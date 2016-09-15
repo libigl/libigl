@@ -30,8 +30,8 @@ namespace igl {
     const Eigen::PlainObjectBase<DerivedM> &Handle_MMatch;
 
     Eigen::VectorXi F_visited;
-    Eigen::PlainObjectBase<DerivedF> TT;
-    Eigen::PlainObjectBase<DerivedF> TTi;
+    DerivedF TT;
+    DerivedF TTi;
 
     Eigen::MatrixXi E, F2E, E2F;
   protected:
@@ -147,7 +147,7 @@ namespace igl {
     F(F_),
     Handle_MMatch(Handle_MMatch_)
     {
-      triangle_triangle_adjacency(V,F,TT,TTi);
+      triangle_triangle_adjacency(F,TT,TTi);
       edge_topology(V,F,E,F2E,E2F);
     };
 

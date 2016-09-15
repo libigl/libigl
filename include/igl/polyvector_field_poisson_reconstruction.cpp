@@ -9,14 +9,12 @@
 
 #include <Eigen/Sparse>
 
-template <typename DerivedV, typename DerivedF, typename DerivedSF, typename DerivedS, typename DerivedE>
-IGL_INLINE double igl::polyvector_field_poisson_reconstruction(
+template <typename DerivedV, typename DerivedF, typename DerivedSF, typename DerivedS>
+IGL_INLINE void igl::polyvector_field_poisson_reconstruction(
   const Eigen::PlainObjectBase<DerivedV> &Vcut,
   const Eigen::PlainObjectBase<DerivedF> &Fcut,
   const Eigen::PlainObjectBase<DerivedS> &sol3D_combed,
-  Eigen::PlainObjectBase<DerivedSF> &scalars,
-  Eigen::PlainObjectBase<DerivedS> &sol3D_recon,
-  Eigen::PlainObjectBase<DerivedE> &max_error )
+                                                               Eigen::PlainObjectBase<DerivedSF> &scalars)
   {
     Eigen::SparseMatrix<typename DerivedV::Scalar> gradMatrix;
     igl::grad(Vcut, Fcut, gradMatrix);
@@ -33,8 +31,6 @@ IGL_INLINE double igl::polyvector_field_poisson_reconstruction(
     igl::repdiag(M1, 3, M) ;
 
     int half_degree = sol3D_combed.cols()/3;
-
-    sol3D_recon.setZero(sol3D_combed.rows(),sol3D_combed.cols());
 
     int numF = Fcut.rows();
     scalars.setZero(Vcut.rows(),half_degree);
@@ -65,13 +61,34 @@ IGL_INLINE double igl::polyvector_field_poisson_reconstruction(
       Eigen::VectorXd bu = igl::slice(b, Iu);
 
       Eigen::VectorXd rhs = bu-Quk*xk;
-      Eigen::MatrixXd yu = solver.solve(rhs);
+      Eigen::VectorXd yu = solver.solve(rhs);
 
-      Eigen::VectorXi index = i*Eigen::VectorXi::Ones(Iu.rows(),1);
-      igl::slice_into(yu, Iu, index, scalars);scalars(Ik[0],i)=xk[0];
+      Eigen::VectorXd y(Vcut.rows(),1);
+      igl::slice_into(yu, Iu, 1, y);y(Ik[0])=xk[0];
+      scalars.col(i) = y;
     }
+}
+
+template <typename DerivedV, typename DerivedF, typename DerivedSF, typename DerivedS, typename DerivedE>
+IGL_INLINE double igl::polyvector_field_poisson_reconstruction(
+                                                               const Eigen::PlainObjectBase<DerivedV> &Vcut,
+                                                               const Eigen::PlainObjectBase<DerivedF> &Fcut,
+                                                               const Eigen::PlainObjectBase<DerivedS> &sol3D_combed,
+                                                               Eigen::PlainObjectBase<DerivedSF> &scalars,
+                                                               Eigen::PlainObjectBase<DerivedS> &sol3D_recon,
+                                                               Eigen::PlainObjectBase<DerivedE> &max_error )
+{
+  
+  igl::polyvector_field_poisson_reconstruction(Vcut, Fcut, sol3D_combed, scalars);
+
+  Eigen::SparseMatrix<typename DerivedV::Scalar> gradMatrix;
+  igl::grad(Vcut, Fcut, gradMatrix);
+  int numF = Fcut.rows();
+  int half_degree = sol3D_combed.cols()/3;
 
     //    evaluate gradient of found scalar function
+  sol3D_recon.setZero(sol3D_combed.rows(),sol3D_combed.cols());
+  
     for (int i =0; i<half_degree; ++i)
     {
       Eigen::VectorXd vec_poisson = gradMatrix*scalars.col(i);
@@ -91,7 +108,9 @@ IGL_INLINE double igl::polyvector_field_poisson_reconstruction(
     return max_error.mean();
   }
 
+
   #ifdef IGL_STATIC_LIBRARY
   // Explicit template specialization
   template double igl::polyvector_field_poisson_reconstruction<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<float, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<float, -1, 1, 0, -1, 1> >&);
+template double igl::polyvector_field_poisson_reconstruction<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&);
   #endif

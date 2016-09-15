@@ -14,7 +14,8 @@ IGL_INLINE bool igl::copyleft::progressive_hulls(
   const Eigen::MatrixXi & F,
   const size_t max_m,
   Eigen::MatrixXd & U,
-  Eigen::MatrixXi & G)
+  Eigen::MatrixXi & G,
+  Eigen::VectorXi & J)
 {
   int m = F.rows();
   return decimate(
@@ -23,5 +24,6 @@ IGL_INLINE bool igl::copyleft::progressive_hulls(
     progressive_hulls_cost_and_placement,
     max_faces_stopping_condition(m,max_m),
     U,
-    G);
+    G,
+    J);
 }

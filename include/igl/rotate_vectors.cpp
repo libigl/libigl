@@ -17,6 +17,8 @@ IGL_INLINE Eigen::MatrixXd igl::rotate_vectors(
 
   for (unsigned i=0; i<V.rows();++i)
   {
+    double norm = V.row(i).norm();
+    
     // project onto the tangent plane and convert to angle
     double a = atan2(B2.row(i).dot(V.row(i)),B1.row(i).dot(V.row(i)));
 
@@ -24,7 +26,7 @@ IGL_INLINE Eigen::MatrixXd igl::rotate_vectors(
     a += (A.size() == 1) ? A(0) : A(i);
 
     // move it back to global coordinates
-    RV.row(i) = cos(a) * B1.row(i) + sin(a) * B2.row(i);
+    RV.row(i) = norm*cos(a) * B1.row(i) + norm*sin(a) * B2.row(i);
   }
 
   return RV;

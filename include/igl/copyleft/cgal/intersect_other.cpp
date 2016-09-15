@@ -9,6 +9,8 @@
 #include "CGAL_includes.hpp"
 #include "mesh_to_cgal_triangle_list.h"
 #include "remesh_intersections.h"
+#include "../../slice_mask.h"
+#include "../../remove_unreferenced.h"
 
 #ifndef IGL_FIRST_HIT_EXCEPTION
 #define IGL_FIRST_HIT_EXCEPTION 10
@@ -25,31 +27,31 @@ namespace igl
       static IGL_INLINE void push_result(
         const Eigen::PlainObjectBase<DerivedF> & F,
         const int f,
+        const int f_other,
         const CGAL::Object & result,
         std::map<
           typename DerivedF::Index,
-          std::pair<typename DerivedF::Index,
-            std::vector<CGAL::Object> > > & offending,
-        std::map<
-          std::pair<typename DerivedF::Index,typename DerivedF::Index>,
-          std::vector<typename DerivedF::Index> > & edge2faces)
+          std::vector<std::pair<typename DerivedF::Index, CGAL::Object> > > &
+          offending)
+        //std::map<
+        //  std::pair<typename DerivedF::Index,typename DerivedF::Index>,
+        //  std::vector<typename DerivedF::Index> > & edge2faces)
       {
         typedef typename DerivedF::Index Index;
         typedef std::pair<Index,Index> EMK;
         if(offending.count(f) == 0)
         {
           // first time marking, initialize with new id and empty list
-          Index id = offending.size();
-          offending[f] = {id,{}};
+          offending[f] = {};
           for(Index e = 0; e<3;e++)
           {
             // append face to edge's list
             Index i = F(f,(e+1)%3) < F(f,(e+2)%3) ? F(f,(e+1)%3) : F(f,(e+2)%3);
             Index j = F(f,(e+1)%3) < F(f,(e+2)%3) ? F(f,(e+2)%3) : F(f,(e+1)%3);
-            edge2faces[EMK(i,j)].push_back(f);
+            //edge2faces[EMK(i,j)].push_back(f);
           }
         }
-        offending[f].second.push_back(result);
+        offending[f].push_back({f_other,result});
       }
       template <
         typename Kernel,
@@ -58,14 +60,10 @@ namespace igl
         typename DerivedVB,
         typename DerivedFB,
         typename DerivedIF,
-        typename DerivedVVA,
-        typename DerivedFFA,
-        typename DerivedJA,
-        typename DerivedIMA,
-        typename DerivedVVB,
-        typename DerivedFFB,
-        typename DerivedJB,
-        typename DerivedIMB>
+        typename DerivedVVAB,
+        typename DerivedFFAB,
+        typename DerivedJAB,
+        typename DerivedIMAB>
       static IGL_INLINE bool intersect_other_helper(
         const Eigen::PlainObjectBase<DerivedVA> & VA,
         const Eigen::PlainObjectBase<DerivedFA> & FA,
@@ -73,14 +71,10 @@ namespace igl
         const Eigen::PlainObjectBase<DerivedFB> & FB,
         const RemeshSelfIntersectionsParam & params,
         Eigen::PlainObjectBase<DerivedIF> & IF,
-        Eigen::PlainObjectBase<DerivedVVA> & VVA,
-        Eigen::PlainObjectBase<DerivedFFA> & FFA,
-        Eigen::PlainObjectBase<DerivedJA>  & JA,
-        Eigen::PlainObjectBase<DerivedIMA> & IMA,
-        Eigen::PlainObjectBase<DerivedVVB> & VVB,
-        Eigen::PlainObjectBase<DerivedFFB> & FFB,
-        Eigen::PlainObjectBase<DerivedJB>  & JB,
-        Eigen::PlainObjectBase<DerivedIMB> & IMB)
+        Eigen::PlainObjectBase<DerivedVVAB> & VVAB,
+        Eigen::PlainObjectBase<DerivedFFAB> & FFAB,
+        Eigen::PlainObjectBase<DerivedJAB>  & JAB,
+        Eigen::PlainObjectBase<DerivedIMAB> & IMAB)
       {
 
         using namespace std;
@@ -113,7 +107,7 @@ namespace igl
           CGAL::Box_intersection_d::Box_with_handle_d<double,3,TrianglesIterator> 
           Box;
         typedef 
-          std::map<Index,std::pair<Index,std::vector<CGAL::Object> > > 
+          std::map<Index,std::vector<std::pair<Index,CGAL::Object> > > 
           OffendingMap;
         typedef std::map<std::pair<Index,Index>,std::vector<Index> >  EdgeMap;
         typedef std::pair<Index,Index> EMK;
@@ -125,7 +119,7 @@ namespace igl
         // http://www.cgal.org/Manual/latest/doc_html/cgal_manual/Box_intersection_d/Chapter_main.html#Section_63.5 
         // Create the corresponding vector of bounding boxes
         std::vector<Box> A_boxes,B_boxes;
-        const auto box_up = [](Triangles & T, std::vector<Box> & boxes)
+        const auto box_up = [](Triangles & T, std::vector<Box> & boxes) -> void
         {
           boxes.reserve(T.size());
           for ( 
@@ -139,10 +133,10 @@ namespace igl
         box_up(TA,A_boxes);
         box_up(TB,B_boxes);
         OffendingMap offendingA,offendingB;
-        EdgeMap edge2facesA,edge2facesB;
+        //EdgeMap edge2facesA,edge2facesB;
 
         std::list<int> lIF;
-        const auto cb = [&](const Box &a, const Box &b)
+        const auto cb = [&](const Box &a, const Box &b) -> void
         {
           using namespace std;
           // index in F and T
@@ -163,8 +157,8 @@ namespace igl
             {
               CGAL::Object result = CGAL::intersection(A,B);
 
-              push_result(FA,fa,result,offendingA,edge2facesA);
-              push_result(FB,fb,result,offendingB,edge2facesB);
+              push_result(FA,fa,fb,result,offendingA);
+              push_result(FB,fb,fa,result,offendingB);
             }
           }
         };
@@ -202,8 +196,38 @@ namespace igl
         }
         if(!params.detect_only)
         {
-          remesh_intersections(VA,FA,TA,offendingA,edge2facesA,VVA,FFA,JA,IMA);
-          remesh_intersections(VB,FB,TB,offendingB,edge2facesB,VVB,FFB,JB,IMB);
+          // Obsolete, now remesh_intersections expects a single mesh
+          // remesh_intersections(VA,FA,TA,offendingA,VVA,FFA,JA,IMA);
+          // remesh_intersections(VB,FB,TB,offendingB,VVB,FFB,JB,IMB);
+          // Combine mesh and offending maps
+          DerivedVA VAB(VA.rows()+VB.rows(),3);
+          VAB<<VA,VB;
+          DerivedFA FAB(FA.rows()+FB.rows(),3);
+          FAB<<FA,(FB.array()+VA.rows());
+          Triangles TAB;
+          TAB.reserve(TA.size()+TB.size());
+          TAB.insert(TAB.end(),TA.begin(),TA.end());
+          TAB.insert(TAB.end(),TB.begin(),TB.end());
+          OffendingMap offending;
+          //offending.reserve(offendingA.size() + offendingB.size());
+          for (const auto itr : offendingA)
+          {
+            // Remap offenders in FB to FAB
+            auto offenders = itr.second;
+            for(auto & offender : offenders)
+            {
+              offender.first += FA.rows();
+            }
+            offending[itr.first] = offenders;
+          }
+          for (const auto itr : offendingB)
+          {
+            // Store offenders for FB according to place in FAB
+            offending[FA.rows() + itr.first] = itr.second;
+          }
+
+          remesh_intersections(
+            VAB,FAB,TAB,offending,params.stitch_all,VVAB,FFAB,JAB,IMAB);
         }
 
         return IF.rows() > 0;
@@ -218,38 +242,30 @@ template <
   typename DerivedVB,
   typename DerivedFB,
   typename DerivedIF,
-  typename DerivedVVA,
-  typename DerivedFFA,
-  typename DerivedJA,
-  typename DerivedIMA,
-  typename DerivedVVB,
-  typename DerivedFFB,
-  typename DerivedJB,
-  typename DerivedIMB>
+  typename DerivedVVAB,
+  typename DerivedFFAB,
+  typename DerivedJAB,
+  typename DerivedIMAB>
 IGL_INLINE bool igl::copyleft::cgal::intersect_other(
-  const Eigen::PlainObjectBase<DerivedVA> & VA,
-  const Eigen::PlainObjectBase<DerivedFA> & FA,
-  const Eigen::PlainObjectBase<DerivedVB> & VB,
-  const Eigen::PlainObjectBase<DerivedFB> & FB,
-  const RemeshSelfIntersectionsParam & params,
-  Eigen::PlainObjectBase<DerivedIF> & IF,
-  Eigen::PlainObjectBase<DerivedVVA> & VVA,
-  Eigen::PlainObjectBase<DerivedFFA> & FFA,
-  Eigen::PlainObjectBase<DerivedJA>  & JA,
-  Eigen::PlainObjectBase<DerivedIMA> & IMA,
-  Eigen::PlainObjectBase<DerivedVVB> & VVB,
-  Eigen::PlainObjectBase<DerivedFFB> & FFB,
-  Eigen::PlainObjectBase<DerivedJB>  & JB,
-  Eigen::PlainObjectBase<DerivedIMB> & IMB)
+    const Eigen::PlainObjectBase<DerivedVA> & VA,
+    const Eigen::PlainObjectBase<DerivedFA> & FA,
+    const Eigen::PlainObjectBase<DerivedVB> & VB,
+    const Eigen::PlainObjectBase<DerivedFB> & FB,
+    const RemeshSelfIntersectionsParam & params,
+    Eigen::PlainObjectBase<DerivedIF> & IF,
+    Eigen::PlainObjectBase<DerivedVVAB> & VVAB,
+    Eigen::PlainObjectBase<DerivedFFAB> & FFAB,
+    Eigen::PlainObjectBase<DerivedJAB>  & JAB,
+    Eigen::PlainObjectBase<DerivedIMAB> & IMAB)
 {
   if(params.detect_only)
   {
     return intersect_other_helper<CGAL::Epick>
-      (VA,FA,VB,FB,params,IF,VVA,FFA,JA,IMA,VVB,FFB,JB,IMB);
+      (VA,FA,VB,FB,params,IF,VVAB,FFAB,JAB,IMAB);
   }else
   {
     return intersect_other_helper<CGAL::Epeck>
-      (VA,FA,VB,FB,params,IF,VVA,FFA,JA,IMA,VVB,FFB,JB,IMB);
+      (VA,FA,VB,FB,params,IF,VVAB,FFAB,JAB,IMAB);
   }
 }
 
@@ -261,11 +277,11 @@ IGL_INLINE bool igl::copyleft::cgal::intersect_other(
   const bool first_only,
   Eigen::MatrixXi & IF)
 {
-  Eigen::MatrixXd VVA,VVB;
-  Eigen::MatrixXi FFA,FFB;
-  Eigen::VectorXi JA,JB,IMA,IMB;
+  Eigen::MatrixXd VVAB;
+  Eigen::MatrixXi FFAB;
+  Eigen::VectorXi JAB,IMAB;
   return intersect_other(
-    VA,FA,VB,FB,{true,first_only},IF,VVA,FFA,JA,IMA,VVB,FFB,JB,IMB);
+    VA,FA,VB,FB,{true,first_only},IF,VVAB,FFAB,JAB,IMAB);
 }
 
 #ifdef IGL_STATIC_LIBRARY

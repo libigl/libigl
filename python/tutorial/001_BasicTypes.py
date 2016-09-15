@@ -4,7 +4,7 @@ from iglhelpers import *
 
 # Create a numpy dense array
 # 2 types are supported by the wrappers: float64 and int64
-dense_matrix = np.array( [ (1,2,3), (4,5,6) , (7,8,9) ], dtype='float64')
+dense_matrix = np.array([(1, 2, 3), (4, 5, 6), (7, 8, 9)], dtype='float64')
 
 # libigl wrappers uses Eigen as a matrix type, you can easily convert between numpy and Eigen using
 # the helper function p2e. This operation duplicates the data.
@@ -18,7 +18,7 @@ dense_matrix_eigen_2 = dense_matrix_eigen * dense_matrix_eigen
 print("Eigen Matrix: \n", dense_matrix_eigen_2, "\n", sep='')
 
 # and access single elements
-print("Eigen Matrix(0,0): ", dense_matrix_eigen_2[0,0], "\n")
+print("Eigen Matrix(0,0): ", dense_matrix_eigen_2[0, 0], "\n")
 
 # To convert it back to a numpy array, use the helper function e2p
 dense_matrix_2 = e2p(dense_matrix_eigen_2)
@@ -39,10 +39,3 @@ print("Sparse matrix Eigen: ", sparse_matrix_eigen, sep='')
 # And converted back with e2p
 sparse_matrix_2 = e2p(sparse_matrix_eigen)
 print("Sparse matrix Numpy: ", sparse_matrix_2.todense(), sep='')
-
-
-
-
-
-
-

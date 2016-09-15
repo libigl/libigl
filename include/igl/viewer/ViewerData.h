@@ -60,12 +60,28 @@ public:
   // Inputs:
   //   C  #V|#F|1 by 3 list of colors
   IGL_INLINE void set_colors(const Eigen::MatrixXd &C);
+  // Set per-vertex UV coordinates
+  //
+  // Inputs:
+  //   UV  #V by 2 list of UV coordinates (indexed by F)
   IGL_INLINE void set_uv(const Eigen::MatrixXd& UV);
+  // Set per-corner UV coordinates
+  //
+  // Inputs:
+  //   UV_V  #UV by 2 list of UV coordinates
+  //   UV_F  #F by 3 list of UV indices into UV_V
   IGL_INLINE void set_uv(const Eigen::MatrixXd& UV_V, const Eigen::MatrixXi& UV_F);
+  // Set the texture associated with the mesh.
+  //
+  // Inputs:
+  //   R  width by height image matrix of red channel
+  //   G  width by height image matrix of green channel
+  //   B  width by height image matrix of blue channel
+  //
   IGL_INLINE void set_texture(
-                    const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& R,
-                    const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& G,
-                    const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& B);
+    const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& R,
+    const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& G,
+    const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& B);
 
   // Sets points given a list of point vertices. In constrast to `set_points`
   // this will (purposefully) clober existing points.
@@ -92,7 +108,10 @@ public:
   IGL_INLINE void compute_normals();
 
   // Assigns uniform colors to all faces/vertices
-  IGL_INLINE void uniform_colors(Eigen::Vector3d ambient, Eigen::Vector3d diffuse, Eigen::Vector3d specular);
+  IGL_INLINE void uniform_colors(
+    Eigen::Vector3d ambient, 
+    Eigen::Vector3d diffuse, 
+    Eigen::Vector3d specular);
 
   // Generates a default grid texture
   IGL_INLINE void grid_texture();

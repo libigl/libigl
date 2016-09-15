@@ -28,7 +28,6 @@ namespace igl
         inline static Eigen::Vector3d view_direction(const Eigen::Vector3d & pos);
         Eigen::Vector3d pos;
         Eigen::Quaterniond rot,down_rot;
-        // This line causes trouble if RotateWidget.h is included before bbw.h
         Eigen::Vector2d down_xy,drag_xy,down_dir;
         Eigen::Vector3d udown,udrag;
         double outer_radius_on_screen;

@@ -20,9 +20,14 @@ namespace igl
       {
         bool detect_only;
         bool first_only;
-        RemeshSelfIntersectionsParam():detect_only(false),first_only(false){};
-        RemeshSelfIntersectionsParam(bool _detect_only, bool _first_only):
-          detect_only(_detect_only),first_only(_first_only){};
+        bool stitch_all;
+        inline RemeshSelfIntersectionsParam(
+          bool _detect_only=false, 
+          bool _first_only=false,
+          bool _stitch_all=false):
+          detect_only(_detect_only),
+          first_only(_first_only),
+          stitch_all(_stitch_all){};
       };
     }
   }

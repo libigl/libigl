@@ -274,124 +274,126 @@ void igl::copyleft::cgal::order_facets_around_edge(
 }
 
 template<
-    typename DerivedV,
-    typename DerivedF,
-    typename DerivedI>
+  typename DerivedV,
+  typename DerivedF,
+  typename DerivedI>
 IGL_INLINE
 void igl::copyleft::cgal::order_facets_around_edge(
-        const Eigen::PlainObjectBase<DerivedV>& V,
-        const Eigen::PlainObjectBase<DerivedF>& F,
-        size_t s,
-        size_t d, 
-        const std::vector<int>& adj_faces,
-        const Eigen::PlainObjectBase<DerivedV>& pivot_point,
-        Eigen::PlainObjectBase<DerivedI>& order)
+  const Eigen::PlainObjectBase<DerivedV>& V,
+  const Eigen::PlainObjectBase<DerivedF>& F,
+  size_t s,
+  size_t d, 
+  const std::vector<int>& adj_faces,
+  const Eigen::PlainObjectBase<DerivedV>& pivot_point,
+  Eigen::PlainObjectBase<DerivedI>& order)
 {
+  assert(V.cols() == 3);
+  assert(F.cols() == 3);
+  assert(pivot_point.cols() == 3);
+  auto signed_index_to_index = [&](int signed_idx)
+  {
+      return abs(signed_idx) -1;
+  };
+  auto get_opposite_vertex_index = [&](size_t fid) -> typename DerivedF::Scalar
+  {
+      typedef typename DerivedF::Scalar Index;
+      if (F(fid, 0) != (Index)s && F(fid, 0) != (Index)d) return F(fid, 0);
+      if (F(fid, 1) != (Index)s && F(fid, 1) != (Index)d) return F(fid, 1);
+      if (F(fid, 2) != (Index)s && F(fid, 2) != (Index)d) return F(fid, 2);
+      assert(false);
+      // avoid warning
+      return -1;
+  };
 
-    assert(V.cols() == 3);
-    assert(F.cols() == 3);
-    assert(pivot_point.cols() == 3);
-    auto signed_index_to_index = [&](int signed_idx)
-    {
-        return abs(signed_idx) -1;
-    };
-    auto get_opposite_vertex_index = [&](size_t fid)
-    {
-        typedef typename DerivedF::Scalar Index;
-        if (F(fid, 0) != (Index)s && F(fid, 0) != (Index)d) return F(fid, 0);
-        if (F(fid, 1) != (Index)s && F(fid, 1) != (Index)d) return F(fid, 1);
-        if (F(fid, 2) != (Index)s && F(fid, 2) != (Index)d) return F(fid, 2);
-        assert(false);
-        // avoid warning
-        return -1;
-    };
-
-    {
-        // Check if s, d and pivot are collinear.
-        typedef CGAL::Exact_predicates_exact_constructions_kernel K;
-        K::Point_3 ps(V(s,0), V(s,1), V(s,2));
-        K::Point_3 pd(V(d,0), V(d,1), V(d,2));
-        K::Point_3 pp(pivot_point(0,0), pivot_point(0,1), pivot_point(0,2));
-        if (CGAL::collinear(ps, pd, pp)) {
-            throw std::runtime_error(
-                    "Pivot point is collinear with the outer edge!");
-        }
+  {
+    // Check if s, d and pivot are collinear.
+    typedef CGAL::Exact_predicates_exact_constructions_kernel K;
+    K::Point_3 ps(V(s,0), V(s,1), V(s,2));
+    K::Point_3 pd(V(d,0), V(d,1), V(d,2));
+    K::Point_3 pp(pivot_point(0,0), pivot_point(0,1), pivot_point(0,2));
+    if (CGAL::collinear(ps, pd, pp)) {
+        throw std::runtime_error(
+                "Pivot point is collinear with the outer edge!");
     }
+  }
 
-    const size_t N = adj_faces.size();
-    const size_t num_faces = N + 1; // N adj faces + 1 pivot face
+  const size_t N = adj_faces.size();
+  const size_t num_faces = N + 1; // N adj faces + 1 pivot face
 
-    // Because face indices are used for tie breaking, the original face indices
-    // in the new faces array must be ascending.
-    auto comp = [&](int i, int j) {
-        return signed_index_to_index(adj_faces[i]) <
-            signed_index_to_index(adj_faces[j]);
-    };
-    std::vector<size_t> adj_order(N);
-    for (size_t i=0; i<N; i++) adj_order[i] = i;
-    std::sort(adj_order.begin(), adj_order.end(), comp);
+  // Because face indices are used for tie breaking, the original face indices
+  // in the new faces array must be ascending.
+  auto comp = [&](int i, int j) 
+  {
+    return signed_index_to_index(adj_faces[i]) <
+      signed_index_to_index(adj_faces[j]);
+  };
+  std::vector<size_t> adj_order(N);
+  for (size_t i=0; i<N; i++) adj_order[i] = i;
+  std::sort(adj_order.begin(), adj_order.end(), comp);
 
-    DerivedV vertices(num_faces + 2, 3);
-    for (size_t i=0; i<N; i++) {
-        const size_t fid = signed_index_to_index(adj_faces[adj_order[i]]);
-        vertices.row(i) = V.row(get_opposite_vertex_index(fid));
-    }
-    vertices.row(N  ) = pivot_point;
-    vertices.row(N+1) = V.row(s);
-    vertices.row(N+2) = V.row(d);
+  DerivedV vertices(num_faces + 2, 3);
+  for (size_t i=0; i<N; i++) 
+  {
+    const size_t fid = signed_index_to_index(adj_faces[adj_order[i]]);
+    vertices.row(i) = V.row(get_opposite_vertex_index(fid));
+  }
+  vertices.row(N  ) = pivot_point;
+  vertices.row(N+1) = V.row(s);
+  vertices.row(N+2) = V.row(d);
 
-    DerivedF faces(num_faces, 3);
-    for (size_t i=0; i<N; i++)
+  DerivedF faces(num_faces, 3);
+  for (size_t i=0; i<N; i++)
+  {
+    if (adj_faces[adj_order[i]] < 0) 
     {
-        if (adj_faces[adj_order[i]] < 0) {
-            faces(i,0) = N+1; // s
-            faces(i,1) = N+2; // d
-            faces(i,2) = i  ;
-        } else {
-            faces(i,0) = N+2; // d
-            faces(i,1) = N+1; // s
-            faces(i,2) = i  ;
-        }
-    }
-    // Last face is the pivot face.
-    faces(N, 0) = N+1;
-    faces(N, 1) = N+2;
-    faces(N, 2) = N;
-
-    std::vector<int> adj_faces_with_pivot(num_faces);
-    for (size_t i=0; i<num_faces; i++)
+      faces(i,0) = N+1; // s
+      faces(i,1) = N+2; // d
+      faces(i,2) = i  ;
+    } else 
     {
-        if ((size_t)faces(i,0) == N+1 && (size_t)faces(i,1) == N+2)
-        {
-            adj_faces_with_pivot[i] = int(i+1) * -1;
-        } else
-        {
-            adj_faces_with_pivot[i] = int(i+1);
-        }
+      faces(i,0) = N+2; // d
+      faces(i,1) = N+1; // s
+      faces(i,2) = i  ;
     }
+  }
+  // Last face is the pivot face.
+  faces(N, 0) = N+1;
+  faces(N, 1) = N+2;
+  faces(N, 2) = N;
 
-    DerivedI order_with_pivot;
-    order_facets_around_edge(
-            vertices, faces, N+1, N+2,
-            adj_faces_with_pivot, order_with_pivot);
-
-    assert((size_t)order_with_pivot.size() == num_faces);
-    order.resize(N);
-    size_t pivot_index = num_faces + 1;
-    for (size_t i=0; i<num_faces; i++)
+  std::vector<int> adj_faces_with_pivot(num_faces);
+  for (size_t i=0; i<num_faces; i++)
+  {
+    if ((size_t)faces(i,0) == N+1 && (size_t)faces(i,1) == N+2)
     {
-        if ((size_t)order_with_pivot[i] == N)
-        {
-            pivot_index = i;
-            break;
-        }
-    }
-    assert(pivot_index < num_faces);
-
-    for (size_t i=0; i<N; i++)
+        adj_faces_with_pivot[i] = int(i+1) * -1;
+    } else
     {
-        order[i] = adj_order[order_with_pivot[(pivot_index+i+1)%num_faces]];
+        adj_faces_with_pivot[i] = int(i+1);
     }
+  }
+
+  DerivedI order_with_pivot;
+  order_facets_around_edge(
+    vertices, faces, N+1, N+2, adj_faces_with_pivot, order_with_pivot);
+
+  assert((size_t)order_with_pivot.size() == num_faces);
+  order.resize(N);
+  size_t pivot_index = num_faces + 1;
+  for (size_t i=0; i<num_faces; i++)
+  {
+    if ((size_t)order_with_pivot[i] == N)
+    {
+      pivot_index = i;
+      break;
+    }
+  }
+  assert(pivot_index < num_faces);
+
+  for (size_t i=0; i<N; i++)
+  {
+    order[i] = adj_order[order_with_pivot[(pivot_index+i+1)%num_faces]];
+  }
 }
 
 

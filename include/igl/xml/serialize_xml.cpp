@@ -7,20 +7,33 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 
 #include "serialize_xml.h"
+#include "../STR.h"
+#include "../serialize.h"
+#include "XMLSerializable.h"
+
 #include <iterator>
+#include <limits>
+#include <iomanip>
 
 namespace igl
 {
   namespace xml
   {
     template <typename T>
-    IGL_INLINE void serialize_xml(const T& obj,const std::string& filename)
+    IGL_INLINE void serialize_xml(
+      const T& obj,
+      const std::string& filename)
     {
       serialize_xml(obj,"object",filename,false,true);
     }
   
     template <typename T>
-    IGL_INLINE void serialize_xml(const T& obj,const std::string& objectName,const std::string& filename,bool binary,bool overwrite)
+    IGL_INLINE void serialize_xml(
+      const T& obj,
+      const std::string& objectName,
+      const std::string& filename,
+      bool binary,
+      bool overwrite)
     {
       tinyxml2::XMLDocument* doc = new tinyxml2::XMLDocument();
   
@@ -28,7 +41,7 @@ namespace igl
       {
         // Check if file exists
         tinyxml2::XMLError error = doc->LoadFile(filename.c_str());
-        if(error != tinyxml2::XML_NO_ERROR)
+        if(error != tinyxml2::XML_SUCCESS)
         {
           doc->Clear();
         }
@@ -45,7 +58,7 @@ namespace igl
   
       // Save
       tinyxml2::XMLError error = doc->SaveFile(filename.c_str());
-      if(error != tinyxml2::XML_NO_ERROR)
+      if(error != tinyxml2::XML_SUCCESS)
       {
         doc->PrintError();
       }
@@ -54,9 +67,16 @@ namespace igl
     }
   
     template <typename T>
-    IGL_INLINE void serialize_xml(const T& obj,const std::string& objectName,tinyxml2::XMLDocument* doc,tinyxml2::XMLElement* element,bool binary)
+    IGL_INLINE void serialize_xml(
+      const T& obj,
+      const std::string& objectName,
+      tinyxml2::XMLDocument* doc,
+      tinyxml2::XMLElement* element,
+      bool binary)
     {
-      static_assert(serialization_xml::is_serializable<T>::value,"'igl::xml::serialize_xml': type is not serializable");
+      static_assert(
+        serialization_xml::is_serializable<T>::value,
+        "'igl::xml::serialize_xml': type is not serializable");
   
       std::string name(objectName);
       serialization_xml::encodeXMLElementName(name);
@@ -73,7 +93,10 @@ namespace igl
       {
         std::vector<char> buffer;
         serialize(obj,name,buffer);
-        std::string data = serialization_xml::base64_encode(reinterpret_cast<const unsigned char*>(buffer.data()),buffer.size());
+        std::string data = 
+          serialization_xml::base64_encode(
+            reinterpret_cast<const unsigned char*>(
+              buffer.data()),buffer.size());
         
         child->SetAttribute("binary",true);
   
@@ -97,7 +120,7 @@ namespace igl
       tinyxml2::XMLDocument* doc = new tinyxml2::XMLDocument();
   
       tinyxml2::XMLError error = doc->LoadFile(filename.c_str());
-      if(error != tinyxml2::XML_NO_ERROR)
+      if(error != tinyxml2::XML_SUCCESS)
       {
         std::cerr << "File not found!" << std::endl;
         doc->PrintError();
@@ -150,139 +173,7 @@ namespace igl
         }
       }
     }
-  
-    IGL_INLINE bool XMLSerializable::PreSerialization() const
-    { 
-      return true;
-    }
-    
-    IGL_INLINE void XMLSerializable::PostSerialization() const
-    {
-    }
-    
-    IGL_INLINE bool XMLSerializable::PreDeserialization()
-    { 
-      return true;
-    }
-  
-    IGL_INLINE void XMLSerializable::PostDeserialization() 
-    {
-    }
-  
-    IGL_INLINE void XMLSerializable::Serialize(std::vector<char>& buffer) const
-    {
-      if(this->PreSerialization())
-      {
-        if(initialized == false)
-        {
-          objects.clear();
-          (const_cast<XMLSerializable*>(this))->InitSerialization();
-          initialized = true;
-        }
-  
-        for(unsigned int i=0;i<objects.size();i++)
-          objects[i]->Serialize(buffer);
-  
-        this->PostSerialization();
-      }
-    }
-  
-    IGL_INLINE void XMLSerializable::Deserialize(const std::vector<char>& buffer)
-    {
-      if(this->PreDeserialization())
-      {
-        if(initialized == false)
-        {
-          objects.clear();
-          (const_cast<XMLSerializable*>(this))->InitSerialization();
-          initialized = true;
-        }
-  
-        for(unsigned int i=0;i<objects.size();i++)
-          objects[i]->Deserialize(buffer);
-  
-        this->PostDeserialization();
-      }
-    }
-  
-    IGL_INLINE void XMLSerializable::Serialize(tinyxml2::XMLDocument* doc,tinyxml2::XMLElement* element) const
-    {
-      if(this->PreSerialization())
-      {
-        if(initialized == false)
-        {
-          objects.clear();
-          (const_cast<XMLSerializable*>(this))->InitSerialization();
-          initialized = true;
-        }
-  
-        for(unsigned int i=0;i<objects.size();i++)
-          objects[i]->Serialize(doc,element);
-  
-        this->PostSerialization();
-      }
-    }
-  
-    IGL_INLINE void XMLSerializable::Deserialize(const tinyxml2::XMLDocument* doc,const tinyxml2::XMLElement* element)
-    {
-      if(this->PreDeserialization())
-      {
-        if(initialized == false)
-        {
-          objects.clear();
-          (const_cast<XMLSerializable*>(this))->InitSerialization();
-          initialized = true;
-        }
-  
-        for(unsigned int i=0;i<objects.size();i++)
-          objects[i]->Deserialize(doc,element);
-  
-        this->PostDeserialization();
-      }
-    }
-  
-    IGL_INLINE XMLSerializable::XMLSerializable()
-    {
-      initialized = false;
-    }
-  
-    IGL_INLINE XMLSerializable::XMLSerializable(const XMLSerializable& obj)
-    {
-      initialized = false;
-      objects.clear();
-    }
-  
-    IGL_INLINE XMLSerializable::~XMLSerializable()
-    {
-      initialized = false;
-      objects.clear();
-    }
-  
-  
-    IGL_INLINE XMLSerializable& XMLSerializable::operator=(const XMLSerializable& obj)
-    {
-      if(this != &obj)
-      {
-        if(initialized)
-        {
-          initialized = false;
-          objects.clear();
-        }
-      }
-      return *this;
-    }
-  
-    template <typename T>
-    IGL_INLINE void XMLSerializable::Add(T& obj,std::string name,bool binary)
-    {
-      XMLSerializationObject<T>* object = new XMLSerializationObject<T>();
-      object->Binary = binary;
-      object->Name = name;
-      object->Object = &obj;
-  
-      objects.push_back(object);
-    }
-  
+
     namespace serialization_xml
     {
       // fundamental types
@@ -510,10 +401,14 @@ namespace igl
           obj.clear();
         }
       }
-  
-      // Eigen types
+
       template<typename T,int R,int C,int P,int MR,int MC>
-      IGL_INLINE void serialize(const Eigen::Matrix<T,R,C,P,MR,MC>& obj,tinyxml2::XMLDocument* doc,tinyxml2::XMLElement* element,const std::string& name)
+      IGL_INLINE void serialize(
+        const Eigen::Matrix<T,R,C,P,MR,MC>& obj,
+        const std::string& name,
+        const std::function<std::string(const T &) >& to_string,
+        tinyxml2::XMLDocument* doc,
+        tinyxml2::XMLElement* element)
       {
         tinyxml2::XMLElement* matrix = getElement(doc,element,name.c_str());
   
@@ -523,15 +418,13 @@ namespace igl
         matrix->SetAttribute("rows",rows);
         matrix->SetAttribute("cols",cols);
   
-        char buffer[200];
         std::stringstream ms;
         ms << "\n";
         for(unsigned int r=0;r<rows;r++)
         {
           for(unsigned int c=0;c<cols;c++)
           {
-            tinyxml2::XMLUtil::ToStr(obj(r,c),buffer,200);
-            ms << buffer << ",";
+            ms << to_string(obj(r,c)) << ",";
           }
           ms << "\n";
         }
@@ -543,8 +436,29 @@ namespace igl
         matrix->SetAttribute("matrix",mString.c_str());
       }
   
+      // Eigen types
       template<typename T,int R,int C,int P,int MR,int MC>
-      IGL_INLINE void deserialize(Eigen::Matrix<T,R,C,P,MR,MC>& obj,const tinyxml2::XMLDocument* doc,const tinyxml2::XMLElement* element,const std::string& name)
+      IGL_INLINE void serialize(
+        const Eigen::Matrix<T,R,C,P,MR,MC>& obj,
+        tinyxml2::XMLDocument* doc,
+        tinyxml2::XMLElement* element,
+        const std::string& name)
+      {
+        const std::function<std::string(const T &) > to_string = 
+          [](const T & v)->std::string
+          {
+            return
+              STR(std::setprecision(std::numeric_limits<double>::digits10+2)<<v);
+          };
+        serialize(obj,name,to_string,doc,element);
+      }
+      template<typename T,int R,int C,int P,int MR,int MC>
+      IGL_INLINE void deserialize(
+        const tinyxml2::XMLDocument* doc,
+        const tinyxml2::XMLElement* element,
+        const std::string& name,
+        const std::function<void(const std::string &,T &)> & from_string,
+        Eigen::Matrix<T,R,C,P,MR,MC>& obj)
       {
         const tinyxml2::XMLElement* child = element->FirstChildElement(name.c_str());
         bool initialized = false;
@@ -583,11 +497,13 @@ namespace igl
   
                   // push pack the data if any
                   if(!val.empty())
-                    getAttribute(val.c_str(),obj.coeffRef(r,c));
+                  {
+                    from_string(val,obj.coeffRef(r,c));
+                  }
                 }
   
                 getline(liness,val);
-                getAttribute(val.c_str(),obj.coeffRef(r,cols-1));
+                from_string(val,obj.coeffRef(r,cols-1));
   
                 r++;
               }
@@ -600,6 +516,21 @@ namespace igl
         {
           obj = Eigen::Matrix<T,R,C,P,MR,MC>();
         }
+      }
+  
+      template<typename T,int R,int C,int P,int MR,int MC>
+      IGL_INLINE void deserialize(
+        Eigen::Matrix<T,R,C,P,MR,MC>& obj,
+        const tinyxml2::XMLDocument* doc,
+        const tinyxml2::XMLElement* element,
+        const std::string& name)
+      {
+        const std::function<void(const std::string &,T &)> & from_string = 
+          [](const std::string & s,T & v)
+          {
+            getAttribute(s.c_str(),v);
+          };
+        deserialize(doc,element,name,from_string,obj);
       }
   
       template<typename T,int P,typename I>

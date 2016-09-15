@@ -1,8 +1,5 @@
 #ifndef IGL_PLY_H
 #define IGL_PLY_H
-// Use unnamed namespace to avoid duplicate symbols
-namespace 
-{
 /*
 
 Header for PLY polygon files.
@@ -326,6 +323,9 @@ properly to target OSs with binary files.
 #include <string.h>
 //#include "ply.h"
 
+// Use unnamed namespace to avoid duplicate symbols
+namespace
+{
 const char *type_names[] = {
 "invalid",
 "char", "short", "int",
@@ -341,6 +341,7 @@ const char *alt_type_names[] = {  /* names of scalar types */
 int ply_type_size[] = {
   0, 1, 2, 4, 1, 2, 4, 4, 8
 };
+}
 
 typedef union
 {
@@ -349,8 +350,11 @@ typedef union
 } endian_test_type;
 
 
+namespace
+{
 static int native_binary_type = -1;
 static int types_checked = 0;
+}
 
 #define NO_OTHER_PROPS  -1
 
@@ -1708,6 +1712,8 @@ Entry:
 inline void ply_close(PlyFile *plyfile)
 {
   fclose (plyfile->fp);
+  // Alec:
+  plyfile->fp = NULL;
 
   /* free up memory associated with the PLY file */
   free (plyfile);
@@ -3082,5 +3088,4 @@ inline char *my_alloc(int size, int lnum, const char *fe)
 }
 
 
-}
 #endif

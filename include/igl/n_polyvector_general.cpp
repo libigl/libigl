@@ -15,6 +15,7 @@
 #include <Eigen/Sparse>
 #include <Eigen/Geometry>
 #include <iostream>
+#include <iostream>
 
 namespace igl {
   template <typename DerivedV, typename DerivedF>
@@ -36,7 +37,7 @@ namespace igl {
     Eigen::VectorXi indInteriorToFull;
     Eigen::VectorXi indFullToInterior;
 
-    Eigen::PlainObjectBase<DerivedV> B1, B2, FN;
+    DerivedV B1, B2, FN;
 
     IGL_INLINE void computek();
     IGL_INLINE void setFieldFromGeneralCoefficients(const  std::vector<Eigen::Matrix<std::complex<typename DerivedV::Scalar>, Eigen::Dynamic,1>> &coeffs,
@@ -201,7 +202,6 @@ IGL_INLINE bool igl::GeneralPolyVectorFieldFinder<DerivedV, DerivedF>::
                            const Eigen::VectorXi &rootsIndex,
                            Eigen::Matrix<typename DerivedV::Scalar, Eigen::Dynamic, Eigen::Dynamic> &output)
 {
-
   // polynomial is of the form:
   // z^(2n) +
   // -c[0]z^(2n-1) +
@@ -209,13 +209,10 @@ IGL_INLINE bool igl::GeneralPolyVectorFieldFinder<DerivedV, DerivedF>::
   // -c[2]z^(2n-3) +
   // ... +
   // (-1)^n c[n-1]
-
   std::vector<Eigen::Matrix<std::complex<typename DerivedV::Scalar>, Eigen::Dynamic,1>> coeffs(n,Eigen::Matrix<std::complex<typename DerivedV::Scalar>, Eigen::Dynamic,1>::Zero(numF, 1));
-
   for (int i =0; i<n; ++i)
   {
     int degree = i+1;
-
     Eigen::Matrix<std::complex<typename DerivedV::Scalar>, Eigen::Dynamic,1> Ck;
     getGeneralCoeffConstraints(isConstrained,
                                cfW,
@@ -232,10 +229,8 @@ IGL_INLINE bool igl::GeneralPolyVectorFieldFinder<DerivedV, DerivedF>::
     else
       minQuadWithKnownMini(DD, f, isConstrained, Ck, coeffs[i]);
   }
-
   std::vector<Eigen::Matrix<typename DerivedV::Scalar, Eigen::Dynamic, 2> > pv;
   setFieldFromGeneralCoefficients(coeffs, pv);
-
   output.setZero(numF,3*n);
   for (int fi=0; fi<numF; ++fi)
   {

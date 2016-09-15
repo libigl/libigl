@@ -6,7 +6,8 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "pseudonormal_test.h"
-#include "AABB.h"
+#include "barycentric_coordinates.h"
+#include "doublearea.h"
 #include "project_to_line_segment.h"
 #include <cassert>
 
@@ -49,7 +50,7 @@ IGL_INLINE void igl::pseudonormal_test(
   const double epsilon = 1e-12;
   if(area>MIN_DOUBLE_AREA)
   {
-    AABB<Eigen::MatrixXd,3>::barycentric_coordinates( c,A,B,C,b);
+    barycentric_coordinates( c,A,B,C,b);
     // Determine which normal to use
     const int type = (b.array()<=epsilon).cast<int>().sum();
     switch(type)

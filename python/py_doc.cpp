@@ -1,409 +1,1149 @@
-const char *__doc_igl_AABB = R"igl_Qu8mg5v7(See igl\AABB.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_active_set = R"igl_Qu8mg5v7(See igl\active_set.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_adjacency_list = R"igl_Qu8mg5v7(See igl\adjacency_list.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_adjacency_matrix = R"igl_Qu8mg5v7(See igl\adjacency_matrix.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_all_edges = R"igl_Qu8mg5v7(See igl\all_edges.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_all_pairs_distances = R"igl_Qu8mg5v7(See igl\all_pairs_distances.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_angle_bound_frame_fields = R"igl_Qu8mg5v7(See igl\angle_bound_frame_fields.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_angular_distance = R"igl_Qu8mg5v7(See igl\angular_distance.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_any_of = R"igl_Qu8mg5v7(See igl\any_of.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_arap = R"igl_Qu8mg5v7(See igl\arap.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_ARAPEnergyType = R"igl_Qu8mg5v7(See igl\ARAPEnergyType.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_arap_dof = R"igl_Qu8mg5v7(See igl\arap_dof.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_arap_linear_block = R"igl_Qu8mg5v7(See igl\arap_linear_block.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_arap_rhs = R"igl_Qu8mg5v7(See igl\arap_rhs.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_average_onto_faces = R"igl_Qu8mg5v7(See igl\average_onto_faces.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_average_onto_vertices = R"igl_Qu8mg5v7(See igl\average_onto_vertices.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_avg_edge_length = R"igl_Qu8mg5v7(See igl\avg_edge_length.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_axis_angle_to_quat = R"igl_Qu8mg5v7(See igl\axis_angle_to_quat.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_barycenter = R"igl_Qu8mg5v7(See igl\barycenter.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_barycentric_coordinates = R"igl_Qu8mg5v7(See igl\barycentric_coordinates.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_barycentric_to_global = R"igl_Qu8mg5v7(See igl\barycentric_to_global.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_basename = R"igl_Qu8mg5v7(See igl\basename.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_bfs_orient = R"igl_Qu8mg5v7(See igl\bfs_orient.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_biharmonic_coordinates = R"igl_Qu8mg5v7(See igl\biharmonic_coordinates.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_bone_parents = R"igl_Qu8mg5v7(See igl\bone_parents.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_boundary_conditions = R"igl_Qu8mg5v7(See igl\boundary_conditions.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_boundary_facets = R"igl_Qu8mg5v7(See igl\boundary_facets.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_boundary_loop = R"igl_Qu8mg5v7(See igl\boundary_loop.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_bounding_box = R"igl_Qu8mg5v7(See igl\bounding_box.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_bounding_box_diagonal = R"igl_Qu8mg5v7(See igl\bounding_box_diagonal.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_Camera = R"igl_Qu8mg5v7(See igl\Camera.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_canonical_quaternions = R"igl_Qu8mg5v7(See igl\canonical_quaternions.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_cat = R"igl_Qu8mg5v7(See igl\cat.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_ceil = R"igl_Qu8mg5v7(See igl\ceil.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_centroid = R"igl_Qu8mg5v7(See igl\centroid.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_circulation = R"igl_Qu8mg5v7(See igl\circulation.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_collapse_edge = R"igl_Qu8mg5v7(See igl\collapse_edge.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_collapse_small_triangles = R"igl_Qu8mg5v7(See igl\collapse_small_triangles.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_colon = R"igl_Qu8mg5v7(See igl\colon.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_columnize = R"igl_Qu8mg5v7(See igl\columnize.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_column_to_quats = R"igl_Qu8mg5v7(See igl\column_to_quats.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_comb_cross_field = R"igl_Qu8mg5v7(See igl\comb_cross_field.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_comb_frame_field = R"igl_Qu8mg5v7(See igl\comb_frame_field.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_comb_line_field = R"igl_Qu8mg5v7(See igl\comb_line_field.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_components = R"igl_Qu8mg5v7(See igl\components.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_compute_frame_field_bisectors = R"igl_Qu8mg5v7(See igl\compute_frame_field_bisectors.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_ConjugateFFSolverData = R"igl_Qu8mg5v7(See igl\ConjugateFFSolverData.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_conjugate_frame_fields = R"igl_Qu8mg5v7(See igl\conjugate_frame_fields.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_cotmatrix = R"igl_Qu8mg5v7(See igl\cotmatrix.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_cotmatrix_entries = R"igl_Qu8mg5v7(See igl\cotmatrix_entries.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_covariance_scatter_matrix = R"igl_Qu8mg5v7(See igl\covariance_scatter_matrix.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_cross = R"igl_Qu8mg5v7(See igl\cross.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_cross_field_missmatch = R"igl_Qu8mg5v7(See igl\cross_field_missmatch.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_crouzeix_raviart_massmatrix = R"igl_Qu8mg5v7(See igl\crouzeix_raviart_massmatrix.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_cumsum = R"igl_Qu8mg5v7(See igl\cumsum.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_cut_mesh = R"igl_Qu8mg5v7(See igl\cut_mesh.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_cut_mesh_from_singularities = R"igl_Qu8mg5v7(See igl\cut_mesh_from_singularities.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_C_STR = R"igl_Qu8mg5v7(See igl\C_STR.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_dated_copy = R"igl_Qu8mg5v7(See igl\dated_copy.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_decimate = R"igl_Qu8mg5v7(See igl\decimate.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_deform_skeleton = R"igl_Qu8mg5v7(See igl\deform_skeleton.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_deprecated = R"igl_Qu8mg5v7(See igl\deprecated.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_diag = R"igl_Qu8mg5v7(See igl\diag.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_dihedral_angles = R"igl_Qu8mg5v7(See igl\dihedral_angles.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_dijkstra = R"igl_Qu8mg5v7(See igl\dijkstra.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_directed_edge_orientations = R"igl_Qu8mg5v7(See igl\directed_edge_orientations.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_directed_edge_parents = R"igl_Qu8mg5v7(See igl\directed_edge_parents.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_dirname = R"igl_Qu8mg5v7(See igl\dirname.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_dot = R"igl_Qu8mg5v7(See igl\dot.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_dot_row = R"igl_Qu8mg5v7(See igl\dot_row.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_doublearea = R"igl_Qu8mg5v7(See igl\doublearea.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_dqs = R"igl_Qu8mg5v7(See igl\dqs.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_edges = R"igl_Qu8mg5v7(See igl\edges.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_edge_collapse_is_valid = R"igl_Qu8mg5v7(See igl\edge_collapse_is_valid.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_edge_flaps = R"igl_Qu8mg5v7(See igl\edge_flaps.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_edge_lengths = R"igl_Qu8mg5v7(See igl\edge_lengths.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_edge_topology = R"igl_Qu8mg5v7(See igl\edge_topology.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_eigs = R"igl_Qu8mg5v7(See igl\eigs.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_EPS = R"igl_Qu8mg5v7(See igl\EPS.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_example_fun = R"igl_Qu8mg5v7(See igl\example_fun.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_exterior_edges = R"igl_Qu8mg5v7(See igl\exterior_edges.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_faces_first = R"igl_Qu8mg5v7(See igl\faces_first.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_facet_components = R"igl_Qu8mg5v7(See igl\facet_components.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_face_areas = R"igl_Qu8mg5v7(See igl\face_areas.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_face_occurrences = R"igl_Qu8mg5v7(See igl\face_occurrences.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_false_barycentric_subdivision = R"igl_Qu8mg5v7(See igl\false_barycentric_subdivision.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_field_local_global_conversions = R"igl_Qu8mg5v7(See igl\field_local_global_conversions.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_file_contents_as_string = R"igl_Qu8mg5v7(See igl\file_contents_as_string.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_file_dialog_open = R"igl_Qu8mg5v7(See igl\file_dialog_open.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_file_dialog_save = R"igl_Qu8mg5v7(See igl\file_dialog_save.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_file_exists = R"igl_Qu8mg5v7(See igl\file_exists.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_find = R"igl_Qu8mg5v7(See igl\find.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_find_cross_field_singularities = R"igl_Qu8mg5v7(See igl\find_cross_field_singularities.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_fit_plane = R"igl_Qu8mg5v7(See igl\fit_plane.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_fit_rigid = R"igl_Qu8mg5v7(See igl\fit_rigid.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_fit_rotations = R"igl_Qu8mg5v7(See igl\fit_rotations.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_floor = R"igl_Qu8mg5v7(See igl\floor.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_forward_kinematics = R"igl_Qu8mg5v7(See igl\forward_kinematics.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_frame_field_deformer = R"igl_Qu8mg5v7(See igl\frame_field_deformer.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_frame_to_cross_field = R"igl_Qu8mg5v7(See igl\frame_to_cross_field.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_frustum = R"igl_Qu8mg5v7(See igl\frustum.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_full = R"igl_Qu8mg5v7(See igl\full.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_gaussian_curvature = R"igl_Qu8mg5v7(See igl\gaussian_curvature.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_get_seconds = R"igl_Qu8mg5v7(See igl\get_seconds.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_get_seconds_hires = R"igl_Qu8mg5v7(See igl\get_seconds_hires.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_grad = R"igl_Qu8mg5v7(See igl\grad.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_group_sum_matrix = R"igl_Qu8mg5v7(See igl\group_sum_matrix.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_HalfEdgeIterator = R"igl_Qu8mg5v7(See igl\HalfEdgeIterator.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_harmonic = R"igl_Qu8mg5v7(See igl\harmonic.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_harwell_boeing = R"igl_Qu8mg5v7(See igl\harwell_boeing.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_histc = R"igl_Qu8mg5v7(See igl\histc.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_hsv_to_rgb = R"igl_Qu8mg5v7(See igl\hsv_to_rgb.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_igl_inline = R"igl_Qu8mg5v7(See igl\igl_inline.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_IndexComparison = R"igl_Qu8mg5v7(See igl\IndexComparison.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_integrable_polyvector_fields = R"igl_Qu8mg5v7(See igl\integrable_polyvector_fields.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_internal_angles = R"igl_Qu8mg5v7(See igl\internal_angles.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_intersect = R"igl_Qu8mg5v7(See igl\intersect.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_invert_diag = R"igl_Qu8mg5v7(See igl\invert_diag.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_in_element = R"igl_Qu8mg5v7(See igl\in_element.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_is_border_vertex = R"igl_Qu8mg5v7(See igl\is_border_vertex.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_is_boundary_edge = R"igl_Qu8mg5v7(See igl\is_boundary_edge.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_is_dir = R"igl_Qu8mg5v7(See igl\is_dir.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_is_edge_manifold = R"igl_Qu8mg5v7(See igl\is_edge_manifold.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_is_file = R"igl_Qu8mg5v7(See igl\is_file.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_is_irregular_vertex = R"igl_Qu8mg5v7(See igl\is_irregular_vertex.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_is_planar = R"igl_Qu8mg5v7(See igl\is_planar.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_is_readable = R"igl_Qu8mg5v7(See igl\is_readable.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_is_sparse = R"igl_Qu8mg5v7(See igl\is_sparse.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_is_symmetric = R"igl_Qu8mg5v7(See igl\is_symmetric.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_is_vertex_manifold = R"igl_Qu8mg5v7(See igl\is_vertex_manifold.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_is_writable = R"igl_Qu8mg5v7(See igl\is_writable.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_jet = R"igl_Qu8mg5v7(See igl\jet.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_launch_medit = R"igl_Qu8mg5v7(See igl\launch_medit.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_lbs_matrix = R"igl_Qu8mg5v7(See igl\lbs_matrix.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_limit_faces = R"igl_Qu8mg5v7(See igl\limit_faces.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_line_field_missmatch = R"igl_Qu8mg5v7(See igl\line_field_missmatch.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_line_segment_in_rectangle = R"igl_Qu8mg5v7(See igl\line_segment_in_rectangle.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_linprog = R"igl_Qu8mg5v7(See igl\linprog.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_list_to_matrix = R"igl_Qu8mg5v7(See igl\list_to_matrix.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_local_basis = R"igl_Qu8mg5v7(See igl\local_basis.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_look_at = R"igl_Qu8mg5v7(See igl\look_at.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_lscm = R"igl_Qu8mg5v7(See igl\lscm.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_lu_lagrange = R"igl_Qu8mg5v7(See igl\lu_lagrange.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_map_vertices_to_circle = R"igl_Qu8mg5v7(See igl\map_vertices_to_circle.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_marching_cubes = R"igl_Qu8mg5v7(See igl\marching_cubes.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_massmatrix = R"igl_Qu8mg5v7(See igl\massmatrix.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_material_colors = R"igl_Qu8mg5v7(See igl\material_colors.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_matlab_format = R"igl_Qu8mg5v7(See igl\matlab_format.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_matrix_to_list = R"igl_Qu8mg5v7(See igl\matrix_to_list.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_mat_max = R"igl_Qu8mg5v7(See igl\mat_max.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_mat_min = R"igl_Qu8mg5v7(See igl\mat_min.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_mat_to_quat = R"igl_Qu8mg5v7(See igl\mat_to_quat.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_max_size = R"igl_Qu8mg5v7(See igl\max_size.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_median = R"igl_Qu8mg5v7(See igl\median.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_min_quad_dense = R"igl_Qu8mg5v7(See igl\min_quad_dense.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_min_quad_with_fixed = R"igl_Qu8mg5v7(See igl\min_quad_with_fixed.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_min_size = R"igl_Qu8mg5v7(See igl\min_size.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_mod = R"igl_Qu8mg5v7(See igl\mod.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_mode = R"igl_Qu8mg5v7(See igl\mode.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_mvc = R"igl_Qu8mg5v7(See igl\mvc.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_nchoosek = R"igl_Qu8mg5v7(See igl\nchoosek.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_next_filename = R"igl_Qu8mg5v7(See igl\next_filename.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_normalize_quat = R"igl_Qu8mg5v7(See igl\normalize_quat.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_normalize_row_lengths = R"igl_Qu8mg5v7(See igl\normalize_row_lengths.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_normalize_row_sums = R"igl_Qu8mg5v7(See igl\normalize_row_sums.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_NormalType = R"igl_Qu8mg5v7(See igl\NormalType.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_normal_derivative = R"igl_Qu8mg5v7(See igl\normal_derivative.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_null = R"igl_Qu8mg5v7(See igl\null.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_n_polyvector = R"igl_Qu8mg5v7(See igl\n_polyvector.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_n_polyvector_general = R"igl_Qu8mg5v7(See igl\n_polyvector_general.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_ONE = R"igl_Qu8mg5v7(See igl\ONE.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_on_boundary = R"igl_Qu8mg5v7(See igl\on_boundary.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_orientable_patches = R"igl_Qu8mg5v7(See igl\orientable_patches.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_orient_outward = R"igl_Qu8mg5v7(See igl\orient_outward.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_orth = R"igl_Qu8mg5v7(See igl\orth.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_ortho = R"igl_Qu8mg5v7(See igl\ortho.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_outer_facet = R"igl_Qu8mg5v7(See igl\outer_facet.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_parallel_transport_angles = R"igl_Qu8mg5v7(See igl\parallel_transport_angles.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_partition = R"igl_Qu8mg5v7(See igl\partition.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_parula = R"igl_Qu8mg5v7(See igl\parula.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_pathinfo = R"igl_Qu8mg5v7(See igl\pathinfo.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_path_to_executable = R"igl_Qu8mg5v7(See igl\path_to_executable.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_per_corner_normals = R"igl_Qu8mg5v7(See igl\per_corner_normals.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_per_edge_normals = R"igl_Qu8mg5v7(See igl\per_edge_normals.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_per_face_normals = R"igl_Qu8mg5v7(See igl\per_face_normals.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_per_vertex_attribute_smoothing = R"igl_Qu8mg5v7(See igl\per_vertex_attribute_smoothing.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_per_vertex_normals = R"igl_Qu8mg5v7(See igl\per_vertex_normals.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_PI = R"igl_Qu8mg5v7(See igl\PI.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_planarize_quad_mesh = R"igl_Qu8mg5v7(See igl\planarize_quad_mesh.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_ply = R"igl_Qu8mg5v7(See igl\ply.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_point_in_circle = R"igl_Qu8mg5v7(See igl\point_in_circle.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_point_in_poly = R"igl_Qu8mg5v7(See igl\point_in_poly.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_point_mesh_squared_distance = R"igl_Qu8mg5v7(See igl\point_mesh_squared_distance.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_polar_dec = R"igl_Qu8mg5v7(See igl\polar_dec.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_polar_svd = R"igl_Qu8mg5v7(See igl\polar_svd.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_polar_svd3x3 = R"igl_Qu8mg5v7(See igl\polar_svd3x3.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_polygon_mesh_to_triangle_mesh = R"igl_Qu8mg5v7(See igl\polygon_mesh_to_triangle_mesh.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_polyroots = R"igl_Qu8mg5v7(See igl\polyroots.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_polyvector_field_comb_from_matchings_and_cuts = R"igl_Qu8mg5v7(See igl\polyvector_field_comb_from_matchings_and_cuts.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_polyvector_field_cut_mesh_with_singularities = R"igl_Qu8mg5v7(See igl\polyvector_field_cut_mesh_with_singularities.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_polyvector_field_matchings = R"igl_Qu8mg5v7(See igl\polyvector_field_matchings.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_polyvector_field_poisson_reconstruction = R"igl_Qu8mg5v7(See igl\polyvector_field_poisson_reconstruction.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_polyvector_field_singularities_from_matchings = R"igl_Qu8mg5v7(See igl\polyvector_field_singularities_from_matchings.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_principal_curvature = R"igl_Qu8mg5v7(See igl\principal_curvature.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_print_ijv = R"igl_Qu8mg5v7(See igl\print_ijv.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_print_vector = R"igl_Qu8mg5v7(See igl\print_vector.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_procrustes = R"igl_Qu8mg5v7(See igl\procrustes.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_project = R"igl_Qu8mg5v7(See igl\project.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_project_isometrically_to_plane = R"igl_Qu8mg5v7(See igl\project_isometrically_to_plane.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_project_to_line = R"igl_Qu8mg5v7(See igl\project_to_line.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_project_to_line_segment = R"igl_Qu8mg5v7(See igl\project_to_line_segment.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_pseudonormal_test = R"igl_Qu8mg5v7(See igl\pseudonormal_test.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_quad_planarity = R"igl_Qu8mg5v7(See igl\quad_planarity.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_quats_to_column = R"igl_Qu8mg5v7(See igl\quats_to_column.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_quat_conjugate = R"igl_Qu8mg5v7(See igl\quat_conjugate.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_quat_mult = R"igl_Qu8mg5v7(See igl\quat_mult.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_quat_to_axis_angle = R"igl_Qu8mg5v7(See igl\quat_to_axis_angle.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_quat_to_mat = R"igl_Qu8mg5v7(See igl\quat_to_mat.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_random_dir = R"igl_Qu8mg5v7(See igl\random_dir.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_random_points_on_mesh = R"igl_Qu8mg5v7(See igl\random_points_on_mesh.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_random_quaternion = R"igl_Qu8mg5v7(See igl\random_quaternion.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_randperm = R"igl_Qu8mg5v7(See igl\randperm.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_ray_sphere_intersect = R"igl_Qu8mg5v7(See igl\ray_sphere_intersect.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_readCSV = R"igl_Qu8mg5v7(See igl\readCSV.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_readDMAT = R"igl_Qu8mg5v7(See igl\readDMAT.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_readMESH = R"igl_Qu8mg5v7(See igl\readMESH.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_readNODE = R"igl_Qu8mg5v7(See igl\readNODE.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_readOBJ = R"igl_Qu8mg5v7(See igl\readOBJ.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_readOFF = R"igl_Qu8mg5v7(See igl\readOFF.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_readPLY = R"igl_Qu8mg5v7(See igl\readPLY.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_readSTL = R"igl_Qu8mg5v7(See igl\readSTL.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_readTGF = R"igl_Qu8mg5v7(See igl\readTGF.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_readWRL = R"igl_Qu8mg5v7(See igl\readWRL.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_read_triangle_mesh = R"igl_Qu8mg5v7(See igl\read_triangle_mesh.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_REDRUM = R"igl_Qu8mg5v7(See igl\REDRUM.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_remove_duplicates = R"igl_Qu8mg5v7(See igl\remove_duplicates.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_remove_duplicate_vertices = R"igl_Qu8mg5v7(See igl\remove_duplicate_vertices.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_remove_unreferenced = R"igl_Qu8mg5v7(See igl\remove_unreferenced.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_reorder = R"igl_Qu8mg5v7(See igl\reorder.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_repdiag = R"igl_Qu8mg5v7(See igl\repdiag.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_repmat = R"igl_Qu8mg5v7(See igl\repmat.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_rgb_to_hsv = R"igl_Qu8mg5v7(See igl\rgb_to_hsv.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_rotate_by_quat = R"igl_Qu8mg5v7(See igl\rotate_by_quat.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_rotate_vectors = R"igl_Qu8mg5v7(See igl\rotate_vectors.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_rotation_matrix_from_directions = R"igl_Qu8mg5v7(See igl\rotation_matrix_from_directions.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_round = R"igl_Qu8mg5v7(See igl\round.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_rows_to_matrix = R"igl_Qu8mg5v7(See igl\rows_to_matrix.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_sample_edges = R"igl_Qu8mg5v7(See igl\sample_edges.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_serialize = R"igl_Qu8mg5v7(See igl\serialize.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_setdiff = R"igl_Qu8mg5v7(See igl\setdiff.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_signed_distance = R"igl_Qu8mg5v7(See igl\signed_distance.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_slice = R"igl_Qu8mg5v7(See igl\slice.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_slice_into = R"igl_Qu8mg5v7(See igl\slice_into.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_slice_mask = R"igl_Qu8mg5v7(See igl\slice_mask.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_slice_tets = R"igl_Qu8mg5v7(See igl\slice_tets.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_snap_points = R"igl_Qu8mg5v7(See igl\snap_points.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_snap_to_canonical_view_quat = R"igl_Qu8mg5v7(See igl\snap_to_canonical_view_quat.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_snap_to_fixed_up = R"igl_Qu8mg5v7(See igl\snap_to_fixed_up.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_SolverStatus = R"igl_Qu8mg5v7(See igl\SolverStatus.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_sort = R"igl_Qu8mg5v7(See igl\sort.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_SortableRow = R"igl_Qu8mg5v7(See igl\SortableRow.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_sortrows = R"igl_Qu8mg5v7(See igl\sortrows.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_sort_angles = R"igl_Qu8mg5v7(See igl\sort_angles.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_sort_triangles = R"igl_Qu8mg5v7(See igl\sort_triangles.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_sort_vectors_ccw = R"igl_Qu8mg5v7(See igl\sort_vectors_ccw.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_sparse = R"igl_Qu8mg5v7(See igl\sparse.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_speye = R"igl_Qu8mg5v7(See igl\speye.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_stdin_to_temp = R"igl_Qu8mg5v7(See igl\stdin_to_temp.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_STR = R"igl_Qu8mg5v7(See igl\STR.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_sum = R"igl_Qu8mg5v7(See igl\sum.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_svd3x3 = R"igl_Qu8mg5v7(See igl\svd3x3.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_svd3x3_avx = R"igl_Qu8mg5v7(See igl\svd3x3_avx.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_svd3x3_sse = R"igl_Qu8mg5v7(See igl\svd3x3_sse.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_Timer = R"igl_Qu8mg5v7(See igl\Timer.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_trackball = R"igl_Qu8mg5v7(See igl\trackball.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_transpose_blocks = R"igl_Qu8mg5v7(See igl\transpose_blocks.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_triangles_from_strip = R"igl_Qu8mg5v7(See igl\triangles_from_strip.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_triangle_fan = R"igl_Qu8mg5v7(See igl\triangle_fan.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_triangle_triangle_adjacency = R"igl_Qu8mg5v7(See igl\triangle_triangle_adjacency.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_two_axis_valuator_fixed_up = R"igl_Qu8mg5v7(See igl\two_axis_valuator_fixed_up.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_uniformly_sample_two_manifold = R"igl_Qu8mg5v7(See igl\uniformly_sample_two_manifold.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_unique = R"igl_Qu8mg5v7(See igl\unique.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_unique_edge_map = R"igl_Qu8mg5v7(See igl\unique_edge_map.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_unique_simplices = R"igl_Qu8mg5v7(See igl\unique_simplices.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_unproject = R"igl_Qu8mg5v7(See igl\unproject.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_upsample = R"igl_Qu8mg5v7(See igl\upsample.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_vector_area_matrix = R"igl_Qu8mg5v7(See igl\vector_area_matrix.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_verbose = R"igl_Qu8mg5v7(See igl\verbose.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_vertex_triangle_adjacency = R"igl_Qu8mg5v7(See igl\vertex_triangle_adjacency.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_Viewport = R"igl_Qu8mg5v7(See igl\Viewport.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_volume = R"igl_Qu8mg5v7(See igl\volume.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_WindingNumberAABB = R"igl_Qu8mg5v7(See igl\WindingNumberAABB.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_WindingNumberMethod = R"igl_Qu8mg5v7(See igl\WindingNumberMethod.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_WindingNumberTree = R"igl_Qu8mg5v7(See igl\WindingNumberTree.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_winding_number = R"igl_Qu8mg5v7(See igl\winding_number.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_writeDMAT = R"igl_Qu8mg5v7(See igl\writeDMAT.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_writeMESH = R"igl_Qu8mg5v7(See igl\writeMESH.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_writeOBJ = R"igl_Qu8mg5v7(See igl\writeOBJ.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_writeOFF = R"igl_Qu8mg5v7(See igl\writeOFF.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_writePLY = R"igl_Qu8mg5v7(See igl\writePLY.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_writeSTL = R"igl_Qu8mg5v7(See igl\writeSTL.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_writeTGF = R"igl_Qu8mg5v7(See igl\writeTGF.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_writeWRL = R"igl_Qu8mg5v7(See igl\writeWRL.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_write_triangle_mesh = R"igl_Qu8mg5v7(See igl\write_triangle_mesh.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_ZERO = R"igl_Qu8mg5v7(See igl\ZERO.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_anttweakbar_cocoa_key_to_anttweakbar_key = R"igl_Qu8mg5v7(See igl\anttweakbar\cocoa_key_to_anttweakbar_key.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_anttweakbar_ReAntTweakBar = R"igl_Qu8mg5v7(See igl\anttweakbar\ReAntTweakBar.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_bbw_bbw = R"igl_Qu8mg5v7(See igl\bbw\bbw.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_boolean_from_cork_mesh = R"igl_Qu8mg5v7(See igl\boolean\from_cork_mesh.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_boolean_MeshBooleanType = R"igl_Qu8mg5v7(See igl\boolean\MeshBooleanType.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_boolean_mesh_boolean = R"igl_Qu8mg5v7(See igl\boolean\mesh_boolean.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_boolean_mesh_boolean_cork = R"igl_Qu8mg5v7(See igl\boolean\mesh_boolean_cork.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_boolean_to_cork_mesh = R"igl_Qu8mg5v7(See igl\boolean\to_cork_mesh.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_cgal_complex_to_mesh = R"igl_Qu8mg5v7(See igl\cgal\complex_to_mesh.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_cgal_intersect_other = R"igl_Qu8mg5v7(See igl\cgal\intersect_other.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_cgal_mesh_to_cgal_triangle_list = R"igl_Qu8mg5v7(See igl\cgal\mesh_to_cgal_triangle_list.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_cgal_mesh_to_polyhedron = R"igl_Qu8mg5v7(See igl\cgal\mesh_to_polyhedron.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_cgal_order_facets_around_edges = R"igl_Qu8mg5v7(See igl\cgal\order_facets_around_edges.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_cgal_outer_hull = R"igl_Qu8mg5v7(See igl\cgal\outer_hull.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_cgal_peel_outer_hull_layers = R"igl_Qu8mg5v7(See igl\cgal\peel_outer_hull_layers.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_cgal_point_mesh_squared_distance = R"igl_Qu8mg5v7(See igl\cgal\point_mesh_squared_distance.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_cgal_polyhedron_to_mesh = R"igl_Qu8mg5v7(See igl\cgal\polyhedron_to_mesh.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_cgal_RemeshSelfIntersectionsParam = R"igl_Qu8mg5v7(See igl\cgal\RemeshSelfIntersectionsParam.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_cgal_remesh_self_intersections = R"igl_Qu8mg5v7(See igl\cgal\remesh_self_intersections.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_cgal_SelfIntersectMesh = R"igl_Qu8mg5v7(See igl\cgal\SelfIntersectMesh.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_cgal_signed_distance_isosurface = R"igl_Qu8mg5v7(See igl\cgal\signed_distance_isosurface.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_comiso_frame_field = R"igl_Qu8mg5v7(See igl\comiso\frame_field.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_comiso_miq = R"igl_Qu8mg5v7(See igl\comiso\miq.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_comiso_nrosy = R"igl_Qu8mg5v7(See igl\comiso\nrosy.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_embree_ambient_occlusion = R"igl_Qu8mg5v7(See igl\embree\ambient_occlusion.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_embree_bone_heat = R"igl_Qu8mg5v7(See igl\embree\bone_heat.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_embree_bone_visible = R"igl_Qu8mg5v7(See igl\embree\bone_visible.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_embree_EmbreeIntersector = R"igl_Qu8mg5v7(See igl\embree\EmbreeIntersector.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_embree_Embree_convenience = R"igl_Qu8mg5v7(See igl\embree\Embree_convenience.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_embree_Hit = R"igl_Qu8mg5v7(See igl\embree\Hit.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_embree_line_mesh_intersection = R"igl_Qu8mg5v7(See igl\embree\line_mesh_intersection.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_embree_reorient_facets_raycast = R"igl_Qu8mg5v7(See igl\embree\reorient_facets_raycast.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_embree_unproject_in_mesh = R"igl_Qu8mg5v7(See igl\embree\unproject_in_mesh.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_embree_unproject_onto_mesh = R"igl_Qu8mg5v7(See igl\embree\unproject_onto_mesh.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_lim_lim = R"igl_Qu8mg5v7(See igl\lim\lim.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_matlab_matlabinterface = R"igl_Qu8mg5v7(See igl\matlab\matlabinterface.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_matlab_MatlabWorkspace = R"igl_Qu8mg5v7(See igl\matlab\MatlabWorkspace.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_matlab_mexErrMsgTxt = R"igl_Qu8mg5v7(See igl\matlab\mexErrMsgTxt.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_matlab_MexStream = R"igl_Qu8mg5v7(See igl\matlab\MexStream.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_matlab_parse_rhs = R"igl_Qu8mg5v7(See igl\matlab\parse_rhs.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_matlab_prepare_lhs = R"igl_Qu8mg5v7(See igl\matlab\prepare_lhs.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_mosek_mosek_guarded = R"igl_Qu8mg5v7(See igl\mosek\mosek_guarded.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_mosek_mosek_linprog = R"igl_Qu8mg5v7(See igl\mosek\mosek_linprog.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_mosek_mosek_quadprog = R"igl_Qu8mg5v7(See igl\mosek\mosek_quadprog.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_opengl_compile_and_link_program = R"igl_Qu8mg5v7(See igl\opengl\compile_and_link_program.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_opengl_compile_shader = R"igl_Qu8mg5v7(See igl\opengl\compile_shader.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_opengl_create_index_vbo = R"igl_Qu8mg5v7(See igl\opengl\create_index_vbo.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_opengl_create_mesh_vbo = R"igl_Qu8mg5v7(See igl\opengl\create_mesh_vbo.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_opengl_create_shader_program = R"igl_Qu8mg5v7(See igl\opengl\create_shader_program.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_opengl_create_vector_vbo = R"igl_Qu8mg5v7(See igl\opengl\create_vector_vbo.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_opengl_destroy_shader_program = R"igl_Qu8mg5v7(See igl\opengl\destroy_shader_program.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_opengl_gl_type_size = R"igl_Qu8mg5v7(See igl\opengl\gl_type_size.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_opengl_init_render_to_texture = R"igl_Qu8mg5v7(See igl\opengl\init_render_to_texture.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_opengl_load_shader = R"igl_Qu8mg5v7(See igl\opengl\load_shader.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_opengl_OpenGL_convenience = R"igl_Qu8mg5v7(See igl\opengl\OpenGL_convenience.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_opengl_print_program_info_log = R"igl_Qu8mg5v7(See igl\opengl\print_program_info_log.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_opengl_print_shader_info_log = R"igl_Qu8mg5v7(See igl\opengl\print_shader_info_log.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_opengl_render_to_tga = R"igl_Qu8mg5v7(See igl\opengl\render_to_tga.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_opengl_report_gl_error = R"igl_Qu8mg5v7(See igl\opengl\report_gl_error.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_opengl_texture_from_tga = R"igl_Qu8mg5v7(See igl\opengl\texture_from_tga.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_opengl_tga = R"igl_Qu8mg5v7(See igl\opengl\tga.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_opengl_uniform_type_to_string = R"igl_Qu8mg5v7(See igl\opengl\uniform_type_to_string.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_opengl2_draw_beach_ball = R"igl_Qu8mg5v7(See igl\opengl2\draw_beach_ball.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_opengl2_draw_floor = R"igl_Qu8mg5v7(See igl\opengl2\draw_floor.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_opengl2_draw_mesh = R"igl_Qu8mg5v7(See igl\opengl2\draw_mesh.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_opengl2_draw_point = R"igl_Qu8mg5v7(See igl\opengl2\draw_point.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_opengl2_draw_rectangular_marquee = R"igl_Qu8mg5v7(See igl\opengl2\draw_rectangular_marquee.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_opengl2_draw_skeleton_3d = R"igl_Qu8mg5v7(See igl\opengl2\draw_skeleton_3d.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_opengl2_draw_skeleton_vector_graphics = R"igl_Qu8mg5v7(See igl\opengl2\draw_skeleton_vector_graphics.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_opengl2_flare_textures = R"igl_Qu8mg5v7(See igl\opengl2\flare_textures.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_opengl2_lens_flare = R"igl_Qu8mg5v7(See igl\opengl2\lens_flare.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_opengl2_model_proj_viewport = R"igl_Qu8mg5v7(See igl\opengl2\model_proj_viewport.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_opengl2_MouseController = R"igl_Qu8mg5v7(See igl\opengl2\MouseController.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_opengl2_print_gl_get = R"igl_Qu8mg5v7(See igl\opengl2\print_gl_get.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_opengl2_project = R"igl_Qu8mg5v7(See igl\opengl2\project.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_opengl2_right_axis = R"igl_Qu8mg5v7(See igl\opengl2\right_axis.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_opengl2_RotateWidget = R"igl_Qu8mg5v7(See igl\opengl2\RotateWidget.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_opengl2_shine_textures = R"igl_Qu8mg5v7(See igl\opengl2\shine_textures.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_opengl2_sort_triangles = R"igl_Qu8mg5v7(See igl\opengl2\sort_triangles.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_opengl2_unproject = R"igl_Qu8mg5v7(See igl\opengl2\unproject.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_opengl2_unproject_to_zero_plane = R"igl_Qu8mg5v7(See igl\opengl2\unproject_to_zero_plane.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_opengl2_up_axis = R"igl_Qu8mg5v7(See igl\opengl2\up_axis.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_opengl2_view_axis = R"igl_Qu8mg5v7(See igl\opengl2\view_axis.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_png_render_to_png = R"igl_Qu8mg5v7(See igl\png\render_to_png.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_png_render_to_png_async = R"igl_Qu8mg5v7(See igl\png\render_to_png_async.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_png_texture_from_file = R"igl_Qu8mg5v7(See igl\png\texture_from_file.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_png_texture_from_png = R"igl_Qu8mg5v7(See igl\png\texture_from_png.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_tetgen_cdt = R"igl_Qu8mg5v7(See igl\tetgen\cdt.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_tetgen_mesh_to_tetgenio = R"igl_Qu8mg5v7(See igl\tetgen\mesh_to_tetgenio.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_tetgen_mesh_with_skeleton = R"igl_Qu8mg5v7(See igl\tetgen\mesh_with_skeleton.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_tetgen_read_into_tetgenio = R"igl_Qu8mg5v7(See igl\tetgen\read_into_tetgenio.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_tetgen_tetgenio_to_tetmesh = R"igl_Qu8mg5v7(See igl\tetgen\tetgenio_to_tetmesh.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_tetgen_tetrahedralize = R"igl_Qu8mg5v7(See igl\tetgen\tetrahedralize.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_triangle_triangulate = R"igl_Qu8mg5v7(See igl\triangle\triangulate.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_viewer_OpenGL_shader = R"igl_Qu8mg5v7(See igl\viewer\OpenGL_shader.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_viewer_OpenGL_state = R"igl_Qu8mg5v7(See igl\viewer\OpenGL_state.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_viewer_TextRenderer = R"igl_Qu8mg5v7(See igl\viewer\TextRenderer.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_viewer_TextRenderer_fonts = R"igl_Qu8mg5v7(See igl\viewer\TextRenderer_fonts.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_viewer_Viewer = R"igl_Qu8mg5v7(See igl\viewer\Viewer.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_viewer_ViewerCore = R"igl_Qu8mg5v7(See igl\viewer\ViewerCore.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_viewer_ViewerData = R"igl_Qu8mg5v7(See igl\viewer\ViewerData.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_viewer_ViewerPlugin = R"igl_Qu8mg5v7(See igl\viewer\ViewerPlugin.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_xml_ReAntTweakBarXMLSerialization = R"igl_Qu8mg5v7(See igl\xml\ReAntTweakBarXMLSerialization.h for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_xml_serialize_xml = R"igl_Qu8mg5v7(See igl\xml\serialize_xml.h for the documentation.)igl_Qu8mg5v7";
+const char *__doc_igl_active_set = R"igl_Qu8mg5v7(// Known Bugs: rows of [Aeq;Aieq] **must** be linearly independent. Should be
+  // using QR decomposition otherwise:
+  //   http://www.okstate.edu/sas/v8/sashtml/ormp/chap5/sect32.htm
+  //
+  // ACTIVE_SET Minimize quadratic energy 
+  //
+  // 0.5*Z'*A*Z + Z'*B + C with constraints
+  //
+  // that Z(known) = Y, optionally also subject to the constraints Aeq*Z = Beq,
+  // and further optionally subject to the linear inequality constraints that
+  // Aieq*Z <= Bieq and constant inequality constraints lx <= x <= ux
+  //
+  // Inputs:
+  //   A  n by n matrix of quadratic coefficients
+  //   B  n by 1 column of linear coefficients
+  //   known  list of indices to known rows in Z
+  //   Y  list of fixed values corresponding to known rows in Z
+  //   Aeq  meq by n list of linear equality constraint coefficients
+  //   Beq  meq by 1 list of linear equality constraint constant values
+  //   Aieq  mieq by n list of linear inequality constraint coefficients
+  //   Bieq  mieq by 1 list of linear inequality constraint constant values
+  //   lx  n by 1 list of lower bounds [] implies -Inf
+  //   ux  n by 1 list of upper bounds [] implies Inf
+  //   params  struct of additional parameters (see below)
+  //   Z  if not empty, is taken to be an n by 1 list of initial guess values
+  //     (see output)
+  // Outputs:
+  //   Z  n by 1 list of solution values
+  // Returns true on success, false on error
+  //
+  // Benchmark: For a harmonic solve on a mesh with 325K facets, matlab 2.2
+  // secs, igl/min_quad_with_fixed.h 7.1 secs
+  //)igl_Qu8mg5v7";
+const char *__doc_igl_arap_precomputation = R"igl_Qu8mg5v7(// Compute necessary information to start using an ARAP deformation
+  //
+  // Inputs:
+  //   V  #V by dim list of mesh positions
+  //   F  #F by simplex-size list of triangle|tet indices into V
+  //   dim  dimension being used at solve time. For deformation usually dim =
+  //     V.cols(), for surface parameterization V.cols() = 3 and dim = 2
+  //   b  #b list of "boundary" fixed vertex indices into V
+  // Outputs:
+  //   data  struct containing necessary precomputation)igl_Qu8mg5v7";
+const char *__doc_igl_arap_solve = R"igl_Qu8mg5v7(// Inputs:
+  //   bc  #b by dim list of boundary conditions
+  //   data  struct containing necessary precomputation and parameters
+  //   U  #V by dim initial guess)igl_Qu8mg5v7";
+const char *__doc_igl_avg_edge_length = R"igl_Qu8mg5v7(// Compute the average edge length for the given triangle mesh
+  // Templates:
+  //   DerivedV derived from vertex positions matrix type: i.e. MatrixXd
+  //   DerivedF derived from face indices matrix type: i.e. MatrixXi
+  //   DerivedL derived from edge lengths matrix type: i.e. MatrixXd
+  // Inputs:
+  //   V  eigen matrix #V by 3
+  //   F  #F by simplex-size list of mesh faces (must be simplex)
+  // Outputs:
+  //   l  average edge length
+  //
+  // See also: adjacency_matrix)igl_Qu8mg5v7";
+const char *__doc_igl_barycenter = R"igl_Qu8mg5v7(// Computes the barycenter of every simplex
+  //
+  // Inputs:
+  //   V  #V x dim matrix of vertex coordinates
+  //   F  #F x simplex_size  matrix of indices of simplex corners into V
+  // Output:
+  //   BC  #F x dim matrix of 3d vertices
+  //)igl_Qu8mg5v7";
+const char *__doc_igl_barycentric_coordinates = R"igl_Qu8mg5v7(// Compute barycentric coordinates in a tet
+  //
+  // Inputs:
+  //   P  #P by 3 Query points in 3d
+  //   A  #P by 3 Tet corners in 3d
+  //   B  #P by 3 Tet corners in 3d
+  //   C  #P by 3 Tet corners in 3d
+  //   D  #P by 3 Tet corners in 3d
+  // Outputs:
+  //   L  #P by 4 list of barycentric coordinates
+  //   )igl_Qu8mg5v7";
+const char *__doc_igl_boundary_facets = R"igl_Qu8mg5v7(// BOUNDARY_FACETS Determine boundary faces (edges) of tetrahedra (triangles)
+  // stored in T (analogous to qptoolbox's `outline` and `boundary_faces`).
+  //
+  // Templates:
+  //   IntegerT  integer-value: e.g. int
+  //   IntegerF  integer-value: e.g. int
+  // Input:
+  //  T  tetrahedron (triangle) index list, m by 4 (3), where m is the number of tetrahedra
+  // Output:
+  //  F  list of boundary faces, n by 3 (2), where n is the number of boundary faces
+  //
+  //)igl_Qu8mg5v7";
+const char *__doc_igl_boundary_loop = R"igl_Qu8mg5v7(// Compute list of ordered boundary loops for a manifold mesh.
+  //
+  // Templates:
+  //  Index  index type
+  // Inputs:
+  //   F  #V by dim list of mesh faces
+  // Outputs:
+  //   L  list of loops where L[i] = ordered list of boundary vertices in loop i
+  //)igl_Qu8mg5v7";
+const char *__doc_igl_cat = R"igl_Qu8mg5v7(// Perform concatenation of a two matrices along a single dimension
+  // If dim == 1, then C = [A;B]. If dim == 2 then C = [A B]
+  // 
+  // Template:
+  //   Scalar  scalar data type for sparse matrices like double or int
+  //   Mat  matrix type for all matrices (e.g. MatrixXd, SparseMatrix)
+  //   MatC  matrix type for ouput matrix (e.g. MatrixXd) needs to support
+  //     resize
+  // Inputs:
+  //   A  first input matrix
+  //   B  second input matrix
+  //   dim  dimension along which to concatenate, 0 or 1
+  // Outputs:
+  //   C  output matrix
+  //   )igl_Qu8mg5v7";
+const char *__doc_igl_collapse_edge = R"igl_Qu8mg5v7(See collapse_edge for the documentation.)igl_Qu8mg5v7";
+const char *__doc_igl_colon = R"igl_Qu8mg5v7(// Colon operator like matlab's colon operator. Enumerats values between low
+  // and hi with step step.
+  // Templates:
+  //   L  should be a eigen matrix primitive type like int or double
+  //   S  should be a eigen matrix primitive type like int or double
+  //   H  should be a eigen matrix primitive type like int or double
+  //   T  should be a eigen matrix primitive type like int or double
+  // Inputs:
+  //   low  starting value if step is valid then this is *always* the first
+  //     element of I
+  //   step  step difference between sequential elements returned in I,
+  //     remember this will be cast to template T at compile time. If low<hi
+  //     then step must be positive. If low>hi then step must be negative.
+  //     Otherwise I will be set to empty.
+  //   hi  ending value, if (hi-low)%step is zero then this will be the last
+  //     element in I. If step is positive there will be no elements greater
+  //     than hi, vice versa if hi<low
+  // Output:
+  //   I  list of values from low to hi with step size step)igl_Qu8mg5v7";
+const char *__doc_igl_comb_cross_field = R"igl_Qu8mg5v7(// Inputs:
+  //   V          #V by 3 eigen Matrix of mesh vertex 3D positions
+  //   F          #F by 4 eigen Matrix of face (quad) indices
+  //   PD1in      #F by 3 eigen Matrix of the first per face cross field vector
+  //   PD2in      #F by 3 eigen Matrix of the second per face cross field vector
+  // Output:
+  //   PD1out      #F by 3 eigen Matrix of the first combed cross field vector
+  //   PD2out      #F by 3 eigen Matrix of the second combed cross field vector
+  //)igl_Qu8mg5v7";
+const char *__doc_igl_comb_frame_field = R"igl_Qu8mg5v7(// Inputs:
+  //   V            #V by 3 eigen Matrix of mesh vertex 3D positions
+  //   F            #F by 4 eigen Matrix of face (quad) indices
+  //   PD1          #F by 3 eigen Matrix of the first per face cross field vector
+  //   PD2          #F by 3 eigen Matrix of the second per face cross field vector
+  //   BIS1_combed  #F by 3 eigen Matrix of the first combed bisector field vector
+  //   BIS2_combed  #F by 3 eigen Matrix of the second combed bisector field vector
+  // Output:
+  //   PD1_combed  #F by 3 eigen Matrix of the first combed cross field vector
+  //   PD2_combed  #F by 3 eigen Matrix of the second combed cross field vector
+  //)igl_Qu8mg5v7";
+const char *__doc_igl_compute_frame_field_bisectors = R"igl_Qu8mg5v7(// Compute bisectors of a frame field defined on mesh faces
+  // Inputs:
+  //   V     #V by 3 eigen Matrix of mesh vertex 3D positions
+  //   F     #F by 3 eigen Matrix of face (triangle) indices
+  //   B1    #F by 3 eigen Matrix of face (triangle) base vector 1
+  //   B2    #F by 3 eigen Matrix of face (triangle) base vector 2
+  //   PD1   #F by 3 eigen Matrix of the first per face frame field vector
+  //   PD2   #F by 3 eigen Matrix of the second per face frame field vector
+  // Output:
+  //   BIS1  #F by 3 eigen Matrix of the first per face frame field bisector
+  //   BIS2  #F by 3 eigen Matrix of the second per face frame field bisector
+  //)igl_Qu8mg5v7";
+const char *__doc_igl_copyleft_cgal_mesh_boolean = R"igl_Qu8mg5v7(//  MESH_BOOLEAN Compute boolean csg operations on "solid", consistently
+      //  oriented meshes.
+      //
+      //  Inputs:
+      //    VA  #VA by 3 list of vertex positions of first mesh
+      //    FA  #FA by 3 list of triangle indices into VA
+      //    VB  #VB by 3 list of vertex positions of second mesh
+      //    FB  #FB by 3 list of triangle indices into VB
+      //    type  type of boolean operation
+      //  Outputs:
+      //    VC  #VC by 3 list of vertex positions of boolean result mesh
+      //    FC  #FC by 3 list of triangle indices into VC
+      //    J  #FC list of indices into [FA;FA.rows()+FB] revealing "birth" facet
+      //  Returns true if inputs induce a piecewise constant winding number
+      //  field and type is valid
+      //
+      //  See also: mesh_boolean_cork, intersect_other,
+      //  remesh_self_intersections)igl_Qu8mg5v7";
+const char *__doc_igl_copyleft_comiso_miq = R"igl_Qu8mg5v7(// Inputs:
+    //   V              #V by 3 list of mesh vertex 3D positions
+    //   F              #F by 3 list of faces indices in V
+    //   PD1            #V by 3 first line of the Jacobian per triangle
+    //   PD2            #V by 3 second line of the Jacobian per triangle
+    //                  (optional, if empty it will be a vector in the tangent plane orthogonal to PD1)
+    //   scale          global scaling for the gradient (controls the quads resolution)
+    //   stiffness      weight for the stiffness iterations
+    //   direct_round   greedily round all integer variables at once (greatly improves optimization speed but lowers quality)
+    //   iter           stiffness iterations (0 = no stiffness)
+    //   local_iter     number of local iterations for the integer rounding
+    //   do_round       enables the integer rounding (disabling it could be useful for debugging)
+    //   round_vertices id of additional vertices that should be snapped to integer coordinates
+    //   hard_features  #H by 2 list of pairs of vertices that belongs to edges that should be snapped to integer coordinates
+    //
+    // Output:
+    //   UV             #UV by 2 list of vertices in 2D
+    //   FUV            #FUV by 3 list of face indices in UV
+    //
+    // TODO: rename the parameters name in the cpp consistenly
+    //       improve the handling of hard_features, right now it might fail in difficult cases)igl_Qu8mg5v7";
+const char *__doc_igl_copyleft_comiso_nrosy = R"igl_Qu8mg5v7(// Generate a N-RoSy field from a sparse set of constraints
+    //
+    // Inputs:
+    //   V       #V by 3 list of mesh vertex coordinates
+    //   F       #F by 3 list of mesh faces (must be triangles)
+    //   b       #B by 1 list of constrained face indices
+    //   bc      #B by 3 list of representative vectors for the constrained
+    //     faces
+    //   b_soft  #S by 1 b for soft constraints
+    //   w_soft  #S by 1 weight for the soft constraints (0-1)
+    //   bc_soft #S by 3 bc for soft constraints
+    //   N       the degree of the N-RoSy vector field
+    //   soft    the strenght of the soft contraints w.r.t. smoothness
+    //           (0 -> smoothness only, 1->constraints only)
+    // Outputs:
+    //   R       #F by 3 the representative vectors of the interpolated field
+    //   S       #V by 1 the singularity index for each vertex (0 = regular))igl_Qu8mg5v7";
+const char *__doc_igl_copyleft_marching_cubes = R"igl_Qu8mg5v7(// marching_cubes( values, points, x_res, y_res, z_res, vertices, faces )
+    //
+    // performs marching cubes reconstruction on the grid defined by values, and
+    // points, and generates vertices and faces
+    //
+    // Input:
+    //  values  #number_of_grid_points x 1 array -- the scalar values of an
+    //    implicit function defined on the grid points (<0 in the inside of the
+    //    surface, 0 on the border, >0 outside)
+    //  points  #number_of_grid_points x 3 array -- 3-D positions of the grid
+    //    points, ordered in x,y,z order:
+    //      points[index] = the point at (x,y,z) where :
+    //      x = (index % (xres -1),
+    //      y = (index / (xres-1)) %(yres-1),
+    //      z = index / (xres -1) / (yres -1) ).
+    //      where x,y,z index x, y, z dimensions
+    //      i.e. index = x + y*xres + z*xres*yres
+    //  xres  resolutions of the grid in x dimension
+    //  yres  resolutions of the grid in y dimension
+    //  zres  resolutions of the grid in z dimension
+    // Output:
+    //   vertices  #V by 3 list of mesh vertex positions
+    //   faces  #F by 3 list of mesh triangle indices
+    //)igl_Qu8mg5v7";
+const char *__doc_igl_copyleft_swept_volume = R"igl_Qu8mg5v7(// Compute the surface of the swept volume of a solid object with surface
+    // (V,F) mesh under going rigid motion.
+    // 
+    // Inputs:
+    //   V  #V by 3 list of mesh positions in reference pose
+    //   F  #F by 3 list of mesh indices into V
+    //   transform  function handle so that transform(t) returns the rigid
+    //     transformation at time t∈[0,1]
+    //   steps  number of time steps: steps=3 --> t∈{0,0.5,1}
+    //   grid_res  number of grid cells on the longest side containing the
+    //     motion (isolevel+1 cells will also be added on each side as padding)
+    //   isolevel  distance level to be contoured as swept volume
+    // Outputs:
+    //   SV  #SV by 3 list of mesh positions of the swept surface
+    //   SF  #SF by 3 list of mesh faces into SV)igl_Qu8mg5v7";
+const char *__doc_igl_copyleft_tetgen_tetrahedralize = R"igl_Qu8mg5v7(// Mesh the interior of a surface mesh (V,F) using tetgen
+      //
+      // Inputs:
+      //   V  #V by 3 vertex position list
+      //   F  #F list of polygon face indices into V (0-indexed)
+      //   switches  string of tetgen options (See tetgen documentation) e.g.
+      //     "pq1.414a0.01" tries to mesh the interior of a given surface with
+      //       quality and area constraints
+      //     "" will mesh the convex hull constrained to pass through V (ignores F)
+      // Outputs:
+      //   TV  #V by 3 vertex position list
+      //   TT  #T by 4 list of tet face indices
+      //   TF  #F by 3 list of triangle face indices
+      // Returns status:
+      //   0 success
+      //   1 tetgen threw exception
+      //   2 tetgen did not crash but could not create any tets (probably there are
+      //     holes, duplicate faces etc.)
+      //   -1 other error)igl_Qu8mg5v7";
+const char *__doc_igl_cotmatrix = R"igl_Qu8mg5v7(// Constructs the cotangent stiffness matrix (discrete laplacian) for a given
+  // mesh (V,F).
+  //
+  // Templates:
+  //   DerivedV  derived type of eigen matrix for V (e.g. derived from
+  //     MatrixXd)
+  //   DerivedF  derived type of eigen matrix for F (e.g. derived from
+  //     MatrixXi)
+  //   Scalar  scalar type for eigen sparse matrix (e.g. double)
+  // Inputs:
+  //   V  #V by dim list of mesh vertex positions
+  //   F  #F by simplex_size list of mesh faces (must be triangles)
+  // Outputs: 
+  //   L  #V by #V cotangent matrix, each row i corresponding to V(i,:)
+  //
+  // See also: adjacency_matrix
+  //
+  // Note: This Laplacian uses the convention that diagonal entries are
+  // **minus** the sum of off-diagonal entries. The diagonal entries are
+  // therefore in general negative and the matrix is **negative** semi-definite
+  // (immediately, -L is **positive** semi-definite)
+  //
+  // Known bugs: off by 1e-16 on regular grid. I think its a problem of
+  // arithmetic order in cotmatrix_entries.h: C(i,e) = (arithmetic)/dblA/4)igl_Qu8mg5v7";
+const char *__doc_igl_covariance_scatter_matrix = R"igl_Qu8mg5v7(// Construct the covariance scatter matrix for a given arap energy
+  // Inputs:
+  //   V  #V by Vdim list of initial domain positions
+  //   F  #F by 3 list of triangle indices into V
+  //   energy  ARAPEnergyType enum value defining which energy is being used.
+  //     See ARAPEnergyType.h for valid options and explanations.
+  // Outputs:
+  //   CSM dim*#V/#F by dim*#V sparse matrix containing special laplacians along
+  //     the diagonal so that when multiplied by V gives covariance matrix
+  //     elements, can be used to speed up covariance matrix computation)igl_Qu8mg5v7";
+const char *__doc_igl_cross_field_missmatch = R"igl_Qu8mg5v7(// Inputs:
+  //   V         #V by 3 eigen Matrix of mesh vertex 3D positions
+  //   F         #F by 3 eigen Matrix of face (quad) indices
+  //   PD1       #F by 3 eigen Matrix of the first per face cross field vector
+  //   PD2       #F by 3 eigen Matrix of the second per face cross field vector
+  //   isCombed  boolean, specifying whether the field is combed (i.e. matching has been precomputed.
+  //             If not, the field is combed first.
+  // Output:
+  //   Handle_MMatch    #F by 3 eigen Matrix containing the integer missmatch of the cross field
+  //                    across all face edges
+  //)igl_Qu8mg5v7";
+const char *__doc_igl_cut_mesh_from_singularities = R"igl_Qu8mg5v7(// Given a mesh (V,F) and the integer mismatch of a cross field per edge
+  // (MMatch), finds the cut_graph connecting the singularities (seams) and the
+  // degree of the singularities singularity_index
+  //
+  // Input:
+  //   V  #V by 3 list of mesh vertex positions
+  //   F  #F by 3 list of faces
+  //   MMatch  #F by 3 list of per corner integer mismatch
+  // Outputs:
+  //   seams  #F by 3 list of per corner booleans that denotes if an edge is a
+  //     seam or not
+  //)igl_Qu8mg5v7";
+const char *__doc_igl_doublearea = R"igl_Qu8mg5v7(// DOUBLEAREA computes twice the area for each input triangle[quad]
+  //
+  // Templates:
+  //   DerivedV  derived type of eigen matrix for V (e.g. derived from
+  //     MatrixXd)
+  //   DerivedF  derived type of eigen matrix for F (e.g. derived from
+  //     MatrixXi)
+  //   DeriveddblA  derived type of eigen matrix for dblA (e.g. derived from
+  //     MatrixXd)
+  // Inputs:
+  //   V  #V by dim list of mesh vertex positions
+  //   F  #F by simplex_size list of mesh faces (must be triangles or quads)
+  // Outputs:
+  //   dblA  #F list of triangle[quad] double areas (SIGNED only for 2D input)
+  //
+  // Known bug: For dim==3 complexity is O(#V + #F)!! Not just O(#F). This is a big deal
+  // if you have 1million unreferenced vertices and 1 face)igl_Qu8mg5v7";
+const char *__doc_igl_doublearea_single = R"igl_Qu8mg5v7(// Single triangle in 2D!
+  //
+  // This should handle streams of corners not just single corners)igl_Qu8mg5v7";
+const char *__doc_igl_doublearea_quad = R"igl_Qu8mg5v7(// DOUBLEAREA_QUAD computes twice the area for each input quadrilateral
+  //
+  // Inputs:
+  //   V  #V by dim list of mesh vertex positions
+  //   F  #F by simplex_size list of mesh faces (must be quadrilaterals)
+  // Outputs:
+  //   dblA  #F list of quadrilateral double areas
+  //)igl_Qu8mg5v7";
+const char *__doc_igl_edge_lengths = R"igl_Qu8mg5v7(// Constructs a list of lengths of edges opposite each index in a face
+  // (triangle/tet) list
+  //
+  // Templates:
+  //   DerivedV derived from vertex positions matrix type: i.e. MatrixXd
+  //   DerivedF derived from face indices matrix type: i.e. MatrixXi
+  //   DerivedL derived from edge lengths matrix type: i.e. MatrixXd
+  // Inputs:
+  //   V  eigen matrix #V by 3
+  //   F  #F by 2 list of mesh edges
+  //    or
+  //   F  #F by 3 list of mesh faces (must be triangles)
+  //    or
+  //   T  #T by 4 list of mesh elements (must be tets)
+  // Outputs:
+  //   L  #F by {1|3|6} list of edge lengths
+  //     for edges, column of lengths
+  //     for triangles, columns correspond to edges [1,2],[2,0],[0,1]
+  //     for tets, columns correspond to edges
+  //     [3 0],[3 1],[3 2],[1 2],[2 0],[0 1]
+  //)igl_Qu8mg5v7";
+const char *__doc_igl_edge_topology = R"igl_Qu8mg5v7(// Initialize Edges and their topological relations
+  //
+  // Output:
+  // EV  : #Ex2, Stores the edge description as pair of indices to vertices
+  // FE : #Fx3, Stores the Triangle-Edge relation
+  // EF : #Ex2: Stores the Edge-Triangle relation
+  //)igl_Qu8mg5v7";
+const char *__doc_igl_eigs = R"igl_Qu8mg5v7(See eigs for the documentation.)igl_Qu8mg5v7";
+const char *__doc_igl_embree_ambient_occlusion = R"igl_Qu8mg5v7(// Compute ambient occlusion per given point
+    //
+    // Inputs:
+    //    ei  EmbreeIntersector containing (V,F)
+    //    P  #P by 3 list of origin points
+    //    N  #P by 3 list of origin normals
+    // Outputs:
+    //    S  #P list of ambient occlusion values between 1 (fully occluded) and
+    //      0 (not occluded)
+    //)igl_Qu8mg5v7";
+const char *__doc_igl_embree_reorient_facets_raycast = R"igl_Qu8mg5v7(// Orient each component (identified by C) of a mesh (V,F) using ambient
+    // occlusion such that the front side is less occluded than back side, as
+    // described in "A Simple Method for Correcting Facet Orientations in
+    // Polygon Meshes Based on Ray Casting" [Takayama et al. 2014].
+    //
+    // Inputs:
+    //   V  #V by 3 list of vertex positions
+    //   F  #F by 3 list of triangle indices
+    //   rays_total  Total number of rays that will be shot
+    //   rays_minimum  Minimum number of rays that each patch should receive
+    //   facet_wise  Decision made for each face independently, no use of patches
+    //     (i.e., each face is treated as a patch)
+    //   use_parity  Use parity mode
+    //   is_verbose  Verbose output to cout
+    // Outputs:
+    //   I  #F list of whether face has been flipped
+    //   C  #F list of patch ID (output of bfs_orient > manifold patches))igl_Qu8mg5v7";
+const char *__doc_igl_find_cross_field_singularities = R"igl_Qu8mg5v7(// Inputs:
+  //   V                #V by 3 eigen Matrix of mesh vertex 3D positions
+  //   F                #F by 3 eigen Matrix of face (quad) indices
+  //   Handle_MMatch    #F by 3 eigen Matrix containing the integer missmatch of the cross field
+  //                    across all face edges
+  // Output:
+  //   isSingularity    #V by 1 boolean eigen Vector indicating the presence of a singularity on a vertex
+  //   singularityIndex #V by 1 integer eigen Vector containing the singularity indices
+  //)igl_Qu8mg5v7";
+const char *__doc_igl_fit_rotations = R"igl_Qu8mg5v7(// Known issues: This seems to be implemented in Eigen/Geometry:
+  // Eigen::umeyama
+  //
+  // FIT_ROTATIONS Given an input mesh and new positions find rotations for
+  // every covariance matrix in a stack of covariance matrices
+  // 
+  // Inputs:
+  //   S  nr*dim by dim stack of covariance matrices
+  //   single_precision  whether to use single precision (faster)
+  // Outputs:
+  //   R  dim by dim * nr list of rotations
+  //)igl_Qu8mg5v7";
+const char *__doc_igl_fit_rotations_planar = R"igl_Qu8mg5v7(// FIT_ROTATIONS Given an input mesh and new positions find 2D rotations for
+  // every vertex that best maps its one ring to the new one ring
+  // 
+  // Inputs:
+  //   S  nr*dim by dim stack of covariance matrices, third column and every
+  //   third row will be ignored
+  // Outputs:
+  //   R  dim by dim * nr list of rotations, third row and third column of each
+  //   rotation will just be identity
+  //)igl_Qu8mg5v7";
+const char *__doc_igl_fit_rotations_SSE = R"igl_Qu8mg5v7(See fit_rotations_SSE for the documentation.)igl_Qu8mg5v7";
+const char *__doc_igl_floor = R"igl_Qu8mg5v7(// Floor a given matrix to nearest integers 
+  //
+  // Inputs:
+  //   X  m by n matrix of scalars
+  // Outputs:
+  //   Y  m by n matrix of floored integers)igl_Qu8mg5v7";
+const char *__doc_igl_gaussian_curvature = R"igl_Qu8mg5v7(// Compute discrete local integral gaussian curvature (angle deficit, without
+  // averaging by local area).
+  //
+  // Inputs:
+  //   V  #V by 3 eigen Matrix of mesh vertex 3D positions
+  //   F  #F by 3 eigen Matrix of face (triangle) indices
+  // Output:
+  //   K  #V by 1 eigen Matrix of discrete gaussian curvature values
+  //)igl_Qu8mg5v7";
+const char *__doc_igl_get_seconds = R"igl_Qu8mg5v7(// Return the current time in seconds since program start
+  // 
+  // Example:
+  //    const auto & tictoc = []()
+  //    {
+  //      static double t_start = igl::get_seconds();
+  //      double diff = igl::get_seconds()-t_start;
+  //      t_start += diff;
+  //      return diff;
+  //    };
+  //    tictoc();
+  //    ... // part 1
+  //    cout<<"part 1: "<<tictoc()<<endl;
+  //    ... // part 2
+  //    cout<<"part 2: "<<tictoc()<<endl;
+  //    ... // etc)igl_Qu8mg5v7";
+const char *__doc_igl_grad = R"igl_Qu8mg5v7(// Gradient of a scalar function defined on piecewise linear elements (mesh)
+  // is constant on each triangle i,j,k:
+  // grad(Xijk) = (Xj-Xi) * (Vi - Vk)^R90 / 2A + (Xk-Xi) * (Vj - Vi)^R90 / 2A
+  // where Xi is the scalar value at vertex i, Vi is the 3D position of vertex
+  // i, and A is the area of triangle (i,j,k). ^R90 represent a rotation of
+  // 90 degrees
+  //)igl_Qu8mg5v7";
+const char *__doc_igl_harmonic = R"igl_Qu8mg5v7(// Compute k-harmonic weight functions "coordinates".
+  //
+  //
+  // Inputs:
+  //   V  #V by dim vertex positions
+  //   F  #F by simplex-size list of element indices
+  //   b  #b boundary indices into V
+  //   bc #b by #W list of boundary values
+  //   k  power of harmonic operation (1: harmonic, 2: biharmonic, etc)
+  // Outputs:
+  //   W  #V by #W list of weights
+  //)igl_Qu8mg5v7";
+const char *__doc_igl_hsv_to_rgb = R"igl_Qu8mg5v7(// Convert RGB to HSV
+  //
+  // Inputs:
+  //   h  hue value (degrees: [0,360])
+  //   s  saturation value ([0,1])
+  //   v  value value ([0,1])
+  // Outputs:
+  //   r  red value ([0,1]) 
+  //   g  green value ([0,1])
+  //   b  blue value ([0,1]))igl_Qu8mg5v7";
+const char *__doc_igl_internal_angles = R"igl_Qu8mg5v7(// Compute internal angles for a triangle mesh
+  //
+  // Inputs:
+  //   V  #V by dim eigen Matrix of mesh vertex nD positions
+  //   F  #F by poly-size eigen Matrix of face (triangle) indices
+  // Output:
+  //   K  #F by poly-size eigen Matrix of internal angles
+  //     for triangles, columns correspond to edges [1,2],[2,0],[0,1]
+  //
+  // Known Issues:
+  //   if poly-size ≠ 3 then dim must equal 3.)igl_Qu8mg5v7";
+const char *__doc_igl_invert_diag = R"igl_Qu8mg5v7(// Templates:
+  //   T  should be a eigen sparse matrix primitive type like int or double
+  // Inputs:
+  //   X  an m by n sparse matrix
+  // Outputs:
+  //   Y  an m by n sparse matrix)igl_Qu8mg5v7";
+const char *__doc_igl_is_irregular_vertex = R"igl_Qu8mg5v7(// Determine if a vertex is irregular, i.e. it has more than 6 (triangles)
+  // or 4 (quads) incident edges. Vertices on the boundary are ignored.
+  //
+  // Inputs:
+  //   V  #V by dim list of vertex positions
+  //   F  #F by 3[4] list of triangle[quads] indices
+  // Returns #V vector of bools revealing whether vertices are singular
+  //)igl_Qu8mg5v7";
+const char *__doc_igl_jet = R"igl_Qu8mg5v7(// JET like MATLAB's jet
+  //
+  // Inputs:
+  //   m  number of colors 
+  // Outputs:
+  //   J  m by list of RGB colors between 0 and 1
+  //
+//#ifndef IGL_NO_EIGEN
+//  void jet(const int m, Eigen::MatrixXd & J);
+//#endif
+  // Wrapper for directly computing [r,g,b] values for a given factor f between
+  // 0 and 1
+  //
+  // Inputs:
+  //   f  factor determining color value as if 0 was min and 1 was max
+  // Outputs:
+  //   r  red value
+  //   g  green value
+  //   b  blue value)igl_Qu8mg5v7";
+const char *__doc_igl_local_basis = R"igl_Qu8mg5v7(// Compute a local orthogonal reference system for each triangle in the given mesh
+  // Templates:
+  //   DerivedV derived from vertex positions matrix type: i.e. MatrixXd
+  //   DerivedF derived from face indices matrix type: i.e. MatrixXi
+  // Inputs:
+  //   V  eigen matrix #V by 3
+  //   F  #F by 3 list of mesh faces (must be triangles)
+  // Outputs:
+  //   B1 eigen matrix #F by 3, each vector is tangent to the triangle
+  //   B2 eigen matrix #F by 3, each vector is tangent to the triangle and perpendicular to B1
+  //   B3 eigen matrix #F by 3, normal of the triangle
+  //
+  // See also: adjacency_matrix)igl_Qu8mg5v7";
+const char *__doc_igl_lscm = R"igl_Qu8mg5v7(// Compute a Least-squares conformal map parametrization (equivalently
+  // derived in "Intrinsic Parameterizations of Surface Meshes" [Desbrun et al.
+  // 2002] and "Least Squares Conformal Maps for Automatic Texture Atlas
+  // Generation" [Lévy et al. 2002]), though this implementation follows the
+  // derivation in: "Spectral Conformal Parameterization" [Mullen et al. 2008]
+  // (note, this does **not** implement the Eigen-decomposition based method in
+  // [Mullen et al. 2008], which is not equivalent). Input should be a manifold
+  // mesh (also no unreferenced vertices) and "boundary" (fixed vertices) `b`
+  // should contain at least two vertices per connected component.
+  //
+  // Inputs:
+  //   V  #V by 3 list of mesh vertex positions
+  //   F  #F by 3 list of mesh faces (must be triangles)
+  //   b  #b boundary indices into V
+  //   bc #b by 3 list of boundary values
+  // Outputs:
+  //   UV #V by 2 list of 2D mesh vertex positions in UV space
+  // Returns true only on solver success.
+  //)igl_Qu8mg5v7";
+const char *__doc_igl_map_vertices_to_circle = R"igl_Qu8mg5v7(// Map the vertices whose indices are in a given boundary loop (bnd) on the
+  // unit circle with spacing proportional to the original boundary edge
+  // lengths.
+  //
+  // Inputs:
+  //   V  #V by dim list of mesh vertex positions
+  //   b  #W list of vertex ids
+  // Outputs:
+  //   UV   #W by 2 list of 2D position on the unit circle for the vertices in b)igl_Qu8mg5v7";
+const char *__doc_igl_massmatrix = R"igl_Qu8mg5v7(// Constructs the mass (area) matrix for a given mesh (V,F).
+  //
+  // Templates:
+  //   DerivedV  derived type of eigen matrix for V (e.g. derived from
+  //     MatrixXd)
+  //   DerivedF  derived type of eigen matrix for F (e.g. derived from
+  //     MatrixXi)
+  //   Scalar  scalar type for eigen sparse matrix (e.g. double)
+  // Inputs:
+  //   V  #V by dim list of mesh vertex positions
+  //   F  #F by simplex_size list of mesh faces (must be triangles)
+  //   type  one of the following ints:
+  //     MASSMATRIX_TYPE_BARYCENTRIC  barycentric
+  //     MASSMATRIX_TYPE_VORONOI voronoi-hybrid {default}
+  //     MASSMATRIX_TYPE_FULL full {not implemented}
+  // Outputs: 
+  //   M  #V by #V mass matrix
+  //
+  // See also: adjacency_matrix
+  //)igl_Qu8mg5v7";
+const char *__doc_igl_min_quad_with_fixed_precompute = R"igl_Qu8mg5v7(// Known Bugs: rows of Aeq **should probably** be linearly independent.
+  // During precomputation, the rows of a Aeq are checked via QR. But in case
+  // they're not then resulting probably will no longer be sparse: it will be
+  // slow.
+  //
+  // MIN_QUAD_WITH_FIXED Minimize quadratic energy 
+  //
+  // 0.5*Z'*A*Z + Z'*B + C with
+  //
+  // constraints that Z(known) = Y, optionally also subject to the constraints
+  // Aeq*Z = Beq
+  //
+  // Templates:
+  //   T  should be a eigen matrix primitive type like int or double
+  // Inputs:
+  //   A  n by n matrix of quadratic coefficients
+  //   known list of indices to known rows in Z
+  //   Y  list of fixed values corresponding to known rows in Z
+  //   Aeq  m by n list of linear equality constraint coefficients
+  //   pd flag specifying whether A(unknown,unknown) is positive definite
+  // Outputs:
+  //   data  factorization struct with all necessary information to solve
+  //     using min_quad_with_fixed_solve
+  // Returns true on success, false on error
+  //
+  // Benchmark: For a harmonic solve on a mesh with 325K facets, matlab 2.2
+  // secs, igl/min_quad_with_fixed.h 7.1 secs
+  //)igl_Qu8mg5v7";
+const char *__doc_igl_min_quad_with_fixed_solve = R"igl_Qu8mg5v7(// Solves a system previously factored using min_quad_with_fixed_precompute
+  //
+  // Template:
+  //   T  type of sparse matrix (e.g. double)
+  //   DerivedY  type of Y (e.g. derived from VectorXd or MatrixXd)
+  //   DerivedZ  type of Z (e.g. derived from VectorXd or MatrixXd)
+  // Inputs:
+  //   data  factorization struct with all necessary precomputation to solve
+  //   B  n by 1 column of linear coefficients
+  //   Y  b by 1 list of constant fixed values
+  //   Beq  m by 1 list of linear equality constraint constant values
+  // Outputs:
+  //   Z  n by cols solution
+  //   sol  #unknowns+#lagrange by cols solution to linear system
+  // Returns true on success, false on error)igl_Qu8mg5v7";
+const char *__doc_igl_min_quad_with_fixed = R"igl_Qu8mg5v7(See min_quad_with_fixed for the documentation.)igl_Qu8mg5v7";
+const char *__doc_igl_n_polyvector = R"igl_Qu8mg5v7(// Inputs:
+  //   v0, v1         the two #3 by 1 vectors
+  //   normalized     boolean, if false, then the vectors are normalized prior to the calculation
+  // Output:
+  //                  3 by 3 rotation matrix that takes v0 to v1
+  //)igl_Qu8mg5v7";
+const char *__doc_igl_parula = R"igl_Qu8mg5v7(// PARULA like MATLAB's parula
+  //
+  // Inputs:
+  //   m  number of colors 
+  // Outputs:
+  //   J  m by list of RGB colors between 0 and 1
+  //
+  // Wrapper for directly computing [r,g,b] values for a given factor f between
+  // 0 and 1
+  //
+  // Inputs:
+  //   f  factor determining color value as if 0 was min and 1 was max
+  // Outputs:
+  //   r  red value
+  //   g  green value
+  //   b  blue value)igl_Qu8mg5v7";
+const char *__doc_igl_per_corner_normals = R"igl_Qu8mg5v7(// Compute vertex normals via vertex position list, face list
+  // Inputs:
+  //   V  #V by 3 eigen Matrix of mesh vertex 3D positions
+  //   F  #F by 3 eigne Matrix of face (triangle) indices
+  //   corner_threshold  threshold in degrees on sharp angles
+  // Output:
+  //   CN  #F*3 by 3 eigen Matrix of mesh vertex 3D normals, where the normal
+  //     for corner F(i,j) is at CN(i*3+j,:) )igl_Qu8mg5v7";
+const char *__doc_igl_per_edge_normals = R"igl_Qu8mg5v7(// Compute face normals via vertex position list, face list
+  // Inputs:
+  //   V  #V by 3 eigen Matrix of mesh vertex 3D positions
+  //   F  #F by 3 eigen Matrix of face (triangle) indices
+  //   weight  weighting type
+  //   FN  #F by 3 matrix of 3D face normals per face
+  // Output:
+  //   N  #2 by 3 matrix of mesh edge 3D normals per row
+  //   E  #E by 2 matrix of edge indices per row
+  //   EMAP  #E by 1 matrix of indices from all edges to E
+  //)igl_Qu8mg5v7";
+const char *__doc_igl_per_face_normals = R"igl_Qu8mg5v7(// Compute face normals via vertex position list, face list
+  // Inputs:
+  //   V  #V by 3 eigen Matrix of mesh vertex 3D positions
+  //   F  #F by 3 eigen Matrix of face (triangle) indices
+  //   Z  3 vector normal given to faces with degenerate normal.
+  // Output:
+  //   N  #F by 3 eigen Matrix of mesh face (triangle) 3D normals
+  //
+  // Example:
+  //   // Give degenerate faces (1/3,1/3,1/3)^0.5
+  //   per_face_normals(V,F,Vector3d(1,1,1).normalized(),N);)igl_Qu8mg5v7";
+const char *__doc_igl_per_face_normals_stable = R"igl_Qu8mg5v7(// Special version where order of face indices is guaranteed not to effect
+  // output.)igl_Qu8mg5v7";
+const char *__doc_igl_per_vertex_normals = R"igl_Qu8mg5v7(// Compute vertex normals via vertex position list, face list
+  // Inputs:
+  //   V  #V by 3 eigen Matrix of mesh vertex 3D positions
+  //   F  #F by 3 eigne Matrix of face (triangle) indices
+  //   weighting  Weighting type
+  // Output:
+  //   N  #V by 3 eigen Matrix of mesh vertex 3D normals)igl_Qu8mg5v7";
+const char *__doc_igl_planarize_quad_mesh = R"igl_Qu8mg5v7(// Inputs:
+  //   Vin        #V by 3 eigen Matrix of mesh vertex 3D positions
+  //   F          #F by 4 eigen Matrix of face (quad) indices
+  //   maxIter    maximum numbers of iterations
+  //   threshold  minimum allowed threshold for non-planarity
+  // Output:
+  //   Vout       #V by 3 eigen Matrix of planar mesh vertex 3D positions
+  //)igl_Qu8mg5v7";
+const char *__doc_igl_png_readPNG = R"igl_Qu8mg5v7(// Read an image from a .png file into 4 memory buffers
+    //
+    // Input:
+    //  png_file  path to .png file
+    // Output:
+    //  R,G,B,A texture channels
+    // Returns true on success, false on failure
+    //)igl_Qu8mg5v7";
+const char *__doc_igl_png_writePNG = R"igl_Qu8mg5v7(// Writes an image to a png file
+    //
+    // Input:
+    //  R,G,B,A texture channels
+    // Output:
+    //  png_file  path to .png file
+    // Returns true on success, false on failure
+    //)igl_Qu8mg5v7";
+const char *__doc_igl_point_mesh_squared_distance = R"igl_Qu8mg5v7(// Compute distances from a set of points P to a triangle mesh (V,F)
+  //
+  // Inputs:
+  //   P  #P by 3 list of query point positions
+  //   V  #V by 3 list of vertex positions
+  //   Ele  #Ele by (3|2|1) list of (triangle|edge|point) indices
+  // Outputs:
+  //   sqrD  #P list of smallest squared distances
+  //   I  #P list of primitive indices corresponding to smallest distances
+  //   C  #P by 3 list of closest points
+  //
+  // Known bugs: This only computes distances to given primitivess. So
+  // unreferenced vertices are ignored. However, degenerate primitives are
+  // handled correctly: triangle [1 2 2] is treated as a segment [1 2], and
+  // triangle [1 1 1] is treated as a point. So one _could_ add extra
+  // combinatorially degenerate rows to Ele for all unreferenced vertices to
+  // also get distances to points.)igl_Qu8mg5v7";
+const char *__doc_igl_polar_svd = R"igl_Qu8mg5v7(// Computes the polar decomposition (R,T) of a matrix A using SVD singular
+  // value decomposition
+  //
+  // Inputs:
+  //   A  3 by 3 matrix to be decomposed
+  // Outputs:
+  //   R  3 by 3 rotation matrix part of decomposition (**always rotataion**)
+  //   T  3 by 3 stretch matrix part of decomposition
+  //   U  3 by 3 left-singular vectors
+  //   S  3 by 1 singular values
+  //   V  3 by 3 right-singular vectors
+  //
+  //)igl_Qu8mg5v7";
+const char *__doc_igl_principal_curvature = R"igl_Qu8mg5v7(// Compute the principal curvature directions and magnitude of the given triangle mesh
+  //   DerivedV derived from vertex positions matrix type: i.e. MatrixXd
+  //   DerivedF derived from face indices matrix type: i.e. MatrixXi
+  // Inputs:
+  //   V       eigen matrix #V by 3
+  //   F       #F by 3 list of mesh faces (must be triangles)
+  //   radius  controls the size of the neighbourhood used, 1 = average edge lenght
+  //
+  // Outputs:
+  //   PD1 #V by 3 maximal curvature direction for each vertex.
+  //   PD2 #V by 3 minimal curvature direction for each vertex.
+  //   PV1 #V by 1 maximal curvature value for each vertex.
+  //   PV2 #V by 1 minimal curvature value for each vertex.
+  //
+  // See also: average_onto_faces, average_onto_vertices
+  //
+  // This function has been developed by: Nikolas De Giorgis, Luigi Rocca and Enrico Puppo.
+  // The algorithm is based on:
+  // Efficient Multi-scale Curvature and Crease Estimation
+  // Daniele Panozzo, Enrico Puppo, Luigi Rocca
+  // GraVisMa, 2010)igl_Qu8mg5v7";
+const char *__doc_igl_quad_planarity = R"igl_Qu8mg5v7(// Compute planarity of the faces of a quad mesh
+  // Inputs:
+  //   V  #V by 3 eigen Matrix of mesh vertex 3D positions
+  //   F  #F by 4 eigen Matrix of face (quad) indices
+  // Output:
+  //   P  #F by 1 eigen Matrix of mesh face (quad) planarities
+  //)igl_Qu8mg5v7";
+const char *__doc_igl_randperm = R"igl_Qu8mg5v7(// Like matlab's randperm(n) but minus 1
+  //
+  // Inputs:
+  //   n  number of elements
+  // Outputs:
+  //   I  n list of rand permutation of 0:n-1)igl_Qu8mg5v7";
+const char *__doc_igl_readDMAT = R"igl_Qu8mg5v7(See readDMAT for the documentation.)igl_Qu8mg5v7";
+const char *__doc_igl_readMESH = R"igl_Qu8mg5v7(// load a tetrahedral volume mesh from a .mesh file
+  //
+  // Templates:
+  //   Scalar  type for positions and vectors (will be read as double and cast
+  //     to Scalar)
+  //   Index  type for indices (will be read as int and cast to Index)
+  // Input:
+  //   mesh_file_name  path of .mesh file
+  // Outputs:
+  //   V  double matrix of vertex positions  #V by 3
+  //   T  #T list of tet indices into vertex positions
+  //   F  #F list of face indices into vertex positions
+  //
+  // Known bugs: Holes and regions are not supported)igl_Qu8mg5v7";
+const char *__doc_igl_readOBJ = R"igl_Qu8mg5v7(// Read a mesh from an ascii obj file, filling in vertex positions, normals
+  // and texture coordinates. Mesh may have faces of any number of degree
+  //
+  // Templates:
+  //   Scalar  type for positions and vectors (will be read as double and cast
+  //     to Scalar)
+  //   Index  type for indices (will be read as int and cast to Index)
+  // Inputs:
+  //  str  path to .obj file
+  // Outputs:
+  //   V  double matrix of vertex positions  #V by 3
+  //   TC  double matrix of texture coordinats #TC by 2
+  //   N  double matrix of corner normals #N by 3
+  //   F  #F list of face indices into vertex positions
+  //   FTC  #F list of face indices into vertex texture coordinates
+  //   FN  #F list of face indices into vertex normals
+  // Returns true on success, false on errors)igl_Qu8mg5v7";
+const char *__doc_igl_readOFF = R"igl_Qu8mg5v7(// Read a mesh from an ascii obj file, filling in vertex positions, normals
+  // and texture coordinates. Mesh may have faces of any number of degree
+  //
+  // Templates:
+  //   Scalar  type for positions and vectors (will be read as double and cast
+  //     to Scalar)
+  //   Index  type for indices (will be read as int and cast to Index)
+  // Inputs:
+  //  str  path to .obj file
+  // Outputs:
+  //   V  double matrix of vertex positions  #V by 3
+  //   F  #F list of face indices into vertex positions
+  //   TC  double matrix of texture coordinats #TC by 2
+  //   FTC  #F list of face indices into vertex texture coordinates
+  //   N  double matrix of corner normals #N by 3
+  //   FN  #F list of face indices into vertex normals
+  // Returns true on success, false on errors)igl_Qu8mg5v7";
+const char *__doc_igl_read_triangle_mesh = R"igl_Qu8mg5v7(// read mesh from an ascii file with automatic detection of file format.
+  // supported: obj, off, stl, wrl, ply, mesh)
+  // 
+  // Templates:
+  //   Scalar  type for positions and vectors (will be read as double and cast
+  //     to Scalar)
+  //   Index  type for indices (will be read as int and cast to Index)
+  // Inputs:
+  //   str  path to file
+  // Outputs:
+  //   V  eigen double matrix #V by 3
+  //   F  eigen int matrix #F by 3
+  // Returns true iff success)igl_Qu8mg5v7";
+const char *__doc_igl_rotate_vectors = R"igl_Qu8mg5v7(// Rotate the vectors V by A radiants on the tangent plane spanned by B1 and
+  // B2
+  //
+  // Inputs:
+  //   V     #V by 3 eigen Matrix of vectors
+  //   A     #V eigen vector of rotation angles or a single angle to be applied
+  //     to all vectors
+  //   B1    #V by 3 eigen Matrix of base vector 1
+  //   B2    #V by 3 eigen Matrix of base vector 2
+  //
+  // Output:
+  //   Returns the rotated vectors
+  //)igl_Qu8mg5v7";
+const char *__doc_igl_setdiff = R"igl_Qu8mg5v7(// Set difference of elements of matrices
+  //
+  // Inputs:
+  //   A  m-long vector of indices
+  //   B  n-long vector of indices
+  // Outputs:
+  //   C  (k<=m)-long vector of unique elements appearing in A but not in B
+  //   IA  (k<=m)-long list of indices into A so that C = A(IA)
+  //)igl_Qu8mg5v7";
+const char *__doc_igl_signed_distance = R"igl_Qu8mg5v7(// Computes signed distance to a mesh
+  //
+  // Inputs:
+  //   P  #P by 3 list of query point positions
+  //   V  #V by 3 list of vertex positions
+  //   F  #F by ss list of triangle indices, ss should be 3 unless sign_type ==
+  //     SIGNED_DISTANCE_TYPE_UNSIGNED
+  //   sign_type  method for computing distance _sign_ S
+  // Outputs:
+  //   S  #P list of smallest signed distances
+  //   I  #P list of facet indices corresponding to smallest distances
+  //   C  #P by 3 list of closest points
+  //   N  #P by 3 list of closest normals (only set if
+  //     sign_type=SIGNED_DISTANCE_TYPE_PSEUDONORMAL)
+  //
+  // Known bugs: This only computes distances to triangles. So unreferenced
+  // vertices and degenerate triangles are ignored.)igl_Qu8mg5v7";
+const char *__doc_igl_signed_distance_pseudonormal = R"igl_Qu8mg5v7(// Computes signed distance to mesh
+  //
+  // Inputs:
+  //   tree  AABB acceleration tree (see AABB.h)
+  //   F  #F by 3 list of triangle indices
+  //   FN  #F by 3 list of triangle normals 
+  //   VN  #V by 3 list of vertex normals (ANGLE WEIGHTING)
+  //   EN  #E by 3 list of edge normals (UNIFORM WEIGHTING)
+  //   EMAP  #F*3 mapping edges in F to E
+  //   q  Query point
+  // Returns signed distance to mesh
+  //)igl_Qu8mg5v7";
+const char *__doc_igl_signed_distance_winding_number = R"igl_Qu8mg5v7(// Inputs:
+  //   tree  AABB acceleration tree (see cgal/point_mesh_squared_distance.h)
+  //   hier  Winding number evaluation hierarchy
+  //   q  Query point
+  // Returns signed distance to mesh)igl_Qu8mg5v7";
+const char *__doc_igl_slice = R"igl_Qu8mg5v7(// Act like the matlab X(row_indices,col_indices) operator, where
+  // row_indices, col_indices are non-negative integer indices.
+  // 
+  // Inputs:
+  //   X  m by n matrix
+  //   R  list of row indices
+  //   C  list of column indices
+  // Output:
+  //   Y  #R by #C matrix
+  //
+  // See also: slice_mask)igl_Qu8mg5v7";
+const char *__doc_igl_slice_into = R"igl_Qu8mg5v7(// Act like the matlab Y(row_indices,col_indices) = X
+  // 
+  // Inputs:
+  //   X  xm by xn rhs matrix
+  //   R  list of row indices
+  //   C  list of column indices
+  //   Y  ym by yn lhs matrix
+  // Output:
+  //   Y  ym by yn lhs matrix, same as input but Y(R,C) = X)igl_Qu8mg5v7";
+const char *__doc_igl_slice_mask = R"igl_Qu8mg5v7(// Act like the matlab X(row_mask,col_mask) operator, where
+  // row_mask, col_mask are non-negative integer indices.
+  // 
+  // Inputs:
+  //   X  m by n matrix
+  //   R  m list of row bools
+  //   C  n list of column bools
+  // Output:
+  //   Y  #trues-in-R by #trues-in-C matrix
+  //
+  // See also: slice_mask)igl_Qu8mg5v7";
+const char *__doc_igl_slice_tets = R"igl_Qu8mg5v7(// SLICE_TETS Slice through a tet mesh (V,T) along a given plane (via its
+  // implicit equation).
+  //
+  // Inputs:
+  //   V  #V by 3 list of tet mesh vertices
+  //   T  #T by 4 list of tet indices into V 
+  //   plane  list of 4 coefficients in the plane equation: [x y z 1]'*plane = 0
+  //   Optional:
+  //     'Manifold' followed by whether to stitch together triangles into a
+  //       manifold mesh {true}: results in more compact U but slightly slower.
+  // Outputs:
+  //   U  #U by 3 list of triangle mesh vertices along slice
+  //   G  #G by 3 list of triangles indices into U
+  //   J  #G list of indices into T revealing from which tet each faces comes
+  //   BC  #U by #V list of barycentric coordinates (or more generally: linear
+  //     interpolation coordinates) so that U = BC*V
+  // )igl_Qu8mg5v7";
+const char *__doc_igl_sortrows = R"igl_Qu8mg5v7(// Act like matlab's [Y,I] = sortrows(X)
+  //
+  // Templates:
+  //   DerivedX derived scalar type, e.g. MatrixXi or MatrixXd
+  //   DerivedI derived integer type, e.g. MatrixXi
+  // Inputs:
+  //   X  m by n matrix whose entries are to be sorted
+  //   ascending  sort ascending (true, matlab default) or descending (false)
+  // Outputs:
+  //   Y  m by n matrix whose entries are sorted (**should not** be same
+  //     reference as X)
+  //   I  m list of indices so that
+  //     Y = X(I,:);)igl_Qu8mg5v7";
+const char *__doc_igl_streamlines_init = R"igl_Qu8mg5v7(    // Given a mesh and a field the function computes the /data/ necessary for tracing the field'
+    // streamlines, and creates the initial /state/ for the tracing.
+    // Inputs:
+    //   V             #V by 3 list of mesh vertex coordinates
+    //   F             #F by 3 list of mesh faces
+    //   temp_field    #F by 3n list of the 3D coordinates of the per-face vectors
+    //                    (n-degrees stacked horizontally for each triangle)
+    //   treat_as_symmetric
+    //              if true, adds n symmetry directions to the field (N = 2n). Else N = n
+    //   percentage    [0-1] percentage of faces sampled
+    // Outputs:
+    //   data          struct containing topology information of the mesh and field
+    //   state         struct containing the state of the tracing )igl_Qu8mg5v7";
+const char *__doc_igl_streamlines_next = R"igl_Qu8mg5v7( // The function computes the next state for each point in the sample
+    //   V             #V by 3 list of mesh vertex coordinates
+    //   F             #F by 3 list of mesh faces
+    //   data          struct containing topology information
+    //   state         struct containing the state of the tracing )igl_Qu8mg5v7";
+const char *__doc_igl_triangle_triangle_adjacency = R"igl_Qu8mg5v7(// Constructs the triangle-triangle adjacency matrix for a given
+  // mesh (V,F).
+  //
+  // Templates:
+  //   Scalar derived type of eigen matrix for V (e.g. derived from
+  //     MatrixXd)
+  //   Index  derived type of eigen matrix for F (e.g. derived from
+  //     MatrixXi)
+  // Inputs:
+  //   F  #F by simplex_size list of mesh faces (must be triangles)
+  // Outputs:
+  //   TT   #F by #3 adjacent matrix, the element i,j is the id of the triangle adjacent to the j edge of triangle i
+  //   TTi  #F by #3 adjacent matrix, the element i,j is the id of edge of the triangle TT(i,j) that is adjacent with triangle i
+  // NOTE: the first edge of a triangle is [0,1] the second [1,2] and the third [2,3].
+  //       this convention is DIFFERENT from cotmatrix_entries.h
+  // Known bug: this should not need to take V as input.)igl_Qu8mg5v7";
+const char *__doc_igl_triangle_triangulate = R"igl_Qu8mg5v7(// Triangulate the interior of a polygon using the triangle library.
+    //
+    // Inputs:
+    //   V #V by 2 list of 2D vertex positions
+    //   E #E by 2 list of vertex ids forming unoriented edges of the boundary of the polygon
+    //   H #H by 2 coordinates of points contained inside holes of the polygon
+    //   flags  string of options pass to triangle (see triangle documentation)
+    // Outputs:
+    //   V2  #V2 by 2  coordinates of the vertives of the generated triangulation
+    //   F2  #F2 by 3  list of indices forming the faces of the generated triangulation
+    //
+    // TODO: expose the option to prevent Steiner points on the boundary
+    //)igl_Qu8mg5v7";
+const char *__doc_igl_unique = R"igl_Qu8mg5v7(// Act like matlab's [C,IA,IC] = unique(X)
+  //
+  // Templates:
+  //   T  comparable type T
+  // Inputs:
+  //   A  #A vector of type T
+  // Outputs:
+  //   C  #C vector of unique entries in A
+  //   IA  #C index vector so that C = A(IA);
+  //   IC  #A index vector so that A = C(IC);)igl_Qu8mg5v7";
+const char *__doc_igl_unique_rows = R"igl_Qu8mg5v7(// Act like matlab's [C,IA,IC] = unique(X,'rows')
+  //
+  // Templates:
+  //   DerivedA derived scalar type, e.g. MatrixXi or MatrixXd
+  //   DerivedIA derived integer type, e.g. MatrixXi
+  //   DerivedIC derived integer type, e.g. MatrixXi
+  // Inputs:
+  //   A  m by n matrix whose entries are to unique'd according to rows
+  // Outputs:
+  //   C  #C vector of unique rows in A
+  //   IA  #C index vector so that C = A(IA,:);
+  //   IC  #A index vector so that A = C(IC,:);)igl_Qu8mg5v7";
+const char *__doc_igl_unproject_onto_mesh = R"igl_Qu8mg5v7(// Unproject a screen location (using current opengl viewport, projection, and
+  // model view) to a 3D position _onto_ a given mesh, if the ray through the
+  // given screen location (x,y) _hits_ the mesh.
+  //
+  // Inputs:
+  //    pos        screen space coordinates
+  //    model      model matrix
+  //    proj       projection matrix
+  //    viewport   vieweport vector
+  //    V   #V by 3 list of mesh vertex positions
+  //    F   #F by 3 list of mesh triangle indices into V
+  // Outputs:
+  //    fid  id of the first face hit
+  //    bc  barycentric coordinates of hit
+  // Returns true if there's a hit)igl_Qu8mg5v7";
+const char *__doc_igl_upsample = R"igl_Qu8mg5v7(// Subdivide a mesh without moving vertices: loop subdivision but odd
+  // vertices stay put and even vertices are just edge midpoints
+  // 
+  // Templates:
+  //   MatV  matrix for vertex positions, e.g. MatrixXd
+  //   MatF  matrix for vertex positions, e.g. MatrixXi
+  // Inputs:
+  //   V  #V by dim  mesh vertices
+  //   F  #F by 3  mesh triangles
+  // Outputs:
+  //   NV new vertex positions, V is guaranteed to be at top
+  //   NF new list of face indices
+  //
+  // NOTE: V should not be the same as NV,
+  // NOTE: F should not be the same as NF, use other proto
+  //
+  // Known issues:
+  //   - assumes (V,F) is edge-manifold.)igl_Qu8mg5v7";
+const char *__doc_igl_winding_number = R"igl_Qu8mg5v7(// WINDING_NUMBER Compute the sum of solid angles of a triangle/tetrahedron
+  // described by points (vectors) V
+  //
+  // Templates:
+  //   dim  dimension of input
+  // Inputs:
+  //  V  n by 3 list of vertex positions
+  //  F  #F by 3 list of triangle indices, minimum index is 0
+  //  O  no by 3 list of origin positions
+  // Outputs:
+  //  S  no by 1 list of winding numbers
+  //
+  // 3d)igl_Qu8mg5v7";
+const char *__doc_igl_winding_number_3 = R"igl_Qu8mg5v7(// Inputs:
+  //   V  pointer to array containing #V by 3 vertex positions along rows,
+  //     given in column major order
+  //   n  number of mesh vertices
+  //   F  pointer to array containing #F by 3 face indices along rows,
+  //     given in column major order
+  //   m  number of faces
+  //   O  pointer to array containing #O by 3 query positions along rows,
+  //     given in column major order
+  //   no  number of origins
+  // Outputs:
+  //   S  no by 1 list of winding numbers)igl_Qu8mg5v7";
+const char *__doc_igl_winding_number_2 = R"igl_Qu8mg5v7(//// Only one evaluation origin
+  //template <typename DerivedF>
+  //IGL_INLINE void winding_number_3(
+  //  const double * V,
+  //  const int n,
+  //  const DerivedF * F,
+  //  const int m,
+  //  const double * O,
+  //  double * S);
+  // 2d)igl_Qu8mg5v7";
+const char *__doc_igl_writeMESH = R"igl_Qu8mg5v7(// save a tetrahedral volume mesh to a .mesh file
+  //
+  // Templates:
+  //   Scalar  type for positions and vectors (will be cast as double)
+  //   Index  type for indices (will be cast to int)
+  // Input:
+  //   mesh_file_name  path of .mesh file
+  //   V  double matrix of vertex positions  #V by 3
+  //   T  #T list of tet indices into vertex positions
+  //   F  #F list of face indices into vertex positions
+  //
+  // Known bugs: Holes and regions are not supported)igl_Qu8mg5v7";
+const char *__doc_igl_writeOBJ = R"igl_Qu8mg5v7(// Write a mesh in an ascii obj file
+  // Inputs:
+  //   str  path to outputfile
+  //   V  #V by 3 mesh vertex positions
+  //   F  #F by 3|4 mesh indices into V
+  //   CN #CN by 3 normal vectors
+  //   FN  #F by 3|4 corner normal indices into CN
+  //   TC  #TC by 2|3 texture coordinates
+  //   FTC #F by 3|4 corner texture coord indices into TC
+  // Returns true on success, false on error)igl_Qu8mg5v7";

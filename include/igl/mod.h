@@ -24,7 +24,7 @@ namespace igl
     const int base,
     Eigen::PlainObjectBase<DerivedB> & B);
   template <typename DerivedA>
-  IGL_INLINE Eigen::PlainObjectBase<DerivedA> mod(
+  IGL_INLINE DerivedA mod(
     const Eigen::PlainObjectBase<DerivedA> & A, const int base);
 }
 #ifndef IGL_STATIC_LIBRARY

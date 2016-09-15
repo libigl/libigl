@@ -27,12 +27,12 @@ namespace igl {
     const Eigen::PlainObjectBase<DerivedF> &F;
     const Eigen::PlainObjectBase<DerivedV> &PD1;
     const Eigen::PlainObjectBase<DerivedV> &PD2;
-    Eigen::PlainObjectBase<DerivedV> N;
+    DerivedV N;
 
   private:
     // internal
-    Eigen::PlainObjectBase<DerivedF> TT;
-    Eigen::PlainObjectBase<DerivedF> TTi;
+    DerivedF TT;
+    DerivedF TTi;
 
 
   private:
@@ -72,7 +72,7 @@ namespace igl {
     PD2(_PD2)
     {
       igl::per_face_normals(V,F,N);
-      igl::triangle_triangle_adjacency(V,F,TT,TTi);
+      igl::triangle_triangle_adjacency(F,TT,TTi);
     }
     inline void comb(Eigen::PlainObjectBase<DerivedV> &PD1out,
               Eigen::PlainObjectBase<DerivedV> &PD2out)

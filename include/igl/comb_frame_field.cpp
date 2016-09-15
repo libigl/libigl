@@ -24,7 +24,7 @@ IGL_INLINE void igl::comb_frame_field(const Eigen::PlainObjectBase<DerivedV> &V,
                                       Eigen::PlainObjectBase<DerivedP> &PD1_combed,
                                       Eigen::PlainObjectBase<DerivedP> &PD2_combed)
 {
-  Eigen::PlainObjectBase<DerivedV> B1, B2, B3;
+  DerivedV B1, B2, B3;
   igl::local_basis(V,F,B1,B2,B3);
 
   PD1_combed.resize(BIS1_combed.rows(),3);

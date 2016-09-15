@@ -281,7 +281,6 @@ IGL_INLINE bool igl::mosek::mosek_quadprog(
 {
   using namespace Eigen;
   using namespace std;
-  using namespace igl;
 
   // Q should be square
   assert(Q.rows() == Q.cols());

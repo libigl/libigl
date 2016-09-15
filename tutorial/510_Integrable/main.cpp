@@ -595,7 +595,7 @@ bool key_down(igl::viewer::Viewer& viewer, unsigned char key, int modifier)
     // Compute curl_minimizing matchings and curl
     printf("--Matchings and curl--\n");
     Eigen::MatrixXi match_ab, match_ba;  // matchings across interior edges
-    double avgCurl = igl::polyvector_field_matchings(two_pv, V, F, true, match_ab, match_ba, curl);
+    double avgCurl = igl::polyvector_field_matchings(two_pv, V, F, true, true, match_ab, match_ba, curl);
     double maxCurl = curl.maxCoeff();
     printf("curl -- max: %.5g, avg: %.5g\n", maxCurl,  avgCurl);
     // Compute singularities
@@ -633,7 +633,7 @@ int main(int argc, char *argv[])
   V_border = igl::is_border_vertex(V,F);
   igl::adjacency_list(F, VV);
   igl::vertex_triangle_adjacency(V,F,VF,VFi);
-  igl::triangle_triangle_adjacency(V,F,TT,TTi);
+  igl::triangle_triangle_adjacency(F,TT,TTi);
   igl::edge_topology(V,F,E,F2E,E2F);
 
   // Generate "subdivided" mesh for visualization of curl terms
@@ -662,7 +662,7 @@ int main(int argc, char *argv[])
   // Compute curl_minimizing matchings and curl
   Eigen::MatrixXi match_ab, match_ba;  // matchings across interior edges
   printf("--Matchings and curl--\n");
-  double avgCurl = igl::polyvector_field_matchings(two_pv_ori, V, F, true, match_ab, match_ba, curl_ori);
+  double avgCurl = igl::polyvector_field_matchings(two_pv_ori, V, F, true, true, match_ab, match_ba, curl_ori);
   double maxCurl = curl_ori.maxCoeff();
   printf("original curl -- max: %.5g, avg: %.5g\n", maxCurl,  avgCurl);
 

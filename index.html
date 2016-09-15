@@ -14,9 +14,9 @@
 
 <h1 id="libigl-asimplecgeometryprocessinglibrary">libigl - A simple C++ geometry processing library</h1>
 
-<figure>
-<img src="libigl-teaser.png" alt="" />
-</figure>
+<p><a href="https://travis-ci.org/libigl/libigl"><img src="https://travis-ci.org/libigl/libigl.svg?branch=master" alt="Build Status" /></a>
+<a href="https://ci.appveyor.com/project/danielepanozzo/libigl-6hjk1"><img src="https://ci.appveyor.com/api/projects/status/mf3t9rnhco0vhly8?svg=true" alt="Build status" /></a>
+<img src="libigl-teaser.png" alt="" /></p>
 
 <p><a href="https://github.com/libigl/libigl/">https://github.com/libigl/libigl/</a></p>
 
@@ -39,8 +39,8 @@ like MATLAB.</p>
 just include igl headers (e.g. <code>#include &lt;igl/cotmatrix.h&gt;</code>) and run. Each
 header file contains a single function (e.g. <code>igl/cotmatrix.h</code> contains
 <code>igl::cotmatrix()</code>). Most are tailored to operate on a generic triangle mesh
-stored in an n-by&#8211;3 matrix of vertex positions V and an m-by&#8211;3 matrix of
-triangle indices F.</p>
+stored in an n-by&#8211;3 matrix of vertex positions <code>V</code> and an m-by&#8211;3 matrix of
+triangle indices <code>F</code>.</p>
 
 <p><em>Optionally</em> the library may also be <a href="optional/">pre-compiled</a> into a statically
 linked library, for faster compile times with your projects. This only effects
@@ -50,6 +50,9 @@ the header-only default mode: (i.e. just include the headers you want to use).</
 <p>We use the <a href="http://eigen.tuxfamily.org">Eigen</a> library heavily in our code. Our
 group prototypes a lot in MATLAB, and we have a useful <a href="matlab-to-eigen.html">MATLAB to libigl+Eigen
 conversion table</a>.</p>
+
+<p>We regularly test compiling our library on Mac OS X with clang, Linux with gcc
+and Windows with Visual Studio 2015 Community Edition.</p>
 
 <h2 id="tutorial">Tutorial</h2>
 
@@ -168,7 +171,7 @@ and updating (i.e. committing) that change to the hash.</p>
 subrepos:</p>
 
 <pre><code class="bash">git pull
-git submodule update -- recursive
+git submodule update --recursive
 </code></pre>
 
 <h2 id="unittesting">Unit testing</h2>
@@ -199,7 +202,7 @@ BibTeX entry:</p>
   title = {{libigl}: A simple {C++} geometry processing library},
   author = {Alec Jacobson and Daniele Panozzo and others},
   note = {http://libigl.github.io/libigl/},
-  year = {2015},
+  year = {2016},
 }
 </code></pre>
 
@@ -210,23 +213,35 @@ Eurographics/ACM Symposium on Geometry Processing software award. Here are a
 few labs/companies/institutions using libigl:</p>
 
 <ul>
+<li><a href="http://www.adobe.com/technology/">Adobe Research</a></li>
+<li><a href="http://www.ea.com">Electronic Arts, Inc</a></li>
+<li><a href="http://meshconsultants.ca/">Mesh</a>, consultants, Canada</li>
+<li><a href="http://graphics.pixar.com/research/">Pixar Research</a></li>
 <li><a href="http://esotericsoftware.com/">Spine by Esoteric Software</a> is an animation tool dedicated to 2D characters.</li>
 <li>Columbia University, <a href="http://www.cs.columbia.edu/cg/">Columbia Computer Graphics Group</a>, USA</li>
 <li><a href="http://www.graphics.cornell.edu/">Cornell University</a>, USA</li>
+<li><a href="http://dcgi.felk.cvut.cz/">Czech Technical University in Prague</a>, Czech</li>
 <li>EPF Lausanne, <a href="http://lgg.epfl.ch/people.php">Computer Graphics and Geometry Laboratory</a>, Switzerland</li>
 <li>ETH Zurich, <a href="http://igl.ethz.ch/">Interactive Geometry Lab</a> and <a href="http://ait.inf.ethz.ch/">Advanced Technologies Lab</a>, Swizterland</li>
 <li>George Mason University, <a href="http://cs.gmu.edu/~ygingold/">CraGL</a>, USA</li>
-<li><a href="http://www.ust.hk/">Hong Kong University of Science and Technology</a>, USA</li>
+<li><a href="http://www.ust.hk/">Hong Kong University of Science and Technology</a>, Hong Kong</li>
 <li><a href="http://www.nii.ac.jp/en/">National Institute of Informatics</a>, Japan</li>
 <li>New York University, <a href="http://mrl.nyu.edu/">Media Research Lab</a>, USA</li>
 <li>NYUPoly, <a href="http://game.engineering.nyu.edu/">Game Innovation Lab</a>, USA</li>
-<li><a href="http://www.telecom-paristech.fr/en/formation-et-innovation-dans-le-numerique.html">Telecom ParisTech</a>, Paris, France</li>
+<li><a href="https://www.cg.tu-berlin.de">TU Berlin</a>, Germany</li>
 <li><a href="http://www.tudelft.nl/en/">TU Delft</a>, Netherlands</li>
+<li><a href="https://www.tuwien.ac.at/en/tuwien_home/">TU Wien</a>, Austria</li>
+<li><a href="http://www.telecom-paristech.fr/en/formation-et-innovation-dans-le-numerique.html">Telecom ParisTech</a>, Paris, France</li>
 <li><a href="http://mtm.ufsc.br/~leo/">Universidade Federal de Santa Catarina</a>, Brazil</li>
-<li><a href="http://www.usi.ch/en">Università della Svizzera Italiana</a>, Switzerland</li>
 <li><a href="http://vecg.cs.ucl.ac.uk/">University College London</a>, England</li>
+<li><a href="http://vis.berkeley.edu/">University of California Berkeley</a>, USA</li>
 <li><a href="http://www.cam.ac.uk/">University of Cambridge</a>, England</li>
 <li><a href="http://cg.cis.upenn.edu/">University of Pennsylvania</a>, USA</li>
+<li><a href="http://www.cs.utexas.edu/users/evouga/">University of Texas at Austin</a>, USA</li>
+<li><a href="https://www.csc.uvic.ca/Research/graphics/">University of Victoria</a>, Canada</li>
+<li><a href="http://www.usi.ch/en">Università della Svizzera Italiana</a>, Switzerland</li>
+<li><a href="http://www.univ-tlse3.fr/">Université Toulouse III Paul Sabatier</a>, France</li>
+<li><a href="http://www.math.zju.edu.cn/cagd/">Zhejiang University</a>, China</li>
 </ul>
 
 <h2 id="contact">Contact</h2>
@@ -248,8 +263,8 @@ page</a>.</p>
 
 <h2 id="copyright">Copyright</h2>
 
-<p>2015 Alec Jacobson, Daniele Panozzo, Christian Schüller, Olga Diamanti, Qingnan
-Zhou, Nico Pietroni, Stefan Brugger, Kenshi Takayama, Wenzel Jakob, Nikolas De
+<p>2016 Alec Jacobson, Daniele Panozzo, Christian Schüller, Olga Diamanti, Qingnan
+Zhou, Sebastian Koch, Nico Pietroni, Stefan Brugger, Kenshi Takayama, Wenzel Jakob, Nikolas De
 Giorgis, Luigi Rocca, Leonardo Sacht, Kevin Walliman, Olga Sorkine-Hornung, and others.</p>
 
 <p>Please see individual files for appropriate copyright notices.</p>

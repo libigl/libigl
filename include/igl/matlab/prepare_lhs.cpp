@@ -14,22 +14,17 @@ IGL_INLINE void igl::matlab::prepare_lhs_double(
 {
   using namespace std;
   using namespace Eigen;
-  plhs[0] = mxCreateDoubleMatrix(V.rows(),V.cols(), mxREAL);
+  const int m = V.rows();
+  const int n = V.cols();
+  plhs[0] = mxCreateDoubleMatrix(m,n, mxREAL);
   double * Vp = mxGetPr(plhs[0]);
-
-  typedef typename DerivedV::Scalar Scalar;
-  const Scalar * V_data;
-  Matrix<Scalar, DerivedV::ColsAtCompileTime, DerivedV::RowsAtCompileTime, RowMajor> VT;
-  if(DerivedV::IsRowMajor)
+  for(int i = 0;i<m;i++)
   {
-    VT = V.transpose();
-    V_data = VT.data();
-  }else
-  {
-    V_data = V.data();
+    for(int j = 0;j<n;j++)
+    {
+      Vp[i+m*j] = V(i,j);
+    }
   }
-
-  copy(V_data,V_data+V.size(),Vp);
 }
 
 template <typename DerivedV>
@@ -39,22 +34,17 @@ IGL_INLINE void igl::matlab::prepare_lhs_logical(
 {
   using namespace std;
   using namespace Eigen;
-  plhs[0] = mxCreateLogicalMatrix(V.rows(),V.cols());
+  const int m = V.rows();
+  const int n = V.cols();
+  plhs[0] = mxCreateLogicalMatrix(m,n);
   mxLogical * Vp = static_cast<mxLogical*>(mxGetData(plhs[0]));
-
-  typedef typename DerivedV::Scalar Scalar;
-  const Scalar * V_data;
-  Matrix<Scalar, DerivedV::ColsAtCompileTime, DerivedV::RowsAtCompileTime, RowMajor> VT;
-  if(DerivedV::IsRowMajor)
+  for(int i = 0;i<m;i++)
   {
-    VT = V.transpose();
-    V_data = VT.data();
-  }else
-  {
-    V_data = V.data();
+    for(int j = 0;j<n;j++)
+    {
+      Vp[i+m*j] = V(i,j);
+    }
   }
-
-  copy(V_data,V_data+V.size(),Vp);
 }
 
 template <typename DerivedV>
@@ -63,9 +53,44 @@ IGL_INLINE void igl::matlab::prepare_lhs_index(
   mxArray *plhs[])
 {
   // Treat indices as reals
-  
   const auto Vd = (V.template cast<double>().array()+1).eval();
   return prepare_lhs_double(Vd,plhs);
+}
+
+template <typename Vtype>
+IGL_INLINE void igl::matlab::prepare_lhs_double(
+  const Eigen::SparseMatrix<Vtype> & M,
+  mxArray *plhs[])
+{
+  using namespace std;
+  const int m = M.rows();
+  const int n = M.cols();
+  // THIS WILL NOT WORK FOR ROW-MAJOR
+  assert(n==M.outerSize());
+  const int nzmax = M.nonZeros();
+  plhs[0] = mxCreateSparse(m, n, nzmax, mxREAL);
+  mxArray * mx_data = plhs[0];
+  // Copy data immediately
+  double * pr = mxGetPr(mx_data);
+  mwIndex * ir = mxGetIr(mx_data);
+  mwIndex * jc = mxGetJc(mx_data);
+
+  // Iterate over outside
+  int k = 0;
+  for(int j=0; j<M.outerSize();j++)
+  {
+    jc[j] = k;
+    // Iterate over inside
+    for(typename Eigen::SparseMatrix<Vtype>::InnerIterator it (M,j); it; ++it)
+    {
+      // copy (cast to double)
+      pr[k] = it.value();
+      ir[k] = it.row();
+      k++;
+    }
+  }
+  jc[M.outerSize()] = k;
+
 }
 
 #ifdef IGL_STATIC_LIBRARY
@@ -75,4 +100,8 @@ template void igl::matlab::prepare_lhs_double<Eigen::Matrix<double, -1, -1, 0, -
 template void igl::matlab::prepare_lhs_index<Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, mxArray_tag**);
 template void igl::matlab::prepare_lhs_logical<Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, mxArray_tag**);
 template void igl::matlab::prepare_lhs_double<Eigen::Matrix<double, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, mxArray_tag**);
+template void igl::matlab::prepare_lhs_logical<Eigen::Matrix<bool, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<bool, -1, 1, 0, -1, 1> > const&, mxArray_tag**);
+template void igl::matlab::prepare_lhs_index<Eigen::Matrix<int, -1, 3, 1, -1, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 1, -1, 3> > const&, mxArray_tag**);
+template void igl::matlab::prepare_lhs_double<Eigen::Matrix<double, -1, 3, 1, -1, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 1, -1, 3> > const&, mxArray_tag**);
+template void igl::matlab::prepare_lhs_double<Eigen::Matrix<int, 1, -1, 1, 1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<int, 1, -1, 1, 1, -1> > const&, mxArray_tag**);
 #endif

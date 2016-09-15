@@ -6,6 +6,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "edge_lengths.h"
+#include "parallel_for.h"
 #include <iostream>
 
 template <typename DerivedV, typename DerivedF, typename DerivedL>
@@ -16,10 +17,6 @@ IGL_INLINE void igl::edge_lengths(
 {
   using namespace std;
   const int m = F.rows();
-  // Minimum number of iterms per openmp thread
-#ifndef IGL_OMP_MIN_VALUE
-#  define IGL_OMP_MIN_VALUE 1000
-#endif
   switch(F.cols())
   {
     case 2:
@@ -35,29 +32,33 @@ IGL_INLINE void igl::edge_lengths(
     {
       L.resize(m,3);
       // loop over faces
-      #pragma omp parallel for if (m>IGL_OMP_MIN_VALUE)
-      for(int i = 0;i<m;i++)
-      {
-        L(i,0) = (V.row(F(i,1))-V.row(F(i,2))).norm();
-        L(i,1) = (V.row(F(i,2))-V.row(F(i,0))).norm();
-        L(i,2) = (V.row(F(i,0))-V.row(F(i,1))).norm();
-      }
+      parallel_for(
+        m,
+        [&V,&F,&L](const int i)
+        {
+          L(i,0) = (V.row(F(i,1))-V.row(F(i,2))).norm();
+          L(i,1) = (V.row(F(i,2))-V.row(F(i,0))).norm();
+          L(i,2) = (V.row(F(i,0))-V.row(F(i,1))).norm();
+        },
+        1000);
       break;
     }
     case 4:
     {
       L.resize(m,6);
       // loop over faces
-      #pragma omp parallel for if (m>IGL_OMP_MIN_VALUE)
-      for(int i = 0;i<m;i++)
-      {
-        L(i,0) = (V.row(F(i,3))-V.row(F(i,0))).norm();
-        L(i,1) = (V.row(F(i,3))-V.row(F(i,1))).norm();
-        L(i,2) = (V.row(F(i,3))-V.row(F(i,2))).norm();
-        L(i,3) = (V.row(F(i,1))-V.row(F(i,2))).norm();
-        L(i,4) = (V.row(F(i,2))-V.row(F(i,0))).norm();
-        L(i,5) = (V.row(F(i,0))-V.row(F(i,1))).norm();
-      }
+      parallel_for(
+        m,
+        [&V,&F,&L](const int i)
+        {
+          L(i,0) = (V.row(F(i,3))-V.row(F(i,0))).norm();
+          L(i,1) = (V.row(F(i,3))-V.row(F(i,1))).norm();
+          L(i,2) = (V.row(F(i,3))-V.row(F(i,2))).norm();
+          L(i,3) = (V.row(F(i,1))-V.row(F(i,2))).norm();
+          L(i,4) = (V.row(F(i,2))-V.row(F(i,0))).norm();
+          L(i,5) = (V.row(F(i,0))-V.row(F(i,1))).norm();
+        },
+        1000);
       break;
     }
     default:
@@ -96,4 +97,9 @@ template void igl::edge_lengths<Eigen::Matrix<double, -1, 3, 1, -1, 3>, Eigen::M
 template void igl::edge_lengths<Eigen::Matrix<float, -1, 3, 1, -1, 3>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<float, -1, 3, 1, -1, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<float, -1, 3, 1, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<float, -1, 3, 1, -1, 3> >&);
 template void igl::edge_lengths<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<double, -1, 6, 0, -1, 6> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 6, 0, -1, 6> >&);
 template void igl::edge_lengths<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 4, 0, -1, 4>, Eigen::Matrix<double, -1, 3, 0, -1, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 4, 0, -1, 4> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> >&);
+template void igl::edge_lengths<Eigen::Matrix<double, -1, 3, 1, -1, 3>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, 3, 0, -1, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 1, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> >&);
+template void igl::edge_lengths<Eigen::Matrix<float, -1, 3, 1, -1, 3>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<float, -1, 3, 0, -1, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<float, -1, 3, 1, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<float, -1, 3, 0, -1, 3> >&);
+template void igl::edge_lengths<Eigen::Matrix<float, -1, 3, 1, -1, 3>, Eigen::Matrix<unsigned int, -1, -1, 1, -1, -1>, Eigen::Matrix<float, -1, 3, 0, -1, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<float, -1, 3, 1, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<unsigned int, -1, -1, 1, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<float, -1, 3, 0, -1, 3> >&);
+template void igl::edge_lengths<Eigen::Matrix<double, -1, 3, 1, -1, 3>, Eigen::Matrix<unsigned int, -1, -1, 1, -1, -1>, Eigen::Matrix<double, -1, 3, 0, -1, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 1, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<unsigned int, -1, -1, 1, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> >&);
+template void igl::edge_lengths<Eigen::Matrix<double, -1, 3, 1, -1, 3>, Eigen::Matrix<int, -1, 3, 1, -1, 3>, Eigen::Matrix<double, -1, 3, 0, -1, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 1, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 1, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> >&);
 #endif

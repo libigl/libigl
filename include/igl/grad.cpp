@@ -14,9 +14,8 @@ IGL_INLINE void igl::grad(const Eigen::PlainObjectBase<DerivedV>&V,
                      const Eigen::PlainObjectBase<DerivedF>&F,
                     Eigen::SparseMatrix<typename DerivedV::Scalar> &G)
 {
-  Eigen::PlainObjectBase<DerivedV > eperp21, eperp13;
-  eperp21.resize(F.rows(),3);
-  eperp13.resize(F.rows(),3);
+  Eigen::Matrix<typename DerivedV::Scalar,Eigen::Dynamic,3> 
+    eperp21(F.rows(),3), eperp13(F.rows(),3);
 
   for (int i=0;i<F.rows();++i)
   {

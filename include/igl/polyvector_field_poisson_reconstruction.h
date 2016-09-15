@@ -41,6 +41,13 @@ namespace igl {
                                                             Eigen::PlainObjectBase<DerivedSF> &scalars,
                                                             Eigen::PlainObjectBase<DerivedS> &sol3D_recon,
                                                             Eigen::PlainObjectBase<DerivedE> &max_error );
+  //Wrappers with less output
+  template <typename DerivedV, typename DerivedF, typename DerivedSF, typename DerivedS>
+  IGL_INLINE void polyvector_field_poisson_reconstruction(
+                                                            const Eigen::PlainObjectBase<DerivedV> &Vcut,
+                                                            const Eigen::PlainObjectBase<DerivedF> &Fcut,
+                                                            const Eigen::PlainObjectBase<DerivedS> &sol3D_combed,
+                                                            Eigen::PlainObjectBase<DerivedSF> &scalars);
 
 
 };

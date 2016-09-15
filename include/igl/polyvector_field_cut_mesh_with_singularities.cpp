@@ -91,7 +91,7 @@ IGL_INLINE void igl::polyvector_field_cut_mesh_with_singularities(
   igl::adjacency_list(F, VV);
 
   Eigen::MatrixXi TT, TTi;
-  igl::triangle_triangle_adjacency(V,F,TT,TTi);
+  igl::triangle_triangle_adjacency(F,TT,TTi);
 
   igl::polyvector_field_cut_mesh_with_singularities(V, F, VF, VV, TT, TTi, singularities, cuts);
 

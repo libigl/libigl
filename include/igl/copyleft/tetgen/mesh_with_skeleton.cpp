@@ -32,7 +32,6 @@ IGL_INLINE bool igl::copyleft::tetgen::mesh_with_skeleton(
   Eigen::MatrixXi & FF)
 {
   using namespace Eigen;
-  using namespace igl;
   using namespace std;
   const string eff_tetgen_flags = 
     (tetgen_flags.length() == 0?DEFAULT_TETGEN_FLAGS:tetgen_flags);

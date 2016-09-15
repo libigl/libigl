@@ -34,7 +34,7 @@ IGL_INLINE void igl::matrix_to_list(
 {
   using namespace std;
   V.resize(M.size());
-  // loop over rows
+  // loop over cols then rows
   for(int j = 0;j<M.cols();j++)
   {
     for(int i = 0;i<M.rows();i++)
@@ -67,4 +67,5 @@ template void igl::matrix_to_list<Eigen::Matrix<double, -1, 1, 0, -1, 1> >(Eigen
 template void igl::matrix_to_list<Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, std::vector<Eigen::Matrix<int, -1, -1, 0, -1, -1>::Scalar, std::allocator<Eigen::Matrix<int, -1, -1, 0, -1, -1>::Scalar> >&);
 template void igl::matrix_to_list<Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, std::vector<Eigen::Matrix<int, -1, 1, 0, -1, 1>::Scalar, std::allocator<Eigen::Matrix<int, -1, 1, 0, -1, 1>::Scalar> >&);
 template void igl::matrix_to_list<Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, std::vector<std::vector<Eigen::Matrix<int, -1, 1, 0, -1, 1>::Scalar, std::allocator<Eigen::Matrix<int, -1, 1, 0, -1, 1>::Scalar> >, std::allocator<std::vector<Eigen::Matrix<int, -1, 1, 0, -1, 1>::Scalar, std::allocator<Eigen::Matrix<int, -1, 1, 0, -1, 1>::Scalar> > > >&);
+template void igl::matrix_to_list<Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, std::vector<Eigen::Matrix<double, -1, -1, 0, -1, -1>::Scalar, std::allocator<Eigen::Matrix<double, -1, -1, 0, -1, -1>::Scalar> >&);
 #endif

@@ -6,7 +6,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "quadprog.h"
-
+#include <vector>
 /*
  FILE eiquadprog.hh
  
@@ -307,7 +307,7 @@ IGL_INLINE bool igl::copyleft::quadprog(
   VectorXi A(m + p), A_old(m + p), iai(m + p);
   int q;
   int iq, iter = 0;
-  bool iaexcl[m + p];
+  std::vector<bool> iaexcl(m + p);
  	
   me = p; /* number of equality constraints */
   mi = m; /* number of inequality constraints */

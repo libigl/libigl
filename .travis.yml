@@ -1,0 +1,62 @@
+language: cpp
+sudo: false
+matrix:
+  include:
+    - os: linux
+      compiler: gcc-4.8.1
+      script:
+        - git submodule update --init --recursive
+        - mkdir external/nanogui/ext/glfw/include/GL
+        - wget -P external/nanogui/ext/glfw/include/GL http://www.opengl.org/registry/api/GL/glcorearb.h
+        - cd python
+        - mkdir build
+        - cd build
+        - cmake -DCMAKE_CXX_COMPILER=g++-4.8 -DCMAKE_C_COMPILER=gcc-4.8 -DLIBIGL_WITH_EMBREE=OFF -DLIBIGL_USE_STATIC_LIBRARY=ON ../
+        - make -j 2
+        - cd ../../
+        - cd tutorial
+        - mkdir build
+        - cd build
+        - cmake -DLIBIGL_USE_STATIC_LIBRARY=ON -DCMAKE_CXX_COMPILER=g++-4.8 -DCMAKE_C_COMPILER=gcc-4.8 ../
+        - make -j 2
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - george-edison55-precise-backports
+          packages:
+            - xorg-dev
+            - libglu1-mesa-dev
+            - g++-4.8
+            - cmake
+            - cmake-data
+            - libblas-dev
+            - liblapack-dev
+    #         - binutils
+    #         - libx11-dev
+    #         - mesa-common-dev
+    #         - libgl1-mesa-dev
+    #         - libglu1-mesa-dev
+    #         - libxrandr-dev
+    #         - libxi-dev
+    #         - libxmu-dev
+    #         - libblas-dev
+    #         - xorg-dev
+    - os: osx
+      compiler: clang
+      script:
+        - brew update
+        - brew upgrade cmake
+        - brew upgrade cgal
+        - git submodule update --init --recursive
+        - cd python
+        - mkdir build
+        - cd build
+        - cmake ../
+        - make -j 2
+        - cd ../../
+        - cd tutorial
+        - mkdir build
+        - cd build
+        - cmake -DLIBIGL_USE_STATIC_LIBRARY=ON ../
+        - make -j 2

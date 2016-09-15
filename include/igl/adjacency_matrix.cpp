@@ -11,13 +11,14 @@
 
 #include <vector>
 
-template <typename T>
+template <typename DerivedF, typename T>
 IGL_INLINE void igl::adjacency_matrix(
-  const Eigen::MatrixXi & F, 
+  const Eigen::PlainObjectBase<DerivedF> & F, 
   Eigen::SparseMatrix<T>& A)
 {
   using namespace std;
   using namespace Eigen;
+  typedef typename DerivedF::Scalar Index;
 
   typedef Triplet<T> IJV;
   vector<IJV > ijv;
@@ -29,14 +30,14 @@ IGL_INLINE void igl::adjacency_matrix(
     for(int j = 0;j<F.cols();j++)
     {
       // Get indices of edge: s --> d
-      int s = F(i,j);
-      int d = F(i,(j+1)%F.cols());
+      Index s = F(i,j);
+      Index d = F(i,(j+1)%F.cols());
       ijv.push_back(IJV(s,d,1));
       ijv.push_back(IJV(d,s,1));
     }
   }
 
-  const int n = F.maxCoeff()+1;
+  const Index n = F.maxCoeff()+1;
   A.resize(n,n);
   switch(F.cols())
   {
@@ -65,6 +66,6 @@ IGL_INLINE void igl::adjacency_matrix(
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
-template void igl::adjacency_matrix<int>(Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, Eigen::SparseMatrix<int, 0, int>&);
-template void igl::adjacency_matrix<double>(Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, Eigen::SparseMatrix<double, 0, int>&);
+template void igl::adjacency_matrix<Eigen::Matrix<int, -1, -1, 0, -1, -1>, double>(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::SparseMatrix<double, 0, int>&);
+template void igl::adjacency_matrix<Eigen::Matrix<int, -1, -1, 0, -1, -1>, int>(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::SparseMatrix<int, 0, int>&);
 #endif

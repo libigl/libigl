@@ -1,6 +1,6 @@
 // This file is part of libigl, a simple c++ geometry processing library.
 // 
-// Copyright (C) 2015 Alec Jacobson <alecjacobson@gmail.com>
+// Copyright (C) 2016 Alec Jacobson <alecjacobson@gmail.com>
 // 
 // This Source Code Form is subject to the terms of the Mozilla Public License 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
@@ -9,7 +9,8 @@
 #include "collapse_edge.h"
 #include "edge_flaps.h"
 #include "remove_unreferenced.h"
-#include "max_faces_stopping_condition.h"
+#include "slice_mask.h"
+#include "connect_boundary_to_infinity.h"
 #include <iostream>
 
 IGL_INLINE bool igl::decimate(
@@ -17,8 +18,12 @@ IGL_INLINE bool igl::decimate(
   const Eigen::MatrixXi & F,
   const size_t max_m,
   Eigen::MatrixXd & U,
-  Eigen::MatrixXi & G)
+  Eigen::MatrixXi & G,
+  Eigen::VectorXi & J)
 {
+  // Original number of faces
+  const int orig_m = F.rows();
+  // Tracking number of faces
   int m = F.rows();
   const auto & shortest_edge_and_midpoint = [](
     const int e,
@@ -34,13 +39,47 @@ IGL_INLINE bool igl::decimate(
     cost = (V.row(E(e,0))-V.row(E(e,1))).norm();
     p = 0.5*(V.row(E(e,0))+V.row(E(e,1)));
   };
-  return decimate(
-    V,
-    F,
+  typedef Eigen::MatrixXd DerivedV;
+  typedef Eigen::MatrixXi DerivedF;
+  DerivedV VO;
+  DerivedF FO;
+  igl::connect_boundary_to_infinity(V,F,VO,FO);
+  const auto & max_non_infinite_faces_stopping_condition = 
+    [max_m,orig_m,&m](
+      const Eigen::MatrixXd &,
+      const Eigen::MatrixXi &,
+      const Eigen::MatrixXi &,
+      const Eigen::VectorXi &,
+      const Eigen::MatrixXi &,
+      const Eigen::MatrixXi &,
+      const std::set<std::pair<double,int> > &,
+      const std::vector<std::set<std::pair<double,int> >::iterator > &,
+      const Eigen::MatrixXd &,
+      const int,
+      const int,
+      const int,
+      const int f1,
+      const int f2) -> bool
+    {
+      // Only subtract if we're collapsing a real face
+      if(f1 < orig_m) m-=1;
+      if(f2 < orig_m) m-=1;
+      return m<=(int)max_m;
+    };
+  bool ret = decimate(
+    VO,
+    FO,
     shortest_edge_and_midpoint,
-    max_faces_stopping_condition(m,max_m),
+    max_non_infinite_faces_stopping_condition,
     U,
-    G);
+    G,
+    J);
+  const Eigen::Array<bool,Eigen::Dynamic,1> keep = (J.array()<orig_m);
+  igl::slice_mask(Eigen::MatrixXi(G),keep,1,G);
+  igl::slice_mask(Eigen::VectorXi(J),keep,1,J);
+  Eigen::VectorXi _1;
+  igl::remove_unreferenced(Eigen::MatrixXd(U),Eigen::MatrixXi(G),U,G,_1);
+  return ret;
 }
 
 IGL_INLINE bool igl::decimate(
@@ -72,7 +111,8 @@ IGL_INLINE bool igl::decimate(
       const int,
       const int)> & stopping_condition,
   Eigen::MatrixXd & U,
-  Eigen::MatrixXi & G)
+  Eigen::MatrixXi & G,
+  Eigen::VectorXi & J)
 {
   using namespace Eigen;
   using namespace std;
@@ -132,6 +172,7 @@ IGL_INLINE bool igl::decimate(
   }
   // remove all IGL_COLLAPSE_EDGE_NULL faces
   MatrixXi F2(F.rows(),3);
+  J.resize(F.rows());
   int m = 0;
   for(int f = 0;f<F.rows();f++)
   {
@@ -140,10 +181,13 @@ IGL_INLINE bool igl::decimate(
       F(f,1) != IGL_COLLAPSE_EDGE_NULL || 
       F(f,2) != IGL_COLLAPSE_EDGE_NULL)
     {
-      F2.row(m++) = F.row(f);
+      F2.row(m) = F.row(f);
+      J(m) = f;
+      m++;
     }
   }
   F2.conservativeResize(m,F2.cols());
+  J.conservativeResize(m);
   VectorXi _1;
   remove_unreferenced(V,F2,U,G,_1);
   return clean_finish;

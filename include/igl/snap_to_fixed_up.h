@@ -24,9 +24,10 @@ namespace igl
   //   s the resulting rotation (as quaternion)
   //
   // See also: two_axis_valuator_fixed_up
+  template <typename Qtype>
   IGL_INLINE void snap_to_fixed_up(
-    const Eigen::Quaterniond & q,
-    Eigen::Quaterniond & s);
+    const Eigen::Quaternion<Qtype> & q,
+    Eigen::Quaternion<Qtype> & s);
 }
 
 #ifndef IGL_STATIC_LIBRARY

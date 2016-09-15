@@ -100,7 +100,6 @@ IGL_INLINE bool igl::copyleft::tetgen::tetgenio_to_tetmesh(
   Eigen::PlainObjectBase<DerivedT>& T,
   Eigen::PlainObjectBase<DerivedF>& F)
 {
-  using namespace igl;
   using namespace std;
   vector<vector<REAL> > vV;
   vector<vector<int> > vT;

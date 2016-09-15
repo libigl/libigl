@@ -77,6 +77,7 @@ lecture notes links to a cross-platform example application.
     * [508 Conjugate vector fields](#conjugatevectorfields)
     * [509 Planarization](#planarization)
     * [510 Integrable PolyVector Fields](#integrable)
+    * [511 General N-PolyVector Fields](#npolyvectorfields_general)
 * [Chapter 6: External libraries](#chapter6:externallibraries)
     * [601 State serialization](#stateserialization)
     * [602 Mixing Matlab code](#mixingmatlabcode)
@@ -87,7 +88,7 @@ lecture notes links to a cross-platform example application.
     * [604 Triangulation of closed polygons](#triangulationofclosedpolygons)
     * [605 Tetrahedralization of closed surfaces](#tetrahedralizationofclosedsurfaces)
     * [606 Baking ambient occlusion](#bakingambientocclusion)
-    * [607 Picking vertices and faces](#pickingverticesandfaces)
+    * [607 Screen Capture](#screencapture)
     * [608 Locally Injective Maps](#locallyinjectivemaps)
     * [609 Boolean Operations on Meshes](#booleanoperationsonmeshes)
     * [610 CSG Tree](#csgtree)
@@ -97,6 +98,10 @@ lecture notes links to a cross-platform example application.
     * [703 Mesh Decimation](#meshdecimation)
     * [704 Signed Distances](#signeddistances)
     * [705 Marching Cubes](#marchingcubes)
+    * [706 Facet Orientation](#facetorientation)
+    * [707 Swept Volume](#sweptvolume)
+    * [708 Picking Vertices and Faces](#pickingverticesandfaces)
+    * [709 Vector Field Visualization](#vectorfieldvisualizer)
 * [Chapter 8: Outlook for continuing development](#future)
 
 # Chapter 1 [chapter1:introductiontolibigl]
@@ -108,7 +113,7 @@ concepts of libigl and introduce a simple mesh viewer that allows to
 visualize a surface mesh and its attributes. All the tutorial examples are
 cross-platform and can be compiled on MacOSX, Linux and Windows.
 
-## libigl design principles [libigldesignprinciples]
+## [libigl design principles](#libigldesignprinciples) [libigldesignprinciples]
 
 Before getting into the examples, we summarize the main design principles in
 libigl:
@@ -187,7 +192,7 @@ compile CoMISo.
 *Note 2*: CoMISo requires a blas implementation. We use the built-in blas in macosx and linux, and we bundle a precompiled binary for VS2015 64 bit. Do NOT compile the tutorials
 in 32 bit on windows.
 
-## Mesh representation [meshrepresentation]
+## [Mesh representation](#meshrepresentation) [meshrepresentation]
 
 libigl uses the [Eigen](http://eigen.tuxfamily.org/) library to encode vector
 and matrices. We suggest that you keep the
@@ -239,7 +244,7 @@ igl::writeOBJ("cube.obj",V,F);
 [Example 101](101_FileIO/main.cpp) contains a simple mesh
 converter from OFF to OBJ format.
 
-## Visualizing surfaces [visualizingsurfaces]
+## [Visualizing surfaces](#visualizingsurfaces) [visualizingsurfaces]
 
 Libigl provides an glfw-based OpenGL 3.2 viewer to visualize surfaces, their
 properties and additional debugging informations.
@@ -262,7 +267,7 @@ int main(int argc, char *argv[])
   igl::readOFF(TUTORIAL_SHARED_PATH "/bunny.off", V, F);
 
   // Plot the mesh
-  igl::Viewer viewer;
+  igl::viewer::Viewer viewer;
   viewer.data.set_mesh(V, F);
   viewer.launch();
 }
@@ -278,7 +283,7 @@ Please see the documentation in
 ![([Example 102](102_DrawMesh/main.cpp)) loads and draws a
 mesh.](images/102_DrawMesh.png)
 
-## Interaction with keyboard and mouse [interactionwithkeyboardandmouse]
+## [Interaction with keyboard and mouse](#interactionwithkeyboardandmouse) [interactionwithkeyboardandmouse]
 
 Keyboard and mouse events triggers callbacks that can be registered in the
 viewer. The viewer supports the following callbacks:
@@ -299,7 +304,7 @@ stages of an algorithm, as demonstrated in [Example 103](103_Events/main.cpp), w
 the keyboard callback changes the visualized mesh depending on the key pressed:
 
 ```cpp
-bool key_down(igl::Viewer& viewer, unsigned char key, int modifier)
+bool key_down(igl::viewer::Viewer& viewer, unsigned char key, int modifier)
 {
   if (key == '1')
   {
@@ -334,7 +339,7 @@ The viewer can be extended using plugins, which are classes that implements all
 the viewer's callbacks. See the
 [Viewer_plugin](../include/igl/viewer/ViewerPlugin.h) for more details.
 
-## Scalar field visualization [scalarfieldvisualization]
+## [Scalar field visualization](#scalarfieldvisualization) [scalarfieldvisualization]
 
 Colors and normals can be associated to faces or vertices using the
 set_colors function:
@@ -371,7 +376,7 @@ color field.](images/104_Colors.png)
 types and can be easily reused for many different tasks.  Not committing to
 heavy data structures types favors simplicity, ease of use and reusability.
 
-## Overlays [overlays]
+## [Overlays](#overlays) [overlays]
 
 In addition to plotting the surface, the viewer supports the visualization of points, lines and text labels: these overlays can be very helpful while developing geometric processing algorithms to plot debug informations.
 
@@ -407,9 +412,14 @@ Eigen::Vector3d M = V.colwise().maxCoeff();
 ![([Example 105](105_Overlays/main.cpp)) The bounding box of a mesh is shown
 using overlays.](images/105_Overlays.png)
 
-## Viewer Menu [viewermenu]
+## [Viewer Menu](#viewermenu) [viewermenu]
 
-As of version 1.2 the viewer uses a new menu and completely replaces [AntTweakBar](http://anttweakbar.sourceforge.net/doc/). It is based on the open-source projects [nanovg](https://github.com/memononen/nanovg) and [nanogui](https://github.com/wjakob/nanogui). To extend the default menu of the viewer and to expose more user defined variables you have to define a callback function:
+As of version 1.2 the viewer uses a new menu and completely replaces
+[AntTweakBar](http://anttweakbar.sourceforge.net/doc/). It is based on the
+open-source projects [nanovg](https://github.com/memononen/nanovg) and
+[nanogui](https://github.com/wjakob/nanogui). To extend the default menu of the
+viewer and to expose more user defined variables you have to define a callback
+function:
 
 ```cpp
 igl::viewer::Viewer viewer;
@@ -426,13 +436,13 @@ viewer.callback_init = [&](igl::viewer::Viewer& viewer)
 
   // Expose a variable directly ...
   viewer.ngui->addVariable("float",floatVariable);
-  
+
   // Expose an enumaration type
   viewer.ngui->addVariable<Orientation>("Direction",dir)->setItems({"Up","Down","Left","Right"});
 
   // Add a button
   viewer.ngui->addButton("Print Hello",[](){ std::cout << "Hello\n"; });
-  
+
   // call to generate menu
   viewer.ngui->layout();
   return false;
@@ -858,6 +868,7 @@ functionality as common Matlab functions.
 | `igl::histc`             | Counting occurrences for building a histogram |
 | `igl::hsv_to_rgb`        | Convert HSV colors to RGB (cf. Matlab's `hsv2rgb`) |
 | `igl::intersect`         | Set intersection of matrix elements. |
+| `igl::isdiag`            | Determine whether matrix is diagonal |
 | `igl::jet`               | Quantized colors along the rainbow. |
 | `igl::median`            | Compute the median per column |
 | `igl::mode`              | Compute the mode per column |
@@ -1757,7 +1768,7 @@ genus. They initially cut the mesh in multiple patches that can be separately pa
 
 4. **Global seamless parametrization**: these are global parametrization algorithm that hides the seams, making the parametrization "continuous", under specific assumptions that we will discuss later.
 
-## Harmonic parametrization [harmonicparametrization]
+## [Harmonic parametrization](#harmonicparametrization) [harmonicparametrization]
 
 Harmonic parametrization [#eck_2005][] is a single patch, fixed boundary parametrization
 algorithm that computes the 2D coordinates of the flattened mesh as two
@@ -1797,7 +1808,7 @@ mesh ([Example 501](501_HarmonicParam/main.cpp)).
 mesh with texture, (right) UV parametrization with
 texture](images/501_HarmonicParam.png)
 
-## Least squares conformal maps [leastsquareconformalmaps]
+## [Least squares conformal maps](#leastsquareconformalmaps) [leastsquareconformalmaps]
 
 Least squares conformal maps parametrization [#levy_2002][] minimizes the
 conformal (angular) distortion of the parametrization. Differently from
@@ -1811,11 +1822,11 @@ which can be rewritten in matrix form as [#mullen_2008][]:
 
 \\[ E_{LSCM}(\mathbf{u},\mathbf{v}) = \frac{1}{2} [\mathbf{u},\mathbf{v}]^t (L_c - 2A) [\mathbf{u},\mathbf{v}] \\]
 
-where $L_c$ is the cotangent Laplacian matrix and A is a matrix such that \\(
-[\mathbf{u},\mathbf{v}]^t A  [\mathbf{u},\mathbf{v}]$ is equal to the
-[vector area](http://en.wikipedia.org/wiki/Vector_area) of the mesh.
+where $L_c$ is the cotangent Laplacian matrix and $A$ is a matrix such that
+$[\mathbf{u},\mathbf{v}]^t A  [\mathbf{u},\mathbf{v}]$ is equal to the [vector
+area](http://en.wikipedia.org/wiki/Vector_area) of the mesh.
 
-Using libigl, this matrix energy can be written in a few lines of codes. The
+Using libigl, this matrix energy can be written in a few lines of code. The
 cotangent matrix can be computed using `igl::cotmatrix`:
 
 ```cpp
@@ -1839,7 +1850,7 @@ SparseMatrix<double> A;
 igl::vector_area_matrix(F,A);
 ```
 
-The final energy matrix is the sum of these two matrices. Note that in this
+The final energy matrix is $L_{flat} - 2A$. Note that in this
 case we do not need to fix the boundary. To remove the null space of the energy and make the minimum unique, it is sufficient to fix two arbitrary
 vertices to two arbitrary positions. The full source code is provided in [Example 502](502_LSCMParam/main.cpp).
 
@@ -1847,7 +1858,7 @@ vertices to two arbitrary positions. The full source code is provided in [Exampl
 ![([Example 502](502_LSCMParam/main.cpp)) LSCM parametrization. (left) mesh
 with texture, (right) UV parametrization](images/502_LSCMParam.png)
 
-## As-rigid-as-possible parametrization [asrigidaspossible]
+## [As-rigid-as-possible parametrization](#asrigidaspossible) [asrigidaspossible]
 
 As-rigid-as-possible parametrization [#liu_2008][] is a powerful single-patch,
 non-linear algorithm to compute a parametrization that strives to preserve
@@ -1869,7 +1880,7 @@ the distortion.
 (left) mesh with texture, (right) UV parametrization with
 texture](images/503_ARAPParam.png)
 
-## N-rotationally symmetric tangent fields [nrotationallysymmetrictangetfields]
+## [N-rotationally symmetric tangent fields](#nrotationallysymmetrictangetfields) [nrotationallysymmetrictangetfields]
 
 The design of tangent fields is a basic tool used to design guidance fields for
 uniform quadrilateral and hexahedral remeshing. Libigl contains an
@@ -1909,7 +1920,7 @@ pressing the number keys. `igl::nrosy` implements the algorithm proposed in
 proposed in [#knoppel_2013][], see Section [npolyvectorfields] for more details
 ([igl::n_polyvector](../include/igl/n_polyvector.h)).
 
-### Global, seamless integer-grid parametrization [globalseamlessintegergridparametrization]
+### [Global, seamless integer-grid parametrization](#globalseamlessintegergridparametrization) [globalseamlessintegergridparametrization]
 
 The previous parametrization methods were focusing on creating parametrizations
 of surface patches aimed at texture mapping or baking of other surface
@@ -1991,7 +2002,7 @@ A quad mesh can be extracted from this parametrization using
 [libQEx](https://github.com/hcebke/libQEx) (not included in libigl).
 The full pipeline is implemented in [Example 505](505_MIQ/main.cpp).
 
-## Anisotropic remeshing [anisotropicremeshingusingframefields]
+## [Anisotropic remeshing](#anisotropicremeshingusingframefields) [anisotropicremeshingusingframefields]
 
 Anisotropic and non-uniform quad remeshing is important to concentrate the
 elements in the regions with more details. It is possible to extend the MIQ
@@ -2036,7 +2047,7 @@ generate the UV parametrization, but other algorithms could be applied: the
 only desiderata is that the generated quad mesh should be as isotropic as
 possible.
 
-## N-PolyVector fields [npolyvectorfields]
+## [N-PolyVector fields](#npolyvectorfields) [npolyvectorfields]
 
 N-RoSy vector fields can be further generalized to represent arbitrary
 vector-sets, with arbitrary angles between them and with arbitrary lengths
@@ -2055,7 +2066,7 @@ PolyVector fields. If the constraints are taken from an N-RoSy field,
 `igl::n_polyvector` generates a field that is equivalent, after normalization,
 to a globally optimal direction field.
 
-## Conjugate vector fields [conjugatevectorfields]
+## [Conjugate vector fields](#conjugatevectorfields) [conjugatevectorfields]
 
 Two tangent vectors lying on a face of a triangle mesh are conjugate if
 
@@ -2077,7 +2088,7 @@ closest conjugate field ([Example 508](508_ConjugateField/main.cpp)).
 ![A smooth 4-PolyVector field (left) is deformed to become a conjugate field
 (right).](images/508_ConjugateField.png)
 
-## Planarization [planarization]
+## [Planarization](#planarization) [planarization]
 
 A quad mesh can be transformed in a planar quad mesh with Shape-Up
 [#bouaziz_2012], a local/global approach that uses the global step to enforce
@@ -2090,7 +2101,7 @@ satisfies a user-given planarity threshold.
 igl::palanarize (right). The colors represent the planarity of the
 quads.](images/509_Planarization.png)
 
-## Integrable PolyVector Fields [integrable]
+## [Integrable PolyVector Fields](#integrable) [integrable]
 
 Vector-field guided surface parameterization is based on the idea of designing the gradients
 of the parameterization functions (which are tangent vector fields on the surface) instead of the functions themselves. Thus, vector-set fields (N-Rosy, frame fields, and polyvector fields) that are to be used for parameterization (and subsequent remeshing) need to be integrable: it must be possible to break them down into individual vector fields that are gradients of scalar functions. Fields obtained by most smoothness-based design methods (eg. [#levy_2008][], [#knoppel_2013][], [#diamanti_2014][], [#bommes_2009][], [#panozzo_2014][]) do not have this property. In [#diamanti_2015][], a method for creating integrable polyvector fields was introduced. This method takes as input a given field and improves its integrability by removing the vector field curl, thus turning it into a gradient of a function ([Example 510](510_Integrable/main.cpp)).
@@ -2099,13 +2110,22 @@ of the parameterization functions (which are tangent vector fields on the surfac
 
 This method retains much of the core principles of the polyvector framework - it expresses the condition for zero discrete curl condition (which typically requires integers for the vector matchings) into a condition involving continuous variables only. This is done using coefficients of appropriately defined polynomials. The parameterizations generated by the resulting fields are exactly aligned to the field directions and contain no inverted triangles.
 
+## [General N-PolyVector fields](#npolyvectorfields_general) [npolyvectorfields_general]
+
+While mostly applicable for the design of symmetric fields (i.e. fields that comprise of vector sets with symmetries between them at each point, e.g. N-RoSy or frame-fields), the framework presented in [#diamanti_2014][] can be used to design completely general fields, with possibly no such symmetries. For example, one can design fields that at each point comprise of an arbitrary number of vectors, not required to be collinear - as opposed e.g. to the case of the 4 pairwise-collinear vectors designed in the example ([Example 507](507_PolyVectorField/main.cpp)). This capability is implemented in the function igl::n_polyvector_general, and is illustrated in the example ([Example 511](511_PolyVectorFieldGeneral/main.cpp)).
+
+![Interpolation of a general field with 3 (left) and 9 vectors per point field from a sparse set of random constraints (in red). The field is defined on all mesh faces, but is only shown on a subset for clarity. ](images/511_PolyVectorFieldGeneral.png)
+
+The design of these general directional fields (also called vector-set fields) is based on the same polynomial framework and includes the symmetric fields as a special case. Note that in the case that some symmetries do exist in the constraints, the final field is not guaranteed to have these symmetries everywhere else on the mesh. For example, designing a field with 3 vectors per point where, at the constrained faces, two of the vectors are on a line opposite to each other, we are not guaranteed to always have two pairwise-collinear vectors everywhere in the result, as can be seen in the picture. In some cases however (as is the case of the frame field in the previous example [Example 507](507_PolyVectorField/main.cpp)) these symmetries are in fact guaranteed due to the particular nature of the polynomial that applies in that case (two coefficients are 0).
+
+For a complete categorization of fields used in various applications (including these general ones) see Vaxman et al. 2016 [#vaxman_2016].
 
 # Chapter 6: External libraries [chapter6:externallibraries]
 
 An additional positive side effect of using matrices as basic types is that it
 is easy to exchange data between libigl and other softwares and libraries.
 
-## State serialization [stateserialization]
+## [State serialization](#stateserialization) [stateserialization]
 
 Geometry processing applications often require a considerable amount of
 computational time and/or manual input. Serializing the state of the application is a simple strategy to greatly increase the development efficiency. It allows to quickly start debugging just
@@ -2178,19 +2198,22 @@ void Serializable::PostDeserialization();
 Alternatively, if you want a non-intrusive way of serializing your state you can overload the following functions:
 
 ```cpp
-namespace igl { namespace serialization {
-
-void serialize(const State& obj,std::vector<char>& buffer){
-  ::igl::serialize(obj.V,std::string("V"),buffer);
-  ::igl::serialize(obj.F,std::string("F"),buffer);
-  ::igl::serialize(obj.ids,std::string("ids"),buffer);
+namespace igl
+{
+  namespace serialization
+  {
+    template <> inline void serialize(const State& obj,std::vector<char>& buffer){
+      ::igl::serialize(obj.V,std::string("V"),buffer);
+      ::igl::serialize(obj.F,std::string("F"),buffer);
+      ::igl::serialize(obj.ids,std::string("ids"),buffer);
+    }
+    template <> inline void deserialize(State& obj,const std::vector<char>& buffer){
+      ::igl::deserialize(obj.V,std::string("V"),buffer);
+      ::igl::deserialize(obj.F,std::string("F"),buffer);
+      ::igl::deserialize(obj.ids,std::string("ids"),buffer);
+    }
+  }
 }
-void deserialize(State& obj,const std::vector<char>& buffer){
-  ::igl::deserialize(obj.V,std::string("V"),buffer);
-  ::igl::deserialize(obj.F,std::string("F"),buffer);
-  ::igl::deserialize(obj.ids,std::string("ids"),buffer);
-}
-}}
 ```
 
 Equivalently, you can use the following macros:
@@ -2230,7 +2253,7 @@ common to have to do small changes to figures, and being able to serialize the
 entire state just before you take screenshots will save you many painful hours
 before a submission deadline.
 
-## Mixing Matlab code [mixingmatlabcode]
+## [Mixing Matlab code](#mixingmatlabcode) [mixingmatlabcode]
 
 Libigl can be interfaced with Matlab to offload numerically heavy computation
 to a Matlab script. The major advantage of this approach is that you will be
@@ -2355,7 +2378,7 @@ L = sparse(LIJV(:,1),LIJV(:,2),LIJV(:,3));
 
 which is easily copied and pasted into Matlab for debugging, etc.
 
-## Calling libigl functions from Matlab [callinglibiglfunctionsfrommatlab]
+## [Calling libigl functions from Matlab](#callinglibiglfunctionsfrommatlab) [callinglibiglfunctionsfrommatlab]
 
 It is also possible to call libigl functions from matlab, compiling them as MEX
 functions. This can be used to offload to C++ code the computationally
@@ -2366,7 +2389,7 @@ We plan to provide wrappers for all our functions in the future, if you are
 interested in this feature (or if you want to help implementing it) please let
 us know.
 
-## Triangulation of closed polygons [triangulationofclosedpolygons]
+## [Triangulation of closed polygons](#triangulationofclosedpolygons) [triangulationofclosedpolygons]
 
 The generation of high-quality triangle and tetrahedral meshes is a very common
 task in geometry processing. We provide wrappers in libigl to
@@ -2389,7 +2412,7 @@ in its interior) is triangulated.
 
 ![Triangulation of the interior of a polygon.](images/604_Triangle.png)
 
-## Tetrahedralization of closed surfaces [tetrahedralizationofclosedsurfaces]
+## [Tetrahedralization of closed surfaces](#tetrahedralizationofclosedsurfaces) [tetrahedralizationofclosedsurfaces]
 
 Similarly, the interior of a closed manifold surface can be tetrahedralized
 using the function `igl::tetrahedralize` which wraps the Tetgen library ([Example
@@ -2401,7 +2424,7 @@ igl::tetrahedralize(V,F,"pq1.414", TV,TT,TF);
 
 ![Tetrahedralization of the interior of a surface mesh.](images/605_Tetgen.png)
 
-## Baking ambient occlusion [bakingambientocclusion]
+## [Baking ambient occlusion](#bakingambientocclusion) [bakingambientocclusion]
 
 [Ambient occlusion](http://en.wikipedia.org/wiki/Ambient_occlusion) is a
 rendering technique used to calculate the exposure of each point in a surface
@@ -2435,39 +2458,33 @@ Ambient occlusion can be used to darken the surface colors, as shown in
 ![A mesh rendered without (left) and with (right) ambient
 occlusion.](images/606_AmbientOcclusion.png)
 
-## Picking [pickingverticesandfaces]
+## [Screen Capture](#screencapture) [screencapture]
 
-Picking vertices and faces using the mouse is very common in geometry
-processing applications. While this might seem a simple operation, its
-implementation is not straighforward. Libigl contains a function that solves this problem using the
-[Embree](https://software.intel.com/en-us/articles/embree-photo-realistic-ray-tracing-kernels)
-raycaster. Its usage is demonstrated in [Example 607](607_Picking/main.cpp):
+Libigl supports read and writing to .png files via the
+[stb image](http://nothings.org/stb_image.h) code.
+
+With the viewer used in this tutorial, it is possible to render the scene in a
+memory buffer using the function, `igl::viewer::ViewerCore::draw_buffer`:
 
 ```cpp
-bool hit = igl::unproject_onto_mesh(
-  Vector2f(x,y),
-  F,
-  viewer.core.view * viewer.core.model,
-  viewer.core.proj,
-  viewer.core.viewport,
-  *ei,
-  fid,
-  vid);
+// Allocate temporary buffers for 1280x800 image
+Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> R(1280,800);
+Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> G(1280,800);
+Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> B(1280,800);
+Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> A(1280,800);
+
+// Draw the scene in the buffers
+viewer.core.draw_buffer(viewer.data,viewer.opengl,false,R,G,B,A);
+
+// Save it to a PNG
+igl::png::writePNG(R,G,B,A,"out.png");
 ```
 
-This function casts a ray from the view plane in the view direction. Variables
-`x` and `y` are
-the mouse screen coordinates; `view`, `model`, `proj` are the view, model and
-projection matrix respectively; `viewport` is the viewport in OpenGL format;
-`ei`
-contains a [Bounding Volume
-Hierarchy](http://en.wikipedia.org/wiki/Bounding_volume_hierarchy) constructed
-by Embree, and `fid` and `vid` are the picked face and vertex, respectively.
+In [Example 607](607_ScreenCapture/main.cpp) a scene is rendered in a temporary
+png and used to texture a quadrilateral.
 
-![([Example 607](607_Picking/main.cpp)) Picking via ray casting. The selected
-vertices are colored in red.](images/607_Picking.png)
 
-## Locally Injective Maps [locallyinjectivemaps]
+## [Locally Injective Maps](#locallyinjectivemaps) [locallyinjectivemaps]
 
 Extreme deformations or parametrizations with high-distortion might flip
 elements.  This is undesirable in many applications, and it is possible to
@@ -2481,7 +2498,7 @@ deformation energies. A simple deformation of a 2D grid is computed in [Example
 ![A mesh (left) deformed using Laplacian editing (middle) and with Laplacian
 editing plus the anti-flipping constraints (right).](images/608_LIM.png)
 
-## Boolean operations on meshes [booleanoperationsonmeshes]
+## [Boolean operations on meshes](#booleanoperationsonmeshes) [booleanoperationsonmeshes]
 
 Constructive solid geometry (CSG) is a technique to define a complex surface as
 the result of a number of set operations on solid regions of space: union,
@@ -2524,22 +2541,21 @@ compute robustly with boundary representations, but are nonetheless useful.
 
 To compute a boolean operation on a triangle mesh with vertices `VA` and
 triangles `FA` and another mesh `VB` and `FB`, libigl first computes a unified
-mesh with vertices `V` and triangles `F` where all triangle-triangle
+"mesh arrangement" (see [#zhou_2016][]) with vertices `V` and triangles `F` where all triangle-triangle
 intersections have been "resolved". That is, edges and vertices are added
 exactly at the intersection lines, so the resulting _non-manifold_ mesh `(V,F)`
 has no self-intersections.
 
-Then libigl _peels_ the outer hull [#attene_2014][] off this mesh recursively,
-keeping track of the iteration parity and orientation flips for each layer.
-For any boolean operation, these two pieces of information determine for each
-triangle (1) if it should be included in the output, and (2) if its orientation
-should be reversed before added to the output.
+Then libigl labels each "cell" bounded by surfaces of the arrangement according
+to its _winding number vector_: winding number with respect to each input mesh
+$(w_A,w_B)$. Finally, according to the desired operation (e.g. union,
+intersection) the boundary of the corresponding cells are extracted.
 
 Calling libigl's boolean operations is simple. To compute the union of
 `(VA,FA)` and `(VB,FB)` into a new mesh `(VC,FC)`, use:
 
 ```cpp
-igl::mesh_boolean(VA,FA,VB,FB,MESH_BOOLEAN_TYPE_UNION,VC,FC);
+igl::copyleft::cgal::mesh_boolean(VA,FA,VB,FB,MESH_BOOLEAN_TYPE_UNION,VC,FC);
 ```
 
 The following figure shows each boolean operation on two meshes.
@@ -2559,14 +2575,14 @@ result of the operation. The "resolve" operation is not really a boolean
 operation, it is simply the result of resolving all intersections and gluing
 together coincident vertices, maintaining original triangle orientations.
 
-Libigl also provides a wrapper `igl::mesh_boolean_cork` to the
+Libigl also provides a wrapper `igl::copyleft::cork::mesh_boolean` to the
 [cork](https://github.com/gilbo/cork), which is typically faster, but is not
 always robust.
 
-## CSG Tree [csgtree]
+## [CSG Tree](#csgtree) [csgtree]
 
 The [previous section](#booleanoperationsonmeshes) discusses using
-`igl::boolean::mesh_boolean` to compute the result of a _single_ boolean
+`igl::copyleft::cgal::mesh_boolean` to compute the result of a _single_ boolean
 operation on two input triangle meshes. When employing constructive solid
 geometry (CSG) as a modeling paradigm, shapes are represented as the result of
 many such binary operations. The sequence is stored in a binary tree.
@@ -2575,9 +2591,9 @@ Libigl uses exact arithmetic internally to construct the intermediary boolean
 results robustly. "Rounding" this result to floating point (even double
 precision) would cause problems if re-injected into a further boolean
 operation. To facilitate CSG tree operations and encourage callers _not_ to
-call `igl::boolean::mesh_boolean` multiple times explicitly, libigl implements
-a class `igl::boolean::CSGTree`. Leaf nodes of this class are simply "solid"
-meshes (otherwise good input to `igl::boolean::mesh_boolean`). Interior nodes
+call `igl::copyleft::cgal::mesh_boolean` multiple times explicitly, libigl implements
+a class `igl::copyleft::cgal::CSGTree`. Leaf nodes of this class are simply "solid"
+meshes (otherwise good input to `igl::copyleft::cgal::mesh_boolean`). Interior nodes
 of the tree combine two children with a boolean operation. Using the intializer
 list constructor it is easy to hard-code specific tree constructions. Here's an
 example taking the _intersection_ of a cube A and sphere B _minus_ the _union_
@@ -2585,7 +2601,7 @@ of three cylinders:
 
 ```cpp
 // Compute result of (A ∩ B) \ ((C ∪ D) ∪ E)
-igl::boolean::CSGTree<MatrixXi> CSGTree =
+igl::copyleft::cgal::CSGTree<MatrixXi> CSGTree =
   {{{VA,FA},{VB,FB},"i"},{{{VC,FC},{VD,FD},"u"},{VE,FE},"u"},"m"};
 ```
 
@@ -2605,7 +2621,7 @@ dealing with meshes and the linear algebra related to them: far too many to
 discuss in this introductory tutorial. We've pulled out a couple of the
 interesting functions in this chapter to highlight.
 
-## Mesh Statistics [meshstatistics]
+## [Mesh Statistics](#meshstatistics) [meshstatistics]
 
 Libigl contains various mesh statistics, including face angles, face areas and
 the detection of singular vertices, which are vertices with more or less than 6
@@ -2641,7 +2657,7 @@ the angles are to 60 degrees the more stable will the optimization be. In this
 case, it is clear that the mesh is of bad quality and it will probably result
 in artifacts if used for solving PDEs.
 
-## Generalized Winding Number [generalizedwindingnumber]
+## [Generalized Winding Number](#generalizedwindingnumber) [generalizedwindingnumber]
 
 The problem of tetrahedralizing the interior of closed watertight surface mesh
 is a difficult, but well-posed problem (see our [Tetgen wrappers][tetrahedralizationofclosedsurfaces]).  But
@@ -2688,7 +2704,7 @@ extracted interior tets, and slices show the winding number function on all
 tets in the convex hull: blue (~0), green (~1), yellow
 (~2).](images/big-sigcat-winding-number.gif)
 
-## Mesh Decimation [meshdecimation]
+## [Mesh Decimation](#meshdecimation) [meshdecimation]
 
 The study of mesh simplification or _decimation_ is nearly as old as meshes
 themselves. Given a high resolution mesh with too many triangles, find a "well
@@ -2817,7 +2833,7 @@ The [Example 703](./703_Decimation/main.cpp) demonstrates using this priority
 queue based approach with the simple shortest-edge-midpoint cost/placement
 strategy discussed above.
 
-## Signed Distances [signeddistances]
+## [Signed Distances](#signeddistances) [signeddistances]
 
 In the [Generalized Winding Number section][generalizedwindingnumber], we
 examined a robust method for determining whether points lie inside or outside
@@ -2927,7 +2943,7 @@ with the pseudo-normal test.
 ![Example [704](704_SignedDistance/main.cpp) computes signed distance on
 slices through the bunny.](images/bunny-signed-distance.gif)
 
-## Marching Cubes [marchingcubes]
+## [Marching Cubes](#marchingcubes) [marchingcubes]
 
 Often 3D data is captured as scalar field defined over space $f(\mathbf{x}) :
 \mathcal{R}^3 \rightarrow \mathcal{R}$. Lurking within this field,
@@ -2959,6 +2975,148 @@ input mesh (left) and then reconstructs the surface using
 marching cubes to contour the 0-level set (center). For comparison, clamping
 this signed distance field to an indicator function and contouring reveals
 serious aliasing artifacts.](images/armadillo-marching-cubes.jpg)
+
+## [Facet Orientation](#facetorientation) [facetorientation]
+
+Models from the web occasionally arrive _unorientated_ in the sense that
+the orderings of each triangles vertices do not consistently agree. Determining
+a consistent facet orientation for a mesh is essential for two-sided lighting
+(e.g., a cloth with red velvet on one side and gold silk on the other side) and
+for inside-outside determination(e.g., using [generalized winding
+numbers](#generalizedwindingnumber)).
+
+For (open) surfaces representing two-sided sheets, libigl provides a routine to
+force consistent orientations within each orientable patch
+(`igl::orientable_patches`) of a mesh:
+
+```cpp
+igl::bfs_orient(F,FF,C);
+```
+
+This simple routine will use breadth-first search on each patch of the mesh to
+enforce a consistent facet orientation in the output faces `FF`.
+
+For (closed or nearly closed) surfaces representing the boundary of a solid
+object, libigl provides a routine to reorient faces so that the vertex ordering
+corresponds to a counter-clockwise ordering of the vertices with a
+right-hand-rule normal pointing outward. This method [#takayama14][] assumes
+that [most of the universe is
+empty](https://www.reddit.com/r/askscience/comments/32otgx/which_as_a_is_more_empty_an_atom_or_the_universe/).
+That is, most points in space are outside of the solid object than inside.
+Points are sampled over surface patches. For each sample point, rays are shot
+into both hemispheres to compute average of the (distance weighted) ambient
+occlusion on each side. A patch is oriented so that the outward side is _less
+occluded_ (lighter, i.e., facing more void space).
+
+```cpp
+igl::embree::reorient_facets_raycast(V,F,FF,I);
+```
+
+The boolean vector `I` reveals which rows of `F` have been flipped in `FF`.
+
+![([Example 706](706_FacetOrientation/main.cpp)) loads a truck model with
+inconsistent orientations (back facing triangles shown darker). Orientable
+patches are uniquely colored and then oriented to face outward (middle left).
+Alternatively, each individual triangle is considered a "patch" (middle right)
+and oriented outward independently.](images/truck-facet-orientation.jpg)
+
+## [Swept Volume](#sweptvolume) [sweptvolume]
+
+The swept volume $S$ of a moving solid object $A$ can be defined as any point in
+space such that at one moment in time the point lies inside the solid. In other
+words, it is the union of the solid object transformed by the rigid motion
+$f(t)$ over time:
+
+$S = \bigcup \limits_{t\in [0,1]} f(t) A.$
+
+The surface of the swept volume of a solid bounded by a triangle mesh
+undergoing a rigid motion with non-trivial rotation is _**not**_ a surface
+exactly representably by triangle mesh: it will be a piecewise-ruled surface.
+
+To see this, consider the surface swept by a single edge's line segment as it
+performs a screw motion.
+
+This means that if we'd like to the surface of the swept volume of a triangle
+mesh undergoing a rigid motion and we'd like the output to be another triangle
+mesh, then we're going to have to be happy with some amount of approximation
+error.
+
+With this in mind, the simplest method for computing an approximate swept
+volume is by exploiting an alternative definition of the swept volume based on
+signed distances:
+
+$S = \left\{ \mathbf{p}\ \middle| \ d(\mathbf{p},\partial S) < 0 \right\} = \left\{ \mathbf{p}\
+\middle|\
+\min\limits_{t \in [0,1]} d(\mathbf{p},f(t)\ \partial A) < 0 \right\}$
+
+If $\partial A$ is a triangle mesh, then we can approximate this by 1)
+discretizing time at a finite step of steps $[0,\Delta t,2\Delta t, \dots, 1]$
+and by 2) discretizing space with a regular grid and representing the distance
+field using trilinear interpolation of grid values. Finally the output mesh,
+$\partial S$ is approximated by contouring using Marching Cubes
+[#lorensen_1987].
+
+This method is similar to one described by Schroeder et al. in 1994
+[#schroeder_1994], and the one used in conjunction with boolean operations by
+Garg et al. 2016 [#garg_2016].
+
+In libigl, if your input solid's surface is represented by `(V,F)` then the
+output surface mesh will be `(SV,SF)` after calling:
+
+```cpp
+igl::copyleft::swept_volume(V,F,num_time_steps,grid_size,isolevel,SV,SF);
+```
+
+The `isolevel` parameter can be set to zero to approximate the exact swept
+volume, greater than zero to approximate a positive offset of the swept volume
+or less than zero to approximate a negative offset.
+
+![([Example 707](707_SweptVolume/main.cpp)) computes
+the surface of the swept volume (silver) of the bunny model undergoing a rigid
+motion (gold).](images/bunny-swept-volume.gif)
+
+## [Picking](#pickingverticesandfaces) [pickingverticesandfaces]
+
+Picking vertices and faces using the mouse is very common in geometry
+processing applications. While this might seem a simple operation, its
+implementation is not straighforward. Libigl contains a function that solves this problem using the
+[Embree](https://software.intel.com/en-us/articles/embree-photo-realistic-ray-tracing-kernels)
+raycaster. Its usage is demonstrated in [Example 708](708_Picking/main.cpp):
+
+```cpp
+bool hit = igl::unproject_onto_mesh(
+  Vector2f(x,y),
+  F,
+  viewer.core.view * viewer.core.model,
+  viewer.core.proj,
+  viewer.core.viewport,
+  *ei,
+  fid,
+  vid);
+```
+
+This function casts a ray from the view plane in the view direction. Variables
+`x` and `y` are
+the mouse screen coordinates; `view`, `model`, `proj` are the view, model and
+projection matrix respectively; `viewport` is the viewport in OpenGL format;
+`ei`
+contains a [Bounding Volume
+Hierarchy](http://en.wikipedia.org/wiki/Bounding_volume_hierarchy) constructed
+by Embree, and `fid` and `vid` are the picked face and vertex, respectively.
+
+![([Example 708](708_Picking/main.cpp)) Picking via ray casting. The selected
+vertices are colored in red.](images/607_Picking.png)
+
+## [Vector Field Visualization](#vectorfieldvisualizer) [vectorfieldvisualizer]
+
+Vector fields on surfaces are commonly visualized by tracing [streamlines] (https://en.wikipedia.org/wiki/Streamlines,_streaklines,_and_pathlines). Libigl
+supports the seeding and tracing of streamlines, for both simple vector fields
+and for N-rosy fields. The seeds for the streamlines are initialized using `streamlines_init`,
+and the lines are traced using `streamlines_next`. Each call to `streamlines_next` extends
+each line by one triangle, allowing interactive rendering of the traced lines, as demonstrated
+in [Example 709](709_VectorFieldVisualizer/main.cpp).
+
+![([Example 709](709_VectorFieldVisualizer/main.cpp)) Interactive streamlines tracing.](images/streamlines.jpg)
 
 # Outlook for continuing development [future]
 
@@ -3024,6 +3182,10 @@ pseudonormal](https://www.google.com/search?q=Signed+distance+computation+using+
 [#eck_2005]: Matthias Eck, Tony DeRose, Tom Duchamp, Hugues Hoppe, Michael Lounsbery, Werner
   Stuetzle.  [Multiresolution Analysis of Arbitrary
   Meshes](http://research.microsoft.com/en-us/um/people/hoppe/mra.pdf), 2005.
+[#garg_2016]: Akash Garg, Alec Jacobson, Eitan Grinspun. [Computational Design
+  of
+  Reconfigurables](https://www.google.com/search?q=Computational+Design+of+Reconfigurables),
+  2016
 [#hildebrandt_2011]: Klaus Hildebrandt, Christian Schulz, Christoph von
   Tycowicz, and Konrad Polthier. [Interactive Surface Modeling using Modal
   Analysis](https://www.google.com/search?q=Interactive+Surface+Modeling+using+Modal+Analysis),
@@ -3106,6 +3268,10 @@ pseudonormal](https://www.google.com/search?q=Signed+distance+computation+using+
   2014.
 [#rustamov_2011]: Raid M. Rustamov, [Multiscale Biharmonic
   Kernels](https://www.google.com/search?q=Multiscale+Biharmonic+Kernels), 2011.
+[#schroeder_1994]: William J. Schroeder, William E. Lorensen, and Steve
+  Linthicum. [Implicit Modeling of Swept Surfaces and
+  Volumes](https://www.google.com/search?q=implicit+modeling+of+swept+surfaces+and+volumes),
+  1994.
 [#schuller_2013]: Christian Schüller, Ladislav Kavan, Daniele Panozzo, Olga
   Sorkine-Hornung.  [Locally Injective
   Mappings](http://igl.ethz.ch/projects/LIM/), 2013.
@@ -3116,8 +3282,13 @@ pseudonormal](https://www.google.com/search?q=Signed+distance+computation+using+
 [#sorkine_2004]: Olga Sorkine, Yaron Lipman, Daniel Cohen-Or, Marc Alexa,
   Christian Rössl and Hans-Peter Seidel. [Laplacian Surface
   Editing](https://www.google.com/search?q=Laplacian+Surface+Editing), 2004.
-[#sorkine_2007]: Olga Sorkine and Marc Alexa, [As-rigid-as-possible Surface
+[#sorkine_2007]: Olga Sorkine and Marc Alexa. [As-rigid-as-possible Surface
   Modeling](https://www.google.com/search?q=As-rigid-as-possible+Surface+Modeling), 2007.
+[#takayama14]: Kenshi Takayama, Alec Jacobson, Ladislav Kavan, Olga
+  Sorkine-Hornung. [A Simple Method for Correcting Facet Orientations in
+  Polygon Meshes Based on Ray
+  Casting](https://www.google.com/search?q=A+Simple+Method+for+Correcting+Facet+Orientations+in+Polygon+Meshes+Based+on+Ray+Casting),
+  2014.
 [#vallet_2008]: Bruno Vallet and Bruno Lévy. [Spectral Geometry Processing with
   Manifold
   Harmonics](https://www.google.com/search?q=Spectral+Geometry+Processing+with+Manifold+Harmonics),
@@ -3126,3 +3297,9 @@ pseudonormal](https://www.google.com/search?q=Signed+distance+computation+using+
   Subspace Design for Real-Time Shape
   Deformation](https://www.google.com/search?q=Linear+Subspace+Design+for+Real-Time+Shape+Deformation),
   2015
+[#zhou_2016]: Qingnan Zhou, Eitan Grinspun, Denis Zorin. [Mesh Arrangements for
+  Solid
+  Geometry](https://www.google.com/search?q=Mesh+Arrangements+for+Solid+Geometry),
+  2016
+[#vaxman_2016]: Amir Vaxman, Marcel Campen, Olga Diamanti, Daniele Panozzo, David Bommes, Klaus Hildebrandt, Mirela Ben-Chen. [Directional Field Synthesis, Design, and Processing](https://www.google.com/search?q=Directional+Field+Synthesis+Design+and+Processing),
+  2016

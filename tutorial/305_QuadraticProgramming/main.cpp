@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
   // Equality constraint constrain solution to sum to 1
   Beq.resize(1,1);
   Beq(0) = 0.08;
-  Aeq = M.diagonal().transpose().sparseView();
+  Aeq = M.diagonal().sparseView().transpose();
   // (Empty inequality constraints)
   solve(viewer);
   cout<<

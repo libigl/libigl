@@ -1,6 +1,6 @@
 // This file is part of libigl, a simple c++ geometry processing library.
 // 
-// Copyright (C) 2015 Alec Jacobson <alecjacobson@gmail.com>
+// Copyright (C) 2016 Alec Jacobson <alecjacobson@gmail.com>
 // 
 // This Source Code Form is subject to the terms of the Mozilla Public License 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
@@ -13,10 +13,9 @@
 #include <set>
 namespace igl
 {
-  // Assumes (V,F) is a closed manifold mesh 
-  // Collapses edges until desired number of faces is achieved. This uses
-  // default edge cost and merged vertex placement functions {edge length, edge
-  // midpoint}.
+  // Assumes (V,F) is a manifold mesh (possibly with boundary) Collapses edges
+  // until desired number of faces is achieved. This uses default edge cost and
+  // merged vertex placement functions {edge length, edge midpoint}.
   //
   // Inputs:
   //   V  #V by dim list of vertex positions
@@ -25,13 +24,20 @@ namespace igl
   // Outputs:
   //   U  #U by dim list of output vertex posistions (can be same ref as V)
   //   G  #G by 3 list of output face indices into U (can be same ref as G)
+  //   J  #G list of indices into F of birth face
   // Returns true if m was reached (otherwise #G > m)
   IGL_INLINE bool decimate(
     const Eigen::MatrixXd & V,
     const Eigen::MatrixXi & F,
     const size_t max_m,
     Eigen::MatrixXd & U,
-    Eigen::MatrixXi & G);
+    Eigen::MatrixXi & G,
+    Eigen::VectorXi & J);
+  // Assumes a **closed** manifold mesh. See igl::connect_boundary_to_infinity
+  // and igl::decimate in decimate.cpp
+  // is handling meshes with boundary by connecting all boundary edges with
+  // dummy facets to infinity **and** modifying the stopping criteria.
+  //
   // Inputs:
   //   cost_and_placement  function computing cost of collapsing an edge and 3d
   //     position where it should be placed:
@@ -45,32 +51,35 @@ namespace igl
     const Eigen::MatrixXd & V,
     const Eigen::MatrixXi & F,
     const std::function<void(
-      const int,
-      const Eigen::MatrixXd &,
-      const Eigen::MatrixXi &,
-      const Eigen::MatrixXi &,
-      const Eigen::VectorXi &,
-      const Eigen::MatrixXi &,
-      const Eigen::MatrixXi &,
-      double &,
-      Eigen::RowVectorXd &)> & cost_and_placement,
+      const int              /*e*/,
+      const Eigen::MatrixXd &/*V*/,
+      const Eigen::MatrixXi &/*F*/,
+      const Eigen::MatrixXi &/*E*/,
+      const Eigen::VectorXi &/*EMAP*/,
+      const Eigen::MatrixXi &/*EF*/,
+      const Eigen::MatrixXi &/*EI*/,
+      double &               /*cost*/,
+      Eigen::RowVectorXd &   /*p*/
+      )> & cost_and_placement,
     const std::function<bool(
-      const Eigen::MatrixXd &,
-      const Eigen::MatrixXi &,
-      const Eigen::MatrixXi &,
-      const Eigen::VectorXi &,
-      const Eigen::MatrixXi &,
-      const Eigen::MatrixXi &,
-      const std::set<std::pair<double,int> > &,
-      const std::vector<std::set<std::pair<double,int> >::iterator > &,
-      const Eigen::MatrixXd &,
-      const int,
-      const int,
-      const int,
-      const int,
-      const int)> & stopping_condition,
+      const Eigen::MatrixXd &                                         ,/*V*/
+      const Eigen::MatrixXi &                                         ,/*F*/
+      const Eigen::MatrixXi &                                         ,/*E*/
+      const Eigen::VectorXi &                                         ,/*EMAP*/
+      const Eigen::MatrixXi &                                         ,/*EF*/
+      const Eigen::MatrixXi &                                         ,/*EI*/
+      const std::set<std::pair<double,int> > &                        ,/*Q*/
+      const std::vector<std::set<std::pair<double,int> >::iterator > &,/*Qit*/
+      const Eigen::MatrixXd &                                         ,/*C*/
+      const int                                                       ,/*e*/
+      const int                                                       ,/*e1*/
+      const int                                                       ,/*e2*/
+      const int                                                       ,/*f1*/
+      const int                                                        /*f2*/
+      )> & stopping_condition,
     Eigen::MatrixXd & U,
-    Eigen::MatrixXi & G);
+    Eigen::MatrixXi & G,
+    Eigen::VectorXi & J);
 
 }
 

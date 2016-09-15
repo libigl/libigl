@@ -7,6 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "unproject_in_mesh.h"
 #include "unproject_ray.h"
+#include "ray_mesh_intersect.h"
 
 template < typename Derivedobj>
   IGL_INLINE int igl::unproject_in_mesh(
@@ -23,7 +24,6 @@ template < typename Derivedobj>
       Eigen::PlainObjectBase<Derivedobj> & obj,
       std::vector<igl::Hit > & hits)
 {
-  using namespace igl;
   using namespace std;
   using namespace Eigen;
   Vector3f s,dir;
@@ -64,7 +64,6 @@ template < typename DerivedV, typename DerivedF, typename Derivedobj>
       Eigen::PlainObjectBase<Derivedobj> & obj,
       std::vector<igl::Hit > & hits)
 {
-  using namespace igl;
   using namespace std;
   using namespace Eigen;
   const auto & shoot_ray = [&V,&F](
@@ -72,30 +71,7 @@ template < typename DerivedV, typename DerivedF, typename Derivedobj>
     const Eigen::Vector3f& dir,
     std::vector<igl::Hit> & hits)
   {
-    // Should be but can't be const 
-    Vector3d s_d = s.template cast<double>();
-    Vector3d dir_d = dir.template cast<double>();
-    hits.clear();
-    // loop over all triangles
-    for(int f = 0;f<F.rows();f++)
-    {
-      // Should be but can't be const 
-      RowVector3d v0 = V.row(F(f,0)).template cast<double>();
-      RowVector3d v1 = V.row(F(f,1)).template cast<double>();
-      RowVector3d v2 = V.row(F(f,2)).template cast<double>();
-      // shoot ray, record hit
-      double t,u,v;
-      if(intersect_triangle1(
-        s_d.data(), dir_d.data(), v0.data(), v1.data(), v2.data(), &t, &u, &v))
-      {
-        hits.push_back({(int)f,(int)-1,(float)u,(float)v,(float)t});
-      }
-    }
-    // Sort hits based on distance
-    std::sort(
-      hits.begin(),
-      hits.end(),
-      [](const Hit & a, const Hit & b)->bool{ return a.t < b.t;});
+    ray_mesh_intersect(s,dir,V,F,hits);
   };
   return unproject_in_mesh(pos,model,proj,viewport,shoot_ray,obj,hits);
 }
@@ -114,7 +90,8 @@ template < typename DerivedV, typename DerivedF, typename Derivedobj>
   return unproject_in_mesh(pos,model,proj,viewport,V,F,obj,hits);
 }
 #ifdef IGL_STATIC_LIBRARY
-template int igl::unproject_in_mesh<Eigen::Matrix<double, 1, 3, 1, 1, 3> >(Eigen::Matrix<float, 2, 1, 0, 2, 1> const&, Eigen::Matrix<float, 4, 4, 0, 4, 4> const&, Eigen::Matrix<float, 4, 4, 0, 4, 4> const&, Eigen::Matrix<float, 4, 1, 0, 4, 1> const&, std::__1::function<void (Eigen::Matrix<float, 3, 1, 0, 3, 1> const&, Eigen::Matrix<float, 3, 1, 0, 3, 1> const&, std::__1::vector<igl::Hit, std::__1::allocator<igl::Hit> >&)> const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> >&, std::__1::vector<igl::Hit, std::__1::allocator<igl::Hit> >&);
-template int igl::unproject_in_mesh<Eigen::Matrix<double, 3, 1, 0, 3, 1> >(Eigen::Matrix<float, 2, 1, 0, 2, 1> const&, Eigen::Matrix<float, 4, 4, 0, 4, 4> const&, Eigen::Matrix<float, 4, 4, 0, 4, 4> const&, Eigen::Matrix<float, 4, 1, 0, 4, 1> const&, std::__1::function<void (Eigen::Matrix<float, 3, 1, 0, 3, 1> const&, Eigen::Matrix<float, 3, 1, 0, 3, 1> const&, std::__1::vector<igl::Hit, std::__1::allocator<igl::Hit> >&)> const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 1, 0, 3, 1> >&, std::__1::vector<igl::Hit, std::__1::allocator<igl::Hit> >&);
-template int igl::unproject_in_mesh<Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::Matrix<float, 2, 1, 0, 2, 1> const&, Eigen::Matrix<float, 4, 4, 0, 4, 4> const&, Eigen::Matrix<float, 4, 4, 0, 4, 4> const&, Eigen::Matrix<float, 4, 1, 0, 4, 1> const&, std::__1::function<void (Eigen::Matrix<float, 3, 1, 0, 3, 1> const&, Eigen::Matrix<float, 3, 1, 0, 3, 1> const&, std::__1::vector<igl::Hit, std::__1::allocator<igl::Hit> >&)> const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, std::__1::vector<igl::Hit, std::__1::allocator<igl::Hit> >&);
+template int igl::unproject_in_mesh<Eigen::Matrix<double, 1, 3, 1, 1, 3> >(Eigen::Matrix<float, 2, 1, 0, 2, 1> const&, Eigen::Matrix<float, 4, 4, 0, 4, 4> const&, Eigen::Matrix<float, 4, 4, 0, 4, 4> const&, Eigen::Matrix<float, 4, 1, 0, 4, 1> const&, std::function<void (Eigen::Matrix<float, 3, 1, 0, 3, 1> const&, Eigen::Matrix<float, 3, 1, 0, 3, 1> const&, std::vector<igl::Hit, std::allocator<igl::Hit> >&)> const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> >&, std::vector<igl::Hit, std::allocator<igl::Hit> >&);
+template int igl::unproject_in_mesh<Eigen::Matrix<double, 3, 1, 0, 3, 1> >(Eigen::Matrix<float, 2, 1, 0, 2, 1> const&, Eigen::Matrix<float, 4, 4, 0, 4, 4> const&, Eigen::Matrix<float, 4, 4, 0, 4, 4> const&, Eigen::Matrix<float, 4, 1, 0, 4, 1> const&, std::function<void (Eigen::Matrix<float, 3, 1, 0, 3, 1> const&, Eigen::Matrix<float, 3, 1, 0, 3, 1> const&, std::vector<igl::Hit, std::allocator<igl::Hit> >&)> const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 1, 0, 3, 1> >&, std::vector<igl::Hit, std::allocator<igl::Hit> >&);
+template int igl::unproject_in_mesh<Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::Matrix<float, 2, 1, 0, 2, 1> const&, Eigen::Matrix<float, 4, 4, 0, 4, 4> const&, Eigen::Matrix<float, 4, 4, 0, 4, 4> const&, Eigen::Matrix<float, 4, 1, 0, 4, 1> const&, std::function<void (Eigen::Matrix<float, 3, 1, 0, 3, 1> const&, Eigen::Matrix<float, 3, 1, 0, 3, 1> const&, std::vector<igl::Hit, std::allocator<igl::Hit> >&)> const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, std::vector<igl::Hit, std::allocator<igl::Hit> >&);
+template int igl::unproject_in_mesh<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, 3, 1, 0, 3, 1> >(Eigen::Matrix<float, 2, 1, 0, 2, 1> const&, Eigen::Matrix<float, 4, 4, 0, 4, 4> const&, Eigen::Matrix<float, 4, 4, 0, 4, 4> const&, Eigen::Matrix<float, 4, 1, 0, 4, 1> const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 1, 0, 3, 1> >&);
 #endif

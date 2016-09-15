@@ -84,8 +84,8 @@ IGL_INLINE void igl::polar_dec(
   Eigen::PlainObjectBase<DerivedR> & R,
   Eigen::PlainObjectBase<DerivedT> & T)
 {
-  Eigen::PlainObjectBase<DerivedA> U;
-  Eigen::PlainObjectBase<DerivedA> V;
+  DerivedA U;
+  DerivedA V;
   Eigen::Matrix<typename DerivedA::Scalar,DerivedA::RowsAtCompileTime,1> S;
   return igl::polar_dec(A,R,T,U,S,V);
 }

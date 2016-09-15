@@ -15,6 +15,32 @@ namespace igl
   {
     namespace cgal
     {
+      // Compute the "outer hull" of a piecewise constant winding number induce
+      // triangle mesh (V,F).
+      //
+      // Inputs:
+      //   V  #V by 3 list of vertex positions
+      //   F  #F by 3 list of triangle indices into V
+      // Outputs:
+      //   HV  #HV by 3 list of output vertex positions
+      //   HF  #HF by 3 list of output triangle indices into HV
+      //   J  #HF list of indices into F
+      //   flip  #HF list of whether facet was flipped when added to HF
+      //
+      template <
+        typename DerivedV,
+        typename DerivedF,
+        typename DerivedHV,
+        typename DerivedHF,
+        typename DerivedJ,
+        typename Derivedflip>
+      IGL_INLINE void outer_hull(
+        const Eigen::PlainObjectBase<DerivedV> & V,
+        const Eigen::PlainObjectBase<DerivedF> & F,
+        Eigen::PlainObjectBase<DerivedHV> & HV,
+        Eigen::PlainObjectBase<DerivedHF> & HF,
+        Eigen::PlainObjectBase<DerivedJ> & J,
+        Eigen::PlainObjectBase<Derivedflip> & flip);
       // Compute the "outer hull" of a potentially non-manifold mesh (V,F) whose
       // intersections have been "resolved" (e.g. using `cork` or
       // `igl::copyleft::cgal::selfintersect`). The outer hull is defined to be all facets
@@ -23,6 +49,10 @@ namespace igl
       // surface of the solid. In general this includes any thin "wings" or
       // "flaps".  This implementation largely follows Section 3.6 of "Direct
       // repair of self-intersecting meshes" [Attene 2014].
+      //
+      // Note: This doesn't require the input mesh to be piecewise constant
+      // winding number, but won't handle multiple non-nested connected
+      // components.
       //
       // Inputs:
       //   V  #V by 3 list of vertex positions
@@ -38,7 +68,7 @@ namespace igl
         typename DerivedG,
         typename DerivedJ,
         typename Derivedflip>
-      IGL_INLINE void outer_hull(
+      IGL_INLINE void outer_hull_legacy(
         const Eigen::PlainObjectBase<DerivedV> & V,
         const Eigen::PlainObjectBase<DerivedF> & F,
         Eigen::PlainObjectBase<DerivedG> & G,

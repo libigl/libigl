@@ -1,5 +1,0 @@
-INCLUDEFLAGS += -I/usr/X11/include
-
-LINKTIMEFLAGS += -lz -L/usr/X11/lib -lpng -bind_at_load
-
-FRAMEWORKS = -framework OpenGL -framework GLUT -framework AppKit

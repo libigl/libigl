@@ -29,7 +29,6 @@ IGL_INLINE bool igl::copyleft::tetgen::read_into_tetgenio(
   const std::string & path,
   tetgenio & in)
 {
-  using namespace igl;
   using namespace std;
   // get file extension
   string dirname,basename,ext,filename;

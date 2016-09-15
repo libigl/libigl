@@ -55,33 +55,56 @@ template <
   typename DerivedC,
   typename DerivedL>
 IGL_INLINE void igl::barycentric_coordinates(
-  const Eigen::PlainObjectBase<DerivedP> & P,
-  const Eigen::PlainObjectBase<DerivedA> & A,
-  const Eigen::PlainObjectBase<DerivedB> & B,
-  const Eigen::PlainObjectBase<DerivedC> & C,
+  const Eigen::MatrixBase<DerivedP> & P,
+  const Eigen::MatrixBase<DerivedA> & A,
+  const Eigen::MatrixBase<DerivedB> & B,
+  const Eigen::MatrixBase<DerivedC> & C,
   Eigen::PlainObjectBase<DerivedL> & L)
 {
   using namespace Eigen;
-  assert(P.cols() == 2 && "query must be in 2d");
-  assert(A.cols() == 2 && "corners must be in 2d");
-  assert(B.cols() == 2 && "corners must be in 2d");
-  assert(C.cols() == 2 && "corners must be in 2d");
+#ifndef NDEBUG
+  const int DIM = P.cols();
+  assert(A.cols() == DIM && "corners must be in same dimension as query");
+  assert(B.cols() == DIM && "corners must be in same dimension as query");
+  assert(C.cols() == DIM && "corners must be in same dimension as query");
   assert(P.rows() == A.rows() && "Must have same number of queries as corners");
   assert(A.rows() == B.rows() && "Corners must be same size");
   assert(A.rows() == C.rows() && "Corners must be same size");
-  typedef Matrix<typename DerivedL::Scalar,DerivedL::RowsAtCompileTime,1> 
-    VectorXS;
-  // Total area
-  VectorXS dblA,LA,LB,LC;
-  doublearea(P,B,C,LA);
-  doublearea(A,P,C,LB);
-  doublearea(A,B,P,LC);
-  doublearea(A,B,C,dblA);
+#endif
+
+  // http://gamedev.stackexchange.com/a/23745
+  typedef 
+    Eigen::Array<
+      typename DerivedP::Scalar,
+               DerivedP::RowsAtCompileTime,
+               DerivedP::ColsAtCompileTime>
+    ArrayS;
+  typedef 
+    Eigen::Array<
+      typename DerivedP::Scalar,
+               DerivedP::RowsAtCompileTime,
+               1>
+    VectorS;
+
+  const ArrayS v0 = B.array() - A.array();
+  const ArrayS v1 = C.array() - A.array();
+  const ArrayS v2 = P.array() - A.array();
+  VectorS d00 = (v0*v0).rowwise().sum();
+  VectorS d01 = (v0*v1).rowwise().sum();
+  VectorS d11 = (v1*v1).rowwise().sum();
+  VectorS d20 = (v2*v0).rowwise().sum();
+  VectorS d21 = (v2*v1).rowwise().sum();
+  VectorS denom = d00 * d11 - d01 * d01;
   L.resize(P.rows(),3);
-  L<<LA,LB,LC;
-  L.array().colwise() /= dblA.array();
+  L.col(1) = (d11 * d20 - d01 * d21) / denom;
+  L.col(2) = (d00 * d21 - d01 * d20) / denom;
+  L.col(0) = 1.0f -(L.col(1) + L.col(2)).array();
 }
 
 #ifdef IGL_STATIC_LIBRARY
 template void igl::barycentric_coordinates<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
+template void igl::barycentric_coordinates<Eigen::Matrix<double, 1, 3, 1, 1, 3>, Eigen::Matrix<double, 1, 3, 1, 1, 3>, Eigen::Matrix<double, 1, 3, 1, 1, 3>, Eigen::Matrix<double, 1, 3, 1, 1, 3>, Eigen::Matrix<double, 1, 3, 1, 1, 3> >(Eigen::MatrixBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > const&, Eigen::MatrixBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > const&, Eigen::MatrixBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > const&, Eigen::MatrixBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> >&);
+template void igl::barycentric_coordinates<Eigen::Matrix<double, 1, 2, 1, 1, 2>, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::Matrix<double, 1, 3, 1, 1, 3> >(Eigen::MatrixBase<Eigen::Matrix<double, 1, 2, 1, 1, 2> > const&, Eigen::MatrixBase<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> > const&, Eigen::MatrixBase<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> > const&, Eigen::MatrixBase<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> >&);
+template void igl::barycentric_coordinates<Eigen::Matrix<double, 1, 3, 1, 1, 3>, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::Matrix<double, 1, 3, 1, 1, 3> >(Eigen::MatrixBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > const&, Eigen::MatrixBase<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> > const&, Eigen::MatrixBase<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> > const&, Eigen::MatrixBase<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> >&);
+template void igl::barycentric_coordinates<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
 #endif

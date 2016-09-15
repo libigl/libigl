@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2015 Qingnan Zhou <qnzhou@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "outer_element.h"
 #include <iostream>
@@ -23,7 +23,7 @@ IGL_INLINE void igl::copyleft::cgal::outer_vertex(
         IndexType & v_index,
         Eigen::PlainObjectBase<DerivedA> & A)
 {
-    // Algorithm: 
+    // Algorithm:
     //    Find an outer vertex (i.e. vertex reachable from infinity)
     //    Return the vertex with the largest X value.
     //    If there is a tie, pick the one with largest Y value.
@@ -112,7 +112,7 @@ IGL_INLINE void igl::copyleft::cgal::outer_edge(
     const ScalarArray3& outer_v = V.row(outer_vid);
     assert(candidate_faces.size() > 0);
 
-    auto get_vertex_index = [&](const IndexArray3& f, Index vid) -> Index 
+    auto get_vertex_index = [&](const IndexArray3& f, Index vid) -> Index
     {
         if (f[0] == vid) return 0;
         if (f[1] == vid) return 1;
@@ -131,7 +131,7 @@ IGL_INLINE void igl::copyleft::cgal::outer_edge(
     Index outer_opp_vid = INVALID;
     bool infinite_slope_detected = false;
     std::vector<Index> incident_faces;
-    auto check_and_update_outer_edge = [&](Index opp_vid, Index fid) {
+    auto check_and_update_outer_edge = [&](Index opp_vid, Index fid) -> void {
         if (opp_vid == outer_opp_vid)
         {
             incident_faces.push_back(fid);
@@ -204,80 +204,14 @@ IGL_INLINE void igl::copyleft::cgal::outer_edge(
     std::copy(incident_faces.begin(), incident_faces.end(), A.data());
 }
 
-template<
-    typename DerivedV,
-    typename DerivedF,
-    typename DerivedN,
-    typename DerivedI,
-    typename IndexType
-    >
-IGL_INLINE void igl::copyleft::cgal::outer_facet(
-        const Eigen::PlainObjectBase<DerivedV> & V,
-        const Eigen::PlainObjectBase<DerivedF> & F,
-        const Eigen::PlainObjectBase<DerivedN> & N,
-        const Eigen::PlainObjectBase<DerivedI> & I,
-        IndexType & f,
-        bool & flipped) {
-    // Algorithm:
-    //    Find an outer edge.
-    //    Find the incident facet with the largest absolute X normal component.
-    //    If there is a tie, keep the one with positive X component.
-    //    If there is still a tie, pick the face with the larger signed index
-    //    (flipped face has negative index).
-    typedef typename DerivedV::Scalar Scalar;
-    typedef typename DerivedV::Index Index;
-    const size_t INVALID = std::numeric_limits<size_t>::max();
-
-    Index v1,v2;
-    Eigen::Matrix<Index,Eigen::Dynamic,1> incident_faces;
-    outer_edge(V, F, I, v1, v2, incident_faces);
-    assert(incident_faces.size() > 0);
-
-    auto generic_fabs = [&](const Scalar& val) -> const Scalar {
-        if (val >= 0) return val;
-        else return -val;
-    };
-
-    Scalar max_nx = 0;
-    size_t outer_fid = INVALID;
-    const size_t num_incident_faces = incident_faces.size();
-    for (size_t i=0; i<num_incident_faces; i++) 
-    {
-        const auto& fid = incident_faces(i);
-        const Scalar nx = N(fid, 0);
-        if (outer_fid == INVALID) {
-            max_nx = nx;
-            outer_fid = fid;
-        } else {
-            if (generic_fabs(nx) > generic_fabs(max_nx)) {
-                max_nx = nx;
-                outer_fid = fid;
-            } else if (nx == -max_nx && nx > 0) {
-                max_nx = nx;
-                outer_fid = fid;
-            } else if (nx == max_nx) {
-                if ((max_nx >= 0 && outer_fid < fid) ||
-                    (max_nx <  0 && outer_fid > fid)) {
-                    max_nx = nx;
-                    outer_fid = fid;
-                }
-            }
-        }
-    }
-
-    assert(outer_fid != INVALID);
-    f = outer_fid;
-    flipped = max_nx < 0;
-}
 
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
-template void igl::copyleft::cgal::outer_facet<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<long, -1, 1, 0, -1, 1>, int>(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<long, -1, 1, 0, -1, 1> > const&, int&, bool&);
-template void igl::copyleft::cgal::outer_facet<Eigen::Matrix<double, -1, -1, 1, -1, -1>, Eigen::Matrix<int, -1, -1, 1, -1, -1>, Eigen::Matrix<double, -1, -1, 1, -1, -1>, Eigen::Matrix<int, -1, -1, 1, -1, -1>, unsigned long>(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 1, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 1, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 1, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 1, -1, -1> > const&, unsigned long&, bool&);
-template void igl::copyleft::cgal::outer_facet<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, int>(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, int&, bool&);
-template void igl::copyleft::cgal::outer_facet<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, int>(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, int&, bool&);
 template void igl::copyleft::cgal::outer_edge<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<long, -1, 1, 0, -1, 1>, long, Eigen::Matrix<long, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<long, -1, 1, 0, -1, 1> > const&, long&, long&, Eigen::PlainObjectBase<Eigen::Matrix<long, -1, 1, 0, -1, 1> >&);
 template void igl::copyleft::cgal::outer_edge<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, long, Eigen::Matrix<long, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, long&, long&, Eigen::PlainObjectBase<Eigen::Matrix<long, -1, 1, 0, -1, 1> >&);
+template void igl::copyleft::cgal::outer_edge<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<long, -1, 1, 0, -1, 1>, long, Eigen::Matrix<long, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<long, -1, 1, 0, -1, 1> > const&, long&, long&, Eigen::PlainObjectBase<Eigen::Matrix<long, -1, 1, 0, -1, 1> >&);
+template void igl::copyleft::cgal::outer_edge<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, long, Eigen::Matrix<long, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, long&, long&, Eigen::PlainObjectBase<Eigen::Matrix<long, -1, 1, 0, -1, 1> >&);
+template void igl::copyleft::cgal::outer_edge<Eigen::Matrix<double, -1, -1, 1, -1, -1>, Eigen::Matrix<int, -1, -1, 1, -1, -1>, Eigen::Matrix<int, -1, -1, 1, -1, -1>, long, Eigen::Matrix<long, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 1, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 1, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 1, -1, -1> > const&, long&, long&, Eigen::PlainObjectBase<Eigen::Matrix<long, -1, 1, 0, -1, 1> >&);
 #endif

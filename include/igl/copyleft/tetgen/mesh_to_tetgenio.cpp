@@ -64,7 +64,6 @@ IGL_INLINE bool igl::copyleft::tetgen::mesh_to_tetgenio(
   const Eigen::PlainObjectBase<DerivedF>& F,
   tetgenio & in)
 {
-  using namespace igl;
   using namespace std;
   vector<vector<REAL> > vV;
   vector<vector<int> > vF;

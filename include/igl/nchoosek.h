@@ -32,7 +32,7 @@ namespace igl
   //     combination
   template < typename DerivedV, typename DerivedU>
   IGL_INLINE void nchoosek(
-    const Eigen::PlainObjectBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedV> & V,
     const int k,
     Eigen::PlainObjectBase<DerivedU> & U);
 }

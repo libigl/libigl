@@ -25,7 +25,8 @@ namespace igl
   // Inputs:
   //   V  #V by 3 eigen Matrix of mesh vertex 3D positions
   //   F  #F by 3 eigen Matrix of face (triangle) indices
-  //   weighting  weighting type
+  //   weight  weighting type
+  //   FN  #F by 3 matrix of 3D face normals per face
   // Output:
   //   N  #2 by 3 matrix of mesh edge 3D normals per row
   //   E  #E by 2 matrix of edge indices per row

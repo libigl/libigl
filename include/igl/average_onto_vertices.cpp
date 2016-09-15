@@ -14,7 +14,7 @@ IGL_INLINE void igl::average_onto_vertices(const Eigen::MatrixBase<DerivedV> &V,
   Eigen::MatrixBase<DerivedS> &SV)
 {
   SV = DerivedS::Zero(V.rows(),S.cols());
-  Eigen::Matrix<DerivedF::Scalar,Eigen::Dynamic,1> COUNT(V.rows());
+  Eigen::Matrix<typename DerivedF::Scalar,Eigen::Dynamic,1> COUNT(V.rows());
   COUNT.setZero();
   for (int i = 0; i <F.rows(); ++i)
   {
@@ -30,5 +30,4 @@ IGL_INLINE void igl::average_onto_vertices(const Eigen::MatrixBase<DerivedV> &V,
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
-template void igl::average_onto_vertices<double, int>(Eigen::Matrix<double, -1, -1, 0, -1, -1> const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, Eigen::Matrix<double, -1, -1, 0, -1, -1> const&, Eigen::Matrix<double, -1, -1, 0, -1, -1>&);
 #endif

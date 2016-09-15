@@ -96,7 +96,7 @@ IGL_INLINE void igl::polyvector_field_comb_from_matchings_and_cuts(
   Eigen::PlainObjectBase<DerivedS> &sol3D_combed)
   {
     Eigen::MatrixXi TT, TTi;
-    igl::triangle_triangle_adjacency(V,F,TT,TTi);
+    igl::triangle_triangle_adjacency(F,TT,TTi);
 
     Eigen::MatrixXi E, E2F, F2E;
     igl::edge_topology(V,F,E,F2E,E2F);

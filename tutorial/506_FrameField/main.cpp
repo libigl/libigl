@@ -7,9 +7,9 @@
 #include <igl/readDMAT.h>
 #include <igl/readOBJ.h>
 #include <igl/rotate_vectors.h>
-#include <igl/comiso/nrosy.h>
-#include <igl/comiso/miq.h>
-#include <igl/comiso/frame_field.h>
+#include <igl/copyleft/comiso/nrosy.h>
+#include <igl/copyleft/comiso/miq.h>
+#include <igl/copyleft/comiso/frame_field.h>
 #include <igl/viewer/Viewer.h>
 
 #include "tutorial_shared_path.h"
@@ -196,7 +196,7 @@ int main(int argc, char *argv[])
   bc2 = temp.block(0,4,temp.rows(),3);
 
   // Interpolate the frame field
-  igl::comiso::frame_field(V, F, b, bc1, bc2, FF1, FF2);
+  igl::copyleft::comiso::frame_field(V, F, b, bc1, bc2, FF1, FF2);
 
   // Deform the mesh to transform the frame field in a cross field
   igl::frame_field_deformer(
@@ -214,7 +214,7 @@ int main(int argc, char *argv[])
     bc_x.row(i) = X1_deformed.row(b(i));
 
   VectorXd S;
-  igl::comiso::nrosy(
+  igl::copyleft::comiso::nrosy(
              V,
              F,
              b,
@@ -234,7 +234,7 @@ int main(int argc, char *argv[])
     igl::rotate_vectors(X1_deformed, VectorXd::Constant(1,M_PI/2), B1, B2);
 
   // Global seamless parametrization
-  igl::comiso::miq(V_deformed,
+  igl::copyleft::comiso::miq(V_deformed,
            F,
            X1_deformed,
            X2_deformed,

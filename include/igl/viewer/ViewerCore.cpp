@@ -8,6 +8,7 @@
 
 #include "ViewerCore.h"
 #include <igl/quat_to_mat.h>
+#include <igl/snap_to_fixed_up.h>
 #include <igl/look_at.h>
 #include <igl/frustum.h>
 #include <igl/ortho.h>
@@ -292,6 +293,7 @@ IGL_INLINE void igl::viewer::ViewerCore::draw(ViewerData& data, OpenGL_state& op
       glUniform4f(fixed_colori, 0.0f, 0.0f, 0.0f, 0.0f);
     }
 
+#ifdef IGL_VIEWER_WITH_NANOGUI
     if (show_vertid)
     {
       textrenderer.BeginDraw(view*model, proj, viewport, object_scale);
@@ -315,6 +317,7 @@ IGL_INLINE void igl::viewer::ViewerCore::draw(ViewerData& data, OpenGL_state& op
       }
       textrenderer.EndDraw();
     }
+#endif
   }
 
   if (show_overlay)
@@ -356,6 +359,7 @@ IGL_INLINE void igl::viewer::ViewerCore::draw(ViewerData& data, OpenGL_state& op
       opengl.draw_overlay_points();
     }
 
+#ifdef IGL_VIEWER_WITH_NANOGUI
     if (data.labels_positions.rows() > 0)
     {
       textrenderer.BeginDraw(view*model, proj, viewport, object_scale);
@@ -364,6 +368,7 @@ IGL_INLINE void igl::viewer::ViewerCore::draw(ViewerData& data, OpenGL_state& op
             data.labels_strings[i]);
       textrenderer.EndDraw();
     }
+#endif
 
     glEnable(GL_DEPTH_TEST);
   }
@@ -456,6 +461,20 @@ IGL_INLINE void igl::viewer::ViewerCore::draw_buffer(ViewerData& data,
   glDeleteFramebuffers(1, &frameBuffer);
 }
 
+IGL_INLINE void igl::viewer::ViewerCore::set_rotation_type(
+  const igl::viewer::ViewerCore::RotationType & value)
+{
+  using namespace Eigen;
+  using namespace std;
+  const RotationType old_rotation_type = rotation_type;
+  rotation_type = value;
+  if(rotation_type == ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP &&
+    old_rotation_type != ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP)
+  {
+    snap_to_fixed_up(Quaternionf(trackball_angle),trackball_angle);
+  }
+}
+
 
 IGL_INLINE igl::viewer::ViewerCore::ViewerCore()
 {
@@ -472,7 +491,7 @@ IGL_INLINE igl::viewer::ViewerCore::ViewerCore()
 
   // Default trackball
   trackball_angle = Eigen::Quaternionf::Identity();
-  rotation_type = ViewerCore::ROTATION_TYPE_TRACKBALL;
+  set_rotation_type(ViewerCore::ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP);
 
   // Defalut model viewing parameters
   model_zoom = 1.0f;
@@ -508,10 +527,14 @@ IGL_INLINE igl::viewer::ViewerCore::ViewerCore()
 
 IGL_INLINE void igl::viewer::ViewerCore::init()
 {
+#ifdef IGL_VIEWER_WITH_NANOGUI
   textrenderer.Init();
+#endif
 }
 
 IGL_INLINE void igl::viewer::ViewerCore::shut()
 {
+#ifdef IGL_VIEWER_WITH_NANOGUI
   textrenderer.Shut();
+#endif
 }

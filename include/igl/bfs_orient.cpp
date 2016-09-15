@@ -17,7 +17,6 @@ IGL_INLINE void igl::bfs_orient(
   Eigen::PlainObjectBase<DerivedC> & C)
 {
   using namespace Eigen;
-  using namespace igl;
   using namespace std;
   SparseMatrix<int> A;
   orientable_patches(F,C,A);

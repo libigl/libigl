@@ -74,7 +74,7 @@ IGL_INLINE size_t igl::copyleft::cgal::peel_outer_hull_layers(
       writePLY(ss.str(), vertices, Fr);
   }
 #endif
-    outer_hull(V,Fr,Fo,Jo,flipr);
+    outer_hull_legacy(V,Fr,Fo,Jo,flipr);
 #ifdef IGL_PEEL_OUTER_HULL_LAYERS_DEBUG
   writePLY(STR("outer-hull-output-"<<iter<<".ply"),V,Fo);
   cout<<"reindex, flip..."<<endl;

@@ -93,3 +93,6 @@ tests/bin
 python/build3
 *.pyc
 python/build4
+python/scripts/generated
+python/builddebug
+tutorial/.idea

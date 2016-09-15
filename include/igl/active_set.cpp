@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2013 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "active_set.h"
 #include "min_quad_with_fixed.h"
@@ -17,9 +17,9 @@
 #include <algorithm>
 
 template <
-  typename AT, 
+  typename AT,
   typename DerivedB,
-  typename Derivedknown, 
+  typename Derivedknown,
   typename DerivedY,
   typename AeqT,
   typename DerivedBeq,
@@ -45,7 +45,7 @@ IGL_INLINE igl::SolverStatus igl::active_set(
   )
 {
 //#define ACTIVE_SET_CPP_DEBUG
-#ifdef ACTIVE_SET_CPP_DEBUG
+#if defined(ACTIVE_SET_CPP_DEBUG) && !defined(_MSC_VER)
 #  warning "ACTIVE_SET_CPP_DEBUG"
 #endif
   using namespace Eigen;
@@ -67,8 +67,8 @@ IGL_INLINE igl::SolverStatus igl::active_set(
   assert((Aieq.size() == 0 && Bieq.size() == 0) || Aieq.cols() == n);
   assert((Aieq.size() == 0 && Bieq.size() == 0) || Aieq.rows() == Bieq.rows());
   assert((Aieq.size() == 0 && Bieq.size() == 0) || Bieq.cols() == 1);
-  Eigen::PlainObjectBase<Derivedlx> lx;
-  Eigen::PlainObjectBase<Derivedux> ux;
+  Eigen::Matrix<typename Derivedlx::Scalar,Eigen::Dynamic,1> lx;
+  Eigen::Matrix<typename Derivedux::Scalar,Eigen::Dynamic,1> ux;
   if(p_lx.size() == 0)
   {
     lx = Eigen::PlainObjectBase<Derivedlx>::Constant(
@@ -172,7 +172,7 @@ IGL_INLINE igl::SolverStatus igl::active_set(
 
     const int as_lx_count = count(as_lx.data(),as_lx.data()+n,TRUE);
     const int as_ux_count = count(as_ux.data(),as_ux.data()+n,TRUE);
-    const int as_ieq_count = 
+    const int as_ieq_count =
       count(as_ieq.data(),as_ieq.data()+as_ieq.size(),TRUE);
 #ifndef NDEBUG
     {
@@ -261,7 +261,7 @@ IGL_INLINE igl::SolverStatus igl::active_set(
       }
     }
 #endif
-    
+
     Eigen::PlainObjectBase<DerivedZ> sol;
     if(known_i.size() == A.rows())
     {
@@ -315,7 +315,7 @@ IGL_INLINE igl::SolverStatus igl::active_set(
     slice(B,known_i,Bk);
     MatrixXd Lambda_known_i = -(0.5*Ak*Z + 0.5*Bk);
     // reverse the lambda values for lx
-    Lambda_known_i.block(nk,0,as_lx_count,1) = 
+    Lambda_known_i.block(nk,0,as_lx_count,1) =
       (-1*Lambda_known_i.block(nk,0,as_lx_count,1)).eval();
 
     // Extract Lagrange multipliers for Aieq_i (always at back of sol)
@@ -324,7 +324,7 @@ IGL_INLINE igl::SolverStatus igl::active_set(
     {
       Lambda_Aieq_i(Aieq_i.rows()-1-l) = sol(sol.rows()-1-l);
     }
-    
+
     // Remove from active set
     for(int l = 0;l<as_lx_count;l++)
     {
@@ -335,7 +335,7 @@ IGL_INLINE igl::SolverStatus igl::active_set(
     }
     for(int u = 0;u<as_ux_count;u++)
     {
-      if(Lambda_known_i(nk + as_lx_count + u) < 
+      if(Lambda_known_i(nk + as_lx_count + u) <
         params.inactive_threshold)
       {
         as_ux(known_i(nk + as_lx_count + u)) = FALSE;
@@ -366,4 +366,5 @@ IGL_INLINE igl::SolverStatus igl::active_set(
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
 template igl::SolverStatus igl::active_set<double, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, double, Eigen::Matrix<double, -1, 1, 0, -1, 1>, double, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1> >(Eigen::SparseMatrix<double, 0, int> const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::SparseMatrix<double, 0, int> const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::SparseMatrix<double, 0, int> const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, igl::active_set_params const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&);
+template igl::SolverStatus igl::active_set<double, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, double, Eigen::Matrix<double, -1, 1, 0, -1, 1>, double, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::SparseMatrix<double, 0, int> const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::SparseMatrix<double, 0, int> const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::SparseMatrix<double, 0, int> const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, igl::active_set_params const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
 #endif

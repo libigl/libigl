@@ -7,6 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "doublearea.h"
 #include "edge_lengths.h"
+#include "parallel_for.h"
 #include "sort.h"
 #include <cassert>
 #include <iostream>
@@ -25,7 +26,7 @@ IGL_INLINE void igl::doublearea(
   assert(F.cols() == 3);
   const size_t m = F.rows();
   // Compute edge lengths
-  Eigen::PlainObjectBase<DerivedV> l;
+  Eigen::Matrix<typename DerivedV::Scalar, Eigen::Dynamic, 3> l;
   // "Lecture Notes on Geometric Robustness" Shewchuck 09, Section 3.1
   // http://www.cs.berkeley.edu/~jrs/meshpapers/robnotes.pdf
 
@@ -101,7 +102,7 @@ IGL_INLINE void igl::doublearea(
     }
     default:
     {
-      Eigen::Matrix<typename DerivedD::Scalar,DerivedD::RowsAtCompileTime,3> 
+      Eigen::Matrix<typename DerivedD::Scalar,DerivedD::RowsAtCompileTime,3>
         uL(A.rows(),3);
       uL.col(0) = (B-C).rowwise().norm();
       uL.col(1) = (C-A).rowwise().norm();
@@ -140,7 +141,7 @@ IGL_INLINE void igl::doublearea(
   assert(ul.cols() == 3);
   // Number of triangles
   const Index m = ul.rows();
-  Eigen::PlainObjectBase<Derivedl> l;
+  Eigen::Matrix<typename Derivedl::Scalar, Eigen::Dynamic, 3> l;
   MatrixXi _;
   sort(ul,2,false,l,_);
   // semiperimeters
@@ -148,28 +149,21 @@ IGL_INLINE void igl::doublearea(
   assert((Index)s.rows() == m);
   // resize output
   dblA.resize(l.rows(),1);
-  // Minimum number of iterms per openmp thread
-  #ifndef IGL_OMP_MIN_VALUE
-  #  define IGL_OMP_MIN_VALUE 1000
-  #endif
-  #pragma omp parallel for if (m>IGL_OMP_MIN_VALUE)
-  for(Index i = 0;i<m;i++)
-  {
-    //// Heron's formula for area
-    //const typename Derivedl::Scalar arg =
-    //  s(i)*(s(i)-l(i,0))*(s(i)-l(i,1))*(s(i)-l(i,2));
-    //assert(arg>=0);
-    //dblA(i) = 2.0*sqrt(arg);
-    // Kahan's Heron's formula
-    const typename Derivedl::Scalar arg =
-      (l(i,0)+(l(i,1)+l(i,2)))*
-      (l(i,2)-(l(i,0)-l(i,1)))*
-      (l(i,2)+(l(i,0)-l(i,1)))*
-      (l(i,0)+(l(i,1)-l(i,2)));
-    dblA(i) = 2.0*0.25*sqrt(arg);
-    assert( l(i,2) - (l(i,0)-l(i,1)) && "FAILED KAHAN'S ASSERTION");
-    assert(dblA(i) == dblA(i) && "DOUBLEAREA() PRODUCED NaN");
-  }
+  parallel_for(
+    m,
+    [&l,&dblA](const int i)
+    {
+      // Kahan's Heron's formula
+      const typename Derivedl::Scalar arg =
+        (l(i,0)+(l(i,1)+l(i,2)))*
+        (l(i,2)-(l(i,0)-l(i,1)))*
+        (l(i,2)+(l(i,0)-l(i,1)))*
+        (l(i,0)+(l(i,1)-l(i,2)));
+      dblA(i) = 2.0*0.25*sqrt(arg);
+      assert( l(i,2) - (l(i,0)-l(i,1)) && "FAILED KAHAN'S ASSERTION");
+      assert(dblA(i) == dblA(i) && "DOUBLEAREA() PRODUCED NaN");
+    },
+    1000l);
 }
 
 template <typename DerivedV, typename DerivedF, typename DeriveddblA>
@@ -218,4 +212,8 @@ template Eigen::Matrix<double, 2, 1, 0, 2, 1>::Scalar igl::doublearea_single<Eig
 template void igl::doublearea<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
 template void igl::doublearea<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
 template void igl::doublearea<Eigen::Matrix<double, 1, 3, 1, 1, 3>, Eigen::Matrix<double, 1, 3, 1, 1, 3>, Eigen::Matrix<double, 1, 3, 1, 1, 3>, Eigen::Matrix<double, 1, 1, 0, 1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 1, 0, 1, 1> >&);
+template void igl::doublearea<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
+template void igl::doublearea<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
+template Eigen::Matrix<double, -1, -1, 0, -1, -1>::Scalar igl::doublearea_single<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&);
+template void igl::doublearea<Eigen::Matrix<double, -1, 3, 1, -1, 3>, Eigen::Matrix<int, -1, 3, 1, -1, 3>, Eigen::Matrix<double, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 1, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 1, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&);
 #endif

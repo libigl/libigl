@@ -14,16 +14,19 @@ IGL_INLINE void igl::mod(
   Eigen::PlainObjectBase<DerivedB> & B)
 {
   B.resize(A.rows(),A.cols());
-  for(int i = 0;i<B.size();i++)
+  for(int i = 0;i<A.rows();i++)
   {
-    *(B.data()+i) = (*(A.data()+i))%base;
+    for(int j = 0;j<A.cols();j++)
+    {
+      B(i,j) = A(i,j)%base;
+    }
   }
 }
 template <typename DerivedA>
-IGL_INLINE Eigen::PlainObjectBase<DerivedA> igl::mod(
+IGL_INLINE DerivedA igl::mod(
   const Eigen::PlainObjectBase<DerivedA> & A, const int base)
 {
-  Eigen::PlainObjectBase<DerivedA> B;
+  DerivedA B;
   mod(A,base,B);
   return B;
 }

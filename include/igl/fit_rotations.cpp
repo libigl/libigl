@@ -71,7 +71,7 @@ IGL_INLINE void igl::fit_rotations_planar(
   using namespace std;
   const int dim = S.cols();
   const int nr = S.rows()/dim;
-  assert(dim == 2 && "_planar input should be 2D");
+  //assert(dim == 2 && "_planar input should be 2D");
   assert(nr * dim == S.rows());
 
   // resize output
@@ -105,6 +105,7 @@ IGL_INLINE void igl::fit_rotations_planar(
 #endif  
 
     // Not sure why polar_dec computes transpose...
+    R.block(0,r*dim,dim,dim).setIdentity();
     R.block(0,r*dim,2,2) = ri.transpose();
   }
 }

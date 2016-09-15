@@ -1,5 +1,6 @@
 # libigl - A simple C++ geometry processing library
-
+[![Build Status](https://travis-ci.org/libigl/libigl.svg?branch=master)](https://travis-ci.org/libigl/libigl)
+[![Build status](https://ci.appveyor.com/api/projects/status/mf3t9rnhco0vhly8?svg=true)](https://ci.appveyor.com/project/danielepanozzo/libigl-6hjk1)
 ![](libigl-teaser.png)
 
 <https://github.com/libigl/libigl/>
@@ -22,8 +23,8 @@ It is **a header-only library**. You do not need to compile anything to use,
 just include igl headers (e.g. `#include <igl/cotmatrix.h>`) and run.  Each
 header file contains a single function (e.g. `igl/cotmatrix.h` contains
 `igl::cotmatrix()`). Most are tailored to operate on a generic triangle mesh
-stored in an n-by-3 matrix of vertex positions V and an m-by-3 matrix of
-triangle indices F.
+stored in an n-by-3 matrix of vertex positions `V` and an m-by-3 matrix of
+triangle indices `F`.
 
 _Optionally_ the library may also be [pre-compiled](optional/) into a statically
 linked library, for faster compile times with your projects. This only effects
@@ -33,6 +34,9 @@ the header-only default mode: (i.e. just include the headers you want to use).
 We use the [Eigen](http://eigen.tuxfamily.org) library heavily in our code. Our
 group prototypes a lot in MATLAB, and we have a useful [MATLAB to libigl+Eigen
 conversion table](matlab-to-eigen.html).
+
+We regularly test compiling our library on Mac OS X with clang, Linux with gcc
+and Windows with Visual Studio 2015 Community Edition.
 
 ## Tutorial
 
@@ -90,7 +94,7 @@ libigl depends only on the [Eigen](http://eigen.tuxfamily.org) library.
 
 For more information see our [tutorial](tutorial/tutorial.html).
 
-### Optional dependencies ###
+### Optional dependencies
 
 Libigl compartmentalizes its **optional** dependences via its directory
 organization in the `include/` folder. All header files located _directly_ in
@@ -151,7 +155,7 @@ subrepos:
 
 ```bash
 git pull
-git submodule update -- recursive
+git submodule update --recursive
 ```
 
 ## Unit testing
@@ -181,7 +185,7 @@ BibTeX entry:
   title = {{libigl}: A simple {C++} geometry processing library},
   author = {Alec Jacobson and Daniele Panozzo and others},
   note = {http://libigl.github.io/libigl/},
-  year = {2015},
+  year = {2016},
 }
 ```
 
@@ -190,23 +194,39 @@ Libigl is used by many research groups around the world. In 2015, it won the
 Eurographics/ACM Symposium on Geometry Processing software award. Here are a
 few labs/companies/institutions using libigl:
 
+ - [Activision](http://www.activision.com)
+ - [Adobe Research](http://www.adobe.com/technology/)  
+ - [Electronic Arts, Inc](http://www.ea.com)
+ - [Epic Games](https://epicgames.com)
+ - [Google Research](https://research.google.com)
+ - [Mesh](http://meshconsultants.ca/), consultants, Canada
+ - [Pixar Research](http://graphics.pixar.com/research/)
  - [Spine by Esoteric Software](http://esotericsoftware.com/) is an animation tool dedicated to 2D characters.
  - Columbia University, [Columbia Computer Graphics Group](http://www.cs.columbia.edu/cg/), USA
  - [Cornell University](http://www.graphics.cornell.edu/), USA
+ - [Czech Technical University in Prague](http://dcgi.felk.cvut.cz/), Czech
  - EPF Lausanne, [Computer Graphics and Geometry Laboratory](http://lgg.epfl.ch/people.php), Switzerland
  - ETH Zurich, [Interactive Geometry Lab](http://igl.ethz.ch/) and [Advanced Technologies Lab](http://ait.inf.ethz.ch/), Swizterland
  - George Mason University, [CraGL](http://cs.gmu.edu/~ygingold/), USA
- - [Hong Kong University of Science and Technology](http://www.ust.hk/), USA
+ - [Hong Kong University of Science and Technology](http://www.ust.hk/), Hong Kong
  - [National Institute of Informatics](http://www.nii.ac.jp/en/), Japan
  - New York University, [Media Research Lab](http://mrl.nyu.edu/), USA
  - NYUPoly, [Game Innovation Lab](http://game.engineering.nyu.edu/), USA
- - [Telecom ParisTech](http://www.telecom-paristech.fr/en/formation-et-innovation-dans-le-numerique.html), Paris, France
+ - [TU Berlin](https://www.cg.tu-berlin.de), Germany
  - [TU Delft](http://www.tudelft.nl/en/), Netherlands
+ - [TU Wien](https://www.tuwien.ac.at/en/tuwien_home/), Austria
+ - [Telecom ParisTech](http://www.telecom-paristech.fr/en/formation-et-innovation-dans-le-numerique.html), Paris, France
  - [Universidade Federal de Santa Catarina](http://mtm.ufsc.br/~leo/), Brazil
- - [Università della Svizzera Italiana](http://www.usi.ch/en), Switzerland
  - [University College London](http://vecg.cs.ucl.ac.uk/), England
+ - [University of California Berkeley](http://vis.berkeley.edu/), USA
  - [University of Cambridge](http://www.cam.ac.uk/), England
  - [University of Pennsylvania](http://cg.cis.upenn.edu/), USA
+ - [University of Texas at Austin](http://www.cs.utexas.edu/users/evouga/), USA
+ - [University of Toronto](http://dgp.toronto.edu), Canada
+ - [University of Victoria](https://www.csc.uvic.ca/Research/graphics/), Canada
+ - [Università della Svizzera Italiana](http://www.usi.ch/en), Switzerland
+ - [Université Toulouse III Paul Sabatier](http://www.univ-tlse3.fr/), France
+ - [Zhejiang University](http://www.math.zju.edu.cn/cagd/), China
 
 
 ## Contact
@@ -227,8 +247,8 @@ If you find bugs or have problems please use our [github issue tracking
 page](https://github.com/libigl/libigl/issues).
 
 ## Copyright
-2015 Alec Jacobson, Daniele Panozzo, Christian Schüller, Olga Diamanti, Qingnan
-Zhou, Nico Pietroni, Stefan Brugger, Kenshi Takayama, Wenzel Jakob, Nikolas De
+2016 Alec Jacobson, Daniele Panozzo, Christian Schüller, Olga Diamanti, Qingnan
+Zhou, Sebastian Koch, Nico Pietroni, Stefan Brugger, Kenshi Takayama, Wenzel Jakob, Nikolas De
 Giorgis, Luigi Rocca, Leonardo Sacht, Kevin Walliman, Olga Sorkine-Hornung, and others.
 
 Please see individual files for appropriate copyright notices.

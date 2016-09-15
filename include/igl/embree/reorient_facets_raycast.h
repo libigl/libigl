@@ -14,7 +14,9 @@ namespace igl
   namespace embree
   {
     // Orient each component (identified by C) of a mesh (V,F) using ambient
-    // occlusion such that the front side is less occluded than back side
+    // occlusion such that the front side is less occluded than back side, as
+    // described in "A Simple Method for Correcting Facet Orientations in
+    // Polygon Meshes Based on Ray Casting" [Takayama et al. 2014].
     //
     // Inputs:
     //   V  #V by 3 list of vertex positions

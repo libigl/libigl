@@ -13,6 +13,12 @@
 #include <Eigen/Core>
 #include <vector>
 
+#include <CGAL/AABB_tree.h>
+#include <CGAL/AABB_traits.h>
+#include <CGAL/AABB_triangle_primitive.h>
+#include <CGAL/intersections.h>
+#include <CGAL/Exact_predicates_exact_constructions_kernel.h>
+
 namespace igl
 {
   namespace copyleft
@@ -32,14 +38,14 @@ namespace igl
       //   S  #P list of bools indicating on which side of the closest facet
       //      each query point lies.
       template<
-          typename DerivedV,
-          typename DerivedF,
-          typename DerivedI,
-          typename DerivedP,
-          typename uE2EType,
-          typename DerivedEMAP,
-          typename DerivedR,
-          typename DerivedS >
+        typename DerivedV,
+        typename DerivedF,
+        typename DerivedI,
+        typename DerivedP,
+        typename uE2EType,
+        typename DerivedEMAP,
+        typename DerivedR,
+        typename DerivedS >
       IGL_INLINE void closest_facet(
         const Eigen::PlainObjectBase<DerivedV>& V,
         const Eigen::PlainObjectBase<DerivedF>& F,
@@ -49,23 +55,51 @@ namespace igl
         const Eigen::PlainObjectBase<DerivedEMAP>& EMAP,
               Eigen::PlainObjectBase<DerivedR>& R,
               Eigen::PlainObjectBase<DerivedS>& S);
-
       template<
-          typename DerivedV,
-          typename DerivedF,
-          typename DerivedP,
-          typename uE2EType,
-          typename DerivedEMAP,
-          typename DerivedR,
-          typename DerivedS >
+        typename DerivedV,
+        typename DerivedF,
+        typename DerivedP,
+        typename uE2EType,
+        typename DerivedEMAP,
+        typename DerivedR,
+        typename DerivedS >
       IGL_INLINE void closest_facet(
-              const Eigen::PlainObjectBase<DerivedV>& V,
-              const Eigen::PlainObjectBase<DerivedF>& F,
-              const Eigen::PlainObjectBase<DerivedP>& P,
-              const std::vector<std::vector<uE2EType> >& uE2E,
-              const Eigen::PlainObjectBase<DerivedEMAP>& EMAP,
-              Eigen::PlainObjectBase<DerivedR>& R,
-              Eigen::PlainObjectBase<DerivedS>& S);
+        const Eigen::PlainObjectBase<DerivedV>& V,
+        const Eigen::PlainObjectBase<DerivedF>& F,
+        const Eigen::PlainObjectBase<DerivedP>& P,
+        const std::vector<std::vector<uE2EType> >& uE2E,
+        const Eigen::PlainObjectBase<DerivedEMAP>& EMAP,
+        Eigen::PlainObjectBase<DerivedR>& R,
+        Eigen::PlainObjectBase<DerivedS>& S);
+      template<
+        typename DerivedV,
+        typename DerivedF,
+        typename DerivedI,
+        typename DerivedP,
+        typename uE2EType,
+        typename DerivedEMAP,
+        typename Kernel,
+        typename DerivedR,
+        typename DerivedS >
+      IGL_INLINE void closest_facet(
+          const Eigen::PlainObjectBase<DerivedV>& V,
+          const Eigen::PlainObjectBase<DerivedF>& F,
+          const Eigen::PlainObjectBase<DerivedI>& I,
+          const Eigen::PlainObjectBase<DerivedP>& P,
+          const std::vector<std::vector<uE2EType> >& uE2E,
+          const Eigen::PlainObjectBase<DerivedEMAP>& EMAP,
+          const std::vector<std::vector<size_t> > & VF,
+          const std::vector<std::vector<size_t> > & VFi,
+          const CGAL::AABB_tree<
+            CGAL::AABB_traits<
+              Kernel, 
+              CGAL::AABB_triangle_primitive<
+                Kernel, typename std::vector<
+                  typename Kernel::Triangle_3 >::iterator > > > & tree,
+          const std::vector<typename Kernel::Triangle_3 > & triangles,
+          const std::vector<bool> & in_I,
+          Eigen::PlainObjectBase<DerivedR>& R,
+          Eigen::PlainObjectBase<DerivedS>& S);
     }
   }
 }

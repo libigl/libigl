@@ -17,7 +17,7 @@ struct State : public igl::Serializable
 
   // You have to define this function to
   // register the fields you want to serialize
-  void InitSerialization()
+  virtual void InitSerialization()
   {
     this->Add(V  , "V");
     this->Add(F  , "F");
@@ -25,21 +25,42 @@ struct State : public igl::Serializable
   }
 };
 
-// alternatively you can do it like the following to have
-// a non-intrusive serialization:
+//// alternatively you can do it like the following to have
+//// a non-intrusive serialization:
+////
+//struct State
+//{
+//  Eigen::MatrixXd V;
+//  Eigen::MatrixXi F;
+//  std::vector<int> ids;
+//};
 //
-// struct State
-// {
-//   Eigen::MatrixXd V;
-//   Eigen::MatrixXi F;
-//   std::vector<int> ids;
-// };
+//
+//namespace igl
+//{
+//  namespace serialization
+//  {
+//    // the `template <>` is essential
+//    template <> inline void serialize(const State& obj,std::vector<char>& buffer){
+//      ::igl::serialize(obj.V,std::string("V"),buffer);
+//      ::igl::serialize(obj.F,std::string("F"),buffer);
+//      ::igl::serialize(obj.ids,std::string("ids"),buffer);
+//    }
+//    template <> inline void deserialize(State& obj,const std::vector<char>& buffer){
+//      ::igl::deserialize(obj.V,std::string("V"),buffer);
+//      ::igl::deserialize(obj.F,std::string("F"),buffer);
+//      ::igl::deserialize(obj.ids,std::string("ids"),buffer);
+//    }
+//  }
+//}
+//
+////OR:
 // 
-// SERIALIZE_TYPE(State,
-//  SERIALIZE_MEMBER(V)
-//   SERIALIZE_MEMBER(F)
-//   SERIALIZE_MEMBER_NAME(ids,"ids")
-// )
+//SERIALIZE_TYPE(State,
+// SERIALIZE_MEMBER(V)
+//  SERIALIZE_MEMBER(F)
+//  SERIALIZE_MEMBER_NAME(ids,"ids")
+//)
 
 int main(int argc, char *argv[])
 {

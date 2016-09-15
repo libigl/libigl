@@ -2,7 +2,6 @@
 #include <igl/barycenter.h>
 #include <igl/comb_cross_field.h>
 #include <igl/comb_frame_field.h>
-#include <igl/comiso/miq.h>
 #include <igl/compute_frame_field_bisectors.h>
 #include <igl/cross_field_missmatch.h>
 #include <igl/cut_mesh_from_singularities.h>
@@ -10,7 +9,8 @@
 #include <igl/local_basis.h>
 #include <igl/readOFF.h>
 #include <igl/rotate_vectors.h>
-#include <igl/comiso/nrosy.h>
+#include <igl/copyleft/comiso/miq.h>
+#include <igl/copyleft/comiso/nrosy.h>
 #include <igl/viewer/Viewer.h>
 #include <sstream>
 
@@ -249,7 +249,7 @@ int main(int argc, char *argv[])
 
   // Create a smooth 4-RoSy field
   VectorXd S;
-  igl::comiso::nrosy(V,F,b,bc,VectorXi(),VectorXd(),MatrixXd(),4,0.5,X1,S);
+  igl::copyleft::comiso::nrosy(V,F,b,bc,VectorXi(),VectorXd(),MatrixXd(),4,0.5,X1,S);
 
   // Find the the orthogonal vector
   MatrixXd B1,B2,B3;
@@ -280,7 +280,7 @@ int main(int argc, char *argv[])
   igl::comb_frame_field(V, F, X1, X2, BIS1_combed, BIS2_combed, X1_combed, X2_combed);
 
   // Global parametrization
-  igl::comiso::miq(V,
+  igl::copyleft::comiso::miq(V,
            F,
            X1_combed,
            X2_combed,
@@ -297,7 +297,7 @@ int main(int argc, char *argv[])
            true);
 
 // Global parametrization (with seams, only for demonstration)
-igl::comiso::miq(V,
+igl::copyleft::comiso::miq(V,
          F,
          X1_combed,
          X2_combed,

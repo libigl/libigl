@@ -6,13 +6,16 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "edges.h"
-
 #include "adjacency_matrix.h"
 
-IGL_INLINE void igl::edges( const Eigen::MatrixXi& F, Eigen::MatrixXi& E)
+template <typename DerivedF, typename DerivedE>
+IGL_INLINE void igl::edges(
+  const Eigen::PlainObjectBase<DerivedF> & F, 
+  Eigen::PlainObjectBase<DerivedE> & E)
 {
   // build adjacency matrix
-  Eigen::SparseMatrix<int> A;
+  typedef typename DerivedF::Scalar Index;
+  Eigen::SparseMatrix<Index> A;
   igl::adjacency_matrix(F,A);
   // Number of non zeros should be twice number of edges
   assert(A.nonZeros()%2 == 0);
@@ -23,7 +26,7 @@ IGL_INLINE void igl::edges( const Eigen::MatrixXi& F, Eigen::MatrixXi& E)
   for(int k=0; k<A.outerSize(); ++k)
   {
     // Iterate over inside
-    for(Eigen::SparseMatrix<int>::InnerIterator it (A,k); it; ++it)
+    for(typename Eigen::SparseMatrix<Index>::InnerIterator it (A,k); it; ++it)
     {
       // only add edge in one direction
       if(it.row()<it.col())

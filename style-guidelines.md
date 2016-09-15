@@ -39,8 +39,6 @@ namespace igl
   // This is an example of a function, it takes a templated parameter and
   // shovels it into cout
   //
-  // Templates:
-  //   T  type that supports
   // Input:
   //   input  some input of a Printable type
   // Returns true for the sake of returning something
@@ -94,7 +92,12 @@ new pair of .h/.cpp files with this sub-function.
 
 If encapsulation in a separate file is not possible or does not make sense,
 then avoid crowding the namespace by creating lambda functions within the
-function implmentation.
+function implementation.
+
+These lambda functions must still be documented with clear [input and output
+arguments](#headerdocumentation). Avoid using full capturing of all automatic
+variables: do not use `[&]` or `[=]`. Rather specify each captured variable
+individually.
 
 ### Avoid "helper" classes
 
@@ -103,7 +106,6 @@ rather than "array of structs". The way we achieve this is to avoid classes and
 pass "basic types" directly. The price we pay is long function interfaces, but
 this increases code reuse dramatically. A "basic type" in our context is a
 Eigen type, stl type, or basic C type.
-
 
 ## Header Documentation
 
@@ -160,7 +162,7 @@ than pointers (e.g. `Matrix * mat`) or value (e.g. `Matrix mat`).
 All functions should be implemented with at least one overload that has a
 `void` or simple return type (e.g. `bool` on success/failure). With this
 implementation its then possible to write an overload that returns a single
-output.
+output. Please see [Templating with Eigen](#templatingwitheigen).
 
 For example:
 
@@ -171,6 +173,81 @@ void adjacency_matrix(const ... & F, Eigen::SparseMatrix<AType> & A);
 template <typename Atype>
 Eigen::SparseMatrix<Atype> adjacency_matrix(const ... & F);
 ```
+
+## Templating with Eigen
+
+Functions taking Eigen dense matrices/arrays as inputs and outputs (but **not**
+return arguments), should template on top of `Eigen::PlainObjectBase`. **Each
+parameter** should be derived using its own template.
+
+For example,
+
+```cpp
+template <typename DerivedV, typename DerivedF, typename DerivedBC>
+void barycenter(
+  const Eigen::PlainObjectBase<DerivedV> & V,
+  const Eigen::PlainObjectBase<DerivedF> & F,
+  const Eigen::PlainObjectBase<DerivedBC> & BC);
+```
+
+The `Derived*` template encodes the scalar type (e.g. `double`, `int`), the
+number of rows and cols at compile time, and the data storage (Row-major vs.
+column-major). 
+
+Returning Eigen types is discouraged. In cases where the size and scalar type
+are a fixed **and matching** function of an input `Derived*` template, then
+return that `Derived*` type. **Do not** return
+`Eigen::PlainObjectBase<...>` types. For example, this function scales fits a
+given set of points to the unit cube. The return is a new set of vertex
+positions so its type should _match_ that of the input points:
+
+```cpp
+template <typename DerivedV>
+void DerivedV fit_to_unit_cube(const Eigen::PlainObjectBase<DerivedV> & V);
+```
+
+To implement this function, it is **required** to implement a more generic
+output-argument version and call that. So a full implementation looks like:
+
+In `igl/fit_in_unit_cube.h`:
+
+```cpp
+template <typename DerivedV, typename DerivedW>
+void fit_to_unit_cube(
+  const Eigen::PlainObjectBase<DerivedV> & V,
+  Eigen::PlainObjectBase<DerivedW> & W);
+template <typename DerivedV>
+void DerivedV fit_to_unit_cube(const Eigen::PlainObjectBase<DerivedV> & V);
+```
+
+In `igl/fit_in_unit_cube.cpp`:
+
+```
+template <typename DerivedV, typename DerivedW>
+void fit_to_unit_cube(
+  const Eigen::PlainObjectBase<DerivedV> & V,
+  Eigen::PlainObjectBase<DerivedW> & W)
+{
+  W = (V.rowwise()-V.colwise().minCoeff()).array() /
+    (V.maxCoeff()-V.minCoeff());
+}
+
+template <typename DerivedV>
+void DerivedV fit_to_unit_cube(const Eigen::PlainObjectBase<DerivedV> & V)
+{
+  DerivedV W;
+  fit_to_unit_cube(V,W);
+  return W;
+}
+```
+
+Notice that `W` is declared as a `DerivedV` type and **not**
+`Eigen::PlainObjectBase<DerivedV>` type.
+
+**Note:** Not all functions are suitable for returning Eigen types. For example
+`igl::barycenter` above outputs a #F by dim list of barycenters. Returning a
+`DerivedV` type would be inappropriate since the number of rows in `DerivedV`
+will be #V and may not match the number of rows in `DerivedF` (#F).
 
 ## Function naming conventions 
 
@@ -302,3 +379,14 @@ edited by you first. This means for
 
 Whenever possible `#include` directives should be placed in the `.cpp`
 implementation file rather than the `.h` header file.
+
+## Warnings
+
+Code should compile without firing any warnings.
+
+### An Exception
+
+The only exception is for the use of the deprecated
+`Eigen::DynamicSparseMatrix` in core sub-routines (e.g. `igl::cat`). This class
+is still supported and faster than the standard, non-deprecated Eigen
+implementation so we're keeping it as long as possible and profitable.
