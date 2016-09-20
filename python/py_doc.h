@@ -13,6 +13,7 @@ extern const char *__doc_igl_comb_cross_field;
 extern const char *__doc_igl_comb_frame_field;
 extern const char *__doc_igl_compute_frame_field_bisectors;
 extern const char *__doc_igl_copyleft_cgal_mesh_boolean;
+extern const char *__doc_igl_copyleft_cgal_remesh_self_intersections;
 extern const char *__doc_igl_copyleft_comiso_miq;
 extern const char *__doc_igl_copyleft_comiso_nrosy;
 extern const char *__doc_igl_copyleft_marching_cubes;
