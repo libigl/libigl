@@ -66,6 +66,8 @@ PYBIND11_PLUGIN(pyigl) {
            comb_frame_field
            compute_frame_field_bisectors
            copyleft_cgal_mesh_boolean
+           copyleft_cgal_remesh_self_intersections
+           copyleft_cgal_RemeshSelfIntersectionsParam
            copyleft_comiso_miq
            copyleft_comiso_nrosy
            copyleft_marching_cubes
