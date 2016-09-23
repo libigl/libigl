@@ -119,6 +119,7 @@ PYBIND11_PLUGIN(pyigl) {
            readOBJ
            readOFF
            read_triangle_mesh
+           remove_duplicate_vertices
            rotate_vectors
            setdiff
            signed_distance
