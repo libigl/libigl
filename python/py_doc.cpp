@@ -905,6 +905,25 @@ const char *__doc_igl_read_triangle_mesh = R"igl_Qu8mg5v7(// read mesh from an a
   //   V  eigen double matrix #V by 3
   //   F  eigen int matrix #F by 3
   // Returns true iff success)igl_Qu8mg5v7";
+const char *__doc_igl_remove_duplicate_vertices = R"igl_Qu8mg5v7(  // REMOVE_DUPLICATE_VERTICES Remove duplicate vertices upto a uniqueness
+  // tolerance (epsilon)
+  //
+  // Inputs:
+  //   V  #V by dim list of vertex positions
+  //   epsilon  uniqueness tolerance (significant digit), can probably think of
+  //     this as a tolerance on L1 distance
+  // Outputs:
+  //   SV  #SV by dim new list of vertex positions
+  //   SVI #V by 1 list of indices so SV = V(SVI,:)
+  //   SVJ #SV by 1 list of indices so V = SV(SVJ,:)
+  //
+  // Example:
+  //   % Mesh in (V,F)
+  //   [SV,SVI,SVJ] = remove_duplicate_vertices(V,1e-7);
+  //   % remap faces
+  //   SF = SVJ(F);
+  //
+  //)igl_Qu8mg5v7";
 const char *__doc_igl_rotate_vectors = R"igl_Qu8mg5v7(// Rotate the vectors V by A radiants on the tangent plane spanned by B1 and
   // B2
   //

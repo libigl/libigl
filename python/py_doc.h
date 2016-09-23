@@ -72,6 +72,7 @@ extern const char *__doc_igl_readMESH;
 extern const char *__doc_igl_readOBJ;
 extern const char *__doc_igl_readOFF;
 extern const char *__doc_igl_read_triangle_mesh;
+extern const char *__doc_igl_remove_duplicate_vertices;
 extern const char *__doc_igl_rotate_vectors;
 extern const char *__doc_igl_setdiff;
 extern const char *__doc_igl_signed_distance;
