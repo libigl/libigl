@@ -18,7 +18,7 @@ IGL_INLINE bool igl::writeDMAT(
   const Mat & W,
   const bool ascii)
 {
-  FILE * fp = fopen(file_name.c_str(),"w");
+  FILE * fp = fopen(file_name.c_str(),"wb");
   if(fp == NULL)
   {
     fprintf(stderr,"IOError: writeDMAT() could not open %s...",file_name.c_str());
