@@ -182,6 +182,40 @@ const char *__doc_igl_copyleft_cgal_mesh_boolean = R"igl_Qu8mg5v7(//  MESH_BOOLE
       //
       //  See also: mesh_boolean_cork, intersect_other,
       //  remesh_self_intersections)igl_Qu8mg5v7";
+const char *__doc_igl_copyleft_cgal_remesh_self_intersections = R"igl_Qu8mg5v7(// Given a triangle mesh (V,F) compute a new mesh (VV,FF) which is the same
+      // as (V,F) except that any self-intersecting triangles in (V,F) have been
+      // subdivided (new vertices and face created) so that the self-intersection
+      // contour lies exactly on edges in (VV,FF). New vertices will appear in
+      // original faces or on original edges. New vertices on edges are "merged"
+      // only across original faces sharing that edge. This means that if the input
+      // triangle mesh is a closed manifold the output will be too.
+      //
+      // Inputs:
+      //   V  #V by 3 list of vertex positions
+      //   F  #F by 3 list of triangle indices into V
+      //   params  struct of optional parameters
+      // Outputs:
+      //   VV  #VV by 3 list of vertex positions
+      //   FF  #FF by 3 list of triangle indices into VV
+      //   IF  #intersecting face pairs by 2  list of intersecting face pairs,
+      //     indexing F
+      //   J  #FF list of indices into F denoting birth triangle
+      //   IM  #VV list of indices into VV of unique vertices.
+      //
+      // Known bugs: If an existing edge in (V,F) lies exactly on another face then
+      // any resulting additional vertices along that edge may not get properly
+      // connected so that the output mesh has the same global topology. This is
+      // because 
+      //
+      // Example:
+      //     // resolve intersections
+      //     igl::copyleft::cgal::remesh_self_intersections(V,F,params,VV,FF,IF,J,IM);
+      //     // _apply_ duplicate vertex mapping IM to FF
+      //     for_each(FF.data(),FF.data()+FF.size(),[&IM](int & a){a=IM(a);});
+      //     // remove any vertices now unreferenced after duplicate mapping.
+      //     igl::remove_unreferenced(VV,FF,SV,SF,UIM);
+      //     // Now (SV,SF) is ready to extract outer hull
+      //     igl::copyleft::cgal::outer_hull(SV,SF,G,J,flip);igl_Qu8mg5v7";
 const char *__doc_igl_copyleft_comiso_miq = R"igl_Qu8mg5v7(// Inputs:
     //   V              #V by 3 list of mesh vertex 3D positions
     //   F              #F by 3 list of faces indices in V
@@ -871,6 +905,25 @@ const char *__doc_igl_read_triangle_mesh = R"igl_Qu8mg5v7(// read mesh from an a
   //   V  eigen double matrix #V by 3
   //   F  eigen int matrix #F by 3
   // Returns true iff success)igl_Qu8mg5v7";
+const char *__doc_igl_remove_duplicate_vertices = R"igl_Qu8mg5v7(  // REMOVE_DUPLICATE_VERTICES Remove duplicate vertices upto a uniqueness
+  // tolerance (epsilon)
+  //
+  // Inputs:
+  //   V  #V by dim list of vertex positions
+  //   epsilon  uniqueness tolerance (significant digit), can probably think of
+  //     this as a tolerance on L1 distance
+  // Outputs:
+  //   SV  #SV by dim new list of vertex positions
+  //   SVI #V by 1 list of indices so SV = V(SVI,:)
+  //   SVJ #SV by 1 list of indices so V = SV(SVJ,:)
+  //
+  // Example:
+  //   % Mesh in (V,F)
+  //   [SV,SVI,SVJ] = remove_duplicate_vertices(V,1e-7);
+  //   % remap faces
+  //   SF = SVJ(F);
+  //
+  //)igl_Qu8mg5v7";
 const char *__doc_igl_rotate_vectors = R"igl_Qu8mg5v7(// Rotate the vectors V by A radiants on the tangent plane spanned by B1 and
   // B2
   //

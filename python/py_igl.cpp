@@ -61,6 +61,7 @@
 #include <igl/readOBJ.h>
 #include <igl/readOFF.h>
 #include <igl/read_triangle_mesh.h>
+#include <igl/remove_duplicate_vertices.h>
 #include <igl/rotate_vectors.h>
 #include <igl/setdiff.h>
 #include <igl/signed_distance.h>
@@ -140,6 +141,7 @@ void python_export_igl(py::module &m)
 #include "py_igl/py_readOBJ.cpp"
 #include "py_igl/py_readOFF.cpp"
 #include "py_igl/py_read_triangle_mesh.cpp"
+#include "py_igl/py_remove_duplicate_vertices.cpp"
 #include "py_igl/py_rotate_vectors.cpp"
 #include "py_igl/py_setdiff.cpp"
 #include "py_igl/py_signed_distance.cpp"
