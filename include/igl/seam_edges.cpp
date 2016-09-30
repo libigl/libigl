@@ -11,23 +11,6 @@
 #include <unordered_set>
 #include <cassert>
 
-namespace {
-    // Computes the orientation of `c` relative to the line between `a` and `b`.
-    // Assumes 2D vector input.
-    // Based on: https://www.cs.cmu.edu/~quake/robust.html
-    template< typename scalar_t >
-    inline scalar_t orientation(
-        const Eigen::Matrix< scalar_t, 2, 1 >& a,
-        const Eigen::Matrix< scalar_t, 2, 1 >& b,
-        const Eigen::Matrix< scalar_t, 2, 1 >& c
-        ) {
-        typedef Eigen::Matrix< scalar_t, 2, 1 > Vector2S;
-        const Vector2S row0 = a - c;
-        const Vector2S row1 = b - c;
-        return row0(0)*row1(1) - row1(0)*row0(1);
-    }
-}
-
 // I have verified that this function produces the exact same output as
 // `find_seam_fast.py` for `cow_triangled.obj`.
 template <typename DerivedV, typename DerivedF, typename DerivedT>
@@ -49,6 +32,15 @@ IGL_INLINE void igl::seam_edges(
     // Assume 2D texture coordinates (foldovers tests).
     assert( TC.cols() == 2 );
     typedef Eigen::Matrix< typename DerivedT::Scalar, 2, 1 > Vector2S;
+    // Computes the orientation of `c` relative to the line between `a` and `b`.
+    // Assumes 2D vector input.
+    // Based on: https://www.cs.cmu.edu/~quake/robust.html
+    const auto& Orientation = []( const Vector2S& a, const Vector2S& b, const Vector2S& c ) -> typename DerivedT::Scalar
+    {
+        const Vector2S row0 = a - c;
+        const Vector2S row1 = b - c;
+        return row0(0)*row1(1) - row1(0)*row0(1);
+    };
     
     seams     .setZero( 3*F.rows(), 4 );
     boundaries.setZero( 3*F.rows(), 2 );
@@ -73,7 +65,7 @@ IGL_INLINE void igl::seam_edges(
     typedef std::pair< typename DerivedF::Scalar, typename DerivedF::Scalar > directed_edge;
 	const int numV = V.rows();
 	const int numF = F.rows();
-	auto edge_hasher = [numV]( directed_edge const& e ) { return e.first*numV + e.second; };
+	const auto& edge_hasher = [numV]( directed_edge const& e ) { return e.first*numV + e.second; };
 	// When we pass a hash function object, we also need to specify the number of buckets.
 	// The Euler characteristic says that the number of undirected edges is numV + numF -2*genus.
 	std::unordered_map< directed_edge, std::pair< int, int >, decltype( edge_hasher ) > directed_position_edge2face_position_index( 2*( numV + numF ), edge_hasher );
@@ -84,12 +76,13 @@ IGL_INLINE void igl::seam_edges(
         }
     }
     
-    // First find all undirected position edges (collect both orientations of
+    // First find all undirected position edges (collect a canonical orientation of
     // the directed edges).
     std::unordered_set< directed_edge, decltype( edge_hasher ) > undirected_position_edges( numV + numF, edge_hasher );
     for( const auto& el : directed_position_edge2face_position_index ) {
-        undirected_position_edges.insert( el.first );
-        undirected_position_edges.insert( std::make_pair( el.first.second, el.first.first ) );
+        // The canonical orientation is the one where the smaller of
+        // the two vertex indices is first.
+        undirected_position_edges.insert( std::make_pair( std::min( el.first.first, el.first.second ), std::max( el.first.first, el.first.second ) ) );
     }
     
     // Now we will iterate over all position edges.
@@ -97,6 +90,10 @@ IGL_INLINE void igl::seam_edges(
     // texcoord indices (or one doesn't exist at all in the case of a mesh
     // boundary).
     for( const auto& vp_edge : undirected_position_edges ) {
+        // We should only see canonical edges,
+        // where the first vertex index is smaller.
+        assert( vp_edge.first < vp_edge.second );
+        
         const auto vp_edge_reverse = std::make_pair( vp_edge.second, vp_edge.first );
         // If it and its opposite exist as directed edges, check if their
         // texture coordinate indices match.
@@ -108,12 +105,6 @@ IGL_INLINE void igl::seam_edges(
             // NOTE: They should never be equal.
             assert( forwards != backwards );
             
-            // NOTE: Non-matching seam edges will show up twice, once as
-            //       ( forwards, backwards ) and once as
-            //       ( backwards, forwards ). We don't need to examine both,
-            //       so continue only if forwards < backwards.
-            if( forwards < backwards ) continue;
-
             // If the texcoord indices match (are similarly flipped),
             // this edge is not a seam. It could be a foldover.
             if( std::make_pair( FTC( forwards.first, forwards.second ), FTC( forwards.first, ( forwards.second+1 ) % 3 ) )
@@ -129,8 +120,8 @@ IGL_INLINE void igl::seam_edges(
                 const Vector2S c_backwards = TC.row( FTC( backwards.first, (backwards.second+2) % 3 ) );
                 // If the opposite vertices' texture coordinates fall on the same side
                 // of the edge, we have a UV-space foldover.
-                const auto orientation_forwards = orientation( a, b, c_forwards );
-                const auto orientation_backwards = orientation( a, b, c_backwards );
+                const auto orientation_forwards = Orientation( a, b, c_forwards );
+                const auto orientation_backwards = Orientation( a, b, c_backwards );
                 if( ( orientation_forwards > 0 && orientation_backwards > 0 ) ||
                     ( orientation_forwards < 0 && orientation_backwards < 0 )
                     ) {
