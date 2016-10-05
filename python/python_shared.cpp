@@ -65,9 +65,9 @@ PYBIND11_PLUGIN(pyigl) {
            comb_cross_field
            comb_frame_field
            compute_frame_field_bisectors
+           copyleft_cgal_RemeshSelfIntersectionsParam
            copyleft_cgal_mesh_boolean
            copyleft_cgal_remesh_self_intersections
-           copyleft_cgal_RemeshSelfIntersectionsParam
            copyleft_comiso_miq
            copyleft_comiso_nrosy
            copyleft_marching_cubes
@@ -128,8 +128,7 @@ PYBIND11_PLUGIN(pyigl) {
            slice_mask
            slice_tets
            sortrows
-           streamlines_init
-           streamlines_next
+           streamlines
            triangle_triangle_adjacency
            triangle_triangulate
            unique

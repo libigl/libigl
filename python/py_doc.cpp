@@ -215,7 +215,8 @@ const char *__doc_igl_copyleft_cgal_remesh_self_intersections = R"igl_Qu8mg5v7(/
       //     // remove any vertices now unreferenced after duplicate mapping.
       //     igl::remove_unreferenced(VV,FF,SV,SF,UIM);
       //     // Now (SV,SF) is ready to extract outer hull
-      //     igl::copyleft::cgal::outer_hull(SV,SF,G,J,flip);igl_Qu8mg5v7";
+      //     igl::copyleft::cgal::outer_hull(SV,SF,G,J,flip);
+      //)igl_Qu8mg5v7";
 const char *__doc_igl_copyleft_comiso_miq = R"igl_Qu8mg5v7(// Inputs:
     //   V              #V by 3 list of mesh vertex 3D positions
     //   F              #F by 3 list of faces indices in V
@@ -412,7 +413,7 @@ const char *__doc_igl_edge_lengths = R"igl_Qu8mg5v7(// Constructs a list of leng
   //    or
   //   T  #T by 4 list of mesh elements (must be tets)
   // Outputs:
-  //   L  #F by {1|3|6} list of edge lengths
+  //   L  #F by {1|3|6} list of edge lengths 
   //     for edges, column of lengths
   //     for triangles, columns correspond to edges [1,2],[2,0],[0,1]
   //     for tets, columns correspond to edges
@@ -424,7 +425,8 @@ const char *__doc_igl_edge_topology = R"igl_Qu8mg5v7(// Initialize Edges and the
   // EV  : #Ex2, Stores the edge description as pair of indices to vertices
   // FE : #Fx3, Stores the Triangle-Edge relation
   // EF : #Ex2: Stores the Edge-Triangle relation
-  //)igl_Qu8mg5v7";
+  //
+  // TODO: This seems to be a duplicate of edge_flaps.h)igl_Qu8mg5v7";
 const char *__doc_igl_eigs = R"igl_Qu8mg5v7(See eigs for the documentation.)igl_Qu8mg5v7";
 const char *__doc_igl_embree_ambient_occlusion = R"igl_Qu8mg5v7(// Compute ambient occlusion per given point
     //
@@ -905,7 +907,7 @@ const char *__doc_igl_read_triangle_mesh = R"igl_Qu8mg5v7(// read mesh from an a
   //   V  eigen double matrix #V by 3
   //   F  eigen int matrix #F by 3
   // Returns true iff success)igl_Qu8mg5v7";
-const char *__doc_igl_remove_duplicate_vertices = R"igl_Qu8mg5v7(  // REMOVE_DUPLICATE_VERTICES Remove duplicate vertices upto a uniqueness
+const char *__doc_igl_remove_duplicate_vertices = R"igl_Qu8mg5v7(// REMOVE_DUPLICATE_VERTICES Remove duplicate vertices upto a uniqueness
   // tolerance (epsilon)
   //
   // Inputs:
@@ -914,7 +916,7 @@ const char *__doc_igl_remove_duplicate_vertices = R"igl_Qu8mg5v7(  // REMOVE_DUP
   //     this as a tolerance on L1 distance
   // Outputs:
   //   SV  #SV by dim new list of vertex positions
-  //   SVI #V by 1 list of indices so SV = V(SVI,:)
+  //   SVI #V by 1 list of indices so SV = V(SVI,:) 
   //   SVJ #SV by 1 list of indices so V = SV(SVJ,:)
   //
   // Example:
@@ -922,7 +924,6 @@ const char *__doc_igl_remove_duplicate_vertices = R"igl_Qu8mg5v7(  // REMOVE_DUP
   //   [SV,SVI,SVJ] = remove_duplicate_vertices(V,1e-7);
   //   % remap faces
   //   SF = SVJ(F);
-  //
   //)igl_Qu8mg5v7";
 const char *__doc_igl_rotate_vectors = R"igl_Qu8mg5v7(// Rotate the vectors V by A radiants on the tangent plane spanned by B1 and
   // B2
@@ -1041,7 +1042,7 @@ const char *__doc_igl_sortrows = R"igl_Qu8mg5v7(// Act like matlab's [Y,I] = sor
   //     reference as X)
   //   I  m list of indices so that
   //     Y = X(I,:);)igl_Qu8mg5v7";
-const char *__doc_igl_streamlines_init = R"igl_Qu8mg5v7(    // Given a mesh and a field the function computes the /data/ necessary for tracing the field'
+const char *__doc_igl_streamlines_init = R"igl_Qu8mg5v7(// Given a mesh and a field the function computes the /data/ necessary for tracing the field'
     // streamlines, and creates the initial /state/ for the tracing.
     // Inputs:
     //   V             #V by 3 list of mesh vertex coordinates
@@ -1053,12 +1054,12 @@ const char *__doc_igl_streamlines_init = R"igl_Qu8mg5v7(    // Given a mesh and 
     //   percentage    [0-1] percentage of faces sampled
     // Outputs:
     //   data          struct containing topology information of the mesh and field
-    //   state         struct containing the state of the tracing )igl_Qu8mg5v7";
-const char *__doc_igl_streamlines_next = R"igl_Qu8mg5v7( // The function computes the next state for each point in the sample
+    //   state         struct containing the state of the tracing)igl_Qu8mg5v7";
+const char *__doc_igl_streamlines_next = R"igl_Qu8mg5v7(// The function computes the next state for each point in the sample
     //   V             #V by 3 list of mesh vertex coordinates
     //   F             #F by 3 list of mesh faces
     //   data          struct containing topology information
-    //   state         struct containing the state of the tracing )igl_Qu8mg5v7";
+    //   state         struct containing the state of the tracing)igl_Qu8mg5v7";
 const char *__doc_igl_triangle_triangle_adjacency = R"igl_Qu8mg5v7(// Constructs the triangle-triangle adjacency matrix for a given
   // mesh (V,F).
   //
@@ -1075,6 +1076,9 @@ const char *__doc_igl_triangle_triangle_adjacency = R"igl_Qu8mg5v7(// Constructs
   // NOTE: the first edge of a triangle is [0,1] the second [1,2] and the third [2,3].
   //       this convention is DIFFERENT from cotmatrix_entries.h
   // Known bug: this should not need to take V as input.)igl_Qu8mg5v7";
+const char *__doc_igl_triangle_triangle_adjacency_preprocess = R"igl_Qu8mg5v7(// Preprocessing)igl_Qu8mg5v7";
+const char *__doc_igl_triangle_triangle_adjacency_extractTT = R"igl_Qu8mg5v7(// Extract the face adjacencies)igl_Qu8mg5v7";
+const char *__doc_igl_triangle_triangle_adjacency_extractTTi = R"igl_Qu8mg5v7(// Extract the face adjacencies indices (needed for fast traversal))igl_Qu8mg5v7";
 const char *__doc_igl_triangle_triangulate = R"igl_Qu8mg5v7(// Triangulate the interior of a polygon using the triangle library.
     //
     // Inputs:
