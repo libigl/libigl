@@ -128,9 +128,11 @@ We provide a few examples in the folder python/matlab.
 ## Documentation
 
 The python functions have exactly the same prototypes as their C++ counterpart.
-To get help for a certain function, please check the documentation in the
-corresponding .h file in libigl/include. We will add a proper docstring
-documentation in the future.
+Docstrings for all available python functions are extracted from the C++ header files and compiled into the python module. To get help for a certain function, you can run `help(pyigl.<function_name>)` in the python console.
+
+In the scripts folder there is the script `generate_docstrings.py` that automatically generates python docstrings for a new function. You can run it with `generate_docstrings.py <path_to_cpp_header_files> <path_to_python_files>`. 
+The script depends on additional libraries (joblib, mako, clang), make sure to install them (e.g. through pip. python-clang is included in external/nanogui/ext/pybind11/tools/clang).
+
 
 ## Known Issues
 
