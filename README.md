@@ -217,6 +217,7 @@ few labs/companies/institutions using libigl:
  - [TU Delft](http://www.tudelft.nl/en/), Netherlands
  - [TU Wien](https://www.tuwien.ac.at/en/tuwien_home/), Austria
  - [Telecom ParisTech](http://www.telecom-paristech.fr/en/formation-et-innovation-dans-le-numerique.html), Paris, France
+ - [Utrecht University](http://www.staff.science.uu.nl/~vaxma001/), The Netherlands
  - [Universidade Federal de Santa Catarina](http://mtm.ufsc.br/~leo/), Brazil
  - [University College London](http://vecg.cs.ucl.ac.uk/), England
  - [University of California Berkeley](http://vis.berkeley.edu/), USA
@@ -250,7 +251,7 @@ page](https://github.com/libigl/libigl/issues).
 
 ## Copyright
 2016 Alec Jacobson, Daniele Panozzo, Christian Schüller, Olga Diamanti, Qingnan
-Zhou, Sebastian Koch, Nico Pietroni, Stefan Brugger, Kenshi Takayama, Wenzel Jakob, Nikolas De
+Zhou, Sebastian Koch, Amir Vaxman, Nico Pietroni, Stefan Brugger, Kenshi Takayama, Wenzel Jakob, Nikolas De
 Giorgis, Luigi Rocca, Leonardo Sacht, Kevin Walliman, Olga Sorkine-Hornung, and others.
 
 Please see individual files for appropriate copyright notices.
