@@ -113,7 +113,7 @@ IGL_INLINE void igl::point_simplex_squared_distance(
   assert(Ele.cols() <= DIM+1);
   assert(Ele.cols() <= 3 && "Only simplices up to triangles are considered");
 
-  bary.resize( DIM, 1 );
+  bary.resize( DIM );
   c = ClosestBaryPtPointTriangle(
     p,
     V.row(Ele(primitive,0)),
