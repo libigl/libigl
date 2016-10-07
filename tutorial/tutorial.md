@@ -2409,7 +2409,7 @@ points contained in holes of the triangulation (#H by 2) and (`V2`,`F2`) is the
 generated triangulation. Additional parameters can be passed to `triangle`, to
 control the quality: `"a0.005q"` enforces a bound on the maximal area of the
 triangles and a minimal angle of 20 degrees. In [Example
-604](604_Triangle/main.m), the interior of a square (excluded a smaller square
+604](604_Triangle/main.cpp), the interior of a square (excluded a smaller square
 in its interior) is triangulated.
 
 ![Triangulation of the interior of a polygon.](images/604_Triangle.png)
@@ -2418,7 +2418,7 @@ in its interior) is triangulated.
 
 Similarly, the interior of a closed manifold surface can be tetrahedralized
 using the function `igl::tetrahedralize` which wraps the Tetgen library ([Example
-605](605_Tetgen/main.c)):
+605](605_Tetgen/main.cpp)):
 
 ```cpp
 igl::tetrahedralize(V,F,"pq1.414", TV,TT,TF);
