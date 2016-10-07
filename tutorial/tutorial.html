@@ -2704,7 +2704,7 @@ task in geometry processing. We provide wrappers in libigl to
 points contained in holes of the triangulation (#H by 2) and (<code>V2</code>,<code>F2</code>) is the
 generated triangulation. Additional parameters can be passed to <code>triangle</code>, to
 control the quality: <code>&quot;a0.005q&quot;</code> enforces a bound on the maximal area of the
-triangles and a minimal angle of 20 degrees. In <a href="604_Triangle/main.m">Example
+triangles and a minimal angle of 20 degrees. In <a href="604_Triangle/main.cpp">Example
 604</a>, the interior of a square (excluded a smaller square
 in its interior) is triangulated.</p>
 
@@ -2716,7 +2716,7 @@ in its interior) is triangulated.</p>
 <h2 id="tetrahedralizationofclosedsurfaces"><a href="#tetrahedralizationofclosedsurfaces">Tetrahedralization of closed surfaces</a></h2>
 
 <p>Similarly, the interior of a closed manifold surface can be tetrahedralized
-using the function <code>igl::tetrahedralize</code> which wraps the Tetgen library (<a href="605_Tetgen/main.c">Example
+using the function <code>igl::tetrahedralize</code> which wraps the Tetgen library (<a href="605_Tetgen/main.cpp">Example
 605</a>):</p>
 
 <pre><code class="cpp">igl::tetrahedralize(V,F,&quot;pq1.414&quot;, TV,TT,TF);
