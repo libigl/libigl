@@ -29,7 +29,7 @@ namespace igl
   //
   // Known bugs: this should not take V as an input parameter.
   // Known bugs/features: if a facet is combinatorially degenerate then faces
-  // will appear multiple times in VF and correpondingly in VFI (j appears
+  // will appear multiple times in VF and correspondingly in VFI (j appears
   // twice in F.row(i) then i will appear twice in VF[j])
   template <typename DerivedF, typename VFType, typename VFiType>
   IGL_INLINE void vertex_triangle_adjacency(
