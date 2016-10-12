@@ -370,6 +370,7 @@ namespace viewer
 #endif
 
     __viewer = nullptr;
+    window = nullptr;
 
     active_data_id = 0;
     data_buffer.push_back(ViewerData());
@@ -457,7 +458,7 @@ namespace viewer
     
     opengl.push_back(OpenGL_state());
 
-    if(__viewer != nullptr)
+    if(window != nullptr)
     {
       opengl[opengl.size()-1].init();
 #if defined(IGL_VIEWER_WITH_NANOGUI) && defined(IGL_VIEWER_WITH_NANOGUI_MULTIMESH)
@@ -479,7 +480,7 @@ namespace viewer
     load_mesh_from_file(mesh_file_name);
 
 #if defined(IGL_VIEWER_WITH_NANOGUI) && defined(IGL_VIEWER_WITH_NANOGUI_MULTIMESH)
-    if(__viewer != nullptr)
+    if(window != nullptr)
     {
       screen->performLayout();
     }
@@ -498,6 +499,11 @@ namespace viewer
       return data_buffer[data_id];
   }
 
+  IGL_INLINE unsigned int Viewer::get_active_mesh_id()
+  {
+    return active_data_id;
+  }
+
   IGL_INLINE bool Viewer::remove_mesh(unsigned int data_id)
   {
     assert(data_buffer.size() > data_id && "data_id out of range");
@@ -512,7 +518,7 @@ namespace viewer
     opengl.erase(opengl.begin()+data_id);
 
 #if defined(IGL_VIEWER_WITH_NANOGUI) && defined(IGL_VIEWER_WITH_NANOGUI_MULTIMESH)
-    if(__viewer != nullptr)
+    if(window != nullptr)
     {
       currentDataCB->setItems(data_ids);
       screen->performLayout();
@@ -520,11 +526,6 @@ namespace viewer
 #endif
 
     return true;
-  }
-
-  IGL_INLINE unsigned int Viewer::get_active_mesh()
-  {
-    return active_data_id;
   }
 
   IGL_INLINE bool Viewer::set_active_mesh(unsigned int data_id)
@@ -536,7 +537,7 @@ namespace viewer
     data = data_buffer[active_data_id];
 
 #if defined(IGL_VIEWER_WITH_NANOGUI) && defined(IGL_VIEWER_WITH_NANOGUI_MULTIMESH)
-    if(__viewer != nullptr)
+    if(window != nullptr)
     {
       currentDataCB->setSelectedIndex(active_data_id);
     }
@@ -603,7 +604,11 @@ namespace viewer
       }
       
       data.set_mesh(V,F);
-      data.set_uv(UV_V,UV_F);
+
+      if(UV_V.rows() > 0)
+      {
+        data.set_uv(UV_V,UV_F);
+      }
 
     } else
     {
@@ -815,7 +820,7 @@ namespace viewer
     Eigen::Vector3f coord =
       igl::project(
         Eigen::Vector3f(center(0),center(1),center(2)),
-        (core.view * core.model).eval(),
+        (core.view * data.model).eval(),
         core.proj,
         core.viewport);
     down_mouse_z = coord[2];
@@ -930,8 +935,8 @@ namespace viewer
         case MouseMode::Translation:
         {
           //translation
-          Eigen::Vector3f pos1 = igl::unproject(Eigen::Vector3f(mouse_x, core.viewport[3] - mouse_y, down_mouse_z), (core.view * core.model).eval(), core.proj, core.viewport);
-          Eigen::Vector3f pos0 = igl::unproject(Eigen::Vector3f(down_mouse_x, core.viewport[3] - down_mouse_y, down_mouse_z), (core.view * core.model).eval(), core.proj, core.viewport);
+          Eigen::Vector3f pos1 = igl::unproject(Eigen::Vector3f(mouse_x, core.viewport[3] - mouse_y, down_mouse_z), (core.view * data.model).eval(), core.proj, core.viewport);
+          Eigen::Vector3f pos0 = igl::unproject(Eigen::Vector3f(down_mouse_x, core.viewport[3] - down_mouse_y, down_mouse_z), (core.view * data.model).eval(), core.proj, core.viewport);
 
           Eigen::Vector3f diff = pos1 - pos0;
           

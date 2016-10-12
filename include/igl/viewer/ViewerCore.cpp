@@ -141,7 +141,7 @@ IGL_INLINE void igl::viewer::ViewerCore::draw(ViewerData& data, OpenGL_state& op
 
   if(update_matrices)
   {
-    model = Eigen::Matrix4f::Identity();
+    //model = Eigen::Matrix4f::Identity();
     view  = Eigen::Matrix4f::Identity();
     proj  = Eigen::Matrix4f::Identity();
 
@@ -193,7 +193,7 @@ IGL_INLINE void igl::viewer::ViewerCore::draw(ViewerData& data, OpenGL_state& op
     T.col(3).head(3) = data.model_translation;
     GT.col(3).head(3) = global_translation;
 
-    model = SI * GR * S * GT * T;
+    data.model = SI * GR * S * GT * T;
 
     //model.col(3).head(3) += model.topLeftCorner(3,3)*-camera_center;// data.model_translation;
   }
@@ -202,7 +202,7 @@ IGL_INLINE void igl::viewer::ViewerCore::draw(ViewerData& data, OpenGL_state& op
   GLint modeli = opengl.shader_mesh.uniform("model");
   GLint viewi  = opengl.shader_mesh.uniform("view");
   GLint proji  = opengl.shader_mesh.uniform("proj");
-  glUniformMatrix4fv(modeli, 1, GL_FALSE, model.data());
+  glUniformMatrix4fv(modeli, 1, GL_FALSE, data.model.data());
   glUniformMatrix4fv(viewi, 1, GL_FALSE, view.data());
   glUniformMatrix4fv(proji, 1, GL_FALSE, proj.data());
 
@@ -243,7 +243,7 @@ IGL_INLINE void igl::viewer::ViewerCore::draw(ViewerData& data, OpenGL_state& op
 #ifdef IGL_VIEWER_WITH_NANOGUI
     if (data.show_vertid)
     {
-      textrenderer.BeginDraw(view*model, proj, viewport, data.object_scale);
+      textrenderer.BeginDraw(view*data.model, proj, viewport, data.object_scale);
       for (int i=0; i<data.V.rows(); ++i)
         textrenderer.DrawText(data.V.row(i),data.V_normals.row(i),to_string(i));
       textrenderer.EndDraw();
@@ -251,7 +251,7 @@ IGL_INLINE void igl::viewer::ViewerCore::draw(ViewerData& data, OpenGL_state& op
 
     if (data.show_faceid)
     {
-      textrenderer.BeginDraw(view*model, proj, viewport, data.object_scale);
+      textrenderer.BeginDraw(view*data.model, proj, viewport, data.object_scale);
 
       for (int i=0; i<data.F.rows(); ++i)
       {
@@ -281,7 +281,7 @@ IGL_INLINE void igl::viewer::ViewerCore::draw(ViewerData& data, OpenGL_state& op
       viewi  = opengl.shader_overlay_lines.uniform("view");
       proji  = opengl.shader_overlay_lines.uniform("proj");
 
-      glUniformMatrix4fv(modeli, 1, GL_FALSE, model.data());
+      glUniformMatrix4fv(modeli, 1, GL_FALSE, data.model.data());
       glUniformMatrix4fv(viewi, 1, GL_FALSE, view.data());
       glUniformMatrix4fv(proji, 1, GL_FALSE, proj.data());
       // This must be enabled, otherwise glLineWidth has no effect
@@ -298,7 +298,7 @@ IGL_INLINE void igl::viewer::ViewerCore::draw(ViewerData& data, OpenGL_state& op
       viewi  = opengl.shader_overlay_points.uniform("view");
       proji  = opengl.shader_overlay_points.uniform("proj");
 
-      glUniformMatrix4fv(modeli, 1, GL_FALSE, model.data());
+      glUniformMatrix4fv(modeli, 1, GL_FALSE, data.model.data());
       glUniformMatrix4fv(viewi, 1, GL_FALSE, view.data());
       glUniformMatrix4fv(proji, 1, GL_FALSE, proj.data());
       glPointSize(data.point_size);
@@ -309,10 +309,10 @@ IGL_INLINE void igl::viewer::ViewerCore::draw(ViewerData& data, OpenGL_state& op
 #ifdef IGL_VIEWER_WITH_NANOGUI
     if (data.labels_positions.rows() > 0)
     {
-      textrenderer.BeginDraw(view*model, proj, viewport, data.object_scale);
+      textrenderer.BeginDraw(view*data.model, proj, viewport, data.object_scale);
       for (int i=0; i<data.labels_positions.rows(); ++i)
         textrenderer.DrawText(data.labels_positions.row(i), Eigen::Vector3d(0.0,0.0,0.0),
-            data.labels_strings[i]);
+            data.labels_strings[i],data.labels_colors.row(i));
       textrenderer.EndDraw();
     }
 #endif

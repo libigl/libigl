@@ -78,17 +78,23 @@ IGL_INLINE void igl::viewer::TextRenderer::EndDraw()
 }
 
 IGL_INLINE void igl::viewer::TextRenderer::DrawText(
-  Eigen::Vector3d pos, Eigen::Vector3d normal, const std::string &text)
+  const Eigen::Vector3d& pos,const Eigen::Vector3d& normal,const std::string &text)
+{
+  DrawText(pos,normal,text,Eigen::Vector3d(10,10,250));
+}
+
+IGL_INLINE void igl::viewer::TextRenderer::DrawText(
+  const Eigen::Vector3d& pos, const Eigen::Vector3d& normal, const std::string &text, const Eigen::Vector3d& color)
 {
   using namespace std;
-  pos += normal * 0.005f * object_scale;
-  Eigen::Vector3f coord = igl::project(Eigen::Vector3f(pos(0), pos(1), pos(2)),
+  Eigen::Vector3d tpos = pos + normal * 0.005f * object_scale;
+  Eigen::Vector3f coord = igl::project(Eigen::Vector3f(tpos(0),tpos(1),tpos(2)),
       view_matrix, proj_matrix, viewport);
 
   nvgFontSize(ctx, 16*mPixelRatio);
   nvgFontFace(ctx, "sans");
   nvgTextAlign(ctx, NVG_ALIGN_LEFT | NVG_ALIGN_MIDDLE);
-  nvgFillColor(ctx, nvgRGBA(10,10,250,255));
+  nvgFillColor(ctx, nvgRGBA(color[0],color[1],color[2],255));
   nvgText(ctx, coord[0]/mPixelRatio, (viewport[3] - coord[1])/mPixelRatio, text.c_str(), NULL);
 }
 #endif

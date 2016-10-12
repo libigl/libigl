@@ -141,7 +141,6 @@ public:
 
   // Save the OpenGL transformation matrices used for the previous rendering pass
   Eigen::Matrix4f view;
-  Eigen::Matrix4f model;
   Eigen::Matrix4f proj;
   public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW

@@ -273,7 +273,12 @@ IGL_INLINE void igl::viewer::ViewerData::add_edges(const Eigen::MatrixXd& P1, co
   dirty |= DIRTY_OVERLAY_LINES;
 }
 
-IGL_INLINE void igl::viewer::ViewerData::add_label(const Eigen::VectorXd& P,  const std::string& str)
+IGL_INLINE void igl::viewer::ViewerData::add_label(const Eigen::VectorXd& P,const std::string& str)
+{
+  add_label(P,str,Eigen::Vector3d(10,10,250));
+}
+
+IGL_INLINE void igl::viewer::ViewerData::add_label(const Eigen::VectorXd& P,  const std::string& str,const Eigen::Vector3d& C)
 {
   Eigen::RowVectorXd P_temp;
 
@@ -289,6 +294,8 @@ IGL_INLINE void igl::viewer::ViewerData::add_label(const Eigen::VectorXd& P,  co
   int lastid = labels_positions.rows();
   labels_positions.conservativeResize(lastid+1, 3);
   labels_positions.row(lastid) = P_temp;
+  labels_colors.conservativeResize(lastid+1,3);
+  labels_colors.row(lastid) = C;
   labels_strings.push_back(str);
 }
 

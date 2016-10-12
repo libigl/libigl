@@ -59,7 +59,7 @@ namespace viewer
     ViewerCore core;
 
     // Stores all the data that should be visualized
-    ViewerData data;
+    ViewerData data; // current acvtive mesh data
     int active_data_id;
     // Don't access this directly but rather use the functions get_mesh() or set_active_mesh()
     std::vector<ViewerData> data_buffer;
@@ -112,7 +112,7 @@ namespace viewer
     // Remove the data of a specific mesh instance
     IGL_INLINE bool remove_mesh(unsigned int data_id);
     // Get/Set the active mesh instance exposed as a copy in data
-    IGL_INLINE unsigned int get_active_mesh();
+    IGL_INLINE unsigned int get_active_mesh_id();
     IGL_INLINE bool set_active_mesh(unsigned int data_id);
 
     // Mesh IO

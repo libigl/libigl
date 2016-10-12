@@ -37,6 +37,7 @@ namespace igl {
     IGL_INLINE void serialization(bool s,igl::viewer::ViewerData& obj,std::vector<char>& buffer)
     {
       SERIALIZE_MEMBER(model_translation);
+      SERIALIZE_MEMBER(model);
 
       SERIALIZE_MEMBER(object_scale);
 
@@ -67,8 +68,11 @@ namespace igl {
 
       SERIALIZE_MEMBER(labels_positions);
       SERIALIZE_MEMBER(labels_strings);
+      SERIALIZE_MEMBER(labels_colors);
 
       SERIALIZE_MEMBER(dirty);
+
+      SERIALIZE_MEMBER(face_based);
 
       SERIALIZE_MEMBER(show_overlay);
       SERIALIZE_MEMBER(show_overlay_depth);
@@ -79,7 +83,6 @@ namespace igl {
       SERIALIZE_MEMBER(show_faceid);
       SERIALIZE_MEMBER(invert_normals);
       SERIALIZE_MEMBER(depth_test);
-      SERIALIZE_MEMBER(face_based);
       SERIALIZE_MEMBER(visible);
 
       SERIALIZE_MEMBER(point_size);
@@ -115,19 +118,19 @@ namespace igl {
 
       SERIALIZE_MEMBER(camera_zoom);
       SERIALIZE_MEMBER(orthographic);
+      SERIALIZE_MEMBER(camera_eye);
+      SERIALIZE_MEMBER(camera_up);
+      SERIALIZE_MEMBER(camera_center);
       SERIALIZE_MEMBER(camera_view_angle);
       SERIALIZE_MEMBER(camera_dnear);
       SERIALIZE_MEMBER(camera_dfar);
-      SERIALIZE_MEMBER(camera_eye);
-      SERIALIZE_MEMBER(camera_center);
-      SERIALIZE_MEMBER(camera_up);
 
       SERIALIZE_MEMBER(is_animating);
       SERIALIZE_MEMBER(animation_max_fps);
 
       SERIALIZE_MEMBER(viewport);
+
       SERIALIZE_MEMBER(view);
-      SERIALIZE_MEMBER(model);
       SERIALIZE_MEMBER(proj);
     }
 

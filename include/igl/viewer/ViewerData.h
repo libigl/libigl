@@ -105,7 +105,8 @@ public:
   //   C  #E|1 by 3 color(s)
   IGL_INLINE void set_edges (const Eigen::MatrixXd& P, const Eigen::MatrixXi& E, const Eigen::MatrixXd& C);
   IGL_INLINE void add_edges (const Eigen::MatrixXd& P1, const Eigen::MatrixXd& P2, const Eigen::MatrixXd& C);
-  IGL_INLINE void add_label (const Eigen::VectorXd& P,  const std::string& str);
+  IGL_INLINE void add_label(const Eigen::VectorXd& P,const std::string& str);
+  IGL_INLINE void add_label (const Eigen::VectorXd& P,  const std::string& str,const Eigen::Vector3d& C);
 
   // Computes the normals of the mesh
   IGL_INLINE void compute_normals();
@@ -119,7 +120,8 @@ public:
   // Generates a default grid texture
   IGL_INLINE void grid_texture();
 
-  // Model transformation
+  // Model matrix
+  Eigen::Matrix4f model;
   Eigen::Vector3f model_translation;
 
   // Caches the two-norm between the min/max point of the bounding box
@@ -170,6 +172,7 @@ public:
   // Texts contains in the i-th position the text of the i-th label
   Eigen::MatrixXd           labels_positions;
   std::vector<std::string>  labels_strings;
+  Eigen::MatrixXd           labels_colors;
 
   // Marks dirty buffers that need to be uploaded to OpenGL
   uint32_t dirty;
