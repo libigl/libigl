@@ -6,6 +6,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "edge_lengths.h"
+#include "edge_lengths_squared.h"
 #include "parallel_for.h"
 #include <iostream>
 
@@ -14,61 +15,11 @@ IGL_INLINE void igl::edge_lengths(
   const Eigen::PlainObjectBase<DerivedV>& V,
   const Eigen::PlainObjectBase<DerivedF>& F,
   Eigen::PlainObjectBase<DerivedL>& L)
-{
-  using namespace std;
-  const int m = F.rows();
-  switch(F.cols())
   {
-    case 2:
-    {
-      L.resize(F.rows(),1);
-      for(int i = 0;i<F.rows();i++)
-      {
-        L(i,0) = (V.row(F(i,1))-V.row(F(i,0))).norm();
-      }
-      break;
-    }
-    case 3:
-    {
-      L.resize(m,3);
-      // loop over faces
-      parallel_for(
-        m,
-        [&V,&F,&L](const int i)
-        {
-          L(i,0) = (V.row(F(i,1))-V.row(F(i,2))).norm();
-          L(i,1) = (V.row(F(i,2))-V.row(F(i,0))).norm();
-          L(i,2) = (V.row(F(i,0))-V.row(F(i,1))).norm();
-        },
-        1000);
-      break;
-    }
-    case 4:
-    {
-      L.resize(m,6);
-      // loop over faces
-      parallel_for(
-        m,
-        [&V,&F,&L](const int i)
-        {
-          L(i,0) = (V.row(F(i,3))-V.row(F(i,0))).norm();
-          L(i,1) = (V.row(F(i,3))-V.row(F(i,1))).norm();
-          L(i,2) = (V.row(F(i,3))-V.row(F(i,2))).norm();
-          L(i,3) = (V.row(F(i,1))-V.row(F(i,2))).norm();
-          L(i,4) = (V.row(F(i,2))-V.row(F(i,0))).norm();
-          L(i,5) = (V.row(F(i,0))-V.row(F(i,1))).norm();
-        },
-        1000);
-      break;
-    }
-    default:
-    {
-      cerr<< "edge_lengths.h: Error: Simplex size ("<<F.cols()<<
-        ") not supported"<<endl;
-      assert(false);
-    }
+      igl::edge_lengths_squared(V,F,L);
+      L=L.array().sqrt().eval();
   }
-}
+  
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
