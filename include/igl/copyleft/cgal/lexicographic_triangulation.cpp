@@ -76,9 +76,7 @@ IGL_INLINE void igl::copyleft::cgal::lexicographic_triangulation(
           faces.push_back({*next_itr, *itr, order[i]});
         }
         orientations.push_back(orientation);
-        std::cout << orientation << " ";
       }
-      std::cout << std::endl;
 
       auto left_itr = boundary.begin();
       auto right_itr = boundary.begin();
