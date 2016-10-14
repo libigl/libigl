@@ -124,12 +124,14 @@ namespace igl
         Eigen::PlainObjectBase<DerivedTF>& TF,
         Eigen::PlainObjectBase<DerivedTM>& TM);
    
-	
+				
 	// Mesh the interior of a surface mesh (V,F) using tetgen
       		//
       		// Inputs:
       		//   V  #V by 3 vertex position list
       		//   F  #F list of polygon face indices into V (0-indexed)
+	    	//   R  #R by 3 region vertex position list
+	        //   H  #H by 3 hole vertex position list
       		//   switches  string of tetgen options (See tetgen documentation) e.g.
       		//     "pq1.414a0.01" tries to mesh the interior of a given surface with
       		//       quality and area constraints
@@ -149,8 +151,6 @@ namespace igl
 	typename DerivedF,
 	typename DerivedR,
 	typename DerivedH,
-	    			typename DerivedVM,
-				typename DerivedFM,
 	typename DerivedTV,
 	typename DerivedTT,
 	typename DerivedTF,
@@ -160,13 +160,13 @@ namespace igl
 	const Eigen::PlainObjectBase<DerivedF>& F,	
 	const Eigen::PlainObjectBase<DerivedR>& R,
 	const Eigen::PlainObjectBase<DerivedH>& H,
+							const Eigen::PlainObjectBase<DerivedVM>& VM,
+							const Eigen::PlainObjectBase<DerivedFM>& FM,	      						
 	const std::string switches,      
-	const Eigen::PlainObjectBase<DerivedVM>& VM,
-	const Eigen::PlainObjectBase<DerivedFM>& FM
 	const Eigen::PlainObjectBase<DerivedTV>& TV,
 	const Eigen::PlainObjectBase<DerivedTT>& TT,
-	const Eigen::PlainObjectBase<DerivedTF>& TF
-      )
+							const Eigen::PlainObjectBase<DerivedTM>& TM,
+	const Eigen::PlainObjectBase<DerivedTF>& TF);
     }
   }
 }
