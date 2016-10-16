@@ -18,6 +18,16 @@ namespace igl
   {
     namespace cgal
     {
+      // This class extracts the exact predicates routines from CGAL kernels.
+      //
+      // Example:
+      //    Eigen::PlainObjectBase<DerivedV> V = ...;
+      //    typedef typename DerivedV::Scalar Scalar;
+      //    typedef igl::copyleft::cgal::ExactPredicate<Scalar> Predicate;
+      //    auto result = Predicate::orientation(
+      //      {V(0, 0), V(0, 1)},
+      //      {V(1, 0), V(1, 1)},
+      //      {V(2, 0), V(2, 1)});
       template<typename Scalar>
       class ExactPredicate {
         public:
@@ -26,6 +36,12 @@ namespace igl
           typedef typename std::conditional<std::is_same<Scalar, Epeck::FT>::value,
                   Epeck, Epick>::type Kernel;
 
+          // Inputs:
+          //   pa,pb,pc   2D points.
+          // Output:
+          //   1 if pa,pb,pc are counterclockwise oriented.
+          //   0 if pa,pb,pc are counterclockwise oriented.
+          //  -1 if pa,pb,pc are clockwise oriented.
           static short orientation(const Scalar pa[2], const Scalar pb[2], const Scalar pc[2])
           {
             switch(CGAL::orientation(
@@ -43,6 +59,12 @@ namespace igl
             }
           }
 
+          // Inputs:
+          //   pa,pb,pc,pd  3D points.
+          // Output:
+          //   1 if pa,pb,pc,pd forms a tet of positive volume.
+          //   0 if pa,pb,pc,pd are coplanar.
+          //  -1 if pa,pb,pc,pd forms a tet of negative volume.
           static short orientation(const Scalar pa[3], const Scalar pb[3], const Scalar pc[3], const Scalar pd[3])
           {
             switch(CGAL::orientation(
@@ -61,6 +83,12 @@ namespace igl
             }
           }
 
+          // Inputs:
+          //   pa,pb,pc,pd  2D points.
+          // Output:
+          //   1 if pd is inside of the oriented circle formed by pa,pb,pc.
+          //   0 if pd is co-circular with pa,pb,pc.
+          //  -1 if pd is outside of the oriented circle formed by pa,pb,pc.
           static short incircle(const Scalar pa[2], const Scalar pb[2], const Scalar pc[2], const Scalar pd[2])
           {
             switch(CGAL::side_of_oriented_circle(
@@ -79,6 +107,12 @@ namespace igl
             }
           }
 
+          // Inputs:
+          //   pa,pb,pc,pd,pe  3D points.
+          // Output:
+          //   1 if pe is inside of the oriented sphere formed by pa,pb,pc,pd.
+          //   0 if pe is co-spherical with pa,pb,pc,pd.
+          //  -1 if pe is outside of the oriented sphere formed by pa,pb,pc,pd.
           static short insphere(const Scalar pa[3], const Scalar pb[3], const Scalar pc[3], const Scalar pd[3],
               const Scalar pe[3])
           {
