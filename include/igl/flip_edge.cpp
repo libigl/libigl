@@ -22,9 +22,7 @@ IGL_INLINE void igl::flip_edge(
 {
   typedef typename DerivedF::Scalar Index;
   const size_t num_faces = F.rows();
-  if (F.cols() != 3) {
-    throw "Edge flip only works on triangle mesh";
-  }
+  assert(F.cols() == 3);
   //          v1                 v1
   //          /|\                / \
   //         / | \              /f1 \

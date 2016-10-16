@@ -22,11 +22,16 @@ IGL_INLINE void igl::copyleft::cgal::delaunay_triangulation(
     const Eigen::PlainObjectBase<DerivedV>& V,
     Eigen::PlainObjectBase<DerivedF>& F)
 {
+  assert(V.cols() == 2);
   typedef typename DerivedF::Scalar Index;
   typedef typename DerivedV::Scalar Scalar;
   typedef typename igl::copyleft::cgal::ExactPredicate<Scalar> Predicate;
   igl::copyleft::cgal::lexicographic_triangulation(V, F);
   const size_t num_faces = F.rows();
+  if (num_faces == 0) {
+    // Input points are degenerate.  No faces will be generated.
+    return;
+  }
   assert(F.cols() == 3);
 
   Eigen::MatrixXi E;
