@@ -27,8 +27,6 @@ IGL_INLINE void igl::doublearea(
   const size_t m = F.rows();
   // Compute edge lengths
   Eigen::Matrix<typename DerivedV::Scalar, Eigen::Dynamic, 3> l;
-  // "Lecture Notes on Geometric Robustness" Shewchuck 09, Section 3.1
-  // http://www.cs.berkeley.edu/~jrs/meshpapers/robnotes.pdf
 
   // Projected area helper
   const auto & proj_doublearea =
@@ -143,6 +141,11 @@ IGL_INLINE void igl::doublearea(
   const Index m = ul.rows();
   Eigen::Matrix<typename Derivedl::Scalar, Eigen::Dynamic, 3> l;
   MatrixXi _;
+  // "Lecture Notes on Geometric Robustness" Shewchuck 09, Section 3.1
+  // http://www.cs.berkeley.edu/~jrs/meshpapers/robnotes.pdf
+  //
+  // "Miscalculating Area and Angles of a Needle-like Triangle"
+  // https://people.eecs.berkeley.edu/~wkahan/Triangle.pdf
   sort(ul,2,false,l,_);
   // semiperimeters
   Matrix<typename Derivedl::Scalar,Dynamic,1> s = l.rowwise().sum()*0.5;
