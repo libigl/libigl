@@ -38,7 +38,6 @@ namespace igl
     Eigen::PlainObjectBase<DerivedBE>& BE);
   template <typename DerivedV, typename DerivedF>
   IGL_INLINE bool is_edge_manifold(
-    const Eigen::PlainObjectBase<DerivedV>& V,
     const Eigen::PlainObjectBase<DerivedF>& F);
 }
 
