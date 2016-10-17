@@ -141,26 +141,20 @@ IGL_INLINE void igl::doublearea(
   assert(ul.cols() == 3);
   // Number of triangles
   const Index m = ul.rows();
-  Eigen::Matrix<typename Derivedl::Scalar, Eigen::Dynamic, 3> l;
-  MatrixXi _;
-  sort(ul,2,false,l,_);
-  // semiperimeters
-  Matrix<typename Derivedl::Scalar,Dynamic,1> s = l.rowwise().sum()*0.5;
-  assert((Index)s.rows() == m);
   // resize output
-  dblA.resize(l.rows(),1);
+  dblA.resize(m,1);
   parallel_for(
     m,
-    [&l,&dblA](const int i)
+    [&ul,&dblA](const int i)
     {
       // Kahan's Heron's formula
       const typename Derivedl::Scalar arg =
-        (l(i,0)+(l(i,1)+l(i,2)))*
-        (l(i,2)-(l(i,0)-l(i,1)))*
-        (l(i,2)+(l(i,0)-l(i,1)))*
-        (l(i,0)+(l(i,1)-l(i,2)));
+        (ul(i,0)+(ul(i,1)+ul(i,2)))*
+        (ul(i,2)-(ul(i,0)-ul(i,1)))*
+        (ul(i,2)+(ul(i,0)-ul(i,1)))*
+        (ul(i,0)+(ul(i,1)-ul(i,2)));
       dblA(i) = 2.0*0.25*sqrt(arg);
-      assert( l(i,2) - (l(i,0)-l(i,1)) && "FAILED KAHAN'S ASSERTION");
+      assert( ul(i,2) - (ul(i,0)-ul(i,1)) && "FAILED KAHAN'S ASSERTION");
       assert(dblA(i) == dblA(i) && "DOUBLEAREA() PRODUCED NaN");
     },
     1000l);
