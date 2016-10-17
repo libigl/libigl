@@ -37,6 +37,24 @@ IGL_INLINE void grad(const Eigen::PlainObjectBase<DerivedV>&V,
                      const Eigen::PlainObjectBase<DerivedF>&F,
                     Eigen::SparseMatrix<typename DerivedV::Scalar> &G);
 
+
+ // G = grad(V,F)
+  //
+  // Compute the numerical gradient operator for a tet mesh
+  //
+  // Inputs:
+  //   V        #vertices by 3 list of mesh vertex positions
+  //   T        #tets by 4 list of tet indices
+  //   uniform  Use a uniform mesh instead of the vertices V
+  // Outputs:
+  //   G  #faces*dim by #V Gradient operator
+  //
+template <typename DerivedV, typename DerivedF>
+IGL_INLINE void grad_tet(const Eigen::PlainObjectBase<DerivedV>&V,
+                     const Eigen::PlainObjectBase<DerivedF>&T,
+                            Eigen::SparseMatrix<typename DerivedV::Scalar> &G,
+                            bool uniform = false);
+
 }
 
 #ifndef IGL_STATIC_LIBRARY
