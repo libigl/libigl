@@ -23,8 +23,13 @@ namespace igl
   // FE : #Fx3, Stores the Triangle-Edge relation
   // EF : #Ex2: Stores the Edge-Triangle relation
   //
-  // TODO: This seems to be a duplicate of edge_flaps.h
-  // TODO: This should not depend on V
+  // TODO: This seems to be a inferior duplicate of edge_flaps.h:
+  //   - unused input parameter V
+  //   - roughly 2x slower than edge_flaps
+  //   - outputs less information: edge_flaps reveals corner opposite edge
+  //   - FE uses non-standard and ambiguous order: FE(f,c) is merely an edge
+  //     incident on corner c of face f. In contrast, edge_flaps's EMAP(f,c) reveals
+  //     the edge _opposite_ corner c of face f
 template <typename DerivedV, typename DerivedF>
   IGL_INLINE void edge_topology(
     const Eigen::PlainObjectBase<DerivedV>& V,
