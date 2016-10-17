@@ -141,20 +141,26 @@ IGL_INLINE void igl::doublearea(
   assert(ul.cols() == 3);
   // Number of triangles
   const Index m = ul.rows();
+  //Sort side lenghts to improve robustness
+  //See: https://people.eecs.berkeley.edu/~wkahan/Triangle.pdf
+  Eigen::Matrix<typename Derivedl::Scalar, Eigen::Dynamic, 3> l;
+  MatrixXi _;
+  igl::sort(ul,2,false,l,_);
+
   // resize output
-  dblA.resize(m,1);
+  dblA.resize(l.rows(),1);
   parallel_for(
     m,
-    [&ul,&dblA](const int i)
+    [&l,&dblA](const int i)
     {
       // Kahan's Heron's formula
       const typename Derivedl::Scalar arg =
-        (ul(i,0)+(ul(i,1)+ul(i,2)))*
-        (ul(i,2)-(ul(i,0)-ul(i,1)))*
-        (ul(i,2)+(ul(i,0)-ul(i,1)))*
-        (ul(i,0)+(ul(i,1)-ul(i,2)));
+        (l(i,0)+(l(i,1)+l(i,2)))*
+        (l(i,2)-(l(i,0)-l(i,1)))*
+        (l(i,2)+(l(i,0)-l(i,1)))*
+        (l(i,0)+(l(i,1)-l(i,2)));
       dblA(i) = 2.0*0.25*sqrt(arg);
-      assert( ul(i,2) - (ul(i,0)-ul(i,1)) && "FAILED KAHAN'S ASSERTION");
+      assert( l(i,2) - (l(i,0)-l(i,1)) && "FAILED KAHAN'S ASSERTION");
       assert(dblA(i) == dblA(i) && "DOUBLEAREA() PRODUCED NaN");
     },
     1000l);
