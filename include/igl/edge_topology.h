@@ -15,7 +15,8 @@
 
 namespace igl 
 {
-  // Initialize Edges and their topological relations
+  // Initialize Edges and their topological relations (assumes an edge-manifold
+  // mesh)
   //
   // Output:
   // EV  : #Ex2, Stores the edge description as pair of indices to vertices
@@ -23,6 +24,7 @@ namespace igl
   // EF : #Ex2: Stores the Edge-Triangle relation
   //
   // TODO: This seems to be a duplicate of edge_flaps.h
+  // TODO: This should not depend on V
 template <typename DerivedV, typename DerivedF>
   IGL_INLINE void edge_topology(
     const Eigen::PlainObjectBase<DerivedV>& V,
