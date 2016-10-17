@@ -14,7 +14,8 @@
 template <typename DerivedV, typename DerivedF>
 IGL_INLINE void igl::grad(const Eigen::PlainObjectBase<DerivedV>&V,
                      const Eigen::PlainObjectBase<DerivedF>&F,
-                    Eigen::SparseMatrix<typename DerivedV::Scalar> &G)
+                    Eigen::SparseMatrix<typename DerivedV::Scalar> &G,
+                    bool uniform)
 {
   Eigen::Matrix<typename DerivedV::Scalar,Eigen::Dynamic,3> 
     eperp21(F.rows(),3), eperp13(F.rows(),3);
@@ -30,17 +31,33 @@ IGL_INLINE void igl::grad(const Eigen::PlainObjectBase<DerivedV>&V,
     Eigen::Matrix<typename DerivedV::Scalar, 1, 3> v32 = V.row(i3) - V.row(i2);
     Eigen::Matrix<typename DerivedV::Scalar, 1, 3> v13 = V.row(i1) - V.row(i3);
     Eigen::Matrix<typename DerivedV::Scalar, 1, 3> v21 = V.row(i2) - V.row(i1);
-
+    Eigen::Matrix<typename DerivedV::Scalar, 1, 3> n = v32.cross(v13);
     // area of parallelogram is twice area of triangle
     // area of parallelogram is || v1 x v2 ||
-    Eigen::Matrix<typename DerivedV::Scalar, 1, 3> n  = v32.cross(v13);
-
     // This does correct l2 norm of rows, so that it contains #F list of twice
     // triangle areas
     double dblA = std::sqrt(n.dot(n));
+    Eigen::Matrix<typename DerivedV::Scalar, 1, 3> u;
+    if (!uniform) {
+      // now normalize normals to get unit normals
+      u = n / dblA;
+    } else {
+      // Abstract equilateral triangle v1=(0,0), v2=(h,0), v3=(h/2, (sqrt(3)/2)*h)
 
-    // now normalize normals to get unit normals
-    Eigen::Matrix<typename DerivedV::Scalar, 1, 3> u = n / dblA;
+      // get h (by the area of the triangle)
+      double h = sqrt( (dblA)/sin(M_PI / 3.0)); // (h^2*sin(60))/2. = Area => h = sqrt(2*Area/sin_60)
+
+      Eigen::VectorXd v1,v2,v3;
+      v1 << 0,0,0;
+      v2 << h,0,0;
+      v3 << h/2.,(sqrt(3)/2.)*h,0;
+      
+      // now fix v32,v13,v21 and the normal
+      v32 = v3-v2;
+      v13 = v1-v3;
+      v21 = v2-v1;
+      n = v32.cross(v13);
+    }
 
     // rotate each vector 90 degrees around normal
     double norm21 = std::sqrt(v21.dot(v21));
@@ -102,11 +119,6 @@ IGL_INLINE void igl::grad(const Eigen::PlainObjectBase<DerivedV>&V,
   G.setFromTriplets(triplets.begin(), triplets.end());
 }
 
-/*
-IGL_INLINE void igl::grad_tet(const Eigen::PlainObjectBase<DerivedV>&V,
-                     const Eigen::PlainObjectBase<DerivedF>&T,
-                    Eigen::SparseMatrix<typename DerivedV::Scalar> &G)
-*/
 template <typename DerivedV, typename DerivedF>
 IGL_INLINE void igl::grad_tet(const Eigen::PlainObjectBase<DerivedV>&V,
                      const Eigen::PlainObjectBase<DerivedF>&T,

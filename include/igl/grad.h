@@ -19,8 +19,9 @@ namespace igl {
   // Compute the numerical gradient operator
   //
   // Inputs:
-  //   V  #vertices by 3 list of mesh vertex positions
-  //   F  #faces by 3 list of mesh face indices
+  //   V          #vertices by 3 list of mesh vertex positions
+  //   F          #faces by 3 list of mesh face indices
+  //   uniform    boolean (default false) - Use a uniform mesh instead of the vertices V
   // Outputs:
   //   G  #faces*dim by #V Gradient operator
   //
@@ -35,7 +36,8 @@ namespace igl {
 template <typename DerivedV, typename DerivedF>
 IGL_INLINE void grad(const Eigen::PlainObjectBase<DerivedV>&V,
                      const Eigen::PlainObjectBase<DerivedF>&F,
-                    Eigen::SparseMatrix<typename DerivedV::Scalar> &G);
+                    Eigen::SparseMatrix<typename DerivedV::Scalar> &G,
+                    bool uniform = false);
 
 
  // G = grad(V,F)
@@ -45,7 +47,7 @@ IGL_INLINE void grad(const Eigen::PlainObjectBase<DerivedV>&V,
   // Inputs:
   //   V        #vertices by 3 list of mesh vertex positions
   //   T        #tets by 4 list of tet indices
-  //   uniform  Use a uniform mesh instead of the vertices V
+  //   uniform  boolean (default false) - Use a uniform mesh instead of the vertices V
   // Outputs:
   //   G  #faces*dim by #V Gradient operator
   //
