@@ -9,6 +9,8 @@
 #include <Eigen/Geometry>
 #include <vector>
 
+#include "per_face_normals.h"
+
 template <typename DerivedV, typename DerivedF>
 IGL_INLINE void igl::grad(const Eigen::PlainObjectBase<DerivedV>&V,
                      const Eigen::PlainObjectBase<DerivedF>&F,
@@ -98,6 +100,111 @@ IGL_INLINE void igl::grad(const Eigen::PlainObjectBase<DerivedV>&V,
     triplets.push_back(Eigen::Triplet<typename DerivedV::Scalar>(rs[i],cs[i],vs[i]));
   }
   G.setFromTriplets(triplets.begin(), triplets.end());
+}
+
+/*
+IGL_INLINE void igl::grad_tet(const Eigen::PlainObjectBase<DerivedV>&V,
+                     const Eigen::PlainObjectBase<DerivedF>&T,
+                    Eigen::SparseMatrix<typename DerivedV::Scalar> &G)
+*/
+template <typename DerivedV, typename DerivedF>
+IGL_INLINE void igl::grad_tet(const Eigen::PlainObjectBase<DerivedV>&V,
+                     const Eigen::PlainObjectBase<DerivedF>&T,
+                            Eigen::SparseMatrix<typename DerivedV::Scalar> &G,
+                            bool uniform) {
+  using namespace Eigen;
+  assert(T.cols() == 4);
+  const int n = V.rows(); int m = T.rows();
+
+  /*
+      F = [ ...
+      T(:,1) T(:,2) T(:,3); ...
+      T(:,1) T(:,3) T(:,4); ...
+      T(:,1) T(:,4) T(:,2); ...
+      T(:,2) T(:,4) T(:,3)]; */
+  MatrixXi F(4*m,3);
+  for (int i = 0; i < m; i++) {
+    F.row(0*m + i) << T(i,0), T(i,1), T(i,2);
+    F.row(1*m + i) << T(i,0), T(i,2), T(i,3);
+    F.row(2*m + i) << T(i,0), T(i,3), T(i,1);
+    F.row(3*m + i) << T(i,1), T(i,3), T(i,2);
+  }
+  // compute volume of each tet
+  VectorXd vol; igl::volume(V,T,vol);
+
+  VectorXd A(F.rows());
+  MatrixXd N(F.rows(),3);
+  if (!uniform) {
+    // compute tetrahedron face normals
+    igl::per_face_normals(V,F,N); int norm_rows = N.rows();
+    for (int i = 0; i < norm_rows; i++)
+      N.row(i) /= N.row(i).norm();
+    igl::doublearea(V,F,A); A/=2.;
+  } else {
+    // Use a uniform tetrahedra as a reference, with the same volume as the original one:
+    //
+    // Use normals of the uniform tet (V = h*[0,0,0;1,0,0;0.5,sqrt(3)/2.,0;0.5,sqrt(3)/6.,sqrt(2)/sqrt(3)])
+    //         0         0    1.0000
+    //         0.8165   -0.4714   -0.3333
+    //         0          0.9428   -0.3333
+    //         -0.8165   -0.4714   -0.3333
+    for (int i = 0; i < m; i++) {
+      N.row(0*m+i) << 0,0,1;
+      double a = sqrt(2)*std::cbrt(3*vol(i)); // area of a face in a uniform tet with volume = vol(i)
+      A(0*m+i) = (pow(a,2)*sqrt(3))/4.;
+    }
+    for (int i = 0; i < m; i++) {
+      N.row(1*m+i) << 0.8165,-0.4714,-0.3333;
+      double a = sqrt(2)*std::cbrt(3*vol(i));
+      A(1*m+i) = (pow(a,2)*sqrt(3))/4.;
+    }
+    for (int i = 0; i < m; i++) {
+      N.row(2*m+i) << 0,0.9428,-0.3333;
+      double a = sqrt(2)*std::cbrt(3*vol(i));
+      A(2*m+i) = (pow(a,2)*sqrt(3))/4.;
+    }
+    for (int i = 0; i < m; i++) {
+      N.row(3*m+i) << -0.8165,-0.4714,-0.3333;
+      double a = sqrt(2)*std::cbrt(3*vol(i));
+      A(3*m+i) = (pow(a,2)*sqrt(3))/4.;
+    }
+
+  }
+
+  /*  G = sparse( ...
+      [0*m + repmat(1:m,1,4) ...
+       1*m + repmat(1:m,1,4) ...
+       2*m + repmat(1:m,1,4)], ...
+      repmat([T(:,4);T(:,2);T(:,3);T(:,1)],3,1), ...
+      repmat(A./(3*repmat(vol,4,1)),3,1).*N(:), ...
+      3*m,n);*/
+  std::vector<Triplet<double> > G_t;
+  for (int i = 0; i < 4*m; i++) {
+    int T_j; // j indexes : repmat([T(:,4);T(:,2);T(:,3);T(:,1)],3,1)
+    switch (i/m) {
+      case 0:
+        T_j = 3;
+        break;
+      case 1:
+        T_j = 1;
+        break;
+      case 2:
+        T_j = 2;
+        break;
+      case 3:
+        T_j = 0;
+        break;
+    }
+    int i_idx = i%m;
+    int j_idx = T(i_idx,T_j);
+
+    double val_before_n = A(i)/(3*vol(i_idx));
+    G_t.push_back(Triplet<double>(0*m+i_idx, j_idx, val_before_n * N(i,0)));
+    G_t.push_back(Triplet<double>(1*m+i_idx, j_idx, val_before_n * N(i,1)));
+    G_t.push_back(Triplet<double>(2*m+i_idx, j_idx, val_before_n * N(i,2)));
+  }
+  G.resize(3*m,n);
+  G.setFromTriplets(G_t.begin(), G_t.end());
 }
 
 #ifdef IGL_STATIC_LIBRARY
