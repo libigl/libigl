@@ -215,7 +215,7 @@ const char *__doc_igl_copyleft_cgal_remesh_self_intersections = R"igl_Qu8mg5v7(/
       //     // remove any vertices now unreferenced after duplicate mapping.
       //     igl::remove_unreferenced(VV,FF,SV,SF,UIM);
       //     // Now (SV,SF) is ready to extract outer hull
-      //     igl::copyleft::cgal::outer_hull(SV,SF,G,J,flip);igl_Qu8mg5v7";
+      //     igl::copyleft::cgal::outer_hull(SV,SF,G,J,flip);)igl_Qu8mg5v7";
 const char *__doc_igl_copyleft_comiso_miq = R"igl_Qu8mg5v7(// Inputs:
     //   V              #V by 3 list of mesh vertex 3D positions
     //   F              #F by 3 list of faces indices in V
@@ -453,6 +453,23 @@ const char *__doc_igl_embree_reorient_facets_raycast = R"igl_Qu8mg5v7(// Orient 
     // Outputs:
     //   I  #F list of whether face has been flipped
     //   C  #F list of patch ID (output of bfs_orient > manifold patches))igl_Qu8mg5v7";
+const char *__doc_igl_embree_line_mesh_intersection = R"igl_Qu8mg5v7(// Project the point cloud V_source onto the triangle mesh
+    // V_target,F_target. 
+    // A ray is casted for every vertex in the direction specified by 
+    // N_source and its opposite.
+    //
+    // Input:
+    // V_source: #Vx3 Vertices of the source mesh
+    // N_source: #Vx3 Normals of the point cloud
+    // V_target: #V2x3 Vertices of the target mesh
+    // F_target: #F2x3 Faces of the target mesh
+    //
+    // Output:
+    // #Vx3 matrix of baricentric coordinate. Each row corresponds to 
+    // a vertex of the projected mesh and it has the following format:
+    // id b1 b2. id is the id of a face of the source mesh. b1 and b2 are 
+    // the barycentric coordinates wrt the first two edges of the triangle
+    // To convert to standard global coordinates, see barycentric_to_global.h)igl_Qu8mg5v7";
 const char *__doc_igl_find_cross_field_singularities = R"igl_Qu8mg5v7(// Inputs:
   //   V                #V by 3 eigen Matrix of mesh vertex 3D positions
   //   F                #F by 3 eigen Matrix of face (quad) indices
