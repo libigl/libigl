@@ -19,7 +19,15 @@ namespace igl
   //
   // Inputs:
   //   V  #V by 2 list of vertex positions
-  //
+  //   orient2D  A functor such that orient2D(pa, pb, pc) returns
+  //               1 if pa,pb,pc forms a conterclockwise triangle.
+  //              -1 if pa,pb,pc forms a clockwise triangle.
+  //               0 if pa,pb,pc are collinear.
+  //              where the argument pa,pb,pc are of type Scalar[2].
+  //   incircle  A functor such that incircle(pa, pb, pc, pd) returns
+  //               1 if pd is on the positive size of circumcirle of (pa,pb,pc)
+  //              -1 if pd is on the positive size of circumcirle of (pa,pb,pc)
+  //               0 if pd is cocircular with pa, pb, pc.
   // Outputs:
   //   F  #F by 3 of faces in Delaunay triangulation.
   template<
