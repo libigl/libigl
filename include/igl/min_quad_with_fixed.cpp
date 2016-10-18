@@ -90,7 +90,18 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
   }
   // cache unknown followed by lagrange indices
   data.unknown_lagrange.resize(data.unknown.size()+data.lagrange.size());
-  data.unknown_lagrange << data.unknown, data.lagrange;
+  // Would like to do:
+  //data.unknown_lagrange << data.unknown, data.lagrange;
+  // but Eigen can't handle empty vectors in comma initialization
+  // https://forum.kde.org/viewtopic.php?f=74&t=107974&p=364947#p364947
+  if(data.unknown.size() > 0)
+  {
+    data.unknown_lagrange << data.unknown;
+  }
+  if(data.lagrange.size() > 0)
+  {
+    data.unknown_lagrange << data.lagrange;
+  }
 
   SparseMatrix<T> Auu;
   slice(A,data.unknown,data.unknown,Auu);
@@ -415,7 +426,19 @@ IGL_INLINE bool igl::min_quad_with_fixed_solve(
     int neq = data.lagrange.size();
     // append lagrange multiplier rhs's
     VectorXT BBeq(B.size() + Beq.size());
-    BBeq << B, (Beq*-2.0);
+    // Would like to do:
+    // BBeq << B, (Beq*-2.0);
+    // but Eigen can't handle empty vectors in comma initialization
+    // https://forum.kde.org/viewtopic.php?f=74&t=107974&p=364947#p364947
+    if(B.size() > 0)
+    {
+      BBeq << B;
+    }
+    if(Beq.size() > 0)
+    {
+      BBeq << Beq*-2.;
+    }
+
     // Build right hand side
     VectorXT BBequl;
     igl::slice(BBeq,data.unknown_lagrange,BBequl);
