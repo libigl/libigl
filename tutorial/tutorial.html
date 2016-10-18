@@ -136,6 +136,7 @@ lecture notes links to a cross-platform example application.</p>
 <li><a href="#locallyinjectivemaps">608 Locally Injective Maps</a></li>
 <li><a href="#booleanoperationsonmeshes">609 Boolean Operations on Meshes</a></li>
 <li><a href="#csgtree">610 CSG Tree</a></li>
+<li><a href="#slim">611 Scalable Locally Injective Maps</a></li>
 </ul></li>
 <li><a href="#chapter7:miscellaneous">Chapter 7: Miscellaneous</a>
 
@@ -2935,6 +2936,17 @@ input meshes." />
 input meshes.</figcaption>
 </figure>
 
+<h2 id="slim"><a href="#slim">Scalable Locally Injective Maps</a></h2>
+
+<p>The Scalable Locally Injective Maps <a class="citation" href="#fn:36" title="Jump to citation">[36]<span class="citekey" style="display:none">rabinovich_2016</span></a> algorithm allows to compute locally injective maps on massive datasets. The algorithm shares many similarities with ARAP, but uses a reweighting scheme to minimize arbitrary distortion energies, including those that prevent the introduction of flips.</p>
+
+<p><a href="611_SLIM/main.cpp">Example 611</a> contains three demos: (1) an example of large scale 2D parametrization, (2) an example of 2D deformation with soft constraints, and (3) an example of 3D deformation with soft constraints. The implementation in libigl is self-contained and relies on Eigen for the solution of the linear system used in the global step. An optimized version that relies on Pardiso is available <a href="https://github.com/MichaelRabinovich/Scalable-Locally-Injective-Mappings">here</a>.</p>
+
+<figure>
+<img src="images/611_SLIM.png" alt="A locally injective parametrization of a mesh with 50k faces is computed using the SLIM algorithm in 10 iterations." />
+<figcaption>A locally injective parametrization of a mesh with 50k faces is computed using the SLIM algorithm in 10 iterations.</figcaption>
+</figure>
+
 <h1 id="chapter7:miscellaneous">Miscellaneous</h1>
 
 <p>Libigl contains a <em>wide</em> variety of geometry processing tools and functions for
@@ -2999,7 +3011,7 @@ mesh and which are outside. That is, which should be kept and which should be
 removed.</p>
 
 <p>The &#8220;Generalized Winding Number&#8221; is a robust method for determined
-inside and outside for troublesome meshes <a class="citation" href="#fn:36" title="Jump to citation">[36]<span class="citekey" style="display:none">jacobson_2013</span></a>. The generalized
+inside and outside for troublesome meshes <a class="citation" href="#fn:37" title="Jump to citation">[37]<span class="citekey" style="display:none">jacobson_2013</span></a>. The generalized
 winding number with respect to <code>(V,F)</code> at some point <span class="math">\(\mathbf{p} \in
 \mathcal{R}^3\)</span> is defined as scalar function:</p>
 
@@ -3042,7 +3054,7 @@ methods are fairly advanced.</p>
 
 <p>One family of mesh decimation methods operates by successively remove elements
 from the mesh. In particular, Hoppe advocates for successively remove or rather
-collapsing edges <a class="citation" href="#fn:37" title="Jump to citation">[37]<span class="citekey" style="display:none">hoppe_1996</span></a>. The generic form of this technique is to
+collapsing edges <a class="citation" href="#fn:38" title="Jump to citation">[38]<span class="citekey" style="display:none">hoppe_1996</span></a>. The generic form of this technique is to
 construct a sequence of n meshes from the initial high-resolution mesh <span class="math">\(M_0\)</span> to
 the lowest resolution mesh <span class="math">\(M_n\)</span> by collapsing a single edge:</p>
 
@@ -3243,8 +3255,8 @@ tree.squared_distance(V,F,P,sqrD,I,C);
 
 <p>Finally, from the closest point or the winding number it&#8217;s possible to <em>sign</em>
 this distance. In <code>igl::signed_distance</code> we provide two methods for signing:
-the so-called &#8220;pseudo-normal test&#8221; <a class="citation" href="#fn:38" title="Jump to citation">[38]<span class="citekey" style="display:none">baerentzen_2005</span></a> and the generalized
-winding number <a class="citation" href="#fn:36" title="Jump to citation">[36]<span class="citekey" style="display:none">jacobson_2013</span></a>.</p>
+the so-called &#8220;pseudo-normal test&#8221; <a class="citation" href="#fn:39" title="Jump to citation">[39]<span class="citekey" style="display:none">baerentzen_2005</span></a> and the generalized
+winding number <a class="citation" href="#fn:37" title="Jump to citation">[37]<span class="citekey" style="display:none">jacobson_2013</span></a>.</p>
 
 <p>The pseudo-normal test (see also <code>igl::pseudonormal_test</code>) assumes the input
 mesh is a watertight (closed, non-self-intersecting, manifold) mesh. Then given
@@ -3288,7 +3300,7 @@ iso-surface at value <span class="math">\(v\)</span> is composed of all points <
 processing is to extract an iso-surface as a triangle mesh for further
 mesh-based processing or visualization. This is referred to as iso-contouring.</p>
 
-<p>&#8220;Marching Cubes&#8221; <a class="citation" href="#fn:39" title="Jump to citation">[39]<span class="citekey" style="display:none">lorensen_1987</span></a> is a <a href="https://en.wikipedia.org/wiki/Marching_cubes">famous
+<p>&#8220;Marching Cubes&#8221; <a class="citation" href="#fn:40" title="Jump to citation">[40]<span class="citekey" style="display:none">lorensen_1987</span></a> is a <a href="https://en.wikipedia.org/wiki/Marching_cubes">famous
 method</a> for iso-contouring
 tri-linear functions <span class="math">\(f\)</span> on a regular lattice (aka grid). The core idea of this
 method is to contour the iso-surface passing through each cell (if it does at
@@ -3339,7 +3351,7 @@ enforce a consistent facet orientation in the output faces <code>FF</code>.</p>
 <p>For (closed or nearly closed) surfaces representing the boundary of a solid
 object, libigl provides a routine to reorient faces so that the vertex ordering
 corresponds to a counter-clockwise ordering of the vertices with a
-right-hand-rule normal pointing outward. This method <a class="citation" href="#fn:40" title="Jump to citation">[40]<span class="citekey" style="display:none">takayama14</span></a> assumes
+right-hand-rule normal pointing outward. This method <a class="citation" href="#fn:41" title="Jump to citation">[41]<span class="citekey" style="display:none">takayama14</span></a> assumes
 that <a href="https://www.reddit.com/r/askscience/comments/32otgx/which_as_a_is_more_empty_an_atom_or_the_universe/">most of the universe is
 empty</a>.
 That is, most points in space are outside of the solid object than inside.
@@ -3400,11 +3412,11 @@ discretizing time at a finite step of steps <span class="math">\([0,\Delta t,2\D
 and by 2) discretizing space with a regular grid and representing the distance
 field using trilinear interpolation of grid values. Finally the output mesh,
 <span class="math">\(\partial S\)</span> is approximated by contouring using Marching Cubes
-<a class="citation" href="#fn:39" title="Jump to citation">[39]<span class="citekey" style="display:none">lorensen_1987</span></a>.</p>
+<a class="citation" href="#fn:40" title="Jump to citation">[40]<span class="citekey" style="display:none">lorensen_1987</span></a>.</p>
 
 <p>This method is similar to one described by Schroeder et al. in 1994
-<a class="citation" href="#fn:41" title="Jump to citation">[41]<span class="citekey" style="display:none">schroeder_1994</span></a>, and the one used in conjunction with boolean operations by
-Garg et al. 2016 <a class="citation" href="#fn:42" title="Jump to citation">[42]<span class="citekey" style="display:none">garg_2016</span></a>.</p>
+<a class="citation" href="#fn:42" title="Jump to citation">[42]<span class="citekey" style="display:none">schroeder_1994</span></a>, and the one used in conjunction with boolean operations by
+Garg et al. 2016 <a class="citation" href="#fn:43" title="Jump to citation">[43]<span class="citekey" style="display:none">garg_2016</span></a>.</p>
 
 <p>In libigl, if your input solid&#8217;s surface is represented by <code>(V,F)</code> then the
 output surface mesh will be <code>(SV,SF)</code> after calling:</p>
@@ -3699,42 +3711,46 @@ repository</a>.</p>
  2016</p>
 </li>
 
-<li id="fn:36" class="citation"><span class="citekey" style="display:none">jacobson_2013</span><p>Alec Jacobson, Ladislav Kavan, and Olga Sorkine.
+<li id="fn:36" class="citation"><span class="citekey" style="display:none">rabinovich_2016</span><p>Michael Rabinovich, Roi Poranne, Daniele Panozzo, Olga Sorkine-Hornung. <a href="http://cs.nyu.edu/~panozzo/papers/SLIM-2016.pdf">Scalable Locally Injective
+Mappings</a>, 2016.</p>
+</li>
+
+<li id="fn:37" class="citation"><span class="citekey" style="display:none">jacobson_2013</span><p>Alec Jacobson, Ladislav Kavan, and Olga Sorkine.
  <a href="https://www.google.com/search?q=Robust+Inside-Outside+Segmentation+using+Generalized+Winding+Numbers">Robust Inside-Outside Segmentation using Generalized Winding
  Numbers</a>,
  2013.</p>
 </li>
 
-<li id="fn:37" class="citation"><span class="citekey" style="display:none">hoppe_1996</span><p>Hugues Hoppe. <a href="https://www.google.com/search?q=Progressive+meshes">Progressive
+<li id="fn:38" class="citation"><span class="citekey" style="display:none">hoppe_1996</span><p>Hugues Hoppe. <a href="https://www.google.com/search?q=Progressive+meshes">Progressive
  Meshes</a>, 1996</p>
 </li>
 
-<li id="fn:38" class="citation"><span class="citekey" style="display:none">baerentzen_2005</span><p>J Andreas Baerentzen and Henrik Aanaes.
+<li id="fn:39" class="citation"><span class="citekey" style="display:none">baerentzen_2005</span><p>J Andreas Baerentzen and Henrik Aanaes.
 <a href="https://www.google.com/search?q=Signed+distance+computation+using+the+angle+weighted+pseudonormal">Signed distance computation using the angle weighted
 pseudonormal</a>,
  2005.</p>
 </li>
 
-<li id="fn:39" class="citation"><span class="citekey" style="display:none">lorensen_1987</span><p>W.E. Lorensen and Harvey E. Cline. <a href="https://www.google.com/search?q=Marching+cubes:+A+high+resolution+3d+surface+construction+algorithm">Marching cubes: A high
+<li id="fn:40" class="citation"><span class="citekey" style="display:none">lorensen_1987</span><p>W.E. Lorensen and Harvey E. Cline. <a href="https://www.google.com/search?q=Marching+cubes:+A+high+resolution+3d+surface+construction+algorithm">Marching cubes: A high
  resolution 3d surface construction
  algorithm</a>,
  1987.</p>
 </li>
 
-<li id="fn:40" class="citation"><span class="citekey" style="display:none">takayama14</span><p>Kenshi Takayama, Alec Jacobson, Ladislav Kavan, Olga
+<li id="fn:41" class="citation"><span class="citekey" style="display:none">takayama14</span><p>Kenshi Takayama, Alec Jacobson, Ladislav Kavan, Olga
  Sorkine-Hornung. <a href="https://www.google.com/search?q=A+Simple+Method+for+Correcting+Facet+Orientations+in+Polygon+Meshes+Based+on+Ray+Casting">A Simple Method for Correcting Facet Orientations in
  Polygon Meshes Based on Ray
  Casting</a>,
  2014.</p>
 </li>
 
-<li id="fn:41" class="citation"><span class="citekey" style="display:none">schroeder_1994</span><p>William J. Schroeder, William E. Lorensen, and Steve
+<li id="fn:42" class="citation"><span class="citekey" style="display:none">schroeder_1994</span><p>William J. Schroeder, William E. Lorensen, and Steve
  Linthicum. <a href="https://www.google.com/search?q=implicit+modeling+of+swept+surfaces+and+volumes">Implicit Modeling of Swept Surfaces and
  Volumes</a>,
  1994.</p>
 </li>
 
-<li id="fn:42" class="citation"><span class="citekey" style="display:none">garg_2016</span><p>Akash Garg, Alec Jacobson, Eitan Grinspun. <a href="https://www.google.com/search?q=Computational+Design+of+Reconfigurables">Computational Design
+<li id="fn:43" class="citation"><span class="citekey" style="display:none">garg_2016</span><p>Akash Garg, Alec Jacobson, Eitan Grinspun. <a href="https://www.google.com/search?q=Computational+Design+of+Reconfigurables">Computational Design
  of
  Reconfigurables</a>,
  2016</p>

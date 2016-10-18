@@ -17,8 +17,9 @@ IGL_INLINE void igl::edge_flaps(
   Eigen::MatrixXi & EF,
   Eigen::MatrixXi & EI)
 {
-  EF.resize(E.rows(),2);
-  EI.resize(E.rows(),2);
+  // Initialize to boundary value
+  EF.setConstant(E.rows(),2,-1);
+  EI.setConstant(E.rows(),2,-1);
   // loop over all faces
   for(int f = 0;f<F.rows();f++)
   {
