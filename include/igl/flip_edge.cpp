@@ -46,10 +46,10 @@ IGL_INLINE void igl::flip_edge(
   assert(c2 < 3);
 
   assert(f1 != f2);
-  const size_t v1 = F(f1, (c1+1)%3);
-  const size_t v2 = F(f1, (c1+2)%3);
-  const size_t v4 = F(f1, c1);
-  const size_t v3 = F(f2, c2);
+  const size_t v1 = F.coeff(f1, (c1+1)%3);
+  const size_t v2 = F.coeff(f1, (c1+2)%3);
+  const size_t v4 = F.coeff(f1, c1);
+  const size_t v3 = F.coeff(f2, c2);
   assert(F(f2, (c2+2)%3) == v1);
   assert(F(f2, (c2+1)%3) == v2);
 
@@ -72,20 +72,20 @@ IGL_INLINE void igl::flip_edge(
   assert(E(e_32, 0) == v3);
   assert(E(e_32, 1) == v2);
 
-  const size_t ue_24 = EMAP[e_24];
-  const size_t ue_41 = EMAP[e_41];
-  const size_t ue_13 = EMAP[e_13];
-  const size_t ue_32 = EMAP[e_32];
+  const size_t ue_24 = EMAP.coeff(e_24);
+  const size_t ue_41 = EMAP.coeff(e_41);
+  const size_t ue_13 = EMAP.coeff(e_13);
+  const size_t ue_32 = EMAP.coeff(e_32);
 
-  F(f1, 0) = v1;
-  F(f1, 1) = v3;
-  F(f1, 2) = v4;
-  F(f2, 0) = v2;
-  F(f2, 1) = v4;
-  F(f2, 2) = v3;
+  F.coeffRef(f1, 0) = v1;
+  F.coeffRef(f1, 1) = v3;
+  F.coeffRef(f1, 2) = v4;
+  F.coeffRef(f2, 0) = v2;
+  F.coeffRef(f2, 1) = v4;
+  F.coeffRef(f2, 2) = v3;
 
-  uE(uei, 0) = v3;
-  uE(uei, 1) = v4;
+  uE.coeffRef(uei, 0) = v3;
+  uE.coeffRef(uei, 1) = v4;
 
   const size_t new_e_34 = f1;
   const size_t new_e_41 = f1 + num_faces;
@@ -94,25 +94,25 @@ IGL_INLINE void igl::flip_edge(
   const size_t new_e_32 = f2 + num_faces;
   const size_t new_e_24 = f2 + num_faces*2;
 
-  E(new_e_34, 0) = v3;
-  E(new_e_34, 1) = v4;
-  E(new_e_41, 0) = v4;
-  E(new_e_41, 1) = v1;
-  E(new_e_13, 0) = v1;
-  E(new_e_13, 1) = v3;
-  E(new_e_43, 0) = v4;
-  E(new_e_43, 1) = v3;
-  E(new_e_32, 0) = v3;
-  E(new_e_32, 1) = v2;
-  E(new_e_24, 0) = v2;
-  E(new_e_24, 1) = v4;
+  E.coeffRef(new_e_34, 0) = v3;
+  E.coeffRef(new_e_34, 1) = v4;
+  E.coeffRef(new_e_41, 0) = v4;
+  E.coeffRef(new_e_41, 1) = v1;
+  E.coeffRef(new_e_13, 0) = v1;
+  E.coeffRef(new_e_13, 1) = v3;
+  E.coeffRef(new_e_43, 0) = v4;
+  E.coeffRef(new_e_43, 1) = v3;
+  E.coeffRef(new_e_32, 0) = v3;
+  E.coeffRef(new_e_32, 1) = v2;
+  E.coeffRef(new_e_24, 0) = v2;
+  E.coeffRef(new_e_24, 1) = v4;
 
-  EMAP[new_e_34] = uei;
-  EMAP[new_e_43] = uei;
-  EMAP[new_e_41] = ue_41;
-  EMAP[new_e_13] = ue_13;
-  EMAP[new_e_32] = ue_32;
-  EMAP[new_e_24] = ue_24;
+  EMAP.coeffRef(new_e_34) = uei;
+  EMAP.coeffRef(new_e_43) = uei;
+  EMAP.coeffRef(new_e_41) = ue_41;
+  EMAP.coeffRef(new_e_13) = ue_13;
+  EMAP.coeffRef(new_e_32) = ue_32;
+  EMAP.coeffRef(new_e_24) = ue_24;
 
   auto replace = [](std::vector<Index>& array, Index old_v, Index new_v) {
     std::replace(array.begin(), array.end(), old_v, new_v);
