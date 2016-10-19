@@ -57,6 +57,7 @@ PYBIND11_PLUGIN(pyigl) {
            avg_edge_length
            barycenter
            barycentric_coordinates
+           barycentric_to_global
            boundary_facets
            boundary_loop
            cat

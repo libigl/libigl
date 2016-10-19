@@ -76,6 +76,20 @@ const char *__doc_igl_barycentric_coordinates = R"igl_Qu8mg5v7(// Compute baryce
   // Outputs:
   //   L  #P by 4 list of barycentric coordinates
   //   )igl_Qu8mg5v7";
+const char *__doc_igl_barycentric_to_global = R"igl_Qu8mg5v7(// Converts barycentric coordinates in the embree form to 3D coordinates
+  // Embree stores barycentric coordinates as triples: fid, bc1, bc2
+  // fid is the id of a face, bc1 is the displacement of the point wrt the 
+  // first vertex v0 and the edge v1-v0. Similarly, bc2 is the displacement
+  // wrt v2-v0.
+  // 
+  // Input:
+  // V:  #Vx3 Vertices of the mesh
+  // F:  #Fxe Faces of the mesh
+  // bc: #Xx3 Barycentric coordinates, one row per point
+  //
+  // Output:
+  // #X: #Xx3 3D coordinates of all points in bc
+  //   )igl_Qu8mg5v7";
 const char *__doc_igl_boundary_facets = R"igl_Qu8mg5v7(// BOUNDARY_FACETS Determine boundary faces (edges) of tetrahedra (triangles)
   // stored in T (analogous to qptoolbox's `outline` and `boundary_faces`).
   //

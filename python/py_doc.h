@@ -4,6 +4,7 @@ extern const char *__doc_igl_arap_solve;
 extern const char *__doc_igl_avg_edge_length;
 extern const char *__doc_igl_barycenter;
 extern const char *__doc_igl_barycentric_coordinates;
+extern const char *__doc_igl_barycentric_to_global;
 extern const char *__doc_igl_boundary_facets;
 extern const char *__doc_igl_boundary_loop;
 extern const char *__doc_igl_cat;
