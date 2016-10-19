@@ -43,6 +43,10 @@ and Windows with Visual Studio 2015 Community Edition.
 As of version 1.0, libigl includes an introductory
 [tutorial](http://libigl.github.io/libigl/tutorial/tutorial.html) that covers many functionalities.
 
+## libigl example project
+
+We provide a [blank project example](https://github.com/libigl/libigl-example-project) showing how to use libigl and cmake. Feel free and encouraged to copy or fork this project as a way of starting a new personal project using libigl.
+
 ## Installation
 
 Libigl is a **header-only** library. You do **not** need to build anything to
