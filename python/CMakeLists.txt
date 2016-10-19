@@ -120,6 +120,11 @@ if (LIBIGL_WITH_COPYLEFT)
   list(APPEND SHARED_SOURCES "modules/copyleft/py_igl_copyleft.cpp")
 endif ()
 
+if (LIBIGL_WITH_BBW)
+  add_definitions(-DPY_BBW)
+  list(APPEND SHARED_SOURCES "modules/py_igl_bbw.cpp")
+endif ()
+
 if (LIBIGL_WITH_PNG)
   add_definitions(-DPY_PNG)
   list(APPEND SHARED_SOURCES "modules/py_igl_png.cpp")

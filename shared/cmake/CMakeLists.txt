@@ -387,6 +387,7 @@ endif()
 
 ### Compile the viewer ###
 if(LIBIGL_WITH_VIEWER)
+  find_package(OpenGL REQUIRED)
   set(NANOGUI_DIR "${LIBIGL_EXTERNAL}/nanogui")
 
   if(LIBIGL_WITH_NANOGUI)
@@ -415,7 +416,7 @@ if(LIBIGL_WITH_VIEWER)
     add_subdirectory("${NANOGUI_DIR}/ext/glfw" "glfw")
 
     set(VIEWER_INCLUDE_DIRS "${NANOGUI_DIR}/ext/glfw/include")
-    set(LIBIGL_VIEWER_EXTRA_LIBRARIES "glfw" ${GLFW_LIBRARIES})
+    set(LIBIGL_VIEWER_EXTRA_LIBRARIES "glfw" ${OPENGL_gl_LIBRARY})
   endif()
 
   ### GLEW for linux and windows

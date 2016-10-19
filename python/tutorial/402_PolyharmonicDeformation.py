@@ -93,8 +93,8 @@ viewer = igl.viewer.Viewer()
 viewer.data.set_mesh(U, F)
 viewer.core.show_lines = False
 viewer.data.set_colors(C)
-# viewer.core.trackball_angle = igl.eigen.Quaterniond(0.81,-0.58,-0.03,-0.03)
-# viewer.core.trackball_angle.normalize()
+viewer.core.trackball_angle = igl.eigen.Quaterniond(0.81,-0.58,-0.03,-0.03)
+viewer.core.trackball_angle.normalize()
 viewer.callback_pre_draw = pre_draw
 viewer.callback_key_down = key_down
 viewer.core.is_animating = True
