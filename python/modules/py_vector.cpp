@@ -68,7 +68,7 @@ py::class_<Type> bind_eigen_2(py::module &m, const char *name,
         })
         .def("__init__", [](Type &m, py::buffer b) {
             py::buffer_info info = b.request();
-            if (info.format != py::format_descriptor<Scalar>::value())
+            if (info.format != py::format_descriptor<Scalar>::value)
                 throw std::runtime_error("Incompatible buffer format!");
             if (info.ndim == 1) {
                 new (&m) Type(info.shape[0], 1);
@@ -319,7 +319,7 @@ py::class_<Type> bind_eigen_2(py::module &m, const char *name,
                 m.data(),                /* Pointer to buffer */
                 sizeof(Scalar),          /* Size of one scalar */
                 /* Python struct-style format descriptor */
-                py::format_descriptor<Scalar>::value(),
+                py::format_descriptor<Scalar>::value,
                 2,                       /* Number of dimensions */
                 { (size_t) m.rows(),     /* Buffer dimensions */
                   (size_t) m.cols() },
@@ -692,16 +692,21 @@ void python_export_vector(py::module &m) {
     .def("solve",[](const Eigen::SimplicialLLT<Eigen::SparseMatrix<double > >& s, const Eigen::MatrixXd& rhs) { return Eigen::MatrixXd(s.solve(rhs)); })
     ;
 
+    // Bindings for Affine3d
     py::class_<Eigen::Affine3d > affine3d(me, "Affine3d");
 
     affine3d
     .def(py::init<>())
+    .def_static("Identity", []() { return Eigen::Affine3d::Identity(); })
     .def("setIdentity",[](Eigen::Affine3d& a){
         return a.setIdentity();
     })
     .def("rotate",[](Eigen::Affine3d& a, double angle, Eigen::MatrixXd axis) {
         assert_is_Vector3("axis", axis);
         return a.rotate(Eigen::AngleAxisd(angle, Eigen::Vector3d(axis)));
+    })
+    .def("rotate",[](Eigen::Affine3d& a, Eigen::Quaterniond quat) {
+        return a.rotate(quat);
     })
     .def("translate",[](Eigen::Affine3d& a, Eigen::MatrixXd offset) {
         assert_is_Vector3("offset", offset);
@@ -711,13 +716,51 @@ void python_export_vector(py::module &m) {
         return Eigen::MatrixXd(a.matrix());
     })
     ;
-    /* Bindings for Quaterniond*/
-    //py::class_<Eigen::Quaterniond > quaterniond(me, "Quaterniond");
-    //
-    // quaterniond
-    // .def(py::init<>())
-    // .def(py::init<double, double, double, double>())
-    // ;
+    // Bindings for Quaterniond
+    py::class_<Eigen::Quaterniond > quaterniond(me, "Quaterniond");
+    
+    quaterniond
+    .def(py::init<>())
+    .def(py::init<double, double, double, double>())
+    .def("__init__", [](Eigen::Quaterniond &q, double angle, Eigen::MatrixXd axis) {
+        assert_is_Vector3("axis", axis);
+        new (&q) Eigen::Quaterniond(Eigen::AngleAxisd(angle, Eigen::Vector3d(axis)));
+    })
+    .def_static("Identity", []() { return Eigen::Quaterniond::Identity(); })
+    .def("__repr__", [](const Eigen::Quaterniond &v) {
+        std::ostringstream oss;
+        oss << "(" << v.w() << ", " << v.x() << ", " << v.y() << ", " << v.z() << ")";
+        return oss.str();
+    })
+    .def("conjugate",[](Eigen::Quaterniond& q) {
+        return q.conjugate();
+    })
+    .def("normalize",[](Eigen::Quaterniond& q) {
+        return q.normalize();
+    })
+    .def("slerp",[](Eigen::Quaterniond& q, double & t, Eigen::Quaterniond other) {
+        return q.slerp(t, other);
+    })
+//    .def_cast(-py::self)
+//    .def_cast(py::self + py::self)
+//    .def_cast(py::self - py::self)
+    .def_cast(py::self * py::self)
+    // .def_cast(py::self - Scalar())
+    // .def_cast(py::self * Scalar())
+    // .def_cast(py::self / Scalar())
+
+//    .def("__mul__", []
+//    (const Type &a, const Scalar& b)
+//    {
+//      return Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic>(a * b);
+//    })
+//    .def("__rmul__", [](const Type& a, const Scalar& b)
+//    {
+//      return Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic>(b * a);
+//    })
+    ;
+
+    
 
 
 

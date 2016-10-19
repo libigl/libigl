@@ -188,8 +188,14 @@ py::class_<igl::viewer::ViewerCore> viewercore_class(me, "ViewerCore");
     })
 
     .def_readwrite("lighting_factor",&igl::viewer::ViewerCore::lighting_factor)
-
     .def_readwrite("model_zoom",&igl::viewer::ViewerCore::model_zoom)
+
+    .def_property("trackball_angle",
+    [](const igl::viewer::ViewerCore& core) {return Eigen::Quaterniond(core.trackball_angle.cast<double>());},
+    [](igl::viewer::ViewerCore& core, const Eigen::Quaterniond& q)
+    {
+      core.trackball_angle = Eigen::Quaternionf(q.cast<float>());
+    })
 
     .def_property("model_translation",
     [](const igl::viewer::ViewerCore& core) {return Eigen::MatrixXd(core.model_translation.cast<double>());},
@@ -316,13 +322,13 @@ py::class_<igl::viewer::ViewerCore> viewercore_class(me, "ViewerCore");
 // UI Enumerations
     py::class_<igl::viewer::Viewer> viewer_class(me, "Viewer");
 
-    #ifdef IGL_VIEWER_WITH_NANOGUI
-    py::object fh = (py::object) py::module::import("nanogui").attr("FormHelper");
-    py::class_<nanogui::FormHelper> form_helper_class(me, "FormHelper", fh);
+//    #ifdef IGL_VIEWER_WITH_NANOGUI
+//    py::object fh = (py::object) py::module::import("nanogui").attr("FormHelper");
+//    py::class_<nanogui::FormHelper> form_helper_class(me, "FormHelper", fh);
 
-    py::object screen = (py::object) py::module::import("nanogui").attr("Screen");
-    py::class_<nanogui::Screen> screen_class(me, "Screen", screen);
-    #endif
+//    py::object screen = (py::object) py::module::import("nanogui").attr("Screen");
+//    py::class_<nanogui::Screen> screen_class(me, "Screen", screen);
+//    #endif
 
     py::enum_<igl::viewer::Viewer::MouseButton>(viewer_class, "MouseButton")
         .value("Left", igl::viewer::Viewer::MouseButton::Left)
