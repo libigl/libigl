@@ -275,12 +275,8 @@ const char *__doc_igl_copyleft_cgal_remesh_self_intersections = R"igl_Qu8mg5v7(/
       //     // remove any vertices now unreferenced after duplicate mapping.
       //     igl::remove_unreferenced(VV,FF,SV,SF,UIM);
       //     // Now (SV,SF) is ready to extract outer hull
-<<<<<<< HEAD
-      //     igl::copyleft::cgal::outer_hull(SV,SF,G,J,flip);)igl_Qu8mg5v7";
-=======
       //     igl::copyleft::cgal::outer_hull(SV,SF,G,J,flip);
       //)igl_Qu8mg5v7";
->>>>>>> upstream/master
 const char *__doc_igl_copyleft_comiso_miq = R"igl_Qu8mg5v7(// Inputs:
     //   V              #V by 3 list of mesh vertex 3D positions
     //   F              #F by 3 list of faces indices in V
