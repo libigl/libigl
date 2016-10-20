@@ -26,6 +26,12 @@ namespace igl
   //   EI  #E by 2 list of edge flap corners (see above).
   //
   // TODO: This seems to be a duplicate of edge_topology.h
+  // igl::edge_topology(V,F,etEV,etFE,etEF);
+  // igl::edge_flaps(F,efE,efEMAP,efEF,efEI);
+  // [~,I] = sort(efE,2)
+  // all( efE(sub2ind(size(efE),repmat(1:size(efE,1),2,1)',I)) == etEV )
+  // all( efEF(sub2ind(size(efE),repmat(1:size(efE,1),2,1)',I)) == etEF )
+  // all(efEMAP(sub2ind(size(F),repmat(1:size(F,1),3,1)',repmat([1 2 3],size(F,1),1))) == etFE(:,[2 3 1]))
   IGL_INLINE void edge_flaps(
     const Eigen::MatrixXi & F,
     const Eigen::MatrixXi & E,
