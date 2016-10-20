@@ -43,7 +43,7 @@ void igl::crouzeix_raviart_massmatrix(
   using namespace std;
   assert(F.cols() == 3);
   // Mesh should be edge-manifold
-  assert(is_edge_manifold(V,F));
+  assert(is_edge_manifold(F));
   // number of elements (triangles)
   int m = F.rows();
   // Get triangle areas
