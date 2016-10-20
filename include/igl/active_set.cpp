@@ -77,7 +77,7 @@ IGL_INLINE igl::SolverStatus igl::active_set(
   {
     lx = p_lx;
   }
-  if(ux.size() == 0)
+  if(p_ux.size() == 0)
   {
     ux = Eigen::PlainObjectBase<Derivedux>::Constant(
       n,1,numeric_limits<typename Derivedux::Scalar>::max());
