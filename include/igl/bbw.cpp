@@ -8,6 +8,7 @@
 #include "bbw.h"
 #include "min_quad_with_fixed.h"
 #include "harmonic.h"
+#include "parallel_for.h"
 #include <Eigen/Sparse>
 #include <iostream>
 #include <cstdio>
