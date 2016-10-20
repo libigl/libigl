@@ -12,11 +12,8 @@
 #include <igl/avg_edge_length.h>
 #include <igl/barycenter.h>
 #include <igl/barycentric_coordinates.h>
-<<<<<<< HEAD
 #include <igl/barycentric_to_global.h>
-=======
 #include <igl/boundary_conditions.h>
->>>>>>> upstream/master
 #include <igl/boundary_facets.h>
 #include <igl/boundary_loop.h>
 #include <igl/cat.h>
