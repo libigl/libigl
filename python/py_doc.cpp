@@ -76,6 +76,20 @@ const char *__doc_igl_barycentric_coordinates = R"igl_Qu8mg5v7(// Compute baryce
   // Outputs:
   //   L  #P by 4 list of barycentric coordinates
   //   )igl_Qu8mg5v7";
+const char *__doc_igl_barycentric_to_global = R"igl_Qu8mg5v7(// Converts barycentric coordinates in the embree form to 3D coordinates
+  // Embree stores barycentric coordinates as triples: fid, bc1, bc2
+  // fid is the id of a face, bc1 is the displacement of the point wrt the 
+  // first vertex v0 and the edge v1-v0. Similarly, bc2 is the displacement
+  // wrt v2-v0.
+  // 
+  // Input:
+  // V:  #Vx3 Vertices of the mesh
+  // F:  #Fxe Faces of the mesh
+  // bc: #Xx3 Barycentric coordinates, one row per point
+  //
+  // Output:
+  // #X: #Xx3 3D coordinates of all points in bc
+  //   )igl_Qu8mg5v7";
 const char *__doc_igl_bbw_bbw = R"igl_Qu8mg5v7(// Compute Bounded Biharmonic Weights on a given domain (V,Ele) with a given
     // set of boundary conditions
     //
@@ -536,6 +550,23 @@ const char *__doc_igl_embree_reorient_facets_raycast = R"igl_Qu8mg5v7(// Orient 
     // Outputs:
     //   I  #F list of whether face has been flipped
     //   C  #F list of patch ID (output of bfs_orient > manifold patches))igl_Qu8mg5v7";
+const char *__doc_igl_embree_line_mesh_intersection = R"igl_Qu8mg5v7(// Project the point cloud V_source onto the triangle mesh
+    // V_target,F_target. 
+    // A ray is casted for every vertex in the direction specified by 
+    // N_source and its opposite.
+    //
+    // Input:
+    // V_source: #Vx3 Vertices of the source mesh
+    // N_source: #Vx3 Normals of the point cloud
+    // V_target: #V2x3 Vertices of the target mesh
+    // F_target: #F2x3 Faces of the target mesh
+    //
+    // Output:
+    // #Vx3 matrix of baricentric coordinate. Each row corresponds to 
+    // a vertex of the projected mesh and it has the following format:
+    // id b1 b2. id is the id of a face of the source mesh. b1 and b2 are 
+    // the barycentric coordinates wrt the first two edges of the triangle
+    // To convert to standard global coordinates, see barycentric_to_global.h)igl_Qu8mg5v7";
 const char *__doc_igl_find_cross_field_singularities = R"igl_Qu8mg5v7(// Inputs:
   //   V                #V by 3 eigen Matrix of mesh vertex 3D positions
   //   F                #F by 3 eigen Matrix of face (quad) indices
