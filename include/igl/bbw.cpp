@@ -11,6 +11,7 @@
 #include "parallel_for.h"
 #include <Eigen/Sparse>
 #include <iostream>
+#include <mutex>
 #include <cstdio>
 
 igl::BBWData::BBWData():
