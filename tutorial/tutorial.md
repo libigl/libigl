@@ -92,6 +92,7 @@ lecture notes links to a cross-platform example application.
     * [608 Locally Injective Maps](#locallyinjectivemaps)
     * [609 Boolean Operations on Meshes](#booleanoperationsonmeshes)
     * [610 CSG Tree](#csgtree)
+    * [611 Scalable Locally Injective Maps](#slim)
 * [Chapter 7: Miscellaneous](#chapter7:miscellaneous)
     * [701 Mesh Statistics](#meshstatistics)
     * [702 Generalized Winding Number](#generalizedwindingnumber)
@@ -193,6 +194,10 @@ compile CoMISo.
 
 *Note 2*: CoMISo requires a blas implementation. We use the built-in blas in macosx and linux, and we bundle a precompiled binary for VS2015 64 bit. Do NOT compile the tutorials
 in 32 bit on windows.
+
+### libigl example project
+
+We provide a [blank project example](https://github.com/libigl/libigl-example-project) showing how to use libigl and cmake. Feel free and encouraged to copy or fork this project as a way of starting a new personal project using libigl.
 
 ## [Mesh representation](#meshrepresentation) [meshrepresentation]
 
@@ -446,7 +451,7 @@ viewer.callback_init = [&](igl::viewer::Viewer& viewer)
   viewer.ngui->addButton("Print Hello",[](){ std::cout << "Hello\n"; });
 
   // call to generate menu
-  viewer.ngui->layout();
+  viewer.screen->performLayout();
   return false;
 };
 
@@ -2616,6 +2621,14 @@ then the final composite.
 ![Example [610](610_CSGTree/main.cpp) computes  complex CSG Tree operation on 5
 input meshes.](images/cube-sphere-cylinders-csg.gif)
 
+## [Scalable Locally Injective Maps](#slim) [slim]
+
+The Scalable Locally Injective Maps [#rabinovich_2016][] algorithm allows to compute locally injective maps on massive datasets. The algorithm shares many similarities with ARAP, but uses a reweighting scheme to minimize arbitrary distortion energies, including those that prevent the introduction of flips.
+
+[Example 611](611_SLIM/main.cpp) contains three demos: (1) an example of large scale 2D parametrization, (2) an example of 2D deformation with soft constraints, and (3) an example of 3D deformation with soft constraints. The implementation in libigl is self-contained and relies on Eigen for the solution of the linear system used in the global step. An optimized version that relies on Pardiso is available [here](https://github.com/MichaelRabinovich/Scalable-Locally-Injective-Mappings).
+
+![A locally injective parametrization of a mesh with 50k faces is computed using the SLIM algorithm in 10 iterations.](images/611_SLIM.png)
+
 # Miscellaneous [chapter7:miscellaneous]
 
 Libigl contains a _wide_ variety of geometry processing tools and functions for
@@ -3305,3 +3318,5 @@ pseudonormal](https://www.google.com/search?q=Signed+distance+computation+using+
   2016
 [#vaxman_2016]: Amir Vaxman, Marcel Campen, Olga Diamanti, Daniele Panozzo, David Bommes, Klaus Hildebrandt, Mirela Ben-Chen. [Directional Field Synthesis, Design, and Processing](https://www.google.com/search?q=Directional+Field+Synthesis+Design+and+Processing),
   2016
+  [#rabinovich_2016]: Michael Rabinovich, Roi Poranne, Daniele Panozzo, Olga Sorkine-Hornung. [Scalable Locally Injective
+    Mappings](http://cs.nyu.edu/~panozzo/papers/SLIM-2016.pdf), 2016.

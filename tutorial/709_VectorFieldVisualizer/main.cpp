@@ -10,7 +10,6 @@
 #include <igl/slice.h>
 #include <igl/sort_vectors_ccw.h>
 #include <igl/streamlines.h>
-#include <igl/triangle_triangle_adjacency.h>
 #include <igl/copyleft/comiso/nrosy.h>
 #include <igl/viewer/Viewer.h>
 

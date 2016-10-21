@@ -4,7 +4,6 @@ project(libigl)
 ### Available options ###
 option(LIBIGL_USE_STATIC_LIBRARY    "Use libigl as static library" OFF)
 option(LIBIGL_WITH_ANTTWEAKBAR      "Use AntTweakBar"    OFF)
-option(LIBIGL_WITH_BBW              "Use BBW"            OFF)
 option(LIBIGL_WITH_CGAL             "Use CGAL"           OFF)
 option(LIBIGL_WITH_COMISO           "Use CoMiso"         OFF)
 option(LIBIGL_WITH_CORK             "Use Cork"           OFF)
@@ -151,20 +150,6 @@ if(LIBIGL_WITH_ANTTWEAKBAR)
     CompileIGL_Module("anttweakbar")
     target_include_directories(iglanttweakbar PRIVATE
       ${ANTTWEAKBAR_INCLUDE_DIR})
-  endif()
-endif()
-
-### Compile the BBW part ###
-if(LIBIGL_WITH_BBW)
-  if(LIBIGL_USE_STATIC_LIBRARY)
-    CompileIGL_Module("bbw")
-    if(LIBIGL_WITH_MOSEK)
-      find_package(MOSEK REQUIRED)
-      list(APPEND LIBIGL_INCLUDE_DIRS ${MOSEK_INCLUDE_DIR})
-      target_include_directories(iglbbw PRIVATE ${MOSEK_INCLUDE_DIR})
-    else()
-      target_compile_definitions(iglbbw PRIVATE -DIGL_NO_MOSEK)
-    endif()
   endif()
 endif()
 
@@ -387,6 +372,7 @@ endif()
 
 ### Compile the viewer ###
 if(LIBIGL_WITH_VIEWER)
+  find_package(OpenGL REQUIRED)
   set(NANOGUI_DIR "${LIBIGL_EXTERNAL}/nanogui")
 
   if(LIBIGL_WITH_NANOGUI)
@@ -415,7 +401,7 @@ if(LIBIGL_WITH_VIEWER)
     add_subdirectory("${NANOGUI_DIR}/ext/glfw" "glfw")
 
     set(VIEWER_INCLUDE_DIRS "${NANOGUI_DIR}/ext/glfw/include")
-    set(LIBIGL_VIEWER_EXTRA_LIBRARIES "glfw" ${GLFW_LIBRARIES})
+    set(LIBIGL_VIEWER_EXTRA_LIBRARIES "glfw" ${OPENGL_gl_LIBRARY})
   endif()
 
   ### GLEW for linux and windows
@@ -472,7 +458,6 @@ if(NOT ${CMAKE_PROJECT_NAME} STREQUAL ${PROJECT_NAME})
   set(LIBIGL_INCLUDE_DIRS ${LIBIGL_INCLUDE_DIRS} PARENT_SCOPE)
   set(LIBIGL_LIBRARIES ${LIBIGL_LIBRARIES} PARENT_SCOPE)
   set(LIBIGL_ANTTWEAKBAR_EXTRA_LIBRARIES ${LIBIGL_ANTTWEAKBAR_EXTRA_LIBRARIES} PARENT_SCOPE)
-  #set(LIBIGL_BBW_EXTRA_LIBRARIES         ${LIBIGL_BBW_EXTRA_LIBRARIES}         PARENT_SCOPE)
   set(LIBIGL_CGAL_EXTRA_LIBRARIES        ${LIBIGL_CGAL_EXTRA_LIBRARIES}        PARENT_SCOPE)
   set(LIBIGL_COMISO_EXTRA_LIBRARIES      ${LIBIGL_COMISO_EXTRA_LIBRARIES}      PARENT_SCOPE)
   set(LIBIGL_CORK_EXTRA_LIBRARIES        ${LIBIGL_CORK_EXTRA_LIBRARIES}        PARENT_SCOPE)

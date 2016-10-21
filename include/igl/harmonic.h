@@ -81,6 +81,39 @@ namespace igl
     const Eigen::PlainObjectBase<Derivedbc> & bc,
     const int k,
     Eigen::PlainObjectBase<DerivedW> & W);
+  // Build the discrete k-harmonic operator (computing integrated quantities).
+  // That is, if the k-harmonic PDE is Q x = 0, then this minimizes x' Q x
+  //
+  // Inputs:
+  //   L  #V by #V discrete (integrated) Laplacian  
+  //   M  #V by #V mass matrix
+  //   k  power of harmonic operation (1: harmonic, 2: biharmonic, etc)
+  // Outputs:
+  //   Q  #V by #V discrete (integrated) k-Laplacian  
+  template <
+    typename DerivedL,
+    typename DerivedM,
+    typename DerivedQ>
+  IGL_INLINE void harmonic(
+    const Eigen::SparseMatrix<DerivedL> & L,
+    const Eigen::SparseMatrix<DerivedM> & M,
+    const int k,
+    Eigen::SparseMatrix<DerivedQ> & Q);
+  // Inputs:
+  //   V  #V by dim vertex positions
+  //   F  #F by simplex-size list of element indices
+  //   k  power of harmonic operation (1: harmonic, 2: biharmonic, etc)
+  // Outputs:
+  //   Q  #V by #V discrete (integrated) k-Laplacian  
+  template <
+    typename DerivedV,
+    typename DerivedF,
+    typename DerivedQ>
+  IGL_INLINE void harmonic(
+    const Eigen::PlainObjectBase<DerivedV> & V,
+    const Eigen::PlainObjectBase<DerivedF> & F,
+    const int k,
+    Eigen::SparseMatrix<DerivedQ> & Q);
 };
 
 #ifndef IGL_STATIC_LIBRARY
