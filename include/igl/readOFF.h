@@ -20,7 +20,7 @@
 namespace igl 
 {
   
-  // Read a mesh from an ascii obj file, filling in vertex positions, normals
+  // Read a mesh from an ascii OFF file, filling in vertex positions, normals
   // and texture coordinates. Mesh may have faces of any number of degree
   //
   // Templates:
