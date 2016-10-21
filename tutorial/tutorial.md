@@ -451,7 +451,7 @@ viewer.callback_init = [&](igl::viewer::Viewer& viewer)
   viewer.ngui->addButton("Print Hello",[](){ std::cout << "Hello\n"; });
 
   // call to generate menu
-  viewer.ngui->layout();
+  viewer.screen->performLayout();
   return false;
 };
 
