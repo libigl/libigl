@@ -35,7 +35,7 @@ IGL_INLINE bool igl::read_triangle_mesh(
   pathinfo(str,d,b,e,f);
   // Convert extension to lower case
   std::transform(e.begin(), e.end(), e.begin(), ::tolower);
-  vector<vector<Scalar> > TC, N;
+  vector<vector<Scalar> > TC, N, C;
   vector<vector<Index> > FTC, FN;
   if(e == "obj")
   {
@@ -49,7 +49,7 @@ IGL_INLINE bool igl::read_triangle_mesh(
     return success;
   }else if(e == "off")
   {
-    return readOFF(str,V,F,N);
+    return readOFF(str,V,F,N,C);
   }
   cerr<<"Error: "<<__FUNCTION__<<": "<<
     str<<" is not a recognized mesh file format."<<endl;
@@ -85,7 +85,7 @@ IGL_INLINE bool igl::read_triangle_mesh(
   pathinfo(filename,dir,base,ext,name);
   // Convert extension to lower case
   transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
-  vector<vector<double > > vV,vN,vTC;
+  vector<vector<double > > vV,vN,vTC,vC;
   vector<vector<int > > vF,vFTC,vFN;
   if(ext == "mesh")
   {
@@ -113,7 +113,7 @@ IGL_INLINE bool igl::read_triangle_mesh(
     }
   }else if(ext == "off")
   {
-    if(!readOFF(filename,vV,vF,vN))
+    if(!readOFF(filename,vV,vF,vN,vC))
     {
       return false;
     }

@@ -14,7 +14,8 @@ IGL_INLINE bool igl::readOFF(
   const std::string off_file_name,
   std::vector<std::vector<Scalar > > & V,
   std::vector<std::vector<Index > > & F,
-  std::vector<std::vector<Scalar > > & N)
+  std::vector<std::vector<Scalar > > & N,
+  std::vector<std::vector<Scalar > > & C)
 {
   using namespace std;
   FILE * off_file = fopen(off_file_name.c_str(),"r");
@@ -26,20 +27,25 @@ IGL_INLINE bool igl::readOFF(
   V.clear();
   F.clear();
   N.clear();
+  C.clear();
+
   // First line is always OFF
   char header[1000];
   const std::string OFF("OFF");
   const std::string NOFF("NOFF");
+  const std::string COFF("COFF");
   if(fscanf(off_file,"%s\n",header)!=1
      || !(
        string(header).compare(0, OFF.length(), OFF)==0 ||
+       string(header).compare(0, COFF.length(), COFF)==0 ||
        string(header).compare(0,NOFF.length(),NOFF)==0))
   {
-    printf("Error: %s's first line should be OFF or NOFF not %s...",off_file_name.c_str(),header);
+    printf("Error: readOFF() %s's first line should be OFF or NOFF or COFF, not %s...",off_file_name.c_str(),header);
     fclose(off_file);
     return false;
   }
   bool has_normals = string(header).compare(0,NOFF.length(),NOFF)==0;
+  bool has_vertexColors = string(header).compare(0,COFF.length(),COFF)==0;
   // Second line is #vertices #faces #edges
   int number_of_vertices;
   int number_of_faces;
@@ -56,6 +62,8 @@ IGL_INLINE bool igl::readOFF(
   V.resize(number_of_vertices);
   if (has_normals)
     N.resize(number_of_vertices);
+  if (has_vertexColors)
+    C.resize(number_of_vertices);
   F.resize(number_of_faces);
   //printf("%s %d %d %d\n",(has_normals ? "NOFF" : "OFF"),number_of_vertices,number_of_faces,number_of_edges);
   // Read vertices
@@ -80,6 +88,14 @@ IGL_INLINE bool igl::readOFF(
         normal[1] = ny;
         normal[2] = nz;
         N[i] = normal;
+      }
+
+      if (has_vertexColors)
+      {
+        C[i].resize(3);
+        C[i][0] = nx / 255.0;
+        C[i][1] = ny / 255.0;
+        C[i][2] = nz / 255.0;
       }
       i++;
     }else if(
@@ -146,10 +162,11 @@ IGL_INLINE bool igl::readOFF(
   std::vector<std::vector<double> > vV;
   std::vector<std::vector<double> > vN;
   std::vector<std::vector<int> > vF;
-  bool success = igl::readOFF(str,vV,vF,vN);
+  std::vector<std::vector<double> > vC;
+  bool success = igl::readOFF(str,vV,vF,vN,vC);
   if(!success)
   {
-    // readOFF(str,vV,vF) should have already printed an error
+    // readOFF(str,vV,vF,vN,vC) should have already printed an error
     // message to stderr
     return false;
   }
@@ -179,10 +196,11 @@ IGL_INLINE bool igl::readOFF(
   std::vector<std::vector<double> > vV;
   std::vector<std::vector<double> > vN;
   std::vector<std::vector<int> > vF;
-  bool success = igl::readOFF(str,vV,vF,vN);
+  std::vector<std::vector<double> > vC;
+  bool success = igl::readOFF(str,vV,vF,vN,vC);
   if(!success)
   {
-    // readOFF(str,vV,vF) should have already printed an error
+    // readOFF(str,vV,vF,vC) should have already printed an error
     // message to stderr
     return false;
   }
@@ -208,6 +226,18 @@ IGL_INLINE bool igl::readOFF(
       return false;
     }
   }
+
+  //Warning: RGB colors will be returned in the N matrix
+  if (vC.size())
+  {
+    bool C_rect = igl::list_to_matrix(vC,N);
+    if(!C_rect)
+    {
+      // igl::list_to_matrix(vC,N) already printed error message to std err
+      return false;
+    }
+  }
+
   return true;
 }
 #endif
