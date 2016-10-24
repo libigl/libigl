@@ -7,7 +7,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "internal_angles.h"
-#include "edge_lengths.h"
+#include "squared_edge_lengths.h"
 #include "parallel_for.h"
 #include "get_seconds.h"
 
@@ -26,11 +26,11 @@ IGL_INLINE void igl::internal_angles(
     Matrix<
       Scalar,
       DerivedF::RowsAtCompileTime,
-      DerivedF::ColsAtCompileTime> L;
-    edge_lengths(V,F,L);
+      DerivedF::ColsAtCompileTime> L_sq;
+      igl::squared_edge_lengths(V,F,L_sq);
 
     assert(F.cols() == 3 && "F should contain triangles");
-    internal_angles(L,K);
+    igl::internal_angles_using_squared_edge_lengths(L_sq,K);
   }else
   {
     assert(V.cols() == 3 && "If F contains non-triangle facets, V must be 3D");
@@ -63,10 +63,37 @@ IGL_INLINE void igl::internal_angles(
 }
 
 template <typename DerivedL, typename DerivedK>
-IGL_INLINE void igl::internal_angles(
+IGL_INLINE void igl::internal_angles_using_squared_edge_lengths(
+  const Eigen::PlainObjectBase<DerivedL>& L_sq,
+  Eigen::PlainObjectBase<DerivedK> & K)
+{
+  typedef typename DerivedL::Index Index;
+  assert(L_sq.cols() == 3 && "Edge-lengths should come from triangles");
+  const Index m = L_sq.rows();
+  K.resize(m,3);
+  parallel_for(
+    m,
+    [&L_sq,&K](const Index f)
+    {
+      for(size_t d = 0;d<3;d++)
+      {
+        const auto & s1 = L_sq(f,d);
+        const auto & s2 = L_sq(f,(d+1)%3);
+        const auto & s3 = L_sq(f,(d+2)%3);
+        K(f,d) = acos((s3 + s2 - s1)/(2.*sqrt(s3*s2)));
+      }
+    },
+    1000l);
+}
+
+template <typename DerivedL, typename DerivedK>
+IGL_INLINE void igl::internal_angles_using_edge_lengths(
   const Eigen::PlainObjectBase<DerivedL>& L,
   Eigen::PlainObjectBase<DerivedK> & K)
 {
+  // Note:
+  //   Usage of internal_angles_using_squared_edge_lengths() is preferred to internal_angles_using_squared_edge_lengths()
+  //   This function is deprecated and probably will be removed in future versions
   typedef typename DerivedL::Index Index;
   assert(L.cols() == 3 && "Edge-lengths should come from triangles");
   const Index m = L.rows();

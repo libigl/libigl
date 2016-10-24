@@ -146,10 +146,10 @@ IGL_INLINE void igl::doublearea(
   //
   // "Miscalculating Area and Angles of a Needle-like Triangle"
   // https://people.eecs.berkeley.edu/~wkahan/Triangle.pdf
-  sort(ul,2,false,l,_);
+  igl::sort(ul,2,false,l,_);
   // semiperimeters
-  Matrix<typename Derivedl::Scalar,Dynamic,1> s = l.rowwise().sum()*0.5;
-  assert((Index)s.rows() == m);
+  //Matrix<typename Derivedl::Scalar,Dynamic,1> s = l.rowwise().sum()*0.5;
+  //assert((Index)s.rows() == m);
   // resize output
   dblA.resize(l.rows(),1);
   parallel_for(
