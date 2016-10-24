@@ -383,8 +383,8 @@ IGL_INLINE void igl::viewer::ViewerCore::draw_buffer(ViewerData& data,
   assert(R.rows() == G.rows() && G.rows() == B.rows() && B.rows() == A.rows());
   assert(R.cols() == G.cols() && G.cols() == B.cols() && B.cols() == A.cols());
 
-  int x = R.rows();
-  int y = R.cols();
+  unsigned x = R.rows();
+  unsigned y = R.cols();
 
   // Create frame buffer
   GLuint frameBuffer;
