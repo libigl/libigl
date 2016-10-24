@@ -28,10 +28,10 @@ namespace igl
     const Eigen::PlainObjectBase<DerivedF>& F,
     Eigen::PlainObjectBase<DerivedK> & K);
   // Inputs:
-  //   L  #F by 3 list of edge lengths
+  //   L_sq  #F by 3 list of edge lengths squared
   template <typename DerivedL, typename DerivedK>
   IGL_INLINE void internal_angles(
-    const Eigen::PlainObjectBase<DerivedL>& L,
+    const Eigen::PlainObjectBase<DerivedL>& L_sq,
     Eigen::PlainObjectBase<DerivedK> & K);
 }
 

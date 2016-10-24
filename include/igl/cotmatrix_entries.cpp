@@ -7,6 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "cotmatrix_entries.h"
 #include "doublearea.h"
+#include "edge_lengths_squared.h"
 #include "edge_lengths.h"
 #include "face_areas.h"
 #include "volume.h"
@@ -34,11 +35,15 @@ IGL_INLINE void igl::cotmatrix_entries(
     case 3:
     {
       // Triangles
-      //Matrix<typename DerivedC::Scalar,Dynamic,3> l;
-      //edge_lengths(V,F,l);
-      // edge lengths numbered same as opposite vertices
+      //Compute Edge lenghts squared
+      Matrix<typename DerivedC::Scalar,Dynamic,3> l2;
+      igl::edge_lengths_squared(V,F,l2);
+      //Compute Edge lenghts 
       Matrix<typename DerivedC::Scalar,Dynamic,3> l;
-      igl::edge_lengths(V,F,l);
+      l = l2.array().sqrt();
+      // edge lengths numbered same as opposite vertices
+      
+      
       // double area
       Matrix<typename DerivedC::Scalar,Dynamic,1> dblA;
       doublearea(l,dblA);
@@ -47,9 +52,9 @@ IGL_INLINE void igl::cotmatrix_entries(
       C.resize(m,3);
       for(int i = 0;i<m;i++)
       {
-        C(i,0) = (l(i,1)*l(i,1) + l(i,2)*l(i,2) - l(i,0)*l(i,0))/dblA(i)/4.0;
-        C(i,1) = (l(i,2)*l(i,2) + l(i,0)*l(i,0) - l(i,1)*l(i,1))/dblA(i)/4.0;
-        C(i,2) = (l(i,0)*l(i,0) + l(i,1)*l(i,1) - l(i,2)*l(i,2))/dblA(i)/4.0;
+        C(i,0) = (l2(i,1) + l2(i,2) - l2(i,0))/dblA(i)/4.0;
+        C(i,1) = (l2(i,2) + l2(i,0) - l2(i,1))/dblA(i)/4.0;
+        C(i,2) = (l2(i,0) + l2(i,1) - l2(i,2))/dblA(i)/4.0;
       }
       break;
     }
