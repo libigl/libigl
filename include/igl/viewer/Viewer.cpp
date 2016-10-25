@@ -80,7 +80,7 @@ static igl::viewer::Viewer * __viewer;
 static double highdpi = 1;
 static double scroll_x = 0;
 static double scroll_y = 0;
-static int global_KMod = 0;
+//static int global_KMod = 0;
 
 static void glfw_mouse_press(GLFWwindow* window, int button, int action, int modifier)
 {
