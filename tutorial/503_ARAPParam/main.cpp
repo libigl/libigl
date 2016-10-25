@@ -7,6 +7,8 @@
 
 #include "tutorial_shared_path.h"
 
+#include <iostream>
+
 Eigen::MatrixXd V;
 Eigen::MatrixXi F;
 Eigen::MatrixXd V_uv;
@@ -55,6 +57,9 @@ int main(int argc, char *argv[])
   // Compute the initial solution for ARAP (harmonic parametrization)
   Eigen::VectorXi bnd;
   igl::boundary_loop(F,bnd);
+
+  if (bnd.size() < 1)
+        std::cerr << "error: Mesh has no boundary"<<std::endl;
   Eigen::MatrixXd bnd_uv;
   igl::map_vertices_to_circle(V,bnd,bnd_uv);
 

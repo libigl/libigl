@@ -5,6 +5,8 @@
 #include <igl/lscm.h>
 
 #include "tutorial_shared_path.h"
+#include <iostream>
+
 
 Eigen::MatrixXd V;
 Eigen::MatrixXi F;
@@ -49,6 +51,8 @@ int main(int argc, char *argv[])
   // Fix two points on the boundary
   VectorXi bnd,b(2,1);
   igl::boundary_loop(F,bnd);
+  if (bnd.size() < 1)
+        std::cerr << "error: Mesh has no boundary"<<std::endl;
   b(0) = bnd(0);
   b(1) = bnd(round(bnd.size()/2));
   MatrixXd bc(2,2);

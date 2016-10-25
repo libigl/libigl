@@ -5,6 +5,8 @@
 #include <igl/viewer/Viewer.h>
 
 #include "tutorial_shared_path.h"
+#include <iostream>
+
 
 Eigen::MatrixXd V;
 Eigen::MatrixXi F;
@@ -45,6 +47,8 @@ int main(int argc, char *argv[])
   // Find the open boundary
   Eigen::VectorXi bnd;
   igl::boundary_loop(F,bnd);
+  if (bnd.size() < 1)
+        std::cerr << "error: Mesh has no boundary"<<std::endl;
 
   // Map the boundary to a circle, preserving edge proportions
   Eigen::MatrixXd bnd_uv;
