@@ -1,5 +1,5 @@
 #include "tutorial_shared_path.h"
-#include <igl/readOFF.h>
+#include <igl/read_triangle_mesh.h>
 #include <igl/unproject_onto_mesh.h>
 #include <igl/viewer/Viewer.h>
 #include <iostream>
@@ -10,8 +10,14 @@ int main(int argc, char *argv[])
   Eigen::MatrixXd V, C;
   Eigen::MatrixXi F;
 
-  // Load a mesh in OFF format
-  igl::readOFF(TUTORIAL_SHARED_PATH "/fertility.off", V, F);
+  // Set input mesh filename
+  std::string filename(TUTORIAL_SHARED_PATH "/fertility.off");
+  if (argc > 1)
+      filename = std::string(argv[1]);
+
+  // Try to load the input mesh
+  if (igl::read_triangle_mesh(filename, V, F) == false)
+      return -1;
 
   // Initialize white
   C = Eigen::MatrixXd::Constant(F.rows(),3,1);
@@ -30,6 +36,7 @@ int main(int argc, char *argv[])
       // paint hit red
       C.row(fid)<<1,0,0;
       viewer.data.set_colors(C);
+      std::cout << "Picked: " << fid << std::endl;
       return true;
     }
     return false;
