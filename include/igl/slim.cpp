@@ -361,7 +361,7 @@ void WeightedGlobalLocal::solve_weighted_arap(const Eigen::MatrixXd& V, const Ei
   } else { // seems like CG performs much worse for 2D and way better for 3D
     Eigen::VectorXd guess(uv.rows()*dim);
     for (int i = 0; i < dim; i++) for (int j = 0; j < dim; j++) guess(uv.rows()*i + j) = uv(i,j); // flatten vector
-    ConjugateGradient<SparseMatrix<double>, Eigen::Upper> solver;
+    ConjugateGradient<SparseMatrix<double>, Eigen::Lower|Upper> solver;
     solver.setTolerance(1e-8);
     Uc = solver.compute(L).solveWithGuess(rhs,guess);
   }
