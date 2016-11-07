@@ -60,7 +60,23 @@ struct SLIMData {
   int f_num;
   double proximal_p;
 
+  Eigen::VectorXd WGL_M;
+  Eigen::VectorXd rhs;
+  Eigen::MatrixXd Ri,Ji;
+  Eigen::VectorXd W_11; Eigen::VectorXd W_12; Eigen::VectorXd W_13;
+  Eigen::VectorXd W_21; Eigen::VectorXd W_22; Eigen::VectorXd W_23;
+  Eigen::VectorXd W_31; Eigen::VectorXd W_32; Eigen::VectorXd W_33;
+  Eigen::SparseMatrix<double> Dx,Dy,Dz;
+
+  int f_n,v_n;
+
+  bool first_solve;
+  bool has_pre_calc = false;
+
+  int dim;
+
   WeightedGlobalLocal* wGlobalLocal;
+
 };
 
   // Compute necessary information to start using SLIM
