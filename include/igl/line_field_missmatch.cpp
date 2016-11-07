@@ -67,7 +67,7 @@ private:
         double angle_diff = atan2(dir1Rot.dot(PD2.row(f0)),dir1Rot.dot(PD1.row(f0)));
 
         double step=M_PI;
-        int i=(int)floor((angle_diff/step)+0.5);
+        int i=(int)std::floor((angle_diff/step)+0.5);
         assert((i>=-2)&&(i<=2));
         int k=0;
         if (i>=0)
