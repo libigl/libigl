@@ -11,12 +11,7 @@
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 
-#include <string>
-
-#include <igl/jet.h>
-#include <igl/readOBJ.h>
-#include <igl/facet_components.h>
-#include <igl/slice.h>
+#include "igl_inline.h"
 
 class WeightedGlobalLocal;
 
@@ -67,16 +62,10 @@ struct SLIMData {
   Eigen::VectorXd W_21; Eigen::VectorXd W_22; Eigen::VectorXd W_23;
   Eigen::VectorXd W_31; Eigen::VectorXd W_32; Eigen::VectorXd W_33;
   Eigen::SparseMatrix<double> Dx,Dy,Dz;
-
   int f_n,v_n;
-
   bool first_solve;
   bool has_pre_calc = false;
-
   int dim;
-
-  WeightedGlobalLocal* wGlobalLocal;
-
 };
 
   // Compute necessary information to start using SLIM
@@ -93,7 +82,7 @@ IGL_INLINE void slim_precompute(Eigen::MatrixXd& V, Eigen::MatrixXi& F, Eigen::M
 // Run iter_num iterations of SLIM
 // Outputs:
 //    V_o (in SLIMData): #V by dim list of mesh vertex positions
-IGL_INLINE void slim_solve(SLIMData& data, int iter_num);
+IGL_INLINE Eigen::MatrixXd slim_solve(SLIMData& data, int iter_num);
 
 }
 
