@@ -6,13 +6,10 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "flip_avoiding_line_search.h"
+#include "line_search.h"
 
 #include <Eigen/Dense>
 #include <vector>
-#include "line_search.h"
-#define TwoPi  2*M_PI//6.28318530717958648
-
-using namespace std;
 
 //---------------------------------------------------------------------------
 // x - array of size 3
@@ -20,48 +17,62 @@ using namespace std;
 //         2 real roots: x[0], x[1],          return 2
 //         1 real root : x[0], x[1] ± i*x[2], return 1
 // http://math.ivanovo.ac.ru/dalgebra/Khashin/poly/index.html
-int SolveP3(std::vector<double>& x,double a,double b,double c) { // solve cubic equation x^3 + a*x^2 + b*x + c
+int SolveP3(std::vector<double>& x,double a,double b,double c)
+{ // solve cubic equation x^3 + a*x^2 + b*x + c
+  using namespace std;
   double a2 = a*a;
     double q  = (a2 - 3*b)/9;
   double r  = (a*(2*a2-9*b) + 27*c)/54;
     double r2 = r*r;
   double q3 = q*q*q;
   double A,B;
-    if(r2<q3) {
-        double t=r/sqrt(q3);
-    if( t<-1) t=-1;
-    if( t> 1) t= 1;
-        t=acos(t);
-        a/=3; q=-2*sqrt(q);
-        x[0]=q*cos(t/3)-a;
-        x[1]=q*cos((t+TwoPi)/3)-a;
-        x[2]=q*cos((t-TwoPi)/3)-a;
-        return(3);
-    } else {
-        A =-pow(fabs(r)+sqrt(r2-q3),1./3);
-    if( r<0 ) A=-A;
-    B = A==0? 0 : B=q/A;
+    if(r2<q3)
+    {
+      double t=r/sqrt(q3);
+      if( t<-1) t=-1;
+      if( t> 1) t= 1;
+      t=acos(t);
+      a/=3; q=-2*sqrt(q);
+      x[0]=q*cos(t/3)-a;
+      x[1]=q*cos((t+(2*M_PI))/3)-a;
+      x[2]=q*cos((t-(2*M_PI))/3)-a;
+      return(3);
+    }
+    else
+    {
+      A =-pow(fabs(r)+sqrt(r2-q3),1./3);
+      if( r<0 ) A=-A;
+      B = A==0? 0 : B=q/A;
 
-    a/=3;
-    x[0] =(A+B)-a;
-        x[1] =-0.5*(A+B)-a;
-        x[2] = 0.5*sqrt(3.)*(A-B);
-    if(fabs(x[2])<1e-14) { x[2]=x[1]; return(2); }
-        return(1);
+      a/=3;
+      x[0] =(A+B)-a;
+      x[1] =-0.5*(A+B)-a;
+      x[2] = 0.5*sqrt(3.)*(A-B);
+      if(fabs(x[2])<1e-14)
+      {
+        x[2]=x[1]; return(2);
+      }
+      return(1);
     }
 }
 
-double get_smallest_pos_quad_zero(double a,double b, double c) {
+double get_smallest_pos_quad_zero(double a,double b, double c)
+{
+  using namespace std;
   double t1,t2;
-  if (a != 0) {
+  if (a != 0)
+  {
     double delta_in = pow(b,2) - 4*a*c;
-    if (delta_in < 0) {
+    if (delta_in < 0)
+    {
       return INFINITY;
     }
     double delta = sqrt(delta_in);
     t1 = (-b + delta)/ (2*a);
     t2 = (-b - delta)/ (2*a);
-  } else {
+  }
+  else
+  {
     t1 = t2 = -b/c;
   }
   assert (std::isfinite(t1));
@@ -69,23 +80,32 @@ double get_smallest_pos_quad_zero(double a,double b, double c) {
 
   double tmp_n = min(t1,t2);
   t1 = max(t1,t2); t2 = tmp_n;
-  if (t1 == t2) {
+  if (t1 == t2)
+  {
     return INFINITY; // means the orientation flips twice = doesn't flip
   }
   // return the smallest negative root if it exists, otherwise return infinity
-  if (t1 > 0) {
-    if (t2 > 0) {
+  if (t1 > 0)
+  {
+    if (t2 > 0)
+    {
       return t2;
-    } else {
+    }
+    else
+    {
       return t1;
     }
-  } else {
+  }
+  else
+  {
     return INFINITY;
   }
 }
 
  double get_min_pos_root_2D(const Eigen::MatrixXd& uv,const Eigen::MatrixXi& F,
-            Eigen::MatrixXd& d, int f) {
+            Eigen::MatrixXd& d, int f)
+{
+  using namespace std;
 /*
       Finding the smallest timestep t s.t a triangle get degenerated (<=> det = 0)
       The following code can be derived by a symbolic expression in matlab:
@@ -125,20 +145,19 @@ double get_smallest_pos_quad_zero(double a,double b, double c) {
 
   int v1 = F(f,0); int v2 = F(f,1); int v3 = F(f,2);
   // get quadratic coefficients (ax^2 + b^x + c)
-  #define U11 uv(v1,0)
-  #define U12 uv(v1,1)
-  #define U21 uv(v2,0)
-  #define U22 uv(v2,1)
-  #define U31 uv(v3,0)
-  #define U32 uv(v3,1)
+  const double& U11 = uv(v1,0);
+  const double& U12 = uv(v1,1);
+  const double& U21 = uv(v2,0);
+  const double& U22 = uv(v2,1);
+  const double& U31 = uv(v3,0);
+  const double& U32 = uv(v3,1);
 
-  #define V11 d(v1,0)
-  #define V12 d(v1,1)
-  #define V21 d(v2,0)
-  #define V22 d(v2,1)
-  #define V31 d(v3,0)
-  #define V32 d(v3,1)
-
+  const double& V11 = d(v1,0);
+  const double& V12 = d(v1,1);
+  const double& V21 = d(v2,0);
+  const double& V22 = d(v2,1);
+  const double& V31 = d(v3,0);
+  const double& V32 = d(v3,1);
 
   double a = V11*V22 - V12*V21 - V11*V32 + V12*V31 + V21*V32 - V22*V31;
   double b = U11*V22 - U12*V21 - U21*V12 + U22*V11 - U11*V32 + U12*V31 + U31*V12 - U32*V11 + U21*V32 - U22*V31 - U31*V22 + U32*V21;
@@ -148,7 +167,9 @@ double get_smallest_pos_quad_zero(double a,double b, double c) {
 }
 
 double get_min_pos_root_3D(const Eigen::MatrixXd& uv,const Eigen::MatrixXi& F,
-            Eigen::MatrixXd& direc, int f) {
+            Eigen::MatrixXd& direc, int f)
+{
+  using namespace std;
   /*
       Searching for the roots of:
         +-1/6 * |ax ay az 1|
@@ -174,55 +195,62 @@ double get_min_pos_root_3D(const Eigen::MatrixXd& uv,const Eigen::MatrixXi& F,
         [coefficients,terms] = coeffs(det(vol_det),t); % terms = [ t^3, t^2, t, 1], Coefficients hold the coeff we seek
   */
   int v1 = F(f,0); int v2 = F(f,1); int v3 = F(f,2); int v4 = F(f,3);
-  #define a_x uv(v1,0)
-  #define a_y uv(v1,1)
-  #define a_z uv(v1,2)
-  #define b_x uv(v2,0)
-  #define b_y uv(v2,1)
-  #define b_z uv(v2,2)
-  #define c_x uv(v3,0)
-  #define c_y uv(v3,1)
-  #define c_z uv(v3,2)
-  #define d_x uv(v4,0)
-  #define d_y uv(v4,1)
-  #define d_z uv(v4,2)
+  const double& a_x = uv(v1,0);
+  const double& a_y = uv(v1,1);
+  const double& a_z = uv(v1,2);
+  const double& b_x = uv(v2,0);
+  const double& b_y = uv(v2,1);
+  const double& b_z = uv(v2,2);
+  const double& c_x = uv(v3,0);
+  const double& c_y = uv(v3,1);
+  const double& c_z = uv(v3,2);
+  const double& d_x = uv(v4,0);
+  const double& d_y = uv(v4,1);
+  const double& d_z = uv(v4,2);
 
-  #define a_dx direc(v1,0)
-  #define a_dy direc(v1,1)
-  #define a_dz direc(v1,2)
-  #define b_dx direc(v2,0)
-  #define b_dy direc(v2,1)
-  #define b_dz direc(v2,2)
-  #define c_dx direc(v3,0)
-  #define c_dy direc(v3,1)
-  #define c_dz direc(v3,2)
-  #define d_dx direc(v4,0)
-  #define d_dy direc(v4,1)
-  #define d_dz direc(v4,2)
+  const double& a_dx = direc(v1,0);
+  const double& a_dy = direc(v1,1);
+  const double& a_dz = direc(v1,2);
+  const double& b_dx = direc(v2,0);
+  const double& b_dy = direc(v2,1);
+  const double& b_dz = direc(v2,2);
+  const double& c_dx = direc(v3,0);
+  const double& c_dy = direc(v3,1);
+  const double& c_dz = direc(v3,2);
+  const double& d_dx = direc(v4,0);
+  const double& d_dy = direc(v4,1);
+  const double& d_dz = direc(v4,2);
 
   // Find solution for: a*t^3 + b*t^2 + c*d +d = 0
   double a = a_dx*b_dy*c_dz - a_dx*b_dz*c_dy - a_dy*b_dx*c_dz + a_dy*b_dz*c_dx + a_dz*b_dx*c_dy - a_dz*b_dy*c_dx - a_dx*b_dy*d_dz + a_dx*b_dz*d_dy + a_dy*b_dx*d_dz - a_dy*b_dz*d_dx - a_dz*b_dx*d_dy + a_dz*b_dy*d_dx + a_dx*c_dy*d_dz - a_dx*c_dz*d_dy - a_dy*c_dx*d_dz + a_dy*c_dz*d_dx + a_dz*c_dx*d_dy - a_dz*c_dy*d_dx - b_dx*c_dy*d_dz + b_dx*c_dz*d_dy + b_dy*c_dx*d_dz - b_dy*c_dz*d_dx - b_dz*c_dx*d_dy + b_dz*c_dy*d_dx;
+
   double b = a_dy*b_dz*c_x - a_dy*b_x*c_dz - a_dz*b_dy*c_x + a_dz*b_x*c_dy + a_x*b_dy*c_dz - a_x*b_dz*c_dy - a_dx*b_dz*c_y + a_dx*b_y*c_dz + a_dz*b_dx*c_y - a_dz*b_y*c_dx - a_y*b_dx*c_dz + a_y*b_dz*c_dx + a_dx*b_dy*c_z - a_dx*b_z*c_dy - a_dy*b_dx*c_z + a_dy*b_z*c_dx + a_z*b_dx*c_dy - a_z*b_dy*c_dx - a_dy*b_dz*d_x + a_dy*b_x*d_dz + a_dz*b_dy*d_x - a_dz*b_x*d_dy - a_x*b_dy*d_dz + a_x*b_dz*d_dy + a_dx*b_dz*d_y - a_dx*b_y*d_dz - a_dz*b_dx*d_y + a_dz*b_y*d_dx + a_y*b_dx*d_dz - a_y*b_dz*d_dx - a_dx*b_dy*d_z + a_dx*b_z*d_dy + a_dy*b_dx*d_z - a_dy*b_z*d_dx - a_z*b_dx*d_dy + a_z*b_dy*d_dx + a_dy*c_dz*d_x - a_dy*c_x*d_dz - a_dz*c_dy*d_x + a_dz*c_x*d_dy + a_x*c_dy*d_dz - a_x*c_dz*d_dy - a_dx*c_dz*d_y + a_dx*c_y*d_dz + a_dz*c_dx*d_y - a_dz*c_y*d_dx - a_y*c_dx*d_dz + a_y*c_dz*d_dx + a_dx*c_dy*d_z - a_dx*c_z*d_dy - a_dy*c_dx*d_z + a_dy*c_z*d_dx + a_z*c_dx*d_dy - a_z*c_dy*d_dx - b_dy*c_dz*d_x + b_dy*c_x*d_dz + b_dz*c_dy*d_x - b_dz*c_x*d_dy - b_x*c_dy*d_dz + b_x*c_dz*d_dy + b_dx*c_dz*d_y - b_dx*c_y*d_dz - b_dz*c_dx*d_y + b_dz*c_y*d_dx + b_y*c_dx*d_dz - b_y*c_dz*d_dx - b_dx*c_dy*d_z + b_dx*c_z*d_dy + b_dy*c_dx*d_z - b_dy*c_z*d_dx - b_z*c_dx*d_dy + b_z*c_dy*d_dx;
+
   double c = a_dz*b_x*c_y - a_dz*b_y*c_x - a_x*b_dz*c_y + a_x*b_y*c_dz + a_y*b_dz*c_x - a_y*b_x*c_dz - a_dy*b_x*c_z + a_dy*b_z*c_x + a_x*b_dy*c_z - a_x*b_z*c_dy - a_z*b_dy*c_x + a_z*b_x*c_dy + a_dx*b_y*c_z - a_dx*b_z*c_y - a_y*b_dx*c_z + a_y*b_z*c_dx + a_z*b_dx*c_y - a_z*b_y*c_dx - a_dz*b_x*d_y + a_dz*b_y*d_x + a_x*b_dz*d_y - a_x*b_y*d_dz - a_y*b_dz*d_x + a_y*b_x*d_dz + a_dy*b_x*d_z - a_dy*b_z*d_x - a_x*b_dy*d_z + a_x*b_z*d_dy + a_z*b_dy*d_x - a_z*b_x*d_dy - a_dx*b_y*d_z + a_dx*b_z*d_y + a_y*b_dx*d_z - a_y*b_z*d_dx - a_z*b_dx*d_y + a_z*b_y*d_dx + a_dz*c_x*d_y - a_dz*c_y*d_x - a_x*c_dz*d_y + a_x*c_y*d_dz + a_y*c_dz*d_x - a_y*c_x*d_dz - a_dy*c_x*d_z + a_dy*c_z*d_x + a_x*c_dy*d_z - a_x*c_z*d_dy - a_z*c_dy*d_x + a_z*c_x*d_dy + a_dx*c_y*d_z - a_dx*c_z*d_y - a_y*c_dx*d_z + a_y*c_z*d_dx + a_z*c_dx*d_y - a_z*c_y*d_dx - b_dz*c_x*d_y + b_dz*c_y*d_x + b_x*c_dz*d_y - b_x*c_y*d_dz - b_y*c_dz*d_x + b_y*c_x*d_dz + b_dy*c_x*d_z - b_dy*c_z*d_x - b_x*c_dy*d_z + b_x*c_z*d_dy + b_z*c_dy*d_x - b_z*c_x*d_dy - b_dx*c_y*d_z + b_dx*c_z*d_y + b_y*c_dx*d_z - b_y*c_z*d_dx - b_z*c_dx*d_y + b_z*c_y*d_dx;
+
   double d = a_x*b_y*c_z - a_x*b_z*c_y - a_y*b_x*c_z + a_y*b_z*c_x + a_z*b_x*c_y - a_z*b_y*c_x - a_x*b_y*d_z + a_x*b_z*d_y + a_y*b_x*d_z - a_y*b_z*d_x - a_z*b_x*d_y + a_z*b_y*d_x + a_x*c_y*d_z - a_x*c_z*d_y - a_y*c_x*d_z + a_y*c_z*d_x + a_z*c_x*d_y - a_z*c_y*d_x - b_x*c_y*d_z + b_x*c_z*d_y + b_y*c_x*d_z - b_y*c_z*d_x - b_z*c_x*d_y + b_z*c_y*d_x;
 
-  if (a==0) {
+  if (a==0)
+  {
     return get_smallest_pos_quad_zero(b,c,d);
   }
   b/=a; c/=a; d/=a; // normalize it all
   std::vector<double> res(3);
   int real_roots_num = SolveP3(res,b,c,d);
-  switch (real_roots_num) {
+  switch (real_roots_num)
+  {
     case 1:
       return (res[0] >= 0) ? res[0]:INFINITY;
-    case 2: {
+    case 2:
+    {
       double max_root = max(res[0],res[1]); double min_root = min(res[0],res[1]);
       if (min_root > 0) return min_root;
       if (max_root > 0) return max_root;
       return INFINITY;
     }
     case 3:
-    default: {
+    default:
+    {
       std::sort(res.begin(),res.end());
       if (res[0] > 0) return res[0];
       if (res[1] > 0) return res[1];
@@ -230,28 +258,34 @@ double get_min_pos_root_3D(const Eigen::MatrixXd& uv,const Eigen::MatrixXi& F,
       return INFINITY;
     }
   }
-
 }
 
 double compute_max_step_from_singularities(const Eigen::MatrixXd& uv,
                                             const Eigen::MatrixXi& F,
-                                            Eigen::MatrixXd& d) {
-    double max_step = INFINITY;
+                                            Eigen::MatrixXd& d)
+{
+  using namespace std;
+  double max_step = INFINITY;
 
-    // The if statement is outside the for loops to avoid branching/ease parallelizing
-    if (uv.cols() == 2) {
-      for (int f = 0; f < F.rows(); f++) {
-        double min_positive_root = get_min_pos_root_2D(uv,F,d,f);
-        max_step = min(max_step, min_positive_root);
-      }
-    } else { // volumetric deformation
-      for (int f = 0; f < F.rows(); f++) {
-        double min_positive_root = get_min_pos_root_3D(uv,F,d,f);
-        max_step = min(max_step, min_positive_root);
-      }
+  // The if statement is outside the for loops to avoid branching/ease parallelizing
+  if (uv.cols() == 2)
+  {
+    for (int f = 0; f < F.rows(); f++)
+    {
+      double min_positive_root = get_min_pos_root_2D(uv,F,d,f);
+      max_step = min(max_step, min_positive_root);
     }
-    return max_step;
- }
+  }
+  else
+  { // volumetric deformation
+    for (int f = 0; f < F.rows(); f++)
+    {
+      double min_positive_root = get_min_pos_root_3D(uv,F,d,f);
+      max_step = min(max_step, min_positive_root);
+    }
+  }
+  return max_step;
+}
 
 IGL_INLINE double igl::flip_avoiding_line_search(
   const Eigen::MatrixXi F,
@@ -260,12 +294,13 @@ IGL_INLINE double igl::flip_avoiding_line_search(
   std::function<double(Eigen::MatrixXd&)> energy,
   double cur_energy)
 {
-    Eigen::MatrixXd d = dst_v - cur_v;
+  using namespace std;
+  Eigen::MatrixXd d = dst_v - cur_v;
 
-    double min_step_to_singularity = compute_max_step_from_singularities(cur_v,F,d);
-    double max_step_size = min(1., min_step_to_singularity*0.8);
+  double min_step_to_singularity = compute_max_step_from_singularities(cur_v,F,d);
+  double max_step_size = min(1., min_step_to_singularity*0.8);
 
-    return igl::line_search(cur_v,d,max_step_size, energy, cur_energy);
+  return igl::line_search(cur_v,d,max_step_size, energy, cur_energy);
 }
 
 #ifdef IGL_STATIC_LIBRARY
