@@ -55,6 +55,11 @@ namespace viewer
 
     IGL_INLINE void init();
 
+    // Stores windows properties
+    bool window_maximized;
+    Eigen::Vector2i window_position;
+    Eigen::Vector2i window_size;
+
     // Stores all the viewing options
     ViewerCore core;
 
@@ -112,7 +117,7 @@ namespace viewer
     // Remove the data of a specific mesh instance
     IGL_INLINE bool remove_mesh(unsigned int data_id);
     // Get/Set the active mesh instance exposed as a copy in data
-    IGL_INLINE unsigned int get_active_mesh_id();
+    IGL_INLINE unsigned int get_active_mesh();
     IGL_INLINE bool set_active_mesh(unsigned int data_id);
 
     // Mesh IO

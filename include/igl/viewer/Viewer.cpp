@@ -147,6 +147,17 @@ static void glfw_key_callback(GLFWwindow* window, int key, int scancode, int act
   }
 }
 
+static void glfw_window_position(GLFWwindow* window,int left,int top)
+{
+  __viewer->window_maximized = glfwGetWindowAttrib(window,GLFW_MAXIMIZED);
+
+  if(!__viewer->window_maximized)
+  {
+    __viewer->window_position(0) = left;
+    __viewer->window_position(1) = top;
+  }
+}
+
 static void glfw_window_size(GLFWwindow* window, int width, int height)
 {
   int w = width*highdpi;
@@ -499,7 +510,7 @@ namespace viewer
       return data_buffer[data_id];
   }
 
-  IGL_INLINE unsigned int Viewer::get_active_mesh_id()
+  IGL_INLINE unsigned int Viewer::get_active_mesh()
   {
     return active_data_id;
   }
@@ -1034,7 +1045,10 @@ namespace viewer
 
 #ifdef IGL_VIEWER_WITH_NANOGUI_SERIALIZATION
 
-    igl::serialize(core,"Core",fname.c_str(),true);
+    igl::serialize(window_maximized,"window_maximized",fname.c_str(),true);
+    igl::serialize(window_position,"window_position",fname.c_str());
+    igl::serialize(window_size,"window_size",fname.c_str());
+    igl::serialize(core,"Core",fname.c_str());
 
 #ifndef ENABLE_SERIALIZATION_CORE_ONLY
     data_buffer[active_data_id] = data;
@@ -1063,6 +1077,9 @@ namespace viewer
   {
 #ifdef IGL_VIEWER_WITH_NANOGUI_SERIALIZATION
 
+    igl::deserialize(window_maximized,"window_maximized",fname.c_str());
+    igl::deserialize(window_position,"window_position",fname.c_str());
+    igl::deserialize(window_size,"window_size",fname.c_str());
     igl::deserialize(core,"Core",fname.c_str());
 
 #ifndef ENABLE_SERIALIZATION_CORE_ONLY
@@ -1074,6 +1091,24 @@ namespace viewer
     data = data_buffer[active_data_id];
 #endif
 
+    if(window_position(0) < 0 || window_position(1) < 0 || window_size(0) < 0 || window_size(1) < 0)
+    {
+      window_position << 200,200;
+      window_size << 640,480;
+    }
+
+    if(window_maximized)
+    {
+      glfwSetWindowPos(window,window_position(0),window_position(1));
+      glfwSetWindowSize(window,window_size(0),window_size(1));
+      glfwMaximizeWindow(window);
+    }
+    else
+    {
+      glfwSetWindowPos(window,window_position(0),window_position(1));
+      glfwSetWindowSize(window,window_size(0),window_size(1));
+    }
+
 #endif
 
     return true;
@@ -1081,6 +1116,13 @@ namespace viewer
 
   IGL_INLINE void Viewer::resize(int w,int h)
   {
+    window_maximized = glfwGetWindowAttrib(window,GLFW_MAXIMIZED);
+
+    if(!window_maximized)
+    {
+      window_size << w,h;
+    }
+
     core.viewport = Eigen::Vector4f(0,0,w,h);
   }
 
@@ -1181,6 +1223,7 @@ namespace viewer
     // Register callbacks
     glfwSetKeyCallback(window, glfw_key_callback);
     glfwSetCursorPosCallback(window,glfw_mouse_move);
+    glfwSetWindowPosCallback(window,glfw_window_position);
     glfwSetWindowSizeCallback(window,glfw_window_size);
     glfwSetMouseButtonCallback(window,glfw_mouse_press);
     glfwSetScrollCallback(window,glfw_mouse_scroll);
@@ -1189,19 +1232,19 @@ namespace viewer
 
     // Handle retina displays (windows and mac)
     glfwGetFramebufferSize(window, &width, &height);
+    
+    glfwSetWindowSizeLimits(window,GLFW_DONT_CARE,GLFW_DONT_CARE,GLFW_DONT_CARE,GLFW_DONT_CARE);
+    glfwGetWindowPos(window,&window_position(0),&window_position(1));
+    glfwGetWindowSize(window, &window_size(0), &window_size(1));
 
-    int width_window, height_window;
-    glfwGetWindowSize(window, &width_window, &height_window);
+    highdpi = width/window_size(0);
 
-    highdpi = width/width_window;
-
-    glfw_window_size(window,width_window,height_window);
+    glfw_window_size(window,window_size(0),window_size(1));
 
     for(auto& v : opengl)
     {
       v.init();
     }
-    
 
     core.align_camera_center(data);
 
