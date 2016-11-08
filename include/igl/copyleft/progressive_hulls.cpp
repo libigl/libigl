@@ -18,6 +18,7 @@ IGL_INLINE bool igl::copyleft::progressive_hulls(
   Eigen::VectorXi & J)
 {
   int m = F.rows();
+  Eigen::VectorXi I;
   return decimate(
     V,
     F,
@@ -25,5 +26,6 @@ IGL_INLINE bool igl::copyleft::progressive_hulls(
     max_faces_stopping_condition(m,max_m),
     U,
     G,
-    J);
+    J,
+    I);
 }

@@ -25,6 +25,24 @@ namespace igl
   //   U  #U by dim list of output vertex posistions (can be same ref as V)
   //   G  #G by 3 list of output face indices into U (can be same ref as G)
   //   J  #G list of indices into F of birth face
+  //   I  #U list of indices into V of birth vertices
+  // Returns true if m was reached (otherwise #G > m)
+  IGL_INLINE bool decimate(
+    const Eigen::MatrixXd & V,
+    const Eigen::MatrixXi & F,
+    const size_t max_m,
+    Eigen::MatrixXd & U,
+    Eigen::MatrixXi & G,
+    Eigen::VectorXi & J,
+    Eigen::VectorXi & I);
+  // Inputs:
+  //   V  #V by dim list of vertex positions
+  //   F  #F by 3 list of face indices into V.
+  //   max_m  desired number of output faces
+  // Outputs:
+  //   U  #U by dim list of output vertex posistions (can be same ref as V)
+  //   G  #G by 3 list of output face indices into U (can be same ref as G)
+  //   J  #G list of indices into F of birth face
   // Returns true if m was reached (otherwise #G > m)
   IGL_INLINE bool decimate(
     const Eigen::MatrixXd & V,
@@ -79,7 +97,8 @@ namespace igl
       )> & stopping_condition,
     Eigen::MatrixXd & U,
     Eigen::MatrixXi & G,
-    Eigen::VectorXi & J);
+    Eigen::VectorXi & J,
+    Eigen::VectorXi & I);
 
 }
 

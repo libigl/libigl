@@ -1,16 +1,16 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2014 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "volume.h"
 #include "cross.h"
 #include <Eigen/Geometry>
 template <
-  typename DerivedV, 
-  typename DerivedT, 
+  typename DerivedV,
+  typename DerivedT,
   typename Derivedvol>
 IGL_INLINE void igl::volume(
   const Eigen::PlainObjectBase<DerivedV>& V,
@@ -68,7 +68,7 @@ IGL_INLINE typename VecA::Scalar igl::volume_single(
 
 
 template <
-  typename DerivedL, 
+  typename DerivedL,
   typename Derivedvol>
 IGL_INLINE void igl::volume(
   const Eigen::PlainObjectBase<DerivedL>& L,
@@ -92,10 +92,10 @@ IGL_INLINE void igl::volume(
     const ScalarS y = (V - w + u)*(w - u + V);
     const ScalarS Z = (v - W + u)*(W + u + v);
     const ScalarS z = (W - u + v)*(u - v + W);
-    const ScalarS a = sqrt(x*Y*Z); 
-    const ScalarS b = sqrt(y*Z*X); 
-    const ScalarS c = sqrt(z*X*Y); 
-    const ScalarS d = sqrt(x*y*z); 
+    const ScalarS a = sqrt(x*Y*Z);
+    const ScalarS b = sqrt(y*Z*X);
+    const ScalarS c = sqrt(z*X*Y);
+    const ScalarS d = sqrt(x*y*z);
     vol(t) = sqrt(
        (-a + b + c + d)*
        ( a - b + c + d)*
@@ -112,4 +112,6 @@ template Eigen::Matrix<double, 1, 3, 1, 1, 3>::Scalar igl::volume_single<Eigen::
 template Eigen::Matrix<double, 3, 1, 0, 3, 1>::Scalar igl::volume_single<Eigen::Matrix<double, 3, 1, 0, 3, 1>, Eigen::Matrix<double, 3, 1, 0, 3, 1>, Eigen::Matrix<double, 3, 1, 0, 3, 1>, Eigen::Matrix<double, 3, 1, 0, 3, 1> >(Eigen::Matrix<double, 3, 1, 0, 3, 1> const&, Eigen::Matrix<double, 3, 1, 0, 3, 1> const&, Eigen::Matrix<double, 3, 1, 0, 3, 1> const&, Eigen::Matrix<double, 3, 1, 0, 3, 1> const&);
 template void igl::volume<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&);
 template void igl::volume<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&);
+template void igl::volume<class Eigen::Matrix<double,-1,3,0,-1,3>,class Eigen::Matrix<int,-1,3,0,-1,3>,class Eigen::Matrix<double,-1,1,0,-1,1> >(class Eigen::PlainObjectBase<class Eigen::Matrix<double,-1,3,0,-1,3> > const &,class Eigen::PlainObjectBase<class Eigen::Matrix<int,-1,3,0,-1,3> > const &,class Eigen::PlainObjectBase<class Eigen::Matrix<double,-1,1,0,-1,1> > &);
+
 #endif

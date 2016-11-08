@@ -22,7 +22,6 @@ option(LIBIGL_USE_STATIC_LIBRARY "Use LibIGL as static library" ON)
 
 
 option(LIBIGL_WITH_ANTTWEAKBAR      "Use AntTweakBar"    ON)
-option(LIBIGL_WITH_BBW              "Use BBW"            ON)
 find_package(CGAL QUIET)
 option(LIBIGL_WITH_CGAL             "Use CGAL"           "${CGAL_FOUND}")
 option(LIBIGL_WITH_COMISO           "Use CoMiso"         ON)
