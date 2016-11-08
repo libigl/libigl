@@ -67,6 +67,7 @@ int main(int argc, char * argv[])
 
     C.resize(E.rows(),V.cols());
     VectorXd costs(E.rows());
+    Q.clear();
     for(int e = 0;e<E.rows();e++)
     {
       double cost = e;
