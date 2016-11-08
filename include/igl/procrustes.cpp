@@ -42,7 +42,7 @@ IGL_INLINE void igl::procrustes(
      double scaleY = YC.norm() / YC.rows();
      scale = scaleY/scaleX;
      XC *= scale;
-     assert (abs(XC.norm() / XC.rows() - scaleY) < 1e-8);
+     assert (std::abs(XC.norm() / XC.rows() - scaleY) < 1e-8);
   }
 
   // Rotation
