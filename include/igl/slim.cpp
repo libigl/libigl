@@ -34,11 +34,8 @@
 #include <Eigen/SparseCholesky>
 #include <Eigen/IterativeLinearSolvers>
 
-
 using namespace std;
 using namespace Eigen;
-
-///////// Helper functions to compute gradient matrices
 
 namespace igl
 {
@@ -48,33 +45,33 @@ namespace igl
     void compute_surface_gradient_matrix(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F,
                                          const Eigen::MatrixXd &F1, const Eigen::MatrixXd &F2,
                                          Eigen::SparseMatrix<double> &D1, Eigen::SparseMatrix<double> &D2);
-    void buildA(igl::SLIMData& m_state, Eigen::SparseMatrix<double> &A);
-    void buildRhs(igl::SLIMData& m_state, const Eigen::SparseMatrix<double> &At);
-    void add_soft_constraints(igl::SLIMData& m_state, Eigen::SparseMatrix<double> &L);
-    double compute_energy(igl::SLIMData& m_state, Eigen::MatrixXd &V_new);
-    double compute_soft_const_energy(igl::SLIMData& m_state,
+    void buildA(igl::SLIMData& s, Eigen::SparseMatrix<double> &A);
+    void buildRhs(igl::SLIMData& s, const Eigen::SparseMatrix<double> &At);
+    void add_soft_constraints(igl::SLIMData& s, Eigen::SparseMatrix<double> &L);
+    double compute_energy(igl::SLIMData& s, Eigen::MatrixXd &V_new);
+    double compute_soft_const_energy(igl::SLIMData& s,
                                      const Eigen::MatrixXd &V,
                                      const Eigen::MatrixXi &F,
                                      Eigen::MatrixXd &V_o);
-    double compute_energy_with_jacobians(igl::SLIMData& m_state,
+    double compute_energy_with_jacobians(igl::SLIMData& s,
                                          const Eigen::MatrixXd &V,
                                          const Eigen::MatrixXi &F, const Eigen::MatrixXd &Ji,
                                          Eigen::MatrixXd &uv, Eigen::VectorXd &areas);
 
-    void solve_weighted_arap(igl::SLIMData& m_state,
+    void solve_weighted_arap(igl::SLIMData& s,
                              const Eigen::MatrixXd &V,
                              const Eigen::MatrixXi &F,
                              Eigen::MatrixXd &uv,
                              Eigen::VectorXi &soft_b_p,
                              Eigen::MatrixXd &soft_bc_p);
 
-    void update_weights_and_closest_rotations(igl::SLIMData& m_state,
+    void update_weights_and_closest_rotations(igl::SLIMData& s,
                                               const Eigen::MatrixXd &V,
                                               const Eigen::MatrixXi &F,
                                               Eigen::MatrixXd &uv);
-    void solve_weighted_proxy(igl::SLIMData& m_state, Eigen::MatrixXd &V_new);
-    void compute_jacobians(igl::SLIMData& m_state, const Eigen::MatrixXd &uv);
-    void build_linear_system(igl::SLIMData& m_state, Eigen::SparseMatrix<double> &L);
+    void compute_jacobians(igl::SLIMData& s, const Eigen::MatrixXd &uv);
+    void build_linear_system(igl::SLIMData& s, Eigen::SparseMatrix<double> &L);
+    void pre_calc(igl::SLIMData& s);
 
     // Implementation
 
@@ -93,50 +90,43 @@ namespace igl
       D2 = F2.col(0).asDiagonal() * Dx + F2.col(1).asDiagonal() * Dy + F2.col(2).asDiagonal() * Dz;
     }
 
-    void solve_weighted_proxy(igl::SLIMData& m_state, Eigen::MatrixXd &V_new)
+    void compute_jacobians(igl::SLIMData& s, const Eigen::MatrixXd &uv)
     {
-
-      update_weights_and_closest_rotations(m_state,m_state.V, m_state.F, V_new);
-      solve_weighted_arap(m_state,m_state.V, m_state.F, V_new, m_state.b, m_state.bc);
-    }
-
-    void compute_jacobians(igl::SLIMData& m_state, const Eigen::MatrixXd &uv)
-    {
-      if (m_state.F.cols() == 3)
+      if (s.F.cols() == 3)
       {
         // Ji=[D1*u,D2*u,D1*v,D2*v];
-        m_state.Ji.col(0) = m_state.Dx * uv.col(0);
-        m_state.Ji.col(1) = m_state.Dy * uv.col(0);
-        m_state.Ji.col(2) = m_state.Dx * uv.col(1);
-        m_state.Ji.col(3) = m_state.Dy * uv.col(1);
+        s.Ji.col(0) = s.Dx * uv.col(0);
+        s.Ji.col(1) = s.Dy * uv.col(0);
+        s.Ji.col(2) = s.Dx * uv.col(1);
+        s.Ji.col(3) = s.Dy * uv.col(1);
       }
       else /*tet mesh*/{
         // Ji=[D1*u,D2*u,D3*u, D1*v,D2*v, D3*v, D1*w,D2*w,D3*w];
-        m_state.Ji.col(0) = m_state.Dx * uv.col(0);
-        m_state.Ji.col(1) = m_state.Dy * uv.col(0);
-        m_state.Ji.col(2) = m_state.Dz * uv.col(0);
-        m_state.Ji.col(3) = m_state.Dx * uv.col(1);
-        m_state.Ji.col(4) = m_state.Dy * uv.col(1);
-        m_state.Ji.col(5) = m_state.Dz * uv.col(1);
-        m_state.Ji.col(6) = m_state.Dx * uv.col(2);
-        m_state.Ji.col(7) = m_state.Dy * uv.col(2);
-        m_state.Ji.col(8) = m_state.Dz * uv.col(2);
+        s.Ji.col(0) = s.Dx * uv.col(0);
+        s.Ji.col(1) = s.Dy * uv.col(0);
+        s.Ji.col(2) = s.Dz * uv.col(0);
+        s.Ji.col(3) = s.Dx * uv.col(1);
+        s.Ji.col(4) = s.Dy * uv.col(1);
+        s.Ji.col(5) = s.Dz * uv.col(1);
+        s.Ji.col(6) = s.Dx * uv.col(2);
+        s.Ji.col(7) = s.Dy * uv.col(2);
+        s.Ji.col(8) = s.Dz * uv.col(2);
       }
     }
 
-    void update_weights_and_closest_rotations(igl::SLIMData& m_state,
+    void update_weights_and_closest_rotations(igl::SLIMData& s,
                                               const Eigen::MatrixXd &V,
                                               const Eigen::MatrixXi &F,
                                               Eigen::MatrixXd &uv)
     {
-      compute_jacobians(m_state, uv);
+      compute_jacobians(s, uv);
 
       const double eps = 1e-8;
-      double exp_f = m_state.exp_factor;
+      double exp_f = s.exp_factor;
 
-      if (m_state.dim == 2)
+      if (s.dim == 2)
       {
-        for (int i = 0; i < m_state.Ji.rows(); ++i)
+        for (int i = 0; i < s.Ji.rows(); ++i)
         {
           typedef Eigen::Matrix<double, 2, 2> Mat2;
           typedef Eigen::Matrix<double, 2, 1> Vec2;
@@ -147,10 +137,10 @@ namespace igl
           Vec2 m_sing_new;
           double s1, s2;
 
-          ji(0, 0) = m_state.Ji(i, 0);
-          ji(0, 1) = m_state.Ji(i, 1);
-          ji(1, 0) = m_state.Ji(i, 2);
-          ji(1, 1) = m_state.Ji(i, 3);
+          ji(0, 0) = s.Ji(i, 0);
+          ji(0, 1) = s.Ji(i, 1);
+          ji(1, 0) = s.Ji(i, 2);
+          ji(1, 1) = s.Ji(i, 3);
 
           igl::polar_svd(ji, ri, ti, ui, sing, vi);
 
@@ -158,7 +148,7 @@ namespace igl
           s2 = sing(1);
 
           // Update Weights according to energy
-          switch (m_state.slim_energy)
+          switch (s.slim_energy)
           {
             case igl::SLIMData::ARAP:
             {
@@ -233,16 +223,16 @@ namespace igl
           if (abs(s2 - 1) < eps) m_sing_new(1) = 1;
           mat_W = ui * m_sing_new.asDiagonal() * ui.transpose();
 
-          m_state.W_11(i) = mat_W(0, 0);
-          m_state.W_12(i) = mat_W(0, 1);
-          m_state.W_21(i) = mat_W(1, 0);
-          m_state.W_22(i) = mat_W(1, 1);
+          s.W_11(i) = mat_W(0, 0);
+          s.W_12(i) = mat_W(0, 1);
+          s.W_21(i) = mat_W(1, 0);
+          s.W_22(i) = mat_W(1, 1);
 
           // 2) Update local step (doesn't have to be a rotation, for instance in case of conformal energy)
-          m_state.Ri(i, 0) = ri(0, 0);
-          m_state.Ri(i, 1) = ri(1, 0);
-          m_state.Ri(i, 2) = ri(0, 1);
-          m_state.Ri(i, 3) = ri(1, 1);
+          s.Ri(i, 0) = ri(0, 0);
+          s.Ri(i, 1) = ri(1, 0);
+          s.Ri(i, 2) = ri(0, 1);
+          s.Ri(i, 3) = ri(1, 1);
         }
       }
       else
@@ -253,17 +243,17 @@ namespace igl
         Vec3 m_sing_new;
         Vec3 closest_sing_vec;
         const double sqrt_2 = sqrt(2);
-        for (int i = 0; i < m_state.Ji.rows(); ++i)
+        for (int i = 0; i < s.Ji.rows(); ++i)
         {
-          ji(0, 0) = m_state.Ji(i, 0);
-          ji(0, 1) = m_state.Ji(i, 1);
-          ji(0, 2) = m_state.Ji(i, 2);
-          ji(1, 0) = m_state.Ji(i, 3);
-          ji(1, 1) = m_state.Ji(i, 4);
-          ji(1, 2) = m_state.Ji(i, 5);
-          ji(2, 0) = m_state.Ji(i, 6);
-          ji(2, 1) = m_state.Ji(i, 7);
-          ji(2, 2) = m_state.Ji(i, 8);
+          ji(0, 0) = s.Ji(i, 0);
+          ji(0, 1) = s.Ji(i, 1);
+          ji(0, 2) = s.Ji(i, 2);
+          ji(1, 0) = s.Ji(i, 3);
+          ji(1, 1) = s.Ji(i, 4);
+          ji(1, 2) = s.Ji(i, 5);
+          ji(2, 0) = s.Ji(i, 6);
+          ji(2, 1) = s.Ji(i, 7);
+          ji(2, 2) = s.Ji(i, 8);
 
           Mat3 ri, ti, ui, vi;
           Vec3 sing;
@@ -274,7 +264,7 @@ namespace igl
           double s3 = sing(2);
 
           // 1) Update Weights
-          switch (m_state.slim_energy)
+          switch (s.slim_energy)
           {
             case igl::SLIMData::ARAP:
             {
@@ -373,33 +363,33 @@ namespace igl
           Mat3 mat_W;
           mat_W = ui * m_sing_new.asDiagonal() * ui.transpose();
 
-          m_state.W_11(i) = mat_W(0, 0);
-          m_state.W_12(i) = mat_W(0, 1);
-          m_state.W_13(i) = mat_W(0, 2);
-          m_state.W_21(i) = mat_W(1, 0);
-          m_state.W_22(i) = mat_W(1, 1);
-          m_state.W_23(i) = mat_W(1, 2);
-          m_state.W_31(i) = mat_W(2, 0);
-          m_state.W_32(i) = mat_W(2, 1);
-          m_state.W_33(i) = mat_W(2, 2);
+          s.W_11(i) = mat_W(0, 0);
+          s.W_12(i) = mat_W(0, 1);
+          s.W_13(i) = mat_W(0, 2);
+          s.W_21(i) = mat_W(1, 0);
+          s.W_22(i) = mat_W(1, 1);
+          s.W_23(i) = mat_W(1, 2);
+          s.W_31(i) = mat_W(2, 0);
+          s.W_32(i) = mat_W(2, 1);
+          s.W_33(i) = mat_W(2, 2);
 
           // 2) Update closest rotations (not rotations in case of conformal energy)
-          m_state.Ri(i, 0) = ri(0, 0);
-          m_state.Ri(i, 1) = ri(1, 0);
-          m_state.Ri(i, 2) = ri(2, 0);
-          m_state.Ri(i, 3) = ri(0, 1);
-          m_state.Ri(i, 4) = ri(1, 1);
-          m_state.Ri(i, 5) = ri(2, 1);
-          m_state.Ri(i, 6) = ri(0, 2);
-          m_state.Ri(i, 7) = ri(1, 2);
-          m_state.Ri(i, 8) = ri(2, 2);
+          s.Ri(i, 0) = ri(0, 0);
+          s.Ri(i, 1) = ri(1, 0);
+          s.Ri(i, 2) = ri(2, 0);
+          s.Ri(i, 3) = ri(0, 1);
+          s.Ri(i, 4) = ri(1, 1);
+          s.Ri(i, 5) = ri(2, 1);
+          s.Ri(i, 6) = ri(0, 2);
+          s.Ri(i, 7) = ri(1, 2);
+          s.Ri(i, 8) = ri(2, 2);
         } // for loop end
 
       } // if dim end
 
     }
 
-    void solve_weighted_arap(igl::SLIMData& m_state,
+    void solve_weighted_arap(igl::SLIMData& s,
                              const Eigen::MatrixXd &V,
                              const Eigen::MatrixXi &F,
                              Eigen::MatrixXd &uv,
@@ -409,93 +399,93 @@ namespace igl
       using namespace Eigen;
 
       Eigen::SparseMatrix<double> L;
-      build_linear_system(m_state,L);
+      build_linear_system(s,L);
 
       // solve
       Eigen::VectorXd Uc;
-      if (m_state.dim == 2)
+      if (s.dim == 2)
       {
         SimplicialLDLT<SparseMatrix<double> > solver;
-        Uc = solver.compute(L).solve(m_state.rhs);
+        Uc = solver.compute(L).solve(s.rhs);
       }
       else
       { // seems like CG performs much worse for 2D and way better for 3D
-        Eigen::VectorXd guess(uv.rows() * m_state.dim);
-        for (int i = 0; i < m_state.dim; i++) for (int j = 0; j < m_state.dim; j++) guess(uv.rows() * i + j) = uv(i, j); // flatten vector
+        Eigen::VectorXd guess(uv.rows() * s.dim);
+        for (int i = 0; i < s.dim; i++) for (int j = 0; j < s.dim; j++) guess(uv.rows() * i + j) = uv(i, j); // flatten vector
         ConjugateGradient<SparseMatrix<double>, Eigen::Lower | Upper> solver;
         solver.setTolerance(1e-8);
-        Uc = solver.compute(L).solveWithGuess(m_state.rhs, guess);
+        Uc = solver.compute(L).solveWithGuess(s.rhs, guess);
       }
 
-      for (int i = 0; i < m_state.dim; i++)
-        uv.col(i) = Uc.block(i * m_state.v_n, 0, m_state.v_n, 1);
+      for (int i = 0; i < s.dim; i++)
+        uv.col(i) = Uc.block(i * s.v_n, 0, s.v_n, 1);
     }
 
 
-    void pre_calc(igl::SLIMData& m_state)
+    void pre_calc(igl::SLIMData& s)
     {
-      if (!m_state.has_pre_calc)
+      if (!s.has_pre_calc)
       {
-        m_state.v_n = m_state.v_num;
-        m_state.f_n = m_state.f_num;
+        s.v_n = s.v_num;
+        s.f_n = s.f_num;
 
-        if (m_state.F.cols() == 3)
+        if (s.F.cols() == 3)
         {
-          m_state.dim = 2;
+          s.dim = 2;
           Eigen::MatrixXd F1, F2, F3;
-          igl::local_basis(m_state.V, m_state.F, F1, F2, F3);
-          compute_surface_gradient_matrix(m_state.V, m_state.F, F1, F2, m_state.Dx, m_state.Dy);
+          igl::local_basis(s.V, s.F, F1, F2, F3);
+          compute_surface_gradient_matrix(s.V, s.F, F1, F2, s.Dx, s.Dy);
 
-          m_state.W_11.resize(m_state.f_n);
-          m_state.W_12.resize(m_state.f_n);
-          m_state.W_21.resize(m_state.f_n);
-          m_state.W_22.resize(m_state.f_n);
+          s.W_11.resize(s.f_n);
+          s.W_12.resize(s.f_n);
+          s.W_21.resize(s.f_n);
+          s.W_22.resize(s.f_n);
         }
         else
         {
-          m_state.dim = 3;
+          s.dim = 3;
           Eigen::SparseMatrix<double> G;
-          igl::grad(m_state.V, m_state.F, G,
-                    m_state.mesh_improvement_3d /*use normal gradient, or one from a "regular" tet*/);
-          m_state.Dx = G.block(0, 0, m_state.F.rows(), m_state.V.rows());
-          m_state.Dy = G.block(m_state.F.rows(), 0, m_state.F.rows(), m_state.V.rows());
-          m_state.Dz = G.block(2 * m_state.F.rows(), 0, m_state.F.rows(), m_state.V.rows());
+          igl::grad(s.V, s.F, G,
+                    s.mesh_improvement_3d /*use normal gradient, or one from a "regular" tet*/);
+          s.Dx = G.block(0, 0, s.F.rows(), s.V.rows());
+          s.Dy = G.block(s.F.rows(), 0, s.F.rows(), s.V.rows());
+          s.Dz = G.block(2 * s.F.rows(), 0, s.F.rows(), s.V.rows());
 
 
-          m_state.W_11.resize(m_state.f_n);
-          m_state.W_12.resize(m_state.f_n);
-          m_state.W_13.resize(m_state.f_n);
-          m_state.W_21.resize(m_state.f_n);
-          m_state.W_22.resize(m_state.f_n);
-          m_state.W_23.resize(m_state.f_n);
-          m_state.W_31.resize(m_state.f_n);
-          m_state.W_32.resize(m_state.f_n);
-          m_state.W_33.resize(m_state.f_n);
+          s.W_11.resize(s.f_n);
+          s.W_12.resize(s.f_n);
+          s.W_13.resize(s.f_n);
+          s.W_21.resize(s.f_n);
+          s.W_22.resize(s.f_n);
+          s.W_23.resize(s.f_n);
+          s.W_31.resize(s.f_n);
+          s.W_32.resize(s.f_n);
+          s.W_33.resize(s.f_n);
         }
 
-        m_state.Dx.makeCompressed();
-        m_state.Dy.makeCompressed();
-        m_state.Dz.makeCompressed();
-        m_state.Ri.resize(m_state.f_n, m_state.dim * m_state.dim);
-        m_state.Ji.resize(m_state.f_n, m_state.dim * m_state.dim);
-        m_state.rhs.resize(m_state.dim * m_state.v_num);
+        s.Dx.makeCompressed();
+        s.Dy.makeCompressed();
+        s.Dz.makeCompressed();
+        s.Ri.resize(s.f_n, s.dim * s.dim);
+        s.Ji.resize(s.f_n, s.dim * s.dim);
+        s.rhs.resize(s.dim * s.v_num);
 
         // flattened weight matrix
-        m_state.WGL_M.resize(m_state.dim * m_state.dim * m_state.f_n);
-        for (int i = 0; i < m_state.dim * m_state.dim; i++)
-          for (int j = 0; j < m_state.f_n; j++)
-            m_state.WGL_M(i * m_state.f_n + j) = m_state.M(j);
+        s.WGL_M.resize(s.dim * s.dim * s.f_n);
+        for (int i = 0; i < s.dim * s.dim; i++)
+          for (int j = 0; j < s.f_n; j++)
+            s.WGL_M(i * s.f_n + j) = s.M(j);
 
-        m_state.first_solve = true;
-        m_state.has_pre_calc = true;
+        s.first_solve = true;
+        s.has_pre_calc = true;
       }
     }
 
-    void build_linear_system(igl::SLIMData& m_state, Eigen::SparseMatrix<double> &L)
+    void build_linear_system(igl::SLIMData& s, Eigen::SparseMatrix<double> &L)
     {
       // formula (35) in paper
-      Eigen::SparseMatrix<double> A(m_state.dim * m_state.dim * m_state.f_n, m_state.dim * m_state.v_n);
-      buildA(m_state,A);
+      Eigen::SparseMatrix<double> A(s.dim * s.dim * s.f_n, s.dim * s.v_n);
+      buildA(s,A);
 
       Eigen::SparseMatrix<double> At = A.transpose();
       At.makeCompressed();
@@ -504,60 +494,60 @@ namespace igl
       id_m.setIdentity();
 
       // add proximal penalty
-      L = At * m_state.WGL_M.asDiagonal() * A + m_state.proximal_p * id_m; //add also a proximal term
+      L = At * s.WGL_M.asDiagonal() * A + s.proximal_p * id_m; //add also a proximal term
       L.makeCompressed();
 
-      buildRhs(m_state, At);
+      buildRhs(s, At);
       Eigen::SparseMatrix<double> OldL = L;
-      add_soft_constraints(m_state,L);
+      add_soft_constraints(s,L);
       L.makeCompressed();
     }
 
-    void add_soft_constraints(igl::SLIMData& m_state, Eigen::SparseMatrix<double> &L)
+    void add_soft_constraints(igl::SLIMData& s, Eigen::SparseMatrix<double> &L)
     {
-      int v_n = m_state.v_num;
-      for (int d = 0; d < m_state.dim; d++)
+      int v_n = s.v_num;
+      for (int d = 0; d < s.dim; d++)
       {
-        for (int i = 0; i < m_state.b.rows(); i++)
+        for (int i = 0; i < s.b.rows(); i++)
         {
-          int v_idx = m_state.b(i);
-          m_state.rhs(d * v_n + v_idx) += m_state.soft_const_p * m_state.bc(i, d); // rhs
-          L.coeffRef(d * v_n + v_idx, d * v_n + v_idx) += m_state.soft_const_p; // diagonal of matrix
+          int v_idx = s.b(i);
+          s.rhs(d * v_n + v_idx) += s.soft_const_p * s.bc(i, d); // rhs
+          L.coeffRef(d * v_n + v_idx, d * v_n + v_idx) += s.soft_const_p; // diagonal of matrix
         }
       }
     }
 
-    double compute_energy(igl::SLIMData& m_state, Eigen::MatrixXd &V_new)
+    double compute_energy(igl::SLIMData& s, Eigen::MatrixXd &V_new)
     {
-      compute_jacobians(m_state,V_new);
-      return compute_energy_with_jacobians(m_state, m_state.V, m_state.F, m_state.Ji, V_new, m_state.M) +
-             compute_soft_const_energy(m_state, m_state.V, m_state.F, V_new);
+      compute_jacobians(s,V_new);
+      return compute_energy_with_jacobians(s, s.V, s.F, s.Ji, V_new, s.M) +
+             compute_soft_const_energy(s, s.V, s.F, V_new);
     }
 
-    double compute_soft_const_energy(igl::SLIMData& m_state,
+    double compute_soft_const_energy(igl::SLIMData& s,
                                      const Eigen::MatrixXd &V,
                                      const Eigen::MatrixXi &F,
                                      Eigen::MatrixXd &V_o)
     {
       double e = 0;
-      for (int i = 0; i < m_state.b.rows(); i++)
+      for (int i = 0; i < s.b.rows(); i++)
       {
-        e += m_state.soft_const_p * (m_state.bc.row(i) - V_o.row(m_state.b(i))).squaredNorm();
+        e += s.soft_const_p * (s.bc.row(i) - V_o.row(s.b(i))).squaredNorm();
       }
       return e;
     }
 
-    double compute_energy_with_jacobians(igl::SLIMData& m_state,
+    double compute_energy_with_jacobians(igl::SLIMData& s,
                                          const Eigen::MatrixXd &V,
                                          const Eigen::MatrixXi &F, const Eigen::MatrixXd &Ji,
                                          Eigen::MatrixXd &uv, Eigen::VectorXd &areas)
     {
 
       double energy = 0;
-      if (m_state.dim == 2)
+      if (s.dim == 2)
       {
         Eigen::Matrix<double, 2, 2> ji;
-        for (int i = 0; i < m_state.f_n; i++)
+        for (int i = 0; i < s.f_n; i++)
         {
           ji(0, 0) = Ji(i, 0);
           ji(0, 1) = Ji(i, 1);
@@ -572,7 +562,7 @@ namespace igl
           double s1 = sing(0);
           double s2 = sing(1);
 
-          switch (m_state.slim_energy)
+          switch (s.slim_energy)
           {
             case igl::SLIMData::ARAP:
             {
@@ -586,7 +576,7 @@ namespace igl
             }
             case igl::SLIMData::EXP_SYMMETRIC_DIRICHLET:
             {
-              energy += areas(i) * exp(m_state.exp_factor * (pow(s1, 2) + pow(s1, -2) + pow(s2, 2) + pow(s2, -2)));
+              energy += areas(i) * exp(s.exp_factor * (pow(s1, 2) + pow(s1, -2) + pow(s2, 2) + pow(s2, -2)));
               break;
             }
             case igl::SLIMData::LOG_ARAP:
@@ -601,7 +591,7 @@ namespace igl
             }
             case igl::SLIMData::EXP_CONFORMAL:
             {
-              energy += areas(i) * exp(m_state.exp_factor * ((pow(s1, 2) + pow(s2, 2)) / (2 * s1 * s2)));
+              energy += areas(i) * exp(s.exp_factor * ((pow(s1, 2) + pow(s2, 2)) / (2 * s1 * s2)));
               break;
             }
 
@@ -612,7 +602,7 @@ namespace igl
       else
       {
         Eigen::Matrix<double, 3, 3> ji;
-        for (int i = 0; i < m_state.f_n; i++)
+        for (int i = 0; i < s.f_n; i++)
         {
           ji(0, 0) = Ji(i, 0);
           ji(0, 1) = Ji(i, 1);
@@ -633,7 +623,7 @@ namespace igl
           double s2 = sing(1);
           double s3 = sing(2);
 
-          switch (m_state.slim_energy)
+          switch (s.slim_energy)
           {
             case igl::SLIMData::ARAP:
             {
@@ -647,7 +637,7 @@ namespace igl
             }
             case igl::SLIMData::EXP_SYMMETRIC_DIRICHLET:
             {
-              energy += areas(i) * exp(m_state.exp_factor *
+              energy += areas(i) * exp(s.exp_factor *
                                        (pow(s1, 2) + pow(s1, -2) + pow(s2, 2) + pow(s2, -2) + pow(s3, 2) + pow(s3, -2)));
               break;
             }
@@ -673,47 +663,47 @@ namespace igl
       return energy;
     }
 
-    void buildA(igl::SLIMData& m_state, Eigen::SparseMatrix<double> &A)
+    void buildA(igl::SLIMData& s, Eigen::SparseMatrix<double> &A)
     {
       // formula (35) in paper
       std::vector<Triplet<double> > IJV;
-      if (m_state.dim == 2)
+      if (s.dim == 2)
       {
-        IJV.reserve(4 * (m_state.Dx.outerSize() + m_state.Dy.outerSize()));
+        IJV.reserve(4 * (s.Dx.outerSize() + s.Dy.outerSize()));
 
         /*A = [W11*Dx, W12*Dx;
              W11*Dy, W12*Dy;
              W21*Dx, W22*Dx;
              W21*Dy, W22*Dy];*/
-        for (int k = 0; k < m_state.Dx.outerSize(); ++k)
+        for (int k = 0; k < s.Dx.outerSize(); ++k)
         {
-          for (SparseMatrix<double>::InnerIterator it(m_state.Dx, k); it; ++it)
+          for (SparseMatrix<double>::InnerIterator it(s.Dx, k); it; ++it)
           {
             int dx_r = it.row();
             int dx_c = it.col();
             double val = it.value();
 
-            IJV.push_back(Triplet<double>(dx_r, dx_c, val * m_state.W_11(dx_r)));
-            IJV.push_back(Triplet<double>(dx_r, m_state.v_n + dx_c, val * m_state.W_12(dx_r)));
+            IJV.push_back(Triplet<double>(dx_r, dx_c, val * s.W_11(dx_r)));
+            IJV.push_back(Triplet<double>(dx_r, s.v_n + dx_c, val * s.W_12(dx_r)));
 
-            IJV.push_back(Triplet<double>(2 * m_state.f_n + dx_r, dx_c, val * m_state.W_21(dx_r)));
-            IJV.push_back(Triplet<double>(2 * m_state.f_n + dx_r, m_state.v_n + dx_c, val * m_state.W_22(dx_r)));
+            IJV.push_back(Triplet<double>(2 * s.f_n + dx_r, dx_c, val * s.W_21(dx_r)));
+            IJV.push_back(Triplet<double>(2 * s.f_n + dx_r, s.v_n + dx_c, val * s.W_22(dx_r)));
           }
         }
 
-        for (int k = 0; k < m_state.Dy.outerSize(); ++k)
+        for (int k = 0; k < s.Dy.outerSize(); ++k)
         {
-          for (SparseMatrix<double>::InnerIterator it(m_state.Dy, k); it; ++it)
+          for (SparseMatrix<double>::InnerIterator it(s.Dy, k); it; ++it)
           {
             int dy_r = it.row();
             int dy_c = it.col();
             double val = it.value();
 
-            IJV.push_back(Triplet<double>(m_state.f_n + dy_r, dy_c, val * m_state.W_11(dy_r)));
-            IJV.push_back(Triplet<double>(m_state.f_n + dy_r, m_state.v_n + dy_c, val * m_state.W_12(dy_r)));
+            IJV.push_back(Triplet<double>(s.f_n + dy_r, dy_c, val * s.W_11(dy_r)));
+            IJV.push_back(Triplet<double>(s.f_n + dy_r, s.v_n + dy_c, val * s.W_12(dy_r)));
 
-            IJV.push_back(Triplet<double>(3 * m_state.f_n + dy_r, dy_c, val * m_state.W_21(dy_r)));
-            IJV.push_back(Triplet<double>(3 * m_state.f_n + dy_r, m_state.v_n + dy_c, val * m_state.W_22(dy_r)));
+            IJV.push_back(Triplet<double>(3 * s.f_n + dy_r, dy_c, val * s.W_21(dy_r)));
+            IJV.push_back(Triplet<double>(3 * s.f_n + dy_r, s.v_n + dy_c, val * s.W_22(dy_r)));
           }
         }
       }
@@ -729,92 +719,92 @@ namespace igl
                W31*Dx, W32*Dx, W33*Dx;
                W31*Dy, W32*Dy, W33*Dy;
                W31*Dz, W32*Dz, W33*Dz;];*/
-        IJV.reserve(9 * (m_state.Dx.outerSize() + m_state.Dy.outerSize() + m_state.Dz.outerSize()));
-        for (int k = 0; k < m_state.Dx.outerSize(); k++)
+        IJV.reserve(9 * (s.Dx.outerSize() + s.Dy.outerSize() + s.Dz.outerSize()));
+        for (int k = 0; k < s.Dx.outerSize(); k++)
         {
-          for (SparseMatrix<double>::InnerIterator it(m_state.Dx, k); it; ++it)
+          for (SparseMatrix<double>::InnerIterator it(s.Dx, k); it; ++it)
           {
             int dx_r = it.row();
             int dx_c = it.col();
             double val = it.value();
 
-            IJV.push_back(Triplet<double>(dx_r, dx_c, val * m_state.W_11(dx_r)));
-            IJV.push_back(Triplet<double>(dx_r, m_state.v_n + dx_c, val * m_state.W_12(dx_r)));
-            IJV.push_back(Triplet<double>(dx_r, 2 * m_state.v_n + dx_c, val * m_state.W_13(dx_r)));
+            IJV.push_back(Triplet<double>(dx_r, dx_c, val * s.W_11(dx_r)));
+            IJV.push_back(Triplet<double>(dx_r, s.v_n + dx_c, val * s.W_12(dx_r)));
+            IJV.push_back(Triplet<double>(dx_r, 2 * s.v_n + dx_c, val * s.W_13(dx_r)));
 
-            IJV.push_back(Triplet<double>(3 * m_state.f_n + dx_r, dx_c, val * m_state.W_21(dx_r)));
-            IJV.push_back(Triplet<double>(3 * m_state.f_n + dx_r, m_state.v_n + dx_c, val * m_state.W_22(dx_r)));
-            IJV.push_back(Triplet<double>(3 * m_state.f_n + dx_r, 2 * m_state.v_n + dx_c, val * m_state.W_23(dx_r)));
+            IJV.push_back(Triplet<double>(3 * s.f_n + dx_r, dx_c, val * s.W_21(dx_r)));
+            IJV.push_back(Triplet<double>(3 * s.f_n + dx_r, s.v_n + dx_c, val * s.W_22(dx_r)));
+            IJV.push_back(Triplet<double>(3 * s.f_n + dx_r, 2 * s.v_n + dx_c, val * s.W_23(dx_r)));
 
-            IJV.push_back(Triplet<double>(6 * m_state.f_n + dx_r, dx_c, val * m_state.W_31(dx_r)));
-            IJV.push_back(Triplet<double>(6 * m_state.f_n + dx_r, m_state.v_n + dx_c, val * m_state.W_32(dx_r)));
-            IJV.push_back(Triplet<double>(6 * m_state.f_n + dx_r, 2 * m_state.v_n + dx_c, val * m_state.W_33(dx_r)));
+            IJV.push_back(Triplet<double>(6 * s.f_n + dx_r, dx_c, val * s.W_31(dx_r)));
+            IJV.push_back(Triplet<double>(6 * s.f_n + dx_r, s.v_n + dx_c, val * s.W_32(dx_r)));
+            IJV.push_back(Triplet<double>(6 * s.f_n + dx_r, 2 * s.v_n + dx_c, val * s.W_33(dx_r)));
           }
         }
 
-        for (int k = 0; k < m_state.Dy.outerSize(); k++)
+        for (int k = 0; k < s.Dy.outerSize(); k++)
         {
-          for (SparseMatrix<double>::InnerIterator it(m_state.Dy, k); it; ++it)
+          for (SparseMatrix<double>::InnerIterator it(s.Dy, k); it; ++it)
           {
             int dy_r = it.row();
             int dy_c = it.col();
             double val = it.value();
 
-            IJV.push_back(Triplet<double>(m_state.f_n + dy_r, dy_c, val * m_state.W_11(dy_r)));
-            IJV.push_back(Triplet<double>(m_state.f_n + dy_r, m_state.v_n + dy_c, val * m_state.W_12(dy_r)));
-            IJV.push_back(Triplet<double>(m_state.f_n + dy_r, 2 * m_state.v_n + dy_c, val * m_state.W_13(dy_r)));
+            IJV.push_back(Triplet<double>(s.f_n + dy_r, dy_c, val * s.W_11(dy_r)));
+            IJV.push_back(Triplet<double>(s.f_n + dy_r, s.v_n + dy_c, val * s.W_12(dy_r)));
+            IJV.push_back(Triplet<double>(s.f_n + dy_r, 2 * s.v_n + dy_c, val * s.W_13(dy_r)));
 
-            IJV.push_back(Triplet<double>(4 * m_state.f_n + dy_r, dy_c, val * m_state.W_21(dy_r)));
-            IJV.push_back(Triplet<double>(4 * m_state.f_n + dy_r, m_state.v_n + dy_c, val * m_state.W_22(dy_r)));
-            IJV.push_back(Triplet<double>(4 * m_state.f_n + dy_r, 2 * m_state.v_n + dy_c, val * m_state.W_23(dy_r)));
+            IJV.push_back(Triplet<double>(4 * s.f_n + dy_r, dy_c, val * s.W_21(dy_r)));
+            IJV.push_back(Triplet<double>(4 * s.f_n + dy_r, s.v_n + dy_c, val * s.W_22(dy_r)));
+            IJV.push_back(Triplet<double>(4 * s.f_n + dy_r, 2 * s.v_n + dy_c, val * s.W_23(dy_r)));
 
-            IJV.push_back(Triplet<double>(7 * m_state.f_n + dy_r, dy_c, val * m_state.W_31(dy_r)));
-            IJV.push_back(Triplet<double>(7 * m_state.f_n + dy_r, m_state.v_n + dy_c, val * m_state.W_32(dy_r)));
-            IJV.push_back(Triplet<double>(7 * m_state.f_n + dy_r, 2 * m_state.v_n + dy_c, val * m_state.W_33(dy_r)));
+            IJV.push_back(Triplet<double>(7 * s.f_n + dy_r, dy_c, val * s.W_31(dy_r)));
+            IJV.push_back(Triplet<double>(7 * s.f_n + dy_r, s.v_n + dy_c, val * s.W_32(dy_r)));
+            IJV.push_back(Triplet<double>(7 * s.f_n + dy_r, 2 * s.v_n + dy_c, val * s.W_33(dy_r)));
           }
         }
 
-        for (int k = 0; k < m_state.Dz.outerSize(); k++)
+        for (int k = 0; k < s.Dz.outerSize(); k++)
         {
-          for (SparseMatrix<double>::InnerIterator it(m_state.Dz, k); it; ++it)
+          for (SparseMatrix<double>::InnerIterator it(s.Dz, k); it; ++it)
           {
             int dz_r = it.row();
             int dz_c = it.col();
             double val = it.value();
 
-            IJV.push_back(Triplet<double>(2 * m_state.f_n + dz_r, dz_c, val * m_state.W_11(dz_r)));
-            IJV.push_back(Triplet<double>(2 * m_state.f_n + dz_r, m_state.v_n + dz_c, val * m_state.W_12(dz_r)));
-            IJV.push_back(Triplet<double>(2 * m_state.f_n + dz_r, 2 * m_state.v_n + dz_c, val * m_state.W_13(dz_r)));
+            IJV.push_back(Triplet<double>(2 * s.f_n + dz_r, dz_c, val * s.W_11(dz_r)));
+            IJV.push_back(Triplet<double>(2 * s.f_n + dz_r, s.v_n + dz_c, val * s.W_12(dz_r)));
+            IJV.push_back(Triplet<double>(2 * s.f_n + dz_r, 2 * s.v_n + dz_c, val * s.W_13(dz_r)));
 
-            IJV.push_back(Triplet<double>(5 * m_state.f_n + dz_r, dz_c, val * m_state.W_21(dz_r)));
-            IJV.push_back(Triplet<double>(5 * m_state.f_n + dz_r, m_state.v_n + dz_c, val * m_state.W_22(dz_r)));
-            IJV.push_back(Triplet<double>(5 * m_state.f_n + dz_r, 2 * m_state.v_n + dz_c, val * m_state.W_23(dz_r)));
+            IJV.push_back(Triplet<double>(5 * s.f_n + dz_r, dz_c, val * s.W_21(dz_r)));
+            IJV.push_back(Triplet<double>(5 * s.f_n + dz_r, s.v_n + dz_c, val * s.W_22(dz_r)));
+            IJV.push_back(Triplet<double>(5 * s.f_n + dz_r, 2 * s.v_n + dz_c, val * s.W_23(dz_r)));
 
-            IJV.push_back(Triplet<double>(8 * m_state.f_n + dz_r, dz_c, val * m_state.W_31(dz_r)));
-            IJV.push_back(Triplet<double>(8 * m_state.f_n + dz_r, m_state.v_n + dz_c, val * m_state.W_32(dz_r)));
-            IJV.push_back(Triplet<double>(8 * m_state.f_n + dz_r, 2 * m_state.v_n + dz_c, val * m_state.W_33(dz_r)));
+            IJV.push_back(Triplet<double>(8 * s.f_n + dz_r, dz_c, val * s.W_31(dz_r)));
+            IJV.push_back(Triplet<double>(8 * s.f_n + dz_r, s.v_n + dz_c, val * s.W_32(dz_r)));
+            IJV.push_back(Triplet<double>(8 * s.f_n + dz_r, 2 * s.v_n + dz_c, val * s.W_33(dz_r)));
           }
         }
       }
       A.setFromTriplets(IJV.begin(), IJV.end());
     }
 
-    void buildRhs(igl::SLIMData& m_state, const Eigen::SparseMatrix<double> &At)
+    void buildRhs(igl::SLIMData& s, const Eigen::SparseMatrix<double> &At)
     {
-      VectorXd f_rhs(m_state.dim * m_state.dim * m_state.f_n);
+      VectorXd f_rhs(s.dim * s.dim * s.f_n);
       f_rhs.setZero();
-      if (m_state.dim == 2)
+      if (s.dim == 2)
       {
         /*b = [W11*R11 + W12*R21; (formula (36))
              W11*R12 + W12*R22;
              W21*R11 + W22*R21;
              W21*R12 + W22*R22];*/
-        for (int i = 0; i < m_state.f_n; i++)
+        for (int i = 0; i < s.f_n; i++)
         {
-          f_rhs(i + 0 * m_state.f_n) = m_state.W_11(i) * m_state.Ri(i, 0) + m_state.W_12(i) * m_state.Ri(i, 1);
-          f_rhs(i + 1 * m_state.f_n) = m_state.W_11(i) * m_state.Ri(i, 2) + m_state.W_12(i) * m_state.Ri(i, 3);
-          f_rhs(i + 2 * m_state.f_n) = m_state.W_21(i) * m_state.Ri(i, 0) + m_state.W_22(i) * m_state.Ri(i, 1);
-          f_rhs(i + 3 * m_state.f_n) = m_state.W_21(i) * m_state.Ri(i, 2) + m_state.W_22(i) * m_state.Ri(i, 3);
+          f_rhs(i + 0 * s.f_n) = s.W_11(i) * s.Ri(i, 0) + s.W_12(i) * s.Ri(i, 1);
+          f_rhs(i + 1 * s.f_n) = s.W_11(i) * s.Ri(i, 2) + s.W_12(i) * s.Ri(i, 3);
+          f_rhs(i + 2 * s.f_n) = s.W_21(i) * s.Ri(i, 0) + s.W_22(i) * s.Ri(i, 1);
+          f_rhs(i + 3 * s.f_n) = s.W_21(i) * s.Ri(i, 2) + s.W_22(i) * s.Ri(i, 3);
         }
       }
       else
@@ -828,25 +818,25 @@ namespace igl
              W31*R11 + W32*R21 + W33*R31;
              W31*R12 + W32*R22 + W33*R32;
              W31*R13 + W32*R23 + W33*R33;];*/
-        for (int i = 0; i < m_state.f_n; i++)
+        for (int i = 0; i < s.f_n; i++)
         {
-          f_rhs(i + 0 * m_state.f_n) = m_state.W_11(i) * m_state.Ri(i, 0) + m_state.W_12(i) * m_state.Ri(i, 1) + m_state.W_13(i) * m_state.Ri(i, 2);
-          f_rhs(i + 1 * m_state.f_n) = m_state.W_11(i) * m_state.Ri(i, 3) + m_state.W_12(i) * m_state.Ri(i, 4) + m_state.W_13(i) * m_state.Ri(i, 5);
-          f_rhs(i + 2 * m_state.f_n) = m_state.W_11(i) * m_state.Ri(i, 6) + m_state.W_12(i) * m_state.Ri(i, 7) + m_state.W_13(i) * m_state.Ri(i, 8);
-          f_rhs(i + 3 * m_state.f_n) = m_state.W_21(i) * m_state.Ri(i, 0) + m_state.W_22(i) * m_state.Ri(i, 1) + m_state.W_23(i) * m_state.Ri(i, 2);
-          f_rhs(i + 4 * m_state.f_n) = m_state.W_21(i) * m_state.Ri(i, 3) + m_state.W_22(i) * m_state.Ri(i, 4) + m_state.W_23(i) * m_state.Ri(i, 5);
-          f_rhs(i + 5 * m_state.f_n) = m_state.W_21(i) * m_state.Ri(i, 6) + m_state.W_22(i) * m_state.Ri(i, 7) + m_state.W_23(i) * m_state.Ri(i, 8);
-          f_rhs(i + 6 * m_state.f_n) = m_state.W_31(i) * m_state.Ri(i, 0) + m_state.W_32(i) * m_state.Ri(i, 1) + m_state.W_33(i) * m_state.Ri(i, 2);
-          f_rhs(i + 7 * m_state.f_n) = m_state.W_31(i) * m_state.Ri(i, 3) + m_state.W_32(i) * m_state.Ri(i, 4) + m_state.W_33(i) * m_state.Ri(i, 5);
-          f_rhs(i + 8 * m_state.f_n) = m_state.W_31(i) * m_state.Ri(i, 6) + m_state.W_32(i) * m_state.Ri(i, 7) + m_state.W_33(i) * m_state.Ri(i, 8);
+          f_rhs(i + 0 * s.f_n) = s.W_11(i) * s.Ri(i, 0) + s.W_12(i) * s.Ri(i, 1) + s.W_13(i) * s.Ri(i, 2);
+          f_rhs(i + 1 * s.f_n) = s.W_11(i) * s.Ri(i, 3) + s.W_12(i) * s.Ri(i, 4) + s.W_13(i) * s.Ri(i, 5);
+          f_rhs(i + 2 * s.f_n) = s.W_11(i) * s.Ri(i, 6) + s.W_12(i) * s.Ri(i, 7) + s.W_13(i) * s.Ri(i, 8);
+          f_rhs(i + 3 * s.f_n) = s.W_21(i) * s.Ri(i, 0) + s.W_22(i) * s.Ri(i, 1) + s.W_23(i) * s.Ri(i, 2);
+          f_rhs(i + 4 * s.f_n) = s.W_21(i) * s.Ri(i, 3) + s.W_22(i) * s.Ri(i, 4) + s.W_23(i) * s.Ri(i, 5);
+          f_rhs(i + 5 * s.f_n) = s.W_21(i) * s.Ri(i, 6) + s.W_22(i) * s.Ri(i, 7) + s.W_23(i) * s.Ri(i, 8);
+          f_rhs(i + 6 * s.f_n) = s.W_31(i) * s.Ri(i, 0) + s.W_32(i) * s.Ri(i, 1) + s.W_33(i) * s.Ri(i, 2);
+          f_rhs(i + 7 * s.f_n) = s.W_31(i) * s.Ri(i, 3) + s.W_32(i) * s.Ri(i, 4) + s.W_33(i) * s.Ri(i, 5);
+          f_rhs(i + 8 * s.f_n) = s.W_31(i) * s.Ri(i, 6) + s.W_32(i) * s.Ri(i, 7) + s.W_33(i) * s.Ri(i, 8);
         }
       }
-      VectorXd uv_flat(m_state.dim *m_state.v_n);
-      for (int i = 0; i < m_state.dim; i++)
-        for (int j = 0; j < m_state.v_n; j++)
-          uv_flat(m_state.v_n * i + j) = m_state.V_o(j, i);
+      VectorXd uv_flat(s.dim *s.v_n);
+      for (int i = 0; i < s.dim; i++)
+        for (int j = 0; j < s.v_n; j++)
+          uv_flat(s.v_n * i + j) = s.V_o(j, i);
 
-      m_state.rhs = (At * m_state.WGL_M.asDiagonal() * f_rhs + m_state.proximal_p * uv_flat);
+      s.rhs = (At * s.WGL_M.asDiagonal() * f_rhs + s.proximal_p * uv_flat);
     }
 
   }
@@ -892,7 +882,10 @@ IGL_INLINE Eigen::MatrixXd igl::slim_solve(SLIMData &data, int iter_num)
   {
     Eigen::MatrixXd dest_res;
     dest_res = data.V_o;
-    igl::slim::solve_weighted_proxy(data,dest_res);
+
+    // Solve Weighted Proxy
+    igl::slim::update_weights_and_closest_rotations(data,data.V, data.F, dest_res);
+    igl::slim::solve_weighted_arap(data,data.V, data.F, dest_res, data.b, data.bc);
 
     double old_energy = data.energy;
 
