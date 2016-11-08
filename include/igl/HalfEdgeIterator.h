@@ -309,7 +309,7 @@ namespace igl
       return !state.reverse ? (state.ei+2)%3 : (state.ei+1)%3;;
     }
 
-    // Get flipped edge index
+    // Get flipped halfedge index
     IGL_INLINE int HEi() const
     {
       return FFi(state.fi,state.ei);

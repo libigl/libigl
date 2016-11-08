@@ -35,22 +35,27 @@ namespace igl
   {
     std::vector<std::vector<DerivedI::Scalar>> cuts;
     cuts.push_back(cut);
-
     std::vector<std::vector<int>> cutVerticesLinkTemp;
     cut_mesh<DerivedS,DerivedI>(V.derived(),F.derived(),cuts,cutVertices,cutVerticesLinkTemp);
     cutVerticesLink = cutVerticesLinkTemp[0];
   }
 
-  template <typename DerivedS,typename DerivedI,int Option>
+  template <typename DerivedS,typename DerivedI>
   void cut_mesh(Eigen::MatrixBase<DerivedS>& V,
                 Eigen::MatrixBase<DerivedI>& F,
                 const std::vector<typename DerivedI::Scalar>& cut,
                 std::vector<std::vector<typename DerivedI::Scalar>>& cutVertices,
-                std::vector<int> cutVerticesLink,
-                Eigen::Matrix<typename DerivedI::Scalar,Eigen::Dynamic,4,Option>& cutHalfedges,
-                std::vector<int> cutHalfedgesLink)
+                std::vector<int>& cutVerticesLink,
+                std::vector<std::vector<typename DerivedI::Scalar>>& cutHalfedges,
+                std::vector<int>& cutHalfedgesLink)
   {
-
+    std::vector<std::vector<DerivedI::Scalar>> cuts;
+    cuts.push_back(cut);
+    std::vector<std::vector<int>> cutVerticesLinkTemp;
+    std::vector<std::vector<int>> cutHalfedgesLinkTemp;
+    cut_mesh(V,F,cuts,cutVertices,cutVerticesLinkTemp,cutHalfedges,cutHalfedgesLinkTemp);
+    cutVerticesLink = cutVerticesLinkTemp[0];
+    cutHalfedgesLink = cutHalfedgesLinkTemp[0];
   }
 
   template <typename DerivedS,typename DerivedI>
@@ -60,8 +65,24 @@ namespace igl
                  std::vector<std::vector<typename DerivedI::Scalar>>& cutVertices,
                  std::vector<std::vector<int>>& cutVerticesLink)
   {
+    std::vector<std::vector<typename DerivedI::Scalar>> cutHalfedges;
+    std::vector<std::vector<int>> cutHalfedgesLink;
+    cut_mesh(V,F,cuts,cutVertices,cutVerticesLink,cutHalfedges,cutHalfedgesLink);
+  }
+
+  template <typename DerivedS,typename DerivedI>
+  void cut_mesh(Eigen::MatrixBase<DerivedS>& V,
+                Eigen::MatrixBase<DerivedI>& F,
+                const std::vector<std::vector<typename DerivedI::Scalar>>& cuts,
+                std::vector<std::vector<typename DerivedI::Scalar>>& cutVertices,
+                std::vector<std::vector<int>>& cutVerticesLink,
+                std::vector<std::vector<typename DerivedI::Scalar>>& cutHalfedges,
+                std::vector<std::vector<int>>& cutHalfedgesLink)
+  {
     cutVertices.clear();
     cutVerticesLink.clear();
+    cutHalfedges.clear();
+    cutHalfedgesLink.clear();
 
     DerivedI TT,TTi;
     igl::triangle_triangle_adjacency(F.derived(),TT,TTi);
@@ -70,8 +91,9 @@ namespace igl
     DerivedI TTHelp = TT;
 
     std::map<int,int> cutHalfEdgesLinks;
+    std::map<pair<int,int>,int> cutHalfEdgesPairLinks;
     std::vector<DerivedI::Scalar> cutVerexIds;
-    std::vector<igl::HalfEdgeIterator<DerivedI>::State> cutHalfEdges;
+    std::vector<igl::HalfEdgeIterator<DerivedI>::State> cutHalfIter;
     for(auto c : cuts)
     {
       // find outgoing halfedge from the cut starting vertex
@@ -91,6 +113,38 @@ namespace igl
       }
 
       cutVerticesLink.push_back(std::vector<int>());
+      cutHalfedgesLink.push_back(std::vector<int>());
+
+      // l-function to remember cut vertices
+      auto rememberVertex = [&](){
+        auto itv = cutHalfEdgesLinks.insert({heIter.Vi(),-1});
+        if(itv.second)
+        {
+          cutHalfIter.push_back(heIter.getState());
+          cutVerexIds.push_back(heIter.Vi());
+          itv.first->second = cutHalfIter.size()-1;
+        }
+        cutVerticesLink.back().push_back(itv.first->second);
+      };
+
+      // l-function to remember halfedge pairs 
+      auto rememberHalfedge = [&](){
+        int vA = heIter.Vi0();
+        int vB = heIter.Vi1();
+        if(vA > vB) std::swap(vA,vB);
+        auto ith = cutHalfEdgesPairLinks.insert({{vA,vB},-1});
+        if(ith.second)
+        {
+          cutHalfedges.push_back(std::vector<DerivedI::Scalar>(4));
+          cutHalfedges.back()[0] = heIter.Fi();
+          cutHalfedges.back()[1] = heIter.Ei();
+          cutHalfedges.back()[2] = heIter.Fif();
+          cutHalfedges.back()[3] = heIter.HEi();
+
+          ith.first->second = cutHalfedges.size()-1;
+        }
+        cutHalfedgesLink.back().push_back(ith.first->second);
+      };
 
       // travel along the cut and detach faces
       heIter.init(f,e);
@@ -112,36 +166,22 @@ namespace igl
           TTHelp(heIter.Fif(),heIter.HEi()) = -1;
         }
 
-        // remember vertex of halfedge
-        auto it = cutHalfEdgesLinks.insert({heIter.Vi(),-1});
-        if(it.second)
-        {
-          cutHalfEdges.push_back(heIter.getState());
-          cutVerexIds.push_back(heIter.Vi());
-          it.first->second = cutHalfEdges.size()-1;
-        }
-        cutVerticesLink.back().push_back(it.first->second);
+        rememberVertex();
+        rememberHalfedge();
 
         heIter.flipV();
         heIter.flipHE();
       }
 
       // remember last vertex
-      auto it = cutHalfEdgesLinks.insert({heIter.Vi(),-1});
-      if(it.second)
-      {
-        cutHalfEdges.push_back(heIter.getState());
-        cutVerexIds.push_back(heIter.Vi());
-        it.first->second = cutHalfEdges.size()-1;
-      }
-      cutVerticesLink.back().push_back(it.first->second);
+      rememberVertex();
     }
 
     // properly detach all cut vertices
-    for(int h=0;h<cutHalfEdges.size();h++)
+    for(int h=0;h<cutHalfIter.size();h++)
     {
       vector<vector<pair<int,int>>> sharedFIds(1);
-      heIter.setState(cutHalfEdges[h]);
+      heIter.setState(cutHalfIter[h]);
       do
       {
         sharedFIds[sharedFIds.size()-1].push_back(make_pair(heIter.Fi(),heIter.Vii()));
@@ -159,7 +199,7 @@ namespace igl
 
         heIter.iterHE();
 
-      } while(heIter.Fi() != cutHalfEdges[h].fi);
+      } while(heIter.Fi() != cutHalfIter[h].fi);
 
       // add new vertices
       int offset = V.rows();
@@ -168,7 +208,7 @@ namespace igl
       cutVertices.back().push_back(cutVerexIds[h]);
       for(int i=1;i<sharedFIds.size()-1;i++)
       {
-        V.row(offset+i-1) = V.row(cutVerexIds[h]);// +RowVec3S::Random()*0.05;
+        V.row(offset+i-1) = V.row(cutVerexIds[h]);// +RowVec3S::Random()*0.005;
         cutVertices.back().push_back(offset+i-1);
       }
 
@@ -181,18 +221,6 @@ namespace igl
         }
       }
     }
-  }
-
-  template <typename DerivedS,typename DerivedI,int Option>
-  void cut_mesh(Eigen::MatrixBase<DerivedS>& V,
-                Eigen::MatrixBase<DerivedI>& F,
-                const std::vector<std::vector<typename DerivedI::Scalar>>& cuts,
-                std::vector<std::vector<typename DerivedI::Scalar>>& cutVertices,
-                std::vector<std::vector<int>> cutVerticesLink,
-                std::vector<Eigen::Matrix<typename DerivedI::Scalar,Eigen::Dynamic,4,Option>>& cutHalfedges,
-                std::vector<std::vector<int>>& cutHalfedgesLink)
-  {
-
   }
 }
 

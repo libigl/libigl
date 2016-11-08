@@ -50,9 +50,9 @@ namespace igl
                 Eigen::MatrixBase<DerivedI>& F,
                 const std::vector<typename DerivedI::Scalar>& cut,
                 std::vector<std::vector<typename DerivedI::Scalar>>& cutVertices,
-                std::vector<int> cutVerticesLink,
-                Eigen::Matrix<typename DerivedI::Scalar,Eigen::Dynamic,4,Option>& cutHalfedges,
-                std::vector<int> cutHalfedgesLink);
+                std::vector<int>& cutVerticesLink,
+                std::vector<std::vector<typename DerivedI::Scalar>>& cutHalfedges,
+                std::vector<int>& cutHalfedgesLink);
   
   template <typename DerivedS,typename DerivedI,int Option>
   void cut_mesh(Eigen::MatrixBase<DerivedS>& V,
@@ -66,7 +66,7 @@ namespace igl
                 Eigen::MatrixBase<DerivedI>& F,
                 const std::vector<std::vector<typename DerivedI::Scalar>>& cuts,
                 std::vector<std::vector<typename DerivedI::Scalar>>& cutVertices,
-                std::vector<std::vector<int>> cutVerticesLink,
+                std::vector<std::vector<int>>& cutVerticesLink,
                 std::vector<Eigen::Matrix<typename DerivedI::Scalar,Eigen::Dynamic,4,Option>>& cutHalfedges,
                 std::vector<std::vector<int>>& cutHalfedgesLink);
 };
