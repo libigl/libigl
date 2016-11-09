@@ -19,9 +19,6 @@ IGL_INLINE void igl::upsample(const int n_verts,
                               Eigen::SparseMatrix<DerivedS>& S,
                               Eigen::PlainObjectBase<DerivedNF>& NF)
 {
-  // Use "in place" wrapper instead
-  assert(&V != &NV);
-  assert(&F != &NF);
   using namespace std;
   using namespace Eigen;
 
