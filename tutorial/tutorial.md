@@ -195,6 +195,10 @@ compile CoMISo.
 *Note 2*: CoMISo requires a blas implementation. We use the built-in blas in macosx and linux, and we bundle a precompiled binary for VS2015 64 bit. Do NOT compile the tutorials
 in 32 bit on windows.
 
+### libigl example project
+
+We provide a [blank project example](https://github.com/libigl/libigl-example-project) showing how to use libigl and cmake. Feel free and encouraged to copy or fork this project as a way of starting a new personal project using libigl.
+
 ## [Mesh representation](#meshrepresentation) [meshrepresentation]
 
 libigl uses the [Eigen](http://eigen.tuxfamily.org/) library to encode vector
@@ -447,7 +451,7 @@ viewer.callback_init = [&](igl::viewer::Viewer& viewer)
   viewer.ngui->addButton("Print Hello",[](){ std::cout << "Hello\n"; });
 
   // call to generate menu
-  viewer.ngui->layout();
+  viewer.screen->performLayout();
   return false;
 };
 

@@ -10,6 +10,7 @@
 #include "edge_flaps.h"
 #include "remove_unreferenced.h"
 #include "slice_mask.h"
+#include "slice.h"
 #include "connect_boundary_to_infinity.h"
 #include <iostream>
 
@@ -19,8 +20,10 @@ IGL_INLINE bool igl::decimate(
   const size_t max_m,
   Eigen::MatrixXd & U,
   Eigen::MatrixXi & G,
-  Eigen::VectorXi & J)
+  Eigen::VectorXi & J,
+  Eigen::VectorXi & I)
 {
+
   // Original number of faces
   const int orig_m = F.rows();
   // Tracking number of faces
@@ -73,13 +76,27 @@ IGL_INLINE bool igl::decimate(
     max_non_infinite_faces_stopping_condition,
     U,
     G,
-    J);
+    J,
+    I);
   const Eigen::Array<bool,Eigen::Dynamic,1> keep = (J.array()<orig_m);
   igl::slice_mask(Eigen::MatrixXi(G),keep,1,G);
   igl::slice_mask(Eigen::VectorXi(J),keep,1,J);
-  Eigen::VectorXi _1;
-  igl::remove_unreferenced(Eigen::MatrixXd(U),Eigen::MatrixXi(G),U,G,_1);
+  Eigen::VectorXi _1,I2;
+  igl::remove_unreferenced(Eigen::MatrixXd(U),Eigen::MatrixXi(G),U,G,_1,I2);
+  igl::slice(Eigen::VectorXi(I),I2,1,I);
   return ret;
+}
+
+IGL_INLINE bool igl::decimate(
+  const Eigen::MatrixXd & V,
+  const Eigen::MatrixXi & F,
+  const size_t max_m,
+  Eigen::MatrixXd & U,
+  Eigen::MatrixXi & G,
+  Eigen::VectorXi & J)
+{
+  Eigen::VectorXi I;
+  return igl::decimate(V,F,max_m,U,G,J,I);
 }
 
 IGL_INLINE bool igl::decimate(
@@ -112,7 +129,9 @@ IGL_INLINE bool igl::decimate(
       const int)> & stopping_condition,
   Eigen::MatrixXd & U,
   Eigen::MatrixXi & G,
-  Eigen::VectorXi & J)
+  Eigen::VectorXi & J,
+  Eigen::VectorXi & I
+  )
 {
   using namespace Eigen;
   using namespace std;
@@ -189,6 +208,6 @@ IGL_INLINE bool igl::decimate(
   F2.conservativeResize(m,F2.cols());
   J.conservativeResize(m);
   VectorXi _1;
-  remove_unreferenced(V,F2,U,G,_1);
+  remove_unreferenced(V,F2,U,G,_1,I);
   return clean_finish;
 }

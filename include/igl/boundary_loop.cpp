@@ -114,6 +114,13 @@ IGL_INLINE void igl::boundary_loop(
     }
   }
 
+  //Check for meshes without boundary
+  if (idxMax == -1)
+  {
+      L.clear();
+      return;
+  }
+
   L.resize(Lall[idxMax].size());
   for (size_t i = 0; i < Lall[idxMax].size(); ++i)
   {
