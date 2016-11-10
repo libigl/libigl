@@ -6,6 +6,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "segment_segment_squared_distance.h"
+#include <CGAL/Vector_3.h>
 
 // http://geomalgorithms.com/a07-_distance.html
 template < typename Kernel>
@@ -14,23 +15,23 @@ IGL_INLINE bool igl::copyleft::cgal::segment_segment_squared_distance(
     const CGAL::Segment_3<Kernel> & S2,
     CGAL::Point_3<Kernel> & P1,
     CGAL::Point_3<Kernel> & P2,
-    typename Kernel::FT & d)
+    typename Kernel::FT & dst)
 {
   typedef CGAL::Point_3<Kernel> Point_3;
   typedef CGAL::Vector_3<Kernel> Vector_3;
-  typedef Kernel::FT EScalar;
+  typedef typename Kernel::FT EScalar;
   if(S1.is_degenerate())
   {
     // All points on S1 are the same
     P1 = S1.source();
-    point_segment_squared_distance(P1,S2,P2,d);
+    point_segment_squared_distance(P1,S2,P2,dst);
     return true;
   }else if(S2.is_degenerate())
   {
     assert(!S1.is_degenerate());
     // All points on S2 are the same
     P2 = S2.source();
-    point_segment_squared_distance(P2,S1,P1,d);
+    point_segment_squared_distance(P2,S1,P1,dst);
     return true;
   }
 
@@ -48,8 +49,8 @@ IGL_INLINE bool igl::copyleft::cgal::segment_segment_squared_distance(
   const auto e = v.dot(w);
   const auto D = a*c - b*b;        // always >= 0
   assert(D>=0);
-  const auto sc, sN, sD = D;       // sc = sN / sD, default sD = D >= 0
-  const auto tc, tN, tD = D;       // tc = tN / tD, default tD = D >= 0
+  const auto sc=D, sN=D, sD = D;       // sc = sN / sD, default sD = D >= 0
+  const auto tc=D, tN=D, tD = D;       // tc = tN / tD, default tD = D >= 0
 
   bool parallel = false;
   // compute the line parameters of the two closest points
@@ -123,6 +124,6 @@ IGL_INLINE bool igl::copyleft::cgal::segment_segment_squared_distance(
   Vector_3   dP = w + (sc * u) - (tc * v);  // =  S1(sc) - S2(tc)
   assert(dP == (P1-P2));
 
-  d = dP.squared_length();   // return the closest distance
+  dst = dP.squared_length();   // return the closest distance
   return parallel;
 }
