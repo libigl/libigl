@@ -8,28 +8,21 @@
 #ifndef SLIM_H
 #define SLIM_H
 
+#include "igl_inline.h"
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
-
-#include <string>
-
-#include <igl/jet.h>
-#include <igl/readOBJ.h>
-#include <igl/facet_components.h>
-#include <igl/slice.h>
-
-class WeightedGlobalLocal;
 
 namespace igl
 {
 
 // Compute a SLIM map as derived in "Scalable Locally Injective Maps" [Rabinovich et al. 2016].
-struct SLIMData {
-
+struct SLIMData
+{
   // Input
   Eigen::MatrixXd V; // #V by 3 list of mesh vertex positions
   Eigen::MatrixXi F; // #F by 3/3 list of mesh faces (triangles/tets)
-  enum SLIM_ENERGY {
+  enum SLIM_ENERGY
+  {
     ARAP,
     LOG_ARAP,
     SYMMETRIC_DIRICHLET,
@@ -40,10 +33,10 @@ struct SLIMData {
   SLIM_ENERGY slim_energy;
 
   // Optional Input
-    // soft constraints
-    Eigen::VectorXi b;
-    Eigen::MatrixXd bc;
-    double soft_const_p;
+  // soft constraints
+  Eigen::VectorXi b;
+  Eigen::MatrixXd bc;
+  double soft_const_p;
 
   double exp_factor; // used for exponential energies, ignored otherwise
   bool mesh_improvement_3d; // only supported for 3d
@@ -60,30 +53,45 @@ struct SLIMData {
   int f_num;
   double proximal_p;
 
-  WeightedGlobalLocal* wGlobalLocal;
+  Eigen::VectorXd WGL_M;
+  Eigen::VectorXd rhs;
+  Eigen::MatrixXd Ri,Ji;
+  Eigen::VectorXd W_11; Eigen::VectorXd W_12; Eigen::VectorXd W_13;
+  Eigen::VectorXd W_21; Eigen::VectorXd W_22; Eigen::VectorXd W_23;
+  Eigen::VectorXd W_31; Eigen::VectorXd W_32; Eigen::VectorXd W_33;
+  Eigen::SparseMatrix<double> Dx,Dy,Dz;
+  int f_n,v_n;
+  bool first_solve;
+  bool has_pre_calc = false;
+  int dim;
 };
 
-  // Compute necessary information to start using SLIM
-  // Inputs:
-  //		V           #V by 3 list of mesh vertex positions
-  //		F           #F by 3/3 list of mesh faces (triangles/tets)
-  //    b           list of boundary indices into V
-  //    bc          #b by dim list of boundary conditions
-  //    soft_p      Soft penalty factor (can be zero)
-  //    slim_energy Energy to minimize
-IGL_INLINE void slim_precompute(Eigen::MatrixXd& V, Eigen::MatrixXi& F, Eigen::MatrixXd& V_init, SLIMData& data,
-   SLIMData::SLIM_ENERGY slim_energy, Eigen::VectorXi& b, Eigen::MatrixXd& bc, double soft_p);
+// Compute necessary information to start using SLIM
+// Inputs:
+//		V           #V by 3 list of mesh vertex positions
+//		F           #F by 3/3 list of mesh faces (triangles/tets)
+//    b           list of boundary indices into V
+//    bc          #b by dim list of boundary conditions
+//    soft_p      Soft penalty factor (can be zero)
+//    slim_energy Energy to minimize
+IGL_INLINE void slim_precompute(Eigen::MatrixXd& V,
+                                Eigen::MatrixXi& F,
+                                Eigen::MatrixXd& V_init,
+                                SLIMData& data,
+                                SLIMData::SLIM_ENERGY slim_energy,
+                                Eigen::VectorXi& b,
+                                Eigen::MatrixXd& bc,
+                                double soft_p);
 
 // Run iter_num iterations of SLIM
 // Outputs:
 //    V_o (in SLIMData): #V by dim list of mesh vertex positions
-IGL_INLINE void slim_solve(SLIMData& data, int iter_num);
+IGL_INLINE Eigen::MatrixXd slim_solve(SLIMData& data, int iter_num);
 
-}
+} // END NAMESPACE
 
 #ifndef IGL_STATIC_LIBRARY
 #  include "slim.cpp"
 #endif
-
 
 #endif // SLIM_H

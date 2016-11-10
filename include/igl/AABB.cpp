@@ -391,7 +391,7 @@ igl::AABB<DerivedV,DIM>::squared_distance(
       int i_left;
       RowVectorDIMS c_left = c;
       Scalar sqr_d_left = m_left->squared_distance(V,Ele,p,sqr_d,i_left,c_left);
-      set_min(p,sqr_d_left,i_left,c_left,sqr_d,i,c);
+      this->set_min(p,sqr_d_left,i_left,c_left,sqr_d,i,c);
       looked_left = true;
     };
     const auto & look_right = [&]()
@@ -399,7 +399,7 @@ igl::AABB<DerivedV,DIM>::squared_distance(
       int i_right;
       RowVectorDIMS c_right = c;
       Scalar sqr_d_right = m_right->squared_distance(V,Ele,p,sqr_d,i_right,c_right);
-      set_min(p,sqr_d_right,i_right,c_right,sqr_d,i,c);
+      this->set_min(p,sqr_d_right,i_right,c_right,sqr_d,i,c);
       looked_right = true;
     };
 
