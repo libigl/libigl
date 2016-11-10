@@ -21,20 +21,20 @@ namespace igl
   // [newV, newF] is the subdivided mesh where newV = S*V.
   //
   // Inputs:
-  //  n_verts an integer (number of mesh vertices)
-  //  F an m by 3 matrix of integers of triangle faces
+  //   n_verts  an integer (number of mesh vertices)
+  //   F  an m by 3 matrix of integers of triangle faces
   // Outputs:
-  //  S a sparse matrix (will become the subdivision matrix)
-  //  newF a matrix containing the new faces
+  //   S  a sparse matrix (will become the subdivision matrix)
+  //   newF  a matrix containing the new faces
   template <
     typename DerivedF,
-    typename DerivedS,
+    typename SType,
     typename DerivedNF>
-  IGL_INLINE void upsample(const int n_verts,
-                           const Eigen::PlainObjectBase<DerivedF>& F,
-                           Eigen::SparseMatrix<DerivedS>& S,
-                           Eigen::PlainObjectBase<DerivedNF>& NF);
-
+  IGL_INLINE void upsample(
+    const int n_verts,
+    const Eigen::PlainObjectBase<DerivedF>& F,
+    Eigen::SparseMatrix<SType>& S,
+    Eigen::PlainObjectBase<DerivedNF>& NF);
   // Subdivide a mesh without moving vertices: loop subdivision but odd
   // vertices stay put and even vertices are just edge midpoints
   // 
@@ -58,19 +58,21 @@ namespace igl
     typename DerivedF,
     typename DerivedNV,
     typename DerivedNF>
-  IGL_INLINE void upsample(const Eigen::PlainObjectBase<DerivedV>& V,
-                           const Eigen::PlainObjectBase<DerivedF>& F,
-                           Eigen::PlainObjectBase<DerivedNV>& NV,
-                           Eigen::PlainObjectBase<DerivedNF>& NF,
-                           const int number_of_subdivs = 1);
+  IGL_INLINE void upsample(
+    const Eigen::PlainObjectBase<DerivedV>& V,
+    const Eigen::PlainObjectBase<DerivedF>& F,
+    Eigen::PlainObjectBase<DerivedNV>& NV,
+    Eigen::PlainObjectBase<DerivedNF>& NF,
+    const int number_of_subdivs = 1);
 
   // Virtually in place wrapper
   template <
     typename MatV, 
     typename MatF>
-  IGL_INLINE void upsample(MatV& V,
-                           MatF& F,
-                           const int number_of_subdivs = 1);
+  IGL_INLINE void upsample(
+    MatV& V,
+    MatF& F,
+    const int number_of_subdivs = 1);
 }
 
 #ifndef IGL_STATIC_LIBRARY
