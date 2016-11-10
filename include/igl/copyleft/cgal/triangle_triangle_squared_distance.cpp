@@ -7,9 +7,12 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "triangle_triangle_squared_distance.h"
 #include "point_triangle_squared_distance.h"
+#include <CGAL/Vector_3.h>
+#include <CGAL/Segment_3.h>
+#include <CGAL/intersections.h>
 
 template < typename Kernel>
-IGL_INLINE bool igl::copyleft:cgal::triangle_triangle_squared_distance(
+IGL_INLINE bool igl::copyleft::cgal::triangle_triangle_squared_distance(
   const CGAL::Triangle_3<Kernel> & T1,
   const CGAL::Triangle_3<Kernel> & T2,
   CGAL::Point_3<Kernel> & P1,
@@ -20,7 +23,7 @@ IGL_INLINE bool igl::copyleft:cgal::triangle_triangle_squared_distance(
   typedef CGAL::Vector_3<Kernel> Vector_3;
   typedef CGAL::Triangle_3<Kernel> Triangle_3;
   typedef CGAL::Segment_3<Kernel> Segment_3;
-  typedef Kernel::FT EScalar;
+  typedef typename Kernel::FT EScalar;
   assert(!T1.is_degenerate());
   assert(!T2.is_degenerate());
 
@@ -38,12 +41,12 @@ IGL_INLINE bool igl::copyleft:cgal::triangle_triangle_squared_distance(
     {
       unique = false;
       Q = s->source();
-    }else if(const Triangle_3 *itri = CGAL::object_cast<Triangle_3 >(&obj))
+    }else if(const Triangle_3 *itri = CGAL::object_cast<Triangle_3 >(&result))
     {
       Q = s->vertex(0);
       unique = false;
     }else if(const std::vector<Point_3 > *polyp = 
-      CGAL::object_cast< std::vector<Point_3 > >(&obj))
+      CGAL::object_cast< std::vector<Point_3 > >(&result))
     {
       assert(polyp->size() > 0 && "intersection poly should not be empty");
       Q = polyp[0];
@@ -60,7 +63,7 @@ IGL_INLINE bool igl::copyleft:cgal::triangle_triangle_squared_distance(
   // triangles do not intersect: the points of closest approach must be on the
   // boundary of one of the triangles
   d = std::numeric_limits<double>::infinity();
-  const auto & vertices_face = [](
+  const auto & vertices_face = [&unique](
     const Triangle_3 & T1,
     const Triangle_3 & T2,
     Point_3 & P1,
@@ -90,10 +93,10 @@ IGL_INLINE bool igl::copyleft:cgal::triangle_triangle_squared_distance(
   vertices_face(T2,T1,P1,P2,d);
   for(int i = 0;i<3;i++)
   {
-    const Segment_3<Kernel> s1( T1.vertex(i+1), T1.vertex(i+2));
+    const Segment_3 s1( T1.vertex(i+1), T1.vertex(i+2));
     for(int j = 0;j<3;j++)
     {
-      const Segment_3<Kernel> s2( T2.vertex(i+1), T2.vertex(i+2));
+      const Segment_3 s2( T2.vertex(i+1), T2.vertex(i+2));
       Point_3 P1ij;
       Point_3 P2ij;
       EScalar dij;
