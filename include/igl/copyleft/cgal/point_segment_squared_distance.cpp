@@ -23,7 +23,7 @@ IGL_INLINE void igl::copyleft::cgal::point_segment_squared_distance(
   // http://stackoverflow.com/a/1501725/148668
   const auto sqr_len = S2.squared_length();
   assert(sqr_len != 0);
-  const auto & V = S1.source();
+  const auto & V = S2.source();
   const auto & W = S2.target();
   const auto t = (P1-V).dot(W-V)/sqr_len;
   if(t<0)
