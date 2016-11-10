@@ -12,21 +12,21 @@
 
 template <
   typename DerivedF,
-  typename DerivedS,
+  typename SType,
   typename DerivedNF>
-IGL_INLINE void igl::upsample(const int n_verts,
-                              const Eigen::PlainObjectBase<DerivedF>& F,
-                              Eigen::SparseMatrix<DerivedS>& S,
-                              Eigen::PlainObjectBase<DerivedNF>& NF)
+IGL_INLINE void igl::upsample(
+  const int n_verts,
+  const Eigen::PlainObjectBase<DerivedF>& F,
+  Eigen::SparseMatrix<SType>& S,
+  Eigen::PlainObjectBase<DerivedNF>& NF)
 {
   using namespace std;
   using namespace Eigen;
 
-  typedef Eigen::Triplet<DerivedS> Triplet_t;
+  typedef Eigen::Triplet<SType> Triplet_t;
 
-  Eigen::Matrix<
-  typename DerivedF::Scalar,Eigen::Dynamic,Eigen::Dynamic>
-  FF,FFi;
+  Eigen::Matrix< typename DerivedF::Scalar,Eigen::Dynamic,Eigen::Dynamic>
+    FF,FFi;
   triangle_triangle_adjacency(F,FF,FFi);
 
   // TODO: Cache optimization missing from here, it is a mess
@@ -106,31 +106,31 @@ template <
   typename DerivedNV,
   typename DerivedNF>
 IGL_INLINE void igl::upsample(
-                              const Eigen::PlainObjectBase<DerivedV>& V,
-                              const Eigen::PlainObjectBase<DerivedF>& F,
-                              Eigen::PlainObjectBase<DerivedNV>& NV,
-                              Eigen::PlainObjectBase<DerivedNF>& NF,
-                              const int number_of_subdivs)
+  const Eigen::PlainObjectBase<DerivedV>& V,
+  const Eigen::PlainObjectBase<DerivedF>& F,
+  Eigen::PlainObjectBase<DerivedNV>& NV,
+  Eigen::PlainObjectBase<DerivedNF>& NF,
+  const int number_of_subdivs)
 {
-  typedef Eigen::SparseMatrix<double> SparseMat;
-  typedef Eigen::Triplet<double> Triplet_t;
-
   NV = V;
   NF = F;
-  for(int i=0; i<number_of_subdivs; ++i) {
+  for(int i=0; i<number_of_subdivs; ++i) 
+  {
     DerivedNF tempF = NF;
-    SparseMat S;
+    Eigen::SparseMatrix<typename DerivedV::Scalar >S;
     upsample(NV.rows(), tempF, S, NF);
-    NV = S*NV;
+    // This .eval is super important
+    NV = (S*NV).eval();
   }
 }
 
 template <
   typename MatV,
   typename MatF>
-IGL_INLINE void igl::upsample(MatV& V,
-                              MatF& F,
-                              const int number_of_subdivs)
+IGL_INLINE void igl::upsample(
+  MatV& V,
+  MatF& F,
+  const int number_of_subdivs)
 {
   const MatV V_copy = V;
   const MatF F_copy = F;
