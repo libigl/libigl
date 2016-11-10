@@ -32,9 +32,9 @@ IGL_INLINE void point_triangle_squared_distance(
   // loop over edges
   for(int i=0;i<3;i++)
   {
-    Point_3<Kernel> P2i;
+    CGAL::Point_3<Kernel> P2i;
     typename Kernel::FT di;
-    const Segment_3<Kernel> si( T2.vertex(i+1), T2.vertex(i+2));
+    const CGAL::Segment_3<Kernel> si( T2.vertex(i+1), T2.vertex(i+2));
     point_segment_squared_distance(P1,si,P2i,di);
     if(first || di < d)
     {
