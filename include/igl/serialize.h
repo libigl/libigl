@@ -187,7 +187,10 @@ namespace igl
  
   public:
  
-    // Override this function to add your member variables which should be serialized
+    // You **MUST** Override this function to add your member variables which
+    // should be serialized
+    //
+    // http://stackoverflow.com/a/6634382/148668
     virtual void InitSerialization() = 0;
  
     // Following functions can be overridden to handle the specific events.
