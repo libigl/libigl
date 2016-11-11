@@ -12,6 +12,7 @@
 
 #include <igl/per_face_normals.h>
 #include <igl/material_colors.h>
+#include <igl/parula.h>
 #include <igl/per_vertex_normals.h>
 
 #ifdef ENABLE_SERIALIZATION
@@ -154,6 +155,12 @@ IGL_INLINE void igl::viewer::ViewerData::set_colors(const Eigen::MatrixXd &C)
 {
   using namespace std;
   using namespace Eigen;
+  if(C.rows()>0 && C.cols() == 1)
+  {
+    Eigen::MatrixXd C3;
+    igl::parula(C,true,C3);
+    return set_colors(C3);
+  }
   // Ambient color should be darker color
   const auto ambient = [](const MatrixXd & C)->MatrixXd
   {

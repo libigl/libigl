@@ -19,14 +19,15 @@ namespace igl {
   // Compute the numerical gradient operator
   //
   // Inputs:
-  //   V  #vertices by 3 list of mesh vertex positions
-  //   F  #faces by 3 list of mesh face indices
+  //   V          #vertices by 3 list of mesh vertex positions
+  //   F          #faces by 3 list of mesh face indices [or a #faces by 4 list of tetrahedral indices]
+  //   uniform    boolean (default false) - Use a uniform mesh instead of the vertices V
   // Outputs:
   //   G  #faces*dim by #V Gradient operator
   //
 
   // Gradient of a scalar function defined on piecewise linear elements (mesh)
-  // is constant on each triangle i,j,k:
+  // is constant on each triangle [tetrahedron] i,j,k:
   // grad(Xijk) = (Xj-Xi) * (Vi - Vk)^R90 / 2A + (Xk-Xi) * (Vj - Vi)^R90 / 2A
   // where Xi is the scalar value at vertex i, Vi is the 3D position of vertex
   // i, and A is the area of triangle (i,j,k). ^R90 represent a rotation of
@@ -35,10 +36,9 @@ namespace igl {
 template <typename DerivedV, typename DerivedF>
 IGL_INLINE void grad(const Eigen::PlainObjectBase<DerivedV>&V,
                      const Eigen::PlainObjectBase<DerivedF>&F,
-                    Eigen::SparseMatrix<typename DerivedV::Scalar> &G);
-
+                    Eigen::SparseMatrix<typename DerivedV::Scalar> &G,
+                    bool uniform = false);
 }
-
 #ifndef IGL_STATIC_LIBRARY
 #  include "grad.cpp"
 #endif

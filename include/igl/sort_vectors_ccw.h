@@ -21,8 +21,6 @@ namespace igl {
   // Inputs:
   //   P               1 by 3N row vector of the vectors to be sorted, stacked horizontally
   //   N               #1 by 3 normal of the plane where the vectors lie
-  //   do_sorted       boolean flag, determines whether to return the sorted vector set
-  //   do_inv_order    boolean flag, determines whether to return the "inverse" set of indices
   // Output:
   //   order           N by 1 order of the vectors (indices of the unordered vectors into
   //                   the ordered vector set)
@@ -35,10 +33,30 @@ namespace igl {
                                    const Eigen::PlainObjectBase<DerivedS>& P,
                                    const Eigen::PlainObjectBase<DerivedS>& N,
                                    Eigen::PlainObjectBase<DerivedI> &order,
-                                   const bool do_sorted,
                                    Eigen::PlainObjectBase<DerivedS> &sorted,
-                                   const bool do_inv_order,
                                    Eigen::PlainObjectBase<DerivedI> &inv_order);
+
+   template <typename DerivedS, typename DerivedI>
+   IGL_INLINE void sort_vectors_ccw(
+                                    const Eigen::PlainObjectBase<DerivedS>& P,
+                                    const Eigen::PlainObjectBase<DerivedS>& N,
+                                    Eigen::PlainObjectBase<DerivedI> &order,
+                                    Eigen::PlainObjectBase<DerivedS> &sorted);
+
+    template <typename DerivedS, typename DerivedI>
+    IGL_INLINE void sort_vectors_ccw(
+                                     const Eigen::PlainObjectBase<DerivedS>& P,
+                                     const Eigen::PlainObjectBase<DerivedS>& N,
+                                     Eigen::PlainObjectBase<DerivedI> &order,
+                                     Eigen::PlainObjectBase<DerivedI> &inv_order);
+
+
+     template <typename DerivedS, typename DerivedI>
+     IGL_INLINE void sort_vectors_ccw(
+                                      const Eigen::PlainObjectBase<DerivedS>& P,
+                                      const Eigen::PlainObjectBase<DerivedS>& N,
+                                      Eigen::PlainObjectBase<DerivedI> &order);
+
 };
 
 

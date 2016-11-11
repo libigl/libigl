@@ -96,9 +96,6 @@ namespace igl
         typedef CGAL::Constrained_triangulation_face_base_2<Kernel> CTAB_2;
         typedef CGAL::Triangulation_data_structure_2<TVB_2,CTAB_2> TDS_2;
         typedef CGAL::Exact_intersections_tag Itag;
-        typedef CGAL::Constrained_Delaunay_triangulation_2<Kernel,TDS_2,Itag> 
-          CDT_2;
-        typedef CGAL::Constrained_triangulation_plus_2<CDT_2> CDT_plus_2;
         // Axis-align boxes for all-pairs self-intersection detection
         typedef std::vector<Triangle_3> Triangles;
         typedef typename Triangles::iterator TrianglesIterator;

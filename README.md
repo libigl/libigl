@@ -43,6 +43,10 @@ and Windows with Visual Studio 2015 Community Edition.
 As of version 1.0, libigl includes an introductory
 [tutorial](http://libigl.github.io/libigl/tutorial/tutorial.html) that covers many functionalities.
 
+## libigl example project
+
+We provide a [blank project example](https://github.com/libigl/libigl-example-project) showing how to use libigl and cmake. Feel free and encouraged to copy or fork this project as a way of starting a new personal project using libigl.
+
 ## Installation
 
 Libigl is a **header-only** library. You do **not** need to build anything to
@@ -194,8 +198,11 @@ Libigl is used by many research groups around the world. In 2015, it won the
 Eurographics/ACM Symposium on Geometry Processing software award. Here are a
 few labs/companies/institutions using libigl:
 
+ - [Activision](http://www.activision.com)
  - [Adobe Research](http://www.adobe.com/technology/)  
  - [Electronic Arts, Inc](http://www.ea.com)
+ - [Epic Games](https://epicgames.com)
+ - [Google Research](https://research.google.com)
  - [Mesh](http://meshconsultants.ca/), consultants, Canada
  - [Pixar Research](http://graphics.pixar.com/research/)
  - [Spine by Esoteric Software](http://esotericsoftware.com/) is an animation tool dedicated to 2D characters.
@@ -206,6 +213,7 @@ few labs/companies/institutions using libigl:
  - ETH Zurich, [Interactive Geometry Lab](http://igl.ethz.ch/) and [Advanced Technologies Lab](http://ait.inf.ethz.ch/), Swizterland
  - George Mason University, [CraGL](http://cs.gmu.edu/~ygingold/), USA
  - [Hong Kong University of Science and Technology](http://www.ust.hk/), Hong Kong
+ - [Inria](Université Grenoble Alpes), France
  - [National Institute of Informatics](http://www.nii.ac.jp/en/), Japan
  - New York University, [Media Research Lab](http://mrl.nyu.edu/), USA
  - NYUPoly, [Game Innovation Lab](http://game.engineering.nyu.edu/), USA
@@ -213,13 +221,16 @@ few labs/companies/institutions using libigl:
  - [TU Delft](http://www.tudelft.nl/en/), Netherlands
  - [TU Wien](https://www.tuwien.ac.at/en/tuwien_home/), Austria
  - [Telecom ParisTech](http://www.telecom-paristech.fr/en/formation-et-innovation-dans-le-numerique.html), Paris, France
+ - [Utrecht University](http://www.staff.science.uu.nl/~vaxma001/), The Netherlands
  - [Universidade Federal de Santa Catarina](http://mtm.ufsc.br/~leo/), Brazil
  - [University College London](http://vecg.cs.ucl.ac.uk/), England
  - [University of California Berkeley](http://vis.berkeley.edu/), USA
  - [University of Cambridge](http://www.cam.ac.uk/), England
  - [University of Pennsylvania](http://cg.cis.upenn.edu/), USA
  - [University of Texas at Austin](http://www.cs.utexas.edu/users/evouga/), USA
+ - [University of Toronto](http://dgp.toronto.edu), Canada
  - [University of Victoria](https://www.csc.uvic.ca/Research/graphics/), Canada
+ - [University of Wisconsin-Eau Claire](http://www.uwec.edu/computer-science/), USA
  - [Università della Svizzera Italiana](http://www.usi.ch/en), Switzerland
  - [Université Toulouse III Paul Sabatier](http://www.univ-tlse3.fr/), France
  - [Zhejiang University](http://www.math.zju.edu.cn/cagd/), China
@@ -244,7 +255,7 @@ page](https://github.com/libigl/libigl/issues).
 
 ## Copyright
 2016 Alec Jacobson, Daniele Panozzo, Christian Schüller, Olga Diamanti, Qingnan
-Zhou, Sebastian Koch, Nico Pietroni, Stefan Brugger, Kenshi Takayama, Wenzel Jakob, Nikolas De
+Zhou, Sebastian Koch, Amir Vaxman, Nico Pietroni, Stefan Brugger, Kenshi Takayama, Wenzel Jakob, Nikolas De
 Giorgis, Luigi Rocca, Leonardo Sacht, Kevin Walliman, Olga Sorkine-Hornung, and others.
 
 Please see individual files for appropriate copyright notices.

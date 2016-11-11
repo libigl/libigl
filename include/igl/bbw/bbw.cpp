@@ -64,29 +64,17 @@ IGL_INLINE bool igl::bbw::bbw(
   int n = V.rows();
   // number of handles
   int m = bc.cols();
-
+  // Build biharmonic operator
   SparseMatrix<typename DerivedW::Scalar> L;
   cotmatrix(V,Ele,L);
-  MassMatrixType mmtype = MASSMATRIX_TYPE_VORONOI;
-  if(Ele.cols() == 4)
-  {
-    mmtype = MASSMATRIX_TYPE_BARYCENTRIC;
-  }
   SparseMatrix<typename DerivedW::Scalar> M;
   SparseMatrix<typename DerivedW::Scalar> Mi;
-  massmatrix(V,Ele,mmtype,M);
-
+  massmatrix(V,Ele,MASSMATRIX_TYPE_DEFAULT,M);
   invert_diag(M,Mi);
-
-  // Biharmonic operator
   SparseMatrix<typename DerivedW::Scalar> Q = L.transpose() * Mi * L;
+  assert(!data.partition_unity && "partition_unity not implemented yet");
 
   W.derived().resize(n,m);
-  if(data.partition_unity)
-  {
-    // Not yet implemented
-    assert(false);
-  }else
   {
     // No linear terms
     VectorXd c = VectorXd::Zero(n);

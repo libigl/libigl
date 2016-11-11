@@ -21,7 +21,7 @@
 #include <igl/readMESH.h>
 #include <igl/readTGF.h>
 #include <igl/viewer/Viewer.h>
-#include <igl/bbw/bbw.h>
+#include <igl/bbw.h>
 //#include <igl/embree/bone_heat.h>
 
 #include <Eigen/Geometry>
@@ -32,7 +32,7 @@
 
 #include "tutorial_shared_path.h"
 
-typedef 
+typedef
   std::vector<Eigen::Quaterniond,Eigen::aligned_allocator<Eigen::Quaterniond> >
   RotationList;
 
@@ -78,7 +78,7 @@ bool pre_draw(igl::viewer::Viewer & viewer)
     MatrixXd CT;
     MatrixXi BET;
     igl::deform_skeleton(C,BE,T,CT,BET);
-    
+
     viewer.data.set_vertices(U);
     viewer.data.set_edges(CT,BET,sea_green);
     viewer.data.compute_normals();
@@ -139,11 +139,11 @@ int main(int argc, char *argv[])
   igl::boundary_conditions(V,T,C,VectorXi(),BE,MatrixXi(),b,bc);
 
   // compute BBW weights matrix
-  igl::bbw::BBWData bbw_data;
+  igl::BBWData bbw_data;
   // only a few iterations for sake of demo
   bbw_data.active_set_params.max_iter = 8;
   bbw_data.verbosity = 2;
-  if(!igl::bbw::bbw(V,T,b,bc,bbw_data,W))
+  if(!igl::bbw(V,T,b,bc,bbw_data,W))
   {
     return false;
   }

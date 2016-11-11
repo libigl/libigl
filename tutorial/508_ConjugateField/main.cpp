@@ -33,8 +33,6 @@ Eigen::MatrixXd conjugate_pvf;
 Eigen::VectorXd conjugacy_s;
 Eigen::VectorXd conjugacy_c;
 
-igl::ConjugateFFSolverData<Eigen::MatrixXd, Eigen::MatrixXi> *csdata;
-
 
 bool key_down(igl::viewer::Viewer& viewer, unsigned char key, int modifier)
 {
@@ -143,7 +141,7 @@ int main(int argc, char *argv[])
   igl::n_polyvector(V, F, b, bc, smooth_pvf);
 
   // Initialize conjugate field with smooth field
-  csdata = new igl::ConjugateFFSolverData<Eigen::MatrixXd,Eigen::MatrixXi>(V,F);
+  igl::ConjugateFFSolverData<Eigen::MatrixXd, Eigen::MatrixXi> csdata(V,F);
   conjugate_pvf = smooth_pvf;
 
 
@@ -153,12 +151,11 @@ int main(int argc, char *argv[])
   double lambdaInit = 100;
   double lambdaMultFactor = 1.01;
   bool doHardConstraints = true;
-  double lambdaOut;
   VectorXi isConstrained = VectorXi::Constant(F.rows(),0);
   for (unsigned i=0; i<b.size(); ++i)
     isConstrained(b(i)) = 1;
 
-  igl::conjugate_frame_fields(*csdata, isConstrained, conjugate_pvf, conjugate_pvf, conjIter, lambdaOrtho, lambdaInit, lambdaMultFactor, doHardConstraints, &lambdaOut);
+  double lambdaOut = igl::conjugate_frame_fields(csdata, isConstrained, conjugate_pvf, conjugate_pvf, conjIter, lambdaOrtho, lambdaInit, lambdaMultFactor, doHardConstraints);
 
   // local representations of field vectors
   Eigen::Matrix<double, Eigen::Dynamic, 2> pvU, pvV;
@@ -168,13 +165,13 @@ int main(int argc, char *argv[])
   const Eigen::MatrixXd &Vs = smooth_pvf.rightCols(3);
   pvU << igl::dot_row(Us,B1), igl::dot_row(Us,B2);
   pvV << igl::dot_row(Vs,B1), igl::dot_row(Vs,B2);
-  csdata->evaluateConjugacy(pvU, pvV, conjugacy_s);
+  csdata.evaluateConjugacy(pvU, pvV, conjugacy_s);
   //conjugate
   const Eigen::MatrixXd &Uc = conjugate_pvf.leftCols(3);
   const Eigen::MatrixXd &Vc = conjugate_pvf.rightCols(3);
   pvU << igl::dot_row(Uc,B1), igl::dot_row(Uc,B2);
   pvV << igl::dot_row(Vc,B1), igl::dot_row(Vc,B2);
-  csdata->evaluateConjugacy(pvU, pvV, conjugacy_c);
+  csdata.evaluateConjugacy(pvU, pvV, conjugacy_c);
   // Launch the viewer
   igl::viewer::Viewer viewer;
   viewer.core.invert_normals = true;
