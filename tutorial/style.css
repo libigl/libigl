@@ -55,6 +55,11 @@ figcaption
   font-style: italic;
 }
 
+figcaption code
+{
+  font-style: normal;
+}
+
 pre, code {
   font-size: 0.85em;
   font-family: Consolas, Inconsolata, Courier, monospace;

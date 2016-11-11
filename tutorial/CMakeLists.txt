@@ -164,7 +164,6 @@ if(TUTORIALS_CHAPTER6)
     add_subdirectory("609_Boolean")
     add_subdirectory("610_CSGTree")
   endif()
-  add_subdirectory("611_SLIM")
 endif()
 
 # Chapter 7
@@ -180,5 +179,6 @@ if(TUTORIALS_CHAPTER7)
   add_subdirectory("707_SweptVolume")
   add_subdirectory("708_Picking")
   add_subdirectory("709_VectorFieldVisualizer")
-
+  add_subdirectory("710_SLIM")
+  add_subdirectory("711_Subdivision")
 endif()
