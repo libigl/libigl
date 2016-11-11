@@ -22,7 +22,7 @@ IGL_INLINE void igl::voxel_grid(
   {
     if(i!=si)
     {
-      side(i) = ceil(s * (box.max()(i)-box.min()(i))/s_len);
+      side(i) = std::ceil(s * (box.max()(i)-box.min()(i))/s_len);
     }
   }
   side.array() += 2*pad_count;

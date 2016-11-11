@@ -10,7 +10,6 @@
 #include "barycenter.h"
 #include "barycentric_coordinates.h"
 #include "colon.h"
-#include "colon.h"
 #include "doublearea.h"
 #include "matlab_format.h"
 #include "point_simplex_squared_distance.h"
@@ -392,7 +391,7 @@ igl::AABB<DerivedV,DIM>::squared_distance(
       int i_left;
       RowVectorDIMS c_left = c;
       Scalar sqr_d_left = m_left->squared_distance(V,Ele,p,sqr_d,i_left,c_left);
-      set_min(p,sqr_d_left,i_left,c_left,sqr_d,i,c);
+      this->set_min(p,sqr_d_left,i_left,c_left,sqr_d,i,c);
       looked_left = true;
     };
     const auto & look_right = [&]()
@@ -400,7 +399,7 @@ igl::AABB<DerivedV,DIM>::squared_distance(
       int i_right;
       RowVectorDIMS c_right = c;
       Scalar sqr_d_right = m_right->squared_distance(V,Ele,p,sqr_d,i_right,c_right);
-      set_min(p,sqr_d_right,i_right,c_right,sqr_d,i,c);
+      this->set_min(p,sqr_d_right,i_right,c_right,sqr_d,i,c);
       looked_right = true;
     };
 
@@ -804,7 +803,14 @@ igl::AABB<DerivedV,DIM>::intersect_ray(
     // Actually process elements
     assert((Ele.size() == 0 || Ele.cols() == 3) && "Elements should be triangles");
     // Cheesecake way of hitting element
-    return ray_mesh_intersect(origin,dir,V,Ele.row(m_primitive),hits);
+    bool ret = ray_mesh_intersect(origin,dir,V,Ele.row(m_primitive),hits);
+    // Since we only gave ray_mesh_intersect a single face, it will have set
+    // any hits to id=0. Set these to this primitive's id
+    for(auto & hit : hits)
+    {
+      hit.id = m_primitive;
+    }
+    return ret;
   }
   std::vector<igl::Hit> left_hits;
   std::vector<igl::Hit> right_hits;
@@ -854,6 +860,8 @@ igl::AABB<DerivedV,DIM>::intersect_ray(
         ray_mesh_intersect(origin,dir,V,Ele.row(tree->m_primitive),leaf_hit)&&
         leaf_hit.t < hit.t)
       {
+        // correct the id
+        leaf_hit.id = tree->m_primitive;
         hit = leaf_hit;
       }
       continue;
@@ -905,7 +913,9 @@ igl::AABB<DerivedV,DIM>::intersect_ray(
     // Actually process elements
     assert((Ele.size() == 0 || Ele.cols() == 3) && "Elements should be triangles");
     // Cheesecake way of hitting element
-    return ray_mesh_intersect(origin,dir,V,Ele.row(m_primitive),hit);
+    bool ret = ray_mesh_intersect(origin,dir,V,Ele.row(m_primitive),hit);
+    hit.id = m_primitive;
+    return ret;
   }
 
   // Doesn't seem like smartly choosing left before/after right makes a
@@ -947,4 +957,10 @@ template double igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>::squared_
 template double igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 2>::squared_distance(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, Eigen::Matrix<double, 1, 2, 1, 1, 2> const&, int&, Eigen::Matrix<double, 1, 2, 1, 1, 2>&) const;
 template void igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 2>::squared_distance<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&) const;
 template void igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>::squared_distance<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&) const;
+template void igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 2>::init<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, int);
+template void igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>::init<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, int);
+template std::vector<int, std::allocator<int> > igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 2>::find<Eigen::Matrix<double, 1, -1, 1, 1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, -1, 1, 1, -1> > const&, bool) const;
+template void igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 2>::serialize<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::Matrix<int, -1, 1, 0, -1, 1>&, int) const;
+template std::vector<int, std::allocator<int> > igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>::find<Eigen::Matrix<double, 1, -1, 1, 1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, -1, 1, 1, -1> > const&, bool) const;
+template void igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>::serialize<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::Matrix<int, -1, 1, 0, -1, 1>&, int) const;
 #endif

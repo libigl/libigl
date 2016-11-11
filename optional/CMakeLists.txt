@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 2.8.12)
 project(libigl)
 
+set (CMAKE_MODULE_PATH
+#${CMAKE_MODULE_PATH}
+"${PROJECT_SOURCE_DIR}/../shared/cmake")
+
 ### Compilation flags: adapt to your needs ###
 if(MSVC)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP /bigobj /w") ### Enable parallel compilation
@@ -18,7 +22,6 @@ option(LIBIGL_USE_STATIC_LIBRARY "Use LibIGL as static library" ON)
 
 
 option(LIBIGL_WITH_ANTTWEAKBAR      "Use AntTweakBar"    ON)
-option(LIBIGL_WITH_BBW              "Use BBW"            ON)
 find_package(CGAL QUIET)
 option(LIBIGL_WITH_CGAL             "Use CGAL"           "${CGAL_FOUND}")
 option(LIBIGL_WITH_COMISO           "Use CoMiso"         ON)
@@ -31,7 +34,7 @@ option(LIBIGL_WITH_MATLAB           "Use Matlab"         "${MATLAB_FOUND}")
 find_package(MOSEK  QUIET)
 option(LIBIGL_WITH_MOSEK            "Use MOSEK"          "${MOSEK_FOUND}")
 ### Nanogui is off by default because it has many dependencies and generates
-### many issues 
+### many issues
 option(LIBIGL_WITH_NANOGUI          "Use Nanogui menu"   OFF)
 option(LIBIGL_WITH_OPENGL           "Use OpenGL"         ON)
 option(LIBIGL_WITH_PNG              "Use PNG"            ON)

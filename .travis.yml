@@ -45,9 +45,9 @@ matrix:
     - os: osx
       compiler: clang
       script:
-        - brew update
-        - brew upgrade cmake
-        - brew upgrade cgal
+        # - brew update
+        # - brew upgrade cmake
+        # - brew upgrade cgal
         - git submodule update --init --recursive
         - cd python
         - mkdir build

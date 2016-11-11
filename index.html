@@ -39,8 +39,8 @@ like MATLAB.</p>
 just include igl headers (e.g. <code>#include &lt;igl/cotmatrix.h&gt;</code>) and run. Each
 header file contains a single function (e.g. <code>igl/cotmatrix.h</code> contains
 <code>igl::cotmatrix()</code>). Most are tailored to operate on a generic triangle mesh
-stored in an n-by&#8211;3 matrix of vertex positions V and an m-by&#8211;3 matrix of
-triangle indices F.</p>
+stored in an n-by&#8211;3 matrix of vertex positions <code>V</code> and an m-by&#8211;3 matrix of
+triangle indices <code>F</code>.</p>
 
 <p><em>Optionally</em> the library may also be <a href="optional/">pre-compiled</a> into a statically
 linked library, for faster compile times with your projects. This only effects
@@ -58,6 +58,10 @@ and Windows with Visual Studio 2015 Community Edition.</p>
 
 <p>As of version 1.0, libigl includes an introductory
 <a href="http://libigl.github.io/libigl/tutorial/tutorial.html">tutorial</a> that covers many functionalities.</p>
+
+<h2 id="libiglexampleproject">libigl example project</h2>
+
+<p>We provide a <a href="https://github.com/libigl/libigl-example-project">blank project example</a> showing how to use libigl and cmake. Feel free and encouraged to copy or fork this project as a way of starting a new personal project using libigl.</p>
 
 <h2 id="installation">Installation</h2>
 
@@ -213,8 +217,11 @@ Eurographics/ACM Symposium on Geometry Processing software award. Here are a
 few labs/companies/institutions using libigl:</p>
 
 <ul>
+<li><a href="http://www.activision.com">Activision</a></li>
 <li><a href="http://www.adobe.com/technology/">Adobe Research</a></li>
 <li><a href="http://www.ea.com">Electronic Arts, Inc</a></li>
+<li><a href="https://epicgames.com">Epic Games</a></li>
+<li><a href="https://research.google.com">Google Research</a></li>
 <li><a href="http://meshconsultants.ca/">Mesh</a>, consultants, Canada</li>
 <li><a href="http://graphics.pixar.com/research/">Pixar Research</a></li>
 <li><a href="http://esotericsoftware.com/">Spine by Esoteric Software</a> is an animation tool dedicated to 2D characters.</li>
@@ -225,6 +232,7 @@ few labs/companies/institutions using libigl:</p>
 <li>ETH Zurich, <a href="http://igl.ethz.ch/">Interactive Geometry Lab</a> and <a href="http://ait.inf.ethz.ch/">Advanced Technologies Lab</a>, Swizterland</li>
 <li>George Mason University, <a href="http://cs.gmu.edu/~ygingold/">CraGL</a>, USA</li>
 <li><a href="http://www.ust.hk/">Hong Kong University of Science and Technology</a>, Hong Kong</li>
+<li>[Inria](Université Grenoble Alpes), France</li>
 <li><a href="http://www.nii.ac.jp/en/">National Institute of Informatics</a>, Japan</li>
 <li>New York University, <a href="http://mrl.nyu.edu/">Media Research Lab</a>, USA</li>
 <li>NYUPoly, <a href="http://game.engineering.nyu.edu/">Game Innovation Lab</a>, USA</li>
@@ -232,13 +240,16 @@ few labs/companies/institutions using libigl:</p>
 <li><a href="http://www.tudelft.nl/en/">TU Delft</a>, Netherlands</li>
 <li><a href="https://www.tuwien.ac.at/en/tuwien_home/">TU Wien</a>, Austria</li>
 <li><a href="http://www.telecom-paristech.fr/en/formation-et-innovation-dans-le-numerique.html">Telecom ParisTech</a>, Paris, France</li>
+<li><a href="http://www.staff.science.uu.nl/~vaxma001/">Utrecht University</a>, The Netherlands</li>
 <li><a href="http://mtm.ufsc.br/~leo/">Universidade Federal de Santa Catarina</a>, Brazil</li>
 <li><a href="http://vecg.cs.ucl.ac.uk/">University College London</a>, England</li>
 <li><a href="http://vis.berkeley.edu/">University of California Berkeley</a>, USA</li>
 <li><a href="http://www.cam.ac.uk/">University of Cambridge</a>, England</li>
 <li><a href="http://cg.cis.upenn.edu/">University of Pennsylvania</a>, USA</li>
 <li><a href="http://www.cs.utexas.edu/users/evouga/">University of Texas at Austin</a>, USA</li>
+<li><a href="http://dgp.toronto.edu">University of Toronto</a>, Canada</li>
 <li><a href="https://www.csc.uvic.ca/Research/graphics/">University of Victoria</a>, Canada</li>
+<li><a href="http://www.uwec.edu/computer-science/">University of Wisconsin-Eau Claire</a>, USA</li>
 <li><a href="http://www.usi.ch/en">Università della Svizzera Italiana</a>, Switzerland</li>
 <li><a href="http://www.univ-tlse3.fr/">Université Toulouse III Paul Sabatier</a>, France</li>
 <li><a href="http://www.math.zju.edu.cn/cagd/">Zhejiang University</a>, China</li>
@@ -264,7 +275,7 @@ page</a>.</p>
 <h2 id="copyright">Copyright</h2>
 
 <p>2016 Alec Jacobson, Daniele Panozzo, Christian Schüller, Olga Diamanti, Qingnan
-Zhou, Sebastian Koch, Nico Pietroni, Stefan Brugger, Kenshi Takayama, Wenzel Jakob, Nikolas De
+Zhou, Sebastian Koch, Amir Vaxman, Nico Pietroni, Stefan Brugger, Kenshi Takayama, Wenzel Jakob, Nikolas De
 Giorgis, Luigi Rocca, Leonardo Sacht, Kevin Walliman, Olga Sorkine-Hornung, and others.</p>
 
 <p>Please see individual files for appropriate copyright notices.</p>
