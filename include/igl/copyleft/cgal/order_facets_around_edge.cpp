@@ -201,7 +201,7 @@ void igl::copyleft::cgal::order_facets_around_edge(
     return order;
   };
 
-  Eigen::PlainObjectBase<DerivedI> positive_order, negative_order;
+  DerivedI positive_order, negative_order;
   order_facets_around_edge(V, F, s, d, positive_side, positive_order, debug);
   order_facets_around_edge(V, F, s, d, negative_side, negative_order, debug);
   std::vector<size_t> tie_positive_order = index_sort(tie_positive_oriented);
