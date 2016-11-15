@@ -119,6 +119,7 @@ namespace viewer
     // Get/Set the active mesh instance exposed as a copy in data
     IGL_INLINE unsigned int get_active_mesh();
     IGL_INLINE bool set_active_mesh(unsigned int data_id);
+    IGL_INLINE unsigned int get_mesh_count();
 
     // Mesh IO
     IGL_INLINE bool load_mesh_from_file(const char* mesh_file_name);

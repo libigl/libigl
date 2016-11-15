@@ -149,7 +149,9 @@ static void glfw_key_callback(GLFWwindow* window, int key, int scancode, int act
 
 static void glfw_window_position(GLFWwindow* window,int left,int top)
 {
+#ifdef GLFW_VERSION_HIGHER_THAN_3_1
   __viewer->window_maximized = glfwGetWindowAttrib(window,GLFW_MAXIMIZED);
+#endif
 
   if(!__viewer->window_maximized)
   {
@@ -555,6 +557,11 @@ namespace viewer
 #endif
 
     return true;
+  }
+
+  IGL_INLINE unsigned int Viewer::get_mesh_count()
+  {
+    return data_buffer.size();
   }
 
   IGL_INLINE bool Viewer::load_mesh_from_file(const char* mesh_file_name)
@@ -1101,7 +1108,9 @@ namespace viewer
     {
       glfwSetWindowPos(window,window_position(0),window_position(1));
       glfwSetWindowSize(window,window_size(0),window_size(1));
+#ifdef GLFW_VERSION_HIGHER_THAN_3_1
       glfwMaximizeWindow(window);
+#endif
     }
     else
     {
@@ -1116,7 +1125,9 @@ namespace viewer
 
   IGL_INLINE void Viewer::resize(int w,int h)
   {
+#ifdef GLFW_VERSION_HIGHER_THAN_3_1
     window_maximized = glfwGetWindowAttrib(window,GLFW_MAXIMIZED);
+#endif
 
     if(!window_maximized)
     {
@@ -1233,7 +1244,6 @@ namespace viewer
     // Handle retina displays (windows and mac)
     glfwGetFramebufferSize(window, &width, &height);
     
-    glfwSetWindowSizeLimits(window,GLFW_DONT_CARE,GLFW_DONT_CARE,GLFW_DONT_CARE,GLFW_DONT_CARE);
     glfwGetWindowPos(window,&window_position(0),&window_position(1));
     glfwGetWindowSize(window, &window_size(0), &window_size(1));
 

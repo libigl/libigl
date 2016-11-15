@@ -21,7 +21,7 @@
 #elif defined(IGL_HALFEDGE_ITERATOR_DEBUG_1)
   #define HE_ITER_DEBUG(action) std::cout << action << " (" << state.fi << "/" << state.ei << "/" << state.reverse << "/" << state.boundary << ")" << std::endl;
 #else
-  #define HE_ITER_DEBUG()
+  #define HE_ITER_DEBUG(action)
 #endif
 
 namespace igl
