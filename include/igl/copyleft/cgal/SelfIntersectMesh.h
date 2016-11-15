@@ -76,9 +76,6 @@ namespace igl
           typedef CGAL::Constrained_triangulation_face_base_2<Kernel> CTFB_2;
           typedef CGAL::Triangulation_data_structure_2<TVB_2,CTFB_2> TDS_2;
           typedef CGAL::Exact_intersections_tag Itag;
-          typedef CGAL::Constrained_Delaunay_triangulation_2<Kernel,TDS_2,Itag> 
-            CDT_2;
-          typedef CGAL::Constrained_triangulation_plus_2<CDT_2> CDT_plus_2;
           // Axis-align boxes for all-pairs self-intersection detection
           typedef std::vector<Triangle_3> Triangles;
           typedef typename Triangles::iterator TrianglesIterator;
@@ -206,18 +203,6 @@ namespace igl
           //   b  box containing a triangle
           inline void box_intersect(const Box& a, const Box& b);
           inline void process_intersecting_boxes();
-        private:
-          // Compute 2D delaunay triangulation of a given 3d triangle and a list of
-          // intersection objects (points,segments,triangles). CGAL uses an affine
-          // projection rather than an isometric projection, so we're not
-          // guaranteed that the 2D delaunay triangulation here will be a delaunay
-          // triangulation in 3D.
-          //
-          // Inputs:
-          //   A  triangle in 3D
-          //   A_objects_3  updated list of intersection objects for A
-          // Outputs:
-          //   cdt  Contrained delaunay triangulation in projected 2D plane
         public:
           // Getters:
           //const IndexList& get_lIF() const{ return lIF;}

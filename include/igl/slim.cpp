@@ -39,40 +39,38 @@ namespace igl
   namespace slim
   {
     // Definitions of internal functions
-    void compute_surface_gradient_matrix(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F,
-                                         const Eigen::MatrixXd &F1, const Eigen::MatrixXd &F2,
-                                         Eigen::SparseMatrix<double> &D1, Eigen::SparseMatrix<double> &D2);
-    void buildA(igl::SLIMData& s, Eigen::SparseMatrix<double> &A);
-    void buildRhs(igl::SLIMData& s, const Eigen::SparseMatrix<double> &At);
-    void add_soft_constraints(igl::SLIMData& s, Eigen::SparseMatrix<double> &L);
-    double compute_energy(igl::SLIMData& s, Eigen::MatrixXd &V_new);
-    double compute_soft_const_energy(igl::SLIMData& s,
-                                     const Eigen::MatrixXd &V,
-                                     const Eigen::MatrixXi &F,
-                                     Eigen::MatrixXd &V_o);
-    double compute_energy_with_jacobians(igl::SLIMData& s,
-                                         const Eigen::MatrixXd &V,
-                                         const Eigen::MatrixXi &F, const Eigen::MatrixXd &Ji,
-                                         Eigen::MatrixXd &uv, Eigen::VectorXd &areas);
-
-    void solve_weighted_arap(igl::SLIMData& s,
-                             const Eigen::MatrixXd &V,
-                             const Eigen::MatrixXi &F,
-                             Eigen::MatrixXd &uv,
-                             Eigen::VectorXi &soft_b_p,
-                             Eigen::MatrixXd &soft_bc_p);
-
-    void update_weights_and_closest_rotations(igl::SLIMData& s,
-                                              const Eigen::MatrixXd &V,
-                                              const Eigen::MatrixXi &F,
-                                              Eigen::MatrixXd &uv);
-    void compute_jacobians(igl::SLIMData& s, const Eigen::MatrixXd &uv);
-    void build_linear_system(igl::SLIMData& s, Eigen::SparseMatrix<double> &L);
-    void pre_calc(igl::SLIMData& s);
+    IGL_INLINE void compute_surface_gradient_matrix(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F,
+                                                    const Eigen::MatrixXd &F1, const Eigen::MatrixXd &F2,
+                                                    Eigen::SparseMatrix<double> &D1, Eigen::SparseMatrix<double> &D2);
+    IGL_INLINE void buildA(igl::SLIMData& s, Eigen::SparseMatrix<double> &A);
+    IGL_INLINE void buildRhs(igl::SLIMData& s, const Eigen::SparseMatrix<double> &At);
+    IGL_INLINE void add_soft_constraints(igl::SLIMData& s, Eigen::SparseMatrix<double> &L);
+    IGL_INLINE double compute_energy(igl::SLIMData& s, Eigen::MatrixXd &V_new);
+    IGL_INLINE double compute_soft_const_energy(igl::SLIMData& s,
+                                                const Eigen::MatrixXd &V,
+                                                const Eigen::MatrixXi &F,
+                                                Eigen::MatrixXd &V_o);
+    IGL_INLINE double compute_energy_with_jacobians(igl::SLIMData& s,
+                                                    const Eigen::MatrixXd &V,
+                                                    const Eigen::MatrixXi &F, const Eigen::MatrixXd &Ji,
+                                                    Eigen::MatrixXd &uv, Eigen::VectorXd &areas);
+    IGL_INLINE void solve_weighted_arap(igl::SLIMData& s,
+                                        const Eigen::MatrixXd &V,
+                                        const Eigen::MatrixXi &F,
+                                        Eigen::MatrixXd &uv,
+                                        Eigen::VectorXi &soft_b_p,
+                                        Eigen::MatrixXd &soft_bc_p);
+    IGL_INLINE void update_weights_and_closest_rotations( igl::SLIMData& s,
+                                                          const Eigen::MatrixXd &V,
+                                                          const Eigen::MatrixXi &F,
+                                                          Eigen::MatrixXd &uv);
+    IGL_INLINE void compute_jacobians(igl::SLIMData& s, const Eigen::MatrixXd &uv);
+    IGL_INLINE void build_linear_system(igl::SLIMData& s, Eigen::SparseMatrix<double> &L);
+    IGL_INLINE void pre_calc(igl::SLIMData& s);
 
     // Implementation
-    void compute_surface_gradient_matrix(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F,
-                                         const Eigen::MatrixXd &F1, const Eigen::MatrixXd &F2,
+    IGL_INLINE void compute_surface_gradient_matrix(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F,
+                                                    const Eigen::MatrixXd &F1, const Eigen::MatrixXd &F2,
                                          Eigen::SparseMatrix<double> &D1, Eigen::SparseMatrix<double> &D2)
     {
 
@@ -86,7 +84,7 @@ namespace igl
       D2 = F2.col(0).asDiagonal() * Dx + F2.col(1).asDiagonal() * Dy + F2.col(2).asDiagonal() * Dz;
     }
 
-    void compute_jacobians(igl::SLIMData& s, const Eigen::MatrixXd &uv)
+    IGL_INLINE void compute_jacobians(igl::SLIMData& s, const Eigen::MatrixXd &uv)
     {
       if (s.F.cols() == 3)
       {
@@ -110,7 +108,7 @@ namespace igl
       }
     }
 
-    void update_weights_and_closest_rotations(igl::SLIMData& s,
+    IGL_INLINE void update_weights_and_closest_rotations(igl::SLIMData& s,
                                               const Eigen::MatrixXd &V,
                                               const Eigen::MatrixXi &F,
                                               Eigen::MatrixXd &uv)
@@ -385,12 +383,12 @@ namespace igl
 
     }
 
-    void solve_weighted_arap(igl::SLIMData& s,
-                             const Eigen::MatrixXd &V,
-                             const Eigen::MatrixXi &F,
-                             Eigen::MatrixXd &uv,
-                             Eigen::VectorXi &soft_b_p,
-                             Eigen::MatrixXd &soft_bc_p)
+    IGL_INLINE void solve_weighted_arap(igl::SLIMData& s,
+                                        const Eigen::MatrixXd &V,
+                                        const Eigen::MatrixXi &F,
+                                        Eigen::MatrixXd &uv,
+                                        Eigen::VectorXi &soft_b_p,
+                                        Eigen::MatrixXd &soft_bc_p)
     {
       using namespace Eigen;
 
@@ -418,7 +416,7 @@ namespace igl
     }
 
 
-    void pre_calc(igl::SLIMData& s)
+    IGL_INLINE void pre_calc(igl::SLIMData& s)
     {
       if (!s.has_pre_calc)
       {
@@ -477,7 +475,7 @@ namespace igl
       }
     }
 
-    void build_linear_system(igl::SLIMData& s, Eigen::SparseMatrix<double> &L)
+    IGL_INLINE void build_linear_system(igl::SLIMData& s, Eigen::SparseMatrix<double> &L)
     {
       // formula (35) in paper
       Eigen::SparseMatrix<double> A(s.dim * s.dim * s.f_n, s.dim * s.v_n);
@@ -499,7 +497,7 @@ namespace igl
       L.makeCompressed();
     }
 
-    void add_soft_constraints(igl::SLIMData& s, Eigen::SparseMatrix<double> &L)
+    IGL_INLINE void add_soft_constraints(igl::SLIMData& s, Eigen::SparseMatrix<double> &L)
     {
       int v_n = s.v_num;
       for (int d = 0; d < s.dim; d++)
@@ -513,17 +511,17 @@ namespace igl
       }
     }
 
-    double compute_energy(igl::SLIMData& s, Eigen::MatrixXd &V_new)
+    IGL_INLINE double compute_energy(igl::SLIMData& s, Eigen::MatrixXd &V_new)
     {
       compute_jacobians(s,V_new);
       return compute_energy_with_jacobians(s, s.V, s.F, s.Ji, V_new, s.M) +
              compute_soft_const_energy(s, s.V, s.F, V_new);
     }
 
-    double compute_soft_const_energy(igl::SLIMData& s,
-                                     const Eigen::MatrixXd &V,
-                                     const Eigen::MatrixXi &F,
-                                     Eigen::MatrixXd &V_o)
+    IGL_INLINE double compute_soft_const_energy(igl::SLIMData& s,
+                                                const Eigen::MatrixXd &V,
+                                                const Eigen::MatrixXi &F,
+                                                Eigen::MatrixXd &V_o)
     {
       double e = 0;
       for (int i = 0; i < s.b.rows(); i++)
@@ -533,10 +531,10 @@ namespace igl
       return e;
     }
 
-    double compute_energy_with_jacobians(igl::SLIMData& s,
-                                         const Eigen::MatrixXd &V,
-                                         const Eigen::MatrixXi &F, const Eigen::MatrixXd &Ji,
-                                         Eigen::MatrixXd &uv, Eigen::VectorXd &areas)
+    IGL_INLINE double compute_energy_with_jacobians(igl::SLIMData& s,
+                                                    const Eigen::MatrixXd &V,
+                                                    const Eigen::MatrixXi &F, const Eigen::MatrixXd &Ji,
+                                                    Eigen::MatrixXd &uv, Eigen::VectorXd &areas)
     {
 
       double energy = 0;
@@ -659,7 +657,7 @@ namespace igl
       return energy;
     }
 
-    void buildA(igl::SLIMData& s, Eigen::SparseMatrix<double> &A)
+    IGL_INLINE void buildA(igl::SLIMData& s, Eigen::SparseMatrix<double> &A)
     {
       // formula (35) in paper
       std::vector<Eigen::Triplet<double> > IJV;
@@ -785,7 +783,7 @@ namespace igl
       A.setFromTriplets(IJV.begin(), IJV.end());
     }
 
-    void buildRhs(igl::SLIMData& s, const Eigen::SparseMatrix<double> &At)
+    IGL_INLINE void buildRhs(igl::SLIMData& s, const Eigen::SparseMatrix<double> &At)
     {
       Eigen::VectorXd f_rhs(s.dim * s.dim * s.f_n);
       f_rhs.setZero();
