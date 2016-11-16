@@ -34,7 +34,8 @@ IGL_INLINE void igl::point_simplex_squared_distance(
   typedef typename Derivedp::Scalar Scalar;
   typedef typename Eigen::Matrix<Scalar,1,DIM> Vector;
   typedef Vector Point;
-  typedef Eigen::PlainObjectBase<Derivedb> BaryPoint;
+  //typedef Eigen::PlainObjectBase<Derivedb> BaryPoint;
+  typedef Eigen::Matrix<typename Derivedb::Scalar,1,3> BaryPoint;
 
   const auto & Dot = [](const Point & a, const Point & b)->Scalar
   {
@@ -114,15 +115,25 @@ IGL_INLINE void igl::point_simplex_squared_distance(
   assert(Ele.cols() <= 3 && "Only simplices up to triangles are considered");
 
   assert((Derivedb::RowsAtCompileTime == 1 || Derivedb::ColsAtCompileTime == 1) && "bary must be Eigen Vector or Eigen RowVector");
-  bary.resize( Derivedb::RowsAtCompileTime == 1 ? 1 : DIM, Derivedb::ColsAtCompileTime == 1 ? 1 : DIM );
+  assert(
+    ((Derivedb::RowsAtCompileTime == -1 || Derivedb::ColsAtCompileTime == -1) ||
+      (Derivedb::RowsAtCompileTime == Ele.cols() || Derivedb::ColsAtCompileTime == -Ele.cols())
+    ) && "bary must be Dynamic or size of Ele.cols()");
+
+  BaryPoint tmp_bary;
   c = ClosestBaryPtPointTriangle(
     p,
     V.row(Ele(primitive,0)),
+    // modulo is a HACK to handle points, segments and triangles. Because of
+    // this, we need 3d buffer for bary
     V.row(Ele(primitive,1%Ele.cols())),
     V.row(Ele(primitive,2%Ele.cols())),
-    bary);
+    tmp_bary);
+  bary.resize( Derivedb::RowsAtCompileTime == 1 ? 1 : Ele.cols(), Derivedb::ColsAtCompileTime == 1 ? 1 : Ele.cols());
+  bary.head(Ele.cols()) = tmp_bary.head(Ele.cols());
   sqr_d = (p-c).squaredNorm();
 }
+
 template <
   int DIM,
   typename Derivedp,
@@ -138,8 +149,9 @@ IGL_INLINE void igl::point_simplex_squared_distance(
   Derivedsqr_d & sqr_d,
   Eigen::PlainObjectBase<Derivedc> & c)
 {
-    Eigen::PlainObjectBase<Derivedc> b;
-    point_simplex_squared_distance<DIM>( p, V, Ele, primitive, sqr_d, c, b );
+  // Use Dynamic because we don't know Ele.cols() at compile time.
+  Eigen::Matrix<typename Derivedc::Scalar,1,Eigen::Dynamic> b;
+  point_simplex_squared_distance<DIM>( p, V, Ele, primitive, sqr_d, c, b );
 }
 
 #ifdef IGL_STATIC_LIBRARY
