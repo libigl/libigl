@@ -161,5 +161,6 @@ template bool igl::list_to_matrix<double, Eigen::Matrix<double, -1, -1, 0, -1, -
 template bool igl::list_to_matrix<double, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(std::vector<double, std::allocator<double> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
 template bool igl::list_to_matrix<unsigned long, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(std::vector<unsigned long, std::allocator<unsigned long> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
 template bool igl::list_to_matrix<unsigned __int64, class Eigen::Matrix<int, -1, -1, 0, -1, -1> >(class std::vector<unsigned __int64, class std::allocator<unsigned __int64> > const &, class Eigen::PlainObjectBase<class Eigen::Matrix<int, -1, -1, 0, -1, -1> > &);
+template bool igl::list_to_matrix<unsigned __int64,class Eigen::Matrix<long,-1,1,0,-1,1> >(class std::vector<unsigned __int64,class std::allocator<unsigned __int64> > const &,class Eigen::PlainObjectBase<class Eigen::Matrix<long,-1,1,0,-1,1> > &);
 #endif
 #endif
