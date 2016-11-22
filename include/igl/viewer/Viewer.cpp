@@ -33,10 +33,13 @@
 
 #include <Eigen/LU>
 
-#define GLFW_INCLUDE_GLU
-#ifndef _WIN32
-  #define GLFW_INCLUDE_GLCOREARB
+//#define GLFW_INCLUDE_GLU
+#if defined(__APPLE__)
+#define GLFW_INCLUDE_GLCOREARB
+#else
+#define GL_GLEXT_PROTOTYPES
 #endif
+
 #include <GLFW/glfw3.h>
 
 #include <cmath>
@@ -80,7 +83,6 @@ static igl::viewer::Viewer * __viewer;
 static double highdpi = 1;
 static double scroll_x = 0;
 static double scroll_y = 0;
-//static int global_KMod = 0;
 
 static void glfw_mouse_press(GLFWwindow* window, int button, int action, int modifier)
 {
@@ -779,8 +781,8 @@ namespace viewer
         break;
 
 #ifdef IGL_VIEWER_WITH_NANOGUI
-    ngui->refresh();
-    screen->drawWidgets();
+	screen->drawContents();
+	screen->drawWidgets();
 #endif
   }
 
@@ -871,7 +873,7 @@ namespace viewer
 
     glfwWindowHint(GLFW_SAMPLES, 8);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 
     #ifdef __APPLE__
       glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
