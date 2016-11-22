@@ -57,7 +57,11 @@ IGL_INLINE void igl::parula(
   denom = denom==0?1:denom;
   for(int r = 0;r<Z.rows();r++)
   {
-    parula((-min_z+Z(r,0))/denom,C(r,0),C(r,1),C(r,2));
+    parula(
+      (typename DerivedC::Scalar)((-min_z+Z(r,0))/denom),
+      C(r,0),
+      C(r,1),
+      C(r,2));
   }
 }
 
