@@ -12,6 +12,8 @@
 #include "slice_mask.h"
 #include "slice.h"
 #include "connect_boundary_to_infinity.h"
+#include "max_faces_stopping_condition.h"
+#include "shortest_edge_and_midpoint.h"
 #include <iostream>
 
 IGL_INLINE bool igl::decimate(
@@ -28,52 +30,16 @@ IGL_INLINE bool igl::decimate(
   const int orig_m = F.rows();
   // Tracking number of faces
   int m = F.rows();
-  const auto & shortest_edge_and_midpoint = [](
-    const int e,
-    const Eigen::MatrixXd & V,
-    const Eigen::MatrixXi & /*F*/,
-    const Eigen::MatrixXi & E,
-    const Eigen::VectorXi & /*EMAP*/,
-    const Eigen::MatrixXi & /*EF*/,
-    const Eigen::MatrixXi & /*EI*/,
-    double & cost,
-    Eigen::RowVectorXd & p)
-  {
-    cost = (V.row(E(e,0))-V.row(E(e,1))).norm();
-    p = 0.5*(V.row(E(e,0))+V.row(E(e,1)));
-  };
   typedef Eigen::MatrixXd DerivedV;
   typedef Eigen::MatrixXi DerivedF;
   DerivedV VO;
   DerivedF FO;
   igl::connect_boundary_to_infinity(V,F,VO,FO);
-  const auto & max_non_infinite_faces_stopping_condition = 
-    [max_m,orig_m,&m](
-      const Eigen::MatrixXd &,
-      const Eigen::MatrixXi &,
-      const Eigen::MatrixXi &,
-      const Eigen::VectorXi &,
-      const Eigen::MatrixXi &,
-      const Eigen::MatrixXi &,
-      const std::set<std::pair<double,int> > &,
-      const std::vector<std::set<std::pair<double,int> >::iterator > &,
-      const Eigen::MatrixXd &,
-      const int,
-      const int,
-      const int,
-      const int f1,
-      const int f2) -> bool
-    {
-      // Only subtract if we're collapsing a real face
-      if(f1 < orig_m) m-=1;
-      if(f2 < orig_m) m-=1;
-      return m<=(int)max_m;
-    };
   bool ret = decimate(
     VO,
     FO,
     shortest_edge_and_midpoint,
-    max_non_infinite_faces_stopping_condition,
+    max_faces_stopping_condition(m,orig_m,max_m),
     U,
     G,
     J,
