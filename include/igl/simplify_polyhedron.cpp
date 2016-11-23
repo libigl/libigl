@@ -99,6 +99,11 @@ IGL_INLINE void igl::simplify_polyhedron(
   igl::per_face_normals(OV,OF,N);
   Eigen::VectorXi I;
   igl::decimate(
-    OV,OF,perfect,igl::infinite_cost_stopping_condition(perfect),V,F,J,I);
+    OV,OF,
+    perfect,
+    igl::infinite_cost_stopping_condition(perfect),
+    [](const int){return true;},
+    [](const int,const bool){},
+    V,F,J,I);
 }
 

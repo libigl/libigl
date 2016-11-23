@@ -39,8 +39,8 @@ namespace igl
     const Eigen::MatrixXi & EI,
     std::vector<
       std::tuple<Eigen::MatrixXd,Eigen::RowVectorXd,double> > & quadrics);
-};
-#ifndef IGL_STATIC_LIBRAY
+}
+#ifndef IGL_STATIC_LIBRARY
 #  include "per_vertex_point_to_plane_quadrics.cpp"
 #endif
 #endif

@@ -1,4 +1,6 @@
 #include "qslim_optimal_collapse_edge_callbacks.h"
+#include "quadric_binary_plus_operator.h"
+#include <Eigen/LU>
 
 IGL_INLINE void igl::qslim_optimal_collapse_edge_callbacks(
   Eigen::MatrixXi & E,
