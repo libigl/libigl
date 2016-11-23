@@ -70,6 +70,16 @@ namespace igl
   //   cost_and_placement  function computing cost of collapsing an edge and 3d
   //     position where it should be placed:
   //     cost_and_placement(V,F,E,EMAP,EF,EI,cost,placement);
+  //     **If the edges is collapsed** then this function will be called on all
+  //     edges of all faces previously incident on the endpoints of the
+  //     collapsed edge.
+  //   pre_collapse  callback called with index of edge whose collapse is about
+  //     to be attempted. This function should return whether to **proceed**
+  //     with the collapse: returning true means "yes, try to collapse",
+  //     returning false means "No, consider this edge 'uncollapsable', behave
+  //     as if collapse_edge(e) returned false.
+  //   post_collapse  callback called with index of edge whose collapse was
+  //     just attempted and a flag revealing whether this was successful.
   //   Q  queue containing pairs of costs and edge indices
   //   Qit  list of iterators so that Qit[e] --> iterator of edge e in Q
   //   C  #E by dim list of stored placements
@@ -84,6 +94,8 @@ namespace igl
       const Eigen::MatrixXi &,
       double &,
       Eigen::RowVectorXd &)> & cost_and_placement,
+    const std::function<bool(const int )> & pre_collapse,
+    const std::function<void(const int , const bool)> & post_collapse,
     Eigen::MatrixXd & V,
     Eigen::MatrixXi & F,
     Eigen::MatrixXi & E,
@@ -104,6 +116,8 @@ namespace igl
       const Eigen::MatrixXi &,
       double &,
       Eigen::RowVectorXd &)> & cost_and_placement,
+    const std::function<bool(const int )> & pre_collapse,
+    const std::function<void(const int , const bool)> & post_collapse,
     Eigen::MatrixXd & V,
     Eigen::MatrixXi & F,
     Eigen::MatrixXi & E,
