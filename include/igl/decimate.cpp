@@ -35,11 +35,15 @@ IGL_INLINE bool igl::decimate(
   DerivedV VO;
   DerivedF FO;
   igl::connect_boundary_to_infinity(V,F,VO,FO);
+  const auto & always_try = [](const int e)->bool{return true;};
+  const auto & never_care = [](const int e, const bool collapsed){};
   bool ret = decimate(
     VO,
     FO,
     shortest_edge_and_midpoint,
     max_faces_stopping_condition(m,orig_m,max_m),
+    always_try,
+    never_care,
     U,
     G,
     J,
@@ -93,6 +97,61 @@ IGL_INLINE bool igl::decimate(
       const int,
       const int,
       const int)> & stopping_condition,
+  const std::function<bool(const int )> & pre_collapse,
+  const std::function<void(const int , const bool)> & post_collapse,
+  Eigen::MatrixXd & U,
+  Eigen::MatrixXi & G,
+  Eigen::VectorXi & J,
+  Eigen::VectorXi & I
+  )
+{
+  using namespace Eigen;
+  using namespace std;
+  VectorXi EMAP;
+  MatrixXi E,EF,EI;
+  edge_flaps(OF,E,EMAP,EF,EI);
+  return igl::decimate(
+    OV,OF,
+    cost_and_placement,stopping_condition,pre_collapse,post_collapse,
+    E,EMAP,EF,EI,
+    U,G,J,I);
+}
+
+
+IGL_INLINE bool igl::decimate(
+  const Eigen::MatrixXd & OV,
+  const Eigen::MatrixXi & OF,
+  const std::function<void(
+    const int,
+    const Eigen::MatrixXd &,
+    const Eigen::MatrixXi &,
+    const Eigen::MatrixXi &,
+    const Eigen::VectorXi &,
+    const Eigen::MatrixXi &,
+    const Eigen::MatrixXi &,
+    double &,
+    Eigen::RowVectorXd &)> & cost_and_placement,
+  const std::function<bool(
+      const Eigen::MatrixXd &,
+      const Eigen::MatrixXi &,
+      const Eigen::MatrixXi &,
+      const Eigen::VectorXi &,
+      const Eigen::MatrixXi &,
+      const Eigen::MatrixXi &,
+      const std::set<std::pair<double,int> > &,
+      const std::vector<std::set<std::pair<double,int> >::iterator > &,
+      const Eigen::MatrixXd &,
+      const int,
+      const int,
+      const int,
+      const int,
+      const int)> & stopping_condition,
+  const std::function<bool(const int )> & pre_collapse,
+  const std::function<void(const int , const bool)> & post_collapse,
+  const Eigen::MatrixXi & OE,
+  const Eigen::VectorXi & OEMAP,
+  const Eigen::MatrixXi & OEF,
+  const Eigen::MatrixXi & OEI,
   Eigen::MatrixXd & U,
   Eigen::MatrixXi & G,
   Eigen::VectorXi & J,
@@ -104,12 +163,14 @@ IGL_INLINE bool igl::decimate(
   // Working copies
   Eigen::MatrixXd V = OV;
   Eigen::MatrixXi F = OF;
-  VectorXi EMAP;
-  MatrixXi E,EF,EI;
+  Eigen::MatrixXi E = OE;
+  Eigen::VectorXi EMAP = OEMAP;
+  Eigen::MatrixXi EF = OEF;
+  Eigen::MatrixXi EI = OEI;
+
   typedef std::set<std::pair<double,int> > PriorityQueue;
   PriorityQueue Q;
   std::vector<PriorityQueue::iterator > Qit;
-  edge_flaps(F,E,EMAP,EF,EI);
   Qit.resize(E.rows());
   // If an edge were collapsed, we'd collapse it to these points:
   MatrixXd C(E.rows(),V.cols());
@@ -136,7 +197,9 @@ IGL_INLINE bool igl::decimate(
       break;
     }
     int e,e1,e2,f1,f2;
-    if(collapse_edge(cost_and_placement,V,F,E,EMAP,EF,EI,Q,Qit,C,e,e1,e2,f1,f2))
+    if(collapse_edge(
+       cost_and_placement, pre_collapse, post_collapse,
+       V,F,E,EMAP,EF,EI,Q,Qit,C,e,e1,e2,f1,f2))
     {
       if(stopping_condition(V,F,E,EMAP,EF,EI,Q,Qit,C,e,e1,e2,f1,f2))
       {

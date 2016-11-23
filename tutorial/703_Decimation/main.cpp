@@ -75,7 +75,11 @@ int main(int argc, char * argv[])
       const int max_iter = std::ceil(0.01*Q.size());
       for(int j = 0;j<max_iter;j++)
       {
-        if(!collapse_edge(shortest_edge_and_midpoint,V,F,E,EMAP,EF,EI,Q,Qit,C))
+        const auto & always_try = [](const int e)->bool{return true;};
+        const auto & never_care = [](const int e, const bool collapsed){};
+        if(!collapse_edge(
+          shortest_edge_and_midpoint,always_try,never_care,
+          V,F,E,EMAP,EF,EI,Q,Qit,C))
         {
           break;
         }
