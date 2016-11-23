@@ -20,12 +20,16 @@ namespace igl
   // Inputs:
   //   m  reference to working variable initially should be set to current
   //    number of faces.
+  //   orig_m  number (size) of original face list _**not**_ including any
+  //     faces added to handle phony boundary faces connecting to point at
+  //     infinity. For closed meshes it's safe to set this to F.rows()
   //   max_m  maximum number of faces
   // Outputs:
   //   stopping_condition
   //
   IGL_INLINE void max_faces_stopping_condition(
     int & m,
+    const int orig_m,
     const int max_m,
     std::function<bool(
       const Eigen::MatrixXd &,
@@ -60,6 +64,7 @@ namespace igl
       const int)> 
     max_faces_stopping_condition(
       int & m,
+      const int orign_m,
       const int max_m);
 }
 

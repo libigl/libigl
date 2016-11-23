@@ -2,6 +2,7 @@
 
 IGL_INLINE void igl::max_faces_stopping_condition(
   int & m,
+  const int orig_m,
   const int max_m,
   std::function<bool(
     const Eigen::MatrixXd &,
@@ -20,7 +21,7 @@ IGL_INLINE void igl::max_faces_stopping_condition(
     const int)> & stopping_condition)
 {
   stopping_condition = 
-    [max_m,&m](
+    [orig_m,max_m,&m](
     const Eigen::MatrixXd &,
     const Eigen::MatrixXi &,
     const Eigen::MatrixXi &,
@@ -33,10 +34,12 @@ IGL_INLINE void igl::max_faces_stopping_condition(
     const int,
     const int,
     const int,
-    const int,
-    const int)->bool
+    const int f1,
+    const int f2)->bool
     {
-      m-=2;
+      // Only subtract if we're collapsing a real face
+      if(f1 < orig_m) m-=1;
+      if(f2 < orig_m) m-=1;
       return m<=(int)max_m;
     };
 }
@@ -59,6 +62,7 @@ IGL_INLINE
     const int)> 
   igl::max_faces_stopping_condition(
     int & m,
+    const int orig_m,
     const int max_m)
 {
   std::function<bool(
@@ -77,6 +81,6 @@ IGL_INLINE
     const int,
     const int)> stopping_condition;
   max_faces_stopping_condition(
-      m,max_m,stopping_condition);
+      m,orig_m,max_m,stopping_condition);
   return stopping_condition;
 }
