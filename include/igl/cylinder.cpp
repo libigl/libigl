@@ -1,7 +1,7 @@
 #include "cylinder.h"
+#include "PI.h"
 #include <cassert>
 #include <cmath>
-#include <cstddef>
 
 template <typename DerivedV, typename DerivedF>
 IGL_INLINE void igl::cylinder(
@@ -16,8 +16,8 @@ IGL_INLINE void igl::cylinder(
   typedef typename DerivedV::Scalar Scalar;
   for(int th = 0;th<axis_devisions;th++)
   {
-    Scalar x = cos(2.*M_PI*Scalar(th)/Scalar(axis_devisions));
-    Scalar y = sin(2.*M_PI*Scalar(th)/Scalar(axis_devisions));
+    Scalar x = cos(2.*igl::PI*Scalar(th)/Scalar(axis_devisions));
+    Scalar y = sin(2.*igl::PI*Scalar(th)/Scalar(axis_devisions));
     for(int h = 0;h<height_devisions;h++)
     {
       Scalar z = Scalar(h)/Scalar(height_devisions-1);
