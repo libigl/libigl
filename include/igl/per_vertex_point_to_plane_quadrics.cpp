@@ -21,7 +21,10 @@ IGL_INLINE void igl::per_vertex_point_to_plane_quadrics(
   //std::vector<Quadric> face_quadrics(F.rows());
   // Initialize each vertex quadric to zeros
   quadrics.resize(
-    V.rows(),{Eigen::MatrixXd::Zero(dim,dim),Eigen::RowVectorXd::Zero(dim),0});
+    V.rows(),
+    // gcc <=4.8 can't handle initializer lists correctly
+    (Quadric)
+    {Eigen::MatrixXd::Zero(dim,dim),Eigen::RowVectorXd::Zero(dim),0});
   Eigen::MatrixXd I = Eigen::MatrixXd::Identity(dim,dim);
   // Rather initial with zeros, initial with a small amount of energy pull
   // toward original vertex position
@@ -76,7 +79,9 @@ IGL_INLINE void igl::per_vertex_point_to_plane_quadrics(
         b += p.dot(ei)*ei;
         c += -pow(p.dot(ei),2);
       }
-      return { weight*A, weight*b, weight*c };
+      // gcc <=4.8 can't handle initializer lists correctly: needs explicit
+      // cast
+      return (Quadric){ weight*A, weight*b, weight*c };
     };
     if(infinite_corner == -1)
     {
