@@ -5,6 +5,7 @@
 #include <functional>
 #include <vector>
 #include <tuple>
+#include <set>
 namespace igl
 {
 
