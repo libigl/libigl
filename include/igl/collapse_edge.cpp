@@ -165,8 +165,92 @@ IGL_INLINE bool igl::collapse_edge(
     const Eigen::MatrixXi &,
     double &,
     Eigen::RowVectorXd &)> & cost_and_placement,
-  const std::function<bool(const int )> & pre_collapse,
-  const std::function<void(const int , const bool)> & post_collapse,
+  Eigen::MatrixXd & V,
+  Eigen::MatrixXi & F,
+  Eigen::MatrixXi & E,
+  Eigen::VectorXi & EMAP,
+  Eigen::MatrixXi & EF,
+  Eigen::MatrixXi & EI,
+  std::set<std::pair<double,int> > & Q,
+  std::vector<std::set<std::pair<double,int> >::iterator > & Qit,
+  Eigen::MatrixXd & C)
+{
+  int e,e1,e2,f1,f2;
+  const auto always_try = [](
+    const Eigen::MatrixXd &                                         ,/*V*/
+    const Eigen::MatrixXi &                                         ,/*F*/
+    const Eigen::MatrixXi &                                         ,/*E*/
+    const Eigen::VectorXi &                                         ,/*EMAP*/
+    const Eigen::MatrixXi &                                         ,/*EF*/
+    const Eigen::MatrixXi &                                         ,/*EI*/
+    const std::set<std::pair<double,int> > &                        ,/*Q*/
+    const std::vector<std::set<std::pair<double,int> >::iterator > &,/*Qit*/
+    const Eigen::MatrixXd &                                         ,/*C*/
+    const int                                                        /*e*/
+    ) -> bool { return true;};
+  const auto never_care = [](
+    const Eigen::MatrixXd &                                         ,   /*V*/
+    const Eigen::MatrixXi &                                         ,   /*F*/
+    const Eigen::MatrixXi &                                         ,   /*E*/
+    const Eigen::VectorXi &                                         ,/*EMAP*/
+    const Eigen::MatrixXi &                                         ,  /*EF*/
+    const Eigen::MatrixXi &                                         ,  /*EI*/
+    const std::set<std::pair<double,int> > &                        ,   /*Q*/
+    const std::vector<std::set<std::pair<double,int> >::iterator > &, /*Qit*/
+    const Eigen::MatrixXd &                                         ,   /*C*/
+    const int                                                       ,   /*e*/
+    const int                                                       ,  /*e1*/
+    const int                                                       ,  /*e2*/
+    const int                                                       ,  /*f1*/
+    const int                                                       ,  /*f2*/
+    const bool                                                  /*collapsed*/
+    )-> void { };
+  return 
+    collapse_edge(
+      cost_and_placement,always_try,never_care,
+      V,F,E,EMAP,EF,EI,Q,Qit,C,e,e1,e2,f1,f2);
+}
+
+IGL_INLINE bool igl::collapse_edge(
+  const std::function<void(
+    const int,
+    const Eigen::MatrixXd &,
+    const Eigen::MatrixXi &,
+    const Eigen::MatrixXi &,
+    const Eigen::VectorXi &,
+    const Eigen::MatrixXi &,
+    const Eigen::MatrixXi &,
+    double &,
+    Eigen::RowVectorXd &)> & cost_and_placement,
+  const std::function<bool(
+    const Eigen::MatrixXd &                                         ,/*V*/
+    const Eigen::MatrixXi &                                         ,/*F*/
+    const Eigen::MatrixXi &                                         ,/*E*/
+    const Eigen::VectorXi &                                         ,/*EMAP*/
+    const Eigen::MatrixXi &                                         ,/*EF*/
+    const Eigen::MatrixXi &                                         ,/*EI*/
+    const std::set<std::pair<double,int> > &                        ,/*Q*/
+    const std::vector<std::set<std::pair<double,int> >::iterator > &,/*Qit*/
+    const Eigen::MatrixXd &                                         ,/*C*/
+    const int                                                        /*e*/
+    )> & pre_collapse,
+  const std::function<void(
+    const Eigen::MatrixXd &                                         ,   /*V*/
+    const Eigen::MatrixXi &                                         ,   /*F*/
+    const Eigen::MatrixXi &                                         ,   /*E*/
+    const Eigen::VectorXi &                                         ,/*EMAP*/
+    const Eigen::MatrixXi &                                         ,  /*EF*/
+    const Eigen::MatrixXi &                                         ,  /*EI*/
+    const std::set<std::pair<double,int> > &                        ,   /*Q*/
+    const std::vector<std::set<std::pair<double,int> >::iterator > &, /*Qit*/
+    const Eigen::MatrixXd &                                         ,   /*C*/
+    const int                                                       ,   /*e*/
+    const int                                                       ,  /*e1*/
+    const int                                                       ,  /*e2*/
+    const int                                                       ,  /*f1*/
+    const int                                                       ,  /*f2*/
+    const bool                                                  /*collapsed*/
+    )> & post_collapse,
   Eigen::MatrixXd & V,
   Eigen::MatrixXi & F,
   Eigen::MatrixXi & E,
@@ -196,8 +280,35 @@ IGL_INLINE bool igl::collapse_edge(
     const Eigen::MatrixXi &,
     double &,
     Eigen::RowVectorXd &)> & cost_and_placement,
-  const std::function<bool(const int )> & pre_collapse,
-  const std::function<void(const int , const bool)> & post_collapse,
+  const std::function<bool(
+    const Eigen::MatrixXd &                                         ,/*V*/
+    const Eigen::MatrixXi &                                         ,/*F*/
+    const Eigen::MatrixXi &                                         ,/*E*/
+    const Eigen::VectorXi &                                         ,/*EMAP*/
+    const Eigen::MatrixXi &                                         ,/*EF*/
+    const Eigen::MatrixXi &                                         ,/*EI*/
+    const std::set<std::pair<double,int> > &                        ,/*Q*/
+    const std::vector<std::set<std::pair<double,int> >::iterator > &,/*Qit*/
+    const Eigen::MatrixXd &                                         ,/*C*/
+    const int                                                        /*e*/
+    )> & pre_collapse,
+  const std::function<void(
+    const Eigen::MatrixXd &                                         ,   /*V*/
+    const Eigen::MatrixXi &                                         ,   /*F*/
+    const Eigen::MatrixXi &                                         ,   /*E*/
+    const Eigen::VectorXi &                                         ,/*EMAP*/
+    const Eigen::MatrixXi &                                         ,  /*EF*/
+    const Eigen::MatrixXi &                                         ,  /*EI*/
+    const std::set<std::pair<double,int> > &                        ,   /*Q*/
+    const std::vector<std::set<std::pair<double,int> >::iterator > &, /*Qit*/
+    const Eigen::MatrixXd &                                         ,   /*C*/
+    const int                                                       ,   /*e*/
+    const int                                                       ,  /*e1*/
+    const int                                                       ,  /*e2*/
+    const int                                                       ,  /*f1*/
+    const int                                                       ,  /*f2*/
+    const bool                                                  /*collapsed*/
+    )> & post_collapse,
   Eigen::MatrixXd & V,
   Eigen::MatrixXi & F,
   Eigen::MatrixXi & E,
@@ -232,7 +343,7 @@ IGL_INLINE bool igl::collapse_edge(
   std::vector<int> Nd = circulation(e,false,F,E,EMAP,EF,EI);
   N.insert(N.begin(),Nd.begin(),Nd.end());
   bool collapsed = true;
-  if(pre_collapse(e))
+  if(pre_collapse(V,F,E,EMAP,EF,EI,Q,Qit,C,e))
   {
     collapsed = collapse_edge(e,C.row(e),V,F,E,EMAP,EF,EI,e1,e2,f1,f2);
   }else
@@ -240,7 +351,7 @@ IGL_INLINE bool igl::collapse_edge(
     // Aborted by pre collapse callback
     collapsed = false;
   }
-  post_collapse(e,collapsed);
+  post_collapse(V,F,E,EMAP,EF,EI,Q,Qit,C,e,e1,e2,f1,f2,collapsed);
   if(collapsed)
   {
     // Erase the two, other collapsed edges

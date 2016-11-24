@@ -14,7 +14,6 @@
 #include "connect_boundary_to_infinity.h"
 #include "max_faces_stopping_condition.h"
 #include "shortest_edge_and_midpoint.h"
-#include <iostream>
 
 IGL_INLINE bool igl::decimate(
   const Eigen::MatrixXd & V,
@@ -25,7 +24,6 @@ IGL_INLINE bool igl::decimate(
   Eigen::VectorXi & J,
   Eigen::VectorXi & I)
 {
-
   // Original number of faces
   const int orig_m = F.rows();
   // Tracking number of faces
@@ -35,15 +33,11 @@ IGL_INLINE bool igl::decimate(
   DerivedV VO;
   DerivedF FO;
   igl::connect_boundary_to_infinity(V,F,VO,FO);
-  const auto & always_try = [](const int e)->bool{return true;};
-  const auto & never_care = [](const int e, const bool collapsed){};
   bool ret = decimate(
     VO,
     FO,
     shortest_edge_and_midpoint,
     max_faces_stopping_condition(m,orig_m,max_m),
-    always_try,
-    never_care,
     U,
     G,
     J,
@@ -97,8 +91,102 @@ IGL_INLINE bool igl::decimate(
       const int,
       const int,
       const int)> & stopping_condition,
-  const std::function<bool(const int )> & pre_collapse,
-  const std::function<void(const int , const bool)> & post_collapse,
+  Eigen::MatrixXd & U,
+  Eigen::MatrixXi & G,
+  Eigen::VectorXi & J,
+  Eigen::VectorXi & I
+  )
+{
+  const auto always_try = [](
+    const Eigen::MatrixXd &                                         ,/*V*/
+    const Eigen::MatrixXi &                                         ,/*F*/
+    const Eigen::MatrixXi &                                         ,/*E*/
+    const Eigen::VectorXi &                                         ,/*EMAP*/
+    const Eigen::MatrixXi &                                         ,/*EF*/
+    const Eigen::MatrixXi &                                         ,/*EI*/
+    const std::set<std::pair<double,int> > &                        ,/*Q*/
+    const std::vector<std::set<std::pair<double,int> >::iterator > &,/*Qit*/
+    const Eigen::MatrixXd &                                         ,/*C*/
+    const int                                                        /*e*/
+    ) -> bool { return true;};
+  const auto never_care = [](
+    const Eigen::MatrixXd &                                         ,   /*V*/
+    const Eigen::MatrixXi &                                         ,   /*F*/
+    const Eigen::MatrixXi &                                         ,   /*E*/
+    const Eigen::VectorXi &                                         ,/*EMAP*/
+    const Eigen::MatrixXi &                                         ,  /*EF*/
+    const Eigen::MatrixXi &                                         ,  /*EI*/
+    const std::set<std::pair<double,int> > &                        ,   /*Q*/
+    const std::vector<std::set<std::pair<double,int> >::iterator > &, /*Qit*/
+    const Eigen::MatrixXd &                                         ,   /*C*/
+    const int                                                       ,   /*e*/
+    const int                                                       ,  /*e1*/
+    const int                                                       ,  /*e2*/
+    const int                                                       ,  /*f1*/
+    const int                                                       ,  /*f2*/
+    const bool                                                  /*collapsed*/
+    )-> void { };
+  return igl::decimate(
+    OV,OF,cost_and_placement,stopping_condition,always_try,never_care,U,G,J,I);
+}
+
+IGL_INLINE bool igl::decimate(
+  const Eigen::MatrixXd & OV,
+  const Eigen::MatrixXi & OF,
+  const std::function<void(
+    const int,
+    const Eigen::MatrixXd &,
+    const Eigen::MatrixXi &,
+    const Eigen::MatrixXi &,
+    const Eigen::VectorXi &,
+    const Eigen::MatrixXi &,
+    const Eigen::MatrixXi &,
+    double &,
+    Eigen::RowVectorXd &)> & cost_and_placement,
+  const std::function<bool(
+      const Eigen::MatrixXd &,
+      const Eigen::MatrixXi &,
+      const Eigen::MatrixXi &,
+      const Eigen::VectorXi &,
+      const Eigen::MatrixXi &,
+      const Eigen::MatrixXi &,
+      const std::set<std::pair<double,int> > &,
+      const std::vector<std::set<std::pair<double,int> >::iterator > &,
+      const Eigen::MatrixXd &,
+      const int,
+      const int,
+      const int,
+      const int,
+      const int)> & stopping_condition,
+    const std::function<bool(
+      const Eigen::MatrixXd &                                         ,/*V*/
+      const Eigen::MatrixXi &                                         ,/*F*/
+      const Eigen::MatrixXi &                                         ,/*E*/
+      const Eigen::VectorXi &                                         ,/*EMAP*/
+      const Eigen::MatrixXi &                                         ,/*EF*/
+      const Eigen::MatrixXi &                                         ,/*EI*/
+      const std::set<std::pair<double,int> > &                        ,/*Q*/
+      const std::vector<std::set<std::pair<double,int> >::iterator > &,/*Qit*/
+      const Eigen::MatrixXd &                                         ,/*C*/
+      const int                                                        /*e*/
+      )> & pre_collapse,
+    const std::function<void(
+      const Eigen::MatrixXd &                                         ,   /*V*/
+      const Eigen::MatrixXi &                                         ,   /*F*/
+      const Eigen::MatrixXi &                                         ,   /*E*/
+      const Eigen::VectorXi &                                         ,/*EMAP*/
+      const Eigen::MatrixXi &                                         ,  /*EF*/
+      const Eigen::MatrixXi &                                         ,  /*EI*/
+      const std::set<std::pair<double,int> > &                        ,   /*Q*/
+      const std::vector<std::set<std::pair<double,int> >::iterator > &, /*Qit*/
+      const Eigen::MatrixXd &                                         ,   /*C*/
+      const int                                                       ,   /*e*/
+      const int                                                       ,  /*e1*/
+      const int                                                       ,  /*e2*/
+      const int                                                       ,  /*f1*/
+      const int                                                       ,  /*f2*/
+      const bool                                                  /*collapsed*/
+      )> & post_collapse,
   Eigen::MatrixXd & U,
   Eigen::MatrixXi & G,
   Eigen::VectorXi & J,
@@ -146,8 +234,35 @@ IGL_INLINE bool igl::decimate(
       const int,
       const int,
       const int)> & stopping_condition,
-  const std::function<bool(const int )> & pre_collapse,
-  const std::function<void(const int , const bool)> & post_collapse,
+    const std::function<bool(
+      const Eigen::MatrixXd &                                         ,/*V*/
+      const Eigen::MatrixXi &                                         ,/*F*/
+      const Eigen::MatrixXi &                                         ,/*E*/
+      const Eigen::VectorXi &                                         ,/*EMAP*/
+      const Eigen::MatrixXi &                                         ,/*EF*/
+      const Eigen::MatrixXi &                                         ,/*EI*/
+      const std::set<std::pair<double,int> > &                        ,/*Q*/
+      const std::vector<std::set<std::pair<double,int> >::iterator > &,/*Qit*/
+      const Eigen::MatrixXd &                                         ,/*C*/
+      const int                                                        /*e*/
+      )> & pre_collapse,
+    const std::function<void(
+      const Eigen::MatrixXd &                                         ,   /*V*/
+      const Eigen::MatrixXi &                                         ,   /*F*/
+      const Eigen::MatrixXi &                                         ,   /*E*/
+      const Eigen::VectorXi &                                         ,/*EMAP*/
+      const Eigen::MatrixXi &                                         ,  /*EF*/
+      const Eigen::MatrixXi &                                         ,  /*EI*/
+      const std::set<std::pair<double,int> > &                        ,   /*Q*/
+      const std::vector<std::set<std::pair<double,int> >::iterator > &, /*Qit*/
+      const Eigen::MatrixXd &                                         ,   /*C*/
+      const int                                                       ,   /*e*/
+      const int                                                       ,  /*e1*/
+      const int                                                       ,  /*e2*/
+      const int                                                       ,  /*f1*/
+      const int                                                       ,  /*f2*/
+      const bool                                                  /*collapsed*/
+      )> & post_collapse,
   const Eigen::MatrixXi & OE,
   const Eigen::VectorXi & OEMAP,
   const Eigen::MatrixXi & OEF,
@@ -158,6 +273,8 @@ IGL_INLINE bool igl::decimate(
   Eigen::VectorXi & I
   )
 {
+
+  // Decimate 1
   using namespace Eigen;
   using namespace std;
   // Working copies
@@ -167,7 +284,6 @@ IGL_INLINE bool igl::decimate(
   Eigen::VectorXi EMAP = OEMAP;
   Eigen::MatrixXi EF = OEF;
   Eigen::MatrixXi EI = OEI;
-
   typedef std::set<std::pair<double,int> > PriorityQueue;
   PriorityQueue Q;
   std::vector<PriorityQueue::iterator > Qit;
@@ -182,9 +298,9 @@ IGL_INLINE bool igl::decimate(
     C.row(e) = p;
     Qit[e] = Q.insert(std::pair<double,int>(cost,e)).first;
   }
-
   int prev_e = -1;
   bool clean_finish = false;
+
   while(true)
   {
     if(Q.empty())

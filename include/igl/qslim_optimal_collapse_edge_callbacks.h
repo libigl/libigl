@@ -37,8 +37,35 @@ namespace igl
       const Eigen::MatrixXi &,
       double &,
       Eigen::RowVectorXd &)> & cost_and_placement,
-    std::function<bool(const int)> & pre_collapse,
-    std::function<void(const int,const bool)> & post_collapse);
+    std::function<bool(
+      const Eigen::MatrixXd &                                         ,/*V*/
+      const Eigen::MatrixXi &                                         ,/*F*/
+      const Eigen::MatrixXi &                                         ,/*E*/
+      const Eigen::VectorXi &                                         ,/*EMAP*/
+      const Eigen::MatrixXi &                                         ,/*EF*/
+      const Eigen::MatrixXi &                                         ,/*EI*/
+      const std::set<std::pair<double,int> > &                        ,/*Q*/
+      const std::vector<std::set<std::pair<double,int> >::iterator > &,/*Qit*/
+      const Eigen::MatrixXd &                                         ,/*C*/
+      const int                                                        /*e*/
+      )> & pre_collapse,
+    std::function<void(
+      const Eigen::MatrixXd &                                         ,   /*V*/
+      const Eigen::MatrixXi &                                         ,   /*F*/
+      const Eigen::MatrixXi &                                         ,   /*E*/
+      const Eigen::VectorXi &                                         ,/*EMAP*/
+      const Eigen::MatrixXi &                                         ,  /*EF*/
+      const Eigen::MatrixXi &                                         ,  /*EI*/
+      const std::set<std::pair<double,int> > &                        ,   /*Q*/
+      const std::vector<std::set<std::pair<double,int> >::iterator > &, /*Qit*/
+      const Eigen::MatrixXd &                                         ,   /*C*/
+      const int                                                       ,   /*e*/
+      const int                                                       ,  /*e1*/
+      const int                                                       ,  /*e2*/
+      const int                                                       ,  /*f1*/
+      const int                                                       ,  /*f2*/
+      const bool                                                  /*collapsed*/
+      )> & post_collapse);
 }
 #ifndef IGL_STATIC_LIBRARY
 #  include "qslim_optimal_collapse_edge_callbacks.cpp"

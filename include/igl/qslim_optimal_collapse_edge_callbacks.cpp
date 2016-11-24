@@ -18,8 +18,35 @@ IGL_INLINE void igl::qslim_optimal_collapse_edge_callbacks(
     const Eigen::MatrixXi &,
     double &,
     Eigen::RowVectorXd &)> & cost_and_placement,
-  std::function<bool(const int)> & pre_collapse,
-  std::function<void(const int,const bool)> & post_collapse)
+  std::function<bool(
+    const Eigen::MatrixXd &                                         ,/*V*/
+    const Eigen::MatrixXi &                                         ,/*F*/
+    const Eigen::MatrixXi &                                         ,/*E*/
+    const Eigen::VectorXi &                                         ,/*EMAP*/
+    const Eigen::MatrixXi &                                         ,/*EF*/
+    const Eigen::MatrixXi &                                         ,/*EI*/
+    const std::set<std::pair<double,int> > &                        ,/*Q*/
+    const std::vector<std::set<std::pair<double,int> >::iterator > &,/*Qit*/
+    const Eigen::MatrixXd &                                         ,/*C*/
+    const int                                                        /*e*/
+    )> & pre_collapse,
+  std::function<void(
+    const Eigen::MatrixXd &                                         ,   /*V*/
+    const Eigen::MatrixXi &                                         ,   /*F*/
+    const Eigen::MatrixXi &                                         ,   /*E*/
+    const Eigen::VectorXi &                                         ,/*EMAP*/
+    const Eigen::MatrixXi &                                         ,  /*EF*/
+    const Eigen::MatrixXi &                                         ,  /*EI*/
+    const std::set<std::pair<double,int> > &                        ,   /*Q*/
+    const std::vector<std::set<std::pair<double,int> >::iterator > &, /*Qit*/
+    const Eigen::MatrixXd &                                         ,   /*C*/
+    const int                                                       ,   /*e*/
+    const int                                                       ,  /*e1*/
+    const int                                                       ,  /*e2*/
+    const int                                                       ,  /*f1*/
+    const int                                                       ,  /*f2*/
+    const bool                                                  /*collapsed*/
+    )> & post_collapse)
 {
   typedef std::tuple<Eigen::MatrixXd,Eigen::RowVectorXd,double> Quadric;
   cost_and_placement = [&quadrics,&v1,&v2](
@@ -47,10 +74,22 @@ IGL_INLINE void igl::qslim_optimal_collapse_edge_callbacks(
     if(isinf(cost) || cost!=cost)
     {
       cost = std::numeric_limits<double>::infinity();
+      // Prevent NaNs. Actually NaNs might be useful for debugging.
+      p.setConstant(0);
     }
   };
   // Remember endpoints
-  pre_collapse = [&v1,&v2,&E](const int e)->bool
+  pre_collapse = [&v1,&v2](
+    const Eigen::MatrixXd &                                         ,/*V*/
+    const Eigen::MatrixXi &                                         ,/*F*/
+    const Eigen::MatrixXi & E,
+    const Eigen::VectorXi &                                         ,/*EMAP*/
+    const Eigen::MatrixXi &                                         ,/*EF*/
+    const Eigen::MatrixXi &                                         ,/*EI*/
+    const std::set<std::pair<double,int> > &                        ,/*Q*/
+    const std::vector<std::set<std::pair<double,int> >::iterator > &,/*Qit*/
+    const Eigen::MatrixXd &                                         ,/*C*/
+    const int e)->bool
   {
     v1 = E(e,0);
     v2 = E(e,1);
@@ -58,8 +97,22 @@ IGL_INLINE void igl::qslim_optimal_collapse_edge_callbacks(
   };
   // update quadric
   post_collapse = [&v1,&v2,&quadrics](
-    const int e, 
-    const bool collapsed)
+      const Eigen::MatrixXd &                                         ,   /*V*/
+      const Eigen::MatrixXi &                                         ,   /*F*/
+      const Eigen::MatrixXi &                                         ,   /*E*/
+      const Eigen::VectorXi &                                         ,/*EMAP*/
+      const Eigen::MatrixXi &                                         ,  /*EF*/
+      const Eigen::MatrixXi &                                         ,  /*EI*/
+      const std::set<std::pair<double,int> > &                        ,   /*Q*/
+      const std::vector<std::set<std::pair<double,int> >::iterator > &, /*Qit*/
+      const Eigen::MatrixXd &                                         ,   /*C*/
+      const int                                                       ,   /*e*/
+      const int                                                       ,  /*e1*/
+      const int                                                       ,  /*e2*/
+      const int                                                       ,  /*f1*/
+      const int                                                       ,  /*f2*/
+      const bool                                                  collapsed
+      )->void
   {
     if(collapsed)
     {

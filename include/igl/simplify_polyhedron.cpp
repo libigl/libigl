@@ -102,8 +102,6 @@ IGL_INLINE void igl::simplify_polyhedron(
     OV,OF,
     perfect,
     igl::infinite_cost_stopping_condition(perfect),
-    [](const int){return true;},
-    [](const int,const bool){},
     V,F,J,I);
 }
 
