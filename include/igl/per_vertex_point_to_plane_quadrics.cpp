@@ -124,7 +124,7 @@ IGL_INLINE void igl::per_vertex_point_to_plane_quadrics(
         "Edge flaps not agreeing on shared edge");
       // Edge vector on opposite face
       const Eigen::RowVectorXd eu = V.row(F(n,nc)) - p;
-      assert(!isinf(eu(0)));
+      assert(!std::isinf(eu(0)));
       // Matrix with vectors spanning plane as columns
       Eigen::MatrixXd A(ev.size(),2);
       A<<ev.transpose(),eu.transpose();
