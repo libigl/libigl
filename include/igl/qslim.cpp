@@ -22,6 +22,7 @@ IGL_INLINE bool igl::qslim(
   Eigen::VectorXi & I)
 {
   using namespace igl;
+
   // Original number of faces
   const int orig_m = F.rows();
   // Tracking number of faces
@@ -52,8 +53,35 @@ IGL_INLINE bool igl::qslim(
     const Eigen::MatrixXi &,
     double &,
     Eigen::RowVectorXd &)> cost_and_placement;
-  std::function<bool(const int)> pre_collapse;
-  std::function<void(const int,const bool)> post_collapse;
+  std::function<bool(
+    const Eigen::MatrixXd &                                         ,/*V*/
+    const Eigen::MatrixXi &                                         ,/*F*/
+    const Eigen::MatrixXi &                                         ,/*E*/
+    const Eigen::VectorXi &                                         ,/*EMAP*/
+    const Eigen::MatrixXi &                                         ,/*EF*/
+    const Eigen::MatrixXi &                                         ,/*EI*/
+    const std::set<std::pair<double,int> > &                        ,/*Q*/
+    const std::vector<std::set<std::pair<double,int> >::iterator > &,/*Qit*/
+    const Eigen::MatrixXd &                                         ,/*C*/
+    const int                                                        /*e*/
+    )> pre_collapse;
+  std::function<void(
+    const Eigen::MatrixXd &                                         ,   /*V*/
+    const Eigen::MatrixXi &                                         ,   /*F*/
+    const Eigen::MatrixXi &                                         ,   /*E*/
+    const Eigen::VectorXi &                                         ,/*EMAP*/
+    const Eigen::MatrixXi &                                         ,  /*EF*/
+    const Eigen::MatrixXi &                                         ,  /*EI*/
+    const std::set<std::pair<double,int> > &                        ,   /*Q*/
+    const std::vector<std::set<std::pair<double,int> >::iterator > &, /*Qit*/
+    const Eigen::MatrixXd &                                         ,   /*C*/
+    const int                                                       ,   /*e*/
+    const int                                                       ,  /*e1*/
+    const int                                                       ,  /*e2*/
+    const int                                                       ,  /*f1*/
+    const int                                                       ,  /*f2*/
+    const bool                                                  /*collapsed*/
+    )> post_collapse;
   qslim_optimal_collapse_edge_callbacks(
     E,quadrics,v1,v2, cost_and_placement, pre_collapse,post_collapse);
   // Call to greedy decimator
@@ -72,5 +100,6 @@ IGL_INLINE bool igl::qslim(
   Eigen::VectorXi _1,I2;
   igl::remove_unreferenced(Eigen::MatrixXd(U),Eigen::MatrixXi(G),U,G,_1,I2);
   igl::slice(Eigen::VectorXi(I),I2,1,I);
+
   return ret;
 }

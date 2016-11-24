@@ -73,13 +73,6 @@ namespace igl
   //     **If the edges is collapsed** then this function will be called on all
   //     edges of all faces previously incident on the endpoints of the
   //     collapsed edge.
-  //   pre_collapse  callback called with index of edge whose collapse is about
-  //     to be attempted. This function should return whether to **proceed**
-  //     with the collapse: returning true means "yes, try to collapse",
-  //     returning false means "No, consider this edge 'uncollapsable', behave
-  //     as if collapse_edge(e) returned false.
-  //   post_collapse  callback called with index of edge whose collapse was
-  //     just attempted and a flag revealing whether this was successful.
   //   Q  queue containing pairs of costs and edge indices
   //   Qit  list of iterators so that Qit[e] --> iterator of edge e in Q
   //   C  #E by dim list of stored placements
@@ -94,8 +87,6 @@ namespace igl
       const Eigen::MatrixXi &,
       double &,
       Eigen::RowVectorXd &)> & cost_and_placement,
-    const std::function<bool(const int )> & pre_collapse,
-    const std::function<void(const int , const bool)> & post_collapse,
     Eigen::MatrixXd & V,
     Eigen::MatrixXi & F,
     Eigen::MatrixXi & E,
@@ -105,6 +96,14 @@ namespace igl
     std::set<std::pair<double,int> > & Q,
     std::vector<std::set<std::pair<double,int> >::iterator > & Qit,
     Eigen::MatrixXd & C);
+  // Inputs:
+  //   pre_collapse  callback called with index of edge whose collapse is about
+  //     to be attempted. This function should return whether to **proceed**
+  //     with the collapse: returning true means "yes, try to collapse",
+  //     returning false means "No, consider this edge 'uncollapsable', behave
+  //     as if collapse_edge(e) returned false.
+  //   post_collapse  callback called with index of edge whose collapse was
+  //     just attempted and a flag revealing whether this was successful.
   IGL_INLINE bool collapse_edge(
     const std::function<void(
       const int,
@@ -116,8 +115,85 @@ namespace igl
       const Eigen::MatrixXi &,
       double &,
       Eigen::RowVectorXd &)> & cost_and_placement,
-    const std::function<bool(const int )> & pre_collapse,
-    const std::function<void(const int , const bool)> & post_collapse,
+    const std::function<bool(
+      const Eigen::MatrixXd &                                         ,/*V*/
+      const Eigen::MatrixXi &                                         ,/*F*/
+      const Eigen::MatrixXi &                                         ,/*E*/
+      const Eigen::VectorXi &                                         ,/*EMAP*/
+      const Eigen::MatrixXi &                                         ,/*EF*/
+      const Eigen::MatrixXi &                                         ,/*EI*/
+      const std::set<std::pair<double,int> > &                        ,/*Q*/
+      const std::vector<std::set<std::pair<double,int> >::iterator > &,/*Qit*/
+      const Eigen::MatrixXd &                                         ,/*C*/
+      const int                                                        /*e*/
+      )> & pre_collapse,
+    const std::function<void(
+      const Eigen::MatrixXd &                                         ,   /*V*/
+      const Eigen::MatrixXi &                                         ,   /*F*/
+      const Eigen::MatrixXi &                                         ,   /*E*/
+      const Eigen::VectorXi &                                         ,/*EMAP*/
+      const Eigen::MatrixXi &                                         ,  /*EF*/
+      const Eigen::MatrixXi &                                         ,  /*EI*/
+      const std::set<std::pair<double,int> > &                        ,   /*Q*/
+      const std::vector<std::set<std::pair<double,int> >::iterator > &, /*Qit*/
+      const Eigen::MatrixXd &                                         ,   /*C*/
+      const int                                                       ,   /*e*/
+      const int                                                       ,  /*e1*/
+      const int                                                       ,  /*e2*/
+      const int                                                       ,  /*f1*/
+      const int                                                       ,  /*f2*/
+      const bool                                                  /*collapsed*/
+      )> & post_collapse,
+    Eigen::MatrixXd & V,
+    Eigen::MatrixXi & F,
+    Eigen::MatrixXi & E,
+    Eigen::VectorXi & EMAP,
+    Eigen::MatrixXi & EF,
+    Eigen::MatrixXi & EI,
+    std::set<std::pair<double,int> > & Q,
+    std::vector<std::set<std::pair<double,int> >::iterator > & Qit,
+    Eigen::MatrixXd & C);
+
+  IGL_INLINE bool collapse_edge(
+    const std::function<void(
+      const int,
+      const Eigen::MatrixXd &,
+      const Eigen::MatrixXi &,
+      const Eigen::MatrixXi &,
+      const Eigen::VectorXi &,
+      const Eigen::MatrixXi &,
+      const Eigen::MatrixXi &,
+      double &,
+      Eigen::RowVectorXd &)> & cost_and_placement,
+    const std::function<bool(
+      const Eigen::MatrixXd &                                         ,/*V*/
+      const Eigen::MatrixXi &                                         ,/*F*/
+      const Eigen::MatrixXi &                                         ,/*E*/
+      const Eigen::VectorXi &                                         ,/*EMAP*/
+      const Eigen::MatrixXi &                                         ,/*EF*/
+      const Eigen::MatrixXi &                                         ,/*EI*/
+      const std::set<std::pair<double,int> > &                        ,/*Q*/
+      const std::vector<std::set<std::pair<double,int> >::iterator > &,/*Qit*/
+      const Eigen::MatrixXd &                                         ,/*C*/
+      const int                                                        /*e*/
+      )> & pre_collapse,
+    const std::function<void(
+      const Eigen::MatrixXd &                                         ,   /*V*/
+      const Eigen::MatrixXi &                                         ,   /*F*/
+      const Eigen::MatrixXi &                                         ,   /*E*/
+      const Eigen::VectorXi &                                         ,/*EMAP*/
+      const Eigen::MatrixXi &                                         ,  /*EF*/
+      const Eigen::MatrixXi &                                         ,  /*EI*/
+      const std::set<std::pair<double,int> > &                        ,   /*Q*/
+      const std::vector<std::set<std::pair<double,int> >::iterator > &, /*Qit*/
+      const Eigen::MatrixXd &                                         ,   /*C*/
+      const int                                                       ,   /*e*/
+      const int                                                       ,  /*e1*/
+      const int                                                       ,  /*e2*/
+      const int                                                       ,  /*f1*/
+      const int                                                       ,  /*f2*/
+      const bool                                                  /*collapsed*/
+      )> & post_collapse,
     Eigen::MatrixXd & V,
     Eigen::MatrixXi & F,
     Eigen::MatrixXi & E,

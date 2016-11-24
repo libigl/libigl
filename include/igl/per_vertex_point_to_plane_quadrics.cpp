@@ -2,6 +2,7 @@
 #include "quadric_binary_plus_operator.h"
 #include <Eigen/QR>
 #include <cassert>
+#include <cmath>
 
 
 IGL_INLINE void igl::per_vertex_point_to_plane_quadrics(
@@ -39,7 +40,10 @@ IGL_INLINE void igl::per_vertex_point_to_plane_quadrics(
     int infinite_corner = -1;
     for(int c = 0;c<3;c++)
     {
-      if(isinf(V(F(f,c),0)) || isinf(V(F(f,c),1)) || isinf(V(F(f,c),2)))
+      if(
+         std::isinf(V(F(f,c),0)) || 
+         std::isinf(V(F(f,c),1)) || 
+         std::isinf(V(F(f,c),2)))
       {
         assert(infinite_corner == -1 && "Should only be one infinite corner");
         infinite_corner = c;
