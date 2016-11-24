@@ -204,11 +204,7 @@ IGL_INLINE bool igl::arap_solve(
   while(iter < data.max_iter)
   {
     U_prev = U;
-    // enforce boundary conditions exactly
-    for(int bi = 0;bi<bc.rows();bi++)
-    {
-      U.row(data.b(bi)) = bc.row(bi);
-    }
+    
 
     const auto & Udim = U.replicate(data.dim,1);
     assert(U.cols() == data.dim);
@@ -237,7 +233,12 @@ IGL_INLINE bool igl::arap_solve(
     //  R.block(0,dim*k,dim,dim) = MatrixXd::Identity(dim,dim);
     //}
 
-
+    // enforce boundary conditions exactly
+    for(int bi = 0;bi<bc.rows();bi++)
+    {
+      U.row(data.b(bi)) = bc.row(bi);
+    }
+    
     // Number of rotations: #vertices or #elements
     int num_rots = data.K.cols()/Rdim/Rdim;
     // distribute group rotations to vertices in each group
