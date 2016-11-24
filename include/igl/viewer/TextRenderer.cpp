@@ -15,7 +15,7 @@
 
 #include <Eigen/Dense>
 
-#define NANOVG_GL3
+#define NANOVG_GL3_IMPLEMENTATION
 #include <nanovg_gl.h>
 
 
