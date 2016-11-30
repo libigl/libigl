@@ -15,7 +15,7 @@
 
 #include <Eigen/Dense>
 
-#define NANOVG_GL3_IMPLEMENTATION
+#define NANOVG_GL3
 #include <nanovg_gl.h>
 
 
@@ -45,9 +45,9 @@ IGL_INLINE int igl::viewer::TextRenderer::Shut()
 }
 
 IGL_INLINE void igl::viewer::TextRenderer::BeginDraw(
-  const Eigen::Matrix4f &view, 
+  const Eigen::Matrix4f &view,
   const Eigen::Matrix4f &proj,
-  const Eigen::Vector4f &_viewport, 
+  const Eigen::Vector4f &_viewport,
   float _object_scale)
 {
   using namespace std;
