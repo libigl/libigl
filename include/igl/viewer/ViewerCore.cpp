@@ -114,23 +114,17 @@ IGL_INLINE void igl::viewer::ViewerCore::get_scale_and_shift_to_fit_mesh(
 
   Eigen::MatrixXd BC;
   if (F.rows() <= 1)
+  {
     BC = V;
-  else
+  } else
+  {
     igl::barycenter(V,F,BC);
-
-  Eigen::RowVector3d min_point = BC.colwise().minCoeff();
-  Eigen::RowVector3d max_point = BC.colwise().maxCoeff();
-  Eigen::RowVector3d centroid  = 0.5*(min_point + max_point);
-
-  shift = -centroid.cast<float>();
-  double x_scale = fabs(max_point[0] - min_point[0]);
-  double y_scale = fabs(max_point[1] - min_point[1]);
-  double z_scale = fabs(max_point[2] - min_point[2]);
-  zoom = 2.0 / std::max(z_scale,std::max(x_scale,y_scale));
+  }
+  return get_scale_and_shift_to_fit_mesh(BC,zoom,shift);
 }
 
 IGL_INLINE void igl::viewer::ViewerCore::align_camera_center(
-                                                     const Eigen::MatrixXd& V)
+  const Eigen::MatrixXd& V)
 {
   if(V.rows() == 0)
     return;
@@ -144,36 +138,19 @@ IGL_INLINE void igl::viewer::ViewerCore::align_camera_center(
 }
 
 IGL_INLINE void igl::viewer::ViewerCore::get_scale_and_shift_to_fit_mesh(
-                                                                 const Eigen::MatrixXd& V,
-                                                                 float& zoom,
-                                                                 Eigen::Vector3f& shift)
+  const Eigen::MatrixXd& V,
+  float& zoom,
+  Eigen::Vector3f& shift)
 {
   if (V.rows() == 0)
     return;
 
-  Eigen::RowVector3d min_point;
-  Eigen::RowVector3d max_point;
-  Eigen::RowVector3d centroid;
-
-  if (V.cols() == 3)
-  {
-    min_point = V.colwise().minCoeff();
-    max_point = V.colwise().maxCoeff();
-  }
-  else if (V.cols() == 2)
-  {
-    min_point << V.colwise().minCoeff(),0;
-    max_point << V.colwise().maxCoeff(),0;
-  }
-  else
-    return;
-
-  centroid = 0.5 * (min_point + max_point);
-  shift = -centroid.cast<float>();
-  double x_scale = fabs(max_point[0] - min_point[0]);
-  double y_scale = fabs(max_point[1] - min_point[1]);
-  double z_scale = fabs(max_point[2] - min_point[2]);
-  zoom = 2.0 / std::max(z_scale,std::max(x_scale,y_scale));
+  auto min_point = V.colwise().minCoeff().eval();
+  auto max_point = V.colwise().maxCoeff().eval();
+  auto centroid  = 0.5*(min_point + max_point).eval();
+  shift.setConstant(0);
+  shift.head(centroid.size())= -centroid.cast<float>();
+  zoom = 2.0 / (max_point-min_point).array().abs().maxCoeff();
 }
 
 
@@ -186,7 +163,10 @@ IGL_INLINE void igl::viewer::ViewerCore::clear_framebuffers()
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-IGL_INLINE void igl::viewer::ViewerCore::draw(ViewerData& data, OpenGL_state& opengl, bool update_matrices)
+IGL_INLINE void igl::viewer::ViewerCore::draw(
+  ViewerData& data, 
+  OpenGL_state& opengl, 
+  bool update_matrices)
 {
   using namespace std;
   using namespace Eigen;
