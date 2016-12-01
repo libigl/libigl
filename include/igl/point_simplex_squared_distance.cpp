@@ -34,7 +34,7 @@ IGL_INLINE void igl::point_simplex_squared_distance(
   typedef typename Derivedp::Scalar Scalar;
   typedef typename Eigen::Matrix<Scalar,1,DIM> Vector;
   typedef Vector Point;
-  //typedef Eigen::PlainObjectBase<Derivedb> BaryPoint;
+  //typedef Derivedb BaryPoint;
   typedef Eigen::Matrix<typename Derivedb::Scalar,1,3> BaryPoint;
 
   const auto & Dot = [](const Point & a, const Point & b)->Scalar

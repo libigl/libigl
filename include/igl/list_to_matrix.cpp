@@ -86,10 +86,10 @@ IGL_INLINE bool igl::list_to_matrix(const std::vector<T > & V,Eigen::PlainObject
   {
     //fprintf(stderr,"Error: list_to_matrix() list is empty()\n");
     //return false;
-    if(Eigen::PlainObjectBase<Derived>::ColsAtCompileTime == 1)
+    if(Derived::ColsAtCompileTime == 1)
     {
       M.resize(0,1);
-    }else if(Eigen::PlainObjectBase<Derived>::RowsAtCompileTime == 1)
+    }else if(Derived::RowsAtCompileTime == 1)
     {
       M.resize(1,0);
     }else
@@ -99,7 +99,7 @@ IGL_INLINE bool igl::list_to_matrix(const std::vector<T > & V,Eigen::PlainObject
     return true;
   }
   // Resize output
-  if(Eigen::PlainObjectBase<Derived>::RowsAtCompileTime == 1)
+  if(Derived::RowsAtCompileTime == 1)
   {
     M.resize(1,m);
   }else

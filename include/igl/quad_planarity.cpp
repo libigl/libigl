@@ -23,7 +23,8 @@ IGL_INLINE void igl::quad_planarity(
     const Eigen::Matrix<typename DerivedV::Scalar,1,3> &v3 = V.row(F(i,2));
     const Eigen::Matrix<typename DerivedV::Scalar,1,3> &v4 = V.row(F(i,3));
     Eigen::Matrix<typename DerivedV::Scalar,1,3> diagCross=(v3-v1).cross(v4-v2);
-    typename Eigen::PlainObjectBase<DerivedV>::Scalar denom = diagCross.norm()*(((v3-v1).norm()+(v4-v2).norm())/2);
+    typename DerivedV::Scalar denom = 
+      diagCross.norm()*(((v3-v1).norm()+(v4-v2).norm())/2);
     if (fabs(denom)<1e-8)
       //degenerate quad is still planar
       P[i] = 0;
