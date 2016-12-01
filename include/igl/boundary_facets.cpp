@@ -110,9 +110,9 @@ IGL_INLINE void igl::boundary_facets(
   using namespace std;
   using namespace Eigen;
   // Cop out: use vector of vectors version
-  vector<vector<typename Eigen::PlainObjectBase<DerivedT>::Scalar> > vT;
+  vector<vector<typename DerivedT::Scalar> > vT;
   matrix_to_list(T,vT);
-  vector<vector<typename Eigen::PlainObjectBase<DerivedF>::Scalar> > vF;
+  vector<vector<typename DerivedF::Scalar> > vF;
   boundary_facets(vT,vF);
   list_to_matrix(vF,F);
 }

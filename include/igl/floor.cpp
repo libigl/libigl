@@ -15,7 +15,7 @@ IGL_INLINE void igl::floor(
   Eigen::PlainObjectBase<DerivedY>& Y)
 {
   using namespace std;
-  //Y = Eigen::PlainObjectBase<DerivedY>::Zero(m,n);
+  //Y = DerivedY::Zero(m,n);
 //#pragma omp parallel for
   //for(int i = 0;i<m;i++)
   //{

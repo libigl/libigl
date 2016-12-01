@@ -105,7 +105,7 @@ IGL_INLINE bool igl::writeSTL(
   const Eigen::PlainObjectBase<DerivedF> & F,
   const bool ascii)
 {
-  return writeSTL(filename,V,F, Eigen::PlainObjectBase<DerivedV>(), ascii);
+  return writeSTL(filename,V,F, DerivedV(), ascii);
 }
 
 #ifdef IGL_STATIC_LIBRARY
