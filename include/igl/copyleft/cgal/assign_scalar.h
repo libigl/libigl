@@ -20,13 +20,13 @@ namespace igl
       // Outputs:
       //   d  output scalar
       IGL_INLINE void assign_scalar(
-        const typename CGAL::Epeck::FT & cgal,
+        const CGAL::Epeck::FT & cgal,
         CGAL::Epeck::FT & d);
       IGL_INLINE void assign_scalar(
-        const typename CGAL::Epeck::FT & cgal,
+        const CGAL::Epeck::FT & cgal,
         double & d);
       IGL_INLINE void assign_scalar(
-        const typename CGAL::Epeck::FT & cgal,
+        const CGAL::Epeck::FT & cgal,
         float& d);
       IGL_INLINE void assign_scalar(
         const double & c,
