@@ -78,7 +78,7 @@ IGL_INLINE void igl::qslim_optimal_collapse_edge_callbacks(
     p = -b*A.inverse();
     cost = p.dot(p*A) + 2*p.dot(b) + c;
     // Force infs and nans to infinity
-    if(isinf(cost) || cost!=cost)
+    if(std::isinf(cost) || cost!=cost)
     {
       cost = std::numeric_limits<double>::infinity();
       // Prevent NaNs. Actually NaNs might be useful for debugging.
