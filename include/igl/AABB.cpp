@@ -398,7 +398,8 @@ igl::AABB<DerivedV,DIM>::squared_distance(
     {
       int i_right;
       RowVectorDIMS c_right = c;
-      Scalar sqr_d_right = m_right->squared_distance(V,Ele,p,sqr_d,i_right,c_right);
+      Scalar sqr_d_right = 
+        m_right->squared_distance(V,Ele,p,sqr_d,i_right,c_right);
       this->set_min(p,sqr_d_right,i_right,c_right,sqr_d,i,c);
       looked_right = true;
     };
@@ -413,8 +414,10 @@ igl::AABB<DerivedV,DIM>::squared_distance(
       look_right();
     }
     // if haven't looked left and could be less than current min, then look
-    Scalar  left_min_sqr_d = m_left->m_box.squaredExteriorDistance(p.transpose());
-    Scalar right_min_sqr_d = m_right->m_box.squaredExteriorDistance(p.transpose());
+    Scalar left_min_sqr_d = 
+      m_left->m_box.squaredExteriorDistance(p.transpose());
+    Scalar right_min_sqr_d = 
+      m_right->m_box.squaredExteriorDistance(p.transpose());
     if(left_min_sqr_d < right_min_sqr_d)
     {
       if(!looked_left && left_min_sqr_d<sqr_d)
@@ -458,6 +461,8 @@ IGL_INLINE void igl::AABB<DerivedV,DIM>::squared_distance(
   sqrD.resize(P.rows(),1);
   I.resize(P.rows(),1);
   C.resize(P.rows(),P.cols());
+  // O( #P * log #Ele ), where log #Ele is really the depth of this AABB
+  // hierarchy
   for(int p = 0;p<P.rows();p++)
   {
     RowVectorDIMS Pp = P.row(p), c;
@@ -507,7 +512,8 @@ template <
   typename DerivedsqrD, 
   typename DerivedI, 
   typename DerivedC>
-IGL_INLINE typename igl::AABB<DerivedV,DIM>::Scalar igl::AABB<DerivedV,DIM>::squared_distance_helper(
+IGL_INLINE typename igl::AABB<DerivedV,DIM>::Scalar 
+  igl::AABB<DerivedV,DIM>::squared_distance_helper(
   const Eigen::PlainObjectBase<DerivedV> & V,
   const Eigen::MatrixXi & Ele, 
   const AABB<Derivedother_V,DIM> * other,
