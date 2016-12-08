@@ -26,16 +26,14 @@ IGL_INLINE bool igl::copyleft::tetgen::cdt(
 {
   using namespace Eigen;
   using namespace std;
-  typedef Eigen::PlainObjectBase<DerivedV> MatrixXS;
-  typedef Eigen::PlainObjectBase<DerivedF> MatrixXI;
   // Effective input mesh
-  MatrixXS U;
-  MatrixXI G;
+  DerivedV U;
+  DerivedF G;
   if(param.use_bounding_box)
   {
     // Construct bounding box mesh
-    MatrixXS BV;
-    MatrixXI BF;
+    DerivedV BV;
+    DerivedF BF;
     bounding_box(V,BV,BF);
     // scale bounding box
     const RowVector3d mid = 
