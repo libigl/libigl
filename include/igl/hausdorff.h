@@ -13,20 +13,51 @@
 
 namespace igl 
 {
-  // HAUSDORFF compute the Hausdorff distance between mesh (VA,FA) and mesh
-  // (VB,FB). This is the 
+  // HAUSDORFF compute lower and upper bounds on the **directed** (asymmetric)
+  // Hausdorff distance from mesh (VA,FA) to mesh (VB,FB) within a given error
+  // bound epsilon:
+  //
+  // l(A,B) ≤ max min d(a,b) ≤ u(A,B)
+  //          a∈A b∈B
+  // u(A,B)-l(A,B) ≤ epsilon
+  //
+  // This is mostly an implementation of "Fast and accurate Hausdorff distance
+  // calculation between meshes" [Guthe et al. 2005], with some ideas from
+  // "Interactive Hausdorff Distance Computation for General Polygonal Models"
+  // [Tang et al. 2009].
+  // 
+  // Inputs:
+  //   VA  #VA by 3 list of vertex positions
+  //   FA  #FA by 3 list of face indices into VA
+  //   VB  #VB by 3 list of vertex positions
+  //   FB  #FB by 3 list of face indices into VB
+  //   eps  desired bound on error
+  // Outputs:
+  //   lower  lower bound on directed Hausdorff distance
+  //   upper  upper bound on directed Hausdorff distance
+  template <
+    typename DerivedVA, 
+    typename DerivedFA,
+    typename DerivedVB,
+    typename DerivedFB,
+    typename Scalar>
+  IGL_INLINE void hausdorff(
+    const Eigen::PlainObjectBase<DerivedVA> & OVA, 
+    const Eigen::PlainObjectBase<DerivedFA> & OFA,
+    const Eigen::PlainObjectBase<DerivedVB> & VB, 
+    const Eigen::PlainObjectBase<DerivedFB> & FB,
+    const Scalar eps,
+    Scalar & lower,
+    Scalar & upper);
+  // HAUSDORFF compute the **symmetric** Hausdorff distance between mesh
+  // (VA,FA) and mesh (VB,FB). That is:
   //
   // d(A,B) = max ( max min d(a,b) , max min d(b,a) )
   //                a∈A b∈B          b∈B a∈A
   //
-  // Known issue: This is only computing max(min(va,B),min(vb,A)). This is
-  // better than max(min(va,Vb),min(vb,Va)). This (at least) is missing
-  // "edge-edge" cases like the distance between the two different
-  // triangulations of a non-planar quad in 3D. Even simpler, consider the
-  // Hausdorff distance between the non-convex, block letter V polygon (with 7
-  // vertices) in 2D and its convex hull. The Hausdorff distance is defined by
-  // the midpoint in the middle of the segment across the concavity and some
-  // non-vertex point _on the edge_ of the V.
+  // Note: this is an iterative method that will compute the distance within
+  // double precision epsilon times the bounding box diagonal of the combined
+  // meshes A and B.
   //
   // Inputs:
   //   VA  #VA by 3 list of vertex positions
@@ -35,8 +66,6 @@ namespace igl
   //   FB  #FB by 3 list of face indices into VB
   // Outputs:
   //   d  hausdorff distance
-  //   //pair  2 by 3 list of "determiner points" so that pair(1,:) is from A
-  //   //  and pair(2,:) is from B
   //
   template <
     typename DerivedVA, 
