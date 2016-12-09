@@ -31,8 +31,8 @@ IGL_INLINE void igl::hausdorff(
   using namespace Eigen;
   using namespace igl;
   using namespace std;
-  assert(VA.cols() == 3 && "VA should contain 3d points");
-  assert(FA.cols() == 3 && "FA should contain triangles");
+  assert(OVA.cols() == 3 && "VA should contain 3d points");
+  assert(OFA.cols() == 3 && "FA should contain triangles");
   assert(VB.cols() == 3 && "VB should contain 3d points");
   assert(FB.cols() == 3 && "FB should contain triangles");
   assert(eps>0 && "eps should be a strictly positive number");
