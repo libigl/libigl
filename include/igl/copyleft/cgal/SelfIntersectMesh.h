@@ -72,9 +72,9 @@ namespace igl
           typedef CGAL::Segment_2<Kernel>  Segment_2; 
           typedef CGAL::Triangle_2<Kernel> Triangle_2; 
           // 2D Constrained Delaunay Triangulation types
-          typedef CGAL::Triangulation_vertex_base_2<Kernel>  TVB_2;
-          typedef CGAL::Constrained_triangulation_face_base_2<Kernel> CTFB_2;
-          typedef CGAL::Triangulation_data_structure_2<TVB_2,CTFB_2> TDS_2;
+          //typedef CGAL::Triangulation_vertex_base_2<Kernel>  TVB_2;
+          //typedef CGAL::Constrained_triangulation_face_base_2<Kernel> CTFB_2;
+          //typedef CGAL::Triangulation_data_structure_2<TVB_2,CTFB_2> TDS_2;
           typedef CGAL::Exact_intersections_tag Itag;
           // Axis-align boxes for all-pairs self-intersection detection
           typedef std::vector<Triangle_3> Triangles;

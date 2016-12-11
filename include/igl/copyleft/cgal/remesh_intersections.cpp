@@ -8,6 +8,7 @@
 //
 #include "remesh_intersections.h"
 #include "assign_scalar.h"
+#include "projected_cdt.h"
 #include "../../get_seconds.h"
 #include "../../unique.h"
 
@@ -162,75 +163,27 @@ IGL_INLINE void igl::copyleft::cgal::remesh_intersections(
       std::vector<Point_3>& vertices,
       std::vector<std::vector<Index> >& faces) -> void 
     {
+      std::vector<CGAL::Object> objects;
+
       CDT_plus_2 cdt;
       // insert each face into a common cdt
       for (const auto& fid : involved_faces)
       {
         const auto itr = offending.find(fid);
         const auto& triangle = T[fid];
-        cdt.insert_constraint(P.to_2d(triangle[0]), P.to_2d(triangle[1]));
-        cdt.insert_constraint(P.to_2d(triangle[1]), P.to_2d(triangle[2]));
-        cdt.insert_constraint(P.to_2d(triangle[2]), P.to_2d(triangle[0]));
+        objects.push_back(CGAL::make_object(triangle));
         if (itr == offending.end())
         {
           continue;
         }
         for (const auto& index_obj : itr->second) 
         {
-            //const auto& ofid = index_obj.first;
-            const auto& obj = index_obj.second;
-            if(const Segment_3 *iseg = CGAL::object_cast<Segment_3 >(&obj)) {
-                // Add segment constraint
-                cdt.insert_constraint(
-                        P.to_2d(iseg->vertex(0)),P.to_2d(iseg->vertex(1)));
-            }else if(const Point_3 *ipoint = CGAL::object_cast<Point_3 >(&obj)) {
-                // Add point
-                cdt.insert(P.to_2d(*ipoint));
-            } else if(const Triangle_3 *itri = CGAL::object_cast<Triangle_3 >(&obj)) {
-                // Add 3 segment constraints
-                cdt.insert_constraint(
-                        P.to_2d(itri->vertex(0)),P.to_2d(itri->vertex(1)));
-                cdt.insert_constraint(
-                        P.to_2d(itri->vertex(1)),P.to_2d(itri->vertex(2)));
-                cdt.insert_constraint(
-                        P.to_2d(itri->vertex(2)),P.to_2d(itri->vertex(0)));
-            } else if(const std::vector<Point_3 > *polyp = 
-                    CGAL::object_cast< std::vector<Point_3 > >(&obj)) {
-                //cerr<<REDRUM("Poly...")<<endl;
-                const std::vector<Point_3 > & poly = *polyp;
-                const Index m = poly.size();
-                assert(m>=2);
-                for(Index p = 0;p<m;p++)
-                {
-                    const Index np = (p+1)%m;
-                    cdt.insert_constraint(P.to_2d(poly[p]),P.to_2d(poly[np]));
-                }
-            }else {
-                throw std::runtime_error("Unknown intersection object!");
-            }
+          //const auto& ofid = index_obj.first;
+          const auto& obj = index_obj.second;
+          objects.push_back(obj);
         }
       }
-      // Read off vertices of the cdt, remembering index
-      std::map<typename CDT_plus_2::Vertex_handle,Index> v2i;
-      size_t count=0;
-      for (
-        auto itr = cdt.finite_vertices_begin();
-        itr != cdt.finite_vertices_end(); 
-        itr++) 
-      {
-        vertices.push_back(P.to_3d(itr->point()));
-        v2i[itr] = count;
-        count++;
-      }
-      // Read off faces and store index triples
-      for (
-        auto itr = cdt.finite_faces_begin();
-        itr != cdt.finite_faces_end(); 
-        itr++)
-      {
-        faces.push_back( 
-          { v2i[itr->vertex(0)], v2i[itr->vertex(1)], v2i[itr->vertex(2)] });
-      }
+      projected_cdt(objects,P,vertices,faces);
     };
 
     // Given p on triangle indexed by ori_f, add point to list of vertices return index of p.
