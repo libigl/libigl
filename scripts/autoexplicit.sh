@@ -34,7 +34,7 @@ while read line; do
   #echo "before = $before"
   after=`sed '1,/^\/\/ Explicit template specialization$/d' $cpp`;
   #echo "after = $after"
-  explicit=`echo "template $symbol;" | sed -e "s/std::__1/std::/g"`
+  explicit=`echo "template $symbol;" | sed -e "s/std::__1::/std::/g"`
   #echo "$explicit"
   if grep -F "$explicit" "$cpp"
   then
