@@ -8,7 +8,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 //
 #include "mesh_boolean.h"
-#include "assign_scalar.h"
+#include "assign.h"
 #include "extract_cells.h"
 #include "mesh_boolean_type_to_funcs.h"
 #include "propagate_winding_numbers.h"
@@ -393,14 +393,8 @@ IGL_INLINE bool igl::copyleft::cgal::mesh_boolean(
     }
 #endif
 
-    MatrixX3S Vs(V.rows(), V.cols());
-    for (size_t i=0; i<(size_t)V.rows(); i++)
-    {
-      for (size_t j=0; j<(size_t)V.cols(); j++)
-      {
-        igl::copyleft::cgal::assign_scalar(V(i,j), Vs(i,j));
-      }
-    }
+    MatrixX3S Vs;
+    assign(V,Vs);
     Eigen::VectorXi newIM;
     igl::remove_unreferenced(Vs,G,VC,FC,newIM);
   }

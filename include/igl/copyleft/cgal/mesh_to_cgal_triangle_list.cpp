@@ -6,7 +6,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "mesh_to_cgal_triangle_list.h"
-#include "assign_scalar.h"
+#include "assign.h"
 
 #include <cassert>
 
@@ -30,14 +30,7 @@ IGL_INLINE void igl::copyleft::cgal::mesh_to_cgal_triangle_list(
     DerivedV::RowsAtCompileTime,
     DerivedV::ColsAtCompileTime> 
     KV(V.rows(),V.cols());
-  // Just use f'ing for loops. What if V and KV don't use same ordering?
-  for(int i = 0;i<V.rows();i++)
-  {
-    for(int j = 0;j<V.cols();j++)
-    {
-      assign_scalar(V(i,j),KV(i,j));
-    }
-  }
+  assign(V,KV);
   // Must be triangles
   assert(F.cols() == 3);
   T.reserve(F.rows());
