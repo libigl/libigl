@@ -208,7 +208,7 @@ IGL_INLINE void igl::winding_number_2(
         }
       }
       double val =
-        atan2(o2vd[0]*o2vs[1]-o2vd[1]*o2vs[0],o2vd[0]*o2vs[0]+o2vd[1]*o2vs[1])/
+        -atan2(o2vd[0]*o2vs[1]-o2vd[1]*o2vs[0],o2vd[0]*o2vs[0]+o2vd[1]*o2vs[1])/
         (2.*igl::PI);
 #pragma omp atomic
       S[o] += val;

@@ -43,7 +43,7 @@ IGL_INLINE void igl::doublearea(
   {
     case 3:
     {
-      dblA = Eigen::PlainObjectBase<DeriveddblA>::Zero(m,1);
+      dblA = DeriveddblA::Zero(m,1);
       for(size_t f = 0;f<m;f++)
       {
         for(int d = 0;d<3;d++)

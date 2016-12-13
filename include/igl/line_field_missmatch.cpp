@@ -31,16 +31,15 @@ public:
     const Eigen::PlainObjectBase<DerivedF> &F;
     const Eigen::PlainObjectBase<DerivedV> &PD1;
     const Eigen::PlainObjectBase<DerivedV> &PD2;
-//#warning "Constructing Eigen::PlainObjectBase directly is deprecated"
-    Eigen::PlainObjectBase<DerivedV> N;
+    DerivedV N;
 
 private:
     // internal
     std::vector<bool> V_border; // bool
     std::vector<std::vector<int> > VF;
     std::vector<std::vector<int> > VFi;
-    Eigen::PlainObjectBase<DerivedF> TT;
-    Eigen::PlainObjectBase<DerivedF> TTi;
+    DerivedF TT;
+    DerivedF TTi;
 
 
 private:
@@ -123,8 +122,8 @@ IGL_INLINE void igl::line_field_missmatch(const Eigen::PlainObjectBase<DerivedV>
                                 const bool isCombed,
                                 Eigen::PlainObjectBase<DerivedO> &missmatch)
 {
-    Eigen::PlainObjectBase<DerivedV> PD1_combed;
-    Eigen::PlainObjectBase<DerivedV> PD2_combed;
+    DerivedV PD1_combed;
+    DerivedV PD2_combed;
 
     if (!isCombed)
         igl::comb_line_field(V,F,PD1,PD1_combed);

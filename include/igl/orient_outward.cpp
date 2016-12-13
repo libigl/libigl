@@ -40,7 +40,7 @@ IGL_INLINE void igl::orient_outward(
   {
     FF = F;
   }
-  PlainObjectBase<DerivedV> N,BC,BCmean;
+  DerivedV N,BC,BCmean;
   Matrix<typename DerivedV::Scalar,Dynamic,1> A;
   VectorXd totA(num_cc), dot(num_cc);
   Matrix<typename DerivedV::Scalar,3,1> Z(1,1,1);

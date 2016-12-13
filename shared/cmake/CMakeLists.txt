@@ -401,7 +401,7 @@ if(LIBIGL_WITH_VIEWER)
     add_subdirectory("${NANOGUI_DIR}/ext/glfw" "glfw")
 
     set(VIEWER_INCLUDE_DIRS "${NANOGUI_DIR}/ext/glfw/include")
-    set(LIBIGL_VIEWER_EXTRA_LIBRARIES "glfw" ${OPENGL_gl_LIBRARY})
+    set(LIBIGL_VIEWER_EXTRA_LIBRARIES "glfw" ${OPENGL_gl_LIBRARY} ${GLFW_LIBRARIES})
   endif()
 
   ### GLEW for linux and windows

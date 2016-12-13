@@ -37,7 +37,7 @@ namespace igl
   template <typename T>
   IGL_INLINE void jet(const T f, T & r, T & g, T & b);
   // Inputs:
-  //   Z  #Z list of factos 
+  //   Z  #Z list of factors
   //   normalize  whether to normalize Z to be tightly between [0,1]
   // Outputs:
   //   C  #C by 3 list of rgb colors

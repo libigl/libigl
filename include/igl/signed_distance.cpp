@@ -93,8 +93,8 @@ IGL_INLINE void igl::signed_distance(
           for(int e = 0;e<F.rows();e++)
           {
             // rotate edge vector
-            FN(e,0) = -(V(F(e,1),1)-V(F(e,0),1));
-            FN(e,1) =  (V(F(e,1),0)-V(F(e,0),0));
+            FN(e,0) =  (V(F(e,1),1)-V(F(e,0),1));
+            FN(e,1) = -(V(F(e,1),0)-V(F(e,0),0));
             FN.row(e).normalize();
             // add to vertex normal
             VN.row(F(e,1)) += FN.row(e);

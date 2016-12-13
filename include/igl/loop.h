@@ -15,38 +15,49 @@
 
 namespace igl
 {
-    // LOOP Given the triangle mesh [V, F], where n_verts = V.rows(), computes newV and a sparse matrix S s.t. [newV, newF] is the subdivided mesh where newV = S*V.
-    //
-    // Inputs:
-    //  n_verts an integer (number of mesh vertices)
-    //  F an m by 3 matrix of integers of triangle faces
-    // Outputs:
-    //  S a sparse matrix (will become the subdivision matrix)
-    //  newF a matrix containing the new faces
-    IGL_INLINE void loop(const int n_verts,
-                         const Eigen::MatrixXi& F,
-                         Eigen::SparseMatrix<double>& S,
-                         Eigen::MatrixXi& newF);
-    
-    // LOOP Given the triangle mesh [V, F], computes number_of_subdivs steps of loop subdivision and outputs the new mesh [newV, newF]
-    //
-    // Inputs:
-    //  V an n by 3 matrix of vertices
-    //  F an m by 3 matrix of integers of triangle faces
-    //  number_of_subdivs an integer that specifies how many subdivision steps to do
-    // Outputs:
-    //  newV a matrix containing the new vertices
-    //  newF a matrix containing the new faces
-    IGL_INLINE void loop(const Eigen::MatrixXd& V,
-                         const Eigen::MatrixXi& F,
-                         Eigen::MatrixXd& newV,
-                         Eigen::MatrixXi& newF,
-                         const int number_of_subdivs = 1);
-    
+  // LOOP Given the triangle mesh [V, F], where n_verts = V.rows(), computes
+  // newV and a sparse matrix S s.t. [newV, newF] is the subdivided mesh where
+  // newV = S*V.
+  //
+  // Inputs:
+  //   n_verts  an integer (number of mesh vertices)
+  //   F  an m by 3 matrix of integers of triangle faces
+  // Outputs:
+  //   S  a sparse matrix (will become the subdivision matrix)
+  //   newF  a matrix containing the new faces
+  template <
+    typename DerivedF,
+    typename SType,
+    typename DerivedNF>
+  IGL_INLINE void loop(
+    const int n_verts,
+    const Eigen::PlainObjectBase<DerivedF> & F,
+    Eigen::SparseMatrix<SType>& S,
+    Eigen::PlainObjectBase<DerivedNF> & NF);
+  // LOOP Given the triangle mesh [V, F], computes number_of_subdivs steps of loop subdivision and outputs the new mesh [newV, newF]
+  //
+  // Inputs:
+  //  V an n by 3 matrix of vertices
+  //  F an m by 3 matrix of integers of triangle faces
+  //  number_of_subdivs an integer that specifies how many subdivision steps to do
+  // Outputs:
+  //  NV a matrix containing the new vertices
+  //  NF a matrix containing the new faces
+  template <
+    typename DerivedV, 
+    typename DerivedF,
+    typename DerivedNV,
+    typename DerivedNF>
+  IGL_INLINE void loop(
+    const Eigen::PlainObjectBase<DerivedV>& V,
+    const Eigen::PlainObjectBase<DerivedF>& F,
+    Eigen::PlainObjectBase<DerivedNV>& NV,
+    Eigen::PlainObjectBase<DerivedNF>& NF,
+    const int number_of_subdivs = 1);
 }
 
 #ifndef IGL_STATIC_LIBRARY
-#include "loop.cpp"
+#  include "loop.cpp"
 #endif
 
 #endif
