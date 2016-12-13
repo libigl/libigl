@@ -8,7 +8,7 @@
 #include "outer_hull.h"
 #include "extract_cells.h"
 #include "remesh_self_intersections.h"
-#include "assign_scalar.h"
+#include "assign.h"
 #include "../../remove_unreferenced.h"
 
 #include <CGAL/AABB_tree.h>
@@ -94,14 +94,8 @@ IGL_INLINE void igl::copyleft::cgal::outer_hull(
   // Remove unreferenced vertices and re-index faces
   {
     // Cast to output type
-    DerivedHV Vr_cast(Vr.rows(),Vr.cols());
-    for(int i = 0;i<Vr.rows();i++)
-    {
-      for(int j = 0;j<Vr.cols();j++)
-      {
-        assign_scalar(Vr(i,j), Vr_cast(i,j));
-      }
-    }
+    DerivedHV Vr_cast;
+    assign(Vr,Vr_cast);
     Eigen::VectorXi I;
     remove_unreferenced(Vr_cast,DerivedHF(HF),HV,HF,I);
   }

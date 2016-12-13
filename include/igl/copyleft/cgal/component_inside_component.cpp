@@ -7,19 +7,18 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "component_inside_component.h"
 
-#include <cassert>
-#include <list>
-#include <limits>
-#include <vector>
+#include "order_facets_around_edge.h"
+#include "points_inside_component.h"
 
 #include <CGAL/AABB_tree.h>
 #include <CGAL/AABB_traits.h>
 #include <CGAL/AABB_triangle_primitive.h>
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 
-#include "order_facets_around_edge.h"
-#include "assign_scalar.h"
-#include "points_inside_component.h"
+#include <cassert>
+#include <list>
+#include <limits>
+#include <vector>
 
 template <typename DerivedV, typename DerivedF, typename DerivedI>
 IGL_INLINE bool igl::copyleft::cgal::component_inside_component(
