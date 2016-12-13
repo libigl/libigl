@@ -9,6 +9,7 @@
 #define IGL_WRITEDMAT_H
 #include "igl_inline.h"
 // See writeDMAT.h for a description of the .dmat file type
+#include <Eigen/Core>
 #include <string>
 #include <vector>
 namespace igl
@@ -23,19 +24,21 @@ namespace igl
   //   ascii  write ascii file {true}
   // Returns true on success, false on error
   //
-  template <class Mat>
+  template <typename DerivedW>
   IGL_INLINE bool writeDMAT(
     const std::string file_name, 
-    const Mat & W,
+    const Eigen::MatrixBase<DerivedW> & W,
     const bool ascii=true);
   template <typename Scalar>
   IGL_INLINE bool writeDMAT(
     const std::string file_name, 
-    const std::vector<std::vector<Scalar> > W);
+    const std::vector<std::vector<Scalar> > & W,
+    const bool ascii=true);
   template <typename Scalar>
   IGL_INLINE bool writeDMAT(
     const std::string file_name, 
-    const std::vector<Scalar > W);
+    const std::vector<Scalar > &W,
+    const bool ascii=true);
 }
 
 #ifndef IGL_STATIC_LIBRARY

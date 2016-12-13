@@ -28,7 +28,7 @@ namespace igl
   //     F(f,:) opposite the vth corner, where EI(e,0)=v. Similarly EF(e,1) "
   //     e=(j->i)
   //   EI  #E by 2 list of edge flap corners (see above).
-  // Returns list of faces touched by circulation.
+  // Returns list of faces touched by circulation (in cyclically order).
   //   
   IGL_INLINE std::vector<int> circulation(
     const int e,

@@ -118,9 +118,15 @@ IGL_INLINE void igl::jet(
   Eigen::PlainObjectBase<DerivedC> & C)
 {
   C.resize(Z.rows(),3);
+  double denom = (max_z-min_z);
+  denom = denom==0?1:denom;
   for(int r = 0;r<Z.rows();r++)
   {
-    jet((-min_z+Z(r,0))/(max_z-min_z),C(r,0),C(r,1),C(r,2));
+    jet(
+      (typename DerivedC::Scalar)((-min_z+Z(r,0))/denom),
+      C(r,0),
+      C(r,1),
+      C(r,2));
   }
 }
 

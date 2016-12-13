@@ -20,17 +20,8 @@ IGL_INLINE void igl::randperm(
   std::random_shuffle(I.data(),I.data()+n);
 }
 
-//template <typename DerivedI>
-//IGL_INLINE Eigen::PlainObjectBase<DerivedI> igl::randperm( const int n)
-//{
-//  Eigen::PlainObjectBase<DerivedI> I;
-//  randperm(n,I);
-//  return I;
-//}
-
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
 template void igl::randperm<Eigen::Matrix<int, -1, 1, 0, -1, 1> >(int, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
 template void igl::randperm<Eigen::Matrix<int, -1, -1, 0, -1, -1> >(int, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
-//template Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > igl::randperm<Eigen::Matrix<int, -1, 1, 0, -1, 1> >(int);
 #endif

@@ -123,7 +123,7 @@ IGL_INLINE void igl::on_boundary(
   using namespace std;
   using namespace Eigen;
   // Cop out: use vector of vectors version
-  vector<vector<typename Eigen::PlainObjectBase<DerivedT>::Scalar> > vT;
+  vector<vector<typename DerivedT::Scalar> > vT;
   matrix_to_list(T,vT);
   vector<bool> vI;
   vector<vector<bool> > vC;

@@ -5,6 +5,7 @@ clone_folder: C:\projects\libigl
 branches:
   only:
     - master
+    - alecjacobson
 install:
   - git submodule update --init --recursive
   - cinstall: python

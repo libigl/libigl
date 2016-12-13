@@ -42,7 +42,7 @@ IGL_INLINE void igl::setdiff(
   typedef Matrix<typename DerivedB::Scalar,Dynamic,1> VectorB;
   VectorA uA;
   VectorB uB;
-  typedef PlainObjectBase<DerivedIA> IAType;
+  typedef DerivedIA IAType;
   IAType uIA,uIuA,uIB,uIuB;
   unique(A,uA,uIA,uIuA);
   unique(B,uB,uIB,uIuB);
