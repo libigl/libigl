@@ -19,6 +19,7 @@
 #endif
 #include <string>
 #include <vector>
+#include <cstdio>
 
 namespace igl 
 {
@@ -42,6 +43,19 @@ namespace igl
   template <typename Scalar, typename Index>
   IGL_INLINE bool readOBJ(
     const std::string obj_file_name, 
+    std::vector<std::vector<Scalar > > & V,
+    std::vector<std::vector<Scalar > > & TC,
+    std::vector<std::vector<Scalar > > & N,
+    std::vector<std::vector<Index > > & F,
+    std::vector<std::vector<Index > > & FTC,
+    std::vector<std::vector<Index > > & FN);
+  // Inputs:
+  //   obj_file  pointer to already opened .obj file 
+  // Outputs:
+  //   obj_file  closed file
+  template <typename Scalar, typename Index>
+  IGL_INLINE bool readOBJ(
+    FILE * obj_file,
     std::vector<std::vector<Scalar > > & V,
     std::vector<std::vector<Scalar > > & TC,
     std::vector<std::vector<Scalar > > & N,
