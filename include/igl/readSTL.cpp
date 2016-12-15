@@ -60,21 +60,39 @@ IGL_INLINE bool igl::readSTL(
             filename.c_str());
     return false;
   }
+  return readSTL(stl_file,V,F,N);
+}
+
+template <typename TypeV, typename TypeF, typename TypeN>
+IGL_INLINE bool igl::readSTL(
+  FILE * stl_file, 
+  std::vector<std::vector<TypeV> > & V,
+  std::vector<std::vector<TypeF> > & F,
+  std::vector<std::vector<TypeN> > & N)
+{
+  using namespace std;
+  stl_file = freopen(NULL,"rb",stl_file);
+  if(NULL==stl_file)
+  {
+    fprintf(stderr,"IOError: stl file could not be reopened as binary (1) ...\n");
+    return false;
+  }
+
   V.clear();
   F.clear();
   N.clear();
+
+
   // Specifically 80 character header
   char header[80];
   char solid[80];
   bool is_ascii = true;
   if(fread(header,1,80,stl_file) != 80)
   {
-    cerr<<"IOError: "<<filename<<" too short (1)."<<endl;
+    cerr<<"IOError: too short (1)."<<endl;
     goto close_false;
   }
-
   sscanf(header,"%s",solid);
-
   if(string("solid") != solid)
   {
     // definitely **not** ascii 
@@ -85,7 +103,7 @@ IGL_INLINE bool igl::readSTL(
     char buf[4];
     if(fread(buf,1,4,stl_file) != 4)
     {
-      cerr<<"IOError: "<<filename<<" too short (3)."<<endl;
+      cerr<<"IOError: too short (3)."<<endl;
       goto close_false;
     }
     size_t num_faces = *reinterpret_cast<unsigned int*>(buf);
@@ -99,14 +117,18 @@ IGL_INLINE bool igl::readSTL(
       is_ascii = true;
     }
   }
-  fclose(stl_file);
-
-
 
   if(is_ascii)
   {
     // Rewind to end of header
-    stl_file = fopen(filename.c_str(),"r");
+    //stl_file = fopen(filename.c_str(),"r");
+    stl_file = freopen(NULL,"r",stl_file);
+    if(NULL==stl_file)
+    {
+      fprintf(stderr,"IOError: stl file could not be reopened as ascii ...\n");
+      return false;
+    }
+    // Read 80 header
     // Eat file name
 #ifndef IGL_LINE_MAX
 #  define IGL_LINE_MAX 2048
@@ -114,7 +136,7 @@ IGL_INLINE bool igl::readSTL(
     char name[IGL_LINE_MAX];
     if(NULL==fgets(name,IGL_LINE_MAX,stl_file))
     {
-      cerr<<"IOError: "<<filename<<" ascii too short (2)."<<endl;
+      cerr<<"IOError: ascii too short (2)."<<endl;
       goto close_false;
     }
     // ascii
@@ -136,7 +158,7 @@ IGL_INLINE bool igl::readSTL(
       {
         cout<<"facet: "<<facet<<endl;
         cout<<"normal: "<<normal<<endl;
-        cerr<<"IOError: "<<filename<<" bad format (1)."<<endl;
+        cerr<<"IOError: bad format (1)."<<endl;
         goto close_false;
       }
       // copy casts to Type
@@ -146,7 +168,7 @@ IGL_INLINE bool igl::readSTL(
       ret = fscanf(stl_file,"%s %s",outer,loop);
       if(ret != 2 || string("outer") != outer || string("loop") != loop)
       {
-        cerr<<"IOError: "<<filename<<" bad format (2)."<<endl;
+        cerr<<"IOError: bad format (2)."<<endl;
         goto close_false;
       }
       vector<TypeF> f;
@@ -164,7 +186,7 @@ IGL_INLINE bool igl::readSTL(
           int ret = fscanf(stl_file,"%lg %lg %lg",vd,vd+1,vd+2);
           if(ret != 3)
           {
-            cerr<<"IOError: "<<filename<<" bad format (3)."<<endl;
+            cerr<<"IOError: bad format (3)."<<endl;
             goto close_false;
           }
           f.push_back(V.size());
@@ -173,7 +195,7 @@ IGL_INLINE bool igl::readSTL(
           V.push_back(v);
         }else
         {
-          cerr<<"IOError: "<<filename<<" bad format (4)."<<endl;
+          cerr<<"IOError: bad format (4)."<<endl;
           goto close_false;
         }
       }
@@ -182,7 +204,7 @@ IGL_INLINE bool igl::readSTL(
       ret = fscanf(stl_file,"%s",endfacet);
       if(ret != 1 || string("endfacet") != endfacet)
       {
-        cerr<<"IOError: "<<filename<<" bad format (5)."<<endl;
+        cerr<<"IOError: bad format (5)."<<endl;
         goto close_false;
       }
     }
@@ -191,25 +213,19 @@ IGL_INLINE bool igl::readSTL(
   }else
   {
     // Binary
-    stl_file = fopen(filename.c_str(),"rb");
-    if(NULL==stl_file)
-    {
-      fprintf(stderr,"IOError: %s could not be opened...\n",
-              filename.c_str());
-      return false;
-    }
+    stl_file = freopen(NULL,"rb",stl_file);
     // Read 80 header
     char header[80];
     if(fread(header,sizeof(char),80,stl_file)!=80)
     {
-      cerr<<"IOError: "<<filename<<" bad format (6)."<<endl;
+      cerr<<"IOError: bad format (6)."<<endl;
       goto close_false;
     }
     // Read number of triangles
     unsigned int num_tri;
     if(fread(&num_tri,sizeof(unsigned int),1,stl_file)!=1)
     {
-      cerr<<"IOError: "<<filename<<" bad format (7)."<<endl;
+      cerr<<"IOError: bad format (7)."<<endl;
       goto close_false;
     }
     V.resize(num_tri*3,vector<TypeV >(3,0));
@@ -221,7 +237,7 @@ IGL_INLINE bool igl::readSTL(
       float n[3];
       if(fread(n,sizeof(float),3,stl_file)!=3)
       {
-        cerr<<"IOError: "<<filename<<" bad format (8)."<<endl;
+        cerr<<"IOError: bad format (8)."<<endl;
         goto close_false;
       }
       // Read each vertex
@@ -232,7 +248,7 @@ IGL_INLINE bool igl::readSTL(
         float v[3];
         if(fread(v,sizeof(float),3,stl_file)!=3)
         {
-          cerr<<"IOError: "<<filename<<" bad format (9)."<<endl;
+          cerr<<"IOError: bad format (9)."<<endl;
           goto close_false;
         }
         V[3*t+c][0] = v[0];
@@ -243,7 +259,7 @@ IGL_INLINE bool igl::readSTL(
       unsigned short att_count;
       if(fread(&att_count,sizeof(unsigned short),1,stl_file)!=1)
       {
-        cerr<<"IOError: "<<filename<<" bad format (10)."<<endl;
+        cerr<<"IOError: bad format (10)."<<endl;
         goto close_false;
       }
     }

@@ -7,18 +7,17 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "read_triangle_mesh.h"
 
-#include <igl/list_to_matrix.h>
-#include <igl/readMESH.h>
-#include <igl/readOBJ.h>
-#include <igl/readOFF.h>
-#include <igl/readSTL.h>
-#include <igl/readPLY.h>
-#include <igl/readWRL.h>
-#include <igl/pathinfo.h>
-#include <igl/boundary_facets.h>
-#include <igl/polygon_mesh_to_triangle_mesh.h>
+#include "list_to_matrix.h"
+#include "readMESH.h"
+#include "readOBJ.h"
+#include "readOFF.h"
+#include "readSTL.h"
+#include "readPLY.h"
+#include "readWRL.h"
+#include "pathinfo.h"
+#include "boundary_facets.h"
+#include "polygon_mesh_to_triangle_mesh.h"
 
-#include <cstdio>
 #include <algorithm>
 #include <iostream>
 
@@ -85,13 +84,26 @@ IGL_INLINE bool igl::read_triangle_mesh(
   pathinfo(filename,dir,base,ext,name);
   // Convert extension to lower case
   transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+  FILE * fp = fopen(filename.c_str(),"r");
+  return read_triangle_mesh(ext,fp,V,F);
+}
+
+template <typename DerivedV, typename DerivedF>
+IGL_INLINE bool igl::read_triangle_mesh(
+  const std::string & ext,
+  FILE * fp,
+  Eigen::PlainObjectBase<DerivedV>& V,
+  Eigen::PlainObjectBase<DerivedF>& F)
+{
+  using namespace std;
+  using namespace Eigen;
   vector<vector<double > > vV,vN,vTC,vC;
   vector<vector<int > > vF,vFTC,vFN;
   if(ext == "mesh")
   {
     // Convert extension to lower case
     MatrixXi T;
-    if(!readMESH(filename,V,T,F))
+    if(!readMESH(fp,V,T,F))
     {
       return 1;
     }
@@ -101,7 +113,7 @@ IGL_INLINE bool igl::read_triangle_mesh(
     }
   }else if(ext == "obj")
   {
-    if(!readOBJ(filename,vV,vTC,vN,vF,vFTC,vFN))
+    if(!readOBJ(fp,vV,vTC,vN,vF,vFTC,vFN))
     {
       return false;
     }
@@ -113,26 +125,25 @@ IGL_INLINE bool igl::read_triangle_mesh(
     }
   }else if(ext == "off")
   {
-    if(!readOFF(filename,vV,vF,vN,vC))
+    if(!readOFF(fp,vV,vF,vN,vC))
     {
       return false;
     }
   }else if(ext == "ply")
   {
-    if(!readPLY(filename,vV,vF,vN,vTC))
+    if(!readPLY(fp,vV,vF,vN,vTC))
     {
       return false;
     }
   }else if(ext == "stl")
   {
-    MatrixXd _;
-    if(!readSTL(filename,V,F,_))
+    if(!readSTL(fp,vV,vF,vN))
     {
       return false;
     }
   }else if(ext == "wrl")
   {
-    if(!readWRL(filename,vV,vF))
+    if(!readWRL(fp,vV,vF))
     {
       return false;
     }

@@ -7,9 +7,6 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "readMESH.h"
 
-#include <cstdio>
-#include "verbose.h"
-
 template <typename Scalar, typename Index>
 IGL_INLINE bool igl::readMESH(
   const std::string mesh_file_name,
@@ -24,6 +21,17 @@ IGL_INLINE bool igl::readMESH(
     fprintf(stderr,"IOError: %s could not be opened...",mesh_file_name.c_str());
     return false;
   }
+  return igl::readMESH(mesh_file,V,T,F);
+}
+
+template <typename Scalar, typename Index>
+IGL_INLINE bool igl::readMESH(
+  FILE * mesh_file,
+  std::vector<std::vector<Scalar > > & V,
+  std::vector<std::vector<Index > > & T,
+  std::vector<std::vector<Index > > & F)
+{
+  using namespace std;
 #ifndef LINE_MAX
 #  define LINE_MAX 2048
 #endif
@@ -37,10 +45,14 @@ IGL_INLINE bool igl::readMESH(
   still_comments= true;
   while(still_comments)
   {
-    fgets(line,LINE_MAX,mesh_file);
+    if(fgets(line,LINE_MAX,mesh_file) == NULL)
+    {
+      fprintf(stderr, "Error: couldn't find start of .mesh file");
+      fclose(mesh_file);
+      return false;
+    }
     still_comments = (line[0] == '#' || line[0] == '\n');
   }
-
   char str[LINE_MAX];
   sscanf(line," %s",str);
   // check that first word is MeshVersionFormatted
@@ -51,6 +63,7 @@ IGL_INLINE bool igl::readMESH(
     fclose(mesh_file);
     return false;
   }
+
   int one = -1;
   if(2 != sscanf(line,"%s %d",str,&one))
   {
@@ -238,6 +251,17 @@ IGL_INLINE bool igl::readMESH(
     fprintf(stderr,"IOError: %s could not be opened...",mesh_file_name.c_str());
     return false;
   }
+  return readMESH(mesh_file,V,T,F);
+}
+
+template <typename DerivedV, typename DerivedF, typename DerivedT>
+IGL_INLINE bool igl::readMESH(
+  FILE * mesh_file,
+  Eigen::PlainObjectBase<DerivedV>& V,
+  Eigen::PlainObjectBase<DerivedT>& T,
+  Eigen::PlainObjectBase<DerivedF>& F)
+{
+  using namespace std;
 #ifndef LINE_MAX
 #  define LINE_MAX 2048
 #endif
