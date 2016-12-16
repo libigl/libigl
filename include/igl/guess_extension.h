@@ -13,9 +13,10 @@ namespace igl
   //   fp  file pointer (see output)
   // Outputs:
   //   fp  file pointer rewound 
-  // Returns extension as string. One of "mesh",{"obj"},"off","ply","stl", or
-  //   "wrl"
+  //   guess  extension as string. One of "mesh",{"obj"},"off","ply","stl", or
+  //     "wrl"
   //
+  IGL_INLINE void guess_extension(FILE * fp, std::string & guess);
   IGL_INLINE std::string guess_extension(FILE * fp);
 }
 #ifndef IGL_STATIC_LIBRARY
