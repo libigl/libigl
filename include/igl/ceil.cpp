@@ -28,6 +28,6 @@ IGL_INLINE void igl::ceil(
 }
 
 #ifdef IGL_STATIC_LIBRARY
-// Explicit instanciation
+// Explicit template specialization
 template void igl::ceil<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
 #endif
