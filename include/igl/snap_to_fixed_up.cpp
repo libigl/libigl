@@ -27,7 +27,7 @@ IGL_INLINE void igl::snap_to_fixed_up(
 }
 
 #ifdef IGL_STATIC_LIBRARY
-// Explicit template instanciations
+// Explicit template specializations
 template void igl::snap_to_fixed_up<float>(Eigen::Quaternion<float, 0> const&, Eigen::Quaternion<float, 0>&);
 template void igl::snap_to_fixed_up<double>(Eigen::Quaternion<double, 0> const&, Eigen::Quaternion<double, 0>&);
 #endif
