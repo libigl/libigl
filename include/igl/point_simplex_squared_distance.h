@@ -35,7 +35,7 @@ namespace igl
     const Eigen::MatrixBase<DerivedEle> & Ele,
     const typename DerivedEle::Index i,
     Derivedsqr_d & sqr_d,
-    Eigen::MatrixBase<Derivedc> & c);
+    Eigen::PlainObjectBase<Derivedc> & c);
   // Determine squared distance from a point to linear simplex.
   // Also return barycentric coordinate of closest point. 
   //
@@ -63,8 +63,8 @@ namespace igl
     const Eigen::MatrixBase<DerivedEle> & Ele,
     const typename DerivedEle::Index i,
     Derivedsqr_d & sqr_d,
-    Eigen::MatrixBase<Derivedc> & c,
-    Eigen::MatrixBase<Derivedb> & b);
+    Eigen::PlainObjectBase<Derivedc> & c,
+    Eigen::PlainObjectBase<Derivedb> & b);
 }
 #ifndef IGL_STATIC_LIBRARY
 #  include "point_simplex_squared_distance.cpp"
