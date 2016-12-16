@@ -2,7 +2,7 @@
 #include "is_stl.h"
 #include "ply.h"
 
-IGL_INLINE std::string igl::guess_extension(FILE * fp)
+IGL_INLINE void igl::guess_extension(FILE * fp, std::string & guess)
 {
   const auto is_off = [](FILE * fp)-> bool
   {
@@ -74,24 +74,30 @@ IGL_INLINE std::string igl::guess_extension(FILE * fp)
     rewind(mesh_file);
     return true;
   };
-  std::string ext = "obj";
+  guess = "obj";
   if(is_mesh(fp))
   {
-    ext = "mesh";
+    guess = "mesh";
   }else if(is_off(fp))
   {
-    ext = "off";
+    guess = "off";
   }else if(is_ply(fp))
   {
-    ext = "ply";
+    guess = "ply";
   }else if(igl::is_stl(fp))
   {
-    ext = "stl";
+    guess = "stl";
   }else if(is_wrl(fp))
   {
-    ext = "wrl";
+    guess = "wrl";
   }
   // else obj
   rewind(fp);
-  return ext;
+}
+
+IGL_INLINE std::string igl::guess_extension(FILE * fp)
+{
+  std::string guess;
+  guess_extension(fp,guess);
+  return guess;
 }
