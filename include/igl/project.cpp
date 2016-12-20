@@ -29,12 +29,12 @@ Eigen::Matrix<Scalar,3,1> igl::project(
   return tmp.head(3);
 }
 
-template <typename DerivedV, typename Scalar, typename DerivedP>
+template <typename DerivedV, typename DerivedM, typename DerivedN, typename DerivedO, typename DerivedP>
 IGL_INLINE void igl::project(
   const    Eigen::PlainObjectBase<DerivedV>&  V,
-  const    Eigen::Matrix<Scalar,4,4>& model,
-  const    Eigen::Matrix<Scalar,4,4>& proj,
-  const    Eigen::Matrix<Scalar,4,1>&  viewport,
+  const    Eigen::MatrixBase<DerivedM>& model,
+  const    Eigen::MatrixBase<DerivedN>& proj,
+  const    Eigen::MatrixBase<DerivedO>&  viewport,
   Eigen::PlainObjectBase<DerivedP> & P)
 {
   typedef typename DerivedP::Scalar PScalar;
