@@ -29,7 +29,7 @@ IGL_INLINE void igl::point_simplex_squared_distance(
   const typename DerivedEle::Index primitive,
   Derivedsqr_d & sqr_d,
   Eigen::MatrixBase<Derivedc> & c,
-  Eigen::MatrixBase<Derivedb> & bary)
+  Eigen::PlainObjectBase<Derivedb> & bary)
 {
   typedef typename Derivedp::Scalar Scalar;
   typedef typename Eigen::Matrix<Scalar,1,DIM> Vector;

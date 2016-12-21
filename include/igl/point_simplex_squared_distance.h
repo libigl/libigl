@@ -64,7 +64,7 @@ namespace igl
     const typename DerivedEle::Index i,
     Derivedsqr_d & sqr_d,
     Eigen::MatrixBase<Derivedc> & c,
-    Eigen::MatrixBase<Derivedb> & b);
+    Eigen::PlainObjectBase<Derivedb> & b);
 }
 #ifndef IGL_STATIC_LIBRARY
 #  include "point_simplex_squared_distance.cpp"
