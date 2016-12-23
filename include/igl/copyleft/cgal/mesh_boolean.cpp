@@ -113,7 +113,8 @@ IGL_INLINE bool igl::copyleft::cgal::mesh_boolean(
   {
     for(int d = 0;d<3;d++) VV(VA.rows()+b,d) = VB(b,d);
   }
-  FF << FA, FB.array() + VA.rows();
+  FF.block(0, 0, FA.rows(), 3) = FA;
+  FF.block(FA.rows(), 0, FB.rows(), 3) = FB.array() + VA.rows();
   return mesh_boolean(VV,FF,sizes,wind_num_op,keep,VC,FC,J);
 }
 

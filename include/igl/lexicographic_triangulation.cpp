@@ -35,7 +35,7 @@ IGL_INLINE void igl::lexicographic_triangulation(
   igl::sortrows(P, true, ordered_P, order);
 
   std::vector<Eigen::Vector3i> faces;
-  std::list<size_t> boundary;
+  std::list<int> boundary;
   const Scalar p0[] = {ordered_P(0, 0), ordered_P(0, 1)};
   const Scalar p1[] = {ordered_P(1, 0), ordered_P(1, 1)};
   for (size_t i=2; i<num_pts; i++) {
