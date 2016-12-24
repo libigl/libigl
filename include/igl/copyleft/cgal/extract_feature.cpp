@@ -97,11 +97,12 @@ IGL_INLINE void igl::copyleft::cgal::extract_feature(
         return CGAL::compare_dihedral_angle(p0, p1, p3, p2, cos_tol) ==
           CGAL::SMALLER;
       case CGAL::COPLANAR:
-        if (!CGAL::collinear(p0, p1, p2) && CGAL::collinear(p0, p1, p3)) {
+        if (!CGAL::collinear(p0, p1, p2) && !CGAL::collinear(p0, p1, p3)) {
           return CGAL::compare_dihedral_angle(p0, p1, p2, p3, cos_tol) ==
             CGAL::SMALLER;
         } else {
-          return false;
+          throw "Dihedral angle (and feature edge) is not well defined for"
+              " degenerate triangles!";
         }
       default:
         throw "Unknown CGAL orientation";
