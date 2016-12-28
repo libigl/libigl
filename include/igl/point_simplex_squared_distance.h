@@ -63,7 +63,7 @@ namespace igl
     const Eigen::MatrixBase<DerivedEle> & Ele,
     const typename DerivedEle::Index i,
     Derivedsqr_d & sqr_d,
-    Eigen::PlainObjectBase<Derivedc> & c,
+    Eigen::MatrixBase<Derivedc> & c,
     Eigen::PlainObjectBase<Derivedb> & b);
 }
 #ifndef IGL_STATIC_LIBRARY
