@@ -109,7 +109,6 @@ IGL_INLINE void igl::on_boundary(
 
 }
 
-#ifndef IGL_NO_EIGEN
 #include "list_to_matrix.h"
 #include "matrix_to_list.h"
 
@@ -131,7 +130,6 @@ IGL_INLINE void igl::on_boundary(
   list_to_matrix(vI,I);
   list_to_matrix(vC,C);
 }
-#endif
 
 
 #ifdef IGL_STATIC_LIBRARY
