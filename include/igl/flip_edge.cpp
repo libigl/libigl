@@ -72,10 +72,10 @@ IGL_INLINE void igl::flip_edge(
   assert(E(e_32, 0) == v3);
   assert(E(e_32, 1) == v2);
 
-  const size_t ue_24 = EMAP[e_24];
-  const size_t ue_41 = EMAP[e_41];
-  const size_t ue_13 = EMAP[e_13];
-  const size_t ue_32 = EMAP[e_32];
+  const size_t ue_24 = EMAP(e_24);
+  const size_t ue_41 = EMAP(e_41);
+  const size_t ue_13 = EMAP(e_13);
+  const size_t ue_32 = EMAP(e_32);
 
   F(f1, 0) = v1;
   F(f1, 1) = v3;
@@ -107,12 +107,12 @@ IGL_INLINE void igl::flip_edge(
   E(new_e_24, 0) = v2;
   E(new_e_24, 1) = v4;
 
-  EMAP[new_e_34] = uei;
-  EMAP[new_e_43] = uei;
-  EMAP[new_e_41] = ue_41;
-  EMAP[new_e_13] = ue_13;
-  EMAP[new_e_32] = ue_32;
-  EMAP[new_e_24] = ue_24;
+  EMAP(new_e_34) = uei;
+  EMAP(new_e_43) = uei;
+  EMAP(new_e_41) = ue_41;
+  EMAP(new_e_13) = ue_13;
+  EMAP(new_e_32) = ue_32;
+  EMAP(new_e_24) = ue_24;
 
   auto replace = [](std::vector<Index>& array, Index old_v, Index new_v) {
     std::replace(array.begin(), array.end(), old_v, new_v);
