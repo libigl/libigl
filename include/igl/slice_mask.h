@@ -25,18 +25,18 @@ namespace igl
   //
   // See also: slice_mask
   
-  template <typename DerivedX>
+  template <typename DerivedX,typename DerivedY>
   IGL_INLINE void slice_mask(
-    const Eigen::PlainObjectBase<DerivedX> & X,
+    const Eigen::MatrixBase<DerivedX> & X,
     const Eigen::Array<bool,Eigen::Dynamic,1> & R,
     const Eigen::Array<bool,Eigen::Dynamic,1> & C,
-    Eigen::PlainObjectBase<DerivedX> & Y);
-  template <typename DerivedX>
+    Eigen::PlainObjectBase<DerivedY> & Y);
+  template <typename DerivedX,typename DerivedY>
   IGL_INLINE void slice_mask(
-    const Eigen::PlainObjectBase<DerivedX> & X,
+    const Eigen::MatrixBase<DerivedX> & X,
     const Eigen::Array<bool,Eigen::Dynamic,1> & R,
     const int dim,
-    Eigen::PlainObjectBase<DerivedX> & Y);
+    Eigen::PlainObjectBase<DerivedY> & Y);
   //
   // This templating is bad because the return type might not have the same
   // size as `DerivedX`. This will probably only work if DerivedX has Dynamic
@@ -44,12 +44,12 @@ namespace igl
   // the number of rows in `DerivedX`.
   template <typename DerivedX>
   IGL_INLINE DerivedX slice_mask(
-    const Eigen::PlainObjectBase<DerivedX> & X,
+    const Eigen::MatrixBase<DerivedX> & X,
     const Eigen::Array<bool,Eigen::Dynamic,1> & R,
     const Eigen::Array<bool,Eigen::Dynamic,1> & C);
   template <typename DerivedX>
   IGL_INLINE DerivedX slice_mask(
-    const Eigen::PlainObjectBase<DerivedX> & X,
+    const Eigen::MatrixBase<DerivedX> & X,
     const Eigen::Array<bool,Eigen::Dynamic,1> & R,
     const int dim);
 }
