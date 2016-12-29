@@ -8,12 +8,12 @@
 #include "slice_mask.h"
 #include <cassert>
 
-template <typename DerivedX>
+template <typename DerivedX,typename DerivedY>
 IGL_INLINE void igl::slice_mask(
-  const Eigen::PlainObjectBase<DerivedX> & X,
+  const Eigen::MatrixBase<DerivedX> & X,
   const Eigen::Array<bool,Eigen::Dynamic,1> & R,
   const Eigen::Array<bool,Eigen::Dynamic,1> & C,
-  Eigen::PlainObjectBase<DerivedX> & Y)
+  Eigen::PlainObjectBase<DerivedY> & Y)
 {
   int xm = X.rows();
   int xn = X.cols();
@@ -43,12 +43,12 @@ IGL_INLINE void igl::slice_mask(
   }
 }
 
-template <typename DerivedX>
+template <typename DerivedX, typename DerivedY>
 IGL_INLINE void igl::slice_mask(
-  const Eigen::PlainObjectBase<DerivedX> & X,
+  const Eigen::MatrixBase<DerivedX> & X,
   const Eigen::Array<bool,Eigen::Dynamic,1> & R,
   const int dim,
-  Eigen::PlainObjectBase<DerivedX> & Y)
+  Eigen::PlainObjectBase<DerivedY> & Y)
 {
   switch(dim)
   {
@@ -95,7 +95,7 @@ IGL_INLINE void igl::slice_mask(
 
 template <typename DerivedX>
 IGL_INLINE DerivedX igl::slice_mask(
-  const Eigen::PlainObjectBase<DerivedX> & X,
+  const Eigen::MatrixBase<DerivedX> & X,
   const Eigen::Array<bool,Eigen::Dynamic,1> & R,
   const Eigen::Array<bool,Eigen::Dynamic,1> & C)
 {
@@ -106,7 +106,7 @@ IGL_INLINE DerivedX igl::slice_mask(
 
 template <typename DerivedX>
 IGL_INLINE DerivedX igl::slice_mask(
-  const Eigen::PlainObjectBase<DerivedX>& X,
+  const Eigen::MatrixBase<DerivedX>& X,
   const Eigen::Array<bool,Eigen::Dynamic,1> & R,
   const int dim)
 {
@@ -116,9 +116,9 @@ IGL_INLINE DerivedX igl::slice_mask(
 }
 
 #ifdef IGL_STATIC_LIBRARY
-template void igl::slice_mask<Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::Array<bool, -1, 1, 0, -1, 1> const&, int, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
-template void igl::slice_mask<Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::Array<bool, -1, 1, 0, -1, 1> const&, Eigen::Array<bool, -1, 1, 0, -1, 1> const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
-template void igl::slice_mask<Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::Array<bool, -1, 1, 0, -1, 1> const&, int, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
-template void igl::slice_mask<Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::Array<bool, -1, 1, 0, -1, 1> const&, Eigen::Array<bool, -1, 1, 0, -1, 1> const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
-template void igl::slice_mask<Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, Eigen::Array<bool, -1, 1, 0, -1, 1> const&, int, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
+template void igl::slice_mask<Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::Array<bool, -1, 1, 0, -1, 1> const&, int, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
+template void igl::slice_mask<Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::Array<bool, -1, 1, 0, -1, 1> const&, Eigen::Array<bool, -1, 1, 0, -1, 1> const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
+template void igl::slice_mask<Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::Array<bool, -1, 1, 0, -1, 1> const&, int, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
+template void igl::slice_mask<Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::Array<bool, -1, 1, 0, -1, 1> const&, Eigen::Array<bool, -1, 1, 0, -1, 1> const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
+template void igl::slice_mask<Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, Eigen::Array<bool, -1, 1, 0, -1, 1> const&, int, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
 #endif
