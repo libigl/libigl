@@ -1,9 +1,14 @@
 #include "ramer_douglas_peucker.h"
 
 #include "find.h"
+#include "cumsum.h"
+#include "histc.h"
+#include "slice.h"
 #include "project_to_line.h"
 #include "EPS.h"
 #include "slice_mask.h"
+#include <igl/matlab_format.h>
+
 template <typename DerivedP, typename DerivedS, typename DerivedJ>
 IGL_INLINE void igl::ramer_douglas_peucker(
   const Eigen::MatrixBase<DerivedP> & P,
@@ -64,4 +69,74 @@ IGL_INLINE void igl::ramer_douglas_peucker(
   simplify(0,n-1);
   slice_mask(P,I,1,S);
   find(I,J);
+}
+
+template <
+  typename DerivedP, 
+  typename DerivedS, 
+  typename DerivedJ,
+  typename DerivedQ>
+IGL_INLINE void igl::ramer_douglas_peucker(
+  const Eigen::MatrixBase<DerivedP> & P,
+  const typename DerivedP::Scalar tol,
+  Eigen::PlainObjectBase<DerivedS> & S,
+  Eigen::PlainObjectBase<DerivedJ> & J,
+  Eigen::PlainObjectBase<DerivedQ> & Q)
+{
+  typedef typename DerivedP::Scalar Scalar;
+  ramer_douglas_peucker(P,tol,S,J);
+  const int n = P.rows();
+  assert(n>=2 && "Curve should be at least 2 points");
+  typedef Eigen::Matrix<Scalar,Eigen::Dynamic,1> VectorXS;
+  // distance traveled along high-res curve
+  VectorXS L(n);
+  L(0) = 0;
+  L.block(1,0,n-1,1) = (P.bottomRows(n-1)-P.topRows(n-1)).rowwise().norm();
+  // Give extra on end
+  VectorXS T;
+  cumsum(L,1,T);
+  T.conservativeResize(T.size()+1);
+  T(T.size()-1) = T(T.size()-2);
+  // index of coarse point before each fine vertex
+  Eigen::VectorXi B;
+  {
+    Eigen::VectorXi N;
+    histc(Eigen::VectorXi::LinSpaced(n,0,n-1),J,N,B);
+  }
+  // Add extra point at end
+  J.conservativeResize(J.size()+1);
+  J(J.size()-1) = J(J.size()-2);
+  Eigen::VectorXi s,d;
+  // Find index in original list of "start" vertices
+  slice(J,B,s);
+  // Find index in original list of "destination" vertices
+  slice(J,(B.array()+1).eval(),d);
+  // Parameter between start and destination is linear in arc-length
+  VectorXS Ts,Td;
+  slice(T,s,Ts);
+  slice(T,d,Td);
+  T = ((T.head(T.size()-1)-Ts).array()/(Td-Ts).array()).eval();
+  for(int t =0;t<T.size();t++)
+  {
+    if(!std::isfinite(T(t)) || T(t)!=T(t))
+    {
+      T(t) = 0;
+    }
+  }
+  DerivedS SB;
+  slice(S,B,1,SB);
+  Eigen::VectorXi MB = B.array()+1;
+  for(int b = 0;b<MB.size();b++)
+  {
+    if(MB(b) >= S.rows())
+    {
+      MB(b) = S.rows()-1;
+    }
+  }
+  DerivedS SMB;
+  slice(S,MB,1,SMB);
+  Q = SB.array() + ((SMB.array()-SB.array()).colwise()*T.array());
+
+  // Remove extra point at end
+  J.conservativeResize(J.size()-1);
 }

@@ -19,6 +19,29 @@ namespace igl
     const typename DerivedP::Scalar tol,
     Eigen::PlainObjectBase<DerivedS> & S,
     Eigen::PlainObjectBase<DerivedJ> & J);
+  // Run (Ramer-)Duglass-Peucker curve simplification but keep track of where
+  // every point on the original curve maps to on the simplified curve.
+  //
+  // Inputs:
+  //   P  #P by dim list of points, (use P([1:end 1],:) for loops)
+  //   tol  DP tolerance
+  // Outputs:
+  //   S  #S by dim list of points along simplified curve
+  //   J  #S indices into P of simplified points
+  //   Q  #P by dim list of points mapping along simplified curve
+  //
+  template <
+    typename DerivedP, 
+    typename DerivedS, 
+    typename DerivedJ,
+    typename DerivedQ>
+  IGL_INLINE void ramer_douglas_peucker(
+    const Eigen::MatrixBase<DerivedP> & P,
+    const typename DerivedP::Scalar tol,
+    Eigen::PlainObjectBase<DerivedS> & S,
+    Eigen::PlainObjectBase<DerivedJ> & J,
+    Eigen::PlainObjectBase<DerivedQ> & Q);
+
 }
 #ifndef IGL_STATIC_LIBRARY
 #  include "ramer_douglas_peucker.cpp"
