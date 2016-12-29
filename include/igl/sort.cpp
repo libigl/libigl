@@ -43,8 +43,8 @@ IGL_INLINE void igl::sort(
   // dim must be 2 or 1
   assert(dim == 1 || dim == 2);
   // Resize output
-  Y.resize(X.rows(),X.cols());
-  IX.resize(X.rows(),X.cols());
+  Y.resizeLike(X);
+  IX.resizeLike(X);
   // idea is to process each column (or row) as a std vector
   // loop over columns (or rows)
   for(int i = 0; i<num_outer;i++)
@@ -106,8 +106,8 @@ IGL_INLINE void igl::sort_new(
   // dim must be 2 or 1
   assert(dim == 1 || dim == 2);
   // Resize output
-  Y.resize(X.rows(),X.cols());
-  IX.resize(X.rows(),X.cols());
+  Y.resizeLike(X);
+  IX.resizeLike(X);
   // idea is to process each column (or row) as a std vector
   // loop over columns (or rows)
   for(int i = 0; i<num_outer;i++)
@@ -166,7 +166,7 @@ IGL_INLINE void igl::sort2(
   int num_inner = (dim == 1 ? X.rows() : X.cols() );
   assert(num_inner == 2);(void)num_inner;
   typedef typename DerivedIX::Scalar Index;
-  IX.resize(X.rows(),X.cols());
+  IX.resizeLike(X);
   if(dim==1)
   {
     IX.row(0).setConstant(0);// = DerivedIX::Zero(1,IX.cols());
@@ -209,7 +209,7 @@ IGL_INLINE void igl::sort3(
   int num_inner = (dim == 1 ? X.rows() : X.cols() );
   assert(num_inner == 3);(void)num_inner;
   typedef typename DerivedIX::Scalar Index;
-  IX.resize(X.rows(),X.cols());
+  IX.resizeLike(X);
   if(dim==1)
   {
     IX.row(0).setConstant(0);// = DerivedIX::Zero(1,IX.cols());

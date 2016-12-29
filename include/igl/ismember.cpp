@@ -24,9 +24,9 @@ IGL_INLINE void igl::ismember(
 {
   using namespace Eigen;
   using namespace std;
-  IA.resize(A.rows(),A.cols());
+  IA.resizeLike(A);
   IA.setConstant(false);
-  LOCB.resize(A.rows(),A.cols());
+  LOCB.resizeLike(A);
   LOCB.setConstant(-1);
   // boring base cases
   if(A.size() == 0)

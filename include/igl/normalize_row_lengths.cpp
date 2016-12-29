@@ -13,7 +13,7 @@ IGL_INLINE void igl::normalize_row_lengths(
   Eigen::PlainObjectBase<DerivedV> & B)
 {
   // Resize output
-  B.resize(A.rows(),A.cols());
+  B.resizeLike(A);
 
   // loop over rows
   for(int i = 0; i < A.rows();i++)

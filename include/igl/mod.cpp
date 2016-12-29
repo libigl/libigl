@@ -13,7 +13,7 @@ IGL_INLINE void igl::mod(
   const int base,
   Eigen::PlainObjectBase<DerivedB> & B)
 {
-  B.resize(A.rows(),A.cols());
+  B.resizeLike(A);
   for(int i = 0;i<A.rows();i++)
   {
     for(int j = 0;j<A.cols();j++)

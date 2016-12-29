@@ -55,7 +55,7 @@ IGL_INLINE void igl::remove_duplicate_vertices(
   using namespace Eigen;
   using namespace std;
   remove_duplicate_vertices(V,epsilon,SV,SVI,SVJ);
-  SF.resize(F.rows(),F.cols());
+  SF.resizeLike(F);
   for(int f = 0;f<F.rows();f++)
   {
     for(int c = 0;c<F.cols();c++)

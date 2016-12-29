@@ -21,7 +21,7 @@ IGL_INLINE void igl::round(
   const Eigen::PlainObjectBase<DerivedX>& X,
   Eigen::PlainObjectBase<DerivedY>& Y)
 {
-  Y.resize(X.rows(),X.cols());
+  Y.resizeLike(X);
   // loop over rows
   for(int i = 0;i<X.rows();i++)
   {

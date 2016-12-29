@@ -66,7 +66,7 @@ IGL_INLINE void igl::faces_first(
   {
     IM(NU(i)) = i+U.size();
   }
-  RF.resize(F.rows(),F.cols());
+  RF.resizeLike(F);
   // Reindex faces
   for(int i = 0; i<F.rows(); i++)
   {
@@ -75,7 +75,7 @@ IGL_INLINE void igl::faces_first(
       RF(i,j) = IM(F(i,j));
     }
   }
-  RV.resize(V.rows(),V.cols());
+  RV.resizeLike(V);
   // Reorder vertices
   for(int i = 0;i<V.rows();i++)
   {

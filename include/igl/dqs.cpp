@@ -26,7 +26,7 @@ IGL_INLINE void igl::dqs(
   assert(W.cols() == (int)vQ.size());
   assert(W.cols() == (int)vT.size());
   // resize output
-  U.resize(V.rows(),V.cols());
+  U.resizeLike(V);
 
   // Convert quats + trans into dual parts
   vector<Q> vD(vQ.size());
