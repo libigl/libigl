@@ -10,7 +10,7 @@
 #include "slice.h"
 #include "slice_into.h"
 #include "cat.h"
-#include "matlab_format.h"
+//#include "matlab_format.h"
 
 #include <iostream>
 #include <limits>

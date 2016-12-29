@@ -7,7 +7,6 @@
 #include "project_to_line.h"
 #include "EPS.h"
 #include "slice_mask.h"
-#include <igl/matlab_format.h>
 
 template <typename DerivedP, typename DerivedS, typename DerivedJ>
 IGL_INLINE void igl::ramer_douglas_peucker(

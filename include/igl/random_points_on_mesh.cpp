@@ -9,7 +9,6 @@
 #include "doublearea.h"
 #include "cumsum.h"
 #include "histc.h"
-#include "matlab_format.h"
 #include <iostream>
 #include <cassert>
 
