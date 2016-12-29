@@ -147,7 +147,7 @@ IGL_INLINE void igl::point_simplex_squared_distance(
   const Eigen::MatrixBase<DerivedEle> & Ele,
   const typename DerivedEle::Index primitive,
   Derivedsqr_d & sqr_d,
-  Eigen::PlainObjectBase<Derivedc> & c)
+  Eigen::MatrixBase<Derivedc> & c)
 {
   // Use Dynamic because we don't know Ele.cols() at compile time.
   Eigen::Matrix<typename Derivedc::Scalar,1,Eigen::Dynamic> b;
