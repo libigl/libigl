@@ -9,7 +9,6 @@
 #include "per_face_normals.h"
 #include "barycenter.h"
 #include "doublearea.h"
-#include "matlab_format.h"
 #include <iostream>
 
 template <

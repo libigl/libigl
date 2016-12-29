@@ -11,7 +11,6 @@
 #include "verbose.h"
 #include "polar_dec.h"
 #include "polar_svd.h"
-#include "matlab_format.h"
 #include "C_STR.h"
 #include <iostream>
 

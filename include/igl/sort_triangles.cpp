@@ -12,7 +12,6 @@
 #include "slice.h"
 #include "round.h"
 #include "colon.h"
-#include "matlab_format.h"
 
 #include <iostream>
 
