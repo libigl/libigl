@@ -34,7 +34,7 @@ IGL_INLINE void igl::internal_angles(
   }else
   {
     assert(V.cols() == 3 && "If F contains non-triangle facets, V must be 3D");
-    K.resize(F.rows(),F.cols());
+    K.resizeLike(F);
     auto corner = [](
       const typename DerivedV::ConstRowXpr & x, 
       const typename DerivedV::ConstRowXpr & y, 

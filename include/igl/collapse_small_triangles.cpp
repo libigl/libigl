@@ -91,7 +91,7 @@ void igl::collapse_small_triangles(
     }
   }
 
-  FF.resize(rF.rows(),rF.cols());
+  FF.resizeLike(rF);
   int num_face_collapses=0;
   // Only keep uncollapsed faces
   {

@@ -62,7 +62,7 @@ IGL_INLINE void igl::remove_duplicates(
 
   count = 0;
   std::vector<typename DerivedF::Scalar> face;
-  NF.resize(F.rows(),F.cols());
+  NF.resizeLike(F);
   for (int i =0; i <F.rows(); ++i)
   {
     face.clear();

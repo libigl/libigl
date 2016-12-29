@@ -460,7 +460,7 @@ IGL_INLINE void igl::AABB<DerivedV,DIM>::squared_distance(
   assert(P.cols() == V.cols() && "cols in P should match dim of cols in V");
   sqrD.resize(P.rows(),1);
   I.resize(P.rows(),1);
-  C.resize(P.rows(),P.cols());
+  C.resizeLike(P);
   // O( #P * log #Ele ), where log #Ele is really the depth of this AABB
   // hierarchy
   for(int p = 0;p<P.rows();p++)

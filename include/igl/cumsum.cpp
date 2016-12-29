@@ -17,7 +17,7 @@ IGL_INLINE void igl::cumsum(
 {
   using namespace Eigen;
   using namespace std;
-  Y.resize(X.rows(),X.cols());
+  Y.resizeLike(X);
   // get number of columns (or rows)
   int num_outer = (dim == 1 ? X.cols() : X.rows() );
   // get number of rows (or columns)

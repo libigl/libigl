@@ -13,7 +13,7 @@ IGL_INLINE void igl::copyleft::cgal::assign(
   const Eigen::PlainObjectBase<DerivedC> & C,
   Eigen::PlainObjectBase<DerivedD> & D)
 {
-  D.resize(C.rows(),C.cols());
+  D.resizeLike(C);
   for(int i = 0;i<C.rows();i++)
   {
     for(int j = 0;j<C.cols();j++)

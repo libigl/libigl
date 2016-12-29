@@ -39,7 +39,7 @@
 //  // Perform sort on rows
 //  igl::sort(rows,ascending,sorted,index_map);
 //  // Resize output
-//  Y.resize(X.rows(),X.cols());
+//  Y.resizeLike(X);
 //  IX.resize(X.rows(),1);
 //  // Convert to eigen
 //  for(int i = 0;i<X.rows();i++)

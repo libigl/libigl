@@ -77,7 +77,7 @@ IGL_INLINE void igl::rgb_to_hsv(
   Eigen::PlainObjectBase<DerivedH> & H)
 {
   assert(R.cols() == 3);
-  H.resize(R.rows(),R.cols());
+  H.resizeLike(R);
   for(typename DerivedR::Index r = 0;r<R.rows();r++)
   {
     typename DerivedR::Scalar rgb[3];
