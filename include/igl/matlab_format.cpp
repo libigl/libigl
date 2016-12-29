@@ -11,7 +11,7 @@
 
 template <typename DerivedM>
 IGL_INLINE const Eigen::WithFormat< DerivedM > igl::matlab_format(
-  const Eigen::MatrixBase<DerivedM> & M,
+  const Eigen::DenseBase<DerivedM> & M,
   const std::string name)
 {
   using namespace std;
