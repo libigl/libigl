@@ -28,7 +28,7 @@ namespace igl
   //     Y = X(I,:);
   template <typename DerivedX, typename DerivedI>
   IGL_INLINE void sortrows(
-    const Eigen::PlainObjectBase<DerivedX>& X,
+    const Eigen::DenseBase<DerivedX>& X,
     const bool ascending,
     Eigen::PlainObjectBase<DerivedX>& Y,
     Eigen::PlainObjectBase<DerivedI>& I);

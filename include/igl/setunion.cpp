@@ -24,16 +24,16 @@ IGL_INLINE void igl::setunion(
   DerivedC CS(A.size()+B.size(),1);
   {
     int k = 0;
-    for(int i = 0;i<A.rows();i++)
+    for(int j = 0;j<A.cols();j++)
     {
-      for(int j = 0;j<A.cols();j++)
+      for(int i = 0;i<A.rows();i++)
       {
         CS(k++) = A(i,j);
       }
     }
-    for(int i = 0;i<B.rows();i++)
+    for(int j = 0;j<B.cols();j++)
     {
-      for(int j = 0;j<B.cols();j++)
+      for(int i = 0;i<B.rows();i++)
       {
         CS(k++) = B(i,j);
       }
