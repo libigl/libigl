@@ -279,6 +279,12 @@ bool a = A.array().any();
         <td></td>
       </tr>
 
+      <tr class=d0>
+        <td><pre><code>A = A - diag(diag(A));</code></pre></td>
+        <td><pre><code>A.prune([](const int r, const int c, const Scalar)-&gt;bool{return r!=c;});</code></pre></td>
+        <td>Remove the diagonal from a sparse matrix.</td>
+      </tr>
+
       <!-- Insert rows for each command pair -->
 
       <!-- Leave this here for copy and pasting
