@@ -81,7 +81,8 @@
         <td><pre><code>M = diag(D)</code></pre></td>
         <td><pre><code>igl::diag(D,M)</code></pre></td>
         <td>Construct new square matrix M with entries of vector D along the
-        diagonal. Currently igl version supports sparse only.</td>
+        diagonal. Currently igl version supports sparse only. Might also
+        consider simply: <code>M = D.asDiagonal();</code></td>
       </tr>
 
       <tr class=d1>
