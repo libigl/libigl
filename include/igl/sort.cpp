@@ -159,10 +159,7 @@ IGL_INLINE void igl::sort2(
   using namespace Eigen;
   using namespace std;
   typedef typename DerivedY::Scalar YScalar;
-  // DenseBase doesn't have a .cast function...
-  //Y = X.template cast<YScalar>();
-  Y.resizeLike(X);
-  for(int j=0;j<X.cols();j++)for(int i=0;i<X.rows();i++)Y(i,j)=(YScalar)X(i,j);
+  Y = X.derived().template cast<YScalar>();
 
 
   // get number of columns (or rows)
@@ -207,8 +204,7 @@ IGL_INLINE void igl::sort3(
   using namespace Eigen;
   using namespace std;
   typedef typename DerivedY::Scalar YScalar;
-  // DenseBase doesn't have a .cast function...
-  //Y = X.template cast<YScalar>();
+  Y = X.derived().template cast<YScalar>();
   Y.resizeLike(X);
   for(int j=0;j<X.cols();j++)for(int i=0;i<X.rows();i++)Y(i,j)=(YScalar)X(i,j);
 
