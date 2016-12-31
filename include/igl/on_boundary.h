@@ -37,7 +37,7 @@ namespace igl
   //   DerivedC  bool-value: i.e. from MatrixXi
   template <typename DerivedT, typename DerivedI, typename DerivedC>
   IGL_INLINE void on_boundary(
-    const Eigen::PlainObjectBase<DerivedT>& T,
+    const Eigen::MatrixBase<DerivedT>& T,
     Eigen::PlainObjectBase<DerivedI>& I,
     Eigen::PlainObjectBase<DerivedC>& C);
 }

@@ -114,7 +114,7 @@ IGL_INLINE void igl::on_boundary(
 
 template <typename DerivedT, typename DerivedI, typename DerivedC>
 IGL_INLINE void igl::on_boundary(
-  const Eigen::PlainObjectBase<DerivedT>& T,
+  const Eigen::MatrixBase<DerivedT>& T,
   Eigen::PlainObjectBase<DerivedI>& I,
   Eigen::PlainObjectBase<DerivedC>& C)
 {
@@ -134,6 +134,6 @@ IGL_INLINE void igl::on_boundary(
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
-template void igl::on_boundary<Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
-template void igl::on_boundary<Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Array<bool, -1, 1, 0, -1, 1>, Eigen::Array<bool, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Array<bool, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Array<bool, -1, -1, 0, -1, -1> >&);
+template void igl::on_boundary<Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
+template void igl::on_boundary<Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Array<bool, -1, 1, 0, -1, 1>, Eigen::Array<bool, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Array<bool, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Array<bool, -1, -1, 0, -1, -1> >&);
 #endif
