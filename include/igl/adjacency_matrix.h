@@ -40,7 +40,7 @@ namespace igl
   // See also: edges, cotmatrix, diag
   template <typename DerivedF, typename T>
   IGL_INLINE void adjacency_matrix(
-    const Eigen::PlainObjectBase<DerivedF> & F, 
+    const Eigen::MatrixBase<DerivedF> & F, 
     Eigen::SparseMatrix<T>& A);
 }
 
