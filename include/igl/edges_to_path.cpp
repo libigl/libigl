@@ -1,6 +1,6 @@
 #include "edges_to_path.h"
 #include "ismember.h"
-#include "adjacency_matrix.h"
+#include "adjacency_list.h"
 
 template <
   typename DerivedE,
