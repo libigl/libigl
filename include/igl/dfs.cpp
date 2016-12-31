@@ -36,7 +36,7 @@ IGL_INLINE void igl::dfs(
   std::vector<CType> & C)
 {
   // number of nodes
-  int N = 0;
+  int N = s+1;
   for(const auto & Ai : A) for(const auto & a : Ai) N = std::max(N,a+1);
   std::vector<bool> seen(N,false);
   P.resize(N,-1);
