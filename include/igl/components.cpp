@@ -24,6 +24,7 @@ IGL_INLINE void igl::components(
   C.resize(n,1);
   typename DerivedC::Scalar id = 0;
   vector<typename Derivedcounts::Scalar> vcounts;
+  // breadth first search
   for(int k=0; k<A.outerSize(); ++k)
   {
     if(seen(k))
@@ -48,7 +49,7 @@ IGL_INLINE void igl::components(
       for(typename SparseMatrix<AScalar>::InnerIterator it (A,f); it; ++it)
       {
         const int g = it.index();
-        if(!seen(g))
+        if(!seen(g) && it.value())
         {
           Q.push(g);
         }
