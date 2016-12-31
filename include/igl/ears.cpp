@@ -1,6 +1,7 @@
 #include "ears.h"
 #include "on_boundary.h"
 #include "find.h"
+#include "slice.h"
 #include "mat_min.h"
 #include <cassert>
 
