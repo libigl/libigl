@@ -41,7 +41,7 @@ namespace igl
     typename DerivedJ,
     typename DerivedV>
   IGL_INLINE void find(
-    const Eigen::PlainObjectBase<DerivedX>& X,
+    const Eigen::DenseBase<DerivedX>& X,
     Eigen::PlainObjectBase<DerivedI> & I,
     Eigen::PlainObjectBase<DerivedJ> & J,
     Eigen::PlainObjectBase<DerivedV> & V);
@@ -49,7 +49,7 @@ namespace igl
     typename DerivedX,
     typename DerivedI>
   IGL_INLINE void find(
-    const Eigen::PlainObjectBase<DerivedX>& X,
+    const Eigen::DenseBase<DerivedX>& X,
     Eigen::PlainObjectBase<DerivedI> & I);
   // Find the non-zero entries and there respective indices in a sparse vector.
   // Similar to matlab's [I,J,V] = find(X), but instead of [I,J] being
