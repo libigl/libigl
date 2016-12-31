@@ -10,7 +10,7 @@
 
 template <typename DerivedX,typename DerivedY>
 IGL_INLINE void igl::slice_mask(
-  const Eigen::MatrixBase<DerivedX> & X,
+  const Eigen::DenseBase<DerivedX> & X,
   const Eigen::Array<bool,Eigen::Dynamic,1> & R,
   const Eigen::Array<bool,Eigen::Dynamic,1> & C,
   Eigen::PlainObjectBase<DerivedY> & Y)
@@ -45,7 +45,7 @@ IGL_INLINE void igl::slice_mask(
 
 template <typename DerivedX, typename DerivedY>
 IGL_INLINE void igl::slice_mask(
-  const Eigen::MatrixBase<DerivedX> & X,
+  const Eigen::DenseBase<DerivedX> & X,
   const Eigen::Array<bool,Eigen::Dynamic,1> & R,
   const int dim,
   Eigen::PlainObjectBase<DerivedY> & Y)
@@ -95,7 +95,7 @@ IGL_INLINE void igl::slice_mask(
 
 template <typename DerivedX>
 IGL_INLINE DerivedX igl::slice_mask(
-  const Eigen::MatrixBase<DerivedX> & X,
+  const Eigen::DenseBase<DerivedX> & X,
   const Eigen::Array<bool,Eigen::Dynamic,1> & R,
   const Eigen::Array<bool,Eigen::Dynamic,1> & C)
 {
@@ -106,7 +106,7 @@ IGL_INLINE DerivedX igl::slice_mask(
 
 template <typename DerivedX>
 IGL_INLINE DerivedX igl::slice_mask(
-  const Eigen::MatrixBase<DerivedX>& X,
+  const Eigen::DenseBase<DerivedX>& X,
   const Eigen::Array<bool,Eigen::Dynamic,1> & R,
   const int dim)
 {
@@ -116,9 +116,9 @@ IGL_INLINE DerivedX igl::slice_mask(
 }
 
 #ifdef IGL_STATIC_LIBRARY
-template void igl::slice_mask<Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::Array<bool, -1, 1, 0, -1, 1> const&, int, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
-template void igl::slice_mask<Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::Array<bool, -1, 1, 0, -1, 1> const&, Eigen::Array<bool, -1, 1, 0, -1, 1> const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
-template void igl::slice_mask<Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::Array<bool, -1, 1, 0, -1, 1> const&, int, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
-template void igl::slice_mask<Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::Array<bool, -1, 1, 0, -1, 1> const&, Eigen::Array<bool, -1, 1, 0, -1, 1> const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
-template void igl::slice_mask<Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, Eigen::Array<bool, -1, 1, 0, -1, 1> const&, int, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
+template void igl::slice_mask<Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::DenseBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::Array<bool, -1, 1, 0, -1, 1> const&, int, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
+template void igl::slice_mask<Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::DenseBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::Array<bool, -1, 1, 0, -1, 1> const&, Eigen::Array<bool, -1, 1, 0, -1, 1> const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
+template void igl::slice_mask<Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::DenseBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::Array<bool, -1, 1, 0, -1, 1> const&, int, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
+template void igl::slice_mask<Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::DenseBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::Array<bool, -1, 1, 0, -1, 1> const&, Eigen::Array<bool, -1, 1, 0, -1, 1> const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
+template void igl::slice_mask<Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::DenseBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, Eigen::Array<bool, -1, 1, 0, -1, 1> const&, int, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
 #endif
