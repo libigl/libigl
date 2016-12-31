@@ -8,6 +8,8 @@
 #ifndef IGL_ALL_H
 #define IGL_ALL_H
 #include "igl_inline.h"
+#include <Eigen/Core>
+#include <Eigen/Sparse>
 namespace igl
 {
   // For Dense matrices use: A.rowwise().all() or A.colwise().all()
