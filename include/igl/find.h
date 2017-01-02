@@ -32,9 +32,9 @@ namespace igl
     typename DerivedV>
   IGL_INLINE void find(
     const Eigen::SparseMatrix<T>& X,
-    Eigen::MatrixBase<DerivedI> & I,
-    Eigen::MatrixBase<DerivedJ> & J,
-    Eigen::MatrixBase<DerivedV> & V);
+    Eigen::DenseBase<DerivedI> & I,
+    Eigen::DenseBase<DerivedJ> & J,
+    Eigen::DenseBase<DerivedV> & V);
   template <
     typename DerivedX,
     typename DerivedI, 
