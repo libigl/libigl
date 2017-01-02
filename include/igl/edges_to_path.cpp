@@ -27,21 +27,21 @@ IGL_INLINE void igl::edges_to_path(
 
   // Compute on reduced graph
   DerivedI U;
-  DerivedE E;
+  Eigen::VectorXi vE;
   {
     Eigen::VectorXi IA;
-    unique(OE,U,IA,E);
+    unique(OE,U,IA,vE);
   }
 
-  Eigen::VectorXi V = Eigen::VectorXi::Zero(E.maxCoeff()+1);
-  for(int e = 0;e<E.size();e++)
+  Eigen::VectorXi V = Eigen::VectorXi::Zero(vE.maxCoeff()+1);
+  for(int e = 0;e<vE.size();e++)
   {
-    V(E(e))++;
-    assert(V(E(e))<=2);
+    V(vE(e))++;
+    assert(V(vE(e))<=2);
   }
   // Try to find a vertex with valence = 1
   int c = 2;
-  int s = E(0);
+  int s = vE(0);
   for(int v = 0;v<V.size();v++)
   {
     if(V(v) == 1)
@@ -55,7 +55,7 @@ IGL_INLINE void igl::edges_to_path(
   assert(c == 2 || c == 1);
 
   // reshape E to be #E by 2
-  E = Eigen::Map<DerivedE>(E.data(),OE.rows(),OE.cols()).eval();
+  DerivedE E = Eigen::Map<DerivedE>(vE.data(),OE.rows(),OE.cols()).eval();
   {
     std::vector<std::vector<int> > A;
     igl::adjacency_list(E,A);
@@ -65,7 +65,7 @@ IGL_INLINE void igl::edges_to_path(
   if(c == 2)
   {
     I.conservativeResize(I.size()+1);
-    I(I.size()-1) = I(I.size()-2);
+    I(I.size()-1) = I(0);
   }
 
   DerivedE sE;
@@ -85,7 +85,7 @@ IGL_INLINE void igl::edges_to_path(
   K.resize(I.size()-1);
   for(int k = 0;k<K.size();k++)
   {
-    K(k) = 1 + (E(J(k),0) != I(k) ? 1 : 0);
+    K(k) = (E(J(k),0) != I(k) ? 1 : 0);
   }
 
   // Map vertex indices onto original graph
