@@ -12,6 +12,8 @@
 #include "components.h"
 #include "ears.h"
 #include "slice.h"
+#include "sum.h"
+#include "find.h"
 
 template <
   typename DerivedV,
@@ -169,7 +171,9 @@ IGL_INLINE void igl::straighten_seams(
   int nc;
   ArrayXi C;
   {
-    SparseMatrix<bool> A = OTVT * (!SV).matrix().asDiagonal() * VTOT;
+    // Doesn't Compile on older Eigen:
+    //SparseMatrix<bool> A = OTVT * (!SV).matrix().asDiagonal() * VTOT;
+    SparseMatrix<bool> A = OTVT * (SV!=true).matrix().asDiagonal() * VTOT;
     components(A,C);
     nc = C.maxCoeff()+1;
   }
@@ -329,3 +333,7 @@ IGL_INLINE void igl::straighten_seams(
   }
   list_to_matrix(vUE,UE);
 }
+
+#ifdef IGL_STATIC_LIBRARY
+// Explicit template specialization
+#endif
