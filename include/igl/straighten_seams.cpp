@@ -54,7 +54,7 @@ IGL_INLINE void igl::straighten_seams(
   Array<bool,Dynamic,3> BT,BF;
   on_boundary(FT,_,BT);
   on_boundary(F,_,BF);
-  assert((!((BF && !BT).any())) && 
+  assert((!((BF && (BT!=true)).any())) && 
     "Not dealing with boundaries of mesh that get 'stitched' in texture mesh");
   typedef Matrix<typename DerivedF::Scalar,Dynamic,2> MatrixX2I; 
   const MatrixX2I ET = (MatrixX2I(FT.rows()*3,2)
