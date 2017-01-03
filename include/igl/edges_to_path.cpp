@@ -1,4 +1,5 @@
 #include "edges_to_path.h"
+#include "dfs.h"
 #include "ismember.h"
 #include "adjacency_list.h"
 
