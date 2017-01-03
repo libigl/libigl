@@ -163,7 +163,7 @@ IGL_INLINE void igl::doublearea(
         (l(i,2)+(l(i,0)-l(i,1)))*
         (l(i,0)+(l(i,1)-l(i,2)));
       dblA(i) = 2.0*0.25*sqrt(arg);
-      assert( l(i,2) - (l(i,0)-l(i,1)) && "FAILED KAHAN'S ASSERTION");
+      assert( ((l(i,2) - (l(i,0)-l(i,1)))>=0) && "FAILED KAHAN'S ASSERTION");
       assert(dblA(i) == dblA(i) && "DOUBLEAREA() PRODUCED NaN");
     },
     1000l);
