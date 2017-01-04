@@ -15,7 +15,7 @@
 #include "order_facets_around_edge.h"
 #include "submesh_aabb_tree.h"
 #include "../../vertex_triangle_adjacency.h"
-#include "../../writePLY.h"
+//#include "../../writePLY.h"
 
 template<
   typename DerivedV,
@@ -402,7 +402,7 @@ IGL_INLINE void igl::copyleft::cgal::closest_facet(
       for (size_t i=0; i<adj_faces.size(); i++) {
         tmp_faces.row(i) = F.row(adj_faces[i]);
       }
-      igl::writePLY("debug.ply", tmp_vertices, tmp_faces, false);
+      //igl::writePLY("debug.ply", tmp_vertices, tmp_faces, false);
       throw std::runtime_error("Invalid vertex neighborhood");
     }
     const auto itr = v2f.equal_range(d);
