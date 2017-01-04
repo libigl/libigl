@@ -96,11 +96,11 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
   // https://forum.kde.org/viewtopic.php?f=74&t=107974&p=364947#p364947
   if(data.unknown.size() > 0)
   {
-    data.unknown_lagrange << data.unknown;
+    data.unknown_lagrange.head(data.unknown.size()) = data.unknown;
   }
   if(data.lagrange.size() > 0)
   {
-    data.unknown_lagrange << data.lagrange;
+    data.unknown_lagrange.tail(data.lagrange.size()) = data.lagrange;
   }
 
   SparseMatrix<T> Auu;
