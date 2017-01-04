@@ -186,6 +186,7 @@ IGL_INLINE void igl::straighten_seams(
     components(A,C);
     nc = C.maxCoeff()+1;
   }
+  //std::cout<<"nc: "<<nc<<std::endl;
   // New texture-vertex locations
   UT = VT;
   // Indices into UT of coarse output polygon edges
