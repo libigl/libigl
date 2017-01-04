@@ -68,25 +68,29 @@ namespace igl
     const std::string obj_file_name, 
     std::vector<std::vector<Scalar > > & V,
     std::vector<std::vector<Index > > & F);
-#ifndef IGL_NO_EIGEN
   // Eigen Wrappers. These will return true only if the data is perfectly
   // "rectangular": All faces are the same degree, all have the same number of
   // textures/normals etc.
-  template <typename DerivedV, typename DerivedF, typename DerivedT>
+  template <
+    typename DerivedV, 
+    typename DerivedTC, 
+    typename DerivedCN, 
+    typename DerivedF,
+    typename DerivedFTC,
+    typename DerivedFN>
   IGL_INLINE bool readOBJ(
     const std::string str,
     Eigen::PlainObjectBase<DerivedV>& V,
-    Eigen::PlainObjectBase<DerivedT>& TC,
-    Eigen::PlainObjectBase<DerivedV>& CN,
+    Eigen::PlainObjectBase<DerivedTC>& TC,
+    Eigen::PlainObjectBase<DerivedCN>& CN,
     Eigen::PlainObjectBase<DerivedF>& F,
-    Eigen::PlainObjectBase<DerivedF>& FTC,
-    Eigen::PlainObjectBase<DerivedF>& FN);
+    Eigen::PlainObjectBase<DerivedFTC>& FTC,
+    Eigen::PlainObjectBase<DerivedFN>& FN);
   template <typename DerivedV, typename DerivedF>
   IGL_INLINE bool readOBJ(
     const std::string str,
     Eigen::PlainObjectBase<DerivedV>& V,
     Eigen::PlainObjectBase<DerivedF>& F);
-#endif
 
 }
 
