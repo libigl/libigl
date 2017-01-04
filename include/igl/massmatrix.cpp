@@ -135,9 +135,10 @@ IGL_INLINE void igl::massmatrix(
     for(int i = 0;i<m;i++)
     {
       // http://en.wikipedia.org/wiki/Tetrahedron#Volume
-      Matrix<Scalar,3,1> v0m3 = V.row(F(i,0)) - V.row(F(i,3));
-      Matrix<Scalar,3,1> v1m3 = V.row(F(i,1)) - V.row(F(i,3));
-      Matrix<Scalar,3,1> v2m3 = V.row(F(i,2)) - V.row(F(i,3));
+      Matrix<Scalar,3,1> v0m3,v1m3,v2m3;
+      v0m3.head(V.cols()) = V.row(F(i,0)) - V.row(F(i,3));
+      v1m3.head(V.cols()) = V.row(F(i,1)) - V.row(F(i,3));
+      v2m3.head(V.cols()) = V.row(F(i,2)) - V.row(F(i,3));
       Scalar v = fabs(v0m3.dot(v1m3.cross(v2m3)))/6.0;
       MV(i+0*m) = v/4.0;
       MV(i+1*m) = v/4.0;
