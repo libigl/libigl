@@ -39,7 +39,7 @@ namespace igl
   //   C  max(F) list of component ids
   template <typename DerivedF, typename DerivedC>
   IGL_INLINE void components(
-    const Eigen::PlainObjectBase<DerivedF> & F,
+    const Eigen::MatrixBase<DerivedF> & F,
     Eigen::PlainObjectBase<DerivedC> & C);
 
 }
