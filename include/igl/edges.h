@@ -26,7 +26,7 @@ namespace igl
   // See also: adjacency_matrix
   template <typename DerivedF, typename DerivedE>
   IGL_INLINE void edges(
-    const Eigen::PlainObjectBase<DerivedF> & F, 
+    const Eigen::MatrixBase<DerivedF> & F, 
     Eigen::PlainObjectBase<DerivedE> & E);
 }
 
