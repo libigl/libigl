@@ -1,6 +1,5 @@
 #ifndef IGL_REDUX_H
 #define IGL_REDUX_H
-#include "igl_inline.h"
 #include <Eigen/Core>
 #include <Eigen/Sparse>
 namespace igl
@@ -26,13 +25,46 @@ namespace igl
   //   or
   //   S  m-long sparse vector (if dim == 2)
   template <typename AType, typename Func, typename DerivedB>
-  IGL_INLINE void redux(
+  inline void redux(
     const Eigen::SparseMatrix<AType> & A,
     const int dim,
     const Func & func,
     Eigen::PlainObjectBase<DerivedB> & B);
 }
-#ifndef IGL_STATIC_LIBRARY
-#  include "redux.cpp"
-#endif
+
+// Implementation
+
+#include "redux.h"
+#include "for_each.h"
+
+template <typename AType, typename Func, typename DerivedB>
+inline void igl::redux(
+  const Eigen::SparseMatrix<AType> & A,
+  const int dim,
+  const Func & func,
+  Eigen::PlainObjectBase<DerivedB> & B)
+{
+  assert((dim == 1 || dim == 2) && "dim must be 2 or 1");
+  // Get size of input
+  int m = A.rows();
+  int n = A.cols();
+  // resize output
+  B = DerivedB::Zero(dim==1?n:m);
+  const auto func_wrap = [&func,&B,&dim](const int i, const int j, const int v)
+  {
+    if(dim == 1)
+    {
+      B(j) = i == 0? v : func(B(j),v);
+    }else
+    {
+      B(i) = j == 0? v : func(B(i),v);
+    }
+  };
+  for_each(A,func_wrap);
+}
+
+
+//#ifndef IGL_STATIC_LIBRARY
+//#  include "redux.cpp"
+//#endif
 #endif
