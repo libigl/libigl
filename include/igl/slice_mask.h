@@ -52,6 +52,18 @@ namespace igl
     const Eigen::DenseBase<DerivedX> & X,
     const Eigen::Array<bool,Eigen::Dynamic,1> & R,
     const int dim);
+  template <typename XType, typename YType>
+  IGL_INLINE void slice_mask(
+    const Eigen::SparseMatrix<XType> & X,
+    const Eigen::Array<bool,Eigen::Dynamic,1> & R,
+    const int dim,
+    Eigen::SparseMatrix<YType> & Y);
+  template <typename XType, typename YType>
+  IGL_INLINE void slice_mask(
+    const Eigen::SparseMatrix<XType> & X,
+    const Eigen::Array<bool,Eigen::Dynamic,1> & R,
+    const Eigen::Array<bool,Eigen::Dynamic,1> & C,
+    Eigen::SparseMatrix<YType> & Y);
 }
 
 
