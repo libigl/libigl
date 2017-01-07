@@ -141,8 +141,6 @@ IGL_INLINE void igl::doublearea(
   const Index m = ul.rows();
   Eigen::Matrix<typename Derivedl::Scalar, Eigen::Dynamic, 3> l;
   MatrixXi _;
-  // "Lecture Notes on Geometric Robustness" Shewchuck 09, Section 3.1
-  // http://www.cs.berkeley.edu/~jrs/meshpapers/robnotes.pdf
   //
   // "Miscalculating Area and Angles of a Needle-like Triangle"
   // https://people.eecs.berkeley.edu/~wkahan/Triangle.pdf
@@ -157,13 +155,26 @@ IGL_INLINE void igl::doublearea(
     [&l,&dblA](const int i)
     {
       // Kahan's Heron's formula
-      const typename Derivedl::Scalar arg =
+      typedef typename Derivedl::Scalar Scalar;
+      const Scalar arg =
         (l(i,0)+(l(i,1)+l(i,2)))*
         (l(i,2)-(l(i,0)-l(i,1)))*
         (l(i,2)+(l(i,0)-l(i,1)))*
         (l(i,0)+(l(i,1)-l(i,2)));
       dblA(i) = 2.0*0.25*sqrt(arg);
-      assert( ((l(i,2) - (l(i,0)-l(i,1)))>=0) && "FAILED KAHAN'S ASSERTION");
+      // Alec: If the input edge lengths were computed from floating point
+      // vertex positions then there's no guarantee that they fulfill the
+      // triangle inequality (in their floating point approximations). For
+      // nearly degenerate triangles the round-off error during side-length
+      // computation may be larger than (or rather smaller) than the height of
+      // the triangle. In "Lecture Notes on Geometric Robustness" Shewchuck 09,
+      // Section 3.1 http://www.cs.berkeley.edu/~jrs/meshpapers/robnotes.pdf,
+      // he recommends computing area of a triangle with vertices nD (if you
+      // have access to them) by computing the determinant of the n+1 × n+1
+      // matrix containg the vertices in n+1D homogeneous coordinates as rows
+      // and dividing by d! (factorial).
+      assert( ((l(i,2) - (l(i,0)-l(i,1)))>=-igl::EPS<Scalar>()) 
+          && "Side lengths do not obey the triangle inequality.");
       assert(dblA(i) == dblA(i) && "DOUBLEAREA() PRODUCED NaN");
     },
     1000l);
