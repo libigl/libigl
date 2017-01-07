@@ -67,7 +67,7 @@ IGL_INLINE void igl::doublearea(
     default:
     {
       edge_lengths(V,F,l);
-      return doublearea(l,dblA);
+      return doublearea(l,0.,dblA);
     }
   }
 }
@@ -132,6 +132,16 @@ IGL_INLINE void igl::doublearea(
   const Eigen::MatrixBase<Derivedl> & ul,
   Eigen::PlainObjectBase<DeriveddblA> & dblA)
 {
+  // Default is to leave NaNs and fire asserts in debug mode
+  return doublearea(ul,0.0/0.0,dblA);
+}
+
+template <typename Derivedl, typename DeriveddblA>
+IGL_INLINE void igl::doublearea(
+  const Eigen::MatrixBase<Derivedl> & ul,
+  const typename Derivedl::Scalar nan_replacement,
+  Eigen::PlainObjectBase<DeriveddblA> & dblA)
+{
   using namespace Eigen;
   using namespace std;
   typedef typename Derivedl::Index Index;
@@ -152,7 +162,7 @@ IGL_INLINE void igl::doublearea(
   dblA.resize(l.rows(),1);
   parallel_for(
     m,
-    [&l,&dblA](const int i)
+    [&l,&dblA,&nan_replacement](const int i)
     {
       // Kahan's Heron's formula
       typedef typename Derivedl::Scalar Scalar;
@@ -169,12 +179,16 @@ IGL_INLINE void igl::doublearea(
       // computation may be larger than (or rather smaller) than the height of
       // the triangle. In "Lecture Notes on Geometric Robustness" Shewchuck 09,
       // Section 3.1 http://www.cs.berkeley.edu/~jrs/meshpapers/robnotes.pdf,
-      // he recommends computing area of a triangle with vertices nD (if you
-      // have access to them) by computing the determinant of the n+1 × n+1
-      // matrix containg the vertices in n+1D homogeneous coordinates as rows
-      // and dividing by d! (factorial).
-      assert( ((l(i,2) - (l(i,0)-l(i,1)))>=-igl::EPS<Scalar>()) 
+      // he recommends computing the triangle areas for 2D and 3D using 2D
+      // signed areas computed with determinants.
+      assert( 
+        (nan_replacement == nan_replacement || 
+          (l(i,2) - (l(i,0)-l(i,1)))>=0)
           && "Side lengths do not obey the triangle inequality.");
+      if(dblA(i) != dblA(i))
+      {
+        dblA(i) = nan_replacement;
+      }
       assert(dblA(i) == dblA(i) && "DOUBLEAREA() PRODUCED NaN");
     },
     1000l);

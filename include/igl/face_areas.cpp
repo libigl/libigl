@@ -26,6 +26,15 @@ IGL_INLINE void igl::face_areas(
   const Eigen::MatrixBase<DerivedL>& L,
   Eigen::PlainObjectBase<DerivedA>& A)
 {
+  return face_areas(L,0./0.,A);
+}
+
+template <typename DerivedL, typename DerivedA>
+IGL_INLINE void igl::face_areas(
+  const Eigen::MatrixBase<DerivedL>& L,
+  const typename DerivedL::Scalar doublearea_nan_replacement,
+  Eigen::PlainObjectBase<DerivedA>& A)
+{
   using namespace Eigen;
   assert(L.cols() == 6);
   const int m = L.rows();

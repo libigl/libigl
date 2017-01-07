@@ -20,7 +20,7 @@ IGL_INLINE void igl::circumradius(
   Eigen::Matrix<typename DerivedV::Scalar,Eigen::Dynamic,3> l;
   igl::edge_lengths(V,F,l);
   DerivedR A;
-  igl::doublearea(l,A);
+  igl::doublearea(l,0.,A);
   // use formula: R=abc/(4*area) to compute the circum radius
   R = l.col(0).array() * l.col(1).array() * l.col(2).array() / (2.0*A.array());
 }
