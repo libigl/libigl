@@ -1,7 +1,35 @@
 #!/bin/bash
-# Usage:
-#   cd $LIBIGL/include/igl
-#   make -C [your_project] 2>&1 | ../../scripts/autoexplicit.sh
+
+while getopts ":C:h" opt; do
+  case $opt in
+    C)
+      if ! cd "$OPTARG" 2>/dev/null
+      then
+        (>&2 echo "Failed to change directory to $OPTARG")
+        exit 1
+      fi
+      ;;
+    h)
+      echo "
+Usage:
+  
+    autoexplicit.sh [-C dir] \"
+    Undefined symbols for architecture x86_64:
+     \\\"...\\\" \"
+
+Or 
+
+    make -C [your_project] 2>&1 | autoexplicit.sh -C \$LIBIGL"
+      exit 1
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      ;;
+  esac
+done
+
+# Shift so that $# makes sense
+shift $((OPTIND-1))
 
 
 # process input line by line
