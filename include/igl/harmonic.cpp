@@ -35,7 +35,10 @@ IGL_INLINE bool igl::harmonic(
   typedef typename DerivedV::Scalar Scalar;
   SparseMatrix<Scalar> L,M;
   cotmatrix(V,F,L);
-  massmatrix(V,F,MASSMATRIX_TYPE_DEFAULT,M);
+  if(k>1)
+  {
+    massmatrix(V,F,MASSMATRIX_TYPE_DEFAULT,M);
+  }
   return harmonic(L,M,b,bc,k,W);
 }
 
@@ -83,9 +86,9 @@ IGL_INLINE bool igl::harmonic(
 {
   const int n = L.rows();
   assert(n == L.cols() && "L must be square");
-  assert(n == M.cols() && "M must be same size as L");
-  assert(n == M.rows() && "M must be square");
-  assert(igl::isdiag(M) && "Mass matrix should be diagonal");
+  assert((k==1 || n == M.cols() ) && "M must be same size as L");
+  assert((k==1 || n == M.rows() ) && "M must be square");
+  assert((k==1 || igl::isdiag(M))  && "Mass matrix should be diagonal");
 
   Eigen::SparseMatrix<DerivedL> Q;
   igl::harmonic(L,M,k,Q);
@@ -120,12 +123,14 @@ IGL_INLINE void igl::harmonic(
   Eigen::SparseMatrix<DerivedQ> & Q)
 {
   assert(L.rows() == L.cols()&&"L should be square");
-  assert(M.rows() == M.cols()&&"M should be square");
-  assert(L.rows() == M.rows()&&"L should match M's dimensions");
   Q = -L;
   if(k == 1) return;
+  assert(L.rows() == M.rows()&&"L should match M's dimensions");
+  assert(M.rows() == M.cols()&&"M should be square");
   Eigen::SparseMatrix<DerivedM> Mi;
   invert_diag(M,Mi);
+  // This is **not** robust for k>2. See KKT system in [Jacobson et al. 2010]
+  // of the kharmonic function in gptoolbox
   for(int p = 1;p<k;p++)
   {
     Q = (Q*Mi*-L).eval();
@@ -145,7 +150,10 @@ IGL_INLINE void igl::harmonic(
 {
   Eigen::SparseMatrix<DerivedQ> L,M;
   cotmatrix(V,F,L);
-  massmatrix(V,F,MASSMATRIX_TYPE_DEFAULT,M);
+  if(k>1)
+  {
+    massmatrix(V,F,MASSMATRIX_TYPE_DEFAULT,M);
+  }
   return harmonic(L,M,k,Q);
 }
 
