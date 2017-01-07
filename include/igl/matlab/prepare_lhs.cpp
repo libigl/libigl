@@ -17,14 +17,9 @@ IGL_INLINE void igl::matlab::prepare_lhs_double(
   const int m = V.rows();
   const int n = V.cols();
   plhs[0] = mxCreateDoubleMatrix(m,n, mxREAL);
-  double * Vp = mxGetPr(plhs[0]);
-  for(int i = 0;i<m;i++)
-  {
-    for(int j = 0;j<n;j++)
-    {
-      Vp[i+m*j] = V(i,j);
-    }
-  }
+  Eigen::Map< Eigen::Matrix<double,Eigen::Dynamic,Eigen::Dynamic> > 
+    map(mxGetPr(plhs[0]),m,n);
+  map = V.template cast<double>();
 }
 
 template <typename DerivedV>
@@ -38,13 +33,9 @@ IGL_INLINE void igl::matlab::prepare_lhs_logical(
   const int n = V.cols();
   plhs[0] = mxCreateLogicalMatrix(m,n);
   mxLogical * Vp = static_cast<mxLogical*>(mxGetData(plhs[0]));
-  for(int i = 0;i<m;i++)
-  {
-    for(int j = 0;j<n;j++)
-    {
-      Vp[i+m*j] = V(i,j);
-    }
-  }
+  Eigen::Map< Eigen::Matrix<mxLogical,Eigen::Dynamic,Eigen::Dynamic> > 
+    map(static_cast<mxLogical*>(mxGetData(plhs[0])),m,n);
+  map = V.template cast<mxLogical>();
 }
 
 template <typename DerivedV>
