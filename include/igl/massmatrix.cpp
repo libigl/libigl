@@ -53,7 +53,7 @@ IGL_INLINE void igl::massmatrix(
       l(i,2) = (V.row(F(i,0))-V.row(F(i,1))).norm();
     }
     Matrix<Scalar,Dynamic,1> dblA;
-    doublearea(l,dblA);
+    doublearea(l,0.,dblA);
 
     switch(eff_type)
     {
