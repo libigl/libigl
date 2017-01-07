@@ -55,17 +55,32 @@ namespace igl
     const Eigen::MatrixBase<DerivedA> & A,
     const Eigen::MatrixBase<DerivedB> & B,
     const Eigen::MatrixBase<DerivedC> & C);
-  // Same as above but use instrinsic edge lengths rather than (V,F) mesh
+  // Same as above but use instrinsic edge lengths rather than (V,F) mesh. This
+  //
   // Inputs:
   //   l  #F by dim list of edge lengths using
   //     for triangles, columns correspond to edges 23,31,12
+  //   nan_replacement  what value should be used for triangles whose given
+  //     edge lengths do not obey the triangle inequality. These may be very
+  //     wrong (e.g., [100 1 1]) or may be nearly degenerate triangles whose
+  //     floating point side length computation leads to breach of the triangle
+  //     inequality. One may wish to set this parameter to 0 if side lengths l
+  //     are _known_ to come from a valid embedding (e.g., some mesh (V,F)). In
+  //     that case, the only circumstance the triangle inequality is broken is
+  //     when the triangle is nearly degenerate and floating point error
+  //     dominates: hence replacing with zero is reasonable.
   // Outputs:
   //   dblA  #F list of triangle double areas
   template <typename Derivedl, typename DeriveddblA>
   IGL_INLINE void doublearea(
     const Eigen::MatrixBase<Derivedl> & l,
+    const typename Derivedl::Scalar nan_replacement,
     Eigen::PlainObjectBase<DeriveddblA> & dblA);
-
+  // default behavior is to assert on NaNs and leave them in place
+  template <typename Derivedl, typename DeriveddblA>
+  IGL_INLINE void doublearea(
+    const Eigen::MatrixBase<Derivedl> & l,
+    Eigen::PlainObjectBase<DeriveddblA> & dblA);
   // DOUBLEAREA_QUAD computes twice the area for each input quadrilateral
   //
   // Inputs:

@@ -28,6 +28,6 @@ IGL_INLINE void igl::inradius(
   // r/(4*area) = 1/(2*(a+b+c))
   // r = (2*area)/(a+b+c)
   DerivedR A;
-  igl::doublearea(l,A);
+  igl::doublearea(l,0.,A);
   r = A.array() /l.array().rowwise().sum();
 }

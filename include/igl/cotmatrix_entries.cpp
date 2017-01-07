@@ -44,7 +44,7 @@ IGL_INLINE void igl::cotmatrix_entries(
       
       // double area
       Matrix<typename DerivedC::Scalar,Dynamic,1> dblA;
-      doublearea(l,dblA);
+      doublearea(l,0.,dblA);
       // cotangents and diagonal entries for element matrices
       // correctly divided by 4 (alec 2010)
       C.resize(m,3);

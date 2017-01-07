@@ -41,6 +41,12 @@ namespace igl
   IGL_INLINE void face_areas(
     const Eigen::MatrixBase<DerivedL>& L,
     Eigen::PlainObjectBase<DerivedA>& A);
+  // doublearea_nan_replacement  See doublearea.h
+  template <typename DerivedL, typename DerivedA>
+  IGL_INLINE void face_areas(
+    const Eigen::MatrixBase<DerivedL>& L,
+    const typename DerivedL::Scalar doublearea_nan_replacement,
+    Eigen::PlainObjectBase<DerivedA>& A);
 }
 
 #ifndef IGL_STATIC_LIBRARY
