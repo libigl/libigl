@@ -513,5 +513,5 @@ IGL_INLINE void igl::n_polyvector(const Eigen::MatrixXd &V,
 
 
 #ifdef IGL_STATIC_LIBRARY
-// Explicit template specialization
+// Explicit template instantiation
 #endif

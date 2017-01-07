@@ -83,5 +83,5 @@ IGL_INLINE bool igl::opengl::render_to_tga(
 }
 
 #ifdef IGL_STATIC_LIBRARY
-// Explicit template specialization
+// Explicit template instantiation
 #endif

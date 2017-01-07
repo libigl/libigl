@@ -32,7 +32,7 @@ IGL_INLINE void igl::polyRoots(Eigen::Matrix<S, Eigen::Dynamic,1> &polyCoeff, //
 
 
 #ifdef IGL_STATIC_LIBRARY
-// Explicit template specialization
+// Explicit template instantiation
 template void igl::polyRoots<std::complex<double>, double>(Eigen::Matrix<std::complex<double>, -1, 1, 0, -1, 1>&, Eigen::Matrix<std::complex<double>, -1, 1, 0, -1, 1>&);
 template void igl::polyRoots<double, double>(Eigen::Matrix<double, -1, 1, 0, -1, 1>&, Eigen::Matrix<std::complex<double>, -1, 1, 0, -1, 1>&);
 #endif

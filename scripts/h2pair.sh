@@ -72,7 +72,7 @@ $after" | sed '1,/endif/d'`;
     after=`echo "$after
 
 #ifdef IGL_STATIC_LIBRARY
-// Explicit template specialization
+// Explicit template instantiation
 #endif"` 
   fi
   echo "$before

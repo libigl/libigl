@@ -158,5 +158,5 @@ IGL_INLINE void igl::opengl2::draw_floor_outline()
   igl::opengl2::draw_floor_outline(grey,white);
 }
 #ifdef IGL_STATIC_LIBRARY
-// Explicit template specialization
+// Explicit template instantiation
 #endif

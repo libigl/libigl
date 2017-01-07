@@ -20,7 +20,7 @@ IGL_INLINE void igl::all(
 }
 
 #ifdef IGL_STATIC_LIBRARY
-// Explicit template specialization
+// Explicit template instantiation
 #endif
 
 

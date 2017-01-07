@@ -68,5 +68,5 @@ IGL_INLINE bool igl::lscm(
 }
 
 #ifdef IGL_STATIC_LIBRARY
-// Explicit template specialization
+// Explicit template instantiation
 #endif
