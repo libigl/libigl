@@ -33,5 +33,5 @@ IGL_INLINE Eigen::MatrixXd igl::rotate_vectors(
 }
 
 #ifdef IGL_STATIC_LIBRARY
-// Explicit template specialization
+// Explicit template instantiation
 #endif

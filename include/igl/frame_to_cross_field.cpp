@@ -54,5 +54,5 @@ IGL_INLINE void igl::frame_to_cross_field(
 
 
 #ifdef IGL_STATIC_LIBRARY
-// Explicit template specialization
+// Explicit template instantiation
 #endif

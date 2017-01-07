@@ -282,5 +282,5 @@ IGL_INLINE bool igl::copyleft::cgal::intersect_other(
 }
 
 #ifdef IGL_STATIC_LIBRARY
-// Explicit template specialization
+// Explicit template instantiation
 #endif

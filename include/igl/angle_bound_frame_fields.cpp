@@ -755,5 +755,5 @@ IGL_INLINE bool igl::angle_bound_frame_fields(const igl::AngleBoundFFSolverData<
 }
 
 #ifdef IGL_STATIC_LIBRARY
-// Explicit template specialization
+// Explicit template instantiation
 #endif

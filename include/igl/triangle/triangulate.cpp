@@ -231,5 +231,5 @@ IGL_INLINE void igl::triangle::triangulate(
 }
 
 #ifdef IGL_STATIC_LIBRARY
-// Explicit template specialization
+// Explicit template instantiation
 #endif

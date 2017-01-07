@@ -25,7 +25,7 @@ IGL_INLINE void igl::opengl2::model_proj_viewport(
 }
 
 #ifdef IGL_STATIC_LIBRARY
-// Explicit template specialization
+// Explicit template instantiation
 template void igl::opengl2::model_proj_viewport<Eigen::Matrix<double, 4, 4, 0, 4, 4>, Eigen::Matrix<double, 4, 4, 0, 4, 4>, Eigen::Matrix<double, 4, 1, 0, 4, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 4, 4, 0, 4, 4> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, 4, 4, 0, 4, 4> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, 4, 1, 0, 4, 1> >&);
 template void igl::opengl2::model_proj_viewport<Eigen::Matrix<float, 4, 4, 0, 4, 4>, Eigen::Matrix<float, 4, 4, 0, 4, 4>, Eigen::Matrix<float, 4, 1, 0, 4, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<float, 4, 4, 0, 4, 4> >&, Eigen::PlainObjectBase<Eigen::Matrix<float, 4, 4, 0, 4, 4> >&, Eigen::PlainObjectBase<Eigen::Matrix<float, 4, 1, 0, 4, 1> >&);
 #endif

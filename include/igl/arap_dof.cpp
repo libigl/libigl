@@ -874,7 +874,7 @@ IGL_INLINE bool igl::arap_dof_update(
 }
 
 #ifdef IGL_STATIC_LIBRARY
-// Explicit template specialization
+// Explicit template instantiation
 template bool igl::arap_dof_update<Eigen::Matrix<double, -1, -1, 0, -1, -1>, double>(ArapDOFData<Eigen::Matrix<double, -1, -1, 0, -1, -1>, double> const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, Eigen::Matrix<double, -1, -1, 0, -1, -1> const&, int, double, Eigen::Matrix<double, -1, -1, 0, -1, -1>&);
 template bool igl::arap_dof_recomputation<Eigen::Matrix<double, -1, -1, 0, -1, -1>, double>(Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, Eigen::SparseMatrix<double, 0, int> const&, ArapDOFData<Eigen::Matrix<double, -1, -1, 0, -1, -1>, double>&);
 template bool igl::arap_dof_precomputation<Eigen::Matrix<double, -1, -1, 0, -1, -1>, double>(Eigen::Matrix<double, -1, -1, 0, -1, -1> const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, Eigen::Matrix<double, -1, -1, 0, -1, -1> const&, Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, ArapDOFData<Eigen::Matrix<double, -1, -1, 0, -1, -1>, double>&);

@@ -128,5 +128,5 @@ IGL_INLINE void igl::comb_line_field(const Eigen::PlainObjectBase<DerivedV> &V,
 }
 
 #ifdef IGL_STATIC_LIBRARY
-// Explicit template specialization
+// Explicit template instantiation
 #endif

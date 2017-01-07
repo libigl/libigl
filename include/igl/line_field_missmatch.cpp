@@ -139,5 +139,5 @@ IGL_INLINE void igl::line_field_missmatch(const Eigen::PlainObjectBase<DerivedV>
 }
 
 #ifdef IGL_STATIC_LIBRARY
-// Explicit template specialization
+// Explicit template instantiation
 #endif

@@ -60,7 +60,7 @@ IGL_INLINE bool igl::copyleft::cgal::component_inside_component(
 
 
 #ifdef IGL_STATIC_LIBRARY
-// Explicit template specialization
+// Explicit template instantiation
 template bool igl::copyleft::cgal::component_inside_component<
 Eigen::Matrix<double, -1, -1, 0, -1, -1>,
 Eigen::Matrix<   int, -1, -1, 0, -1, -1>,

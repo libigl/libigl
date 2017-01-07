@@ -29,5 +29,5 @@ IGL_INLINE void igl::average_onto_vertices(const Eigen::MatrixBase<DerivedV> &V,
 };
 
 #ifdef IGL_STATIC_LIBRARY
-// Explicit template specialization
+// Explicit template instantiation
 #endif

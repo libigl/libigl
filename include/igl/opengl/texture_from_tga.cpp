@@ -67,5 +67,5 @@ IGL_INLINE bool igl::opengl::texture_from_tga(const std::string tga_file, GLuint
 }
 
 #ifdef IGL_STATIC_LIBRARY
-// Explicit template specialization
+// Explicit template instantiation
 #endif

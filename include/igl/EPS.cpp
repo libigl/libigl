@@ -26,5 +26,5 @@ template <> IGL_INLINE double igl::EPS_SQ()
 }
 
 #ifdef IGL_STATIC_LIBRARY
-// Explicit template specialization
+// Explicit template instantiation
 #endif

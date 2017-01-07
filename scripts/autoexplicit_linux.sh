@@ -23,15 +23,15 @@ while read line; do
     continue
   fi
 
-  if ! grep -q "^\/\/ Explicit template specialization*$" "$cpp"
+  if ! grep -q "^\/\/ Explicit template instantiation*$" "$cpp"
   then
-    echo "Warning: skipping $cpp because it does not match ^\/\/ Explicit template specialization*$ "
+    echo "Warning: skipping $cpp because it does not match ^\/\/ Explicit template instantiation*$ "
     continue;
   fi
 
-  before=`sed '/^\/\/ Explicit template specialization$/q' "$cpp"`;
+  before=`sed '/^\/\/ Explicit template instantiation$/q' "$cpp"`;
   #echo "before = $before"
-  after=`sed '1,/^\/\/ Explicit template specialization$/d' $cpp`;
+  after=`sed '1,/^\/\/ Explicit template instantiation$/d' $cpp`;
   #echo "after = $after"
   explicit="template $symbol;"
   #echo "$explicit"

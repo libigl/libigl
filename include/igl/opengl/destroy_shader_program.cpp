@@ -45,6 +45,6 @@ IGL_INLINE bool igl::opengl::destroy_shader_program(const GLuint id)
 }
 
 #ifdef IGL_STATIC_LIBRARY
-// Explicit template specialization
+// Explicit template instantiation
 #endif
 
