@@ -83,6 +83,20 @@ public:
     const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& G,
     const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& B);
 
+  // Set the texture associated with the mesh.
+  //
+  // Inputs:
+  //   R  width by height image matrix of red channel
+  //   G  width by height image matrix of green channel
+  //   B  width by height image matrix of blue channel
+  //   A  width by height image matrix of alpha channel
+  //
+  IGL_INLINE void set_texture(
+    const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& R,
+    const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& G,
+    const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& B,
+    const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& A);
+
   // Sets points given a list of point vertices. In constrast to `set_points`
   // this will (purposefully) clober existing points.
   //
@@ -90,7 +104,7 @@ public:
   //   P  #P by 3 list of vertex positions
   //   C  #P|1 by 3 color(s)
   IGL_INLINE void set_points(
-    const Eigen::MatrixXd& P,  
+    const Eigen::MatrixXd& P,
     const Eigen::MatrixXd& C);
   IGL_INLINE void add_points(const Eigen::MatrixXd& P,  const Eigen::MatrixXd& C);
   // Sets edges given a list of edge vertices and edge indices. In constrast
@@ -109,9 +123,15 @@ public:
 
   // Assigns uniform colors to all faces/vertices
   IGL_INLINE void uniform_colors(
-    Eigen::Vector3d ambient, 
-    Eigen::Vector3d diffuse, 
+    Eigen::Vector3d ambient,
+    Eigen::Vector3d diffuse,
     Eigen::Vector3d specular);
+
+  // Assigns uniform colors to all faces/vertices
+  IGL_INLINE void uniform_colors(
+    Eigen::Vector4d ambient,
+    Eigen::Vector4d diffuse,
+    Eigen::Vector4d specular);
 
   // Generates a default grid texture
   IGL_INLINE void grid_texture();
@@ -141,6 +161,7 @@ public:
   Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> texture_R;
   Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> texture_G;
   Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> texture_B;
+  Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> texture_A;
 
   // Overlays
 
