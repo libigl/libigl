@@ -158,12 +158,12 @@ protected:
 #ifdef ENABLE_SERIALIZATION
 namespace serialization
 {
-  IGL_INLINE void serialize(const ViewerPlugin& obj,std::vector<char>& buffer)
+  inline void serialize(const ViewerPlugin& obj,std::vector<char>& buffer)
   {
     obj.serialize(buffer);
   }
 
-  IGL_INLINE void deserialize(ViewerPlugin& obj,const std::vector<char>& buffer)
+  inline void deserialize(ViewerPlugin& obj,const std::vector<char>& buffer)
   {
     obj.deserialize(buffer);
   }
