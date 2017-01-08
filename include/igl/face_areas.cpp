@@ -26,7 +26,8 @@ IGL_INLINE void igl::face_areas(
   const Eigen::MatrixBase<DerivedL>& L,
   Eigen::PlainObjectBase<DerivedA>& A)
 {
-  return face_areas(L,0./0.,A);
+  return face_areas(
+    L,std::numeric_limits<typename DerivedL::Scalar>::quiet_NaN(),A);
 }
 
 template <typename DerivedL, typename DerivedA>
