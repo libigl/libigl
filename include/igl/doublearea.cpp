@@ -11,6 +11,7 @@
 #include "sort.h"
 #include <cassert>
 #include <iostream>
+#include <limits>
 
 template <typename DerivedV, typename DerivedF, typename DeriveddblA>
 IGL_INLINE void igl::doublearea(
@@ -133,7 +134,8 @@ IGL_INLINE void igl::doublearea(
   Eigen::PlainObjectBase<DeriveddblA> & dblA)
 {
   // Default is to leave NaNs and fire asserts in debug mode
-  return doublearea(ul,0.0/0.0,dblA);
+  return doublearea(
+    ul,std::numeric_limits<typename Derivedl::Scalar>::quiet_NaN(),dblA);
 }
 
 template <typename Derivedl, typename DeriveddblA>
