@@ -164,8 +164,8 @@ IGL_INLINE void igl::viewer::ViewerCore::clear_framebuffers()
 }
 
 IGL_INLINE void igl::viewer::ViewerCore::draw(
-  ViewerData& data, 
-  OpenGL_state& opengl, 
+  ViewerData& data,
+  OpenGL_state& opengl,
   bool update_matrices)
 {
   using namespace std;
@@ -175,6 +175,9 @@ IGL_INLINE void igl::viewer::ViewerCore::draw(
     glEnable(GL_DEPTH_TEST);
   else
     glDisable(GL_DEPTH_TEST);
+
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   /* Bind and potentially refresh mesh/line/point data */
   if (data.dirty)
