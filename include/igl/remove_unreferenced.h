@@ -36,8 +36,8 @@ namespace igl
     typename DerivedNF,
     typename DerivedI>
   IGL_INLINE void remove_unreferenced(
-    const Eigen::PlainObjectBase<DerivedV> &V,
-    const Eigen::PlainObjectBase<DerivedF> &F,
+    const Eigen::MatrixBase<DerivedV> &V,
+    const Eigen::MatrixBase<DerivedF> &F,
     Eigen::PlainObjectBase<DerivedNV> &NV,
     Eigen::PlainObjectBase<DerivedNF> &NF,
     Eigen::PlainObjectBase<DerivedI> &I);
@@ -49,8 +49,8 @@ namespace igl
     typename DerivedI,
     typename DerivedJ>
   IGL_INLINE void remove_unreferenced(
-    const Eigen::PlainObjectBase<DerivedV> &V,
-    const Eigen::PlainObjectBase<DerivedF> &F,
+    const Eigen::MatrixBase<DerivedV> &V,
+    const Eigen::MatrixBase<DerivedF> &F,
     Eigen::PlainObjectBase<DerivedNV> &NV,
     Eigen::PlainObjectBase<DerivedNF> &NF,
     Eigen::PlainObjectBase<DerivedI> &I,
@@ -69,7 +69,7 @@ namespace igl
     typename DerivedJ>
   IGL_INLINE void remove_unreferenced(
     const size_t n,
-    const Eigen::PlainObjectBase<DerivedF> &F,
+    const Eigen::MatrixBase<DerivedF> &F,
     Eigen::PlainObjectBase<DerivedI> &I,
     Eigen::PlainObjectBase<DerivedJ> &J);
 
