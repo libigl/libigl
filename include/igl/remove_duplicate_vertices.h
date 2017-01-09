@@ -35,7 +35,7 @@ namespace igl
     typename DerivedSVI, 
     typename DerivedSVJ>
   IGL_INLINE void remove_duplicate_vertices(
-    const Eigen::PlainObjectBase<DerivedV>& V,
+    const Eigen::MatrixBase<DerivedV>& V,
     const double epsilon,
     Eigen::PlainObjectBase<DerivedSV>& SV,
     Eigen::PlainObjectBase<DerivedSVI>& SVI,
@@ -49,8 +49,8 @@ namespace igl
     typename DerivedSVJ,
     typename DerivedSF>
   IGL_INLINE void remove_duplicate_vertices(
-    const Eigen::PlainObjectBase<DerivedV>& V,
-    const Eigen::PlainObjectBase<DerivedF>& F,
+    const Eigen::MatrixBase<DerivedV>& V,
+    const Eigen::MatrixBase<DerivedF>& F,
     const double epsilon,
     Eigen::PlainObjectBase<DerivedSV>& SV,
     Eigen::PlainObjectBase<DerivedSVI>& SVI,
