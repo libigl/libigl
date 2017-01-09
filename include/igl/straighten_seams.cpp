@@ -251,6 +251,9 @@ IGL_INLINE void igl::straighten_seams(
             (PI.colwise().maxCoeff() - PI.colwise().minCoeff()).norm();
           // Do not collapse boundaries to fewer than 3 vertices
           const bool allow_boundary_collapse = false;
+          assert(PI.size() >= 2);
+          const bool is_closed = PI(0) == PI(PI.size()-1);
+          assert(!is_closed ||  vpath.size() >= 4);
           Scalar eff_tol = std::min(tol,2.);
           VectorXi UIc;
           while(true)
@@ -258,7 +261,7 @@ IGL_INLINE void igl::straighten_seams(
             MatrixX2S UPI,UTvpath;
             ramer_douglas_peucker(PI,eff_tol*bbd,UPI,UIc,UTvpath);
             slice_into(UTvpath,vpath,1,UT);
-            if(allow_boundary_collapse)
+            if(!is_closed || allow_boundary_collapse)
             {
               break;
             }
