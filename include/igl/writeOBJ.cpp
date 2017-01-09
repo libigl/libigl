@@ -39,11 +39,12 @@ IGL_INLINE bool igl::writeOBJ(
   // Loop over V
   for(int i = 0;i<(int)V.rows();i++)
   {
-    fprintf(obj_file,"v %0.17g %0.17g %0.17g\n",
-      V(i,0),
-      V(i,1),
-      V(i,2)
-      );
+    fprintf(obj_file,"v");
+    for(int j = 0;j<(int)V.cols();++j)
+    {
+      fprintf(obj_file," %0.17g", V(i,j));
+    }
+    fprintf(obj_file,"\n");
   }
   bool write_N = CN.rows() >0;
 
