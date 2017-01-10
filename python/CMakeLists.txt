@@ -53,6 +53,8 @@ include_directories(${PROJECT_SOURCE_DIR}/../external/nanogui/ext/pybind11/inclu
 ## include libigl
 option(LIBIGL_USE_STATIC_LIBRARY "Use LibIGL as static library" OFF)
 option(LIBIGL_WITH_VIEWER           "Use OpenGL viewer"  ON)
+option(LIBIGL_WITH_OPENGL           "Use viewer"         ON)
+option(LIBIGL_WITH_OPENGL_GLFW      "Use GLFW"           ON)
 option(LIBIGL_WITH_NANOGUI          "Use Nanogui menu"   OFF)
 option(LIBIGL_WITH_CGAL             "Use CGAL"           OFF)
 option(LIBIGL_WITH_BOOLEAN          "Use Cork boolean"   OFF)
