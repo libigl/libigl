@@ -324,15 +324,30 @@ if(LIBIGL_WITH_OPENGL)
 
   if(LIBIGL_WITH_OPENGL_GLFW)
     set(GLFW_INCLUDE_DIRS "${NANOGUI_DIR}/ext/glfw/include")
+
+    ### GLEW for linux and windows
+    if((UNIX AND NOT APPLE) OR WIN32) ### Compile glew if needed
+      set(GLEW_INSTALL OFF CACHE BOOL " " FORCE)
+      add_subdirectory("${NANOGUI_DIR}/ext/glew" "glew")
+    endif()
+    if(NOT APPLE)
+      list(APPEND GLFW_INCLUDE_DIRS "${NANOGUI_DIR}/ext/glew/include")
+      list(APPEND LIBIGL_OPENGL_GLFW_EXTRA_LIBRARIES "glew")
+    endif()
+
+    add_subdirectory("${NANOGUI_DIR}/ext/glfw" "glfw")
+    set(LIBIGL_OPENGL_GLFW_EXTRA_LIBRARIES "glfw" ${GLFW_LIBRARIES})
     if(LIBIGL_USE_STATIC_LIBRARY)
       CompileIGL_Module("opengl/glfw" "")
       set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL " " FORCE)
       set(GLFW_BUILD_TESTS OFF CACHE BOOL " " FORCE)
       set(GLFW_BUILD_DOCS OFF CACHE BOOL " " FORCE)
       set(GLFW_BUILD_INSTALL OFF CACHE BOOL " " FORCE)
-      add_subdirectory("${NANOGUI_DIR}/ext/glfw" "glfw")
-      set(LIBIGL_OPENGL_GLFW_EXTRA_LIBRARIES "glfw" ${GLFW_LIBRARIES})
+      target_include_directories(igl_opengl_glfw PRIVATE ${GLFW_INCLUDE_DIRS})
     endif()
+    list(APPEND LIBIGL_INCLUDE_DIRS ${GLFW_INCLUDE_DIRS})
+    list(APPEND LIBIGL_EXTRA_LIBRARIES ${LIBIGL_OPENGL_GLFW_EXTRA_LIBRARIES})
+
     ### Compile the viewer ###
     if(LIBIGL_WITH_VIEWER)
       if(LIBIGL_WITH_NANOGUI)
@@ -365,18 +380,6 @@ if(LIBIGL_WITH_OPENGL)
     endif()
   endif()
 
-  ### GLEW for linux and windows
-  if((UNIX AND NOT APPLE) OR WIN32) ### Compile glew if needed
-    set(GLEW_INSTALL OFF CACHE BOOL " " FORCE)
-    add_subdirectory("${NANOGUI_DIR}/ext/glew" "glew")
-  endif()
-  if(NOT APPLE)
-    list(APPEND GLFW_INCLUDE_DIRS "${NANOGUI_DIR}/ext/glew/include")
-    list(APPEND LIBIGL_OPENGL_GLFW_EXTRA_LIBRARIES "glew")
-  endif()
-  list(APPEND LIBIGL_INCLUDE_DIRS ${GLFW_INCLUDE_DIRS})
-  list(APPEND LIBIGL_EXTRA_LIBRARIES ${LIBIGL_OPENGL_GLFW_EXTRA_LIBRARIES})
-  target_include_directories(igl_opengl_glfw PRIVATE ${GLFW_INCLUDE_DIRS})
 endif()
 
 ### Compile the png parts ###
