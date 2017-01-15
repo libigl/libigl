@@ -44,6 +44,33 @@ namespace igl
     const Eigen::MatrixBase<Derivedb> & b,
     const Eigen::MatrixBase<Derivedbc> & bc,
     Eigen::PlainObjectBase<DerivedU> & U);
+  //
+  // Inputs:
+  //   min_steps  mininum number of steps to take from V(b,:) to bc
+  //   max_steps  mininum number of steps to take from V(b,:) to bc (if
+  //     max_steps == min_steps then no further number of steps will be tried)
+  //   num_inner_iters  number of iterations of harmonic solves to run after
+  //     for each morph step (to try to push flips back in)
+  //   test_for_flips  wether to check if flips occured (and trigger more
+  //     steps). if test_for_flips = false then this function always returns
+  //     true
+  // 
+  template <
+    typename DerivedV,
+    typename DerivedF,
+    typename Derivedb,
+    typename Derivedbc,
+    typename DerivedU>
+  IGL_INLINE bool bijective_composite_harmonic_mapping(
+    const Eigen::MatrixBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedF> & F,
+    const Eigen::MatrixBase<Derivedb> & b,
+    const Eigen::MatrixBase<Derivedbc> & bc,
+    const int min_steps,
+    const int max_steps,
+    const int num_inner_iters,
+    const bool test_for_flips,
+    Eigen::PlainObjectBase<DerivedU> & U);
 }
 
 #ifndef IGL_STATIC_LIBRARY
