@@ -74,14 +74,15 @@ struct SLIMData
 //    bc          #b by dim list of boundary conditions
 //    soft_p      Soft penalty factor (can be zero)
 //    slim_energy Energy to minimize
-IGL_INLINE void slim_precompute(Eigen::MatrixXd& V,
-                                Eigen::MatrixXi& F,
-                                Eigen::MatrixXd& V_init,
-                                SLIMData& data,
-                                SLIMData::SLIM_ENERGY slim_energy,
-                                Eigen::VectorXi& b,
-                                Eigen::MatrixXd& bc,
-                                double soft_p);
+IGL_INLINE void slim_precompute(
+  const Eigen::MatrixXd& V,
+  const Eigen::MatrixXi& F,
+  const Eigen::MatrixXd& V_init,
+  SLIMData& data,
+  SLIMData::SLIM_ENERGY slim_energy,
+  Eigen::VectorXi& b,
+  Eigen::MatrixXd& bc,
+  double soft_p);
 
 // Run iter_num iterations of SLIM
 // Outputs:

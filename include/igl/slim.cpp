@@ -838,9 +838,15 @@ namespace igl
 
 /// Slim Implementation
 
-IGL_INLINE void igl::slim_precompute(Eigen::MatrixXd &V, Eigen::MatrixXi &F, Eigen::MatrixXd &V_init, SLIMData &data,
-                                     SLIMData::SLIM_ENERGY slim_energy, Eigen::VectorXi &b, Eigen::MatrixXd &bc,
-                                     double soft_p)
+IGL_INLINE void igl::slim_precompute(
+  const Eigen::MatrixXd &V, 
+  const Eigen::MatrixXi &F, 
+  const Eigen::MatrixXd &V_init, 
+  SLIMData &data,
+  SLIMData::SLIM_ENERGY slim_energy, 
+  Eigen::VectorXi &b, 
+  Eigen::MatrixXd &bc,
+  double soft_p)
 {
 
   data.V = V;
@@ -891,3 +897,7 @@ IGL_INLINE Eigen::MatrixXd igl::slim_solve(SLIMData &data, int iter_num)
   }
   return data.V_o;
 }
+
+#ifdef IGL_STATIC_LIBRARY
+// Explicit template instantiation
+#endif
