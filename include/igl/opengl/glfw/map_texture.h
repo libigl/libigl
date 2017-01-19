@@ -35,6 +35,19 @@ namespace igl
         const int h,
         const int nc,
         std::vector<unsigned char> & out_data);
+      template <typename DerivedV, typename DerivedF, typename DerivedU>
+      IGL_INLINE bool map_texture(
+        const Eigen::MatrixBase<DerivedV> & _V,
+        const Eigen::MatrixBase<DerivedF> & _F,
+        const Eigen::MatrixBase<DerivedU> & _U,
+        const unsigned char * in_data,
+        const int w,
+        const int h,
+        const int nc,
+        std::vector<unsigned char> & out_data,
+        int & out_w,
+        int & out_h,
+        int & out_nc);
     }
   }
 }
