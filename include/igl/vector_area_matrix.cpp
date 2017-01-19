@@ -47,7 +47,7 @@ IGL_INLINE void igl::vector_area_matrix(
 
 	aux.setFromTriplets(auxTripletList.begin(), auxTripletList.end());
 	auxT.setFromTriplets(auxTTripletList.begin(), auxTTripletList.end());
-	A = (aux + auxT)/2;
+	A = (aux + auxT)*0.5;
 }
 
 #ifdef IGL_STATIC_LIBRARY
