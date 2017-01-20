@@ -29,12 +29,12 @@ namespace igl
   //   Y  m-long vector (if dim == 2)
   //   I  vector the same size as Y containing the indices along dim of maximum
   //     entries
-  template <typename T>
+  template <typename DerivedX, typename DerivedY, typename DerivedI>
   IGL_INLINE void mat_max(
-    const Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> & X,
+    const Eigen::DenseBase<DerivedX> & X,
     const int dim,
-    Eigen::Matrix<T,Eigen::Dynamic,1> & Y,
-    Eigen::Matrix<int,Eigen::Dynamic,1> & I);
+    Eigen::PlainObjectBase<DerivedY> & Y,
+    Eigen::PlainObjectBase<DerivedI> & I);
 }
 
 #ifndef IGL_STATIC_LIBRARY

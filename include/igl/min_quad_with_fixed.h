@@ -52,7 +52,7 @@ namespace igl
   template <typename T, typename Derivedknown>
   IGL_INLINE bool min_quad_with_fixed_precompute(
     const Eigen::SparseMatrix<T>& A,
-    const Eigen::PlainObjectBase<Derivedknown> & known,
+    const Eigen::MatrixBase<Derivedknown> & known,
     const Eigen::SparseMatrix<T>& Aeq,
     const bool pd,
     min_quad_with_fixed_data<T> & data
@@ -82,9 +82,9 @@ namespace igl
     typename Derivedsol>
   IGL_INLINE bool min_quad_with_fixed_solve(
     const min_quad_with_fixed_data<T> & data,
-    const Eigen::PlainObjectBase<DerivedB> & B,
-    const Eigen::PlainObjectBase<DerivedY> & Y,
-    const Eigen::PlainObjectBase<DerivedBeq> & Beq,
+    const Eigen::MatrixBase<DerivedB> & B,
+    const Eigen::MatrixBase<DerivedY> & Y,
+    const Eigen::MatrixBase<DerivedBeq> & Beq,
     Eigen::PlainObjectBase<DerivedZ> & Z,
     Eigen::PlainObjectBase<Derivedsol> & sol);
   // Wrapper without sol
@@ -96,9 +96,9 @@ namespace igl
     typename DerivedZ>
   IGL_INLINE bool min_quad_with_fixed_solve(
     const min_quad_with_fixed_data<T> & data,
-    const Eigen::PlainObjectBase<DerivedB> & B,
-    const Eigen::PlainObjectBase<DerivedY> & Y,
-    const Eigen::PlainObjectBase<DerivedBeq> & Beq,
+    const Eigen::MatrixBase<DerivedB> & B,
+    const Eigen::MatrixBase<DerivedY> & Y,
+    const Eigen::MatrixBase<DerivedBeq> & Beq,
     Eigen::PlainObjectBase<DerivedZ> & Z);
   template <
     typename T,
@@ -109,11 +109,11 @@ namespace igl
     typename DerivedZ>
   IGL_INLINE bool min_quad_with_fixed(
     const Eigen::SparseMatrix<T>& A,
-    const Eigen::PlainObjectBase<DerivedB> & B,
-    const Eigen::PlainObjectBase<Derivedknown> & known,
-    const Eigen::PlainObjectBase<DerivedY> & Y,
+    const Eigen::MatrixBase<DerivedB> & B,
+    const Eigen::MatrixBase<Derivedknown> & known,
+    const Eigen::MatrixBase<DerivedY> & Y,
     const Eigen::SparseMatrix<T>& Aeq,
-    const Eigen::PlainObjectBase<DerivedBeq> & Beq,
+    const Eigen::MatrixBase<DerivedBeq> & Beq,
     const bool pd,
     Eigen::PlainObjectBase<DerivedZ> & Z);
 }

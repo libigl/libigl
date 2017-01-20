@@ -13,6 +13,7 @@
 #  include <Eigen/Core>
 #endif
 #include <string>
+#include <cstdio>
 #include <vector>
 
 namespace igl 
@@ -41,6 +42,16 @@ namespace igl
     Eigen::PlainObjectBase<DerivedV> & V,
     Eigen::PlainObjectBase<DerivedF> & F,
     Eigen::PlainObjectBase<DerivedN> & N);
+  // Inputs:
+  //   stl_file  pointer to already opened .stl file 
+  // Outputs:
+  //   stl_file  closed file
+  template <typename TypeV, typename TypeF, typename TypeN>
+  IGL_INLINE bool readSTL(
+    FILE * stl_file, 
+    std::vector<std::vector<TypeV> > & V,
+    std::vector<std::vector<TypeF> > & F,
+    std::vector<std::vector<TypeN> > & N);
   template <typename TypeV, typename TypeF, typename TypeN>
   IGL_INLINE bool readSTL(
     const std::string & filename,

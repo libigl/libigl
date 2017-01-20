@@ -39,10 +39,14 @@ namespace igl
     const IndexVector & J,
     const ValueVector & V,
     Eigen::SparseMatrix<T>& X);
-  template <class IndexVector, class ValueVector, typename T>
+  template <
+    class IndexVectorI, 
+    class IndexVectorJ, 
+    class ValueVector, 
+    typename T>
   IGL_INLINE void sparse(
-    const IndexVector & I,
-    const IndexVector & J,
+    const IndexVectorI & I,
+    const IndexVectorJ & J,
     const ValueVector & V,
     const size_t m,
     const size_t n,

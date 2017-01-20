@@ -14,7 +14,7 @@ IGL_INLINE bool igl::any_of(const Mat & S)
 }
 
 #ifdef IGL_STATIC_LIBRARY
-// Explicit template specialization
+// Explicit template instantiation
 template bool igl::any_of<Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::Matrix<int, -1, 1, 0, -1, 1> const&);
 #endif
 

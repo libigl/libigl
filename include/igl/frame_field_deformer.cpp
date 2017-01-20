@@ -407,5 +407,5 @@ IGL_INLINE void igl::frame_field_deformer(
 }
 
 #ifdef IGL_STATIC_LIBRARY
-// Explicit template specialization
+// Explicit template instantiation
 #endif

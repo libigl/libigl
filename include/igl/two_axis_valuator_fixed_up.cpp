@@ -43,7 +43,7 @@ IGL_INLINE void igl::two_axis_valuator_fixed_up(
 }
 
 #ifdef IGL_STATIC_LIBRARY
-// Explicit template specialization
+// Explicit template instantiation
 template void igl::two_axis_valuator_fixed_up<float, float>(int, int, double, Eigen::Quaternion<float, 0> const&, int, int, int, int, Eigen::Quaternion<float, 0>&);
 template void igl::two_axis_valuator_fixed_up<double, double>(int, int, double, Eigen::Quaternion<double, 0> const&, int, int, int, int, Eigen::Quaternion<double, 0>&);
 #endif

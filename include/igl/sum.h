@@ -8,7 +8,6 @@
 #ifndef IGL_SUM_H
 #define IGL_SUM_H
 #include "igl_inline.h"
-#define EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
 #include <Eigen/Sparse>
 
 namespace igl
@@ -33,6 +32,12 @@ namespace igl
     const Eigen::SparseMatrix<T>& X, 
     const int dim,
     Eigen::SparseVector<T>& S);
+  // Sum is "conducted" in the type of DerivedB::Scalar 
+  template <typename AType, typename DerivedB>
+  IGL_INLINE void sum(
+    const Eigen::SparseMatrix<AType> & A, 
+    const int dim,
+    Eigen::PlainObjectBase<DerivedB>& B);
 }
 
 #ifndef IGL_STATIC_LIBRARY

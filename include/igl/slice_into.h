@@ -32,7 +32,7 @@ namespace igl
 
   template <typename DerivedX, typename DerivedY>
   IGL_INLINE void slice_into(
-    const Eigen::PlainObjectBase<DerivedX> & X,
+    const Eigen::DenseBase<DerivedX> & X,
     const Eigen::Matrix<int,Eigen::Dynamic,1> & R,
     const Eigen::Matrix<int,Eigen::Dynamic,1> & C,
     Eigen::PlainObjectBase<DerivedY> & Y);
@@ -51,7 +51,7 @@ namespace igl
 
   template <typename DerivedX, typename DerivedY>
   IGL_INLINE void slice_into(
-    const Eigen::PlainObjectBase<DerivedX> & X,
+    const Eigen::DenseBase<DerivedX> & X,
     const Eigen::Matrix<int,Eigen::Dynamic,1> & R,
     Eigen::PlainObjectBase<DerivedY> & Y);
 }

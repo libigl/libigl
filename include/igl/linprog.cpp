@@ -9,7 +9,6 @@
 #include "slice.h"
 #include "slice_into.h"
 #include "find.h"
-#include "matlab_format.h"
 #include "colon.h"
 #include <iostream>
 

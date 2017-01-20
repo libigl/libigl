@@ -17,5 +17,5 @@ template <> IGL_INLINE double igl::CANONICAL_VIEW_QUAT<double>(int i, int j)
 }
 
 #ifdef IGL_STATIC_LIBRARY
-// Explicit template specialization
+// Explicit template instantiation
 #endif

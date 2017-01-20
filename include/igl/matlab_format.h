@@ -42,7 +42,7 @@ namespace igl
   // // ];
   template <typename DerivedM>
   IGL_INLINE const Eigen::WithFormat< DerivedM > matlab_format(
-    const Eigen::PlainObjectBase<DerivedM> & M,
+    const Eigen::DenseBase<DerivedM> & M,
     const std::string name = "");
   // Same but for sparse matrices. Print IJV format into an auxillary variable
   // and then print a call to sparse which will construct the sparse matrix

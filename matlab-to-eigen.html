@@ -67,7 +67,12 @@
         <td><pre><code>Acol_sum = sum(A,1)<br>Arow_sum = sum(A,2)<br>Adim_sum = sum(Asparse,dim)</code></pre></td>
         <td><pre><code>Acol_sum = A.colwise().sum()<br>Arow_sum = A.rowwise().sum()<br>igl::sum(Asparse,dim,Adim_sum)</code></pre></td>
         <td>Currently the igl version only supports sparse matrix input (and
-            dim must be 1 or 2)</td>
+            dim must be 1 or 2).<br>
+            For sparse matrices, one could use
+            <code>A*Matrix&lt;Atype,Dynamic,1&gt;::Ones(A.cols(),1);</code> but this
+            will <b>not</b> work as expected for
+            <code>SparseMatrix&lt;bool&gt;</code>.
+        </td>
       </tr>
 
       <tr class=d1>
@@ -81,7 +86,8 @@
         <td><pre><code>M = diag(D)</code></pre></td>
         <td><pre><code>igl::diag(D,M)</code></pre></td>
         <td>Construct new square matrix M with entries of vector D along the
-        diagonal. Currently igl version supports sparse only.</td>
+        diagonal. Currently igl version supports sparse only. Might also
+        consider simply: <code>M = D.asDiagonal();</code></td>
       </tr>
 
       <tr class=d1>
@@ -276,6 +282,18 @@ bool a = A.array().any();
         <td><pre><code>[IA,LOCB] = ismember(A,B)</code></pre></td>
         <td><pre><code>igl::ismember(A,B,IA,LOCB)</code></pre></td>
         <td></td>
+      </tr>
+
+      <tr class=d0>
+        <td><pre><code>A = A - diag(diag(A));</code></pre></td>
+        <td><pre><code>A.prune([](const int r, const int c, const Scalar)-&gt;bool{return r!=c;});</code></pre></td>
+        <td>Remove the diagonal from a sparse matrix.</td>
+      </tr>
+
+      <tr class=d1>
+        <td><pre><code>A = A - diag(diag(A));</code></pre></td>
+        <td><pre><code>A.prune([](const int r, const int c, const Scalar)-&gt;bool{return r!=c;});</code></pre></td>
+        <td>Remove the diagonal from a sparse matrix.</td>
       </tr>
 
       <!-- Insert rows for each command pair -->

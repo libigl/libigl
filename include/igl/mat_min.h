@@ -31,12 +31,12 @@ namespace igl
   //     entries
   //
   // See also: mat_max
-  template <typename T>
+  template <typename DerivedX, typename DerivedY, typename DerivedI>
   IGL_INLINE void mat_min(
-    const Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> & X,
+    const Eigen::DenseBase<DerivedX> & X,
     const int dim,
-    Eigen::Matrix<T,Eigen::Dynamic,1> & Y,
-    Eigen::Matrix<int,Eigen::Dynamic,1> & I);
+    Eigen::PlainObjectBase<DerivedY> & Y,
+    Eigen::PlainObjectBase<DerivedI> & I);
   // Use Y = X.colwise().minCoeff() instead
   //// In-line wrapper
   //template <typename T>
