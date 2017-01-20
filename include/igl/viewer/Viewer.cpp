@@ -316,6 +316,7 @@ namespace viewer
     const std::string usage(R"(igl::viewer::Viewer usage:
   [drag]  Rotate scene
   A,a     Toggle animation (tight draw loop)
+  F,f     Toggle face based
   I,i     Toggle invert normals
   L,l     Toggle wireframe
   O,o     Toggle orthographic/perspective projection
@@ -494,6 +495,12 @@ namespace viewer
       case 'a':
       {
         core.is_animating = !core.is_animating;
+        return true;
+      }
+      case 'F':
+      case 'f':
+      {
+        data.set_face_based(!data.face_based);
         return true;
       }
       case 'I':

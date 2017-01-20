@@ -13,6 +13,7 @@
 #  include <Eigen/Core>
 #endif
 #include <string>
+#include <cstdio>
 #include <vector>
 // History:
 //  renamed read -> read_triangle_mesh     Daniele 24 June 2014
@@ -58,6 +59,17 @@ namespace igl
     std::string & base,
     std::string & ext,
     std::string & name);
+  // Inputs:
+  //   ext  file extension
+  //   fp  pointer to already opened .ext file 
+  // Outputs:
+  //   fp  closed file
+  template <typename DerivedV, typename DerivedF>
+  IGL_INLINE bool read_triangle_mesh(
+    const std::string & ext,
+    FILE * fp,
+    Eigen::PlainObjectBase<DerivedV>& V,
+    Eigen::PlainObjectBase<DerivedF>& F);
 #endif
 }
 

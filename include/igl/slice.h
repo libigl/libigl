@@ -43,7 +43,7 @@ namespace igl
     typename MatY>
   IGL_INLINE void slice(
     const MatX& X,
-    const Eigen::PlainObjectBase<DerivedR> & R,
+    const Eigen::DenseBase<DerivedR> & R,
     const int dim,
     MatY& Y);
   template <
@@ -52,14 +52,14 @@ namespace igl
     typename DerivedC, 
     typename DerivedY>
   IGL_INLINE void slice(
-    const Eigen::PlainObjectBase<DerivedX> & X,
-    const Eigen::PlainObjectBase<DerivedR> & R,
-    const Eigen::PlainObjectBase<DerivedC> & C,
+    const Eigen::DenseBase<DerivedX> & X,
+    const Eigen::DenseBase<DerivedR> & R,
+    const Eigen::DenseBase<DerivedC> & C,
     Eigen::PlainObjectBase<DerivedY> & Y);
 
   template <typename DerivedX, typename DerivedY>
   IGL_INLINE void slice(
-    const Eigen::PlainObjectBase<DerivedX> & X,
+    const Eigen::DenseBase<DerivedX> & X,
     const Eigen::Matrix<int,Eigen::Dynamic,1> & R,
     Eigen::PlainObjectBase<DerivedY> & Y);
   // VectorXi Y = slice(X,R);
@@ -70,11 +70,11 @@ namespace igl
   // the number of rows in `DerivedX`.
   template <typename DerivedX>
   IGL_INLINE DerivedX slice(
-    const Eigen::PlainObjectBase<DerivedX> & X,
+    const Eigen::DenseBase<DerivedX> & X,
     const Eigen::Matrix<int,Eigen::Dynamic,1> & R);
   template <typename DerivedX>
   IGL_INLINE DerivedX slice(
-    const Eigen::PlainObjectBase<DerivedX>& X,
+    const Eigen::DenseBase<DerivedX>& X,
     const Eigen::Matrix<int,Eigen::Dynamic,1> & R,
     const int dim);
 

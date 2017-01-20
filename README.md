@@ -213,7 +213,8 @@ few labs/companies/institutions using libigl:
  - ETH Zurich, [Interactive Geometry Lab](http://igl.ethz.ch/) and [Advanced Technologies Lab](http://ait.inf.ethz.ch/), Swizterland
  - George Mason University, [CraGL](http://cs.gmu.edu/~ygingold/), USA
  - [Hong Kong University of Science and Technology](http://www.ust.hk/), Hong Kong
- - [Inria](Université Grenoble Alpes), France
+ - [Inria, Université Grenoble Alpes](https://www.inria.fr/centre/grenoble/), France
+ - [Jiangnan university](http://english.jiangnan.edu.cn), China
  - [National Institute of Informatics](http://www.nii.ac.jp/en/), Japan
  - New York University, [Media Research Lab](http://mrl.nyu.edu/), USA
  - NYUPoly, [Game Innovation Lab](http://game.engineering.nyu.edu/), USA
@@ -239,7 +240,7 @@ few labs/companies/institutions using libigl:
 ## Contact
 
 Libigl is a group endeavor led by [Alec
-Jacobson](http://www.cs.columbia.edu/~jacobson/) and [Daniele
+Jacobson](http://www.cs.toronto.edu/~jacobson/) and [Daniele
 Panozzo](http://www.inf.ethz.ch/personal/dpanozzo/). Please [contact
 us](mailto:alecjacobson@gmail.com,daniele.panozzo@gmail.com) if you have
 questions or comments. For troubleshooting, please post an

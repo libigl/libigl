@@ -12,7 +12,6 @@
 #include "../../unique.h"
 #include "../../get_seconds.h"
 #include "../../edges.h"
-#include "assign_scalar.h"
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 #include <cassert>
 #include <vector>

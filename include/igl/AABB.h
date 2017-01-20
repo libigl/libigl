@@ -177,12 +177,10 @@ public:
       // Inputs:
       //   V  #V by dim list of vertex positions
       //   Ele  #Ele by dim list of simplex indices
-      //   P  3 list of query point coordinates
-      //   min_sqr_d  current minimum squared distance (only find distances
-      //   less than this)
+      //   p  dim-long query point 
       // Outputs:
-      //   I  #P list of facet indices corresponding to smallest distances
-      //   C  #P by 3 list of closest points
+      //   i  facet index corresponding to smallest distances
+      //   c  closest point
       // Returns squared distance
       //
       // Known bugs: currently assumes Elements are triangles regardless of
@@ -194,6 +192,22 @@ public:
         int & i,
         RowVectorDIMS & c) const;
 //private:
+      // Compute squared distance to a query point
+      //
+      // Inputs:
+      //   V  #V by dim list of vertex positions
+      //   Ele  #Ele by dim list of simplex indices
+      //   p  dim-long query point 
+      //   min_sqr_d  current minimum squared distance (only consider distances
+      //     less than this), see output.
+      // Outputs:
+      //   min_sqr_d  updated current minimum squared distance
+      //   i  facet index corresponding to smallest distances
+      //   c  closest point
+      // Returns squared distance
+      //
+      // Known bugs: currently assumes Elements are triangles regardless of
+      // dimension.
       IGL_INLINE Scalar squared_distance(
         const Eigen::PlainObjectBase<DerivedV> & V,
         const Eigen::MatrixXi & Ele, 
@@ -226,6 +240,18 @@ public:
 
 
 public:
+      // Compute the squared distance from all query points in P to the
+      // _closest_ points on the primitives stored in the AABB hierarchy for
+      // the mesh (V,Ele).
+      //
+      // Inputs:
+      //   V  #V by dim list of vertex positions
+      //   Ele  #Ele by dim list of simplex indices
+      //   P  #P by dim list of query points
+      // Outputs:
+      //   sqrD  #P list of squared distances
+      //   I  #P list of indices into Ele of closest primitives
+      //   C  #P by dim list of closest points
       template <
         typename DerivedP, 
         typename DerivedsqrD, 
@@ -239,6 +265,21 @@ public:
         Eigen::PlainObjectBase<DerivedI> & I,
         Eigen::PlainObjectBase<DerivedC> & C) const;
 
+      // Compute the squared distance from all query points in P already stored
+      // in its own AABB hierarchy to the _closest_ points on the primitives
+      // stored in the AABB hierarchy for the mesh (V,Ele).
+      //
+      // Inputs:
+      //   V  #V by dim list of vertex positions
+      //   Ele  #Ele by dim list of simplex indices
+      //   other  AABB hierarchy of another set of primitives (must be points)
+      //   other_V  #other_V by dim list of query points
+      //   other_Ele  #other_Ele by ss list of simplex indices into other_V
+      //     (must be simple list of points: ss == 1)
+      // Outputs:
+      //   sqrD  #P list of squared distances
+      //   I  #P list of indices into Ele of closest primitives
+      //   C  #P by dim list of closest points
       template < 
         typename Derivedother_V,
         typename DerivedsqrD, 
@@ -269,7 +310,21 @@ private:
         Eigen::PlainObjectBase<DerivedsqrD> & sqrD,
         Eigen::PlainObjectBase<DerivedI> & I,
         Eigen::PlainObjectBase<DerivedC> & C) const;
-      // Helper function for leaves: works in-place on sqr_d
+      // Compute the squared distance to the primitive in this node: assumes
+      // that this is indeed a leaf node.
+      //
+      // Inputs:
+      //   V  #V by dim list of vertex positions
+      //   Ele  #Ele by dim list of simplex indices
+      //   p  dim-long query point
+      //   sqr_d  current minimum distance for this query, see output
+      //   i  current index into Ele of closest point, see output
+      //   c  dim-long current closest point, see output
+      // Outputs:
+      //   sqr_d   minimum of initial value and squared distance to this
+      //     primitive
+      //   i  possibly updated index into Ele of closest point
+      //   c  dim-long possibly updated closest point
       IGL_INLINE void leaf_squared_distance(
         const Eigen::PlainObjectBase<DerivedV> & V,
         const Eigen::MatrixXi & Ele, 
@@ -277,6 +332,23 @@ private:
         Scalar & sqr_d,
         int & i,
         RowVectorDIMS & c) const;
+      // If new distance (sqr_d_candidate) is less than current distance
+      // (sqr_d), then update this distance and its associated values
+      // _in-place_:
+      //
+      // Inputs:
+      //   p  dim-long query point (only used in DEBUG mode)
+      //   sqr_d  candidate minimum distance for this query, see output
+      //   i  candidate index into Ele of closest point, see output
+      //   c  dim-long candidate closest point, see output
+      //   sqr_d  current minimum distance for this query, see output
+      //   i  current index into Ele of closest point, see output
+      //   c  dim-long current closest point, see output
+      // Outputs:
+      //   sqr_d   minimum of initial value and squared distance to this
+      //     primitive
+      //   i  possibly updated index into Ele of closest point
+      //   c  dim-long possibly updated closest point
       IGL_INLINE void set_min(
         const RowVectorDIMS & p,
         const Scalar sqr_d_candidate,

@@ -6,40 +6,40 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 
-#include <igl/copyleft/comiso/miq.h>
-#include <igl/local_basis.h>
-#include <igl/triangle_triangle_adjacency.h>
-#include <igl/cut_mesh.h>
+#include "miq.h"
+#include "../../local_basis.h"
+#include "../../triangle_triangle_adjacency.h"
+#include "../../cut_mesh.h"
 
 // includes for VertexIndexing
-#include <igl/HalfEdgeIterator.h>
-#include <igl/is_border_vertex.h>
-#include <igl/vertex_triangle_adjacency.h>
+#include "../../HalfEdgeIterator.h"
+#include "../../is_border_vertex.h"
+#include "../../vertex_triangle_adjacency.h"
 
 // includes for PoissonSolver
-#include <igl/slice_into.h>
-#include <igl/grad.h>
-#include <igl/cotmatrix.h>
-#include <igl/doublearea.h>
+#include "../../slice_into.h"
+#include "../../grad.h"
+#include "../../cotmatrix.h"
+#include "../../doublearea.h"
 #include <gmm/gmm.h>
 #include <CoMISo/Solver/ConstrainedSolver.hh>
 #include <CoMISo/Solver/MISolver.hh>
 #include <CoMISo/Solver/GMM_Tools.hh>
 
 //
-#include <igl/cross_field_missmatch.h>
-#include <igl/comb_frame_field.h>
-#include <igl/comb_cross_field.h>
-#include <igl/cut_mesh_from_singularities.h>
-#include <igl/find_cross_field_singularities.h>
-#include <igl/compute_frame_field_bisectors.h>
-#include <igl/rotate_vectors.h>
+#include "../../cross_field_missmatch.h"
+#include "../../comb_frame_field.h"
+#include "../../comb_cross_field.h"
+#include "../../cut_mesh_from_singularities.h"
+#include "../../find_cross_field_singularities.h"
+#include "../../compute_frame_field_bisectors.h"
+#include "../../rotate_vectors.h"
 
 #ifndef NDEBUG
 #include <fstream>
 #endif
 #include <iostream>
-#include <igl/matlab_format.h>
+#include "../../matlab_format.h"
 
 #define DEBUGPRINT 0
 
@@ -1526,7 +1526,7 @@ IGL_INLINE void igl::copyleft::comiso::miq(
 }
 
 #ifdef IGL_STATIC_LIBRARY
-// Explicit template specialization
+// Explicit template instantiation
 template void igl::copyleft::comiso::miq<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> >&, double, double, bool, int, int, bool, bool, std::vector<int, std::allocator<int> >, std::vector<std::vector<int, std::allocator<int> >, std::allocator<std::vector<int, std::allocator<int> > > >);
 template void igl::copyleft::comiso::miq<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::Matrix<int, -1, 3, 0, -1, 3> const&, Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, Eigen::Matrix<int, -1, 3, 0, -1, 3> const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, double, double, bool, int, int, bool, bool, std::vector<int, std::allocator<int> >, std::vector<std::vector<int, std::allocator<int> >, std::allocator<std::vector<int, std::allocator<int> > > >);
 template void igl::copyleft::comiso::miq<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, double, double, bool, int, int, bool, bool, std::vector<int, std::allocator<int> >, std::vector<std::vector<int, std::allocator<int> >, std::allocator<std::vector<int, std::allocator<int> > > >);

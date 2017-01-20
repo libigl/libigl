@@ -49,6 +49,6 @@ IGL_INLINE void igl::copyleft::cgal::submesh_aabb_tree(
 }
 
 #ifdef IGL_STATIC_LIBRARY
-// Explicit template instanciation
+// Explicit template instantiation
 template void igl::copyleft::cgal::submesh_aabb_tree<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, CGAL::Epeck>(Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, CGAL::AABB_tree<CGAL::AABB_traits<CGAL::Epeck, CGAL::AABB_triangle_primitive<CGAL::Epeck, std::vector<CGAL::Epeck::Triangle_3, std::allocator<CGAL::Epeck::Triangle_3> >::iterator, CGAL::Boolean_tag<false> > > >&, std::vector<CGAL::Epeck::Triangle_3, std::allocator<CGAL::Epeck::Triangle_3> >&, std::vector<bool, std::allocator<bool> >&);
 #endif

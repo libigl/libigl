@@ -136,6 +136,6 @@ IGL_INLINE GLuint igl::opengl::create_shader_program(
 }
 
 #ifdef IGL_STATIC_LIBRARY
-// Explicit template specialization
+// Explicit template instantiation
 #endif
 

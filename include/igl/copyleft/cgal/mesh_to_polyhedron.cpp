@@ -47,7 +47,7 @@ IGL_INLINE bool igl::copyleft::cgal::mesh_to_polyhedron(
 }
 
 #ifdef IGL_STATIC_LIBRARY
-// Explicit template specialization
+// Explicit template instantiation
 #include <CGAL/Simple_cartesian.h>
 #include <CGAL/Polyhedron_items_with_id_3.h>
 template bool igl::copyleft::cgal::mesh_to_polyhedron<CGAL::Polyhedron_3<CGAL::Simple_cartesian<double>, CGAL::Polyhedron_items_with_id_3, CGAL::HalfedgeDS_default, std::allocator<int> > >(Eigen::Matrix<double, -1, -1, 0, -1, -1> const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, CGAL::Polyhedron_3<CGAL::Simple_cartesian<double>, CGAL::Polyhedron_items_with_id_3, CGAL::HalfedgeDS_default, std::allocator<int> >&);

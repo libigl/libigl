@@ -58,6 +58,6 @@ IGL_INLINE Eigen::Matrix<Scalar, 3, 3> igl::rotation_matrix_from_directions(
 }
 
 #ifdef IGL_STATIC_LIBRARY
-// Explicit template specialization
+// Explicit template instantiation
 template Eigen::Matrix<double, 3, 3, 0, 3, 3> igl::rotation_matrix_from_directions<double>(const Eigen::Matrix<double, 3, 1, 0, 3, 1>, const Eigen::Matrix<double, 3, 1, 0, 3, 1>);
 #endif

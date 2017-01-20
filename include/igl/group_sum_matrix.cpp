@@ -40,7 +40,7 @@ IGL_INLINE void igl::group_sum_matrix(
 }
 
 #ifdef IGL_STATIC_LIBRARY
-// Explicit template specialization
+// Explicit template instantiation
 template void igl::group_sum_matrix<double>(Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, int, Eigen::SparseMatrix<double, 0, int>&);
 template void igl::group_sum_matrix<double>(Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, Eigen::SparseMatrix<double, 0, int>&);
 #endif

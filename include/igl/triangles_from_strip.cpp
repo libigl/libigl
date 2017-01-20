@@ -32,5 +32,5 @@ IGL_INLINE void igl::triangles_from_strip(
 }
 
 #ifdef IGL_STATIC_LIBRARY
-// Explicit template specialization
+// Explicit template instantiation
 #endif

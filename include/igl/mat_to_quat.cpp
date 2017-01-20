@@ -134,7 +134,7 @@ IGL_INLINE void igl::mat3_to_quat(const Q_type * mat, Q_type * q)
 
 
 #ifdef IGL_STATIC_LIBRARY
-// Explicit template specialization
+// Explicit template instantiation
 template void igl::mat4_to_quat<double>(double const*, double*);
 template void igl::mat4_to_quat<float>(float const*, float*);
 template void igl::mat3_to_quat<double>(double const*, double*);
