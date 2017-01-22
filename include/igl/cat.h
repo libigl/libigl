@@ -30,7 +30,7 @@ namespace igl
   // Inputs:
   //   A  first input matrix
   //   B  second input matrix
-  //   dim  dimension along which to concatenate, 0 or 1
+  //   dim  dimension along which to concatenate, 1 or 2
   // Outputs:
   //   C  output matrix
   //   
