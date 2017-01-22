@@ -8,17 +8,14 @@
 #ifndef IGL_OPENGL_TGA_H
 #define IGL_OPENGL_TGA_H
 #include "../igl_inline.h"
+
+#include "gl.h"
 // See license in tga.cpp
-
 /* tga.h - interface for TrueVision (TGA) image file loader */
-
 #include <stdio.h>
-
 #ifdef _WIN32
 #include <windows.h>
 #endif
-
-#include "OpenGL_convenience.h"
 
 namespace igl
 {

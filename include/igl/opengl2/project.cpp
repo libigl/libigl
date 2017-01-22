@@ -7,8 +7,8 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "project.h"
 #include "../project.h"
-#include "../opengl/report_gl_error.h"
-#include "../opengl/OpenGL_convenience.h"
+#include "gl.h"
+#include "glu.h"
 #include <iostream>
 
 IGL_INLINE int igl::opengl2::project(

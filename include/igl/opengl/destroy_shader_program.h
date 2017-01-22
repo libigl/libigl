@@ -8,8 +8,7 @@
 #ifndef IGL_OPENGL_DESTROY_SHADER_PROGRAM_H
 #define IGL_OPENGL_DESTROY_SHADER_PROGRAM_H
 #include "../igl_inline.h"
-
-#include "OpenGL_convenience.h"
+#include "gl.h"
 
 namespace igl
 {

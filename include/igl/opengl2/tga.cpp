@@ -40,13 +40,12 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include "tga.h"
+#include "glext.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-
-#include "tga.h"
-
 
 static char error[256];
 static unsigned int _verbose = 0;

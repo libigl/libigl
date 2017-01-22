@@ -8,7 +8,7 @@
 #include "render_to_tga.h"
 #include "tga.h"
 
-#include "OpenGL_convenience.h"
+#include "gl.h"
 
 #include <cstdlib>
 
@@ -58,7 +58,7 @@ IGL_INLINE bool igl::opengl::render_to_tga(
   genericImage->pixels = pixels;
   // CMAP is not supported, but we need to put something here
   genericImage->cmapEntries = 0;
-  genericImage->cmapFormat = GL_BGR_EXT;  // XXX fix me
+  genericImage->cmapFormat = GL_BGR;
   genericImage->cmap = cmap;
 
   // write pixels to tga file

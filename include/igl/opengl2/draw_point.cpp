@@ -8,7 +8,7 @@
 #include "draw_point.h"
 
 // Implementation
-#include "../opengl/OpenGL_convenience.h"
+#include "gl.h"
 
 #include <cassert>
 #include <cmath>

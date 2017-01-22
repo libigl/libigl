@@ -9,7 +9,8 @@
 #include "report_gl_error.h"
 #include <iostream>
 
-IGL_INLINE GLuint igl::opengl::compile_shader(const GLint type, const char * str)
+IGL_INLINE GLuint igl::opengl::compile_shader(
+  const GLint type, const char * str)
 {
   GLuint id = glCreateShader(type);
   report_gl_error("glCreateShader: ");

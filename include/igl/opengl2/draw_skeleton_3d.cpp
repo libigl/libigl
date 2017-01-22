@@ -9,7 +9,7 @@
 #include "draw_skeleton_3d.h"
 #include "../PI.h"
 #include "../material_colors.h"
-#include "../opengl/OpenGL_convenience.h"
+#include "gl.h"
 #include <Eigen/Geometry>
 #include <iostream>
 

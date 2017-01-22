@@ -7,12 +7,10 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_OPENGL_CREATE_SHADER_PROGRAM_H
 #define IGL_OPENGL_CREATE_SHADER_PROGRAM_H
-
 #include "../igl_inline.h"
+#include "gl.h"
 #include <string>
 #include <map>
-
-#include "OpenGL_convenience.h"
 
 namespace igl
 {
