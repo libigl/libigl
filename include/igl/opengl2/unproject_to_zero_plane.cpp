@@ -7,7 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "unproject_to_zero_plane.h"
 
-#include "../opengl/OpenGL_convenience.h"
+#include "gl.h"
 
 #include "project.h"
 #include "unproject.h"

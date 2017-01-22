@@ -6,8 +6,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "draw_floor.h"
-
-#include "../opengl/OpenGL_convenience.h"
+#include "gl.h"
 
 IGL_INLINE void igl::opengl2::draw_floor(const float * colorA, const float * colorB,
   const int GridSizeX,

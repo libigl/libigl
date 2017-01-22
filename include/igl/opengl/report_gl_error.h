@@ -9,8 +9,10 @@
 #define IGL_OPENGL_REPORT_GL_ERROR_H
 #include "../igl_inline.h"
 
-#include "OpenGL_convenience.h"
-
+// Hack to allow both opengl/ and opengl2 to use this (we shouldn't allow this)
+#ifndef __gl_h_ 
+#  include "gl.h"
+#endif
 #include <string>
 
 namespace igl

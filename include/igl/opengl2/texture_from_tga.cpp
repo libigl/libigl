@@ -6,9 +6,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "texture_from_tga.h"
-
 #include "tga.h"
-#include "report_gl_error.h"
 #include <cstring>
 
 IGL_INLINE bool igl::opengl::texture_from_tga(const std::string tga_file, GLuint & id)
@@ -56,7 +54,6 @@ IGL_INLINE bool igl::opengl::texture_from_tga(const std::string tga_file, GLuint
     img->format == GL_BGR))
   {
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    igl::opengl::report_gl_error();
   }
 
   // Load texture

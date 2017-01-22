@@ -1,6 +1,6 @@
 #include "map_texture.h"
 #include "../create_shader_program.h"
-#include "../OpenGL_convenience.h"
+#include "../gl.h"
 
 #define GLFW_INCLUDE_GLU
 #include <GLFW/glfw3.h>

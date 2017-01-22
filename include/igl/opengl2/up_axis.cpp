@@ -6,7 +6,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "up_axis.h"
-#include "../opengl/OpenGL_convenience.h"
+#include "gl.h"
 
 IGL_INLINE void igl::opengl2::up_axis(double * x, double * y, double * z)
 {

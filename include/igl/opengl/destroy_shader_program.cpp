@@ -6,8 +6,8 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "destroy_shader_program.h"
-#include <cstdio>
 #include "report_gl_error.h"
+#include <cstdio>
 
 IGL_INLINE bool igl::opengl::destroy_shader_program(const GLuint id)
 {

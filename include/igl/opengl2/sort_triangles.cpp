@@ -8,7 +8,7 @@
 #include "sort_triangles.h"
 #include "project.h"
 #include "../sort_triangles.h"
-#include "../opengl/OpenGL_convenience.h"
+#include "gl.h"
 #include "../sort.h"
 #include "../slice.h"
 #include "../barycenter.h"

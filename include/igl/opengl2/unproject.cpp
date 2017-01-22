@@ -8,7 +8,7 @@
 #include "unproject.h"
 #include "model_proj_viewport.h"
 #include "../unproject.h"
-#include "../opengl/OpenGL_convenience.h"
+#include "gl.h"
 
 #include <Eigen/Dense>
 #include <Eigen/LU>

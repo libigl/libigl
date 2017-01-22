@@ -7,7 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "draw_skeleton_vector_graphics.h"
 #include "draw_point.h"
-#include "../opengl/OpenGL_convenience.h"
+#include "gl.h"
 #include "../material_colors.h"
 
 IGL_INLINE void igl::opengl2::draw_skeleton_vector_graphics(

@@ -7,9 +7,8 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_OPENGL2_PRINT_GL_GET_H
 #define IGL_OPENGL2_PRINT_GL_GET_H
+#include "gl.h"
 #include "../igl_inline.h"
-
-#include "../opengl/OpenGL_convenience.h"
 
 namespace igl
 {
