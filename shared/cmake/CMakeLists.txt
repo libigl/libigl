@@ -326,17 +326,20 @@ if(LIBIGL_WITH_OPENGL)
   set(LIBIGL_OPENGL_EXTRA_LIBRARIES ${OPENGL_gl_LIBRARY})
   list(APPEND LIBIGL_EXTRA_LIBRARIES ${LIBIGL_OPENGL_EXTRA_LIBRARIES})
 
+  ### GLEW for linux and windows
+  if((UNIX AND NOT APPLE) OR WIN32) ### Compile glew if needed
+    set(GLEW_INSTALL OFF CACHE BOOL " " FORCE)
+    add_subdirectory("${NANOGUI_DIR}/ext/glew" "glew")
+  endif()
+  if(NOT APPLE)
+    list(APPEND LIBIGL_INCLUDE_DIRS "${NANOGUI_DIR}/ext/glew/include")
+    list(APPEND LIBIGL_OPENGL_EXTRA_LIBRARIES "glew")
+  endif()
+
   if(LIBIGL_WITH_OPENGL_GLFW)
     set(GLFW_INCLUDE_DIRS "${NANOGUI_DIR}/ext/glfw/include")
-
-    ### GLEW for linux and windows
-    if((UNIX AND NOT APPLE) OR WIN32) ### Compile glew if needed
-      set(GLEW_INSTALL OFF CACHE BOOL " " FORCE)
-      add_subdirectory("${NANOGUI_DIR}/ext/glew" "glew")
-    endif()
     if(NOT APPLE)
       list(APPEND GLFW_INCLUDE_DIRS "${NANOGUI_DIR}/ext/glew/include")
-      list(APPEND LIBIGL_OPENGL_GLFW_EXTRA_LIBRARIES "glew")
     endif()
 
     add_subdirectory("${NANOGUI_DIR}/ext/glfw" "glfw")
