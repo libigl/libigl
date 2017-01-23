@@ -39,7 +39,7 @@ namespace igl
     typename DerivedIA,
     typename DerivedIC>
   IGL_INLINE void unique(
-      const Eigen::PlainObjectBase<DerivedA> & A,
+      const Eigen::DenseBase<DerivedA> & A,
       Eigen::PlainObjectBase<DerivedC> & C,
       Eigen::PlainObjectBase<DerivedIA> & IA,
       Eigen::PlainObjectBase<DerivedIC> & IC);
@@ -47,7 +47,7 @@ namespace igl
     typename DerivedA,
     typename DerivedC>
   IGL_INLINE void unique(
-      const Eigen::PlainObjectBase<DerivedA> & A,
+      const Eigen::DenseBase<DerivedA> & A,
       Eigen::PlainObjectBase<DerivedC> & C);
   // Act like matlab's [C,IA,IC] = unique(X,'rows')
   //
@@ -63,7 +63,7 @@ namespace igl
   //   IC  #A index vector so that A = C(IC,:);
   template <typename DerivedA, typename DerivedIA, typename DerivedIC>
   IGL_INLINE void unique_rows(
-    const Eigen::PlainObjectBase<DerivedA>& A,
+    const Eigen::DenseBase<DerivedA>& A,
     Eigen::PlainObjectBase<DerivedA>& C,
     Eigen::PlainObjectBase<DerivedIA>& IA,
     Eigen::PlainObjectBase<DerivedIC>& IC);

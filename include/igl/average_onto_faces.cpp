@@ -25,5 +25,5 @@ IGL_INLINE void igl::average_onto_faces(const Eigen::Matrix<T, Eigen::Dynamic, E
 };
 
 #ifdef IGL_STATIC_LIBRARY
-// Explicit template specialization
+// Explicit template instantiation
 #endif

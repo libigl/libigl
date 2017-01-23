@@ -45,6 +45,6 @@ IGL_INLINE M igl::intersect(const M & A, const M & B)
   return C;
 }
 #ifdef IGL_STATIC_LIBRARY
-// Explicit template specialization
+// Explicit template instantiation
 template Eigen::Matrix<int, -1, 1, 0, -1, 1> igl::intersect<Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, Eigen::Matrix<int, -1, 1, 0, -1, 1> const&); 
 #endif

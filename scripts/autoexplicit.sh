@@ -1,7 +1,35 @@
 #!/bin/bash
-# Usage:
-#   cd $LIBIGL/include/igl
-#   make -C [your_project] 2>&1 | ../../scripts/autoexplicit.sh
+
+while getopts ":C:h" opt; do
+  case $opt in
+    C)
+      if ! cd "$OPTARG" 2>/dev/null
+      then
+        (>&2 echo "Failed to change directory to $OPTARG")
+        exit 1
+      fi
+      ;;
+    h)
+      echo "
+Usage:
+  
+    autoexplicit.sh [-C dir] \"
+    Undefined symbols for architecture x86_64:
+     \\\"...\\\" \"
+
+Or 
+
+    make -C [your_project] 2>&1 | autoexplicit.sh -C \$LIBIGL"
+      exit 1
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      ;;
+  esac
+done
+
+# Shift so that $# makes sense
+shift $((OPTIND-1))
 
 
 # process input line by line
@@ -24,17 +52,17 @@ while read line; do
     continue
   fi
 
-  if ! grep -q "^\/\/ Explicit template specialization*$" "$cpp"
+  if ! grep -q "^\/\/ Explicit template instantiation*$" "$cpp"
   then
-    echo "Warning: skipping $cpp because it does not match ^\/\/ Explicit template specialization*$ "
+    echo "Warning: skipping $cpp because it does not match ^\/\/ Explicit template instantiation*$ "
     continue;
   fi
 
-  before=`sed '/^\/\/ Explicit template specialization$/q' "$cpp"`;
+  before=`sed '/^\/\/ Explicit template instantiation$/q' "$cpp"`;
   #echo "before = $before"
-  after=`sed '1,/^\/\/ Explicit template specialization$/d' $cpp`;
+  after=`sed '1,/^\/\/ Explicit template instantiation$/d' $cpp`;
   #echo "after = $after"
-  explicit="template $symbol;"
+  explicit=`echo "template $symbol;" | sed -e "s/std::__1::/std::/g"`
   #echo "$explicit"
   if grep -F "$explicit" "$cpp"
   then

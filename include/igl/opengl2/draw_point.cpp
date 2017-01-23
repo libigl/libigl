@@ -8,7 +8,7 @@
 #include "draw_point.h"
 
 // Implementation
-#include "../opengl/OpenGL_convenience.h"
+#include "gl.h"
 
 #include <cassert>
 #include <cmath>
@@ -93,7 +93,7 @@ IGL_INLINE void igl::opengl2::draw_point(
 }
 
 #ifdef IGL_STATIC_LIBRARY
-// Explicit template specialization
+// Explicit template instantiation
 template void igl::opengl2::draw_point<Eigen::Matrix<double, 3, 1, 0, 3, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 1, 0, 3, 1> > const&, double, bool);
 template void igl::opengl2::draw_point<Eigen::Matrix<double, 2, 1, 0, 2, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 2, 1, 0, 2, 1> > const&, double, bool); 
 #endif

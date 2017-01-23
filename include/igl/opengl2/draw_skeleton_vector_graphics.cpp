@@ -7,7 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "draw_skeleton_vector_graphics.h"
 #include "draw_point.h"
-#include "../opengl/OpenGL_convenience.h"
+#include "gl.h"
 #include "../material_colors.h"
 
 IGL_INLINE void igl::opengl2::draw_skeleton_vector_graphics(
@@ -117,6 +117,6 @@ IGL_INLINE void igl::opengl2::draw_skeleton_vector_graphics(
 }
 
 #ifdef IGL_STATIC_LIBRARY
-// Explicit template specialization
+// Explicit template instantiation
 template void igl::opengl2::draw_skeleton_vector_graphics<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&);
 #endif

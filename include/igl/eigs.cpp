@@ -1,3 +1,10 @@
+// This file is part of libigl, a simple c++ geometry processing library.
+// 
+// Copyright (C) 2016 Alec Jacobson <alecjacobson@gmail.com>
+// 
+// This Source Code Form is subject to the terms of the Mozilla Public License 
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+// obtain one at http://mozilla.org/MPL/2.0/.
 #include "eigs.h"
 
 #include "cotmatrix.h"
@@ -150,7 +157,7 @@ IGL_INLINE bool igl::eigs(
 }
 
 #ifdef IGL_STATIC_LIBRARY
-// Explicit template specialization
+// Explicit template instantiation
 template bool igl::eigs<double, double, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, 1, 0, -1, 1> >(Eigen::SparseMatrix<double, 0, int> const&, Eigen::SparseMatrix<double, 0, int> const&, unsigned long, igl::EigsType, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&);
 #ifdef WIN32
 template bool igl::eigs<double, double, Eigen::Matrix<double,-1,-1,0,-1,-1>, Eigen::Matrix<double,-1,1,0,-1,1> >(Eigen::SparseMatrix<double,0,int> const &,Eigen::SparseMatrix<double,0,int> const &,unsigned long long, igl::EigsType, Eigen::PlainObjectBase< Eigen::Matrix<double,-1,-1,0,-1,-1> > &, Eigen::PlainObjectBase<Eigen::Matrix<double,-1,1,0,-1,1> > &);

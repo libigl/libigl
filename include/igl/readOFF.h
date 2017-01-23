@@ -16,11 +16,12 @@
 #endif
 #include <string>
 #include <vector>
+#include <cstdio>
 
 namespace igl 
 {
   
-  // Read a mesh from an ascii obj file, filling in vertex positions, normals
+  // Read a mesh from an ascii OFF file, filling in vertex positions, normals
   // and texture coordinates. Mesh may have faces of any number of degree
   //
   // Templates:
@@ -32,17 +33,27 @@ namespace igl
   // Outputs:
   //   V  double matrix of vertex positions  #V by 3
   //   F  #F list of face indices into vertex positions
-  //   TC  double matrix of texture coordinats #TC by 2
-  //   FTC  #F list of face indices into vertex texture coordinates
-  //   N  double matrix of corner normals #N by 3
-  //   FN  #F list of face indices into vertex normals
+  //   N  list of vertex normals #V by 3
+  //   C  list of rgb color values per vertex #V by 3
   // Returns true on success, false on errors
   template <typename Scalar, typename Index>
   IGL_INLINE bool readOFF(
     const std::string off_file_name, 
     std::vector<std::vector<Scalar > > & V,
     std::vector<std::vector<Index > > & F,
-    std::vector<std::vector<Scalar > > & N);
+    std::vector<std::vector<Scalar > > & N,
+    std::vector<std::vector<Scalar > > & C);
+  // Inputs:
+  //   off_file  pointer to already opened .off file 
+  // Outputs:
+  //   off_file  closed file
+  template <typename Scalar, typename Index>
+  IGL_INLINE bool readOFF(
+    FILE * off_file,
+    std::vector<std::vector<Scalar > > & V,
+    std::vector<std::vector<Index > > & F,
+    std::vector<std::vector<Scalar > > & N,
+    std::vector<std::vector<Scalar > > & C);
   
   
 #ifndef IGL_NO_EIGEN

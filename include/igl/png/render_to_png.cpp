@@ -8,7 +8,7 @@
 #include "render_to_png.h"
 #include <stb_image_write.h>
 
-#include "../opengl/OpenGL_convenience.h"
+#include "../opengl/gl.h"
 
 IGL_INLINE bool igl::png::render_to_png(
   const std::string png_file,
@@ -41,5 +41,5 @@ IGL_INLINE bool igl::png::render_to_png(
 }
 
 #ifdef IGL_STATIC_LIBRARY
-// Explicit template specialization
+// Explicit template instantiation
 #endif

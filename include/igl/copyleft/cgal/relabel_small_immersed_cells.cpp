@@ -9,7 +9,7 @@
 
 #include "relabel_small_immersed_cells.h"
 #include "../../centroid.h"
-#include "assign_scalar.h"
+#include "assign.h"
 #include "cell_adjacency.h"
 
 #include <vector>
@@ -37,12 +37,8 @@ IGL_INLINE void igl::copyleft::cgal::relabel_small_immersed_cells(
   std::vector<std::set<CellConnection> > cell_adj;
   igl::copyleft::cgal::cell_adjacency(C, num_cells, cell_adj);
 
-  Eigen::MatrixXd VV(V.rows(), V.cols());
-  for (size_t i=0; i<num_vertices; i++) {
-    igl::copyleft::cgal::assign_scalar(V(i,0), VV(i,0));
-    igl::copyleft::cgal::assign_scalar(V(i,1), VV(i,1));
-    igl::copyleft::cgal::assign_scalar(V(i,2), VV(i,2));
-  }
+  Eigen::MatrixXd VV;
+  assign(V,VV);
 
   auto compute_cell_volume = [&](size_t cell_id) {
     std::vector<short> is_involved(num_patches, 0);

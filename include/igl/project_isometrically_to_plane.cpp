@@ -24,14 +24,14 @@ IGL_INLINE void igl::project_isometrically_to_plane(
   using namespace std;
   using namespace Eigen;
   assert(F.cols() == 3 && "F should contain triangles");
-  typedef Eigen::PlainObjectBase<DerivedV> MatrixX;
+  typedef DerivedV MatrixX;
   MatrixX l;
   edge_lengths(V,F,l);
   // Number of faces
   const int m = F.rows();
 
   // First corner at origin
-  U = Eigen::PlainObjectBase<DerivedU>::Zero(m*3,2);
+  U = DerivedU::Zero(m*3,2);
   // Second corner along x-axis
   U.block(m,0,m,1) = l.col(2);
   // Third corner rotated onto plane

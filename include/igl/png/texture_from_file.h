@@ -8,7 +8,7 @@
 #ifndef IGL_PNG_TEXTURE_FROM_FILE_H
 #define IGL_PNG_TEXTURE_FROM_FILE_H
 #include "../igl_inline.h"
-#include "../opengl/OpenGL_convenience.h"
+#include "../opengl/gl.h"
 
 #include <string>
 
@@ -17,8 +17,8 @@ namespace igl
   namespace png
   {
     // Read an image from an image file and use it as a texture. Officially,
-    // only .tga and .png are supported. Any filetype read by ImageMagick's
-    // `convert` will work via an unsafe system call.
+    // only <del>.tga and</del> .png are supported. Any filetype read by
+    // ImageMagick's `convert` will work via an unsafe system call.
     //
     // Input:
     //  filename  path to image file

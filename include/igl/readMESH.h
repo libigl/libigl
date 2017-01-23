@@ -9,9 +9,10 @@
 #define IGL_READMESH_H
 #include "igl_inline.h"
 
+#include <Eigen/Core>
 #include <string>
 #include <vector>
-#include <Eigen/Core>
+#include <cstdio>
 
 namespace igl
 {
@@ -35,6 +36,16 @@ namespace igl
     std::vector<std::vector<Scalar > > & V,
     std::vector<std::vector<Index > > & T,
     std::vector<std::vector<Index > > & F);
+  // Inputs:
+  //   mesh_file  pointer to already opened .mesh file 
+  // Outputs:
+  //   mesh_file  closed file
+  template <typename Scalar, typename Index>
+  IGL_INLINE bool readMESH(
+    FILE * mesh_file,
+    std::vector<std::vector<Scalar > > & V,
+    std::vector<std::vector<Index > > & T,
+    std::vector<std::vector<Index > > & F);
 
   // Input:
   //   mesh_file_name  path of .mesh file
@@ -45,6 +56,16 @@ namespace igl
   template <typename DerivedV, typename DerivedF, typename DerivedT>
   IGL_INLINE bool readMESH(
     const std::string mesh_file_name,
+    Eigen::PlainObjectBase<DerivedV>& V,
+    Eigen::PlainObjectBase<DerivedT>& T,
+    Eigen::PlainObjectBase<DerivedF>& F);
+  // Inputs:
+  //   mesh_file  pointer to already opened .mesh file 
+  // Outputs:
+  //   mesh_file  closed file
+  template <typename DerivedV, typename DerivedF, typename DerivedT>
+  IGL_INLINE bool readMESH(
+    FILE * mesh_file,
     Eigen::PlainObjectBase<DerivedV>& V,
     Eigen::PlainObjectBase<DerivedT>& T,
     Eigen::PlainObjectBase<DerivedF>& F);

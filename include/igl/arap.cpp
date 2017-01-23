@@ -55,8 +55,8 @@ IGL_INLINE bool igl::arap_precomputation(
   assert(data.dim <= V.cols() && "solve dim should be <= embedding");
   bool flat = (V.cols() - data.dim)==1;
 
-  PlainObjectBase<DerivedV> plane_V;
-  PlainObjectBase<DerivedF> plane_F;
+  DerivedV plane_V;
+  DerivedF plane_F;
   typedef SparseMatrix<Scalar> SparseMatrixS;
   SparseMatrixS ref_map,ref_map_dim;
   if(flat)

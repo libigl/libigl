@@ -7,13 +7,13 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_FLIP_AVOIDING_LINE_SEARCH_H
 #define IGL_FLIP_AVOIDING_LINE_SEARCH_H
-#include <igl/igl_inline.h>
+#include "igl_inline.h"
 
 #include <Eigen/Dense>
 
 namespace igl
 {
-  // A bisection line search for a mesh based energy that avoids triangle flips as suggested in 
+  // A bisection line search for a mesh based energy that avoids triangle flips as suggested in
   // 		"Bijective Parameterization with Free Boundaries" (Smith J. and Schaefer S., 2015).
   //
   // The user specifies an initial vertices position (that has no flips) and target one (that my have flipped triangles).
@@ -27,7 +27,7 @@ namespace igl
   //   cur_v  						#V by dim list of variables
   //   dst_v  						#V by dim list of target vertices. This mesh may have flipped triangles
   //   energy       			    A function to compute the mesh-based energy (return an energy that is bigger than 0)
-  //   cur_energy(OPTIONAL)         The energy at the given point. Helps save redundant computations. 
+  //   cur_energy(OPTIONAL)         The energy at the given point. Helps save redundant computations.
   //							    This is optional. If not specified, the function will compute it.
   // Outputs:
   //		cur_v  						#V by dim list of variables at the new location

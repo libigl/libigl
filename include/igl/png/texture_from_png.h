@@ -11,7 +11,7 @@
 #include <Eigen/Core>
 #include <string>
 
-#include "../opengl/OpenGL_convenience.h"
+#include "../opengl/gl.h"
 
 namespace igl
 {

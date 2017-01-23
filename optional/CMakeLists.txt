@@ -37,6 +37,7 @@ option(LIBIGL_WITH_MOSEK            "Use MOSEK"          "${MOSEK_FOUND}")
 ### many issues
 option(LIBIGL_WITH_NANOGUI          "Use Nanogui menu"   OFF)
 option(LIBIGL_WITH_OPENGL           "Use OpenGL"         ON)
+option(LIBIGL_WITH_OPENGL_GLFW      "Use GLFW"           ON)
 option(LIBIGL_WITH_PNG              "Use PNG"            ON)
 option(LIBIGL_WITH_TETGEN           "Use Tetgen"         ON)
 option(LIBIGL_WITH_TRIANGLE         "Use Triangle"       ON)

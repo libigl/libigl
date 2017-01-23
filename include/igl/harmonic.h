@@ -31,10 +31,10 @@ namespace igl
     typename Derivedbc,
     typename DerivedW>
   IGL_INLINE bool harmonic(
-    const Eigen::PlainObjectBase<DerivedV> & V,
-    const Eigen::PlainObjectBase<DerivedF> & F,
-    const Eigen::PlainObjectBase<Derivedb> & b,
-    const Eigen::PlainObjectBase<Derivedbc> & bc,
+    const Eigen::MatrixBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedF> & F,
+    const Eigen::MatrixBase<Derivedb> & b,
+    const Eigen::MatrixBase<Derivedbc> & bc,
     const int k,
     Eigen::PlainObjectBase<DerivedW> & W);
   // Compute harmonic map using uniform laplacian operator
@@ -53,9 +53,9 @@ namespace igl
     typename Derivedbc,
     typename DerivedW>
   IGL_INLINE bool harmonic(
-    const Eigen::PlainObjectBase<DerivedF> & F,
-    const Eigen::PlainObjectBase<Derivedb> & b,
-    const Eigen::PlainObjectBase<Derivedbc> & bc,
+    const Eigen::MatrixBase<DerivedF> & F,
+    const Eigen::MatrixBase<Derivedb> & b,
+    const Eigen::MatrixBase<Derivedbc> & bc,
     const int k,
     Eigen::PlainObjectBase<DerivedW> & W);
   // Compute a harmonic map using a given Laplacian and mass matrix
@@ -77,8 +77,8 @@ namespace igl
   IGL_INLINE bool harmonic(
     const Eigen::SparseMatrix<DerivedL> & L,
     const Eigen::SparseMatrix<DerivedM> & M,
-    const Eigen::PlainObjectBase<Derivedb> & b,
-    const Eigen::PlainObjectBase<Derivedbc> & bc,
+    const Eigen::MatrixBase<Derivedb> & b,
+    const Eigen::MatrixBase<Derivedbc> & bc,
     const int k,
     Eigen::PlainObjectBase<DerivedW> & W);
   // Build the discrete k-harmonic operator (computing integrated quantities).
@@ -110,8 +110,8 @@ namespace igl
     typename DerivedF,
     typename DerivedQ>
   IGL_INLINE void harmonic(
-    const Eigen::PlainObjectBase<DerivedV> & V,
-    const Eigen::PlainObjectBase<DerivedF> & F,
+    const Eigen::MatrixBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedF> & F,
     const int k,
     Eigen::SparseMatrix<DerivedQ> & Q);
 };

@@ -6,7 +6,7 @@ import pyigl as igl
 
 from shared import TUTORIAL_SHARED_PATH, check_dependencies, print_usage
 
-dependencies = ["viewer", "bbw"]
+dependencies = ["viewer"]
 check_dependencies(dependencies)
 
 
@@ -117,11 +117,11 @@ if __name__ == "__main__":
     igl.boundary_conditions(V, T, C, igl.eigen.MatrixXi(), BE, igl.eigen.MatrixXi(), b, bc)
 
     # compute BBW weights matrix
-    bbw_data = igl.bbw.BBWData()
+    bbw_data = igl.BBWData()
     # only a few iterations for sake of demo
     bbw_data.active_set_params.max_iter = 8
     bbw_data.verbosity = 2
-    if not igl.bbw.bbw(V, T, b, bc, bbw_data, W):
+    if not igl.bbw(V, T, b, bc, bbw_data, W):
         exit(-1)
 
     # Normalize weights to sum to one

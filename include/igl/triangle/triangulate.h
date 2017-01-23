@@ -1,6 +1,7 @@
 // This file is part of libigl, a simple c++ geometry processing library.
 //
 // Copyright (C) 2014 Daniele Panozzo <daniele.panozzo@gmail.com>
+// Copyright (C) 2017 Alec Jacobson
 //
 // This Source Code Form is subject to the terms of the Mozilla Public License
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
@@ -26,16 +27,20 @@ namespace igl
     //   V2  #V2 by 2  coordinates of the vertives of the generated triangulation
     //   F2  #F2 by 3  list of indices forming the faces of the generated triangulation
     //
-    // TODO: expose the option to prevent Steiner points on the boundary
-    //
+    template <
+      typename DerivedV,
+      typename DerivedE,
+      typename DerivedH,
+      typename DerivedV2,
+      typename DerivedF2>
     IGL_INLINE void triangulate(
-      const Eigen::MatrixXd& V,
-      const Eigen::MatrixXi& E,
-      const Eigen::MatrixXd& H,
+      const Eigen::MatrixBase<DerivedV> & V,
+      const Eigen::MatrixBase<DerivedE> & E,
+      const Eigen::MatrixBase<DerivedH> & H,
       const std::string flags,
-      Eigen::MatrixXd& V2,
-      Eigen::MatrixXi& F2);
-		
+      Eigen::PlainObjectBase<DerivedV2> & V2,
+      Eigen::PlainObjectBase<DerivedF2> & F2);
+        
 		// Triangulate the interior of a polygon using the triangle library.
     //
     // Inputs:
@@ -51,16 +56,27 @@ namespace igl
     //
     // TODO: expose the option to prevent Steiner points on the boundary
     //
-		IGL_INLINE void triangulate(
-			const Eigen::MatrixXd& V,
-			const Eigen::MatrixXi& E,
-			const Eigen::MatrixXd& H,
-			const Eigen::VectorXi& VM,
-			const Eigen::VectorXi& EM,
-			const std::string flags,
-			Eigen::MatrixXd& V2,
-			Eigen::MatrixXi& F2,
-			Eigen::VectorXi& M2);
+    template <
+      typename DerivedV,
+      typename DerivedE,
+      typename DerivedH,
+      typename DerivedVM,
+      typename DerivedEM,
+      typename DerivedV2,
+      typename DerivedF2,
+      typename DerivedVM2,
+      typename DerivedEM2>
+    IGL_INLINE void triangulate(
+      const Eigen::MatrixBase<DerivedV> & V,
+      const Eigen::MatrixBase<DerivedE> & E,
+      const Eigen::MatrixBase<DerivedH> & H,
+      const Eigen::MatrixBase<DerivedVM> & VM,
+      const Eigen::MatrixBase<DerivedEM> & EM,
+      const std::string flags,
+      Eigen::PlainObjectBase<DerivedV2> & V2,
+      Eigen::PlainObjectBase<DerivedF2> & F2,
+      Eigen::PlainObjectBase<DerivedVM2> & VM2,
+      Eigen::PlainObjectBase<DerivedEM2> & EM2);
   }
 }
 

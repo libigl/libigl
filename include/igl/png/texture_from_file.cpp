@@ -11,7 +11,7 @@
 #include "../STR.h"
 #include "../pathinfo.h"
 #include "../opengl/report_gl_error.h"
-#include "../opengl/texture_from_tga.h"
+//#include "../opengl2/texture_from_tga.h"
 #include <string>
 #include <algorithm>
 #include <iostream>
@@ -25,10 +25,11 @@ IGL_INLINE bool igl::png::texture_from_file(const std::string filename, GLuint &
   pathinfo(filename,d,b,ext,f);
   // Convert extension to lower case
   transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
-  if(ext == "tga")
-  {
-    return texture_from_tga(filename,id);
-  }else if(ext == "png")
+  //if(ext == "tga")
+  //{
+  //  return texture_from_tga(filename,id);
+  //}else 
+  if(ext == "png")
   {
     return texture_from_png(filename,id);
   }else

@@ -1039,7 +1039,7 @@ inline PlyFile *ply_read(FILE *fp, int *nelems, char ***elem_names)
   /* read and parse the file's header */
 
   words = get_words (plyfile->fp, &nwords, &orig_line);
-  if (!words || !equal_strings (words[0], "ply"))
+  if (nwords == 0 || !words || !equal_strings (words[0], "ply"))
   {
        if (words)
 	 free(words);

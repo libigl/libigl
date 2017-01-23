@@ -5,7 +5,7 @@
 
 #include "../python_shared.h"
 
-#include <igl/bbw/bbw.h>
+#include <igl/bbw.h>
 
 
 void python_export_igl_bbw(py::module &me) {
@@ -13,6 +13,6 @@ void python_export_igl_bbw(py::module &me) {
   py::module m = me.def_submodule(
     "bbw", "Wrappers for libigl functions that use bbw");
 
-  #include "../py_igl/bbw/py_bbw.cpp"
+  #include "../py_igl/py_bbw.cpp"
 
 }

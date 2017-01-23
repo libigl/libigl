@@ -8,10 +8,7 @@
 #ifndef IGL_ON_BOUNDARY_H
 #define IGL_ON_BOUNDARY_H
 #include "igl_inline.h"
-
-#ifndef IGL_NO_EIGEN
-#  include <Eigen/Dense>
-#endif
+#include <Eigen/Dense>
 
 #include <vector>
 
@@ -34,18 +31,15 @@ namespace igl
     const std::vector<std::vector<IntegerT> > & T,
     std::vector<bool> & I,
     std::vector<std::vector<bool> > & C);
-
-#ifndef IGL_NO_EIGEN
   // Templates:
   //   DerivedT  integer-value: i.e. from MatrixXi
   //   DerivedI  bool-value: i.e. from MatrixXi
   //   DerivedC  bool-value: i.e. from MatrixXi
   template <typename DerivedT, typename DerivedI, typename DerivedC>
   IGL_INLINE void on_boundary(
-    const Eigen::PlainObjectBase<DerivedT>& T,
+    const Eigen::MatrixBase<DerivedT>& T,
     Eigen::PlainObjectBase<DerivedI>& I,
     Eigen::PlainObjectBase<DerivedC>& C);
-#endif
 }
 
 #ifndef IGL_STATIC_LIBRARY
