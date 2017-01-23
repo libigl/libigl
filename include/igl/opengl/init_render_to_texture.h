@@ -8,7 +8,7 @@
 #ifndef IGL_OPENGL_INIT_RENDER_TO_TEXTURE_H
 #define IGL_OPENGL_INIT_RENDER_TO_TEXTURE_H
 #include "../igl_inline.h"
-#include "OpenGL_convenience.h"
+#include "gl.h"
 #include <cstdlib>
 namespace igl
 {

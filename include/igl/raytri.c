@@ -5,6 +5,9 @@
 /* by Tomas Moller, May 2000                        */
 
 
+// Alec: this file is listed as "Public Domain"
+// http://fileadmin.cs.lth.se/cs/Personal/Tomas_Akenine-Moller/code/
+
 // Alec: I've added an include guard, made all functions inline and added
 // IGL_RAY_TRI_ to #define macros
 #ifndef IGL_RAY_TRI_C

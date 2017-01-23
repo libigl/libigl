@@ -8,10 +8,9 @@
 #ifndef IGL_OPENGL2_LENS_FLARE_H
 #define IGL_OPENGL2_LENS_FLARE_H
 
-#include "../opengl/OpenGL_convenience.h"
 #include "../igl_inline.h"
+#include "gl.h"
 #include <Eigen/Core>
-
 #include <vector>
 
 namespace igl

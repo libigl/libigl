@@ -8,7 +8,8 @@
 
 
 #include "draw_rectangular_marquee.h"
-#include "../opengl/OpenGL_convenience.h"
+#include "gl.h"
+#include "glu.h"
 #include "../material_colors.h"
 
 IGL_INLINE void igl::opengl2::draw_rectangular_marquee(

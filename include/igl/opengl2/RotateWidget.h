@@ -7,10 +7,10 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_OPENGL2_ROTATE_WIDGET_H
 #define IGL_OPENGL2_ROTATE_WIDGET_H
+#include "../material_colors.h"
 #include <Eigen/Geometry>
 #include <Eigen/Core>
 #include <vector>
-#include "../material_colors.h"
 
 namespace igl
 {

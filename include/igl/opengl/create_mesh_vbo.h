@@ -8,11 +8,8 @@
 #ifndef IGL_OPENGL_CREATE_MESH_VBO_H
 #define IGL_OPENGL_CREATE_MESH_VBO_H
 #include "../igl_inline.h"
-// NOTE: It wouldn't be so hard to template this using Eigen's templates
-
+#include "gl.h"
 #include <Eigen/Core>
-
-#include "OpenGL_convenience.h"
 
 // Create a VBO (Vertex Buffer Object) for a mesh. Actually two VBOs: one 
 // GL_ARRAY_BUFFER for the vertex positions (V) and one

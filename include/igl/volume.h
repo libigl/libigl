@@ -27,8 +27,8 @@ namespace igl
     typename DerivedT, 
     typename Derivedvol>
   IGL_INLINE void volume(
-    const Eigen::PlainObjectBase<DerivedV>& V,
-    const Eigen::PlainObjectBase<DerivedT>& T,
+    const Eigen::MatrixBase<DerivedV>& V,
+    const Eigen::MatrixBase<DerivedT>& T,
     Eigen::PlainObjectBase<Derivedvol>& vol);
   template <
     typename DerivedA,
@@ -37,10 +37,10 @@ namespace igl
     typename DerivedD,
     typename Derivedvol>
   IGL_INLINE void volume(
-    const Eigen::PlainObjectBase<DerivedA> & A,
-    const Eigen::PlainObjectBase<DerivedB> & B,
-    const Eigen::PlainObjectBase<DerivedC> & C,
-    const Eigen::PlainObjectBase<DerivedD> & D,
+    const Eigen::MatrixBase<DerivedA> & A,
+    const Eigen::MatrixBase<DerivedB> & B,
+    const Eigen::MatrixBase<DerivedC> & C,
+    const Eigen::MatrixBase<DerivedD> & D,
     Eigen::PlainObjectBase<Derivedvol> & vol);
   // Single tet
   template <
@@ -61,7 +61,7 @@ namespace igl
     typename DerivedL, 
     typename Derivedvol>
   IGL_INLINE void volume(
-    const Eigen::PlainObjectBase<DerivedL>& L,
+    const Eigen::MatrixBase<DerivedL>& L,
     Eigen::PlainObjectBase<Derivedvol>& vol);
 }
 

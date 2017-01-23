@@ -62,7 +62,7 @@ IGL_INLINE void igl::remove_duplicates(
 
   count = 0;
   std::vector<typename DerivedF::Scalar> face;
-  NF.resize(F.rows(),F.cols());
+  NF.resizeLike(F);
   for (int i =0; i <F.rows(); ++i)
   {
     face.clear();
@@ -82,7 +82,7 @@ IGL_INLINE void igl::remove_duplicates(
 }
 
 #ifdef IGL_STATIC_LIBRARY
-// Explicit template specialization
+// Explicit template instantiation
 template void igl::remove_duplicates<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::Matrix<Eigen::Matrix<int, -1, -1, 0, -1, -1>::Scalar, -1, 1, 0, -1, 1>&, double);
 template void igl::remove_duplicates<Eigen::Matrix<double, -1, 3, 1, -1, 3>, Eigen::Matrix<int, -1, 3, 1, -1, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 1, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 1, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 1, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 1, -1, 3> >&, Eigen::Matrix<Eigen::Matrix<int, -1, 3, 1, -1, 3>::Scalar, -1, 1, 0, -1, 1>&, double);
 #endif

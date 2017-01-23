@@ -25,8 +25,8 @@ namespace igl
   //
   template <typename DerivedV, typename DerivedF, typename DerivedC>
   IGL_INLINE void cotmatrix_entries(
-    const Eigen::PlainObjectBase<DerivedV>& V,
-    const Eigen::PlainObjectBase<DerivedF>& F,
+    const Eigen::MatrixBase<DerivedV>& V,
+    const Eigen::MatrixBase<DerivedF>& F,
     Eigen::PlainObjectBase<DerivedC>& C);
 }
 

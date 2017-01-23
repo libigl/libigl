@@ -7,7 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_LINE_SEARCH_H
 #define IGL_LINE_SEARCH_H
-#include <igl/igl_inline.h>
+#include "igl_inline.h"
 
 #include <Eigen/Dense>
 
@@ -21,7 +21,7 @@ namespace igl
   //   d  						#X by dim list of a given search direction
   //   i_step_size  			initial step size
   //   energy       			A function to compute the mesh-based energy (return an energy that is bigger than 0)
-  //   cur_energy(OPTIONAL)     The energy at the given point. Helps save redundant computations. 
+  //   cur_energy(OPTIONAL)     The energy at the given point. Helps save redundant computations.
   //							This is optional. If not specified, the function will compute it.
   // Outputs:
   //		x  						#X by dim list of variables at the new location

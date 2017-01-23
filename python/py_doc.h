@@ -5,7 +5,7 @@ extern const char *__doc_igl_avg_edge_length;
 extern const char *__doc_igl_barycenter;
 extern const char *__doc_igl_barycentric_coordinates;
 extern const char *__doc_igl_barycentric_to_global;
-extern const char *__doc_igl_bbw_bbw;
+extern const char *__doc_igl_bbw;
 extern const char *__doc_igl_boundary_conditions;
 extern const char *__doc_igl_boundary_facets;
 extern const char *__doc_igl_boundary_loop;

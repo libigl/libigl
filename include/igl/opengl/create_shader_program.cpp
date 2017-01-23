@@ -40,7 +40,7 @@ IGL_INLINE bool igl::opengl::create_shader_program(
   if(geom_source != "")
   {
     // load vertex shader
-    g = igl::opengl::load_shader(geom_source.c_str(),GL_GEOMETRY_SHADER_EXT);
+    g = igl::opengl::load_shader(geom_source.c_str(),GL_GEOMETRY_SHADER);
     if(g == 0)
     {
       cerr<<"geometry shader failed to compile."<<endl;
@@ -136,6 +136,6 @@ IGL_INLINE GLuint igl::opengl::create_shader_program(
 }
 
 #ifdef IGL_STATIC_LIBRARY
-// Explicit template specialization
+// Explicit template instantiation
 #endif
 

@@ -27,7 +27,7 @@
 template <typename T, typename Derivedknown>
 IGL_INLINE bool igl::min_quad_with_fixed_precompute(
   const Eigen::SparseMatrix<T>& A2,
-  const Eigen::PlainObjectBase<Derivedknown> & known,
+  const Eigen::MatrixBase<Derivedknown> & known,
   const Eigen::SparseMatrix<T>& Aeq,
   const bool pd,
   min_quad_with_fixed_data<T> & data
@@ -96,11 +96,11 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
   // https://forum.kde.org/viewtopic.php?f=74&t=107974&p=364947#p364947
   if(data.unknown.size() > 0)
   {
-    data.unknown_lagrange << data.unknown;
+    data.unknown_lagrange.head(data.unknown.size()) = data.unknown;
   }
   if(data.lagrange.size() > 0)
   {
-    data.unknown_lagrange << data.lagrange;
+    data.unknown_lagrange.tail(data.lagrange.size()) = data.lagrange;
   }
 
   SparseMatrix<T> Auu;
@@ -388,9 +388,9 @@ template <
   typename Derivedsol>
 IGL_INLINE bool igl::min_quad_with_fixed_solve(
   const min_quad_with_fixed_data<T> & data,
-  const Eigen::PlainObjectBase<DerivedB> & B,
-  const Eigen::PlainObjectBase<DerivedY> & Y,
-  const Eigen::PlainObjectBase<DerivedBeq> & Beq,
+  const Eigen::MatrixBase<DerivedB> & B,
+  const Eigen::MatrixBase<DerivedY> & Y,
+  const Eigen::MatrixBase<DerivedBeq> & Beq,
   Eigen::PlainObjectBase<DerivedZ> & Z,
   Eigen::PlainObjectBase<Derivedsol> & sol)
 {
@@ -486,15 +486,15 @@ IGL_INLINE bool igl::min_quad_with_fixed_solve(
   }else
   {
     assert(data.solver_type == min_quad_with_fixed_data<T>::QR_LLT);
-    PlainObjectBase<DerivedBeq> eff_Beq;
+    DerivedBeq eff_Beq;
     // Adjust Aeq rhs to include known parts
     eff_Beq =
       //data.AeqTQR.colsPermutation().transpose() * (-data.Aeqk * Y + Beq);
       data.AeqTET * (-data.Aeqk * Y + Beq);
     // Where did this -0.5 come from? Probably the same place as above.
-    PlainObjectBase<DerivedB> Bu;
+    DerivedB Bu;
     slice(B,data.unknown,Bu);
-    PlainObjectBase<DerivedB> NB;
+    DerivedB NB;
     NB = -0.5*(Bu + data.preY * Y);
     // Trim eff_Beq
     const int nc = data.AeqTQR.rank();
@@ -502,24 +502,24 @@ IGL_INLINE bool igl::min_quad_with_fixed_solve(
     eff_Beq = eff_Beq.topLeftCorner(nc,1).eval();
     data.AeqTR1T.template triangularView<Lower>().solveInPlace(eff_Beq);
     // Now eff_Beq = (data.AeqTR1T \ (data.AeqTET * (-data.Aeqk * Y + Beq)))
-    PlainObjectBase<DerivedB> lambda_0;
+    DerivedB lambda_0;
     lambda_0 = data.AeqTQ1 * eff_Beq;
     //cout<<matlab_format(lambda_0,"lambda_0")<<endl;
-    PlainObjectBase<DerivedB> QRB;
+    DerivedB QRB;
     QRB = -data.AeqTQ2T * (data.Auu * lambda_0) + data.AeqTQ2T * NB;
-    PlainObjectBase<Derivedsol> lambda;
+    Derivedsol lambda;
     lambda = data.llt.solve(QRB);
     // prepare output
-    PlainObjectBase<Derivedsol> solu;
+    Derivedsol solu;
     solu = data.AeqTQ2 * lambda + lambda_0;
     //  http://www.math.uh.edu/~rohop/fall_06/Chapter3.pdf
-    PlainObjectBase<Derivedsol> solLambda;
+    Derivedsol solLambda;
     {
-      PlainObjectBase<Derivedsol> temp1,temp2;
+      Derivedsol temp1,temp2;
       temp1 = (data.AeqTQ1T * NB - data.AeqTQ1T * data.Auu * solu);
       data.AeqTR1.template triangularView<Upper>().solveInPlace(temp1);
       //cout<<matlab_format(temp1,"temp1")<<endl;
-      temp2 = PlainObjectBase<Derivedsol>::Zero(neq,1);
+      temp2 = Derivedsol::Zero(neq,1);
       temp2.topLeftCorner(nc,1) = temp1;
       //solLambda = data.AeqTQR.colsPermutation() * temp2;
       solLambda = data.AeqTE * temp2;
@@ -552,9 +552,9 @@ template <
   typename DerivedZ>
 IGL_INLINE bool igl::min_quad_with_fixed_solve(
   const min_quad_with_fixed_data<T> & data,
-  const Eigen::PlainObjectBase<DerivedB> & B,
-  const Eigen::PlainObjectBase<DerivedY> & Y,
-  const Eigen::PlainObjectBase<DerivedBeq> & Beq,
+  const Eigen::MatrixBase<DerivedB> & B,
+  const Eigen::MatrixBase<DerivedY> & Y,
+  const Eigen::MatrixBase<DerivedBeq> & Beq,
   Eigen::PlainObjectBase<DerivedZ> & Z)
 {
   Eigen::Matrix<typename DerivedZ::Scalar, Eigen::Dynamic, Eigen::Dynamic> sol;
@@ -570,11 +570,11 @@ template <
   typename DerivedZ>
 IGL_INLINE bool igl::min_quad_with_fixed(
   const Eigen::SparseMatrix<T>& A,
-  const Eigen::PlainObjectBase<DerivedB> & B,
-  const Eigen::PlainObjectBase<Derivedknown> & known,
-  const Eigen::PlainObjectBase<DerivedY> & Y,
+  const Eigen::MatrixBase<DerivedB> & B,
+  const Eigen::MatrixBase<Derivedknown> & known,
+  const Eigen::MatrixBase<DerivedY> & Y,
   const Eigen::SparseMatrix<T>& Aeq,
-  const Eigen::PlainObjectBase<DerivedBeq> & Beq,
+  const Eigen::MatrixBase<DerivedBeq> & Beq,
   const bool pd,
   Eigen::PlainObjectBase<DerivedZ> & Z)
 {
@@ -587,16 +587,14 @@ IGL_INLINE bool igl::min_quad_with_fixed(
 }
 
 #ifdef IGL_STATIC_LIBRARY
-// Explicit template specialization
-template bool igl::min_quad_with_fixed_solve<double, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1> >(igl::min_quad_with_fixed_data<double> const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&);
-template bool igl::min_quad_with_fixed_precompute<double, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::SparseMatrix<double, 0, int> const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, Eigen::SparseMatrix<double, 0, int> const&, bool, igl::min_quad_with_fixed_data<double>&);
-template bool igl::min_quad_with_fixed_solve<double, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(igl::min_quad_with_fixed_data<double> const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
-template bool igl::min_quad_with_fixed_solve<double, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(igl::min_quad_with_fixed_data<double> const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
-template bool igl::min_quad_with_fixed_solve<double, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1> >(igl::min_quad_with_fixed_data<double> const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&);
-template  bool igl::min_quad_with_fixed_solve<double, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(igl::min_quad_with_fixed_data<double> const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
-template bool igl::min_quad_with_fixed_solve<double, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(igl::min_quad_with_fixed_data<double> const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
-template bool igl::min_quad_with_fixed<double, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::SparseMatrix<double, 0, int> const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::SparseMatrix<double, 0, int> const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, bool, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
-template bool igl::min_quad_with_fixed<double, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::SparseMatrix<double, 0, int> const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::SparseMatrix<double, 0, int> const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, bool, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
-template bool igl::min_quad_with_fixed_solve<double, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(igl::min_quad_with_fixed_data<double> const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
-template bool igl::min_quad_with_fixed_solve<double, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(igl::min_quad_with_fixed_data<double> const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
+// Explicit template instantiation
+// generated by autoexplicit.sh
+template bool igl::min_quad_with_fixed<double, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::SparseMatrix<double, 0, int> const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::SparseMatrix<double, 0, int> const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, bool, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
+template bool igl::min_quad_with_fixed_solve<double, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1> >(igl::min_quad_with_fixed_data<double> const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&);
+template bool igl::min_quad_with_fixed_precompute<double, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::SparseMatrix<double, 0, int> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, Eigen::SparseMatrix<double, 0, int> const&, bool, igl::min_quad_with_fixed_data<double>&);
+template bool igl::min_quad_with_fixed_solve<double, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1> >(igl::min_quad_with_fixed_data<double> const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&);
+template bool igl::min_quad_with_fixed_solve<double, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(igl::min_quad_with_fixed_data<double> const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
+template bool igl::min_quad_with_fixed_precompute<double, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::SparseMatrix<double, 0, int> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::SparseMatrix<double, 0, int> const&, bool, igl::min_quad_with_fixed_data<double>&);
+template bool igl::min_quad_with_fixed_solve<double, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(igl::min_quad_with_fixed_data<double> const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
+template bool igl::min_quad_with_fixed_solve<double, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(igl::min_quad_with_fixed_data<double> const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
 #endif

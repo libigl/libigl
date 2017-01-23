@@ -32,7 +32,11 @@ namespace igl
   //     (notice the #b != #weights in general because #b will include all the
   //     intermediary samples along each bone, etc.. The ordering of the
   //     weights corresponds to [P;BE]
-  // Returns true if boundary conditions make sense
+  // Returns false if boundary conditions are suspicious:
+  //   P and BE are empty
+  //   bc is empty
+  //   some column of bc doesn't have a 0 (assuming bc has >1 columns)
+  //   some column of bc doesn't have a 1 (assuming bc has >1 columns)
   IGL_INLINE bool boundary_conditions(
     const Eigen::MatrixXd & V,
     const Eigen::MatrixXi & Ele,

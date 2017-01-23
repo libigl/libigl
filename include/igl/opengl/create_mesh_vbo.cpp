@@ -39,5 +39,5 @@ IGL_INLINE void igl::opengl::create_mesh_vbo(
 }
 
 #ifdef IGL_STATIC_LIBRARY
-// Explicit template specialization
+// Explicit template instantiation
 #endif

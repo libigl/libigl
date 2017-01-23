@@ -100,7 +100,7 @@ IGL_INLINE void igl::copyleft::cgal::projected_delaunay(
 }
 
 #ifdef IGL_STATIC_LIBRARY
-// Explicit template specialization
+// Explicit template instantiation
 template void igl::copyleft::cgal::projected_delaunay<CGAL::Epeck>(CGAL::Triangle_3<CGAL::Epeck> const&, std::vector<CGAL::Object, std::allocator<CGAL::Object> > const&, CGAL::Constrained_triangulation_plus_2<CGAL::Constrained_Delaunay_triangulation_2<CGAL::Epeck, CGAL::Triangulation_data_structure_2<CGAL::Triangulation_vertex_base_2<CGAL::Epeck, CGAL::Triangulation_ds_vertex_base_2<void> >, CGAL::Constrained_triangulation_face_base_2<CGAL::Epeck, CGAL::Triangulation_face_base_2<CGAL::Epeck, CGAL::Triangulation_ds_face_base_2<void> > > >, CGAL::Exact_intersections_tag> >&);
 template void igl::copyleft::cgal::projected_delaunay<CGAL::Epick>(CGAL::Triangle_3<CGAL::Epick> const&, std::vector<CGAL::Object, std::allocator<CGAL::Object> > const&, CGAL::Constrained_triangulation_plus_2<CGAL::Constrained_Delaunay_triangulation_2<CGAL::Epick, CGAL::Triangulation_data_structure_2<CGAL::Triangulation_vertex_base_2<CGAL::Epick, CGAL::Triangulation_ds_vertex_base_2<void> >, CGAL::Constrained_triangulation_face_base_2<CGAL::Epick, CGAL::Triangulation_face_base_2<CGAL::Epick, CGAL::Triangulation_ds_face_base_2<void> > > >, CGAL::Exact_intersections_tag> >&);
 #endif

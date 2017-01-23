@@ -114,6 +114,13 @@ IGL_INLINE void igl::boundary_loop(
     }
   }
 
+  //Check for meshes without boundary
+  if (idxMax == -1)
+  {
+      L.clear();
+      return;
+  }
+
   L.resize(Lall[idxMax].size());
   for (size_t i = 0; i < Lall[idxMax].size(); ++i)
   {
@@ -141,6 +148,6 @@ IGL_INLINE void igl::boundary_loop(
 }
 
 #ifdef IGL_STATIC_LIBRARY
-// Explicit template specialization
+// Explicit template instantiation
 template void igl::boundary_loop<Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
 #endif

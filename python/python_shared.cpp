@@ -38,10 +38,6 @@ extern void python_export_igl_copyleft(py::module &);
 extern void python_export_igl_png(py::module &);
 #endif
 
-#ifdef PY_BBW
-extern void python_export_igl_bbw(py::module &);
-#endif
-
 PYBIND11_PLUGIN(pyigl) {
     py::module m("pyigl", R"pyigldoc(
         Python wrappers for libigl
@@ -62,7 +58,7 @@ PYBIND11_PLUGIN(pyigl) {
            barycenter
            barycentric_coordinates
            barycentric_to_global
-           bbw_bbw
+           bbw
            boundary_conditions
            boundary_facets
            boundary_loop
@@ -191,10 +187,6 @@ PYBIND11_PLUGIN(pyigl) {
 
     #ifdef PY_PNG
     python_export_igl_png(m);
-    #endif
-
-    #ifdef PY_BBW
-    python_export_igl_bbw(m);
     #endif
 
     return m.ptr();

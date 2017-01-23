@@ -77,7 +77,7 @@ IGL_INLINE void igl::rgb_to_hsv(
   Eigen::PlainObjectBase<DerivedH> & H)
 {
   assert(R.cols() == 3);
-  H.resize(R.rows(),R.cols());
+  H.resizeLike(R);
   for(typename DerivedR::Index r = 0;r<R.rows();r++)
   {
     typename DerivedR::Scalar rgb[3];
@@ -93,7 +93,7 @@ IGL_INLINE void igl::rgb_to_hsv(
 }
 
 #ifdef IGL_STATIC_LIBRARY
-// Explicit instanciation
+// Explicit template instantiation
 template void igl::rgb_to_hsv<float, double>(float const*, double*);
 template void igl::rgb_to_hsv<double, double>(double const*, double*);
 template void igl::rgb_to_hsv<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);

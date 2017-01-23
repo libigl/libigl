@@ -5,7 +5,7 @@ add_executable(${PROJECT_NAME}_bin
   main.cpp)
 target_include_directories(${PROJECT_NAME}_bin PRIVATE ${LIBIGL_INCLUDE_DIRS})
 target_compile_definitions(${PROJECT_NAME}_bin PRIVATE ${LIBIGL_DEFINITIONS})
-target_link_libraries(${PROJECT_NAME}_bin ${LIBIGL_LIBRARIES} ${LIBIGL_VIEWER_EXTRA_LIBRARIES})
+target_link_libraries(${PROJECT_NAME}_bin ${LIBIGL_LIBRARIES} ${LIBIGL_VIEWER_EXTRA_LIBRARIES} ${LIBIGL_OPENGL_EXTRA_LIBRARIES} ${LIBIGL_OPENGL_GLFW_EXTRA_LIBRARIES})
 if(LIBIGL_WITH_MOSEK)
   target_link_libraries(${PROJECT_NAME}_bin ${LIBIGL_MOSEK_EXTRA_LIBRARIES})
 endif()

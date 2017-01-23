@@ -273,6 +273,6 @@ IGL_INLINE void igl::opengl2::draw_mesh(
 }
 
 #ifdef IGL_STATIC_LIBRARY
-// Explicit template specialization
+// Explicit template instantiation
 #endif
 
