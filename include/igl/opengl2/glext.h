@@ -22,7 +22,9 @@
 
 #ifdef __APPLE__
 #  include <OpenGL/glext.h>
-#else
+#elif _WIN32
+// do nothing(?)
+#else 
 #  include <GL/glext.h>
 #endif
 
