@@ -5,6 +5,7 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
+#include "LinSpaced.h"
 #include "normal_derivative.h"
 #include "cotmatrix_entries.h"
 #include "slice.h"
@@ -48,7 +49,7 @@ IGL_INLINE void igl::normal_derivative(
       MatrixXi DDI(m,24);
       for(size_t f = 0;f<4;f++)
       {
-        const auto & I = (VectorXi::LinSpaced(m,0,m-1).array()+f*m).eval();
+        const auto & I = (igl::LinSpaced<VectorXi >(m,0,m-1).array()+f*m).eval();
         for(size_t r = 0;r<6;r++)
         {
           DDI.col(f*6+r) = I;
@@ -83,7 +84,7 @@ IGL_INLINE void igl::normal_derivative(
       MatrixXi DDI(m,12);
       for(size_t f = 0;f<3;f++)
       {
-        const auto & I = (VectorXi::LinSpaced(m,0,m-1).array()+f*m).eval();
+        const auto & I = (igl::LinSpaced<VectorXi >(m,0,m-1).array()+f*m).eval();
         for(size_t r = 0;r<4;r++)
         {
           DDI.col(f*4+r) = I;

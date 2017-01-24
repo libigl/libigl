@@ -6,6 +6,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "colon.h"
+#include "LinSpaced.h"
 
 #include <cstdio>
 
@@ -17,7 +18,7 @@ IGL_INLINE void igl::colon(
   Eigen::Matrix<T,Eigen::Dynamic,1> & I)
 {
   const int size = ((hi-low)/step)+1;
-  I = Eigen::Matrix<T,Eigen::Dynamic,1>::LinSpaced(size,low,low+step*(size-1));
+  I = igl::LinSpaced<Eigen::Matrix<T,Eigen::Dynamic,1> >(size,low,low+step*(size-1));
 }
 
 template <typename L,typename H,typename T>

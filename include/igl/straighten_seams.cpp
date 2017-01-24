@@ -6,6 +6,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "straighten_seams.h"
+#include "LinSpaced.h"
 #include "on_boundary.h"
 #include "sparse.h"
 #include "max.h"
@@ -84,7 +85,7 @@ IGL_INLINE void igl::straighten_seams(
   {
     SparseMatrix<bool> OEQR;
     sparse(
-      VectorXi::LinSpaced(OT.rows(),0,OT.rows()-1),
+      igl::LinSpaced<VectorXi >(OT.rows(),0,OT.rows()-1),
       OFMAP,
       Array<bool,Dynamic,1>::Ones(OT.rows(),1),
       OT.rows(),
@@ -139,7 +140,7 @@ IGL_INLINE void igl::straighten_seams(
   SparseMatrix<bool> VTOT;
   {
     Eigen::MatrixXi I = 
-      VectorXi::LinSpaced(OT.rows(),0,OT.rows()-1).replicate(1,2);
+      igl::LinSpaced<VectorXi >(OT.rows(),0,OT.rows()-1).replicate(1,2);
     sparse(
       OT,
       I,
@@ -288,7 +289,7 @@ IGL_INLINE void igl::straighten_seams(
             find(OEQIcT,Icc,II,IV);
             assert(II.size() == Ic.size() && 
               (II.array() ==
-              VectorXi::LinSpaced(Ic.size(),0,Ic.size()-1).array()).all());
+              igl::LinSpaced<VectorXi >(Ic.size(),0,Ic.size()-1).array()).all());
             assert(Icc.size() == Ic.size());
             const int cc = C(Icc(0));
             Eigen::VectorXi CIcc;

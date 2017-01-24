@@ -10,6 +10,7 @@
 #include "assign_scalar.h"
 #include "projected_cdt.h"
 #include "../../get_seconds.h"
+#include "../../LinSpaced.h"
 #include "../../unique.h"
 
 #include <vector>
@@ -447,7 +448,9 @@ IGL_INLINE void igl::copyleft::cgal::remesh_intersections(
       std::transform(FF.data(), FF.data() + FF.rows()*FF.cols(),
           FF.data(), [&vv_to_unique](const typename DerivedFF::Scalar& a)
           { return vv_to_unique[a]; });
-      IM.setLinSpaced(unique_vv.rows(), 0, unique_vv.rows()-1);
+      IM = igl::LinSpaced<
+        Eigen::Matrix<typename DerivedIM::Scalar, Eigen::Dynamic,1 >
+        >(unique_vv.rows(), 0, unique_vv.rows()-1);
     }else 
     {
       // Vertices with the same coordinates would be represented by one vertex.

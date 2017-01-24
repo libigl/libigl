@@ -8,6 +8,7 @@
 #include "component_inside_component.h"
 
 #include "order_facets_around_edge.h"
+#include "../../LinSpaced.h"
 #include "points_inside_component.h"
 
 #include <CGAL/AABB_tree.h>
@@ -53,8 +54,8 @@ IGL_INLINE bool igl::copyleft::cgal::component_inside_component(
         throw "Component inside test cannot be done on empty component!";
     }
     Eigen::VectorXi I1(F1.rows()), I2(F2.rows());
-    I1.setLinSpaced(F1.rows(), 0, F1.rows()-1);
-    I2.setLinSpaced(F2.rows(), 0, F2.rows()-1);
+    I1 = igl::LinSpaced<Eigen::VectorXi>(F1.rows(), 0, F1.rows()-1);
+    I2 = igl::LinSpaced<Eigen::VectorXi>(F2.rows(), 0, F2.rows()-1);
     return igl::copyleft::cgal::component_inside_component(V1, F1, I1, V2, F2, I2);
 }
 

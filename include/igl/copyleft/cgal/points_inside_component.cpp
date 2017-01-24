@@ -6,19 +6,20 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "points_inside_component.h"
-
-#include <cassert>
-#include <list>
-#include <limits>
-#include <vector>
+#include "../../LinSpaced.h"
+#include "order_facets_around_edge.h"
+#include "assign_scalar.h"
 
 #include <CGAL/AABB_tree.h>
 #include <CGAL/AABB_traits.h>
 #include <CGAL/AABB_triangle_primitive.h>
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 
-#include "order_facets_around_edge.h"
-#include "assign_scalar.h"
+#include <cassert>
+#include <list>
+#include <limits>
+#include <vector>
+
 
 namespace igl {
   namespace copyleft 
@@ -332,8 +333,7 @@ IGL_INLINE void igl::copyleft::cgal::points_inside_component(
         const Eigen::PlainObjectBase<DerivedF>& F,
         const Eigen::PlainObjectBase<DerivedP>& P,
         Eigen::PlainObjectBase<DerivedB>& inside) {
-    Eigen::VectorXi I(F.rows());
-    I.setLinSpaced(F.rows(), 0, F.rows()-1);
+    Eigen::VectorXi I = igl::LinSpaced<Eigen::VectorXi>(F.rows(), 0, F.rows()-1);
     igl::copyleft::cgal::points_inside_component(V, F, I, P, inside);
 }
 

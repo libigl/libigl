@@ -1,5 +1,6 @@
 #include "ramer_douglas_peucker.h"
 
+#include "LinSpaced.h"
 #include "find.h"
 #include "cumsum.h"
 #include "histc.h"
@@ -100,7 +101,7 @@ IGL_INLINE void igl::ramer_douglas_peucker(
   Eigen::VectorXi B;
   {
     Eigen::VectorXi N;
-    histc(Eigen::VectorXi::LinSpaced(n,0,n-1),J,N,B);
+    histc(igl::LinSpaced<Eigen::VectorXi >(n,0,n-1),J,N,B);
   }
   // Add extra point at end
   J.conservativeResize(J.size()+1);

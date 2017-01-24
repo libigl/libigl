@@ -7,6 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "peel_outer_hull_layers.h"
 #include "outer_hull.h"
+#include "../../LinSpaced.h"
 #include <vector>
 #include <iostream>
 //#define IGL_PEEL_OUTER_HULL_LAYERS_DEBUG
@@ -50,7 +51,7 @@ IGL_INLINE size_t igl::copyleft::cgal::peel_outer_hull_layers(
   I.resize(m,1);
   flip.resize(m,1);
   // Keep track of index map
-  MatrixXI IM = MatrixXI::LinSpaced(m,0,m-1);
+  MatrixXI IM = igl::LinSpaced<MatrixXI >(m,0,m-1);
   // This is O(n * layers)
   MatrixXI P(m,1);
   Index iter = 0;
