@@ -65,16 +65,11 @@ namespace igl
           typedef CGAL::Triangle_3<Kernel> Triangle_3; 
           typedef CGAL::Plane_3<Kernel>    Plane_3;
           typedef CGAL::Tetrahedron_3<Kernel> Tetrahedron_3; 
-          //typedef CGAL::Polyhedron_3<Kernel> Polyhedron_3; 
-          //typedef CGAL::Nef_polyhedron_3<Kernel> Nef_polyhedron_3; 
           // 2D Primitives
           typedef CGAL::Point_2<Kernel>    Point_2;
           typedef CGAL::Segment_2<Kernel>  Segment_2; 
           typedef CGAL::Triangle_2<Kernel> Triangle_2; 
           // 2D Constrained Delaunay Triangulation types
-          //typedef CGAL::Triangulation_vertex_base_2<Kernel>  TVB_2;
-          //typedef CGAL::Constrained_triangulation_face_base_2<Kernel> CTFB_2;
-          //typedef CGAL::Triangulation_data_structure_2<TVB_2,CTFB_2> TDS_2;
           typedef CGAL::Exact_intersections_tag Itag;
           // Axis-align boxes for all-pairs self-intersection detection
           typedef std::vector<Triangle_3> Triangles;
@@ -106,7 +101,6 @@ namespace igl
           // Make a short name for the edge map
           typedef std::map<EMK,EMV> EdgeMap;
           // Maps edges of offending faces to all incident offending faces
-          //EdgeMap edge2faces;
           std::vector<std::pair<TrianglesIterator, TrianglesIterator> >
               candidate_triangle_pairs;
 
@@ -155,9 +149,9 @@ namespace igl
               const Index fa,
               const Index fb);
           // Helper function for box_intersect. In the case where A and B have
-          // already been identified to share a vertex, then we only want to add
-          // possible segment intersections. Assumes truly duplicate triangles are
-          // not given as input
+          // already been identified to share a vertex, then we only want to
+          // add possible segment intersections. Assumes truly duplicate
+          // triangles are not given as input
           //
           // Inputs:
           //   A  triangle in 3D
@@ -166,7 +160,6 @@ namespace igl
           //   fb  index of B in F (and key into offending)
           //   va  index of shared vertex in A (and key into offending)
           //   vb  index of shared vertex in B (and key into offending)
-          //// Returns object of intersection (should be Segment or point)
           //   Returns true if intersection (besides shared point)
           //
           inline bool single_shared_vertex(
@@ -184,9 +177,9 @@ namespace igl
               const Index fb,
               const Index va);
           // Helper function for box_intersect. In the case where A and B have
-          // already been identified to share two vertices, then we only want to add
-          // a possible coplanar (Triangle) intersection. Assumes truly degenerate
-          // facets are not givin as input.
+          // already been identified to share two vertices, then we only want
+          // to add a possible coplanar (Triangle) intersection. Assumes truly
+          // degenerate facets are not givin as input.
           inline bool double_shared_vertex(
               const Triangle_3 & A,
               const Triangle_3 & B,
@@ -196,8 +189,8 @@ namespace igl
     
         public:
           // Callback function called during box self intersections test. Means
-          // boxes a and b intersect. This method then checks if the triangles in
-          // each box intersect and if so, then processes the intersections
+          // boxes a and b intersect. This method then checks if the triangles
+          // in each box intersect and if so, then processes the intersections
           //
           // Inputs:
           //   a  box containing a triangle
@@ -244,12 +237,6 @@ namespace igl
 // A: But! It seems we could use CGAL::Triangulation_3. Though it won't be easy
 // to take advantage of functions like insert_in_facet because we want to
 // constrain segments. Hmmm. Actualy Triangulation_3 doesn't look right...
-
-//static void box_intersect(SelfIntersectMesh * SIM,const Box & A, const Box & B)
-//{
-//  return SIM->box_intersect(A,B);
-//}
-
 
 // CGAL's box_self_intersection_d uses C-style function callbacks without
 // userdata. This is a leapfrog method for calling a member function. It should
@@ -316,7 +303,6 @@ inline igl::copyleft::cgal::SelfIntersectMesh<
   T(),
   lIF(),
   offending(),
-  //edge2faces(),
   params(params)
 {
   using namespace std;
@@ -446,13 +432,6 @@ inline void igl::copyleft::cgal::SelfIntersectMesh<
   {
     // first time marking, initialize with new id and empty list
     offending[f] = {};
-    for(Index e = 0; e<3;e++)
-    {
-      // append face to edge's list
-      Index i = F(f,(e+1)%3) < F(f,(e+2)%3) ? F(f,(e+1)%3) : F(f,(e+2)%3);
-      Index j = F(f,(e+1)%3) < F(f,(e+2)%3) ? F(f,(e+2)%3) : F(f,(e+1)%3);
-      //edge2faces[EMK(i,j)].push_back(f);
-    }
   }
 }
 
@@ -554,20 +533,6 @@ inline bool igl::copyleft::cgal::SelfIntersectMesh<
   const Index va,
   const Index vb)
 {
-  ////using namespace std;
-  //CGAL::Object result = CGAL::intersection(A,B);
-  //if(CGAL::object_cast<Segment_3 >(&result))
-  //{
-  //  // Append to each triangle's running list
-  //  F_objects[fa].push_back(result);
-  //  F_objects[fb].push_back(result);
-  //  count_intersection(fa,fb);
-  //}else
-  //{
-  //  // Then intersection must be at point
-  //  // And point must be at shared vertex
-  //  assert(CGAL::object_cast<Point_3>(&result));
-  //}
   if(single_shared_vertex(A,B,fa,fb,va))
   {
     return true;
@@ -628,17 +593,6 @@ inline bool igl::copyleft::cgal::SelfIntersectMesh<
       return true;
     }else if(CGAL::object_cast<Segment_3 >(&result))
     {
-      //cerr<<REDRUM("Coplanar at: "<<fa<<" & "<<fb<<" (single shared).")<<endl;
-      // Must be coplanar
-      // WRONG:
-      //// Segment intersection --> triangle from shared point to intersection
-      //CGAL::Object tri = CGAL::make_object(Triangle_3(
-      //  A.vertex(va),
-      //  s->vertex(0),
-      //  s->vertex(1)));
-      //F_objects[fa].push_back(tri);
-      //F_objects[fb].push_back(tri);
-      //count_intersection(fa,fb);
       // Need to do full test. Intersection could be a general poly.
       bool test = intersect(A,B,fa,fb);
       ((void)test);
@@ -692,9 +646,7 @@ inline bool igl::copyleft::cgal::SelfIntersectMesh<
   // (triangle). Either
   //   - the vertex of A (B) opposite the shared edge of lies on B (A), or
   //   - an edge of A intersects and edge of B without sharing a vertex
-
-
-
+  //
   // Determine if the vertex opposite edge (a0,a1) in triangle A lies in
   // (intersects) triangle B
   const auto & opposite_point_inside = [](
@@ -713,7 +665,6 @@ inline bool igl::copyleft::cgal::SelfIntersectMesh<
     }
     assert(a2 != -1);
     bool ret = CGAL::do_intersect(A.vertex(a2),B);
-    //cout<<"opposite_point_inside: "<<ret<<endl;
     return ret;
   };
 
@@ -725,13 +676,9 @@ inline bool igl::copyleft::cgal::SelfIntersectMesh<
   {
     Segment_3 sa( A.vertex((va+1)%3), A.vertex((va+2)%3));
     Segment_3 sb( B.vertex((vb+1)%3), B.vertex((vb+2)%3));
-    //cout<<sa<<endl;
-    //cout<<sb<<endl;
     bool ret = CGAL::do_intersect(sa,sb);
-    //cout<<"opposite_edges_intersect: "<<ret<<endl;
     return ret;
   };
-
 
   if( 
     !opposite_point_inside(A,shared[0].first,shared[1].first,B) &&
@@ -773,7 +720,6 @@ inline bool igl::copyleft::cgal::SelfIntersectMesh<
         std::lock_guard<std::mutex> guard(m_offending_lock);
         offending[fa].push_back({fb, result});
         offending[fb].push_back({fa, result});
-        //cerr<<REDRUM("Coplanar at: "<<fa<<" & "<<fb<<" (double shared).")<<endl;
         return true;
       }
     }else
@@ -862,7 +808,8 @@ inline void igl::copyleft::cgal::SelfIntersectMesh<
         Index fa=T.size(), fb=T.size();
         {
           // Before knowing which triangles are involved, we need to lock
-          // everything to prevent race condition in updating reference counters.
+          // everything to prevent race condition in updating reference
+          // counters.
           std::lock_guard<std::mutex> guard(index_lock);
           const auto& tri_pair = candidate_triangle_pairs[i];
           fa = tri_pair.first - T.begin();
@@ -894,8 +841,8 @@ inline void igl::copyleft::cgal::SelfIntersectMesh<
 
         // Number of combinatorially shared vertices
         Index comb_shared_vertices = 0;
-        // Number of geometrically shared vertices (*not* including combinatorially
-        // shared)
+        // Number of geometrically shared vertices (*not* including
+        // combinatorially shared)
         Index geo_shared_vertices = 0;
         // Keep track of shared vertex indices
         std::vector<std::pair<Index,Index> > shared;
@@ -915,21 +862,22 @@ inline void igl::copyleft::cgal::SelfIntersectMesh<
             }
           }
         }
-        const Index total_shared_vertices = comb_shared_vertices + geo_shared_vertices;
+        const Index total_shared_vertices = 
+          comb_shared_vertices + geo_shared_vertices;
         if(exception_fired) return;
 
         if(comb_shared_vertices== 3)
         {
           assert(shared.size() == 3);
-          //// Combinatorially duplicate face, these should be removed by preprocessing
-          //cerr<<REDRUM("Facets "<<fa<<" and "<<fb<<" are combinatorial duplicates")<<endl;
+          // Combinatorially duplicate face, these should be removed by
+          // preprocessing
           continue;
         }
         if(total_shared_vertices== 3)
         {
           assert(shared.size() == 3);
-          //// Geometrically duplicate face, these should be removed by preprocessing
-          //cerr<<REDRUM("Facets "<<fa<<" and "<<fb<<" are geometrical duplicates")<<endl;
+          // Geometrically duplicate face, these should be removed by
+          // preprocessing
           continue;
         }
         if(total_shared_vertices == 2)
