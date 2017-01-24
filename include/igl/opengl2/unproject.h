@@ -32,7 +32,7 @@ namespace igl
       const Eigen::PlainObjectBase<Derivedwin> & win,
       Eigen::PlainObjectBase<Derivedobj> & obj);
     template <typename Derivedwin>
-    IGL_INLINE Eigen::PlainObjectBase<Derivedwin> unproject(
+    IGL_INLINE Derivedwin unproject(
       const Eigen::PlainObjectBase<Derivedwin> & win);
   }
 }

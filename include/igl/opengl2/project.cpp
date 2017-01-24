@@ -50,7 +50,7 @@ IGL_INLINE int igl::opengl2::project(
 }
 
 template <typename Derivedobj>
-IGL_INLINE Eigen::PlainObjectBase<Derivedobj> igl::opengl2::project(
+IGL_INLINE Derivedobj igl::opengl2::project(
   const Eigen::PlainObjectBase<Derivedobj> & obj)
 {
   Derivedobj win;
@@ -61,13 +61,13 @@ IGL_INLINE Eigen::PlainObjectBase<Derivedobj> igl::opengl2::project(
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instantiation
 template int igl::opengl2::project<Eigen::Matrix<double, 3, 1, 0, 3, 1>, Eigen::Matrix<double, 3, 1, 0, 3, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 1, 0, 3, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 1, 0, 3, 1> >&);
-template Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 1, 0, 3, 1> > igl::opengl2::project<Eigen::Matrix<double, 3, 1, 0, 3, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 1, 0, 3, 1> > const&);
 template int igl::opengl2::project<Eigen::Matrix<float, 3, 1, 0, 3, 1>, Eigen::Matrix<float, 3, 1, 0, 3, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<float, 3, 1, 0, 3, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<float, 3, 1, 0, 3, 1> >&);
-template Eigen::PlainObjectBase<Eigen::Matrix<float, 3, 1, 0, 3, 1> > igl::opengl2::project<Eigen::Matrix<float, 3, 1, 0, 3, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<float, 3, 1, 0, 3, 1> > const&);
-template Eigen::PlainObjectBase<Eigen::Matrix<double, 1, -1, 1, 1, -1> > igl::opengl2::project<Eigen::Matrix<double, 1, -1, 1, 1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 1, -1, 1, 1, -1> > const&);
 template int igl::opengl2::project<Eigen::Matrix<double, 1, 3, 1, 1, 3>, Eigen::Matrix<double, 1, 3, 1, 1, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> >&);
-template Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > igl::opengl2::project<Eigen::Matrix<double, 1, 3, 1, 1, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > const&);
-template Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 2, 1, 1, 2> > igl::opengl2::project<Eigen::Matrix<double, 1, 2, 1, 1, 2> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 2, 1, 1, 2> > const&);
-template Eigen::PlainObjectBase<Eigen::Matrix<double, 2, 1, 0, 2, 1> > igl::opengl2::project<Eigen::Matrix<double, 2, 1, 0, 2, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 2, 1, 0, 2, 1> > const&);
+template Eigen::Matrix<double, 3, 1, 0, 3, 1>  igl::opengl2::project<Eigen::Matrix<double, 3, 1, 0, 3, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 1, 0, 3, 1> > const&);
+template Eigen::Matrix<float, 3, 1, 0, 3, 1>  igl::opengl2::project<Eigen::Matrix<float, 3, 1, 0, 3, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<float, 3, 1, 0, 3, 1> > const&);
+template Eigen::Matrix<double, 1, -1, 1, 1, -1>  igl::opengl2::project<Eigen::Matrix<double, 1, -1, 1, 1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 1, -1, 1, 1, -1> > const&);
+template Eigen::Matrix<double, 1, 3, 1, 1, 3>  igl::opengl2::project<Eigen::Matrix<double, 1, 3, 1, 1, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > const&);
+template Eigen::Matrix<double, 1, 2, 1, 1, 2>  igl::opengl2::project<Eigen::Matrix<double, 1, 2, 1, 1, 2> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 2, 1, 1, 2> > const&);
+template Eigen::Matrix<double, 2, 1, 0, 2, 1>  igl::opengl2::project<Eigen::Matrix<double, 2, 1, 0, 2, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 2, 1, 0, 2, 1> > const&);
 #endif
 
