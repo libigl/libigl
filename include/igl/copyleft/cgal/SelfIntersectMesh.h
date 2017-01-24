@@ -107,7 +107,8 @@ namespace igl
           typedef std::map<EMK,EMV> EdgeMap;
           // Maps edges of offending faces to all incident offending faces
           //EdgeMap edge2faces;
-          std::vector<std::pair<const Box, const Box> > candidate_box_pairs;
+          std::vector<std::pair<TrianglesIterator, TrianglesIterator> >
+              candidate_triangle_pairs;
 
         public:
           RemeshSelfIntersectionsParam params;
@@ -818,7 +819,7 @@ inline void igl::copyleft::cgal::SelfIntersectMesh<
   const Box& a, 
   const Box& b)
 {
-  candidate_box_pairs.push_back({a, b});
+  candidate_triangle_pairs.push_back({a.handle(), b.handle()});
 }
 
 template <
@@ -863,11 +864,9 @@ inline void igl::copyleft::cgal::SelfIntersectMesh<
           // Before knowing which triangles are involved, we need to lock
           // everything to prevent race condition in updating reference counters.
           std::lock_guard<std::mutex> guard(index_lock);
-          const auto& box_pair = candidate_box_pairs[i];
-          const auto& a = box_pair.first;
-          const auto& b = box_pair.second;
-          fa = a.handle()-T.begin();
-          fb = b.handle()-T.begin();
+          const auto& tri_pair = candidate_triangle_pairs[i];
+          fa = tri_pair.first - T.begin();
+          fb = tri_pair.second - T.begin();
         }
         assert(fa < T.size());
         assert(fb < T.size());
@@ -972,7 +971,7 @@ inline void igl::copyleft::cgal::SelfIntersectMesh<
     num_threads = hardware_limit;
   }
   assert(num_threads > 0);
-  const size_t num_pairs = candidate_box_pairs.size();
+  const size_t num_pairs = candidate_triangle_pairs.size();
   const size_t chunk_size = num_pairs / num_threads;
   std::vector<std::thread> threads;
   for (size_t i=0; i<num_threads-1; i++) 
@@ -986,7 +985,7 @@ inline void igl::copyleft::cgal::SelfIntersectMesh<
     if (t.joinable()) t.join();
   }
   if(exception_fired) throw exception;
-  //process_chunk(0, candidate_box_pairs.size());
+  //process_chunk(0, candidate_triangle_pairs.size());
 }
 
 #endif
