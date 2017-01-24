@@ -78,12 +78,12 @@ namespace igl
 }
 
 // Implementation
-#include "../opengl/OpenGL_convenience.h"
 #include "../PI.h"
 #include "../EPS.h"
 #include "../ray_sphere_intersect.h"
 #include "../mat_to_quat.h"
 #include "../trackball.h"
+#include "gl.h"
 #include "project.h"
 #include "unproject.h"
 #include <iostream>
