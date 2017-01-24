@@ -29,7 +29,6 @@ IGL_INLINE void igl::copyleft::cgal::insert_into_cdt(
   typedef CGAL::Point_3<Kernel>    Point_3;
   typedef CGAL::Segment_3<Kernel>  Segment_3; 
   typedef CGAL::Triangle_3<Kernel> Triangle_3; 
-  typedef CGAL::Plane_3<Kernel>    Plane_3;
 
   if(const Segment_3 *iseg = CGAL::object_cast<Segment_3 >(&obj)) 
   {

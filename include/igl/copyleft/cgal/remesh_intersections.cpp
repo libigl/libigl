@@ -85,7 +85,6 @@ IGL_INLINE void igl::copyleft::cgal::remesh_intersections(
 
     typedef CGAL::Point_3<Kernel>    Point_3;
     typedef CGAL::Segment_3<Kernel>  Segment_3; 
-    typedef CGAL::Triangle_3<Kernel> Triangle_3; 
     typedef CGAL::Plane_3<Kernel>    Plane_3;
     typedef CGAL::Triangulation_vertex_base_2<Kernel>  TVB_2;
     typedef CGAL::Constrained_triangulation_face_base_2<Kernel> CTFB_2;
