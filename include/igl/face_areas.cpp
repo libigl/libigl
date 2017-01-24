@@ -48,10 +48,10 @@ IGL_INLINE void igl::face_areas(
   L1<<L.col(0),L.col(2),L.col(4);
   L2<<L.col(0),L.col(1),L.col(5);
   L3<<L.col(3),L.col(4),L.col(5);
-  doublearea(L0,A0);
-  doublearea(L1,A1);
-  doublearea(L2,A2);
-  doublearea(L3,A3);
+  doublearea(L0,doublearea_nan_replacement,A0);
+  doublearea(L1,doublearea_nan_replacement,A1);
+  doublearea(L2,doublearea_nan_replacement,A2);
+  doublearea(L3,doublearea_nan_replacement,A3);
   A.resize(m,4);
   A.col(0) = 0.5*A0;
   A.col(1) = 0.5*A1;
