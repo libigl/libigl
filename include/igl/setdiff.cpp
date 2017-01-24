@@ -6,7 +6,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "setdiff.h"
-#include "colon.h"
+#include "LinSpaced.h"
 #include "list_to_matrix.h"
 #include "sort.h"
 #include "unique.h"
@@ -42,7 +42,7 @@ IGL_INLINE void igl::setdiff(
       }
     }
     assert(k == C.size());
-    IA = Eigen::Matrix<typename DerivedIA::Scalar,Eigen::Dynamic,1>::LinSpaced(
+    IA = igl::LinSpaced<Eigen::Matrix<typename DerivedIA::Scalar,Eigen::Dynamic,1> >(
       C.size(),0,C.size()-1);
   }
 

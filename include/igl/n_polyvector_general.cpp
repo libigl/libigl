@@ -6,12 +6,13 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 
-#include <igl/n_polyvector_general.h>
-#include <igl/edge_topology.h>
-#include <igl/local_basis.h>
-#include <igl/nchoosek.h>
-#include <igl/slice.h>
-#include <igl/polyroots.h>
+#include "LinSpaced.h"
+#include "n_polyvector_general.h"
+#include "edge_topology.h"
+#include "local_basis.h"
+#include "nchoosek.h"
+#include "slice.h"
+#include "polyroots.h"
 #include <Eigen/Sparse>
 #include <Eigen/Geometry>
 #include <iostream>
@@ -323,7 +324,7 @@ IGL_INLINE void igl::GeneralPolyVectorFieldFinder<DerivedV, DerivedF>::getGenera
 
   Eigen::MatrixXi allCombs;
   {
-    Eigen::VectorXi V = Eigen::VectorXi::LinSpaced(n,0,n-1);
+    Eigen::VectorXi V = igl::LinSpaced<Eigen::VectorXi >(n,0,n-1);
     igl::nchoosek(V,k+1,allCombs);
   }
 

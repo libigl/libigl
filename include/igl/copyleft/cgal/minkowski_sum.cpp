@@ -9,6 +9,7 @@
 #include "mesh_boolean.h"
 
 #include "../../slice_mask.h"
+#include "../../LinSpaced.h"
 #include "../../unique.h"
 #include "../../get_seconds.h"
 #include "../../edges.h"
@@ -228,7 +229,7 @@ IGL_INLINE void igl::copyleft::cgal::minkowski_sum(
   MatrixXI GT(mp+mn,3);
   GT<< slice_mask(FA,N,1), slice_mask((FA.array()+n).eval(),P,1);
   // J indexes FA for parts at s and m+FA for parts at d
-  J = DerivedJ::LinSpaced(m,0,m-1);
+  J = igl::LinSpaced<DerivedJ >(m,0,m-1);
   DerivedJ JT(mp+mn);
   JT << slice_mask(J,P,1), slice_mask(J,N,1);
   JT.block(mp,0,mn,1).array()+=m;
@@ -281,7 +282,7 @@ IGL_INLINE void igl::copyleft::cgal::minkowski_sum(
     }
     Matrix<bool,Dynamic,1> M = Matrix<bool,Dynamic,1>::Zero(m,1);
     {
-      VectorXI P = VectorXI::LinSpaced(d,0,d-1);
+      VectorXI P = igl::LinSpaced<VectorXI >(d,0,d-1);
       for(int p = 0;p<d;p++)
       {
         for(int f = 0;f<m;f++)

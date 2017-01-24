@@ -10,6 +10,7 @@
 #include "../../local_basis.h"
 #include "../../triangle_triangle_adjacency.h"
 #include "../../cut_mesh.h"
+#include "../../LinSpaced.h"
 
 // includes for VertexIndexing
 #include "../../HalfEdgeIterator.h"
@@ -830,8 +831,8 @@ IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::AddToR
 template <typename DerivedV, typename DerivedF>
 IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::BuildLaplacianMatrix(double vfscale)
 {
-  Eigen::VectorXi idx  = Eigen::VectorXi::LinSpaced(Vcut.rows(), 0, 2*Vcut.rows()-2);
-  Eigen::VectorXi idx2 = Eigen::VectorXi::LinSpaced(Vcut.rows(), 1, 2*Vcut.rows()-1);
+  Eigen::VectorXi idx  = igl::LinSpaced<Eigen::VectorXi >(Vcut.rows(), 0, 2*Vcut.rows()-2);
+  Eigen::VectorXi idx2 = igl::LinSpaced<Eigen::VectorXi >(Vcut.rows(), 1, 2*Vcut.rows()-1);
 
   // get gradient matrix
   Eigen::SparseMatrix<double> G(Fcut.rows() * 3, Vcut.rows());

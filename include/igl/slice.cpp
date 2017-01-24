@@ -101,8 +101,8 @@ IGL_INLINE void igl::slice(
   assert(C.maxCoeff() < xn);
 
   // initialize row and col permutation vectors
-  Eigen::VectorXi rowIndexVec = Eigen::VectorXi::LinSpaced(xm,0,xm-1);
-  Eigen::VectorXi rowPermVec  = Eigen::VectorXi::LinSpaced(xm,0,xm-1);
+  Eigen::VectorXi rowIndexVec = igl::LinSpaced<Eigen::VectorXi >(xm,0,xm-1);
+  Eigen::VectorXi rowPermVec  = igl::LinSpaced<Eigen::VectorXi >(xm,0,xm-1);
   for(int i=0;i<ym;i++)
   {
     int pos = rowIndexVec.coeffRef(R(i));
@@ -115,8 +115,8 @@ IGL_INLINE void igl::slice(
   }
   Eigen::PermutationMatrix<Eigen::Dynamic,Eigen::Dynamic,int> rowPerm(rowIndexVec);
 
-  Eigen::VectorXi colIndexVec = Eigen::VectorXi::LinSpaced(xn,0,xn-1);
-  Eigen::VectorXi colPermVec =  Eigen::VectorXi::LinSpaced(xn,0,xn-1);
+  Eigen::VectorXi colIndexVec = igl::LinSpaced<Eigen::VectorXi >(xn,0,xn-1);
+  Eigen::VectorXi colPermVec =  igl::LinSpaced<Eigen::VectorXi >(xn,0,xn-1);
   for(int i=0;i<yn;i++)
   {
     int pos = colIndexVec.coeffRef(C(i));

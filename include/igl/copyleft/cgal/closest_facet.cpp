@@ -15,6 +15,7 @@
 #include "order_facets_around_edge.h"
 #include "submesh_aabb_tree.h"
 #include "../../vertex_triangle_adjacency.h"
+#include "../../LinSpaced.h"
 //#include "../../writePLY.h"
 
 template<
@@ -484,8 +485,7 @@ IGL_INLINE void igl::copyleft::cgal::closest_facet(
     Eigen::PlainObjectBase<DerivedR>& R,
     Eigen::PlainObjectBase<DerivedS>& S) {
   const size_t num_faces = F.rows();
-  Eigen::VectorXi I(num_faces);
-  I.setLinSpaced(num_faces, 0, num_faces-1);
+  Eigen::VectorXi I = igl::LinSpaced<Eigen::VectorXi>(num_faces, 0, num_faces-1);
   igl::copyleft::cgal::closest_facet(V, F, I, P, uE2E, EMAP, R, S);
 }
 

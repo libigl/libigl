@@ -6,6 +6,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "swept_volume_signed_distance.h"
+#include "LinSpaced.h"
 #include "flood_fill.h"
 #include "signed_distance.h"
 #include "AABB.h"
@@ -32,7 +33,7 @@ IGL_INLINE void igl::swept_volume_signed_distance(
   using namespace igl;
   using namespace Eigen;
   S = S0;
-  const VectorXd t = VectorXd::LinSpaced(steps,0,1);
+  const VectorXd t = igl::LinSpaced<VectorXd >(steps,0,1);
   const bool finite_iso = isfinite(isolevel);
   const double extension = (finite_iso ? isolevel : 0) + sqrt(3.0)*h;
   Eigen::AlignedBox3d box(
