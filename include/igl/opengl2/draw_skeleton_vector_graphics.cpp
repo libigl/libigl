@@ -96,8 +96,8 @@ IGL_INLINE void igl::opengl2::draw_skeleton_vector_graphics(
   const float * point_color,
   const float * line_color)
 {
-  Eigen::PlainObjectBase<DerivedC> CT;
-  Eigen::PlainObjectBase<DerivedBE> BET;
+  DerivedC CT;
+  DerivedBE BET;
   const int dim = T.cols();
   assert(dim == C.cols());
   CT.resize(2*BE.rows(),C.cols());
