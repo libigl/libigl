@@ -16,10 +16,6 @@ IGL_INLINE void igl::copyleft::cgal::projected_cdt(
   std::vector<CGAL::Point_3<Kernel> >& vertices,
   std::vector<std::vector<Index> >& faces)
 {
-  typedef CGAL::Point_3<Kernel>    Point_3;
-  typedef CGAL::Segment_3<Kernel>  Segment_3; 
-  typedef CGAL::Triangle_3<Kernel> Triangle_3; 
-  typedef CGAL::Plane_3<Kernel>    Plane_3;
   typedef CGAL::Triangulation_vertex_base_2<Kernel>  TVB_2;
   typedef CGAL::Constrained_triangulation_face_base_2<Kernel> CTFB_2;
   typedef CGAL::Triangulation_data_structure_2<TVB_2,CTFB_2> TDS_2;
