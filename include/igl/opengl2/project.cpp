@@ -53,7 +53,7 @@ template <typename Derivedobj>
 IGL_INLINE Eigen::PlainObjectBase<Derivedobj> igl::opengl2::project(
   const Eigen::PlainObjectBase<Derivedobj> & obj)
 {
-  Eigen::PlainObjectBase<Derivedobj> win;
+  Derivedobj win;
   igl::opengl2::project(obj,win);
   return win;
 }
