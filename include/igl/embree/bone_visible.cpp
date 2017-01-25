@@ -25,7 +25,7 @@ IGL_INLINE void igl::embree::bone_visible(
   Eigen::PlainObjectBase<Derivedflag>  & flag)
 {
   // "double sided lighting"
-  Eigen::PlainObjectBase<DerivedF> FF;
+  Eigen::Matrix<typename DerivedF::Scalar,Eigen::Dynamic,Eigen::Dynamic> FF;
   FF.resize(F.rows()*2,F.cols());
   FF << F, F.rowwise().reverse();
   // Initialize intersector

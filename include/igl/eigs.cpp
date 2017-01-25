@@ -150,7 +150,7 @@ IGL_INLINE bool igl::eigs(
   // finally sort
   VectorXi I;
   igl::sort(S,1,false,sS,I);
-  sU = igl::slice(U,I,2);
+  igl::slice(U,I,2,sU);
   sS /= rescale;
   sU /= sqrt(rescale);
   return true;
