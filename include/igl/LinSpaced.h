@@ -29,7 +29,8 @@
 namespace igl
 {
   template <typename Derived>
-  inline typename Eigen::DenseBase< Derived >::RandomAccessLinSpacedReturnType LinSpaced(
+  //inline typename Eigen::DenseBase< Derived >::RandomAccessLinSpacedReturnType 
+  inline Derived LinSpaced(
     typename Derived::Index size,
     const typename Derived::Scalar & low,
     const typename Derived::Scalar & high);
@@ -38,7 +39,8 @@ namespace igl
 // Implementation
 
 template <typename Derived>
-inline typename Eigen::DenseBase< Derived >::RandomAccessLinSpacedReturnType 
+//inline typename Eigen::DenseBase< Derived >::RandomAccessLinSpacedReturnType 
+inline Derived
 igl::LinSpaced(
   typename Derived::Index size,
   const typename Derived::Scalar & low,
@@ -48,8 +50,10 @@ igl::LinSpaced(
   {
     // Force empty vector with correct "RandomAccessLinSpacedReturnType" type.
     return Derived::LinSpaced(0,0,1);
-  }else
+  }else if(high < low)
   {
+    return low-Derived::LinSpaced(size,low-low,low-high).array();
+  }else{
     return Derived::LinSpaced(size,low,high);
   }
 }
