@@ -150,9 +150,9 @@ namespace igl
           // Returns mesh vertices in the desired output type, casting when
           // appropriate to floating precision.
           template <typename DerivedV>
-          Eigen::PlainObjectBase<DerivedV> cast_V() const
+          DerivedV cast_V() const
           {
-            Eigen::PlainObjectBase<DerivedV> dV;
+            DerivedV dV;
             dV.resize(m_V.rows(),m_V.cols());
             for(int i = 0;i<m_V.rows();i++)
             {
