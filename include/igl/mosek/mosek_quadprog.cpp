@@ -282,6 +282,8 @@ IGL_INLINE bool igl::mosek::mosek_quadprog(
   using namespace Eigen;
   using namespace std;
 
+  typedef int Index;
+  typedef double Scalar;
   // Q should be square
   assert(Q.rows() == Q.cols());
   // Q should be symmetric
@@ -289,36 +291,36 @@ IGL_INLINE bool igl::mosek::mosek_quadprog(
   assert( (Q-Q.transpose()).sum() < FLOAT_EPS);
 #endif
   // Only keep lower triangular part of Q
-  SparseMatrix<double> QL;
+  SparseMatrix<Scalar> QL;
   //QL = Q.template triangularView<Lower>();
   QL = Q.triangularView<Lower>();
   VectorXi Qi,Qj;
   VectorXd Qv;
   find(QL,Qi,Qj,Qv);
-  vector<int> vQi = matrix_to_list(Qi);
-  vector<int> vQj = matrix_to_list(Qj);
-  vector<double> vQv = matrix_to_list(Qv);
+  vector<Index> vQi = matrix_to_list(Qi);
+  vector<Index> vQj = matrix_to_list(Qj);
+  vector<Scalar> vQv = matrix_to_list(Qv);
 
   // Convert linear term
-  vector<double> vc = matrix_to_list(c);
+  vector<Scalar> vc = matrix_to_list(c);
 
   assert(lc.size() == A.rows());
   assert(uc.size() == A.rows());
   // Convert A to harwell boeing format
-  vector<double> vAv;
-  vector<int> vAr,vAc;
-  int nr;
+  vector<Scalar> vAv;
+  vector<Index> vAr,vAc;
+  Index nr;
   harwell_boeing(A,nr,vAv,vAr,vAc);
 
   assert(lx.size() == Q.rows());
   assert(ux.size() == Q.rows());
-  vector<double> vlc = matrix_to_list(lc);
-  vector<double> vuc = matrix_to_list(uc);
-  vector<double> vlx = matrix_to_list(lx);
-  vector<double> vux = matrix_to_list(ux);
+  vector<Scalar> vlc = matrix_to_list(lc);
+  vector<Scalar> vuc = matrix_to_list(uc);
+  vector<Scalar> vlx = matrix_to_list(lx);
+  vector<Scalar> vux = matrix_to_list(ux);
 
-  vector<double> vx;
-  bool ret = mosek_quadprog(
+  vector<Scalar> vx;
+  bool ret = mosek_quadprog<Index,Scalar>(
     Q.rows(),vQi,vQj,vQv,
     vc,
     cf,

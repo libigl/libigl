@@ -13,19 +13,24 @@
 #include <vector>
 #include <igl/igl_inline.h>
 
+// This file violates many of the libigl style guidelines.
+
 namespace igl
 {
   // HalfEdgeIterator - Fake halfedge for fast and easy navigation on triangle meshes with vertex_triangle_adjacency and
   // triangle_triangle adjacency
-  template <typename DerivedF>
+  template <
+    typename DerivedF,
+    typename DerivedFF,
+    typename DerivedFFi>
   class HalfEdgeIterator
   {
   public:
     // Init the HalfEdgeIterator by specifying Face,Edge Index and Orientation
     IGL_INLINE HalfEdgeIterator(
         const Eigen::PlainObjectBase<DerivedF>& _F,
-        const Eigen::PlainObjectBase<DerivedF>& _FF,
-        const Eigen::PlainObjectBase<DerivedF>& _FFi,
+        const Eigen::PlainObjectBase<DerivedFF>& _FF,
+        const Eigen::PlainObjectBase<DerivedFFi>& _FFi,
         int _fi,
         int _ei,
         bool _reverse = false
@@ -146,9 +151,10 @@ namespace igl
     int ei;
     bool reverse;
 
-    const Eigen::PlainObjectBase<DerivedF>& F;
-    const Eigen::PlainObjectBase<DerivedF>& FF;
-    const Eigen::PlainObjectBase<DerivedF>& FFi;
+    // All the same type? This is likely to break.
+    const DerivedF & F;
+    const DerivedFF & FF;
+    const DerivedFFi & FFi;
   };
 
 }
