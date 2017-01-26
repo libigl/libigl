@@ -45,7 +45,7 @@ IGL_INLINE void igl::remove_unreferenced(
   const size_t n = V.rows();
   remove_unreferenced(n,F,I,J);
   NF = F;
-  for_each(NF.data(),NF.data()+NF.size(),
+  std::for_each(NF.data(),NF.data()+NF.size(),
     [&I](typename DerivedNF::Scalar & a){a=I(a);});
   slice(V,J,1,NV);
 }
