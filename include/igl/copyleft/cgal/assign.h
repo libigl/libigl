@@ -19,8 +19,19 @@ namespace igl
     {
       template <typename DerivedC, typename DerivedD>
       IGL_INLINE void assign(
-        const Eigen::PlainObjectBase<DerivedC> & C,
+        const Eigen::MatrixBase<DerivedC> & C,
         Eigen::PlainObjectBase<DerivedD> & D);
+      template <typename ReturnScalar, typename DerivedC>
+      IGL_INLINE 
+      Eigen::Matrix<
+        ReturnScalar,
+        DerivedC::RowsAtCompileTime, 
+        DerivedC::ColsAtCompileTime, 
+        1,
+        DerivedC::MaxRowsAtCompileTime, 
+        DerivedC::MaxColsAtCompileTime> 
+      assign(
+        const Eigen::MatrixBase<DerivedC> & C);
     }
   }
 }
