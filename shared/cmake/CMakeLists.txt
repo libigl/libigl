@@ -328,13 +328,7 @@ if(LIBIGL_WITH_OPENGL)
   ### GLEW for linux and windows
   if((UNIX AND NOT APPLE) OR WIN32) ### Compile glew if needed
     set(GLEW_INSTALL OFF CACHE BOOL " " FORCE)
-
-    # Note: if add_subdirectory("${NANOGUI_DIR}" "nanogui") runs below it will
-    # add GLEW as a side-effect; in this case, CMake will complain about
-    # duplicates if we add them here.
-    if (NOT (LIBIGL_WITH_OPENGL_GLFW AND LIBIGL_WITH_VIEWER AND LIBIGL_WITH_NANOGUI))
-        add_subdirectory("${NANOGUI_DIR}/ext/glew" "glew")
-    endif()
+    add_subdirectory("${NANOGUI_DIR}/ext/glew" "glew")
   endif()
   if(NOT APPLE)
     list(APPEND LIBIGL_INCLUDE_DIRS "${NANOGUI_DIR}/ext/glew/include")
