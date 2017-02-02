@@ -328,7 +328,13 @@ if(LIBIGL_WITH_OPENGL)
   ### GLEW for linux and windows
   if((UNIX AND NOT APPLE) OR WIN32) ### Compile glew if needed
     set(GLEW_INSTALL OFF CACHE BOOL " " FORCE)
-    add_subdirectory("${NANOGUI_DIR}/ext/glew" "glew")
+
+    # Note: if add_subdirectory("${NANOGUI_DIR}" "nanogui") runs below it will
+    # add GLEW as a side-effect; in this case, CMake will complain about
+    # duplicates if we add them here.
+    if (NOT (LIBIGL_WITH_OPENGL_GLFW AND LIBIGL_WITH_VIEWER AND LIBIGL_WITH_NANOGUI))
+        add_subdirectory("${NANOGUI_DIR}/ext/glew" "glew")
+    endif()
   endif()
   if(NOT APPLE)
     list(APPEND LIBIGL_INCLUDE_DIRS "${NANOGUI_DIR}/ext/glew/include")
@@ -343,7 +349,12 @@ if(LIBIGL_WITH_OPENGL)
       list(APPEND GLFW_INCLUDE_DIRS "${NANOGUI_DIR}/ext/glew/include")
     endif()
 
-    add_subdirectory("${NANOGUI_DIR}/ext/glfw" "glfw")
+    # Note: if add_subdirectory("${NANOGUI_DIR}" "nanogui") runs below it will
+    # add GLFW as a side-effect; in this case, CMake will complain about
+    # duplicates if we add them here.
+    if (NOT (LIBIGL_WITH_VIEWER AND LIBIGL_WITH_NANOGUI))
+        add_subdirectory("${NANOGUI_DIR}/ext/glfw" "glfw")
+    endif()
     set(LIBIGL_OPENGL_GLFW_EXTRA_LIBRARIES "glfw" ${GLFW_LIBRARIES})
     if(LIBIGL_USE_STATIC_LIBRARY)
       CompileIGL_Module("opengl/glfw" "")
