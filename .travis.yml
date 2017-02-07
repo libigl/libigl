@@ -7,7 +7,7 @@ matrix:
       script:
         - git submodule update --init --recursive
         - mkdir external/nanogui/ext/glfw/include/GL
-        - wget -P external/nanogui/ext/glfw/include/GL http://www.opengl.org/registry/api/GL/glcorearb.h
+        - wget --no-check-certificate -P external/nanogui/ext/glfw/include/GL http://www.opengl.org/registry/api/GL/glcorearb.h
         - cd python
         - mkdir build
         - cd build
