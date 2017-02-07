@@ -58,7 +58,23 @@ py::enum_<igl::viewer::ViewerData::DirtyFlags>(viewerdata_class, "DirtyFlags")
        (void (igl::viewer::ViewerData::*) (const Eigen::MatrixXd &, const Eigen::MatrixXi&)) &igl::viewer::ViewerData::set_uv
     )
 
-    .def("set_texture", &igl::viewer::ViewerData::set_texture)
+    .def("set_texture",
+       (void (igl::viewer::ViewerData::*) (
+         const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>&,
+         const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>&,
+         const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>&)
+       ) &igl::viewer::ViewerData::set_texture
+    )
+
+    .def("set_texture",
+       (void (igl::viewer::ViewerData::*) (
+         const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>&,
+         const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>&,
+         const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>&,
+         const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>&)
+       ) &igl::viewer::ViewerData::set_texture
+    )
+
     .def("set_points", &igl::viewer::ViewerData::set_points)
     .def("add_points", &igl::viewer::ViewerData::add_points)
     .def("set_edges", &igl::viewer::ViewerData::set_edges)
@@ -74,10 +90,28 @@ py::enum_<igl::viewer::ViewerData::DirtyFlags>(viewerdata_class, "DirtyFlags")
 
     .def("uniform_colors", [] (igl::viewer::ViewerData& data, const Eigen::MatrixXd& ambient, const Eigen::MatrixXd& diffuse, const Eigen::MatrixXd& specular)
     {
-      assert_is_Vector3("ambient",ambient);
-      assert_is_Vector3("diffuse",diffuse);
-      assert_is_Vector3("specular",specular);
-      data.uniform_colors(ambient,diffuse, specular);
+      if (ambient.cols() == 3)
+      {
+        assert_is_Vector3("ambient",ambient);
+        assert_is_Vector3("diffuse",diffuse);
+        assert_is_Vector3("specular",specular);
+        Eigen::Vector3d vambient = ambient;
+        Eigen::Vector3d vdiffuse = diffuse;
+        Eigen::Vector3d vspecular = specular;
+        data.uniform_colors(vambient,vdiffuse, vspecular);
+      }
+
+      if (ambient.cols() == 4)
+      {
+        assert_is_Vector4("ambient",ambient);
+        assert_is_Vector4("diffuse",diffuse);
+        assert_is_Vector4("specular",specular);
+        Eigen::Vector4d vambient = ambient;
+        Eigen::Vector4d vdiffuse = diffuse;
+        Eigen::Vector4d vspecular = specular;
+        data.uniform_colors(vambient,vdiffuse,vspecular);
+      }
+
     })
 
     .def("grid_texture", &igl::viewer::ViewerData::grid_texture)
