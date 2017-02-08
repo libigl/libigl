@@ -91,11 +91,17 @@ namespace igl
     DerivedI TTHelp = TT;
 
     std::map<int,int> cutHalfEdgesLinks;
-    std::map<pair<int,int>,int> cutHalfEdgesPairLinks;
+    std::map<std::pair<int,int>,int> cutHalfEdgesPairLinks;
     std::vector<DerivedI::Scalar> cutVerexIds;
     std::vector<igl::HalfEdgeIterator<DerivedI>::State> cutHalfIter;
     for(auto c : cuts)
     {
+      if(c.size() == 0)
+      {
+        std::cout << "Empty cut vertex sequence provided!" << std::endl;
+        continue;
+      }
+
       // find outgoing halfedge from the cut starting vertex
       int f=-1,e=-1;
       for(int t=0;t<F.rows();t++)
@@ -180,11 +186,11 @@ namespace igl
     // properly detach all cut vertices
     for(int h=0;h<cutHalfIter.size();h++)
     {
-      vector<vector<pair<int,int>>> sharedFIds(1);
+      std::vector<std::vector<std::pair<int,int>>> sharedFIds(1);
       heIter.setState(cutHalfIter[h]);
       do
       {
-        sharedFIds[sharedFIds.size()-1].push_back(make_pair(heIter.Fi(),heIter.Vii()));
+        sharedFIds[sharedFIds.size()-1].push_back(std::make_pair(heIter.Fi(),heIter.Vii()));
 
         if(heIter.isBoundaryHE())
         {
@@ -194,7 +200,7 @@ namespace igl
         if(TTHelp(heIter.Fi(),heIter.Ei()) == -1)
         {
           // add a new vertex for all independent components
-          sharedFIds.push_back(vector<pair<int,int>>());
+          sharedFIds.push_back(std::vector<std::pair<int,int>>());
         }
 
         heIter.iterHE();
@@ -204,11 +210,11 @@ namespace igl
       // add new vertices
       int offset = V.rows();
       V.derived().conservativeResize(offset+sharedFIds.size()-2,3);
-      cutVertices.push_back(vector<typename DerivedI::Scalar>());
+      cutVertices.push_back(std::vector<typename DerivedI::Scalar>());
       cutVertices.back().push_back(cutVerexIds[h]);
       for(int i=1;i<sharedFIds.size()-1;i++)
       {
-        V.row(offset+i-1) = V.row(cutVerexIds[h]);// +RowVec3S::Random()*0.005;
+        V.row(offset+i-1) = V.row(cutVerexIds[h]);// +RowVec3S::Random()*0.01;
         cutVertices.back().push_back(offset+i-1);
       }
 

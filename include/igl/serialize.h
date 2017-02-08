@@ -43,6 +43,22 @@
  
 // non-intrusive serialization helper macros
  
+#define SERIALIZE_HEADER_START \
+namespace igl { namespace serialization {
+
+#define SERIALIZE_HEADER_END \
+}}
+
+#define SERIALIZE_TYPE_HEADER(Type) \
+void _serialize(const Type& obj,std::vector<char>& buffer); \
+void _deserialize(Type& obj,const std::vector<char>& buffer); \
+template<> inline void serialize(const Type& obj,std::vector<char>& buffer) { \
+  igl::serialization::_serialize(obj,buffer); \
+} \
+template<> inline void deserialize(Type& obj,const std::vector<char>& buffer) { \
+  igl::serialization::_deserialize(obj,buffer); \
+}
+
 #define SERIALIZE_TYPE(Type,Params) \
 namespace igl { namespace serialization { \
   void _serialization(bool s,Type& obj,std::vector<char>& buffer) {Params} \

@@ -12,7 +12,7 @@
 #include <vector>
 namespace igl
 {
-  // Constuct relationships between facet "half"-(or rather "viewed")-edges E
+  // Construct relationships between facet "half"-(or rather "viewed")-edges E
   // to unique edges of the mesh seen as a graph.
   //
   // Inputs:

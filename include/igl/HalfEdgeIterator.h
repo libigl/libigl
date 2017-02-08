@@ -149,15 +149,55 @@ namespace igl
       return false;
     }
 
-    IGL_INLINE bool isBorder() const
+    // Return if vertex is on boundary
+    IGL_INLINE bool isBoundaryV() const
+    {
+      HalfEdgeIterator<DerivedF> iter(F,FF,FFi,0,0);
+      HalfEdgeIterator<DerivedF> end(F,FF,FFi,0,0);
+      iter.setState(state);
+      
+      if(state.reverse != state.boundary)
+      {
+        iter.flipHE();
+      }
+
+      bool isBoundary = false;
+      end = iter;
+      do
+      {
+        isBoundary = isBoundary || iter.isBoundaryE();
+        iter.iterHE();
+      } while(iter != end && !isBoundary);
+
+      return isBoundary;
+    }
+
+    // Return if edge is on boundary
+    IGL_INLINE bool isBoundaryE() const
     {
       return FF(state.fi,state.ei) == -1;
     }
 
+    // Todo
+    /*IGL_INLINE int isBoundaryF() const
+    {
+    }*/
+
+    // Return if halfedge is on boundary
     IGL_INLINE bool isBoundaryHE() const
     {
       return state.boundary;
     }
+
+    // Todo
+    /*IGL_INLINE std::vector<int> neighbourV() const
+    {
+    }*/
+
+    // Todo
+    /*IGL_INLINE std::vector<int> bool neighbourF() const
+    {
+    }*/
 
     // Move to next halfedge such that Vi0 becomes Vi1
     // Can also be used to travel along boundary halfedges
@@ -172,7 +212,7 @@ namespace igl
           {
             flipF();
             flipE();
-          } while(!isBorder());
+          } while(!isBoundaryE());
           flipHE();
         }
         else
@@ -181,7 +221,7 @@ namespace igl
           {
             flipF();
             flipE();
-          } while(!isBorder());
+          } while(!isBoundaryE());
           flipHE();
           flipV();
         }
@@ -225,13 +265,13 @@ namespace igl
      */
     IGL_INLINE bool nextFE()
     {
-      if ( isBorder() ) // we are on a boundary
+      if ( isBoundaryE() ) // we are on a boundary
       {
         do
         {
           flipF();
           flipE();
-        } while (!isBorder());
+        } while (!isBoundaryE());
         flipE();
         HE_ITER_DEBUG("Next face edge - border");
         return false;

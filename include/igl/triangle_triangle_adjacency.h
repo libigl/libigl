@@ -17,9 +17,7 @@ namespace igl
   // mesh (V,F).
   //
   // Templates:
-  //   Scalar derived type of eigen matrix for V (e.g. derived from
-  //     MatrixXd)
-  //   Index  derived type of eigen matrix for F (e.g. derived from
+  //   DerivedF  derived type of eigen matrix for F (e.g. derived from
   //     MatrixXi)
   // Inputs:
   //   F  #F by simplex_size list of mesh faces (must be triangles)
@@ -28,7 +26,6 @@ namespace igl
   //   TTi  #F by #3 adjacent matrix, the element i,j is the id of edge of the triangle TT(i,j) that is adjacent with triangle i
   // NOTE: the first edge of a triangle is [0,1] the second [1,2] and the third [2,3].
   //       this convention is DIFFERENT from cotmatrix_entries.h
-  // Known bug: this should not need to take V as input.
   template <typename DerivedF, typename DerivedTT, typename DerivedTTi>
   IGL_INLINE void triangle_triangle_adjacency(
     const Eigen::PlainObjectBase<DerivedF>& F,

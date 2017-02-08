@@ -861,7 +861,14 @@ namespace viewer
     switch (button)
     {
       case MouseButton::Left:
-        mouse_mode = MouseMode::Rotation;
+        if(down_modifier == GLFW_MOD_SHIFT)
+        {
+          mouse_mode = MouseMode::Translation;
+        }
+        else
+        {
+          mouse_mode = MouseMode::Rotation;
+        }
         break;
 
       case MouseButton::Right:
