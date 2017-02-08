@@ -65,6 +65,6 @@ int main(int argc, char * argv[])
     }
   };
   viewer.callback_key_down(viewer,' ',0);
-  viewer.core.show_lines = false;
+  viewer.data.show_lines = false;
   viewer.launch();
 }

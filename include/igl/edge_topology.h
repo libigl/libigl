@@ -19,7 +19,7 @@ namespace igl
   // mesh)
   //
   // Output:
-  // EV  : #Ex2, Stores the edge description as pair of indices to vertices
+  // EV : #Ex2, Stores the edge description as pair of indices to vertices
   // FE : #Fx3, Stores the Triangle-Edge relation
   // EF : #Ex2: Stores the Edge-Triangle relation
   //

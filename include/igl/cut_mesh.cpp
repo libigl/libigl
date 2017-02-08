@@ -160,7 +160,7 @@ FindInitialPos(const int vert,
   {
     int curr_f = VFI.Fi();
     int curr_edge=VFI.Ei();
-    VFI.NextFE();
+    VFI.nextFE();
     int next_f=VFI.Fi();
     ///test if I've just crossed a border
     bool on_border=(TT(curr_f,curr_edge)==-1);
@@ -206,7 +206,7 @@ MapIndexes(const int  vert,
     int curr_edge = VFI.Ei();
     ///assing the current index
     HandleS_Index(curr_f,curr_edge) = curr_index;
-    VFI.NextFE();
+    VFI.nextFE();
     int next_f = VFI.Fi();
     ///test if I've finiseh with the face exploration
     complete_turn = (next_f==f_init);

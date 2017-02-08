@@ -34,7 +34,8 @@ namespace viewer
 
     IGL_INLINE void EndDraw();
 
-    IGL_INLINE void DrawText(Eigen::Vector3d pos,Eigen::Vector3d normal,const std::string &text);
+    IGL_INLINE void DrawText(const Eigen::Vector3d& pos,const Eigen::Vector3d& normal,const std::string &text);
+    IGL_INLINE void DrawText(const Eigen::Vector3d& pos,const Eigen::Vector3d& normal,const std::string &text,const Eigen::Vector3d& color);
 
   protected:
     std::map<std::string,void *> m_textObjects;

@@ -385,7 +385,7 @@ IGL_INLINE void igl::viewer::OpenGL_state::init()
   "  position_eye = vec3 (view * model * vec4 (position, 1.0));"
   "  normal_eye = vec3 (view * model * vec4 (normal, 0.0));"
   "  normal_eye = normalize(normal_eye);"
-  "  gl_Position = proj * vec4 (position_eye, 1.0);" //proj * view * model * vec4(position, 1.0);"
+  "  gl_Position = proj * vec4 (position_eye, 1.0);" // gl_Position = proj * view * model * vec4(position, 1.0);
   "  Kai = Ka;"
   "  Kdi = Kd;"
   "  Ksi = Ks;"

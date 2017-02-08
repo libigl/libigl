@@ -4,9 +4,12 @@ message(STATUS "CMAKE_C_COMPILER: ${CMAKE_C_COMPILER}")
 message(STATUS "CMAKE_CXX_COMPILER: ${CMAKE_CXX_COMPILER}")
 
 ### libIGL options: choose between header only and compiled static library
-option(LIBIGL_USE_STATIC_LIBRARY "Use LibIGL as static library" ON)
-option(LIBIGL_WITH_VIEWER      "Use OpenGL viewer"  ON)
-option(LIBIGL_WITH_NANOGUI     "Use Nanogui menu"   OFF)
+option(LIBIGL_USE_STATIC_LIBRARY        "Use LibIGL as static library" ON)
+option(LIBIGL_WITH_VIEWER               "Use OpenGL viewer"         ON)
+option(LIBIGL_VIEWER_WITH_NANOGUI       "Use Nanogui menu"          OFF)
+option(LIBIGL_VIEWER_WITH_NANOGUI_MULTIMESH     "Show mesh selection"       OFF)
+option(LIBIGL_VIEWER_WITH_NANOGUI_IO            "Show IO menu"              OFF)
+option(LIBIGL_VIEWER_WITH_NANOGUI_SERIALIZATION "Show serialization menu"   OFF)
 
 ### libIGL options: choose your dependencies (by default everything is OFF, in this example we need the viewer) ###
 find_package(CGAL QUIET)

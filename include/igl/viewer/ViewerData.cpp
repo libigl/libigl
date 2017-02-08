@@ -18,7 +18,7 @@
 IGL_INLINE igl::viewer::ViewerData::ViewerData()
 : dirty(DIRTY_ALL)
 {
-  clear();
+  reset();
 };
 
 IGL_INLINE void igl::viewer::ViewerData::set_face_based(bool newvalue)
@@ -69,6 +69,12 @@ IGL_INLINE void igl::viewer::ViewerData::set_mesh(const Eigen::MatrixXd& _V, con
     else
       cerr << "ERROR (set_mesh): The new mesh has a different number of vertices/faces. Please clear the mesh before plotting."<<endl;
   }
+
+  if(V.size() > 0)
+  {
+    object_scale = (V.colwise().maxCoeff() - V.colwise().minCoeff()).norm();
+  }
+
   dirty |= DIRTY_FACE | DIRTY_POSITION;
 }
 
@@ -291,7 +297,12 @@ IGL_INLINE void igl::viewer::ViewerData::add_edges(const Eigen::MatrixXd& P1, co
   dirty |= DIRTY_OVERLAY_LINES;
 }
 
-IGL_INLINE void igl::viewer::ViewerData::add_label(const Eigen::VectorXd& P,  const std::string& str)
+IGL_INLINE void igl::viewer::ViewerData::add_label(const Eigen::VectorXd& P,const std::string& str)
+{
+  add_label(P,str,Eigen::Vector3d(10,10,250));
+}
+
+IGL_INLINE void igl::viewer::ViewerData::add_label(const Eigen::VectorXd& P,  const std::string& str,const Eigen::Vector3d& C)
 {
   Eigen::RowVectorXd P_temp;
 
@@ -307,6 +318,8 @@ IGL_INLINE void igl::viewer::ViewerData::add_label(const Eigen::VectorXd& P,  co
   int lastid = labels_positions.rows();
   labels_positions.conservativeResize(lastid+1, 3);
   labels_positions.row(lastid) = P_temp;
+  labels_colors.conservativeResize(lastid+1,3);
+  labels_colors.row(lastid) = C;
   labels_strings.push_back(str);
 }
 
@@ -333,8 +346,31 @@ IGL_INLINE void igl::viewer::ViewerData::clear()
   points                  = Eigen::MatrixXd (0,6);
   labels_positions        = Eigen::MatrixXd (0,3);
   labels_strings.clear();
+}
 
+IGL_INLINE void igl::viewer::ViewerData::reset()
+{
+  clear();
+
+  // Default model viewing parameters
+  model_translation << 0,0,0;
+
+  // Default visualization options
+  show_faces = true;
+  show_lines = true;
+  invert_normals = false;
+  show_overlay = true;
+  show_overlay_depth = true;
+  show_vertid = false;
+  show_faceid = false;
+  show_texture = false;
+  depth_test = true;
   face_based = false;
+  visible = true;
+
+  // Default point size / line width
+  point_size = 30;
+  line_width = 0.5f;
 }
 
 IGL_INLINE void igl::viewer::ViewerData::compute_normals()
