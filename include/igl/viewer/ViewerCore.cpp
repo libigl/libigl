@@ -66,29 +66,44 @@ IGL_INLINE void igl::viewer::ViewerCore::get_zoom_and_shift_to_fit_mesh(
   float& zoom,
   Eigen::Vector3f& shift)
 {
-  Eigen::MatrixXd BC;
-  if (F.rows() <= 1)
-  {
-    BC = V;
-  } else
-  {
-    igl::barycenter(V,F,BC);
-  }
-  return get_scale_and_shift_to_fit_mesh(BC,zoom,shift);
-}
-
-IGL_INLINE void igl::viewer::ViewerCore::align_camera_center(
-  const Eigen::MatrixXd& V)
-{
-  if(V.rows() == 0)
+  if (V.rows() == 0)
     return;
 
-  get_scale_and_shift_to_fit_mesh(V,model_zoom,model_translation);
-  // Rather than crash on empty mesh...
-  if(V.size() > 0)
+  Eigen::RowVector3d min_point;
+  Eigen::RowVector3d max_point;
+  Eigen::RowVector3d centroid;
+
+  if(F.rows() == 0)
   {
-    object_scale = (V.colwise().maxCoeff() - V.colwise().minCoeff()).norm();
+    if(V.cols() == 3)
+    {
+      min_point = V.colwise().minCoeff();
+      max_point = V.colwise().maxCoeff();
+    } else if(V.cols() == 2)
+    {
+      min_point << V.colwise().minCoeff(),0;
+      max_point << V.colwise().maxCoeff(),0;
+    } else
+      return;
   }
+  else
+  {
+    Eigen::MatrixXd BC;
+    if(F.rows() <= 1)
+      BC = V;
+    else
+      igl::barycenter(V,F,BC);
+
+    min_point = BC.colwise().minCoeff();
+    max_point = BC.colwise().maxCoeff();
+  }
+
+  centroid = 0.5 * (min_point + max_point);
+  shift = -centroid.cast<float>();
+  double x_scale = fabs(max_point[0] - min_point[0]);
+  double y_scale = fabs(max_point[1] - min_point[1]);
+  double z_scale = fabs(max_point[2] - min_point[2]);
+  zoom = std::max(z_scale,std::max(x_scale,y_scale)) / 2;
 }
 
 IGL_INLINE void igl::viewer::ViewerCore::clear_framebuffers()
