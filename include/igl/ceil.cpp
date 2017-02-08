@@ -14,7 +14,7 @@ IGL_INLINE void igl::ceil(
   Eigen::PlainObjectBase<DerivedY>& Y)
 {
   using namespace std;
-  //Y = Eigen::PlainObjectBase<DerivedY>::Zero(m,n);
+  //Y = DerivedY::Zero(m,n);
 //#pragma omp parallel for
   //for(int i = 0;i<m;i++)
   //{
@@ -28,6 +28,6 @@ IGL_INLINE void igl::ceil(
 }
 
 #ifdef IGL_STATIC_LIBRARY
-// Explicit instanciation
+// Explicit template instantiation
 template void igl::ceil<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
 #endif

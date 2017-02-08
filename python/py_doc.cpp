@@ -90,7 +90,7 @@ const char *__doc_igl_barycentric_to_global = R"igl_Qu8mg5v7(// Converts barycen
   // Output:
   // #X: #Xx3 3D coordinates of all points in bc
   //   )igl_Qu8mg5v7";
-const char *__doc_igl_bbw_bbw = R"igl_Qu8mg5v7(// Compute Bounded Biharmonic Weights on a given domain (V,Ele) with a given
+const char *__doc_igl_bbw = R"igl_Qu8mg5v7(// Compute Bounded Biharmonic Weights on a given domain (V,Ele) with a given
     // set of boundary conditions
     //
     // Templates

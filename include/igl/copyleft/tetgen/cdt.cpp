@@ -7,7 +7,6 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "cdt.h"
 #include "../../bounding_box.h"
-#include "../../writeOBJ.h"
 #include "tetrahedralize.h"
 
 template <
@@ -26,16 +25,14 @@ IGL_INLINE bool igl::copyleft::tetgen::cdt(
 {
   using namespace Eigen;
   using namespace std;
-  typedef Eigen::PlainObjectBase<DerivedV> MatrixXS;
-  typedef Eigen::PlainObjectBase<DerivedF> MatrixXI;
   // Effective input mesh
-  MatrixXS U;
-  MatrixXI G;
+  DerivedV U;
+  DerivedF G;
   if(param.use_bounding_box)
   {
     // Construct bounding box mesh
-    MatrixXS BV;
-    MatrixXI BF;
+    DerivedV BV;
+    DerivedF BF;
     bounding_box(V,BV,BF);
     // scale bounding box
     const RowVector3d mid = 
@@ -58,11 +55,10 @@ IGL_INLINE bool igl::copyleft::tetgen::cdt(
   }
   // effective flags;
   string flags = param.flags + (param.use_bounding_box ? "" : "c");
-  writeOBJ("UG.obj",U,G);
   return tetrahedralize(U,G,flags,TV,TT,TF);
 }
 
 #ifdef IGL_STATIC_LIBRARY
-// Explicit template specialization
+// Explicit template instantiation
 template bool igl::copyleft::tetgen::cdt<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, igl::copyleft::tetgen::CDTParam const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
 #endif

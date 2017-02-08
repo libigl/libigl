@@ -262,8 +262,12 @@ void check_mesh_for_issues(Eigen::MatrixXd& V, Eigen::MatrixXi& F) {
     cout << "Error! Input has multiple connected components" << endl; exit(1);
   }
   int euler_char = igl::euler_characteristic(V, F);
-  if (!euler_char) {
-    cout << "Error! Input does not have a disk topology, it's euler char is " << euler_char << endl; exit(1);
+  if (euler_char!=1) 
+  {
+    cout << 
+      "Error! Input does not have a disk topology, it's euler char is " << 
+      euler_char << endl; 
+    exit(1);
   }
   bool is_edge_manifold = igl::is_edge_manifold(F);
   if (!is_edge_manifold) {

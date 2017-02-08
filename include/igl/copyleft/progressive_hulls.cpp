@@ -23,7 +23,7 @@ IGL_INLINE bool igl::copyleft::progressive_hulls(
     V,
     F,
     progressive_hulls_cost_and_placement,
-    max_faces_stopping_condition(m,max_m),
+    max_faces_stopping_condition(m,(const int)m,max_m),
     U,
     G,
     J,

@@ -10,6 +10,7 @@
 #include "igl_inline.h"
 #include <Eigen/Core>
 #include <Eigen/Geometry>
+#include <Eigen/StdVector>
 #include <vector>
 
 namespace igl

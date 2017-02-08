@@ -248,6 +248,6 @@ IGL_INLINE void igl::arap_linear_block_elements(
 
 
 #ifdef IGL_STATIC_LIBRARY
-// Explicit template specialization
+// Explicit template instantiation
 template IGL_INLINE void igl::arap_linear_block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, double>(Eigen::Matrix<double, -1, -1, 0, -1, -1> const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, int, igl::ARAPEnergyType, Eigen::SparseMatrix<double, 0, int>&);
 #endif

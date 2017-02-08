@@ -20,7 +20,13 @@ namespace igl
   //   BF  #BF by dim list of simplex facets 
   template <typename DerivedV, typename DerivedBV, typename DerivedBF>
   IGL_INLINE void bounding_box(
-    const Eigen::PlainObjectBase<DerivedV>& V,
+    const Eigen::MatrixBase<DerivedV>& V,
+    Eigen::PlainObjectBase<DerivedBV>& BV,
+    Eigen::PlainObjectBase<DerivedBF>& BF);
+  template <typename DerivedV, typename DerivedBV, typename DerivedBF>
+  IGL_INLINE void bounding_box(
+    const Eigen::MatrixBase<DerivedV>& V,
+    const typename DerivedV::Scalar pad,
     Eigen::PlainObjectBase<DerivedBV>& BV,
     Eigen::PlainObjectBase<DerivedBF>& BF);
 }

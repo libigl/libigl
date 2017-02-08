@@ -6,8 +6,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "draw_beach_ball.h"
-
-#include "../opengl/OpenGL_convenience.h"
+#include "gl.h"
 
 // I'm not sure why windows would need it this way:
 // http://lists.cairographics.org/archives/cairo/2008-January/012722.html

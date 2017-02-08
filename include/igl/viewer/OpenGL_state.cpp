@@ -176,7 +176,7 @@ IGL_INLINE void igl::viewer::OpenGL_state::set_data(const igl::viewer::ViewerDat
 
     if (dirty & ViewerData::DIRTY_AMBIENT)
     {
-      V_ambient_vbo.resize(3,data.F.rows()*3);
+      V_ambient_vbo.resize(4,data.F.rows()*3);
       for (unsigned i=0; i<data.F.rows();++i)
         for (unsigned j=0;j<3;++j)
           V_ambient_vbo.col (i*3+j) = data.F_material_ambient.row(i).transpose().cast<float>();
@@ -184,7 +184,7 @@ IGL_INLINE void igl::viewer::OpenGL_state::set_data(const igl::viewer::ViewerDat
 
     if (dirty & ViewerData::DIRTY_DIFFUSE)
     {
-      V_diffuse_vbo.resize(3,data.F.rows()*3);
+      V_diffuse_vbo.resize(4,data.F.rows()*3);
       for (unsigned i=0; i<data.F.rows();++i)
         for (unsigned j=0;j<3;++j)
           V_diffuse_vbo.col (i*3+j) = data.F_material_diffuse.row(i).transpose().cast<float>();
@@ -192,7 +192,7 @@ IGL_INLINE void igl::viewer::OpenGL_state::set_data(const igl::viewer::ViewerDat
 
     if (dirty & ViewerData::DIRTY_SPECULAR)
     {
-      V_specular_vbo.resize(3,data.F.rows()*3);
+      V_specular_vbo.resize(4,data.F.rows()*3);
       for (unsigned i=0; i<data.F.rows();++i)
         for (unsigned j=0;j<3;++j)
           V_specular_vbo.col(i*3+j) = data.F_material_specular.row(i).transpose().cast<float>();
@@ -232,12 +232,13 @@ IGL_INLINE void igl::viewer::OpenGL_state::set_data(const igl::viewer::ViewerDat
   {
     tex_u = data.texture_R.rows();
     tex_v = data.texture_R.cols();
-    tex.resize(data.texture_R.size()*3);
+    tex.resize(data.texture_R.size()*4);
     for (unsigned i=0;i<data.texture_R.size();++i)
     {
-      tex(i*3+0) = data.texture_R(i);
-      tex(i*3+1) = data.texture_G(i);
-      tex(i*3+2) = data.texture_B(i);
+      tex(i*4+0) = data.texture_R(i);
+      tex(i*4+1) = data.texture_G(i);
+      tex(i*4+2) = data.texture_B(i);
+      tex(i*4+3) = data.texture_A(i);
     }
   }
 
@@ -295,7 +296,7 @@ IGL_INLINE void igl::viewer::OpenGL_state::bind_mesh()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, tex_u, tex_v, 0, GL_RGB, GL_UNSIGNED_BYTE, tex.data());
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tex_u, tex_v, 0, GL_RGBA, GL_UNSIGNED_BYTE, tex.data());
   }
   glUniform1i(shader_mesh.uniform("tex"), 0);
   dirty &= ~ViewerData::DIRTY_MESH;
@@ -370,14 +371,14 @@ IGL_INLINE void igl::viewer::OpenGL_state::init()
   "in vec3 normal;"
   "out vec3 position_eye;"
   "out vec3 normal_eye;"
-  "in vec3 Ka;"
-  "in vec3 Kd;"
-  "in vec3 Ks;"
+  "in vec4 Ka;"
+  "in vec4 Kd;"
+  "in vec4 Ks;"
   "in vec2 texcoord;"
   "out vec2 texcoordi;"
-  "out vec3 Kai;"
-  "out vec3 Kdi;"
-  "out vec3 Ksi;"
+  "out vec4 Kai;"
+  "out vec4 Kdi;"
+  "out vec4 Ksi;"
 
   "void main()"
   "{"
@@ -403,9 +404,9 @@ IGL_INLINE void igl::viewer::OpenGL_state::init()
   "vec3 Ls = vec3 (1, 1, 1);"
   "vec3 Ld = vec3 (1, 1, 1);"
   "vec3 La = vec3 (1, 1, 1);"
-  "in vec3 Ksi;"
-  "in vec3 Kdi;"
-  "in vec3 Kai;"
+  "in vec4 Ksi;"
+  "in vec4 Kdi;"
+  "in vec4 Kai;"
   "in vec2 texcoordi;"
   "uniform sampler2D tex;"
   "uniform float specular_exponent;"
@@ -414,22 +415,22 @@ IGL_INLINE void igl::viewer::OpenGL_state::init()
   "out vec4 outColor;"
   "void main()"
   "{"
-  "vec3 Ia = La * Kai;"    // ambient intensity
+  "vec3 Ia = La * vec3(Kai);"    // ambient intensity
 
   "vec3 light_position_eye = vec3 (view * vec4 (light_position_world, 1.0));"
   "vec3 vector_to_light_eye = light_position_eye - position_eye;"
   "vec3 direction_to_light_eye = normalize (vector_to_light_eye);"
   "float dot_prod = dot (direction_to_light_eye, normal_eye);"
   "float clamped_dot_prod = max (dot_prod, 0.0);"
-  "vec3 Id = Ld * Kdi * clamped_dot_prod;"    // Diffuse intensity
+  "vec3 Id = Ld * vec3(Kdi) * clamped_dot_prod;"    // Diffuse intensity
 
   "vec3 reflection_eye = reflect (-direction_to_light_eye, normal_eye);"
   "vec3 surface_to_viewer_eye = normalize (-position_eye);"
   "float dot_prod_specular = dot (reflection_eye, surface_to_viewer_eye);"
   "dot_prod_specular = float(abs(dot_prod)==dot_prod) * max (dot_prod_specular, 0.0);"
   "float specular_factor = pow (dot_prod_specular, specular_exponent);"
-  "vec3 Is = Ls * Ksi * specular_factor;"    // specular intensity
-  "vec4 color = vec4(lighting_factor * (Is + Id) + Ia, 1.0) + vec4((1.0-lighting_factor) * Kdi,1.0);"
+  "vec3 Is = Ls * vec3(Ksi) * specular_factor;"    // specular intensity
+  "vec4 color = vec4(lighting_factor * (Is + Id) + Ia + (1.0-lighting_factor) * vec3(Kdi),(Kai.a+Ksi.a+Kdi.a)/3);"
   "outColor = mix(vec4(1,1,1,1), texture(tex, texcoordi), texture_factor) * color;"
   "if (fixed_color != vec4(0.0)) outColor = fixed_color;"
   "}";

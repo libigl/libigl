@@ -7,7 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_OPENGL2_FLARE_TEXTURES_H
 #define IGL_OPENGL2_FLARE_TEXTURES_H
-#include <stdint.h>
+#include <cstdint>
 namespace igl
 {
     namespace opengl2

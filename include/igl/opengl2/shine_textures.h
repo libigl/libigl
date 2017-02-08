@@ -8,7 +8,7 @@
 #ifndef IGL_OPENGL2_SHINE_TEXTURES_H
 #define IGL_OPENGL2_SHINE_TEXTURES_H
 
-#include <stdint.h>
+#include <cstdint>
 
 namespace igl
 {

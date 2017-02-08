@@ -93,8 +93,8 @@ IGL_INLINE void igl::signed_distance(
           for(int e = 0;e<F.rows();e++)
           {
             // rotate edge vector
-            FN(e,0) = -(V(F(e,1),1)-V(F(e,0),1));
-            FN(e,1) =  (V(F(e,1),0)-V(F(e,0),0));
+            FN(e,0) =  (V(F(e,1),1)-V(F(e,0),1));
+            FN(e,1) = -(V(F(e,1),0)-V(F(e,0),0));
             FN.row(e).normalize();
             // add to vertex normal
             VN.row(F(e,1)) += FN.row(e);
@@ -217,7 +217,7 @@ IGL_INLINE void igl::signed_distance_pseudonormal(
     C.row(p) = c;
   }
 //  igl::AABB<MatrixXd,3> tree_P;
-//  MatrixXi J = VectorXi::LinSpaced(P.rows(),0,P.rows()-1);
+//  MatrixXi J = igl::LinSpaced<VectorXi >(P.rows(),0,P.rows()-1);
 //  tree_P.init(P,J);
 //  tree.squared_distance(V,F,tree_P,P,J,S,I,C);
 //# pragma omp parallel for if(np>1000)

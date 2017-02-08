@@ -6,6 +6,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "sort_angles.h"
+#include "LinSpaced.h"
 #include <algorithm>
 
 template <typename DerivedM, typename DerivedR>
@@ -17,7 +18,9 @@ IGL_INLINE void igl::sort_angles(
     assert(num_cols >= 2);
 
     R.resize(num_rows);
-    R.setLinSpaced(num_rows, 0, num_rows-1);
+    R = igl::LinSpaced<
+      Eigen::Matrix<typename DerivedR::Scalar, Eigen::Dynamic, 1> >
+      (num_rows, 0, num_rows-1);
 
     //              |
     // (pi/2, pi)   | (0, pi/2)

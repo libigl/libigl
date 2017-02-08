@@ -7,19 +7,19 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "component_inside_component.h"
 
-#include <cassert>
-#include <list>
-#include <limits>
-#include <vector>
+#include "order_facets_around_edge.h"
+#include "../../LinSpaced.h"
+#include "points_inside_component.h"
 
 #include <CGAL/AABB_tree.h>
 #include <CGAL/AABB_traits.h>
 #include <CGAL/AABB_triangle_primitive.h>
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 
-#include "order_facets_around_edge.h"
-#include "assign_scalar.h"
-#include "points_inside_component.h"
+#include <cassert>
+#include <list>
+#include <limits>
+#include <vector>
 
 template <typename DerivedV, typename DerivedF, typename DerivedI>
 IGL_INLINE bool igl::copyleft::cgal::component_inside_component(
@@ -54,14 +54,14 @@ IGL_INLINE bool igl::copyleft::cgal::component_inside_component(
         throw "Component inside test cannot be done on empty component!";
     }
     Eigen::VectorXi I1(F1.rows()), I2(F2.rows());
-    I1.setLinSpaced(F1.rows(), 0, F1.rows()-1);
-    I2.setLinSpaced(F2.rows(), 0, F2.rows()-1);
+    I1 = igl::LinSpaced<Eigen::VectorXi>(F1.rows(), 0, F1.rows()-1);
+    I2 = igl::LinSpaced<Eigen::VectorXi>(F2.rows(), 0, F2.rows()-1);
     return igl::copyleft::cgal::component_inside_component(V1, F1, I1, V2, F2, I2);
 }
 
 
 #ifdef IGL_STATIC_LIBRARY
-// Explicit template specialization
+// Explicit template instantiation
 template bool igl::copyleft::cgal::component_inside_component<
 Eigen::Matrix<double, -1, -1, 0, -1, -1>,
 Eigen::Matrix<   int, -1, -1, 0, -1, -1>,

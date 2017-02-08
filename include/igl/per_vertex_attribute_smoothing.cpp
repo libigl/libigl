@@ -15,7 +15,7 @@ IGL_INLINE void igl::per_vertex_attribute_smoothing(
     Eigen::PlainObjectBase<DerivedV> & Aout)
 {
     std::vector<double> denominator(Ain.rows(), 0);
-    Aout = Eigen::PlainObjectBase<DerivedV>::Zero(Ain.rows(), Ain.cols());
+    Aout = DerivedV::Zero(Ain.rows(), Ain.cols());
     for (int i = 0; i < F.rows(); ++i) {
         for (int j = 0; j < 3; ++j) {
             int j1 = (j + 1) % 3;

@@ -26,8 +26,8 @@ namespace igl
     typename DerivedC,
     typename DerivedIA>
   IGL_INLINE void setdiff(
-    const Eigen::PlainObjectBase<DerivedA> & A,
-    const Eigen::PlainObjectBase<DerivedB> & B,
+    const Eigen::DenseBase<DerivedA> & A,
+    const Eigen::DenseBase<DerivedB> & B,
     Eigen::PlainObjectBase<DerivedC> & C,
     Eigen::PlainObjectBase<DerivedIA> & IA);
 }

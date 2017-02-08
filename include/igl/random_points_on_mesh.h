@@ -21,8 +21,8 @@ namespace igl
   //   V  #V by dim list of mesh vertex positions
   //   F  #F by 3 list of mesh triangle indices
   // Outputs:
-  //   B  n by #V list of barycentric coordinates such that each row i has
-  //     three nonzero entries hoding barycentric corridinates of the point.
+  //   B  n by 3 list of barycentric coordinates, ith row are coordinates of
+  //     ith sampled point in face FI(i)
   //   FI  n list of indices into F 
   //
   template <typename DerivedV, typename DerivedF, typename DerivedB, typename DerivedFI>
@@ -32,6 +32,8 @@ namespace igl
     const Eigen::PlainObjectBase<DerivedF > & F,
     Eigen::PlainObjectBase<DerivedB > & B,
     Eigen::PlainObjectBase<DerivedFI > & FI);
+  // Outputs:
+  //   B n by #V sparse matrix so that  B*V produces a list of sample points
   template <typename DerivedV, typename DerivedF, typename ScalarB, typename DerivedFI>
   IGL_INLINE void random_points_on_mesh(
     const int n,

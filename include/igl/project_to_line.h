@@ -12,12 +12,12 @@
 
 namespace igl
 {
-  // PROJECT_TO_LINES  project points onto vectors, that is find the paramter
+  // PROJECT_TO_LINE  project points onto vectors, that is find the paramter
   // t for a point p such that proj_p = (y-x).*t, additionally compute the
   // squared distance from p to the line of the vector, such that 
   // |p - proj_p|² = sqr_d
   //
-  // [T,sqrD] = project_to_lines(P,S,D)
+  // [T,sqrD] = project_to_line(P,S,D)
   //
   // Inputs:
   //   P  #P by dim list of points to be projected

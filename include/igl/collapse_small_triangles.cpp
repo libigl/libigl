@@ -31,7 +31,7 @@ void igl::collapse_small_triangles(
   MatrixXd l;
   edge_lengths(V,F,l);
   VectorXd dblA;
-  doublearea(l,dblA);
+  doublearea(l,0.,dblA);
 
   // Minimum area tolerance
   const double min_dblarea = 2.0*eps*bbd*bbd;
@@ -91,7 +91,7 @@ void igl::collapse_small_triangles(
     }
   }
 
-  FF.resize(rF.rows(),rF.cols());
+  FF.resizeLike(rF);
   int num_face_collapses=0;
   // Only keep uncollapsed faces
   {

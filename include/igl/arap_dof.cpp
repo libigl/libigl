@@ -149,7 +149,7 @@ IGL_INLINE bool igl::arap_dof_precomputation(
   // Apply group sum to each dimension's block of covariance scatter matrix
   SparseMatrix<double> G_sum_dim;
   repdiag(G_sum,data.dim,G_sum_dim);
-  CSM = G_sum_dim * CSM;
+  CSM = (G_sum_dim * CSM).eval();
 #ifdef EXTREME_VERBOSE
   cout<<"CSMIJV=["<<endl;print_ijv(CSM,1);cout<<endl<<"];"<<
     endl<<"CSM=sparse(CSMIJV(:,1),CSMIJV(:,2),CSMIJV(:,3),"<<
@@ -874,7 +874,7 @@ IGL_INLINE bool igl::arap_dof_update(
 }
 
 #ifdef IGL_STATIC_LIBRARY
-// Explicit instanciation
+// Explicit template instantiation
 template bool igl::arap_dof_update<Eigen::Matrix<double, -1, -1, 0, -1, -1>, double>(ArapDOFData<Eigen::Matrix<double, -1, -1, 0, -1, -1>, double> const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, Eigen::Matrix<double, -1, -1, 0, -1, -1> const&, int, double, Eigen::Matrix<double, -1, -1, 0, -1, -1>&);
 template bool igl::arap_dof_recomputation<Eigen::Matrix<double, -1, -1, 0, -1, -1>, double>(Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, Eigen::SparseMatrix<double, 0, int> const&, ArapDOFData<Eigen::Matrix<double, -1, -1, 0, -1, -1>, double>&);
 template bool igl::arap_dof_precomputation<Eigen::Matrix<double, -1, -1, 0, -1, -1>, double>(Eigen::Matrix<double, -1, -1, 0, -1, -1> const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, Eigen::Matrix<double, -1, -1, 0, -1, -1> const&, Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, ArapDOFData<Eigen::Matrix<double, -1, -1, 0, -1, -1>, double>&);

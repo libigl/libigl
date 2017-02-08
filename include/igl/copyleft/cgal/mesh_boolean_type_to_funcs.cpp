@@ -35,5 +35,5 @@ IGL_INLINE void igl::copyleft::cgal::mesh_boolean_type_to_funcs(
 }
 
 #ifdef IGL_STATIC_LIBRARY
-// Explicit template specialization
+// Explicit template instantiation
 #endif
