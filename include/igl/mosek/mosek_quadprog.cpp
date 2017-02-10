@@ -110,8 +110,6 @@ IGL_INLINE bool igl::mosek::mosek_quadprog(
   //  printf("%s",str);
   //}
   //mosek_guarded(MSK_linkfunctoenvstream(env,MSK_STREAM_LOG,NULL,printstr));
-  // initialize mosek environment
-  mosek_guarded(MSK_initenv(env));
   // Create the optimization task
   mosek_guarded(MSK_maketask(env,m,n,&task));
   verbose("Creating task with %ld linear constraints and %ld variables...\n",m,n);
@@ -318,7 +316,7 @@ IGL_INLINE bool igl::mosek::mosek_quadprog(
   vector<double> vux = matrix_to_list(ux);
 
   vector<double> vx;
-  bool ret = mosek_quadprog(
+  bool ret = mosek_quadprog<int, double>(
     Q.rows(),vQi,vQj,vQv,
     vc,
     cf,
