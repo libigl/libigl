@@ -209,7 +209,7 @@ if (LIBIGL_WITH_PYTHON AND LIBIGL_WITH_NANOGUI)
   add_custom_target(copy ALL)
   add_custom_command(
         TARGET copy
-        COMMAND ${CMAKE_COMMAND} -E copy ${NANOGUI_LIB} ${CMAKE_CURRENT_BINARY_DIR}/../nanogui.so
+        COMMAND ${CMAKE_COMMAND} -E copy ${NANOGUI_LIB} ${CMAKE_CURRENT_BINARY_DIR}/../
         )
   add_dependencies(copy pyigl)
 
