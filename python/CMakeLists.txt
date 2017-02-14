@@ -205,11 +205,11 @@ endif()
 
 if (LIBIGL_WITH_PYTHON AND LIBIGL_WITH_NANOGUI)
   # Copy the nanogui python lib after compilation
-  get_target_property(NANOGUI_LIB nanogui_python LOCATION)
+  get_target_property(NANOGUI_LIB nanogui-python LOCATION)
   add_custom_target(copy ALL)
   add_custom_command(
         TARGET copy
-        COMMAND ${CMAKE_COMMAND} -E copy ${NANOGUI_LIB} ${CMAKE_CURRENT_BINARY_DIR}/../
+        COMMAND ${CMAKE_COMMAND} -E copy ${NANOGUI_LIB} ${CMAKE_CURRENT_BINARY_DIR}/../nanogui.so
         )
   add_dependencies(copy pyigl)
 
