@@ -52,7 +52,7 @@ def viewer_init(viewer):
     viewer.ngui.addButton("Print Hello", cb)
 
     #Add an additional menu window
-    viewer.ngui.addWindow(nanogui.Vector2i(220, 10), "New Window")
+    viewer.ngui.addWindow((220, 10), "New Window")
 
     # add accessor
     viewer.ngui.addDoubleVariable("double", *make_accessors("float_variable"))
