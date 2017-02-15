@@ -13,6 +13,7 @@
 #include <igl/barycenter.h>
 #include <igl/barycentric_coordinates.h>
 #include <igl/barycentric_to_global.h>
+#include <igl/bbw.h>
 #include <igl/boundary_conditions.h>
 #include <igl/boundary_facets.h>
 #include <igl/boundary_loop.h>
@@ -107,6 +108,7 @@ void python_export_igl(py::module &m)
 #include "py_igl/py_barycenter.cpp"
 #include "py_igl/py_barycentric_coordinates.cpp"
 #include "py_igl/py_barycentric_to_global.cpp"
+#include "py_igl/py_bbw.cpp"
 #include "py_igl/py_boundary_conditions.cpp"
 #include "py_igl/py_boundary_facets.cpp"
 #include "py_igl/py_boundary_loop.cpp"

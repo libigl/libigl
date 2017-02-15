@@ -60,6 +60,7 @@ def key_down(viewer, key, mod):
         viewer.data.compute_normals()
         viewer.data.set_colors(C)
         return True
+    return False
 
 
 viewer.callback_key_down = key_down

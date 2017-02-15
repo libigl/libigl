@@ -90,6 +90,7 @@ PYBIND11_PLUGIN(pyigl) {
            edge_topology
            eigs
            embree_ambient_occlusion
+           embree_line_mesh_intersection
            embree_reorient_facets_raycast
            find_cross_field_singularities
            fit_rotations
