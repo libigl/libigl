@@ -7,14 +7,13 @@
 
 /// Creates Python bindings for a dynamic Eigen matrix
 template <typename Type>
-py::class_<Type> bind_eigen_2(py::module &m, const char *name,
-                                py::object parent = py::object()) {
+py::class_<Type> bind_eigen_2(py::module &m, const char *name) {
     typedef typename Type::Scalar Scalar;
 
     /* Many Eigen functions are templated and can't easily be referenced using
        a function pointer, thus a big portion of the binding code below
        instantiates Eigen code using small anonymous wrapper functions */
-    py::class_<Type> matrix(m, name, parent);
+    py::class_<Type> matrix(m, name, py::buffer_protocol());
 
     matrix
         /* Constructors */
@@ -23,6 +22,26 @@ py::class_<Type> bind_eigen_2(py::module &m, const char *name,
         .def("__init__", [](Type &m, Scalar f) {
             new (&m) Type(1, 1);
             m(0, 0) = f;
+        })
+        .def("__init__", [](Type &m, py::buffer b) {
+            py::buffer_info info = b.request();
+            if (info.format != py::format_descriptor<Scalar>::format())
+                throw std::runtime_error("Incompatible buffer format!");
+            if (info.ndim == 1) {
+                new (&m) Type(info.shape[0], 1);
+                memcpy(m.data(), info.ptr, sizeof(Scalar) * m.size());
+            } else if (info.ndim == 2) {
+                if (info.strides[0] == sizeof(Scalar)) {
+                    new (&m) Type(info.shape[0], info.shape[1]);
+                    memcpy(m.data(), info.ptr, sizeof(Scalar) * m.size());
+                } else {
+                    new (&m) Type(info.shape[1], info.shape[0]);
+                    memcpy(m.data(), info.ptr, sizeof(Scalar) * m.size());
+                    m.transposeInPlace();
+                }
+            } else {
+                throw std::runtime_error("Incompatible buffer dimension!");
+            }
         })
         .def("__init__", [](Type &m, std::vector<std::vector< Scalar> >& b) {
           if (b.size() == 0)
@@ -66,26 +85,7 @@ py::class_<Type> bind_eigen_2(py::module &m, const char *name,
 
           return;
         })
-        .def("__init__", [](Type &m, py::buffer b) {
-            py::buffer_info info = b.request();
-            if (info.format != py::format_descriptor<Scalar>::value)
-                throw std::runtime_error("Incompatible buffer format!");
-            if (info.ndim == 1) {
-                new (&m) Type(info.shape[0], 1);
-                memcpy(m.data(), info.ptr, sizeof(Scalar) * m.size());
-            } else if (info.ndim == 2) {
-                if (info.strides[0] == sizeof(Scalar)) {
-                    new (&m) Type(info.shape[0], info.shape[1]);
-                    memcpy(m.data(), info.ptr, sizeof(Scalar) * m.size());
-                } else {
-                    new (&m) Type(info.shape[1], info.shape[0]);
-                    memcpy(m.data(), info.ptr, sizeof(Scalar) * m.size());
-                    m.transposeInPlace();
-                }
-            } else {
-                throw std::runtime_error("Incompatible buffer dimension!");
-            }
-        })
+
 
         /* Size query functions */
         .def("size", [](const Type &m) { return m.size(); })
@@ -319,7 +319,7 @@ py::class_<Type> bind_eigen_2(py::module &m, const char *name,
                 m.data(),                /* Pointer to buffer */
                 sizeof(Scalar),          /* Size of one scalar */
                 /* Python struct-style format descriptor */
-                py::format_descriptor<Scalar>::value,
+                py::format_descriptor<Scalar>::format(),
                 2,                       /* Number of dimensions */
                 { (size_t) m.rows(),     /* Buffer dimensions */
                   (size_t) m.cols() },
@@ -347,14 +347,13 @@ py::class_<Type> bind_eigen_2(py::module &m, const char *name,
 
 /// Creates Python bindings for a dynamic Eigen sparse order-2 tensor (i.e. a matrix)
 template <typename Type>
-py::class_<Type> bind_eigen_sparse_2(py::module &m, const char *name,
-                                py::object parent = py::object()) {
+py::class_<Type> bind_eigen_sparse_2(py::module &m, const char *name) {
     typedef typename Type::Scalar Scalar;
 
     /* Many Eigen functions are templated and can't easily be referenced using
        a function pointer, thus a big portion of the binding code below
        instantiates Eigen code using small anonymous wrapper functions */
-    py::class_<Type> matrix(m, name, parent);
+    py::class_<Type> matrix(m, name, py::buffer_protocol());
 
     matrix
         /* Constructors */
@@ -532,14 +531,13 @@ py::class_<Type> bind_eigen_sparse_2(py::module &m, const char *name,
 
 /// Creates Python bindings for a diagonal Eigen sparse order-2 tensor (i.e. a matrix)
 template <typename Type>
-py::class_<Type> bind_eigen_diagonal_2(py::module &m, const char *name,
-                                py::object parent = py::object()) {
+py::class_<Type> bind_eigen_diagonal_2(py::module &m, const char *name) {
     typedef typename Type::Scalar Scalar;
 
     /* Many Eigen functions are templated and can't easily be referenced using
        a function pointer, thus a big portion of the binding code below
        instantiates Eigen code using small anonymous wrapper functions */
-    py::class_<Type> matrix(m, name, parent);
+    py::class_<Type> matrix(m, name, py::buffer_protocol());
 
     matrix
         /* Constructors */
@@ -632,7 +630,7 @@ void python_export_vector(py::module &m) {
 
     /* Bindings for MatrixXi */
     bind_eigen_2<Eigen::MatrixXi> (me, "MatrixXi");
-//    py::implicitly_convertible<py::buffer, Eigen::MatrixXi>();
+    //py::implicitly_convertible<py::buffer, Eigen::MatrixXi>();
     //py::implicitly_convertible<double, Eigen::MatrixXi>();
 
     /* Bindings for MatrixXb */
