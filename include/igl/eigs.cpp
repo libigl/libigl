@@ -45,8 +45,10 @@ IGL_INLINE bool igl::eigs(
   Scalar conv = 1e-14;
   int max_iter = 100;
   int i = 0;
+  //std::cout<<"start"<<std::endl;
   while(true)
   {
+    //std::cout<<i<<std::endl;
     // Random initial guess
     VectorXS y = VectorXS::Random(n,1);
     Scalar eff_sigma = 0;
@@ -132,8 +134,13 @@ IGL_INLINE bool igl::eigs(
       cerr<<"Failed to converge."<<endl;
       return false;
     }
-    if(i==0 || (S.head(i).array()-sigma).abs().maxCoeff()>1e-14)
+    if(
+      i==0 || 
+      (S.head(i).array()-sigma).abs().maxCoeff()>1e-14 ||
+      ((S.transpose()*B*x).array().abs()>=1e-7).all()
+      )
     {
+      //cout<<"Found "<<i<<"th mode"<<endl;
       U.col(i) = x;
       S(i) = sigma;
       i++;
@@ -144,7 +151,7 @@ IGL_INLINE bool igl::eigs(
     }else
     {
       // restart with new random guess.
-      cout<<"RESTART!"<<endl;
+      cout<<"igl::eigs RESTART"<<endl;
     }
   }
   // finally sort
