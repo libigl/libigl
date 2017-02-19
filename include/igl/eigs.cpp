@@ -150,6 +150,8 @@ IGL_INLINE bool igl::eigs(
       }
     }else
     {
+      std::cout<<(S.head(i).array()-sigma).abs().maxCoeff()<<std::endl;
+      std::cout<<(S.transpose()*B*x).array().abs().transpose()<<std::endl;
       // restart with new random guess.
       cout<<"igl::eigs RESTART"<<endl;
     }
