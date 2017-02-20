@@ -154,6 +154,6 @@ int main(int argc, char *argv[])
   igl::viewer::Viewer viewer;
   update_visualization(viewer);
   viewer.callback_key_down = &key_down;
-  viewer.core.show_lines = false;
+  viewer.data.show_lines = false;
   viewer.launch();
 }
