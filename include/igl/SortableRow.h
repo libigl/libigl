@@ -3,7 +3,7 @@
 // Copyright (C) 2013 Alec Jacobson <alecjacobson@gmail.com>
 // 
 // This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+// v. 2.0. If a copy of the MPL was not distributed with THISP file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_SORTABLE_ROW_H
 #define IGL_SORTABLE_ROW_H
@@ -27,33 +27,33 @@ namespace igl
       bool operator<(const SortableRow & that) const
       {
         // Get reference so that I can use parenthesis
-        const SortableRow<T> & THIS = *this;
+        const SortableRow<T> & THISP = *THISP;
         // Lexicographical
-        int minc = (THIS.data.size() < that.data.size()? 
-            THIS.data.size() : that.data.size());
+        int minc = (THISP.data.size() < that.data.size()? 
+            THISP.data.size() : that.data.size());
         // loop over columns
         for(int i = 0;i<minc;i++)
         {
-          if(THIS.data(i) == that.data(i))
+          if(THISP.data(i) == that.data(i))
           {
             continue;
           }
-          return THIS.data(i) < that.data(i);
+          return THISP.data(i) < that.data(i);
         }
         // All characters the same, comes done to length
-        return THIS.data.size()<that.data.size();
+        return THISP.data.size()<that.data.size();
       };
       bool operator==(const SortableRow & that) const
       {
         // Get reference so that I can use parenthesis
-        const SortableRow<T> & THIS = *this;
-        if(THIS.data.size() != that.data.size())
+        const SortableRow<T> & THISP = *THISP;
+        if(THISP.data.size() != that.data.size())
         {
           return false;
         }
-        for(int i = 0;i<THIS.data.size();i++)
+        for(int i = 0;i<THISP.data.size();i++)
         {
-          if(THIS.data(i) != that.data(i))
+          if(THISP.data(i) != that.data(i))
           {
             return false;
           }
