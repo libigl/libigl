@@ -64,7 +64,7 @@ namespace igl
     {
       using namespace std;
       double t1,t2;
-      if (a != 0)
+      if (std::abs(a)>1.0e-10)
       {
         double delta_in = pow(b,2) - 4*a*c;
         if (delta_in < 0)
@@ -238,7 +238,7 @@ namespace igl
 
       double d = a_x*b_y*c_z - a_x*b_z*c_y - a_y*b_x*c_z + a_y*b_z*c_x + a_z*b_x*c_y - a_z*b_y*c_x - a_x*b_y*d_z + a_x*b_z*d_y + a_y*b_x*d_z - a_y*b_z*d_x - a_z*b_x*d_y + a_z*b_y*d_x + a_x*c_y*d_z - a_x*c_z*d_y - a_y*c_x*d_z + a_y*c_z*d_x + a_z*c_x*d_y - a_z*c_y*d_x - b_x*c_y*d_z + b_x*c_z*d_y + b_y*c_x*d_z - b_y*c_z*d_x - b_z*c_x*d_y + b_z*c_y*d_x;
 
-      if (a==0)
+      if (std::abs(a)<=1.e-10)
       {
         return get_smallest_pos_quad_zero(b,c,d);
       }
