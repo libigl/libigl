@@ -121,7 +121,7 @@ IGL_INLINE bool igl::read_triangle_mesh(
     // read_triangle_mesh
     for(auto & v : vV)
     {
-      v.resize(std::min(v.size(),(size_t)3));
+      v.resize((std::min)(v.size(),(size_t)3));
     }
   }else if(ext == "off")
   {
