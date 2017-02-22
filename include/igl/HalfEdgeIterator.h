@@ -41,11 +41,10 @@ namespace igl
 
       int fin = (FF)(fi,ei);
       int ein = (FFi)(fi,ei);
-      int reversen = !reverse;
 
       fi = fin;
       ei = ein;
-      reverse = reversen;
+      reverse = !reverse;
     }
 
     // Change Edge
@@ -110,9 +109,9 @@ namespace igl
       assert(ei <= 2);
 
       if (!reverse)
-        return (*F)(fi,ei);
+        return (F)(fi,ei);
       else
-        return (*F)(fi,(ei+1)%3);
+        return (F)(fi,(ei+1)%3);
     }
 
     // Get face index
