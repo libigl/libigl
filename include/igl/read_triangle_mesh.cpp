@@ -43,7 +43,7 @@ IGL_INLINE bool igl::read_triangle_mesh(
     bool success = readOBJ(str,V,TC,N,F,FTC,FN);
     for(auto & v : V)
     {
-      v.resize(std::min(v.size(),(size_t)3));
+      v.resize((std::min)(v.size(),(size_t)3));
     }
     return success;
   }else if(e == "off")
@@ -121,7 +121,7 @@ IGL_INLINE bool igl::read_triangle_mesh(
     // read_triangle_mesh
     for(auto & v : vV)
     {
-      v.resize(std::min(v.size(),(size_t)3));
+      v.resize((std::min)(v.size(),(size_t)3));
     }
   }else if(ext == "off")
   {
