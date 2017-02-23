@@ -11,6 +11,7 @@
 #include <igl/triangle_triangle_adjacency.h>
 #include <igl/HalfEdgeIterator.h>
 
+#include <stdio.h>
 #include <map>
 
 namespace igl
@@ -20,7 +21,7 @@ namespace igl
                 Eigen::MatrixBase<DerivedI>& F,
                 const std::vector<typename DerivedI::Scalar>& cut)
   {
-    std::vector<std::vector<DerivedI::Scalar>> cutVertices;
+    std::vector<std::vector<typename DerivedI::Scalar>> cutVertices;
     cut_mesh(V.derived(),F.derived(),cut,cutVertices);
   }
 
@@ -41,7 +42,7 @@ namespace igl
                 std::vector<std::vector<typename DerivedI::Scalar>>& cutVertices,
                 std::vector<int>& cutVerticesLink)
   {
-    std::vector<std::vector<DerivedI::Scalar>> cuts;
+    std::vector<std::vector<typename DerivedI::Scalar>> cuts;
     cuts.push_back(cut);
     std::vector<std::vector<int>> cutVerticesLinkTemp;
     cut_mesh<DerivedS,DerivedI>(V.derived(),F.derived(),cuts,cutVertices,cutVerticesLinkTemp);
@@ -57,7 +58,7 @@ namespace igl
                 std::vector<std::vector<typename DerivedI::Scalar>>& cutHalfedges,
                 std::vector<int>& cutHalfedgesLink)
   {
-    std::vector<std::vector<DerivedI::Scalar>> cuts;
+    std::vector<std::vector<typename DerivedI::Scalar>> cuts;
     cuts.push_back(cut);
     std::vector<std::vector<int>> cutVerticesLinkTemp;
     std::vector<std::vector<int>> cutHalfedgesLinkTemp;
@@ -100,8 +101,8 @@ namespace igl
 
     std::map<int,int> cutHalfEdgesLinks;
     std::map<std::pair<int,int>,int> cutHalfEdgesPairLinks;
-    std::vector<DerivedI::Scalar> cutVerexIds;
-    std::vector<igl::HalfEdgeIterator<DerivedI>::State> cutHalfIter;
+    std::vector<typename DerivedI::Scalar> cutVerexIds;
+    std::vector<typename igl::HalfEdgeIterator<DerivedI>::State> cutHalfIter;
     for(auto c : cuts)
     {
       if(c.size() == 0)
@@ -149,7 +150,7 @@ namespace igl
         auto ith = cutHalfEdgesPairLinks.insert({{vA,vB},-1});
         if(ith.second)
         {
-          cutHalfedges.push_back(std::vector<DerivedI::Scalar>(4));
+          cutHalfedges.push_back(std::vector<typename DerivedI::Scalar>(4));
           cutHalfedges.back()[0] = heIter.Fi();
           cutHalfedges.back()[1] = heIter.Ei();
           cutHalfedges.back()[2] = heIter.Fif();
