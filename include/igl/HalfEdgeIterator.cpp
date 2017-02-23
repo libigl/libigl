@@ -138,6 +138,11 @@ IGL_INLINE bool igl::HalfEdgeIterator<DerivedF>::operator==(HalfEdgeIterator& p2
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instantiation
+template igl::HalfEdgeIterator<Eigen::Matrix<int, -1, 3, 0, -1, 3> >::HalfEdgeIterator(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, int, int, bool);
+template bool igl::HalfEdgeIterator<Eigen::Matrix<int, -1, -1, 0, -1, -1> >::NextFE();
+template int igl::HalfEdgeIterator<Eigen::Matrix<int, -1, 3, 0, -1, 3> >::Ei();
+template int igl::HalfEdgeIterator<Eigen::Matrix<int, -1, 3, 0, -1, 3> >::Fi();
+template bool igl::HalfEdgeIterator<Eigen::Matrix<int, -1, 3, 0, -1, 3> >::NextFE();
 template int igl::HalfEdgeIterator<Eigen::Matrix<int, -1, -1, 0, -1, -1> >::Vi();
 template igl::HalfEdgeIterator<Eigen::Matrix<int, -1, -1, 0, -1, -1> >::HalfEdgeIterator(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, int, int, bool);
 template int igl::HalfEdgeIterator<Eigen::Matrix<int, -1, -1, 0, -1, -1> >::Ei();
