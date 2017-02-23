@@ -1135,6 +1135,9 @@ namespace viewer
     {
       glfwSetWindowPos(window,window_position(0),window_position(1));
       glfwSetWindowSize(window,window_size(0),window_size(1));
+#ifdef GLFW_VERSION_HIGHER_THAN_3_1
+      glfwRestoreWindow(window);
+#endif
     }
 
 #endif
