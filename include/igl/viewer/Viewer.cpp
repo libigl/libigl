@@ -515,11 +515,6 @@ namespace viewer
       return data_buffer[data_id];
   }
 
-  IGL_INLINE unsigned int Viewer::get_active_mesh()
-  {
-    return active_data_id;
-  }
-
   IGL_INLINE bool Viewer::remove_mesh(unsigned int data_id)
   {
     assert(data_buffer.size() > data_id && "data_id out of range");
@@ -542,6 +537,11 @@ namespace viewer
 #endif
 
     return true;
+  }
+
+  IGL_INLINE unsigned int Viewer::get_active_mesh()
+  {
+    return active_data_id;
   }
 
   IGL_INLINE bool Viewer::set_active_mesh(unsigned int data_id)

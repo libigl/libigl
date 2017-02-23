@@ -2,7 +2,7 @@
 #include <Eigen/Sparse>
 
 #include "../python_shared.h"
-#define ENABLE_SERIALIZATION
+
 #include <igl/viewer/Viewer.h>
 #include <igl/viewer/ViewerCore.h>
 #include <igl/viewer/ViewerData.h>
@@ -42,15 +42,15 @@ py::enum_<igl::viewer::ViewerData::DirtyFlags>(viewerdata_class, "DirtyFlags")
 
     viewerdata_class
     .def(py::init<>())
-    .def("set_mesh", &igl::viewer::ViewerData::set_mesh)
-    .def("set_colors", &igl::viewer::ViewerData::set_colors)
-    .def("set_face_based", &igl::viewer::ViewerData::set_face_based)
+    .def("clear", &igl::viewer::ViewerData::clear)
+    .def("reset", &igl::viewer::ViewerData::reset)
 
+    .def("set_face_based", &igl::viewer::ViewerData::set_face_based) 
+    .def("set_mesh", &igl::viewer::ViewerData::set_mesh)
     .def("set_vertices", &igl::viewer::ViewerData::set_vertices)
     .def("set_normals", &igl::viewer::ViewerData::set_normals)
 
-    .def("clear", &igl::viewer::ViewerData::clear)
-    .def("reset", &igl::viewer::ViewerData::reset)
+    .def("set_colors", &igl::viewer::ViewerData::set_colors)   
 
     .def("set_uv",
        (void (igl::viewer::ViewerData::*) (const Eigen::MatrixXd &)) &igl::viewer::ViewerData::set_uv
@@ -123,7 +123,7 @@ py::enum_<igl::viewer::ViewerData::DirtyFlags>(viewerdata_class, "DirtyFlags")
     [](igl::viewer::ViewerData& data, const Eigen::MatrixXd& v)
     {
       assert_is_Matrix4("model",v);
-      core.model = Eigen::Matrix4f(v.cast<float>());
+      data.model = Eigen::Matrix4f(v.cast<float>());
     })
     .def_readwrite("model_translation", &igl::viewer::ViewerData::model_translation)
 
@@ -223,15 +223,30 @@ py::class_<igl::viewer::ViewerCore> viewercore_class(me, "ViewerCore");
 
     .def("clear_framebuffers",&igl::viewer::ViewerCore::clear_framebuffers)
     .def("draw",&igl::viewer::ViewerCore::draw)
+    //.def("draw_buffer",&igl::viewer::ViewerCore::draw_buffer)
 
     .def("draw_buffer",
-       (void (igl::viewer::ViewerCore::*) (const igl::viewer::ViewerData &,
-         Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> &,
-         bool,
-         Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> &,
-         Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> &,
-         Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> &
-         )) &igl::viewer::ViewerCore::draw_buffer
+      (void (igl::viewer::ViewerCore::*) (
+        igl::viewer::ViewerData&,
+        igl::viewer::OpenGL_state&,
+        bool,
+        Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>&,
+        Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>&,
+        Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>&,
+        Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>&)
+      ) &igl::viewer::ViewerCore::draw_buffer
+    )
+
+    .def("draw_buffer",
+      (void (igl::viewer::ViewerCore::*) (
+        std::vector<igl::viewer::ViewerData*>&,
+        std::vector<igl::viewer::OpenGL_state*>&,
+        bool,
+        Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>&,
+        Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>&,
+        Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>&,
+        Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>&)
+      ) &igl::viewer::ViewerCore::draw_buffer
     )
 
     .def_property("background_color",
@@ -264,7 +279,13 @@ py::class_<igl::viewer::ViewerCore> viewercore_class(me, "ViewerCore");
 
     .def_readwrite("rotation_type",&igl::viewer::ViewerCore::rotation_type)
     // Eigen::Quaternionf trackball_angle; // TODO: wrap this!
-    .def_readwrite("global_translation",&igl::viewer::ViewerCore::global_translation)
+    .def_property("global_translation",
+    [](const igl::viewer::ViewerCore& core) {return Eigen::MatrixXd(core.global_translation.cast<double>());},
+    [](igl::viewer::ViewerCore& core, const Eigen::MatrixXd& v)
+    {
+      assert_is_Vector3("global_translation",v);
+      core.global_translation = Eigen::Vector3f(v.cast<float>());
+    })
 
     .def_readwrite("camera_zoom",&igl::viewer::ViewerCore::camera_zoom)
 
@@ -357,48 +378,49 @@ py::class_<igl::viewer::ViewerCore> viewercore_class(me, "ViewerCore");
     .def_readwrite("screen", &igl::viewer::Viewer::screen)
     #endif
 
-    .def("launch", &igl::viewer::Viewer::launch, py::arg("resizable") = true, py::arg("fullscreen") = false)
-    .def("launch_init", &igl::viewer::Viewer::launch_init, py::arg("resizable") = true, py::arg("fullscreen") = false)
+    .def("launch", &igl::viewer::Viewer::launch, py::arg("resizable") = true, py::arg("fullscreen") = false,py::arg("width") = 1200,py::arg("height") = 768)
+    .def("launch_init", &igl::viewer::Viewer::launch_init, py::arg("resizable") = true, py::arg("fullscreen") = false, py::arg("width") = 1200,py::arg("height") = 768)
     .def("launch_rendering", &igl::viewer::Viewer::launch_rendering, py::arg("loop") = true)
     .def("launch_shut", &igl::viewer::Viewer::launch_shut)
     .def("init", &igl::viewer::Viewer::init)
    
-    .def("window_maximized", &igl::viewer::Viewer::window_maximized)
-    .def("window_position", &igl::viewer::Viewer::window_position)
-    .def("window_size", &igl::viewer::Viewer::window_size)
+    .def_readwrite("window_maximized", &igl::viewer::Viewer::window_maximized)
+    .def_readwrite("window_position", &igl::viewer::Viewer::window_position)
+    .def_readwrite("window_size", &igl::viewer::Viewer::window_size)
 
     .def("add_mesh",
-       (void (igl::viewer::Viewer::*) (const std::string &)) &igl::viewer::ViewerCore::add_mesh
+       (unsigned int (igl::viewer::Viewer::*) (const std::string &)) &igl::viewer::Viewer::add_mesh
     )
     .def("add_mesh",
-       (void (igl::viewer::Viewer::*) (const char *,const std::string &)) &igl::viewer::ViewerCore::add_mesh
+       (unsigned int (igl::viewer::Viewer::*) (const char *,const std::string &)) &igl::viewer::Viewer::add_mesh
     )
     .def("get_mesh",
-       (void (igl::viewer::Viewer::*) (unsigned int)) &igl::viewer::ViewerCore::get_mesh
-    )
-    .def("set_mesh",
-       (void (igl::viewer::Viewer::*) (unsigned int, const ViewerData &)) &igl::viewer::ViewerCore::set_mesh
+       (igl::viewer::ViewerData& (igl::viewer::Viewer::*) (unsigned int)) &igl::viewer::Viewer::get_mesh
     )
     .def("remove_mesh",
-       (void (igl::viewer::Viewer::*) (unsigned int)) &igl::viewer::ViewerCore::remove_mesh
+       (bool (igl::viewer::Viewer::*) (unsigned int)) &igl::viewer::Viewer::remove_mesh
     )
-    .def("get_active_mesh",&igl::viewer::ViewerCore::get_active_mesh)
+    .def("get_active_mesh",
+       (unsigned int (igl::viewer::Viewer::*) (unsigned int)) &igl::viewer::Viewer::get_active_mesh
+    )
     .def("set_active_mesh",
-       (void (igl::viewer::Viewer::*) (unsigned int)) &igl::viewer::ViewerCore::set_active_mesh
+       (bool (igl::viewer::Viewer::*) (unsigned int)) &igl::viewer::Viewer::set_active_mesh
     )
-    .def("get_mesh_count",&igl::viewer::ViewerCore::get_mesh_count)
+    .def("get_mesh_count",
+       (unsigned int (igl::viewer::Viewer::*) (unsigned int)) &igl::viewer::Viewer::get_mesh_count
+    )
    
     .def("load_mesh_from_file",
-       (void (igl::viewer::Viewer::*) (const char *)) &igl::viewer::ViewerCore::load_mesh_from_file
+       (bool (igl::viewer::Viewer::*) (const char *)) &igl::viewer::Viewer::load_mesh_from_file
     )
     .def("load_mesh_from_file",
-       (void (igl::viewer::Viewer::*) (const char *, unsigned int)) &igl::viewer::ViewerCore::load_mesh_from_file
+       (bool (igl::viewer::Viewer::*) (const char *, unsigned int)) &igl::viewer::Viewer::load_mesh_from_file
     )
     .def("save_mesh_to_file",
-       (void (igl::viewer::Viewer::*) (const char *)) &igl::viewer::ViewerCore::save_mesh_to_file
+       (bool (igl::viewer::Viewer::*) (const char *)) &igl::viewer::Viewer::save_mesh_to_file
     )
     .def("save_mesh_to_file",
-       (void (igl::viewer::Viewer::*) (const char *, unsigned int)) &igl::viewer::ViewerCore::save_mesh_to_file
+       (bool (igl::viewer::Viewer::*) (const char *, unsigned int)) &igl::viewer::Viewer::save_mesh_to_file
     )
 
     // Scene IO

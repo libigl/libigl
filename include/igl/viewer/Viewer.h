@@ -112,8 +112,6 @@ namespace viewer
     IGL_INLINE unsigned int add_mesh(const char* mesh_file_name,const std::string& id);
     // Get the data of a specific mesh instance
     IGL_INLINE ViewerData& get_mesh(unsigned int data_id);
-    // Set the data of a specific mesh instance
-    IGL_INLINE bool set_mesh(unsigned int data_id,const ViewerData& data);
     // Remove the data of a specific mesh instance
     IGL_INLINE bool remove_mesh(unsigned int data_id);
     // Get/Set the active mesh instance exposed as a copy in data

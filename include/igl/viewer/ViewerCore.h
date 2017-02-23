@@ -71,9 +71,19 @@ public:
 
   // Draw everything
   IGL_INLINE void draw(ViewerData& data, OpenGL_state& opengl, bool update_matrices = true);
+  
   IGL_INLINE void draw_buffer(
     ViewerData& data,
     OpenGL_state& opengl,
+    bool update_matrices,
+    Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& R,
+    Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& G,
+    Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& B,
+    Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& A);
+
+  IGL_INLINE void draw_buffer(
+    std::vector<ViewerData*>& data,
+    std::vector<OpenGL_state*>& opengl,
     bool update_matrices,
     Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& R,
     Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& G,
@@ -88,14 +98,6 @@ public:
     NUM_ROTATION_TYPES = 2
   };
   IGL_INLINE void set_rotation_type(const RotationType & value);
-
-  IGL_INLINE void draw_buffer(std::vector<ViewerData*>& data,
-                              std::vector<OpenGL_state*>& opengl,
-                              bool update_matrices,
-                              Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& R,
-                              Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& G,
-                              Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& B,
-                              Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& A);
 
   // ------------------- Properties
 
