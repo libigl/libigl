@@ -13,7 +13,7 @@
 #include <set>
 namespace igl
 {
-  // Assumes (V,F) is a closed manifold mesh (except for previouslly collapsed
+  // Assumes (V,F) is a closed manifold mesh (except for previously collapsed
   // faces which should be set to: 
   // [IGL_COLLAPSE_EDGE_NULL IGL_COLLAPSE_EDGE_NULL IGL_COLLAPSE_EDGE_NULL].
   // Collapses exactly two faces and exactly 3 edges from E (e and one side of
