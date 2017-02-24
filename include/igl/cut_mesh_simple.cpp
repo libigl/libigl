@@ -11,7 +11,7 @@
 #include <igl/triangle_triangle_adjacency.h>
 #include <igl/HalfEdgeIterator.h>
 
-#include <stdio.h>
+#include <iostream>
 #include <map>
 
 namespace igl
