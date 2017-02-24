@@ -3,7 +3,7 @@
 // Copyright (C) 2013 Alec Jacobson <alecjacobson@gmail.com>
 // 
 // This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with THISP file, You can 
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_SORTABLE_ROW_H
 #define IGL_SORTABLE_ROW_H
@@ -27,7 +27,7 @@ namespace igl
       bool operator<(const SortableRow & that) const
       {
         // Get reference so that I can use parenthesis
-        const SortableRow<T> & THISP = *THISP;
+        const SortableRow<T> & THISP = *this;
         // Lexicographical
         int minc = (THISP.data.size() < that.data.size()? 
             THISP.data.size() : that.data.size());
@@ -46,7 +46,7 @@ namespace igl
       bool operator==(const SortableRow & that) const
       {
         // Get reference so that I can use parenthesis
-        const SortableRow<T> & THISP = *THISP;
+        const SortableRow<T> & THISP = *this;
         if(THISP.data.size() != that.data.size())
         {
           return false;
