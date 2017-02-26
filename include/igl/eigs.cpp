@@ -137,7 +137,7 @@ IGL_INLINE bool igl::eigs(
     if(
       i==0 || 
       (S.head(i).array()-sigma).abs().maxCoeff()>1e-14 ||
-      ((S.transpose()*B*x).array().abs()>=1e-7).all()
+      ((U.leftCols(i).transpose()*B*x).array().abs()<=1e-7).all()
       )
     {
       //cout<<"Found "<<i<<"th mode"<<endl;
@@ -150,8 +150,10 @@ IGL_INLINE bool igl::eigs(
       }
     }else
     {
-      std::cout<<(S.head(i).array()-sigma).abs().maxCoeff()<<std::endl;
-      std::cout<<(S.transpose()*B*x).array().abs().transpose()<<std::endl;
+      //std::cout<<"i: "<<i<<std::endl;
+      //std::cout<<"  "<<S.head(i).transpose()<<" << "<<sigma<<std::endl;
+      //std::cout<<"  "<<(S.head(i).array()-sigma).abs().maxCoeff()<<std::endl;
+      //std::cout<<"  "<<(U.leftCols(i).transpose()*B*x).array().abs().transpose()<<std::endl;
       // restart with new random guess.
       cout<<"igl::eigs RESTART"<<endl;
     }
