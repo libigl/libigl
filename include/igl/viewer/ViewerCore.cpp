@@ -456,7 +456,7 @@ IGL_INLINE igl::viewer::ViewerCore::ViewerCore()
 
   // Default lights settings
   shininess = 35.0f;
-  light_position << 0.0f, -0.30f, -5.0f; // 0.0f, -0.30f, -50.0f
+  light_position << 0.0f, -0.30f, -500.0f;
   lighting_factor = 1.0f; //on
 
   // Global scene transformation

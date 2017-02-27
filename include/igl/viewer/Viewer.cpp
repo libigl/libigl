@@ -1278,7 +1278,11 @@ namespace viewer
       v.init();
     }
 
+    // set camera zoom and position to show mesh centered
     core.align_camera_center(data);
+
+    // set appropriate light position
+    core.light_position *= core.camera_zoom;
 
     // Initialize IGL viewer
     init();
