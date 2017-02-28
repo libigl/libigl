@@ -393,6 +393,8 @@ namespace viewer
     data = data_buffer[active_data_id];
     opengl.push_back(OpenGL_state());
 
+    window_maximized = false;
+
     // Temporary variables initialization
     down = false;
     hack_never_moved = true;
