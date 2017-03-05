@@ -406,8 +406,8 @@ IGL_INLINE bool igl::min_quad_with_fixed_solve(
   }
   // number of columns to solve
   int cols = Y.cols();
-  assert(B.cols() == 1);
-  assert(Beq.size() == 0 || Beq.cols() == 1);
+  assert(B.cols() == 1 || B.cols() == cols);
+  assert(Beq.size() == 0 || Beq.cols() == 1 || Beq.cols() == cols);
 
   // resize output
   Z.resize(data.n,cols);
@@ -425,25 +425,19 @@ IGL_INLINE bool igl::min_quad_with_fixed_solve(
     // number of lagrange multipliers aka linear equality constraints
     int neq = data.lagrange.size();
     // append lagrange multiplier rhs's
-    VectorXT BBeq(B.size() + Beq.size());
-    // Would like to do:
-    // BBeq << B, (Beq*-2.0);
-    // but Eigen can't handle empty vectors in comma initialization
-    // https://forum.kde.org/viewtopic.php?f=74&t=107974&p=364947#p364947
+    MatrixXT BBeq(B.rows() + Beq.rows(),cols);
     if(B.size() > 0)
     {
-      BBeq << B;
+      BBeq.topLeftCorner(B.rows(),cols) = B.replicate(1,B.cols()==cols?1:cols);
     }
     if(Beq.size() > 0)
     {
-      BBeq << Beq*-2.;
+      BBeq.bottomLeftCorner(Beq.rows(),cols) = -2.0*Beq.replicate(1,Beq.cols()==cols?1:cols);
     }
 
     // Build right hand side
-    VectorXT BBequl;
-    igl::slice(BBeq,data.unknown_lagrange,BBequl);
     MatrixXT BBequlcols;
-    igl::repmat(BBequl,1,cols,BBequlcols);
+    igl::slice(BBeq,data.unknown_lagrange,1,BBequlcols);
     MatrixXT NB;
     if(kr == 0)
     {
@@ -486,26 +480,26 @@ IGL_INLINE bool igl::min_quad_with_fixed_solve(
   }else
   {
     assert(data.solver_type == min_quad_with_fixed_data<T>::QR_LLT);
-    DerivedBeq eff_Beq;
+    MatrixXT eff_Beq;
     // Adjust Aeq rhs to include known parts
     eff_Beq =
       //data.AeqTQR.colsPermutation().transpose() * (-data.Aeqk * Y + Beq);
-      data.AeqTET * (-data.Aeqk * Y + Beq);
+      data.AeqTET * (-data.Aeqk * Y + Beq.replicate(1,Beq.cols()==cols?1:cols));
     // Where did this -0.5 come from? Probably the same place as above.
-    DerivedB Bu;
-    slice(B,data.unknown,Bu);
-    DerivedB NB;
-    NB = -0.5*(Bu + data.preY * Y);
+    MatrixXT Bu;
+    slice(B,data.unknown,1,Bu);
+    MatrixXT NB;
+    NB = -0.5*(Bu.replicate(1,B.cols()==cols?1:cols) + data.preY * Y);
     // Trim eff_Beq
     const int nc = data.AeqTQR.rank();
     const int neq = Beq.rows();
-    eff_Beq = eff_Beq.topLeftCorner(nc,1).eval();
+    eff_Beq = eff_Beq.topLeftCorner(nc,cols).eval();
     data.AeqTR1T.template triangularView<Lower>().solveInPlace(eff_Beq);
     // Now eff_Beq = (data.AeqTR1T \ (data.AeqTET * (-data.Aeqk * Y + Beq)))
-    DerivedB lambda_0;
+    MatrixXT lambda_0;
     lambda_0 = data.AeqTQ1 * eff_Beq;
     //cout<<matlab_format(lambda_0,"lambda_0")<<endl;
-    DerivedB QRB;
+    MatrixXT QRB;
     QRB = -data.AeqTQ2T * (data.Auu * lambda_0) + data.AeqTQ2T * NB;
     Derivedsol lambda;
     lambda = data.llt.solve(QRB);
@@ -519,8 +513,8 @@ IGL_INLINE bool igl::min_quad_with_fixed_solve(
       temp1 = (data.AeqTQ1T * NB - data.AeqTQ1T * data.Auu * solu);
       data.AeqTR1.template triangularView<Upper>().solveInPlace(temp1);
       //cout<<matlab_format(temp1,"temp1")<<endl;
-      temp2 = Derivedsol::Zero(neq,1);
-      temp2.topLeftCorner(nc,1) = temp1;
+      temp2 = Derivedsol::Zero(neq,cols);
+      temp2.topLeftCorner(nc,cols) = temp1;
       //solLambda = data.AeqTQR.colsPermutation() * temp2;
       solLambda = data.AeqTE * temp2;
     }
