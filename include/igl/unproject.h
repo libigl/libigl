@@ -27,10 +27,10 @@ namespace igl
     typename Derivedviewport,
     typename Derivedscene>
   IGL_INLINE void unproject(
-    const Eigen::PlainObjectBase<Derivedwin>&  win,
-    const Eigen::PlainObjectBase<Derivedmodel>& model,
-    const Eigen::PlainObjectBase<Derivedproj>& proj,
-    const Eigen::PlainObjectBase<Derivedviewport>&  viewport,
+    const Eigen::MatrixBase<Derivedwin>&  win,
+    const Eigen::MatrixBase<Derivedmodel>& model,
+    const Eigen::MatrixBase<Derivedproj>& proj,
+    const Eigen::MatrixBase<Derivedviewport>&  viewport,
     Eigen::PlainObjectBase<Derivedscene> & scene);
   template <typename Scalar>
   IGL_INLINE Eigen::Matrix<Scalar,3,1> unproject(
