@@ -162,10 +162,10 @@ py::class_<Type> bind_eigen_2(py::module &m, const char *name) {
         .def("castint", [](const Type &m) {return Eigen::MatrixXi(m.template cast<int>());})
 
         /* Component-wise operations */
-        .def("cwiseAbs", &Type::cwiseAbs)
-        .def("cwiseAbs2", &Type::cwiseAbs2)
-        .def("cwiseSqrt", &Type::cwiseSqrt)
-        .def("cwiseInverse", &Type::cwiseInverse)
+        .def("cwiseAbs", [](const Type &m) -> Type { return m.cwiseAbs(); })
+        .def("cwiseAbs2", [](const Type &m) -> Type { return m.cwiseAbs2(); })
+        .def("cwiseSqrt", [](const Type &m) -> Type { return m.cwiseSqrt(); })
+        .def("cwiseInverse", [](const Type &m) -> Type { return m.cwiseInverse(); })
         .def("cwiseMin", [](const Type &m1, const Type &m2) -> Type { return m1.cwiseMin(m2); })
         .def("cwiseMax", [](const Type &m1, const Type &m2) -> Type { return m1.cwiseMax(m2); })
         .def("cwiseMin", [](const Type &m1, Scalar s) -> Type { return m1.cwiseMin(s); })
