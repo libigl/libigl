@@ -26,7 +26,8 @@ namespace igl
   // Inputs:
   //   A  #A by #A symmetric matrix
   //   B  #A by #A symmetric positive-definite matrix
-  //   k  number of eigen pairs to compute
+  //   k  number of eigen pairs to compute (0 continues until max_iter fails to find another pair)
+  //   max_iter  number of iterations allowed per pair
   // Outputs:
   //   sU  #A by k list of sorted eigen vectors (descending)
   //   sS  k list of sorted eigen values (descending)
@@ -49,10 +50,11 @@ namespace igl
   IGL_INLINE bool eigs(
     const Eigen::SparseMatrix<Atype> & A,
     const Eigen::SparseMatrix<Btype> & B,
-    const size_t k,
     const EigsType type,
     Eigen::PlainObjectBase<DerivedU> & sU,
-    Eigen::PlainObjectBase<DerivedS> & sS);
+    Eigen::PlainObjectBase<DerivedS> & sS,
+	const size_t k = 0,
+    unsigned int max_iter = 100);
 }
 
 #ifndef IGL_STATIC_LIBRARY
