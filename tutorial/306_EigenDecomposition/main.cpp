@@ -31,7 +31,7 @@ int main(int argc, char * argv[])
   L = (-L).eval();
   massmatrix(V,F,MASSMATRIX_TYPE_DEFAULT,M);
   const size_t k = 5;
-  if(!eigs(L,M,k+1,EIGS_TYPE_SM,U,D))
+  if(!eigs(L,M,EIGS_TYPE_SM,U,D,k+1))
   {
     cout<<"failed."<<endl;
   }
