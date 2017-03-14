@@ -12,12 +12,12 @@
 namespace igl
 {
   // Find the file with the first filename of the form
-  // "prefix-%0[zeros]dsuffix"
+  // "prefix%0[zeros]dsuffix"
   // 
   // Inputs:
   //   prefix  path to containing dir and filename prefix
   //   zeros number of leading zeros as if digit printed with printf
-  //   suffix  suffix of filename and extension
+  //   suffix  suffix of filename and extension (should included dot)
   // Outputs:
   //   next  path to next file
   // Returns true if found, false if exceeding range in zeros
