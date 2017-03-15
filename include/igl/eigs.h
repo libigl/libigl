@@ -43,6 +43,19 @@ namespace igl
     NUM_EIGS_TYPES = 2
   };
   template <
+	typename Atype,
+	typename Btype,
+	typename DerivedU,
+	typename DerivedS>
+	IGL_INLINE bool eigs(
+	  const Eigen::SparseMatrix<Atype> & A,
+	  const Eigen::SparseMatrix<Btype> & B,
+	  const size_t k,
+	  const EigsType type,
+	  Eigen::PlainObjectBase<DerivedU> & sU,
+	  Eigen::PlainObjectBase<DerivedS> & sS);
+
+  template <
     typename Atype,
     typename Btype,
     typename DerivedU,
