@@ -69,11 +69,12 @@ int main(int argc, char * argv[])
           if(show_swept_volume)
           {
             viewer.data.set_mesh(SV,SF);
-            viewer.data.uniform_colors(
-              {SILVER_AMBIENT[0], SILVER_AMBIENT[1], SILVER_AMBIENT[2]},
-              {SILVER_DIFFUSE[0], SILVER_DIFFUSE[1], SILVER_DIFFUSE[2]},
-              {SILVER_SPECULAR[0], SILVER_SPECULAR[1], SILVER_SPECULAR[2]});
-          }else
+            Eigen::Vector3d ambient = Eigen::Vector3d(SILVER_AMBIENT[0], SILVER_AMBIENT[1], SILVER_AMBIENT[2]);
+            Eigen::Vector3d diffuse = Eigen::Vector3d(SILVER_DIFFUSE[0], SILVER_DIFFUSE[1], SILVER_DIFFUSE[2]);
+            Eigen::Vector3d specular = Eigen::Vector3d(SILVER_SPECULAR[0], SILVER_SPECULAR[1], SILVER_SPECULAR[2]);
+            viewer.data.uniform_colors(ambient,diffuse,specular);
+          }
+          else
           {
             viewer.data.set_mesh(V,F);
           }
