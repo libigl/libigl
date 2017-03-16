@@ -9,7 +9,7 @@ option(LIBIGL_WITH_VIEWER      "Use OpenGL viewer"  ON)
 option(LIBIGL_WITH_NANOGUI     "Use Nanogui menu"   OFF)
 
 ### libIGL options: choose your dependencies (by default everything is OFF, in this example we need the viewer) ###
-find_package(CGAL QUIET)
+find_package(CGAL QUIET COMPONENTS Core)
 option(LIBIGL_WITH_CGAL             "Use CGAL"           "${CGAL_FOUND}")
 option(LIBIGL_WITH_COMISO           "Use CoMiso"         ON)
 option(LIBIGL_WITH_CORK             "Use CORK"           OFF)
@@ -28,7 +28,7 @@ option(LIBIGL_WITH_XML              "Use XML"            ON)
 
 ### libIGL options: decide if you want to use the functionalities that depends on cgal
 if(LIBIGL_WITH_CGAL) # Do not remove or move this block, cgal strange build system fails without it
-  find_package(CGAL REQUIRED)
+  find_package(CGAL REQUIRED COMPONENTS Core)
   set(CGAL_DONT_OVERRIDE_CMAKE_FLAGS TRUE CACHE BOOL "CGAL's CMAKE Setup is super annoying ")
   include(${CGAL_USE_FILE})
 endif()
