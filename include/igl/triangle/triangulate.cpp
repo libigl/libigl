@@ -94,7 +94,7 @@ IGL_INLINE void igl::triangle::triangulate(
   assert(H.size() == 0 || H.cols() == 2);
 
   // Prepare the flags
-  string full_flags = flags + "pz" + (EM.size() || VM.size() ? "B" : "");
+  string full_flags = flags + "pz" + (EM.size() || VM.size() ? "" : "B");
 
   typedef Map< Matrix<double,Dynamic,Dynamic,RowMajor> > MapXdr;
   typedef Map< Matrix<int,Dynamic,Dynamic,RowMajor> > MapXir;

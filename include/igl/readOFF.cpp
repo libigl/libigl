@@ -67,7 +67,7 @@ IGL_INLINE bool igl::readOFF(
   while(still_comments)
   {
     fgets(line,1000,off_file);
-    still_comments = line[0] == '#';
+    still_comments = (line[0] == '#' || line[0] == '\n');
   }
   sscanf(line,"%d %d %d",&number_of_vertices,&number_of_faces,&number_of_edges);
   V.resize(number_of_vertices);

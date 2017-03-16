@@ -405,7 +405,7 @@ namespace igl
       else
       { // seems like CG performs much worse for 2D and way better for 3D
         Eigen::VectorXd guess(uv.rows() * s.dim);
-        for (int i = 0; i < s.dim; i++) for (int j = 0; j < s.dim; j++) guess(uv.rows() * i + j) = uv(i, j); // flatten vector
+        for (int i = 0; i < s.v_num; i++) for (int j = 0; j < s.dim; j++) guess(uv.rows() * j + i) = uv(i, j); // flatten vector
         ConjugateGradient<Eigen::SparseMatrix<double>, Eigen::Lower | Upper> solver;
         solver.setTolerance(1e-8);
         Uc = solver.compute(L).solveWithGuess(s.rhs, guess);

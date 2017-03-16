@@ -17,77 +17,6 @@
 #include <Eigen/Geometry>
 #include <iostream>
 
-#ifdef ENABLE_SERIALIZATION
-#include <igl/serialize.h>
-namespace igl {
-  namespace serialization {
-
-    IGL_INLINE void serialization(bool s,igl::viewer::ViewerCore& obj,std::vector<char>& buffer)
-    {
-      SERIALIZE_MEMBER(shininess);
-
-      SERIALIZE_MEMBER(background_color);
-      SERIALIZE_MEMBER(line_color);
-
-      SERIALIZE_MEMBER(light_position);
-      SERIALIZE_MEMBER(lighting_factor);
-
-      SERIALIZE_MEMBER(trackball_angle);
-      SERIALIZE_MEMBER(rotation_type);
-
-      SERIALIZE_MEMBER(model_zoom);
-      SERIALIZE_MEMBER(model_translation);
-
-      SERIALIZE_MEMBER(model_zoom_uv);
-      SERIALIZE_MEMBER(model_translation_uv);
-
-      SERIALIZE_MEMBER(camera_zoom);
-      SERIALIZE_MEMBER(orthographic);
-      SERIALIZE_MEMBER(camera_view_angle);
-      SERIALIZE_MEMBER(camera_dnear);
-      SERIALIZE_MEMBER(camera_dfar);
-      SERIALIZE_MEMBER(camera_eye);
-      SERIALIZE_MEMBER(camera_center);
-      SERIALIZE_MEMBER(camera_up);
-
-      SERIALIZE_MEMBER(show_faces);
-      SERIALIZE_MEMBER(show_lines);
-      SERIALIZE_MEMBER(invert_normals);
-      SERIALIZE_MEMBER(show_overlay);
-      SERIALIZE_MEMBER(show_overlay_depth);
-      SERIALIZE_MEMBER(show_vertid);
-      SERIALIZE_MEMBER(show_faceid);
-      SERIALIZE_MEMBER(show_texture);
-      SERIALIZE_MEMBER(depth_test);
-
-      SERIALIZE_MEMBER(point_size);
-      SERIALIZE_MEMBER(line_width);
-      SERIALIZE_MEMBER(is_animating);
-      SERIALIZE_MEMBER(animation_max_fps);
-
-      SERIALIZE_MEMBER(object_scale);
-
-      SERIALIZE_MEMBER(viewport);
-      SERIALIZE_MEMBER(view);
-      SERIALIZE_MEMBER(model);
-      SERIALIZE_MEMBER(proj);
-    }
-
-    template<>
-    IGL_INLINE void serialize(const igl::viewer::ViewerCore& obj,std::vector<char>& buffer)
-    {
-      serialization(true,const_cast<igl::viewer::ViewerCore&>(obj),buffer);
-    }
-
-    template<>
-    IGL_INLINE void deserialize(igl::viewer::ViewerCore& obj,const std::vector<char>& buffer)
-    {
-      serialization(false,obj,const_cast<std::vector<char>&>(buffer));
-    }
-  }
-}
-#endif
-
 IGL_INLINE void igl::viewer::ViewerCore::align_camera_center(
   const Eigen::MatrixXd& V,
   const Eigen::MatrixXi& F)
@@ -164,8 +93,8 @@ IGL_INLINE void igl::viewer::ViewerCore::clear_framebuffers()
 }
 
 IGL_INLINE void igl::viewer::ViewerCore::draw(
-  ViewerData& data, 
-  OpenGL_state& opengl, 
+  ViewerData& data,
+  OpenGL_state& opengl,
   bool update_matrices)
 {
   using namespace std;
@@ -175,6 +104,9 @@ IGL_INLINE void igl::viewer::ViewerCore::draw(
     glEnable(GL_DEPTH_TEST);
   else
     glDisable(GL_DEPTH_TEST);
+
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   /* Bind and potentially refresh mesh/line/point data */
   if (data.dirty)

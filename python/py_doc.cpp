@@ -88,27 +88,26 @@ const char *__doc_igl_barycentric_to_global = R"igl_Qu8mg5v7(// Converts barycen
   // bc: #Xx3 Barycentric coordinates, one row per point
   //
   // Output:
-  // #X: #Xx3 3D coordinates of all points in bc
-  //   )igl_Qu8mg5v7";
+  // #X: #Xx3 3D coordinates of all points in bc)igl_Qu8mg5v7";
 const char *__doc_igl_bbw = R"igl_Qu8mg5v7(// Compute Bounded Biharmonic Weights on a given domain (V,Ele) with a given
-    // set of boundary conditions
-    //
-    // Templates
-    //   DerivedV  derived type of eigen matrix for V (e.g. MatrixXd)
-    //   DerivedF  derived type of eigen matrix for F (e.g. MatrixXi)
-    //   Derivedb  derived type of eigen matrix for b (e.g. VectorXi)
-    //   Derivedbc  derived type of eigen matrix for bc (e.g. MatrixXd)
-    //   DerivedW  derived type of eigen matrix for W (e.g. MatrixXd)
-    // Inputs:
-    //   V  #V by dim vertex positions
-    //   Ele  #Elements by simplex-size list of element indices
-    //   b  #b boundary indices into V
-    //   bc #b by #W list of boundary values
-    //   data  object containing options, intial guess --> solution and results
-    // Outputs:
-    //   W  #V by #W list of *unnormalized* weights to normalize use
-    //    igl::normalize_row_sums(W,W);
-    // Returns true on success, false on failure)igl_Qu8mg5v7";
+  // set of boundary conditions
+  //
+  // Templates
+  //   DerivedV  derived type of eigen matrix for V (e.g. MatrixXd)
+  //   DerivedF  derived type of eigen matrix for F (e.g. MatrixXi)
+  //   Derivedb  derived type of eigen matrix for b (e.g. VectorXi)
+  //   Derivedbc  derived type of eigen matrix for bc (e.g. MatrixXd)
+  //   DerivedW  derived type of eigen matrix for W (e.g. MatrixXd)
+  // Inputs:
+  //   V  #V by dim vertex positions
+  //   Ele  #Elements by simplex-size list of element indices
+  //   b  #b boundary indices into V
+  //   bc #b by #W list of boundary values
+  //   data  object containing options, intial guess --> solution and results
+  // Outputs:
+  //   W  #V by #W list of *unnormalized* weights to normalize use
+  //    igl::normalize_row_sums(W,W);
+  // Returns true on success, false on failure)igl_Qu8mg5v7";
 const char *__doc_igl_boundary_conditions = R"igl_Qu8mg5v7(// Compute boundary conditions for automatic weights computation. This
   // function expects that the given mesh (V,Ele) has sufficient samples
   // (vertices) exactly at point handle locations and exactly along bone and
@@ -128,7 +127,11 @@ const char *__doc_igl_boundary_conditions = R"igl_Qu8mg5v7(// Compute boundary c
   //     (notice the #b != #weights in general because #b will include all the
   //     intermediary samples along each bone, etc.. The ordering of the
   //     weights corresponds to [P;BE]
-  // Returns true if boundary conditions make sense)igl_Qu8mg5v7";
+  // Returns false if boundary conditions are suspicious:
+  //   P and BE are empty
+  //   bc is empty
+  //   some column of bc doesn't have a 0 (assuming bc has >1 columns)
+  //   some column of bc doesn't have a 1 (assuming bc has >1 columns))igl_Qu8mg5v7";
 const char *__doc_igl_boundary_facets = R"igl_Qu8mg5v7(// BOUNDARY_FACETS Determine boundary faces (edges) of tetrahedra (triangles)
   // stored in T (analogous to qptoolbox's `outline` and `boundary_faces`).
   //
@@ -161,7 +164,7 @@ const char *__doc_igl_cat = R"igl_Qu8mg5v7(// Perform concatenation of a two mat
   // Inputs:
   //   A  first input matrix
   //   B  second input matrix
-  //   dim  dimension along which to concatenate, 0 or 1
+  //   dim  dimension along which to concatenate, 1 or 2
   // Outputs:
   //   C  output matrix
   //   )igl_Qu8mg5v7";
@@ -394,9 +397,7 @@ const char *__doc_igl_cotmatrix = R"igl_Qu8mg5v7(// Constructs the cotangent sti
   // **minus** the sum of off-diagonal entries. The diagonal entries are
   // therefore in general negative and the matrix is **negative** semi-definite
   // (immediately, -L is **positive** semi-definite)
-  //
-  // Known bugs: off by 1e-16 on regular grid. I think its a problem of
-  // arithmetic order in cotmatrix_entries.h: C(i,e) = (arithmetic)/dblA/4)igl_Qu8mg5v7";
+  //)igl_Qu8mg5v7";
 const char *__doc_igl_covariance_scatter_matrix = R"igl_Qu8mg5v7(// Construct the covariance scatter matrix for a given arap energy
   // Inputs:
   //   V  #V by Vdim list of initial domain positions
@@ -514,14 +515,21 @@ const char *__doc_igl_edge_lengths = R"igl_Qu8mg5v7(// Constructs a list of leng
   //     for tets, columns correspond to edges
   //     [3 0],[3 1],[3 2],[1 2],[2 0],[0 1]
   //)igl_Qu8mg5v7";
-const char *__doc_igl_edge_topology = R"igl_Qu8mg5v7(// Initialize Edges and their topological relations
+const char *__doc_igl_edge_topology = R"igl_Qu8mg5v7(// Initialize Edges and their topological relations (assumes an edge-manifold
+  // mesh)
   //
   // Output:
   // EV  : #Ex2, Stores the edge description as pair of indices to vertices
   // FE : #Fx3, Stores the Triangle-Edge relation
   // EF : #Ex2: Stores the Edge-Triangle relation
   //
-  // TODO: This seems to be a duplicate of edge_flaps.h)igl_Qu8mg5v7";
+  // TODO: This seems to be a inferior duplicate of edge_flaps.h:
+  //   - unused input parameter V
+  //   - roughly 2x slower than edge_flaps
+  //   - outputs less information: edge_flaps reveals corner opposite edge
+  //   - FE uses non-standard and ambiguous order: FE(f,c) is merely an edge
+  //     incident on corner c of face f. In contrast, edge_flaps's EMAP(f,c) reveals
+  //     the edge _opposite_ corner c of face f)igl_Qu8mg5v7";
 const char *__doc_igl_eigs = R"igl_Qu8mg5v7(See eigs for the documentation.)igl_Qu8mg5v7";
 const char *__doc_igl_embree_ambient_occlusion = R"igl_Qu8mg5v7(// Compute ambient occlusion per given point
     //
@@ -533,23 +541,6 @@ const char *__doc_igl_embree_ambient_occlusion = R"igl_Qu8mg5v7(// Compute ambie
     //    S  #P list of ambient occlusion values between 1 (fully occluded) and
     //      0 (not occluded)
     //)igl_Qu8mg5v7";
-const char *__doc_igl_embree_reorient_facets_raycast = R"igl_Qu8mg5v7(// Orient each component (identified by C) of a mesh (V,F) using ambient
-    // occlusion such that the front side is less occluded than back side, as
-    // described in "A Simple Method for Correcting Facet Orientations in
-    // Polygon Meshes Based on Ray Casting" [Takayama et al. 2014].
-    //
-    // Inputs:
-    //   V  #V by 3 list of vertex positions
-    //   F  #F by 3 list of triangle indices
-    //   rays_total  Total number of rays that will be shot
-    //   rays_minimum  Minimum number of rays that each patch should receive
-    //   facet_wise  Decision made for each face independently, no use of patches
-    //     (i.e., each face is treated as a patch)
-    //   use_parity  Use parity mode
-    //   is_verbose  Verbose output to cout
-    // Outputs:
-    //   I  #F list of whether face has been flipped
-    //   C  #F list of patch ID (output of bfs_orient > manifold patches))igl_Qu8mg5v7";
 const char *__doc_igl_embree_line_mesh_intersection = R"igl_Qu8mg5v7(// Project the point cloud V_source onto the triangle mesh
     // V_target,F_target. 
     // A ray is casted for every vertex in the direction specified by 
@@ -567,6 +558,23 @@ const char *__doc_igl_embree_line_mesh_intersection = R"igl_Qu8mg5v7(// Project 
     // id b1 b2. id is the id of a face of the source mesh. b1 and b2 are 
     // the barycentric coordinates wrt the first two edges of the triangle
     // To convert to standard global coordinates, see barycentric_to_global.h)igl_Qu8mg5v7";
+const char *__doc_igl_embree_reorient_facets_raycast = R"igl_Qu8mg5v7(// Orient each component (identified by C) of a mesh (V,F) using ambient
+    // occlusion such that the front side is less occluded than back side, as
+    // described in "A Simple Method for Correcting Facet Orientations in
+    // Polygon Meshes Based on Ray Casting" [Takayama et al. 2014].
+    //
+    // Inputs:
+    //   V  #V by 3 list of vertex positions
+    //   F  #F by 3 list of triangle indices
+    //   rays_total  Total number of rays that will be shot
+    //   rays_minimum  Minimum number of rays that each patch should receive
+    //   facet_wise  Decision made for each face independently, no use of patches
+    //     (i.e., each face is treated as a patch)
+    //   use_parity  Use parity mode
+    //   is_verbose  Verbose output to cout
+    // Outputs:
+    //   I  #F list of whether face has been flipped
+    //   C  #F list of patch ID (output of bfs_orient > manifold patches))igl_Qu8mg5v7";
 const char *__doc_igl_find_cross_field_singularities = R"igl_Qu8mg5v7(// Inputs:
   //   V                #V by 3 eigen Matrix of mesh vertex 3D positions
   //   F                #F by 3 eigen Matrix of face (quad) indices
@@ -643,7 +651,7 @@ const char *__doc_igl_get_seconds = R"igl_Qu8mg5v7(// Return the current time in
   //    cout<<"part 2: "<<tictoc()<<endl;
   //    ... // etc)igl_Qu8mg5v7";
 const char *__doc_igl_grad = R"igl_Qu8mg5v7(// Gradient of a scalar function defined on piecewise linear elements (mesh)
-  // is constant on each triangle i,j,k:
+  // is constant on each triangle [tetrahedron] i,j,k:
   // grad(Xijk) = (Xj-Xi) * (Vi - Vk)^R90 / 2A + (Xk-Xi) * (Vj - Vi)^R90 / 2A
   // where Xi is the scalar value at vertex i, Vi is the 3D position of vertex
   // i, and A is the area of triangle (i,j,k). ^R90 represent a rotation of
@@ -682,6 +690,23 @@ const char *__doc_igl_internal_angles = R"igl_Qu8mg5v7(// Compute internal angle
   //
   // Known Issues:
   //   if poly-size ≠ 3 then dim must equal 3.)igl_Qu8mg5v7";
+const char *__doc_igl_internal_angles_using_squared_edge_lengths = R"igl_Qu8mg5v7(// Inputs:
+  //   L_sq  #F by 3 list of squared edge lengths
+  // Output:
+  //   K  #F by poly-size eigen Matrix of internal angles
+  //     for triangles, columns correspond to edges [1,2],[2,0],[0,1]
+  //
+  // Note:
+  //   Usage of internal_angles_using_squared_edge_lengths is preferred to internal_angles_using_squared_edge_lengths)igl_Qu8mg5v7";
+const char *__doc_igl_internal_angles_using_edge_lengths = R"igl_Qu8mg5v7(// Inputs:
+  //   L  #F by 3 list of edge lengths
+  // Output:
+  //   K  #F by poly-size eigen Matrix of internal angles
+  //     for triangles, columns correspond to edges [1,2],[2,0],[0,1]
+  //
+  // Note:
+  //   Usage of internal_angles_using_squared_edge_lengths is preferred to internal_angles_using_squared_edge_lengths
+  //   This function is deprecated and probably will be removed in future versions)igl_Qu8mg5v7";
 const char *__doc_igl_invert_diag = R"igl_Qu8mg5v7(// Templates:
   //   T  should be a eigen sparse matrix primitive type like int or double
   // Inputs:
@@ -1050,7 +1075,7 @@ const char *__doc_igl_readOBJ = R"igl_Qu8mg5v7(// Read a mesh from an ascii obj 
   //   FTC  #F list of face indices into vertex texture coordinates
   //   FN  #F list of face indices into vertex normals
   // Returns true on success, false on errors)igl_Qu8mg5v7";
-const char *__doc_igl_readOFF = R"igl_Qu8mg5v7(// Read a mesh from an ascii obj file, filling in vertex positions, normals
+const char *__doc_igl_readOFF = R"igl_Qu8mg5v7(// Read a mesh from an ascii OFF file, filling in vertex positions, normals
   // and texture coordinates. Mesh may have faces of any number of degree
   //
   // Templates:
@@ -1062,10 +1087,8 @@ const char *__doc_igl_readOFF = R"igl_Qu8mg5v7(// Read a mesh from an ascii obj 
   // Outputs:
   //   V  double matrix of vertex positions  #V by 3
   //   F  #F list of face indices into vertex positions
-  //   TC  double matrix of texture coordinats #TC by 2
-  //   FTC  #F list of face indices into vertex texture coordinates
-  //   N  double matrix of corner normals #N by 3
-  //   FN  #F list of face indices into vertex normals
+  //   N  list of vertex normals #V by 3
+  //   C  list of rgb color values per vertex #V by 3
   // Returns true on success, false on errors)igl_Qu8mg5v7";
 const char *__doc_igl_readTGF = R"igl_Qu8mg5v7(// READTGF
   //
@@ -1279,8 +1302,6 @@ const char *__doc_igl_triangle_triangulate = R"igl_Qu8mg5v7(// Triangulate the i
     // Outputs:
     //   V2  #V2 by 2  coordinates of the vertives of the generated triangulation
     //   F2  #F2 by 3  list of indices forming the faces of the generated triangulation
-    //
-    // TODO: expose the option to prevent Steiner points on the boundary
     //)igl_Qu8mg5v7";
 const char *__doc_igl_unique = R"igl_Qu8mg5v7(// Act like matlab's [C,IA,IC] = unique(X)
   //
@@ -1319,24 +1340,16 @@ const char *__doc_igl_unproject_onto_mesh = R"igl_Qu8mg5v7(// Unproject a screen
   //    fid  id of the first face hit
   //    bc  barycentric coordinates of hit
   // Returns true if there's a hit)igl_Qu8mg5v7";
-const char *__doc_igl_upsample = R"igl_Qu8mg5v7(// Subdivide a mesh without moving vertices: loop subdivision but odd
-  // vertices stay put and even vertices are just edge midpoints
-  // 
-  // Templates:
-  //   MatV  matrix for vertex positions, e.g. MatrixXd
-  //   MatF  matrix for vertex positions, e.g. MatrixXi
+const char *__doc_igl_upsample = R"igl_Qu8mg5v7(// Subdivide without moving vertices: Given the triangle mesh [V, F],
+  // where n_verts = V.rows(), computes newV and a sparse matrix S s.t.
+  // [newV, newF] is the subdivided mesh where newV = S*V.
+  //
   // Inputs:
-  //   V  #V by dim  mesh vertices
-  //   F  #F by 3  mesh triangles
+  //   n_verts  an integer (number of mesh vertices)
+  //   F  an m by 3 matrix of integers of triangle faces
   // Outputs:
-  //   NV new vertex positions, V is guaranteed to be at top
-  //   NF new list of face indices
-  //
-  // NOTE: V should not be the same as NV,
-  // NOTE: F should not be the same as NF, use other proto
-  //
-  // Known issues:
-  //   - assumes (V,F) is edge-manifold.)igl_Qu8mg5v7";
+  //   S  a sparse matrix (will become the subdivision matrix)
+  //   newF  a matrix containing the new faces)igl_Qu8mg5v7";
 const char *__doc_igl_winding_number = R"igl_Qu8mg5v7(// WINDING_NUMBER Compute the sum of solid angles of a triangle/tetrahedron
   // described by points (vectors) V
   //
@@ -1393,4 +1406,7 @@ const char *__doc_igl_writeOBJ = R"igl_Qu8mg5v7(// Write a mesh in an ascii obj 
   //   FN  #F by 3|4 corner normal indices into CN
   //   TC  #TC by 2|3 texture coordinates
   //   FTC #F by 3|4 corner texture coord indices into TC
-  // Returns true on success, false on error)igl_Qu8mg5v7";
+  // Returns true on success, false on error
+  //
+  // Known issues: Horrifyingly, this does not have the same order of
+  // parameters as readOBJ.)igl_Qu8mg5v7";
