@@ -154,7 +154,9 @@ endif()
 
 ### Compile the cgal parts ###
 if(LIBIGL_WITH_CGAL) # to be cleaned
-  find_package(CGAL REQUIRED)
+  # Core is needed for
+  # `Exact_predicates_exact_constructions_kernel_with_sqrt`
+  find_package(CGAL REQUIRED COMPONENTS Core)
   # set(Boost_USE_MULTITHREADED      ON)
   # set(Boost_USE_STATIC_LIBS      ON)
   #
