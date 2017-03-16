@@ -31,8 +31,6 @@ namespace igl
   // Each tuple contains information on (face, edge, vertex)
   //    and encoded by (face, edge \in {0,1,2}, bool reverse)
   //
-  // Templates:
-  //    DerivedF Matrix Type for F. Has to be explicitly declared.
   // Inputs:
   //    F #F by 3 list of "faces"
   //    FF #F by 3 list of triangle-triangle adjacency.
