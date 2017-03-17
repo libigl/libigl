@@ -25,7 +25,7 @@ namespace igl
   // once for each direction).
   template <typename DerivedF, typename DerivedE>
   IGL_INLINE void all_edges(
-    const Eigen::PlainObjectBase<DerivedF> & F,
+    const Eigen::MatrixBase<DerivedF> & F,
     Eigen::PlainObjectBase<DerivedE> & E);
 }
 
