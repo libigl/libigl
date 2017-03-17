@@ -19,7 +19,7 @@ void igl::crouzeix_raviart_cotmatrix(
   Eigen::PlainObjectBase<DerivedE> & E,
   Eigen::PlainObjectBase<DerivedEMAP> & EMAP)
 {
-  // All occurances of directed edges
+  // All occurances of directed "facets"
   Eigen::MatrixXi allE;
   oriented_facets(F,allE);
   Eigen::VectorXi _1;
@@ -35,18 +35,19 @@ void igl::crouzeix_raviart_cotmatrix(
   const Eigen::MatrixBase<DerivedEMAP> & EMAP,
   Eigen::SparseMatrix<LT> & L)
 {
-  assert(F.cols() == 3);
   // number of rows
   const int m = F.rows();
+  // Element simplex size
+  const int ss = F.cols();
   // Mesh should be edge-manifold
-  assert(is_edge_manifold(F));
+  assert(F.cols() != 3 || is_edge_manifold(F));
   typedef Eigen::Matrix<LT,Eigen::Dynamic,Eigen::Dynamic> MatrixXS;
   MatrixXS C;
   cotmatrix_entries(V,F,C);
-  Eigen::MatrixXi F2E(m,3);
+  Eigen::MatrixXi F2E(m,ss);
   {
     int k =0;
-    for(int c = 0;c<3;c++)
+    for(int c = 0;c<ss;c++)
     {
       for(int f = 0;f<m;f++)
       {
@@ -54,20 +55,38 @@ void igl::crouzeix_raviart_cotmatrix(
       }
     }
   }
-  std::vector<Eigen::Triplet<LT> > LIJV(12*m);
-  Eigen::VectorXi LI(12),LJ(12),LV(12);
-  LI<<0,1,2,1,2,0,0,1,2,1,2,0;
-  LJ<<1,2,0,0,1,2,0,1,2,1,2,0;
-  LV<<2,0,1,2,0,1,2,0,1,2,0,1;
+  // number of entries inserted per facet
+  const int k = ss*(ss-1)*2;
+  std::vector<Eigen::Triplet<LT> > LIJV(k*m);
+  Eigen::VectorXi LI(k),LJ(k),LV(k);
+  // Compensation factor to match scales in matlab version
+  double factor = 2.0;
+
+  switch(ss)
+  {
+    default: assert(false && "unsupported simplex size");
+    case 3:
+      factor = 4.0;
+      LI<<0,1,2,1,2,0,0,1,2,1,2,0;
+      LJ<<1,2,0,0,1,2,0,1,2,1,2,0;
+      LV<<2,0,1,2,0,1,2,0,1,2,0,1;
+      break;
+    case 4:
+      factor *= -1.0;
+      LI<<0,3,3,3,1,2,1,0,1,2,2,0,0,3,3,3,1,2,1,0,1,2,2,0;
+      LJ<<1,0,1,2,2,0,0,3,3,3,1,2,0,3,3,3,1,2,1,0,1,2,2,0;
+      LV<<2,3,4,5,0,1,2,3,4,5,0,1,2,3,4,5,0,1,2,3,4,5,0,1;
+      break;
+  }
 
   for(int f=0;f<m;f++)
   {
-    for(int c = 0;c<12;c++)
+    for(int c = 0;c<k;c++)
     {
       LIJV.emplace_back(
         EMAP(F2E(f,LI(c))),
         EMAP(F2E(f,LJ(c))),
-        (c<6?-1.:1.) * 4. *C(f,LV(c)));
+        (c<(k/2)?-1.:1.) * factor *C(f,LV(c)));
     }
   }
   L.resize(E.rows(),E.rows());
