@@ -11,7 +11,8 @@
 #include <Eigen/Dense>
 namespace igl
 {
-  // ALL_EDGES Determines all "directed edges" of a given set of simplices
+  // ALL_EDGES Determines all "directed edges" of a given set of simplices. For
+  // a manifold mesh, this computes all of the half-edges
   //
   // Inputs:
   //   F  #F by simplex_size list of "faces"
