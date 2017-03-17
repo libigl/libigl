@@ -57,7 +57,7 @@ void igl::crouzeix_raviart_cotmatrix(
   }
   // number of entries inserted per facet
   const int k = ss*(ss-1)*2;
-  std::vector<Eigen::Triplet<LT> > LIJV(k*m);
+  std::vector<Eigen::Triplet<LT> > LIJV;LIJV.reserve(k*m);
   Eigen::VectorXi LI(k),LJ(k),LV(k);
   // Compensation factor to match scales in matlab version
   double factor = 2.0;
