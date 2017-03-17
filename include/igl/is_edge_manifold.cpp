@@ -6,7 +6,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "is_edge_manifold.h"
-#include "all_edges.h"
+#include "oriented_facets.h"
 #include "unique_simplices.h"
 
 #include <algorithm>
@@ -30,7 +30,7 @@ IGL_INLINE bool igl::is_edge_manifold(
   typedef Matrix<typename DerivedF::Scalar,Dynamic,1> VectorXF;
   typedef Matrix<typename DerivedF::Scalar,Dynamic,2> MatrixXF2;
   MatrixXF2 allE;
-  all_edges(F,allE);
+  oriented_facets(F,allE);
   // Find unique undirected edges and mapping
   VectorXF _;
   unique_simplices(allE,E,_,EMAP);

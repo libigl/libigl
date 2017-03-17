@@ -1,6 +1,13 @@
+// This file is part of libigl, a simple c++ geometry processing library.
+// 
+// Copyright (C) 2017 Alec Jacobson <alecjacobson@gmail.com>
+// 
+// This Source Code Form is subject to the terms of the Mozilla Public License 
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+// obtain one at http://mozilla.org/MPL/2.0/.
 #include "crouzeix_raviart_cotmatrix.h"
 #include "unique_simplices.h"
-#include "all_edges.h"
+#include "oriented_facets.h"
 #include "is_edge_manifold.h"
 #include "cotmatrix_entries.h"
 
@@ -14,7 +21,7 @@ void igl::crouzeix_raviart_cotmatrix(
 {
   // All occurances of directed edges
   Eigen::MatrixXi allE;
-  all_edges(F,allE);
+  oriented_facets(F,allE);
   Eigen::VectorXi _1;
   unique_simplices(allE,E,_1,EMAP);
   return crouzeix_raviart_cotmatrix(V,F,E,EMAP,L);
