@@ -7,7 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "crouzeix_raviart_massmatrix.h"
 #include "unique_simplices.h"
-#include "all_edges.h"
+#include "oriented_facets.h"
 
 #include "is_edge_manifold.h"
 #include "doublearea.h"
@@ -17,15 +17,15 @@
 
 template <typename MT, typename DerivedV, typename DerivedF, typename DerivedE, typename DerivedEMAP>
 void igl::crouzeix_raviart_massmatrix(
-    const Eigen::PlainObjectBase<DerivedV> & V, 
-    const Eigen::PlainObjectBase<DerivedF> & F, 
+    const Eigen::MatrixBase<DerivedV> & V, 
+    const Eigen::MatrixBase<DerivedF> & F, 
     Eigen::SparseMatrix<MT> & M,
     Eigen::PlainObjectBase<DerivedE> & E,
     Eigen::PlainObjectBase<DerivedEMAP> & EMAP)
 {
   // All occurances of directed edges
   Eigen::MatrixXi allE;
-  all_edges(F,allE);
+  oriented_facets(F,allE);
   Eigen::VectorXi _1;
   unique_simplices(allE,E,_1,EMAP);
   return crouzeix_raviart_massmatrix(V,F,E,EMAP,M);
@@ -33,10 +33,10 @@ void igl::crouzeix_raviart_massmatrix(
 
 template <typename MT, typename DerivedV, typename DerivedF, typename DerivedE, typename DerivedEMAP>
 void igl::crouzeix_raviart_massmatrix(
-    const Eigen::PlainObjectBase<DerivedV> & V, 
-    const Eigen::PlainObjectBase<DerivedF> & F, 
-    const Eigen::PlainObjectBase<DerivedE> & E,
-    const Eigen::PlainObjectBase<DerivedEMAP> & EMAP,
+    const Eigen::MatrixBase<DerivedV> & V, 
+    const Eigen::MatrixBase<DerivedF> & F, 
+    const Eigen::MatrixBase<DerivedE> & E,
+    const Eigen::MatrixBase<DerivedEMAP> & EMAP,
     Eigen::SparseMatrix<MT> & M)
 {
   using namespace Eigen;
@@ -63,6 +63,6 @@ void igl::crouzeix_raviart_massmatrix(
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instantiation
-template void igl::crouzeix_raviart_massmatrix<double, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, Eigen::SparseMatrix<double, 0, int>&);
-template void igl::crouzeix_raviart_massmatrix<float, Eigen::Matrix<float, -1, 3, 1, -1, 3>, Eigen::Matrix<unsigned int, -1, -1, 1, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<float, -1, 3, 1, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<unsigned int, -1, -1, 1, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, Eigen::SparseMatrix<float, 0, int>&);
+template void igl::crouzeix_raviart_massmatrix<double, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, Eigen::SparseMatrix<double, 0, int>&);
+template void igl::crouzeix_raviart_massmatrix<float, Eigen::Matrix<float, -1, 3, 1, -1, 3>, Eigen::Matrix<unsigned int, -1, -1, 1, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::MatrixBase<Eigen::Matrix<float, -1, 3, 1, -1, 3> > const&, Eigen::MatrixBase<Eigen::Matrix<unsigned int, -1, -1, 1, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, Eigen::SparseMatrix<float, 0, int>&);
 #endif

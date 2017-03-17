@@ -19,38 +19,29 @@ namespace igl
   // See for example "Discrete Quadratic Curvature Energies" [Wardetzky, Bergou,
   // Harmon, Zorin, Grinspun 2007]
   //
-  // Templates:
-  //   MT  type of eigen sparse matrix for M (e.g. double for
-  //     SparseMatrix<double>)
-  //   DerivedV  derived type of eigen matrix for V (e.g. derived from
-  //     MatrixXd)
-  //   DerivedF  derived type of eigen matrix for F (e.g. derived from
-  //     MatrixXi)
-  //   DerivedE  derived type of eigen matrix for E (e.g. derived from
-  //     MatrixXi)
   // Inputs:
   //   V  #V by dim list of vertex positions
-  //   F  #F by 3 list of triangle indices
+  //   F  #F by 3/4 list of triangle/tetrahedron indices
   // Outputs:
-  //   M  #E by #E edge-based diagonal mass matrix
-  //   E  #E by 2 list of edges
-  //   EMAP  #F*3 list of indices mapping allE to E
+  //   M  #E by #E edge/face-based diagonal mass matrix
+  //   E  #E by 2/3 list of edges/faces
+  //   EMAP  #F*3/4 list of indices mapping allE to E
   //
-  //
+  // See also: crouzeix_raviart_cotmatrix
   template <typename MT, typename DerivedV, typename DerivedF, typename DerivedE, typename DerivedEMAP>
   void crouzeix_raviart_massmatrix(
-      const Eigen::PlainObjectBase<DerivedV> & V, 
-      const Eigen::PlainObjectBase<DerivedF> & F, 
+      const Eigen::MatrixBase<DerivedV> & V, 
+      const Eigen::MatrixBase<DerivedF> & F, 
       Eigen::SparseMatrix<MT> & M,
       Eigen::PlainObjectBase<DerivedE> & E,
       Eigen::PlainObjectBase<DerivedEMAP> & EMAP);
   // wrapper if E and EMAP are already computed (better match!)
   template <typename MT, typename DerivedV, typename DerivedF, typename DerivedE, typename DerivedEMAP>
   void crouzeix_raviart_massmatrix(
-      const Eigen::PlainObjectBase<DerivedV> & V, 
-      const Eigen::PlainObjectBase<DerivedF> & F, 
-      const Eigen::PlainObjectBase<DerivedE> & E,
-      const Eigen::PlainObjectBase<DerivedEMAP> & EMAP,
+      const Eigen::MatrixBase<DerivedV> & V, 
+      const Eigen::MatrixBase<DerivedF> & F, 
+      const Eigen::MatrixBase<DerivedE> & E,
+      const Eigen::MatrixBase<DerivedEMAP> & EMAP,
       Eigen::SparseMatrix<MT> & M);
 }
 #ifndef IGL_STATIC_LIBRARY

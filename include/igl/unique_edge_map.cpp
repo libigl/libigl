@@ -6,7 +6,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "unique_edge_map.h"
-#include "all_edges.h"
+#include "oriented_facets.h"
 #include "unique_simplices.h"
 #include <cassert>
 #include <algorithm>
@@ -26,7 +26,7 @@ IGL_INLINE void igl::unique_edge_map(
   using namespace Eigen;
   using namespace std;
   // All occurances of directed edges
-  all_edges(F,E);
+  oriented_facets(F,E);
   const size_t ne = E.rows();
   // This is 2x faster to create than a map from pairs to lists of edges and 5x
   // faster to access (actually access is probably assympotically faster O(1)
