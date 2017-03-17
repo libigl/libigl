@@ -82,8 +82,8 @@ namespace igl
       assert (std::isfinite(t1));
       assert (std::isfinite(t2));
 
-      double tmp_n = min(t1,t2);
-      t1 = max(t1,t2); t2 = tmp_n;
+      double tmp_n = std::min(t1,t2);
+      t1 = std::max(t1,t2); t2 = tmp_n;
       if (t1 == t2)
       {
         return INFINITY; // means the orientation flips twice = doesn't flip
@@ -251,7 +251,7 @@ namespace igl
           return (res[0] >= 0) ? res[0]:INFINITY;
         case 2:
         {
-          double max_root = max(res[0],res[1]); double min_root = min(res[0],res[1]);
+          double max_root = std::max(res[0],res[1]); double min_root = std::min(res[0],res[1]);
           if (min_root > 0) return min_root;
           if (max_root > 0) return max_root;
           return INFINITY;
@@ -281,7 +281,7 @@ namespace igl
         for (int f = 0; f < F.rows(); f++)
         {
           double min_positive_root = get_min_pos_root_2D(uv,F,d,f);
-          max_step = min(max_step, min_positive_root);
+          max_step = std::min(max_step, min_positive_root);
         }
       }
       else
@@ -289,7 +289,7 @@ namespace igl
         for (int f = 0; f < F.rows(); f++)
         {
           double min_positive_root = get_min_pos_root_3D(uv,F,d,f);
-          max_step = min(max_step, min_positive_root);
+          max_step = std::min(max_step, min_positive_root);
         }
       }
       return max_step;
@@ -308,7 +308,7 @@ IGL_INLINE double igl::flip_avoiding_line_search(
   Eigen::MatrixXd d = dst_v - cur_v;
 
   double min_step_to_singularity = igl::flip_avoiding::compute_max_step_from_singularities(cur_v,F,d);
-  double max_step_size = min(1., min_step_to_singularity*0.8);
+  double max_step_size = std::min(1., min_step_to_singularity*0.8);
 
   return igl::line_search(cur_v,d,max_step_size, energy, cur_energy);
 }

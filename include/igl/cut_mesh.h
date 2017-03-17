@@ -20,6 +20,8 @@ namespace igl
   // Todo: this combinatorial operation should not depend on the vertex
   // positions V.
   //
+  // Known issues: Assumes mesh is edge-manifold.
+  //
   // Inputs:
   //   V  #V by 3 list of the vertex positions
   //   F  #F by 3 list of the faces (must be triangles)
