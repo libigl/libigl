@@ -94,10 +94,10 @@ IGL_INLINE bool igl::line_segment_in_rectangle(
 
     return true;
   };
-  const double minX = min(A(0),B(0));
-  const double minY = min(A(1),B(1));
-  const double maxX = max(A(0),B(0));
-  const double maxY = max(A(1),B(1));
+  const double minX = std::min(A(0),B(0));
+  const double minY = std::min(A(1),B(1));
+  const double maxX = std::max(A(0),B(0));
+  const double maxY = std::max(A(1),B(1));
   bool ret = SegmentIntersectRectangle(minX,minY,maxX,maxY,s(0),s(1),d(0),d(1));
   return ret;
 }

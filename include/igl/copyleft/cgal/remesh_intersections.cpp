@@ -448,7 +448,9 @@ IGL_INLINE void igl::copyleft::cgal::remesh_intersections(
       std::transform(FF.data(), FF.data() + FF.rows()*FF.cols(),
           FF.data(), [&vv_to_unique](const typename DerivedFF::Scalar& a)
           { return vv_to_unique[a]; });
-      IM = igl::LinSpaced<
+      IM.resize(unique_vv.rows());
+      // Have to use << instead of = becasue Eigen's PlainObjectBase is annoying
+      IM << igl::LinSpaced<
         Eigen::Matrix<typename DerivedIM::Scalar, Eigen::Dynamic,1 >
         >(unique_vv.rows(), 0, unique_vv.rows()-1);
     }else 

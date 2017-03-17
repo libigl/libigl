@@ -13,6 +13,8 @@
 #include <vector>
 #include <igl/igl_inline.h>
 
+// This file violates many of the libigl style guidelines.
+
 namespace igl
 {
   // HalfEdgeIterator - Fake halfedge for fast and easy navigation
@@ -29,8 +31,6 @@ namespace igl
   // Each tuple contains information on (face, edge, vertex)
   //    and encoded by (face, edge \in {0,1,2}, bool reverse)
   //
-  // Templates:
-  //    DerivedF Matrix Type for F. Has to be explicitly declared.
   // Inputs:
   //    F #F by 3 list of "faces"
   //    FF #F by 3 list of triangle-triangle adjacency.
@@ -40,15 +40,18 @@ namespace igl
   //    FlipF/E/V changes solely one actual face/edge/vertex resp.
   //    NextFE iterates through one-ring of a vertex robustly.
   //
-  template <typename DerivedF>
+  template <
+    typename DerivedF,
+    typename DerivedFF,
+    typename DerivedFFi>
   class HalfEdgeIterator
   {
   public:
     // Init the HalfEdgeIterator by specifying Face,Edge Index and Orientation
     IGL_INLINE HalfEdgeIterator(
         const Eigen::PlainObjectBase<DerivedF>& _F,
-        const Eigen::PlainObjectBase<DerivedF>& _FF,
-        const Eigen::PlainObjectBase<DerivedF>& _FFi,
+        const Eigen::PlainObjectBase<DerivedFF>& _FF,
+        const Eigen::PlainObjectBase<DerivedFFi>& _FFi,
         int _fi,
         int _ei,
         bool _reverse = false
@@ -73,7 +76,9 @@ namespace igl
      *   / d  \ | / a  \
      *  /______\|/______\
      *          v
-     * In this example, if a and d are of-border and the pos is iterating counterclockwise, this method iterate through the faces incident on vertex v,
+     * In this example, if a and d are of-border and the pos is iterating
+     counterclockwise, this method iterate through the faces incident on vertex
+     v,
      * producing the sequence a, b, c, d, a, b, c, ...
      */
     IGL_INLINE bool NextFE();
@@ -94,9 +99,10 @@ namespace igl
     int ei;
     bool reverse;
 
-    const Eigen::PlainObjectBase<DerivedF>& F;
-    const Eigen::PlainObjectBase<DerivedF>& FF;
-    const Eigen::PlainObjectBase<DerivedF>& FFi;
+    // All the same type? This is likely to break.
+    const DerivedF & F;
+    const DerivedFF & FF;
+    const DerivedFFi & FFi;
   };
 
 }

@@ -16,6 +16,7 @@
 #include "per_edge_normals.h"
 #include <Eigen/Geometry>
 #include <cmath>
+#include <algorithm>
 
 IGL_INLINE void igl::swept_volume_signed_distance(
   const Eigen::MatrixXd & V,
@@ -80,7 +81,7 @@ IGL_INLINE void igl::swept_volume_signed_distance(
         pseudonormal_test(V,F,FN,VN,EN,EMAP,gv,i,c,s,n);
         if(S(g) == S(g))
         {
-          S(g) = min(S(g),s*sqrt(sqrd));
+          S(g) = std::min(S(g),s*sqrt(sqrd));
         }else
         {
           S(g) = s*sqrt(sqrd);
@@ -96,7 +97,7 @@ IGL_INLINE void igl::swept_volume_signed_distance(
   {
 #ifndef NDEBUG
     // Check for nans
-    for_each(S.data(),S.data()+S.size(),[](const double s){assert(s==s);});
+    std::for_each(S.data(),S.data()+S.size(),[](const double s){assert(s==s);});
 #endif
   }
 }
