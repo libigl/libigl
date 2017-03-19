@@ -90,11 +90,12 @@ namespace igl
       std::vector<std::vector<std::vector<TTIndex> > > & TT,
       std::vector<std::vector<std::vector<TTiIndex> > > & TTi);
   // Inputs:
-  //   E  #F*3 by 2 list of all of directed edges in order (see `all_edges`)
+  //   E  #F*3 by 2 list of all of directed edges in order (see
+  //     `oriented_facets`)
   //   EMAP #F*3 list of indices into uE, mapping each directed edge to unique
   //     undirected edge
   //   uE2E  #uE list of lists of indices into E of coexisting edges
-  // See also: unique_edge_map, all_edges
+  // See also: unique_edge_map, oriented_facets
   template <
     typename DerivedE, 
     typename DerivedEMAP,

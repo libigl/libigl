@@ -7,8 +7,11 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "biharmonic_coordinates.h"
 #include "cotmatrix.h"
+#include "sum.h"
 #include "massmatrix.h"
 #include "min_quad_with_fixed.h"
+#include "crouzeix_raviart_massmatrix.h"
+#include "crouzeix_raviart_cotmatrix.h"
 #include "normal_derivative.h"
 #include "on_boundary.h"
 #include <Eigen/Sparse>
@@ -45,11 +48,18 @@ IGL_INLINE bool igl::biharmonic_coordinates(
   // Subspace Design for Real-Time Shape Deformation" [Wang et al. 2015].
   SparseMatrix<double> A;
   {
-    SparseMatrix<double> N,Z,L,K,M;
-    normal_derivative(V,T,N);
-    Array<bool,Dynamic,1> I;
+    DiagonalMatrix<double,Dynamic> Minv;
+    SparseMatrix<double> L,K;
     Array<bool,Dynamic,Dynamic> C;
-    on_boundary(T,I,C);
+    {
+      Array<bool,Dynamic,1> I;
+      on_boundary(T,I,C);
+    }
+#ifdef false 
+    // Version described in paper is "wrong"
+    // http://www.cs.toronto.edu/~jacobson/images/error-in-linear-subspace-design-for-real-time-shape-deformation-2017-wang-et-al.pdf
+    SparseMatrix<double> N,Z,M;
+    normal_derivative(V,T,N);
     {
       std::vector<Triplet<double> >ZIJV;
       for(int t =0;t<T.rows();t++)
@@ -75,8 +85,50 @@ IGL_INLINE bool igl::biharmonic_coordinates(
     massmatrix(V,T,MASSMATRIX_TYPE_DEFAULT,M);
     // normalize
     M /= ((VectorXd)M.diagonal()).array().abs().maxCoeff();
-    DiagonalMatrix<double,Dynamic> Minv =
+    Minv =
       ((VectorXd)M.diagonal().array().inverse()).asDiagonal();
+#else
+    Eigen::SparseMatrix<double> M;
+    Eigen::MatrixXi E;
+    Eigen::VectorXi EMAP;
+    crouzeix_raviart_massmatrix(V,T,M,E,EMAP);
+    crouzeix_raviart_cotmatrix(V,T,E,EMAP,L);
+    // Ad  #E by #V facet-vertex incidence matrix
+    Eigen::SparseMatrix<double> Ad(E.rows(),V.rows());
+    {
+      std::vector<Eigen::Triplet<double> > AIJV(E.size());
+      for(int e = 0;e<E.rows();e++)
+      {
+        for(int c = 0;c<E.cols();c++)
+        {
+          AIJV[e+c*E.rows()] = Eigen::Triplet<double>(e,E(e,c),1);
+        }
+      }
+      Ad.setFromTriplets(AIJV.begin(),AIJV.end());
+    }
+    // Degrees
+    Eigen::VectorXd De;
+    sum(Ad,2,De);
+    Eigen::DiagonalMatrix<double,Eigen::Dynamic> De_diag = 
+      De.array().inverse().matrix().asDiagonal();
+    K = L*(De_diag*Ad);
+    // normalize
+    M /= ((VectorXd)M.diagonal()).array().abs().maxCoeff();
+    Minv = ((VectorXd)M.diagonal().array().inverse()).asDiagonal();
+    // kill boundary edges
+    for(int f = 0;f<T.rows();f++)
+    {
+      for(int c = 0;c<T.cols();c++)
+      {
+        if(C(f,c))
+        {
+          const int e = EMAP(f+T.rows()*c);
+          Minv.diagonal()(e) = 0;
+        }
+      }
+    }
+
+#endif
     switch(k)
     {
       default:
