@@ -39,10 +39,10 @@ namespace igl
     // Todo: this is an inappropriate function name. This is really just
     // reading a png.... Not necessarily as a texture.
     IGL_INLINE bool texture_from_png(const std::string png_file,
-    Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& R,
-    Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& G,
-    Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& B,
-    Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& A
+    Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& R,
+    Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& G,
+    Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& B,
+    Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& A
     );
   }
 }
