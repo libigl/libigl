@@ -65,7 +65,9 @@ set(LIBIGL_EXTERNAL "${LIBIGL_ROOT}/external")
 set(NANOGUI_DIR "${LIBIGL_EXTERNAL}/nanogui")
 
 ### Eigen ###
-set(EIGEN_INCLUDE_DIR "${NANOGUI_DIR}/ext/eigen")
+if(NOT EIGEN_INCLUDE_DIR)
+  set(EIGEN_INCLUDE_DIR "${NANOGUI_DIR}/ext/eigen")
+endif()
 list(APPEND LIBIGL_INCLUDE_DIRS "${EIGEN_INCLUDE_DIR}")
 
 macro(CompileIGL_Module module_dir prefix)
@@ -152,7 +154,9 @@ endif()
 
 ### Compile the cgal parts ###
 if(LIBIGL_WITH_CGAL) # to be cleaned
-  find_package(CGAL REQUIRED)
+  # Core is needed for
+  # `Exact_predicates_exact_constructions_kernel_with_sqrt`
+  find_package(CGAL REQUIRED COMPONENTS Core)
   # set(Boost_USE_MULTITHREADED      ON)
   # set(Boost_USE_STATIC_LIBS      ON)
   #
@@ -334,6 +338,7 @@ if(LIBIGL_WITH_OPENGL)
     list(APPEND LIBIGL_INCLUDE_DIRS "${NANOGUI_DIR}/ext/glew/include")
     list(APPEND LIBIGL_OPENGL_EXTRA_LIBRARIES "glew")
   endif()
+  list(APPEND LIBIGL_EXTRA_LIBRARIES ${LIBIGL_OPENGL_EXTRA_LIBRARIES})
 
   list(APPEND LIBIGL_EXTRA_LIBRARIES ${LIBIGL_OPENGL_EXTRA_LIBRARIES})
 

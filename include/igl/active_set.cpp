@@ -170,10 +170,10 @@ IGL_INLINE igl::SolverStatus igl::active_set(
       old_Z = Z;
     }
 
-    const int as_lx_count = count(as_lx.data(),as_lx.data()+n,TRUE);
-    const int as_ux_count = count(as_ux.data(),as_ux.data()+n,TRUE);
+    const int as_lx_count = std::count(as_lx.data(),as_lx.data()+n,TRUE);
+    const int as_ux_count = std::count(as_ux.data(),as_ux.data()+n,TRUE);
     const int as_ieq_count =
-      count(as_ieq.data(),as_ieq.data()+as_ieq.size(),TRUE);
+      std::count(as_ieq.data(),as_ieq.data()+as_ieq.size(),TRUE);
 #ifndef NDEBUG
     {
       int count = 0;
