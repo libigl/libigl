@@ -26,12 +26,14 @@ namespace igl
   // they're not then resulting probably will no longer be sparse: it will be
   // slow.
   //
-  // MIN_QUAD_WITH_FIXED Minimize quadratic energy 
+  // MIN_QUAD_WITH_FIXED Minimize a quadratic energy of the form
   //
-  // 0.5*Z'*A*Z + Z'*B + C with
+  // trace( 0.5*Z'*A*Z + Z'*B + constant )
   //
-  // constraints that Z(known) = Y, optionally also subject to the constraints
-  // Aeq*Z = Beq
+  // subject to
+  //
+  //   Z(known,:) = Y, and
+  //   Aeq*Z = Beq
   //
   // Templates:
   //   T  should be a eigen matrix primitive type like int or double
@@ -57,7 +59,6 @@ namespace igl
     const bool pd,
     min_quad_with_fixed_data<T> & data
     );
-
   // Solves a system previously factored using min_quad_with_fixed_precompute
   //
   // Template:
@@ -66,12 +67,12 @@ namespace igl
   //   DerivedZ  type of Z (e.g. derived from VectorXd or MatrixXd)
   // Inputs:
   //   data  factorization struct with all necessary precomputation to solve
-  //   B  n by 1 column of linear coefficients
-  //   Y  b by 1 list of constant fixed values
-  //   Beq  m by 1 list of linear equality constraint constant values
+  //   B  n by k column of linear coefficients
+  //   Y  b by k list of constant fixed values
+  //   Beq  m by k list of linear equality constraint constant values
   // Outputs:
-  //   Z  n by cols solution
-  //   sol  #unknowns+#lagrange by cols solution to linear system
+  //   Z  n by k solution
+  //   sol  #unknowns+#lagrange by k solution to linear system
   // Returns true on success, false on error
   template <
     typename T,

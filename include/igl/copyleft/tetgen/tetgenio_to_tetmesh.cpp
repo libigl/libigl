@@ -136,7 +136,7 @@ IGL_INLINE bool igl::copyleft::tetgen::tetgenio_to_tetmesh(
   Eigen::PlainObjectBase<DerivedV>& V,
   Eigen::PlainObjectBase<DerivedT>& T)
 {
-  Eigen::PlainObjectBase<DerivedT> F;
+  Eigen::Matrix<typename DerivedT::Scalar,Eigen::Dynamic,3> F;
   return tetgenio_to_tetmesh(out,V,T,F);
 }
 

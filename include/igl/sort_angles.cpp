@@ -18,7 +18,8 @@ IGL_INLINE void igl::sort_angles(
     assert(num_cols >= 2);
 
     R.resize(num_rows);
-    R = igl::LinSpaced<
+    // Have to use << instead of = becasue Eigen's PlainObjectBase is annoying
+    R << igl::LinSpaced<
       Eigen::Matrix<typename DerivedR::Scalar, Eigen::Dynamic, 1> >
       (num_rows, 0, num_rows-1);
 
