@@ -63,46 +63,48 @@ namespace igl
     IGL_INLINE double get_smallest_pos_quad_zero(double a,double b, double c)
     {
       using namespace std;
-      double t1,t2;
-      if (std::abs(a)>1.0e-10)
+      double t1, t2;
+      if(std::abs(a) > 1.0e-10)
       {
-        double delta_in = pow(b,2) - 4*a*c;
-        if (delta_in < 0)
+        double delta_in = pow(b, 2) - 4 * a * c;
+        if(delta_in <= 0)
         {
           return INFINITY;
         }
-        double delta = sqrt(delta_in);
-        t1 = (-b + delta)/ (2*a);
-        t2 = (-b - delta)/ (2*a);
-      }
-      else
-      {
-        t1 = t2 = -b/c;
-      }
-      assert (std::isfinite(t1));
-      assert (std::isfinite(t2));
 
-      double tmp_n = min(t1,t2);
-      t1 = max(t1,t2); t2 = tmp_n;
-      if (t1 == t2)
-      {
-        return INFINITY; // means the orientation flips twice = doesn't flip
-      }
-      // return the smallest negative root if it exists, otherwise return infinity
-      if (t1 > 0)
-      {
-        if (t2 > 0)
+        double delta = sqrt(delta_in); // delta >= 0
+        if(b >= 0) // avoid subtracting two similar numbers
         {
-          return t2;
+          double bd = - b - delta;
+          t1 = 2 * c / bd;
+          t2 = bd / (2 * a);
         }
         else
         {
-          return t1;
+          double bd = - b + delta;
+          t1 = bd / (2 * a);
+          t2 = (2 * c) / bd;
+        }
+
+        assert (std::isfinite(t1));
+        assert (std::isfinite(t2));
+
+        if(a < 0) std::swap(t1, t2); // make t1 > t2
+        // return the smaller positive root if it exists, otherwise return infinity
+        if(t1 > 0)
+        {
+          return t2 > 0 ? t2 : t1;
+        }
+        else
+        {
+          return INFINITY;
         }
       }
       else
       {
-        return INFINITY;
+        if(b == 0) return INFINITY; // just to avoid divide-by-zero
+        t1 = -c / b;
+        return t1 > 0 ? t1 : INFINITY;
       }
     }
 
@@ -251,7 +253,7 @@ namespace igl
           return (res[0] >= 0) ? res[0]:INFINITY;
         case 2:
         {
-          double max_root = max(res[0],res[1]); double min_root = min(res[0],res[1]);
+          double max_root = std::max(res[0],res[1]); double min_root = std::min(res[0],res[1]);
           if (min_root > 0) return min_root;
           if (max_root > 0) return max_root;
           return INFINITY;
@@ -281,7 +283,7 @@ namespace igl
         for (int f = 0; f < F.rows(); f++)
         {
           double min_positive_root = get_min_pos_root_2D(uv,F,d,f);
-          max_step = min(max_step, min_positive_root);
+          max_step = std::min(max_step, min_positive_root);
         }
       }
       else
@@ -289,7 +291,7 @@ namespace igl
         for (int f = 0; f < F.rows(); f++)
         {
           double min_positive_root = get_min_pos_root_3D(uv,F,d,f);
-          max_step = min(max_step, min_positive_root);
+          max_step = std::min(max_step, min_positive_root);
         }
       }
       return max_step;
@@ -308,7 +310,7 @@ IGL_INLINE double igl::flip_avoiding_line_search(
   Eigen::MatrixXd d = dst_v - cur_v;
 
   double min_step_to_singularity = igl::flip_avoiding::compute_max_step_from_singularities(cur_v,F,d);
-  double max_step_size = min(1., min_step_to_singularity*0.8);
+  double max_step_size = std::min(1., min_step_to_singularity*0.8);
 
   return igl::line_search(cur_v,d,max_step_size, energy, cur_energy);
 }

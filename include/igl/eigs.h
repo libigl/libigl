@@ -26,14 +26,13 @@ namespace igl
   // Inputs:
   //   A  #A by #A symmetric matrix
   //   B  #A by #A symmetric positive-definite matrix
-  //   k  number of eigen pairs to compute (0 continues until max_iter fails to find another pair)
-  //   max_iter  number of iterations allowed per pair
+  //   k  number of eigen pairs to compute
+  //   type  whether to extract from the high or low end
   // Outputs:
   //   sU  #A by k list of sorted eigen vectors (descending)
   //   sS  k list of sorted eigen values (descending)
   //
   // Known issues:
-  //   - only one pair per eigen value is found (no multiples)
   //   - only the 'sm' small magnitude eigen values are well supported
   //   
   enum EigsType
@@ -55,6 +54,9 @@ namespace igl
 	  Eigen::PlainObjectBase<DerivedU> & sU,
 	  Eigen::PlainObjectBase<DerivedS> & sS);
 
+// An overloaded variant of eigs that changes the following inputs
+//   k  number of eigen pairs to compute (0 continues until max_iter fails to find another pair)
+//   max_iter  number of iterations allowed per pair
   template <
     typename Atype,
     typename Btype,

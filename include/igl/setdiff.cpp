@@ -42,7 +42,8 @@ IGL_INLINE void igl::setdiff(
       }
     }
     assert(k == C.size());
-    IA = igl::LinSpaced<Eigen::Matrix<typename DerivedIA::Scalar,Eigen::Dynamic,1> >(
+    // Have to use << instead of = becasue Eigen's PlainObjectBase is annoying
+    IA << igl::LinSpaced<Eigen::Matrix<typename DerivedIA::Scalar,Eigen::Dynamic,1> >(
       C.size(),0,C.size()-1);
   }
 

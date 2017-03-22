@@ -6,8 +6,6 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "triangle_triangle_adjacency.h"
-#include "all_edges.h"
-#include "unique_simplices.h"
 #include "parallel_for.h"
 #include "unique_edge_map.h"
 #include <algorithm>

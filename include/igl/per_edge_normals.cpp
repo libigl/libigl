@@ -5,7 +5,7 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
-#include "all_edges.h"
+#include "oriented_facets.h"
 #include "doublearea.h"
 #include "per_edge_normals.h"
 #include "get_seconds.h"
@@ -37,7 +37,7 @@ IGL_INLINE void igl::per_edge_normals(
   const int m = F.rows();
   // All occurances of directed edges
   MatrixXi allE;
-  all_edges(F,allE);
+  oriented_facets(F,allE);
   // Find unique undirected edges and mapping
   VectorXi _;
   unique_simplices(allE,E,_,EMAP);

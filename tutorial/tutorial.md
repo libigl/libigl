@@ -1531,11 +1531,11 @@ Libigl, supports these common flavors. Selecting one is a matter of setting the
 energy type before the precompuation phase:
 
 ```cpp
-igl::ARAPData data;
+igl::ARAPData arap_data;
 arap_data.energy = igl::ARAP_ENERGY_TYPE_SPOKES;
 //arap_data.energy = igl::ARAP_ENERGY_TYPE_SPOKES_AND_RIMS;
 //arap_data.energy = igl::ARAP_ENERGY_TYPE_ELEMENTS; //triangles or tets
-igl::arap_precomputation(V,F,dim,b,data);
+igl::arap_precomputation(V,F,dim,b,arap_data);
 ```
 
 Just like `igl::min_quad_with_fixed_*`, this precomputation phase only depends
@@ -1543,7 +1543,7 @@ on the mesh, fixed vertex indices `b` and the energy parameters. To solve with
 certain constraints on the positions of vertices in `b`, we may call:
 
 ```cpp
-igl::arap_solve(bc,data,U);
+igl::arap_solve(bc,arap_data,U);
 ```
 
 which uses `U` as an initial guess and then computes the solution into it.
@@ -3339,7 +3339,7 @@ pseudonormal](https://www.google.com/search?q=Signed+distance+computation+using+
   2010.
 [#panozzo_2014]: Daniele Panozzo, Enrico Puppo, Marco Tarini, Olga
   Sorkine-Hornung.  [Frame Fields: Anisotropic and Non-Orthogonal Cross
-  Fields](http://www.inf.ethz.ch/personal/dpanozzo/papers/frame-fields-2014.pdf),
+  Fields](http://cs.nyu.edu/~panozzo/papers/frame-fields-2014.pdf),
   2014.
 [#rabinovich_2016]: Michael Rabinovich, Roi Poranne, Daniele Panozzo, Olga
   Sorkine-Hornung. [Scalable Locally Injective
