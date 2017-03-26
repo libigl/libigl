@@ -261,9 +261,16 @@ if(LIBIGL_WITH_EMBREE)
   list(APPEND LIBIGL_EMBREE_EXTRA_LIBRARIES "embree")
   list(APPEND LIBIGL_EXTRA_LIBRARIES ${LIBIGL_EMBREE_EXTRA_LIBRARIES})
 
-    if(NOT MSVC)
+  if(NOT MSVC)
 		list(APPEND LIBIGL_DEFINITIONS "-DENABLE_STATIC_LIB")
 	endif()
+
+  if(MSVC)
+    add_custom_target(Copy-Embree-DLL ALL        # Adds a post-build event to MyTest
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different  # which executes "cmake - E copy_if_different..."
+            "${CMAKE_BINARY_DIR}/libigl/embree/$<CONFIGURATION>/embree.dll"      # <--this is in-file
+          "${CMAKE_BINARY_DIR}/embree.dll")                 # <--this is out-file path	endif()
+  endif()
 
   if(LIBIGL_USE_STATIC_LIBRARY)
     CompileIGL_Module("embree" "")
