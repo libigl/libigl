@@ -21,7 +21,7 @@ namespace igl
   
     // Inputs:
     //   V  #V by 3 eigen Matrix of mesh vertex 3D positions
-    //   F  #F by 3 eigne Matrix of face (triangle) indices
+    //   F  #F by 3 eigen Matrix of face (triangle) indices
     // Outputs:
     //   V_vbo_id  buffer id for vertex positions
     //   F_vbo_id  buffer id for face indices
@@ -37,7 +37,7 @@ namespace igl
   
     // Inputs:
     //   V  #V by 3 eigen Matrix of mesh vertex 3D positions
-    //   F  #F by 3 eigne Matrix of face (triangle) indices
+    //   F  #F by 3 eigen Matrix of face (triangle) indices
     //   N  #V by 3 eigen Matrix of mesh vertex 3D normals
     // Outputs:
     //   V_vbo_id  buffer id for vertex positions

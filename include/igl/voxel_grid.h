@@ -20,8 +20,8 @@ namespace igl
   //   s  number of cell centers on largest side (including 2*pad_count)
   //   pad_count  number of cells beyond box
   // Outputs:
-  //   GV  res(0)*res(1)*res(2) by 3 list of cell center positions
-  //   res  3-long list of dimension of voxel grid
+  //   GV  side(0)*side(1)*side(2) by 3 list of cell center positions
+  //   side  3-long list of dimension of voxel grid
   IGL_INLINE void voxel_grid(
     const Eigen::AlignedBox3d & box, 
     const int s,
