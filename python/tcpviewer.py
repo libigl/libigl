@@ -42,7 +42,6 @@ class TCPViewer(igl.viewer.Viewer):
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             s.connect((HOST, PORT))
             ser = self.data.serialize()
-            print(len(ser))
             a = array.array('u', ser)
             s.sendall(a)
             s.close()
