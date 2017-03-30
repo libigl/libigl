@@ -175,6 +175,8 @@ sudo apt-get install libxrandr-dev
 sudo apt-get install libxi-dev
 sudo apt-get install libxmu-dev
 sudo apt-get install libblas-dev
+sudo apt-get install libxinerama-dev
+sudo apt-get install libxcursor-dev
 ```
 *Note for windows users*: libigl only supports the Microsoft Visual Studio 2015 compiler in 64bit mode. It will not work with a 32bit build and it will not work
 with older versions of visual studio.
