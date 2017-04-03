@@ -30,8 +30,8 @@ namespace igl
     typename Deriveddir,
     typename Scalar>
   IGL_INLINE bool ray_box_intersect(
-    const Eigen::PlainObjectBase<Derivedsource> & source,
-    const Eigen::PlainObjectBase<Deriveddir> & dir,
+    const Eigen::MatrixBase<Derivedsource> & source,
+    const Eigen::MatrixBase<Deriveddir> & dir,
     const Eigen::AlignedBox<Scalar,3> & box,
     const Scalar & t0,
     const Scalar & t1,

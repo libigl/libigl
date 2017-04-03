@@ -50,8 +50,8 @@ namespace igl
         typename DerivedJ,
         typename DerivedIM>
       IGL_INLINE void remesh_intersections(
-        const Eigen::PlainObjectBase<DerivedV> & V,
-        const Eigen::PlainObjectBase<DerivedF> & F,
+        const Eigen::MatrixBase<DerivedV> & V,
+        const Eigen::MatrixBase<DerivedF> & F,
         const std::vector<CGAL::Triangle_3<Kernel> > & T,
         const std::map<
           typename DerivedF::Index,
@@ -72,8 +72,8 @@ namespace igl
         typename DerivedJ,
         typename DerivedIM>
       IGL_INLINE void remesh_intersections(
-        const Eigen::PlainObjectBase<DerivedV> & V,
-        const Eigen::PlainObjectBase<DerivedF> & F,
+        const Eigen::MatrixBase<DerivedV> & V,
+        const Eigen::MatrixBase<DerivedF> & F,
         const std::vector<CGAL::Triangle_3<Kernel> > & T,
         const std::map<
           typename DerivedF::Index,

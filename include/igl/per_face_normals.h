@@ -24,23 +24,23 @@ namespace igl
   //   per_face_normals(V,F,Vector3d(1,1,1).normalized(),N);
   template <typename DerivedV, typename DerivedF, typename DerivedZ, typename DerivedN>
   IGL_INLINE void per_face_normals(
-    const Eigen::PlainObjectBase<DerivedV>& V,
-    const Eigen::PlainObjectBase<DerivedF>& F,
-    const Eigen::PlainObjectBase<DerivedZ> & Z,
+    const Eigen::MatrixBase<DerivedV>& V,
+    const Eigen::MatrixBase<DerivedF>& F,
+    const Eigen::MatrixBase<DerivedZ> & Z,
     Eigen::PlainObjectBase<DerivedN> & N);
   // Wrapper with Z = (0,0,0). Note that this means that row norms will be zero
   // (i.e. not 1) for degenerate normals.
   template <typename DerivedV, typename DerivedF, typename DerivedN>
   IGL_INLINE void per_face_normals(
-    const Eigen::PlainObjectBase<DerivedV>& V,
-    const Eigen::PlainObjectBase<DerivedF>& F,
+    const Eigen::MatrixBase<DerivedV>& V,
+    const Eigen::MatrixBase<DerivedF>& F,
     Eigen::PlainObjectBase<DerivedN> & N);
   // Special version where order of face indices is guaranteed not to effect
   // output.
   template <typename DerivedV, typename DerivedF, typename DerivedN>
   IGL_INLINE void per_face_normals_stable(
-    const Eigen::PlainObjectBase<DerivedV>& V,
-    const Eigen::PlainObjectBase<DerivedF>& F,
+    const Eigen::MatrixBase<DerivedV>& V,
+    const Eigen::MatrixBase<DerivedF>& F,
     Eigen::PlainObjectBase<DerivedN> & N);
 }
 
