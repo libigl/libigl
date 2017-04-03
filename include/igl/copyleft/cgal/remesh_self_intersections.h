@@ -62,8 +62,8 @@ namespace igl
         typename DerivedJ,
         typename DerivedIM>
       IGL_INLINE void remesh_self_intersections(
-        const Eigen::PlainObjectBase<DerivedV> & V,
-        const Eigen::PlainObjectBase<DerivedF> & F,
+        const Eigen::MatrixBase<DerivedV> & V,
+        const Eigen::MatrixBase<DerivedF> & F,
         const RemeshSelfIntersectionsParam & params,
         Eigen::PlainObjectBase<DerivedVV> & VV,
         Eigen::PlainObjectBase<DerivedFF> & FF,
