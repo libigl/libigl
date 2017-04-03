@@ -129,4 +129,5 @@ template Eigen::WithFormat<Eigen::Matrix<double, 2, 3, 0, 2, 3> > const igl::mat
 template Eigen::WithFormat<Eigen::Matrix<double, 3, 2, 0, 3, 2> > const igl::matlab_format<Eigen::Matrix<double, 3, 2, 0, 3, 2> >(Eigen::DenseBase<Eigen::Matrix<double, 3, 2, 0, 3, 2> > const&, std::basic_string<char, std::char_traits<char>, std::allocator<char> >);
 template Eigen::WithFormat<Eigen::Matrix<float, -1, 1, 0, -1, 1> > const igl::matlab_format<Eigen::Matrix<float, -1, 1, 0, -1, 1> >(Eigen::DenseBase<Eigen::Matrix<float, -1, 1, 0, -1, 1> > const&, std::basic_string<char, std::char_traits<char>, std::allocator<char> >);
 template Eigen::WithFormat<Eigen::Matrix<int, 2, 2, 0, 2, 2> > const igl::matlab_format<Eigen::Matrix<int, 2, 2, 0, 2, 2> >(Eigen::DenseBase<Eigen::Matrix<int, 2, 2, 0, 2, 2> > const&, std::basic_string<char, std::char_traits<char>, std::allocator<char> >);
+template Eigen::WithFormat<Eigen::Matrix<float, 4, 4, 0, 4, 4> > const igl::matlab_format<Eigen::Matrix<float, 4, 4, 0, 4, 4> >(Eigen::DenseBase<Eigen::Matrix<float, 4, 4, 0, 4, 4> > const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >);
 #endif
