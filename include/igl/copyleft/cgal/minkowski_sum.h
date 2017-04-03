@@ -42,10 +42,10 @@ namespace igl
         typename DerivedG,
         typename DerivedJ>
       IGL_INLINE void minkowski_sum(
-        const Eigen::PlainObjectBase<DerivedVA> & VA,
-        const Eigen::PlainObjectBase<DerivedFA> & FA,
-        const Eigen::PlainObjectBase<DerivedVB> & VB,
-        const Eigen::PlainObjectBase<DerivedFB> & FB,
+        const Eigen::MatrixBase<DerivedVA> & VA,
+        const Eigen::MatrixBase<DerivedFA> & FA,
+        const Eigen::MatrixBase<DerivedVB> & VB,
+        const Eigen::MatrixBase<DerivedFB> & FB,
         const bool resolve_overlaps,
         Eigen::PlainObjectBase<DerivedW> & W,
         Eigen::PlainObjectBase<DerivedG> & G,
@@ -75,8 +75,8 @@ namespace igl
         typename DerivedG,
         typename DerivedJ>
       IGL_INLINE void minkowski_sum(
-        const Eigen::PlainObjectBase<DerivedVA> & VA,
-        const Eigen::PlainObjectBase<DerivedFA> & FA,
+        const Eigen::MatrixBase<DerivedVA> & VA,
+        const Eigen::MatrixBase<DerivedFA> & FA,
         const Eigen::Matrix<sType,1,sCols,sOptions> & s,
         const Eigen::Matrix<dType,1,dCols,dOptions> & d,
         const bool resolve_overlaps,
@@ -92,8 +92,8 @@ namespace igl
         typename DerivedG,
         typename DerivedJ>
       IGL_INLINE void minkowski_sum(
-        const Eigen::PlainObjectBase<DerivedVA> & VA,
-        const Eigen::PlainObjectBase<DerivedFA> & FA,
+        const Eigen::MatrixBase<DerivedVA> & VA,
+        const Eigen::MatrixBase<DerivedFA> & FA,
         const Eigen::Matrix<sType,1,sCols,sOptions> & s,
         const Eigen::Matrix<dType,1,dCols,dOptions> & d,
         Eigen::PlainObjectBase<DerivedW> & W,

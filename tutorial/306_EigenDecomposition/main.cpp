@@ -20,7 +20,8 @@ int main(int argc, char * argv[])
   using namespace std;
   using namespace igl;
   VectorXd D;
-  if(!read_triangle_mesh(TUTORIAL_SHARED_PATH "/beetle.off",V,F))
+  if(!read_triangle_mesh(
+     argc>1?argv[1]: TUTORIAL_SHARED_PATH "/beetle.off",V,F))
   {
     cout<<"failed to load mesh"<<endl;
   }
