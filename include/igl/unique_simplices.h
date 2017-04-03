@@ -25,7 +25,7 @@ namespace igl
     typename DerivedIA,
     typename DerivedIC>
   IGL_INLINE void unique_simplices(
-    const Eigen::PlainObjectBase<DerivedF>& F,
+    const Eigen::MatrixBase<DerivedF>& F,
     Eigen::PlainObjectBase<DerivedFF>& FF,
     Eigen::PlainObjectBase<DerivedIA>& IA,
     Eigen::PlainObjectBase<DerivedIC>& IC);
@@ -33,7 +33,7 @@ namespace igl
     typename DerivedF,
     typename DerivedFF>
   IGL_INLINE void unique_simplices(
-    const Eigen::PlainObjectBase<DerivedF>& F,
+    const Eigen::MatrixBase<DerivedF>& F,
     Eigen::PlainObjectBase<DerivedFF>& FF);
 }
 

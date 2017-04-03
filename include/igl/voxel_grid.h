@@ -22,12 +22,16 @@ namespace igl
   // Outputs:
   //   GV  side(0)*side(1)*side(2) by 3 list of cell center positions
   //   side  3-long list of dimension of voxel grid
+  template <
+    typename Scalar,
+    typename DerivedGV,
+    typename Derivedside>
   IGL_INLINE void voxel_grid(
-    const Eigen::AlignedBox3d & box, 
+    const Eigen::AlignedBox<Scalar,3> & box, 
     const int s,
     const int pad_count,
-    Eigen::MatrixXd & GV,
-    Eigen::RowVector3i & side);
+    Eigen::PlainObjectBase<DerivedGV> & GV,
+    Eigen::PlainObjectBase<Derivedside> & side);
 }
 #ifndef IGL_STATIC_LIBRARY
 #  include "voxel_grid.cpp"

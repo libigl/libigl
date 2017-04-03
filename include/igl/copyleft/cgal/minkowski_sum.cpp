@@ -230,7 +230,7 @@ IGL_INLINE void igl::copyleft::cgal::minkowski_sum(
   MatrixXI GT(mp+mn,3);
   GT<< slice_mask(FA,N,1), slice_mask((FA.array()+n).eval(),P,1);
   // J indexes FA for parts at s and m+FA for parts at d
-  J = igl::LinSpaced<DerivedJ >(m,0,m-1);
+  J.derived() = igl::LinSpaced<DerivedJ >(m,0,m-1);
   DerivedJ JT(mp+mn);
   JT << slice_mask(J,P,1), slice_mask(J,N,1);
   JT.block(mp,0,mn,1).array()+=m;
@@ -347,7 +347,7 @@ IGL_INLINE void igl::copyleft::cgal::minkowski_sum(
       Matrix<typename DerivedVA::Scalar,Dynamic,Dynamic>(),MatrixXI(),
       MESH_BOOLEAN_TYPE_UNION,
       W,G,SJ);
-    J = slice(DerivedJ(J),SJ,1);
+    J.derived() = slice(DerivedJ(J),SJ,1);
   }
 }
 

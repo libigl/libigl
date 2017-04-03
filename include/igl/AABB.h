@@ -107,15 +107,15 @@ public:
       //   i  recursive call index {0}
       template <typename Derivedbb_mins, typename Derivedbb_maxs>
         IGL_INLINE void init(
-            const Eigen::PlainObjectBase<DerivedV> & V,
+            const Eigen::MatrixBase<DerivedV> & V,
             const Eigen::MatrixXi & Ele, 
-            const Eigen::PlainObjectBase<Derivedbb_mins> & bb_mins,
-            const Eigen::PlainObjectBase<Derivedbb_maxs> & bb_maxs,
+            const Eigen::MatrixBase<Derivedbb_mins> & bb_mins,
+            const Eigen::MatrixBase<Derivedbb_maxs> & bb_maxs,
             const Eigen::VectorXi & elements,
             const int i = 0);
       // Wrapper for root with empty serialization
       IGL_INLINE void init(
-          const Eigen::PlainObjectBase<DerivedV> & V,
+          const Eigen::MatrixBase<DerivedV> & V,
           const Eigen::MatrixXi & Ele);
       // Build an Axis-Aligned Bounding Box tree for a given mesh.
       //
@@ -130,7 +130,7 @@ public:
       //     calls)
       // 
       IGL_INLINE void init(
-          const Eigen::PlainObjectBase<DerivedV> & V,
+          const Eigen::MatrixBase<DerivedV> & V,
           const Eigen::MatrixXi & Ele, 
           const Eigen::MatrixXi & SI,
           const Eigen::VectorXi & I);
@@ -150,9 +150,9 @@ public:
       //   list of indices of elements containing q
       template <typename Derivedq>
       IGL_INLINE std::vector<int> find(
-          const Eigen::PlainObjectBase<DerivedV> & V,
+          const Eigen::MatrixBase<DerivedV> & V,
           const Eigen::MatrixXi & Ele, 
-          const Eigen::PlainObjectBase<Derivedq> & q,
+          const Eigen::MatrixBase<Derivedq> & q,
           const bool first=false) const;
 
       // If number of elements m then total tree size should be 2*h where h is
@@ -186,7 +186,7 @@ public:
       // Known bugs: currently assumes Elements are triangles regardless of
       // dimension.
       IGL_INLINE Scalar squared_distance(
-        const Eigen::PlainObjectBase<DerivedV> & V,
+        const Eigen::MatrixBase<DerivedV> & V,
         const Eigen::MatrixXi & Ele, 
         const RowVectorDIMS & p,
         int & i,
@@ -209,7 +209,7 @@ public:
       // Known bugs: currently assumes Elements are triangles regardless of
       // dimension.
       IGL_INLINE Scalar squared_distance(
-        const Eigen::PlainObjectBase<DerivedV> & V,
+        const Eigen::MatrixBase<DerivedV> & V,
         const Eigen::MatrixXi & Ele, 
         const RowVectorDIMS & p,
         const Scalar min_sqr_d,
@@ -217,21 +217,21 @@ public:
         RowVectorDIMS & c) const;
       // All hits
       IGL_INLINE bool intersect_ray(
-        const Eigen::PlainObjectBase<DerivedV> & V,
+        const Eigen::MatrixBase<DerivedV> & V,
         const Eigen::MatrixXi & Ele, 
         const RowVectorDIMS & origin,
         const RowVectorDIMS & dir,
         std::vector<igl::Hit> & hits) const;
       // First hit
       IGL_INLINE bool intersect_ray(
-        const Eigen::PlainObjectBase<DerivedV> & V,
+        const Eigen::MatrixBase<DerivedV> & V,
         const Eigen::MatrixXi & Ele, 
         const RowVectorDIMS & origin,
         const RowVectorDIMS & dir,
         igl::Hit & hit) const;
 //private:
       IGL_INLINE bool intersect_ray(
-        const Eigen::PlainObjectBase<DerivedV> & V,
+        const Eigen::MatrixBase<DerivedV> & V,
         const Eigen::MatrixXi & Ele, 
         const RowVectorDIMS & origin,
         const RowVectorDIMS & dir,
@@ -258,9 +258,9 @@ public:
         typename DerivedI, 
         typename DerivedC>
       IGL_INLINE void squared_distance(
-        const Eigen::PlainObjectBase<DerivedV> & V,
+        const Eigen::MatrixBase<DerivedV> & V,
         const Eigen::MatrixXi & Ele, 
-        const Eigen::PlainObjectBase<DerivedP> & P,
+        const Eigen::MatrixBase<DerivedP> & P,
         Eigen::PlainObjectBase<DerivedsqrD> & sqrD,
         Eigen::PlainObjectBase<DerivedI> & I,
         Eigen::PlainObjectBase<DerivedC> & C) const;
@@ -286,10 +286,10 @@ public:
         typename DerivedI, 
         typename DerivedC>
       IGL_INLINE void squared_distance(
-        const Eigen::PlainObjectBase<DerivedV> & V,
+        const Eigen::MatrixBase<DerivedV> & V,
         const Eigen::MatrixXi & Ele, 
         const AABB<Derivedother_V,DIM> & other,
-        const Eigen::PlainObjectBase<Derivedother_V> & other_V,
+        const Eigen::MatrixBase<Derivedother_V> & other_V,
         const Eigen::MatrixXi & other_Ele, 
         Eigen::PlainObjectBase<DerivedsqrD> & sqrD,
         Eigen::PlainObjectBase<DerivedI> & I,
@@ -301,10 +301,10 @@ private:
         typename DerivedI, 
         typename DerivedC>
       IGL_INLINE Scalar squared_distance_helper(
-        const Eigen::PlainObjectBase<DerivedV> & V,
+        const Eigen::MatrixBase<DerivedV> & V,
         const Eigen::MatrixXi & Ele, 
         const AABB<Derivedother_V,DIM> * other,
-        const Eigen::PlainObjectBase<Derivedother_V> & other_V,
+        const Eigen::MatrixBase<Derivedother_V> & other_V,
         const Eigen::MatrixXi & other_Ele, 
         const Scalar min_sqr_d,
         Eigen::PlainObjectBase<DerivedsqrD> & sqrD,
@@ -326,7 +326,7 @@ private:
       //   i  possibly updated index into Ele of closest point
       //   c  dim-long possibly updated closest point
       IGL_INLINE void leaf_squared_distance(
-        const Eigen::PlainObjectBase<DerivedV> & V,
+        const Eigen::MatrixBase<DerivedV> & V,
         const Eigen::MatrixXi & Ele, 
         const RowVectorDIMS & p,
         Scalar & sqr_d,

@@ -14,15 +14,23 @@
 #include "pseudonormal_test.h"
 
 
+template <
+  typename DerivedP,
+  typename DerivedV,
+  typename DerivedF,
+  typename DerivedS,
+  typename DerivedI,
+  typename DerivedC,
+  typename DerivedN>
 IGL_INLINE void igl::signed_distance(
-  const Eigen::MatrixXd & P,
-  const Eigen::MatrixXd & V,
-  const Eigen::MatrixXi & F,
+  const Eigen::MatrixBase<DerivedP> & P,
+  const Eigen::MatrixBase<DerivedV> & V,
+  const Eigen::MatrixBase<DerivedF> & F,
   const SignedDistanceType sign_type,
-  Eigen::VectorXd & S,
-  Eigen::VectorXi & I,
-  Eigen::MatrixXd & C,
-  Eigen::MatrixXd & N)
+  Eigen::PlainObjectBase<DerivedS> & S,
+  Eigen::PlainObjectBase<DerivedI> & I,
+  Eigen::PlainObjectBase<DerivedC> & C,
+  Eigen::PlainObjectBase<DerivedN> & N)
 {
   using namespace Eigen;
   using namespace std;
@@ -35,10 +43,11 @@ IGL_INLINE void igl::signed_distance(
   {
     assert(F.cols() == dim && "F should have co-dimension 0 simplices");
   }
+  typedef Eigen::Matrix<typename DerivedV::Scalar,1,3> RowVector3S;
 
   // Prepare distance computation
-  AABB<MatrixXd,3> tree3;
-  AABB<MatrixXd,2> tree2;
+  AABB<DerivedV,3> tree3;
+  AABB<DerivedV,2> tree2;
   switch(dim)
   {
     default:
@@ -50,10 +59,10 @@ IGL_INLINE void igl::signed_distance(
       break;
   }
 
-  Eigen::MatrixXd FN,VN,EN;
-  Eigen::MatrixXi E;
-  Eigen::VectorXi EMAP;
-  WindingNumberAABB<Eigen::Vector3d> hier3;
+  Eigen::Matrix<typename DerivedV::Scalar,Eigen::Dynamic,3> FN,VN,EN;
+  Eigen::Matrix<typename DerivedF::Scalar,Eigen::Dynamic,2> E;
+  Eigen::Matrix<typename DerivedF::Scalar,Eigen::Dynamic,1> EMAP;
+  WindingNumberAABB<RowVector3S > hier3;
   switch(sign_type)
   {
     default:
@@ -113,8 +122,8 @@ IGL_INLINE void igl::signed_distance(
   C.resize(P.rows(),dim);
   for(int p = 0;p<P.rows();p++)
   {
-    RowVector3d q3;
-    RowVector2d q2;
+    RowVector3S q3;
+    Eigen::Matrix<typename DerivedV::Scalar,1,2>  q2;
     switch(P.cols())
     {
       default:
@@ -126,9 +135,9 @@ IGL_INLINE void igl::signed_distance(
         break;
     }
     double s,sqrd;
-    RowVectorXd c;
-    RowVector3d c3;
-    RowVector2d c2;
+    Eigen::Matrix<typename DerivedV::Scalar,1,Eigen::Dynamic>  c;
+    RowVector3S c3;
+    Eigen::Matrix<typename DerivedV::Scalar,1,2>  c2;
     int i=-1;
     switch(sign_type)
     {
@@ -148,12 +157,12 @@ IGL_INLINE void igl::signed_distance(
         break;
       case SIGNED_DISTANCE_TYPE_PSEUDONORMAL:
       {
-        RowVector3d n3;
-        RowVector2d n2;
+        RowVector3S n3;
+        Eigen::Matrix<typename DerivedV::Scalar,1,2>  n2;
         dim==3 ?
           signed_distance_pseudonormal(tree3,V,F,FN,VN,EN,EMAP,q3,s,sqrd,i,c3,n3):
           signed_distance_pseudonormal(tree2,V,F,FN,VN,q2,s,sqrd,i,c2,n2);
-        Eigen::RowVectorXd n;
+        Eigen::Matrix<typename DerivedV::Scalar,1,Eigen::Dynamic>  n;
         (dim==3 ? n = n3 : n = n2);
         N.row(p) = n;
         break;
@@ -166,36 +175,56 @@ IGL_INLINE void igl::signed_distance(
 }
 
 
-IGL_INLINE double igl::signed_distance_pseudonormal(
-  const AABB<Eigen::MatrixXd,3> & tree,
-  const Eigen::MatrixXd & V,
-  const Eigen::MatrixXi & F,
-  const Eigen::MatrixXd & FN,
-  const Eigen::MatrixXd & VN,
-  const Eigen::MatrixXd & EN,
-  const Eigen::VectorXi & EMAP,
-  const Eigen::RowVector3d & q)
+template <
+  typename DerivedV,
+  typename DerivedF,
+  typename DerivedFN,
+  typename DerivedVN,
+  typename DerivedEN,
+  typename DerivedEMAP,
+  typename Derivedq>
+IGL_INLINE typename DerivedV::Scalar igl::signed_distance_pseudonormal(
+  const AABB<DerivedV,3> & tree,
+  const Eigen::MatrixBase<DerivedV> & V,
+  const Eigen::MatrixBase<DerivedF> & F,
+  const Eigen::MatrixBase<DerivedFN> & FN,
+  const Eigen::MatrixBase<DerivedVN> & VN,
+  const Eigen::MatrixBase<DerivedEN> & EN,
+  const Eigen::MatrixBase<DerivedEMAP> & EMAP,
+  const Eigen::MatrixBase<Derivedq> & q)
 {
-  double s,sqrd;
-  Eigen::RowVector3d n,c;
+  typename DerivedV::Scalar s,sqrd;
+  Eigen::Matrix<typename DerivedV::Scalar,1,3> n,c;
   int i = -1;
   signed_distance_pseudonormal(tree,V,F,FN,VN,EN,EMAP,q,s,sqrd,i,c,n);
   return s*sqrt(sqrd);
 }
 
+template <
+  typename DerivedP,
+  typename DerivedV,
+  typename DerivedF,
+  typename DerivedFN,
+  typename DerivedVN,
+  typename DerivedEN,
+  typename DerivedEMAP,
+  typename DerivedS,
+  typename DerivedI,
+  typename DerivedC,
+  typename DerivedN>
 IGL_INLINE void igl::signed_distance_pseudonormal(
-  const Eigen::MatrixXd & P,
-  const Eigen::MatrixXd & V,
-  const Eigen::MatrixXi & F,
-  const AABB<Eigen::MatrixXd,3> & tree,
-  const Eigen::MatrixXd & FN,
-  const Eigen::MatrixXd & VN,
-  const Eigen::MatrixXd & EN,
-  const Eigen::VectorXi & EMAP,
-  Eigen::VectorXd & S,
-  Eigen::VectorXi & I,
-  Eigen::MatrixXd & C,
-  Eigen::MatrixXd & N)
+  const Eigen::MatrixBase<DerivedP> & P,
+  const Eigen::MatrixBase<DerivedV> & V,
+  const Eigen::MatrixBase<DerivedF> & F,
+  const AABB<DerivedV,3> & tree,
+  const Eigen::MatrixBase<DerivedFN> & FN,
+  const Eigen::MatrixBase<DerivedVN> & VN,
+  const Eigen::MatrixBase<DerivedEN> & EN,
+  const Eigen::MatrixBase<DerivedEMAP> & EMAP,
+  Eigen::PlainObjectBase<DerivedS> & S,
+  Eigen::PlainObjectBase<DerivedI> & I,
+  Eigen::PlainObjectBase<DerivedC> & C,
+  Eigen::PlainObjectBase<DerivedN> & N)
 {
   using namespace Eigen;
   const size_t np = P.rows();
@@ -203,131 +232,160 @@ IGL_INLINE void igl::signed_distance_pseudonormal(
   I.resize(np,1);
   N.resize(np,3);
   C.resize(np,3);
+  typedef Eigen::Matrix<typename DerivedV::Scalar,1,3> RowVector3S;
 # pragma omp parallel for if(np>1000)
   for(size_t p = 0;p<np;p++)
   {
-    double s,sqrd;
-    RowVector3d n,c;
+    typename DerivedV::Scalar s,sqrd;
+    RowVector3S n,c;
     int i = -1;
-    RowVector3d q = P.row(p);
+    RowVector3S q = P.row(p);
     signed_distance_pseudonormal(tree,V,F,FN,VN,EN,EMAP,q,s,sqrd,i,c,n);
     S(p) = s*sqrt(sqrd);
     I(p) = i;
     N.row(p) = n;
     C.row(p) = c;
   }
-//  igl::AABB<MatrixXd,3> tree_P;
-//  MatrixXi J = igl::LinSpaced<VectorXi >(P.rows(),0,P.rows()-1);
-//  tree_P.init(P,J);
-//  tree.squared_distance(V,F,tree_P,P,J,S,I,C);
-//# pragma omp parallel for if(np>1000)
-//  for(size_t p = 0;p<np;p++)
-//  {
-//    RowVector3d c = C.row(p);
-//    RowVector3d q = P.row(p);
-//    const int f = I(p);
-//    double s;
-//    RowVector3d n;
-//    pseudonormal_test(V,F,FN,VN,EN,EMAP,q,f,c,s,n);
-//    N.row(p) = n;
-//    S(p) = s*sqrt(S(p));
-//  }
-
 }
 
+template <
+  typename DerivedV,
+  typename DerivedF,
+  typename DerivedFN,
+  typename DerivedVN,
+  typename DerivedEN,
+  typename DerivedEMAP,
+  typename Derivedq,
+  typename Scalar,
+  typename Derivedc,
+  typename Derivedn>
 IGL_INLINE void igl::signed_distance_pseudonormal(
-  const AABB<Eigen::MatrixXd,3> & tree,
-  const Eigen::MatrixXd & V,
-  const Eigen::MatrixXi & F,
-  const Eigen::MatrixXd & FN,
-  const Eigen::MatrixXd & VN,
-  const Eigen::MatrixXd & EN,
-  const Eigen::VectorXi & EMAP,
-  const Eigen::RowVector3d & q,
-  double & s,
-  double & sqrd,
-  int & f,
-  Eigen::RowVector3d & c,
-  Eigen::RowVector3d & n)
+  const AABB<DerivedV,3> & tree,
+  const Eigen::MatrixBase<DerivedV> & V,
+  const Eigen::MatrixBase<DerivedF> & F,
+  const Eigen::MatrixBase<DerivedFN> & FN,
+  const Eigen::MatrixBase<DerivedVN> & VN,
+  const Eigen::MatrixBase<DerivedEN> & EN,
+  const Eigen::MatrixBase<DerivedEMAP> & EMAP,
+  const Eigen::MatrixBase<Derivedq> & q,
+  Scalar & s,
+  Scalar & sqrd,
+  int & i,
+  Eigen::PlainObjectBase<Derivedc> & c,
+  Eigen::PlainObjectBase<Derivedn> & n)
 {
   using namespace Eigen;
   using namespace std;
-  sqrd = tree.squared_distance(V,F,q,f,c);
-  pseudonormal_test(V,F,FN,VN,EN,EMAP,q,f,c,s,n);
+  typedef Eigen::Matrix<typename DerivedV::Scalar,1,3> RowVector3S;
+  sqrd = tree.squared_distance(V,F,RowVector3S(q),i,(RowVector3S&)c);
+  pseudonormal_test(V,F,FN,VN,EN,EMAP,q,i,c,s,n);
 }
 
+template <
+  typename DerivedV,
+  typename DerivedE,
+  typename DerivedEN,
+  typename DerivedVN,
+  typename Derivedq,
+  typename Scalar,
+  typename Derivedc,
+  typename Derivedn>
 IGL_INLINE void igl::signed_distance_pseudonormal(
-  const AABB<Eigen::MatrixXd,2> & tree,
-  const Eigen::MatrixXd & V,
-  const Eigen::MatrixXi & F,
-  const Eigen::MatrixXd & FN,
-  const Eigen::MatrixXd & VN,
-  const Eigen::RowVector2d & q,
-  double & s,
-  double & sqrd,
-  int & f,
-  Eigen::RowVector2d & c,
-  Eigen::RowVector2d & n)
+  const AABB<DerivedV,2> & tree,
+  const Eigen::MatrixBase<DerivedV> & V,
+  const Eigen::MatrixBase<DerivedE> & E,
+  const Eigen::MatrixBase<DerivedEN> & EN,
+  const Eigen::MatrixBase<DerivedVN> & VN,
+  const Eigen::MatrixBase<Derivedq> & q,
+  Scalar & s,
+  Scalar & sqrd,
+  int & i,
+  Eigen::PlainObjectBase<Derivedc> & c,
+  Eigen::PlainObjectBase<Derivedn> & n)
 {
   using namespace Eigen;
   using namespace std;
-  sqrd = tree.squared_distance(V,F,q,f,c);
-  pseudonormal_test(V,F,FN,VN,q,f,c,s,n);
+  typedef Eigen::Matrix<typename DerivedV::Scalar,1,2> RowVector2S;
+  sqrd = tree.squared_distance(V,E,RowVector2S(q),i,(RowVector2S&)c);
+  pseudonormal_test(V,E,EN,VN,q,i,c,s,n);
 }
 
-IGL_INLINE double igl::signed_distance_winding_number(
-  const AABB<Eigen::MatrixXd,3> & tree,
-  const Eigen::MatrixXd & V,
-  const Eigen::MatrixXi & F,
-  const igl::WindingNumberAABB<Eigen::Vector3d> & hier,
-  const Eigen::RowVector3d & q)
+template <
+  typename DerivedV,
+  typename DerivedF,
+  typename Derivedq>
+IGL_INLINE typename DerivedV::Scalar igl::signed_distance_winding_number(
+  const AABB<DerivedV,3> & tree,
+  const Eigen::MatrixBase<DerivedV> & V,
+  const Eigen::MatrixBase<DerivedF> & F,
+  const igl::WindingNumberAABB<Derivedq> & hier,
+  const Eigen::MatrixBase<Derivedq> & q)
 {
-  double s,sqrd;
-  Eigen::RowVector3d c;
+  typedef typename DerivedV::Scalar Scalar;
+  Scalar s,sqrd;
+  Eigen::Matrix<Scalar,1,3> c;
   int i=-1;
   signed_distance_winding_number(tree,V,F,hier,q,s,sqrd,i,c);
   return s*sqrt(sqrd);
 }
 
 
+template <
+  typename DerivedV,
+  typename DerivedF,
+  typename Derivedq,
+  typename Scalar,
+  typename Derivedc>
 IGL_INLINE void igl::signed_distance_winding_number(
-  const AABB<Eigen::MatrixXd,3> & tree,
-  const Eigen::MatrixXd & V,
-  const Eigen::MatrixXi & F,
-  const igl::WindingNumberAABB<Eigen::Matrix<double,3,1> > & hier,
-  const Eigen::Matrix<double,1,3> & q,
-  double & s,
-  double & sqrd,
+  const AABB<DerivedV,3> & tree,
+  const Eigen::MatrixBase<DerivedV> & V,
+  const Eigen::MatrixBase<DerivedF> & F,
+  const igl::WindingNumberAABB<Derivedq> & hier,
+  const Eigen::MatrixBase<Derivedq> & q,
+  Scalar & s,
+  Scalar & sqrd,
   int & i,
-  Eigen::Matrix<double,1,3> & c)
+  Eigen::PlainObjectBase<Derivedc> & c)
 {
   using namespace Eigen;
   using namespace std;
-  sqrd = tree.squared_distance(V,F,q,i,c);
-  const double w = hier.winding_number(q.transpose());
+  typedef Eigen::Matrix<typename DerivedV::Scalar,1,3> RowVector3S;
+  sqrd = tree.squared_distance(V,F,RowVector3S(q),i,(RowVector3S&)c);
+  const Scalar w = hier.winding_number(q.transpose());
   s = 1.-2.*w;
 }
 
+template <
+  typename DerivedV,
+  typename DerivedF,
+  typename Derivedq,
+  typename Scalar,
+  typename Derivedc>
 IGL_INLINE void igl::signed_distance_winding_number(
   const AABB<Eigen::MatrixXd,2> & tree,
-  const Eigen::MatrixXd & V,
-  const Eigen::MatrixXi & F,
-  const Eigen::Matrix<double,1,2> & q,
-  double & s,
-  double & sqrd,
+  const Eigen::MatrixBase<DerivedV> & V,
+  const Eigen::MatrixBase<DerivedF> & F,
+  const Eigen::MatrixBase<Derivedq> & q,
+  Scalar & s,
+  Scalar & sqrd,
   int & i,
-  Eigen::Matrix<double,1,2> & c)
+  Eigen::PlainObjectBase<Derivedc> & c)
 {
   using namespace Eigen;
   using namespace std;
-  sqrd = tree.squared_distance(V,F,q,i,c);
-  double w;
-  winding_number_2(V.data(), V.rows(), F.data(), F.rows(), q.data(), 1, &w);
+  typedef Eigen::Matrix<typename DerivedV::Scalar,1,2> RowVector2S;
+  sqrd = tree.squared_distance(V,F,RowVector2S(q),i,(RowVector2S&)c);
+  Scalar w;
+  // TODO: using .data() like this is very dangerous... This is assuming
+  // colmajor order
+  assert(V.IsColMajor);
+  assert(F.IsColMajor);
+  winding_number_2(V.derived().data(), V.rows(), F.derived().data(), F.rows(), q.derived().data(), 1, &w);
   s = 1.-2.*w;
-
 }
 
 #ifdef IGL_STATIC_LIBRARY
-// This template is necessary for the others to compile with clang
-// http://stackoverflow.com/questions/27748442/is-clangs-c11-support-reliable
+// Explicit template instantiation
+template void igl::signed_distance_pseudonormal<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3> const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
+template void igl::signed_distance<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, igl::SignedDistanceType, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
 #endif

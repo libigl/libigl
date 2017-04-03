@@ -24,33 +24,53 @@ namespace igl
   //   EN  #E by 3 list of edge normals (UNIFORM WEIGHTING)
   //   EMAP  #F*3 mapping edges in F to E
   //   q  Query point
-  //   i  index into F to face to which c belongs
+  //   f  index into F to face to which c belongs
   //   c  Point on (V,F)
   // Outputs:
   //   s  sign
   //   n  normal
+  template <
+    typename DerivedV,
+    typename DerivedF,
+    typename DerivedFN,
+    typename DerivedVN,
+    typename DerivedEN,
+    typename DerivedEMAP,
+    typename Derivedq,
+    typename Derivedc,
+    typename Scalar,
+    typename Derivedn>
   IGL_INLINE void pseudonormal_test(
-    const Eigen::MatrixXd & V,
-    const Eigen::MatrixXi & F,
-    const Eigen::MatrixXd & FN,
-    const Eigen::MatrixXd & VN,
-    const Eigen::MatrixXd & EN,
-    const Eigen::VectorXi & EMAP,
-    const Eigen::RowVector3d & q,
-    const int i,
-    const Eigen::RowVector3d & c,
-    double & s,
-    Eigen::RowVector3d & n);
+    const Eigen::MatrixBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedF> & F,
+    const Eigen::MatrixBase<DerivedFN> & FN,
+    const Eigen::MatrixBase<DerivedVN> & VN,
+    const Eigen::MatrixBase<DerivedEN> & EN,
+    const Eigen::MatrixBase<DerivedEMAP> & EMAP,
+    const Eigen::MatrixBase<Derivedq> & q,
+    const int f,
+    Eigen::PlainObjectBase<Derivedc> & c,
+    Scalar & s,
+    Eigen::PlainObjectBase<Derivedn> & n);
+  template <
+    typename DerivedV,
+    typename DerivedF,
+    typename DerivedEN,
+    typename DerivedVN,
+    typename Derivedq,
+    typename Derivedc,
+    typename Scalar,
+    typename Derivedn>
   IGL_INLINE void pseudonormal_test(
-    const Eigen::MatrixXd & V,
-    const Eigen::MatrixXi & E,
-    const Eigen::MatrixXd & EN,
-    const Eigen::MatrixXd & VN,
-    const Eigen::RowVector2d & q,
-    const int i,
-    const Eigen::RowVector2d & c,
-    double & s,
-    Eigen::RowVector2d & n);
+    const Eigen::MatrixBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedF> & E,
+    const Eigen::MatrixBase<DerivedEN> & EN,
+    const Eigen::MatrixBase<DerivedVN> & VN,
+    const Eigen::MatrixBase<Derivedq> & q,
+    const int e,
+    Eigen::PlainObjectBase<Derivedc> & c,
+    Scalar & s,
+    Eigen::PlainObjectBase<Derivedn> & n);
 }
 #ifndef IGL_STATIC_LIBRARY
 #  include "pseudonormal_test.cpp"
