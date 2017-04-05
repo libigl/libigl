@@ -40,7 +40,7 @@ void igl::copyleft::offset_surface(
     Eigen::VectorXi I;
     Eigen::Matrix<typename DerivedV::Scalar,Eigen::Dynamic,3> C,N;
     igl::signed_distance(
-      GV,V,F,igl::SIGNED_DISTANCE_TYPE_PSEUDONORMAL,S,I,C,N);
+      GV,V,F,signed_distance_type,S,I,C,N);
   }
   DerivedS SS = S.array()-isolevel;
   igl::copyleft::marching_cubes(SS,GV,side(0),side(1),side(2),SV,SF);
