@@ -2,6 +2,7 @@
 #include "marching_cubes.h"
 #include "../voxel_grid.h"
 #include <cassert>
+#include <iostream>
 
 template <
   typename DerivedV,
@@ -34,7 +35,7 @@ void igl::copyleft::offset_surface(
     RowVector3S max_ext = V.colwise().maxCoeff().array() + isolevel;
     box.extend(min_ext.transpose());
     box.extend(max_ext.transpose());
-    igl::voxel_grid(box,s,0,GV,side);
+    igl::voxel_grid(box,s,1,GV,side);
   }
   {
     Eigen::VectorXi I;
