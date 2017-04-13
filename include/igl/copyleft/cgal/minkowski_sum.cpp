@@ -17,6 +17,7 @@
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 #include <cassert>
 #include <vector>
+#include <iostream>
 
 
 template <
@@ -247,7 +248,13 @@ IGL_INLINE void igl::copyleft::cgal::minkowski_sum(
 
   MatrixXI uGQ;
   VectorXI S,sI,sJ;
-  //const auto & total_signed_distance = 
+  // Inputs:
+  //   F  #F by d list of polygons
+  // Outputs:
+  //   S  #uF list of signed incidences for each unique face
+  //  uF  #uF by d list of unique faces
+  //   I  #uF index vector so that uF = sort(F,2)(I,:)
+  //   J  #F index vector so that sort(F,2) = uF(J,:)
   [](
       const MatrixXI & F,
       VectorXI & S,
@@ -273,7 +280,7 @@ IGL_INLINE void igl::copyleft::cgal::minkowski_sum(
         }
       }
     }
-    // swap orienation
+    // swap orienation so that last index is greater than first
     for(int f = 0;f<m;f++)
     {
       if(sF(f,d-1) < sF(f,1))
