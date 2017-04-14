@@ -18,16 +18,6 @@ IGL_INLINE void igl::opengl::init_render_to_texture(
   GLuint & d_id)
 {
   using namespace std;
-  // Delete if already exists
-  glDeleteTextures(1,&tex_id);
-  glDeleteFramebuffers(1,&fbo_id);
-  if(depth_texture)
-  {
-    glDeleteTextures(1,&d_id);
-  }else
-  {
-    glDeleteFramebuffers(1,&d_id);
-  }
   // http://www.opengl.org/wiki/Framebuffer_Object_Examples#Quick_example.2C_render_to_texture_.282D.29
   const auto & gen_tex = [](GLuint & tex_id)
   {
