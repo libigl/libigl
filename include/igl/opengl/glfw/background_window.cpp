@@ -17,6 +17,16 @@ IGL_INLINE bool igl::opengl::glfw::background_window(GLFWwindow* & window)
   window = glfwCreateWindow(1, 1,"", NULL, NULL);
   if(!window) return false;
   glfwMakeContextCurrent(window);
+  #ifndef __APPLE__
+    glewExperimental = true;
+    GLenum err = glewInit();
+    if(GLEW_OK != err)
+    {
+      /* Problem: glewInit failed, something is seriously wrong. */
+     fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
+    }
+    glGetError(); // pull and savely ignonre unhandled errors like GL_INVALID_ENUM
+  #endif
   return true;
 }
 
