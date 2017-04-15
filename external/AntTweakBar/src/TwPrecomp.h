@@ -44,7 +44,28 @@
 #   pragma warning(pop)
 #endif
 
-#if defined(_UNIX)
+#if defined(_WINDOWS) || defined(WIN32) || defined(WIN64) || defined(_WIN32) || defined(_WIN64)
+#   define ANT_WINDOWS
+#   ifndef WIN32_LEAN_AND_MEAN
+#       define WIN32_LEAN_AND_MEAN // Exclude rarely-used stuff from Windows headers
+#   endif
+#   include <windows.h>
+#   include <shellapi.h>
+#elif defined(_MACOSX)
+#   define ANT_OSX
+#   include <unistd.h>
+#   include <Foundation/Foundation.h>
+#   include <AppKit/NSImage.h>
+#   include <AppKit/NSCursor.h>
+#   undef _WIN32
+#   undef WIN32
+#   undef _WIN64
+#   undef WIN64
+#   undef _WINDOWS
+#   undef ANT_WINDOWS
+#   undef ANT_UNIX
+#else
+//defined(_UNIX)
 #   define ANT_UNIX
 #   include <X11/cursorfont.h>
 #   define GLX_GLXEXT_LEGACY
@@ -59,26 +80,6 @@
 #   undef _WINDOWS
 #   undef ANT_WINDOWS
 #   undef ANT_OSX
-#elif defined(_MACOSX)
-#   define ANT_OSX
-#   include <unistd.h>
-#   include <Foundation/Foundation.h>
-#   include <AppKit/NSImage.h>
-#   include <AppKit/NSCursor.h>
-#   undef _WIN32
-#   undef WIN32
-#   undef _WIN64
-#   undef WIN64
-#   undef _WINDOWS
-#   undef ANT_WINDOWS
-#   undef ANT_UNIX
-#elif defined(_WINDOWS) || defined(WIN32) || defined(WIN64) || defined(_WIN32) || defined(_WIN64)
-#   define ANT_WINDOWS
-#   ifndef WIN32_LEAN_AND_MEAN
-#       define WIN32_LEAN_AND_MEAN // Exclude rarely-used stuff from Windows headers
-#   endif
-#   include <windows.h>
-#   include <shellapi.h>
 #endif
 
 #if !defined(ANT_OGL_HEADER_INCLUDED)
