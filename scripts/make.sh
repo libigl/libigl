@@ -55,6 +55,7 @@ else
   PROJECTS=`echo "$@" | tr ' ' '\n'`
 fi
 
+ret=0
 for PROJECT in $PROJECTS
 do
 
@@ -100,5 +101,10 @@ do
     done
     #echo -e "\033[0;35mHanding off to make $TARGET\033[0m"
     make -j$NUM_THREADS -f "${TARGET_DIR}/build.make" "${TARGET_DIR}/build" 
+    make_ret="$?"
+    if [ $make_ret -ne 0 ] ; then
+      ret="$make_ret"
+    fi
   done
 done
+exit $ret
