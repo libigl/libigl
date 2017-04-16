@@ -4,7 +4,7 @@
 #include <igl/jet.h>
 #include <igl/readDMAT.h>
 #include <igl/readOFF.h>
-#include <igl/viewer/Viewer.h>
+#include <igl/opengl/glfw/Viewer.h>
 
 #include <iostream>
 #include "tutorial_shared_path.h"
@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
   // Compute gradient magnitude
   const VectorXd GU_mag = GU.rowwise().norm();
 
-  igl::viewer::Viewer viewer;
+  igl::opengl::glfw::Viewer viewer;
   viewer.data.set_mesh(V, F);
 
   // Compute pseudocolor for original function

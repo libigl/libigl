@@ -2,7 +2,7 @@
 #include <igl/readOBJ.h>
 #include <igl/n_polyvector.h>
 #include <igl/integrable_polyvector_fields.h>
-#include <igl/viewer/Viewer.h>
+#include <igl/opengl/glfw/Viewer.h>
 #include <igl/local_basis.h>
 #include <igl/avg_edge_length.h>
 #include <igl/is_border_vertex.h>
@@ -222,7 +222,7 @@ bc<<
 
 }
 
-void drawCuts(igl::viewer::Viewer& viewer,
+void drawCuts(igl::opengl::glfw::Viewer& viewer,
               const Eigen::MatrixXi &cuts)
 {
   int maxCutNum = cuts.sum();
@@ -240,7 +240,7 @@ void drawCuts(igl::viewer::Viewer& viewer,
   viewer.data.add_edges(start, end , Eigen::RowVector3d(1.,0,1.));
 }
 
-void drawField(igl::viewer::Viewer &viewer,
+void drawField(igl::opengl::glfw::Viewer &viewer,
                const Eigen::MatrixXd &field,
                const Eigen::RowVector3d &color)
 {
@@ -252,7 +252,7 @@ void drawField(igl::viewer::Viewer &viewer,
   }
 }
 
-void drawConstraints(igl::viewer::Viewer &viewer)
+void drawConstraints(igl::opengl::glfw::Viewer &viewer)
 {
   for (int n=0; n<2; ++n)
   {
@@ -311,7 +311,7 @@ void colorEdgeMeshFaces(const Eigen::VectorXd &values,
 
 }
 
-void update_display(igl::viewer::Viewer& viewer)
+void update_display(igl::opengl::glfw::Viewer& viewer)
 {
   using namespace std;
   using namespace Eigen;
@@ -517,7 +517,7 @@ void update_display(igl::viewer::Viewer& viewer)
 
 }
 
-bool key_down(igl::viewer::Viewer& viewer, unsigned char key, int modifier)
+bool key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier)
 {
 
   if (key == '1')
@@ -707,7 +707,7 @@ int main(int argc, char *argv[])
 
   cerr<<"Done. Press keys 1-0 for various visualizations, 'A' to improve integrability." <<endl;
 
-  igl::viewer::Viewer viewer;
+  igl::opengl::glfw::Viewer viewer;
   viewer.callback_key_down = &key_down;
   viewer.core.show_lines = false;
   key_down(viewer,'2',0);

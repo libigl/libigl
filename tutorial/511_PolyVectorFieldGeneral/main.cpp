@@ -1,6 +1,6 @@
 #include <igl/readOBJ.h>
 #include <igl/readDMAT.h>
-#include <igl/viewer/Viewer.h>
+#include <igl/opengl/glfw/Viewer.h>
 #include <igl/barycenter.h>
 #include <igl/avg_edge_length.h>
 #include <vector>
@@ -71,7 +71,7 @@ Eigen::VectorXd random_constraints(const
   return r;
 }
 
-bool key_down(igl::viewer::Viewer& viewer, unsigned char key, int modifier)
+bool key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier)
 {
   using namespace std;
   using namespace Eigen;
@@ -172,7 +172,7 @@ int main(int argc, char *argv[])
   // Make the example deterministic
   srand(0);
 
-  igl::viewer::Viewer viewer;
+  igl::opengl::glfw::Viewer viewer;
   viewer.data.set_mesh(V, F);
   viewer.callback_key_down = &key_down;
   viewer.core.show_lines = false;

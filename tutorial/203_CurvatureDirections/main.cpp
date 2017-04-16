@@ -8,7 +8,7 @@
 #include <igl/per_vertex_normals.h>
 #include <igl/principal_curvature.h>
 #include <igl/read_triangle_mesh.h>
-#include <igl/viewer/Viewer.h>
+#include <igl/opengl/glfw/Viewer.h>
 #include "tutorial_shared_path.h"
 
 Eigen::MatrixXd V;
@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
   // mean curvature
   H = 0.5*(PV1+PV2);
 
-  igl::viewer::Viewer viewer;
+  igl::opengl::glfw::Viewer viewer;
   viewer.data.set_mesh(V, F);
 
 

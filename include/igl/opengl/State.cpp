@@ -7,7 +7,10 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 
 #include "State.h"
+#include "bind_vertex_attrib_array.h"
 #include "../ViewerData.h"
+#include "create_shader_program.h"
+#include "destroy_shader_program.h"
 
 IGL_INLINE void igl::opengl::State::init_buffers()
 {
@@ -275,13 +278,13 @@ IGL_INLINE void igl::opengl::State::set_data(const igl::ViewerData &data, bool i
 IGL_INLINE void igl::opengl::State::bind_mesh()
 {
   glBindVertexArray(vao_mesh);
-  shader_mesh.bind();
-  shader_mesh.bindVertexAttribArray("position", vbo_V, V_vbo, dirty & ViewerData::DIRTY_POSITION);
-  shader_mesh.bindVertexAttribArray("normal", vbo_V_normals, V_normals_vbo, dirty & ViewerData::DIRTY_NORMAL);
-  shader_mesh.bindVertexAttribArray("Ka", vbo_V_ambient, V_ambient_vbo, dirty & ViewerData::DIRTY_AMBIENT);
-  shader_mesh.bindVertexAttribArray("Kd", vbo_V_diffuse, V_diffuse_vbo, dirty & ViewerData::DIRTY_DIFFUSE);
-  shader_mesh.bindVertexAttribArray("Ks", vbo_V_specular, V_specular_vbo, dirty & ViewerData::DIRTY_SPECULAR);
-  shader_mesh.bindVertexAttribArray("texcoord", vbo_V_uv, V_uv_vbo, dirty & ViewerData::DIRTY_UV);
+  glUseProgram(shader_mesh);
+  bind_vertex_attrib_array(shader_mesh,"position", vbo_V, V_vbo, dirty & ViewerData::DIRTY_POSITION);
+  bind_vertex_attrib_array(shader_mesh,"normal", vbo_V_normals, V_normals_vbo, dirty & ViewerData::DIRTY_NORMAL);
+  bind_vertex_attrib_array(shader_mesh,"Ka", vbo_V_ambient, V_ambient_vbo, dirty & ViewerData::DIRTY_AMBIENT);
+  bind_vertex_attrib_array(shader_mesh,"Kd", vbo_V_diffuse, V_diffuse_vbo, dirty & ViewerData::DIRTY_DIFFUSE);
+  bind_vertex_attrib_array(shader_mesh,"Ks", vbo_V_specular, V_specular_vbo, dirty & ViewerData::DIRTY_SPECULAR);
+  bind_vertex_attrib_array(shader_mesh,"texcoord", vbo_V_uv, V_uv_vbo, dirty & ViewerData::DIRTY_UV);
 
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_F);
   if (dirty & ViewerData::DIRTY_FACE)
@@ -298,7 +301,7 @@ IGL_INLINE void igl::opengl::State::bind_mesh()
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tex_u, tex_v, 0, GL_RGBA, GL_UNSIGNED_BYTE, tex.data());
   }
-  glUniform1i(shader_mesh.uniform("tex"), 0);
+  glUniform1i(glGetUniformLocation(shader_mesh,"tex"), 0);
   dirty &= ~ViewerData::DIRTY_MESH;
 }
 
@@ -307,9 +310,9 @@ IGL_INLINE void igl::opengl::State::bind_overlay_lines()
   bool is_dirty = dirty & ViewerData::DIRTY_OVERLAY_LINES;
 
   glBindVertexArray(vao_overlay_lines);
-  shader_overlay_lines.bind();
-  shader_overlay_lines.bindVertexAttribArray("position", vbo_lines_V, lines_V_vbo, is_dirty);
-  shader_overlay_lines.bindVertexAttribArray("color", vbo_lines_V_colors, lines_V_colors_vbo, is_dirty);
+  glUseProgram(shader_overlay_lines);
+ bind_vertex_attrib_array(shader_overlay_lines,"position", vbo_lines_V, lines_V_vbo, is_dirty);
+ bind_vertex_attrib_array(shader_overlay_lines,"color", vbo_lines_V_colors, lines_V_colors_vbo, is_dirty);
 
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_lines_F);
   if (is_dirty)
@@ -323,9 +326,9 @@ IGL_INLINE void igl::opengl::State::bind_overlay_points()
   bool is_dirty = dirty & ViewerData::DIRTY_OVERLAY_POINTS;
 
   glBindVertexArray(vao_overlay_points);
-  shader_overlay_points.bind();
-  shader_overlay_points.bindVertexAttribArray("position", vbo_points_V, points_V_vbo, is_dirty);
-  shader_overlay_points.bindVertexAttribArray("color", vbo_points_V_colors, points_V_colors_vbo, is_dirty);
+  glUseProgram(shader_overlay_points);
+ bind_vertex_attrib_array(shader_overlay_points,"position", vbo_points_V, points_V_vbo, is_dirty);
+ bind_vertex_attrib_array(shader_overlay_points,"color", vbo_points_V_colors, points_V_colors_vbo, is_dirty);
 
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_points_F);
   if (is_dirty)
@@ -471,18 +474,35 @@ IGL_INLINE void igl::opengl::State::init()
   "}";
 
   init_buffers();
-  shader_mesh.init(mesh_vertex_shader_string,
-      mesh_fragment_shader_string, "outColor");
-  shader_overlay_lines.init(overlay_vertex_shader_string,
-      overlay_fragment_shader_string, "outColor");
-  shader_overlay_points.init(overlay_vertex_shader_string,
-      overlay_point_fragment_shader_string, "outColor");
+  create_shader_program(
+    mesh_vertex_shader_string,
+    mesh_fragment_shader_string,
+    {},
+    shader_mesh);
+  create_shader_program(
+    overlay_vertex_shader_string,
+    overlay_fragment_shader_string,
+    {},
+    shader_overlay_lines);
+  create_shader_program(
+    overlay_vertex_shader_string,
+    overlay_point_fragment_shader_string,
+    {},
+    shader_overlay_points);
 }
 
 IGL_INLINE void igl::opengl::State::free()
 {
-  shader_mesh.free();
-  shader_overlay_lines.free();
-  shader_overlay_points.free();
+  const auto free = [](GLuint & id)
+  {
+    if(id)
+    {
+      destroy_shader_program(id);
+      id = 0;
+    }
+  };
+  free(shader_mesh);
+  free(shader_overlay_lines);
+  free(shader_overlay_points);
   free_buffers();
 }

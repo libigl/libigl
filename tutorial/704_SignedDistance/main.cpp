@@ -10,7 +10,7 @@
 #include <igl/slice_mask.h>
 #include <igl/slice_tets.h>
 #include <igl/upsample.h>
-#include <igl/viewer/Viewer.h>
+#include <igl/opengl/glfw/Viewer.h>
 #include <Eigen/Sparse>
 #include <iostream>
 
@@ -27,7 +27,7 @@ double max_distance = 1;
 double slice_z = 0.5;
 bool overlay = false;
 
-void update_visualization(igl::viewer::Viewer & viewer)
+void update_visualization(igl::opengl::glfw::Viewer & viewer)
 {
   using namespace Eigen;
   using namespace std;
@@ -97,7 +97,7 @@ void update_visualization(igl::viewer::Viewer & viewer)
   viewer.core.lighting_factor = overlay;
 }
 
-bool key_down(igl::viewer::Viewer& viewer, unsigned char key, int mod)
+bool key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int mod)
 {
   switch(key)
   {
@@ -151,7 +151,7 @@ int main(int argc, char *argv[])
     V,F,igl::PER_EDGE_NORMALS_WEIGHTING_TYPE_UNIFORM,FN,EN,E,EMAP);
 
   // Plot the generated mesh
-  igl::viewer::Viewer viewer;
+  igl::opengl::glfw::Viewer viewer;
   update_visualization(viewer);
   viewer.callback_key_down = &key_down;
   viewer.core.show_lines = false;

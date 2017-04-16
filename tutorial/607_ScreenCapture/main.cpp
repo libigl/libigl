@@ -1,12 +1,12 @@
 #include <igl/readOFF.h>
-#include <igl/viewer/Viewer.h>
+#include <igl/opengl/glfw/Viewer.h>
 #include <iostream>
 #include "tutorial_shared_path.h"
 #include <igl/png/writePNG.h>
 #include <igl/png/readPNG.h>
 
 // This function is called every time a keyboard button is pressed
-bool key_down(igl::viewer::Viewer& viewer, unsigned char key, int modifier)
+bool key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier)
 {
   if (key == '1')
   {
@@ -75,7 +75,7 @@ int main(int argc, char *argv[])
   std::cerr << "Press 2 to load the saved png and use it as a texture." << std::endl;
 
   // Plot the mesh and register the callback
-  igl::viewer::Viewer viewer;
+  igl::opengl::glfw::Viewer viewer;
   viewer.callback_key_down = &key_down;
   viewer.data.set_mesh(V, F);
   viewer.launch();

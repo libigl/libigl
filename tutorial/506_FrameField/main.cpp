@@ -10,7 +10,7 @@
 #include <igl/copyleft/comiso/nrosy.h>
 #include <igl/copyleft/comiso/miq.h>
 #include <igl/copyleft/comiso/frame_field.h>
-#include <igl/viewer/Viewer.h>
+#include <igl/opengl/glfw/Viewer.h>
 
 #include "tutorial_shared_path.h"
 
@@ -68,7 +68,7 @@ void line_texture(Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> &te
   texture_B = texture_R;
 }
 
-bool key_down(igl::viewer::Viewer& viewer, unsigned char key, int modifier)
+bool key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier)
 {
   using namespace std;
   using namespace Eigen;
@@ -245,7 +245,7 @@ int main(int argc, char *argv[])
            false,
            2);
 
-  igl::viewer::Viewer viewer;
+  igl::opengl::glfw::Viewer viewer;
   // Plot the original mesh with a texture parametrization
   key_down(viewer,'6',0);
 

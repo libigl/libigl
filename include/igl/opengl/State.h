@@ -17,7 +17,6 @@
 // appropriate.
 
 #include <igl/igl_inline.h>
-#include "Shader.h"
 #include "../ViewerData.h"
 
 namespace igl
@@ -33,9 +32,9 @@ public:
   GLuint vao_mesh;
   GLuint vao_overlay_lines;
   GLuint vao_overlay_points;
-  Shader shader_mesh;
-  Shader shader_overlay_lines;
-  Shader shader_overlay_points;
+  GLuint shader_mesh;
+  GLuint shader_overlay_lines;
+  GLuint shader_overlay_points;
 
   GLuint vbo_V; // Vertices of the current mesh (#V x 3)
   GLuint vbo_V_uv; // UV coordinates for the current mesh (#V x 2)

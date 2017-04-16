@@ -1,5 +1,5 @@
 #include <igl/readOFF.h>
-#include <igl/viewer/Viewer.h>
+#include <igl/opengl/glfw/Viewer.h>
 #include <sstream>
 #include "tutorial_shared_path.h"
 
@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
   7 ,3;
 
   // Plot the mesh
-  igl::viewer::Viewer viewer;
+  igl::opengl::glfw::Viewer viewer;
   viewer.data.set_mesh(V, F);
 
   // Plot the corners of the bounding box as points

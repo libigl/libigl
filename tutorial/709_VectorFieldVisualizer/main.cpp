@@ -11,7 +11,7 @@
 #include <igl/sort_vectors_ccw.h>
 #include <igl/streamlines.h>
 #include <igl/copyleft/comiso/nrosy.h>
-#include <igl/viewer/Viewer.h>
+#include <igl/opengl/glfw/Viewer.h>
 
 #include <cstdlib>
 #include <iostream>
@@ -64,7 +64,7 @@ void representative_to_nrosy(
     }
 }
 
-bool pre_draw(igl::viewer::Viewer &viewer)
+bool pre_draw(igl::opengl::glfw::Viewer &viewer)
 {
     using namespace Eigen;
     using namespace std;
@@ -88,7 +88,7 @@ bool pre_draw(igl::viewer::Viewer &viewer)
     return false;
 }
 
-bool key_down(igl::viewer::Viewer &viewer, unsigned char key, int modifier)
+bool key_down(igl::opengl::glfw::Viewer &viewer, unsigned char key, int modifier)
 {
     if (key == ' ')
     {
@@ -128,7 +128,7 @@ int main(int argc, char *argv[])
 
 
     // Viewer Settings
-    igl::viewer::Viewer viewer;
+    igl::opengl::glfw::Viewer viewer;
     viewer.data.set_mesh(V, F);
     viewer.callback_pre_draw = &pre_draw;
     viewer.callback_key_down = &key_down;

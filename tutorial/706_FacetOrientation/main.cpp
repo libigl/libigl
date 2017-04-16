@@ -4,13 +4,13 @@
 #include <igl/slice.h>
 #include <igl/hsv_to_rgb.h>
 #include <igl/embree/reorient_facets_raycast.h>
-#include <igl/viewer/Viewer.h>
+#include <igl/opengl/glfw/Viewer.h>
 #include <fstream>
 #include <iostream>
 #include <string>
 #include <vector>
 
-igl::viewer::Viewer viewer;
+igl::opengl::glfw::Viewer viewer;
 Eigen::MatrixXd V;
 std::vector<Eigen::VectorXi> C(2);
 std::vector<Eigen::MatrixXd> RGBcolors(2);
@@ -49,7 +49,7 @@ S,s      Scramble colors
 
   viewer.callback_key_pressed = 
     [&scramble_colors]
-    (igl::viewer::Viewer& /*viewer*/, unsigned int key, int mod)->bool
+    (igl::opengl::glfw::Viewer& /*viewer*/, unsigned int key, int mod)->bool
   {
     switch(key)
     {

@@ -1,3 +1,4 @@
+#include <igl/opengl/gl.h>
 #include <igl/arap.h>
 #include <igl/biharmonic_coordinates.h>
 #include <igl/cat.h>
@@ -11,7 +12,7 @@
 #include <igl/remove_unreferenced.h>
 #include <igl/slice.h>
 #include <igl/writeDMAT.h>
-#include <igl/viewer/Viewer.h>
+#include <igl/opengl/glfw/Viewer.h>
 #include <Eigen/Sparse>
 #include <iostream>
 #include <queue>
@@ -100,7 +101,7 @@ int main(int argc, char * argv[])
   // Random initial velocities to wiggle things
   arap_data.vel = MatrixXd::Random(n,3);
   
-  igl::viewer::Viewer viewer;
+  igl::opengl::glfw::Viewer viewer;
   // Create one huge mesh containing both meshes
   igl::cat(1,low.U,high.U,scene.U);
   igl::cat(1,low.F,MatrixXi(high.F.array()+low.V.rows()),scene.F);
@@ -113,7 +114,7 @@ int main(int argc, char * argv[])
   viewer.data.set_colors(C);
 
   viewer.callback_key_pressed = 
-    [&](igl::viewer::Viewer & viewer,unsigned int key,int mods)->bool
+    [&](igl::opengl::glfw::Viewer & viewer,unsigned int key,int mods)->bool
   {
     switch(key)
     {
@@ -127,7 +128,7 @@ int main(int argc, char * argv[])
         return true;
     }
   };
-  viewer.callback_pre_draw = [&](igl::viewer::Viewer & viewer)->bool
+  viewer.callback_pre_draw = [&](igl::opengl::glfw::Viewer & viewer)->bool
   {
     glEnable(GL_CULL_FACE);
     if(viewer.core.is_animating)
@@ -164,6 +165,6 @@ int main(int argc, char * argv[])
 'r'     to reset positions 
       )";
   viewer.core.rotation_type = 
-    igl::viewer::ViewerCore::ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP;
+    igl::opengl::ViewerCore::ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP;
   viewer.launch();
 }
