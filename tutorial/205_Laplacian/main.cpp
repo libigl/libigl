@@ -8,7 +8,7 @@
 #include <igl/readDMAT.h>
 #include <igl/readOFF.h>
 #include <igl/repdiag.h>
-#include <igl/viewer/Viewer.h>
+#include <igl/opengl/glfw/Viewer.h>
 
 #include <iostream>
 #include "tutorial_shared_path.h"
@@ -16,7 +16,7 @@
 Eigen::MatrixXd V,U;
 Eigen::MatrixXi F;
 Eigen::SparseMatrix<double> L;
-igl::viewer::Viewer viewer;
+igl::opengl::glfw::Viewer viewer;
 
 int main(int argc, char *argv[])
 {
@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
   K = -G.transpose() * T * G;
   cout<<"|K-L|: "<<(K-L).norm()<<endl;
 
-  const auto &key_down = [](igl::viewer::Viewer &viewer,unsigned char key,int mod)->bool
+  const auto &key_down = [](igl::opengl::glfw::Viewer &viewer,unsigned char key,int mod)->bool
   {
     switch(key)
     {

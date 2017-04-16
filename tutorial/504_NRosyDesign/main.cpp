@@ -3,7 +3,7 @@
 #include <igl/local_basis.h>
 #include <igl/readOFF.h>
 #include <igl/copyleft/comiso/nrosy.h>
-#include <igl/viewer/Viewer.h>
+#include <igl/opengl/glfw/Viewer.h>
 
 #include "tutorial_shared_path.h"
 
@@ -55,7 +55,7 @@ void representative_to_nrosy(
 // Plots the mesh with an N-RoSy field and its singularities on top
 // The constrained faces (b) are colored in red.
 void plot_mesh_nrosy(
-  igl::viewer::Viewer& viewer,
+  igl::opengl::glfw::Viewer& viewer,
   Eigen::MatrixXd& V,
   Eigen::MatrixXi& F,
   int N,
@@ -101,7 +101,7 @@ void plot_mesh_nrosy(
 }
 
   // It allows to change the degree of the field when a number is pressed
-bool key_down(igl::viewer::Viewer& viewer, unsigned char key, int modifier)
+bool key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier)
 {
   using namespace Eigen;
   using namespace std;
@@ -131,7 +131,7 @@ int main(int argc, char *argv[])
   bc.resize(1,3);
   bc << 1,1,1;
 
-  igl::viewer::Viewer viewer;
+  igl::opengl::glfw::Viewer viewer;
 
   // Interpolate the field and plot
   key_down(viewer, '4', 0);

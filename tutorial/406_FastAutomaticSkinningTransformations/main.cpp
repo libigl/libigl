@@ -15,7 +15,7 @@
 #include <igl/readOBJ.h>
 #include <igl/arap.h>
 #include <igl/arap_dof.h>
-#include <igl/viewer/Viewer.h>
+#include <igl/opengl/glfw/Viewer.h>
 
 #include <Eigen/Geometry>
 #include <Eigen/StdVector>
@@ -51,7 +51,7 @@ enum ModeType
   NUM_MODE_TYPES = 4
 } mode = MODE_TYPE_ARAP;
 
-bool pre_draw(igl::viewer::Viewer & viewer)
+bool pre_draw(igl::opengl::glfw::Viewer & viewer)
 {
   using namespace Eigen;
   using namespace std;
@@ -113,7 +113,7 @@ bool pre_draw(igl::viewer::Viewer & viewer)
   return false;
 }
 
-bool key_down(igl::viewer::Viewer &viewer, unsigned char key, int mods)
+bool key_down(igl::opengl::glfw::Viewer &viewer, unsigned char key, int mods)
 {
   switch(key)
   {
@@ -204,7 +204,7 @@ int main(int argc, char *argv[])
   bbd = (V.colwise().maxCoeff()- V.colwise().minCoeff()).norm();
 
   // Plot the mesh with pseudocolors
-  igl::viewer::Viewer viewer;
+  igl::opengl::glfw::Viewer viewer;
   viewer.data.set_mesh(U, F);
   viewer.data.add_points(igl::slice(V,b,1),sea_green);
   viewer.core.show_lines = false;

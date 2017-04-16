@@ -20,7 +20,7 @@
 #include <igl/readDMAT.h>
 #include <igl/readMESH.h>
 #include <igl/readTGF.h>
-#include <igl/viewer/Viewer.h>
+#include <igl/opengl/glfw/Viewer.h>
 #include <igl/bbw.h>
 //#include <igl/embree/bone_heat.h>
 
@@ -45,7 +45,7 @@ RotationList pose;
 double anim_t = 1.0;
 double anim_t_dir = -0.03;
 
-bool pre_draw(igl::viewer::Viewer & viewer)
+bool pre_draw(igl::opengl::glfw::Viewer & viewer)
 {
   using namespace Eigen;
   using namespace std;
@@ -88,14 +88,14 @@ bool pre_draw(igl::viewer::Viewer & viewer)
   return false;
 }
 
-void set_color(igl::viewer::Viewer &viewer)
+void set_color(igl::opengl::glfw::Viewer &viewer)
 {
   Eigen::MatrixXd C;
   igl::jet(W.col(selected).eval(),true,C);
   viewer.data.set_colors(C);
 }
 
-bool key_down(igl::viewer::Viewer &viewer, unsigned char key, int mods)
+bool key_down(igl::opengl::glfw::Viewer &viewer, unsigned char key, int mods)
 {
   switch(key)
   {
@@ -163,7 +163,7 @@ int main(int argc, char *argv[])
   igl::lbs_matrix(V,W,M);
 
   // Plot the mesh with pseudocolors
-  igl::viewer::Viewer viewer;
+  igl::opengl::glfw::Viewer viewer;
   viewer.data.set_mesh(U, F);
   set_color(viewer);
   viewer.data.set_edges(C,BE,sea_green);

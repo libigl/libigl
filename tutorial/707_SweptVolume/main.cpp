@@ -3,7 +3,7 @@
 #include <igl/material_colors.h>
 #include <igl/copyleft/marching_cubes.h>
 #include <igl/copyleft/swept_volume.h>
-#include <igl/viewer/Viewer.h>
+#include <igl/opengl/glfw/Viewer.h>
 #include <Eigen/Core>
 #include <iostream>
 
@@ -30,7 +30,7 @@ int main(int argc, char * argv[])
   cout<<R"(Usage:
 [space]  Toggle between transforming original mesh and swept volume
 )";
-  igl::viewer::Viewer viewer;
+  igl::opengl::glfw::Viewer viewer;
   viewer.data.set_mesh(V,F);
   viewer.data.set_face_based(true);
   viewer.core.is_animating = !show_swept_volume;
@@ -43,7 +43,7 @@ int main(int argc, char * argv[])
   std::cerr<<" finished."<<std::endl;
 
   viewer.callback_pre_draw =
-    [&](igl::viewer::Viewer & viewer)->bool
+    [&](igl::opengl::glfw::Viewer & viewer)->bool
     {
       if(!show_swept_volume)
       {
@@ -57,7 +57,7 @@ int main(int argc, char * argv[])
       return false;
     };
   viewer.callback_key_down =
-    [&](igl::viewer::Viewer & viewer, unsigned char key, int mod)->bool
+    [&](igl::opengl::glfw::Viewer & viewer, unsigned char key, int mod)->bool
     {
       switch(key)
       {

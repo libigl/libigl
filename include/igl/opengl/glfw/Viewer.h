@@ -21,7 +21,6 @@
 
 #include <igl/igl_inline.h>
 
-#include "../Shader.h"
 #include "../State.h"
 #include "../ViewerCore.h"
 #include "../../ViewerData.h"

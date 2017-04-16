@@ -2,7 +2,7 @@
 #include <igl/harmonic.h>
 #include <igl/readOBJ.h>
 #include <igl/readDMAT.h>
-#include <igl/viewer/Viewer.h>
+#include <igl/opengl/glfw/Viewer.h>
 #include <algorithm>
 #include <iostream>
 #include "tutorial_shared_path.h"
@@ -15,7 +15,7 @@ Eigen::VectorXd Z;
 Eigen::MatrixXi F;
 Eigen::VectorXi b;
 
-bool pre_draw(igl::viewer::Viewer & viewer)
+bool pre_draw(igl::opengl::glfw::Viewer & viewer)
 {
   using namespace Eigen;
   // Determine boundary conditions
@@ -41,7 +41,7 @@ bool pre_draw(igl::viewer::Viewer & viewer)
   return false;
 }
 
-bool key_down(igl::viewer::Viewer &viewer, unsigned char key, int mods)
+bool key_down(igl::opengl::glfw::Viewer &viewer, unsigned char key, int mods)
 {
   switch(key)
   {
@@ -109,7 +109,7 @@ int main(int argc, char *argv[])
   }
 
   // Plot the mesh with pseudocolors
-  igl::viewer::Viewer viewer;
+  igl::opengl::glfw::Viewer viewer;
   viewer.data.set_mesh(U, F);
   viewer.core.show_lines = false;
   viewer.data.set_colors(C);

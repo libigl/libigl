@@ -6,7 +6,7 @@
 #include <igl/readDMAT.h>
 #include <igl/readOFF.h>
 #include <igl/slice.h>
-#include <igl/viewer/Viewer.h>
+#include <igl/opengl/glfw/Viewer.h>
 #include <vector>
 #include <cstdlib>
 
@@ -28,7 +28,7 @@ Eigen::MatrixXd PQC0plan, PQC1plan, PQC2plan, PQC3plan;
 double global_scale; //TODO: not used
 
 
-bool key_down(igl::viewer::Viewer& viewer, unsigned char key, int modifier)
+bool key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier)
 {
   using namespace std;
   using namespace Eigen;
@@ -107,7 +107,7 @@ int main(int argc, char *argv[])
   igl::slice( VQCplan, FQC.col(3).eval(), 1, PQC3plan);
 
   // Launch the viewer
-  igl::viewer::Viewer viewer;
+  igl::opengl::glfw::Viewer viewer;
   key_down(viewer,'2',0);
   viewer.core.invert_normals = true;
   viewer.core.show_lines = false;

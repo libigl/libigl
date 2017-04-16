@@ -1,5 +1,5 @@
 #include <igl/readOFF.h>
-#include <igl/viewer/Viewer.h>
+#include <igl/opengl/glfw/Viewer.h>
 #include <igl/per_vertex_normals.h>
 #include <igl/per_face_normals.h>
 #include <igl/per_corner_normals.h>
@@ -15,7 +15,7 @@ Eigen::MatrixXd N_corners;
 
 
 // This function is called every time a keyboard button is pressed
-bool key_down(igl::viewer::Viewer& viewer, unsigned char key, int modifier)
+bool key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier)
 {
   switch(key)
   {
@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
   igl::per_corner_normals(V,F,20,N_corners);
 
   // Plot the mesh
-  igl::viewer::Viewer viewer;
+  igl::opengl::glfw::Viewer viewer;
   viewer.callback_key_down = &key_down;
   viewer.core.show_lines = false;
   viewer.data.set_mesh(V, F);

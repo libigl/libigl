@@ -12,7 +12,7 @@
 #include "igl/harmonic.h"
 #include <igl/serialize.h>
 #include <igl/read_triangle_mesh.h>
-#include <igl/viewer/Viewer.h>
+#include <igl/opengl/glfw/Viewer.h>
 #include <igl/flipped_triangles.h>
 #include <igl/euler_characteristic.h>
 #include <igl/barycenter.h>
@@ -30,12 +30,12 @@ using namespace std;
 using namespace Eigen;
 
 void check_mesh_for_issues(Eigen::MatrixXd& V, Eigen::MatrixXi& F);
-void param_2d_demo_iter(igl::viewer::Viewer& viewer);
+void param_2d_demo_iter(igl::opengl::glfw::Viewer& viewer);
 void get_soft_constraint_for_circle(Eigen::MatrixXd& V_o, Eigen::MatrixXi& F, Eigen::VectorXi& b, Eigen::MatrixXd& bc);
-void soft_const_demo_iter(igl::viewer::Viewer& viewer);
-void deform_3d_demo_iter(igl::viewer::Viewer& viewer);
+void soft_const_demo_iter(igl::opengl::glfw::Viewer& viewer);
+void deform_3d_demo_iter(igl::opengl::glfw::Viewer& viewer);
 void get_cube_corner_constraints(Eigen::MatrixXd& V_o, Eigen::MatrixXi& F, Eigen::VectorXi& b, Eigen::MatrixXd& bc);
-void display_3d_mesh(igl::viewer::Viewer& viewer);
+void display_3d_mesh(igl::opengl::glfw::Viewer& viewer);
 void int_set_to_eigen_vector(const std::set<int>& int_set, Eigen::VectorXi& vec);
 
 Eigen::MatrixXd V;
@@ -53,7 +53,7 @@ enum DEMO_TYPE {
 };
 DEMO_TYPE demo_type;
 
-bool key_down(igl::viewer::Viewer& viewer, unsigned char key, int modifier){
+bool key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier){
   if (key == ' ') {
     switch (demo_type) {
       case PARAM_2D: {
@@ -76,7 +76,7 @@ bool key_down(igl::viewer::Viewer& viewer, unsigned char key, int modifier){
   return false;
 }
 
-void param_2d_demo_iter(igl::viewer::Viewer& viewer) {
+void param_2d_demo_iter(igl::opengl::glfw::Viewer& viewer) {
   if (first_iter) {
     timer.start();
     igl::read_triangle_mesh(TUTORIAL_SHARED_PATH "/face.obj", V, F);
@@ -114,7 +114,7 @@ void param_2d_demo_iter(igl::viewer::Viewer& viewer) {
   }
 }
 
-void soft_const_demo_iter(igl::viewer::Viewer& viewer) {
+void soft_const_demo_iter(igl::opengl::glfw::Viewer& viewer) {
   if (first_iter) {
 
     igl::read_triangle_mesh(TUTORIAL_SHARED_PATH "/circle.obj", V, F);
@@ -141,7 +141,7 @@ void soft_const_demo_iter(igl::viewer::Viewer& viewer) {
   }
 }
 
-void deform_3d_demo_iter(igl::viewer::Viewer& viewer) {
+void deform_3d_demo_iter(igl::opengl::glfw::Viewer& viewer) {
   if (first_iter) {
     igl::readOBJ(TUTORIAL_SHARED_PATH "/cube_40k.obj", V, F);
 
@@ -163,7 +163,7 @@ void deform_3d_demo_iter(igl::viewer::Viewer& viewer) {
   }
 }
 
-void display_3d_mesh(igl::viewer::Viewer& viewer) {
+void display_3d_mesh(igl::opengl::glfw::Viewer& viewer) {
   MatrixXd V_temp; MatrixXi F_temp;
   Eigen::MatrixXd Barycenters;
 
@@ -232,7 +232,7 @@ int main(int argc, char *argv[]) {
 
 
   // Launch the viewer
-  igl::viewer::Viewer viewer;
+  igl::opengl::glfw::Viewer viewer;
   viewer.callback_key_down = &key_down;
 
   // Disable wireframe

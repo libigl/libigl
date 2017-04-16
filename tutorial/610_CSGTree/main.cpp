@@ -1,6 +1,6 @@
 #include <igl/read_triangle_mesh.h>
 #include <igl/copyleft/cgal/CSGTree.h>
-#include <igl/viewer/Viewer.h>
+#include <igl/opengl/glfw/Viewer.h>
 #include <igl/jet.h>
 #include <Eigen/Core>
 
@@ -24,7 +24,7 @@ int main(int argc, char * argv[])
   read_triangle_mesh(TUTORIAL_SHARED_PATH "/xcylinder.obj",VC,FC);
   read_triangle_mesh(TUTORIAL_SHARED_PATH "/ycylinder.obj",VD,FD);
   read_triangle_mesh(TUTORIAL_SHARED_PATH "/zcylinder.obj",VE,FE);
-  igl::viewer::Viewer viewer;
+  igl::opengl::glfw::Viewer viewer;
 
   int num_views = 5+4;
   int view_id = num_views-1;
@@ -108,7 +108,7 @@ int main(int argc, char * argv[])
   update();
 
   viewer.callback_key_down = 
-    [&](igl::viewer::Viewer &viewer, unsigned char key, int mods)->bool
+    [&](igl::opengl::glfw::Viewer &viewer, unsigned char key, int mods)->bool
     {
       switch(key)
       {

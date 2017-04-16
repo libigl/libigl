@@ -7,13 +7,14 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 
 #include "ViewerCore.h"
-#include <igl/quat_to_mat.h>
-#include <igl/snap_to_fixed_up.h>
-#include <igl/look_at.h>
-#include <igl/frustum.h>
-#include <igl/ortho.h>
-#include <igl/massmatrix.h>
-#include <igl/barycenter.h>
+#include "gl.h"
+#include "../quat_to_mat.h"
+#include "../snap_to_fixed_up.h"
+#include "../look_at.h"
+#include "../frustum.h"
+#include "../ortho.h"
+#include "../massmatrix.h"
+#include "../barycenter.h"
 #include <Eigen/Geometry>
 #include <iostream>
 
@@ -161,19 +162,19 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
   }
 
   // Send transformations to the GPU
-  GLint modeli = opengl.shader_mesh.uniform("model");
-  GLint viewi  = opengl.shader_mesh.uniform("view");
-  GLint proji  = opengl.shader_mesh.uniform("proj");
+  GLint modeli = glGetUniformLocation(opengl.shader_mesh,"model");
+  GLint viewi  = glGetUniformLocation(opengl.shader_mesh,"view");
+  GLint proji  = glGetUniformLocation(opengl.shader_mesh,"proj");
   glUniformMatrix4fv(modeli, 1, GL_FALSE, model.data());
   glUniformMatrix4fv(viewi, 1, GL_FALSE, view.data());
   glUniformMatrix4fv(proji, 1, GL_FALSE, proj.data());
 
   // Light parameters
-  GLint specular_exponenti    = opengl.shader_mesh.uniform("specular_exponent");
-  GLint light_position_worldi = opengl.shader_mesh.uniform("light_position_world");
-  GLint lighting_factori      = opengl.shader_mesh.uniform("lighting_factor");
-  GLint fixed_colori          = opengl.shader_mesh.uniform("fixed_color");
-  GLint texture_factori       = opengl.shader_mesh.uniform("texture_factor");
+  GLint specular_exponenti    = glGetUniformLocation(opengl.shader_mesh,"specular_exponent");
+  GLint light_position_worldi = glGetUniformLocation(opengl.shader_mesh,"light_position_world");
+  GLint lighting_factori      = glGetUniformLocation(opengl.shader_mesh,"lighting_factor");
+  GLint fixed_colori          = glGetUniformLocation(opengl.shader_mesh,"fixed_color");
+  GLint texture_factori       = glGetUniformLocation(opengl.shader_mesh,"texture_factor");
 
   glUniform1f(specular_exponenti, shininess);
   Vector3f rev_light = -1.*light_position;
@@ -239,9 +240,9 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
     if (data.lines.rows() > 0)
     {
       opengl.bind_overlay_lines();
-      modeli = opengl.shader_overlay_lines.uniform("model");
-      viewi  = opengl.shader_overlay_lines.uniform("view");
-      proji  = opengl.shader_overlay_lines.uniform("proj");
+      modeli = glGetUniformLocation(opengl.shader_overlay_lines,"model");
+      viewi  = glGetUniformLocation(opengl.shader_overlay_lines,"view");
+      proji  = glGetUniformLocation(opengl.shader_overlay_lines,"proj");
 
       glUniformMatrix4fv(modeli, 1, GL_FALSE, model.data());
       glUniformMatrix4fv(viewi, 1, GL_FALSE, view.data());
@@ -256,9 +257,9 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
     if (data.points.rows() > 0)
     {
       opengl.bind_overlay_points();
-      modeli = opengl.shader_overlay_points.uniform("model");
-      viewi  = opengl.shader_overlay_points.uniform("view");
-      proji  = opengl.shader_overlay_points.uniform("proj");
+      modeli = glGetUniformLocation(opengl.shader_overlay_points,"model");
+      viewi  = glGetUniformLocation(opengl.shader_overlay_points,"view");
+      proji  = glGetUniformLocation(opengl.shader_overlay_points,"proj");
 
       glUniformMatrix4fv(modeli, 1, GL_FALSE, model.data());
       glUniformMatrix4fv(viewi, 1, GL_FALSE, view.data());

@@ -2,7 +2,7 @@
 #include <igl/per_vertex_normals.h>
 #include <igl/readOFF.h>
 #include <igl/embree/ambient_occlusion.h>
-#include <igl/viewer/Viewer.h>
+#include <igl/opengl/glfw/Viewer.h>
 #include <iostream>
 
 #include "tutorial_shared_path.h"
@@ -14,7 +14,7 @@ Eigen::MatrixXi F;
 Eigen::VectorXd AO;
 
 // It allows to change the degree of the field when a number is pressed
-bool key_down(igl::viewer::Viewer& viewer, unsigned char key, int modifier)
+bool key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier)
 {
   using namespace Eigen;
   using namespace std;
@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
   AO = 1.0 - AO.array();
 
   // Show mesh
-  igl::viewer::Viewer viewer;
+  igl::opengl::glfw::Viewer viewer;
   viewer.data.set_mesh(V, F);
   viewer.callback_key_down = &key_down;
   key_down(viewer,'2',0);

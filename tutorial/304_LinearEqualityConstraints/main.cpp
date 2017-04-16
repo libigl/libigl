@@ -5,7 +5,7 @@
 #include <igl/massmatrix.h>
 #include <igl/min_quad_with_fixed.h>
 #include <igl/readOFF.h>
-#include <igl/viewer/Viewer.h>
+#include <igl/opengl/glfw/Viewer.h>
 #include <Eigen/Sparse>
 #include <iostream>
 #include "tutorial_shared_path.h"
@@ -72,13 +72,13 @@ int main(int argc, char *argv[])
   igl::jet(Z_const,min_z,max_z,data.C_const);
 
   // Plot the mesh with pseudocolors
-  igl::viewer::Viewer viewer;
+  igl::opengl::glfw::Viewer viewer;
   viewer.data.set_mesh(V, F);
   viewer.core.show_lines = false;
   viewer.data.set_colors(data.C);
 
   viewer.callback_key_down = 
-    [](igl::viewer::Viewer& viewer,unsigned char key,int mod)->bool
+    [](igl::opengl::glfw::Viewer& viewer,unsigned char key,int mod)->bool
     {
       if(key == ' ')
       {

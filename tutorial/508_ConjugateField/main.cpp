@@ -8,7 +8,7 @@
 #include <igl/n_polyvector.h>
 #include <igl/readDMAT.h>
 #include <igl/readOBJ.h>
-#include <igl/viewer/Viewer.h>
+#include <igl/opengl/glfw/Viewer.h>
 #include <vector>
 #include <cstdlib>
 
@@ -34,7 +34,7 @@ Eigen::VectorXd conjugacy_s;
 Eigen::VectorXd conjugacy_c;
 
 
-bool key_down(igl::viewer::Viewer& viewer, unsigned char key, int modifier)
+bool key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier)
 {
   using namespace std;
   using namespace Eigen;
@@ -173,7 +173,7 @@ int main(int argc, char *argv[])
   pvV << igl::dot_row(Vc,B1), igl::dot_row(Vc,B2);
   csdata.evaluateConjugacy(pvU, pvV, conjugacy_c);
   // Launch the viewer
-  igl::viewer::Viewer viewer;
+  igl::opengl::glfw::Viewer viewer;
   viewer.core.invert_normals = true;
   viewer.core.show_lines = false;
   viewer.core.show_texture = false;
