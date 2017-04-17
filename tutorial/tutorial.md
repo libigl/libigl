@@ -175,6 +175,8 @@ sudo apt-get install libxrandr-dev
 sudo apt-get install libxi-dev
 sudo apt-get install libxmu-dev
 sudo apt-get install libblas-dev
+sudo apt-get install libxinerama-dev
+sudo apt-get install libxcursor-dev
 ```
 *Note for windows users*: libigl only supports the Microsoft Visual Studio 2015 compiler in 64bit mode. It will not work with a 32bit build and it will not work
 with older versions of visual studio.
@@ -3339,7 +3341,7 @@ pseudonormal](https://www.google.com/search?q=Signed+distance+computation+using+
   2010.
 [#panozzo_2014]: Daniele Panozzo, Enrico Puppo, Marco Tarini, Olga
   Sorkine-Hornung.  [Frame Fields: Anisotropic and Non-Orthogonal Cross
-  Fields](http://www.inf.ethz.ch/personal/dpanozzo/papers/frame-fields-2014.pdf),
+  Fields](http://cs.nyu.edu/~panozzo/papers/frame-fields-2014.pdf),
   2014.
 [#rabinovich_2016]: Michael Rabinovich, Roi Poranne, Daniele Panozzo, Olga
   Sorkine-Hornung. [Scalable Locally Injective
