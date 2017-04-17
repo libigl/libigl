@@ -243,25 +243,41 @@ endif()
 if(LIBIGL_WITH_EMBREE)
   set(EMBREE_DIR "${LIBIGL_EXTERNAL}/embree")
 
-  set(ENABLE_ISPC_SUPPORT OFF CACHE BOOL " " FORCE)
-  set(RTCORE_TASKING_SYSTEM "INTERNAL" CACHE BOOL " " FORCE)
-  set(ENABLE_TUTORIALS OFF CACHE BOOL " " FORCE)
-  set(ENABLE_STATIC_LIB ON CACHE BOOL " " FORCE)
-  set(ENABLE_INSTALLER OFF CACHE BOOL " " FORCE)
+  set(EMBREE_ISPC_SUPPORT OFF CACHE BOOL " " FORCE)
+  set(EMBREE_TASKING_SYSTEM "INTERNAL" CACHE BOOL " " FORCE)
+  set(EMBREE_TUTORIALS OFF CACHE BOOL " " FORCE)
+  set(EMBREE_MAX_ISA NONE CACHE STRINGS " " FORCE)
+
+  # set(ENABLE_INSTALLER OFF CACHE BOOL " " FORCE)
   if(MSVC)
-    set(USE_STATIC_RUNTIME OFF CACHE BOOL " " FORCE)
+    # set(EMBREE_STATIC_RUNTIME OFF CACHE BOOL " " FORCE)
+    set(EMBREE_STATIC_LIB OFF CACHE BOOL " " FORCE)
+  else()
+    set(EMBREE_STATIC_LIB ON CACHE BOOL " " FORCE)
   endif()
 
   add_subdirectory("${EMBREE_DIR}" "embree")
   list(APPEND LIBIGL_INCLUDE_DIRS "${EMBREE_DIR}/include")
   list(APPEND LIBIGL_EMBREE_EXTRA_LIBRARIES "embree")
   list(APPEND LIBIGL_EXTRA_LIBRARIES ${LIBIGL_EMBREE_EXTRA_LIBRARIES})
-  list(APPEND LIBIGL_DEFINITIONS "-DENABLE_STATIC_LIB")
+
+  if(NOT MSVC)
+		list(APPEND LIBIGL_DEFINITIONS "-DENABLE_STATIC_LIB")
+	endif()
+
+  if(MSVC)
+    add_custom_target(Copy-Embree-DLL ALL        # Adds a post-build event to MyTest
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different  # which executes "cmake - E copy_if_different..."
+            "${CMAKE_BINARY_DIR}/libigl/embree/$<CONFIGURATION>/embree.dll"      # <--this is in-file
+          "${CMAKE_BINARY_DIR}/embree.dll")                 # <--this is out-file path	endif()
+  endif()
 
   if(LIBIGL_USE_STATIC_LIBRARY)
     CompileIGL_Module("embree" "")
     target_include_directories(igl_embree PRIVATE ${EMBREE_DIR}/include)
-    target_compile_definitions(igl_embree PRIVATE -DENABLE_STATIC_LIB)
+	if(NOT MSVC)
+		target_compile_definitions(igl_embree PRIVATE -DENABLE_STATIC_LIB)
+	endif()
   endif()
 endif()
 

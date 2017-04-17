@@ -63,46 +63,48 @@ namespace igl
     IGL_INLINE double get_smallest_pos_quad_zero(double a,double b, double c)
     {
       using namespace std;
-      double t1,t2;
-      if (std::abs(a)>1.0e-10)
+      double t1, t2;
+      if(std::abs(a) > 1.0e-10)
       {
-        double delta_in = pow(b,2) - 4*a*c;
-        if (delta_in < 0)
+        double delta_in = pow(b, 2) - 4 * a * c;
+        if(delta_in <= 0)
         {
           return INFINITY;
         }
-        double delta = sqrt(delta_in);
-        t1 = (-b + delta)/ (2*a);
-        t2 = (-b - delta)/ (2*a);
-      }
-      else
-      {
-        t1 = t2 = -b/c;
-      }
-      assert (std::isfinite(t1));
-      assert (std::isfinite(t2));
 
-      double tmp_n = std::min(t1,t2);
-      t1 = std::max(t1,t2); t2 = tmp_n;
-      if (t1 == t2)
-      {
-        return INFINITY; // means the orientation flips twice = doesn't flip
-      }
-      // return the smallest negative root if it exists, otherwise return infinity
-      if (t1 > 0)
-      {
-        if (t2 > 0)
+        double delta = sqrt(delta_in); // delta >= 0
+        if(b >= 0) // avoid subtracting two similar numbers
         {
-          return t2;
+          double bd = - b - delta;
+          t1 = 2 * c / bd;
+          t2 = bd / (2 * a);
         }
         else
         {
-          return t1;
+          double bd = - b + delta;
+          t1 = bd / (2 * a);
+          t2 = (2 * c) / bd;
+        }
+
+        assert (std::isfinite(t1));
+        assert (std::isfinite(t2));
+
+        if(a < 0) std::swap(t1, t2); // make t1 > t2
+        // return the smaller positive root if it exists, otherwise return infinity
+        if(t1 > 0)
+        {
+          return t2 > 0 ? t2 : t1;
+        }
+        else
+        {
+          return INFINITY;
         }
       }
       else
       {
-        return INFINITY;
+        if(b == 0) return INFINITY; // just to avoid divide-by-zero
+        t1 = -c / b;
+        return t1 > 0 ? t1 : INFINITY;
       }
     }
 

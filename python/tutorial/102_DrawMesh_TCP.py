@@ -10,12 +10,7 @@ from shared import TUTORIAL_SHARED_PATH
 
 
 ## This is a test application for the TCPViewer
-
-# Launch the tcp viewer
-os.system("python ../tcpviewer.py&")
-
-# Wait for it to set up the socket
-time.sleep(1)
+# Make sure to launch the tcpviewer.py first
 
 # Read a mesh
 V = igl.eigen.MatrixXd()
