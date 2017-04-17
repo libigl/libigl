@@ -140,7 +140,7 @@ The script depends on additional libraries (joblib, mako, clang), make sure to i
 
 Libigl is a group endeavor led by [Alec
 Jacobson](http://www.cs.columbia.edu/~jacobson/) and [Daniele
-Panozzo](http://www.inf.ethz.ch/personal/dpanozzo/). Please [contact
+Panozzo](http://cs.nyu.edu/~panozzo/). Please [contact
 us](mailto:alecjacobson@gmail.com,daniele.panozzo@gmail.com) if you have
 questions or comments. For troubleshooting, please post an
 [issue](https://github.com/libigl/libigl/issues) on github.

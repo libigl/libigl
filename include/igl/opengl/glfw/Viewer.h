@@ -35,7 +35,7 @@
 namespace nanogui { class FormHelper; class Screen; }
 #endif
 
-class GLFWwindow;
+struct GLFWwindow;
 
 namespace igl
 {
