@@ -228,8 +228,8 @@ inline igl::embree::EmbreeIntersector::EmbreeIntersector()
   :
   //scene(NULL),
   geomID(0),
-  triangles(NULL),
   vertices(NULL),
+  triangles(NULL),
   initialized(false)
 {
 }
@@ -239,8 +239,8 @@ inline igl::embree::EmbreeIntersector::EmbreeIntersector(
   :// To make -Weffc++ happy
   //scene(NULL),
   geomID(0),
-  triangles(NULL),
   vertices(NULL),
+  triangles(NULL),
   initialized(false)
 {
   assert(false && "Embree: Copying EmbreeIntersector is not allowed");

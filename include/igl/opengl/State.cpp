@@ -176,7 +176,9 @@ IGL_INLINE void igl::opengl::State::set_data(
         V_uv_vbo.resize(data.F.rows()*3,2);
         for (unsigned i=0; i<data.F.rows();++i)
           for (unsigned j=0;j<3;++j)
-            V_uv_vbo.row(i*3+j) = data.V_uv.row(data.F(i,j)).cast<float>();
+            V_uv_vbo.row(i*3+j) = 
+              data.V_uv.row(per_corner_uv ? 
+                data.F_uv(i,j) : data.F(i,j)).cast<float>();
       }
     }
   }

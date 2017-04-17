@@ -16,7 +16,7 @@ def worker(viewer,lock,s):
             lock.acquire()
             slist = []
             while True:
-                buf = conn.recv(10000000)
+                buf = conn.recv(4096)
                 if not buf:
                     break
                 slist.append(buf.decode('unicode_internal','ignore'))
@@ -41,7 +41,8 @@ class TCPViewer(igl.viewer.Viewer):
         try:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             s.connect((HOST, PORT))
-            a = array.array('u',self.data.serialize())
+            ser = self.data.serialize()
+            a = array.array('u', ser)
             s.sendall(a)
             s.close()
         except:

@@ -206,7 +206,7 @@ namespace glfw
     ngui->setFixedSize(Eigen::Vector2i(60,20));
 
     // Create nanogui widgets
-    nanogui::Window *window = ngui->addWindow(Eigen::Vector2i(10,10),"libIGL-Viewer");
+    /* nanogui::Window *window = */ ngui->addWindow(Eigen::Vector2i(10,10),"libIGL-Viewer");
 
     // ---------------------- LOADING ----------------------
 
