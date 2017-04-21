@@ -43,6 +43,13 @@ namespace igl
         const Eigen::PlainObjectBase<DerivedV>& V,
         const Eigen::PlainObjectBase<DerivedF>& F,
         tetgenio & in);
+    
+      IGL_INLINE bool mesh_to_tetgenio(
+        const std::vector<std::vector<REAL> > & V,
+	const std::vector<std::vector<int> > & F,
+	const std::vector<std::vector<REAL > > & H, // holes
+	const std::vector<std::vector<REAL > > & R, // regions
+	tetgenio & in);	
     }
   }
 }
