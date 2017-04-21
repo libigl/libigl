@@ -22,8 +22,8 @@
 IGL_INLINE int igl::copyleft::tetgen::tetrahedralize(
   const std:vector<std::vector<REAL > > & V,
   const std::vector<std::vector<int> > & F,
-  const std::vector<std::vector<REAL> > & H.
-  const std::vector<std::vector<REAL>>
+  const std::vector<std::vector<REAL > > & H,
+  const std::vector<std::vector<REAL > >,
   const std::string switches,
   std::vector<std::vector<REAL > > & TV)
 {
