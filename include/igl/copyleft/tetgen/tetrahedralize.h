@@ -123,50 +123,24 @@ namespace igl
         Eigen::PlainObjectBase<DerivedTT>& TT,
         Eigen::PlainObjectBase<DerivedTF>& TF,
         Eigen::PlainObjectBase<DerivedTM>& TM);
-   
-				
-	// Mesh the interior of a surface mesh (V,F) using tetgen
-      		//
-      		// Inputs:
-      		//   V  #V by 3 vertex position list
-      		//   F  #F list of polygon face indices into V (0-indexed)
-	    	//   R  #R by 3 region vertex position list
-	        //   H  #H by 3 hole vertex position list
-      		//   switches  string of tetgen options (See tetgen documentation) e.g.
-      		//     "pq1.414a0.01" tries to mesh the interior of a given surface with
-      		//       quality and area constraints
-      		//     "" will mesh the convex hull constrained to pass through V (ignores F)
-      		// Outputs:
-      		//   TV  #V by 3 vertex position list
-      		//   TT  #T by 4 list of tet face indices
-      		//   TF  #F by 3 list of triangle face indices
-      		// Returns status:
-      		//   0 success
-      		//   1 tetgen threw exception
-      		//   2 tetgen did not crash but could not create any tets (probably there are
-      		//     holes, duplicate faces etc.)
-      		//   -1 other error      
-    template <
-	typename DerivedV,
-	typename DerivedF,
-	typename DerivedR,
-	typename DerivedH,
-	typename DerivedTV,
-	typename DerivedTT,
-	typename DerivedTF,
-	typename DerivedTM>    
-      IGL_INLINE int tetrahedralize(
-	const Eigen::PlainObjectBase<DerivedV>& V,
-	const Eigen::PlainObjectBase<DerivedF>& F,	
-	const Eigen::PlainObjectBase<DerivedR>& R,
-	const Eigen::PlainObjectBase<DerivedH>& H,
-							const Eigen::PlainObjectBase<DerivedVM>& VM,
-							const Eigen::PlainObjectBase<DerivedFM>& FM,	      						
-	const std::string switches,      
-	const Eigen::PlainObjectBase<DerivedTV>& TV,
-	const Eigen::PlainObjectBase<DerivedTT>& TT,
-							const Eigen::PlainObjectBase<DerivedTM>& TM,
-	const Eigen::PlainObjectBase<DerivedTF>& TF);
+	
+        // Define a overload which also accepts hole and region information in input and outputs region and hole tets seperately.
+	IGL_INLINE int tetrahedralize(
+	  const std::vector<std::vector<REAL> > &V,
+	  const std::vector<std::vector<int> >  &F, 
+	  const std::vector<std::vector<REAL> > &H, // input holes
+	  const std::vector<std::vector<int> > &R, // input region ids
+	  const std::vector<int> & VM,
+	  const std::vector<int> & FM,
+	  
+	  const std::string switches, 
+	  
+	  std::vector<std::vector<REAL > > & TV,
+	  std::vector<std::vector<int > >  & TT,
+	  std::vector<std::vector<int > >  & TF,
+	  std::vector<int> &TM
+	  std::vector<int> &TR); // region marker per tet
+	     
     }
   }
 }
