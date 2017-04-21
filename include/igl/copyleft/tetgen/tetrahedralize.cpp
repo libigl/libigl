@@ -27,34 +27,36 @@ IGL_INLINE int igl::copyleft::tetgen::tetrahedralize(
   const std::string switches,
   std::vector<std::vector<REAL > > & TV)
 {
-	using namespace std;
-	tetgenio in,out;
-	bool success;
-	success = mesh_to_tetgenio(V, F, in);
-	if(!success)
-	{
-		return -1;
-	}
-	try 
-	{
-	  char * cswitches = new char[switches.size() + 1];
-  	  strcpy(cswitches, switches.c_str());	  
-	}catch(int e)
-	{
-		cerr <<"^"<<__FUNCTION__<<": tetgen failed!!"<<endl;
-		return 1;
-	}
-	if(out.numberoftetrahedra == 0)
-	{
-	  cerr<<"^"<<__FUNCTION__<<": Tetgen failed to create tets"<<endl;
-          return 2;	  
-	}
-	success = tetgenio_to_tetmesh(out, TV, TT, TF);
-	if(!success)
-	{
-  	  return -1;
-	}
-	return 0;
+  using namespace std;
+  tetgenio in,out;
+  bool success;
+  success = mesh_to_tetgenio(V, F, H, R, in);
+  if(!success)
+  {
+    return -1;
+  }
+  try 
+  {
+    char * cswitches = new char[switches.size() + 1];
+    strcpy(cswitches, switches.c_str());
+    ::tetrahedralize(cswitches, &in, &out); 
+    delete[] cswitches;
+  }catch(int e)
+  {
+    cerr <<"^"<<__FUNCTION__<<": TETGEN CRASHED...KABOOM!!"<<endl;
+    return 1;
+  }
+  if(out.numberoftetrahedra == 0)
+  {
+    cerr<<"^"<<__FUNCTION__<<": Tetgen failed to create tets"<<endl;
+    return 2;	  
+  }
+  success = tetgenio_to_tetmesh(out, TV, TT, TF);
+  if(!success)
+  {
+    return -1;
+  }
+    return 0;
 }
 
 
