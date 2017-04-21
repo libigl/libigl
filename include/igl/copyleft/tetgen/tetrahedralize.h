@@ -126,10 +126,10 @@ namespace igl
 	
         // Define a overload which also accepts hole and region information in input and outputs region and hole tets seperately.
 	IGL_INLINE int tetrahedralize(
-	  const std::vector<std::vector<REAL> > &V,
+	  const std::vector<std::vector<REAL> > &V, 
 	  const std::vector<std::vector<int> >  &F, 
-	  const std::vector<std::vector<REAL> > &H, // input holes
-	  const std::vector<std::vector<int> > &R, // input region ids
+	  const std::vector<std::vector<REAL> > &H, 
+	  const std::vector<std::vector<REAL> > &R, 
 	  const std::vector<int> & VM,
 	  const std::vector<int> & FM,
 	  
