@@ -54,6 +54,15 @@ namespace igl
         const tetgenio & out,
         Eigen::PlainObjectBase<DerivedV>& V,
         Eigen::PlainObjectBase<DerivedT>& T);
+    
+      // Support for region marking for each tetrahedron
+      IGL_INLINE bool tetgenio_to_tetmesh(
+        const tetgenio & out,
+	std::vector<std::vector<REAL > > & V,
+	std::vector<std::vector<int> > & T,
+        std::vector<std::vector<int> > & F, 
+	size_t nR, // number of regions
+	std::vector<std::vector<REAL> > & R); // region marks for tetrahedrons	
     }
   }
 }

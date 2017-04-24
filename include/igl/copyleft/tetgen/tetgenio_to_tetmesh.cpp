@@ -15,6 +15,86 @@
 
 IGL_INLINE bool igl::copyleft::tetgen::tetgenio_to_tetmesh(
   const tetgenio & out,
+  std::vector<std::vector<REAL > > & V,
+  std::vector<std::vector<int> > & T,
+  std::vector<std::vector<int > > & F,
+  size_t nR,
+  std::vector<std::vector<REAL > > & R) // region marks for tetrahedron
+ {
+   using namespace std;
+   // process points
+   if(out.pointlist == NULL)
+   {
+     cerr<<"^tetgenio_to_tetmesh Error: point list is NULL\n"<<endl;
+     return false;
+   }
+   V.resize(out.numberofpoints,vector<REAL>(3));
+   // loop over points
+   for(int i = 0;i < out.numberofpoints; i++)
+   {
+     V[i][0] = out.pointlist[i*3+0];
+     V[i][1] = out.pointlist[i*3+1];
+     V[i][2] = out.pointlist[i*3+2];
+   }
+
+   // process tets
+   if(out.tetrahedronlist == NULL)
+   {
+     cerr<<"^tetgenio_to_tetmesh Error: tet list is NULL\n"<<endl;
+     return false;
+   }
+
+   // When would this not be 4?
+   assert(out.numberofcorners == 4);
+   T.resize(out.numberoftetrahedra,vector<int>(out.numberofcorners));
+   int min_index = 1e7;
+   int max_index = -1e7;
+   // loop over tetrahedra
+   for(int i = 0; i < out.numberoftetrahedra; i++)
+   {
+     for(int j = 0; j<out.numberofcorners; j++)
+     {
+       int index = out.tetrahedronlist[i * out.numberofcorners + j];
+       T[i][j] = index;
+       min_index = (min_index > index ? index : min_index);
+       max_index = (max_index < index ? index : max_index);
+     }
+   }
+   assert(min_index >= 0);
+   assert(max_index >= 0);
+   assert(max_index < (int)V.size());
+ 
+   cout<<out.numberoftrifaces<<endl;
+
+   // When would this not be 4?
+   F.clear();
+   // loop over tetrahedra
+   for(int i = 0; i < out.numberoftrifaces; i++)
+   {
+     if(out.trifacemarkerlist[i]>=0)
+     {
+       vector<int> face(3);
+       for(int j = 0; j<3; j++)
+       {
+         face[j] = out.trifacelist[i * 3 + j];
+       }
+       F.push_back(face);
+     }
+   }
+
+   
+   // extract region marks
+   nR = out.numberofregions;
+   R = new REAL[out.numberoftetrahedra];
+   for(size_t i = 0; i < out.numberoftetrahedra; i++)
+     R[i] = out.tetrahedronattributelist[i];
+   
+   return true;
+}
+
+
+IGL_INLINE bool igl::copyleft::tetgen::tetgenio_to_tetmesh(
+  const tetgenio & out,
   std::vector<std::vector<REAL > > & V, 
   std::vector<std::vector<int> > & T,
   std::vector<std::vector<int> > & F)
