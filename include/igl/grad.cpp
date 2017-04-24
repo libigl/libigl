@@ -139,7 +139,7 @@ IGL_INLINE void grad_tri(const Eigen::PlainObjectBase<DerivedV>&V,
     // This does correct l2 norm of rows, so that it contains #F list of twice
     // triangle areas
     double dblA = std::sqrt(n.dot(n));
-    Eigen::Matrix<typename DerivedV::Scalar, 1, 3> u;
+    Eigen::Matrix<typename DerivedV::Scalar, 1, 3> u(0,0,1);
     if (!uniform) {
       // now normalize normals to get unit normals
       u = n / dblA;
