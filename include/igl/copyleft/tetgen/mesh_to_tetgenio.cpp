@@ -14,12 +14,11 @@
 #include <cassert>
 
 
-
 IGL_INLINE bool igl::copyleft::tetgen::mesh_to_tetgenio(
   const std::vector<std::vector<REAL > > & V,
   const std::vector<std::vector<int> > & F,
-  const std::vector<std::vector<REAL> > & H,
-  const std::vector<std::vector<REAL> > & R,
+  const std::vector<std::vector<REAL> > & H, // hole points
+  const std::vector<std::vector<REAL> > & R, // region points
   tetgenio & in)
 {
   using namespace std;
