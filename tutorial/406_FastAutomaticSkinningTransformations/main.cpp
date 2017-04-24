@@ -207,7 +207,7 @@ int main(int argc, char *argv[])
   igl::viewer::Viewer viewer;
   viewer.data.set_mesh(U, F);
   viewer.data.add_points(igl::slice(V,b,1),sea_green);
-  viewer.core.show_lines = false;
+  viewer.data.show_lines = false;
   viewer.callback_pre_draw = &pre_draw;
   viewer.callback_key_down = &key_down;
   viewer.core.is_animating = false;

@@ -2,7 +2,7 @@
 #include <Eigen/Sparse>
 
 #include "../python_shared.h"
-#define ENABLE_SERIALIZATION
+
 #include <igl/viewer/Viewer.h>
 #include <igl/viewer/ViewerCore.h>
 #include <igl/viewer/ViewerData.h>
@@ -42,13 +42,15 @@ py::enum_<igl::viewer::ViewerData::DirtyFlags>(viewerdata_class, "DirtyFlags")
 
     viewerdata_class
     .def(py::init<>())
-    .def("set_mesh", &igl::viewer::ViewerData::set_mesh)
-    .def("set_colors", &igl::viewer::ViewerData::set_colors)
     .def("clear", &igl::viewer::ViewerData::clear)
-    .def("set_face_based", &igl::viewer::ViewerData::set_face_based)
+    .def("reset", &igl::viewer::ViewerData::reset)
 
+    .def("set_face_based", &igl::viewer::ViewerData::set_face_based) 
+    .def("set_mesh", &igl::viewer::ViewerData::set_mesh)
     .def("set_vertices", &igl::viewer::ViewerData::set_vertices)
     .def("set_normals", &igl::viewer::ViewerData::set_normals)
+
+    .def("set_colors", &igl::viewer::ViewerData::set_colors)   
 
     .def("set_uv",
        (void (igl::viewer::ViewerData::*) (const Eigen::MatrixXd &)) &igl::viewer::ViewerData::set_uv
@@ -116,15 +118,28 @@ py::enum_<igl::viewer::ViewerData::DirtyFlags>(viewerdata_class, "DirtyFlags")
 
     .def("grid_texture", &igl::viewer::ViewerData::grid_texture)
 
+    .def_property("model",
+    [](const igl::viewer::ViewerData& data) {return Eigen::MatrixXd(data.model.cast<double>());},
+    [](igl::viewer::ViewerData& data, const Eigen::MatrixXd& v)
+    {
+      assert_is_Matrix4("model",v);
+      data.model = Eigen::Matrix4f(v.cast<float>());
+    })
+    .def_readwrite("model_translation", &igl::viewer::ViewerData::model_translation)
+
+    .def_readwrite("object_scale", &igl::viewer::ViewerData::object_scale)
+
     .def_readwrite("V", &igl::viewer::ViewerData::V)
     .def_readwrite("F", &igl::viewer::ViewerData::F)
 
     .def_readwrite("F_normals", &igl::viewer::ViewerData::F_normals)
+
     .def_readwrite("F_material_ambient", &igl::viewer::ViewerData::F_material_ambient)
     .def_readwrite("F_material_diffuse", &igl::viewer::ViewerData::F_material_diffuse)
     .def_readwrite("F_material_specular", &igl::viewer::ViewerData::F_material_specular)
 
     .def_readwrite("V_normals", &igl::viewer::ViewerData::V_normals)
+
     .def_readwrite("V_material_ambient", &igl::viewer::ViewerData::V_material_ambient)
     .def_readwrite("V_material_diffuse", &igl::viewer::ViewerData::V_material_diffuse)
     .def_readwrite("V_material_specular", &igl::viewer::ViewerData::V_material_specular)
@@ -132,28 +147,37 @@ py::enum_<igl::viewer::ViewerData::DirtyFlags>(viewerdata_class, "DirtyFlags")
     .def_readwrite("V_uv", &igl::viewer::ViewerData::V_uv)
     .def_readwrite("F_uv", &igl::viewer::ViewerData::F_uv)
 
+    .def_readwrite("model_translation_uv", &igl::viewer::ViewerData::model_translation_uv)
+    .def_readwrite("model_zoom_uv", &igl::viewer::ViewerData::model_zoom_uv)
+
     .def_readwrite("texture_R", &igl::viewer::ViewerData::texture_R)
     .def_readwrite("texture_G", &igl::viewer::ViewerData::texture_G)
     .def_readwrite("texture_B", &igl::viewer::ViewerData::texture_B)
+    .def_readwrite("texture_A", &igl::viewer::ViewerData::texture_A)
 
     .def_readwrite("lines", &igl::viewer::ViewerData::lines)
     .def_readwrite("points", &igl::viewer::ViewerData::points)
+
     .def_readwrite("labels_positions", &igl::viewer::ViewerData::labels_positions)
     .def_readwrite("labels_strings", &igl::viewer::ViewerData::labels_strings)
+    .def_readwrite("labels_colors", &igl::viewer::ViewerData::labels_colors)
+
     .def_readwrite("dirty", &igl::viewer::ViewerData::dirty)
     .def_readwrite("face_based", &igl::viewer::ViewerData::face_based)
-    .def("serialize", [](igl::viewer::ViewerData& data)
-    {
-      std::vector<char> a;
-      igl::serialize(data,"Data",a);
-      return a;
-    })
 
-    .def("deserialize", [](igl::viewer::ViewerData& data, const std::vector<char>& a)
-    {
-      igl::deserialize(data,"Data",a);
-      return;
-    })
+    .def_readwrite("show_overlay", &igl::viewer::ViewerData::show_overlay)
+    .def_readwrite("show_overlay_depth", &igl::viewer::ViewerData::show_overlay_depth)
+    .def_readwrite("show_texture", &igl::viewer::ViewerData::show_texture)
+    .def_readwrite("show_faces", &igl::viewer::ViewerData::show_faces)
+    .def_readwrite("show_lines", &igl::viewer::ViewerData::show_lines)
+    .def_readwrite("show_vertid", &igl::viewer::ViewerData::show_vertid)
+    .def_readwrite("show_faceid", &igl::viewer::ViewerData::show_faceid)
+    .def_readwrite("invert_normals", &igl::viewer::ViewerData::invert_normals)
+    .def_readwrite("depth_test", &igl::viewer::ViewerData::depth_test)
+    .def_readwrite("visible", &igl::viewer::ViewerData::visible)
+
+    .def_readwrite("point_size", &igl::viewer::ViewerData::point_size)
+    .def_readwrite("line_width", &igl::viewer::ViewerData::line_width)
 
     ;
 
@@ -179,23 +203,51 @@ py::class_<igl::viewer::ViewerCore> viewercore_class(me, "ViewerCore");
 
     viewercore_class
     .def(py::init<>())
-    //.def("align_camera_center", [](igl::viewer::ViewerCore& core, const Eigen::MatrixXd& V, const Eigen::MatrixXi& F){return core.align_camera_center(V,F);})
+
     .def("init", &igl::viewer::ViewerCore::init)
     .def("shut", &igl::viewer::ViewerCore::shut)
-    //.def("InitSerialization", &igl::viewer::ViewerCore::InitSerialization)
+
+    /*.def("set_camera_position",
+       (void (igl::viewer::ViewerCore::*) (const Eigen::MatrixXf &)) &igl::viewer::ViewerCore::set_camera_position
+    )*/
+
+    .def("align_camera_center",
+       (void (igl::viewer::ViewerCore::*) (const igl::viewer::ViewerData &)) &igl::viewer::ViewerCore::align_camera_center
+    )
     .def("align_camera_center",
        (void (igl::viewer::ViewerCore::*) (const Eigen::MatrixXd &, const Eigen::MatrixXi &)) &igl::viewer::ViewerCore::align_camera_center
     )
-
     .def("align_camera_center",
        (void (igl::viewer::ViewerCore::*) (const Eigen::MatrixXd &)) &igl::viewer::ViewerCore::align_camera_center
     )
 
     .def("clear_framebuffers",&igl::viewer::ViewerCore::clear_framebuffers)
     .def("draw",&igl::viewer::ViewerCore::draw)
-    .def("draw_buffer",&igl::viewer::ViewerCore::draw_buffer)
+    //.def("draw_buffer",&igl::viewer::ViewerCore::draw_buffer)
 
-    .def_readwrite("shininess",&igl::viewer::ViewerCore::shininess)
+    .def("draw_buffer",
+      (void (igl::viewer::ViewerCore::*) (
+        igl::viewer::ViewerData&,
+        igl::viewer::OpenGL_state&,
+        bool,
+        Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>&,
+        Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>&,
+        Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>&,
+        Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>&)
+      ) &igl::viewer::ViewerCore::draw_buffer
+    )
+
+    .def("draw_buffer",
+      (void (igl::viewer::ViewerCore::*) (
+        std::vector<igl::viewer::ViewerData*>&,
+        std::vector<igl::viewer::OpenGL_state*>&,
+        bool,
+        Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>&,
+        Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>&,
+        Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>&,
+        Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>&)
+      ) &igl::viewer::ViewerCore::draw_buffer
+    )
 
     .def_property("background_color",
     [](const igl::viewer::ViewerCore& core) {return Eigen::MatrixXd(core.background_color.cast<double>());},
@@ -213,7 +265,9 @@ py::class_<igl::viewer::ViewerCore> viewercore_class(me, "ViewerCore");
       core.line_color = Eigen::Vector4f(v.cast<float>());
     })
 
-    .def_property("light_position",
+    .def_readwrite("shininess",&igl::viewer::ViewerCore::shininess)
+
+      .def_property("light_position",
     [](const igl::viewer::ViewerCore& core) {return Eigen::MatrixXd(core.light_position.cast<double>());},
     [](igl::viewer::ViewerCore& core, const Eigen::MatrixXd& v)
     {
@@ -222,34 +276,19 @@ py::class_<igl::viewer::ViewerCore> viewercore_class(me, "ViewerCore");
     })
 
     .def_readwrite("lighting_factor",&igl::viewer::ViewerCore::lighting_factor)
-    .def_readwrite("model_zoom",&igl::viewer::ViewerCore::model_zoom)
 
-    .def_property("trackball_angle",
-    [](const igl::viewer::ViewerCore& core) {return Eigen::Quaterniond(core.trackball_angle.cast<double>());},
-    [](igl::viewer::ViewerCore& core, const Eigen::Quaterniond& q)
-    {
-      core.trackball_angle = Eigen::Quaternionf(q.cast<float>());
-    })
-
-    .def_property("model_translation",
-    [](const igl::viewer::ViewerCore& core) {return Eigen::MatrixXd(core.model_translation.cast<double>());},
+    .def_readwrite("rotation_type",&igl::viewer::ViewerCore::rotation_type)
+    // Eigen::Quaternionf trackball_angle; // TODO: wrap this!
+    .def_property("global_translation",
+    [](const igl::viewer::ViewerCore& core) {return Eigen::MatrixXd(core.global_translation.cast<double>());},
     [](igl::viewer::ViewerCore& core, const Eigen::MatrixXd& v)
     {
-      assert_is_Vector3("model_translation",v);
-      core.model_translation = Eigen::Vector3f(v.cast<float>());
-    })
-
-    .def_readwrite("model_zoom_uv",&igl::viewer::ViewerCore::model_zoom_uv)
-
-    .def_property("model_translation_uv",
-    [](const igl::viewer::ViewerCore& core) {return Eigen::MatrixXd(core.model_translation_uv.cast<double>());},
-    [](igl::viewer::ViewerCore& core, const Eigen::MatrixXd& v)
-    {
-      assert_is_Vector3("model_translation_uv",v);
-      core.model_translation_uv = Eigen::Vector3f(v.cast<float>());
+      assert_is_Vector3("global_translation",v);
+      core.global_translation = Eigen::Vector3f(v.cast<float>());
     })
 
     .def_readwrite("camera_zoom",&igl::viewer::ViewerCore::camera_zoom)
+
     .def_readwrite("orthographic",&igl::viewer::ViewerCore::orthographic)
 
     .def_property("camera_eye",
@@ -277,28 +316,11 @@ py::class_<igl::viewer::ViewerCore> viewercore_class(me, "ViewerCore");
     })
 
     .def_readwrite("camera_view_angle",&igl::viewer::ViewerCore::camera_view_angle)
-
     .def_readwrite("camera_dnear",&igl::viewer::ViewerCore::camera_dnear)
     .def_readwrite("camera_dfar",&igl::viewer::ViewerCore::camera_dfar)
-
-    .def_readwrite("show_overlay",&igl::viewer::ViewerCore::show_overlay)
-    .def_readwrite("show_overlay_depth",&igl::viewer::ViewerCore::show_overlay_depth)
-    .def_readwrite("show_texture",&igl::viewer::ViewerCore::show_texture)
-    .def_readwrite("show_faces",&igl::viewer::ViewerCore::show_faces)
-
-    .def_readwrite("show_lines",&igl::viewer::ViewerCore::show_lines)
-    .def_readwrite("show_vertid",&igl::viewer::ViewerCore::show_vertid)
-    .def_readwrite("show_faceid",&igl::viewer::ViewerCore::show_faceid)
-    .def_readwrite("invert_normals",&igl::viewer::ViewerCore::invert_normals)
-    .def_readwrite("depth_test",&igl::viewer::ViewerCore::depth_test)
-
-    .def_readwrite("point_size",&igl::viewer::ViewerCore::point_size)
-    .def_readwrite("line_width",&igl::viewer::ViewerCore::line_width)
-
+    
     .def_readwrite("is_animating",&igl::viewer::ViewerCore::is_animating)
     .def_readwrite("animation_max_fps",&igl::viewer::ViewerCore::animation_max_fps)
-
-    .def_readwrite("object_scale",&igl::viewer::ViewerCore::object_scale)
 
     .def_property("viewport",
     [](const igl::viewer::ViewerCore& core) {return Eigen::MatrixXd(core.viewport.cast<double>());},
@@ -316,14 +338,6 @@ py::class_<igl::viewer::ViewerCore> viewercore_class(me, "ViewerCore");
       core.view = Eigen::Matrix4f(v.cast<float>());
     })
 
-    .def_property("model",
-    [](const igl::viewer::ViewerCore& core) {return Eigen::MatrixXd(core.model.cast<double>());},
-    [](igl::viewer::ViewerCore& core, const Eigen::MatrixXd& v)
-    {
-      assert_is_Matrix4("model",v);
-      core.model = Eigen::Matrix4f(v.cast<float>());
-    })
-
     .def_property("proj",
     [](const igl::viewer::ViewerCore& core) {return Eigen::MatrixXd(core.proj.cast<double>());},
     [](igl::viewer::ViewerCore& core, const Eigen::MatrixXd& v)
@@ -332,23 +346,6 @@ py::class_<igl::viewer::ViewerCore> viewercore_class(me, "ViewerCore");
       core.proj = Eigen::Matrix4f(v.cast<float>());
     })
 
-    .def_readwrite("rotation_type",&igl::viewer::ViewerCore::rotation_type)
-
-    .def("serialize", [](igl::viewer::ViewerCore& core)
-    {
-      std::vector<char> a;
-      igl::serialize(core,"Core",a);
-      return a;
-    })
-
-    .def("deserialize", [](igl::viewer::ViewerCore& core, const std::vector<char>& a)
-    {
-      igl::deserialize(core,"Core",a);
-      return;
-    })
-
-    // TODO: wrap this!
-    // Eigen::Quaternionf trackball_angle;
     ;
 
 ///////////////////////// VIEWER
@@ -381,26 +378,50 @@ py::class_<igl::viewer::ViewerCore> viewercore_class(me, "ViewerCore");
     .def_readwrite("screen", &igl::viewer::Viewer::screen)
     #endif
 
-    .def("launch", &igl::viewer::Viewer::launch, py::arg("resizable") = true, py::arg("fullscreen") = false)
-    .def("launch_init", &igl::viewer::Viewer::launch_init, py::arg("resizable") = true, py::arg("fullscreen") = false)
+    .def("launch", &igl::viewer::Viewer::launch, py::arg("resizable") = true, py::arg("fullscreen") = false,py::arg("width") = 1200,py::arg("height") = 768)
+    .def("launch_init", &igl::viewer::Viewer::launch_init, py::arg("resizable") = true, py::arg("fullscreen") = false, py::arg("width") = 1200,py::arg("height") = 768)
     .def("launch_rendering", &igl::viewer::Viewer::launch_rendering, py::arg("loop") = true)
     .def("launch_shut", &igl::viewer::Viewer::launch_shut)
     .def("init", &igl::viewer::Viewer::init)
-    .def("serialize", [](igl::viewer::Viewer& viewer)
-    {
-      std::vector<char> a;
-      igl::serialize(viewer.core,"Core",a);
-      igl::serialize(viewer.data,"Data",a);
+   
+    .def_readwrite("window_maximized", &igl::viewer::Viewer::window_maximized)
+    .def_readwrite("window_position", &igl::viewer::Viewer::window_position)
+    .def_readwrite("window_size", &igl::viewer::Viewer::window_size)
 
-      return a;
-    })
-
-    .def("deserialize", [](igl::viewer::Viewer& viewer, const std::vector<char>& a)
-    {
-      igl::deserialize(viewer.core,"Core",a);
-      igl::deserialize(viewer.data,"Data",a);
-      return;
-    })
+    .def("add_mesh",
+       (unsigned int (igl::viewer::Viewer::*) (const std::string &)) &igl::viewer::Viewer::add_mesh
+    )
+    .def("add_mesh",
+       (unsigned int (igl::viewer::Viewer::*) (const char *,const std::string &)) &igl::viewer::Viewer::add_mesh
+    )
+    .def("get_mesh",
+       (igl::viewer::ViewerData& (igl::viewer::Viewer::*) (unsigned int)) &igl::viewer::Viewer::get_mesh
+    )
+    .def("remove_mesh",
+       (bool (igl::viewer::Viewer::*) (unsigned int)) &igl::viewer::Viewer::remove_mesh
+    )
+    .def("get_active_mesh",
+       (unsigned int (igl::viewer::Viewer::*) (unsigned int)) &igl::viewer::Viewer::get_active_mesh
+    )
+    .def("set_active_mesh",
+       (bool (igl::viewer::Viewer::*) (unsigned int)) &igl::viewer::Viewer::set_active_mesh
+    )
+    .def("get_mesh_count",
+       (unsigned int (igl::viewer::Viewer::*) (unsigned int)) &igl::viewer::Viewer::get_mesh_count
+    )
+   
+    .def("load_mesh_from_file",
+       (bool (igl::viewer::Viewer::*) (const char *)) &igl::viewer::Viewer::load_mesh_from_file
+    )
+    .def("load_mesh_from_file",
+       (bool (igl::viewer::Viewer::*) (const char *, unsigned int)) &igl::viewer::Viewer::load_mesh_from_file
+    )
+    .def("save_mesh_to_file",
+       (bool (igl::viewer::Viewer::*) (const char *)) &igl::viewer::Viewer::save_mesh_to_file
+    )
+    .def("save_mesh_to_file",
+       (bool (igl::viewer::Viewer::*) (const char *, unsigned int)) &igl::viewer::Viewer::save_mesh_to_file
+    )
 
     // Scene IO
     .def("load_scene", [](igl::viewer::Viewer& viewer)

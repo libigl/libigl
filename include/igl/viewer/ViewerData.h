@@ -12,6 +12,7 @@
 #include <vector>
 
 #include <Eigen/Core>
+#include <Eigen/Geometry>
 
 #include <igl/igl_inline.h>
 
@@ -44,8 +45,10 @@ public:
     DIRTY_ALL            = 0x03FF
   };
 
-  // Empy all fields
+  // Empty all fields but keep data options
   IGL_INLINE void clear();
+  // Reset all fields to default
+  IGL_INLINE void reset();
 
   // Change the visualization mode, invalidating the cache if necessary
   IGL_INLINE void set_face_based(bool newvalue);
@@ -116,7 +119,8 @@ public:
   //   C  #E|1 by 3 color(s)
   IGL_INLINE void set_edges (const Eigen::MatrixXd& P, const Eigen::MatrixXi& E, const Eigen::MatrixXd& C);
   IGL_INLINE void add_edges (const Eigen::MatrixXd& P1, const Eigen::MatrixXd& P2, const Eigen::MatrixXd& C);
-  IGL_INLINE void add_label (const Eigen::VectorXd& P,  const std::string& str);
+  IGL_INLINE void add_label(const Eigen::VectorXd& P,const std::string& str);
+  IGL_INLINE void add_label (const Eigen::VectorXd& P,  const std::string& str,const Eigen::Vector3d& C);
 
   // Computes the normals of the mesh
   IGL_INLINE void compute_normals();
@@ -135,6 +139,13 @@ public:
 
   // Generates a default grid texture
   IGL_INLINE void grid_texture();
+
+  // Model matrix
+  Eigen::Matrix4f model;
+  Eigen::Vector3f model_translation;
+
+  // Caches the two-norm between the min/max point of the bounding box
+  float object_scale;
 
   Eigen::MatrixXd V; // Vertices of the current mesh (#V x 3)
   Eigen::MatrixXi F; // Faces of the mesh (#F x 3)
@@ -156,6 +167,8 @@ public:
   // UV parametrization
   Eigen::MatrixXd V_uv; // UV vertices
   Eigen::MatrixXi F_uv; // optional faces for UVs
+  Eigen::Vector3f model_translation_uv;
+  float model_zoom_uv;
 
   // Texture
   Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> texture_R;
@@ -180,72 +193,35 @@ public:
   // Texts contains in the i-th position the text of the i-th label
   Eigen::MatrixXd           labels_positions;
   std::vector<std::string>  labels_strings;
+  Eigen::MatrixXd           labels_colors;
 
   // Marks dirty buffers that need to be uploaded to OpenGL
   uint32_t dirty;
 
   // Enable per-face or per-vertex properties
   bool face_based;
+
+  // Visualization options
+  bool show_overlay;
+  bool show_overlay_depth;
+  bool show_texture;
+  bool show_faces;
+  bool show_lines;
+  bool show_vertid;
+  bool show_faceid;
+  bool invert_normals;
+  bool depth_test;
+  bool visible;
+
+  // Point size / line width
+  float point_size;
+  float line_width;
+
   /*********************************/
 };
 
 }
 }
-
-#ifdef ENABLE_SERIALIZATION
-#include <igl/serialize.h>
-namespace igl {
-	namespace serialization {
-
-		inline void serialization(bool s, igl::viewer::ViewerData& obj, std::vector<char>& buffer)
-		{
-			SERIALIZE_MEMBER(V);
-			SERIALIZE_MEMBER(F);
-
-			SERIALIZE_MEMBER(F_normals);
-			SERIALIZE_MEMBER(F_material_ambient);
-			SERIALIZE_MEMBER(F_material_diffuse);
-			SERIALIZE_MEMBER(F_material_specular);
-
-			SERIALIZE_MEMBER(V_normals);
-			SERIALIZE_MEMBER(V_material_ambient);
-			SERIALIZE_MEMBER(V_material_diffuse);
-			SERIALIZE_MEMBER(V_material_specular);
-
-			SERIALIZE_MEMBER(V_uv);
-			SERIALIZE_MEMBER(F_uv);
-
-			SERIALIZE_MEMBER(texture_R);
-			SERIALIZE_MEMBER(texture_G);
-			SERIALIZE_MEMBER(texture_B);
-      SERIALIZE_MEMBER(texture_A);
-
-			SERIALIZE_MEMBER(lines);
-			SERIALIZE_MEMBER(points);
-
-			SERIALIZE_MEMBER(labels_positions);
-			SERIALIZE_MEMBER(labels_strings);
-
-			SERIALIZE_MEMBER(dirty);
-
-			SERIALIZE_MEMBER(face_based);
-		}
-
-		template<>
-		inline void serialize(const igl::viewer::ViewerData& obj, std::vector<char>& buffer)
-		{
-			serialization(true, const_cast<igl::viewer::ViewerData&>(obj), buffer);
-		}
-
-		template<>
-		inline void deserialize(igl::viewer::ViewerData& obj, const std::vector<char>& buffer)
-		{
-			serialization(false, obj, const_cast<std::vector<char>&>(buffer));
-			obj.dirty = igl::viewer::ViewerData::DIRTY_ALL;
-		}
-	}
-}
-#endif
 
 #ifndef IGL_STATIC_LIBRARY
 #  include "ViewerData.cpp"
