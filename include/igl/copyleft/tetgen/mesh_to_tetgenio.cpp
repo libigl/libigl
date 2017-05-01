@@ -81,6 +81,23 @@ IGL_INLINE bool igl::copyleft::tetgen::mesh_to_tetgenio(
     
 }	
 
+template <typename DerivedV, typename DerivedF, typename DerivedH, typename DerivedR>
+IGL_INLINE bool igl::copyleft::tetgen::mesh_to_tetgenio(
+  const Eigen::PlainObjectBase<DerivedV>& V,
+  const Eigen::PlainObjectBase<DerivedF>& F,
+  const Eigen::PlainObjectBase<DerivedH>& H,
+  const Eigen::PlainObjectBase<DerivedR>& R,
+  tetgenio & in)
+{
+  using namespace std;
+  vector<vector<REAL> > vV, vH, vR;
+  vector<vector<int> > vF;
+  matrix_to_list(V,vV);
+  matrix_to_list(F,vF);
+  matrix_to_list(H, vH);
+  matrix_to_list(R, vR);
+  return mesh_to_tetgenio(vV,vF,vH,vR,in);
+}
 
 
 IGL_INLINE bool igl::copyleft::tetgen::mesh_to_tetgenio(
