@@ -20,14 +20,16 @@
 
 
 IGL_INLINE int igl::copyleft::tetgen::tetrahedralize(
-  const std:vector<std::vector<REAL > > & V,
+  const std::vector<std::vector<REAL > > & V,
   const std::vector<std::vector<int> > & F,
   const std::vector<std::vector<REAL > > & H,
-  const std::vector<std::vector<REAL > >,
+  const std::vector<std::vector<REAL > > & R,
   const std::string switches,
   std::vector<std::vector<REAL > > & TV,
   std::vector<std::vector<int > > & TT,
-   std::vector<std::vector<int > > & TF)
+  std::vector<std::vector<int > > & TF,
+  std::vector<std::vector<REAL > > &TR,
+  size_t numRegions)
 {
   using namespace std;
   tetgenio in,out;
@@ -53,7 +55,7 @@ IGL_INLINE int igl::copyleft::tetgen::tetrahedralize(
     cerr<<"^"<<__FUNCTION__<<": Tetgen failed to create tets"<<endl;
     return 2;	  
   }
-  success = tetgenio_to_tetmesh(out, TV, TT, TF);
+  success = tetgenio_to_tetmesh(out, TV, TT, TF, TR, numRegions);
   if(!success)
   {
     return -1;
@@ -61,7 +63,60 @@ IGL_INLINE int igl::copyleft::tetgen::tetrahedralize(
     return 0;
 }
 
-
+template <
+  typename DerivedV, 
+  typename DerivedF, 
+  typename DerivedH,
+  typename DerivedR,
+  typename DerivedTV, 
+  typename DerivedTT, 
+  typename DerivedTF,
+  typename DerivedTR>
+IGL_INLINE int igl::copyleft::tetgen::tetrahedralize(
+  const Eigen::PlainObjectBase<DerivedV>& V,
+  const Eigen::PlainObjectBase<DerivedF>& F,
+  const Eigen::PlainObjectBase<DerivedH>& H,
+  const Eigen::PlainObjectBase<DerivedR>& R,
+  const std::string switches,
+  Eigen::PlainObjectBase<DerivedTV>& TV,
+  Eigen::PlainObjectBase<DerivedTT>& TT,
+  Eigen::PlainObjectBase<DerivedTF>& TF,
+  Eigen::PlainObjectBase<DerivedTR>& TR,
+  size_t numRegions)
+{
+  using namespace std;
+  vector<vector<REAL> > vV, vH, vR, vTV, vTR;
+  vector<vector<int> > vF,vTT,vTF;
+  matrix_to_list(V,vV);
+  matrix_to_list(F,vF);
+  matrix_to_list(H, vH);
+  matrix_to_list(R, vR);
+  int e = tetrahedralize(vV,vF,vH,vR,switches,vTV,vTT,vTF,vTR,numRegions);
+  if(e == 0)
+  {
+    bool TV_rect = list_to_matrix(vTV,TV);
+    if(!TV_rect)
+    {
+      return 3;
+    }
+    bool TT_rect = list_to_matrix(vTT,TT);
+    if(!TT_rect)
+    {
+      return 3;
+    }
+    bool TF_rect = list_to_matrix(vTF,TF);
+    if(!TF_rect)
+    {
+      return 3;
+    }
+    bool TR_rect = list_to_matrix(vTR, TR);
+    if(!TR_rect)
+    {
+      return 3;	    
+    }
+  }
+  return e;
+}
 
 IGL_INLINE int igl::copyleft::tetgen::tetrahedralize(
   const std::vector<std::vector<REAL > > & V, 

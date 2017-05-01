@@ -124,24 +124,44 @@ namespace igl
         Eigen::PlainObjectBase<DerivedTF>& TF,
         Eigen::PlainObjectBase<DerivedTM>& TM);
 	
-        // Define a overload which also accepts hole and region information in input and outputs region and hole tets seperately.
+
+// Define a overload which also accepts hole and region information in input and outputs region and hole tets seperately.
 	IGL_INLINE int tetrahedralize(
 	  const std::vector<std::vector<REAL> > &V, 
 	  const std::vector<std::vector<int> >  &F, 
 	  const std::vector<std::vector<REAL> > &H, 
 	  const std::vector<std::vector<REAL> > &R, 
-	  const std::vector<int> & VM,
-	  const std::vector<int> & FM,
-	  
+	  	  
 	  const std::string switches, 
 	  
 	  std::vector<std::vector<REAL > > & TV,
 	  std::vector<std::vector<int > >  & TT,
 	  std::vector<std::vector<int > >  & TF,
-	  std::vector<int> &TM
-	  std::vector<int> &TR); // region marker per tet
-	     
-    }
+	  std::vector<std::vector<REAL > > &TR,  // region marker per tet
+	  size_t numRegions);	     
+
+      template <
+        typename DerivedV,
+   	typename DerivedF,
+	typename DerivedH,
+	typename DerivedR,
+	typename DerivedTV,
+	typename DerivedTT,
+	typename DerivedTF,
+	typename DerivedTR>	
+      IGL_INLINE int tetrahedralize(
+	const Eigen::PlainObjectBase<DerivedV>& V,
+	const Eigen::PlainObjectBase<DerivedF>& F,
+	const Eigen::PlainObjectBase<DerivedH>& H,
+	const Eigen::PlainObjectBase<DerivedR>& R,
+	const std::string switches,
+	Eigen::PlainObjectBase<DerivedTV>& TV,
+        Eigen::PlainObjectBase<DerivedTT>& TT,
+	Eigen::PlainObjectBase<DerivedTF>& TF,
+	Eigen::PlainObjectBase<DerivedTR>& TR, 
+	size_t numRegions);	      
+
+            }
   }
 }
 

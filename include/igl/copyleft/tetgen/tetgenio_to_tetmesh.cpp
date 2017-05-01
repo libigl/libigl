@@ -18,9 +18,9 @@ IGL_INLINE bool igl::copyleft::tetgen::tetgenio_to_tetmesh(
   std::vector<std::vector<REAL > > & V,
   std::vector<std::vector<int> > & T,
   std::vector<std::vector<int > > & F,
-  size_t nR,
-  std::vector<std::vector<REAL > > & R) // region marks for tetrahedron
- {
+  std::vector<std::vector<REAL > >&  R, // region marks for tetrahedron
+  size_t nR ) 
+{
    using namespace std;
    // process points
    if(out.pointlist == NULL)
@@ -85,10 +85,13 @@ IGL_INLINE bool igl::copyleft::tetgen::tetgenio_to_tetmesh(
    
    // extract region marks
    nR = out.numberofregions;
-   R = new REAL[out.numberoftetrahedra];
+   R.resize(out.numberoftetrahedra, vector<REAL>(out.numberoftetrahedronattributes));
    for(size_t i = 0; i < out.numberoftetrahedra; i++)
-     R[i] = out.tetrahedronattributelist[i];
-   
+   {
+	for (size_t tetAttributeID = 0; tetAttributeID < out.numberoftetrahedronattributes; tetAttributeID++)
+		R[i][tetAttributeID] = out.tetrahedronattributelist[i * out.numberoftetrahedronattributes + tetAttributeID];
+   }
+
    return true;
 }
 

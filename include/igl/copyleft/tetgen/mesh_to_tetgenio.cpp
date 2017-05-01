@@ -28,7 +28,7 @@ IGL_INLINE bool igl::copyleft::tetgen::mesh_to_tetgenio(
   //loop over points
   for(size_t i = 0; i < (size_t)V.size(); i++)
   {
-    assert(V[i].size() == 3)
+    assert(V[i].size() == 3);
     in.pointlist[i*3+0] = V[i][0];
     in.pointlist[i*3+1] = V[i][1];
     in.pointlist[i*3+2] = V[i][2];    
@@ -56,7 +56,7 @@ IGL_INLINE bool igl::copyleft::tetgen::mesh_to_tetgenio(
     }
   }
   
-  in.numberofholes = new double[3 * in.numberofholes];
+  in.holelist = new double[3 * in.numberofholes];
   // loop over holes
   for(size_t holeID = 0, nHoles = H.size(); holeID < nHoles; holeID++)
   {
@@ -70,11 +70,11 @@ IGL_INLINE bool igl::copyleft::tetgen::mesh_to_tetgenio(
   // loop over regions
   for(size_t regionID = 0, nRegions = R.size(); regionID < nRegions; regionID++)
   {
-    in.regionlist[holeID * 5 + 0] = H[holeID][0]; 
-    in.regionlist[holeID * 5 + 1] = H[holeID][1];
-    in.regionlist[holeID * 5 + 2] = H[holeID][2];
-    in.regionlist[holeID * 5 + 3] = H[holeID][3];
-    in.regionlist[holeID * 5 + 4] = H[holeID][4]
+    in.regionlist[regionID * 5 + 0] = R[regionID][0]; 
+    in.regionlist[regionID * 5 + 1] = R[regionID][1];
+    in.regionlist[regionID * 5 + 2] = R[regionID][2];
+    in.regionlist[regionID * 5 + 3] = R[regionID][3];
+    in.regionlist[regionID * 5 + 4] = R[regionID][4];
   }	  
 
   return true;

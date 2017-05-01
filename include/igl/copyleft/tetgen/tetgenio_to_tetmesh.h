@@ -61,8 +61,9 @@ namespace igl
 	std::vector<std::vector<REAL > > & V,
 	std::vector<std::vector<int> > & T,
         std::vector<std::vector<int> > & F, 
-	size_t nR, // number of regions
-	std::vector<std::vector<REAL> > & R); // region marks for tetrahedrons	
+	std::vector<std::vector<REAL> > & R,// region marks for tetrahedrons	
+	size_t nR // number of regions
+);    
     }
   }
 }
