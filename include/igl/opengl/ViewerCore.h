@@ -5,12 +5,12 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
-#ifndef IGL_VIEWER_VIEWER_CORE_H
-#define IGL_VIEWER_VIEWER_CORE_H
+#ifndef IGL_OPENGL_VIEWERCORE_H
+#define IGL_OPENGL_VIEWERCORE_H
 
-#include <igl/viewer/OpenGL_state.h>
+#include <igl/opengl/State.h>
 #ifdef IGL_VIEWER_WITH_NANOGUI
-#include <igl/viewer/TextRenderer.h>
+#include <igl/opengl/glfw/TextRenderer.h>
 #endif
 #include <igl/ViewerData.h>
 #include <igl/opengl/State.h>
@@ -74,6 +74,8 @@ public:
   IGL_INLINE void clear_framebuffers();
 
   // Draw everything
+  //
+  // data cannot be const because it is being set to "clean"
   IGL_INLINE void draw(ViewerData& data, State& opengl, bool update_matrices = true);
   IGL_INLINE void draw_buffer(
     ViewerData& data,

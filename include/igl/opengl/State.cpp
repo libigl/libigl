@@ -86,7 +86,7 @@ IGL_INLINE void igl::opengl::State::set_data(
     X_vbo.resize(data.F.rows()*3,3);
     for (unsigned i=0; i<data.F.rows();++i)
       for (unsigned j=0;j<3;++j)
-        X_vbo.row(i*3+j) = X.row(i).cast<float>();
+        X_vbo.row(i*3+j) = X.row(i).cast<float>().head(3);
   };
 
   // Input:
@@ -366,6 +366,11 @@ IGL_INLINE void igl::opengl::State::draw_overlay_points()
 
 IGL_INLINE void igl::opengl::State::init()
 {
+  if(is_initialized)
+  {
+    return;
+  }
+  is_initialized = true;
   std::string mesh_vertex_shader_string =
   "#version 150\n"
   "uniform mat4 model;"

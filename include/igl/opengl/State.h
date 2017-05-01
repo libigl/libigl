@@ -29,6 +29,7 @@ class State
 public:
   typedef unsigned int GLuint;
 
+  bool is_initialized = false;
   GLuint vao_mesh;
   GLuint vao_overlay_lines;
   GLuint vao_overlay_points;
