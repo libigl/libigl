@@ -8,11 +8,11 @@
 #ifndef IGL_VIEWER_VIEWER_CORE_H
 #define IGL_VIEWER_VIEWER_CORE_H
 
+#include <igl/viewer/OpenGL_state.h>
 #ifdef IGL_VIEWER_WITH_NANOGUI
 #include <igl/viewer/TextRenderer.h>
 #endif
 #include <igl/viewer/ViewerData.h>
-#include <igl/viewer/OpenGL_state.h>
 
 #include <igl/igl_inline.h>
 #include <Eigen/Geometry>

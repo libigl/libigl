@@ -1,6 +1,6 @@
 # libigl - A simple C++ geometry processing library
 [![Build Status](https://travis-ci.org/libigl/libigl.svg?branch=master)](https://travis-ci.org/libigl/libigl)
-[![Build status](https://ci.appveyor.com/api/projects/status/mf3t9rnhco0vhly8?svg=true)](https://ci.appveyor.com/project/danielepanozzo/libigl-6hjk1)
+[![Build status](https://ci.appveyor.com/api/projects/status/mf3t9rnhco0vhly8/branch/master?svg=true)](https://ci.appveyor.com/project/danielepanozzo/libigl-6hjk1/branch/master)
 ![](libigl-teaser.png)
 
 <https://github.com/libigl/libigl/>
@@ -241,7 +241,7 @@ few labs/companies/institutions using libigl:
 
 Libigl is a group endeavor led by [Alec
 Jacobson](http://www.cs.toronto.edu/~jacobson/) and [Daniele
-Panozzo](http://www.inf.ethz.ch/personal/dpanozzo/). Please [contact
+Panozzo](http://cs.nyu.edu/~panozzo/). Please [contact
 us](mailto:alecjacobson@gmail.com,daniele.panozzo@gmail.com) if you have
 questions or comments. For troubleshooting, please post an
 [issue](https://github.com/libigl/libigl/issues) on github.
