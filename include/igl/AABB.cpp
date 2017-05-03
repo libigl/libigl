@@ -148,22 +148,14 @@ IGL_INLINE void igl::AABB<DerivedV,DIM>::init(
         {
           SIdI(i) = SI(I(i),max_d);
         }
-        // Since later I use <= I think I don't need to worry about odd/even
         // Pass by copy to avoid changing input
-        const auto median = [](VectorXi A)->Scalar
+        const auto median = [](VectorXi A)->int
         {
-          size_t n = A.size()/2;
+          size_t n = (A.size()-1)/2;
           nth_element(A.data(),A.data()+n,A.data()+A.size());
-          if(A.rows() % 2 == 1)
-          {
-            return A(n);
-          }else
-          {
-            nth_element(A.data(),A.data()+n-1,A.data()+A.size());
-            return 0.5*(A(n)+A(n-1));
-          }
+          return A(n);
         };
-        const Scalar med = median(SIdI);
+        const int med = median(SIdI);
         VectorXi LI((I.rows()+1)/2),RI(I.rows()/2);
         assert(LI.rows()+RI.rows() == I.rows());
         // Distribute left and right
