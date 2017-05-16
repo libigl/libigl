@@ -10,6 +10,7 @@
 #include <igl/igl_inline.h>
 #include <mex.h>
 #include <Eigen/Dense>
+#include <Eigen/Sparse>
 namespace igl
 {
   namespace matlab
@@ -29,6 +30,10 @@ namespace igl
     IGL_INLINE void parse_rhs_index(
       const mxArray *prhs[], 
       Eigen::PlainObjectBase<DerivedV> & V);
+    template <typename VType>
+    IGL_INLINE void parse_rhs(
+      const mxArray *prhs[], 
+      Eigen::SparseMatrix<VType> & M);
   }
 };
 #ifndef IGL_STATIC_LIBRARY
