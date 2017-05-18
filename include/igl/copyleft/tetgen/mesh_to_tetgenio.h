@@ -51,7 +51,7 @@ namespace igl
 	const std::vector<std::vector<REAL > > & R, // regions
 	tetgenio & in);	
       
-      typename <typename DerivedV, typename DerivedF, typename DerivedH, typename DerivedR>
+      template <typename DerivedV, typename DerivedF, typename DerivedH, typename DerivedR>
       IGL_INLINE bool mesh_to_tetgenio(
 	const Eigen::PlainObjectBase<DerivedV>& V,
 	const Eigen::PlainObjectBase<DerivedF>& F,

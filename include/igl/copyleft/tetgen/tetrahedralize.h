@@ -159,6 +159,8 @@ namespace igl
         Eigen::PlainObjectBase<DerivedTT>& TT,
 	Eigen::PlainObjectBase<DerivedTF>& TF,
 	Eigen::PlainObjectBase<DerivedTR>& TR, 
+	Eigen::PlainObjectBase<DerivedTN>& TN, // neighborlist per tet
+	Eigen::PlainObjectBase<DerivedTP>& TP, // point2tet list
 	size_t numRegions);	      
 
             }
