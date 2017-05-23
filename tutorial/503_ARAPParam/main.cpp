@@ -2,10 +2,12 @@
 #include <igl/boundary_loop.h>
 #include <igl/harmonic.h>
 #include <igl/map_vertices_to_circle.h>
-#include <igl/readOFF.h>
+#include <igl/read_triangle_mesh.h>
 #include <igl/viewer/Viewer.h>
 
 #include "tutorial_shared_path.h"
+
+#include <iostream>
 
 Eigen::MatrixXd V;
 Eigen::MatrixXi F;
@@ -43,12 +45,21 @@ bool key_down(igl::viewer::Viewer& viewer, unsigned char key, int modifier)
 int main(int argc, char *argv[])
 {
   using namespace std;
-  // Load a mesh in OFF format
-  igl::readOFF(TUTORIAL_SHARED_PATH "/camelhead.off", V, F);
+  // Set input mesh filename
+  std::string filename(TUTORIAL_SHARED_PATH "/camelhead.off");
+  if (argc > 1)
+      filename = std::string(argv[1]);
+
+  // Try to load the input mesh
+  if (igl::read_triangle_mesh(filename, V, F) == false)
+      return -1;
 
   // Compute the initial solution for ARAP (harmonic parametrization)
   Eigen::VectorXi bnd;
   igl::boundary_loop(F,bnd);
+
+  if (bnd.size() < 1)
+        std::cerr << "error: Mesh has no boundary"<<std::endl;
   Eigen::MatrixXd bnd_uv;
   igl::map_vertices_to_circle(V,bnd,bnd_uv);
 

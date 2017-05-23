@@ -24,9 +24,17 @@ int main(int argc, char * argv[])
     T.translate(Eigen::Vector3d(0,0.125*cos(2.*M_PI*t),0));
     return T;
   };
-  // Read in inputs as double precision floating point meshes
-  read_triangle_mesh(
-      TUTORIAL_SHARED_PATH "/bunny.off",V,F);
+
+  // Set input mesh filename
+  std::string filename(TUTORIAL_SHARED_PATH "/bunny.off");
+  if (argc > 1)
+      filename = std::string(argv[1]);
+
+  // Try to load the input mesh
+  if (igl::read_triangle_mesh(filename, V, F) == false)
+      return -1;
+
+
   cout<<R"(Usage:
 [space]  Toggle between transforming original mesh and swept volume
 )";

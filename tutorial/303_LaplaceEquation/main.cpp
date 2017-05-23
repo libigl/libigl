@@ -3,7 +3,7 @@
 #include <igl/cotmatrix.h>
 #include <igl/jet.h>
 #include <igl/min_quad_with_fixed.h>
-#include <igl/readOFF.h>
+#include <igl/read_triangle_mesh.h>
 #include <igl/setdiff.h>
 #include <igl/slice.h>
 #include <igl/slice_into.h>
@@ -19,10 +19,22 @@ int main(int argc, char *argv[])
   using namespace std;
   MatrixXd V;
   MatrixXi F;
-  igl::readOFF(TUTORIAL_SHARED_PATH "/camelhead.off",V,F);
+
+  // Set input mesh filename
+  std::string filename(TUTORIAL_SHARED_PATH "/camelhead.off");
+  if (argc > 1)
+      filename = std::string(argv[1]);
+
+  // Try to load the input mesh
+  if (igl::read_triangle_mesh(filename, V, F) == false)
+      return -1;
+
   // Find boundary edges
   MatrixXi E;
   igl::boundary_facets(F,E);
+  if (E.rows() < 1)
+      std::cerr << "error: Mesh has no boundary"<<std::endl;
+
   // Find boundary vertices
   VectorXi b,IA,IC;
   igl::unique(E,b,IA,IC);

@@ -1,10 +1,12 @@
 #include <igl/boundary_loop.h>
 #include <igl/harmonic.h>
 #include <igl/map_vertices_to_circle.h>
-#include <igl/readOFF.h>
+#include <igl/read_triangle_mesh.h>
 #include <igl/viewer/Viewer.h>
 
 #include "tutorial_shared_path.h"
+#include <iostream>
+
 
 Eigen::MatrixXd V;
 Eigen::MatrixXi F;
@@ -16,28 +18,37 @@ bool key_down(igl::viewer::Viewer& viewer, unsigned char key, int modifier)
   {
     // Plot the 3D mesh
     viewer.data.set_mesh(V,F);
+    viewer.data.compute_normals();
     viewer.core.align_camera_center(V,F);
   }
   else if (key == '2')
   {
     // Plot the mesh in 2D using the UV coordinates as vertex coordinates
     viewer.data.set_mesh(V_uv,F);
+    viewer.data.compute_normals();
     viewer.core.align_camera_center(V_uv,F);
   }
 
-  viewer.data.compute_normals();
 
   return false;
 }
 
 int main(int argc, char *argv[])
 {
-  // Load a mesh in OFF format
-  igl::readOFF(TUTORIAL_SHARED_PATH "/camelhead.off", V, F);
+  // Set input mesh filename
+  std::string filename(TUTORIAL_SHARED_PATH "/camelhead.off");
+  if (argc > 1)
+      filename = std::string(argv[1]);
+
+  // Try to load the input mesh
+  if (igl::read_triangle_mesh(filename, V, F) == false)
+      return -1;
 
   // Find the open boundary
   Eigen::VectorXi bnd;
   igl::boundary_loop(F,bnd);
+  if (bnd.size() < 1)
+        std::cerr << "error: Mesh has no boundary"<<std::endl;
 
   // Map the boundary to a circle, preserving edge proportions
   Eigen::MatrixXd bnd_uv;

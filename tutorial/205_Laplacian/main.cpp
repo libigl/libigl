@@ -6,7 +6,7 @@
 #include <igl/massmatrix.h>
 #include <igl/per_vertex_normals.h>
 #include <igl/readDMAT.h>
-#include <igl/readOFF.h>
+#include <igl/read_triangle_mesh.h>
 #include <igl/repdiag.h>
 #include <igl/viewer/Viewer.h>
 
@@ -23,8 +23,14 @@ int main(int argc, char *argv[])
   using namespace Eigen;
   using namespace std;
 
-  // Load a mesh in OFF format
-  igl::readOFF(TUTORIAL_SHARED_PATH "/cow.off", V, F);
+  // Set input mesh filename
+  std::string filename(TUTORIAL_SHARED_PATH "/cow.off");
+  if (argc > 1)
+      filename = std::string(argv[1]);
+
+  // Try to load the input mesh
+  if (igl::read_triangle_mesh(filename, V, F) == false)
+      return -1;
 
   // Compute Laplace-Beltrami operator: #V by #V
   igl::cotmatrix(V,F,L);

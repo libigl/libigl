@@ -14,9 +14,16 @@ int main(int argc, char * argv[])
   using namespace igl;
   MatrixXi F;
   MatrixXd V;
-  // Read in inputs as double precision floating point meshes
-  read_triangle_mesh(
-      TUTORIAL_SHARED_PATH "/armadillo.obj",V,F);
+
+  // Set input mesh filename
+  std::string filename(TUTORIAL_SHARED_PATH "/armadillo.obj");
+  if (argc > 1)
+      filename = std::string(argv[1]);
+
+  // Try to load the input mesh
+  if (igl::read_triangle_mesh(filename, V, F) == false)
+      return -1;
+
   // number of vertices on the largest side
   const int s = 50;
   const RowVector3d Vmin = V.colwise().minCoeff();

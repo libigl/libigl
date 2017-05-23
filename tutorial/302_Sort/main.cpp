@@ -1,7 +1,7 @@
 #include <igl/barycenter.h>
 #include <igl/colon.h>
 #include <igl/jet.h>
-#include <igl/readOFF.h>
+#include <igl/read_triangle_mesh.h>
 #include <igl/slice_into.h>
 #include <igl/sortrows.h>
 #include <igl/viewer/Viewer.h>
@@ -14,7 +14,14 @@ int main(int argc, char *argv[])
   using namespace std;
   MatrixXd V;
   MatrixXi F;
-  igl::readOFF(TUTORIAL_SHARED_PATH "/decimated-knight.off",V,F);
+  // Set input mesh filename
+  std::string filename(TUTORIAL_SHARED_PATH "/decimated-knight.off");
+  if (argc > 1)
+      filename = std::string(argv[1]);
+
+  // Try to load the input mesh
+  if (igl::read_triangle_mesh(filename, V, F) == false)
+      return -1;
 
   // Sort barycenters lexicographically
   MatrixXd BC,sorted_BC;
