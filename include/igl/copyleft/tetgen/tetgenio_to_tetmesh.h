@@ -61,9 +61,24 @@ namespace igl
 	std::vector<std::vector<REAL > > & V,
 	std::vector<std::vector<int> > & T,
         std::vector<std::vector<int> > & F, 
-	std::vector<std::vector<REAL> > & R,// region marks for tetrahedrons	
-	size_t nR // number of regions
-);    
+	std::vector<std::vector<REAL> > & R,// region marks for tetrahedrons
+	std::vector<std::vector<int > > &N, // neighborlist per tet
+	std::vector<std::vector<int > >	&PT, // Point to tet list per point
+	size_t nR); // number of regions    
+
+      // Wrapper with Eigen types
+      // Templates:
+      //   DerivedV  real-value: i.e. from MatrixXd
+      //   DerivedT  integer-value: i.e. from MatrixXi
+      template <typename DerivedV, typename DerivedT, typename DerivedF>
+      IGL_INLINE bool tetgenio_to_tetmesh(
+        const tetgenio & out,
+        Eigen::PlainObjectBase<DerivedV>& V,
+        Eigen::PlainObjectBase<DerivedT>& T,
+        Eigen::PlainObjectBase<DerivedF>& F,
+	Eigen::PlainObjectBase<DerivedT>& N,
+	Eigen::PlainObjectBase<DerivedT>& PT,
+	size_t nR);
     }
   }
 }

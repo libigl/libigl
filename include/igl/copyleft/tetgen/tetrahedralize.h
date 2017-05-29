@@ -138,6 +138,8 @@ namespace igl
 	  std::vector<std::vector<int > >  & TT,
 	  std::vector<std::vector<int > >  & TF,
 	  std::vector<std::vector<REAL > > &TR,  // region marker per tet
+	  std::vector<std::vector<int > > &TN, // neighbor list per tet
+	  std::vector<std::vector<int > > &TP, // point to tet list
 	  size_t numRegions);	     
 
       template <
