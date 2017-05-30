@@ -139,7 +139,8 @@ namespace igl
 	  std::vector<std::vector<int > >  & TF,
 	  std::vector<std::vector<REAL > > &TR,  // region marker per tet
 	  std::vector<std::vector<int > > &TN, // neighbor list per tet
-	  std::vector<std::vector<int > > &TP, // point to tet list
+	  std::vector<std::vector<int > > &PT, // point to tet list
+	  std::vector<std::vector<int > > &FT, // face to tet list
 	  size_t numRegions);	     
 
       template <
@@ -161,8 +162,9 @@ namespace igl
         Eigen::PlainObjectBase<DerivedTT>& TT,
 	Eigen::PlainObjectBase<DerivedTF>& TF,
 	Eigen::PlainObjectBase<DerivedTR>& TR, 
-	Eigen::PlainObjectBase<DerivedTN>& TN, // neighborlist per tet
-	Eigen::PlainObjectBase<DerivedTP>& TP, // point2tet list
+	Eigen::PlainObjectBase<DerivedTT>& TN, // neighborlist per tet
+	Eigen::PlainObjectBase<DerivedTT>& PT, // point2tet list
+	Eigen::PlainObjectBase<DerivedTT>& FT, // face2tet list
 	size_t numRegions);	      
 
             }

@@ -64,6 +64,7 @@ namespace igl
 	std::vector<std::vector<REAL> > & R,// region marks for tetrahedrons
 	std::vector<std::vector<int > > &N, // neighborlist per tet
 	std::vector<std::vector<int > >	&PT, // Point to tet list per point
+	std::vector<std::vector<int > > &FT, // face to tet list
 	size_t nR); // number of regions    
 
       // Wrapper with Eigen types
@@ -78,6 +79,7 @@ namespace igl
         Eigen::PlainObjectBase<DerivedF>& F,
 	Eigen::PlainObjectBase<DerivedT>& N,
 	Eigen::PlainObjectBase<DerivedT>& PT,
+	Eigen::PlainObjectBase<DerivedT>& FT, 
 	size_t nR);
     }
   }

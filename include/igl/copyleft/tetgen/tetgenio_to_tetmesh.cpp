@@ -21,6 +21,7 @@ IGL_INLINE bool igl::copyleft::tetgen::tetgenio_to_tetmesh(
   std::vector<std::vector<REAL > >&  R, // region marks for tetrahedron
   std::vector<std::vector<int > >& N,
   std::vector<std::vector<int > >& PT,
+  std::vector<std::vector<int > >& FT,
   size_t nR ) 
 {
    using namespace std;
@@ -94,17 +95,22 @@ IGL_INLINE bool igl::copyleft::tetgen::tetgenio_to_tetmesh(
 		R[i][tetAttributeID] = out.tetrahedronattributelist[i * out.numberoftetrahedronattributes + tetAttributeID];
    }
 
-   // extract neighbor list TODO
+   // extract neighbor list 
    for (size_t i = 0; i < out.numberoftetrahedra; i++)
    {
 	for (size_t j = 0; j < 4; j++)
 		N[i][j] = out.neighborlist[i * 4 + j];
    } 
    
-   // extract point 2 tetrahedron list TODO
+   // extract point 2 tetrahedron list 
    for (size_t i = 0; i < out.numberofpoints; i++)
    {
 	PT[i][0] = out.point2tetlist[i]; 
+   }
+   //extract face to tetrahedron list
+   for (size_t i = 0; i < out.numberoftrifaces; i++)
+   {
+	FT[i][0] = out.face2tetlist[i]; 
    }
 
    return true;
