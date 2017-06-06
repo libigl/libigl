@@ -42,6 +42,22 @@ namespace igl
     NUM_EIGS_TYPES = 2
   };
   template <
+	typename Atype,
+	typename Btype,
+	typename DerivedU,
+	typename DerivedS>
+	IGL_INLINE bool eigs(
+	  const Eigen::SparseMatrix<Atype> & A,
+	  const Eigen::SparseMatrix<Btype> & B,
+	  const size_t k,
+	  const EigsType type,
+	  Eigen::PlainObjectBase<DerivedU> & sU,
+	  Eigen::PlainObjectBase<DerivedS> & sS);
+
+// An overloaded variant of eigs that changes the following inputs
+//   k  number of eigen pairs to compute (0 continues until max_iter fails to find another pair)
+//   max_iter  number of iterations allowed per pair
+  template <
     typename Atype,
     typename Btype,
     typename DerivedU,
@@ -49,10 +65,11 @@ namespace igl
   IGL_INLINE bool eigs(
     const Eigen::SparseMatrix<Atype> & A,
     const Eigen::SparseMatrix<Btype> & B,
-    const size_t k,
     const EigsType type,
     Eigen::PlainObjectBase<DerivedU> & sU,
-    Eigen::PlainObjectBase<DerivedS> & sS);
+    Eigen::PlainObjectBase<DerivedS> & sS,
+	const size_t k = 0,
+    unsigned int max_iter = 100);
 }
 
 #ifndef IGL_STATIC_LIBRARY
