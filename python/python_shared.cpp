@@ -53,6 +53,7 @@ PYBIND11_PLUGIN(pyigl) {
            MeshBooleanType
            SolverStatus
            active_set
+           adjacency_list
            arap
            avg_edge_length
            barycenter
