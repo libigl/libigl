@@ -99,7 +99,7 @@ endif()
 
 ### Compile the AntTweakBar part ###
 if(LIBIGL_WITH_ANTTWEAKBAR)
-  set(ANTTWEAKBAR_DIR "${LIBIGL_EXTERNAL}/anttweakbar")
+  set(ANTTWEAKBAR_DIR "${LIBIGL_EXTERNAL}/AntTweakBar")
   set(ANTTWEAKBAR_INCLUDE_DIR "${ANTTWEAKBAR_DIR}/include")
   set(ANTTWEAKBAR_C_SRC_FILES
     "${ANTTWEAKBAR_DIR}/src/TwEventGLFW.c"
