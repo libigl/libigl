@@ -56,6 +56,7 @@ IGL_INLINE bool igl::copyleft::tetgen::mesh_to_tetgenio(
     }
   }
   
+  in.numberofholes = H.size(); 
   in.holelist = new double[3 * in.numberofholes];
   // loop over holes
   for(size_t holeID = 0, nHoles = H.size(); holeID < nHoles; holeID++)
@@ -66,6 +67,7 @@ IGL_INLINE bool igl::copyleft::tetgen::mesh_to_tetgenio(
   }	  
 
   in.numberofregions = R.size();
+  cout << "Input number of regions in library: " << in.numberofregions << endl << flush;
   in.regionlist = new REAL[ 5 * in.numberofregions];
   // loop over regions
   for(size_t regionID = 0, nRegions = R.size(); regionID < nRegions; regionID++)

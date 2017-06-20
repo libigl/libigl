@@ -32,7 +32,7 @@ IGL_INLINE int igl::copyleft::tetgen::tetrahedralize(
   std::vector<std::vector<int > > & TN, 
   std::vector<std::vector<int > > & PT,
   std::vector<std::vector<int > > & FT,
-  size_t numRegions)
+  size_t & numRegions)
 {
   using namespace std;
   tetgenio in,out;
@@ -46,9 +46,10 @@ IGL_INLINE int igl::copyleft::tetgen::tetrahedralize(
   {
     char * cswitches = new char[switches.size() + 1];
     strcpy(cswitches, switches.c_str());
+    
     ::tetrahedralize(cswitches, &in, &out); 
     delete[] cswitches;
-  }catch(int e)
+}catch(int e)
   {
     cerr <<"^"<<__FUNCTION__<<": TETGEN CRASHED...KABOOM!!"<<endl;
     return 1;
@@ -58,7 +59,8 @@ IGL_INLINE int igl::copyleft::tetgen::tetrahedralize(
     cerr<<"^"<<__FUNCTION__<<": Tetgen failed to create tets"<<endl;
     return 2;	  
   }
-  success = tetgenio_to_tetmesh(out, TV, TT, TF, TR, TN, PT, FT, numRegions);
+   success = tetgenio_to_tetmesh(out, TV, TT, TF, TR, TN, PT, FT, numRegions
+);
   if(!success)
   {
     return -1;
@@ -88,16 +90,18 @@ IGL_INLINE int igl::copyleft::tetgen::tetrahedralize(
   Eigen::PlainObjectBase<DerivedTT>& TN,
   Eigen::PlainObjectBase<DerivedTT>& PT,
   Eigen::PlainObjectBase<DerivedTT>& FT,
-  size_t numRegions)
+  size_t & numRegions)
 {
   using namespace std;
   vector<vector<REAL> > vV, vH, vR, vTV, vTR;
   vector<vector<int> > vF,vTT,vTF, vTN, vPT, vFT;
   matrix_to_list(V,vV);
-  matrix_to_list(F,vF);
+  matrix_to_list(F,vF);	
   matrix_to_list(H, vH);
   matrix_to_list(R, vR);
+  
   int e = tetrahedralize(vV,vF,vH,vR,switches,vTV,vTT,vTF,vTR,vTN,vPT,vFT, numRegions);
+  
   if(e == 0)
   {
     bool TV_rect = list_to_matrix(vTV,TV);

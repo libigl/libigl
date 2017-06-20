@@ -22,9 +22,10 @@ IGL_INLINE bool igl::copyleft::tetgen::tetgenio_to_tetmesh(
   std::vector<std::vector<int > >& N,
   std::vector<std::vector<int > >& PT,
   std::vector<std::vector<int > >& FT,
-  size_t nR ) 
+  size_t & nR ) 
 {
    using namespace std;
+   cout << "inside tetgeniototetmesh!!" << flush << endl;	
    // process points
    if(out.pointlist == NULL)
    {
@@ -63,6 +64,7 @@ IGL_INLINE bool igl::copyleft::tetgen::tetgenio_to_tetmesh(
        max_index = (max_index < index ? index : max_index);
      }
    }
+  
    assert(min_index >= 0);
    assert(max_index >= 0);
    assert(max_index < (int)V.size());
@@ -85,34 +87,49 @@ IGL_INLINE bool igl::copyleft::tetgen::tetgenio_to_tetmesh(
      }
    }
 
-   
-   // extract region marks
-   nR = out.numberofregions;
-   R.resize(out.numberoftetrahedra, vector<REAL>(out.numberoftetrahedronattributes));
+   R.resize(out.numberoftetrahedra, vector<REAL>(1));
+   unordered_map<REAL, REAL> hashUniqueRegions;
    for(size_t i = 0; i < out.numberoftetrahedra; i++)
    {
-	for (size_t tetAttributeID = 0; tetAttributeID < out.numberoftetrahedronattributes; tetAttributeID++)
-		R[i][tetAttributeID] = out.tetrahedronattributelist[i * out.numberoftetrahedronattributes + tetAttributeID];
+//	for (size_t tetAttributeID = 0; tetAttributeID < 1; tetAttributeID++)
+		R[i][0] = out.tetrahedronattributelist[i];
+   		hashUniqueRegions[R[i][0]] = i;
    }
+  // extract region marks
+   nR = hashUniqueRegions.size();
+
+   cout << "Number of regions in library: " << nR << endl << flush;
 
    // extract neighbor list 
+   N.resize(out.numberoftetrahedra, vector<int>(4));   
    for (size_t i = 0; i < out.numberoftetrahedra; i++)
    {
 	for (size_t j = 0; j < 4; j++)
 		N[i][j] = out.neighborlist[i * 4 + j];
    } 
-   
+  
    // extract point 2 tetrahedron list 
-   for (size_t i = 0; i < out.numberofpoints; i++)
+   PT.resize(out.numberofpoints, vector<int>(1));
+   if (out.point2tetlist != NULL)
    {
-	PT[i][0] = out.point2tetlist[i]; 
+	for (size_t i = 0; i < out.numberofpoints; i++)
+	   {
+		PT[i][0] = out.point2tetlist[i]; 
+	   }	
+   	cout << "No probs!!" << endl << flush;
    }
+   else
+	{
+		cout << "NULL11" << endl << flush;
+	}
+ 
    //extract face to tetrahedron list
+/*   FT.resize(out.numberoftrifaces, vector<int>(1));
    for (size_t i = 0; i < out.numberoftrifaces; i++)
    {
 	FT[i][0] = out.face2tetlist[i]; 
    }
-
+*/
    return true;
 }
 
