@@ -119,7 +119,8 @@ namespace viewer
     IGL_INLINE void draw();
 
     // OpenGL context resize
-    IGL_INLINE void resize(int w,int h);
+    IGL_INLINE void resize(int w,int h); // explicitly set window size
+    IGL_INLINE void resize_callback(int w,int h); // external resize due to user interaction
 
     // Helper functions
     IGL_INLINE void snap_to_canonical_quaternion();
