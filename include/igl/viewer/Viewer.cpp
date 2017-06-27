@@ -278,6 +278,8 @@ namespace viewer
 
   IGL_INLINE Viewer::Viewer()
   {
+    window = nullptr;
+
 #ifdef IGL_VIEWER_WITH_NANOGUI
     ngui = nullptr;
     screen = nullptr;
@@ -842,7 +844,11 @@ namespace viewer
 
   IGL_INLINE void Viewer::resize(int w,int h)
   {
-    glfwSetWindowSize(window, w/highdpi, h/highdpi);
+    if (window) {
+      glfwSetWindowSize(window, w/highdpi, h/highdpi);
+    } else {
+      resize_callback(w, h);
+    }
   }
 
   IGL_INLINE void Viewer::resize_callback(int w,int h)
