@@ -154,7 +154,7 @@ static void glfw_window_size(GLFWwindow* window, int width, int height)
   int w = width*highdpi;
   int h = height*highdpi;
 
-  __viewer->resize(w, h);
+  __viewer->resize_callback(w, h);
 
   // TODO: repositioning of the nanogui
 }
@@ -842,6 +842,11 @@ namespace viewer
 
   IGL_INLINE void Viewer::resize(int w,int h)
   {
+    glfwSetWindowSize(window, w/highdpi, h/highdpi);
+  }
+
+  IGL_INLINE void Viewer::resize_callback(int w,int h)
+  {
     core.viewport = Eigen::Vector4f(0,0,w,h);
   }
 
@@ -895,7 +900,11 @@ namespace viewer
     }
     else
     {
-      window = glfwCreateWindow(1280,800,"libigl viewer",nullptr,nullptr);
+      if (core.viewport.tail<2>().any()) {
+        window = glfwCreateWindow(core.viewport(2),core.viewport(3),"libigl viewer",nullptr,nullptr);
+      } else {
+        window = glfwCreateWindow(1280,800,"libigl viewer",nullptr,nullptr);
+      }
     }
 
     if (!window)
