@@ -18,14 +18,13 @@ IGL_INLINE bool igl::copyleft::tetgen::tetgenio_to_tetmesh(
   std::vector<std::vector<REAL > > & V,
   std::vector<std::vector<int> > & T,
   std::vector<std::vector<int > > & F,
-  std::vector<std::vector<REAL > >&  R, // region marks for tetrahedron
+  std::vector<std::vector<REAL > >&  R, 
   std::vector<std::vector<int > >& N,
   std::vector<std::vector<int > >& PT,
   std::vector<std::vector<int > >& FT,
   size_t & nR ) 
 {
    using namespace std;
-   cout << "inside tetgeniototetmesh!!" << flush << endl;	
    // process points
    if(out.pointlist == NULL)
    {
@@ -91,45 +90,39 @@ IGL_INLINE bool igl::copyleft::tetgen::tetgenio_to_tetmesh(
    unordered_map<REAL, REAL> hashUniqueRegions;
    for(size_t i = 0; i < out.numberoftetrahedra; i++)
    {
-//	for (size_t tetAttributeID = 0; tetAttributeID < 1; tetAttributeID++)
-		R[i][0] = out.tetrahedronattributelist[i];
-   		hashUniqueRegions[R[i][0]] = i;
+	R[i][0] = out.tetrahedronattributelist[i];
+	hashUniqueRegions[R[i][0]] = i;
    }
-  // extract region marks
+   // extract region marks
    nR = hashUniqueRegions.size();
-
-   cout << "Number of regions in library: " << nR << endl << flush;
 
    // extract neighbor list 
    N.resize(out.numberoftetrahedra, vector<int>(4));   
    for (size_t i = 0; i < out.numberoftetrahedra; i++)
    {
-	for (size_t j = 0; j < 4; j++)
-		N[i][j] = out.neighborlist[i * 4 + j];
+     for (size_t j = 0; j < 4; j++)
+       N[i][j] = out.neighborlist[i * 4 + j];
    } 
   
    // extract point 2 tetrahedron list 
    PT.resize(out.numberofpoints, vector<int>(1));
-   if (out.point2tetlist != NULL)
+   for (size_t i = 0; i < out.numberofpoints; i++)
    {
-	for (size_t i = 0; i < out.numberofpoints; i++)
-	   {
-		PT[i][0] = out.point2tetlist[i]; 
-	   }	
-   	cout << "No probs!!" << endl << flush;
-   }
-   else
-	{
-		cout << "NULL11" << endl << flush;
-	}
+     PT[i][0] = out.point2tetlist[i]; 
+   }	
  
    //extract face to tetrahedron list
-/*   FT.resize(out.numberoftrifaces, vector<int>(1));
+   FT.resize(out.numberoftrifaces, vector<int>(2)); 
+   int triface;
+   
    for (size_t i = 0; i < out.numberoftrifaces; i++)
    {
-	FT[i][0] = out.face2tetlist[i]; 
+     for (size_t j = 0; j < 2; j++)
+     {
+       FT[i][j] = out.face2tetlist[0]; 
+     }
    }
-*/
+
    return true;
 }
 

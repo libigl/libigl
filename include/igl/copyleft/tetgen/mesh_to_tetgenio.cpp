@@ -17,8 +17,8 @@
 IGL_INLINE bool igl::copyleft::tetgen::mesh_to_tetgenio(
   const std::vector<std::vector<REAL > > & V,
   const std::vector<std::vector<int> > & F,
-  const std::vector<std::vector<REAL> > & H, // hole points
-  const std::vector<std::vector<REAL> > & R, // region points
+  const std::vector<std::vector<REAL> > & H, 
+  const std::vector<std::vector<REAL> > & R, 
   tetgenio & in)
 {
   using namespace std;
@@ -67,7 +67,6 @@ IGL_INLINE bool igl::copyleft::tetgen::mesh_to_tetgenio(
   }	  
 
   in.numberofregions = R.size();
-  cout << "Input number of regions in library: " << in.numberofregions << endl << flush;
   in.regionlist = new REAL[ 5 * in.numberofregions];
   // loop over regions
   for(size_t regionID = 0, nRegions = R.size(); regionID < nRegions; regionID++)
