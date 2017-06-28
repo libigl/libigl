@@ -154,7 +154,7 @@ static void glfw_window_size(GLFWwindow* window, int width, int height)
   int w = width*highdpi;
   int h = height*highdpi;
 
-  __viewer->resize_callback(w, h);
+  __viewer->post_resize(w, h);
 
   // TODO: repositioning of the nanogui
 }
@@ -847,13 +847,17 @@ namespace viewer
     if (window) {
       glfwSetWindowSize(window, w/highdpi, h/highdpi);
     } else {
-      resize_callback(w, h);
+      post_resize(w, h);
     }
   }
 
-  IGL_INLINE void Viewer::resize_callback(int w,int h)
+  IGL_INLINE void Viewer::post_resize(int w,int h)
   {
     core.viewport = Eigen::Vector4f(0,0,w,h);
+    for (unsigned int i = 0; i<plugins.size(); ++i)
+    {
+      plugins[i]->post_resize(w, h);
+    }
   }
 
   IGL_INLINE void Viewer::snap_to_canonical_quaternion()
