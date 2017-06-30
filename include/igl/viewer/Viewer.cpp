@@ -628,7 +628,11 @@ namespace viewer
     switch (button)
     {
       case MouseButton::Left:
-        mouse_mode = MouseMode::Rotation;
+        if (core.rotation_type == ViewerCore::ROTATION_TYPE_NO_ROTATION) {
+          mouse_mode = MouseMode::Translation;
+        } else {
+          mouse_mode = MouseMode::Rotation;
+        }
         break;
 
       case MouseButton::Right:
@@ -689,6 +693,8 @@ namespace viewer
           {
             default:
               assert(false && "Unknown rotation type");
+            case ViewerCore::ROTATION_TYPE_NO_ROTATION:
+              break;
             case ViewerCore::ROTATION_TYPE_TRACKBALL:
               igl::trackball(
                 core.viewport(2),
