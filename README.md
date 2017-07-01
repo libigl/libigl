@@ -49,7 +49,7 @@ We provide a [blank project example](https://github.com/libigl/libigl-example-pr
 
 ## Coding Guidelines and Tips
 
-libigl follows strict coding guidelines, please take a look [here](style-guidelines.html) before submitting your pull requests. We also have a set of [general coding tips](coding-guidelines.html) on how to code a geometry processing research project.
+libigl follows strict coding guidelines, please take a look [here](http://libigl.github.io/libigl/style-guidelines.html) before submitting your pull requests. We also have a set of [general coding tips](http://libigl.github.io/libigl/coding-guidelines.html) on how to code a geometry processing research project.
 
 ## Installation
 
