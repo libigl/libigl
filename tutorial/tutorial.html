@@ -220,6 +220,8 @@ sudo apt-get install libxrandr-dev
 sudo apt-get install libxi-dev
 sudo apt-get install libxmu-dev
 sudo apt-get install libblas-dev
+sudo apt-get install libxinerama-dev
+sudo apt-get install libxcursor-dev
 </code></pre>
 
 <p><em>Note for windows users</em>: libigl only supports the Microsoft Visual Studio 2015 compiler in 64bit mode. It will not work with a 32bit build and it will not work
@@ -1010,6 +1012,10 @@ functionality as common Matlab functions.</p>
 	<td style="text-align:left;">Determine whether matrix is diagonal</td>
 </tr>
 <tr>
+	<td style="text-align:left;"><code>igl::ismember</code></td>
+	<td style="text-align:left;">Determine whether elements in A occur in B</td>
+</tr>
+<tr>
 	<td style="text-align:left;"><code>igl::jet</code></td>
 	<td style="text-align:left;">Quantized colors along the rainbow.</td>
 </tr>
@@ -1747,18 +1753,18 @@ measuring bending, albeit in a discretization-dependent way.</p>
 <p>Libigl, supports these common flavors. Selecting one is a matter of setting the
 energy type before the precompuation phase:</p>
 
-<pre><code class="cpp">igl::ARAPData data;
+<pre><code class="cpp">igl::ARAPData arap_data;
 arap_data.energy = igl::ARAP_ENERGY_TYPE_SPOKES;
 //arap_data.energy = igl::ARAP_ENERGY_TYPE_SPOKES_AND_RIMS;
 //arap_data.energy = igl::ARAP_ENERGY_TYPE_ELEMENTS; //triangles or tets
-igl::arap_precomputation(V,F,dim,b,data);
+igl::arap_precomputation(V,F,dim,b,arap_data);
 </code></pre>
 
 <p>Just like <code>igl::min_quad_with_fixed_*</code>, this precomputation phase only depends
 on the mesh, fixed vertex indices <code>b</code> and the energy parameters. To solve with
 certain constraints on the positions of vertices in <code>b</code>, we may call:</p>
 
-<pre><code class="cpp">igl::arap_solve(bc,data,U);
+<pre><code class="cpp">igl::arap_solve(bc,arap_data,U);
 </code></pre>
 
 <p>which uses <code>U</code> as an initial guess and then computes the solution into it.</p>
