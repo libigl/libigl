@@ -92,6 +92,7 @@
 #include <igl/winding_number.h>
 #include <igl/writeMESH.h>
 #include <igl/writeOBJ.h>
+#include <igl/writePLY.h>
 
 
 void python_export_igl(py::module &m)
@@ -187,5 +188,6 @@ void python_export_igl(py::module &m)
 #include "py_igl/py_winding_number.cpp"
 #include "py_igl/py_writeMESH.cpp"
 #include "py_igl/py_writeOBJ.cpp"
+#include "py_igl/py_writePLY.cpp"
 
 }
