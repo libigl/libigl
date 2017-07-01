@@ -2611,9 +2611,11 @@ example taking the _intersection_ of a cube A and sphere B _minus_ the _union_
 of three cylinders:
 
 ```cpp
+{% raw %}
 // Compute result of (A ∩ B) \ ((C ∪ D) ∪ E)
 igl::copyleft::cgal::CSGTree<MatrixXi> CSGTree =
   {{{VA,FA},{VB,FB},"i"},{{{VC,FC},{VD,FD},"u"},{VE,FE},"u"},"m"};
+{% endraw %}
 ```
 
 ![A CSG Tree represents a shape as a combination of binary boolean
