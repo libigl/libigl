@@ -22,5 +22,5 @@ IGL_INLINE double igl::bounding_box_diagonal(
 }
 
 #ifdef IGL_STATIC_LIBRARY
-// Explicit template specialization
+// Explicit template instantiation
 #endif

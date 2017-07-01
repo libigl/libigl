@@ -1,3 +1,10 @@
+// This file is part of libigl, a simple c++ geometry processing library.
+// 
+// Copyright (C) 2016 Alec Jacobson <alecjacobson@gmail.com>
+// 
+// This Source Code Form is subject to the terms of the Mozilla Public License 
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+// obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_EIGS_H
 #define IGL_EIGS_H
 #include "igl_inline.h"
@@ -20,12 +27,12 @@ namespace igl
   //   A  #A by #A symmetric matrix
   //   B  #A by #A symmetric positive-definite matrix
   //   k  number of eigen pairs to compute
+  //   type  whether to extract from the high or low end
   // Outputs:
   //   sU  #A by k list of sorted eigen vectors (descending)
   //   sS  k list of sorted eigen values (descending)
   //
   // Known issues:
-  //   - only one pair per eigen value is found (no multiples)
   //   - only the 'sm' small magnitude eigen values are well supported
   //   
   enum EigsType

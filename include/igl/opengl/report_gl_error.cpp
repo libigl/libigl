@@ -6,9 +6,8 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "report_gl_error.h"
-
-#include <cstdio>
 #include "../verbose.h"
+#include <cstdio>
 
 IGL_INLINE GLenum igl::opengl::report_gl_error(const std::string id)
 {

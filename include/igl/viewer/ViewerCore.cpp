@@ -14,79 +14,9 @@
 #include <igl/ortho.h>
 #include <igl/massmatrix.h>
 #include <igl/barycenter.h>
+#include <igl/PI.h>
 #include <Eigen/Geometry>
 #include <iostream>
-
-#ifdef ENABLE_SERIALIZATION
-#include <igl/serialize.h>
-namespace igl {
-  namespace serialization {
-
-    IGL_INLINE void serialization(bool s,igl::viewer::ViewerCore& obj,std::vector<char>& buffer)
-    {
-      SERIALIZE_MEMBER(shininess);
-
-      SERIALIZE_MEMBER(background_color);
-      SERIALIZE_MEMBER(line_color);
-
-      SERIALIZE_MEMBER(light_position);
-      SERIALIZE_MEMBER(lighting_factor);
-
-      SERIALIZE_MEMBER(trackball_angle);
-      SERIALIZE_MEMBER(rotation_type);
-
-      SERIALIZE_MEMBER(model_zoom);
-      SERIALIZE_MEMBER(model_translation);
-
-      SERIALIZE_MEMBER(model_zoom_uv);
-      SERIALIZE_MEMBER(model_translation_uv);
-
-      SERIALIZE_MEMBER(camera_zoom);
-      SERIALIZE_MEMBER(orthographic);
-      SERIALIZE_MEMBER(camera_view_angle);
-      SERIALIZE_MEMBER(camera_dnear);
-      SERIALIZE_MEMBER(camera_dfar);
-      SERIALIZE_MEMBER(camera_eye);
-      SERIALIZE_MEMBER(camera_center);
-      SERIALIZE_MEMBER(camera_up);
-
-      SERIALIZE_MEMBER(show_faces);
-      SERIALIZE_MEMBER(show_lines);
-      SERIALIZE_MEMBER(invert_normals);
-      SERIALIZE_MEMBER(show_overlay);
-      SERIALIZE_MEMBER(show_overlay_depth);
-      SERIALIZE_MEMBER(show_vertid);
-      SERIALIZE_MEMBER(show_faceid);
-      SERIALIZE_MEMBER(show_texture);
-      SERIALIZE_MEMBER(depth_test);
-
-      SERIALIZE_MEMBER(point_size);
-      SERIALIZE_MEMBER(line_width);
-      SERIALIZE_MEMBER(is_animating);
-      SERIALIZE_MEMBER(animation_max_fps);
-
-      SERIALIZE_MEMBER(object_scale);
-
-      SERIALIZE_MEMBER(viewport);
-      SERIALIZE_MEMBER(view);
-      SERIALIZE_MEMBER(model);
-      SERIALIZE_MEMBER(proj);
-    }
-
-    template<>
-    IGL_INLINE void serialize(const igl::viewer::ViewerCore& obj,std::vector<char>& buffer)
-    {
-      serialization(true,const_cast<igl::viewer::ViewerCore&>(obj),buffer);
-    }
-
-    template<>
-    IGL_INLINE void deserialize(igl::viewer::ViewerCore& obj,const std::vector<char>& buffer)
-    {
-      serialization(false,obj,const_cast<std::vector<char>&>(buffer));
-    }
-  }
-}
-#endif
 
 IGL_INLINE void igl::viewer::ViewerCore::align_camera_center(
   const Eigen::MatrixXd& V,
@@ -114,23 +44,17 @@ IGL_INLINE void igl::viewer::ViewerCore::get_scale_and_shift_to_fit_mesh(
 
   Eigen::MatrixXd BC;
   if (F.rows() <= 1)
+  {
     BC = V;
-  else
+  } else
+  {
     igl::barycenter(V,F,BC);
-
-  Eigen::RowVector3d min_point = BC.colwise().minCoeff();
-  Eigen::RowVector3d max_point = BC.colwise().maxCoeff();
-  Eigen::RowVector3d centroid  = 0.5*(min_point + max_point);
-
-  shift = -centroid.cast<float>();
-  double x_scale = fabs(max_point[0] - min_point[0]);
-  double y_scale = fabs(max_point[1] - min_point[1]);
-  double z_scale = fabs(max_point[2] - min_point[2]);
-  zoom = 2.0 / std::max(z_scale,std::max(x_scale,y_scale));
+  }
+  return get_scale_and_shift_to_fit_mesh(BC,zoom,shift);
 }
 
 IGL_INLINE void igl::viewer::ViewerCore::align_camera_center(
-                                                     const Eigen::MatrixXd& V)
+  const Eigen::MatrixXd& V)
 {
   if(V.rows() == 0)
     return;
@@ -144,36 +68,19 @@ IGL_INLINE void igl::viewer::ViewerCore::align_camera_center(
 }
 
 IGL_INLINE void igl::viewer::ViewerCore::get_scale_and_shift_to_fit_mesh(
-                                                                 const Eigen::MatrixXd& V,
-                                                                 float& zoom,
-                                                                 Eigen::Vector3f& shift)
+  const Eigen::MatrixXd& V,
+  float& zoom,
+  Eigen::Vector3f& shift)
 {
   if (V.rows() == 0)
     return;
 
-  Eigen::RowVector3d min_point;
-  Eigen::RowVector3d max_point;
-  Eigen::RowVector3d centroid;
-
-  if (V.cols() == 3)
-  {
-    min_point = V.colwise().minCoeff();
-    max_point = V.colwise().maxCoeff();
-  }
-  else if (V.cols() == 2)
-  {
-    min_point << V.colwise().minCoeff(),0;
-    max_point << V.colwise().maxCoeff(),0;
-  }
-  else
-    return;
-
-  centroid = 0.5 * (min_point + max_point);
-  shift = -centroid.cast<float>();
-  double x_scale = fabs(max_point[0] - min_point[0]);
-  double y_scale = fabs(max_point[1] - min_point[1]);
-  double z_scale = fabs(max_point[2] - min_point[2]);
-  zoom = 2.0 / std::max(z_scale,std::max(x_scale,y_scale));
+  auto min_point = V.colwise().minCoeff();
+  auto max_point = V.colwise().maxCoeff();
+  auto centroid  = (0.5*(min_point + max_point)).eval();
+  shift.setConstant(0);
+  shift.head(centroid.size()) = -centroid.cast<float>();
+  zoom = 2.0 / (max_point-min_point).array().abs().maxCoeff();
 }
 
 
@@ -186,7 +93,10 @@ IGL_INLINE void igl::viewer::ViewerCore::clear_framebuffers()
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-IGL_INLINE void igl::viewer::ViewerCore::draw(ViewerData& data, OpenGL_state& opengl, bool update_matrices)
+IGL_INLINE void igl::viewer::ViewerCore::draw(
+  ViewerData& data,
+  OpenGL_state& opengl,
+  bool update_matrices)
 {
   using namespace std;
   using namespace Eigen;
@@ -195,6 +105,9 @@ IGL_INLINE void igl::viewer::ViewerCore::draw(ViewerData& data, OpenGL_state& op
     glEnable(GL_DEPTH_TEST);
   else
     glDisable(GL_DEPTH_TEST);
+
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   /* Bind and potentially refresh mesh/line/point data */
   if (data.dirty)
@@ -223,12 +136,12 @@ IGL_INLINE void igl::viewer::ViewerCore::draw(ViewerData& data, OpenGL_state& op
     if (orthographic)
     {
       float length = (camera_eye - camera_center).norm();
-      float h = tan(camera_view_angle/360.0 * M_PI) * (length);
+      float h = tan(camera_view_angle/360.0 * igl::PI) * (length);
       ortho(-h*width/height, h*width/height, -h, h, camera_dnear, camera_dfar,proj);
     }
     else
     {
-      float fH = tan(camera_view_angle / 360.0 * M_PI) * camera_dnear;
+      float fH = tan(camera_view_angle / 360.0 * igl::PI) * camera_dnear;
       float fW = fH * (double)width/(double)height;
       frustum(-fW, fW, -fH, fH, camera_dnear, camera_dfar,proj);
     }
@@ -383,8 +296,8 @@ IGL_INLINE void igl::viewer::ViewerCore::draw_buffer(ViewerData& data,
   assert(R.rows() == G.rows() && G.rows() == B.rows() && B.rows() == A.rows());
   assert(R.cols() == G.cols() && G.cols() == B.cols() && B.cols() == A.cols());
 
-  int x = R.rows();
-  int y = R.cols();
+  unsigned x = R.rows();
+  unsigned y = R.cols();
 
   // Create frame buffer
   GLuint frameBuffer;

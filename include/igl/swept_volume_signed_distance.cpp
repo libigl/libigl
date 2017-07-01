@@ -1,4 +1,12 @@
+// This file is part of libigl, a simple c++ geometry processing library.
+// 
+// Copyright (C) 2016 Alec Jacobson <alecjacobson@gmail.com>
+// 
+// This Source Code Form is subject to the terms of the Mozilla Public License 
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+// obtain one at http://mozilla.org/MPL/2.0/.
 #include "swept_volume_signed_distance.h"
+#include "LinSpaced.h"
 #include "flood_fill.h"
 #include "signed_distance.h"
 #include "AABB.h"
@@ -8,6 +16,7 @@
 #include "per_edge_normals.h"
 #include <Eigen/Geometry>
 #include <cmath>
+#include <algorithm>
 
 IGL_INLINE void igl::swept_volume_signed_distance(
   const Eigen::MatrixXd & V,
@@ -25,7 +34,7 @@ IGL_INLINE void igl::swept_volume_signed_distance(
   using namespace igl;
   using namespace Eigen;
   S = S0;
-  const VectorXd t = VectorXd::LinSpaced(steps,0,1);
+  const VectorXd t = igl::LinSpaced<VectorXd >(steps,0,1);
   const bool finite_iso = isfinite(isolevel);
   const double extension = (finite_iso ? isolevel : 0) + sqrt(3.0)*h;
   Eigen::AlignedBox3d box(
@@ -72,7 +81,7 @@ IGL_INLINE void igl::swept_volume_signed_distance(
         pseudonormal_test(V,F,FN,VN,EN,EMAP,gv,i,c,s,n);
         if(S(g) == S(g))
         {
-          S(g) = min(S(g),s*sqrt(sqrd));
+          S(g) = std::min(S(g),s*sqrt(sqrd));
         }else
         {
           S(g) = s*sqrt(sqrd);
@@ -88,7 +97,7 @@ IGL_INLINE void igl::swept_volume_signed_distance(
   {
 #ifndef NDEBUG
     // Check for nans
-    for_each(S.data(),S.data()+S.size(),[](const double s){assert(s==s);});
+    std::for_each(S.data(),S.data()+S.size(),[](const double s){assert(s==s);});
 #endif
   }
 }

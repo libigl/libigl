@@ -24,7 +24,27 @@ IGL_INLINE bool igl::readPLY(
 {
   using namespace std;
   // Largely follows ply2iv.c
+  FILE * ply_file = fopen(filename.c_str(),"r");
+  if(ply_file == NULL)
+  {
+    return false;
+  }
+  return readPLY(ply_file,V,F,N,UV);
+}
 
+template <
+  typename Vtype,
+  typename Ftype,
+  typename Ntype,
+  typename UVtype>
+IGL_INLINE bool igl::readPLY(
+  FILE * ply_file,
+  std::vector<std::vector<Vtype> > & V,
+  std::vector<std::vector<Ftype> > & F,
+  std::vector<std::vector<Ntype> > & N,
+  std::vector<std::vector<UVtype> >  & UV)
+{
+  using namespace std;
    typedef struct Vertex {
      double x,y,z;          /* position */
      double nx,ny,nz;         /* surface normal */
@@ -53,14 +73,10 @@ IGL_INLINE bool igl::readPLY(
     {"vertex_indices", PLY_INT, PLY_INT, offsetof(Face,verts),
       1, PLY_UCHAR, PLY_UCHAR, offsetof(Face,nverts)},
   };
-  FILE * fp = fopen(filename.c_str(),"r");
-  if(fp == NULL)
-  {
-    return false;
-  }
+
   int nelems;
   char ** elem_names;
-  PlyFile * in_ply = ply_read(fp,&nelems,&elem_names);
+  PlyFile * in_ply = ply_read(ply_file,&nelems,&elem_names);
   if(in_ply==NULL)
   {
     return false;
@@ -196,6 +212,10 @@ IGL_INLINE bool igl::readPLY(
 }
 
 #ifdef IGL_STATIC_LIBRARY
-// Explicit template specialization
+// Explicit template instantiation
 template bool igl::readPLY<double, int, double, double>(std::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > >&, std::vector<std::vector<int, std::allocator<int> >, std::allocator<std::vector<int, std::allocator<int> > > >&, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > >&, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > >&);
+
+template bool igl::readPLY<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>, Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic>, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> >(std::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> > &, Eigen::PlainObjectBase<Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic> > &, Eigen::PlainObjectBase<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> > &, Eigen::PlainObjectBase<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> > &);
+
+template bool igl::readPLY<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>, Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic> >(std::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> > &, Eigen::PlainObjectBase<Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic> > &);
 #endif

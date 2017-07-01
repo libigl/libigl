@@ -16,14 +16,14 @@
 
 template <typename DerivedV, typename DerivedF>
 IGL_INLINE void igl::compute_frame_field_bisectors(
-                                                   const Eigen::PlainObjectBase<DerivedV>& V,
-                                                   const Eigen::PlainObjectBase<DerivedF>& F,
-                                                   const Eigen::PlainObjectBase<DerivedV>& B1,
-                                                   const Eigen::PlainObjectBase<DerivedV>& B2,
-                                                   const Eigen::PlainObjectBase<DerivedV>& PD1,
-                                                   const Eigen::PlainObjectBase<DerivedV>& PD2,
-                                                   Eigen::PlainObjectBase<DerivedV>& BIS1,
-                                                   Eigen::PlainObjectBase<DerivedV>& BIS2)
+  const Eigen::PlainObjectBase<DerivedV>& V,
+  const Eigen::PlainObjectBase<DerivedF>& F,
+  const Eigen::PlainObjectBase<DerivedV>& B1,
+  const Eigen::PlainObjectBase<DerivedV>& B2,
+  const Eigen::PlainObjectBase<DerivedV>& PD1,
+  const Eigen::PlainObjectBase<DerivedV>& PD2,
+  Eigen::PlainObjectBase<DerivedV>& BIS1,
+  Eigen::PlainObjectBase<DerivedV>& BIS2)
 {
   BIS1.resize(PD1.rows(),3);
   BIS2.resize(PD1.rows(),3);
@@ -34,24 +34,24 @@ IGL_INLINE void igl::compute_frame_field_bisectors(
     // Convert to angle
     double a1 = atan2(B2.row(i).dot(PD1.row(i)),B1.row(i).dot(PD1.row(i)));
     //make it positive by adding some multiple of 2pi
-    a1 += ceil (std::max(0., -a1) / (M_PI*2.)) * (M_PI*2.);
+    a1 += std::ceil (std::max(0., -a1) / (M_PI*2.)) * (M_PI*2.);
     //take modulo 2pi
     a1 = fmod(a1, (M_PI*2.));
     double a2 = atan2(B2.row(i).dot(PD2.row(i)),B1.row(i).dot(PD2.row(i)));
     //make it positive by adding some multiple of 2pi
-    a2 += ceil (std::max(0., -a2) / (M_PI*2.)) * (M_PI*2.);
+    a2 += std::ceil (std::max(0., -a2) / (M_PI*2.)) * (M_PI*2.);
     //take modulo 2pi
     a2 = fmod(a2, (M_PI*2.));
 
     double b1 = (a1+a2)/2.0;
     //make it positive by adding some multiple of 2pi
-    b1 += ceil (std::max(0., -b1) / (M_PI*2.)) * (M_PI*2.);
+    b1 += std::ceil (std::max(0., -b1) / (M_PI*2.)) * (M_PI*2.);
     //take modulo 2pi
     b1 = fmod(b1, (M_PI*2.));
 
     double b2 = b1+(M_PI/2.);
     //make it positive by adding some multiple of 2pi
-    b2 += ceil (std::max(0., -b2) / (M_PI*2.)) * (M_PI*2.);
+    b2 += std::ceil (std::max(0., -b2) / (M_PI*2.)) * (M_PI*2.);
     //take modulo 2pi
     b2 = fmod(b2, (M_PI*2.));
 
@@ -78,7 +78,7 @@ IGL_INLINE void igl::compute_frame_field_bisectors(
 }
 
 #ifdef IGL_STATIC_LIBRARY
-// Explicit template specialization
+// Explicit template instantiation
 template void igl::compute_frame_field_bisectors<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> >&);
 template void igl::compute_frame_field_bisectors<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
 #endif

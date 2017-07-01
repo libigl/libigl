@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 2.8.12)
 project(libigl_tutorials)
+message(STATUS "CMAKE_C_COMPILER: ${CMAKE_C_COMPILER}")
+message(STATUS "CMAKE_CXX_COMPILER: ${CMAKE_CXX_COMPILER}")
 
 ### libIGL options: choose between header only and compiled static library
 option(LIBIGL_USE_STATIC_LIBRARY "Use LibIGL as static library" ON)
@@ -7,7 +9,7 @@ option(LIBIGL_WITH_VIEWER      "Use OpenGL viewer"  ON)
 option(LIBIGL_WITH_NANOGUI     "Use Nanogui menu"   OFF)
 
 ### libIGL options: choose your dependencies (by default everything is OFF, in this example we need the viewer) ###
-find_package(CGAL QUIET)
+find_package(CGAL QUIET COMPONENTS Core)
 option(LIBIGL_WITH_CGAL             "Use CGAL"           "${CGAL_FOUND}")
 option(LIBIGL_WITH_COMISO           "Use CoMiso"         ON)
 option(LIBIGL_WITH_CORK             "Use CORK"           OFF)
@@ -17,6 +19,7 @@ find_package(MATLAB QUIET)
 option(LIBIGL_WITH_MATLAB           "Use Matlab"         "${MATLAB_FOUND}")
 option(LIBIGL_WITH_MOSEK            "Use MOSEK"          "${MOSEK_FOUND}")
 option(LIBIGL_WITH_OPENGL           "Use OpenGL"         ON)
+option(LIBIGL_WITH_OPENGL_GLFW      "Use OpenGL GLFW"    ON)
 option(LIBIGL_WITH_PNG              "Use PNG"            ON)
 option(LIBIGL_WITH_TETGEN           "Use Tetgen"         ON)
 option(LIBIGL_WITH_TRIANGLE         "Use Triangle"       ON)
@@ -25,7 +28,7 @@ option(LIBIGL_WITH_XML              "Use XML"            ON)
 
 ### libIGL options: decide if you want to use the functionalities that depends on cgal
 if(LIBIGL_WITH_CGAL) # Do not remove or move this block, cgal strange build system fails without it
-  find_package(CGAL REQUIRED)
+  find_package(CGAL REQUIRED COMPONENTS Core)
   set(CGAL_DONT_OVERRIDE_CMAKE_FLAGS TRUE CACHE BOOL "CGAL's CMAKE Setup is super annoying ")
   include(${CGAL_USE_FILE})
 endif()
@@ -164,7 +167,6 @@ if(TUTORIALS_CHAPTER6)
     add_subdirectory("609_Boolean")
     add_subdirectory("610_CSGTree")
   endif()
-  add_subdirectory("611_SLIM")
 endif()
 
 # Chapter 7
@@ -179,6 +181,9 @@ if(TUTORIALS_CHAPTER7)
   endif()
   add_subdirectory("707_SweptVolume")
   add_subdirectory("708_Picking")
-  add_subdirectory("709_VectorFieldVisualizer")
-
+  if(LIBIGL_WITH_COMISO)
+    add_subdirectory("709_VectorFieldVisualizer")
+  endif()
+  add_subdirectory("710_SLIM")
+  add_subdirectory("711_Subdivision")
 endif()

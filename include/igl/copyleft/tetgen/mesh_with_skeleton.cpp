@@ -10,8 +10,6 @@
 
 #include "../../sample_edges.h"
 #include "../../cat.h"
-#include "../../writeOFF.h"
-#include "../../writeOBJ.h"
 
 #include <iostream>
 // Default settings pq2Y tell tetgen to mesh interior of triangle mesh and
@@ -49,7 +47,6 @@ IGL_INLINE bool igl::copyleft::tetgen::mesh_with_skeleton(
   //   * has consistent orientation
   //   * has no self-intersections
   //   * has no 0-volume pieces
-  //writeOBJ("mesh_with_skeleton.obj",VS,F);
   cerr<<"tetgen begin()"<<endl;
   int status = tetrahedralize( VS,F,eff_tetgen_flags,VV,TT,FF);
   cerr<<"tetgen end()"<<endl;
@@ -101,5 +98,5 @@ IGL_INLINE bool igl::copyleft::tetgen::mesh_with_skeleton(
 }
 
 #ifdef IGL_STATIC_LIBRARY
-// Explicit template specialization
+// Explicit template instantiation
 #endif

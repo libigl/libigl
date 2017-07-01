@@ -55,5 +55,5 @@ IGL_INLINE void igl::print_vector( std::vector< std::vector< std::vector<T> > >&
 }
 
 #ifdef IGL_STATIC_LIBRARY
-// Explicit template specialization
+// Explicit template instantiation
 #endif

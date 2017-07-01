@@ -8,18 +8,18 @@
 #include "assign_scalar.h"
 
 IGL_INLINE void igl::copyleft::cgal::assign_scalar(
-  const typename CGAL::Epeck::FT & cgal,
+  const CGAL::Epeck::FT & cgal,
   CGAL::Epeck::FT & d)
 {
   d = cgal;
 }
 
 IGL_INLINE void igl::copyleft::cgal::assign_scalar(
-  const typename CGAL::Epeck::FT & _cgal,
+  const CGAL::Epeck::FT & _cgal,
   double & d)
 {
   // FORCE evaluation of the exact type otherwise interval might be huge.
-  const typename CGAL::Epeck::FT cgal = _cgal.exact();
+  const CGAL::Epeck::FT cgal = _cgal.exact();
   const auto interval = CGAL::to_interval(cgal);
   d = interval.first;
   do {
@@ -30,11 +30,11 @@ IGL_INLINE void igl::copyleft::cgal::assign_scalar(
 }
 
 IGL_INLINE void igl::copyleft::cgal::assign_scalar(
-  const typename CGAL::Epeck::FT & _cgal,
+  const CGAL::Epeck::FT & _cgal,
   float& d)
 {
   // FORCE evaluation of the exact type otherwise interval might be huge.
-  const typename CGAL::Epeck::FT cgal = _cgal.exact();
+  const CGAL::Epeck::FT cgal = _cgal.exact();
   const auto interval = CGAL::to_interval(cgal);
   d = interval.first;
   do {
@@ -63,4 +63,37 @@ IGL_INLINE void igl::copyleft::cgal::assign_scalar(
   double& d)
 {
   d = c;
+}
+
+IGL_INLINE void igl::copyleft::cgal::assign_scalar(
+  const CGAL::Exact_predicates_exact_constructions_kernel_with_sqrt::FT & cgal,
+  CGAL::Exact_predicates_exact_constructions_kernel_with_sqrt::FT & d)
+{
+  d = cgal;
+}
+
+IGL_INLINE void igl::copyleft::cgal::assign_scalar(
+  const CGAL::Exact_predicates_exact_constructions_kernel_with_sqrt::FT & cgal,
+  double & d)
+{
+  const auto interval = CGAL::to_interval(cgal);
+  d = interval.first;
+  do {
+      const double next = nextafter(d, interval.second);
+      if (CGAL::abs(cgal-d) < CGAL::abs(cgal-next)) break;
+      d = next;
+  } while (d < interval.second);
+}
+
+IGL_INLINE void igl::copyleft::cgal::assign_scalar(
+  const CGAL::Exact_predicates_exact_constructions_kernel_with_sqrt::FT & cgal,
+  float& d)
+{
+  const auto interval = CGAL::to_interval(cgal);
+  d = interval.first;
+  do {
+      const float next = nextafter(d, float(interval.second));
+      if (CGAL::abs(cgal-d) < CGAL::abs(cgal-next)) break;
+      d = next;
+  } while (d < float(interval.second));
 }

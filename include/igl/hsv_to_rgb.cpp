@@ -48,7 +48,7 @@ void igl::hsv_to_rgb(
   Eigen::PlainObjectBase<DerivedR> & R)
 {
   assert(H.cols() == 3);
-  R.resize(H.rows(),H.cols());
+  R.resizeLike(H);
   for(typename DerivedH::Index r = 0;r<H.rows();r++)
   {
     typename DerivedH::Scalar hsv[3];

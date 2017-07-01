@@ -6,9 +6,10 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "slice_tets.h"
-#include <igl/sort.h>
-#include <igl/cat.h>
-#include <igl/per_face_normals.h>
+#include "LinSpaced.h"
+#include "sort.h"
+#include "cat.h"
+#include "per_face_normals.h"
 #include <cassert>
 #include <algorithm>
 #include <vector>
@@ -150,7 +151,10 @@ IGL_INLINE void igl::slice_tets(
     G.resize(m,3);
     for(size_t c = 0;c<3;c++)
     {
-      G.col(c).setLinSpaced(m,0+c*m,(m-1)+c*m);
+      G.col(c) = 
+        igl::LinSpaced<
+        Eigen::Matrix<typename DerivedG::Scalar,Eigen::Dynamic,1> >
+        (m,0+c*m,(m-1)+c*m);
     }
   };
 
@@ -189,12 +193,12 @@ IGL_INLINE void igl::slice_tets(
     BC.reserve(m*4*2);
     BC.setFromTriplets(IJV.begin(),IJV.end());
     G.resize(2*m,3);
-    G.block(0,0,m,1) = VectorXI::LinSpaced(m,0+0*m,(m-1)+0*m);
-    G.block(0,1,m,1) = VectorXI::LinSpaced(m,0+1*m,(m-1)+1*m);
-    G.block(0,2,m,1) = VectorXI::LinSpaced(m,0+3*m,(m-1)+3*m);
-    G.block(m,0,m,1) = VectorXI::LinSpaced(m,0+0*m,(m-1)+0*m);
-    G.block(m,1,m,1) = VectorXI::LinSpaced(m,0+3*m,(m-1)+3*m);
-    G.block(m,2,m,1) = VectorXI::LinSpaced(m,0+2*m,(m-1)+2*m);
+    G.block(0,0,m,1) = igl::LinSpaced<VectorXI >(m,0+0*m,(m-1)+0*m);
+    G.block(0,1,m,1) = igl::LinSpaced<VectorXI >(m,0+1*m,(m-1)+1*m);
+    G.block(0,2,m,1) = igl::LinSpaced<VectorXI >(m,0+3*m,(m-1)+3*m);
+    G.block(m,0,m,1) = igl::LinSpaced<VectorXI >(m,0+0*m,(m-1)+0*m);
+    G.block(m,1,m,1) = igl::LinSpaced<VectorXI >(m,0+3*m,(m-1)+3*m);
+    G.block(m,2,m,1) = igl::LinSpaced<VectorXI >(m,0+2*m,(m-1)+2*m);
   };
 
   MatrixX3I G13,G31,G22;
@@ -224,7 +228,7 @@ IGL_INLINE void igl::slice_tets(
 }
 
 #ifdef IGL_STATIC_LIBRARY
-// Explicit template specialization
+// Explicit template instantiation
 template void igl::slice_tets<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, 4, 1, 0, 4, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, double>(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 4, 1, 0, 4, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&, Eigen::SparseMatrix<double, 0, int>&);
 template void igl::slice_tets<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, double>(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&, Eigen::SparseMatrix<double, 0, int>&);
 #endif

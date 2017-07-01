@@ -92,7 +92,6 @@ lecture notes links to a cross-platform example application.
     * [608 Locally Injective Maps](#locallyinjectivemaps)
     * [609 Boolean Operations on Meshes](#booleanoperationsonmeshes)
     * [610 CSG Tree](#csgtree)
-    * [611 Scalable Locally Injective Maps](#slim)
 * [Chapter 7: Miscellaneous](#chapter7:miscellaneous)
     * [701 Mesh Statistics](#meshstatistics)
     * [702 Generalized Winding Number](#generalizedwindingnumber)
@@ -103,6 +102,8 @@ lecture notes links to a cross-platform example application.
     * [707 Swept Volume](#sweptvolume)
     * [708 Picking Vertices and Faces](#pickingverticesandfaces)
     * [709 Vector Field Visualization](#vectorfieldvisualizer)
+    * [710 Scalable Locally Injective Maps](#slim)
+    * [711 Subdivision surfaces](#subdivision)
 * [Chapter 8: Outlook for continuing development](#future)
 
 # Chapter 1 [chapter1:introductiontolibigl]
@@ -174,6 +175,8 @@ sudo apt-get install libxrandr-dev
 sudo apt-get install libxi-dev
 sudo apt-get install libxmu-dev
 sudo apt-get install libblas-dev
+sudo apt-get install libxinerama-dev
+sudo apt-get install libxcursor-dev
 ```
 *Note for windows users*: libigl only supports the Microsoft Visual Studio 2015 compiler in 64bit mode. It will not work with a 32bit build and it will not work
 with older versions of visual studio.
@@ -876,6 +879,7 @@ functionality as common Matlab functions.
 | `igl::hsv_to_rgb`        | Convert HSV colors to RGB (cf. Matlab's `hsv2rgb`) |
 | `igl::intersect`         | Set intersection of matrix elements. |
 | `igl::isdiag`            | Determine whether matrix is diagonal |
+| `igl::ismember`          | Determine whether elements in A occur in B |
 | `igl::jet`               | Quantized colors along the rainbow. |
 | `igl::median`            | Compute the median per column |
 | `igl::mode`              | Compute the mode per column |
@@ -1529,11 +1533,11 @@ Libigl, supports these common flavors. Selecting one is a matter of setting the
 energy type before the precompuation phase:
 
 ```cpp
-igl::ARAPData data;
+igl::ARAPData arap_data;
 arap_data.energy = igl::ARAP_ENERGY_TYPE_SPOKES;
 //arap_data.energy = igl::ARAP_ENERGY_TYPE_SPOKES_AND_RIMS;
 //arap_data.energy = igl::ARAP_ENERGY_TYPE_ELEMENTS; //triangles or tets
-igl::arap_precomputation(V,F,dim,b,data);
+igl::arap_precomputation(V,F,dim,b,arap_data);
 ```
 
 Just like `igl::min_quad_with_fixed_*`, this precomputation phase only depends
@@ -1541,7 +1545,7 @@ on the mesh, fixed vertex indices `b` and the energy parameters. To solve with
 certain constraints on the positions of vertices in `b`, we may call:
 
 ```cpp
-igl::arap_solve(bc,data,U);
+igl::arap_solve(bc,arap_data,U);
 ```
 
 which uses `U` as an initial guess and then computes the solution into it.
@@ -2621,21 +2625,6 @@ then the final composite.
 ![Example [610](610_CSGTree/main.cpp) computes  complex CSG Tree operation on 5
 input meshes.](images/cube-sphere-cylinders-csg.gif)
 
-## [Scalable Locally Injective Maps](#slim) [slim]
-
-The Scalable Locally Injective Maps [#rabinovich_2016][] algorithm allows to compute locally injective maps on massive datasets. The algorithm shares many similarities with ARAP, but uses a reweighting scheme to minimize arbitrary distortion energies, including those that prevent the introduction of flips.
-
-[Example 611](611_SLIM/main.cpp) contains three demos: (1) an example of large scale 2D parametrization, (2) an example of 2D deformation with soft constraints, and (3) an example of 3D deformation with soft constraints. The implementation in libigl is self-contained and relies on Eigen for the solution of the linear system used in the global step. An optimized version that relies on Pardiso is available [here](https://github.com/MichaelRabinovich/Scalable-Locally-Injective-Mappings).
-
-![A locally injective parametrization of a mesh with 50k faces is computed using the SLIM algorithm in 10 iterations.](images/611_SLIM.png)
-
-# Miscellaneous [chapter7:miscellaneous]
-
-Libigl contains a _wide_ variety of geometry processing tools and functions for
-dealing with meshes and the linear algebra related to them: far too many to
-discuss in this introductory tutorial. We've pulled out a couple of the
-interesting functions in this chapter to highlight.
-
 ## [Mesh Statistics](#meshstatistics) [meshstatistics]
 
 Libigl contains various mesh statistics, including face angles, face areas and
@@ -3133,6 +3122,76 @@ in [Example 709](709_VectorFieldVisualizer/main.cpp).
 
 ![([Example 709](709_VectorFieldVisualizer/main.cpp)) Interactive streamlines tracing.](images/streamlines.jpg)
 
+## [Scalable Locally Injective Maps](#slim) [slim]
+
+The Scalable Locally Injective Maps [#rabinovich_2016] algorithm allows to
+compute locally injective maps on massive datasets. The algorithm shares many
+similarities with ARAP, but uses a reweighting scheme to minimize arbitrary
+distortion energies, including those that prevent the introduction of flips.
+
+[Example 710](710_SLIM/main.cpp) contains three demos: (1) an example of large
+scale 2D parametrization, (2) an example of 2D deformation with soft
+constraints, and (3) an example of 3D deformation with soft constraints. The
+implementation in libigl is self-contained and relies on Eigen for the solution
+of the linear system used in the global step. An optimized version that relies
+on Pardiso is available
+[here](https://github.com/MichaelRabinovich/Scalable-Locally-Injective-Mappings).
+
+![A locally injective parametrization of a mesh with 50k faces is computed
+using the SLIM algorithm in 10 iterations.](images/slim.png)
+
+## [Subdivision surfaces](#subdivision) [subdivision]
+
+Given a coarse mesh (aka cage) with vertices `V` and faces `F`, one can createa
+higher-resolution mesh with more vertices and faces by _subdividing_ every
+face. That is, each coarse triangle in the input is replaced by many smaller
+triangles. Libigl has three different methods for subdividing a triangle mesh.
+
+An "in plane" subdivision method will not change the point set or carrier
+surface of the mesh. New vertices are added on the planes of existing triangles
+and vertices surviving from the original mesh are not moved.
+
+By adding new faces, a subdivision algorithm changes the _combinatorics_ of the
+mesh. The change in combinatorics and the formula for positioning the
+high-resolution vertices is called the "subdivision rule".
+
+For example, in the _in plane_ subdivision method of `igl::upsample`, vertices
+are added at the midpoint of every edge: $v_{ab} = \frac{1}{2}(v_a + v_b)$ and
+each triangle $(i_a,i_b,i_c)$ is replaced with four triangles:
+$(i_a,i_{ab},i_{ca})$, $(i_b,i_{bc},i_{ab})$, $(i_{ab},i_{bc},i_{ca})$, and
+$(i_{bc},i_{c},i_{ca})$. This process may be applied recursively, resulting in
+a finer and finer mesh.
+
+The subdivision method of `igl::loop` is not in plane. The vertices of the
+refined mesh are moved to weight combinations of their neighbors: the mesh is
+smoothed as it is refined [#loop_1987]. This and other _smooth subdivision_
+methods can be understood as generalizations of spline curves to surfaces. In
+particular the Loop subdivision method will converge to a $C^1$ surface as we
+consider the limit of recursive applications of subdivision. Away from
+"irregular" or "extraordinary" vertices (vertices of the original cage with
+valence not equal to 6), the surface is $C^2$. The combinatorics (connectivity
+and number of faces) of `igl::loop` and `igl::upsample` are identical: the only
+difference is that the vertices have been smoothed in `igl::loop`.
+
+Finally, libigl also implements a form of _in plane_ "false barycentric
+subdivision" in `igl::false_barycentric_subdivision`. This method simply adds
+the barycenter of every triangle as a new vertex $v_{abc}$ and replaces each
+triangle with three triangles $(i_a,i_b,i_{abc})$, $(i_b,i_c,i_{abc})$, and
+$(i_c,i_a,i_{abc})$. In contrast to `igl::upsample`, this method will create
+triangles with smaller and smaller internal angles and new vertices will sample
+the carrier surfaces with extreme bias.
+
+![The original coarse mesh and three different subdivision methods:
+`igl::upsample`, `igl::loop` and
+`igl::false_barycentric_subdivision`.](images/decimated-knight-subdivision.gif)
+
+# Miscellaneous [chapter7:miscellaneous]
+
+Libigl contains a _wide_ variety of geometry processing tools and functions for
+dealing with meshes and the linear algebra related to them: far too many to
+discuss in this introductory tutorial. We've pulled out a couple of the
+interesting functions in this chapter to highlight.
+
 # Outlook for continuing development [future]
 
 Libigl is in active development, and we plan to focus on the following features
@@ -3257,6 +3316,9 @@ pseudonormal](https://www.google.com/search?q=Signed+distance+computation+using+
   Wang.  [General Planar Quadrilateral Mesh Design Using Conjugate Direction
   Field](http://research.microsoft.com/en-us/um/people/yangliu/publication/cdf.pdf),
   2008.
+[#loop_1987]: Charles Loop. [Smooth Subdivision Surfaces Based on
+  Triangles](https://www.google.com/search?q=smooth+subdivision+surfaces+based+on+triangles),
+  1987.
 [#lorensen_1987]: W.E. Lorensen and Harvey E. Cline. [Marching cubes: A high
   resolution 3d surface construction
   algorithm](https://www.google.com/search?q=Marching+cubes:+A+high+resolution+3d+surface+construction+algorithm),
@@ -3279,8 +3341,11 @@ pseudonormal](https://www.google.com/search?q=Signed+distance+computation+using+
   2010.
 [#panozzo_2014]: Daniele Panozzo, Enrico Puppo, Marco Tarini, Olga
   Sorkine-Hornung.  [Frame Fields: Anisotropic and Non-Orthogonal Cross
-  Fields](http://www.inf.ethz.ch/personal/dpanozzo/papers/frame-fields-2014.pdf),
+  Fields](http://cs.nyu.edu/~panozzo/papers/frame-fields-2014.pdf),
   2014.
+[#rabinovich_2016]: Michael Rabinovich, Roi Poranne, Daniele Panozzo, Olga
+  Sorkine-Hornung. [Scalable Locally Injective
+  Mappings](http://cs.nyu.edu/~panozzo/papers/SLIM-2016.pdf), 2016.
 [#rustamov_2011]: Raid M. Rustamov, [Multiscale Biharmonic
   Kernels](https://www.google.com/search?q=Multiscale+Biharmonic+Kernels), 2011.
 [#schroeder_1994]: William J. Schroeder, William E. Lorensen, and Steve
@@ -3308,6 +3373,11 @@ pseudonormal](https://www.google.com/search?q=Signed+distance+computation+using+
   Manifold
   Harmonics](https://www.google.com/search?q=Spectral+Geometry+Processing+with+Manifold+Harmonics),
   2008.
+[#vaxman_2016]: Amir Vaxman, Marcel Campen, Olga Diamanti, Daniele Panozzo,
+  David Bommes, Klaus Hildebrandt, Mirela Ben-Chen. [Directional Field
+  Synthesis, Design, and
+  Processing](https://www.google.com/search?q=Directional+Field+Synthesis+Design+and+Processing),
+  2016
 [#wang_bc_2015]: Yu Wang, Alec Jacobson, Jernej Barbic, Ladislav Kavan. [Linear
   Subspace Design for Real-Time Shape
   Deformation](https://www.google.com/search?q=Linear+Subspace+Design+for+Real-Time+Shape+Deformation),
@@ -3316,7 +3386,3 @@ pseudonormal](https://www.google.com/search?q=Signed+distance+computation+using+
   Solid
   Geometry](https://www.google.com/search?q=Mesh+Arrangements+for+Solid+Geometry),
   2016
-[#vaxman_2016]: Amir Vaxman, Marcel Campen, Olga Diamanti, Daniele Panozzo, David Bommes, Klaus Hildebrandt, Mirela Ben-Chen. [Directional Field Synthesis, Design, and Processing](https://www.google.com/search?q=Directional+Field+Synthesis+Design+and+Processing),
-  2016
-  [#rabinovich_2016]: Michael Rabinovich, Roi Poranne, Daniele Panozzo, Olga Sorkine-Hornung. [Scalable Locally Injective
-    Mappings](http://cs.nyu.edu/~panozzo/papers/SLIM-2016.pdf), 2016.

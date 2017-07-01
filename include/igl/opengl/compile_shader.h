@@ -7,8 +7,8 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_OPENGL_COMPILE_SHADER_H
 #define IGL_OPENGL_COMPILE_SHADER_H
-#include "OpenGL_convenience.h"
 #include "../igl_inline.h"
+#include "gl.h"
 namespace igl
 {
   namespace opengl

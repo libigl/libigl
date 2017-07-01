@@ -11,7 +11,10 @@
 #include <Eigen/Dense>
 namespace igl
 {
-  // ALL_EDGES Determines all "directed edges" of a given set of simplices
+  // Deprecated: call oriented_facets instead.
+  //
+  // ALL_EDGES Determines all "directed edges" of a given set of simplices. For
+  // a manifold mesh, this computes all of the half-edges
   //
   // Inputs:
   //   F  #F by simplex_size list of "faces"
@@ -24,7 +27,7 @@ namespace igl
   // once for each direction).
   template <typename DerivedF, typename DerivedE>
   IGL_INLINE void all_edges(
-    const Eigen::PlainObjectBase<DerivedF> & F,
+    const Eigen::MatrixBase<DerivedF> & F,
     Eigen::PlainObjectBase<DerivedE> & E);
 }
 

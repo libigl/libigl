@@ -8,10 +8,9 @@
 #ifndef IGL_OPENGL2_DRAW_MESH_H
 #define IGL_OPENGL2_DRAW_MESH_H
 #include "../igl_inline.h"
-
+#include "gl.h"
 #include <Eigen/Dense>
 
-#include "../opengl/OpenGL_convenience.h"
 
 namespace igl
 {

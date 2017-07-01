@@ -7,10 +7,10 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_OPENGL2_ROTATE_WIDGET_H
 #define IGL_OPENGL2_ROTATE_WIDGET_H
+#include "../material_colors.h"
 #include <Eigen/Geometry>
 #include <Eigen/Core>
 #include <vector>
-#include "../material_colors.h"
 
 namespace igl
 {
@@ -78,12 +78,12 @@ namespace igl
 }
 
 // Implementation
-#include "../opengl/OpenGL_convenience.h"
 #include "../PI.h"
 #include "../EPS.h"
 #include "../ray_sphere_intersect.h"
 #include "../mat_to_quat.h"
 #include "../trackball.h"
+#include "gl.h"
 #include "project.h"
 #include "unproject.h"
 #include <iostream>

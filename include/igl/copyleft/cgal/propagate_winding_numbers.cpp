@@ -15,10 +15,11 @@
 #include "../../writeOBJ.h"
 #include "../../writePLY.h"
 #include "../../get_seconds.h"
+#include "../../LinSpaced.h"
 #include "order_facets_around_edge.h"
 #include "outer_facet.h"
 #include "closest_facet.h"
-#include "assign_scalar.h"
+#include "assign.h"
 #include "extract_cells.h"
 #include "cell_adjacency.h"
 
@@ -147,12 +148,8 @@ IGL_INLINE bool igl::copyleft::cgal::propagate_winding_numbers(
     for (size_t i=0; i<faces.size(); i++) {
       cell_faces.row(i) = F.row(faces[i]);
     }
-    Eigen::MatrixXd vertices(V.rows(), 3);
-    for (size_t i=0; i<(size_t)V.rows(); i++) {
-      assign_scalar(V(i,0), vertices(i,0));
-      assign_scalar(V(i,1), vertices(i,1));
-      assign_scalar(V(i,2), vertices(i,2));
-    }
+    Eigen::MatrixXd vertices;
+    assign(V,vertices);
     writePLY(filename, vertices, cell_faces);
   };
 
@@ -224,8 +221,7 @@ IGL_INLINE bool igl::copyleft::cgal::propagate_winding_numbers(
 
   size_t outer_facet;
   bool flipped;
-  Eigen::VectorXi I;
-  I.setLinSpaced(num_faces, 0, num_faces-1);
+  Eigen::VectorXi I = igl::LinSpaced<Eigen::VectorXi>(num_faces, 0, num_faces-1);
   igl::copyleft::cgal::outer_facet(V, F, I, outer_facet, flipped);
 #ifdef PROPAGATE_WINDING_NUMBER_TIMING
   log_time("outer_facet");

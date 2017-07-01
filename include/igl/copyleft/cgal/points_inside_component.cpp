@@ -6,19 +6,20 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "points_inside_component.h"
-
-#include <cassert>
-#include <list>
-#include <limits>
-#include <vector>
+#include "../../LinSpaced.h"
+#include "order_facets_around_edge.h"
+#include "assign_scalar.h"
 
 #include <CGAL/AABB_tree.h>
 #include <CGAL/AABB_traits.h>
 #include <CGAL/AABB_triangle_primitive.h>
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 
-#include "order_facets_around_edge.h"
-#include "assign_scalar.h"
+#include <cassert>
+#include <list>
+#include <limits>
+#include <vector>
+
 
 namespace igl {
   namespace copyleft 
@@ -332,13 +333,12 @@ IGL_INLINE void igl::copyleft::cgal::points_inside_component(
         const Eigen::PlainObjectBase<DerivedF>& F,
         const Eigen::PlainObjectBase<DerivedP>& P,
         Eigen::PlainObjectBase<DerivedB>& inside) {
-    Eigen::VectorXi I(F.rows());
-    I.setLinSpaced(F.rows(), 0, F.rows()-1);
+    Eigen::VectorXi I = igl::LinSpaced<Eigen::VectorXi>(F.rows(), 0, F.rows()-1);
     igl::copyleft::cgal::points_inside_component(V, F, I, P, inside);
 }
 
 #ifdef IGL_STATIC_LIBRARY
-// Explicit template specialization
+// Explicit template instantiation
 template void igl::copyleft::cgal::points_inside_component< Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<   int, -1, -1, 0, -1, -1>, Eigen::Matrix<   int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<   int, -1, -1, 0, -1, -1> > ( Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<   int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<   int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<   int, -1, -1, 0, -1, -1> >&);
 template void igl::copyleft::cgal::points_inside_component< Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<   int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<   int, -1, -1, 0, -1, -1> > ( Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix< int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<   int, -1, -1, 0, -1, -1> >&);
 template void igl::copyleft::cgal::points_inside_component<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);

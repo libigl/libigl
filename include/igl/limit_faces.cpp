@@ -59,5 +59,5 @@ IGL_INLINE void igl::limit_faces(
 }
 
 #ifdef IGL_STATIC_LIBRARY
-// Explicit template specialization
+// Explicit template instantiation
 #endif

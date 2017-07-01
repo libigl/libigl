@@ -8,8 +8,7 @@
 #ifndef IGL_OPENGL_LOAD_SHADER_H 
 #define IGL_OPENGL_LOAD_SHADER_H
 #include "../igl_inline.h" 
-
-#include "OpenGL_convenience.h"
+#include "gl.h"
 
 namespace igl
 {

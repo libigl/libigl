@@ -34,7 +34,7 @@ namespace igl
       Eigen::PlainObjectBase<Derivedwin> & win);
     // Eigen wrapper  with return
     template <typename Derivedobj>
-    IGL_INLINE Eigen::PlainObjectBase<Derivedobj> project(
+    IGL_INLINE Derivedobj project(
       const Eigen::PlainObjectBase<Derivedobj> & obj);
   }
 }

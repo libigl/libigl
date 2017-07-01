@@ -19,7 +19,7 @@
 
 template <typename DerivedX, typename DerivedY, typename DerivedIX>
 IGL_INLINE void igl::sort(
-  const Eigen::PlainObjectBase<DerivedX>& X,
+  const Eigen::DenseBase<DerivedX>& X,
   const int dim,
   const bool ascending,
   Eigen::PlainObjectBase<DerivedY>& Y,
@@ -43,8 +43,8 @@ IGL_INLINE void igl::sort(
   // dim must be 2 or 1
   assert(dim == 1 || dim == 2);
   // Resize output
-  Y.resize(X.rows(),X.cols());
-  IX.resize(X.rows(),X.cols());
+  Y.resizeLike(X);
+  IX.resizeLike(X);
   // idea is to process each column (or row) as a std vector
   // loop over columns (or rows)
   for(int i = 0; i<num_outer;i++)
@@ -82,7 +82,7 @@ IGL_INLINE void igl::sort(
 
 template <typename DerivedX, typename DerivedY, typename DerivedIX>
 IGL_INLINE void igl::sort_new(
-  const Eigen::PlainObjectBase<DerivedX>& X,
+  const Eigen::DenseBase<DerivedX>& X,
   const int dim,
   const bool ascending,
   Eigen::PlainObjectBase<DerivedY>& Y,
@@ -106,8 +106,8 @@ IGL_INLINE void igl::sort_new(
   // dim must be 2 or 1
   assert(dim == 1 || dim == 2);
   // Resize output
-  Y.resize(X.rows(),X.cols());
-  IX.resize(X.rows(),X.cols());
+  Y.resizeLike(X);
+  IX.resizeLike(X);
   // idea is to process each column (or row) as a std vector
   // loop over columns (or rows)
   for(int i = 0; i<num_outer;i++)
@@ -150,7 +150,7 @@ IGL_INLINE void igl::sort_new(
 
 template <typename DerivedX, typename DerivedY, typename DerivedIX>
 IGL_INLINE void igl::sort2(
-  const Eigen::PlainObjectBase<DerivedX>& X,
+  const Eigen::DenseBase<DerivedX>& X,
   const int dim,
   const bool ascending,
   Eigen::PlainObjectBase<DerivedY>& Y,
@@ -158,23 +158,25 @@ IGL_INLINE void igl::sort2(
 {
   using namespace Eigen;
   using namespace std;
-  typedef typename Eigen::PlainObjectBase<DerivedY>::Scalar YScalar;
-  Y = X.template cast<YScalar>();
+  typedef typename DerivedY::Scalar YScalar;
+  Y = X.derived().template cast<YScalar>();
+
+
   // get number of columns (or rows)
   int num_outer = (dim == 1 ? X.cols() : X.rows() );
   // get number of rows (or columns)
   int num_inner = (dim == 1 ? X.rows() : X.cols() );
   assert(num_inner == 2);(void)num_inner;
-  typedef typename Eigen::PlainObjectBase<DerivedIX>::Scalar Index;
-  IX.resize(X.rows(),X.cols());
+  typedef typename DerivedIX::Scalar Index;
+  IX.resizeLike(X);
   if(dim==1)
   {
-    IX.row(0).setConstant(0);// = Eigen::PlainObjectBase<DerivedIX>::Zero(1,IX.cols());
-    IX.row(1).setConstant(1);// = Eigen::PlainObjectBase<DerivedIX>::Ones (1,IX.cols());
+    IX.row(0).setConstant(0);// = DerivedIX::Zero(1,IX.cols());
+    IX.row(1).setConstant(1);// = DerivedIX::Ones (1,IX.cols());
   }else
   {
-    IX.col(0).setConstant(0);// = Eigen::PlainObjectBase<DerivedIX>::Zero(IX.rows(),1);
-    IX.col(1).setConstant(1);// = Eigen::PlainObjectBase<DerivedIX>::Ones (IX.rows(),1);
+    IX.col(0).setConstant(0);// = DerivedIX::Zero(IX.rows(),1);
+    IX.col(1).setConstant(1);// = DerivedIX::Ones (IX.rows(),1);
   }
   // loop over columns (or rows)
   for(int i = 0;i<num_outer;i++)
@@ -193,7 +195,7 @@ IGL_INLINE void igl::sort2(
 
 template <typename DerivedX, typename DerivedY, typename DerivedIX>
 IGL_INLINE void igl::sort3(
-  const Eigen::PlainObjectBase<DerivedX>& X,
+  const Eigen::DenseBase<DerivedX>& X,
   const int dim,
   const bool ascending,
   Eigen::PlainObjectBase<DerivedY>& Y,
@@ -201,25 +203,28 @@ IGL_INLINE void igl::sort3(
 {
   using namespace Eigen;
   using namespace std;
-  typedef typename Eigen::PlainObjectBase<DerivedY>::Scalar YScalar;
-  Y = X.template cast<YScalar>();
+  typedef typename DerivedY::Scalar YScalar;
+  Y = X.derived().template cast<YScalar>();
+  Y.resizeLike(X);
+  for(int j=0;j<X.cols();j++)for(int i=0;i<X.rows();i++)Y(i,j)=(YScalar)X(i,j);
+
   // get number of columns (or rows)
   int num_outer = (dim == 1 ? X.cols() : X.rows() );
   // get number of rows (or columns)
   int num_inner = (dim == 1 ? X.rows() : X.cols() );
   assert(num_inner == 3);(void)num_inner;
-  typedef typename Eigen::PlainObjectBase<DerivedIX>::Scalar Index;
-  IX.resize(X.rows(),X.cols());
+  typedef typename DerivedIX::Scalar Index;
+  IX.resizeLike(X);
   if(dim==1)
   {
-    IX.row(0).setConstant(0);// = Eigen::PlainObjectBase<DerivedIX>::Zero(1,IX.cols());
-    IX.row(1).setConstant(1);// = Eigen::PlainObjectBase<DerivedIX>::Ones (1,IX.cols());
-    IX.row(2).setConstant(2);// = Eigen::PlainObjectBase<DerivedIX>::Ones (1,IX.cols());
+    IX.row(0).setConstant(0);// = DerivedIX::Zero(1,IX.cols());
+    IX.row(1).setConstant(1);// = DerivedIX::Ones (1,IX.cols());
+    IX.row(2).setConstant(2);// = DerivedIX::Ones (1,IX.cols());
   }else
   {
-    IX.col(0).setConstant(0);// = Eigen::PlainObjectBase<DerivedIX>::Zero(IX.rows(),1);
-    IX.col(1).setConstant(1);// = Eigen::PlainObjectBase<DerivedIX>::Ones (IX.rows(),1);
-    IX.col(2).setConstant(2);// = Eigen::PlainObjectBase<DerivedIX>::Ones (IX.rows(),1);
+    IX.col(0).setConstant(0);// = DerivedIX::Zero(IX.rows(),1);
+    IX.col(1).setConstant(1);// = DerivedIX::Ones (IX.rows(),1);
+    IX.col(2).setConstant(2);// = DerivedIX::Ones (IX.rows(),1);
   }
 
 
@@ -309,33 +314,30 @@ if(!ascending)
 }
 
 #ifdef IGL_STATIC_LIBRARY
-// Explicit template specialization
+// Explicit template instantiation
 // generated by autoexplicit.sh
-template void igl::sort<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, int, bool, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
+template void igl::sort<Eigen::Matrix<int, -1, 2, 0, -1, 2>, Eigen::Matrix<int, -1, 2, 0, -1, 2>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::DenseBase<Eigen::Matrix<int, -1, 2, 0, -1, 2> > const&, int, bool, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 2, 0, -1, 2> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
 // generated by autoexplicit.sh
-template void igl::sort<Eigen::Matrix<double, 1, 3, 1, 1, 3>, Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > const&, int, bool, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
-// generated by autoexplicit.sh
+template void igl::sort<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::DenseBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, int, bool, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
+template void igl::sort<Eigen::Matrix<double, 1, 3, 1, 1, 3>, Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::DenseBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > const&, int, bool, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
 template void igl::sort<int>(std::vector<int, std::allocator<int> > const&, bool, std::vector<int, std::allocator<int> >&, std::vector<size_t,class std::allocator<size_t> > &);
-
-// generated by autoexplicit.sh
-template void igl::sort<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, int, bool, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
-// generated by autoexplicit.sh
-template void igl::sort<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, int, bool, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
-template void igl::sort<Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, int, bool, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
-template void igl::sort<Eigen::Matrix<int, -1, 2, 0, -1, 2>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 2, 0, -1, 2> > const&, int, bool, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
-template void igl::sort<Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, int, bool, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
-template void igl::sort<Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, int, bool, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
-template void igl::sort_new<Eigen::Matrix<int, 1, 6, 1, 1, 6>, Eigen::Matrix<int, 1, 6, 1, 1, 6>, Eigen::Matrix<int, 1, 6, 1, 1, 6> >(Eigen::PlainObjectBase<Eigen::Matrix<int, 1, 6, 1, 1, 6> > const&, int, bool, Eigen::PlainObjectBase<Eigen::Matrix<int, 1, 6, 1, 1, 6> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, 1, 6, 1, 1, 6> >&);
-template void igl::sort<Eigen::Matrix<int, -1, 2, 0, -1, 2>, Eigen::Matrix<int, -1, 2, 0, -1, 2> >(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 2, 0, -1, 2> > const&, int, bool, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 2, 0, -1, 2> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 2, 0, -1, 2> >&);
-template void igl::sort<Eigen::Matrix<double, -1, 4, 0, -1, 4>, Eigen::Matrix<double, -1, 4, 0, -1, 4>, Eigen::Matrix<int, -1, 4, 0, -1, 4> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 4, 0, -1, 4> > const&, int, bool, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 4, 0, -1, 4> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 4, 0, -1, 4> >&);
-template void igl::sort<Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, int, bool, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
-template void igl::sort<long>(std::vector<long, std::allocator<long> > const&, bool, std::vector<long, std::allocator<long> >&, std::vector<unsigned long, std::allocator<unsigned long> >&);
-template void igl::sort<Eigen::Matrix<double, -1, 2, 0, -1, 2>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 2, 0, -1, 2> > const&, int, bool, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
-template void igl::sort<Eigen::Matrix<double, -1, 3, 1, -1, 3>, Eigen::Matrix<double, -1, 3, 1, -1, 3>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 1, -1, 3> > const&, int, bool, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 1, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
-template void igl::sort<Eigen::Matrix<float, -1, 3, 1, -1, 3>, Eigen::Matrix<float, -1, 3, 1, -1, 3>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<float, -1, 3, 1, -1, 3> > const&, int, bool, Eigen::PlainObjectBase<Eigen::Matrix<float, -1, 3, 1, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
-template void igl::sort<Eigen::Matrix<double, -1, 2, 0, -1, 2>, Eigen::Matrix<double, -1, 2, 0, -1, 2>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 2, 0, -1, 2> > const&, int, bool, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 2, 0, -1, 2> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
-template void igl::sort<Eigen::Matrix<double, 1, 3, 1, 1, 3>, Eigen::Matrix<double, 1, 3, 1, 1, 3>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > const&, int, bool, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
-template void igl::sort<Eigen::Matrix<float, -1, 3, 0, -1, 3>, Eigen::Matrix<float, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<float, -1, 3, 0, -1, 3> > const&, int, bool, Eigen::PlainObjectBase<Eigen::Matrix<float, -1, 3, 0, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
-template void igl::sort<Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, int, bool, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
-
+template void igl::sort<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::DenseBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, int, bool, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
+template void igl::sort<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::DenseBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, int, bool, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
+template void igl::sort<Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::DenseBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, int, bool, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
+template void igl::sort<Eigen::Matrix<int, -1, 2, 0, -1, 2>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::DenseBase<Eigen::Matrix<int, -1, 2, 0, -1, 2> > const&, int, bool, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
+template void igl::sort<Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::DenseBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, int, bool, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
+template void igl::sort<Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::DenseBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, int, bool, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
+template void igl::sort_new<Eigen::Matrix<int, 1, 6, 1, 1, 6>, Eigen::Matrix<int, 1, 6, 1, 1, 6>, Eigen::Matrix<int, 1, 6, 1, 1, 6> >(Eigen::DenseBase<Eigen::Matrix<int, 1, 6, 1, 1, 6> > const&, int, bool, Eigen::PlainObjectBase<Eigen::Matrix<int, 1, 6, 1, 1, 6> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, 1, 6, 1, 1, 6> >&);
+template void igl::sort<Eigen::Matrix<int, -1, 2, 0, -1, 2>, Eigen::Matrix<int, -1, 2, 0, -1, 2> >(Eigen::DenseBase<Eigen::Matrix<int, -1, 2, 0, -1, 2> > const&, int, bool, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 2, 0, -1, 2> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 2, 0, -1, 2> >&);
+template void igl::sort<Eigen::Matrix<double, -1, 4, 0, -1, 4>, Eigen::Matrix<double, -1, 4, 0, -1, 4>, Eigen::Matrix<int, -1, 4, 0, -1, 4> >(Eigen::DenseBase<Eigen::Matrix<double, -1, 4, 0, -1, 4> > const&, int, bool, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 4, 0, -1, 4> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 4, 0, -1, 4> >&);
+template void igl::sort<Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::DenseBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, int, bool, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
+template void igl::sort<long>(std::vector<long, std::allocator<long> > const&, bool, std::vector<long, std::allocator<long> >&, std::vector<size_t, std::allocator<size_t> >&);
+template void igl::sort<Eigen::Matrix<double, -1, 2, 0, -1, 2>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::DenseBase<Eigen::Matrix<double, -1, 2, 0, -1, 2> > const&, int, bool, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
+template void igl::sort<Eigen::Matrix<double, -1, 3, 1, -1, 3>, Eigen::Matrix<double, -1, 3, 1, -1, 3>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::DenseBase<Eigen::Matrix<double, -1, 3, 1, -1, 3> > const&, int, bool, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 1, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
+template void igl::sort<Eigen::Matrix<float, -1, 3, 1, -1, 3>, Eigen::Matrix<float, -1, 3, 1, -1, 3>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::DenseBase<Eigen::Matrix<float, -1, 3, 1, -1, 3> > const&, int, bool, Eigen::PlainObjectBase<Eigen::Matrix<float, -1, 3, 1, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
+template void igl::sort<Eigen::Matrix<double, -1, 2, 0, -1, 2>, Eigen::Matrix<double, -1, 2, 0, -1, 2>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::DenseBase<Eigen::Matrix<double, -1, 2, 0, -1, 2> > const&, int, bool, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 2, 0, -1, 2> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
+template void igl::sort<Eigen::Matrix<double, 1, 3, 1, 1, 3>, Eigen::Matrix<double, 1, 3, 1, 1, 3>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::DenseBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > const&, int, bool, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
+template void igl::sort<Eigen::Matrix<float, -1, 3, 0, -1, 3>, Eigen::Matrix<float, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::DenseBase<Eigen::Matrix<float, -1, 3, 0, -1, 3> > const&, int, bool, Eigen::PlainObjectBase<Eigen::Matrix<float, -1, 3, 0, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
+template void igl::sort<Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::DenseBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, int, bool, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
+template void igl::sort<Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<long, -1, 1, 0, -1, 1> >(Eigen::DenseBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, int, bool, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<long, -1, 1, 0, -1, 1> >&);
 #endif

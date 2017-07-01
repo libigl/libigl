@@ -13,62 +13,60 @@
 #include <vector>
 #include <igl/igl_inline.h>
 
+// This file violates many of the libigl style guidelines.
+
 namespace igl
 {
-  // HalfEdgeIterator - Fake halfedge for fast and easy navigation on triangle meshes with vertex_triangle_adjacency and
+  // HalfEdgeIterator - Fake halfedge for fast and easy navigation
+  // on triangle meshes with vertex_triangle_adjacency and
   // triangle_triangle adjacency
-  template <typename DerivedF>
+  //
+  // Note: this is different to classical Half Edge data structure.
+  //    Instead, it follows cell-tuple in [Brisson, 1989]
+  //    "Representing geometric structures in d dimensions: topology and order."
+  //    This class can achieve local navigation similar to half edge in OpenMesh
+  //    But the logic behind each atom operation is different.
+  //    So this should be more properly called TriangleTupleIterator.
+  //
+  // Each tuple contains information on (face, edge, vertex)
+  //    and encoded by (face, edge \in {0,1,2}, bool reverse)
+  //
+  // Inputs:
+  //    F #F by 3 list of "faces"
+  //    FF #F by 3 list of triangle-triangle adjacency.
+  //    FFi #F by 3 list of FF inverse. For FF and FFi, refer to
+  //        "triangle_triangle_adjacency.h"
+  // Usages:
+  //    FlipF/E/V changes solely one actual face/edge/vertex resp.
+  //    NextFE iterates through one-ring of a vertex robustly.
+  //
+  template <
+    typename DerivedF,
+    typename DerivedFF,
+    typename DerivedFFi>
   class HalfEdgeIterator
   {
   public:
     // Init the HalfEdgeIterator by specifying Face,Edge Index and Orientation
     IGL_INLINE HalfEdgeIterator(
         const Eigen::PlainObjectBase<DerivedF>& _F,
-        const Eigen::PlainObjectBase<DerivedF>& _FF,
-        const Eigen::PlainObjectBase<DerivedF>& _FFi,
+        const Eigen::PlainObjectBase<DerivedFF>& _FF,
+        const Eigen::PlainObjectBase<DerivedFFi>& _FFi,
         int _fi,
         int _ei,
         bool _reverse = false
-        )
-    : fi(_fi), ei(_ei), reverse(_reverse), F(_F), FF(_FF), FFi(_FFi)
-    {}
+        );
 
     // Change Face
-    IGL_INLINE void flipF()
-    {
-      if (isBorder())
-        return;
-
-      int fin = (FF)(fi,ei);
-      int ein = (FFi)(fi,ei);
-      int reversen = !reverse;
-
-      fi = fin;
-      ei = ein;
-      reverse = reversen;
-    }
+    IGL_INLINE void flipF();
 
     // Change Edge
-    IGL_INLINE void flipE()
-    {
-      if (!reverse)
-        ei = (ei+2)%3; // ei-1
-      else
-        ei = (ei+1)%3;
-
-      reverse = !reverse;
-    }
+    IGL_INLINE void flipE();
 
     // Change Vertex
-    IGL_INLINE void flipV()
-    {
-      reverse = !reverse;
-    }
+    IGL_INLINE void flipV();
 
-    IGL_INLINE bool isBorder()
-    {
-      return (FF)(fi,ei) == -1;
-    }
+    IGL_INLINE bool isBorder();
 
     /*!
      * Returns the next edge skipping the border
@@ -78,79 +76,39 @@ namespace igl
      *   / d  \ | / a  \
      *  /______\|/______\
      *          v
-     * In this example, if a and d are of-border and the pos is iterating counterclockwise, this method iterate through the faces incident on vertex v,
+     * In this example, if a and d are of-border and the pos is iterating
+     counterclockwise, this method iterate through the faces incident on vertex
+     v,
      * producing the sequence a, b, c, d, a, b, c, ...
      */
-    IGL_INLINE bool NextFE()
-    {
-      if ( isBorder() ) // we are on a border
-      {
-        do
-        {
-          flipF();
-          flipE();
-        } while (!isBorder());
-        flipE();
-        return false;
-      }
-      else
-      {
-        flipF();
-        flipE();
-        return true;
-      }
-    }
+    IGL_INLINE bool NextFE();
 
     // Get vertex index
-    IGL_INLINE int Vi()
-    {
-      assert(fi >= 0);
-      assert(fi < F.rows());
-      assert(ei >= 0);
-      assert(ei <= 2);
-
-      if (!reverse)
-        return (*F)(fi,ei);
-      else
-        return (*F)(fi,(ei+1)%3);
-    }
+    IGL_INLINE int Vi();
 
     // Get face index
-    IGL_INLINE int Fi()
-    {
-      return fi;
-    }
+    IGL_INLINE int Fi();
 
     // Get edge index
-    IGL_INLINE int Ei()
-    {
-      return ei;
-    }
+    IGL_INLINE int Ei();
 
-
-    IGL_INLINE bool operator==(HalfEdgeIterator& p2)
-    {
-      return
-      (
-       (fi == p2.fi) &&
-       (ei == p2.ei) &&
-       (reverse == p2.reverse) &&
-       (F   == p2.F) &&
-       (FF  == p2.FF) &&
-       (FFi == p2.FFi)
-       );
-    }
+    IGL_INLINE bool operator==(HalfEdgeIterator& p2);
 
   private:
     int fi;
     int ei;
     bool reverse;
 
-    const Eigen::PlainObjectBase<DerivedF>& F;
-    const Eigen::PlainObjectBase<DerivedF>& FF;
-    const Eigen::PlainObjectBase<DerivedF>& FFi;
+    // All the same type? This is likely to break.
+    const DerivedF & F;
+    const DerivedFF & FF;
+    const DerivedFFi & FFi;
   };
 
 }
+
+#ifndef IGL_STATIC_LIBRARY
+#  include "HalfEdgeIterator.cpp"
+#endif
 
 #endif
