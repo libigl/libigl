@@ -12,9 +12,9 @@ V = igl.eigen.MatrixXd()
 F = igl.eigen.MatrixXi()
 igl.readOFF(TUTORIAL_SHARED_PATH + "cube.off", V, F)
 
-# Print the vertices and faces matrices
-print("Vertices: \n", V, sep='')
-print("Faces: \n", F, sep='')
+# Print the vertices and faces matrices (commented out to make this file compatible with python 2.x and 3.x)
+# print("Vertices: \n", V, sep='')
+# print("Faces: \n", F, sep='')
 
 # Save the mesh in OBJ format
 igl.writeOBJ("cube.obj",V,F)
