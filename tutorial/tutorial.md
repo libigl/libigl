@@ -866,13 +866,18 @@ functionality as common Matlab functions.
 
 | Name                     | Description                                                                         |
 | :----------------------- | :---------------------------------------------------------------------------------- |
-| `igl::any_of`            | Whether any elements are non-zero (true)                                            |
+| `igl::all`               | Whether all elements are non-zero (true)                                            |
+| `igl::any`               | Whether any elements are non-zero (true)                                            |
 | `igl::cat`               | Concatenate two matrices (especially useful for dealing with Eigen sparse matrices) |
 | `igl::ceil`              | Round entries up to nearest integer |
 | `igl::cumsum`            | Cumulative sum of matrix elements |
 | `igl::colon`             | Act like Matlab's `:`, similar to Eigen's `LinSpaced` |
+| `igl::components`        | Connected components of graph (cf. Matlab's `graphconncomp`) |
+| `igl::count`             | Count non-zeros in rows or columns |
 | `igl::cross`             | Cross product per-row |
+| `igl::cumsum`            | Cummulative summation |
 | `igl::dot`               | dot product per-row |
+| `igl::eigs`              | Solve sparse eigen value problem |
 | `igl::find`              | Find subscripts of non-zero entries |
 | `igl::floor`             | Round entries down to nearest integer |
 | `igl::histc`             | Counting occurrences for building a histogram |
@@ -881,15 +886,26 @@ functionality as common Matlab functions.
 | `igl::isdiag`            | Determine whether matrix is diagonal |
 | `igl::ismember`          | Determine whether elements in A occur in B |
 | `igl::jet`               | Quantized colors along the rainbow. |
+| `igl::max`               | Compute maximum entry per row or column |
 | `igl::median`            | Compute the median per column |
+| `igl::min`               | Compute minimum entry per row or column |
+| `igl::mod`               | Compute per element modulo |
 | `igl::mode`              | Compute the mode per column |
 | `igl::null`              | Compute the null space basis of a matrix |
 | `igl::nchoosek`          | Compute all k-size combinations of n-long vector |
 | `igl::orth`              | Orthogonalization of a basis |
 | `igl::parula`            | Generate a quantized colormap from blue to yellow |
+| `igl::pinv`              | Compute Moore-Penrose pseudoinverse |
 | `igl::randperm`          | Generate a random permutation of [0,...,n-1] |
 | `igl::rgb_to_hsv`        | Convert RGB colors to HSV (cf. Matlab's `rgb2hsv`) |
+| `igl::repmat`            | Repeat a matrix along columns and rows |
+| `igl::round`             | Per-element round to whole number |
 | `igl::setdiff`           | Set difference of matrix elements |
+| `igl::setunion`          | Set union of matrix elements |
+| `igl::setxor`            | Set exclusive "or" of matrix elements |
+| `igl::slice`             | Slice parts of matrix using index lists: (cf. Matlab's `B = A(I,J)`)
+| `igl::slice_mask`        | Slice parts of matrix using boolean masks: (cf. Matlab's `B = A(M,N)`)
+| `igl::slice_into`        | Slice left-hand side of matrix assignment using index lists (cf. Matlab's `B(I,J) = A`)
 | `igl::sort`              | Sort elements or rows of matrix |
 | `igl::speye`             | Identity as sparse matrix |
 | `igl::sum`               | Sum along columns or rows (of sparse matrix) |
