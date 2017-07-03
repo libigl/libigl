@@ -29,8 +29,8 @@ namespace igl
   // See also: adjacency_matrix
   template <typename DerivedV, typename DerivedF>
   IGL_INLINE double avg_edge_length(
-    const Eigen::PlainObjectBase<DerivedV>& V,
-    const Eigen::PlainObjectBase<DerivedF>& F);
+    const Eigen::MatrixBase<DerivedV>& V,
+    const Eigen::MatrixBase<DerivedF>& F);
 
 }
 

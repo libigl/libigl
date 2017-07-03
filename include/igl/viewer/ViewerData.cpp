@@ -344,7 +344,7 @@ IGL_INLINE void igl::viewer::ViewerData::compute_normals()
   dirty |= DIRTY_NORMAL;
 }
 
-IGL_INLINE void igl::viewer::ViewerData::uniform_colors(Eigen::Vector3d ambient, Eigen::Vector3d diffuse, Eigen::Vector3d specular)
+IGL_INLINE void igl::viewer::ViewerData::uniform_colors(const Eigen::Vector3d& ambient, const Eigen::Vector3d& diffuse, const Eigen::Vector3d& specular)
 {
   Eigen::Vector4d ambient4;
   Eigen::Vector4d diffuse4;
@@ -357,7 +357,7 @@ IGL_INLINE void igl::viewer::ViewerData::uniform_colors(Eigen::Vector3d ambient,
   uniform_colors(ambient4,diffuse4,specular4);
 }
 
-IGL_INLINE void igl::viewer::ViewerData::uniform_colors(Eigen::Vector4d ambient, Eigen::Vector4d diffuse, Eigen::Vector4d specular)
+IGL_INLINE void igl::viewer::ViewerData::uniform_colors(const Eigen::Vector4d& ambient, const Eigen::Vector4d& diffuse, const Eigen::Vector4d& specular)
 {
   V_material_ambient.resize(V.rows(),4);
   V_material_diffuse.resize(V.rows(),4);

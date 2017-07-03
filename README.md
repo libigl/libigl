@@ -43,9 +43,13 @@ and Windows with Visual Studio 2015 Community Edition.
 As of version 1.0, libigl includes an introductory
 [tutorial](http://libigl.github.io/libigl/tutorial/tutorial.html) that covers many functionalities.
 
-## libigl example project
+## libigl Example Project
 
 We provide a [blank project example](https://github.com/libigl/libigl-example-project) showing how to use libigl and cmake. Feel free and encouraged to copy or fork this project as a way of starting a new personal project using libigl.
+
+## Coding Guidelines and Tips
+
+libigl follows strict coding guidelines, please take a look [here](http://libigl.github.io/libigl/style-guidelines.html) before submitting your pull requests. We also have a set of [general coding tips](http://libigl.github.io/libigl/coding-guidelines.html) on how to code a geometry processing research project.
 
 ## Installation
 
@@ -98,7 +102,7 @@ libigl depends only on the [Eigen](http://eigen.tuxfamily.org) library.
 
 For more information see our [tutorial](tutorial/tutorial.html).
 
-### Optional dependencies
+### Optional Dependencies
 
 Libigl compartmentalizes its **optional** dependences via its directory
 organization in the `include/` folder. All header files located _directly_ in
@@ -106,7 +110,7 @@ the `include/igl/` folder have only stl and Eigen as dependencies. For example,
 all of the headers that depend on CGAL are located in `include/igl/cgal`. For a
 full list of _optional_ dependencies check `optional/CMakeLists.txt`.
 
-### GCC and the optional CGAL dependency
+### GCC and the Optional CGAL Dependency
 The `include/igl/cgal/*.h` headers depend on CGAL. It has come to our attention
 that CGAL does not work properly with GCC 4.8. To the best of our knowledge,
 GCC 4.7 and clang will work correctly.
@@ -162,16 +166,16 @@ git pull
 git submodule update --recursive
 ```
 
-## Unit testing
+## Unit Testing
 
 Libigl maintains [separate
 repository](https://github.com/libigl/libigl-unit-tests) for unit testing.
 
-## How to contribute
+## How to Contribute
 
 If you are interested in joining development, please fork the repository and
 submit a [pull request](https://help.github.com/articles/using-pull-requests/)
-with your changes.
+with your changes. libigl follows strict coding guidelines, please take a look at our  [style guidelines](style-guidelines.html) before submitting your pull requests.
 
 ## License
 libigl is primarily [MPL2](http://www.mozilla.org/MPL/2.0/) licensed
@@ -255,7 +259,7 @@ If you find bugs or have problems please use our [github issue tracking
 page](https://github.com/libigl/libigl/issues).
 
 ## Copyright
-2016 Alec Jacobson, Daniele Panozzo, Christian Schüller, Olga Diamanti, Qingnan
+2017 Alec Jacobson, Daniele Panozzo, Christian Schüller, Olga Diamanti, Qingnan
 Zhou, Sebastian Koch, Amir Vaxman, Nico Pietroni, Stefan Brugger, Kenshi Takayama, Wenzel Jakob, Nikolas De
 Giorgis, Luigi Rocca, Leonardo Sacht, Kevin Walliman, Olga Sorkine-Hornung, and others.
 

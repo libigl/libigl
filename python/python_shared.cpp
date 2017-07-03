@@ -151,6 +151,7 @@ PYBIND11_PLUGIN(pyigl) {
            winding_number
            writeMESH
            writeOBJ
+           writePLY
 
     )pyigldoc");
 
