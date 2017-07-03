@@ -28,8 +28,8 @@ namespace igl
     typename DerivedIA,
     typename DerivedLOCB>
   IGL_INLINE void ismember(
-    const Eigen::PlainObjectBase<DerivedA> & A,
-    const Eigen::PlainObjectBase<DerivedB> & B,
+    const Eigen::MatrixBase<DerivedA> & A,
+    const Eigen::MatrixBase<DerivedB> & B,
     Eigen::PlainObjectBase<DerivedIA> & IA,
     Eigen::PlainObjectBase<DerivedLOCB> & LOCB);
   template <
@@ -38,8 +38,8 @@ namespace igl
     typename DerivedIA,
     typename DerivedLOCB>
   IGL_INLINE void ismember_rows(
-    const Eigen::PlainObjectBase<DerivedA> & A,
-    const Eigen::PlainObjectBase<DerivedB> & B,
+    const Eigen::MatrixBase<DerivedA> & A,
+    const Eigen::MatrixBase<DerivedB> & B,
     Eigen::PlainObjectBase<DerivedIA> & IA,
     Eigen::PlainObjectBase<DerivedLOCB> & LOCB);
 
