@@ -48,7 +48,8 @@ endif()
 include_directories(${PYTHON_INCLUDE_DIR} include)
 
 ## include pybind
-include_directories(${PROJECT_SOURCE_DIR}/../external/nanogui/ext/pybind11/include)
+set(PYBIND11_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/../external/nanogui/ext/pybind11/include CACHE PATH "Path to pybind11/include")
+include_directories(${PYBIND11_INCLUDE_DIR})
 
 ## include libigl
 option(LIBIGL_USE_STATIC_LIBRARY "Use LibIGL as static library" OFF)
