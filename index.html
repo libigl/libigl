@@ -15,7 +15,7 @@
 <h1 id="libigl-asimplecgeometryprocessinglibrary">libigl - A simple C++ geometry processing library</h1>
 
 <p><a href="https://travis-ci.org/libigl/libigl"><img src="https://travis-ci.org/libigl/libigl.svg?branch=master" alt="Build Status" /></a>
-<a href="https://ci.appveyor.com/project/danielepanozzo/libigl-6hjk1"><img src="https://ci.appveyor.com/api/projects/status/mf3t9rnhco0vhly8?svg=true" alt="Build status" /></a>
+<a href="https://ci.appveyor.com/project/danielepanozzo/libigl-6hjk1/branch/master"><img src="https://ci.appveyor.com/api/projects/status/mf3t9rnhco0vhly8/branch/master?svg=true" alt="Build status" /></a>
 <img src="libigl-teaser.png" alt="" /></p>
 
 <p><a href="https://github.com/libigl/libigl/">https://github.com/libigl/libigl/</a></p>
@@ -59,9 +59,13 @@ and Windows with Visual Studio 2015 Community Edition.</p>
 <p>As of version 1.0, libigl includes an introductory
 <a href="http://libigl.github.io/libigl/tutorial/tutorial.html">tutorial</a> that covers many functionalities.</p>
 
-<h2 id="libiglexampleproject">libigl example project</h2>
+<h2 id="libiglexampleproject">libigl Example Project</h2>
 
 <p>We provide a <a href="https://github.com/libigl/libigl-example-project">blank project example</a> showing how to use libigl and cmake. Feel free and encouraged to copy or fork this project as a way of starting a new personal project using libigl.</p>
+
+<h2 id="codingguidelinesandtips">Coding Guidelines and Tips</h2>
+
+<p>libigl follows strict coding guidelines, please take a look <a href="http://libigl.github.io/libigl/style-guidelines.html">here</a> before submitting your pull requests. We also have a set of <a href="http://libigl.github.io/libigl/coding-guidelines.html">general coding tips</a> on how to code a geometry processing research project.</p>
 
 <h2 id="installation">Installation</h2>
 
@@ -112,7 +116,7 @@ libigl depends only on the <a href="http://eigen.tuxfamily.org">Eigen</a> librar
 
 <p>For more information see our <a href="tutorial/tutorial.html">tutorial</a>.</p>
 
-<h3 id="optionaldependencies">Optional dependencies</h3>
+<h3 id="optionaldependencies">Optional Dependencies</h3>
 
 <p>Libigl compartmentalizes its <strong>optional</strong> dependences via its directory
 organization in the <code>include/</code> folder. All header files located <em>directly</em> in
@@ -120,7 +124,7 @@ the <code>include/igl/</code> folder have only stl and Eigen as dependencies. Fo
 all of the headers that depend on CGAL are located in <code>include/igl/cgal</code>. For a
 full list of <em>optional</em> dependencies check <code>optional/CMakeLists.txt</code>.</p>
 
-<h3 id="gccandtheoptionalcgaldependency">GCC and the optional CGAL dependency</h3>
+<h3 id="gccandtheoptionalcgaldependency">GCC and the Optional CGAL Dependency</h3>
 
 <p>The <code>include/igl/cgal/*.h</code> headers depend on CGAL. It has come to our attention
 that CGAL does not work properly with GCC 4.8. To the best of our knowledge,
@@ -178,16 +182,16 @@ subrepos:</p>
 git submodule update --recursive
 </code></pre>
 
-<h2 id="unittesting">Unit testing</h2>
+<h2 id="unittesting">Unit Testing</h2>
 
 <p>Libigl maintains <a href="https://github.com/libigl/libigl-unit-tests">separate
 repository</a> for unit testing.</p>
 
-<h2 id="howtocontribute">How to contribute</h2>
+<h2 id="howtocontribute">How to Contribute</h2>
 
 <p>If you are interested in joining development, please fork the repository and
 submit a <a href="https://help.github.com/articles/using-pull-requests/">pull request</a>
-with your changes.</p>
+with your changes. libigl follows strict coding guidelines, please take a look at our <a href="style-guidelines.html">style guidelines</a> before submitting your pull requests.</p>
 
 <h2 id="license">License</h2>
 
@@ -232,7 +236,8 @@ few labs/companies/institutions using libigl:</p>
 <li>ETH Zurich, <a href="http://igl.ethz.ch/">Interactive Geometry Lab</a> and <a href="http://ait.inf.ethz.ch/">Advanced Technologies Lab</a>, Swizterland</li>
 <li>George Mason University, <a href="http://cs.gmu.edu/~ygingold/">CraGL</a>, USA</li>
 <li><a href="http://www.ust.hk/">Hong Kong University of Science and Technology</a>, Hong Kong</li>
-<li>[Inria](Université Grenoble Alpes), France</li>
+<li><a href="https://www.inria.fr/centre/grenoble/">Inria, Université Grenoble Alpes</a>, France</li>
+<li><a href="http://english.jiangnan.edu.cn">Jiangnan university</a>, China</li>
 <li><a href="http://www.nii.ac.jp/en/">National Institute of Informatics</a>, Japan</li>
 <li>New York University, <a href="http://mrl.nyu.edu/">Media Research Lab</a>, USA</li>
 <li>NYUPoly, <a href="http://game.engineering.nyu.edu/">Game Innovation Lab</a>, USA</li>
@@ -257,7 +262,7 @@ few labs/companies/institutions using libigl:</p>
 
 <h2 id="contact">Contact</h2>
 
-<p>Libigl is a group endeavor led by <a href="http://www.cs.columbia.edu/~jacobson/">Alec
+<p>Libigl is a group endeavor led by <a href="http://www.cs.toronto.edu/~jacobson/">Alec
 Jacobson</a> and <a href="http://cs.nyu.edu/~panozzo/">Daniele
 Panozzo</a>. Please <a href="&#109;&#97;&#105;&#108;&#x74;&#111;&#x3a;&#x61;&#x6c;&#101;&#x63;&#x6a;&#x61;&#x63;&#111;&#98;&#115;&#111;&#110;&#64;&#103;&#109;&#x61;&#105;&#108;&#x2e;&#x63;&#x6f;&#x6d;&#44;&#x64;&#x61;&#110;&#105;&#101;&#x6c;&#101;&#x2e;&#x70;&#x61;&#110;&#x6f;&#122;&#x7a;&#x6f;&#64;&#x67;&#x6d;&#x61;&#x69;&#x6c;&#x2e;&#99;&#x6f;&#x6d;">&#99;&#x6f;&#x6e;&#116;&#x61;&#99;&#x74;
 &#117;&#115;</a> if you have
@@ -274,7 +279,7 @@ page</a>.</p>
 
 <h2 id="copyright">Copyright</h2>
 
-<p>2016 Alec Jacobson, Daniele Panozzo, Christian Schüller, Olga Diamanti, Qingnan
+<p>2017 Alec Jacobson, Daniele Panozzo, Christian Schüller, Olga Diamanti, Qingnan
 Zhou, Sebastian Koch, Amir Vaxman, Nico Pietroni, Stefan Brugger, Kenshi Takayama, Wenzel Jakob, Nikolas De
 Giorgis, Luigi Rocca, Leonardo Sacht, Kevin Walliman, Olga Sorkine-Hornung, and others.</p>
 

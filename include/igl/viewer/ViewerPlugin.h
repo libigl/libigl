@@ -96,6 +96,11 @@ public:
     return false;
   }
 
+  // This function is called after the window has been resized
+  IGL_INLINE virtual void post_resize(int w, int h)
+  {
+  }
+
   // This function is called when the mouse button is pressed
   // - button can be GLUT_LEFT_BUTTON, GLUT_MIDDLE_BUTTON or GLUT_RIGHT_BUTTON
   // - modifiers is a bitfield that might one or more of the following bits Preview3D::NO_KEY, Preview3D::SHIFT, Preview3D::CTRL, Preview3D::ALT;
