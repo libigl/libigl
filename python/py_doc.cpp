@@ -1410,3 +1410,11 @@ const char *__doc_igl_writeOBJ = R"igl_Qu8mg5v7(// Write a mesh in an ascii obj 
   //
   // Known issues: Horrifyingly, this does not have the same order of
   // parameters as readOBJ.)igl_Qu8mg5v7";
+const char *__doc_igl_writePLY = R"igl_Qu8mg5v7(// Write a mesh in an ascii ply file
+  // Inputs:
+  //   str  path to outputfile
+  //   V  #V by 3 mesh vertex positions
+  //   F  #F by 3 mesh indices into V
+  //   N  #V by 3 normal vectors
+  //   UV #V by 2 texture coordinates
+  // Returns true on success, false on error)igl_Qu8mg5v7";

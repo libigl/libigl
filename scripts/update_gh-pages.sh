@@ -16,7 +16,7 @@ echo "$HEADER" \
   | cat - README.md | multimarkdown -o index.html
 
 echo "$HEADER" \
-  | cat - style-guidelines.md | multimarkdown -o style-guidelines.html 
+  | cat - style-guidelines.md | multimarkdown -o style-guidelines.html
 
 HEADER="title: libigl
 author: Alec Jacobson and Daniele Panozzo and others
@@ -32,3 +32,6 @@ echo "$HEADER" \
   | cat - optional/README.md | multimarkdown -o optional/index.html
 
 multimarkdown tutorial/tutorial.md -o tutorial/tutorial.html
+
+echo "$HEADER" \
+  | cat - coding-guidelines.md | multimarkdown -o coding-guidelines.html
