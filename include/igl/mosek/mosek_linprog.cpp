@@ -26,7 +26,9 @@ IGL_INLINE bool igl::mosek::mosek_linprog(
   // Create the MOSEK environment
   mosek_guarded(MSK_makeenv(&env,NULL));
   // initialize mosek environment
+#if MSK_VERSION_MAJOR <= 7
   mosek_guarded(MSK_initenv(env));
+#endif
   const bool ret = mosek_linprog(c,A,lc,uc,lx,ux,env,x);
   MSK_deleteenv(&env);
   return ret;
