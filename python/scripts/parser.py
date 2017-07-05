@@ -118,7 +118,7 @@ def parse(path):
     # Clang can't parse files with missing definitions, add static library definition or not?
     args = ['-x', 'c++', '-std=c++11', '-fparse-all-comments', '-DIGL_STATIC_LIBRARY']
     args.append('-I/usr/include/eigen3/') # TODO Properly add all needed includes
-    syspath = ccsyspath.system_include_paths('clang++-3.7') # Add the system libraries
+    syspath = ccsyspath.system_include_paths('clang++') # Add the system libraries
     incargs = [(b'-I' + inc).decode("utf-8") for inc in syspath]
     args.extend(incargs)
 
