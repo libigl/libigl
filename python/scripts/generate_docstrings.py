@@ -1,6 +1,6 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 #
-#  Syntax: generate_docstrings.py <path_to_c++_header_files> <path_to_python_files>
+#  Syntax: generate_docstrings.py <path to libigl C++ header_files> <path to python binding C++ files>
 #
 #  Extract documentation from C++ header files to use it in libiglPython bindings
 #
@@ -37,8 +37,7 @@ def get_filepaths(directory):
 
 
 def get_name_from_path(path, basepath, prefix, postfix):
-    f_clean = path[len(basepath):]
-    f_clean = f_clean.replace(basepath, "")
+    f_clean = os.path.relpath(path, basepath)
     f_clean = f_clean.replace(postfix, "")
     f_clean = f_clean.replace(prefix, "")
     f_clean = f_clean.replace("/", "_")
@@ -51,7 +50,7 @@ def get_name_from_path(path, basepath, prefix, postfix):
 if __name__ == '__main__':
 
     if len(sys.argv) != 3:
-        print('Syntax: %s <path_to_c++_header_files> <path_to_python_files>' % sys.argv[0])
+        print('Syntax: %s generate_docstrings.py <path to libigl C++ header_files> <path to python binding C++ files>' % sys.argv[0])
         exit(-1)
 
     # List all files in the given folder and subfolders
@@ -109,7 +108,7 @@ if __name__ == '__main__':
             for f in d["functions"]:
                 h_string = "extern const char *__doc_" + namespaces + "_" + f.name + ";\n"
                 docu_string = "See " + f.name + " for the documentation."
-                if f.documentation != "":
+                if f.documentation:
                     docu_string = f.documentation
                 cpp_string = "const char *__doc_" + namespaces + "_" + f.name + " = R\"igl_Qu8mg5v7(" + docu_string + ")igl_Qu8mg5v7\";\n"
 

@@ -1,4 +1,5 @@
 extern const char *__doc_igl_active_set;
+extern const char *__doc_igl_adjacency_list;
 extern const char *__doc_igl_arap_precomputation;
 extern const char *__doc_igl_arap_solve;
 extern const char *__doc_igl_avg_edge_length;
