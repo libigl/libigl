@@ -29,7 +29,7 @@ IGL_INLINE bool igl::writeWRL(
   FF.leftCols(3) = F;
   FF.col(3).setConstant(-1);
 
-  s<<R"(
+  s<<R"(#VRML V2.0 utf8
 DEF default Transform {
 translation 0 0 0
 children [
@@ -81,7 +81,7 @@ IGL_INLINE bool igl::writeWRL(
   double rgbScale = (C.maxCoeff() <= 1.0)?1.0:1.0/255.0;
   Eigen::MatrixXd RGB = rgbScale * C;
 
-  s<<R"(
+  s<<R"(#VRML V2.0 utf8
 DEF default Transform {
 translation 0 0 0
 children [
