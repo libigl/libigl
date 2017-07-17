@@ -960,7 +960,11 @@ functionality as common Matlab functions.</p>
 
 <tbody>
 <tr>
-	<td style="text-align:left;"><code>igl::any_of</code></td>
+	<td style="text-align:left;"><code>igl::all</code></td>
+	<td style="text-align:left;">Whether all elements are non-zero (true)</td>
+</tr>
+<tr>
+	<td style="text-align:left;"><code>igl::any</code></td>
 	<td style="text-align:left;">Whether any elements are non-zero (true)</td>
 </tr>
 <tr>
@@ -980,12 +984,28 @@ functionality as common Matlab functions.</p>
 	<td style="text-align:left;">Act like Matlab&#8217;s <code>:</code>, similar to Eigen&#8217;s <code>LinSpaced</code></td>
 </tr>
 <tr>
+	<td style="text-align:left;"><code>igl::components</code></td>
+	<td style="text-align:left;">Connected components of graph (cf. Matlab&#8217;s <code>graphconncomp</code>)</td>
+</tr>
+<tr>
+	<td style="text-align:left;"><code>igl::count</code></td>
+	<td style="text-align:left;">Count non-zeros in rows or columns</td>
+</tr>
+<tr>
 	<td style="text-align:left;"><code>igl::cross</code></td>
 	<td style="text-align:left;">Cross product per-row</td>
 </tr>
 <tr>
+	<td style="text-align:left;"><code>igl::cumsum</code></td>
+	<td style="text-align:left;">Cummulative summation</td>
+</tr>
+<tr>
 	<td style="text-align:left;"><code>igl::dot</code></td>
 	<td style="text-align:left;">dot product per-row</td>
+</tr>
+<tr>
+	<td style="text-align:left;"><code>igl::eigs</code></td>
+	<td style="text-align:left;">Solve sparse eigen value problem</td>
 </tr>
 <tr>
 	<td style="text-align:left;"><code>igl::find</code></td>
@@ -1020,8 +1040,20 @@ functionality as common Matlab functions.</p>
 	<td style="text-align:left;">Quantized colors along the rainbow.</td>
 </tr>
 <tr>
+	<td style="text-align:left;"><code>igl::max</code></td>
+	<td style="text-align:left;">Compute maximum entry per row or column</td>
+</tr>
+<tr>
 	<td style="text-align:left;"><code>igl::median</code></td>
 	<td style="text-align:left;">Compute the median per column</td>
+</tr>
+<tr>
+	<td style="text-align:left;"><code>igl::min</code></td>
+	<td style="text-align:left;">Compute minimum entry per row or column</td>
+</tr>
+<tr>
+	<td style="text-align:left;"><code>igl::mod</code></td>
+	<td style="text-align:left;">Compute per element modulo</td>
 </tr>
 <tr>
 	<td style="text-align:left;"><code>igl::mode</code></td>
@@ -1044,6 +1076,10 @@ functionality as common Matlab functions.</p>
 	<td style="text-align:left;">Generate a quantized colormap from blue to yellow</td>
 </tr>
 <tr>
+	<td style="text-align:left;"><code>igl::pinv</code></td>
+	<td style="text-align:left;">Compute Moore-Penrose pseudoinverse</td>
+</tr>
+<tr>
 	<td style="text-align:left;"><code>igl::randperm</code></td>
 	<td style="text-align:left;">Generate a random permutation of [0,&#8230;,n&#8211;1]</td>
 </tr>
@@ -1052,8 +1088,36 @@ functionality as common Matlab functions.</p>
 	<td style="text-align:left;">Convert RGB colors to HSV (cf. Matlab&#8217;s <code>rgb2hsv</code>)</td>
 </tr>
 <tr>
+	<td style="text-align:left;"><code>igl::repmat</code></td>
+	<td style="text-align:left;">Repeat a matrix along columns and rows</td>
+</tr>
+<tr>
+	<td style="text-align:left;"><code>igl::round</code></td>
+	<td style="text-align:left;">Per-element round to whole number</td>
+</tr>
+<tr>
 	<td style="text-align:left;"><code>igl::setdiff</code></td>
 	<td style="text-align:left;">Set difference of matrix elements</td>
+</tr>
+<tr>
+	<td style="text-align:left;"><code>igl::setunion</code></td>
+	<td style="text-align:left;">Set union of matrix elements</td>
+</tr>
+<tr>
+	<td style="text-align:left;"><code>igl::setxor</code></td>
+	<td style="text-align:left;">Set exclusive &#8220;or&#8221; of matrix elements</td>
+</tr>
+<tr>
+	<td style="text-align:left;"><code>igl::slice</code></td>
+	<td style="text-align:left;">Slice parts of matrix using index lists: (cf. Matlab&#8217;s <code>B = A(I,J)</code>)</td>
+</tr>
+<tr>
+	<td style="text-align:left;"><code>igl::slice_mask</code></td>
+	<td style="text-align:left;">Slice parts of matrix using boolean masks: (cf. Matlab&#8217;s <code>B = A(M,N)</code>)</td>
+</tr>
+<tr>
+	<td style="text-align:left;"><code>igl::slice_into</code></td>
+	<td style="text-align:left;">Slice left-hand side of matrix assignment using index lists (cf. Matlab&#8217;s <code>B(I,J) = A</code>)</td>
 </tr>
 <tr>
 	<td style="text-align:left;"><code>igl::sort</code></td>

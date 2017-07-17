@@ -476,15 +476,15 @@ inline bool igl::matlab::MatlabWorkspace::find(
   //cout<<name<<": "<<mxGetM(mx_data)<<" "<<mxGetN(mx_data)<<endl;
   const int m = mxGetM(mx_data);
   const int n = mxGetN(mx_data);
-
+  // TODO: It should be possible to directly load the data into the sparse
+  // matrix without going through the triplets
   // Copy data immediately
   double * pr = mxGetPr(mx_data);
   mwIndex * ir = mxGetIr(mx_data);
   mwIndex * jc = mxGetJc(mx_data);
-
   vector<Triplet<MT> > MIJV;
-  MIJV.reserve(mxGetNumberOfElements(mx_data));
-
+  const int nnz = mxGetNzmax(mx_data);
+  MIJV.reserve(nnz);
   // Iterate over outside
   int k = 0;
   for(int j=0; j<n;j++)
@@ -501,8 +501,8 @@ inline bool igl::matlab::MatlabWorkspace::find(
   }
   M.resize(m,n);
   M.setFromTriplets(MIJV.begin(),MIJV.end());
-  return true;
 
+  return true;
 }
 
 inline bool igl::matlab::MatlabWorkspace::find( 

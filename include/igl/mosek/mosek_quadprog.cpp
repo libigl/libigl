@@ -111,7 +111,9 @@ IGL_INLINE bool igl::mosek::mosek_quadprog(
   //}
   //mosek_guarded(MSK_linkfunctoenvstream(env,MSK_STREAM_LOG,NULL,printstr));
   // initialize mosek environment
+#if MSK_VERSION_MAJOR <= 7
   mosek_guarded(MSK_initenv(env));
+#endif
   // Create the optimization task
   mosek_guarded(MSK_maketask(env,m,n,&task));
   verbose("Creating task with %ld linear constraints and %ld variables...\n",m,n);

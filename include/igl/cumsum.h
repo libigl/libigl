@@ -26,12 +26,12 @@ namespace igl
   //
   template <typename DerivedX, typename DerivedY>
   IGL_INLINE void cumsum(
-    const Eigen::PlainObjectBase<DerivedX > & X,
+    const Eigen::MatrixBase<DerivedX > & X,
     const int dim,
     Eigen::PlainObjectBase<DerivedY > & Y);
   //template <typename DerivedX, typename DerivedY>
   //IGL_INLINE void cumsum(
-  //  const Eigen::PlainObjectBase<DerivedX > & X,
+  //  const Eigen::MatrixBase<DerivedX > & X,
   //  Eigen::PlainObjectBase<DerivedY > & Y);
 }
 

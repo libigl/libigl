@@ -24,7 +24,7 @@ namespace igl
       template <typename DerivedV>
       IGL_INLINE void half_space_box(
         const CGAL::Plane_3<CGAL::Epeck> & P,
-        const Eigen::PlainObjectBase<DerivedV> & V,
+        const Eigen::MatrixBase<DerivedV> & V,
         Eigen::Matrix<CGAL::Epeck::FT,8,3> & BV,
         Eigen::Matrix<int,12,3> & BF);
       // Inputs:
@@ -36,9 +36,9 @@ namespace igl
       //   BF  #BF b3 list of box triangle indices into BV
       template <typename Derivedp, typename Derivedn, typename DerivedV>
       IGL_INLINE void half_space_box(
-        const Eigen::PlainObjectBase<Derivedp> & p,
-        const Eigen::PlainObjectBase<Derivedn> & n,
-        const Eigen::PlainObjectBase<DerivedV> & V,
+        const Eigen::MatrixBase<Derivedp> & p,
+        const Eigen::MatrixBase<Derivedn> & n,
+        const Eigen::MatrixBase<DerivedV> & V,
         Eigen::Matrix<CGAL::Epeck::FT,8,3> & BV,
         Eigen::Matrix<int,12,3> & BF);
       // Inputs:
@@ -49,8 +49,8 @@ namespace igl
       //   BF  #BF b3 list of box triangle indices into BV
       template <typename Derivedequ, typename DerivedV>
       IGL_INLINE void half_space_box(
-        const Eigen::PlainObjectBase<Derivedequ> & equ,
-        const Eigen::PlainObjectBase<DerivedV> & V,
+        const Eigen::MatrixBase<Derivedequ> & equ,
+        const Eigen::MatrixBase<DerivedV> & V,
         Eigen::Matrix<CGAL::Epeck::FT,8,3> & BV,
         Eigen::Matrix<int,12,3> & BF);
     }

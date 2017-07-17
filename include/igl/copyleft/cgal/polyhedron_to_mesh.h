@@ -25,11 +25,14 @@ namespace igl
       // Outputs:
       //   V  #V by 3 list of vertex positions
       //   F  #F by 3 list of triangle indices
-      template <typename Polyhedron>
+      template <
+        typename Polyhedron,
+        typename DerivedV,
+        typename DerivedF>
       IGL_INLINE void polyhedron_to_mesh(
         const Polyhedron & poly,
-        Eigen::MatrixXd & V,
-        Eigen::MatrixXi & F);
+        Eigen::PlainObjectBase<DerivedV> & V,
+        Eigen::PlainObjectBase<DerivedF> & F);
     }
   }
 }

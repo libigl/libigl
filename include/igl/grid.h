@@ -19,7 +19,12 @@ namespace igl
   // Outputs:
   //   GV  res(0)*res(1)*res(2) by 3 list of mesh vertex positions.
   //   
-  IGL_INLINE void grid(const Eigen::RowVector3i & res, Eigen::MatrixXd & GV);
+  template <
+    typename Derivedres,
+    typename DerivedGV>
+  IGL_INLINE void grid(
+    const Eigen::MatrixBase<Derivedres> & res, 
+    Eigen::PlainObjectBase<DerivedGV> & GV);
 }
 #ifndef IGL_STATIC_LIBRARY
 #  include "grid.cpp"

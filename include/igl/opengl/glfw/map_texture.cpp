@@ -1,4 +1,5 @@
 #include "map_texture.h"
+#include "background_window.h"
 #include "../create_shader_program.h"
 #include "../gl.h"
 
@@ -63,18 +64,12 @@ IGL_INLINE bool igl::opengl::glfw::map_texture(
     DerivedF::ColsAtCompileTime,
     Eigen::RowMajor> F = _F.template cast<int>();
   const int dim = U.cols();
-  // Set up glfw
-  if(!glfwInit()) fail("Could not initialize glfw");
-  glfwSetErrorCallback([](int id,const char* m){std::cerr<<m<<std::endl;});
-  glfwWindowHint(GLFW_SAMPLES, 4);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
-  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-  glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
-  GLFWwindow* window = glfwCreateWindow(1, 1,"", NULL, NULL);
-  if(!window) fail("Could not create glfw window");
-  glfwMakeContextCurrent(window);
+  GLFWwindow * window;
+  if(!background_window(window))
+  {
+    fail("Could not initialize glfw window");
+  }
+
   // Compile each shader
   std::string vertex_shader = dim == 2 ? 
     R"(

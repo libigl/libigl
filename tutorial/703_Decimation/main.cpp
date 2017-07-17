@@ -113,6 +113,7 @@ int main(int argc, char * argv[])
   };
 
   reset();
+  viewer.core.background_color.setConstant(1);
   viewer.core.is_animating = true;
   viewer.callback_key_down = key_down;
   viewer.callback_pre_draw = pre_draw;

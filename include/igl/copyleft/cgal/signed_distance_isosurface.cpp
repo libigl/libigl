@@ -113,7 +113,7 @@ IGL_INLINE bool igl::copyleft::cgal::signed_distance_isosurface(
         [&tree,&IV,&IF,&hier,&level](const Point_3 & q) -> FT
         {
           const double sd = signed_distance_winding_number(
-            tree,IV,IF,hier,RowVector3d(q.x(),q.y(),q.z()));
+            tree,IV,IF,hier,Vector3d(q.x(),q.y(),q.z()));
           return sd-level;
         };
       break;
