@@ -1436,3 +1436,13 @@ const char *__doc_igl_writePLY = R"igl_Qu8mg5v7(// Write a mesh in an ascii ply 
   //   N  #V by 3 normal vectors
   //   UV #V by 2 texture coordinates
   // Returns true on success, false on error)igl_Qu8mg5v7";
+const char *__doc_igl_readPLY= R"igl_Qu8mg5v7(// Read a mesh from an ascii ply file, filling in vertex positions, 
+  // mesh indices, normals and texture coordinates 
+  // Inputs: 
+  //  str path to .obj file
+  // Outputs:
+  //   V  double matrix of vertex positions  #V by 3
+  //   F  #F list of face indices into vertex positions
+  //   N  double matrix of corner normals #N by 3
+  //   UV #V by 2 texture coordinates
+  // Returns true on success, false on errors)igl_Qu8mg5v7";
