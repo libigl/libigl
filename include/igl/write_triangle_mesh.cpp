@@ -21,7 +21,7 @@ IGL_INLINE bool igl::write_triangle_mesh(
   const std::string str,
   const Eigen::PlainObjectBase<DerivedV>& V,
   const Eigen::PlainObjectBase<DerivedF>& F,
-  const bool ascii)
+  const bool force_ascii)
 {
   using namespace std;
   // dirname, basename, extension and filename
@@ -31,26 +31,22 @@ IGL_INLINE bool igl::write_triangle_mesh(
   std::transform(e.begin(), e.end(), e.begin(), ::tolower);
   if(e == "mesh")
   {
-    assert(ascii && ".mesh only supports ascii");
     Eigen::MatrixXi _1;
     return writeMESH(str,V,_1,F);
   }else if(e == "obj")
   {
-    assert(ascii && ".obj only supports ascii");
     return writeOBJ(str,V,F);
   }else if(e == "off")
   {
-    assert(ascii && ".off only supports ascii");
     return writeOFF(str,V,F);
   }else if(e == "ply")
   {
-    return writePLY(str,V,F,ascii);
+    return writePLY(str,V,F,force_ascii);
   }else if(e == "stl")
   {
-    return writeSTL(str,V,F,ascii);
+    return writeSTL(str,V,F,force_ascii);
   }else if(e == "wrl")
   {
-    assert(ascii && ".wrl only supports ascii");
     return writeWRL(str,V,F);
   }else
   {
