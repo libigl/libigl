@@ -120,15 +120,16 @@ IGL_INLINE bool igl::writePLY(
 
   ply_describe_element(ply, "face", F.rows(),1,&face_props[0]);
   ply_header_complete(ply);
+  int native_binary_type = get_native_binary_type2();
   ply_put_element_setup(ply, "vertex");
   for(const auto v : vlist)
   {
-    ply_put_element(ply, (void *) &v);
+    ply_put_element(ply, (void *) &v, &native_binary_type);
   }
   ply_put_element_setup(ply, "face");
   for(const auto f : flist)
   {
-    ply_put_element(ply, (void *) &f);
+    ply_put_element(ply, (void *) &f, &native_binary_type);
   }
 
   ply_close(ply);
