@@ -65,15 +65,15 @@ namespace igl
   //  const double * O,
   //  double * S);
   // 2d
-  template <typename DerivedF>
+  template <typename Scalar, typename DerivedF>
   IGL_INLINE void winding_number_2(
-    const double * V,
+    const Scalar * V,
     const int n,
     const DerivedF * F,
     const int m,
-    const double * O,
+    const Scalar * O,
     const int no,
-    double * S);
+    Scalar * S);
 }
 
 #ifndef IGL_STATIC_LIBRARY

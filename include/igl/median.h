@@ -18,7 +18,9 @@ namespace igl
   // Outputs:
   //   m  median of those values
   // Returns true on success, false on failure
-  IGL_INLINE bool median(const Eigen::VectorXd & V, double & m);
+  template <typename DerivedV, typename mType>
+  IGL_INLINE bool median(
+    const Eigen::MatrixBase<DerivedV> & V, mType & m);
 }
 
 #ifndef IGL_STATIC_LIBRARY
