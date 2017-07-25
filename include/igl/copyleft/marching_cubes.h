@@ -38,14 +38,18 @@ namespace igl
     //   vertices  #V by 3 list of mesh vertex positions
     //   faces  #F by 3 list of mesh triangle indices
     //
-    template <typename DerivedV1, typename DerivedV2, typename DerivedF>
+    template <
+      typename Derivedvalues, 
+      typename Derivedpoints, 
+      typename Derivedvertices, 
+      typename DerivedF>
       IGL_INLINE void marching_cubes(
-        const Eigen::PlainObjectBase<DerivedV1> &values,
-        const Eigen::PlainObjectBase<DerivedV2> &points,
+        const Eigen::PlainObjectBase<Derivedvalues> &values,
+        const Eigen::PlainObjectBase<Derivedpoints> &points,
         const unsigned x_res,
         const unsigned y_res,
         const unsigned z_res,
-        Eigen::PlainObjectBase<DerivedV2> &vertices,
+        Eigen::PlainObjectBase<Derivedvertices> &vertices,
         Eigen::PlainObjectBase<DerivedF> &faces);
   }
 }
