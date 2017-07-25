@@ -11,6 +11,7 @@
 #include "connect_boundary_to_infinity.h"
 #include "decimate.h"
 #include "edge_flaps.h"
+#include "is_edge_manifold.h"
 #include "max_faces_stopping_condition.h"
 #include "per_vertex_point_to_plane_quadrics.h"
 #include "qslim_optimal_collapse_edge_callbacks.h"
@@ -39,6 +40,13 @@ IGL_INLINE bool igl::qslim(
   DerivedV VO;
   DerivedF FO;
   igl::connect_boundary_to_infinity(V,F,VO,FO);
+  // decimate will not work correctly on non-edge-manifold meshes. By extension
+  // this includes meshes with non-manifold vertices on the boundary since these
+  // will create a non-manifold edge when connected to infinity.
+  if(!is_edge_manifold(FO))
+  {
+    return false;
+  }
   Eigen::VectorXi EMAP;
   Eigen::MatrixXi E,EF,EI;
   edge_flaps(FO,E,EMAP,EF,EI);
