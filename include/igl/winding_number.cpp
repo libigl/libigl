@@ -34,7 +34,7 @@ IGL_INLINE void igl::winding_number(
         W.data());
     case 3:
     {
-      WindingNumberAABB<Vector3d> hier(V,F);
+      WindingNumberAABB<Vector3d,MatrixXd,MatrixXi> hier(V,F);
       hier.grow();
       // loop over origins
       const int no = O.rows();
@@ -144,15 +144,15 @@ IGL_INLINE void igl::winding_number_3(
   }
 }
 
-template <typename DerivedF>
+template <typename Scalar, typename DerivedF>
 IGL_INLINE void igl::winding_number_2(
-  const double * V,
+  const Scalar * V,
   const int n,
   const DerivedF * F,
   const int m,
-  const double * O,
+  const Scalar * O,
   const int no,
-  double * S)
+  Scalar * S)
 {
   // Initialize output
   // loop over origins
@@ -169,8 +169,8 @@ IGL_INLINE void igl::winding_number_2(
     int s = F[m*0 + f];
     int d = F[m*1 + f];
     // Positions of source and destination
-    double vs[2];
-    double vd[2];
+    Scalar vs[2];
+    Scalar vd[2];
     vs[0] = V[0*n + s];
     vs[1] = V[1*n + s];
     vd[0] = V[0*n + d];
@@ -180,11 +180,11 @@ IGL_INLINE void igl::winding_number_2(
     for(int o = 0;o<no;o++)
     {
       // Gather vectors to source and destination
-      double o2vs[2];
-      double o2vd[2];
+      Scalar o2vs[2];
+      Scalar o2vd[2];
       // and lengths
-      double o2vsl = 0;
-      double o2vdl = 0;
+      Scalar o2vsl = 0;
+      Scalar o2vdl = 0;
       for(int i = 0;i<2;i++)
       {
         o2vs[i] = O[i*no + o] - vs[i];
@@ -207,7 +207,7 @@ IGL_INLINE void igl::winding_number_2(
           o2vd[i] /= o2vdl;
         }
       }
-      double val =
+      Scalar val =
         -atan2(o2vd[0]*o2vs[1]-o2vd[1]*o2vs[0],o2vd[0]*o2vs[0]+o2vd[1]*o2vs[1])/
         (2.*igl::PI);
 #pragma omp atomic
@@ -218,8 +218,7 @@ IGL_INLINE void igl::winding_number_2(
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instantiation
-template void igl::winding_number_2<double>(double const*, int, double const*, int, double const*, int, double*);
-template void igl::winding_number_3<double>(double const*, int, double const*, int, double const*, int, double*);
 template void igl::winding_number_3<double, int>(double const*, int, int const*, int, double const*, int, double*);
-template void igl::winding_number_2<int>(double const*, int, int const*, int, double const*, int, double*);
+template void igl::winding_number_2<double,int>(double const*, int, int const*, int, double const*, int, double*);
+template void igl::winding_number_3<float, int>(float const*, int, int const*, int, float const*, int, float*);
 #endif

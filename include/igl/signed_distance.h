@@ -177,7 +177,7 @@ namespace igl
     const AABB<DerivedV,3> & tree,
     const Eigen::MatrixBase<DerivedV> & V,
     const Eigen::MatrixBase<DerivedF> & F,
-    const igl::WindingNumberAABB<Derivedq> & hier,
+    const igl::WindingNumberAABB<Derivedq,DerivedV,DerivedF> & hier,
     const Eigen::MatrixBase<Derivedq> & q);
   // Outputs:
   //   s  sign
@@ -193,7 +193,7 @@ namespace igl
     const AABB<DerivedV,3> & tree,
     const Eigen::MatrixBase<DerivedV> & V,
     const Eigen::MatrixBase<DerivedF> & F,
-    const igl::WindingNumberAABB<Derivedq> & hier,
+    const igl::WindingNumberAABB<Derivedq,DerivedV,DerivedF> & hier,
     const Eigen::MatrixBase<Derivedq> & q,
     Scalar & s,
     Scalar & sqrd,
@@ -206,7 +206,7 @@ namespace igl
     typename Scalar,
     typename Derivedc>
   IGL_INLINE void signed_distance_winding_number(
-    const AABB<Eigen::MatrixXd,2> & tree,
+    const AABB<DerivedV,2> & tree,
     const Eigen::MatrixBase<DerivedV> & V,
     const Eigen::MatrixBase<DerivedF> & F,
     const Eigen::MatrixBase<Derivedq> & q,
