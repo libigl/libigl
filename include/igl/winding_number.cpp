@@ -218,7 +218,10 @@ IGL_INLINE void igl::winding_number_2(
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instantiation
-template void igl::winding_number_3<double, int>(double const*, int, int const*, int, double const*, int, double*);
 template void igl::winding_number_2<double,int>(double const*, int, int const*, int, double const*, int, double*);
+template void igl::winding_number_2<float, int>(float const*, int, int const*, int, float const*, int, float*);
+template void igl::winding_number_2<double, double>(double const*, int, double const*, int, double const*, int, double*);
+template void igl::winding_number_3<double, int>(double const*, int, int const*, int, double const*, int, double*);
 template void igl::winding_number_3<float, int>(float const*, int, int const*, int, float const*, int, float*);
+template void igl::winding_number_3<double, double>(double const*, int, double const*, int, double const*, int, double*);
 #endif
