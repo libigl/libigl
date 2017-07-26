@@ -365,12 +365,17 @@ igl::AABB<DerivedV,DIM>::squared_distance(
   const Eigen::MatrixBase<DerivedV> & V,
   const Eigen::MatrixBase<DerivedEle> & Ele, 
   const RowVectorDIMS & p,
+  Scalar max_sqr_d,
   Scalar min_sqr_d,
   int & i,
   Eigen::PlainObjectBase<RowVectorDIMS> & c) const
 {
   using namespace Eigen;
   using namespace std;
+  if(max_sqr_d > min_sqr_d)
+  {
+    return max_sqr_d;
+  }
   Scalar sqr_d = min_sqr_d;
   //assert(DIM == 3 && "Code has only been tested for DIM == 3");
   assert((Ele.cols() == 3 || Ele.cols() == 2 || Ele.cols() == 1)
@@ -379,7 +384,7 @@ igl::AABB<DerivedV,DIM>::squared_distance(
   assert(m_primitive==-1 || (m_left == NULL && m_right == NULL));
   if(is_leaf())
   {
-    leaf_squared_distance(V,Ele,p,sqr_d,i,c);
+    leaf_squared_distance(V,Ele,p,max_sqr_d,sqr_d,i,c);
   }else
   {
     bool looked_left = false;
@@ -388,7 +393,8 @@ igl::AABB<DerivedV,DIM>::squared_distance(
     {
       int i_left;
       RowVectorDIMS c_left = c;
-      Scalar sqr_d_left = m_left->squared_distance(V,Ele,p,sqr_d,i_left,c_left);
+      Scalar sqr_d_left = 
+        m_left->squared_distance(V,Ele,p,max_sqr_d,sqr_d,i_left,c_left);
       this->set_min(p,sqr_d_left,i_left,c_left,sqr_d,i,c);
       looked_left = true;
     };
@@ -397,7 +403,7 @@ igl::AABB<DerivedV,DIM>::squared_distance(
       int i_right;
       Eigen::PlainObjectBase<RowVectorDIMS> c_right = c;
       Scalar sqr_d_right = 
-        m_right->squared_distance(V,Ele,p,sqr_d,i_right,c_right);
+        m_right->squared_distance(V,Ele,p,max_sqr_d,sqr_d,i_right,c_right);
       this->set_min(p,sqr_d_right,i_right,c_right,sqr_d,i,c);
       looked_right = true;
     };
@@ -439,6 +445,20 @@ igl::AABB<DerivedV,DIM>::squared_distance(
     }
   }
   return sqr_d;
+}
+
+template <typename DerivedV, int DIM>
+template <typename DerivedEle>
+IGL_INLINE typename igl::AABB<DerivedV,DIM>::Scalar 
+igl::AABB<DerivedV,DIM>::squared_distance(
+  const Eigen::MatrixBase<DerivedV> & V,
+  const Eigen::MatrixBase<DerivedEle> & Ele, 
+  const RowVectorDIMS & p,
+  Scalar min_sqr_d,
+  int & i,
+  Eigen::PlainObjectBase<RowVectorDIMS> & c) const
+{
+  return squared_distance(V,Ele,p,0.0,min_sqr_d,i,c);
 }
 
 template <typename DerivedV, int DIM>
@@ -504,7 +524,7 @@ IGL_INLINE void igl::AABB<DerivedV,DIM>::squared_distance(
   // current best minimum squared distance for all points in this subtree
   double min_sqr_d = std::numeric_limits<double>::infinity();
   squared_distance_helper(
-    V,Ele,&other,other_V,other_Ele,min_sqr_d,sqrD,I,C);
+    V,Ele,&other,other_V,other_Ele,0,min_sqr_d,sqrD,I,C);
 }
 
 template <typename DerivedV, int DIM>
@@ -746,17 +766,36 @@ IGL_INLINE void igl::AABB<DerivedV,DIM>::leaf_squared_distance(
   const Eigen::MatrixBase<DerivedV> & V,
   const Eigen::MatrixBase<DerivedEle> & Ele, 
   const RowVectorDIMS & p,
+  const Scalar max_sqr_d,
   Scalar & sqr_d,
   int & i,
   Eigen::PlainObjectBase<RowVectorDIMS> & c) const
 {
   using namespace Eigen;
   using namespace std;
+  if(max_sqr_d > sqr_d)
+  {
+    sqr_d = max_sqr_d;
+    return;
+  }
   RowVectorDIMS c_candidate;
   Scalar sqr_d_candidate;
   igl::point_simplex_squared_distance<DIM>(
     p,V,Ele,m_primitive,sqr_d_candidate,c_candidate);
   set_min(p,sqr_d_candidate,m_primitive,c_candidate,sqr_d,i,c);
+}
+
+template <typename DerivedV, int DIM>
+template <typename DerivedEle>
+IGL_INLINE void igl::AABB<DerivedV,DIM>::leaf_squared_distance(
+  const Eigen::MatrixBase<DerivedV> & V,
+  const Eigen::MatrixBase<DerivedEle> & Ele, 
+  const RowVectorDIMS & p,
+  Scalar & sqr_d,
+  int & i,
+  Eigen::PlainObjectBase<RowVectorDIMS> & c) const
+{
+  return leaf_squared_distance(V,Ele,p,0,sqr_d,i,c);
 }
 
 
@@ -963,14 +1002,20 @@ igl::AABB<DerivedV,DIM>::intersect_ray(
 // combinations of 3D V with DIM=2 AABB
 // 
 // _Define_ as a no-op rather than monkeying around with the proper code above
-template<> 
-template<>
-IGL_INLINE float igl::AABB<Eigen::Matrix<float, -1, 3, 1, -1, 3>, 2>::squared_distance(
-  Eigen::MatrixBase<Eigen::Matrix<float, -1, 3, 1, -1, 3> > const&, 
-  Eigen::MatrixBase<Eigen::Matrix<int, -1, 3, 1, -1, 3> > const&, 
-  Eigen::Matrix<float, 1, 2, 1, 1, 2> const&, 
-  int&, 
-  Eigen::PlainObjectBase<Eigen::Matrix<float, 1, 2, 1, 1, 2> >&) const { return -1;};
+//
+// Meanwhile, GCC seems to have a bug. Let's see if GCC likes using explicit
+// namespace block instead. https://stackoverflow.com/a/25594681/148668
+namespace igl
+{
+  template<> 
+  template<>
+  IGL_INLINE float AABB<Eigen::Matrix<float, -1, 3, 1, -1, 3>, 2>::squared_distance(
+    Eigen::MatrixBase<Eigen::Matrix<float, -1, 3, 1, -1, 3> > const&, 
+    Eigen::MatrixBase<Eigen::Matrix<int, -1, 3, 1, -1, 3> > const&, 
+    Eigen::Matrix<float, 1, 2, 1, 1, 2> const&, 
+    int&, 
+    Eigen::PlainObjectBase<Eigen::Matrix<float, 1, 2, 1, 1, 2> >&) const { return -1;};
+}
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instantiation

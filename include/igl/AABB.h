@@ -208,6 +208,7 @@ public:
       //   V  #V by dim list of vertex positions
       //   Ele  #Ele by dim list of simplex indices
       //   p  dim-long query point 
+      //   min_sqr_d  specified maximum squared distance 
       //   min_sqr_d  current minimum squared distance (only consider distances
       //     less than this), see output.
       // Outputs:
@@ -218,6 +219,16 @@ public:
       //
       // Known bugs: currently assumes Elements are triangles regardless of
       // dimension.
+      template <typename DerivedEle>
+      IGL_INLINE Scalar squared_distance(
+        const Eigen::MatrixBase<DerivedV> & V,
+        const Eigen::MatrixBase<DerivedEle> & Ele, 
+        const RowVectorDIMS & p,
+        const Scalar max_sqr_d,
+        const Scalar min_sqr_d,
+        int & i,
+        Eigen::PlainObjectBase<RowVectorDIMS> & c) const;
+      // Default max_sqr_d
       template <typename DerivedEle>
       IGL_INLINE Scalar squared_distance(
         const Eigen::MatrixBase<DerivedV> & V,
@@ -344,6 +355,16 @@ private:
       //     primitive
       //   i  possibly updated index into Ele of closest point
       //   c  dim-long possibly updated closest point
+      template <typename DerivedEle>
+      IGL_INLINE void leaf_squared_distance(
+        const Eigen::MatrixBase<DerivedV> & V,
+        const Eigen::MatrixBase<DerivedEle> & Ele, 
+        const RowVectorDIMS & p,
+        const Scalar max_sqr_d,
+        Scalar & sqr_d,
+        int & i,
+        Eigen::PlainObjectBase<RowVectorDIMS> & c) const;
+      // Default max_sqr_d
       template <typename DerivedEle>
       IGL_INLINE void leaf_squared_distance(
         const Eigen::MatrixBase<DerivedV> & V,
