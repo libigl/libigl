@@ -970,7 +970,7 @@ IGL_INLINE float igl::AABB<Eigen::Matrix<float, -1, 3, 1, -1, 3>, 2>::squared_di
   Eigen::MatrixBase<Eigen::Matrix<int, -1, 3, 1, -1, 3> > const&, 
   Eigen::Matrix<float, 1, 2, 1, 1, 2> const&, 
   int&, 
-  Eigen::PlainObjectBase<Eigen::Matrix<float, 1, 2, 1, 1, 2> >&) const {};
+  Eigen::PlainObjectBase<Eigen::Matrix<float, 1, 2, 1, 1, 2> >&) const { return -1;};
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instantiation
