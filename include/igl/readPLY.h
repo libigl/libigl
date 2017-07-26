@@ -31,7 +31,7 @@ namespace igl
     typename Ntype,
     typename UVtype>
   IGL_INLINE bool readPLY(
-    const std::string & filename,
+    const std::string filename,
     std::vector<std::vector<Vtype> > & V,
     std::vector<std::vector<Ftype> > & F,
     std::vector<std::vector<Ntype> > & N,
@@ -57,7 +57,7 @@ namespace igl
     typename DerivedN,
     typename DerivedUV>
   IGL_INLINE bool readPLY(
-    const std::string & filename,
+    const std::string filename,
     Eigen::PlainObjectBase<DerivedV> & V,
     Eigen::PlainObjectBase<DerivedF> & F,
     Eigen::PlainObjectBase<DerivedN> & N,
@@ -66,7 +66,7 @@ namespace igl
     typename DerivedV,
     typename DerivedF>
   IGL_INLINE bool readPLY(
-    const std::string & filename,
+    const std::string filename,
     Eigen::PlainObjectBase<DerivedV> & V,
     Eigen::PlainObjectBase<DerivedF> & F);
 }

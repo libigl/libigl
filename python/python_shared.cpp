@@ -153,6 +153,7 @@ PYBIND11_PLUGIN(pyigl) {
            writeMESH
            writeOBJ
            writePLY
+           readPLY
 
     )pyigldoc");
 
