@@ -232,7 +232,7 @@ IGL_INLINE void igl::signed_distance_pseudonormal(
   I.resize(np,1);
   N.resize(np,3);
   C.resize(np,3);
-  typedef Eigen::Matrix<typename DerivedV::Scalar,1,3> RowVector3S;
+  typedef typename AABB<DerivedV,3>::RowVectorDIMS RowVector3S;
 # pragma omp parallel for if(np>1000)
   for(size_t p = 0;p<np;p++)
   {
@@ -276,8 +276,12 @@ IGL_INLINE void igl::signed_distance_pseudonormal(
 {
   using namespace Eigen;
   using namespace std;
-  typedef Eigen::Matrix<typename DerivedV::Scalar,1,3> RowVector3S;
-  sqrd = tree.squared_distance(V,F,RowVector3S(q),i,(RowVector3S&)c);
+  //typedef Eigen::Matrix<typename DerivedV::Scalar,1,3> RowVector3S;
+  // Alec: Why was this constructor around q necessary?
+  //sqrd = tree.squared_distance(V,F,RowVector3S(q),i,(RowVector3S&)c);
+  // Alec: Why was this constructor around c necessary?
+  //sqrd = tree.squared_distance(V,F,q,i,(RowVector3S&)c);
+  sqrd = tree.squared_distance(V,F,q,i,c);
   pseudonormal_test(V,F,FN,VN,EN,EMAP,q,i,c,s,n);
 }
 
