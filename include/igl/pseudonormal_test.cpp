@@ -187,8 +187,11 @@ IGL_INLINE void igl::pseudonormal_test(
 // combinations of 3D V with DIM=2 AABB
 // 
 // _Define_ as a no-op rather than monkeying around with the proper code above
-template <> IGL_INLINE void igl::pseudonormal_test(Eigen::MatrixBase<Eigen::Matrix<float, -1, 3, 1, -1, 3> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 3, 1, -1, 3> > const&, Eigen::MatrixBase<Eigen::Matrix<float, -1, 3, 0, -1, 3> > const&, Eigen::MatrixBase<Eigen::Matrix<float, -1, 3, 0, -1, 3> > const&, Eigen::MatrixBase<Eigen::Matrix<float, 1, 2, 1, 1, 2> > const&, int, Eigen::PlainObjectBase<Eigen::Matrix<float, 1, 2, 1, 1, 2> >&, float&, Eigen::PlainObjectBase<Eigen::Matrix<float, 1, 2, 1, 1, 2> >&){assert(false);};
-template <> IGL_INLINE void igl::pseudonormal_test(Eigen::MatrixBase<Eigen::Matrix<float, -1, 3, 1, -1, 3> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 2, 0, -1, 2> > const&, Eigen::MatrixBase<Eigen::Matrix<float, -1, 3, 0, -1, 3> > const&, Eigen::MatrixBase<Eigen::Matrix<float, -1, 3, 0, -1, 3> > const&, Eigen::MatrixBase<Eigen::Matrix<float, 1, 2, 1, 1, 2> > const&, int, Eigen::PlainObjectBase<Eigen::Matrix<float, 1, 2, 1, 1, 2> >&, float&, Eigen::PlainObjectBase<Eigen::Matrix<float, 1, 2, 1, 1, 2> >&){assert(false);};
+namespace igl
+{
+  template <> IGL_INLINE void pseudonormal_test(Eigen::MatrixBase<Eigen::Matrix<float, -1, 3, 1, -1, 3> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 3, 1, -1, 3> > const&, Eigen::MatrixBase<Eigen::Matrix<float, -1, 3, 0, -1, 3> > const&, Eigen::MatrixBase<Eigen::Matrix<float, -1, 3, 0, -1, 3> > const&, Eigen::MatrixBase<Eigen::Matrix<float, 1, 2, 1, 1, 2> > const&, int, Eigen::PlainObjectBase<Eigen::Matrix<float, 1, 2, 1, 1, 2> >&, float&, Eigen::PlainObjectBase<Eigen::Matrix<float, 1, 2, 1, 1, 2> >&){assert(false);};
+  template <> IGL_INLINE void pseudonormal_test(Eigen::MatrixBase<Eigen::Matrix<float, -1, 3, 1, -1, 3> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 2, 0, -1, 2> > const&, Eigen::MatrixBase<Eigen::Matrix<float, -1, 3, 0, -1, 3> > const&, Eigen::MatrixBase<Eigen::Matrix<float, -1, 3, 0, -1, 3> > const&, Eigen::MatrixBase<Eigen::Matrix<float, 1, 2, 1, 1, 2> > const&, int, Eigen::PlainObjectBase<Eigen::Matrix<float, 1, 2, 1, 1, 2> >&, float&, Eigen::PlainObjectBase<Eigen::Matrix<float, 1, 2, 1, 1, 2> >&){assert(false);};
+}
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instantiation
