@@ -28,6 +28,8 @@ IGL_INLINE void igl::signed_distance(
   const Eigen::MatrixBase<DerivedV> & V,
   const Eigen::MatrixBase<DerivedF> & F,
   const SignedDistanceType sign_type,
+  const typename DerivedV::Scalar lower_bound,
+  const typename DerivedV::Scalar upper_bound,
   Eigen::PlainObjectBase<DerivedS> & S,
   Eigen::PlainObjectBase<DerivedI> & I,
   Eigen::PlainObjectBase<DerivedC> & C,
@@ -36,6 +38,7 @@ IGL_INLINE void igl::signed_distance(
   using namespace Eigen;
   using namespace std;
   const int dim = V.cols();
+  assert(lower_bound <= upper_bound);
   assert((V.cols() == 3||V.cols() == 2) && "V should have 3d or 2d positions");
   assert((P.cols() == 3||P.cols() == 2) && "P should have 3d or 2d positions");
   assert(V.cols() == P.cols() && "V should have same dimension as P");
@@ -121,6 +124,14 @@ IGL_INLINE void igl::signed_distance(
   S.resize(P.rows(),1);
   I.resize(P.rows(),1);
   C.resize(P.rows(),dim);
+
+  // convert to bounds on (unsiged) squared distances
+  typedef typename DerivedV::Scalar Scalar; 
+  const Scalar max_abs = std::max(std::abs(lower_bound),std::abs(upper_bound));
+  const Scalar up_sqr_d = std::pow(max_abs,2.0);
+  const Scalar low_sqr_d = 
+    std::pow(std::max(max_abs-(upper_bound-lower_bound),(Scalar)0.0),2.0);
+
   parallel_for(P.rows(),[&](const int p)
   //for(int p = 0;p<P.rows();p++)
   {
@@ -148,13 +159,15 @@ IGL_INLINE void igl::signed_distance(
       case SIGNED_DISTANCE_TYPE_UNSIGNED:
         s = 1.;
         sqrd = dim==3?
-          tree3.squared_distance(V,F,q3,i,c3):
-          tree2.squared_distance(V,F,q2,i,c2);
+          tree3.squared_distance(V,F,q3,low_sqr_d,up_sqr_d,i,c3):
+          tree2.squared_distance(V,F,q2,low_sqr_d,up_sqr_d,i,c2);
         break;
       case SIGNED_DISTANCE_TYPE_DEFAULT:
       case SIGNED_DISTANCE_TYPE_WINDING_NUMBER:
         dim==3 ? 
-          signed_distance_winding_number(tree3,V,F,hier3,q3,s,sqrd,i,c3):
+          signed_distance_winding_number(
+            tree3,V,F,hier3,q3,low_sqr_d,up_sqr_d,s,sqrd,i,c3):
+          // Too lazy to add the bounds here... no reason not to
           signed_distance_winding_number(tree2,V,F,q2,s,sqrd,i,c2);
         break;
       case SIGNED_DISTANCE_TYPE_PSEUDONORMAL:
@@ -162,8 +175,10 @@ IGL_INLINE void igl::signed_distance(
         RowVector3S n3;
         Eigen::Matrix<typename DerivedV::Scalar,1,2>  n2;
         dim==3 ?
-          signed_distance_pseudonormal(tree3,V,F,FN,VN,EN,EMAP,q3,s,sqrd,i,c3,n3):
-          signed_distance_pseudonormal(tree2,V,F,FN,VN,q2,s,sqrd,i,c2,n2);
+          signed_distance_pseudonormal(
+            tree3,V,F,FN,VN,EN,EMAP,q3,low_sqr_d,up_sqr_d,s,sqrd,i,c3,n3):
+          signed_distance_pseudonormal(
+            tree2,V,F,FN,VN,q2,        low_sqr_d,up_sqr_d,s,sqrd,i,c2,n2);
         Eigen::Matrix<typename DerivedV::Scalar,1,Eigen::Dynamic>  n;
         (dim==3 ? n = n3 : n = n2);
         N.row(p) = n;
@@ -175,6 +190,30 @@ IGL_INLINE void igl::signed_distance(
     C.row(p) = (dim==3 ? c=c3 : c=c2);
   }
   ,10000);
+}
+
+template <
+  typename DerivedP,
+  typename DerivedV,
+  typename DerivedF,
+  typename DerivedS,
+  typename DerivedI,
+  typename DerivedC,
+  typename DerivedN>
+IGL_INLINE void igl::signed_distance(
+  const Eigen::MatrixBase<DerivedP> & P,
+  const Eigen::MatrixBase<DerivedV> & V,
+  const Eigen::MatrixBase<DerivedF> & F,
+  const SignedDistanceType sign_type,
+  Eigen::PlainObjectBase<DerivedS> & S,
+  Eigen::PlainObjectBase<DerivedI> & I,
+  Eigen::PlainObjectBase<DerivedC> & C,
+  Eigen::PlainObjectBase<DerivedN> & N)
+{
+  typedef typename DerivedV::Scalar Scalar;
+  Scalar lower = std::numeric_limits<Scalar>::min();
+  Scalar upper = std::numeric_limits<Scalar>::max();
+  return signed_distance(P,V,F,sign_type,lower,upper,S,I,C,N);
 }
 
 
@@ -271,6 +310,8 @@ IGL_INLINE void igl::signed_distance_pseudonormal(
   const Eigen::MatrixBase<DerivedEN> & EN,
   const Eigen::MatrixBase<DerivedEMAP> & EMAP,
   const Eigen::MatrixBase<Derivedq> & q,
+  const Scalar low_sqr_d,
+  const Scalar up_sqr_d,
   Scalar & s,
   Scalar & sqrd,
   int & i,
@@ -284,8 +325,72 @@ IGL_INLINE void igl::signed_distance_pseudonormal(
   //sqrd = tree.squared_distance(V,F,RowVector3S(q),i,(RowVector3S&)c);
   // Alec: Why was this constructor around c necessary?
   //sqrd = tree.squared_distance(V,F,q,i,(RowVector3S&)c);
-  sqrd = tree.squared_distance(V,F,q,i,c);
+  sqrd = tree.squared_distance(V,F,q,low_sqr_d,up_sqr_d,i,c);
   pseudonormal_test(V,F,FN,VN,EN,EMAP,q,i,c,s,n);
+}
+
+template <
+  typename DerivedV,
+  typename DerivedF,
+  typename DerivedFN,
+  typename DerivedVN,
+  typename DerivedEN,
+  typename DerivedEMAP,
+  typename Derivedq,
+  typename Scalar,
+  typename Derivedc,
+  typename Derivedn>
+IGL_INLINE void igl::signed_distance_pseudonormal(
+  const AABB<DerivedV,3> & tree,
+  const Eigen::MatrixBase<DerivedV> & V,
+  const Eigen::MatrixBase<DerivedF> & F,
+  const Eigen::MatrixBase<DerivedFN> & FN,
+  const Eigen::MatrixBase<DerivedVN> & VN,
+  const Eigen::MatrixBase<DerivedEN> & EN,
+  const Eigen::MatrixBase<DerivedEMAP> & EMAP,
+  const Eigen::MatrixBase<Derivedq> & q,
+  Scalar & s,
+  Scalar & sqrd,
+  int & i,
+  Eigen::PlainObjectBase<Derivedc> & c,
+  Eigen::PlainObjectBase<Derivedn> & n)
+{
+  Scalar low_sqr_d = 0;
+  Scalar up_sqr_d = std::numeric_limits<Scalar>::max();
+  return signed_distance_pseudonormal(
+    tree,V,F,FN,VN,EN,EMAP,q,low_sqr_d,up_sqr_d,s,sqrd,i,c,n);
+}
+
+template <
+  typename DerivedV,
+  typename DerivedE,
+  typename DerivedEN,
+  typename DerivedVN,
+  typename Derivedq,
+  typename Scalar,
+  typename Derivedc,
+  typename Derivedn>
+IGL_INLINE void igl::signed_distance_pseudonormal(
+  const AABB<DerivedV,2> & tree,
+  const Eigen::MatrixBase<DerivedV> & V,
+  const Eigen::MatrixBase<DerivedE> & E,
+  const Eigen::MatrixBase<DerivedEN> & EN,
+  const Eigen::MatrixBase<DerivedVN> & VN,
+  const Eigen::MatrixBase<Derivedq> & q,
+  const Scalar low_sqr_d,
+  const Scalar up_sqr_d,
+  Scalar & s,
+  Scalar & sqrd,
+  int & i,
+  Eigen::PlainObjectBase<Derivedc> & c,
+  Eigen::PlainObjectBase<Derivedn> & n)
+{
+  using namespace Eigen;
+  using namespace std;
+  typedef Eigen::Matrix<typename DerivedV::Scalar,1,2> RowVector2S;
+  sqrd = tree.squared_distance(
+    V,E,RowVector2S(q),low_sqr_d,up_sqr_d,i,(RowVector2S&)c);
+  pseudonormal_test(V,E,EN,VN,q,i,c,s,n);
 }
 
 template <
@@ -310,11 +415,10 @@ IGL_INLINE void igl::signed_distance_pseudonormal(
   Eigen::PlainObjectBase<Derivedc> & c,
   Eigen::PlainObjectBase<Derivedn> & n)
 {
-  using namespace Eigen;
-  using namespace std;
-  typedef Eigen::Matrix<typename DerivedV::Scalar,1,2> RowVector2S;
-  sqrd = tree.squared_distance(V,E,RowVector2S(q),i,(RowVector2S&)c);
-  pseudonormal_test(V,E,EN,VN,q,i,c,s,n);
+  Scalar low_sqr_d = 0;
+  Scalar up_sqr_d = std::numeric_limits<Scalar>::max();
+  return signed_distance_pseudonormal(
+    tree,V,E,EN,VN,q,low_sqr_d,up_sqr_d,s,sqrd,i,c,n);
 }
 
 template <
@@ -349,6 +453,8 @@ IGL_INLINE void igl::signed_distance_winding_number(
   const Eigen::MatrixBase<DerivedF> & F,
   const igl::WindingNumberAABB<Derivedq,DerivedV,DerivedF> & hier,
   const Eigen::MatrixBase<Derivedq> & q,
+  const Scalar low_sqr_d,
+  const Scalar up_sqr_d,
   Scalar & s,
   Scalar & sqrd,
   int & i,
@@ -357,9 +463,33 @@ IGL_INLINE void igl::signed_distance_winding_number(
   using namespace Eigen;
   using namespace std;
   typedef Eigen::Matrix<typename DerivedV::Scalar,1,3> RowVector3S;
-  sqrd = tree.squared_distance(V,F,RowVector3S(q),i,(RowVector3S&)c);
+  sqrd = tree.squared_distance(
+      V,F,RowVector3S(q),low_sqr_d,up_sqr_d,i,(RowVector3S&)c);
   const Scalar w = hier.winding_number(q.transpose());
   s = 1.-2.*w;
+}
+
+template <
+  typename DerivedV,
+  typename DerivedF,
+  typename Derivedq,
+  typename Scalar,
+  typename Derivedc>
+IGL_INLINE void igl::signed_distance_winding_number(
+  const AABB<DerivedV,3> & tree,
+  const Eigen::MatrixBase<DerivedV> & V,
+  const Eigen::MatrixBase<DerivedF> & F,
+  const igl::WindingNumberAABB<Derivedq,DerivedV,DerivedF> & hier,
+  const Eigen::MatrixBase<Derivedq> & q,
+  Scalar & s,
+  Scalar & sqrd,
+  int & i,
+  Eigen::PlainObjectBase<Derivedc> & c)
+{
+  Scalar low_sqr_d = 0;
+  Scalar up_sqr_d = std::numeric_limits<Scalar>::max();
+  return signed_distance_winding_number(
+    tree,V,F,hier,q,low_sqr_d,up_sqr_d,s,sqrd,i,c);
 }
 
 template <
