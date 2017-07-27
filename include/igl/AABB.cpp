@@ -370,6 +370,7 @@ igl::AABB<DerivedV,DIM>::squared_distance(
   int & i,
   Eigen::PlainObjectBase<RowVectorDIMS> & c) const
 {
+  assert(max_sqr_d <= min_sqr_d);
   using namespace Eigen;
   using namespace std;
   if(max_sqr_d > min_sqr_d)
@@ -1015,7 +1016,18 @@ namespace igl
     Eigen::Matrix<float, 1, 2, 1, 1, 2> const&, 
     int&, 
     Eigen::PlainObjectBase<Eigen::Matrix<float, 1, 2, 1, 1, 2> >&) const { return -1;};
+  template <>
+  template <>
+  IGL_INLINE float igl::AABB<Eigen::Matrix<float, -1, 3, 1, -1, 3>, 2>::squared_distance(
+    Eigen::MatrixBase<Eigen::Matrix<float, -1, 3, 1, -1, 3> > const&, 
+    Eigen::MatrixBase<Eigen::Matrix<int, -1, 3, 1, -1, 3> > const&, 
+    Eigen::Matrix<float, 1, 2, 1, 1, 2> const&, 
+    float, 
+    float, 
+    int&, 
+    Eigen::PlainObjectBase<Eigen::Matrix<float, 1, 2, 1, 1, 2> >&) const { return -1;};
 }
+
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instantiation

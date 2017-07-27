@@ -1,6 +1,8 @@
 #include "offset_surface.h"
 #include "marching_cubes.h"
 #include "../voxel_grid.h"
+#include "../signed_distance.h"
+#include "../flood_fill.h"
 #include <cassert>
 #include <iostream>
 
@@ -26,8 +28,9 @@ void igl::copyleft::offset_surface(
   Eigen::PlainObjectBase<Derivedside> & side,
   Eigen::PlainObjectBase<DerivedS> & S)
 {
+  typedef typename DerivedV::Scalar Scalar;
+  typedef typename DerivedF::Scalar Index;
   {
-    typedef typename DerivedV::Scalar Scalar;
     Eigen::AlignedBox<Scalar,3> box;
     typedef Eigen::Matrix<Scalar,1,3> RowVector3S;
     assert(V.cols() == 3 && "V must contain positions in 3D");
@@ -37,12 +40,19 @@ void igl::copyleft::offset_surface(
     box.extend(max_ext.transpose());
     igl::voxel_grid(box,s,1,GV,side);
   }
+
+  const Scalar h = 
+    (GV.col(0).maxCoeff()-GV.col(0).minCoeff())/((Scalar)(side(0)-1));
+  const Scalar lower_bound = isolevel-sqrt(3.0)*h;
+  const Scalar upper_bound = isolevel+sqrt(3.0)*h;
   {
-    Eigen::VectorXi I;
+    Eigen::Matrix<Index,Eigen::Dynamic,1> I;
     Eigen::Matrix<typename DerivedV::Scalar,Eigen::Dynamic,3> C,N;
     igl::signed_distance(
-      GV,V,F,signed_distance_type,S,I,C,N);
+      GV,V,F,signed_distance_type,lower_bound,upper_bound,S,I,C,N);
   }
+  igl::flood_fill(side,S);
+  
   DerivedS SS = S.array()-isolevel;
   igl::copyleft::marching_cubes(SS,GV,side(0),side(1),side(2),SV,SF);
 }
