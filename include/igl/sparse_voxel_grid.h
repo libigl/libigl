@@ -31,14 +31,14 @@ namespace igl {
   //   CV  #cube-vertices by 3 list of cube vertex positions
   //   CI  #number of cubes by 8 list of indexes into CS and CV. Each row represents a cube
   //
-  template <typename DerivedS, typename DerivedP0, typename DerivedV, typename DerivedI>
+  template <typename DerivedP0, typename Func, typename DerivedS, typename DerivedV, typename DerivedI>
   IGL_INLINE void sparse_voxel_grid(const Eigen::MatrixBase<DerivedP0>& p0,
-                                    const std::function<typename DerivedS::Scalar(const DerivedP0&)>& scalarFunc,
+                                    const Func& scalarFunc,
                                     const double eps,
+                                    const int expected_number_of_cubes,
                                     Eigen::PlainObjectBase<DerivedS>& CS,
                                     Eigen::PlainObjectBase<DerivedV>& CV,
-                                    Eigen::PlainObjectBase<DerivedI>& CI,
-                                    int expected_number_of_cubes=1024);
+                                    Eigen::PlainObjectBase<DerivedI>& CI);
 
 }
 #ifndef IGL_STATIC_LIBRARY
