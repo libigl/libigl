@@ -65,7 +65,7 @@ namespace igl
 
     // marching_cubes( values, points, indices, vertices, faces )
     //
-    // Perform marching cubes reconstruction on the grid cells defined by indices.
+    // Perform marching cubes reconstruction on the sparse grid cells defined by (indices, points).
     // The indices parameter is an nx8 dense array of index values into the points and values arrays.
     // Each row of indices represents a cube for which to generate vertices and faces over.
     //
