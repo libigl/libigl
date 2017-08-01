@@ -371,17 +371,7 @@ inline typename DerivedV::Scalar
     }
   }
   PBF.conservativeResize(pbfi,PBF.cols());
-  typename DerivedV::Scalar w = 
-    numeric_limits<typename DerivedV::Scalar>::infinity();
-  igl::winding_number_3(
-    BV.data(),
-    BV.rows(),
-    PBF.data(),
-    PBF.rows(),
-    p.data(),
-    1,
-    &w);
-  return w;
+  return igl::winding_number(BV,PBF,p);
 }
 
 #endif
