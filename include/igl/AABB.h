@@ -36,12 +36,12 @@ public:
       Eigen::AlignedBox<Scalar,DIM> m_box;
       // -1 non-leaf
       int m_primitive;
-      //Scalar m_max_sqr_d;
+      //Scalar m_low_sqr_d;
       //int m_depth;
       AABB():
         m_left(NULL), m_right(NULL),
         m_box(), m_primitive(-1)
-        //m_max_sqr_d(std::numeric_limits<double>::infinity()),
+        //m_low_sqr_d(std::numeric_limits<double>::infinity()),
         //m_depth(0)
     {}
       // http://stackoverflow.com/a/3279550/148668
@@ -50,7 +50,7 @@ public:
         m_right(other.m_right ? new AABB(*other.m_right) : NULL),
         m_box(other.m_box),
         m_primitive(other.m_primitive)
-        //m_max_sqr_d(other.m_max_sqr_d),
+        //m_low_sqr_d(other.m_low_sqr_d),
         //m_depth(std::max(
         //   m_left ? m_left->m_depth + 1 : 0,
         //   m_right ? m_right->m_depth + 1 : 0))
@@ -65,7 +65,7 @@ public:
         swap(first.m_right,second.m_right);
         swap(first.m_box,second.m_box);
         swap(first.m_primitive,second.m_primitive);
-        //swap(first.m_max_sqr_d,second.m_max_sqr_d);
+        //swap(first.m_low_sqr_d,second.m_low_sqr_d);
         //swap(first.m_depth,second.m_depth);
       }
       // Pass-by-value (aka copy)
@@ -208,11 +208,13 @@ public:
       //   V  #V by dim list of vertex positions
       //   Ele  #Ele by dim list of simplex indices
       //   p  dim-long query point 
-      //   min_sqr_d  specified maximum squared distance 
-      //   min_sqr_d  current minimum squared distance (only consider distances
-      //     less than this), see output.
+      //   low_sqr_d  lower bound on squared distance, specified maximum squared
+      //     distance 
+      //   up_sqr_d  current upper bounded on squared distance, current minimum
+      //     squared distance (only consider distances less than this), see
+      //     output.
       // Outputs:
-      //   min_sqr_d  updated current minimum squared distance
+      //   up_sqr_d  updated current minimum squared distance
       //   i  facet index corresponding to smallest distances
       //   c  closest point
       // Returns squared distance
@@ -224,17 +226,17 @@ public:
         const Eigen::MatrixBase<DerivedV> & V,
         const Eigen::MatrixBase<DerivedEle> & Ele, 
         const RowVectorDIMS & p,
-        const Scalar max_sqr_d,
-        const Scalar min_sqr_d,
+        const Scalar low_sqr_d,
+        const Scalar up_sqr_d,
         int & i,
         Eigen::PlainObjectBase<RowVectorDIMS> & c) const;
-      // Default max_sqr_d
+      // Default low_sqr_d
       template <typename DerivedEle>
       IGL_INLINE Scalar squared_distance(
         const Eigen::MatrixBase<DerivedV> & V,
         const Eigen::MatrixBase<DerivedEle> & Ele, 
         const RowVectorDIMS & p,
-        const Scalar min_sqr_d,
+        const Scalar up_sqr_d,
         int & i,
         Eigen::PlainObjectBase<RowVectorDIMS> & c) const;
       // All hits
@@ -336,7 +338,7 @@ private:
         const AABB<Derivedother_V,DIM> * other,
         const Eigen::MatrixBase<Derivedother_V> & other_V,
         const Eigen::MatrixBase<Derivedother_Ele>& other_Ele, 
-        const Scalar min_sqr_d,
+        const Scalar up_sqr_d,
         Eigen::PlainObjectBase<DerivedsqrD> & sqrD,
         Eigen::PlainObjectBase<DerivedI> & I,
         Eigen::PlainObjectBase<DerivedC> & C) const;
@@ -360,11 +362,11 @@ private:
         const Eigen::MatrixBase<DerivedV> & V,
         const Eigen::MatrixBase<DerivedEle> & Ele, 
         const RowVectorDIMS & p,
-        const Scalar max_sqr_d,
+        const Scalar low_sqr_d,
         Scalar & sqr_d,
         int & i,
         Eigen::PlainObjectBase<RowVectorDIMS> & c) const;
-      // Default max_sqr_d
+      // Default low_sqr_d
       template <typename DerivedEle>
       IGL_INLINE void leaf_squared_distance(
         const Eigen::MatrixBase<DerivedV> & V,

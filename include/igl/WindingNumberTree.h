@@ -362,16 +362,7 @@ template <typename Point, typename DerivedV, typename DerivedF>
 inline typename DerivedV::Scalar 
   igl::WindingNumberTree<Point,DerivedV,DerivedF>::winding_number_all(const Point & p) const
 {
-  typename DerivedV::Scalar w = 0;
-  igl::winding_number_3(
-    V.data(),
-    V.rows(),
-    F.data(),
-    F.rows(),
-    p.data(),
-    1,
-    &w);
-  return w;
+  return igl::winding_number(V,F,p);
 }
 
 template <typename Point, typename DerivedV, typename DerivedF>
@@ -380,18 +371,7 @@ igl::WindingNumberTree<Point,DerivedV,DerivedF>::winding_number_boundary(const P
 {
   using namespace Eigen;
   using namespace std;
-
-  typename DerivedV::Scalar w = 0;
-  // `cap` is already flipped inside out, so we don't need to flip sign of w
-  igl::winding_number_3(
-    V.data(),
-    V.rows(),
-    cap.data(),
-    cap.rows(),
-    &p[0],
-    1,
-    &w);
-  return w;
+  return igl::winding_number(V,cap,p);
 }
 
 //template <typename Point, typename DerivedV, typename DerivedF>
