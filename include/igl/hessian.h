@@ -17,7 +17,9 @@
 namespace igl
 {
     // Constructs the finite element Hessian matrix
-    // as described in https://arxiv.org/abs/1707.04348
+    // as described in https://arxiv.org/abs/1707.04348,
+    // Natural Boundary Conditions for Smoothing in Geometry Processing
+    // (Oded Stein, Eitan Grinspun, Max Wardetzky, Alec Jacobson)
     // The interior vertices are NOT set to zero yet.
     //
     // Inputs:
@@ -29,15 +31,15 @@ namespace igl
     //
     //
     template <typename DerivedV, typename DerivedF, typename Scalar>
-    IGL_INLINE void fem_hessian(
-                                const Eigen::PlainObjectBase<DerivedV> & V,
-                                const Eigen::PlainObjectBase<DerivedF> & F,
-                                Eigen::SparseMatrix<Scalar>& H);
+    IGL_INLINE void hessian(
+                            const Eigen::MatrixBase<DerivedV> & V,
+                            const Eigen::MatrixBase<DerivedF> & F,
+                            Eigen::SparseMatrix<Scalar>& H);
     
 }
 
 #ifndef IGL_STATIC_LIBRARY
-#  include "fem_hessian.cpp"
+#  include "hessian.cpp"
 #endif
 
 #endif

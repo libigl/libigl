@@ -1,23 +1,23 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2017 Alec Jacobson <alecjacobson@gmail.com> and Oded Stein <oded.stein@columbia.edu>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "hessian_energy.h"
 #include <vector>
 
-#include <igl/fem_hessian.h>
+#include <igl/hessian.h>
 #include <igl/massmatrix.h>
 #include <igl/boundary_loop.h>
 
 
 template <typename DerivedV, typename DerivedF, typename Scalar>
 IGL_INLINE void igl::hessian_energy(
-                               const Eigen::PlainObjectBase<DerivedV> & V,
-                               const Eigen::PlainObjectBase<DerivedF> & F,
-                               Eigen::SparseMatrix<Scalar>& Q)
+                                    const Eigen::MatrixBase<DerivedV> & V,
+                                    const Eigen::MatrixBase<DerivedF> & F,
+                                    Eigen::SparseMatrix<Scalar>& Q)
 {
     typedef typename DerivedV::Scalar denseScalar;
     typedef typename Eigen::Matrix<denseScalar, Eigen::Dynamic, 1> VecXd;
@@ -26,14 +26,14 @@ IGL_INLINE void igl::hessian_energy(
     
     int dim = V.cols();
     assert((dim==2 || dim==3) && "The dimension of the vertices should be 2 or 3");
-
+    
     SparseMat M;
     igl::massmatrix(V,F,igl::MASSMATRIX_TYPE_VORONOI,M);
     
     //Kill non-interior DOFs
     VecXd Mint = M.diagonal();
     std::vector<std::vector<int> > bdryLoop;
-    igl::boundary_loop(F,bdryLoop);
+    igl::boundary_loop(Eigen::PlainObjectBase<DerivedF>(F),bdryLoop);
     for(const std::vector<int>& loop : bdryLoop)
         for(const int& bdryVert : loop)
             Mint(bdryVert) = 0.;
@@ -48,7 +48,7 @@ IGL_INLINE void igl::hessian_energy(
     
     //Compute squared Hessian
     SparseMat H;
-    igl::fem_hessian(V,F,H);
+    igl::hessian(V,F,H);
     Q = H.transpose()*stackedMinv*H;
     
 }
@@ -57,5 +57,5 @@ IGL_INLINE void igl::hessian_energy(
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instantiation
-template void igl::hessian_energy<Eigen::Matrix<double, -1, -1, 1, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, double>(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 1, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::SparseMatrix<double, 0, int>&);
+template void igl::hessian_energy<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, double>(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::SparseMatrix<double, 0, int>&);
 #endif
