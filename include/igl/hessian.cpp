@@ -1,6 +1,7 @@
 // This file is part of libigl, a simple c++ geometry processing library.
 //
-// Copyright (C) 2017 Alec Jacobson <alecjacobson@gmail.com> and Oded Stein <oded.stein@columbia.edu>
+// Copyright (C) 2017 Alec Jacobson <alecjacobson@gmail.com>
+//  and Oded Stein <oded.stein@columbia.edu>
 //
 // This Source Code Form is subject to the terms of the Mozilla Public License
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
@@ -24,18 +25,22 @@ IGL_INLINE void igl::hessian(
     typedef typename DerivedV::Scalar denseScalar;
     typedef typename Eigen::Matrix<denseScalar, Eigen::Dynamic, 1> VecXd;
     typedef typename Eigen::SparseMatrix<Scalar> SparseMat;
-    typedef typename Eigen::DiagonalMatrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> DiagMat;
+    typedef typename Eigen::DiagonalMatrix
+                       <Scalar, Eigen::Dynamic, Eigen::Dynamic> DiagMat;
     
     int dim = V.cols();
-    assert((dim==2 || dim==3) && "The dimension of the vertices should be 2 or 3");
+    assert((dim==2 || dim==3) &&
+           "The dimension of the vertices should be 2 or 3");
     
     //Construct the combined gradient matric
     SparseMat G;
-    igl::grad(Eigen::PlainObjectBase<DerivedV>(V), Eigen::PlainObjectBase<DerivedF>(F), G, false);
+    igl::grad(Eigen::PlainObjectBase<DerivedV>(V),
+              Eigen::PlainObjectBase<DerivedF>(F),
+              G, false);
     SparseMat GG(F.rows(), dim*V.rows());
     GG.reserve(G.nonZeros());
     for(int i=0; i<dim; ++i)
-        GG.middleCols(i*G.cols(), G.cols()) = G.middleRows(i*F.rows(), F.rows());
+        GG.middleCols(i*G.cols(),G.cols()) = G.middleRows(i*F.rows(),F.rows());
     SparseMat D;
     igl::repdiag(GG,dim,D);
     

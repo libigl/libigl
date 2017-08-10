@@ -1,6 +1,7 @@
 // This file is part of libigl, a simple c++ geometry processing library.
 //
-// Copyright (C) 2017 Alec Jacobson <alecjacobson@gmail.com> and Oded Stein <oded.stein@columbia.edu>
+// Copyright (C) 2017 Alec Jacobson <alecjacobson@gmail.com>
+//  and Oded Stein <oded.stein@columbia.edu>
 //
 // This Source Code Form is subject to the terms of the Mozilla Public License
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
@@ -26,7 +27,8 @@ namespace igl
     //   V  #V by dim list of mesh vertex positions
     //   F  #F by 3 list of mesh faces (must be triangles)
     // Outputs:
-    //   H  #V by #V Hessian energy matrix, each column i corresponding to V(i,:)
+    //   H  #V by #V Hessian energy matrix, each column i
+    //     corresponding to V(i,:)
     //
     //
     //
