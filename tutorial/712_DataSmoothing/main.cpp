@@ -41,7 +41,7 @@ int main(int argc, char * argv[])
         + V.block(0,2,V.rows(),1).array().pow(3);
 
     //Make the exact function noisy
-    srand(0);
+    srand(5);
     const double s = 0.2*(zexact.maxCoeff() - zexact.minCoeff());
     Eigen::VectorXd znoisy = zexact + s*Eigen::VectorXd::Random(zexact.size());
 
@@ -56,10 +56,10 @@ int main(int argc, char * argv[])
     igl::hessian_energy(V, F, QH);
 
     //Solve to find Laplacian-smoothed and Hessian-smoothed solutions
-    const double al = 5e-4;
+    const double al = 8e-4;
     Eigen::SimplicialLDLT<SparseMat> lapSolver(al*QL + (1.-al)*M);
     Eigen::VectorXd zl = lapSolver.solve(al*M*znoisy);
-    const double ah = 3e-6;
+    const double ah = 5e-6;
     Eigen::SimplicialLDLT<SparseMat> hessSolver(ah*QH + (1.-ah)*M);
     Eigen::VectorXd zh = hessSolver.solve(ah*M*znoisy);
 
@@ -89,12 +89,20 @@ int main(int argc, char * argv[])
         }
         Eigen::MatrixXd isoV;
         Eigen::MatrixXi isoE;
-        isolines(V, F, *z, 30, isoV, isoE);
+        if(key!='2')
+            isolines(V, F, *z, 30, isoV, isoE);
         viewer.data.set_edges(isoV,isoE,Eigen::RowVector3d(0,0,0));
         Eigen::MatrixXd colors;
         igl::jet(*z, true, colors);
         viewer.data.set_colors(colors);
     };
+    std::cout << R"(Usage:
+1  Show original function
+2  Show noisy function
+3  Biharmonic smoothing (zero Neumann boundary)
+4  Biharmonic smoothing (natural Hessian boundary)
+
+)";
     viewer.launch();
 
     return 0;
