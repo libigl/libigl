@@ -3231,6 +3231,10 @@ whereas the zero Neumann boundary condition in the third image bias the isolines
 of the function to be perpendicular to the boundary, the Hessian energy gives
 an unbiased result.
 
+From left to right: a function on the beetle mesh, the function with
+added noise, the result of smoothing with the Laplacian energy and zero
+Neumann boundary conditions, and the result of smoothing with the
+Hessian energy:
 ![From left to right: a function on the beetle mesh, the function with
 added noise, the result of smoothing with the Laplacian energy and zero
 Neumann boundary conditions, and the result of smoothing with the
