@@ -3235,6 +3235,7 @@ From left to right: a function on the beetle mesh, the function with
 added noise, the result of smoothing with the Laplacian energy and zero
 Neumann boundary conditions, and the result of smoothing with the
 Hessian energy:
+
 ![From left to right: a function on the beetle mesh, the function with
 added noise, the result of smoothing with the Laplacian energy and zero
 Neumann boundary conditions, and the result of smoothing with the
