@@ -27,33 +27,33 @@ namespace igl
       bool operator<(const SortableRow & that) const
       {
         // Get reference so that I can use parenthesis
-        const SortableRow<T> & THIS = *this;
+        const SortableRow<T> & THISP = *this;
         // Lexicographical
-        int minc = (THIS.data.size() < that.data.size()? 
-            THIS.data.size() : that.data.size());
+        int minc = (THISP.data.size() < that.data.size()? 
+            THISP.data.size() : that.data.size());
         // loop over columns
         for(int i = 0;i<minc;i++)
         {
-          if(THIS.data(i) == that.data(i))
+          if(THISP.data(i) == that.data(i))
           {
             continue;
           }
-          return THIS.data(i) < that.data(i);
+          return THISP.data(i) < that.data(i);
         }
         // All characters the same, comes done to length
-        return THIS.data.size()<that.data.size();
+        return THISP.data.size()<that.data.size();
       };
       bool operator==(const SortableRow & that) const
       {
         // Get reference so that I can use parenthesis
-        const SortableRow<T> & THIS = *this;
-        if(THIS.data.size() != that.data.size())
+        const SortableRow<T> & THISP = *this;
+        if(THISP.data.size() != that.data.size())
         {
           return false;
         }
-        for(int i = 0;i<THIS.data.size();i++)
+        for(int i = 0;i<THISP.data.size();i++)
         {
-          if(THIS.data(i) != that.data(i))
+          if(THISP.data(i) != that.data(i))
           {
             return false;
           }
