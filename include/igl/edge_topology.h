@@ -18,18 +18,22 @@ namespace igl
   // Initialize Edges and their topological relations (assumes an edge-manifold
   // mesh)
   //
-  // Output:
-  // EV  : #Ex2, Stores the edge description as pair of indices to vertices
-  // FE : #Fx3, Stores the Triangle-Edge relation
-  // EF : #Ex2: Stores the Edge-Triangle relation
+  // Inputs:
+  //   V  #V by dim list of mesh vertex positions (unused)
+  //   F  #F by 3 list of triangle indices into V
+  // Outputs:
+  //   EV  #Ex2 matrix storing the edge description as pair of indices to
+  //       vertices
+  //   FE  #Fx3 matrix storing the Triangle-Edge relation
+  //   EF  #Ex2 matrix storing the Edge-Triangle relation
   //
   // TODO: This seems to be a inferior duplicate of edge_flaps.h:
   //   - unused input parameter V
   //   - roughly 2x slower than edge_flaps
   //   - outputs less information: edge_flaps reveals corner opposite edge
   //   - FE uses non-standard and ambiguous order: FE(f,c) is merely an edge
-  //     incident on corner c of face f. In contrast, edge_flaps's EMAP(f,c) reveals
-  //     the edge _opposite_ corner c of face f
+  //     incident on corner c of face f. In contrast, edge_flaps's EMAP(f,c)
+  //     reveals the edge _opposite_ corner c of face f
 template <typename DerivedV, typename DerivedF>
   IGL_INLINE void edge_topology(
     const Eigen::PlainObjectBase<DerivedV>& V,
