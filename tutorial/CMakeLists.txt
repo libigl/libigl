@@ -4,11 +4,11 @@ message(STATUS "CMAKE_C_COMPILER: ${CMAKE_C_COMPILER}")
 message(STATUS "CMAKE_CXX_COMPILER: ${CMAKE_CXX_COMPILER}")
 
 ### libIGL options: choose between header only and compiled static library
-option(LIBIGL_USE_STATIC_LIBRARY "Use LibIGL as static library" ON)
+option(LIBIGL_USE_STATIC_LIBRARY "Use LibIGL as static library" OFF)
 option(LIBIGL_WITH_VIEWER      "Use OpenGL viewer"  ON)
 option(LIBIGL_WITH_NANOGUI     "Use Nanogui menu"   OFF)
 
-### libIGL options: choose your dependencies (by default everything is OFF, in this example we need the viewer) ###
+### libIGL options: choose your dependencies (by default everything is OFF, in this example we need the viewer)
 find_package(CGAL QUIET COMPONENTS Core)
 option(LIBIGL_WITH_CGAL             "Use CGAL"           "${CGAL_FOUND}")
 option(LIBIGL_WITH_COMISO           "Use CoMiso"         ON)
@@ -24,7 +24,7 @@ option(LIBIGL_WITH_PNG              "Use PNG"            ON)
 option(LIBIGL_WITH_TETGEN           "Use Tetgen"         ON)
 option(LIBIGL_WITH_TRIANGLE         "Use Triangle"       ON)
 option(LIBIGL_WITH_XML              "Use XML"            ON)
-### End   to be tested ----
+### End
 
 ### Adding libIGL: choose the path to your local copy libIGL ###
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../shared/cmake)
@@ -38,18 +38,18 @@ else()
   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "../")
 endif()
 
-### Choose which chapters to compile ###
+### Choose which chapters to compile
 option(TUTORIALS_CHAPTER1 "Compile chapter 1" ON)
-option(TUTORIALS_CHAPTER2 "Compile chapter 2" OFF)
-option(TUTORIALS_CHAPTER3 "Compile chapter 3" OFF)
-option(TUTORIALS_CHAPTER4 "Compile chapter 4" OFF)
-option(TUTORIALS_CHAPTER5 "Compile chapter 5" OFF)
+option(TUTORIALS_CHAPTER2 "Compile chapter 2" ON)
+option(TUTORIALS_CHAPTER3 "Compile chapter 3" ON)
+option(TUTORIALS_CHAPTER4 "Compile chapter 4" ON)
+option(TUTORIALS_CHAPTER5 "Compile chapter 5" ON)
 option(TUTORIALS_CHAPTER6 "Compile chapter 6" OFF)
 option(TUTORIALS_CHAPTER7 "Compile chapter 7" OFF)
 
 # Store location of tutorial/shared directory
-add_library(tutorials INTERFACE)
 set(TUTORIAL_SHARED_PATH ${CMAKE_CURRENT_SOURCE_DIR}/shared CACHE PATH "location of shared tutorial resources")
+add_library(tutorials INTERFACE)
 target_compile_definitions(tutorials INTERFACE "-DTUTORIAL_SHARED_PATH=\"${TUTORIAL_SHARED_PATH}\"")
 target_include_directories(tutorials INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
 
