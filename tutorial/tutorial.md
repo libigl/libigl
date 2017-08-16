@@ -3208,7 +3208,7 @@ A noisy function $f$ defined on a surface $\Omega$ can be smoothed using an
 energy minimization that balances a smoothing term $E_S$ with a quadratic
 fitting term:
 
-$u = \operatorname{argmin}_u \alpha E_S(u) + (1-\alpha)\int_Omega ||u-f||^2 dx$
+$u = \operatorname{argmin}_u \alpha E_S(u) + (1-\alpha)\int_\Omega ||u-f||^2 dx$
 
 The parameter $\alpha$ determines how aggressively the function is smoothed.
 
@@ -3223,7 +3223,8 @@ In #[stein_2017] it is suggested to use the Biharmonic energy with natural
 Hessian boundary conditions instead, which corresponds to the hessian energy
 with the matrix `QH = H'*(M2\H)`, where `H` is a finite element Hessian and
 `M2` is a stacked mass matrix. The matrices `H` and `QH` are implemented in
-libigl as `igl::hessian` and `igl::hessian_energy` respectively.
+libigl as `igl::hessian` and `igl::hessian_energy` respectively. An example
+of how to use the function is given in [Example 712](712_DataSmoothing/main.cpp).
 
 In the following image the differences between the Laplacian energy with
 zero Neumann boundary conditions and the Hessian energy can be clearly seen:
@@ -3231,15 +3232,10 @@ whereas the zero Neumann boundary condition in the third image bias the isolines
 of the function to be perpendicular to the boundary, the Hessian energy gives
 an unbiased result.
 
-From left to right: a function on the beetle mesh, the function with
-added noise, the result of smoothing with the Laplacian energy and zero
-Neumann boundary conditions, and the result of smoothing with the
-Hessian energy:
-
-![From left to right: a function on the beetle mesh, the function with
-added noise, the result of smoothing with the Laplacian energy and zero
-Neumann boundary conditions, and the result of smoothing with the
-Hessian energy.](images/712_beetles.jpg)
+![([Example 712](712_DataSmoothing/main.cpp)) From left to right: a function
+on the beetle mesh, the function with added noise, the result of smoothing
+with the Laplacian energy and zero Neumann boundary conditions, and the
+result of smoothing with the Hessian energy.](images/712_beetles.jpg)
 
 # Miscellaneous [chapter7:miscellaneous]
 
