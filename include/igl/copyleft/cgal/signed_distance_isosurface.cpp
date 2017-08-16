@@ -58,7 +58,7 @@ IGL_INLINE bool igl::copyleft::cgal::signed_distance_isosurface(
   Eigen::MatrixXd FN,VN,EN;
   Eigen::MatrixXi E;
   Eigen::VectorXi EMAP;
-  WindingNumberAABB<Eigen::Vector3d> hier;
+  WindingNumberAABB< Eigen::Vector3d, Eigen::MatrixXd, Eigen::MatrixXi > hier;
   switch(sign_type)
   {
     default:
