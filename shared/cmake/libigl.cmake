@@ -47,9 +47,9 @@ set(NANOGUI_DIR "${LIBIGL_EXTERNAL}/nanogui")
 
 # Dependencies are linked as INTERFACE targets unless libigl is compiled as a static library
 if(LIBIGL_USE_STATIC_LIBRARY)
-  set(LINK_TYPE PUBLIC)
+  set(IGL_SCOPE PUBLIC)
 else()
-  set(LINK_TYPE INTERFACE)
+  set(IGL_SCOPE INTERFACE)
 endif()
 
 ################################################################################
@@ -175,7 +175,7 @@ if(LIBIGL_WITH_CGAL)
   compile_igl_module("cgal" "copyleft/")
   find_package(CGAL REQUIRED COMPONENTS Core)
   find_package(Boost 1.48 REQUIRED thread system)
-  target_link_libraries(igl_cgal ${LINK_TYPE} CGAL::CGAL ${Boost_LIBRARIES})
+  target_link_libraries(igl_cgal ${IGL_SCOPE} CGAL::CGAL ${Boost_LIBRARIES})
 endif()
 
 ################################################################################
@@ -344,10 +344,10 @@ if(LIBIGL_WITH_OPENGL)
   compile_igl_module("opengl2" "")
 
   find_package(OpenGL REQUIRED)
-  target_link_libraries(igl_opengl ${LINK_TYPE} ${OPENGL_gl_LIBRARY})
-  target_link_libraries(igl_opengl2 ${LINK_TYPE} ${OPENGL_gl_LIBRARY})
-  target_include_directories(igl_opengl SYSTEM ${LINK_TYPE} ${OPENGL_INCLUDE_DIR})
-  target_include_directories(igl_opengl2 SYSTEM ${LINK_TYPE} ${OPENGL_INCLUDE_DIR})
+  target_link_libraries(igl_opengl ${IGL_SCOPE} ${OPENGL_gl_LIBRARY})
+  target_link_libraries(igl_opengl2 ${IGL_SCOPE} ${OPENGL_gl_LIBRARY})
+  target_include_directories(igl_opengl SYSTEM ${IGL_SCOPE} ${OPENGL_INCLUDE_DIR})
+  target_include_directories(igl_opengl2 SYSTEM ${IGL_SCOPE} ${OPENGL_INCLUDE_DIR})
 
   ### GLEW for linux and windows
   if(NOT TARGET glew)
@@ -355,8 +355,8 @@ if(LIBIGL_WITH_OPENGL)
     target_include_directories(glew SYSTEM PUBLIC ${NANOGUI_DIR}/ext/glew/include)
     target_compile_definitions(glew PUBLIC -DGLEW_BUILD -DGLEW_NO_GLU)
   endif()
-  target_link_libraries(igl_opengl ${LINK_TYPE} glew)
-  target_link_libraries(igl_opengl2 ${LINK_TYPE} glew)
+  target_link_libraries(igl_opengl ${IGL_SCOPE} glew)
+  target_link_libraries(igl_opengl2 ${IGL_SCOPE} glew)
 
   if(LIBIGL_WITH_OPENGL_GLFW)
     # GLFW
@@ -368,12 +368,13 @@ if(LIBIGL_WITH_OPENGL)
       set(GLFW_BUILD_INSTALL OFF CACHE BOOL " " FORCE)
       add_subdirectory(${NANOGUI_DIR}/ext/glfw glfw)
     endif()
-    target_link_libraries(igl_opengl_glfw ${LINK_TYPE} igl_opengl glfw)
+    target_link_libraries(igl_opengl_glfw ${IGL_SCOPE} igl_opengl glfw)
 
     ### Compile the viewer
     if(LIBIGL_WITH_VIEWER)
       compile_igl_module("viewer" "")
-      target_link_libraries(igl_viewer ${LINK_TYPE} igl_core glfw glew OpenGL::GL)
+      target_link_libraries(igl_viewer ${IGL_SCOPE} igl_core glfw glew ${OPENGL_gl_LIBRARY})
+      target_include_directories(igl_opengl2 SYSTEM ${IGL_SCOPE} ${OPENGL_INCLUDE_DIR})
 
       if(LIBIGL_WITH_NANOGUI)
         target_compile_definitions(igl_viewer PUBLIC -DIGL_VIEWER_WITH_NANOGUI)
@@ -385,7 +386,7 @@ if(LIBIGL_WITH_OPENGL)
         set(NANOGUI_BUILD_EXAMPLE OFF CACHE BOOL " " FORCE)
         set(NANOGUI_BUILD_SHARED  OFF CACHE BOOL " " FORCE)
         add_subdirectory(${NANOGUI_DIR} nanogui)
-        target_link_libraries(igl_viewer ${LINK_TYPE} nanogui)
+        target_link_libraries(igl_viewer ${IGL_SCOPE} nanogui)
       endif()
     endif()
 
