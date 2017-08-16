@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2015 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "winding_number.h"
 #include "WindingNumberAABB.h"
@@ -40,10 +40,10 @@ IGL_INLINE void igl::winding_number(
     }
     case 3:
     {
-      WindingNumberAABB< 
-        Eigen::Matrix<typename DerivedV::Scalar,1,3>, 
+      WindingNumberAABB<
+        Eigen::Matrix<typename DerivedV::Scalar,1,3>,
         DerivedV,
-        DerivedF> 
+        DerivedF>
         hier(V,F);
       hier.grow();
       // loop over origins
