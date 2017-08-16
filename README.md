@@ -207,9 +207,12 @@ few labs/companies/institutions using libigl:
  - [Electronic Arts, Inc](http://www.ea.com)
  - [Epic Games](https://epicgames.com)
  - [Google Research](https://research.google.com)
- - [Mesh](http://meshconsultants.ca/), consultants, Canada
- - [Pixar Research](http://graphics.pixar.com/research/)
+ - [Industrial Light and Magic](http://ilm.com)
+ - [Mesh consultants](http://meshconsultants.ca/), Canada
+ - [Microsoft Research](https://www.microsoft.com/en-us/research/)
+ - [Pixar](http://graphics.pixar.com/research/)
  - [Spine by Esoteric Software](http://esotericsoftware.com/) is an animation tool dedicated to 2D characters.
+ - [vvvv toolkit](http://vvvv.org) a multipurpose tookit
  - Columbia University, [Columbia Computer Graphics Group](http://www.cs.columbia.edu/cg/), USA
  - [Cornell University](http://www.graphics.cornell.edu/), USA
  - [Czech Technical University in Prague](http://dcgi.felk.cvut.cz/), Czech

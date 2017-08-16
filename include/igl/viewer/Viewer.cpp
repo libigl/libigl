@@ -540,8 +540,6 @@ namespace viewer
       {
         if(core.rotation_type == ViewerCore::ROTATION_TYPE_TRACKBALL)
           core.set_rotation_type(ViewerCore::ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP);
-        else if (core.rotation_type == ViewerCore::ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP)
-          core.set_rotation_type(ViewerCore::ROTATION_TYPE_NO_ROTATION);
         else
           core.set_rotation_type(ViewerCore::ROTATION_TYPE_TRACKBALL);
 

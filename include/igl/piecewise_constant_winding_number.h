@@ -36,12 +36,12 @@ namespace igl
     typename DeriveduE,
     typename uE2EType>
   IGL_INLINE bool piecewise_constant_winding_number(
-    const Eigen::PlainObjectBase<DerivedF>& F,
-    const Eigen::PlainObjectBase<DeriveduE>& uE,
+    const Eigen::MatrixBase<DerivedF>& F,
+    const Eigen::MatrixBase<DeriveduE>& uE,
     const std::vector<std::vector<uE2EType> >& uE2E);
   template <typename DerivedF>
   IGL_INLINE bool piecewise_constant_winding_number(
-    const Eigen::PlainObjectBase<DerivedF>& F);
+    const Eigen::MatrixBase<DerivedF>& F);
 }
 #ifndef IGL_STATIC_LIBRARY
 #  include "piecewise_constant_winding_number.cpp"

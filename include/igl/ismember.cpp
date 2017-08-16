@@ -11,6 +11,7 @@
 #include "sort.h"
 #include "sortrows.h"
 #include "unique.h"
+#include "unique_rows.h"
 
 template <
   typename DerivedA,

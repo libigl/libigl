@@ -154,7 +154,7 @@ precomputeInteriorEdges()
   // Flag border edges
   numInteriorEdges = 0;
   isBorderEdge.setZero(numE,1);
-  indFullToInterior = -1.*Eigen::VectorXi::Ones(numE,1);
+  indFullToInterior = Eigen::VectorXi::Constant(numE,-1);
 
   for(unsigned i=0; i<numE; ++i)
   {

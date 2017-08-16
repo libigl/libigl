@@ -32,6 +32,8 @@ namespace igl
   //   F  #F by ss list of triangle indices, ss should be 3 unless sign_type ==
   //     SIGNED_DISTANCE_TYPE_UNSIGNED
   //   sign_type  method for computing distance _sign_ S
+  //   lower_bound  lower bound of distances needed {std::numeric_limits::min}
+  //   upper_bound  lower bound of distances needed {std::numeric_limits::max}
   // Outputs:
   //   S  #P list of smallest signed distances
   //   I  #P list of facet indices corresponding to smallest distances
@@ -41,6 +43,26 @@ namespace igl
   //
   // Known bugs: This only computes distances to triangles. So unreferenced
   // vertices and degenerate triangles are ignored.
+  template <
+    typename DerivedP,
+    typename DerivedV,
+    typename DerivedF,
+    typename DerivedS,
+    typename DerivedI,
+    typename DerivedC,
+    typename DerivedN>
+  IGL_INLINE void signed_distance(
+    const Eigen::MatrixBase<DerivedP> & P,
+    const Eigen::MatrixBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedF> & F,
+    const SignedDistanceType sign_type,
+    const typename DerivedV::Scalar lower_bound,
+    const typename DerivedV::Scalar upper_bound,
+    Eigen::PlainObjectBase<DerivedS> & S,
+    Eigen::PlainObjectBase<DerivedI> & I,
+    Eigen::PlainObjectBase<DerivedC> & C,
+    Eigen::PlainObjectBase<DerivedN> & N);
+  // Default bounds
   template <
     typename DerivedP,
     typename DerivedV,
@@ -177,7 +199,7 @@ namespace igl
     const AABB<DerivedV,3> & tree,
     const Eigen::MatrixBase<DerivedV> & V,
     const Eigen::MatrixBase<DerivedF> & F,
-    const igl::WindingNumberAABB<Derivedq> & hier,
+    const igl::WindingNumberAABB<Derivedq,DerivedV,DerivedF> & hier,
     const Eigen::MatrixBase<Derivedq> & q);
   // Outputs:
   //   s  sign
@@ -193,7 +215,7 @@ namespace igl
     const AABB<DerivedV,3> & tree,
     const Eigen::MatrixBase<DerivedV> & V,
     const Eigen::MatrixBase<DerivedF> & F,
-    const igl::WindingNumberAABB<Derivedq> & hier,
+    const igl::WindingNumberAABB<Derivedq,DerivedV,DerivedF> & hier,
     const Eigen::MatrixBase<Derivedq> & q,
     Scalar & s,
     Scalar & sqrd,
@@ -206,7 +228,7 @@ namespace igl
     typename Scalar,
     typename Derivedc>
   IGL_INLINE void signed_distance_winding_number(
-    const AABB<Eigen::MatrixXd,2> & tree,
+    const AABB<DerivedV,2> & tree,
     const Eigen::MatrixBase<DerivedV> & V,
     const Eigen::MatrixBase<DerivedF> & F,
     const Eigen::MatrixBase<Derivedq> & q,

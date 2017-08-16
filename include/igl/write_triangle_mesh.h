@@ -25,13 +25,14 @@ namespace igl
   //   str  path to file
   //   V  eigen double matrix #V by 3
   //   F  eigen int matrix #F by 3
+  //   force_ascii  force ascii format even if binary is available 
   // Returns true iff success
   template <typename DerivedV, typename DerivedF>
   IGL_INLINE bool write_triangle_mesh(
     const std::string str,
     const Eigen::PlainObjectBase<DerivedV>& V,
     const Eigen::PlainObjectBase<DerivedF>& F,
-    const bool ascii = true);
+    const bool force_ascii = true);
 }
 
 #ifndef IGL_STATIC_LIBRARY

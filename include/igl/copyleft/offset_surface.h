@@ -23,7 +23,8 @@ namespace igl
     //   SF  #SF by 3 list of output mesh triangle indices into SV
     //   GV  #GV=side(0)*side(1)*side(2) by 3 list of grid cell centers
     //   side  list of number of grid cells in x, y, and z directions
-    //   S  #GV by 3 list of signed distance values
+    //   S  #GV by 3 list of signed distance values _near_ `isolevel` ("far"
+    //     from `isolevel` these values are incorrect)
     //
     template <
       typename DerivedV,
