@@ -11,7 +11,7 @@ matrix:
         - cd python
         - mkdir build
         - cd build
-        - cmake -DCMAKE_CXX_COMPILER=g++-4.8 -DCMAKE_C_COMPILER=gcc-4.8 -DLIBIGL_WITH_EMBREE=OFF -DLIBIGL_USE_STATIC_LIBRARY=OFF ../
+        - cmake -DCMAKE_CXX_COMPILER=g++-4.8 -DCMAKE_C_COMPILER=gcc-4.8 -DLIBIGL_WITH_EMBREE=OFF -DLIBIGL_USE_STATIC_LIBRARY=ON ../
         - make -j 2
         - cd ../tutorial
         - python 101_FileIO.py
