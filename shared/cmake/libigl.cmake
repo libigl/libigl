@@ -367,8 +367,8 @@ if(LIBIGL_WITH_OPENGL)
       set(GLFW_BUILD_DOCS OFF CACHE BOOL " " FORCE)
       set(GLFW_BUILD_INSTALL OFF CACHE BOOL " " FORCE)
       add_subdirectory(${NANOGUI_DIR}/ext/glfw glfw)
+      target_include_directories(glfw ${IGL_SCOPE} ${NANOGUI_DIR}/ext/glfw/include)
     endif()
-    target_include_directories(glfw ${IGL_SCOPE} ${NANOGUI_DIR}/ext/glew/include)
     target_link_libraries(igl_opengl_glfw ${IGL_SCOPE} igl_opengl glfw)
 
     ### Compile the viewer
