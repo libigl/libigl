@@ -10,9 +10,9 @@
 #include "hessian.h"
 #include <vector>
 
-#include <igl/grad.h>
-#include <igl/doublearea.h>
-#include <igl/repdiag.h>
+#include "grad.h"
+#include "igl/doublearea.h"
+#include "igl/repdiag.h"
 
 
 
