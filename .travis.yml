@@ -14,7 +14,7 @@ matrix:
         - cmake -DCMAKE_CXX_COMPILER=g++-4.8 -DCMAKE_C_COMPILER=gcc-4.8 -DLIBIGL_WITH_EMBREE=OFF -DLIBIGL_USE_STATIC_LIBRARY=ON ../
         - make -j 2
         - cd ../tutorial
-        - python 101_FileIO.py || mkdir build2; cd build2; cmake -DCMAKE_CXX_COMPILER=g++-4.8 -DCMAKE_C_COMPILER=gcc-4.8 -DLIBIGL_WITH_EMBREE=OFF -DLIBIGL_USE_STATIC_LIBRARY=ON - DCHECK_UNDEFINED=ON; make -j 2
+        - python 101_FileIO.py || { mkdir build2; cd build2; cmake -DCMAKE_CXX_COMPILER=g++-4.8 -DCMAKE_C_COMPILER=gcc-4.8 -DLIBIGL_WITH_EMBREE=OFF -DLIBIGL_USE_STATIC_LIBRARY=ON - DCHECK_UNDEFINED=ON; make -j 2; }
         - cd ../../
         - cd tutorial
         - mkdir build
