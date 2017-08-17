@@ -107,13 +107,13 @@ For more information see our [tutorial](tutorial/tutorial.html).
 Libigl compartmentalizes its **optional** dependences via its directory
 organization in the `include/` folder. All header files located _directly_ in
 the `include/igl/` folder have only stl and Eigen as dependencies. For example,
-all of the headers that depend on CGAL are located in `include/igl/cgal`. For a
-full list of _optional_ dependencies check `optional/CMakeLists.txt`.
+all of the headers that depend on CGAL are located in `include/igl/copyleft/cgal`.
+For a full list of _optional_ dependencies check `optional/CMakeLists.txt`.
 
 ### GCC and the Optional CGAL Dependency
-The `include/igl/cgal/*.h` headers depend on CGAL. It has come to our attention
-that CGAL does not work properly with GCC 4.8. To the best of our knowledge,
-GCC 4.7 and clang will work correctly.
+The `include/igl/copyleft/cgal/*.h` headers depend on CGAL. It has come to
+our attention that CGAL does not work properly with GCC 4.8. To the best of
+our knowledge, GCC 4.7 and clang will work correctly.
 
 ### OpenMP and Windows
 Some of our functions will take advantage of OpenMP if available. However, it

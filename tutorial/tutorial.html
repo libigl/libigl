@@ -151,6 +151,7 @@ lecture notes links to a cross-platform example application.</p>
 <li><a href="#vectorfieldvisualizer">709 Vector Field Visualization</a></li>
 <li><a href="#slim">710 Scalable Locally Injective Maps</a></li>
 <li><a href="#subdivision">711 Subdivision surfaces</a></li>
+<li><a href="#datasmoothing">712 Data smoothing</a></li>
 </ul></li>
 <li><a href="#future">Chapter 8: Outlook for continuing development</a></li>
 </ul>
@@ -3613,6 +3614,47 @@ igl::false_barycentric_subdivision." />
 <figcaption>The original coarse mesh and three different subdivision methods:
 <code>igl::upsample</code>, <code>igl::loop</code> and
 <code>igl::false_barycentric_subdivision</code>.</figcaption>
+</figure>
+
+<h2 id="datasmoothing"><a href="#datasmoothing">Data smoothing</a></h2>
+
+<p>A noisy function <span class="math">\(f\)</span> defined on a surface <span class="math">\(\Omega\)</span> can be smoothed using an
+energy minimization that balances a smoothing term <span class="math">\(E_S\)</span> with a quadratic
+fitting term:</p>
+
+<p><span class="math">\(u = \operatorname{argmin}_u \alpha E_S(u) + (1-\alpha)\int_\Omega ||u-f||^2 dx\)</span></p>
+
+<p>The parameter <span class="math">\(\alpha\)</span> determines how aggressively the function is smoothed.</p>
+
+<p>A classical choice for the smoothness energy is the Laplacian energy of the
+function with zero Neumann boundary conditions, which is a form of the
+biharmonic energy. It is constructed using the cotangent Laplacian <code>L</code> and
+the mass matrix <code>M</code>: <code>QL = L'*(M\L)</code>. Because of the implicit zero Neumann
+boundary conditions however, the function behavior is significantly warped at
+the boundary if <span class="math">\(f\)</span> does not have zero normal gradient at the boundary.</p>
+
+<p>In #[stein_2017] it is suggested to use the Biharmonic energy with natural
+Hessian boundary conditions instead, which corresponds to the hessian energy
+with the matrix <code>QH = H'*(M2\H)</code>, where <code>H</code> is a finite element Hessian and
+<code>M2</code> is a stacked mass matrix. The matrices <code>H</code> and <code>QH</code> are implemented in
+libigl as <code>igl::hessian</code> and <code>igl::hessian_energy</code> respectively. An example
+of how to use the function is given in <a href="712_DataSmoothing/main.cpp">Example 712</a>.</p>
+
+<p>In the following image the differences between the Laplacian energy with
+zero Neumann boundary conditions and the Hessian energy can be clearly seen:
+whereas the zero Neumann boundary condition in the third image bias the isolines
+of the function to be perpendicular to the boundary, the Hessian energy gives
+an unbiased result.</p>
+
+<figure>
+<img src="images/712_beetles.jpg" alt="(Example 712) From left to right: a function
+on the beetle mesh, the function with added noise, the result of smoothing
+with the Laplacian energy and zero Neumann boundary conditions, and the
+result of smoothing with the Hessian energy." />
+<figcaption>(<a href="712_DataSmoothing/main.cpp">Example 712</a>) From left to right: a function
+on the beetle mesh, the function with added noise, the result of smoothing
+with the Laplacian energy and zero Neumann boundary conditions, and the
+result of smoothing with the Hessian energy.</figcaption>
 </figure>
 
 <h1 id="chapter7:miscellaneous">Miscellaneous</h1>
