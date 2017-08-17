@@ -100,9 +100,9 @@ namespace igl
     bool reverse;
 
     // All the same type? This is likely to break.
-    const DerivedF & F;
-    const DerivedFF & FF;
-    const DerivedFFi & FFi;
+    const Eigen::PlainObjectBase<DerivedF> & F;
+    const Eigen::PlainObjectBase<DerivedFF> & FF;
+    const Eigen::PlainObjectBase<DerivedFFi> & FFi;
   };
 
 }
