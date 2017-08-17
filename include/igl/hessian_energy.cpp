@@ -9,9 +9,9 @@
 #include "hessian_energy.h"
 #include <vector>
 
-#include <igl/hessian.h>
-#include <igl/massmatrix.h>
-#include <igl/boundary_loop.h>
+#include "hessian.h"
+#include "massmatrix.h"
+#include "boundary_loop.h"
 
 
 template <typename DerivedV, typename DerivedF, typename Scalar>
