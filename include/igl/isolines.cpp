@@ -104,7 +104,7 @@ IGL_INLINE void igl::isolines(
     typedef Eigen::Matrix<LInt, Eigen::Dynamic, Eigen::Dynamic> LIMat;
     LIVec dummy1, dummy2;
     igl::remove_duplicate_vertices(LMat(isoV), LIMat(isoE),
-                                   1e-12, isoV, dummy1, dummy2, isoE);
+                                   2.2204e-15, isoV, dummy1, dummy2, isoE);
     
 }
 
