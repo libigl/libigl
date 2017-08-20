@@ -13,7 +13,6 @@
 #include <array>
 #include <iostream>
 
-#include "sort.h"
 #include "remove_duplicate_vertices.h"
 
 
