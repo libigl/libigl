@@ -18,7 +18,7 @@
 
 #include "tutorial_shared_path.h"
 
-#include "isolines.h"
+#include <igl/isolines.h>
 
 
 int main(int argc, char * argv[])
@@ -90,7 +90,7 @@ int main(int argc, char * argv[])
         Eigen::MatrixXd isoV;
         Eigen::MatrixXi isoE;
         if(key!='2')
-            isolines(V, F, *z, 30, isoV, isoE);
+            igl::isolines(V, F, *z, 30, isoV, isoE);
         viewer.data.set_edges(isoV,isoE,Eigen::RowVector3d(0,0,0));
         Eigen::MatrixXd colors;
         igl::jet(*z, true, colors);
