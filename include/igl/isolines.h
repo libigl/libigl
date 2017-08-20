@@ -23,11 +23,11 @@ namespace igl
     // Inputs:
     //   V  #V by dim list of mesh vertex positions
     //   F  #F by 3 list of mesh faces (must be triangles)
-    //   z  #V by 1 list of function values ecaluated at vertices
+    //   z  #V by 1 list of function values evaluated at vertices
     //   n  the number of desired isolines
     // Outputs:
     //   isoV  #isoV by dim list of isoline vertex positions
-    //   isoE  #isoE by dim list of isoline edge positions
+    //   isoE  #isoE by 2 list of isoline edge positions
     //
     //
     
