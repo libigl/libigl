@@ -104,6 +104,7 @@ lecture notes links to a cross-platform example application.
     * [709 Vector Field Visualization](#vectorfieldvisualizer)
     * [710 Scalable Locally Injective Maps](#slim)
     * [711 Subdivision surfaces](#subdivision)
+    * [712 Data smoothing](#datasmoothing)
 * [Chapter 8: Outlook for continuing development](#future)
 
 # Chapter 1 [chapter1:introductiontolibigl]
@@ -3201,6 +3202,41 @@ the carrier surfaces with extreme bias.
 `igl::upsample`, `igl::loop` and
 `igl::false_barycentric_subdivision`.](images/decimated-knight-subdivision.gif)
 
+## [Data smoothing](#datasmoothing) [datasmoothing]
+
+A noisy function $f$ defined on a surface $\Omega$ can be smoothed using an
+energy minimization that balances a smoothing term $E_S$ with a quadratic
+fitting term:
+
+$u = \operatorname{argmin}_u \alpha E_S(u) + (1-\alpha)\int_\Omega ||u-f||^2 dx$
+
+The parameter $\alpha$ determines how aggressively the function is smoothed.
+
+A classical choice for the smoothness energy is the Laplacian energy of the
+function with zero Neumann boundary conditions, which is a form of the
+biharmonic energy. It is constructed using the cotangent Laplacian `L` and
+the mass matrix `M`: `QL = L'*(M\L)`. Because of the implicit zero Neumann
+boundary conditions however, the function behavior is significantly warped at
+the boundary if $f$ does not have zero normal gradient at the boundary.
+
+In #[stein_2017] it is suggested to use the Biharmonic energy with natural
+Hessian boundary conditions instead, which corresponds to the hessian energy
+with the matrix `QH = H'*(M2\H)`, where `H` is a finite element Hessian and
+`M2` is a stacked mass matrix. The matrices `H` and `QH` are implemented in
+libigl as `igl::hessian` and `igl::hessian_energy` respectively. An example
+of how to use the function is given in [Example 712](712_DataSmoothing/main.cpp).
+
+In the following image the differences between the Laplacian energy with
+zero Neumann boundary conditions and the Hessian energy can be clearly seen:
+whereas the zero Neumann boundary condition in the third image bias the isolines
+of the function to be perpendicular to the boundary, the Hessian energy gives
+an unbiased result.
+
+![([Example 712](712_DataSmoothing/main.cpp)) From left to right: a function
+on the beetle mesh, the function with added noise, the result of smoothing
+with the Laplacian energy and zero Neumann boundary conditions, and the
+result of smoothing with the Hessian energy.](images/712_beetles.jpg)
+
 # Miscellaneous [chapter7:miscellaneous]
 
 Libigl contains a _wide_ variety of geometry processing tools and functions for
@@ -3380,6 +3416,9 @@ pseudonormal](https://www.google.com/search?q=Signed+distance+computation+using+
   Editing](https://www.google.com/search?q=Laplacian+Surface+Editing), 2004.
 [#sorkine_2007]: Olga Sorkine and Marc Alexa. [As-rigid-as-possible Surface
   Modeling](https://www.google.com/search?q=As-rigid-as-possible+Surface+Modeling), 2007.
+[#stein_2017]: Oded Stein, Eitan Grinspun, Max Wardetzky, Alec Jacobson.
+  [Natural Boundary Conditions for Smoothing in Geometry Processing](https://arxiv.org/abs/1707.04348),
+  2017.
 [#takayama14]: Kenshi Takayama, Alec Jacobson, Ladislav Kavan, Olga
   Sorkine-Hornung. [A Simple Method for Correcting Facet Orientations in
   Polygon Meshes Based on Ray
