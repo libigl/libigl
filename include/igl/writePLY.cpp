@@ -13,15 +13,15 @@
 
 namespace
 {
-  inline template <typename Scalar> int ply_type();
-  inline template <> int ply_type<char>(){ return PLY_CHAR; }
-  inline template <> int ply_type<short>(){ return PLY_SHORT; }
-  inline template <> int ply_type<int>(){ return PLY_INT; }
-  inline template <> int ply_type<unsigned char>(){ return PLY_UCHAR; }
-  inline template <> int ply_type<unsigned short>(){ return PLY_SHORT; }
-  inline template <> int ply_type<unsigned int>(){ return PLY_UINT; }
-  inline template <> int ply_type<float>(){ return PLY_FLOAT; }
-  inline template <> int ply_type<double>(){ return PLY_DOUBLE; }
+  template <typename Scalar> int ply_type();
+  template <> int ply_type<char>(){ return PLY_CHAR; }
+  template <> int ply_type<short>(){ return PLY_SHORT; }
+  template <> int ply_type<int>(){ return PLY_INT; }
+  template <> int ply_type<unsigned char>(){ return PLY_UCHAR; }
+  template <> int ply_type<unsigned short>(){ return PLY_SHORT; }
+  template <> int ply_type<unsigned int>(){ return PLY_UINT; }
+  template <> int ply_type<float>(){ return PLY_FLOAT; }
+  template <> int ply_type<double>(){ return PLY_DOUBLE; }
 }
 
 template <
