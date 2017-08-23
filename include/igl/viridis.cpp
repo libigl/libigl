@@ -10,9 +10,8 @@
 
 // One of the new matplotlib colormaps by Nathaniel J.Smith, Stefan van der Walt, and (in the case of viridis) Eric Firing.
 // Released under the CC0 license / public domain dedication
-static const unsigned int pal = 256;
 
-static float viridis_cm[pal][3] = {
+static float viridis_cm[256][3] = {
 	{ 0.267004, 0.004874, 0.329415 },
 	{ 0.268510, 0.009605, 0.335427 },
 	{ 0.269944, 0.014625, 0.341379 },
@@ -272,23 +271,6 @@ static float viridis_cm[pal][3] = {
 };
 
 template <typename T>
-static float hue(float delta, T r, T g, T b) {
-	float h = 0.0f;
-
-	if (delta != 0.0f) {
-		if (r > g && r > b) {
-			h = 60.0f * std::fmod(g - b / delta, 6.0);
-		} else if (g > b) {
-			h = 60.0f * ((b - r / delta) + 2.0);
-		} else {
-			h = 60.0f * ((r - g / delta) + 4.0);
-		}
-	}
-
-	return h;
-}
-
-template <typename T>
 IGL_INLINE void igl::viridis(const T x, T * rgb)
 {
   return viridis(x,rgb[0],rgb[1],rgb[2]);
@@ -297,9 +279,12 @@ IGL_INLINE void igl::viridis(const T x, T * rgb)
 template <typename T>
 IGL_INLINE void igl::viridis(const T x_in, T & r, T & g, T & b)
 {
-	T x_in_clamped = static_cast<T>(std::max(0.0, std::min(1.0, x_in)));
+	static const unsigned int pal = 256;
+	const T zero = 0.0;
+	const T one = 1.0;
+	T x_in_clamped = static_cast<T>(std::max(zero, std::min(one, x_in)));
 
-	// simple rgb lerp from palette 
+	// simple rgb lerp from palette
 	unsigned int least = std::floor(x_in_clamped * static_cast<T>(pal - 1));
 	unsigned int most = std::ceil(x_in_clamped * static_cast<T>(pal - 1));
 
@@ -307,11 +292,11 @@ IGL_INLINE void igl::viridis(const T x_in, T & r, T & g, T & b)
 	T _g[2] = { viridis_cm[least][1], viridis_cm[most][1] };
 	T _b[2] = { viridis_cm[least][2], viridis_cm[most][2] };
 
-	float t = std::max(0.0, std::min(1.0, fmod(x_in_clamped * static_cast<T>(pal), 1.0f)));
+	T t = std::max(zero, std::min(one, fmod(x_in_clamped * static_cast<T>(pal), 1.0f)));
 
-	r = std::max(0.0, std::min(1.0, (1.0f - t) * _r[0] + t * _r[1]));
-	g = std::max(0.0, std::min(1.0, (1.0f - t) * _g[0] + t * _g[1]));
-	b = std::max(0.0, std::min(1.0, (1.0f - t) * _b[0] + t * _b[1]));
+	r = std::max(zero, std::min(one, (one - t) * _r[0] + t * _r[1]));
+	g = std::max(zero, std::min(one, (one - t) * _g[0] + t * _g[1]));
+	b = std::max(zero, std::min(one, (one - t) * _b[0] + t * _b[1]));
 }
 
 template <typename DerivedZ, typename DerivedC>
