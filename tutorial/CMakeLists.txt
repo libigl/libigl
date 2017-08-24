@@ -115,9 +115,9 @@ endif()
 
 # Chapter 6
 if(TUTORIALS_CHAPTER6)
-  # if(LIBIGL_WITH_XML)
-  #   add_subdirectory("601_Serialization")
-  # endif()
+  if(LIBIGL_WITH_XML)
+    add_subdirectory("601_Serialization")
+  endif()
   # if(LIBIGL_WITH_MATLAB)
   #   add_subdirectory("602_Matlab")
   # endif()
