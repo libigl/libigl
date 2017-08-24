@@ -175,7 +175,7 @@ if(LIBIGL_WITH_CGAL)
   compile_igl_module("cgal" "copyleft/")
   find_package(CGAL REQUIRED COMPONENTS Core)
   find_package(Boost 1.48 REQUIRED thread system)
-  target_link_libraries(igl_cgal ${IGL_SCOPE} CGAL::CGAL ${Boost_LIBRARIES})
+  target_link_libraries(igl_cgal ${IGL_SCOPE} CGAL::CGAL CGAL::CGAL_Core ${Boost_LIBRARIES})
 endif()
 
 ################################################################################
