@@ -284,18 +284,13 @@ endif()
 
 ################################################################################
 ### Compile the mosek part ###
-# if(LIBIGL_WITH_MOSEK)
-#   find_package(MOSEK REQUIRED)
-#   list(APPEND LIBIGL_INCLUDE_DIRS ${MOSEK_INCLUDE_DIR})
-#   list(APPEND LIBIGL_MOSEK_EXTRA_LIBRARIES ${MOSEK_LIBRARIES})
-#   list(APPEND LIBIGL_EXTRA_LIBRARIES ${LIBIGL_MOSEK_EXTRA_LIBRARIES})
-#   if(LIBIGL_USE_STATIC_LIBRARY)
-#     compile_igl_module("mosek" "")
-#     target_include_directories(igl_mosek PRIVATE ${MOSEK_INCLUDE_DIR})
-#   endif()
-# else()
-#   list(APPEND LIBIGL_DEFINITIONS "-DIGL_NO_MOSEK")
-# endif()
+if(LIBIGL_WITH_MOSEK)
+  find_package(MOSEK REQUIRED)
+  compile_igl_module("mosek" "")
+  target_link_libraries(igl_mosek ${IGL_SCOPE} ${MOSEK_LIBRARIES})
+  target_include_directories(igl_mosek ${IGL_SCOPE} ${MOSEK_INCLUDE_DIRS})
+  target_compile_definitions(igl_mosek ${IGL_SCOPE} -DLIBIGL_WITH_MOSEK)
+endif()
 
 ################################################################################
 ### Compile the opengl parts ###
