@@ -403,21 +403,17 @@ endif()
 
 ################################################################################
 ### Compile the xml part ###
-# if(LIBIGL_WITH_XML)
-#   set(TINYXML2_DIR "${LIBIGL_EXTERNAL}/tinyxml2")
-#   add_library(tinyxml2 STATIC ${TINYXML2_DIR}/tinyxml2.cpp ${TINYXML2_DIR}/tinyxml2.h)
-#   set_target_properties(tinyxml2 PROPERTIES
-#           COMPILE_DEFINITIONS "TINYXML2_EXPORT"
-#           VERSION "3.0.0"
-#           SOVERSION "3")
-#   list(APPEND LIBIGL_INCLUDE_DIRS ${TINYXML2_DIR})
-#   list(APPEND LIBIGL_XML_EXTRA_LIBRARIES "tinyxml2")
-#   list(APPEND LIBIGL_EXTRA_LIBRARIES ${LIBIGL_XML_EXTRA_LIBRARIES})
-#   if(LIBIGL_USE_STATIC_LIBRARY)
-#     compile_igl_module("xml" "")
-#     target_include_directories(igl_xml PRIVATE ${TINYXML2_DIR})
-#   endif()
-# endif()
+if(LIBIGL_WITH_XML)
+  set(TINYXML2_DIR "${LIBIGL_EXTERNAL}/tinyxml2")
+  add_library(tinyxml2 STATIC ${TINYXML2_DIR}/tinyxml2.cpp ${TINYXML2_DIR}/tinyxml2.h)
+  target_include_directories(tinyxml2 PUBLIC ${TINYXML2_DIR})
+  set_target_properties(tinyxml2 PROPERTIES
+          COMPILE_DEFINITIONS "TINYXML2_EXPORT"
+          VERSION "3.0.0"
+          SOVERSION "3")
+  compile_igl_module("xml" "")
+  target_link_libraries(igl_xml ${IGL_SCOPE} tinyxml2)
+endif()
 
 # Function to print list nicely
 # function(print_list title list)
