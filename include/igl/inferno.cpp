@@ -292,7 +292,7 @@ IGL_INLINE void igl::inferno(const T x_in, T & r, T & g, T & b)
 	T _g[2] = { inferno_cm[least][1], inferno_cm[most][1] };
 	T _b[2] = { inferno_cm[least][2], inferno_cm[most][2] };
 
-	T t = std::max(zero, std::min(one, fmod(x_in_clamped * static_cast<T>(pal), 1.0f)));
+	T t = std::max(zero, std::min(one, fmod(x_in_clamped * static_cast<T>(pal), one)));
 
 	r = std::max(zero, std::min(one, (one - t) * _r[0] + t * _r[1]));
 	g = std::max(zero, std::min(one, (one - t) * _g[0] + t * _g[1]));
