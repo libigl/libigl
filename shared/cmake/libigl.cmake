@@ -333,7 +333,6 @@ if(LIBIGL_WITH_OPENGL)
     target_include_directories(nanogui PUBLIC
       "${NANOGUI_DIR}/include"
       "${NANOGUI_DIR}/ext/nanovg/src")
-    #target_link_libraries(nanogui PUBLIC glew)
   endif()
 
   # GLFW module
@@ -356,7 +355,7 @@ if(LIBIGL_WITH_OPENGL)
     target_link_libraries(igl_viewer ${IGL_SCOPE} igl_core glfw glew ${OPENGL_gl_LIBRARY})
     target_include_directories(igl_viewer SYSTEM ${IGL_SCOPE} ${OPENGL_INCLUDE_DIR})
     if(TARGET nanogui)
-      target_link_libraries(igl_viewer ${IGL_SCOPE} nanogui)
+      target_link_libraries(igl_viewer ${IGL_SCOPE} nanogui glew)
       target_compile_definitions(igl_viewer ${IGL_SCOPE} -DIGL_VIEWER_WITH_NANOGUI)
     endif()
   endif()
