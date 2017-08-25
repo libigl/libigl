@@ -8,12 +8,12 @@
 #include "texture_from_png.h"
 
 #include "../opengl/report_gl_error.h"
-#include <stb_image.h>
+#include <igl_stb_image.h>
 
 IGL_INLINE bool igl::png::texture_from_png(const std::string png_file, const bool flip, GLuint & id)
 {
   int width,height,n;
-  unsigned char *data = stbi_load(png_file.c_str(), &width, &height, &n, 4);
+  unsigned char *data = igl::stbi_load(png_file.c_str(), &width, &height, &n, 4);
   if(data == NULL) {
     return false;
   }
@@ -23,7 +23,7 @@ IGL_INLINE bool igl::png::texture_from_png(const std::string png_file, const boo
   {
     yimg.flip();
   }*/
-  
+
   glGenTextures(1, &id);
   glBindTexture(GL_TEXTURE_2D, id);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -35,7 +35,7 @@ IGL_INLINE bool igl::png::texture_from_png(const std::string png_file, const boo
     width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
   glBindTexture(GL_TEXTURE_2D, 0);
 
-  stbi_image_free(data);
+  igl::stbi_image_free(data);
 
   return true;
 }
@@ -55,7 +55,7 @@ IGL_INLINE bool igl::png::texture_from_png(
 )
 {
   int width,height,n;
-  unsigned char *data = stbi_load(png_file.c_str(), &width, &height, &n, 4);
+  unsigned char *data = igl::stbi_load(png_file.c_str(), &width, &height, &n, 4);
   if(data == NULL) {
     return false;
   }
@@ -77,7 +77,7 @@ IGL_INLINE bool igl::png::texture_from_png(
     }
   }
 
-  stbi_image_free(data);
+  igl::stbi_image_free(data);
 
   return true;
 }

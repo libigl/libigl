@@ -2,38 +2,27 @@ cmake_minimum_required(VERSION 3.1)
 
 ### Available options ###
 option(LIBIGL_USE_STATIC_LIBRARY    "Use libigl as static library" OFF)
-option(LIBIGL_WITH_ANTTWEAKBAR      "Use AntTweakBar"    OFF)
-option(LIBIGL_WITH_CGAL             "Use CGAL"           OFF)
-option(LIBIGL_WITH_COMISO           "Use CoMiso"         OFF)
-option(LIBIGL_WITH_CORK             "Use Cork"           OFF)
-option(LIBIGL_WITH_EMBREE           "Use Embree"         OFF)
-option(LIBIGL_WITH_LIM              "Use LIM"            OFF)
-option(LIBIGL_WITH_MATLAB           "Use Matlab"         OFF)
-option(LIBIGL_WITH_MOSEK            "Use MOSEK"          OFF)
+option(LIBIGL_WITH_ANTTWEAKBAR      "Use AntTweakBar"    ON)
+option(LIBIGL_WITH_CGAL             "Use CGAL"           ON)
+option(LIBIGL_WITH_COMISO           "Use CoMiso"         ON)
+option(LIBIGL_WITH_CORK             "Use Cork"           ON)
+option(LIBIGL_WITH_EMBREE           "Use Embree"         ON)
+option(LIBIGL_WITH_LIM              "Use LIM"            ON)
+option(LIBIGL_WITH_MATLAB           "Use Matlab"         ON)
+option(LIBIGL_WITH_MOSEK            "Use MOSEK"          ON)
 option(LIBIGL_WITH_NANOGUI          "Use Nanogui menu"   OFF)
-option(LIBIGL_WITH_OPENGL           "Use OpenGL"         OFF)
-option(LIBIGL_WITH_OPENGL_GLFW      "Use GLFW"           OFF)
-option(LIBIGL_WITH_PNG              "Use PNG"            OFF)
-option(LIBIGL_WITH_TETGEN           "Use Tetgen"         OFF)
-option(LIBIGL_WITH_TRIANGLE         "Use Triangle"       OFF)
-option(LIBIGL_WITH_VIEWER           "Use OpenGL viewer"  OFF)
-option(LIBIGL_WITH_XML              "Use XML"            OFF)
+option(LIBIGL_WITH_OPENGL           "Use OpenGL"         ON)
+option(LIBIGL_WITH_OPENGL_GLFW      "Use GLFW"           ON)
+option(LIBIGL_WITH_PNG              "Use PNG"            ON)
+option(LIBIGL_WITH_TETGEN           "Use Tetgen"         ON)
+option(LIBIGL_WITH_TRIANGLE         "Use Triangle"       ON)
+option(LIBIGL_WITH_VIEWER           "Use OpenGL viewer"  ON)
+option(LIBIGL_WITH_XML              "Use XML"            ON)
 option(LIBIGL_WITH_PYTHON           "Use Python"         OFF)
 
 if(LIBIGL_WITH_VIEWER AND (NOT LIBIGL_WITH_OPENGL_GLFW OR NOT LIBIGL_WITH_OPENGL) )
   message(FATAL_ERROR "LIBIGL_WITH_VIEWER=ON requires LIBIGL_WITH_OPENGL_GLFW=ON and LIBIGL_WITH_OPENGL=ON")
 endif()
-
-### Compilation configuration ###
-function(set_compilation_flags target_name)
-  if(MSVC)
-    ### Enable parallel compilation for Visual Studio
-    target_compile_options(${target_name} PRIVATE /MP /bigobj)
-    #target_compile_options(${target_name} PRIVATE /w) # disable all warnings (not ideal but...)
-  else()
-    #target_compile_options(${target_name} PRIVATE -w) # disable all warnings (not ideal but...)
-  endif()
-endfunction()
 
 ################################################################################
 
@@ -66,9 +55,15 @@ endif()
 include(CXXFeatures)
 target_compile_features(igl_common INTERFACE ${CXX11_FEATURES})
 
+# Other compilation flags
+if(MSVC)
+  # Enable parallel compilation for Visual Studio
+  target_compile_options(igl_common INTERFACE /MP /bigobj)
+endif()
+
 if(BUILD_SHARED_LIBS)
   # Generate position independent code
-  set_target_properties(igl_${module_name} PROPERTIES INTERFACE_POSITION_INDEPENDENT_CODE ON)
+  set_target_properties(igl_common PROPERTIES INTERFACE_POSITION_INDEPENDENT_CODE ON)
 endif()
 
 # Eigen
@@ -88,8 +83,6 @@ function(compile_igl_module module_dir prefix)
       "${LIBIGL_SOURCE_DIR}/igl/${prefix}/${module_dir}/*.cpp")
     add_library(igl_${module_name} STATIC ${SOURCES_IGL_${module_name}} ${ARGN})
     target_link_libraries(igl_${module_name} PUBLIC igl_common)
-    set_compilation_flags(igl_${module_name})
-
   else()
     add_library(igl_${module_name} INTERFACE)
     target_link_libraries(igl_${module_name} INTERFACE igl_common)
@@ -172,10 +165,14 @@ compile_igl_module("core" "" ${SOURCES_IGL})
 if(LIBIGL_WITH_CGAL)
   # CGAL Core is needed for
   # `Exact_predicates_exact_constructions_kernel_with_sqrt`
-  compile_igl_module("cgal" "copyleft/")
-  find_package(CGAL REQUIRED COMPONENTS Core)
-  find_package(Boost 1.48 REQUIRED thread system)
-  target_link_libraries(igl_cgal ${IGL_SCOPE} CGAL::CGAL CGAL::CGAL_Core ${Boost_LIBRARIES})
+  find_package(CGAL COMPONENTS Core)
+  if(CGAL_FOUND)
+    compile_igl_module("cgal" "copyleft/")
+    find_package(Boost 1.48 REQUIRED thread system)
+    target_link_libraries(igl_cgal ${IGL_SCOPE} CGAL::CGAL CGAL::CGAL_Core ${Boost_LIBRARIES})
+  else()
+    set(LIBIGL_WITH_CGAL OFF CACHE BOOL "" FORCE)
+  endif()
 endif()
 
 ################################################################################
@@ -285,27 +282,31 @@ endif()
 ################################################################################
 ### Compile the mosek part ###
 if(LIBIGL_WITH_MOSEK)
-  find_package(MOSEK REQUIRED)
-  compile_igl_module("mosek" "")
-  target_link_libraries(igl_mosek ${IGL_SCOPE} ${MOSEK_LIBRARIES})
-  target_include_directories(igl_mosek ${IGL_SCOPE} ${MOSEK_INCLUDE_DIRS})
-  target_compile_definitions(igl_mosek ${IGL_SCOPE} -DLIBIGL_WITH_MOSEK)
+  find_package(MOSEK)
+  if(MOSEK_FOUND)
+    compile_igl_module("mosek" "")
+    target_link_libraries(igl_mosek ${IGL_SCOPE} ${MOSEK_LIBRARIES})
+    target_include_directories(igl_mosek ${IGL_SCOPE} ${MOSEK_INCLUDE_DIRS})
+    target_compile_definitions(igl_mosek ${IGL_SCOPE} -DLIBIGL_WITH_MOSEK)
+  else()
+    set(LIBIGL_WITH_MOSEK OFF CACHE BOOL "" FORCE)
+  endif()
 endif()
 
 ################################################################################
 ### Compile the opengl parts ###
 
 if(LIBIGL_WITH_OPENGL)
+  # OpenGL modules
+  find_package(OpenGL REQUIRED)
   compile_igl_module("opengl" "")
   compile_igl_module("opengl2" "")
-
-  find_package(OpenGL REQUIRED)
   target_link_libraries(igl_opengl ${IGL_SCOPE} ${OPENGL_gl_LIBRARY})
   target_link_libraries(igl_opengl2 ${IGL_SCOPE} ${OPENGL_gl_LIBRARY})
   target_include_directories(igl_opengl SYSTEM ${IGL_SCOPE} ${OPENGL_INCLUDE_DIR})
   target_include_directories(igl_opengl2 SYSTEM ${IGL_SCOPE} ${OPENGL_INCLUDE_DIR})
 
-  ### GLEW for linux and windows
+  # GLEW for linux and windows
   if(NOT TARGET glew)
     add_library(glew STATIC ${NANOGUI_DIR}/ext/glew/src/glew.c)
     target_include_directories(glew SYSTEM PUBLIC ${NANOGUI_DIR}/ext/glew/include)
@@ -314,8 +315,23 @@ if(LIBIGL_WITH_OPENGL)
   target_link_libraries(igl_opengl ${IGL_SCOPE} glew)
   target_link_libraries(igl_opengl2 ${IGL_SCOPE} glew)
 
+  # Nanogui
+  if(LIBIGL_WITH_NANOGUI)
+    if(LIBIGL_WITH_PYTHON)
+      set(NANOGUI_BUILD_PYTHON ON CACHE BOOL " " FORCE)
+    else()
+      set(NANOGUI_BUILD_PYTHON OFF CACHE BOOL " " FORCE)
+    endif()
+    set(NANOGUI_BUILD_EXAMPLE OFF CACHE BOOL " " FORCE)
+    set(NANOGUI_BUILD_SHARED  OFF CACHE BOOL " " FORCE)
+    add_subdirectory(${NANOGUI_DIR} nanogui)
+    target_include_directories(nanogui PUBLIC
+      "${NANOGUI_DIR}/include"
+      "${NANOGUI_DIR}/ext/nanovg/src")
+  endif()
+
+  # GLFW module
   if(LIBIGL_WITH_OPENGL_GLFW)
-    # GLFW
     compile_igl_module("opengl/glfw" "")
     if(NOT TARGET glfw)
       set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL " " FORCE)
@@ -326,99 +342,69 @@ if(LIBIGL_WITH_OPENGL)
       target_include_directories(glfw ${IGL_SCOPE} ${NANOGUI_DIR}/ext/glfw/include)
     endif()
     target_link_libraries(igl_opengl_glfw ${IGL_SCOPE} igl_opengl glfw)
+  endif()
 
-    ### Compile the viewer
-    if(LIBIGL_WITH_VIEWER)
-      compile_igl_module("viewer" "")
-      target_link_libraries(igl_viewer ${IGL_SCOPE} igl_core glfw glew ${OPENGL_gl_LIBRARY})
-      target_include_directories(igl_opengl2 SYSTEM ${IGL_SCOPE} ${OPENGL_INCLUDE_DIR})
-
-      if(LIBIGL_WITH_NANOGUI)
-        target_compile_definitions(igl_viewer PUBLIC -DIGL_VIEWER_WITH_NANOGUI)
-        if(LIBIGL_WITH_PYTHON)
-          set(NANOGUI_BUILD_PYTHON ON CACHE BOOL " " FORCE)
-        else()
-          set(NANOGUI_BUILD_PYTHON OFF CACHE BOOL " " FORCE)
-        endif()
-        set(NANOGUI_BUILD_EXAMPLE OFF CACHE BOOL " " FORCE)
-        set(NANOGUI_BUILD_SHARED  OFF CACHE BOOL " " FORCE)
-        add_subdirectory(${NANOGUI_DIR} nanogui)
-        target_link_libraries(igl_viewer ${IGL_SCOPE} nanogui)
-      endif()
+  # Viewer module
+  if(LIBIGL_WITH_VIEWER)
+    compile_igl_module("viewer" "")
+    target_link_libraries(igl_viewer ${IGL_SCOPE} igl_core glfw glew ${OPENGL_gl_LIBRARY})
+    target_include_directories(igl_viewer SYSTEM ${IGL_SCOPE} ${OPENGL_INCLUDE_DIR})
+    if(TARGET nanogui)
+      target_link_libraries(igl_viewer ${IGL_SCOPE} nanogui)
+      target_compile_definitions(igl_viewer ${IGL_SCOPE} -DIGL_VIEWER_WITH_NANOGUI)
     endif()
-
   endif()
 
 endif()
 
 ################################################################################
 ### Compile the png parts ###
-# if(LIBIGL_WITH_PNG)
-#   if(LIBIGL_WITH_NANOGUI)
-#     set(STBI_LOAD OFF CACHE BOOL " " FORCE)
-#   endif()
-#   set(STB_IMAGE_DIR "${LIBIGL_EXTERNAL}/stb_image")
-#   add_subdirectory("${STB_IMAGE_DIR}" "stb_image")
-#   list(APPEND LIBIGL_INCLUDE_DIRS ${STB_IMAGE_DIR})
-#   list(APPEND LIBIGL_PNG_EXTRA_LIBRARIES "stb_image")
-#   list(APPEND LIBIGL_EXTRA_LIBRARIES ${LIBIGL_PNG_EXTRA_LIBRARIES})
-#   if(LIBIGL_USE_STATIC_LIBRARY)
-#     compile_igl_module("png" "")
-#     target_include_directories(igl_png PRIVATE ${STB_IMAGE_DIR})
-#     if(NOT APPLE)
-#       target_include_directories(igl_png PRIVATE "${NANOGUI_DIR}/ext/glew/include")
-#     endif()
-#   endif()
-# endif()
+if(LIBIGL_WITH_PNG)
+  set(STB_IMAGE_DIR "${LIBIGL_EXTERNAL}/stb_image")
+  if(NOT TARGET stb_image)
+    add_subdirectory("${STB_IMAGE_DIR}" "stb_image")
+  endif()
+  compile_igl_module("png" "")
+  target_link_libraries(igl_png ${IGL_SCOPE} igl_stb_image)
+endif()
 
 ################################################################################
 ### Compile the tetgen part ###
-# if(LIBIGL_WITH_TETGEN)
-#   set(TETGEN_DIR "${LIBIGL_EXTERNAL}/tetgen")
-#   add_subdirectory("${TETGEN_DIR}" "tetgen")
-#   list(APPEND LIBIGL_INCLUDE_DIRS ${TETGEN_DIR})
-#   list(APPEND LIBIGL_TETGEN_EXTRA_LIBRARIES "tetgen")
-#   list(APPEND LIBIGL_EXTRA_LIBRARIES ${LIBIGL_TETGEN_EXTRA_LIBRARIES})
-
-#   if(LIBIGL_USE_STATIC_LIBRARY)
-#     compile_igl_module("tetgen" "copyleft/")
-#     target_include_directories(igl_tetgen PRIVATE ${TETGEN_DIR})
-#   endif()
-# endif()
+if(LIBIGL_WITH_TETGEN)
+  set(TETGEN_DIR "${LIBIGL_EXTERNAL}/tetgen")
+  if(NOT TARGET tetgen)
+    add_subdirectory("${TETGEN_DIR}" "tetgen")
+  endif()
+  compile_igl_module("tetgen" "copyleft/")
+  target_link_libraries(igl_tetgen ${IGL_SCOPE} tetgen)
+  target_include_directories(igl_tetgen ${IGL_SCOPE} ${TETGEN_DIR})
+endif()
 
 ################################################################################
 ### Compile the triangle part ###
-# if(LIBIGL_WITH_TRIANGLE)
-#   set(TRIANGLE_DIR "${LIBIGL_EXTERNAL}/triangle")
-#   add_subdirectory("${TRIANGLE_DIR}" "triangle")
-#   list(APPEND LIBIGL_INCLUDE_DIRS ${TRIANGLE_DIR})
-#   list(APPEND LIBIGL_TRIANGLE_EXTRA_LIBRARIES "triangle")
-#   list(APPEND LIBIGL_EXTRA_LIBRARIES ${LIBIGL_TRIANGLE_EXTRA_LIBRARIES})
-
-#   if(LIBIGL_USE_STATIC_LIBRARY)
-#     compile_igl_module("triangle" "")
-#     target_include_directories(igl_triangle PRIVATE ${TRIANGLE_DIR})
-#   endif()
-# endif()
+if(LIBIGL_WITH_TRIANGLE)
+  set(TRIANGLE_DIR "${LIBIGL_EXTERNAL}/triangle")
+  if(NOT TARGET triangle)
+    add_subdirectory("${TRIANGLE_DIR}" "triangle")
+  endif()
+  compile_igl_module("triangle" "")
+  target_link_libraries(igl_triangle ${IGL_SCOPE} triangle)
+  target_include_directories(igl_triangle ${IGL_SCOPE} ${TRIANGLE_DIR})
+endif()
 
 ################################################################################
 ### Compile the xml part ###
 if(LIBIGL_WITH_XML)
   set(TINYXML2_DIR "${LIBIGL_EXTERNAL}/tinyxml2")
-  add_library(tinyxml2 STATIC ${TINYXML2_DIR}/tinyxml2.cpp ${TINYXML2_DIR}/tinyxml2.h)
-  target_include_directories(tinyxml2 PUBLIC ${TINYXML2_DIR})
-  set_target_properties(tinyxml2 PROPERTIES
-          COMPILE_DEFINITIONS "TINYXML2_EXPORT"
-          VERSION "3.0.0"
-          SOVERSION "3")
+  if(NOT TARGET tinyxml2)
+    add_library(tinyxml2 STATIC ${TINYXML2_DIR}/tinyxml2.cpp ${TINYXML2_DIR}/tinyxml2.h)
+    target_include_directories(tinyxml2 PUBLIC ${TINYXML2_DIR})
+    set_target_properties(tinyxml2 PROPERTIES
+            COMPILE_DEFINITIONS "TINYXML2_EXPORT"
+            VERSION "3.0.0"
+            SOVERSION "3")
+  endif()
   compile_igl_module("xml" "")
   target_link_libraries(igl_xml ${IGL_SCOPE} tinyxml2)
 endif()
 
-# Function to print list nicely
-# function(print_list title list)
-#   message("-- ${title}:")
-#   foreach(elt ${list})
-#     message("\t ${elt}")
-#   endforeach()
-# endfunction()
