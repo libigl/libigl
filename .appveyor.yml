@@ -6,6 +6,7 @@ branches:
   only:
     - master
     - alecjacobson
+    - cmake
 install:
   - git submodule update --init --recursive
   - cinstall: python
