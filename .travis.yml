@@ -9,14 +9,14 @@ matrix:
         - git submodule update --init --recursive
         - mkdir external/nanogui/ext/glfw/include/GL
         - wget --no-check-certificate -P external/nanogui/ext/glfw/include/GL http://www.opengl.org/registry/api/GL/glcorearb.h
-        - cd python
-        - mkdir build
-        - cd build
-        - cmake -DCMAKE_CXX_COMPILER=g++-4.8 -DCMAKE_C_COMPILER=gcc-4.8 -DLIBIGL_WITH_EMBREE=OFF -DLIBIGL_USE_STATIC_LIBRARY=ON ../
-        - make -j 2
-        - cd ../tutorial
-        - python 101_FileIO.py
-        - cd ../../
+        # - cd python
+        # - mkdir build
+        # - cd build
+        # - cmake -DCMAKE_CXX_COMPILER=g++-4.8 -DCMAKE_C_COMPILER=gcc-4.8 -DLIBIGL_WITH_EMBREE=OFF -DLIBIGL_USE_STATIC_LIBRARY=ON ../
+        # - make -j 2
+        # - cd ../tutorial
+        # - python 101_FileIO.py
+        # - cd ../../
         - cd tutorial
         - mkdir build
         - cd build
@@ -52,14 +52,14 @@ matrix:
         # - brew upgrade cmake
         # - brew upgrade cgal
         - git submodule update --init --recursive
-        - cd python
-        - mkdir build
-        - cd build
-        - cmake ../
-        - make -j 2
-        - cd ../tutorial
-        - python 101_FileIO.py
-        - cd ../../
+        # - cd python
+        # - mkdir build
+        # - cd build
+        # - cmake ../
+        # - make -j 2
+        # - cd ../tutorial
+        # - python 101_FileIO.py
+        # - cd ../../
         - cd tutorial
         - mkdir build
         - cd build
