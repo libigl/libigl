@@ -1,6 +1,6 @@
 language: cpp
 sudo: false
-dist: precise
+dist: trusty
 matrix:
   include:
     - os: linux
