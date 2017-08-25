@@ -328,7 +328,7 @@ if(LIBIGL_WITH_OPENGL)
     target_include_directories(nanogui PUBLIC
       "${NANOGUI_DIR}/include"
       "${NANOGUI_DIR}/ext/nanovg/src")
-    target_link_libraries(nanogui PUBLIC glew)
+    #target_link_libraries(nanogui PUBLIC glew)
   endif()
 
   # GLFW module
