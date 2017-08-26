@@ -1358,9 +1358,9 @@ static IGL_INLINE void color_from_palette(const T x_in, T & r, T & g, T & b, dou
 	unsigned int least = std::floor(x_in_clamped * static_cast<T>(pal - 1));
 	unsigned int most = std::ceil(x_in_clamped * static_cast<T>(pal - 1));
 
-	T _r[2] = { palette[least][0], palette[most][0] };
-	T _g[2] = { palette[least][1], palette[most][1] };
-	T _b[2] = { palette[least][2], palette[most][2] };
+	T _r[2] = { static_cast<T>(palette[least][0]), static_cast<T>(palette[most][0]) };
+	T _g[2] = { static_cast<T>(palette[least][1]), static_cast<T>(palette[most][1]) };
+	T _b[2] = { static_cast<T>(palette[least][2]), static_cast<T>(palette[most][2]) };
 
 	T t = std::max(zero, std::min(one, static_cast<T>(fmod(x_in_clamped * static_cast<T>(pal), one))));
 
