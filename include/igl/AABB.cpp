@@ -401,7 +401,7 @@ igl::AABB<DerivedV,DIM>::squared_distance(
     const auto & look_right = [&]()
     {
       int i_right;
-      Eigen::PlainObjectBase<RowVectorDIMS> c_right = c;
+      RowVectorDIMS c_right = c;
       Scalar sqr_d_right = 
         m_right->squared_distance(V,Ele,p,low_sqr_d,sqr_d,i_right,c_right);
       this->set_min(p,sqr_d_right,i_right,c_right,sqr_d,i,c);
