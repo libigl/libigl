@@ -1,7 +1,11 @@
+################################################################################
+
 if(NOT (${CMAKE_VERSION} VERSION_LESS "3.8.0"))
+	# For CMake 3.8 and above, we can use meta features directly provided by CMake itself
     set(CXX11_FEATURES cxx_std_11)
     set(CXX14_FEATURES cxx_std_14)
     set(CXX17_FEATURES cxx_std_17)
+    return()
 endif()
 
 ################################################################################
@@ -18,6 +22,8 @@ set(CXX14_FEATURES
 set(CXX17_FEATURES
 
 )
+
+################################################################################
 
 # https://cmake.org/cmake/help/v3.1/prop_gbl/CMAKE_CXX_KNOWN_FEATURES.html
 # cxx_aggregate_default_initializers    Aggregate default initializers, as defined in N3605.
