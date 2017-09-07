@@ -5,7 +5,7 @@ option(LIBIGL_USE_STATIC_LIBRARY    "Use libigl as static library" OFF)
 option(LIBIGL_WITH_ANTTWEAKBAR      "Use AntTweakBar"    ON)
 option(LIBIGL_WITH_CGAL             "Use CGAL"           ON)
 option(LIBIGL_WITH_COMISO           "Use CoMiso"         ON)
-option(LIBIGL_WITH_CORK             "Use Cork"           ON)
+option(LIBIGL_WITH_CORK             "Use Cork"           OFF)
 option(LIBIGL_WITH_EMBREE           "Use Embree"         ON)
 option(LIBIGL_WITH_LIM              "Use LIM"            ON)
 option(LIBIGL_WITH_MATLAB           "Use Matlab"         ON)
@@ -192,20 +192,17 @@ endif()
 
 ################################################################################
 ### Compile the cork parts ###
-# if(LIBIGL_WITH_CORK)
-#   set(CORK_DIR "${LIBIGL_EXTERNAL}/cork")
-#   set(CORK_INCLUDE_DIR "${CORK_DIR}/src")
-#   # call this "lib-cork" instead of "cork", otherwise cmake gets confused about
-#   # "cork" executable
-#   add_subdirectory("${CORK_DIR}" "lib-cork")
-#   list(APPEND LIBIGL_INCLUDE_DIRS "${CORK_INCLUDE_DIR}")
-#   list(APPEND LIBIGL_CORK_EXTRA_LIBRARIES "cork")
-#   list(APPEND LIBIGL_EXTRA_LIBRARIES ${LIBIGL_CORK_EXTRA_LIBRARIES})
-#   if(LIBIGL_USE_STATIC_LIBRARY)
-#     compile_igl_module("cork" "copyleft/")
-#     target_include_directories(igl_cork PRIVATE ${CORK_INCLUDE_DIR})
-#   endif()
-# endif()
+if(LIBIGL_WITH_CORK)
+  set(CORK_DIR "${LIBIGL_EXTERNAL}/cork")
+  if(NOT TARGET cork)
+    # call this "lib-cork" instead of "cork", otherwise cmake gets confused about
+    # "cork" executable
+    add_subdirectory("${CORK_DIR}" "lib-cork")
+  endif()
+  compile_igl_module("cork" "copyleft/")
+  target_include_directories(igl_cork ${IGL_SCOPE} cork)
+  target_include_directories(igl_cork ${IGL_SCOPE} "${CORK_DIR}/src")
+endif()
 
 ################################################################################
 ### Compile the embree part ###
@@ -252,23 +249,15 @@ endif()
 
 ################################################################################
 ### Compile the lim part ###
-# if(LIBIGL_WITH_LIM)
-#   set(LIM_DIR "${LIBIGL_EXTERNAL}/lim")
-#   add_subdirectory("${LIM_DIR}" "lim")
-#   list(APPEND LIBIGL_INCLUDE_DIRS ${LIM_DIR})
-#   ## it depends on ligigl, so placing it here solve linking problems
-#   #list(APPEND LIBIGL_LIBRARIES "lim")
-#   # ^--- Alec: I don't understand this comment. Does lim need to come before
-#   # libigl libraries? Why can't lim be placed where it belongs in
-#   # LIBIGL_EXTRA_LIBRARIES?
-#   set(LIBIGL_LIM_EXTRA_LIBRARIES "lim")
-#   list(APPEND LIBIGL_EXTRA_LIBRARIES "${LIBIGL_LIM_EXTRA_LIBRARIES}")
-
-#   if(LIBIGL_USE_STATIC_LIBRARY)
-#     compile_igl_module("lim" "")
-#     target_include_directories(igl_lim PRIVATE ${LIM_DIR})
-#   endif()
-# endif()
+if(LIBIGL_WITH_LIM)
+  set(LIM_DIR "${LIBIGL_EXTERNAL}/lim")
+  if(NOT TARGET lim)
+    add_subdirectory("${LIM_DIR}" "lim")
+  endif()
+  compile_igl_module("lim" "")
+  target_link_libraries(igl_lim ${IGL_SCOPE} lim)
+  target_include_directories(igl_lim ${IGL_SCOPE} ${LIM_DIR})
+endif()
 
 ################################################################################
 ### Compile the matlab part ###
