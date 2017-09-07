@@ -184,10 +184,10 @@ if(LIBIGL_WITH_EMBREE)
   endif()
 
   if(MSVC)
-    add_custom_target(Copy-Embree-DLL ALL        # Adds a post-build event to MyTest
+    add_custom_target(Copy-Embree-DLL ALL # Adds a post-build event to MyTest
         COMMAND ${CMAKE_COMMAND} -E copy_if_different  # which executes "cmake - E copy_if_different..."
-          "${CMAKE_BINARY_DIR}/libigl/embree/$<CONFIGURATION>/embree.dll"      # <--this is in-file
-          "${CMAKE_BINARY_DIR}/embree.dll")                 # <--this is out-file path  endif()
+          "${CMAKE_BINARY_DIR}/libigl/embree/$<CONFIGURATION>/embree.dll" # <--this is in-file
+          "${CMAKE_BINARY_DIR}/embree.dll") # <--this is out-file path
   endif()
 
   compile_igl_module("embree" "")
@@ -212,17 +212,16 @@ endif()
 
 ################################################################################
 ### Compile the matlab part ###
-# if(LIBIGL_WITH_MATLAB)
-#   find_package(MATLAB REQUIRED)
-#   list(APPEND LIBIGL_INCLUDE_DIRS ${MATLAB_INCLUDE_DIR})
-#   list(APPEND LIBIGL_MATLAB_EXTRA_LIBRARIES ${MATLAB_LIBRARIES})
-#   list(APPEND LIBIGL_EXTRA_LIBRARIES ${LIBIGL_MATLAB_EXTRA_LIBRARIES})
-
-#   if(LIBIGL_USE_STATIC_LIBRARY)
-#     compile_igl_module("matlab" "")
-#     target_include_directories(igl_matlab PRIVATE ${MATLAB_INCLUDE_DIR})
-#   endif()
-# endif()
+if(LIBIGL_WITH_MATLAB)
+  find_package(MATLAB)
+  if(MATLAB_FOUND)
+    compile_igl_module("matlab" "")
+    target_link_libraries(igl_matlab ${IGL_SCOPE} ${MATLAB_LIBRARIES})
+    target_include_directories(igl_matlab ${IGL_SCOPE} ${MATLAB_INCLUDE_DIR})
+  else()
+    set(LIBIGL_WITH_MATLAB OFF CACHE BOOL "" FORCE)
+  endif()
+endif()
 
 ################################################################################
 ### Compile the mosek part ###
