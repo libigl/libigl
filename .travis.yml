@@ -63,5 +63,5 @@ matrix:
         - cd tutorial
         - mkdir build
         - cd build
-        - cmake -DLIBIGL_USE_STATIC_LIBRARY=ON -DLIBIGL_WITH_EMBREE=OFF ../
+        - cmake -DLIBIGL_USE_STATIC_LIBRARY=ON ../
         - make -j 2
