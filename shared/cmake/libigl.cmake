@@ -179,15 +179,16 @@ if(LIBIGL_WITH_EMBREE)
     set(EMBREE_STATIC_LIB ON CACHE BOOL " " FORCE)
   endif()
 
-  if(NOT TARGET)
+  if(NOT TARGET embree)
     add_subdirectory("${EMBREE_DIR}" "embree")
   endif()
 
   if(MSVC)
-    add_custom_command(TARGET embree POST_BUILD # Adds a post-build event to embree
+    add_custom_target(Copy-Embree-DLL ALL # Adds a post-build event
         COMMAND ${CMAKE_COMMAND} -E copy_if_different # which executes "cmake - E
         $<TARGET_FILE:embree> # <--this is in-file
-        "${CMAKE_BINARY_DIR}") # <--this is out-file path
+        "${CMAKE_BINARY_DIR}" # <--this is out-file path
+        DEPENDS embree) # Execute after embree target has been built
   endif()
 
   compile_igl_module("embree" "")
