@@ -25,39 +25,42 @@
 
 #include "marching_cubes.h"
 #include "marching_cubes_tables.h"
-#include <map>
+
+#include <unordered_map>
+
 
 extern const int edgeTable[256];
 extern const int triTable[256][2][17];
 extern const int polyTable[8][16];
 
-class EdgeKey
+struct EdgeKey
 {
-public:
+  EdgeKey(unsigned i0, unsigned i1) : i0_(i0), i1_(i1) {}
 
-  EdgeKey(unsigned i0, unsigned i1) {
-    if (i0 < i1)  { i0_ = i0;  i1_ = i1; }
-    else            { i0_ = i1;  i1_ = i0; }
-  }
-
-  bool operator<(const EdgeKey& _rhs) const
+  bool operator==(const EdgeKey& _rhs) const
   {
-    if (i0_ != _rhs.i0_)
-      return (i0_ < _rhs.i0_);
-    else
-      return (i1_ < _rhs.i1_);
+    return i0_ == _rhs.i0_ && i1_ == _rhs.i1_;
   }
 
-private:
   unsigned i0_, i1_;
+};
+
+struct EdgeHash
+{
+    std::size_t operator()(const EdgeKey& key) const {
+        std::size_t seed = 0;
+        seed ^= key.i0_ + 0x9e3779b9 + (seed<<6) + (seed>>2); // Copied from boost::hash_combine
+        seed ^= key.i1_ + 0x9e3779b9 + (seed<<6) + (seed>>2);
+        return std::hash<std::size_t>()(seed);
+    }
 };
 
 
 template <typename Derivedvalues, typename Derivedpoints,typename Derivedvertices, typename DerivedF>
 class MarchingCubes
 {
-  typedef std::map<EdgeKey, unsigned>  MyMap;
-  typedef typename MyMap::const_iterator   MyMapIterator;
+  typedef std::unordered_map<EdgeKey, unsigned, EdgeHash> MyMap;
+  typedef typename MyMap::const_iterator                  MyMapIterator;
 
 public:
   MarchingCubes(
