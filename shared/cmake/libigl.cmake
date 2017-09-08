@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.1)
 
 ### Available options ###
 option(LIBIGL_USE_STATIC_LIBRARY    "Use libigl as static library" OFF)
-option(LIBIGL_WITH_ANTTWEAKBAR      "Use AntTweakBar"    ON)
+option(LIBIGL_WITH_ANTTWEAKBAR      "Use AntTweakBar"    OFF)
 option(LIBIGL_WITH_CGAL             "Use CGAL"           ON)
 option(LIBIGL_WITH_COMISO           "Use CoMiso"         ON)
 option(LIBIGL_WITH_CORK             "Use Cork"           OFF)
@@ -184,10 +184,10 @@ if(LIBIGL_WITH_EMBREE)
   endif()
 
   if(MSVC)
-    add_custom_target(Copy-Embree-DLL ALL # Adds a post-build event to MyTest
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different  # which executes "cmake - E copy_if_different..."
-          "${CMAKE_BINARY_DIR}/libigl/embree/$<CONFIGURATION>/embree.dll" # <--this is in-file
-          "${CMAKE_BINARY_DIR}/embree.dll") # <--this is out-file path
+    add_custom_command(TARGET embree POST_BUILD # Adds a post-build event to embree
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different # which executes "cmake - E
+        $<TARGET_FILE:embree> # <--this is in-file
+        "${CMAKE_BINARY_DIR}") # <--this is out-file path
   endif()
 
   compile_igl_module("embree" "")
