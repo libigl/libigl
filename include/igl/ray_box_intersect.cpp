@@ -13,8 +13,8 @@ template <
   typename Deriveddir,
   typename Scalar>
 IGL_INLINE bool igl::ray_box_intersect(
-  const Eigen::PlainObjectBase<Derivedsource> & origin,
-  const Eigen::PlainObjectBase<Deriveddir> & dir,
+  const Eigen::MatrixBase<Derivedsource> & origin,
+  const Eigen::MatrixBase<Deriveddir> & dir,
   const Eigen::AlignedBox<Scalar,3> & box,
   const Scalar & t0,
   const Scalar & t1,

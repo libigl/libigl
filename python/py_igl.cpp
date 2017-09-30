@@ -8,6 +8,7 @@
 #include <igl/MeshBooleanType.h>
 #include <igl/SolverStatus.h>
 #include <igl/active_set.h>
+#include <igl/adjacency_list.h>
 #include <igl/arap.h>
 #include <igl/avg_edge_length.h>
 #include <igl/barycenter.h>
@@ -92,7 +93,8 @@
 #include <igl/winding_number.h>
 #include <igl/writeMESH.h>
 #include <igl/writeOBJ.h>
-
+#include <igl/writePLY.h>
+#include <igl/readPLY.h>
 
 void python_export_igl(py::module &m)
 {
@@ -103,6 +105,7 @@ void python_export_igl(py::module &m)
 #include "py_igl/py_MeshBooleanType.cpp"
 #include "py_igl/py_SolverStatus.cpp"
 #include "py_igl/py_active_set.cpp"
+#include "py_igl/py_adjacency_list.cpp"
 #include "py_igl/py_arap.cpp"
 #include "py_igl/py_avg_edge_length.cpp"
 #include "py_igl/py_barycenter.cpp"
@@ -187,5 +190,6 @@ void python_export_igl(py::module &m)
 #include "py_igl/py_winding_number.cpp"
 #include "py_igl/py_writeMESH.cpp"
 #include "py_igl/py_writeOBJ.cpp"
-
+#include "py_igl/py_writePLY.cpp"
+#include "py_igl/py_readPLY.cpp"
 }

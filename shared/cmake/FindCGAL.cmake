@@ -49,6 +49,7 @@ if ( NOT CGAL_DIR )
     ${CGAL_DIR_SEARCH}
 
     # Look in standard UNIX install locations.
+    /usr/lib/x86_64-linux-gnu/cmake/CGAL
     /opt/local/share/CGAL/cmake
     /usr/local/lib/CGAL
     /usr/lib/CGAL

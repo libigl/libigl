@@ -16,7 +16,7 @@ template <
   typename Ntype,
   typename UVtype>
 IGL_INLINE bool igl::readPLY(
-  const std::string & filename,
+  const std::string filename,
   std::vector<std::vector<Vtype> > & V,
   std::vector<std::vector<Ftype> > & F,
   std::vector<std::vector<Ntype> > & N,
@@ -88,6 +88,7 @@ IGL_INLINE bool igl::readPLY(
   int nprops;
   int elem_count;
   plist = ply_get_element_description (in_ply,"vertex", &elem_count, &nprops);
+  int native_binary_type = get_native_binary_type2();
   if (plist != NULL)
   {
     /* set up for getting vertex elements */
@@ -132,11 +133,12 @@ IGL_INLINE bool igl::readPLY(
     {
       UV.resize(0);
     }
-    for(int j = 0;j<elem_count;j++)
+   	
+	for(int j = 0;j<elem_count;j++)
     {
       Vertex v;
       ply_get_element_setup(in_ply,"vertex",3,vert_props);
-      ply_get_element(in_ply,(void*)&v);
+      ply_get_element(in_ply,(void*)&v, &native_binary_type);
       V[j][0] = v.x;
       V[j][1] = v.y;
       V[j][2] = v.z;
@@ -161,7 +163,7 @@ IGL_INLINE bool igl::readPLY(
     for (int j = 0; j < elem_count; j++) 
     {
       Face f;
-      ply_get_element(in_ply, (void *) &f);
+      ply_get_element(in_ply, (void *) &f, &native_binary_type);
       for(size_t c = 0;c<f.nverts;c++)
       {
         F[j].push_back(f.verts[c]);
@@ -178,7 +180,7 @@ template <
   typename DerivedN,
   typename DerivedUV>
 IGL_INLINE bool igl::readPLY(
-  const std::string & filename,
+  const std::string filename,
   Eigen::PlainObjectBase<DerivedV> & V,
   Eigen::PlainObjectBase<DerivedF> & F,
   Eigen::PlainObjectBase<DerivedN> & N,
@@ -203,7 +205,7 @@ template <
   typename DerivedV,
   typename DerivedF>
 IGL_INLINE bool igl::readPLY(
-  const std::string & filename,
+  const std::string filename,
   Eigen::PlainObjectBase<DerivedV> & V,
   Eigen::PlainObjectBase<DerivedF> & F)
 {
@@ -213,9 +215,9 @@ IGL_INLINE bool igl::readPLY(
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instantiation
-template bool igl::readPLY<double, int, double, double>(std::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > >&, std::vector<std::vector<int, std::allocator<int> >, std::allocator<std::vector<int, std::allocator<int> > > >&, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > >&, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > >&);
+template bool igl::readPLY<double, int, double, double>(std::basic_string<char, std::char_traits<char>, std::allocator<char> > const, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > >&, std::vector<std::vector<int, std::allocator<int> >, std::allocator<std::vector<int, std::allocator<int> > > >&, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > >&, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > >&);
 
-template bool igl::readPLY<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>, Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic>, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> >(std::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> > &, Eigen::PlainObjectBase<Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic> > &, Eigen::PlainObjectBase<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> > &, Eigen::PlainObjectBase<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> > &);
+template bool igl::readPLY<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>, Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic>, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> >(std::basic_string<char, std::char_traits<char>, std::allocator<char> > const, Eigen::PlainObjectBase<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> > &, Eigen::PlainObjectBase<Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic> > &, Eigen::PlainObjectBase<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> > &, Eigen::PlainObjectBase<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> > &);
 
-template bool igl::readPLY<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>, Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic> >(std::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> > &, Eigen::PlainObjectBase<Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic> > &);
+template bool igl::readPLY<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>, Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic> >(std::basic_string<char, std::char_traits<char>, std::allocator<char> > const, Eigen::PlainObjectBase<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> > &, Eigen::PlainObjectBase<Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic> > &);
 #endif

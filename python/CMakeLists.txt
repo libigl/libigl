@@ -48,7 +48,8 @@ endif()
 include_directories(${PYTHON_INCLUDE_DIR} include)
 
 ## include pybind
-include_directories(${PROJECT_SOURCE_DIR}/../external/nanogui/ext/pybind11/include)
+set(PYBIND11_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/../external/nanogui/ext/pybind11/include CACHE PATH "Path to pybind11/include")
+include_directories(${PYBIND11_INCLUDE_DIR})
 
 ## include libigl
 option(LIBIGL_USE_STATIC_LIBRARY "Use LibIGL as static library" OFF)
@@ -188,7 +189,7 @@ elseif (UNIX)
     endif()
 
     if (NOT ${U_CMAKE_BUILD_TYPE} MATCHES DEBUG)
-      add_custom_command(TARGET pyigl POST_BUILD COMMAND strip -u -r ${CMAKE_CURRENT_BINARY_DIR}/../pyigl.so)
+      add_custom_command(TARGET pyigl POST_BUILD COMMAND strip -u -r ${PROJECT_SOURCE_DIR}/pyigl.so)
     endif()
   else()
 
@@ -198,7 +199,7 @@ elseif (UNIX)
     endif()
 
     if (NOT ${U_CMAKE_BUILD_TYPE} MATCHES DEBUG)
-      add_custom_command(TARGET pyigl POST_BUILD COMMAND strip ${CMAKE_CURRENT_BINARY_DIR}/../pyigl.so)
+      add_custom_command(TARGET pyigl POST_BUILD COMMAND strip ${PROJECT_SOURCE_DIR}/pyigl.so)
     endif()
   endif()
 endif()
@@ -209,7 +210,7 @@ if (LIBIGL_WITH_PYTHON AND LIBIGL_WITH_NANOGUI)
   add_custom_target(copy ALL)
   add_custom_command(
         TARGET copy
-        COMMAND ${CMAKE_COMMAND} -E copy ${NANOGUI_LIB} ${CMAKE_CURRENT_BINARY_DIR}/../
+        COMMAND ${CMAKE_COMMAND} -E copy ${NANOGUI_LIB} ${PROJECT_SOURCE_DIR}
         )
   add_dependencies(copy pyigl)
 

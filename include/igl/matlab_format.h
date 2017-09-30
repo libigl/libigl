@@ -62,6 +62,12 @@ namespace igl
   IGL_INLINE const std::string matlab_format(
     const Eigen::SparseMatrix<DerivedS> & S,
     const std::string name = "");
+  IGL_INLINE const std::string matlab_format(
+    const double v,
+    const std::string name = "");
+  IGL_INLINE const std::string matlab_format(
+    const float v,
+    const std::string name = "");
   // Return just IOFormat 
   //
   // Example:

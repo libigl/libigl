@@ -177,7 +177,7 @@ Eigen::SparseMatrix<Atype> adjacency_matrix(const ... & F);
 ## Templating with Eigen
 
 Functions taking Eigen dense matrices/arrays as inputs and outputs (but **not**
-return arguments), should template on top of `Eigen::PlainObjectBase`. **Each
+return arguments), should template on top of `Eigen::MatrixBase`. **Each
 parameter** should be derived using its own template.
 
 For example,
@@ -185,9 +185,9 @@ For example,
 ```cpp
 template <typename DerivedV, typename DerivedF, typename DerivedBC>
 void barycenter(
-  const Eigen::PlainObjectBase<DerivedV> & V,
-  const Eigen::PlainObjectBase<DerivedF> & F,
-  const Eigen::PlainObjectBase<DerivedBC> & BC);
+  const Eigen::MatrixBase<DerivedV> & V,
+  const Eigen::MatrixBase<DerivedF> & F,
+  const Eigen::MatrixBase<DerivedBC> & BC);
 ```
 
 The `Derived*` template encodes the scalar type (e.g. `double`, `int`), the
@@ -214,7 +214,7 @@ In `igl/fit_in_unit_cube.h`:
 ```cpp
 template <typename DerivedV, typename DerivedW>
 void fit_to_unit_cube(
-  const Eigen::PlainObjectBase<DerivedV> & V,
+  const Eigen::MatrixBase<DerivedV> & V,
   Eigen::PlainObjectBase<DerivedW> & W);
 template <typename DerivedV>
 void DerivedV fit_to_unit_cube(const Eigen::PlainObjectBase<DerivedV> & V);
@@ -225,7 +225,7 @@ In `igl/fit_in_unit_cube.cpp`:
 ```
 template <typename DerivedV, typename DerivedW>
 void fit_to_unit_cube(
-  const Eigen::PlainObjectBase<DerivedV> & V,
+  const Eigen::MatrixBase<DerivedV> & V,
   Eigen::PlainObjectBase<DerivedW> & W)
 {
   W = (V.rowwise()-V.colwise().minCoeff()).array() /
@@ -233,7 +233,7 @@ void fit_to_unit_cube(
 }
 
 template <typename DerivedV>
-void DerivedV fit_to_unit_cube(const Eigen::PlainObjectBase<DerivedV> & V)
+void DerivedV fit_to_unit_cube(const Eigen::MatrixBase<DerivedV> & V)
 {
   DerivedV W;
   fit_to_unit_cube(V,W);

@@ -96,3 +96,5 @@ python/build4
 python/scripts/generated
 python/builddebug
 tutorial/.idea
+python/buildstatic
+tutorial/cmake-build-debug

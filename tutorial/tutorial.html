@@ -151,6 +151,7 @@ lecture notes links to a cross-platform example application.</p>
 <li><a href="#vectorfieldvisualizer">709 Vector Field Visualization</a></li>
 <li><a href="#slim">710 Scalable Locally Injective Maps</a></li>
 <li><a href="#subdivision">711 Subdivision surfaces</a></li>
+<li><a href="#datasmoothing">712 Data smoothing</a></li>
 </ul></li>
 <li><a href="#future">Chapter 8: Outlook for continuing development</a></li>
 </ul>
@@ -220,6 +221,8 @@ sudo apt-get install libxrandr-dev
 sudo apt-get install libxi-dev
 sudo apt-get install libxmu-dev
 sudo apt-get install libblas-dev
+sudo apt-get install libxinerama-dev
+sudo apt-get install libxcursor-dev
 </code></pre>
 
 <p><em>Note for windows users</em>: libigl only supports the Microsoft Visual Studio 2015 compiler in 64bit mode. It will not work with a 32bit build and it will not work
@@ -958,7 +961,11 @@ functionality as common Matlab functions.</p>
 
 <tbody>
 <tr>
-	<td style="text-align:left;"><code>igl::any_of</code></td>
+	<td style="text-align:left;"><code>igl::all</code></td>
+	<td style="text-align:left;">Whether all elements are non-zero (true)</td>
+</tr>
+<tr>
+	<td style="text-align:left;"><code>igl::any</code></td>
 	<td style="text-align:left;">Whether any elements are non-zero (true)</td>
 </tr>
 <tr>
@@ -978,12 +985,28 @@ functionality as common Matlab functions.</p>
 	<td style="text-align:left;">Act like Matlab&#8217;s <code>:</code>, similar to Eigen&#8217;s <code>LinSpaced</code></td>
 </tr>
 <tr>
+	<td style="text-align:left;"><code>igl::components</code></td>
+	<td style="text-align:left;">Connected components of graph (cf. Matlab&#8217;s <code>graphconncomp</code>)</td>
+</tr>
+<tr>
+	<td style="text-align:left;"><code>igl::count</code></td>
+	<td style="text-align:left;">Count non-zeros in rows or columns</td>
+</tr>
+<tr>
 	<td style="text-align:left;"><code>igl::cross</code></td>
 	<td style="text-align:left;">Cross product per-row</td>
 </tr>
 <tr>
+	<td style="text-align:left;"><code>igl::cumsum</code></td>
+	<td style="text-align:left;">Cummulative summation</td>
+</tr>
+<tr>
 	<td style="text-align:left;"><code>igl::dot</code></td>
 	<td style="text-align:left;">dot product per-row</td>
+</tr>
+<tr>
+	<td style="text-align:left;"><code>igl::eigs</code></td>
+	<td style="text-align:left;">Solve sparse eigen value problem</td>
 </tr>
 <tr>
 	<td style="text-align:left;"><code>igl::find</code></td>
@@ -1010,12 +1033,28 @@ functionality as common Matlab functions.</p>
 	<td style="text-align:left;">Determine whether matrix is diagonal</td>
 </tr>
 <tr>
+	<td style="text-align:left;"><code>igl::ismember</code></td>
+	<td style="text-align:left;">Determine whether elements in A occur in B</td>
+</tr>
+<tr>
 	<td style="text-align:left;"><code>igl::jet</code></td>
 	<td style="text-align:left;">Quantized colors along the rainbow.</td>
 </tr>
 <tr>
+	<td style="text-align:left;"><code>igl::max</code></td>
+	<td style="text-align:left;">Compute maximum entry per row or column</td>
+</tr>
+<tr>
 	<td style="text-align:left;"><code>igl::median</code></td>
 	<td style="text-align:left;">Compute the median per column</td>
+</tr>
+<tr>
+	<td style="text-align:left;"><code>igl::min</code></td>
+	<td style="text-align:left;">Compute minimum entry per row or column</td>
+</tr>
+<tr>
+	<td style="text-align:left;"><code>igl::mod</code></td>
+	<td style="text-align:left;">Compute per element modulo</td>
 </tr>
 <tr>
 	<td style="text-align:left;"><code>igl::mode</code></td>
@@ -1038,6 +1077,10 @@ functionality as common Matlab functions.</p>
 	<td style="text-align:left;">Generate a quantized colormap from blue to yellow</td>
 </tr>
 <tr>
+	<td style="text-align:left;"><code>igl::pinv</code></td>
+	<td style="text-align:left;">Compute Moore-Penrose pseudoinverse</td>
+</tr>
+<tr>
 	<td style="text-align:left;"><code>igl::randperm</code></td>
 	<td style="text-align:left;">Generate a random permutation of [0,&#8230;,n&#8211;1]</td>
 </tr>
@@ -1046,8 +1089,36 @@ functionality as common Matlab functions.</p>
 	<td style="text-align:left;">Convert RGB colors to HSV (cf. Matlab&#8217;s <code>rgb2hsv</code>)</td>
 </tr>
 <tr>
+	<td style="text-align:left;"><code>igl::repmat</code></td>
+	<td style="text-align:left;">Repeat a matrix along columns and rows</td>
+</tr>
+<tr>
+	<td style="text-align:left;"><code>igl::round</code></td>
+	<td style="text-align:left;">Per-element round to whole number</td>
+</tr>
+<tr>
 	<td style="text-align:left;"><code>igl::setdiff</code></td>
 	<td style="text-align:left;">Set difference of matrix elements</td>
+</tr>
+<tr>
+	<td style="text-align:left;"><code>igl::setunion</code></td>
+	<td style="text-align:left;">Set union of matrix elements</td>
+</tr>
+<tr>
+	<td style="text-align:left;"><code>igl::setxor</code></td>
+	<td style="text-align:left;">Set exclusive &#8220;or&#8221; of matrix elements</td>
+</tr>
+<tr>
+	<td style="text-align:left;"><code>igl::slice</code></td>
+	<td style="text-align:left;">Slice parts of matrix using index lists: (cf. Matlab&#8217;s <code>B = A(I,J)</code>)</td>
+</tr>
+<tr>
+	<td style="text-align:left;"><code>igl::slice_mask</code></td>
+	<td style="text-align:left;">Slice parts of matrix using boolean masks: (cf. Matlab&#8217;s <code>B = A(M,N)</code>)</td>
+</tr>
+<tr>
+	<td style="text-align:left;"><code>igl::slice_into</code></td>
+	<td style="text-align:left;">Slice left-hand side of matrix assignment using index lists (cf. Matlab&#8217;s <code>B(I,J) = A</code>)</td>
 </tr>
 <tr>
 	<td style="text-align:left;"><code>igl::sort</code></td>
@@ -1747,18 +1818,18 @@ measuring bending, albeit in a discretization-dependent way.</p>
 <p>Libigl, supports these common flavors. Selecting one is a matter of setting the
 energy type before the precompuation phase:</p>
 
-<pre><code class="cpp">igl::ARAPData data;
+<pre><code class="cpp">igl::ARAPData arap_data;
 arap_data.energy = igl::ARAP_ENERGY_TYPE_SPOKES;
 //arap_data.energy = igl::ARAP_ENERGY_TYPE_SPOKES_AND_RIMS;
 //arap_data.energy = igl::ARAP_ENERGY_TYPE_ELEMENTS; //triangles or tets
-igl::arap_precomputation(V,F,dim,b,data);
+igl::arap_precomputation(V,F,dim,b,arap_data);
 </code></pre>
 
 <p>Just like <code>igl::min_quad_with_fixed_*</code>, this precomputation phase only depends
 on the mesh, fixed vertex indices <code>b</code> and the energy parameters. To solve with
 certain constraints on the positions of vertices in <code>b</code>, we may call:</p>
 
-<pre><code class="cpp">igl::arap_solve(bc,data,U);
+<pre><code class="cpp">igl::arap_solve(bc,arap_data,U);
 </code></pre>
 
 <p>which uses <code>U</code> as an initial guess and then computes the solution into it.</p>
@@ -3543,6 +3614,47 @@ igl::false_barycentric_subdivision." />
 <figcaption>The original coarse mesh and three different subdivision methods:
 <code>igl::upsample</code>, <code>igl::loop</code> and
 <code>igl::false_barycentric_subdivision</code>.</figcaption>
+</figure>
+
+<h2 id="datasmoothing"><a href="#datasmoothing">Data smoothing</a></h2>
+
+<p>A noisy function <span class="math">\(f\)</span> defined on a surface <span class="math">\(\Omega\)</span> can be smoothed using an
+energy minimization that balances a smoothing term <span class="math">\(E_S\)</span> with a quadratic
+fitting term:</p>
+
+<p><span class="math">\(u = \operatorname{argmin}_u \alpha E_S(u) + (1-\alpha)\int_\Omega ||u-f||^2 dx\)</span></p>
+
+<p>The parameter <span class="math">\(\alpha\)</span> determines how aggressively the function is smoothed.</p>
+
+<p>A classical choice for the smoothness energy is the Laplacian energy of the
+function with zero Neumann boundary conditions, which is a form of the
+biharmonic energy. It is constructed using the cotangent Laplacian <code>L</code> and
+the mass matrix <code>M</code>: <code>QL = L'*(M\L)</code>. Because of the implicit zero Neumann
+boundary conditions however, the function behavior is significantly warped at
+the boundary if <span class="math">\(f\)</span> does not have zero normal gradient at the boundary.</p>
+
+<p>In #[stein_2017] it is suggested to use the Biharmonic energy with natural
+Hessian boundary conditions instead, which corresponds to the hessian energy
+with the matrix <code>QH = H'*(M2\H)</code>, where <code>H</code> is a finite element Hessian and
+<code>M2</code> is a stacked mass matrix. The matrices <code>H</code> and <code>QH</code> are implemented in
+libigl as <code>igl::hessian</code> and <code>igl::hessian_energy</code> respectively. An example
+of how to use the function is given in <a href="712_DataSmoothing/main.cpp">Example 712</a>.</p>
+
+<p>In the following image the differences between the Laplacian energy with
+zero Neumann boundary conditions and the Hessian energy can be clearly seen:
+whereas the zero Neumann boundary condition in the third image bias the isolines
+of the function to be perpendicular to the boundary, the Hessian energy gives
+an unbiased result.</p>
+
+<figure>
+<img src="images/712_beetles.jpg" alt="(Example 712) From left to right: a function
+on the beetle mesh, the function with added noise, the result of smoothing
+with the Laplacian energy and zero Neumann boundary conditions, and the
+result of smoothing with the Hessian energy." />
+<figcaption>(<a href="712_DataSmoothing/main.cpp">Example 712</a>) From left to right: a function
+on the beetle mesh, the function with added noise, the result of smoothing
+with the Laplacian energy and zero Neumann boundary conditions, and the
+result of smoothing with the Hessian energy.</figcaption>
 </figure>
 
 <h1 id="chapter7:miscellaneous">Miscellaneous</h1>

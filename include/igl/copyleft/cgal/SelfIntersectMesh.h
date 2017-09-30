@@ -80,8 +80,8 @@ namespace igl
             Box;
     
           // Input mesh
-          const Eigen::PlainObjectBase<DerivedV> & V;
-          const Eigen::PlainObjectBase<DerivedF> & F;
+          const Eigen::MatrixBase<DerivedV> & V;
+          const Eigen::MatrixBase<DerivedF> & F;
           // Number of self-intersecting triangle pairs
           typedef typename DerivedF::Index Index;
           Index count;
@@ -112,8 +112,8 @@ namespace igl
           //
           // See also: remesh_self_intersections.h
           inline SelfIntersectMesh(
-              const Eigen::PlainObjectBase<DerivedV> & V,
-              const Eigen::PlainObjectBase<DerivedF> & F,
+              const Eigen::MatrixBase<DerivedV> & V,
+              const Eigen::MatrixBase<DerivedF> & F,
               const RemeshSelfIntersectionsParam & params,
               Eigen::PlainObjectBase<DerivedVV> & VV,
               Eigen::PlainObjectBase<DerivedFF> & FF,
@@ -289,8 +289,8 @@ inline igl::copyleft::cgal::SelfIntersectMesh<
   DerivedIF,
   DerivedJ,
   DerivedIM>::SelfIntersectMesh(
-  const Eigen::PlainObjectBase<DerivedV> & V,
-  const Eigen::PlainObjectBase<DerivedF> & F,
+  const Eigen::MatrixBase<DerivedV> & V,
+  const Eigen::MatrixBase<DerivedF> & F,
   const RemeshSelfIntersectionsParam & params,
   Eigen::PlainObjectBase<DerivedVV> & VV,
   Eigen::PlainObjectBase<DerivedFF> & FF,

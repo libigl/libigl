@@ -7,7 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "unzip_corners.h"
 
-#include "unique.h"
+#include "unique_rows.h"
 #include "slice.h"
 
 template < typename DerivedA, typename DerivedU, typename DerivedG, typename DerivedJ >

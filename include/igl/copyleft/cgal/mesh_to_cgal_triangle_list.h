@@ -31,8 +31,8 @@ namespace igl
         typename DerivedF,
         typename Kernel>
       IGL_INLINE void mesh_to_cgal_triangle_list(
-        const Eigen::PlainObjectBase<DerivedV> & V,
-        const Eigen::PlainObjectBase<DerivedF> & F,
+        const Eigen::MatrixBase<DerivedV> & V,
+        const Eigen::MatrixBase<DerivedF> & F,
         std::vector<CGAL::Triangle_3<Kernel> > & T);
     }
   }

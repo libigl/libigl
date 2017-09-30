@@ -24,8 +24,8 @@ namespace igl
   //   if poly-size ≠ 3 then dim must equal 3.
   template <typename DerivedV, typename DerivedF, typename DerivedK>
   IGL_INLINE void internal_angles(
-    const Eigen::PlainObjectBase<DerivedV>& V,
-    const Eigen::PlainObjectBase<DerivedF>& F,
+    const Eigen::MatrixBase<DerivedV>& V,
+    const Eigen::MatrixBase<DerivedF>& F,
     Eigen::PlainObjectBase<DerivedK> & K);
   // Inputs:
   //   L_sq  #F by 3 list of squared edge lengths
@@ -37,7 +37,7 @@ namespace igl
   //   Usage of internal_angles_using_squared_edge_lengths is preferred to internal_angles_using_squared_edge_lengths
   template <typename DerivedL, typename DerivedK>
   IGL_INLINE void internal_angles_using_squared_edge_lengths(
-    const Eigen::PlainObjectBase<DerivedL>& L_sq,
+    const Eigen::MatrixBase<DerivedL>& L_sq,
     Eigen::PlainObjectBase<DerivedK> & K);
   // Inputs:
   //   L  #F by 3 list of edge lengths
@@ -50,7 +50,7 @@ namespace igl
   //   This function is deprecated and probably will be removed in future versions
   template <typename DerivedL, typename DerivedK>
   IGL_INLINE void internal_angles_using_edge_lengths(
-    const Eigen::PlainObjectBase<DerivedL>& L,
+    const Eigen::MatrixBase<DerivedL>& L,
     Eigen::PlainObjectBase<DerivedK> & K);}
 
 #ifndef IGL_STATIC_LIBRARY

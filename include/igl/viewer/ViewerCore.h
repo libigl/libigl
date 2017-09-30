@@ -88,7 +88,8 @@ public:
   {
     ROTATION_TYPE_TRACKBALL = 0,
     ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP = 1,
-    NUM_ROTATION_TYPES = 2
+    ROTATION_TYPE_NO_ROTATION = 2,
+    NUM_ROTATION_TYPES = 3
   };
   IGL_INLINE void set_rotation_type(const RotationType & value);
 

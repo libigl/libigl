@@ -30,11 +30,11 @@ namespace igl
     typename DerivedD,
     typename DerivedL>
   IGL_INLINE void barycentric_coordinates(
-    const Eigen::PlainObjectBase<DerivedP> & P,
-    const Eigen::PlainObjectBase<DerivedA> & A,
-    const Eigen::PlainObjectBase<DerivedB> & B,
-    const Eigen::PlainObjectBase<DerivedC> & C,
-    const Eigen::PlainObjectBase<DerivedD> & D,
+    const Eigen::MatrixBase<DerivedP> & P,
+    const Eigen::MatrixBase<DerivedA> & A,
+    const Eigen::MatrixBase<DerivedB> & B,
+    const Eigen::MatrixBase<DerivedC> & C,
+    const Eigen::MatrixBase<DerivedD> & D,
     Eigen::PlainObjectBase<DerivedL> & L);
   // Compute barycentric coordinates in a triangle
   //

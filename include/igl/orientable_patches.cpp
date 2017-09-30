@@ -8,7 +8,7 @@
 #include "orientable_patches.h"
 #include "components.h"
 #include "sort.h"
-#include "unique.h"
+#include "unique_rows.h"
 #include <vector>
 #include <iostream>
 
