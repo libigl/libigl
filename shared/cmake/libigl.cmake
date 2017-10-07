@@ -82,7 +82,6 @@ function(compile_igl_module module_dir prefix)
     file(GLOB SOURCES_IGL_${module_name}
       "${LIBIGL_SOURCE_DIR}/igl/${prefix}/${module_dir}/*.cpp")
     add_library(igl_${module_name} STATIC ${SOURCES_IGL_${module_name}} ${ARGN})
-    target_link_libraries(igl_${module_name} PUBLIC igl_common)
     if(MSVC)
       target_compile_options(igl_${module_name} PRIVATE /w) # disable all warnings (not ideal but...)
     else()
@@ -90,7 +89,11 @@ function(compile_igl_module module_dir prefix)
     endif()
   else()
     add_library(igl_${module_name} INTERFACE)
-    target_link_libraries(igl_${module_name} INTERFACE igl_common)
+  endif()
+  
+  target_link_libraries(igl_${module_name} ${IGL_SCOPE} igl_common)
+  if(NOT module_name STREQUAL "core")
+	  target_link_libraries(igl_${module_name} ${IGL_SCOPE} igl_core)
   endif()
 
   # Alias target because it looks nicer
