@@ -36,20 +36,20 @@ def recursive_traversal(dir,  oldcopyright, copyright):
         if (os.path.isdir(fullfn)):
             recursive_traversal(fullfn, oldcopyright, copyright)
         else:
-            if (fullfn.endswith(".h")):
+            if (fullfn.endswith(".py")):
                 update_source(fullfn, oldcopyright, copyright)
 
 
 #oldcright = file("oldcr.txt","r+").read()
 #cright = file("copyrightText.txt","r+").read()
 oldcright = None
-cright = """// This file is part of libigl, a simple c++ geometry processing library.
-//
-// Copyright (C) 2017 Sebastian Koch <s.koch@tu-berlin.de> and Daniele Panozzo <daniele.panozzo@gmail.com>
-//
-// This Source Code Form is subject to the terms of the Mozilla Public License
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can
-// obtain one at http://mozilla.org/MPL/2.0/.
+cright = """# This file is part of libigl, a simple c++ geometry processing library.
+#
+# Copyright (C) 2017 Sebastian Koch <s.koch@tu-berlin.de> and Daniele Panozzo <daniele.panozzo@gmail.com>
+#
+# This Source Code Form is subject to the terms of the Mozilla Public License
+# v. 2.0. If a copy of the MPL was not distributed with this file, You can
+# obtain one at http://mozilla.org/MPL/2.0/.
 """
 recursive_traversal(".", oldcright, cright)
 exit()
