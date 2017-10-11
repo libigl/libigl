@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 2.8.12)
 project(libigl)
 
+message(DEPRECATION "shared/cmake/CMakeLists.txt is deprecated. Use libigl.cmake instead.")
+
 ### Available options ###
 option(LIBIGL_USE_STATIC_LIBRARY    "Use libigl as static library" OFF)
 option(LIBIGL_WITH_ANTTWEAKBAR      "Use AntTweakBar"    OFF)
