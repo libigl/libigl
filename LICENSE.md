@@ -38,9 +38,3 @@ The Libigl code that interfaces with "copyleft" libraries is in
 `include/igl/copyleft`.  Only include these headers if you are accept the
 licensing terms of the corresponding external library.  For example, using
 `include/igl/copyleft/tetgen` requires that you accept the terms of the AGPLv3.
-
-One additional exception is include/igl/opengl2/tga.hpp (and tga.cpp), which is
-subject to the terms of the GNU GPLv2.  No other files include these files, so
-it is safe to use all other files in include/igl/opengl2, even if you do not
-accept the terms of the GPLv2.
-// TODO: consider moving these two files to include/igl/copyleft/opengl2
