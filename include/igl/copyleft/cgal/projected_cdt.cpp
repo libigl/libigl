@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2016 Alec Jacobson
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "projected_cdt.h"
 #include "insert_into_cdt.h"
@@ -29,8 +29,8 @@ IGL_INLINE void igl::copyleft::cgal::projected_cdt(
   size_t count=0;
   for (
     auto itr = cdt.finite_vertices_begin();
-    itr != cdt.finite_vertices_end(); 
-    itr++) 
+    itr != cdt.finite_vertices_end();
+    itr++)
   {
     vertices.push_back(P.to_3d(itr->point()));
     v2i[itr] = count;
@@ -39,10 +39,10 @@ IGL_INLINE void igl::copyleft::cgal::projected_cdt(
   // Read off faces and store index triples
   for (
     auto itr = cdt.finite_faces_begin();
-    itr != cdt.finite_faces_end(); 
+    itr != cdt.finite_faces_end();
     itr++)
   {
-    faces.push_back( 
+    faces.push_back(
       { v2i[itr->vertex(0)], v2i[itr->vertex(1)], v2i[itr->vertex(2)] });
   }
 }

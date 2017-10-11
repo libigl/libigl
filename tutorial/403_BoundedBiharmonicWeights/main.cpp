@@ -1,13 +1,10 @@
-// If you don't have mosek installed and don't want to install it. Then
-// uncomment the following six lines.  Don't use static library for this
-// example because of Mosek complications
-//
-//#define IGL_NO_MOSEK
-//#ifdef IGL_NO_MOSEK
-//#ifdef IGL_STATIC_LIBRARY
-//#undef IGL_STATIC_LIBRARY
-//#endif
-//#endif
+// Because of Mosek complications, we don't use static library if Mosek is used.
+#ifdef LIBIGL_WITH_MOSEK
+#ifdef IGL_STATIC_LIBRARY
+#undef IGL_STATIC_LIBRARY
+#endif
+#endif
+
 #include <igl/boundary_conditions.h>
 #include <igl/colon.h>
 #include <igl/column_to_quats.h>
