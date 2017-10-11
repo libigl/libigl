@@ -1,8 +1,8 @@
 [submodule "external/nanogui"]
 	path = external/nanogui
-url=https://github.com/libigl/nanogui.git
-        fetchRecursiveSubmodules = true
-        ignore = dirty
+	url=https://github.com/libigl/nanogui.git
+	fetchRecursiveSubmodules = true
+	ignore = dirty
 [submodule "external/embree"]
 	path = external/embree
 	url = https://github.com/embree/embree.git
@@ -20,7 +20,7 @@ url=https://github.com/libigl/nanogui.git
 	url = https://github.com/leethomason/tinyxml2.git
 [submodule "external/CoMISo"]
 	path = external/CoMISo
-	url = https://github.com/libigl/CoMISo.git
+	url = https://github.com/jdumas/CoMISo.git
 [submodule "external/cork"]
 	path = external/cork
 	url = https://github.com/libigl/cork.git
