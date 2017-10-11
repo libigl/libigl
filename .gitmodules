@@ -20,7 +20,7 @@
 	url = https://github.com/leethomason/tinyxml2.git
 [submodule "external/CoMISo"]
 	path = external/CoMISo
-	url = https://github.com/jdumas/CoMISo.git
+	url = https://github.com/libigl/CoMISo.git
 [submodule "external/cork"]
 	path = external/cork
 	url = https://github.com/libigl/cork.git
