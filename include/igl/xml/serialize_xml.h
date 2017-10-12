@@ -58,7 +58,7 @@ namespace igl
     IGL_INLINE void serialize_xml(
       const T& obj,
       const std::string& objectName,
-      const std::string& filename, 
+      const std::string& filename,
       bool binary = false,
       bool overwrite = false);
     template <typename T>
@@ -68,7 +68,7 @@ namespace igl
       tinyxml2::XMLDocument* doc,
       tinyxml2::XMLElement* element,
       bool binary = false);
-  
+
     // deserializes the given data from a xml file or doc data back to the provided object
     //
     // Templates:
@@ -90,7 +90,7 @@ namespace igl
     IGL_INLINE void deserialize_xml(T& obj,const std::string& objectName,const std::string& filename);
     template <typename T>
     IGL_INLINE void deserialize_xml(T& obj,const std::string& objectName,const tinyxml2::XMLDocument* doc,const tinyxml2::XMLElement* element);
-  
+
     // internal functions
     namespace serialization_xml
     {
@@ -99,38 +99,38 @@ namespace igl
       IGL_INLINE typename std::enable_if<std::is_fundamental<T>::value>::type serialize(const T& obj,tinyxml2::XMLDocument* doc,tinyxml2::XMLElement* element,const std::string& name);
       template <typename T>
       IGL_INLINE typename std::enable_if<std::is_fundamental<T>::value>::type deserialize(T& obj,const tinyxml2::XMLDocument* doc,const tinyxml2::XMLElement* element,const std::string& name);
-  
+
       // std::string
       IGL_INLINE void serialize(const std::string& obj,tinyxml2::XMLDocument* doc,tinyxml2::XMLElement* element,const std::string& name);
       IGL_INLINE void deserialize(std::string& obj,const tinyxml2::XMLDocument* doc,const tinyxml2::XMLElement* element,const std::string& name);
-  
+
       // XMLSerializableBase
       template <typename T>
       IGL_INLINE typename std::enable_if<std::is_base_of<XMLSerializableBase,T>::value>::type serialize(const T& obj,tinyxml2::XMLDocument* doc,tinyxml2::XMLElement* element,const std::string& name);
       template <typename T>
       IGL_INLINE typename std::enable_if<std::is_base_of<XMLSerializableBase,T>::value>::type deserialize(T& obj,const tinyxml2::XMLDocument* doc,const tinyxml2::XMLElement* element,const std::string& name);
-  
+
       // STL containers
       template <typename T1, typename T2>
       IGL_INLINE void serialize(const std::pair<T1,T2>& obj,tinyxml2::XMLDocument* doc,tinyxml2::XMLElement* element,const std::string& name);
       template <typename T1,typename T2>
       IGL_INLINE void deserialize(std::pair<T1,T2>& obj,const tinyxml2::XMLDocument* doc,const tinyxml2::XMLElement* element,const std::string& name);
-  
+
       template <typename T1,typename T2>
       IGL_INLINE void serialize(const std::vector<T1,T2>& obj,tinyxml2::XMLDocument* doc,tinyxml2::XMLElement* element,const std::string& name);
       template <typename T1,typename T2>
       IGL_INLINE void deserialize(std::vector<T1,T2>& obj,const tinyxml2::XMLDocument* doc,const tinyxml2::XMLElement* element,const std::string& name);
-  
+
       template <typename T>
       IGL_INLINE void serialize(const std::set<T>& obj,tinyxml2::XMLDocument* doc,tinyxml2::XMLElement* element,const std::string& name);
       template <typename T>
       IGL_INLINE void deserialize(std::set<T>& obj,const tinyxml2::XMLDocument* doc,const tinyxml2::XMLElement* element,const std::string& name);
-  
+
       template <typename T1,typename T2>
       IGL_INLINE void serialize(const std::map<T1,T2>& obj,tinyxml2::XMLDocument* doc,tinyxml2::XMLElement* element,const std::string& name);
       template <typename T1,typename T2>
       IGL_INLINE void deserialize(std::map<T1,T2>& obj,const tinyxml2::XMLDocument* doc,const tinyxml2::XMLElement* element,const std::string& name);
-  
+
       // Eigen types
 
       // Serialize a Dense Eigen Matrix to xml (in the matrix= attribute,
@@ -143,7 +143,7 @@ namespace igl
       // Outputs:
       //   doc  pointer to xml document
       //   element  pointer to xml element
-      //   
+      //
       template<typename T,int R,int C,int P,int MR,int MC>
       IGL_INLINE void serialize(
         const Eigen::Matrix<T,R,C,P,MR,MC>& obj,
@@ -168,7 +168,7 @@ namespace igl
         const std::string& name,
         const std::function<void(const std::string &,T &)> & from_string,
         Eigen::Matrix<T,R,C,P,MR,MC>& obj);
-  
+
       // Legacy APIs
       template<typename T,int R,int C,int P,int MR,int MC>
       IGL_INLINE void serialize(
@@ -182,18 +182,18 @@ namespace igl
         const tinyxml2::XMLDocument* doc,
         const tinyxml2::XMLElement* element,
         const std::string& name);
-  
+
       template<typename T,int P,typename I>
       IGL_INLINE void serialize(const Eigen::SparseMatrix<T,P,I>& obj,tinyxml2::XMLDocument* doc,tinyxml2::XMLElement* element,const std::string& name);
       template<typename T,int P,typename I>
       IGL_INLINE void deserialize(Eigen::SparseMatrix<T,P,I>& obj,const tinyxml2::XMLDocument* doc,const tinyxml2::XMLElement* element,const std::string& name);
-  
+
       // raw pointers
       template <typename T>
       IGL_INLINE typename std::enable_if<std::is_pointer<T>::value>::type serialize(const T& obj,tinyxml2::XMLDocument* doc,tinyxml2::XMLElement* element,const std::string& name);
       template <typename T>
       IGL_INLINE typename std::enable_if<std::is_pointer<T>::value>::type deserialize(T& obj,const tinyxml2::XMLDocument* doc,const tinyxml2::XMLElement* element,const std::string& name);
-  
+
       // helper functions
       tinyxml2::XMLElement* getElement(tinyxml2::XMLDocument* doc,tinyxml2::XMLElement* element,const std::string& name);
       IGL_INLINE void getAttribute(const char* src,bool& dest);
@@ -210,7 +210,7 @@ namespace igl
       IGL_INLINE void decodeXMLElementName(std::string& name);
       IGL_INLINE std::string base64_encode(unsigned char const* bytes_to_encode,unsigned int in_len);
       IGL_INLINE std::string base64_decode(std::string const& encoded_string);
-  
+
       // compile time type serializable check
       template <typename T>
       struct is_stl_container { static const bool value = false; };
@@ -222,14 +222,14 @@ namespace igl
       struct is_stl_container<std::set<T> > { static const bool value = true; };
       template <typename T1,typename T2>
       struct is_stl_container<std::map<T1,T2> > { static const bool value = true; };
-  
+
       template <typename T>
       struct is_eigen_type { static const bool value = false; };
       template <typename T,int R,int C,int P,int MR,int MC>
       struct is_eigen_type<Eigen::Matrix<T,R,C,P,MR,MC> > { static const bool value = true; };
       template <typename T,int P,typename I>
       struct is_eigen_type<Eigen::SparseMatrix<T,P,I> > { static const bool value = true; };
-  
+
       template <typename T>
       struct is_serializable {
         using T0 = typename  std::remove_pointer<T>::type;

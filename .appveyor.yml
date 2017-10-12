@@ -6,6 +6,7 @@ branches:
   only:
     - master
     - alecjacobson
+    - cmake
 install:
   - git submodule update --init --recursive
   - cinstall: python
@@ -14,7 +15,7 @@ build_script:
   - cd c:\projects\libigl\tutorial
   - mkdir build
   - cd build
-  - cmake -D "LIBIGL_USE_STATIC_LIBRARY=ON" -G "Visual Studio 14 2015 Win64" ../
+  - cmake -D "LIBIGL_USE_STATIC_LIBRARY=ON" -D "LIBIGL_WITH_ANTTWEAKBAR=OFF" -G "Visual Studio 14 2015 Win64" ../
 #  - cmake -G "Visual Studio 14 2015 Win64" ../
   - set MSBuildLogger="C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 #  - set MSBuildOptions=/v:m /p:Configuration=Release /logger:%MSBuildLogger%
