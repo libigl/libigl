@@ -387,28 +387,30 @@ namespace glfw
       return this->selected_data().face_based;
     });
 
-    ngui->addVariable("Show texture",core.show_texture);
+    ngui->addVariable("Show texture",this->selected_data().show_texture);
 
     ngui->addVariable<bool>("Invert normals",[&](bool checked)
     {
       this->selected_data().dirty |= ViewerData::DIRTY_NORMAL;
-      this->core.invert_normals = checked;
+      this->selected_data().invert_normals = checked;
     },[&]()
     {
-      return this->core.invert_normals;
+      return this->selected_data().invert_normals;
     });
 
-    ngui->addVariable("Show overlay", core.show_overlay);
-    ngui->addVariable("Show overlay depth", core.show_overlay_depth);
+    // Alec: This will probably just attach to the selected_data() at the time
+    // that addVariable is called. We probably need to use a callback here.
+    ngui->addVariable("Show overlay", selected_data().show_overlay);
+    ngui->addVariable("Show overlay depth", selected_data().show_overlay_depth);
+    ngui->addVariable("Line color", (nanogui::Color &) selected_data().line_color);
     ngui->addVariable("Background", (nanogui::Color &) core.background_color);
-    ngui->addVariable("Line color", (nanogui::Color &) core.line_color);
-    ngui->addVariable("Shininess", core.shininess);
+    ngui->addVariable("Shininess", selected_data().shininess);
 
     ngui->addGroup("Overlays");
-    ngui->addVariable("Wireframe", core.show_lines);
-    ngui->addVariable("Fill", core.show_faces);
-    ngui->addVariable("Show vertex labels", core.show_vertid);
-    ngui->addVariable("Show faces labels", core.show_faceid);
+    ngui->addVariable("Wireframe", selected_data().show_lines);
+    ngui->addVariable("Fill", selected_data().show_faces);
+    ngui->addVariable("Show vertex labels", selected_data().show_vertid);
+    ngui->addVariable("Show faces labels", selected_data().show_faceid);
 
     screen->setVisible(true);
     screen->performLayout();
@@ -671,13 +673,13 @@ namespace glfw
       case 'i':
       {
         selected_data().dirty |= ViewerData::DIRTY_NORMAL;
-        core.invert_normals = !core.invert_normals;
+        selected_data().invert_normals = !selected_data().invert_normals;
         return true;
       }
       case 'L':
       case 'l':
       {
-        core.show_lines = !core.show_lines;
+        selected_data().show_lines = !selected_data().show_lines;
         return true;
       }
       case 'O':
@@ -689,7 +691,7 @@ namespace glfw
       case 'T':
       case 't':
       {
-        core.show_faces = !core.show_faces;
+        selected_data().show_faces = !selected_data().show_faces;
         return true;
       }
       case 'Z':
@@ -716,10 +718,10 @@ namespace glfw
       }
 #ifdef IGL_VIEWER_WITH_NANOGUI
       case ';':
-        core.show_vertid = !core.show_vertid;
+        selected_data().show_vertid = !selected_data().show_vertid;
         return true;
       case ':':
-        core.show_faceid = !core.show_faceid;
+        selected_data().show_faceid = !selected_data().show_faceid;
         return true;
 #endif
       default: break;//do nothing
