@@ -17,7 +17,19 @@
 
 
 IGL_INLINE igl::ViewerData::ViewerData()
-: dirty(DIRTY_ALL)
+: dirty(DIRTY_ALL),
+  show_faces(true),
+  show_lines(true),
+  invert_normals(false),
+  show_overlay(true),
+  show_overlay_depth(true),
+  show_vertid(false),
+  show_faceid(false),
+  show_texture(false),
+  point_size(30),
+  line_width(0.5f),
+  line_color(0,0,0,1),
+  shininess(35.0f)
 {
   clear();
 };

@@ -103,12 +103,9 @@ public:
   TextRenderer textrenderer;
 #endif
 
-  // Shape material
-  float shininess;
 
   // Colors
   Eigen::Vector4f background_color;
-  Eigen::Vector4f line_color;
 
   // Lighting
   Eigen::Vector3f light_position;
@@ -136,20 +133,7 @@ public:
   float camera_dnear;
   float camera_dfar;
 
-  // Visualization options
-  bool show_overlay;
-  bool show_overlay_depth;
-  bool show_texture;
-  bool show_faces;
-  bool show_lines;
-  bool show_vertid;
-  bool show_faceid;
-  bool invert_normals;
   bool depth_test;
-
-  // Point size / line width
-  float point_size;
-  float line_width;
 
   // Animation
   bool is_animating;
@@ -161,7 +145,8 @@ public:
   // Viewport size
   Eigen::Vector4f viewport;
 
-  // Save the OpenGL transformation matrices used for the previous rendering pass
+  // Save the OpenGL transformation matrices used for the previous rendering
+  // pass
   Eigen::Matrix4f view;
   Eigen::Matrix4f model;
   Eigen::Matrix4f proj;
@@ -176,70 +161,57 @@ public:
 #ifdef ENABLE_SERIALIZATION
 #include <igl/serialize.h>
 namespace igl {
-	namespace serialization {
+  namespace serialization {
 
-		inline void serialization(bool s, igl::opengl::ViewerCore& obj, std::vector<char>& buffer)
-		{
-			SERIALIZE_MEMBER(shininess);
+    inline void serialization(bool s, igl::opengl::ViewerCore& obj, std::vector<char>& buffer)
+    {
 
-			SERIALIZE_MEMBER(background_color);
-			SERIALIZE_MEMBER(line_color);
+      SERIALIZE_MEMBER(background_color);
 
-			SERIALIZE_MEMBER(light_position);
-			SERIALIZE_MEMBER(lighting_factor);
+      SERIALIZE_MEMBER(light_position);
+      SERIALIZE_MEMBER(lighting_factor);
 
-			SERIALIZE_MEMBER(trackball_angle);
-			SERIALIZE_MEMBER(rotation_type);
+      SERIALIZE_MEMBER(trackball_angle);
+      SERIALIZE_MEMBER(rotation_type);
 
-			SERIALIZE_MEMBER(model_zoom);
-			SERIALIZE_MEMBER(model_translation);
+      SERIALIZE_MEMBER(model_zoom);
+      SERIALIZE_MEMBER(model_translation);
 
-			SERIALIZE_MEMBER(model_zoom_uv);
-			SERIALIZE_MEMBER(model_translation_uv);
+      SERIALIZE_MEMBER(model_zoom_uv);
+      SERIALIZE_MEMBER(model_translation_uv);
 
-			SERIALIZE_MEMBER(camera_zoom);
-			SERIALIZE_MEMBER(orthographic);
-			SERIALIZE_MEMBER(camera_view_angle);
-			SERIALIZE_MEMBER(camera_dnear);
-			SERIALIZE_MEMBER(camera_dfar);
-			SERIALIZE_MEMBER(camera_eye);
-			SERIALIZE_MEMBER(camera_center);
-			SERIALIZE_MEMBER(camera_up);
+      SERIALIZE_MEMBER(camera_zoom);
+      SERIALIZE_MEMBER(orthographic);
+      SERIALIZE_MEMBER(camera_view_angle);
+      SERIALIZE_MEMBER(camera_dnear);
+      SERIALIZE_MEMBER(camera_dfar);
+      SERIALIZE_MEMBER(camera_eye);
+      SERIALIZE_MEMBER(camera_center);
+      SERIALIZE_MEMBER(camera_up);
 
-			SERIALIZE_MEMBER(show_faces);
-			SERIALIZE_MEMBER(show_lines);
-			SERIALIZE_MEMBER(invert_normals);
-			SERIALIZE_MEMBER(show_overlay);
-			SERIALIZE_MEMBER(show_overlay_depth);
-			SERIALIZE_MEMBER(show_vertid);
-			SERIALIZE_MEMBER(show_faceid);
-			SERIALIZE_MEMBER(show_texture);
-			SERIALIZE_MEMBER(depth_test);
+      SERIALIZE_MEMBER(depth_test);
+      SERIALIZE_MEMBER(is_animating);
+      SERIALIZE_MEMBER(animation_max_fps);
 
-			SERIALIZE_MEMBER(point_size);
-			SERIALIZE_MEMBER(line_width);
-			SERIALIZE_MEMBER(is_animating);
-			SERIALIZE_MEMBER(animation_max_fps);
+      SERIALIZE_MEMBER(object_scale);
 
-			SERIALIZE_MEMBER(object_scale);
+      SERIALIZE_MEMBER(viewport);
+      SERIALIZE_MEMBER(view);
+      SERIALIZE_MEMBER(model);
+      SERIALIZE_MEMBER(proj);
+    }
 
-			SERIALIZE_MEMBER(viewport);
-			SERIALIZE_MEMBER(view);
-			SERIALIZE_MEMBER(model);
-			SERIALIZE_MEMBER(proj);
-		}
+    template<>
+    inline void serialize(const igl::opengl::ViewerCore& obj, std::vector<char>& buffer)
+    {
+      serialization(true, const_cast<igl::opengl::ViewerCore&>(obj), buffer);
+    }
 
-		template<>
-		inline void serialize(const igl::opengl::ViewerCore& obj, std::vector<char>& buffer)
-		{
-			serialization(true, const_cast<igl::opengl::ViewerCore&>(obj), buffer);
-		}
-
-		template<>
-		inline void deserialize(igl::opengl::ViewerCore& obj, const std::vector<char>& buffer)
-		{
-			serialization(false, obj, const_cast<std::vector<char>&>(buffer));
-		}
+    template<>
+    inline void deserialize(igl::opengl::ViewerCore& obj, const std::vector<char>& buffer)
+    {
+      serialization(false, obj, const_cast<std::vector<char>&>(buffer));
+    }
   }
 }
 #endif
