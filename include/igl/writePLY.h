@@ -29,18 +29,18 @@ namespace igl
     typename DerivedUV>
   IGL_INLINE bool writePLY(
     const std::string & filename,
-    const Eigen::PlainObjectBase<DerivedV> & V,
-    const Eigen::PlainObjectBase<DerivedF> & F,
-    const Eigen::PlainObjectBase<DerivedN> & N,
-    const Eigen::PlainObjectBase<DerivedUV> & UV,
+    const Eigen::MatrixBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedF> & F,
+    const Eigen::MatrixBase<DerivedN> & N,
+    const Eigen::MatrixBase<DerivedUV> & UV,
     const bool ascii = true);
   template <
     typename DerivedV,
     typename DerivedF>
   IGL_INLINE bool writePLY(
     const std::string & filename,
-    const Eigen::PlainObjectBase<DerivedV> & V,
-    const Eigen::PlainObjectBase<DerivedF> & F,
+    const Eigen::MatrixBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedF> & F,
     const bool ascii = true);
 }
 #ifndef IGL_STATIC_LIBRARY

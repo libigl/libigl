@@ -33,10 +33,8 @@ namespace igl
   //   g  green value
   //   b  blue value
   template <typename T>
-  [[deprecated("The jet functions have been refactored into a general colormap function set and are tagged for removal -- see igl/colormap.h")]]
   IGL_INLINE void jet(const T f, T * rgb);
   template <typename T>
-  [[deprecated("The jet functions have been refactored into a general colormap function set and are tagged for removal -- see igl/colormap.h")]]
   IGL_INLINE void jet(const T f, T & r, T & g, T & b);
   // Inputs:
   //   Z  #Z list of factors
@@ -44,18 +42,16 @@ namespace igl
   // Outputs:
   //   C  #C by 3 list of rgb colors
   template <typename DerivedZ, typename DerivedC>
-  [[deprecated("The jet functions have been refactored into a general colormap function set and are tagged for removal -- see igl/colormap.h")]]
   IGL_INLINE void jet(
-    const Eigen::PlainObjectBase<DerivedZ> & Z,
+    const Eigen::MatrixBase<DerivedZ> & Z,
     const bool normalize,
     Eigen::PlainObjectBase<DerivedC> & C);
   // Inputs:
   //   min_z  value at blue
   //   max_z  value at red
   template <typename DerivedZ, typename DerivedC>
-  [[deprecated("The jet functions have been refactored into a general colormap function set and are tagged for removal -- see igl/colormap.h")]]
   IGL_INLINE void jet(
-    const Eigen::PlainObjectBase<DerivedZ> & Z,
+    const Eigen::MatrixBase<DerivedZ> & Z,
     const double min_Z,
     const double max_Z,
     Eigen::PlainObjectBase<DerivedC> & C);

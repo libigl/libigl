@@ -41,7 +41,7 @@
  */
 
 #include "tga.h"
-#include "glext.h"
+#include "../../opengl2/glext.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
