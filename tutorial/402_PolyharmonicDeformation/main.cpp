@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
   // Plot the mesh with pseudocolors
   igl::opengl::glfw::Viewer viewer;
   viewer.selected_data().set_mesh(U, F);
-  viewer.core.show_lines = false;
+  viewer.selected_data().show_lines = false;
   viewer.selected_data().set_colors(C);
   viewer.core.trackball_angle = Eigen::Quaternionf(0.81,-0.58,-0.03,-0.03);
   viewer.core.trackball_angle.normalize();

@@ -147,8 +147,8 @@ int main(int argc, char *argv[])
   igl::opengl::glfw::Viewer viewer;
   viewer.selected_data().set_mesh(V, F);
   viewer.callback_key_down = &key_down;
-  viewer.core.show_lines = false;
-  viewer.core.line_width = 10000;// this does not work, why?
+  viewer.selected_data().show_lines = false;
+  viewer.selected_data().line_width = 10000;// this does not work, why?
   key_down(viewer,'2',0);
 
 

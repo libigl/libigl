@@ -77,8 +77,8 @@ bool key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier
     return false;
 
   viewer.selected_data().clear();
-  viewer.core.show_lines = false;
-  viewer.core.show_texture = false;
+  viewer.selected_data().show_lines = false;
+  viewer.selected_data().show_texture = false;
 
   if (key == '1')
   {
@@ -153,7 +153,7 @@ bool key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier
     viewer.selected_data().set_mesh(V_deformed, F);
     viewer.selected_data().set_uv(V_uv,F_uv);
     viewer.selected_data().set_colors(RowVector3d(1,1,1));
-    viewer.core.show_texture = true;
+    viewer.selected_data().show_texture = true;
   }
 
   if (key == '6')
@@ -162,7 +162,7 @@ bool key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier
     viewer.selected_data().set_mesh(V, F);
     viewer.selected_data().set_uv(V_uv,F_uv);
     viewer.selected_data().set_colors(RowVector3d(1,1,1));
-    viewer.core.show_texture = true;
+    viewer.selected_data().show_texture = true;
   }
 
   // Replace the standard texture with an integer shift invariant texture

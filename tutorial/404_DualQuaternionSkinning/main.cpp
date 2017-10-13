@@ -133,9 +133,9 @@ int main(int argc, char *argv[])
   igl::opengl::glfw::Viewer viewer;
   viewer.selected_data().set_mesh(U, F);
   viewer.selected_data().set_edges(C,BE,sea_green);
-  viewer.core.show_lines = false;
-  viewer.core.show_overlay_depth = false;
-  viewer.core.line_width = 1;
+  viewer.selected_data().show_lines = false;
+  viewer.selected_data().show_overlay_depth = false;
+  viewer.selected_data().line_width = 1;
   viewer.core.trackball_angle.normalize();
   viewer.callback_pre_draw = &pre_draw;
   viewer.callback_key_down = &key_down;

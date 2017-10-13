@@ -326,7 +326,7 @@ namespace glfw
 
   IGL_INLINE void Viewer::launch_shut()
   {
-    for(auto & opengl : opengl_list)
+    for(auto & opengl : opengl_state_list)
     {
       opengl.free();
     }
@@ -444,7 +444,7 @@ namespace glfw
 
   IGL_INLINE Viewer::Viewer():
     data_list(1),
-    opengl_list(1),
+    opengl_state_list(1),
     selected_data_index(0)
   {
     window = nullptr;
@@ -526,9 +526,7 @@ namespace glfw
     // Create new data slot and set to selected
     if(!(selected_data().F.rows() == 0  && selected_data().V.rows() == 0))
     {
-      data_list.emplace_back();
-      opengl_list.emplace_back();
-      selected_data_index = data_list.size()-1;
+      append_mesh();
     }
     selected_data().clear();
 
@@ -1003,11 +1001,11 @@ namespace glfw
         return;
       }
     }
-    assert(data_list.size() == opengl_list.size());
+    assert(data_list.size() == opengl_state_list.size());
     for(int i = 0;i<data_list.size();i++)
     {
-      opengl_list[i].init();
-      core.draw(data_list[i],opengl_list[i]);
+      opengl_state_list[i].init();
+      core.draw(data_list[i],opengl_state_list[i]);
     }
     if (callback_post_draw)
     {
@@ -1082,15 +1080,41 @@ namespace glfw
     return data_list[selected_data_index];
   }
 
-
-  IGL_INLINE State& Viewer::selected_opengl()
+  IGL_INLINE void Viewer::append_mesh()
   {
-    assert(!opengl_list.empty() && "opengl_list should never be empty");
-    assert(opengl_list.size() == data_list.size());
+    assert(data_list.size() == opengl_state_list.size());
+    assert(data_list.size() >= 1);
+
+    data_list.emplace_back();
+    opengl_state_list.emplace_back();
+    selected_data_index = data_list.size()-1;
+  }
+  IGL_INLINE bool Viewer::erase_mesh(const size_t index)
+  {
+    assert(data_list.size() == opengl_state_list.size());
+    assert(data_list.size() >= 1);
+    if(data_list.size() == 1)
+    {
+      // Cannot remove last mesh
+      return false;
+    }
+    data_list.erase(data_list.begin()                 + index);
+    opengl_state_list.erase(opengl_state_list.begin() + index);
+    if(selected_data_index >= index)
+    {
+      selected_data_index--;
+    }
+    return true;
+  }
+
+  IGL_INLINE State& Viewer::selected_opengl_state()
+  {
+    assert(!opengl_state_list.empty() && "opengl_state_list should never be empty");
+    assert(opengl_state_list.size() == data_list.size());
     assert(
-      (selected_data_index >= 0 && selected_data_index < opengl_list.size()) && 
+      (selected_data_index >= 0 && selected_data_index < opengl_state_list.size()) && 
       "selected_data_index should be in bounds");
-    return opengl_list[selected_data_index];
+    return opengl_state_list[selected_data_index];
   }
 } // end namespace
 } // end namespace

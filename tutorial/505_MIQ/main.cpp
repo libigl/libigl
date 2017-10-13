@@ -91,8 +91,8 @@ bool key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier
     return false;
 
   viewer.selected_data().clear();
-  viewer.core.show_lines = false;
-  viewer.core.show_texture = false;
+  viewer.selected_data().show_lines = false;
+  viewer.selected_data().show_texture = false;
 
   if (key == '1')
   {
@@ -197,7 +197,7 @@ bool key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier
     // Global parametrization UV
     viewer.selected_data().set_mesh(UV, FUV);
     viewer.selected_data().set_uv(UV);
-    viewer.core.show_lines = true;
+    viewer.selected_data().show_lines = true;
   }
 
   if (key == '7')
@@ -205,7 +205,7 @@ bool key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier
     // Global parametrization in 3D
     viewer.selected_data().set_mesh(V, F);
     viewer.selected_data().set_uv(UV,FUV);
-    viewer.core.show_texture = true;
+    viewer.selected_data().show_texture = true;
   }
 
   if (key == '8')
@@ -213,7 +213,7 @@ bool key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier
     // Global parametrization in 3D with seams
     viewer.selected_data().set_mesh(V, F);
     viewer.selected_data().set_uv(UV_seams,FUV_seams);
-    viewer.core.show_texture = true;
+    viewer.selected_data().show_texture = true;
   }
 
   viewer.selected_data().set_colors(Eigen::RowVector3d(1,1,1));

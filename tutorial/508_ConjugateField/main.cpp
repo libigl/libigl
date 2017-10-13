@@ -174,9 +174,9 @@ int main(int argc, char *argv[])
   csdata.evaluateConjugacy(pvU, pvV, conjugacy_c);
   // Launch the viewer
   igl::opengl::glfw::Viewer viewer;
-  viewer.core.invert_normals = true;
-  viewer.core.show_lines = false;
-  viewer.core.show_texture = false;
+  viewer.selected_data().invert_normals = true;
+  viewer.selected_data().show_lines = false;
+  viewer.selected_data().show_texture = false;
   viewer.selected_data().set_mesh(V, F);
   viewer.callback_key_down = &key_down;
   key_down(viewer,'1',0);

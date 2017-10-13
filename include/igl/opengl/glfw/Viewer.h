@@ -85,14 +85,40 @@ namespace glfw
     IGL_INLINE void open_dialog_save_mesh();
     IGL_INLINE ViewerData& selected_data();
     //IGL_INLINE const ViewerData& const_selected_data() const;
-    IGL_INLINE State& selected_opengl();
+    IGL_INLINE State& selected_opengl_state();
+    // Append a new "slot" for a mesh (i.e., create empty entires at the end of
+    // the data_list and opengl_state_list.
+    //
+    // Returns number of meshes (always >= 1)
+    // 
+    // Side Effects:
+    //   selected_data_index is set this newly created, last entry (i.e.,
+    //   #meshes-1)
+    IGL_INLINE void append_mesh();
+    // Erase a mesh (i.e., its corresponding data and state entires in data_list
+    // and opengl_state_list)
+    //
+    // Inputs:
+    //   index  index of mesh to erase
+    // Returns whether erasure was successful <=> cannot erase last mesh
+    // 
+    // Side Effects:
+    //   If selected_data_index is greater than or equal to index then it is
+    //   decremented
+    // Example:
+    //   // Erase all mesh slots except first and clear remaining mesh
+    //   viewer.selected_data_index = viewer.data_list.size()-1;
+    //   while(viewer.erase_mesh(viewer.selected_data_index)){};
+    //   viewer.selected_data().clear();
+    //
+    IGL_INLINE bool erase_mesh(const size_t index);
   private:
     // Alec: I call this data_list instead of just data to avoid confusion with
     // old "data" variable.
     // Stores all the data that should be visualized
     std::vector<ViewerData> data_list;
     // Stores the vbos indices and opengl related settings
-    std::vector<State> opengl_list;
+    std::vector<State> opengl_state_list;
   public:
     size_t selected_data_index;
     GLFWwindow* window;

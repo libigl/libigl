@@ -83,7 +83,7 @@ int main(int argc, char *argv[])
   // Initialize
   update(viewer);
 
-  viewer.core.show_lines = true;
+  viewer.selected_data().show_lines = true;
   viewer.callback_key_down = &key_down;
   viewer.core.camera_dnear = 3.9;
   cout<<
