@@ -28,52 +28,33 @@ namespace igl
   // Outputs:
   //  S  no by 1 list of winding numbers
   //
-  // 3d
+  template <
+    typename DerivedV,
+    typename DerivedF,
+    typename DerivedO,
+    typename DerivedW>
   IGL_INLINE void winding_number(
-    const Eigen::MatrixXd & V,
-    const Eigen::MatrixXi & F,
-    const Eigen::MatrixXd & O,
-    Eigen::VectorXd & W);
+    const Eigen::MatrixBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedF> & F,
+    const Eigen::MatrixBase<DerivedO> & O,
+    Eigen::PlainObjectBase<DerivedW> & W);
+  // Compute winding number of a single point
+  //
   // Inputs:
-  //   V  pointer to array containing #V by 3 vertex positions along rows,
-  //     given in column major order
-  //   n  number of mesh vertices
-  //   F  pointer to array containing #F by 3 face indices along rows,
-  //     given in column major order
-  //   m  number of faces
-  //   O  pointer to array containing #O by 3 query positions along rows,
-  //     given in column major order
-  //   no  number of origins
+  //  V  n by dim list of vertex positions
+  //  F  #F by dim list of triangle indices, minimum index is 0
+  //  p  single origin position
   // Outputs:
-  //   S  no by 1 list of winding numbers
-  template <typename Scalar, typename DerivedF>
-  IGL_INLINE void winding_number_3(
-    const Scalar * V,
-    const int n,
-    const DerivedF * F,
-    const int m,
-    const Scalar * O,
-    const int no,
-    Scalar * S);
-  //// Only one evaluation origin
-  //template <typename DerivedF>
-  //IGL_INLINE void winding_number_3(
-  //  const double * V,
-  //  const int n,
-  //  const DerivedF * F,
-  //  const int m,
-  //  const double * O,
-  //  double * S);
-  // 2d
-  template <typename DerivedF>
-  IGL_INLINE void winding_number_2(
-    const double * V,
-    const int n,
-    const DerivedF * F,
-    const int m,
-    const double * O,
-    const int no,
-    double * S);
+  //  w  winding number of this point
+  //
+  template <
+    typename DerivedV,
+    typename DerivedF,
+    typename Derivedp>
+  IGL_INLINE typename DerivedV::Scalar winding_number(
+    const Eigen::MatrixBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedF> & F,
+    const Eigen::MatrixBase<Derivedp> & p);
 }
 
 #ifndef IGL_STATIC_LIBRARY

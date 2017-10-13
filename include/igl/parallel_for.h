@@ -10,6 +10,9 @@
 #include "igl_inline.h"
 #include <functional>
 
+//#warning "Defining IGL_PARALLEL_FOR_FORCE_SERIAL"
+//#define IGL_PARALLEL_FOR_FORCE_SERIAL
+
 namespace igl
 {
   // PARALLEL_FOR Functional implementation of a basic, open-mp style, parallel

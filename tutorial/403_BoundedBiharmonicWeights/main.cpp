@@ -1,13 +1,10 @@
-// If you don't have mosek installed and don't want to install it. Then
-// uncomment the following six lines.  Don't use static library for this
-// example because of Mosek complications
-//
-//#define IGL_NO_MOSEK
-//#ifdef IGL_NO_MOSEK
-//#ifdef IGL_STATIC_LIBRARY
-//#undef IGL_STATIC_LIBRARY
-//#endif
-//#endif
+// Because of Mosek complications, we don't use static library if Mosek is used.
+#ifdef LIBIGL_WITH_MOSEK
+#ifdef IGL_STATIC_LIBRARY
+#undef IGL_STATIC_LIBRARY
+#endif
+#endif
+
 #include <igl/boundary_conditions.h>
 #include <igl/colon.h>
 #include <igl/column_to_quats.h>
@@ -79,9 +76,9 @@ bool pre_draw(igl::opengl::glfw::Viewer & viewer)
     MatrixXi BET;
     igl::deform_skeleton(C,BE,T,CT,BET);
 
-    viewer.data.set_vertices(U);
-    viewer.data.set_edges(CT,BET,sea_green);
-    viewer.data.compute_normals();
+    viewer.selected_data().set_vertices(U);
+    viewer.selected_data().set_edges(CT,BET,sea_green);
+    viewer.selected_data().compute_normals();
     anim_t += anim_t_dir;
     anim_t_dir *= (anim_t>=1.0 || anim_t<=0.0?-1.0:1.0);
   }
@@ -92,7 +89,7 @@ void set_color(igl::opengl::glfw::Viewer &viewer)
 {
   Eigen::MatrixXd C;
   igl::jet(W.col(selected).eval(),true,C);
-  viewer.data.set_colors(C);
+  viewer.selected_data().set_colors(C);
 }
 
 bool key_down(igl::opengl::glfw::Viewer &viewer, unsigned char key, int mods)
@@ -164,9 +161,9 @@ int main(int argc, char *argv[])
 
   // Plot the mesh with pseudocolors
   igl::opengl::glfw::Viewer viewer;
-  viewer.data.set_mesh(U, F);
+  viewer.selected_data().set_mesh(U, F);
   set_color(viewer);
-  viewer.data.set_edges(C,BE,sea_green);
+  viewer.selected_data().set_edges(C,BE,sea_green);
   viewer.core.show_lines = false;
   viewer.core.show_overlay_depth = false;
   viewer.core.line_width = 1;

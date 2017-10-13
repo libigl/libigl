@@ -122,15 +122,15 @@ public:
 
   // Assigns uniform colors to all faces/vertices
   IGL_INLINE void uniform_colors(
-    Eigen::Vector3d ambient,
-    Eigen::Vector3d diffuse,
-    Eigen::Vector3d specular);
+    const Eigen::Vector3d& diffuse,
+    const Eigen::Vector3d& ambient,
+    const Eigen::Vector3d& specular);
 
   // Assigns uniform colors to all faces/vertices
   IGL_INLINE void uniform_colors(
-    Eigen::Vector4d ambient,
-    Eigen::Vector4d diffuse,
-    Eigen::Vector4d specular);
+    const Eigen::Vector4d& ambient,
+    const Eigen::Vector4d& diffuse,
+    const Eigen::Vector4d& specular);
 
   // Generates a default grid texture
   IGL_INLINE void grid_texture();

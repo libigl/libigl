@@ -60,8 +60,8 @@ namespace glfw
     Viewer();
     ~Viewer();
     // Mesh IO
-    IGL_INLINE bool load_mesh_from_file(const char* mesh_file_name);
-    IGL_INLINE bool save_mesh_to_file(const char* mesh_file_name);
+    IGL_INLINE bool load_mesh_from_file(const std::string & mesh_file_name);
+    IGL_INLINE bool   save_mesh_to_file(const std::string & mesh_file_name);
     // Callbacks
     IGL_INLINE bool key_pressed(unsigned int unicode_key,int modifier);
     IGL_INLINE bool key_down(int key,int modifier);
@@ -77,7 +77,8 @@ namespace glfw
     // Draw everything
     IGL_INLINE void draw();
     // OpenGL context resize
-    IGL_INLINE void resize(int w,int h);
+    IGL_INLINE void resize(int w,int h); // explicitly set window size
+    IGL_INLINE void post_resize(int w,int h); // external resize due to user interaction
     // Helper functions
     IGL_INLINE void snap_to_canonical_quaternion();
     IGL_INLINE void open_dialog_load_mesh();

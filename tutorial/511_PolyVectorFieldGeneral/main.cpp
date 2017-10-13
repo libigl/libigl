@@ -79,7 +79,7 @@ bool key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier
   if (key <'1' || key >'9')
     return false;
 
-  viewer.data.lines.resize(0,9);
+  viewer.selected_data().lines.resize(0,9);
 
   int num = key  - '0';
 
@@ -129,7 +129,7 @@ bool key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier
   MatrixXd C = MatrixXd::Constant(F.rows(),3,1);
   for (unsigned i=0; i<b.size();++i)
     C.row(b(i)) << 1, 0, 0;
-  viewer.data.set_colors(C);
+  viewer.selected_data().set_colors(C);
 
   for (int n=0; n<num; ++n)
   {
@@ -144,8 +144,8 @@ bool key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier
     VectorXd c = VF.rowwise().norm();
     MatrixXd C2;
     igl::jet(c,1,1+rand_factor,C2);
-    // viewer.data.add_edges(B - global_scale*VF, B + global_scale*VF , C2);
-    viewer.data.add_edges(B, B + global_scale*VF , C2);
+    // viewer.selected_data().add_edges(B - global_scale*VF, B + global_scale*VF , C2);
+    viewer.selected_data().add_edges(B, B + global_scale*VF , C2);
   }
 
 
@@ -173,7 +173,7 @@ int main(int argc, char *argv[])
   srand(0);
 
   igl::opengl::glfw::Viewer viewer;
-  viewer.data.set_mesh(V, F);
+  viewer.selected_data().set_mesh(V, F);
   viewer.callback_key_down = &key_down;
   viewer.core.show_lines = false;
   key_down(viewer,'3',0);

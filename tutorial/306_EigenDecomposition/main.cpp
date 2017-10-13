@@ -58,9 +58,9 @@ int main(int argc, char * argv[])
         {
           V.col(2) = Z;
         }
-        viewer.data.set_mesh(V,F);
-        viewer.data.compute_normals();
-        viewer.data.set_colors(C);
+        viewer.selected_data().set_mesh(V,F);
+        viewer.selected_data().compute_normals();
+        viewer.selected_data().set_colors(C);
         return true;
       }
     }

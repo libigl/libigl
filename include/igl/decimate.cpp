@@ -8,6 +8,7 @@
 #include "decimate.h"
 #include "collapse_edge.h"
 #include "edge_flaps.h"
+#include "is_edge_manifold.h"
 #include "remove_unreferenced.h"
 #include "slice_mask.h"
 #include "slice.h"
@@ -33,6 +34,13 @@ IGL_INLINE bool igl::decimate(
   DerivedV VO;
   DerivedF FO;
   igl::connect_boundary_to_infinity(V,F,VO,FO);
+  // decimate will not work correctly on non-edge-manifold meshes. By extension
+  // this includes meshes with non-manifold vertices on the boundary since these
+  // will create a non-manifold edge when connected to infinity.
+  if(!is_edge_manifold(FO))
+  {
+    return false;
+  }
   bool ret = decimate(
     VO,
     FO,

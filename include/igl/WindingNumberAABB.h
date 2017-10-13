@@ -16,13 +16,16 @@
 
 namespace igl
 {
-  template <typename Point>
-  class WindingNumberAABB : public WindingNumberTree<Point>
+  template <
+    typename Point,
+    typename DerivedV, 
+    typename DerivedF >
+  class WindingNumberAABB : public WindingNumberTree<Point,DerivedV,DerivedF>
   {
     protected:
       Point min_corner;
       Point max_corner;
-      double total_positive_area;
+      typename DerivedV::Scalar total_positive_area;
     public: 
       enum SplitMethod
       {
@@ -32,26 +35,26 @@ namespace igl
       } split_method;
     public:
       inline WindingNumberAABB():
-        total_positive_area(std::numeric_limits<double>::infinity()),
+        total_positive_area(std::numeric_limits<typename DerivedV::Scalar>::infinity()),
         split_method(MEDIAN_ON_LONGEST_AXIS)
       {}
       inline WindingNumberAABB(
-        const Eigen::MatrixXd & V,
-        const Eigen::MatrixXi & F);
+        const Eigen::MatrixBase<DerivedV> & V,
+        const Eigen::MatrixBase<DerivedF> & F);
       inline WindingNumberAABB(
-        const WindingNumberTree<Point> & parent,
-        const Eigen::MatrixXi & F);
+        const WindingNumberTree<Point,DerivedV,DerivedF> & parent,
+        const Eigen::MatrixBase<DerivedF> & F);
       // Initialize some things
       inline void set_mesh(
-        const Eigen::MatrixXd & V,
-        const Eigen::MatrixXi & F);
+        const Eigen::MatrixBase<DerivedV> & V,
+        const Eigen::MatrixBase<DerivedF> & F);
       inline void init();
       inline bool inside(const Point & p) const;
       inline virtual void grow();
       // Compute min and max corners
       inline void compute_min_max_corners();
-      inline double max_abs_winding_number(const Point & p) const;
-      inline double max_simple_abs_winding_number(const Point & p) const;
+      inline typename DerivedV::Scalar max_abs_winding_number(const Point & p) const;
+      inline typename DerivedV::Scalar max_simple_abs_winding_number(const Point & p) const;
   };
 }
 
@@ -74,55 +77,57 @@ namespace igl
 #  define WindingNumberAABB_MIN_F 100
 #endif
 
-template <typename Point>
-inline void igl::WindingNumberAABB<Point>::set_mesh(
-    const Eigen::MatrixXd & V,
-    const Eigen::MatrixXi & F)
+template <typename Point, typename DerivedV, typename DerivedF>
+inline void igl::WindingNumberAABB<Point,DerivedV,DerivedF>::set_mesh(
+    const Eigen::MatrixBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedF> & F)
 {
-  igl::WindingNumberTree<Point>::set_mesh(V,F);
+  igl::WindingNumberTree<Point,DerivedV,DerivedF>::set_mesh(V,F);
   init();
 }
 
-template <typename Point>
-inline void igl::WindingNumberAABB<Point>::init()
+template <typename Point, typename DerivedV, typename DerivedF>
+inline void igl::WindingNumberAABB<Point,DerivedV,DerivedF>::init()
 {
   using namespace Eigen;
   assert(max_corner.size() == 3);
   assert(min_corner.size() == 3);
   compute_min_max_corners();
-  VectorXd dblA;
+  Eigen::Matrix<typename DerivedV::Scalar,Eigen::Dynamic,1> dblA;
   doublearea(this->getV(),this->getF(),dblA);
   total_positive_area = dblA.sum()/2.0;
 }
 
-template <typename Point>
-inline igl::WindingNumberAABB<Point>::WindingNumberAABB(
-  const Eigen::MatrixXd & V,
-  const Eigen::MatrixXi & F):
-  WindingNumberTree<Point>(V,F),
+template <typename Point, typename DerivedV, typename DerivedF>
+inline igl::WindingNumberAABB<Point,DerivedV,DerivedF>::WindingNumberAABB(
+  const Eigen::MatrixBase<DerivedV> & V,
+  const Eigen::MatrixBase<DerivedF> & F):
+  WindingNumberTree<Point,DerivedV,DerivedF>(V,F),
   min_corner(),
   max_corner(),
-  total_positive_area(std::numeric_limits<double>::infinity()),
+  total_positive_area(
+    std::numeric_limits<typename DerivedV::Scalar>::infinity()),
   split_method(MEDIAN_ON_LONGEST_AXIS)
 {
   init();
 }
 
-template <typename Point>
-inline igl::WindingNumberAABB<Point>::WindingNumberAABB(
-  const WindingNumberTree<Point> & parent,
-  const Eigen::MatrixXi & F):
-  WindingNumberTree<Point>(parent,F),
+template <typename Point, typename DerivedV, typename DerivedF>
+inline igl::WindingNumberAABB<Point,DerivedV,DerivedF>::WindingNumberAABB(
+  const WindingNumberTree<Point,DerivedV,DerivedF> & parent,
+  const Eigen::MatrixBase<DerivedF> & F):
+  WindingNumberTree<Point,DerivedV,DerivedF>(parent,F),
   min_corner(),
   max_corner(),
-  total_positive_area(std::numeric_limits<double>::infinity()),
+  total_positive_area(
+    std::numeric_limits<typename DerivedV::Scalar>::infinity()),
   split_method(MEDIAN_ON_LONGEST_AXIS)
 {
   init();
 }
 
-template <typename Point>
-inline void igl::WindingNumberAABB<Point>::grow()
+template <typename Point, typename DerivedV, typename DerivedF>
+inline void igl::WindingNumberAABB<Point,DerivedV,DerivedF>::grow()
 {
   using namespace std;
   using namespace Eigen;
@@ -143,7 +148,8 @@ inline void igl::WindingNumberAABB<Point>::grow()
 
   // Compute longest direction
   int max_d = -1;
-  double max_len = -numeric_limits<double>::infinity();
+  typename DerivedV::Scalar max_len = 
+    -numeric_limits<typename DerivedV::Scalar>::infinity();
   for(int d = 0;d<min_corner.size();d++)
   {
     if( (max_corner[d] - min_corner[d]) > max_len )
@@ -153,13 +159,13 @@ inline void igl::WindingNumberAABB<Point>::grow()
     }
   }
   // Compute facet barycenters
-  MatrixXd BC;
+  Eigen::Matrix<typename DerivedV::Scalar,Eigen::Dynamic,Eigen::Dynamic> BC;
   barycenter(this->getV(),this->getF(),BC);
 
 
   // Blerg, why is selecting rows so difficult
 
-  double split_value;
+  typename DerivedV::Scalar split_value;
   // Split in longest direction
   switch(split_method)
   {
@@ -196,8 +202,8 @@ inline void igl::WindingNumberAABB<Point>::grow()
     return;
   }
   assert(lefts+rights == this->getF().rows());
-  MatrixXi leftF(lefts,  this->getF().cols());
-  MatrixXi rightF(rights,this->getF().cols());
+  DerivedF leftF(lefts,  this->getF().cols());
+  DerivedF rightF(rights,this->getF().cols());
   int left_i = 0;
   int right_i = 0;
   for(int i = 0;i<this->getF().rows();i++)
@@ -216,16 +222,18 @@ inline void igl::WindingNumberAABB<Point>::grow()
   assert(right_i == rightF.rows());
   assert(left_i == leftF.rows());
   // Finally actually grow children and Recursively grow
-  WindingNumberAABB<Point> * leftWindingNumberAABB = new WindingNumberAABB<Point>(*this,leftF);
+  WindingNumberAABB<Point,DerivedV,DerivedF> * leftWindingNumberAABB = 
+    new WindingNumberAABB<Point,DerivedV,DerivedF>(*this,leftF);
   leftWindingNumberAABB->grow();
   this->children.push_back(leftWindingNumberAABB);
-  WindingNumberAABB<Point> * rightWindingNumberAABB = new WindingNumberAABB<Point>(*this,rightF);
+  WindingNumberAABB<Point,DerivedV,DerivedF> * rightWindingNumberAABB = 
+    new WindingNumberAABB<Point,DerivedV,DerivedF>(*this,rightF);
   rightWindingNumberAABB->grow();
   this->children.push_back(rightWindingNumberAABB);
 }
 
-template <typename Point>
-inline bool igl::WindingNumberAABB<Point>::inside(const Point & p) const
+template <typename Point, typename DerivedV, typename DerivedF>
+inline bool igl::WindingNumberAABB<Point,DerivedV,DerivedF>::inside(const Point & p) const
 {
   assert(p.size() == max_corner.size());
   assert(p.size() == min_corner.size());
@@ -242,15 +250,15 @@ inline bool igl::WindingNumberAABB<Point>::inside(const Point & p) const
   return true;
 }
 
-template <typename Point>
-inline void igl::WindingNumberAABB<Point>::compute_min_max_corners()
+template <typename Point, typename DerivedV, typename DerivedF>
+inline void igl::WindingNumberAABB<Point,DerivedV,DerivedF>::compute_min_max_corners()
 {
   using namespace std;
   // initialize corners
   for(int d = 0;d<min_corner.size();d++)
   {
-    min_corner[d] =  numeric_limits<double>::infinity();
-    max_corner[d] = -numeric_limits<double>::infinity();
+    min_corner[d] =  numeric_limits<typename Point::Scalar>::infinity();
+    max_corner[d] = -numeric_limits<typename Point::Scalar>::infinity();
   }
 
   this->center = Point(0,0,0);
@@ -285,36 +293,45 @@ inline void igl::WindingNumberAABB<Point>::compute_min_max_corners()
   this->radius = (max_corner-min_corner).norm()/2.0;
 }
 
-template <typename Point>
-inline double igl::WindingNumberAABB<Point>::max_abs_winding_number(const Point & p) const
+template <typename Point, typename DerivedV, typename DerivedF>
+inline typename DerivedV::Scalar
+igl::WindingNumberAABB<Point,DerivedV,DerivedF>::max_abs_winding_number(const Point & p) const
 {
   using namespace std;
   // Only valid if not inside
   if(inside(p))
   {
-    return numeric_limits<double>::infinity();
+    return numeric_limits<typename DerivedV::Scalar>::infinity();
   }
   // Q: we know the total positive area so what's the most this could project
   // to? Remember it could be layered in the same direction.
-  return numeric_limits<double>::infinity();
+  return numeric_limits<typename DerivedV::Scalar>::infinity();
 }
 
-template <typename Point>
-inline double igl::WindingNumberAABB<Point>::max_simple_abs_winding_number(const Point & p) const
+template <typename Point, typename DerivedV, typename DerivedF>
+inline typename DerivedV::Scalar 
+  igl::WindingNumberAABB<Point,DerivedV,DerivedF>::max_simple_abs_winding_number(
+  const Point & p) const
 {
   using namespace std;
   using namespace Eigen;
   // Only valid if not inside
   if(inside(p))
   {
-    return numeric_limits<double>::infinity();
+    return numeric_limits<typename DerivedV::Scalar>::infinity();
   }
   // Max simple is the same as sum of positive winding number contributions of
   // bounding box
 
   // begin precomputation
   //MatrixXd BV((int)pow(2,3),3);
-  MatrixXd BV((int)(1<<3),3);
+  typedef
+    Eigen::Matrix<typename DerivedV::Scalar,Eigen::Dynamic,Eigen::Dynamic>
+    MatrixXS;
+  typedef
+    Eigen::Matrix<typename DerivedF::Scalar,Eigen::Dynamic,Eigen::Dynamic>
+    MatrixXF;
+  MatrixXS BV((int)(1<<3),3);
   BV <<
     min_corner[0],min_corner[1],min_corner[2],
     min_corner[0],min_corner[1],max_corner[2],
@@ -324,7 +341,7 @@ inline double igl::WindingNumberAABB<Point>::max_simple_abs_winding_number(const
     max_corner[0],min_corner[1],max_corner[2],
     max_corner[0],max_corner[1],min_corner[2],
     max_corner[0],max_corner[1],max_corner[2];
-  MatrixXi BF(2*2*3,3);
+  MatrixXF BF(2*2*3,3);
   BF <<
     0,6,4,
     0,2,6,
@@ -338,12 +355,12 @@ inline double igl::WindingNumberAABB<Point>::max_simple_abs_winding_number(const
     0,5,1,
     1,5,7,
     1,7,3;
-  MatrixXd BFN;
+  MatrixXS BFN;
   per_face_normals(BV,BF,BFN);
   // end of precomputation
 
   // Only keep those with positive dot products
-  MatrixXi PBF(BF.rows(),BF.cols());
+  MatrixXF PBF(BF.rows(),BF.cols());
   int pbfi = 0;
   Point p2c = 0.5*(min_corner+max_corner)-p;
   for(int i = 0;i<BFN.rows();i++)
@@ -354,18 +371,7 @@ inline double igl::WindingNumberAABB<Point>::max_simple_abs_winding_number(const
     }
   }
   PBF.conservativeResize(pbfi,PBF.cols());
-  double w = numeric_limits<double>::infinity();
-  igl::winding_number_3(
-    BV.data(),
-    BV.rows(),
-    PBF.data(),
-    PBF.rows(),
-    p.data(),
-    1,
-    &w);
-  return w;
+  return igl::winding_number(BV,PBF,p);
 }
 
-//// Explicit instanciation
-//template class igl::WindingNumberAABB<Eigen::Vector3d >;
 #endif

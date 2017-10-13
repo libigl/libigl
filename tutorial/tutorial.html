@@ -45,6 +45,7 @@ lecture notes links to a cross-platform example application.</p>
 <li><a href="#scalarfieldvisualization">104 Scalar field visualization</a></li>
 <li><a href="#overlays">105 Overlays</a></li>
 <li><a href="#viewermenu">106 Viewer Menu</a></li>
+<li><a href="#multiplemeshes">107 Multiple Meshes</a></li>
 </ul></li>
 <li><a href="#chapter2:discretegeometricquantitiesandoperators">Chapter 2: Discrete Geometric Quantities and
  Operators</a>
@@ -151,6 +152,7 @@ lecture notes links to a cross-platform example application.</p>
 <li><a href="#vectorfieldvisualizer">709 Vector Field Visualization</a></li>
 <li><a href="#slim">710 Scalable Locally Injective Maps</a></li>
 <li><a href="#subdivision">711 Subdivision surfaces</a></li>
+<li><a href="#datasmoothing">712 Data smoothing</a></li>
 </ul></li>
 <li><a href="#future">Chapter 8: Outlook for continuing development</a></li>
 </ul>
@@ -220,6 +222,8 @@ sudo apt-get install libxrandr-dev
 sudo apt-get install libxi-dev
 sudo apt-get install libxmu-dev
 sudo apt-get install libblas-dev
+sudo apt-get install libxinerama-dev
+sudo apt-get install libxcursor-dev
 </code></pre>
 
 <p><em>Note for windows users</em>: libigl only supports the Microsoft Visual Studio 2015 compiler in 64bit mode. It will not work with a 32bit build and it will not work
@@ -310,7 +314,7 @@ It is a standalone application that loads a mesh and uses the viewer to
 render it.</p>
 
 <pre><code class="cpp">#include &lt;igl/readOFF.h&gt;
-#include &lt;igl/viewer/Viewer.h&gt;
+#include &lt;igl/opengl/glfw/Viewer.h&gt;
 
 Eigen::MatrixXd V;
 Eigen::MatrixXi F;
@@ -321,8 +325,8 @@ int main(int argc, char *argv[])
   igl::readOFF(TUTORIAL_SHARED_PATH &quot;/bunny.off&quot;, V, F);
 
   // Plot the mesh
-  igl::viewer::Viewer viewer;
-  viewer.data.set_mesh(V, F);
+  igl::opengl::glfw::Viewer viewer;
+  viewer.selected_data().set_mesh(V, F);
   viewer.launch();
 }
 </code></pre>
@@ -360,18 +364,18 @@ bool (*callback_key_up)(Viewer&amp; viewer, unsigned char key, int modifiers);
 stages of an algorithm, as demonstrated in <a href="103_Events/main.cpp">Example 103</a>, where
 the keyboard callback changes the visualized mesh depending on the key pressed:</p>
 
-<pre><code class="cpp">bool key_down(igl::viewer::Viewer&amp; viewer, unsigned char key, int modifier)
+<pre><code class="cpp">bool key_down(igl::opengl::glfw::Viewer&amp; viewer, unsigned char key, int modifier)
 {
   if (key == '1')
   {
-    viewer.data.clear();
-    viewer.data.set_mesh(V1, F1);
+    viewer.selected_data().clear();
+    viewer.selected_data().set_mesh(V1, F1);
     viewer.core.align_camera_center(V1,F1);
   }
   else if (key == '2')
   {
-    viewer.data.clear();
-    viewer.data.set_mesh(V2, F2);
+    viewer.selected_data().clear();
+    viewer.selected_data().set_mesh(V2, F2);
     viewer.core.align_camera_center(V2,F2);
   }
   return false;
@@ -392,14 +396,14 @@ control the camera directly in your code.</p>
 
 <p>The viewer can be extended using plugins, which are classes that implements all
 the viewer&#8217;s callbacks. See the
-<a href="../include/igl/viewer/ViewerPlugin.h">Viewer_plugin</a> for more details.</p>
+<a href="../include/igl/opengl/glfw/ViewerPlugin.h">Viewer_plugin</a> for more details.</p>
 
 <h2 id="scalarfieldvisualization"><a href="#scalarfieldvisualization">Scalar field visualization</a></h2>
 
 <p>Colors and normals can be associated to faces or vertices using the
 set_colors function:</p>
 
-<pre><code class="cpp">viewer.data.set_colors(C);
+<pre><code class="cpp">viewer.selected_data().set_colors(C);
 </code></pre>
 
 <p><code>C</code> is a #C by 3 matrix with one RGB color per row. <code>C</code> must have as many
@@ -437,17 +441,17 @@ heavy data structures types favors simplicity, ease of use and reusability.</p>
 
 <p>In addition to plotting the surface, the viewer supports the visualization of points, lines and text labels: these overlays can be very helpful while developing geometric processing algorithms to plot debug informations.</p>
 
-<pre><code class="cpp">viewer.data.add_points(P,Eigen::RowVector3d(r,g,b));
+<pre><code class="cpp">viewer.selected_data().add_points(P,Eigen::RowVector3d(r,g,b));
 </code></pre>
 
 <p>Draws a point of color r,g,b for each row of P. The point is placed at the coordinates specified in each row of P, which is a #P by 3 matrix.</p>
 
-<pre><code class="cpp">viewer.data.add_edges(P1,P2,Eigen::RowVector3d(r,g,b);
+<pre><code class="cpp">viewer.selected_data().add_edges(P1,P2,Eigen::RowVector3d(r,g,b);
 </code></pre>
 
 <p>Draws a line of color r,g,b for each row of P1 and P2, which connects the 3D point in to the point in P2. Both P1 and P2 are of size #P by 3.</p>
 
-<pre><code class="cpp">viewer.data.add_label(p,str);
+<pre><code class="cpp">viewer.selected_data().add_label(p,str);
 </code></pre>
 
 <p>Draws a label containing the string str at the position p, which is a vector of length 3.</p>
@@ -478,14 +482,14 @@ open-source projects <a href="https://github.com/memononen/nanovg">nanovg</a> an
 viewer and to expose more user defined variables you have to define a callback
 function:</p>
 
-<pre><code class="cpp">igl::viewer::Viewer viewer;
+<pre><code class="cpp">igl::opengl::glfw::Viewer viewer;
 
 bool boolVariable = true;
 float floatVariable = 0.1f;
 enum Orientation { Up=0,Down,Left,Right } dir = Up;
 
 // Extend viewer menu
-viewer.callback_init = [&amp;](igl::viewer::Viewer&amp; viewer)
+viewer.callback_init = [&amp;](igl::opengl::glfw::Viewer&amp; viewer)
 {
   // Add new group
   viewer.ngui-&gt;addGroup(&quot;New Group&quot;);
@@ -526,6 +530,25 @@ viewer.ngui-&gt;addVariable&lt;bool&gt;(&quot;bool&quot;,[&amp;](bool val) {
 <figure>
 <img src="images/106_ViewerMenu.png" alt="(Example 106) The UI of the viewer can be easily customized." />
 <figcaption>(<a href="106_ViewerMenu/main.cpp">Example 106</a>) The UI of the viewer can be easily customized.</figcaption>
+</figure>
+
+<h2 id="multiplemeshes"><a href="#multiplemeshes">Multiple Meshes</a></h2>
+
+<p>Libigl&#8217;s <code>igl::opengl::glfw::Viewer</code> provides basic support for rendering
+multiple meshes.</p>
+
+<p>Which mesh is <em>selected</em> is controled via the <code>viewer.selected_data_index</code>
+field. By default it his is set to <code>0</code>, so in the typical case of a single mesh
+<code>viewer.selected_data()</code> returns the <code>igl::ViewerData</code> corresponding to the one
+and only mesh.</p>
+
+<figure>
+<img src="images/multiple-meshes.png" alt="(Example 107) The igl::opengl::glfw::Viewer
+can render multiple meshes, each with its own attributes like
+colors." />
+<figcaption>(<a href="107_MultipleMeshes/main.cpp">Example 107</a>) The <code>igl::opengl::glfw::Viewer</code>
+can render multiple meshes, each with its own attributes like
+colors.</figcaption>
 </figure>
 
 <h1 id="chapter2:discretegeometricquantitiesandoperators">Chapter 2: Discrete Geometric Quantities and Operators</h1>
@@ -958,7 +981,11 @@ functionality as common Matlab functions.</p>
 
 <tbody>
 <tr>
-	<td style="text-align:left;"><code>igl::any_of</code></td>
+	<td style="text-align:left;"><code>igl::all</code></td>
+	<td style="text-align:left;">Whether all elements are non-zero (true)</td>
+</tr>
+<tr>
+	<td style="text-align:left;"><code>igl::any</code></td>
 	<td style="text-align:left;">Whether any elements are non-zero (true)</td>
 </tr>
 <tr>
@@ -978,12 +1005,28 @@ functionality as common Matlab functions.</p>
 	<td style="text-align:left;">Act like Matlab&#8217;s <code>:</code>, similar to Eigen&#8217;s <code>LinSpaced</code></td>
 </tr>
 <tr>
+	<td style="text-align:left;"><code>igl::components</code></td>
+	<td style="text-align:left;">Connected components of graph (cf. Matlab&#8217;s <code>graphconncomp</code>)</td>
+</tr>
+<tr>
+	<td style="text-align:left;"><code>igl::count</code></td>
+	<td style="text-align:left;">Count non-zeros in rows or columns</td>
+</tr>
+<tr>
 	<td style="text-align:left;"><code>igl::cross</code></td>
 	<td style="text-align:left;">Cross product per-row</td>
 </tr>
 <tr>
+	<td style="text-align:left;"><code>igl::cumsum</code></td>
+	<td style="text-align:left;">Cummulative summation</td>
+</tr>
+<tr>
 	<td style="text-align:left;"><code>igl::dot</code></td>
 	<td style="text-align:left;">dot product per-row</td>
+</tr>
+<tr>
+	<td style="text-align:left;"><code>igl::eigs</code></td>
+	<td style="text-align:left;">Solve sparse eigen value problem</td>
 </tr>
 <tr>
 	<td style="text-align:left;"><code>igl::find</code></td>
@@ -1010,12 +1053,28 @@ functionality as common Matlab functions.</p>
 	<td style="text-align:left;">Determine whether matrix is diagonal</td>
 </tr>
 <tr>
+	<td style="text-align:left;"><code>igl::ismember</code></td>
+	<td style="text-align:left;">Determine whether elements in A occur in B</td>
+</tr>
+<tr>
 	<td style="text-align:left;"><code>igl::jet</code></td>
 	<td style="text-align:left;">Quantized colors along the rainbow.</td>
 </tr>
 <tr>
+	<td style="text-align:left;"><code>igl::max</code></td>
+	<td style="text-align:left;">Compute maximum entry per row or column</td>
+</tr>
+<tr>
 	<td style="text-align:left;"><code>igl::median</code></td>
 	<td style="text-align:left;">Compute the median per column</td>
+</tr>
+<tr>
+	<td style="text-align:left;"><code>igl::min</code></td>
+	<td style="text-align:left;">Compute minimum entry per row or column</td>
+</tr>
+<tr>
+	<td style="text-align:left;"><code>igl::mod</code></td>
+	<td style="text-align:left;">Compute per element modulo</td>
 </tr>
 <tr>
 	<td style="text-align:left;"><code>igl::mode</code></td>
@@ -1038,6 +1097,10 @@ functionality as common Matlab functions.</p>
 	<td style="text-align:left;">Generate a quantized colormap from blue to yellow</td>
 </tr>
 <tr>
+	<td style="text-align:left;"><code>igl::pinv</code></td>
+	<td style="text-align:left;">Compute Moore-Penrose pseudoinverse</td>
+</tr>
+<tr>
 	<td style="text-align:left;"><code>igl::randperm</code></td>
 	<td style="text-align:left;">Generate a random permutation of [0,&#8230;,n&#8211;1]</td>
 </tr>
@@ -1046,8 +1109,36 @@ functionality as common Matlab functions.</p>
 	<td style="text-align:left;">Convert RGB colors to HSV (cf. Matlab&#8217;s <code>rgb2hsv</code>)</td>
 </tr>
 <tr>
+	<td style="text-align:left;"><code>igl::repmat</code></td>
+	<td style="text-align:left;">Repeat a matrix along columns and rows</td>
+</tr>
+<tr>
+	<td style="text-align:left;"><code>igl::round</code></td>
+	<td style="text-align:left;">Per-element round to whole number</td>
+</tr>
+<tr>
 	<td style="text-align:left;"><code>igl::setdiff</code></td>
 	<td style="text-align:left;">Set difference of matrix elements</td>
+</tr>
+<tr>
+	<td style="text-align:left;"><code>igl::setunion</code></td>
+	<td style="text-align:left;">Set union of matrix elements</td>
+</tr>
+<tr>
+	<td style="text-align:left;"><code>igl::setxor</code></td>
+	<td style="text-align:left;">Set exclusive &#8220;or&#8221; of matrix elements</td>
+</tr>
+<tr>
+	<td style="text-align:left;"><code>igl::slice</code></td>
+	<td style="text-align:left;">Slice parts of matrix using index lists: (cf. Matlab&#8217;s <code>B = A(I,J)</code>)</td>
+</tr>
+<tr>
+	<td style="text-align:left;"><code>igl::slice_mask</code></td>
+	<td style="text-align:left;">Slice parts of matrix using boolean masks: (cf. Matlab&#8217;s <code>B = A(M,N)</code>)</td>
+</tr>
+<tr>
+	<td style="text-align:left;"><code>igl::slice_into</code></td>
+	<td style="text-align:left;">Slice left-hand side of matrix assignment using index lists (cf. Matlab&#8217;s <code>B(I,J) = A</code>)</td>
 </tr>
 <tr>
 	<td style="text-align:left;"><code>igl::sort</code></td>
@@ -1747,18 +1838,18 @@ measuring bending, albeit in a discretization-dependent way.</p>
 <p>Libigl, supports these common flavors. Selecting one is a matter of setting the
 energy type before the precompuation phase:</p>
 
-<pre><code class="cpp">igl::ARAPData data;
+<pre><code class="cpp">igl::ARAPData arap_data;
 arap_data.energy = igl::ARAP_ENERGY_TYPE_SPOKES;
 //arap_data.energy = igl::ARAP_ENERGY_TYPE_SPOKES_AND_RIMS;
 //arap_data.energy = igl::ARAP_ENERGY_TYPE_ELEMENTS; //triangles or tets
-igl::arap_precomputation(V,F,dim,b,data);
+igl::arap_precomputation(V,F,dim,b,arap_data);
 </code></pre>
 
 <p>Just like <code>igl::min_quad_with_fixed_*</code>, this precomputation phase only depends
 on the mesh, fixed vertex indices <code>b</code> and the energy parameters. To solve with
 certain constraints on the positions of vertices in <code>b</code>, we may call:</p>
 
-<pre><code class="cpp">igl::arap_solve(bc,data,U);
+<pre><code class="cpp">igl::arap_solve(bc,arap_data,U);
 </code></pre>
 
 <p>which uses <code>U</code> as an initial guess and then computes the solution into it.</p>
@@ -2035,7 +2126,7 @@ functions is designed to be reusable in other parametrization algorithms.</p>
 
 <p>A UV parametrization can be visualized in the viewer with:</p>
 
-<pre><code class="cpp">viewer.data.set_uv(V_uv);
+<pre><code class="cpp">viewer.selected_data().set_uv(V_uv);
 </code></pre>
 
 <p>The UV coordinates are then used to apply a procedural checkerboard texture to the
@@ -2407,28 +2498,71 @@ quads.</figcaption>
 
 <h2 id="integrable"><a href="#integrable">Integrable PolyVector Fields</a></h2>
 
-<p>Vector-field guided surface parameterization is based on the idea of designing the gradients
-of the parameterization functions (which are tangent vector fields on the surface) instead of the functions themselves. Thus, vector-set fields (N-Rosy, frame fields, and polyvector fields) that are to be used for parameterization (and subsequent remeshing) need to be integrable: it must be possible to break them down into individual vector fields that are gradients of scalar functions. Fields obtained by most smoothness-based design methods (eg. <a class="citation" href="#fn:25" title="Jump to citation">[25]<span class="citekey" style="display:none">levy_2008</span></a>, <a class="citation" href="#fn:27" title="Jump to citation">[27]<span class="citekey" style="display:none">knoppel_2013</span></a>, <a class="citation" href="#fn:29" title="Jump to citation">[29]<span class="citekey" style="display:none">diamanti_2014</span></a>, <a class="citation" href="#fn:26" title="Jump to citation">[26]<span class="citekey" style="display:none">bommes_2009</span></a>, <a class="citation" href="#fn:28" title="Jump to citation">[28]<span class="citekey" style="display:none">panozzo_2014</span></a>) do not have this property. In <a class="citation" href="#fn:32" title="Jump to citation">[32]<span class="citekey" style="display:none">diamanti_2015</span></a>, a method for creating integrable polyvector fields was introduced. This method takes as input a given field and improves its integrability by removing the vector field curl, thus turning it into a gradient of a function (<a href="510_Integrable/main.cpp">Example 510</a>).</p>
+<p>Vector-field guided surface parameterization is based on the idea of designing
+the gradients of the parameterization functions (which are tangent vector fields
+on the surface) instead of the functions themselves. Thus, vector-set fields
+(N-Rosy, frame fields, and polyvector fields) that are to be used for
+parameterization (and subsequent remeshing) need to be integrable: it must be
+possible to break them down into individual vector fields that are gradients of
+scalar functions. Fields obtained by most smoothness-based design methods (eg.
+<a class="citation" href="#fn:25" title="Jump to citation">[25]<span class="citekey" style="display:none">levy_2008</span></a>, <a class="citation" href="#fn:27" title="Jump to citation">[27]<span class="citekey" style="display:none">knoppel_2013</span></a>, <a class="citation" href="#fn:29" title="Jump to citation">[29]<span class="citekey" style="display:none">diamanti_2014</span></a>, <a class="citation" href="#fn:26" title="Jump to citation">[26]<span class="citekey" style="display:none">bommes_2009</span></a>,
+<a class="citation" href="#fn:28" title="Jump to citation">[28]<span class="citekey" style="display:none">panozzo_2014</span></a>) do not have this property. In <a class="citation" href="#fn:32" title="Jump to citation">[32]<span class="citekey" style="display:none">diamanti_2015</span></a>, a method
+for creating integrable polyvector fields was introduced. This method takes as
+input a given field and improves its integrability by removing the vector field
+curl, thus turning it into a gradient of a function (<a href="510_Integrable/main.cpp">Example
+510</a>).</p>
 
 <figure>
-<img src="images/510_Integrable.png" alt="Integration error is removed from a frame field to produce a field aligned parameterization free of triangle flips." />
-<figcaption>Integration error is removed from a frame field to produce a field aligned parameterization free of triangle flips.</figcaption>
+<img src="images/510_Integrable.png" alt="Integration error is removed from a frame field to produce a field aligned
+parameterization free of triangle flips." />
+<figcaption>Integration error is removed from a frame field to produce a field aligned
+parameterization free of triangle flips.</figcaption>
 </figure>
 
-<p>This method retains much of the core principles of the polyvector framework - it expresses the condition for zero discrete curl condition (which typically requires integers for the vector matchings) into a condition involving continuous variables only. This is done using coefficients of appropriately defined polynomials. The parameterizations generated by the resulting fields are exactly aligned to the field directions and contain no inverted triangles.</p>
+<p>This method retains much of the core principles of the polyvector framework - it
+expresses the condition for zero discrete curl condition (which typically
+requires integers for the vector matchings) into a condition involving
+continuous variables only. This is done using coefficients of appropriately
+defined polynomials. The parameterizations generated by the resulting fields are
+exactly aligned to the field directions and contain no inverted triangles.</p>
 
 <h2 id="npolyvectorfields_general"><a href="#npolyvectorfields_general">General N-PolyVector fields</a></h2>
 
-<p>While mostly applicable for the design of symmetric fields (i.e. fields that comprise of vector sets with symmetries between them at each point, e.g. N-RoSy or frame-fields), the framework presented in <a class="citation" href="#fn:29" title="Jump to citation">[29]<span class="citekey" style="display:none">diamanti_2014</span></a> can be used to design completely general fields, with possibly no such symmetries. For example, one can design fields that at each point comprise of an arbitrary number of vectors, not required to be collinear - as opposed e.g. to the case of the 4 pairwise-collinear vectors designed in the example (<a href="507_PolyVectorField/main.cpp">Example 507</a>). This capability is implemented in the function igl::n_polyvector_general, and is illustrated in the example (<a href="511_PolyVectorFieldGeneral/main.cpp">Example 511</a>).</p>
+<p>While mostly applicable for the design of symmetric fields (i.e. fields that
+comprise of vector sets with symmetries between them at each point, e.g. N-RoSy
+or frame-fields), the framework presented in <a class="citation" href="#fn:29" title="Jump to citation">[29]<span class="citekey" style="display:none">diamanti_2014</span></a> can be used to
+design completely general fields, with possibly no such symmetries. For example,
+one can design fields that at each point comprise of an arbitrary number of
+vectors, not required to be collinear - as opposed e.g. to the case of the 4
+pairwise-collinear vectors designed in the example (<a href="507_PolyVectorField/main.cpp">Example
+507</a>). This capability is implemented in the
+function igl::n_polyvector_general, and is illustrated in the example (<a href="511_PolyVectorFieldGeneral/main.cpp">Example
+511</a>).</p>
 
 <figure>
-<img src="images/511_PolyVectorFieldGeneral.png" alt="Interpolation of a general field with 3 (left) and 9 vectors per point field from a sparse set of random constraints (in red). The field is defined on all mesh faces, but is only shown on a subset for clarity. " />
-<figcaption>Interpolation of a general field with 3 (left) and 9 vectors per point field from a sparse set of random constraints (in red). The field is defined on all mesh faces, but is only shown on a subset for clarity. </figcaption>
+<img src="images/511_PolyVectorFieldGeneral.png" alt="Interpolation of a general field with 3 (left) and 9 vectors per point field
+from a sparse set of random constraints (in red). The field is defined on all
+mesh faces, but is only shown on a subset for clarity." />
+<figcaption>Interpolation of a general field with 3 (left) and 9 vectors per point field
+from a sparse set of random constraints (in red). The field is defined on all
+mesh faces, but is only shown on a subset for clarity.</figcaption>
 </figure>
 
-<p>The design of these general directional fields (also called vector-set fields) is based on the same polynomial framework and includes the symmetric fields as a special case. Note that in the case that some symmetries do exist in the constraints, the final field is not guaranteed to have these symmetries everywhere else on the mesh. For example, designing a field with 3 vectors per point where, at the constrained faces, two of the vectors are on a line opposite to each other, we are not guaranteed to always have two pairwise-collinear vectors everywhere in the result, as can be seen in the picture. In some cases however (as is the case of the frame field in the previous example <a href="507_PolyVectorField/main.cpp">Example 507</a>) these symmetries are in fact guaranteed due to the particular nature of the polynomial that applies in that case (two coefficients are 0).</p>
+<p>The design of these general directional fields (also called vector-set fields)
+is based on the same polynomial framework and includes the symmetric fields as a
+special case. Note that in the case that some symmetries do exist in the
+constraints, the final field is not guaranteed to have these symmetries
+everywhere else on the mesh. For example, designing a field with 3 vectors per
+point where, at the constrained faces, two of the vectors are on a line opposite
+to each other, we are not guaranteed to always have two pairwise-collinear
+vectors everywhere in the result, as can be seen in the picture. In some cases
+however (as is the case of the frame field in the previous example <a href="507_PolyVectorField/main.cpp">Example
+507</a>) these symmetries are in fact guaranteed due
+to the particular nature of the polynomial that applies in that case (two
+coefficients are 0).</p>
 
-<p>For a complete categorization of fields used in various applications (including these general ones) see Vaxman et al. 2016 <a class="citation" href="#fn:33" title="Jump to citation">[33]<span class="citekey" style="display:none">vaxman_2016</span></a>.</p>
+<p>For a complete categorization of fields used in various applications (including
+these general ones) see Vaxman et al. 2016 <a class="citation" href="#fn:33" title="Jump to citation">[33]<span class="citekey" style="display:none">vaxman_2016</span></a>.</p>
 
 <h1 id="chapter6:externallibraries">Chapter 6: External libraries</h1>
 
@@ -2438,17 +2572,24 @@ is easy to exchange data between libigl and other softwares and libraries.</p>
 <h2 id="stateserialization"><a href="#stateserialization">State serialization</a></h2>
 
 <p>Geometry processing applications often require a considerable amount of
-computational time and/or manual input. Serializing the state of the application is a simple strategy to greatly increase the development efficiency. It allows to quickly start debugging just
-before the crash happens, avoiding to wait for the precomputation to take place
-every time and it also makes your experiments reproducible, allowing to quickly test algorithms variants on the same input data.</p>
+computational time and/or manual input. Serializing the state of the application
+is a simple strategy to greatly increase the development efficiency. It allows
+to quickly start debugging just before the crash happens, avoiding to wait for
+the precomputation to take place every time and it also makes your experiments
+reproducible, allowing to quickly test algorithms variants on the same input
+data.</p>
 
-<p>Serialization is often not considered in geometry processing due
-to the extreme difficulty in serializing pointer-based data structured, such as
-an half-edge data structure (<a href="http://openmesh.org">OpenMesh</a>, <a href="http://www.cgal.org">CGAL</a>), or a pointer based indexed structure (<a href="http://vcg.isti.cnr.it/~cignoni/newvcglib/html/">VCG</a>).</p>
+<p>Serialization is often not considered in geometry processing due to the extreme
+difficulty in serializing pointer-based data structured, such as an half-edge
+data structure (<a href="http://openmesh.org">OpenMesh</a>, <a href="http://www.cgal.org">CGAL</a>),
+or a pointer based indexed structure
+(<a href="http://vcg.isti.cnr.it/~cignoni/newvcglib/html/">VCG</a>).</p>
 
-<p>In libigl, serialization is much simpler, since the majority of the functions use basic types, and pointers are used in very rare cases (usually to interface
-with external libraries). Libigl bundles a simple and self-contained binary and XML serialization framework, that drastically reduces the overhead required to add
-serialization to your applications.</p>
+<p>In libigl, serialization is much simpler, since the majority of the functions
+use basic types, and pointers are used in very rare cases (usually to interface
+with external libraries). Libigl bundles a simple and self-contained binary and
+XML serialization framework, that drastically reduces the overhead required to
+add serialization to your applications.</p>
 
 <p>To de-/serialize a set of variables use the following method:</p>
 
@@ -2458,7 +2599,8 @@ bool b = true;
 unsigned int num = 10;
 std::vector&lt;float&gt; vec = {0.1,0.002,5.3};
 
-// use overwrite = true for the first serialization to create or overwrite an existing file
+// use overwrite = true for the first serialization to create or overwrite an
+// existing file
 igl::serialize(b,&quot;B&quot;,&quot;filename&quot;,true);
 // append following serialization to existing file
 igl::serialize(num,&quot;Number&quot;,&quot;filename&quot;);
@@ -2470,10 +2612,16 @@ igl::deserialize(num,&quot;Number&quot;,&quot;filename&quot;);
 igl::deserialize(vec,&quot;VectorName&quot;,&quot;filename&quot;);
 </code></pre>
 
-<p>Currently all fundamental data types (bool, int, float, double, &#8230;) are supported, as well as std::string, basic <code>STL</code> containers, dense and sparse Eigen matrices and nestings of those.
-Some limitations apply to pointers. Currently, loops or many to one type of link structures are not handled correctly. Each pointer is assumed to point to a different independent object.
-Uninitialized pointers must be set to <code>nullptr</code> before de-/serialization to avoid memory leaks. Cross-platform issues like little-, big-endianess is currently not supported.
-To make user defined types serializable, just derive from <code>igl::Serializable</code> and trivially implementing the <code>InitSerialization</code> method.</p>
+<p>Currently all fundamental data types (bool, int, float, double, &#8230;) are
+supported, as well as std::string, basic <code>STL</code> containers, dense and sparse
+Eigen matrices and nestings of those. Some limitations apply to pointers.
+Currently, loops or many to one type of link structures are not handled
+correctly. Each pointer is assumed to point to a different independent object.
+Uninitialized pointers must be set to <code>nullptr</code> before de-/serialization to
+avoid memory leaks. Cross-platform issues like little-, big-endianess is
+currently not supported. To make user defined types serializable, just derive
+from <code>igl::Serializable</code> and trivially implementing the <code>InitSerialization</code>
+method.</p>
 
 <p>Assume that the state of your application is a mesh and a set of integer ids:</p>
 
@@ -2494,7 +2642,9 @@ struct State : public igl::Serializable
 };
 </code></pre>
 
-<p>If you need more control over the serialization of your types, you can override the following functions or directly inherit from the interface <code>igl::SerializableBase</code>.</p>
+<p>If you need more control over the serialization of your types, you can override
+the following functions or directly inherit from the interface
+<code>igl::SerializableBase</code>.</p>
 
 <pre><code class="cpp">bool Serializable::PreSerialization() const;
 void Serializable::PostSerialization() const;
@@ -2502,18 +2652,21 @@ bool Serializable::PreDeserialization();
 void Serializable::PostDeserialization();
 </code></pre>
 
-<p>Alternatively, if you want a non-intrusive way of serializing your state you can overload the following functions:</p>
+<p>Alternatively, if you want a non-intrusive way of serializing your state you can
+overload the following functions:</p>
 
 <pre><code class="cpp">namespace igl
 {
   namespace serialization
   {
-    template &lt;&gt; inline void serialize(const State&amp; obj,std::vector&lt;char&gt;&amp; buffer){
+    template &lt;&gt; inline void serialize(const State&amp; obj,std::vector&lt;char&gt;&amp; buffer)
+    {
       ::igl::serialize(obj.V,std::string(&quot;V&quot;),buffer);
       ::igl::serialize(obj.F,std::string(&quot;F&quot;),buffer);
       ::igl::serialize(obj.ids,std::string(&quot;ids&quot;),buffer);
     }
-    template &lt;&gt; inline void deserialize(State&amp; obj,const std::vector&lt;char&gt;&amp; buffer){
+    template &lt;&gt; inline void deserialize(State&amp; obj,const std::vector&lt;char&gt;&amp; buffer)
+    {
       ::igl::deserialize(obj.V,std::string(&quot;V&quot;),buffer);
       ::igl::deserialize(obj.F,std::string(&quot;F&quot;),buffer);
       ::igl::deserialize(obj.ids,std::string(&quot;ids&quot;),buffer);
@@ -2531,9 +2684,13 @@ void Serializable::PostDeserialization();
 )
 </code></pre>
 
-<p>All the former code is for binary serialization which is especially useful if you have to handle larger data where the loading and saving times become more important.
-For cases where you want to read and edit the serialized data by hand we provide a serialization to XML files which is based on the library <a href="https://github.com/leethomason/tinyxml2">tinyxml2</a>.
-There you also have the option to create a partial binary serialization of your data by using the binary parameter, exposed in the function <code>serialize_xml()</code>:</p>
+<p>All the former code is for binary serialization which is especially useful if
+you have to handle larger data where the loading and saving times become more
+important. For cases where you want to read and edit the serialized data by
+hand we provide a serialization to XML files which is based on the library
+<a href="https://github.com/leethomason/tinyxml2">tinyxml2</a>. There you also have the
+option to create a partial binary serialization of your data by using the binary
+parameter, exposed in the function <code>serialize_xml()</code>:</p>
 
 <pre><code class="cpp">#include &quot;igl/xml/serialize_xml.h&quot;
 
@@ -2776,7 +2933,7 @@ occlusion.</figcaption>
 <a href="http://nothings.org/stb_image.h">stb image</a> code.</p>
 
 <p>With the viewer used in this tutorial, it is possible to render the scene in a
-memory buffer using the function, <code>igl::viewer::ViewerCore::draw_buffer</code>:</p>
+memory buffer using the function, <code>igl::opengl::ViewerCore::draw_buffer</code>:</p>
 
 <pre><code class="cpp">// Allocate temporary buffers for 1280x800 image
 Eigen::Matrix&lt;unsigned char,Eigen::Dynamic,Eigen::Dynamic&gt; R(1280,800);
@@ -3543,6 +3700,47 @@ igl::false_barycentric_subdivision." />
 <figcaption>The original coarse mesh and three different subdivision methods:
 <code>igl::upsample</code>, <code>igl::loop</code> and
 <code>igl::false_barycentric_subdivision</code>.</figcaption>
+</figure>
+
+<h2 id="datasmoothing"><a href="#datasmoothing">Data smoothing</a></h2>
+
+<p>A noisy function <span class="math">\(f\)</span> defined on a surface <span class="math">\(\Omega\)</span> can be smoothed using an
+energy minimization that balances a smoothing term <span class="math">\(E_S\)</span> with a quadratic
+fitting term:</p>
+
+<p><span class="math">\(u = \operatorname{argmin}_u \alpha E_S(u) + (1-\alpha)\int_\Omega ||u-f||^2 dx\)</span></p>
+
+<p>The parameter <span class="math">\(\alpha\)</span> determines how aggressively the function is smoothed.</p>
+
+<p>A classical choice for the smoothness energy is the Laplacian energy of the
+function with zero Neumann boundary conditions, which is a form of the
+biharmonic energy. It is constructed using the cotangent Laplacian <code>L</code> and
+the mass matrix <code>M</code>: <code>QL = L'*(M\L)</code>. Because of the implicit zero Neumann
+boundary conditions however, the function behavior is significantly warped at
+the boundary if <span class="math">\(f\)</span> does not have zero normal gradient at the boundary.</p>
+
+<p>In #[stein_2017] it is suggested to use the Biharmonic energy with natural
+Hessian boundary conditions instead, which corresponds to the hessian energy
+with the matrix <code>QH = H'*(M2\H)</code>, where <code>H</code> is a finite element Hessian and
+<code>M2</code> is a stacked mass matrix. The matrices <code>H</code> and <code>QH</code> are implemented in
+libigl as <code>igl::hessian</code> and <code>igl::hessian_energy</code> respectively. An example
+of how to use the function is given in <a href="712_DataSmoothing/main.cpp">Example 712</a>.</p>
+
+<p>In the following image the differences between the Laplacian energy with
+zero Neumann boundary conditions and the Hessian energy can be clearly seen:
+whereas the zero Neumann boundary condition in the third image bias the isolines
+of the function to be perpendicular to the boundary, the Hessian energy gives
+an unbiased result.</p>
+
+<figure>
+<img src="images/712_beetles.jpg" alt="(Example 712) From left to right: a function
+on the beetle mesh, the function with added noise, the result of smoothing
+with the Laplacian energy and zero Neumann boundary conditions, and the
+result of smoothing with the Hessian energy." />
+<figcaption>(<a href="712_DataSmoothing/main.cpp">Example 712</a>) From left to right: a function
+on the beetle mesh, the function with added noise, the result of smoothing
+with the Laplacian energy and zero Neumann boundary conditions, and the
+result of smoothing with the Hessian energy.</figcaption>
 </figure>
 
 <h1 id="chapter7:miscellaneous">Miscellaneous</h1>

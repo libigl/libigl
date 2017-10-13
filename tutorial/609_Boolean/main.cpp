@@ -1,5 +1,4 @@
 #include <igl/readOFF.h>
-//#define IGL_NO_CORK
 //#undef IGL_STATIC_LIBRARY
 #include <igl/copyleft/cgal/mesh_boolean.h>
 #include <igl/opengl/glfw/Viewer.h>
@@ -38,9 +37,9 @@ void update(igl::opengl::glfw::Viewer &viewer)
       C.row(f) = Eigen::RowVector3d(0,1,0);
     }
   }
-  viewer.data.clear();
-  viewer.data.set_mesh(VC,FC);
-  viewer.data.set_colors(C);
+  viewer.selected_data().clear();
+  viewer.selected_data().set_mesh(VC,FC);
+  viewer.selected_data().set_colors(C);
   std::cout<<"A "<<MESH_BOOLEAN_TYPE_NAMES[boolean_type]<<" B."<<std::endl;
 }
 

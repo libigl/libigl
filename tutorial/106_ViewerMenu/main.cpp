@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
   };
 
   // Plot the mesh
-  viewer.data.set_mesh(V, F);
+  viewer.selected_data().set_mesh(V, F);
   viewer.launch();
 }
 #endif

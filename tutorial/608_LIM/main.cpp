@@ -50,7 +50,7 @@ bool key_down(igl::opengl::glfw::Viewer& viewer,unsigned char key,int modifier)
     }
 
     // set mesh
-    viewer.data.set_vertices(V1);
+    viewer.selected_data().set_vertices(V1);
 
     return true;
   }
@@ -108,7 +108,7 @@ int main(int argc, char *argv[])
   // Show mesh
   igl::opengl::glfw::Viewer viewer;
   viewer.callback_key_down = &key_down;
-  viewer.data.set_mesh(V1, F);
+  viewer.selected_data().set_mesh(V1, F);
   viewer.core.show_lines = true;
   viewer.core.lighting_factor = 0.0f;
   viewer.launch();

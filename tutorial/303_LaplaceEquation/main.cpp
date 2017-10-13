@@ -66,8 +66,8 @@ int main(int argc, char *argv[])
 
   // Plot the mesh with pseudocolors
   igl::opengl::glfw::Viewer viewer;
-  viewer.data.set_mesh(V, F);
+  viewer.selected_data().set_mesh(V, F);
   viewer.core.show_lines = false;
-  viewer.data.set_colors(C);
+  viewer.selected_data().set_colors(C);
   viewer.launch();
 }

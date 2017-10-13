@@ -1,3 +1,10 @@
+// This file is part of libigl, a simple c++ geometry processing library.
+//
+// Copyright (C) 2017 Sebastian Koch <s.koch@tu-berlin.de> and Daniele Panozzo <daniele.panozzo@gmail.com>
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
+// obtain one at http://mozilla.org/MPL/2.0/.
 const char *__doc_igl_active_set = R"igl_Qu8mg5v7(// Known Bugs: rows of [Aeq;Aieq] **must** be linearly independent. Should be
   // using QR decomposition otherwise:
   //   http://www.okstate.edu/sas/v8/sashtml/ormp/chap5/sect32.htm
@@ -31,6 +38,21 @@ const char *__doc_igl_active_set = R"igl_Qu8mg5v7(// Known Bugs: rows of [Aeq;Ai
   // Benchmark: For a harmonic solve on a mesh with 325K facets, matlab 2.2
   // secs, igl/min_quad_with_fixed.h 7.1 secs
   //)igl_Qu8mg5v7";
+const char *__doc_igl_adjacency_list = R"igl_Qu8mg5v7(// Constructs the graph adjacency list of a given mesh (V,F)
+  // Templates:
+  //   T  should be a eigen sparse matrix primitive type like int or double
+  // Inputs:
+  //   F       #F by dim list of mesh faces (must be triangles)
+  //   sorted  flag that indicates if the list should be sorted counter-clockwise
+  // Outputs: 
+  //   A  vector<vector<T> > containing at row i the adjacent vertices of vertex i
+  //
+  // Example:
+  //   // Mesh in (V,F)
+  //   vector<vector<double> > A;
+  //   adjacency_list(F,A);
+  //
+  // See also: edges, cotmatrix, diag)igl_Qu8mg5v7";
 const char *__doc_igl_arap_precomputation = R"igl_Qu8mg5v7(// Compute necessary information to start using an ARAP deformation
   //
   // Inputs:
@@ -78,10 +100,10 @@ const char *__doc_igl_barycentric_coordinates = R"igl_Qu8mg5v7(// Compute baryce
   //   )igl_Qu8mg5v7";
 const char *__doc_igl_barycentric_to_global = R"igl_Qu8mg5v7(// Converts barycentric coordinates in the embree form to 3D coordinates
   // Embree stores barycentric coordinates as triples: fid, bc1, bc2
-  // fid is the id of a face, bc1 is the displacement of the point wrt the 
+  // fid is the id of a face, bc1 is the displacement of the point wrt the
   // first vertex v0 and the edge v1-v0. Similarly, bc2 is the displacement
   // wrt v2-v0.
-  // 
+  //
   // Input:
   // V:  #Vx3 Vertices of the mesh
   // F:  #Fxe Faces of the mesh
@@ -89,6 +111,7 @@ const char *__doc_igl_barycentric_to_global = R"igl_Qu8mg5v7(// Converts barycen
   //
   // Output:
   // #X: #Xx3 3D coordinates of all points in bc)igl_Qu8mg5v7";
+
 const char *__doc_igl_bbw = R"igl_Qu8mg5v7(// Compute Bounded Biharmonic Weights on a given domain (V,Ele) with a given
   // set of boundary conditions
   //
@@ -839,12 +862,14 @@ const char *__doc_igl_min_quad_with_fixed_precompute = R"igl_Qu8mg5v7(// Known B
   // they're not then resulting probably will no longer be sparse: it will be
   // slow.
   //
-  // MIN_QUAD_WITH_FIXED Minimize quadratic energy 
+  // MIN_QUAD_WITH_FIXED Minimize a quadratic energy of the form
   //
-  // 0.5*Z'*A*Z + Z'*B + C with
+  // trace( 0.5*Z'*A*Z + Z'*B + constant )
   //
-  // constraints that Z(known) = Y, optionally also subject to the constraints
-  // Aeq*Z = Beq
+  // subject to
+  //
+  //   Z(known,:) = Y, and
+  //   Aeq*Z = Beq
   //
   // Templates:
   //   T  should be a eigen matrix primitive type like int or double
@@ -870,12 +895,12 @@ const char *__doc_igl_min_quad_with_fixed_solve = R"igl_Qu8mg5v7(// Solves a sys
   //   DerivedZ  type of Z (e.g. derived from VectorXd or MatrixXd)
   // Inputs:
   //   data  factorization struct with all necessary precomputation to solve
-  //   B  n by 1 column of linear coefficients
-  //   Y  b by 1 list of constant fixed values
-  //   Beq  m by 1 list of linear equality constraint constant values
+  //   B  n by k column of linear coefficients
+  //   Y  b by k list of constant fixed values
+  //   Beq  m by k list of linear equality constraint constant values
   // Outputs:
-  //   Z  n by cols solution
-  //   sol  #unknowns+#lagrange by cols solution to linear system
+  //   Z  n by k solution
+  //   sol  #unknowns+#lagrange by k solution to linear system
   // Returns true on success, false on error)igl_Qu8mg5v7";
 const char *__doc_igl_min_quad_with_fixed = R"igl_Qu8mg5v7(See min_quad_with_fixed for the documentation.)igl_Qu8mg5v7";
 const char *__doc_igl_n_polyvector = R"igl_Qu8mg5v7(// Inputs:
@@ -1410,3 +1435,21 @@ const char *__doc_igl_writeOBJ = R"igl_Qu8mg5v7(// Write a mesh in an ascii obj 
   //
   // Known issues: Horrifyingly, this does not have the same order of
   // parameters as readOBJ.)igl_Qu8mg5v7";
+const char *__doc_igl_writePLY = R"igl_Qu8mg5v7(// Write a mesh in an ascii ply file
+  // Inputs:
+  //   str  path to outputfile
+  //   V  #V by 3 mesh vertex positions
+  //   F  #F by 3 mesh indices into V
+  //   N  #V by 3 normal vectors
+  //   UV #V by 2 texture coordinates
+  // Returns true on success, false on error)igl_Qu8mg5v7";
+const char *__doc_igl_readPLY= R"igl_Qu8mg5v7(// Read a mesh from an ascii ply file, filling in vertex positions,
+  // mesh indices, normals and texture coordinates
+  // Inputs:
+  //  str path to .obj file
+  // Outputs:
+  //   V  double matrix of vertex positions  #V by 3
+  //   F  #F list of face indices into vertex positions
+  //   N  double matrix of corner normals #N by 3
+  //   UV #V by 2 texture coordinates
+  // Returns true on success, false on errors)igl_Qu8mg5v7";

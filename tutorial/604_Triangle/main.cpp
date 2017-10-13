@@ -32,6 +32,6 @@ int main(int argc, char *argv[])
 
   // Plot the generated mesh
   igl::opengl::glfw::Viewer viewer;
-  viewer.data.set_mesh(V2,F2);
+  viewer.selected_data().set_mesh(V2,F2);
   viewer.launch();
 }

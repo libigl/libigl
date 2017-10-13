@@ -64,10 +64,10 @@ void update_visualization(igl::opengl::glfw::Viewer & viewer)
     default:
       break;
   }
-  viewer.data.clear();
-  viewer.data.set_mesh(V_vis,F_vis);
-  viewer.data.set_colors(C_vis);
-  viewer.data.set_face_based(true);
+  viewer.selected_data().clear();
+  viewer.selected_data().set_mesh(V_vis,F_vis);
+  viewer.selected_data().set_colors(C_vis);
+  viewer.selected_data().set_face_based(true);
 }
 
 bool key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int mod)

@@ -31,8 +31,8 @@ int main(int argc, char * argv[])
 [space]  Toggle between transforming original mesh and swept volume
 )";
   igl::opengl::glfw::Viewer viewer;
-  viewer.data.set_mesh(V,F);
-  viewer.data.set_face_based(true);
+  viewer.selected_data().set_mesh(V,F);
+  viewer.selected_data().set_face_based(true);
   viewer.core.is_animating = !show_swept_volume;
   const int grid_size = 50;
   const int time_steps = 200;
@@ -51,8 +51,8 @@ int main(int argc, char * argv[])
         VT = V*T.matrix().block(0,0,3,3).transpose();
         Eigen::RowVector3d trans = T.matrix().block(0,3,3,1).transpose();
         VT = ( VT.rowwise() + trans).eval();
-        viewer.data.set_vertices(VT);
-        viewer.data.compute_normals();
+        viewer.selected_data().set_vertices(VT);
+        viewer.selected_data().compute_normals();
       }
       return false;
     };
@@ -65,21 +65,21 @@ int main(int argc, char * argv[])
           return false;
         case ' ':
           show_swept_volume = !show_swept_volume;
-          viewer.data.clear();
+          viewer.selected_data().clear();
           if(show_swept_volume)
           {
-            viewer.data.set_mesh(SV,SF);
+            viewer.selected_data().set_mesh(SV,SF);
             Eigen::Vector3d ambient = Eigen::Vector3d(SILVER_AMBIENT[0], SILVER_AMBIENT[1], SILVER_AMBIENT[2]);
             Eigen::Vector3d diffuse = Eigen::Vector3d(SILVER_DIFFUSE[0], SILVER_DIFFUSE[1], SILVER_DIFFUSE[2]);
             Eigen::Vector3d specular = Eigen::Vector3d(SILVER_SPECULAR[0], SILVER_SPECULAR[1], SILVER_SPECULAR[2]);
-            viewer.data.uniform_colors(ambient,diffuse,specular);
+            viewer.selected_data().uniform_colors(ambient,diffuse,specular);
           }
           else
           {
-            viewer.data.set_mesh(V,F);
+            viewer.selected_data().set_mesh(V,F);
           }
           viewer.core.is_animating = !show_swept_volume;
-          viewer.data.set_face_based(true);
+          viewer.selected_data().set_face_based(true);
           break;
       }
       return true;

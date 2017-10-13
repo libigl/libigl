@@ -23,7 +23,7 @@ void solve(igl::opengl::glfw::Viewer &viewer)
   // Pseudo-color based on solution
   Eigen::MatrixXd C;
   igl::jet(Z,0,1,C);
-  viewer.data.set_colors(C);
+  viewer.selected_data().set_colors(C);
 }
 
 bool key_down(igl::opengl::glfw::Viewer &viewer, unsigned char key, int mod)
@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
 
   // Plot the mesh
   igl::opengl::glfw::Viewer viewer;
-  viewer.data.set_mesh(V, F);
+  viewer.selected_data().set_mesh(V, F);
   viewer.core.show_lines = false;
   viewer.callback_key_down = &key_down;
 

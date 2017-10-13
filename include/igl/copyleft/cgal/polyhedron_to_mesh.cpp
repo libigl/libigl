@@ -8,11 +8,14 @@
 #include "polyhedron_to_mesh.h"
 #include <CGAL/Polyhedron_3.h>
 
-template <typename Polyhedron>
+template <
+  typename Polyhedron,
+  typename DerivedV,
+  typename DerivedF>
 IGL_INLINE void igl::copyleft::cgal::polyhedron_to_mesh(
   const Polyhedron & poly,
-  Eigen::MatrixXd & V,
-  Eigen::MatrixXi & F)
+  Eigen::PlainObjectBase<DerivedV> & V,
+  Eigen::PlainObjectBase<DerivedF> & F)
 {
   using namespace std;
   V.resize(poly.size_of_vertices(),3);
@@ -59,6 +62,8 @@ IGL_INLINE void igl::copyleft::cgal::polyhedron_to_mesh(
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instantiation
 #include <CGAL/Simple_cartesian.h>
+#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 #include <CGAL/Polyhedron_items_with_id_3.h>
-template void igl::copyleft::cgal::polyhedron_to_mesh<CGAL::Polyhedron_3<CGAL::Simple_cartesian<double>, CGAL::Polyhedron_items_with_id_3, CGAL::HalfedgeDS_default, std::allocator<int> > >(CGAL::Polyhedron_3<CGAL::Simple_cartesian<double>, CGAL::Polyhedron_items_with_id_3, CGAL::HalfedgeDS_default, std::allocator<int> > const&, Eigen::Matrix<double, -1, -1, 0, -1, -1>&, Eigen::Matrix<int, -1, -1, 0, -1, -1>&);
+template void igl::copyleft::cgal::polyhedron_to_mesh<CGAL::Polyhedron_3<CGAL::Epick, CGAL::Polyhedron_items_3, CGAL::HalfedgeDS_default, std::allocator<int> >, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(CGAL::Polyhedron_3<CGAL::Epick, CGAL::Polyhedron_items_3, CGAL::HalfedgeDS_default, std::allocator<int> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
+template void igl::copyleft::cgal::polyhedron_to_mesh<CGAL::Polyhedron_3<CGAL::Simple_cartesian<double>,CGAL::Polyhedron_items_with_id_3, CGAL::HalfedgeDS_default, std::allocator<int> >, Eigen::Matrix<double, -1, -1, 0,-1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(CGAL::Polyhedron_3<CGAL::Simple_cartesian<double>,CGAL::Polyhedron_items_with_id_3, CGAL::HalfedgeDS_default, std::allocator<int> > const&,Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0,-1, -1> >&);
 #endif

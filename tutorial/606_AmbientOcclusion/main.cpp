@@ -23,7 +23,7 @@ bool key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier
   {
     case '1':
       // Show the mesh without the ambient occlusion factor
-      viewer.data.set_colors(color);
+      viewer.selected_data().set_colors(color);
       break;
     case '2':
     {
@@ -31,7 +31,7 @@ bool key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier
       MatrixXd C = color.replicate(V.rows(),1);
       for (unsigned i=0; i<C.rows();++i)
         C.row(i) *= AO(i);//std::min<double>(AO(i)+0.2,1);
-      viewer.data.set_colors(C);
+      viewer.selected_data().set_colors(C);
       break;
     }
     case '.':
@@ -70,7 +70,7 @@ int main(int argc, char *argv[])
 
   // Show mesh
   igl::opengl::glfw::Viewer viewer;
-  viewer.data.set_mesh(V, F);
+  viewer.selected_data().set_mesh(V, F);
   viewer.callback_key_down = &key_down;
   key_down(viewer,'2',0);
   viewer.core.show_lines = false;

@@ -7,24 +7,35 @@
 # MOSEK_LIBRARIES       - Link these to use MOSEK
 #
 
-FIND_PATH(MOSEK_INCLUDE_DIR mosek.h
-  PATHS /usr/local/mosek/7/tools/platform/osx64x86/h/
-    )
+# Hardcoded search paths
+set(SEARCH_PATHS
+  /usr/local/mosek/7/tools/platform/osx64x86/
+  /usr/local/mosek/8/tools/platform/osx64x86/
+  /opt/mosek/7/tools/platform/linux64x86/
+)
 
-SET(SEARCH_PATHS "${MOSEK_INCLUDE_DIR}" "${MOSEK_INCLUDE_DIR}/../bin" "${MOSEK_INCLUDE_DIR}/lib")
+find_path(MOSEK_INCLUDE_DIR mosek.h
+  PATHS ${SEARCH_PATHS}
+  PATH_SUFFIXES h
+)
 
 set(MOSEK_LIBRARIES)
-FIND_LIBRARY(MOSEK_LIBRARIES  NAMES mosek64 PATHS ${SEARCH_PATHS} NO_DEFAULT_PATH DPATH_SUFFIXES a lib dylib)
+find_library(MOSEK_LIBRARIES NAMES mosek64
+  HINT
+    "${MOSEK_INCLUDE_DIR}"
+    "${MOSEK_INCLUDE_DIR}/../bin"
+    "${MOSEK_INCLUDE_DIR}/lib"
+  PATHS
+    ${SEARCH_PATHS}
+  NO_DEFAULT_PATH
+  PATH_SUFFIXES a bin lib dylib)
 
-if(MOSEK_LIBRARIES AND MOSEK_INCLUDE_DIR)
-message(STATUS "Found mosek: ${MOSEK_LIBRARIES}")
-set(MOSEK_FOUND TRUE)
-endif(MOSEK_LIBRARIES AND MOSEK_INCLUDE_DIR)
+# Check that Mosek was successfully found
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(
+  MOSEK DEFAULT_MSG MOSEK_LIBRARIES MOSEK_INCLUDE_DIR
+)
+set(MOSEK_INCLUDE_DIRS ${MOSEK_INCLUDE_DIR})
 
-IF (MOSEK_FOUND)
-   message(STATUS "Found MOSEK: ${MOSEK_INCLUDE_DIR}")
-   SET(MOSEK_INCLUDE_DIRS ${MOSEK_INCLUDE_DIR} )
-ELSE (MOSEK_FOUND)
-    #add_definitions(-DIGL_NO_MOSEK)
-    #message(WARNING "could NOT find MOSEK")
-ENDIF (MOSEK_FOUND)
+# Hide variables from CMake-Gui options
+mark_as_advanced(MOSEK_LIBRARIES MOSEK_INCLUDE_DIRS MOSEK_INCLUDE_DIR)
