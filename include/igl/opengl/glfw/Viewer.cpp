@@ -1100,10 +1100,13 @@ namespace glfw
     }
     data_list.erase(data_list.begin()                 + index);
     opengl_state_list.erase(opengl_state_list.begin() + index);
-    if(selected_data_index >= index)
+    if(selected_data_index >= index && selected_data_index>0)
     {
       selected_data_index--;
     }
+    std::cout<<"data: "<<data_list.size()<<std::endl;
+    std::cout<<"opengl_state: "<<opengl_state_list.size()<<std::endl;
+    std::cout<<"selected_data_index: "<<selected_data_index<<std::endl;
     return true;
   }
 
