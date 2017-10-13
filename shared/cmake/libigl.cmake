@@ -310,13 +310,18 @@ endif()
 ################################################################################
 ### Compile the png parts ###
 if(LIBIGL_WITH_PNG)
-  set(STB_IMAGE_DIR "${LIBIGL_EXTERNAL}/stb_image")
-  if(NOT TARGET stb_image)
-    add_subdirectory("${STB_IMAGE_DIR}" "stb_image")
+  # png/ module is anomalous because it also depends on opengl it really should
+  # be moved into the opengl/ directory and namespace ...
+  if(TARGET igl_opengl)
+    set(STB_IMAGE_DIR "${LIBIGL_EXTERNAL}/stb_image")
+    if(NOT TARGET stb_image)
+      add_subdirectory("${STB_IMAGE_DIR}" "stb_image")
+    endif()
+    compile_igl_module("png" "")
+    target_link_libraries(igl_png ${IGL_SCOPE} igl_stb_image igl_opengl)
+  else()
+    set(LIBIGL_WITH_PNG OFF CACHE BOOL "" FORCE)
   endif()
-  compile_igl_module("png")
-  target_link_libraries(igl_png ${IGL_SCOPE} igl_stb_image igl_opengl)
-  target_include_directories(igl_png SYSTEM ${IGL_SCOPE} ${STB_IMAGE_DIR})
 endif()
 
 ################################################################################
