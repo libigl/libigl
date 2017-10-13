@@ -8,7 +8,7 @@
 #include "render_to_tga.h"
 #include "tga.h"
 
-#include "gl.h"
+#include "../../opengl2/gl.h"
 
 #include <cstdlib>
 
