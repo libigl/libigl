@@ -27,7 +27,7 @@ bool key_down(igl::viewer::Viewer& viewer,unsigned char key,int modifier)
   using namespace std;
   using namespace Eigen;
 
-  if(key >= '0' && key <= '5' || key == 'B')
+  if((key >= '0' && key <= '5') || key == 'B')
   {
     // compute locally injective map
     Energy energy = Energy(key - '1');

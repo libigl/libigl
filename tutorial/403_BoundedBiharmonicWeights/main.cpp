@@ -142,7 +142,7 @@ int main(int argc, char *argv[])
   bbw_data.verbosity = 2;
   if(!igl::bbw(V,T,b,bc,bbw_data,W))
   {
-    return false;
+    return EXIT_FAILURE;
   }
 
   //MatrixXd Vsurf = V.topLeftCorner(F.maxCoeff()+1,V.cols());
@@ -176,4 +176,5 @@ int main(int argc, char *argv[])
     "Press ',' to show previous weight function."<<endl<<
     "Press [space] to toggle animation."<<endl;
   viewer.launch();
+  return EXIT_SUCCESS;
 }

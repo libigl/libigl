@@ -95,6 +95,7 @@ int main(int argc, char * argv[])
         Eigen::MatrixXd colors;
         igl::jet(*z, true, colors);
         viewer.data.set_colors(colors);
+        return true;
     };
     std::cout << R"(Usage:
 1  Show original function
