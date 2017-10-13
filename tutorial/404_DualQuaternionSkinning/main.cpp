@@ -77,9 +77,9 @@ bool pre_draw(igl::opengl::glfw::Viewer & viewer)
     MatrixXi BET;
     igl::deform_skeleton(C,BE,T,CT,BET);
     
-    viewer.data.set_vertices(U);
-    viewer.data.set_edges(CT,BET,sea_green);
-    viewer.data.compute_normals();
+    viewer.selected_data().set_vertices(U);
+    viewer.selected_data().set_edges(CT,BET,sea_green);
+    viewer.selected_data().compute_normals();
     if(viewer.core.is_animating)
     {
       anim_t += anim_t_dir;
@@ -131,8 +131,8 @@ int main(int argc, char *argv[])
 
   // Plot the mesh with pseudocolors
   igl::opengl::glfw::Viewer viewer;
-  viewer.data.set_mesh(U, F);
-  viewer.data.set_edges(C,BE,sea_green);
+  viewer.selected_data().set_mesh(U, F);
+  viewer.selected_data().set_edges(C,BE,sea_green);
   viewer.core.show_lines = false;
   viewer.core.show_overlay_depth = false;
   viewer.core.line_width = 1;

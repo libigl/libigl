@@ -109,8 +109,8 @@ IGL_INLINE void igl::triangle::triangulate(
   }
 
   in.numberofpointattributes = 0;
-  in.pointmarkerlist = (int*)calloc(VM.size(),sizeof(int));
-  for(unsigned i=0;i<VM.rows();++i) in.pointmarkerlist[i] = VM.size()?VM(i):1;
+  in.pointmarkerlist = (int*)calloc(V.size(),sizeof(int)) ;
+  for(unsigned i=0;i<V.rows();++i) in.pointmarkerlist[i] = VM.size()?VM(i):1;
 
   in.trianglelist = NULL;
   in.numberoftriangles = 0;

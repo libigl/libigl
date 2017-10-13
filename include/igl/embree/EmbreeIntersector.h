@@ -412,6 +412,7 @@ inline bool igl::embree::EmbreeIntersector::intersectBeam(
   if((intersectRay(origin,direction,hit,tnear,tfar,mask) && (hit.gid == geoId || geoId == -1)))
   {
     bestHit = hit;
+    hasHit = true;
   }
 
   // sample points around actual ray (conservative hitcheck)

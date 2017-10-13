@@ -91,9 +91,9 @@ void update_visualization(igl::opengl::glfw::Viewer & viewer)
   {
     append_mesh(V,F,RowVector3d(0.8,0.8,0.8));
   }
-  viewer.data.clear();
-  viewer.data.set_mesh(V_vis,F_vis);
-  viewer.data.set_colors(C_vis);
+  viewer.selected_data().clear();
+  viewer.selected_data().set_mesh(V_vis,F_vis);
+  viewer.selected_data().set_colors(C_vis);
   viewer.core.lighting_factor = overlay;
 }
 

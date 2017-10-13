@@ -237,7 +237,7 @@ void drawCuts(igl::opengl::glfw::Viewer& viewer,
         end.row(ind) = V.row(F(i,(j+1)%3));
         ind++;
       }
-  viewer.data.add_edges(start, end , Eigen::RowVector3d(1.,0,1.));
+  viewer.selected_data().add_edges(start, end , Eigen::RowVector3d(1.,0,1.));
 }
 
 void drawField(igl::opengl::glfw::Viewer &viewer,
@@ -248,7 +248,7 @@ void drawField(igl::opengl::glfw::Viewer &viewer,
   {
     Eigen::MatrixXd VF = field.block(0,n*3,F.rows(),3);
     Eigen::VectorXd c = VF.rowwise().norm();
-    viewer.data.add_edges(B - global_scale*VF, B + global_scale*VF , color);
+    viewer.selected_data().add_edges(B - global_scale*VF, B + global_scale*VF , color);
   }
 }
 
@@ -264,7 +264,7 @@ void drawConstraints(igl::opengl::glfw::Viewer &viewer)
       if (blevel[i] ==1 && n>0)
         color.row(i)<<0.7,0.7,0.7;
     // Eigen::RowVector3d color; color<<0.5,0.5,0.5;
-    viewer.data.add_edges(Bc - global_scale*bc.block(0,n*3,bc.rows(),3), Bc + global_scale*bc.block(0,n*3,bc.rows(),3) , color);
+    viewer.selected_data().add_edges(Bc - global_scale*bc.block(0,n*3,bc.rows(),3), Bc + global_scale*bc.block(0,n*3,bc.rows(),3) , color);
   }
 
 }
@@ -316,22 +316,22 @@ void update_display(igl::opengl::glfw::Viewer& viewer)
   using namespace std;
   using namespace Eigen;
 
-  viewer.data.clear();
-  viewer.data.lines.resize(0,9);
-  viewer.data.points.resize(0,6);
+  viewer.selected_data().clear();
+  viewer.selected_data().lines.resize(0,9);
+  viewer.selected_data().points.resize(0,6);
   viewer.core.show_texture = false;
 
   if (display_mode == 1)
   {
     cerr<< "Displaying original field, its singularities and its cuts"  <<endl;
 
-    viewer.data.set_mesh(V, F);
+    viewer.selected_data().set_mesh(V, F);
 
     // Highlight in red the constrained faces
     MatrixXd C = MatrixXd::Constant(F.rows(),3,1);
     for (unsigned i=0; i<b.size();++i)
       C.row(b(i)) << 1, 0, 0;
-    viewer.data.set_colors(C);
+    viewer.selected_data().set_colors(C);
 
     //Draw constraints
     drawConstraints(viewer);
@@ -345,7 +345,7 @@ void update_display(igl::opengl::glfw::Viewer& viewer)
 
     //Draw Singularities
     Eigen::MatrixXd singular_points = igl::slice(V, singularities_ori, 1);
-    viewer.data.add_points(singular_points,Eigen::RowVector3d(239./255.,205./255.,57./255.));
+    viewer.selected_data().add_points(singular_points,Eigen::RowVector3d(239./255.,205./255.,57./255.));
 
   }
 
@@ -353,13 +353,13 @@ void update_display(igl::opengl::glfw::Viewer& viewer)
   {
     cerr<< "Displaying current field, its singularities and its cuts"  <<endl;
 
-    viewer.data.set_mesh(V, F);
+    viewer.selected_data().set_mesh(V, F);
 
     // Highlight in red the constrained faces
     MatrixXd C = MatrixXd::Constant(F.rows(),3,1);
     for (unsigned i=0; i<b.size();++i)
       C.row(b(i)) << 1, 0, 0;
-    viewer.data.set_colors(C);
+    viewer.selected_data().set_colors(C);
 
     //Draw constraints
     drawConstraints(viewer);
@@ -373,17 +373,17 @@ void update_display(igl::opengl::glfw::Viewer& viewer)
 
     //Draw Singularities
     Eigen::MatrixXd singular_points = igl::slice(V, singularities, 1);
-    viewer.data.add_points(singular_points,Eigen::RowVector3d(239./255.,205./255.,57./255.));
+    viewer.selected_data().add_points(singular_points,Eigen::RowVector3d(239./255.,205./255.,57./255.));
   }
 
   if (display_mode == 3)
   {
     cerr<< "Displaying original field and its curl"  <<endl;
 
-    viewer.data.set_mesh(Vbs, Fbs);
+    viewer.selected_data().set_mesh(Vbs, Fbs);
     Eigen::MatrixXd C;
     colorEdgeMeshFaces(curl_ori, 0, 0.2, C);
-    viewer.data.set_colors(C);
+    viewer.selected_data().set_colors(C);
 
     // Draw Field
     Eigen::RowVector3d color; color<<1,1,1;
@@ -395,10 +395,10 @@ void update_display(igl::opengl::glfw::Viewer& viewer)
   {
     cerr<< "Displaying current field and its curl"  <<endl;
 
-    viewer.data.set_mesh(Vbs, Fbs);
+    viewer.selected_data().set_mesh(Vbs, Fbs);
     Eigen::MatrixXd C;
     colorEdgeMeshFaces(curl, 0, 0.2, C);
-    viewer.data.set_colors(C);
+    viewer.selected_data().set_colors(C);
 
     // Draw Field
     Eigen::RowVector3d color; color<<1,1,1;
@@ -409,10 +409,10 @@ void update_display(igl::opengl::glfw::Viewer& viewer)
   {
     cerr<< "Displaying original poisson-integrated field and original poisson error"  <<endl;
 
-    viewer.data.set_mesh(V, F);
+    viewer.selected_data().set_mesh(V, F);
     Eigen::MatrixXd C;
     igl::jet(poisson_error_ori, 0, 0.5, C);
-    viewer.data.set_colors(C);
+    viewer.selected_data().set_colors(C);
 
     // Draw Field
     Eigen::RowVector3d color; color<<1,1,1;
@@ -423,10 +423,10 @@ void update_display(igl::opengl::glfw::Viewer& viewer)
   {
     cerr<< "Displaying current poisson-integrated field and current poisson error"  <<endl;
 
-    viewer.data.set_mesh(V, F);
+    viewer.selected_data().set_mesh(V, F);
     Eigen::MatrixXd C;
     igl::jet(poisson_error, 0, 0.5, C);
-    viewer.data.set_colors(C);
+    viewer.selected_data().set_colors(C);
 
     // Draw Field
     Eigen::RowVector3d color; color<<1,1,1;
@@ -437,11 +437,11 @@ void update_display(igl::opengl::glfw::Viewer& viewer)
   {
     cerr<< "Displaying original texture with cuts and singularities"  <<endl;
 
-    viewer.data.set_mesh(V, F);
+    viewer.selected_data().set_mesh(V, F);
     MatrixXd C = MatrixXd::Constant(F.rows(),3,1);
-    viewer.data.set_colors(C);
-    viewer.data.set_uv(uv_scale*scalars_ori, Fcut_ori);
-    viewer.data.set_texture(texture_R, texture_B, texture_G);
+    viewer.selected_data().set_colors(C);
+    viewer.selected_data().set_uv(uv_scale*scalars_ori, Fcut_ori);
+    viewer.selected_data().set_texture(texture_R, texture_B, texture_G);
     viewer.core.show_texture = true;
 
     // Draw Cuts
@@ -449,18 +449,18 @@ void update_display(igl::opengl::glfw::Viewer& viewer)
 
     //Draw Singularities
     Eigen::MatrixXd singular_points = igl::slice(V, singularities_ori, 1);
-    viewer.data.add_points(singular_points,Eigen::RowVector3d(239./255.,205./255.,57./255.));
+    viewer.selected_data().add_points(singular_points,Eigen::RowVector3d(239./255.,205./255.,57./255.));
 
   }
   if (display_mode == 8)
   {
     cerr<< "Displaying current texture with cuts and singularities"  <<endl;
 
-    viewer.data.set_mesh(V, F);
+    viewer.selected_data().set_mesh(V, F);
     MatrixXd C = MatrixXd::Constant(F.rows(),3,1);
-    viewer.data.set_colors(C);
-    viewer.data.set_uv(uv_scale*scalars, Fcut);
-    viewer.data.set_texture(texture_R, texture_B, texture_G);
+    viewer.selected_data().set_colors(C);
+    viewer.selected_data().set_uv(uv_scale*scalars, Fcut);
+    viewer.selected_data().set_texture(texture_R, texture_B, texture_G);
     viewer.core.show_texture = true;
 
     // Draw Cuts
@@ -468,7 +468,7 @@ void update_display(igl::opengl::glfw::Viewer& viewer)
 
     //Draw Singularities
     Eigen::MatrixXd singular_points = igl::slice(V, singularities, 1);
-    viewer.data.add_points(singular_points,Eigen::RowVector3d(239./255.,205./255.,57./255.));
+    viewer.selected_data().add_points(singular_points,Eigen::RowVector3d(239./255.,205./255.,57./255.));
 
   }
 
@@ -476,13 +476,13 @@ void update_display(igl::opengl::glfw::Viewer& viewer)
   {
     cerr<< "Displaying original field overlayed onto the current integrated field"  <<endl;
 
-    viewer.data.set_mesh(V, F);
+    viewer.selected_data().set_mesh(V, F);
 
     // Highlight in red the constrained faces
     MatrixXd C = MatrixXd::Constant(F.rows(),3,1);
     for (unsigned i=0; i<b.size();++i)
       C.row(b(i)) << 1, 0, 0;
-    viewer.data.set_colors(C);
+    viewer.selected_data().set_colors(C);
 
     // Draw Field
     Eigen::RowVector3d color; color<<0,0,1;
@@ -498,13 +498,13 @@ void update_display(igl::opengl::glfw::Viewer& viewer)
   {
     cerr<< "Displaying current field overlayed onto the current integrated field"  <<endl;
 
-    viewer.data.set_mesh(V, F);
+    viewer.selected_data().set_mesh(V, F);
 
     // Highlight in red the constrained faces
     MatrixXd C = MatrixXd::Constant(F.rows(),3,1);
     for (unsigned i=0; i<b.size();++i)
       C.row(b(i)) << 1, 0, 0;
-    viewer.data.set_colors(C);
+    viewer.selected_data().set_colors(C);
 
     // Draw Field
     Eigen::RowVector3d color; color<<0,0,1;

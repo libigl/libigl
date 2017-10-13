@@ -66,8 +66,8 @@ void plot_mesh_nrosy(
   using namespace Eigen;
   using namespace std;
   // Clear the mesh
-  viewer.data.clear();
-  viewer.data.set_mesh(V,F);
+  viewer.selected_data().clear();
+  viewer.selected_data().set_mesh(V,F);
 
   // Expand the representative vectors in the full vector set and plot them as lines
   double avg = igl::avg_edge_length(V, F);
@@ -82,22 +82,22 @@ void plot_mesh_nrosy(
     for(unsigned j=0; j<N; ++j)
       Be.row(i*N+j) = B.row(i);
 
-  viewer.data.add_edges(Be,Be+Y*(avg/2),RowVector3d(0,0,1));
+  viewer.selected_data().add_edges(Be,Be+Y*(avg/2),RowVector3d(0,0,1));
 
   // Plot the singularities as colored dots (red for negative, blue for positive)
   for (unsigned i=0; i<S.size();++i)
   {
     if (S(i) < -0.001)
-      viewer.data.add_points(V.row(i),RowVector3d(1,0,0));
+      viewer.selected_data().add_points(V.row(i),RowVector3d(1,0,0));
     else if (S(i) > 0.001)
-      viewer.data.add_points(V.row(i),RowVector3d(0,1,0));
+      viewer.selected_data().add_points(V.row(i),RowVector3d(0,1,0));
   }
 
   // Highlight in red the constrained faces
   MatrixXd C = MatrixXd::Constant(F.rows(),3,1);
   for (unsigned i=0; i<b.size();++i)
     C.row(b(i)) << 1, 0, 0;
-  viewer.data.set_colors(C);
+  viewer.selected_data().set_colors(C);
 }
 
   // It allows to change the degree of the field when a number is pressed
@@ -137,7 +137,7 @@ int main(int argc, char *argv[])
   key_down(viewer, '4', 0);
 
   // Plot the mesh
-  viewer.data.set_mesh(V, F);
+  viewer.selected_data().set_mesh(V, F);
   viewer.callback_key_down = &key_down;
 
   // Disable wireframe

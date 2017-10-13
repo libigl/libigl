@@ -153,7 +153,7 @@ static void glfw_window_size(GLFWwindow* window, int width, int height)
   int w = width*highdpi;
   int h = height*highdpi;
 
-  __viewer->resize(w, h);
+  __viewer->post_resize(w, h);
 
   // TODO: repositioning of the nanogui
 }
@@ -230,7 +230,11 @@ namespace glfw
     }
     else
     {
-      window = glfwCreateWindow(1280,800,"libigl viewer",nullptr,nullptr);
+      if (core.viewport.tail<2>().any()) {
+        window = glfwCreateWindow(core.viewport(2),core.viewport(3),"libigl viewer",nullptr,nullptr);
+      } else {
+        window = glfwCreateWindow(1280,800,"libigl viewer",nullptr,nullptr);
+      }
     }
     if (!window)
     {
@@ -287,6 +291,8 @@ namespace glfw
     init();
     return EXIT_SUCCESS;
   }
+
+
 
   IGL_INLINE bool Viewer::launch_rendering(bool loop)
   {
@@ -439,6 +445,8 @@ namespace glfw
     opengl_list(1),
     selected_data_index(0)
   {
+    window = nullptr;
+
 #ifdef IGL_VIEWER_WITH_NANOGUI
     ngui = nullptr;
     screen = nullptr;
@@ -483,8 +491,8 @@ namespace glfw
   O,o     Toggle orthographic/perspective projection
   T,t     Toggle filled faces
   Z       Snap to canonical view
-  [,]     Toggle between rotation control types (e.g. trackball, two-axis
-          valuator with fixed up)
+  [,]     Toggle between rotation control types (trackball, two-axis
+          valuator with fixed up, 2D mode with no rotation)
   <,>     Toggle between models.)"
 #ifdef IGL_VIEWER_WITH_NANOGUI
 		R"(
@@ -500,9 +508,9 @@ namespace glfw
   {
   }
 
-  IGL_INLINE bool Viewer::load_mesh_from_file(const char* mesh_file_name)
+  IGL_INLINE bool Viewer::load_mesh_from_file(
+      const std::string & mesh_file_name_string)
   {
-    std::string mesh_file_name_string = std::string(mesh_file_name);
 
     // first try to load it with a plugin
     for (unsigned int i = 0; i<plugins.size(); ++i)
@@ -525,7 +533,8 @@ namespace glfw
     size_t last_dot = mesh_file_name_string.rfind('.');
     if (last_dot == std::string::npos)
     {
-      printf("Error: No file extension found in %s\n",mesh_file_name);
+      std::cerr<<"Error: No file extension found in "<<
+        mesh_file_name_string<<std::endl;
       return false;
     }
 
@@ -586,10 +595,9 @@ namespace glfw
     return true;
   }
 
-  IGL_INLINE bool Viewer::save_mesh_to_file(const char* mesh_file_name)
+  IGL_INLINE bool Viewer::save_mesh_to_file(
+      const std::string & mesh_file_name_string)
   {
-    std::string mesh_file_name_string(mesh_file_name);
-
     // first try to load it with a plugin
     for (unsigned int i = 0; i<plugins.size(); ++i)
       if (plugins[i]->save(mesh_file_name_string))
@@ -599,7 +607,8 @@ namespace glfw
     if (last_dot == std::string::npos)
     {
       // No file type determined
-      printf("Error: No file extension found in %s\n",mesh_file_name);
+      std::cerr<<"Error: No file extension found in "<<
+        mesh_file_name_string<<std::endl;
       return false;
     }
     std::string extension = mesh_file_name_string.substr(last_dot+1);
@@ -692,13 +701,10 @@ namespace glfw
       case ']':
       {
         if(core.rotation_type == ViewerCore::ROTATION_TYPE_TRACKBALL)
-        {
-          core.set_rotation_type(
-            ViewerCore::ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP);
-        }else
-        {
+          core.set_rotation_type(ViewerCore::ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP);
+        else
           core.set_rotation_type(ViewerCore::ROTATION_TYPE_TRACKBALL);
-        }
+
         return true;
       }
       case '<':
@@ -788,7 +794,11 @@ namespace glfw
     switch (button)
     {
       case MouseButton::Left:
-        mouse_mode = MouseMode::Rotation;
+        if (core.rotation_type == ViewerCore::ROTATION_TYPE_NO_ROTATION) {
+          mouse_mode = MouseMode::Translation;
+        } else {
+          mouse_mode = MouseMode::Rotation;
+        }
         break;
 
       case MouseButton::Right:
@@ -849,6 +859,8 @@ namespace glfw
           {
             default:
               assert(false && "Unknown rotation type");
+            case ViewerCore::ROTATION_TYPE_NO_ROTATION:
+              break;
             case ViewerCore::ROTATION_TYPE_TRACKBALL:
               igl::trackball(
                 core.viewport(2),
@@ -1017,7 +1029,20 @@ namespace glfw
 
   IGL_INLINE void Viewer::resize(int w,int h)
   {
+    if (window) {
+      glfwSetWindowSize(window, w/highdpi, h/highdpi);
+    } else {
+      post_resize(w, h);
+    }
+  }
+
+  IGL_INLINE void Viewer::post_resize(int w,int h)
+  {
     core.viewport = Eigen::Vector4f(0,0,w,h);
+    for (unsigned int i = 0; i<plugins.size(); ++i)
+    {
+      plugins[i]->post_resize(w, h);
+    }
   }
 
   IGL_INLINE void Viewer::snap_to_canonical_quaternion()
@@ -1054,6 +1079,8 @@ namespace glfw
       "selected_data_index should be in bounds");
     return data_list[selected_data_index];
   }
+
+
   IGL_INLINE State& Viewer::selected_opengl()
   {
     assert(!opengl_list.empty() && "opengl_list should never be empty");

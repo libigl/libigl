@@ -1,4 +1,12 @@
+// This file is part of libigl, a simple c++ geometry processing library.
+//
+// Copyright (C) 2017 Sebastian Koch <s.koch@tu-berlin.de> and Daniele Panozzo <daniele.panozzo@gmail.com>
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
+// obtain one at http://mozilla.org/MPL/2.0/.
 extern const char *__doc_igl_active_set;
+extern const char *__doc_igl_adjacency_list;
 extern const char *__doc_igl_arap_precomputation;
 extern const char *__doc_igl_arap_solve;
 extern const char *__doc_igl_avg_edge_length;
@@ -116,3 +124,5 @@ extern const char *__doc_igl_winding_number_3;
 extern const char *__doc_igl_winding_number_2;
 extern const char *__doc_igl_writeMESH;
 extern const char *__doc_igl_writeOBJ;
+extern const char *__doc_igl_writePLY;
+extern const char *__doc_igl_readPLY;

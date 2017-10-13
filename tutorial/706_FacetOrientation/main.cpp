@@ -44,7 +44,7 @@ S,s      Scramble colors
       HSV.rightCols(2).setConstant(1.0);
       igl::hsv_to_rgb(HSV,RGBcolors[pass]);
     }
-    viewer.data.set_colors(RGBcolors[facetwise]);
+    viewer.selected_data().set_colors(RGBcolors[facetwise]);
   };
 
   viewer.callback_key_pressed = 
@@ -73,9 +73,9 @@ S,s      Scramble colors
       break;
     }
     }
-    viewer.data.clear();
-    viewer.data.set_mesh(V,is_showing_reoriented?FF[facetwise]:F);
-    viewer.data.set_colors(RGBcolors[facetwise]);
+    viewer.selected_data().clear();
+    viewer.selected_data().set_mesh(V,is_showing_reoriented?FF[facetwise]:F);
+    viewer.selected_data().set_colors(RGBcolors[facetwise]);
     return true;
   };
 
@@ -100,8 +100,8 @@ S,s      Scramble colors
     }
   }
 
-  viewer.data.set_mesh(V,is_showing_reoriented?FF[facetwise]:F);
-  viewer.data.set_face_based(true);
+  viewer.selected_data().set_mesh(V,is_showing_reoriented?FF[facetwise]:F);
+  viewer.selected_data().set_face_based(true);
   scramble_colors();
   viewer.launch();
 }

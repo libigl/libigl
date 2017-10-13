@@ -1,54 +1,29 @@
 cmake_minimum_required(VERSION 2.8.12)
-project(pybind)
-
-### Compilation flags: adapt to your needs ###
-if(MSVC)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP /bigobj /w") ### Enable parallel compilation
-  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR} )
-  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR} )
-else()
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11") #### Libigl requires a modern C++ compiler that supports c++11
-  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "../" )
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations -Wno-unused-parameter -Wno-deprecated-register -Wno-return-type-c-linkage")
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-deprecated-declarations -Wno-unused-parameter -Wno-deprecated-register -Wno-return-type-c-linkage")
-endif()
+project(pyigl)
 
 # Force a specific python version
-# SET(PYTHON_LIBRARIES "D:/Python34/libs/python34.lib")
-# SET(PYTHON_INCLUDE_DIR "D:/Python34/include")
+# set(PYTHON_LIBRARIES "D:/Python34/libs/python34.lib")
+# set(PYTHON_INCLUDE_DIR "D:/Python34/include")
 
 # Force a specific python version
-# SET(PYTHON_LIBRARIES "/usr/local/Cellar/python3/3.5.0/Frameworks/Python.framework/Versions/3.5/lib/libpython3.5m.dylib")
-# SET(PYTHON_INCLUDE_DIR "/usr/local/Cellar/python3/3.5.0/Frameworks/Python.framework/Versions/3.5/include/python3.5m")
+# set(PYTHON_LIBRARIES "/usr/local/Cellar/python3/3.5.0/Frameworks/Python.framework/Versions/3.5/lib/libpython3.5m.dylib")
+# set(PYTHON_INCLUDE_DIR "/usr/local/Cellar/python3/3.5.0/Frameworks/Python.framework/Versions/3.5/include/python3.5m")
 
 set(Python_ADDITIONAL_VERSIONS 3.4 3.5 3.6)
 find_package(PythonLibs REQUIRED)
 find_package(PythonInterp REQUIRED)
 
 string(TOUPPER "${CMAKE_BUILD_TYPE}" U_CMAKE_BUILD_TYPE)
-if (UNIX)
+if(UNIX)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fPIC")
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
-  if (NOT ${U_CMAKE_BUILD_TYPE} MATCHES DEBUG)
+  if(NOT ${U_CMAKE_BUILD_TYPE} MATCHES DEBUG)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden -flto")
   endif()
 endif()
 
-# Compile with compiler warnings turned on
-# if(MSVC)
-#   if(CMAKE_CXX_FLAGS MATCHES "/W[0-4]")
-#     string(REGEX REPLACE "/W[0-4]" "/W4" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-#   else()
-#     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
-#   endif()
-# else()
-#   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
-# endif()
-
-include_directories(${PYTHON_INCLUDE_DIR} include)
-
 ## include pybind
-include_directories(${PROJECT_SOURCE_DIR}/../external/nanogui/ext/pybind11/include)
+add_subdirectory(${PROJECT_SOURCE_DIR}/../external/nanogui/ext/pybind11 pybind11)
 
 ## include libigl
 option(LIBIGL_USE_STATIC_LIBRARY "Use LibIGL as static library" OFF)
@@ -70,83 +45,80 @@ option(LIBIGL_WITH_XML              "Use XML"            ON)
 option(LIBIGL_WITH_PYTHON           "Use Python"         ON)
 option(LIBIGL_WITH_COPYLEFT         "Use Copyleft"       ON)
 
-
-if(LIBIGL_WITH_CGAL) # Do not remove or move this block, cgal strange build system fails without it
-  find_package(CGAL REQUIRED)
-  set(CGAL_DONT_OVERRIDE_CMAKE_FLAGS TRUE CACHE BOOL "CGAL's CMAKE Setup is super annoying ")
-  include(${CGAL_USE_FILE})
+## libigl
+if(NOT TARGET igl::core)
+  list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/../shared/cmake")
+  include(libigl)
 endif()
 
-add_subdirectory("${PROJECT_SOURCE_DIR}/../shared/cmake" "libigl")
-
-
-### Prepare the build environment
-
-include_directories(${LIBIGL_INCLUDE_DIRS})
-add_definitions(${LIBIGL_DEFINITIONS})
-
-## Optional modules
-if (LIBIGL_WITH_VIEWER)
-  add_definitions(-DPY_VIEWER)
-  list(APPEND SHARED_SOURCES "modules/py_igl_viewer.cpp")
-endif ()
-
-if (LIBIGL_WITH_COMISO)
-  add_definitions(-DPY_COMISO)
-  list(APPEND SHARED_SOURCES "modules/copyleft/py_igl_comiso.cpp")
-endif ()
-
-if (LIBIGL_WITH_TETGEN)
-  add_definitions(-DPY_TETGEN)
-  list(APPEND SHARED_SOURCES "modules/copyleft/py_igl_tetgen.cpp")
-endif ()
-
-if (LIBIGL_WITH_EMBREE)
-  add_definitions(-DPY_EMBREE)
-  list(APPEND SHARED_SOURCES "modules/py_igl_embree.cpp")
-endif ()
-
-if (LIBIGL_WITH_TRIANGLE)
-  add_definitions(-DPY_TRIANGLE)
-  list(APPEND SHARED_SOURCES "modules/py_igl_triangle.cpp")
-endif ()
-
-if (LIBIGL_WITH_CGAL)
-  add_definitions(-DPY_CGAL)
-  list(APPEND SHARED_SOURCES "modules/copyleft/py_igl_cgal.cpp")
-endif ()
-
-if (LIBIGL_WITH_COPYLEFT)
-  add_definitions(-DPY_COPYLEFT)
-  list(APPEND SHARED_SOURCES "modules/copyleft/py_igl_copyleft.cpp")
-endif ()
-
-if (LIBIGL_WITH_PNG)
-  add_definitions(-DPY_PNG)
-  list(APPEND SHARED_SOURCES "modules/py_igl_png.cpp")
-endif ()
-
-#----
 ## Prepare the python library
-add_library(pyigl SHARED
+pybind11_add_module(pyigl
   python_shared.cpp
   modules/py_vector.cpp
   py_igl.cpp
   py_doc.cpp
-  ${SHARED_SOURCES}
 )
+
+## Add dependencies
+target_include_directories(pyigl PUBLIC igl::core)
+
+## Optional modules
+if(LIBIGL_WITH_VIEWER)
+  target_sources(pyigl PRIVATE "modules/py_igl_viewer.cpp")
+  target_compile_definitions(pyigl PUBLIC -DPY_VIEWER)
+  target_link_libraries(pyigl PUBLIC igl::viewer)
+endif()
+
+if(LIBIGL_WITH_COMISO)
+  target_sources(pyigl PRIVATE "modules/copyleft/py_igl_comiso.cpp")
+  target_compile_definitions(pyigl PUBLIC -DPY_COMISO)
+  target_link_libraries(pyigl PUBLIC igl::comiso)
+endif()
+
+if(LIBIGL_WITH_TETGEN)
+  target_sources(pyigl PRIVATE "modules/copyleft/py_igl_tetgen.cpp")
+  target_compile_definitions(pyigl PUBLIC -DPY_TETGEN)
+  target_link_libraries(pyigl PUBLIC igl::tetgen)
+endif()
+
+if(LIBIGL_WITH_EMBREE)
+  target_sources(pyigl PRIVATE "modules/py_igl_embree.cpp")
+  target_compile_definitions(pyigl PUBLIC -DPY_EMBREE)
+  target_link_libraries(pyigl PUBLIC igl::embree)
+endif()
+
+if(LIBIGL_WITH_TRIANGLE)
+  target_sources(pyigl PRIVATE "modules/py_igl_triangle.cpp")
+  target_compile_definitions(pyigl PUBLIC -DPY_TRIANGLE)
+  target_link_libraries(pyigl PUBLIC igl::triangle)
+endif()
+
+if(LIBIGL_WITH_CGAL)
+  target_sources(pyigl PRIVATE "modules/copyleft/py_igl_cgal.cpp")
+  target_compile_definitions(pyigl PUBLIC -DPY_CGAL)
+  target_link_libraries(pyigl PUBLIC igl::cgal)
+endif()
+
+if(LIBIGL_WITH_COPYLEFT)
+  target_sources(pyigl PRIVATE "modules/copyleft/py_igl_copyleft.cpp")
+  target_compile_definitions(pyigl PUBLIC -DPY_COPYLEFT)
+endif()
+
+if(LIBIGL_WITH_PNG)
+  target_sources(pyigl PRIVATE "modules/py_igl_png.cpp")
+  target_compile_definitions(pyigl PUBLIC -DPY_PNG)
+  target_link_libraries(pyigl PUBLIC igl::png)
+endif()
 
 set_target_properties(pyigl PROPERTIES PREFIX "")
 set_target_properties(pyigl PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR})
-
-target_link_libraries(pyigl ${LIBIGL_LIBRARIES} ${LIBIGL_EXTRA_LIBRARIES})
 
 # Copy the nanogui bindings
 #get_target_property(NANOGUI_LIB nanogui_python LOCATION)
 #file(COPY ${NANOGUI_LIB} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../)
 
-if (WIN32)
-  if (MSVC)
+if(WIN32)
+  if(MSVC)
     # Enforce size-based optimization and link time code generation on MSVC (~30% smaller binaries in experiments)
     set_target_properties(pyigl PROPERTIES COMPILE_FLAGS "/Os /GL")
     set_target_properties(pyigl PROPERTIES LINK_FLAGS "/LTCG")
@@ -160,7 +132,7 @@ if (WIN32)
   # target_link_libraries(igl ${PYTHON_LIBRARY})
   target_link_libraries(pyigl ${PYTHON_LIBRARIES})
 
-elseif (UNIX)
+elseif(UNIX)
   # It's quite common to have multiple copies of the same Python version
   # installed on one's system. E.g.: one copy from the OS and another copy
   # that's statically linked into an application like Blender or Maya.
@@ -183,33 +155,33 @@ elseif (UNIX)
   if(APPLE)
     set_target_properties(pyigl PROPERTIES MACOSX_RPATH ".")
 
-    if (NOT CHECK_UNDEFINED)
+    if(NOT CHECK_UNDEFINED)
       set_target_properties(pyigl PROPERTIES LINK_FLAGS "-undefined dynamic_lookup -dead_strip")
     endif()
 
-    if (NOT ${U_CMAKE_BUILD_TYPE} MATCHES DEBUG)
-      add_custom_command(TARGET pyigl POST_BUILD COMMAND strip -u -r ${CMAKE_CURRENT_BINARY_DIR}/../pyigl.so)
+    if(NOT ${U_CMAKE_BUILD_TYPE} MATCHES DEBUG)
+      add_custom_command(TARGET pyigl POST_BUILD COMMAND strip -u -r ${PROJECT_SOURCE_DIR}/pyigl.so)
     endif()
   else()
 
-    if (CHECK_UNDEFINED)
+    if(CHECK_UNDEFINED)
       target_link_libraries(pyigl ${PYTHON_LIBRARIES})
       set_target_properties(pyigl PROPERTIES LINK_FLAGS "-Wl,--no-undefined")
     endif()
 
-    if (NOT ${U_CMAKE_BUILD_TYPE} MATCHES DEBUG)
-      add_custom_command(TARGET pyigl POST_BUILD COMMAND strip ${CMAKE_CURRENT_BINARY_DIR}/../pyigl.so)
+    if(NOT ${U_CMAKE_BUILD_TYPE} MATCHES DEBUG)
+      add_custom_command(TARGET pyigl POST_BUILD COMMAND strip ${PROJECT_SOURCE_DIR}/pyigl.so)
     endif()
   endif()
 endif()
 
-if (LIBIGL_WITH_PYTHON AND LIBIGL_WITH_NANOGUI)
+if(LIBIGL_WITH_PYTHON AND LIBIGL_WITH_NANOGUI)
   # Copy the nanogui python lib after compilation
   get_target_property(NANOGUI_LIB nanogui-python LOCATION)
   add_custom_target(copy ALL)
   add_custom_command(
         TARGET copy
-        COMMAND ${CMAKE_COMMAND} -E copy ${NANOGUI_LIB} ${CMAKE_CURRENT_BINARY_DIR}/../
+        COMMAND ${CMAKE_COMMAND} -E copy ${NANOGUI_LIB} ${PROJECT_SOURCE_DIR}
         )
   add_dependencies(copy pyigl)
 

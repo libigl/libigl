@@ -15,6 +15,7 @@
 #include "../ortho.h"
 #include "../massmatrix.h"
 #include "../barycenter.h"
+#include "../PI.h"
 #include <Eigen/Geometry>
 #include <iostream>
 
@@ -136,12 +137,12 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
     if (orthographic)
     {
       float length = (camera_eye - camera_center).norm();
-      float h = tan(camera_view_angle/360.0 * M_PI) * (length);
+      float h = tan(camera_view_angle/360.0 * igl::PI) * (length);
       ortho(-h*width/height, h*width/height, -h, h, camera_dnear, camera_dfar,proj);
     }
     else
     {
-      float fH = tan(camera_view_angle / 360.0 * M_PI) * camera_dnear;
+      float fH = tan(camera_view_angle / 360.0 * igl::PI) * camera_dnear;
       float fW = fH * (double)width/(double)height;
       frustum(-fW, fW, -fH, fH, camera_dnear, camera_dfar,proj);
     }
@@ -433,6 +434,8 @@ IGL_INLINE igl::opengl::ViewerCore::ViewerCore()
   line_width = 0.5f;
   is_animating = false;
   animation_max_fps = 30.;
+
+  viewport.setZero();
 }
 
 IGL_INLINE void igl::opengl::ViewerCore::init()

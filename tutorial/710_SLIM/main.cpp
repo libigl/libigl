@@ -100,16 +100,16 @@ void param_2d_demo_iter(igl::opengl::glfw::Viewer& viewer) {
     slim_precompute(V,F,uv_init,sData, igl::SLIMData::SYMMETRIC_DIRICHLET, b,bc,0);
 
     uv_scale_param = 15 * (1./sqrt(sData.mesh_area));
-    viewer.data.set_mesh(V, F);
+    viewer.selected_data().set_mesh(V, F);
     viewer.core.align_camera_center(V,F);
-    viewer.data.set_uv(sData.V_o*uv_scale_param);
-    viewer.data.compute_normals();
+    viewer.selected_data().set_uv(sData.V_o*uv_scale_param);
+    viewer.selected_data().compute_normals();
     viewer.core.show_texture = true;
 
     first_iter = false;
   } else {
     slim_solve(sData,1); // 1 iter
-    viewer.data.set_uv(sData.V_o*uv_scale_param);
+    viewer.selected_data().set_uv(sData.V_o*uv_scale_param);
     cout << "time = " << timer.getElapsedTime() << endl;
   }
 }
@@ -128,16 +128,16 @@ void soft_const_demo_iter(igl::opengl::glfw::Viewer& viewer) {
     double soft_const_p = 1e5;
     slim_precompute(V,F,V_0,sData,igl::SLIMData::SYMMETRIC_DIRICHLET,b,bc,soft_const_p);
 
-    viewer.data.set_mesh(V, F);
+    viewer.selected_data().set_mesh(V, F);
     viewer.core.align_camera_center(V,F);
-    viewer.data.compute_normals();
+    viewer.selected_data().compute_normals();
     viewer.core.show_lines = true;
 
     first_iter = false;
 
   } else {
     slim_solve(sData,1); // 1 iter
-    viewer.data.set_mesh(sData.V_o, F);
+    viewer.selected_data().set_mesh(sData.V_o, F);
   }
 }
 
@@ -195,9 +195,9 @@ void display_3d_mesh(igl::opengl::glfw::Viewer& viewer) {
     F_temp.row(i*4+2) << (i*4)+3, (i*4)+2, (i*4)+0;
     F_temp.row(i*4+3) << (i*4)+1, (i*4)+2, (i*4)+3;
   }
-  viewer.data.set_mesh(V_temp,F_temp);
+  viewer.selected_data().set_mesh(V_temp,F_temp);
   viewer.core.align_camera_center(V_temp,F_temp);
-  viewer.data.set_face_based(true);
+  viewer.selected_data().set_face_based(true);
   viewer.core.show_lines = true;
 }
 

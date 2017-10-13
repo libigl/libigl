@@ -81,7 +81,7 @@ bool pre_draw(igl::opengl::glfw::Viewer &viewer)
     value = value / 0.5;
     igl::parula(value, color[0], color[1], color[2]);
 
-    viewer.data.add_edges(sl_state.start_point, sl_state.end_point, color);
+    viewer.selected_data().add_edges(sl_state.start_point, sl_state.end_point, color);
 
     anim_t += anim_t_dir;
 
@@ -129,7 +129,7 @@ int main(int argc, char *argv[])
 
     // Viewer Settings
     igl::opengl::glfw::Viewer viewer;
-    viewer.data.set_mesh(V, F);
+    viewer.selected_data().set_mesh(V, F);
     viewer.callback_pre_draw = &pre_draw;
     viewer.callback_key_down = &key_down;
 
@@ -140,8 +140,8 @@ int main(int argc, char *argv[])
 
     // Paint mesh grayish
     Eigen::MatrixXd C;
-    C.setConstant(viewer.data.V.rows(), 3, .9);
-    viewer.data.set_colors(C);
+    C.setConstant(viewer.selected_data().V.rows(), 3, .9);
+    viewer.selected_data().set_colors(C);
 
 
     // Draw vector field on sample points
@@ -151,7 +151,7 @@ int main(int argc, char *argv[])
     Eigen::MatrixXd v = sl_state0.end_point - sl_state0.start_point;
     v.rowwise().normalize();
 
-    viewer.data.add_edges(sl_state0.start_point,
+    viewer.selected_data().add_edges(sl_state0.start_point,
                           sl_state0.start_point + 0.059 * v,
                           Eigen::RowVector3d::Constant(1.0f));
 

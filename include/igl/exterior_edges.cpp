@@ -8,7 +8,7 @@
 #include "exterior_edges.h"
 #include "oriented_facets.h"
 #include "sort.h"
-#include "unique.h"
+#include "unique_rows.h"
 
 #include <cassert>
 #include <unordered_map>

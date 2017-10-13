@@ -1,5 +1,6 @@
 language: cpp
 sudo: false
+dist: precise
 matrix:
   include:
     - os: linux
@@ -13,11 +14,13 @@ matrix:
         - cd build
         - cmake -DCMAKE_CXX_COMPILER=g++-4.8 -DCMAKE_C_COMPILER=gcc-4.8 -DLIBIGL_WITH_EMBREE=OFF -DLIBIGL_USE_STATIC_LIBRARY=ON ../
         - make -j 2
+        - cd ../tutorial
+        - python3 101_FileIO.py || { cd ../; mkdir build2; cd build2; cmake -DCMAKE_CXX_COMPILER=g++-4.8 -DCMAKE_C_COMPILER=gcc-4.8 -DLIBIGL_WITH_EMBREE=OFF -DLIBIGL_USE_STATIC_LIBRARY=ON - DCHECK_UNDEFINED=ON ../; make -j 2; }
         - cd ../../
         - cd tutorial
         - mkdir build
         - cd build
-        - cmake -DLIBIGL_USE_STATIC_LIBRARY=ON -DCMAKE_CXX_COMPILER=g++-4.8 -DCMAKE_C_COMPILER=gcc-4.8 ../
+        - cmake -DLIBIGL_USE_STATIC_LIBRARY=ON  -DCMAKE_CXX_COMPILER=g++-4.8 -DCMAKE_C_COMPILER=gcc-4.8 -DLIBIGL_WITH_EMBREE=OFF ../
         - make -j 2
       addons:
         apt:
@@ -54,9 +57,11 @@ matrix:
         - cd build
         - cmake ../
         - make -j 2
+        - cd ../tutorial
+        - python 101_FileIO.py
         - cd ../../
         - cd tutorial
         - mkdir build
         - cd build
-        - cmake -DLIBIGL_USE_STATIC_LIBRARY=ON ../
+        - cmake -DLIBIGL_USE_STATIC_LIBRARY=ON -DLIBIGL_WITH_NANOGUI=ON ../
         - make -j 2

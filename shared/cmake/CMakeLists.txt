@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 2.8.12)
 project(libigl)
 
+message(DEPRECATION "shared/cmake/CMakeLists.txt is deprecated. Use libigl.cmake instead.")
+
 ### Available options ###
 option(LIBIGL_USE_STATIC_LIBRARY    "Use libigl as static library" OFF)
 option(LIBIGL_WITH_ANTTWEAKBAR      "Use AntTweakBar"    OFF)
@@ -412,10 +414,11 @@ if(LIBIGL_WITH_PNG)
   set(STB_IMAGE_DIR "${LIBIGL_EXTERNAL}/stb_image")
   add_subdirectory("${STB_IMAGE_DIR}" "stb_image")
   list(APPEND LIBIGL_INCLUDE_DIRS ${STB_IMAGE_DIR})
-  list(APPEND LIBIGL_PNG_EXTRA_LIBRARIES "stb_image")
+  list(APPEND LIBIGL_PNG_EXTRA_LIBRARIES "igl_stb_image")
   list(APPEND LIBIGL_EXTRA_LIBRARIES ${LIBIGL_PNG_EXTRA_LIBRARIES})
   if(LIBIGL_USE_STATIC_LIBRARY)
     CompileIGL_Module("png" "")
+    target_link_libraries(igl_png PRIVATE igl_stb_image)
     target_include_directories(igl_png PRIVATE ${STB_IMAGE_DIR})
     if(NOT APPLE)
       target_include_directories(igl_png PRIVATE "${NANOGUI_DIR}/ext/glew/include")
