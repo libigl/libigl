@@ -175,7 +175,7 @@ int main(int argc, char *argv[])
   igl::opengl::glfw::Viewer viewer;
   viewer.selected_data().set_mesh(V, F);
   viewer.callback_key_down = &key_down;
-  viewer.core.show_lines = false;
+  viewer.selected_data().show_lines = false;
   key_down(viewer,'3',0);
   std::cerr << " *** Press keys 1-9 to select number of vectors per point. ***" << std::endl;
   

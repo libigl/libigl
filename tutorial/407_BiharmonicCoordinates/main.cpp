@@ -156,7 +156,7 @@ int main(int argc, char * argv[])
     }
     return false;
   };
-  viewer.core.show_lines = false;
+  viewer.selected_data().show_lines = false;
   viewer.core.is_animating = true;
   viewer.core.animation_max_fps = 30.;
   viewer.selected_data().set_face_based(true);

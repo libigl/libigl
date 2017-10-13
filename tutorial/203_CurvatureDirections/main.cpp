@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
   viewer.selected_data().add_edges(V + PD2*avg, V - PD2*avg, red);
 
   // Hide wireframe
-  viewer.core.show_lines = false;
+  viewer.selected_data().show_lines = false;
 
   viewer.launch();
 }

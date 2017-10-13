@@ -319,7 +319,7 @@ void update_display(igl::opengl::glfw::Viewer& viewer)
   viewer.selected_data().clear();
   viewer.selected_data().lines.resize(0,9);
   viewer.selected_data().points.resize(0,6);
-  viewer.core.show_texture = false;
+  viewer.selected_data().show_texture = false;
 
   if (display_mode == 1)
   {
@@ -442,7 +442,7 @@ void update_display(igl::opengl::glfw::Viewer& viewer)
     viewer.selected_data().set_colors(C);
     viewer.selected_data().set_uv(uv_scale*scalars_ori, Fcut_ori);
     viewer.selected_data().set_texture(texture_R, texture_B, texture_G);
-    viewer.core.show_texture = true;
+    viewer.selected_data().show_texture = true;
 
     // Draw Cuts
     drawCuts(viewer,cuts_ori);
@@ -461,7 +461,7 @@ void update_display(igl::opengl::glfw::Viewer& viewer)
     viewer.selected_data().set_colors(C);
     viewer.selected_data().set_uv(uv_scale*scalars, Fcut);
     viewer.selected_data().set_texture(texture_R, texture_B, texture_G);
-    viewer.core.show_texture = true;
+    viewer.selected_data().show_texture = true;
 
     // Draw Cuts
     drawCuts(viewer,cuts);
@@ -709,7 +709,7 @@ int main(int argc, char *argv[])
 
   igl::opengl::glfw::Viewer viewer;
   viewer.callback_key_down = &key_down;
-  viewer.core.show_lines = false;
+  viewer.selected_data().show_lines = false;
   key_down(viewer,'2',0);
 
   // Replace the standard texture with an integer shift invariant texture

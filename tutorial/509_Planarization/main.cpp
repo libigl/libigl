@@ -109,8 +109,8 @@ int main(int argc, char *argv[])
   // Launch the viewer
   igl::opengl::glfw::Viewer viewer;
   key_down(viewer,'2',0);
-  viewer.core.invert_normals = true;
-  viewer.core.show_lines = false;
+  viewer.selected_data().invert_normals = true;
+  viewer.selected_data().show_lines = false;
   viewer.callback_key_down = &key_down;
   viewer.launch();
 }

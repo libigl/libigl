@@ -66,7 +66,7 @@ int main(int argc, char * argv[])
     //Viewer that shows all functions: zexact, znoisy, zl, zh
     igl::opengl::glfw::Viewer viewer;
     viewer.selected_data().set_mesh(V,F);
-    viewer.core.show_lines = false;
+    viewer.selected_data().show_lines = false;
     viewer.callback_key_down =
       [&](igl::opengl::glfw::Viewer & viewer, unsigned char key, int mod)->bool
       {

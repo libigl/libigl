@@ -56,10 +56,10 @@ int main(int argc, char *argv[])
   viewer.callback_key_down = &key_down;
 
   // Disable wireframe
-  viewer.core.show_lines = false;
+  viewer.selected_data().show_lines = false;
 
   // Draw checkerboard texture
-  viewer.core.show_texture = true;
+  viewer.selected_data().show_texture = true;
 
   // Launch the viewer
   viewer.launch();

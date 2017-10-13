@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
   viewer.selected_data().set_mesh(V, F);
   viewer.callback_key_down = &key_down;
   key_down(viewer,'2',0);
-  viewer.core.show_lines = false;
+  viewer.selected_data().show_lines = false;
   viewer.core.lighting_factor = 0.0f;
   viewer.launch();
 }

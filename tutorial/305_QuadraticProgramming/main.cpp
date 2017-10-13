@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
   // Plot the mesh
   igl::opengl::glfw::Viewer viewer;
   viewer.selected_data().set_mesh(V, F);
-  viewer.core.show_lines = false;
+  viewer.selected_data().show_lines = false;
   viewer.callback_key_down = &key_down;
 
   // One fixed point

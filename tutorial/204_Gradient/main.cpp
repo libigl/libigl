@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
   viewer.selected_data().add_edges(BC,BC+max_size*GU, black);
 
   // Hide wireframe
-  viewer.core.show_lines = false;
+  viewer.selected_data().show_lines = false;
 
   viewer.launch();
 }
