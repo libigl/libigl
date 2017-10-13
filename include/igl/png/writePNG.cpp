@@ -6,7 +6,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "writePNG.h"
-#include <stb_image_write.h>
+#include <igl_stb_image.h>
 #include <vector>
 
 IGL_INLINE bool igl::png::writePNG(
@@ -35,7 +35,7 @@ IGL_INLINE bool igl::png::writePNG(
     }
   }
 
-  stbi_write_png(png_file.c_str(), R.rows(), R.cols(), comp, data.data(), stride_in_bytes);
+  igl::stbi_write_png(png_file.c_str(), R.rows(), R.cols(), comp, data.data(), stride_in_bytes);
 
   return true;
 }

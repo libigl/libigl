@@ -47,6 +47,9 @@ namespace igl {
                                     const double &s,
                                     Eigen::VectorXd &residuals,
                                     bool do_jac = false,
+                                    // Alec: why use a reference if it can
+                                    // point some undefined junk? This is asking
+                                    // for trouble...
                                     Eigen::MatrixXd &J = *(Eigen::MatrixXd*)NULL);
     IGL_INLINE void rj_polycurl_edge(const Eigen::RowVectorXd &vec2D_a,
                                      const Eigen::RowVector2d &ea,

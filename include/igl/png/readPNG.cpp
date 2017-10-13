@@ -6,7 +6,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "readPNG.h"
-#include <stb_image.h>
+#include <igl_stb_image.h>
 
 IGL_INLINE bool igl::png::readPNG(
   const std::string png_file,
@@ -36,7 +36,7 @@ IGL_INLINE bool igl::png::readPNG(
     }
   }
 
-  stbi_image_free(data);
+  igl::stbi_image_free(data);
 
   return true;
 }

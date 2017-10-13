@@ -1,15 +1,11 @@
-cmake_minimum_required(VERSION 2.6)
-project(stb_image)
+cmake_minimum_required(VERSION 3.1)
+project(igl_stb_image)
 
-option(STBI_LOAD              "Compile stbi"                         ON)
-option(STBI_WRITE             "Compile stbi_writeUse CoMiso"         ON)
+add_library(${PROJECT_NAME} SHARED igl_stb_image.cpp stb_image.h stb_image_write.h)
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
-if (STBI_LOAD)
-	add_definitions(-DSTBI_LOAD)
-endif()
-
-if (STBI_WRITE)
-	add_definitions(-DSTBI_WRITE)
-endif()
-
-add_library(stb_image STATIC stb_image.cpp stb_image.h stb_image_write.h)
+# Export interface symbols and hide internal implementation
+include(GenerateExportHeader)
+generate_export_header(${PROJECT_NAME})
+target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_BINARY_DIR})
+set_target_properties(${PROJECT_NAME} PROPERTIES CXX_VISIBILITY_PRESET hidden)

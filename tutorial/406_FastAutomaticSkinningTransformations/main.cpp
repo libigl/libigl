@@ -82,6 +82,8 @@ bool pre_draw(igl::viewer::Viewer & viewer)
     }
     switch(mode)
     {
+      default:
+        assert("unknown mode");
       case MODE_TYPE_ARAP:
         igl::arap_solve(bc,arap_data,U);
         break;
