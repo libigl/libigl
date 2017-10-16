@@ -54,7 +54,7 @@ bool pre_draw(igl::viewer::Viewer & viewer)
     {
       anim_pose[e] = pose[e].slerp(anim_t,Quaterniond::Identity());
     }
-    // Propogate relative rotations via FK to retrieve absolute transformations
+    // Propagate relative rotations via FK to retrieve absolute transformations
     RotationList vQ;
     vector<Vector3d> vT;
     igl::forward_kinematics(C,BE,P,anim_pose,vQ,vT);

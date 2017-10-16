@@ -70,11 +70,11 @@ namespace igl {
     IGL_INLINE void FindInitialPos(const int vert, int &edge, int &face);
 
 
-    // intialize the mapping given an initial pos
+    // initialize the mapping given an initial pos
     // whih must be initialized with FindInitialPos
     IGL_INLINE void MapIndexes(const int  vert, const int edge_init, const int f_init);
 
-    // intialize the mapping for a given vertex
+    // initialize the mapping for a given vertex
     IGL_INLINE void InitMappingSeam(const int vert);
 
   };
@@ -187,7 +187,7 @@ FindInitialPos(const int vert,
 
 
 
-///intialize the mapping given an initial pos
+///initialize the mapping given an initial pos
 ///whih must be initialized with FindInitialPos
 template <typename DerivedV, typename DerivedF, typename VFType, typename DerivedTT, typename DerivedC>
 IGL_INLINE void igl::MeshCutterMini<DerivedV, DerivedF, VFType, DerivedTT, DerivedC>::

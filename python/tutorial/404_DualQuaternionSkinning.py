@@ -34,7 +34,7 @@ def pre_draw(viewer):
         for e in range(len(poses[begin])):
             anim_pose.append(poses[begin][e].slerp(t, poses[end][e]))
 
-        # Propogate relative rotations via FK to retrieve absolute transformations
+        # Propagate relative rotations via FK to retrieve absolute transformations
         vQ = igl.RotationList()
         vT = []
         igl.forward_kinematics(C, BE, P, anim_pose, vQ, vT)

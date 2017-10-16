@@ -946,7 +946,7 @@ namespace viewer
       major = glfwGetWindowAttrib(window, GLFW_CONTEXT_VERSION_MAJOR);
       minor = glfwGetWindowAttrib(window, GLFW_CONTEXT_VERSION_MINOR);
       rev = glfwGetWindowAttrib(window, GLFW_CONTEXT_REVISION);
-      printf("OpenGL version recieved: %d.%d.%d\n", major, minor, rev);
+      printf("OpenGL version received: %d.%d.%d\n", major, minor, rev);
       printf("Supported OpenGL is %s\n", (const char*)glGetString(GL_VERSION));
       printf("Supported GLSL is %s\n", (const char*)glGetString(GL_SHADING_LANGUAGE_VERSION));
     #endif

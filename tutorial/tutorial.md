@@ -258,7 +258,7 @@ converter from OFF to OBJ format.
 ## [Visualizing surfaces](#visualizingsurfaces) [visualizingsurfaces]
 
 Libigl provides an glfw-based OpenGL 3.2 viewer to visualize surfaces, their
-properties and additional debugging informations.
+properties and additional debugging information.
 
 The following code ([Example 102](102_DrawMesh/main.cpp)) is a basic skeleton
 for all the examples that will be used in the tutorial.
@@ -389,7 +389,7 @@ heavy data structures types favors simplicity, ease of use and reusability.
 
 ## [Overlays](#overlays) [overlays]
 
-In addition to plotting the surface, the viewer supports the visualization of points, lines and text labels: these overlays can be very helpful while developing geometric processing algorithms to plot debug informations.
+In addition to plotting the surface, the viewer supports the visualization of points, lines and text labels: these overlays can be very helpful while developing geometric processing algorithms to plot debug information.
 
 ```cpp
 viewer.data.add_points(P,Eigen::RowVector3d(r,g,b));
@@ -1176,7 +1176,7 @@ where $A$ is a sparse symmetric matrix and $B$ is a sparse positive definite
 matrix. Most commonly in geometry processing, we let $A=L$ the cotangent
 Laplacian and $B=M$ the per-vertex mass matrix (e.g. [#vallet_2008][]).
 Typically applications will make use of the _low frequency_ eigen modes.
-Analagous to the Fourier decomposition, a function $f$ on a surface can be
+Analogous to the Fourier decomposition, a function $f$ on a surface can be
 represented via its spectral decomposition of the eigen modes of the
 Laplace-Beltrami:
 
@@ -2151,7 +2151,7 @@ For a complete categorization of fields used in various applications (including 
 # Chapter 6: External libraries [chapter6:externallibraries]
 
 An additional positive side effect of using matrices as basic types is that it
-is easy to exchange data between libigl and other softwares and libraries.
+is easy to exchange data between libigl and other software and libraries.
 
 ## [State serialization](#stateserialization) [stateserialization]
 
@@ -2285,7 +2285,7 @@ before a submission deadline.
 
 Libigl can be interfaced with Matlab to offload numerically heavy computation
 to a Matlab script. The major advantage of this approach is that you will be
-able to develop efficient and complex user-interfaces in C++, while exploting
+able to develop efficient and complex user-interfaces in C++, while exploring
 the syntax and fast protototyping features of matlab. In particular, the use of
 an external Matlab script in a libigl application allows to change the Matlab
 code while the C++ application is running, greatly increasing coding

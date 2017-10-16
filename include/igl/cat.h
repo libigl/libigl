@@ -25,7 +25,7 @@ namespace igl
   // Template:
   //   Scalar  scalar data type for sparse matrices like double or int
   //   Mat  matrix type for all matrices (e.g. MatrixXd, SparseMatrix)
-  //   MatC  matrix type for ouput matrix (e.g. MatrixXd) needs to support
+  //   MatC  matrix type for output matrix (e.g. MatrixXd) needs to support
   //     resize
   // Inputs:
   //   A  first input matrix

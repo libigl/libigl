@@ -493,7 +493,7 @@ igl::WindingNumberTree<Point,DerivedV,DerivedF>::cached_winding_number(
   return 0;
 }
 
-// Explicit instanciation of static variable
+// Explicit instantiation of static variable
 template <
   typename Point,
   typename DerivedV, 

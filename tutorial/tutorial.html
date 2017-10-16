@@ -305,7 +305,7 @@ converter from OFF to OBJ format.</p>
 <h2 id="visualizingsurfaces"><a href="#visualizingsurfaces">Visualizing surfaces</a></h2>
 
 <p>Libigl provides an glfw-based OpenGL 3.2 viewer to visualize surfaces, their
-properties and additional debugging informations.</p>
+properties and additional debugging information.</p>
 
 <p>The following code (<a href="102_DrawMesh/main.cpp">Example 102</a>) is a basic skeleton
 for all the examples that will be used in the tutorial.
@@ -438,7 +438,7 @@ heavy data structures types favors simplicity, ease of use and reusability.</p>
 
 <h2 id="overlays"><a href="#overlays">Overlays</a></h2>
 
-<p>In addition to plotting the surface, the viewer supports the visualization of points, lines and text labels: these overlays can be very helpful while developing geometric processing algorithms to plot debug informations.</p>
+<p>In addition to plotting the surface, the viewer supports the visualization of points, lines and text labels: these overlays can be very helpful while developing geometric processing algorithms to plot debug information.</p>
 
 <pre><code class="cpp">viewer.data.add_points(P,Eigen::RowVector3d(r,g,b));
 </code></pre>
@@ -1419,7 +1419,7 @@ eigen value problem:</p>
 matrix. Most commonly in geometry processing, we let <span class="math">\(A=L\)</span> the cotangent
 Laplacian and <span class="math">\(B=M\)</span> the per-vertex mass matrix (e.g. <a class="citation" href="#fn:7" title="Jump to citation">[7]<span class="citekey" style="display:none">vallet_2008</span></a>).
 Typically applications will make use of the <em>low frequency</em> eigen modes.
-Analagous to the Fourier decomposition, a function <span class="math">\(f\)</span> on a surface can be
+Analogous to the Fourier decomposition, a function <span class="math">\(f\)</span> on a surface can be
 represented via its spectral decomposition of the eigen modes of the
 Laplace-Beltrami:</p>
 
@@ -2504,7 +2504,7 @@ of the parameterization functions (which are tangent vector fields on the surfac
 <h1 id="chapter6:externallibraries">Chapter 6: External libraries</h1>
 
 <p>An additional positive side effect of using matrices as basic types is that it
-is easy to exchange data between libigl and other softwares and libraries.</p>
+is easy to exchange data between libigl and other software and libraries.</p>
 
 <h2 id="stateserialization"><a href="#stateserialization">State serialization</a></h2>
 
@@ -2632,7 +2632,7 @@ before a submission deadline.</p>
 
 <p>Libigl can be interfaced with Matlab to offload numerically heavy computation
 to a Matlab script. The major advantage of this approach is that you will be
-able to develop efficient and complex user-interfaces in C++, while exploting
+able to develop efficient and complex user-interfaces in C++, while exploring
 the syntax and fast protototyping features of matlab. In particular, the use of
 an external Matlab script in a libigl application allows to change the Matlab
 code while the C++ application is running, greatly increasing coding
