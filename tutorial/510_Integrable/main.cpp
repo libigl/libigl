@@ -474,7 +474,7 @@ void update_display(igl::viewer::Viewer& viewer)
 
   if (display_mode == 9)
   {
-    cerr<< "Displaying original field overlayed onto the current integrated field"  <<endl;
+    cerr<< "Displaying original field overlaid onto the current integrated field"  <<endl;
 
     viewer.data.set_mesh(V, F);
 
@@ -496,7 +496,7 @@ void update_display(igl::viewer::Viewer& viewer)
 
   if (display_mode == 0)
   {
-    cerr<< "Displaying current field overlayed onto the current integrated field"  <<endl;
+    cerr<< "Displaying current field overlaid onto the current integrated field"  <<endl;
 
     viewer.data.set_mesh(V, F);
 

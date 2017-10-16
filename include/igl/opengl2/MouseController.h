@@ -24,7 +24,7 @@ namespace igl
     {
       public:
         typedef Eigen::VectorXi VectorXb;
-        // Propogate selection to descendants so that selected bones and their
+        // Propagate selection to descendants so that selected bones and their
         // subtrees are all selected.
         //
         // Input:
@@ -495,7 +495,7 @@ inline void igl::opengl2::MouseController::set_selection(
   // Combine upward, group rigid parts, repeat
   while(true)
   {
-    // Spread selection accross rigid pieces
+    // Spread selection across rigid pieces
     VectorXb SRP(VectorXb::Zero(RP.maxCoeff()+1));
     for(int e = 0;e<BE.rows();e++)
     {

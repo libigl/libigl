@@ -29,7 +29,7 @@ namespace igl
   //   bc  #b by 2 list of boundary conditions corresponding to b
   // Outputs:
   //   U  #V by 2 list of output mesh vertex locations
-  // Returns true if and only if U contains a successfull bijectie mapping
+  // Returns true if and only if U contains a successful bijectie mapping
   //
   // 
   template <
@@ -51,7 +51,7 @@ namespace igl
   //     max_steps == min_steps then no further number of steps will be tried)
   //   num_inner_iters  number of iterations of harmonic solves to run after
   //     for each morph step (to try to push flips back in)
-  //   test_for_flips  wether to check if flips occured (and trigger more
+  //   test_for_flips  whether to check if flips occurred (and trigger more
   //     steps). if test_for_flips = false then this function always returns
   //     true
   // 

@@ -30,7 +30,7 @@ namespace igl
     //   Ele  #Elements by simplex-size list of element indices
     //   b  #b boundary indices into V
     //   bc #b by #W list of boundary values
-    //   data  object containing options, intial guess --> solution and results
+    //   data  object containing options, initial guess --> solution and results
     //   mosek_data  object containing mosek options
     // Outputs:
     //   W  #V by #W list of *unnormalized* weights to normalize use

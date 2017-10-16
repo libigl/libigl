@@ -59,7 +59,7 @@ namespace igl
     //--------------------------------------------------------------------------
     // Return values:
     //  Succeeded : Successful optimization with fulfilled tolerance
-    //  LocalMinima : Convergenged to a local minima / tolerance not fullfilled
+    //  LocalMinima : Convergenged to a local minima / tolerance not fulfilled
     //  IterationLimit : Max iteration reached before tolerance was fulfilled
     //  Infeasible : not feasible -> has inverted elements (decrease eps?)
   

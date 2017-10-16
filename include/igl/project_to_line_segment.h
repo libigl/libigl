@@ -12,7 +12,7 @@
 
 namespace igl
 {
-  // PROJECT_TO_LINE_SEGMENT project points onto vectors, that is find the paramter
+  // PROJECT_TO_LINE_SEGMENT project points onto vectors, that is find the parameter
   // t for a point p such that proj_p = (y-x).*t, additionally compute the
   // squared distance from p to the line of the vector, such that 
   // |p - proj_p|² = sqr_d

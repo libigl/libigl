@@ -50,7 +50,7 @@ namespace igl
           Eigen::PlainObjectBase<DerivedI>& order,
           bool debug=false);
 
-      // This funciton is a wrapper around the one above.  Since the ordering
+      // This function is a wrapper around the one above.  Since the ordering
       // is circular, the pivot point is used to define a starting point.  So
       // order[0] is the index into adj_face that is immediately after the
       // pivot face (s, d, pivot point) in clockwise order.

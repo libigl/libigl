@@ -19,7 +19,7 @@ void igl::crouzeix_raviart_cotmatrix(
   Eigen::PlainObjectBase<DerivedE> & E,
   Eigen::PlainObjectBase<DerivedEMAP> & EMAP)
 {
-  // All occurances of directed "facets"
+  // All occurrences of directed "facets"
   Eigen::MatrixXi allE;
   oriented_facets(F,allE);
   Eigen::VectorXi _1;

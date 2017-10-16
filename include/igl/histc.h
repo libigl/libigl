@@ -13,7 +13,7 @@
 
 namespace igl
 {
-  // Like matlab's histc. Count occurances of values in X between consecutive
+  // Like matlab's histc. Count occurrences of values in X between consecutive
   // entries in E
   //
   // Inputs:

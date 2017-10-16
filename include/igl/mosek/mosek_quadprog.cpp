@@ -53,7 +53,7 @@ igl::mosek::MosekData::MosekData()
   //   choose the right ordering method when really any of them are
   //   instantaneous
   intparam[MSK_IPAR_INTPNT_ORDER_METHOD] = MSK_ORDER_METHOD_NONE;
-  // 1.0 means optimizer is very leniant about declaring model infeasible
+  // 1.0 means optimizer is very lenient about declaring model infeasible
   douparam[MSK_DPAR_INTPNT_TOL_INFEAS] = 1e-8;
   // Hard to say if this is doing anything, probably nothing dramatic
   douparam[MSK_DPAR_INTPNT_TOL_PSAFE]= 1e2;

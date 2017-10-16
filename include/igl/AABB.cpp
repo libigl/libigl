@@ -584,7 +584,7 @@ IGL_INLINE typename igl::AABB<DerivedV,DIM>::Scalar
     return sqr_d;
   }
 
-  //// Exact minimum squared distance between arbitary primitives inside this and
+  //// Exact minimum squared distance between arbitrary primitives inside this and
   //// othre's bounding boxes
   //const auto & min_squared_distance = [&](
   //  const AABB<DerivedV,DIM> * A,

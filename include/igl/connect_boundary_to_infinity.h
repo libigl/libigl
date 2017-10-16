@@ -11,7 +11,7 @@
 #include <Eigen/Core>
 namespace igl
 {
-  // Connect all boundary edges to a ficticious point at infinity.
+  // Connect all boundary edges to a fictitious point at infinity.
   //
   // Inputs:
   //   F  #F by 3 list of face indices into some V

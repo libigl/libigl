@@ -25,7 +25,7 @@ namespace igl
   //
   // Input:
   //  filename  .tgf file name
-  // Ouput:
+  // Output:
   //  V  # vertices by 3 list of vertex positions
   //  E  # edges by 2 list of edge indices
   //  P  # point-handles list of point handle indices

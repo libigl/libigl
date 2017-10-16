@@ -51,7 +51,7 @@ namespace igl {
                                                     igl::IntegrableFieldSolverData<DerivedV, DerivedF, DerivedFF, DerivedC> &data);
 
 
-  // Given the current estimate of the field, performes one round of optimization
+  // Given the current estimate of the field, performs one round of optimization
   // iterations and updates the current estimate. The intermediate data is saved
   // and returned for the next iteration.
   // Inputs:

@@ -34,7 +34,7 @@
 // defined if no early exit is supported, i.e., always take a fixed number of iterations
 #define IGL_ARAP_DOF_FIXED_ITERATIONS_COUNT
 
-// A carefull derivation of this implementation is given in the corresponding
+// A careful derivation of this implementation is given in the corresponding
 // matlab function arap_dof.m
 template <typename LbsMatrixType, typename SSCALAR>
 IGL_INLINE bool igl::arap_dof_precomputation(
@@ -339,7 +339,7 @@ namespace igl
   }
   
   // converts CSM_M_SSCALAR[0], CSM_M_SSCALAR[1], CSM_M_SSCALAR[2] into one
-  // "condensed" matrix CSM while checking we're not loosing any information by
+  // "condensed" matrix CSM while checking we're not losing any information by
   // this process; specifically, returns maximal difference from scaled 3x3
   // identity blocks, which should be pretty small number
   template <typename MatrixXS>
@@ -449,7 +449,7 @@ namespace igl
   }
   
   // converts "Solve1" the "rotations" part of FullSolve matrix (the first part)
-  // into one "condensed" matrix CSolve1 while checking we're not loosing any
+  // into one "condensed" matrix CSolve1 while checking we're not losing any
   // information by this process; specifically, returns maximal difference from
   // scaled 3x3 identity blocks, which should be pretty small number
   template <typename MatrixXS>
