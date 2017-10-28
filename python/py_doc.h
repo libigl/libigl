@@ -127,3 +127,4 @@ extern const char *__doc_igl_writeOBJ;
 extern const char *__doc_igl_writePLY;
 extern const char *__doc_igl_readPLY;
 extern const char *__doc_igl_seam_edges;
+extern const char *__doc_igl_geodesic_exact_geodesic;

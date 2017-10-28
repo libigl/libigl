@@ -19,6 +19,7 @@ option(LIBIGL_WITH_TRIANGLE         "Use Triangle"       ON)
 option(LIBIGL_WITH_VIEWER           "Use OpenGL viewer"  ON)
 option(LIBIGL_WITH_XML              "Use XML"            ON)
 option(LIBIGL_WITH_PYTHON           "Use Python"         OFF)
+option(LIBIGL_WITH_GEODESIC         "Use Geodesic"       ON)
 
 if(LIBIGL_WITH_VIEWER AND (NOT LIBIGL_WITH_OPENGL_GLFW OR NOT LIBIGL_WITH_OPENGL) )
   message(FATAL_ERROR "LIBIGL_WITH_VIEWER=ON requires LIBIGL_WITH_OPENGL_GLFW=ON and LIBIGL_WITH_OPENGL=ON")
@@ -359,4 +360,12 @@ if(LIBIGL_WITH_XML)
   endif()
   compile_igl_module("xml" "")
   target_link_libraries(igl_xml ${IGL_SCOPE} tinyxml2)
+endif()
+
+################################################################################
+### Compile the geodesic part ###
+if(LIBIGL_WITH_GEODESIC)
+  set(GEODESIC_DIR "${LIBIGL_EXTERNAL}/geodesic")
+  compile_igl_module("geodesic" "")
+  target_include_directories(igl_geodesic ${IGL_SCOPE} ${GEODESIC_DIR})
 endif()
