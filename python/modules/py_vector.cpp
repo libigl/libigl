@@ -8,6 +8,9 @@
 #include <Eigen/Geometry>
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
+#include <Eigen/SparseCore>
+#include <vector>
+#include <tuple>
 
 
 #include "../python_shared.h"
@@ -492,6 +495,37 @@ py::class_<Type> bind_eigen_sparse_2(py::module &m, const char *name) {
         // .def_static("Ones", [](size_t n, size_t m) { return Type(Type::Ones(n, m)); })
         // .def_static("Constant", [](size_t n, size_t m, Scalar value) { return Type(Type::Constant(n, m, value)); })
         // .def_static("Identity", [](size_t n, size_t m) { return Type(Type::Identity(n, m)); })
+          /* CSR format
+           * Values: stores the coefficient values of the non-zeros.
+           * InnerIndices: stores the column indices of the non-zeros.
+           * OuterStarts: stores for each row the index of the first non-zero in the previous two arrays.
+           * InnerNNZs: stores the number of non-zeros of each row. The word inner refers to an inner vector that is a column for a column-major matrix, or a row for a row-major matrix. The word outer refers to the other direction.
+           */
+        .def("toCSR",[](const Type&_m)
+        {
+          Type m;
+          if(!_m.IsRowMajor){
+            m = _m.transpose();
+          } else {
+            m = _m;
+          }
+          
+          m.makeCompressed();
+          int nnz = m.nonZeros();
+          std::vector<Scalar> value(m.valuePtr(), m.valuePtr() + nnz);
+          std::vector<int> inner(m.innerIndexPtr(), m.innerIndexPtr() + nnz);
+          std::vector<int> outer(m.outerIndexPtr(), m.outerIndexPtr() + m.outerSize() + 1);
+          return std::make_tuple(value, inner, outer);
+       })
+        .def("fromCSR", [](Type&m, std::vector<Scalar> value, std::vector<int> inner, std::vector<int> outer, int rows, int cols) {
+		int nnzs = value.size();
+#if EIGEN_MAJOR_VERSION < 4
+    	m = Eigen::MappedSparseMatrix<Scalar,Eigen::RowMajor>(rows, cols, nnzs, &outer[0], &inner[0], &value[0]);
+#else
+		// use this if updated to Eigen >= 3.4
+    	m = Eigen::Map<Eigen::SparseMatrix<Scalar,Eigen::RowMajor>>(rows, cols, nnzs, &outer[0], &inner[0], &value[0]);
+#endif
+        })
         .def("toCOO",[](const Type& m)
         {
           Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic> t(m.nonZeros(),3);
@@ -632,11 +666,14 @@ void python_export_vector(py::module &m) {
 
     /* Bindings for MatrixXd */
     bind_eigen_2<Eigen::MatrixXd> (me, "MatrixXd");
+    /* Bindings for MatrixXd */
+    bind_eigen_2<Eigen::Matrix<double,-1,-1,Eigen::RowMajor>> (me, "RowMatrixXd");
     //py::implicitly_convertible<py::buffer, Eigen::MatrixXd>();
     //py::implicitly_convertible<double, Eigen::MatrixXd>();
 
     /* Bindings for MatrixXi */
     bind_eigen_2<Eigen::MatrixXi> (me, "MatrixXi");
+    bind_eigen_2<Eigen::Matrix<int, -1,-1,Eigen::RowMajor>> (me, "RowMatrixXi");
     //py::implicitly_convertible<py::buffer, Eigen::MatrixXi>();
     //py::implicitly_convertible<double, Eigen::MatrixXi>();
 
@@ -669,6 +706,8 @@ void python_export_vector(py::module &m) {
 
     /* Bindings for SparseMatrix<double> */
     bind_eigen_sparse_2< Eigen::SparseMatrix<double> > (me, "SparseMatrixd");
+
+    bind_eigen_sparse_2< Eigen::SparseMatrix<double, Eigen::RowMajor> > (me, "RowSparseMatrixd");
 
     /* Bindings for SparseMatrix<int> */
     bind_eigen_sparse_2< Eigen::SparseMatrix<int> > (me, "SparseMatrixi");
