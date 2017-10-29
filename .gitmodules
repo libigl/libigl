@@ -24,3 +24,6 @@
 [submodule "external/cork"]
 	path = external/cork
 	url = https://github.com/libigl/cork.git
+[submodule "external/geodesic"]
+	path = external/geodesic
+	url = https://github.com/jiangzhongshi/ExactGeodesic

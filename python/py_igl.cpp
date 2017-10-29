@@ -102,6 +102,7 @@
 #include <igl/writeOBJ.h>
 #include <igl/writePLY.h>
 #include <igl/readPLY.h>
+#include <igl/seam_edges.h>
 
 void python_export_igl(py::module &m)
 {
@@ -199,4 +200,5 @@ void python_export_igl(py::module &m)
 #include "py_igl/py_writeOBJ.cpp"
 #include "py_igl/py_writePLY.cpp"
 #include "py_igl/py_readPLY.cpp"
+#include "py_igl/py_seam_edges.cpp"
 }
