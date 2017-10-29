@@ -74,6 +74,10 @@ else()
   target_include_directories(igl_common SYSTEM INTERFACE ${NANOGUI_DIR}/ext/eigen)
 endif()
 
+# C++11 Thread library
+find_package(Threads REQUIRED)
+target_link_libraries(igl_common INTERFACE ${CMAKE_THREAD_LIBS_INIT})
+
 ################################################################################
 
 function(compile_igl_module module_dir prefix)
@@ -93,7 +97,7 @@ function(compile_igl_module module_dir prefix)
 
   target_link_libraries(igl_${module_name} ${IGL_SCOPE} igl_common)
   if(NOT module_name STREQUAL "core")
-	  target_link_libraries(igl_${module_name} ${IGL_SCOPE} igl_core)
+    target_link_libraries(igl_${module_name} ${IGL_SCOPE} igl_core)
   endif()
 
   # Alias target because it looks nicer
@@ -286,7 +290,7 @@ if(LIBIGL_WITH_OPENGL)
       set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL " " FORCE)
       set(GLFW_BUILD_TESTS OFF CACHE BOOL " " FORCE)
       set(GLFW_BUILD_DOCS OFF CACHE BOOL " " FORCE)
-      set(GLFW_BUILD_INSTALL OFF CACHE BOOL " " FORCE)
+      set(GLFW_INSTALL OFF CACHE BOOL " " FORCE)
       add_subdirectory(${NANOGUI_DIR}/ext/glfw glfw)
     endif()
     target_include_directories(glfw ${IGL_SCOPE} ${NANOGUI_DIR}/ext/glfw/include)
