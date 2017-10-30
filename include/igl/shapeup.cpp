@@ -9,6 +9,7 @@
 #define IGL_SHAPEUP_H
 
 #include "shapeup.h"
+#include "igl/min_quad_with_fixed.h"
 #include <igl/igl_inline.h>
 #include <igl/setdiff.h>
 #include <igl/cat.h>
@@ -16,120 +17,134 @@
 #include <vector>
 
 
-//This file implements the following algorithm:
-
-//Boaziz et al.
-//Shape-Up: Shaping Discrete Geometry with Projections
-//Computer Graphics Forum (Proc. SGP) 31(5), 2012
 
 namespace igl
 {
-    
-    //This function does the precomputation of the necessary operators for the shape-up projection process.
-    
-
-    IGL_INLINE void shapeup_precomputation(const Eigen::MatrixXd& V,
-                                       const Eigen::VectorXi& D,
-                                       const Eigen::MatrixXi& F,
-                                       const Eigen::VectorXi& SD,
-                                       const Eigen::MatrixXi& S,
-                                       const Eigen::VectorXi& h,
-                                       const Eigen::VectorXd& w,
-                                       const double shapeCoeff,
-                                       const double closeCoeff,
-                                       struct ShapeupData& sudata)
+    template <
+    typename DerivedP,
+    typename DerivedSC,
+    typename DerivedS,
+    typename Derivedb,
+    typename Derivedw>
+    IGL_INLINE void shapeup_precomputation(
+                                           const Eigen::PlainObjectBase<DerivedP>& P,
+                                           const Eigen::PlainObjectBase<DerivedSC>& SC,
+                                           const Eigen::PlainObjectBase<DerivedS>& S,
+                                           const Eigen::PlainObjectBase<DerivedS>& E,
+                                           const Eigen::PlainObjectBase<Derivedb>& b,
+                                           const Eigen::PlainObjectBase<Derivedw>& w,
+                                           const std::function<bool(const Eigen::PlainObjectBase<DerivedP>&, const Eigen::PlainObjectBase<DerivedSX>&, const Eigen::PlainObjectBase<DerivedS>&,  Eigen::PlainObjectBase<Derivedb&)>& local_projection,
+                                           struct ShapeupData& sudata)
     {
+        using namespace std;
         using namespace Eigen;
-        //The integration solve is separable to x,y,z components
-        sudata.V=V; sudata.F=F; sudata.D=D; sudata.SD=SD; sudata.S=S; sudata.h=h; sudata.closeCoeff=closeCoeff; sudata.shapeCoeff=shapeCoeff;
-        sudata.Q.conservativeResize(SD.sum(), V.rows());  //Shape matrix (integration);
-        sudata.C.conservativeResize(h.rows(), V.rows());        //Closeness matrix for handles
+        sudata.P=P;
+        sudata.SC=SC;
+        sudata.S=S;
+        sudata.E=E;
+        sudata.b=b;
+        sudata.local_projection=local_projection;
         
-        std::vector<Triplet<double> > QTriplets;
+        sudata.DShape.conservativeResize(SC.sum(), P.rows());  //Shape matrix (integration);
+        sudata.DClose.conservativeResize(h.rows(), P.rows());  //Closeness matrix for positional constraints
+        sudata.DSmooth.conservativeResize(EV.rows(), P.rows());  //smoothness matrix
+        
+        //Building shape matrix
+        std::vector<Triplet<double> > DShapeTriplets;
         int currRow=0;
         for (int i=0;i<S.rows();i++){
-            double avgCoeff=1.0/(double)SD(i);
+            double avgCoeff=1.0/(double)SC(i);
             
-            for (int j=0;j<SD(i);j++){
-                for (int k=0;k<SD(i);k++){
+            for (int j=0;j<SC(i);j++){
+                for (int k=0;k<SC(i);k++){
                     if (j==k)
-                        QTriplets.push_back(Triplet<double>(currRow+j, S(i,k), (1.0-avgCoeff)));
+                        DShapeTriplets.push_back(Triplet<double>(currRow+j, S(i,k), (1.0-avgCoeff)));
                     else
-                        QTriplets.push_back(Triplet<double>(currRow+j, S(i,k), (-avgCoeff)));
+                        DShapeTriplets.push_back(Triplet<double>(currRow+j, S(i,k), (-avgCoeff)));
                 }
             }
-            currRow+=SD(i);
+            currRow+=SC(i);
         }
         
-        sudata.Q.setFromTriplets(QTriplets.begin(), QTriplets.end());
+        sudata.DShape.setFromTriplets(DShapeTriplets.begin(), DShapeTriplets.end());
         
-        std::vector<Triplet<double> > CTriplets;
-        for (int i=0;i<h.size();i++)
-            CTriplets.push_back(Triplet<double>(i,h(i), 1.0));
+        //Building closeness matrix
+        std::vector<Triplet<double> > DCloseTriplets;
+        for (int i=0;i<b.size();i++)
+            DCloseTriplets.push_back(Triplet<double>(i,h(i), 1.0));
         
-        sudata.C.setFromTriplets(CTriplets.begin(), CTriplets.end());
+        sudata.DClose.setFromTriplets(DCloseTriplets.begin(), DCloseTriplets.end());
         
-        igl::cat(1, sudata.Q, sudata.C, sudata.A);
-        sudata.At=sudata.A.transpose();  //to save up this expensive computation.
+        igl::cat(1, sudata.DShape, sudata.DClose, sudata.A);
+        //is this allowed? repeating A.
+        igl::cat(1, sudata.A, sudata.DSmooth, sudata.A);
+        //sudata.At=sudata.A.transpose();  //to save up this expensive computation.
         
         //weight matrix
         vector<Triplet<double> > WTriplets;
-        //std::cout<<"w: "<<w<<std::endl;
+        
+        //one weight per set in S.
         currRow=0;
         for (int i=0;i<SD.rows();i++){
             for (int j=0;j<SD(i);j++)
                 WTriplets.push_back(Triplet<double>(currRow+j,currRow+j,shapeCoeff*w(i)));
             currRow+=SD(i);
         }
-        for (int i=0;i<h.size();i++)
+        
+        for (int i=0;i<b.size();i++)
             WTriplets.push_back(Triplet<double>(SD.sum()+i, SD.sum()+i, closeCoeff));
-        sudata.W.resize(SD.sum()+h.size(), SD.sum()+h.size());
+        
+        for (int i=0;i<EV.rows();i++)
+            WTriplets.push_back(Triplet<double>(SD.sum()+b.size()+i, SD.sum()+b.size()+i, smoothCoeff));
+        
+        
+        sudata.W.conserativeResize(SD.sum()+b.size()+EV.rows(), SD.sum()+b.size()+EV.rows());
         sudata.W.setFromTriplets(WTriplets.begin(), WTriplets.end());
         
-        sudata.E=sudata.At*sudata.W*sudata.A;
-        sudata.solver.compute(sudata.E);
+        sudata.At=sudata.A.transpose();
+        sudata.Q=sudata.At*sudata.W*sudata.A;
+        
+        return min_quad_with_fixed_precompute(sudata.Q,VectorXi(),SparseMatrix<double>(),true,solver_data);
     }
     
     
     
-    IGL_INLINE void shapeup_compute(void (*projection)(int , const hedra::ShapeupData&, const Eigen::MatrixXd& , Eigen::MatrixXd&),
-                                    const Eigen::MatrixXd& vh,
+    template <
+    typename Derivedbc,
+    typename DerivedP>
+    IGL_INLINE void shapeup_solve(const Eigen::PlainObjectBase<Derivedbc>& bc,
+                                    const Eigen::PlainObjectBase<DerivedP>& P0,
                                     const struct ShapeupData& sudata,
-                                    Eigen::MatrixXd& currV,
-                                    const int maxIterations=50,
-                                    const double vTolerance=10e-6)
+                                    Eigen::PlainObjectBase<DerivedP>& P)
     {
         using namespace Eigen;
-        MatrixXd prevV=currV;
-        MatrixXd PV;
+        using namespace std;
+        MatrixXd currP;
+        MatrixXd prevP=P0;
+        MatrixXd projP;
         MatrixXd b(sudata.A.rows(),3);
-        b.block(sudata.Q.rows(), 0, sudata.h.rows(),3)=vh;  //this stays constant throughout the iterations
+        b.block(sudata.Q.rows(), 0, sudata.b.rows(),3)=bc;  //this stays constant throughout the iterations
         
-        //std::cout<<"vh: "<<vh<<std::endl;
-        //std::cout<<"V(h(0))"<<currV.row(sudata.h(0))<<std::endl;
-        PV.conservativeResize(sudata.SD.rows(), 3*sudata.SD.maxCoeff());
+        projP.conservativeResize(sudata.SD.rows(), 3*sudata.SC.maxCoeff());
         for (int i=0;i<maxIterations;i++){
-            //std::cout<<"A*prevV-b before local projection:"<<(sudata.W*(sudata.A*prevV-b)).squaredNorm()<<std::endl;
-            for (int j=0;j<sudata.SD.rows();j++)
-                projection(j, sudata, currV, PV);
+            
+            for (int j=0;j<sudata.SC.rows();j++)
+                sudata.local_projection(currV, SC,S,projP);
             //constructing the projection part of the right hand side
             int currRow=0;
             for (int i=0;i<sudata.S.rows();i++){
-                for (int j=0;j<sudata.SD(i);j++)
-                    b.row(currRow++)=PV.block(i, 3*j, 1,3);
-                //currRow+=sudata.SD(i);
+                for (int j=0;j<sudata.SC(i);j++){
+                    b.row(currRow++)=projP.block(i, 3*j, 1,3);
+                }
             }
-            //std::cout<<"A*prevV-b after local projection:"<<(sudata.W*(sudata.A*prevV-b)).squaredNorm()<<std::endl;
-            //std::cout<<"A*currV-b:"<<i<<(sudata.A*currV-b)<<std::endl;
-            currV=sudata.solver.solve(sudata.At*sudata.W*b);
-            //std::cout<<"b: "<<b<<std::endl;
-            //std::cout<<"A*cubbV-b after global solve:"<<
-            std::cout<<i<<","<<(sudata.W*(sudata.A*currV-b)).squaredNorm()<<std::endl;
-            //std::cout<<"b:"<<b.block(b.rows()-1, 0, 1, b.cols())<<std::endl;
-            //exit(0);
-            double currChange=(currV-prevV).lpNorm<Infinity>();
-            //std::cout<<"Iteration: "<<i<<", currChange: "<<currChange<<std::endl;
-            prevV=currV;
+   
+            //the global solve is independent per dimension
+            Eigen::PlainObjectBase<DerivedP> rhs=-sudata.At*sudata.W*b;
+            min_quad_with_fixed_solve(sudata.solver_data, rhs,Eigen::PlainObjectBase<DerivedP>(),Eigen::PlainObjectBase<DerivedP>(), currP);
+
+            currV=sudata.solver.solve();
+            double currChange=(currP-prevP).lpNorm<Infinity>();
+            prevP=currP;
             if (currChange<vTolerance)
                 break;
             
@@ -137,8 +152,7 @@ namespace igl
     }
 }
 
-#ifndef IGL_STATIC_LIBRARY
-#include "shapeup.cpp"
-#endif
-
-#endif
+/*#ifdef IGL_STATIC_LIBRARY
+template bool igl::shapeup_solve<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, igl::ARAPData&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
+template bool igl::arap_precomputation<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, int, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, igl::ARAPData&);
+#endif*/
