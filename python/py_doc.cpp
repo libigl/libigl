@@ -9,7 +9,7 @@ const char *__doc_igl_active_set = R"igl_Qu8mg5v7(// Known Bugs: rows of [Aeq;Ai
   // using QR decomposition otherwise:
   //   http://www.okstate.edu/sas/v8/sashtml/ormp/chap5/sect32.htm
   //
-  // ACTIVE_SET Minimize quadratic energy 
+  // ACTIVE_SET Minimize quadratic energy
   //
   // 0.5*Z'*A*Z + Z'*B + C with constraints
   //
@@ -44,7 +44,7 @@ const char *__doc_igl_adjacency_list = R"igl_Qu8mg5v7(// Constructs the graph ad
   // Inputs:
   //   F       #F by dim list of mesh faces (must be triangles)
   //   sorted  flag that indicates if the list should be sorted counter-clockwise
-  // Outputs: 
+  // Outputs:
   //   A  vector<vector<T> > containing at row i the adjacent vertices of vertex i
   //
   // Example:
@@ -178,7 +178,7 @@ const char *__doc_igl_boundary_loop = R"igl_Qu8mg5v7(// Compute list of ordered 
   //)igl_Qu8mg5v7";
 const char *__doc_igl_cat = R"igl_Qu8mg5v7(// Perform concatenation of a two matrices along a single dimension
   // If dim == 1, then C = [A;B]. If dim == 2 then C = [A B]
-  // 
+  //
   // Template:
   //   Scalar  scalar data type for sparse matrices like double or int
   //   Mat  matrix type for all matrices (e.g. MatrixXd, SparseMatrix)
@@ -291,7 +291,7 @@ const char *__doc_igl_copyleft_cgal_remesh_self_intersections = R"igl_Qu8mg5v7(/
       // Known bugs: If an existing edge in (V,F) lies exactly on another face then
       // any resulting additional vertices along that edge may not get properly
       // connected so that the output mesh has the same global topology. This is
-      // because 
+      // because
       //
       // Example:
       //     // resolve intersections
@@ -367,7 +367,7 @@ const char *__doc_igl_copyleft_marching_cubes = R"igl_Qu8mg5v7(// marching_cubes
     //)igl_Qu8mg5v7";
 const char *__doc_igl_copyleft_swept_volume = R"igl_Qu8mg5v7(// Compute the surface of the swept volume of a solid object with surface
     // (V,F) mesh under going rigid motion.
-    // 
+    //
     // Inputs:
     //   V  #V by 3 list of mesh positions in reference pose
     //   F  #F by 3 list of mesh indices into V
@@ -411,7 +411,7 @@ const char *__doc_igl_cotmatrix = R"igl_Qu8mg5v7(// Constructs the cotangent sti
   // Inputs:
   //   V  #V by dim list of mesh vertex positions
   //   F  #F by simplex_size list of mesh faces (must be triangles)
-  // Outputs: 
+  // Outputs:
   //   L  #V by #V cotangent matrix, each row i corresponding to V(i,:)
   //
   // See also: adjacency_matrix
@@ -471,7 +471,7 @@ const char *__doc_igl_directed_edge_orientations = R"igl_Qu8mg5v7(// Determine r
   //   C  #C by 3 list of edge vertex positions
   //   E  #E by 2 list of directed edges
   // Outputs:
-  //   Q  #E list of quaternions 
+  //   Q  #E list of quaternions
   //)igl_Qu8mg5v7";
 const char *__doc_igl_directed_edge_parents = R"igl_Qu8mg5v7(// Recover "parents" (preceeding edges) in a tree given just directed edges.
   //
@@ -513,7 +513,7 @@ const char *__doc_igl_dqs = R"igl_Qu8mg5v7(// Dual quaternion skinning
   // Inputs:
   //   V  #V by 3 list of rest positions
   //   W  #W by #C list of weights
-  //   vQ  #C list of rotation quaternions 
+  //   vQ  #C list of rotation quaternions
   //   vT  #C list of translation vectors
   // Outputs:
   //   U  #V by 3 list of new positions)igl_Qu8mg5v7";
@@ -532,7 +532,7 @@ const char *__doc_igl_edge_lengths = R"igl_Qu8mg5v7(// Constructs a list of leng
   //    or
   //   T  #T by 4 list of mesh elements (must be tets)
   // Outputs:
-  //   L  #F by {1|3|6} list of edge lengths 
+  //   L  #F by {1|3|6} list of edge lengths
   //     for edges, column of lengths
   //     for triangles, columns correspond to edges [1,2],[2,0],[0,1]
   //     for tets, columns correspond to edges
@@ -565,8 +565,8 @@ const char *__doc_igl_embree_ambient_occlusion = R"igl_Qu8mg5v7(// Compute ambie
     //      0 (not occluded)
     //)igl_Qu8mg5v7";
 const char *__doc_igl_embree_line_mesh_intersection = R"igl_Qu8mg5v7(// Project the point cloud V_source onto the triangle mesh
-    // V_target,F_target. 
-    // A ray is casted for every vertex in the direction specified by 
+    // V_target,F_target.
+    // A ray is casted for every vertex in the direction specified by
     // N_source and its opposite.
     //
     // Input:
@@ -576,9 +576,9 @@ const char *__doc_igl_embree_line_mesh_intersection = R"igl_Qu8mg5v7(// Project 
     // F_target: #F2x3 Faces of the target mesh
     //
     // Output:
-    // #Vx3 matrix of baricentric coordinate. Each row corresponds to 
+    // #Vx3 matrix of baricentric coordinate. Each row corresponds to
     // a vertex of the projected mesh and it has the following format:
-    // id b1 b2. id is the id of a face of the source mesh. b1 and b2 are 
+    // id b1 b2. id is the id of a face of the source mesh. b1 and b2 are
     // the barycentric coordinates wrt the first two edges of the triangle
     // To convert to standard global coordinates, see barycentric_to_global.h)igl_Qu8mg5v7";
 const char *__doc_igl_embree_reorient_facets_raycast = R"igl_Qu8mg5v7(// Orient each component (identified by C) of a mesh (V,F) using ambient
@@ -612,7 +612,7 @@ const char *__doc_igl_fit_rotations = R"igl_Qu8mg5v7(// Known issues: This seems
   //
   // FIT_ROTATIONS Given an input mesh and new positions find rotations for
   // every covariance matrix in a stack of covariance matrices
-  // 
+  //
   // Inputs:
   //   S  nr*dim by dim stack of covariance matrices
   //   single_precision  whether to use single precision (faster)
@@ -621,7 +621,7 @@ const char *__doc_igl_fit_rotations = R"igl_Qu8mg5v7(// Known issues: This seems
   //)igl_Qu8mg5v7";
 const char *__doc_igl_fit_rotations_planar = R"igl_Qu8mg5v7(// FIT_ROTATIONS Given an input mesh and new positions find 2D rotations for
   // every vertex that best maps its one ring to the new one ring
-  // 
+  //
   // Inputs:
   //   S  nr*dim by dim stack of covariance matrices, third column and every
   //   third row will be ignored
@@ -630,7 +630,7 @@ const char *__doc_igl_fit_rotations_planar = R"igl_Qu8mg5v7(// FIT_ROTATIONS Giv
   //   rotation will just be identity
   //)igl_Qu8mg5v7";
 const char *__doc_igl_fit_rotations_SSE = R"igl_Qu8mg5v7(See fit_rotations_SSE for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_floor = R"igl_Qu8mg5v7(// Floor a given matrix to nearest integers 
+const char *__doc_igl_floor = R"igl_Qu8mg5v7(// Floor a given matrix to nearest integers
   //
   // Inputs:
   //   X  m by n matrix of scalars
@@ -658,7 +658,7 @@ const char *__doc_igl_gaussian_curvature = R"igl_Qu8mg5v7(// Compute discrete lo
   //   K  #V by 1 eigen Matrix of discrete gaussian curvature values
   //)igl_Qu8mg5v7";
 const char *__doc_igl_get_seconds = R"igl_Qu8mg5v7(// Return the current time in seconds since program start
-  // 
+  //
   // Example:
   //    const auto & tictoc = []()
   //    {
@@ -699,7 +699,7 @@ const char *__doc_igl_hsv_to_rgb = R"igl_Qu8mg5v7(// Convert RGB to HSV
   //   s  saturation value ([0,1])
   //   v  value value ([0,1])
   // Outputs:
-  //   r  red value ([0,1]) 
+  //   r  red value ([0,1])
   //   g  green value ([0,1])
   //   b  blue value ([0,1]))igl_Qu8mg5v7";
 const char *__doc_igl_internal_angles = R"igl_Qu8mg5v7(// Compute internal angles for a triangle mesh
@@ -747,7 +747,7 @@ const char *__doc_igl_is_irregular_vertex = R"igl_Qu8mg5v7(// Determine if a ver
 const char *__doc_igl_jet = R"igl_Qu8mg5v7(// JET like MATLAB's jet
   //
   // Inputs:
-  //   m  number of colors 
+  //   m  number of colors
   // Outputs:
   //   J  m by list of RGB colors between 0 and 1
   //
@@ -791,7 +791,7 @@ const char *__doc_igl_lbs_matrix_column = R"igl_Qu8mg5v7(// LBS_MATRIX  construc
   // Output:
   //   M  #V * dim by #handles * dim * (dim+1) matrix such that
   //     new_V(:) = LBS(V,W,A) = reshape(M * A,size(V)), where A is a column
-  //     vectors formed by the entries in each handle's dim by dim+1 
+  //     vectors formed by the entries in each handle's dim by dim+1
   //     transformation matrix. Specifcally, A =
   //       reshape(permute(Astack,[3 1 2]),n*dim*(dim+1),1)
   //     or A = [Lxx;Lyx;Lxy;Lyy;tx;ty], and likewise for other dim
@@ -852,7 +852,7 @@ const char *__doc_igl_massmatrix = R"igl_Qu8mg5v7(// Constructs the mass (area) 
   //     MASSMATRIX_TYPE_BARYCENTRIC  barycentric
   //     MASSMATRIX_TYPE_VORONOI voronoi-hybrid {default}
   //     MASSMATRIX_TYPE_FULL full {not implemented}
-  // Outputs: 
+  // Outputs:
   //   M  #V by #V mass matrix
   //
   // See also: adjacency_matrix
@@ -903,12 +903,6 @@ const char *__doc_igl_min_quad_with_fixed_solve = R"igl_Qu8mg5v7(// Solves a sys
   //   sol  #unknowns+#lagrange by k solution to linear system
   // Returns true on success, false on error)igl_Qu8mg5v7";
 const char *__doc_igl_min_quad_with_fixed = R"igl_Qu8mg5v7(See min_quad_with_fixed for the documentation.)igl_Qu8mg5v7";
-const char *__doc_igl_n_polyvector = R"igl_Qu8mg5v7(// Inputs:
-  //   v0, v1         the two #3 by 1 vectors
-  //   normalized     boolean, if false, then the vectors are normalized prior to the calculation
-  // Output:
-  //                  3 by 3 rotation matrix that takes v0 to v1
-  //)igl_Qu8mg5v7";
 const char *__doc_igl_normalize_row_lengths = R"igl_Qu8mg5v7(// Obsolete: just use A.rowwise().normalize() or B=A.rowwise().normalized();
   //
   // Normalize the rows in A so that their lengths are each 1 and place the new
@@ -928,7 +922,7 @@ const char *__doc_igl_normalize_row_sums = R"igl_Qu8mg5v7(// Normalize the rows 
 const char *__doc_igl_parula = R"igl_Qu8mg5v7(// PARULA like MATLAB's parula
   //
   // Inputs:
-  //   m  number of colors 
+  //   m  number of colors
   // Outputs:
   //   J  m by list of RGB colors between 0 and 1
   //
@@ -1130,11 +1124,11 @@ const char *__doc_igl_readTGF = R"igl_Qu8mg5v7(// READTGF
   //  BE # bone-edges by 2 list of bone-edge indices
   //  CE # cage-edges by 2 list of cage-edge indices
   //  PE # pseudo-edges by 2 list of pseudo-edge indices
-  // 
+  //
   // Assumes that graph vertices are 3 dimensional)igl_Qu8mg5v7";
 const char *__doc_igl_read_triangle_mesh = R"igl_Qu8mg5v7(// read mesh from an ascii file with automatic detection of file format.
   // supported: obj, off, stl, wrl, ply, mesh)
-  // 
+  //
   // Templates:
   //   Scalar  type for positions and vectors (will be read as double and cast
   //     to Scalar)
@@ -1154,7 +1148,7 @@ const char *__doc_igl_remove_duplicate_vertices = R"igl_Qu8mg5v7(// REMOVE_DUPLI
   //     this as a tolerance on L1 distance
   // Outputs:
   //   SV  #SV by dim new list of vertex positions
-  //   SVI #V by 1 list of indices so SV = V(SVI,:) 
+  //   SVI #V by 1 list of indices so SV = V(SVI,:)
   //   SVJ #SV by 1 list of indices so V = SV(SVJ,:)
   //
   // Example:
@@ -1207,7 +1201,7 @@ const char *__doc_igl_signed_distance_pseudonormal = R"igl_Qu8mg5v7(// Computes 
   // Inputs:
   //   tree  AABB acceleration tree (see AABB.h)
   //   F  #F by 3 list of triangle indices
-  //   FN  #F by 3 list of triangle normals 
+  //   FN  #F by 3 list of triangle normals
   //   VN  #V by 3 list of vertex normals (ANGLE WEIGHTING)
   //   EN  #E by 3 list of edge normals (UNIFORM WEIGHTING)
   //   EMAP  #F*3 mapping edges in F to E
@@ -1221,7 +1215,7 @@ const char *__doc_igl_signed_distance_winding_number = R"igl_Qu8mg5v7(// Inputs:
   // Returns signed distance to mesh)igl_Qu8mg5v7";
 const char *__doc_igl_slice = R"igl_Qu8mg5v7(// Act like the matlab X(row_indices,col_indices) operator, where
   // row_indices, col_indices are non-negative integer indices.
-  // 
+  //
   // Inputs:
   //   X  m by n matrix
   //   R  list of row indices
@@ -1231,7 +1225,7 @@ const char *__doc_igl_slice = R"igl_Qu8mg5v7(// Act like the matlab X(row_indice
   //
   // See also: slice_mask)igl_Qu8mg5v7";
 const char *__doc_igl_slice_into = R"igl_Qu8mg5v7(// Act like the matlab Y(row_indices,col_indices) = X
-  // 
+  //
   // Inputs:
   //   X  xm by xn rhs matrix
   //   R  list of row indices
@@ -1241,7 +1235,7 @@ const char *__doc_igl_slice_into = R"igl_Qu8mg5v7(// Act like the matlab Y(row_i
   //   Y  ym by yn lhs matrix, same as input but Y(R,C) = X)igl_Qu8mg5v7";
 const char *__doc_igl_slice_mask = R"igl_Qu8mg5v7(// Act like the matlab X(row_mask,col_mask) operator, where
   // row_mask, col_mask are non-negative integer indices.
-  // 
+  //
   // Inputs:
   //   X  m by n matrix
   //   R  m list of row bools
@@ -1255,7 +1249,7 @@ const char *__doc_igl_slice_tets = R"igl_Qu8mg5v7(// SLICE_TETS Slice through a 
   //
   // Inputs:
   //   V  #V by 3 list of tet mesh vertices
-  //   T  #T by 4 list of tet indices into V 
+  //   T  #T by 4 list of tet indices into V
   //   plane  list of 4 coefficients in the plane equation: [x y z 1]'*plane = 0
   //   Optional:
   //     'Manifold' followed by whether to stitch together triangles into a
