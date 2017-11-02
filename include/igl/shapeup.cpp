@@ -5,11 +5,9 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
-#ifndef IGL_SHAPEUP_H
-#define IGL_SHAPEUP_H
 
-#include "shapeup.h"
-#include "igl/min_quad_with_fixed.h"
+#include <igl/shapeup.h>
+#include <igl/min_quad_with_fixed.h>
 #include <igl/igl_inline.h>
 #include <igl/setdiff.h>
 #include <igl/cat.h>
@@ -26,28 +24,27 @@ namespace igl
     typename DerivedS,
     typename Derivedb,
     typename Derivedw>
-    IGL_INLINE void shapeup_precomputation(
+    IGL_INLINE bool shapeup_precomputation(
                                            const Eigen::PlainObjectBase<DerivedP>& P,
                                            const Eigen::PlainObjectBase<DerivedSC>& SC,
                                            const Eigen::PlainObjectBase<DerivedS>& S,
                                            const Eigen::PlainObjectBase<DerivedS>& E,
                                            const Eigen::PlainObjectBase<Derivedb>& b,
                                            const Eigen::PlainObjectBase<Derivedw>& w,
-                                           const std::function<bool(const Eigen::PlainObjectBase<DerivedP>&, const Eigen::PlainObjectBase<DerivedSX>&, const Eigen::PlainObjectBase<DerivedS>&,  Eigen::PlainObjectBase<Derivedb&)>& local_projection,
-                                           struct ShapeupData& sudata)
+                                           const std::function<bool(const Eigen::PlainObjectBase<DerivedP>&, const Eigen::PlainObjectBase<DerivedSC>&, const Eigen::PlainObjectBase<DerivedS>&,  Eigen::PlainObjectBase<Derivedb>&)>& local_projection,
+                                           ShapeupData & sudata)
     {
         using namespace std;
         using namespace Eigen;
         sudata.P=P;
         sudata.SC=SC;
         sudata.S=S;
-        sudata.E=E;
         sudata.b=b;
         sudata.local_projection=local_projection;
         
         sudata.DShape.conservativeResize(SC.sum(), P.rows());  //Shape matrix (integration);
-        sudata.DClose.conservativeResize(h.rows(), P.rows());  //Closeness matrix for positional constraints
-        sudata.DSmooth.conservativeResize(EV.rows(), P.rows());  //smoothness matrix
+        sudata.DClose.conservativeResize(b.rows(), P.rows());  //Closeness matrix for positional constraints
+        sudata.DSmooth.conservativeResize(E.rows(), P.rows());  //smoothness matrix
         
         //Building shape matrix
         std::vector<Triplet<double> > DShapeTriplets;
@@ -71,7 +68,7 @@ namespace igl
         //Building closeness matrix
         std::vector<Triplet<double> > DCloseTriplets;
         for (int i=0;i<b.size();i++)
-            DCloseTriplets.push_back(Triplet<double>(i,h(i), 1.0));
+            DCloseTriplets.push_back(Triplet<double>(i,b(i), 1.0));
         
         sudata.DClose.setFromTriplets(DCloseTriplets.begin(), DCloseTriplets.end());
         
@@ -85,26 +82,26 @@ namespace igl
         
         //one weight per set in S.
         currRow=0;
-        for (int i=0;i<SD.rows();i++){
-            for (int j=0;j<SD(i);j++)
-                WTriplets.push_back(Triplet<double>(currRow+j,currRow+j,shapeCoeff*w(i)));
-            currRow+=SD(i);
+        for (int i=0;i<SC.rows();i++){
+            for (int j=0;j<SC(i);j++)
+                WTriplets.push_back(Triplet<double>(currRow+j,currRow+j,sudata.shapeCoeff*w(i)));
+            currRow+=SC(i);
         }
         
         for (int i=0;i<b.size();i++)
-            WTriplets.push_back(Triplet<double>(SD.sum()+i, SD.sum()+i, closeCoeff));
+            WTriplets.push_back(Triplet<double>(SC.sum()+i, SC.sum()+i, sudata.closeCoeff));
         
-        for (int i=0;i<EV.rows();i++)
-            WTriplets.push_back(Triplet<double>(SD.sum()+b.size()+i, SD.sum()+b.size()+i, smoothCoeff));
+        for (int i=0;i<E.rows();i++)
+            WTriplets.push_back(Triplet<double>(SC.sum()+b.size()+i, SC.sum()+b.size()+i, sudata.smoothCoeff));
         
         
-        sudata.W.conserativeResize(SD.sum()+b.size()+EV.rows(), SD.sum()+b.size()+EV.rows());
+        sudata.W.conservativeResize(SC.sum()+b.size()+E.rows(), SC.sum()+b.size()+E.rows());
         sudata.W.setFromTriplets(WTriplets.begin(), WTriplets.end());
         
         sudata.At=sudata.A.transpose();
         sudata.Q=sudata.At*sudata.W*sudata.A;
         
-        return min_quad_with_fixed_precompute(sudata.Q,VectorXi(),SparseMatrix<double>(),true,solver_data);
+        return min_quad_with_fixed_precompute(sudata.Q,VectorXi(),SparseMatrix<double>(),true,sudata.solver_data);
     }
     
     
@@ -112,9 +109,9 @@ namespace igl
     template <
     typename Derivedbc,
     typename DerivedP>
-    IGL_INLINE void shapeup_solve(const Eigen::PlainObjectBase<Derivedbc>& bc,
+    IGL_INLINE bool shapeup_solve(const Eigen::PlainObjectBase<Derivedbc>& bc,
                                     const Eigen::PlainObjectBase<DerivedP>& P0,
-                                    const struct ShapeupData& sudata,
+                                    const ShapeupData & sudata,
                                     Eigen::PlainObjectBase<DerivedP>& P)
     {
         using namespace Eigen;
@@ -125,11 +122,11 @@ namespace igl
         MatrixXd b(sudata.A.rows(),3);
         b.block(sudata.Q.rows(), 0, sudata.b.rows(),3)=bc;  //this stays constant throughout the iterations
         
-        projP.conservativeResize(sudata.SD.rows(), 3*sudata.SC.maxCoeff());
-        for (int i=0;i<maxIterations;i++){
+        projP.conservativeResize(sudata.SC.rows(), 3*sudata.SC.maxCoeff());
+        for (int i=0;i<sudata.maxIterations;i++){
             
             for (int j=0;j<sudata.SC.rows();j++)
-                sudata.local_projection(currV, SC,S,projP);
+                sudata.local_projection(currP, sudata.SC,sudata.S,projP);
             //constructing the projection part of the right hand side
             int currRow=0;
             for (int i=0;i<sudata.S.rows();i++){
@@ -142,13 +139,13 @@ namespace igl
             Eigen::PlainObjectBase<DerivedP> rhs=-sudata.At*sudata.W*b;
             min_quad_with_fixed_solve(sudata.solver_data, rhs,Eigen::PlainObjectBase<DerivedP>(),Eigen::PlainObjectBase<DerivedP>(), currP);
 
-            currV=sudata.solver.solve();
             double currChange=(currP-prevP).lpNorm<Infinity>();
             prevP=currP;
-            if (currChange<vTolerance)
+            if (currChange<sudata.pTolerance)
                 break;
             
         }
+        return true;
     }
 }
 
