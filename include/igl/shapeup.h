@@ -8,7 +8,8 @@
 #ifndef IGL_SHAPEUP_H
 #define IGL_SHAPEUP_H
 
-#include "shapeup_local_projections.h"
+#include <igl/shapeup_local_projections.h>
+#include <igl/min_quad_with_fixed.h>
 #include <igl/igl_inline.h>
 #include <igl/setdiff.h>
 #include <igl/cat.h>
@@ -26,7 +27,6 @@ namespace igl
 {
     
     struct ShapeupData{
-
         //input data
         Eigen::MatrixXd P;
         Eigen::VectorXi SC;
@@ -40,7 +40,7 @@ namespace igl
         std::function<bool(const Eigen::MatrixXd&, const Eigen::VectorXi&, const Eigen::MatrixXi&,  Eigen::MatrixXd&)> local_projection;
         
         //Internally-used matrices
-        Eigen::SparseMatrix<double> DShape, DClose, DSmooth, Q, A, At;
+        Eigen::SparseMatrix<double> DShape, DClose, DSmooth, Q, A, At, W;
         
          min_quad_with_fixed_data<double> solver_data;
         
@@ -50,7 +50,7 @@ namespace igl
         shapeCoeff(1.0),
         closeCoeff(100.0),
         smoothCoeff(0.0),
-        local_projection(igl::shapeup_identity_projection),
+        local_projection(igl::shapeup_identity_projection)
         {}
     };
     
@@ -84,8 +84,8 @@ namespace igl
                                            const Eigen::PlainObjectBase<DerivedS>& E,
                                            const Eigen::PlainObjectBase<Derivedb>& b,
                                            const Eigen::PlainObjectBase<Derivedw>& w,
-                                           const std::function<bool(const Eigen::PlainObjectBase<DerivedP>&, const Eigen::PlainObjectBase<DerivedSX>&, const Eigen::PlainObjectBase<DerivedS>&,  Eigen::PlainObjectBase<Derivedb&)>& local_projection,
-                                           struct ShapeupData& sudata);
+                                           const std::function<bool(const Eigen::PlainObjectBase<DerivedP>&, const Eigen::PlainObjectBase<DerivedSC>&, const Eigen::PlainObjectBase<DerivedS>&,  Eigen::PlainObjectBase<Derivedb>&)>& local_projection,
+                                           ShapeupData & sudata);
     
     //This function solve the shapeup project optimization. shapeup_precompute must be called before with the same sudata, or results are unpredictable
     
@@ -101,7 +101,7 @@ namespace igl
     typename DerivedP>
     IGL_INLINE void shapeup_solve(const Eigen::PlainObjectBase<Derivedbc>& bc,
                                    const Eigen::PlainObjectBase<DerivedP>& P0,
-                                    const struct ShapeupData& sudata,
+                                    const ShapeupData & sudata,
                                     Eigen::PlainObjectBase<DerivedP>& P);
 }
 

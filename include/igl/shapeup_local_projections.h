@@ -25,11 +25,11 @@ namespace igl
         projP.conservativeResize(SC.rows(), 3*SC.maxCoeff());
         for (int i=0;i<S.rows();i++){
             Eigen::RowVector3d avgCurrP=Eigen::RowVector3d::Zero();
-            for (int j=0;j<sudata.SC(i);j++)
-                avgCurrP+=currP.row(sudata.S(i,j))/(double)(sudata.SC(i));
+            for (int j=0;j<SC(i);j++)
+                avgCurrP+=P.row(S(i,j))/(double)(SC(i));
             
-            for (int j=0;j<sudata.SC(i);j++)
-                projP.block(i,3*j,1,3)=currP.row(sudata.S(i,j))-avgCurrP;
+            for (int j=0;j<SC(i);j++)
+                projP.block(i,3*j,1,3)=P.row(S(i,j))-avgCurrP;
         }
     }
     
@@ -43,13 +43,13 @@ namespace igl
             int N=SC(currRow);
             const Eigen::RowVectorXi SRow=S.row(currRow);
             Eigen::RowVector3d avgCurrP=Eigen::RowVector3d::Zero();
-            Eigen::MatrixXd targetPos(N, 3);
-            Eigen::MatrixXd sourcePos(N, 3);
+            Eigen::MatrixXd targetPolygon(N, 3);
+            Eigen::MatrixXd sourcePolygon(N, 3);
             for (int j=0;j<N;j++)
-                avgCurrP+=currP.row(SRow(j))/(double)(N);
+                avgCurrP+=P.row(SRow(j))/(double)(N);
             
             for (int j=0;j<N;j++)
-                targetPolygon.row(j)=currP.row(SRow(j))-avgCurrP;
+                targetPolygon.row(j)=P.row(SRow(j))-avgCurrP;
             
             //creating perfectly regular source polygon
             for (int j=0;j<N;j++)

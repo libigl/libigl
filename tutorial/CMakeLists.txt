@@ -16,7 +16,7 @@ option(LIBIGL_WITH_NANOGUI     "Use Nanogui menu"   OFF)
 option(LIBIGL_WITH_EMBREE      "Use Embree"         ON)
 
 ### libIGL options: choose your dependencies (by default everything is OFF, in this example we need the viewer)
-option(LIBIGL_WITH_CGAL             "Use CGAL"           "${CGAL_FOUND}")
+option(LIBIGL_WITH_CGAL             "Use CGAL"           OFF)
 option(LIBIGL_WITH_CORK             "Use CORK"           OFF)
 option(LIBIGL_WITH_MATLAB           "Use Matlab"         "${MATLAB_FOUND}")
 option(LIBIGL_WITH_MOSEK            "Use MOSEK"          "${MOSEK_FOUND}")
@@ -41,6 +41,7 @@ option(TUTORIALS_CHAPTER4 "Compile chapter 4" ON)
 option(TUTORIALS_CHAPTER5 "Compile chapter 5" ON)
 option(TUTORIALS_CHAPTER6 "Compile chapter 6" ON)
 option(TUTORIALS_CHAPTER7 "Compile chapter 7" ON)
+option(TUTORIALS_CHAPTER8 "Compile chapter 8" ON)
 
 # Store location of tutorial/shared directory
 set(TUTORIAL_SHARED_PATH ${CMAKE_CURRENT_SOURCE_DIR}/shared CACHE PATH "location of shared tutorial resources")
@@ -152,5 +153,10 @@ if(TUTORIALS_CHAPTER7)
   add_subdirectory("710_SLIM")
   add_subdirectory("711_Subdivision")
   add_subdirectory("712_DataSmoothing")
+endif()
+
+# Chapter 3
+if(TUTORIALS_CHAPTER8)
+  add_subdirectory("801_ShapeUp")
 endif()
 
