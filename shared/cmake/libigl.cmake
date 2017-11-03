@@ -58,7 +58,17 @@ target_compile_features(igl_common INTERFACE ${CXX11_FEATURES})
 # Other compilation flags
 if(MSVC)
   # Enable parallel compilation for Visual Studio
-  target_compile_options(igl_common INTERFACE /MP /bigobj)
+   target_compile_options(
+                          igl_common INTERFACE 
+                          "/MP" "/bigobj"
+                          )
+  if(LIBIGL_WITH_CGAL)
+    target_compile_options(
+	                      igl_common INTERFACE 
+                          "$<$<CONFIG:Release>:/MD>" 
+                          "$<$<CONFIG:Debug>:/MDd>"
+						  )
+  endif()
 endif()
 
 if(BUILD_SHARED_LIBS)
@@ -134,9 +144,9 @@ if(LIBIGL_WITH_CGAL)
   # `Exact_predicates_exact_constructions_kernel_with_sqrt`
   find_package(CGAL COMPONENTS Core)
   if(CGAL_FOUND)
-	if(WIN32 AND LIBIGL_USE_STATIC_LIBRARY)
-		message(FATAL_ERROR "Compiling a static version of libigl with CGAL is not supported on Windows.")
-	endif()
+#	if(WIN32 AND LIBIGL_USE_STATIC_LIBRARY)
+#		message(FATAL_ERROR "Compiling a static version of libigl with CGAL is not supported on Windows.")
+#	endif()
     compile_igl_module("cgal" "copyleft/")
     find_package(Boost 1.48 REQUIRED thread system)
 	target_include_directories(igl_cgal ${IGL_SCOPE} ${CGAL_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
