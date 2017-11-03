@@ -21,10 +21,10 @@ namespace igl
 {
     
     //This projection does nothing but render points into projP. Mostly used for "echoing" the global step
-    IGL_INLINE bool shapeup_identity_projection(const Eigen::MatrixXd& P, const Eigen::VectorXi& SC, const Eigen::MatrixXi& S,  Eigen::MatrixXd& projP);
+    IGL_INLINE bool shapeup_identity_projection(const Eigen::PlainObjectBase<Eigen::MatrixXd>& P, const Eigen::PlainObjectBase<Eigen::VectorXi>& SC, const Eigen::PlainObjectBase<Eigen::MatrixXi>& S,  Eigen::PlainObjectBase<Eigen::MatrixXd>& projP);
     
     //the projection assumes that the sets are vertices of polygons in order
-    IGL_INLINE bool shapeup_regular_face_projection(const Eigen::MatrixXd& P, const Eigen::VectorXi& SC, const Eigen::MatrixXi& S,  Eigen::MatrixXd& projP);
+    IGL_INLINE bool shapeup_regular_face_projection(const Eigen::PlainObjectBase<Eigen::MatrixXd>& P, const Eigen::PlainObjectBase<Eigen::VectorXi>& SC, const Eigen::PlainObjectBase<Eigen::MatrixXi>& S,  Eigen::PlainObjectBase<Eigen::MatrixXd>& projP);
     
 }
 
