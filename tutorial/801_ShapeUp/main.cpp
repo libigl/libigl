@@ -40,6 +40,7 @@ bool key_down(igl::viewer::Viewer& viewer, unsigned char key, int modifier)
   // Plot the original quad mesh
   if (key == '1')
   {
+      cout<<"before setting mesh 1"<<endl;
     // Draw the triangulated quad mesh
     viewer.data.set_mesh(VQC, FQCtri);
 
@@ -63,6 +64,7 @@ bool key_down(igl::viewer::Viewer& viewer, unsigned char key, int modifier)
   if (key == '2')
   {
     // Draw the triangulated quad mesh
+      cout<<"before setting mesh 2"<<endl;
     viewer.data.set_mesh(VQCregular, FQCtri);
 
     // Assign a color to each quad that corresponds to its planarity
@@ -113,9 +115,12 @@ int main(int argc, char *argv[])
   VectorXd bc;
     
   VectorXi array_of_fours=VectorXi::Constant(FQC.rows(),4);
-   
-  //shapeup_precomputation(VQC, array_of_fours,FQC,E,b,w, igl::shapeup_identity_projection,su_data);
-  //shapeup_solve(bc,VQC,su_data,VQCregular);
+    cout<<"before pre-computation"<<endl;
+    shapeup_precomputation(VQC, array_of_fours,FQC,E,b,w, std::function<bool(const MatrixXd&, const VectorXi&, const MatrixXi&, MatrixXd&)>(igl::shapeup_identity_projection),su_data);
+    cout<<"after pre-computation"<<endl;
+  shapeup_solve(bc,VQC,su_data,VQCregular);
+    cout<<"after computation"<<endl;
+    
 
   // Convert the planarized mesh to triangles
   igl::slice( VQCregular, FQC.col(0).eval(), 1, PQC0regular);
@@ -125,7 +130,7 @@ int main(int argc, char *argv[])
 
   // Launch the viewer
   igl::viewer::Viewer viewer;
-  key_down(viewer,'2',0);
+  key_down(viewer,'1',0);
   viewer.core.invert_normals = true;
   viewer.core.show_lines = false;
   viewer.callback_key_down = &key_down;
