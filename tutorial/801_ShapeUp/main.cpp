@@ -111,14 +111,15 @@ int main(int argc, char *argv[])
   E.col(1)<<FQC.col(1),FQC.col(2),FQC.col(3),FQC.col(0);
     
   VectorXi b;
-  VectorXi w(FQC.rows());
-  VectorXd bc;
+  VectorXd w(FQC.rows());
+  MatrixXd bc;
     
   VectorXi array_of_fours=VectorXi::Constant(FQC.rows(),4);
     cout<<"before pre-computation"<<endl;
-    shapeup_precomputation(VQC, array_of_fours,FQC,E,b,w, std::function<bool(const MatrixXd&, const VectorXi&, const MatrixXi&, MatrixXd&)>(igl::shapeup_identity_projection),su_data);
+    std::function<bool(const MatrixXd&, const VectorXi&, const MatrixXi&, MatrixXd&)> localFunction=std::function<bool(const MatrixXd&, const VectorXi&, const MatrixXi&, MatrixXd&)>(igl::shapeup_identity_projection);
+    //shapeup_precomputation(VQC, array_of_fours,FQC,E,b,w, localFunction,su_data);
     cout<<"after pre-computation"<<endl;
-  shapeup_solve(bc,VQC,su_data,VQCregular);
+    shapeup_solve(bc,VQC,su_data,VQCregular);
     cout<<"after computation"<<endl;
     
 
