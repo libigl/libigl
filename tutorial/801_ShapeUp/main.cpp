@@ -116,8 +116,9 @@ int main(int argc, char *argv[])
     
   VectorXi array_of_fours=VectorXi::Constant(FQC.rows(),4);
     cout<<"before pre-computation"<<endl;
-    std::function<bool(const MatrixXd&, const VectorXi&, const MatrixXi&, MatrixXd&)> localFunction=std::function<bool(const MatrixXd&, const VectorXi&, const MatrixXi&, MatrixXd&)>(igl::shapeup_identity_projection);
-    //shapeup_precomputation(VQC, array_of_fours,FQC,E,b,w, localFunction,su_data);
+    std::function<bool(const Eigen::PlainObjectBase<MatrixXd>&, const Eigen::PlainObjectBase<VectorXi>&, const Eigen::PlainObjectBase<MatrixXi>&, Eigen::PlainObjectBase<MatrixXd>&)> localFunction(igl::shapeup_identity_projection);
+    
+    shapeup_precomputation(VQC, array_of_fours,FQC,E,b,w, localFunction,su_data);
     cout<<"after pre-computation"<<endl;
     shapeup_solve(bc,VQC,su_data,VQCregular);
     cout<<"after computation"<<endl;
