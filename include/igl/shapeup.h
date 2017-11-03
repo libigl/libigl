@@ -84,7 +84,7 @@ namespace igl
                                            const Eigen::PlainObjectBase<DerivedS>& E,
                                            const Eigen::PlainObjectBase<Derivedb>& b,
                                            const Eigen::PlainObjectBase<Derivedw>& w,
-                                           const std::function<bool(const Eigen::PlainObjectBase<DerivedP>&, const Eigen::PlainObjectBase<DerivedSC>&, const Eigen::PlainObjectBase<DerivedS>&,  Eigen::PlainObjectBase<Derivedb>&)>& local_projection,
+                                           const std::function<bool(const Eigen::PlainObjectBase<DerivedP>&, const Eigen::PlainObjectBase<DerivedSC>&, const Eigen::PlainObjectBase<DerivedS>&,  Eigen::PlainObjectBase<DerivedP>&)>& local_projection,
                                            ShapeupData & sudata);
     
     //This function solve the shapeup project optimization. shapeup_precompute must be called before with the same sudata, or results are unpredictable

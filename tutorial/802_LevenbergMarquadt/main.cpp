@@ -1,22 +1,23 @@
 #include <igl/unproject_onto_mesh.h>
 #include <igl/viewer/Viewer.h>
+#include <igl/readDMAT.h>
+#include <igl/jet.h>
 #include <hedra/polygonal_read_OFF.h>
 #include <hedra/triangulate_mesh.h>
 #include <hedra/polygonal_edge_topology.h>
 #include <hedra/point_spheres.h>
-#include <hedra/shapeup.h>
-#include <hedra/planarity.h>
-#include <hedra/concyclity.h>
-#include <hedra/regularity.h>
 #include <hedra/scalar2RGB.h>
-
-enum ViewingMode{PLANARITY, CONCYCLITY, REGULARITY} ViewingMode;
+#include <hedra/LMSolver.h>
+#include <hedra/EigenSolverWrapper.h>
+#include <hedra/DiscreteShellsTraits.h>
+#include <Eigen/SparseCholesky>
+#include <hedra/check_traits.h>
 
 
 std::vector<int> Handles;
 std::vector<Eigen::RowVector3d> HandlePoses;
 int CurrentHandle;
-Eigen::MatrixXd VOrig, V, C;
+Eigen::MatrixXd VOrig, V;
 Eigen::MatrixXi F, T;
 Eigen::VectorXi D, TF;
 Eigen::MatrixXi EV, EF, FE, EFi;
@@ -26,12 +27,10 @@ Eigen::Vector3d spans;
 bool Editing=false;
 bool ChoosingHandleMode=false;
 double CurrWinZ;
-
-Eigen::VectorXd planarity, concyclity, regularity;
-
-hedra::ShapeupData sudata;
-Eigen::MatrixXi SFaceRegular;
-Eigen::VectorXi SDFaceRegular;
+typedef hedra::optimization::EigenSolverWrapper<Eigen::SimplicialLLT<Eigen::SparseMatrix<double> > > LinearSolver;
+hedra::optimization::DiscreteShellsTraits dst;
+LinearSolver esw;
+hedra::optimization::LMSolver<LinearSolver, hedra::optimization::DiscreteShellsTraits> lmSolver;
 
 
 
@@ -40,10 +39,6 @@ bool UpdateCurrentView(igl::viewer::Viewer & viewer)
     using namespace Eigen;
     using namespace std;
     
-    hedra::planarity(V,D,F,planarity);
-    hedra::concyclity(V,D,F,concyclity);
-    hedra::regularity(V,D,F,regularity);
-    
     MatrixXd sphereV;
     MatrixXi sphereT;
     MatrixXd sphereTC;
@@ -51,12 +46,7 @@ bool UpdateCurrentView(igl::viewer::Viewer & viewer)
     for (int i=0;i<Handles.size();i++)
         bc.row(i)=HandlePoses[i].transpose();
     
-    switch(ViewingMode){
-        case PLANARITY: hedra::scalar2RGB(planarity, 0.0,1.0, C); break;
-        case CONCYCLITY:  hedra::scalar2RGB(concyclity, 0.0,5.0, C); break;
-        case REGULARITY:  hedra::scalar2RGB(regularity, 0.0,1.0, C); break;
-    }
- 
+    
     double sphereRadius=spans.sum()/200.0;
     MatrixXd sphereGreens(Handles.size(),3);
     sphereGreens.col(0).setZero();
@@ -67,10 +57,6 @@ bool UpdateCurrentView(igl::viewer::Viewer & viewer)
     
     Eigen::MatrixXd bigV(V.rows()+sphereV.rows(),3);
     Eigen::MatrixXi bigT(T.rows()+sphereT.rows(),3);
-    Eigen::MatrixXd bigTC(C.rows()+sphereTC.rows(),3);
-    for (int i=0;i<T.rows();i++)
-        bigTC.row(i)=C.row(TF(i));
-    bigTC.block(T.rows(),0,sphereTC.rows(),3)=sphereTC;
     if (sphereV.rows()!=0){
         bigV<<V, sphereV;
         bigT<<T, sphereT+Eigen::MatrixXi::Constant(sphereT.rows(), sphereT.cols(), V.rows());
@@ -87,7 +73,6 @@ bool UpdateCurrentView(igl::viewer::Viewer & viewer)
     
     viewer.data.clear();
     viewer.data.set_mesh(bigV,bigT);
-    viewer.data.set_colors(bigTC);
     viewer.data.compute_normals();
     viewer.data.set_edges(V,EV,OrigEdgeColors);
     return true;
@@ -112,7 +97,9 @@ bool mouse_move(igl::viewer::Viewer& viewer, int mouse_x, int mouse_y)
     for (int i=0;i<Handles.size();i++)
         bc.row(i)=HandlePoses[i].transpose();
     
-   
+    dst.qh=bc;
+    lmSolver.solve(true);
+    V=dst.fullSolution;
     UpdateCurrentView(viewer);
     return true;
 
@@ -172,8 +159,8 @@ bool mouse_down(igl::viewer::Viewer& viewer, int button, int modifier)
         for (int i=0;i<Handles.size();i++)
             b(i)=Handles[i];
         
-        //hedra::shapeup_precompute(V,D, F,SDFaceRegular,SFaceRegular, b,1.0,100.0, sudata);
-
+        dst.init(VOrig, T, b, EV, EF, EFi,innerEdges);
+        lmSolver.init(&esw, &dst, 250, 10e-6);
         UpdateCurrentView(viewer);
     }
     return true;
@@ -186,12 +173,7 @@ bool key_up(igl::viewer::Viewer& viewer, unsigned char key, int modifiers)
             
         case '1': ChoosingHandleMode=false;
             break;
-        case '2': ViewingMode=PLANARITY; break;
-        case '3': ViewingMode=CONCYCLITY; break;
-        case '4': ViewingMode=REGULARITY; break;
-
     }
-    UpdateCurrentView(viewer);
     return false;
 }
 
@@ -213,23 +195,14 @@ int main(int argc, char *argv[])
     using namespace std;
     using namespace Eigen;
     
-    std::cout<<R"(
-    1 choose handles (with right mouse button)
-    2 Show planarity between [0,1]
-    3 Show concyclity between [0,5]
-    4 Show regularity between [0,1]
-    )";
-    
-    hedra::polygonal_read_OFF(DATA_PATH "/intersection.off", V, D, F);
-    hedra::polygonal_edge_topology(D, F, EV, FE, EF,EFi,FEs,innerEdges);
+    hedra::polygonal_read_OFF(DATA_PATH "/moomoo.off", V, D, F);
     hedra::triangulate_mesh(D, F, T, TF);
-
-    
+    VectorXi DT=VectorXi::Constant(T.rows(),3);
+    hedra::polygonal_edge_topology(DT, T, EV, FE, EF,EFi,FEs,innerEdges);
     
     spans=V.colwise().maxCoeff()-V.colwise().minCoeff();
     
     VOrig=V;
-    ViewingMode=REGULARITY;
     igl::viewer::Viewer viewer;
     viewer.callback_mouse_down = &mouse_down;
     viewer.callback_mouse_move = &mouse_move;
