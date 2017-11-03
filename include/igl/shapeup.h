@@ -99,7 +99,7 @@ namespace igl
     template <
     typename Derivedbc,
     typename DerivedP>
-    IGL_INLINE void shapeup_solve(const Eigen::PlainObjectBase<Derivedbc>& bc,
+    IGL_INLINE bool shapeup_solve(const Eigen::PlainObjectBase<Derivedbc>& bc,
                                    const Eigen::PlainObjectBase<DerivedP>& P0,
                                     const ShapeupData & sudata,
                                     Eigen::PlainObjectBase<DerivedP>& P);
