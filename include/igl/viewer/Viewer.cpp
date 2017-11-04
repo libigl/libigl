@@ -793,6 +793,7 @@ namespace viewer
         break;
 
 #ifdef IGL_VIEWER_WITH_NANOGUI
+	ngui->refresh();
 	screen->drawContents();
 	screen->drawWidgets();
 #endif
