@@ -41,8 +41,10 @@ if ( NOT CGAL_DIR )
   # Look for an installation or build tree.
   #
   find_path(CGAL_DIR CGALConfig.cmake
+    # Look for CGAL in 'external/' folder
+	"${CMAKE_CURRENT_LIST_DIR}/../../external/cgal/cgal/lib/CGAL"
 
-    # Look for an environment variable CGAL_DIR.
+    #[=[ Look for an environment variable CGAL_DIR.
     $ENV{CGAL_DIR}
 
     # Look in places relative to the system executable search path.
@@ -66,6 +68,7 @@ if ( NOT CGAL_DIR )
     [HKEY_CURRENT_USER\\Software\\Kitware\\CMakeSetup\\Settings\\StartPath;WhereBuild8]
     [HKEY_CURRENT_USER\\Software\\Kitware\\CMakeSetup\\Settings\\StartPath;WhereBuild9]
     [HKEY_CURRENT_USER\\Software\\Kitware\\CMakeSetup\\Settings\\StartPath;WhereBuild10]
+	#]=]
 
     # Help the user find it if we cannot.
     DOC "The ${CGAL_DIR_DESCRIPTION}"
