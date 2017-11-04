@@ -140,7 +140,7 @@ if(LIBIGL_WITH_CGAL)
     compile_igl_module("cgal" "copyleft/")
     if(WIN32)
       set(Boost_USE_STATIC_LIBS ON) # Favor static Boost libs on Windows
-      target_include_directories(igl_cgal ${IGL_SCOPE} "${CGAL_INCLUDE_DIRS}/../auxiliary/gmp/include")
+      target_include_directories(igl_cgal ${IGL_SCOPE} "${GMP_INCLUDE_DIR}" "${MPFR_INCLUDE_DIR}")
     endif()
     find_package(Boost 1.48 REQUIRED thread system)
     target_include_directories(igl_cgal ${IGL_SCOPE} ${CGAL_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
