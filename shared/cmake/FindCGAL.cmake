@@ -13,27 +13,27 @@
 # Construct consitent error messages for use below.
 set(CGAL_DIR_DESCRIPTION "directory containing CGALConfig.cmake. This is either the binary directory where CGAL was configured or PREFIX/lib/CGAL for an installation.")
 set(CGAL_DIR_MESSAGE     "CGAL not found.  Set the CGAL_DIR cmake variable or environment variable to the ${CGAL_DIR_DESCRIPTION}")
- 
+
 set(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS true)
- 
+
 if ( NOT CGAL_DIR )
-  
+
   # Get the system search path as a list.
   if(UNIX)
     string(REGEX MATCHALL "[^:]+" CGAL_DIR_SEARCH1 "$ENV{PATH}")
   else()
     string(REGEX REPLACE "\\\\" "/" CGAL_DIR_SEARCH1 "$ENV{PATH}")
   endif()
-  
+
   string(REGEX REPLACE "/;" ";" CGAL_DIR_SEARCH2 "${CGAL_DIR_SEARCH1}")
 
   # Construct a set of paths relative to the system search path.
   set(CGAL_DIR_SEARCH "")
-  
+
   foreach(dir ${CGAL_DIR_SEARCH2})
-  
+
     set(CGAL_DIR_SEARCH ${CGAL_DIR_SEARCH} ${dir}/../lib/CGAL )
-      
+
   endforeach()
 
 
@@ -42,9 +42,9 @@ if ( NOT CGAL_DIR )
   #
   find_path(CGAL_DIR CGALConfig.cmake
     # Look for CGAL in 'external/' folder
-	"${CMAKE_CURRENT_LIST_DIR}/../../external/cgal/cgal/lib/CGAL"
+    "${CMAKE_CURRENT_LIST_DIR}/../../external/cgal/lib/CGAL"
 
-    #[=[ Look for an environment variable CGAL_DIR.
+    # Look for an environment variable CGAL_DIR.
     $ENV{CGAL_DIR}
 
     # Look in places relative to the system executable search path.
@@ -68,16 +68,15 @@ if ( NOT CGAL_DIR )
     [HKEY_CURRENT_USER\\Software\\Kitware\\CMakeSetup\\Settings\\StartPath;WhereBuild8]
     [HKEY_CURRENT_USER\\Software\\Kitware\\CMakeSetup\\Settings\\StartPath;WhereBuild9]
     [HKEY_CURRENT_USER\\Software\\Kitware\\CMakeSetup\\Settings\\StartPath;WhereBuild10]
-	#]=]
 
     # Help the user find it if we cannot.
     DOC "The ${CGAL_DIR_DESCRIPTION}"
   )
-  
+
 endif()
 
 if ( CGAL_DIR )
-  
+
   if ( EXISTS "${CGAL_DIR}/CGALConfig.cmake" )
     include( "${CGAL_DIR}/CGALConfig.cmake" )
     set( CGAL_FOUND TRUE )
