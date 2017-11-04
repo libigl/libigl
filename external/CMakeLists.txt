@@ -25,6 +25,6 @@ ExternalProject_Add(CGAL_Project
 ExternalProject_Add_Step(
   CGAL_Project download_auxiliary
   COMMAND ${CMAKE_COMMAND} -DCGAL_DIR=${CGAL_DIR} -P ${CMAKE_CURRENT_LIST_DIR}/download.cmake
-  DEPENDEES downdload
+  DEPENDEES download
   DEPENDERS configure
 )
