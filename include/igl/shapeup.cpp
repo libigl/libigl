@@ -68,6 +68,13 @@ namespace igl
             DCloseTriplets.push_back(Triplet<double>(i,b(i), 1.0));
         
         sudata.DClose.setFromTriplets(DCloseTriplets.begin(), DCloseTriplets.end());
+
+		//Building smoothness matrix
+		std::vector<Triplet<double> > DSmoothTriplets;
+		for (int i = 0; i < E.rows(); i++) {
+			DSmoothTriplets.push_back(Triplet<double>(i, E(i, 0), -1));
+			DSmoothTriplets.push_back(Triplet<double>(i, E(i, 1), 1));
+		}
         
         igl::cat(1, sudata.DShape, sudata.DClose, sudata.A);
         //is this allowed? repeating A.
@@ -95,7 +102,7 @@ namespace igl
         sudata.W.conservativeResize(SC.sum()+b.size()+E.rows(), SC.sum()+b.size()+E.rows());
         sudata.W.setFromTriplets(WTriplets.begin(), WTriplets.end());
         
-        sudata.At=sudata.A.transpose();
+        sudata.At=sudata.A.transpose();  //for efficieny, as we use the transpose a lot in the least squares
         sudata.Q=sudata.At*sudata.W*sudata.A;
         
         return min_quad_with_fixed_precompute(sudata.Q,VectorXi(),SparseMatrix<double>(),true,sudata.solver_data);
@@ -112,30 +119,31 @@ namespace igl
     {
         using namespace Eigen;
         using namespace std;
-        MatrixXd currP;
+        MatrixXd currP=P0;
         MatrixXd prevP=P0;
         MatrixXd projP;
-        MatrixXd b(sudata.A.rows(),3);
-        b.block(sudata.Q.rows(), 0, sudata.b.rows(),3)=bc;  //this stays constant throughout the iterations
+		MatrixXd rhs(sudata.A.rows(), 3); rhs.setZero();
+        rhs.block(sudata.DShape.rows(), 0, sudata.b.rows(),3)=bc;  //this stays constant throughout the iterations
         
         projP.conservativeResize(sudata.SC.rows(), 3*sudata.SC.maxCoeff());
         for (int i=0;i<sudata.maxIterations;i++){
             
             for (int j=0;j<sudata.SC.rows();j++)
                 sudata.local_projection(currP, sudata.SC,sudata.S,projP);
-            //constructing the projection part of the right hand side
+            //constructing the projection part of the (DShape rows of the) right hand side
             int currRow=0;
             for (int i=0;i<sudata.S.rows();i++){
                 for (int j=0;j<sudata.SC(i);j++){
-                    b.row(currRow++)=projP.block(i, 3*j, 1,3);
+					rhs.row(currRow++)=projP.block(i, 3*j, 1,3);
                 }
             }
    
             //the global solve is independent per dimension
-            Eigen::PlainObjectBase<DerivedP> rhs=-sudata.At*sudata.W*b;
+            Eigen::PlainObjectBase<DerivedP> lsrhs=-sudata.At*sudata.W*rhs;
             min_quad_with_fixed_solve(sudata.solver_data, rhs,Eigen::PlainObjectBase<DerivedP>(),Eigen::PlainObjectBase<DerivedP>(), currP);
 
             double currChange=(currP-prevP).lpNorm<Infinity>();
+			cout << "currChange: " << currChange << endl;
             prevP=currP;
             if (currChange<sudata.pTolerance)
                 break;
