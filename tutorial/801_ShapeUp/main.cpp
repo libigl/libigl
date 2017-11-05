@@ -112,7 +112,7 @@ int main(int argc, char *argv[])
     
   VectorXi b;
   VectorXd w(FQC.rows());
-  MatrixXd bc;
+  MatrixXd bc(0,3);
     
   VectorXi array_of_fours=VectorXi::Constant(FQC.rows(),4);
     cout<<"before pre-computation"<<endl;
