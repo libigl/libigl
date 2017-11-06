@@ -105,7 +105,7 @@ lecture notes links to a cross-platform example application.
     * [710 Scalable Locally Injective Maps](#slim)
     * [711 Subdivision surfaces](#subdivision)
     * [712 Data smoothing](#datasmoothing)
-    * [713 ShapeUp projection] (#shapeup)
+    * [713 ShapeUp projection](#shapeup)
 * [Chapter 8: Outlook for continuing development](#future)
 
 # Chapter 1 [chapter1:introductiontolibigl]
