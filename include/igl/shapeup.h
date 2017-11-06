@@ -55,13 +55,12 @@ namespace igl
   //input:
   //  P   #P by 3             point positions
   //  SC  #Set by 1           cardinalities of sets in S
-  //  S   #Sets by max(SC)    independent sets where the local projection applies. Values beyond column SC(i) in row S(i,:) are "don't care"
-  //  E   #E by 2             the "edges" of a mesh; used for the smoothness energy.
+  //  S   #Sets by max(SC)    independent sets where the local projection applies. Values beyond column SC(i)-1 in row S(i,:) are "don't care"
+  //  E   #E by 2             the "edges" of the set P; used for the smoothness energy.
   //  b   #b by 1             boundary (fixed) vertices from P.
-  //  w   #Set by 1           weight for each set (used in the global step)
-  //  local_projection              function pointer taking (P,SC,S,projP),
-  // where the first three parameters are as defined, and "projP" is the output, as a #S by 3*max(SC) function in format xyzxyzxyz, and where it returns the projected points corresponding to each set in S in the same order.
-    
+  //  wShape,   #Set by 1
+  //  wSmooth   #b by 1       weights for constraints from S and positional constraints (used in the global step)
+
   // Output:
   //  sudata struct ShapeupData     the data necessary to solve the system in shapeup_solve
 
@@ -85,11 +84,15 @@ namespace igl
     
   //Input:
   //bc                #b by 3 fixed point values corresonding to "b" in sudata
+  //local_projection  function pointer taking (P,SC,S,projP),
+  // where the first three parameters are as defined, and "projP" is the output, as a #S by 3*max(SC) function in format xyzxyzxyz, and where it returns the projected points corresponding to each set in S in the same order.
   //NOTE: the input values in P0 don't need to correspond to prescribed values in bc; the iterations will project them automatically (by design).
   //P0                #P by 3 initial solution (point positions)
+  //sudata            the ShapeUpData structure computed in shapeup_precomputation()
+  //quietIterations   flagging if to output iteration information.
 
   //Output:
-  //P                 the solution to the problem, corresponding to P0.
+  //P                 the solution to the problem, indices corresponding to P0.
   template <
   typename DerivedP,
   typename DerivedSC,
