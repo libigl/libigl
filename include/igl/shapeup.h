@@ -75,7 +75,8 @@ namespace igl
                                          const Eigen::PlainObjectBase<DerivedS>& S,
                                          const Eigen::PlainObjectBase<DerivedS>& E,
                                          const Eigen::PlainObjectBase<DerivedSC>& b,
-                                         const Eigen::PlainObjectBase<Derivedw>& w,
+                                         const Eigen::PlainObjectBase<Derivedw>& wShape,
+                                         const Eigen::PlainObjectBase<Derivedw>& wSmooth,
                                          ShapeupData & sudata);
     
     
@@ -96,8 +97,10 @@ namespace igl
   IGL_INLINE bool shapeup_solve(const Eigen::PlainObjectBase<DerivedP>& bc,
                                 const std::function<bool(const Eigen::PlainObjectBase<DerivedP>&, const Eigen::PlainObjectBase<DerivedSC>&, const Eigen::PlainObjectBase<DerivedS>&,  Eigen::PlainObjectBase<DerivedP>&)>& local_projection,
                                 const Eigen::PlainObjectBase<DerivedP>& P0,
-                                const bool quiet,
+                                const ShapeupData & sudata,
+                                const bool quietIterations,
                                 Eigen::PlainObjectBase<DerivedP>& P);
+  
 }
 
 #ifndef IGL_STATIC_LIBRARY

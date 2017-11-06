@@ -128,15 +128,17 @@ int main(int argc, char *argv[])
   
   VectorXi b(1); b(0)=0;  //setting the first vertex to be the same.
   
-  VectorXd w=VectorXd::Constant(FQC.rows(),1.0);
+  VectorXd wShape=VectorXd::Constant(FQC.rows(),1.0);
+  VectorXd wSmooth=VectorXd::Constant(E.rows(),1.0);
   MatrixXd bc(1,3); bc<<VQC.row(0);
   
   VectorXi array_of_fours=VectorXi::Constant(FQC.rows(),4);
   std::function<bool(const Eigen::PlainObjectBase<MatrixXd>&, const Eigen::PlainObjectBase<VectorXi>&, const Eigen::PlainObjectBase<MatrixXi>&, Eigen::PlainObjectBase<MatrixXd>&)> localFunction(igl::shapeup_regular_face_projection);
   
   su_data.maxIterations=200;
-  shapeup_precomputation(VQC, array_of_fours,FQC,E,b,w,su_data);
+  shapeup_precomputation(VQC, array_of_fours,FQC,E,b,wShape, wSmooth,su_data);
   shapeup_solve(bc,localFunction, VQC,su_data, false,VQCregular);
+  
 
   // Convert the planarized mesh to triangles
   igl::slice( VQCregular, FQC.col(0).eval(), 1, PQC0regular);
