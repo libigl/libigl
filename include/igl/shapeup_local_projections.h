@@ -26,6 +26,8 @@ namespace igl
   //the projection assumes that the sets are vertices of polygons in order
   IGL_INLINE bool shapeup_regular_face_projection(const Eigen::PlainObjectBase<Eigen::MatrixXd>& P, const Eigen::PlainObjectBase<Eigen::VectorXi>& SC, const Eigen::PlainObjectBase<Eigen::MatrixXi>& S,  Eigen::PlainObjectBase<Eigen::MatrixXd>& projP);
   
+  typedef std::function<bool(const Eigen::PlainObjectBase<Eigen::MatrixXd>&, const Eigen::PlainObjectBase<Eigen::VectorXi>&, const Eigen::PlainObjectBase<Eigen::MatrixXi>&, Eigen::PlainObjectBase<Eigen::MatrixXd>&)> shapeup_projection_function;
+  
 }
 
 #ifndef IGL_STATIC_LIBRARY

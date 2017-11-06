@@ -64,7 +64,7 @@ bool key_down(igl::viewer::Viewer& viewer, unsigned char key, int modifier)
     VectorXd angleRegularity(FQC.rows());
     quadAngleRegularity( VQC, FQC, angleRegularity);
     MatrixXd Ct;
-    igl::jet(angleRegularity, 0.0, 0.1, Ct);
+    igl::jet(angleRegularity, 0.0, 0.05, Ct);
     MatrixXd C(FQCtri.rows(),3);
     C << Ct, Ct;
     viewer.data.set_colors(C);
@@ -87,7 +87,7 @@ bool key_down(igl::viewer::Viewer& viewer, unsigned char key, int modifier)
     VectorXd angleRegularity(FQC.rows());
     quadAngleRegularity( VQCregular, FQC, angleRegularity);
     MatrixXd Ct;
-    igl::jet(angleRegularity, 0, 0.1, Ct);
+    igl::jet(angleRegularity, 0, 0.05, Ct);
     MatrixXd C(FQCtri.rows(),3);
     C << Ct, Ct;
     viewer.data.set_colors(C);
@@ -133,7 +133,7 @@ int main(int argc, char *argv[])
   MatrixXd bc(1,3); bc<<VQC.row(0);
   
   VectorXi array_of_fours=VectorXi::Constant(FQC.rows(),4);
-  std::function<bool(const Eigen::PlainObjectBase<MatrixXd>&, const Eigen::PlainObjectBase<VectorXi>&, const Eigen::PlainObjectBase<MatrixXi>&, Eigen::PlainObjectBase<MatrixXd>&)> localFunction(igl::shapeup_regular_face_projection);
+  igl::shapeup_projection_function localFunction(igl::shapeup_regular_face_projection);
   
   su_data.maxIterations=200;
   shapeup_precomputation(VQC, array_of_fours,FQC,E,b,wShape, wSmooth,su_data);
