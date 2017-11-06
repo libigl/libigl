@@ -8,6 +8,7 @@
 #include <igl/readOFF.h>
 #include <igl/slice.h>
 #include <igl/viewer/Viewer.h>
+#include <igl/PI.h>
 #include <vector>
 #include <cstdlib>
 
@@ -31,6 +32,20 @@ igl::ShapeupData su_data;
 // Scale for visualizing the fields
 double global_scale; //TODO: not used
 
+void quadAngleRegularity(const Eigen::MatrixXd& V, const Eigen::MatrixXi& Q, Eigen::VectorXd& angleRegularity)
+{
+  angleRegularity.conservativeResize(Q.rows());
+  angleRegularity.setZero();
+  for (int i=0;i<Q.rows();i++){
+    for (int j=0;j<4;j++){
+      Eigen::RowVectorXd v21=(V.row(Q(i,j))-V.row(Q(i,(j+1)%4))).normalized();
+      Eigen::RowVectorXd v23=(V.row(Q(i,(j+2)%4))-V.row(Q(i,(j+1)%4))).normalized();
+  
+      angleRegularity(i)+=(abs(acos(v21.dot(v23))-igl::PI/2.0)/(igl::PI/2.0))/4.0;
+    }
+  }
+}
+
 
 bool key_down(igl::viewer::Viewer& viewer, unsigned char key, int modifier)
 {
@@ -38,17 +53,18 @@ bool key_down(igl::viewer::Viewer& viewer, unsigned char key, int modifier)
   using namespace Eigen;
 
   // Plot the original quad mesh
+  
   if (key == '1')
   {
-      cout<<"before setting mesh 1"<<endl;
+    viewer.data.clear();
     // Draw the triangulated quad mesh
     viewer.data.set_mesh(VQC, FQCtri);
 
-    // Assign a color to each quad that corresponds to its planarity
-    VectorXd planarity;
-    igl::quad_planarity( VQC, FQC, planarity);
+    // Assign a color to each quad that corresponds to the average deviation of each angle from pi/2
+    VectorXd angleRegularity(FQC.rows());
+    quadAngleRegularity( VQC, FQC, angleRegularity);
     MatrixXd Ct;
-    igl::jet(planarity, 0, 0.01, Ct);
+    igl::jet(angleRegularity, 0.0, 0.1, Ct);
     MatrixXd C(FQCtri.rows(),3);
     C << Ct, Ct;
     viewer.data.set_colors(C);
@@ -63,15 +79,15 @@ bool key_down(igl::viewer::Viewer& viewer, unsigned char key, int modifier)
   // Plot the planarized quad mesh
   if (key == '2')
   {
+    viewer.data.clear();
     // Draw the triangulated quad mesh
-      cout<<"before setting mesh 2"<<endl;
     viewer.data.set_mesh(VQCregular, FQCtri);
 
     // Assign a color to each quad that corresponds to its planarity
-    VectorXd planarity;
-    igl::quad_planarity( VQCregular, FQC, planarity);
+    VectorXd angleRegularity(FQC.rows());
+    quadAngleRegularity( VQCregular, FQC, angleRegularity);
     MatrixXd Ct;
-    igl::jet(planarity, 0, 0.01, Ct);
+    igl::jet(angleRegularity, 0, 0.1, Ct);
     MatrixXd C(FQCtri.rows(),3);
     C << Ct, Ct;
     viewer.data.set_colors(C);
@@ -105,24 +121,22 @@ int main(int argc, char *argv[])
 
   // Create a planar version with ShapeUp
   //igl::planarize_quad_mesh(VQC, FQC, 100, 0.005, VQCregular);
-    
+  
   E.resize(FQC.size(),2);
   E.col(0)<<FQC.col(0),FQC.col(1),FQC.col(2),FQC.col(3);
   E.col(1)<<FQC.col(1),FQC.col(2),FQC.col(3),FQC.col(0);
-    
-  VectorXi b;
-  VectorXd w(FQC.rows());
-  MatrixXd bc(0,3);
-    
+  
+  VectorXi b(1); b(0)=0;  //setting the first vertex to be the same.
+  
+  VectorXd w=VectorXd::Constant(FQC.rows(),1.0);
+  MatrixXd bc(1,3); bc<<VQC.row(0);
+  
   VectorXi array_of_fours=VectorXi::Constant(FQC.rows(),4);
-    cout<<"before pre-computation"<<endl;
-    std::function<bool(const Eigen::PlainObjectBase<MatrixXd>&, const Eigen::PlainObjectBase<VectorXi>&, const Eigen::PlainObjectBase<MatrixXi>&, Eigen::PlainObjectBase<MatrixXd>&)> localFunction(igl::shapeup_identity_projection);
-    
-    shapeup_precomputation(VQC, array_of_fours,FQC,E,b,w, localFunction,su_data);
-    cout<<"after pre-computation"<<endl;
-    shapeup_solve(bc,VQC,su_data,VQCregular);
-    cout<<"after computation"<<endl;
-    
+  std::function<bool(const Eigen::PlainObjectBase<MatrixXd>&, const Eigen::PlainObjectBase<VectorXi>&, const Eigen::PlainObjectBase<MatrixXi>&, Eigen::PlainObjectBase<MatrixXd>&)> localFunction(igl::shapeup_regular_face_projection);
+  
+  su_data.maxIterations=200;
+  shapeup_precomputation(VQC, array_of_fours,FQC,E,b,w,su_data);
+  shapeup_solve(bc,localFunction, VQC,su_data, false,VQCregular);
 
   // Convert the planarized mesh to triangles
   igl::slice( VQCregular, FQC.col(0).eval(), 1, PQC0regular);
