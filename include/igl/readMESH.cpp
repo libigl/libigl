@@ -6,6 +6,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "readMESH.h"
+#include <iostream>
 
 template <typename Scalar, typename Index>
 IGL_INLINE bool igl::readMESH(
@@ -400,6 +401,7 @@ IGL_INLINE bool igl::readMESH(
   int tri[3];
   for(int i = 0;i<number_of_triangles;i++)
   {
+    std::cout<<i<<std::endl;
     if(4 != fscanf(mesh_file," %d %d %d %d",&tri[0],&tri[1],&tri[2],&extra))
     {
       printf("Error: expecting triangle indices...\n");
