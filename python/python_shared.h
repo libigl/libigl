@@ -13,10 +13,10 @@
 #include <pybind11/numpy.h>
 #include <pybind11/stl.h>
 #include <pybind11/functional.h>
-
-#include "py_doc.h"
-
 #include <Eigen/Dense>
+#include "py_doc.h"
+#include "modules/py_typedefs.h"
+
 
 template<typename Scalar>
 void assert_is_VectorX(const std::string name, const Eigen::PlainObjectBase<Scalar>& v)
