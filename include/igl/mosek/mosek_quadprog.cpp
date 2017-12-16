@@ -28,6 +28,9 @@ igl::mosek::MosekData::MosekData()
   // 1e-4 seems safe
   // 1e-8 MOSEK DEFAULT SOLUTION
   douparam[MSK_DPAR_INTPNT_TOL_REL_GAP]=1e-8;
+#if MSK_VERSION_MAJOR >= 8
+  douparam[MSK_DPAR_INTPNT_QO_TOL_REL_GAP]=1e-12;
+#endif
   // Force using multiple threads, not sure if MOSEK is properly destorying
   //extra threads...
 #if MSK_VERSION_MAJOR >= 7
