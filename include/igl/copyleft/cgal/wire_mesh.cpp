@@ -18,6 +18,7 @@ IGL_INLINE void igl::copyleft::cgal::wire_mesh(
   const Eigen::MatrixBase<DerivedWE> & WE,
   const double th,
   const int poly_size,
+  const bool solid,
   Eigen::PlainObjectBase<DerivedV> & V,
   Eigen::PlainObjectBase<DerivedF> & F,
   Eigen::PlainObjectBase<DerivedJ> & J)
@@ -166,12 +167,36 @@ IGL_INLINE void igl::copyleft::cgal::wire_mesh(
   }
 
   list_to_matrix(vF,F);
-  // Self-union to clean up 
-  igl::copyleft::cgal::mesh_boolean(
-    Eigen::MatrixXd(V),Eigen::MatrixXi(F),Eigen::MatrixXd(),Eigen::MatrixXi(),
-    "union",
-    V,F,J);
-  for(int j=0;j<J.size();j++) J(j) = vJ[J(j)];
+  if(solid)
+  {
+    // Self-union to clean up 
+    igl::copyleft::cgal::mesh_boolean(
+      Eigen::MatrixXd(V),Eigen::MatrixXi(F),Eigen::MatrixXd(),Eigen::MatrixXi(),
+      "union",
+      V,F,J);
+    for(int j=0;j<J.size();j++) J(j) = vJ[J(j)];
+  }else
+  {
+    list_to_matrix(vJ,J);
+  }
+}
+
+template <
+  typename DerivedWV,
+  typename DerivedWE,
+  typename DerivedV,
+  typename DerivedF,
+  typename DerivedJ>
+IGL_INLINE void igl::copyleft::cgal::wire_mesh(
+  const Eigen::MatrixBase<DerivedWV> & WV,
+  const Eigen::MatrixBase<DerivedWE> & WE,
+  const double th,
+  const int poly_size,
+  Eigen::PlainObjectBase<DerivedV> & V,
+  Eigen::PlainObjectBase<DerivedF> & F,
+  Eigen::PlainObjectBase<DerivedJ> & J)
+{
+  return wire_mesh(WV,WE,th,poly_size,true,V,F,J);
 }
 
 #ifdef IGL_STATIC_LIBRARY
