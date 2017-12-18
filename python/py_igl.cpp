@@ -8,7 +8,7 @@
 #include <Eigen/Dense>
 
 #include "python_shared.h"
-#include "modules/py_typedefs.h"
+
 
 #include <igl/AABB.h>
 #include <igl/ARAPEnergyType.h>
