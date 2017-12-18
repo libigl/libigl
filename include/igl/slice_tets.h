@@ -23,9 +23,6 @@ namespace igl
   //   V  #V by 3 list of tet mesh vertices
   //   T  #T by 4 list of tet indices into V 
   //   plane  list of 4 coefficients in the plane equation: [x y z 1]'*plane = 0
-  //   Optional:
-  //     'Manifold' followed by whether to stitch together triangles into a
-  //       manifold mesh {true}: results in more compact U but slightly slower.
   // Outputs:
   //   U  #U by 3 list of triangle mesh vertices along slice
   //   G  #G by 3 list of triangles indices into U
