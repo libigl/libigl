@@ -53,6 +53,24 @@ namespace igl
     typename DerivedS,
     typename DerivedSV,
     typename DerivedSF,
+    typename DerivedJ>
+  IGL_INLINE void slice_tets(
+    const Eigen::MatrixBase<DerivedV>& V,
+    const Eigen::MatrixBase<DerivedT>& T,
+    const Eigen::MatrixBase<DerivedS> & S,
+    Eigen::PlainObjectBase<DerivedSV>& SV,
+    Eigen::PlainObjectBase<DerivedSF>& SF,
+    Eigen::PlainObjectBase<DerivedJ>& J);
+  // Outputs:
+  //   sE  #SV by 2 list of sorted edge indices into V
+  //   lambda  #SV by 1 list of parameters along each edge in sE so that:
+  //     SV(i,:) = V(sE(i,1),:)*lambda(i) + V(sE(i,2),:)*(1-lambda(i));
+  template <
+    typename DerivedV, 
+    typename DerivedT, 
+    typename DerivedS,
+    typename DerivedSV,
+    typename DerivedSF,
     typename DerivedJ,
     typename DerivedsE,
     typename Derivedlambda
