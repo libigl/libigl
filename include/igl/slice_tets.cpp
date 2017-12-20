@@ -54,6 +54,26 @@ template <
   typename DerivedS,
   typename DerivedSV,
   typename DerivedSF,
+  typename DerivedJ>
+IGL_INLINE void igl::slice_tets(
+  const Eigen::MatrixBase<DerivedV>& V,
+  const Eigen::MatrixBase<DerivedT>& T,
+  const Eigen::MatrixBase<DerivedS> & S,
+  Eigen::PlainObjectBase<DerivedSV>& SV,
+  Eigen::PlainObjectBase<DerivedSF>& SF,
+  Eigen::PlainObjectBase<DerivedJ>& J)
+{
+  Eigen::MatrixXi sE;
+  Eigen::Matrix<typename DerivedSV::Scalar,Eigen::Dynamic,1> lambda;
+  igl::slice_tets(V,T,S,SV,SF,J,sE,lambda);
+}
+
+template <
+  typename DerivedV, 
+  typename DerivedT, 
+  typename DerivedS,
+  typename DerivedSV,
+  typename DerivedSF,
   typename DerivedJ,
   typename DerivedsE,
   typename Derivedlambda>
@@ -92,7 +112,7 @@ IGL_INLINE void igl::slice_tets(
   // number of tets
   const size_t m = T.rows();
 
-  typedef typename DerivedV::Scalar Scalar;
+  typedef typename DerivedS::Scalar Scalar;
   typedef typename DerivedT::Scalar Index;
   typedef Matrix<Scalar,Dynamic,1> VectorXS;
   typedef Matrix<Scalar,Dynamic,4> MatrixX4S;
@@ -195,6 +215,12 @@ IGL_INLINE void igl::slice_tets(
   {
     // Number of tets
     const size_t m = T.rows();
+    if(m == 0)
+    {
+      U.resize(0,2);
+      SF.resize(0,3);
+      return;
+    }
     MatrixX4S sIT;
     MatrixX4I sJ;
     sort(IT,2,true,sIT,sJ);
@@ -235,6 +261,12 @@ IGL_INLINE void igl::slice_tets(
   {
     // Number of tets
     const size_t m = T.rows();
+    if(m == 0)
+    {
+      U.resize(0,2);
+      SF.resize(0,3);
+      return;
+    }
     MatrixX4S sIT;
     MatrixX4I sJ;
     sort(IT,2,true,sIT,sJ);
@@ -273,6 +305,7 @@ IGL_INLINE void igl::slice_tets(
   one_below(T13, IT13,U13,SF13);
   one_below(T31,-IT31,U31,SF31);
   two_below(T22, IT22,U22,SF22);
+  // https://forum.kde.org/viewtopic.php?f=74&t=107974
   const MatrixX2I U = 
     (MatrixX2I(U13.rows()+ U31.rows()+ U22.rows(),2)<<U13,U31,U22).finished();
   MatrixX2I sU;
@@ -299,7 +332,8 @@ IGL_INLINE void igl::slice_tets(
   SV.resize(sE.rows(),V.cols());
   for(int e = 0;e<sE.rows();e++)
   {
-    SV.row(e) = V.row(sE(e,0))*lambda(e) + V.row(sE(e,1))*(1.0-lambda(e));
+    SV.row(e) = V.row(sE(e,0)).template cast<Scalar>()*lambda(e) + 
+                V.row(sE(e,1)).template cast<Scalar>()*(1.0-lambda(e));
   }
   SF.resize( SF13.rows()+SF31.rows()+SF22.rows(),3);
   SF<<
