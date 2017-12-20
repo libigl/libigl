@@ -10,6 +10,7 @@
 #include "assign_scalar.h"
 #include "projected_cdt.h"
 #include "../../get_seconds.h"
+#include "../../parallel_for.h"
 #include "../../LinSpaced.h"
 #include "../../unique_rows.h"
 
@@ -375,18 +376,21 @@ IGL_INLINE void igl::copyleft::cgal::remesh_intersections(
     std::vector<std::vector<Point_3> > cdt_vertices(num_cdts);
     std::vector<std::vector<std::vector<Index> > > cdt_faces(num_cdts);
 
-    const auto cdt = [&](const size_t first, const size_t last) 
+    //// Not clear whether this is safe because of reference counting on Point_3
+    //// objects...
+    //// 
+    //// I tried it and got random segfaults (via MATLAB). Seems this is not
+    //// safe.
+    //igl::parallel_for(num_cdts,[&](int i)
+    for (size_t i=0; i<num_cdts; i++) 
     {
-      for (size_t i=first; i<last; i++) 
-      {
-        auto& vertices = cdt_vertices[i];
-        auto& faces = cdt_faces[i];
-        const auto& P = cdt_inputs[i].first;
-        const auto& involved_faces = cdt_inputs[i].second;
-        delaunay_triangulation(P, involved_faces, vertices, faces);
-      }
-    };
-    cdt(0, num_cdts);
+      auto& vertices = cdt_vertices[i];
+      auto& faces = cdt_faces[i];
+      const auto& P = cdt_inputs[i].first;
+      const auto& involved_faces = cdt_inputs[i].second;
+      delaunay_triangulation(P, involved_faces, vertices, faces);
+    }
+    //,1000);
 #ifdef REMESH_INTERSECTIONS_TIMING
     log_time("cdt");
 #endif
