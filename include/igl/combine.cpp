@@ -55,3 +55,9 @@ IGL_INLINE void igl::combine(
     assert(kf == F.rows());
   }
 }
+
+#ifdef IGL_STATIC_LIBRARY
+// Explicit template instantiations
+template void igl::combine<Eigen::Matrix<double, -1, 3, 1, -1, 3>, Eigen::Matrix<int, -1, 3, 1, -1, 3>, Eigen::Matrix<double, -1, 3, 1, -1, 3>, Eigen::Matrix<int, -1, 3, 1, -1, 3> >(std::vector<Eigen::Matrix<double, -1, 3, 1, -1, 3>, std::allocator<Eigen::Matrix<double, -1, 3, 1, -1, 3> > > const&, std::vector<Eigen::Matrix<int, -1, 3, 1, -1, 3>, std::allocator<Eigen::Matrix<int, -1, 3, 1, -1, 3> > > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 1, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 1, -1, 3> >&);
+#endif
+
