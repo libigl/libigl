@@ -7,19 +7,26 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "combine.h"
 #include <cassert>
+
 template <
   typename DerivedVV, 
   typename DerivedFF, 
   typename DerivedV, 
-  typename DerivedF>
+  typename DerivedF,
+  typename DerivedVsizes,
+  typename DerivedFsizes>
 IGL_INLINE void igl::combine(
   const std::vector<DerivedVV> & VV,
   const std::vector<DerivedFF> & FF,
   Eigen::PlainObjectBase<DerivedV> & V,
-  Eigen::PlainObjectBase<DerivedF> & F)
+  Eigen::PlainObjectBase<DerivedF> & F,
+  Eigen::PlainObjectBase<DerivedVsizes> & Vsizes,
+  Eigen::PlainObjectBase<DerivedFsizes> & Fsizes)
 {
   assert(VV.size() == FF.size() && 
     "Lists of verex lists and face lists should be same size");
+  Vsizes.resize(VV.size());
+  Fsizes.resize(FF.size());
   // Dimension of vertex positions
   const int dim = VV.size() > 0 ? VV[0].cols() : 0;
   // Simplex/element size
@@ -30,8 +37,10 @@ IGL_INLINE void igl::combine(
   {
     const auto & Vi = VV[i];
     const auto & Fi = FF[i];
+    Vsizes(i) = Vi.rows();
     n+=Vi.rows();
     assert(dim == Vi.cols() && "All vertex lists should have same #columns");
+    Fsizes(i) = Fi.rows();
     m+=Fi.rows();
     assert(ss == Fi.cols() && "All face lists should have same #columns");
   }
@@ -56,8 +65,23 @@ IGL_INLINE void igl::combine(
   }
 }
 
+template <
+  typename DerivedVV, 
+  typename DerivedFF, 
+  typename DerivedV, 
+  typename DerivedF>
+IGL_INLINE void igl::combine(
+  const std::vector<DerivedVV> & VV,
+  const std::vector<DerivedFF> & FF,
+  Eigen::PlainObjectBase<DerivedV> & V,
+  Eigen::PlainObjectBase<DerivedF> & F)
+{
+  Eigen::VectorXi Vsizes,Fsizes;
+  return igl::combine(VV,FF,V,F,Vsizes,Fsizes);
+}
+
 #ifdef IGL_STATIC_LIBRARY
-// Explicit template instantiations
+// Explicit template instantiation
+template void igl::combine<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<unsigned long, -1, 1, 0, -1, 1>, Eigen::Matrix<unsigned long, -1, 1, 0, -1, 1> >(std::vector<Eigen::Matrix<double, -1, -1, 0, -1, -1>, std::allocator<Eigen::Matrix<double, -1, -1, 0, -1, -1> > > const&, std::vector<Eigen::Matrix<int, -1, -1, 0, -1, -1>, std::allocator<Eigen::Matrix<int, -1, -1, 0, -1, -1> > > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<unsigned long, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<unsigned long, -1, 1, 0, -1, 1> >&);
 template void igl::combine<Eigen::Matrix<double, -1, 3, 1, -1, 3>, Eigen::Matrix<int, -1, 3, 1, -1, 3>, Eigen::Matrix<double, -1, 3, 1, -1, 3>, Eigen::Matrix<int, -1, 3, 1, -1, 3> >(std::vector<Eigen::Matrix<double, -1, 3, 1, -1, 3>, std::allocator<Eigen::Matrix<double, -1, 3, 1, -1, 3> > > const&, std::vector<Eigen::Matrix<int, -1, 3, 1, -1, 3>, std::allocator<Eigen::Matrix<int, -1, 3, 1, -1, 3> > > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 1, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 1, -1, 3> >&);
 #endif
-

@@ -7,6 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "edges.h"
 #include "adjacency_matrix.h"
+#include <iostream>
 
 template <typename DerivedF, typename DerivedE>
 IGL_INLINE void igl::edges(

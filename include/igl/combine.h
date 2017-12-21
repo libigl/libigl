@@ -26,10 +26,27 @@ namespace igl
   //     vertex positions
   //   F   FF[0].rows()+...+FF[k-1].rows() by FF[0].cols() list of mesh faces
   //     indices into V
+  //   Vsizes  k list so that Vsizes(i) is the #vertices in the ith input
+  //   Fsizes  k list so that Fsizes(i) is the #faces in the ith input
   // Example:
   //   // Suppose you have mesh A (VA,FA) and mesh B (VB,FB)
   //   igl::combine<Eigen::MatrixXd,Eigen::MatrixXi>({VA,VB},{FA,FB},V,F);
   //
+  //
+  template <
+    typename DerivedVV, 
+    typename DerivedFF, 
+    typename DerivedV, 
+    typename DerivedF,
+    typename DerivedVsizes,
+    typename DerivedFsizes>
+  IGL_INLINE void combine(
+    const std::vector<DerivedVV> & VV,
+    const std::vector<DerivedFF> & FF,
+    Eigen::PlainObjectBase<DerivedV> & V,
+    Eigen::PlainObjectBase<DerivedF> & F,
+    Eigen::PlainObjectBase<DerivedVsizes> & Vsizes,
+    Eigen::PlainObjectBase<DerivedFsizes> & Fsizes);
   template <
     typename DerivedVV, 
     typename DerivedFF, 
