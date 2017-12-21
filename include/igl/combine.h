@@ -14,8 +14,8 @@
 
 namespace igl
 {
-  // Combine k meshes into a single >=k connected component mesh with a single
-  // vertex list and face list. Similar to Maya's Combine operation.
+  // Concatenate k meshes into a single >=k connected component mesh with a
+  // single vertex list and face list. Similar to Maya's Combine operation. 
   //
   // Inputs:
   //   VV  k-long list of lists of mesh vertex positions
