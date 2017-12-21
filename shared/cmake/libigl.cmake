@@ -59,6 +59,9 @@ target_compile_features(igl_common INTERFACE ${CXX11_FEATURES})
 if(MSVC)
   # Enable parallel compilation for Visual Studio
   target_compile_options(igl_common INTERFACE /MP /bigobj)
+  if(LIBIGL_WITH_CGAL)
+    target_compile_options(igl_common INTERFACE "/MD$<$<CONFIG:Debug>:d>")
+  endif()
 endif()
 
 if(BUILD_SHARED_LIBS)
@@ -73,6 +76,10 @@ if(TARGET Eigen3::Eigen)
 else()
   target_include_directories(igl_common SYSTEM INTERFACE ${NANOGUI_DIR}/ext/eigen)
 endif()
+
+# C++11 Thread library
+find_package(Threads REQUIRED)
+target_link_libraries(igl_common INTERFACE ${CMAKE_THREAD_LIBS_INIT})
 
 ################################################################################
 
@@ -94,7 +101,7 @@ function(compile_igl_module module_dir)
 
   target_link_libraries(igl_${module_name} ${IGL_SCOPE} igl_common)
   if(NOT module_name STREQUAL "core")
-	  target_link_libraries(igl_${module_name} ${IGL_SCOPE} igl_core)
+    target_link_libraries(igl_${module_name} ${IGL_SCOPE} igl_core)
   endif()
 
   # Alias target because it looks nicer
@@ -132,13 +139,36 @@ if(LIBIGL_WITH_CGAL)
   find_package(CGAL COMPONENTS Core)
   if(CGAL_FOUND)
     compile_igl_module("cgal")
+    if(WIN32)
+      set(Boost_USE_STATIC_LIBS ON) # Favor static Boost libs on Windows
+    endif()
+    target_include_directories(igl_cgal ${IGL_SCOPE} "${GMP_INCLUDE_DIR}" "${MPFR_INCLUDE_DIR}")
     find_package(Boost 1.48 REQUIRED thread system)
-    target_include_directories(igl_cgal ${IGL_SCOPE} ${CGAL_INCLUDE_DIRS})
+    target_include_directories(igl_cgal ${IGL_SCOPE} ${CGAL_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
     target_link_libraries(igl_cgal ${IGL_SCOPE} CGAL::CGAL CGAL::CGAL_Core ${Boost_LIBRARIES})
   else()
     set(LIBIGL_WITH_CGAL OFF CACHE BOOL "" FORCE)
   endif()
 endif()
+
+# Helper function for `igl_copy_cgal_dll()`
+function(igl_copy_imported_dll src_target dst_target)
+  get_target_property(configurations ${src_target} IMPORTED_CONFIGURATIONS)
+  foreach(config ${configurations})
+    get_target_property(location ${src_target} IMPORTED_LOCATION_${config})
+    if(EXISTS "${location}" AND location MATCHES "^.*\\.dll$")
+      add_custom_command(TARGET ${dst_target} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different "${location}" $<TARGET_FILE_DIR:${dst_target}>)
+    endif()
+  endforeach()
+endfunction()
+
+# Convenient functions to copy CGAL dlls into a target (executable) destination folder (for Windows)
+function(igl_copy_cgal_dll target)
+  if(WIN32 AND LIBIGL_WITH_CGAL)
+    igl_copy_imported_dll(CGAL::CGAL ${target})
+    igl_copy_imported_dll(CGAL::CGAL_Core ${target})
+  endif()
+endfunction()
 
 ################################################################################
 # Compile CoMISo
@@ -287,7 +317,7 @@ if(LIBIGL_WITH_OPENGL)
       set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL " " FORCE)
       set(GLFW_BUILD_TESTS OFF CACHE BOOL " " FORCE)
       set(GLFW_BUILD_DOCS OFF CACHE BOOL " " FORCE)
-      set(GLFW_BUILD_INSTALL OFF CACHE BOOL " " FORCE)
+      set(GLFW_INSTALL OFF CACHE BOOL " " FORCE)
       add_subdirectory(${NANOGUI_DIR}/ext/glfw glfw)
     endif()
     target_include_directories(glfw ${IGL_SCOPE} ${NANOGUI_DIR}/ext/glfw/include)
@@ -297,7 +327,7 @@ if(LIBIGL_WITH_OPENGL)
   # Viewer module
   if(LIBIGL_WITH_VIEWER)
     compile_igl_module("viewer")
-    target_link_libraries(igl_viewer ${IGL_SCOPE} igl_core glfw glew ${OPENGL_gl_LIBRARY})
+    target_link_libraries(igl_viewer ${IGL_SCOPE} glfw glew ${OPENGL_gl_LIBRARY})
     target_include_directories(igl_viewer SYSTEM ${IGL_SCOPE} ${OPENGL_INCLUDE_DIR})
     if(TARGET nanogui)
       target_link_libraries(igl_viewer ${IGL_SCOPE} nanogui)

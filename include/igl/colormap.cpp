@@ -1378,7 +1378,7 @@ IGL_INLINE void igl::colormap(
   Eigen::PlainObjectBase<DerivedC> & C)
 {
   const double min_z = normalize ? Z.minCoeff() : 0;
-  const double max_z = normalize ? Z.maxCoeff() : -1;
+  const double max_z = normalize ? Z.maxCoeff() : 1;
   return colormap(cm, Z, min_z, max_z, C);
 }
 

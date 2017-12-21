@@ -32,8 +32,16 @@ void update_visualization(igl::viewer::Viewer & viewer)
   MatrixXd V_vis;
   MatrixXi F_vis;
   VectorXi J;
-  SparseMatrix<double> bary;
-  igl::slice_tets(V,T,plane,V_vis,F_vis,J,bary);
+  {
+    SparseMatrix<double> bary;
+    // Value of plane's implicit function at all vertices
+    const VectorXd IV = 
+      (V.col(0)*plane(0) + 
+        V.col(1)*plane(1) + 
+        V.col(2)*plane(2)).array()
+      + plane(3);
+    igl::slice_tets(V,T,IV,V_vis,F_vis,J,bary);
+  }
   VectorXd W_vis;
   igl::slice(W,J,W_vis);
   MatrixXd C_vis;
