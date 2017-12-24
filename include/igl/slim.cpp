@@ -51,7 +51,7 @@ namespace igl
                                                     const Eigen::MatrixXd &F1, const Eigen::MatrixXd &F2,
                                                     Eigen::SparseMatrix<double> &D1, Eigen::SparseMatrix<double> &D2);
     IGL_INLINE void buildA(igl::SLIMData& s, std::vector<Eigen::Triplet<double> > & IJV);
-    IGL_INLINE void buildRhs(igl::SLIMData& s, const Eigen::SparseMatrix<double> &At);
+    IGL_INLINE void buildRhs(igl::SLIMData& s, const Eigen::SparseMatrix<double> &A);
     IGL_INLINE void add_soft_constraints(igl::SLIMData& s, Eigen::SparseMatrix<double> &L);
     IGL_INLINE double compute_energy(igl::SLIMData& s, Eigen::MatrixXd &V_new);
     IGL_INLINE double compute_soft_const_energy(igl::SLIMData& s,
@@ -527,8 +527,6 @@ namespace igl
 
       t.start();
       #ifdef SLIM_FAST
-      Eigen::SparseMatrix<double> At = s.A.transpose();
-      At.makeCompressed();      
       #else
       Eigen::SparseMatrix<double> At = A.transpose();
       At.makeCompressed();
@@ -538,7 +536,12 @@ namespace igl
       std::cerr << "At: " << t.getElapsedTime() << std::endl;
 
       t.start();
-      Eigen::SparseMatrix<double> id_m(At.rows(), At.rows());
+      #ifdef SLIM_FAST
+      Eigen::SparseMatrix<double> id_m(s.A.cols(), s.A.cols());
+      #else
+      Eigen::SparseMatrix<double> id_m(A.cols(), A.cols());
+      #endif
+
       id_m.setIdentity();
       t.stop();
       std::cerr << "idm: " << t.getElapsedTime() << std::endl;
@@ -578,10 +581,6 @@ namespace igl
       L = s.AtA + s.proximal_p * id_m; //add also a proximal 
       L.makeCompressed();
 
-      // Eigen::SparseMatrix<double> L2 = At * s.WGL_M.asDiagonal() * s.A + s.proximal_p * id_m; 
-      
-      // std::cerr << "Error: ------> " << (L2 - L).norm() << std::endl;
-
       #else
       L = At * s.WGL_M.asDiagonal() * A + s.proximal_p * id_m; //add also a proximal term
       L.makeCompressed();
@@ -591,9 +590,9 @@ namespace igl
 
       t.start();
       #ifdef SLIM_FAST
-      buildRhs(s, At);
+      buildRhs(s, s.A);
       #else
-      buildRhs(s, At);
+      buildRhs(s, A);
       #endif
       t.stop();
       std::cerr << "rhs: " << t.getElapsedTime() << std::endl;
@@ -891,7 +890,7 @@ namespace igl
       }
     }
 
-    IGL_INLINE void buildRhs(igl::SLIMData& s, const Eigen::SparseMatrix<double> &At)
+    IGL_INLINE void buildRhs(igl::SLIMData& s, const Eigen::SparseMatrix<double> &A)
     {
       Eigen::VectorXd f_rhs(s.dim * s.dim * s.f_n);
       f_rhs.setZero();
@@ -938,7 +937,7 @@ namespace igl
         for (int j = 0; j < s.v_n; j++)
           uv_flat(s.v_n * i + j) = s.V_o(j, i);
 
-      s.rhs = (At * s.WGL_M.asDiagonal() * f_rhs + s.proximal_p * uv_flat);
+      s.rhs = (f_rhs.transpose() * s.WGL_M.asDiagonal() * A).transpose() + s.proximal_p * uv_flat;
     }
 
   }
