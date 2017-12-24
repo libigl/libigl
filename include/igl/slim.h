@@ -12,6 +12,13 @@
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 
+
+#define SLIM_FAST
+
+#ifdef SLIM_FAST
+#include <igl/sparse_AtA_fast.h>
+#endif
+
 namespace igl
 {
 
@@ -64,6 +71,13 @@ struct SLIMData
   bool first_solve;
   bool has_pre_calc = false;
   int dim;
+
+  #ifdef SLIM_FAST
+  Eigen::SparseMatrix<double> A;
+  Eigen::VectorXi A_data;
+  Eigen::SparseMatrix<double> AtA;
+  igl::sparse_AtA_fast_data AtA_data;
+  #endif
 };
 
 // Compute necessary information to start using SLIM
