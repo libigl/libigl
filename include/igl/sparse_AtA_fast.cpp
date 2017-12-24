@@ -42,8 +42,8 @@ IGL_INLINE void igl::sparse_AtA_fast_precompute(
       assert(value_index >= 0);
       assert(value_index < A.nonZeros());
 
-      Col_RowPtr.at(col).push_back(row);
-      Col_IndexPtr.at(col).push_back(value_index);
+      Col_RowPtr[col].push_back(row);
+      Col_IndexPtr[col].push_back(value_index);
     }
   }
 
@@ -58,6 +58,11 @@ IGL_INLINE void igl::sparse_AtA_fast_precompute(
   if (data.W.size() == 0)
     data.W = Eigen::VectorXd::Ones(A.rows());
   assert(data.W.size() == A.rows());
+
+  data.I_outer.reserve(AtA.outerSize());
+  data.I_row.reserve(2*AtA.nonZeros());
+  data.I_col.reserve(2*AtA.nonZeros());
+  data.I_w.reserve(2*AtA.nonZeros());
 
   // 2 Construct the rules
   for (unsigned k=0; k<AtA.outerSize(); ++k)
@@ -79,18 +84,24 @@ IGL_INLINE void igl::sparse_AtA_fast_precompute(
 
       data.I_outer.push_back(data.I_row.size());
 
-      // Find corresponding indices
-      for (unsigned i=0;i<Col_RowPtr.at(row).size();++i)
+      // Find correspondences
+      unsigned i=0;
+      unsigned j=0;
+      while (i<Col_RowPtr[row].size() && j<Col_RowPtr[col].size())
       {
-        for (unsigned j=0;j<Col_RowPtr.at(col).size();++j)
-        {
-          if (Col_RowPtr.at(row)[i] == Col_RowPtr.at(col)[j])
+          if (Col_RowPtr[row][i] == Col_RowPtr[col][j])
           {
             data.I_row.push_back(Col_IndexPtr[row][i]);
             data.I_col.push_back(Col_IndexPtr[col][j]);
             data.I_w.push_back(data.W[Col_RowPtr[col][j]]);
-          }
-        }
+            ++i;
+            ++j;
+          } else 
+          if (Col_RowPtr[row][i] > Col_RowPtr[col][j])
+            ++j;
+          else
+            ++i;
+
       }
     }
   }
