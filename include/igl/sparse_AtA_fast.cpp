@@ -106,6 +106,8 @@ IGL_INLINE void igl::sparse_AtA_fast_precompute(
     }
   }
   data.I_outer.push_back(data.I_row.size()); // makes it more efficient to iterate later on
+
+  igl::sparse_AtA_fast(A,AtA,data);
 }
 
 IGL_INLINE void igl::sparse_AtA_fast(
