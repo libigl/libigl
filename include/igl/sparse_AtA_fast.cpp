@@ -93,7 +93,7 @@ IGL_INLINE void igl::sparse_AtA_fast_precompute(
           {
             data.I_row.push_back(Col_IndexPtr[row][i]);
             data.I_col.push_back(Col_IndexPtr[col][j]);
-            data.I_w.push_back(data.W[Col_RowPtr[col][j]]);
+            data.I_w.push_back(Col_RowPtr[col][j]);
             ++i;
             ++j;
           } else 
@@ -119,7 +119,7 @@ IGL_INLINE void igl::sparse_AtA_fast(
   {
     *(AtA.valuePtr() + i) = 0;
     for (unsigned j=data.I_outer[i]; j<data.I_outer[i+1]; ++j)
-      *(AtA.valuePtr() + i) += *(A.valuePtr() + data.I_row[j]) * data.I_w[j] * *(A.valuePtr() + data.I_col[j]);
+      *(AtA.valuePtr() + i) += *(A.valuePtr() + data.I_row[j]) * data.W[data.I_w[j]] * *(A.valuePtr() + data.I_col[j]);
   }
 }
 

@@ -21,7 +21,7 @@ namespace igl
     // Flatten composition rules
     std::vector<int> I_row;
     std::vector<int> I_col;
-    std::vector<double> I_w;
+    std::vector<int> I_w;
 
     // For each entry of AtA, points to the beginning
     // of the composition rules
