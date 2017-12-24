@@ -18,7 +18,7 @@ IGL_INLINE void igl::sparse_AtA_fast_precompute(
     Eigen::SparseMatrix<double>& AtA,
     igl::sparse_AtA_fast_data& data)
 {
-  // 1 Compute At
+  // 1 Compute At (this could be avoided, but performance-wise it will not make a difference)
   std::vector<std::vector<int> > Col_RowPtr;
   std::vector<std::vector<int> > Col_IndexPtr;
 
