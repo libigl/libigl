@@ -507,20 +507,7 @@ namespace igl
       t.stop();
       std::cerr << "buildA: " << t.getElapsedTime() << std::endl;
 
-      // // // TEST CODE
-      // std::vector<Eigen::Triplet<double> > test;
-      // test.push_back(Eigen::Triplet<double>(4,3,10));
-      // test.push_back(Eigen::Triplet<double>(1,0,20));
-      // test.push_back(Eigen::Triplet<double>(2,2,30));
-      // test.push_back(Eigen::Triplet<double>(4,4,2.5));
-
-      // A = Eigen::SparseMatrix<double>(5,5);
-      // A.setFromTriplets(test.begin(),test.end());
       A.makeCompressed();
-
-      //std::cin.get();
-
-      
 
       t.start();
       Eigen::SparseMatrix<double> At = A.transpose();
@@ -534,35 +521,28 @@ namespace igl
       t.stop();
       std::cerr << "idm: " << t.getElapsedTime() << std::endl;
 
-      // std::cerr << "\n TEST CODE" << std::endl;
-      //   s.WGL_M.resize(5);
-      //   s.WGL_M[0] = 1;
-      //   s.WGL_M[1] = 2;
-      //   s.WGL_M[2] = 3;
-      //   s.WGL_M[3] = 3;
-      //   s.WGL_M[4] = 10;
-      t.start();
-      Eigen::SparseMatrix<double> AtA_slow = At * s.WGL_M.asDiagonal() * A;
-      t.stop();
-      std::cerr << "AtA slow: " << t.getElapsedTime() << std::endl;
-      // std::cerr << "AtA slow: " << AtA_slow << std::endl;
+      // t.start();
+      // Eigen::SparseMatrix<double> AtA_slow = At * s.WGL_M.asDiagonal() * A;
+      // t.stop();
+      // std::cerr << "AtA slow: " << t.getElapsedTime() << std::endl;
+      // // std::cerr << "AtA slow: " << AtA_slow << std::endl;
 
-      t.start();
-      Eigen::SparseMatrix<double> AtA_fast;
-      igl::sparse_AtA_fast_data data;
-      data.W = s.WGL_M;
-      igl::sparse_AtA_fast_precompute(A,AtA_fast,data);
-      t.stop();
-      std::cerr << "AtA fast pre: " << t.getElapsedTime() << std::endl;
-      t.start();
-      igl::sparse_AtA_fast(A,AtA_fast,data);
-      t.stop();
-      std::cerr << "AtA fast: " << t.getElapsedTime() << std::endl;
-      // std::cerr << "AtA fast: " << AtA_fast  << std::endl;
+      // t.start();
+      // Eigen::SparseMatrix<double> AtA_fast;
+      // igl::sparse_AtA_fast_data data;
+      // data.W = s.WGL_M;
+      // igl::sparse_AtA_fast_precompute(A,AtA_fast,data);
+      // t.stop();
+      // std::cerr << "AtA fast pre: " << t.getElapsedTime() << std::endl;
+      // t.start();
+      // igl::sparse_AtA_fast(A,AtA_fast,data);
+      // t.stop();
+      // std::cerr << "AtA fast: " << t.getElapsedTime() << std::endl;
+      // // std::cerr << "AtA fast: " << AtA_fast  << std::endl;
 
-      std::cerr << "Difference: " << (AtA_fast - AtA_slow).norm() << std::endl;
+      // std::cerr << "Difference: " << (AtA_fast - AtA_slow).norm() << std::endl;
 
-        exit(0);
+      //   exit(0);
 
       // add proximal penalty
       t.start();
@@ -868,24 +848,26 @@ namespace igl
         }
       }
 
-      // igl::Timer t;
-      // t.start();
+      igl::Timer t;
+      t.start();
       A.setFromTriplets(IJV.begin(), IJV.end());
-      // t.stop();
-      // std::cerr << "setFromTriplets: " << t.getElapsedTime() << std::endl;
+      t.stop();
+      std::cerr << "setFromTriplets: " << t.getElapsedTime() << std::endl;
+      Eigen::SparseMatrix<double> A_slow = A;
 
       // // Debug Code
-      // Eigen::VectorXi data;
-      // t.start();
-      // igl::fast_sparse_precompute(IJV,A,data);
-      // t.stop();
-      // std::cerr << "fast_precompute: " << t.getElapsedTime() << std::endl;
+      Eigen::VectorXi data;
+      t.start();
+      igl::sparse_fast_precompute(IJV,A,data);
+      t.stop();
+      std::cerr << "fast_precompute: " << t.getElapsedTime() << std::endl;
 
-      // t.start();
-      // igl::fast_sparse(IJV,A,data);
-      // t.stop();
-      // std::cerr << "fast_precompute: " << t.getElapsedTime() << std::endl;
+      t.start();
+      igl::sparse_fast(IJV,A,data);
+      t.stop();
+      std::cerr << "fast_eval: " << t.getElapsedTime() << std::endl;
 
+      std::cerr << "Norm: " << (A - A_slow).norm() << std::endl;
 
     }
 

@@ -9,24 +9,10 @@
 
 #include <iostream>
 #include <vector>
+#include <array>
 #include <unordered_map>
 #include <map>
 #include <utility>
-
-// Hashing function
-// namespace std {
-//     template<> 
-//     struct hash<pair<int, int> > {
-//         size_t operator()(const pair<int, int>& p) const {
-//             size_t seed = 0;
-//             hash<int> h;
-//             seed ^= h(p.first) + 0x9e3779b9 + (seed << 6) + (seed >> 2); 
-//             seed ^= h(p.second) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
-//             return seed;
-//         }
-//     };
-// }
-
 
 IGL_INLINE void igl::sparse_fast_precompute(
   const Eigen::VectorXi & I,
@@ -52,9 +38,19 @@ IGL_INLINE void igl::sparse_fast_precompute(
     X.setFromTriplets(triplets.begin(),triplets.end());
     X.makeCompressed();
 
-    // Build hash table for all nnz entries
-    // TODO: this is slow and could be done in nlogn
-    std::map<std::pair<int,int>,int> id;
+    std::vector<std::array<int,3> > T(triplets.size());
+    for (unsigned i=0; i<triplets.size(); ++i)
+    {
+      T[i][0] = triplets[i].col();
+      T[i][1] = triplets[i].row();
+      T[i][2] = i;
+    }
+
+    std::sort(T.begin(), T.end());
+
+    data.resize(triplets.size());
+
+    int t = 0;
 
     for (unsigned k=0; k<X.outerSize(); ++k)
     {
@@ -66,16 +62,21 @@ IGL_INLINE void igl::sparse_fast_precompute(
         int col = k;
         int row = *(X.innerIndexPtr()+l);
         int value_index = l;
+        assert(col < X.cols());
+        assert(col >= 0);
+        assert(row < X.rows());
+        assert(row >= 0);
+        assert(value_index >= 0);
+        assert(value_index < X.nonZeros());
 
-        std::pair<int,int> rc = std::make_pair(row,col);
-        id[rc] = value_index;
+        std::pair<int,int> p_m = std::make_pair(row,col);
+
+        while (t<T.size() && (p_m == std::make_pair(T[t][1],T[t][0])))
+          data[T[t++][2]] = value_index;
       }
     }
+    assert(t==T.size());
 
-    // Compute the indices
-    data.resize(triplets.size());
-    for (unsigned i=0; i<triplets.size(); ++i)
-      data[i] = id[std::make_pair(triplets[i].row(),triplets[i].col())];
 }
   
 IGL_INLINE void igl::sparse_fast(
