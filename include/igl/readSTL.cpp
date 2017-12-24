@@ -71,7 +71,7 @@ IGL_INLINE bool igl::readSTL(
   std::vector<std::vector<TypeN> > & N)
 {
   using namespace std;
-  stl_file = freopen(NULL,"rb",stl_file);
+  //stl_file = freopen(NULL,"rb",stl_file);
   if(NULL==stl_file)
   {
     fprintf(stderr,"IOError: stl file could not be reopened as binary (1) ...\n");
@@ -122,7 +122,8 @@ IGL_INLINE bool igl::readSTL(
   {
     // Rewind to end of header
     //stl_file = fopen(filename.c_str(),"r");
-    stl_file = freopen(NULL,"r",stl_file);
+    //stl_file = freopen(NULL,"r",stl_file);
+    fseek(stl_file, 0, SEEK_SET);
     if(NULL==stl_file)
     {
       fprintf(stderr,"IOError: stl file could not be reopened as ascii ...\n");
@@ -213,7 +214,8 @@ IGL_INLINE bool igl::readSTL(
   }else
   {
     // Binary
-    stl_file = freopen(NULL,"rb",stl_file);
+    //stl_file = freopen(NULL,"rb",stl_file);
+    fseek(stl_file, 0, SEEK_SET);
     // Read 80 header
     char header[80];
     if(fread(header,sizeof(char),80,stl_file)!=80)
