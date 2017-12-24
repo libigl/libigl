@@ -578,9 +578,9 @@ namespace igl
       L = s.AtA + s.proximal_p * id_m; //add also a proximal 
       L.makeCompressed();
 
-      Eigen::SparseMatrix<double> L2 = At * s.WGL_M.asDiagonal() * s.A + s.proximal_p * id_m; 
+      // Eigen::SparseMatrix<double> L2 = At * s.WGL_M.asDiagonal() * s.A + s.proximal_p * id_m; 
       
-      std::cerr << "Error: ------> " << (L2 - L).norm() << std::endl;
+      // std::cerr << "Error: ------> " << (L2 - L).norm() << std::endl;
 
       #else
       L = At * s.WGL_M.asDiagonal() * A + s.proximal_p * id_m; //add also a proximal term
