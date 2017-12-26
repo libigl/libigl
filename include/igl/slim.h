@@ -17,7 +17,7 @@
 #define SLIM_CACHED 
 
 #ifdef SLIM_CACHED
-#include <igl/sparse_AtA_fast.h>
+#include <igl/AtA_cached.h>
 #endif
 
 namespace igl
@@ -77,7 +77,7 @@ struct SLIMData
   Eigen::SparseMatrix<double> A;
   Eigen::VectorXi A_data;
   Eigen::SparseMatrix<double> AtA;
-  igl::sparse_AtA_fast_data AtA_data;
+  igl::AtA_cached_data AtA_data;
   #endif
 };
 

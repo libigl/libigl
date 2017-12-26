@@ -5,18 +5,17 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
-#include "sparse_AtA_fast.h"
+#include "AtA_cached.h"
 
 #include <iostream>
 #include <vector>
-#include <unordered_map>
-#include <map>
 #include <utility>
 
-IGL_INLINE void igl::sparse_AtA_fast_precompute(
-    const Eigen::SparseMatrix<double>& A,
-    Eigen::SparseMatrix<double>& AtA,
-    igl::sparse_AtA_fast_data& data)
+template <typename Scalar>
+IGL_INLINE void igl::AtA_cached_precompute(
+    const Eigen::SparseMatrix<Scalar>& A,
+    Eigen::SparseMatrix<Scalar>& AtA,
+    igl::AtA_cached_data& data)
 {
   // 1 Compute At (this could be avoided, but performance-wise it will not make a difference)
   std::vector<std::vector<int> > Col_RowPtr;
@@ -47,7 +46,7 @@ IGL_INLINE void igl::sparse_AtA_fast_precompute(
     }
   }
 
-  Eigen::SparseMatrix<double> At = A.transpose();
+  Eigen::SparseMatrix<Scalar> At = A.transpose();
   At.makeCompressed();
   AtA = At * A;
   AtA.makeCompressed();
@@ -107,13 +106,14 @@ IGL_INLINE void igl::sparse_AtA_fast_precompute(
   }
   data.I_outer.push_back(data.I_row.size()); // makes it more efficient to iterate later on
 
-  igl::sparse_AtA_fast(A,AtA,data);
+  igl::AtA_cached(A,AtA,data);
 }
 
-IGL_INLINE void igl::sparse_AtA_fast(
-    const Eigen::SparseMatrix<double>& A,
-    Eigen::SparseMatrix<double>& AtA,
-    const igl::sparse_AtA_fast_data& data)
+template <typename Scalar>
+IGL_INLINE void igl::AtA_cached(
+    const Eigen::SparseMatrix<Scalar>& A,
+    Eigen::SparseMatrix<Scalar>& AtA,
+    const igl::AtA_cached_data& data)
 {
   for (unsigned i=0; i<data.I_outer.size()-1; ++i)
   {
@@ -125,4 +125,6 @@ IGL_INLINE void igl::sparse_AtA_fast(
 
 
 #ifdef IGL_STATIC_LIBRARY
+template void igl::AtA_cached<double>(Eigen::SparseMatrix<double, 0, int> const&, Eigen::SparseMatrix<double, 0, int>&, igl::AtA_cached_data const&);
+template void igl::AtA_cached_precompute<double>(Eigen::SparseMatrix<double, 0, int> const&, Eigen::SparseMatrix<double, 0, int>&, igl::AtA_cached_data&);
 #endif
