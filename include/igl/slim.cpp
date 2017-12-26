@@ -405,7 +405,7 @@ namespace igl
 
       igl::Timer t;
       
-      t.start();
+      //t.start();
       // solve
       Eigen::VectorXd Uc;
 #ifndef CHOLMOD
@@ -430,8 +430,8 @@ namespace igl
       for (int i = 0; i < s.dim; i++)
         uv.col(i) = Uc.block(i * s.v_n, 0, s.v_n, 1);
 
-      t.stop();
-      std::cerr << "solve: " << t.getElapsedTime() << std::endl;
+      // t.stop();
+      // std::cerr << "solve: " << t.getElapsedTime() << std::endl;
 
     }
 
@@ -498,14 +498,9 @@ namespace igl
     IGL_INLINE void build_linear_system(igl::SLIMData& s, Eigen::SparseMatrix<double> &L)
     {
       // formula (35) in paper
-      std::cerr << "------------------: " << std::endl;
-
-      igl::Timer t;
-
       std::vector<Eigen::Triplet<double> > IJV;
-      t.start();
       
-      #ifdef SLIM_FAST
+      #ifdef SLIM_CACHED
       buildA(s,IJV);
       if (s.A.rows() == 0)
       {
@@ -520,58 +515,23 @@ namespace igl
       A.setFromTriplets(IJV.begin(),IJV.end());
       A.makeCompressed();
       #endif
-      t.stop();
-      std::cerr << "buildA: " << t.getElapsedTime() << std::endl;
 
-      
-
-      t.start();
-      #ifdef SLIM_FAST
+      #ifdef SLIM_CACHED
       #else
       Eigen::SparseMatrix<double> At = A.transpose();
       At.makeCompressed();
       #endif
 
-      t.stop();
-      std::cerr << "At: " << t.getElapsedTime() << std::endl;
-
-      t.start();
-      #ifdef SLIM_FAST
+      #ifdef SLIM_CACHED
       Eigen::SparseMatrix<double> id_m(s.A.cols(), s.A.cols());
       #else
       Eigen::SparseMatrix<double> id_m(A.cols(), A.cols());
       #endif
 
       id_m.setIdentity();
-      t.stop();
-      std::cerr << "idm: " << t.getElapsedTime() << std::endl;
-
-      // t.start();
-      // Eigen::SparseMatrix<double> AtA_slow = At * s.WGL_M.asDiagonal() * A;
-      // t.stop();
-      // std::cerr << "AtA slow: " << t.getElapsedTime() << std::endl;
-      // // std::cerr << "AtA slow: " << AtA_slow << std::endl;
-
-      // t.start();
-      // Eigen::SparseMatrix<double> AtA_fast;
-      // igl::sparse_AtA_fast_data data;
-      // data.W = s.WGL_M;
-      // igl::sparse_AtA_fast_precompute(A,AtA_fast,data);
-      // t.stop();
-      // std::cerr << "AtA fast pre: " << t.getElapsedTime() << std::endl;
-      // t.start();
-      // igl::sparse_AtA_fast(A,AtA_fast,data);
-      // t.stop();
-      // std::cerr << "AtA fast: " << t.getElapsedTime() << std::endl;
-      // // std::cerr << "AtA fast: " << AtA_fast  << std::endl;
-
-      // std::cerr << "Difference: " << (AtA_fast - AtA_slow).norm() << std::endl;
-
-      //   exit(0);
 
       // add proximal penalty
-      t.start();
-      #ifdef SLIM_FAST
+      #ifdef SLIM_CACHED
       s.AtA_data.W = s.WGL_M;
       if (s.AtA.rows() == 0)
         igl::sparse_AtA_fast_precompute(s.A,s.AtA,s.AtA_data);
@@ -585,25 +545,16 @@ namespace igl
       L = At * s.WGL_M.asDiagonal() * A + s.proximal_p * id_m; //add also a proximal term
       L.makeCompressed();
       #endif
-      t.stop();
-      std::cerr << "proximal: " << t.getElapsedTime() << std::endl;
 
-      t.start();
-      #ifdef SLIM_FAST
+      #ifdef SLIM_CACHED
       buildRhs(s, s.A);
       #else
       buildRhs(s, A);
       #endif
-      t.stop();
-      std::cerr << "rhs: " << t.getElapsedTime() << std::endl;
 
-      t.start();
       Eigen::SparseMatrix<double> OldL = L;
       add_soft_constraints(s,L);
       L.makeCompressed();
-      t.stop();
-      std::cerr << "soft: " << t.getElapsedTime() << std::endl;
-
     }
 
     IGL_INLINE void add_soft_constraints(igl::SLIMData& s, Eigen::SparseMatrix<double> &L)
