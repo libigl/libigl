@@ -13,9 +13,11 @@
 #include <Eigen/Sparse>
 namespace igl
 {
-  // Build a sparse matrix from list of indices and values (I,J,V), functions
-  // like the sparse function in matlab. Divides the construction in two phases, one
-  // for fixing the sparsity pattern, and one to populate it with values.
+  // Build a sparse matrix from list of indices and values (I,J,V), similarly to 
+  // the sparse function in matlab. Divides the construction in two phases, one
+  // for fixing the sparsity pattern, and one to populate it with values. Compared to
+  // igl::sparse, this version is slower for the first time (since it requires a
+  // precomputation), but faster to the subsequent evaluations.
   //
   // Templates:
   //   IndexVector  list of indices, value should be non-negative and should
