@@ -35,8 +35,8 @@
 #include <Eigen/IterativeLinearSolvers>
 
 #include <igl/Timer.h>
-#include <igl/sparse_fast.h>
-#include <igl/sparse_AtA_fast.h>
+#include <igl/sparse_cached.h>
+#include <igl/AtA_cached.h>
 
 #ifdef CHOLMOD
 #include <Eigen/CholmodSupport>
@@ -505,10 +505,10 @@ namespace igl
       if (s.A.rows() == 0)
       {
         s.A = Eigen::SparseMatrix<double>(s.dim * s.dim * s.f_n, s.dim * s.v_n);
-        igl::sparse_fast_precompute(IJV,s.A,s.A_data);
+        igl::sparse_cached_precompute(IJV,s.A,s.A_data);
       }
       else
-        igl::sparse_fast(IJV,s.A,s.A_data);
+        igl::sparse_cached(IJV,s.A,s.A_data);
       #else
       Eigen::SparseMatrix<double> A(s.dim * s.dim * s.f_n, s.dim * s.v_n);
       buildA(s,IJV);
@@ -534,9 +534,9 @@ namespace igl
       #ifdef SLIM_CACHED
       s.AtA_data.W = s.WGL_M;
       if (s.AtA.rows() == 0)
-        igl::sparse_AtA_fast_precompute(s.A,s.AtA,s.AtA_data);
+        igl::AtA_cached_precompute(s.A,s.AtA,s.AtA_data);
       else
-        igl::sparse_AtA_fast(s.A,s.AtA,s.AtA_data);
+        igl::AtA_cached(s.A,s.AtA,s.AtA_data);
 
       L = s.AtA + s.proximal_p * id_m; //add also a proximal 
       L.makeCompressed();

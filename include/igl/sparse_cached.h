@@ -5,8 +5,8 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
-#ifndef IGL_SPARSE_FAST_H
-#define IGL_SPARSE_FAST_H
+#ifndef IGL_SPARSE_CACHED_H
+#define IGL_SPARSE_CACHED_H
 #include "igl_inline.h"
 #define EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
 #include <Eigen/Dense>
@@ -36,31 +36,47 @@ namespace igl
   // Outputs:
   //   X  m by n matrix of type T whose entries are to be found 
   //
-  IGL_INLINE void sparse_fast_precompute(
-    const Eigen::VectorXi & I,
-    const Eigen::VectorXi & J,
-    Eigen::SparseMatrix<double>& X,
+  // Example:
+  //   Eigen::SparseMatrix<double> A;
+  //   std::vector<Eigen::Triplet<double> > IJV;
+  //   buildA(IJV);
+  //   if (A.rows() == 0)
+  //   {
+  //     A = Eigen::SparseMatrix<double>(rows,cols);
+  //     igl::sparse_cached_precompute(IJV,A,A_data);
+  //   }
+  //   else
+  //     igl::sparse_cached(IJV,s.A,s.A_data);
+
+  template <typename DerivedI, typename Scalar>
+  IGL_INLINE void sparse_cached_precompute(
+    const Eigen::MatrixBase<DerivedI> & I,
+    const Eigen::MatrixBase<DerivedI> & J,
+    Eigen::SparseMatrix<Scalar>& X,
     Eigen::VectorXi& data);
   
-  IGL_INLINE void sparse_fast_precompute(
-    const std::vector<Eigen::Triplet<double> >& triplets,
-    Eigen::SparseMatrix<double>& X,
+  template <typename Scalar>
+  IGL_INLINE void sparse_cached_precompute(
+    const std::vector<Eigen::Triplet<Scalar> >& triplets,
+    Eigen::SparseMatrix<Scalar>& X,
     Eigen::VectorXi& data);
 
-  IGL_INLINE void sparse_fast(
-    const std::vector<Eigen::Triplet<double> >& triplets,
-    Eigen::SparseMatrix<double>& X,
+  template <typename Scalar>
+  IGL_INLINE void sparse_cached(
+    const std::vector<Eigen::Triplet<Scalar> >& triplets,
+    Eigen::SparseMatrix<Scalar>& X,
     const Eigen::VectorXi& data);
 
-  IGL_INLINE void sparse_fast(
-    const Eigen::VectorXd & V,
-    Eigen::SparseMatrix<double>& X,
+  template <typename DerivedV, typename Scalar>
+  IGL_INLINE void sparse_cached(
+    const Eigen::MatrixBase<DerivedV>& V,
+    Eigen::SparseMatrix<Scalar>& X,
     const Eigen::VectorXi& data);
   
 }
 
 #ifndef IGL_STATIC_LIBRARY
-#  include "sparse_fast.cpp"
+#  include "sparse_cached.cpp"
 #endif
 
 #endif
