@@ -69,6 +69,8 @@ IGL_INLINE void igl::copyleft::cgal::wire_mesh(
     A[WE(e,1)].emplace_back(e,1);
     typedef Eigen::Matrix<Scalar,1,3> RowVector3S;
     const RowVector3S ev = WV.row(WE(e,1))-WV.row(WE(e,0));
+    const Scalar len = ev.norm();
+    // Unit edge vector
     const RowVector3S uv = ev.normalized();
     Eigen::Quaternion<Scalar> q;
     q = q.FromTwoVectors(RowVector3S(0,0,1),uv);
@@ -79,9 +81,16 @@ IGL_INLINE void igl::copyleft::cgal::wire_mesh(
       // loop over endpoints
       for(int c = 0;c<2;c++)
       {
-        // Move to endpoint, offset by factor of thickness
+        // Direction moving along edge vector
+        const Scalar dir = c==0?1:-1;
+        // Amount (distance) to move along edge vector
+        // Start with factor of thickness;
+        // Max out amount at 1/3 of edge length so that there's always some
+        // amount of edge
+        Scalar dist = std::min(1.*th,len/3.0);
+        // Move to endpoint, offset by amount
         V.row(index(e,c,p)) = 
-          qp+WV.row(WE(e,c)) + 1.*th*Scalar(1-2*c)*uv;
+          qp+WV.row(WE(e,c)) + dist*dir*uv;
       }
     }
   }
