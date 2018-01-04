@@ -31,7 +31,7 @@ igl::mosek::MosekData::MosekData()
 #if MSK_VERSION_MAJOR >= 8
   douparam[MSK_DPAR_INTPNT_QO_TOL_REL_GAP]=1e-12;
 #endif
-  // Force using multiple threads, not sure if MOSEK is properly destorying
+  // Force using multiple threads, not sure if MOSEK is properly destroying
   //extra threads...
 #if MSK_VERSION_MAJOR >= 7
   intparam[MSK_IPAR_NUM_THREADS] = 6;

@@ -15,7 +15,7 @@
 
 namespace igl {
   // Compute a curl-free frame field from user constraints, optionally starting
-  // from a gived frame field (assumed to be interpolating the constraints).
+  // from a given frame field (assumed to be interpolating the constraints).
   // Implementation of the paper "Integrable PolyVector Fields", SIGGRAPH 2015.
 
   // Set of parameters used during solve

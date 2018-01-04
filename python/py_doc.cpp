@@ -322,7 +322,7 @@ const char *__doc_igl_copyleft_comiso_miq = R"igl_Qu8mg5v7(// Inputs:
     //   UV             #UV by 2 list of vertices in 2D
     //   FUV            #FUV by 3 list of face indices in UV
     //
-    // TODO: rename the parameters name in the cpp consistenly
+    // TODO: rename the parameters name in the cpp consistently
     //       improve the handling of hard_features, right now it might fail in difficult cases)igl_Qu8mg5v7";
 const char *__doc_igl_copyleft_comiso_nrosy = R"igl_Qu8mg5v7(// Generate a N-RoSy field from a sparse set of constraints
     //
@@ -336,7 +336,7 @@ const char *__doc_igl_copyleft_comiso_nrosy = R"igl_Qu8mg5v7(// Generate a N-RoS
     //   w_soft  #S by 1 weight for the soft constraints (0-1)
     //   bc_soft #S by 3 bc for soft constraints
     //   N       the degree of the N-RoSy vector field
-    //   soft    the strength of the soft contraints w.r.t. smoothness
+    //   soft    the strength of the soft constraints w.r.t. smoothness
     //           (0 -> smoothness only, 1->constraints only)
     // Outputs:
     //   R       #F by 3 the representative vectors of the interpolated field
