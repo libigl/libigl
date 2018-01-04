@@ -876,7 +876,7 @@ functionality as common Matlab functions.
 | `igl::components`        | Connected components of graph (cf. Matlab's `graphconncomp`) |
 | `igl::count`             | Count non-zeros in rows or columns |
 | `igl::cross`             | Cross product per-row |
-| `igl::cumsum`            | Cummulative summation |
+| `igl::cumsum`            | Cumulative summation |
 | `igl::dot`               | dot product per-row |
 | `igl::eigs`              | Solve sparse eigen value problem |
 | `igl::find`              | Find subscripts of non-zero entries |
@@ -1687,7 +1687,7 @@ rotation edge sets (right of middle), to the very fast subpsace method
 ## Biharmonic Coordinates
 
 Linear blend skinning (as [above](#boundedbiharmonicweights)) deforms a mesh by
-propogating _full affine transformations_ at handles (bones, points, regions,
+propagating _full affine transformations_ at handles (bones, points, regions,
 etc.) to the rest of the shape via weights. Another deformation framework,
 called "generalized barycentric coordinates", is a special case of linear blend
 skinning [#jacobson_skinning_course_2014][]: transformations are restricted to
@@ -3100,7 +3100,7 @@ motion (gold).](images/bunny-swept-volume.gif)
 
 Picking vertices and faces using the mouse is very common in geometry
 processing applications. While this might seem a simple operation, its
-implementation is not straighforward. Libigl contains a function that solves this problem using the
+implementation is not straightforward. Libigl contains a function that solves this problem using the
 [Embree](https://software.intel.com/en-us/articles/embree-photo-realistic-ray-tracing-kernels)
 raycaster. Its usage is demonstrated in [Example 708](708_Picking/main.cpp):
 

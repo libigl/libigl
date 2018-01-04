@@ -59,7 +59,7 @@ namespace igl
   //   V   3 by 3 list of corner positions so that V.row(i) is the position of the
   //     ith corner
   //   dist_to_B  function taking the x,y,z coordinate of a query position and
-  //     outputing the closest-point distance to some point-set B
+  //     outputting the closest-point distance to some point-set B
   // Outputs:
   //   l  lower bound on Hausdorff distance 
   //   u  upper bound on Hausdorff distance

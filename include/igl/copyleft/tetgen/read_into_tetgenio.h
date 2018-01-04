@@ -31,7 +31,7 @@ namespace igl
       //   .vtk
       //   etc.
       // Notably it does not support .obj which is loaded by hand here (also
-      // demonstrating how to load points/faces programatically)
+      // demonstrating how to load points/faces programmatically)
       //
       // If the file extension is not recognized the filename is assumed to be
       // the basename of a collection describe a tetmesh, (of which at least

@@ -34,7 +34,7 @@ namespace igl
         // Flags to tetgen. Do not include the "c" flag here! {"Y"}
         std::string flags = "Y";
       };
-      // Create a constrained delaunay tesselation containing convex hull of the
+      // Create a constrained delaunay tessellation containing convex hull of the
       // given **non-selfintersecting** mesh.
       //
       // Inputs:

@@ -46,8 +46,8 @@ namespace igl
     Eigen::PlainObjectBase<DerivedU> & U);
   //
   // Inputs:
-  //   min_steps  mininum number of steps to take from V(b,:) to bc
-  //   max_steps  mininum number of steps to take from V(b,:) to bc (if
+  //   min_steps  minimum number of steps to take from V(b,:) to bc
+  //   max_steps  minimum number of steps to take from V(b,:) to bc (if
   //     max_steps == min_steps then no further number of steps will be tried)
   //   num_inner_iters  number of iterations of harmonic solves to run after
   //     for each morph step (to try to push flips back in)

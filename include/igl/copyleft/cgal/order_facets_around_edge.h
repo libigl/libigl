@@ -31,7 +31,7 @@ namespace igl
       //   V  #V by 3 list of vertices.
       //   F  #F by 3 list of faces
       //   s  Index of source vertex.
-      //   d  Index of desination vertex.
+      //   d  Index of destination vertex.
       //   adj_faces  List of adjacent face signed indices.
       // Output:
       //   order  List of face indices that orders adjacent faces around edge
