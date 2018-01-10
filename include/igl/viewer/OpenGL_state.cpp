@@ -72,7 +72,7 @@ IGL_INLINE void igl::viewer::OpenGL_state::set_data(const igl::viewer::ViewerDat
 
   if (!data.face_based)
   {
-    if (!per_corner_uv)
+    if (!(per_corner_uv || per_corner_normals))
     {
       // Vertex positions
       if (dirty & ViewerData::DIRTY_POSITION)
@@ -142,7 +142,12 @@ IGL_INLINE void igl::viewer::OpenGL_state::set_data(const igl::viewer::ViewerDat
         V_normals_vbo.resize(3,data.F.rows()*3);
         for (unsigned i=0; i<data.F.rows();++i)
           for (unsigned j=0;j<3;++j)
-            V_normals_vbo.col (i*3+j) = data.V_normals.row(data.F(i,j)).transpose().cast<float>();
+          
+            V_normals_vbo.col (i*3+j) = 
+                         per_corner_normals ?
+               data.F_normals.row(i*3+j).transpose().cast<float>() :
+               data.V_normals.row(data.F(i,j)).transpose().cast<float>();
+
 
         if (invert_normals)
           V_normals_vbo = -V_normals_vbo;
