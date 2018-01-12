@@ -115,7 +115,7 @@ IGL_INLINE void igl::viewer::OpenGL_state::set_data(const igl::viewer::ViewerDat
 
       if (dirty & ViewerData::DIRTY_AMBIENT)
       {
-        V_ambient_vbo.resize(3,data.F.rows()*3);
+        V_ambient_vbo.resize(4,data.F.rows()*3);
         for (unsigned i=0; i<data.F.rows();++i)
           for (unsigned j=0;j<3;++j)
             V_ambient_vbo.col (i*3+j) = data.V_material_ambient.row(data.F(i,j)).transpose().cast<float>();
@@ -123,7 +123,7 @@ IGL_INLINE void igl::viewer::OpenGL_state::set_data(const igl::viewer::ViewerDat
 
       if (dirty & ViewerData::DIRTY_DIFFUSE)
       {
-        V_diffuse_vbo.resize(3,data.F.rows()*3);
+        V_diffuse_vbo.resize(4,data.F.rows()*3);
         for (unsigned i=0; i<data.F.rows();++i)
           for (unsigned j=0;j<3;++j)
             V_diffuse_vbo.col (i*3+j) = data.V_material_diffuse.row(data.F(i,j)).transpose().cast<float>();
@@ -131,7 +131,7 @@ IGL_INLINE void igl::viewer::OpenGL_state::set_data(const igl::viewer::ViewerDat
 
       if (dirty & ViewerData::DIRTY_SPECULAR)
       {
-        V_specular_vbo.resize(3,data.F.rows()*3);
+        V_specular_vbo.resize(4,data.F.rows()*3);
         for (unsigned i=0; i<data.F.rows();++i)
           for (unsigned j=0;j<3;++j)
             V_specular_vbo.col(i*3+j) = data.V_material_specular.row(data.F(i,j)).transpose().cast<float>();
