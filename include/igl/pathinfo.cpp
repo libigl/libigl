@@ -9,7 +9,7 @@
 
 #include "dirname.h"
 #include "basename.h"
-// Verbose should be removed once everythings working correctly
+// Verbose should be removed once everything working correctly
 #include "verbose.h"
 #include <algorithm>
 

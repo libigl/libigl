@@ -23,7 +23,7 @@ The following files contain the offensive \"std::__1\" namespace:
 
 ${RED}$STD1${NC}
 
-Consider issueing:
+Consider issuing:
 
     sed -i '' -e \"s/std::__1/std/g\"" $STD1
 

@@ -204,7 +204,7 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
       data.preY.resize(data.unknown_lagrange.size(),0);
     }
 
-    // Positive definite and no equality constraints (Postive definiteness
+    // Positive definite and no equality constraints (Positive definiteness
     // implies symmetric)
 #ifdef MIN_QUAD_WITH_FIXED_CPP_DEBUG
     cout<<"    factorize"<<endl;

@@ -1623,7 +1623,7 @@ void CQuaternionExt::MouseLeaveCB(void *structExtValue, void *clientData, TwBar 
 
 
 //  ---------------------------------------------------------------------------
-//  Convertion between VC++ Debug/Release std::string
+//  Conversion between VC++ Debug/Release std::string
 //  (Needed because VC++ adds some extra info to std::string in Debug mode!)
 //  And resolve binary std::string incompatibility between VS2010 and other VS versions
 //  ---------------------------------------------------------------------------

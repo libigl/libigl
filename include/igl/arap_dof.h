@@ -127,7 +127,7 @@ namespace igl
   //   L0  #handles * dim * dim+1 list of initial guess transformation entries,
   //     also holds fixed transformation entries for fixed handles
   //   max_iters  maximum number of iterations
-  //   tol  stopping critera parameter. If variables (linear transformation
+  //   tol  stopping criteria parameter. If variables (linear transformation
   //     matrix entries) change by less than 'tol' the optimization terminates,
   //       0.75 (weak tolerance)
   //       0.0 (extreme tolerance)

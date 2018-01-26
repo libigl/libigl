@@ -390,7 +390,7 @@ IGL_INLINE void igl::sort_triangles(
 //  assert(false && 
 //    "THIS WILL NEVER WORK because depth sorting is not a numerical sort where"
 //    "pairwise comparisons of triangles are transitive.  Rather it is a"
-//    "topological sort on a dependecy graph. Dependency encodes 'This triangle"
+//    "topological sort on a dependency graph. Dependency encodes 'This triangle"
 //    "must be drawn before that one'");
 //  using namespace std;
 //  using namespace Eigen;

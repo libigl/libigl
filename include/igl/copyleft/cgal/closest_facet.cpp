@@ -124,7 +124,7 @@ IGL_INLINE void igl::copyleft::cgal::closest_facet(
       case CGAL::COPLANAR:
         // Warning:
         // This can only happen if fid contains a boundary edge.
-        // Catergorized this ambiguous case as negative side.
+        // Categorized this ambiguous case as negative side.
         return false;
       default:
         throw std::runtime_error("Unknown CGAL state.");
