@@ -56,7 +56,7 @@ IGL_INLINE void igl::copyleft::cgal::trim_with_solid(
   igl::slice_mask(Eigen::MatrixXi(F),A,1,F);
   igl::slice_mask(Eigen::VectorXi(P),A,1,P);
   igl::slice_mask(Eigen::VectorXi(J),A,1,J);
-  // Agregate representative query points for each patch
+  // Aggregate representative query points for each patch
   std::vector<bool> flag(num_patches);
   std::vector<std::vector<CGAL::Epeck::FT> > vQ;
   Eigen::VectorXi P2Q(num_patches);

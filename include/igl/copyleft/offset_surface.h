@@ -8,7 +8,7 @@ namespace igl
 {
   namespace copyleft
   {
-    // Compute a triangulated offset surface using maching cubes on a gride of
+    // Compute a triangulated offset surface using matching cubes on a grid of
     // signed distance values from the input triangle mesh.
     //
     // Inputs:

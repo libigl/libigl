@@ -25,7 +25,7 @@ IGL_INLINE bool igl::xml::writeDAE(
 
   const auto & ele = [&doc](
     const std::string tag,
-    // Can't just use `{}` as the default arguement because of a clang-bug
+    // Can't just use `{}` as the default argument because of a clang-bug
     // http://stackoverflow.com/questions/17264067/
     const std::map<std::string,std::string> attribs =
       std::map<std::string,std::string>(),

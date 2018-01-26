@@ -25,7 +25,7 @@ IGL_INLINE bool igl::opengl::glfw::background_window(GLFWwindow* & window)
       /* Problem: glewInit failed, something is seriously wrong. */
      fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
     }
-    glGetError(); // pull and savely ignonre unhandled errors like GL_INVALID_ENUM
+    glGetError(); // pull and safely ignore unhandled errors like GL_INVALID_ENUM
   #endif
   return true;
 }

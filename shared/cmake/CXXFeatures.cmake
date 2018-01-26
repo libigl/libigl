@@ -76,7 +76,7 @@ set(CXX17_FEATURES
 # cxx_thread_local                      Thread-local variables, as defined in N2659.
 # cxx_trailing_return_types             Automatic function return type, as defined in N2541.
 # cxx_unicode_literals                  Unicode string literals, as defined in N2442.
-# cxx_uniform_initialization            Uniform intialization, as defined in N2640.
+# cxx_uniform_initialization            Uniform initialization, as defined in N2640.
 # cxx_unrestricted_unions               Unrestricted unions, as defined in N2544.
 # cxx_user_literals                     User-defined literals, as defined in N2765.
 # cxx_variable_templates                Variable templates, as defined in N3651.

@@ -321,7 +321,7 @@ IGL_INLINE void igl::copyleft::cgal::points_inside_component(
                 inside(i,0) = determine_point_face_orientation(V, F, I, query, fid);
                 break;
             default:
-                throw "Unknow closest element type!";
+                throw "Unknown closest element type!";
         }
     }
 }

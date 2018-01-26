@@ -257,7 +257,7 @@ int main(int argc, char *argv[])
     VectorXd S;
     igl::copyleft::comiso::nrosy(V, F, b, bc, VectorXi(), VectorXd(), MatrixXd(), 4, 0.5, X1, S);
 
-    // Find the the orthogonal vector
+    // Find the orthogonal vector
     MatrixXd B1, B2, B3;
     igl::local_basis(V, F, B1, B2, B3);
     X2 = igl::rotate_vectors(X1, VectorXd::Constant(1, M_PI / 2), B1, B2);

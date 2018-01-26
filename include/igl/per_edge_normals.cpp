@@ -35,7 +35,7 @@ IGL_INLINE void igl::per_edge_normals(
   assert(F.cols() == 3 && "Faces must be triangles");
   // number of faces
   const int m = F.rows();
-  // All occurances of directed edges
+  // All occurrences of directed edges
   MatrixXi allE;
   oriented_facets(F,allE);
   // Find unique undirected edges and mapping
