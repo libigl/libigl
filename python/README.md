@@ -122,11 +122,11 @@ viewer.launch()
 
 ### Remote viewer
 
-Whe using the viewer from an interactive python shell (iPython), it is
+When using the viewer from an interactive python shell (iPython), it is
 inconvenient to let the viewer take control of the main thread for rendering
 purposes. We provide a simple wrapper for the viewer that allows to launch
 a remote process and send meshes to it via a TCP/IP socket. For more
-informations on how to use it see the documentation in [tcpviewer.py](tcpviewer.py)
+information on how to use it see the documentation in [tcpviewer.py](tcpviewer.py)
 
 ## Matlab
 

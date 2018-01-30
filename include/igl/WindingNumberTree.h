@@ -52,7 +52,7 @@ namespace igl
       MatrixXS SV;
       // Facets in this bounding volume
       MatrixXF F;
-      // Tesselated boundary curve
+      // Tessellated boundary curve
       MatrixXF cap;
       // Upper Bound on radius of enclosing ball
       typename DerivedV::Scalar radius;
@@ -97,7 +97,7 @@ namespace igl
       // Same as above, but always computes winding number using exact method
       // (sum over every facet)
       inline typename DerivedV::Scalar winding_number_all(const Point & p) const;
-      // Same as above, but always computes using sum over tesslated boundary
+      // Same as above, but always computes using sum over tessllated boundary
       inline typename DerivedV::Scalar winding_number_boundary(const Point & p) const;
       //// Same as winding_number above, but if max_simple_abs_winding_number is
       //// less than some threshold min_max_w just return 0 (colloquially the "fast
@@ -493,7 +493,7 @@ igl::WindingNumberTree<Point,DerivedV,DerivedF>::cached_winding_number(
   return 0;
 }
 
-// Explicit instanciation of static variable
+// Explicit instantiation of static variable
 template <
   typename Point,
   typename DerivedV, 

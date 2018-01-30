@@ -44,7 +44,7 @@ public:
     DIRTY_ALL            = 0x03FF
   };
 
-  // Empy all fields
+  // Empty all fields
   IGL_INLINE void clear();
 
   // Change the visualization mode, invalidating the cache if necessary

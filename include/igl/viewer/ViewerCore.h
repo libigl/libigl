@@ -119,7 +119,7 @@ public:
   float model_zoom;
   Eigen::Vector3f model_translation;
 
-  // Model viewing paramters (uv coordinates)
+  // Model viewing parameters (uv coordinates)
   float model_zoom_uv;
   Eigen::Vector3f model_translation_uv;
 

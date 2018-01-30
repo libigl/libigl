@@ -100,7 +100,7 @@ py::class_<Type> bind_eigen_2(py::module &m, const char *name) {
         .def("rows", [](const Type &m) { return m.rows(); })
         .def("shape", [](const Type &m) { return std::tuple<int,int>(m.rows(), m.cols()); })
 
-        /* Extract rows and colums */
+        /* Extract rows and columns */
         .def("col", [](const Type &m, int i) {
             if (i<0 || i>=m.cols())
               throw std::runtime_error("Column index out of bound.");
