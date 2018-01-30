@@ -39,4 +39,7 @@ template void igl::reorder<int>(std::vector<int, std::allocator<int> > const&, s
   template void igl::reorder<igl::SortableRow<Eigen::Matrix<double, -1, 1, 0, -1, 1> > >(std::vector<igl::SortableRow<Eigen::Matrix<double, -1, 1, 0, -1, 1> >, std::allocator<igl::SortableRow<Eigen::Matrix<double, -1, 1, 0, -1, 1> > > > const&, std::vector<size_t, std::allocator<size_t> > const&, std::vector<igl::SortableRow<Eigen::Matrix<double, -1, 1, 0, -1, 1> >, std::allocator<igl::SortableRow<Eigen::Matrix<double, -1, 1, 0, -1, 1> > > >&);
 #  endif
 template void igl::reorder<long>(std::vector<long, std::allocator<long> > const&, std::vector<size_t, std::allocator<size_t> > const&, std::vector<long, std::allocator<long> >&);
+#ifdef WIN32
+template void igl::reorder<float>(class std::vector<float,class std::allocator<float> > const &,class std::vector<unsigned __int64,class std::allocator<unsigned __int64> > const &,class std::vector<float,class std::allocator<float> > &);
+#endif
 #endif
