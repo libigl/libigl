@@ -15,6 +15,7 @@
 #include "sort.h"
 #include "volume.h"
 #include "ray_box_intersect.h"
+#include "parallel_for.h"
 #include "ray_mesh_intersect.h"
 #include <iostream>
 #include <iomanip>
@@ -482,14 +483,16 @@ IGL_INLINE void igl::AABB<DerivedV,DIM>::squared_distance(
   C.resizeLike(P);
   // O( #P * log #Ele ), where log #Ele is really the depth of this AABB
   // hierarchy
-  for(int p = 0;p<P.rows();p++)
-  {
-    RowVectorDIMS Pp = P.row(p), c;
-    int Ip;
-    sqrD(p) = squared_distance(V,Ele,Pp,Ip,c);
-    I(p) = Ip;
-    C.row(p).head(DIM) = c;
-  }
+  //for(int p = 0;p<P.rows();p++)
+  igl::parallel_for(P.rows(),[&](int p)
+    {
+      RowVectorDIMS Pp = P.row(p), c;
+      int Ip;
+      sqrD(p) = squared_distance(V,Ele,Pp,Ip,c);
+      I(p) = Ip;
+      C.row(p).head(DIM) = c;
+    },
+    10000);
 }
 
 template <typename DerivedV, int DIM>
