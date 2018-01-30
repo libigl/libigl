@@ -249,7 +249,7 @@ endif()
 ################################################################################
 ### Compile the matlab part ###
 if(LIBIGL_WITH_MATLAB)
-  find_package(MATLAB)
+  find_package(Matlab)
   if(MATLAB_FOUND)
     compile_igl_module("matlab")
     target_link_libraries(igl_matlab ${IGL_SCOPE} ${MATLAB_LIBRARIES})
