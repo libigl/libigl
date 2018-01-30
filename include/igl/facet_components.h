@@ -16,7 +16,7 @@ namespace igl
   //
   // Inputs:
   //   F  #F by 3 list of triangle indices
-  // Ouputs:
+  // Outputs:
   //   C  #F list of connected component ids
   template <typename DerivedF, typename DerivedC>
   IGL_INLINE void facet_components(
@@ -25,7 +25,7 @@ namespace igl
   // Inputs:
   //   TT  #TT by 3 list of list of adjacency triangles (see
   //   triangle_triangle_adjacency.h)
-  // Ouputs:
+  // Outputs:
   //   C  #F list of connected component ids
   //   counts #C list of number of facets in each components
   template <

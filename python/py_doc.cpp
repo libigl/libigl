@@ -126,7 +126,7 @@ const char *__doc_igl_bbw = R"igl_Qu8mg5v7(// Compute Bounded Biharmonic Weights
   //   Ele  #Elements by simplex-size list of element indices
   //   b  #b boundary indices into V
   //   bc #b by #W list of boundary values
-  //   data  object containing options, intial guess --> solution and results
+  //   data  object containing options, initial guess --> solution and results
   // Outputs:
   //   W  #V by #W list of *unnormalized* weights to normalize use
   //    igl::normalize_row_sums(W,W);
@@ -182,7 +182,7 @@ const char *__doc_igl_cat = R"igl_Qu8mg5v7(// Perform concatenation of a two mat
   // Template:
   //   Scalar  scalar data type for sparse matrices like double or int
   //   Mat  matrix type for all matrices (e.g. MatrixXd, SparseMatrix)
-  //   MatC  matrix type for ouput matrix (e.g. MatrixXd) needs to support
+  //   MatC  matrix type for output matrix (e.g. MatrixXd) needs to support
   //     resize
   // Inputs:
   //   A  first input matrix
@@ -322,7 +322,7 @@ const char *__doc_igl_copyleft_comiso_miq = R"igl_Qu8mg5v7(// Inputs:
     //   UV             #UV by 2 list of vertices in 2D
     //   FUV            #FUV by 3 list of face indices in UV
     //
-    // TODO: rename the parameters name in the cpp consistenly
+    // TODO: rename the parameters name in the cpp consistently
     //       improve the handling of hard_features, right now it might fail in difficult cases)igl_Qu8mg5v7";
 const char *__doc_igl_copyleft_comiso_nrosy = R"igl_Qu8mg5v7(// Generate a N-RoSy field from a sparse set of constraints
     //
@@ -336,7 +336,7 @@ const char *__doc_igl_copyleft_comiso_nrosy = R"igl_Qu8mg5v7(// Generate a N-RoS
     //   w_soft  #S by 1 weight for the soft constraints (0-1)
     //   bc_soft #S by 3 bc for soft constraints
     //   N       the degree of the N-RoSy vector field
-    //   soft    the strenght of the soft contraints w.r.t. smoothness
+    //   soft    the strength of the soft constraints w.r.t. smoothness
     //           (0 -> smoothness only, 1->constraints only)
     // Outputs:
     //   R       #F by 3 the representative vectors of the interpolated field
@@ -473,7 +473,7 @@ const char *__doc_igl_directed_edge_orientations = R"igl_Qu8mg5v7(// Determine r
   // Outputs:
   //   Q  #E list of quaternions 
   //)igl_Qu8mg5v7";
-const char *__doc_igl_directed_edge_parents = R"igl_Qu8mg5v7(// Recover "parents" (preceeding edges) in a tree given just directed edges.
+const char *__doc_igl_directed_edge_parents = R"igl_Qu8mg5v7(// Recover "parents" (preceding edges) in a tree given just directed edges.
   //
   // Inputs:
   //   E  #E by 2 list of directed edges
@@ -1040,7 +1040,7 @@ const char *__doc_igl_principal_curvature = R"igl_Qu8mg5v7(// Compute the princi
   // Inputs:
   //   V       eigen matrix #V by 3
   //   F       #F by 3 list of mesh faces (must be triangles)
-  //   radius  controls the size of the neighbourhood used, 1 = average edge lenght
+  //   radius  controls the size of the neighbourhood used, 1 = average edge length
   //
   // Outputs:
   //   PD1 #V by 3 maximal curvature direction for each vertex.
@@ -1123,7 +1123,7 @@ const char *__doc_igl_readTGF = R"igl_Qu8mg5v7(// READTGF
   //
   // Input:
   //  filename  .tgf file name
-  // Ouput:
+  // Output:
   //  V  # vertices by 3 list of vertex positions
   //  E  # edges by 2 list of edge indices
   //  P  # point-handles list of point handle indices

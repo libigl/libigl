@@ -21,7 +21,7 @@ IGL_INLINE bool igl::png::writePNG(
   assert((R.cols() == G.cols()) && (G.cols() == B.cols()) && (B.cols() == A.cols()));
 
   const int comp = 4;                                  // 4 Channels Red, Green, Blue, Alpha
-  const int stride_in_bytes = R.rows()*comp;           // Lenght of one row in bytes
+  const int stride_in_bytes = R.rows()*comp;           // Length of one row in bytes
   std::vector<unsigned char> data(R.size()*comp,0);     // The image itself;
 
   for (unsigned i = 0; i<R.rows();++i)

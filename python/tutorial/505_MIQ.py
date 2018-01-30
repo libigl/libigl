@@ -226,7 +226,7 @@ S = igl.eigen.MatrixXd()
 
 igl.comiso.nrosy(V, F, b, bc, igl.eigen.MatrixXi(), igl.eigen.MatrixXd(), igl.eigen.MatrixXd(), 4, 0.5, X1, S)
 
-# Find the the orthogonal vector
+# Find the orthogonal vector
 B1 = igl.eigen.MatrixXd()
 B2 = igl.eigen.MatrixXd()
 B3 = igl.eigen.MatrixXd()

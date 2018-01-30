@@ -48,7 +48,7 @@ IGL_INLINE bool igl::readOBJ(
   std::vector<std::vector<Index > > & FTC,
   std::vector<std::vector<Index > > & FN)
 {
-  // File open was succesfull so clear outputs
+  // File open was successful so clear outputs
   V.clear();
   TC.clear();
   N.clear();
@@ -56,7 +56,7 @@ IGL_INLINE bool igl::readOBJ(
   FTC.clear();
   FN.clear();
 
-  // variables an constants to assist parsing the .obj file
+  // variables and constants to assist parsing the .obj file
   // Constant strings to compare against
   std::string v("v");
   std::string vn("vn");
