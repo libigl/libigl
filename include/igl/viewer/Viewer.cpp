@@ -772,6 +772,20 @@ namespace viewer
     using namespace std;
     using namespace Eigen;
 
+    int width, height;
+    glfwGetFramebufferSize(window, &width, &height);
+
+    int width_window, height_window;
+    glfwGetWindowSize(window, &width_window, &height_window);
+
+    auto highdpi_tmp = width/width_window;
+
+    if(fabs(highdpi_tmp-highdpi)>1e-8)
+    {
+      post_resize(width, height);
+      highdpi=highdpi_tmp;
+    }
+
     core.clear_framebuffers();
 
     if (callback_pre_draw)
@@ -850,9 +864,8 @@ namespace viewer
   {
     if (window) {
       glfwSetWindowSize(window, w/highdpi, h/highdpi);
-    } else {
-      post_resize(w, h);
     }
+    post_resize(w, h);
   }
 
   IGL_INLINE void Viewer::post_resize(int w,int h)
