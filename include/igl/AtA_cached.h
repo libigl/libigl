@@ -44,20 +44,22 @@ namespace igl
   // AtA_data = igl::AtA_cached_data();
   // AtA_data.W = W;
   // if (s.AtA.rows() == 0)
-  //   igl::AtA_cached_precompute(s.A,s.AtA,s.AtA_data);
+  //   igl::AtA_cached_precompute(s.A,s.AtA_data,s.AtA);
   // else
-  //   igl::AtA_cached(s.A,s.AtA,s.AtA_data);
+  //   igl::AtA_cached(s.A,s.AtA_data,s.AtA);
   template <typename Scalar>
   IGL_INLINE void AtA_cached_precompute(
     const Eigen::SparseMatrix<Scalar>& A,
-    Eigen::SparseMatrix<Scalar>& AtA,
-    AtA_cached_data& data);
+    AtA_cached_data& data,
+    Eigen::SparseMatrix<Scalar>& AtA
+    );
 
   template <typename Scalar>
   IGL_INLINE void AtA_cached(
     const Eigen::SparseMatrix<Scalar>& A,
-    Eigen::SparseMatrix<Scalar>& AtA,
-    const AtA_cached_data& data);
+    const AtA_cached_data& data,
+    Eigen::SparseMatrix<Scalar>& AtA
+    );
   
 }
 
