@@ -10,15 +10,16 @@
 #include <iostream>
 #include <vector>
 #include <utility>
-#include <igl/slice.h>
+#include "slice.h"
 
-template <typename TX, typename TY>
+template <typename TX, typename TY, typename DerivedI>
 IGL_INLINE void igl::slice_cached_precompute(
   const Eigen::SparseMatrix<TX>& X,
   const Eigen::Matrix<int,Eigen::Dynamic,1> & R,
   const Eigen::Matrix<int,Eigen::Dynamic,1> & C,
-  Eigen::SparseMatrix<TY>& Y,
-  Eigen::VectorXi& data)
+  Eigen::MatrixBase<DerivedI>& data,
+  Eigen::SparseMatrix<TY>& Y
+  )
 {
   // Create a sparse matrix whose entries are the ids
   Eigen::SparseMatrix<unsigned> TS = X.template cast<unsigned>();
@@ -39,17 +40,18 @@ IGL_INLINE void igl::slice_cached_precompute(
   }
 }
 
-template <typename TX, typename TY>
+template <typename TX, typename TY, typename DerivedI>
 IGL_INLINE void igl::slice_cached(
   const Eigen::SparseMatrix<TX>& X,
-  Eigen::SparseMatrix<TY>& Y,
-  const Eigen::VectorXi& data)
+  const Eigen::MatrixBase<DerivedI>& data,
+  Eigen::SparseMatrix<TY>& Y
+  )
 {
   for (unsigned i=0; i<data.size(); ++i)
     *(Y.valuePtr() + i) = *(X.valuePtr() + data[i]);
 }
 
 #ifdef IGL_STATIC_LIBRARY
-template void igl::slice_cached_precompute<double, double>(Eigen::SparseMatrix<double, 0, int> const&, Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, Eigen::SparseMatrix<double, 0, int>&, Eigen::Matrix<int, -1, 1, 0, -1, 1>&);
-template void igl::slice_cached<double, double>(Eigen::SparseMatrix<double, 0, int> const&, Eigen::SparseMatrix<double, 0, int>&, Eigen::Matrix<int, -1, 1, 0, -1, 1> const&);
+template void igl::slice_cached<double, double, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::SparseMatrix<double, 0, int> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, Eigen::SparseMatrix<double, 0, int>&);
+template void igl::slice_cached_precompute<double, double, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::SparseMatrix<double, 0, int> const&, Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&, Eigen::SparseMatrix<double, 0, int>&);
 #endif
