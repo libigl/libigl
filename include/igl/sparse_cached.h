@@ -52,26 +52,29 @@ namespace igl
   IGL_INLINE void sparse_cached_precompute(
     const Eigen::MatrixBase<DerivedI> & I,
     const Eigen::MatrixBase<DerivedI> & J,
-    Eigen::SparseMatrix<Scalar>& X,
-    Eigen::VectorXi& data);
+    Eigen::VectorXi& data,
+    Eigen::SparseMatrix<Scalar>& X
+    );
   
   template <typename Scalar>
   IGL_INLINE void sparse_cached_precompute(
     const std::vector<Eigen::Triplet<Scalar> >& triplets,
-    Eigen::SparseMatrix<Scalar>& X,
-    Eigen::VectorXi& data);
+    Eigen::VectorXi& data,
+    Eigen::SparseMatrix<Scalar>& X
+    );
 
   template <typename Scalar>
   IGL_INLINE void sparse_cached(
     const std::vector<Eigen::Triplet<Scalar> >& triplets,
-    Eigen::SparseMatrix<Scalar>& X,
-    const Eigen::VectorXi& data);
+    const Eigen::VectorXi& data,
+    Eigen::SparseMatrix<Scalar>& X);
 
   template <typename DerivedV, typename Scalar>
   IGL_INLINE void sparse_cached(
     const Eigen::MatrixBase<DerivedV>& V,
-    Eigen::SparseMatrix<Scalar>& X,
-    const Eigen::VectorXi& data);
+    const Eigen::VectorXi& data,
+    Eigen::SparseMatrix<Scalar>& X
+    );
   
 }
 
