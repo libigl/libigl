@@ -303,6 +303,8 @@ if(LIBIGL_WITH_OPENGL)
     target_include_directories(nanogui PUBLIC
       "${NANOGUI_DIR}/include"
       "${NANOGUI_DIR}/ext/nanovg/src")
+    target_compile_definitions(nanogui ${IGL_SCOPE} -DIGL_VIEWER_WITH_NANOGUI)
+    
   endif()
 
   # GLFW module

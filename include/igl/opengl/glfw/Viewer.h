@@ -84,8 +84,6 @@ namespace glfw
     IGL_INLINE void open_dialog_load_mesh();
     IGL_INLINE void open_dialog_save_mesh();
     IGL_INLINE ViewerData& data();
-    //IGL_INLINE const ViewerData& const_data() const;
-    IGL_INLINE MeshGL& selected_opengl_state();
     // Append a new "slot" for a mesh (i.e., create empty entires at the end of
     // the data_list and opengl_state_list.
     //
@@ -117,8 +115,6 @@ namespace glfw
     // old "data" variable.
     // Stores all the data that should be visualized
     std::vector<ViewerData> data_list;
-    // Stores the vbos indices and opengl related settings
-    std::vector<MeshGL> opengl_state_list;
   public:
     size_t selected_data_index;
     GLFWwindow* window;

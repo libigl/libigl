@@ -75,10 +75,9 @@ public:
   // Draw everything
   //
   // data cannot be const because it is being set to "clean"
-  IGL_INLINE void draw(ViewerData& data, MeshGL& opengl, bool update_matrices = true);
+  IGL_INLINE void draw(ViewerData& data, bool update_matrices = true);
   IGL_INLINE void draw_buffer(
     ViewerData& data,
-    MeshGL& opengl,
     bool update_matrices,
     Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& R,
     Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& G,
@@ -99,7 +98,7 @@ public:
 
 #ifdef IGL_VIEWER_WITH_NANOGUI
   // Text rendering helper
-  TextRenderer textrenderer;
+  glfw::TextRenderer textrenderer;
 #endif
 
 

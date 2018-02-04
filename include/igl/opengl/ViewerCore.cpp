@@ -96,7 +96,6 @@ IGL_INLINE void igl::opengl::ViewerCore::clear_framebuffers()
 
 IGL_INLINE void igl::opengl::ViewerCore::draw(
   ViewerData& data,
-  MeshGL& opengl,
   bool update_matrices)
 {
   using namespace std;
@@ -113,10 +112,10 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
   /* Bind and potentially refresh mesh/line/point data */
   if (data.dirty)
   {
-    opengl.set_data(data, data.invert_normals);
-    data.dirty = ViewerData::DIRTY_NONE;
+    data.updateGL(data, data.invert_normals,data.meshgl);
+    data.dirty = MeshGL::DIRTY_NONE;
   }
-  opengl.bind_mesh();
+  data.meshgl.bind_mesh();
 
   // Initialize uniform
   glViewport(viewport(0), viewport(1), viewport(2), viewport(3));
@@ -163,19 +162,19 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
   }
 
   // Send transformations to the GPU
-  GLint modeli = glGetUniformLocation(opengl.shader_mesh,"model");
-  GLint viewi  = glGetUniformLocation(opengl.shader_mesh,"view");
-  GLint proji  = glGetUniformLocation(opengl.shader_mesh,"proj");
+  GLint modeli = glGetUniformLocation(data.meshgl.shader_mesh,"model");
+  GLint viewi  = glGetUniformLocation(data.meshgl.shader_mesh,"view");
+  GLint proji  = glGetUniformLocation(data.meshgl.shader_mesh,"proj");
   glUniformMatrix4fv(modeli, 1, GL_FALSE, model.data());
   glUniformMatrix4fv(viewi, 1, GL_FALSE, view.data());
   glUniformMatrix4fv(proji, 1, GL_FALSE, proj.data());
 
   // Light parameters
-  GLint specular_exponenti    = glGetUniformLocation(opengl.shader_mesh,"specular_exponent");
-  GLint light_position_worldi = glGetUniformLocation(opengl.shader_mesh,"light_position_world");
-  GLint lighting_factori      = glGetUniformLocation(opengl.shader_mesh,"lighting_factor");
-  GLint fixed_colori          = glGetUniformLocation(opengl.shader_mesh,"fixed_color");
-  GLint texture_factori       = glGetUniformLocation(opengl.shader_mesh,"texture_factor");
+  GLint specular_exponenti    = glGetUniformLocation(data.meshgl.shader_mesh,"specular_exponent");
+  GLint light_position_worldi = glGetUniformLocation(data.meshgl.shader_mesh,"light_position_world");
+  GLint lighting_factori      = glGetUniformLocation(data.meshgl.shader_mesh,"lighting_factor");
+  GLint fixed_colori          = glGetUniformLocation(data.meshgl.shader_mesh,"fixed_color");
+  GLint texture_factori       = glGetUniformLocation(data.meshgl.shader_mesh,"texture_factor");
 
   glUniform1f(specular_exponenti, data.shininess);
   Vector3f rev_light = -1.*light_position;
@@ -190,7 +189,7 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
     {
       // Texture
       glUniform1f(texture_factori, data.show_texture ? 1.0f : 0.0f);
-      opengl.draw_mesh(true);
+      data.meshgl.draw_mesh(true);
       glUniform1f(texture_factori, 0.0f);
     }
 
@@ -202,7 +201,7 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
         data.line_color[0], 
         data.line_color[1],
         data.line_color[2], 1.0f);
-      opengl.draw_mesh(false);
+      data.meshgl.draw_mesh(false);
       glUniform4f(fixed_colori, 0.0f, 0.0f, 0.0f, 0.0f);
     }
 
@@ -242,10 +241,10 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
 
     if (data.lines.rows() > 0)
     {
-      opengl.bind_overlay_lines();
-      modeli = glGetUniformLocation(opengl.shader_overlay_lines,"model");
-      viewi  = glGetUniformLocation(opengl.shader_overlay_lines,"view");
-      proji  = glGetUniformLocation(opengl.shader_overlay_lines,"proj");
+      data.meshgl.bind_overlay_lines();
+      modeli = glGetUniformLocation(data.meshgl.shader_overlay_lines,"model");
+      viewi  = glGetUniformLocation(data.meshgl.shader_overlay_lines,"view");
+      proji  = glGetUniformLocation(data.meshgl.shader_overlay_lines,"proj");
 
       glUniformMatrix4fv(modeli, 1, GL_FALSE, model.data());
       glUniformMatrix4fv(viewi, 1, GL_FALSE, view.data());
@@ -254,22 +253,22 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
       glEnable(GL_LINE_SMOOTH);
       glLineWidth(data.line_width);
 
-      opengl.draw_overlay_lines();
+      data.meshgl.draw_overlay_lines();
     }
 
     if (data.points.rows() > 0)
     {
-      opengl.bind_overlay_points();
-      modeli = glGetUniformLocation(opengl.shader_overlay_points,"model");
-      viewi  = glGetUniformLocation(opengl.shader_overlay_points,"view");
-      proji  = glGetUniformLocation(opengl.shader_overlay_points,"proj");
+      data.meshgl.bind_overlay_points();
+      modeli = glGetUniformLocation(data.meshgl.shader_overlay_points,"model");
+      viewi  = glGetUniformLocation(data.meshgl.shader_overlay_points,"view");
+      proji  = glGetUniformLocation(data.meshgl.shader_overlay_points,"proj");
 
       glUniformMatrix4fv(modeli, 1, GL_FALSE, model.data());
       glUniformMatrix4fv(viewi, 1, GL_FALSE, view.data());
       glUniformMatrix4fv(proji, 1, GL_FALSE, proj.data());
       glPointSize(data.point_size);
 
-      opengl.draw_overlay_points();
+      data.meshgl.draw_overlay_points();
     }
 
 #ifdef IGL_VIEWER_WITH_NANOGUI
@@ -289,7 +288,6 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
 }
 
 IGL_INLINE void igl::opengl::ViewerCore::draw_buffer(ViewerData& data,
-  MeshGL& opengl,
   bool update_matrices,
   Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& R,
   Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& G,
@@ -339,7 +337,7 @@ IGL_INLINE void igl::opengl::ViewerCore::draw_buffer(ViewerData& data,
   viewport << 0,0,x,y;
 
   // Draw
-  draw(data,opengl,update_matrices);
+  draw(data,update_matrices);
 
   // Restore viewport
   viewport = viewport_ori;
