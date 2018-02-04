@@ -14,9 +14,9 @@
 
 
 #include "../../igl_inline.h"
-#include "../State.h"
+#include "../MeshGL.h"
 #include "../ViewerCore.h"
-#include "../../ViewerData.h"
+#include "../ViewerData.h"
 #include "ViewerPlugin.h"
 
 #include <Eigen/Core>
@@ -85,7 +85,7 @@ namespace glfw
     IGL_INLINE void open_dialog_save_mesh();
     IGL_INLINE ViewerData& data();
     //IGL_INLINE const ViewerData& const_data() const;
-    IGL_INLINE State& selected_opengl_state();
+    IGL_INLINE MeshGL& selected_opengl_state();
     // Append a new "slot" for a mesh (i.e., create empty entires at the end of
     // the data_list and opengl_state_list.
     //
@@ -118,7 +118,7 @@ namespace glfw
     // Stores all the data that should be visualized
     std::vector<ViewerData> data_list;
     // Stores the vbos indices and opengl related settings
-    std::vector<State> opengl_state_list;
+    std::vector<MeshGL> opengl_state_list;
   public:
     size_t selected_data_index;
     GLFWwindow* window;

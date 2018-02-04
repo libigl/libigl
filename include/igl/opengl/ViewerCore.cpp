@@ -96,7 +96,7 @@ IGL_INLINE void igl::opengl::ViewerCore::clear_framebuffers()
 
 IGL_INLINE void igl::opengl::ViewerCore::draw(
   ViewerData& data,
-  State& opengl,
+  MeshGL& opengl,
   bool update_matrices)
 {
   using namespace std;
@@ -289,7 +289,7 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
 }
 
 IGL_INLINE void igl::opengl::ViewerCore::draw_buffer(ViewerData& data,
-  State& opengl,
+  MeshGL& opengl,
   bool update_matrices,
   Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& R,
   Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& G,

@@ -1124,7 +1124,7 @@ namespace glfw
     return true;
   }
 
-  IGL_INLINE State& Viewer::selected_opengl_state()
+  IGL_INLINE MeshGL& Viewer::selected_opengl_state()
   {
     assert(!opengl_state_list.empty() && "opengl_state_list should never be empty");
     assert(opengl_state_list.size() == data_list.size());

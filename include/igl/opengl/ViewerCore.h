@@ -8,12 +8,11 @@
 #ifndef IGL_OPENGL_VIEWERCORE_H
 #define IGL_OPENGL_VIEWERCORE_H
 
-#include <igl/opengl/State.h>
+#include <igl/opengl/MeshGL.h>
 #ifdef IGL_VIEWER_WITH_NANOGUI
 #include <igl/opengl/glfw/TextRenderer.h>
 #endif
-#include <igl/ViewerData.h>
-#include <igl/opengl/State.h>
+#include <igl/opengl/ViewerData.h>
 
 #include <igl/igl_inline.h>
 #include <Eigen/Geometry>
@@ -76,10 +75,10 @@ public:
   // Draw everything
   //
   // data cannot be const because it is being set to "clean"
-  IGL_INLINE void draw(ViewerData& data, State& opengl, bool update_matrices = true);
+  IGL_INLINE void draw(ViewerData& data, MeshGL& opengl, bool update_matrices = true);
   IGL_INLINE void draw_buffer(
     ViewerData& data,
-    State& opengl,
+    MeshGL& opengl,
     bool update_matrices,
     Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& R,
     Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& G,

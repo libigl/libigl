@@ -20,6 +20,9 @@ namespace igl
 {
 
 // TODO: write documentation
+namespace opengl
+{
+
 
 class ViewerData
 {
@@ -203,6 +206,7 @@ public:
   float shininess;
 };
 
+}
 }
 
 #ifdef ENABLE_SERIALIZATION
