@@ -13,7 +13,7 @@ import pyigl as igl
 
 from shared import TUTORIAL_SHARED_PATH, check_dependencies
 
-dependencies = ["viewer"]
+dependencies = ["opengl_glfw"]
 check_dependencies(dependencies)
 
 
