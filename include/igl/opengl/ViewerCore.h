@@ -157,7 +157,6 @@ public:
 }
 }
 
-// Alec: Is this the best place for this?
 #ifdef ENABLE_SERIALIZATION
 #include <igl/serialize.h>
 namespace igl {
