@@ -5,32 +5,37 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
-#ifndef IGL_VIEWER_OPENGL_STATE_H
-#define IGL_VIEWER_OPENGL_STATE_H
+#ifndef IGL_OPENGL_STATE_H
+#define IGL_OPENGL_STATE_H
 
-// Coverts mesh data inside a igl::viewer::ViewerData class in an OpenGL compatible format
-// The class includes a shader and the opengl calls to plot the data
+// Coverts mesh data inside a igl::ViewerData class in an OpenGL
+// compatible format The class includes a shader and the opengl calls to plot
+// the data
+
+// Alec: not sure why this is call "State". It seems this is a drawable mesh
+// equipt with its own shaders and dirty flags. "Mesh" would even be more
+// appropriate.
 
 #include <igl/igl_inline.h>
-#include <igl/viewer/OpenGL_shader.h>
-#include <igl/viewer/ViewerData.h>
+#include "../ViewerData.h"
 
 namespace igl
 {
-namespace viewer
+namespace opengl
 {
 
-class OpenGL_state
+class State
 {
 public:
   typedef unsigned int GLuint;
 
+  bool is_initialized = false;
   GLuint vao_mesh;
   GLuint vao_overlay_lines;
   GLuint vao_overlay_points;
-  OpenGL_shader shader_mesh;
-  OpenGL_shader shader_overlay_lines;
-  OpenGL_shader shader_overlay_points;
+  GLuint shader_mesh;
+  GLuint shader_overlay_lines;
+  GLuint shader_overlay_points;
 
   GLuint vbo_V; // Vertices of the current mesh (#V x 3)
   GLuint vbo_V_uv; // UV coordinates for the current mesh (#V x 2)
@@ -50,24 +55,25 @@ public:
   GLuint vbo_points_V_colors; // Color values of the point overlay
 
   // Temporary copy of the content of each VBO
-  Eigen::MatrixXf V_vbo;
-  Eigen::MatrixXf V_normals_vbo;
-  Eigen::MatrixXf V_ambient_vbo;
-  Eigen::MatrixXf V_diffuse_vbo;
-  Eigen::MatrixXf V_specular_vbo;
-  Eigen::MatrixXf V_uv_vbo;
-  Eigen::MatrixXf lines_V_vbo;
-  Eigen::MatrixXf lines_V_colors_vbo;
-  Eigen::MatrixXf points_V_vbo;
-  Eigen::MatrixXf points_V_colors_vbo;
+  typedef Eigen::Matrix<float,Eigen::Dynamic,Eigen::Dynamic,Eigen::RowMajor> RowMatrixXf;
+  RowMatrixXf V_vbo;
+  RowMatrixXf V_normals_vbo;
+  RowMatrixXf V_ambient_vbo;
+  RowMatrixXf V_diffuse_vbo;
+  RowMatrixXf V_specular_vbo;
+  RowMatrixXf V_uv_vbo;
+  RowMatrixXf lines_V_vbo;
+  RowMatrixXf lines_V_colors_vbo;
+  RowMatrixXf points_V_vbo;
+  RowMatrixXf points_V_colors_vbo;
 
   int tex_u;
   int tex_v;
   Eigen::Matrix<char,Eigen::Dynamic,1> tex;
 
-  Eigen::Matrix<unsigned, Eigen::Dynamic, Eigen::Dynamic> F_vbo;
-  Eigen::Matrix<unsigned, Eigen::Dynamic, Eigen::Dynamic> lines_F_vbo;
-  Eigen::Matrix<unsigned, Eigen::Dynamic, Eigen::Dynamic> points_F_vbo;
+  Eigen::Matrix<unsigned, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> F_vbo;
+  Eigen::Matrix<unsigned, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> lines_F_vbo;
+  Eigen::Matrix<unsigned, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> points_F_vbo;
 
   // Marks dirty buffers that need to be uploaded to OpenGL
   uint32_t dirty;
@@ -82,7 +88,7 @@ public:
   IGL_INLINE void init_buffers();
 
   // Update contents from a 'Data' instance
-  IGL_INLINE void set_data(const igl::viewer::ViewerData &data, bool invert_normals);
+  IGL_INLINE void set_data(const igl::ViewerData &data, bool invert_normals);
 
   // Bind the underlying OpenGL buffer objects for subsequent mesh draw calls
   IGL_INLINE void bind_mesh();
@@ -111,7 +117,7 @@ public:
 }
 
 #ifndef IGL_STATIC_LIBRARY
-#  include "OpenGL_state.cpp"
+#  include "State.cpp"
 #endif
 
 #endif

@@ -8,20 +8,33 @@
 
 #include "ViewerData.h"
 
+#include "per_face_normals.h"
+#include "material_colors.h"
+#include "parula.h"
+#include "per_vertex_normals.h"
+
 #include <iostream>
 
-#include <igl/per_face_normals.h>
-#include <igl/material_colors.h>
-#include <igl/parula.h>
-#include <igl/per_vertex_normals.h>
 
-IGL_INLINE igl::viewer::ViewerData::ViewerData()
-: dirty(DIRTY_ALL)
+IGL_INLINE igl::ViewerData::ViewerData()
+: dirty(DIRTY_ALL),
+  show_faces(true),
+  show_lines(true),
+  invert_normals(false),
+  show_overlay(true),
+  show_overlay_depth(true),
+  show_vertid(false),
+  show_faceid(false),
+  show_texture(false),
+  point_size(30),
+  line_width(0.5f),
+  line_color(0,0,0,1),
+  shininess(35.0f)
 {
   clear();
 };
 
-IGL_INLINE void igl::viewer::ViewerData::set_face_based(bool newvalue)
+IGL_INLINE void igl::ViewerData::set_face_based(bool newvalue)
 {
   if (face_based != newvalue)
   {
@@ -31,7 +44,8 @@ IGL_INLINE void igl::viewer::ViewerData::set_face_based(bool newvalue)
 }
 
 // Helpers that draws the most common meshes
-IGL_INLINE void igl::viewer::ViewerData::set_mesh(const Eigen::MatrixXd& _V, const Eigen::MatrixXi& _F)
+IGL_INLINE void igl::ViewerData::set_mesh(
+    const Eigen::MatrixXd& _V, const Eigen::MatrixXi& _F)
 {
   using namespace std;
 
@@ -72,14 +86,14 @@ IGL_INLINE void igl::viewer::ViewerData::set_mesh(const Eigen::MatrixXd& _V, con
   dirty |= DIRTY_FACE | DIRTY_POSITION;
 }
 
-IGL_INLINE void igl::viewer::ViewerData::set_vertices(const Eigen::MatrixXd& _V)
+IGL_INLINE void igl::ViewerData::set_vertices(const Eigen::MatrixXd& _V)
 {
   V = _V;
   assert(F.size() == 0 || F.maxCoeff() < V.rows());
   dirty |= DIRTY_POSITION;
 }
 
-IGL_INLINE void igl::viewer::ViewerData::set_normals(const Eigen::MatrixXd& N)
+IGL_INLINE void igl::ViewerData::set_normals(const Eigen::MatrixXd& N)
 {
   using namespace std;
   if (N.rows() == V.rows())
@@ -97,7 +111,7 @@ IGL_INLINE void igl::viewer::ViewerData::set_normals(const Eigen::MatrixXd& N)
   dirty |= DIRTY_NORMAL;
 }
 
-IGL_INLINE void igl::viewer::ViewerData::set_colors(const Eigen::MatrixXd &C)
+IGL_INLINE void igl::ViewerData::set_colors(const Eigen::MatrixXd &C)
 {
   using namespace std;
   using namespace Eigen;
@@ -165,7 +179,7 @@ IGL_INLINE void igl::viewer::ViewerData::set_colors(const Eigen::MatrixXd &C)
 
 }
 
-IGL_INLINE void igl::viewer::ViewerData::set_uv(const Eigen::MatrixXd& UV)
+IGL_INLINE void igl::ViewerData::set_uv(const Eigen::MatrixXd& UV)
 {
   using namespace std;
   if (UV.rows() == V.rows())
@@ -178,7 +192,7 @@ IGL_INLINE void igl::viewer::ViewerData::set_uv(const Eigen::MatrixXd& UV)
   dirty |= DIRTY_UV;
 }
 
-IGL_INLINE void igl::viewer::ViewerData::set_uv(const Eigen::MatrixXd& UV_V, const Eigen::MatrixXi& UV_F)
+IGL_INLINE void igl::ViewerData::set_uv(const Eigen::MatrixXd& UV_V, const Eigen::MatrixXi& UV_F)
 {
   set_face_based(true);
   V_uv = UV_V.block(0,0,UV_V.rows(),2);
@@ -187,7 +201,7 @@ IGL_INLINE void igl::viewer::ViewerData::set_uv(const Eigen::MatrixXd& UV_V, con
 }
 
 
-IGL_INLINE void igl::viewer::ViewerData::set_texture(
+IGL_INLINE void igl::ViewerData::set_texture(
   const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& R,
   const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& G,
   const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& B)
@@ -199,7 +213,7 @@ IGL_INLINE void igl::viewer::ViewerData::set_texture(
   dirty |= DIRTY_TEXTURE;
 }
 
-IGL_INLINE void igl::viewer::ViewerData::set_texture(
+IGL_INLINE void igl::ViewerData::set_texture(
   const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& R,
   const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& G,
   const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& B,
@@ -212,7 +226,7 @@ IGL_INLINE void igl::viewer::ViewerData::set_texture(
   dirty |= DIRTY_TEXTURE;
 }
 
-IGL_INLINE void igl::viewer::ViewerData::set_points(
+IGL_INLINE void igl::ViewerData::set_points(
   const Eigen::MatrixXd& P,
   const Eigen::MatrixXd& C)
 {
@@ -221,7 +235,7 @@ IGL_INLINE void igl::viewer::ViewerData::set_points(
   add_points(P,C);
 }
 
-IGL_INLINE void igl::viewer::ViewerData::add_points(const Eigen::MatrixXd& P,  const Eigen::MatrixXd& C)
+IGL_INLINE void igl::ViewerData::add_points(const Eigen::MatrixXd& P,  const Eigen::MatrixXd& C)
 {
   Eigen::MatrixXd P_temp;
 
@@ -242,7 +256,7 @@ IGL_INLINE void igl::viewer::ViewerData::add_points(const Eigen::MatrixXd& P,  c
   dirty |= DIRTY_OVERLAY_POINTS;
 }
 
-IGL_INLINE void igl::viewer::ViewerData::set_edges(
+IGL_INLINE void igl::ViewerData::set_edges(
   const Eigen::MatrixXd& P,
   const Eigen::MatrixXi& E,
   const Eigen::MatrixXd& C)
@@ -265,7 +279,7 @@ IGL_INLINE void igl::viewer::ViewerData::set_edges(
   dirty |= DIRTY_OVERLAY_LINES;
 }
 
-IGL_INLINE void igl::viewer::ViewerData::add_edges(const Eigen::MatrixXd& P1, const Eigen::MatrixXd& P2, const Eigen::MatrixXd& C)
+IGL_INLINE void igl::ViewerData::add_edges(const Eigen::MatrixXd& P1, const Eigen::MatrixXd& P2, const Eigen::MatrixXd& C)
 {
   Eigen::MatrixXd P1_temp,P2_temp;
 
@@ -291,7 +305,7 @@ IGL_INLINE void igl::viewer::ViewerData::add_edges(const Eigen::MatrixXd& P1, co
   dirty |= DIRTY_OVERLAY_LINES;
 }
 
-IGL_INLINE void igl::viewer::ViewerData::add_label(const Eigen::VectorXd& P,  const std::string& str)
+IGL_INLINE void igl::ViewerData::add_label(const Eigen::VectorXd& P,  const std::string& str)
 {
   Eigen::RowVectorXd P_temp;
 
@@ -310,7 +324,7 @@ IGL_INLINE void igl::viewer::ViewerData::add_label(const Eigen::VectorXd& P,  co
   labels_strings.push_back(str);
 }
 
-IGL_INLINE void igl::viewer::ViewerData::clear()
+IGL_INLINE void igl::ViewerData::clear()
 {
   V                       = Eigen::MatrixXd (0,3);
   F                       = Eigen::MatrixXi (0,3);
@@ -337,14 +351,17 @@ IGL_INLINE void igl::viewer::ViewerData::clear()
   face_based = false;
 }
 
-IGL_INLINE void igl::viewer::ViewerData::compute_normals()
+IGL_INLINE void igl::ViewerData::compute_normals()
 {
   igl::per_face_normals(V, F, F_normals);
   igl::per_vertex_normals(V, F, F_normals, V_normals);
   dirty |= DIRTY_NORMAL;
 }
 
-IGL_INLINE void igl::viewer::ViewerData::uniform_colors(const Eigen::Vector3d& ambient, const Eigen::Vector3d& diffuse, const Eigen::Vector3d& specular)
+IGL_INLINE void igl::ViewerData::uniform_colors(
+  const Eigen::Vector3d& ambient, 
+  const Eigen::Vector3d& diffuse, 
+  const Eigen::Vector3d& specular)
 {
   Eigen::Vector4d ambient4;
   Eigen::Vector4d diffuse4;
@@ -357,7 +374,10 @@ IGL_INLINE void igl::viewer::ViewerData::uniform_colors(const Eigen::Vector3d& a
   uniform_colors(ambient4,diffuse4,specular4);
 }
 
-IGL_INLINE void igl::viewer::ViewerData::uniform_colors(const Eigen::Vector4d& ambient, const Eigen::Vector4d& diffuse, const Eigen::Vector4d& specular)
+IGL_INLINE void igl::ViewerData::uniform_colors(
+  const Eigen::Vector4d& ambient, 
+  const Eigen::Vector4d& diffuse, 
+  const Eigen::Vector4d& specular)
 {
   V_material_ambient.resize(V.rows(),4);
   V_material_diffuse.resize(V.rows(),4);
@@ -383,7 +403,7 @@ IGL_INLINE void igl::viewer::ViewerData::uniform_colors(const Eigen::Vector4d& a
   dirty |= DIRTY_SPECULAR | DIRTY_DIFFUSE | DIRTY_AMBIENT;
 }
 
-IGL_INLINE void igl::viewer::ViewerData::grid_texture()
+IGL_INLINE void igl::ViewerData::grid_texture()
 {
   // Don't do anything for an empty mesh
   if(V.rows() == 0)

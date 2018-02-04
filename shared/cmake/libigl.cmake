@@ -16,13 +16,8 @@ option(LIBIGL_WITH_OPENGL_GLFW      "Use GLFW"           ON)
 option(LIBIGL_WITH_PNG              "Use PNG"            ON)
 option(LIBIGL_WITH_TETGEN           "Use Tetgen"         ON)
 option(LIBIGL_WITH_TRIANGLE         "Use Triangle"       ON)
-option(LIBIGL_WITH_VIEWER           "Use OpenGL viewer"  ON)
 option(LIBIGL_WITH_XML              "Use XML"            ON)
 option(LIBIGL_WITH_PYTHON           "Use Python"         OFF)
-
-if(LIBIGL_WITH_VIEWER AND (NOT LIBIGL_WITH_OPENGL_GLFW OR NOT LIBIGL_WITH_OPENGL) )
-  message(FATAL_ERROR "LIBIGL_WITH_VIEWER=ON requires LIBIGL_WITH_OPENGL_GLFW=ON and LIBIGL_WITH_OPENGL=ON")
-endif()
 
 ################################################################################
 
@@ -322,17 +317,6 @@ if(LIBIGL_WITH_OPENGL)
     endif()
     target_include_directories(glfw ${IGL_SCOPE} ${NANOGUI_DIR}/ext/glfw/include)
     target_link_libraries(igl_opengl_glfw ${IGL_SCOPE} igl_opengl glfw)
-  endif()
-
-  # Viewer module
-  if(LIBIGL_WITH_VIEWER)
-    compile_igl_module("viewer")
-    target_link_libraries(igl_viewer ${IGL_SCOPE} glfw glew ${OPENGL_gl_LIBRARY})
-    target_include_directories(igl_viewer SYSTEM ${IGL_SCOPE} ${OPENGL_INCLUDE_DIR})
-    if(TARGET nanogui)
-      target_link_libraries(igl_viewer ${IGL_SCOPE} nanogui)
-      target_compile_definitions(igl_viewer ${IGL_SCOPE} -DIGL_VIEWER_WITH_NANOGUI)
-    endif()
   endif()
 
 endif()

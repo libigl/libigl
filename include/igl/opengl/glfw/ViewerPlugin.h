@@ -5,8 +5,8 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
-#ifndef IGL_VIEWER_VIEWER_PLUGIN_H
-#define IGL_VIEWER_VIEWER_PLUGIN_H
+#ifndef IGL_OPENGL_GLFW_VIEWERPLUGIN_H
+#define IGL_OPENGL_GLFW_VIEWERPLUGIN_H
 
 // TODO:
 // * create plugins/skeleton.h
@@ -19,7 +19,9 @@
 
 namespace igl
 {
-namespace viewer
+namespace opengl
+{
+namespace glfw
 {
 
 // Abstract class for plugins
@@ -175,6 +177,7 @@ namespace serialization
 }
 #endif
 
+}
 }
 }
 

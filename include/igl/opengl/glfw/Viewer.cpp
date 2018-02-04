@@ -73,13 +73,12 @@
 #include <igl/two_axis_valuator_fixed_up.h>
 #include <igl/snap_to_canonical_view_quat.h>
 #include <igl/unproject.h>
-
 #ifdef ENABLE_SERIALIZATION
 #include <igl/serialize.h>
 #endif
 
 // Internal global variables used for glfw event handling
-static igl::viewer::Viewer * __viewer;
+static igl::opengl::glfw::Viewer * __viewer;
 static double highdpi = 1;
 static double scroll_x = 0;
 static double scroll_y = 0;
@@ -93,14 +92,14 @@ static void glfw_mouse_press(GLFWwindow* window, int button, int action, int mod
     false;
 #endif
 
-  igl::viewer::Viewer::MouseButton mb;
+  igl::opengl::glfw::Viewer::MouseButton mb;
 
   if (button == GLFW_MOUSE_BUTTON_1)
-    mb = igl::viewer::Viewer::MouseButton::Left;
+    mb = igl::opengl::glfw::Viewer::MouseButton::Left;
   else if (button == GLFW_MOUSE_BUTTON_2)
-    mb = igl::viewer::Viewer::MouseButton::Right;
+    mb = igl::opengl::glfw::Viewer::MouseButton::Right;
   else //if (button == GLFW_MOUSE_BUTTON_3)
-    mb = igl::viewer::Viewer::MouseButton::Middle;
+    mb = igl::opengl::glfw::Viewer::MouseButton::Middle;
 
   if (action == GLFW_PRESS)
   {
@@ -195,8 +194,155 @@ static void glfw_drop_callback(GLFWwindow *window,int count,const char **filenam
 
 namespace igl
 {
-namespace viewer
+namespace opengl
 {
+namespace glfw
+{
+
+  IGL_INLINE int Viewer::launch(bool resizable,bool fullscreen)
+  {
+    // TODO return values are being ignored...
+    launch_init(resizable,fullscreen);
+    launch_rendering(true);
+    launch_shut();
+    return EXIT_SUCCESS;
+  }
+
+  IGL_INLINE int  Viewer::launch_init(bool resizable,bool fullscreen)
+  {
+    glfwSetErrorCallback(glfw_error_callback);
+    if (!glfwInit())
+    {
+      return EXIT_FAILURE;
+    }
+    glfwWindowHint(GLFW_SAMPLES, 8);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    #ifdef __APPLE__
+      glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+      glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    #endif
+    if(fullscreen)
+    {
+      GLFWmonitor *monitor = glfwGetPrimaryMonitor();
+      const GLFWvidmode *mode = glfwGetVideoMode(monitor);
+      window = glfwCreateWindow(mode->width,mode->height,"libigl viewer",monitor,nullptr);
+    }
+    else
+    {
+      if (core.viewport.tail<2>().any()) {
+        window = glfwCreateWindow(core.viewport(2),core.viewport(3),"libigl viewer",nullptr,nullptr);
+      } else {
+        window = glfwCreateWindow(1280,800,"libigl viewer",nullptr,nullptr);
+      }
+    }
+    if (!window)
+    {
+      glfwTerminate();
+      return EXIT_FAILURE;
+    }
+    glfwMakeContextCurrent(window);
+    #ifndef __APPLE__
+      glewExperimental = true;
+      GLenum err = glewInit();
+      if(GLEW_OK != err)
+      {
+        /* Problem: glewInit failed, something is seriously wrong. */
+       fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
+      }
+      glGetError(); // pull and savely ignonre unhandled errors like GL_INVALID_ENUM
+      fprintf(stdout, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
+    #endif
+    #if defined(DEBUG) || defined(_DEBUG)
+      int major, minor, rev;
+      major = glfwGetWindowAttrib(window, GLFW_CONTEXT_VERSION_MAJOR);
+      minor = glfwGetWindowAttrib(window, GLFW_CONTEXT_VERSION_MINOR);
+      rev = glfwGetWindowAttrib(window, GLFW_CONTEXT_REVISION);
+      printf("OpenGL version recieved: %d.%d.%d\n", major, minor, rev);
+      printf("Supported OpenGL is %s\n", (const char*)glGetString(GL_VERSION));
+      printf("Supported GLSL is %s\n", (const char*)glGetString(GL_SHADING_LANGUAGE_VERSION));
+    #endif
+    glfwSetInputMode(window,GLFW_CURSOR,GLFW_CURSOR_NORMAL);
+    // Initialize FormScreen
+#ifdef IGL_VIEWER_WITH_NANOGUI
+    screen = new nanogui::Screen();
+    screen->initialize(window, false);
+    ngui = new nanogui::FormHelper(screen);
+#endif
+    __viewer = this;
+    // Register callbacks
+    glfwSetKeyCallback(window, glfw_key_callback);
+    glfwSetCursorPosCallback(window,glfw_mouse_move);
+    glfwSetWindowSizeCallback(window,glfw_window_size);
+    glfwSetMouseButtonCallback(window,glfw_mouse_press);
+    glfwSetScrollCallback(window,glfw_mouse_scroll);
+    glfwSetCharModsCallback(window,glfw_char_mods_callback);
+    glfwSetDropCallback(window,glfw_drop_callback);
+    // Handle retina displays (windows and mac)
+    int width, height;
+    glfwGetFramebufferSize(window, &width, &height);
+    int width_window, height_window;
+    glfwGetWindowSize(window, &width_window, &height_window);
+    highdpi = width/width_window;
+    glfw_window_size(window,width_window,height_window);
+    //opengl.init();
+    core.align_camera_center(selected_data().V,selected_data().F);
+    // Initialize IGL viewer
+    init();
+    return EXIT_SUCCESS;
+  }
+
+
+
+  IGL_INLINE bool Viewer::launch_rendering(bool loop)
+  {
+    // glfwMakeContextCurrent(window);
+    // Rendering loop
+    while (!glfwWindowShouldClose(window))
+    {
+      double tic = get_seconds();
+      draw();
+      glfwSwapBuffers(window);
+      if(core.is_animating)
+      {
+        glfwPollEvents();
+        // In microseconds
+        double duration = 1000000.*(get_seconds()-tic);
+        const double min_duration = 1000000./core.animation_max_fps;
+        if(duration<min_duration)
+        {
+          std::this_thread::sleep_for(std::chrono::microseconds((int)(min_duration-duration)));
+        }
+      }
+      else
+      {
+        glfwWaitEvents();
+      }
+      if (!loop)
+        return !glfwWindowShouldClose(window);
+    }
+    return EXIT_SUCCESS;
+  }
+
+  IGL_INLINE void Viewer::launch_shut()
+  {
+    for(auto & opengl : opengl_state_list)
+    {
+      opengl.free();
+    }
+    core.shut();
+    shutdown_plugins();
+#ifdef IGL_VIEWER_WITH_NANOGUI
+    delete ngui;
+    //delete screen;
+    screen = nullptr;
+    ngui = nullptr;
+#endif
+    glfwDestroyWindow(window);
+    glfwTerminate();
+    return;
+  }
+
   IGL_INLINE void Viewer::init()
   {
 #ifdef IGL_VIEWER_WITH_NANOGUI
@@ -222,7 +368,8 @@ namespace viewer
   #endif
 
     ngui->addGroup("Viewing Options");
-    ngui->addButton("Center object",[&](){this->core.align_camera_center(this->data.V,this->data.F);});
+    ngui->addButton("Center object",[&](){this->core.align_camera_center(
+      this->selected_data().V,this->selected_data().F);});
     ngui->addButton("Snap canonical view",[&]()
     {
       this->snap_to_canonical_quaternion();
@@ -234,34 +381,36 @@ namespace viewer
 
     ngui->addVariable<bool>("Face-based", [&](bool checked)
     {
-      this->data.set_face_based(checked);
+      this->selected_data().set_face_based(checked);
     },[&]()
     {
-      return this->data.face_based;
+      return this->selected_data().face_based;
     });
 
-    ngui->addVariable("Show texture",core.show_texture);
+    ngui->addVariable("Show texture",this->selected_data().show_texture);
 
     ngui->addVariable<bool>("Invert normals",[&](bool checked)
     {
-      this->data.dirty |= ViewerData::DIRTY_NORMAL;
-      this->core.invert_normals = checked;
+      this->selected_data().dirty |= ViewerData::DIRTY_NORMAL;
+      this->selected_data().invert_normals = checked;
     },[&]()
     {
-      return this->core.invert_normals;
+      return this->selected_data().invert_normals;
     });
 
-    ngui->addVariable("Show overlay", core.show_overlay);
-    ngui->addVariable("Show overlay depth", core.show_overlay_depth);
+    // Alec: This will probably just attach to the selected_data() at the time
+    // that addVariable is called. We probably need to use a callback here.
+    ngui->addVariable("Show overlay", selected_data().show_overlay);
+    ngui->addVariable("Show overlay depth", selected_data().show_overlay_depth);
+    ngui->addVariable("Line color", (nanogui::Color &) selected_data().line_color);
     ngui->addVariable("Background", (nanogui::Color &) core.background_color);
-    ngui->addVariable("Line color", (nanogui::Color &) core.line_color);
-    ngui->addVariable("Shininess", core.shininess);
+    ngui->addVariable("Shininess", selected_data().shininess);
 
     ngui->addGroup("Overlays");
-    ngui->addVariable("Wireframe", core.show_lines);
-    ngui->addVariable("Fill", core.show_faces);
-    ngui->addVariable("Show vertex labels", core.show_vertid);
-    ngui->addVariable("Show faces labels", core.show_faceid);
+    ngui->addVariable("Wireframe", selected_data().show_lines);
+    ngui->addVariable("Fill", selected_data().show_faces);
+    ngui->addVariable("Show vertex labels", selected_data().show_vertid);
+    ngui->addVariable("Show faces labels", selected_data().show_faceid);
 
     screen->setVisible(true);
     screen->performLayout();
@@ -276,7 +425,27 @@ namespace viewer
     init_plugins();
   }
 
-  IGL_INLINE Viewer::Viewer()
+  IGL_INLINE void Viewer::init_plugins()
+  {
+    // Init all plugins
+    for (unsigned int i = 0; i<plugins.size(); ++i)
+    {
+      plugins[i]->init(this);
+    }
+  }
+
+  IGL_INLINE void Viewer::shutdown_plugins()
+  {
+    for (unsigned int i = 0; i<plugins.size(); ++i)
+    {
+      plugins[i]->shutdown();
+    }
+  }
+
+  IGL_INLINE Viewer::Viewer():
+    data_list(1),
+    opengl_state_list(1),
+    selected_data_index(0)
   {
     window = nullptr;
 
@@ -291,7 +460,7 @@ namespace viewer
     scroll_position = 0.0f;
 
     // Per face
-    data.set_face_based(false);
+    selected_data().set_face_based(false);
 
     // C-style callbacks
     callback_init         = nullptr;
@@ -315,7 +484,7 @@ namespace viewer
     callback_key_up_data        = nullptr;
 
 #ifndef IGL_VIEWER_VIEWER_QUIET
-    const std::string usage(R"(igl::viewer::Viewer usage:
+    const std::string usage(R"(igl::opengl::glfw::Viewer usage:
   [drag]  Rotate scene
   A,a     Toggle animation (tight draw loop)
   F,f     Toggle face based
@@ -325,7 +494,8 @@ namespace viewer
   T,t     Toggle filled faces
   Z       Snap to canonical view
   [,]     Toggle between rotation control types (trackball, two-axis
-          valuator with fixed up, 2D mode with no rotation))"
+          valuator with fixed up, 2D mode with no rotation)
+  <,>     Toggle between models.)"
 #ifdef IGL_VIEWER_WITH_NANOGUI
 		R"(
   ;       Toggle vertex labels
@@ -336,30 +506,13 @@ namespace viewer
 #endif
   }
 
-  IGL_INLINE void Viewer::init_plugins()
-  {
-    // Init all plugins
-    for (unsigned int i = 0; i<plugins.size(); ++i)
-    {
-      plugins[i]->init(this);
-    }
-  }
-
   IGL_INLINE Viewer::~Viewer()
   {
   }
 
-  IGL_INLINE void Viewer::shutdown_plugins()
+  IGL_INLINE bool Viewer::load_mesh_from_file(
+      const std::string & mesh_file_name_string)
   {
-    for (unsigned int i = 0; i<plugins.size(); ++i)
-    {
-      plugins[i]->shutdown();
-    }
-  }
-
-  IGL_INLINE bool Viewer::load_mesh_from_file(const char* mesh_file_name)
-  {
-    std::string mesh_file_name_string = std::string(mesh_file_name);
 
     // first try to load it with a plugin
     for (unsigned int i = 0; i<plugins.size(); ++i)
@@ -370,12 +523,18 @@ namespace viewer
       }
     }
 
-    data.clear();
+    // Create new data slot and set to selected
+    if(!(selected_data().F.rows() == 0  && selected_data().V.rows() == 0))
+    {
+      append_mesh();
+    }
+    selected_data().clear();
 
     size_t last_dot = mesh_file_name_string.rfind('.');
     if (last_dot == std::string::npos)
     {
-      printf("Error: No file extension found in %s\n",mesh_file_name);
+      std::cerr<<"Error: No file extension found in "<<
+        mesh_file_name_string<<std::endl;
       return false;
     }
 
@@ -387,7 +546,7 @@ namespace viewer
       Eigen::MatrixXi F;
       if (!igl::readOFF(mesh_file_name_string, V, F))
         return false;
-      data.set_mesh(V,F);
+      selected_data().set_mesh(V,F);
     }
     else if (extension == "obj" || extension =="OBJ")
     {
@@ -407,8 +566,8 @@ namespace viewer
         return false;
       }
 
-      data.set_mesh(V,F);
-      data.set_uv(UV_V,UV_F);
+      selected_data().set_mesh(V,F);
+      selected_data().set_uv(UV_V,UV_F);
 
     }
     else
@@ -418,16 +577,16 @@ namespace viewer
       return false;
     }
 
-    data.compute_normals();
-    data.uniform_colors(Eigen::Vector3d(51.0/255.0,43.0/255.0,33.3/255.0),
+    selected_data().compute_normals();
+    selected_data().uniform_colors(Eigen::Vector3d(51.0/255.0,43.0/255.0,33.3/255.0),
                    Eigen::Vector3d(255.0/255.0,228.0/255.0,58.0/255.0),
                    Eigen::Vector3d(255.0/255.0,235.0/255.0,80.0/255.0));
-    if (data.V_uv.rows() == 0)
+    if (selected_data().V_uv.rows() == 0)
     {
-      data.grid_texture();
+      selected_data().grid_texture();
     }
 
-    core.align_camera_center(data.V,data.F);
+    core.align_camera_center(selected_data().V,selected_data().F);
 
     for (unsigned int i = 0; i<plugins.size(); ++i)
       if (plugins[i]->post_load())
@@ -436,10 +595,9 @@ namespace viewer
     return true;
   }
 
-  IGL_INLINE bool Viewer::save_mesh_to_file(const char* mesh_file_name)
+  IGL_INLINE bool Viewer::save_mesh_to_file(
+      const std::string & mesh_file_name_string)
   {
-    std::string mesh_file_name_string(mesh_file_name);
-
     // first try to load it with a plugin
     for (unsigned int i = 0; i<plugins.size(); ++i)
       if (plugins[i]->save(mesh_file_name_string))
@@ -449,13 +607,15 @@ namespace viewer
     if (last_dot == std::string::npos)
     {
       // No file type determined
-      printf("Error: No file extension found in %s\n",mesh_file_name);
+      std::cerr<<"Error: No file extension found in "<<
+        mesh_file_name_string<<std::endl;
       return false;
     }
     std::string extension = mesh_file_name_string.substr(last_dot+1);
     if (extension == "off" || extension =="OFF")
     {
-      return igl::writeOFF(mesh_file_name_string,data.V,data.F);
+      return igl::writeOFF(
+        mesh_file_name_string,selected_data().V,selected_data().F);
     }
     else if (extension == "obj" || extension =="OBJ")
     {
@@ -465,8 +625,10 @@ namespace viewer
       Eigen::MatrixXd UV_V;
       Eigen::MatrixXi UV_F;
 
-      return igl::writeOBJ(mesh_file_name_string, data.V,
-          data.F, corner_normals, fNormIndices, UV_V, UV_F);
+      return igl::writeOBJ(mesh_file_name_string, 
+          selected_data().V,
+          selected_data().F, 
+          corner_normals, fNormIndices, UV_V, UV_F);
     }
     else
     {
@@ -502,20 +664,20 @@ namespace viewer
       case 'F':
       case 'f':
       {
-        data.set_face_based(!data.face_based);
+        selected_data().set_face_based(!selected_data().face_based);
         return true;
       }
       case 'I':
       case 'i':
       {
-        data.dirty |= ViewerData::DIRTY_NORMAL;
-        core.invert_normals = !core.invert_normals;
+        selected_data().dirty |= ViewerData::DIRTY_NORMAL;
+        selected_data().invert_normals = !selected_data().invert_normals;
         return true;
       }
       case 'L':
       case 'l':
       {
-        core.show_lines = !core.show_lines;
+        selected_data().show_lines = !selected_data().show_lines;
         return true;
       }
       case 'O':
@@ -527,7 +689,7 @@ namespace viewer
       case 'T':
       case 't':
       {
-        core.show_faces = !core.show_faces;
+        selected_data().show_faces = !selected_data().show_faces;
         return true;
       }
       case 'Z':
@@ -545,12 +707,19 @@ namespace viewer
 
         return true;
       }
+      case '<':
+      case '>':
+      {
+        selected_data_index = 
+          (selected_data_index + data_list.size() + (unicode_key=='>'?1:-1))%data_list.size();
+        return true;
+      }
 #ifdef IGL_VIEWER_WITH_NANOGUI
       case ';':
-        core.show_vertid = !core.show_vertid;
+        selected_data().show_vertid = !selected_data().show_vertid;
         return true;
       case ':':
-        core.show_faceid = !core.show_faceid;
+        selected_data().show_faceid = !selected_data().show_faceid;
         return true;
 #endif
       default: break;//do nothing
@@ -603,12 +772,12 @@ namespace viewer
 
     // Initialization code for the trackball
     Eigen::RowVector3d center;
-    if (data.V.rows() == 0)
+    if (selected_data().V.rows() == 0)
     {
       center << 0,0,0;
     }else
     {
-      center = data.V.colwise().sum()/data.V.rows();
+      center = selected_data().V.colwise().sum()/selected_data().V.rows();
     }
 
     Eigen::Vector3f coord =
@@ -767,6 +936,52 @@ namespace viewer
     return true;
   }
 
+  IGL_INLINE bool Viewer::load_scene()
+  {
+    std::string fname = igl::file_dialog_open();
+    if(fname.length() == 0)
+    {
+      return false;
+    }
+    return load_scene(fname);
+  }
+
+  IGL_INLINE bool Viewer::load_scene(std::string fname)
+  {
+#ifdef ENABLE_SERIALIZATION
+    igl::deserialize(core,"Core",fname.c_str());
+#ifndef ENABLE_SERIALIZATION_CORE_ONLY
+    igl::deserialize(selected_data(),"Data",fname.c_str());
+    for(unsigned int i = 0; i <plugins.size(); ++i)
+    {
+      igl::deserialize(*plugins[i],plugins[i]->plugin_name,fname.c_str());
+    }
+#endif
+#endif
+    return true;
+  }
+
+  IGL_INLINE bool Viewer::save_scene()
+  {
+    std::string fname = igl::file_dialog_save();
+    if (fname.length() == 0)
+      return false;
+
+#ifdef ENABLE_SERIALIZATION
+
+    igl::serialize(core,"Core",fname.c_str(),true);
+
+#ifndef ENABLE_SERIALIZATION_CORE_ONLY
+    igl::serialize(selected_data(),"Data",fname.c_str());
+    for(unsigned int i = 0; i <plugins.size(); ++i)
+      igl::serialize(*plugins[i],plugins[i]->plugin_name,fname.c_str());
+#endif
+
+#endif
+
+    return true;
+  }
+
   IGL_INLINE void Viewer::draw()
   {
     using namespace std;
@@ -787,77 +1002,44 @@ namespace viewer
     }
 
     core.clear_framebuffers();
-
     if (callback_pre_draw)
+    {
       if (callback_pre_draw(*this))
+      {
         return;
-
+      }
+    }
     for (unsigned int i = 0; i<plugins.size(); ++i)
+    {
       if (plugins[i]->pre_draw())
+      {
         return;
-
-    core.draw(data,opengl);
-
+      }
+    }
+    assert(data_list.size() == opengl_state_list.size());
+    for(int i = 0;i<data_list.size();i++)
+    {
+      opengl_state_list[i].init();
+      core.draw(data_list[i],opengl_state_list[i]);
+    }
     if (callback_post_draw)
+    {
       if (callback_post_draw(*this))
+      {
         return;
-
+      }
+    }
     for (unsigned int i = 0; i<plugins.size(); ++i)
+    {
       if (plugins[i]->post_draw())
+      {
         break;
-
+      }
+    }
 #ifdef IGL_VIEWER_WITH_NANOGUI
-	ngui->refresh();
 	screen->drawContents();
 	screen->drawWidgets();
 #endif
-  }
-
-  IGL_INLINE bool Viewer::save_scene()
-  {
-    std::string fname = igl::file_dialog_save();
-    if (fname.length() == 0)
-      return false;
-
-#ifdef ENABLE_SERIALIZATION
-
-    igl::serialize(core,"Core",fname.c_str(),true);
-
-#ifndef ENABLE_SERIALIZATION_CORE_ONLY
-    igl::serialize(data,"Data",fname.c_str());
-    for(unsigned int i = 0; i <plugins.size(); ++i)
-      igl::serialize(*plugins[i],plugins[i]->plugin_name,fname.c_str());
-#endif
-
-#endif
-
-    return true;
-  }
-
-  IGL_INLINE bool Viewer::load_scene()
-  {
-    std::string fname = igl::file_dialog_open();
-    if(fname.length() == 0)
-      return false;
-
-    return load_scene(fname);
-  }
-
-  IGL_INLINE bool Viewer::load_scene(std::string fname)
-  {
-#ifdef ENABLE_SERIALIZATION
-
-    igl::deserialize(core,"Core",fname.c_str());
-
-#ifndef ENABLE_SERIALIZATION_CORE_ONLY
-    igl::deserialize(data,"Data",fname.c_str());
-    for(unsigned int i = 0; i <plugins.size(); ++i)
-      igl::deserialize(*plugins[i],plugins[i]->plugin_name,fname.c_str());
-#endif
-
-#endif
-
-    return true;
   }
 
   IGL_INLINE void Viewer::resize(int w,int h)
@@ -903,165 +1085,54 @@ namespace viewer
     this->save_mesh_to_file(fname.c_str());
   }
 
-
-  IGL_INLINE int  Viewer::launch_init(bool resizable,bool fullscreen)
+  IGL_INLINE ViewerData& Viewer::selected_data()
   {
-    glfwSetErrorCallback(glfw_error_callback);
-    if (!glfwInit())
-      return EXIT_FAILURE;
-
-    glfwWindowHint(GLFW_SAMPLES, 8);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-
-    #ifdef __APPLE__
-      glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-      glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-    #endif
-
-    if(fullscreen)
-    {
-      GLFWmonitor *monitor = glfwGetPrimaryMonitor();
-      const GLFWvidmode *mode = glfwGetVideoMode(monitor);
-      window = glfwCreateWindow(mode->width,mode->height,"libigl viewer",monitor,nullptr);
-    }
-    else
-    {
-      if (core.viewport.tail<2>().any()) {
-        window = glfwCreateWindow(core.viewport(2),core.viewport(3),"libigl viewer",nullptr,nullptr);
-      } else {
-        window = glfwCreateWindow(1280,800,"libigl viewer",nullptr,nullptr);
-      }
-    }
-
-    if (!window)
-    {
-      glfwTerminate();
-      return EXIT_FAILURE;
-    }
-
-    glfwMakeContextCurrent(window);
-
-    #ifndef __APPLE__
-      glewExperimental = true;
-      GLenum err = glewInit();
-      if(GLEW_OK != err)
-      {
-        /* Problem: glewInit failed, something is seriously wrong. */
-       fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
-      }
-      glGetError(); // pull and safely ignore unhandled errors like GL_INVALID_ENUM
-      fprintf(stdout, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
-    #endif
-
-    #if defined(DEBUG) || defined(_DEBUG)
-      int major, minor, rev;
-      major = glfwGetWindowAttrib(window, GLFW_CONTEXT_VERSION_MAJOR);
-      minor = glfwGetWindowAttrib(window, GLFW_CONTEXT_VERSION_MINOR);
-      rev = glfwGetWindowAttrib(window, GLFW_CONTEXT_REVISION);
-      printf("OpenGL version received: %d.%d.%d\n", major, minor, rev);
-      printf("Supported OpenGL is %s\n", (const char*)glGetString(GL_VERSION));
-      printf("Supported GLSL is %s\n", (const char*)glGetString(GL_SHADING_LANGUAGE_VERSION));
-    #endif
-
-    glfwSetInputMode(window,GLFW_CURSOR,GLFW_CURSOR_NORMAL);
-
-    // Initialize FormScreen
-#ifdef IGL_VIEWER_WITH_NANOGUI
-    screen = new nanogui::Screen();
-    screen->initialize(window, false);
-    ngui = new nanogui::FormHelper(screen);
-#endif
-
-    __viewer = this;
-
-    // Register callbacks
-    glfwSetKeyCallback(window, glfw_key_callback);
-    glfwSetCursorPosCallback(window,glfw_mouse_move);
-    glfwSetWindowSizeCallback(window,glfw_window_size);
-    glfwSetMouseButtonCallback(window,glfw_mouse_press);
-    glfwSetScrollCallback(window,glfw_mouse_scroll);
-    glfwSetCharModsCallback(window,glfw_char_mods_callback);
-    glfwSetDropCallback(window,glfw_drop_callback);
-
-    // Handle retina displays (windows and mac)
-    int width, height;
-    glfwGetFramebufferSize(window, &width, &height);
-
-    int width_window, height_window;
-    glfwGetWindowSize(window, &width_window, &height_window);
-
-    highdpi = width/width_window;
-
-    glfw_window_size(window,width_window,height_window);
-
-    opengl.init();
-
-    core.align_camera_center(data.V,data.F);
-
-    // Initialize IGL viewer
-    init();
-    return EXIT_SUCCESS;
+    assert(!data_list.empty() && "data_list should never be empty");
+    assert(
+      (selected_data_index >= 0 && selected_data_index < data_list.size()) && 
+      "selected_data_index should be in bounds");
+    return data_list[selected_data_index];
   }
 
-  IGL_INLINE bool Viewer::launch_rendering(bool loop)
+  IGL_INLINE void Viewer::append_mesh()
   {
-    // glfwMakeContextCurrent(window);
+    assert(data_list.size() == opengl_state_list.size());
+    assert(data_list.size() >= 1);
 
-    // Rendering loop
-    while (!glfwWindowShouldClose(window))
+    data_list.emplace_back();
+    opengl_state_list.emplace_back();
+    selected_data_index = data_list.size()-1;
+  }
+  IGL_INLINE bool Viewer::erase_mesh(const size_t index)
+  {
+    assert(data_list.size() == opengl_state_list.size());
+    assert(data_list.size() >= 1);
+    if(data_list.size() == 1)
     {
-      double tic = get_seconds();
-      draw();
-
-      glfwSwapBuffers(window);
-      if(core.is_animating)
-      {
-        glfwPollEvents();
-        // In microseconds
-        double duration = 1000000.*(get_seconds()-tic);
-        const double min_duration = 1000000./core.animation_max_fps;
-        if(duration<min_duration)
-        {
-          std::this_thread::sleep_for(std::chrono::microseconds((int)(min_duration-duration)));
-        }
-      }
-      else
-      {
-        glfwWaitEvents();
-      }
-
-      if (!loop)
-        return !glfwWindowShouldClose(window);
+      // Cannot remove last mesh
+      return false;
     }
-    return EXIT_SUCCESS;
+    data_list.erase(data_list.begin()                 + index);
+    opengl_state_list.erase(opengl_state_list.begin() + index);
+    if(selected_data_index >= index && selected_data_index>0)
+    {
+      selected_data_index--;
+    }
+    std::cout<<"data: "<<data_list.size()<<std::endl;
+    std::cout<<"opengl_state: "<<opengl_state_list.size()<<std::endl;
+    std::cout<<"selected_data_index: "<<selected_data_index<<std::endl;
+    return true;
   }
 
-  IGL_INLINE void Viewer::launch_shut()
+  IGL_INLINE State& Viewer::selected_opengl_state()
   {
-    opengl.free();
-    core.shut();
-
-    shutdown_plugins();
-#ifdef IGL_VIEWER_WITH_NANOGUI
-    delete ngui;
-    //delete screen;
-    screen = nullptr;
-    ngui = nullptr;
-#endif
-
-    glfwDestroyWindow(window);
-    glfwTerminate();
-    return;
+    assert(!opengl_state_list.empty() && "opengl_state_list should never be empty");
+    assert(opengl_state_list.size() == data_list.size());
+    assert(
+      (selected_data_index >= 0 && selected_data_index < opengl_state_list.size()) && 
+      "selected_data_index should be in bounds");
+    return opengl_state_list[selected_data_index];
   }
-
-  IGL_INLINE int Viewer::launch(bool resizable,bool fullscreen)
-  {
-    // TODO return values are being ignored...
-    launch_init(resizable,fullscreen);
-    launch_rendering(true);
-    launch_shut();
-    return EXIT_SUCCESS;
-  }
+} // end namespace
 } // end namespace
 }
