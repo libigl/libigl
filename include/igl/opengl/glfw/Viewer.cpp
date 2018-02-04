@@ -326,9 +326,9 @@ namespace glfw
 
   IGL_INLINE void Viewer::launch_shut()
   {
-    for(auto & opengl : opengl_state_list)
+    for(auto & data : data_list)
     {
-      opengl.free();
+      data.meshgl.free();
     }
     core.shut();
     shutdown_plugins();
@@ -391,7 +391,7 @@ namespace glfw
 
     ngui->addVariable<bool>("Invert normals",[&](bool checked)
     {
-      this->data().dirty |= ViewerData::DIRTY_NORMAL;
+      this->data().dirty |= MeshGL::DIRTY_NORMAL;
       this->data().invert_normals = checked;
     },[&]()
     {
@@ -444,7 +444,6 @@ namespace glfw
 
   IGL_INLINE Viewer::Viewer():
     data_list(1),
-    opengl_state_list(1),
     selected_data_index(0)
   {
     window = nullptr;
@@ -670,7 +669,7 @@ namespace glfw
       case 'I':
       case 'i':
       {
-        data().dirty |= ViewerData::DIRTY_NORMAL;
+        data().dirty |= MeshGL::DIRTY_NORMAL;
         data().invert_normals = !data().invert_normals;
         return true;
       }
@@ -1016,11 +1015,9 @@ namespace glfw
         return;
       }
     }
-    assert(data_list.size() == opengl_state_list.size());
     for(int i = 0;i<data_list.size();i++)
     {
-      opengl_state_list[i].init();
-      core.draw(data_list[i],opengl_state_list[i]);
+      core.draw(data_list[i]);
     }
     if (callback_post_draw)
     {
@@ -1096,43 +1093,30 @@ namespace glfw
 
   IGL_INLINE void Viewer::append_mesh()
   {
-    assert(data_list.size() == opengl_state_list.size());
     assert(data_list.size() >= 1);
 
     data_list.emplace_back();
-    opengl_state_list.emplace_back();
     selected_data_index = data_list.size()-1;
   }
   IGL_INLINE bool Viewer::erase_mesh(const size_t index)
   {
-    assert(data_list.size() == opengl_state_list.size());
     assert(data_list.size() >= 1);
     if(data_list.size() == 1)
     {
       // Cannot remove last mesh
       return false;
     }
+    data_list[index].meshgl.free();
     data_list.erase(data_list.begin()                 + index);
-    opengl_state_list.erase(opengl_state_list.begin() + index);
     if(selected_data_index >= index && selected_data_index>0)
     {
       selected_data_index--;
     }
     std::cout<<"data: "<<data_list.size()<<std::endl;
-    std::cout<<"opengl_state: "<<opengl_state_list.size()<<std::endl;
     std::cout<<"selected_data_index: "<<selected_data_index<<std::endl;
     return true;
   }
 
-  IGL_INLINE MeshGL& Viewer::selected_opengl_state()
-  {
-    assert(!opengl_state_list.empty() && "opengl_state_list should never be empty");
-    assert(opengl_state_list.size() == data_list.size());
-    assert(
-      (selected_data_index >= 0 && selected_data_index < opengl_state_list.size()) && 
-      "selected_data_index should be in bounds");
-    return opengl_state_list[selected_data_index];
-  }
 } // end namespace
 } // end namespace
 }

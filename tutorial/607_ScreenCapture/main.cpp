@@ -18,7 +18,7 @@ bool key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier
 
     // Draw the scene in the buffers
     viewer.core.draw_buffer(
-      viewer.data(),viewer.selected_opengl_state(),false,R,G,B,A);
+      viewer.data(),false,R,G,B,A);
 
     // Save it to a PNG
     igl::png::writePNG(R,G,B,A,"out.png");

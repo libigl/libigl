@@ -11,7 +11,8 @@
 #include <cstdint>
 #include <vector>
 #include <Eigen/Core>
-#include <igl/igl_inline.h>
+#include "../igl_inline.h"
+#include "MeshGL.h"
 
 // Alec: This is a mesh class containing a variety of data types (normals,
 // overlays, material colors, etc.)
@@ -29,26 +30,9 @@ class ViewerData
 public:
   ViewerData();
 
-  enum DirtyFlags
-  {
-    DIRTY_NONE           = 0x0000,
-    DIRTY_POSITION       = 0x0001,
-    DIRTY_UV             = 0x0002,
-    DIRTY_NORMAL         = 0x0004,
-    DIRTY_AMBIENT        = 0x0008,
-    DIRTY_DIFFUSE        = 0x0010,
-    DIRTY_SPECULAR       = 0x0020,
-    DIRTY_TEXTURE        = 0x0040,
-    DIRTY_FACE           = 0x0080,
-    DIRTY_MESH           = 0x00FF,
-    DIRTY_OVERLAY_LINES  = 0x0100,
-    DIRTY_OVERLAY_POINTS = 0x0200,
-    DIRTY_ALL            = 0x03FF
-  };
-
   // Empty all fields
   IGL_INLINE void clear();
-
+  
   // Change the visualization mode, invalidating the cache if necessary
   IGL_INLINE void set_face_based(bool newvalue);
 
@@ -204,6 +188,15 @@ public:
   Eigen::Vector4f line_color;
   // Shape material
   float shininess;
+
+  // OpenGL representation of the mesh
+  igl::opengl::MeshGL meshgl;
+
+  // Update contents from a 'Data' instance
+  IGL_INLINE void updateGL(
+    const igl::opengl::ViewerData& data, 
+    const bool invert_normals,
+    igl::opengl::MeshGL& meshgl);
 };
 
 }

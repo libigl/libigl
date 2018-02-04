@@ -1,13 +1,3 @@
-#ifndef IGL_VIEWER_WITH_NANOGUI
-#include <iostream>
-int main()
-{
-  std::cerr<<
-    "Error: recompile with LIBIGL_VIEWER_WITH_NANOGUI defined."<<std::endl;
-  return EXIT_FAILURE;
-}
-#else
-
 #include <igl/readOFF.h>
 #include <igl/opengl/glfw/Viewer.h>
 #include <nanogui/formhelper.h>
@@ -68,4 +58,3 @@ int main(int argc, char *argv[])
   viewer.data().set_mesh(V, F);
   viewer.launch();
 }
-#endif

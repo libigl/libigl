@@ -17,7 +17,7 @@
 
 
 IGL_INLINE igl::opengl::ViewerData::ViewerData()
-: dirty(DIRTY_ALL),
+: dirty(MeshGL::DIRTY_ALL),
   show_faces(true),
   show_lines(true),
   invert_normals(false),
@@ -39,7 +39,7 @@ IGL_INLINE void igl::opengl::ViewerData::set_face_based(bool newvalue)
   if (face_based != newvalue)
   {
     face_based = newvalue;
-    dirty = DIRTY_ALL;
+    dirty = MeshGL::DIRTY_ALL;
   }
 }
 
@@ -83,14 +83,14 @@ IGL_INLINE void igl::opengl::ViewerData::set_mesh(
     else
       cerr << "ERROR (set_mesh): The new mesh has a different number of vertices/faces. Please clear the mesh before plotting."<<endl;
   }
-  dirty |= DIRTY_FACE | DIRTY_POSITION;
+  dirty |= MeshGL::DIRTY_FACE | MeshGL::DIRTY_POSITION;
 }
 
 IGL_INLINE void igl::opengl::ViewerData::set_vertices(const Eigen::MatrixXd& _V)
 {
   V = _V;
   assert(F.size() == 0 || F.maxCoeff() < V.rows());
-  dirty |= DIRTY_POSITION;
+  dirty |= MeshGL::DIRTY_POSITION;
 }
 
 IGL_INLINE void igl::opengl::ViewerData::set_normals(const Eigen::MatrixXd& N)
@@ -108,7 +108,7 @@ IGL_INLINE void igl::opengl::ViewerData::set_normals(const Eigen::MatrixXd& N)
   }
   else
     cerr << "ERROR (set_normals): Please provide a normal per face, per corner or per vertex."<<endl;
-  dirty |= DIRTY_NORMAL;
+  dirty |= MeshGL::DIRTY_NORMAL;
 }
 
 IGL_INLINE void igl::opengl::ViewerData::set_colors(const Eigen::MatrixXd &C)
@@ -175,7 +175,7 @@ IGL_INLINE void igl::opengl::ViewerData::set_colors(const Eigen::MatrixXd &C)
   }
   else
     cerr << "ERROR (set_colors): Please provide a single color, or a color per face or per vertex."<<endl;;
-  dirty |= DIRTY_DIFFUSE;
+  dirty |= MeshGL::DIRTY_DIFFUSE;
 
 }
 
@@ -189,7 +189,7 @@ IGL_INLINE void igl::opengl::ViewerData::set_uv(const Eigen::MatrixXd& UV)
   }
   else
     cerr << "ERROR (set_UV): Please provide uv per vertex."<<endl;;
-  dirty |= DIRTY_UV;
+  dirty |= MeshGL::DIRTY_UV;
 }
 
 IGL_INLINE void igl::opengl::ViewerData::set_uv(const Eigen::MatrixXd& UV_V, const Eigen::MatrixXi& UV_F)
@@ -197,7 +197,7 @@ IGL_INLINE void igl::opengl::ViewerData::set_uv(const Eigen::MatrixXd& UV_V, con
   set_face_based(true);
   V_uv = UV_V.block(0,0,UV_V.rows(),2);
   F_uv = UV_F;
-  dirty |= DIRTY_UV;
+  dirty |= MeshGL::DIRTY_UV;
 }
 
 
@@ -210,7 +210,7 @@ IGL_INLINE void igl::opengl::ViewerData::set_texture(
   texture_G = G;
   texture_B = B;
   texture_A = Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>::Constant(R.rows(),R.cols(),255);
-  dirty |= DIRTY_TEXTURE;
+  dirty |= MeshGL::DIRTY_TEXTURE;
 }
 
 IGL_INLINE void igl::opengl::ViewerData::set_texture(
@@ -223,7 +223,7 @@ IGL_INLINE void igl::opengl::ViewerData::set_texture(
   texture_G = G;
   texture_B = B;
   texture_A = A;
-  dirty |= DIRTY_TEXTURE;
+  dirty |= MeshGL::DIRTY_TEXTURE;
 }
 
 IGL_INLINE void igl::opengl::ViewerData::set_points(
@@ -253,7 +253,7 @@ IGL_INLINE void igl::opengl::ViewerData::add_points(const Eigen::MatrixXd& P,  c
   for (unsigned i=0; i<P_temp.rows(); ++i)
     points.row(lastid+i) << P_temp.row(i), i<C.rows() ? C.row(i) : C.row(C.rows()-1);
 
-  dirty |= DIRTY_OVERLAY_POINTS;
+  dirty |= MeshGL::DIRTY_OVERLAY_POINTS;
 }
 
 IGL_INLINE void igl::opengl::ViewerData::set_edges(
@@ -276,7 +276,7 @@ IGL_INLINE void igl::opengl::ViewerData::set_edges(
     }
     lines.row(e)<< P.row(E(e,0)), P.row(E(e,1)), color;
   }
-  dirty |= DIRTY_OVERLAY_LINES;
+  dirty |= MeshGL::DIRTY_OVERLAY_LINES;
 }
 
 IGL_INLINE void igl::opengl::ViewerData::add_edges(const Eigen::MatrixXd& P1, const Eigen::MatrixXd& P2, const Eigen::MatrixXd& C)
@@ -302,7 +302,7 @@ IGL_INLINE void igl::opengl::ViewerData::add_edges(const Eigen::MatrixXd& P1, co
   for (unsigned i=0; i<P1_temp.rows(); ++i)
     lines.row(lastid+i) << P1_temp.row(i), P2_temp.row(i), i<C.rows() ? C.row(i) : C.row(C.rows()-1);
 
-  dirty |= DIRTY_OVERLAY_LINES;
+  dirty |= MeshGL::DIRTY_OVERLAY_LINES;
 }
 
 IGL_INLINE void igl::opengl::ViewerData::add_label(const Eigen::VectorXd& P,  const std::string& str)
@@ -355,7 +355,7 @@ IGL_INLINE void igl::opengl::ViewerData::compute_normals()
 {
   igl::per_face_normals(V, F, F_normals);
   igl::per_vertex_normals(V, F, F_normals, V_normals);
-  dirty |= DIRTY_NORMAL;
+  dirty |= MeshGL::DIRTY_NORMAL;
 }
 
 IGL_INLINE void igl::opengl::ViewerData::uniform_colors(
@@ -400,7 +400,7 @@ IGL_INLINE void igl::opengl::ViewerData::uniform_colors(
     F_material_diffuse.row(i) = diffuse;
     F_material_specular.row(i) = specular;
   }
-  dirty |= DIRTY_SPECULAR | DIRTY_DIFFUSE | DIRTY_AMBIENT;
+  dirty |= MeshGL::DIRTY_SPECULAR | MeshGL::DIRTY_DIFFUSE | MeshGL::DIRTY_AMBIENT;
 }
 
 IGL_INLINE void igl::opengl::ViewerData::grid_texture()
@@ -419,7 +419,7 @@ IGL_INLINE void igl::opengl::ViewerData::grid_texture()
     V_uv.col(1) = V_uv.col(1).array() - V_uv.col(1).minCoeff();
     V_uv.col(1) = V_uv.col(1).array() / V_uv.col(1).maxCoeff();
     V_uv = V_uv.array() * 10;
-    dirty |= DIRTY_TEXTURE;
+    dirty |= MeshGL::DIRTY_TEXTURE;
   }
 
   unsigned size = 128;
@@ -438,5 +438,241 @@ IGL_INLINE void igl::opengl::ViewerData::grid_texture()
   texture_G = texture_R;
   texture_B = texture_R;
   texture_A = Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>::Constant(texture_R.rows(),texture_R.cols(),255);
-  dirty |= DIRTY_TEXTURE;
+  dirty |= MeshGL::DIRTY_TEXTURE;
+}
+
+IGL_INLINE void igl::opengl::ViewerData::updateGL(
+  const igl::opengl::ViewerData& data, 
+  const bool invert_normals,
+  igl::opengl::MeshGL& meshgl
+  )
+{
+  if (!meshgl.is_initialized)
+  {
+    std::cerr << "Inizializing meshgl" << std::endl;
+    meshgl.init();
+  }
+
+  bool per_corner_uv = (data.F_uv.rows() == data.F.rows());
+  bool per_corner_normals = (data.F_normals.rows() == 3 * data.F.rows());
+
+  meshgl.dirty |= data.dirty;
+
+  // Input:
+  //   X  #F by dim quantity
+  // Output:
+  //   X_vbo  #F*3 by dim scattering per corner
+  const auto per_face = [&data](
+      const Eigen::MatrixXd & X,
+      MeshGL::RowMatrixXf & X_vbo)
+  {
+    X_vbo.resize(data.F.rows()*3,3);
+    for (unsigned i=0; i<data.F.rows();++i)
+      for (unsigned j=0;j<3;++j)
+        X_vbo.row(i*3+j) = X.row(i).cast<float>().head(3);
+  };
+
+  // Input:
+  //   X  #V by dim quantity
+  // Output:
+  //   X_vbo  #F*3 by dim scattering per corner
+  const auto per_corner = [&data](
+      const Eigen::MatrixXd & X,
+      MeshGL::RowMatrixXf & X_vbo)
+  {
+    X_vbo.resize(data.F.rows()*3,3);
+    for (unsigned i=0; i<data.F.rows();++i)
+      for (unsigned j=0;j<3;++j)
+        X_vbo.row(i*3+j) = X.row(data.F(i,j)).cast<float>();
+  };
+
+  if (!data.face_based)
+  {
+    if (!(per_corner_uv || per_corner_normals))
+    {
+      // Vertex positions
+      if (meshgl.dirty & MeshGL::DIRTY_POSITION)
+        meshgl.V_vbo = data.V.cast<float>();
+
+      // Vertex normals
+      if (meshgl.dirty & MeshGL::DIRTY_NORMAL)
+      {
+        meshgl.V_normals_vbo = data.V_normals.cast<float>();
+        if (invert_normals)
+          meshgl.V_normals_vbo = -meshgl.V_normals_vbo;
+      }
+
+      // Per-vertex material settings
+      if (meshgl.dirty & MeshGL::DIRTY_AMBIENT)
+        meshgl.V_ambient_vbo = data.V_material_ambient.cast<float>();
+      if (meshgl.dirty & MeshGL::DIRTY_DIFFUSE)
+        meshgl.V_diffuse_vbo = data.V_material_diffuse.cast<float>();
+      if (meshgl.dirty & MeshGL::DIRTY_SPECULAR)
+        meshgl.V_specular_vbo = data.V_material_specular.cast<float>();
+
+      // Face indices
+      if (meshgl.dirty & MeshGL::DIRTY_FACE)
+        meshgl.F_vbo = data.F.cast<unsigned>();
+
+      // Texture coordinates
+      if (meshgl.dirty & MeshGL::DIRTY_UV)
+        meshgl.V_uv_vbo = data.V_uv.cast<float>();
+    }
+    else
+    {
+
+      // Per vertex properties with per corner UVs
+      if (meshgl.dirty & MeshGL::DIRTY_POSITION)
+      {
+        per_corner(data.V,meshgl.V_vbo);
+      }
+
+      if (meshgl.dirty & MeshGL::DIRTY_AMBIENT)
+      {
+        meshgl.V_ambient_vbo.resize(4,data.F.rows()*3);
+        for (unsigned i=0; i<data.F.rows();++i)
+          for (unsigned j=0;j<3;++j)
+            meshgl.V_ambient_vbo.col (i*3+j) = data.V_material_ambient.row(data.F(i,j)).transpose().cast<float>();
+      }
+      if (meshgl.dirty & MeshGL::DIRTY_DIFFUSE)
+      {
+        meshgl.V_diffuse_vbo.resize(4,data.F.rows()*3);
+        for (unsigned i=0; i<data.F.rows();++i)
+          for (unsigned j=0;j<3;++j)
+            meshgl.V_diffuse_vbo.col (i*3+j) = data.V_material_diffuse.row(data.F(i,j)).transpose().cast<float>();
+      }
+      if (meshgl.dirty & MeshGL::DIRTY_SPECULAR)
+      {
+        meshgl.V_specular_vbo.resize(4,data.F.rows()*3);
+        for (unsigned i=0; i<data.F.rows();++i)
+          for (unsigned j=0;j<3;++j)
+            meshgl.V_specular_vbo.col(i*3+j) = data.V_material_specular.row(data.F(i,j)).transpose().cast<float>();
+      }
+
+      if (meshgl.dirty & MeshGL::DIRTY_NORMAL)
+      {
+        meshgl.V_normals_vbo.resize(3,data.F.rows()*3);
+        for (unsigned i=0; i<data.F.rows();++i)
+          for (unsigned j=0;j<3;++j)
+          
+            meshgl.V_normals_vbo.col (i*3+j) = 
+                         per_corner_normals ?
+               data.F_normals.row(i*3+j).transpose().cast<float>() :
+               data.V_normals.row(data.F(i,j)).transpose().cast<float>();
+
+
+        if (invert_normals)
+          meshgl.V_normals_vbo = -meshgl.V_normals_vbo;
+      }
+
+      if (meshgl.dirty & MeshGL::DIRTY_FACE)
+      {
+        meshgl.F_vbo.resize(data.F.rows(),3);
+        for (unsigned i=0; i<data.F.rows();++i)
+          meshgl.F_vbo.row(i) << i*3+0, i*3+1, i*3+2;
+      }
+
+      if (meshgl.dirty & MeshGL::DIRTY_UV)
+      {
+        meshgl.V_uv_vbo.resize(data.F.rows()*3,2);
+        for (unsigned i=0; i<data.F.rows();++i)
+          for (unsigned j=0;j<3;++j)
+            meshgl.V_uv_vbo.row(i*3+j) = 
+              data.V_uv.row(per_corner_uv ? 
+                data.F_uv(i,j) : data.F(i,j)).cast<float>();
+      }
+    }
+  }
+  else
+  {
+    if (meshgl.dirty & MeshGL::DIRTY_POSITION)
+    {
+      per_corner(data.V,meshgl.V_vbo);
+    }
+
+    if (meshgl.dirty & MeshGL::DIRTY_AMBIENT)
+    {
+      per_face(data.F_material_ambient,meshgl.V_ambient_vbo);
+    }
+    if (meshgl.dirty & MeshGL::DIRTY_DIFFUSE)
+    {
+      per_face(data.F_material_diffuse,meshgl.V_diffuse_vbo);
+    }
+    if (meshgl.dirty & MeshGL::DIRTY_SPECULAR)
+    {
+      per_face(data.F_material_specular,meshgl.V_specular_vbo);
+    }
+
+    if (meshgl.dirty & MeshGL::DIRTY_NORMAL)
+    {
+      meshgl.V_normals_vbo.resize(data.F.rows()*3,3);
+      for (unsigned i=0; i<data.F.rows();++i)
+        for (unsigned j=0;j<3;++j)
+          meshgl.V_normals_vbo.row(i*3+j) =
+             per_corner_normals ?
+               data.F_normals.row(i*3+j).cast<float>() :
+               data.F_normals.row(i).cast<float>();
+
+      if (invert_normals)
+        meshgl.V_normals_vbo = -meshgl.V_normals_vbo;
+    }
+
+    if (meshgl.dirty & MeshGL::DIRTY_FACE)
+    {
+      meshgl.F_vbo.resize(data.F.rows(),3);
+      for (unsigned i=0; i<data.F.rows();++i)
+        meshgl.F_vbo.row(i) << i*3+0, i*3+1, i*3+2;
+    }
+
+    if (meshgl.dirty & MeshGL::DIRTY_UV)
+    {
+        meshgl.V_uv_vbo.resize(data.F.rows()*3,2);
+        for (unsigned i=0; i<data.F.rows();++i)
+          for (unsigned j=0;j<3;++j)
+            meshgl.V_uv_vbo.row(i*3+j) = data.V_uv.row(per_corner_uv ? data.F_uv(i,j) : data.F(i,j)).cast<float>();
+    }
+  }
+
+  if (meshgl.dirty & MeshGL::DIRTY_TEXTURE)
+  {
+    meshgl.tex_u = data.texture_R.rows();
+    meshgl.tex_v = data.texture_R.cols();
+    meshgl.tex.resize(data.texture_R.size()*4);
+    for (unsigned i=0;i<data.texture_R.size();++i)
+    {
+      meshgl.tex(i*4+0) = data.texture_R(i);
+      meshgl.tex(i*4+1) = data.texture_G(i);
+      meshgl.tex(i*4+2) = data.texture_B(i);
+      meshgl.tex(i*4+3) = data.texture_A(i);
+    }
+  }
+
+  if (meshgl.dirty & MeshGL::DIRTY_OVERLAY_LINES)
+  {
+    meshgl.lines_V_vbo.resize(data.lines.rows()*2,3);
+    meshgl.lines_V_colors_vbo.resize(data.lines.rows()*2,3);
+    meshgl.lines_F_vbo.resize(data.lines.rows()*2,1);
+    for (unsigned i=0; i<data.lines.rows();++i)
+    {
+      meshgl.lines_V_vbo.row(2*i+0) = data.lines.block<1, 3>(i, 0).cast<float>();
+      meshgl.lines_V_vbo.row(2*i+1) = data.lines.block<1, 3>(i, 3).cast<float>();
+      meshgl.lines_V_colors_vbo.row(2*i+0) = data.lines.block<1, 3>(i, 6).cast<float>();
+      meshgl.lines_V_colors_vbo.row(2*i+1) = data.lines.block<1, 3>(i, 6).cast<float>();
+      meshgl.lines_F_vbo(2*i+0) = 2*i+0;
+      meshgl.lines_F_vbo(2*i+1) = 2*i+1;
+    }
+  }
+
+  if (meshgl.dirty & MeshGL::DIRTY_OVERLAY_POINTS)
+  {
+    meshgl.points_V_vbo.resize(data.points.rows(),3);
+    meshgl.points_V_colors_vbo.resize(data.points.rows(),3);
+    meshgl.points_F_vbo.resize(data.points.rows(),1);
+    for (unsigned i=0; i<data.points.rows();++i)
+    {
+      meshgl.points_V_vbo.row(i) = data.points.block<1, 3>(i, 0).cast<float>();
+      meshgl.points_V_colors_vbo.row(i) = data.points.block<1, 3>(i, 3).cast<float>();
+      meshgl.points_F_vbo(i) = i;
+    }
+  }
 }
