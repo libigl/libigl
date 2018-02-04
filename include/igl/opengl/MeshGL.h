@@ -5,26 +5,22 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
-#ifndef IGL_OPENGL_STATE_H
-#define IGL_OPENGL_STATE_H
+#ifndef IGL_OPENGL_MESHGL_H
+#define IGL_OPENGL_MESHGL_H
 
 // Coverts mesh data inside a igl::ViewerData class in an OpenGL
 // compatible format The class includes a shader and the opengl calls to plot
 // the data
 
-// Alec: not sure why this is call "State". It seems this is a drawable mesh
-// equipt with its own shaders and dirty flags. "Mesh" would even be more
-// appropriate.
-
 #include <igl/igl_inline.h>
-#include "../ViewerData.h"
+#include "ViewerData.h"
 
 namespace igl
 {
 namespace opengl
 {
 
-class State
+class MeshGL
 {
 public:
   typedef unsigned int GLuint;
@@ -88,7 +84,7 @@ public:
   IGL_INLINE void init_buffers();
 
   // Update contents from a 'Data' instance
-  IGL_INLINE void set_data(const igl::ViewerData &data, bool invert_normals);
+  IGL_INLINE void set_data(const igl::opengl::ViewerData &data, bool invert_normals);
 
   // Bind the underlying OpenGL buffer objects for subsequent mesh draw calls
   IGL_INLINE void bind_mesh();
@@ -117,7 +113,7 @@ public:
 }
 
 #ifndef IGL_STATIC_LIBRARY
-#  include "State.cpp"
+#  include "MeshGL.cpp"
 #endif
 
 #endif

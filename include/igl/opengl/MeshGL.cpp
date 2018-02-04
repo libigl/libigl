@@ -6,13 +6,13 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 
-#include "State.h"
+#include "MeshGL.h"
 #include "bind_vertex_attrib_array.h"
-#include "../ViewerData.h"
+#include "ViewerData.h"
 #include "create_shader_program.h"
 #include "destroy_shader_program.h"
 
-IGL_INLINE void igl::opengl::State::init_buffers()
+IGL_INLINE void igl::opengl::MeshGL::init_buffers()
 {
   // Mesh: Vertex Array Object & Buffer objects
   glGenVertexArrays(1, &vao_mesh);
@@ -43,7 +43,7 @@ IGL_INLINE void igl::opengl::State::init_buffers()
   dirty = ViewerData::DIRTY_ALL;
 }
 
-IGL_INLINE void igl::opengl::State::free_buffers()
+IGL_INLINE void igl::opengl::MeshGL::free_buffers()
 {
   glDeleteVertexArrays(1, &vao_mesh);
   glDeleteVertexArrays(1, &vao_overlay_lines);
@@ -66,8 +66,8 @@ IGL_INLINE void igl::opengl::State::free_buffers()
   glDeleteTextures(1, &vbo_tex);
 }
 
-IGL_INLINE void igl::opengl::State::set_data(
-  const igl::ViewerData &data, 
+IGL_INLINE void igl::opengl::MeshGL::set_data(
+  const igl::opengl::ViewerData &data, 
   bool invert_normals)
 {
   bool per_corner_uv = (data.F_uv.rows() == data.F.rows());
@@ -294,7 +294,7 @@ IGL_INLINE void igl::opengl::State::set_data(
   }
 }
 
-IGL_INLINE void igl::opengl::State::bind_mesh()
+IGL_INLINE void igl::opengl::MeshGL::bind_mesh()
 {
   glBindVertexArray(vao_mesh);
   glUseProgram(shader_mesh);
@@ -324,7 +324,7 @@ IGL_INLINE void igl::opengl::State::bind_mesh()
   dirty &= ~ViewerData::DIRTY_MESH;
 }
 
-IGL_INLINE void igl::opengl::State::bind_overlay_lines()
+IGL_INLINE void igl::opengl::MeshGL::bind_overlay_lines()
 {
   bool is_dirty = dirty & ViewerData::DIRTY_OVERLAY_LINES;
 
@@ -340,7 +340,7 @@ IGL_INLINE void igl::opengl::State::bind_overlay_lines()
   dirty &= ~ViewerData::DIRTY_OVERLAY_LINES;
 }
 
-IGL_INLINE void igl::opengl::State::bind_overlay_points()
+IGL_INLINE void igl::opengl::MeshGL::bind_overlay_points()
 {
   bool is_dirty = dirty & ViewerData::DIRTY_OVERLAY_POINTS;
 
@@ -356,7 +356,7 @@ IGL_INLINE void igl::opengl::State::bind_overlay_points()
   dirty &= ~ViewerData::DIRTY_OVERLAY_POINTS;
 }
 
-IGL_INLINE void igl::opengl::State::draw_mesh(bool solid)
+IGL_INLINE void igl::opengl::MeshGL::draw_mesh(bool solid)
 {
   glPolygonMode(GL_FRONT_AND_BACK, solid ? GL_FILL : GL_LINE);
 
@@ -372,17 +372,17 @@ IGL_INLINE void igl::opengl::State::draw_mesh(bool solid)
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
-IGL_INLINE void igl::opengl::State::draw_overlay_lines()
+IGL_INLINE void igl::opengl::MeshGL::draw_overlay_lines()
 {
   glDrawElements(GL_LINES, lines_F_vbo.rows(), GL_UNSIGNED_INT, 0);
 }
 
-IGL_INLINE void igl::opengl::State::draw_overlay_points()
+IGL_INLINE void igl::opengl::MeshGL::draw_overlay_points()
 {
   glDrawElements(GL_POINTS, points_F_vbo.rows(), GL_UNSIGNED_INT, 0);
 }
 
-IGL_INLINE void igl::opengl::State::init()
+IGL_INLINE void igl::opengl::MeshGL::init()
 {
   if(is_initialized)
   {
@@ -515,7 +515,7 @@ IGL_INLINE void igl::opengl::State::init()
     shader_overlay_points);
 }
 
-IGL_INLINE void igl::opengl::State::free()
+IGL_INLINE void igl::opengl::MeshGL::free()
 {
   const auto free = [](GLuint & id)
   {
