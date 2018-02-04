@@ -326,7 +326,7 @@ int main(int argc, char *argv[])
 
   // Plot the mesh
   igl::opengl::glfw::Viewer viewer;
-  viewer.selected_data().set_mesh(V, F);
+  viewer.data().set_mesh(V, F);
   viewer.launch();
 }
 </code></pre>
@@ -368,14 +368,14 @@ the keyboard callback changes the visualized mesh depending on the key pressed:<
 {
   if (key == '1')
   {
-    viewer.selected_data().clear();
-    viewer.selected_data().set_mesh(V1, F1);
+    viewer.data().clear();
+    viewer.data().set_mesh(V1, F1);
     viewer.core.align_camera_center(V1,F1);
   }
   else if (key == '2')
   {
-    viewer.selected_data().clear();
-    viewer.selected_data().set_mesh(V2, F2);
+    viewer.data().clear();
+    viewer.data().set_mesh(V2, F2);
     viewer.core.align_camera_center(V2,F2);
   }
   return false;
@@ -403,7 +403,7 @@ the viewer&#8217;s callbacks. See the
 <p>Colors and normals can be associated to faces or vertices using the
 set_colors function:</p>
 
-<pre><code class="cpp">viewer.selected_data().set_colors(C);
+<pre><code class="cpp">viewer.data().set_colors(C);
 </code></pre>
 
 <p><code>C</code> is a #C by 3 matrix with one RGB color per row. <code>C</code> must have as many
@@ -441,17 +441,17 @@ heavy data structures types favors simplicity, ease of use and reusability.</p>
 
 <p>In addition to plotting the surface, the viewer supports the visualization of points, lines and text labels: these overlays can be very helpful while developing geometric processing algorithms to plot debug information.</p>
 
-<pre><code class="cpp">viewer.selected_data().add_points(P,Eigen::RowVector3d(r,g,b));
+<pre><code class="cpp">viewer.data().add_points(P,Eigen::RowVector3d(r,g,b));
 </code></pre>
 
 <p>Draws a point of color r,g,b for each row of P. The point is placed at the coordinates specified in each row of P, which is a #P by 3 matrix.</p>
 
-<pre><code class="cpp">viewer.selected_data().add_edges(P1,P2,Eigen::RowVector3d(r,g,b);
+<pre><code class="cpp">viewer.data().add_edges(P1,P2,Eigen::RowVector3d(r,g,b);
 </code></pre>
 
 <p>Draws a line of color r,g,b for each row of P1 and P2, which connects the 3D point in to the point in P2. Both P1 and P2 are of size #P by 3.</p>
 
-<pre><code class="cpp">viewer.selected_data().add_label(p,str);
+<pre><code class="cpp">viewer.data().add_label(p,str);
 </code></pre>
 
 <p>Draws a label containing the string str at the position p, which is a vector of length 3.</p>
@@ -539,7 +539,7 @@ multiple meshes.</p>
 
 <p>Which mesh is <em>selected</em> is controled via the <code>viewer.selected_data_index</code>
 field. By default it his is set to <code>0</code>, so in the typical case of a single mesh
-<code>viewer.selected_data()</code> returns the <code>igl::ViewerData</code> corresponding to the one
+<code>viewer.data()</code> returns the <code>igl::ViewerData</code> corresponding to the one
 and only mesh.</p>
 
 <figure>
@@ -2126,7 +2126,7 @@ functions is designed to be reusable in other parametrization algorithms.</p>
 
 <p>A UV parametrization can be visualized in the viewer with:</p>
 
-<pre><code class="cpp">viewer.selected_data().set_uv(V_uv);
+<pre><code class="cpp">viewer.data().set_uv(V_uv);
 </code></pre>
 
 <p>The UV coordinates are then used to apply a procedural checkerboard texture to the

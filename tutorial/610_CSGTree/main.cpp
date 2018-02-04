@@ -30,13 +30,13 @@ int main(int argc, char * argv[])
   int view_id = num_views-1;
   const auto & update = [&]()
   {
-    viewer.selected_data().clear();
+    viewer.data().clear();
     // CSGTree templated on type of F
     VectorXd I;
     const auto & set_mesh = 
       [&](const MatrixXd & V, const MatrixXi & F, const int i)
     {
-      viewer.selected_data().set_mesh(V,F);
+      viewer.data().set_mesh(V,F);
       I = VectorXd::Constant(F.rows(),1,i);
     };
     switch(view_id)
@@ -85,7 +85,7 @@ int main(int argc, char * argv[])
           default:
             assert(false && "unknown view id");
         }
-        viewer.selected_data().set_mesh(M.cast_V<MatrixXd>(),M.F());
+        viewer.data().set_mesh(M.cast_V<MatrixXd>(),M.F());
         I.resize(M.F().rows(),1);
         // Compute colors based on original facets
         for(int f = 0;f<M.F().rows();f++)
@@ -103,7 +103,7 @@ int main(int argc, char * argv[])
 
     MatrixXd C;
     jet(I,1,5,C);
-    viewer.selected_data().set_colors(C);
+    viewer.data().set_colors(C);
   };
   update();
 

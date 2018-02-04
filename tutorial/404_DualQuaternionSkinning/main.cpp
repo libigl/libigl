@@ -77,9 +77,9 @@ bool pre_draw(igl::opengl::glfw::Viewer & viewer)
     MatrixXi BET;
     igl::deform_skeleton(C,BE,T,CT,BET);
     
-    viewer.selected_data().set_vertices(U);
-    viewer.selected_data().set_edges(CT,BET,sea_green);
-    viewer.selected_data().compute_normals();
+    viewer.data().set_vertices(U);
+    viewer.data().set_edges(CT,BET,sea_green);
+    viewer.data().compute_normals();
     if(viewer.core.is_animating)
     {
       anim_t += anim_t_dir;
@@ -131,11 +131,11 @@ int main(int argc, char *argv[])
 
   // Plot the mesh with pseudocolors
   igl::opengl::glfw::Viewer viewer;
-  viewer.selected_data().set_mesh(U, F);
-  viewer.selected_data().set_edges(C,BE,sea_green);
-  viewer.selected_data().show_lines = false;
-  viewer.selected_data().show_overlay_depth = false;
-  viewer.selected_data().line_width = 1;
+  viewer.data().set_mesh(U, F);
+  viewer.data().set_edges(C,BE,sea_green);
+  viewer.data().show_lines = false;
+  viewer.data().show_overlay_depth = false;
+  viewer.data().line_width = 1;
   viewer.core.trackball_angle.normalize();
   viewer.callback_pre_draw = &pre_draw;
   viewer.callback_key_down = &key_down;

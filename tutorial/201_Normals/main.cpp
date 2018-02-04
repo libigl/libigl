@@ -20,13 +20,13 @@ bool key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier
   switch(key)
   {
     case '1':
-      viewer.selected_data().set_normals(N_faces);
+      viewer.data().set_normals(N_faces);
       return true;
     case '2':
-      viewer.selected_data().set_normals(N_vertices);
+      viewer.data().set_normals(N_vertices);
       return true;
     case '3':
-      viewer.selected_data().set_normals(N_corners);
+      viewer.data().set_normals(N_corners);
       return true;
     default: break;
   }
@@ -50,9 +50,9 @@ int main(int argc, char *argv[])
   // Plot the mesh
   igl::opengl::glfw::Viewer viewer;
   viewer.callback_key_down = &key_down;
-  viewer.selected_data().show_lines = false;
-  viewer.selected_data().set_mesh(V, F);
-  viewer.selected_data().set_normals(N_faces);
+  viewer.data().show_lines = false;
+  viewer.data().set_mesh(V, F);
+  viewer.data().set_normals(N_faces);
   std::cout<<
     "Press '1' for per-face normals."<<std::endl<<
     "Press '2' for per-vertex normals."<<std::endl<<

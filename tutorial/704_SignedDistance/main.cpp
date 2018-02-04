@@ -101,9 +101,9 @@ void update_visualization(igl::opengl::glfw::Viewer & viewer)
   {
     append_mesh(V,F,RowVector3d(0.8,0.8,0.8));
   }
-  viewer.selected_data().clear();
-  viewer.selected_data().set_mesh(V_vis,F_vis);
-  viewer.selected_data().set_colors(C_vis);
+  viewer.data().clear();
+  viewer.data().set_mesh(V_vis,F_vis);
+  viewer.data().set_colors(C_vis);
   viewer.core.lighting_factor = overlay;
 }
 
@@ -164,6 +164,6 @@ int main(int argc, char *argv[])
   igl::opengl::glfw::Viewer viewer;
   update_visualization(viewer);
   viewer.callback_key_down = &key_down;
-  viewer.selected_data().show_lines = false;
+  viewer.data().show_lines = false;
   viewer.launch();
 }

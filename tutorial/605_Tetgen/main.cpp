@@ -49,9 +49,9 @@ bool key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier
       F_temp.row(i*4+3) << (i*4)+1, (i*4)+2, (i*4)+3;
     }
 
-    viewer.selected_data().clear();
-    viewer.selected_data().set_mesh(V_temp,F_temp);
-    viewer.selected_data().set_face_based(true);
+    viewer.data().clear();
+    viewer.data().set_mesh(V_temp,F_temp);
+    viewer.data().set_face_based(true);
   }
 
 

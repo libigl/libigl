@@ -13,17 +13,17 @@ bool key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier
   if (key == '1')
   {
     // Clear should be called before drawing the mesh
-    viewer.selected_data().clear();
+    viewer.data().clear();
     // Draw_mesh creates or updates the vertices and faces of the displayed mesh.
     // If a mesh is already displayed, draw_mesh returns an error if the given V and
     // F have size different than the current ones
-    viewer.selected_data().set_mesh(V1, F1);
+    viewer.data().set_mesh(V1, F1);
     viewer.core.align_camera_center(V1,F1);
   }
   else if (key == '2')
   {
-    viewer.selected_data().clear();
-    viewer.selected_data().set_mesh(V2, F2);
+    viewer.data().clear();
+    viewer.data().set_mesh(V2, F2);
     viewer.core.align_camera_center(V2,F2);
   }
 
@@ -45,6 +45,6 @@ int main(int argc, char *argv[])
   // Register a keyboard callback that allows to switch between
   // the two loaded meshes
   viewer.callback_key_down = &key_down;
-  viewer.selected_data().set_mesh(V1, F1);
+  viewer.data().set_mesh(V1, F1);
   viewer.launch();
 }

@@ -76,9 +76,9 @@ bool pre_draw(igl::opengl::glfw::Viewer & viewer)
     MatrixXi BET;
     igl::deform_skeleton(C,BE,T,CT,BET);
 
-    viewer.selected_data().set_vertices(U);
-    viewer.selected_data().set_edges(CT,BET,sea_green);
-    viewer.selected_data().compute_normals();
+    viewer.data().set_vertices(U);
+    viewer.data().set_edges(CT,BET,sea_green);
+    viewer.data().compute_normals();
     anim_t += anim_t_dir;
     anim_t_dir *= (anim_t>=1.0 || anim_t<=0.0?-1.0:1.0);
   }
@@ -89,7 +89,7 @@ void set_color(igl::opengl::glfw::Viewer &viewer)
 {
   Eigen::MatrixXd C;
   igl::jet(W.col(selected).eval(),true,C);
-  viewer.selected_data().set_colors(C);
+  viewer.data().set_colors(C);
 }
 
 bool key_down(igl::opengl::glfw::Viewer &viewer, unsigned char key, int mods)
@@ -161,12 +161,12 @@ int main(int argc, char *argv[])
 
   // Plot the mesh with pseudocolors
   igl::opengl::glfw::Viewer viewer;
-  viewer.selected_data().set_mesh(U, F);
+  viewer.data().set_mesh(U, F);
   set_color(viewer);
-  viewer.selected_data().set_edges(C,BE,sea_green);
-  viewer.selected_data().show_lines = false;
-  viewer.selected_data().show_overlay_depth = false;
-  viewer.selected_data().line_width = 1;
+  viewer.data().set_edges(C,BE,sea_green);
+  viewer.data().show_lines = false;
+  viewer.data().show_overlay_depth = false;
+  viewer.data().line_width = 1;
   viewer.callback_pre_draw = &pre_draw;
   viewer.callback_key_down = &key_down;
   viewer.core.is_animating = false;

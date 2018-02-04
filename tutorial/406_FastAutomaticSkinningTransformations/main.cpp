@@ -101,9 +101,9 @@ bool pre_draw(igl::opengl::glfw::Viewer & viewer)
         break;
       }
     }
-    viewer.selected_data().set_vertices(U);
-    viewer.selected_data().set_points(bc,sea_green);
-    viewer.selected_data().compute_normals();
+    viewer.data().set_vertices(U);
+    viewer.data().set_points(bc,sea_green);
+    viewer.data().compute_normals();
     if(viewer.core.is_animating)
     {
       anim_t += anim_t_dir;
@@ -207,9 +207,9 @@ int main(int argc, char *argv[])
 
   // Plot the mesh with pseudocolors
   igl::opengl::glfw::Viewer viewer;
-  viewer.selected_data().set_mesh(U, F);
-  viewer.selected_data().add_points(igl::slice(V,b,1),sea_green);
-  viewer.selected_data().show_lines = false;
+  viewer.data().set_mesh(U, F);
+  viewer.data().add_points(igl::slice(V,b,1),sea_green);
+  viewer.data().show_lines = false;
   viewer.callback_pre_draw = &pre_draw;
   viewer.callback_key_down = &key_down;
   viewer.core.is_animating = false;

@@ -106,12 +106,12 @@ int main(int argc, char * argv[])
   igl::cat(1,low.U,high.U,scene.U);
   igl::cat(1,low.F,MatrixXi(high.F.array()+low.V.rows()),scene.F);
   // Color each mesh
-  viewer.selected_data().set_mesh(scene.U,scene.F);
+  viewer.data().set_mesh(scene.U,scene.F);
   MatrixXd C(scene.F.rows(),3);
   C<<
     RowVector3d(0.8,0.5,0.2).replicate(low.F.rows(),1),
     RowVector3d(0.3,0.4,1.0).replicate(high.F.rows(),1);
-  viewer.selected_data().set_colors(C);
+  viewer.data().set_colors(C);
 
   viewer.callback_key_pressed = 
     [&](igl::opengl::glfw::Viewer & viewer,unsigned int key,int mods)->bool
@@ -151,15 +151,15 @@ int main(int argc, char * argv[])
       high.U = W * (low.U.rowwise() + RowVector3d(1,0,0));
       scene.U.block(low.U.rows(),0,high.U.rows(),high.U.cols()) = high.U;
 
-      viewer.selected_data().set_vertices(scene.U);
-      viewer.selected_data().compute_normals();
+      viewer.data().set_vertices(scene.U);
+      viewer.data().compute_normals();
     }
     return false;
   };
-  viewer.selected_data().show_lines = false;
+  viewer.data().show_lines = false;
   viewer.core.is_animating = true;
   viewer.core.animation_max_fps = 30.;
-  viewer.selected_data().set_face_based(true);
+  viewer.data().set_face_based(true);
   cout<<R"(
 [space] to toggle animation
 'r'     to reset positions 

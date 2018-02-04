@@ -60,9 +60,9 @@ int main(int argc, char * argv[])
       Qit[e] = Q.insert(std::pair<double,int>(cost,e)).first;
     }
     num_collapsed = 0;
-    viewer.selected_data().clear();
-    viewer.selected_data().set_mesh(V,F);
-    viewer.selected_data().set_face_based(true);
+    viewer.data().clear();
+    viewer.data().set_mesh(V,F);
+    viewer.data().set_face_based(true);
   };
 
   const auto &pre_draw = [&](igl::opengl::glfw::Viewer & viewer)->bool
@@ -86,9 +86,9 @@ int main(int argc, char * argv[])
 
       if(something_collapsed)
       {
-        viewer.selected_data().clear();
-        viewer.selected_data().set_mesh(V,F);
-        viewer.selected_data().set_face_based(true);
+        viewer.data().clear();
+        viewer.data().set_mesh(V,F);
+        viewer.data().set_face_based(true);
       }
     }
     return false;

@@ -90,38 +90,38 @@ bool key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier
   if (key <'1' || key >'8')
     return false;
 
-  viewer.selected_data().clear();
-  viewer.selected_data().show_lines = false;
-  viewer.selected_data().show_texture = false;
+  viewer.data().clear();
+  viewer.data().show_lines = false;
+  viewer.data().show_texture = false;
 
   if (key == '1')
   {
     // Cross field
-    viewer.selected_data().set_mesh(V, F);
-    viewer.selected_data().add_edges(extend_arrows ? B - global_scale*X1 : B, B + global_scale*X1 ,Eigen::RowVector3d(1,0,0));
-    viewer.selected_data().add_edges(extend_arrows ? B - global_scale*X2 : B, B + global_scale*X2 ,Eigen::RowVector3d(0,0,1));
+    viewer.data().set_mesh(V, F);
+    viewer.data().add_edges(extend_arrows ? B - global_scale*X1 : B, B + global_scale*X1 ,Eigen::RowVector3d(1,0,0));
+    viewer.data().add_edges(extend_arrows ? B - global_scale*X2 : B, B + global_scale*X2 ,Eigen::RowVector3d(0,0,1));
   }
 
   if (key == '2')
   {
     // Bisector field
-    viewer.selected_data().set_mesh(V, F);
-    viewer.selected_data().add_edges(extend_arrows ? B - global_scale*BIS1 : B, B + global_scale*BIS1 ,Eigen::RowVector3d(1,0,0));
-    viewer.selected_data().add_edges(extend_arrows ? B - global_scale*BIS2 : B, B + global_scale*BIS2 ,Eigen::RowVector3d(0,0,1));
+    viewer.data().set_mesh(V, F);
+    viewer.data().add_edges(extend_arrows ? B - global_scale*BIS1 : B, B + global_scale*BIS1 ,Eigen::RowVector3d(1,0,0));
+    viewer.data().add_edges(extend_arrows ? B - global_scale*BIS2 : B, B + global_scale*BIS2 ,Eigen::RowVector3d(0,0,1));
   }
 
   if (key == '3')
   {
     // Bisector field combed
-    viewer.selected_data().set_mesh(V, F);
-    viewer.selected_data().add_edges(extend_arrows ? B - global_scale*BIS1_combed : B, B + global_scale*BIS1_combed ,Eigen::RowVector3d(1,0,0));
-    viewer.selected_data().add_edges(extend_arrows ? B - global_scale*BIS2_combed : B, B + global_scale*BIS2_combed ,Eigen::RowVector3d(0,0,1));
+    viewer.data().set_mesh(V, F);
+    viewer.data().add_edges(extend_arrows ? B - global_scale*BIS1_combed : B, B + global_scale*BIS1_combed ,Eigen::RowVector3d(1,0,0));
+    viewer.data().add_edges(extend_arrows ? B - global_scale*BIS2_combed : B, B + global_scale*BIS2_combed ,Eigen::RowVector3d(0,0,1));
   }
 
   if (key == '4')
   {
     // Singularities and cuts
-    viewer.selected_data().set_mesh(V, F);
+    viewer.data().set_mesh(V, F);
 
     // Plot cuts
     int l_count = Seams.sum();
@@ -141,15 +141,15 @@ bool key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier
       }
     }
 
-    viewer.selected_data().add_edges(P1, P2, Eigen::RowVector3d(1, 0, 0));
+    viewer.data().add_edges(P1, P2, Eigen::RowVector3d(1, 0, 0));
 
     // Plot the singularities as colored dots (red for negative, blue for positive)
     for (unsigned i=0; i<singularityIndex.size();++i)
     {
       if (singularityIndex(i) < 2 && singularityIndex(i) > 0)
-        viewer.selected_data().add_points(V.row(i),Eigen::RowVector3d(1,0,0));
+        viewer.data().add_points(V.row(i),Eigen::RowVector3d(1,0,0));
       else if (singularityIndex(i) > 2)
-        viewer.selected_data().add_points(V.row(i),Eigen::RowVector3d(0,1,0));
+        viewer.data().add_points(V.row(i),Eigen::RowVector3d(0,1,0));
     }
 
   }
@@ -158,9 +158,9 @@ bool key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier
   {
     // Singularities and cuts, original field
     // Singularities and cuts
-    viewer.selected_data().set_mesh(V, F);
-    viewer.selected_data().add_edges(extend_arrows ? B - global_scale*X1_combed : B, B + global_scale*X1_combed ,Eigen::RowVector3d(1,0,0));
-    viewer.selected_data().add_edges(extend_arrows ? B - global_scale*X2_combed : B, B + global_scale*X2_combed ,Eigen::RowVector3d(0,0,1));
+    viewer.data().set_mesh(V, F);
+    viewer.data().add_edges(extend_arrows ? B - global_scale*X1_combed : B, B + global_scale*X1_combed ,Eigen::RowVector3d(1,0,0));
+    viewer.data().add_edges(extend_arrows ? B - global_scale*X2_combed : B, B + global_scale*X2_combed ,Eigen::RowVector3d(0,0,1));
 
     // Plot cuts
     int l_count = Seams.sum();
@@ -180,50 +180,50 @@ bool key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier
       }
     }
 
-    viewer.selected_data().add_edges(P1, P2, Eigen::RowVector3d(1, 0, 0));
+    viewer.data().add_edges(P1, P2, Eigen::RowVector3d(1, 0, 0));
 
     // Plot the singularities as colored dots (red for negative, blue for positive)
     for (unsigned i=0; i<singularityIndex.size();++i)
     {
       if (singularityIndex(i) < 2 && singularityIndex(i) > 0)
-        viewer.selected_data().add_points(V.row(i),Eigen::RowVector3d(1,0,0));
+        viewer.data().add_points(V.row(i),Eigen::RowVector3d(1,0,0));
       else if (singularityIndex(i) > 2)
-        viewer.selected_data().add_points(V.row(i),Eigen::RowVector3d(0,1,0));
+        viewer.data().add_points(V.row(i),Eigen::RowVector3d(0,1,0));
     }
   }
 
   if (key == '6')
   {
     // Global parametrization UV
-    viewer.selected_data().set_mesh(UV, FUV);
-    viewer.selected_data().set_uv(UV);
-    viewer.selected_data().show_lines = true;
+    viewer.data().set_mesh(UV, FUV);
+    viewer.data().set_uv(UV);
+    viewer.data().show_lines = true;
   }
 
   if (key == '7')
   {
     // Global parametrization in 3D
-    viewer.selected_data().set_mesh(V, F);
-    viewer.selected_data().set_uv(UV,FUV);
-    viewer.selected_data().show_texture = true;
+    viewer.data().set_mesh(V, F);
+    viewer.data().set_uv(UV,FUV);
+    viewer.data().show_texture = true;
   }
 
   if (key == '8')
   {
     // Global parametrization in 3D with seams
-    viewer.selected_data().set_mesh(V, F);
-    viewer.selected_data().set_uv(UV_seams,FUV_seams);
-    viewer.selected_data().show_texture = true;
+    viewer.data().set_mesh(V, F);
+    viewer.data().set_uv(UV_seams,FUV_seams);
+    viewer.data().show_texture = true;
   }
 
-  viewer.selected_data().set_colors(Eigen::RowVector3d(1,1,1));
+  viewer.data().set_colors(Eigen::RowVector3d(1,1,1));
 
   // Replace the standard texture with an integer shift invariant texture
   Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> texture_R, texture_G, texture_B;
   line_texture(texture_R, texture_G, texture_B);
-  viewer.selected_data().set_texture(texture_R, texture_B, texture_G);
+  viewer.data().set_texture(texture_R, texture_B, texture_G);
 
-  viewer.core.align_camera_center(viewer.selected_data().V,viewer.selected_data().F);
+  viewer.core.align_camera_center(viewer.data().V,viewer.data().F);
 
   return false;
 }
