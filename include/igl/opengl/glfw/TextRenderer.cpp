@@ -19,9 +19,9 @@
 #include <nanovg_gl.h>
 
 
-IGL_INLINE igl::viewer::TextRenderer::TextRenderer(): ctx(nullptr) {}
+IGL_INLINE igl::opengl::glfw::TextRenderer::TextRenderer(): ctx(nullptr) {}
 
-IGL_INLINE int igl::viewer::TextRenderer::Init()
+IGL_INLINE int igl::opengl::glfw::TextRenderer::Init()
 {
   using namespace std;
   #ifdef NDEBUG
@@ -36,7 +36,7 @@ IGL_INLINE int igl::viewer::TextRenderer::Init()
   return 0;
 }
 
-IGL_INLINE int igl::viewer::TextRenderer::Shut()
+IGL_INLINE int igl::opengl::glfw::TextRenderer::Shut()
 {
   using namespace std;
   if(ctx)
@@ -44,7 +44,7 @@ IGL_INLINE int igl::viewer::TextRenderer::Shut()
   return 0;
 }
 
-IGL_INLINE void igl::viewer::TextRenderer::BeginDraw(
+IGL_INLINE void igl::opengl::glfw::TextRenderer::BeginDraw(
   const Eigen::Matrix4f &view,
   const Eigen::Matrix4f &proj,
   const Eigen::Vector4f &_viewport,
@@ -71,13 +71,13 @@ IGL_INLINE void igl::viewer::TextRenderer::BeginDraw(
   nvgBeginFrame(ctx,mSize[0],mSize[1],mPixelRatio);
 }
 
-IGL_INLINE void igl::viewer::TextRenderer::EndDraw()
+IGL_INLINE void igl::opengl::glfw::TextRenderer::EndDraw()
 {
   using namespace std;
   nvgEndFrame(ctx);
 }
 
-IGL_INLINE void igl::viewer::TextRenderer::DrawText(
+IGL_INLINE void igl::opengl::glfw::TextRenderer::DrawText(
   Eigen::Vector3d pos, Eigen::Vector3d normal, const std::string &text)
 {
   using namespace std;

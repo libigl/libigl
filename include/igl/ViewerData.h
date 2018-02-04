@@ -5,19 +5,18 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
-#ifndef IGL_VIEWER_VIEWER_DATA_H
-#define IGL_VIEWER_VIEWER_DATA_H
+#ifndef IGL_VIEWERDATA_H
+#define IGL_VIEWERDATA_H
 
 #include <cstdint>
 #include <vector>
-
 #include <Eigen/Core>
-
 #include <igl/igl_inline.h>
 
+// Alec: This is a mesh class containing a variety of data types (normals,
+// overlays, material colors, etc.)
+//
 namespace igl
-{
-namespace viewer
 {
 
 // TODO: write documentation
@@ -186,66 +185,25 @@ public:
 
   // Enable per-face or per-vertex properties
   bool face_based;
-  /*********************************/
+
+  // Visualization options
+  bool show_overlay;
+  bool show_overlay_depth;
+  bool show_texture;
+  bool show_faces;
+  bool show_lines;
+  bool show_vertid;
+  bool show_faceid;
+  bool invert_normals;
+  // Point size / line width
+  float point_size;
+  float line_width;
+  Eigen::Vector4f line_color;
+  // Shape material
+  float shininess;
 };
 
 }
-}
-
-#ifdef ENABLE_SERIALIZATION
-#include <igl/serialize.h>
-namespace igl {
-	namespace serialization {
-
-		inline void serialization(bool s, igl::viewer::ViewerData& obj, std::vector<char>& buffer)
-		{
-			SERIALIZE_MEMBER(V);
-			SERIALIZE_MEMBER(F);
-
-			SERIALIZE_MEMBER(F_normals);
-			SERIALIZE_MEMBER(F_material_ambient);
-			SERIALIZE_MEMBER(F_material_diffuse);
-			SERIALIZE_MEMBER(F_material_specular);
-
-			SERIALIZE_MEMBER(V_normals);
-			SERIALIZE_MEMBER(V_material_ambient);
-			SERIALIZE_MEMBER(V_material_diffuse);
-			SERIALIZE_MEMBER(V_material_specular);
-
-			SERIALIZE_MEMBER(V_uv);
-			SERIALIZE_MEMBER(F_uv);
-
-			SERIALIZE_MEMBER(texture_R);
-			SERIALIZE_MEMBER(texture_G);
-			SERIALIZE_MEMBER(texture_B);
-      SERIALIZE_MEMBER(texture_A);
-
-			SERIALIZE_MEMBER(lines);
-			SERIALIZE_MEMBER(points);
-
-			SERIALIZE_MEMBER(labels_positions);
-			SERIALIZE_MEMBER(labels_strings);
-
-			SERIALIZE_MEMBER(dirty);
-
-			SERIALIZE_MEMBER(face_based);
-		}
-
-		template<>
-		inline void serialize(const igl::viewer::ViewerData& obj, std::vector<char>& buffer)
-		{
-			serialization(true, const_cast<igl::viewer::ViewerData&>(obj), buffer);
-		}
-
-		template<>
-		inline void deserialize(igl::viewer::ViewerData& obj, const std::vector<char>& buffer)
-		{
-			serialization(false, obj, const_cast<std::vector<char>&>(buffer));
-			obj.dirty = igl::viewer::ViewerData::DIRTY_ALL;
-		}
-	}
-}
-#endif
 
 #ifndef IGL_STATIC_LIBRARY
 #  include "ViewerData.cpp"

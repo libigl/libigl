@@ -6,10 +6,13 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 
-#include "OpenGL_state.h"
-#include "ViewerData.h"
+#include "State.h"
+#include "bind_vertex_attrib_array.h"
+#include "../ViewerData.h"
+#include "create_shader_program.h"
+#include "destroy_shader_program.h"
 
-IGL_INLINE void igl::viewer::OpenGL_state::init_buffers()
+IGL_INLINE void igl::opengl::State::init_buffers()
 {
   // Mesh: Vertex Array Object & Buffer objects
   glGenVertexArrays(1, &vao_mesh);
@@ -40,7 +43,7 @@ IGL_INLINE void igl::viewer::OpenGL_state::init_buffers()
   dirty = ViewerData::DIRTY_ALL;
 }
 
-IGL_INLINE void igl::viewer::OpenGL_state::free_buffers()
+IGL_INLINE void igl::opengl::State::free_buffers()
 {
   glDeleteVertexArrays(1, &vao_mesh);
   glDeleteVertexArrays(1, &vao_overlay_lines);
@@ -63,12 +66,42 @@ IGL_INLINE void igl::viewer::OpenGL_state::free_buffers()
   glDeleteTextures(1, &vbo_tex);
 }
 
-IGL_INLINE void igl::viewer::OpenGL_state::set_data(const igl::viewer::ViewerData &data, bool invert_normals)
+IGL_INLINE void igl::opengl::State::set_data(
+  const igl::ViewerData &data, 
+  bool invert_normals)
 {
   bool per_corner_uv = (data.F_uv.rows() == data.F.rows());
   bool per_corner_normals = (data.F_normals.rows() == 3 * data.F.rows());
 
   dirty |= data.dirty;
+
+  // Input:
+  //   X  #F by dim quantity
+  // Output:
+  //   X_vbo  #F*3 by dim scattering per corner
+  const auto per_face = [&data](
+      const Eigen::MatrixXd & X,
+      RowMatrixXf & X_vbo)
+  {
+    X_vbo.resize(data.F.rows()*3,3);
+    for (unsigned i=0; i<data.F.rows();++i)
+      for (unsigned j=0;j<3;++j)
+        X_vbo.row(i*3+j) = X.row(i).cast<float>().head(3);
+  };
+
+  // Input:
+  //   X  #V by dim quantity
+  // Output:
+  //   X_vbo  #F*3 by dim scattering per corner
+  const auto per_corner = [&data](
+      const Eigen::MatrixXd & X,
+      RowMatrixXf & X_vbo)
+  {
+    X_vbo.resize(data.F.rows()*3,3);
+    for (unsigned i=0; i<data.F.rows();++i)
+      for (unsigned j=0;j<3;++j)
+        X_vbo.row(i*3+j) = X.row(data.F(i,j)).cast<float>();
+  };
 
   if (!data.face_based)
   {
@@ -76,41 +109,39 @@ IGL_INLINE void igl::viewer::OpenGL_state::set_data(const igl::viewer::ViewerDat
     {
       // Vertex positions
       if (dirty & ViewerData::DIRTY_POSITION)
-        V_vbo = (data.V.transpose()).cast<float>();
+        V_vbo = data.V.cast<float>();
 
       // Vertex normals
       if (dirty & ViewerData::DIRTY_NORMAL)
       {
-        V_normals_vbo = (data.V_normals.transpose()).cast<float>();
+        V_normals_vbo = data.V_normals.cast<float>();
         if (invert_normals)
           V_normals_vbo = -V_normals_vbo;
       }
 
       // Per-vertex material settings
       if (dirty & ViewerData::DIRTY_AMBIENT)
-        V_ambient_vbo = (data.V_material_ambient.transpose()).cast<float>();
+        V_ambient_vbo = data.V_material_ambient.cast<float>();
       if (dirty & ViewerData::DIRTY_DIFFUSE)
-        V_diffuse_vbo = (data.V_material_diffuse.transpose()).cast<float>();
+        V_diffuse_vbo = data.V_material_diffuse.cast<float>();
       if (dirty & ViewerData::DIRTY_SPECULAR)
-        V_specular_vbo = (data.V_material_specular.transpose()).cast<float>();
+        V_specular_vbo = data.V_material_specular.cast<float>();
 
       // Face indices
       if (dirty & ViewerData::DIRTY_FACE)
-        F_vbo = (data.F.transpose()).cast<unsigned>();
+        F_vbo = data.F.cast<unsigned>();
 
       // Texture coordinates
       if (dirty & ViewerData::DIRTY_UV)
-        V_uv_vbo = (data.V_uv.transpose()).cast<float>();
+        V_uv_vbo = data.V_uv.cast<float>();
     }
     else
     {
+
       // Per vertex properties with per corner UVs
       if (dirty & ViewerData::DIRTY_POSITION)
       {
-        V_vbo.resize(3,data.F.rows()*3);
-        for (unsigned i=0; i<data.F.rows();++i)
-          for (unsigned j=0;j<3;++j)
-            V_vbo.col(i*3+j) = data.V.row(data.F(i,j)).transpose().cast<float>();
+        per_corner(data.V,V_vbo);
       }
 
       if (dirty & ViewerData::DIRTY_AMBIENT)
@@ -120,7 +151,6 @@ IGL_INLINE void igl::viewer::OpenGL_state::set_data(const igl::viewer::ViewerDat
           for (unsigned j=0;j<3;++j)
             V_ambient_vbo.col (i*3+j) = data.V_material_ambient.row(data.F(i,j)).transpose().cast<float>();
       }
-
       if (dirty & ViewerData::DIRTY_DIFFUSE)
       {
         V_diffuse_vbo.resize(4,data.F.rows()*3);
@@ -128,7 +158,6 @@ IGL_INLINE void igl::viewer::OpenGL_state::set_data(const igl::viewer::ViewerDat
           for (unsigned j=0;j<3;++j)
             V_diffuse_vbo.col (i*3+j) = data.V_material_diffuse.row(data.F(i,j)).transpose().cast<float>();
       }
-
       if (dirty & ViewerData::DIRTY_SPECULAR)
       {
         V_specular_vbo.resize(4,data.F.rows()*3);
@@ -155,17 +184,19 @@ IGL_INLINE void igl::viewer::OpenGL_state::set_data(const igl::viewer::ViewerDat
 
       if (dirty & ViewerData::DIRTY_FACE)
       {
-        F_vbo.resize(3,data.F.rows());
+        F_vbo.resize(data.F.rows(),3);
         for (unsigned i=0; i<data.F.rows();++i)
-          F_vbo.col(i) << i*3+0, i*3+1, i*3+2;
+          F_vbo.row(i) << i*3+0, i*3+1, i*3+2;
       }
 
       if (dirty & ViewerData::DIRTY_UV)
       {
-        V_uv_vbo.resize(2,data.F.rows()*3);
+        V_uv_vbo.resize(data.F.rows()*3,2);
         for (unsigned i=0; i<data.F.rows();++i)
           for (unsigned j=0;j<3;++j)
-            V_uv_vbo.col(i*3+j) = data.V_uv.row(per_corner_uv ? data.F_uv(i,j) : data.F(i,j)).transpose().cast<float>();
+            V_uv_vbo.row(i*3+j) = 
+              data.V_uv.row(per_corner_uv ? 
+                data.F_uv(i,j) : data.F(i,j)).cast<float>();
       }
     }
   }
@@ -173,45 +204,31 @@ IGL_INLINE void igl::viewer::OpenGL_state::set_data(const igl::viewer::ViewerDat
   {
     if (dirty & ViewerData::DIRTY_POSITION)
     {
-      V_vbo.resize(3,data.F.rows()*3);
-      for (unsigned i=0; i<data.F.rows();++i)
-        for (unsigned j=0;j<3;++j)
-          V_vbo.col(i*3+j) = data.V.row(data.F(i,j)).transpose().cast<float>();
+      per_corner(data.V,V_vbo);
     }
 
     if (dirty & ViewerData::DIRTY_AMBIENT)
     {
-      V_ambient_vbo.resize(4,data.F.rows()*3);
-      for (unsigned i=0; i<data.F.rows();++i)
-        for (unsigned j=0;j<3;++j)
-          V_ambient_vbo.col (i*3+j) = data.F_material_ambient.row(i).transpose().cast<float>();
+      per_face(data.F_material_ambient,V_ambient_vbo);
     }
-
     if (dirty & ViewerData::DIRTY_DIFFUSE)
     {
-      V_diffuse_vbo.resize(4,data.F.rows()*3);
-      for (unsigned i=0; i<data.F.rows();++i)
-        for (unsigned j=0;j<3;++j)
-          V_diffuse_vbo.col (i*3+j) = data.F_material_diffuse.row(i).transpose().cast<float>();
+      per_face(data.F_material_diffuse,V_diffuse_vbo);
     }
-
     if (dirty & ViewerData::DIRTY_SPECULAR)
     {
-      V_specular_vbo.resize(4,data.F.rows()*3);
-      for (unsigned i=0; i<data.F.rows();++i)
-        for (unsigned j=0;j<3;++j)
-          V_specular_vbo.col(i*3+j) = data.F_material_specular.row(i).transpose().cast<float>();
+      per_face(data.F_material_specular,V_specular_vbo);
     }
 
     if (dirty & ViewerData::DIRTY_NORMAL)
     {
-      V_normals_vbo.resize(3,data.F.rows()*3);
+      V_normals_vbo.resize(data.F.rows()*3,3);
       for (unsigned i=0; i<data.F.rows();++i)
         for (unsigned j=0;j<3;++j)
-          V_normals_vbo.col (i*3+j) =
+          V_normals_vbo.row(i*3+j) =
              per_corner_normals ?
-               data.F_normals.row(i*3+j).transpose().cast<float>() :
-               data.F_normals.row(i).transpose().cast<float>();
+               data.F_normals.row(i*3+j).cast<float>() :
+               data.F_normals.row(i).cast<float>();
 
       if (invert_normals)
         V_normals_vbo = -V_normals_vbo;
@@ -219,17 +236,17 @@ IGL_INLINE void igl::viewer::OpenGL_state::set_data(const igl::viewer::ViewerDat
 
     if (dirty & ViewerData::DIRTY_FACE)
     {
-      F_vbo.resize(3,data.F.rows());
+      F_vbo.resize(data.F.rows(),3);
       for (unsigned i=0; i<data.F.rows();++i)
-        F_vbo.col(i) << i*3+0, i*3+1, i*3+2;
+        F_vbo.row(i) << i*3+0, i*3+1, i*3+2;
     }
 
     if (dirty & ViewerData::DIRTY_UV)
     {
-        V_uv_vbo.resize(2,data.F.rows()*3);
+        V_uv_vbo.resize(data.F.rows()*3,2);
         for (unsigned i=0; i<data.F.rows();++i)
           for (unsigned j=0;j<3;++j)
-            V_uv_vbo.col(i*3+j) = data.V_uv.row(per_corner_uv ? data.F_uv(i,j) : data.F(i,j)).transpose().cast<float>();
+            V_uv_vbo.row(i*3+j) = data.V_uv.row(per_corner_uv ? data.F_uv(i,j) : data.F(i,j)).cast<float>();
     }
   }
 
@@ -249,15 +266,15 @@ IGL_INLINE void igl::viewer::OpenGL_state::set_data(const igl::viewer::ViewerDat
 
   if (dirty & ViewerData::DIRTY_OVERLAY_LINES)
   {
-    lines_V_vbo.resize(3, data.lines.rows()*2);
-    lines_V_colors_vbo.resize(3, data.lines.rows()*2);
-    lines_F_vbo.resize(1, data.lines.rows()*2);
+    lines_V_vbo.resize(data.lines.rows()*2,3);
+    lines_V_colors_vbo.resize(data.lines.rows()*2,3);
+    lines_F_vbo.resize(data.lines.rows()*2,1);
     for (unsigned i=0; i<data.lines.rows();++i)
     {
-      lines_V_vbo.col(2*i+0) = data.lines.block<1, 3>(i, 0).transpose().cast<float>();
-      lines_V_vbo.col(2*i+1) = data.lines.block<1, 3>(i, 3).transpose().cast<float>();
-      lines_V_colors_vbo.col(2*i+0) = data.lines.block<1, 3>(i, 6).transpose().cast<float>();
-      lines_V_colors_vbo.col(2*i+1) = data.lines.block<1, 3>(i, 6).transpose().cast<float>();
+      lines_V_vbo.row(2*i+0) = data.lines.block<1, 3>(i, 0).cast<float>();
+      lines_V_vbo.row(2*i+1) = data.lines.block<1, 3>(i, 3).cast<float>();
+      lines_V_colors_vbo.row(2*i+0) = data.lines.block<1, 3>(i, 6).cast<float>();
+      lines_V_colors_vbo.row(2*i+1) = data.lines.block<1, 3>(i, 6).cast<float>();
       lines_F_vbo(2*i+0) = 2*i+0;
       lines_F_vbo(2*i+1) = 2*i+1;
     }
@@ -265,28 +282,28 @@ IGL_INLINE void igl::viewer::OpenGL_state::set_data(const igl::viewer::ViewerDat
 
   if (dirty & ViewerData::DIRTY_OVERLAY_POINTS)
   {
-    points_V_vbo.resize(3, data.points.rows());
-    points_V_colors_vbo.resize(3, data.points.rows());
-    points_F_vbo.resize(1, data.points.rows());
+    points_V_vbo.resize(data.points.rows(),3);
+    points_V_colors_vbo.resize(data.points.rows(),3);
+    points_F_vbo.resize(data.points.rows(),1);
     for (unsigned i=0; i<data.points.rows();++i)
     {
-      points_V_vbo.col(i) = data.points.block<1, 3>(i, 0).transpose().cast<float>();
-      points_V_colors_vbo.col(i) = data.points.block<1, 3>(i, 3).transpose().cast<float>();
+      points_V_vbo.row(i) = data.points.block<1, 3>(i, 0).cast<float>();
+      points_V_colors_vbo.row(i) = data.points.block<1, 3>(i, 3).cast<float>();
       points_F_vbo(i) = i;
     }
   }
 }
 
-IGL_INLINE void igl::viewer::OpenGL_state::bind_mesh()
+IGL_INLINE void igl::opengl::State::bind_mesh()
 {
   glBindVertexArray(vao_mesh);
-  shader_mesh.bind();
-  shader_mesh.bindVertexAttribArray("position", vbo_V, V_vbo, dirty & ViewerData::DIRTY_POSITION);
-  shader_mesh.bindVertexAttribArray("normal", vbo_V_normals, V_normals_vbo, dirty & ViewerData::DIRTY_NORMAL);
-  shader_mesh.bindVertexAttribArray("Ka", vbo_V_ambient, V_ambient_vbo, dirty & ViewerData::DIRTY_AMBIENT);
-  shader_mesh.bindVertexAttribArray("Kd", vbo_V_diffuse, V_diffuse_vbo, dirty & ViewerData::DIRTY_DIFFUSE);
-  shader_mesh.bindVertexAttribArray("Ks", vbo_V_specular, V_specular_vbo, dirty & ViewerData::DIRTY_SPECULAR);
-  shader_mesh.bindVertexAttribArray("texcoord", vbo_V_uv, V_uv_vbo, dirty & ViewerData::DIRTY_UV);
+  glUseProgram(shader_mesh);
+  bind_vertex_attrib_array(shader_mesh,"position", vbo_V, V_vbo, dirty & ViewerData::DIRTY_POSITION);
+  bind_vertex_attrib_array(shader_mesh,"normal", vbo_V_normals, V_normals_vbo, dirty & ViewerData::DIRTY_NORMAL);
+  bind_vertex_attrib_array(shader_mesh,"Ka", vbo_V_ambient, V_ambient_vbo, dirty & ViewerData::DIRTY_AMBIENT);
+  bind_vertex_attrib_array(shader_mesh,"Kd", vbo_V_diffuse, V_diffuse_vbo, dirty & ViewerData::DIRTY_DIFFUSE);
+  bind_vertex_attrib_array(shader_mesh,"Ks", vbo_V_specular, V_specular_vbo, dirty & ViewerData::DIRTY_SPECULAR);
+  bind_vertex_attrib_array(shader_mesh,"texcoord", vbo_V_uv, V_uv_vbo, dirty & ViewerData::DIRTY_UV);
 
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_F);
   if (dirty & ViewerData::DIRTY_FACE)
@@ -303,18 +320,18 @@ IGL_INLINE void igl::viewer::OpenGL_state::bind_mesh()
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tex_u, tex_v, 0, GL_RGBA, GL_UNSIGNED_BYTE, tex.data());
   }
-  glUniform1i(shader_mesh.uniform("tex"), 0);
+  glUniform1i(glGetUniformLocation(shader_mesh,"tex"), 0);
   dirty &= ~ViewerData::DIRTY_MESH;
 }
 
-IGL_INLINE void igl::viewer::OpenGL_state::bind_overlay_lines()
+IGL_INLINE void igl::opengl::State::bind_overlay_lines()
 {
   bool is_dirty = dirty & ViewerData::DIRTY_OVERLAY_LINES;
 
   glBindVertexArray(vao_overlay_lines);
-  shader_overlay_lines.bind();
-  shader_overlay_lines.bindVertexAttribArray("position", vbo_lines_V, lines_V_vbo, is_dirty);
-  shader_overlay_lines.bindVertexAttribArray("color", vbo_lines_V_colors, lines_V_colors_vbo, is_dirty);
+  glUseProgram(shader_overlay_lines);
+ bind_vertex_attrib_array(shader_overlay_lines,"position", vbo_lines_V, lines_V_vbo, is_dirty);
+ bind_vertex_attrib_array(shader_overlay_lines,"color", vbo_lines_V_colors, lines_V_colors_vbo, is_dirty);
 
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_lines_F);
   if (is_dirty)
@@ -323,14 +340,14 @@ IGL_INLINE void igl::viewer::OpenGL_state::bind_overlay_lines()
   dirty &= ~ViewerData::DIRTY_OVERLAY_LINES;
 }
 
-IGL_INLINE void igl::viewer::OpenGL_state::bind_overlay_points()
+IGL_INLINE void igl::opengl::State::bind_overlay_points()
 {
   bool is_dirty = dirty & ViewerData::DIRTY_OVERLAY_POINTS;
 
   glBindVertexArray(vao_overlay_points);
-  shader_overlay_points.bind();
-  shader_overlay_points.bindVertexAttribArray("position", vbo_points_V, points_V_vbo, is_dirty);
-  shader_overlay_points.bindVertexAttribArray("color", vbo_points_V_colors, points_V_colors_vbo, is_dirty);
+  glUseProgram(shader_overlay_points);
+ bind_vertex_attrib_array(shader_overlay_points,"position", vbo_points_V, points_V_vbo, is_dirty);
+ bind_vertex_attrib_array(shader_overlay_points,"color", vbo_points_V_colors, points_V_colors_vbo, is_dirty);
 
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_points_F);
   if (is_dirty)
@@ -339,7 +356,7 @@ IGL_INLINE void igl::viewer::OpenGL_state::bind_overlay_points()
   dirty &= ~ViewerData::DIRTY_OVERLAY_POINTS;
 }
 
-IGL_INLINE void igl::viewer::OpenGL_state::draw_mesh(bool solid)
+IGL_INLINE void igl::opengl::State::draw_mesh(bool solid)
 {
   glPolygonMode(GL_FRONT_AND_BACK, solid ? GL_FILL : GL_LINE);
 
@@ -349,24 +366,29 @@ IGL_INLINE void igl::viewer::OpenGL_state::draw_mesh(bool solid)
     glEnable(GL_POLYGON_OFFSET_FILL);
     glPolygonOffset(1.0, 1.0);
   }
-  glDrawElements(GL_TRIANGLES, 3*F_vbo.cols(), GL_UNSIGNED_INT, 0);
+  glDrawElements(GL_TRIANGLES, 3*F_vbo.rows(), GL_UNSIGNED_INT, 0);
 
   glDisable(GL_POLYGON_OFFSET_FILL);
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
-IGL_INLINE void igl::viewer::OpenGL_state::draw_overlay_lines()
+IGL_INLINE void igl::opengl::State::draw_overlay_lines()
 {
-  glDrawElements(GL_LINES, lines_F_vbo.cols(), GL_UNSIGNED_INT, 0);
+  glDrawElements(GL_LINES, lines_F_vbo.rows(), GL_UNSIGNED_INT, 0);
 }
 
-IGL_INLINE void igl::viewer::OpenGL_state::draw_overlay_points()
+IGL_INLINE void igl::opengl::State::draw_overlay_points()
 {
-  glDrawElements(GL_POINTS, points_F_vbo.cols(), GL_UNSIGNED_INT, 0);
+  glDrawElements(GL_POINTS, points_F_vbo.rows(), GL_UNSIGNED_INT, 0);
 }
 
-IGL_INLINE void igl::viewer::OpenGL_state::init()
+IGL_INLINE void igl::opengl::State::init()
 {
+  if(is_initialized)
+  {
+    return;
+  }
+  is_initialized = true;
   std::string mesh_vertex_shader_string =
   "#version 150\n"
   "uniform mat4 model;"
@@ -476,18 +498,35 @@ IGL_INLINE void igl::viewer::OpenGL_state::init()
   "}";
 
   init_buffers();
-  shader_mesh.init(mesh_vertex_shader_string,
-      mesh_fragment_shader_string, "outColor");
-  shader_overlay_lines.init(overlay_vertex_shader_string,
-      overlay_fragment_shader_string, "outColor");
-  shader_overlay_points.init(overlay_vertex_shader_string,
-      overlay_point_fragment_shader_string, "outColor");
+  create_shader_program(
+    mesh_vertex_shader_string,
+    mesh_fragment_shader_string,
+    {},
+    shader_mesh);
+  create_shader_program(
+    overlay_vertex_shader_string,
+    overlay_fragment_shader_string,
+    {},
+    shader_overlay_lines);
+  create_shader_program(
+    overlay_vertex_shader_string,
+    overlay_point_fragment_shader_string,
+    {},
+    shader_overlay_points);
 }
 
-IGL_INLINE void igl::viewer::OpenGL_state::free()
+IGL_INLINE void igl::opengl::State::free()
 {
-  shader_mesh.free();
-  shader_overlay_lines.free();
-  shader_overlay_points.free();
+  const auto free = [](GLuint & id)
+  {
+    if(id)
+    {
+      destroy_shader_program(id);
+      id = 0;
+    }
+  };
+  free(shader_mesh);
+  free(shader_overlay_lines);
+  free(shader_overlay_points);
   free_buffers();
 }

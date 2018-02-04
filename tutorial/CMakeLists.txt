@@ -11,7 +11,6 @@ find_package(MOSEK)
 
 ### libIGL options: choose between header only and compiled static library
 option(LIBIGL_USE_STATIC_LIBRARY "Use LibIGL as static library" ON)
-option(LIBIGL_WITH_VIEWER      "Use OpenGL viewer"  ON)
 option(LIBIGL_WITH_NANOGUI     "Use Nanogui menu"   OFF)
 option(LIBIGL_WITH_EMBREE      "Use Embree"         ON)
 
@@ -56,6 +55,7 @@ if(TUTORIALS_CHAPTER1)
   add_subdirectory("104_Colors")
   add_subdirectory("105_Overlays")
   add_subdirectory("106_ViewerMenu")
+  add_subdirectory("107_MultipleMeshes")
 endif()
 
 # Chapter 2

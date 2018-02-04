@@ -9,7 +9,7 @@ int main()
 #else
 
 #include <igl/readOFF.h>
-#include <igl/viewer/Viewer.h>
+#include <igl/opengl/glfw/Viewer.h>
 #include <nanogui/formhelper.h>
 #include <nanogui/screen.h>
 #include <iostream>
@@ -28,10 +28,10 @@ int main(int argc, char *argv[])
   igl::readOFF(TUTORIAL_SHARED_PATH "/bunny.off", V, F);
 
   // Init the viewer
-  igl::viewer::Viewer viewer;
+  igl::opengl::glfw::Viewer viewer;
 
   // Extend viewer menu
-  viewer.callback_init = [&](igl::viewer::Viewer& viewer)
+  viewer.callback_init = [&](igl::opengl::glfw::Viewer& viewer)
   {
     // Add new group
     viewer.ngui->addGroup("New Group");
@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
   };
 
   // Plot the mesh
-  viewer.data.set_mesh(V, F);
+  viewer.selected_data().set_mesh(V, F);
   viewer.launch();
 }
 #endif
