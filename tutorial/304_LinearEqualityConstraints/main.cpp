@@ -73,9 +73,9 @@ int main(int argc, char *argv[])
 
   // Plot the mesh with pseudocolors
   igl::opengl::glfw::Viewer viewer;
-  viewer.selected_data().set_mesh(V, F);
-  viewer.selected_data().show_lines = false;
-  viewer.selected_data().set_colors(data.C);
+  viewer.data().set_mesh(V, F);
+  viewer.data().show_lines = false;
+  viewer.data().set_colors(data.C);
 
   viewer.callback_key_down = 
     [](igl::opengl::glfw::Viewer& viewer,unsigned char key,int mod)->bool
@@ -84,7 +84,7 @@ int main(int argc, char *argv[])
       {
         Data & data = *static_cast<Data*>(viewer.callback_key_down_data);
         static bool toggle = true;
-        viewer.selected_data().set_colors(toggle?data.C_const:data.C);
+        viewer.data().set_colors(toggle?data.C_const:data.C);
         toggle = !toggle;
         return true;
       }else

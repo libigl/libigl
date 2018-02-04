@@ -37,9 +37,9 @@ void update(igl::opengl::glfw::Viewer &viewer)
       C.row(f) = Eigen::RowVector3d(0,1,0);
     }
   }
-  viewer.selected_data().clear();
-  viewer.selected_data().set_mesh(VC,FC);
-  viewer.selected_data().set_colors(C);
+  viewer.data().clear();
+  viewer.data().set_mesh(VC,FC);
+  viewer.data().set_colors(C);
   std::cout<<"A "<<MESH_BOOLEAN_TYPE_NAMES[boolean_type]<<" B."<<std::endl;
 }
 
@@ -83,7 +83,7 @@ int main(int argc, char *argv[])
   // Initialize
   update(viewer);
 
-  viewer.selected_data().show_lines = true;
+  viewer.data().show_lines = true;
   viewer.callback_key_down = &key_down;
   viewer.core.camera_dnear = 3.9;
   cout<<

@@ -15,19 +15,19 @@ int main(int argc, char * argv[])
 
   // Set colors of each mesh by selecting its index first
   viewer.selected_data_index = 0;
-  viewer.selected_data().set_colors(Eigen::RowVector3d(0.8,0.47,0.22));
+  viewer.data().set_colors(Eigen::RowVector3d(0.8,0.47,0.22));
   viewer.selected_data_index = 1;
-  viewer.selected_data().set_colors(Eigen::RowVector3d(0.6,0.01,0.11));
+  viewer.data().set_colors(Eigen::RowVector3d(0.6,0.01,0.11));
   viewer.selected_data_index = 2;
-  viewer.selected_data().set_colors(Eigen::RowVector3d(0.37,0.06,0.25));
+  viewer.data().set_colors(Eigen::RowVector3d(0.37,0.06,0.25));
   viewer.selected_data_index = 3;
-  viewer.selected_data().set_colors(Eigen::RowVector3d(1,1,1));
+  viewer.data().set_colors(Eigen::RowVector3d(1,1,1));
 
   viewer.callback_key_down = 
     [&](igl::opengl::glfw::Viewer &, unsigned int key, int mod)
   {
     // Delete
-    if(key == 3)
+    if(key == '3')
     {
       viewer.erase_mesh(viewer.selected_data_index);
       return true;

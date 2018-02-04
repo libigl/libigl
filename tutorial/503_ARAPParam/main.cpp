@@ -26,16 +26,16 @@ bool key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier
 
   if (show_uv)
   {
-    viewer.selected_data().set_mesh(V_uv,F);
+    viewer.data().set_mesh(V_uv,F);
     viewer.core.align_camera_center(V_uv,F);
   }
   else
   {
-    viewer.selected_data().set_mesh(V,F);
+    viewer.data().set_mesh(V,F);
     viewer.core.align_camera_center(V,F);
   }
 
-  viewer.selected_data().compute_normals();
+  viewer.data().compute_normals();
 
   return false;
 }
@@ -77,15 +77,15 @@ int main(int argc, char *argv[])
 
   // Plot the mesh
   igl::opengl::glfw::Viewer viewer;
-  viewer.selected_data().set_mesh(V, F);
-  viewer.selected_data().set_uv(V_uv);
+  viewer.data().set_mesh(V, F);
+  viewer.data().set_uv(V_uv);
   viewer.callback_key_down = &key_down;
 
   // Disable wireframe
-  viewer.selected_data().show_lines = false;
+  viewer.data().show_lines = false;
 
   // Draw checkerboard texture
-  viewer.selected_data().show_texture = true;
+  viewer.data().show_texture = true;
 
   // Launch the viewer
   viewer.launch();

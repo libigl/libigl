@@ -286,7 +286,7 @@ namespace glfw
     highdpi = width/width_window;
     glfw_window_size(window,width_window,height_window);
     //opengl.init();
-    core.align_camera_center(selected_data().V,selected_data().F);
+    core.align_camera_center(data().V,data().F);
     // Initialize IGL viewer
     init();
     return EXIT_SUCCESS;
@@ -369,7 +369,7 @@ namespace glfw
 
     ngui->addGroup("Viewing Options");
     ngui->addButton("Center object",[&](){this->core.align_camera_center(
-      this->selected_data().V,this->selected_data().F);});
+      this->data().V,this->data().F);});
     ngui->addButton("Snap canonical view",[&]()
     {
       this->snap_to_canonical_quaternion();
@@ -381,36 +381,36 @@ namespace glfw
 
     ngui->addVariable<bool>("Face-based", [&](bool checked)
     {
-      this->selected_data().set_face_based(checked);
+      this->data().set_face_based(checked);
     },[&]()
     {
-      return this->selected_data().face_based;
+      return this->data().face_based;
     });
 
-    ngui->addVariable("Show texture",this->selected_data().show_texture);
+    ngui->addVariable("Show texture",this->data().show_texture);
 
     ngui->addVariable<bool>("Invert normals",[&](bool checked)
     {
-      this->selected_data().dirty |= ViewerData::DIRTY_NORMAL;
-      this->selected_data().invert_normals = checked;
+      this->data().dirty |= ViewerData::DIRTY_NORMAL;
+      this->data().invert_normals = checked;
     },[&]()
     {
-      return this->selected_data().invert_normals;
+      return this->data().invert_normals;
     });
 
-    // Alec: This will probably just attach to the selected_data() at the time
+    // Alec: This will probably just attach to the data() at the time
     // that addVariable is called. We probably need to use a callback here.
-    ngui->addVariable("Show overlay", selected_data().show_overlay);
-    ngui->addVariable("Show overlay depth", selected_data().show_overlay_depth);
-    ngui->addVariable("Line color", (nanogui::Color &) selected_data().line_color);
+    ngui->addVariable("Show overlay", data().show_overlay);
+    ngui->addVariable("Show overlay depth", data().show_overlay_depth);
+    ngui->addVariable("Line color", (nanogui::Color &) data().line_color);
     ngui->addVariable("Background", (nanogui::Color &) core.background_color);
-    ngui->addVariable("Shininess", selected_data().shininess);
+    ngui->addVariable("Shininess", data().shininess);
 
     ngui->addGroup("Overlays");
-    ngui->addVariable("Wireframe", selected_data().show_lines);
-    ngui->addVariable("Fill", selected_data().show_faces);
-    ngui->addVariable("Show vertex labels", selected_data().show_vertid);
-    ngui->addVariable("Show faces labels", selected_data().show_faceid);
+    ngui->addVariable("Wireframe", data().show_lines);
+    ngui->addVariable("Fill", data().show_faces);
+    ngui->addVariable("Show vertex labels", data().show_vertid);
+    ngui->addVariable("Show faces labels", data().show_faceid);
 
     screen->setVisible(true);
     screen->performLayout();
@@ -460,7 +460,7 @@ namespace glfw
     scroll_position = 0.0f;
 
     // Per face
-    selected_data().set_face_based(false);
+    data().set_face_based(false);
 
     // C-style callbacks
     callback_init         = nullptr;
@@ -524,11 +524,11 @@ namespace glfw
     }
 
     // Create new data slot and set to selected
-    if(!(selected_data().F.rows() == 0  && selected_data().V.rows() == 0))
+    if(!(data().F.rows() == 0  && data().V.rows() == 0))
     {
       append_mesh();
     }
-    selected_data().clear();
+    data().clear();
 
     size_t last_dot = mesh_file_name_string.rfind('.');
     if (last_dot == std::string::npos)
@@ -546,7 +546,7 @@ namespace glfw
       Eigen::MatrixXi F;
       if (!igl::readOFF(mesh_file_name_string, V, F))
         return false;
-      selected_data().set_mesh(V,F);
+      data().set_mesh(V,F);
     }
     else if (extension == "obj" || extension =="OBJ")
     {
@@ -566,8 +566,8 @@ namespace glfw
         return false;
       }
 
-      selected_data().set_mesh(V,F);
-      selected_data().set_uv(UV_V,UV_F);
+      data().set_mesh(V,F);
+      data().set_uv(UV_V,UV_F);
 
     }
     else
@@ -577,16 +577,16 @@ namespace glfw
       return false;
     }
 
-    selected_data().compute_normals();
-    selected_data().uniform_colors(Eigen::Vector3d(51.0/255.0,43.0/255.0,33.3/255.0),
+    data().compute_normals();
+    data().uniform_colors(Eigen::Vector3d(51.0/255.0,43.0/255.0,33.3/255.0),
                    Eigen::Vector3d(255.0/255.0,228.0/255.0,58.0/255.0),
                    Eigen::Vector3d(255.0/255.0,235.0/255.0,80.0/255.0));
-    if (selected_data().V_uv.rows() == 0)
+    if (data().V_uv.rows() == 0)
     {
-      selected_data().grid_texture();
+      data().grid_texture();
     }
 
-    core.align_camera_center(selected_data().V,selected_data().F);
+    core.align_camera_center(data().V,data().F);
 
     for (unsigned int i = 0; i<plugins.size(); ++i)
       if (plugins[i]->post_load())
@@ -615,7 +615,7 @@ namespace glfw
     if (extension == "off" || extension =="OFF")
     {
       return igl::writeOFF(
-        mesh_file_name_string,selected_data().V,selected_data().F);
+        mesh_file_name_string,data().V,data().F);
     }
     else if (extension == "obj" || extension =="OBJ")
     {
@@ -626,8 +626,8 @@ namespace glfw
       Eigen::MatrixXi UV_F;
 
       return igl::writeOBJ(mesh_file_name_string, 
-          selected_data().V,
-          selected_data().F, 
+          data().V,
+          data().F, 
           corner_normals, fNormIndices, UV_V, UV_F);
     }
     else
@@ -664,20 +664,20 @@ namespace glfw
       case 'F':
       case 'f':
       {
-        selected_data().set_face_based(!selected_data().face_based);
+        data().set_face_based(!data().face_based);
         return true;
       }
       case 'I':
       case 'i':
       {
-        selected_data().dirty |= ViewerData::DIRTY_NORMAL;
-        selected_data().invert_normals = !selected_data().invert_normals;
+        data().dirty |= ViewerData::DIRTY_NORMAL;
+        data().invert_normals = !data().invert_normals;
         return true;
       }
       case 'L':
       case 'l':
       {
-        selected_data().show_lines = !selected_data().show_lines;
+        data().show_lines = !data().show_lines;
         return true;
       }
       case 'O':
@@ -689,7 +689,7 @@ namespace glfw
       case 'T':
       case 't':
       {
-        selected_data().show_faces = !selected_data().show_faces;
+        data().show_faces = !data().show_faces;
         return true;
       }
       case 'Z':
@@ -716,10 +716,10 @@ namespace glfw
       }
 #ifdef IGL_VIEWER_WITH_NANOGUI
       case ';':
-        selected_data().show_vertid = !selected_data().show_vertid;
+        data().show_vertid = !data().show_vertid;
         return true;
       case ':':
-        selected_data().show_faceid = !selected_data().show_faceid;
+        data().show_faceid = !data().show_faceid;
         return true;
 #endif
       default: break;//do nothing
@@ -772,12 +772,12 @@ namespace glfw
 
     // Initialization code for the trackball
     Eigen::RowVector3d center;
-    if (selected_data().V.rows() == 0)
+    if (data().V.rows() == 0)
     {
       center << 0,0,0;
     }else
     {
-      center = selected_data().V.colwise().sum()/selected_data().V.rows();
+      center = data().V.colwise().sum()/data().V.rows();
     }
 
     Eigen::Vector3f coord =
@@ -951,7 +951,7 @@ namespace glfw
 #ifdef ENABLE_SERIALIZATION
     igl::deserialize(core,"Core",fname.c_str());
 #ifndef ENABLE_SERIALIZATION_CORE_ONLY
-    igl::deserialize(selected_data(),"Data",fname.c_str());
+    igl::deserialize(data(),"Data",fname.c_str());
     for(unsigned int i = 0; i <plugins.size(); ++i)
     {
       igl::deserialize(*plugins[i],plugins[i]->plugin_name,fname.c_str());
@@ -972,7 +972,7 @@ namespace glfw
     igl::serialize(core,"Core",fname.c_str(),true);
 
 #ifndef ENABLE_SERIALIZATION_CORE_ONLY
-    igl::serialize(selected_data(),"Data",fname.c_str());
+    igl::serialize(data(),"Data",fname.c_str());
     for(unsigned int i = 0; i <plugins.size(); ++i)
       igl::serialize(*plugins[i],plugins[i]->plugin_name,fname.c_str());
 #endif
@@ -1085,7 +1085,7 @@ namespace glfw
     this->save_mesh_to_file(fname.c_str());
   }
 
-  IGL_INLINE ViewerData& Viewer::selected_data()
+  IGL_INLINE ViewerData& Viewer::data()
   {
     assert(!data_list.empty() && "data_list should never be empty");
     assert(

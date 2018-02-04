@@ -45,14 +45,14 @@ int main(int argc, char *argv[])
 
   // Plot the mesh
   igl::opengl::glfw::Viewer viewer;
-  viewer.selected_data().set_mesh(V, F);
+  viewer.data().set_mesh(V, F);
 
   // Plot the corners of the bounding box as points
-  viewer.selected_data().add_points(V_box,Eigen::RowVector3d(1,0,0));
+  viewer.data().add_points(V_box,Eigen::RowVector3d(1,0,0));
 
   // Plot the edges of the bounding box
   for (unsigned i=0;i<E_box.rows(); ++i)
-    viewer.selected_data().add_edges
+    viewer.data().add_edges
     (
       V_box.row(E_box(i,0)),
       V_box.row(E_box(i,1)),
@@ -62,10 +62,10 @@ int main(int argc, char *argv[])
   // Plot labels with the coordinates of bounding box vertices
   std::stringstream l1;
   l1 << m(0) << ", " << m(1) << ", " << m(2);
-  viewer.selected_data().add_label(m,l1.str());
+  viewer.data().add_label(m,l1.str());
   std::stringstream l2;
   l2 << M(0) << ", " << M(1) << ", " << M(2);
-  viewer.selected_data().add_label(M,l2.str());
+  viewer.data().add_label(M,l2.str());
 
   // Launch the viewer
   viewer.launch();

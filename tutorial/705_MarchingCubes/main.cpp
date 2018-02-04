@@ -64,7 +64,7 @@ int main(int argc, char * argv[])
 '3'  Show marching cubes contour of indicator function.
 )";
   igl::opengl::glfw::Viewer viewer;
-  viewer.selected_data().set_mesh(SV,SF);
+  viewer.data().set_mesh(SV,SF);
   viewer.callback_key_down =
     [&](igl::opengl::glfw::Viewer & viewer, unsigned char key, int mod)->bool
     {
@@ -73,19 +73,19 @@ int main(int argc, char * argv[])
         default:
           return false;
         case '1':
-          viewer.selected_data().clear();
-          viewer.selected_data().set_mesh(V,F);
+          viewer.data().clear();
+          viewer.data().set_mesh(V,F);
           break;
         case '2':
-          viewer.selected_data().clear();
-          viewer.selected_data().set_mesh(SV,SF);
+          viewer.data().clear();
+          viewer.data().set_mesh(SV,SF);
           break;
         case '3':
-          viewer.selected_data().clear();
-          viewer.selected_data().set_mesh(BV,BF);
+          viewer.data().clear();
+          viewer.data().set_mesh(BV,BF);
           break;
       }
-      viewer.selected_data().set_face_based(true);
+      viewer.data().set_face_based(true);
       return true;
     };
   viewer.launch();

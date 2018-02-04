@@ -26,8 +26,8 @@ int main(int argc, char * argv[])
 4  Apply False barycentric subdivision
 )";
   igl::opengl::glfw::Viewer viewer;
-  viewer.selected_data().set_mesh(V,F);
-  viewer.selected_data().set_face_based(true);
+  viewer.data().set_mesh(V,F);
+  viewer.data().set_face_based(true);
 
   viewer.callback_key_down =
     [&](igl::opengl::glfw::Viewer & viewer, unsigned char key, int mod)->bool
@@ -59,9 +59,9 @@ int main(int argc, char * argv[])
           break;
         }
       }
-      viewer.selected_data().clear();
-      viewer.selected_data().set_mesh(V,F);
-      viewer.selected_data().set_face_based(true);
+      viewer.data().clear();
+      viewer.data().set_mesh(V,F);
+      viewer.data().set_face_based(true);
       return true;
     };
   viewer.launch();

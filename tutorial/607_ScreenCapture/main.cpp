@@ -18,7 +18,7 @@ bool key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier
 
     // Draw the scene in the buffers
     viewer.core.draw_buffer(
-      viewer.selected_data(),viewer.selected_opengl_state(),false,R,G,B,A);
+      viewer.data(),viewer.selected_opengl_state(),false,R,G,B,A);
 
     // Save it to a PNG
     igl::png::writePNG(R,G,B,A,"out.png");
@@ -50,14 +50,14 @@ bool key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier
       1,1,
       0,1;
 
-    viewer.selected_data().clear();
-    viewer.selected_data().set_mesh(V,F);
-    viewer.selected_data().set_uv(UV);
+    viewer.data().clear();
+    viewer.data().set_mesh(V,F);
+    viewer.data().set_uv(UV);
     viewer.core.align_camera_center(V);
-    viewer.selected_data().show_texture = true;
+    viewer.data().show_texture = true;
 
     // Use the image as a texture
-    viewer.selected_data().set_texture(R,G,B);
+    viewer.data().set_texture(R,G,B);
 
   }
 
@@ -78,6 +78,6 @@ int main(int argc, char *argv[])
   // Plot the mesh and register the callback
   igl::opengl::glfw::Viewer viewer;
   viewer.callback_key_down = &key_down;
-  viewer.selected_data().set_mesh(V, F);
+  viewer.data().set_mesh(V, F);
   viewer.launch();
 }

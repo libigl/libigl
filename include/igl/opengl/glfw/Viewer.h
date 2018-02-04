@@ -83,8 +83,8 @@ namespace glfw
     IGL_INLINE void snap_to_canonical_quaternion();
     IGL_INLINE void open_dialog_load_mesh();
     IGL_INLINE void open_dialog_save_mesh();
-    IGL_INLINE ViewerData& selected_data();
-    //IGL_INLINE const ViewerData& const_selected_data() const;
+    IGL_INLINE ViewerData& data();
+    //IGL_INLINE const ViewerData& const_data() const;
     IGL_INLINE State& selected_opengl_state();
     // Append a new "slot" for a mesh (i.e., create empty entires at the end of
     // the data_list and opengl_state_list.
@@ -109,7 +109,7 @@ namespace glfw
     //   // Erase all mesh slots except first and clear remaining mesh
     //   viewer.selected_data_index = viewer.data_list.size()-1;
     //   while(viewer.erase_mesh(viewer.selected_data_index)){};
-    //   viewer.selected_data().clear();
+    //   viewer.data().clear();
     //
     IGL_INLINE bool erase_mesh(const size_t index);
   private:

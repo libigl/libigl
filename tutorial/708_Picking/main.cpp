@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
     {
       // paint hit red
       C.row(fid)<<1,0,0;
-      viewer.selected_data().set_colors(C);
+      viewer.data().set_colors(C);
       return true;
     }
     return false;
@@ -39,8 +39,8 @@ int main(int argc, char *argv[])
 
 )";
   // Show mesh
-  viewer.selected_data().set_mesh(V, F);
-  viewer.selected_data().set_colors(C);
-  viewer.selected_data().show_lines = false;
+  viewer.data().set_mesh(V, F);
+  viewer.data().set_colors(C);
+  viewer.data().show_lines = false;
   viewer.launch();
 }

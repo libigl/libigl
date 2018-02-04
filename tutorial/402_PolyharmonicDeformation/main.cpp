@@ -25,8 +25,8 @@ bool pre_draw(igl::opengl::glfw::Viewer & viewer)
     resolve = false;
   }
   U.col(2) = z_max*Z;
-  viewer.selected_data().set_vertices(U);
-  viewer.selected_data().compute_normals();
+  viewer.data().set_vertices(U);
+  viewer.data().compute_normals();
   if(viewer.core.is_animating)
   {
     z_max += z_dir;
@@ -94,9 +94,9 @@ int main(int argc, char *argv[])
 
   // Plot the mesh with pseudocolors
   igl::opengl::glfw::Viewer viewer;
-  viewer.selected_data().set_mesh(U, F);
-  viewer.selected_data().show_lines = false;
-  viewer.selected_data().set_colors(C);
+  viewer.data().set_mesh(U, F);
+  viewer.data().show_lines = false;
+  viewer.data().set_colors(C);
   viewer.core.trackball_angle = Eigen::Quaternionf(0.81,-0.58,-0.03,-0.03);
   viewer.core.trackball_angle.normalize();
   viewer.callback_pre_draw = &pre_draw;

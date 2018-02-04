@@ -36,8 +36,8 @@ bool pre_draw(igl::opengl::glfw::Viewer & viewer)
   {
     igl::harmonic(V,F,b,U_bc_anim,2.,U);
   }
-  viewer.selected_data().set_vertices(U);
-  viewer.selected_data().compute_normals();
+  viewer.data().set_vertices(U);
+  viewer.data().compute_normals();
   return false;
 }
 
@@ -110,9 +110,9 @@ int main(int argc, char *argv[])
 
   // Plot the mesh with pseudocolors
   igl::opengl::glfw::Viewer viewer;
-  viewer.selected_data().set_mesh(U, F);
-  viewer.selected_data().show_lines = false;
-  viewer.selected_data().set_colors(C);
+  viewer.data().set_mesh(U, F);
+  viewer.data().show_lines = false;
+  viewer.data().set_colors(C);
   viewer.core.trackball_angle = Eigen::Quaternionf(sqrt(2.0),0,sqrt(2.0),0);
   viewer.core.trackball_angle.normalize();
   viewer.callback_pre_draw = &pre_draw;

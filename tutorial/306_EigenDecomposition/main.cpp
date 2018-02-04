@@ -58,14 +58,14 @@ int main(int argc, char * argv[])
         {
           V.col(2) = Z;
         }
-        viewer.selected_data().set_mesh(V,F);
-        viewer.selected_data().compute_normals();
-        viewer.selected_data().set_colors(C);
+        viewer.data().set_mesh(V,F);
+        viewer.data().compute_normals();
+        viewer.data().set_colors(C);
         return true;
       }
     }
   };
   viewer.callback_key_down(viewer,' ',0);
-  viewer.selected_data().show_lines = false;
+  viewer.data().show_lines = false;
   viewer.launch();
 }

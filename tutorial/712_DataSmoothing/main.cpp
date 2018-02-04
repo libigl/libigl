@@ -65,8 +65,8 @@ int main(int argc, char * argv[])
 
     //Viewer that shows all functions: zexact, znoisy, zl, zh
     igl::opengl::glfw::Viewer viewer;
-    viewer.selected_data().set_mesh(V,F);
-    viewer.selected_data().show_lines = false;
+    viewer.data().set_mesh(V,F);
+    viewer.data().show_lines = false;
     viewer.callback_key_down =
       [&](igl::opengl::glfw::Viewer & viewer, unsigned char key, int mod)->bool
       {
@@ -92,10 +92,10 @@ int main(int argc, char * argv[])
         Eigen::MatrixXi isoE;
         if(key!='2')
             igl::isolines(V, F, *z, 30, isoV, isoE);
-        viewer.selected_data().set_edges(isoV,isoE,Eigen::RowVector3d(0,0,0));
+        viewer.data().set_edges(isoV,isoE,Eigen::RowVector3d(0,0,0));
         Eigen::MatrixXd colors;
         igl::jet(*z, true, colors);
-        viewer.selected_data().set_colors(colors);
+        viewer.data().set_colors(colors);
         return true;
     };
     std::cout << R"(Usage:

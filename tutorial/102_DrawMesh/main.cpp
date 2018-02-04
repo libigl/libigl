@@ -12,6 +12,6 @@ int main(int argc, char *argv[])
 
   // Plot the mesh
   igl::opengl::glfw::Viewer viewer;
-  viewer.selected_data().set_mesh(V, F);
+  viewer.data().set_mesh(V, F);
   viewer.launch();
 }
