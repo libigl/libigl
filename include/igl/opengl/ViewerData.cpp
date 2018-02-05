@@ -449,7 +449,6 @@ IGL_INLINE void igl::opengl::ViewerData::updateGL(
 {
   if (!meshgl.is_initialized)
   {
-    std::cerr << "Inizializing meshgl" << std::endl;
     meshgl.init();
   }
 

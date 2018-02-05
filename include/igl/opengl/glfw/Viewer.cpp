@@ -1112,8 +1112,6 @@ namespace glfw
     {
       selected_data_index--;
     }
-    std::cout<<"data: "<<data_list.size()<<std::endl;
-    std::cout<<"selected_data_index: "<<selected_data_index<<std::endl;
     return true;
   }
 

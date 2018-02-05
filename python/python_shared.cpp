@@ -13,8 +13,8 @@
 extern void python_export_vector(py::module &);
 extern void python_export_igl(py::module &);
 
-#ifdef PY_VIEWER
-extern void python_export_igl_viewer(py::module &);
+#ifdef PY_GLFW
+extern void python_export_igl_glfw(py::module &);
 #endif
 
 #ifdef PY_COMISO
@@ -168,8 +168,8 @@ PYBIND11_PLUGIN(pyigl) {
     python_export_igl(m);
 
 
-    #ifdef PY_VIEWER
-    python_export_igl_viewer(m);
+    #ifdef PY_GLFW
+    python_export_igl_glfw(m);
     #endif
 
     #ifdef PY_COMISO
