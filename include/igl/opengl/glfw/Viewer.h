@@ -110,12 +110,12 @@ namespace glfw
     //   viewer.data().clear();
     //
     IGL_INLINE bool erase_mesh(const size_t index);
-  private:
+  
     // Alec: I call this data_list instead of just data to avoid confusion with
     // old "data" variable.
     // Stores all the data that should be visualized
     std::vector<ViewerData> data_list;
-  public:
+  
     size_t selected_data_index;
     GLFWwindow* window;
     // Stores all the viewing options

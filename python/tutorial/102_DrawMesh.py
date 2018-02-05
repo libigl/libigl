@@ -13,9 +13,8 @@ import pyigl as igl
 
 from shared import TUTORIAL_SHARED_PATH, check_dependencies
 
-dependencies = ["opengl_glfw"]
+dependencies = ["glfw"]
 check_dependencies(dependencies)
-
 
 # Load a mesh in OFF format
 V = igl.eigen.MatrixXd()
@@ -23,6 +22,6 @@ F = igl.eigen.MatrixXi()
 igl.readOFF(TUTORIAL_SHARED_PATH + "beetle.off", V, F)
 
 # Plot the mesh
-viewer = igl.viewer.Viewer()
-viewer.data.set_mesh(V, F)
+viewer = igl.glfw.Viewer()
+viewer.data().set_mesh(V, F)
 viewer.launch()

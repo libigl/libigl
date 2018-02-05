@@ -12,90 +12,90 @@
 #define ENABLE_SERIALIZATION
 #include <igl/opengl/glfw/Viewer.h>
 #include <igl/opengl/ViewerCore.h>
-#include <igl/ViewerData.h>
-#include <igl/opengl/State.h>
+#include <igl/opengl/ViewerData.h>
+#include <igl/opengl/MeshGL.h>
 #include <igl/serialize.h>
 #ifdef IGL_VIEWER_WITH_NANOGUI
 #include "../../../external/nanogui/include/nanogui/formhelper.h"
 #include "../../../external/nanogui/include/nanogui/screen.h"
 #endif
 
-void python_export_igl_viewer(py::module &m)
+void python_export_igl_glfw(py::module &m)
 {
 
   py::module me = m.def_submodule(
-    "opengl_glfw", "GLFW Mesh viewer");
+    "glfw", "GLFW Mesh viewer");
 
 /////////////////////// DATA
 
-py::class_<igl::ViewerData> viewerdata_class(me, "ViewerData");
+py::class_<igl::opengl::ViewerData> viewerdata_class(me, "ViewerData");
 
-py::enum_<igl::ViewerData::DirtyFlags>(viewerdata_class, "DirtyFlags")
-    .value("DIRTY_NONE", igl::ViewerData::DIRTY_NONE)
-    .value("DIRTY_POSITION", igl::ViewerData::DIRTY_POSITION)
-    .value("DIRTY_UV", igl::ViewerData::DIRTY_UV)
-    .value("DIRTY_NORMAL", igl::ViewerData::DIRTY_NORMAL)
-    .value("DIRTY_AMBIENT", igl::ViewerData::DIRTY_AMBIENT)
-    .value("DIRTY_DIFFUSE", igl::ViewerData::DIRTY_DIFFUSE)
-    .value("DIRTY_SPECULAR", igl::ViewerData::DIRTY_SPECULAR)
-    .value("DIRTY_TEXTURE", igl::ViewerData::DIRTY_TEXTURE)
-    .value("DIRTY_FACE", igl::ViewerData::DIRTY_FACE)
-    .value("DIRTY_MESH", igl::ViewerData::DIRTY_MESH)
-    .value("DIRTY_OVERLAY_LINES", igl::ViewerData::DIRTY_OVERLAY_LINES)
-    .value("DIRTY_OVERLAY_POINTS", igl::ViewerData::DIRTY_OVERLAY_POINTS)
-    .value("DIRTY_ALL", igl::ViewerData::DIRTY_ALL)
+py::enum_<igl::opengl::MeshGL::DirtyFlags>(viewerdata_class, "DirtyFlags")
+    .value("DIRTY_NONE", igl::opengl::MeshGL::DIRTY_NONE)
+    .value("DIRTY_POSITION", igl::opengl::MeshGL::DIRTY_POSITION)
+    .value("DIRTY_UV", igl::opengl::MeshGL::DIRTY_UV)
+    .value("DIRTY_NORMAL", igl::opengl::MeshGL::DIRTY_NORMAL)
+    .value("DIRTY_AMBIENT", igl::opengl::MeshGL::DIRTY_AMBIENT)
+    .value("DIRTY_DIFFUSE", igl::opengl::MeshGL::DIRTY_DIFFUSE)
+    .value("DIRTY_SPECULAR", igl::opengl::MeshGL::DIRTY_SPECULAR)
+    .value("DIRTY_TEXTURE", igl::opengl::MeshGL::DIRTY_TEXTURE)
+    .value("DIRTY_FACE", igl::opengl::MeshGL::DIRTY_FACE)
+    .value("DIRTY_MESH", igl::opengl::MeshGL::DIRTY_MESH)
+    .value("DIRTY_OVERLAY_LINES", igl::opengl::MeshGL::DIRTY_OVERLAY_LINES)
+    .value("DIRTY_OVERLAY_POINTS", igl::opengl::MeshGL::DIRTY_OVERLAY_POINTS)
+    .value("DIRTY_ALL", igl::opengl::MeshGL::DIRTY_ALL)
     .export_values();
 
 
     viewerdata_class
     .def(py::init<>())
-    .def("set_mesh", &igl::ViewerData::set_mesh)
-    .def("set_colors", &igl::ViewerData::set_colors)
-    .def("clear", &igl::ViewerData::clear)
-    .def("set_face_based", &igl::ViewerData::set_face_based)
+    .def("set_mesh", &igl::opengl::ViewerData::set_mesh)
+    .def("set_colors", &igl::opengl::ViewerData::set_colors)
+    .def("clear", &igl::opengl::ViewerData::clear)
+    .def("set_face_based", &igl::opengl::ViewerData::set_face_based)
 
-    .def("set_vertices", &igl::ViewerData::set_vertices)
-    .def("set_normals", &igl::ViewerData::set_normals)
+    .def("set_vertices", &igl::opengl::ViewerData::set_vertices)
+    .def("set_normals", &igl::opengl::ViewerData::set_normals)
 
     .def("set_uv",
-       (void (igl::ViewerData::*) (const Eigen::MatrixXd &)) &igl::ViewerData::set_uv
+       (void (igl::opengl::ViewerData::*) (const Eigen::MatrixXd &)) &igl::opengl::ViewerData::set_uv
     )
 
     .def("set_uv",
-       (void (igl::ViewerData::*) (const Eigen::MatrixXd &, const Eigen::MatrixXi&)) &igl::ViewerData::set_uv
+       (void (igl::opengl::ViewerData::*) (const Eigen::MatrixXd &, const Eigen::MatrixXi&)) &igl::opengl::ViewerData::set_uv
     )
 
     .def("set_texture",
-       (void (igl::ViewerData::*) (
+       (void (igl::opengl::ViewerData::*) (
          const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>&,
          const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>&,
          const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>&)
-       ) &igl::ViewerData::set_texture
+       ) &igl::opengl::ViewerData::set_texture
     )
 
     .def("set_texture",
-       (void (igl::ViewerData::*) (
+       (void (igl::opengl::ViewerData::*) (
          const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>&,
          const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>&,
          const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>&,
          const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>&)
-       ) &igl::ViewerData::set_texture
+       ) &igl::opengl::ViewerData::set_texture
     )
 
-    .def("set_points", &igl::ViewerData::set_points)
-    .def("add_points", &igl::ViewerData::add_points)
-    .def("set_edges", &igl::ViewerData::set_edges)
-    .def("add_edges", &igl::ViewerData::add_edges)
+    .def("set_points", &igl::opengl::ViewerData::set_points)
+    .def("add_points", &igl::opengl::ViewerData::add_points)
+    .def("set_edges", &igl::opengl::ViewerData::set_edges)
+    .def("add_edges", &igl::opengl::ViewerData::add_edges)
 
-    .def("add_label", [] (igl::ViewerData& data, const Eigen::MatrixXd& P,  const std::string& str)
+    .def("add_label", [] (igl::opengl::ViewerData& data, const Eigen::MatrixXd& P,  const std::string& str)
     {
       assert_is_VectorX("P",P);
       data.add_label(P,str);
     })
 
-    .def("compute_normals", &igl::ViewerData::compute_normals)
+    .def("compute_normals", &igl::opengl::ViewerData::compute_normals)
 
-    .def("uniform_colors", [] (igl::ViewerData& data, const Eigen::MatrixXd& ambient, const Eigen::MatrixXd& diffuse, const Eigen::MatrixXd& specular)
+    .def("uniform_colors", [] (igl::opengl::ViewerData& data, const Eigen::MatrixXd& ambient, const Eigen::MatrixXd& diffuse, const Eigen::MatrixXd& specular)
     {
       if (ambient.cols() == 3)
       {
@@ -121,81 +121,81 @@ py::enum_<igl::ViewerData::DirtyFlags>(viewerdata_class, "DirtyFlags")
 
     })
 
-    .def("grid_texture", &igl::ViewerData::grid_texture)
+    .def("grid_texture", &igl::opengl::ViewerData::grid_texture)
 
-    .def_readwrite("V", &igl::ViewerData::V)
-    .def_readwrite("F", &igl::ViewerData::F)
+    .def_readwrite("V", &igl::opengl::ViewerData::V)
+    .def_readwrite("F", &igl::opengl::ViewerData::F)
 
-    .def_readwrite("F_normals", &igl::ViewerData::F_normals)
-    .def_readwrite("F_material_ambient", &igl::ViewerData::F_material_ambient)
-    .def_readwrite("F_material_diffuse", &igl::ViewerData::F_material_diffuse)
-    .def_readwrite("F_material_specular", &igl::ViewerData::F_material_specular)
+    .def_readwrite("F_normals", &igl::opengl::ViewerData::F_normals)
+    .def_readwrite("F_material_ambient", &igl::opengl::ViewerData::F_material_ambient)
+    .def_readwrite("F_material_diffuse", &igl::opengl::ViewerData::F_material_diffuse)
+    .def_readwrite("F_material_specular", &igl::opengl::ViewerData::F_material_specular)
 
-    .def_readwrite("V_normals", &igl::ViewerData::V_normals)
-    .def_readwrite("V_material_ambient", &igl::ViewerData::V_material_ambient)
-    .def_readwrite("V_material_diffuse", &igl::ViewerData::V_material_diffuse)
-    .def_readwrite("V_material_specular", &igl::ViewerData::V_material_specular)
+    .def_readwrite("V_normals", &igl::opengl::ViewerData::V_normals)
+    .def_readwrite("V_material_ambient", &igl::opengl::ViewerData::V_material_ambient)
+    .def_readwrite("V_material_diffuse", &igl::opengl::ViewerData::V_material_diffuse)
+    .def_readwrite("V_material_specular", &igl::opengl::ViewerData::V_material_specular)
 
-    .def_readwrite("V_uv", &igl::ViewerData::V_uv)
-    .def_readwrite("F_uv", &igl::ViewerData::F_uv)
+    .def_readwrite("V_uv", &igl::opengl::ViewerData::V_uv)
+    .def_readwrite("F_uv", &igl::opengl::ViewerData::F_uv)
 
-    .def_readwrite("texture_R", &igl::ViewerData::texture_R)
-    .def_readwrite("texture_G", &igl::ViewerData::texture_G)
-    .def_readwrite("texture_B", &igl::ViewerData::texture_B)
+    .def_readwrite("texture_R", &igl::opengl::ViewerData::texture_R)
+    .def_readwrite("texture_G", &igl::opengl::ViewerData::texture_G)
+    .def_readwrite("texture_B", &igl::opengl::ViewerData::texture_B)
 
-    .def_readwrite("lines", &igl::ViewerData::lines)
-    .def_readwrite("points", &igl::ViewerData::points)
-    .def_readwrite("labels_positions", &igl::ViewerData::labels_positions)
-    .def_readwrite("labels_strings", &igl::ViewerData::labels_strings)
-    .def_readwrite("dirty", &igl::ViewerData::dirty)
-    .def_readwrite("face_based", &igl::ViewerData::face_based)
-    .def("serialize", [](igl::ViewerData& data)
+    .def_readwrite("lines", &igl::opengl::ViewerData::lines)
+    .def_readwrite("points", &igl::opengl::ViewerData::points)
+    .def_readwrite("labels_positions", &igl::opengl::ViewerData::labels_positions)
+    .def_readwrite("labels_strings", &igl::opengl::ViewerData::labels_strings)
+    .def_readwrite("dirty", &igl::opengl::MeshGL::dirty)
+    .def_readwrite("face_based", &igl::opengl::ViewerData::face_based)
+    .def("serialize", [](igl::opengl::ViewerData& data)
     {
       std::vector<char> a;
       igl::serialize(data,"Data",a);
       return a;
     })
 
-    .def("deserialize", [](igl::ViewerData& data, const std::vector<char>& a)
+    .def("deserialize", [](igl::opengl::ViewerData& data, const std::vector<char>& a)
     {
       igl::deserialize(data,"Data",a);
       return;
     })
 
-    .def_readwrite("shininess",&igl::ViewerData::shininess)
+    .def_readwrite("shininess",&igl::opengl::ViewerData::shininess)
 
     .def_property("line_color",
-    [](const igl::ViewerData& data) {return Eigen::MatrixXd(data.line_color.cast<double>());},
-    [](igl::ViewerData& data, const Eigen::MatrixXd& v)
+    [](const igl::opengl::ViewerData& data) {return Eigen::MatrixXd(data.line_color.cast<double>());},
+    [](igl::opengl::ViewerData& data, const Eigen::MatrixXd& v)
     {
       assert_is_Vector4("line_color",v);
       data.line_color = Eigen::Vector4f(v.cast<float>());
     })
 
-    .def_readwrite("show_overlay",&igl::ViewerData::show_overlay)
-    .def_readwrite("show_overlay_depth",&igl::ViewerData::show_overlay_depth)
-    .def_readwrite("show_texture",&igl::ViewerData::show_texture)
-    .def_readwrite("show_faces",&igl::ViewerData::show_faces)
+    .def_readwrite("show_overlay",&igl::opengl::ViewerData::show_overlay)
+    .def_readwrite("show_overlay_depth",&igl::opengl::ViewerData::show_overlay_depth)
+    .def_readwrite("show_texture",&igl::opengl::ViewerData::show_texture)
+    .def_readwrite("show_faces",&igl::opengl::ViewerData::show_faces)
 
-    .def_readwrite("show_lines",&igl::ViewerData::show_lines)
-    .def_readwrite("show_vertid",&igl::ViewerData::show_vertid)
-    .def_readwrite("show_faceid",&igl::ViewerData::show_faceid)
-    .def_readwrite("invert_normals",&igl::ViewerData::invert_normals)
+    .def_readwrite("show_lines",&igl::opengl::ViewerData::show_lines)
+    .def_readwrite("show_vertid",&igl::opengl::ViewerData::show_vertid)
+    .def_readwrite("show_faceid",&igl::opengl::ViewerData::show_faceid)
+    .def_readwrite("invert_normals",&igl::opengl::ViewerData::invert_normals)
 
-    .def_readwrite("point_size",&igl::ViewerData::point_size)
-    .def_readwrite("line_width",&igl::ViewerData::line_width)
+    .def_readwrite("point_size",&igl::opengl::ViewerData::point_size)
+    .def_readwrite("line_width",&igl::opengl::ViewerData::line_width)
 
     ;
 
 //////////////////////// OPENGL_State
 
-py::class_<igl::opengl::State> opengl_state_class(me, "OpenGL_state");
+// py::class_<igl::opengl::State> opengl_state_class(me, "OpenGL_state");
 
-    opengl_state_class
-    .def(py::init<>())
-    .def("init", &igl::opengl::State::init)
+//     opengl_state_class
+//     .def(py::init<>())
+//     .def("init", &igl::opengl::State::init)
 
-    ;
+//     ;
 
 //////////////////////// CORE
 
@@ -381,12 +381,15 @@ py::class_<igl::opengl::ViewerCore> viewercore_class(me, "ViewerCore");
     viewer_class
     .def(py::init<>())
     //.def_readwrite("data", &igl::opengl::glfw::Viewer::data)
-    .def_property("data",
-    [](igl::opengl::glfw::Viewer& viewer) {return viewer.data();},
-    [](igl::opengl::glfw::Viewer& viewer, const igl::ViewerData& data)
-    {
-      viewer.data() = data;
-    })
+   
+    // .def_property("data",
+    // [](igl::opengl::glfw::Viewer& viewer) {return viewer.data();},
+    // [](igl::opengl::glfw::Viewer& viewer, const igl::opengl::ViewerData& data)
+    // {
+    //   viewer.data() = data;
+    // })
+
+    .def("data", &igl::opengl::glfw::Viewer::data)
 
     .def_readwrite("core", &igl::opengl::glfw::Viewer::core)
     //.def_readwrite("opengl", &igl::opengl::glfw::Viewer::opengl)

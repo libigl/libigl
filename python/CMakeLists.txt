@@ -65,7 +65,7 @@ target_include_directories(pyigl PUBLIC igl::core)
 ## Optional modules
 if(LIBIGL_WITH_OPENGL_GLFW)
   target_sources(pyigl PRIVATE "modules/py_igl_opengl_glfw.cpp")
-  target_compile_definitions(pyigl PUBLIC -DPY_OPENGL_GLFW)
+  target_compile_definitions(pyigl PUBLIC -DPY_GLFW)
   target_link_libraries(pyigl PUBLIC igl::opengl igl::opengl_glfw)
 endif()
 

@@ -208,7 +208,7 @@ namespace igl
 {
   namespace serialization
   {
-    inline void serialization(bool s, igl::ViewerData& obj, std::vector<char>& buffer)
+    inline void serialization(bool s, igl::opengl::ViewerData& obj, std::vector<char>& buffer)
     {
       SERIALIZE_MEMBER(V);
       SERIALIZE_MEMBER(F);
@@ -246,15 +246,15 @@ namespace igl
       SERIALIZE_MEMBER(shininess);
     }
     template<>
-    inline void serialize(const igl::ViewerData& obj, std::vector<char>& buffer)
+    inline void serialize(const igl::opengl::ViewerData& obj, std::vector<char>& buffer)
     {
-      serialization(true, const_cast<igl::ViewerData&>(obj), buffer);
+      serialization(true, const_cast<igl::opengl::ViewerData&>(obj), buffer);
     }
     template<>
-    inline void deserialize(igl::ViewerData& obj, const std::vector<char>& buffer)
+    inline void deserialize(igl::opengl::ViewerData& obj, const std::vector<char>& buffer)
     {
       serialization(false, obj, const_cast<std::vector<char>&>(buffer));
-      obj.dirty = igl::ViewerData::DIRTY_ALL;
+      obj.dirty = igl::opengl::MeshGL::DIRTY_ALL;
     }
   }
 }
