@@ -192,9 +192,9 @@ public:
   IGL_INLINE void printCurvature(const std::string& outpath);
   IGL_INLINE double getAverageEdge();
 
-  IGL_INLINE static int rotateForward (float *v0, float *v1, float *v2)
+  IGL_INLINE static int rotateForward (double *v0, double *v1, double *v2)
   {
-    float t;
+    double t;
 
     if (std::abs(*v2) >= std::abs(*v1) && std::abs(*v2) >= std::abs(*v0))
       return 0;
@@ -207,9 +207,9 @@ public:
     return 1 + rotateForward (v0, v1, v2);
   }
 
-  IGL_INLINE static void rotateBackward (int nr, float *v0, float *v1, float *v2)
+  IGL_INLINE static void rotateBackward (int nr, double *v0, double *v1, double *v2)
   {
-    float t;
+    double t;
 
     if (nr == 0)
       return;
@@ -222,16 +222,16 @@ public:
     rotateBackward (nr - 1, v0, v1, v2);
   }
 
-  IGL_INLINE static Eigen::Vector3d chooseMax (Eigen::Vector3d n, Eigen::Vector3d abc, float ab)
+  IGL_INLINE static Eigen::Vector3d chooseMax (Eigen::Vector3d n, Eigen::Vector3d abc, double ab)
   {
     int max_i;
-    float max_sp;
+    double max_sp;
     Eigen::Vector3d nt[8];
 
     n.normalize ();
     abc.normalize ();
 
-    max_sp = - std::numeric_limits<float>::max();
+    max_sp = - std::numeric_limits<double>::max();
 
     for (int i = 0; i < 4; ++i)
     {
@@ -492,7 +492,7 @@ IGL_INLINE void CurvatureCalculator::getSphere(const int start, const double r, 
       if (!visited[neighbor])
       {
         Eigen::Vector3d neigh=vertices.row(neighbor);
-        float distance=(me-neigh).norm();
+        double distance=(me-neigh).norm();
         if (distance<r)
           queue->push_back(neighbor);
         else if ((int)vv.size()<min)
@@ -512,7 +512,7 @@ IGL_INLINE void CurvatureCalculator::getSphere(const int start, const double r, 
       if (!visited[neighbor])
       {
         Eigen::Vector3d neigh=vertices.row(neighbor);
-        float distance=(me-neigh).norm();
+        double distance=(me-neigh).norm();
         extra_candidates->push(std::pair<int,double>(neighbor,distance));
         visited[neighbor]=true;
       }
@@ -559,9 +559,9 @@ IGL_INLINE void CurvatureCalculator::getAverageNormal(int j, const std::vector<i
 IGL_INLINE void CurvatureCalculator::getProjPlane(int j, const std::vector<int>& vv, Eigen::Vector3d& ppn)
 {
   int nr;
-  float a, b, c;
-  float nx, ny, nz;
-  float abcq;
+  double a, b, c;
+  double nx, ny, nz;
+  double abcq;
 
   a = b = c = 0;
 
