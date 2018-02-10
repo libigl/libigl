@@ -623,7 +623,7 @@ IGL_INLINE double CurvatureCalculator::getAverageEdge()
 IGL_INLINE void CurvatureCalculator::applyProjOnPlane(const Eigen::Vector3d& ppn, const std::vector<int>& vin, std::vector<int> &vout)
 {
   for (std::vector<int>::const_iterator vpi = vin.begin(); vpi != vin.end(); ++vpi)
-    if (vertex_normals.row(*vpi) * ppn > 0.0f)
+    if (vertex_normals.row(*vpi) * ppn > 0.0)
       vout.push_back(*vpi);
 }
 
