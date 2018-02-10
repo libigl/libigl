@@ -221,10 +221,10 @@ namespace glfw
     // Load OpenGL and its extensions
     if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress))
     {
-      printf("Failed to load OpenGL and its extensions");
+      printf("Failed to load OpenGL and its extensions\n");
       return(-1);
     }
-    printf("OpenGL Version %d.%d loaded", GLVersion.major, GLVersion.minor);
+    printf("OpenGL Version %d.%d loaded\n", GLVersion.major, GLVersion.minor);
     #if defined(DEBUG) || defined(_DEBUG)
       int major, minor, rev;
       major = glfwGetWindowAttrib(window, GLFW_CONTEXT_VERSION_MAJOR);

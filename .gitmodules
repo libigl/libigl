@@ -25,7 +25,7 @@
 	path = external/cork
 	url = https://github.com/libigl/cork.git
 [submodule "external/imgui"]
-	path = external/imgui
+	path = external/imgui/imgui
 	url = https://github.com/ocornut/imgui.git
 [submodule "external/glfw"]
 	path = external/glfw

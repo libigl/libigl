@@ -1,22 +1,23 @@
 cmake_minimum_required(VERSION 3.1)
 
 ### Available options ###
-option(LIBIGL_USE_STATIC_LIBRARY    "Use libigl as static library" OFF)
-option(LIBIGL_WITH_ANTTWEAKBAR      "Use AntTweakBar"    OFF)
-option(LIBIGL_WITH_CGAL             "Use CGAL"           ON)
-option(LIBIGL_WITH_COMISO           "Use CoMiso"         ON)
-option(LIBIGL_WITH_CORK             "Use Cork"           OFF)
-option(LIBIGL_WITH_EMBREE           "Use Embree"         OFF)
-option(LIBIGL_WITH_LIM              "Use LIM"            ON)
-option(LIBIGL_WITH_MATLAB           "Use Matlab"         ON)
-option(LIBIGL_WITH_MOSEK            "Use MOSEK"          ON)
-option(LIBIGL_WITH_OPENGL           "Use OpenGL"         ON)
-option(LIBIGL_WITH_OPENGL_GLFW      "Use GLFW"           ON)
-option(LIBIGL_WITH_PNG              "Use PNG"            ON)
-option(LIBIGL_WITH_TETGEN           "Use Tetgen"         ON)
-option(LIBIGL_WITH_TRIANGLE         "Use Triangle"       ON)
-option(LIBIGL_WITH_XML              "Use XML"            ON)
-option(LIBIGL_WITH_PYTHON           "Use Python"         OFF)
+option(LIBIGL_USE_STATIC_LIBRARY     "Use libigl as static library" OFF)
+option(LIBIGL_WITH_ANTTWEAKBAR       "Use AntTweakBar"    OFF)
+option(LIBIGL_WITH_CGAL              "Use CGAL"           ON)
+option(LIBIGL_WITH_COMISO            "Use CoMiso"         ON)
+option(LIBIGL_WITH_CORK              "Use Cork"           OFF)
+option(LIBIGL_WITH_EMBREE            "Use Embree"         OFF)
+option(LIBIGL_WITH_LIM               "Use LIM"            ON)
+option(LIBIGL_WITH_MATLAB            "Use Matlab"         ON)
+option(LIBIGL_WITH_MOSEK             "Use MOSEK"          ON)
+option(LIBIGL_WITH_OPENGL            "Use OpenGL"         ON)
+option(LIBIGL_WITH_OPENGL_GLFW       "Use GLFW"           ON)
+option(LIBIGL_WITH_OPENGL_GLFW_IMGUI "Use ImGui"          ON)
+option(LIBIGL_WITH_PNG               "Use PNG"            ON)
+option(LIBIGL_WITH_TETGEN            "Use Tetgen"         ON)
+option(LIBIGL_WITH_TRIANGLE          "Use Triangle"       ON)
+option(LIBIGL_WITH_XML               "Use XML"            ON)
+option(LIBIGL_WITH_PYTHON            "Use Python"         OFF)
 
 ################################################################################
 
@@ -283,9 +284,14 @@ if(LIBIGL_WITH_OPENGL)
   endif()
   target_link_libraries(igl_opengl ${IGL_SCOPE} glad)
   # target_link_libraries(igl_opengl2 ${IGL_SCOPE} glad)
+endif()
 
-  # GLFW module
-  if(LIBIGL_WITH_OPENGL_GLFW)
+################################################################################
+### Compile the GLFW part ###
+
+if(LIBIGL_WITH_OPENGL_GLFW)
+  if(TARGET igl::opengl)
+    # GLFW module
     compile_igl_module("opengl/glfw")
     if(NOT TARGET glfw)
       set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL " " FORCE)
@@ -295,12 +301,31 @@ if(LIBIGL_WITH_OPENGL)
       add_subdirectory(${LIBIGL_EXTERNAL}/glfw glfw)
     endif()
     target_link_libraries(igl_opengl_glfw ${IGL_SCOPE} igl_opengl glfw)
+  else()
+    message(WARNING "GLFW module could not be compiled")
+    set(LIBIGL_WITH_OPENGL_GLFW OFF CACHE BOOL "" FORCE)
   endif()
-
 endif()
 
 ################################################################################
-### Compile the png parts ###
+### Compile the ImGui part ###
+
+if(LIBIGL_WITH_OPENGL_GLFW_IMGUI)
+  if(TARGET igl::opengl_glfw)
+    # ImGui module
+    compile_igl_module("opengl/glfw/imgui")
+    if(NOT TARGET imgui)
+      add_subdirectory(${LIBIGL_EXTERNAL}/imgui imgui)
+    endif()
+    target_link_libraries(igl_opengl_glfw_imgui ${IGL_SCOPE} igl_opengl_glfw imgui)
+  else()
+    message(WARNING "ImGui module could not be compiled")
+    set(LIBIGL_WITH_OPENGL_GLFW_IMGUI OFF CACHE BOOL "" FORCE)
+  endif()
+endif()
+
+################################################################################
+### Compile the png part ###
 if(LIBIGL_WITH_PNG)
   # png/ module is anomalous because it also depends on opengl it really should
   # be moved into the opengl/ directory and namespace ...
