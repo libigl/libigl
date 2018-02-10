@@ -105,7 +105,7 @@ public:
     }
 
 
-    IGL_INLINE static Quadric fit(const std::vector<Eigen::Vector3d> &VV, bool zeroDetCheck)
+    IGL_INLINE static Quadric fit(const std::vector<Eigen::Vector3d> &VV)
     {
       assert(VV.size() >= 5);
       if (VV.size() < 5)
@@ -159,7 +159,6 @@ public:
   bool localMode; /* Use local mode */
   bool projectionPlaneCheck; /* Check collected vertices on tangent plane */
   bool montecarlo;
-  bool zeroDetCheck; /* Check if the determinant is close to zero */
   unsigned int montecarloN;
 
   searchType st; /* Use either a sphere search or a k-ring search */
@@ -312,7 +311,6 @@ IGL_INLINE CurvatureCalculator::CurvatureCalculator()
   this->montecarlo=false;
   this->montecarloN=0;
   this->kRing=3;
-  this->zeroDetCheck=true;
   this->curvatureComputed=false;
   this->expStep=true;
 }
@@ -350,7 +348,7 @@ IGL_INLINE void CurvatureCalculator::fitQuadric(const Eigen::Vector3d& v, const 
     double z = vTang.dot(ref[2]);
     points.push_back(Eigen::Vector3d (x,y,z));
   }
-  *q = Quadric::fit (points, zeroDetCheck);
+  *q = Quadric::fit (points);
 }
 
 IGL_INLINE void CurvatureCalculator::finalEigenStuff(int i, const std::vector<Eigen::Vector3d>& ref, Quadric& q)
