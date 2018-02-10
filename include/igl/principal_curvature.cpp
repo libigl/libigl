@@ -348,7 +348,15 @@ IGL_INLINE void CurvatureCalculator::fitQuadric(const Eigen::Vector3d& v, const 
     double z = vTang.dot(ref[2]);
     points.push_back(Eigen::Vector3d (x,y,z));
   }
-  *q = Quadric::fit (points);
+  if (points.size() < 5)
+  {
+    std::cerr << "ASSERT FAILED! fit function requires at least 5 points: Only " << points.size() << " were given." << std::endl;
+    *q = Quadric(0,0,0,0,0);
+  }
+  else
+  {
+    *q = Quadric::fit (points);
+  }
 }
 
 IGL_INLINE void CurvatureCalculator::finalEigenStuff(int i, const std::vector<Eigen::Vector3d>& ref, Quadric& q)
