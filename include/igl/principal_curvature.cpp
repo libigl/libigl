@@ -105,13 +105,12 @@ public:
     }
 
 
-    IGL_INLINE static Quadric fit(std::vector<Eigen::Vector3d> &VV, bool zeroDetCheck, bool svd)
+    IGL_INLINE static Quadric fit(const std::vector<Eigen::Vector3d> &VV, bool zeroDetCheck, bool svd)
     {
-      using namespace std;
       assert(VV.size() >= 5);
       if (VV.size() < 5)
       {
-        cerr << "ASSERT FAILED!" << endl;
+        std::cerr << "ASSERT FAILED!" << std::endl;
         exit(0);
       }
 
@@ -179,18 +178,18 @@ public:
   IGL_INLINE CurvatureCalculator();
   IGL_INLINE void init(const Eigen::MatrixXd& V, const Eigen::MatrixXi& F);
 
-  IGL_INLINE void finalEigenStuff (int, std::vector<Eigen::Vector3d>, Quadric );
-  IGL_INLINE void fitQuadric (Eigen::Vector3d, std::vector<Eigen::Vector3d> ref, const  std::vector<int>& , Quadric *);
-  IGL_INLINE void applyProjOnPlane(Eigen::Vector3d, std::vector<int>, std::vector<int>&);
+  IGL_INLINE void finalEigenStuff(int, const std::vector<Eigen::Vector3d>&, Quadric&);
+  IGL_INLINE void fitQuadric(const Eigen::Vector3d&, const std::vector<Eigen::Vector3d>& ref, const std::vector<int>& , Quadric *);
+  IGL_INLINE void applyProjOnPlane(const Eigen::Vector3d&, const std::vector<int>&, std::vector<int>&);
   IGL_INLINE void getSphere(const int, const double, std::vector<int>&, int min);
   IGL_INLINE void getKRing(const int, const double,std::vector<int>&);
-  IGL_INLINE Eigen::Vector3d project(Eigen::Vector3d, Eigen::Vector3d, Eigen::Vector3d);
-  IGL_INLINE void computeReferenceFrame(int, Eigen::Vector3d, std::vector<Eigen::Vector3d>&);
-  IGL_INLINE void getAverageNormal(int, std::vector<int>, Eigen::Vector3d&);
-  IGL_INLINE void getProjPlane(int, std::vector<int>, Eigen::Vector3d&);
-  IGL_INLINE void applyMontecarlo(std::vector<int>&,std::vector<int>*);
+  IGL_INLINE Eigen::Vector3d project(const Eigen::Vector3d&, const Eigen::Vector3d&, const Eigen::Vector3d&);
+  IGL_INLINE void computeReferenceFrame(int, const Eigen::Vector3d&, std::vector<Eigen::Vector3d>&);
+  IGL_INLINE void getAverageNormal(int, const std::vector<int>&, Eigen::Vector3d&);
+  IGL_INLINE void getProjPlane(int, const std::vector<int>&, Eigen::Vector3d&);
+  IGL_INLINE void applyMontecarlo(const std::vector<int>&,std::vector<int>*);
   IGL_INLINE void computeCurvature();
-  IGL_INLINE void printCurvature(std::string outpath);
+  IGL_INLINE void printCurvature(const std::string& outpath);
   IGL_INLINE double getAverageEdge();
 
   IGL_INLINE static int rotateForward (float *v0, float *v1, float *v2)
@@ -225,7 +224,7 @@ public:
 
   IGL_INLINE static Eigen::Vector3d chooseMax (Eigen::Vector3d n, Eigen::Vector3d abc, float ab)
   {
-    int i, max_i;
+    int max_i;
     float max_sp;
     Eigen::Vector3d nt[8];
 
@@ -234,7 +233,7 @@ public:
 
     max_sp = - std::numeric_limits<float>::max();
 
-    for (i = 0; i < 4; i++)
+    for (int i = 0; i < 4; ++i)
     {
       nt[i] = n;
       if (ab > 0)
@@ -290,7 +289,6 @@ public:
         max_i = i;
       }
     }
-
     return nt[max_i];
   }
 
@@ -337,7 +335,7 @@ IGL_INLINE void CurvatureCalculator::init(const Eigen::MatrixXd& V, const Eigen:
   igl::per_vertex_normals(V, F, face_normals, vertex_normals);
 }
 
-IGL_INLINE void CurvatureCalculator::fitQuadric (Eigen::Vector3d v, std::vector<Eigen::Vector3d> ref, const std::vector<int>& vv, Quadric *q)
+IGL_INLINE void CurvatureCalculator::fitQuadric(const Eigen::Vector3d& v, const std::vector<Eigen::Vector3d>& ref, const std::vector<int>& vv, Quadric *q)
 {
   std::vector<Eigen::Vector3d> points;
   points.reserve (vv.size());
@@ -357,14 +355,14 @@ IGL_INLINE void CurvatureCalculator::fitQuadric (Eigen::Vector3d v, std::vector<
   *q = Quadric::fit (points, zeroDetCheck, svd);
 }
 
-IGL_INLINE void CurvatureCalculator::finalEigenStuff (int i, std::vector<Eigen::Vector3d> ref, Quadric q)
+IGL_INLINE void CurvatureCalculator::finalEigenStuff(int i, const std::vector<Eigen::Vector3d>& ref, Quadric& q)
 {
 
-  double a = q.a();
-  double b = q.b();
-  double c = q.c();
-  double d = q.d();
-  double e = q.e();
+  const double a = q.a();
+  const double b = q.b();
+  const double c = q.c();
+  const double d = q.d();
+  const double e = q.e();
 
 //  if (fabs(a) < 10e-8 || fabs(b) < 10e-8)
 //  {
@@ -457,7 +455,7 @@ IGL_INLINE void CurvatureCalculator::getKRing(const int start, const double r, s
     vv.push_back(toVisit);
     if (distance<(int)r)
     {
-      for (unsigned int i=0; i<vertex_to_vertices[toVisit].size(); i++)
+      for (unsigned int i=0; i<vertex_to_vertices[toVisit].size(); ++i)
       {
         int neighbor=vertex_to_vertices[toVisit][i];
         if (!visited[neighbor])
@@ -488,7 +486,7 @@ IGL_INLINE void CurvatureCalculator::getSphere(const int start, const double r, 
     int toVisit=queue->front();
     queue->pop_front();
     vv.push_back(toVisit);
-    for (unsigned int i=0; i<vertex_to_vertices[toVisit].size(); i++)
+    for (unsigned int i=0; i<vertex_to_vertices[toVisit].size(); ++i)
     {
       int neighbor=vertex_to_vertices[toVisit][i];
       if (!visited[neighbor])
@@ -508,7 +506,7 @@ IGL_INLINE void CurvatureCalculator::getSphere(const int start, const double r, 
     std::pair<int, double> cand=extra_candidates->top();
     extra_candidates->pop();
     vv.push_back(cand.first);
-    for (unsigned int i=0; i<vertex_to_vertices[cand.first].size(); i++)
+    for (unsigned int i=0; i<vertex_to_vertices[cand.first].size(); ++i)
     {
       int neighbor=vertex_to_vertices[cand.first][i];
       if (!visited[neighbor])
@@ -525,16 +523,15 @@ IGL_INLINE void CurvatureCalculator::getSphere(const int start, const double r, 
   free(visited);
 }
 
-IGL_INLINE Eigen::Vector3d CurvatureCalculator::project(Eigen::Vector3d v, Eigen::Vector3d  vp, Eigen::Vector3d ppn)
+IGL_INLINE Eigen::Vector3d CurvatureCalculator::project(const Eigen::Vector3d& v, const Eigen::Vector3d& vp, const Eigen::Vector3d& ppn)
 {
   return (vp - (ppn * ((vp - v).dot(ppn))));
 }
 
-IGL_INLINE void CurvatureCalculator::computeReferenceFrame(int i, Eigen::Vector3d normal, std::vector<Eigen::Vector3d>& ref )
+IGL_INLINE void CurvatureCalculator::computeReferenceFrame(int i, const Eigen::Vector3d& normal, std::vector<Eigen::Vector3d>& ref )
 {
 
-  Eigen::Vector3d longest_v=Eigen::Vector3d::Zero();
-  longest_v=Eigen::Vector3d(vertices.row(vertex_to_vertices[i][0]));
+  Eigen::Vector3d longest_v=Eigen::Vector3d(vertices.row(vertex_to_vertices[i][0]));
 
   longest_v=(project(vertices.row(i),longest_v,normal)-Eigen::Vector3d(vertices.row(i))).normalized();
 
@@ -546,20 +543,20 @@ IGL_INLINE void CurvatureCalculator::computeReferenceFrame(int i, Eigen::Vector3
   ref[2]=normal;
 }
 
-IGL_INLINE void CurvatureCalculator::getAverageNormal(int j, std::vector<int> vv, Eigen::Vector3d& normal)
+IGL_INLINE void CurvatureCalculator::getAverageNormal(int j, const std::vector<int>& vv, Eigen::Vector3d& normal)
 {
   normal=(vertex_normals.row(j)).normalized();
   if (localMode)
     return;
 
-  for (unsigned int i=0; i<vv.size(); i++)
+  for (unsigned int i=0; i<vv.size(); ++i)
   {
     normal+=vertex_normals.row(vv[i]).normalized();
   }
   normal.normalize();
 }
 
-IGL_INLINE void CurvatureCalculator::getProjPlane(int j, std::vector<int> vv, Eigen::Vector3d& ppn)
+IGL_INLINE void CurvatureCalculator::getProjPlane(int j, const std::vector<int>& vv, Eigen::Vector3d& ppn)
 {
   int nr;
   float a, b, c;
@@ -605,9 +602,9 @@ IGL_INLINE double CurvatureCalculator::getAverageEdge()
   double sum = 0;
   int count = 0;
 
-  for (int i = 0; i<faces.rows(); i++)
+  for (int i = 0; i<faces.rows(); ++i)
   {
-    for (short unsigned j=0; j<3; j++)
+    for (short unsigned j=0; j<3; ++j)
     {
       Eigen::Vector3d p1=vertices.row(faces.row(i)[j]);
       Eigen::Vector3d p2=vertices.row(faces.row(i)[(j+1)%3]);
@@ -623,14 +620,14 @@ IGL_INLINE double CurvatureCalculator::getAverageEdge()
 }
 
 
-IGL_INLINE void CurvatureCalculator::applyProjOnPlane(Eigen::Vector3d ppn, std::vector<int> vin, std::vector<int> &vout)
+IGL_INLINE void CurvatureCalculator::applyProjOnPlane(const Eigen::Vector3d& ppn, const std::vector<int>& vin, std::vector<int> &vout)
 {
-  for (std::vector<int>::iterator vpi = vin.begin(); vpi != vin.end(); ++vpi)
+  for (std::vector<int>::const_iterator vpi = vin.begin(); vpi != vin.end(); ++vpi)
     if (vertex_normals.row(*vpi) * ppn > 0.0f)
-      vout.push_back (*vpi);
+      vout.push_back(*vpi);
 }
 
-IGL_INLINE void CurvatureCalculator::applyMontecarlo(std::vector<int>& vin, std::vector<int> *vout)
+IGL_INLINE void CurvatureCalculator::applyMontecarlo(const std::vector<int>& vin, std::vector<int> *vout)
 {
   if (montecarloN >= vin.size ())
   {
@@ -639,24 +636,22 @@ IGL_INLINE void CurvatureCalculator::applyMontecarlo(std::vector<int>& vin, std:
   }
 
   float p = ((float) montecarloN) / (float) vin.size();
-  for (std::vector<int>::iterator vpi = vin.begin(); vpi != vin.end(); ++vpi)
+  for (std::vector<int>::const_iterator vpi = vin.begin(); vpi != vin.end(); ++vpi)
   {
     float r;
     if ((r = ((float)rand () / RAND_MAX)) < p)
     {
-      vout->push_back (*vpi);
+      vout->push_back(*vpi);
     }
   }
 }
 
 IGL_INLINE void CurvatureCalculator::computeCurvature()
 {
-  using namespace std;
-
   //CHECK che esista la mesh
-  size_t vertices_count=vertices.rows() ;
+  const size_t vertices_count=vertices.rows();
 
-  if (vertices_count <=0)
+  if (vertices_count ==0)
     return;
 
   curvDir=std::vector< std::vector<Eigen::Vector3d> >(vertices_count);
@@ -691,10 +686,9 @@ IGL_INLINE void CurvatureCalculator::computeCurvature()
         return;
     }
 
-    std::vector<Eigen::Vector3d> ref(3);
     if (vv.size()<6)
     {
-      std::cerr << "Could not compute curvature of radius " << scaledRadius << endl;
+      std::cerr << "Could not compute curvature of radius " << scaledRadius << std::endl;
       return;
     }
 
@@ -704,8 +698,7 @@ IGL_INLINE void CurvatureCalculator::computeCurvature()
       vvtmp.reserve (vv.size ());
       applyProjOnPlane (vertex_normals.row(i), vv, vvtmp);
       if (vvtmp.size() >= 6 && vvtmp.size()<vv.size())
-	  vv = vvtmp;
-
+        vv = vvtmp;
     }
 
 
@@ -723,7 +716,7 @@ IGL_INLINE void CurvatureCalculator::computeCurvature()
     }
     if (vv.size()<6)
     {
-      std::cerr << "Could not compute curvature of radius " << scaledRadius << endl;
+      std::cerr << "Could not compute curvature of radius " << scaledRadius << std::endl;
       return;
     }
     if (montecarlo)
@@ -737,6 +730,7 @@ IGL_INLINE void CurvatureCalculator::computeCurvature()
 
     if (vv.size()<6)
       return;
+    std::vector<Eigen::Vector3d> ref(3);
     computeReferenceFrame(i,normal,ref);
 
     Quadric q;
@@ -748,7 +742,7 @@ IGL_INLINE void CurvatureCalculator::computeCurvature()
   curvatureComputed=true;
 }
 
-IGL_INLINE void CurvatureCalculator::printCurvature(std::string outpath)
+IGL_INLINE void CurvatureCalculator::printCurvature(const std::string& outpath)
 {
   using namespace std;
   if (!curvatureComputed)
@@ -765,7 +759,7 @@ IGL_INLINE void CurvatureCalculator::printCurvature(std::string outpath)
 
   int vertices_count=vertices.rows();
   of << vertices_count << endl;
-  for (int i=0; i<vertices_count; i++)
+  for (int i=0; i<vertices_count; ++i)
   {
     of << curv[i][0] << " " << curv[i][1] << " " << curvDir[i][0][0] << " " << curvDir[i][0][1] << " " << curvDir[i][0][2] << " " <<
     curvDir[i][1][0] << " " << curvDir[i][1][1] << " " << curvDir[i][1][2] << endl;
@@ -792,12 +786,10 @@ IGL_INLINE void igl::principal_curvature(
   unsigned radius,
   bool useKring)
 {
-  using namespace std;
-
   if (radius < 2)
   {
     radius = 2;
-    cout << "WARNING: igl::principal_curvature needs a radius >= 2, fixing it to 2." << endl;
+    std::cout << "WARNING: igl::principal_curvature needs a radius >= 2, fixing it to 2." << std::endl;
   }
 
   // Preallocate memory
@@ -823,10 +815,8 @@ IGL_INLINE void igl::principal_curvature(
   cc.computeCurvature();
 
   // Copy it back
-  for (unsigned i=0; i<V.rows(); i++)
+  for (unsigned i=0; i<V.rows(); ++i)
   {
-    Eigen::Vector3d d1;
-    Eigen::Vector3d d2;
     PD1.row(i) << cc.curvDir[i][0][0], cc.curvDir[i][0][1], cc.curvDir[i][0][2];
     PD2.row(i) << cc.curvDir[i][1][0], cc.curvDir[i][1][1], cc.curvDir[i][1][2];
     PD1.row(i).normalize();
@@ -843,7 +833,7 @@ IGL_INLINE void igl::principal_curvature(
 
     if (PD1.row(i) * PD2.row(i).transpose() > 10e-6)
     {
-      cerr << "PRINCIPAL_CURVATURE: Something is wrong with vertex: i" << endl;
+      std::cerr << "PRINCIPAL_CURVATURE: Something is wrong with vertex: i" << std::endl;
       PD1.row(i) *= 0;
       PD2.row(i) *= 0;
     }
