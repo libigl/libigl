@@ -110,7 +110,7 @@ public:
       assert(VV.size() >= 5);
       if (VV.size() < 5)
       {
-        std::cerr << "ASSERT FAILED!" << std::endl;
+        std::cerr << "ASSERT FAILED! fit function requires at least 5 points: Only " << VV.size() << " were given." << std::endl;
         exit(0);
       }
 
