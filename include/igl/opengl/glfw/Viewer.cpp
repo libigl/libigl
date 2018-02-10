@@ -10,36 +10,12 @@
 #define IGL_VIEWER_VIEWER_CPP
 #include "Viewer.h"
 
-#ifdef _WIN32
-#  include <windows.h>
-#  undef max
-#  undef min
-#endif
-
 #include <chrono>
 #include <thread>
 
-#ifndef __APPLE__
-#  define GLEW_STATIC
-#  include <GL/glew.h>
-#endif
-
-#ifdef __APPLE__
-#   include <OpenGL/gl3.h>
-#   define __gl_h_ /* Prevent inclusion of the old gl.h */
-#else
-#   include <GL/gl.h>
-#endif
-
 #include <Eigen/LU>
 
-//#define GLFW_INCLUDE_GLU
-#if defined(__APPLE__)
-#define GLFW_INCLUDE_GLCOREARB
-#else
-#define GL_GLEXT_PROTOTYPES
-#endif
-
+#include "../gl.h"
 #include <GLFW/glfw3.h>
 
 #include <cmath>
@@ -242,23 +218,19 @@ namespace glfw
       return EXIT_FAILURE;
     }
     glfwMakeContextCurrent(window);
-    #ifndef __APPLE__
-      glewExperimental = true;
-      GLenum err = glewInit();
-      if(GLEW_OK != err)
-      {
-        /* Problem: glewInit failed, something is seriously wrong. */
-       fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
-      }
-      glGetError(); // pull and savely ignonre unhandled errors like GL_INVALID_ENUM
-      fprintf(stdout, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
-    #endif
+    // Load OpenGL and its extensions
+    if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress))
+    {
+      printf("Failed to load OpenGL and its extensions");
+      return(-1);
+    }
+    printf("OpenGL Version %d.%d loaded", GLVersion.major, GLVersion.minor);
     #if defined(DEBUG) || defined(_DEBUG)
       int major, minor, rev;
       major = glfwGetWindowAttrib(window, GLFW_CONTEXT_VERSION_MAJOR);
       minor = glfwGetWindowAttrib(window, GLFW_CONTEXT_VERSION_MINOR);
       rev = glfwGetWindowAttrib(window, GLFW_CONTEXT_REVISION);
-      printf("OpenGL version recieved: %d.%d.%d\n", major, minor, rev);
+      printf("OpenGL version received: %d.%d.%d\n", major, minor, rev);
       printf("Supported OpenGL is %s\n", (const char*)glGetString(GL_VERSION));
       printf("Supported GLSL is %s\n", (const char*)glGetString(GL_SHADING_LANGUAGE_VERSION));
     #endif
@@ -624,9 +596,9 @@ namespace glfw
       Eigen::MatrixXd UV_V;
       Eigen::MatrixXi UV_F;
 
-      return igl::writeOBJ(mesh_file_name_string, 
+      return igl::writeOBJ(mesh_file_name_string,
           data().V,
-          data().F, 
+          data().F,
           corner_normals, fNormIndices, UV_V, UV_F);
     }
     else
@@ -709,7 +681,7 @@ namespace glfw
       case '<':
       case '>':
       {
-        selected_data_index = 
+        selected_data_index =
           (selected_data_index + data_list.size() + (unicode_key=='>'?1:-1))%data_list.size();
         return true;
       }
@@ -1086,7 +1058,7 @@ namespace glfw
   {
     assert(!data_list.empty() && "data_list should never be empty");
     assert(
-      (selected_data_index >= 0 && selected_data_index < data_list.size()) && 
+      (selected_data_index >= 0 && selected_data_index < data_list.size()) &&
       "selected_data_index should be in bounds");
     return data_list[selected_data_index];
   }
