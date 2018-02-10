@@ -12,7 +12,6 @@
 #define IGL_OPENGL_4
 #endif
 
-
 #include "../../igl_inline.h"
 #include "../MeshGL.h"
 #include "../ViewerCore.h"
@@ -88,7 +87,7 @@ namespace glfw
     // the data_list and opengl_state_list.
     //
     // Returns number of meshes (always >= 1)
-    // 
+    //
     // Side Effects:
     //   selected_data_index is set this newly created, last entry (i.e.,
     //   #meshes-1)
@@ -99,7 +98,7 @@ namespace glfw
     // Inputs:
     //   index  index of mesh to erase
     // Returns whether erasure was successful <=> cannot erase last mesh
-    // 
+    //
     // Side Effects:
     //   If selected_data_index is greater than or equal to index then it is
     //   decremented
@@ -110,12 +109,12 @@ namespace glfw
     //   viewer.data().clear();
     //
     IGL_INLINE bool erase_mesh(const size_t index);
-  
+
     // Alec: I call this data_list instead of just data to avoid confusion with
     // old "data" variable.
     // Stores all the data that should be visualized
     std::vector<ViewerData> data_list;
-  
+
     size_t selected_data_index;
     GLFWwindow* window;
     // Stores all the viewing options

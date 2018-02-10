@@ -10,7 +10,6 @@ option(LIBIGL_WITH_EMBREE           "Use Embree"         OFF)
 option(LIBIGL_WITH_LIM              "Use LIM"            ON)
 option(LIBIGL_WITH_MATLAB           "Use Matlab"         ON)
 option(LIBIGL_WITH_MOSEK            "Use MOSEK"          ON)
-option(LIBIGL_WITH_NANOGUI          "Use Nanogui menu"   OFF)
 option(LIBIGL_WITH_OPENGL           "Use OpenGL"         ON)
 option(LIBIGL_WITH_OPENGL_GLFW      "Use GLFW"           ON)
 option(LIBIGL_WITH_PNG              "Use PNG"            ON)
@@ -25,9 +24,6 @@ option(LIBIGL_WITH_PYTHON           "Use Python"         OFF)
 set(LIBIGL_ROOT "${CMAKE_CURRENT_LIST_DIR}/../..")
 set(LIBIGL_SOURCE_DIR "${LIBIGL_ROOT}/include")
 set(LIBIGL_EXTERNAL "${LIBIGL_ROOT}/external")
-
-### Multiple dependencies are buried in Nanogui
-set(NANOGUI_DIR "${LIBIGL_EXTERNAL}/nanogui")
 
 # Dependencies are linked as INTERFACE targets unless libigl is compiled as a static library
 if(LIBIGL_USE_STATIC_LIBRARY)
@@ -69,7 +65,7 @@ if(TARGET Eigen3::Eigen)
   # If an imported target already exists, use it
   target_link_libraries(igl_common INTERFACE Eigen3::Eigen)
 else()
-  target_include_directories(igl_common SYSTEM INTERFACE ${NANOGUI_DIR}/ext/eigen)
+  target_include_directories(igl_common SYSTEM INTERFACE ${LIBIGL_EXTERNAL}/eigen)
 endif()
 
 # C++11 Thread library
@@ -82,7 +78,7 @@ function(compile_igl_module module_dir)
   string(REPLACE "/" "_" module_name "${module_dir}")
   if(LIBIGL_USE_STATIC_LIBRARY)
     file(GLOB SOURCES_IGL_${module_name}
-      "${LIBIGL_SOURCE_DIR}/igl/${module_dir}/*.cpp" 
+      "${LIBIGL_SOURCE_DIR}/igl/${module_dir}/*.cpp"
       "${LIBIGL_SOURCE_DIR}/igl/copyleft/${module_dir}/*.cpp")
     add_library(igl_${module_name} STATIC ${SOURCES_IGL_${module_name}} ${ARGN})
     if(MSVC)
@@ -272,40 +268,21 @@ endif()
 ### Compile the opengl parts ###
 
 if(LIBIGL_WITH_OPENGL)
-  # OpenGL modules
+  # OpenGL module
   find_package(OpenGL REQUIRED)
   compile_igl_module("opengl")
-  compile_igl_module("opengl2")
+  # compile_igl_module("opengl2")
   target_link_libraries(igl_opengl ${IGL_SCOPE} ${OPENGL_gl_LIBRARY})
-  target_link_libraries(igl_opengl2 ${IGL_SCOPE} ${OPENGL_gl_LIBRARY})
+  # target_link_libraries(igl_opengl2 ${IGL_SCOPE} ${OPENGL_gl_LIBRARY})
   target_include_directories(igl_opengl SYSTEM ${IGL_SCOPE} ${OPENGL_INCLUDE_DIR})
-  target_include_directories(igl_opengl2 SYSTEM ${IGL_SCOPE} ${OPENGL_INCLUDE_DIR})
+  # target_include_directories(igl_opengl2 SYSTEM ${IGL_SCOPE} ${OPENGL_INCLUDE_DIR})
 
-  # GLEW for linux and windows
-  if(NOT TARGET glew)
-    add_library(glew STATIC ${NANOGUI_DIR}/ext/glew/src/glew.c)
-    target_include_directories(glew SYSTEM PUBLIC ${NANOGUI_DIR}/ext/glew/include)
-    target_compile_definitions(glew PUBLIC -DGLEW_BUILD -DGLEW_NO_GLU)
+  # glad module
+  if(NOT TARGET glad)
+    add_subdirectory(${LIBIGL_EXTERNAL}/glad glad)
   endif()
-  target_link_libraries(igl_opengl ${IGL_SCOPE} glew)
-  target_link_libraries(igl_opengl2 ${IGL_SCOPE} glew)
-
-  # Nanogui
-  if(LIBIGL_WITH_NANOGUI)
-    if(LIBIGL_WITH_PYTHON)
-      set(NANOGUI_BUILD_PYTHON ON CACHE BOOL " " FORCE)
-    else()
-      set(NANOGUI_BUILD_PYTHON OFF CACHE BOOL " " FORCE)
-    endif()
-    set(NANOGUI_BUILD_EXAMPLE OFF CACHE BOOL " " FORCE)
-    set(NANOGUI_BUILD_SHARED  OFF CACHE BOOL " " FORCE)
-    add_subdirectory(${NANOGUI_DIR} nanogui)
-    target_include_directories(nanogui PUBLIC
-      "${NANOGUI_DIR}/include"
-      "${NANOGUI_DIR}/ext/nanovg/src")
-    target_compile_definitions(nanogui ${IGL_SCOPE} -DIGL_VIEWER_WITH_NANOGUI)
-    
-  endif()
+  target_link_libraries(igl_opengl ${IGL_SCOPE} glad)
+  # target_link_libraries(igl_opengl2 ${IGL_SCOPE} glad)
 
   # GLFW module
   if(LIBIGL_WITH_OPENGL_GLFW)
@@ -315,9 +292,8 @@ if(LIBIGL_WITH_OPENGL)
       set(GLFW_BUILD_TESTS OFF CACHE BOOL " " FORCE)
       set(GLFW_BUILD_DOCS OFF CACHE BOOL " " FORCE)
       set(GLFW_INSTALL OFF CACHE BOOL " " FORCE)
-      add_subdirectory(${NANOGUI_DIR}/ext/glfw glfw)
+      add_subdirectory(${LIBIGL_EXTERNAL}/glfw glfw)
     endif()
-    target_include_directories(glfw ${IGL_SCOPE} ${NANOGUI_DIR}/ext/glfw/include)
     target_link_libraries(igl_opengl_glfw ${IGL_SCOPE} igl_opengl glfw)
   endif()
 
