@@ -6,16 +6,20 @@
 #include <map>
 #include <iostream>
 
-std::vector<std::string> names = {"cube.obj","sphere.obj","xcylinder.obj","ycylinder.obj","zcylinder.obj"};
-std::map<std::string, Eigen::RowVector3d> colors;
+// Add custom data to a viewer mesh
+struct MeshData
+{
+  std::string name;
+  Eigen::RowVector3d color;
+};
 int last_colored_index = -1;
 
 // Set colors of each mesh
 void update_colors(igl::opengl::glfw::Viewer &viewer)
 {
-  for (int i = 0; i < (int) viewer.data_list.size(); ++i)
+  for (auto &data : viewer.data_list)
   {
-    viewer.data_list[i].set_colors(colors[names[i]]);
+    data.set_colors(data.attr.get<MeshData>().color);
   }
   viewer.data_list[viewer.selected_data_index].set_colors(Eigen::RowVector3d(0.9,0.1,0.1));
   last_colored_index = viewer.selected_data_index;
@@ -26,11 +30,10 @@ class MyMenu : public igl::opengl::glfw::imgui::ImGuiMenu
 {
   virtual void draw_viewer_menu() override
   {
-    if (ImGui::Combo("Selected Mesh", (int *) &viewer->selected_data_index, names))
-    {
-      update_colors(*viewer);
-    }
-    if (last_colored_index != viewer->selected_data_index)
+    if (ImGui::Combo("Selected Mesh", (int *) &viewer->selected_data_index,
+          [&](int i) { return viewer->data_list[i].attr.get<MeshData>().name.c_str(); },
+          viewer->data_list.size())
+      || last_colored_index != viewer->selected_data_index)
     {
       update_colors(*viewer);
     }
@@ -40,10 +43,12 @@ class MyMenu : public igl::opengl::glfw::imgui::ImGuiMenu
 int main(int argc, char * argv[])
 {
   igl::opengl::glfw::Viewer viewer;
+  auto names = {"cube.obj","sphere.obj","xcylinder.obj","ycylinder.obj","zcylinder.obj"};
   for(const auto & name : names)
   {
     viewer.load_mesh_from_file(std::string(TUTORIAL_SHARED_PATH) + "/" + name);
-    colors[name] = Eigen::RowVector3d::Random();
+    viewer.data().attr.get<MeshData>().name = name;
+    viewer.data().attr.get<MeshData>().color = Eigen::RowVector3d::Random();
   }
 
   // Attach a custom menu
@@ -59,12 +64,8 @@ int main(int argc, char * argv[])
     // Delete
     if(key == '3')
     {
-      int old_index = viewer.selected_data_index;
-      if (viewer.erase_mesh(viewer.selected_data_index))
-      {
-        names.erase(names.begin() + old_index);
-        update_colors(viewer);
-      }
+      viewer.erase_mesh(viewer.selected_data_index);
+      update_colors(viewer);
       return true;
     }
     return false;

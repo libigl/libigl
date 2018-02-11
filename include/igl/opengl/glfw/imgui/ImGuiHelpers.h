@@ -13,6 +13,7 @@
 #include <vector>
 #include <string>
 #include <algorithm>
+#include <functional>
 ////////////////////////////////////////////////////////////////////////////////
 
 // Extend ImGui by populating its namespace directly
@@ -35,6 +36,17 @@ inline bool Combo(const char* label, int* idx, std::vector<std::string>& values)
 	if (values.empty()) { return false; }
 	return Combo(label, idx, vector_getter,
 		static_cast<void*>(&values), values.size());
+}
+
+inline bool Combo(const char* label, int* idx, std::function<const char *(int)> getter, int items_count)
+{
+	auto func = [](void* data, int i, const char** out_text) {
+		auto &getter = *reinterpret_cast<std::function<const char *(int)> *>(data);
+		const char *s = getter(i);
+		if (s) { *out_text = s; return true; }
+		else { return false; }
+	};
+	return Combo(label, idx, func, reinterpret_cast<void *>(&getter), items_count);
 }
 
 inline bool ListBox(const char* label, int* idx, std::vector<std::string>& values)
