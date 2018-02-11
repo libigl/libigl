@@ -12,6 +12,7 @@
 #include <imgui/imgui.h>
 #include <vector>
 #include <string>
+#include <algorithm>
 ////////////////////////////////////////////////////////////////////////////////
 
 // Extend ImGui by populating its namespace directly
@@ -41,6 +42,19 @@ inline bool ListBox(const char* label, int* idx, std::vector<std::string>& value
 	if (values.empty()) { return false; }
 	return ListBox(label, idx, vector_getter,
 		static_cast<void*>(&values), values.size());
+}
+
+inline bool InputText(const char* label, std::string &str, ImGuiInputTextFlags flags = 0, ImGuiTextEditCallback callback = NULL, void* user_data = NULL)
+{
+  char buf[1024];
+  std::fill_n(buf, 1024, 0);
+  std::copy_n(str.begin(), std::min(1024, (int) str.size()), buf);
+  if (ImGui::InputText(label, buf, 1024, flags, callback, user_data))
+  {
+    str = std::string(buf);
+    return true;
+  }
+  return false;
 }
 
 } // namespace ImGui
