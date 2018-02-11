@@ -1070,7 +1070,7 @@ namespace glfw
 
   IGL_INLINE bool Viewer::erase_mesh(const size_t index)
   {
-    assert((i >= 0 && i < data_list.size()) && "index should be in bounds");
+    assert((index >= 0 && index < data_list.size()) && "index should be in bounds");
     assert(data_list.size() >= 1);
     if(data_list.size() == 1)
     {
