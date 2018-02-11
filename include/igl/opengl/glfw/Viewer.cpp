@@ -6,8 +6,6 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 
-// Must defined this before including Viewer.h
-#define IGL_VIEWER_VIEWER_CPP
 #include "Viewer.h"
 
 #include <chrono>
@@ -465,13 +463,10 @@ namespace glfw
   T,t     Toggle filled faces
   Z       Snap to canonical view
   [,]     Toggle between rotation control types (trackball, two-axis
-          valuator with fixed up, 2D mode with no rotation)
-  <,>     Toggle between models.)"
-#ifdef IGL_VIEWER_WITH_NANOGUI
-		R"(
+          valuator with fixed up, 2D mode with no rotation))
+  <,>     Toggle between models
   ;       Toggle vertex labels
   :       Toggle face labels)"
-#endif
 );
     std::cout<<usage<<std::endl;
 #endif
@@ -685,14 +680,12 @@ namespace glfw
           (selected_data_index + data_list.size() + (unicode_key=='>'?1:-1))%data_list.size();
         return true;
       }
-#ifdef IGL_VIEWER_WITH_NANOGUI
       case ';':
         data().show_vertid = !data().show_vertid;
         return true;
       case ':':
         data().show_faceid = !data().show_faceid;
         return true;
-#endif
       default: break;//do nothing
     }
     return false;
@@ -1063,15 +1056,18 @@ namespace glfw
     return data_list[selected_data_index];
   }
 
-  IGL_INLINE void Viewer::append_mesh()
+  IGL_INLINE size_t Viewer::append_mesh()
   {
     assert(data_list.size() >= 1);
 
     data_list.emplace_back();
     selected_data_index = data_list.size()-1;
+    return data_list.size();
   }
+
   IGL_INLINE bool Viewer::erase_mesh(const size_t index)
   {
+    assert((i >= 0 && i < data_list.size()) && "index should be in bounds");
     assert(data_list.size() >= 1);
     if(data_list.size() == 1)
     {
@@ -1079,7 +1075,7 @@ namespace glfw
       return false;
     }
     data_list[index].meshgl.free();
-    data_list.erase(data_list.begin()                 + index);
+    data_list.erase(data_list.begin() + index);
     if(selected_data_index >= index && selected_data_index>0)
     {
       selected_data_index--;

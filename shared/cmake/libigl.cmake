@@ -272,18 +272,14 @@ if(LIBIGL_WITH_OPENGL)
   # OpenGL module
   find_package(OpenGL REQUIRED)
   compile_igl_module("opengl")
-  # compile_igl_module("opengl2")
   target_link_libraries(igl_opengl ${IGL_SCOPE} ${OPENGL_gl_LIBRARY})
-  # target_link_libraries(igl_opengl2 ${IGL_SCOPE} ${OPENGL_gl_LIBRARY})
   target_include_directories(igl_opengl SYSTEM ${IGL_SCOPE} ${OPENGL_INCLUDE_DIR})
-  # target_include_directories(igl_opengl2 SYSTEM ${IGL_SCOPE} ${OPENGL_INCLUDE_DIR})
 
   # glad module
   if(NOT TARGET glad)
     add_subdirectory(${LIBIGL_EXTERNAL}/glad glad)
   endif()
   target_link_libraries(igl_opengl ${IGL_SCOPE} glad)
-  # target_link_libraries(igl_opengl2 ${IGL_SCOPE} glad)
 endif()
 
 ################################################################################
