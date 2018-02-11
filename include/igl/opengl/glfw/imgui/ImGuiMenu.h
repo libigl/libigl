@@ -30,14 +30,14 @@ class ImGuiMenu : public igl::opengl::glfw::ViewerPlugin
 {
 protected:
   // Hidpi scaling to be used for text rendering.
-  float m_HidpiScaling;
+  float hidpi_scaling_;
 
   // Ratio between the framebuffer size and the window size.
   // May be different from the hipdi scaling!
-  float m_PixelRatio;
+  float pixel_ratio_;
 
   // ImGui Context
-  ImGuiContext * m_Context = nullptr;
+  ImGuiContext * context_ = nullptr;
 
 public:
   IGL_INLINE virtual void init(igl::opengl::glfw::Viewer *_viewer) override;
@@ -85,7 +85,7 @@ public:
 
   IGL_INLINE float hidpi_scaling();
 
-  float menu_scaling() { return m_HidpiScaling / m_PixelRatio; }
+  float menu_scaling() { return hidpi_scaling_ / pixel_ratio_; }
 };
 
 } // end namespace
