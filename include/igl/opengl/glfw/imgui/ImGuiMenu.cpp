@@ -140,7 +140,7 @@ IGL_INLINE bool ImGuiMenu::key_up(int key, int modifiers)
 IGL_INLINE void ImGuiMenu::draw_menu()
 {
   // Text labels
-  draw_labels_menu();
+  draw_labels_window();
 
   // Viewer settings
   float menu_width = 180.f * menu_scaling();
@@ -154,12 +154,14 @@ IGL_INLINE void ImGuiMenu::draw_menu()
       | ImGuiWindowFlags_AlwaysAutoResize
   );
   ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.4f);
-  draw_viewer_menu();
+  if (draw_viewer_menu_func) { draw_viewer_menu_func(); }
+  else { draw_viewer_menu(); }
   ImGui::PopItemWidth();
   ImGui::End();
 
-  // Other menus
-  draw_other_menu();
+  // Other windows
+  if (draw_custom_window_func) { draw_custom_window_func(); }
+  else { draw_custom_window(); }
 }
 
 IGL_INLINE void ImGuiMenu::draw_viewer_menu()
@@ -276,7 +278,7 @@ IGL_INLINE void ImGuiMenu::draw_viewer_menu()
   }
 }
 
-IGL_INLINE void ImGuiMenu::draw_labels_menu()
+IGL_INLINE void ImGuiMenu::draw_labels_window()
 {
   // Text labels
   ImGui::SetNextWindowPos(ImVec2(0,0), ImGuiSetCond_Always);
