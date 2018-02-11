@@ -6,7 +6,7 @@
 #include <iostream>
 #include "tutorial_shared_path.h"
 
-class MyMenu : public igl::opengl::glfw::imgui::ImGuiMenu
+class CustomMenu : public igl::opengl::glfw::imgui::ImGuiMenu
 {
   float floatVariable = 0.1f; // Shared between two menus
 
@@ -60,7 +60,7 @@ class MyMenu : public igl::opengl::glfw::imgui::ImGuiMenu
     }
   }
 
-  virtual void draw_other_menu() override
+  virtual void draw_custom_window() override
   {
     // Define next window position + size
     ImGui::SetNextWindowPos(ImVec2(180.f * menu_scaling(), 10), ImGuiSetCond_FirstUseEver);
@@ -95,8 +95,7 @@ int main(int argc, char *argv[])
   igl::opengl::glfw::Viewer viewer;
 
   // Attach a custom menu
-  MyMenu menu;
-  // viewer.core.is_animating = true;
+  CustomMenu menu;
   viewer.plugins.push_back(&menu);
 
   // Plot the mesh

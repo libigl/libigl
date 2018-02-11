@@ -73,9 +73,13 @@ public:
 
   IGL_INLINE virtual void draw_viewer_menu();
 
-  IGL_INLINE virtual void draw_other_menu() { }
+  IGL_INLINE virtual void draw_custom_window() { }
 
-  IGL_INLINE void draw_labels_menu();
+  // Easy-to-customize callbacks
+  std::function<void(void)> draw_viewer_menu_func;
+  std::function<void(void)> draw_custom_window_func;
+
+  IGL_INLINE void draw_labels_window();
 
   IGL_INLINE void draw_labels(const igl::opengl::ViewerData &data);
 

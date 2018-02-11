@@ -25,21 +25,6 @@ void update_colors(igl::opengl::glfw::Viewer &viewer)
   last_colored_index = viewer.selected_data_index;
 }
 
-// Menu for selecting a mesh
-class MyMenu : public igl::opengl::glfw::imgui::ImGuiMenu
-{
-  virtual void draw_viewer_menu() override
-  {
-    if (ImGui::Combo("Selected Mesh", (int *) &viewer->selected_data_index,
-          [&](int i) { return viewer->data_list[i].attr<MeshData>().name.c_str(); },
-          viewer->data_list.size())
-      || last_colored_index != viewer->selected_data_index)
-    {
-      update_colors(*viewer);
-    }
-  }
-};
-
 int main(int argc, char * argv[])
 {
   igl::opengl::glfw::Viewer viewer;
@@ -52,8 +37,20 @@ int main(int argc, char * argv[])
   }
 
   // Attach a custom menu
-  MyMenu menu;
+  igl::opengl::glfw::imgui::ImGuiMenu menu;
   viewer.plugins.push_back(&menu);
+
+  // Customize default menu
+  menu.draw_viewer_menu_func = [&]()
+  {
+    if (ImGui::Combo("Selected Mesh", (int *) &viewer.selected_data_index,
+          [&](int i) { return viewer.data_list[i].attr<MeshData>().name.c_str(); },
+          viewer.data_list.size())
+      || last_colored_index != viewer.selected_data_index)
+    {
+      update_colors(viewer);
+    }
+  };
 
   // Color each mesh differently
   update_colors(viewer);
