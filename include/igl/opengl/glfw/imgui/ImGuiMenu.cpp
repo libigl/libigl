@@ -1,3 +1,10 @@
+// This file is part of libigl, a simple c++ geometry processing library.
+//
+// Copyright (C) 2018 Jérémie Dumas <jeremie.dumas@ens-lyon.org>
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
+// obtain one at http://mozilla.org/MPL/2.0/.
 ////////////////////////////////////////////////////////////////////////////////
 #include "ImGuiMenu.h"
 #include <igl/project.h>
@@ -285,7 +292,10 @@ IGL_INLINE void ImGuiMenu::draw_labels_menu()
       | ImGuiWindowFlags_NoCollapse
       | ImGuiWindowFlags_NoSavedSettings
       | ImGuiWindowFlags_NoInputs);
-  draw_labels(viewer->data());
+  for (const auto & data : viewer->data_list)
+  {
+    draw_labels(data);
+  }
   ImGui::End();
   ImGui::PopStyleColor();
 }

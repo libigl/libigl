@@ -20,6 +20,25 @@
 //     #include <GL/gl.h>
 //
 
-#include <glad/glad.h>
+// For now this includes glu, glew and glext (perhaps these should be
+// separated)
+#ifdef _WIN32
+#    define NOMINMAX
+#    include <Windows.h>
+#    undef DrawText
+#    undef NOMINMAX
+#endif
+
+#ifndef __APPLE__
+#  define GLEW_STATIC
+#  include <GL/glew.h>
+#endif
+
+#ifdef __APPLE__
+#  include <OpenGL/gl.h>
+#  define __gl_h_ /* Prevent inclusion of the old gl.h */
+#else
+#  include <GL/gl.h>
+#endif
 
 #endif
