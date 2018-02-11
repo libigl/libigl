@@ -64,7 +64,7 @@ class MyMenu : public igl::opengl::glfw::imgui::ImGuiMenu
   {
     // Define next window position + size
     ImGui::SetNextWindowPos(ImVec2(180.f * menu_scaling(), 10), ImGuiSetCond_FirstUseEver);
-    ImGui::SetNextWindowSize(ImVec2(200, 80), ImGuiSetCond_FirstUseEver);
+    ImGui::SetNextWindowSize(ImVec2(200, 160), ImGuiSetCond_FirstUseEver);
     ImGui::Begin(
         "New Window", nullptr,
         ImGuiWindowFlags_NoSavedSettings
@@ -74,6 +74,9 @@ class MyMenu : public igl::opengl::glfw::imgui::ImGuiMenu
     ImGui::PushItemWidth(-80);
     ImGui::DragFloat("float", &floatVariable, 0.0, 0.0, 3.0);
     ImGui::PopItemWidth();
+
+    static std::string str = "bunny";
+    ImGui::InputText("Name", str);
 
     ImGui::End();
   }
