@@ -8,12 +8,14 @@
 #ifndef IGL_VIEWERDATA_H
 #define IGL_VIEWERDATA_H
 
-#include <cstdint>
-#include <vector>
-#include <Eigen/Core>
 #include "../igl_inline.h"
-#include "../Attributes.h"
+#include "../Attribute.h"
 #include "MeshGL.h"
+#include <cassert>
+#include <cstdint>
+#include <Eigen/Core>
+#include <memory>
+#include <vector>
 
 // Alec: This is a mesh class containing a variety of data types (normals,
 // overlays, material colors, etc.)
@@ -24,7 +26,6 @@ namespace igl
 // TODO: write documentation
 namespace opengl
 {
-
 
 class ViewerData
 {
@@ -183,10 +184,12 @@ public:
   bool show_vertid;
   bool show_faceid;
   bool invert_normals;
+
   // Point size / line width
   float point_size;
   float line_width;
   Eigen::Vector4f line_color;
+
   // Shape material
   float shininess;
 
@@ -194,7 +197,11 @@ public:
   igl::opengl::MeshGL meshgl;
 
   // User-defined attribute
-  AttributeManager attr;
+  std::shared_ptr<AttributeBase> attr_ptr;
+
+  // Retrieve custom attribute
+  template<typename T> T & attr();
+  template<typename T> const T & attr() const;
 
   // Update contents from a 'Data' instance
   IGL_INLINE void updateGL(
@@ -203,8 +210,36 @@ public:
     igl::opengl::MeshGL& meshgl);
 };
 
+// -----------------------------------------------------------------------------
+
+// Retrieve custom attribute
+template<typename T>
+inline T & ViewerData::attr()
+{
+  if (!attr_ptr)
+  {
+    attr_ptr = std::make_shared<Attribute<T>>();
+  }
+  auto * derived = dynamic_cast<Attribute<T> *>(attr_ptr.get());
+  assert(derived && "Incompatible type requested for attribute");
+  return derived->content_;
 }
+
+
+// Retrieve custom attribute
+template<typename T>
+inline const T & ViewerData::attr() const
+{
+  assert(attr_ptr);
+  const auto * derived = dynamic_cast<const Attribute<T> *>(attr_ptr.get());
+  assert(derived && "Incompatible type requested for attribute");
+  return derived->content_;
 }
+
+} // namespace opengl
+} // namespace igl
+
+////////////////////////////////////////////////////////////////////////////////
 
 #ifdef ENABLE_SERIALIZATION
 #include <igl/serialize.h>

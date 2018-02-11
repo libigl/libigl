@@ -30,9 +30,9 @@ IGL_INLINE void ImGuiMenu::init(igl::opengl::glfw::Viewer *_viewer)
   // Setup ImGui binding
   if (_viewer)
   {
-    if (m_Context == nullptr)
+    if (context_ == nullptr)
     {
-      m_Context = ImGui::CreateContext();
+      context_ = ImGui::CreateContext();
     }
     ImGui_ImplGlfwGL3_Init(viewer->window, false);
     ImGui::GetIO().IniFilename = nullptr;
@@ -45,21 +45,21 @@ IGL_INLINE void ImGuiMenu::init(igl::opengl::glfw::Viewer *_viewer)
 
 IGL_INLINE void ImGuiMenu::reload_font(int font_size)
 {
-  m_HidpiScaling = hidpi_scaling();
-  m_PixelRatio = pixel_ratio();
+  hidpi_scaling_ = hidpi_scaling();
+  pixel_ratio_ = pixel_ratio();
   ImGuiIO& io = ImGui::GetIO();
   io.Fonts->Clear();
   io.Fonts->AddFontFromMemoryCompressedTTF(droid_sans_compressed_data,
-    droid_sans_compressed_size, font_size * m_HidpiScaling);
-  io.FontGlobalScale = 1.0 / m_PixelRatio;
+    droid_sans_compressed_size, font_size * hidpi_scaling_);
+  io.FontGlobalScale = 1.0 / pixel_ratio_;
 }
 
 IGL_INLINE void ImGuiMenu::shutdown()
 {
   // Cleanup
   ImGui_ImplGlfwGL3_Shutdown();
-  ImGui::DestroyContext(m_Context);
-  m_Context = nullptr;
+  ImGui::DestroyContext(context_);
+  context_ = nullptr;
 }
 
 IGL_INLINE bool ImGuiMenu::pre_draw()
@@ -68,7 +68,7 @@ IGL_INLINE bool ImGuiMenu::pre_draw()
 
   // Check whether window dpi has changed
   float scaling = hidpi_scaling();
-  if (std::abs(scaling - m_HidpiScaling) > 1e-5)
+  if (std::abs(scaling - hidpi_scaling_) > 1e-5)
   {
     reload_font();
     ImGui_ImplGlfwGL3_InvalidateDeviceObjects();
@@ -87,7 +87,7 @@ IGL_INLINE bool ImGuiMenu::post_draw()
 
 IGL_INLINE void ImGuiMenu::post_resize(int width, int height)
 {
-  if (m_Context)
+  if (context_)
   {
     ImGui::GetIO().DisplaySize.x = float(width);
     ImGui::GetIO().DisplaySize.y = float(height);
@@ -345,7 +345,7 @@ IGL_INLINE void ImGuiMenu::draw_text(Eigen::Vector3d pos, Eigen::Vector3d normal
   // Draw text labels slightly bigger than normal text
   ImDrawList* drawList = ImGui::GetWindowDrawList();
   drawList->AddText(ImGui::GetFont(), ImGui::GetFontSize() * 1.2,
-      ImVec2(coord[0]/m_PixelRatio, (viewer->core.viewport[3] - coord[1])/m_PixelRatio),
+      ImVec2(coord[0]/pixel_ratio_, (viewer->core.viewport[3] - coord[1])/pixel_ratio_),
       ImGui::GetColorU32(ImVec4(0, 0, 10, 255)),
       &text[0], &text[0] + text.size());
 }

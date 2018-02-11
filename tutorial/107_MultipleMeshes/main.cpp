@@ -19,7 +19,7 @@ void update_colors(igl::opengl::glfw::Viewer &viewer)
 {
   for (auto &data : viewer.data_list)
   {
-    data.set_colors(data.attr.get<MeshData>().color);
+    data.set_colors(data.attr<MeshData>().color);
   }
   viewer.data_list[viewer.selected_data_index].set_colors(Eigen::RowVector3d(0.9,0.1,0.1));
   last_colored_index = viewer.selected_data_index;
@@ -31,7 +31,7 @@ class MyMenu : public igl::opengl::glfw::imgui::ImGuiMenu
   virtual void draw_viewer_menu() override
   {
     if (ImGui::Combo("Selected Mesh", (int *) &viewer->selected_data_index,
-          [&](int i) { return viewer->data_list[i].attr.get<MeshData>().name.c_str(); },
+          [&](int i) { return viewer->data_list[i].attr<MeshData>().name.c_str(); },
           viewer->data_list.size())
       || last_colored_index != viewer->selected_data_index)
     {
@@ -47,8 +47,8 @@ int main(int argc, char * argv[])
   for(const auto & name : names)
   {
     viewer.load_mesh_from_file(std::string(TUTORIAL_SHARED_PATH) + "/" + name);
-    viewer.data().attr.get<MeshData>().name = name;
-    viewer.data().attr.get<MeshData>().color = Eigen::RowVector3d::Random();
+    viewer.data().attr<MeshData>().name = name;
+    viewer.data().attr<MeshData>().color = Eigen::RowVector3d::Random();
   }
 
   // Attach a custom menu
