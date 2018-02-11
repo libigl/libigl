@@ -268,12 +268,14 @@ namespace glfw
   {
     // glfwMakeContextCurrent(window);
     // Rendering loop
+    const int num_extra_frames = 5;
+    int frame_counter = 0;
     while (!glfwWindowShouldClose(window))
     {
       double tic = get_seconds();
       draw();
       glfwSwapBuffers(window);
-      if(core.is_animating)
+      if(core.is_animating || frame_counter++ < num_extra_frames)
       {
         glfwPollEvents();
         // In microseconds
@@ -287,6 +289,7 @@ namespace glfw
       else
       {
         glfwWaitEvents();
+        frame_counter = 0;
       }
       if (!loop)
         return !glfwWindowShouldClose(window);

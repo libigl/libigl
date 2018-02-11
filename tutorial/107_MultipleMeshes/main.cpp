@@ -48,7 +48,6 @@ int main(int argc, char * argv[])
 
   // Attach a custom menu
   MyMenu menu;
-  viewer.core.is_animating = true;
   viewer.plugins.push_back(&menu);
 
   // Color each mesh differently
