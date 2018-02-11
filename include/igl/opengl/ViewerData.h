@@ -12,6 +12,7 @@
 #include <vector>
 #include <Eigen/Core>
 #include "../igl_inline.h"
+#include "../Attributes.h"
 #include "MeshGL.h"
 
 // Alec: This is a mesh class containing a variety of data types (normals,
@@ -32,7 +33,7 @@ public:
 
   // Empty all fields
   IGL_INLINE void clear();
-  
+
   // Change the visualization mode, invalidating the cache if necessary
   IGL_INLINE void set_face_based(bool newvalue);
 
@@ -192,9 +193,12 @@ public:
   // OpenGL representation of the mesh
   igl::opengl::MeshGL meshgl;
 
+  // User-defined attribute
+  AttributeManager attr;
+
   // Update contents from a 'Data' instance
   IGL_INLINE void updateGL(
-    const igl::opengl::ViewerData& data, 
+    const igl::opengl::ViewerData& data,
     const bool invert_normals,
     igl::opengl::MeshGL& meshgl);
 };
@@ -204,7 +208,7 @@ public:
 
 #ifdef ENABLE_SERIALIZATION
 #include <igl/serialize.h>
-namespace igl 
+namespace igl
 {
   namespace serialization
   {
