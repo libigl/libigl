@@ -141,14 +141,20 @@ IGL_INLINE void igl::opengl::ViewerData::set_colors(const Eigen::MatrixXd &C)
   {
     for (unsigned i=0;i<V_material_diffuse.rows();++i)
     {
-      V_material_diffuse.row(i) << C.row(0),1;
+      if (C.cols() == 3)
+        V_material_diffuse.row(i) << C.row(0),1;
+      else if (C.cols() == 4)
+        V_material_diffuse.row(i) << C.row(0);
     }
     V_material_ambient = ambient(V_material_diffuse);
     V_material_specular = specular(V_material_diffuse);
 
     for (unsigned i=0;i<F_material_diffuse.rows();++i)
     {
-      F_material_diffuse.row(i) << C.row(0),1;
+      if (C.cols() == 3)
+        F_material_diffuse.row(i) << C.row(0),1;
+      else if (C.cols() == 4)
+        F_material_diffuse.row(i) << C.row(0);
     }
     F_material_ambient = ambient(F_material_diffuse);
     F_material_specular = specular(F_material_diffuse);
@@ -158,7 +164,10 @@ IGL_INLINE void igl::opengl::ViewerData::set_colors(const Eigen::MatrixXd &C)
     set_face_based(false);
     for (unsigned i=0;i<V_material_diffuse.rows();++i)
     {
-      V_material_diffuse.row(i) << C.row(i),1;
+      if (C.cols() == 3)
+        V_material_diffuse.row(i) << C.row(i), 1;
+      else if (C.cols() == 4)
+        V_material_diffuse.row(i) << C.row(i);
     }
     V_material_ambient = ambient(V_material_diffuse);
     V_material_specular = specular(V_material_diffuse);
@@ -168,13 +177,16 @@ IGL_INLINE void igl::opengl::ViewerData::set_colors(const Eigen::MatrixXd &C)
     set_face_based(true);
     for (unsigned i=0;i<F_material_diffuse.rows();++i)
     {
-      F_material_diffuse.row(i) << C.row(i),1;
+      if (C.cols() == 3)
+        F_material_diffuse.row(i) << C.row(i), 1;
+      else if (C.cols() == 4)
+        F_material_diffuse.row(i) << C.row(i);
     }
     F_material_ambient = ambient(F_material_diffuse);
     F_material_specular = specular(F_material_diffuse);
   }
   else
-    cerr << "ERROR (set_colors): Please provide a single color, or a color per face or per vertex."<<endl;;
+    cerr << "ERROR (set_colors): Please provide a single color, or a color per face or per vertex."<<endl;
   dirty |= MeshGL::DIRTY_DIFFUSE;
 
 }
@@ -359,8 +371,8 @@ IGL_INLINE void igl::opengl::ViewerData::compute_normals()
 }
 
 IGL_INLINE void igl::opengl::ViewerData::uniform_colors(
-  const Eigen::Vector3d& ambient, 
-  const Eigen::Vector3d& diffuse, 
+  const Eigen::Vector3d& ambient,
+  const Eigen::Vector3d& diffuse,
   const Eigen::Vector3d& specular)
 {
   Eigen::Vector4d ambient4;
@@ -375,8 +387,8 @@ IGL_INLINE void igl::opengl::ViewerData::uniform_colors(
 }
 
 IGL_INLINE void igl::opengl::ViewerData::uniform_colors(
-  const Eigen::Vector4d& ambient, 
-  const Eigen::Vector4d& diffuse, 
+  const Eigen::Vector4d& ambient,
+  const Eigen::Vector4d& diffuse,
   const Eigen::Vector4d& specular)
 {
   V_material_ambient.resize(V.rows(),4);
@@ -442,7 +454,7 @@ IGL_INLINE void igl::opengl::ViewerData::grid_texture()
 }
 
 IGL_INLINE void igl::opengl::ViewerData::updateGL(
-  const igl::opengl::ViewerData& data, 
+  const igl::opengl::ViewerData& data,
   const bool invert_normals,
   igl::opengl::MeshGL& meshgl
   )
@@ -465,10 +477,11 @@ IGL_INLINE void igl::opengl::ViewerData::updateGL(
       const Eigen::MatrixXd & X,
       MeshGL::RowMatrixXf & X_vbo)
   {
-    X_vbo.resize(data.F.rows()*3,3);
+    assert(X.cols() == 4);
+    X_vbo.resize(data.F.rows()*3,4);
     for (unsigned i=0; i<data.F.rows();++i)
       for (unsigned j=0;j<3;++j)
-        X_vbo.row(i*3+j) = X.row(i).cast<float>().head(3);
+        X_vbo.row(i*3+j) = X.row(i).cast<float>();
   };
 
   // Input:
@@ -479,7 +492,7 @@ IGL_INLINE void igl::opengl::ViewerData::updateGL(
       const Eigen::MatrixXd & X,
       MeshGL::RowMatrixXf & X_vbo)
   {
-    X_vbo.resize(data.F.rows()*3,3);
+    X_vbo.resize(data.F.rows()*3,X.cols());
     for (unsigned i=0; i<data.F.rows();++i)
       for (unsigned j=0;j<3;++j)
         X_vbo.row(i*3+j) = X.row(data.F(i,j)).cast<float>();
@@ -553,8 +566,8 @@ IGL_INLINE void igl::opengl::ViewerData::updateGL(
         meshgl.V_normals_vbo.resize(3,data.F.rows()*3);
         for (unsigned i=0; i<data.F.rows();++i)
           for (unsigned j=0;j<3;++j)
-          
-            meshgl.V_normals_vbo.col (i*3+j) = 
+
+            meshgl.V_normals_vbo.col (i*3+j) =
                          per_corner_normals ?
                data.F_normals.row(i*3+j).transpose().cast<float>() :
                data.V_normals.row(data.F(i,j)).transpose().cast<float>();
@@ -576,8 +589,8 @@ IGL_INLINE void igl::opengl::ViewerData::updateGL(
         meshgl.V_uv_vbo.resize(data.F.rows()*3,2);
         for (unsigned i=0; i<data.F.rows();++i)
           for (unsigned j=0;j<3;++j)
-            meshgl.V_uv_vbo.row(i*3+j) = 
-              data.V_uv.row(per_corner_uv ? 
+            meshgl.V_uv_vbo.row(i*3+j) =
+              data.V_uv.row(per_corner_uv ?
                 data.F_uv(i,j) : data.F(i,j)).cast<float>();
       }
     }
@@ -588,7 +601,6 @@ IGL_INLINE void igl::opengl::ViewerData::updateGL(
     {
       per_corner(data.V,meshgl.V_vbo);
     }
-
     if (meshgl.dirty & MeshGL::DIRTY_AMBIENT)
     {
       per_face(data.F_material_ambient,meshgl.V_ambient_vbo);
