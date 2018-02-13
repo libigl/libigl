@@ -4,31 +4,36 @@ project(libigl_external)
 include(ExternalProject)
 
 # Boost
-set(BOOST_DIR "${CMAKE_CURRENT_LIST_DIR}/boost")
-ExternalProject_Add(Boost_Project
-	PREFIX "${BOOST_DIR}"
+if(WIN32)
+	set(BOOST_DIR "${CMAKE_CURRENT_LIST_DIR}/boost")
+	ExternalProject_Add(Boost_Project
+		PREFIX "${BOOST_DIR}"
 
-	URL "http://sourceforge.net/projects/boost/files/boost/1.63.0/boost_1_63_0.tar.bz2"
-	URL_HASH SHA1=9f1dd4fa364a3e3156a77dc17aa562ef06404ff6
+		URL "http://sourceforge.net/projects/boost/files/boost/1.63.0/boost_1_63_0.tar.bz2"
+		URL_HASH SHA1=9f1dd4fa364a3e3156a77dc17aa562ef06404ff6
 
-	BUILD_IN_SOURCE 1
-	CONFIGURE_COMMAND ./bootstrap.sh
-			--with-libraries=filesystem
-			--with-libraries=system
-			--with-libraries=thread
-			--with-libraries=serialization
-			--with-libraries=date_time
-			--prefix=<INSTALL_DIR>
-	BUILD_COMMAND
-		./b2 install link=static variant=release threading=multi runtime-link=static
+		BUILD_IN_SOURCE 1
+		CONFIGURE_COMMAND ./bootstrap.bat
+				--with-libraries=filesystem
+				--with-libraries=system
+				--with-libraries=thread
+				--with-libraries=serialization
+				--with-libraries=date_time
+				--prefix=<INSTALL_DIR>
+		BUILD_COMMAND
+			./b2.exe install link=static variant=release threading=multi runtime-link=static
 
-	INSTALL_COMMAND ""
-)
+		INSTALL_COMMAND ""
+	)
+	set(BOOST_PROJECT Boost_Project)
+else()
+	set(BOOST_PROJECT "")
+endif()
 
 # CGAL
 set(CGAL_DIR "${CMAKE_CURRENT_LIST_DIR}/cgal")
 ExternalProject_Add(CGAL_Project
-	DEPENDS Boost_Project
+	DEPENDS ${BOOST_PROJECT}
 
 	PREFIX "${CGAL_DIR}"
 
