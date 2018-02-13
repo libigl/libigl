@@ -204,32 +204,6 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
       data.meshgl.draw_mesh(false);
       glUniform4f(fixed_colori, 0.0f, 0.0f, 0.0f, 0.0f);
     }
-
-#ifdef IGL_VIEWER_WITH_NANOGUI
-    if (data.show_vertid)
-    {
-      textrenderer.BeginDraw(view*model, proj, viewport, object_scale);
-      for (int i=0; i<data.V.rows(); ++i)
-        textrenderer.DrawText(data.V.row(i),data.V_normals.row(i),to_string(i));
-      textrenderer.EndDraw();
-    }
-
-    if (data.show_faceid)
-    {
-      textrenderer.BeginDraw(view*model, proj, viewport, object_scale);
-
-      for (int i=0; i<data.F.rows(); ++i)
-      {
-        Eigen::RowVector3d p = Eigen::RowVector3d::Zero();
-        for (int j=0;j<data.F.cols();++j)
-          p += data.V.row(data.F(i,j));
-        p /= data.F.cols();
-
-        textrenderer.DrawText(p, data.F_normals.row(i), to_string(i));
-      }
-      textrenderer.EndDraw();
-    }
-#endif
   }
 
   if (data.show_overlay)
@@ -270,17 +244,6 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
 
       data.meshgl.draw_overlay_points();
     }
-
-#ifdef IGL_VIEWER_WITH_NANOGUI
-    if (data.labels_positions.rows() > 0)
-    {
-      textrenderer.BeginDraw(view*model, proj, viewport, object_scale);
-      for (int i=0; i<data.labels_positions.rows(); ++i)
-        textrenderer.DrawText(data.labels_positions.row(i), Eigen::Vector3d(0.0,0.0,0.0),
-            data.labels_strings[i]);
-      textrenderer.EndDraw();
-    }
-#endif
 
     glEnable(GL_DEPTH_TEST);
   }
@@ -424,14 +387,8 @@ IGL_INLINE igl::opengl::ViewerCore::ViewerCore()
 
 IGL_INLINE void igl::opengl::ViewerCore::init()
 {
-#ifdef IGL_VIEWER_WITH_NANOGUI
-  textrenderer.Init();
-#endif
 }
 
 IGL_INLINE void igl::opengl::ViewerCore::shut()
 {
-#ifdef IGL_VIEWER_WITH_NANOGUI
-  textrenderer.Shut();
-#endif
 }

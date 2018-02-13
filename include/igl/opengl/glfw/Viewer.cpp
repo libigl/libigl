@@ -26,11 +26,6 @@
 #include <limits>
 #include <cassert>
 
-#ifdef IGL_VIEWER_WITH_NANOGUI
-#  include <nanogui/formhelper.h>
-#  include <nanogui/screen.h>
-#endif
-
 #include <igl/project.h>
 #include <igl/get_seconds.h>
 #include <igl/readOBJ.h>
@@ -47,9 +42,7 @@
 #include <igl/two_axis_valuator_fixed_up.h>
 #include <igl/snap_to_canonical_view_quat.h>
 #include <igl/unproject.h>
-#ifdef ENABLE_SERIALIZATION
 #include <igl/serialize.h>
-#endif
 
 // Internal global variables used for glfw event handling
 static igl::opengl::glfw::Viewer * __viewer;
@@ -59,12 +52,6 @@ static double scroll_y = 0;
 
 static void glfw_mouse_press(GLFWwindow* window, int button, int action, int modifier)
 {
-  bool tw_used =
-#ifdef IGL_VIEWER_WITH_NANOGUI
-    __viewer->screen->mouseButtonCallbackEvent(button,action,modifier);
-#else
-    false;
-#endif
 
   igl::opengl::glfw::Viewer::MouseButton mb;
 
@@ -76,17 +63,9 @@ static void glfw_mouse_press(GLFWwindow* window, int button, int action, int mod
     mb = igl::opengl::glfw::Viewer::MouseButton::Middle;
 
   if (action == GLFW_PRESS)
-  {
-    if(!tw_used)
-    {
-      __viewer->mouse_down(mb,modifier);
-    }
-  } else
-  {
-    // Always call mouse_up on up
+    __viewer->mouse_down(mb,modifier);
+  else
     __viewer->mouse_up(mb,modifier);
-  }
-
 }
 
 static void glfw_error_callback(int error, const char* description)
@@ -96,14 +75,7 @@ static void glfw_error_callback(int error, const char* description)
 
 static void glfw_char_mods_callback(GLFWwindow* window, unsigned int codepoint, int modifier)
 {
-  // TODO: pass to nanogui (although it's also using physical key down/up
-  // rather than character codes...
-#ifdef IGL_VIEWER_WITH_NANOGUI
-  if(! __viewer->screen->charCallbackEvent(codepoint) )
-#endif
-  {
-    __viewer->key_pressed(codepoint, modifier);
-  }
+  __viewer->key_pressed(codepoint, modifier);
 }
 
 static void glfw_key_callback(GLFWwindow* window, int key, int scancode, int action, int modifier)
@@ -111,15 +83,10 @@ static void glfw_key_callback(GLFWwindow* window, int key, int scancode, int act
   if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
     glfwSetWindowShouldClose(window, GL_TRUE);
 
-#ifdef IGL_VIEWER_WITH_NANOGUI
-  if (__viewer->screen->keyCallbackEvent(key,scancode,action,modifier) == false)
-#endif
-  {
-    if (action == GLFW_PRESS)
-      __viewer->key_down(key, modifier);
-    else if(action == GLFW_RELEASE)
-      __viewer->key_up(key, modifier);
-  }
+  if (action == GLFW_PRESS)
+    __viewer->key_down(key, modifier);
+  else if(action == GLFW_RELEASE)
+    __viewer->key_up(key, modifier);
 }
 
 static void glfw_window_size(GLFWwindow* window, int width, int height)
@@ -129,20 +96,11 @@ static void glfw_window_size(GLFWwindow* window, int width, int height)
 
   __viewer->post_resize(w, h);
 
-  // TODO: repositioning of the nanogui
 }
 
 static void glfw_mouse_move(GLFWwindow* window, double x, double y)
 {
-  if(
-#ifdef IGL_VIEWER_WITH_NANOGUI
-      __viewer->screen->cursorPosCallbackEvent(x,y) == false &&
-#endif
-      true
-    )
-  {
-    __viewer->mouse_move(x*highdpi, y*highdpi);
-  }
+  __viewer->mouse_move(x*highdpi, y*highdpi);
 }
 
 static void glfw_mouse_scroll(GLFWwindow* window, double x, double y)
@@ -151,19 +109,11 @@ static void glfw_mouse_scroll(GLFWwindow* window, double x, double y)
   scroll_x += x;
   scroll_y += y;
 
-#ifdef IGL_VIEWER_WITH_NANOGUI
-  if (__viewer->screen->scrollCallbackEvent(x,y) == false)
-#endif
-  {
-    __viewer->mouse_scroll(y);
-  }
+  __viewer->mouse_scroll(y);
 }
 
 static void glfw_drop_callback(GLFWwindow *window,int count,const char **filenames)
 {
-#ifdef IGL_VIEWER_WITH_NANOGUI
-  __viewer->screen->dropCallbackEvent(count,filenames);
-#endif
 }
 
 namespace igl
@@ -234,11 +184,6 @@ namespace glfw
     #endif
     glfwSetInputMode(window,GLFW_CURSOR,GLFW_CURSOR_NORMAL);
     // Initialize FormScreen
-#ifdef IGL_VIEWER_WITH_NANOGUI
-    screen = new nanogui::Screen();
-    screen->initialize(window, false);
-    ngui = new nanogui::FormHelper(screen);
-#endif
     __viewer = this;
     // Register callbacks
     glfwSetKeyCallback(window, glfw_key_callback);
@@ -305,12 +250,6 @@ namespace glfw
     }
     core.shut();
     shutdown_plugins();
-#ifdef IGL_VIEWER_WITH_NANOGUI
-    delete ngui;
-    //delete screen;
-    screen = nullptr;
-    ngui = nullptr;
-#endif
     glfwDestroyWindow(window);
     glfwTerminate();
     return;
@@ -318,77 +257,6 @@ namespace glfw
 
   IGL_INLINE void Viewer::init()
   {
-#ifdef IGL_VIEWER_WITH_NANOGUI
-    using namespace nanogui;
-
-    ngui->setFixedSize(Eigen::Vector2i(60,20));
-
-    // Create nanogui widgets
-    /* nanogui::Window *window = */ ngui->addWindow(Eigen::Vector2i(10,10),"libIGL-Viewer");
-
-    // ---------------------- LOADING ----------------------
-
-  #ifdef ENABLE_SERIALIZATION
-    ngui->addGroup("Workspace");
-    ngui->addButton("Load",[&](){this->load_scene();});
-    ngui->addButton("Save",[&](){this->save_scene();});
-  #endif
-
-  #ifdef ENABLE_IO
-    ngui->addGroup("Mesh");
-    ngui->addButton("Load",[&](){this->open_dialog_load_mesh();});
-    ngui->addButton("Save",[&](){this->open_dialog_save_mesh();});
-  #endif
-
-    ngui->addGroup("Viewing Options");
-    ngui->addButton("Center object",[&](){this->core.align_camera_center(
-      this->data().V,this->data().F);});
-    ngui->addButton("Snap canonical view",[&]()
-    {
-      this->snap_to_canonical_quaternion();
-    });
-    ngui->addVariable("Zoom", core.camera_zoom);
-    ngui->addVariable("Orthographic view", core.orthographic);
-
-    ngui->addGroup("Draw options");
-
-    ngui->addVariable<bool>("Face-based", [&](bool checked)
-    {
-      this->data().set_face_based(checked);
-    },[&]()
-    {
-      return this->data().face_based;
-    });
-
-    ngui->addVariable("Show texture",this->data().show_texture);
-
-    ngui->addVariable<bool>("Invert normals",[&](bool checked)
-    {
-      this->data().dirty |= MeshGL::DIRTY_NORMAL;
-      this->data().invert_normals = checked;
-    },[&]()
-    {
-      return this->data().invert_normals;
-    });
-
-    // Alec: This will probably just attach to the data() at the time
-    // that addVariable is called. We probably need to use a callback here.
-    ngui->addVariable("Show overlay", data().show_overlay);
-    ngui->addVariable("Show overlay depth", data().show_overlay_depth);
-    ngui->addVariable("Line color", (nanogui::Color &) data().line_color);
-    ngui->addVariable("Background", (nanogui::Color &) core.background_color);
-    ngui->addVariable("Shininess", data().shininess);
-
-    ngui->addGroup("Overlays");
-    ngui->addVariable("Wireframe", data().show_lines);
-    ngui->addVariable("Fill", data().show_faces);
-    ngui->addVariable("Show vertex labels", data().show_vertid);
-    ngui->addVariable("Show faces labels", data().show_faceid);
-
-    screen->setVisible(true);
-    screen->performLayout();
-#endif
-
     core.init();
 
     if (callback_init)
@@ -420,11 +288,6 @@ namespace glfw
     selected_data_index(0)
   {
     window = nullptr;
-
-#ifdef IGL_VIEWER_WITH_NANOGUI
-    ngui = nullptr;
-    screen = nullptr;
-#endif
 
     // Temporary variables initialization
     down = false;
@@ -915,16 +778,12 @@ namespace glfw
 
   IGL_INLINE bool Viewer::load_scene(std::string fname)
   {
-#ifdef ENABLE_SERIALIZATION
     igl::deserialize(core,"Core",fname.c_str());
-#ifndef ENABLE_SERIALIZATION_CORE_ONLY
     igl::deserialize(data(),"Data",fname.c_str());
     for(unsigned int i = 0; i <plugins.size(); ++i)
     {
       igl::deserialize(*plugins[i],plugins[i]->plugin_name,fname.c_str());
     }
-#endif
-#endif
     return true;
   }
 
@@ -934,17 +793,10 @@ namespace glfw
     if (fname.length() == 0)
       return false;
 
-#ifdef ENABLE_SERIALIZATION
-
     igl::serialize(core,"Core",fname.c_str(),true);
-
-#ifndef ENABLE_SERIALIZATION_CORE_ONLY
     igl::serialize(data(),"Data",fname.c_str());
     for(unsigned int i = 0; i <plugins.size(); ++i)
       igl::serialize(*plugins[i],plugins[i]->plugin_name,fname.c_str());
-#endif
-
-#endif
 
     return true;
   }
@@ -1001,10 +853,6 @@ namespace glfw
         break;
       }
     }
-#ifdef IGL_VIEWER_WITH_NANOGUI
-	screen->drawContents();
-	screen->drawWidgets();
-#endif
   }
 
   IGL_INLINE void Viewer::resize(int w,int h)
