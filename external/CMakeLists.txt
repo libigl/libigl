@@ -3,59 +3,87 @@ project(libigl_external)
 
 include(ExternalProject)
 
-# Boost
-if(WIN32)
-	set(BOOST_DIR "${CMAKE_CURRENT_LIST_DIR}/boost")
-	ExternalProject_Add(Boost_Project
-		PREFIX "${BOOST_DIR}"
-
-		URL "http://sourceforge.net/projects/boost/files/boost/1.63.0/boost_1_63_0.tar.bz2"
-		URL_HASH SHA1=9f1dd4fa364a3e3156a77dc17aa562ef06404ff6
-
-		BUILD_IN_SOURCE 1
-		CONFIGURE_COMMAND ./bootstrap.bat
-				--with-libraries=filesystem
-				--with-libraries=system
-				--with-libraries=thread
-				--with-libraries=serialization
-				--with-libraries=date_time
-				--prefix=<INSTALL_DIR>
-		BUILD_COMMAND
-			./b2.exe install link=static variant=release threading=multi runtime-link=static
-
-		INSTALL_COMMAND ""
-	)
-	set(BOOST_PROJECT Boost_Project)
-else()
-	set(BOOST_PROJECT "")
+# Note: It IS important to download different files on different OS's:
+# on Unix-like systems, we need the file persmissions (only available in the .tar.gz),
+# while on Windows, we need CR/LF line feeds (only available in the .zip)
+if(UNIX)
+  set(BOOST_URL "https://dl.bintray.com/boostorg/release/1.66.0/source/boost_1_66_0.tar.gz")
+  set(BOOST_HASH SHA256=bd0df411efd9a585e5a2212275f8762079fed8842264954675a4fddc46cfcf60)
+  set(BOOST_BOOTSTRAP_COMMAND ./bootstrap.sh)
+  set(BOOST_B2_COMMAND ./b2)
+elseif(WIN32)
+  set(BOOST_URL "https://dl.bintray.com/boostorg/release/1.66.0/source/boost_1_66_0.zip")
+  set(BOOST_HASH SHA256=e1c55ebb00886c1a96528e4024be98a38b815115f62ecfe878fcf587ba715aad)
+  set(BOOST_BOOTSTRAP_COMMAND cmd /C bootstrap.bat msvc)
+  set(BOOST_B2_COMMAND b2.exe)
 endif()
+
+# We only support x64 builds
+set(BOOST_ADDRESS_MODEL 64)
+
+if (MSVC_VERSION EQUAL 1500) #VS2008
+  set(BOOST_TOOLSET "--toolset=msvc-9.0")
+elseif(MSVC_VERSION EQUAL 1600) #VS2010
+  set(BOOST_TOOLSET "--toolset=msvc-10.0")
+elseif(MSVC_VERSION EQUAL 1700) #VS2012
+  set(BOOST_TOOLSET "--toolset=msvc-11.0")
+elseif(MSVC_VERSION EQUAL 1800) #VS2013
+  set(BOOST_TOOLSET "--toolset=msvc-12.0")
+elseif(MSVC_VERSION EQUAL 1900) #VS2015
+  set(BOOST_TOOLSET "--toolset=msvc-14.0")
+endif(MSVC_VERSION EQUAL 1500)
+
+if(${BUILD_SHARED_LIBS} MATCHES OFF)
+  set(BUILD_LIBS "static")
+elseif(${BUILD_SHARED_LIBS} MATCHES ON)
+  set(BUILD_LIBS "shared")
+endif()
+
+# Boost
+set(BOOST_DIR "${CMAKE_CURRENT_LIST_DIR}/boost")
+ExternalProject_Add(Boost_Project
+  BUILD_IN_SOURCE 1
+  INSTALL_COMMAND ""
+
+  PREFIX "${BOOST_DIR}"
+  BUILD_IN_SOURCE 1
+
+  URL ${BOOST_URL}
+  URL_HASH ${BOOST_MD5}
+
+  UPDATE_COMMAND ""
+  CONFIGURE_COMMAND ${BOOST_BOOTSTRAP_COMMAND} --prefix=${BOOST_DIR}/lib
+  BUILD_COMMAND ${BOOST_B2_COMMAND} install -j8 --prefix=${BOOST_DIR} --with-filesystem --with-system --with-thread --with-serialization --with-date_time address-model=${BOOST_ADDRESS_MODEL} link=static,shared ${BOOST_TOOLSET}
+  # runtime-link=static
+  INSTALL_COMMAND ""
+)
 
 # CGAL
 set(CGAL_DIR "${CMAKE_CURRENT_LIST_DIR}/cgal")
 ExternalProject_Add(CGAL_Project
-	DEPENDS ${BOOST_PROJECT}
+  DEPENDS Boost_Project
 
-	PREFIX "${CGAL_DIR}"
+  PREFIX "${CGAL_DIR}"
 
-	URL "https://github.com/CGAL/cgal/releases/download/releases%2FCGAL-4.11/CGAL-4.11.zip"
-	URL_MD5 320d70f7fd2a98537d20e21eeaea5a25
+  URL "https://github.com/CGAL/cgal/releases/download/releases%2FCGAL-4.11/CGAL-4.11.zip"
+  URL_MD5 320d70f7fd2a98537d20e21eeaea5a25
 
-	UPDATE_COMMAND ""
-	PATCH_COMMAND ""
+  UPDATE_COMMAND ""
+  PATCH_COMMAND ""
 
-	CMAKE_ARGS
-		-DCMAKE_PREFIX_PATH=${CGAL_DIR}/auxiliary/gmp
-		-DBOOST_ROOT=${BOOST_DIR}
-		-DBUILD_SHARED_LIBS=OFF
-		"-DCMAKE_INSTALL_PREFIX=${CGAL_DIR}/"
-		-DCMAKE_INSTALL_LIBDIR=lib
+  CMAKE_ARGS
+    -DCMAKE_PREFIX_PATH=${CGAL_DIR}/auxiliary/gmp
+    -DBOOST_ROOT=${BOOST_DIR}
+    -DBUILD_SHARED_LIBS=OFF
+    "-DCMAKE_INSTALL_PREFIX=${CGAL_DIR}/"
+    -DCMAKE_INSTALL_LIBDIR=lib
 
-	TEST_COMMAND ""
+  TEST_COMMAND ""
 )
 
 ExternalProject_Add_Step(
-	CGAL_Project download_auxiliary
-	COMMAND ${CMAKE_COMMAND} -DCGAL_DIR=${CGAL_DIR} -P ${CMAKE_CURRENT_LIST_DIR}/download.cmake
-	DEPENDEES download
-	DEPENDERS configure
+  CGAL_Project download_auxiliary
+  COMMAND ${CMAKE_COMMAND} -DCGAL_DIR=${CGAL_DIR} -P ${CMAKE_CURRENT_LIST_DIR}/download.cmake
+  DEPENDEES download
+  DEPENDERS configure
 )
