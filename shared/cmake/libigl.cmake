@@ -142,6 +142,7 @@ if(LIBIGL_WITH_CGAL)
       set(Boost_USE_STATIC_LIBS ON) # Favor static Boost libs on Windows
       target_include_directories(igl_cgal ${IGL_SCOPE} "${GMP_INCLUDE_DIR}" "${MPFR_INCLUDE_DIR}")
     endif()
+    set(BOOST_ROOT "${LIBIGL_EXTERNAL}/boost")
     find_package(Boost 1.48 REQUIRED thread system)
     target_include_directories(igl_cgal ${IGL_SCOPE} ${CGAL_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
     target_link_libraries(igl_cgal ${IGL_SCOPE} CGAL::CGAL CGAL::CGAL_Core ${Boost_LIBRARIES})
