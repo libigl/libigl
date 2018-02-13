@@ -162,7 +162,6 @@ protected:
   Viewer *viewer;
 };
 
-#ifdef ENABLE_SERIALIZATION
 namespace serialization
 {
   inline void serialize(const ViewerPlugin& obj,std::vector<char>& buffer)
@@ -175,7 +174,6 @@ namespace serialization
     obj.deserialize(buffer);
   }
 }
-#endif
 
 }
 }

@@ -9,9 +9,6 @@
 #define IGL_OPENGL_VIEWERCORE_H
 
 #include <igl/opengl/MeshGL.h>
-#ifdef IGL_VIEWER_WITH_NANOGUI
-#include <igl/opengl/glfw/TextRenderer.h>
-#endif
 #include <igl/opengl/ViewerData.h>
 
 #include <igl/igl_inline.h>
@@ -96,12 +93,6 @@ public:
 
   // ------------------- Properties
 
-#ifdef IGL_VIEWER_WITH_NANOGUI
-  // Text rendering helper
-  glfw::TextRenderer textrenderer;
-#endif
-
-
   // Colors
   Eigen::Vector4f background_color;
 
@@ -155,7 +146,6 @@ public:
 }
 }
 
-#ifdef ENABLE_SERIALIZATION
 #include <igl/serialize.h>
 namespace igl {
   namespace serialization {
@@ -211,7 +201,6 @@ namespace igl {
     }
   }
 }
-#endif
 
 #ifndef IGL_STATIC_LIBRARY
 #  include "ViewerCore.cpp"

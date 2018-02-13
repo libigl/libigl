@@ -9,7 +9,6 @@
 #include <Eigen/Sparse>
 
 #include "../python_shared.h"
-#define ENABLE_SERIALIZATION
 #include <igl/opengl/glfw/Viewer.h>
 #include <igl/opengl/ViewerCore.h>
 #include <igl/opengl/ViewerData.h>

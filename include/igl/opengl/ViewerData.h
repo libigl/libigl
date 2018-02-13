@@ -241,7 +241,6 @@ inline const T & ViewerData::attr() const
 
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifdef ENABLE_SERIALIZATION
 #include <igl/serialize.h>
 namespace igl
 {
@@ -297,7 +296,6 @@ namespace igl
     }
   }
 }
-#endif
 
 #ifndef IGL_STATIC_LIBRARY
 #  include "ViewerData.cpp"
