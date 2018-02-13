@@ -770,9 +770,7 @@ namespace glfw
   {
     std::string fname = igl::file_dialog_open();
     if(fname.length() == 0)
-    {
       return false;
-    }
     return load_scene(fname);
   }
 
@@ -780,10 +778,6 @@ namespace glfw
   {
     igl::deserialize(core,"Core",fname.c_str());
     igl::deserialize(data(),"Data",fname.c_str());
-    for(unsigned int i = 0; i <plugins.size(); ++i)
-    {
-      igl::deserialize(*plugins[i],plugins[i]->plugin_name,fname.c_str());
-    }
     return true;
   }
 
@@ -792,11 +786,13 @@ namespace glfw
     std::string fname = igl::file_dialog_save();
     if (fname.length() == 0)
       return false;
+    return save_scene(fname);
+  }
 
+  IGL_INLINE bool Viewer::save_scene(std::string fname)
+  {
     igl::serialize(core,"Core",fname.c_str(),true);
     igl::serialize(data(),"Data",fname.c_str());
-    for(unsigned int i = 0; i <plugins.size(); ++i)
-      igl::serialize(*plugins[i],plugins[i]->plugin_name,fname.c_str());
 
     return true;
   }
