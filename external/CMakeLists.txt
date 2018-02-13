@@ -70,6 +70,7 @@ ExternalProject_Add(CGAL_Project
   UPDATE_COMMAND ""
   PATCH_COMMAND ""
 
+  CMAKE_GENERATOR "Visual Studio 15 2017 Win64"
   CMAKE_GENERATOR_TOOLSET "host=x64"
   CMAKE_ARGS
     -DCMAKE_PREFIX_PATH=${CGAL_DIR}/auxiliary/gmp
