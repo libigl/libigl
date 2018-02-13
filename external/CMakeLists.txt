@@ -3,28 +3,54 @@ project(libigl_external)
 
 include(ExternalProject)
 
+# Boost
+set(BOOST_DIR "${CMAKE_CURRENT_LIST_DIR}/boost")
+ExternalProject_Add(Boost_Project
+	PREFIX "${BOOST_DIR}"
+
+	URL "http://sourceforge.net/projects/boost/files/boost/1.63.0/boost_1_63_0.tar.bz2"
+	URL_HASH SHA1=9f1dd4fa364a3e3156a77dc17aa562ef06404ff6
+
+	BUILD_IN_SOURCE 1
+	CONFIGURE_COMMAND ./bootstrap.sh
+			--with-libraries=filesystem
+			--with-libraries=system
+			--with-libraries=thread
+			--with-libraries=serialization
+			--with-libraries=date_time
+			--prefix=<INSTALL_DIR>
+	BUILD_COMMAND
+		./b2 install link=static variant=release threading=multi runtime-link=static
+
+	INSTALL_COMMAND ""
+)
+
+# CGAL
 set(CGAL_DIR "${CMAKE_CURRENT_LIST_DIR}/cgal")
 ExternalProject_Add(CGAL_Project
-  PREFIX "${CGAL_DIR}"
+	DEPENDS Boost_Project
 
-  URL "https://github.com/CGAL/cgal/releases/download/releases%2FCGAL-4.11/CGAL-4.11.zip"
-  URL_MD5 320d70f7fd2a98537d20e21eeaea5a25
+	PREFIX "${CGAL_DIR}"
 
-  UPDATE_COMMAND ""
-  PATCH_COMMAND ""
- 
-  CMAKE_ARGS
-    -DCMAKE_PREFIX_PATH=${CGAL_DIR}/auxiliary/gmp
-    -DBUILD_SHARED_LIBS=OFF
-    "-DCMAKE_INSTALL_PREFIX=${CGAL_DIR}/"
-    -DCMAKE_INSTALL_LIBDIR=lib
+	URL "https://github.com/CGAL/cgal/releases/download/releases%2FCGAL-4.11/CGAL-4.11.zip"
+	URL_MD5 320d70f7fd2a98537d20e21eeaea5a25
 
-  TEST_COMMAND ""
+	UPDATE_COMMAND ""
+	PATCH_COMMAND ""
+
+	CMAKE_ARGS
+		-DCMAKE_PREFIX_PATH=${CGAL_DIR}/auxiliary/gmp
+		-DBOOST_ROOT=${BOOST_DIR}
+		-DBUILD_SHARED_LIBS=OFF
+		"-DCMAKE_INSTALL_PREFIX=${CGAL_DIR}/"
+		-DCMAKE_INSTALL_LIBDIR=lib
+
+	TEST_COMMAND ""
 )
 
 ExternalProject_Add_Step(
-  CGAL_Project download_auxiliary
-  COMMAND ${CMAKE_COMMAND} -DCGAL_DIR=${CGAL_DIR} -P ${CMAKE_CURRENT_LIST_DIR}/download.cmake
-  DEPENDEES download
-  DEPENDERS configure
+	CGAL_Project download_auxiliary
+	COMMAND ${CMAKE_COMMAND} -DCGAL_DIR=${CGAL_DIR} -P ${CMAKE_CURRENT_LIST_DIR}/download.cmake
+	DEPENDEES download
+	DEPENDERS configure
 )
