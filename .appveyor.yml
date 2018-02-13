@@ -18,8 +18,6 @@ build_script:
   - mkdir build
   - cd build
   - cmake ..
-  - set MSBuildLogger="C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
-  - set MSBuildOptions=/v:m /p:Configuration=Debug /logger:%MSBuildLogger%
   - msbuild %MSBuildOptions% libigl_external.sln
   - cd ../../tutorial
   - mkdir build
@@ -27,4 +25,6 @@ build_script:
   - cmake -D "LIBIGL_USE_STATIC_LIBRARY=ON" -D "LIBIGL_WITH_ANTTWEAKBAR=OFF" -G "Visual Studio 14 2015 Win64" ../
 #  - cmake -G "Visual Studio 14 2015 Win64" ../
 #  - set MSBuildOptions=/v:m /p:Configuration=Release /logger:%MSBuildLogger%
+  - set MSBuildLogger="C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+  - set MSBuildOptions=/v:m /p:Configuration=Debug /logger:%MSBuildLogger%
   - msbuild %MSBuildOptions% libigl_tutorials.sln
