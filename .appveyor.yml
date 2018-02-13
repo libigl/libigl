@@ -12,7 +12,13 @@ install:
   - cinstall: python
 build_script:
   - echo Running cmake...
-  - cd c:\projects\libigl\tutorial
+  - cd c:\projects\libigl
+  - cd external
+  - mkdir build
+  - cd build
+  - cmake ..
+  - msbuild %MSBuildOptions% libigl_external.sln
+  - cd ../../tutorial
   - mkdir build
   - cd build
   - cmake -D "LIBIGL_USE_STATIC_LIBRARY=ON" -D "LIBIGL_WITH_ANTTWEAKBAR=OFF" -G "Visual Studio 14 2015 Win64" ../
