@@ -7,13 +7,13 @@ include(ExternalProject)
 # on Unix-like systems, we need the file persmissions (only available in the .tar.gz),
 # while on Windows, we need CR/LF line feeds (only available in the .zip)
 if(UNIX)
-  set(BOOST_URL "https://dl.bintray.com/boostorg/release/1.66.0/source/boost_1_66_0.tar.gz")
-  set(BOOST_HASH SHA256=bd0df411efd9a585e5a2212275f8762079fed8842264954675a4fddc46cfcf60)
+  set(BOOST_URL "https://dl.bintray.com/boostorg/release/1.65.1/source/boost_1_65_1.tar.gz")
+  set(BOOST_HASH SHA256=a13de2c8fbad635e6ba9c8f8714a0e6b4264b60a29b964b940a22554705b6b60)
   set(BOOST_BOOTSTRAP_COMMAND ./bootstrap.sh)
   set(BOOST_B2_COMMAND ./b2)
 elseif(WIN32)
-  set(BOOST_URL "https://dl.bintray.com/boostorg/release/1.66.0/source/boost_1_66_0.zip")
-  set(BOOST_HASH SHA256=e1c55ebb00886c1a96528e4024be98a38b815115f62ecfe878fcf587ba715aad)
+  set(BOOST_URL "https://dl.bintray.com/boostorg/release/1.65.1/source/boost_1_65_1.zip")
+  set(BOOST_HASH SHA256=d1775aef807bd6a14077b450cce2950d8eacd86aaf51015f79e712917f8cc3c2)
   set(BOOST_BOOTSTRAP_COMMAND cmd /C bootstrap.bat msvc)
   set(BOOST_B2_COMMAND b2.exe)
 endif()
@@ -49,12 +49,11 @@ ExternalProject_Add(Boost_Project
   BUILD_IN_SOURCE 1
 
   URL ${BOOST_URL}
-  URL_HASH ${BOOST_MD5}
+  URL_HASH ${BOOST_HASH}
 
   UPDATE_COMMAND ""
   CONFIGURE_COMMAND ${BOOST_BOOTSTRAP_COMMAND} --prefix=${BOOST_DIR}/lib
-  BUILD_COMMAND ${BOOST_B2_COMMAND} install -j8 --prefix=${BOOST_DIR} --with-filesystem --with-system --with-thread --with-serialization --with-date_time address-model=${BOOST_ADDRESS_MODEL} link=static,shared ${BOOST_TOOLSET}
-  # runtime-link=static
+  BUILD_COMMAND ${BOOST_B2_COMMAND} install -j8 --prefix=${BOOST_DIR} --with-filesystem --with-system --with-thread --with-serialization --with-date_time address-model=${BOOST_ADDRESS_MODEL} link=static runtime-link=shared ${BOOST_TOOLSET}
   INSTALL_COMMAND ""
 )
 
@@ -73,7 +72,9 @@ ExternalProject_Add(CGAL_Project
 
   CMAKE_ARGS
     -DCMAKE_PREFIX_PATH=${CGAL_DIR}/auxiliary/gmp
-    -DBOOST_ROOT=${BOOST_DIR}
+    "-DBOOST_ROOT=${BOOST_DIR}"
+    "-DBOOST_LIBRARYDIR=${BOOST_DIR}/lib"
+    "-DBOOST_INCLUDEDIR=${BOOST_DIR}/include/boost-1_65"
     -DBUILD_SHARED_LIBS=OFF
     "-DCMAKE_INSTALL_PREFIX=${CGAL_DIR}/"
     -DCMAKE_INSTALL_LIBDIR=lib
