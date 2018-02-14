@@ -81,7 +81,7 @@ IGL_INLINE void igl::copyleft::cgal::point_mesh_squared_distance_precompute(
   // accelerate_distance_queries doesn't seem actually to do _all_ of the
   // precomputation. the tree (despite being const) will still do more
   // precomputation and reorganizing on the first call of `closest_point` or
-  // `closest_point_and_primitive`. Therefor, call it once here.
+  // `closest_point_and_primitive`. Therefore, call it once here.
   tree.closest_point_and_primitive(Point_3(0,0,0));
 }
 

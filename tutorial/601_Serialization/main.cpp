@@ -55,7 +55,7 @@ struct State : public igl::Serializable
 //}
 //
 ////OR:
-// 
+//
 //SERIALIZE_TYPE(State,
 // SERIALIZE_MEMBER(V)
 //  SERIALIZE_MEMBER(F)
@@ -102,9 +102,9 @@ int main(int argc, char *argv[])
   std::cout << "Faces:    " << std::endl << stateOut.F << std::endl;
   std::cout << "ids:      " << std::endl
             << stateOut.ids[0] << " " << stateOut.ids[1] << std::endl;
-			
+
   // XML serialization
-  
+
   // binary = false, overwrite = true
   igl::xml::serialize_xml(vec,"VectorXML",xmlFile,false,true);
   // binary = true, overwrite = false

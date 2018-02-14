@@ -7,8 +7,8 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_OPENGL_TEXTURE_FROM_TGA_H
 #define IGL_OPENGL_TEXTURE_FROM_TGA_H
-#include "../igl_inline.h"
-#include "gl.h"
+#include "../../igl_inline.h"
+#include "../../opengl2/gl.h"
 #include <string>
 
 namespace igl
