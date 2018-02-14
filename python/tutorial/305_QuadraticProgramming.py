@@ -13,7 +13,7 @@ import pyigl as igl
 
 from shared import TUTORIAL_SHARED_PATH, check_dependencies
 
-dependencies = ["viewer"]
+dependencies = ["glfw"]
 check_dependencies(dependencies)
 
 
@@ -40,7 +40,7 @@ def solve(viewer):
 
     C = igl.eigen.MatrixXd()
     igl.jet(Z, 0, 1, C)
-    viewer.data.set_colors(C)
+    viewer.data().set_colors(C)
 
 
 def key_down(viewer, key, mod):
@@ -65,13 +65,13 @@ F = igl.eigen.MatrixXi()
 igl.readOFF(TUTORIAL_SHARED_PATH + "cheburashka.off", V, F)
 
 # Plot the mesh
-viewer = igl.viewer.Viewer()
-viewer.data.set_mesh(V, F)
-viewer.core.show_lines = False
+viewer = igl.glfw.Viewer()
+viewer.data().set_mesh(V, F)
+viewer.data().show_lines = False
 viewer.callback_key_down = key_down
 
 # One fixed point on belly
-b = igl.eigen.MatrixXi([[2556]])
+b = igl.eigen.MatrixXd([[2556]]).castint()
 bc = igl.eigen.MatrixXd([[1]])
 
 # Construct Laplacian and mass matrix

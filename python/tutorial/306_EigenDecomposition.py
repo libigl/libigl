@@ -13,7 +13,7 @@ import pyigl as igl
 
 from shared import TUTORIAL_SHARED_PATH, check_dependencies
 
-dependencies = ["viewer"]
+dependencies = ["glfw"]
 check_dependencies(dependencies)
 
 
@@ -45,7 +45,7 @@ if not igl.eigs(L, M, k + 1, igl.EIGS_TYPE_SM, U, D):
 
 U = (U - U.minCoeff()) / (U.maxCoeff() - U.minCoeff())
 
-viewer = igl.viewer.Viewer()
+viewer = igl.glfw.Viewer()
 
 
 def key_down(viewer, key, mod):
@@ -63,14 +63,14 @@ def key_down(viewer, key, mod):
         if twod:
             V.setcol(2, Z)
 
-        viewer.data.set_mesh(V, F)
-        viewer.data.compute_normals()
-        viewer.data.set_colors(C)
+        viewer.data().set_mesh(V, F)
+        viewer.data().compute_normals()
+        viewer.data().set_colors(C)
         return True
     return False
 
 
 viewer.callback_key_down = key_down
 viewer.callback_key_down(viewer, ord(' '), 0)
-viewer.core.show_lines = False
+viewer.data().show_lines = False
 viewer.launch()

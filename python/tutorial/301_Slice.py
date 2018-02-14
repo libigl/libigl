@@ -13,7 +13,7 @@ import pyigl as igl
 
 from shared import TUTORIAL_SHARED_PATH, check_dependencies
 
-dependencies = ["viewer"]
+dependencies = ["glfw"]
 check_dependencies(dependencies)
 
 V = igl.eigen.MatrixXd()
@@ -44,7 +44,7 @@ R = igl.eigen.MatrixXd([[1.0, 0.3, 0.3]]).replicate(K.rows(), 1)
 igl.slice_into(R, K, 1, C)
 
 # Plot the mesh with pseudocolors
-viewer = igl.viewer.Viewer()
-viewer.data.set_mesh(V, F)
-viewer.data.set_colors(C)
+viewer = igl.glfw.Viewer()
+viewer.data().set_mesh(V, F)
+viewer.data().set_colors(C)
 viewer.launch()
