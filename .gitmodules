@@ -28,3 +28,6 @@
 [submodule "external/eigen"]
 	path = external/eigen
 	url = https://github.com/eigenteam/eigen-git-mirror.git
+[submodule "external/pybind11"]
+	path = external/pybind11
+	url = https://github.com/pybind/pybind11

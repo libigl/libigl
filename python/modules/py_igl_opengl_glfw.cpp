@@ -146,7 +146,7 @@ py::enum_<igl::opengl::MeshGL::DirtyFlags>(viewerdata_class, "DirtyFlags")
     .def_readwrite("points", &igl::opengl::ViewerData::points)
     .def_readwrite("labels_positions", &igl::opengl::ViewerData::labels_positions)
     .def_readwrite("labels_strings", &igl::opengl::ViewerData::labels_strings)
-    .def_readwrite("dirty", &igl::opengl::MeshGL::dirty)
+    // .def_readwrite("dirty", &igl::opengl::MeshGL::dirty)
     .def_readwrite("face_based", &igl::opengl::ViewerData::face_based)
     .def("serialize", [](igl::opengl::ViewerData& data)
     {
@@ -388,7 +388,7 @@ py::class_<igl::opengl::ViewerCore> viewercore_class(me, "ViewerCore");
     //   viewer.data() = data;
     // })
 
-    .def("data", &igl::opengl::glfw::Viewer::data)
+    .def("data", &igl::opengl::glfw::Viewer::data,pybind11::return_value_policy::reference)
 
     .def_readwrite("core", &igl::opengl::glfw::Viewer::core)
     //.def_readwrite("opengl", &igl::opengl::glfw::Viewer::opengl)
@@ -430,7 +430,15 @@ py::class_<igl::opengl::ViewerCore> viewercore_class(me, "ViewerCore");
       viewer.load_scene(str);
     })
 
-    .def("save_scene", &igl::opengl::glfw::Viewer::save_scene)
+    .def("save_scene", [](igl::opengl::glfw::Viewer& viewer)
+    {
+      viewer.save_scene();
+    })
+
+    .def("save_scene", [](igl::opengl::glfw::Viewer& viewer, std::string str)
+    {
+      viewer.save_scene(str);
+    })
 
     // Draw everything
     .def("draw", &igl::opengl::glfw::Viewer::draw)
