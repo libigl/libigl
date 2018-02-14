@@ -837,7 +837,7 @@ IGL_INLINE void igl::principal_curvature(
 
     if (PD1.row(i) * PD2.row(i).transpose() > 10e-6)
     {
-      std::cerr << "PRINCIPAL_CURVATURE: Something is wrong with vertex: i" << std::endl;
+      std::cerr << "PRINCIPAL_CURVATURE: Something is wrong with vertex: " << i << std::endl;
       PD1.row(i) *= 0;
       PD2.row(i) *= 0;
     }
