@@ -23,7 +23,7 @@ if(UNIX)
 endif()
 
 ## include pybind
-set(PYBIND11_DIR ${PROJECT_SOURCE_DIR}/../external/nanogui/ext/pybind11 CACHE PATH "Path to pybind11")
+set(PYBIND11_DIR ${PROJECT_SOURCE_DIR}/../external/pybind11 CACHE PATH "Path to pybind11")
 add_subdirectory(${PYBIND11_DIR} pybind11)
 
 ## include libigl
