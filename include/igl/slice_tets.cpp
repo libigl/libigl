@@ -8,8 +8,11 @@
 #include "slice_tets.h"
 #include "LinSpaced.h"
 #include "sort.h"
+#include "edges.h"
+#include "slice.h"
 #include "cat.h"
-#include "per_face_normals.h"
+#include "ismember.h"
+#include "unique_rows.h"
 #include <cassert>
 #include <algorithm>
 #include <vector>
@@ -17,30 +20,99 @@
 template <
   typename DerivedV, 
   typename DerivedT, 
-  typename Derivedplane,
-  typename DerivedU,
-  typename DerivedG,
+  typename DerivedS,
+  typename DerivedSV,
+  typename DerivedSF,
   typename DerivedJ,
   typename BCType>
 IGL_INLINE void igl::slice_tets(
-  const Eigen::PlainObjectBase<DerivedV>& V,
-  const Eigen::PlainObjectBase<DerivedT>& T,
-  const Eigen::PlainObjectBase<Derivedplane> & plane,
-  Eigen::PlainObjectBase<DerivedU>& U,
-  Eigen::PlainObjectBase<DerivedG>& G,
+  const Eigen::MatrixBase<DerivedV>& V,
+  const Eigen::MatrixBase<DerivedT>& T,
+  const Eigen::MatrixBase<DerivedS> & S,
+  Eigen::PlainObjectBase<DerivedSV>& SV,
+  Eigen::PlainObjectBase<DerivedSF>& SF,
   Eigen::PlainObjectBase<DerivedJ>& J,
   Eigen::SparseMatrix<BCType> & BC)
 {
+  Eigen::MatrixXi sE;
+  Eigen::Matrix<typename DerivedSV::Scalar,Eigen::Dynamic,1> lambda;
+  igl::slice_tets(V,T,S,SV,SF,J,sE,lambda);
+  const int ns = SV.rows();
+  std::vector<Eigen::Triplet<BCType> > BCIJV(ns*2);
+  for(int i = 0;i<ns;i++)
+  {
+    BCIJV[2*i+0] = Eigen::Triplet<BCType>(i,sE(i,0),    lambda(i));
+    BCIJV[2*i+1] = Eigen::Triplet<BCType>(i,sE(i,1),1.0-lambda(i));
+  }
+  BC.resize(SV.rows(),V.rows());
+  BC.setFromTriplets(BCIJV.begin(),BCIJV.end());
+}
+
+template <
+  typename DerivedV, 
+  typename DerivedT, 
+  typename DerivedS,
+  typename DerivedSV,
+  typename DerivedSF,
+  typename DerivedJ>
+IGL_INLINE void igl::slice_tets(
+  const Eigen::MatrixBase<DerivedV>& V,
+  const Eigen::MatrixBase<DerivedT>& T,
+  const Eigen::MatrixBase<DerivedS> & S,
+  Eigen::PlainObjectBase<DerivedSV>& SV,
+  Eigen::PlainObjectBase<DerivedSF>& SF,
+  Eigen::PlainObjectBase<DerivedJ>& J)
+{
+  Eigen::MatrixXi sE;
+  Eigen::Matrix<typename DerivedSV::Scalar,Eigen::Dynamic,1> lambda;
+  igl::slice_tets(V,T,S,SV,SF,J,sE,lambda);
+}
+
+template <
+  typename DerivedV, 
+  typename DerivedT, 
+  typename DerivedS,
+  typename DerivedSV,
+  typename DerivedSF,
+  typename DerivedJ,
+  typename DerivedsE,
+  typename Derivedlambda>
+IGL_INLINE void igl::slice_tets(
+  const Eigen::MatrixBase<DerivedV>& V,
+  const Eigen::MatrixBase<DerivedT>& T,
+  const Eigen::MatrixBase<DerivedS> & S,
+  Eigen::PlainObjectBase<DerivedSV>& SV,
+  Eigen::PlainObjectBase<DerivedSF>& SF,
+  Eigen::PlainObjectBase<DerivedJ>& J,
+  Eigen::PlainObjectBase<DerivedsE>& sE,
+  Eigen::PlainObjectBase<Derivedlambda>& lambda)
+{
+
   using namespace Eigen;
   using namespace std;
   assert(V.cols() == 3 && "V should be #V by 3");
   assert(T.cols() == 4 && "T should be #T by 4");
-  assert(plane.size() == 4 && "Plane equation should be 4 coefficients");
+
+  static const Eigen::Matrix<int,12,4> flipped_order = 
+    (Eigen::Matrix<int,12,4>(12,4)<<
+      3,2,0,1,
+      3,1,2,0,
+      3,0,1,2,
+      2,3,1,0,
+      2,1,0,3,
+      2,0,3,1,
+      1,3,0,2,
+      1,2,3,0,
+      1,0,2,3,
+      0,3,2,1,
+      0,2,1,3,
+      0,1,3,2
+    ).finished();
 
   // number of tets
   const size_t m = T.rows();
 
-  typedef typename DerivedV::Scalar Scalar;
+  typedef typename DerivedS::Scalar Scalar;
   typedef typename DerivedT::Scalar Index;
   typedef Matrix<Scalar,Dynamic,1> VectorXS;
   typedef Matrix<Scalar,Dynamic,4> MatrixX4S;
@@ -48,28 +120,29 @@ IGL_INLINE void igl::slice_tets(
   typedef Matrix<Scalar,Dynamic,2> MatrixX2S;
   typedef Matrix<Index,Dynamic,4> MatrixX4I;
   typedef Matrix<Index,Dynamic,3> MatrixX3I;
+  typedef Matrix<Index,Dynamic,2> MatrixX2I;
   typedef Matrix<Index,Dynamic,1> VectorXI;
-  typedef Matrix<bool,Dynamic,1> VectorXb;
+  typedef Array<bool,Dynamic,1> ArrayXb;
   
-  // Value of plane's implicit function at all vertices
-  VectorXS IV = 
-    (V.col(0)*plane(0) + 
-     V.col(1)*plane(1) + 
-     V.col(2)*plane(2)).array()
-    + plane(3);
   MatrixX4S IT(m,4);
   for(size_t t = 0;t<m;t++)
   {
     for(size_t c = 0;c<4;c++)
     {
-      IT(t,c) = IV(T(t,c));
+      IT(t,c) = S(T(t,c));
     }
   }
 
+  // Essentially, just a glorified slice(X,1)
+  // 
+  // Inputs:
+  //   T  #T by 4 list of tet indices into V
+  //   IT  #IT by 4 list of isosurface values at each tet
+  //   I  #I list of bools whether to grab data corresponding to each tet
   const auto & extract_rows = [](
-    const PlainObjectBase<DerivedT> & T,
+    const MatrixBase<DerivedT> & T,
     const MatrixX4S & IT,
-    const VectorXb & I,
+    const ArrayXb & I,
     MatrixX4I  & TI,
     MatrixX4S & ITI,
     VectorXI & JI)
@@ -94,9 +167,9 @@ IGL_INLINE void igl::slice_tets(
     }
   };
 
-  VectorXb I13 = (IT.array()<0).rowwise().count()==1;
-  VectorXb I31 = (IT.array()>0).rowwise().count()==1;
-  VectorXb I22 = (IT.array()<0).rowwise().count()==2;
+  ArrayXb I13 = (IT.array()<0).rowwise().count()==1;
+  ArrayXb I31 = (IT.array()>0).rowwise().count()==1;
+  ArrayXb I22 = (IT.array()<0).rowwise().count()==2;
   MatrixX4I T13,T31,T22;
   MatrixX4S IT13,IT31,IT22;
   VectorXI J13,J31,J22;
@@ -104,7 +177,7 @@ IGL_INLINE void igl::slice_tets(
   extract_rows(T,IT,I31,T31,IT31,J31);
   extract_rows(T,IT,I22,T22,IT22,J22);
 
-  const auto & apply_sort = [] (
+  const auto & apply_sort4 = [] (
      const MatrixX4I & T, 
      const MatrixX4I & sJ, 
      MatrixX4I & sT)
@@ -119,116 +192,165 @@ IGL_INLINE void igl::slice_tets(
     }
   };
 
-  const auto & one_below = [&V,&apply_sort](
+  const auto & apply_sort2 = [] (
+     const MatrixX2I & E, 
+     const MatrixX2I & sJ, 
+     Eigen::PlainObjectBase<DerivedsE>& sE)
+  {
+    sE.resize(E.rows(),2);
+    for(size_t t = 0;t<(size_t)E.rows();t++)
+    {
+      for(size_t c = 0;c<2;c++)
+      {
+        sE(t,c) = E(t,sJ(t,c));
+      }
+    }
+  };
+
+  const auto & one_below = [&apply_sort4](
     const MatrixX4I & T,
     const MatrixX4S & IT,
-    MatrixX3I & G,
-    SparseMatrix<BCType> & BC)
+    MatrixX2I & U,
+    MatrixX3I & SF)
   {
     // Number of tets
     const size_t m = T.rows();
+    if(m == 0)
+    {
+      U.resize(0,2);
+      SF.resize(0,3);
+      return;
+    }
     MatrixX4S sIT;
     MatrixX4I sJ;
     sort(IT,2,true,sIT,sJ);
     MatrixX4I sT;
-    apply_sort(T,sJ,sT);
-    MatrixX3S lambda = 
-      sIT.rightCols(3).array() /
-      (sIT.rightCols(3).colwise()-sIT.col(0)).array();
-    vector<Triplet<BCType> > IJV;
-    IJV.reserve(m*3*2);
+    apply_sort4(T,sJ,sT);
+    U.resize(3*m,2);
+    U<<
+      sT.col(0),sT.col(1),
+      sT.col(0),sT.col(2),
+      sT.col(0),sT.col(3);
+    SF.resize(m,3);
     for(size_t c = 0;c<3;c++)
     {
-      for(size_t t = 0;t<(size_t)m;t++)
-      {
-        IJV.push_back(Triplet<BCType>(c*m+t,  sT(t,0),  lambda(t,c)));
-        IJV.push_back(Triplet<BCType>(c*m+t,sT(t,c+1),1-lambda(t,c)));
-      }
-    }
-    BC.resize(m*3,V.rows());
-    BC.reserve(m*3*2);
-    BC.setFromTriplets(IJV.begin(),IJV.end());
-    G.resize(m,3);
-    for(size_t c = 0;c<3;c++)
-    {
-      G.col(c) = 
+      SF.col(c) = 
         igl::LinSpaced<
-        Eigen::Matrix<typename DerivedG::Scalar,Eigen::Dynamic,1> >
+        Eigen::Matrix<typename DerivedSF::Scalar,Eigen::Dynamic,1> >
         (m,0+c*m,(m-1)+c*m);
     }
+    ArrayXb flip;
+    {
+      VectorXi _;
+      ismember_rows(sJ,flipped_order,flip,_);
+    }
+    for(int i = 0;i<m;i++)
+    {
+      if(flip(i))
+      {
+        SF.row(i) = SF.row(i).reverse().eval();
+      }
+    }
   };
 
-  const auto & two_below = [&V,&apply_sort](
+  const auto & two_below = [&apply_sort4](
     const MatrixX4I & T,
     const MatrixX4S & IT,
-    MatrixX3I & G,
-    SparseMatrix<BCType> & BC)
+    MatrixX2I & U,
+    MatrixX3I & SF)
   {
     // Number of tets
     const size_t m = T.rows();
+    if(m == 0)
+    {
+      U.resize(0,2);
+      SF.resize(0,3);
+      return;
+    }
     MatrixX4S sIT;
     MatrixX4I sJ;
     sort(IT,2,true,sIT,sJ);
     MatrixX4I sT;
-    apply_sort(T,sJ,sT);
-    MatrixX2S lambda = 
-      sIT.rightCols(2).array() /
-      (sIT.rightCols(2).colwise()-sIT.col(0)).array();
-    MatrixX2S gamma = 
-      sIT.rightCols(2).array() /
-      (sIT.rightCols(2).colwise()-sIT.col(1)).array();
-    vector<Triplet<BCType> > IJV;
-    IJV.reserve(m*4*2);
-    for(size_t c = 0;c<2;c++)
+    apply_sort4(T,sJ,sT);
+    U.resize(4*m,2);
+    U<<
+      sT.col(0),sT.col(2),
+      sT.col(0),sT.col(3),
+      sT.col(1),sT.col(2),
+      sT.col(1),sT.col(3);
+    SF.resize(2*m,3);
+    SF.block(0,0,m,1) = igl::LinSpaced<VectorXI >(m,0+0*m,(m-1)+0*m);
+    SF.block(0,1,m,1) = igl::LinSpaced<VectorXI >(m,0+1*m,(m-1)+1*m);
+    SF.block(0,2,m,1) = igl::LinSpaced<VectorXI >(m,0+3*m,(m-1)+3*m);
+    SF.block(m,0,m,1) = igl::LinSpaced<VectorXI >(m,0+0*m,(m-1)+0*m);
+    SF.block(m,1,m,1) = igl::LinSpaced<VectorXI >(m,0+3*m,(m-1)+3*m);
+    SF.block(m,2,m,1) = igl::LinSpaced<VectorXI >(m,0+2*m,(m-1)+2*m);
+    ArrayXb flip;
     {
-      for(size_t t = 0;t<(size_t)m;t++)
+      VectorXi _;
+      ismember_rows(sJ,flipped_order,flip,_);
+    }
+    for(int i = 0;i<m;i++)
+    {
+      if(flip(i))
       {
-        IJV.push_back(Triplet<BCType>(0*2*m+c*m+t,  sT(t,0),  lambda(t,c)));
-        IJV.push_back(Triplet<BCType>(0*2*m+c*m+t,sT(t,c+2),1-lambda(t,c)));
-        IJV.push_back(Triplet<BCType>(1*2*m+c*m+t,  sT(t,1),   gamma(t,c)));
-        IJV.push_back(Triplet<BCType>(1*2*m+c*m+t,sT(t,c+2),1- gamma(t,c)));
+        SF.row(i  ) = SF.row(i  ).reverse().eval();
+        SF.row(i+m) = SF.row(i+m).reverse().eval();
       }
     }
-    BC.resize(m*4,V.rows());
-    BC.reserve(m*4*2);
-    BC.setFromTriplets(IJV.begin(),IJV.end());
-    G.resize(2*m,3);
-    G.block(0,0,m,1) = igl::LinSpaced<VectorXI >(m,0+0*m,(m-1)+0*m);
-    G.block(0,1,m,1) = igl::LinSpaced<VectorXI >(m,0+1*m,(m-1)+1*m);
-    G.block(0,2,m,1) = igl::LinSpaced<VectorXI >(m,0+3*m,(m-1)+3*m);
-    G.block(m,0,m,1) = igl::LinSpaced<VectorXI >(m,0+0*m,(m-1)+0*m);
-    G.block(m,1,m,1) = igl::LinSpaced<VectorXI >(m,0+3*m,(m-1)+3*m);
-    G.block(m,2,m,1) = igl::LinSpaced<VectorXI >(m,0+2*m,(m-1)+2*m);
   };
 
-  MatrixX3I G13,G31,G22;
-  SparseMatrix<BCType> BC13,BC31,BC22;
-  one_below(T13,IT13,G13,BC13);
-  one_below(T31,-IT31,G31,BC31);
-  two_below(T22,IT22,G22,BC22);
-
-  BC = cat(1,cat(1,BC13,BC31),BC22);
-  U = BC*V;
-  G.resize(G13.rows()+G31.rows()+G22.rows(),3);
-  G<<G13,(G31.array()+BC13.rows()),(G22.array()+BC13.rows()+BC31.rows());
-  MatrixX3S N;
-  per_face_normals(U,G,N);
-  Matrix<Scalar,1,3> planeN(plane(0),plane(1),plane(2));
-  VectorXb flip = (N.array().rowwise() * planeN.array()).rowwise().sum()<0;
-  for(size_t g = 0;g<(size_t)G.rows();g++)
+  MatrixX3I SF13,SF31,SF22;
+  MatrixX2I U13,U31,U22;
+  one_below(T13, IT13,U13,SF13);
+  one_below(T31,-IT31,U31,SF31);
+  two_below(T22, IT22,U22,SF22);
+  // https://forum.kde.org/viewtopic.php?f=74&t=107974
+  const MatrixX2I U = 
+    (MatrixX2I(U13.rows()+ U31.rows()+ U22.rows(),2)<<U13,U31,U22).finished();
+  MatrixX2I sU;
   {
-    if(flip(g))
+    MatrixX2I _;
+    sort(U,2,true,sU,_);
+  }
+  MatrixX2I E;
+  VectorXI uI,uJ;
+  unique_rows(sU,E,uI,uJ);
+  MatrixX2S IE(E.rows(),2);
+  for(size_t t = 0;t<E.rows();t++)
+  {
+    for(size_t c = 0;c<2;c++)
     {
-      G.row(g) = G.row(g).reverse().eval();
+      IE(t,c) = S(E(t,c));
     }
   }
+  MatrixX2S sIE;
+  MatrixX2I sJ;
+  sort(IE,2,true,sIE,sJ);
+  apply_sort2(E,sJ,sE);
+  lambda = sIE.col(1).array() / (sIE.col(1)-sIE.col(0)).array();
+  SV.resize(sE.rows(),V.cols());
+  for(int e = 0;e<sE.rows();e++)
+  {
+    SV.row(e) = V.row(sE(e,0)).template cast<Scalar>()*lambda(e) + 
+                V.row(sE(e,1)).template cast<Scalar>()*(1.0-lambda(e));
+  }
+  SF.resize( SF13.rows()+SF31.rows()+SF22.rows(),3);
+  SF<<
+    SF13,
+    U13.rows()+           SF31.rowwise().reverse().array(),
+    U13.rows()+U31.rows()+SF22.array();
 
-  J.resize(G.rows());
+  std::for_each(
+    SF.data(),
+    SF.data()+SF.size(),
+    [&uJ](typename DerivedSF::Scalar & i){i=uJ(i);});
+
+  J.resize(SF.rows());
   J<<J13,J31,J22,J22;
 }
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instantiation
-template void igl::slice_tets<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, 4, 1, 0, 4, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, double>(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 4, 1, 0, 4, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&, Eigen::SparseMatrix<double, 0, int>&);
-template void igl::slice_tets<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, double>(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&, Eigen::SparseMatrix<double, 0, int>&);
+template void igl::slice_tets<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, double>(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&, Eigen::SparseMatrix<double, 0, int>&);
 #endif

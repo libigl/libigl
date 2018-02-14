@@ -26,7 +26,7 @@ namespace igl
         // See cgal::remesh_self_intersections.h for how to obtain such input.
         //
         // This function differ from igl::outer_facet() in the fact this
-        // funciton is more robust because it does not rely on facet normals.
+        // function is more robust because it does not rely on facet normals.
         //
         // Inputs:
         //   V  #V by 3 list of vertex positions

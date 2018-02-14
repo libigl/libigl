@@ -223,4 +223,7 @@ template bool igl::readDMAT<Eigen::Matrix<int, -1, 1, 0, -1, 1> >(std::string, E
 template bool igl::readDMAT<Eigen::Matrix<int, -1, 2, 0, -1, 2> >(std::string, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 2, 0, -1, 2> >&);
 template bool igl::readDMAT<Eigen::Matrix<double, -1, -1, 1, -1, -1> >(std::string, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 1, -1, -1> >&);
 template bool igl::readDMAT<Eigen::Matrix<int, -1, -1, 1, -1, -1> >(std::string, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 1, -1, -1> >&);
+template bool igl::readDMAT<Eigen::Matrix<float, 1, 3, 1, 1, 3> >( std::string, Eigen::PlainObjectBase<Eigen::Matrix<float, 1, 3, 1, 1, 3> >&);
+template bool igl::readDMAT<Eigen::Matrix<double, 1, 1, 0, 1, 1> >(std::string, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 1, 0, 1, 1> >&);
 #endif
+

@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
   // Extract the first 10 eigenvectors
   igl::matlab::mleval(&engine,"[EV,~] = eigs(-L,10,'sm')");
 
-  // Plot the size of EV (only for demostration purposes)
+  // Plot the size of EV (only for demonstration purposes)
   std::cerr << igl::matlab::mleval(&engine,"size(EV)") << std::endl;
 
   // Retrieve the result

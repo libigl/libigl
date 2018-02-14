@@ -772,6 +772,20 @@ namespace viewer
     using namespace std;
     using namespace Eigen;
 
+    int width, height;
+    glfwGetFramebufferSize(window, &width, &height);
+
+    int width_window, height_window;
+    glfwGetWindowSize(window, &width_window, &height_window);
+
+    auto highdpi_tmp = width/width_window;
+
+    if(fabs(highdpi_tmp-highdpi)>1e-8)
+    {
+      post_resize(width, height);
+      highdpi=highdpi_tmp;
+    }
+
     core.clear_framebuffers();
 
     if (callback_pre_draw)
@@ -793,6 +807,7 @@ namespace viewer
         break;
 
 #ifdef IGL_VIEWER_WITH_NANOGUI
+	ngui->refresh();
 	screen->drawContents();
 	screen->drawWidgets();
 #endif
@@ -849,9 +864,8 @@ namespace viewer
   {
     if (window) {
       glfwSetWindowSize(window, w/highdpi, h/highdpi);
-    } else {
-      post_resize(w, h);
     }
+    post_resize(w, h);
   }
 
   IGL_INLINE void Viewer::post_resize(int w,int h)
@@ -936,7 +950,7 @@ namespace viewer
         /* Problem: glewInit failed, something is seriously wrong. */
        fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
       }
-      glGetError(); // pull and savely ignonre unhandled errors like GL_INVALID_ENUM
+      glGetError(); // pull and safely ignore unhandled errors like GL_INVALID_ENUM
       fprintf(stdout, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
     #endif
 
@@ -945,7 +959,7 @@ namespace viewer
       major = glfwGetWindowAttrib(window, GLFW_CONTEXT_VERSION_MAJOR);
       minor = glfwGetWindowAttrib(window, GLFW_CONTEXT_VERSION_MINOR);
       rev = glfwGetWindowAttrib(window, GLFW_CONTEXT_REVISION);
-      printf("OpenGL version recieved: %d.%d.%d\n", major, minor, rev);
+      printf("OpenGL version received: %d.%d.%d\n", major, minor, rev);
       printf("Supported OpenGL is %s\n", (const char*)glGetString(GL_VERSION));
       printf("Supported GLSL is %s\n", (const char*)glGetString(GL_SHADING_LANGUAGE_VERSION));
     #endif

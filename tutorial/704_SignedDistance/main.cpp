@@ -10,6 +10,7 @@
 #include <igl/slice_mask.h>
 #include <igl/slice_tets.h>
 #include <igl/upsample.h>
+#include <igl/writeOBJ.h>
 #include <igl/viewer/Viewer.h>
 #include <Eigen/Sparse>
 #include <iostream>
@@ -40,7 +41,16 @@ void update_visualization(igl::viewer::Viewer & viewer)
   {
     VectorXi J;
     SparseMatrix<double> bary;
-    igl::slice_tets(V,T,plane,V_vis,F_vis,J,bary);
+    {
+      // Value of plane's implicit function at all vertices
+      const VectorXd IV = 
+        (V.col(0)*plane(0) + 
+         V.col(1)*plane(1) + 
+         V.col(2)*plane(2)).array()
+        + plane(3);
+      igl::slice_tets(V,T,IV,V_vis,F_vis,J,bary);
+      igl::writeOBJ("vis.obj",V_vis,F_vis);
+    }
     while(true)
     {
       MatrixXd l;

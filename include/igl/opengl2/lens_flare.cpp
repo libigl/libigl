@@ -115,7 +115,7 @@ IGL_INLINE void igl::opengl2::lens_flare_draw(
   using namespace Eigen;
   using namespace std;
 
-  //// view_dir  direction from eye to position is is looking at
+  //// view_dir  direction from eye to position it is looking at
   //const Vector3f view_dir =  (at - from).normalized();
 
   //// near_clip  distance from eye to near clipping plane along view_dir

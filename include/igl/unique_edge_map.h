@@ -30,7 +30,7 @@ namespace igl
     typename DerivedEMAP,
     typename uE2EType>
   IGL_INLINE void unique_edge_map(
-    const Eigen::PlainObjectBase<DerivedF> & F,
+    const Eigen::MatrixBase<DerivedF> & F,
     Eigen::PlainObjectBase<DerivedE> & E,
     Eigen::PlainObjectBase<DeriveduE> & uE,
     Eigen::PlainObjectBase<DerivedEMAP> & EMAP,

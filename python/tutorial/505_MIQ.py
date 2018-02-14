@@ -1,3 +1,10 @@
+# This file is part of libigl, a simple c++ geometry processing library.
+#
+# Copyright (C) 2017 Sebastian Koch <s.koch@tu-berlin.de> and Daniele Panozzo <daniele.panozzo@gmail.com>
+#
+# This Source Code Form is subject to the terms of the Mozilla Public License
+# v. 2.0. If a copy of the MPL was not distributed with this file, You can
+# obtain one at http://mozilla.org/MPL/2.0/.
 import sys, os
 from math import pi
 
@@ -219,7 +226,7 @@ S = igl.eigen.MatrixXd()
 
 igl.comiso.nrosy(V, F, b, bc, igl.eigen.MatrixXi(), igl.eigen.MatrixXd(), igl.eigen.MatrixXd(), 4, 0.5, X1, S)
 
-# Find the the orthogonal vector
+# Find the orthogonal vector
 B1 = igl.eigen.MatrixXd()
 B2 = igl.eigen.MatrixXd()
 B3 = igl.eigen.MatrixXd()

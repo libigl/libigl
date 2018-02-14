@@ -246,7 +246,7 @@ struct CTwMgr
         static void ANT_CALL GetCB(void *_Value, void *_ClientData);
     };
     std::list<CCDStdString>  m_CDStdStrings;
-    struct CClientStdString  // Convertion between VC++ Debug/Release std::string
+    struct CClientStdString  // Conversion between VC++ Debug/Release std::string
     {
                         CClientStdString();
         void            FromLib(const char *libStr);
@@ -255,7 +255,7 @@ struct CTwMgr
         char            m_Data[sizeof(std::string)+2*sizeof(void *)];
         std::string     m_LibStr;
     };
-    struct CLibStdString   // Convertion between VC++ Debug/Release std::string
+    struct CLibStdString   // Conversion between VC++ Debug/Release std::string
     {
                         CLibStdString();
         void            FromClient(const std::string& clientStr);

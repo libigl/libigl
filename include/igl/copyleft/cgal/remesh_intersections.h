@@ -30,7 +30,7 @@ namespace igl
       //   offending #offending map taking face indices into F to pairs of order
       //     of first finding and list of intersection objects from all
       //     intersections
-      //   stitch_all  if true, merge all vertices with thte same coordiante.
+      //   stitch_all  if true, merge all vertices with the same coordinate.
       // Outputs:
       //   VV  #VV by 3 list of vertex positions, if stitch_all = false then
       //     first #V vertices will always be V

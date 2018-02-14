@@ -32,7 +32,7 @@ namespace igl
     //   w_soft  #S by 1 weight for the soft constraints (0-1)
     //   bc_soft #S by 3 bc for soft constraints
     //   N       the degree of the N-RoSy vector field
-    //   soft    the strenght of the soft contraints w.r.t. smoothness
+    //   soft    the strength of the soft constraints w.r.t. smoothness
     //           (0 -> smoothness only, 1->constraints only)
     // Outputs:
     //   R       #F by 3 the representative vectors of the interpolated field

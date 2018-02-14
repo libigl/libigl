@@ -7,7 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_OPENGL_RENDER_TO_TGA_H
 #define IGL_OPENGL_RENDER_TO_TGA_H
-#include "../igl_inline.h"
+#include "../../igl_inline.h"
 #include <string>
 
 namespace igl
@@ -20,7 +20,7 @@ namespace igl
     //   width  width of scene and resulting image
     //   height height of scene and resulting image
     ///  alpha  whether to include alpha channel
-    // Returns true only if no errors occured
+    // Returns true only if no errors occurred
     //
     // See also: png/render_to_png which is slower but writes .png files
     IGL_INLINE bool render_to_tga(

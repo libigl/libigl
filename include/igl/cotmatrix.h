@@ -16,7 +16,7 @@
 //  Used const references rather than copying the entire mesh 
 //    Alec 9 October 2011
 //  removed cotan (uniform weights) optional parameter it was building a buggy
-//    half of the uniform laplacian, please see adjacency_matrix istead 
+//    half of the uniform laplacian, please see adjacency_matrix instead 
 //    Alec 9 October 2011
 
 namespace igl 

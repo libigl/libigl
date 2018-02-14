@@ -8,7 +8,7 @@ namespace igl
 {
   namespace copyleft
   {
-    // Compute a triangulated offset surface using maching cubes on a gride of
+    // Compute a triangulated offset surface using matching cubes on a grid of
     // signed distance values from the input triangle mesh.
     //
     // Inputs:
@@ -30,7 +30,6 @@ namespace igl
       typename DerivedV,
       typename DerivedF,
       typename isolevelType,
-      typename sType,
       typename DerivedSV,
       typename DerivedSF,
       typename DerivedGV,
@@ -40,7 +39,7 @@ namespace igl
       const Eigen::MatrixBase<DerivedV> & V,
       const Eigen::MatrixBase<DerivedF> & F,
       const isolevelType isolevel,
-      const sType s,
+      const typename Derivedside::Scalar s,
       const SignedDistanceType & signed_distance_type,
       Eigen::PlainObjectBase<DerivedSV> & SV,
       Eigen::PlainObjectBase<DerivedSF> & SF,

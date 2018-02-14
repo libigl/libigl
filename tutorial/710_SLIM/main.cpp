@@ -152,7 +152,7 @@ void deform_3d_demo_iter(igl::viewer::Viewer& viewer) {
     double soft_const_p = 1e5;
     sData.exp_factor = 5.0;
     slim_precompute(V,F,V_0,sData,igl::SLIMData::EXP_CONFORMAL,b,bc,soft_const_p);
-    cout << "precomputed" << endl;
+    //cout << "precomputed" << endl;
 
     first_iter = false;
     display_3d_mesh(viewer);

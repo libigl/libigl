@@ -1,3 +1,10 @@
+# This file is part of libigl, a simple c++ geometry processing library.
+#
+# Copyright (C) 2017 Sebastian Koch <s.koch@tu-berlin.de> and Daniele Panozzo <daniele.panozzo@gmail.com>
+#
+# This Source Code Form is subject to the terms of the Mozilla Public License
+# v. 2.0. If a copy of the MPL was not distributed with this file, You can
+# obtain one at http://mozilla.org/MPL/2.0/.
 import sys, os
 
 # Add the igl library to the modules search path
@@ -15,11 +22,11 @@ F = igl.eigen.MatrixXi()
 
 igl.readOFF(TUTORIAL_SHARED_PATH + "decimated-knight.off", V, F)
 
-# 100 random indicies into rows of F
+# 100 random indices into rows of F
 I = igl.eigen.MatrixXi()
 igl.floor((0.5 * (igl.eigen.MatrixXd.Random(100, 1) + 1.) * F.rows()), I)
 
-# 50 random indicies into rows of I
+# 50 random indices into rows of I
 J = igl.eigen.MatrixXi()
 igl.floor((0.5 * (igl.eigen.MatrixXd.Random(50, 1) + 1.) * I.rows()), J)
 
