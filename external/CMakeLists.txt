@@ -6,14 +6,17 @@ include(ExternalProject)
 # Note: It IS important to download different files on different OS's:
 # on Unix-like systems, we need the file persmissions (only available in the .tar.gz),
 # while on Windows, we need CR/LF line feeds (only available in the .zip)
+
+# Boost 1.65 fucks things up because of https://github.com/boostorg/build/issues/230
+# Boost 1.66 fucks things up becaue of https://github.com/boostorg/build/issues/273
 if(UNIX)
-  set(BOOST_URL "https://dl.bintray.com/boostorg/release/1.65.1/source/boost_1_65_1.tar.gz")
-  set(BOOST_HASH SHA256=a13de2c8fbad635e6ba9c8f8714a0e6b4264b60a29b964b940a22554705b6b60)
+  set(BOOST_URL "https://dl.bintray.com/boostorg/release/1.64.0/source/boost_1_64_0.tar.gz")
+  set(BOOST_HASH SHA256=0445c22a5ef3bd69f5dfb48354978421a85ab395254a26b1ffb0aa1bfd63a108)
   set(BOOST_BOOTSTRAP_COMMAND ./bootstrap.sh)
   set(BOOST_B2_COMMAND ./b2)
 elseif(WIN32)
-  set(BOOST_URL "https://dl.bintray.com/boostorg/release/1.65.1/source/boost_1_65_1.zip")
-  set(BOOST_HASH SHA256=d1775aef807bd6a14077b450cce2950d8eacd86aaf51015f79e712917f8cc3c2)
+  set(BOOST_URL "https://dl.bintray.com/boostorg/release/1.64.0/source/boost_1_64_0.zip")
+  set(BOOST_HASH SHA256=b99973c805f38b549dbeaf88701c0abeff8b0e8eaa4066df47cac10a32097523)
   set(BOOST_BOOTSTRAP_COMMAND cmd /C bootstrap.bat msvc)
   set(BOOST_B2_COMMAND b2.exe)
 endif()
@@ -53,7 +56,7 @@ ExternalProject_Add(Boost_Project
 
   UPDATE_COMMAND ""
   CONFIGURE_COMMAND ${BOOST_BOOTSTRAP_COMMAND} --prefix=${BOOST_DIR}/lib
-  BUILD_COMMAND ${BOOST_B2_COMMAND} install -j8 --prefix=${BOOST_DIR} --with-filesystem --with-system --with-thread --with-serialization --with-date_time address-model=${BOOST_ADDRESS_MODEL} link=static runtime-link=shared ${BOOST_TOOLSET}
+  BUILD_COMMAND ${BOOST_B2_COMMAND} install -j8 -d0 --prefix=${BOOST_DIR} --with-filesystem --with-system --with-thread --with-serialization --with-date_time address-model=${BOOST_ADDRESS_MODEL} link=static runtime-link=shared ${BOOST_TOOLSET}
   INSTALL_COMMAND ""
 )
 
