@@ -14,7 +14,7 @@ import pyigl as igl
 
 from shared import TUTORIAL_SHARED_PATH, check_dependencies
 
-dependencies = ["viewer"]
+dependencies = ["glfw"]
 check_dependencies(dependencies)
 
 
@@ -55,8 +55,8 @@ def pre_draw(viewer):
             bc[i, 0] += r * sin(0.35 * anim_t * 2. * pi)
 
     igl.arap_solve(bc, arap_data, U)
-    viewer.data.set_vertices(U)
-    viewer.data.compute_normals()
+    viewer.data().set_vertices(U)
+    viewer.data().compute_normals()
 
     if viewer.core.is_animating:
         anim_t += anim_t_dir
@@ -77,7 +77,7 @@ igl.readDMAT(TUTORIAL_SHARED_PATH + "decimated-knight-selection.dmat", S)
 
 # Vertices in selection
 
-b = igl.eigen.MatrixXi([[t[0] for t in [(i, S[i]) for i in range(0, V.rows())] if t[1] >= 0]]).transpose()
+b = igl.eigen.MatrixXd([[t[0] for t in [(i, S[i]) for i in range(0, V.rows())] if t[1] >= 0]]).transpose().castint()
 
 # Centroid
 mid = 0.5 * (V.colwiseMaxCoeff() + V.colwiseMinCoeff())
@@ -98,9 +98,9 @@ for f in range(0, F.rows()):
         C.setRow(f, gold)
 
 # Plot the mesh with pseudocolors
-viewer = igl.viewer.Viewer()
-viewer.data.set_mesh(U, F)
-viewer.data.set_colors(C)
+viewer = igl.glfw.Viewer()
+viewer.data().set_mesh(U, F)
+viewer.data().set_colors(C)
 viewer.callback_pre_draw = pre_draw
 viewer.callback_key_down = key_down
 viewer.core.is_animating = True
