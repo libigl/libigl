@@ -16,7 +16,7 @@ import pyigl as igl
 
 from shared import TUTORIAL_SHARED_PATH, check_dependencies, print_usage
 
-dependencies = ["viewer"]
+dependencies = ["glfw"]
 check_dependencies(dependencies)
 
 
@@ -57,9 +57,9 @@ def pre_draw(viewer):
         BET = igl.eigen.MatrixXi()
         igl.deform_skeleton(C, BE, T, CT, BET)
 
-        viewer.data.set_vertices(U)
-        viewer.data.set_edges(CT, BET, sea_green)
-        viewer.data.compute_normals()
+        viewer.data().set_vertices(U)
+        viewer.data().set_edges(CT, BET, sea_green)
+        viewer.data().compute_normals()
         if viewer.core.is_animating:
             anim_t += anim_t_dir
         else:
@@ -132,12 +132,12 @@ if __name__ == "__main__":
     igl.lbs_matrix(V, W, M)
 
     # Plot the mesh with pseudocolors
-    viewer = igl.viewer.Viewer()
-    viewer.data.set_mesh(U, F)
-    viewer.data.set_edges(C, BE, sea_green)
-    viewer.core.show_lines = False
-    viewer.core.show_overlay_depth = False
-    viewer.core.line_width = 1
+    viewer = igl.glfw.Viewer()
+    viewer.data().set_mesh(U, F)
+    viewer.data().set_edges(C, BE, sea_green)
+    viewer.data().show_lines = False
+    viewer.data().show_overlay_depth = False
+    viewer.data().line_width = 1
     viewer.core.trackball_angle.normalize()
     viewer.callback_pre_draw = pre_draw
     viewer.callback_key_down = key_down

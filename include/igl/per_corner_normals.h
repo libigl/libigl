@@ -16,7 +16,7 @@ namespace igl
   // Compute vertex normals via vertex position list, face list
   // Inputs:
   //   V  #V by 3 eigen Matrix of mesh vertex 3D positions
-  //   F  #F by 3 eigne Matrix of face (triangle) indices
+  //   F  #F by 3 eigen Matrix of face (triangle) indices
   //   corner_threshold  threshold in degrees on sharp angles
   // Output:
   //   CN  #F*3 by 3 eigen Matrix of mesh vertex 3D normals, where the normal

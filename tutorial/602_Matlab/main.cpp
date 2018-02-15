@@ -2,7 +2,7 @@
 #include <igl/readOFF.h>
 #include <igl/cotmatrix.h>
 #include <igl/matlab/matlabinterface.h>
-#include <igl/viewer/Viewer.h>
+#include <igl/opengl/glfw/Viewer.h>
 #include <iostream>
 
 #include "tutorial_shared_path.h"
@@ -17,7 +17,7 @@ Engine* engine;
 // Eigenvectors of the laplacian
 Eigen::MatrixXd EV;
 
-void plotEV(igl::viewer::Viewer& viewer, int id)
+void plotEV(igl::opengl::glfw::Viewer& viewer, int id)
 {
   Eigen::VectorXd v = EV.col(id);
   v = v.array() - v.minCoeff();
@@ -32,11 +32,11 @@ void plotEV(igl::viewer::Viewer& viewer, int id)
     C.row(i) << r,g,b;
   }
 
-  viewer.data.set_colors(C);
+  viewer.data().set_colors(C);
 }
 
 // This function is called every time a keyboard button is pressed
-bool key_down(igl::viewer::Viewer& viewer, unsigned char key, int modifier)
+bool key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier)
 {
   if (key >= '1' && key <= '9')
     plotEV(viewer,(key - '1') + 1);
@@ -72,9 +72,9 @@ int main(int argc, char *argv[])
   igl::matlab::mlgetmatrix(&engine,"EV",EV);
 
   // Plot the mesh
-  igl::viewer::Viewer viewer;
+  igl::opengl::glfw::Viewer viewer;
   viewer.callback_key_down = &key_down;
-  viewer.data.set_mesh(V, F);
+  viewer.data().set_mesh(V, F);
 
   // Plot the first non-trivial eigenvector
   plotEV(viewer,1);

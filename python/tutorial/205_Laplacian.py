@@ -14,7 +14,7 @@ import pyigl as igl
 
 from shared import TUTORIAL_SHARED_PATH, check_dependencies
 
-dependencies = ["viewer"]
+dependencies = ["glfw"]
 check_dependencies(dependencies)
 
 
@@ -23,7 +23,7 @@ U = igl.eigen.MatrixXd()
 F = igl.eigen.MatrixXi()
 
 L = igl.eigen.SparseMatrixd()
-viewer = igl.viewer.Viewer()
+viewer = igl.glfw.Viewer()
 
 # Load a mesh in OFF format
 igl.readOFF(TUTORIAL_SHARED_PATH + "cow.off", V, F)
@@ -97,8 +97,8 @@ def key_pressed(viewer, key, modifier):
         return False
 
     # Send new positions, update normals, recenter
-    viewer.data.set_vertices(U)
-    viewer.data.compute_normals()
+    viewer.data().set_vertices(U)
+    viewer.data().compute_normals()
     viewer.core.align_camera_center(U, F)
     return True
 
@@ -110,8 +110,8 @@ C = N.rowwiseNormalized() * 0.5 + 0.5
 
 # Initialize smoothing with base mesh
 U = V
-viewer.data.set_mesh(U, F)
-viewer.data.set_colors(C)
+viewer.data().set_mesh(U, F)
+viewer.data().set_colors(C)
 viewer.callback_key_pressed = key_pressed
 
 print("Press [space] to smooth.")

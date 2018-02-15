@@ -7,18 +7,19 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 
 #include "ViewerCore.h"
-#include <igl/quat_to_mat.h>
-#include <igl/snap_to_fixed_up.h>
-#include <igl/look_at.h>
-#include <igl/frustum.h>
-#include <igl/ortho.h>
-#include <igl/massmatrix.h>
-#include <igl/barycenter.h>
-#include <igl/PI.h>
+#include "gl.h"
+#include "../quat_to_mat.h"
+#include "../snap_to_fixed_up.h"
+#include "../look_at.h"
+#include "../frustum.h"
+#include "../ortho.h"
+#include "../massmatrix.h"
+#include "../barycenter.h"
+#include "../PI.h"
 #include <Eigen/Geometry>
 #include <iostream>
 
-IGL_INLINE void igl::viewer::ViewerCore::align_camera_center(
+IGL_INLINE void igl::opengl::ViewerCore::align_camera_center(
   const Eigen::MatrixXd& V,
   const Eigen::MatrixXi& F)
 {
@@ -33,7 +34,7 @@ IGL_INLINE void igl::viewer::ViewerCore::align_camera_center(
   }
 }
 
-IGL_INLINE void igl::viewer::ViewerCore::get_scale_and_shift_to_fit_mesh(
+IGL_INLINE void igl::opengl::ViewerCore::get_scale_and_shift_to_fit_mesh(
   const Eigen::MatrixXd& V,
   const Eigen::MatrixXi& F,
   float& zoom,
@@ -53,7 +54,7 @@ IGL_INLINE void igl::viewer::ViewerCore::get_scale_and_shift_to_fit_mesh(
   return get_scale_and_shift_to_fit_mesh(BC,zoom,shift);
 }
 
-IGL_INLINE void igl::viewer::ViewerCore::align_camera_center(
+IGL_INLINE void igl::opengl::ViewerCore::align_camera_center(
   const Eigen::MatrixXd& V)
 {
   if(V.rows() == 0)
@@ -67,7 +68,7 @@ IGL_INLINE void igl::viewer::ViewerCore::align_camera_center(
   }
 }
 
-IGL_INLINE void igl::viewer::ViewerCore::get_scale_and_shift_to_fit_mesh(
+IGL_INLINE void igl::opengl::ViewerCore::get_scale_and_shift_to_fit_mesh(
   const Eigen::MatrixXd& V,
   float& zoom,
   Eigen::Vector3f& shift)
@@ -84,7 +85,7 @@ IGL_INLINE void igl::viewer::ViewerCore::get_scale_and_shift_to_fit_mesh(
 }
 
 
-IGL_INLINE void igl::viewer::ViewerCore::clear_framebuffers()
+IGL_INLINE void igl::opengl::ViewerCore::clear_framebuffers()
 {
   glClearColor(background_color[0],
                background_color[1],
@@ -93,9 +94,8 @@ IGL_INLINE void igl::viewer::ViewerCore::clear_framebuffers()
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-IGL_INLINE void igl::viewer::ViewerCore::draw(
+IGL_INLINE void igl::opengl::ViewerCore::draw(
   ViewerData& data,
-  OpenGL_state& opengl,
   bool update_matrices)
 {
   using namespace std;
@@ -112,10 +112,10 @@ IGL_INLINE void igl::viewer::ViewerCore::draw(
   /* Bind and potentially refresh mesh/line/point data */
   if (data.dirty)
   {
-    opengl.set_data(data, invert_normals);
-    data.dirty = ViewerData::DIRTY_NONE;
+    data.updateGL(data, data.invert_normals,data.meshgl);
+    data.dirty = MeshGL::DIRTY_NONE;
   }
-  opengl.bind_mesh();
+  data.meshgl.bind_mesh();
 
   // Initialize uniform
   glViewport(viewport(0), viewport(1), viewport(2), viewport(3));
@@ -162,21 +162,21 @@ IGL_INLINE void igl::viewer::ViewerCore::draw(
   }
 
   // Send transformations to the GPU
-  GLint modeli = opengl.shader_mesh.uniform("model");
-  GLint viewi  = opengl.shader_mesh.uniform("view");
-  GLint proji  = opengl.shader_mesh.uniform("proj");
+  GLint modeli = glGetUniformLocation(data.meshgl.shader_mesh,"model");
+  GLint viewi  = glGetUniformLocation(data.meshgl.shader_mesh,"view");
+  GLint proji  = glGetUniformLocation(data.meshgl.shader_mesh,"proj");
   glUniformMatrix4fv(modeli, 1, GL_FALSE, model.data());
   glUniformMatrix4fv(viewi, 1, GL_FALSE, view.data());
   glUniformMatrix4fv(proji, 1, GL_FALSE, proj.data());
 
   // Light parameters
-  GLint specular_exponenti    = opengl.shader_mesh.uniform("specular_exponent");
-  GLint light_position_worldi = opengl.shader_mesh.uniform("light_position_world");
-  GLint lighting_factori      = opengl.shader_mesh.uniform("lighting_factor");
-  GLint fixed_colori          = opengl.shader_mesh.uniform("fixed_color");
-  GLint texture_factori       = opengl.shader_mesh.uniform("texture_factor");
+  GLint specular_exponenti    = glGetUniformLocation(data.meshgl.shader_mesh,"specular_exponent");
+  GLint light_position_worldi = glGetUniformLocation(data.meshgl.shader_mesh,"light_position_world");
+  GLint lighting_factori      = glGetUniformLocation(data.meshgl.shader_mesh,"lighting_factor");
+  GLint fixed_colori          = glGetUniformLocation(data.meshgl.shader_mesh,"fixed_color");
+  GLint texture_factori       = glGetUniformLocation(data.meshgl.shader_mesh,"texture_factor");
 
-  glUniform1f(specular_exponenti, shininess);
+  glUniform1f(specular_exponenti, data.shininess);
   Vector3f rev_light = -1.*light_position;
   glUniform3fv(light_position_worldi, 1, rev_light.data());
   glUniform1f(lighting_factori, lighting_factor); // enables lighting
@@ -185,108 +185,72 @@ IGL_INLINE void igl::viewer::ViewerCore::draw(
   if (data.V.rows()>0)
   {
     // Render fill
-    if (show_faces)
+    if (data.show_faces)
     {
       // Texture
-      glUniform1f(texture_factori, show_texture ? 1.0f : 0.0f);
-      opengl.draw_mesh(true);
+      glUniform1f(texture_factori, data.show_texture ? 1.0f : 0.0f);
+      data.meshgl.draw_mesh(true);
       glUniform1f(texture_factori, 0.0f);
     }
 
     // Render wireframe
-    if (show_lines)
+    if (data.show_lines)
     {
-      glLineWidth(line_width);
-      glUniform4f(fixed_colori, line_color[0], line_color[1],
-        line_color[2], 1.0f);
-      opengl.draw_mesh(false);
+      glLineWidth(data.line_width);
+      glUniform4f(fixed_colori, 
+        data.line_color[0], 
+        data.line_color[1],
+        data.line_color[2], 1.0f);
+      data.meshgl.draw_mesh(false);
       glUniform4f(fixed_colori, 0.0f, 0.0f, 0.0f, 0.0f);
     }
-
-#ifdef IGL_VIEWER_WITH_NANOGUI
-    if (show_vertid)
-    {
-      textrenderer.BeginDraw(view*model, proj, viewport, object_scale);
-      for (int i=0; i<data.V.rows(); ++i)
-        textrenderer.DrawText(data.V.row(i),data.V_normals.row(i),to_string(i));
-      textrenderer.EndDraw();
-    }
-
-    if (show_faceid)
-    {
-      textrenderer.BeginDraw(view*model, proj, viewport, object_scale);
-
-      for (int i=0; i<data.F.rows(); ++i)
-      {
-        Eigen::RowVector3d p = Eigen::RowVector3d::Zero();
-        for (int j=0;j<data.F.cols();++j)
-          p += data.V.row(data.F(i,j));
-        p /= data.F.cols();
-
-        textrenderer.DrawText(p, data.F_normals.row(i), to_string(i));
-      }
-      textrenderer.EndDraw();
-    }
-#endif
   }
 
-  if (show_overlay)
+  if (data.show_overlay)
   {
-    if (show_overlay_depth)
+    if (data.show_overlay_depth)
       glEnable(GL_DEPTH_TEST);
     else
       glDisable(GL_DEPTH_TEST);
 
     if (data.lines.rows() > 0)
     {
-      opengl.bind_overlay_lines();
-      modeli = opengl.shader_overlay_lines.uniform("model");
-      viewi  = opengl.shader_overlay_lines.uniform("view");
-      proji  = opengl.shader_overlay_lines.uniform("proj");
+      data.meshgl.bind_overlay_lines();
+      modeli = glGetUniformLocation(data.meshgl.shader_overlay_lines,"model");
+      viewi  = glGetUniformLocation(data.meshgl.shader_overlay_lines,"view");
+      proji  = glGetUniformLocation(data.meshgl.shader_overlay_lines,"proj");
 
       glUniformMatrix4fv(modeli, 1, GL_FALSE, model.data());
       glUniformMatrix4fv(viewi, 1, GL_FALSE, view.data());
       glUniformMatrix4fv(proji, 1, GL_FALSE, proj.data());
       // This must be enabled, otherwise glLineWidth has no effect
       glEnable(GL_LINE_SMOOTH);
-      glLineWidth(line_width);
+      glLineWidth(data.line_width);
 
-      opengl.draw_overlay_lines();
+      data.meshgl.draw_overlay_lines();
     }
 
     if (data.points.rows() > 0)
     {
-      opengl.bind_overlay_points();
-      modeli = opengl.shader_overlay_points.uniform("model");
-      viewi  = opengl.shader_overlay_points.uniform("view");
-      proji  = opengl.shader_overlay_points.uniform("proj");
+      data.meshgl.bind_overlay_points();
+      modeli = glGetUniformLocation(data.meshgl.shader_overlay_points,"model");
+      viewi  = glGetUniformLocation(data.meshgl.shader_overlay_points,"view");
+      proji  = glGetUniformLocation(data.meshgl.shader_overlay_points,"proj");
 
       glUniformMatrix4fv(modeli, 1, GL_FALSE, model.data());
       glUniformMatrix4fv(viewi, 1, GL_FALSE, view.data());
       glUniformMatrix4fv(proji, 1, GL_FALSE, proj.data());
-      glPointSize(point_size);
+      glPointSize(data.point_size);
 
-      opengl.draw_overlay_points();
+      data.meshgl.draw_overlay_points();
     }
-
-#ifdef IGL_VIEWER_WITH_NANOGUI
-    if (data.labels_positions.rows() > 0)
-    {
-      textrenderer.BeginDraw(view*model, proj, viewport, object_scale);
-      for (int i=0; i<data.labels_positions.rows(); ++i)
-        textrenderer.DrawText(data.labels_positions.row(i), Eigen::Vector3d(0.0,0.0,0.0),
-            data.labels_strings[i]);
-      textrenderer.EndDraw();
-    }
-#endif
 
     glEnable(GL_DEPTH_TEST);
   }
 
 }
 
-IGL_INLINE void igl::viewer::ViewerCore::draw_buffer(ViewerData& data,
-  OpenGL_state& opengl,
+IGL_INLINE void igl::opengl::ViewerCore::draw_buffer(ViewerData& data,
   bool update_matrices,
   Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& R,
   Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& G,
@@ -336,7 +300,7 @@ IGL_INLINE void igl::viewer::ViewerCore::draw_buffer(ViewerData& data,
   viewport << 0,0,x,y;
 
   // Draw
-  draw(data,opengl,update_matrices);
+  draw(data,update_matrices);
 
   // Restore viewport
   viewport = viewport_ori;
@@ -371,8 +335,8 @@ IGL_INLINE void igl::viewer::ViewerCore::draw_buffer(ViewerData& data,
   glDeleteFramebuffers(1, &frameBuffer);
 }
 
-IGL_INLINE void igl::viewer::ViewerCore::set_rotation_type(
-  const igl::viewer::ViewerCore::RotationType & value)
+IGL_INLINE void igl::opengl::ViewerCore::set_rotation_type(
+  const igl::opengl::ViewerCore::RotationType & value)
 {
   using namespace Eigen;
   using namespace std;
@@ -386,14 +350,10 @@ IGL_INLINE void igl::viewer::ViewerCore::set_rotation_type(
 }
 
 
-IGL_INLINE igl::viewer::ViewerCore::ViewerCore()
+IGL_INLINE igl::opengl::ViewerCore::ViewerCore()
 {
-  // Default shininess
-  shininess = 35.0f;
-
   // Default colors
   background_color << 0.3f, 0.3f, 0.5f, 1.0f;
-  line_color << 0.0f, 0.0f, 0.0f, 1.0f;
 
   // Default lights settings
   light_position << 0.0f, -0.30f, -5.0f;
@@ -417,36 +377,18 @@ IGL_INLINE igl::viewer::ViewerCore::ViewerCore()
   camera_center << 0, 0, 0;
   camera_up << 0, 1, 0;
 
-  // Default visualization options
-  show_faces = true;
-  show_lines = true;
-  invert_normals = false;
-  show_overlay = true;
-  show_overlay_depth = true;
-  show_vertid = false;
-  show_faceid = false;
-  show_texture = false;
   depth_test = true;
 
-  // Default point size / line width
-  point_size = 30;
-  line_width = 0.5f;
   is_animating = false;
   animation_max_fps = 30.;
 
   viewport.setZero();
 }
 
-IGL_INLINE void igl::viewer::ViewerCore::init()
+IGL_INLINE void igl::opengl::ViewerCore::init()
 {
-#ifdef IGL_VIEWER_WITH_NANOGUI
-  textrenderer.Init();
-#endif
 }
 
-IGL_INLINE void igl::viewer::ViewerCore::shut()
+IGL_INLINE void igl::opengl::ViewerCore::shut()
 {
-#ifdef IGL_VIEWER_WITH_NANOGUI
-  textrenderer.Shut();
-#endif
 }

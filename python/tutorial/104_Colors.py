@@ -13,7 +13,7 @@ import pyigl as igl
 
 from shared import TUTORIAL_SHARED_PATH, check_dependencies
 
-dependencies = ["viewer"]
+dependencies = ["glfw"]
 check_dependencies(dependencies)
 
 
@@ -25,8 +25,8 @@ C = igl.eigen.MatrixXd()
 igl.readOFF(TUTORIAL_SHARED_PATH + "screwdriver.off", V, F)
 
 # Plot the mesh
-viewer = igl.viewer.Viewer()
-viewer.data.set_mesh(V, F)
+viewer = igl.glfw.Viewer()
+viewer.data().set_mesh(V, F)
 
 # Use the z coordinate as a scalar field over the surface
 Z = V.col(2)
@@ -35,7 +35,7 @@ Z = V.col(2)
 igl.jet(Z, True, C)
 
 # Add per-vertex colors
-viewer.data.set_colors(C)
+viewer.data().set_colors(C)
 
 # Launch the viewer
 viewer.launch()

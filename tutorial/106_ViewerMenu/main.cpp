@@ -1,71 +1,104 @@
-#ifndef IGL_VIEWER_WITH_NANOGUI
-#include <iostream>
-int main()
-{
-  std::cerr<<
-    "Error: recompile with LIBIGL_VIEWER_WITH_NANOGUI defined."<<std::endl;
-  return EXIT_FAILURE;
-}
-#else
-
 #include <igl/readOFF.h>
-#include <igl/viewer/Viewer.h>
-#include <nanogui/formhelper.h>
-#include <nanogui/screen.h>
+#include <igl/opengl/glfw/Viewer.h>
+#include <igl/opengl/glfw/imgui/ImGuiMenu.h>
+#include <igl/opengl/glfw/imgui/ImGuiHelpers.h>
+#include <imgui/imgui.h>
 #include <iostream>
 #include "tutorial_shared_path.h"
+
+class CustomMenu : public igl::opengl::glfw::imgui::ImGuiMenu
+{
+  float floatVariable = 0.1f; // Shared between two menus
+
+  virtual void draw_viewer_menu() override
+  {
+    // Draw parent menu
+    ImGuiMenu::draw_viewer_menu();
+
+    // Add new group
+    if (ImGui::CollapsingHeader("New Group", ImGuiTreeNodeFlags_DefaultOpen))
+    {
+      // Expose variable directly ...
+      ImGui::InputFloat("float", &floatVariable, 0, 0, 3);
+
+      // ... or using a custom callback
+      static bool boolVariable = true;
+      if (ImGui::Checkbox("bool", &boolVariable))
+      {
+        // do something
+        std::cout << "boolVariable: " << std::boolalpha << boolVariable << std::endl;
+      }
+
+      // Expose an enumeration type
+      enum Orientation { Up=0, Down, Left, Right };
+      static Orientation dir = Up;
+      ImGui::Combo("Direction", (int *)(&dir), "Up\0Down\0Left\0Right\0\0");
+
+      // We can also use a std::vector<std::string> defined dynamically
+      static int num_choices = 3;
+      static std::vector<std::string> choices;
+      static int idx_choice = 0;
+      if (ImGui::InputInt("Num letters", &num_choices))
+      {
+        num_choices = std::max(1, std::min(26, num_choices));
+      }
+      if (num_choices != (int) choices.size())
+      {
+        choices.resize(num_choices);
+        for (int i = 0; i < num_choices; ++i)
+          choices[i] = std::string(1, 'A' + i);
+        if (idx_choice >= num_choices)
+          idx_choice = num_choices - 1;
+      }
+      ImGui::Combo("Letter", &idx_choice, choices);
+
+      // Add a button
+      if (ImGui::Button("Print Hello", ImVec2(-1,0)))
+      {
+        std::cout << "Hello\n";
+      }
+    }
+  }
+
+  virtual void draw_custom_window() override
+  {
+    // Define next window position + size
+    ImGui::SetNextWindowPos(ImVec2(180.f * menu_scaling(), 10), ImGuiSetCond_FirstUseEver);
+    ImGui::SetNextWindowSize(ImVec2(200, 160), ImGuiSetCond_FirstUseEver);
+    ImGui::Begin(
+        "New Window", nullptr,
+        ImGuiWindowFlags_NoSavedSettings
+    );
+
+    // Expose the same variable directly ...
+    ImGui::PushItemWidth(-80);
+    ImGui::DragFloat("float", &floatVariable, 0.0, 0.0, 3.0);
+    ImGui::PopItemWidth();
+
+    static std::string str = "bunny";
+    ImGui::InputText("Name", str);
+
+    ImGui::End();
+  }
+
+};
 
 int main(int argc, char *argv[])
 {
   Eigen::MatrixXd V;
   Eigen::MatrixXi F;
 
-  bool boolVariable = true;
-  float floatVariable = 0.1f;
-  enum Orientation { Up=0,Down,Left,Right } dir = Up;
-
   // Load a mesh in OFF format
   igl::readOFF(TUTORIAL_SHARED_PATH "/bunny.off", V, F);
 
   // Init the viewer
-  igl::viewer::Viewer viewer;
+  igl::opengl::glfw::Viewer viewer;
 
-  // Extend viewer menu
-  viewer.callback_init = [&](igl::viewer::Viewer& viewer)
-  {
-    // Add new group
-    viewer.ngui->addGroup("New Group");
-
-    // Expose variable directly ...
-    viewer.ngui->addVariable("float",floatVariable);
-
-    // ... or using a custom callback
-    viewer.ngui->addVariable<bool>("bool",[&](bool val) {
-      boolVariable = val; // set
-    },[&]() {
-      return boolVariable; // get
-    });
-
-    // Expose an enumaration type
-    viewer.ngui->addVariable<Orientation>("Direction",dir)->setItems({"Up","Down","Left","Right"});
-
-    // Add a button
-    viewer.ngui->addButton("Print Hello",[](){ std::cout << "Hello\n"; });
-
-    // Add an additional menu window
-    viewer.ngui->addWindow(Eigen::Vector2i(220,10),"New Window");
-
-    // Expose the same variable directly ...
-    viewer.ngui->addVariable("float",floatVariable);
-
-    // Generate menu
-    viewer.screen->performLayout();
-
-    return false;
-  };
+  // Attach a custom menu
+  CustomMenu menu;
+  viewer.plugins.push_back(&menu);
 
   // Plot the mesh
-  viewer.data.set_mesh(V, F);
+  viewer.data().set_mesh(V, F);
   viewer.launch();
 }
-#endif

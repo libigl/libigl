@@ -1,3 +1,4 @@
+#include <igl/opengl/gl.h>
 #include <igl/arap.h>
 #include <igl/biharmonic_coordinates.h>
 #include <igl/cat.h>
@@ -11,7 +12,7 @@
 #include <igl/remove_unreferenced.h>
 #include <igl/slice.h>
 #include <igl/writeDMAT.h>
-#include <igl/viewer/Viewer.h>
+#include <igl/opengl/glfw/Viewer.h>
 #include <Eigen/Sparse>
 #include <iostream>
 #include <queue>
@@ -100,20 +101,20 @@ int main(int argc, char * argv[])
   // Random initial velocities to wiggle things
   arap_data.vel = MatrixXd::Random(n,3);
   
-  igl::viewer::Viewer viewer;
+  igl::opengl::glfw::Viewer viewer;
   // Create one huge mesh containing both meshes
   igl::cat(1,low.U,high.U,scene.U);
   igl::cat(1,low.F,MatrixXi(high.F.array()+low.V.rows()),scene.F);
   // Color each mesh
-  viewer.data.set_mesh(scene.U,scene.F);
+  viewer.data().set_mesh(scene.U,scene.F);
   MatrixXd C(scene.F.rows(),3);
   C<<
     RowVector3d(0.8,0.5,0.2).replicate(low.F.rows(),1),
     RowVector3d(0.3,0.4,1.0).replicate(high.F.rows(),1);
-  viewer.data.set_colors(C);
+  viewer.data().set_colors(C);
 
   viewer.callback_key_pressed = 
-    [&](igl::viewer::Viewer & viewer,unsigned int key,int mods)->bool
+    [&](igl::opengl::glfw::Viewer & viewer,unsigned int key,int mods)->bool
   {
     switch(key)
     {
@@ -127,7 +128,7 @@ int main(int argc, char * argv[])
         return true;
     }
   };
-  viewer.callback_pre_draw = [&](igl::viewer::Viewer & viewer)->bool
+  viewer.callback_pre_draw = [&](igl::opengl::glfw::Viewer & viewer)->bool
   {
     glEnable(GL_CULL_FACE);
     if(viewer.core.is_animating)
@@ -150,20 +151,20 @@ int main(int argc, char * argv[])
       high.U = W * (low.U.rowwise() + RowVector3d(1,0,0));
       scene.U.block(low.U.rows(),0,high.U.rows(),high.U.cols()) = high.U;
 
-      viewer.data.set_vertices(scene.U);
-      viewer.data.compute_normals();
+      viewer.data().set_vertices(scene.U);
+      viewer.data().compute_normals();
     }
     return false;
   };
-  viewer.core.show_lines = false;
+  viewer.data().show_lines = false;
   viewer.core.is_animating = true;
   viewer.core.animation_max_fps = 30.;
-  viewer.data.set_face_based(true);
+  viewer.data().set_face_based(true);
   cout<<R"(
 [space] to toggle animation
 'r'     to reset positions 
       )";
   viewer.core.rotation_type = 
-    igl::viewer::ViewerCore::ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP;
+    igl::opengl::ViewerCore::ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP;
   viewer.launch();
 }

@@ -18,8 +18,8 @@ template <typename DerivedI, typename Scalar>
 IGL_INLINE void igl::sparse_cached_precompute(
   const Eigen::MatrixBase<DerivedI> & I,
   const Eigen::MatrixBase<DerivedI> & J,
-  Eigen::SparseMatrix<Scalar>& X,
-  Eigen::VectorXi& data)
+  Eigen::VectorXi& data,
+  Eigen::SparseMatrix<Scalar>& X)
 {
   // Generates the triplets
   std::vector<Eigen::Triplet<double> > t(I.size());
@@ -33,8 +33,8 @@ IGL_INLINE void igl::sparse_cached_precompute(
 template <typename Scalar>
 IGL_INLINE void igl::sparse_cached_precompute(
   const std::vector<Eigen::Triplet<Scalar> >& triplets,
-  Eigen::SparseMatrix<Scalar>& X,
-  Eigen::VectorXi& data)
+  Eigen::VectorXi& data,
+  Eigen::SparseMatrix<Scalar>& X)
 {
     // Construct an empty sparse matrix
     X.setFromTriplets(triplets.begin(),triplets.end());
@@ -84,8 +84,8 @@ IGL_INLINE void igl::sparse_cached_precompute(
 template <typename Scalar>
 IGL_INLINE void igl::sparse_cached(
   const std::vector<Eigen::Triplet<Scalar> >& triplets,
-  Eigen::SparseMatrix<Scalar>& X,
-  const Eigen::VectorXi& data)
+  const Eigen::VectorXi& data,
+  Eigen::SparseMatrix<Scalar>& X)
 {
   assert(triplets.size() == data.size());
 
@@ -101,8 +101,8 @@ IGL_INLINE void igl::sparse_cached(
 template <typename DerivedV, typename Scalar>
 IGL_INLINE void igl::sparse_cached(
   const Eigen::MatrixBase<DerivedV>& V,
-  Eigen::SparseMatrix<Scalar>& X,
-  const Eigen::VectorXi& data)
+  const Eigen::VectorXi& data,
+  Eigen::SparseMatrix<Scalar>& X)
 {
   assert(V.size() == data.size());
 
@@ -117,6 +117,6 @@ IGL_INLINE void igl::sparse_cached(
 
 
 #ifdef IGL_STATIC_LIBRARY
-template void igl::sparse_cached_precompute<double>(std::vector<Eigen::Triplet<double, Eigen::SparseMatrix<double, 0, int>::Index>, std::allocator<Eigen::Triplet<double, Eigen::SparseMatrix<double, 0, int>::Index> > > const&, Eigen::SparseMatrix<double, 0, int>&, Eigen::Matrix<int, -1, 1, 0, -1, 1>&);
-template void igl::sparse_cached<double>(std::vector<Eigen::Triplet<double, Eigen::SparseMatrix<double, 0, int>::Index>, std::allocator<Eigen::Triplet<double, Eigen::SparseMatrix<double, 0, int>::Index> > > const&, Eigen::SparseMatrix<double, 0, int>&, Eigen::Matrix<int, -1, 1, 0, -1, 1> const&);
+template void igl::sparse_cached<double>(std::vector<Eigen::Triplet<double, Eigen::SparseMatrix<double, 0, int>::Index>, std::allocator<Eigen::Triplet<double, Eigen::SparseMatrix<double, 0, int>::Index> > > const&, Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, Eigen::SparseMatrix<double, 0, int>&);
+template void igl::sparse_cached_precompute<double>(std::vector<Eigen::Triplet<double, Eigen::SparseMatrix<double, 0, int>::Index>, std::allocator<Eigen::Triplet<double, Eigen::SparseMatrix<double, 0, int>::Index> > > const&, Eigen::Matrix<int, -1, 1, 0, -1, 1>&, Eigen::SparseMatrix<double, 0, int>&);
 #endif
