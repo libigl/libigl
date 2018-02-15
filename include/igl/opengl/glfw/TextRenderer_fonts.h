@@ -6,8 +6,8 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 
-#ifndef IGL_TEXT_RENDERER_FONTS_H
-#define IGL_TEXT_RENDERER_FONTS_H
+#ifndef IGL_OPENGL_GLFW_TEXT_RENDERER_FONTS_H
+#define IGL_OPENGL_GLFW_TEXT_RENDERER_FONTS_H
 
 #include <stdint.h>
 

@@ -8,7 +8,7 @@
 #include <igl/slice.h>
 #include <igl/slice_into.h>
 #include <igl/unique.h>
-#include <igl/viewer/Viewer.h>
+#include <igl/opengl/glfw/Viewer.h>
 #include <Eigen/Sparse>
 #include <iostream>
 #include "tutorial_shared_path.h"
@@ -65,9 +65,9 @@ int main(int argc, char *argv[])
   igl::jet(Z,true,C);
 
   // Plot the mesh with pseudocolors
-  igl::viewer::Viewer viewer;
-  viewer.data.set_mesh(V, F);
-  viewer.core.show_lines = false;
-  viewer.data.set_colors(C);
+  igl::opengl::glfw::Viewer viewer;
+  viewer.data().set_mesh(V, F);
+  viewer.data().show_lines = false;
+  viewer.data().set_colors(C);
   viewer.launch();
 }

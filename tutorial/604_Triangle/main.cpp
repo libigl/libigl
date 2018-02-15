@@ -1,4 +1,4 @@
-#include <igl/viewer/Viewer.h>
+#include <igl/opengl/glfw/Viewer.h>
 #include <igl/triangle/triangulate.h>
 // Input polygon
 Eigen::MatrixXd V;
@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
   igl::triangle::triangulate(V,E,H,"a0.005q",V2,F2);
 
   // Plot the generated mesh
-  igl::viewer::Viewer viewer;
-  viewer.data.set_mesh(V2,F2);
+  igl::opengl::glfw::Viewer viewer;
+  viewer.data().set_mesh(V2,F2);
   viewer.launch();
 }

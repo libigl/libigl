@@ -1,9 +1,8 @@
 #ifndef IGL_OPENGL_GLFW_BACKGROUND_WINDOW_H
 #define IGL_OPENGL_GLFW_BACKGROUND_WINDOW_H
 #include "../../igl_inline.h"
-#include "../gl.h"
 
-#define GLFW_INCLUDE_GLU
+#include "../gl.h"
 #include <GLFW/glfw3.h>
 
 namespace igl
@@ -13,7 +12,7 @@ namespace igl
     namespace glfw
     {
       // Create a background window with a valid core profile opengl context
-      // set to current. 
+      // set to current.
       //
       // After you're finished with this window you may call
       // `glfwDestroyWindow(window)`

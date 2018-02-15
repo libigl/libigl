@@ -7,8 +7,8 @@ matrix:
       compiler: gcc-4.8.1
       script:
         - git submodule update --init --recursive
-        - mkdir external/nanogui/ext/glfw/include/GL
-        - wget --no-check-certificate -P external/nanogui/ext/glfw/include/GL http://www.opengl.org/registry/api/GL/glcorearb.h
+        - mkdir external/glfw/include/GL
+        - wget --no-check-certificate -P external/glfw/include/GL http://www.opengl.org/registry/api/GL/glcorearb.h
         - cd python
         - mkdir build
         - cd build
@@ -63,5 +63,5 @@ matrix:
         - cd tutorial
         - mkdir build
         - cd build
-        - cmake -DLIBIGL_USE_STATIC_LIBRARY=ON -DLIBIGL_WITH_NANOGUI=ON ../
+        - cmake -DLIBIGL_USE_STATIC_LIBRARY=ON ../
         - make -j 2

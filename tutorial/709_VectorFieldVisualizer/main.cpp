@@ -11,7 +11,7 @@
 #include <igl/sort_vectors_ccw.h>
 #include <igl/streamlines.h>
 #include <igl/copyleft/comiso/nrosy.h>
-#include <igl/viewer/Viewer.h>
+#include <igl/opengl/glfw/Viewer.h>
 
 #include <cstdlib>
 #include <iostream>
@@ -64,7 +64,7 @@ void representative_to_nrosy(
     }
 }
 
-bool pre_draw(igl::viewer::Viewer &viewer)
+bool pre_draw(igl::opengl::glfw::Viewer &viewer)
 {
     using namespace Eigen;
     using namespace std;
@@ -81,14 +81,14 @@ bool pre_draw(igl::viewer::Viewer &viewer)
     value = value / 0.5;
     igl::parula(value, color[0], color[1], color[2]);
 
-    viewer.data.add_edges(sl_state.start_point, sl_state.end_point, color);
+    viewer.data().add_edges(sl_state.start_point, sl_state.end_point, color);
 
     anim_t += anim_t_dir;
 
     return false;
 }
 
-bool key_down(igl::viewer::Viewer &viewer, unsigned char key, int modifier)
+bool key_down(igl::opengl::glfw::Viewer &viewer, unsigned char key, int modifier)
 {
     if (key == ' ')
     {
@@ -128,20 +128,20 @@ int main(int argc, char *argv[])
 
 
     // Viewer Settings
-    igl::viewer::Viewer viewer;
-    viewer.data.set_mesh(V, F);
+    igl::opengl::glfw::Viewer viewer;
+    viewer.data().set_mesh(V, F);
     viewer.callback_pre_draw = &pre_draw;
     viewer.callback_key_down = &key_down;
 
-    viewer.core.show_lines = false;
+    viewer.data().show_lines = false;
 
     viewer.core.is_animating = false;
     viewer.core.animation_max_fps = 30.;
 
     // Paint mesh grayish
     Eigen::MatrixXd C;
-    C.setConstant(viewer.data.V.rows(), 3, .9);
-    viewer.data.set_colors(C);
+    C.setConstant(viewer.data().V.rows(), 3, .9);
+    viewer.data().set_colors(C);
 
 
     // Draw vector field on sample points
@@ -151,7 +151,7 @@ int main(int argc, char *argv[])
     Eigen::MatrixXd v = sl_state0.end_point - sl_state0.start_point;
     v.rowwise().normalize();
 
-    viewer.data.add_edges(sl_state0.start_point,
+    viewer.data().add_edges(sl_state0.start_point,
                           sl_state0.start_point + 0.059 * v,
                           Eigen::RowVector3d::Constant(1.0f));
 
