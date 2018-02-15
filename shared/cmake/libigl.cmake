@@ -43,9 +43,6 @@ set(LIBIGL_ROOT "${CMAKE_CURRENT_LIST_DIR}/../..")
 set(LIBIGL_SOURCE_DIR "${LIBIGL_ROOT}/include")
 set(LIBIGL_EXTERNAL "${LIBIGL_ROOT}/external")
 
-### Multiple dependencies are buried in Nanogui
-set(NANOGUI_DIR "${LIBIGL_EXTERNAL}/nanogui")
-
 # Dependencies are linked as INTERFACE targets unless libigl is compiled as a static library
 if(LIBIGL_USE_STATIC_LIBRARY)
   set(IGL_SCOPE PUBLIC)
@@ -86,7 +83,7 @@ if(TARGET Eigen3::Eigen)
   # If an imported target already exists, use it
   target_link_libraries(igl_common INTERFACE Eigen3::Eigen)
 else()
-  target_include_directories(igl_common SYSTEM INTERFACE ${NANOGUI_DIR}/ext/eigen)
+  target_include_directories(igl_common SYSTEM INTERFACE ${LIBIGL_EXTERNAL}/eigen)
 endif()
 
 # C++11 Thread library
@@ -99,7 +96,7 @@ function(compile_igl_module module_dir)
   string(REPLACE "/" "_" module_name "${module_dir}")
   if(LIBIGL_USE_STATIC_LIBRARY)
     file(GLOB SOURCES_IGL_${module_name}
-      "${LIBIGL_SOURCE_DIR}/igl/${module_dir}/*.cpp" 
+      "${LIBIGL_SOURCE_DIR}/igl/${module_dir}/*.cpp"
       "${LIBIGL_SOURCE_DIR}/igl/copyleft/${module_dir}/*.cpp")
     add_library(igl_${module_name} STATIC ${SOURCES_IGL_${module_name}} ${ARGN})
     if(MSVC)
@@ -277,68 +274,59 @@ endif()
 ### Compile the opengl parts ###
 
 if(LIBIGL_WITH_OPENGL)
-  # OpenGL modules
+  # OpenGL module
   find_package(OpenGL REQUIRED)
   compile_igl_module("opengl")
-  compile_igl_module("opengl2")
   target_link_libraries(igl_opengl ${IGL_SCOPE} ${OPENGL_gl_LIBRARY})
-  target_link_libraries(igl_opengl2 ${IGL_SCOPE} ${OPENGL_gl_LIBRARY})
   target_include_directories(igl_opengl SYSTEM ${IGL_SCOPE} ${OPENGL_INCLUDE_DIR})
-  target_include_directories(igl_opengl2 SYSTEM ${IGL_SCOPE} ${OPENGL_INCLUDE_DIR})
 
-  # GLEW for linux and windows
-  if(NOT TARGET glew)
-    add_library(glew STATIC ${NANOGUI_DIR}/ext/glew/src/glew.c)
-    target_include_directories(glew SYSTEM PUBLIC ${NANOGUI_DIR}/ext/glew/include)
-    target_compile_definitions(glew PUBLIC -DGLEW_BUILD -DGLEW_NO_GLU)
+  # glad module
+  if(NOT TARGET glad)
+    add_subdirectory(${LIBIGL_EXTERNAL}/glad glad)
   endif()
-  target_link_libraries(igl_opengl ${IGL_SCOPE} glew)
-  target_link_libraries(igl_opengl2 ${IGL_SCOPE} glew)
+  target_link_libraries(igl_opengl ${IGL_SCOPE} glad)
+endif()
 
-  # Nanogui
-  if(LIBIGL_WITH_NANOGUI)
-    if(LIBIGL_WITH_PYTHON)
-      set(NANOGUI_BUILD_PYTHON ON CACHE BOOL " " FORCE)
-    else()
-      set(NANOGUI_BUILD_PYTHON OFF CACHE BOOL " " FORCE)
-    endif()
-    set(NANOGUI_BUILD_EXAMPLE OFF CACHE BOOL " " FORCE)
-    set(NANOGUI_BUILD_SHARED  OFF CACHE BOOL " " FORCE)
-    add_subdirectory(${NANOGUI_DIR} nanogui)
-    target_include_directories(nanogui PUBLIC
-      "${NANOGUI_DIR}/include"
-      "${NANOGUI_DIR}/ext/nanovg/src")
-  endif()
+################################################################################
+### Compile the GLFW part ###
 
-  # GLFW module
-  if(LIBIGL_WITH_OPENGL_GLFW)
+if(LIBIGL_WITH_OPENGL_GLFW)
+  if(TARGET igl::opengl)
+    # GLFW module
     compile_igl_module("opengl/glfw")
     if(NOT TARGET glfw)
       set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL " " FORCE)
       set(GLFW_BUILD_TESTS OFF CACHE BOOL " " FORCE)
       set(GLFW_BUILD_DOCS OFF CACHE BOOL " " FORCE)
       set(GLFW_INSTALL OFF CACHE BOOL " " FORCE)
-      add_subdirectory(${NANOGUI_DIR}/ext/glfw glfw)
+      add_subdirectory(${LIBIGL_EXTERNAL}/glfw glfw)
     endif()
-    target_include_directories(glfw ${IGL_SCOPE} ${NANOGUI_DIR}/ext/glfw/include)
     target_link_libraries(igl_opengl_glfw ${IGL_SCOPE} igl_opengl glfw)
+  else()
+    message(WARNING "GLFW module could not be compiled")
+    set(LIBIGL_WITH_OPENGL_GLFW OFF CACHE BOOL "" FORCE)
   endif()
-
-  # Viewer module
-  if(LIBIGL_WITH_VIEWER)
-    compile_igl_module("viewer")
-    target_link_libraries(igl_viewer ${IGL_SCOPE} glfw glew ${OPENGL_gl_LIBRARY})
-    target_include_directories(igl_viewer SYSTEM ${IGL_SCOPE} ${OPENGL_INCLUDE_DIR})
-    if(TARGET nanogui)
-      target_link_libraries(igl_viewer ${IGL_SCOPE} nanogui)
-      target_compile_definitions(igl_viewer ${IGL_SCOPE} -DIGL_VIEWER_WITH_NANOGUI)
-    endif()
-  endif()
-
 endif()
 
 ################################################################################
-### Compile the png parts ###
+### Compile the ImGui part ###
+
+if(LIBIGL_WITH_OPENGL_GLFW_IMGUI)
+  if(TARGET igl::opengl_glfw)
+    # ImGui module
+    compile_igl_module("opengl/glfw/imgui")
+    if(NOT TARGET imgui)
+      add_subdirectory(${LIBIGL_EXTERNAL}/imgui imgui)
+    endif()
+    target_link_libraries(igl_opengl_glfw_imgui ${IGL_SCOPE} igl_opengl_glfw imgui)
+  else()
+    message(WARNING "ImGui module could not be compiled")
+    set(LIBIGL_WITH_OPENGL_GLFW_IMGUI OFF CACHE BOOL "" FORCE)
+  endif()
+endif()
+
+################################################################################
+### Compile the png part ###
 if(LIBIGL_WITH_PNG)
   # png/ module is anomalous because it also depends on opengl it really should
   # be moved into the opengl/ directory and namespace ...

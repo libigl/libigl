@@ -14,8 +14,8 @@
 template <typename Scalar>
 IGL_INLINE void igl::AtA_cached_precompute(
     const Eigen::SparseMatrix<Scalar>& A,
-    Eigen::SparseMatrix<Scalar>& AtA,
-    igl::AtA_cached_data& data)
+    igl::AtA_cached_data& data,
+    Eigen::SparseMatrix<Scalar>& AtA)
 {
   // 1 Compute At (this could be avoided, but performance-wise it will not make a difference)
   std::vector<std::vector<int> > Col_RowPtr;
@@ -106,14 +106,14 @@ IGL_INLINE void igl::AtA_cached_precompute(
   }
   data.I_outer.push_back(data.I_row.size()); // makes it more efficient to iterate later on
 
-  igl::AtA_cached(A,AtA,data);
+  igl::AtA_cached(A,data,AtA);
 }
 
 template <typename Scalar>
 IGL_INLINE void igl::AtA_cached(
     const Eigen::SparseMatrix<Scalar>& A,
-    Eigen::SparseMatrix<Scalar>& AtA,
-    const igl::AtA_cached_data& data)
+    const igl::AtA_cached_data& data,
+    Eigen::SparseMatrix<Scalar>& AtA)
 {
   for (unsigned i=0; i<data.I_outer.size()-1; ++i)
   {
@@ -125,6 +125,6 @@ IGL_INLINE void igl::AtA_cached(
 
 
 #ifdef IGL_STATIC_LIBRARY
-template void igl::AtA_cached<double>(Eigen::SparseMatrix<double, 0, int> const&, Eigen::SparseMatrix<double, 0, int>&, igl::AtA_cached_data const&);
-template void igl::AtA_cached_precompute<double>(Eigen::SparseMatrix<double, 0, int> const&, Eigen::SparseMatrix<double, 0, int>&, igl::AtA_cached_data&);
+template void igl::AtA_cached<double>(Eigen::SparseMatrix<double, 0, int> const&, igl::AtA_cached_data const&, Eigen::SparseMatrix<double, 0, int>&);
+template void igl::AtA_cached_precompute<double>(Eigen::SparseMatrix<double, 0, int> const&, igl::AtA_cached_data&, Eigen::SparseMatrix<double, 0, int>&);
 #endif

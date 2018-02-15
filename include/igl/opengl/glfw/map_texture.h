@@ -1,6 +1,8 @@
 #ifndef IGL_OPENGL_GLFW_MAP_TEXTURE_H
 #define IGL_OPENGL_GLFW_MAP_TEXTURE_H
 
+#ifdef IGL_OPENGL_4
+
 #include "../../igl_inline.h"
 #include <Eigen/Core>
 #include <vector>
@@ -55,5 +57,7 @@ namespace igl
 #ifndef IGL_STATIC_LIBRARY
 #  include "map_texture.cpp"
 #endif
+
+#endif // IGL_OPENGL_4
 
 #endif

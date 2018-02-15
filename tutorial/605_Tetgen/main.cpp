@@ -1,4 +1,4 @@
-#include <igl/viewer/Viewer.h>
+#include <igl/opengl/glfw/Viewer.h>
 #include <igl/copyleft/tetgen/tetrahedralize.h>
 #include <igl/readOFF.h>
 #include <igl/barycenter.h>
@@ -16,7 +16,7 @@ Eigen::MatrixXi TT;
 Eigen::MatrixXi TF;
 
 // This function is called every time a keyboard button is pressed
-bool key_down(igl::viewer::Viewer& viewer, unsigned char key, int modifier)
+bool key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier)
 {
   using namespace std;
   using namespace Eigen;
@@ -49,9 +49,9 @@ bool key_down(igl::viewer::Viewer& viewer, unsigned char key, int modifier)
       F_temp.row(i*4+3) << (i*4)+1, (i*4)+2, (i*4)+3;
     }
 
-    viewer.data.clear();
-    viewer.data.set_mesh(V_temp,F_temp);
-    viewer.data.set_face_based(true);
+    viewer.data().clear();
+    viewer.data().set_mesh(V_temp,F_temp);
+    viewer.data().set_face_based(true);
   }
 
 
@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
   igl::barycenter(TV,TT,B);
 
   // Plot the generated mesh
-  igl::viewer::Viewer viewer;
+  igl::opengl::glfw::Viewer viewer;
   viewer.callback_key_down = &key_down;
   key_down(viewer,'5',0);
   viewer.launch();
