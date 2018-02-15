@@ -13,7 +13,7 @@ import pyigl as igl
 
 from shared import TUTORIAL_SHARED_PATH, check_dependencies
 
-dependencies = ["cgal", "viewer"]
+dependencies = ["cgal", "glfw"]
 check_dependencies(dependencies)
 
 boolean_type_names = {igl.MESH_BOOLEAN_TYPE_UNION: "Union", igl.MESH_BOOLEAN_TYPE_INTERSECT: "Intersect", igl.MESH_BOOLEAN_TYPE_MINUS: "Minus", igl.MESH_BOOLEAN_TYPE_XOR: "XOR", igl.MESH_BOOLEAN_TYPE_RESOLVE: "Resolve"}
@@ -34,9 +34,9 @@ def update(viewer):
         else:
             C.setRow(f, Green)
 
-    viewer.data.clear()
-    viewer.data.set_mesh(VC, FC)
-    viewer.data.set_colors(C)
+    viewer.data().clear()
+    viewer.data().set_mesh(VC, FC)
+    viewer.data().set_colors(C)
     print("Done.")
 
 
@@ -78,13 +78,13 @@ if __name__ == "__main__":
 
     boolean_type = igl.MESH_BOOLEAN_TYPE_UNION
 
-    viewer = igl.viewer.Viewer()
+    viewer = igl.glfw.Viewer()
     update(viewer)
 
     print(
         "Usage: Press '.' to switch to next boolean operation type. \nPress ',' to switch to previous boolean operation type. \nPress ']' to push near cutting plane away from camera. \nPress '[' to pull near cutting plane closer to camera. \nHint: investigate _inside_ the model to see orientation changes. \n")
 
-    viewer.core.show_lines = True
+    viewer.data().show_lines = True
     viewer.callback_key_down = key_down
     viewer.core.camera_dnear = 3.9
     viewer.launch()

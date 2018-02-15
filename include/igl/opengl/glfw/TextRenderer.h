@@ -5,8 +5,8 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
-#ifndef IGL_VIEWER_TEXT_RENDERER_H
-#define IGL_VIEWER_TEXT_RENDERER_H
+#ifndef IGL_OPENGL_GLFW_TEXT_RENDERER_H
+#define IGL_OPENGL_GLFW_TEXT_RENDERER_H
 #ifdef IGL_VIEWER_WITH_NANOGUI
 
 #include <Eigen/Dense>
@@ -18,7 +18,9 @@ struct NVGcontext;
 
 namespace igl
 {
-namespace viewer
+namespace opengl
+{
+namespace glfw
 {
 
   class TextRenderer
@@ -45,6 +47,7 @@ namespace viewer
     NVGcontext *ctx;
   };
 
+}
 }
 }
 

@@ -13,7 +13,7 @@ import pyigl as igl
 
 from shared import TUTORIAL_SHARED_PATH, check_dependencies
 
-dependencies = ["viewer"]
+dependencies = ["glfw"]
 check_dependencies(dependencies)
 
 
@@ -41,8 +41,8 @@ def pre_draw(viewer):
         resolve = False
 
     U.setCol(2, z_max * Z)
-    viewer.data.set_vertices(U)
-    viewer.data.compute_normals()
+    viewer.data().set_vertices(U)
+    viewer.data().compute_normals()
 
     if viewer.core.is_animating:
         z_max += z_dir
@@ -77,7 +77,7 @@ is_outer = [Vrn[i] - 1.00 > -1e-15 for i in range(0, V.rows())]
 is_inner = [Vrn[i] - 0.15 < 1e-15 for i in range(0, V.rows())]
 in_b = [is_outer[i] or is_inner[i] for i in range(0, len(is_outer))]
 
-b = igl.eigen.MatrixXi([[i for i in range(0, V.rows()) if (in_b[i])]]).transpose()
+b = igl.eigen.MatrixXd([[i for i in range(0, V.rows()) if (in_b[i])]]).transpose().castint()
 
 bc.resize(b.size(), 1)
 
@@ -96,10 +96,10 @@ for f in range(0, F.rows()):
         C.setRow(f, gold)
 
 # Plot the mesh with pseudocolors
-viewer = igl.viewer.Viewer()
-viewer.data.set_mesh(U, F)
-viewer.core.show_lines = False
-viewer.data.set_colors(C)
+viewer = igl.glfw.Viewer()
+viewer.data().set_mesh(U, F)
+viewer.data().show_lines = False
+viewer.data().set_colors(C)
 viewer.core.trackball_angle = igl.eigen.Quaterniond(0.81,-0.58,-0.03,-0.03)
 viewer.core.trackball_angle.normalize()
 viewer.callback_pre_draw = pre_draw
