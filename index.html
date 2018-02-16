@@ -1,14 +1,11 @@
 <!DOCTYPE html>
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
 <head>
 	<meta charset="utf-8"/>
 	<title>libigl</title>
 	<meta name="author" content="Alec Jacobson and Daniele Panozzo and others"/>
 	<link type="text/css" rel="stylesheet" href="tutorial/style.css"/>
-<script type='text/javascript' src='http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
-<link rel='stylesheet' href='http://yandex.st/highlightjs/7.3/styles/default.min.css'>
-<script src='http://yandex.st/highlightjs/7.3/highlight.min.js'></script>
-<script>hljs.initHighlightingOnLoad();</script>
+<script type='text/javascript' src='http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script> <link rel='stylesheet' href='http://yandex.st/highlightjs/7.3/styles/default.min.css'> <script src='http://yandex.st/highlightjs/7.3/highlight.min.js'></script> <script>hljs.initHighlightingOnLoad();</script>
 </head>
 <body>
 
@@ -22,10 +19,10 @@
 
 <blockquote>
 <p>Get started with:</p>
+</blockquote>
 
 <pre><code class="bash">git clone --recursive https://github.com/libigl/libigl.git
 </code></pre>
-</blockquote>
 
 <p>libigl is a simple C++ geometry processing library. We have a wide
 functionality including construction of sparse discrete differential geometry
@@ -39,7 +36,7 @@ like MATLAB.</p>
 just include igl headers (e.g. <code>#include &lt;igl/cotmatrix.h&gt;</code>) and run. Each
 header file contains a single function (e.g. <code>igl/cotmatrix.h</code> contains
 <code>igl::cotmatrix()</code>). Most are tailored to operate on a generic triangle mesh
-stored in an n-by&#8211;3 matrix of vertex positions <code>V</code> and an m-by&#8211;3 matrix of
+stored in an n-by-3 matrix of vertex positions <code>V</code> and an m-by-3 matrix of
 triangle indices <code>F</code>.</p>
 
 <p><em>Optionally</em> the library may also be <a href="optional/">pre-compiled</a> into a statically
@@ -121,14 +118,14 @@ libigl depends only on the <a href="http://eigen.tuxfamily.org">Eigen</a> librar
 <p>Libigl compartmentalizes its <strong>optional</strong> dependences via its directory
 organization in the <code>include/</code> folder. All header files located <em>directly</em> in
 the <code>include/igl/</code> folder have only stl and Eigen as dependencies. For example,
-all of the headers that depend on CGAL are located in <code>include/igl/cgal</code>. For a
-full list of <em>optional</em> dependencies check <code>optional/CMakeLists.txt</code>.</p>
+all of the headers that depend on CGAL are located in <code>include/igl/copyleft/cgal</code>.
+For a full list of <em>optional</em> dependencies check <code>optional/CMakeLists.txt</code>.</p>
 
 <h3 id="gccandtheoptionalcgaldependency">GCC and the Optional CGAL Dependency</h3>
 
-<p>The <code>include/igl/cgal/*.h</code> headers depend on CGAL. It has come to our attention
-that CGAL does not work properly with GCC 4.8. To the best of our knowledge,
-GCC 4.7 and clang will work correctly.</p>
+<p>The <code>include/igl/copyleft/cgal/*.h</code> headers depend on CGAL. It has come to
+our attention that CGAL does not work properly with GCC 4.8. To the best of
+our knowledge, GCC 4.7 and clang will work correctly.</p>
 
 <h3 id="openmpandwindows">OpenMP and Windows</h3>
 
@@ -210,7 +207,7 @@ BibTeX entry:</p>
   title = {{libigl}: A simple {C++} geometry processing library},
   author = {Alec Jacobson and Daniele Panozzo and others},
   note = {http://libigl.github.io/libigl/},
-  year = {2016},
+  year = {2017},
 }
 </code></pre>
 
@@ -221,56 +218,59 @@ Eurographics/ACM Symposium on Geometry Processing software award. Here are a
 few labs/companies/institutions using libigl:</p>
 
 <ul>
-<li><a href="http://www.activision.com">Activision</a></li>
-<li><a href="http://www.adobe.com/technology/">Adobe Research</a></li>
-<li><a href="http://www.ea.com">Electronic Arts, Inc</a></li>
-<li><a href="https://epicgames.com">Epic Games</a></li>
-<li><a href="https://research.google.com">Google Research</a></li>
-<li><a href="http://meshconsultants.ca/">Mesh</a>, consultants, Canada</li>
-<li><a href="http://graphics.pixar.com/research/">Pixar Research</a></li>
-<li><a href="http://esotericsoftware.com/">Spine by Esoteric Software</a> is an animation tool dedicated to 2D characters.</li>
-<li>Columbia University, <a href="http://www.cs.columbia.edu/cg/">Columbia Computer Graphics Group</a>, USA</li>
-<li><a href="http://www.graphics.cornell.edu/">Cornell University</a>, USA</li>
-<li><a href="http://dcgi.felk.cvut.cz/">Czech Technical University in Prague</a>, Czech</li>
-<li>EPF Lausanne, <a href="http://lgg.epfl.ch/people.php">Computer Graphics and Geometry Laboratory</a>, Switzerland</li>
-<li>ETH Zurich, <a href="http://igl.ethz.ch/">Interactive Geometry Lab</a> and <a href="http://ait.inf.ethz.ch/">Advanced Technologies Lab</a>, Swizterland</li>
-<li>George Mason University, <a href="http://cs.gmu.edu/~ygingold/">CraGL</a>, USA</li>
-<li><a href="http://www.ust.hk/">Hong Kong University of Science and Technology</a>, Hong Kong</li>
-<li><a href="https://www.inria.fr/centre/grenoble/">Inria, Université Grenoble Alpes</a>, France</li>
-<li><a href="http://english.jiangnan.edu.cn">Jiangnan university</a>, China</li>
-<li><a href="http://www.nii.ac.jp/en/">National Institute of Informatics</a>, Japan</li>
-<li>New York University, <a href="http://mrl.nyu.edu/">Media Research Lab</a>, USA</li>
-<li>NYUPoly, <a href="http://game.engineering.nyu.edu/">Game Innovation Lab</a>, USA</li>
-<li><a href="https://www.cg.tu-berlin.de">TU Berlin</a>, Germany</li>
-<li><a href="http://www.tudelft.nl/en/">TU Delft</a>, Netherlands</li>
-<li><a href="https://www.tuwien.ac.at/en/tuwien_home/">TU Wien</a>, Austria</li>
-<li><a href="http://www.telecom-paristech.fr/en/formation-et-innovation-dans-le-numerique.html">Telecom ParisTech</a>, Paris, France</li>
-<li><a href="http://www.staff.science.uu.nl/~vaxma001/">Utrecht University</a>, The Netherlands</li>
-<li><a href="http://mtm.ufsc.br/~leo/">Universidade Federal de Santa Catarina</a>, Brazil</li>
-<li><a href="http://vecg.cs.ucl.ac.uk/">University College London</a>, England</li>
-<li><a href="http://vis.berkeley.edu/">University of California Berkeley</a>, USA</li>
-<li><a href="http://www.cam.ac.uk/">University of Cambridge</a>, England</li>
-<li><a href="http://cg.cis.upenn.edu/">University of Pennsylvania</a>, USA</li>
-<li><a href="http://www.cs.utexas.edu/users/evouga/">University of Texas at Austin</a>, USA</li>
-<li><a href="http://dgp.toronto.edu">University of Toronto</a>, Canada</li>
-<li><a href="https://www.csc.uvic.ca/Research/graphics/">University of Victoria</a>, Canada</li>
-<li><a href="http://www.uwec.edu/computer-science/">University of Wisconsin-Eau Claire</a>, USA</li>
-<li><a href="http://www.usi.ch/en">Università della Svizzera Italiana</a>, Switzerland</li>
-<li><a href="http://www.univ-tlse3.fr/">Université Toulouse III Paul Sabatier</a>, France</li>
-<li><a href="http://www.math.zju.edu.cn/cagd/">Zhejiang University</a>, China</li>
+<li> <a href="http://www.activision.com">Activision</a></li>
+<li> <a href="http://www.adobe.com/technology/">Adobe Research</a></li>
+<li> <a href="http://www.ea.com">Electronic Arts, Inc</a></li>
+<li> <a href="https://epicgames.com">Epic Games</a></li>
+<li> <a href="https://research.google.com">Google Research</a></li>
+<li> <a href="http://ilm.com">Industrial Light and Magic</a></li>
+<li> <a href="http://meshconsultants.ca/">Mesh consultants</a>, Canada</li>
+<li> <a href="https://www.microsoft.com/en-us/research/">Microsoft Research</a></li>
+<li> <a href="http://graphics.pixar.com/research/">Pixar</a></li>
+<li> <a href="http://esotericsoftware.com/">Spine by Esoteric Software</a> is an animation tool dedicated to 2D characters.</li>
+<li> <a href="http://vvvv.org">vvvv toolkit</a> a multipurpose tookit</li>
+<li> Columbia University, <a href="http://www.cs.columbia.edu/cg/">Columbia Computer Graphics Group</a>, USA</li>
+<li> <a href="http://www.graphics.cornell.edu/">Cornell University</a>, USA</li>
+<li> <a href="http://dcgi.felk.cvut.cz/">Czech Technical University in Prague</a>, Czech</li>
+<li> EPF Lausanne, <a href="http://lgg.epfl.ch/people.php">Computer Graphics and Geometry Laboratory</a>, Switzerland</li>
+<li> ETH Zurich, <a href="http://igl.ethz.ch/">Interactive Geometry Lab</a> and <a href="http://ait.inf.ethz.ch/">Advanced Technologies Lab</a>, Swizterland</li>
+<li> George Mason University, <a href="http://cs.gmu.edu/~ygingold/">CraGL</a>, USA</li>
+<li> <a href="http://www.ust.hk/">Hong Kong University of Science and Technology</a>, Hong Kong</li>
+<li> <a href="https://www.inria.fr/centre/grenoble/">Inria, Université Grenoble Alpes</a>, France</li>
+<li> <a href="http://english.jiangnan.edu.cn">Jiangnan university</a>, China</li>
+<li> <a href="http://www.nii.ac.jp/en/">National Institute of Informatics</a>, Japan</li>
+<li> New York University, <a href="http://mrl.nyu.edu/">Media Research Lab</a>, USA</li>
+<li> NYUPoly, <a href="http://game.engineering.nyu.edu/">Game Innovation Lab</a>, USA</li>
+<li> <a href="https://www.cg.tu-berlin.de">TU Berlin</a>, Germany</li>
+<li> <a href="http://www.tudelft.nl/en/">TU Delft</a>, Netherlands</li>
+<li> <a href="https://www.tuwien.ac.at/en/tuwien_home/">TU Wien</a>, Austria</li>
+<li> <a href="http://www.telecom-paristech.fr/en/formation-et-innovation-dans-le-numerique.html">Telecom ParisTech</a>, Paris, France</li>
+<li> <a href="http://www.staff.science.uu.nl/~vaxma001/">Utrecht University</a>, The Netherlands</li>
+<li> <a href="http://mtm.ufsc.br/~leo/">Universidade Federal de Santa Catarina</a>, Brazil</li>
+<li> <a href="http://vecg.cs.ucl.ac.uk/">University College London</a>, England</li>
+<li> <a href="http://vis.berkeley.edu/">University of California Berkeley</a>, USA</li>
+<li> <a href="http://www.cam.ac.uk/">University of Cambridge</a>, England</li>
+<li> <a href="http://cg.cis.upenn.edu/">University of Pennsylvania</a>, USA</li>
+<li> <a href="http://www.cs.utexas.edu/users/evouga/">University of Texas at Austin</a>, USA</li>
+<li> <a href="http://dgp.toronto.edu">University of Toronto</a>, Canada</li>
+<li> <a href="https://www.csc.uvic.ca/Research/graphics/">University of Victoria</a>, Canada</li>
+<li> <a href="http://www.uwec.edu/computer-science/">University of Wisconsin-Eau Claire</a>, USA</li>
+<li> <a href="http://www.usi.ch/en">Università della Svizzera Italiana</a>, Switzerland</li>
+<li> <a href="http://www.univ-tlse3.fr/">Université Toulouse III Paul Sabatier</a>, France</li>
+<li> <a href="http://www.math.zju.edu.cn/cagd/">Zhejiang University</a>, China</li>
 </ul>
 
 <h2 id="contact">Contact</h2>
 
 <p>Libigl is a group endeavor led by <a href="http://www.cs.toronto.edu/~jacobson/">Alec
 Jacobson</a> and <a href="http://cs.nyu.edu/~panozzo/">Daniele
-Panozzo</a>. Please <a href="&#109;&#97;&#105;&#108;&#x74;&#111;&#x3a;&#x61;&#x6c;&#101;&#x63;&#x6a;&#x61;&#x63;&#111;&#98;&#115;&#111;&#110;&#64;&#103;&#109;&#x61;&#105;&#108;&#x2e;&#x63;&#x6f;&#x6d;&#44;&#x64;&#x61;&#110;&#105;&#101;&#x6c;&#101;&#x2e;&#x70;&#x61;&#110;&#x6f;&#122;&#x7a;&#x6f;&#64;&#x67;&#x6d;&#x61;&#x69;&#x6c;&#x2e;&#99;&#x6f;&#x6d;">&#99;&#x6f;&#x6e;&#116;&#x61;&#99;&#x74;
-&#117;&#115;</a> if you have
+Panozzo</a>. Please <a href="mailto:alecjacobson@gmail.com,daniele.panozzo@gmail.com">contact
+us</a> if you have
 questions or comments. For troubleshooting, please post an
 <a href="https://github.com/libigl/libigl/issues">issue</a> on github.</p>
 
-<p>If you&#8217;re using libigl in your projects, quickly <a href="&#x6d;&#x61;&#105;&#108;&#x74;&#x6f;&#58;&#97;&#x6c;&#101;&#99;&#106;&#x61;&#x63;&#111;&#x62;&#x73;&#x6f;&#110;&#64;&#103;&#x6d;&#x61;&#x69;&#x6c;&#46;&#99;&#x6f;&#x6d;&#x2c;&#100;&#x61;&#110;&#105;&#x65;&#108;&#x65;&#x2e;&#112;&#97;&#x6e;&#111;&#x7a;&#x7a;&#x6f;&#x40;&#103;&#109;&#x61;&#105;&#x6c;&#x2e;&#x63;&#111;&#109;">&#x64;&#x72;&#111;&#112; &#x75;&#x73; &#97;
-&#110;&#111;&#116;&#101;</a>. Tell us who you
+<p>If you&#8217;re using libigl in your projects, quickly <a href="mailto:alecjacobson@gmail.com,daniele.panozzo@gmail.com">drop us a
+note</a>. Tell us who you
 are and what you&#8217;re using it for. This helps us apply for funding and justify
 spending time maintaining this.</p>
 
@@ -279,11 +279,10 @@ page</a>.</p>
 
 <h2 id="copyright">Copyright</h2>
 
-<p>2017 Alec Jacobson, Daniele Panozzo, Christian Schüller, Olga Diamanti, Qingnan
-Zhou, Sebastian Koch, Amir Vaxman, Nico Pietroni, Stefan Brugger, Kenshi Takayama, Wenzel Jakob, Nikolas De
-Giorgis, Luigi Rocca, Leonardo Sacht, Kevin Walliman, Olga Sorkine-Hornung, and others.</p>
+<p>2017 Alec Jacobson, Daniele Panozzo, Christian Schüller, Olga Diamanti, Qingnan Zhou, Sebastian Koch, Jeremie Dumas, Amir Vaxman, Nico Pietroni, Stefan Brugger, Kenshi Takayama, Wenzel Jakob, Nikolas De Giorgis, Luigi Rocca, Leonardo Sacht, Kevin Walliman, Olga Sorkine-Hornung, and others.</p>
 
 <p>Please see individual files for appropriate copyright notices.</p>
 
 </body>
 </html>
+
