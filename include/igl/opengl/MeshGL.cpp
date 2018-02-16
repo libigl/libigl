@@ -166,7 +166,6 @@ IGL_INLINE void igl::opengl::MeshGL::init()
   is_initialized = true;
   std::string mesh_vertex_shader_string =
   "#version 150\n"
-  "uniform mat4 model;"
   "uniform mat4 view;"
   "uniform mat4 proj;"
   "in vec3 position;"
@@ -184,10 +183,10 @@ IGL_INLINE void igl::opengl::MeshGL::init()
 
   "void main()"
   "{"
-  "  position_eye = vec3 (view * model * vec4 (position, 1.0));"
-  "  normal_eye = vec3 (view * model * vec4 (normal, 0.0));"
+  "  position_eye = vec3 (view * vec4 (position, 1.0));"
+  "  normal_eye = vec3 (view * vec4 (normal, 0.0));"
   "  normal_eye = normalize(normal_eye);"
-  "  gl_Position = proj * vec4 (position_eye, 1.0);" //proj * view * model * vec4(position, 1.0);"
+  "  gl_Position = proj * vec4 (position_eye, 1.0);" //proj * view * vec4(position, 1.0);"
   "  Kai = Ka;"
   "  Kdi = Kd;"
   "  Ksi = Ks;"
@@ -196,13 +195,12 @@ IGL_INLINE void igl::opengl::MeshGL::init()
 
   std::string mesh_fragment_shader_string =
   "#version 150\n"
-  "uniform mat4 model;"
   "uniform mat4 view;"
   "uniform mat4 proj;"
   "uniform vec4 fixed_color;"
   "in vec3 position_eye;"
   "in vec3 normal_eye;"
-  "uniform vec3 light_position_world;"
+  "uniform vec3 light_position_eye;"
   "vec3 Ls = vec3 (1, 1, 1);"
   "vec3 Ld = vec3 (1, 1, 1);"
   "vec3 La = vec3 (1, 1, 1);"
@@ -219,7 +217,6 @@ IGL_INLINE void igl::opengl::MeshGL::init()
   "{"
   "vec3 Ia = La * vec3(Kai);"    // ambient intensity
 
-  "vec3 light_position_eye = vec3 (view * vec4 (light_position_world, 1.0));"
   "vec3 vector_to_light_eye = light_position_eye - position_eye;"
   "vec3 direction_to_light_eye = normalize (vector_to_light_eye);"
   "float dot_prod = dot (direction_to_light_eye, normal_eye);"
@@ -239,7 +236,6 @@ IGL_INLINE void igl::opengl::MeshGL::init()
 
   std::string overlay_vertex_shader_string =
   "#version 150\n"
-  "uniform mat4 model;"
   "uniform mat4 view;"
   "uniform mat4 proj;"
   "in vec3 position;"
@@ -248,7 +244,7 @@ IGL_INLINE void igl::opengl::MeshGL::init()
 
   "void main()"
   "{"
-  "  gl_Position = proj * view * model * vec4 (position, 1.0);"
+  "  gl_Position = proj * view * vec4 (position, 1.0);"
   "  color_frag = color;"
   "}";
 

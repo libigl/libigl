@@ -241,7 +241,7 @@ py::class_<igl::opengl::ViewerCore> viewercore_class(me, "ViewerCore");
     })
 
     .def_readwrite("lighting_factor",&igl::opengl::ViewerCore::lighting_factor)
-    .def_readwrite("model_zoom",&igl::opengl::ViewerCore::model_zoom)
+    .def_readwrite("camera_base_zoom",&igl::opengl::ViewerCore::camera_base_zoom)
 
     .def_property("trackball_angle",
     [](const igl::opengl::ViewerCore& core) {return Eigen::Quaterniond(core.trackball_angle.cast<double>());},
@@ -250,22 +250,12 @@ py::class_<igl::opengl::ViewerCore> viewercore_class(me, "ViewerCore");
       core.trackball_angle = Eigen::Quaternionf(q.cast<float>());
     })
 
-    .def_property("model_translation",
-    [](const igl::opengl::ViewerCore& core) {return Eigen::MatrixXd(core.model_translation.cast<double>());},
+    .def_property("camera_translation",
+    [](const igl::opengl::ViewerCore& core) {return Eigen::MatrixXd(core.camera_translation.cast<double>());},
     [](igl::opengl::ViewerCore& core, const Eigen::MatrixXd& v)
     {
-      assert_is_Vector3("model_translation",v);
-      core.model_translation = Eigen::Vector3f(v.cast<float>());
-    })
-
-    .def_readwrite("model_zoom_uv",&igl::opengl::ViewerCore::model_zoom_uv)
-
-    .def_property("model_translation_uv",
-    [](const igl::opengl::ViewerCore& core) {return Eigen::MatrixXd(core.model_translation_uv.cast<double>());},
-    [](igl::opengl::ViewerCore& core, const Eigen::MatrixXd& v)
-    {
-      assert_is_Vector3("model_translation_uv",v);
-      core.model_translation_uv = Eigen::Vector3f(v.cast<float>());
+      assert_is_Vector3("camera_translation",v);
+      core.camera_translation = Eigen::Vector3f(v.cast<float>());
     })
 
     .def_readwrite("camera_zoom",&igl::opengl::ViewerCore::camera_zoom)
@@ -380,7 +370,7 @@ py::class_<igl::opengl::ViewerCore> viewercore_class(me, "ViewerCore");
     viewer_class
     .def(py::init<>())
     //.def_readwrite("data", &igl::opengl::glfw::Viewer::data)
-   
+
     // .def_property("data",
     // [](igl::opengl::glfw::Viewer& viewer) {return viewer.data();},
     // [](igl::opengl::glfw::Viewer& viewer, const igl::opengl::ViewerData& data)
