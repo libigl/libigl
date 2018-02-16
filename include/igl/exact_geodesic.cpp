@@ -12,6 +12,7 @@
 //Code from https://code.google.com/archive/p/geodesic/
 // Compiled into a single file by Zhongshi Jiang
 
+#include <igl/PI.h>
 #include <algorithm>
 #include <assert.h>
 #include <cmath>
@@ -25,10 +26,6 @@ namespace igl{
 namespace geodesic{
 
 //#include "geodesic_constants_and_simple_functions.h"
-
-#ifndef M_PI
-#define M_PI 3.14159265358979323846
-#endif
 
 //double const GEODESIC_INF = std::numeric_limits<double>::max();
 double const GEODESIC_INF = 1e100;
@@ -235,7 +232,7 @@ public:
 	void clear()
 	{
 		m_num_bytes = 0;
-		m_buffer = std::auto_ptr<double>();
+		m_buffer = std::shared_ptr<double>();
 	}
 
 	template<class T>
@@ -245,7 +242,7 @@ public:
 		if(wanted > m_num_bytes)
 		{
 			unsigned new_size = (unsigned) ceil(wanted / (double)sizeof(double));
-			m_buffer = std::auto_ptr<double>(new double[new_size]);
+			m_buffer = std::shared_ptr<double>(new double[new_size]);
 			m_num_bytes = new_size*sizeof(double);
 		}
 
@@ -266,7 +263,7 @@ public:
 
 private:
 
-	std::auto_ptr<double> m_buffer;
+	std::shared_ptr<double> m_buffer;
 	unsigned m_num_bytes;
 };
 
@@ -993,7 +990,7 @@ inline void Mesh::build_adjacencies()
 			f.corner_angles()[j] = angle;
 			sum += angle;
 		}
-		assert(std::abs(sum - M_PI) < 1e-5);		//algorithm works well with non-degenerate meshes only 
+		assert(std::abs(sum - igl::PI) < 1e-5);		//algorithm works well with non-degenerate meshes only 
 	}
 
 		//define m_turn_around_flag for vertices
@@ -1011,7 +1008,7 @@ inline void Mesh::build_adjacencies()
 	for(unsigned i=0; i<m_vertices.size(); ++i)
 	{
 		Vertex& v = m_vertices[i];
-		v.saddle_or_boundary() = (total_vertex_angle[v.id()] > 2.0*M_PI - 1e-5); 
+		v.saddle_or_boundary() = (total_vertex_angle[v.id()] > 2.0*igl::PI - 1e-5); 
 	}
 
 	for(unsigned i=0; i<m_edges.size(); ++i)
@@ -1133,8 +1130,8 @@ inline bool Mesh::verify()		//verifies connectivity of the mesh and prints some 
 		}
 	}
 	// std::cout << "min/max face angles are "
-	// 		  << min_angle/M_PI*180.0 << "/"
-	// 		  << max_angle/M_PI*180.0
+	// 		  << min_angle/igl::PI*180.0 << "/"
+	// 		  << max_angle/igl::PI*180.0
 	// 		  << " degrees\n";
 
 	// std::cout << std::endl;
