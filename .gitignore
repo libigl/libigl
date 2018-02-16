@@ -98,3 +98,5 @@ python/builddebug
 tutorial/.idea
 python/buildstatic
 tutorial/cmake-build-debug
+.vscode/
+.idea/
