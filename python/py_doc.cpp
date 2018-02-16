@@ -598,6 +598,23 @@ const char *__doc_igl_embree_reorient_facets_raycast = R"igl_Qu8mg5v7(// Orient 
     // Outputs:
     //   I  #F list of whether face has been flipped
     //   C  #F list of patch ID (output of bfs_orient > manifold patches))igl_Qu8mg5v7";
+const char *__doc_igl_geodesic_exact_geodesic = R"igl_Qu8mg5v7( 
+    // Exact geodesic algorithm for triangular mesh with the implementation from https://code.google.com/archive/p/geodesic/,  
+    // and the algorithm first described by Mitchell, Mount and Papadimitriou in 1987 
+    //  
+    // Inputs: 
+    //   V  #V by 3 list of 3D vertex positions 
+    //   F  #F by 3 list of mesh faces 
+    //   VS #VS by 1 vector specifying indices of source vertices 
+    //   FS #FS by 1 vector specifying indices of source faces 
+    //   VT #VT by 1 vector specifying indices of target vertices 
+    //   FT #FT by 1 vector specifying indices of target faces 
+    // Output: 
+    //   D  #VT+#FT by 1 vector of geodesic distances of each target w.r.t. the nearest one in the source set 
+    // 
+    // Note:  
+    //      Specifying a face as target/source means its center.  
+    //)igl_Qu8mg5v7";
 const char *__doc_igl_find_cross_field_singularities = R"igl_Qu8mg5v7(// Inputs:
   //   V                #V by 3 eigen Matrix of mesh vertex 3D positions
   //   F                #F by 3 eigen Matrix of face (quad) indices
