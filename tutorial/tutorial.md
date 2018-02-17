@@ -44,10 +44,11 @@ lecture notes links to a cross-platform example application.
     * [202 Gaussian Curvature](#gaussiancurvature)
     * [203 Curvature Directions](#curvaturedirections)
     * [204 Gradient](#gradient)
-    * [204 Laplacian](#laplacian)
+    * [205 Laplacian](#laplacian)
         * [Mass matrix](#massmatrix)
         * [Alternative construction of
           Laplacian](#alternativeconstructionoflaplacian)
+    * [206 Geodesic Distance](#geodesic)
 * [Chapter 3: Matrices and Linear Algebra](#chapter3:matricesandlinearalgebra)
     * [301 Slice](#slice)
     * [302 Sort](#sort)
@@ -789,6 +790,28 @@ hints that we may consider $\mathbf{G}^T$ as a discrete _divergence_ operator,
 since the Laplacian is the divergence of the gradient. Naturally, $\mathbf{G}^T$ is
 a $n \times md$ sparse matrix which takes vector values stored at triangle faces
 to scalar divergence values at vertices.
+
+## Geodesic
+
+The discrete geodesic distance between two points is the length of the shortest path between then restricted to the surface. For triangle meshes, such a path is made of a set of segments which can be either edges of the mesh or crossing a triangle.
+
+Libigl includes a wrapper for the exact geodesic algorithm [#mitchell_1987] developed by Danil Kirsanov (https://code.google.com/archive/p/geodesic/), exposing it through an Eigen-based API. The function 
+```cpp
+igl::exact_geodesic(V,F,VS,FS,VT,FT,d);
+```
+computes the closest geodesic distances of each vertex in VT or face in FT, from the source vertices VS or faces FS of the input mesh V,F. The output is writted in the vector d, which lists first the distances for the vertices in VT, and then for the faces in FT. For example, if you want to compute the distance from the vertex with id ```vid```, to all vertices of F you can use:
+```cpp
+Eigen::VectorXi VS,FS,VT,FT;
+// The selected vertex is the source
+VS.resize(1);
+VS << vid;
+// All vertices are the targets
+VT.setLinSpaced(V.rows(),0,V.rows()-1);
+Eigen::VectorXd d;
+igl::exact_geodesic(V,F,VS,FS,VT,FT,d);
+```
+![[Example 206](206_GeodesicDistance/main.cpp) allows to interactively pick the source vertex and displays the distance using a periodic color pattern.
+](images/geodesicdistance.jpg)
 
 # Chapter 3: Matrices and linear algebra
 Libigl relies heavily on the Eigen library for dense and sparse linear algebra
@@ -3524,3 +3547,4 @@ pseudonormal](https://www.google.com/search?q=Signed+distance+computation+using+
   Solid
   Geometry](https://www.google.com/search?q=Mesh+Arrangements+for+Solid+Geometry),
   2016
+[#mitchell_1987]: Joseph S. B. Mitchell, David M. Mount, Christos H. Papadimitriou. [The Discrete Geodesic Problem](https://www.google.com/search?q=The+Discrete+Geodesic+Problem), 1987
