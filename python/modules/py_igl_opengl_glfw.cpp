@@ -241,21 +241,12 @@ py::class_<igl::opengl::ViewerCore> viewercore_class(me, "ViewerCore");
     })
 
     .def_readwrite("lighting_factor",&igl::opengl::ViewerCore::lighting_factor)
-    .def_readwrite("camera_base_zoom",&igl::opengl::ViewerCore::camera_base_zoom)
 
     .def_property("trackball_angle",
     [](const igl::opengl::ViewerCore& core) {return Eigen::Quaterniond(core.trackball_angle.cast<double>());},
     [](igl::opengl::ViewerCore& core, const Eigen::Quaterniond& q)
     {
       core.trackball_angle = Eigen::Quaternionf(q.cast<float>());
-    })
-
-    .def_property("camera_translation",
-    [](const igl::opengl::ViewerCore& core) {return Eigen::MatrixXd(core.camera_translation.cast<double>());},
-    [](igl::opengl::ViewerCore& core, const Eigen::MatrixXd& v)
-    {
-      assert_is_Vector3("camera_translation",v);
-      core.camera_translation = Eigen::Vector3f(v.cast<float>());
     })
 
     .def_property("camera_base_translation",
@@ -266,6 +257,15 @@ py::class_<igl::opengl::ViewerCore> viewercore_class(me, "ViewerCore");
       core.camera_base_translation = Eigen::Vector3f(v.cast<float>());
     })
 
+    .def_property("camera_translation",
+    [](const igl::opengl::ViewerCore& core) {return Eigen::MatrixXd(core.camera_translation.cast<double>());},
+    [](igl::opengl::ViewerCore& core, const Eigen::MatrixXd& v)
+    {
+      assert_is_Vector3("camera_translation",v);
+      core.camera_translation = Eigen::Vector3f(v.cast<float>());
+    })
+
+    .def_readwrite("camera_base_zoom",&igl::opengl::ViewerCore::camera_base_zoom)
     .def_readwrite("camera_zoom",&igl::opengl::ViewerCore::camera_zoom)
     .def_readwrite("orthographic",&igl::opengl::ViewerCore::orthographic)
 
@@ -319,14 +319,6 @@ py::class_<igl::opengl::ViewerCore> viewercore_class(me, "ViewerCore");
     {
       assert_is_Matrix4("view",v);
       core.view = Eigen::Matrix4f(v.cast<float>());
-    })
-
-    .def_property("model",
-    [](const igl::opengl::ViewerCore& core) {return Eigen::MatrixXd(core.model.cast<double>());},
-    [](igl::opengl::ViewerCore& core, const Eigen::MatrixXd& v)
-    {
-      assert_is_Matrix4("model",v);
-      core.model = Eigen::Matrix4f(v.cast<float>());
     })
 
     .def_property("proj",
