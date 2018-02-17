@@ -168,6 +168,7 @@ IGL_INLINE void igl::opengl::MeshGL::init()
   "#version 150\n"
   "uniform mat4 view;"
   "uniform mat4 proj;"
+  "uniform mat4 normal_matrix;"
   "in vec3 position;"
   "in vec3 normal;"
   "out vec3 position_eye;"
@@ -184,7 +185,7 @@ IGL_INLINE void igl::opengl::MeshGL::init()
   "void main()"
   "{"
   "  position_eye = vec3 (view * vec4 (position, 1.0));"
-  "  normal_eye = vec3 (view * vec4 (normal, 0.0));"
+  "  normal_eye = vec3 (normal_matrix * vec4 (normal, 0.0));"
   "  normal_eye = normalize(normal_eye);"
   "  gl_Position = proj * vec4 (position_eye, 1.0);" //proj * view * vec4(position, 1.0);"
   "  Kai = Ka;"
@@ -219,11 +220,11 @@ IGL_INLINE void igl::opengl::MeshGL::init()
 
   "vec3 vector_to_light_eye = light_position_eye - position_eye;"
   "vec3 direction_to_light_eye = normalize (vector_to_light_eye);"
-  "float dot_prod = dot (direction_to_light_eye, normal_eye);"
+  "float dot_prod = dot (direction_to_light_eye, normalize(normal_eye));"
   "float clamped_dot_prod = max (dot_prod, 0.0);"
   "vec3 Id = Ld * vec3(Kdi) * clamped_dot_prod;"    // Diffuse intensity
 
-  "vec3 reflection_eye = reflect (-direction_to_light_eye, normal_eye);"
+  "vec3 reflection_eye = reflect (-direction_to_light_eye, normalize(normal_eye));"
   "vec3 surface_to_viewer_eye = normalize (-position_eye);"
   "float dot_prod_specular = dot (reflection_eye, surface_to_viewer_eye);"
   "dot_prod_specular = float(abs(dot_prod)==dot_prod) * max (dot_prod_specular, 0.0);"

@@ -131,6 +131,7 @@ public:
   // Save the OpenGL transformation matrices used for the previous rendering pass
   Eigen::Matrix4f view;
   Eigen::Matrix4f proj;
+  Eigen::Matrix4f norm;
   public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
@@ -174,6 +175,7 @@ namespace igl {
       SERIALIZE_MEMBER(viewport);
       SERIALIZE_MEMBER(view);
       SERIALIZE_MEMBER(proj);
+      SERIALIZE_MEMBER(norm);
     }
 
     template<>
