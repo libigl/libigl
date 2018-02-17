@@ -14,7 +14,7 @@
 
 #include <igl/PI.h>
 #include <algorithm>
-#include <assert.h>
+#include <cassert>
 #include <cmath>
 #include <cstddef>
 #include <ctime>
@@ -22,6 +22,7 @@
 #include <iostream>
 #include <set>
 #include <vector>
+#include <memory>
 namespace igl{
 namespace geodesic{
 
