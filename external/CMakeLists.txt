@@ -8,7 +8,7 @@ include(ExternalProject)
 # while on Windows, we need CR/LF line feeds (only available in the .zip)
 
 # Boost 1.65 fucks things up because of https://github.com/boostorg/build/issues/230
-# Boost 1.66 fucks things up becaue of https://github.com/boostorg/build/issues/273
+# Boost 1.66 fucks things up because of https://github.com/boostorg/build/issues/273
 if(UNIX)
   set(BOOST_URL "https://dl.bintray.com/boostorg/release/1.65.1/source/boost_1_65_1.tar.gz")
   set(BOOST_HASH SHA256=a13de2c8fbad635e6ba9c8f8714a0e6b4264b60a29b964b940a22554705b6b60)
