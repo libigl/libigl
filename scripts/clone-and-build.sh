@@ -64,7 +64,7 @@ The command produced the following standard output/error before failing:
   echo -e "$html_content" | mail -s "$subject" $recipients
 } 
 
-# Runs the arguements as a command as usual, but if the command fails send an
+# Runs the arguments as a command as usual, but if the command fails send an
 # email using `report_error` and exit without continuing
 #
 #     guard command arg1 arg2 ...

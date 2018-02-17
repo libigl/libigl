@@ -43,7 +43,7 @@ namespace igl
     //   UV             #UV by 2 list of vertices in 2D
     //   FUV            #FUV by 3 list of face indices in UV
     //
-    // TODO: rename the parameters name in the cpp consistenly
+    // TODO: rename the parameters name in the cpp consistently
     //       improve the handling of hard_features, right now it might fail in difficult cases
 
     template <typename DerivedV, typename DerivedF, typename DerivedU>

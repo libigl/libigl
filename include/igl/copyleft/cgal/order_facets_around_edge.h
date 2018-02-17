@@ -31,7 +31,7 @@ namespace igl
       //   V  #V by 3 list of vertices.
       //   F  #F by 3 list of faces
       //   s  Index of source vertex.
-      //   d  Index of desination vertex.
+      //   d  Index of destination vertex.
       //   adj_faces  List of adjacent face signed indices.
       // Output:
       //   order  List of face indices that orders adjacent faces around edge
@@ -50,7 +50,7 @@ namespace igl
           Eigen::PlainObjectBase<DerivedI>& order,
           bool debug=false);
 
-      // This funciton is a wrapper around the one above.  Since the ordering
+      // This function is a wrapper around the one above.  Since the ordering
       // is circular, the pivot point is used to define a starting point.  So
       // order[0] is the index into adj_face that is immediately after the
       // pivot face (s, d, pivot point) in clockwise order.

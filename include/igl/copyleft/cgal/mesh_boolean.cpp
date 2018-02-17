@@ -15,6 +15,7 @@
 #include "relabel_small_immersed_cells.h"
 #include "remesh_self_intersections.h"
 #include "string_to_mesh_boolean_type.h"
+#include "../../combine.h"
 #include "../../cumsum.h"
 #include "../../extract_manifold_patches.h"
 #include "../../get_seconds.h"
@@ -137,33 +138,11 @@ IGL_INLINE bool igl::copyleft::cgal::mesh_boolean(
     Eigen::PlainObjectBase<DerivedFC > & FC,
     Eigen::PlainObjectBase<DerivedJ > & J)
 {
-  assert(Flist.size() == Vlist.size() && "#Vlist and #Flist should match");
-  const size_t num_inputs = Vlist.size();
-  // Gather sizes
-  Eigen::Matrix<size_t,Eigen::Dynamic,1> sizes(num_inputs);
-  int numf = 0;
-  int numv = 0;
-  for(int i = 0;i<num_inputs;i++)
-  {
-    sizes(i) = Flist[i].rows();
-    numf += Flist[i].rows();
-    numv += Vlist[i].rows();
-  }
-  // Combined mesh
-  DerivedV VV(numv,3);
-  DerivedF FF(numf,3);
-  {
-    int fk = 0;
-    int vk = 0;
-    for(int i = 0;i<num_inputs;i++)
-    {
-      FF.block(fk,0,Flist[i].rows(),3) = Flist[i].array() + vk;
-      fk += Flist[i].rows();
-      VV.block(vk,0,Vlist[i].rows(),3) = Vlist[i];
-      vk += Vlist[i].rows();
-    }
-  }
-  return mesh_boolean(VV,FF,sizes,wind_num_op,keep,VC,FC,J);
+  DerivedV VV;
+  DerivedF FF;
+  Eigen::Matrix<size_t,Eigen::Dynamic,1> Vsizes,Fsizes;
+  igl::combine(Vlist,Flist,VV,FF,Vsizes,Fsizes);
+  return mesh_boolean(VV,FF,Fsizes,wind_num_op,keep,VC,FC,J);
 }
 
 template <

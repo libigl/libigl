@@ -79,9 +79,9 @@ IGL_INLINE bool igl::mosek::mosek_linprog(
     {
       if(lxj == uxj)
       {
-        k = MSK_BK_RA;
-      }else{
         k = MSK_BK_FX;
+      }else{
+        k = MSK_BK_RA;
       }
     }else if(isfinite(lxj))
     {

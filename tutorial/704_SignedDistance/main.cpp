@@ -10,7 +10,8 @@
 #include <igl/slice_mask.h>
 #include <igl/slice_tets.h>
 #include <igl/upsample.h>
-#include <igl/viewer/Viewer.h>
+#include <igl/opengl/glfw/Viewer.h>
+#include <igl/writeOBJ.h>
 #include <Eigen/Sparse>
 #include <iostream>
 
@@ -27,7 +28,7 @@ double max_distance = 1;
 double slice_z = 0.5;
 bool overlay = false;
 
-void update_visualization(igl::viewer::Viewer & viewer)
+void update_visualization(igl::opengl::glfw::Viewer & viewer)
 {
   using namespace Eigen;
   using namespace std;
@@ -40,7 +41,16 @@ void update_visualization(igl::viewer::Viewer & viewer)
   {
     VectorXi J;
     SparseMatrix<double> bary;
-    igl::slice_tets(V,T,plane,V_vis,F_vis,J,bary);
+    {
+      // Value of plane's implicit function at all vertices
+      const VectorXd IV = 
+        (V.col(0)*plane(0) + 
+         V.col(1)*plane(1) + 
+         V.col(2)*plane(2)).array()
+        + plane(3);
+      igl::slice_tets(V,T,IV,V_vis,F_vis,J,bary);
+      igl::writeOBJ("vis.obj",V_vis,F_vis);
+    }
     while(true)
     {
       MatrixXd l;
@@ -91,13 +101,13 @@ void update_visualization(igl::viewer::Viewer & viewer)
   {
     append_mesh(V,F,RowVector3d(0.8,0.8,0.8));
   }
-  viewer.data.clear();
-  viewer.data.set_mesh(V_vis,F_vis);
-  viewer.data.set_colors(C_vis);
+  viewer.data().clear();
+  viewer.data().set_mesh(V_vis,F_vis);
+  viewer.data().set_colors(C_vis);
   viewer.core.lighting_factor = overlay;
 }
 
-bool key_down(igl::viewer::Viewer& viewer, unsigned char key, int mod)
+bool key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int mod)
 {
   switch(key)
   {
@@ -151,9 +161,9 @@ int main(int argc, char *argv[])
     V,F,igl::PER_EDGE_NORMALS_WEIGHTING_TYPE_UNIFORM,FN,EN,E,EMAP);
 
   // Plot the generated mesh
-  igl::viewer::Viewer viewer;
+  igl::opengl::glfw::Viewer viewer;
   update_visualization(viewer);
   viewer.callback_key_down = &key_down;
-  viewer.core.show_lines = false;
+  viewer.data().show_lines = false;
   viewer.launch();
 }

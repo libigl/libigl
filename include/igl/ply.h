@@ -2249,7 +2249,7 @@ inline char **get_words(FILE *fp, int *nwords, char **orig_line)
   }
 
   /* convert line-feed and tabs into spaces */
-  /* (this guarentees that there will be a space before the */
+  /* (this guarantees that there will be a space before the */
   /*  null character at the end of the string) */
 
   str[BIG_STRING-2] = ' ';
@@ -2349,7 +2349,7 @@ char **get_words(FILE *fp, int *nwords, char **orig_line)
   }
 
   // convert line-feed and tabs into spaces  
-  // (this guarentees that there will be a space before the  
+  // (this guarantees that there will be a space before the  
   //  null character at the end of the string)  
 
   str[BIG_STRING-2] = ' ';
@@ -2368,7 +2368,7 @@ char **get_words(FILE *fp, int *nwords, char **orig_line)
     }
     else if (*ptr == '\r') {
       *ptr = '\0';
-      *ptr2 = '\0'; //note dont break yet, on a pc \r is followed by \n
+      *ptr2 = '\0'; //note don't break yet, on a pc \r is followed by \n
     }
   }
 

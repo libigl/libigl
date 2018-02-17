@@ -5,46 +5,34 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
-#ifndef IGL_VIEWER_VIEWER_DATA_H
-#define IGL_VIEWER_VIEWER_DATA_H
+#ifndef IGL_VIEWERDATA_H
+#define IGL_VIEWERDATA_H
 
+#include "../igl_inline.h"
+#include "../Attribute.h"
+#include "MeshGL.h"
+#include <cassert>
 #include <cstdint>
+#include <Eigen/Core>
+#include <memory>
 #include <vector>
 
-#include <Eigen/Core>
-
-#include <igl/igl_inline.h>
-
+// Alec: This is a mesh class containing a variety of data types (normals,
+// overlays, material colors, etc.)
+//
 namespace igl
-{
-namespace viewer
 {
 
 // TODO: write documentation
+namespace opengl
+{
 
 class ViewerData
 {
 public:
   ViewerData();
 
-  enum DirtyFlags
-  {
-    DIRTY_NONE           = 0x0000,
-    DIRTY_POSITION       = 0x0001,
-    DIRTY_UV             = 0x0002,
-    DIRTY_NORMAL         = 0x0004,
-    DIRTY_AMBIENT        = 0x0008,
-    DIRTY_DIFFUSE        = 0x0010,
-    DIRTY_SPECULAR       = 0x0020,
-    DIRTY_TEXTURE        = 0x0040,
-    DIRTY_FACE           = 0x0080,
-    DIRTY_MESH           = 0x00FF,
-    DIRTY_OVERLAY_LINES  = 0x0100,
-    DIRTY_OVERLAY_POINTS = 0x0200,
-    DIRTY_ALL            = 0x03FF
-  };
-
-  // Empy all fields
+  // Empty all fields
   IGL_INLINE void clear();
 
   // Change the visualization mode, invalidating the cache if necessary
@@ -186,66 +174,128 @@ public:
 
   // Enable per-face or per-vertex properties
   bool face_based;
-  /*********************************/
+
+  // Visualization options
+  bool show_overlay;
+  bool show_overlay_depth;
+  bool show_texture;
+  bool show_faces;
+  bool show_lines;
+  bool show_vertid;
+  bool show_faceid;
+  bool invert_normals;
+
+  // Point size / line width
+  float point_size;
+  float line_width;
+  Eigen::Vector4f line_color;
+
+  // Shape material
+  float shininess;
+
+  // OpenGL representation of the mesh
+  igl::opengl::MeshGL meshgl;
+
+  // User-defined attribute
+  std::shared_ptr<AttributeBase> attr_ptr;
+
+  // Retrieve custom attribute
+  template<typename T> T & attr();
+  template<typename T> const T & attr() const;
+
+  // Update contents from a 'Data' instance
+  IGL_INLINE void updateGL(
+    const igl::opengl::ViewerData& data,
+    const bool invert_normals,
+    igl::opengl::MeshGL& meshgl);
 };
 
-}
+// -----------------------------------------------------------------------------
+
+// Retrieve custom attribute
+template<typename T>
+inline T & ViewerData::attr()
+{
+  if (!attr_ptr)
+  {
+    attr_ptr = std::make_shared<Attribute<T>>();
+  }
+  auto * derived = dynamic_cast<Attribute<T> *>(attr_ptr.get());
+  assert(derived && "Incompatible type requested for attribute");
+  return derived->content_;
 }
 
-#ifdef ENABLE_SERIALIZATION
+
+// Retrieve custom attribute
+template<typename T>
+inline const T & ViewerData::attr() const
+{
+  assert(attr_ptr);
+  const auto * derived = dynamic_cast<const Attribute<T> *>(attr_ptr.get());
+  assert(derived && "Incompatible type requested for attribute");
+  return derived->content_;
+}
+
+} // namespace opengl
+} // namespace igl
+
+////////////////////////////////////////////////////////////////////////////////
+
 #include <igl/serialize.h>
-namespace igl {
-	namespace serialization {
-
-		inline void serialization(bool s, igl::viewer::ViewerData& obj, std::vector<char>& buffer)
-		{
-			SERIALIZE_MEMBER(V);
-			SERIALIZE_MEMBER(F);
-
-			SERIALIZE_MEMBER(F_normals);
-			SERIALIZE_MEMBER(F_material_ambient);
-			SERIALIZE_MEMBER(F_material_diffuse);
-			SERIALIZE_MEMBER(F_material_specular);
-
-			SERIALIZE_MEMBER(V_normals);
-			SERIALIZE_MEMBER(V_material_ambient);
-			SERIALIZE_MEMBER(V_material_diffuse);
-			SERIALIZE_MEMBER(V_material_specular);
-
-			SERIALIZE_MEMBER(V_uv);
-			SERIALIZE_MEMBER(F_uv);
-
-			SERIALIZE_MEMBER(texture_R);
-			SERIALIZE_MEMBER(texture_G);
-			SERIALIZE_MEMBER(texture_B);
+namespace igl
+{
+  namespace serialization
+  {
+    inline void serialization(bool s, igl::opengl::ViewerData& obj, std::vector<char>& buffer)
+    {
+      SERIALIZE_MEMBER(V);
+      SERIALIZE_MEMBER(F);
+      SERIALIZE_MEMBER(F_normals);
+      SERIALIZE_MEMBER(F_material_ambient);
+      SERIALIZE_MEMBER(F_material_diffuse);
+      SERIALIZE_MEMBER(F_material_specular);
+      SERIALIZE_MEMBER(V_normals);
+      SERIALIZE_MEMBER(V_material_ambient);
+      SERIALIZE_MEMBER(V_material_diffuse);
+      SERIALIZE_MEMBER(V_material_specular);
+      SERIALIZE_MEMBER(V_uv);
+      SERIALIZE_MEMBER(F_uv);
+      SERIALIZE_MEMBER(texture_R);
+      SERIALIZE_MEMBER(texture_G);
+      SERIALIZE_MEMBER(texture_B);
       SERIALIZE_MEMBER(texture_A);
-
-			SERIALIZE_MEMBER(lines);
-			SERIALIZE_MEMBER(points);
-
-			SERIALIZE_MEMBER(labels_positions);
-			SERIALIZE_MEMBER(labels_strings);
-
-			SERIALIZE_MEMBER(dirty);
-
-			SERIALIZE_MEMBER(face_based);
-		}
-
-		template<>
-		inline void serialize(const igl::viewer::ViewerData& obj, std::vector<char>& buffer)
-		{
-			serialization(true, const_cast<igl::viewer::ViewerData&>(obj), buffer);
-		}
-
-		template<>
-		inline void deserialize(igl::viewer::ViewerData& obj, const std::vector<char>& buffer)
-		{
-			serialization(false, obj, const_cast<std::vector<char>&>(buffer));
-			obj.dirty = igl::viewer::ViewerData::DIRTY_ALL;
-		}
-	}
+      SERIALIZE_MEMBER(lines);
+      SERIALIZE_MEMBER(points);
+      SERIALIZE_MEMBER(labels_positions);
+      SERIALIZE_MEMBER(labels_strings);
+      SERIALIZE_MEMBER(dirty);
+      SERIALIZE_MEMBER(face_based);
+      SERIALIZE_MEMBER(show_faces);
+      SERIALIZE_MEMBER(show_lines);
+      SERIALIZE_MEMBER(invert_normals);
+      SERIALIZE_MEMBER(show_overlay);
+      SERIALIZE_MEMBER(show_overlay_depth);
+      SERIALIZE_MEMBER(show_vertid);
+      SERIALIZE_MEMBER(show_faceid);
+      SERIALIZE_MEMBER(show_texture);
+      SERIALIZE_MEMBER(point_size);
+      SERIALIZE_MEMBER(line_width);
+      SERIALIZE_MEMBER(line_color);
+      SERIALIZE_MEMBER(shininess);
+    }
+    template<>
+    inline void serialize(const igl::opengl::ViewerData& obj, std::vector<char>& buffer)
+    {
+      serialization(true, const_cast<igl::opengl::ViewerData&>(obj), buffer);
+    }
+    template<>
+    inline void deserialize(igl::opengl::ViewerData& obj, const std::vector<char>& buffer)
+    {
+      serialization(false, obj, const_cast<std::vector<char>&>(buffer));
+      obj.dirty = igl::opengl::MeshGL::DIRTY_ALL;
+    }
+  }
 }
-#endif
 
 #ifndef IGL_STATIC_LIBRARY
 #  include "ViewerData.cpp"

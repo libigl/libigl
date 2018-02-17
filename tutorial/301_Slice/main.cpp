@@ -2,7 +2,7 @@
 #include <igl/readOFF.h>
 #include <igl/slice.h>
 #include <igl/slice_into.h>
-#include <igl/viewer/Viewer.h>
+#include <igl/opengl/glfw/Viewer.h>
 #include <iostream>
 #include "tutorial_shared_path.h"
 
@@ -14,11 +14,11 @@ int main(int argc, char *argv[])
   MatrixXi F;
   igl::readOFF(TUTORIAL_SHARED_PATH "/decimated-knight.off",V,F);
 
-  // 100 random indicies into rows of F
+  // 100 random indices into rows of F
   VectorXi I;
   igl::floor((0.5*(VectorXd::Random(100,1).array()+1.)*F.rows()).eval(),I);
   
-  // 50 random indicies into rows of I
+  // 50 random indices into rows of I
   VectorXi J;
   igl::floor((0.5*(VectorXd::Random(50,1).array()+1.)*I.rows()).eval(),J);
   
@@ -34,8 +34,8 @@ int main(int argc, char *argv[])
   igl::slice_into(R,K,1,C);
 
   // Plot the mesh with pseudocolors
-  igl::viewer::Viewer viewer;
-  viewer.data.set_mesh(V, F);
-  viewer.data.set_colors(C);
+  igl::opengl::glfw::Viewer viewer;
+  viewer.data().set_mesh(V, F);
+  viewer.data().set_colors(C);
   viewer.launch();
 }

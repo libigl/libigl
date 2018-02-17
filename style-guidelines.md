@@ -270,7 +270,7 @@ to mean a list of faces/triangles.
 Classes should be avoided. When naming a class use CamelCase (e.g.
 SortableRow.h).
 
-## Enum naming convertion
+## Enum naming conversion
 
 Enums types should be placed in the appropriate `igl::` namespace and should be
 named in CamelCase (e.g. `igl::SolverStatus`) and instances should be named in

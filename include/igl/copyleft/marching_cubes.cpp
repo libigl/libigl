@@ -211,6 +211,7 @@ public:
     if (num_vertices > vertices.rows())
       vertices.conservativeResize(vertices.rows()+10000, Eigen::NoChange);
 
+    // Linear interpolation based on linearly interpolating values
     vertices.row(num_vertices-1)  = ((1.0f-t)*p0 + t*p1).template cast<typename Derivedvertices::Scalar>();
     edge2vertex[EdgeKey(i0, i1)] = num_vertices-1;
 

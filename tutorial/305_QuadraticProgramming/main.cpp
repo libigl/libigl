@@ -5,7 +5,7 @@
 #include <igl/jet.h>
 #include <igl/massmatrix.h>
 #include <igl/readOFF.h>
-#include <igl/viewer/Viewer.h>
+#include <igl/opengl/glfw/Viewer.h>
 #include <Eigen/Sparse>
 #include <iostream>
 #include "tutorial_shared_path.h"
@@ -14,7 +14,7 @@ Eigen::VectorXi b;
 Eigen::VectorXd B,bc,lx,ux,Beq,Bieq,Z;
 Eigen::SparseMatrix<double> Q,Aeq,Aieq;
 
-void solve(igl::viewer::Viewer &viewer)
+void solve(igl::opengl::glfw::Viewer &viewer)
 {
   using namespace std;
   igl::active_set_params as;
@@ -23,10 +23,10 @@ void solve(igl::viewer::Viewer &viewer)
   // Pseudo-color based on solution
   Eigen::MatrixXd C;
   igl::jet(Z,0,1,C);
-  viewer.data.set_colors(C);
+  viewer.data().set_colors(C);
 }
 
-bool key_down(igl::viewer::Viewer &viewer, unsigned char key, int mod)
+bool key_down(igl::opengl::glfw::Viewer &viewer, unsigned char key, int mod)
 {
   switch(key)
   {
@@ -56,9 +56,9 @@ int main(int argc, char *argv[])
   igl::readOFF(TUTORIAL_SHARED_PATH "/cheburashka.off",V,F);
 
   // Plot the mesh
-  igl::viewer::Viewer viewer;
-  viewer.data.set_mesh(V, F);
-  viewer.core.show_lines = false;
+  igl::opengl::glfw::Viewer viewer;
+  viewer.data().set_mesh(V, F);
+  viewer.data().show_lines = false;
   viewer.callback_key_down = &key_down;
 
   // One fixed point
