@@ -107,6 +107,7 @@ public:
   float camera_base_zoom;
   float camera_zoom;
   bool orthographic;
+  Eigen::Vector3f camera_base_translation;
   Eigen::Vector3f camera_translation;
   Eigen::Vector3f camera_eye;
   Eigen::Vector3f camera_up;
@@ -155,6 +156,7 @@ namespace igl {
       SERIALIZE_MEMBER(camera_base_zoom);
       SERIALIZE_MEMBER(camera_zoom);
       SERIALIZE_MEMBER(orthographic);
+      SERIALIZE_MEMBER(camera_base_translation);
       SERIALIZE_MEMBER(camera_translation);
       SERIALIZE_MEMBER(camera_view_angle);
       SERIALIZE_MEMBER(camera_dnear);

@@ -26,7 +26,7 @@ IGL_INLINE void igl::opengl::ViewerCore::align_camera_center(
   if(V.rows() == 0)
     return;
 
-  get_scale_and_shift_to_fit_mesh(V,F,camera_base_zoom,camera_translation);
+  get_scale_and_shift_to_fit_mesh(V,F,camera_base_zoom,camera_base_translation);
   // Rather than crash on empty mesh...
   if(V.size() > 0)
   {
@@ -60,7 +60,7 @@ IGL_INLINE void igl::opengl::ViewerCore::align_camera_center(
   if(V.rows() == 0)
     return;
 
-  get_scale_and_shift_to_fit_mesh(V,camera_base_zoom,camera_translation);
+  get_scale_and_shift_to_fit_mesh(V,camera_base_zoom,camera_base_translation);
   // Rather than crash on empty mesh...
   if(V.size() > 0)
   {
@@ -132,7 +132,7 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
     look_at( camera_eye, camera_center, camera_up, view);
     view = view
       * (trackball_angle * Eigen::Scaling(camera_zoom * camera_base_zoom)
-      * Eigen::Translation3f(camera_translation)).matrix();
+      * Eigen::Translation3f(camera_translation + camera_base_translation)).matrix();
 
     // Set projection
     if (orthographic)
@@ -352,6 +352,7 @@ IGL_INLINE igl::opengl::ViewerCore::ViewerCore()
   camera_view_angle = 45.0;
   camera_dnear = 1.0;
   camera_dfar = 100.0;
+  camera_base_translation << 0,0,0;
   camera_translation << 0,0,0;
   camera_eye << 0, 0, 5;
   camera_center << 0, 0, 0;
