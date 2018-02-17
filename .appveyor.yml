@@ -22,7 +22,7 @@ build_script:
   - cd ../../tutorial
   - mkdir build
   - cd build
-  - cmake -D "LIBIGL_USE_STATIC_LIBRARY=ON" -D "LIBIGL_WITH_ANTTWEAKBAR=OFF" -G "Visual Studio 15 2017 Win64" ../
+  - cmake -D "LIBIGL_USE_STATIC_LIBRARY=ON" -D "LIBIGL_WITH_ANTTWEAKBAR=OFF" -D "BOOST_ROOT=../external/boost/" -G "Visual Studio 15 2017 Win64" ../
   - set MSBuildLogger="C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
   - set MSBuildOptions=/v:m /p:Configuration=Debug /logger:%MSBuildLogger%
   - msbuild %MSBuildOptions% libigl_tutorials.sln
