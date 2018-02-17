@@ -46,12 +46,4 @@ cmake ..
 make -j4
 ```
 
-Once this is done, when building the libigl tutorials, set the variable `BOOST_ROOT` to point to `<path-to-libigl>/external/boost/`:
-
-```
-cd ../tutorials
-mkdir build
-cd build
-cmake -DBOOST_ROOT=../external/boost ..
-make -j4
-```
+Once this is done, just build the libigl tutorials, and it should properly detect CGAL and Boost.

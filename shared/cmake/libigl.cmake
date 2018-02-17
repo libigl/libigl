@@ -128,7 +128,9 @@ endif()
 if(LIBIGL_WITH_CGAL)
   # CGAL Core is needed for
   # `Exact_predicates_exact_constructions_kernel_with_sqrt`
-  # set(BOOST_ROOT "${LIBIGL_EXTERNAL}/boost")
+  if(EXISTS ${LIBIGL_EXTERNAL}/boost)
+    set(BOOST_ROOT "${LIBIGL_EXTERNAL}/boost")
+  endif()
   find_package(CGAL COMPONENTS Core)
   if(CGAL_FOUND)
     compile_igl_module("cgal")
