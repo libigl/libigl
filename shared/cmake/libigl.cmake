@@ -137,7 +137,7 @@ if(LIBIGL_WITH_CGAL)
   # `Exact_predicates_exact_constructions_kernel_with_sqrt`
   set(BOOST_ROOT "${LIBIGL_EXTERNAL}/boost")
   set(BOOST_LIBRARYDIR "${LIBIGL_EXTERNAL}/boost/lib")
-  set(BOOST_INCLUDEDIR "${LIBIGL_EXTERNAL}/boost/include/boost-1_66")
+  set(BOOST_INCLUDEDIR "${LIBIGL_EXTERNAL}/boost/include/boost-1_65")
   set(Boost_DEBUG ON CACHE BOOL "" FORCE)
   find_package(CGAL COMPONENTS Core)
   if(CGAL_FOUND)

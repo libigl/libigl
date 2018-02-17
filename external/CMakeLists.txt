@@ -10,13 +10,13 @@ include(ExternalProject)
 # Boost 1.65 fucks things up because of https://github.com/boostorg/build/issues/230
 # Boost 1.66 fucks things up becaue of https://github.com/boostorg/build/issues/273
 if(UNIX)
-  set(BOOST_URL "https://dl.bintray.com/boostorg/release/1.64.0/source/boost_1_64_0.tar.gz")
-  set(BOOST_HASH SHA256=0445c22a5ef3bd69f5dfb48354978421a85ab395254a26b1ffb0aa1bfd63a108)
+  set(BOOST_URL "https://dl.bintray.com/boostorg/release/1.65.1/source/boost_1_65_1.tar.gz")
+  set(BOOST_HASH SHA256=a13de2c8fbad635e6ba9c8f8714a0e6b4264b60a29b964b940a22554705b6b60)
   set(BOOST_BOOTSTRAP_COMMAND ./bootstrap.sh)
   set(BOOST_B2_COMMAND ./b2)
 elseif(WIN32)
-  set(BOOST_URL "https://dl.bintray.com/boostorg/release/1.64.0/source/boost_1_64_0.zip")
-  set(BOOST_HASH SHA256=b99973c805f38b549dbeaf88701c0abeff8b0e8eaa4066df47cac10a32097523)
+  set(BOOST_URL "https://dl.bintray.com/boostorg/release/1.65.1/source/boost_1_65_1.zip")
+  set(BOOST_HASH SHA256=d1775aef807bd6a14077b450cce2950d8eacd86aaf51015f79e712917f8cc3c2)
   set(BOOST_BOOTSTRAP_COMMAND cmd /C bootstrap.bat msvc)
   set(BOOST_B2_COMMAND b2.exe)
 endif()
@@ -34,7 +34,9 @@ elseif(MSVC_VERSION EQUAL 1800) #VS2013
   set(BOOST_TOOLSET "--toolset=msvc-12.0")
 elseif(MSVC_VERSION EQUAL 1900) #VS2015
   set(BOOST_TOOLSET "--toolset=msvc-14.0")
-endif(MSVC_VERSION EQUAL 1500)
+elseif(NOT (MSVC_VERSION LESS 1910)) #VS2017
+  set(BOOST_TOOLSET "--toolset=msvc-14.1")
+endif()
 
 if(${BUILD_SHARED_LIBS} MATCHES OFF)
   set(BUILD_LIBS "static")
@@ -55,6 +57,7 @@ ExternalProject_Add(Boost_Project
   URL_HASH ${BOOST_HASH}
 
   UPDATE_COMMAND ""
+  PATCH_COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_LIST_DIR}/os.jam" "tools/build/src/util/os.jam"
   CONFIGURE_COMMAND ${BOOST_BOOTSTRAP_COMMAND} --prefix=${BOOST_DIR}/lib
   BUILD_COMMAND ${BOOST_B2_COMMAND} install -j8 -d0 --prefix=${BOOST_DIR} --with-filesystem --with-system --with-thread --with-serialization --with-date_time address-model=${BOOST_ADDRESS_MODEL} link=static runtime-link=shared ${BOOST_TOOLSET}
   INSTALL_COMMAND ""
@@ -78,8 +81,6 @@ ExternalProject_Add(CGAL_Project
   CMAKE_ARGS
     -DCMAKE_PREFIX_PATH=${CGAL_DIR}/auxiliary/gmp
     "-DBOOST_ROOT=${BOOST_DIR}"
-    "-DBOOST_LIBRARYDIR=${BOOST_DIR}/lib"
-    "-DBOOST_INCLUDEDIR=${BOOST_DIR}/include/boost-1_65"
     -DBUILD_SHARED_LIBS=OFF
     "-DCMAKE_INSTALL_PREFIX=${CGAL_DIR}/"
     -DCMAKE_INSTALL_LIBDIR=lib
