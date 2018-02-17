@@ -258,6 +258,14 @@ py::class_<igl::opengl::ViewerCore> viewercore_class(me, "ViewerCore");
       core.camera_translation = Eigen::Vector3f(v.cast<float>());
     })
 
+    .def_property("camera_base_translation",
+    [](const igl::opengl::ViewerCore& core) {return Eigen::MatrixXd(core.camera_base_translation.cast<double>());},
+    [](igl::opengl::ViewerCore& core, const Eigen::MatrixXd& v)
+    {
+      assert_is_Vector3("camera_base_translation",v);
+      core.camera_base_translation = Eigen::Vector3f(v.cast<float>());
+    })
+
     .def_readwrite("camera_zoom",&igl::opengl::ViewerCore::camera_zoom)
     .def_readwrite("orthographic",&igl::opengl::ViewerCore::orthographic)
 
