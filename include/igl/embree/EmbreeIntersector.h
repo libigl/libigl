@@ -209,7 +209,7 @@ inline void igl::embree::EmbreeIntersector::global_init()
   {
     rtcInit();
     if(rtcGetError() != RTC_NO_ERROR)
-      std::cerr << "Embree: An error occured while initialiting embree core!" << std::endl;
+      std::cerr << "Embree: An error occurred while initializing embree core!" << std::endl;
 #ifdef IGL_VERBOSE
     else
       std::cerr << "Embree: core initialized." << std::endl;
@@ -324,7 +324,7 @@ inline void igl::embree::EmbreeIntersector::init(
   rtcCommit(scene);
 
   if(rtcGetError() != RTC_NO_ERROR)
-      std::cerr << "Embree: An error occured while initializing the provided geometry!" << endl;
+      std::cerr << "Embree: An error occurred while initializing the provided geometry!" << endl;
 #ifdef IGL_VERBOSE
   else
     std::cerr << "Embree: geometry added." << endl;
@@ -348,7 +348,7 @@ void igl::embree::EmbreeIntersector::deinit()
 
     if(rtcGetError() != RTC_NO_ERROR)
     {
-        std::cerr << "Embree: An error occured while resetting!" << std::endl;
+        std::cerr << "Embree: An error occurred while resetting!" << std::endl;
     }
 #ifdef IGL_VERBOSE
     else
@@ -374,7 +374,7 @@ inline bool igl::embree::EmbreeIntersector::intersectRay(
   rtcIntersect(scene,ray);
 #ifdef IGL_VERBOSE
   if(rtcGetError() != RTC_NO_ERROR)
-      std::cerr << "Embree: An error occured while resetting!" << std::endl;
+      std::cerr << "Embree: An error occurred while resetting!" << std::endl;
 #endif
 
   if((unsigned)ray.geomID != RTC_INVALID_GEOMETRY_ID)

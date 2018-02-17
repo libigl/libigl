@@ -8,7 +8,7 @@
 #include <igl/n_polyvector.h>
 #include <igl/readDMAT.h>
 #include <igl/readOBJ.h>
-#include <igl/viewer/Viewer.h>
+#include <igl/opengl/glfw/Viewer.h>
 #include <vector>
 #include <cstdlib>
 
@@ -34,7 +34,7 @@ Eigen::VectorXd conjugacy_s;
 Eigen::VectorXd conjugacy_c;
 
 
-bool key_down(igl::viewer::Viewer& viewer, unsigned char key, int modifier)
+bool key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier)
 {
   using namespace std;
   using namespace Eigen;
@@ -42,7 +42,7 @@ bool key_down(igl::viewer::Viewer& viewer, unsigned char key, int modifier)
   if (key <'1' || key >'5')
     return false;
 
-  viewer.data.lines.resize(0,9);
+  viewer.data().lines.resize(0,9);
   // Highlight in red the constrained faces
   MatrixXd C = MatrixXd::Constant(F.rows(),3,1);
   for (unsigned i=0; i<b.size();++i)
@@ -73,44 +73,44 @@ bool key_down(igl::viewer::Viewer& viewer, unsigned char key, int modifier)
       F2_t.row(b(i)) = bc.block(i,3,1,3);
     }
 
-    viewer.data.add_edges(B - global_scale*F1_t, B + global_scale*F1_t , Eigen::RowVector3d(0,0,1));
-    viewer.data.add_edges(B - global_scale*F2_t, B + global_scale*F2_t , Eigen::RowVector3d(0,0,1));
-    viewer.data.set_colors(C);
+    viewer.data().add_edges(B - global_scale*F1_t, B + global_scale*F1_t , Eigen::RowVector3d(0,0,1));
+    viewer.data().add_edges(B - global_scale*F2_t, B + global_scale*F2_t , Eigen::RowVector3d(0,0,1));
+    viewer.data().set_colors(C);
   }
 
   if (key == '2')
   {
     // Interpolated result
-    viewer.data.add_edges(B - global_scale*smooth_pvf.block(0,0,F.rows(),3),
+    viewer.data().add_edges(B - global_scale*smooth_pvf.block(0,0,F.rows(),3),
                       B + global_scale*smooth_pvf.block(0,0,F.rows(),3),
                       Eigen::RowVector3d(0,0,1));
-    viewer.data.add_edges(B - global_scale*smooth_pvf.block(0,3,F.rows(),3),
+    viewer.data().add_edges(B - global_scale*smooth_pvf.block(0,3,F.rows(),3),
                       B + global_scale*smooth_pvf.block(0,3,F.rows(),3),
                       Eigen::RowVector3d(0,0,1));
-    viewer.data.set_colors(C);
+    viewer.data().set_colors(C);
   }
 
   if (key == '3')
   {
     // Interpolated result
-    viewer.data.set_colors(CS);
+    viewer.data().set_colors(CS);
   }
 
   if (key == '4')
   {
     // Conjugate field
-    viewer.data.add_edges(B - global_scale*conjugate_pvf.block(0,0,F.rows(),3),
+    viewer.data().add_edges(B - global_scale*conjugate_pvf.block(0,0,F.rows(),3),
                       B + global_scale*conjugate_pvf.block(0,0,F.rows(),3),
                       Eigen::RowVector3d(0,0,1));
-    viewer.data.add_edges(B - global_scale*conjugate_pvf.block(0,3,F.rows(),3),
+    viewer.data().add_edges(B - global_scale*conjugate_pvf.block(0,3,F.rows(),3),
                       B + global_scale*conjugate_pvf.block(0,3,F.rows(),3),
                       Eigen::RowVector3d(0,0,1));
-    viewer.data.set_colors(C);
+    viewer.data().set_colors(C);
   }
   if (key == '5')
   {
     // Conjugate field
-    viewer.data.set_colors(CC);
+    viewer.data().set_colors(CC);
   }
 
   return false;
@@ -173,11 +173,11 @@ int main(int argc, char *argv[])
   pvV << igl::dot_row(Vc,B1), igl::dot_row(Vc,B2);
   csdata.evaluateConjugacy(pvU, pvV, conjugacy_c);
   // Launch the viewer
-  igl::viewer::Viewer viewer;
-  viewer.core.invert_normals = true;
-  viewer.core.show_lines = false;
-  viewer.core.show_texture = false;
-  viewer.data.set_mesh(V, F);
+  igl::opengl::glfw::Viewer viewer;
+  viewer.data().invert_normals = true;
+  viewer.data().show_lines = false;
+  viewer.data().show_texture = false;
+  viewer.data().set_mesh(V, F);
   viewer.callback_key_down = &key_down;
   key_down(viewer,'1',0);
   viewer.launch();

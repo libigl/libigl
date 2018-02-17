@@ -26,7 +26,7 @@ IGL_INLINE void igl::polyvector_field_matching(
   // make sure the matching preserve ccw order of the vectors across the edge
   // 1) order vectors in a, ccw  e.g. (0,1,2,3)_a not ccw --> (0,3,2,1)_a ccw
   // 2) order vectors in b, ccw  e.g. (0,1,2,3)_b not ccw --> (0,2,1,3)_b ccw
-  // 3) the vectors in b that match the ordered vectors in a (in this case  (0,3,2,1)_a ) must be a circular shift of the ccw ordered vectors in b  - so we need to explicitely check only these matchings to find the best ccw one, there are N of them
+  // 3) the vectors in b that match the ordered vectors in a (in this case  (0,3,2,1)_a ) must be a circular shift of the ccw ordered vectors in b  - so we need to explicitly check only these matchings to find the best ccw one, there are N of them
   int hN = _ua.cols()/3;
   int N;
   if (is_symmetric)

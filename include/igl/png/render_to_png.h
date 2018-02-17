@@ -22,7 +22,7 @@ namespace igl
     //   height height of scene and resulting image
     //   alpha  whether to include alpha channel
     //   fast  sacrifice compression ratio for speed
-    // Returns true only if no errors occured
+    // Returns true only if no errors occurred
     //
     // See also: igl/render_to_tga which is faster but writes .tga files
     IGL_INLINE bool render_to_png(

@@ -13,7 +13,7 @@
 
 namespace igl
 {
-  // Determin if a set of points lies on the XY plane
+  // Determine if a set of points lies on the XY plane
   //
   // Inputs:
   //   V  #V by dim list of vertex positions

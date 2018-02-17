@@ -13,7 +13,7 @@ import pyigl as igl
 
 from shared import TUTORIAL_SHARED_PATH, check_dependencies
 
-dependencies = ["viewer"]
+dependencies = ["glfw"]
 check_dependencies(dependencies)
 
 V = igl.eigen.MatrixXd()
@@ -22,11 +22,11 @@ F = igl.eigen.MatrixXi()
 
 igl.readOFF(TUTORIAL_SHARED_PATH + "decimated-knight.off", V, F)
 
-# 100 random indicies into rows of F
+# 100 random indices into rows of F
 I = igl.eigen.MatrixXi()
 igl.floor((0.5 * (igl.eigen.MatrixXd.Random(100, 1) + 1.) * F.rows()), I)
 
-# 50 random indicies into rows of I
+# 50 random indices into rows of I
 J = igl.eigen.MatrixXi()
 igl.floor((0.5 * (igl.eigen.MatrixXd.Random(50, 1) + 1.) * I.rows()), J)
 
@@ -44,7 +44,7 @@ R = igl.eigen.MatrixXd([[1.0, 0.3, 0.3]]).replicate(K.rows(), 1)
 igl.slice_into(R, K, 1, C)
 
 # Plot the mesh with pseudocolors
-viewer = igl.viewer.Viewer()
-viewer.data.set_mesh(V, F)
-viewer.data.set_colors(C)
+viewer = igl.glfw.Viewer()
+viewer.data().set_mesh(V, F)
+viewer.data().set_colors(C)
 viewer.launch()

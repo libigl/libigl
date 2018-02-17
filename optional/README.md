@@ -232,7 +232,7 @@ Alternatively, you can also compress everything into a single header file:
 
 * **Hard to debug/edit**: The compressed files are
   automatically generated. They're huge and should not be edited. Thus
-  debugging and editting are near impossible.
+  debugging and editing are near impossible.
 
 * **Compounded dependencies**:
   An immediate disadvantage of this
@@ -241,7 +241,7 @@ Alternatively, you can also compress everything into a single header file:
   `igl.cpp` will require linking to all of `libigl`'s
   dependencies (`OpenGL`, `GLUT`,
   `AntTweakBar`, `BLAS`). However, because all
-  depencies other than Eigen should be encapsulated between
+  dependencies other than Eigen should be encapsulated between
   `#ifndef` guards (e.g. `#ifndef IGL_NO_OPENGL`, it
   is possible to ignore certain functions that have such dependencies.
 

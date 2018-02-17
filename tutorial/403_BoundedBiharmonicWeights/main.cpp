@@ -17,7 +17,7 @@
 #include <igl/readDMAT.h>
 #include <igl/readMESH.h>
 #include <igl/readTGF.h>
-#include <igl/viewer/Viewer.h>
+#include <igl/opengl/glfw/Viewer.h>
 #include <igl/bbw.h>
 //#include <igl/embree/bone_heat.h>
 
@@ -42,7 +42,7 @@ RotationList pose;
 double anim_t = 1.0;
 double anim_t_dir = -0.03;
 
-bool pre_draw(igl::viewer::Viewer & viewer)
+bool pre_draw(igl::opengl::glfw::Viewer & viewer)
 {
   using namespace Eigen;
   using namespace std;
@@ -54,7 +54,7 @@ bool pre_draw(igl::viewer::Viewer & viewer)
     {
       anim_pose[e] = pose[e].slerp(anim_t,Quaterniond::Identity());
     }
-    // Propogate relative rotations via FK to retrieve absolute transformations
+    // Propagate relative rotations via FK to retrieve absolute transformations
     RotationList vQ;
     vector<Vector3d> vT;
     igl::forward_kinematics(C,BE,P,anim_pose,vQ,vT);
@@ -76,23 +76,23 @@ bool pre_draw(igl::viewer::Viewer & viewer)
     MatrixXi BET;
     igl::deform_skeleton(C,BE,T,CT,BET);
 
-    viewer.data.set_vertices(U);
-    viewer.data.set_edges(CT,BET,sea_green);
-    viewer.data.compute_normals();
+    viewer.data().set_vertices(U);
+    viewer.data().set_edges(CT,BET,sea_green);
+    viewer.data().compute_normals();
     anim_t += anim_t_dir;
     anim_t_dir *= (anim_t>=1.0 || anim_t<=0.0?-1.0:1.0);
   }
   return false;
 }
 
-void set_color(igl::viewer::Viewer &viewer)
+void set_color(igl::opengl::glfw::Viewer &viewer)
 {
   Eigen::MatrixXd C;
   igl::jet(W.col(selected).eval(),true,C);
-  viewer.data.set_colors(C);
+  viewer.data().set_colors(C);
 }
 
-bool key_down(igl::viewer::Viewer &viewer, unsigned char key, int mods)
+bool key_down(igl::opengl::glfw::Viewer &viewer, unsigned char key, int mods)
 {
   switch(key)
   {
@@ -160,13 +160,13 @@ int main(int argc, char *argv[])
   igl::lbs_matrix(V,W,M);
 
   // Plot the mesh with pseudocolors
-  igl::viewer::Viewer viewer;
-  viewer.data.set_mesh(U, F);
+  igl::opengl::glfw::Viewer viewer;
+  viewer.data().set_mesh(U, F);
   set_color(viewer);
-  viewer.data.set_edges(C,BE,sea_green);
-  viewer.core.show_lines = false;
-  viewer.core.show_overlay_depth = false;
-  viewer.core.line_width = 1;
+  viewer.data().set_edges(C,BE,sea_green);
+  viewer.data().show_lines = false;
+  viewer.data().show_overlay_depth = false;
+  viewer.data().line_width = 1;
   viewer.callback_pre_draw = &pre_draw;
   viewer.callback_key_down = &key_down;
   viewer.core.is_animating = false;

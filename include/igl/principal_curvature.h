@@ -27,7 +27,7 @@ namespace igl
   // Inputs:
   //   V       eigen matrix #V by 3
   //   F       #F by 3 list of mesh faces (must be triangles)
-  //   radius  controls the size of the neighbourhood used, 1 = average edge lenght
+  //   radius  controls the size of the neighbourhood used, 1 = average edge length
   //
   // Outputs:
   //   PD1 #V by 3 maximal curvature direction for each vertex.

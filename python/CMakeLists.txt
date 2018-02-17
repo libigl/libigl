@@ -23,11 +23,11 @@ if(UNIX)
 endif()
 
 ## include pybind
-add_subdirectory(${PROJECT_SOURCE_DIR}/../external/nanogui/ext/pybind11 pybind11)
+set(PYBIND11_DIR ${PROJECT_SOURCE_DIR}/../external/pybind11 CACHE PATH "Path to pybind11")
+add_subdirectory(${PYBIND11_DIR} pybind11)
 
 ## include libigl
 option(LIBIGL_USE_STATIC_LIBRARY "Use LibIGL as static library" OFF)
-option(LIBIGL_WITH_VIEWER           "Use OpenGL viewer"  ON)
 option(LIBIGL_WITH_OPENGL           "Use viewer"         ON)
 option(LIBIGL_WITH_OPENGL_GLFW      "Use GLFW"           ON)
 option(LIBIGL_WITH_NANOGUI          "Use Nanogui menu"   OFF)
@@ -63,10 +63,10 @@ pybind11_add_module(pyigl
 target_include_directories(pyigl PUBLIC igl::core)
 
 ## Optional modules
-if(LIBIGL_WITH_VIEWER)
-  target_sources(pyigl PRIVATE "modules/py_igl_viewer.cpp")
-  target_compile_definitions(pyigl PUBLIC -DPY_VIEWER)
-  target_link_libraries(pyigl PUBLIC igl::viewer)
+if(LIBIGL_WITH_OPENGL_GLFW)
+  target_sources(pyigl PRIVATE "modules/py_igl_opengl_glfw.cpp")
+  target_compile_definitions(pyigl PUBLIC -DPY_GLFW)
+  target_link_libraries(pyigl PUBLIC igl::opengl igl::opengl_glfw)
 endif()
 
 if(LIBIGL_WITH_COMISO)

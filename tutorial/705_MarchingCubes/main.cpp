@@ -1,7 +1,7 @@
 #include <igl/copyleft/marching_cubes.h>
 #include <igl/signed_distance.h>
 #include <igl/read_triangle_mesh.h>
-#include <igl/viewer/Viewer.h>
+#include <igl/opengl/glfw/Viewer.h>
 #include <Eigen/Core>
 #include <iostream>
 
@@ -63,29 +63,29 @@ int main(int argc, char * argv[])
 '2'  Show marching cubes contour of signed distance.
 '3'  Show marching cubes contour of indicator function.
 )";
-  igl::viewer::Viewer viewer;
-  viewer.data.set_mesh(SV,SF);
+  igl::opengl::glfw::Viewer viewer;
+  viewer.data().set_mesh(SV,SF);
   viewer.callback_key_down =
-    [&](igl::viewer::Viewer & viewer, unsigned char key, int mod)->bool
+    [&](igl::opengl::glfw::Viewer & viewer, unsigned char key, int mod)->bool
     {
       switch(key)
       {
         default:
           return false;
         case '1':
-          viewer.data.clear();
-          viewer.data.set_mesh(V,F);
+          viewer.data().clear();
+          viewer.data().set_mesh(V,F);
           break;
         case '2':
-          viewer.data.clear();
-          viewer.data.set_mesh(SV,SF);
+          viewer.data().clear();
+          viewer.data().set_mesh(SV,SF);
           break;
         case '3':
-          viewer.data.clear();
-          viewer.data.set_mesh(BV,BF);
+          viewer.data().clear();
+          viewer.data().set_mesh(BV,BF);
           break;
       }
-      viewer.data.set_face_based(true);
+      viewer.data().set_face_based(true);
       return true;
     };
   viewer.launch();
