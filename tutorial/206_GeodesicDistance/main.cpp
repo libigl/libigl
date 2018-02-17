@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
       // Cast a ray in the view direction starting from the mouse position
       double x = viewer.current_mouse_x;
       double y = viewer.core.viewport(3) - viewer.current_mouse_y;
-      if(igl::unproject_onto_mesh(Eigen::Vector2f(x,y), viewer.core.view * viewer.core.model,
+      if(igl::unproject_onto_mesh(Eigen::Vector2f(x,y), viewer.core.view,
                                   viewer.core.proj, viewer.core.viewport, V, F, fid, bc))
       {
           int max;
