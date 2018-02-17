@@ -1,17 +1,17 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2016 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "combine.h"
 #include <cassert>
 
 template <
-  typename DerivedVV, 
-  typename DerivedFF, 
-  typename DerivedV, 
+  typename DerivedVV,
+  typename DerivedFF,
+  typename DerivedV,
   typename DerivedF,
   typename DerivedVsizes,
   typename DerivedFsizes>
@@ -23,7 +23,7 @@ IGL_INLINE void igl::combine(
   Eigen::PlainObjectBase<DerivedVsizes> & Vsizes,
   Eigen::PlainObjectBase<DerivedFsizes> & Fsizes)
 {
-  assert(VV.size() == FF.size() && 
+  assert(VV.size() == FF.size() &&
     "Lists of verex lists and face lists should be same size");
   Vsizes.resize(VV.size());
   Fsizes.resize(FF.size());
@@ -66,9 +66,9 @@ IGL_INLINE void igl::combine(
 }
 
 template <
-  typename DerivedVV, 
-  typename DerivedFF, 
-  typename DerivedV, 
+  typename DerivedVV,
+  typename DerivedFF,
+  typename DerivedV,
   typename DerivedF>
 IGL_INLINE void igl::combine(
   const std::vector<DerivedVV> & VV,
@@ -84,4 +84,6 @@ IGL_INLINE void igl::combine(
 // Explicit template instantiation
 template void igl::combine<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<unsigned long, -1, 1, 0, -1, 1>, Eigen::Matrix<unsigned long, -1, 1, 0, -1, 1> >(std::vector<Eigen::Matrix<double, -1, -1, 0, -1, -1>, std::allocator<Eigen::Matrix<double, -1, -1, 0, -1, -1> > > const&, std::vector<Eigen::Matrix<int, -1, -1, 0, -1, -1>, std::allocator<Eigen::Matrix<int, -1, -1, 0, -1, -1> > > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<unsigned long, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<unsigned long, -1, 1, 0, -1, 1> >&);
 template void igl::combine<Eigen::Matrix<double, -1, 3, 1, -1, 3>, Eigen::Matrix<int, -1, 3, 1, -1, 3>, Eigen::Matrix<double, -1, 3, 1, -1, 3>, Eigen::Matrix<int, -1, 3, 1, -1, 3> >(std::vector<Eigen::Matrix<double, -1, 3, 1, -1, 3>, std::allocator<Eigen::Matrix<double, -1, 3, 1, -1, 3> > > const&, std::vector<Eigen::Matrix<int, -1, 3, 1, -1, 3>, std::allocator<Eigen::Matrix<int, -1, 3, 1, -1, 3> > > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 1, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 1, -1, 3> >&);
+template void igl::combine<Eigen::Matrix<double,-1,-1,0,-1,-1>, Eigen::Matrix<int,-1,-1,0,-1,-1>,Eigen::Matrix<double,-1,-1,0,-1,-1>,Eigen::Matrix<int,-1,-1,0,-1,-1>,Eigen::Matrix<unsigned __int64,-1,1,0,-1,1>,Eigen::Matrix<unsigned __int64,-1,1,0,-1,1> >(class std::vector<Eigen::Matrix<double,-1,-1,0,-1,-1>,class std::allocator<Eigen::Matrix<double,-1,-1,0,-1,-1> > > const &,class std::vector<Eigen::Matrix<int,-1,-1,0,-1,-1>,class std::allocator<Eigen::Matrix<int,-1,-1,0,-1,-1> > > const &,Eigen::PlainObjectBase<Eigen::Matrix<double,-1,-1,0,-1,-1> > &,Eigen::PlainObjectBase<Eigen::Matrix<int,-1,-1,0,-1,-1> > &,Eigen::PlainObjectBase<Eigen::Matrix<unsigned __int64,-1,1,0,-1,1> > &,Eigen::PlainObjectBase<Eigen::Matrix<unsigned __int64,-1,1,0,-1,1> > &);
+template void igl::combine<Eigen::Matrix<double,-1,-1,0,-1,-1>, Eigen::Matrix<int,-1,-1,0,-1,-1>,Eigen::Matrix<double,-1,-1,0,-1,-1>,Eigen::Matrix<int,-1,-1,0,-1,-1>,Eigen::Matrix<unsigned __int64,-1,1,0,-1,1>,Eigen::Matrix<unsigned __int64,-1,1,0,-1,1> >(class std::vector<Eigen::Matrix<double,-1,-1,0,-1,-1>,class std::allocator<Eigen::Matrix<double,-1,-1,0,-1,-1> > > const &,class std::vector<Eigen::Matrix<int,-1,-1,0,-1,-1>,class std::allocator<Eigen::Matrix<int,-1,-1,0,-1,-1> > > const &,Eigen::PlainObjectBase<Eigen::Matrix<double,-1,-1,0,-1,-1> > &,Eigen::PlainObjectBase<Eigen::Matrix<int,-1,-1,0,-1,-1> > &,Eigen::PlainObjectBase<Eigen::Matrix<unsigned __int64,-1,1,0,-1,1> > &,Eigen::PlainObjectBase<Eigen::Matrix<unsigned __int64,-1,1,0,-1,1> > &);
 #endif
