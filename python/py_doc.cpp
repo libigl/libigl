@@ -598,7 +598,7 @@ const char *__doc_igl_embree_reorient_facets_raycast = R"igl_Qu8mg5v7(// Orient 
     // Outputs:
     //   I  #F list of whether face has been flipped
     //   C  #F list of patch ID (output of bfs_orient > manifold patches))igl_Qu8mg5v7";
-const char *__doc_igl_geodesic_exact_geodesic = R"igl_Qu8mg5v7( 
+const char *__doc_igl_exact_geodesic = R"igl_Qu8mg5v7( 
     // Exact geodesic algorithm for triangular mesh with the implementation from https://code.google.com/archive/p/geodesic/,  
     // and the algorithm first described by Mitchell, Mount and Papadimitriou in 1987 
     //  
