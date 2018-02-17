@@ -122,8 +122,9 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
 
   if(update_matrices)
   {
-    view  = Eigen::Matrix4f::Identity();
-    proj  = Eigen::Matrix4f::Identity();
+    view = Eigen::Matrix4f::Identity();
+    proj = Eigen::Matrix4f::Identity();
+    norm = Eigen::Matrix4f::Identity();
 
     float width  = viewport(2);
     float height = viewport(3);
@@ -133,6 +134,8 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
     view = view
       * (trackball_angle * Eigen::Scaling(camera_zoom * camera_base_zoom)
       * Eigen::Translation3f(camera_translation + camera_base_translation)).matrix();
+
+    norm = view.inverse().transpose();
 
     // Set projection
     if (orthographic)
@@ -152,8 +155,10 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
   // Send transformations to the GPU
   GLint viewi  = glGetUniformLocation(data.meshgl.shader_mesh,"view");
   GLint proji  = glGetUniformLocation(data.meshgl.shader_mesh,"proj");
+  GLint normi  = glGetUniformLocation(data.meshgl.shader_mesh,"normal_matrix");
   glUniformMatrix4fv(viewi, 1, GL_FALSE, view.data());
   glUniformMatrix4fv(proji, 1, GL_FALSE, proj.data());
+  glUniformMatrix4fv(normi, 1, GL_FALSE, norm.data());
 
   // Light parameters
   GLint specular_exponenti    = glGetUniformLocation(data.meshgl.shader_mesh,"specular_exponent");
@@ -163,8 +168,7 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
   GLint texture_factori       = glGetUniformLocation(data.meshgl.shader_mesh,"texture_factor");
 
   glUniform1f(specular_exponenti, data.shininess);
-  Vector3f rev_light = -1.*light_position;
-  glUniform3fv(light_position_eyei, 1, rev_light.data());
+  glUniform3fv(light_position_eyei, 1, light_position.data());
   glUniform1f(lighting_factori, lighting_factor); // enables lighting
   glUniform4f(fixed_colori, 0.0, 0.0, 0.0, 0.0);
 
@@ -338,7 +342,7 @@ IGL_INLINE igl::opengl::ViewerCore::ViewerCore()
   background_color << 0.3f, 0.3f, 0.5f, 1.0f;
 
   // Default lights settings
-  light_position << 0.0f, -0.30f, -5.0f;
+  light_position << 0.0f, 0.3f, 0.0f;
   lighting_factor = 1.0f; //on
 
   // Default trackball
@@ -352,8 +356,8 @@ IGL_INLINE igl::opengl::ViewerCore::ViewerCore()
   camera_view_angle = 45.0;
   camera_dnear = 1.0;
   camera_dfar = 100.0;
-  camera_base_translation << 0,0,0;
-  camera_translation << 0,0,0;
+  camera_base_translation << 0, 0, 0;
+  camera_translation << 0, 0, 0;
   camera_eye << 0, 0, 5;
   camera_center << 0, 0, 0;
   camera_up << 0, 1, 0;
