@@ -107,6 +107,7 @@ lecture notes links to a cross-platform example application.
     * [710 Scalable Locally Injective Maps](#slim)
     * [711 Subdivision surfaces](#subdivision)
     * [712 Data smoothing](#datasmoothing)
+    * [713 Bijective Maps](#scaf)
 * [Chapter 8: Outlook for continuing development](#future)
 
 # Chapter 1 [chapter1:introductiontolibigl]
@@ -3343,6 +3344,17 @@ on the beetle mesh, the function with added noise, the result of smoothing
 with the Laplacian energy and zero Neumann boundary conditions, and the
 result of smoothing with the Hessian energy.](images/712_beetles.jpg)
 
+
+## [Bijective Maps](#scaf) [scaf]
+
+The Simplicial Complex Augmentation Framework  [#jiang_2017] algorithm allows to
+compute bijective maps efficiently and robustly.
+The algorithm constructed a scaffold structure to take advantage of efficient locally injective mapping algorithms like SLIM[#slim], guarantees a overlapping free map with low distortion while being efficient and scalable.
+
+[Example 713](713_SCAF/main.cpp) contains a demo of bijective parameterizing a camel mesh.
+
+![A bijective parametrization of a mesh
+using the SCAF algorithm in 10 iterations.](images/713_SCAF.png)
 # Miscellaneous [chapter7:miscellaneous]
 
 Libigl contains a _wide_ variety of geometry processing tools and functions for
