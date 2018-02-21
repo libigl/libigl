@@ -102,7 +102,7 @@ lecture notes links to a cross-platform example application.
     * [710 Scalable Locally Injective Maps](#slim)
     * [711 Subdivision surfaces](#subdivision)
     * [712 Data smoothing](#datasmoothing)
-    * [713 ShapeUp projection](#shapeup)
+    * [713 Bijective Maps](#scaf)
 * [Chapter 8: Outlook for continuing development](#future)
 
 # Chapter 1 [chapter1:introductiontolibigl]
@@ -3275,7 +3275,18 @@ on the beetle mesh, the function with added noise, the result of smoothing
 with the Laplacian energy and zero Neumann boundary conditions, and the
 result of smoothing with the Hessian energy.](images/712_beetles.jpg)
 
-## [ShapeUp Projections](#shapeup) [shapeup]
+
+## [Bijective Maps](#scaf) [scaf]
+
+The Simplicial Complex Augmentation Framework  [#jiang_2017] algorithm allows to
+compute bijective maps efficiently and robustly.
+The algorithm constructed a scaffold structure to take advantage of efficient locally injective mapping algorithms like SLIM[#slim], guarantees a overlapping free map with low distortion while being efficient and scalable.
+
+[Example 713](713_SCAF/main.cpp) contains a demo of bijective parameterizing a camel mesh.
+
+![A bijective parametrization of a mesh
+using the SCAF algorithm in 10 iterations.](images/713_SCAF.png)
+# Miscellaneous [chapter7:miscellaneous]
 
 Our input is a set of points $P_0$ (not necessarily part of any mesh), and a set of constraints $S=\left\{S_1,S_2,...S_m\right\}$, where each constraint is defined on a different, and sparse, subset of $P_0$. We wish to create a new set of points $P$ that are close to the original set $P_0$ (each point with corresponding indices), while adhering to the constraints. Other objectives, such as smoothness, can be employed. The constraints can be nonlinear, which makes the problem nonconvex, difficult, and without a guaranteed global optimum. A very popular lightweight approach to such problems is a local-global iterative algorithm, comprising these two steps:
 

@@ -147,7 +147,7 @@ if(TUTORIALS_CHAPTER7)
   add_subdirectory("710_SLIM")
   add_subdirectory("711_Subdivision")
   add_subdirectory("712_DataSmoothing")
-  add_subdirectory("713_ShapeUp")
+  add_subdirectory("713_SCAF")
 endif()
 
 
