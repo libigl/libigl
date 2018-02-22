@@ -809,7 +809,7 @@ double compute_energy_from_jacobians(const Eigen::MatrixXd &Ji,
       case igl::SLIMData::SYMMETRIC_DIRICHLET:
       {
         energy +=
-            areas(i) * (pow(s1, 2) + pow(s1, -2) + pow(s2, 2) + pow(s2, -2));
+            areas(i) * (pow(s1, 2) + pow(s1, -2) + pow(s2, 2) + pow(s2, -2) - 4);
         break;
       }
       case igl::SLIMData::LOG_ARAP:
@@ -1903,7 +1903,7 @@ IGL_INLINE Eigen::MatrixXd igl::scaf_solve(SCAFData &d_, int iter_num, Eigen::Ve
 
     cout << "Iteration time = " << timer.getElapsedTime() << endl;
     double current_mesh_energy =
-        igl::scaf::compute_energy(d_, false) / d_.mesh_measure - 4;
+        igl::scaf::compute_energy(d_, false) / d_.mesh_measure;
     double mesh_energy_decrease = last_mesh_energy - current_mesh_energy;
     cout << "Energy After:"
          << d_.energy
