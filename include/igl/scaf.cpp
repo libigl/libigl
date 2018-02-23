@@ -351,12 +351,12 @@ void compute_scaffold_gradient_matrix(SCAFData &d_,
 
     for (int e = acc_bnd; e < acc_bnd + current_size - 1; e++)
     {
-      min_bnd_edge_len = std::min(min_bnd_edge_len,
+      min_bnd_edge_len = (std::min)(min_bnd_edge_len,
                                   (d_.w_uv.row(d_.internal_bnd(e)) -
                                    d_.w_uv.row(d_.internal_bnd(e + 1)))
                                       .squaredNorm());
     }
-    min_bnd_edge_len = std::min(min_bnd_edge_len,
+    min_bnd_edge_len = (std::min)(min_bnd_edge_len,
                                 (d_.w_uv.row(d_.internal_bnd(acc_bnd)) -
                                  d_.w_uv.row(d_.internal_bnd(acc_bnd + current_size -
                                                              1)))
