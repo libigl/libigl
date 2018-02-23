@@ -105,9 +105,9 @@ lecture notes links to a cross-platform example application.
     * [708 Picking Vertices and Faces](#pickingverticesandfaces)
     * [709 Vector Field Visualization](#vectorfieldvisualizer)
     * [710 Scalable Locally Injective Maps](#slim)
-    * [711 Subdivision surfaces](#subdivision)
-    * [712 Data smoothing](#datasmoothing)
-    * [713 Bijective Maps](#scaf)
+    * [711 Bijective Maps](#scaf)
+    * [712 Subdivision surfaces](#subdivision)
+    * [713 Data smoothing](#datasmoothing)
 * [Chapter 8: Outlook for continuing development](#future)
 
 # Chapter 1 [chapter1:introductiontolibigl]
@@ -260,7 +260,7 @@ converter from OFF to OBJ format.
 
 ## [Visualizing surfaces](#visualizingsurfaces) [visualizingsurfaces]
 
-Libigl provides an glfw-based OpenGL 3.2 viewer to visualize surfaces, their
+Libigl provides an glfw-based OpenGL 4.1 viewer to visualize surfaces, their
 properties and additional debugging information.
 
 The following code ([Example 102](102_DrawMesh/main.cpp)) is a basic skeleton
@@ -292,7 +292,7 @@ The function `set_mesh` copies the mesh into the viewer.
 Additional properties can be plotted on the mesh (as we will see later),
 and it is possible to extend the viewer with standard OpenGL code.
 Please see the documentation in
-[Viewer.h](../include/igl/Viewer/Viewer.h) for more details.
+[Viewer.h](../include/igl/opengl/glfw/Viewer.h) for more details.
 
 ![([Example 102](102_DrawMesh/main.cpp)) loads and draws a
 mesh.](images/102_DrawMesh.png)
@@ -428,59 +428,110 @@ using overlays.](images/105_Overlays.png)
 
 ## [Viewer Menu](#viewermenu) [viewermenu]
 
-As of version 1.2 the viewer uses a new menu and completely replaces
-[AntTweakBar](http://anttweakbar.sourceforge.net/doc/). It is based on the
-open-source projects [nanovg](https://github.com/memononen/nanovg) and
-[nanogui](https://github.com/wjakob/nanogui). To extend the default menu of the
-viewer and to expose more user defined variables you have to define a callback
-function:
+As of latest version, the viewer uses a new menu and completely replaces
+[AntTweakBar](http://anttweakbar.sourceforge.net/doc/) and
+[nanogui](https://github.com/wjakob/nanogui) with [Dear ImGui](https://github.com/ocornut/imgui). To extend the default menu of the
+viewer and to expose more user defined variables you have to implement a custom interface, as in [Example 106](106_ViewerMenu/main.cpp):
 
 ```cpp
-igl::opengl::glfw::Viewer viewer;
-
-bool boolVariable = true;
-float floatVariable = 0.1f;
-enum Orientation { Up=0,Down,Left,Right } dir = Up;
-
-// Extend viewer menu
-viewer.callback_init = [&](igl::opengl::glfw::Viewer& viewer)
+class CustomMenu : public igl::opengl::glfw::imgui::ImGuiMenu
 {
-  // Add new group
-  viewer.ngui->addGroup("New Group");
+  float floatVariable = 0.1f; // Shared between two menus
 
-  // Expose a variable directly ...
-  viewer.ngui->addVariable("float",floatVariable);
+  virtual void draw_viewer_menu() override
+  {
+    // Draw parent menu
+    ImGuiMenu::draw_viewer_menu();
 
-  // Expose an enumaration type
-  viewer.ngui->addVariable<Orientation>("Direction",dir)->setItems({"Up","Down","Left","Right"});
+    // Add new group
+    if (ImGui::CollapsingHeader("New Group", ImGuiTreeNodeFlags_DefaultOpen))
+    {
+      // Expose variable directly ...
+      ImGui::InputFloat("float", &floatVariable, 0, 0, 3);
 
-  // Add a button
-  viewer.ngui->addButton("Print Hello",[](){ std::cout << "Hello\n"; });
+      // ... or using a custom callback
+      static bool boolVariable = true;
+      if (ImGui::Checkbox("bool", &boolVariable))
+      {
+        // do something
+        std::cout << "boolVariable: " << std::boolalpha << boolVariable << std::endl;
+      }
 
-  // call to generate menu
-  viewer.screen->performLayout();
-  return false;
+      // Expose an enumeration type
+      enum Orientation { Up=0, Down, Left, Right };
+      static Orientation dir = Up;
+      ImGui::Combo("Direction", (int *)(&dir), "Up\0Down\0Left\0Right\0\0");
+
+      // We can also use a std::vector<std::string> defined dynamically
+      static int num_choices = 3;
+      static std::vector<std::string> choices;
+      static int idx_choice = 0;
+      if (ImGui::InputInt("Num letters", &num_choices))
+      {
+        num_choices = std::max(1, std::min(26, num_choices));
+      }
+      if (num_choices != (int) choices.size())
+      {
+        choices.resize(num_choices);
+        for (int i = 0; i < num_choices; ++i)
+          choices[i] = std::string(1, 'A' + i);
+        if (idx_choice >= num_choices)
+          idx_choice = num_choices - 1;
+      }
+      ImGui::Combo("Letter", &idx_choice, choices);
+
+      // Add a button
+      if (ImGui::Button("Print Hello", ImVec2(-1,0)))
+      {
+        std::cout << "Hello\n";
+      }
+    }
+  }
+
+  virtual void draw_custom_window() override
+  {
+    // Define next window position + size
+    ImGui::SetNextWindowPos(ImVec2(180.f * menu_scaling(), 10), ImGuiSetCond_FirstUseEver);
+    ImGui::SetNextWindowSize(ImVec2(200, 160), ImGuiSetCond_FirstUseEver);
+    ImGui::Begin(
+        "New Window", nullptr,
+        ImGuiWindowFlags_NoSavedSettings
+    );
+
+    // Expose the same variable directly ...
+    ImGui::PushItemWidth(-80);
+    ImGui::DragFloat("float", &floatVariable, 0.0, 0.0, 3.0);
+    ImGui::PopItemWidth();
+
+    static std::string str = "bunny";
+    ImGui::InputText("Name", str);
+
+    ImGui::End();
+  }
+
 };
 
-// start viewer
+// Init the viewer
+igl::opengl::glfw::Viewer viewer;
+
+// Attach a custom menu
+CustomMenu menu;
+viewer.plugins.push_back(&menu);
+
 viewer.launch();
 ```
 
-If you need a separate new menu window use:
+If you need a separate new menu window implement:
 
 ```cpp
-viewer.ngui->addWindow(Eigen::Vector2i(220,10),"New Window");
-```
-
-If you do not want to expose variables directly but rather use the get/set functionality:
-
-```cpp
-// ... or using a custom callback
-viewer.ngui->addVariable<bool>("bool",[&](bool val) {
-  boolVariable = val; // setter
-},[&]() {
-  return boolVariable; // getter
-});
+class CustomMenu : public igl::opengl::glfw::imgui::ImGuiMenu
+{
+  // ... some code
+  virtual void draw_custom_window() override 
+  {
+    // ... custom window specifications
+  }
+}
 ```
 
 ![([Example 106](106_ViewerMenu/main.cpp)) The UI of the viewer can be easily
@@ -2749,6 +2800,14 @@ then the final composite.
 ![Example [610](610_CSGTree/main.cpp) computes  complex CSG Tree operation on 5
 input meshes.](images/cube-sphere-cylinders-csg.gif)
 
+
+# Miscellaneous [chapter7:miscellaneous]
+
+Libigl contains a _wide_ variety of geometry processing tools and functions for
+dealing with meshes and the linear algebra related to them: far too many to
+discuss in this introductory tutorial. We've pulled out a couple of the
+interesting functions in this chapter to highlight.
+
 ## [Mesh Statistics](#meshstatistics) [meshstatistics]
 
 Libigl contains various mesh statistics, including face angles, face areas and
@@ -3264,6 +3323,18 @@ on Pardiso is available
 ![A locally injective parametrization of a mesh with 50k faces is computed
 using the SLIM algorithm in 10 iterations.](images/slim.png)
 
+
+## [Bijective Maps with Simpliciaol Complex Augmentation Framework](#scaf) [scaf]
+
+The Simplicial Complex Augmentation Framework  [#jiang_2017] algorithm allows to
+compute bijective maps (most notably, UV mapping) efficiently and robustly.
+The algorithm constructed a scaffold structure to take advantage of efficient locally injective mapping algorithms like SLIM[#slim], guarantees a overlapping free map with low distortion while being efficient and scalable.
+
+[Example 711](711_SCAF/main.cpp) contains a demo of bijective parameterizing a camel mesh.
+
+![A bijective parametrization of a mesh
+using the SCAF algorithm in 10 iterations.](images/711_SCAF.png)
+
 ## [Subdivision surfaces](#subdivision) [subdivision]
 
 Given a coarse mesh (aka cage) with vertices `V` and faces `F`, one can createa
@@ -3331,7 +3402,7 @@ Hessian boundary conditions instead, which corresponds to the hessian energy
 with the matrix `QH = H'*(M2\H)`, where `H` is a finite element Hessian and
 `M2` is a stacked mass matrix. The matrices `H` and `QH` are implemented in
 libigl as `igl::hessian` and `igl::hessian_energy` respectively. An example
-of how to use the function is given in [Example 712](712_DataSmoothing/main.cpp).
+of how to use the function is given in [Example 713](713_DataSmoothing/main.cpp).
 
 In the following image the differences between the Laplacian energy with
 zero Neumann boundary conditions and the Hessian energy can be clearly seen:
@@ -3339,28 +3410,12 @@ whereas the zero Neumann boundary condition in the third image bias the isolines
 of the function to be perpendicular to the boundary, the Hessian energy gives
 an unbiased result.
 
-![([Example 712](712_DataSmoothing/main.cpp)) From left to right: a function
+![([Example 713](713_DataSmoothing/main.cpp)) From left to right: a function
 on the beetle mesh, the function with added noise, the result of smoothing
 with the Laplacian energy and zero Neumann boundary conditions, and the
-result of smoothing with the Hessian energy.](images/712_beetles.jpg)
+result of smoothing with the Hessian energy.](images/713_beetles.jpg)
 
 
-## [Bijective Maps](#scaf) [scaf]
-
-The Simplicial Complex Augmentation Framework  [#jiang_2017] algorithm allows to
-compute bijective maps efficiently and robustly.
-The algorithm constructed a scaffold structure to take advantage of efficient locally injective mapping algorithms like SLIM[#slim], guarantees a overlapping free map with low distortion while being efficient and scalable.
-
-[Example 713](713_SCAF/main.cpp) contains a demo of bijective parameterizing a camel mesh.
-
-![A bijective parametrization of a mesh
-using the SCAF algorithm in 10 iterations.](images/713_SCAF.png)
-# Miscellaneous [chapter7:miscellaneous]
-
-Libigl contains a _wide_ variety of geometry processing tools and functions for
-dealing with meshes and the linear algebra related to them: far too many to
-discuss in this introductory tutorial. We've pulled out a couple of the
-interesting functions in this chapter to highlight.
 
 # Outlook for continuing development [future]
 
@@ -3560,3 +3615,4 @@ pseudonormal](https://www.google.com/search?q=Signed+distance+computation+using+
   Geometry](https://www.google.com/search?q=Mesh+Arrangements+for+Solid+Geometry),
   2016
 [#mitchell_1987]: Joseph S. B. Mitchell, David M. Mount, Christos H. Papadimitriou. [The Discrete Geodesic Problem](https://www.google.com/search?q=The+Discrete+Geodesic+Problem), 1987
+[#jiang_2017]: Zhongshi Jiang, Scott Schaefer, Daniele Panozzo. [SCAF: Simplicial Complex Augmentation Framework for Bijective Maps](https://doi.org/10.1145/3130800.3130895), 2017
