@@ -260,7 +260,7 @@ converter from OFF to OBJ format.
 
 ## [Visualizing surfaces](#visualizingsurfaces) [visualizingsurfaces]
 
-Libigl provides an glfw-based OpenGL 4.1 viewer to visualize surfaces, their
+Libigl provides an glfw-based OpenGL 3.3 viewer to visualize surfaces, their
 properties and additional debugging information.
 
 The following code ([Example 102](102_DrawMesh/main.cpp)) is a basic skeleton
