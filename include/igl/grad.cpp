@@ -36,10 +36,11 @@ IGL_INLINE void grad_tet(const Eigen::PlainObjectBase<DerivedV>&V,
     F.row(3*m + i) << T(i,1), T(i,3), T(i,2);
   }
   // compute volume of each tet
-  VectorXd vol; igl::volume(V,T,vol);
+  Eigen::Matrix<typename DerivedV::Scalar, Eigen::Dynamic, 1> vol; 
+  igl::volume(V,T,vol);
 
-  VectorXd A(F.rows());
-  MatrixXd N(F.rows(),3);
+  Eigen::Matrix<typename DerivedV::Scalar, Eigen::Dynamic, 1> A(F.rows());
+  Eigen::Matrix<typename DerivedV::Scalar, Eigen::Dynamic, Eigen::Dynamic> N(F.rows(),3);
   if (!uniform) {
     // compute tetrahedron face normals
     igl::per_face_normals(V,F,N); int norm_rows = N.rows();
@@ -149,7 +150,7 @@ IGL_INLINE void grad_tri(const Eigen::PlainObjectBase<DerivedV>&V,
       // get h (by the area of the triangle)
       double h = sqrt( (dblA)/sin(M_PI / 3.0)); // (h^2*sin(60))/2. = Area => h = sqrt(2*Area/sin_60)
 
-      Eigen::Vector3d v1,v2,v3;
+      Eigen::Matrix<typename DerivedV::Scalar, 3, 1> v1,v2,v3;
       v1 << 0,0,0;
       v2 << h,0,0;
       v3 << h/2.,(sqrt(3)/2.)*h,0;
