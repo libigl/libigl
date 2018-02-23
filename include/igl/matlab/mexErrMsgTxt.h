@@ -8,6 +8,9 @@
 #ifndef IGL_MATLAB_MEXERRMSGTXT_H
 #define IGL_MATLAB_MEXERRMSGTXT_H
 #include "../igl_inline.h"
+// Overload mexErrMsgTxt to check an assertion then print text only if
+// assertion fails
+#include "mex.h"
 namespace igl
 {
   namespace matlab
