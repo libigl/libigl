@@ -150,8 +150,9 @@ Matlab</a></li>
 <li><a href="#pickingverticesandfaces">708 Picking Vertices and Faces</a></li>
 <li><a href="#vectorfieldvisualizer">709 Vector Field Visualization</a></li>
 <li><a href="#slim">710 Scalable Locally Injective Maps</a></li>
-<li><a href="#subdivision">711 Subdivision surfaces</a></li>
-<li><a href="#datasmoothing">712 Data smoothing</a></li>
+<li><a href="#scaf">711 Bijective Maps</a></li>
+<li><a href="#subdivision">712 Subdivision surfaces</a></li>
+<li><a href="#datasmoothing">713 Data smoothing</a></li>
 </ul></li>
 <li><a href="#future">Chapter 8: Outlook for continuing development</a></li>
 </ul>
@@ -304,7 +305,7 @@ converter from OFF to OBJ format.</p>
 
 <h2 id="visualizingsurfaces"><a href="#visualizingsurfaces">Visualizing surfaces</a> </h2>
 
-<p>Libigl provides an glfw-based OpenGL 3.2 viewer to visualize surfaces, their
+<p>Libigl provides an glfw-based OpenGL 3.3 viewer to visualize surfaces, their
 properties and additional debugging information.</p>
 
 <p>The following code (<a href="102_DrawMesh/main.cpp">Example 102</a>) is a basic skeleton
@@ -335,7 +336,7 @@ int main(int argc, char *argv[])
 Additional properties can be plotted on the mesh (as we will see later),
 and it is possible to extend the viewer with standard OpenGL code.
 Please see the documentation in
-<a href="../include/igl/Viewer/Viewer.h">Viewer.h</a> for more details.</p>
+<a href="../include/igl/opengl/glfw/Viewer.h">Viewer.h</a> for more details.</p>
 
 <figure>
 <img src="images/102_DrawMesh.png" alt="([Example 102](102_DrawMesh/main.cpp)) loads and draws a
@@ -474,56 +475,108 @@ using overlays.</figcaption>
 
 <h2 id="viewermenu"><a href="#viewermenu">Viewer Menu</a> </h2>
 
-<p>As of version 1.2 the viewer uses a new menu and completely replaces
-<a href="http://anttweakbar.sourceforge.net/doc/">AntTweakBar</a>. It is based on the
-open-source projects <a href="https://github.com/memononen/nanovg">nanovg</a> and
-<a href="https://github.com/wjakob/nanogui">nanogui</a>. To extend the default menu of the
-viewer and to expose more user defined variables you have to define a callback
-function:</p>
+<p>As of latest version, the viewer uses a new menu and completely replaces
+<a href="http://anttweakbar.sourceforge.net/doc/">AntTweakBar</a> and
+<a href="https://github.com/wjakob/nanogui">nanogui</a> with <a href="https://github.com/ocornut/imgui">Dear ImGui</a>. To extend the default menu of the
+viewer and to expose more user defined variables you have to implement a custom interface, as in <a href="106_ViewerMenu/main.cpp">Example 106</a>:</p>
 
-<pre><code class="cpp">igl::opengl::glfw::Viewer viewer;
-
-bool boolVariable = true;
-float floatVariable = 0.1f;
-enum Orientation { Up=0,Down,Left,Right } dir = Up;
-
-// Extend viewer menu
-viewer.callback_init = [&amp;](igl::opengl::glfw::Viewer&amp; viewer)
+<pre><code class="cpp">class CustomMenu : public igl::opengl::glfw::imgui::ImGuiMenu
 {
-  // Add new group
-  viewer.ngui-&gt;addGroup(&quot;New Group&quot;);
+  float floatVariable = 0.1f; // Shared between two menus
 
-  // Expose a variable directly ...
-  viewer.ngui-&gt;addVariable(&quot;float&quot;,floatVariable);
+  virtual void draw_viewer_menu() override
+  {
+    // Draw parent menu
+    ImGuiMenu::draw_viewer_menu();
 
-  // Expose an enumaration type
-  viewer.ngui-&gt;addVariable&lt;Orientation&gt;(&quot;Direction&quot;,dir)-&gt;setItems({&quot;Up&quot;,&quot;Down&quot;,&quot;Left&quot;,&quot;Right&quot;});
+    // Add new group
+    if (ImGui::CollapsingHeader(&quot;New Group&quot;, ImGuiTreeNodeFlags_DefaultOpen))
+    {
+      // Expose variable directly ...
+      ImGui::InputFloat(&quot;float&quot;, &amp;floatVariable, 0, 0, 3);
 
-  // Add a button
-  viewer.ngui-&gt;addButton(&quot;Print Hello&quot;,[](){ std::cout &lt;&lt; &quot;Hello\n&quot;; });
+      // ... or using a custom callback
+      static bool boolVariable = true;
+      if (ImGui::Checkbox(&quot;bool&quot;, &amp;boolVariable))
+      {
+        // do something
+        std::cout &lt;&lt; &quot;boolVariable: &quot; &lt;&lt; std::boolalpha &lt;&lt; boolVariable &lt;&lt; std::endl;
+      }
 
-  // call to generate menu
-  viewer.screen-&gt;performLayout();
-  return false;
+      // Expose an enumeration type
+      enum Orientation { Up=0, Down, Left, Right };
+      static Orientation dir = Up;
+      ImGui::Combo(&quot;Direction&quot;, (int *)(&amp;dir), &quot;Up\0Down\0Left\0Right\0\0&quot;);
+
+      // We can also use a std::vector&lt;std::string&gt; defined dynamically
+      static int num_choices = 3;
+      static std::vector&lt;std::string&gt; choices;
+      static int idx_choice = 0;
+      if (ImGui::InputInt(&quot;Num letters&quot;, &amp;num_choices))
+      {
+        num_choices = std::max(1, std::min(26, num_choices));
+      }
+      if (num_choices != (int) choices.size())
+      {
+        choices.resize(num_choices);
+        for (int i = 0; i &lt; num_choices; ++i)
+          choices[i] = std::string(1, 'A' + i);
+        if (idx_choice &gt;= num_choices)
+          idx_choice = num_choices - 1;
+      }
+      ImGui::Combo(&quot;Letter&quot;, &amp;idx_choice, choices);
+
+      // Add a button
+      if (ImGui::Button(&quot;Print Hello&quot;, ImVec2(-1,0)))
+      {
+        std::cout &lt;&lt; &quot;Hello\n&quot;;
+      }
+    }
+  }
+
+  virtual void draw_custom_window() override
+  {
+    // Define next window position + size
+    ImGui::SetNextWindowPos(ImVec2(180.f * menu_scaling(), 10), ImGuiSetCond_FirstUseEver);
+    ImGui::SetNextWindowSize(ImVec2(200, 160), ImGuiSetCond_FirstUseEver);
+    ImGui::Begin(
+        &quot;New Window&quot;, nullptr,
+        ImGuiWindowFlags_NoSavedSettings
+    );
+
+    // Expose the same variable directly ...
+    ImGui::PushItemWidth(-80);
+    ImGui::DragFloat(&quot;float&quot;, &amp;floatVariable, 0.0, 0.0, 3.0);
+    ImGui::PopItemWidth();
+
+    static std::string str = &quot;bunny&quot;;
+    ImGui::InputText(&quot;Name&quot;, str);
+
+    ImGui::End();
+  }
+
 };
 
-// start viewer
+// Init the viewer
+igl::opengl::glfw::Viewer viewer;
+
+// Attach a custom menu
+CustomMenu menu;
+viewer.plugins.push_back(&amp;menu);
+
 viewer.launch();
 </code></pre>
 
-<p>If you need a separate new menu window use:</p>
+<p>If you need a separate new menu window implement:</p>
 
-<pre><code class="cpp">viewer.ngui-&gt;addWindow(Eigen::Vector2i(220,10),&quot;New Window&quot;);
-</code></pre>
-
-<p>If you do not want to expose variables directly but rather use the get/set functionality:</p>
-
-<pre><code class="cpp">// ... or using a custom callback
-viewer.ngui-&gt;addVariable&lt;bool&gt;(&quot;bool&quot;,[&amp;](bool val) {
-  boolVariable = val; // setter
-},[&amp;]() {
-  return boolVariable; // getter
-});
+<pre><code class="cpp">class CustomMenu : public igl::opengl::glfw::imgui::ImGuiMenu
+{
+  // ... some code
+  virtual void draw_custom_window() override 
+  {
+    // ... custom window specifications
+  }
+}
 </code></pre>
 
 <figure>
@@ -3142,6 +3195,13 @@ input meshes." />
 input meshes.</figcaption>
 </figure>
 
+<h1 id="chapter7:miscellaneous">Miscellaneous </h1>
+
+<p>Libigl contains a <em>wide</em> variety of geometry processing tools and functions for
+dealing with meshes and the linear algebra related to them: far too many to
+discuss in this introductory tutorial. We&#8217;ve pulled out a couple of the
+interesting functions in this chapter to highlight.</p>
+
 <h2 id="meshstatistics"><a href="#meshstatistics">Mesh Statistics</a> </h2>
 
 <p>Libigl contains various mesh statistics, including face angles, face areas and
@@ -3697,6 +3757,21 @@ using the SLIM algorithm in 10 iterations." />
 using the SLIM algorithm in 10 iterations.</figcaption>
 </figure>
 
+<h2 id="scaf"><a href="#scaf">Bijective Maps with Simpliciaol Complex Augmentation Framework</a> </h2>
+
+<p>The Simplicial Complex Augmentation Framework <a href="#cn:45" id="cnref:45" title="see citation" class="citation">(45)</a> algorithm allows to
+compute bijective maps (most notably, UV mapping) efficiently and robustly.
+The algorithm constructed a scaffold structure to take advantage of efficient locally injective mapping algorithms like SLIM<a href="#cn:46" id="cnref:46" title="see citation" class="citation">(46)</a>, guarantees a overlapping free map with low distortion while being efficient and scalable.</p>
+
+<p><a href="711_SCAF/main.cpp">Example 711</a> contains a demo of bijective parameterizing a camel mesh.</p>
+
+<figure>
+<img src="images/711_SCAF.png" alt="A bijective parametrization of a mesh
+using the SCAF algorithm in 10 iterations." />
+<figcaption>A bijective parametrization of a mesh
+using the SCAF algorithm in 10 iterations.</figcaption>
+</figure>
+
 <h2 id="subdivision"><a href="#subdivision">Subdivision surfaces</a> </h2>
 
 <p>Given a coarse mesh (aka cage) with vertices <code>V</code> and faces <code>F</code>, one can createa
@@ -3721,7 +3796,7 @@ a finer and finer mesh.</p>
 
 <p>The subdivision method of <code>igl::loop</code> is not in plane. The vertices of the
 refined mesh are moved to weight combinations of their neighbors: the mesh is
-smoothed as it is refined <a href="#cn:45" id="cnref:45" title="see citation" class="citation">(45)</a>. This and other <em>smooth subdivision</em>
+smoothed as it is refined <a href="#cn:47" id="cnref:47" title="see citation" class="citation">(47)</a>. This and other <em>smooth subdivision</em>
 methods can be understood as generalizations of spline curves to surfaces. In
 particular the Loop subdivision method will converge to a <span class="math">\(C^1\)</span> surface as we
 consider the limit of recursive applications of subdivision. Away from
@@ -3769,7 +3844,7 @@ Hessian boundary conditions instead, which corresponds to the hessian energy
 with the matrix <code>QH = H'*(M2\H)</code>, where <code>H</code> is a finite element Hessian and
 <code>M2</code> is a stacked mass matrix. The matrices <code>H</code> and <code>QH</code> are implemented in
 libigl as <code>igl::hessian</code> and <code>igl::hessian_energy</code> respectively. An example
-of how to use the function is given in <a href="712_DataSmoothing/main.cpp">Example 712</a>.</p>
+of how to use the function is given in <a href="713_DataSmoothing/main.cpp">Example 713</a>.</p>
 
 <p>In the following image the differences between the Laplacian energy with
 zero Neumann boundary conditions and the Hessian energy can be clearly seen:
@@ -3778,22 +3853,15 @@ of the function to be perpendicular to the boundary, the Hessian energy gives
 an unbiased result.</p>
 
 <figure>
-<img src="images/712_beetles.jpg" alt="([Example 712](712_DataSmoothing/main.cpp)) From left to right: a function
+<img src="images/713_beetles.jpg" alt="([Example 713](713_DataSmoothing/main.cpp)) From left to right: a function
 on the beetle mesh, the function with added noise, the result of smoothing
 with the Laplacian energy and zero Neumann boundary conditions, and the
 result of smoothing with the Hessian energy." />
-<figcaption>(<a href="712_DataSmoothing/main.cpp">Example 712</a>) From left to right: a function
+<figcaption>(<a href="713_DataSmoothing/main.cpp">Example 713</a>) From left to right: a function
 on the beetle mesh, the function with added noise, the result of smoothing
 with the Laplacian energy and zero Neumann boundary conditions, and the
 result of smoothing with the Hessian energy.</figcaption>
 </figure>
-
-<h1 id="chapter7:miscellaneous">Miscellaneous </h1>
-
-<p>Libigl contains a <em>wide</em> variety of geometry processing tools and functions for
-dealing with meshes and the linear algebra related to them: far too many to
-discuss in this introductory tutorial. We&#8217;ve pulled out a couple of the
-interesting functions in this chapter to highlight.</p>
 
 <h1 id="future">Outlook for continuing development </h1>
 
@@ -4117,9 +4185,17 @@ Mappings</a>, 2016. <a href="#cnref:44" title="return to body" class="reversecit
 </li>
 
 <li id="cn:45">
+<p>Zhongshi Jiang, Scott Schaefer, Daniele Panozzo. <a href="https://doi.org/10.1145/3130800.3130895">SCAF: Simplicial Complex Augmentation Framework for Bijective Maps</a>, 2017 <a href="#cnref:45" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
+</li>
+
+<li id="cn:46">
+<p>slim <a href="#cnref:46" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
+</li>
+
+<li id="cn:47">
 <p>Charles Loop. <a href="https://www.google.com/search?q=smooth+subdivision+surfaces+based+on+triangles">Smooth Subdivision Surfaces Based on
 Triangles</a>,
-1987. <a href="#cnref:45" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
+1987. <a href="#cnref:47" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
 </li>
 
 </ol>
