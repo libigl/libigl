@@ -1,5 +1,6 @@
 #include "tutorial_shared_path.h"
 #include <igl/opengl/glfw/Viewer.h>
+#include <GLFW/glfw3.h>
 #include <string>
 #include <iostream>
 
@@ -26,8 +27,7 @@ int main(int argc, char * argv[])
   viewer.callback_key_down = 
     [&](igl::opengl::glfw::Viewer &, unsigned int key, int mod)
   {
-    // Delete
-    if(key == 3)
+    if(key == GLFW_KEY_BACKSPACE)
     {
       viewer.erase_mesh(viewer.selected_data_index);
       return true;
