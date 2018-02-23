@@ -43,7 +43,6 @@ namespace igl
       Eigen::VectorXd s_M; // scaffold area or volume
       Eigen::VectorXd w_M; // area/volume weights for whole
       double mesh_measure; // area or volume
-      double avg_edge_length;
       double proximal_p = 0;
 
       Eigen::VectorXi frame_ids;
@@ -57,22 +56,7 @@ namespace igl
       // multi-chart support
       std::vector<int> component_sizes;
       std::vector<int> bnd_sizes;
-      /*
-      public:
-        SCAFData();
-        SCAFData(Eigen::MatrixXd &mesh_V, Eigen::MatrixXi &mesh_F,
-            Eigen::MatrixXd &all_V, Eigen::MatrixXi &scaf_T);
-        void add_new_patch(const Eigen::MatrixXd&, const Eigen::MatrixXi&,
-                         const Eigen::RowVectorXd &center);
-
-      void mesh_improve();
-      void automatic_expand_frame(double min=2.0, double max = 3.0);
-
-      void add_soft_constraints(int b,
-                                const Eigen::RowVectorXd &bc);
-      void add_soft_constraints(const Eigen::VectorXi &b,
-                                const Eigen::MatrixXd &bc);
-      void update_scaffold();*/
+    
         // reweightedARAP interior variables.
         bool has_pre_calc = false;
         Eigen::SparseMatrix<double> Dx_s, Dy_s, Dz_s;

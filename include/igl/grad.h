@@ -38,6 +38,12 @@ IGL_INLINE void grad(const Eigen::PlainObjectBase<DerivedV>&V,
                      const Eigen::PlainObjectBase<DerivedF>&F,
                     Eigen::SparseMatrix<typename DerivedV::Scalar> &G,
                     bool uniform = false);
+
+template <typename DerivedV, typename DerivedF>
+IGL_INLINE void adjusted_grad(const Eigen::MatrixBase<DerivedV> &V,
+                          const Eigen::MatrixBase<DerivedF> &F,
+                          Eigen::SparseMatrix<typename DerivedV::Scalar> &G,
+                          double eps);
 }
 #ifndef IGL_STATIC_LIBRARY
 #  include "grad.cpp"

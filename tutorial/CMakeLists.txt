@@ -145,9 +145,9 @@ if(TUTORIALS_CHAPTER7)
   add_subdirectory("707_SweptVolume")
   add_subdirectory("708_Picking")
   add_subdirectory("710_SLIM")
-  add_subdirectory("711_Subdivision")
-  add_subdirectory("712_DataSmoothing")
-  add_subdirectory("713_SCAF")
+  add_subdirectory("711_SCAF")
+  add_subdirectory("712_Subdivision")
+  add_subdirectory("713_DataSmoothing")
 endif()
 
 

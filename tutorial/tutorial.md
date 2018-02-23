@@ -100,9 +100,9 @@ lecture notes links to a cross-platform example application.
     * [708 Picking Vertices and Faces](#pickingverticesandfaces)
     * [709 Vector Field Visualization](#vectorfieldvisualizer)
     * [710 Scalable Locally Injective Maps](#slim)
-    * [711 Subdivision surfaces](#subdivision)
-    * [712 Data smoothing](#datasmoothing)
-    * [713 Bijective Maps](#scaf)
+    * [711 Bijective Maps](#scaf)
+    * [712 Subdivision surfaces](#subdivision)
+    * [713 Data smoothing](#datasmoothing)
 * [Chapter 8: Outlook for continuing development](#future)
 
 # Chapter 1 [chapter1:introductiontolibigl]
@@ -255,7 +255,7 @@ converter from OFF to OBJ format.
 
 ## [Visualizing surfaces](#visualizingsurfaces) [visualizingsurfaces]
 
-Libigl provides an glfw-based OpenGL 3.2 viewer to visualize surfaces, their
+Libigl provides an glfw-based OpenGL 3.3 viewer to visualize surfaces, their
 properties and additional debugging information.
 
 The following code ([Example 102](102_DrawMesh/main.cpp)) is a basic skeleton
@@ -3195,6 +3195,18 @@ on Pardiso is available
 ![A locally injective parametrization of a mesh with 50k faces is computed
 using the SLIM algorithm in 10 iterations.](images/slim.png)
 
+
+## [Bijective Maps with Simpliciaol Complex Augmentation Framework](#scaf) [scaf]
+
+The Simplicial Complex Augmentation Framework  [#jiang_2017] algorithm allows to
+compute bijective maps (most notably, UV mapping) efficiently and robustly.
+The algorithm constructed a scaffold structure to take advantage of efficient locally injective mapping algorithms like SLIM[#slim], guarantees a overlapping free map with low distortion while being efficient and scalable.
+
+[Example 711](711_SCAF/main.cpp) contains a demo of bijective parameterizing a camel mesh.
+
+![A bijective parametrization of a mesh
+using the SCAF algorithm in 10 iterations.](images/711_SCAF.png)
+
 ## [Subdivision surfaces](#subdivision) [subdivision]
 
 Given a coarse mesh (aka cage) with vertices `V` and faces `F`, one can createa
@@ -3262,7 +3274,7 @@ Hessian boundary conditions instead, which corresponds to the hessian energy
 with the matrix `QH = H'*(M2\H)`, where `H` is a finite element Hessian and
 `M2` is a stacked mass matrix. The matrices `H` and `QH` are implemented in
 libigl as `igl::hessian` and `igl::hessian_energy` respectively. An example
-of how to use the function is given in [Example 712](712_DataSmoothing/main.cpp).
+of how to use the function is given in [Example 713](713_DataSmoothing/main.cpp).
 
 In the following image the differences between the Laplacian energy with
 zero Neumann boundary conditions and the Hessian energy can be clearly seen:
@@ -3270,13 +3282,12 @@ whereas the zero Neumann boundary condition in the third image bias the isolines
 of the function to be perpendicular to the boundary, the Hessian energy gives
 an unbiased result.
 
-![([Example 712](712_DataSmoothing/main.cpp)) From left to right: a function
+![([Example 713](713_DataSmoothing/main.cpp)) From left to right: a function
 on the beetle mesh, the function with added noise, the result of smoothing
 with the Laplacian energy and zero Neumann boundary conditions, and the
-result of smoothing with the Hessian energy.](images/712_beetles.jpg)
+result of smoothing with the Hessian energy.](images/713_beetles.jpg)
 
 
-## [Bijective Maps](#scaf) [scaf]
 
 The Simplicial Complex Augmentation Framework  [#jiang_2017] algorithm allows to
 compute bijective maps efficiently and robustly.
@@ -3511,3 +3522,4 @@ pseudonormal](https://www.google.com/search?q=Signed+distance+computation+using+
   Geometry](https://www.google.com/search?q=Mesh+Arrangements+for+Solid+Geometry),
   2016
 [#mitchell_1987]: Joseph S. B. Mitchell, David M. Mount, Christos H. Papadimitriou. [The Discrete Geodesic Problem](https://www.google.com/search?q=The+Discrete+Geodesic+Problem), 1987
+[#jiang_2017]: Zhongshi Jiang, Scott Schaefer, Daniele Panozzo. [SCAF: Simplicial Complex Augmentation Framework for Bijective Maps](https://doi.org/10.1145/3130800.3130895), 2017
