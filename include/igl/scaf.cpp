@@ -526,7 +526,7 @@ void mesh_improve(igl::SCAFData &s)
     igl::boundary_loop(F_ref, all_bnds);
     int num_holes = all_bnds.size() - 1;
 
-    std::sort(all_bnds.begin(), all_bnds.end(), [](std::vector<int> &a, std::vector<int> &b) {
+    std::sort(all_bnds.begin(), all_bnds.end(), [](const std::vector<int> &a, const std::vector<int> &b) {
       return a.size() > b.size();});
 
     bnd = Map<Eigen::VectorXi>(all_bnds[0].data(), all_bnds[0].size());
@@ -659,7 +659,7 @@ void add_new_patch(igl::SCAFData &s, const Eigen::MatrixXd &V_in,
   igl::boundary_loop(F_ref, all_bnds);
   int num_holes = all_bnds.size() - 1;
 
-  std::sort(all_bnds.begin(), all_bnds.end(), [](std::vector<int> &a, std::vector<int> &b) {
+  std::sort(all_bnds.begin(), all_bnds.end(), [](const std::vector<int> &a, const std::vector<int> &b) {
   return a.size() > b.size();});
 
   bnd = Map<Eigen::VectorXi>(all_bnds[0].data(), all_bnds[0].size());
