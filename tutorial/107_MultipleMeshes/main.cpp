@@ -4,21 +4,17 @@
 #include <string>
 #include <iostream>
 
-// Add custom data to a viewer mesh
-struct MeshData
-{
-  Eigen::RowVector3d color;
-};
-
 int main(int argc, char * argv[])
 {
   igl::opengl::glfw::Viewer viewer;
   const auto names =
     {"cube.obj","sphere.obj","xcylinder.obj","ycylinder.obj","zcylinder.obj"};
+  std::vector<Eigen::RowVector3d> colors;
+  int last_selected = -1;
   for(const auto & name : names)
   {
     viewer.load_mesh_from_file(std::string(TUTORIAL_SHARED_PATH) + "/" + name);
-    viewer.data().attr<MeshData>().color = 0.5*Eigen::RowVector3d::Random().array() + 0.5;
+    colors.push_back(0.5*Eigen::RowVector3d::Random().array() + 0.5);
   }
 
   viewer.callback_key_down =
@@ -26,7 +22,12 @@ int main(int argc, char * argv[])
   {
     if(key == GLFW_KEY_BACKSPACE)
     {
-      viewer.erase_mesh(viewer.selected_data_index);
+      int old_index = viewer.selected_data_index;
+      if (viewer.erase_mesh(viewer.selected_data_index))
+      {
+        colors.erase(colors.begin() + old_index);
+        last_selected = -1;
+      }
       return true;
     }
     return false;
@@ -36,12 +37,11 @@ int main(int argc, char * argv[])
   viewer.callback_pre_draw =
     [&](igl::opengl::glfw::Viewer &)
   {
-    static int last_selected = -1;
     if (last_selected != viewer.selected_data_index)
     {
-      for (auto &data : viewer.data_list)
+      for (size_t i = 0; i < viewer.data_list.size(); ++i)
       {
-        data.set_colors(data.attr<MeshData>().color);
+        viewer.data_list[i].set_colors(colors[i]);
       }
       viewer.data_list[viewer.selected_data_index].set_colors(Eigen::RowVector3d(0.9,0.1,0.1));
       last_selected = viewer.selected_data_index;
