@@ -7,9 +7,6 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "mexErrMsgTxt.h"
 
-// Overload mexErrMsgTxt to check an assertion then print text only if
-// assertion fails
-#include "mex.h"
 IGL_INLINE void igl::matlab::mexErrMsgTxt(bool assertion, const char * text)
 {
   if(!assertion)
