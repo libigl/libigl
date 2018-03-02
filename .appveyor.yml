@@ -17,7 +17,7 @@ build_script:
   - cd external
   - mkdir build
   - cd build
-  - cmake ..
+  - cmake -G "Visual Studio 15 2017 Win64" -T "host=x64" ..
   - msbuild %MSBuildOptions% libigl_external.sln
   - cd ../../tutorial
   - mkdir build
