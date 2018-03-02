@@ -36,6 +36,7 @@ int main(int argc, char * argv[])
   {
     cout<<"failed."<<endl;
   }
+  // Normalize
   U = ((U.array()-U.minCoeff())/(U.maxCoeff()-U.minCoeff())).eval();
 
   igl::opengl::glfw::Viewer viewer;
@@ -67,5 +68,9 @@ int main(int argc, char * argv[])
   };
   viewer.callback_key_down(viewer,' ',0);
   viewer.data().show_lines = false;
+  std::cout<<
+R"(
+  [space] Cycle through eigen modes
+)";
   viewer.launch();
 }

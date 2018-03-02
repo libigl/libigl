@@ -1,23 +1,41 @@
 cmake_minimum_required(VERSION 3.1)
 
+### Find packages to populate default options ###
+#
+# COMPONENTS should match subsequent calls
+find_package(CGAL COMPONENTS Core) # --> CGAL_FOUND
+find_package(Boost 1.48 COMPONENTS thread system) # --> BOOST_FOUND
+if(CGAL_FOUND AND BOOST_FOUND)
+  set(CGAL_AND_BOOST_FOUND TRUE)
+endif()
+find_package(Matlab COMPONENTS MEX_COMPILER MX_LIBRARY ENG_LIBRARY) # --> Matlab_FOUND
+find_package(MOSEK) # --> MOSEK_FOUND
+find_package(OpenGL) # --> OPENGL_FOUND
+
 ### Available options ###
 option(LIBIGL_USE_STATIC_LIBRARY     "Use libigl as static library" OFF)
 option(LIBIGL_WITH_ANTTWEAKBAR       "Use AntTweakBar"    OFF)
-option(LIBIGL_WITH_CGAL              "Use CGAL"           ON)
+option(LIBIGL_WITH_CGAL              "Use CGAL"           "${CGAL_AND_BOOST_FOUND}")
 option(LIBIGL_WITH_COMISO            "Use CoMiso"         ON)
 option(LIBIGL_WITH_CORK              "Use Cork"           OFF)
 option(LIBIGL_WITH_EMBREE            "Use Embree"         OFF)
 option(LIBIGL_WITH_LIM               "Use LIM"            ON)
-option(LIBIGL_WITH_MATLAB            "Use Matlab"         ON)
-option(LIBIGL_WITH_MOSEK             "Use MOSEK"          ON)
-option(LIBIGL_WITH_OPENGL            "Use OpenGL"         ON)
-option(LIBIGL_WITH_OPENGL_GLFW       "Use GLFW"           ON)
-option(LIBIGL_WITH_OPENGL_GLFW_IMGUI "Use ImGui"          ON)
+option(LIBIGL_WITH_MATLAB            "Use Matlab"         "${Matlab_FOUND}")
+option(LIBIGL_WITH_MOSEK             "Use MOSEK"          "${MOSEK_FOUND}")
+option(LIBIGL_WITH_NANOGUI           "Use Nanogui menu"   OFF)
+option(LIBIGL_WITH_OPENGL            "Use OpenGL"         "${OPENGL_FOUND}")
+option(LIBIGL_WITH_OPENGL_GLFW       "Use GLFW"           "${OPENGL_FOUND}")
+option(LIBIGL_WITH_OPENGL_GLFW_IMGUI "Use IMGUI"          OFF)
 option(LIBIGL_WITH_PNG               "Use PNG"            ON)
 option(LIBIGL_WITH_TETGEN            "Use Tetgen"         ON)
 option(LIBIGL_WITH_TRIANGLE          "Use Triangle"       ON)
+option(LIBIGL_WITH_VIEWER            "Use OpenGL viewer"  "${OPENGL_FOUND}")
 option(LIBIGL_WITH_XML               "Use XML"            ON)
 option(LIBIGL_WITH_PYTHON            "Use Python"         OFF)
+
+if(LIBIGL_WITH_VIEWER AND (NOT LIBIGL_WITH_OPENGL_GLFW OR NOT LIBIGL_WITH_OPENGL) )
+  message(FATAL_ERROR "LIBIGL_WITH_VIEWER=ON requires LIBIGL_WITH_OPENGL_GLFW=ON and LIBIGL_WITH_OPENGL=ON")
+endif()
 
 ################################################################################
 
@@ -131,7 +149,7 @@ if(LIBIGL_WITH_CGAL)
   if(EXISTS ${LIBIGL_EXTERNAL}/boost)
     set(BOOST_ROOT "${LIBIGL_EXTERNAL}/boost")
   endif()
-  find_package(CGAL COMPONENTS Core)
+  find_package(CGAL REQUIRED COMPONENTS Core)
   if(CGAL_FOUND)
     compile_igl_module("cgal")
     if(WIN32)
@@ -144,6 +162,10 @@ if(LIBIGL_WITH_CGAL)
   else()
     set(LIBIGL_WITH_CGAL OFF CACHE BOOL "" FORCE)
   endif()
+  target_include_directories(igl_cgal ${IGL_SCOPE} "${GMP_INCLUDE_DIR}" "${MPFR_INCLUDE_DIR}")
+  find_package(Boost 1.48 REQUIRED thread system)
+  target_include_directories(igl_cgal ${IGL_SCOPE} ${CGAL_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
+  target_link_libraries(igl_cgal ${IGL_SCOPE} CGAL::CGAL CGAL::CGAL_Core ${Boost_LIBRARIES})
 endif()
 
 # Helper function for `igl_copy_cgal_dll()`
@@ -251,28 +273,20 @@ endif()
 ################################################################################
 ### Compile the matlab part ###
 if(LIBIGL_WITH_MATLAB)
-  find_package(Matlab)
-  if(MATLAB_FOUND)
-    compile_igl_module("matlab")
-    target_link_libraries(igl_matlab ${IGL_SCOPE} ${MATLAB_LIBRARIES})
-    target_include_directories(igl_matlab ${IGL_SCOPE} ${MATLAB_INCLUDE_DIR})
-  else()
-    set(LIBIGL_WITH_MATLAB OFF CACHE BOOL "" FORCE)
-  endif()
+  find_package(Matlab REQUIRED COMPONENTS MEX_COMPILER MX_LIBRARY ENG_LIBRARY)
+  compile_igl_module("matlab")
+  target_link_libraries(igl_matlab ${IGL_SCOPE} ${Matlab_LIBRARIES})
+  target_include_directories(igl_matlab ${IGL_SCOPE} ${Matlab_INCLUDE_DIRS})
 endif()
 
 ################################################################################
 ### Compile the mosek part ###
 if(LIBIGL_WITH_MOSEK)
-  find_package(MOSEK)
-  if(MOSEK_FOUND)
-    compile_igl_module("mosek")
-    target_link_libraries(igl_mosek ${IGL_SCOPE} ${MOSEK_LIBRARIES})
-    target_include_directories(igl_mosek ${IGL_SCOPE} ${MOSEK_INCLUDE_DIRS})
-    target_compile_definitions(igl_mosek ${IGL_SCOPE} -DLIBIGL_WITH_MOSEK)
-  else()
-    set(LIBIGL_WITH_MOSEK OFF CACHE BOOL "" FORCE)
-  endif()
+  find_package(MOSEK REQUIRED)
+  compile_igl_module("mosek")
+  target_link_libraries(igl_mosek ${IGL_SCOPE} ${MOSEK_LIBRARIES})
+  target_include_directories(igl_mosek ${IGL_SCOPE} ${MOSEK_INCLUDE_DIRS})
+  target_compile_definitions(igl_mosek ${IGL_SCOPE} -DLIBIGL_WITH_MOSEK)
 endif()
 
 ################################################################################
@@ -307,9 +321,6 @@ if(LIBIGL_WITH_OPENGL_GLFW)
       add_subdirectory(${LIBIGL_EXTERNAL}/glfw glfw)
     endif()
     target_link_libraries(igl_opengl_glfw ${IGL_SCOPE} igl_opengl glfw)
-  else()
-    message(WARNING "GLFW module could not be compiled")
-    set(LIBIGL_WITH_OPENGL_GLFW OFF CACHE BOOL "" FORCE)
   endif()
 endif()
 
@@ -324,9 +335,6 @@ if(LIBIGL_WITH_OPENGL_GLFW_IMGUI)
       add_subdirectory(${LIBIGL_EXTERNAL}/imgui imgui)
     endif()
     target_link_libraries(igl_opengl_glfw_imgui ${IGL_SCOPE} igl_opengl_glfw imgui)
-  else()
-    message(WARNING "ImGui module could not be compiled")
-    set(LIBIGL_WITH_OPENGL_GLFW_IMGUI OFF CACHE BOOL "" FORCE)
   endif()
 endif()
 
@@ -342,8 +350,6 @@ if(LIBIGL_WITH_PNG)
     endif()
     compile_igl_module("png" "")
     target_link_libraries(igl_png ${IGL_SCOPE} igl_stb_image igl_opengl)
-  else()
-    set(LIBIGL_WITH_PNG OFF CACHE BOOL "" FORCE)
   endif()
 endif()
 

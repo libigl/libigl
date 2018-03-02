@@ -3,12 +3,16 @@ project(libigl_external)
 
 include(ExternalProject)
 
+if(NOT WIN32)
+  message(FATAL_ERROR "This CMake script was written to build CGAL/Boost on Windows. It does not currently work on Linux/macOS.")
+endif()
+
 # Note: It IS important to download different files on different OS's:
 # on Unix-like systems, we need the file persmissions (only available in the .tar.gz),
 # while on Windows, we need CR/LF line feeds (only available in the .zip)
 
-# Boost 1.65 fucks things up because of https://github.com/boostorg/build/issues/230
-# Boost 1.66 fucks things up because of https://github.com/boostorg/build/issues/273
+# Boost 1.65 is problematic because of https://github.com/boostorg/build/issues/230
+# Boost 1.66 is problematic because of https://github.com/boostorg/build/issues/273
 if(UNIX)
   set(BOOST_URL "https://dl.bintray.com/boostorg/release/1.65.1/source/boost_1_65_1.tar.gz")
   set(BOOST_HASH SHA256=a13de2c8fbad635e6ba9c8f8714a0e6b4264b60a29b964b940a22554705b6b60)
@@ -24,7 +28,7 @@ endif()
 # We only support x64 builds
 set(BOOST_ADDRESS_MODEL 64)
 
-if (MSVC_VERSION EQUAL 1500) #VS2008
+if(MSVC_VERSION EQUAL 1500) #VS2008
   set(BOOST_TOOLSET "--toolset=msvc-9.0")
 elseif(MSVC_VERSION EQUAL 1600) #VS2010
   set(BOOST_TOOLSET "--toolset=msvc-10.0")
@@ -36,12 +40,6 @@ elseif(MSVC_VERSION EQUAL 1900) #VS2015
   set(BOOST_TOOLSET "--toolset=msvc-14.0")
 elseif(NOT (MSVC_VERSION LESS 1910)) #VS2017
   set(BOOST_TOOLSET "--toolset=msvc-14.1")
-endif()
-
-if(${BUILD_SHARED_LIBS} MATCHES OFF)
-  set(BUILD_LIBS "static")
-elseif(${BUILD_SHARED_LIBS} MATCHES ON)
-  set(BUILD_LIBS "shared")
 endif()
 
 # Boost
