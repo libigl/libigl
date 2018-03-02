@@ -162,10 +162,6 @@ if(LIBIGL_WITH_CGAL)
   else()
     set(LIBIGL_WITH_CGAL OFF CACHE BOOL "" FORCE)
   endif()
-  target_include_directories(igl_cgal ${IGL_SCOPE} "${GMP_INCLUDE_DIR}" "${MPFR_INCLUDE_DIR}")
-  find_package(Boost 1.48 REQUIRED thread system)
-  target_include_directories(igl_cgal ${IGL_SCOPE} ${CGAL_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
-  target_link_libraries(igl_cgal ${IGL_SCOPE} CGAL::CGAL CGAL::CGAL_Core ${Boost_LIBRARIES})
 endif()
 
 # Helper function for `igl_copy_cgal_dll()`
