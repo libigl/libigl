@@ -142,8 +142,8 @@ namespace glfw
     std::function<bool(Viewer& viewer, float delta_y)> callback_mouse_scroll;
     std::function<bool(Viewer& viewer, unsigned int key, int modifiers)> callback_key_pressed;
     // THESE SHOULD BE DEPRECATED:
-    std::function<bool(Viewer& viewer, unsigned char key, int modifiers)> callback_key_down;
-    std::function<bool(Viewer& viewer, unsigned char key, int modifiers)> callback_key_up;
+    std::function<bool(Viewer& viewer, unsigned int key, int modifiers)> callback_key_down;
+    std::function<bool(Viewer& viewer, unsigned int key, int modifiers)> callback_key_up;
     // Pointers to per-callback data
     void* callback_init_data;
     void* callback_pre_draw_data;

@@ -14,9 +14,11 @@
 namespace igl
 {  
 
-  // Act like the matlab X(row_indices,col_indices) operator, where
-  // row_indices, col_indices are non-negative integer indices. This is a fast version
-  // of igl::slice that can analyze and store the sparsity structure. It is slower at the // first evaluation (slice_cached_precompute), but faster on the subsequent ones.
+  // Act like the matlab X(row_indices,col_indices) operator, where row_indices,
+  // col_indices are non-negative integer indices. This is a fast version of
+  // igl::slice that can analyze and store the sparsity structure. It is slower
+  // at the irst evaluation (slice_cached_precompute), but faster on the
+  // subsequent ones.
   // 
   // Inputs:
   //   X  m by n matrix

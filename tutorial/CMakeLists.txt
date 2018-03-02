@@ -53,7 +53,9 @@ if(TUTORIALS_CHAPTER1)
   add_subdirectory("103_Events")
   add_subdirectory("104_Colors")
   add_subdirectory("105_Overlays")
-  add_subdirectory("106_ViewerMenu")
+  if(LIBIGL_WITH_OPENGL_GLFW_IMGUI)
+    add_subdirectory("106_ViewerMenu")
+  endif()
   add_subdirectory("107_MultipleMeshes")
 endif()
 
@@ -64,6 +66,7 @@ if(TUTORIALS_CHAPTER2)
   add_subdirectory("203_CurvatureDirections")
   add_subdirectory("204_Gradient")
   add_subdirectory("205_Laplacian")
+  add_subdirectory("206_GeodesicDistance")
 endif()
 
 # Chapter 3
