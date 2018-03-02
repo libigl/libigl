@@ -172,8 +172,8 @@ namespace glfw
       printf("Failed to load OpenGL and its extensions\n");
       return(-1);
     }
-    printf("OpenGL Version %d.%d loaded\n", GLVersion.major, GLVersion.minor);
     #if defined(DEBUG) || defined(_DEBUG)
+      printf("OpenGL Version %d.%d loaded\n", GLVersion.major, GLVersion.minor);
       int major, minor, rev;
       major = glfwGetWindowAttrib(window, GLFW_CONTEXT_VERSION_MAJOR);
       minor = glfwGetWindowAttrib(window, GLFW_CONTEXT_VERSION_MINOR);
@@ -413,6 +413,8 @@ namespace glfw
     data().uniform_colors(Eigen::Vector3d(51.0/255.0,43.0/255.0,33.3/255.0),
                    Eigen::Vector3d(255.0/255.0,228.0/255.0,58.0/255.0),
                    Eigen::Vector3d(255.0/255.0,235.0/255.0,80.0/255.0));
+
+    // Alec: why?
     if (data().V_uv.rows() == 0)
     {
       data().grid_texture();
