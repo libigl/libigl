@@ -5,7 +5,7 @@ message(STATUS "CMAKE_CXX_COMPILER: ${CMAKE_CXX_COMPILER}")
 
 ### conditionally compile certain modules depending on libraries found on the system
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../shared/cmake)
-find_package(CGAL QUIET COMPONENTS Core)
+#find_package(CGAL QUIET COMPONENTS Core)
 find_package(MATLAB QUIET)
 find_package(MOSEK)
 
@@ -14,7 +14,7 @@ option(LIBIGL_USE_STATIC_LIBRARY "Use LibIGL as static library" ON)
 option(LIBIGL_WITH_EMBREE      "Use Embree"         ON)
 
 ### libIGL options: choose your dependencies (by default everything is OFF, in this example we need the viewer)
-option(LIBIGL_WITH_CGAL             "Use CGAL"           "${CGAL_FOUND}")
+option(LIBIGL_WITH_CGAL             "Use CGAL"           ON)
 option(LIBIGL_WITH_CORK             "Use CORK"           OFF)
 option(LIBIGL_WITH_MATLAB           "Use Matlab"         "${MATLAB_FOUND}")
 option(LIBIGL_WITH_MOSEK            "Use MOSEK"          "${MOSEK_FOUND}")
