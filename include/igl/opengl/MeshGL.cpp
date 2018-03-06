@@ -249,7 +249,7 @@ R"(#version 150
   {
     gl_Position = proj * view * vec4 (position, 1.0);
     color_frag = color;
-  };
+  }
 )";
 
   std::string overlay_fragment_shader_string =
