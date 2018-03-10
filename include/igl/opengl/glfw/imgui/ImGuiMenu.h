@@ -71,13 +71,19 @@ public:
   // Draw menu
   IGL_INLINE virtual void draw_menu();
 
+  // Can be overwritten by `callback_draw_viewer_window`
+  IGL_INLINE virtual void draw_viewer_window();
+
+  // Can be overwritten by `callback_draw_viewer_menu`
   IGL_INLINE virtual void draw_viewer_menu();
 
+  // Can be overwritten by `callback_draw_custom_window`
   IGL_INLINE virtual void draw_custom_window() { }
 
   // Easy-to-customize callbacks
-  std::function<void(void)> draw_viewer_menu_func;
-  std::function<void(void)> draw_custom_window_func;
+  std::function<void(void)> callback_draw_viewer_window;
+  std::function<void(void)> callback_draw_viewer_menu;
+  std::function<void(void)> callback_draw_custom_window;
 
   IGL_INLINE void draw_labels_window();
 

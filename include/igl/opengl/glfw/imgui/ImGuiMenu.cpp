@@ -143,6 +143,16 @@ IGL_INLINE void ImGuiMenu::draw_menu()
   draw_labels_window();
 
   // Viewer settings
+  if (callback_draw_viewer_window) { callback_draw_viewer_window(); }
+  else { draw_viewer_window(); }
+
+  // Other windows
+  if (callback_draw_custom_window) { callback_draw_custom_window(); }
+  else { draw_custom_window(); }
+}
+
+IGL_INLINE void ImGuiMenu::draw_viewer_window()
+{
   float menu_width = 180.f * menu_scaling();
   ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiSetCond_FirstUseEver);
   ImGui::SetNextWindowSize(ImVec2(0.0f, 0.0f), ImGuiSetCond_FirstUseEver);
@@ -154,14 +164,10 @@ IGL_INLINE void ImGuiMenu::draw_menu()
       | ImGuiWindowFlags_AlwaysAutoResize
   );
   ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.4f);
-  if (draw_viewer_menu_func) { draw_viewer_menu_func(); }
+  if (callback_draw_viewer_menu) { callback_draw_viewer_menu(); }
   else { draw_viewer_menu(); }
   ImGui::PopItemWidth();
   ImGui::End();
-
-  // Other windows
-  if (draw_custom_window_func) { draw_custom_window_func(); }
-  else { draw_custom_window(); }
 }
 
 IGL_INLINE void ImGuiMenu::draw_viewer_menu()
