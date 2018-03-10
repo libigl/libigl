@@ -6,14 +6,30 @@
 #include <iostream>
 #include "tutorial_shared_path.h"
 
-class CustomMenu : public igl::opengl::glfw::imgui::ImGuiMenu
+
+int main(int argc, char *argv[])
 {
+  Eigen::MatrixXd V;
+  Eigen::MatrixXi F;
+
+  // Load a mesh in OFF format
+  igl::readOFF(TUTORIAL_SHARED_PATH "/bunny.off", V, F);
+
+  // Init the viewer
+  igl::opengl::glfw::Viewer viewer;
+
+  // Attach a menu plugin
+  igl::opengl::glfw::imgui::ImGuiMenu menu;
+  viewer.plugins.push_back(&menu);
+
+  // Customize the menu
   float floatVariable = 0.1f; // Shared between two menus
 
-  virtual void draw_viewer_menu() override
+  // Add content to the default menu window
+  menu.callback_draw_viewer_menu = [&]()
   {
-    // Draw parent menu
-    ImGuiMenu::draw_viewer_menu();
+    // Draw parent menu content
+    menu.draw_viewer_menu();
 
     // Add new group
     if (ImGui::CollapsingHeader("New Group", ImGuiTreeNodeFlags_DefaultOpen))
@@ -58,12 +74,13 @@ class CustomMenu : public igl::opengl::glfw::imgui::ImGuiMenu
         std::cout << "Hello\n";
       }
     }
-  }
+  };
 
-  virtual void draw_custom_window() override
+  // Draw additional windows
+  menu.callback_draw_custom_window = [&]()
   {
     // Define next window position + size
-    ImGui::SetNextWindowPos(ImVec2(180.f * menu_scaling(), 10), ImGuiSetCond_FirstUseEver);
+    ImGui::SetNextWindowPos(ImVec2(180.f * menu.menu_scaling(), 10), ImGuiSetCond_FirstUseEver);
     ImGui::SetNextWindowSize(ImVec2(200, 160), ImGuiSetCond_FirstUseEver);
     ImGui::Begin(
         "New Window", nullptr,
@@ -79,24 +96,7 @@ class CustomMenu : public igl::opengl::glfw::imgui::ImGuiMenu
     ImGui::InputText("Name", str);
 
     ImGui::End();
-  }
-
-};
-
-int main(int argc, char *argv[])
-{
-  Eigen::MatrixXd V;
-  Eigen::MatrixXi F;
-
-  // Load a mesh in OFF format
-  igl::readOFF(TUTORIAL_SHARED_PATH "/bunny.off", V, F);
-
-  // Init the viewer
-  igl::opengl::glfw::Viewer viewer;
-
-  // Attach a custom menu
-  CustomMenu menu;
-  viewer.plugins.push_back(&menu);
+  };
 
   // Plot the mesh
   viewer.data().set_mesh(V, F);
