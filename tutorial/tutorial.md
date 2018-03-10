@@ -75,17 +75,12 @@ lecture notes links to a cross-platform example application.
     * [504 N-Rotationally symmetric tangent fields](#nrotationallysymmetrictangetfields)
     * [505 Global, seamless integer-grid parametrization](#globalseamlessintegergridparametrization)
     * [506 Anisotropic remeshing using frame fields](#anisotropicremeshingusingframefields)
-    * [507 N-PolyVector fields](#npolyvectorfields)
-    * [508 Conjugate vector fields](#conjugatevectorfields)
-    * [509 Planarization](#planarization)
-    * [510 Integrable PolyVector Fields](#integrable)
-    * [511 General N-PolyVector Fields](#npolyvectorfields_general)
+    * [507 Planarization](#planarization)
 * [Chapter 6: External libraries](#chapter6:externallibraries)
     * [601 State serialization](#stateserialization)
     * [602 Mixing Matlab code](#mixingmatlabcode)
         * [Saving a Matlab workspace](#savingamatlabworkspace)
-        * [Dumping Eigen matrices to copy and paste into
-          Matlab](#dumpingeigenmatricestocopyandpasteintomatlab)
+        * [Dumping Eigen matrices to copy and paste into Matlab](#dumpingeigenmatricestocopyandpasteintomatlab)
     * [603 Calling libigl functions from Matlab](#callinglibiglfunctionsfrommatlab)
     * [604 Triangulation of closed polygons](#triangulationofclosedpolygons)
     * [605 Tetrahedralization of closed surfaces](#tetrahedralizationofclosedsurfaces)
@@ -1986,9 +1981,11 @@ N are of different types and they appear in different positions.
 We demonstrate how to call and plot N-RoSy fields in [Example
 504](504_NRosyDesign/main.cpp), where the degree of the field can be change
 pressing the number keys. `igl::nrosy` implements the algorithm proposed in
-[#bommes_2009][]. N-RoSy fields can also be interpolated with the algorithm
-proposed in [#knoppel_2013][], see Section [npolyvectorfields] for more details
-([igl::n_polyvector](../include/igl/n_polyvector.h)).
+[#bommes_2009][]. N-RoSy fields can also be interpolated with many other algorithms,
+see the library [libdirectional](https://github.com/avaxman/libdirectional) for
+a reference implementation of the most popular ones. For a complete categorization
+of fields used in various applications see Vaxman et al. 2016 [#vaxman_2016].
+
 
 ### [Global, seamless integer-grid parametrization](#globalseamlessintegergridparametrization) [globalseamlessintegergridparametrization]
 
@@ -2117,119 +2114,18 @@ generate the UV parametrization, but other algorithms could be applied: the
 only desiderata is that the generated quad mesh should be as isotropic as
 possible.
 
-## [N-PolyVector fields](#npolyvectorfields) [npolyvectorfields]
-
-N-RoSy vector fields can be further generalized to represent arbitrary
-vector-sets, with arbitrary angles between them and with arbitrary lengths
-[#diamanti_2014][].  This generalization is called  N-PolyVector field, and
-libigl provides the function `igl::n_polyvector` to design them starting from a
-sparse set of constraints ([Example 507](507_PolyVectorField/main.cpp)).
-
-![Interpolation of a 6-PolyVector field (right) and a 12-PolyVector field from a sparse set of random constraints.](images/507_PolyVectorField.png)
-
-The core idea is to represent the vector set as the roots of a complex
-polynomial: The polynomial coefficients are then harmonically interpolated
-leading to polynomials whose roots smoothly vary over the surface.
-
-Globally optimal direction fields [#knoppel_2013][] are a special case of
-PolyVector fields. If the constraints are taken from an N-RoSy field,
-`igl::n_polyvector` generates a field that is equivalent, after normalization,
-to a globally optimal direction field.
-
-## [Conjugate vector fields](#conjugatevectorfields) [conjugatevectorfields]
-
-Two tangent vectors lying on a face of a triangle mesh are conjugate if
-
-\\[ k_1 (u^T d_1)(v^T d_1) + k_2(u^T d_2)(v^T d_2) = 0. \\]
-
-This condition is very important in architectural geometry: The faces of an
-infinitely dense quad mesh whose edges are aligned with a conjugate field are
-planar. Thus, a quad mesh whose edges follow a conjugate field  are easier to
-planarize [#liu_2011].
-
-Finding a conjugate vector field that satisfies given directional constraints
-is a standard problem in architectural geometry, which can be tackled by
-deforming a Poly-Vector field to the closest conjugate field.
-
-This algorithm [#diamanti_2014] alternates a global step, which enforces
-smoothness, with a local step, that projects the field on every face to the
-closest conjugate field ([Example 508](508_ConjugateField/main.cpp)).
-
-![A smooth 4-PolyVector field (left) is deformed to become a conjugate field
-(right).](images/508_ConjugateField.png)
-
 ## [Planarization](#planarization) [planarization]
 
 A quad mesh can be transformed in a planar quad mesh with Shape-Up
 [#bouaziz_2012], a local/global approach that uses the global step to enforce
 surface continuity and the local step to enforce planarity.
 
-[Example 509](509_Planarization/main.cpp) planarizes a quad mesh until it
+[Example 507](507_Planarization/main.cpp) planarizes a quad mesh until it
 satisfies a user-given planarity threshold.
 
 ![A non-planar quad mesh (left) is planarized using the libigl function
-igl::palanarize (right). The colors represent the planarity of the
+igl::planarize (right). The colors represent the planarity of the
 quads.](images/509_Planarization.png)
-
-## [Integrable PolyVector Fields](#integrable) [integrable]
-
-Vector-field guided surface parameterization is based on the idea of designing
-the gradients of the parameterization functions (which are tangent vector fields
-on the surface) instead of the functions themselves. Thus, vector-set fields
-(N-Rosy, frame fields, and polyvector fields) that are to be used for
-parameterization (and subsequent remeshing) need to be integrable: it must be
-possible to break them down into individual vector fields that are gradients of
-scalar functions. Fields obtained by most smoothness-based design methods (eg.
-[#levy_2008][], [#knoppel_2013][], [#diamanti_2014][], [#bommes_2009][],
-[#panozzo_2014][]) do not have this property. In [#diamanti_2015][], a method
-for creating integrable polyvector fields was introduced. This method takes as
-input a given field and improves its integrability by removing the vector field
-curl, thus turning it into a gradient of a function ([Example
-510](510_Integrable/main.cpp)).
-
-![Integration error is removed from a frame field to produce a field aligned
-parameterization free of triangle flips.](images/510_Integrable.png)
-
-This method retains much of the core principles of the polyvector framework - it
-expresses the condition for zero discrete curl condition (which typically
-requires integers for the vector matchings) into a condition involving
-continuous variables only. This is done using coefficients of appropriately
-defined polynomials. The parameterizations generated by the resulting fields are
-exactly aligned to the field directions and contain no inverted triangles.
-
-## [General N-PolyVector fields](#npolyvectorfields_general) [npolyvectorfields_general]
-
-While mostly applicable for the design of symmetric fields (i.e. fields that
-comprise of vector sets with symmetries between them at each point, e.g. N-RoSy
-or frame-fields), the framework presented in [#diamanti_2014][] can be used to
-design completely general fields, with possibly no such symmetries. For example,
-one can design fields that at each point comprise of an arbitrary number of
-vectors, not required to be collinear - as opposed e.g. to the case of the 4
-pairwise-collinear vectors designed in the example ([Example
-507](507_PolyVectorField/main.cpp)). This capability is implemented in the
-function igl::n_polyvector_general, and is illustrated in the example ([Example
-511](511_PolyVectorFieldGeneral/main.cpp)).
-
-![Interpolation of a general field with 3 (left) and 9 vectors per point field
-from a sparse set of random constraints (in red). The field is defined on all
-mesh faces, but is only shown on a subset for clarity.
-](images/511_PolyVectorFieldGeneral.png)
-
-The design of these general directional fields (also called vector-set fields)
-is based on the same polynomial framework and includes the symmetric fields as a
-special case. Note that in the case that some symmetries do exist in the
-constraints, the final field is not guaranteed to have these symmetries
-everywhere else on the mesh. For example, designing a field with 3 vectors per
-point where, at the constrained faces, two of the vectors are on a line opposite
-to each other, we are not guaranteed to always have two pairwise-collinear
-vectors everywhere in the result, as can be seen in the picture. In some cases
-however (as is the case of the frame field in the previous example [Example
-507](507_PolyVectorField/main.cpp)) these symmetries are in fact guaranteed due
-to the particular nature of the polynomial that applies in that case (two
-coefficients are 0).
-
-For a complete categorization of fields used in various applications (including
-these general ones) see Vaxman et al. 2016 [#vaxman_2016].
 
 # Chapter 6: External libraries [chapter6:externallibraries]
 

@@ -119,7 +119,6 @@ PYBIND11_PLUGIN(pyigl) {
            map_vertices_to_circle
            massmatrix
            min_quad_with_fixed
-           n_polyvector
            normalize_row_lengths
            normalize_row_sums
            parula
