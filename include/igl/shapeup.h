@@ -8,7 +8,6 @@
 #ifndef IGL_SHAPEUP_H
 #define IGL_SHAPEUP_H
 
-#include <igl/shapeup_local_projections.h>
 #include <igl/min_quad_with_fixed.h>
 #include <igl/igl_inline.h>
 #include <igl/setdiff.h>
@@ -48,7 +47,22 @@ namespace igl
     smoothCoeff(0.0){}
   };
       
-    
+  //Every function here defines a local projection for ShapeUp, and must have the following structure to qualify:
+  //Input:
+  //	P		#P by 3				the set of points, either the initial solution, or from previous iteration.
+  //  SC		#Set by 1           cardinalities of sets in S
+  //  S		#Sets by max(SC)    independent sets where the local projection applies. Values beyond column SC(i)-1 in row S(i,:) are "don't care"
+  //Output:
+  //	projP	#S by 3*max(SC) in format xyzxyzxyz,  where the projected points correspond to each set in S in the same order.
+  typedef std::function<bool(const Eigen::PlainObjectBase<Eigen::MatrixXd>&, const Eigen::PlainObjectBase<Eigen::VectorXi>&, const Eigen::PlainObjectBase<Eigen::MatrixXi>&, Eigen::PlainObjectBase<Eigen::MatrixXd>&)> shapeup_projection_function;
+
+  
+  //This projection does nothing but render points into projP. Mostly used for "echoing" the global step
+  IGL_INLINE bool shapeup_identity_projection(const Eigen::PlainObjectBase<Eigen::MatrixXd>& P, const Eigen::PlainObjectBase<Eigen::VectorXi>& SC, const Eigen::PlainObjectBase<Eigen::MatrixXi>& S,  Eigen::PlainObjectBase<Eigen::MatrixXd>& projP);
+  
+  //the projection assumes that the sets are vertices of polygons in cyclic order
+  IGL_INLINE bool shapeup_regular_face_projection(const Eigen::PlainObjectBase<Eigen::MatrixXd>& P, const Eigen::PlainObjectBase<Eigen::VectorXi>& SC, const Eigen::PlainObjectBase<Eigen::MatrixXi>& S,  Eigen::PlainObjectBase<Eigen::MatrixXd>& projP);
+
     
   //This function precomputation the necessary matrices for the ShapeUp process, and prefactorizes them.
     
