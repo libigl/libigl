@@ -126,7 +126,7 @@ if(WIN32)
   # Link against the Python shared library
   # message(FATAL_ERROR ${PYTHON_LIBRARY})
   # target_link_libraries(igl ${PYTHON_LIBRARY})
-  target_link_libraries(pyigl ${PYTHON_LIBRARIES})
+  target_link_libraries(pyigl PRIVATE ${PYTHON_LIBRARIES})
 
 elseif(UNIX)
   # It's quite common to have multiple copies of the same Python version
@@ -161,7 +161,7 @@ elseif(UNIX)
   else()
 
     if(CHECK_UNDEFINED)
-      target_link_libraries(pyigl ${PYTHON_LIBRARIES})
+      target_link_libraries(pyigl PRIVATE ${PYTHON_LIBRARIES})
       set_target_properties(pyigl PROPERTIES LINK_FLAGS "-Wl,--no-undefined")
     endif()
 
