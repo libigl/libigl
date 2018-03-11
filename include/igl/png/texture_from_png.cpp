@@ -48,10 +48,10 @@ IGL_INLINE bool igl::png::texture_from_png(const std::string png_file, GLuint & 
 
 IGL_INLINE bool igl::png::texture_from_png(
   const std::string png_file,
-  Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& R,
-  Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& G,
-  Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& B,
-  Eigen::Matrix<char,Eigen::Dynamic,Eigen::Dynamic>& A
+  Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& R,
+  Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& G,
+  Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& B,
+  Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& A
 )
 {
   int width,height,n;
