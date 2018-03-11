@@ -2,7 +2,6 @@
 #include <igl/barycenter.h>
 #include <igl/jet.h>
 #include <igl/shapeup.h>
-#include <igl/shapeup_local_projections.h>
 #include <igl/quad_planarity.h>
 #include <igl/readDMAT.h>
 #include <igl/readOFF.h>
