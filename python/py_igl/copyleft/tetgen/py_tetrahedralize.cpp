@@ -20,4 +20,20 @@ m.def("tetrahedralize", []
 }, __doc_igl_copyleft_tetgen_tetrahedralize,
 py::arg("V"), py::arg("F"), py::arg("switches"), py::arg("TV"), py::arg("TT"), py::arg("TF"));
 
+m.def("tetrahedralize", []
+(
+  const Eigen::MatrixXd& V,
+  const Eigen::MatrixXi& F,
+  const Eigen::MatrixXi& VM,
+  const Eigen::MatrixXi& FM,
+  const std::string switches,
+  Eigen::MatrixXd& TV,
+  Eigen::MatrixXi& TT,
+  Eigen::MatrixXi& TF,
+  Eigen::MatrixXi& TM
+)
+{
+  return igl::copyleft::tetgen::tetrahedralize(V, F, VM, FM, switches, TV, TT, TF, TM);
+}, __doc_igl_copyleft_tetgen_tetrahedralize,
+py::arg("V"), py::arg("F"), py::arg("VM"), py::arg("FM"), py::arg("switches"), py::arg("TV"), py::arg("TT"), py::arg("TF"), py::arg("TM"));
 
