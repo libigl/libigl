@@ -331,7 +331,7 @@ int main(int argc, char *argv[])
 Additional properties can be plotted on the mesh (as we will see later),
 and it is possible to extend the viewer with standard OpenGL code.
 Please see the documentation in
-<a href="../include/igl/Viewer/Viewer.h">Viewer.h</a> for more details.</p>
+<a href="../include/igl/opengl/glfw/Viewer.h">Viewer.h</a> for more details.</p>
 
 <figure>
 <img src="images/102_DrawMesh.png" alt="([Example 102](102_DrawMesh/main.cpp)) loads and draws a
@@ -470,56 +470,108 @@ using overlays.</figcaption>
 
 <h2 id="viewermenu"><a href="#viewermenu">Viewer Menu</a> </h2>
 
-<p>As of version 1.2 the viewer uses a new menu and completely replaces
-<a href="http://anttweakbar.sourceforge.net/doc/">AntTweakBar</a>. It is based on the
-open-source projects <a href="https://github.com/memononen/nanovg">nanovg</a> and
-<a href="https://github.com/wjakob/nanogui">nanogui</a>. To extend the default menu of the
-viewer and to expose more user defined variables you have to define a callback
-function:</p>
+<p>As of latest version, the viewer uses a new menu and completely replaces
+<a href="http://anttweakbar.sourceforge.net/doc/">AntTweakBar</a> and
+<a href="https://github.com/wjakob/nanogui">nanogui</a> with <a href="https://github.com/ocornut/imgui">Dear ImGui</a>. To extend the default menu of the
+viewer and to expose more user defined variables you have to implement a custom interface, as in <a href="106_ViewerMenu/main.cpp">Example 106</a>:</p>
 
-<pre><code class="cpp">igl::opengl::glfw::Viewer viewer;
-
-bool boolVariable = true;
-float floatVariable = 0.1f;
-enum Orientation { Up=0,Down,Left,Right } dir = Up;
-
-// Extend viewer menu
-viewer.callback_init = [&amp;](igl::opengl::glfw::Viewer&amp; viewer)
+<pre><code class="cpp">class CustomMenu : public igl::opengl::glfw::imgui::ImGuiMenu
 {
-  // Add new group
-  viewer.ngui-&gt;addGroup(&quot;New Group&quot;);
+  float floatVariable = 0.1f; // Shared between two menus
 
-  // Expose a variable directly ...
-  viewer.ngui-&gt;addVariable(&quot;float&quot;,floatVariable);
+  virtual void draw_viewer_menu() override
+  {
+    // Draw parent menu
+    ImGuiMenu::draw_viewer_menu();
 
-  // Expose an enumaration type
-  viewer.ngui-&gt;addVariable&lt;Orientation&gt;(&quot;Direction&quot;,dir)-&gt;setItems({&quot;Up&quot;,&quot;Down&quot;,&quot;Left&quot;,&quot;Right&quot;});
+    // Add new group
+    if (ImGui::CollapsingHeader(&quot;New Group&quot;, ImGuiTreeNodeFlags_DefaultOpen))
+    {
+      // Expose variable directly ...
+      ImGui::InputFloat(&quot;float&quot;, &amp;floatVariable, 0, 0, 3);
 
-  // Add a button
-  viewer.ngui-&gt;addButton(&quot;Print Hello&quot;,[](){ std::cout &lt;&lt; &quot;Hello\n&quot;; });
+      // ... or using a custom callback
+      static bool boolVariable = true;
+      if (ImGui::Checkbox(&quot;bool&quot;, &amp;boolVariable))
+      {
+        // do something
+        std::cout &lt;&lt; &quot;boolVariable: &quot; &lt;&lt; std::boolalpha &lt;&lt; boolVariable &lt;&lt; std::endl;
+      }
 
-  // call to generate menu
-  viewer.screen-&gt;performLayout();
-  return false;
+      // Expose an enumeration type
+      enum Orientation { Up=0, Down, Left, Right };
+      static Orientation dir = Up;
+      ImGui::Combo(&quot;Direction&quot;, (int *)(&amp;dir), &quot;Up\0Down\0Left\0Right\0\0&quot;);
+
+      // We can also use a std::vector&lt;std::string&gt; defined dynamically
+      static int num_choices = 3;
+      static std::vector&lt;std::string&gt; choices;
+      static int idx_choice = 0;
+      if (ImGui::InputInt(&quot;Num letters&quot;, &amp;num_choices))
+      {
+        num_choices = std::max(1, std::min(26, num_choices));
+      }
+      if (num_choices != (int) choices.size())
+      {
+        choices.resize(num_choices);
+        for (int i = 0; i &lt; num_choices; ++i)
+          choices[i] = std::string(1, 'A' + i);
+        if (idx_choice &gt;= num_choices)
+          idx_choice = num_choices - 1;
+      }
+      ImGui::Combo(&quot;Letter&quot;, &amp;idx_choice, choices);
+
+      // Add a button
+      if (ImGui::Button(&quot;Print Hello&quot;, ImVec2(-1,0)))
+      {
+        std::cout &lt;&lt; &quot;Hello\n&quot;;
+      }
+    }
+  }
+
+  virtual void draw_custom_window() override
+  {
+    // Define next window position + size
+    ImGui::SetNextWindowPos(ImVec2(180.f * menu_scaling(), 10), ImGuiSetCond_FirstUseEver);
+    ImGui::SetNextWindowSize(ImVec2(200, 160), ImGuiSetCond_FirstUseEver);
+    ImGui::Begin(
+        &quot;New Window&quot;, nullptr,
+        ImGuiWindowFlags_NoSavedSettings
+    );
+
+    // Expose the same variable directly ...
+    ImGui::PushItemWidth(-80);
+    ImGui::DragFloat(&quot;float&quot;, &amp;floatVariable, 0.0, 0.0, 3.0);
+    ImGui::PopItemWidth();
+
+    static std::string str = &quot;bunny&quot;;
+    ImGui::InputText(&quot;Name&quot;, str);
+
+    ImGui::End();
+  }
+
 };
 
-// start viewer
+// Init the viewer
+igl::opengl::glfw::Viewer viewer;
+
+// Attach a custom menu
+CustomMenu menu;
+viewer.plugins.push_back(&amp;menu);
+
 viewer.launch();
 </code></pre>
 
-<p>If you need a separate new menu window use:</p>
+<p>If you need a separate new menu window implement:</p>
 
-<pre><code class="cpp">viewer.ngui-&gt;addWindow(Eigen::Vector2i(220,10),&quot;New Window&quot;);
-</code></pre>
-
-<p>If you do not want to expose variables directly but rather use the get/set functionality:</p>
-
-<pre><code class="cpp">// ... or using a custom callback
-viewer.ngui-&gt;addVariable&lt;bool&gt;(&quot;bool&quot;,[&amp;](bool val) {
-  boolVariable = val; // setter
-},[&amp;]() {
-  return boolVariable; // getter
-});
+<pre><code class="cpp">class CustomMenu : public igl::opengl::glfw::imgui::ImGuiMenu
+{
+  // ... some code
+  virtual void draw_custom_window() override 
+  {
+    // ... custom window specifications
+  }
+}
 </code></pre>
 
 <figure>
@@ -643,7 +695,7 @@ on a triangle mesh is via a vertex&#8217;s <em>angular deficit</em>:</p>
 at vertex <span class="math">\(i\)</span> in triangle <span class="math">\(j\)</span> <a href="#cn:1" id="cnref:1" title="see citation" class="citation">(1)</a>.</p>
 
 <p>Just like the continuous analog, our discrete Gaussian curvature reveals
-elliptic, hyperbolic and parabolic vertices on the domain, as demonstrated in <a href="202GaussianCurvature/main.cpp">Example 202</a>.</p>
+elliptic, hyperbolic and parabolic vertices on the domain, as demonstrated in <a href="202_GaussianCurvature/main.cpp">Example 202</a>.</p>
 
 <figure>
 <img src="images/bumpy-gaussian-curvature.jpg" alt="The `GaussianCurvature` example computes discrete Gaussian curvature and
