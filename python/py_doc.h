@@ -36,6 +36,7 @@ extern const char *__doc_igl_covariance_scatter_matrix;
 extern const char *__doc_igl_cross_field_missmatch;
 extern const char *__doc_igl_cut_mesh_from_singularities;
 extern const char *__doc_igl_deform_skeleton;
+extern const char *__doc_igl_dirac_operator;
 extern const char *__doc_igl_directed_edge_orientations;
 extern const char *__doc_igl_directed_edge_parents;
 extern const char *__doc_igl_doublearea;

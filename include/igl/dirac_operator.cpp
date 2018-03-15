@@ -3,9 +3,9 @@
 #include <Eigen/Core>
 #include <igl/doublearea.h>
 #include <iostream>
-#include "dirac.h"
+#include "dirac_operator.h"
 template <typename DerivedV, typename DerivedF, typename Scalar>
-IGL_INLINE void igl::dirac(
+IGL_INLINE void igl::dirac_operator(
 const Eigen::MatrixBase<DerivedV> & V, 
 const Eigen::MatrixBase<DerivedF> & F, 
 Eigen::SparseMatrix<Scalar>& D,

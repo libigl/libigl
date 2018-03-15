@@ -464,7 +464,7 @@ const char *__doc_igl_deform_skeleton = R"igl_Qu8mg5v7(// Deform a skeleton.
   //   CT  #BE*2 by 3 list of deformed joint positions
   //   BET  #BE by 2 list of bone edge indices (maintains order)
   //)igl_Qu8mg5v7";
-const char *__doc_igl_dirac = R"igl_Qu8mg5v7(// 
+const char *__doc_igl_dirac_operator = R"igl_Qu8mg5v7(// 
   // Constructs the dirac operator with 4x4 matrix in place of quanternions
   // for a given mesh (V,F).
   // Templates:

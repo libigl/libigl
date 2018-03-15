@@ -34,7 +34,7 @@ namespace igl
   // Note: This Dirac matrix uses a 4x4 matrix in place of quanternions
   //
   template <typename DerivedV, typename DerivedF, typename Scalar>
-  IGL_INLINE void dirac(
+  IGL_INLINE void dirac_operator(
     const Eigen::MatrixBase<DerivedV> & V, 
     const Eigen::MatrixBase<DerivedF> & F,
     Eigen::SparseMatrix<Scalar>& D,
@@ -42,6 +42,6 @@ namespace igl
 }
 
 #ifndef IGL_STATIC_LIBRARY
-#  include "dirac.cpp"
+#  include "dirac_operator.cpp"
 #endif
 #endif

@@ -7,7 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 
 
-m.def("dirac", []
+m.def("dirac_operator", []
 (
     const Eigen::MatrixXd &V,
     const Eigen::MatrixXi &F,
@@ -15,7 +15,7 @@ m.def("dirac", []
     Eigen::SparseMatrix<double> &DA
 )
 {
-  return igl::dirac(V, F, D, DA);
-}, __doc_igl_dirac,
+  return igl::dirac_operator(V, F, D, DA);
+}, __doc_igl_dirac_operator,
 py::arg("V"), py::arg("F"), py::arg("D"), py::arg("DA"));
 
