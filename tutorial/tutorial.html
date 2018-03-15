@@ -475,103 +475,81 @@ using overlays.</figcaption>
 <a href="https://github.com/wjakob/nanogui">nanogui</a> with <a href="https://github.com/ocornut/imgui">Dear ImGui</a>. To extend the default menu of the
 viewer and to expose more user defined variables you have to implement a custom interface, as in <a href="106_ViewerMenu/main.cpp">Example 106</a>:</p>
 
-<pre><code class="cpp">class CustomMenu : public igl::opengl::glfw::imgui::ImGuiMenu
+<pre><code class="cpp">// Add content to the default menu window
+menu.callback_draw_viewer_menu = [&amp;]()
 {
-  float floatVariable = 0.1f; // Shared between two menus
+  // Draw parent menu content
+  menu.draw_viewer_menu();
 
-  virtual void draw_viewer_menu() override
+  // Add new group
+  if (ImGui::CollapsingHeader(&quot;New Group&quot;, ImGuiTreeNodeFlags_DefaultOpen))
   {
-    // Draw parent menu
-    ImGuiMenu::draw_viewer_menu();
+    // Expose variable directly ...
+    ImGui::InputFloat(&quot;float&quot;, &amp;floatVariable, 0, 0, 3);
 
-    // Add new group
-    if (ImGui::CollapsingHeader(&quot;New Group&quot;, ImGuiTreeNodeFlags_DefaultOpen))
+    // ... or using a custom callback
+    static bool boolVariable = true;
+    if (ImGui::Checkbox(&quot;bool&quot;, &amp;boolVariable))
     {
-      // Expose variable directly ...
-      ImGui::InputFloat(&quot;float&quot;, &amp;floatVariable, 0, 0, 3);
+      // do something
+      std::cout &lt;&lt; &quot;boolVariable: &quot; &lt;&lt; std::boolalpha &lt;&lt; boolVariable &lt;&lt; std::endl;
+    }
 
-      // ... or using a custom callback
-      static bool boolVariable = true;
-      if (ImGui::Checkbox(&quot;bool&quot;, &amp;boolVariable))
-      {
-        // do something
-        std::cout &lt;&lt; &quot;boolVariable: &quot; &lt;&lt; std::boolalpha &lt;&lt; boolVariable &lt;&lt; std::endl;
-      }
+    // Expose an enumeration type
+    enum Orientation { Up=0, Down, Left, Right };
+    static Orientation dir = Up;
+    ImGui::Combo(&quot;Direction&quot;, (int *)(&amp;dir), &quot;Up\0Down\0Left\0Right\0\0&quot;);
 
-      // Expose an enumeration type
-      enum Orientation { Up=0, Down, Left, Right };
-      static Orientation dir = Up;
-      ImGui::Combo(&quot;Direction&quot;, (int *)(&amp;dir), &quot;Up\0Down\0Left\0Right\0\0&quot;);
+    // We can also use a std::vector&lt;std::string&gt; defined dynamically
+    static int num_choices = 3;
+    static std::vector&lt;std::string&gt; choices;
+    static int idx_choice = 0;
+    if (ImGui::InputInt(&quot;Num letters&quot;, &amp;num_choices))
+    {
+      num_choices = std::max(1, std::min(26, num_choices));
+    }
+    if (num_choices != (int) choices.size())
+    {
+      choices.resize(num_choices);
+      for (int i = 0; i &lt; num_choices; ++i)
+        choices[i] = std::string(1, 'A' + i);
+      if (idx_choice &gt;= num_choices)
+        idx_choice = num_choices - 1;
+    }
+    ImGui::Combo(&quot;Letter&quot;, &amp;idx_choice, choices);
 
-      // We can also use a std::vector&lt;std::string&gt; defined dynamically
-      static int num_choices = 3;
-      static std::vector&lt;std::string&gt; choices;
-      static int idx_choice = 0;
-      if (ImGui::InputInt(&quot;Num letters&quot;, &amp;num_choices))
-      {
-        num_choices = std::max(1, std::min(26, num_choices));
-      }
-      if (num_choices != (int) choices.size())
-      {
-        choices.resize(num_choices);
-        for (int i = 0; i &lt; num_choices; ++i)
-          choices[i] = std::string(1, 'A' + i);
-        if (idx_choice &gt;= num_choices)
-          idx_choice = num_choices - 1;
-      }
-      ImGui::Combo(&quot;Letter&quot;, &amp;idx_choice, choices);
-
-      // Add a button
-      if (ImGui::Button(&quot;Print Hello&quot;, ImVec2(-1,0)))
-      {
-        std::cout &lt;&lt; &quot;Hello\n&quot;;
-      }
+    // Add a button
+    if (ImGui::Button(&quot;Print Hello&quot;, ImVec2(-1,0)))
+    {
+      std::cout &lt;&lt; &quot;Hello\n&quot;;
     }
   }
-
-  virtual void draw_custom_window() override
-  {
-    // Define next window position + size
-    ImGui::SetNextWindowPos(ImVec2(180.f * menu_scaling(), 10), ImGuiSetCond_FirstUseEver);
-    ImGui::SetNextWindowSize(ImVec2(200, 160), ImGuiSetCond_FirstUseEver);
-    ImGui::Begin(
-        &quot;New Window&quot;, nullptr,
-        ImGuiWindowFlags_NoSavedSettings
-    );
-
-    // Expose the same variable directly ...
-    ImGui::PushItemWidth(-80);
-    ImGui::DragFloat(&quot;float&quot;, &amp;floatVariable, 0.0, 0.0, 3.0);
-    ImGui::PopItemWidth();
-
-    static std::string str = &quot;bunny&quot;;
-    ImGui::InputText(&quot;Name&quot;, str);
-
-    ImGui::End();
-  }
-
 };
-
-// Init the viewer
-igl::opengl::glfw::Viewer viewer;
-
-// Attach a custom menu
-CustomMenu menu;
-viewer.plugins.push_back(&amp;menu);
-
-viewer.launch();
 </code></pre>
 
 <p>If you need a separate new menu window implement:</p>
 
-<pre><code class="cpp">class CustomMenu : public igl::opengl::glfw::imgui::ImGuiMenu
+<pre><code class="cpp">// Draw additional windows
+menu.callback_draw_custom_window = [&amp;]()
 {
-  // ... some code
-  virtual void draw_custom_window() override 
-  {
-    // ... custom window specifications
-  }
-}
+  // Define next window position + size
+  ImGui::SetNextWindowPos(ImVec2(180.f * menu.menu_scaling(), 10), ImGuiSetCond_FirstUseEver);
+  ImGui::SetNextWindowSize(ImVec2(200, 160), ImGuiSetCond_FirstUseEver);
+  ImGui::Begin(
+      &quot;New Window&quot;, nullptr,
+      ImGuiWindowFlags_NoSavedSettings
+  );
+
+  // Expose the same variable directly ...
+  ImGui::PushItemWidth(-80);
+  ImGui::DragFloat(&quot;float&quot;, &amp;floatVariable, 0.0, 0.0, 3.0);
+  ImGui::PopItemWidth();
+
+  static std::string str = &quot;bunny&quot;;
+  ImGui::InputText(&quot;Name&quot;, str);
+
+  ImGui::End();
+};
 </code></pre>
 
 <figure>
