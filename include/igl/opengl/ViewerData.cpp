@@ -29,7 +29,8 @@ IGL_INLINE igl::opengl::ViewerData::ViewerData()
   point_size(30),
   line_width(0.5f),
   line_color(0,0,0,1),
-  shininess(35.0f)
+  shininess(35.0f),
+  id(-1)
 {
   clear();
 };
