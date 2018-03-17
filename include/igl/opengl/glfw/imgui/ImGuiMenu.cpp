@@ -175,33 +175,33 @@ IGL_INLINE void ImGuiMenu::draw_viewer_menu()
   // Workspace
   if (ImGui::CollapsingHeader("Workspace", ImGuiTreeNodeFlags_DefaultOpen))
   {
-    ImGui::Columns(2, nullptr, false);
-    if (ImGui::Button("Load##Workspace", ImVec2(-1, 0)))
+    float w = ImGui::GetContentRegionAvailWidth();
+    float p = ImGui::GetStyle().FramePadding.x;
+    if (ImGui::Button("Load##Workspace", ImVec2((w-p)/2.f, 0)))
     {
       viewer->load_scene();
     }
-    ImGui::NextColumn();
-    if (ImGui::Button("Save##Workspace", ImVec2(-1, 0)))
+    ImGui::SameLine(0, p);
+    if (ImGui::Button("Save##Workspace", ImVec2((w-p)/2.f, 0)))
     {
       viewer->save_scene();
     }
-    ImGui::Columns(1);
   }
 
   // Mesh
   if (ImGui::CollapsingHeader("Mesh", ImGuiTreeNodeFlags_DefaultOpen))
   {
-    ImGui::Columns(2, nullptr, false);
-    if (ImGui::Button("Load##Mesh", ImVec2(-1, 0)))
+    float w = ImGui::GetContentRegionAvailWidth();
+    float p = ImGui::GetStyle().FramePadding.x;
+    if (ImGui::Button("Load##Mesh", ImVec2((w-p)/2.f, 0)))
     {
       viewer->open_dialog_load_mesh();
     }
-    ImGui::NextColumn();
-    if (ImGui::Button("Save##Mesh", ImVec2(-1, 0)))
+    ImGui::SameLine(0, p);
+    if (ImGui::Button("Save##Mesh", ImVec2((w-p)/2.f, 0)))
     {
       viewer->open_dialog_save_mesh();
     }
-    ImGui::Columns(1);
   }
 
   // Viewing options
@@ -291,6 +291,7 @@ IGL_INLINE void ImGuiMenu::draw_labels_window()
   ImGui::SetNextWindowSize(ImGui::GetIO().DisplaySize, ImGuiSetCond_Always);
   bool visible = true;
   ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0,0,0,0));
+  ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0);
   ImGui::Begin("ViewerLabels", &visible,
       ImGuiWindowFlags_NoTitleBar
       | ImGuiWindowFlags_NoResize
@@ -306,6 +307,7 @@ IGL_INLINE void ImGuiMenu::draw_labels_window()
   }
   ImGui::End();
   ImGui::PopStyleColor();
+  ImGui::PopStyleVar();
 }
 
 IGL_INLINE void ImGuiMenu::draw_labels(const igl::opengl::ViewerData &data)
