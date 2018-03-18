@@ -169,7 +169,7 @@ as a matrix multiplication taking vertex values to triangle values:
 
 where $\mathbf{f}$ is $n\times 1$ and $\mathbf{G}$ is an $md\times n$ sparse
 matrix. This matrix $\mathbf{G}$ can be derived geometrically, e.g.
-[ch. 2][#jacobson_thesis_2013].
+ch. 2[^jacobson_thesis_2013].
 Libigl's `grad` function computes $\mathbf{G}$ for
 triangle and tetrahedral meshes ([Example 204](204_Gradient/main.cpp)):
 
@@ -313,3 +313,10 @@ igl::exact_geodesic(V,F,VS,FS,VT,FT,d);
 ```
 ![[Example 206](206_GeodesicDistance/main.cpp) allows to interactively pick the source vertex and displays the distance using a periodic color pattern.
 ](images/geodesicdistance.jpg)
+
+## References
+
+[^jacobson_thesis_2013]:
+    Alec Jacobson,
+    [_Algorithms and Interfaces for Real-Time Deformation of 2D and 3D Shapes_](https://www.google.com/search?q=Algorithms+and+Interfaces+for+Real-Time+Deformation+of+2D+and+3D+Shapes),
+    2013.
