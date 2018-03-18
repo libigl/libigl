@@ -4,9 +4,11 @@ This is a short list of coding tips that will greatly reduce your pain and suffe
 
 
 ### 1. Serialize it all
+
 The entire state of your application should be serializable, i.e. It should be possible to save it into a binary file and reload it at any point. This drastically simplifies debugging, since you can serialize just before a crash happens and debug from that point without running your complete algorithm again. Serializing all results shown in the paper's figures enables quicker editing iterations before (and after) the deadline. It also allows you to share your results with others that wish to compare with your method. An additional tip is to serialize the state of the application on the window close event and automatically reload it when you launch it again.
 
 ### 2. Always assert
+
 Even if you know what you are doing, always assert, you will be surprised. Assertion is a powerful but underused feature available in all programming languages. It is essential for writing research code since often you will have to implement algorithms that turns out to not be doing what you expect: in these cases it is important to know if the algorithm is flawed or if there is a bug in your implementation. Discarding a good idea  because of a coding bug is frustrating and unfortunately common. Assertion is an ideal way to reduce the chances of introducing bugs in your code and, differently from unit testing, requires a very minor programming effort. You should use them extensively.
 
 ### 3. Plot everything

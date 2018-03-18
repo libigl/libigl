@@ -4,7 +4,7 @@ Libigl is used and developed by many people. This document highlights some
 style guidelines for _developers_ of the library, but also acts as
 best-practices for users.
 
-## One function, one .h/.cpp pair [filefunction]
+## One function, one .h/.cpp pair
 
 The structure of libigl is very flat and function-based. For every
 function/sub-routine, create a single .h and .cpp file. For example, if you have
@@ -251,7 +251,7 @@ will be #V and may not match the number of rows in `DerivedF` (#F).
 
 ## Function naming conventions 
 
-Functions (and [thus also files](#filefunction)) should have simple,
+Functions (and [thus also files](#one-function-one-hcpp-pair-filefunction)) should have simple,
 descriptive names using lowercase letters and underscores between words. Avoid
 unnecessary prefaces. For example, instead of `compute_adjacency_matrix`,
 `construct_adjacency_matrix`, `extract_adjacency_matrix`,

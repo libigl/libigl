@@ -1,0 +1,49 @@
+site_name: libigl
+theme:
+  name: material
+  logo:
+    icon: 'details'
+  palette:
+    primary: 'light blue'
+    accent: 'blue'
+markdown_extensions:
+  - codehilite
+  - markdown.extensions.toc:
+      permalink: true
+  - pymdownx.arithmatex
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.critic
+  - pymdownx.details
+  - pymdownx.inlinehilite
+  - pymdownx.magiclink
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.superfences
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+extra_javascript:
+  - 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML'
+pages:
+    - Home: index.md
+    - Tutorial:
+      - "Chapter 1: Introduction to libig": tutorial/chapter-1.md
+      - "Chapter 2: Discrete Geometric Quantities and Operators": tutorial/chapter-2.md
+      - "Chapter 3: Matrices and Linear Algebra": tutorial/chapter-3.md
+      - "Chapter 4: Shape Deformation": tutorial/chapter-4.md
+      - "Chapter 5: Parametrization": tutorial/chapter-5.md
+      - "Chapter 6: External libraries": tutorial/chapter-6.md
+      - "Chapter 7: Miscellaneous": tutorial/chapter-7.md
+      - "Chapter 8: Outlook for continuing development": tutorial/chapter-8.md
+    - Contributing:
+      - Style Guidelines: style-guidelines.md
+      - Bug Report: CONTRIBUTING.md
+      - Creating a Pull Request: before-submitting-pull-request.md
+    - Misc:
+      - Coding Tips: coding-guidelines.md
+    - FAQ: faq.md
+    - About:
+      - Release History: RELEASE_HISTORY.md
+      - License: LICENSE.md
