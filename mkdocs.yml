@@ -8,6 +8,7 @@ theme:
     accent: 'blue'
 markdown_extensions:
   - codehilite
+  - footnotes
   - markdown.extensions.toc:
       permalink: true
   - pymdownx.arithmatex
@@ -29,7 +30,7 @@ extra_javascript:
 pages:
     - Home: index.md
     - Tutorial:
-      - "Chapter 1: Introduction to libig": tutorial/chapter-1.md
+      - "Chapter 1: Introduction to libigl": tutorial/chapter-1.md
       - "Chapter 2: Discrete Geometric Quantities and Operators": tutorial/chapter-2.md
       - "Chapter 3: Matrices and Linear Algebra": tutorial/chapter-3.md
       - "Chapter 4: Shape Deformation": tutorial/chapter-4.md
