@@ -75,7 +75,6 @@ extern const char *__doc_igl_massmatrix;
 extern const char *__doc_igl_min_quad_with_fixed_precompute;
 extern const char *__doc_igl_min_quad_with_fixed_solve;
 extern const char *__doc_igl_min_quad_with_fixed;
-extern const char *__doc_igl_n_polyvector;
 extern const char *__doc_igl_normalize_row_lengths;
 extern const char *__doc_igl_normalize_row_sums;
 extern const char *__doc_igl_parula;

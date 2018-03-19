@@ -285,7 +285,8 @@ namespace glfw
 
   IGL_INLINE Viewer::Viewer():
     data_list(1),
-    selected_data_index(0)
+    selected_data_index(0),
+    next_data_id(0)
   {
     window = nullptr;
 
@@ -905,13 +906,14 @@ namespace glfw
     return data_list[selected_data_index];
   }
 
-  IGL_INLINE size_t Viewer::append_mesh()
+  IGL_INLINE int Viewer::append_mesh()
   {
     assert(data_list.size() >= 1);
 
     data_list.emplace_back();
     selected_data_index = data_list.size()-1;
-    return data_list.size();
+    data_list.back().id = next_data_id++;
+    return data_list.back().id;
   }
 
   IGL_INLINE bool Viewer::erase_mesh(const size_t index)
@@ -931,6 +933,16 @@ namespace glfw
     }
     return true;
   }
+
+  IGL_INLINE size_t Viewer::mesh_index(const int id) {
+    for (size_t i = 0; i < data_list.size(); ++i)
+    {
+      if (data_list[i].id == id)
+        return i;
+    }
+    return 0;
+  }
+
 
 } // end namespace
 } // end namespace
