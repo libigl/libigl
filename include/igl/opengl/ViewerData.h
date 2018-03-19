@@ -9,7 +9,6 @@
 #define IGL_VIEWERDATA_H
 
 #include "../igl_inline.h"
-#include "../Attribute.h"
 #include "MeshGL.h"
 #include <cassert>
 #include <cstdint>
@@ -195,15 +194,11 @@ public:
   // Shape material
   float shininess;
 
+  // Unique identifier
+  int id;
+
   // OpenGL representation of the mesh
   igl::opengl::MeshGL meshgl;
-
-  // User-defined attribute
-  std::shared_ptr<AttributeBase> attr_ptr;
-
-  // Retrieve custom attribute
-  template<typename T> T & attr();
-  template<typename T> const T & attr() const;
 
   // Update contents from a 'Data' instance
   IGL_INLINE void updateGL(
@@ -211,32 +206,6 @@ public:
     const bool invert_normals,
     igl::opengl::MeshGL& meshgl);
 };
-
-// -----------------------------------------------------------------------------
-
-// Retrieve custom attribute
-template<typename T>
-inline T & ViewerData::attr()
-{
-  if (!attr_ptr)
-  {
-    attr_ptr = std::make_shared<Attribute<T>>();
-  }
-  auto * derived = dynamic_cast<Attribute<T> *>(attr_ptr.get());
-  assert(derived && "Incompatible type requested for attribute");
-  return derived->content_;
-}
-
-
-// Retrieve custom attribute
-template<typename T>
-inline const T & ViewerData::attr() const
-{
-  assert(attr_ptr);
-  const auto * derived = dynamic_cast<const Attribute<T> *>(attr_ptr.get());
-  assert(derived && "Incompatible type requested for attribute");
-  return derived->content_;
-}
 
 } // namespace opengl
 } // namespace igl
@@ -284,6 +253,7 @@ namespace igl
       SERIALIZE_MEMBER(line_width);
       SERIALIZE_MEMBER(line_color);
       SERIALIZE_MEMBER(shininess);
+      SERIALIZE_MEMBER(id);
     }
     template<>
     inline void serialize(const igl::opengl::ViewerData& obj, std::vector<char>& buffer)

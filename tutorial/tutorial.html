@@ -111,11 +111,7 @@ transformations</a>
 <li><a href="#nrotationallysymmetrictangetfields">504 N-Rotationally symmetric tangent fields</a></li>
 <li><a href="#globalseamlessintegergridparametrization">505 Global, seamless integer-grid parametrization</a></li>
 <li><a href="#anisotropicremeshingusingframefields">506 Anisotropic remeshing using frame fields</a></li>
-<li><a href="#npolyvectorfields">507 N-PolyVector fields</a></li>
-<li><a href="#conjugatevectorfields">508 Conjugate vector fields</a></li>
-<li><a href="#planarization">509 Planarization</a></li>
-<li><a href="#integrable">510 Integrable PolyVector Fields</a></li>
-<li><a href="#npolyvectorfields_general">511 General N-PolyVector Fields</a></li>
+<li><a href="#planarization">507 Planarization</a></li>
 </ul></li>
 <li><a href="#chapter6:externallibraries">Chapter 6: External libraries</a>
 
@@ -125,8 +121,7 @@ transformations</a>
 
 <ul>
 <li><a href="#savingamatlabworkspace">Saving a Matlab workspace</a></li>
-<li><a href="#dumpingeigenmatricestocopyandpasteintomatlab">Dumping Eigen matrices to copy and paste into
-Matlab</a></li>
+<li><a href="#dumpingeigenmatricestocopyandpasteintomatlab">Dumping Eigen matrices to copy and paste into Matlab</a></li>
 </ul></li>
 <li><a href="#callinglibiglfunctionsfrommatlab">603 Calling libigl functions from Matlab</a></li>
 <li><a href="#triangulationofclosedpolygons">604 Triangulation of closed polygons</a></li>
@@ -152,6 +147,7 @@ Matlab</a></li>
 <li><a href="#slim">710 Scalable Locally Injective Maps</a></li>
 <li><a href="#subdivision">711 Subdivision surfaces</a></li>
 <li><a href="#datasmoothing">712 Data smoothing</a></li>
+<li><a href="#shapeup">713 ShapeUp projection</a></li>
 </ul></li>
 <li><a href="#future">Chapter 8: Outlook for continuing development</a></li>
 </ul>
@@ -335,7 +331,7 @@ int main(int argc, char *argv[])
 Additional properties can be plotted on the mesh (as we will see later),
 and it is possible to extend the viewer with standard OpenGL code.
 Please see the documentation in
-<a href="../include/igl/Viewer/Viewer.h">Viewer.h</a> for more details.</p>
+<a href="../include/igl/opengl/glfw/Viewer.h">Viewer.h</a> for more details.</p>
 
 <figure>
 <img src="images/102_DrawMesh.png" alt="([Example 102](102_DrawMesh/main.cpp)) loads and draws a
@@ -474,56 +470,86 @@ using overlays.</figcaption>
 
 <h2 id="viewermenu"><a href="#viewermenu">Viewer Menu</a> </h2>
 
-<p>As of version 1.2 the viewer uses a new menu and completely replaces
-<a href="http://anttweakbar.sourceforge.net/doc/">AntTweakBar</a>. It is based on the
-open-source projects <a href="https://github.com/memononen/nanovg">nanovg</a> and
-<a href="https://github.com/wjakob/nanogui">nanogui</a>. To extend the default menu of the
-viewer and to expose more user defined variables you have to define a callback
-function:</p>
+<p>As of latest version, the viewer uses a new menu and completely replaces
+<a href="http://anttweakbar.sourceforge.net/doc/">AntTweakBar</a> and
+<a href="https://github.com/wjakob/nanogui">nanogui</a> with <a href="https://github.com/ocornut/imgui">Dear ImGui</a>. To extend the default menu of the
+viewer and to expose more user defined variables you have to implement a custom interface, as in <a href="106_ViewerMenu/main.cpp">Example 106</a>:</p>
 
-<pre><code class="cpp">igl::opengl::glfw::Viewer viewer;
-
-bool boolVariable = true;
-float floatVariable = 0.1f;
-enum Orientation { Up=0,Down,Left,Right } dir = Up;
-
-// Extend viewer menu
-viewer.callback_init = [&amp;](igl::opengl::glfw::Viewer&amp; viewer)
+<pre><code class="cpp">// Add content to the default menu window
+menu.callback_draw_viewer_menu = [&amp;]()
 {
+  // Draw parent menu content
+  menu.draw_viewer_menu();
+
   // Add new group
-  viewer.ngui-&gt;addGroup(&quot;New Group&quot;);
+  if (ImGui::CollapsingHeader(&quot;New Group&quot;, ImGuiTreeNodeFlags_DefaultOpen))
+  {
+    // Expose variable directly ...
+    ImGui::InputFloat(&quot;float&quot;, &amp;floatVariable, 0, 0, 3);
 
-  // Expose a variable directly ...
-  viewer.ngui-&gt;addVariable(&quot;float&quot;,floatVariable);
+    // ... or using a custom callback
+    static bool boolVariable = true;
+    if (ImGui::Checkbox(&quot;bool&quot;, &amp;boolVariable))
+    {
+      // do something
+      std::cout &lt;&lt; &quot;boolVariable: &quot; &lt;&lt; std::boolalpha &lt;&lt; boolVariable &lt;&lt; std::endl;
+    }
 
-  // Expose an enumaration type
-  viewer.ngui-&gt;addVariable&lt;Orientation&gt;(&quot;Direction&quot;,dir)-&gt;setItems({&quot;Up&quot;,&quot;Down&quot;,&quot;Left&quot;,&quot;Right&quot;});
+    // Expose an enumeration type
+    enum Orientation { Up=0, Down, Left, Right };
+    static Orientation dir = Up;
+    ImGui::Combo(&quot;Direction&quot;, (int *)(&amp;dir), &quot;Up\0Down\0Left\0Right\0\0&quot;);
 
-  // Add a button
-  viewer.ngui-&gt;addButton(&quot;Print Hello&quot;,[](){ std::cout &lt;&lt; &quot;Hello\n&quot;; });
+    // We can also use a std::vector&lt;std::string&gt; defined dynamically
+    static int num_choices = 3;
+    static std::vector&lt;std::string&gt; choices;
+    static int idx_choice = 0;
+    if (ImGui::InputInt(&quot;Num letters&quot;, &amp;num_choices))
+    {
+      num_choices = std::max(1, std::min(26, num_choices));
+    }
+    if (num_choices != (int) choices.size())
+    {
+      choices.resize(num_choices);
+      for (int i = 0; i &lt; num_choices; ++i)
+        choices[i] = std::string(1, 'A' + i);
+      if (idx_choice &gt;= num_choices)
+        idx_choice = num_choices - 1;
+    }
+    ImGui::Combo(&quot;Letter&quot;, &amp;idx_choice, choices);
 
-  // call to generate menu
-  viewer.screen-&gt;performLayout();
-  return false;
+    // Add a button
+    if (ImGui::Button(&quot;Print Hello&quot;, ImVec2(-1,0)))
+    {
+      std::cout &lt;&lt; &quot;Hello\n&quot;;
+    }
+  }
 };
-
-// start viewer
-viewer.launch();
 </code></pre>
 
-<p>If you need a separate new menu window use:</p>
+<p>If you need a separate new menu window implement:</p>
 
-<pre><code class="cpp">viewer.ngui-&gt;addWindow(Eigen::Vector2i(220,10),&quot;New Window&quot;);
-</code></pre>
+<pre><code class="cpp">// Draw additional windows
+menu.callback_draw_custom_window = [&amp;]()
+{
+  // Define next window position + size
+  ImGui::SetNextWindowPos(ImVec2(180.f * menu.menu_scaling(), 10), ImGuiSetCond_FirstUseEver);
+  ImGui::SetNextWindowSize(ImVec2(200, 160), ImGuiSetCond_FirstUseEver);
+  ImGui::Begin(
+      &quot;New Window&quot;, nullptr,
+      ImGuiWindowFlags_NoSavedSettings
+  );
 
-<p>If you do not want to expose variables directly but rather use the get/set functionality:</p>
+  // Expose the same variable directly ...
+  ImGui::PushItemWidth(-80);
+  ImGui::DragFloat(&quot;float&quot;, &amp;floatVariable, 0.0, 0.0, 3.0);
+  ImGui::PopItemWidth();
 
-<pre><code class="cpp">// ... or using a custom callback
-viewer.ngui-&gt;addVariable&lt;bool&gt;(&quot;bool&quot;,[&amp;](bool val) {
-  boolVariable = val; // setter
-},[&amp;]() {
-  return boolVariable; // getter
-});
+  static std::string str = &quot;bunny&quot;;
+  ImGui::InputText(&quot;Name&quot;, str);
+
+  ImGui::End();
+};
 </code></pre>
 
 <figure>
@@ -647,7 +673,7 @@ on a triangle mesh is via a vertex&#8217;s <em>angular deficit</em>:</p>
 at vertex <span class="math">\(i\)</span> in triangle <span class="math">\(j\)</span> <a href="#cn:1" id="cnref:1" title="see citation" class="citation">(1)</a>.</p>
 
 <p>Just like the continuous analog, our discrete Gaussian curvature reveals
-elliptic, hyperbolic and parabolic vertices on the domain, as demonstrated in <a href="202GaussianCurvature/main.cpp">Example 202</a>.</p>
+elliptic, hyperbolic and parabolic vertices on the domain, as demonstrated in <a href="202_GaussianCurvature/main.cpp">Example 202</a>.</p>
 
 <figure>
 <img src="images/bumpy-gaussian-curvature.jpg" alt="The `GaussianCurvature` example computes discrete Gaussian curvature and
@@ -2297,9 +2323,10 @@ N are of different types and they appear in different positions.</p>
 <p>We demonstrate how to call and plot N-RoSy fields in <a href="504_NRosyDesign/main.cpp">Example
 504</a>, where the degree of the field can be change
 pressing the number keys. <code>igl::nrosy</code> implements the algorithm proposed in
-<a href="#cn:27" id="cnref:27" title="see citation" class="citation">(27)</a>[]. N-RoSy fields can also be interpolated with the algorithm
-proposed in <a href="#cn:28" id="cnref:28" title="see citation" class="citation">(28)</a>[], see Section <a href="#npolyvectorfields">npolyvectorfields</a> for more details
-(<a href="../include/igl/n_polyvector.h">igl::n_polyvector</a>).</p>
+<a href="#cn:27" id="cnref:27" title="see citation" class="citation">(27)</a>[]. N-RoSy fields can also be interpolated with many other algorithms,
+see the library <a href="https://github.com/avaxman/libdirectional">libdirectional</a> for
+a reference implementation of the most popular ones. For a complete categorization
+of fields used in various applications see Vaxman et al. 2016 <a href="#cn:28" id="cnref:28" title="see citation" class="citation">(28)</a>.</p>
 
 <h3 id="globalseamlessintegergridparametrization"><a href="#globalseamlessintegergridparametrization">Global, seamless integer-grid parametrization</a> </h3>
 
@@ -2468,141 +2495,23 @@ generate the UV parametrization, but other algorithms could be applied: the
 only desiderata is that the generated quad mesh should be as isotropic as
 possible.</p>
 
-<h2 id="npolyvectorfields"><a href="#npolyvectorfields">N-PolyVector fields</a> </h2>
-
-<p>N-RoSy vector fields can be further generalized to represent arbitrary
-vector-sets, with arbitrary angles between them and with arbitrary lengths
-<a href="#cn:30" id="cnref:30" title="see citation" class="citation">(30)</a>[]. This generalization is called N-PolyVector field, and
-libigl provides the function <code>igl::n_polyvector</code> to design them starting from a
-sparse set of constraints (<a href="507_PolyVectorField/main.cpp">Example 507</a>).</p>
-
-<figure>
-<img src="images/507_PolyVectorField.png" alt="Interpolation of a 6-PolyVector field (right) and a 12-PolyVector field from a sparse set of random constraints." />
-<figcaption>Interpolation of a 6-PolyVector field (right) and a 12-PolyVector field from a sparse set of random constraints.</figcaption>
-</figure>
-
-<p>The core idea is to represent the vector set as the roots of a complex
-polynomial: The polynomial coefficients are then harmonically interpolated
-leading to polynomials whose roots smoothly vary over the surface.</p>
-
-<p>Globally optimal direction fields <a href="#cn:28" title="see citation" class="citation">(28)</a>[] are a special case of
-PolyVector fields. If the constraints are taken from an N-RoSy field,
-<code>igl::n_polyvector</code> generates a field that is equivalent, after normalization,
-to a globally optimal direction field.</p>
-
-<h2 id="conjugatevectorfields"><a href="#conjugatevectorfields">Conjugate vector fields</a> </h2>
-
-<p>Two tangent vectors lying on a face of a triangle mesh are conjugate if</p>
-
-<p><span class="math">\[ k_1 (u^T d_1)(v^T d_1) + k_2(u^T d_2)(v^T d_2) = 0. \]</span></p>
-
-<p>This condition is very important in architectural geometry: The faces of an
-infinitely dense quad mesh whose edges are aligned with a conjugate field are
-planar. Thus, a quad mesh whose edges follow a conjugate field are easier to
-planarize <a href="#cn:31" id="cnref:31" title="see citation" class="citation">(31)</a>.</p>
-
-<p>Finding a conjugate vector field that satisfies given directional constraints
-is a standard problem in architectural geometry, which can be tackled by
-deforming a Poly-Vector field to the closest conjugate field.</p>
-
-<p>This algorithm <a href="#cn:30" title="see citation" class="citation">(30)</a> alternates a global step, which enforces
-smoothness, with a local step, that projects the field on every face to the
-closest conjugate field (<a href="508_ConjugateField/main.cpp">Example 508</a>).</p>
-
-<figure>
-<img src="images/508_ConjugateField.png" alt="A smooth 4-PolyVector field (left) is deformed to become a conjugate field
-(right)." />
-<figcaption>A smooth 4-PolyVector field (left) is deformed to become a conjugate field
-(right).</figcaption>
-</figure>
-
 <h2 id="planarization"><a href="#planarization">Planarization</a> </h2>
 
 <p>A quad mesh can be transformed in a planar quad mesh with Shape-Up
-<a href="#cn:32" id="cnref:32" title="see citation" class="citation">(32)</a>, a local/global approach that uses the global step to enforce
+<a href="#cn:30" id="cnref:30" title="see citation" class="citation">(30)</a>, a local/global approach that uses the global step to enforce
 surface continuity and the local step to enforce planarity.</p>
 
-<p><a href="509_Planarization/main.cpp">Example 509</a> planarizes a quad mesh until it
+<p><a href="507_Planarization/main.cpp">Example 507</a> planarizes a quad mesh until it
 satisfies a user-given planarity threshold.</p>
 
 <figure>
 <img src="images/509_Planarization.png" alt="A non-planar quad mesh (left) is planarized using the libigl function
-igl::palanarize (right). The colors represent the planarity of the
+igl::planarize (right). The colors represent the planarity of the
 quads." />
 <figcaption>A non-planar quad mesh (left) is planarized using the libigl function
-igl::palanarize (right). The colors represent the planarity of the
+igl::planarize (right). The colors represent the planarity of the
 quads.</figcaption>
 </figure>
-
-<h2 id="integrable"><a href="#integrable">Integrable PolyVector Fields</a> </h2>
-
-<p>Vector-field guided surface parameterization is based on the idea of designing
-the gradients of the parameterization functions (which are tangent vector fields
-on the surface) instead of the functions themselves. Thus, vector-set fields
-(N-Rosy, frame fields, and polyvector fields) that are to be used for
-parameterization (and subsequent remeshing) need to be integrable: it must be
-possible to break them down into individual vector fields that are gradients of
-scalar functions. Fields obtained by most smoothness-based design methods (eg.
-<a href="#cn:26" title="see citation" class="citation">(26)</a>[], <a href="#cn:28" title="see citation" class="citation">(28)</a>[], <a href="#cn:30" title="see citation" class="citation">(30)</a>[], <a href="#cn:27" title="see citation" class="citation">(27)</a>[],
-<a href="#cn:29" title="see citation" class="citation">(29)</a>[]) do not have this property. In <a href="#cn:33" id="cnref:33" title="see citation" class="citation">(33)</a>[], a method
-for creating integrable polyvector fields was introduced. This method takes as
-input a given field and improves its integrability by removing the vector field
-curl, thus turning it into a gradient of a function (<a href="510_Integrable/main.cpp">Example
-510</a>).</p>
-
-<figure>
-<img src="images/510_Integrable.png" alt="Integration error is removed from a frame field to produce a field aligned
-parameterization free of triangle flips." />
-<figcaption>Integration error is removed from a frame field to produce a field aligned
-parameterization free of triangle flips.</figcaption>
-</figure>
-
-<p>This method retains much of the core principles of the polyvector framework - it
-expresses the condition for zero discrete curl condition (which typically
-requires integers for the vector matchings) into a condition involving
-continuous variables only. This is done using coefficients of appropriately
-defined polynomials. The parameterizations generated by the resulting fields are
-exactly aligned to the field directions and contain no inverted triangles.</p>
-
-<h2 id="npolyvectorfields_general"><a href="#npolyvectorfields_general">General N-PolyVector fields</a> </h2>
-
-<p>While mostly applicable for the design of symmetric fields (i.e. fields that
-comprise of vector sets with symmetries between them at each point, e.g. N-RoSy
-or frame-fields), the framework presented in <a href="#cn:30" title="see citation" class="citation">(30)</a>[] can be used to
-design completely general fields, with possibly no such symmetries. For example,
-one can design fields that at each point comprise of an arbitrary number of
-vectors, not required to be collinear - as opposed e.g. to the case of the 4
-pairwise-collinear vectors designed in the example (<a href="507_PolyVectorField/main.cpp">Example
-507</a>). This capability is implemented in the
-function igl::n_polyvector_general, and is illustrated in the example (<a href="511_PolyVectorFieldGeneral/main.cpp">Example
-511</a>).</p>
-
-<figure>
-<img src="images/511_PolyVectorFieldGeneral.png" alt="Interpolation of a general field with 3 (left) and 9 vectors per point field
-from a sparse set of random constraints (in red). The field is defined on all
-mesh faces, but is only shown on a subset for clarity.
-" />
-<figcaption>Interpolation of a general field with 3 (left) and 9 vectors per point field
-from a sparse set of random constraints (in red). The field is defined on all
-mesh faces, but is only shown on a subset for clarity.
-</figcaption>
-</figure>
-
-<p>The design of these general directional fields (also called vector-set fields)
-is based on the same polynomial framework and includes the symmetric fields as a
-special case. Note that in the case that some symmetries do exist in the
-constraints, the final field is not guaranteed to have these symmetries
-everywhere else on the mesh. For example, designing a field with 3 vectors per
-point where, at the constrained faces, two of the vectors are on a line opposite
-to each other, we are not guaranteed to always have two pairwise-collinear
-vectors everywhere in the result, as can be seen in the picture. In some cases
-however (as is the case of the frame field in the previous example <a href="507_PolyVectorField/main.cpp">Example
-507</a>) these symmetries are in fact guaranteed due
-to the particular nature of the polynomial that applies in that case (two
-coefficients are 0).</p>
-
-<p>For a complete categorization of fields used in various applications (including
-these general ones) see Vaxman et al. 2016 <a href="#cn:34" id="cnref:34" title="see citation" class="citation">(34)</a>.</p>
 
 <h1 id="chapter6:externallibraries">Chapter 6: External libraries </h1>
 
@@ -2998,7 +2907,7 @@ elements. This is undesirable in many applications, and it is possible to
 avoid it by introducing a non-linear constraints that guarantees that the area
 of every element remain positive.</p>
 
-<p>Libigl can be used to compute Locally Injective Maps <a href="#cn:35" id="cnref:35" title="see citation" class="citation">(35)</a>[] using a variety of
+<p>Libigl can be used to compute Locally Injective Maps <a href="#cn:31" id="cnref:31" title="see citation" class="citation">(31)</a>[] using a variety of
 deformation energies. A simple deformation of a 2D grid is computed in <a href="608_LIM/main.cpp">Example
 608</a>.</p>
 
@@ -3056,7 +2965,7 @@ compute robustly with boundary representations, but are nonetheless useful.</p>
 
 <p>To compute a boolean operation on a triangle mesh with vertices <code>VA</code> and
 triangles <code>FA</code> and another mesh <code>VB</code> and <code>FB</code>, libigl first computes a unified
-&#8220;mesh arrangement&#8221; (see <a href="#cn:36" id="cnref:36" title="see citation" class="citation">(36)</a>[]) with vertices <code>V</code> and triangles <code>F</code> where all triangle-triangle
+&#8220;mesh arrangement&#8221; (see <a href="#cn:32" id="cnref:32" title="see citation" class="citation">(32)</a>[]) with vertices <code>V</code> and triangles <code>F</code> where all triangle-triangle
 intersections have been &#8220;resolved&#8221;. That is, edges and vertices are added
 exactly at the intersection lines, so the resulting <em>non-manifold</em> mesh <code>(V,F)</code>
 has no self-intersections.</p>
@@ -3142,6 +3051,13 @@ input meshes." />
 input meshes.</figcaption>
 </figure>
 
+<h1 id="chapter7:miscellaneous">Miscellaneous </h1>
+
+<p>Libigl contains a <em>wide</em> variety of geometry processing tools and functions for
+dealing with meshes and the linear algebra related to them: far too many to
+discuss in this introductory tutorial. We&#8217;ve pulled out a couple of the
+interesting functions in this chapter to highlight.</p>
+
 <h2 id="meshstatistics"><a href="#meshstatistics">Mesh Statistics</a> </h2>
 
 <p>Libigl contains various mesh statistics, including face angles, face areas and
@@ -3199,7 +3115,7 @@ mesh and which are outside. That is, which should be kept and which should be
 removed.</p>
 
 <p>The &#8220;Generalized Winding Number&#8221; is a robust method for determined
-inside and outside for troublesome meshes <a href="#cn:37" id="cnref:37" title="see citation" class="citation">(37)</a>[]. The generalized
+inside and outside for troublesome meshes <a href="#cn:33" id="cnref:33" title="see citation" class="citation">(33)</a>[]. The generalized
 winding number with respect to <code>(V,F)</code> at some point <span class="math">\(\mathbf{p} \in
 \mathcal{R}^3\)</span> is defined as scalar function:</p>
 
@@ -3242,7 +3158,7 @@ methods are fairly advanced.</p>
 
 <p>One family of mesh decimation methods operates by successively remove elements
 from the mesh. In particular, Hoppe advocates for successively remove or rather
-collapsing edges <a href="#cn:38" id="cnref:38" title="see citation" class="citation">(38)</a>[]. The generic form of this technique is to
+collapsing edges <a href="#cn:34" id="cnref:34" title="see citation" class="citation">(34)</a>[]. The generic form of this technique is to
 construct a sequence of n meshes from the initial high-resolution mesh <span class="math">\(M_0\)</span> to
 the lowest resolution mesh <span class="math">\(M_n\)</span> by collapsing a single edge:</p>
 
@@ -3443,8 +3359,8 @@ tree.squared_distance(V,F,P,sqrD,I,C);
 
 <p>Finally, from the closest point or the winding number it&#8217;s possible to <em>sign</em>
 this distance. In <code>igl::signed_distance</code> we provide two methods for signing:
-the so-called &#8220;pseudo-normal test&#8221; <a href="#cn:39" id="cnref:39" title="see citation" class="citation">(39)</a>[] and the generalized
-winding number <a href="#cn:37" title="see citation" class="citation">(37)</a>[].</p>
+the so-called &#8220;pseudo-normal test&#8221; <a href="#cn:35" id="cnref:35" title="see citation" class="citation">(35)</a>[] and the generalized
+winding number <a href="#cn:33" title="see citation" class="citation">(33)</a>[].</p>
 
 <p>The pseudo-normal test (see also <code>igl::pseudonormal_test</code>) assumes the input
 mesh is a watertight (closed, non-self-intersecting, manifold) mesh. Then given
@@ -3488,7 +3404,7 @@ iso-surface at value <span class="math">\(v\)</span> is composed of all points <
 processing is to extract an iso-surface as a triangle mesh for further
 mesh-based processing or visualization. This is referred to as iso-contouring.</p>
 
-<p>&#8220;Marching Cubes&#8221; <a href="#cn:40" id="cnref:40" title="see citation" class="citation">(40)</a> is a <a href="https://en.wikipedia.org/wiki/Marching_cubes">famous
+<p>&#8220;Marching Cubes&#8221; <a href="#cn:36" id="cnref:36" title="see citation" class="citation">(36)</a> is a <a href="https://en.wikipedia.org/wiki/Marching_cubes">famous
 method</a> for iso-contouring
 tri-linear functions <span class="math">\(f\)</span> on a regular lattice (aka grid). The core idea of this
 method is to contour the iso-surface passing through each cell (if it does at
@@ -3539,7 +3455,7 @@ enforce a consistent facet orientation in the output faces <code>FF</code>.</p>
 <p>For (closed or nearly closed) surfaces representing the boundary of a solid
 object, libigl provides a routine to reorient faces so that the vertex ordering
 corresponds to a counter-clockwise ordering of the vertices with a
-right-hand-rule normal pointing outward. This method <a href="#cn:41" id="cnref:41" title="see citation" class="citation">(41)</a>[] assumes
+right-hand-rule normal pointing outward. This method <a href="#cn:37" id="cnref:37" title="see citation" class="citation">(37)</a>[] assumes
 that <a href="https://www.reddit.com/r/askscience/comments/32otgx/which_as_a_is_more_empty_an_atom_or_the_universe/">most of the universe is
 empty</a>.
 That is, most points in space are outside of the solid object than inside.
@@ -3601,11 +3517,11 @@ discretizing time at a finite step of steps <span class="math">\([0,\Delta t,2\D
 and by 2) discretizing space with a regular grid and representing the distance
 field using trilinear interpolation of grid values. Finally the output mesh,
 <span class="math">\(\partial S\)</span> is approximated by contouring using Marching Cubes
-<a href="#cn:40" title="see citation" class="citation">(40)</a>.</p>
+<a href="#cn:36" title="see citation" class="citation">(36)</a>.</p>
 
 <p>This method is similar to one described by Schroeder et al. in 1994
-<a href="#cn:42" id="cnref:42" title="see citation" class="citation">(42)</a>, and the one used in conjunction with boolean operations by
-Garg et al. 2016 <a href="#cn:43" id="cnref:43" title="see citation" class="citation">(43)</a>.</p>
+<a href="#cn:38" id="cnref:38" title="see citation" class="citation">(38)</a>, and the one used in conjunction with boolean operations by
+Garg et al. 2016 <a href="#cn:39" id="cnref:39" title="see citation" class="citation">(39)</a>.</p>
 
 <p>In libigl, if your input solid&#8217;s surface is represented by <code>(V,F)</code> then the
 output surface mesh will be <code>(SV,SF)</code> after calling:</p>
@@ -3677,7 +3593,7 @@ in <a href="709_VectorFieldVisualizer/main.cpp">Example 709</a>.</p>
 
 <h2 id="slim"><a href="#slim">Scalable Locally Injective Maps</a> </h2>
 
-<p>The Scalable Locally Injective Maps <a href="#cn:44" id="cnref:44" title="see citation" class="citation">(44)</a> algorithm allows to
+<p>The Scalable Locally Injective Maps <a href="#cn:40" id="cnref:40" title="see citation" class="citation">(40)</a> algorithm allows to
 compute locally injective maps on massive datasets. The algorithm shares many
 similarities with ARAP, but uses a reweighting scheme to minimize arbitrary
 distortion energies, including those that prevent the introduction of flips.</p>
@@ -3721,7 +3637,7 @@ a finer and finer mesh.</p>
 
 <p>The subdivision method of <code>igl::loop</code> is not in plane. The vertices of the
 refined mesh are moved to weight combinations of their neighbors: the mesh is
-smoothed as it is refined <a href="#cn:45" id="cnref:45" title="see citation" class="citation">(45)</a>. This and other <em>smooth subdivision</em>
+smoothed as it is refined <a href="#cn:41" id="cnref:41" title="see citation" class="citation">(41)</a>. This and other <em>smooth subdivision</em>
 methods can be understood as generalizations of spline curves to surfaces. In
 particular the Loop subdivision method will converge to a <span class="math">\(C^1\)</span> surface as we
 consider the limit of recursive applications of subdivision. Away from
@@ -3788,12 +3704,31 @@ with the Laplacian energy and zero Neumann boundary conditions, and the
 result of smoothing with the Hessian energy.</figcaption>
 </figure>
 
-<h1 id="chapter7:miscellaneous">Miscellaneous </h1>
+<h2 id="shapeup"><a href="#shapeup">ShapeUp Projections</a> </h2>
 
-<p>Libigl contains a <em>wide</em> variety of geometry processing tools and functions for
-dealing with meshes and the linear algebra related to them: far too many to
-discuss in this introductory tutorial. We&#8217;ve pulled out a couple of the
-interesting functions in this chapter to highlight.</p>
+<p>Our input is a set of points <span class="math">\(P_0\)</span> (not necessarily part of any mesh), and a set of constraints <span class="math">\(S=\left\{S_1,S_2,...S_m\right\}\)</span>, where each constraint is defined on a different, and sparse, subset of <span class="math">\(P_0\)</span>. We wish to create a new set of points <span class="math">\(P\)</span> that are close to the original set <span class="math">\(P_0\)</span> (each point with corresponding indices), while adhering to the constraints. Other objectives, such as smoothness, can be employed. The constraints can be nonlinear, which makes the problem nonconvex, difficult, and without a guaranteed global optimum. A very popular lightweight approach to such problems is a local-global iterative algorithm, comprising these two steps:</p>
+
+<p>For iteration <span class="math">\(k\)</span>:</p>
+
+<ol>
+<li><em>Local step</em>: compute the projections of the set <span class="math">\(P_{k-1}\)</span> onto <span class="math">\(S\)</span>, individually per constraint; that would mean fragmenting each point that appears in multiple constraints. That can be a nonlinear operation, but if the constraints are sparse, it is a a set of many small systems.</li>
+<li><em>Global step</em>: integrate the set <span class="math">\(P_k\)</span> to be as close as possible to the projected fragmented set, with auxiliary objective functions possible. That results in a global, but quadratic objective function. Moreover, the resulting linear system has a constant matrix, and therefore can be pre-factored.</li>
+</ol>
+
+<p>The version we implement in libigl is the general version described by <a href="#cn:30" title="see citation" class="citation">(30)</a>, and is in two files: <code>&lt;igl/shapeup.h&gt;</code> and <code>&lt;igl/shapeup_local_projections.h&gt;</code>. A demo implementing regularity constraints (creating a mesh in which each face is as regular as possible) is in <a href="713_Shapeup/main.cpp">Example 713</a>.</p>
+
+<p>The local step is instantiated by a function of type <code>igl::shapeup_projection_function</code>. The global step is done by two functions: <code>igl::shapeup_precomputation()</code>, which precomputes the matrices required for the global step, and <code>igl::shapeup_solve()</code>, which solves the problem, according to the initial solution <span class="math">\(P_0\)</span> and the input local projection function. The data struct <code>igl::ShapeUpData</code> contains the information necessary to run the algorithm, and can be configured; for instance, the self-explanatory variable <code>Maxiterations</code>.</p>
+
+<p>The global step minimizes the following energy:</p>
+
+<p><span class="math">\[E_{total}=\lambda_{shape}E_{shape}+\lambda_{close}E_{close}+\lambda_{smooth}E_{smooth},\]</span></p>
+
+<p>where the <span class="math">\(\lambda\)</span> coefficients are encoded in <code>igl::ShapeUpData</code>, and can be updated <strong>prior</strong> to calling <code>igl::shapeup_precomputation()</code>. The <span class="math">\(E_{shape}\)</span> component is the integration energy (fitting <span class="math">\(P_k\)</span> to the local projections). The <span class="math">\(E_{close}\)</span> component is adherence to positional constraints, given by <code>b</code> and <code>bc</code> parameters. The <span class="math">\(E_{smooth}\)</span> component is an optional objective function, to minimize differences (in the Dirichlet sense) between points, encodes by &#8220;edges&#8221; in parameter <code>E</code>. Both <span class="math">\(E_{close}\)</span> and <span class="math">\(E_{shape}\)</span> are also weighted by <code>wClose</code> and <code>wShape</code> function parameters, respectively.</p>
+
+<figure>
+<img src="images/713_ShapeUp.png" alt="([Example 713](713_ShapeUp/main.cpp)) The half-tunnel mesh (left) has been optimized to be almost perfectly regular (right). The color scale is between $[0,0.05]$, measuring the average normalized deviation of the angles of each face from $90^{\circ}$." />
+<figcaption>(<a href="713_ShapeUp/main.cpp">Example 713</a>) The half-tunnel mesh (left) has been optimized to be almost perfectly regular (right). The color scale is between <span class="math">\([0,0.05]\)</span>, measuring the average normalized deviation of the angles of each face from <span class="math">\(90^{\circ}\)</span>.</figcaption>
+</figure>
 
 <h1 id="future">Outlook for continuing development </h1>
 
@@ -4004,10 +3939,11 @@ quadrangulation</a>,
 </li>
 
 <li id="cn:28">
-<p>Felix Knöppel, Keenan Crane, Ulrich Pinkall, and Peter
-Schröder. <a href="http://www.cs.columbia.edu/~keenan/Projects/GloballyOptimalDirectionFields/paper.pdf">Globally Optimal Direction
-Fields</a>,
-2013. <a href="#cnref:28" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
+<p>Amir Vaxman, Marcel Campen, Olga Diamanti, Daniele Panozzo,
+David Bommes, Klaus Hildebrandt, Mirela Ben&#8211;Chen. <a href="https://www.google.com/search?q=Directional+Field+Synthesis+Design+and+Processing">Directional Field
+Synthesis, Design, and
+Processing</a>,
+2016 <a href="#cnref:28" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
 </li>
 
 <li id="cn:29">
@@ -4018,108 +3954,82 @@ Fields</a>,
 </li>
 
 <li id="cn:30">
-<p>Olga Diamanti, Amir Vaxman, Daniele Panozzo, Olga
-Sorkine&#8211;Hornung. <a href="http://igl.ethz.ch/projects/complex-roots/">Designing N&#8211;PolyVector Fields with Complex
-Polynomials</a>, 2014 <a href="#cnref:30" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
+<p>Sofien Bouaziz, Mario Deuss, Yuliy Schwartzburg, Thibaut Weise, Mark Pauly
+<a href="http://lgg.epfl.ch/publications/2012/shapeup.pdf">Shape&#8211;Up: Shaping Discrete Geometry with
+Projections</a>, 2012 <a href="#cnref:30" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
 </li>
 
 <li id="cn:31">
-<p>Yang Liu, Weiwei Xu, Jun Wang, Lifeng Zhu, Baining Guo, Falai Chen, Guoping
-Wang. <a href="http://research.microsoft.com/en-us/um/people/yangliu/publication/cdf.pdf">General Planar Quadrilateral Mesh Design Using Conjugate Direction
-Field</a>,
-2008. <a href="#cnref:31" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
+<p>Christian Schüller, Ladislav Kavan, Daniele Panozzo, Olga
+Sorkine&#8211;Hornung. <a href="http://igl.ethz.ch/projects/LIM/">Locally Injective
+Mappings</a>, 2013. <a href="#cnref:31" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
 </li>
 
 <li id="cn:32">
-<p>Sofien Bouaziz, Mario Deuss, Yuliy Schwartzburg, Thibaut Weise, Mark Pauly
-<a href="http://lgg.epfl.ch/publications/2012/shapeup.pdf">Shape&#8211;Up: Shaping Discrete Geometry with
-Projections</a>, 2012 <a href="#cnref:32" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
-</li>
-
-<li id="cn:33">
-<p>Olga Diamanti, Amir Vaxman, Daniele Panozzo, Olga
-Sorkine&#8211;Hornung. <a href="http://igl.ethz.ch/projects/integrable/">Integrable PolyVector Fields</a>, 2015 <a href="#cnref:33" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
-</li>
-
-<li id="cn:34">
-<p>Amir Vaxman, Marcel Campen, Olga Diamanti, Daniele Panozzo,
-David Bommes, Klaus Hildebrandt, Mirela Ben&#8211;Chen. <a href="https://www.google.com/search?q=Directional+Field+Synthesis+Design+and+Processing">Directional Field
-Synthesis, Design, and
-Processing</a>,
-2016 <a href="#cnref:34" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
-</li>
-
-<li id="cn:35">
-<p>Christian Schüller, Ladislav Kavan, Daniele Panozzo, Olga
-Sorkine&#8211;Hornung. <a href="http://igl.ethz.ch/projects/LIM/">Locally Injective
-Mappings</a>, 2013. <a href="#cnref:35" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
-</li>
-
-<li id="cn:36">
 <p>Qingnan Zhou, Eitan Grinspun, Denis Zorin. <a href="https://www.google.com/search?q=Mesh+Arrangements+for+Solid+Geometry">Mesh Arrangements for
 Solid
 Geometry</a>,
-2016 <a href="#cnref:36" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
+2016 <a href="#cnref:32" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
 </li>
 
-<li id="cn:37">
+<li id="cn:33">
 <p>Alec Jacobson, Ladislav Kavan, and Olga Sorkine.
 <a href="https://www.google.com/search?q=Robust+Inside-Outside+Segmentation+using+Generalized+Winding+Numbers">Robust Inside&#8211;Outside Segmentation using Generalized Winding
 Numbers</a>,
-2013. <a href="#cnref:37" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
+2013. <a href="#cnref:33" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
 </li>
 
-<li id="cn:38">
+<li id="cn:34">
 <p>Hugues Hoppe. <a href="https://www.google.com/search?q=Progressive+meshes">Progressive
-Meshes</a>, 1996 <a href="#cnref:38" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
+Meshes</a>, 1996 <a href="#cnref:34" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
 </li>
 
-<li id="cn:39">
+<li id="cn:35">
 <p>J Andreas Baerentzen and Henrik Aanaes.
 <a href="https://www.google.com/search?q=Signed+distance+computation+using+the+angle+weighted+pseudonormal">Signed distance computation using the angle weighted
 pseudonormal</a>,
-2005. <a href="#cnref:39" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
+2005. <a href="#cnref:35" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
 </li>
 
-<li id="cn:40">
+<li id="cn:36">
 <p>W.E. Lorensen and Harvey E. Cline. <a href="https://www.google.com/search?q=Marching+cubes:+A+high+resolution+3d+surface+construction+algorithm">Marching cubes: A high
 resolution 3d surface construction
 algorithm</a>,
-1987. <a href="#cnref:40" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
+1987. <a href="#cnref:36" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
 </li>
 
-<li id="cn:41">
+<li id="cn:37">
 <p>Kenshi Takayama, Alec Jacobson, Ladislav Kavan, Olga
 Sorkine&#8211;Hornung. <a href="https://www.google.com/search?q=A+Simple+Method+for+Correcting+Facet+Orientations+in+Polygon+Meshes+Based+on+Ray+Casting">A Simple Method for Correcting Facet Orientations in
 Polygon Meshes Based on Ray
 Casting</a>,
-2014. <a href="#cnref:41" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
+2014. <a href="#cnref:37" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
 </li>
 
-<li id="cn:42">
+<li id="cn:38">
 <p>William J. Schroeder, William E. Lorensen, and Steve
 Linthicum. <a href="https://www.google.com/search?q=implicit+modeling+of+swept+surfaces+and+volumes">Implicit Modeling of Swept Surfaces and
 Volumes</a>,
-1994. <a href="#cnref:42" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
+1994. <a href="#cnref:38" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
 </li>
 
-<li id="cn:43">
+<li id="cn:39">
 <p>Akash Garg, Alec Jacobson, Eitan Grinspun. <a href="https://www.google.com/search?q=Computational+Design+of+Reconfigurables">Computational Design
 of
 Reconfigurables</a>,
-2016 <a href="#cnref:43" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
+2016 <a href="#cnref:39" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
 </li>
 
-<li id="cn:44">
+<li id="cn:40">
 <p>Michael Rabinovich, Roi Poranne, Daniele Panozzo, Olga
 Sorkine&#8211;Hornung. <a href="http://cs.nyu.edu/~panozzo/papers/SLIM-2016.pdf">Scalable Locally Injective
-Mappings</a>, 2016. <a href="#cnref:44" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
+Mappings</a>, 2016. <a href="#cnref:40" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
 </li>
 
-<li id="cn:45">
+<li id="cn:41">
 <p>Charles Loop. <a href="https://www.google.com/search?q=smooth+subdivision+surfaces+based+on+triangles">Smooth Subdivision Surfaces Based on
 Triangles</a>,
-1987. <a href="#cnref:45" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
+1987. <a href="#cnref:41" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
 </li>
 
 </ol>

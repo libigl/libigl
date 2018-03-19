@@ -75,17 +75,12 @@ lecture notes links to a cross-platform example application.
     * [504 N-Rotationally symmetric tangent fields](#nrotationallysymmetrictangetfields)
     * [505 Global, seamless integer-grid parametrization](#globalseamlessintegergridparametrization)
     * [506 Anisotropic remeshing using frame fields](#anisotropicremeshingusingframefields)
-    * [507 N-PolyVector fields](#npolyvectorfields)
-    * [508 Conjugate vector fields](#conjugatevectorfields)
-    * [509 Planarization](#planarization)
-    * [510 Integrable PolyVector Fields](#integrable)
-    * [511 General N-PolyVector Fields](#npolyvectorfields_general)
+    * [507 Planarization](#planarization)
 * [Chapter 6: External libraries](#chapter6:externallibraries)
     * [601 State serialization](#stateserialization)
     * [602 Mixing Matlab code](#mixingmatlabcode)
         * [Saving a Matlab workspace](#savingamatlabworkspace)
-        * [Dumping Eigen matrices to copy and paste into
-          Matlab](#dumpingeigenmatricestocopyandpasteintomatlab)
+        * [Dumping Eigen matrices to copy and paste into Matlab](#dumpingeigenmatricestocopyandpasteintomatlab)
     * [603 Calling libigl functions from Matlab](#callinglibiglfunctionsfrommatlab)
     * [604 Triangulation of closed polygons](#triangulationofclosedpolygons)
     * [605 Tetrahedralization of closed surfaces](#tetrahedralizationofclosedsurfaces)
@@ -107,6 +102,7 @@ lecture notes links to a cross-platform example application.
     * [710 Scalable Locally Injective Maps](#slim)
     * [711 Subdivision surfaces](#subdivision)
     * [712 Data smoothing](#datasmoothing)
+    * [713 ShapeUp projection](#shapeup)
 * [Chapter 8: Outlook for continuing development](#future)
 
 # Chapter 1 [chapter1:introductiontolibigl]
@@ -291,7 +287,7 @@ The function `set_mesh` copies the mesh into the viewer.
 Additional properties can be plotted on the mesh (as we will see later),
 and it is possible to extend the viewer with standard OpenGL code.
 Please see the documentation in
-[Viewer.h](../include/igl/Viewer/Viewer.h) for more details.
+[Viewer.h](../include/igl/opengl/glfw/Viewer.h) for more details.
 
 ![([Example 102](102_DrawMesh/main.cpp)) loads and draws a
 mesh.](images/102_DrawMesh.png)
@@ -427,59 +423,87 @@ using overlays.](images/105_Overlays.png)
 
 ## [Viewer Menu](#viewermenu) [viewermenu]
 
-As of version 1.2 the viewer uses a new menu and completely replaces
-[AntTweakBar](http://anttweakbar.sourceforge.net/doc/). It is based on the
-open-source projects [nanovg](https://github.com/memononen/nanovg) and
-[nanogui](https://github.com/wjakob/nanogui). To extend the default menu of the
-viewer and to expose more user defined variables you have to define a callback
-function:
-
+As of latest version, the viewer uses a new menu and completely replaces
+[AntTweakBar](http://anttweakbar.sourceforge.net/doc/) and
+[nanogui](https://github.com/wjakob/nanogui) with [Dear ImGui](https://github.com/ocornut/imgui). To extend the default menu of the
+viewer and to expose more user defined variables you have to implement a custom interface, as in [Example 106](106_ViewerMenu/main.cpp):
 ```cpp
-igl::opengl::glfw::Viewer viewer;
-
-bool boolVariable = true;
-float floatVariable = 0.1f;
-enum Orientation { Up=0,Down,Left,Right } dir = Up;
-
-// Extend viewer menu
-viewer.callback_init = [&](igl::opengl::glfw::Viewer& viewer)
+// Add content to the default menu window
+menu.callback_draw_viewer_menu = [&]()
 {
+  // Draw parent menu content
+  menu.draw_viewer_menu();
+
   // Add new group
-  viewer.ngui->addGroup("New Group");
+  if (ImGui::CollapsingHeader("New Group", ImGuiTreeNodeFlags_DefaultOpen))
+  {
+    // Expose variable directly ...
+    ImGui::InputFloat("float", &floatVariable, 0, 0, 3);
 
-  // Expose a variable directly ...
-  viewer.ngui->addVariable("float",floatVariable);
+    // ... or using a custom callback
+    static bool boolVariable = true;
+    if (ImGui::Checkbox("bool", &boolVariable))
+    {
+      // do something
+      std::cout << "boolVariable: " << std::boolalpha << boolVariable << std::endl;
+    }
 
-  // Expose an enumaration type
-  viewer.ngui->addVariable<Orientation>("Direction",dir)->setItems({"Up","Down","Left","Right"});
+    // Expose an enumeration type
+    enum Orientation { Up=0, Down, Left, Right };
+    static Orientation dir = Up;
+    ImGui::Combo("Direction", (int *)(&dir), "Up\0Down\0Left\0Right\0\0");
 
-  // Add a button
-  viewer.ngui->addButton("Print Hello",[](){ std::cout << "Hello\n"; });
+    // We can also use a std::vector<std::string> defined dynamically
+    static int num_choices = 3;
+    static std::vector<std::string> choices;
+    static int idx_choice = 0;
+    if (ImGui::InputInt("Num letters", &num_choices))
+    {
+      num_choices = std::max(1, std::min(26, num_choices));
+    }
+    if (num_choices != (int) choices.size())
+    {
+      choices.resize(num_choices);
+      for (int i = 0; i < num_choices; ++i)
+        choices[i] = std::string(1, 'A' + i);
+      if (idx_choice >= num_choices)
+        idx_choice = num_choices - 1;
+    }
+    ImGui::Combo("Letter", &idx_choice, choices);
 
-  // call to generate menu
-  viewer.screen->performLayout();
-  return false;
+    // Add a button
+    if (ImGui::Button("Print Hello", ImVec2(-1,0)))
+    {
+      std::cout << "Hello\n";
+    }
+  }
 };
-
-// start viewer
-viewer.launch();
 ```
 
-If you need a separate new menu window use:
+If you need a separate new menu window implement:
 
 ```cpp
-viewer.ngui->addWindow(Eigen::Vector2i(220,10),"New Window");
-```
+// Draw additional windows
+menu.callback_draw_custom_window = [&]()
+{
+  // Define next window position + size
+  ImGui::SetNextWindowPos(ImVec2(180.f * menu.menu_scaling(), 10), ImGuiSetCond_FirstUseEver);
+  ImGui::SetNextWindowSize(ImVec2(200, 160), ImGuiSetCond_FirstUseEver);
+  ImGui::Begin(
+      "New Window", nullptr,
+      ImGuiWindowFlags_NoSavedSettings
+  );
 
-If you do not want to expose variables directly but rather use the get/set functionality:
+  // Expose the same variable directly ...
+  ImGui::PushItemWidth(-80);
+  ImGui::DragFloat("float", &floatVariable, 0.0, 0.0, 3.0);
+  ImGui::PopItemWidth();
 
-```cpp
-// ... or using a custom callback
-viewer.ngui->addVariable<bool>("bool",[&](bool val) {
-  boolVariable = val; // setter
-},[&]() {
-  return boolVariable; // getter
-});
+  static std::string str = "bunny";
+  ImGui::InputText("Name", str);
+
+  ImGui::End();
+};
 ```
 
 ![([Example 106](106_ViewerMenu/main.cpp)) The UI of the viewer can be easily
@@ -587,7 +611,7 @@ where $N(i)$ are the triangles incident on vertex $i$ and $θ_{ij}$ is the angle
 at vertex $i$ in triangle $j$ [][#meyer_2003].
 
 Just like the continuous analog, our discrete Gaussian curvature reveals
-elliptic, hyperbolic and parabolic vertices on the domain, as demonstrated in [Example 202](202GaussianCurvature/main.cpp).
+elliptic, hyperbolic and parabolic vertices on the domain, as demonstrated in [Example 202](202_GaussianCurvature/main.cpp).
 
 ![The `GaussianCurvature` example computes discrete Gaussian curvature and
 visualizes it in pseudocolor.](images/bumpy-gaussian-curvature.jpg)
@@ -1986,9 +2010,11 @@ N are of different types and they appear in different positions.
 We demonstrate how to call and plot N-RoSy fields in [Example
 504](504_NRosyDesign/main.cpp), where the degree of the field can be change
 pressing the number keys. `igl::nrosy` implements the algorithm proposed in
-[#bommes_2009][]. N-RoSy fields can also be interpolated with the algorithm
-proposed in [#knoppel_2013][], see Section [npolyvectorfields] for more details
-([igl::n_polyvector](../include/igl/n_polyvector.h)).
+[#bommes_2009][]. N-RoSy fields can also be interpolated with many other algorithms,
+see the library [libdirectional](https://github.com/avaxman/libdirectional) for
+a reference implementation of the most popular ones. For a complete categorization
+of fields used in various applications see Vaxman et al. 2016 [#vaxman_2016].
+
 
 ### [Global, seamless integer-grid parametrization](#globalseamlessintegergridparametrization) [globalseamlessintegergridparametrization]
 
@@ -2117,119 +2143,18 @@ generate the UV parametrization, but other algorithms could be applied: the
 only desiderata is that the generated quad mesh should be as isotropic as
 possible.
 
-## [N-PolyVector fields](#npolyvectorfields) [npolyvectorfields]
-
-N-RoSy vector fields can be further generalized to represent arbitrary
-vector-sets, with arbitrary angles between them and with arbitrary lengths
-[#diamanti_2014][].  This generalization is called  N-PolyVector field, and
-libigl provides the function `igl::n_polyvector` to design them starting from a
-sparse set of constraints ([Example 507](507_PolyVectorField/main.cpp)).
-
-![Interpolation of a 6-PolyVector field (right) and a 12-PolyVector field from a sparse set of random constraints.](images/507_PolyVectorField.png)
-
-The core idea is to represent the vector set as the roots of a complex
-polynomial: The polynomial coefficients are then harmonically interpolated
-leading to polynomials whose roots smoothly vary over the surface.
-
-Globally optimal direction fields [#knoppel_2013][] are a special case of
-PolyVector fields. If the constraints are taken from an N-RoSy field,
-`igl::n_polyvector` generates a field that is equivalent, after normalization,
-to a globally optimal direction field.
-
-## [Conjugate vector fields](#conjugatevectorfields) [conjugatevectorfields]
-
-Two tangent vectors lying on a face of a triangle mesh are conjugate if
-
-\\[ k_1 (u^T d_1)(v^T d_1) + k_2(u^T d_2)(v^T d_2) = 0. \\]
-
-This condition is very important in architectural geometry: The faces of an
-infinitely dense quad mesh whose edges are aligned with a conjugate field are
-planar. Thus, a quad mesh whose edges follow a conjugate field  are easier to
-planarize [#liu_2011].
-
-Finding a conjugate vector field that satisfies given directional constraints
-is a standard problem in architectural geometry, which can be tackled by
-deforming a Poly-Vector field to the closest conjugate field.
-
-This algorithm [#diamanti_2014] alternates a global step, which enforces
-smoothness, with a local step, that projects the field on every face to the
-closest conjugate field ([Example 508](508_ConjugateField/main.cpp)).
-
-![A smooth 4-PolyVector field (left) is deformed to become a conjugate field
-(right).](images/508_ConjugateField.png)
-
 ## [Planarization](#planarization) [planarization]
 
 A quad mesh can be transformed in a planar quad mesh with Shape-Up
 [#bouaziz_2012], a local/global approach that uses the global step to enforce
 surface continuity and the local step to enforce planarity.
 
-[Example 509](509_Planarization/main.cpp) planarizes a quad mesh until it
+[Example 507](507_Planarization/main.cpp) planarizes a quad mesh until it
 satisfies a user-given planarity threshold.
 
 ![A non-planar quad mesh (left) is planarized using the libigl function
-igl::palanarize (right). The colors represent the planarity of the
+igl::planarize (right). The colors represent the planarity of the
 quads.](images/509_Planarization.png)
-
-## [Integrable PolyVector Fields](#integrable) [integrable]
-
-Vector-field guided surface parameterization is based on the idea of designing
-the gradients of the parameterization functions (which are tangent vector fields
-on the surface) instead of the functions themselves. Thus, vector-set fields
-(N-Rosy, frame fields, and polyvector fields) that are to be used for
-parameterization (and subsequent remeshing) need to be integrable: it must be
-possible to break them down into individual vector fields that are gradients of
-scalar functions. Fields obtained by most smoothness-based design methods (eg.
-[#levy_2008][], [#knoppel_2013][], [#diamanti_2014][], [#bommes_2009][],
-[#panozzo_2014][]) do not have this property. In [#diamanti_2015][], a method
-for creating integrable polyvector fields was introduced. This method takes as
-input a given field and improves its integrability by removing the vector field
-curl, thus turning it into a gradient of a function ([Example
-510](510_Integrable/main.cpp)).
-
-![Integration error is removed from a frame field to produce a field aligned
-parameterization free of triangle flips.](images/510_Integrable.png)
-
-This method retains much of the core principles of the polyvector framework - it
-expresses the condition for zero discrete curl condition (which typically
-requires integers for the vector matchings) into a condition involving
-continuous variables only. This is done using coefficients of appropriately
-defined polynomials. The parameterizations generated by the resulting fields are
-exactly aligned to the field directions and contain no inverted triangles.
-
-## [General N-PolyVector fields](#npolyvectorfields_general) [npolyvectorfields_general]
-
-While mostly applicable for the design of symmetric fields (i.e. fields that
-comprise of vector sets with symmetries between them at each point, e.g. N-RoSy
-or frame-fields), the framework presented in [#diamanti_2014][] can be used to
-design completely general fields, with possibly no such symmetries. For example,
-one can design fields that at each point comprise of an arbitrary number of
-vectors, not required to be collinear - as opposed e.g. to the case of the 4
-pairwise-collinear vectors designed in the example ([Example
-507](507_PolyVectorField/main.cpp)). This capability is implemented in the
-function igl::n_polyvector_general, and is illustrated in the example ([Example
-511](511_PolyVectorFieldGeneral/main.cpp)).
-
-![Interpolation of a general field with 3 (left) and 9 vectors per point field
-from a sparse set of random constraints (in red). The field is defined on all
-mesh faces, but is only shown on a subset for clarity.
-](images/511_PolyVectorFieldGeneral.png)
-
-The design of these general directional fields (also called vector-set fields)
-is based on the same polynomial framework and includes the symmetric fields as a
-special case. Note that in the case that some symmetries do exist in the
-constraints, the final field is not guaranteed to have these symmetries
-everywhere else on the mesh. For example, designing a field with 3 vectors per
-point where, at the constrained faces, two of the vectors are on a line opposite
-to each other, we are not guaranteed to always have two pairwise-collinear
-vectors everywhere in the result, as can be seen in the picture. In some cases
-however (as is the case of the frame field in the previous example [Example
-507](507_PolyVectorField/main.cpp)) these symmetries are in fact guaranteed due
-to the particular nature of the polynomial that applies in that case (two
-coefficients are 0).
-
-For a complete categorization of fields used in various applications (including
-these general ones) see Vaxman et al. 2016 [#vaxman_2016].
 
 # Chapter 6: External libraries [chapter6:externallibraries]
 
@@ -2747,6 +2672,13 @@ then the final composite.
 
 ![Example [610](610_CSGTree/main.cpp) computes  complex CSG Tree operation on 5
 input meshes.](images/cube-sphere-cylinders-csg.gif)
+
+# Miscellaneous [chapter7:miscellaneous]
+
+Libigl contains a _wide_ variety of geometry processing tools and functions for
+dealing with meshes and the linear algebra related to them: far too many to
+discuss in this introductory tutorial. We've pulled out a couple of the
+interesting functions in this chapter to highlight.
 
 ## [Mesh Statistics](#meshstatistics) [meshstatistics]
 
@@ -3343,12 +3275,32 @@ on the beetle mesh, the function with added noise, the result of smoothing
 with the Laplacian energy and zero Neumann boundary conditions, and the
 result of smoothing with the Hessian energy.](images/712_beetles.jpg)
 
-# Miscellaneous [chapter7:miscellaneous]
+## [ShapeUp Projections](#shapeup) [shapeup]
 
-Libigl contains a _wide_ variety of geometry processing tools and functions for
-dealing with meshes and the linear algebra related to them: far too many to
-discuss in this introductory tutorial. We've pulled out a couple of the
-interesting functions in this chapter to highlight.
+Our input is a set of points $P_0$ (not necessarily part of any mesh), and a set of constraints $S=\left\{S_1,S_2,...S_m\right\}$, where each constraint is defined on a different, and sparse, subset of $P_0$. We wish to create a new set of points $P$ that are close to the original set $P_0$ (each point with corresponding indices), while adhering to the constraints. Other objectives, such as smoothness, can be employed. The constraints can be nonlinear, which makes the problem nonconvex, difficult, and without a guaranteed global optimum. A very popular lightweight approach to such problems is a local-global iterative algorithm, comprising these two steps:
+
+For iteration $k$:
+1. *Local step*: compute the projections of the set $P_{k-1}$ onto $S$, individually per constraint; that would mean fragmenting each point that appears in multiple constraints. That can be a nonlinear operation, but if the constraints are sparse, it is a a set of many small systems.
+2. *Global step*: integrate the set $P_k$ to be as close as possible to the projected fragmented set, with auxiliary objective functions possible. That results in a global, but quadratic objective function. Moreover, the resulting linear system has a constant matrix, and therefore can be pre-factored.
+
+The version we implement in libigl is the general version described by [#bouaziz_2012], and is in two files: ``<igl/shapeup.h>`` and ``<igl/shapeup_local_projections.h>``. A demo implementing regularity constraints (creating a mesh in which each face is as regular as possible) is in [Example 713](713_Shapeup/main.cpp). 
+
+The local step is instantiated by a function of type ``igl::shapeup_projection_function``. The global step is done by two functions: ``igl::shapeup_precomputation()``, which precomputes the matrices required for the global step, and ``igl::shapeup_solve()``, which solves the problem, according to the initial solution $P_0$ and the input local projection function. The data struct ``igl::ShapeUpData`` contains the information necessary to run the algorithm, and can be configured; for instance, the self-explanatory variable ``Maxiterations``.
+
+The global step minimizes the following energy:
+
+$$E_{total}=\lambda_{shape}E_{shape}+\lambda_{close}E_{close}+\lambda_{smooth}E_{smooth},$$
+
+where the $\lambda$ coefficients are encoded in ``igl::ShapeUpData``, and can be updated **prior** to calling ``igl::shapeup_precomputation()``. The $E_{shape}$ component is the integration energy (fitting $P_k$ to the local projections). The $E_{close}$ component is adherence to positional constraints, given by ``b`` and ``bc`` parameters. The $E_{smooth}$ component is an optional objective function, to minimize differences (in the Dirichlet sense) between points, encodes by "edges" in parameter `E`. Both $E_{close}$ and $E_{shape}$ are also weighted by ``wClose`` and ``wShape`` function parameters, respectively.
+
+![([Example 713](713_ShapeUp/main.cpp)) The half-tunnel mesh (left) has been optimized to be almost perfectly regular (right). The color scale is between $[0,0.05]$, measuring the average normalized deviation of the angles of each face from $90^{\circ}$.](images/713_ShapeUp.png)
+
+
+
+
+
+
+
 
 # Outlook for continuing development [future]
 

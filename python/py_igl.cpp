@@ -64,7 +64,6 @@
 #include <igl/map_vertices_to_circle.h>
 #include <igl/massmatrix.h>
 #include <igl/min_quad_with_fixed.h>
-#include <igl/n_polyvector.h>
 #include <igl/normalize_row_lengths.h>
 #include <igl/normalize_row_sums.h>
 #include <igl/parula.h>
@@ -93,7 +92,6 @@
 #include <igl/slice_mask.h>
 #include <igl/slice_tets.h>
 #include <igl/sortrows.h>
-#include <igl/streamlines.h>
 #include <igl/triangle_triangle_adjacency.h>
 #include <igl/unique.h>
 #include <igl/unproject_onto_mesh.h>
@@ -163,7 +161,6 @@ void python_export_igl(py::module &m)
 #include "py_igl/py_map_vertices_to_circle.cpp"
 #include "py_igl/py_massmatrix.cpp"
 #include "py_igl/py_min_quad_with_fixed.cpp"
-#include "py_igl/py_n_polyvector.cpp"
 #include "py_igl/py_normalize_row_lengths.cpp"
 #include "py_igl/py_normalize_row_sums.cpp"
 #include "py_igl/py_parula.cpp"
@@ -192,7 +189,6 @@ void python_export_igl(py::module &m)
 #include "py_igl/py_slice_mask.cpp"
 #include "py_igl/py_slice_tets.cpp"
 #include "py_igl/py_sortrows.cpp"
-#include "py_igl/py_streamlines.cpp"
 #include "py_igl/py_triangle_triangle_adjacency.cpp"
 #include "py_igl/py_unique.cpp"
 #include "py_igl/py_unproject_onto_mesh.cpp"

@@ -2,6 +2,7 @@ This directory contains external libraries which are either difficult to
 obtain, difficult to compile or patched for libigl.
 
 ## AntTweakBar
+
 Patched to support copying and pasting from text fields (see
 http://www.alecjacobson.com/weblog/?p=2378)
 
@@ -20,6 +21,7 @@ then
     make
 
 ## TinyXML2
+
 double precision bug fixes:
 
 tinyxml2.h line 1286 add function:
@@ -33,3 +35,15 @@ tinyxml2.cpp line 434 replace with:
 
 TIXML_SNPRINTF( buffer, bufferSize, "%.15e", v );
 
+## CGAL
+
+CGAL can be built as a CMake external project thanks to the `CMakeLists.txt` provided in this folder. While this is mainly intended as a convenience for Windows users, and CI builds on AppVeyor, this should work on Linux/macOS as well. To build CGAL and Boost with the provided CMake script, build this folder as you would compile any CMake project (use CMake GUI and MSVC on Windows):
+
+```
+mkdir build
+cd build
+cmake ..
+make -j4
+```
+
+Once this is done, just build the libigl tutorials, and it should properly detect CGAL and Boost.
