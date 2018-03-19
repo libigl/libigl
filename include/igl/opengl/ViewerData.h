@@ -103,6 +103,8 @@ public:
   //   E  #E by 2 list of edge indices into P
   //   C  #E|1 by 3 color(s)
   IGL_INLINE void set_edges (const Eigen::MatrixXd& P, const Eigen::MatrixXi& E, const Eigen::MatrixXd& C);
+  // Alec: This is very confusing. Why does add_edges have a different API from
+  // set_edges? 
   IGL_INLINE void add_edges (const Eigen::MatrixXd& P1, const Eigen::MatrixXd& P2, const Eigen::MatrixXd& C);
   IGL_INLINE void add_label (const Eigen::VectorXd& P,  const std::string& str);
 
