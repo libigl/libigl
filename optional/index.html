@@ -1,14 +1,11 @@
 <!DOCTYPE html>
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
 <head>
 	<meta charset="utf-8"/>
 	<title>libigl</title>
 	<meta name="author" content="Alec Jacobson and Daniele Panozzo and others"/>
 	<link type="text/css" rel="stylesheet" href="../tutorial/style.css"/>
-<script type='text/javascript' src='http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
-<link rel='stylesheet' href='http://yandex.st/highlightjs/7.3/styles/default.min.css'>
-<script src='http://yandex.st/highlightjs/7.3/highlight.min.js'></script>
-<script>hljs.initHighlightingOnLoad();</script>
+<script type='text/javascript' src='http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script> <link rel='stylesheet' href='http://yandex.st/highlightjs/7.3/styles/default.min.css'> <script src='http://yandex.st/highlightjs/7.3/highlight.min.js'></script> <script>hljs.initHighlightingOnLoad();</script>
 </head>
 <body>
 
@@ -24,7 +21,7 @@ improve your compilation times.</p>
 <p>Libigl is developed most often on Mac OS X, though has current users in Linux
 and Windows.</p>
 
-<h3 id="linuxmacosxcygwin">Linux/Mac OS X/Cygwin</h3>
+<h3 id="linuxmacosxcygwin">Linux/Mac OS X/Cygwin </h3>
 
 <p>Libigl may also be compiled to a static library. This is advantageous when
 building a project with libigl, since when used as an header-only library can
@@ -40,7 +37,7 @@ cmake -DCMAKE_BUILD_TYPE=Release ../optional
 make
 </code></pre>
 
-<h4 id="warnings">Warnings</h4>
+<h4 id="warnings">Warnings </h4>
 
 <p>You should expect to see a few linker warnings of the form:</p>
 
@@ -50,7 +47,7 @@ make
 <p>These are (admittedly unpopular) functions that have never been used by us
 statically so we haven&#8217;t explicit instantiations (yet).</p>
 
-<h4 id="external">External</h4>
+<h4 id="external">External </h4>
 
 <p>Finally there are a number of external libraries that we include in
 <code>./external/</code> because they are either difficult to obtain or they have been
@@ -58,7 +55,7 @@ patched for easier use with libigl. Please see the respective readmes in those
 directories or build the tutorial using cmake, which will recursively build all
 dependencies.</p>
 
-<h5 id="installingembree2.0">Installing Embree 2.0</h5>
+<h5 id="installingembree2.0">Installing Embree 2.0 </h5>
 
 <p>To build the embree library and executables on Mac OS X issue:</p>
 
@@ -74,72 +71,72 @@ make
 #sudo make install
 </code></pre>
 
-<h2 id="extras">Extras</h2>
+<h2 id="extras">Extras </h2>
 
-<h3 id="bbw">bbw</h3>
+<h3 id="bbw">bbw </h3>
 
 <p>This library extra contains functions for computing Bounded Biharmonic Weights, can
 be used with and without the <a href="#mosek">mosek</a> extra via the <code>IGL_NO_MOSEK</code>
 macro.</p>
 
-<h3 id="boolean">boolean</h3>
+<h3 id="boolean">boolean </h3>
 
 <p>This library extra contains functions for computing mesh-mesh booleans,
 depending on CGAL and optionally Cork.</p>
 
-<h3 id="cgal">cgal</h3>
+<h3 id="cgal">cgal </h3>
 
 <p>This library extra utilizes CGAL&#8217;s efficient and exact intersection and
 proximity queries.</p>
 
-<h3 id="embree">embree</h3>
+<h3 id="embree">embree </h3>
 
 <p>This library extra utilizes embree&#8217;s efficient ray tracing queries.</p>
 
-<h3 id="matlab">matlab</h3>
+<h3 id="matlab">matlab </h3>
 
 <p>This library extra provides support for reading and writing <code>.mat</code> workspace
 files, interfacing with Matlab at run time and compiling mex functions.</p>
 
-<h3 id="mosek">mosek</h3>
+<h3 id="mosek">mosek </h3>
 
 <p>This library extra utilizes mosek&#8217;s efficient interior-point solver for
 quadratic programs.</p>
 
-<h3 id="png">png</h3>
+<h3 id="png">png </h3>
 
 <p>This library extra uses <code>libpng</code> and <code>YImage</code> to read and write <code>.png</code> files.</p>
 
-<h3 id="tetgen">tetgen</h3>
+<h3 id="tetgen">tetgen </h3>
 
 <p>This library extra provides a simplified wrapper to the tetgen 3d tetrahedral
 meshing library.</p>
 
-<h3 id="triangle">Triangle</h3>
+<h3 id="triangle">Triangle </h3>
 
 <p>This library extra provides a simplified wrapper to the triangle 2d triangle
 meshing library.</p>
 
-<h3 id="viewer">viewer</h3>
+<h3 id="viewer">viewer </h3>
 
 <p>This library extra utilizes glfw and glew to open an opengl context and launch
 a simple mesh viewer.</p>
 
-<h3 id="xml">xml</h3>
+<h3 id="xml">xml </h3>
 
 <p>This library extra utilizes tinyxml2 to read and write serialized classes
 containing Eigen matrices and other standard simple data-structures.</p>
 
-<h2 id="development">Development</h2>
+<h2 id="development">Development </h2>
 
 <p>Further documentation for developers is listed in
 <a href="../style_guidelines.html">style_guidelines.html</a>.</p>
 
-<h2 id="license">License</h2>
+<h2 id="license">License </h2>
 
 <p>See <code>LICENSE.txt</code></p>
 
-<h2 id="zipping">Zipping</h2>
+<h2 id="zipping">Zipping </h2>
 
 <p>Zip this directory without .git litter and binaries using:</p>
 
@@ -275,28 +272,28 @@ exposing templated functions.</li>
 
 <ul>
 <li><strong>Easy incorporation</strong>: This can be easily incorporated
- into external projects.</li>
+into external projects.</li>
 </ul>
 
 <h3 id="drawbacksofcompressed.h.cpppair">Drawbacks of compressed .h/.cpp pair</h3>
 
 <ul>
 <li><p><strong>Hard to debug/edit</strong>: The compressed files are
- automatically generated. They&#8217;re huge and should not be edited. Thus
- debugging and editting are near impossible.</p></li>
+automatically generated. They&#8217;re huge and should not be edited. Thus
+debugging and editing are near impossible.</p></li>
 <li><p><strong>Compounded dependencies</strong>:
- An immediate disadvantage of this
- seems to be that even to use a single function (e.g.
- <code>cotmatrix</code>), compiling and linking against
- <code>igl.cpp</code> will require linking to all of <code>libigl</code>&#8217;s
- dependencies (<code>OpenGL</code>, <code>GLUT</code>,
- <code>AntTweakBar</code>, <code>BLAS</code>). However, because all
- depencies other than Eigen should be encapsulated between
- <code>#ifndef</code> guards (e.g. <code>#ifndef IGL_NO_OPENGL</code>, it
- is possible to ignore certain functions that have such dependencies.</p></li>
+An immediate disadvantage of this
+seems to be that even to use a single function (e.g.
+<code>cotmatrix</code>), compiling and linking against
+<code>igl.cpp</code> will require linking to all of <code>libigl</code>&#8217;s
+dependencies (<code>OpenGL</code>, <code>GLUT</code>,
+<code>AntTweakBar</code>, <code>BLAS</code>). However, because all
+dependencies other than Eigen should be encapsulated between
+<code>#ifndef</code> guards (e.g. <code>#ifndef IGL_NO_OPENGL</code>, it
+is possible to ignore certain functions that have such dependencies.</p></li>
 <li><p><strong>Long compile</strong>:
- Compiling <code>igl.cpp</code> takes a long time and isn&#8217;t easily parallelized (no <code>make
-  -j12</code> equivalent).</p></li>
+Compiling <code>igl.cpp</code> takes a long time and isn&#8217;t easily parallelized (no <code>make
+-j12</code> equivalent).</p></li>
 </ul>
 
 <p>Here&#8217;s a tiny test example using <code>igl.h</code> and <code>igl.cpp</code>. Save the following in <code>test.cpp</code>:</p>
@@ -334,7 +331,7 @@ return (argc&gt;=2 &amp;&amp; igl::read_triangle_mesh(argv[1],V,F)?0:1);
 <pre><code>grep OpenGL `grep -L IGL_NO_OPENGL include/igl/*`
 </code></pre>
 
-<h3 id="optional">Optional</h3>
+<h3 id="optional">Optional </h3>
 
 <ul>
 <li>OpenGL (disable with <code>IGL_NO_OPENGL</code>)
@@ -343,7 +340,7 @@ return (argc&gt;=2 &amp;&amp; igl::read_triangle_mesh(argv[1],V,F)?0:1);
 <li>OpenGL &gt;= 4 (enable with <code>IGL_OPENGL_4</code>)</li>
 </ul></li>
 <li>AntTweakBar (disable with <code>IGL_NO_ANTTWEAKBAR</code>) Last tested 1.16 (see
- <code>libigl/external/AntTweakBar</code>)</li>
+<code>libigl/external/AntTweakBar</code>)</li>
 <li>GLEW Windows and Linux</li>
 <li>OpenMP</li>
 <li>libpng libiglpng extra only</li>
@@ -361,7 +358,7 @@ return (argc&gt;=2 &amp;&amp; igl::read_triangle_mesh(argv[1],V,F)?0:1);
 <li>CoMiSo libcomiso extra only</li>
 </ul>
 
-<h3 id="optionalincludedinexternal">Optional (included in external/)</h3>
+<h3 id="optionalincludedinexternal">Optional (included in external/) </h3>
 
 <ul>
 <li>TetGen libigltetgen extra only</li>
@@ -373,3 +370,4 @@ return (argc&gt;=2 &amp;&amp; igl::read_triangle_mesh(argv[1],V,F)?0:1);
 
 </body>
 </html>
+

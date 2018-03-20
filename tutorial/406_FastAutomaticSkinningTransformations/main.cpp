@@ -15,7 +15,7 @@
 #include <igl/readOBJ.h>
 #include <igl/arap.h>
 #include <igl/arap_dof.h>
-#include <igl/viewer/Viewer.h>
+#include <igl/opengl/glfw/Viewer.h>
 
 #include <Eigen/Geometry>
 #include <Eigen/StdVector>
@@ -51,7 +51,7 @@ enum ModeType
   NUM_MODE_TYPES = 4
 } mode = MODE_TYPE_ARAP;
 
-bool pre_draw(igl::viewer::Viewer & viewer)
+bool pre_draw(igl::opengl::glfw::Viewer & viewer)
 {
   using namespace Eigen;
   using namespace std;
@@ -82,6 +82,8 @@ bool pre_draw(igl::viewer::Viewer & viewer)
     }
     switch(mode)
     {
+      default:
+        assert("unknown mode");
       case MODE_TYPE_ARAP:
         igl::arap_solve(bc,arap_data,U);
         break;
@@ -99,9 +101,9 @@ bool pre_draw(igl::viewer::Viewer & viewer)
         break;
       }
     }
-    viewer.data.set_vertices(U);
-    viewer.data.set_points(bc,sea_green);
-    viewer.data.compute_normals();
+    viewer.data().set_vertices(U);
+    viewer.data().set_points(bc,sea_green);
+    viewer.data().compute_normals();
     if(viewer.core.is_animating)
     {
       anim_t += anim_t_dir;
@@ -113,7 +115,7 @@ bool pre_draw(igl::viewer::Viewer & viewer)
   return false;
 }
 
-bool key_down(igl::viewer::Viewer &viewer, unsigned char key, int mods)
+bool key_down(igl::opengl::glfw::Viewer &viewer, unsigned char key, int mods)
 {
   switch(key)
   {
@@ -204,10 +206,10 @@ int main(int argc, char *argv[])
   bbd = (V.colwise().maxCoeff()- V.colwise().minCoeff()).norm();
 
   // Plot the mesh with pseudocolors
-  igl::viewer::Viewer viewer;
-  viewer.data.set_mesh(U, F);
-  viewer.data.add_points(igl::slice(V,b,1),sea_green);
-  viewer.core.show_lines = false;
+  igl::opengl::glfw::Viewer viewer;
+  viewer.data().set_mesh(U, F);
+  viewer.data().add_points(igl::slice(V,b,1),sea_green);
+  viewer.data().show_lines = false;
   viewer.callback_pre_draw = &pre_draw;
   viewer.callback_key_down = &key_down;
   viewer.core.is_animating = false;

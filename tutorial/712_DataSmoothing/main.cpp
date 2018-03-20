@@ -6,7 +6,7 @@
 #include <igl/edges.h>
 #include <igl/components.h>
 #include <igl/remove_unreferenced.h>
-#include <igl/viewer/Viewer.h>
+#include <igl/opengl/glfw/Viewer.h>
 
 #include <Eigen/Core>
 #include <Eigen/SparseCholesky>
@@ -64,11 +64,12 @@ int main(int argc, char * argv[])
     Eigen::VectorXd zh = hessSolver.solve(ah*M*znoisy);
 
     //Viewer that shows all functions: zexact, znoisy, zl, zh
-    igl::viewer::Viewer viewer;
-    viewer.data.set_mesh(V,F);
-    viewer.core.show_lines = false;
+    igl::opengl::glfw::Viewer viewer;
+    viewer.data().set_mesh(V,F);
+    viewer.data().show_lines = false;
     viewer.callback_key_down =
-      [&](igl::viewer::Viewer & viewer, unsigned char key, int mod)->bool {
+      [&](igl::opengl::glfw::Viewer & viewer, unsigned char key, int mod)->bool
+      {
         //Graduate result to show isolines, then compute color matrix
         const Eigen::VectorXd* z;
         switch(key) {
@@ -91,10 +92,11 @@ int main(int argc, char * argv[])
         Eigen::MatrixXi isoE;
         if(key!='2')
             igl::isolines(V, F, *z, 30, isoV, isoE);
-        viewer.data.set_edges(isoV,isoE,Eigen::RowVector3d(0,0,0));
+        viewer.data().set_edges(isoV,isoE,Eigen::RowVector3d(0,0,0));
         Eigen::MatrixXd colors;
         igl::jet(*z, true, colors);
-        viewer.data.set_colors(colors);
+        viewer.data().set_colors(colors);
+        return true;
     };
     std::cout << R"(Usage:
 1  Show original function

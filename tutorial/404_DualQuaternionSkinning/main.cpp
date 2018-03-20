@@ -8,7 +8,7 @@
 #include <igl/readDMAT.h>
 #include <igl/readOBJ.h>
 #include <igl/readTGF.h>
-#include <igl/viewer/Viewer.h>
+#include <igl/opengl/glfw/Viewer.h>
 
 #include <Eigen/Geometry>
 #include <Eigen/StdVector>
@@ -32,7 +32,7 @@ double anim_t_dir = 0.015;
 bool use_dqs = false;
 bool recompute = true;
 
-bool pre_draw(igl::viewer::Viewer & viewer)
+bool pre_draw(igl::opengl::glfw::Viewer & viewer)
 {
   using namespace Eigen;
   using namespace std;
@@ -49,7 +49,7 @@ bool pre_draw(igl::viewer::Viewer & viewer)
     {
       anim_pose[e] = poses[begin][e].slerp(t,poses[end][e]);
     }
-    // Propogate relative rotations via FK to retrieve absolute transformations
+    // Propagate relative rotations via FK to retrieve absolute transformations
     RotationList vQ;
     vector<Vector3d> vT;
     igl::forward_kinematics(C,BE,P,anim_pose,vQ,vT);
@@ -77,9 +77,9 @@ bool pre_draw(igl::viewer::Viewer & viewer)
     MatrixXi BET;
     igl::deform_skeleton(C,BE,T,CT,BET);
     
-    viewer.data.set_vertices(U);
-    viewer.data.set_edges(CT,BET,sea_green);
-    viewer.data.compute_normals();
+    viewer.data().set_vertices(U);
+    viewer.data().set_edges(CT,BET,sea_green);
+    viewer.data().compute_normals();
     if(viewer.core.is_animating)
     {
       anim_t += anim_t_dir;
@@ -92,7 +92,7 @@ bool pre_draw(igl::viewer::Viewer & viewer)
   return false;
 }
 
-bool key_down(igl::viewer::Viewer &viewer, unsigned char key, int mods)
+bool key_down(igl::opengl::glfw::Viewer &viewer, unsigned char key, int mods)
 {
   recompute = true;
   switch(key)
@@ -130,12 +130,12 @@ int main(int argc, char *argv[])
   igl::lbs_matrix(V,W,M);
 
   // Plot the mesh with pseudocolors
-  igl::viewer::Viewer viewer;
-  viewer.data.set_mesh(U, F);
-  viewer.data.set_edges(C,BE,sea_green);
-  viewer.core.show_lines = false;
-  viewer.core.show_overlay_depth = false;
-  viewer.core.line_width = 1;
+  igl::opengl::glfw::Viewer viewer;
+  viewer.data().set_mesh(U, F);
+  viewer.data().set_edges(C,BE,sea_green);
+  viewer.data().show_lines = false;
+  viewer.data().show_overlay_depth = false;
+  viewer.data().line_width = 1;
   viewer.core.trackball_angle.normalize();
   viewer.callback_pre_draw = &pre_draw;
   viewer.callback_key_down = &key_down;

@@ -1,6 +1,6 @@
 #include <igl/read_triangle_mesh.h>
 #include <igl/copyleft/cgal/CSGTree.h>
-#include <igl/viewer/Viewer.h>
+#include <igl/opengl/glfw/Viewer.h>
 #include <igl/jet.h>
 #include <Eigen/Core>
 
@@ -24,19 +24,19 @@ int main(int argc, char * argv[])
   read_triangle_mesh(TUTORIAL_SHARED_PATH "/xcylinder.obj",VC,FC);
   read_triangle_mesh(TUTORIAL_SHARED_PATH "/ycylinder.obj",VD,FD);
   read_triangle_mesh(TUTORIAL_SHARED_PATH "/zcylinder.obj",VE,FE);
-  igl::viewer::Viewer viewer;
+  igl::opengl::glfw::Viewer viewer;
 
   int num_views = 5+4;
   int view_id = num_views-1;
   const auto & update = [&]()
   {
-    viewer.data.clear();
+    viewer.data().clear();
     // CSGTree templated on type of F
     VectorXd I;
     const auto & set_mesh = 
       [&](const MatrixXd & V, const MatrixXi & F, const int i)
     {
-      viewer.data.set_mesh(V,F);
+      viewer.data().set_mesh(V,F);
       I = VectorXd::Constant(F.rows(),1,i);
     };
     switch(view_id)
@@ -85,7 +85,7 @@ int main(int argc, char * argv[])
           default:
             assert(false && "unknown view id");
         }
-        viewer.data.set_mesh(M.cast_V<MatrixXd>(),M.F());
+        viewer.data().set_mesh(M.cast_V<MatrixXd>(),M.F());
         I.resize(M.F().rows(),1);
         // Compute colors based on original facets
         for(int f = 0;f<M.F().rows();f++)
@@ -103,12 +103,12 @@ int main(int argc, char * argv[])
 
     MatrixXd C;
     jet(I,1,5,C);
-    viewer.data.set_colors(C);
+    viewer.data().set_colors(C);
   };
   update();
 
   viewer.callback_key_down = 
-    [&](igl::viewer::Viewer &viewer, unsigned char key, int mods)->bool
+    [&](igl::opengl::glfw::Viewer &viewer, unsigned char key, int mods)->bool
     {
       switch(key)
       {

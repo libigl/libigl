@@ -3,7 +3,7 @@
 #include <igl/harmonic.h>
 #include <igl/map_vertices_to_circle.h>
 #include <igl/readOFF.h>
-#include <igl/viewer/Viewer.h>
+#include <igl/opengl/glfw/Viewer.h>
 
 #include "tutorial_shared_path.h"
 
@@ -14,7 +14,7 @@ Eigen::MatrixXd initial_guess;
 
 bool show_uv = false;
 
-bool key_down(igl::viewer::Viewer& viewer, unsigned char key, int modifier)
+bool key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier)
 {
   if (key == '1')
     show_uv = false;
@@ -26,16 +26,16 @@ bool key_down(igl::viewer::Viewer& viewer, unsigned char key, int modifier)
 
   if (show_uv)
   {
-    viewer.data.set_mesh(V_uv,F);
+    viewer.data().set_mesh(V_uv,F);
     viewer.core.align_camera_center(V_uv,F);
   }
   else
   {
-    viewer.data.set_mesh(V,F);
+    viewer.data().set_mesh(V,F);
     viewer.core.align_camera_center(V,F);
   }
 
-  viewer.data.compute_normals();
+  viewer.data().compute_normals();
 
   return false;
 }
@@ -76,16 +76,16 @@ int main(int argc, char *argv[])
   V_uv *= 20;
 
   // Plot the mesh
-  igl::viewer::Viewer viewer;
-  viewer.data.set_mesh(V, F);
-  viewer.data.set_uv(V_uv);
+  igl::opengl::glfw::Viewer viewer;
+  viewer.data().set_mesh(V, F);
+  viewer.data().set_uv(V_uv);
   viewer.callback_key_down = &key_down;
 
   // Disable wireframe
-  viewer.core.show_lines = false;
+  viewer.data().show_lines = false;
 
   // Draw checkerboard texture
-  viewer.core.show_texture = true;
+  viewer.data().show_texture = true;
 
   // Launch the viewer
   viewer.launch();

@@ -1,3 +1,10 @@
+# This file is part of libigl, a simple c++ geometry processing library.
+#
+# Copyright (C) 2017 Sebastian Koch <s.koch@tu-berlin.de> and Daniele Panozzo <daniele.panozzo@gmail.com>
+#
+# This Source Code Form is subject to the terms of the Mozilla Public License
+# v. 2.0. If a copy of the MPL was not distributed with this file, You can
+# obtain one at http://mozilla.org/MPL/2.0/.
 import sys, os
 
 # Add the igl library to the modules search path
@@ -6,7 +13,7 @@ import pyigl as igl
 
 from shared import TUTORIAL_SHARED_PATH, check_dependencies
 
-dependencies = ["viewer"]
+dependencies = ["glfw"]
 check_dependencies(dependencies)
 
 
@@ -17,7 +24,7 @@ igl.readOFF(TUTORIAL_SHARED_PATH + "cheburashka.off", V, F)
 
 # Two fixed points
 # Left hand, left foot
-b = igl.eigen.MatrixXi([[4331], [5957]])
+b = igl.eigen.MatrixXd([[4331], [5957]]).castint()
 bc = igl.eigen.MatrixXd([[1], [-1]])
 
 # Construct Laplacian and mass matrix
@@ -75,10 +82,10 @@ igl.jet(Z, min_z, max_z, C)
 igl.jet(Z_const, min_z, max_z, C_const)
 
 # Plot the mesh with pseudocolors
-viewer = igl.viewer.Viewer()
-viewer.data.set_mesh(V, F)
-viewer.core.show_lines = False
-viewer.data.set_colors(C)
+viewer = igl.glfw.Viewer()
+viewer.data().set_mesh(V, F)
+viewer.data().show_lines = False
+viewer.data().set_colors(C)
 
 
 def key_down(viewer, key, mode):
@@ -86,9 +93,9 @@ def key_down(viewer, key, mode):
         global toggle, C, C_const
 
         if toggle:
-            viewer.data.set_colors(C)
+            viewer.data().set_colors(C)
         else:
-            viewer.data.set_colors(C_const)
+            viewer.data().set_colors(C_const)
 
         toggle = not toggle
         return True

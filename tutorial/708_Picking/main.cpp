@@ -1,7 +1,7 @@
 #include "tutorial_shared_path.h"
 #include <igl/readOFF.h>
 #include <igl/unproject_onto_mesh.h>
-#include <igl/viewer/Viewer.h>
+#include <igl/opengl/glfw/Viewer.h>
 #include <iostream>
 
 int main(int argc, char *argv[])
@@ -15,9 +15,9 @@ int main(int argc, char *argv[])
 
   // Initialize white
   C = Eigen::MatrixXd::Constant(F.rows(),3,1);
-  igl::viewer::Viewer viewer;
+  igl::opengl::glfw::Viewer viewer;
   viewer.callback_mouse_down = 
-    [&V,&F,&C](igl::viewer::Viewer& viewer, int, int)->bool
+    [&V,&F,&C](igl::opengl::glfw::Viewer& viewer, int, int)->bool
   {
     int fid;
     Eigen::Vector3f bc;
@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
     {
       // paint hit red
       C.row(fid)<<1,0,0;
-      viewer.data.set_colors(C);
+      viewer.data().set_colors(C);
       return true;
     }
     return false;
@@ -39,8 +39,8 @@ int main(int argc, char *argv[])
 
 )";
   // Show mesh
-  viewer.data.set_mesh(V, F);
-  viewer.data.set_colors(C);
-  viewer.core.show_lines = false;
+  viewer.data().set_mesh(V, F);
+  viewer.data().set_colors(C);
+  viewer.data().show_lines = false;
   viewer.launch();
 }

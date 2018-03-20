@@ -1,18 +1,25 @@
+# This file is part of libigl, a simple c++ geometry processing library.
+#
+# Copyright (C) 2017 Sebastian Koch <s.koch@tu-berlin.de> and Daniele Panozzo <daniele.panozzo@gmail.com>
+#
+# This Source Code Form is subject to the terms of the Mozilla Public License
+# v. 2.0. If a copy of the MPL was not distributed with this file, You can
+# obtain one at http://mozilla.org/MPL/2.0/.
 import numpy as np
 import scipy.sparse as sparse
 import pyigl as igl
 
 def p2e(m):
     if isinstance(m, np.ndarray):
-        if not m.flags['C_CONTIGUOUS']:
-            raise TypeError("p2e only support C-contiguous order")
-        if m.dtype.type == np.int32:
-            return igl.eigen.MatrixXi(m)
-        elif m.dtype.type == np.float64:
-            return igl.eigen.MatrixXd(m)
+        if not (m.flags['C_CONTIGUOUS'] or m.flags['F_CONTIGUOUS']):
+            raise TypeError('p2e support either c-order or f-order')
+        if m.dtype.type in [np.int32, np.int64]:
+            return igl.eigen.MatrixXi(m.astype(np.int32))
+        elif m.dtype.type in [np.float64, np.float32]:
+            return igl.eigen.MatrixXd(m.astype(np.float64))
         elif m.dtype.type == np.bool:
             return igl.eigen.MatrixXb(m)
-        raise TypeError("p2e only support dtype float64, int32 and bool")
+        raise TypeError("p2e only support dtype float64/32, int64/32 and bool")
     if sparse.issparse(m):
         # convert in a dense matrix with triples
         coo = m.tocoo()

@@ -236,7 +236,7 @@ namespace igl
 // a 2-manifold.
 // A: But! It seems we could use CGAL::Triangulation_3. Though it won't be easy
 // to take advantage of functions like insert_in_facet because we want to
-// constrain segments. Hmmm. Actualy Triangulation_3 doesn't look right...
+// constrain segments. Hmmm. Actually Triangulation_3 doesn't look right...
 
 // CGAL's box_self_intersection_d uses C-style function callbacks without
 // userdata. This is a leapfrog method for calling a member function. It should

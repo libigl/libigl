@@ -2,7 +2,7 @@
 #include <igl/loop.h>
 #include <igl/upsample.h>
 #include <igl/false_barycentric_subdivision.h>
-#include <igl/viewer/Viewer.h>
+#include <igl/opengl/glfw/Viewer.h>
 #include <Eigen/Core>
 #include <iostream>
 
@@ -25,12 +25,12 @@ int main(int argc, char * argv[])
 3  Apply Loop subdivided mesh
 4  Apply False barycentric subdivision
 )";
-  igl::viewer::Viewer viewer;
-  viewer.data.set_mesh(V,F);
-  viewer.data.set_face_based(true);
+  igl::opengl::glfw::Viewer viewer;
+  viewer.data().set_mesh(V,F);
+  viewer.data().set_face_based(true);
 
   viewer.callback_key_down =
-    [&](igl::viewer::Viewer & viewer, unsigned char key, int mod)->bool
+    [&](igl::opengl::glfw::Viewer & viewer, unsigned char key, int mod)->bool
     {
       switch(key)
       {
@@ -59,9 +59,9 @@ int main(int argc, char * argv[])
           break;
         }
       }
-      viewer.data.clear();
-      viewer.data.set_mesh(V,F);
-      viewer.data.set_face_based(true);
+      viewer.data().clear();
+      viewer.data().set_mesh(V,F);
+      viewer.data().set_face_based(true);
       return true;
     };
   viewer.launch();

@@ -4,13 +4,13 @@
 #include <igl/slice.h>
 #include <igl/hsv_to_rgb.h>
 #include <igl/embree/reorient_facets_raycast.h>
-#include <igl/viewer/Viewer.h>
+#include <igl/opengl/glfw/Viewer.h>
 #include <fstream>
 #include <iostream>
 #include <string>
 #include <vector>
 
-igl::viewer::Viewer viewer;
+igl::opengl::glfw::Viewer viewer;
 Eigen::MatrixXd V;
 std::vector<Eigen::VectorXi> C(2);
 std::vector<Eigen::MatrixXd> RGBcolors(2);
@@ -44,12 +44,12 @@ S,s      Scramble colors
       HSV.rightCols(2).setConstant(1.0);
       igl::hsv_to_rgb(HSV,RGBcolors[pass]);
     }
-    viewer.data.set_colors(RGBcolors[facetwise]);
+    viewer.data().set_colors(RGBcolors[facetwise]);
   };
 
   viewer.callback_key_pressed = 
     [&scramble_colors]
-    (igl::viewer::Viewer& /*viewer*/, unsigned int key, int mod)->bool
+    (igl::opengl::glfw::Viewer& /*viewer*/, unsigned int key, int mod)->bool
   {
     switch(key)
     {
@@ -73,9 +73,9 @@ S,s      Scramble colors
       break;
     }
     }
-    viewer.data.clear();
-    viewer.data.set_mesh(V,is_showing_reoriented?FF[facetwise]:F);
-    viewer.data.set_colors(RGBcolors[facetwise]);
+    viewer.data().clear();
+    viewer.data().set_mesh(V,is_showing_reoriented?FF[facetwise]:F);
+    viewer.data().set_colors(RGBcolors[facetwise]);
     return true;
   };
 
@@ -100,8 +100,8 @@ S,s      Scramble colors
     }
   }
 
-  viewer.data.set_mesh(V,is_showing_reoriented?FF[facetwise]:F);
-  viewer.data.set_face_based(true);
+  viewer.data().set_mesh(V,is_showing_reoriented?FF[facetwise]:F);
+  viewer.data().set_face_based(true);
   scramble_colors();
   viewer.launch();
 }

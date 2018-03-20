@@ -1,3 +1,10 @@
+# This file is part of libigl, a simple c++ geometry processing library.
+#
+# Copyright (C) 2017 Sebastian Koch <s.koch@tu-berlin.de> and Daniele Panozzo <daniele.panozzo@gmail.com>
+#
+# This Source Code Form is subject to the terms of the Mozilla Public License
+# v. 2.0. If a copy of the MPL was not distributed with this file, You can
+# obtain one at http://mozilla.org/MPL/2.0/.
 import sys, os
 from math import atan2, pi, cos, sin
 
@@ -7,7 +14,7 @@ import pyigl as igl
 
 from shared import TUTORIAL_SHARED_PATH, check_dependencies
 
-dependencies = ["comiso", "viewer"]
+dependencies = ["comiso", "glfw"]
 check_dependencies(dependencies)
 
 
@@ -52,8 +59,8 @@ def representative_to_nrosy(V, F, R, N, Y):
 # The constrained faces (b) are colored in red.
 def plot_mesh_nrosy(viewer, V, F, N, PD1, S, b):
     # Clear the mesh
-    viewer.data.clear()
-    viewer.data.set_mesh(V, F)
+    viewer.data().clear()
+    viewer.data().set_mesh(V, F)
 
     # Expand the representative vectors in the full vector set and plot them as lines
     avg = igl.avg_edge_length(V, F)
@@ -68,20 +75,20 @@ def plot_mesh_nrosy(viewer, V, F, N, PD1, S, b):
         for j in range(0, N):
             Be.setRow(i * N + j, B.row(i))
 
-    viewer.data.add_edges(Be, Be + Y * (avg / 2), igl.eigen.MatrixXd([[0, 0, 1]]))
+    viewer.data().add_edges(Be, Be + Y * (avg / 2), igl.eigen.MatrixXd([[0, 0, 1]]))
 
     # Plot the singularities as colored dots (red for negative, blue for positive)
     for i in range(0, S.size()):
         if S[i] < -0.001:
-            viewer.data.add_points(V.row(i), igl.eigen.MatrixXd([[1, 0, 0]]))
+            viewer.data().add_points(V.row(i), igl.eigen.MatrixXd([[1, 0, 0]]))
         elif S[i] > 0.001:
-            viewer.data.add_points(V.row(i), igl.eigen.MatrixXd([[0, 1, 0]]));
+            viewer.data().add_points(V.row(i), igl.eigen.MatrixXd([[0, 1, 0]]));
 
     # Highlight in red the constrained faces
     C = igl.eigen.MatrixXd.Constant(F.rows(), 3, 1)
     for i in range(0, b.size()):
         C.setRow(b[i], igl.eigen.MatrixXd([[1, 0, 0]]))
-    viewer.data.set_colors(C)
+    viewer.data().set_colors(C)
 
 
 # It allows to change the degree of the field when a number is pressed
@@ -103,20 +110,20 @@ def key_down(viewer, key, modifier):
 igl.readOFF(TUTORIAL_SHARED_PATH + "bumpy.off", V, F)
 
 # Threshold faces with high anisotropy
-b = igl.eigen.MatrixXi([[0]])
+b = igl.eigen.MatrixXd([[0]]).castint()
 bc = igl.eigen.MatrixXd([[1, 1, 1]])
 
-viewer = igl.viewer.Viewer()
+viewer = igl.glfw.Viewer()
 
 # Interpolate the field and plot
 key_down(viewer, ord('4'), 0)
 
 # Plot the mesh
-viewer.data.set_mesh(V, F)
+viewer.data().set_mesh(V, F)
 viewer.callback_key_down = key_down
 
 # Disable wireframe
-viewer.core.show_lines = False
+viewer.data().show_lines = False
 
 # Launch the viewer
 viewer.launch()

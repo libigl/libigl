@@ -3,7 +3,7 @@
 #include <igl/edge_flaps.h>
 #include <igl/shortest_edge_and_midpoint.h>
 #include <igl/read_triangle_mesh.h>
-#include <igl/viewer/Viewer.h>
+#include <igl/opengl/glfw/Viewer.h>
 #include <Eigen/Core>
 #include <iostream>
 #include <set>
@@ -28,7 +28,7 @@ int main(int argc, char * argv[])
   MatrixXi F,OF;
   read_triangle_mesh(filename,OV,OF);
 
-  igl::viewer::Viewer viewer;
+  igl::opengl::glfw::Viewer viewer;
 
   // Prepare array-based edge data structures and priority queue
   VectorXi EMAP;
@@ -60,12 +60,12 @@ int main(int argc, char * argv[])
       Qit[e] = Q.insert(std::pair<double,int>(cost,e)).first;
     }
     num_collapsed = 0;
-    viewer.data.clear();
-    viewer.data.set_mesh(V,F);
-    viewer.data.set_face_based(true);
+    viewer.data().clear();
+    viewer.data().set_mesh(V,F);
+    viewer.data().set_face_based(true);
   };
 
-  const auto &pre_draw = [&](igl::viewer::Viewer & viewer)->bool
+  const auto &pre_draw = [&](igl::opengl::glfw::Viewer & viewer)->bool
   {
     // If animating then collapse 10% of edges
     if(viewer.core.is_animating && !Q.empty())
@@ -86,16 +86,16 @@ int main(int argc, char * argv[])
 
       if(something_collapsed)
       {
-        viewer.data.clear();
-        viewer.data.set_mesh(V,F);
-        viewer.data.set_face_based(true);
+        viewer.data().clear();
+        viewer.data().set_mesh(V,F);
+        viewer.data().set_face_based(true);
       }
     }
     return false;
   };
 
   const auto &key_down =
-    [&](igl::viewer::Viewer &viewer,unsigned char key,int mod)->bool
+    [&](igl::opengl::glfw::Viewer &viewer,unsigned char key,int mod)->bool
   {
     switch(key)
     {

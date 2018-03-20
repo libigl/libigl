@@ -15,7 +15,7 @@
 namespace igl
 {
   // Templates:
-  //   T  should be a matrix that implments .size(), and operator(int i)
+  //   T  should be a matrix that implements .size(), and operator(int i)
   template <typename T>
   class SortableRow
   {

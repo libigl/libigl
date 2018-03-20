@@ -1,15 +1,12 @@
 <!DOCTYPE html>
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
 <head>
 	<meta charset="utf-8"/>
 	<title>libigl Tutorial</title>
 	<meta name="author" content="Daniele Panozzo and Alec Jacobson"/>
 	<meta name="date" content="07 November 2015"/>
 	<link type="text/css" rel="stylesheet" href="style.css"/>
-<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-<link rel="stylesheet" href="http://yandex.st/highlightjs/7.3/styles/default.min.css">
-<script src="http://yandex.st/highlightjs/7.3/highlight.min.js"></script>
-<script>hljs.initHighlightingOnLoad();</script>
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script> <link rel="stylesheet" href="http://yandex.st/highlightjs/7.3/styles/default.min.css"> <script src="http://yandex.st/highlightjs/7.3/highlight.min.js"></script> <script>hljs.initHighlightingOnLoad();</script>
 </head>
 <body>
 
@@ -19,6 +16,7 @@
 
 <figure>
 <img src="images/libigl-logo.jpg" alt="" />
+<figcaption></figcaption>
 </figure>
 
 <p>Libigl is an open source C++ library for geometry processing research and
@@ -45,9 +43,10 @@ lecture notes links to a cross-platform example application.</p>
 <li><a href="#scalarfieldvisualization">104 Scalar field visualization</a></li>
 <li><a href="#overlays">105 Overlays</a></li>
 <li><a href="#viewermenu">106 Viewer Menu</a></li>
+<li><a href="#multiplemeshes">107 Multiple Meshes</a></li>
 </ul></li>
 <li><a href="#chapter2:discretegeometricquantitiesandoperators">Chapter 2: Discrete Geometric Quantities and
- Operators</a>
+Operators</a>
 
 <ul>
 <li><a href="#normals">201 Normals</a>
@@ -60,13 +59,14 @@ lecture notes links to a cross-platform example application.</p>
 <li><a href="#gaussiancurvature">202 Gaussian Curvature</a></li>
 <li><a href="#curvaturedirections">203 Curvature Directions</a></li>
 <li><a href="#gradient">204 Gradient</a></li>
-<li><a href="#laplacian">204 Laplacian</a>
+<li><a href="#laplacian">205 Laplacian</a>
 
 <ul>
 <li><a href="#massmatrix">Mass matrix</a></li>
 <li><a href="#alternativeconstructionoflaplacian">Alternative construction of
- Laplacian</a></li>
+Laplacian</a></li>
 </ul></li>
+<li><a href="#geodesic">206 Geodesic Distance</a></li>
 </ul></li>
 <li><a href="#chapter3:matricesandlinearalgebra">Chapter 3: Matrices and Linear Algebra</a>
 
@@ -95,7 +95,7 @@ lecture notes links to a cross-platform example application.</p>
 <li><a href="#dualquaternionskinning">404 Dual Quaternion Skinning</a></li>
 <li><a href="#as-rigid-as-possible">405 As-rigid-as-possible</a></li>
 <li><a href="#fastautomaticskinningtransformations">406 Fast automatic skinning
- transformations</a>
+transformations</a>
 
 <ul>
 <li><a href="#arapwithgroupededge-sets">ARAP with grouped edge-sets</a></li>
@@ -111,11 +111,7 @@ lecture notes links to a cross-platform example application.</p>
 <li><a href="#nrotationallysymmetrictangetfields">504 N-Rotationally symmetric tangent fields</a></li>
 <li><a href="#globalseamlessintegergridparametrization">505 Global, seamless integer-grid parametrization</a></li>
 <li><a href="#anisotropicremeshingusingframefields">506 Anisotropic remeshing using frame fields</a></li>
-<li><a href="#npolyvectorfields">507 N-PolyVector fields</a></li>
-<li><a href="#conjugatevectorfields">508 Conjugate vector fields</a></li>
-<li><a href="#planarization">509 Planarization</a></li>
-<li><a href="#integrable">510 Integrable PolyVector Fields</a></li>
-<li><a href="#npolyvectorfields_general">511 General N-PolyVector Fields</a></li>
+<li><a href="#planarization">507 Planarization</a></li>
 </ul></li>
 <li><a href="#chapter6:externallibraries">Chapter 6: External libraries</a>
 
@@ -125,8 +121,7 @@ lecture notes links to a cross-platform example application.</p>
 
 <ul>
 <li><a href="#savingamatlabworkspace">Saving a Matlab workspace</a></li>
-<li><a href="#dumpingeigenmatricestocopyandpasteintomatlab">Dumping Eigen matrices to copy and paste into
- Matlab</a></li>
+<li><a href="#dumpingeigenmatricestocopyandpasteintomatlab">Dumping Eigen matrices to copy and paste into Matlab</a></li>
 </ul></li>
 <li><a href="#callinglibiglfunctionsfrommatlab">603 Calling libigl functions from Matlab</a></li>
 <li><a href="#triangulationofclosedpolygons">604 Triangulation of closed polygons</a></li>
@@ -152,11 +147,12 @@ lecture notes links to a cross-platform example application.</p>
 <li><a href="#slim">710 Scalable Locally Injective Maps</a></li>
 <li><a href="#subdivision">711 Subdivision surfaces</a></li>
 <li><a href="#datasmoothing">712 Data smoothing</a></li>
+<li><a href="#shapeup">713 ShapeUp projection</a></li>
 </ul></li>
 <li><a href="#future">Chapter 8: Outlook for continuing development</a></li>
 </ul>
 
-<h1 id="chapter1:introductiontolibigl">Chapter 1</h1>
+<h1 id="chapter1:introductiontolibigl">Chapter 1 </h1>
 
 <p>We introduce libigl with a series of self-contained examples. The purpose of
 each example is to showcase a feature of libigl while applying to a practical
@@ -165,24 +161,24 @@ concepts of libigl and introduce a simple mesh viewer that allows to
 visualize a surface mesh and its attributes. All the tutorial examples are
 cross-platform and can be compiled on MacOSX, Linux and Windows.</p>
 
-<h2 id="libigldesignprinciples"><a href="#libigldesignprinciples">libigl design principles</a></h2>
+<h2 id="libigldesignprinciples"><a href="#libigldesignprinciples">libigl design principles</a> </h2>
 
 <p>Before getting into the examples, we summarize the main design principles in
 libigl:</p>
 
 <ol>
 <li><p><strong>No complex data types.</strong> We mostly use matrices and vectors. This greatly
- favors code reusability and forces the function authors to expose all the
- parameters used by the algorithm. </p></li>
+favors code reusability and forces the function authors to expose all the
+parameters used by the algorithm.</p></li>
 <li><p><strong>Minimal dependencies.</strong> We use external libraries only when necessary and
- we wrap them in a small set of functions.</p></li>
+we wrap them in a small set of functions.</p></li>
 <li><p><strong>Header-only.</strong> It is straight forward to use our library since it is only
- one additional include directory in your project. (if you are worried about
- compilation speed, it is also possible to build the library as a <a href="../optional/">static
- library</a>)</p></li>
+one additional include directory in your project. (if you are worried about
+compilation speed, it is also possible to build the library as a <a href="../optional/">static
+library</a>)</p></li>
 <li><p><strong>Function encapsulation.</strong> Every function (including its full
- implementation) is contained in a pair of .h/.cpp files with the same name of
- the function.</p></li>
+implementation) is contained in a pair of .h/.cpp files with the same name of
+the function.</p></li>
 </ol>
 
 <h3 id="downloadinglibigl">Downloading libigl</h3>
@@ -248,7 +244,7 @@ in 32 bit on windows.</p>
 
 <p>We provide a <a href="https://github.com/libigl/libigl-example-project">blank project example</a> showing how to use libigl and cmake. Feel free and encouraged to copy or fork this project as a way of starting a new personal project using libigl.</p>
 
-<h2 id="meshrepresentation"><a href="#meshrepresentation">Mesh representation</a></h2>
+<h2 id="meshrepresentation"><a href="#meshrepresentation">Mesh representation</a> </h2>
 
 <p>libigl uses the <a href="http://eigen.tuxfamily.org/">Eigen</a> library to encode vector
 and matrices. We suggest that you keep the
@@ -302,10 +298,10 @@ Similarly, a mesh can be written in an OBJ file using:</p>
 <p><a href="101_FileIO/main.cpp">Example 101</a> contains a simple mesh
 converter from OFF to OBJ format.</p>
 
-<h2 id="visualizingsurfaces"><a href="#visualizingsurfaces">Visualizing surfaces</a></h2>
+<h2 id="visualizingsurfaces"><a href="#visualizingsurfaces">Visualizing surfaces</a> </h2>
 
 <p>Libigl provides an glfw-based OpenGL 3.2 viewer to visualize surfaces, their
-properties and additional debugging informations.</p>
+properties and additional debugging information.</p>
 
 <p>The following code (<a href="102_DrawMesh/main.cpp">Example 102</a>) is a basic skeleton
 for all the examples that will be used in the tutorial.
@@ -313,7 +309,7 @@ It is a standalone application that loads a mesh and uses the viewer to
 render it.</p>
 
 <pre><code class="cpp">#include &lt;igl/readOFF.h&gt;
-#include &lt;igl/viewer/Viewer.h&gt;
+#include &lt;igl/opengl/glfw/Viewer.h&gt;
 
 Eigen::MatrixXd V;
 Eigen::MatrixXi F;
@@ -324,8 +320,8 @@ int main(int argc, char *argv[])
   igl::readOFF(TUTORIAL_SHARED_PATH &quot;/bunny.off&quot;, V, F);
 
   // Plot the mesh
-  igl::viewer::Viewer viewer;
-  viewer.data.set_mesh(V, F);
+  igl::opengl::glfw::Viewer viewer;
+  viewer.data().set_mesh(V, F);
   viewer.launch();
 }
 </code></pre>
@@ -335,16 +331,16 @@ int main(int argc, char *argv[])
 Additional properties can be plotted on the mesh (as we will see later),
 and it is possible to extend the viewer with standard OpenGL code.
 Please see the documentation in
-<a href="../include/igl/Viewer/Viewer.h">Viewer.h</a> for more details.</p>
+<a href="../include/igl/opengl/glfw/Viewer.h">Viewer.h</a> for more details.</p>
 
 <figure>
-<img src="images/102_DrawMesh.png" alt="(Example 102) loads and draws a
+<img src="images/102_DrawMesh.png" alt="([Example 102](102_DrawMesh/main.cpp)) loads and draws a
 mesh." />
 <figcaption>(<a href="102_DrawMesh/main.cpp">Example 102</a>) loads and draws a
 mesh.</figcaption>
 </figure>
 
-<h2 id="interactionwithkeyboardandmouse"><a href="#interactionwithkeyboardandmouse">Interaction with keyboard and mouse</a></h2>
+<h2 id="interactionwithkeyboardandmouse"><a href="#interactionwithkeyboardandmouse">Interaction with keyboard and mouse</a> </h2>
 
 <p>Keyboard and mouse events triggers callbacks that can be registered in the
 viewer. The viewer supports the following callbacks:</p>
@@ -363,18 +359,18 @@ bool (*callback_key_up)(Viewer&amp; viewer, unsigned char key, int modifiers);
 stages of an algorithm, as demonstrated in <a href="103_Events/main.cpp">Example 103</a>, where
 the keyboard callback changes the visualized mesh depending on the key pressed:</p>
 
-<pre><code class="cpp">bool key_down(igl::viewer::Viewer&amp; viewer, unsigned char key, int modifier)
+<pre><code class="cpp">bool key_down(igl::opengl::glfw::Viewer&amp; viewer, unsigned char key, int modifier)
 {
   if (key == '1')
   {
-    viewer.data.clear();
-    viewer.data.set_mesh(V1, F1);
+    viewer.data().clear();
+    viewer.data().set_mesh(V1, F1);
     viewer.core.align_camera_center(V1,F1);
   }
   else if (key == '2')
   {
-    viewer.data.clear();
-    viewer.data.set_mesh(V2, F2);
+    viewer.data().clear();
+    viewer.data().set_mesh(V2, F2);
     viewer.core.align_camera_center(V2,F2);
   }
   return false;
@@ -395,14 +391,14 @@ control the camera directly in your code.</p>
 
 <p>The viewer can be extended using plugins, which are classes that implements all
 the viewer&#8217;s callbacks. See the
-<a href="../include/igl/viewer/ViewerPlugin.h">Viewer_plugin</a> for more details.</p>
+<a href="../include/igl/opengl/glfw/ViewerPlugin.h">Viewer_plugin</a> for more details.</p>
 
-<h2 id="scalarfieldvisualization"><a href="#scalarfieldvisualization">Scalar field visualization</a></h2>
+<h2 id="scalarfieldvisualization"><a href="#scalarfieldvisualization">Scalar field visualization</a> </h2>
 
 <p>Colors and normals can be associated to faces or vertices using the
 set_colors function:</p>
 
-<pre><code class="cpp">viewer.data.set_colors(C);
+<pre><code class="cpp">viewer.data().set_colors(C);
 </code></pre>
 
 <p><code>C</code> is a #C by 3 matrix with one RGB color per row. <code>C</code> must have as many
@@ -426,7 +422,7 @@ igl::jet(Z,true,C);
 vertex) and the second calls a libigl functions that converts a scalar field to colors. The second parameter of jet normalizes the scalar field to lie between 0 and 1 before applying the transfer function.</p>
 
 <figure>
-<img src="images/104_Colors.png" alt="(Example 104) igl::jet converts a scalar field to a
+<img src="images/104_Colors.png" alt="([Example 104](104_Colors/main.cpp)) igl::jet converts a scalar field to a
 color field." />
 <figcaption>(<a href="104_Colors/main.cpp">Example 104</a>) igl::jet converts a scalar field to a
 color field.</figcaption>
@@ -436,21 +432,21 @@ color field.</figcaption>
 types and can be easily reused for many different tasks. Not committing to
 heavy data structures types favors simplicity, ease of use and reusability.</p>
 
-<h2 id="overlays"><a href="#overlays">Overlays</a></h2>
+<h2 id="overlays"><a href="#overlays">Overlays</a> </h2>
 
-<p>In addition to plotting the surface, the viewer supports the visualization of points, lines and text labels: these overlays can be very helpful while developing geometric processing algorithms to plot debug informations.</p>
+<p>In addition to plotting the surface, the viewer supports the visualization of points, lines and text labels: these overlays can be very helpful while developing geometric processing algorithms to plot debug information.</p>
 
-<pre><code class="cpp">viewer.data.add_points(P,Eigen::RowVector3d(r,g,b));
+<pre><code class="cpp">viewer.data().add_points(P,Eigen::RowVector3d(r,g,b));
 </code></pre>
 
 <p>Draws a point of color r,g,b for each row of P. The point is placed at the coordinates specified in each row of P, which is a #P by 3 matrix.</p>
 
-<pre><code class="cpp">viewer.data.add_edges(P1,P2,Eigen::RowVector3d(r,g,b);
+<pre><code class="cpp">viewer.data().add_edges(P1,P2,Eigen::RowVector3d(r,g,b);
 </code></pre>
 
 <p>Draws a line of color r,g,b for each row of P1 and P2, which connects the 3D point in to the point in P2. Both P1 and P2 are of size #P by 3.</p>
 
-<pre><code class="cpp">viewer.data.add_label(p,str);
+<pre><code class="cpp">viewer.data().add_label(p,str);
 </code></pre>
 
 <p>Draws a label containing the string str at the position p, which is a vector of length 3.</p>
@@ -466,81 +462,135 @@ Eigen::Vector3d M = V.colwise().maxCoeff();
 </code></pre>
 
 <figure>
-<img src="images/105_Overlays.png" alt="(Example 105) The bounding box of a mesh is shown
+<img src="images/105_Overlays.png" alt="([Example 105](105_Overlays/main.cpp)) The bounding box of a mesh is shown
 using overlays." />
 <figcaption>(<a href="105_Overlays/main.cpp">Example 105</a>) The bounding box of a mesh is shown
 using overlays.</figcaption>
 </figure>
 
-<h2 id="viewermenu"><a href="#viewermenu">Viewer Menu</a></h2>
+<h2 id="viewermenu"><a href="#viewermenu">Viewer Menu</a> </h2>
 
-<p>As of version 1.2 the viewer uses a new menu and completely replaces
-<a href="http://anttweakbar.sourceforge.net/doc/">AntTweakBar</a>. It is based on the
-open-source projects <a href="https://github.com/memononen/nanovg">nanovg</a> and
-<a href="https://github.com/wjakob/nanogui">nanogui</a>. To extend the default menu of the
-viewer and to expose more user defined variables you have to define a callback
-function:</p>
+<p>As of latest version, the viewer uses a new menu and completely replaces
+<a href="http://anttweakbar.sourceforge.net/doc/">AntTweakBar</a> and
+<a href="https://github.com/wjakob/nanogui">nanogui</a> with <a href="https://github.com/ocornut/imgui">Dear ImGui</a>. To extend the default menu of the
+viewer and to expose more user defined variables you have to implement a custom interface, as in <a href="106_ViewerMenu/main.cpp">Example 106</a>:</p>
 
-<pre><code class="cpp">igl::viewer::Viewer viewer;
-
-bool boolVariable = true;
-float floatVariable = 0.1f;
-enum Orientation { Up=0,Down,Left,Right } dir = Up;
-
-// Extend viewer menu
-viewer.callback_init = [&amp;](igl::viewer::Viewer&amp; viewer)
+<pre><code class="cpp">// Add content to the default menu window
+menu.callback_draw_viewer_menu = [&amp;]()
 {
+  // Draw parent menu content
+  menu.draw_viewer_menu();
+
   // Add new group
-  viewer.ngui-&gt;addGroup(&quot;New Group&quot;);
+  if (ImGui::CollapsingHeader(&quot;New Group&quot;, ImGuiTreeNodeFlags_DefaultOpen))
+  {
+    // Expose variable directly ...
+    ImGui::InputFloat(&quot;float&quot;, &amp;floatVariable, 0, 0, 3);
 
-  // Expose a variable directly ...
-  viewer.ngui-&gt;addVariable(&quot;float&quot;,floatVariable);
+    // ... or using a custom callback
+    static bool boolVariable = true;
+    if (ImGui::Checkbox(&quot;bool&quot;, &amp;boolVariable))
+    {
+      // do something
+      std::cout &lt;&lt; &quot;boolVariable: &quot; &lt;&lt; std::boolalpha &lt;&lt; boolVariable &lt;&lt; std::endl;
+    }
 
-  // Expose an enumaration type
-  viewer.ngui-&gt;addVariable&lt;Orientation&gt;(&quot;Direction&quot;,dir)-&gt;setItems({&quot;Up&quot;,&quot;Down&quot;,&quot;Left&quot;,&quot;Right&quot;});
+    // Expose an enumeration type
+    enum Orientation { Up=0, Down, Left, Right };
+    static Orientation dir = Up;
+    ImGui::Combo(&quot;Direction&quot;, (int *)(&amp;dir), &quot;Up\0Down\0Left\0Right\0\0&quot;);
 
-  // Add a button
-  viewer.ngui-&gt;addButton(&quot;Print Hello&quot;,[](){ std::cout &lt;&lt; &quot;Hello\n&quot;; });
+    // We can also use a std::vector&lt;std::string&gt; defined dynamically
+    static int num_choices = 3;
+    static std::vector&lt;std::string&gt; choices;
+    static int idx_choice = 0;
+    if (ImGui::InputInt(&quot;Num letters&quot;, &amp;num_choices))
+    {
+      num_choices = std::max(1, std::min(26, num_choices));
+    }
+    if (num_choices != (int) choices.size())
+    {
+      choices.resize(num_choices);
+      for (int i = 0; i &lt; num_choices; ++i)
+        choices[i] = std::string(1, 'A' + i);
+      if (idx_choice &gt;= num_choices)
+        idx_choice = num_choices - 1;
+    }
+    ImGui::Combo(&quot;Letter&quot;, &amp;idx_choice, choices);
 
-  // call to generate menu
-  viewer.screen-&gt;performLayout();
-  return false;
+    // Add a button
+    if (ImGui::Button(&quot;Print Hello&quot;, ImVec2(-1,0)))
+    {
+      std::cout &lt;&lt; &quot;Hello\n&quot;;
+    }
+  }
 };
-
-// start viewer
-viewer.launch();
 </code></pre>
 
-<p>If you need a separate new menu window use:</p>
+<p>If you need a separate new menu window implement:</p>
 
-<pre><code class="cpp">viewer.ngui-&gt;addWindow(Eigen::Vector2i(220,10),&quot;New Window&quot;);
-</code></pre>
+<pre><code class="cpp">// Draw additional windows
+menu.callback_draw_custom_window = [&amp;]()
+{
+  // Define next window position + size
+  ImGui::SetNextWindowPos(ImVec2(180.f * menu.menu_scaling(), 10), ImGuiSetCond_FirstUseEver);
+  ImGui::SetNextWindowSize(ImVec2(200, 160), ImGuiSetCond_FirstUseEver);
+  ImGui::Begin(
+      &quot;New Window&quot;, nullptr,
+      ImGuiWindowFlags_NoSavedSettings
+  );
 
-<p>If you do not want to expose variables directly but rather use the get/set functionality:</p>
+  // Expose the same variable directly ...
+  ImGui::PushItemWidth(-80);
+  ImGui::DragFloat(&quot;float&quot;, &amp;floatVariable, 0.0, 0.0, 3.0);
+  ImGui::PopItemWidth();
 
-<pre><code class="cpp">// ... or using a custom callback
-viewer.ngui-&gt;addVariable&lt;bool&gt;(&quot;bool&quot;,[&amp;](bool val) {
-  boolVariable = val; // setter
-},[&amp;]() {
-  return boolVariable; // getter
-});
+  static std::string str = &quot;bunny&quot;;
+  ImGui::InputText(&quot;Name&quot;, str);
+
+  ImGui::End();
+};
 </code></pre>
 
 <figure>
-<img src="images/106_ViewerMenu.png" alt="(Example 106) The UI of the viewer can be easily customized." />
-<figcaption>(<a href="106_ViewerMenu/main.cpp">Example 106</a>) The UI of the viewer can be easily customized.</figcaption>
+<img src="images/106_ViewerMenu.png" alt="([Example 106](106_ViewerMenu/main.cpp)) The UI of the viewer can be easily
+customized." />
+<figcaption>(<a href="106_ViewerMenu/main.cpp">Example 106</a>) The UI of the viewer can be easily
+customized.</figcaption>
+</figure>
+
+<h2 id="multiplemeshes"><a href="#multiplemeshes">Multiple Meshes</a> </h2>
+
+<p>Libigl&#8217;s <code>igl::opengl::glfw::Viewer</code> provides basic support for rendering
+multiple meshes.</p>
+
+<p>Which mesh is <em>selected</em> is controlled via the <code>viewer.selected_data_index</code>
+field. By default it his is set to <code>0</code>, so in the typical case of a single mesh
+<code>viewer.data()</code> returns the <code>igl::ViewerData</code> corresponding to the one
+and only mesh.</p>
+
+<figure>
+<img src="images/multiple-meshes.png" alt="([Example 107](107_MultipleMeshes/main.cpp)) The `igl::opengl::glfw::Viewer`
+can render multiple meshes, each with its own attributes like
+colors." />
+<figcaption>(<a href="107_MultipleMeshes/main.cpp">Example 107</a>) The <code>igl::opengl::glfw::Viewer</code>
+can render multiple meshes, each with its own attributes like
+colors.</figcaption>
 </figure>
 
 <h1 id="chapter2:discretegeometricquantitiesandoperators">Chapter 2: Discrete Geometric Quantities and Operators</h1>
 
 <p>This chapter illustrates a few discrete quantities that libigl can compute on a
 mesh and the libigl functions that construct popular discrete differential
-geometry operators. It also provides an introduction to basic drawing and coloring routines of our viewer.</p>
+geometry operators. It also provides an introduction to basic drawing and
+coloring routines of our viewer.</p>
 
 <h2 id="normals">Normals</h2>
 
 <p>Surface normals are a basic quantity necessary for rendering a surface. There
-are a variety of ways to compute and store normals on a triangle mesh. <a href="201_Normals/main.cpp">Example 201</a> demonstrates how to compute and visualize normals with libigl.</p>
+are a variety of ways to compute and store normals on a triangle mesh. <a href="201_Normals/main.cpp">Example
+201</a> demonstrates how to compute and visualize normals
+with libigl.</p>
 
 <h3 id="per-face">Per-face</h3>
 
@@ -593,7 +643,7 @@ implements a simple scheme which computes corner normals as averages of
 normals of faces incident on the corresponding vertex which do not deviate by more than a specified dihedral angle (e.g. 20°).</p>
 
 <figure>
-<img src="images/fandisk-normals.jpg" alt="The Normals example computes per-face (left), per-vertex (middle) and
+<img src="images/fandisk-normals.jpg" alt="The `Normals` example computes per-face (left), per-vertex (middle) and
 per-corner (right) normals" />
 <figcaption>The <code>Normals</code> example computes per-face (left), per-vertex (middle) and
 per-corner (right) normals</figcaption>
@@ -610,8 +660,8 @@ principal curvatures:</p>
 not the surface&#8217;s embedding.</p>
 
 <p>Intuitively, Gaussian curvature tells how locally spherical or <em>elliptic</em> the
-surface is ( <span class="math">\(k_G>0\)</span> ), how locally saddle-shaped or <em>hyperbolic</em> the surface
-is ( <span class="math">\(k_G<0\)</span> ), or how locally cylindrical or <em>parabolic</em> ( <span class="math">\(k_G=0\)</span> ) the
+surface is ( <span class="math">\(k_G&gt;0\)</span> ), how locally saddle-shaped or <em>hyperbolic</em> the surface
+is ( <span class="math">\(k_G&lt;0\)</span> ), or how locally cylindrical or <em>parabolic</em> ( <span class="math">\(k_G=0\)</span> ) the
 surface is.</p>
 
 <p>In the discrete setting, one definition for a &#8220;discrete Gaussian curvature&#8221;
@@ -620,13 +670,13 @@ on a triangle mesh is via a vertex&#8217;s <em>angular deficit</em>:</p>
 <p><span class="math">\(k_G(v_i) = 2π - \sum\limits_{j\in N(i)}θ_{ij},\)</span></p>
 
 <p>where <span class="math">\(N(i)\)</span> are the triangles incident on vertex <span class="math">\(i\)</span> and <span class="math">\(θ_{ij}\)</span> is the angle
-at vertex <span class="math">\(i\)</span> in triangle <span class="math">\(j\)</span> <a class="citation" href="#fn:1" title="Jump to citation">[1]<span class="citekey" style="display:none">meyer_2003</span></a>.</p>
+at vertex <span class="math">\(i\)</span> in triangle <span class="math">\(j\)</span> <a href="#cn:1" id="cnref:1" title="see citation" class="citation">(1)</a>.</p>
 
 <p>Just like the continuous analog, our discrete Gaussian curvature reveals
-elliptic, hyperbolic and parabolic vertices on the domain, as demonstrated in <a href="202GaussianCurvature/main.cpp">Example 202</a>.</p>
+elliptic, hyperbolic and parabolic vertices on the domain, as demonstrated in <a href="202_GaussianCurvature/main.cpp">Example 202</a>.</p>
 
 <figure>
-<img src="images/bumpy-gaussian-curvature.jpg" alt="The GaussianCurvature example computes discrete Gaussian curvature and
+<img src="images/bumpy-gaussian-curvature.jpg" alt="The `GaussianCurvature` example computes discrete Gaussian curvature and
 visualizes it in pseudocolor." />
 <figcaption>The <code>GaussianCurvature</code> example computes discrete Gaussian curvature and
 visualizes it in pseudocolor.</figcaption>
@@ -650,7 +700,7 @@ normal:</p>
 <p><span class="math">\(-\Delta \mathbf{x} = H \mathbf{n}.\)</span></p>
 
 <p>It is easy to compute this on a discrete triangle mesh in libigl using the
-cotangent Laplace-Beltrami operator <a class="citation" href="#fn:1" title="Jump to citation">[1]<span class="citekey" style="display:none">meyer_2003</span></a>.</p>
+cotangent Laplace-Beltrami operator <a href="#cn:1" title="see citation" class="citation">(1)</a>.</p>
 
 <pre><code class="cpp">#include &lt;igl/cotmatrix.h&gt;
 #include &lt;igl/massmatrix.h&gt;
@@ -667,16 +717,16 @@ H = HN.rowwise().norm(); //up to sign
 
 <p>Combined with the angle defect definition of discrete Gaussian curvature, one
 can define principal curvatures and use least squares fitting to find
-directions <a class="citation" href="#fn:1" title="Jump to citation">[1]<span class="citekey" style="display:none">meyer_2003</span></a>.</p>
+directions <a href="#cn:1" title="see citation" class="citation">(1)</a>.</p>
 
 <p>Alternatively, a robust method for determining principal curvatures is via
-quadric fitting <a class="citation" href="#fn:2" title="Jump to citation">[2]<span class="citekey" style="display:none">panozzo_2010</span></a>. In the neighborhood around every vertex, a
+quadric fitting <a href="#cn:2" id="cnref:2" title="see citation" class="citation">(2)</a>. In the neighborhood around every vertex, a
 best-fit quadric is found and principal curvature values and directions are
 analytically computed on this quadric (<a href="203_curvatureDirections/main.cpp">Example
 203</a>).</p>
 
 <figure>
-<img src="images/fertility-principal-curvature.jpg" alt="The CurvatureDirections example computes principal curvatures via quadric
+<img src="images/fertility-principal-curvature.jpg" alt="The `CurvatureDirections` example computes principal curvatures via quadric
 fitting and visualizes mean curvature in pseudocolor and principal directions
 with a cross field." />
 <figcaption>The <code>CurvatureDirections</code> example computes principal curvatures via quadric
@@ -706,8 +756,8 @@ linear on incident triangles.</figcaption>
 of the hat functions:</p>
 
 <p><span class="math">\(\nabla f(\mathbf{x}) \approx
- \nabla \sum\limits_{i=1}^n \phi_i(\mathbf{x})\, f_i =
- \sum\limits_{i=1}^n \nabla \phi_i(\mathbf{x})\, f_i.\)</span></p>
+\nabla \sum\limits_{i=1}^n \phi_i(\mathbf{x})\, f_i =
+\sum\limits_{i=1}^n \nabla \phi_i(\mathbf{x})\, f_i.\)</span></p>
 
 <p>This reveals that the gradient is a linear function of the vector of <span class="math">\(f_i\)</span>
 values. Because the <span class="math">\(\phi_i\)</span> are linear in each triangle, their gradients are
@@ -718,12 +768,12 @@ as a matrix multiplication taking vertex values to triangle values:</p>
 
 <p>where <span class="math">\(\mathbf{f}\)</span> is <span class="math">\(n\times 1\)</span> and <span class="math">\(\mathbf{G}\)</span> is an <span class="math">\(md\times n\)</span> sparse
 matrix. This matrix <span class="math">\(\mathbf{G}\)</span> can be derived geometrically, e.g.
-<a class="citation" href="#fn:3" title="Jump to citation">[<span class="locator">ch. 2</span>, 3]<span class="citekey" style="display:none">jacobson_thesis_2013</span></a>.
+<a href="#cn:3" id="cnref:3" title="see citation" class="citation">(ch. 2, 3)</a>.
 Libigl&#8217;s <code>grad</code> function computes <span class="math">\(\mathbf{G}\)</span> for
 triangle and tetrahedral meshes (<a href="204_Gradient/main.cpp">Example 204</a>):</p>
 
 <figure>
-<img src="images/cheburashka-gradient.jpg" alt="The Gradient example computes gradients of an input function on a mesh and
+<img src="images/cheburashka-gradient.jpg" alt="The `Gradient` example computes gradients of an input function on a mesh and
 visualizes the vector field." />
 <figcaption>The <code>Gradient</code> example computes gradients of an input function on a mesh and
 visualizes the vector field.</figcaption>
@@ -739,9 +789,9 @@ gradient (or equivalently the Laplacian of a function is the trace of its
 Hessian):</p>
 
 <p><span class="math">\(\Delta f =
- \frac{\partial^2 f}{\partial x^2} +
- \frac{\partial^2 f}{\partial y^2} +
- \frac{\partial^2 f}{\partial z^2}.\)</span></p>
+\frac{\partial^2 f}{\partial x^2} +
+\frac{\partial^2 f}{\partial y^2} +
+\frac{\partial^2 f}{\partial z^2}.\)</span></p>
 
 <p>The <em>Laplace-Beltrami</em> operator generalizes this to surfaces.</p>
 
@@ -752,9 +802,9 @@ simultaneously from FEM, DEC and applying divergence theorem to vertex
 one-rings. As a linear operator taking vertex values to vertex values, the
 Laplacian <span class="math">\(\mathbf{L}\)</span> is a <span class="math">\(n\times n\)</span> matrix with elements:</p>
 
-<p><span class="math">\(L_{ij} = \begin{cases}j \in N(i) &\cot \alpha_{ij} + \cot \beta_{ij},\\
-j \notin N(i) & 0,\\
-i = j & -\sum\limits_{k\neq i} L_{ik},
+<p><span class="math">\(L_{ij} = \begin{cases}j \in N(i) &amp;\cot \alpha_{ij} + \cot \beta_{ij},\\
+j \notin N(i) &amp; 0,\\
+i = j &amp; -\sum\limits_{k\neq i} L_{ik},
 \end{cases}\)</span></p>
 
 <p>where <span class="math">\(N(i)\)</span> are the vertices adjacent to (neighboring) vertex <span class="math">\(i\)</span>, and
@@ -793,16 +843,16 @@ of the Dirichlet energy (sum of squared gradients):</p>
 <p>Libigl implements discrete &#8220;cotangent&#8221; Laplacians for triangles meshes and
 tetrahedral meshes, building both with fast geometric rules rather than &#8220;by the
 book&#8221; FEM construction which involves many (small) matrix inversions, cf.
-<a class="citation" href="#fn:4" title="Jump to citation">[4]<span class="citekey" style="display:none">sharf_2007</span></a>.</p>
+<a href="#cn:4" id="cnref:4" title="see citation" class="citation">(4)</a>[].</p>
 
 <p>The operator applied to mesh vertex positions amounts to smoothing by <em>flowing</em>
 the surface along the mean curvature normal direction (<a href="205_Laplacian/main.cpp">Example 205</a>). Note that this is equivalent to minimizing surface area.</p>
 
 <figure>
-<img src="images/cow-curvature-flow.jpg" alt="The Laplacian example computes conformalized mean curvature flow using the
-cotangent Laplacian ." />
+<img src="images/cow-curvature-flow.jpg" alt="The `Laplacian` example computes conformalized mean curvature flow using the
+cotangent Laplacian [#kazhdan_2012][]." />
 <figcaption>The <code>Laplacian</code> example computes conformalized mean curvature flow using the
-cotangent Laplacian <a class="citation" href="#fn:5" title="Jump to citation">[5]<span class="citekey" style="display:none">kazhdan_2012</span></a>.</figcaption>
+cotangent Laplacian <a href="#cn:5" id="cnref:5" title="see citation" class="citation">(5)</a>[].</figcaption>
 </figure>
 
 <h3 id="massmatrix">Mass matrix</h3>
@@ -811,7 +861,7 @@ cotangent Laplacian <a class="citation" href="#fn:5" title="Jump to citation">[5
 values to vertex values. From an FEM point of view, it is a discretization of
 the inner-product: it accounts for the area around each vertex. Consequently,
 <span class="math">\(\mathbf{M}\)</span> is often a diagonal matrix, such that <span class="math">\(M_{ii}\)</span> is the barycentric
-or voronoi area around vertex <span class="math">\(i\)</span> in the mesh <a class="citation" href="#fn:1" title="Jump to citation">[1]<span class="citekey" style="display:none">meyer_2003</span></a>. The inverse of
+or voronoi area around vertex <span class="math">\(i\)</span> in the mesh <a href="#cn:1" title="see citation" class="citation">(1)</a>[]. The inverse of
 this matrix is also very useful as it transforms integrated quantities into
 point-wise quantities, e.g.:</p>
 
@@ -839,14 +889,42 @@ Green&#8217;s identity (ignoring boundary conditions for the moment):</p>
 <p>Or in matrix form which is immediately translatable to code:</p>
 
 <p><span class="math">\(\mathbf{f}^T \mathbf{G}^T \mathbf{T} \mathbf{G} \mathbf{f} =
-  \mathbf{f}^T \mathbf{M} \mathbf{M}^{-1} \mathbf{L} \mathbf{f} =
-  \mathbf{f}^T \mathbf{L} \mathbf{f}.\)</span></p>
+\mathbf{f}^T \mathbf{M} \mathbf{M}^{-1} \mathbf{L} \mathbf{f} =
+\mathbf{f}^T \mathbf{L} \mathbf{f}.\)</span></p>
 
 <p>So we have that <span class="math">\(\mathbf{L} = \mathbf{G}^T \mathbf{T} \mathbf{G}\)</span>. This also
 hints that we may consider <span class="math">\(\mathbf{G}^T\)</span> as a discrete <em>divergence</em> operator,
 since the Laplacian is the divergence of the gradient. Naturally, <span class="math">\(\mathbf{G}^T\)</span> is
 a <span class="math">\(n \times md\)</span> sparse matrix which takes vector values stored at triangle faces
 to scalar divergence values at vertices.</p>
+
+<h2 id="geodesic">Geodesic</h2>
+
+<p>The discrete geodesic distance between two points is the length of the shortest path between then restricted to the surface. For triangle meshes, such a path is made of a set of segments which can be either edges of the mesh or crossing a triangle.</p>
+
+<p>Libigl includes a wrapper for the exact geodesic algorithm <a href="#cn:6" id="cnref:6" title="see citation" class="citation">(6)</a> developed by Danil Kirsanov (https://code.google.com/archive/p/geodesic/), exposing it through an Eigen-based API. The function</p>
+
+<pre><code class="cpp">igl::exact_geodesic(V,F,VS,FS,VT,FT,d);
+</code></pre>
+
+<p>computes the closest geodesic distances of each vertex in VT or face in FT, from the source vertices VS or faces FS of the input mesh V,F. The output is writted in the vector d, which lists first the distances for the vertices in VT, and then for the faces in FT. For example, if you want to compute the distance from the vertex with id <code>vid</code>, to all vertices of F you can use:</p>
+
+<pre><code class="cpp">Eigen::VectorXi VS,FS,VT,FT;
+// The selected vertex is the source
+VS.resize(1);
+VS &lt;&lt; vid;
+// All vertices are the targets
+VT.setLinSpaced(V.rows(),0,V.rows()-1);
+Eigen::VectorXd d;
+igl::exact_geodesic(V,F,VS,FS,VT,FT,d);
+</code></pre>
+
+<figure>
+<img src="images/geodesicdistance.jpg" alt="[Example 206](206_GeodesicDistance/main.cpp) allows to interactively pick the source vertex and displays the distance using a periodic color pattern.
+" />
+<figcaption><a href="206_GeodesicDistance/main.cpp">Example 206</a> allows to interactively pick the source vertex and displays the distance using a periodic color pattern.
+</figcaption>
+</figure>
 
 <h1 id="chapter3:matricesandlinearalgebra">Chapter 3: Matrices and linear algebra</h1>
 
@@ -891,7 +969,7 @@ functionality is provided in libigl using <code>slice_into</code>:</p>
 </code></pre>
 
 <figure>
-<img src="images/decimated-knight-slice-color.jpg" alt="The example Slice shows how to use igl::slice to change the colors for
+<img src="images/decimated-knight-slice-color.jpg" alt="The example `Slice` shows how to use `igl::slice` to change the colors for
 triangles on a mesh." />
 <figcaption>The example <code>Slice</code> shows how to use <code>igl::slice</code> to change the colors for
 triangles on a mesh.</figcaption>
@@ -933,11 +1011,11 @@ X(I(i,j),j);</code>. That is, <code>I</code> reveals how <code>X</code> is sorte
 <p>Analogous functions are available in libigl for: <code>max</code>, <code>min</code>, and <code>unique</code>.</p>
 
 <figure>
-<img src="images/decimated-knight-sort-color.jpg" alt="The example Sort shows how to use igl::sortrows to
+<img src="images/decimated-knight-sort-color.jpg" alt="The example `Sort` shows how to use `igl::sortrows` to
 pseudocolor triangles according to their barycenters' sorted
-order (Example 302)." />
+order ([Example 302](302_Sort/main.cpp))." />
 <figcaption>The example <code>Sort</code> shows how to use <code>igl::sortrows</code> to
-pseudocolor triangles according to their barycenters&#8217; sorted
+pseudocolor triangles according to their barycenters' sorted
 order (<a href="302_Sort/main.cpp">Example 302</a>).</figcaption>
 </figure>
 
@@ -954,187 +1032,187 @@ functionality as common Matlab functions.</p>
 
 <thead>
 <tr>
-	<th style="text-align:left;">Name</th>
-	<th style="text-align:left;">Description</th>
+	<th style="text-align:left;"> Name      </th>
+	<th style="text-align:left;"> Description                   </th>
 </tr>
 </thead>
 
 <tbody>
 <tr>
-	<td style="text-align:left;"><code>igl::all</code></td>
-	<td style="text-align:left;">Whether all elements are non-zero (true)</td>
+	<td style="text-align:left;"> <code>igl::all</code>    </td>
+	<td style="text-align:left;"> Whether all elements are non-zero (true)           </td>
 </tr>
 <tr>
-	<td style="text-align:left;"><code>igl::any</code></td>
-	<td style="text-align:left;">Whether any elements are non-zero (true)</td>
+	<td style="text-align:left;"> <code>igl::any</code>    </td>
+	<td style="text-align:left;"> Whether any elements are non-zero (true)           </td>
 </tr>
 <tr>
-	<td style="text-align:left;"><code>igl::cat</code></td>
-	<td style="text-align:left;">Concatenate two matrices (especially useful for dealing with Eigen sparse matrices)</td>
+	<td style="text-align:left;"> <code>igl::cat</code>    </td>
+	<td style="text-align:left;"> Concatenate two matrices (especially useful for dealing with Eigen sparse matrices) </td>
 </tr>
 <tr>
-	<td style="text-align:left;"><code>igl::ceil</code></td>
-	<td style="text-align:left;">Round entries up to nearest integer</td>
+	<td style="text-align:left;"> <code>igl::ceil</code>    </td>
+	<td style="text-align:left;"> Round entries up to nearest integer </td>
 </tr>
 <tr>
-	<td style="text-align:left;"><code>igl::cumsum</code></td>
-	<td style="text-align:left;">Cumulative sum of matrix elements</td>
+	<td style="text-align:left;"> <code>igl::cumsum</code>   </td>
+	<td style="text-align:left;"> Cumulative sum of matrix elements </td>
 </tr>
 <tr>
-	<td style="text-align:left;"><code>igl::colon</code></td>
-	<td style="text-align:left;">Act like Matlab&#8217;s <code>:</code>, similar to Eigen&#8217;s <code>LinSpaced</code></td>
+	<td style="text-align:left;"> <code>igl::colon</code>    </td>
+	<td style="text-align:left;"> Act like Matlab&#8217;s <code>:</code>, similar to Eigen&#8217;s <code>LinSpaced</code> </td>
 </tr>
 <tr>
-	<td style="text-align:left;"><code>igl::components</code></td>
-	<td style="text-align:left;">Connected components of graph (cf. Matlab&#8217;s <code>graphconncomp</code>)</td>
+	<td style="text-align:left;"> <code>igl::components</code>  </td>
+	<td style="text-align:left;"> Connected components of graph (cf. Matlab&#8217;s <code>graphconncomp</code>) </td>
 </tr>
 <tr>
-	<td style="text-align:left;"><code>igl::count</code></td>
-	<td style="text-align:left;">Count non-zeros in rows or columns</td>
+	<td style="text-align:left;"> <code>igl::count</code>    </td>
+	<td style="text-align:left;"> Count non-zeros in rows or columns </td>
 </tr>
 <tr>
-	<td style="text-align:left;"><code>igl::cross</code></td>
-	<td style="text-align:left;">Cross product per-row</td>
+	<td style="text-align:left;"> <code>igl::cross</code>    </td>
+	<td style="text-align:left;"> Cross product per-row </td>
 </tr>
 <tr>
-	<td style="text-align:left;"><code>igl::cumsum</code></td>
-	<td style="text-align:left;">Cummulative summation</td>
+	<td style="text-align:left;"> <code>igl::cumsum</code>   </td>
+	<td style="text-align:left;"> Cumulative summation </td>
 </tr>
 <tr>
-	<td style="text-align:left;"><code>igl::dot</code></td>
-	<td style="text-align:left;">dot product per-row</td>
+	<td style="text-align:left;"> <code>igl::dot</code>    </td>
+	<td style="text-align:left;"> dot product per-row </td>
 </tr>
 <tr>
-	<td style="text-align:left;"><code>igl::eigs</code></td>
-	<td style="text-align:left;">Solve sparse eigen value problem</td>
+	<td style="text-align:left;"> <code>igl::eigs</code>    </td>
+	<td style="text-align:left;"> Solve sparse eigen value problem </td>
 </tr>
 <tr>
-	<td style="text-align:left;"><code>igl::find</code></td>
-	<td style="text-align:left;">Find subscripts of non-zero entries</td>
+	<td style="text-align:left;"> <code>igl::find</code>    </td>
+	<td style="text-align:left;"> Find subscripts of non-zero entries </td>
 </tr>
 <tr>
-	<td style="text-align:left;"><code>igl::floor</code></td>
-	<td style="text-align:left;">Round entries down to nearest integer</td>
+	<td style="text-align:left;"> <code>igl::floor</code>    </td>
+	<td style="text-align:left;"> Round entries down to nearest integer </td>
 </tr>
 <tr>
-	<td style="text-align:left;"><code>igl::histc</code></td>
-	<td style="text-align:left;">Counting occurrences for building a histogram</td>
+	<td style="text-align:left;"> <code>igl::histc</code>    </td>
+	<td style="text-align:left;"> Counting occurrences for building a histogram </td>
 </tr>
 <tr>
-	<td style="text-align:left;"><code>igl::hsv_to_rgb</code></td>
-	<td style="text-align:left;">Convert HSV colors to RGB (cf. Matlab&#8217;s <code>hsv2rgb</code>)</td>
+	<td style="text-align:left;"> <code>igl::hsv_to_rgb</code>  </td>
+	<td style="text-align:left;"> Convert HSV colors to RGB (cf. Matlab&#8217;s <code>hsv2rgb</code>) </td>
 </tr>
 <tr>
-	<td style="text-align:left;"><code>igl::intersect</code></td>
-	<td style="text-align:left;">Set intersection of matrix elements.</td>
+	<td style="text-align:left;"> <code>igl::intersect</code>   </td>
+	<td style="text-align:left;"> Set intersection of matrix elements. </td>
 </tr>
 <tr>
-	<td style="text-align:left;"><code>igl::isdiag</code></td>
-	<td style="text-align:left;">Determine whether matrix is diagonal</td>
+	<td style="text-align:left;"> <code>igl::isdiag</code>   </td>
+	<td style="text-align:left;"> Determine whether matrix is diagonal </td>
 </tr>
 <tr>
-	<td style="text-align:left;"><code>igl::ismember</code></td>
-	<td style="text-align:left;">Determine whether elements in A occur in B</td>
+	<td style="text-align:left;"> <code>igl::ismember</code>   </td>
+	<td style="text-align:left;"> Determine whether elements in A occur in B </td>
 </tr>
 <tr>
-	<td style="text-align:left;"><code>igl::jet</code></td>
-	<td style="text-align:left;">Quantized colors along the rainbow.</td>
+	<td style="text-align:left;"> <code>igl::jet</code>    </td>
+	<td style="text-align:left;"> Quantized colors along the rainbow. </td>
 </tr>
 <tr>
-	<td style="text-align:left;"><code>igl::max</code></td>
-	<td style="text-align:left;">Compute maximum entry per row or column</td>
+	<td style="text-align:left;"> <code>igl::max</code>    </td>
+	<td style="text-align:left;"> Compute maximum entry per row or column </td>
 </tr>
 <tr>
-	<td style="text-align:left;"><code>igl::median</code></td>
-	<td style="text-align:left;">Compute the median per column</td>
+	<td style="text-align:left;"> <code>igl::median</code>   </td>
+	<td style="text-align:left;"> Compute the median per column </td>
 </tr>
 <tr>
-	<td style="text-align:left;"><code>igl::min</code></td>
-	<td style="text-align:left;">Compute minimum entry per row or column</td>
+	<td style="text-align:left;"> <code>igl::min</code>    </td>
+	<td style="text-align:left;"> Compute minimum entry per row or column </td>
 </tr>
 <tr>
-	<td style="text-align:left;"><code>igl::mod</code></td>
-	<td style="text-align:left;">Compute per element modulo</td>
+	<td style="text-align:left;"> <code>igl::mod</code>    </td>
+	<td style="text-align:left;"> Compute per element modulo </td>
 </tr>
 <tr>
-	<td style="text-align:left;"><code>igl::mode</code></td>
-	<td style="text-align:left;">Compute the mode per column</td>
+	<td style="text-align:left;"> <code>igl::mode</code>    </td>
+	<td style="text-align:left;"> Compute the mode per column </td>
 </tr>
 <tr>
-	<td style="text-align:left;"><code>igl::null</code></td>
-	<td style="text-align:left;">Compute the null space basis of a matrix</td>
+	<td style="text-align:left;"> <code>igl::null</code>    </td>
+	<td style="text-align:left;"> Compute the null space basis of a matrix </td>
 </tr>
 <tr>
-	<td style="text-align:left;"><code>igl::nchoosek</code></td>
-	<td style="text-align:left;">Compute all k-size combinations of n-long vector</td>
+	<td style="text-align:left;"> <code>igl::nchoosek</code>   </td>
+	<td style="text-align:left;"> Compute all k-size combinations of n-long vector </td>
 </tr>
 <tr>
-	<td style="text-align:left;"><code>igl::orth</code></td>
-	<td style="text-align:left;">Orthogonalization of a basis</td>
+	<td style="text-align:left;"> <code>igl::orth</code>    </td>
+	<td style="text-align:left;"> Orthogonalization of a basis </td>
 </tr>
 <tr>
-	<td style="text-align:left;"><code>igl::parula</code></td>
-	<td style="text-align:left;">Generate a quantized colormap from blue to yellow</td>
+	<td style="text-align:left;"> <code>igl::parula</code>   </td>
+	<td style="text-align:left;"> Generate a quantized colormap from blue to yellow </td>
 </tr>
 <tr>
-	<td style="text-align:left;"><code>igl::pinv</code></td>
-	<td style="text-align:left;">Compute Moore-Penrose pseudoinverse</td>
+	<td style="text-align:left;"> <code>igl::pinv</code>    </td>
+	<td style="text-align:left;"> Compute Moore-Penrose pseudoinverse </td>
 </tr>
 <tr>
-	<td style="text-align:left;"><code>igl::randperm</code></td>
-	<td style="text-align:left;">Generate a random permutation of [0,&#8230;,n&#8211;1]</td>
+	<td style="text-align:left;"> <code>igl::randperm</code>   </td>
+	<td style="text-align:left;"> Generate a random permutation of [0,&#8230;,n-1] </td>
 </tr>
 <tr>
-	<td style="text-align:left;"><code>igl::rgb_to_hsv</code></td>
-	<td style="text-align:left;">Convert RGB colors to HSV (cf. Matlab&#8217;s <code>rgb2hsv</code>)</td>
+	<td style="text-align:left;"> <code>igl::rgb_to_hsv</code>  </td>
+	<td style="text-align:left;"> Convert RGB colors to HSV (cf. Matlab&#8217;s <code>rgb2hsv</code>) </td>
 </tr>
 <tr>
-	<td style="text-align:left;"><code>igl::repmat</code></td>
-	<td style="text-align:left;">Repeat a matrix along columns and rows</td>
+	<td style="text-align:left;"> <code>igl::repmat</code>   </td>
+	<td style="text-align:left;"> Repeat a matrix along columns and rows </td>
 </tr>
 <tr>
-	<td style="text-align:left;"><code>igl::round</code></td>
-	<td style="text-align:left;">Per-element round to whole number</td>
+	<td style="text-align:left;"> <code>igl::round</code>    </td>
+	<td style="text-align:left;"> Per-element round to whole number </td>
 </tr>
 <tr>
-	<td style="text-align:left;"><code>igl::setdiff</code></td>
-	<td style="text-align:left;">Set difference of matrix elements</td>
+	<td style="text-align:left;"> <code>igl::setdiff</code>   </td>
+	<td style="text-align:left;"> Set difference of matrix elements </td>
 </tr>
 <tr>
-	<td style="text-align:left;"><code>igl::setunion</code></td>
-	<td style="text-align:left;">Set union of matrix elements</td>
+	<td style="text-align:left;"> <code>igl::setunion</code>   </td>
+	<td style="text-align:left;"> Set union of matrix elements </td>
 </tr>
 <tr>
-	<td style="text-align:left;"><code>igl::setxor</code></td>
-	<td style="text-align:left;">Set exclusive &#8220;or&#8221; of matrix elements</td>
+	<td style="text-align:left;"> <code>igl::setxor</code>   </td>
+	<td style="text-align:left;"> Set exclusive &#8220;or&#8221; of matrix elements </td>
 </tr>
 <tr>
-	<td style="text-align:left;"><code>igl::slice</code></td>
-	<td style="text-align:left;">Slice parts of matrix using index lists: (cf. Matlab&#8217;s <code>B = A(I,J)</code>)</td>
+	<td style="text-align:left;"> <code>igl::slice</code>    </td>
+	<td style="text-align:left;"> Slice parts of matrix using index lists: (cf. Matlab&#8217;s <code>B = A(I,J)</code>)</td>
 </tr>
 <tr>
-	<td style="text-align:left;"><code>igl::slice_mask</code></td>
-	<td style="text-align:left;">Slice parts of matrix using boolean masks: (cf. Matlab&#8217;s <code>B = A(M,N)</code>)</td>
+	<td style="text-align:left;"> <code>igl::slice_mask</code>  </td>
+	<td style="text-align:left;"> Slice parts of matrix using boolean masks: (cf. Matlab&#8217;s <code>B = A(M,N)</code>)</td>
 </tr>
 <tr>
-	<td style="text-align:left;"><code>igl::slice_into</code></td>
-	<td style="text-align:left;">Slice left-hand side of matrix assignment using index lists (cf. Matlab&#8217;s <code>B(I,J) = A</code>)</td>
+	<td style="text-align:left;"> <code>igl::slice_into</code>  </td>
+	<td style="text-align:left;"> Slice left-hand side of matrix assignment using index lists (cf. Matlab&#8217;s <code>B(I,J) = A</code>)</td>
 </tr>
 <tr>
-	<td style="text-align:left;"><code>igl::sort</code></td>
-	<td style="text-align:left;">Sort elements or rows of matrix</td>
+	<td style="text-align:left;"> <code>igl::sort</code>    </td>
+	<td style="text-align:left;"> Sort elements or rows of matrix </td>
 </tr>
 <tr>
-	<td style="text-align:left;"><code>igl::speye</code></td>
-	<td style="text-align:left;">Identity as sparse matrix</td>
+	<td style="text-align:left;"> <code>igl::speye</code>    </td>
+	<td style="text-align:left;"> Identity as sparse matrix </td>
 </tr>
 <tr>
-	<td style="text-align:left;"><code>igl::sum</code></td>
-	<td style="text-align:left;">Sum along columns or rows (of sparse matrix)</td>
+	<td style="text-align:left;"> <code>igl::sum</code>    </td>
+	<td style="text-align:left;"> Sum along columns or rows (of sparse matrix) </td>
 </tr>
 <tr>
-	<td style="text-align:left;"><code>igl::unique</code></td>
-	<td style="text-align:left;">Extract unique elements or rows of matrix</td>
+	<td style="text-align:left;"> <code>igl::unique</code>   </td>
+	<td style="text-align:left;"> Extract unique elements or rows of matrix </td>
 </tr>
 </tbody>
 </table>
@@ -1164,31 +1242,31 @@ the right-hand side.</p>
 vertices come first and then boundary vertices:</p>
 
 <p><span class="math">\[\left(\begin{array}{cc}
- \mathbf{L}_{in,in} & \mathbf{L}_{in,b}\\
- \mathbf{L}_{b,in} & \mathbf{L}_{b,b}\end{array}\right)
- \left(\begin{array}{c}
- \mathbf{z}_{in}\\
- \mathbf{z}_{b}\end{array}\right) =
- \left(\begin{array}{c}
- \mathbf{0}_{in}\\
- \mathbf{z}_{bc}\end{array}\right)\]</span></p>
+\mathbf{L}_{in,in} &amp; \mathbf{L}_{in,b}\\
+\mathbf{L}_{b,in} &amp; \mathbf{L}_{b,b}\end{array}\right)
+\left(\begin{array}{c}
+\mathbf{z}_{in}\\
+\mathbf{z}_{b}\end{array}\right) =
+\left(\begin{array}{c}
+\mathbf{0}_{in}\\
+\mathbf{z}_{bc}\end{array}\right)\]</span></p>
 
 <p>The bottom block of equations is no longer meaningful so we&#8217;ll only consider
 the top block:</p>
 
 <p><span class="math">\[\left(\begin{array}{cc}
- \mathbf{L}_{in,in} & \mathbf{L}_{in,b}\end{array}\right)
- \left(\begin{array}{c}
- \mathbf{z}_{in}\\
- \mathbf{z}_{b}\end{array}\right) =
- \mathbf{0}_{in}\]</span></p>
+\mathbf{L}_{in,in} &amp; \mathbf{L}_{in,b}\end{array}\right)
+\left(\begin{array}{c}
+\mathbf{z}_{in}\\
+\mathbf{z}_{b}\end{array}\right) =
+\mathbf{0}_{in}\]</span></p>
 
 <p>We can move the known values to the right-hand side:</p>
 
 <p><span class="math">\[\mathbf{L}_{in,in}
- \mathbf{z}_{in} = -
- \mathbf{L}_{in,b}
- \mathbf{z}_{b}\]</span></p>
+\mathbf{z}_{in} = -
+\mathbf{L}_{in,b}
+\mathbf{z}_{b}\]</span></p>
 
 <p>Finally we can solve this equation for the unknown values at interior vertices
 <span class="math">\(\mathbf{z}_{in}\)</span>.</p>
@@ -1203,7 +1281,7 @@ the linear algebra above directly. Then we can slice the solution <em>into</em> 
 rows of <code>Z</code> corresponding to the interior vertices (<a href="303_LaplaceEquation/main.cpp">Example 303</a>).</p>
 
 <figure>
-<img src="images/camelhead-laplace-equation.jpg" alt="The LaplaceEquation example solves a Laplace equation with Dirichlet
+<img src="images/camelhead-laplace-equation.jpg" alt="The `LaplaceEquation` example solves a Laplace equation with Dirichlet
 boundary conditions." />
 <figcaption>The <code>LaplaceEquation</code> example solves a Laplace equation with Dirichlet
 boundary conditions.</figcaption>
@@ -1219,7 +1297,7 @@ energy subject to the same boundary conditions:</p>
 <p>On our discrete mesh, recall that this becomes</p>
 
 <p><span class="math">\(\mathop{\text{minimize }}_\mathbf{z}  \frac{1}{2}\mathbf{z}^T \mathbf{G}^T \mathbf{D}
- \mathbf{G} \mathbf{z} \rightarrow \mathop{\text{minimize }}_\mathbf{z} \mathbf{z}^T \mathbf{L} \mathbf{z}\)</span></p>
+\mathbf{G} \mathbf{z} \rightarrow \mathop{\text{minimize }}_\mathbf{z} \mathbf{z}^T \mathbf{L} \mathbf{z}\)</span></p>
 
 <p>The general problem of minimizing some energy over a mesh subject to fixed
 value boundary conditions is so wide spread that libigl has a dedicated api for
@@ -1229,26 +1307,28 @@ solving such systems.</p>
 common constraints:</p>
 
 <p><span class="math">\[\mathop{\text{minimize }}_\mathbf{z}  \frac{1}{2}\mathbf{z}^T \mathbf{Q} \mathbf{z} +
- \mathbf{z}^T \mathbf{B} + \text{constant},\]</span></p>
+\mathbf{z}^T \mathbf{B} + \text{constant},\]</span></p>
 
 <p>subject to</p>
 
 <p><span class="math">\[\mathbf{z}_b = \mathbf{z}_{bc} \text{ and } \mathbf{A}_{eq} \mathbf{z} =
- \mathbf{B}_{eq},\]</span></p>
+\mathbf{B}_{eq},\]</span></p>
 
 <p>where</p>
 
 <ul>
-<li><span class="math">\(\mathbf{Q}\)</span> is a (usually sparse) <span class="math">\(n \times n\)</span> positive semi-definite
+<li> <span class="math">\(\mathbf{Q}\)</span> is a (usually sparse) <span class="math">\(n \times n\)</span> positive semi-definite
 matrix of quadratic coefficients (Hessian),</li>
-<li><span class="math">\(\mathbf{B}\)</span> is a <span class="math">\(n \times 1\)</span> vector of linear coefficients,</li>
-<li><span class="math">\(\mathbf{z}_b\)</span> is a <span class="math">\(|b| \times 1\)</span> portion of
+<li> <span class="math">\(\mathbf{B}\)</span> is a <span class="math">\(n \times 1\)</span> vector of linear coefficients,</li>
+<li> <span class="math">\(\mathbf{z}_b\)</span> is a <span class="math">\(|b| \times 1\)</span> portion of
+
 <span class="math">\(\mathbf{z}\)</span> corresponding to boundary or <em>fixed</em> vertices,</li>
-<li><span class="math">\(\mathbf{z}_{bc}\)</span> is a <span class="math">\(|b| \times 1\)</span> vector of known values corresponding to
+<li> <span class="math">\(\mathbf{z}_{bc}\)</span> is a <span class="math">\(|b| \times 1\)</span> vector of known values corresponding to
+
 <span class="math">\(\mathbf{z}_b\)</span>,</li>
-<li><span class="math">\(\mathbf{A}_{eq}\)</span> is a (usually sparse) <span class="math">\(m \times n\)</span> matrix of linear
+<li> <span class="math">\(\mathbf{A}_{eq}\)</span> is a (usually sparse) <span class="math">\(m \times n\)</span> matrix of linear
 equality constraint coefficients (one row per constraint), and</li>
-<li><span class="math">\(\mathbf{B}_{eq}\)</span> is a <span class="math">\(m \times 1\)</span> vector of linear equality constraint
+<li> <span class="math">\(\mathbf{B}_{eq}\)</span> is a <span class="math">\(m \times 1\)</span> vector of linear equality constraint
 right-hand side values.</li>
 </ul>
 
@@ -1283,7 +1363,7 @@ with active linear equality constraints. Specifically let&#8217;s solve the
 <code>bi-Laplace equation</code> or equivalently minimize the Laplace energy:</p>
 
 <p><span class="math">\[\Delta^2 z = 0 \leftrightarrow \mathop{\text{minimize }}\limits_z \frac{1}{2}
- \int\limits_S (\Delta z)^2 dA\]</span></p>
+\int\limits_S (\Delta z)^2 dA\]</span></p>
 
 <p>subject to fixed value constraints and a linear equality constraint:</p>
 
@@ -1303,41 +1383,44 @@ general a <span class="math">\(m \times 1\)</span> vector of variables <span cla
 saddle problem:</p>
 
 <p><span class="math">\[\mathop{\text{find saddle }}_{\mathbf{z},\lambda}\, \frac{1}{2}\mathbf{z}^T \mathbf{Q} \mathbf{z} +
-  \mathbf{z}^T \mathbf{B} + \text{constant} + \lambda^T\left(\mathbf{A}_{eq}
- \mathbf{z} - \mathbf{B}_{eq}\right)\]</span></p>
+\mathbf{z}^T \mathbf{B} + \text{constant} + \lambda^T\left(\mathbf{A}_{eq}
+\mathbf{z} - \mathbf{B}_{eq}\right)\]</span></p>
 
 <p>This can be rewritten in a more familiar form by stacking <span class="math">\(\mathbf{z}\)</span> and
 <span class="math">\(\lambda\)</span> into one <span class="math">\((m+n) \times 1\)</span> vector of unknowns:</p>
 
-<p><span class="math">\[\mathop{\text{find saddle }}_{\mathbf{z},\lambda}\,
- \frac{1}{2}
- \left(
-  \mathbf{z}^T
-  \lambda^T
- \right)
- \left(
-  \begin{array}{cc}
-  \mathbf{Q}      & \mathbf{A}_{eq}^T\\
-  \mathbf{A}_{eq} & 0
-  \end{array}
- \right)
- \left(
-  \begin{array}{c}
-  \mathbf{z}\\
-  \lambda
-  \end{array}
- \right) +
- \left(
-  \mathbf{z}^T
-  \lambda^T
- \right)
- \left(
-  \begin{array}{c}
-  \mathbf{B}\\
-  -\mathbf{B}_{eq}
-  \end{array}
-  \right)
-  + \text{constant}\]</span></p>
+<p>$$\mathop{\text{find saddle }}_{\mathbf{z},\lambda},
+\frac{1}{2}
+\left(
+\mathbf{z}<sup>T</sup>
+\lambda<sup>T</sup>
+\right)
+\left(
+\begin{array}{cc}
+\mathbf{Q}  &amp; \mathbf{A}<em>{eq}<sup>T</sup>\
+\mathbf{A}</em>{eq} &amp; 0
+\end{array}
+\right)
+\left(
+\begin{array}{c}
+\mathbf{z}\
+\lambda
+\end{array}
+\right) +
+\left(
+\mathbf{z}<sup>T</sup>
+\lambda<sup>T</sup>
+\right)
+\left(
+\begin{array}{c}
+\mathbf{B}\
+-\mathbf{B}_{eq}
+\end{array}
+\right)</p>
+
+<ul>
+<li> \text{constant}$$</li>
+</ul>
 
 <p>Differentiating with respect to <span class="math">\(\left( \mathbf{z}^T \lambda^T \right)\)</span> reveals
 a linear system and we can solve for <span class="math">\(\mathbf{z}\)</span> and <span class="math">\(\lambda\)</span>. The only
@@ -1348,12 +1431,12 @@ different factorization technique (LDLT rather than LLT): libigl&#8217;s
 the presence of linear equality constraints (<a href="304_LinearEqualityConstraints/main.cpp">Example 304</a>).</p>
 
 <figure>
-<img src="images/cheburashka-biharmonic-leq.jpg" alt="The example LinearEqualityConstraints first solves with just fixed value
+<img src="images/cheburashka-biharmonic-leq.jpg" alt="The example `LinearEqualityConstraints` first solves with just fixed value
 constraints (left: 1 and -1 on the left hand and foot respectively), then
 solves with an additional linear equality constraint (right: points on right
 hand and foot constrained to be equal)." />
 <figcaption>The example <code>LinearEqualityConstraints</code> first solves with just fixed value
-constraints (left: 1 and &#8211;1 on the left hand and foot respectively), then
+constraints (left: 1 and -1 on the left hand and foot respectively), then
 solves with an additional linear equality constraint (right: points on right
 hand and foot constrained to be equal).</figcaption>
 </figure>
@@ -1400,11 +1483,11 @@ igl::active_set(Q,B,b,bc,Aeq,Beq,Aieq,Bieq,lx,ux,as,Z);
 </code></pre>
 
 <figure>
-<img src="images/cheburashka-multiscale-biharmonic-kernels.jpg" alt=" Example 305 uses an active set solver to optimize
-discrete biharmonic kernels  at multiple scales
+<img src="images/cheburashka-multiscale-biharmonic-kernels.jpg" alt=" [Example 305](305_QuadraticProgramming/main.cpp) uses an active set solver to optimize
+discrete biharmonic kernels [#rustamov_2011][] at multiple scales
 ." />
 <figcaption> <a href="305_QuadraticProgramming/main.cpp">Example 305</a> uses an active set solver to optimize
-discrete biharmonic kernels <a class="citation" href="#fn:6" title="Jump to citation">[6]<span class="citekey" style="display:none">rustamov_2011</span></a> at multiple scales
+discrete biharmonic kernels <a href="#cn:7" id="cnref:7" title="see citation" class="citation">(7)</a>[] at multiple scales
 .</figcaption>
 </figure>
 
@@ -1417,9 +1500,9 @@ eigen value problem:</p>
 
 <p>where <span class="math">\(A\)</span> is a sparse symmetric matrix and <span class="math">\(B\)</span> is a sparse positive definite
 matrix. Most commonly in geometry processing, we let <span class="math">\(A=L\)</span> the cotangent
-Laplacian and <span class="math">\(B=M\)</span> the per-vertex mass matrix (e.g. <a class="citation" href="#fn:7" title="Jump to citation">[7]<span class="citekey" style="display:none">vallet_2008</span></a>).
+Laplacian and <span class="math">\(B=M\)</span> the per-vertex mass matrix (e.g. <a href="#cn:8" id="cnref:8" title="see citation" class="citation">(8)</a>[]).
 Typically applications will make use of the <em>low frequency</em> eigen modes.
-Analagous to the Fourier decomposition, a function <span class="math">\(f\)</span> on a surface can be
+Analogous to the Fourier decomposition, a function <span class="math">\(f\)</span> on a surface can be
 represented via its spectral decomposition of the eigen modes of the
 Laplace-Beltrami:</p>
 
@@ -1437,7 +1520,7 @@ eigen vector satisfying:</p>
 
 <p><span class="math">\(\mathbf{L} \phi_i = \lambda_i \mathbf{M} \phi_i\)</span>.</p>
 
-<p>Note that Vallet &amp; Levy <a class="citation" href="#fn:7" title="Jump to citation">[7]<span class="citekey" style="display:none">vallet_2008</span></a> propose solving a symmetrized
+<p>Note that Vallet &amp; Levy <a href="#cn:8" title="see citation" class="citation">(8)</a>[] propose solving a symmetrized
 <em>standard</em> eigen problem <span class="math">\(\mathbf{M}^{-1/2}\mathbf{L}\mathbf{M}^{-1/2} \phi_i
 = \lambda_i \phi_i\)</span>. Libigl implements a generalized eigen problem solver so
 this unnecessary symmetrization can be avoided.</p>
@@ -1445,9 +1528,9 @@ this unnecessary symmetrization can be avoided.</p>
 <p>Often the sum above is <em>truncated</em> to the first <span class="math">\(k\)</span> eigen vectors. If the low
 frequency modes are chosen, i.e. those corresponding to small <span class="math">\(\lambda_i\)</span>
 values, then this truncation effectively <em>regularizes</em> <span class="math">\(\mathbf{f}\)</span> to smooth,
-slowly changing functions over the mesh (e.g. <a class="citation" href="#fn:8" title="Jump to citation">[8]<span class="citekey" style="display:none">hildebrandt_2011</span></a>). Modal
+slowly changing functions over the mesh (e.g. <a href="#cn:9" id="cnref:9" title="see citation" class="citation">(9)</a>[]). Modal
 analysis and model subspaces have been used frequently in real-time deformation
-(e.g. <a class="citation" href="#fn:9" title="Jump to citation">[9]<span class="citekey" style="display:none">barbic_2005</span></a>).</p>
+(e.g. <a href="#cn:10" id="cnref:10" title="see citation" class="citation">(10)</a>[]).</p>
 
 <p>In <a href="306_EigenDecomposition/main.cpp">Example 306</a>), the first 5 eigen vectors
 of the discrete Laplace-Beltrami operator are computed and displayed in
@@ -1464,7 +1547,7 @@ igl::eigs(L,M,5,igl::EIGS_TYPE_SM,U,S);
 </code></pre>
 
 <figure>
-<img src="images/beetle-eigen-decomposition.gif" alt="(Example 306) Low frequency eigen vectors
+<img src="images/beetle-eigen-decomposition.gif" alt="([Example 306](306_EigenDecomposition/main.cpp)) Low frequency eigen vectors
 of the discrete Laplace-Beltrami operator vary smoothly and slowly over the
 Beetle." />
 <figcaption>(<a href="306_EigenDecomposition/main.cpp">Example 306</a>) Low frequency eigen vectors
@@ -1491,9 +1574,9 @@ partial differential equation.</p>
 
 <p>There are many flavors of these techniques, but a prototypical subset are those
 that consider solutions to the bi-Laplace equation, that is a biharmonic
-function <a class="citation" href="#fn:10" title="Jump to citation">[10]<span class="citekey" style="display:none">botsch_2004</span></a>. This fourth-order PDE provides sufficient
+function <a href="#cn:11" id="cnref:11" title="see citation" class="citation">(11)</a>[]. This fourth-order PDE provides sufficient
 flexibility in boundary conditions to ensure <span class="math">\(C^1\)</span> continuity at handle
-constraints (in the limit under refinement) <a class="citation" href="#fn:11" title="Jump to citation">[11]<span class="citekey" style="display:none">jacobson_mixed_2010</span></a>.</p>
+constraints (in the limit under refinement) <a href="#cn:12" id="cnref:12" title="see citation" class="citation">(12)</a>[].</p>
 
 <h3 id="biharmonicsurfaces">Biharmonic surfaces</h3>
 
@@ -1565,7 +1648,7 @@ U = V+D;
 </code></pre>
 
 <figure>
-<img src="images/max-biharmonic.jpg" alt="The BiharmonicDeformation example deforms a statues head as a biharmonic
+<img src="images/max-biharmonic.jpg" alt="The [BiharmonicDeformation](401_BiharmonicDeformation/main.cpp) example deforms a statue's head as a biharmonic
 surface (top) and using a biharmonic displacements
 (bottom)." />
 <figcaption>The <a href="401_BiharmonicDeformation/main.cpp">BiharmonicDeformation</a> example deforms a statue&#8217;s head as a <em>biharmonic
@@ -1589,10 +1672,10 @@ terms of the original positions <span class="math">\(\mathbf{x}\)</span> and the
 <span class="math">\(\mathbf{x}' = \mathbf{x} - \mathbf{d}\)</span>:</p>
 
 <p><span class="math">\(\int\limits_S \|\Delta (\mathbf{x}' - \mathbf{x})\|^2 dA = \int\limits_S
- \|\Delta \mathbf{x}' - \Delta \mathbf{x})\|^2 dA.\)</span></p>
+\|\Delta \mathbf{x}' - \Delta \mathbf{x})\|^2 dA.\)</span></p>
 
 <p>In the early work of Sorkine et al., the quantities <span class="math">\(\Delta \mathbf{x}'\)</span> and
-<span class="math">\(\Delta \mathbf{x}\)</span> were dubbed &#8220;differential coordinates&#8221; <a class="citation" href="#fn:12" title="Jump to citation">[12]<span class="citekey" style="display:none">sorkine_2004</span></a>.
+<span class="math">\(\Delta \mathbf{x}\)</span> were dubbed &#8220;differential coordinates&#8221; <a href="#cn:13" id="cnref:13" title="see citation" class="citation">(13)</a>[].
 Their deformations (without linearized rotations) is thus equivalent to
 biharmonic deformation fields.</p>
 
@@ -1612,7 +1695,7 @@ igl::harmonic(V,F,b,bc,k,Z);
 </code></pre>
 
 <figure>
-<img src="images/bump-k-harmonic.jpg" alt="The PolyharmonicDeformation example deforms a flat domain (left) into a bump as a
+<img src="images/bump-k-harmonic.jpg" alt="The [PolyharmonicDeformation](402_PolyharmonicDeformation/main.cpp) example deforms a flat domain (left) into a bump as a
 solution to various $k$-harmonic PDEs." />
 <figcaption>The <a href="402_PolyharmonicDeformation/main.cpp">PolyharmonicDeformation</a> example deforms a flat domain (left) into a bump as a
 solution to various <span class="math">\(k\)</span>-harmonic PDEs.</figcaption>
@@ -1630,7 +1713,7 @@ rotations.</p>
 computes its new location as a linear combination of bone transformations:</p>
 
 <p><span class="math">\(\mathbf{x}' = \sum\limits_{i = 1}^m w_i(\mathbf{x}) \mathbf{T}_i
- \left(\begin{array}{c}\mathbf{x}_i\\1\end{array}\right),\)</span></p>
+\left(\begin{array}{c}\mathbf{x}_i\\1\end{array}\right),\)</span></p>
 
 <p>where <span class="math">\(w_i(\mathbf{x})\)</span> is the scalar <em>weight function</em> of the ith bone evaluated at
 <span class="math">\(\mathbf{x}\)</span> and <span class="math">\(\mathbf{T}_i\)</span> is the bone transformation as a <span class="math">\(4 \times 3\)</span>
@@ -1660,15 +1743,15 @@ any handle structure such as a cage, collection of points, selected regions,
 etc.).</p>
 
 <p>Bounded biharmonic weights are one such technique that casts weight computation
-as a constrained optimization problem <a class="citation" href="#fn:13" title="Jump to citation">[13]<span class="citekey" style="display:none">jacobson_2011</span></a>. The weights enforce
+as a constrained optimization problem <a href="#cn:14" id="cnref:14" title="see citation" class="citation">(14)</a>[]. The weights enforce
 smoothness by minimizing the familiar Laplacian energy:</p>
 
 <p><span class="math">\(\sum\limits_{i = 1}^m \int_S (\Delta w_i)^2 dA\)</span></p>
 
 <p>subject to constraints which enforce interpolation of handle constraints:</p>
 
-<p><span class="math">\(w_i(\mathbf{x}) = \begin{cases} 1 & \text{ if } \mathbf{x} \in H_i\\ 0 &
- \text{ otherwise } \end{cases},\)</span></p>
+<p><span class="math">\(w_i(\mathbf{x}) = \begin{cases} 1 &amp; \text{ if } \mathbf{x} \in H_i\\ 0 &amp;
+\text{ otherwise } \end{cases},\)</span></p>
 
 <p>where <span class="math">\(H_i\)</span> is the ith handle, and constraints which enforce non-negativity,
 parition of unity and encourage sparsity:</p>
@@ -1679,7 +1762,7 @@ parition of unity and encourage sparsity:</p>
 set solver or by calling out to <a href="http://www.mosek.com">Mosek</a>.</p>
 
 <figure>
-<img src="images/hand-bbw.jpg" alt="The example BoundedBiharmonicWeights computes weights for a tetrahedral
+<img src="images/hand-bbw.jpg" alt="The example [BoundedBiharmonicWeights](403_BoundedBiharmonicWeights/main.cpp) computes weights for a tetrahedral
 mesh given a skeleton (top) and then animates a linear blend skinning
 deformation (bottom)." />
 <figcaption>The example <a href="403_BoundedBiharmonicWeights/main.cpp">BoundedBiharmonicWeights</a> computes weights for a tetrahedral
@@ -1697,22 +1780,22 @@ about the <span class="math">\(z\)</span>-axis. Intuitively one might expect to 
 but instead the blend is a degenerate matrix scaling the <span class="math">\(x\)</span> and <span class="math">\(y\)</span>
 coordinates by zero:</p>
 
-<p><span class="math">\(0.5\left(\begin{array}{ccc}0&-1&0\\1&0&0\\0&0&1\end{array}\right)+
- 0.5\left(\begin{array}{ccc}0&1&0\\-1&0&0\\0&0&1\end{array}\right)=
- \left(\begin{array}{ccc}0&0&0\\0&0&0\\0&0&1\end{array}\right)\)</span></p>
+<p><span class="math">\(0.5\left(\begin{array}{ccc}0&amp;-1&amp;0\\1&amp;0&amp;0\\0&amp;0&amp;1\end{array}\right)+
+0.5\left(\begin{array}{ccc}0&amp;1&amp;0\\-1&amp;0&amp;0\\0&amp;0&amp;1\end{array}\right)=
+\left(\begin{array}{ccc}0&amp;0&amp;0\\0&amp;0&amp;0\\0&amp;0&amp;1\end{array}\right)\)</span></p>
 
 <p>In practice, this means the shape shrinks and collapses in regions where bone
 weights overlap: near joints.</p>
 
-<p>Dual quaternion skinning presents a solution <a class="citation" href="#fn:14" title="Jump to citation">[14]<span class="citekey" style="display:none">kavan_2008</span></a>. This method
+<p>Dual quaternion skinning presents a solution <a href="#cn:15" id="cnref:15" title="see citation" class="citation">(15)</a>. This method
 represents rigid transformations as a pair of unit quaternions,
 <span class="math">\(\hat{\mathbf{q}}\)</span>. The linear blend skinning formula is replaced with a
 linear blend of dual quaternions:</p>
 
 <p><span class="math">\(\mathbf{x}' =
- \cfrac{\sum\limits_{i=1}^m w_i(\mathbf{x})\hat{\mathbf{q}_i}}
- {\left\|\sum\limits_{i=1}^m w_i(\mathbf{x})\hat{\mathbf{q}_i}\right\|}
- \mathbf{x},\)</span></p>
+\cfrac{\sum\limits_{i=1}^m w_i(\mathbf{x})\hat{\mathbf{q}_i}}
+{\left\|\sum\limits_{i=1}^m w_i(\mathbf{x})\hat{\mathbf{q}_i}\right\|}
+\mathbf{x},\)</span></p>
 
 <p>where <span class="math">\(\hat{\mathbf{q}_i}\)</span> is the dual quaternion representation of the rigid
 transformation of bone <span class="math">\(i\)</span>. The normalization forces the result of the linear
@@ -1732,8 +1815,8 @@ igl::dqs(V,W,vQ,vT,U);
 </code></pre>
 
 <figure>
-<img src="images/arm-dqs.jpg" alt="The example DualQuaternionSkinning compares linear blend skinning (top) to dual
-quaternion skinning (bottom), highlighting LBSs candy wrapper effect (middle)
+<img src="images/arm-dqs.jpg" alt="The example [DualQuaternionSkinning](404_DualQuaternionSkinning/main.cpp) compares linear blend skinning (top) to dual
+quaternion skinning (bottom), highlighting LBS's candy wrapper effect (middle)
 and joint collapse (right)." />
 <figcaption>The example <a href="404_DualQuaternionSkinning/main.cpp">DualQuaternionSkinning</a> compares linear blend skinning (top) to dual
 quaternion skinning (bottom), highlighting LBS&#8217;s candy wrapper effect (middle)
@@ -1761,15 +1844,15 @@ They work by comparing the deformation of a mesh
 vertex to its rest position <em>rotated</em> to a new coordinate frame which best
 matches the deformation. The non-linearity stems from the mutual dependence of
 the deformation and the best-fit rotation. These techniques are often labeled
-&#8220;as-rigid-as-possible&#8221; as they penalize the sum of all local deformations&#8217;
+&#8220;as-rigid-as-possible&#8221; as they penalize the sum of all local deformations'
 deviations from rotations.</p>
 
 <p>To arrive at such an energy, let&#8217;s consider a simple per-triangle energy:</p>
 
 <p><span class="math">\(E_\text{linear}(\mathbf{X}') = \sum\limits_{t \in T} a_t \sum\limits_{\{i,j\}
- \in t} w_{ij} \left\|
- \left(\mathbf{x}'_i - \mathbf{x}'_j\right) -
- \left(\mathbf{x}_i - \mathbf{x}_j\right)\right\|^2\)</span></p>
+\in t} w_{ij} \left\|
+\left(\mathbf{x}'_i - \mathbf{x}'_j\right) -
+\left(\mathbf{x}_i - \mathbf{x}_j\right)\right\|^2\)</span></p>
 
 <p>where <span class="math">\(\mathbf{X}'\)</span> are the mesh&#8217;s unknown deformed vertex positions, <span class="math">\(t\)</span> is a
 triangle in a list of triangles <span class="math">\(T\)</span>, <span class="math">\(a_t\)</span> is the area of triangle <span class="math">\(t\)</span> and
@@ -1788,10 +1871,11 @@ for each triangle <span class="math">\(t\)</span> which are constrained to be ro
 rewritten, this time comparing deformed edge vectors to their rotated rest
 counterparts:</p>
 
-<p><span class="math">\(E_\text{arap}(\mathbf{X}',\{\mathbf{R}_1,\dots,\mathbf{R}_{|T|}\}) = \sum\limits_{t \in T} a_t \sum\limits_{\{i,j\}
- \in t} w_{ij} \left\|
- \left(\mathbf{x}'_i - \mathbf{x}'_j\right)-
- \mathbf{R}_t\left(\mathbf{x}_i - \mathbf{x}_j\right)\right\|^2.\)</span></p>
+<p>$E_\text{arap}(\mathbf{X}',{\mathbf{R}<em>1,\dots,\mathbf{R}</em>{|T|}}) = \sum\limits_{t \in T} a_t \sum\limits_{{i,j}</p>
+
+<p>\in t} w_{ij} \left|
+\left(\mathbf{x}&#8216;_i - \mathbf{x}&#8217;_j\right)-
+\mathbf{R}_t\left(\mathbf{x}_i - \mathbf{x}_j\right)\right|<sup>2</sup>.$</p>
 
 <p>The separation into the primary vertex position variables <span class="math">\(\mathbf{X}'\)</span> and the
 rotations <span class="math">\(\{\mathbf{R}_1,\dots,\mathbf{R}_{|T|}\}\)</span> lead to strategy for
@@ -1805,11 +1889,11 @@ the energy, thus we may safely iterate them until convergence.</p>
 
 <p>The different flavors of &#8220;as-rigid-as-possible&#8221; depend on the dimension and
 codimension of the domain and the edge-sets <span class="math">\(T\)</span>. The proposed surface
-manipulation technique by Sorkine and Alexa <a class="citation" href="#fn:15" title="Jump to citation">[15]<span class="citekey" style="display:none">sorkine_2007</span></a>, considers <span class="math">\(T\)</span> to
+manipulation technique by Sorkine and Alexa <a href="#cn:16" id="cnref:16" title="see citation" class="citation">(16)</a>[], considers <span class="math">\(T\)</span> to
 be the set of sets of edges emanating from each vertex (spokes). Later, Chao et
 al. derived the relationship between &#8220;as-rigid-as-possible&#8221; mesh energies and
 co-rotational elasticity considering 0-codimension elements as edge-sets:
-triangles in 2D and tetrahedra in 3D <a class="citation" href="#fn:16" title="Jump to citation">[16]<span class="citekey" style="display:none">chao_2010</span></a>. They also showed how
+triangles in 2D and tetrahedra in 3D <a href="#cn:17" id="cnref:17" title="see citation" class="citation">(17)</a>[]. They also showed how
 Sorkine and Alexa&#8217;s edge-sets are not a discretization of a continuous energy,
 proposing instead edge-sets for surfaces containing all edges of elements
 incident on a vertex (spokes and rims). They show that this amounts to
@@ -1836,10 +1920,10 @@ certain constraints on the positions of vertices in <code>b</code>, we may call:
 
 <p>Libigl&#8217;s implementation of as-rigid-as-possible deformation takes advantage of
 the highly optimized singular value decomposition code from McAdams et al.
-<a class="citation" href="#fn:17" title="Jump to citation">[17]<span class="citekey" style="display:none">mcadams_2011</span></a> which leverages SSE intrinsics.</p>
+<a href="#cn:18" id="cnref:18" title="see citation" class="citation">(18)</a>[] which leverages SSE intrinsics.</p>
 
 <figure>
-<img src="images/decimated-knight-arap.jpg" alt="The example AsRigidAsPossible deforms a surface as if it were made of an
+<img src="images/decimated-knight-arap.jpg" alt="The example [AsRigidAsPossible](405_AsRigidAsPossible/main.cpp) deforms a surface as if it were made of an
 elastic material" />
 <figcaption>The example <a href="405_AsRigidAsPossible/main.cpp">AsRigidAsPossible</a> deforms a surface as if it were made of an
 elastic material</figcaption>
@@ -1855,7 +1939,7 @@ the case of the as-rigid-as-possible optimization, the bottleneck is typically
 the large number of polar decompositions necessary to recover best fit
 rotations for each edge-set (i.e. for each triangle, tetrahedron, or vertex
 cell). Even if this code is optimized, the number of primary degrees of freedom
-is tied to the discretization level, despite the deformations&#8217; low frequency
+is tied to the discretization level, despite the deformations' low frequency
 behavior.</p>
 
 <p>This invites two routes toward fast non-linear optimization. First, is it
@@ -1875,7 +1959,7 @@ linear blend skinning in matrix form:</p>
 replaced by a linear combination of a small number of degrees of freedom in the
 <span class="math">\((3+1)m \times 3\)</span> stack of transposed &#8220;handle&#8221; transformations. Swapping in
 <span class="math">\(\mathbf{M}\mathbf{T}\)</span> for <span class="math">\(\mathbf{X}'\)</span> in the ARAP energies above immediately
-sees performance gains during the global solve step as <span class="math">\(m << n\)</span>.</p>
+sees performance gains during the global solve step as <span class="math">\(m &lt;&lt; n\)</span>.</p>
 
 <p>The complexity of the local step&#8212;fitting rotations&#8212;is still bound
 to the original mesh discretization. However, if the skinning is well behaved,
@@ -1888,7 +1972,7 @@ clustered edge-sets show diminishing returns on the deformation quality so we
 may choose a small number of clusters, proportional to the number of skinning
 weight functions (rather than the number of discrete mesh vertices).</p>
 
-<p>This proposed deformation model <a class="citation" href="#fn:18" title="Jump to citation">[18]<span class="citekey" style="display:none">jacobson_2012</span></a>, can simultaneously be seen as a
+<p>This proposed deformation model <a href="#cn:19" id="cnref:19" title="see citation" class="citation">(19)</a>[], can simultaneously be seen as a
 fast, subspace optimization for ARAP and as an automatic method for finding
 <em>the best</em> skinning transformation degrees of freedom.</p>
 
@@ -1897,11 +1981,11 @@ the skinning transformations associated with handles. To fix a transformation
 entirely we simply add the constraint:</p>
 
 <p><span class="math">\(\left(\begin{array}{cccc}
- 1 & 0 & 0 & 0\\
- 0 & 1 & 0 & 0\\
- 0 & 0 & 1 & 0\\
- 0 & 0 & 0 & 1\end{array}\right)
- \mathbf{T}_i^T = \hat{\mathbf{T}}_i^T,\)</span></p>
+1 &amp; 0 &amp; 0 &amp; 0\\
+0 &amp; 1 &amp; 0 &amp; 0\\
+0 &amp; 0 &amp; 1 &amp; 0\\
+0 &amp; 0 &amp; 0 &amp; 1\end{array}\right)
+\mathbf{T}_i^T = \hat{\mathbf{T}}_i^T,\)</span></p>
 
 <p>where <span class="math">\(\hat{\mathbf{T}}_i^T\)</span> is the <span class="math">\((3+1) \times 3\)</span> transposed fixed
 transformation for handle <span class="math">\(i\)</span>.</p>
@@ -1920,10 +2004,10 @@ user.</p>
 freeing the translation component (producing a &#8220;chickenhead&#8221; effect):</p>
 
 <p><span class="math">\(\left(\begin{array}{cccc}
- 1&0&0&0\\
- 0&1&0&0\\
- 0&0&1&0\end{array}\right)
- \mathbf{T}_i^T = \hat{\mathbf{L}}_i^T,\)</span></p>
+1&amp;0&amp;0&amp;0\\
+0&amp;1&amp;0&amp;0\\
+0&amp;0&amp;1&amp;0\end{array}\right)
+\mathbf{T}_i^T = \hat{\mathbf{L}}_i^T,\)</span></p>
 
 <p>where <span class="math">\(\hat{\mathbf{L}}_i^T\)</span> is the fixed <span class="math">\(3 \times 3\)</span> linear part of the
 transformation at handle <span class="math">\(i\)</span>.</p>
@@ -1951,7 +2035,7 @@ biharmonic distance embedding.</p>
 redundant) clustering of the per-triangle edge-sets.</p>
 
 <figure>
-<img src="images/armadillo-fast.jpg" alt="The example FastAutomaticSkinningTransformations compares a full (slow)
+<img src="images/armadillo-fast.jpg" alt="The example [FastAutomaticSkinningTransformations](406_FastAutomaticSkinningTransformations/main.cpp) compares a full (slow)
 ARAP deformation on a detailed shape (left of middle), to ARAP with grouped
 rotation edge sets (right of middle), to the very fast subpsace method
 (right)." />
@@ -1964,10 +2048,10 @@ rotation edge sets (right of middle), to the very fast subpsace method
 <h2 id="biharmoniccoordinates">Biharmonic Coordinates</h2>
 
 <p>Linear blend skinning (as <a href="#boundedbiharmonicweights">above</a>) deforms a mesh by
-propogating <em>full affine transformations</em> at handles (bones, points, regions,
+propagating <em>full affine transformations</em> at handles (bones, points, regions,
 etc.) to the rest of the shape via weights. Another deformation framework,
 called &#8220;generalized barycentric coordinates&#8221;, is a special case of linear blend
-skinning <a class="citation" href="#fn:19" title="Jump to citation">[19]<span class="citekey" style="display:none">jacobson_skinning_course_2014</span></a>: transformations are restricted to
+skinning <a href="#cn:20" id="cnref:20" title="see citation" class="citation">(20)</a>[]: transformations are restricted to
 <em>pure translations</em> and weights are required to retain <em>affine precision</em>. This
 latter requirement means that we can write the rest-position of any vertex in
 the mesh as the weighted combination of the control handle locations:</p>
@@ -1983,19 +2067,19 @@ position of each point of the shape to be the weighted combination of the
 
 <p>There are <em>many</em> different flavors of &#8220;generalized barycentric coordinates&#8221;
 (see table in &#8220;Automatic Methods&#8221; section,
-<a class="citation" href="#fn:19" title="Jump to citation">[19]<span class="citekey" style="display:none">jacobson_skinning_course_2014</span></a>). The vague goal of &#8220;generalized barycentric
+<a href="#cn:20" title="see citation" class="citation">(20)</a>[]). The vague goal of &#8220;generalized barycentric
 coordinates&#8221; is to capture as many properties of simplicial barycentric
 coordinates (e.g. for triangles in 2D and tetrahedral in 3D) for larger sets of
 points or polyhedra. Some generalized barycentric coordinates can be computed
 in closed form; others require optimization-based precomputation. Nearly all
 flavors require connectivity information describing how the control points form
 a external polyhedron around the input shape: a cage. However, a recent
-techinique does not require a cage <a class="citation" href="#fn:20" title="Jump to citation">[20]<span class="citekey" style="display:none">wang_bc_2015</span></a>. This method ensures
+techinique does not require a cage <a href="#cn:21" id="cnref:21" title="see citation" class="citation">(21)</a>[]. This method ensures
 affine precision during optimization over weights of a smoothness energy with
 affine functions in its kernel:</p>
 
 <p><span class="math">\(\mathop{\text{min}}_\mathbf{W}\,\, \text{trace}(\frac{1}{2}\mathbf{W}^T \mathbf{A}
- \mathbf{W}), \text{subject to: } \mathbf{C} = \mathbf{W}\mathbf{C}\)</span></p>
+\mathbf{W}), \text{subject to: } \mathbf{C} = \mathbf{W}\mathbf{C}\)</span></p>
 
 <p>subject to interpolation constraints at selected vertices. If <span class="math">\(\mathbf{A}\)</span> has
 affine functions in its kernel&#8212;that is, if <span class="math">\(\mathbf{A}\mathbf{V} = 0\)</span>&#8212;then
@@ -2020,12 +2104,12 @@ the integral-average of <span class="math">\(\mathbf{K}\)</span> applied to a fu
 the mesh:</p>
 
 <p><span class="math">\(\mathbf{A} = (\mathbf{M}^{-1}\mathbf{K})^2_\mathbf{M} = \mathbf{K}^T \mathbf{M}^{-1}
- \mathbf{K}.\)</span></p>
+\mathbf{K}.\)</span></p>
 
 <p>Since the Laplacian <span class="math">\(\mathbf{K}\)</span> is a second-order derivative it measures zero on affine
 functions, thus <span class="math">\(\mathbf{A}\)</span> has affine functions in its null space. A short
 derivation proves that this implies <span class="math">\(\mathbf{W}\)</span> will be affine precise (see
-<a class="citation" href="#fn:20" title="Jump to citation">[20]<span class="citekey" style="display:none">wang_bc_2015</span></a>).</p>
+<a href="#cn:21" title="see citation" class="citation">(21)</a>[]).</p>
 
 <p>Minimizers of this &#8220;squared Laplacian&#8221; energy are in some sense <em>discrete
 biharmonic functions</em>. Thus they&#8217;re dubbed &#8220;biharmonic coordinates&#8221; (not the
@@ -2040,7 +2124,7 @@ handles):</p>
 </code></pre>
 
 <figure>
-<img src="images/octopus-biharmonic-coordinates-physics.gif" alt="(Example 407) shows a physics
+<img src="images/octopus-biharmonic-coordinates-physics.gif" alt="([Example 407](407_BiharmonicCoordinates/main.cpp)) shows a physics
 simulation on a coarse orange mesh. The vertices of this mesh become control
 points for a biharmonic coordinates deformation of the blue high-resolution
 mesh." />
@@ -2050,7 +2134,7 @@ points for a biharmonic coordinates deformation of the blue high-resolution
 mesh.</figcaption>
 </figure>
 
-<h1 id="chapter5:parametrization">Chapter 5: Parametrization</h1>
+<h1 id="chapter5:parametrization">Chapter 5: Parametrization </h1>
 
 <p>In computer graphics, we denote as surface parametrization a map from the
 surface to <span class="math">\(\mathbf{R}^2\)</span>. It is usually encoded by a new set of 2D
@@ -2076,9 +2160,9 @@ genus. They initially cut the mesh in multiple patches that can be separately pa
 <li><p><strong>Global seamless parametrization</strong>: these are global parametrization algorithm that hides the seams, making the parametrization &#8220;continuous&#8221;, under specific assumptions that we will discuss later.</p></li>
 </ol>
 
-<h2 id="harmonicparametrization"><a href="#harmonicparametrization">Harmonic parametrization</a></h2>
+<h2 id="harmonicparametrization"><a href="#harmonicparametrization">Harmonic parametrization</a> </h2>
 
-<p>Harmonic parametrization <a class="citation" href="#fn:21" title="Jump to citation">[21]<span class="citekey" style="display:none">eck_2005</span></a> is a single patch, fixed boundary parametrization
+<p>Harmonic parametrization <a href="#cn:22" id="cnref:22" title="see citation" class="citation">(22)</a>[] is a single patch, fixed boundary parametrization
 algorithm that computes the 2D coordinates of the flattened mesh as two
 harmonic functions.</p>
 
@@ -2106,14 +2190,14 @@ functions is designed to be reusable in other parametrization algorithms.</p>
 
 <p>A UV parametrization can be visualized in the viewer with:</p>
 
-<pre><code class="cpp">viewer.data.set_uv(V_uv);
+<pre><code class="cpp">viewer.data().set_uv(V_uv);
 </code></pre>
 
 <p>The UV coordinates are then used to apply a procedural checkerboard texture to the
 mesh (<a href="501_HarmonicParam/main.cpp">Example 501</a>).</p>
 
 <figure>
-<img src="images/501_HarmonicParam.png" alt="(Example 501) Harmonic parametrization. (left)
+<img src="images/501_HarmonicParam.png" alt="([Example 501](501_HarmonicParam/main.cpp)) Harmonic parametrization. (left)
 mesh with texture, (right) UV parametrization with
 texture" />
 <figcaption>(<a href="501_HarmonicParam/main.cpp">Example 501</a>) Harmonic parametrization. (left)
@@ -2121,9 +2205,9 @@ mesh with texture, (right) UV parametrization with
 texture</figcaption>
 </figure>
 
-<h2 id="leastsquareconformalmaps"><a href="#leastsquareconformalmaps">Least squares conformal maps</a></h2>
+<h2 id="leastsquareconformalmaps"><a href="#leastsquareconformalmaps">Least squares conformal maps</a> </h2>
 
-<p>Least squares conformal maps parametrization <a class="citation" href="#fn:22" title="Jump to citation">[22]<span class="citekey" style="display:none">levy_2002</span></a> minimizes the
+<p>Least squares conformal maps parametrization <a href="#cn:23" id="cnref:23" title="see citation" class="citation">(23)</a>[] minimizes the
 conformal (angular) distortion of the parametrization. Differently from
 harmonic parametrization, it does not need to have a fixed boundary.</p>
 
@@ -2131,7 +2215,7 @@ harmonic parametrization, it does not need to have a fixed boundary.</p>
 
 <p><span class="math">\[ E_{LSCM}(\mathbf{u},\mathbf{v}) = \int_X \frac{1}{2}| \nabla \mathbf{u}^{\perp} - \nabla \mathbf{v} |^2 dA \]</span></p>
 
-<p>which can be rewritten in matrix form as <a class="citation" href="#fn:23" title="Jump to citation">[23]<span class="citekey" style="display:none">mullen_2008</span></a>:</p>
+<p>which can be rewritten in matrix form as <a href="#cn:24" id="cnref:24" title="see citation" class="citation">(24)</a>[]:</p>
 
 <p><span class="math">\[ E_{LSCM}(\mathbf{u},\mathbf{v}) = \frac{1}{2} [\mathbf{u},\mathbf{v}]^t (L_c - 2A) [\mathbf{u},\mathbf{v}] \]</span></p>
 
@@ -2165,15 +2249,15 @@ case we do not need to fix the boundary. To remove the null space of the energy 
 vertices to two arbitrary positions. The full source code is provided in <a href="502_LSCMParam/main.cpp">Example 502</a>.</p>
 
 <figure>
-<img src="images/502_LSCMParam.png" alt="(Example 502) LSCM parametrization. (left) mesh
+<img src="images/502_LSCMParam.png" alt="([Example 502](502_LSCMParam/main.cpp)) LSCM parametrization. (left) mesh
 with texture, (right) UV parametrization" />
 <figcaption>(<a href="502_LSCMParam/main.cpp">Example 502</a>) LSCM parametrization. (left) mesh
 with texture, (right) UV parametrization</figcaption>
 </figure>
 
-<h2 id="asrigidaspossible"><a href="#asrigidaspossible">As-rigid-as-possible parametrization</a></h2>
+<h2 id="asrigidaspossible"><a href="#asrigidaspossible">As-rigid-as-possible parametrization</a> </h2>
 
-<p>As-rigid-as-possible parametrization <a class="citation" href="#fn:24" title="Jump to citation">[24]<span class="citekey" style="display:none">liu_2008</span></a> is a powerful single-patch,
+<p>As-rigid-as-possible parametrization <a href="#cn:25" id="cnref:25" title="see citation" class="citation">(25)</a>[] is a powerful single-patch,
 non-linear algorithm to compute a parametrization that strives to preserve
 distances (and thus angles). The idea is very similar to ARAP surface
 deformation: each triangle is mapped to the plane trying to preserve its
@@ -2190,7 +2274,7 @@ parametrization. Similarly to LSCM, the boundary is free to deform to minimize
 the distortion.</p>
 
 <figure>
-<img src="images/503_ARAPParam.png" alt="(Example 503) As-Rigid-As-Possible parametrization.
+<img src="images/503_ARAPParam.png" alt="([Example 503](502_ARAPParam/main.cpp)) As-Rigid-As-Possible parametrization.
 (left) mesh with texture, (right) UV parametrization with
 texture" />
 <figcaption>(<a href="502_ARAPParam/main.cpp">Example 503</a>) As-Rigid-As-Possible parametrization.
@@ -2198,7 +2282,7 @@ texture" />
 texture</figcaption>
 </figure>
 
-<h2 id="nrotationallysymmetrictangetfields"><a href="#nrotationallysymmetrictangetfields">N-rotationally symmetric tangent fields</a></h2>
+<h2 id="nrotationallysymmetrictangetfields"><a href="#nrotationallysymmetrictangetfields">N-rotationally symmetric tangent fields</a> </h2>
 
 <p>The design of tangent fields is a basic tool used to design guidance fields for
 uniform quadrilateral and hexahedral remeshing. Libigl contains an
@@ -2225,7 +2309,7 @@ the triangle mesh (output_field), plus the singularities of the field
 </figure>
 
 <p>The singularities are vertices where the field vanishes (highlighted in red in
-the figure above). <code>igl::nrosy</code> can also generate N-RoSy fields <a class="citation" href="#fn:25" title="Jump to citation">[25]<span class="citekey" style="display:none">levy_2008</span></a>,
+the figure above). <code>igl::nrosy</code> can also generate N-RoSy fields <a href="#cn:26" id="cnref:26" title="see citation" class="citation">(26)</a>[],
 which are a generalization of vector fields where in every face the vector is
 defined up to a constant rotation of <span class="math">\(2\pi / N\)</span>. As can be observed in
 the following figure, the singularities of the fields generated with different
@@ -2239,11 +2323,12 @@ N are of different types and they appear in different positions.</p>
 <p>We demonstrate how to call and plot N-RoSy fields in <a href="504_NRosyDesign/main.cpp">Example
 504</a>, where the degree of the field can be change
 pressing the number keys. <code>igl::nrosy</code> implements the algorithm proposed in
-<a class="citation" href="#fn:26" title="Jump to citation">[26]<span class="citekey" style="display:none">bommes_2009</span></a>. N-RoSy fields can also be interpolated with the algorithm
-proposed in <a class="citation" href="#fn:27" title="Jump to citation">[27]<span class="citekey" style="display:none">knoppel_2013</span></a>, see Section <a href="#npolyvectorfields">npolyvectorfields</a> for more details
-(<a href="../include/igl/n_polyvector.h">igl::n_polyvector</a>).</p>
+<a href="#cn:27" id="cnref:27" title="see citation" class="citation">(27)</a>[]. N-RoSy fields can also be interpolated with many other algorithms,
+see the library <a href="https://github.com/avaxman/libdirectional">libdirectional</a> for
+a reference implementation of the most popular ones. For a complete categorization
+of fields used in various applications see Vaxman et al. 2016 <a href="#cn:28" id="cnref:28" title="see citation" class="citation">(28)</a>.</p>
 
-<h3 id="globalseamlessintegergridparametrization"><a href="#globalseamlessintegergridparametrization">Global, seamless integer-grid parametrization</a></h3>
+<h3 id="globalseamlessintegergridparametrization"><a href="#globalseamlessintegergridparametrization">Global, seamless integer-grid parametrization</a> </h3>
 
 <p>The previous parametrization methods were focusing on creating parametrizations
 of surface patches aimed at texture mapping or baking of other surface
@@ -2251,7 +2336,7 @@ properties such as normals and high-frequency details. Global, seamless
 parametrization aims at parametrizing complex shapes with a parametrization
 that is aligned with a given set of directions for the purpose of surface
 remeshing. In libigl, we provide a reference implementation of the pipeline
-proposed in the mixed integer quadrangulation paper <a class="citation" href="#fn:26" title="Jump to citation">[26]<span class="citekey" style="display:none">bommes_2009</span></a>.</p>
+proposed in the mixed integer quadrangulation paper <a href="#cn:27" title="see citation" class="citation">(27)</a>[].</p>
 
 <p>The first step involves the design of a 4-RoSy field (sometimes called <em>cross</em>
 field) that describes the alignment of the edges of the desired quadrilateral
@@ -2330,7 +2415,7 @@ input cross field.</p>
 </figure>
 
 <p>We hide the seams by adding integer constraints to the Poisson problem
-that align the isolines on both sides of each seam <a class="citation" href="#fn:26" title="Jump to citation">[26]<span class="citekey" style="display:none">bommes_2009</span></a>.</p>
+that align the isolines on both sides of each seam <a href="#cn:27" title="see citation" class="citation">(27)</a>.</p>
 
 <figure>
 <img src="images/505_MIQ_7.png" alt="Seamless Poisson parametrization." />
@@ -2349,12 +2434,12 @@ it contains many overlaps.</p>
 <a href="https://github.com/hcebke/libQEx">libQEx</a> (not included in libigl).
 The full pipeline is implemented in <a href="505_MIQ/main.cpp">Example 505</a>.</p>
 
-<h2 id="anisotropicremeshingusingframefields"><a href="#anisotropicremeshingusingframefields">Anisotropic remeshing</a></h2>
+<h2 id="anisotropicremeshingusingframefields"><a href="#anisotropicremeshingusingframefields">Anisotropic remeshing</a> </h2>
 
 <p>Anisotropic and non-uniform quad remeshing is important to concentrate the
 elements in the regions with more details. It is possible to extend the MIQ
 quad meshing framework to generate anisotropic quad meshes using a mesh
-deformation approach <a class="citation" href="#fn:28" title="Jump to citation">[28]<span class="citekey" style="display:none">panozzo_2014</span></a>.</p>
+deformation approach <a href="#cn:29" id="cnref:29" title="see citation" class="citation">(29)</a>[].</p>
 
 <p>The input of the anisotropic remeshing algorithm is a sparse set of constraints
 that define the shape and scale of the desired quads. This can be encoded as a
@@ -2410,116 +2495,50 @@ generate the UV parametrization, but other algorithms could be applied: the
 only desiderata is that the generated quad mesh should be as isotropic as
 possible.</p>
 
-<h2 id="npolyvectorfields"><a href="#npolyvectorfields">N-PolyVector fields</a></h2>
-
-<p>N-RoSy vector fields can be further generalized to represent arbitrary
-vector-sets, with arbitrary angles between them and with arbitrary lengths
-<a class="citation" href="#fn:29" title="Jump to citation">[29]<span class="citekey" style="display:none">diamanti_2014</span></a>. This generalization is called N-PolyVector field, and
-libigl provides the function <code>igl::n_polyvector</code> to design them starting from a
-sparse set of constraints (<a href="507_PolyVectorField/main.cpp">Example 507</a>).</p>
-
-<figure>
-<img src="images/507_PolyVectorField.png" alt="Interpolation of a 6-PolyVector field (right) and a 12-PolyVector field from a sparse set of random constraints." />
-<figcaption>Interpolation of a 6-PolyVector field (right) and a 12-PolyVector field from a sparse set of random constraints.</figcaption>
-</figure>
-
-<p>The core idea is to represent the vector set as the roots of a complex
-polynomial: The polynomial coefficients are then harmonically interpolated
-leading to polynomials whose roots smoothly vary over the surface.</p>
-
-<p>Globally optimal direction fields <a class="citation" href="#fn:27" title="Jump to citation">[27]<span class="citekey" style="display:none">knoppel_2013</span></a> are a special case of
-PolyVector fields. If the constraints are taken from an N-RoSy field,
-<code>igl::n_polyvector</code> generates a field that is equivalent, after normalization,
-to a globally optimal direction field.</p>
-
-<h2 id="conjugatevectorfields"><a href="#conjugatevectorfields">Conjugate vector fields</a></h2>
-
-<p>Two tangent vectors lying on a face of a triangle mesh are conjugate if</p>
-
-<p><span class="math">\[ k_1 (u^T d_1)(v^T d_1) + k_2(u^T d_2)(v^T d_2) = 0. \]</span></p>
-
-<p>This condition is very important in architectural geometry: The faces of an
-infinitely dense quad mesh whose edges are aligned with a conjugate field are
-planar. Thus, a quad mesh whose edges follow a conjugate field are easier to
-planarize <a class="citation" href="#fn:30" title="Jump to citation">[30]<span class="citekey" style="display:none">liu_2011</span></a>.</p>
-
-<p>Finding a conjugate vector field that satisfies given directional constraints
-is a standard problem in architectural geometry, which can be tackled by
-deforming a Poly-Vector field to the closest conjugate field.</p>
-
-<p>This algorithm <a class="citation" href="#fn:29" title="Jump to citation">[29]<span class="citekey" style="display:none">diamanti_2014</span></a> alternates a global step, which enforces
-smoothness, with a local step, that projects the field on every face to the
-closest conjugate field (<a href="508_ConjugateField/main.cpp">Example 508</a>).</p>
-
-<figure>
-<img src="images/508_ConjugateField.png" alt="A smooth 4-PolyVector field (left) is deformed to become a conjugate field
-(right)." />
-<figcaption>A smooth 4-PolyVector field (left) is deformed to become a conjugate field
-(right).</figcaption>
-</figure>
-
-<h2 id="planarization"><a href="#planarization">Planarization</a></h2>
+<h2 id="planarization"><a href="#planarization">Planarization</a> </h2>
 
 <p>A quad mesh can be transformed in a planar quad mesh with Shape-Up
-<a class="citation" href="#fn:31" title="Jump to citation">[31]<span class="citekey" style="display:none">bouaziz_2012</span></a>, a local/global approach that uses the global step to enforce
+<a href="#cn:30" id="cnref:30" title="see citation" class="citation">(30)</a>, a local/global approach that uses the global step to enforce
 surface continuity and the local step to enforce planarity.</p>
 
-<p><a href="509_Planarization/main.cpp">Example 509</a> planarizes a quad mesh until it
+<p><a href="507_Planarization/main.cpp">Example 507</a> planarizes a quad mesh until it
 satisfies a user-given planarity threshold.</p>
 
 <figure>
 <img src="images/509_Planarization.png" alt="A non-planar quad mesh (left) is planarized using the libigl function
-igl::palanarize (right). The colors represent the planarity of the
+igl::planarize (right). The colors represent the planarity of the
 quads." />
 <figcaption>A non-planar quad mesh (left) is planarized using the libigl function
-igl::palanarize (right). The colors represent the planarity of the
+igl::planarize (right). The colors represent the planarity of the
 quads.</figcaption>
 </figure>
 
-<h2 id="integrable"><a href="#integrable">Integrable PolyVector Fields</a></h2>
-
-<p>Vector-field guided surface parameterization is based on the idea of designing the gradients
-of the parameterization functions (which are tangent vector fields on the surface) instead of the functions themselves. Thus, vector-set fields (N-Rosy, frame fields, and polyvector fields) that are to be used for parameterization (and subsequent remeshing) need to be integrable: it must be possible to break them down into individual vector fields that are gradients of scalar functions. Fields obtained by most smoothness-based design methods (eg. <a class="citation" href="#fn:25" title="Jump to citation">[25]<span class="citekey" style="display:none">levy_2008</span></a>, <a class="citation" href="#fn:27" title="Jump to citation">[27]<span class="citekey" style="display:none">knoppel_2013</span></a>, <a class="citation" href="#fn:29" title="Jump to citation">[29]<span class="citekey" style="display:none">diamanti_2014</span></a>, <a class="citation" href="#fn:26" title="Jump to citation">[26]<span class="citekey" style="display:none">bommes_2009</span></a>, <a class="citation" href="#fn:28" title="Jump to citation">[28]<span class="citekey" style="display:none">panozzo_2014</span></a>) do not have this property. In <a class="citation" href="#fn:32" title="Jump to citation">[32]<span class="citekey" style="display:none">diamanti_2015</span></a>, a method for creating integrable polyvector fields was introduced. This method takes as input a given field and improves its integrability by removing the vector field curl, thus turning it into a gradient of a function (<a href="510_Integrable/main.cpp">Example 510</a>).</p>
-
-<figure>
-<img src="images/510_Integrable.png" alt="Integration error is removed from a frame field to produce a field aligned parameterization free of triangle flips." />
-<figcaption>Integration error is removed from a frame field to produce a field aligned parameterization free of triangle flips.</figcaption>
-</figure>
-
-<p>This method retains much of the core principles of the polyvector framework - it expresses the condition for zero discrete curl condition (which typically requires integers for the vector matchings) into a condition involving continuous variables only. This is done using coefficients of appropriately defined polynomials. The parameterizations generated by the resulting fields are exactly aligned to the field directions and contain no inverted triangles.</p>
-
-<h2 id="npolyvectorfields_general"><a href="#npolyvectorfields_general">General N-PolyVector fields</a></h2>
-
-<p>While mostly applicable for the design of symmetric fields (i.e. fields that comprise of vector sets with symmetries between them at each point, e.g. N-RoSy or frame-fields), the framework presented in <a class="citation" href="#fn:29" title="Jump to citation">[29]<span class="citekey" style="display:none">diamanti_2014</span></a> can be used to design completely general fields, with possibly no such symmetries. For example, one can design fields that at each point comprise of an arbitrary number of vectors, not required to be collinear - as opposed e.g. to the case of the 4 pairwise-collinear vectors designed in the example (<a href="507_PolyVectorField/main.cpp">Example 507</a>). This capability is implemented in the function igl::n_polyvector_general, and is illustrated in the example (<a href="511_PolyVectorFieldGeneral/main.cpp">Example 511</a>).</p>
-
-<figure>
-<img src="images/511_PolyVectorFieldGeneral.png" alt="Interpolation of a general field with 3 (left) and 9 vectors per point field from a sparse set of random constraints (in red). The field is defined on all mesh faces, but is only shown on a subset for clarity. " />
-<figcaption>Interpolation of a general field with 3 (left) and 9 vectors per point field from a sparse set of random constraints (in red). The field is defined on all mesh faces, but is only shown on a subset for clarity. </figcaption>
-</figure>
-
-<p>The design of these general directional fields (also called vector-set fields) is based on the same polynomial framework and includes the symmetric fields as a special case. Note that in the case that some symmetries do exist in the constraints, the final field is not guaranteed to have these symmetries everywhere else on the mesh. For example, designing a field with 3 vectors per point where, at the constrained faces, two of the vectors are on a line opposite to each other, we are not guaranteed to always have two pairwise-collinear vectors everywhere in the result, as can be seen in the picture. In some cases however (as is the case of the frame field in the previous example <a href="507_PolyVectorField/main.cpp">Example 507</a>) these symmetries are in fact guaranteed due to the particular nature of the polynomial that applies in that case (two coefficients are 0).</p>
-
-<p>For a complete categorization of fields used in various applications (including these general ones) see Vaxman et al. 2016 <a class="citation" href="#fn:33" title="Jump to citation">[33]<span class="citekey" style="display:none">vaxman_2016</span></a>.</p>
-
-<h1 id="chapter6:externallibraries">Chapter 6: External libraries</h1>
+<h1 id="chapter6:externallibraries">Chapter 6: External libraries </h1>
 
 <p>An additional positive side effect of using matrices as basic types is that it
-is easy to exchange data between libigl and other softwares and libraries.</p>
+is easy to exchange data between libigl and other software and libraries.</p>
 
-<h2 id="stateserialization"><a href="#stateserialization">State serialization</a></h2>
+<h2 id="stateserialization"><a href="#stateserialization">State serialization</a> </h2>
 
 <p>Geometry processing applications often require a considerable amount of
-computational time and/or manual input. Serializing the state of the application is a simple strategy to greatly increase the development efficiency. It allows to quickly start debugging just
-before the crash happens, avoiding to wait for the precomputation to take place
-every time and it also makes your experiments reproducible, allowing to quickly test algorithms variants on the same input data.</p>
+computational time and/or manual input. Serializing the state of the application
+is a simple strategy to greatly increase the development efficiency. It allows
+to quickly start debugging just before the crash happens, avoiding to wait for
+the precomputation to take place every time and it also makes your experiments
+reproducible, allowing to quickly test algorithms variants on the same input
+data.</p>
 
-<p>Serialization is often not considered in geometry processing due
-to the extreme difficulty in serializing pointer-based data structured, such as
-an half-edge data structure (<a href="http://openmesh.org">OpenMesh</a>, <a href="http://www.cgal.org">CGAL</a>), or a pointer based indexed structure (<a href="http://vcg.isti.cnr.it/~cignoni/newvcglib/html/">VCG</a>).</p>
+<p>Serialization is often not considered in geometry processing due to the extreme
+difficulty in serializing pointer-based data structured, such as an half-edge
+data structure (<a href="http://openmesh.org">OpenMesh</a>, <a href="http://www.cgal.org">CGAL</a>),
+or a pointer based indexed structure
+(<a href="http://vcg.isti.cnr.it/~cignoni/newvcglib/html/">VCG</a>).</p>
 
-<p>In libigl, serialization is much simpler, since the majority of the functions use basic types, and pointers are used in very rare cases (usually to interface
-with external libraries). Libigl bundles a simple and self-contained binary and XML serialization framework, that drastically reduces the overhead required to add
-serialization to your applications.</p>
+<p>In libigl, serialization is much simpler, since the majority of the functions
+use basic types, and pointers are used in very rare cases (usually to interface
+with external libraries). Libigl bundles a simple and self-contained binary and
+XML serialization framework, that drastically reduces the overhead required to
+add serialization to your applications.</p>
 
 <p>To de-/serialize a set of variables use the following method:</p>
 
@@ -2529,7 +2548,8 @@ bool b = true;
 unsigned int num = 10;
 std::vector&lt;float&gt; vec = {0.1,0.002,5.3};
 
-// use overwrite = true for the first serialization to create or overwrite an existing file
+// use overwrite = true for the first serialization to create or overwrite an
+// existing file
 igl::serialize(b,&quot;B&quot;,&quot;filename&quot;,true);
 // append following serialization to existing file
 igl::serialize(num,&quot;Number&quot;,&quot;filename&quot;);
@@ -2541,10 +2561,16 @@ igl::deserialize(num,&quot;Number&quot;,&quot;filename&quot;);
 igl::deserialize(vec,&quot;VectorName&quot;,&quot;filename&quot;);
 </code></pre>
 
-<p>Currently all fundamental data types (bool, int, float, double, &#8230;) are supported, as well as std::string, basic <code>STL</code> containers, dense and sparse Eigen matrices and nestings of those.
-Some limitations apply to pointers. Currently, loops or many to one type of link structures are not handled correctly. Each pointer is assumed to point to a different independent object.
-Uninitialized pointers must be set to <code>nullptr</code> before de-/serialization to avoid memory leaks. Cross-platform issues like little-, big-endianess is currently not supported.
-To make user defined types serializable, just derive from <code>igl::Serializable</code> and trivially implementing the <code>InitSerialization</code> method.</p>
+<p>Currently all fundamental data types (bool, int, float, double, &#8230;) are
+supported, as well as std::string, basic <code>STL</code> containers, dense and sparse
+Eigen matrices and nestings of those. Some limitations apply to pointers.
+Currently, loops or many to one type of link structures are not handled
+correctly. Each pointer is assumed to point to a different independent object.
+Uninitialized pointers must be set to <code>nullptr</code> before de-/serialization to
+avoid memory leaks. Cross-platform issues like little-, big-endianess is
+currently not supported. To make user defined types serializable, just derive
+from <code>igl::Serializable</code> and trivially implementing the <code>InitSerialization</code>
+method.</p>
 
 <p>Assume that the state of your application is a mesh and a set of integer ids:</p>
 
@@ -2565,7 +2591,9 @@ struct State : public igl::Serializable
 };
 </code></pre>
 
-<p>If you need more control over the serialization of your types, you can override the following functions or directly inherit from the interface <code>igl::SerializableBase</code>.</p>
+<p>If you need more control over the serialization of your types, you can override
+the following functions or directly inherit from the interface
+<code>igl::SerializableBase</code>.</p>
 
 <pre><code class="cpp">bool Serializable::PreSerialization() const;
 void Serializable::PostSerialization() const;
@@ -2573,18 +2601,21 @@ bool Serializable::PreDeserialization();
 void Serializable::PostDeserialization();
 </code></pre>
 
-<p>Alternatively, if you want a non-intrusive way of serializing your state you can overload the following functions:</p>
+<p>Alternatively, if you want a non-intrusive way of serializing your state you can
+overload the following functions:</p>
 
 <pre><code class="cpp">namespace igl
 {
   namespace serialization
   {
-    template &lt;&gt; inline void serialize(const State&amp; obj,std::vector&lt;char&gt;&amp; buffer){
+    template &lt;&gt; inline void serialize(const State&amp; obj,std::vector&lt;char&gt;&amp; buffer)
+    {
       ::igl::serialize(obj.V,std::string(&quot;V&quot;),buffer);
       ::igl::serialize(obj.F,std::string(&quot;F&quot;),buffer);
       ::igl::serialize(obj.ids,std::string(&quot;ids&quot;),buffer);
     }
-    template &lt;&gt; inline void deserialize(State&amp; obj,const std::vector&lt;char&gt;&amp; buffer){
+    template &lt;&gt; inline void deserialize(State&amp; obj,const std::vector&lt;char&gt;&amp; buffer)
+    {
       ::igl::deserialize(obj.V,std::string(&quot;V&quot;),buffer);
       ::igl::deserialize(obj.F,std::string(&quot;F&quot;),buffer);
       ::igl::deserialize(obj.ids,std::string(&quot;ids&quot;),buffer);
@@ -2602,9 +2633,13 @@ void Serializable::PostDeserialization();
 )
 </code></pre>
 
-<p>All the former code is for binary serialization which is especially useful if you have to handle larger data where the loading and saving times become more important.
-For cases where you want to read and edit the serialized data by hand we provide a serialization to XML files which is based on the library <a href="https://github.com/leethomason/tinyxml2">tinyxml2</a>.
-There you also have the option to create a partial binary serialization of your data by using the binary parameter, exposed in the function <code>serialize_xml()</code>:</p>
+<p>All the former code is for binary serialization which is especially useful if
+you have to handle larger data where the loading and saving times become more
+important. For cases where you want to read and edit the serialized data by
+hand we provide a serialization to XML files which is based on the library
+<a href="https://github.com/leethomason/tinyxml2">tinyxml2</a>. There you also have the
+option to create a partial binary serialization of your data by using the binary
+parameter, exposed in the function <code>serialize_xml()</code>:</p>
 
 <pre><code class="cpp">#include &quot;igl/xml/serialize_xml.h&quot;
 
@@ -2628,11 +2663,11 @@ common to have to do small changes to figures, and being able to serialize the
 entire state just before you take screenshots will save you many painful hours
 before a submission deadline.</p>
 
-<h2 id="mixingmatlabcode"><a href="#mixingmatlabcode">Mixing Matlab code</a></h2>
+<h2 id="mixingmatlabcode"><a href="#mixingmatlabcode">Mixing Matlab code</a> </h2>
 
 <p>Libigl can be interfaced with Matlab to offload numerically heavy computation
 to a Matlab script. The major advantage of this approach is that you will be
-able to develop efficient and complex user-interfaces in C++, while exploting
+able to develop efficient and complex user-interfaces in C++, while exploring
 the syntax and fast protototyping features of matlab. In particular, the use of
 an external Matlab script in a libigl application allows to change the Matlab
 code while the C++ application is running, greatly increasing coding
@@ -2754,7 +2789,7 @@ L = sparse(LIJV(:,1),LIJV(:,2),LIJV(:,3));
 
 <p>which is easily copied and pasted into Matlab for debugging, etc.</p>
 
-<h2 id="callinglibiglfunctionsfrommatlab"><a href="#callinglibiglfunctionsfrommatlab">Calling libigl functions from Matlab</a></h2>
+<h2 id="callinglibiglfunctionsfrommatlab"><a href="#callinglibiglfunctionsfrommatlab">Calling libigl functions from Matlab</a> </h2>
 
 <p>It is also possible to call libigl functions from matlab, compiling them as MEX
 functions. This can be used to offload to C++ code the computationally
@@ -2765,7 +2800,7 @@ We plan to provide wrappers for all our functions in the future, if you are
 interested in this feature (or if you want to help implementing it) please let
 us know.</p>
 
-<h2 id="triangulationofclosedpolygons"><a href="#triangulationofclosedpolygons">Triangulation of closed polygons</a></h2>
+<h2 id="triangulationofclosedpolygons"><a href="#triangulationofclosedpolygons">Triangulation of closed polygons</a> </h2>
 
 <p>The generation of high-quality triangle and tetrahedral meshes is a very common
 task in geometry processing. We provide wrappers in libigl to
@@ -2790,7 +2825,7 @@ in its interior) is triangulated.</p>
 <figcaption>Triangulation of the interior of a polygon.</figcaption>
 </figure>
 
-<h2 id="tetrahedralizationofclosedsurfaces"><a href="#tetrahedralizationofclosedsurfaces">Tetrahedralization of closed surfaces</a></h2>
+<h2 id="tetrahedralizationofclosedsurfaces"><a href="#tetrahedralizationofclosedsurfaces">Tetrahedralization of closed surfaces</a> </h2>
 
 <p>Similarly, the interior of a closed manifold surface can be tetrahedralized
 using the function <code>igl::tetrahedralize</code> which wraps the Tetgen library (<a href="605_Tetgen/main.cpp">Example
@@ -2804,7 +2839,7 @@ using the function <code>igl::tetrahedralize</code> which wraps the Tetgen libra
 <figcaption>Tetrahedralization of the interior of a surface mesh.</figcaption>
 </figure>
 
-<h2 id="bakingambientocclusion"><a href="#bakingambientocclusion">Baking ambient occlusion</a></h2>
+<h2 id="bakingambientocclusion"><a href="#bakingambientocclusion">Baking ambient occlusion</a> </h2>
 
 <p><a href="http://en.wikipedia.org/wiki/Ambient_occlusion">Ambient occlusion</a> is a
 rendering technique used to calculate the exposure of each point in a surface
@@ -2841,13 +2876,13 @@ occlusion." />
 occlusion.</figcaption>
 </figure>
 
-<h2 id="screencapture"><a href="#screencapture">Screen Capture</a></h2>
+<h2 id="screencapture"><a href="#screencapture">Screen Capture</a> </h2>
 
 <p>Libigl supports read and writing to .png files via the
 <a href="http://nothings.org/stb_image.h">stb image</a> code.</p>
 
 <p>With the viewer used in this tutorial, it is possible to render the scene in a
-memory buffer using the function, <code>igl::viewer::ViewerCore::draw_buffer</code>:</p>
+memory buffer using the function, <code>igl::opengl::ViewerCore::draw_buffer</code>:</p>
 
 <pre><code class="cpp">// Allocate temporary buffers for 1280x800 image
 Eigen::Matrix&lt;unsigned char,Eigen::Dynamic,Eigen::Dynamic&gt; R(1280,800);
@@ -2865,14 +2900,14 @@ igl::png::writePNG(R,G,B,A,&quot;out.png&quot;);
 <p>In <a href="607_ScreenCapture/main.cpp">Example 607</a> a scene is rendered in a temporary
 png and used to texture a quadrilateral.</p>
 
-<h2 id="locallyinjectivemaps"><a href="#locallyinjectivemaps">Locally Injective Maps</a></h2>
+<h2 id="locallyinjectivemaps"><a href="#locallyinjectivemaps">Locally Injective Maps</a> </h2>
 
 <p>Extreme deformations or parametrizations with high-distortion might flip
 elements. This is undesirable in many applications, and it is possible to
 avoid it by introducing a non-linear constraints that guarantees that the area
 of every element remain positive.</p>
 
-<p>Libigl can be used to compute Locally Injective Maps <a class="citation" href="#fn:34" title="Jump to citation">[34]<span class="citekey" style="display:none">schuller_2013</span></a> using a variety of
+<p>Libigl can be used to compute Locally Injective Maps <a href="#cn:31" id="cnref:31" title="see citation" class="citation">(31)</a>[] using a variety of
 deformation energies. A simple deformation of a 2D grid is computed in <a href="608_LIM/main.cpp">Example
 608</a>.</p>
 
@@ -2883,7 +2918,7 @@ editing plus the anti-flipping constraints (right)." />
 editing plus the anti-flipping constraints (right).</figcaption>
 </figure>
 
-<h2 id="booleanoperationsonmeshes"><a href="#booleanoperationsonmeshes">Boolean operations on meshes</a></h2>
+<h2 id="booleanoperationsonmeshes"><a href="#booleanoperationsonmeshes">Boolean operations on meshes</a> </h2>
 
 <p>Constructive solid geometry (CSG) is a technique to define a complex surface as
 the result of a number of set operations on solid regions of space: union,
@@ -2897,23 +2932,27 @@ function <span class="math">\(a(\mathbf{x})\)</span> &#8220;returns true&#8221;.
 operations are straightforward. For example, the union of solids <span class="math">\(A\)</span> and <span class="math">\(B\)</span>
 is simply</p>
 
-<p><span class="math">\(A \cup B = \{\mathbf{x} \left.\right|
-  a(\mathbf{x}) \text{ or } b(\mathbf{x})\},\)</span></p>
+<p>$A \cup B = {\mathbf{x} \left.\right|</p>
+
+<p>a(\mathbf{x}) \text{ or } b(\mathbf{x})},$</p>
 
 <p>the intersection is</p>
 
-<p><span class="math">\(A \cap B = \{\mathbf{x} \left.\right|
-  a(\mathbf{x}) \text{ and } b(\mathbf{x})\},\)</span></p>
+<p>$A \cap B = {\mathbf{x} \left.\right|</p>
+
+<p>a(\mathbf{x}) \text{ and } b(\mathbf{x})},$</p>
 
 <p>the difference <span class="math">\(A\)</span> <em>minus</em> <span class="math">\(B\)</span> is</p>
 
-<p><span class="math">\(A \setminus B = \{\mathbf{x} \left.\right|
-  a(\mathbf{x}) \text{ and _not_ } b(\mathbf{x})\},\)</span></p>
+<p>$A \setminus B = {\mathbf{x} \left.\right|</p>
+
+<p>a(\mathbf{x}) \text{ and <em>not</em> } b(\mathbf{x})},$</p>
 
 <p>and the symmetric difference (XOR) is</p>
 
-<p><span class="math">\(A \triangle B = \{\mathbf{x} \left.\right|
-  \text{either } a(\mathbf{x}) \text{ or } b(\mathbf{x}) \text{ but not both }\}.\)</span></p>
+<p>$A \triangle B = {\mathbf{x} \left.\right|</p>
+
+<p>\text{either } a(\mathbf{x}) \text{ or } b(\mathbf{x}) \text{ but not both }}.$</p>
 
 <p>Stringing together many of these operations, one can design quite complex
 shapes. A typical CSG library might only keep explicit <em>base-case</em>
@@ -2926,7 +2965,7 @@ compute robustly with boundary representations, but are nonetheless useful.</p>
 
 <p>To compute a boolean operation on a triangle mesh with vertices <code>VA</code> and
 triangles <code>FA</code> and another mesh <code>VB</code> and <code>FB</code>, libigl first computes a unified
-&#8220;mesh arrangement&#8221; (see <a class="citation" href="#fn:35" title="Jump to citation">[35]<span class="citekey" style="display:none">zhou_2016</span></a>) with vertices <code>V</code> and triangles <code>F</code> where all triangle-triangle
+&#8220;mesh arrangement&#8221; (see <a href="#cn:32" id="cnref:32" title="see citation" class="citation">(32)</a>[]) with vertices <code>V</code> and triangles <code>F</code> where all triangle-triangle
 intersections have been &#8220;resolved&#8221;. That is, edges and vertices are added
 exactly at the intersection lines, so the resulting <em>non-manifold</em> mesh <code>(V,F)</code>
 has no self-intersections.</p>
@@ -2945,10 +2984,10 @@ intersection) the boundary of the corresponding cells are extracted.</p>
 <p>The following figure shows each boolean operation on two meshes.</p>
 
 <figure>
-<img src="images/cheburashka-knight-boolean.jpg" alt="The example Boolean conducts
+<img src="images/cheburashka-knight-boolean.jpg" alt="The example [Boolean](609_Boolean/main.cpp) conducts
 boolean operations on the Cheburashka (red) and Knight (green). From left
 to right: union, intersection, set minus, symmetric difference (XOR),
-resolve. Bottom row reveals inner surfaces, darker color indicates
+"resolve". Bottom row reveals inner surfaces, darker color indicates
 back-facing triangles." />
 <figcaption>The example <a href="609_Boolean/main.cpp">Boolean</a> conducts
 boolean operations on the <em>Cheburashka</em> (red) and <em>Knight</em> (green). From left
@@ -2970,7 +3009,7 @@ together coincident vertices, maintaining original triangle orientations.</p>
 <a href="https://github.com/gilbo/cork">cork</a>, which is typically faster, but is not
 always robust.</p>
 
-<h2 id="csgtree"><a href="#csgtree">CSG Tree</a></h2>
+<h2 id="csgtree"><a href="#csgtree">CSG Tree</a> </h2>
 
 <p>The <a href="#booleanoperationsonmeshes">previous section</a> discusses using
 <code>igl::copyleft::cgal::mesh_boolean</code> to compute the result of a <em>single</em> boolean
@@ -3006,13 +3045,20 @@ operations</figcaption>
 then the final composite.</p>
 
 <figure>
-<img src="images/cube-sphere-cylinders-csg.gif" alt="Example 610 computes complex CSG Tree operation on 5
+<img src="images/cube-sphere-cylinders-csg.gif" alt="Example [610](610_CSGTree/main.cpp) computes  complex CSG Tree operation on 5
 input meshes." />
 <figcaption>Example <a href="610_CSGTree/main.cpp">610</a> computes complex CSG Tree operation on 5
 input meshes.</figcaption>
 </figure>
 
-<h2 id="meshstatistics"><a href="#meshstatistics">Mesh Statistics</a></h2>
+<h1 id="chapter7:miscellaneous">Miscellaneous </h1>
+
+<p>Libigl contains a <em>wide</em> variety of geometry processing tools and functions for
+dealing with meshes and the linear algebra related to them: far too many to
+discuss in this introductory tutorial. We&#8217;ve pulled out a couple of the
+interesting functions in this chapter to highlight.</p>
+
+<h2 id="meshstatistics"><a href="#meshstatistics">Mesh Statistics</a> </h2>
 
 <p>Libigl contains various mesh statistics, including face angles, face areas and
 the detection of singular vertices, which are vertices with more or less than 6
@@ -3047,7 +3093,7 @@ the angles are to 60 degrees the more stable will the optimization be. In this
 case, it is clear that the mesh is of bad quality and it will probably result
 in artifacts if used for solving PDEs.</p>
 
-<h2 id="generalizedwindingnumber"><a href="#generalizedwindingnumber">Generalized Winding Number</a></h2>
+<h2 id="generalizedwindingnumber"><a href="#generalizedwindingnumber">Generalized Winding Number</a> </h2>
 
 <p>The problem of tetrahedralizing the interior of closed watertight surface mesh
 is a difficult, but well-posed problem (see our <a href="#tetrahedralizationofclosedsurfaces">Tetgen wrappers</a>). But
@@ -3069,7 +3115,7 @@ mesh and which are outside. That is, which should be kept and which should be
 removed.</p>
 
 <p>The &#8220;Generalized Winding Number&#8221; is a robust method for determined
-inside and outside for troublesome meshes <a class="citation" href="#fn:36" title="Jump to citation">[36]<span class="citekey" style="display:none">jacobson_2013</span></a>. The generalized
+inside and outside for troublesome meshes <a href="#cn:33" id="cnref:33" title="see citation" class="citation">(33)</a>[]. The generalized
 winding number with respect to <code>(V,F)</code> at some point <span class="math">\(\mathbf{p} \in
 \mathcal{R}^3\)</span> is defined as scalar function:</p>
 
@@ -3088,7 +3134,7 @@ oriented), then <span class="math">\(w(\mathbf{p})\)</span> tends smoothly towar
 <em>more</em> inside <code>(V,F)</code>, and toward 0 as <span class="math">\(\mathbf{p}\)</span> is more outside.</p>
 
 <figure>
-<img src="images/big-sigcat-winding-number.gif" alt="Example 702 computes the
+<img src="images/big-sigcat-winding-number.gif" alt="Example [702](702_WindingNumber/main.cpp) computes the
 generalized winding number function for a tetrahedral mesh inside a cat with
 holes and self intersections (gold). The silver mesh is surface of the
 extracted interior tets, and slices show the winding number function on all
@@ -3098,11 +3144,11 @@ tets in the convex hull: blue (~0), green (~1), yellow
 generalized winding number function for a tetrahedral mesh inside a cat with
 holes and self intersections (gold). The silver mesh is surface of the
 extracted interior tets, and slices show the winding number function on all
-tets in the convex hull: blue (~0), green (~1), yellow
-(~2).</figcaption>
+tets in the convex hull: blue (<sub>0</sub>), green (<sub>1</sub>), yellow
+(<sub>2</sub>).</figcaption>
 </figure>
 
-<h2 id="meshdecimation"><a href="#meshdecimation">Mesh Decimation</a></h2>
+<h2 id="meshdecimation"><a href="#meshdecimation">Mesh Decimation</a> </h2>
 
 <p>The study of mesh simplification or <em>decimation</em> is nearly as old as meshes
 themselves. Given a high resolution mesh with too many triangles, find a &#8220;well
@@ -3112,14 +3158,14 @@ methods are fairly advanced.</p>
 
 <p>One family of mesh decimation methods operates by successively remove elements
 from the mesh. In particular, Hoppe advocates for successively remove or rather
-collapsing edges <a class="citation" href="#fn:37" title="Jump to citation">[37]<span class="citekey" style="display:none">hoppe_1996</span></a>. The generic form of this technique is to
+collapsing edges <a href="#cn:34" id="cnref:34" title="see citation" class="citation">(34)</a>[]. The generic form of this technique is to
 construct a sequence of n meshes from the initial high-resolution mesh <span class="math">\(M_0\)</span> to
 the lowest resolution mesh <span class="math">\(M_n\)</span> by collapsing a single edge:</p>
 
 <p><span class="math">\(M_0 \mathop{\longrightarrow}_\text{edge collapse}
-  M_1 \mathop{\longrightarrow}_\text{edge collapse}
-  \dots \mathop{\longrightarrow}_\text{edge collapse}
-  M_{n-1} \mathop{\longrightarrow}_\text{edge collapse} M_n.\)</span></p>
+M_1 \mathop{\longrightarrow}_\text{edge collapse}
+\dots \mathop{\longrightarrow}_\text{edge collapse}
+M_{n-1} \mathop{\longrightarrow}_\text{edge collapse} M_n.\)</span></p>
 
 <p>Hoppe&#8217;s original method and subsequent follow-up works propose various ways to
 choose the next edge to collapse in this sequence. Using a cost-based paradigm,
@@ -3179,13 +3225,13 @@ drops below <code>m=1000</code>.</p>
 <p>One can also scratch deeper inside the decimation loop and call
 <code>igl::collapse_edge</code> directly. In order to operate efficiently, this routine
 needs more than the usual <code>(V,F)</code> mesh representation. We need <code>E</code> a list of
-edge indices, where <code>E.row(i) --&gt; [s,d]</code>; we need <code>EMAP</code> which maps the
+edge indices, where <code>E.row(i) --> [s,d]</code>; we need <code>EMAP</code> which maps the
 &#8220;half&#8221;-edges of each triangle in <code>F</code> to its corresponding edge in <code>E</code> so that
-<code>E.row(EMAP(f+i*F.rows)) --&gt; [s,d]</code> if the edge across from the ith corner of the
+<code>E.row(EMAP(f+i*F.rows)) --> [s,d]</code> if the edge across from the ith corner of the
 fth face is <code>[s,d]</code> (up to orientation); we need <code>EF</code> and <code>EI</code> which keep track
 of the faces incident on each edge and across from which corner of those faces
 the edges appears, so that <code>EF(e,o) = f</code> and <code>EI(e,o) = i</code> means that the edge
-<code>E.row(e) --&gt; [s,d]</code> appears in the fth face across from its ith corner (for
+<code>E.row(e) --> [s,d]</code> appears in the fth face across from its ith corner (for
 <code>o=0</code> the edge orientations should match, for <code>o=1</code> the orientations are
 opposite).</p>
 
@@ -3238,7 +3284,7 @@ model.</figcaption>
 queue based approach with the simple shortest-edge-midpoint cost/placement
 strategy discussed above.</p>
 
-<h2 id="signeddistances"><a href="#signeddistances">Signed Distances</a></h2>
+<h2 id="signeddistances"><a href="#signeddistances">Signed Distances</a> </h2>
 
 <p>In the <a href="#generalizedwindingnumber">Generalized Winding Number section</a>, we
 examined a robust method for determining whether points lie inside or outside
@@ -3313,15 +3359,15 @@ tree.squared_distance(V,F,P,sqrD,I,C);
 
 <p>Finally, from the closest point or the winding number it&#8217;s possible to <em>sign</em>
 this distance. In <code>igl::signed_distance</code> we provide two methods for signing:
-the so-called &#8220;pseudo-normal test&#8221; <a class="citation" href="#fn:38" title="Jump to citation">[38]<span class="citekey" style="display:none">baerentzen_2005</span></a> and the generalized
-winding number <a class="citation" href="#fn:36" title="Jump to citation">[36]<span class="citekey" style="display:none">jacobson_2013</span></a>.</p>
+the so-called &#8220;pseudo-normal test&#8221; <a href="#cn:35" id="cnref:35" title="see citation" class="citation">(35)</a>[] and the generalized
+winding number <a href="#cn:33" title="see citation" class="citation">(33)</a>[].</p>
 
 <p>The pseudo-normal test (see also <code>igl::pseudonormal_test</code>) assumes the input
 mesh is a watertight (closed, non-self-intersecting, manifold) mesh. Then given
 a query point <span class="math">\(\mathbf{q}\)</span> and its closest point <span class="math">\(\mathbf{c} \in (V,F)\)</span>, it
 carefully chooses an outward normal <span class="math">\(\mathbf{n}\)</span> at <span class="math">\(\mathbf{c}\)</span> so that
 <span class="math">\(\text{sign}(\mathbf{q}-\mathbf{c})\cdot \mathbf{n}\)</span> reveals whether
-<span class="math">\(\mathbf{q}\)</span> is inside <span class="math">\((V,F)\)</span>: &#8211;1, or outside: +1. This is a fast <span class="math">\(O(1)\)</span> test
+<span class="math">\(\mathbf{q}\)</span> is inside <span class="math">\((V,F)\)</span>: -1, or outside: +1. This is a fast <span class="math">\(O(1)\)</span> test
 once <span class="math">\(\mathbf{c}\)</span> is located, but may fail if <code>V,F</code> is not watertight.</p>
 
 <p>An alternative is to use the <a href="#generalizedwindingnumber">generalized winding
@@ -3342,13 +3388,13 @@ contains signed (unsquared) distances and the extra output <code>N</code> (only 
 with the pseudo-normal test.</p>
 
 <figure>
-<img src="images/bunny-signed-distance.gif" alt="Example 704 computes signed distance on
+<img src="images/bunny-signed-distance.gif" alt="Example [704](704_SignedDistance/main.cpp) computes signed distance on
 slices through the bunny." />
 <figcaption>Example <a href="704_SignedDistance/main.cpp">704</a> computes signed distance on
 slices through the bunny.</figcaption>
 </figure>
 
-<h2 id="marchingcubes"><a href="#marchingcubes">Marching Cubes</a></h2>
+<h2 id="marchingcubes"><a href="#marchingcubes">Marching Cubes</a> </h2>
 
 <p>Often 3D data is captured as scalar field defined over space <span class="math">\(f(\mathbf{x}) :
 \mathcal{R}^3 \rightarrow \mathcal{R}\)</span>. Lurking within this field,
@@ -3358,7 +3404,7 @@ iso-surface at value <span class="math">\(v\)</span> is composed of all points <
 processing is to extract an iso-surface as a triangle mesh for further
 mesh-based processing or visualization. This is referred to as iso-contouring.</p>
 
-<p>&#8220;Marching Cubes&#8221; <a class="citation" href="#fn:39" title="Jump to citation">[39]<span class="citekey" style="display:none">lorensen_1987</span></a> is a <a href="https://en.wikipedia.org/wiki/Marching_cubes">famous
+<p>&#8220;Marching Cubes&#8221; <a href="#cn:36" id="cnref:36" title="see citation" class="citation">(36)</a> is a <a href="https://en.wikipedia.org/wiki/Marching_cubes">famous
 method</a> for iso-contouring
 tri-linear functions <span class="math">\(f\)</span> on a regular lattice (aka grid). The core idea of this
 method is to contour the iso-surface passing through each cell (if it does at
@@ -3375,7 +3421,7 @@ input scalar field <code>S</code> sampled at vertex locations <code>GV</code> of
 </code></pre>
 
 <figure>
-<img src="images/armadillo-marching-cubes.jpg" alt="(Example 705) samples signed distance to the
+<img src="images/armadillo-marching-cubes.jpg" alt="([Example 705](705_MarchingCubes/main.cpp)) samples signed distance to the
 input mesh (left) and then reconstructs the surface using
 marching cubes to contour the 0-level set (center). For comparison, clamping
 this signed distance field to an indicator function and contouring reveals
@@ -3387,7 +3433,7 @@ this signed distance field to an indicator function and contouring reveals
 serious aliasing artifacts.</figcaption>
 </figure>
 
-<h2 id="facetorientation"><a href="#facetorientation">Facet Orientation</a></h2>
+<h2 id="facetorientation"><a href="#facetorientation">Facet Orientation</a> </h2>
 
 <p>Models from the web occasionally arrive <em>unorientated</em> in the sense that
 the orderings of each triangles vertices do not consistently agree. Determining
@@ -3409,7 +3455,7 @@ enforce a consistent facet orientation in the output faces <code>FF</code>.</p>
 <p>For (closed or nearly closed) surfaces representing the boundary of a solid
 object, libigl provides a routine to reorient faces so that the vertex ordering
 corresponds to a counter-clockwise ordering of the vertices with a
-right-hand-rule normal pointing outward. This method <a class="citation" href="#fn:40" title="Jump to citation">[40]<span class="citekey" style="display:none">takayama14</span></a> assumes
+right-hand-rule normal pointing outward. This method <a href="#cn:37" id="cnref:37" title="see citation" class="citation">(37)</a>[] assumes
 that <a href="https://www.reddit.com/r/askscience/comments/32otgx/which_as_a_is_more_empty_an_atom_or_the_universe/">most of the universe is
 empty</a>.
 That is, most points in space are outside of the solid object than inside.
@@ -3424,10 +3470,10 @@ occluded</em> (lighter, i.e., facing more void space).</p>
 <p>The boolean vector <code>I</code> reveals which rows of <code>F</code> have been flipped in <code>FF</code>.</p>
 
 <figure>
-<img src="images/truck-facet-orientation.jpg" alt="(Example 706) loads a truck model with
+<img src="images/truck-facet-orientation.jpg" alt="([Example 706](706_FacetOrientation/main.cpp)) loads a truck model with
 inconsistent orientations (back facing triangles shown darker). Orientable
 patches are uniquely colored and then oriented to face outward (middle left).
-Alternatively, each individual triangle is considered a patch (middle right)
+Alternatively, each individual triangle is considered a "patch" (middle right)
 and oriented outward independently." />
 <figcaption>(<a href="706_FacetOrientation/main.cpp">Example 706</a>) loads a truck model with
 inconsistent orientations (back facing triangles shown darker). Orientable
@@ -3436,7 +3482,7 @@ Alternatively, each individual triangle is considered a &#8220;patch&#8221; (mid
 and oriented outward independently.</figcaption>
 </figure>
 
-<h2 id="sweptvolume"><a href="#sweptvolume">Swept Volume</a></h2>
+<h2 id="sweptvolume"><a href="#sweptvolume">Swept Volume</a> </h2>
 
 <p>The swept volume <span class="math">\(S\)</span> of a moving solid object <span class="math">\(A\)</span> can be defined as any point in
 space such that at one moment in time the point lies inside the solid. In other
@@ -3461,20 +3507,21 @@ error.</p>
 volume is by exploiting an alternative definition of the swept volume based on
 signed distances:</p>
 
-<p><span class="math">\(S = \left\{ \mathbf{p}\ \middle| \ d(\mathbf{p},\partial S) < 0 \right\} = \left\{ \mathbf{p}\
-\middle|\
-\min\limits_{t \in [0,1]} d(\mathbf{p},f(t)\ \partial A) < 0 \right\}\)</span></p>
+<p>$S = \left{ \mathbf{p}&nbsp;\middle| &nbsp;d(\mathbf{p},\partial S) &lt; 0 \right} = \left{ \mathbf{p}<br />
+\middle|</p>
+
+<p>\min\limits_{t \in [0,1]} d(\mathbf{p},f(t)&nbsp;\partial A) &lt; 0 \right}$</p>
 
 <p>If <span class="math">\(\partial A\)</span> is a triangle mesh, then we can approximate this by 1)
 discretizing time at a finite step of steps <span class="math">\([0,\Delta t,2\Delta t, \dots, 1]\)</span>
 and by 2) discretizing space with a regular grid and representing the distance
 field using trilinear interpolation of grid values. Finally the output mesh,
 <span class="math">\(\partial S\)</span> is approximated by contouring using Marching Cubes
-<a class="citation" href="#fn:39" title="Jump to citation">[39]<span class="citekey" style="display:none">lorensen_1987</span></a>.</p>
+<a href="#cn:36" title="see citation" class="citation">(36)</a>.</p>
 
 <p>This method is similar to one described by Schroeder et al. in 1994
-<a class="citation" href="#fn:41" title="Jump to citation">[41]<span class="citekey" style="display:none">schroeder_1994</span></a>, and the one used in conjunction with boolean operations by
-Garg et al. 2016 <a class="citation" href="#fn:42" title="Jump to citation">[42]<span class="citekey" style="display:none">garg_2016</span></a>.</p>
+<a href="#cn:38" id="cnref:38" title="see citation" class="citation">(38)</a>, and the one used in conjunction with boolean operations by
+Garg et al. 2016 <a href="#cn:39" id="cnref:39" title="see citation" class="citation">(39)</a>.</p>
 
 <p>In libigl, if your input solid&#8217;s surface is represented by <code>(V,F)</code> then the
 output surface mesh will be <code>(SV,SF)</code> after calling:</p>
@@ -3487,7 +3534,7 @@ volume, greater than zero to approximate a positive offset of the swept volume
 or less than zero to approximate a negative offset.</p>
 
 <figure>
-<img src="images/bunny-swept-volume.gif" alt="(Example 707) computes
+<img src="images/bunny-swept-volume.gif" alt="([Example 707](707_SweptVolume/main.cpp)) computes
 the surface of the swept volume (silver) of the bunny model undergoing a rigid
 motion (gold)." />
 <figcaption>(<a href="707_SweptVolume/main.cpp">Example 707</a>) computes
@@ -3495,11 +3542,11 @@ the surface of the swept volume (silver) of the bunny model undergoing a rigid
 motion (gold).</figcaption>
 </figure>
 
-<h2 id="pickingverticesandfaces"><a href="#pickingverticesandfaces">Picking</a></h2>
+<h2 id="pickingverticesandfaces"><a href="#pickingverticesandfaces">Picking</a> </h2>
 
 <p>Picking vertices and faces using the mouse is very common in geometry
 processing applications. While this might seem a simple operation, its
-implementation is not straighforward. Libigl contains a function that solves this problem using the
+implementation is not straightforward. Libigl contains a function that solves this problem using the
 <a href="https://software.intel.com/en-us/articles/embree-photo-realistic-ray-tracing-kernels">Embree</a>
 raycaster. Its usage is demonstrated in <a href="708_Picking/main.cpp">Example 708</a>:</p>
 
@@ -3524,15 +3571,15 @@ Hierarchy</a> constructed
 by Embree, and <code>fid</code> and <code>vid</code> are the picked face and vertex, respectively.</p>
 
 <figure>
-<img src="images/607_Picking.png" alt="(Example 708) Picking via ray casting. The selected
+<img src="images/607_Picking.png" alt="([Example 708](708_Picking/main.cpp)) Picking via ray casting. The selected
 vertices are colored in red." />
 <figcaption>(<a href="708_Picking/main.cpp">Example 708</a>) Picking via ray casting. The selected
 vertices are colored in red.</figcaption>
 </figure>
 
-<h2 id="vectorfieldvisualizer"><a href="#vectorfieldvisualizer">Vector Field Visualization</a></h2>
+<h2 id="vectorfieldvisualizer"><a href="#vectorfieldvisualizer">Vector Field Visualization</a> </h2>
 
-<p>Vector fields on surfaces are commonly visualized by tracing <a href="https://en.wikipedia.org/wiki/Streamlines,_streaklines,_and_pathlines">streamlines</a>. Libigl
+<p>Vector fields on surfaces are commonly visualized by tracing [streamlines] (https://en.wikipedia.org/wiki/Streamlines,_streaklines,_and_pathlines). Libigl
 supports the seeding and tracing of streamlines, for both simple vector fields
 and for N-rosy fields. The seeds for the streamlines are initialized using <code>streamlines_init</code>,
 and the lines are traced using <code>streamlines_next</code>. Each call to <code>streamlines_next</code> extends
@@ -3540,13 +3587,13 @@ each line by one triangle, allowing interactive rendering of the traced lines, a
 in <a href="709_VectorFieldVisualizer/main.cpp">Example 709</a>.</p>
 
 <figure>
-<img src="images/streamlines.jpg" alt="(Example 709) Interactive streamlines tracing." />
+<img src="images/streamlines.jpg" alt="([Example 709](709_VectorFieldVisualizer/main.cpp)) Interactive streamlines tracing." />
 <figcaption>(<a href="709_VectorFieldVisualizer/main.cpp">Example 709</a>) Interactive streamlines tracing.</figcaption>
 </figure>
 
-<h2 id="slim"><a href="#slim">Scalable Locally Injective Maps</a></h2>
+<h2 id="slim"><a href="#slim">Scalable Locally Injective Maps</a> </h2>
 
-<p>The Scalable Locally Injective Maps <a class="citation" href="#fn:43" title="Jump to citation">[43]<span class="citekey" style="display:none">rabinovich_2016</span></a> algorithm allows to
+<p>The Scalable Locally Injective Maps <a href="#cn:40" id="cnref:40" title="see citation" class="citation">(40)</a> algorithm allows to
 compute locally injective maps on massive datasets. The algorithm shares many
 similarities with ARAP, but uses a reweighting scheme to minimize arbitrary
 distortion energies, including those that prevent the introduction of flips.</p>
@@ -3566,7 +3613,7 @@ using the SLIM algorithm in 10 iterations." />
 using the SLIM algorithm in 10 iterations.</figcaption>
 </figure>
 
-<h2 id="subdivision"><a href="#subdivision">Subdivision surfaces</a></h2>
+<h2 id="subdivision"><a href="#subdivision">Subdivision surfaces</a> </h2>
 
 <p>Given a coarse mesh (aka cage) with vertices <code>V</code> and faces <code>F</code>, one can createa
 higher-resolution mesh with more vertices and faces by <em>subdividing</em> every
@@ -3590,7 +3637,7 @@ a finer and finer mesh.</p>
 
 <p>The subdivision method of <code>igl::loop</code> is not in plane. The vertices of the
 refined mesh are moved to weight combinations of their neighbors: the mesh is
-smoothed as it is refined <a class="citation" href="#fn:44" title="Jump to citation">[44]<span class="citekey" style="display:none">loop_1987</span></a>. This and other <em>smooth subdivision</em>
+smoothed as it is refined <a href="#cn:41" id="cnref:41" title="see citation" class="citation">(41)</a>. This and other <em>smooth subdivision</em>
 methods can be understood as generalizations of spline curves to surfaces. In
 particular the Loop subdivision method will converge to a <span class="math">\(C^1\)</span> surface as we
 consider the limit of recursive applications of subdivision. Away from
@@ -3609,14 +3656,14 @@ the carrier surfaces with extreme bias.</p>
 
 <figure>
 <img src="images/decimated-knight-subdivision.gif" alt="The original coarse mesh and three different subdivision methods:
-igl::upsample, igl::loop and
-igl::false_barycentric_subdivision." />
+`igl::upsample`, `igl::loop` and
+`igl::false_barycentric_subdivision`." />
 <figcaption>The original coarse mesh and three different subdivision methods:
 <code>igl::upsample</code>, <code>igl::loop</code> and
 <code>igl::false_barycentric_subdivision</code>.</figcaption>
 </figure>
 
-<h2 id="datasmoothing"><a href="#datasmoothing">Data smoothing</a></h2>
+<h2 id="datasmoothing"><a href="#datasmoothing">Data smoothing</a> </h2>
 
 <p>A noisy function <span class="math">\(f\)</span> defined on a surface <span class="math">\(\Omega\)</span> can be smoothed using an
 energy minimization that balances a smoothing term <span class="math">\(E_S\)</span> with a quadratic
@@ -3647,7 +3694,7 @@ of the function to be perpendicular to the boundary, the Hessian energy gives
 an unbiased result.</p>
 
 <figure>
-<img src="images/712_beetles.jpg" alt="(Example 712) From left to right: a function
+<img src="images/712_beetles.jpg" alt="([Example 712](712_DataSmoothing/main.cpp)) From left to right: a function
 on the beetle mesh, the function with added noise, the result of smoothing
 with the Laplacian energy and zero Neumann boundary conditions, and the
 result of smoothing with the Hessian energy." />
@@ -3657,31 +3704,50 @@ with the Laplacian energy and zero Neumann boundary conditions, and the
 result of smoothing with the Hessian energy.</figcaption>
 </figure>
 
-<h1 id="chapter7:miscellaneous">Miscellaneous</h1>
+<h2 id="shapeup"><a href="#shapeup">ShapeUp Projections</a> </h2>
 
-<p>Libigl contains a <em>wide</em> variety of geometry processing tools and functions for
-dealing with meshes and the linear algebra related to them: far too many to
-discuss in this introductory tutorial. We&#8217;ve pulled out a couple of the
-interesting functions in this chapter to highlight.</p>
+<p>Our input is a set of points <span class="math">\(P_0\)</span> (not necessarily part of any mesh), and a set of constraints <span class="math">\(S=\left\{S_1,S_2,...S_m\right\}\)</span>, where each constraint is defined on a different, and sparse, subset of <span class="math">\(P_0\)</span>. We wish to create a new set of points <span class="math">\(P\)</span> that are close to the original set <span class="math">\(P_0\)</span> (each point with corresponding indices), while adhering to the constraints. Other objectives, such as smoothness, can be employed. The constraints can be nonlinear, which makes the problem nonconvex, difficult, and without a guaranteed global optimum. A very popular lightweight approach to such problems is a local-global iterative algorithm, comprising these two steps:</p>
 
-<h1 id="future">Outlook for continuing development</h1>
+<p>For iteration <span class="math">\(k\)</span>:</p>
+
+<ol>
+<li><em>Local step</em>: compute the projections of the set <span class="math">\(P_{k-1}\)</span> onto <span class="math">\(S\)</span>, individually per constraint; that would mean fragmenting each point that appears in multiple constraints. That can be a nonlinear operation, but if the constraints are sparse, it is a a set of many small systems.</li>
+<li><em>Global step</em>: integrate the set <span class="math">\(P_k\)</span> to be as close as possible to the projected fragmented set, with auxiliary objective functions possible. That results in a global, but quadratic objective function. Moreover, the resulting linear system has a constant matrix, and therefore can be pre-factored.</li>
+</ol>
+
+<p>The version we implement in libigl is the general version described by <a href="#cn:30" title="see citation" class="citation">(30)</a>, and is in two files: <code>&lt;igl/shapeup.h&gt;</code> and <code>&lt;igl/shapeup_local_projections.h&gt;</code>. A demo implementing regularity constraints (creating a mesh in which each face is as regular as possible) is in <a href="713_Shapeup/main.cpp">Example 713</a>.</p>
+
+<p>The local step is instantiated by a function of type <code>igl::shapeup_projection_function</code>. The global step is done by two functions: <code>igl::shapeup_precomputation()</code>, which precomputes the matrices required for the global step, and <code>igl::shapeup_solve()</code>, which solves the problem, according to the initial solution <span class="math">\(P_0\)</span> and the input local projection function. The data struct <code>igl::ShapeUpData</code> contains the information necessary to run the algorithm, and can be configured; for instance, the self-explanatory variable <code>Maxiterations</code>.</p>
+
+<p>The global step minimizes the following energy:</p>
+
+<p><span class="math">\[E_{total}=\lambda_{shape}E_{shape}+\lambda_{close}E_{close}+\lambda_{smooth}E_{smooth},\]</span></p>
+
+<p>where the <span class="math">\(\lambda\)</span> coefficients are encoded in <code>igl::ShapeUpData</code>, and can be updated <strong>prior</strong> to calling <code>igl::shapeup_precomputation()</code>. The <span class="math">\(E_{shape}\)</span> component is the integration energy (fitting <span class="math">\(P_k\)</span> to the local projections). The <span class="math">\(E_{close}\)</span> component is adherence to positional constraints, given by <code>b</code> and <code>bc</code> parameters. The <span class="math">\(E_{smooth}\)</span> component is an optional objective function, to minimize differences (in the Dirichlet sense) between points, encodes by &#8220;edges&#8221; in parameter <code>E</code>. Both <span class="math">\(E_{close}\)</span> and <span class="math">\(E_{shape}\)</span> are also weighted by <code>wClose</code> and <code>wShape</code> function parameters, respectively.</p>
+
+<figure>
+<img src="images/713_ShapeUp.png" alt="([Example 713](713_ShapeUp/main.cpp)) The half-tunnel mesh (left) has been optimized to be almost perfectly regular (right). The color scale is between $[0,0.05]$, measuring the average normalized deviation of the angles of each face from $90^{\circ}$." />
+<figcaption>(<a href="713_ShapeUp/main.cpp">Example 713</a>) The half-tunnel mesh (left) has been optimized to be almost perfectly regular (right). The color scale is between <span class="math">\([0,0.05]\)</span>, measuring the average normalized deviation of the angles of each face from <span class="math">\(90^{\circ}\)</span>.</figcaption>
+</figure>
+
+<h1 id="future">Outlook for continuing development </h1>
 
 <p>Libigl is in active development, and we plan to focus on the following features
 in the next months:</p>
 
 <ul>
 <li><p>A better and more consistent <strong>documentation</strong>, plus extending this tutorial
- to cover more libigl features.</p></li>
+to cover more libigl features.</p></li>
 <li><p>Implement a <strong>mixed-integer solver</strong> which only uses Eigen to remove the
- dependency on CoMiSo.</p></li>
+dependency on CoMiSo.</p></li>
 <li><p>Improve the robustness and performance of the active set QP solver. In
- particular, handle linearly dependent constraints.</p></li>
+particular, handle linearly dependent constraints.</p></li>
 <li><p>Implement more mesh analysis functions, including structural analysis for
- masonry and <em>3D-printability</em> analysis.</p></li>
+masonry and <em>3D-printability</em> analysis.</p></li>
 <li><p>Increase support for point clouds and general polygonal meshes.</p></li>
-<li><p>What would you like to see in libigl? <a href="&#109;&#97;&#105;&#108;&#x74;&#111;&#x3a;&#x61;&#x6c;&#101;&#x63;&#x6a;&#x61;&#x63;&#111;&#98;&#115;&#111;&#110;&#64;&#103;&#109;&#x61;&#105;&#108;&#x2e;&#x63;&#x6f;&#x6d;">&#67;&#x6f;&#x6e;&#116;&#97;&#99;&#x74;
- &#117;&#x73;&#x21;</a> or post a <a href="https://github.com/libigl/libigl/issues/new">feature
- request</a>.</p></li>
+<li><p>What would you like to see in libigl? <a href="mailto:alecjacobson@gmail.com">Contact
+us!</a> or post a <a href="https://github.com/libigl/libigl/issues/new">feature
+request</a>.</p></li>
 </ul>
 
 <p>We encourage you to contribute to the library and to report problems and bugs.
@@ -3690,262 +3756,285 @@ repository and to open a <a href="https://help.github.com/articles/using-pull-re
 request</a> on <a href="https://github.com/libigl/libigl">our github
 repository</a>.</p>
 
-<div class="footnotes">
+<div class="citations">
 <hr />
 <ol>
 
-<li id="fn:1" class="citation"><span class="citekey" style="display:none">meyer_2003</span><p>Mark Meyer, Mathieu Desbrun, Peter Schröder and Alan H. Barr,
- <a href="https://www.google.com/search?q=Discrete+Differential-Geometry+Operators+for+Triangulated+2-Manifolds">Discrete Differential-Geometry Operators for Triangulated
- 2-Manifolds</a>,
- 2003.</p>
+<li id="cn:1">
+<p>Mark Meyer, Mathieu Desbrun, Peter Schröder and Alan H. Barr,
+<a href="https://www.google.com/search?q=Discrete+Differential-Geometry+Operators+for+Triangulated+2-Manifolds">Discrete Differential&#8211;Geometry Operators for Triangulated
+2&#8211;Manifolds</a>,
+2003. <a href="#cnref:1" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
 </li>
 
-<li id="fn:2" class="citation"><span class="citekey" style="display:none">panozzo_2010</span><p>Daniele Panozzo, Enrico Puppo, Luigi Rocca, <a href="https://www.google.com/search?q=Efficient+Multi-scale+Curvature+and+Crease+Estimation">Efficient
- Multi-scale Curvature and Crease
- Estimation</a>,
- 2010.</p>
+<li id="cn:2">
+<p>Daniele Panozzo, Enrico Puppo, Luigi Rocca, <a href="https://www.google.com/search?q=Efficient+Multi-scale+Curvature+and+Crease+Estimation">Efficient
+Multi&#8211;scale Curvature and Crease
+Estimation</a>,
+2010. <a href="#cnref:2" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
 </li>
 
-<li id="fn:3" class="citation"><span class="citekey" style="display:none">jacobson_thesis_2013</span><p>Alec Jacobson,
- <a href="https://www.google.com/search?q=Algorithms+and+Interfaces+for+Real-Time+Deformation+of+2D+and+3D+Shapes"><em>Algorithms and Interfaces for Real-Time Deformation of 2D and 3D
- Shapes</em></a>,
- 2013.</p>
+<li id="cn:3">
+<p>Alec Jacobson,
+<a href="https://www.google.com/search?q=Algorithms+and+Interfaces+for+Real-Time+Deformation+of+2D+and+3D+Shapes"><em>Algorithms and Interfaces for Real&#8211;Time Deformation of 2D and 3D
+Shapes</em></a>,
+2013. <a href="#cnref:3" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
 </li>
 
-<li id="fn:4" class="citation"><span class="citekey" style="display:none">sharf_2007</span><p>Andrei Sharf, Thomas Lewiner, Gil Shklarski, Sivan Toledo, and
- Daniel Cohen-Or. <a href="https://www.google.com/search?q=Interactive+topology-aware+surface+reconstruction">Interactive topology-aware surface
- reconstruction</a>,
- 2007.</p>
+<li id="cn:4">
+<p>Andrei Sharf, Thomas Lewiner, Gil Shklarski, Sivan Toledo, and
+Daniel Cohen&#8211;Or. <a href="https://www.google.com/search?q=Interactive+topology-aware+surface+reconstruction">Interactive topology&#8211;aware surface
+reconstruction</a>,
+2007. <a href="#cnref:4" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
 </li>
 
-<li id="fn:5" class="citation"><span class="citekey" style="display:none">kazhdan_2012</span><p>Michael Kazhdan, Jake Solomon, Mirela Ben-Chen,
- <a href="https://www.google.com/search?q=Can+Mean-Curvature+Flow+Be+Made+Non-Singular">Can Mean-Curvature Flow Be Made
- Non-Singular</a>,
- 2012.</p>
+<li id="cn:5">
+<p>Michael Kazhdan, Jake Solomon, Mirela Ben&#8211;Chen,
+<a href="https://www.google.com/search?q=Can+Mean-Curvature+Flow+Be+Made+Non-Singular">Can Mean&#8211;Curvature Flow Be Made
+Non&#8211;Singular</a>,
+2012. <a href="#cnref:5" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
 </li>
 
-<li id="fn:6" class="citation"><span class="citekey" style="display:none">rustamov_2011</span><p>Raid M. Rustamov, <a href="https://www.google.com/search?q=Multiscale+Biharmonic+Kernels">Multiscale Biharmonic
- Kernels</a>, 2011.</p>
+<li id="cn:6">
+<p>Joseph S. B. Mitchell, David M. Mount, Christos H. Papadimitriou. <a href="https://www.google.com/search?q=The+Discrete+Geodesic+Problem">The Discrete Geodesic Problem</a>, 1987 <a href="#cnref:6" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
 </li>
 
-<li id="fn:7" class="citation"><span class="citekey" style="display:none">vallet_2008</span><p>Bruno Vallet and Bruno Lévy. <a href="https://www.google.com/search?q=Spectral+Geometry+Processing+with+Manifold+Harmonics">Spectral Geometry Processing with
- Manifold
- Harmonics</a>,
- 2008.</p>
+<li id="cn:7">
+<p>Raid M. Rustamov, <a href="https://www.google.com/search?q=Multiscale+Biharmonic+Kernels">Multiscale Biharmonic
+Kernels</a>, 2011. <a href="#cnref:7" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
 </li>
 
-<li id="fn:8" class="citation"><span class="citekey" style="display:none">hildebrandt_2011</span><p>Klaus Hildebrandt, Christian Schulz, Christoph von
- Tycowicz, and Konrad Polthier. <a href="https://www.google.com/search?q=Interactive+Surface+Modeling+using+Modal+Analysis">Interactive Surface Modeling using Modal
- Analysis</a>,
- 2011.</p>
+<li id="cn:8">
+<p>Bruno Vallet and Bruno Lévy. <a href="https://www.google.com/search?q=Spectral+Geometry+Processing+with+Manifold+Harmonics">Spectral Geometry Processing with
+Manifold
+Harmonics</a>,
+2008. <a href="#cnref:8" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
 </li>
 
-<li id="fn:9" class="citation"><span class="citekey" style="display:none">barbic_2005</span><p>Jernej Barbic and Doug James. <a href="https://www.google.com/search?q=Real-Time+Subspace+Integration+for+St.Venant-Kirchhoff+Deformable+Models">Real-Time Subspace Integration
- for St.Venant-Kirchhoff Deformable
- Models</a>,
- 2005.</p>
+<li id="cn:9">
+<p>Klaus Hildebrandt, Christian Schulz, Christoph von
+Tycowicz, and Konrad Polthier. <a href="https://www.google.com/search?q=Interactive+Surface+Modeling+using+Modal+Analysis">Interactive Surface Modeling using Modal
+Analysis</a>,
+2011. <a href="#cnref:9" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
 </li>
 
-<li id="fn:10" class="citation"><span class="citekey" style="display:none">botsch_2004</span><p>Matrio Botsch and Leif Kobbelt.
- <a href="https://www.google.com/search?q=An+Intuitive+Framework+for+Real-Time+Freeform+Modeling">An Intuitive Framework for Real-Time Freeform
- Modeling</a>,
- 2004.</p>
+<li id="cn:10">
+<p>Jernej Barbic and Doug James. <a href="https://www.google.com/search?q=Real-Time+Subspace+Integration+for+St.Venant-Kirchhoff+Deformable+Models">Real&#8211;Time Subspace Integration
+for St.Venant&#8211;Kirchhoff Deformable
+Models</a>,
+2005. <a href="#cnref:10" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
 </li>
 
-<li id="fn:11" class="citation"><span class="citekey" style="display:none">jacobson_mixed_2010</span><p>Alec Jacobson, Elif Tosun, Olga Sorkine, and Denis
- Zorin. <a href="https://www.google.com/search?q=Mixed+Finite+Elements+for+Variational+Surface+Modeling">Mixed Finite Elements for Variational Surface
- Modeling</a>,
- 2010.</p>
+<li id="cn:11">
+<p>Matrio Botsch and Leif Kobbelt.
+<a href="https://www.google.com/search?q=An+Intuitive+Framework+for+Real-Time+Freeform+Modeling">An Intuitive Framework for Real&#8211;Time Freeform
+Modeling</a>,
+2004. <a href="#cnref:11" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
 </li>
 
-<li id="fn:12" class="citation"><span class="citekey" style="display:none">sorkine_2004</span><p>Olga Sorkine, Yaron Lipman, Daniel Cohen-Or, Marc Alexa,
- Christian Rössl and Hans-Peter Seidel. <a href="https://www.google.com/search?q=Laplacian+Surface+Editing">Laplacian Surface
- Editing</a>, 2004.</p>
+<li id="cn:12">
+<p>Alec Jacobson, Elif Tosun, Olga Sorkine, and Denis
+Zorin. <a href="https://www.google.com/search?q=Mixed+Finite+Elements+for+Variational+Surface+Modeling">Mixed Finite Elements for Variational Surface
+Modeling</a>,
+2010. <a href="#cnref:12" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
 </li>
 
-<li id="fn:13" class="citation"><span class="citekey" style="display:none">jacobson_2011</span><p>Alec Jacobson, Ilya Baran, Jovan Popović, and Olga Sorkine.
- <a href="https://www.google.com/search?q=Bounded+biharmonic+weights+for+real-time+deformation">Bounded Biharmonic Weights for Real-Time
- Deformation</a>,
- 2011.</p>
+<li id="cn:13">
+<p>Olga Sorkine, Yaron Lipman, Daniel Cohen&#8211;Or, Marc Alexa,
+Christian Rössl and Hans&#8211;Peter Seidel. <a href="https://www.google.com/search?q=Laplacian+Surface+Editing">Laplacian Surface
+Editing</a>, 2004. <a href="#cnref:13" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
 </li>
 
-<li id="fn:14" class="citation"><span class="citekey" style="display:none">kavan_2008</span><p>Ladislav Kavan, Steven Collins, Jiri Zara, and Carol O&#8217;Sullivan.
- <a href="https://www.google.com/search?q=Geometric+Skinning+with+Approximate+Dual+Quaternion+Blending">Geometric Skinning with Approximate Dual Quaternion
- Blending</a>,
- 2008.</p>
+<li id="cn:14">
+<p>Alec Jacobson, Ilya Baran, Jovan Popović, and Olga Sorkine.
+<a href="https://www.google.com/search?q=Bounded+biharmonic+weights+for+real-time+deformation">Bounded Biharmonic Weights for Real&#8211;Time
+Deformation</a>,
+2011. <a href="#cnref:14" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
 </li>
 
-<li id="fn:15" class="citation"><span class="citekey" style="display:none">sorkine_2007</span><p>Olga Sorkine and Marc Alexa. <a href="https://www.google.com/search?q=As-rigid-as-possible+Surface+Modeling">As-rigid-as-possible Surface
- Modeling</a>, 2007.</p>
+<li id="cn:15">
+<p>Ladislav Kavan, Steven Collins, Jiri Zara, and Carol O'Sullivan.
+<a href="https://www.google.com/search?q=Geometric+Skinning+with+Approximate+Dual+Quaternion+Blending">Geometric Skinning with Approximate Dual Quaternion
+Blending</a>,
+2008. <a href="#cnref:15" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
 </li>
 
-<li id="fn:16" class="citation"><span class="citekey" style="display:none">chao_2010</span><p>Isaac Chao, Ulrich Pinkall, Patrick Sanan, Peter Schröder.
- <a href="https://www.google.com/search?q=A+Simple+Geometric+Model+for+Elastic+Deformations">A Simple Geometric Model for Elastic
- Deformations</a>,
- 2010.</p>
+<li id="cn:16">
+<p>Olga Sorkine and Marc Alexa. <a href="https://www.google.com/search?q=As-rigid-as-possible+Surface+Modeling">As&#8211;rigid&#8211;as&#8211;possible Surface
+Modeling</a>, 2007. <a href="#cnref:16" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
 </li>
 
-<li id="fn:17" class="citation"><span class="citekey" style="display:none">mcadams_2011</span><p>Alexa McAdams, Andrew Selle, Rasmus Tamstorf, Joseph Teran,
- Eftychios Sifakis. <a href="https://www.google.com/search?q=Computing+the+Singular+Value+Decomposition+of+3x3+matrices+with+minimal+branching+and+elementary+floating+point+operations">Computing the Singular Value Decomposition of 3x3
- matrices with minimal branching and elementary floating point
- operations</a>,
- 2011.</p>
+<li id="cn:17">
+<p>Isaac Chao, Ulrich Pinkall, Patrick Sanan, Peter Schröder.
+<a href="https://www.google.com/search?q=A+Simple+Geometric+Model+for+Elastic+Deformations">A Simple Geometric Model for Elastic
+Deformations</a>,
+2010. <a href="#cnref:17" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
 </li>
 
-<li id="fn:18" class="citation"><span class="citekey" style="display:none">jacobson_2012</span><p>Alec Jacobson, Ilya Baran, Ladislav Kavan, Jovan Popović, and
- Olga Sorkine. <a href="https://www.google.com/search?q=Fast+Automatic+Skinning+Transformations">Fast Automatic Skinning
- Transformations</a>,
- 2012.</p>
+<li id="cn:18">
+<p>Alexa McAdams, Andrew Selle, Rasmus Tamstorf, Joseph Teran,
+Eftychios Sifakis. <a href="https://www.google.com/search?q=Computing+the+Singular+Value+Decomposition+of+3x3+matrices+with+minimal+branching+and+elementary+floating+point+operations">Computing the Singular Value Decomposition of 3x3
+matrices with minimal branching and elementary floating point
+operations</a>,
+2011. <a href="#cnref:18" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
 </li>
 
-<li id="fn:19" class="citation"><span class="citekey" style="display:none">jacobson_skinning_course_2014</span><p>Alec Jacobson, Zhigang Deng, Ladislav Kavan,
- J.P. Lewis. <a href="https://www.google.com/search?q=Skinning+Real-Time+Shape+Deformation"><em>Skinning: Real-Time Shape
- Deformation</em></a>,
- 2014.</p>
+<li id="cn:19">
+<p>Alec Jacobson, Ilya Baran, Ladislav Kavan, Jovan Popović, and
+Olga Sorkine. <a href="https://www.google.com/search?q=Fast+Automatic+Skinning+Transformations">Fast Automatic Skinning
+Transformations</a>,
+2012. <a href="#cnref:19" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
 </li>
 
-<li id="fn:20" class="citation"><span class="citekey" style="display:none">wang_bc_2015</span><p>Yu Wang, Alec Jacobson, Jernej Barbic, Ladislav Kavan. <a href="https://www.google.com/search?q=Linear+Subspace+Design+for+Real-Time+Shape+Deformation">Linear
- Subspace Design for Real-Time Shape
- Deformation</a>,
- 2015</p>
+<li id="cn:20">
+<p>Alec Jacobson, Zhigang Deng, Ladislav Kavan,
+J.P. Lewis. <a href="https://www.google.com/search?q=Skinning+Real-Time+Shape+Deformation"><em>Skinning: Real&#8211;Time Shape
+Deformation</em></a>,
+2014. <a href="#cnref:20" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
 </li>
 
-<li id="fn:21" class="citation"><span class="citekey" style="display:none">eck_2005</span><p>Matthias Eck, Tony DeRose, Tom Duchamp, Hugues Hoppe, Michael Lounsbery, Werner
- Stuetzle. <a href="http://research.microsoft.com/en-us/um/people/hoppe/mra.pdf">Multiresolution Analysis of Arbitrary
- Meshes</a>, 2005.</p>
+<li id="cn:21">
+<p>Yu Wang, Alec Jacobson, Jernej Barbic, Ladislav Kavan. <a href="https://www.google.com/search?q=Linear+Subspace+Design+for+Real-Time+Shape+Deformation">Linear
+Subspace Design for Real&#8211;Time Shape
+Deformation</a>,
+2015 <a href="#cnref:21" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
 </li>
 
-<li id="fn:22" class="citation"><span class="citekey" style="display:none">levy_2002</span><p>Bruno Lévy, Sylvain Petitjean, Nicolas Ray, Jérome Maillot.
- <a href="http://www.cs.jhu.edu/~misha/Fall09/Levy02.pdf">Least Squares Conformal Maps, for Automatic Texture Atlas
- Generation,</a>, 2002.</p>
+<li id="cn:22">
+<p>Matthias Eck, Tony DeRose, Tom Duchamp, Hugues Hoppe, Michael Lounsbery, Werner
+Stuetzle. <a href="http://research.microsoft.com/en-us/um/people/hoppe/mra.pdf">Multiresolution Analysis of Arbitrary
+Meshes</a>, 2005. <a href="#cnref:22" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
 </li>
 
-<li id="fn:23" class="citation"><span class="citekey" style="display:none">mullen_2008</span><p>Patrick Mullen, Yiying Tong, Pierre Alliez, Mathieu Desbrun.
- <a href="http://www.geometry.caltech.edu/pubs/MTAD08.pdf">Spectral Conformal
- Parameterization</a>, 2008.</p>
+<li id="cn:23">
+<p>Bruno Lévy, Sylvain Petitjean, Nicolas Ray, Jérome Maillot.
+<a href="http://www.cs.jhu.edu/~misha/Fall09/Levy02.pdf">Least Squares Conformal Maps, for Automatic Texture Atlas
+Generation,</a>, 2002. <a href="#cnref:23" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
 </li>
 
-<li id="fn:24" class="citation"><span class="citekey" style="display:none">liu_2008</span><p>Ligang Liu, Lei Zhang, Yin Xu, Craig Gotsman, Steven J. Gortler.
- <a href="http://cs.harvard.edu/~sjg/papers/arap.pdf">A Local/Global Approach to Mesh
- Parameterization</a>, 2008.</p>
+<li id="cn:24">
+<p>Patrick Mullen, Yiying Tong, Pierre Alliez, Mathieu Desbrun.
+<a href="http://www.geometry.caltech.edu/pubs/MTAD08.pdf">Spectral Conformal
+Parameterization</a>, 2008. <a href="#cnref:24" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
 </li>
 
-<li id="fn:25" class="citation"><span class="citekey" style="display:none">levy_2008</span><p>Nicolas Ray, Bruno Vallet, Wan Chiu Li, Bruno Lévy.
- <a href="http://alice.loria.fr/publications/papers/2008/DGF/NSDFD-TOG.pdf">N-Symmetry Direction Field
- Design</a>,
- 2008.</p>
+<li id="cn:25">
+<p>Ligang Liu, Lei Zhang, Yin Xu, Craig Gotsman, Steven J. Gortler.
+<a href="http://cs.harvard.edu/~sjg/papers/arap.pdf">A Local/Global Approach to Mesh
+Parameterization</a>, 2008. <a href="#cnref:25" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
 </li>
 
-<li id="fn:26" class="citation"><span class="citekey" style="display:none">bommes_2009</span><p>David Bommes, Henrik Zimmer, Leif Kobbelt.
- <a href="http://www-sop.inria.fr/members/David.Bommes/publications/miq.pdf">Mixed-integer
- quadrangulation</a>,
- 2009.</p>
+<li id="cn:26">
+<p>Nicolas Ray, Bruno Vallet, Wan Chiu Li, Bruno Lévy.
+<a href="http://alice.loria.fr/publications/papers/2008/DGF/NSDFD-TOG.pdf">N&#8211;Symmetry Direction Field
+Design</a>,
+2008. <a href="#cnref:26" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
 </li>
 
-<li id="fn:27" class="citation"><span class="citekey" style="display:none">knoppel_2013</span><p>Felix Knöppel, Keenan Crane, Ulrich Pinkall, and Peter
- Schröder. <a href="http://www.cs.columbia.edu/~keenan/Projects/GloballyOptimalDirectionFields/paper.pdf">Globally Optimal Direction
- Fields</a>,
- 2013.</p>
+<li id="cn:27">
+<p>David Bommes, Henrik Zimmer, Leif Kobbelt.
+<a href="http://www-sop.inria.fr/members/David.Bommes/publications/miq.pdf">Mixed&#8211;integer
+quadrangulation</a>,
+2009. <a href="#cnref:27" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
 </li>
 
-<li id="fn:28" class="citation"><span class="citekey" style="display:none">panozzo_2014</span><p>Daniele Panozzo, Enrico Puppo, Marco Tarini, Olga
- Sorkine-Hornung. <a href="http://cs.nyu.edu/~panozzo/papers/frame-fields-2014.pdf">Frame Fields: Anisotropic and Non-Orthogonal Cross
- Fields</a>,
- 2014.</p>
+<li id="cn:28">
+<p>Amir Vaxman, Marcel Campen, Olga Diamanti, Daniele Panozzo,
+David Bommes, Klaus Hildebrandt, Mirela Ben&#8211;Chen. <a href="https://www.google.com/search?q=Directional+Field+Synthesis+Design+and+Processing">Directional Field
+Synthesis, Design, and
+Processing</a>,
+2016 <a href="#cnref:28" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
 </li>
 
-<li id="fn:29" class="citation"><span class="citekey" style="display:none">diamanti_2014</span><p>Olga Diamanti, Amir Vaxman, Daniele Panozzo, Olga
- Sorkine-Hornung. <a href="http://igl.ethz.ch/projects/complex-roots/">Designing N-PolyVector Fields with Complex
- Polynomials</a>, 2014</p>
+<li id="cn:29">
+<p>Daniele Panozzo, Enrico Puppo, Marco Tarini, Olga
+Sorkine&#8211;Hornung. <a href="http://cs.nyu.edu/~panozzo/papers/frame-fields-2014.pdf">Frame Fields: Anisotropic and Non&#8211;Orthogonal Cross
+Fields</a>,
+2014. <a href="#cnref:29" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
 </li>
 
-<li id="fn:30" class="citation"><span class="citekey" style="display:none">liu_2011</span><p>Yang Liu, Weiwei Xu, Jun Wang, Lifeng Zhu, Baining Guo, Falai Chen, Guoping
- Wang. <a href="http://research.microsoft.com/en-us/um/people/yangliu/publication/cdf.pdf">General Planar Quadrilateral Mesh Design Using Conjugate Direction
- Field</a>,
- 2008.</p>
+<li id="cn:30">
+<p>Sofien Bouaziz, Mario Deuss, Yuliy Schwartzburg, Thibaut Weise, Mark Pauly
+<a href="http://lgg.epfl.ch/publications/2012/shapeup.pdf">Shape&#8211;Up: Shaping Discrete Geometry with
+Projections</a>, 2012 <a href="#cnref:30" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
 </li>
 
-<li id="fn:31" class="citation"><span class="citekey" style="display:none">bouaziz_2012</span><p>Sofien Bouaziz, Mario Deuss, Yuliy Schwartzburg, Thibaut Weise, Mark Pauly
- <a href="http://lgg.epfl.ch/publications/2012/shapeup.pdf">Shape-Up: Shaping Discrete Geometry with
- Projections</a>, 2012</p>
+<li id="cn:31">
+<p>Christian Schüller, Ladislav Kavan, Daniele Panozzo, Olga
+Sorkine&#8211;Hornung. <a href="http://igl.ethz.ch/projects/LIM/">Locally Injective
+Mappings</a>, 2013. <a href="#cnref:31" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
 </li>
 
-<li id="fn:32" class="citation"><span class="citekey" style="display:none">diamanti_2015</span><p>Olga Diamanti, Amir Vaxman, Daniele Panozzo, Olga
- Sorkine-Hornung. <a href="http://igl.ethz.ch/projects/integrable/">Integrable PolyVector Fields</a>, 2015</p>
+<li id="cn:32">
+<p>Qingnan Zhou, Eitan Grinspun, Denis Zorin. <a href="https://www.google.com/search?q=Mesh+Arrangements+for+Solid+Geometry">Mesh Arrangements for
+Solid
+Geometry</a>,
+2016 <a href="#cnref:32" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
 </li>
 
-<li id="fn:33" class="citation"><span class="citekey" style="display:none">vaxman_2016</span><p>Amir Vaxman, Marcel Campen, Olga Diamanti, Daniele Panozzo,
- David Bommes, Klaus Hildebrandt, Mirela Ben-Chen. <a href="https://www.google.com/search?q=Directional+Field+Synthesis+Design+and+Processing">Directional Field
- Synthesis, Design, and
- Processing</a>,
- 2016</p>
+<li id="cn:33">
+<p>Alec Jacobson, Ladislav Kavan, and Olga Sorkine.
+<a href="https://www.google.com/search?q=Robust+Inside-Outside+Segmentation+using+Generalized+Winding+Numbers">Robust Inside&#8211;Outside Segmentation using Generalized Winding
+Numbers</a>,
+2013. <a href="#cnref:33" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
 </li>
 
-<li id="fn:34" class="citation"><span class="citekey" style="display:none">schuller_2013</span><p>Christian Schüller, Ladislav Kavan, Daniele Panozzo, Olga
- Sorkine-Hornung. <a href="http://igl.ethz.ch/projects/LIM/">Locally Injective
- Mappings</a>, 2013.</p>
+<li id="cn:34">
+<p>Hugues Hoppe. <a href="https://www.google.com/search?q=Progressive+meshes">Progressive
+Meshes</a>, 1996 <a href="#cnref:34" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
 </li>
 
-<li id="fn:35" class="citation"><span class="citekey" style="display:none">zhou_2016</span><p>Qingnan Zhou, Eitan Grinspun, Denis Zorin. <a href="https://www.google.com/search?q=Mesh+Arrangements+for+Solid+Geometry">Mesh Arrangements for
- Solid
- Geometry</a>,
- 2016</p>
-</li>
-
-<li id="fn:36" class="citation"><span class="citekey" style="display:none">jacobson_2013</span><p>Alec Jacobson, Ladislav Kavan, and Olga Sorkine.
- <a href="https://www.google.com/search?q=Robust+Inside-Outside+Segmentation+using+Generalized+Winding+Numbers">Robust Inside-Outside Segmentation using Generalized Winding
- Numbers</a>,
- 2013.</p>
-</li>
-
-<li id="fn:37" class="citation"><span class="citekey" style="display:none">hoppe_1996</span><p>Hugues Hoppe. <a href="https://www.google.com/search?q=Progressive+meshes">Progressive
- Meshes</a>, 1996</p>
-</li>
-
-<li id="fn:38" class="citation"><span class="citekey" style="display:none">baerentzen_2005</span><p>J Andreas Baerentzen and Henrik Aanaes.
+<li id="cn:35">
+<p>J Andreas Baerentzen and Henrik Aanaes.
 <a href="https://www.google.com/search?q=Signed+distance+computation+using+the+angle+weighted+pseudonormal">Signed distance computation using the angle weighted
 pseudonormal</a>,
- 2005.</p>
+2005. <a href="#cnref:35" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
 </li>
 
-<li id="fn:39" class="citation"><span class="citekey" style="display:none">lorensen_1987</span><p>W.E. Lorensen and Harvey E. Cline. <a href="https://www.google.com/search?q=Marching+cubes:+A+high+resolution+3d+surface+construction+algorithm">Marching cubes: A high
- resolution 3d surface construction
- algorithm</a>,
- 1987.</p>
+<li id="cn:36">
+<p>W.E. Lorensen and Harvey E. Cline. <a href="https://www.google.com/search?q=Marching+cubes:+A+high+resolution+3d+surface+construction+algorithm">Marching cubes: A high
+resolution 3d surface construction
+algorithm</a>,
+1987. <a href="#cnref:36" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
 </li>
 
-<li id="fn:40" class="citation"><span class="citekey" style="display:none">takayama14</span><p>Kenshi Takayama, Alec Jacobson, Ladislav Kavan, Olga
- Sorkine-Hornung. <a href="https://www.google.com/search?q=A+Simple+Method+for+Correcting+Facet+Orientations+in+Polygon+Meshes+Based+on+Ray+Casting">A Simple Method for Correcting Facet Orientations in
- Polygon Meshes Based on Ray
- Casting</a>,
- 2014.</p>
+<li id="cn:37">
+<p>Kenshi Takayama, Alec Jacobson, Ladislav Kavan, Olga
+Sorkine&#8211;Hornung. <a href="https://www.google.com/search?q=A+Simple+Method+for+Correcting+Facet+Orientations+in+Polygon+Meshes+Based+on+Ray+Casting">A Simple Method for Correcting Facet Orientations in
+Polygon Meshes Based on Ray
+Casting</a>,
+2014. <a href="#cnref:37" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
 </li>
 
-<li id="fn:41" class="citation"><span class="citekey" style="display:none">schroeder_1994</span><p>William J. Schroeder, William E. Lorensen, and Steve
- Linthicum. <a href="https://www.google.com/search?q=implicit+modeling+of+swept+surfaces+and+volumes">Implicit Modeling of Swept Surfaces and
- Volumes</a>,
- 1994.</p>
+<li id="cn:38">
+<p>William J. Schroeder, William E. Lorensen, and Steve
+Linthicum. <a href="https://www.google.com/search?q=implicit+modeling+of+swept+surfaces+and+volumes">Implicit Modeling of Swept Surfaces and
+Volumes</a>,
+1994. <a href="#cnref:38" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
 </li>
 
-<li id="fn:42" class="citation"><span class="citekey" style="display:none">garg_2016</span><p>Akash Garg, Alec Jacobson, Eitan Grinspun. <a href="https://www.google.com/search?q=Computational+Design+of+Reconfigurables">Computational Design
- of
- Reconfigurables</a>,
- 2016</p>
+<li id="cn:39">
+<p>Akash Garg, Alec Jacobson, Eitan Grinspun. <a href="https://www.google.com/search?q=Computational+Design+of+Reconfigurables">Computational Design
+of
+Reconfigurables</a>,
+2016 <a href="#cnref:39" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
 </li>
 
-<li id="fn:43" class="citation"><span class="citekey" style="display:none">rabinovich_2016</span><p>Michael Rabinovich, Roi Poranne, Daniele Panozzo, Olga
- Sorkine-Hornung. <a href="http://cs.nyu.edu/~panozzo/papers/SLIM-2016.pdf">Scalable Locally Injective
- Mappings</a>, 2016.</p>
+<li id="cn:40">
+<p>Michael Rabinovich, Roi Poranne, Daniele Panozzo, Olga
+Sorkine&#8211;Hornung. <a href="http://cs.nyu.edu/~panozzo/papers/SLIM-2016.pdf">Scalable Locally Injective
+Mappings</a>, 2016. <a href="#cnref:40" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
 </li>
 
-<li id="fn:44" class="citation"><span class="citekey" style="display:none">loop_1987</span><p>Charles Loop. <a href="https://www.google.com/search?q=smooth+subdivision+surfaces+based+on+triangles">Smooth Subdivision Surfaces Based on
- Triangles</a>,
- 1987.</p>
+<li id="cn:41">
+<p>Charles Loop. <a href="https://www.google.com/search?q=smooth+subdivision+surfaces+based+on+triangles">Smooth Subdivision Surfaces Based on
+Triangles</a>,
+1987. <a href="#cnref:41" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
 </li>
 
 </ol>
 </div>
 
-
 </body>
 </html>
+

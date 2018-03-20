@@ -14,7 +14,7 @@ namespace igl
   namespace opengl2
   {
   // Wrapper for gluUnproject that uses the current GL_MODELVIEW_MATRIX,
-    // GL_PROJECTION_MATRIX, and GL_VIEWPORT to unproject a screen postion
+    // GL_PROJECTION_MATRIX, and GL_VIEWPORT to unproject a screen position
     // (winX,winY) to a 3d location at same depth as the current origin.
     // Inputs:
     //   win*  screen space x, y, and z coordinates respectively

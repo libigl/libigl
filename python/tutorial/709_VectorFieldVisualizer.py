@@ -1,3 +1,10 @@
+# This file is part of libigl, a simple c++ geometry processing library.
+#
+# Copyright (C) 2017 Sebastian Koch <s.koch@tu-berlin.de> and Daniele Panozzo <daniele.panozzo@gmail.com>
+#
+# This Source Code Form is subject to the terms of the Mozilla Public License
+# v. 2.0. If a copy of the MPL was not distributed with this file, You can
+# obtain one at http://mozilla.org/MPL/2.0/.
 import sys, os
 import numpy as np
 
@@ -6,7 +13,7 @@ sys.path.insert(0, os.getcwd() + "/../")
 import pyigl as igl
 from shared import TUTORIAL_SHARED_PATH, check_dependencies
 
-dependencies = ["viewer"]
+dependencies = ["glfw"]
 check_dependencies(dependencies)
 
 # Input mesh
@@ -59,7 +66,7 @@ def pre_draw(viewer):
         value = 1 - value
     value /= 0.5
     r, g, b = igl.parula(value)
-    viewer.data.add_edges(state.start_point, state.end_point, igl.eigen.MatrixXd([[r, g, b]]))
+    viewer.data().add_edges(state.start_point, state.end_point, igl.eigen.MatrixXd([[r, g, b]]))
 
     anim_t += anim_t_dir
 
@@ -93,8 +100,8 @@ def main():
     igl.streamlines_init(V, F, temp_field2, treat_as_symmetric, data, state)
 
     # Setup viewer
-    viewer = igl.viewer.Viewer()
-    viewer.data.set_mesh(V, F)
+    viewer = igl.glfw.Viewer()
+    viewer.data().set_mesh(V, F)
     viewer.callback_pre_draw = pre_draw
     viewer.callback_key_down = key_down
 
@@ -105,8 +112,8 @@ def main():
 
     # Paint mesh grayish
     C = igl.eigen.MatrixXd()
-    C.setConstant(viewer.data.V.rows(), 3, .9)
-    viewer.data.set_colors(C)
+    C.setConstant(viewer.data().V.rows(), 3, .9)
+    viewer.data().set_colors(C)
 
     # Draw vector field on sample points
     state0 = state.copy()
@@ -115,7 +122,7 @@ def main():
     v = state0.end_point - state0.start_point
     v = v.rowwiseNormalized()
 
-    viewer.data.add_edges(state0.start_point,
+    viewer.data().add_edges(state0.start_point,
                           state0.start_point + 0.059 * v,
                           igl.eigen.MatrixXd([[1.0, 1.0, 1.0]]))
 

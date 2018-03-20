@@ -1,3 +1,10 @@
+// This file is part of libigl, a simple c++ geometry processing library.
+//
+// Copyright (C) 2017 Sebastian Koch <s.koch@tu-berlin.de> and Daniele Panozzo <daniele.panozzo@gmail.com>
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
+// obtain one at http://mozilla.org/MPL/2.0/.
 #include "python_shared.h"
 #include <sstream>
 #include <string>
@@ -6,8 +13,8 @@
 extern void python_export_vector(py::module &);
 extern void python_export_igl(py::module &);
 
-#ifdef PY_VIEWER
-extern void python_export_igl_viewer(py::module &);
+#ifdef PY_GLFW
+extern void python_export_igl_glfw(py::module &);
 #endif
 
 #ifdef PY_COMISO
@@ -112,7 +119,6 @@ PYBIND11_PLUGIN(pyigl) {
            map_vertices_to_circle
            massmatrix
            min_quad_with_fixed
-           n_polyvector
            normalize_row_lengths
            normalize_row_sums
            parula
@@ -161,8 +167,8 @@ PYBIND11_PLUGIN(pyigl) {
     python_export_igl(m);
 
 
-    #ifdef PY_VIEWER
-    python_export_igl_viewer(m);
+    #ifdef PY_GLFW
+    python_export_igl_glfw(m);
     #endif
 
     #ifdef PY_COMISO

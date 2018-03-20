@@ -12,7 +12,7 @@
 //              GLFW:        http://www.glfw.org
 //  
 //
-//              This example draws a simple scene that can be re-tesselated 
+//              This example draws a simple scene that can be re-tessellated 
 //              interactively, and illuminated dynamically by an adjustable 
 //              number of moving lights.
 //
@@ -175,7 +175,7 @@ void Scene::Init(bool changeLights)
     glColorMaterial(GL_FRONT_AND_BACK, GL_DIFFUSE);
     glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_FALSE);
 
-    // Create objects display list using the current Subdiv parameter to control the tesselation
+    // Create objects display list using the current Subdiv parameter to control the tessellation
     if( objList>0 )
         glDeleteLists(objList, 1);      // delete previously created display list
     objList = glGenLists(1);

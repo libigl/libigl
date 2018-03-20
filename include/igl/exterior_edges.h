@@ -12,7 +12,7 @@
 namespace igl
 {
   // EXTERIOR_EDGES Determines boundary "edges" and also edges with an
-  // odd number of occurances where seeing edge (i,j) counts as +1 and seeing
+  // odd number of occurrences where seeing edge (i,j) counts as +1 and seeing
   // the opposite edge (j,i) counts as -1
   //
   // Inputs:

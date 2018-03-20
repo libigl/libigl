@@ -27,7 +27,7 @@ namespace igl
       //   num_cells        number of cells.
       //
       // Outputs:
-      //   adjacency_list  #C array of list of adjcent cell informations.  If
+      //   adjacency_list  #C array of list of adjcent cell information.  If
       //                   cell i and cell j are adjacent via patch x, where i
       //                   is on the positive side of x, and j is on the
       //                   negative side.  Then,
