@@ -38,10 +38,15 @@ pages:
       - "Chapter 6: External libraries": tutorial/chapter-6.md
       - "Chapter 7: Miscellaneous": tutorial/chapter-7.md
       - "Chapter 8: Outlook for continuing development": tutorial/chapter-8.md
+    - Compilation:
+      - Example Project: example-project.md
+      - Static Library: static-library.md
+      - External Dependencies: third-party.md
     - Contributing:
       - Style Guidelines: style-guidelines.md
       - Bug Report: CONTRIBUTING.md
       - Creating a Pull Request: before-submitting-pull-request.md
+      - Unit Tests: unit-tests.md
     - Misc:
       - Coding Tips: coding-guidelines.md
     - FAQ: faq.md
