@@ -286,9 +286,10 @@ namespace glfw
   IGL_INLINE Viewer::Viewer():
     data_list(1),
     selected_data_index(0),
-    next_data_id(0)
+    next_data_id(1)
   {
     window = nullptr;
+    data_list.front().id = 0;
 
     // Temporary variables initialization
     down = false;
@@ -934,7 +935,7 @@ namespace glfw
     return true;
   }
 
-  IGL_INLINE size_t Viewer::mesh_index(const int id) {
+  IGL_INLINE size_t Viewer::mesh_index(const int id) const {
     for (size_t i = 0; i < data_list.size(); ++i)
     {
       if (data_list[i].id == id)
