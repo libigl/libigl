@@ -2,7 +2,7 @@
 #include <igl/per_vertex_normals.h>
 #include <igl/readOFF.h>
 #include <igl/lim/lim.h>
-#include <igl/viewer/Viewer.h>
+#include <igl/opengl/glfw/Viewer.h>
 #include <iostream>
 
 #include "tutorial_shared_path.h"
@@ -22,12 +22,12 @@ bool barriersEnabled;
 
 // This function is called every time a keyboard button is pressed
 // keys: 0:Original Mesh / 1:Harmonic / 2:Biharmonic / 3:Green / 4:ARAP
-bool key_down(igl::viewer::Viewer& viewer,unsigned char key,int modifier)
+bool key_down(igl::opengl::glfw::Viewer& viewer,unsigned char key,int modifier)
 {
   using namespace std;
   using namespace Eigen;
 
-  if(key >= '0' && key <= '5' || key == 'B')
+  if((key >= '0' && key <= '5') || key == 'B')
   {
     // compute locally injective map
     Energy energy = Energy(key - '1');
@@ -50,7 +50,7 @@ bool key_down(igl::viewer::Viewer& viewer,unsigned char key,int modifier)
     }
 
     // set mesh
-    viewer.data.set_vertices(V1);
+    viewer.data().set_vertices(V1);
 
     return true;
   }
@@ -106,10 +106,10 @@ int main(int argc, char *argv[])
   lim(V1,V0,F,C,b,energyType,1e-8,100,true,true,barriersEnabled,true,-1,-1);
 
   // Show mesh
-  igl::viewer::Viewer viewer;
+  igl::opengl::glfw::Viewer viewer;
   viewer.callback_key_down = &key_down;
-  viewer.data.set_mesh(V1, F);
-  viewer.core.show_lines = true;
+  viewer.data().set_mesh(V1, F);
+  viewer.data().show_lines = true;
   viewer.core.lighting_factor = 0.0f;
   viewer.launch();
 }

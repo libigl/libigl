@@ -1,14 +1,11 @@
 <!DOCTYPE html>
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
 <head>
 	<meta charset="utf-8"/>
 	<title>libigl</title>
 	<meta name="author" content="Alec Jacobson and Daniele Panozzo and others"/>
 	<link type="text/css" rel="stylesheet" href="tutorial/style.css"/>
-<script type='text/javascript' src='http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
-<link rel='stylesheet' href='http://yandex.st/highlightjs/7.3/styles/default.min.css'>
-<script src='http://yandex.st/highlightjs/7.3/highlight.min.js'></script>
-<script>hljs.initHighlightingOnLoad();</script>
+<script type='text/javascript' src='http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script> <link rel='stylesheet' href='http://yandex.st/highlightjs/7.3/styles/default.min.css'> <script src='http://yandex.st/highlightjs/7.3/highlight.min.js'></script> <script>hljs.initHighlightingOnLoad();</script>
 </head>
 <body>
 
@@ -18,7 +15,7 @@
 style guidelines for <em>developers</em> of the library, but also acts as
 best-practices for users.</p>
 
-<h2 id="filefunction">One function, one .h/.cpp pair</h2>
+<h2 id="filefunction">One function, one .h/.cpp pair </h2>
 
 <p>The structure of libigl is very flat and function-based. For every
 function/sub-routine, create a single .h and .cpp file. For example, if you have
@@ -61,7 +58,7 @@ namespace igl
 }
 
 #ifndef IGL_STATIC_LIBRARY
-#  include &quot;example_fun.cpp&quot;
+#include &quot;example_fun.cpp&quot;
 #endif
 
 #endif
@@ -185,21 +182,21 @@ Eigen::SparseMatrix&lt;Atype&gt; adjacency_matrix(const ... &amp; F);
 <h2 id="templatingwitheigen">Templating with Eigen</h2>
 
 <p>Functions taking Eigen dense matrices/arrays as inputs and outputs (but <strong>not</strong>
-return arguments), should template on top of <code>Eigen::PlainObjectBase</code>. <strong>Each
+return arguments), should template on top of <code>Eigen::MatrixBase</code>. <strong>Each
 parameter</strong> should be derived using its own template.</p>
 
 <p>For example,</p>
 
 <pre><code class="cpp">template &lt;typename DerivedV, typename DerivedF, typename DerivedBC&gt;
 void barycenter(
-  const Eigen::PlainObjectBase&lt;DerivedV&gt; &amp; V,
-  const Eigen::PlainObjectBase&lt;DerivedF&gt; &amp; F,
-  const Eigen::PlainObjectBase&lt;DerivedBC&gt; &amp; BC);
+  const Eigen::MatrixBase&lt;DerivedV&gt; &amp; V,
+  const Eigen::MatrixBase&lt;DerivedF&gt; &amp; F,
+  const Eigen::MatrixBase&lt;DerivedBC&gt; &amp; BC);
 </code></pre>
 
 <p>The <code>Derived*</code> template encodes the scalar type (e.g. <code>double</code>, <code>int</code>), the
 number of rows and cols at compile time, and the data storage (Row-major vs.
-column-major). </p>
+column-major).</p>
 
 <p>Returning Eigen types is discouraged. In cases where the size and scalar type
 are a fixed <strong>and matching</strong> function of an input <code>Derived*</code> template, then
@@ -219,7 +216,7 @@ output-argument version and call that. So a full implementation looks like:</p>
 
 <pre><code class="cpp">template &lt;typename DerivedV, typename DerivedW&gt;
 void fit_to_unit_cube(
-  const Eigen::PlainObjectBase&lt;DerivedV&gt; &amp; V,
+  const Eigen::MatrixBase&lt;DerivedV&gt; &amp; V,
   Eigen::PlainObjectBase&lt;DerivedW&gt; &amp; W);
 template &lt;typename DerivedV&gt;
 void DerivedV fit_to_unit_cube(const Eigen::PlainObjectBase&lt;DerivedV&gt; &amp; V);
@@ -229,7 +226,7 @@ void DerivedV fit_to_unit_cube(const Eigen::PlainObjectBase&lt;DerivedV&gt; &amp
 
 <pre><code>template &lt;typename DerivedV, typename DerivedW&gt;
 void fit_to_unit_cube(
-  const Eigen::PlainObjectBase&lt;DerivedV&gt; &amp; V,
+  const Eigen::MatrixBase&lt;DerivedV&gt; &amp; V,
   Eigen::PlainObjectBase&lt;DerivedW&gt; &amp; W)
 {
   W = (V.rowwise()-V.colwise().minCoeff()).array() /
@@ -237,7 +234,7 @@ void fit_to_unit_cube(
 }
 
 template &lt;typename DerivedV&gt;
-void DerivedV fit_to_unit_cube(const Eigen::PlainObjectBase&lt;DerivedV&gt; &amp; V)
+void DerivedV fit_to_unit_cube(const Eigen::MatrixBase&lt;DerivedV&gt; &amp; V)
 {
   DerivedV W;
   fit_to_unit_cube(V,W);
@@ -274,7 +271,7 @@ to mean a list of faces/triangles.</p>
 <p>Classes should be avoided. When naming a class use CamelCase (e.g.
 SortableRow.h).</p>
 
-<h2 id="enumnamingconvertion">Enum naming convertion</h2>
+<h2 id="enumnamingconversion">Enum naming conversion</h2>
 
 <p>Enums types should be placed in the appropriate <code>igl::</code> namespace and should be
 named in CamelCase (e.g. <code>igl::SolverStatus</code>) and instances should be named in
@@ -392,3 +389,4 @@ implementation so we&#8217;re keeping it as long as possible and profitable.</p>
 
 </body>
 </html>
+

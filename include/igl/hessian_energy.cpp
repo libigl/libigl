@@ -25,35 +25,35 @@ IGL_INLINE void igl::hessian_energy(
     typedef typename Eigen::SparseMatrix<Scalar> SparseMat;
     typedef typename Eigen::DiagonalMatrix
                        <Scalar, Eigen::Dynamic, Eigen::Dynamic> DiagMat;
-    
+
     int dim = V.cols();
     assert((dim==2 || dim==3) &&
            "The dimension of the vertices should be 2 or 3");
-    
+
     SparseMat M;
     igl::massmatrix(V,F,igl::MASSMATRIX_TYPE_VORONOI,M);
-    
+
     //Kill non-interior DOFs
     VecXd Mint = M.diagonal();
     std::vector<std::vector<int> > bdryLoop;
-    igl::boundary_loop(Eigen::PlainObjectBase<DerivedF>(F),bdryLoop);
+    igl::boundary_loop(DerivedF(F),bdryLoop);
     for(const std::vector<int>& loop : bdryLoop)
         for(const int& bdryVert : loop)
             Mint(bdryVert) = 0.;
-    
+
     //Invert Mint
     for(int i=0; i<Mint.rows(); ++i)
         if(Mint(i) > 0)
             Mint(i) = 1./Mint(i);
-    
+
     //Repeat Mint to form diaginal matrix
     DiagMat stackedMinv = Mint.replicate(dim*dim,1).asDiagonal();
-    
+
     //Compute squared Hessian
     SparseMat H;
     igl::hessian(V,F,H);
     Q = H.transpose()*stackedMinv*H;
-    
+
 }
 
 

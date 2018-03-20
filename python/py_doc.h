@@ -1,3 +1,10 @@
+// This file is part of libigl, a simple c++ geometry processing library.
+//
+// Copyright (C) 2017 Sebastian Koch <s.koch@tu-berlin.de> and Daniele Panozzo <daniele.panozzo@gmail.com>
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
+// obtain one at http://mozilla.org/MPL/2.0/.
 extern const char *__doc_igl_active_set;
 extern const char *__doc_igl_adjacency_list;
 extern const char *__doc_igl_arap_precomputation;
@@ -41,6 +48,7 @@ extern const char *__doc_igl_eigs;
 extern const char *__doc_igl_embree_ambient_occlusion;
 extern const char *__doc_igl_embree_line_mesh_intersection;
 extern const char *__doc_igl_embree_reorient_facets_raycast;
+extern const char *__doc_igl_exact_geodesic;
 extern const char *__doc_igl_find_cross_field_singularities;
 extern const char *__doc_igl_fit_rotations;
 extern const char *__doc_igl_fit_rotations_planar;
@@ -67,7 +75,6 @@ extern const char *__doc_igl_massmatrix;
 extern const char *__doc_igl_min_quad_with_fixed_precompute;
 extern const char *__doc_igl_min_quad_with_fixed_solve;
 extern const char *__doc_igl_min_quad_with_fixed;
-extern const char *__doc_igl_n_polyvector;
 extern const char *__doc_igl_normalize_row_lengths;
 extern const char *__doc_igl_normalize_row_sums;
 extern const char *__doc_igl_parula;
@@ -92,6 +99,7 @@ extern const char *__doc_igl_readTGF;
 extern const char *__doc_igl_read_triangle_mesh;
 extern const char *__doc_igl_remove_duplicate_vertices;
 extern const char *__doc_igl_rotate_vectors;
+extern const char *__doc_igl_seam_edges;
 extern const char *__doc_igl_setdiff;
 extern const char *__doc_igl_signed_distance;
 extern const char *__doc_igl_signed_distance_pseudonormal;

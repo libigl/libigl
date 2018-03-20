@@ -1,3 +1,10 @@
+# This file is part of libigl, a simple c++ geometry processing library.
+#
+# Copyright (C) 2017 Sebastian Koch <s.koch@tu-berlin.de> and Daniele Panozzo <daniele.panozzo@gmail.com>
+#
+# This Source Code Form is subject to the terms of the Mozilla Public License
+# v. 2.0. If a copy of the MPL was not distributed with this file, You can
+# obtain one at http://mozilla.org/MPL/2.0/.
 import sys, os
 
 # Add the igl library to the modules search path
@@ -6,7 +13,7 @@ import pyigl as igl
 
 from shared import TUTORIAL_SHARED_PATH, check_dependencies
 
-dependencies = ["viewer"]
+dependencies = ["glfw"]
 check_dependencies(dependencies)
 
 
@@ -31,8 +38,8 @@ GU = (G * U).MapMatrix(F.rows(), 3)
 # Compute gradient magnitude
 GU_mag = GU.rowwiseNorm()
 
-viewer = igl.viewer.Viewer()
-viewer.data.set_mesh(V, F)
+viewer = igl.glfw.Viewer()
+viewer.data().set_mesh(V, F)
 
 # Compute pseudocolor for original function
 C = igl.eigen.MatrixXd()
@@ -42,7 +49,7 @@ igl.jet(U, True, C)
 # Or for gradient magnitude
 # igl.jet(GU_mag,True,C)
 
-viewer.data.set_colors(C)
+viewer.data().set_colors(C)
 
 # Average edge length divided by average gradient (for scaling)
 max_size = igl.avg_edge_length(V, F) / GU_mag.mean()
@@ -52,9 +59,9 @@ BC = igl.eigen.MatrixXd()
 igl.barycenter(V, F, BC)
 
 black = igl.eigen.MatrixXd([[0.0, 0.0, 0.0]])
-viewer.data.add_edges(BC, BC + max_size * GU, black)
+viewer.data().add_edges(BC, BC + max_size * GU, black)
 
 # Hide wireframe
-viewer.core.show_lines = False
+viewer.data().show_lines = False
 
 viewer.launch()

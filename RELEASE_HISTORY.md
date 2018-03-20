@@ -37,7 +37,7 @@ Version | Short description
 0.3.1   | Linearly dependent constraints in min_quad_with_fixed, SparseQR buggy
 0.3.0   | Better active set method support
 0.2.3   | More explicits, active set method, opengl/anttweakbar guards
-0.2.2   | More explicit instanciations, faster sorts and uniques
+0.2.2   | More explicit instantiations, faster sorts and uniques
 0.2.1   | Bug fixes in barycenter and doublearea found by Martin Bisson
 0.2.0   | XML serializer more stable and fixed bug in remove_duplicate_vertices
 0.1.8   | Embree and xml (windows only) extras

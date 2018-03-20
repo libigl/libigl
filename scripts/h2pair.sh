@@ -37,7 +37,7 @@ do
 
   if [[ `grep -c "^\#endif" "$i"` > 1 ]];
   then
-    echo "Warning $i contains multple matches to ^#endif"
+    echo "Warning $i contains multiple matches to ^#endif"
   fi
 
   before=`sed -n '/^\/\/ Implementation$/q;p' "$i"`;

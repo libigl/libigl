@@ -12,13 +12,6 @@
 
 #include <Eigen/Dense>
 
-#ifdef MEX
-#  include <mex.h>
-#  include <cassert>
-#  undef assert
-#  define assert( isOK ) ( (isOK) ? (void)0 : (void) mexErrMsgTxt(C_STR(__FILE__<<":"<<__LINE__<<": failed assertion `"<<#isOK<<"'"<<std::endl) ) )
-#endif
-
 namespace igl
 {
   namespace copyleft

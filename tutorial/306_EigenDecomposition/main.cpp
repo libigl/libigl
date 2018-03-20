@@ -1,7 +1,7 @@
 #include <igl/eigs.h>
 #include <igl/cotmatrix.h>
 #include <igl/massmatrix.h>
-#include <igl/viewer/Viewer.h>
+#include <igl/opengl/glfw/Viewer.h>
 #include <igl/parula.h>
 #include <igl/read_triangle_mesh.h>
 #include <Eigen/Sparse>
@@ -36,10 +36,11 @@ int main(int argc, char * argv[])
   {
     cout<<"failed."<<endl;
   }
+  // Normalize
   U = ((U.array()-U.minCoeff())/(U.maxCoeff()-U.minCoeff())).eval();
 
-  igl::viewer::Viewer viewer;
-  viewer.callback_key_down = [&](igl::viewer::Viewer & viewer,unsigned char key,int)->bool
+  igl::opengl::glfw::Viewer viewer;
+  viewer.callback_key_down = [&](igl::opengl::glfw::Viewer & viewer,unsigned char key,int)->bool
   {
     switch(key)
     {
@@ -58,14 +59,18 @@ int main(int argc, char * argv[])
         {
           V.col(2) = Z;
         }
-        viewer.data.set_mesh(V,F);
-        viewer.data.compute_normals();
-        viewer.data.set_colors(C);
+        viewer.data().set_mesh(V,F);
+        viewer.data().compute_normals();
+        viewer.data().set_colors(C);
         return true;
       }
     }
   };
   viewer.callback_key_down(viewer,' ',0);
-  viewer.core.show_lines = false;
+  viewer.data().show_lines = false;
+  std::cout<<
+R"(
+  [space] Cycle through eigen modes
+)";
   viewer.launch();
 }

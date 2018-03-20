@@ -5,7 +5,7 @@
 #include <igl/slice.h>
 #include <igl/slice_tets.h>
 #include <igl/winding_number.h>
-#include <igl/viewer/Viewer.h>
+#include <igl/opengl/glfw/Viewer.h>
 #include <Eigen/Sparse>
 #include <iostream>
 
@@ -23,7 +23,7 @@ enum OverLayType
   NUM_OVERLAY = 3,
 } overlay = OVERLAY_NONE;
 
-void update_visualization(igl::viewer::Viewer & viewer)
+void update_visualization(igl::opengl::glfw::Viewer & viewer)
 {
   using namespace Eigen;
   using namespace std;
@@ -32,8 +32,16 @@ void update_visualization(igl::viewer::Viewer & viewer)
   MatrixXd V_vis;
   MatrixXi F_vis;
   VectorXi J;
-  SparseMatrix<double> bary;
-  igl::slice_tets(V,T,plane,V_vis,F_vis,J,bary);
+  {
+    SparseMatrix<double> bary;
+    // Value of plane's implicit function at all vertices
+    const VectorXd IV = 
+      (V.col(0)*plane(0) + 
+        V.col(1)*plane(1) + 
+        V.col(2)*plane(2)).array()
+      + plane(3);
+    igl::slice_tets(V,T,IV,V_vis,F_vis,J,bary);
+  }
   VectorXd W_vis;
   igl::slice(W,J,W_vis);
   MatrixXd C_vis;
@@ -64,13 +72,13 @@ void update_visualization(igl::viewer::Viewer & viewer)
     default:
       break;
   }
-  viewer.data.clear();
-  viewer.data.set_mesh(V_vis,F_vis);
-  viewer.data.set_colors(C_vis);
-  viewer.data.set_face_based(true);
+  viewer.data().clear();
+  viewer.data().set_mesh(V_vis,F_vis);
+  viewer.data().set_colors(C_vis);
+  viewer.data().set_face_based(true);
 }
 
-bool key_down(igl::viewer::Viewer& viewer, unsigned char key, int mod)
+bool key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int mod)
 {
   switch(key)
   {
@@ -134,7 +142,7 @@ int main(int argc, char *argv[])
   W = (W.array() - W.minCoeff())/(W.maxCoeff()-W.minCoeff());
 
   // Plot the generated mesh
-  igl::viewer::Viewer viewer;
+  igl::opengl::glfw::Viewer viewer;
   update_visualization(viewer);
   viewer.callback_key_down = &key_down;
   viewer.launch();

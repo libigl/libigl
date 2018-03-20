@@ -1,3 +1,10 @@
+# This file is part of libigl, a simple c++ geometry processing library.
+#
+# Copyright (C) 2017 Sebastian Koch <s.koch@tu-berlin.de> and Daniele Panozzo <daniele.panozzo@gmail.com>
+#
+# This Source Code Form is subject to the terms of the Mozilla Public License
+# v. 2.0. If a copy of the MPL was not distributed with this file, You can
+# obtain one at http://mozilla.org/MPL/2.0/.
 import sys, os
 
 # Add the igl library to the modules search path
@@ -6,7 +13,7 @@ import pyigl as igl
 
 from shared import TUTORIAL_SHARED_PATH, check_dependencies
 
-dependencies = ["tetgen", "viewer"]
+dependencies = ["tetgen", "glfw"]
 check_dependencies(dependencies)
 
 
@@ -20,7 +27,7 @@ TV = igl.eigen.MatrixXd()
 TT = igl.eigen.MatrixXi()
 TF = igl.eigen.MatrixXi()
 
-viewer = igl.viewer.Viewer()
+viewer = igl.glfw.Viewer()
 
 
 def key_down(viewer, key, modifier):
@@ -36,7 +43,7 @@ def key_down(viewer, key, modifier):
                 s.append(i)
 
         V_temp = igl.eigen.MatrixXd(len(s) * 4, 3)
-        F_temp = igl.eigen.MatrixXi(len(s) * 4, 3)
+        F_temp = igl.eigen.MatrixXd(len(s) * 4, 3).castint()
 
         for i in range(len(s)):
             V_temp.setRow(i * 4 + 0, TV.row(TT[s[i], 0]))
@@ -44,14 +51,14 @@ def key_down(viewer, key, modifier):
             V_temp.setRow(i * 4 + 2, TV.row(TT[s[i], 2]))
             V_temp.setRow(i * 4 + 3, TV.row(TT[s[i], 3]))
 
-            F_temp.setRow(i * 4 + 0, igl.eigen.MatrixXi([[(i*4)+0, (i*4)+1, (i*4)+3]]))
-            F_temp.setRow(i * 4 + 1, igl.eigen.MatrixXi([[(i*4)+0, (i*4)+2, (i*4)+1]]))
-            F_temp.setRow(i * 4 + 2, igl.eigen.MatrixXi([[(i*4)+3, (i*4)+2, (i*4)+0]]))
-            F_temp.setRow(i * 4 + 3, igl.eigen.MatrixXi([[(i*4)+1, (i*4)+2, (i*4)+3]]))
+            F_temp.setRow(i * 4 + 0, igl.eigen.MatrixXd([[(i*4)+0, (i*4)+1, (i*4)+3]]).castint())
+            F_temp.setRow(i * 4 + 1, igl.eigen.MatrixXd([[(i*4)+0, (i*4)+2, (i*4)+1]]).castint())
+            F_temp.setRow(i * 4 + 2, igl.eigen.MatrixXd([[(i*4)+3, (i*4)+2, (i*4)+0]]).castint())
+            F_temp.setRow(i * 4 + 3, igl.eigen.MatrixXd([[(i*4)+1, (i*4)+2, (i*4)+3]]).castint())
 
-        viewer.data.clear()
-        viewer.data.set_mesh(V_temp, F_temp)
-        viewer.data.set_face_based(True)
+        viewer.data().clear()
+        viewer.data().set_mesh(V_temp, F_temp)
+        viewer.data().set_face_based(True)
 
     else:
         return False

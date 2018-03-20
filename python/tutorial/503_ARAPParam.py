@@ -1,3 +1,10 @@
+# This file is part of libigl, a simple c++ geometry processing library.
+#
+# Copyright (C) 2017 Sebastian Koch <s.koch@tu-berlin.de> and Daniele Panozzo <daniele.panozzo@gmail.com>
+#
+# This Source Code Form is subject to the terms of the Mozilla Public License
+# v. 2.0. If a copy of the MPL was not distributed with this file, You can
+# obtain one at http://mozilla.org/MPL/2.0/.
 import sys, os
 
 # Add the igl library to the modules search path
@@ -6,7 +13,7 @@ import pyigl as igl
 
 from shared import TUTORIAL_SHARED_PATH, check_dependencies
 
-dependencies = ["viewer"]
+dependencies = ["glfw"]
 check_dependencies(dependencies)
 
 
@@ -28,13 +35,13 @@ def key_down(viewer, key, modifier):
         V_uv = initial_guess
 
     if show_uv:
-        viewer.data.set_mesh(V_uv, F)
+        viewer.data().set_mesh(V_uv, F)
         viewer.core.align_camera_center(V_uv, F)
     else:
-        viewer.data.set_mesh(V, F)
+        viewer.data().set_mesh(V, F)
         viewer.core.align_camera_center(V, F)
 
-    viewer.data.compute_normals()
+    viewer.data().compute_normals()
     return False
 
 
@@ -70,16 +77,16 @@ igl.arap_solve(bc, arap_data, V_uv)
 V_uv *= 20
 
 # Plot the mesh
-viewer = igl.viewer.Viewer()
-viewer.data.set_mesh(V, F)
-viewer.data.set_uv(V_uv)
+viewer = igl.glfw.Viewer()
+viewer.data().set_mesh(V, F)
+viewer.data().set_uv(V_uv)
 viewer.callback_key_down = key_down
 
 # Disable wireframe
-viewer.core.show_lines = False
+viewer.data().show_lines = False
 
 # Draw checkerboard texture
-viewer.core.show_texture = True
+viewer.data().show_texture = True
 
 # Launch the viewer
 viewer.launch()

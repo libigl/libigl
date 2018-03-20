@@ -1,8 +1,3 @@
-[submodule "external/nanogui"]
-	path = external/nanogui
-url=https://github.com/libigl/nanogui.git
-        fetchRecursiveSubmodules = true
-        ignore = dirty
 [submodule "external/embree"]
 	path = external/embree
 	url = https://github.com/embree/embree.git
@@ -24,3 +19,15 @@ url=https://github.com/libigl/nanogui.git
 [submodule "external/cork"]
 	path = external/cork
 	url = https://github.com/libigl/cork.git
+[submodule "external/imgui"]
+	path = external/imgui/imgui
+	url = https://github.com/ocornut/imgui.git
+[submodule "external/glfw"]
+	path = external/glfw
+	url = https://github.com/glfw/glfw.git
+[submodule "external/eigen"]
+	path = external/eigen
+	url = https://github.com/eigenteam/eigen-git-mirror.git
+[submodule "external/pybind11"]
+	path = external/pybind11
+	url = https://github.com/pybind/pybind11

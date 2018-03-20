@@ -1,3 +1,10 @@
+# This file is part of libigl, a simple c++ geometry processing library.
+#
+# Copyright (C) 2017 Sebastian Koch <s.koch@tu-berlin.de> and Daniele Panozzo <daniele.panozzo@gmail.com>
+#
+# This Source Code Form is subject to the terms of the Mozilla Public License
+# v. 2.0. If a copy of the MPL was not distributed with this file, You can
+# obtain one at http://mozilla.org/MPL/2.0/.
 import sys, os
 
 # Add the igl library to the modules search path
@@ -6,20 +13,20 @@ import pyigl as igl
 
 from shared import TUTORIAL_SHARED_PATH, check_dependencies, print_usage
 
-dependencies = ["copyleft", "viewer"]
+dependencies = ["copyleft", "glfw"]
 check_dependencies(dependencies)
 
 
 def key_down(viewer, key, modifier):
     if key == ord('1'):
-        viewer.data.clear()
-        viewer.data.set_mesh(V, F)
+        viewer.data().clear()
+        viewer.data().set_mesh(V, F)
     elif key == ord('2'):
-        viewer.data.clear()
-        viewer.data.set_mesh(SV, SF)
+        viewer.data().clear()
+        viewer.data().set_mesh(SV, SF)
     elif key == ord('3'):
-        viewer.data.clear()
-        viewer.data.set_mesh(BV, BF)
+        viewer.data().clear()
+        viewer.data().set_mesh(BV, BF)
 
     return True
 
@@ -88,7 +95,7 @@ if __name__ == "__main__":
     igl.copyleft.marching_cubes(B, GV, res[0], res[1], res[2], BV, BF)
 
     # Plot the generated mesh
-    viewer = igl.viewer.Viewer()
-    viewer.data.set_mesh(SV, SF)
+    viewer = igl.glfw.Viewer()
+    viewer.data().set_mesh(SV, SF)
     viewer.callback_key_down = key_down
     viewer.launch()

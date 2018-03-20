@@ -1,3 +1,10 @@
+# This file is part of libigl, a simple c++ geometry processing library.
+#
+# Copyright (C) 2017 Sebastian Koch <s.koch@tu-berlin.de> and Daniele Panozzo <daniele.panozzo@gmail.com>
+#
+# This Source Code Form is subject to the terms of the Mozilla Public License
+# v. 2.0. If a copy of the MPL was not distributed with this file, You can
+# obtain one at http://mozilla.org/MPL/2.0/.
 import sys, os
 
 # Add the igl library to the modules search path
@@ -6,7 +13,7 @@ import pyigl as igl
 
 from shared import TUTORIAL_SHARED_PATH, check_dependencies, print_usage
 
-dependencies = ["viewer"]
+dependencies = ["glfw"]
 check_dependencies(dependencies)
 
 
@@ -39,10 +46,10 @@ def update(viewer):
     elif overlay == 2:  # OVERLAY_OUTPUT
         append_mesh(C_vis, F_vis, V_vis, V, F, igl.eigen.MatrixXd([[0.8, 0.8, 0.8]]))
 
-    viewer.data.clear()
-    viewer.data.set_mesh(V_vis, F_vis)
-    viewer.data.set_colors(C_vis)
-    viewer.data.set_face_based(True)
+    viewer.data().clear()
+    viewer.data().set_mesh(V_vis, F_vis)
+    viewer.data().set_colors(C_vis)
+    viewer.data().set_face_based(True)
 
 
 def key_down(viewer, key, modifier):
@@ -106,7 +113,7 @@ if __name__ == "__main__":
     W = (W - W.minCoeff()) / (W.maxCoeff() - W.minCoeff())
 
     # Plot the generated mesh
-    viewer = igl.viewer.Viewer()
+    viewer = igl.glfw.Viewer()
     update(viewer)
     viewer.callback_key_down = key_down
     viewer.launch()

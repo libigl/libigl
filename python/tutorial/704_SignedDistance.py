@@ -1,3 +1,10 @@
+# This file is part of libigl, a simple c++ geometry processing library.
+#
+# Copyright (C) 2017 Sebastian Koch <s.koch@tu-berlin.de> and Daniele Panozzo <daniele.panozzo@gmail.com>
+#
+# This Source Code Form is subject to the terms of the Mozilla Public License
+# v. 2.0. If a copy of the MPL was not distributed with this file, You can
+# obtain one at http://mozilla.org/MPL/2.0/.
 import sys, os
 import math
 
@@ -7,7 +14,7 @@ import pyigl as igl
 
 from shared import TUTORIAL_SHARED_PATH, check_dependencies
 
-dependencies = ["viewer"]
+dependencies = ["glfw"]
 check_dependencies(dependencies)
 
 
@@ -25,7 +32,7 @@ max_distance = 1
 slice_z = 0.5
 overlay = False
 
-viewer = igl.viewer.Viewer()
+viewer = igl.glfw.Viewer()
 
 
 def append_mesh(C_vis, F_vis, V_vis, V, F, color):
@@ -85,9 +92,9 @@ def update_visualization(viewer):
     if overlay:
         append_mesh(C_vis, F_vis, V_vis, V, F, igl.eigen.MatrixXd([[0.8, 0.8, 0.8]]))
 
-    viewer.data.clear()
-    viewer.data.set_mesh(V_vis, F_vis)
-    viewer.data.set_colors(C_vis)
+    viewer.data().clear()
+    viewer.data().set_mesh(V_vis, F_vis)
+    viewer.data().set_colors(C_vis)
     viewer.core.lighting_factor = overlay
 
 
@@ -131,5 +138,5 @@ igl.per_edge_normals(V, F, igl.PER_EDGE_NORMALS_WEIGHTING_TYPE_UNIFORM, FN, EN, 
 # Plot the generated mesh
 update_visualization(viewer)
 viewer.callback_key_down = key_down
-viewer.core.show_lines = False
+viewer.data().show_lines = False
 viewer.launch()

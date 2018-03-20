@@ -129,7 +129,7 @@ inline int intersect_triangle1(double orig[3], double dir[3],
       if (*v > 0.0 || *u + *v < det)
 	 return 0;
    }
-   else return 0;  /* ray is parallell to the plane of the triangle */
+   else return 0;  /* ray is parallel to the plane of the triangle */
 
 
    inv_det = 1.0 / det;
@@ -196,7 +196,7 @@ inline int intersect_triangle2(double orig[3], double dir[3],
       if (*v > 0.0 || *u + *v < det)
 	 return 0;
    }
-   else return 0;  /* ray is parallell to the plane of the triangle */
+   else return 0;  /* ray is parallel to the plane of the triangle */
 
    /* calculate t, ray intersects triangle */
    *t = IGL_RAY_TRI_DOT(edge2, qvec) * inv_det;
@@ -256,7 +256,7 @@ inline int intersect_triangle3(double orig[3], double dir[3],
       if (*v > 0.0 || *u + *v < det)
 	 return 0;
    }
-   else return 0;  /* ray is parallell to the plane of the triangle */
+   else return 0;  /* ray is parallel to the plane of the triangle */
 
    *t = IGL_RAY_TRI_DOT(edge2, qvec) * inv_det;
    (*u) *= inv_det;

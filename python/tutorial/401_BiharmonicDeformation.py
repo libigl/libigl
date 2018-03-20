@@ -1,3 +1,10 @@
+# This file is part of libigl, a simple c++ geometry processing library.
+#
+# Copyright (C) 2017 Sebastian Koch <s.koch@tu-berlin.de> and Daniele Panozzo <daniele.panozzo@gmail.com>
+#
+# This Source Code Form is subject to the terms of the Mozilla Public License
+# v. 2.0. If a copy of the MPL was not distributed with this file, You can
+# obtain one at http://mozilla.org/MPL/2.0/.
 import sys, os
 
 # Add the igl library to the modules search path
@@ -6,7 +13,7 @@ import pyigl as igl
 
 from shared import TUTORIAL_SHARED_PATH, check_dependencies
 
-dependencies = ["viewer"]
+dependencies = ["glfw"]
 check_dependencies(dependencies)
 
 bc_frac = 1.0
@@ -40,8 +47,8 @@ def pre_draw(viewer):
     else:
         igl.harmonic(V, F, b, U_bc_anim, 2, U)
 
-    viewer.data.set_vertices(U)
-    viewer.data.compute_normals()
+    viewer.data().set_vertices(U)
+    viewer.data().compute_normals()
     return False
 
 
@@ -66,7 +73,7 @@ igl.readDMAT(TUTORIAL_SHARED_PATH + "decimated-max-selection.dmat", S)
 
 S = S.castint()
 
-b = igl.eigen.MatrixXi([[t[0] for t in [(i, S[i]) for i in range(0, V.rows())] if t[1] >= 0]]).transpose()
+b = igl.eigen.MatrixXd([[t[0] for t in [(i, S[i]) for i in range(0, V.rows())] if t[1] >= 0]]).transpose().castint()
 
 # Boundary conditions directly on deformed positions
 U_bc.resize(b.rows(), V.cols())
@@ -97,10 +104,10 @@ for f in range(0, F.rows()):
         C.setRow(f, gold)
 
 # Plot the mesh with pseudocolors
-viewer = igl.viewer.Viewer()
-viewer.data.set_mesh(U, F)
-viewer.core.show_lines = False
-viewer.data.set_colors(C)
+viewer = igl.glfw.Viewer()
+viewer.data().set_mesh(U, F)
+viewer.data().show_lines = False
+viewer.data().set_colors(C)
 # viewer.core.trackball_angle = igl.eigen.Quaterniond(sqrt(2.0),0,sqrt(2.0),0)
 # viewer.core.trackball_angle.normalize()
 

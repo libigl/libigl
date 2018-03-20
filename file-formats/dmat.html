@@ -12,7 +12,7 @@
     <p>
 A .dmat file contains a dense matrix in column major order. It can contain
 ASCII or binary data. Note that it is uncompressed so binary only reduces the
-file size by 50%. But writing and reading binary is usualy faster. In MATLAB,
+file size by 50%. But writing and reading binary is usually faster. In MATLAB,
 binary is almost 100x faster.
     </p>
     <h2>ASCII</h2>
@@ -33,7 +33,7 @@ Then there should be another header containing the size of the binary part:
     </p>
     <pre><code>[#cols] [#rows]</code></pre>
     <p>
-Then coefficents are written in column-major order in Little-endian 8-byte
+Then coefficients are written in column-major order in Little-endian 8-byte
 double precision IEEE floating point format.
     </p>
     <p><strong>Note:</strong> Line endings must be <code>'\n'</code> aka char(10) aka line feeds.</p>
