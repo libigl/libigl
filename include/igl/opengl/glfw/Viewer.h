@@ -111,7 +111,7 @@ namespace glfw
 
     // Retrieve mesh index from its unique identifier
     // Returns 0 if not found
-    IGL_INLINE size_t mesh_index(const int id);
+    IGL_INLINE size_t mesh_index(const int id) const;
 
     // Alec: I call this data_list instead of just data to avoid confusion with
     // old "data" variable.
