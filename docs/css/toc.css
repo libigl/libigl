@@ -1,0 +1,5 @@
+label[for="toc"]+.md-nav__list .md-nav__list .md-nav__list {
+    display: none;
+}
+
+.md-nav--secondary .md-nav__list .md-nav__list { display: none }

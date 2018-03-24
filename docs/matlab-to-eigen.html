@@ -1,0 +1,317 @@
+<html> <head>
+    <title>MATLAB to Eigen</title>
+    <link href="./style.css" rel="stylesheet" type="text/css">
+  </head>
+  <body>
+    <table>
+      <tr class="header">
+        <th>MATLAB</th>
+        <th>Eigen with libigl</th>
+        <th>Notes</th>
+      </tr>
+
+      <tr class=d0>
+        <td><pre><code>[Y,IX] = sort(X,dim,mode)</code></pre></td>
+        <td><pre><code>igl::sort(X,dim,mode,Y,IX)</code></pre></td>
+        <td>MATLAB version allows Y to be a multidimensional matrix, but the
+        Eigen version is only for 1D or 2D matrices.</td>
+      </tr>
+
+      <tr class=d1>
+        <td><pre><code>B(i:(i+w),j:(j+h)) = A(x:(x+w),y:(y+h))</code></pre></td>
+        <td><pre><code>B.block(i,j,w,h) = A.block(i,j,w,h)</code></pre></td>
+        <td>MATLAB version would allow w and h to be non-positive since the
+        colon operator evaluates to a list of indices, but the Eigen version
+        needs non-negative width and height values.</td>
+      </tr>
+
+      <tr class=d0>
+        <td><pre><code>max(A(:))</code></pre></td>
+        <td><pre><code>A.maxCoeff()</code></pre></td>
+        <td>Find the maximum coefficient over all entries of the matrix.</td>
+      </tr>
+
+      <tr class=d1>
+        <td><pre><code>min(A(:))</code></pre></td>
+        <td><pre><code>A.minCoeff()</code></pre></td>
+        <td>Find the minimum coefficient over all entries of the matrix.</td>
+      </tr>
+
+      <tr class=d0>
+        <td><pre><code>eye(w,h)</code></pre></td>
+        <td><pre><code>MatrixXd::Identity(w,h), MatrixXf::Identity(w,h), etc.</code></pre></td>
+        <td></td>
+      </tr>
+
+      <tr class=d1>
+        <td><pre><code>A(i:(i+w),j:(j+h)) = eye(w,h)</code></pre></td>
+        <td><pre><code>A.block(i,j,w,h).setIdentity()</code></pre></td>
+        <td></td>
+      </tr>
+
+      <tr class=d0>
+        <td><pre><code>[I,J,V] = find(X)</code></pre></td>
+        <td><pre><code>igl::find(X,I,J,V)</code></pre></td>
+        <td>Matlab supports finding subscripts (I and J) as well as indices
+        (just I), but so far igl::find only supports subscripts. Also,
+        igl::find requires X to be sparse.</td>
+      </tr>
+
+      <tr class=d1>
+        <td><pre><code>X(:,j) = X(:,j) + x</code></pre></td>
+        <td><pre><code>X.col(j).array() += x</code></pre></td>
+        <td></td>
+      </tr>
+
+      <tr class=d0>
+        <td><pre><code>Acol_sum = sum(A,1)<br>Arow_sum = sum(A,2)<br>Adim_sum = sum(Asparse,dim)</code></pre></td>
+        <td><pre><code>Acol_sum = A.colwise().sum()<br>Arow_sum = A.rowwise().sum()<br>igl::sum(Asparse,dim,Adim_sum)</code></pre></td>
+        <td>Currently the igl version only supports sparse matrix input (and
+            dim must be 1 or 2).<br>
+            For sparse matrices, one could use
+            <code>A*Matrix&lt;Atype,Dynamic,1&gt;::Ones(A.cols(),1);</code> but this
+            will <b>not</b> work as expected for
+            <code>SparseMatrix&lt;bool&gt;</code>.
+        </td>
+      </tr>
+
+      <tr class=d1>
+        <td><pre><code>D = diag(M)</code></pre></td>
+        <td><pre><code>igl::diag(M,D)</code></pre></td>
+        <td>Extract the main diagonal of a matrix. Currently igl version
+        supports sparse only.</td>
+      </tr>
+
+      <tr class=d0>
+        <td><pre><code>M = diag(D)</code></pre></td>
+        <td><pre><code>igl::diag(D,M)</code></pre></td>
+        <td>Construct new square matrix M with entries of vector D along the
+        diagonal. Currently igl version supports sparse only. Might also
+        consider simply: <code>M = D.asDiagonal();</code></td>
+      </tr>
+
+      <tr class=d1>
+        <td><pre><code>[Y,I] = max(X,[],dim)</code></pre></td>
+        <td id=mat_max><pre><code>igl::mat_max(X,dim,Y,I)</code></pre></td>
+        <td>Matlab has a bizarre convention of passing [] as the second
+          argument to mean take the max/min along dimension dim.</td>
+      </tr>
+
+      <tr class=d0>
+        <td><pre><code>Y = max(X,[],1)<br>Y = max(X,[],2)<br>Y = min(X,[],1)<br>Y = min(X,[],2)</code></pre></td>
+        <td><pre><code>Y = X.colwise().maxCoeff()<br>Y = X.rowwise().maxCoeff()<br>Y = X.colwise().minCoeff()<br>Y = X.rowwise().minCoeff()</code></pre></td>
+        <td>Matlab allows you to obtain the indices of extrema see <a href=#mat_max>mat_max</a></td>
+      </tr>
+
+      <tr class=d1>
+        <td><pre><code>C = A.*B</code></pre></td>
+        <td><pre><code>C = (A.array() * B.array()).matrix()</code></pre></td>
+        <td></td>
+      </tr>
+
+      <tr class=d0>
+        <td><pre><code>C = A.^b</code></pre></td>
+        <td><pre><code>C = A.array().pow(b).matrix()</code></pre></td>
+        <td></td>
+      </tr>
+
+      <tr class=d1>
+        <td><pre><code>A(B == 0) = C(B==0)</code></pre></td>
+        <td><pre><code>A = (B.array() == 0).select(C,A)</code></pre></td>
+        <td></td>
+      </tr>
+
+      <tr class=gotcha1>
+        <td><pre><code>C = A + B'</code></pre></td>
+        <td><pre><code>SparseMatrixType BT = B.transpose()<br>SparseMatrixType C = A+BT;</code></pre></td>
+        <td>Do <b>not</b> attempt to combine .transpose() in expression like
+        this: <pre><code>C = A + B.transpose()</code></pre></td>
+      </tr>
+
+      <tr class=gotcha2>
+        <td><pre><code>[L,p] = chol(A)</code></pre></td>
+        <td><pre><code>SparseLLT&lt;SparseMatrixType&gt; A_LLT(A.template triangularView&lt;Lower&gt;())<br>SparseMatrixType L = A_LLT.matrixL();bool p = (L*0).eval().nonZeros()==0;</code></pre></td>
+        <td>Do <b>not</b> attempt to use A in constructor of A_LLT like
+        this: <pre><code>SparseLLT&lt;SparseMatrixType&gt; A_LLT(A)</code></pre><br>
+        Do <b>not</b> attempt to use A_LLT.succeeded() to determine if Cholesky
+        factorization succeeded, like this:
+        <pre><code>bool p = A_LLT.succeeded()</code></pre>
+        </td>
+      </tr>
+
+      <tr class=d0>
+        <td><pre><code>X = U\(L\b)</code></pre></td>
+        <td><pre><code>X = b;<br>L.template triangularView&lt;Lower&gt;().solveInPlace(X);<br>U.template triangularView&lt;Upper&gt;().solveInPlace(X);</code></pre></td>
+        <td>Expects that L and U are lower and upper triangular matrices
+        respectively</td>
+      </tr>
+
+      <tr class=d1>
+        <td><pre><code>B = repmat(A,i,j)</code></pre></td>
+        <td><pre><code>igl::repmat(A,i,j,B);
+B = A.replicate(i,j);</code></pre></td>
+        <td>igl::repmat is also implemented for Sparse Matrices.
+        </td>
+      </tr>
+
+      <tr class=d0>
+        <td><pre><code>I = low:step:hi</code></pre></td>
+        <td><pre><code>igl::colon(low,step,hi,I);
+// or
+const int size = ((hi-low)/step)+1;
+I = VectorXi::LinSpaced(size,low,low+step*(size-1));</code></pre></td>
+        <td>IGL version should be templated enough to handle same situations as
+        matlab's colon. The matlab keyword <b>end</b> does not correspond in
+        the C++ version. You'll have to use M.size(),M.rows() or whatever.
+        </td>
+      </tr>
+
+      <tr class=d1>
+        <td><pre><code>O = ones(m,n)</code></pre></td>
+        <td><pre><code>Matrix* O = Matrix*::Ones(m,n)</code></pre></td>
+        <td></td>
+      </tr>
+
+      <tr class=d0>
+        <td><pre><code>O = zeros(m,n)</code></pre></td>
+        <td><pre><code>Matrix* O = Matrix*::Zero(m,n)</code></pre></td>
+        <td></td>
+      </tr>
+
+      <tr class=d1>
+        <td><pre><code>B = A(I,J)<br>B = A(I,:)</code></pre></td>
+        <td><pre><code>igl::slice(A,I,J,B)<br>igl::slice(A,I,1,B)</code></pre></td>
+        <td>This is only for the case when I and J are lists of indices and
+        not vectors of logicals.</td>
+      </tr>
+
+      <tr class=d0>
+        <td><pre><code>B(I,J) = A<br>B(I,:) = A</code></pre></td>
+        <td><pre><code>igl::slice_into(A,I,J,B)<br>igl::slice_into(A,I,1,B)</code></pre></td>
+        <td>This is only for the case when I and J are lists of indices and
+        not vectors of logicals.</td>
+      </tr>
+
+      <tr class=d1>
+        <td><pre><code>M = mode(X,dim)</code></pre></td>
+        <td><pre><code>igl::mode(X,dim,M)</code></pre></td>
+        <td></td>
+      </tr>
+
+      <tr class=d0>
+        <td><pre><code>B = arrayfun(FUN, A)</code></pre></td>
+        <td><pre><code>B = A.unaryExpr(ptr_fun(FUN))</code></pre></td>
+        <td>If FUN is templated, the templates must be fully resolved.</td>
+      </tr>
+
+      <tr class=d1>
+        <td><pre><code>B = fliplr(A)<br>B = flipud(A)</code></pre></td>
+        <td><pre><code>B = A.rowwise().reverse().eval()<br>B =
+	A.colwise().reverse().eval()</code></pre></td>
+        <td>The <code>.eval()</code> is not necessary if A != B</td>
+      </tr>
+
+      <tr class=d0>
+        <td><pre><code>B = IM(A)
+
+A = IM(A);
+  </code></pre></td>
+        <td><pre><code>B = A.unaryExpr(bind1st(mem_fun(
+  static_cast&lt;VectorXi::Scalar&amp;(VectorXi::*)(VectorXi::Index)&gt;
+  (&amp;VectorXi::operator())), &amp;IM)).eval();
+// or
+for_each(A.data(),A.data()+A.size(),[&amp;IM](int &amp; a){a=IM(a);});
+  </code></pre></td>
+        <td>Where IM is an "index map" column vector and A is an arbitrary
+        matrix. The <code>.eval()</code> is not necessary if A != B, but then
+        the second option should be used.</td>
+      </tr>
+
+      <tr class=d1>
+        <td><pre><code>A = sparse(I,J,V)</code></pre></td>
+        <td><pre><code>// build std::vector&ltEigen::Triplet&gt; IJV
+A.setFromTriplets(IJV);
+        </code></pre></td>
+        <td>IJV and A should not be empty! (this might be fixed)</td>
+      </tr>
+
+
+      <tr class=d0>
+        <td><pre><code>A = min(A,c);</code></pre></td>
+        <td><pre><code>C.array() = A.array().min(c);
+        </code></pre></td>
+        <td>Coefficient-wise minimum of matrix and scalar (or matching size matrix)</td>
+      </tr>
+
+      <tr class=d1>
+        <td><pre><code>I=1:10;
+...
+IP = I(P==0);</code></pre></td>
+        <td><pre><code>I = VectorXi::LinSpaced(10,0,9);
+...
+VectorXi IP = I;
+IP.conservativeResize(stable_partition(
+  IP.data(),
+  IP.data()+IP.size(),
+  [&amp;P](int i){return P(i)==0;})-IP.data());
+        </code></pre></td>
+        <td>Where I is a vector of increasing indices from 0 to n, and P is a vector. <i>Requires C++11 and <code>#include &lt;algorithm&gt;</code></i></td>
+      </tr>
+
+      <tr class=d0>
+        <td><pre><code>B = A(R&lt;2,C&gt;1);</code></pre>
+        <td><pre><code>B = igl::slice_mask(A,R.array()&lt;2,C.array()&gt;1);</code></pre>
+        <td></td>
+      </tr>
+
+      <tr class=d1>
+        <td><pre><code>a = any(A(:))</code></pre></td>
+        <td><pre><code><del>bool a = any_of(A.data(),A.data()+A.size(),[](bool a){ return a;});</del>
+bool a = A.array().any();
+        </code></pre></td>
+        <td>Casts <code>Matrix::Scalar<code> to <code>bool</code>.</td>
+      </tr>
+
+      <tr class=d0>
+        <td><pre><code>B = mod(A,2)</code></pre></td>
+        <td><pre><code>igl::mod(A,2,B)</code></pre></td>
+        <td></td>
+      </tr>
+
+      <tr class=d1>
+        <td><pre><code>[IA,LOCB] = ismember(A,B)</code></pre></td>
+        <td><pre><code>igl::ismember(A,B,IA,LOCB)</code></pre></td>
+        <td></td>
+      </tr>
+
+      <tr class=d0>
+        <td><pre><code>A = A - diag(diag(A));</code></pre></td>
+        <td><pre><code>A.prune([](const int r, const int c, const Scalar)-&gt;bool{return r!=c;});</code></pre></td>
+        <td>Remove the diagonal from a sparse matrix.</td>
+      </tr>
+
+      <tr class=d1>
+        <td><pre><code>A = A - diag(diag(A));</code></pre></td>
+        <td><pre><code>A.prune([](const int r, const int c, const Scalar)-&gt;bool{return r!=c;});</code></pre></td>
+        <td>Remove the diagonal from a sparse matrix.</td>
+      </tr>
+
+      <!-- Insert rows for each command pair -->
+
+      <!-- Leave this here for copy and pasting
+
+      <tr class=d0>
+        <td><pre><code>Matlab code</code></pre></td>
+        <td><pre><code>Eigen code</code></pre></td>
+        <td>Notes</td>
+      </tr>
+
+      -->
+
+    </table>
+    <a href="http://eigen.tuxfamily.org/dox/AsciiQuickReference.txt">Eigen's
+    "ASCII Quick Reference" with MATLAB translations</a>
+    <br>
+    <a href="./tutorial.html">IGL Lib Tutorial</a>
+  </body>
+</html>
