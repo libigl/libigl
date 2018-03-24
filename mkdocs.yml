@@ -1,4 +1,5 @@
 site_name: libigl
+strict: true
 theme:
   name: material
   logo:
@@ -56,7 +57,7 @@ pages:
     - Matlab-libigl Cheatsheet: matlab-to-eigen.md
     - Coding Tips: coding-guidelines.md
     - File Formats:
-      - List: file-formats/index.md
+      - Index: file-formats/index.md
       - bf: file-formats/bf.md
       - dmat: file-formats/dmat.md
       - rbr: file-formats/rbr.md
