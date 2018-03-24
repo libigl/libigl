@@ -61,9 +61,7 @@ make
 ## Extras
 
 ### bbw
-This library extra contains functions for computing Bounded Biharmonic Weights, can
-be used with and without the [mosek](#mosek) extra via the `IGL_NO_MOSEK`
-macro.
+This library extra contains functions for computing Bounded Biharmonic Weights, can be used with and without the [mosek](#mosek) extra via the `IGL_NO_MOSEK` macro.
 
 ### boolean
 This library extra contains functions for computing mesh-mesh booleans,

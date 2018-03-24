@@ -307,7 +307,7 @@ viewer.data().add_points(P,Eigen::RowVector3d(r,g,b));
 Draws a point of color r,g,b for each row of P. The point is placed at the coordinates specified in each row of P, which is a #P by 3 matrix.
 
 ```cpp
-viewer.data().add_edges(P1,P2,Eigen::RowVector3d(r,g,b);
+viewer.data().add_edges(P1,P2,Eigen::RowVector3d(r,g,b));
 ```
 
 Draws a line of color r,g,b for each row of P1 and P2, which connects the 3D point in to the point in P2. Both P1 and P2 are of size #P by 3.

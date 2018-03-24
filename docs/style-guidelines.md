@@ -1,3 +1,5 @@
+<link href="../css/toc.css" rel="stylesheet" type="text/css">
+
 # Libigl Style Guidelines
 
 Libigl is used and developed by many people. This document highlights some
@@ -55,7 +57,7 @@ namespace igl
 
 #### `example_fun.cpp`
 
-```
+```cpp
 // This file is part of libigl, a simple c++ geometry processing library.
 // 
 // Copyright (C) 2015 [Your Name] [your email address]
@@ -134,7 +136,7 @@ header file. A typical documentation consists of four parts:
 
 For example the header `barycenter.h`
 
-```
+```cpp
 // Computes the barycenter of every simplex
 //
 // Inputs:
@@ -222,7 +224,7 @@ void DerivedV fit_to_unit_cube(const Eigen::PlainObjectBase<DerivedV> & V);
 
 In `igl/fit_in_unit_cube.cpp`:
 
-```
+```cpp
 template <typename DerivedV, typename DerivedW>
 void fit_to_unit_cube(
   const Eigen::MatrixBase<DerivedV> & V,

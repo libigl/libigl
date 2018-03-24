@@ -1,13 +1,13 @@
 # libigl example project
 
-A blank project example showing how to use libigl and cmake. Feel free and
+A blank project example showing how to use libigl and cmake can be found
+[here](https://github.com/libigl/libigl-example-project). Feel free and
 encouraged to copy or fork this project as a way of starting a new personal
 project using libigl.
 
 ## See the tutorial first
 
-Then build, run and understand the [libigl
-tutorial](http://libigl.github.io/libigl/tutorial/tutorial.html).
+Then build, run and understand the [libigl tutorial](./tutorial/chapter-1.md).
 
 ## Compile
 
@@ -33,7 +33,7 @@ A glfw app should launch displaying a 3D cube.
 The only dependencies are stl, eigen, [libigl](libigl.github.io/libigl/) and
 the dependencies of the `igl::opengl::glfw::Viewer`.
 
-We recommend you to install libigl using git via:
+We recommend to install libigl using git via:
 
     git clone https://github.com/libigl/libigl.git
     cd libigl/

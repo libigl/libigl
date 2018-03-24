@@ -1,8 +1,9 @@
 # License
 
-Libigl is primarily licensed under MPL2
-  - http://www.mozilla.org/MPL/2.0/
-  - http://www.mozilla.org/MPL/2.0/FAQ.html
+Libigl is primarily licensed under MPL2:
+
+- http://www.mozilla.org/MPL/2.0/
+- http://www.mozilla.org/MPL/2.0/FAQ.html
 
 All `.h` and `.cpp` _files_ directly in `include/igl` (but not necessarily in
 sub-directories) are subject only to the terms of the MPL2; they should not
