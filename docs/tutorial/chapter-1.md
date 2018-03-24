@@ -1,22 +1,13 @@
-title: libigl Tutorial
-author: Daniele Panozzo and Alec Jacobson
-date: 07 November 2015
-css: style.css
-html header:   <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-<link rel="stylesheet" href="http://yandex.st/highlightjs/7.3/styles/default.min.css">
-<script src="http://yandex.st/highlightjs/7.3/highlight.min.js"></script>
-<script>hljs.initHighlightingOnLoad();</script>
+<h1>libigl tutorial notes</h1>
 
-# libigl tutorial notes
-
-#### originally presented by Daniele Panozzo and Alec Jacobson at SGP Graduate School 2014
+<h4>originally presented by Daniele Panozzo and Alec Jacobson at SGP Graduate School 2014</h4>
 
 ![](images/libigl-logo.jpg)
 
 Libigl is an open source C++ library for geometry processing research and development.  Dropping the heavy data structures of tradition geometry libraries, libigl is a simple header-only library of encapsulated functions. This combines the rapid prototyping familiar to Matlab or Python programmers with the performance and versatility of C++.  The tutorial is a self-contained, hands-on introduction to libigl.  Via interactive, step-by-step examples, we demonstrate how to accomplish common geometry processing tasks such as computation of differential quantities and operators, real-time deformation, parametrization, numerical optimization and remeshing. Each section of the lecture notes links to a cross-platform example application.
 
 
-# Chapter 1 [chapter1:introductiontolibigl]
+# Chapter 1
 
 We introduce libigl with a series of self-contained examples. The purpose of
 each example is to showcase a feature of libigl while applying to a practical
@@ -25,7 +16,7 @@ concepts of libigl and introduce a simple mesh viewer that allows to
 visualize a surface mesh and its attributes. All the tutorial examples are
 cross-platform and can be compiled on MacOSX, Linux and Windows.
 
-## [libigl design principles](#libigldesignprinciples) [libigldesignprinciples]
+## libigl design principles
 
 Before getting into the examples, we summarize the main design principles in
 libigl:
@@ -112,7 +103,7 @@ in 32 bit on windows.
 
 We provide a [blank project example](https://github.com/libigl/libigl-example-project) showing how to use libigl and cmake. Feel free and encouraged to copy or fork this project as a way of starting a new personal project using libigl.
 
-## [Mesh representation](#meshrepresentation) [meshrepresentation]
+## Mesh representation
 
 libigl uses the [Eigen](http://eigen.tuxfamily.org/) library to encode vector
 and matrices. We suggest that you keep the
@@ -164,7 +155,7 @@ igl::writeOBJ("cube.obj",V,F);
 [Example 101](101_FileIO/main.cpp) contains a simple mesh
 converter from OFF to OBJ format.
 
-## [Visualizing surfaces](#visualizingsurfaces) [visualizingsurfaces]
+## Visualizing surfaces
 
 Libigl provides an glfw-based OpenGL 3.2 viewer to visualize surfaces, their
 properties and additional debugging information.
@@ -203,7 +194,7 @@ Please see the documentation in
 ![([Example 102](102_DrawMesh/main.cpp)) loads and draws a
 mesh.](images/102_DrawMesh.png)
 
-## [Interaction with keyboard and mouse](#interactionwithkeyboardandmouse) [interactionwithkeyboardandmouse]
+## Interaction with keyboard and mouse
 
 Keyboard and mouse events triggers callbacks that can be registered in the
 viewer. The viewer supports the following callbacks:
@@ -259,7 +250,7 @@ The viewer can be extended using plugins, which are classes that implements all
 the viewer's callbacks. See the
 [Viewer_plugin](../include/igl/opengl/glfw/ViewerPlugin.h) for more details.
 
-## [Scalar field visualization](#scalarfieldvisualization) [scalarfieldvisualization]
+## Scalar field visualization
 
 Colors and normals can be associated to faces or vertices using the
 set_colors function:
@@ -296,7 +287,7 @@ color field.](images/104_Colors.png)
 types and can be easily reused for many different tasks.  Not committing to
 heavy data structures types favors simplicity, ease of use and reusability.
 
-## [Overlays](#overlays) [overlays]
+## Overlays
 
 In addition to plotting the surface, the viewer supports the visualization of points, lines and text labels: these overlays can be very helpful while developing geometric processing algorithms to plot debug information.
 
@@ -332,7 +323,7 @@ Eigen::Vector3d M = V.colwise().maxCoeff();
 ![([Example 105](105_Overlays/main.cpp)) The bounding box of a mesh is shown
 using overlays.](images/105_Overlays.png)
 
-## [Viewer Menu](#viewermenu) [viewermenu]
+## Viewer Menu
 
 As of latest version, the viewer uses a new menu and completely replaces
 [AntTweakBar](http://anttweakbar.sourceforge.net/doc/) and
@@ -420,7 +411,7 @@ menu.callback_draw_custom_window = [&]()
 ![([Example 106](106_ViewerMenu/main.cpp)) The UI of the viewer can be easily
 customized.](images/106_ViewerMenu.png)
 
-## [Multiple Meshes](#multiplemeshes) [multiplemeshes]
+## Multiple Meshes
 
 Libigl's `igl::opengl::glfw::Viewer` provides basic support for rendering
 multiple meshes.

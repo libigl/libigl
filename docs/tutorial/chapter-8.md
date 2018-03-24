@@ -1,4 +1,4 @@
-# Outlook for continuing development [future]
+# Outlook for continuing development
 
 Libigl is in active development, and we plan to focus on the following features
 in the next months:

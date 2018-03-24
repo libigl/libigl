@@ -1,5 +1,5 @@
 
-# Chapter 5: Parametrization [chapter5:parametrization]
+# Chapter 5: Parametrization
 
 In computer graphics, we denote as surface parametrization a map from the
 surface to \\(\mathbf{R}^2\\). It is usually encoded by a new set of 2D
@@ -26,7 +26,7 @@ genus. They initially cut the mesh in multiple patches that can be separately pa
 
 4. **Global seamless parametrization**: these are global parametrization algorithm that hides the seams, making the parametrization "continuous", under specific assumptions that we will discuss later.
 
-## [Harmonic parametrization](#harmonicparametrization) [harmonicparametrization]
+## Harmonic parametrization
 
 Harmonic parametrization [#eck_2005][] is a single patch, fixed boundary parametrization
 algorithm that computes the 2D coordinates of the flattened mesh as two
@@ -66,7 +66,7 @@ mesh ([Example 501](501_HarmonicParam/main.cpp)).
 mesh with texture, (right) UV parametrization with
 texture](images/501_HarmonicParam.png)
 
-## [Least squares conformal maps](#leastsquareconformalmaps) [leastsquareconformalmaps]
+## Least squares conformal maps
 
 Least squares conformal maps parametrization [#levy_2002][] minimizes the
 conformal (angular) distortion of the parametrization. Differently from
@@ -116,7 +116,7 @@ vertices to two arbitrary positions. The full source code is provided in [Exampl
 ![([Example 502](502_LSCMParam/main.cpp)) LSCM parametrization. (left) mesh
 with texture, (right) UV parametrization](images/502_LSCMParam.png)
 
-## [As-rigid-as-possible parametrization](#asrigidaspossible) [asrigidaspossible]
+## As-rigid-as-possible parametrization
 
 As-rigid-as-possible parametrization [#liu_2008][] is a powerful single-patch,
 non-linear algorithm to compute a parametrization that strives to preserve
@@ -138,7 +138,7 @@ the distortion.
 (left) mesh with texture, (right) UV parametrization with
 texture](images/503_ARAPParam.png)
 
-## [N-rotationally symmetric tangent fields](#nrotationallysymmetrictangetfields) [nrotationallysymmetrictangetfields]
+## N-rotationally symmetric tangent fields
 
 The design of tangent fields is a basic tool used to design guidance fields for
 uniform quadrilateral and hexahedral remeshing. Libigl contains an
@@ -180,7 +180,7 @@ a reference implementation of the most popular ones. For a complete categorizati
 of fields used in various applications see Vaxman et al. 2016 [#vaxman_2016].
 
 
-### [Global, seamless integer-grid parametrization](#globalseamlessintegergridparametrization) [globalseamlessintegergridparametrization]
+### Global, seamless integer-grid parametrization
 
 The previous parametrization methods were focusing on creating parametrizations
 of surface patches aimed at texture mapping or baking of other surface
@@ -262,7 +262,7 @@ A quad mesh can be extracted from this parametrization using
 [libQEx](https://github.com/hcebke/libQEx) (not included in libigl).
 The full pipeline is implemented in [Example 505](505_MIQ/main.cpp).
 
-## [Anisotropic remeshing](#anisotropicremeshingusingframefields) [anisotropicremeshingusingframefields]
+## Anisotropic remeshing
 
 Anisotropic and non-uniform quad remeshing is important to concentrate the
 elements in the regions with more details. It is possible to extend the MIQ
@@ -307,7 +307,7 @@ generate the UV parametrization, but other algorithms could be applied: the
 only desiderata is that the generated quad mesh should be as isotropic as
 possible.
 
-## [Planarization](#planarization) [planarization]
+## Planarization
 
 A quad mesh can be transformed in a planar quad mesh with Shape-Up
 [#bouaziz_2012], a local/global approach that uses the global step to enforce

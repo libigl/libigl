@@ -1,4 +1,5 @@
-<link href="../css/toc.css" rel="stylesheet" type="text/css">
+<!-- Hide h3+ from toc  -->
+<style>.md-nav--secondary .md-nav__list .md-nav__list { display: none }</style>
 
 # Compiling libigl as a static library
 

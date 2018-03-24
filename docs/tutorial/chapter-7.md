@@ -1,11 +1,11 @@
-# Miscellaneous [chapter7:miscellaneous]
+# Miscellaneous
 
 Libigl contains a _wide_ variety of geometry processing tools and functions for
 dealing with meshes and the linear algebra related to them: far too many to
 discuss in this introductory tutorial. We've pulled out a couple of the
 interesting functions in this chapter to highlight.
 
-## [Mesh Statistics](#meshstatistics) [meshstatistics]
+## Mesh Statistics
 
 Libigl contains various mesh statistics, including face angles, face areas and
 the detection of singular vertices, which are vertices with more or less than 6
@@ -41,7 +41,7 @@ the angles are to 60 degrees the more stable will the optimization be. In this
 case, it is clear that the mesh is of bad quality and it will probably result
 in artifacts if used for solving PDEs.
 
-## [Generalized Winding Number](#generalizedwindingnumber) [generalizedwindingnumber]
+## Generalized Winding Number
 
 The problem of tetrahedralizing the interior of closed watertight surface mesh
 is a difficult, but well-posed problem (see our [Tetgen wrappers][tetrahedralizationofclosedsurfaces]).  But
@@ -88,7 +88,7 @@ extracted interior tets, and slices show the winding number function on all
 tets in the convex hull: blue (~0), green (~1), yellow
 (~2).](images/big-sigcat-winding-number.gif)
 
-## [Mesh Decimation](#meshdecimation) [meshdecimation]
+## Mesh Decimation
 
 The study of mesh simplification or _decimation_ is nearly as old as meshes
 themselves. Given a high resolution mesh with too many triangles, find a "well
@@ -217,7 +217,7 @@ The [Example 703](./703_Decimation/main.cpp) demonstrates using this priority
 queue based approach with the simple shortest-edge-midpoint cost/placement
 strategy discussed above.
 
-## [Signed Distances](#signeddistances) [signeddistances]
+## Signed Distances
 
 In the [Generalized Winding Number section][generalizedwindingnumber], we
 examined a robust method for determining whether points lie inside or outside
@@ -327,7 +327,7 @@ with the pseudo-normal test.
 ![Example [704](704_SignedDistance/main.cpp) computes signed distance on
 slices through the bunny.](images/bunny-signed-distance.gif)
 
-## [Marching Cubes](#marchingcubes) [marchingcubes]
+## Marching Cubes
 
 Often 3D data is captured as scalar field defined over space $f(\mathbf{x}) :
 \mathcal{R}^3 \rightarrow \mathcal{R}$. Lurking within this field,
@@ -360,14 +360,14 @@ marching cubes to contour the 0-level set (center). For comparison, clamping
 this signed distance field to an indicator function and contouring reveals
 serious aliasing artifacts.](images/armadillo-marching-cubes.jpg)
 
-## [Facet Orientation](#facetorientation) [facetorientation]
+## Facet Orientation
 
 Models from the web occasionally arrive _unorientated_ in the sense that
 the orderings of each triangles vertices do not consistently agree. Determining
 a consistent facet orientation for a mesh is essential for two-sided lighting
 (e.g., a cloth with red velvet on one side and gold silk on the other side) and
 for inside-outside determination(e.g., using [generalized winding
-numbers](#generalizedwindingnumber)).
+numbers](#generalized-winding-number)).
 
 For (open) surfaces representing two-sided sheets, libigl provides a routine to
 force consistent orientations within each orientable patch
@@ -404,7 +404,7 @@ patches are uniquely colored and then oriented to face outward (middle left).
 Alternatively, each individual triangle is considered a "patch" (middle right)
 and oriented outward independently.](images/truck-facet-orientation.jpg)
 
-## [Swept Volume](#sweptvolume) [sweptvolume]
+## Swept Volume
 
 The swept volume $S$ of a moving solid object $A$ can be defined as any point in
 space such that at one moment in time the point lies inside the solid. In other
@@ -459,7 +459,7 @@ or less than zero to approximate a negative offset.
 the surface of the swept volume (silver) of the bunny model undergoing a rigid
 motion (gold).](images/bunny-swept-volume.gif)
 
-## [Picking](#pickingverticesandfaces) [pickingverticesandfaces]
+## Picking
 
 Picking vertices and faces using the mouse is very common in geometry
 processing applications. While this might seem a simple operation, its
@@ -491,7 +491,7 @@ by Embree, and `fid` and `vid` are the picked face and vertex, respectively.
 ![([Example 708](708_Picking/main.cpp)) Picking via ray casting. The selected
 vertices are colored in red.](images/607_Picking.png)
 
-## [Vector Field Visualization](#vectorfieldvisualizer) [vectorfieldvisualizer]
+## Vector Field Visualization
 
 Vector fields on surfaces are commonly visualized by tracing [streamlines] (https://en.wikipedia.org/wiki/Streamlines,_streaklines,_and_pathlines). Libigl
 supports the seeding and tracing of streamlines, for both simple vector fields
@@ -502,7 +502,7 @@ in [Example 709](709_VectorFieldVisualizer/main.cpp).
 
 ![([Example 709](709_VectorFieldVisualizer/main.cpp)) Interactive streamlines tracing.](images/streamlines.jpg)
 
-## [Scalable Locally Injective Maps](#slim) [slim]
+## Scalable Locally Injective Maps
 
 The Scalable Locally Injective Maps [#rabinovich_2016] algorithm allows to
 compute locally injective maps on massive datasets. The algorithm shares many
@@ -520,7 +520,7 @@ on Pardiso is available
 ![A locally injective parametrization of a mesh with 50k faces is computed
 using the SLIM algorithm in 10 iterations.](images/slim.png)
 
-## [Subdivision surfaces](#subdivision) [subdivision]
+## Subdivision surfaces
 
 Given a coarse mesh (aka cage) with vertices `V` and faces `F`, one can createa
 higher-resolution mesh with more vertices and faces by _subdividing_ every
@@ -565,7 +565,7 @@ the carrier surfaces with extreme bias.
 `igl::upsample`, `igl::loop` and
 `igl::false_barycentric_subdivision`.](images/decimated-knight-subdivision.gif)
 
-## [Data smoothing](#datasmoothing) [datasmoothing]
+## Data smoothing
 
 A noisy function $f$ defined on a surface $\Omega$ can be smoothed using an
 energy minimization that balances a smoothing term $E_S$ with a quadratic
@@ -600,7 +600,7 @@ on the beetle mesh, the function with added noise, the result of smoothing
 with the Laplacian energy and zero Neumann boundary conditions, and the
 result of smoothing with the Hessian energy.](images/712_beetles.jpg)
 
-## [ShapeUp Projections](#shapeup) [shapeup]
+## ShapeUp Projections
 
 Our input is a set of points $P_0$ (not necessarily part of any mesh), and a set of constraints $S=\left\{S_1,S_2,...S_m\right\}$, where each constraint is defined on a different, and sparse, subset of $P_0$. We wish to create a new set of points $P$ that are close to the original set $P_0$ (each point with corresponding indices), while adhering to the constraints. Other objectives, such as smoothness, can be employed. The constraints can be nonlinear, which makes the problem nonconvex, difficult, and without a guaranteed global optimum. A very popular lightweight approach to such problems is a local-global iterative algorithm, comprising these two steps:
 

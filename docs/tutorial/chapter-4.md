@@ -1,3 +1,5 @@
+<!-- Hide h4+ from toc  -->
+<style>.md-nav--secondary .md-nav__list .md-nav__list .md-nav__list { display: none }</style>
 
 # Chapter 4: Shape deformation
 Modern mesh-based shape deformation methods satisfy user deformation

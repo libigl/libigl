@@ -1,9 +1,9 @@
-# Chapter 6: External libraries [chapter6:externallibraries]
+# Chapter 6: External libraries
 
 An additional positive side effect of using matrices as basic types is that it
 is easy to exchange data between libigl and other software and libraries.
 
-## [State serialization](#stateserialization) [stateserialization]
+## State serialization
 
 Geometry processing applications often require a considerable amount of
 computational time and/or manual input. Serializing the state of the application
@@ -154,7 +154,7 @@ common to have to do small changes to figures, and being able to serialize the
 entire state just before you take screenshots will save you many painful hours
 before a submission deadline.
 
-## [Mixing Matlab code](#mixingmatlabcode) [mixingmatlabcode]
+## Mixing Matlab code
 
 Libigl can be interfaced with Matlab to offload numerically heavy computation
 to a Matlab script. The major advantage of this approach is that you will be
@@ -279,7 +279,7 @@ L = sparse(LIJV(:,1),LIJV(:,2),LIJV(:,3));
 
 which is easily copied and pasted into Matlab for debugging, etc.
 
-## [Calling libigl functions from Matlab](#callinglibiglfunctionsfrommatlab) [callinglibiglfunctionsfrommatlab]
+## Calling libigl functions from Matlab
 
 It is also possible to call libigl functions from matlab, compiling them as MEX
 functions. This can be used to offload to C++ code the computationally
@@ -290,7 +290,7 @@ We plan to provide wrappers for all our functions in the future, if you are
 interested in this feature (or if you want to help implementing it) please let
 us know.
 
-## [Triangulation of closed polygons](#triangulationofclosedpolygons) [triangulationofclosedpolygons]
+## Triangulation of closed polygons
 
 The generation of high-quality triangle and tetrahedral meshes is a very common
 task in geometry processing. We provide wrappers in libigl to
@@ -313,7 +313,7 @@ in its interior) is triangulated.
 
 ![Triangulation of the interior of a polygon.](images/604_Triangle.png)
 
-## [Tetrahedralization of closed surfaces](#tetrahedralizationofclosedsurfaces) [tetrahedralizationofclosedsurfaces]
+## Tetrahedralization of closed surfaces
 
 Similarly, the interior of a closed manifold surface can be tetrahedralized
 using the function `igl::tetrahedralize` which wraps the Tetgen library ([Example
@@ -325,7 +325,7 @@ igl::tetrahedralize(V,F,"pq1.414", TV,TT,TF);
 
 ![Tetrahedralization of the interior of a surface mesh.](images/605_Tetgen.png)
 
-## [Baking ambient occlusion](#bakingambientocclusion) [bakingambientocclusion]
+## Baking ambient occlusion
 
 [Ambient occlusion](http://en.wikipedia.org/wiki/Ambient_occlusion) is a
 rendering technique used to calculate the exposure of each point in a surface
@@ -359,7 +359,7 @@ Ambient occlusion can be used to darken the surface colors, as shown in
 ![A mesh rendered without (left) and with (right) ambient
 occlusion.](images/606_AmbientOcclusion.png)
 
-## [Screen Capture](#screencapture) [screencapture]
+## Screen Capture
 
 Libigl supports read and writing to .png files via the
 [stb image](http://nothings.org/stb_image.h) code.
@@ -385,7 +385,7 @@ In [Example 607](607_ScreenCapture/main.cpp) a scene is rendered in a temporary
 png and used to texture a quadrilateral.
 
 
-## [Locally Injective Maps](#locallyinjectivemaps) [locallyinjectivemaps]
+## Locally Injective Maps
 
 Extreme deformations or parametrizations with high-distortion might flip
 elements.  This is undesirable in many applications, and it is possible to
@@ -399,7 +399,7 @@ deformation energies. A simple deformation of a 2D grid is computed in [Example
 ![A mesh (left) deformed using Laplacian editing (middle) and with Laplacian
 editing plus the anti-flipping constraints (right).](images/608_LIM.png)
 
-## [Boolean operations on meshes](#booleanoperationsonmeshes) [booleanoperationsonmeshes]
+## Boolean operations on meshes
 
 Constructive solid geometry (CSG) is a technique to define a complex surface as
 the result of a number of set operations on solid regions of space: union,
@@ -480,9 +480,9 @@ Libigl also provides a wrapper `igl::copyleft::cork::mesh_boolean` to the
 [cork](https://github.com/gilbo/cork), which is typically faster, but is not
 always robust.
 
-## [CSG Tree](#csgtree) [csgtree]
+## CSG Tree
 
-The [previous section](#booleanoperationsonmeshes) discusses using
+The [previous section](#boolean-operations-on-meshes) discusses using
 `igl::copyleft::cgal::mesh_boolean` to compute the result of a _single_ boolean
 operation on two input triangle meshes. When employing constructive solid
 geometry (CSG) as a modeling paradigm, shapes are represented as the result of
