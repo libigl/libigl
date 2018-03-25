@@ -159,7 +159,8 @@ the right-hand side.
 Conceptually, this is very easy if we have sorted $\mathbf{z}$ so that interior
 vertices come first and then boundary vertices:
 
- $$\left(\begin{array}{cc}
+$$
+ \left(\begin{array}{cc}
  \mathbf{L}_{in,in} & \mathbf{L}_{in,b}\\
  \mathbf{L}_{b,in} & \mathbf{L}_{b,b}\end{array}\right)
  \left(\begin{array}{c}
@@ -167,24 +168,29 @@ vertices come first and then boundary vertices:
  \mathbf{z}_{b}\end{array}\right) =
  \left(\begin{array}{c}
  \mathbf{0}_{in}\\
- \mathbf{z}_{bc}\end{array}\right)$$
+ \mathbf{z}_{bc}\end{array}\right)
+$$
 
 The bottom block of equations is no longer meaningful so we'll only consider
 the top block:
 
- $$\left(\begin{array}{cc}
+$$
+ \left(\begin{array}{cc}
  \mathbf{L}_{in,in} & \mathbf{L}_{in,b}\end{array}\right)
  \left(\begin{array}{c}
  \mathbf{z}_{in}\\
  \mathbf{z}_{b}\end{array}\right) =
- \mathbf{0}_{in}$$
+ \mathbf{0}_{in}
+$$
 
 We can move the known values to the right-hand side:
 
- $$\mathbf{L}_{in,in}
+$$
+ \mathbf{L}_{in,in}
  \mathbf{z}_{in} = -
  \mathbf{L}_{in,b}
- \mathbf{z}_{b}$$
+ \mathbf{z}_{b}
+$$
 
 Finally we can solve this equation for the unknown values at interior vertices
 $\mathbf{z}_{in}$.
@@ -219,13 +225,17 @@ solving such systems.
 Let us consider a general quadratic minimization problem subject to different
 common constraints:
 
- $$\mathop{\text{minimize }}_\mathbf{z}  \frac{1}{2}\mathbf{z}^T \mathbf{Q} \mathbf{z} +
- \mathbf{z}^T \mathbf{B} + \text{constant},$$
+$$
+ \mathop{\text{minimize }}_\mathbf{z}  \frac{1}{2}\mathbf{z}^T \mathbf{Q} \mathbf{z} +
+ \mathbf{z}^T \mathbf{B} + \text{constant},
+$$
 
  subject to
 
- $$\mathbf{z}_b = \mathbf{z}_{bc} \text{ and } \mathbf{A}_{eq} \mathbf{z} =
- \mathbf{B}_{eq},$$
+$$
+ \mathbf{z}_b = \mathbf{z}_{bc} \text{ and } \mathbf{A}_{eq} \mathbf{z} =
+ \mathbf{B}_{eq},
+$$
 
 where
 
@@ -272,8 +282,10 @@ solve general quadratic programs. Let's consider another example, this time
 with active linear equality constraints. Specifically let's solve the
 `bi-Laplace equation` or equivalently minimize the Laplace energy:
 
- $$\Delta^2 z = 0 \leftrightarrow \mathop{\text{minimize }}\limits_z \frac{1}{2}
- \int\limits_S (\Delta z)^2 dA$$
+$$
+ \Delta^2 z = 0 \leftrightarrow \mathop{\text{minimize }}\limits_z \frac{1}{2}
+ \int\limits_S (\Delta z)^2 dA
+$$
 
 subject to fixed value constraints and a linear equality constraint:
 
@@ -292,9 +304,11 @@ method. This method adds additional variables for each linear constraint (in
 general a $m \times 1$ vector of variables $\lambda$) and then solves the
 saddle problem:
 
- $$\mathop{\text{find saddle }}_{\mathbf{z},\lambda}\, \frac{1}{2}\mathbf{z}^T \mathbf{Q} \mathbf{z} +
+$$
+  \mathop{\text{find saddle }}_{\mathbf{z},\lambda}\, \frac{1}{2}\mathbf{z}^T \mathbf{Q} \mathbf{z} +
   \mathbf{z}^T \mathbf{B} + \text{constant} + \lambda^T\left(\mathbf{A}_{eq}
- \mathbf{z} - \mathbf{B}_{eq}\right)$$
+ \mathbf{z} - \mathbf{B}_{eq}\right)
+$$
 
 This can be rewritten in a more familiar form by stacking $\mathbf{z}$ and
 $\lambda$ into one $(m+n) \times 1$ vector of unknowns:
