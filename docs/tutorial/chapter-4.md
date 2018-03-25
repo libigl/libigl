@@ -18,9 +18,9 @@ partial differential equation.
 
 There are many flavors of these techniques, but a prototypical subset are those
 that consider solutions to the bi-Laplace equation, that is a biharmonic
-function [#botsch_2004][]. This fourth-order PDE provides sufficient
+function [^botsch_2004]. This fourth-order PDE provides sufficient
 flexibility in boundary conditions to ensure $C^1$ continuity at handle
-constraints (in the limit under refinement) [#jacobson_mixed_2010][].
+constraints (in the limit under refinement) [^jacobson_mixed_2010].
 
 ### Biharmonic surfaces
 Let us first begin our discussion of biharmonic _deformation_, by considering
@@ -111,7 +111,7 @@ $\mathbf{x}' = \mathbf{x} - \mathbf{d}$:
  \|\Delta \mathbf{x}' - \Delta \mathbf{x})\|^2 dA.$
 
 In the early work of Sorkine et al., the quantities $\Delta \mathbf{x}'$ and
-$\Delta \mathbf{x}$ were dubbed "differential coordinates" [#sorkine_2004][].
+$\Delta \mathbf{x}$ were dubbed "differential coordinates" [^sorkine_2004].
 Their deformations (without linearized rotations) is thus equivalent to
 biharmonic deformation fields.
 
@@ -173,7 +173,7 @@ any handle structure such as a cage, collection of points, selected regions,
 etc.).
 
 Bounded biharmonic weights are one such technique that casts weight computation
-as a constrained optimization problem [#jacobson_2011][]. The weights enforce
+as a constrained optimization problem [^jacobson_2011]. The weights enforce
 smoothness by minimizing the familiar Laplacian energy:
 
  $\sum\limits_{i = 1}^m \int_S (\Delta w_i)^2 dA$
@@ -209,7 +209,7 @@ coordinates by zero:
 In practice, this means the shape shrinks and collapses in regions where bone
 weights overlap: near joints.
 
-Dual quaternion skinning presents a solution [#kavan_2008]. This method
+Dual quaternion skinning presents a solution [^kavan_2008]. This method
 represents rigid transformations as a pair of unit quaternions,
 $\hat{\mathbf{q}}$. The linear blend skinning formula is replaced with a
 linear blend of dual quaternions:
@@ -305,11 +305,11 @@ the energy, thus we may safely iterate them until convergence.
 
 The different flavors of "as-rigid-as-possible" depend on the dimension and
 codimension of the domain and the edge-sets $T$. The proposed surface
-manipulation technique by Sorkine and Alexa [#sorkine_2007][], considers $T$ to
+manipulation technique by Sorkine and Alexa [^sorkine_2007], considers $T$ to
 be the set of sets of edges emanating from each vertex (spokes). Later, Chao et
 al.  derived the relationship between "as-rigid-as-possible" mesh energies and
 co-rotational elasticity considering 0-codimension elements as edge-sets:
-triangles in 2D and tetrahedra in 3D [#chao_2010][]. They also showed how
+triangles in 2D and tetrahedra in 3D [^chao_2010]. They also showed how
 Sorkine and Alexa's edge-sets are not a discretization of a continuous energy,
 proposing instead edge-sets for surfaces containing all edges of elements
 incident on a vertex (spokes and rims). They show that this amounts to
@@ -338,7 +338,7 @@ which uses `U` as an initial guess and then computes the solution into it.
 
 Libigl's implementation of as-rigid-as-possible deformation takes advantage of
 the highly optimized singular value decomposition code from McAdams et al.
-[#mcadams_2011][] which leverages SSE intrinsics.
+[^mcadams_2011] which leverages SSE intrinsics.
 
 ![The example [AsRigidAsPossible](405_AsRigidAsPossible/main.cpp) deforms a surface as if it were made of an elastic material](images/decimated-knight-arap.jpg)
 
@@ -385,7 +385,7 @@ clustered edge-sets show diminishing returns on the deformation quality so we
 may choose a small number of clusters, proportional to the number of skinning
 weight functions (rather than the number of discrete mesh vertices).
 
-This proposed deformation model [#jacobson_2012][], can simultaneously be seen as a
+This proposed deformation model [^jacobson_2012], can simultaneously be seen as a
 fast, subspace optimization for ARAP and as an automatic method for finding
 _the best_ skinning transformation degrees of freedom.
 
@@ -455,7 +455,7 @@ Linear blend skinning (as [above](#boundedbiharmonicweights)) deforms a mesh by
 propagating _full affine transformations_ at handles (bones, points, regions,
 etc.) to the rest of the shape via weights. Another deformation framework,
 called "generalized barycentric coordinates", is a special case of linear blend
-skinning [#jacobson_skinning_course_2014][]: transformations are restricted to
+skinning [^jacobson_skinning_course_2014]: transformations are restricted to
 _pure translations_ and weights are required to retain _affine precision_. This
 latter requirement means that we can write the rest-position of any vertex in
 the mesh as the weighted combination of the control handle locations:
@@ -471,14 +471,14 @@ _translated_ control point positions:
 
 There are _many_ different flavors of "generalized barycentric coordinates"
 (see table in "Automatic Methods" section,
-[#jacobson_skinning_course_2014][]). The vague goal of "generalized barycentric
+[^jacobson_skinning_course_2014]). The vague goal of "generalized barycentric
 coordinates" is to capture as many properties of simplicial barycentric
 coordinates (e.g. for triangles in 2D and tetrahedral in 3D) for larger sets of
 points or polyhedra. Some generalized barycentric coordinates can be computed
 in closed form; others require optimization-based precomputation. Nearly all
 flavors require connectivity information describing how the control points form
 a external polyhedron around the input shape: a cage. However, a recent
-techinique does not require a cage [#wang_bc_2015][]. This method ensures
+techinique does not require a cage [^wang_bc_2015]. This method ensures
 affine precision during optimization over weights of a smoothness energy with
 affine functions in its kernel:
 
@@ -513,7 +513,7 @@ the mesh:
 Since the Laplacian $\mathbf{K}$ is a second-order derivative it measures zero on affine
 functions, thus $\mathbf{A}$ has affine functions in its null space. A short
 derivation proves that this implies $\mathbf{W}$ will be affine precise (see
-[#wang_bc_2015][]).
+[^wang_bc_2015]).
 
 Minimizers of this "squared Laplacian" energy are in some sense _discrete
 biharmonic functions_. Thus they're dubbed "biharmonic coordinates" (not the
@@ -530,3 +530,16 @@ igl::biharmonic_coordinates(V,F,S,W);
 
 ![([Example 407](407_BiharmonicCoordinates/main.cpp)) shows a physics simulation on a coarse orange mesh. The vertices of this mesh become control points for a biharmonic coordinates deformation of the blue high-resolution mesh.](images/octopus-biharmonic-coordinates-physics.gif)
 
+## References
+
+[^botsch_2004]: Matrio Botsch and Leif Kobbelt. [An Intuitive Framework for Real-Time Freeform Modeling](https://www.google.com/search?q=An+Intuitive+Framework+for+Real-Time+Freeform+Modeling), 2004.
+[^chao_2010]: Isaac Chao, Ulrich Pinkall, Patrick Sanan, Peter Schröder. [A Simple Geometric Model for Elastic Deformations](https://www.google.com/search?q=A+Simple+Geometric+Model+for+Elastic+Deformations), 2010.
+[^jacobson_2011]: Alec Jacobson, Ilya Baran, Jovan Popović, and Olga Sorkine. [Bounded Biharmonic Weights for Real-Time Deformation](https://www.google.com/search?q=Bounded+biharmonic+weights+for+real-time+deformation), 2011.
+[^jacobson_2012]: Alec Jacobson, Ilya Baran, Ladislav Kavan, Jovan Popović, and Olga Sorkine. [Fast Automatic Skinning Transformations](https://www.google.com/search?q=Fast+Automatic+Skinning+Transformations), 2012.
+[^jacobson_mixed_2010]: Alec Jacobson, Elif Tosun, Olga Sorkine, and Denis Zorin. [Mixed Finite Elements for Variational Surface Modeling](https://www.google.com/search?q=Mixed+Finite+Elements+for+Variational+Surface+Modeling), 2010.
+[^jacobson_skinning_course_2014]: Alec Jacobson, Zhigang Deng, Ladislav Kavan, J.P. Lewis. [_Skinning: Real-Time Shape Deformation_](https://www.google.com/search?q=Skinning+Real-Time+Shape+Deformation), 2014.
+[^kavan_2008]: Ladislav Kavan, Steven Collins, Jiri Zara, and Carol O'Sullivan. [Geometric Skinning with Approximate Dual Quaternion Blending](https://www.google.com/search?q=Geometric+Skinning+with+Approximate+Dual+Quaternion+Blending), 2008.
+[^mcadams_2011]: Alexa McAdams, Andrew Selle, Rasmus Tamstorf, Joseph Teran, Eftychios Sifakis. [Computing the Singular Value Decomposition of 3x3 matrices with minimal branching and elementary floating point operations](https://www.google.com/search?q=Computing+the+Singular+Value+Decomposition+of+3x3+matrices+with+minimal+branching+and+elementary+floating+point+operations), 2011.
+[^sorkine_2004]: Olga Sorkine, Yaron Lipman, Daniel Cohen-Or, Marc Alexa, Christian Rössl and Hans-Peter Seidel. [Laplacian Surface Editing](https://www.google.com/search?q=Laplacian+Surface+Editing), 2004.
+[^sorkine_2007]: Olga Sorkine and Marc Alexa. [As-rigid-as-possible Surface Modeling](https://www.google.com/search?q=As-rigid-as-possible+Surface+Modeling), 2007.
+[^wang_bc_2015]: Yu Wang, Alec Jacobson, Jernej Barbic, Ladislav Kavan. [Linear Subspace Design for Real-Time Shape Deformation](https://www.google.com/search?q=Linear+Subspace+Design+for+Real-Time+Shape+Deformation), 2015

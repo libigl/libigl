@@ -397,7 +397,7 @@ igl::active_set_params as;
 igl::active_set(Q,B,b,bc,Aeq,Beq,Aieq,Bieq,lx,ux,as,Z);
 ```
 
-![ [Example 305](305_QuadraticProgramming/main.cpp) uses an active set solver to optimize discrete biharmonic kernels [#rustamov_2011][] at multiple scales .](images/cheburashka-multiscale-biharmonic-kernels.jpg)
+![ [Example 305](305_QuadraticProgramming/main.cpp) uses an active set solver to optimize discrete biharmonic kernels [^rustamov_2011] at multiple scales .](images/cheburashka-multiscale-biharmonic-kernels.jpg)
 
 ## Eigen Decomposition
 
@@ -408,7 +408,7 @@ eigen value problem:
 
 where $A$ is a sparse symmetric matrix and $B$ is a sparse positive definite
 matrix. Most commonly in geometry processing, we let $A=L$ the cotangent
-Laplacian and $B=M$ the per-vertex mass matrix (e.g. [#vallet_2008][]).
+Laplacian and $B=M$ the per-vertex mass matrix (e.g. [^vallet_2008]).
 Typically applications will make use of the _low frequency_ eigen modes.
 Analogous to the Fourier decomposition, a function $f$ on a surface can be
 represented via its spectral decomposition of the eigen modes of the
@@ -428,7 +428,7 @@ eigen vector satisfying:
 
 $\mathbf{L} \phi_i = \lambda_i \mathbf{M} \phi_i$.
 
-Note that Vallet &amp; Levy [#vallet_2008][] propose solving a symmetrized
+Note that Vallet &amp; Levy [^vallet_2008] propose solving a symmetrized
 _standard_ eigen problem $\mathbf{M}^{-1/2}\mathbf{L}\mathbf{M}^{-1/2} \phi_i
 = \lambda_i \phi_i$. Libigl implements a generalized eigen problem solver so
 this unnecessary symmetrization can be avoided.
@@ -436,9 +436,9 @@ this unnecessary symmetrization can be avoided.
 Often the sum above is _truncated_ to the first $k$ eigen vectors. If the low
 frequency modes are chosen, i.e. those corresponding to small $\lambda_i$
 values, then this truncation effectively _regularizes_ $\mathbf{f}$ to smooth,
-slowly changing functions over the mesh (e.g. [#hildebrandt_2011][]). Modal
+slowly changing functions over the mesh (e.g. [^hildebrandt_2011]). Modal
 analysis and model subspaces have been used frequently in real-time deformation
-(e.g. [#barbic_2005][]).
+(e.g. [^barbic_2005]).
 
 In [Example 306](306_EigenDecomposition/main.cpp)), the first 5 eigen vectors
 of the discrete Laplace-Beltrami operator are computed and displayed in
@@ -456,3 +456,10 @@ igl::eigs(L,M,5,igl::EIGS_TYPE_SM,U,S);
 ```
 
 ![([Example 306](306_EigenDecomposition/main.cpp)) Low frequency eigen vectors of the discrete Laplace-Beltrami operator vary smoothly and slowly over the _Beetle_.](images/beetle-eigen-decomposition.gif)
+
+## References
+
+[^barbic_2005]: Jernej Barbic and Doug James. [Real-Time Subspace Integration for St.Venant-Kirchhoff Deformable Models](https://www.google.com/search?q=Real-Time+Subspace+Integration+for+St.Venant-Kirchhoff+Deformable+Models), 2005.
+[^hildebrandt_2011]: Klaus Hildebrandt, Christian Schulz, Christoph von Tycowicz, and Konrad Polthier. [Interactive Surface Modeling using Modal Analysis](https://www.google.com/search?q=Interactive+Surface+Modeling+using+Modal+Analysis), 2011.
+[^rustamov_2011]: Raid M. Rustamov, [Multiscale Biharmonic Kernels](https://www.google.com/search?q=Multiscale+Biharmonic+Kernels), 2011.
+[^vallet_2008]: Bruno Vallet and Bruno Lévy. [Spectral Geometry Processing with Manifold Harmonics](https://www.google.com/search?q=Spectral+Geometry+Processing+with+Manifold+Harmonics), 2008.

@@ -389,7 +389,7 @@ elements.  This is undesirable in many applications, and it is possible to
 avoid it by introducing a non-linear constraints that guarantees that the area
 of every element remain positive.
 
-Libigl can be used to compute Locally Injective Maps [#schuller_2013][] using a variety of
+Libigl can be used to compute Locally Injective Maps [^schuller_2013] using a variety of
 deformation energies. A simple deformation of a 2D grid is computed in [Example
 608](608_LIM/main.cpp).
 
@@ -438,7 +438,7 @@ compute robustly with boundary representations, but are nonetheless useful.
 
 To compute a boolean operation on a triangle mesh with vertices `VA` and
 triangles `FA` and another mesh `VB` and `FB`, libigl first computes a unified
-"mesh arrangement" (see [#zhou_2016][]) with vertices `V` and triangles `F` where all triangle-triangle
+"mesh arrangement" (see [^zhou_2016][]) with vertices `V` and triangles `F` where all triangle-triangle
 intersections have been "resolved". That is, edges and vertices are added
 exactly at the intersection lines, so the resulting _non-manifold_ mesh `(V,F)`
 has no self-intersections.
@@ -504,3 +504,8 @@ Example [610](610_CSGTree/main.cpp) computes each intermediary CSG result and
 then the final composite.
 
 ![Example [610](610_CSGTree/main.cpp) computes  complex CSG Tree operation on 5 input meshes.](images/cube-sphere-cylinders-csg.gif)
+
+## References
+
+[^schuller_2013]: Christian Schüller, Ladislav Kavan, Daniele Panozzo, Olga Sorkine-Hornung.  [Locally Injective Mappings](http://igl.ethz.ch/projects/LIM/), 2013.
+[^zhou_2016]: Qingnan Zhou, Eitan Grinspun, Denis Zorin. [Mesh Arrangements for Solid Geometry](https://www.google.com/search?q=Mesh+Arrangements+for+Solid+Geometry), 2016

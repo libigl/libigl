@@ -84,7 +84,7 @@ on a triangle mesh is via a vertex's _angular deficit_:
  $k_G(v_i) = 2π - \sum\limits_{j\in N(i)}θ_{ij},$
 
 where $N(i)$ are the triangles incident on vertex $i$ and $θ_{ij}$ is the angle
-at vertex $i$ in triangle $j$ [][#meyer_2003].
+at vertex $i$ in triangle $j$ [^meyer_2003].
 
 Just like the continuous analog, our discrete Gaussian curvature reveals
 elliptic, hyperbolic and parabolic vertices on the domain, as demonstrated in [Example 202](202_GaussianCurvature/main.cpp).
@@ -108,7 +108,7 @@ normal:
   $-\Delta \mathbf{x} = H \mathbf{n}.$
 
 It is easy to compute this on a discrete triangle mesh in libigl using the
-cotangent Laplace-Beltrami operator [][#meyer_2003].
+cotangent Laplace-Beltrami operator [^meyer_2003].
 
 ```cpp
 #include <igl/cotmatrix.h>
@@ -126,10 +126,10 @@ H = HN.rowwise().norm(); //up to sign
 
 Combined with the angle defect definition of discrete Gaussian curvature, one
 can define principal curvatures and use least squares fitting to find
-directions [][#meyer_2003].
+directions [^meyer_2003].
 
 Alternatively, a robust method for determining principal curvatures is via
-quadric fitting [][#panozzo_2010]. In the neighborhood around every vertex, a
+quadric fitting [^panozzo_2010]. In the neighborhood around every vertex, a
 best-fit quadric is found and principal curvature values and directions are
 analytically computed on this quadric ([Example
 203](203_curvatureDirections/main.cpp)).
@@ -236,19 +236,19 @@ for(triangle t : triangles)
 Libigl implements discrete "cotangent" Laplacians for triangles meshes and
 tetrahedral meshes, building both with fast geometric rules rather than "by the
 book" FEM construction which involves many (small) matrix inversions, cf.
-[#sharf_2007][].
+[^sharf_2007].
 
 The operator applied to mesh vertex positions amounts to smoothing by _flowing_
 the surface along the mean curvature normal direction ([Example 205](205_Laplacian/main.cpp)). Note that this is equivalent to minimizing surface area.
 
-![The `Laplacian` example computes conformalized mean curvature flow using the cotangent Laplacian [#kazhdan_2012][].](images/cow-curvature-flow.jpg)
+![The `Laplacian` example computes conformalized mean curvature flow using the cotangent Laplacian [^kazhdan_2012].](images/cow-curvature-flow.jpg)
 
 ### Mass matrix
 The mass matrix $\mathbf{M}$ is another $n \times n$ matrix which takes vertex
 values to vertex values. From an FEM point of view, it is a discretization of
 the inner-product: it accounts for the area around each vertex. Consequently,
 $\mathbf{M}$ is often a diagonal matrix, such that $M_{ii}$ is the barycentric
-or voronoi area around vertex $i$ in the mesh [#meyer_2003][]. The inverse of
+or voronoi area around vertex $i$ in the mesh [^meyer_2003]. The inverse of
 this matrix is also very useful as it transforms integrated quantities into
 point-wise quantities, e.g.:
 
@@ -289,7 +289,7 @@ to scalar divergence values at vertices.
 
 The discrete geodesic distance between two points is the length of the shortest path between then restricted to the surface. For triangle meshes, such a path is made of a set of segments which can be either edges of the mesh or crossing a triangle.
 
-Libigl includes a wrapper for the exact geodesic algorithm [#mitchell_1987] developed by Danil Kirsanov (https://code.google.com/archive/p/geodesic/), exposing it through an Eigen-based API. The function 
+Libigl includes a wrapper for the exact geodesic algorithm [^mitchell_1987] developed by Danil Kirsanov (https://code.google.com/archive/p/geodesic/), exposing it through an Eigen-based API. The function 
 ```cpp
 igl::exact_geodesic(V,F,VS,FS,VT,FT,d);
 ```
@@ -310,3 +310,8 @@ igl::exact_geodesic(V,F,VS,FS,VT,FT,d);
 ## References
 
 [^jacobson_thesis_2013]: Alec Jacobson, [_Algorithms and Interfaces for Real-Time Deformation of 2D and 3D Shapes_](https://www.google.com/search?q=Algorithms+and+Interfaces+for+Real-Time+Deformation+of+2D+and+3D+Shapes), 2013.
+[^kazhdan_2012]: Michael Kazhdan, Jake Solomon, Mirela Ben-Chen, [Can Mean-Curvature Flow Be Made Non-Singular](https://www.google.com/search?q=Can+Mean-Curvature+Flow+Be+Made+Non-Singular), 2012.
+[^meyer_2003]: Mark Meyer, Mathieu Desbrun, Peter Schröder and Alan H.  Barr, [Discrete Differential-Geometry Operators for Triangulated 2-Manifolds](https://www.google.com/search?q=Discrete+Differential-Geometry+Operators+for+Triangulated+2-Manifolds), 2003.
+[^mitchell_1987]: Joseph S. B. Mitchell, David M. Mount, Christos H. Papadimitriou. [The Discrete Geodesic Problem](https://www.google.com/search?q=The+Discrete+Geodesic+Problem), 1987
+[^panozzo_2010]: Daniele Panozzo, Enrico Puppo, Luigi Rocca, [Efficient Multi-scale Curvature and Crease Estimation](https://www.google.com/search?q=Efficient+Multi-scale+Curvature+and+Crease+Estimation), 2010.
+[^sharf_2007]: Andrei Sharf, Thomas Lewiner, Gil Shklarski, Sivan Toledo, and Daniel Cohen-Or. [Interactive topology-aware surface reconstruction](https://www.google.com/search?q=Interactive+topology-aware+surface+reconstruction), 2007.

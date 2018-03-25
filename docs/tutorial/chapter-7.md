@@ -63,7 +63,7 @@ mesh and which are outside. That is, which should be kept and which should be
 removed.
 
 The "Generalized Winding Number" is a robust method for determined
-inside and outside for troublesome meshes [#jacobson_2013][].  The generalized
+inside and outside for troublesome meshes [^jacobson_2013].  The generalized
 winding number with respect to `(V,F)` at some point $\mathbf{p} \in
 \mathcal{R}^3$ is defined as scalar function:
 
@@ -95,7 +95,7 @@ methods are fairly advanced.
 
 One family of mesh decimation methods operates by successively remove elements
 from the mesh. In particular, Hoppe advocates for successively remove or rather
-collapsing edges [#hoppe_1996][]. The generic form of this technique is to
+collapsing edges [^hoppe_1996][]. The generic form of this technique is to
 construct a sequence of n meshes from the initial high-resolution mesh $M_0$ to
 the lowest resolution mesh $M_n$ by collapsing a single edge:
 
@@ -291,8 +291,8 @@ tree.squared_distance(V,F,P,sqrD,I,C);
 
 Finally, from the closest point or the winding number it's possible to _sign_
 this distance. In `igl::signed_distance` we provide two methods for signing:
-the so-called "pseudo-normal test" [#baerentzen_2005][] and the generalized
-winding number [#jacobson_2013][].
+the so-called "pseudo-normal test" [^baerentzen_2005][] and the generalized
+winding number [^jacobson_2013][].
 
 The pseudo-normal test (see also `igl::pseudonormal_test`) assumes the input
 mesh is a watertight (closed, non-self-intersecting, manifold) mesh. Then given
@@ -332,7 +332,7 @@ $\mathcal{R}^3$ such that $f(\mathbf{x}) = v$. A core problem in geometry
 processing is to extract an iso-surface as a triangle mesh for further
 mesh-based processing or visualization. This is referred to as iso-contouring.
 
-"Marching Cubes" [#lorensen_1987] is a [famous
+"Marching Cubes" [^lorensen_1987] is a [famous
 method](https://en.wikipedia.org/wiki/Marching_cubes) for iso-contouring
 tri-linear functions $f$ on a regular lattice (aka grid). The core idea of this
 method is to contour the iso-surface passing through each cell  (if it does at
@@ -374,7 +374,7 @@ enforce a consistent facet orientation in the output faces `FF`.
 For (closed or nearly closed) surfaces representing the boundary of a solid
 object, libigl provides a routine to reorient faces so that the vertex ordering
 corresponds to a counter-clockwise ordering of the vertices with a
-right-hand-rule normal pointing outward. This method [#takayama14][] assumes
+right-hand-rule normal pointing outward. This method [^takayama14][] assumes
 that [most of the universe is
 empty](https://www.reddit.com/r/askscience/comments/32otgx/which_as_a_is_more_empty_an_atom_or_the_universe/).
 That is, most points in space are outside of the solid object than inside.
@@ -425,11 +425,11 @@ discretizing time at a finite step of steps $[0,\Delta t,2\Delta t, \dots, 1]$
 and by 2) discretizing space with a regular grid and representing the distance
 field using trilinear interpolation of grid values. Finally the output mesh,
 $\partial S$ is approximated by contouring using Marching Cubes
-[#lorensen_1987].
+[^lorensen_1987].
 
 This method is similar to one described by Schroeder et al. in 1994
-[#schroeder_1994], and the one used in conjunction with boolean operations by
-Garg et al. 2016 [#garg_2016].
+[^schroeder_1994], and the one used in conjunction with boolean operations by
+Garg et al. 2016 [^garg_2016].
 
 In libigl, if your input solid's surface is represented by `(V,F)` then the
 output surface mesh will be `(SV,SF)` after calling:
@@ -488,7 +488,7 @@ in [Example 709](709_VectorFieldVisualizer/main.cpp).
 
 ## Scalable Locally Injective Maps
 
-The Scalable Locally Injective Maps [#rabinovich_2016] algorithm allows to
+The Scalable Locally Injective Maps [^rabinovich_2016] algorithm allows to
 compute locally injective maps on massive datasets. The algorithm shares many
 similarities with ARAP, but uses a reweighting scheme to minimize arbitrary
 distortion energies, including those that prevent the introduction of flips.
@@ -527,7 +527,7 @@ a finer and finer mesh.
 
 The subdivision method of `igl::loop` is not in plane. The vertices of the
 refined mesh are moved to weight combinations of their neighbors: the mesh is
-smoothed as it is refined [#loop_1987]. This and other _smooth subdivision_
+smoothed as it is refined [^loop_1987]. This and other _smooth subdivision_
 methods can be understood as generalizations of spline curves to surfaces. In
 particular the Loop subdivision method will converge to a $C^1$ surface as we
 consider the limit of recursive applications of subdivision. Away from
@@ -586,7 +586,7 @@ For iteration $k$:
 1. *Local step*: compute the projections of the set $P_{k-1}$ onto $S$, individually per constraint; that would mean fragmenting each point that appears in multiple constraints. That can be a nonlinear operation, but if the constraints are sparse, it is a a set of many small systems.
 2. *Global step*: integrate the set $P_k$ to be as close as possible to the projected fragmented set, with auxiliary objective functions possible. That results in a global, but quadratic objective function. Moreover, the resulting linear system has a constant matrix, and therefore can be pre-factored.
 
-The version we implement in libigl is the general version described by [#bouaziz_2012], and is in two files: ``<igl/shapeup.h>`` and ``<igl/shapeup_local_projections.h>``. A demo implementing regularity constraints (creating a mesh in which each face is as regular as possible) is in [Example 713](713_Shapeup/main.cpp). 
+The version we implement in libigl is the general version described by [^bouaziz_2012], and is in two files: ``<igl/shapeup.h>`` and ``<igl/shapeup_local_projections.h>``. A demo implementing regularity constraints (creating a mesh in which each face is as regular as possible) is in [Example 713](713_Shapeup/main.cpp). 
 
 The local step is instantiated by a function of type ``igl::shapeup_projection_function``. The global step is done by two functions: ``igl::shapeup_precomputation()``, which precomputes the matrices required for the global step, and ``igl::shapeup_solve()``, which solves the problem, according to the initial solution $P_0$ and the input local projection function. The data struct ``igl::ShapeUpData`` contains the information necessary to run the algorithm, and can be configured; for instance, the self-explanatory variable ``Maxiterations``.
 
@@ -599,3 +599,16 @@ $$
 where the $\lambda$ coefficients are encoded in ``igl::ShapeUpData``, and can be updated **prior** to calling ``igl::shapeup_precomputation()``. The $E_{shape}$ component is the integration energy (fitting $P_k$ to the local projections). The $E_{close}$ component is adherence to positional constraints, given by ``b`` and ``bc`` parameters. The $E_{smooth}$ component is an optional objective function, to minimize differences (in the Dirichlet sense) between points, encodes by "edges" in parameter `E`. Both $E_{close}$ and $E_{shape}$ are also weighted by ``wClose`` and ``wShape`` function parameters, respectively.
 
 ![([Example 713](713_ShapeUp/main.cpp)) The half-tunnel mesh (left) has been optimized to be almost perfectly regular (right). The color scale is between $\lbrack 0,0.05 \rbrack$, measuring the average normalized deviation of the angles of each face from $90^{\circ}$.](images/713_ShapeUp.png)
+
+## References
+
+[^baerentzen_2005]: J Andreas Baerentzen and Henrik Aanaes. [Signed distance computation using the angle weighted pseudonormal](https://www.google.com/search?q=Signed+distance+computation+using+the+angle+weighted+pseudonormal), 2005.
+[^bouaziz_2012]: Sofien Bouaziz, Mario Deuss, Yuliy Schwartzburg, Thibaut Weise, Mark Pauly [Shape-Up: Shaping Discrete Geometry with Projections](http://lgg.epfl.ch/publications/2012/shapeup.pdf), 2012
+[^garg_2016]: Akash Garg, Alec Jacobson, Eitan Grinspun. [Computational Design of Reconfigurables](https://www.google.com/search?q=Computational+Design+of+Reconfigurables), 2016
+[^hoppe_1996]: Hugues Hoppe. [Progressive Meshes](https://www.google.com/search?q=Progressive+meshes), 1996
+[^jacobson_2013]: Alec Jacobson, Ladislav Kavan, and Olga Sorkine. [Robust Inside-Outside Segmentation using Generalized Winding Numbers](https://www.google.com/search?q=Robust+Inside-Outside+Segmentation+using+Generalized+Winding+Numbers), 2013.
+[^loop_1987]: Charles Loop. [Smooth Subdivision Surfaces Based on Triangles](https://www.google.com/search?q=smooth+subdivision+surfaces+based+on+triangles), 1987.
+[^lorensen_1987]: W.E. Lorensen and Harvey E. Cline. [Marching cubes: A high resolution 3d surface construction algorithm](https://www.google.com/search?q=Marching+cubes:+A+high+resolution+3d+surface+construction+algorithm), 1987.
+[^rabinovich_2016]: Michael Rabinovich, Roi Poranne, Daniele Panozzo, Olga Sorkine-Hornung. [Scalable Locally Injective Mappings](http://cs.nyu.edu/~panozzo/papers/SLIM-2016.pdf), 2016.
+[^schroeder_1994]: William J. Schroeder, William E. Lorensen, and Steve Linthicum. [Implicit Modeling of Swept Surfaces and Volumes](https://www.google.com/search?q=implicit+modeling+of+swept+surfaces+and+volumes), 1994.
+[^takayama14]: Kenshi Takayama, Alec Jacobson, Ladislav Kavan, Olga Sorkine-Hornung. [A Simple Method for Correcting Facet Orientations in Polygon Meshes Based on Ray Casting](https://www.google.com/search?q=A+Simple+Method+for+Correcting+Facet+Orientations+in+Polygon+Meshes+Based+on+Ray+Casting), 2014.

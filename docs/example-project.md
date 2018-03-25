@@ -30,7 +30,7 @@ A glfw app should launch displaying a 3D cube.
 
 ## Dependencies
 
-The only dependencies are stl, eigen, [libigl](libigl.github.io/libigl/) and
+The only dependencies are stl, eigen, [libigl](https://libigl.github.io/) and
 the dependencies of the `igl::opengl::glfw::Viewer`.
 
 We recommend to install libigl using git via:

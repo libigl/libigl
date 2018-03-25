@@ -28,7 +28,7 @@ genus. They initially cut the mesh in multiple patches that can be separately pa
 
 ## Harmonic parametrization
 
-Harmonic parametrization [#eck_2005][] is a single patch, fixed boundary parametrization
+Harmonic parametrization [^eck_2005] is a single patch, fixed boundary parametrization
 algorithm that computes the 2D coordinates of the flattened mesh as two
 harmonic functions.
 
@@ -62,11 +62,11 @@ viewer.data().set_uv(V_uv);
 The UV coordinates are then used to apply a procedural checkerboard texture to the
 mesh ([Example 501](501_HarmonicParam/main.cpp)).
 
-![([Example 501](501_HarmonicParam/main.cpp)) Harmonic parametrization. (left) mesh with texture, (right) UV parametrization with texture](images/501_HarmonicParam.png)
+![([Example 501](tutorial/501_HarmonicParam/main.cpp)) Harmonic parametrization. (left) mesh with texture, (right) UV parametrization with texture](images/501_HarmonicParam.png)
 
 ## Least squares conformal maps
 
-Least squares conformal maps parametrization [#levy_2002][] minimizes the
+Least squares conformal maps parametrization [^levy_2002] minimizes the
 conformal (angular) distortion of the parametrization. Differently from
 harmonic parametrization, it does not need to have a fixed boundary.
 
@@ -74,7 +74,7 @@ LSCM minimizes the following energy:
 
 \\[ E_{LSCM}(\mathbf{u},\mathbf{v}) = \int_X \frac{1}{2}| \nabla \mathbf{u}^{\perp} - \nabla \mathbf{v} |^2 dA \\]
 
-which can be rewritten in matrix form as [#mullen_2008][]:
+which can be rewritten in matrix form as [^mullen_2008]:
 
 \\[ E_{LSCM}(\mathbf{u},\mathbf{v}) = \frac{1}{2} [\mathbf{u},\mathbf{v}]^t (L_c - 2A) [\mathbf{u},\mathbf{v}] \\]
 
@@ -114,7 +114,7 @@ vertices to two arbitrary positions. The full source code is provided in [Exampl
 
 ## As-rigid-as-possible parametrization
 
-As-rigid-as-possible parametrization [#liu_2008][] is a powerful single-patch,
+As-rigid-as-possible parametrization [^liu_2008] is a powerful single-patch,
 non-linear algorithm to compute a parametrization that strives to preserve
 distances (and thus angles). The idea is very similar to ARAP surface
 deformation: each triangle is mapped to the plane trying to preserve its
@@ -157,7 +157,7 @@ the triangle mesh (output_field), plus the singularities of the field
 ![Design of a unit-length vector field](images/504_vector_field.png)
 
 The singularities are vertices where the field vanishes (highlighted in red in
-the figure above). `igl::nrosy` can also generate N-RoSy fields [#levy_2008][],
+the figure above). `igl::nrosy` can also generate N-RoSy fields [^levy_2008],
 which are a generalization of vector fields where in every face the vector is
 defined up to a constant rotation of $2\pi / N$. As can be observed in
 the following figure, the singularities of the fields generated with different
@@ -168,10 +168,10 @@ N are of different types and they appear in different positions.
 We demonstrate how to call and plot N-RoSy fields in [Example
 504](504_NRosyDesign/main.cpp), where the degree of the field can be change
 pressing the number keys. `igl::nrosy` implements the algorithm proposed in
-[#bommes_2009][]. N-RoSy fields can also be interpolated with many other algorithms,
+[^bommes_2009]. N-RoSy fields can also be interpolated with many other algorithms,
 see the library [libdirectional](https://github.com/avaxman/libdirectional) for
 a reference implementation of the most popular ones. For a complete categorization
-of fields used in various applications see Vaxman et al. 2016 [#vaxman_2016].
+of fields used in various applications see Vaxman et al. 2016 [^vaxman_2016].
 
 
 ### Global, seamless integer-grid parametrization
@@ -182,7 +182,7 @@ properties such as normals and high-frequency details. Global, seamless
 parametrization aims at parametrizing complex shapes with a parametrization
 that is aligned with a given set of directions for the purpose of surface
 remeshing. In libigl, we provide a reference  implementation of the pipeline
-proposed in the mixed integer quadrangulation paper [#bommes_2009][].
+proposed in the mixed integer quadrangulation paper [^bommes_2009].
 
 The first step involves the design of a 4-RoSy field (sometimes called *cross*
 field) that describes the alignment of the edges of the desired quadrilateral
@@ -243,7 +243,7 @@ input cross field.
 ![Poisson parametrization.](images/505_MIQ_8.png)
 
 We hide the seams by adding integer constraints to the Poisson problem
-that align the isolines on both sides of each seam [#bommes_2009].
+that align the isolines on both sides of each seam [^bommes_2009].
 
 ![Seamless Poisson parametrization.](images/505_MIQ_7.png)
 
@@ -261,7 +261,7 @@ The full pipeline is implemented in [Example 505](505_MIQ/main.cpp).
 Anisotropic and non-uniform quad remeshing is important to concentrate the
 elements in the regions with more details. It is possible to extend the MIQ
 quad meshing framework to generate anisotropic quad meshes using a mesh
-deformation approach [#panozzo_2014][].
+deformation approach [^panozzo_2014].
 
 The input of the anisotropic remeshing algorithm is a sparse set of constraints
 that define the shape and scale of the desired quads. This can be encoded as a
@@ -300,10 +300,21 @@ possible.
 ## Planarization
 
 A quad mesh can be transformed in a planar quad mesh with Shape-Up
-[#bouaziz_2012], a local/global approach that uses the global step to enforce
+[^bouaziz_2012], a local/global approach that uses the global step to enforce
 surface continuity and the local step to enforce planarity.
 
 [Example 507](507_Planarization/main.cpp) planarizes a quad mesh until it
 satisfies a user-given planarity threshold.
 
+## References
+
 ![A non-planar quad mesh (left) is planarized using the libigl function igl::planarize (right). The colors represent the planarity of the quads.](images/509_Planarization.png)
+[^bommes_2009]: David Bommes, Henrik Zimmer, Leif Kobbelt. [Mixed-integer quadrangulation](http://www-sop.inria.fr/members/David.Bommes/publications/miq.pdf), 2009.
+[^bouaziz_2012]: Sofien Bouaziz, Mario Deuss, Yuliy Schwartzburg, Thibaut Weise, Mark Pauly [Shape-Up: Shaping Discrete Geometry with Projections](http://lgg.epfl.ch/publications/2012/shapeup.pdf), 2012
+[^eck_2005]: Matthias Eck, Tony DeRose, Tom Duchamp, Hugues Hoppe, Michael Lounsbery, Werner Stuetzle.  [Multiresolution Analysis of Arbitrary Meshes](http://research.microsoft.com/en-us/um/people/hoppe/mra.pdf), 2005.
+[^levy_2002]: Bruno Lévy, Sylvain Petitjean, Nicolas Ray, Jérome Maillot. [Least Squares Conformal Maps, for Automatic Texture Atlas Generation](http://www.cs.jhu.edu/~misha/Fall09/Levy02.pdf), 2002.
+[^levy_2008]: Nicolas Ray, Bruno Vallet, Wan Chiu Li, Bruno Lévy. [N-Symmetry Direction Field Design](http://alice.loria.fr/publications/papers/2008/DGF/NSDFD-TOG.pdf), 2008.
+[^liu_2008]: Ligang Liu, Lei Zhang, Yin Xu, Craig Gotsman, Steven J. Gortler. [A Local/Global Approach to Mesh Parameterization](http://cs.harvard.edu/~sjg/papers/arap.pdf), 2008.
+[^mullen_2008]: Patrick Mullen, Yiying Tong, Pierre Alliez, Mathieu Desbrun. [Spectral Conformal Parameterization](http://www.geometry.caltech.edu/pubs/MTAD08.pdf), 2008.
+[^panozzo_2014]: Daniele Panozzo, Enrico Puppo, Marco Tarini, Olga Sorkine-Hornung.  [Frame Fields: Anisotropic and Non-Orthogonal Cross Fields](http://cs.nyu.edu/~panozzo/papers/frame-fields-2014.pdf), 2014.
+[^vaxman_2016]: Amir Vaxman, Marcel Campen, Olga Diamanti, Daniele Panozzo, David Bommes, Klaus Hildebrandt, Mirela Ben-Chen. [Directional Field Synthesis, Design, and Processing](https://www.google.com/search?q=Directional+Field+Synthesis+Design+and+Processing), 2016
