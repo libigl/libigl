@@ -123,6 +123,7 @@ extern const char *__doc_igl_upsample;
 extern const char *__doc_igl_winding_number;
 extern const char *__doc_igl_winding_number_3;
 extern const char *__doc_igl_winding_number_2;
+extern const char *__doc_igl_writeDMAT;
 extern const char *__doc_igl_writeMESH;
 extern const char *__doc_igl_writeOBJ;
 extern const char *__doc_igl_writePLY;

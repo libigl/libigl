@@ -1421,6 +1421,7 @@ const char *__doc_igl_winding_number_2 = R"igl_Qu8mg5v7(//// Only one evaluation
   //  const double * O,
   //  double * S);
   // 2d)igl_Qu8mg5v7";
+const char *__doc_igl_writeDMAT = R"igl_Qu8mg5v7(See writeDMAT for the documentation.)igl_Qu8mg5v7";
 const char *__doc_igl_writeMESH = R"igl_Qu8mg5v7(// save a tetrahedral volume mesh to a .mesh file
   //
   // Templates:

@@ -6,22 +6,24 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 
-m.def("readDMAT", []
+m.def("writeDMAT", []
 (
   const std::string str,
-  Eigen::MatrixXd& W
+  Eigen::MatrixXd& W,
+  bool ascii
 )
 {
-  return igl::readDMAT(str,W);
-}, __doc_igl_readDMAT,
-py::arg("str"), py::arg("W"));
+  return igl::writeDMAT(str, W, ascii);
+}, __doc_igl_writeDMAT,
+py::arg("str"), py::arg("W"), py::arg("ascii"));
 
-m.def("readDMAT", []
+m.def("writeDMAT", []
 (
   const std::string str,
-  Eigen::MatrixXi& W
+  Eigen::MatrixXi& W,
+  bool ascii
 )
 {
-  return igl::readDMAT(str,W);
-}, __doc_igl_readDMAT,
-py::arg("str"), py::arg("W"));
+  return igl::writeDMAT(str, W, ascii);
+}, __doc_igl_writeDMAT,
+py::arg("str"), py::arg("W"), py::arg("ascii"));
