@@ -17,7 +17,7 @@ If `A` is a $m \times n$ matrix and `R` is a $j$-long list of row-indices
 (between 1 and $m$) and `C` is a $k$-long list of column-indices, then as a
 result `B` will be a $j \times k$ matrix drawing elements from `A` according to
 `R` and `C`. In libigl, the same functionality is provided by the `slice`
-function ([Example 301](301_Slice/main.cpp)):
+function ([Example 301]({{ repo_url }}/tutorial/301_Slice/main.cpp)):
 
 ```cpp
 VectorXi R,C;
@@ -82,7 +82,7 @@ where again `I` reveals the index of sort so that it can be reproduced with
 
 Analogous functions are available in libigl for: `max`, `min`, and `unique`.
 
-![The example `Sort` shows how to use `igl::sortrows` to pseudocolor triangles according to their barycenters' sorted order ([Example 302](302_Sort/main.cpp)).](images/decimated-knight-sort-color.jpg)
+![The example `Sort` shows how to use `igl::sortrows` to pseudocolor triangles according to their barycenters' sorted order ([Example 302]({{ repo_url }}/tutorial/302_Sort/main.cpp)).](images/decimated-knight-sort-color.jpg)
 
 
 ### Other Matlab-style functions
@@ -202,7 +202,7 @@ this solution is not very general.
 With array slicing no explicit sort is needed. Instead we can _slice-out_
 submatrix blocks ($\mathbf{L}_{in,in}$, $\mathbf{L}_{in,b}$, etc.) and follow
 the linear algebra above directly. Then we can slice the solution _into_ the
-rows of `Z` corresponding to the interior vertices ([Example 303](303_LaplaceEquation/main.cpp)).
+rows of `Z` corresponding to the interior vertices ([Example 303]({{ repo_url }}/tutorial/303_LaplaceEquation/main.cpp)).
 
 ![The `LaplaceEquation` example solves a Laplace equation with Dirichlet boundary conditions.](images/camelhead-laplace-equation.jpg)
 
@@ -351,7 +351,7 @@ difference from the straight quadratic _minimization_ system, is that this
 saddle problem system will not be positive definite. Thus, we must use a
 different factorization technique (LDLT rather than LLT): libigl's
 `min_quad_with_fixed_precompute` automatically chooses the correct solver in
-the presence of linear equality constraints ([Example 304](304_LinearEqualityConstraints/main.cpp)).
+the presence of linear equality constraints ([Example 304]({{ repo_url }}/tutorial/304_LinearEqualityConstraints/main.cpp)).
 
 ![The example `LinearEqualityConstraints` first solves with just fixed value constraints (left: 1 and -1 on the left hand and foot respectively), then solves with an additional linear equality constraint (right: points on right hand and foot constrained to be equal).](images/cheburashka-biharmonic-leq.jpg)
 
@@ -397,7 +397,7 @@ igl::active_set_params as;
 igl::active_set(Q,B,b,bc,Aeq,Beq,Aieq,Bieq,lx,ux,as,Z);
 ```
 
-![ [Example 305](305_QuadraticProgramming/main.cpp) uses an active set solver to optimize discrete biharmonic kernels [^rustamov_2011] at multiple scales .](images/cheburashka-multiscale-biharmonic-kernels.jpg)
+![ [Example 305]({{ repo_url }}/tutorial/305_QuadraticProgramming/main.cpp) uses an active set solver to optimize discrete biharmonic kernels [^rustamov_2011] at multiple scales .](images/cheburashka-multiscale-biharmonic-kernels.jpg)
 
 ## Eigen Decomposition
 
@@ -440,7 +440,7 @@ slowly changing functions over the mesh (e.g. [^hildebrandt_2011]). Modal
 analysis and model subspaces have been used frequently in real-time deformation
 (e.g. [^barbic_2005]).
 
-In [Example 306](306_EigenDecomposition/main.cpp)), the first 5 eigen vectors
+In [Example 306]({{ repo_url }}/tutorial/306_EigenDecomposition/main.cpp)), the first 5 eigen vectors
 of the discrete Laplace-Beltrami operator are computed and displayed in
 pseudo-color atop the beetle. Eigen vectors are computed using `igl::eigs`
 (mirroring MATLAB's `eigs`). The 5 eigen vectors are placed into the columns
@@ -455,7 +455,7 @@ Eigen::VectorXd S;
 igl::eigs(L,M,5,igl::EIGS_TYPE_SM,U,S);
 ```
 
-![([Example 306](306_EigenDecomposition/main.cpp)) Low frequency eigen vectors of the discrete Laplace-Beltrami operator vary smoothly and slowly over the _Beetle_.](images/beetle-eigen-decomposition.gif)
+![([Example 306]({{ repo_url }}/tutorial/306_EigenDecomposition/main.cpp)) Low frequency eigen vectors of the discrete Laplace-Beltrami operator vary smoothly and slowly over the _Beetle_.](images/beetle-eigen-decomposition.gif)
 
 ## References
 

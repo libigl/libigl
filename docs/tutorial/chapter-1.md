@@ -152,7 +152,7 @@ Similarly, a mesh can be written in an OBJ file using:
 igl::writeOBJ("cube.obj",V,F);
 ```
 
-[Example 101](101_FileIO/main.cpp) contains a simple mesh
+[Example 101]({{ repo_url }}/tutorial/101_FileIO/main.cpp) contains a simple mesh
 converter from OFF to OBJ format.
 
 ## Visualizing surfaces
@@ -160,7 +160,7 @@ converter from OFF to OBJ format.
 Libigl provides an glfw-based OpenGL 3.2 viewer to visualize surfaces, their
 properties and additional debugging information.
 
-The following code ([Example 102](102_DrawMesh/main.cpp)) is a basic skeleton
+The following code ([Example 102]({{ repo_url }}/tutorial/102_DrawMesh/main.cpp)) is a basic skeleton
 for all the examples that will be used in the tutorial.
 It is a standalone application that loads a mesh and uses the viewer to
 render it.
@@ -189,9 +189,9 @@ The function `set_mesh` copies the mesh into the viewer.
 Additional properties can be plotted on the mesh (as we will see later),
 and it is possible to extend the viewer with standard OpenGL code.
 Please see the documentation in
-[Viewer.h](../include/igl/opengl/glfw/Viewer.h) for more details.
+[Viewer.h]({{ repo_url }}/include/igl/opengl/glfw/Viewer.h) for more details.
 
-![([Example 102](102_DrawMesh/main.cpp)) loads and draws a mesh.](images/102_DrawMesh.png)
+![([Example 102]({{ repo_url }}/tutorial/102_DrawMesh/main.cpp)) loads and draws a mesh.](images/102_DrawMesh.png)
 
 ## Interaction with keyboard and mouse
 
@@ -210,7 +210,7 @@ bool (*callback_key_up)(Viewer& viewer, unsigned char key, int modifiers);
 ```
 
 A keyboard callback can be used to visualize multiple meshes or different
-stages of an algorithm, as demonstrated in [Example 103](103_Events/main.cpp), where
+stages of an algorithm, as demonstrated in [Example 103]({{ repo_url }}/tutorial/103_Events/main.cpp), where
 the keyboard callback changes the visualized mesh depending on the key pressed:
 
 ```cpp
@@ -247,7 +247,7 @@ control the camera directly in your code.
 
 The viewer can be extended using plugins, which are classes that implements all
 the viewer's callbacks. See the
-[Viewer_plugin](../include/igl/opengl/glfw/ViewerPlugin.h) for more details.
+[Viewer_plugin]({{ repo_url }}/include/igl/opengl/glfw/ViewerPlugin.h) for more details.
 
 ## Scalar field visualization
 
@@ -268,7 +268,7 @@ scalar function is converted to colors using a color transfer function, which
 maps a scalar value between 0 and 1 to a color. A simple example of a scalar
 field defined on a surface is the z coordinate of each point, which can be
 extract from our mesh representation by taking the last column of `V`
-([Example 104](104_Colors/main.cpp)). The function `igl::jet` can be used to
+([Example 104]({{ repo_url }}/tutorial/104_Colors/main.cpp)). The function `igl::jet` can be used to
 convert it to colors:
 
 ```cpp
@@ -279,7 +279,7 @@ igl::jet(Z,true,C);
 The first row extracts the third column from `V` (the z coordinate of each
 vertex) and the second calls a libigl functions that converts a scalar field to colors. The second parameter of jet normalizes the scalar field to lie between 0 and 1 before applying the transfer function.
 
-![([Example 104](104_Colors/main.cpp)) igl::jet converts a scalar field to a color field.](images/104_Colors.png)
+![([Example 104]({{ repo_url }}/tutorial/104_Colors/main.cpp)) igl::jet converts a scalar field to a color field.](images/104_Colors.png)
 
 `igl::jet` is an example of a standard function in libigl: it takes simple
 types and can be easily reused for many different tasks.  Not committing to
@@ -307,7 +307,7 @@ viewer.data().add_label(p,str);
 
 Draws a label containing the string str at the position p, which is a vector of length 3.
 
-These functions are demonstrate in [Example 105](105_Overlays/main.cpp) where
+These functions are demonstrate in [Example 105]({{ repo_url }}/tutorial/105_Overlays/main.cpp) where
 the bounding box of a mesh is plotted using lines and points.
 Using matrices to encode the mesh and its attributes allows to write short and
 efficient code for many operations, avoiding to write for loops. For example,
@@ -318,14 +318,14 @@ Eigen::Vector3d m = V.colwise().minCoeff();
 Eigen::Vector3d M = V.colwise().maxCoeff();
 ```
 
-![([Example 105](105_Overlays/main.cpp)) The bounding box of a mesh is shown using overlays.](images/105_Overlays.png)
+![([Example 105]({{ repo_url }}/tutorial/105_Overlays/main.cpp)) The bounding box of a mesh is shown using overlays.](images/105_Overlays.png)
 
 ## Viewer Menu
 
 As of latest version, the viewer uses a new menu and completely replaces
 [AntTweakBar](http://anttweakbar.sourceforge.net/doc/) and
 [nanogui](https://github.com/wjakob/nanogui) with [Dear ImGui](https://github.com/ocornut/imgui). To extend the default menu of the
-viewer and to expose more user defined variables you have to implement a custom interface, as in [Example 106](106_ViewerMenu/main.cpp):
+viewer and to expose more user defined variables you have to implement a custom interface, as in [Example 106]({{ repo_url }}/tutorial/106_ViewerMenu/main.cpp):
 ```cpp
 // Add content to the default menu window
 menu.callback_draw_viewer_menu = [&]()
@@ -405,7 +405,7 @@ menu.callback_draw_custom_window = [&]()
 };
 ```
 
-![([Example 106](106_ViewerMenu/main.cpp)) The UI of the viewer can be easily customized.](images/106_ViewerMenu.png)
+![([Example 106]({{ repo_url }}/tutorial/106_ViewerMenu/main.cpp)) The UI of the viewer can be easily customized.](images/106_ViewerMenu.png)
 
 ## Multiple Meshes
 
@@ -417,4 +417,4 @@ field. By default it his is set to `0`, so in the typical case of a single mesh
 `viewer.data()` returns the `igl::ViewerData` corresponding to the one
 and only mesh.
 
-![([Example 107](107_MultipleMeshes/main.cpp)) The `igl::opengl::glfw::Viewer` can render multiple meshes, each with its own attributes like colors.](images/multiple-meshes.png)
+![([Example 107]({{ repo_url }}/tutorial/107_MultipleMeshes/main.cpp)) The `igl::opengl::glfw::Viewer` can render multiple meshes, each with its own attributes like colors.](images/multiple-meshes.png)

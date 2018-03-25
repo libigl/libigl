@@ -91,7 +91,7 @@ igl::harmonic(V,F,b,D_bc,2,D);
 U = V+D;
 ```
 
-![The [BiharmonicDeformation](401_BiharmonicDeformation/main.cpp) example deforms a statue's head as a _biharmonic surface_ (top) and using a _biharmonic displacements_ (bottom).](images/max-biharmonic.jpg)
+![The [BiharmonicDeformation]({{ repo_url }}/tutorial/401_BiharmonicDeformation/main.cpp) example deforms a statue's head as a _biharmonic surface_ (top) and using a _biharmonic displacements_ (bottom).](images/max-biharmonic.jpg)
 
 #### Relationship to "differential coordinates" and Laplacian surface editing
 Biharmonic functions (whether positions or displacements) are solutions to the
@@ -130,7 +130,7 @@ int k = 2;// or 1,3,4,...
 igl::harmonic(V,F,b,bc,k,Z);
 ```
 
-![The [PolyharmonicDeformation](402_PolyharmonicDeformation/main.cpp) example deforms a flat domain (left) into a bump as a solution to various $k$-harmonic PDEs.](images/bump-k-harmonic.jpg)
+![The [PolyharmonicDeformation]({{ repo_url }}/tutorial/402_PolyharmonicDeformation/main.cpp) example deforms a flat domain (left) into a bump as a solution to various $k$-harmonic PDEs.](images/bump-k-harmonic.jpg)
 
 ## Bounded biharmonic weights
 In computer animation, shape deformation is often referred to as "skinning".
@@ -191,7 +191,7 @@ parition of unity and encourage sparsity:
 This is a quadratic programming problem and libigl solves it using its active
 set solver or by calling out to [Mosek](http://www.mosek.com).
 
-![The example [BoundedBiharmonicWeights](403_BoundedBiharmonicWeights/main.cpp) computes weights for a tetrahedral mesh given a skeleton (top) and then animates a linear blend skinning deformation (bottom).](images/hand-bbw.jpg)
+![The example [BoundedBiharmonicWeights]({{ repo_url }}/tutorial/403_BoundedBiharmonicWeights/main.cpp) computes weights for a tetrahedral mesh given a skeleton (top) and then animates a linear blend skinning deformation (bottom).](images/hand-bbw.jpg)
 
 ## Dual quaternion skinning
 Even with high quality weights, linear blend skinning is limited. In
@@ -237,7 +237,7 @@ internally converts to the dual quaternion representation before blending:
 igl::dqs(V,W,vQ,vT,U);
 ```
 
-![The example [DualQuaternionSkinning](404_DualQuaternionSkinning/main.cpp) compares linear blend skinning (top) to dual quaternion skinning (bottom), highlighting LBS's candy wrapper effect (middle) and joint collapse (right).](images/arm-dqs.jpg)
+![The example [DualQuaternionSkinning]({{ repo_url }}/tutorial/404_DualQuaternionSkinning/main.cpp) compares linear blend skinning (top) to dual quaternion skinning (bottom), highlighting LBS's candy wrapper effect (middle) and joint collapse (right).](images/arm-dqs.jpg)
 
 ## As-rigid-as-possible
 
@@ -340,7 +340,7 @@ Libigl's implementation of as-rigid-as-possible deformation takes advantage of
 the highly optimized singular value decomposition code from McAdams et al.
 [^mcadams_2011] which leverages SSE intrinsics.
 
-![The example [AsRigidAsPossible](405_AsRigidAsPossible/main.cpp) deforms a surface as if it were made of an elastic material](images/decimated-knight-arap.jpg)
+![The example [AsRigidAsPossible]({{ repo_url }}/tutorial/405_AsRigidAsPossible/main.cpp) deforms a surface as if it were made of an elastic material](images/decimated-knight-arap.jpg)
 
 The concept of local rigidity will be revisited shortly in the context of
 surface parameterization.
@@ -447,7 +447,7 @@ biharmonic distance embedding.
 In this light, we can think of the "spokes+rims" style surface ARAP as a (slight and
 redundant) clustering of the per-triangle edge-sets.
 
-![The example [FastAutomaticSkinningTransformations](406_FastAutomaticSkinningTransformations/main.cpp) compares a full (slow) ARAP deformation on a detailed shape (left of middle), to ARAP with grouped rotation edge sets (right of middle), to the very fast subpsace method (right).](images/armadillo-fast.jpg)
+![The example [FastAutomaticSkinningTransformations]({{ repo_url }}/tutorial/406_FastAutomaticSkinningTransformations/main.cpp) compares a full (slow) ARAP deformation on a detailed shape (left of middle), to ARAP with grouped rotation edge sets (right of middle), to the very fast subpsace method (right).](images/armadillo-fast.jpg)
 
 ## Biharmonic Coordinates
 
@@ -528,7 +528,7 @@ handles):
 igl::biharmonic_coordinates(V,F,S,W);
 ```
 
-![([Example 407](407_BiharmonicCoordinates/main.cpp)) shows a physics simulation on a coarse orange mesh. The vertices of this mesh become control points for a biharmonic coordinates deformation of the blue high-resolution mesh.](images/octopus-biharmonic-coordinates-physics.gif)
+![([Example 407]({{ repo_url }}/tutorial/407_BiharmonicCoordinates/main.cpp)) shows a physics simulation on a coarse orange mesh. The vertices of this mesh become control points for a biharmonic coordinates deformation of the blue high-resolution mesh.](images/octopus-biharmonic-coordinates-physics.gif)
 
 ## References
 

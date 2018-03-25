@@ -11,7 +11,7 @@ Libigl contains various mesh statistics, including face angles, face areas and
 the detection of singular vertices, which are vertices with more or less than 6
 neighbours in triangulations or 4 in quadrangulations.
 
-The example [Statistics](701_Statistics/main.cpp) computes these quantities and
+The example [Statistics]({{ repo_url }}/tutorial/701_Statistics/main.cpp) computes these quantities and
 does a basic statistic analysis that allows to estimate the isometry and
 regularity of a mesh:
 
@@ -83,7 +83,7 @@ if `(V,F)` is not closed or not even manifold (but at least consistently
 oriented), then $w(\mathbf{p})$ tends smoothly toward 1 as $\mathbf{p}$ is
 _more_ inside `(V,F)`, and toward 0 as $\mathbf{p}$ is more outside.
 
-![Example [702](702_WindingNumber/main.cpp) computes the generalized winding number function for a tetrahedral mesh inside a cat with holes and self intersections (gold). The silver mesh is surface of the extracted interior tets, and slices show the winding number function on all tets in the convex hull: blue (~0), green (~1), yellow (~2).](images/big-sigcat-winding-number.gif)
+![Example [702]({{ repo_url }}/tutorial/702_WindingNumber/main.cpp) computes the generalized winding number function for a tetrahedral mesh inside a cat with holes and self intersections (gold). The silver mesh is surface of the extracted interior tets, and slices show the winding number function on all tets in the convex hull: blue (~0), green (~1), yellow (~2).](images/big-sigcat-winding-number.gif)
 
 ## Mesh Decimation
 
@@ -209,7 +209,7 @@ reinserted with infinite cost.
 
 ![Example 703 conducts edge collapses on the fertility model.](images/fertility-edge-collapse.gif)
 
-The [Example 703](./703_Decimation/main.cpp) demonstrates using this priority
+The [Example 703]({{ repo_url }}/tutorial/703_Decimation/main.cpp) demonstrates using this priority
 queue based approach with the simple shortest-edge-midpoint cost/placement
 strategy discussed above.
 
@@ -320,7 +320,7 @@ contains signed (unsquared) distances and the extra output `N` (only set when
 `type == SIGNED_DISTANCE_TYPE_PSEUDON`) contains the normals used for signing
 with the pseudo-normal test.
 
-![Example [704](704_SignedDistance/main.cpp) computes signed distance on slices through the bunny.](images/bunny-signed-distance.gif)
+![Example [704]({{ repo_url }}/tutorial/704_SignedDistance/main.cpp) computes signed distance on slices through the bunny.](images/bunny-signed-distance.gif)
 
 ## Marching Cubes
 
@@ -349,7 +349,7 @@ input scalar field `S` sampled at vertex locations `GV` of a `nx` by `ny` by
 igl::marching_cubes(S,GV,nx,ny,nz,V,F);
 ```
 
-![([Example 705](705_MarchingCubes/main.cpp)) samples signed distance to the input mesh (left) and then reconstructs the surface using marching cubes to contour the 0-level set (center). For comparison, clamping this signed distance field to an indicator function and contouring reveals serious aliasing artifacts.](images/armadillo-marching-cubes.jpg)
+![([Example 705]({{ repo_url }}/tutorial/705_MarchingCubes/main.cpp)) samples signed distance to the input mesh (left) and then reconstructs the surface using marching cubes to contour the 0-level set (center). For comparison, clamping this signed distance field to an indicator function and contouring reveals serious aliasing artifacts.](images/armadillo-marching-cubes.jpg)
 
 ## Facet Orientation
 
@@ -389,7 +389,7 @@ igl::embree::reorient_facets_raycast(V,F,FF,I);
 
 The boolean vector `I` reveals which rows of `F` have been flipped in `FF`.
 
-![([Example 706](706_FacetOrientation/main.cpp)) loads a truck model with inconsistent orientations (back facing triangles shown darker). Orientable patches are uniquely colored and then oriented to face outward (middle left). Alternatively, each individual triangle is considered a "patch" (middle right) and oriented outward independently.](images/truck-facet-orientation.jpg)
+![([Example 706]({{ repo_url }}/tutorial/706_FacetOrientation/main.cpp)) loads a truck model with inconsistent orientations (back facing triangles shown darker). Orientable patches are uniquely colored and then oriented to face outward (middle left). Alternatively, each individual triangle is considered a "patch" (middle right) and oriented outward independently.](images/truck-facet-orientation.jpg)
 
 ## Swept Volume
 
@@ -442,7 +442,7 @@ The `isolevel` parameter can be set to zero to approximate the exact swept
 volume, greater than zero to approximate a positive offset of the swept volume
 or less than zero to approximate a negative offset.
 
-![([Example 707](707_SweptVolume/main.cpp)) computes the surface of the swept volume (silver) of the bunny model undergoing a rigid motion (gold).](images/bunny-swept-volume.gif)
+![([Example 707]({{ repo_url }}/tutorial/707_SweptVolume/main.cpp)) computes the surface of the swept volume (silver) of the bunny model undergoing a rigid motion (gold).](images/bunny-swept-volume.gif)
 
 ## Picking
 
@@ -450,7 +450,7 @@ Picking vertices and faces using the mouse is very common in geometry
 processing applications. While this might seem a simple operation, its
 implementation is not straightforward. Libigl contains a function that solves this problem using the
 [Embree](https://software.intel.com/en-us/articles/embree-photo-realistic-ray-tracing-kernels)
-raycaster. Its usage is demonstrated in [Example 708](708_Picking/main.cpp):
+raycaster. Its usage is demonstrated in [Example 708]({{ repo_url }}/tutorial/708_Picking/main.cpp):
 
 ```cpp
 bool hit = igl::unproject_onto_mesh(
@@ -473,7 +473,7 @@ contains a [Bounding Volume
 Hierarchy](http://en.wikipedia.org/wiki/Bounding_volume_hierarchy) constructed
 by Embree, and `fid` and `vid` are the picked face and vertex, respectively.
 
-![([Example 708](708_Picking/main.cpp)) Picking via ray casting. The selected vertices are colored in red.](images/607_Picking.png)
+![([Example 708]({{ repo_url }}/tutorial/708_Picking/main.cpp)) Picking via ray casting. The selected vertices are colored in red.](images/607_Picking.png)
 
 ## Vector Field Visualization
 
@@ -482,9 +482,9 @@ supports the seeding and tracing of streamlines, for both simple vector fields
 and for N-rosy fields. The seeds for the streamlines are initialized using `streamlines_init`,
 and the lines are traced using `streamlines_next`. Each call to `streamlines_next` extends
 each line by one triangle, allowing interactive rendering of the traced lines, as demonstrated
-in [Example 709](709_VectorFieldVisualizer/main.cpp).
+in [Example 709]({{ repo_url }}/tutorial/709_VectorFieldVisualizer/main.cpp).
 
-![([Example 709](709_VectorFieldVisualizer/main.cpp)) Interactive streamlines tracing.](images/streamlines.jpg)
+![([Example 709]({{ repo_url }}/tutorial/709_VectorFieldVisualizer/main.cpp)) Interactive streamlines tracing.](images/streamlines.jpg)
 
 ## Scalable Locally Injective Maps
 
@@ -493,7 +493,7 @@ compute locally injective maps on massive datasets. The algorithm shares many
 similarities with ARAP, but uses a reweighting scheme to minimize arbitrary
 distortion energies, including those that prevent the introduction of flips.
 
-[Example 710](710_SLIM/main.cpp) contains three demos: (1) an example of large
+[Example 710]({{ repo_url }}/tutorial/710_SLIM/main.cpp) contains three demos: (1) an example of large
 scale 2D parametrization, (2) an example of 2D deformation with soft
 constraints, and (3) an example of 3D deformation with soft constraints. The
 implementation in libigl is self-contained and relies on Eigen for the solution
@@ -568,7 +568,7 @@ Hessian boundary conditions instead, which corresponds to the hessian energy
 with the matrix `QH = H'*(M2\H)`, where `H` is a finite element Hessian and
 `M2` is a stacked mass matrix. The matrices `H` and `QH` are implemented in
 libigl as `igl::hessian` and `igl::hessian_energy` respectively. An example
-of how to use the function is given in [Example 712](712_DataSmoothing/main.cpp).
+of how to use the function is given in [Example 712]({{ repo_url }}/tutorial/712_DataSmoothing/main.cpp).
 
 In the following image the differences between the Laplacian energy with
 zero Neumann boundary conditions and the Hessian energy can be clearly seen:
@@ -576,7 +576,7 @@ whereas the zero Neumann boundary condition in the third image bias the isolines
 of the function to be perpendicular to the boundary, the Hessian energy gives
 an unbiased result.
 
-![([Example 712](712_DataSmoothing/main.cpp)) From left to right: a function on the beetle mesh, the function with added noise, the result of smoothing with the Laplacian energy and zero Neumann boundary conditions, and the result of smoothing with the Hessian energy.](images/712_beetles.jpg)
+![([Example 712]({{ repo_url }}/tutorial/712_DataSmoothing/main.cpp)) From left to right: a function on the beetle mesh, the function with added noise, the result of smoothing with the Laplacian energy and zero Neumann boundary conditions, and the result of smoothing with the Hessian energy.](images/712_beetles.jpg)
 
 ## ShapeUp Projections
 
@@ -586,7 +586,7 @@ For iteration $k$:
 1. *Local step*: compute the projections of the set $P_{k-1}$ onto $S$, individually per constraint; that would mean fragmenting each point that appears in multiple constraints. That can be a nonlinear operation, but if the constraints are sparse, it is a a set of many small systems.
 2. *Global step*: integrate the set $P_k$ to be as close as possible to the projected fragmented set, with auxiliary objective functions possible. That results in a global, but quadratic objective function. Moreover, the resulting linear system has a constant matrix, and therefore can be pre-factored.
 
-The version we implement in libigl is the general version described by [^bouaziz_2012], and is in two files: ``<igl/shapeup.h>`` and ``<igl/shapeup_local_projections.h>``. A demo implementing regularity constraints (creating a mesh in which each face is as regular as possible) is in [Example 713](713_Shapeup/main.cpp). 
+The version we implement in libigl is the general version described by [^bouaziz_2012], and is in two files: ``<igl/shapeup.h>`` and ``<igl/shapeup_local_projections.h>``. A demo implementing regularity constraints (creating a mesh in which each face is as regular as possible) is in [Example 713]({{ repo_url }}/tutorial/713_Shapeup/main.cpp). 
 
 The local step is instantiated by a function of type ``igl::shapeup_projection_function``. The global step is done by two functions: ``igl::shapeup_precomputation()``, which precomputes the matrices required for the global step, and ``igl::shapeup_solve()``, which solves the problem, according to the initial solution $P_0$ and the input local projection function. The data struct ``igl::ShapeUpData`` contains the information necessary to run the algorithm, and can be configured; for instance, the self-explanatory variable ``Maxiterations``.
 
@@ -598,7 +598,7 @@ $$
 
 where the $\lambda$ coefficients are encoded in ``igl::ShapeUpData``, and can be updated **prior** to calling ``igl::shapeup_precomputation()``. The $E_{shape}$ component is the integration energy (fitting $P_k$ to the local projections). The $E_{close}$ component is adherence to positional constraints, given by ``b`` and ``bc`` parameters. The $E_{smooth}$ component is an optional objective function, to minimize differences (in the Dirichlet sense) between points, encodes by "edges" in parameter `E`. Both $E_{close}$ and $E_{shape}$ are also weighted by ``wClose`` and ``wShape`` function parameters, respectively.
 
-![([Example 713](713_ShapeUp/main.cpp)) The half-tunnel mesh (left) has been optimized to be almost perfectly regular (right). The color scale is between $\lbrack 0,0.05 \rbrack$, measuring the average normalized deviation of the angles of each face from $90^{\circ}$.](images/713_ShapeUp.png)
+![([Example 713]({{ repo_url }}/tutorial/713_ShapeUp/main.cpp)) The half-tunnel mesh (left) has been optimized to be almost perfectly regular (right). The color scale is between $\lbrack 0,0.05 \rbrack$, measuring the average normalized deviation of the angles of each face from $90^{\circ}$.](images/713_ShapeUp.png)
 
 ## References
 

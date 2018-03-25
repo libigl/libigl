@@ -147,7 +147,7 @@ igl::deserialize_xml(vec,"VectorBin",xmlFile);
 For user defined types derive from `XMLSerializable`.
 
 The code snippets above are extracted from [Example
-601](601_Serialization/main.cpp). We strongly suggest that you make the entire
+601]({{ repo_url }}/tutorial/601_Serialization/main.cpp). We strongly suggest that you make the entire
 state of your application always serializable since it will save you a lot of
 troubles when you will be preparing figures for a scientific report. It is very
 common to have to do small changes to figures, and being able to serialize the
@@ -165,7 +165,7 @@ code while the C++ application is running, greatly increasing coding
 efficiency.
 
 We demonstrate how to integrate Matlab in a libigl application in [Example
-602](602_Matlab/main.cpp). The example uses Matlab to compute the
+602]({{ repo_url }}/tutorial/602_Matlab/main.cpp). The example uses Matlab to compute the
 Eigenfunctions of the discrete Laplacian operator, relying on libigl for mesh
 IO, visualization and for computing the Laplacian operator.
 
@@ -283,7 +283,7 @@ It is also possible to call libigl functions from matlab, compiling them as MEX
 functions. This can be used to offload to C++ code the computationally
 intensive parts of a Matlab application.
 
-We provide a wrapper for `igl::readOBJ` in [Example 603](603_MEX/compileMEX.m).
+We provide a wrapper for `igl::readOBJ` in [Example 603]({{ repo_url }}/tutorial/603_MEX/compileMEX.m).
 We plan to provide wrappers for all our functions in the future, if you are
 interested in this feature (or if you want to help implementing it) please let
 us know.
@@ -306,7 +306,7 @@ points contained in holes of the triangulation (#H by 2) and (`V2`,`F2`) is the
 generated triangulation. Additional parameters can be passed to `triangle`, to
 control the quality: `"a0.005q"` enforces a bound on the maximal area of the
 triangles and a minimal angle of 20 degrees. In [Example
-604](604_Triangle/main.cpp), the interior of a square (excluded a smaller square
+604]({{ repo_url }}/tutorial/604_Triangle/main.cpp), the interior of a square (excluded a smaller square
 in its interior) is triangulated.
 
 ![Triangulation of the interior of a polygon.](images/604_Triangle.png)
@@ -315,7 +315,7 @@ in its interior) is triangulated.
 
 Similarly, the interior of a closed manifold surface can be tetrahedralized
 using the function `igl::tetrahedralize` which wraps the Tetgen library ([Example
-605](605_Tetgen/main.cpp)):
+605]({{ repo_url }}/tutorial/605_Tetgen/main.cpp)):
 
 ```cpp
 igl::tetrahedralize(V,F,"pq1.414", TV,TT,TF);
@@ -352,7 +352,7 @@ required to get a smooth result) and the result is returned in `AO`, as a
 single scalar for each sample.
 
 Ambient occlusion can be used to darken the surface colors, as shown in
-[Example 606](606_AmbientOcclusion/main.c)
+[Example 606]({{ repo_url }}/tutorial/606_AmbientOcclusion/main.c)
 
 ![A mesh rendered without (left) and with (right) ambient occlusion.](images/606_AmbientOcclusion.png)
 
@@ -378,7 +378,7 @@ viewer.core.draw_buffer(viewer.data,viewer.opengl,false,R,G,B,A);
 igl::png::writePNG(R,G,B,A,"out.png");
 ```
 
-In [Example 607](607_ScreenCapture/main.cpp) a scene is rendered in a temporary
+In [Example 607]({{ repo_url }}/tutorial/607_ScreenCapture/main.cpp) a scene is rendered in a temporary
 png and used to texture a quadrilateral.
 
 
@@ -391,7 +391,7 @@ of every element remain positive.
 
 Libigl can be used to compute Locally Injective Maps [^schuller_2013] using a variety of
 deformation energies. A simple deformation of a 2D grid is computed in [Example
-608](608_LIM/main.cpp).
+608]({{ repo_url }}/tutorial/608_LIM/main.cpp).
 
 ![A mesh (left) deformed using Laplacian editing (middle) and with Laplacian editing plus the anti-flipping constraints (right).](images/608_LIM.png)
 
@@ -457,7 +457,7 @@ igl::copyleft::cgal::mesh_boolean(VA,FA,VB,FB,MESH_BOOLEAN_TYPE_UNION,VC,FC);
 
 The following figure shows each boolean operation on two meshes.
 
-![The example [Boolean](609_Boolean/main.cpp) conducts boolean operations on the _Cheburashka_ (red) and _Knight_ (green). From left to right: union, intersection, set minus, symmetric difference (XOR), "resolve". Bottom row reveals inner surfaces, darker color indicates back-facing triangles.](images/cheburashka-knight-boolean.jpg)
+![The example [Boolean]({{ repo_url }}/tutorial/609_Boolean/main.cpp) conducts boolean operations on the _Cheburashka_ (red) and _Knight_ (green). From left to right: union, intersection, set minus, symmetric difference (XOR), "resolve". Bottom row reveals inner surfaces, darker color indicates back-facing triangles.](images/cheburashka-knight-boolean.jpg)
 
 The union, symmetric difference and "resolve" have the same outward
 appearance, but differ in their treatment of internal structures. The union has
@@ -500,10 +500,10 @@ igl::copyleft::cgal::CSGTree<MatrixXi> CSGTree =
 
 ![A CSG Tree represents a shape as a combination of binary boolean operations](images/cube-sphere-cylinders-csg-tree.jpg)
 
-Example [610](610_CSGTree/main.cpp) computes each intermediary CSG result and
+Example [610]({{ repo_url }}/tutorial/610_CSGTree/main.cpp) computes each intermediary CSG result and
 then the final composite.
 
-![Example [610](610_CSGTree/main.cpp) computes  complex CSG Tree operation on 5 input meshes.](images/cube-sphere-cylinders-csg.gif)
+![Example [610]({{ repo_url }}/tutorial/610_CSGTree/main.cpp) computes  complex CSG Tree operation on 5 input meshes.](images/cube-sphere-cylinders-csg.gif)
 
 ## References
 

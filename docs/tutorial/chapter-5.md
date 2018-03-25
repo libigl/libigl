@@ -60,9 +60,9 @@ viewer.data().set_uv(V_uv);
 ```
 
 The UV coordinates are then used to apply a procedural checkerboard texture to the
-mesh ([Example 501](501_HarmonicParam/main.cpp)).
+mesh ([Example 501]({{ repo_url }}/tutorial/501_HarmonicParam/main.cpp)).
 
-![([Example 501](tutorial/501_HarmonicParam/main.cpp)) Harmonic parametrization. (left) mesh with texture, (right) UV parametrization with texture](images/501_HarmonicParam.png)
+![([Example 501]({{ repo_url }}/tutorial/501_HarmonicParam/main.cpp)) Harmonic parametrization. (left) mesh with texture, (right) UV parametrization with texture](images/501_HarmonicParam.png)
 
 ## Least squares conformal maps
 
@@ -108,9 +108,9 @@ igl::vector_area_matrix(F,A);
 
 The final energy matrix is $L_{flat} - 2A$. Note that in this
 case we do not need to fix the boundary. To remove the null space of the energy and make the minimum unique, it is sufficient to fix two arbitrary
-vertices to two arbitrary positions. The full source code is provided in [Example 502](502_LSCMParam/main.cpp).
+vertices to two arbitrary positions. The full source code is provided in [Example 502]({{ repo_url }}/tutorial/502_LSCMParam/main.cpp).
 
-![([Example 502](502_LSCMParam/main.cpp)) LSCM parametrization. (left) mesh with texture, (right) UV parametrization](images/502_LSCMParam.png)
+![([Example 502]({{ repo_url }}/tutorial/502_LSCMParam/main.cpp)) LSCM parametrization. (left) mesh with texture, (right) UV parametrization](images/502_LSCMParam.png)
 
 ## As-rigid-as-possible parametrization
 
@@ -126,11 +126,11 @@ difference is that the optimization has to be done in 2D instead of 3D and that
 we need to compute a starting point. While for 3D deformation the optimization
 is bootstrapped with the original mesh, this is not the case for ARAP
 parametrization since the starting point must be a 2D mesh. In [Example
-503](503_ARAPParam/main.cpp), we initialize the optimization with harmonic
+503]({{ repo_url }}/tutorial/503_ARAPParam/main.cpp), we initialize the optimization with harmonic
 parametrization. Similarly to LSCM, the boundary is free to deform to minimize
 the distortion.
 
-![([Example 503](502_ARAPParam/main.cpp)) As-Rigid-As-Possible parametrization. (left) mesh with texture, (right) UV parametrization with texture](images/503_ARAPParam.png)
+![([Example 503]({{ repo_url }}/tutorial/502_ARAPParam/main.cpp)) As-Rigid-As-Possible parametrization. (left) mesh with texture, (right) UV parametrization with texture](images/503_ARAPParam.png)
 
 ## N-rotationally symmetric tangent fields
 
@@ -166,7 +166,7 @@ N are of different types and they appear in different positions.
 ![Design of a 2-,4- and 9-RoSy field](images/504_nrosy_field.png)
 
 We demonstrate how to call and plot N-RoSy fields in [Example
-504](504_NRosyDesign/main.cpp), where the degree of the field can be change
+504]({{ repo_url }}/tutorial/504_NRosyDesign/main.cpp), where the degree of the field can be change
 pressing the number keys. `igl::nrosy` implements the algorithm proposed in
 [^bommes_2009]. N-RoSy fields can also be interpolated with many other algorithms,
 see the library [libdirectional](https://github.com/avaxman/libdirectional) for
@@ -188,7 +188,7 @@ The first step involves the design of a 4-RoSy field (sometimes called *cross*
 field) that describes the alignment of the edges of the desired quadrilateral
 remeshing. The field constraints are usually manually specified or extracted
 from the principal curvature directions. In [[Example
-506](506_FrameField/main.cpp)], we simply fix one face in a random direction.
+506]({{ repo_url }}/tutorial/506_FrameField/main.cpp)], we simply fix one face in a random direction.
 
 ![Initial cross field prescribing the edge alignment.](images/505_MIQ_1.png)
 
@@ -254,7 +254,7 @@ it contains many overlaps.
 
 A quad mesh can be extracted from this parametrization using
 [libQEx](https://github.com/hcebke/libQEx) (not included in libigl).
-The full pipeline is implemented in [Example 505](505_MIQ/main.cpp).
+The full pipeline is implemented in [Example 505]({{ repo_url }}/tutorial/505_MIQ/main.cpp).
 
 ## Anisotropic remeshing
 
@@ -292,7 +292,7 @@ field.
 
 ![The global parametrization is lifted to the original surface to create the anisotropic quad meshing.](images/506_FrameField_4.png)
 
-Our implementation ([Example 506](506_FrameField/main.cpp)) uses MIQ to
+Our implementation ([Example 506]({{ repo_url }}/tutorial/506_FrameField/main.cpp)) uses MIQ to
 generate the UV parametrization, but other algorithms could be applied: the
 only desiderata is that the generated quad mesh should be as isotropic as
 possible.
@@ -303,7 +303,7 @@ A quad mesh can be transformed in a planar quad mesh with Shape-Up
 [^bouaziz_2012], a local/global approach that uses the global step to enforce
 surface continuity and the local step to enforce planarity.
 
-[Example 507](507_Planarization/main.cpp) planarizes a quad mesh until it
+[Example 507]({{ repo_url }}/tutorial/507_Planarization/main.cpp) planarizes a quad mesh until it
 satisfies a user-given planarity threshold.
 
 ## References

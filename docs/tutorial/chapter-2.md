@@ -8,7 +8,7 @@ coloring routines of our viewer.
 ## Normals
 Surface normals are a basic quantity necessary for rendering a surface. There
 are a variety of ways to compute and store normals on a triangle mesh. [Example
-201](201_Normals/main.cpp) demonstrates how to compute and visualize normals
+201]({{ repo_url }}/tutorial/201_Normals/main.cpp) demonstrates how to compute and visualize normals
 with libigl.
 
 ### Per-face
@@ -87,7 +87,7 @@ where $N(i)$ are the triangles incident on vertex $i$ and $θ_{ij}$ is the angle
 at vertex $i$ in triangle $j$ [^meyer_2003].
 
 Just like the continuous analog, our discrete Gaussian curvature reveals
-elliptic, hyperbolic and parabolic vertices on the domain, as demonstrated in [Example 202](202_GaussianCurvature/main.cpp).
+elliptic, hyperbolic and parabolic vertices on the domain, as demonstrated in [Example 202]({{ repo_url }}/tutorial/202_GaussianCurvature/main.cpp).
 
 ![The `GaussianCurvature` example computes discrete Gaussian curvature and visualizes it in pseudocolor.](images/bumpy-gaussian-curvature.jpg)
 
@@ -132,7 +132,7 @@ Alternatively, a robust method for determining principal curvatures is via
 quadric fitting [^panozzo_2010]. In the neighborhood around every vertex, a
 best-fit quadric is found and principal curvature values and directions are
 analytically computed on this quadric ([Example
-203](203_curvatureDirections/main.cpp)).
+203]({{ repo_url }}/tutorial/203_curvatureDirections/main.cpp)).
 
 ![The `CurvatureDirections` example computes principal curvatures via quadric fitting and visualizes mean curvature in pseudocolor and principal directions with a cross field.](images/fertility-principal-curvature.jpg)
 
@@ -166,7 +166,7 @@ where $\mathbf{f}$ is $n\times 1$ and $\mathbf{G}$ is an $md\times n$ sparse
 matrix. This matrix $\mathbf{G}$ can be derived geometrically, e.g.
 ch. 2[^jacobson_thesis_2013].
 Libigl's `grad` function computes $\mathbf{G}$ for
-triangle and tetrahedral meshes ([Example 204](204_Gradient/main.cpp)):
+triangle and tetrahedral meshes ([Example 204]({{ repo_url }}/tutorial/204_Gradient/main.cpp)):
 
 ![The `Gradient` example computes gradients of an input function on a mesh and visualizes the vector field.](images/cheburashka-gradient.jpg)
 
@@ -239,7 +239,7 @@ book" FEM construction which involves many (small) matrix inversions, cf.
 [^sharf_2007].
 
 The operator applied to mesh vertex positions amounts to smoothing by _flowing_
-the surface along the mean curvature normal direction ([Example 205](205_Laplacian/main.cpp)). Note that this is equivalent to minimizing surface area.
+the surface along the mean curvature normal direction ([Example 205]({{ repo_url }}/tutorial/205_Laplacian/main.cpp)). Note that this is equivalent to minimizing surface area.
 
 ![The `Laplacian` example computes conformalized mean curvature flow using the cotangent Laplacian [^kazhdan_2012].](images/cow-curvature-flow.jpg)
 
@@ -305,7 +305,7 @@ Eigen::VectorXd d;
 igl::exact_geodesic(V,F,VS,FS,VT,FT,d);
 ```
 
-![[Example 206](206_GeodesicDistance/main.cpp) allows to interactively pick the source vertex and displays the distance using a periodic color pattern.](images/geodesicdistance.jpg)
+![[Example 206]({{ repo_url }}/tutorial/206_GeodesicDistance/main.cpp) allows to interactively pick the source vertex and displays the distance using a periodic color pattern.](images/geodesicdistance.jpg)
 
 ## References
 
