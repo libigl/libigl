@@ -20,7 +20,7 @@ markdown_extensions:
   - admonition
   - toc:
       permalink: true
-  - figureAltCaption
+  - scripts.figureAltCaption
   - markdown.extensions.smarty
   - markdown.extensions.toc:
       permalink: true
@@ -38,6 +38,9 @@ markdown_extensions:
   - pymdownx.tasklist:
       custom_checkbox: true
   - pymdownx.tilde
+  - scripts.fixPaths:
+      variables:
+        repo_url: 'https://github.com/libigl/libigl/tree/master'
 extra_javascript:
   - 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML'
 extra_css:
