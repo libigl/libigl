@@ -2,8 +2,9 @@ site_name: libigl
 strict: true
 theme:
   name: material
+  favicon: 'img/favicon.ico'
   logo:
-    icon: 'details'
+    icon: ' '
   palette:
     primary: 'light blue'
     accent: 'blue'
