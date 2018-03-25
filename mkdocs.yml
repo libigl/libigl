@@ -7,6 +7,12 @@ theme:
   palette:
     primary: 'light blue'
     accent: 'blue'
+repo_name: 'libigl/libigl'
+repo_url: 'https://github.com/libigl/libigl'
+extra:
+  social:
+    - type: 'github'
+      link: 'https://github.com/libigl'
 markdown_extensions:
   - codehilite
   - footnotes
