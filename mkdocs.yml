@@ -13,6 +13,8 @@ markdown_extensions:
   - admonition
   - toc:
       permalink: true
+  - figureAltCaption
+  - markdown.extensions.smarty
   - markdown.extensions.toc:
       permalink: true
   - pymdownx.arithmatex
@@ -32,7 +34,7 @@ markdown_extensions:
 extra_javascript:
   - 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML'
 extra_css:
-  - ' '
+  - 'css/style.css'
 pages:
   - Home: index.md
   - Tutorial:
