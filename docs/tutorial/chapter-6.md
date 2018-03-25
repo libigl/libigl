@@ -191,8 +191,7 @@ see the sparsity pattern of L using spy:
 igl::mleval(&engine,"spy(L)");
 ```
 
-![The Matlab spy function is called from a libigl-based
-application.](images/602_Matlab_1.png)
+![The Matlab spy function is called from a libigl-based application.](images/602_Matlab_1.png)
 
 The results of Matlab computations can be returned back to the C++ application
 
@@ -203,8 +202,7 @@ igl::mlgetmatrix(&engine,"EV",EV);
 
 and plotted using the libigl viewer.
 
-![4 Eigenfunctions of the Laplacian plotted in the libigl
-viewer.](images/602_Matlab_2.png)
+![4 Eigenfunctions of the Laplacian plotted in the libigl viewer.](images/602_Matlab_2.png)
 
 
 ### Saving a Matlab workspace
@@ -356,8 +354,7 @@ single scalar for each sample.
 Ambient occlusion can be used to darken the surface colors, as shown in
 [Example 606](606_AmbientOcclusion/main.c)
 
-![A mesh rendered without (left) and with (right) ambient
-occlusion.](images/606_AmbientOcclusion.png)
+![A mesh rendered without (left) and with (right) ambient occlusion.](images/606_AmbientOcclusion.png)
 
 ## Screen Capture
 
@@ -396,8 +393,7 @@ Libigl can be used to compute Locally Injective Maps [#schuller_2013][] using a 
 deformation energies. A simple deformation of a 2D grid is computed in [Example
 608](608_LIM/main.cpp).
 
-![A mesh (left) deformed using Laplacian editing (middle) and with Laplacian
-editing plus the anti-flipping constraints (right).](images/608_LIM.png)
+![A mesh (left) deformed using Laplacian editing (middle) and with Laplacian editing plus the anti-flipping constraints (right).](images/608_LIM.png)
 
 ## Boolean operations on meshes
 
@@ -461,11 +457,7 @@ igl::copyleft::cgal::mesh_boolean(VA,FA,VB,FB,MESH_BOOLEAN_TYPE_UNION,VC,FC);
 
 The following figure shows each boolean operation on two meshes.
 
-![The example [Boolean](609_Boolean/main.cpp) conducts
-boolean operations on the _Cheburashka_ (red) and _Knight_ (green). From left
-to right: union, intersection, set minus, symmetric difference (XOR),
-"resolve". Bottom row reveals inner surfaces, darker color indicates
-back-facing triangles.](images/cheburashka-knight-boolean.jpg)
+![The example [Boolean](609_Boolean/main.cpp) conducts boolean operations on the _Cheburashka_ (red) and _Knight_ (green). From left to right: union, intersection, set minus, symmetric difference (XOR), "resolve". Bottom row reveals inner surfaces, darker color indicates back-facing triangles.](images/cheburashka-knight-boolean.jpg)
 
 The union, symmetric difference and "resolve" have the same outward
 appearance, but differ in their treatment of internal structures. The union has
@@ -506,11 +498,9 @@ igl::copyleft::cgal::CSGTree<MatrixXi> CSGTree =
   {{{VA,FA},{VB,FB},"i"},{{{VC,FC},{VD,FD},"u"},{VE,FE},"u"},"m"};
 ```
 
-![A CSG Tree represents a shape as a combination of binary boolean
-operations](images/cube-sphere-cylinders-csg-tree.jpg)
+![A CSG Tree represents a shape as a combination of binary boolean operations](images/cube-sphere-cylinders-csg-tree.jpg)
 
 Example [610](610_CSGTree/main.cpp) computes each intermediary CSG result and
 then the final composite.
 
-![Example [610](610_CSGTree/main.cpp) computes  complex CSG Tree operation on 5
-input meshes.](images/cube-sphere-cylinders-csg.gif)
+![Example [610](610_CSGTree/main.cpp) computes  complex CSG Tree operation on 5 input meshes.](images/cube-sphere-cylinders-csg.gif)

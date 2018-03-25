@@ -62,9 +62,7 @@ viewer.data().set_uv(V_uv);
 The UV coordinates are then used to apply a procedural checkerboard texture to the
 mesh ([Example 501](501_HarmonicParam/main.cpp)).
 
-![([Example 501](501_HarmonicParam/main.cpp)) Harmonic parametrization. (left)
-mesh with texture, (right) UV parametrization with
-texture](images/501_HarmonicParam.png)
+![([Example 501](501_HarmonicParam/main.cpp)) Harmonic parametrization. (left) mesh with texture, (right) UV parametrization with texture](images/501_HarmonicParam.png)
 
 ## Least squares conformal maps
 
@@ -112,9 +110,7 @@ The final energy matrix is $L_{flat} - 2A$. Note that in this
 case we do not need to fix the boundary. To remove the null space of the energy and make the minimum unique, it is sufficient to fix two arbitrary
 vertices to two arbitrary positions. The full source code is provided in [Example 502](502_LSCMParam/main.cpp).
 
-
-![([Example 502](502_LSCMParam/main.cpp)) LSCM parametrization. (left) mesh
-with texture, (right) UV parametrization](images/502_LSCMParam.png)
+![([Example 502](502_LSCMParam/main.cpp)) LSCM parametrization. (left) mesh with texture, (right) UV parametrization](images/502_LSCMParam.png)
 
 ## As-rigid-as-possible parametrization
 
@@ -134,9 +130,7 @@ parametrization since the starting point must be a 2D mesh. In [Example
 parametrization. Similarly to LSCM, the boundary is free to deform to minimize
 the distortion.
 
-![([Example 503](502_ARAPParam/main.cpp)) As-Rigid-As-Possible parametrization.
-(left) mesh with texture, (right) UV parametrization with
-texture](images/503_ARAPParam.png)
+![([Example 503](502_ARAPParam/main.cpp)) As-Rigid-As-Possible parametrization. (left) mesh with texture, (right) UV parametrization with texture](images/503_ARAPParam.png)
 
 ## N-rotationally symmetric tangent fields
 
@@ -277,17 +271,14 @@ unique affine transformation. The two parts can then be interpolated
 separately, using `igl::nrosy` for the cross field, and an harmonic interpolant
 for the affine part.
 
-![Interpolation of a frame field. Colors on the vectors denote the desired
-scale. The red faces contains the frame field
-constraints.](images/506_FrameField_1.png)
+![Interpolation of a frame field. Colors on the vectors denote the desired scale. The red faces contains the frame field constraints.](images/506_FrameField_1.png)
 
 After the interpolation, the surface is warped to transform each frame into an
 orthogonal and unit length cross (i.e. removing the scaling and skewness from
 the frame). This deformation defines a new embedding (and a new metric) for the
 surface.
 
-![The surface is deformed to transform the frame field in a cross
-field.](images/506_FrameField_2.png)
+![The surface is deformed to transform the frame field in a cross field.](images/506_FrameField_2.png)
 
 The deformed surface can the be isotropically remeshed using the MIQ algorithm
 that has been presented in the previous section.
@@ -299,8 +290,7 @@ parametrization to the original surface, where the isolines will trace a quad
 mesh whose elements are similar to the shape prescribed in the input frame
 field.
 
-![The global parametrization is lifted to the original surface to create the
-anisotropic quad meshing.](images/506_FrameField_4.png)
+![The global parametrization is lifted to the original surface to create the anisotropic quad meshing.](images/506_FrameField_4.png)
 
 Our implementation ([Example 506](506_FrameField/main.cpp)) uses MIQ to
 generate the UV parametrization, but other algorithms could be applied: the
@@ -316,6 +306,4 @@ surface continuity and the local step to enforce planarity.
 [Example 507](507_Planarization/main.cpp) planarizes a quad mesh until it
 satisfies a user-given planarity threshold.
 
-![A non-planar quad mesh (left) is planarized using the libigl function
-igl::planarize (right). The colors represent the planarity of the
-quads.](images/509_Planarization.png)
+![A non-planar quad mesh (left) is planarized using the libigl function igl::planarize (right). The colors represent the planarity of the quads.](images/509_Planarization.png)

@@ -81,12 +81,7 @@ if `(V,F)` is not closed or not even manifold (but at least consistently
 oriented), then $w(\mathbf{p})$ tends smoothly toward 1 as $\mathbf{p}$ is
 _more_ inside `(V,F)`, and toward 0 as $\mathbf{p}$ is more outside.
 
-![Example [702](702_WindingNumber/main.cpp) computes the
-generalized winding number function for a tetrahedral mesh inside a cat with
-holes and self intersections (gold). The silver mesh is surface of the
-extracted interior tets, and slices show the winding number function on all
-tets in the convex hull: blue (~0), green (~1), yellow
-(~2).](images/big-sigcat-winding-number.gif)
+![Example [702](702_WindingNumber/main.cpp) computes the generalized winding number function for a tetrahedral mesh inside a cat with holes and self intersections (gold). The silver mesh is surface of the extracted interior tets, and slices show the winding number function on all tets in the convex hull: blue (~0), green (~1), yellow (~2).](images/big-sigcat-winding-number.gif)
 
 ## Mesh Decimation
 
@@ -210,8 +205,7 @@ updating their costs according to `cost_and_placement`, new placements are
 remembered in `C`. If not valid, then the edge is "popped" from `Q` and
 reinserted with infinite cost.
 
-![Example 703 conducts edge collapses on the fertility
-model.](images/fertility-edge-collapse.gif)
+![Example 703 conducts edge collapses on the fertility model.](images/fertility-edge-collapse.gif)
 
 The [Example 703](./703_Decimation/main.cpp) demonstrates using this priority
 queue based approach with the simple shortest-edge-midpoint cost/placement
@@ -324,8 +318,7 @@ contains signed (unsquared) distances and the extra output `N` (only set when
 `type == SIGNED_DISTANCE_TYPE_PSEUDON`) contains the normals used for signing
 with the pseudo-normal test.
 
-![Example [704](704_SignedDistance/main.cpp) computes signed distance on
-slices through the bunny.](images/bunny-signed-distance.gif)
+![Example [704](704_SignedDistance/main.cpp) computes signed distance on slices through the bunny.](images/bunny-signed-distance.gif)
 
 ## Marching Cubes
 
@@ -354,11 +347,7 @@ input scalar field `S` sampled at vertex locations `GV` of a `nx` by `ny` by
 igl::marching_cubes(S,GV,nx,ny,nz,V,F);
 ```
 
-![([Example 705](705_MarchingCubes/main.cpp)) samples signed distance to the
-input mesh (left) and then reconstructs the surface using
-marching cubes to contour the 0-level set (center). For comparison, clamping
-this signed distance field to an indicator function and contouring reveals
-serious aliasing artifacts.](images/armadillo-marching-cubes.jpg)
+![([Example 705](705_MarchingCubes/main.cpp)) samples signed distance to the input mesh (left) and then reconstructs the surface using marching cubes to contour the 0-level set (center). For comparison, clamping this signed distance field to an indicator function and contouring reveals serious aliasing artifacts.](images/armadillo-marching-cubes.jpg)
 
 ## Facet Orientation
 
@@ -398,11 +387,7 @@ igl::embree::reorient_facets_raycast(V,F,FF,I);
 
 The boolean vector `I` reveals which rows of `F` have been flipped in `FF`.
 
-![([Example 706](706_FacetOrientation/main.cpp)) loads a truck model with
-inconsistent orientations (back facing triangles shown darker). Orientable
-patches are uniquely colored and then oriented to face outward (middle left).
-Alternatively, each individual triangle is considered a "patch" (middle right)
-and oriented outward independently.](images/truck-facet-orientation.jpg)
+![([Example 706](706_FacetOrientation/main.cpp)) loads a truck model with inconsistent orientations (back facing triangles shown darker). Orientable patches are uniquely colored and then oriented to face outward (middle left). Alternatively, each individual triangle is considered a "patch" (middle right) and oriented outward independently.](images/truck-facet-orientation.jpg)
 
 ## Swept Volume
 
@@ -455,9 +440,7 @@ The `isolevel` parameter can be set to zero to approximate the exact swept
 volume, greater than zero to approximate a positive offset of the swept volume
 or less than zero to approximate a negative offset.
 
-![([Example 707](707_SweptVolume/main.cpp)) computes
-the surface of the swept volume (silver) of the bunny model undergoing a rigid
-motion (gold).](images/bunny-swept-volume.gif)
+![([Example 707](707_SweptVolume/main.cpp)) computes the surface of the swept volume (silver) of the bunny model undergoing a rigid motion (gold).](images/bunny-swept-volume.gif)
 
 ## Picking
 
@@ -488,12 +471,11 @@ contains a [Bounding Volume
 Hierarchy](http://en.wikipedia.org/wiki/Bounding_volume_hierarchy) constructed
 by Embree, and `fid` and `vid` are the picked face and vertex, respectively.
 
-![([Example 708](708_Picking/main.cpp)) Picking via ray casting. The selected
-vertices are colored in red.](images/607_Picking.png)
+![([Example 708](708_Picking/main.cpp)) Picking via ray casting. The selected vertices are colored in red.](images/607_Picking.png)
 
 ## Vector Field Visualization
 
-Vector fields on surfaces are commonly visualized by tracing [streamlines] (https://en.wikipedia.org/wiki/Streamlines,_streaklines,_and_pathlines). Libigl
+Vector fields on surfaces are commonly visualized by tracing [streamlines](https://en.wikipedia.org/wiki/Streamlines,_streaklines,_and_pathlines). Libigl
 supports the seeding and tracing of streamlines, for both simple vector fields
 and for N-rosy fields. The seeds for the streamlines are initialized using `streamlines_init`,
 and the lines are traced using `streamlines_next`. Each call to `streamlines_next` extends
@@ -517,8 +499,7 @@ of the linear system used in the global step. An optimized version that relies
 on Pardiso is available
 [here](https://github.com/MichaelRabinovich/Scalable-Locally-Injective-Mappings).
 
-![A locally injective parametrization of a mesh with 50k faces is computed
-using the SLIM algorithm in 10 iterations.](images/slim.png)
+![A locally injective parametrization of a mesh with 50k faces is computed using the SLIM algorithm in 10 iterations.](images/slim.png)
 
 ## Subdivision surfaces
 
@@ -561,9 +542,7 @@ $(i_c,i_a,i_{abc})$. In contrast to `igl::upsample`, this method will create
 triangles with smaller and smaller internal angles and new vertices will sample
 the carrier surfaces with extreme bias.
 
-![The original coarse mesh and three different subdivision methods:
-`igl::upsample`, `igl::loop` and
-`igl::false_barycentric_subdivision`.](images/decimated-knight-subdivision.gif)
+![The original coarse mesh and three different subdivision methods: `igl::upsample`, `igl::loop` and `igl::false_barycentric_subdivision`.](images/decimated-knight-subdivision.gif)
 
 ## Data smoothing
 
@@ -595,10 +574,7 @@ whereas the zero Neumann boundary condition in the third image bias the isolines
 of the function to be perpendicular to the boundary, the Hessian energy gives
 an unbiased result.
 
-![([Example 712](712_DataSmoothing/main.cpp)) From left to right: a function
-on the beetle mesh, the function with added noise, the result of smoothing
-with the Laplacian energy and zero Neumann boundary conditions, and the
-result of smoothing with the Hessian energy.](images/712_beetles.jpg)
+![([Example 712](712_DataSmoothing/main.cpp)) From left to right: a function on the beetle mesh, the function with added noise, the result of smoothing with the Laplacian energy and zero Neumann boundary conditions, and the result of smoothing with the Hessian energy.](images/712_beetles.jpg)
 
 ## ShapeUp Projections
 

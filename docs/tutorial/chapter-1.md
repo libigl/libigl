@@ -191,8 +191,7 @@ and it is possible to extend the viewer with standard OpenGL code.
 Please see the documentation in
 [Viewer.h](../include/igl/opengl/glfw/Viewer.h) for more details.
 
-![([Example 102](102_DrawMesh/main.cpp)) loads and draws a
-mesh.](images/102_DrawMesh.png)
+![([Example 102](102_DrawMesh/main.cpp)) loads and draws a mesh.](images/102_DrawMesh.png)
 
 ## Interaction with keyboard and mouse
 
@@ -280,8 +279,7 @@ igl::jet(Z,true,C);
 The first row extracts the third column from `V` (the z coordinate of each
 vertex) and the second calls a libigl functions that converts a scalar field to colors. The second parameter of jet normalizes the scalar field to lie between 0 and 1 before applying the transfer function.
 
-![([Example 104](104_Colors/main.cpp)) igl::jet converts a scalar field to a
-color field.](images/104_Colors.png)
+![([Example 104](104_Colors/main.cpp)) igl::jet converts a scalar field to a color field.](images/104_Colors.png)
 
 `igl::jet` is an example of a standard function in libigl: it takes simple
 types and can be easily reused for many different tasks.  Not committing to
@@ -320,8 +318,7 @@ Eigen::Vector3d m = V.colwise().minCoeff();
 Eigen::Vector3d M = V.colwise().maxCoeff();
 ```
 
-![([Example 105](105_Overlays/main.cpp)) The bounding box of a mesh is shown
-using overlays.](images/105_Overlays.png)
+![([Example 105](105_Overlays/main.cpp)) The bounding box of a mesh is shown using overlays.](images/105_Overlays.png)
 
 ## Viewer Menu
 
@@ -408,8 +405,7 @@ menu.callback_draw_custom_window = [&]()
 };
 ```
 
-![([Example 106](106_ViewerMenu/main.cpp)) The UI of the viewer can be easily
-customized.](images/106_ViewerMenu.png)
+![([Example 106](106_ViewerMenu/main.cpp)) The UI of the viewer can be easily customized.](images/106_ViewerMenu.png)
 
 ## Multiple Meshes
 
@@ -421,6 +417,4 @@ field. By default it his is set to `0`, so in the typical case of a single mesh
 `viewer.data()` returns the `igl::ViewerData` corresponding to the one
 and only mesh.
 
-![([Example 107](107_MultipleMeshes/main.cpp)) The `igl::opengl::glfw::Viewer`
-can render multiple meshes, each with its own attributes like
-colors.](images/multiple-meshes.png)
+![([Example 107](107_MultipleMeshes/main.cpp)) The `igl::opengl::glfw::Viewer` can render multiple meshes, each with its own attributes like colors.](images/multiple-meshes.png)

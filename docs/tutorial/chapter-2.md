@@ -61,8 +61,7 @@ designer, but creases and corners can also be computed automatically. Libigl
 implements a simple scheme which computes corner normals as averages of
 normals of faces incident on the corresponding vertex which do not deviate by more than a specified dihedral angle (e.g. 20°).
 
-![The `Normals` example computes per-face (left), per-vertex (middle) and
-per-corner (right) normals](images/fandisk-normals.jpg)
+![The `Normals` example computes per-face (left), per-vertex (middle) and per-corner (right) normals](images/fandisk-normals.jpg)
 
 ## Gaussian curvature
 
@@ -90,8 +89,7 @@ at vertex $i$ in triangle $j$ [][#meyer_2003].
 Just like the continuous analog, our discrete Gaussian curvature reveals
 elliptic, hyperbolic and parabolic vertices on the domain, as demonstrated in [Example 202](202_GaussianCurvature/main.cpp).
 
-![The `GaussianCurvature` example computes discrete Gaussian curvature and
-visualizes it in pseudocolor.](images/bumpy-gaussian-curvature.jpg)
+![The `GaussianCurvature` example computes discrete Gaussian curvature and visualizes it in pseudocolor.](images/bumpy-gaussian-curvature.jpg)
 
 ## Curvature directions
 The two principal curvatures $(k_1,k_2)$ at a point on a surface measure how
@@ -136,9 +134,7 @@ best-fit quadric is found and principal curvature values and directions are
 analytically computed on this quadric ([Example
 203](203_curvatureDirections/main.cpp)).
 
-![The `CurvatureDirections` example computes principal curvatures via quadric
-fitting and visualizes mean curvature in pseudocolor and principal directions
-with a cross field.](images/fertility-principal-curvature.jpg)
+![The `CurvatureDirections` example computes principal curvatures via quadric fitting and visualizes mean curvature in pseudocolor and principal directions with a cross field.](images/fertility-principal-curvature.jpg)
 
 ## Gradient
 Scalar functions on a surface can be discretized as a piecewise linear function
@@ -150,8 +146,7 @@ where $\phi_i$ is a piecewise linear hat function defined by the mesh so that
 for each triangle $\phi_i$ is _the_ linear function which is one only at
 vertex $i$ and zero at the other corners.
 
-![Hat function $\phi_i$ is one at vertex $i$, zero at all other vertices, and
-linear on incident triangles.](images/hat-function.jpg)
+![Hat function $\phi_i$ is one at vertex $i$, zero at all other vertices, and linear on incident triangles.](images/hat-function.jpg)
 
 Thus gradients of such piecewise linear functions are simply sums of gradients
 of the hat functions:
@@ -173,8 +168,7 @@ ch. 2[^jacobson_thesis_2013].
 Libigl's `grad` function computes $\mathbf{G}$ for
 triangle and tetrahedral meshes ([Example 204](204_Gradient/main.cpp)):
 
-![The `Gradient` example computes gradients of an input function on a mesh and
-visualizes the vector field.](images/cheburashka-gradient.jpg)
+![The `Gradient` example computes gradients of an input function on a mesh and visualizes the vector field.](images/cheburashka-gradient.jpg)
 
 ## Laplacian
 
@@ -247,8 +241,7 @@ book" FEM construction which involves many (small) matrix inversions, cf.
 The operator applied to mesh vertex positions amounts to smoothing by _flowing_
 the surface along the mean curvature normal direction ([Example 205](205_Laplacian/main.cpp)). Note that this is equivalent to minimizing surface area.
 
-![The `Laplacian` example computes conformalized mean curvature flow using the
-cotangent Laplacian [#kazhdan_2012][].](images/cow-curvature-flow.jpg)
+![The `Laplacian` example computes conformalized mean curvature flow using the cotangent Laplacian [#kazhdan_2012][].](images/cow-curvature-flow.jpg)
 
 ### Mass matrix
 The mass matrix $\mathbf{M}$ is another $n \times n$ matrix which takes vertex
@@ -311,12 +304,9 @@ VT.setLinSpaced(V.rows(),0,V.rows()-1);
 Eigen::VectorXd d;
 igl::exact_geodesic(V,F,VS,FS,VT,FT,d);
 ```
-![[Example 206](206_GeodesicDistance/main.cpp) allows to interactively pick the source vertex and displays the distance using a periodic color pattern.
-](images/geodesicdistance.jpg)
+
+![[Example 206](206_GeodesicDistance/main.cpp) allows to interactively pick the source vertex and displays the distance using a periodic color pattern.](images/geodesicdistance.jpg)
 
 ## References
 
-[^jacobson_thesis_2013]:
-    Alec Jacobson,
-    [_Algorithms and Interfaces for Real-Time Deformation of 2D and 3D Shapes_](https://www.google.com/search?q=Algorithms+and+Interfaces+for+Real-Time+Deformation+of+2D+and+3D+Shapes),
-    2013.
+[^jacobson_thesis_2013]: Alec Jacobson, [_Algorithms and Interfaces for Real-Time Deformation of 2D and 3D Shapes_](https://www.google.com/search?q=Algorithms+and+Interfaces+for+Real-Time+Deformation+of+2D+and+3D+Shapes), 2013.
