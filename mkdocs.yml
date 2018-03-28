@@ -58,8 +58,9 @@ pages:
     - "Chapter 8: Outlook for continuing development": tutorial/chapter-8.md
   - Compilation:
     - Example Project: example-project.md
-    - Static Library: static-library.md
+    # - Static Library: static-library.md
     - External Dependencies: third-party.md
+    - Python Bindings: python-bindings.md
   - Contributing:
     - Style Guidelines: style-guidelines.md
     - Bug Report: CONTRIBUTING.md
