@@ -1,12 +1,11 @@
 # Python wrappers for libigl
 
-
 ## Work in progress
-<span style="color:#F62217">
-Everything in this folder is currently being developed and it is likely to be
-changed radically in the next couple of months, breaking compatibility between
-different version. We plan to stabilize the python API by the end of 2016.
-</span>
+
+!!! warning
+    Everything in this folder is currently being developed and it is likely to be
+    changed radically in the next couple of months, breaking compatibility between
+    different version. We plan to stabilize the python API by the end of 2016.
 
 ## Introduction
 
@@ -67,8 +66,8 @@ python 102_DrawMesh.py
 
 ## Matrix Representation
 
-TODO: describe in detail the wrapped eigen classes and how to convert them to
-numpy.
+!!! todo
+    describe in detail the wrapped eigen classes and how to convert them to numpy.
 
 ## Viewer and callbacks
 
@@ -162,6 +161,7 @@ If you find bugs or have problems please use our [github issue tracking
 page](https://github.com/libigl/libigl/issues).
 
 ## Copyright
+
 2015 Alec Jacobson, Daniele Panozzo, Christian Schüller, Olga Diamanti, Qingnan
 Zhou, Sebastian Koch, Nico Pietroni, Stefan Brugger, Kenshi Takayama, Wenzel Jakob, Nikolas De
 Giorgis, Luigi Rocca, Leonardo Sacht, Olga Sorkine-Hornung, and others.
