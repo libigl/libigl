@@ -31,7 +31,7 @@ libigl:
 3. **Header-only.** It is straight forward to use our library since it is only
   one additional include directory in your project. (if you are worried about
   compilation speed, it is also possible to build the library as a [static
-  library](../optional/))
+  library](../static-library/))
 
 4. **Function encapsulation.** Every function (including its full
   implementation) is contained in a pair of .h/.cpp files with the same name of
