@@ -61,13 +61,15 @@ IGL_INLINE bool igl::writeOFF(
 
   //Check if RGB values are in the range [0..1] or [0..255]
   int rgbScale = (C.maxCoeff() <= 1.0)?255:1;
-  Eigen::MatrixXd RGB = rgbScale * C;
+  // Use RGB_Array instead of RGB because of clash with mingw macro 
+  // (https://github.com/libigl/libigl/pull/679)
+  Eigen::MatrixXd RGB_Array = rgbScale * C;
 
   s<< "COFF\n"<<V.rows()<<" "<<F.rows()<<" 0\n";
   for (unsigned i=0; i< V.rows(); i++)
   {
     s <<V.row(i).format(IOFormat(FullPrecision,DontAlignCols," "," ","","",""," "));
-    s << unsigned(RGB(i,0)) << " " << unsigned(RGB(i,1)) << " " << unsigned(RGB(i,2)) << " 255\n";
+    s << unsigned(RGB_Array(i,0)) << " " << unsigned(RGB_Array(i,1)) << " " << unsigned(RGB_Array(i,2)) << " 255\n";
   }
 
   s<<(F.array()).format(IOFormat(FullPrecision,DontAlignCols," ","\n","3 ","","","\n"));
