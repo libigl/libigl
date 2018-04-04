@@ -1,9 +1,13 @@
-target_link_libraries(libigl2 eigen3 ethos)
+#libigl2
 
-target_include_directories(libigl2 PUBLIC
+add_library(libigl2 INTERFACE)
+
+target_link_libraries(libigl2 INTERFACE eigen3 ethos)
+
+target_include_directories(libigl2 INTERFACE
     include
 )
 
-target_compile_definitions(libigl2 PUBLIC
+target_compile_definitions(libigl2 INTERFACE
     _USE_MATH_DEFINES
 )
