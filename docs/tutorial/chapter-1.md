@@ -63,28 +63,30 @@ make
 The examples can also be built independently using the CMakeLists.txt
 inside each example folder.
 
-*Note for linux users*: Many linux distributions do not include gcc and the basic development tools
-in their default installation. On Ubuntu, you need to install the following packages:
+!!! note "Note for linux users"
+    Many linux distributions do not include gcc and the basic development tools
+    in their default installation. On Ubuntu, you need to install the following packages:
 
-```bash
-sudo apt-get install git
-sudo apt-get install build-essential
-sudo apt-get install cmake
-sudo apt-get install libx11-dev
-sudo apt-get install mesa-common-dev libgl1-mesa-dev libglu1-mesa-dev
-sudo apt-get install libxrandr-dev
-sudo apt-get install libxi-dev
-sudo apt-get install libxmu-dev
-sudo apt-get install libblas-dev
-sudo apt-get install libxinerama-dev
-sudo apt-get install libxcursor-dev
-```
-*Note for windows users*: libigl only supports the Microsoft Visual Studio 2015 compiler in 64bit mode. It will not work with a 32bit build and it will not work
-with older versions of visual studio.
+    ```bash
+    sudo apt-get install git
+    sudo apt-get install build-essential
+    sudo apt-get install cmake
+    sudo apt-get install libx11-dev
+    sudo apt-get install mesa-common-dev libgl1-mesa-dev libglu1-mesa-dev
+    sudo apt-get install libxrandr-dev
+    sudo apt-get install libxi-dev
+    sudo apt-get install libxmu-dev
+    sudo apt-get install libblas-dev
+    sudo apt-get install libxinerama-dev
+    sudo apt-get install libxcursor-dev
+    ```
 
-A few examples in Chapter 5 requires the [CoMiSo
-solver](http://www.graphics.rwth-aachen.de/software/comiso). We provide a
-mirror of CoMISo that works out of the box with libigl. To install it:
+!!! note "Note for Windows users"
+    libigl only supports the Microsoft Visual Studio 2015 compiler and later, in 64bit mode.
+    It will not work with a 32bit build and it will not work with older versions of visual studio.
+
+A few examples in Chapter 5 requires the [CoMiSo solver](http://www.graphics.rwth-aachen.de/software/comiso).
+We provide a mirror of CoMISo that works out of the box with libigl. To install it:
 
 ```bash
 cd libigl/external
