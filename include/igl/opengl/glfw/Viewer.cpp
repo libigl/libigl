@@ -283,14 +283,19 @@ namespace glfw
   IGL_INLINE Viewer::Viewer():
     data_list(1),
     selected_data_index(0),
-    next_data_id(1)
+    next_data_id(1),
+    selected_core_index(0),
+	next_core_id(1)
+
   {
-	coreList.emplace_back(ViewerCore());
-	core = &coreList[0];
     window = nullptr;
     data_list.front().id = 0;
 
-    // Temporary variables initialization
+	core_list.emplace_back(ViewerCore());
+	core = &core_list[0];
+	core_list.front().id = 0;
+
+	// Temporary variables initialization
     down = false;
     hack_never_moved = true;
     scroll_position = 0.0f;
@@ -420,8 +425,8 @@ namespace glfw
     {
       data().grid_texture();
     }
-	for(int i=0;i<coreList.size(); i++)
-		coreList[i].align_camera_center(data().V,data().F);
+	for(int i=0;i<core_list.size(); i++)
+		core_list[i].align_camera_center(data().V,data().F);
 
     for (unsigned int i = 0; i<plugins.size(); ++i)
       if (plugins[i]->post_load())
@@ -682,14 +687,14 @@ namespace glfw
       if (plugins[i]->mouse_move(mouse_x, mouse_y))
         return true;
 
-	for (int i = 0; i < coreList.size(); i++)
+	for (int i = 0; i < core_list.size(); i++)
 	{
-		Eigen::Vector4f viewport = coreList[i].viewport;
+		Eigen::Vector4f viewport = core_list[i].viewport;
 
-		if (mouse_x > viewport[0] && mouse_x<viewport[0] + viewport[2] &&
-			mouse_y>viewport[1] && mouse_y < viewport[1] + viewport[3])
+		if (mouse_x > viewport[0] && mouse_x < viewport[0] + viewport[2] &&
+			mouse_y > viewport[1] && mouse_y < viewport[1] + viewport[3])
 		{
-			core = &coreList[i];
+			core = &core_list[i];
 			break;
 		}
 	}
@@ -829,7 +834,7 @@ namespace glfw
       post_resize(width, height);
       highdpi=highdpi_tmp;
     }
-	for (auto& core : coreList)
+	for (auto& core : core_list)
 		core.clear_framebuffers();
 
     if (callback_pre_draw)
@@ -847,7 +852,7 @@ namespace glfw
       }
     }
 
-	for(auto& core:coreList)
+	for(auto& core:core_list)
 	  for(int i = 0;i<data_list.size();i++)
 	  {
 		  core.draw(data_list[i]);
@@ -879,7 +884,7 @@ namespace glfw
 
   IGL_INLINE void Viewer::post_resize(int w,int h)
   {
-	if(coreList.size()==1)
+	if(core_list.size()==1)
 		core->viewport = Eigen::Vector4f(0,0,w,h);
     for (unsigned int i = 0; i<plugins.size(); ++i)
     {
@@ -959,6 +964,40 @@ namespace glfw
     return 0;
   }
 
+  IGL_INLINE bool Viewer::erase_core(const size_t index)
+  {
+	  assert((index >= 0 && index < core_list.size()) && "index should be in bounds");
+	  assert(data_list.size() >= 1);
+	  if (core_list.size() == 1)
+	  {
+		  // Cannot remove last mesh
+		  return false;
+	  }
+	  core_list[index].shut(); // does nothing
+	  core_list.erase(core_list.begin() + index);
+	  if (selected_core_index >= index && selected_core_index > 0)
+	  {
+		  selected_core_index--;
+	  }
+	  return true;
+  }
+
+  IGL_INLINE size_t Viewer::core_index(const int id) const {
+	  for (size_t i = 0; i < core_list.size(); ++i)
+	  {
+		  if (core_list[i].id == id)
+			  return i;
+	  }
+	  return 0;
+  }
+
+  IGL_INLINE int Viewer::append_core(Eigen::Vector4f viewport)
+  {
+	  core_list.push_back(*core);
+	  core_list.back().viewport = viewport;
+	  core_list.back().id = next_core_id++;
+	  return core_list.back().id;
+  }
 
 } // end namespace
 } // end namespace
