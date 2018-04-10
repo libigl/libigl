@@ -45,8 +45,8 @@ namespace glfw
     // UI Enumerations
     enum class MouseButton {Left, Middle, Right};
     enum class MouseMode { None, Rotation, Zoom, Pan, Translation} mouse_mode;
-    IGL_INLINE int launch(bool resizable = true,bool fullscreen = false);
-    IGL_INLINE int launch_init(bool resizable = true,bool fullscreen = false);
+    IGL_INLINE int launch(bool resizable = true,bool fullscreen = false, int width = 1280, int height = 800);
+    IGL_INLINE int launch_init(bool resizable = true,bool fullscreen = false, int width = 1280, int height = 800);
     IGL_INLINE bool launch_rendering(bool loop = true);
     IGL_INLINE void launch_shut();
     IGL_INLINE void init();
@@ -122,7 +122,9 @@ namespace glfw
     int next_data_id;
     GLFWwindow* window;
     // Stores all the viewing options
-    ViewerCore core;
+    ViewerCore *core;
+	std::vector<ViewerCore> coreList;
+
     // List of registered plugins
     std::vector<ViewerPlugin*> plugins;
     // Temporary data stored when the mouse button is pressed
