@@ -852,11 +852,8 @@ namespace glfw
       }
     }
 
-	for(auto& core:core_list)
-	  for(int i = 0;i<data_list.size();i++)
-	  {
-		  core.draw(data_list[i]);
-	  }
+	for (auto& pair : coreDataPairs)
+		core_list[pair.first].draw(data_list[pair.second]);
 
     if (callback_post_draw)
     {
@@ -934,6 +931,8 @@ namespace glfw
     data_list.emplace_back();
     selected_data_index = data_list.size()-1;
     data_list.back().id = next_data_id++;
+	for (int i = 0; i < core_list.size(); i++)
+		coreDataPairs.insert(std::pair<int,int>(core_list[i].id, data_list.back().id));
     return data_list.back().id;
   }
 
@@ -996,6 +995,8 @@ namespace glfw
 	  core_list.push_back(*core);
 	  core_list.back().viewport = viewport;
 	  core_list.back().id = next_core_id++;
+	  for (int i = 0; i < data_list.size(); i++)
+		  coreDataPairs.insert(std::pair<int, int>(core_list.back().id, data_list[i].id));
 	  return core_list.back().id;
   }
 
