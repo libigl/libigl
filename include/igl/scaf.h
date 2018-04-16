@@ -89,8 +89,8 @@ namespace igl
 // Run iter_num iterations of SCAF
 // Outputs:
 //    V_o (in SLIMData): #V by dim list of mesh vertex positions
-  IGL_INLINE Eigen::MatrixXd scaf_solve(SCAFData &data, int iter_num);
-  IGL_INLINE Eigen::MatrixXd scaf_solve(SCAFData &data, int iter_num, Eigen::VectorXi& cstrs);
+//   IGL_INLINE Eigen::MatrixXd scaf_solve(SCAFData &data, int iter_num);
+  IGL_INLINE Eigen::MatrixXd scaf_solve(SCAFData &data, int iter_num, const Eigen::VectorXi& cstrs = Eigen::VectorXi());
 
   }
 

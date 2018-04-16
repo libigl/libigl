@@ -378,50 +378,10 @@ double compute_energy_from_jacobians(const Eigen::MatrixXd &Ji,
                                      igl::SLIMData::SLIM_ENERGY energy_type)
 {
   double energy = 0;
-
-    Eigen::Matrix<double, 2, 2> ji;
-    for (int i = 0; i < Ji.rows(); i++)
-    {
-      ji << Ji(i, 0), Ji(i, 1), Ji(i, 2), Ji(i, 3);
-
-      typedef Eigen::Matrix<double, 2, 2> Mat2;
-      typedef Eigen::Matrix<double, 2, 1> Vec2;
-      Mat2 ri, ti, ui, vi;
-      Vec2 sing;
-      igl::polar_svd(ji, ri, ti, ui, sing, vi);
-      double s1 = sing(0);
-      double s2 = sing(1);
-
-      switch (energy_type)
-      {
-      case igl::SLIMData::ARAP:
-      {
-        energy += areas(i) * (pow(s1 - 1, 2) + pow(s2 - 1, 2));
-        break;
-      }
-      case igl::SLIMData::SYMMETRIC_DIRICHLET:
-      {
-        energy +=
-            areas(i) * (pow(s1, 2) + pow(s1, -2) + pow(s2, 2) + pow(s2, -2) - 4);
-        break;
-      }
-      case igl::SLIMData::LOG_ARAP:
-      {
-        energy += areas(i) * (pow(log(s1), 2) + pow(log(s2), 2));
-        break;
-      }
-      case igl::SLIMData::CONFORMAL:
-      {
-        energy += areas(i) * ((pow(s1, 2) + pow(s2, 2)) / (2 * s1 * s2));
-        break;
-      }
-      default:
-        break;
-      }
-    }
-
-  
-  return energy;
+  if (energy_type == igl::SLIMData::SYMMETRIC_DIRICHLET) {
+    energy = -4;
+  }
+  return energy + igl::slim::compute_energy_with_jacobians(Ji, areas, energy_type, 0);
 }
 
 double compute_soft_constraint_energy(const SCAFData &d_)
@@ -451,94 +411,7 @@ void update_weights_and_closest_rotations2(
     Eigen::MatrixXd &W,
     Eigen::MatrixXd &Ri)
 {
-  const double eps = 1e-8;
-
-  W.resize(Ji.rows(), 4);
-  Ri.resize(Ji.rows(), 4);
-  for (int i = 0; i < Ji.rows(); ++i)
-  {
-    typedef Eigen::Matrix<double, 2, 2> Mat2;
-    typedef Eigen::Matrix<double, 2, 1> Vec2;
-    Mat2 ji, ri, ti, ui, vi;
-    Vec2 sing;
-    Vec2 closest_sing_vec;
-    Mat2 mat_W;
-    Vec2 m_sing_new;
-    double s1, s2;
-
-    ji(0, 0) = Ji(i, 0);
-    ji(0, 1) = Ji(i, 1);
-    ji(1, 0) = Ji(i, 2);
-    ji(1, 1) = Ji(i, 3);
-
-    igl::polar_svd(ji, ri, ti, ui, sing, vi);
-
-    s1 = sing(0);
-    s2 = sing(1);
-
-    // Branch between mesh face and scaffold faces.
-    switch (energy_type)
-    {
-    case igl::SLIMData::ARAP:
-    {
-      m_sing_new << 1, 1;
-      break;
-    }
-    case igl::SLIMData::SYMMETRIC_DIRICHLET:
-    {
-      double s1_g = 2 * (s1 - pow(s1, -3));
-      double s2_g = 2 * (s2 - pow(s2, -3));
-      m_sing_new << sqrt(s1_g / (2 * (s1 - 1))), sqrt(
-                                                     s2_g / (2 * (s2 - 1)));
-      break;
-    }
-    case igl::SLIMData::LOG_ARAP:
-    {
-      double s1_g = 2 * (log(s1) / s1);
-      double s2_g = 2 * (log(s2) / s2);
-      m_sing_new << sqrt(s1_g / (2 * (s1 - 1))), sqrt(
-                                                     s2_g / (2 * (s2 - 1)));
-      break;
-    }
-    case igl::SLIMData::CONFORMAL:
-    {
-      double s1_g = 1 / (2 * s2) - s2 / (2 * pow(s1, 2));
-      double s2_g = 1 / (2 * s1) - s1 / (2 * pow(s2, 2));
-
-      double geo_avg = sqrt(s1 * s2);
-      double s1_min = geo_avg;
-      double s2_min = geo_avg;
-
-      m_sing_new << sqrt(s1_g / (2 * (s1 - s1_min))), sqrt(
-                                                          s2_g / (2 * (s2 - s2_min)));
-
-      // change local step
-      closest_sing_vec << s1_min, s2_min;
-      ri = ui * closest_sing_vec.asDiagonal() * vi.transpose();
-      break;
-    }
-    default:
-      break;
-    }
-
-    if (abs(s1 - 1) < eps)
-      m_sing_new(0) = 1;
-    if (abs(s2 - 1) < eps)
-      m_sing_new(1) = 1;
-
-    mat_W = ui * m_sing_new.asDiagonal() * ui.transpose();
-
-    W(i, 0) = mat_W(0, 0);
-    W(i, 1) = mat_W(0, 1);
-    W(i, 2) = mat_W(1, 0);
-    W(i, 3) = mat_W(1, 1);
-
-    // 2) Update local step (doesn't have to be a rotation, for instance in case of conformal energy)
-    Ri(i, 0) = ri(0, 0);
-    Ri(i, 1) = ri(1, 0);
-    Ri(i, 2) = ri(0, 1);
-    Ri(i, 3) = ri(1, 1);
-  }
+    igl::slim::update_weights_and_closest_rotations_with_jacobians(Ji, energy_type, 0, W, Ri);
 }
 
 void buildAm(const Eigen::VectorXd &sqrt_M,
@@ -547,55 +420,15 @@ void buildAm(const Eigen::VectorXd &sqrt_M,
              const Eigen::MatrixXd &W,
              Eigen::SparseMatrix<double> &Am)
 {
-  using namespace Eigen;
-  // formula (35) in paper
-  std::vector<Triplet<double>> IJV;
-  const int f_n = W.rows();
-  const int v_n = Dx.cols();
+  std::vector<Eigen::Triplet<double> > IJV;
+  Eigen::SparseMatrix<double> Dz;
 
-  IJV.reserve(4 * (Dx.outerSize() + Dy.outerSize()));
+  Eigen::SparseMatrix<double> MDx = sqrt_M.asDiagonal() * Dx;
+  Eigen::SparseMatrix<double> MDy = sqrt_M.asDiagonal() * Dy;
+  igl::slim::buildA(MDx, MDy, Dz, W, IJV);
 
-  /*A = [W11*Dx, W12*Dx;
-  W11*Dy, W12*Dy;
-  W21*Dx, W22*Dx;
-  W21*Dy, W22*Dy];*/
-  for (int k = 0; k < Dx.outerSize(); ++k)
-  {
-    for (SparseMatrix<double>::InnerIterator it(Dx, k); it; ++it)
-    {
-      int dx_r = it.row();
-      int dx_c = it.col();
-      double val = it.value() * sqrt_M(dx_r);
-
-      IJV.push_back(Triplet<double>(dx_r, dx_c, val * W(dx_r, 0)));
-      IJV.push_back(Triplet<double>(dx_r, v_n + dx_c, val * W(dx_r, 1)));
-
-      IJV.push_back(Triplet<double>(2 * f_n + dx_r, dx_c, val * W(dx_r, 2)));
-      IJV.push_back(
-          Triplet<double>(2 * f_n + dx_r, v_n + dx_c, val * W(dx_r, 3)));
-    }
-  }
-
-  for (int k = 0; k < Dy.outerSize(); ++k)
-  {
-    for (SparseMatrix<double>::InnerIterator it(Dy, k); it; ++it)
-    {
-      int dy_r = it.row();
-      int dy_c = it.col();
-      double val = it.value() * sqrt_M(dy_r);
-
-      IJV.push_back(Triplet<double>(f_n + dy_r, dy_c,
-                                    val * W(dy_r, 0)));
-      IJV.push_back(Triplet<double>(f_n + dy_r, v_n + dy_c,
-                                    val * W(dy_r, 1)));
-
-      IJV.push_back(Triplet<double>(3 * f_n + dy_r, dy_c,
-                                    val * W(dy_r, 2)));
-      IJV.push_back(Triplet<double>(3 * f_n + dy_r, v_n + dy_c,
-                                    val * W(dy_r, 3)));
-    }
-  }
   Am.setFromTriplets(IJV.begin(), IJV.end());
+  Am.makeCompressed();
 }
 
 void buildRhs(const Eigen::VectorXd &sqrt_M,
@@ -617,57 +450,6 @@ void buildRhs(const Eigen::VectorXd &sqrt_M,
     }
 }
 
-// TODO: move to libigl
-void sparse_slice(Eigen::SparseMatrix<double> & A,
-                  const Eigen::VectorXi & unknown_ids,
-                  const Eigen::VectorXi &known_ids,
-                  Eigen::SparseMatrix<double>& Au, Eigen::SparseMatrix<double> & Ae)
-{
-  using namespace Eigen;
-  using TY = double;
-  using TX = double;
-  auto &X = A;
-
-  int xm = X.rows();
-  int xn = X.cols();
-  int ym = xm;
-  int yn = unknown_ids.size();
-  int ykn = known_ids.size();
-
-  std::vector<int> CI(xn, -1);
-  std::vector<int> CKI(xn, -1);
-  // initialize to -1
-  for (int i = 0; i < yn; i++)
-    CI[unknown_ids(i)] = (i);
-  for (int i = 0; i < ykn; i++)
-    CKI[known_ids(i)] = i;
-  Eigen::DynamicSparseMatrix<TY, Eigen::ColMajor> dyn_Y(ym, yn);
-  Eigen::DynamicSparseMatrix<TY, Eigen::ColMajor> dyn_K(ym, ykn);
-  // Take a guess at the number of nonzeros (this assumes uniform distribution
-  // not banded or heavily diagonal)
-  dyn_Y.reserve(A.nonZeros());
-  dyn_K.reserve(A.nonZeros() * ykn / xn);
-  // Iterate over outside
-  for (int k = 0; k < X.outerSize(); ++k)
-  {
-    // Iterate over inside
-    if (CI[k] != -1)
-      for (typename Eigen::SparseMatrix<double>::InnerIterator it(X, k); it;
-           ++it)
-      {
-        dyn_Y.coeffRef(it.row(), CI[it.col()]) = it.value();
-      }
-    else
-      for (typename Eigen::SparseMatrix<TX>::InnerIterator it(X, k); it;
-           ++it)
-      {
-        dyn_K.coeffRef(it.row(), CKI[it.col()]) = it.value();
-      }
-  }
-  Au = Eigen::SparseMatrix<TY>(dyn_Y);
-  Ae = Eigen::SparseMatrix<double>(dyn_K);
-}
-
 void get_complement(const Eigen::VectorXi& bnd_ids, int v_n, Eigen::ArrayXi& unknown_ids)
 { // get the complement of bnd_ids.
   int assign = 0, i = 0;
@@ -685,7 +467,6 @@ void get_complement(const Eigen::VectorXi& bnd_ids, int v_n, Eigen::ArrayXi& unk
 
 void build_surface_linear_system(const SCAFData &d_, Eigen::SparseMatrix<double> &L, Eigen::VectorXd &rhs)
 {
-
   using namespace Eigen;
   using namespace std;
 
@@ -734,7 +515,8 @@ void build_surface_linear_system(const SCAFData &d_, Eigen::SparseMatrix<double>
     }
 
     Eigen::SparseMatrix<double> Au, Ae;
-    sparse_slice(A, unknown_ids, known_ids, Au, Ae);
+    igl::slice(A, unknown_ids, 2, Au);
+    igl::slice(A, known_ids, 2, Ae);
 
     Eigen::SparseMatrix<double> Aut = Au.transpose();
     Aut.makeCompressed();
@@ -799,7 +581,8 @@ void build_scaffold_linear_system(const SCAFData &d_, Eigen::SparseMatrix<double
 
   // manual slicing for A(:, unknown/known)'
   Eigen::SparseMatrix<double> Au, Ae;
-  sparse_slice(A, unknown_ids, known_ids, Au, Ae);
+  igl::slice(A, unknown_ids, 2, Au);
+  igl::slice(A, known_ids, 2, Ae);
 
   Eigen::SparseMatrix<double> Aut = Au.transpose();
   Aut.makeCompressed();
@@ -862,7 +645,6 @@ void solve_weighted_arap(SCAFData &d_, Eigen::MatrixXd &uv)
   Eigen::VectorXd rhs_m, rhs_s;
   build_surface_linear_system(d_, L_m, rhs_m);  // complete Am, with soft
   build_scaffold_linear_system(d_, L_s, rhs_s); // complete As, without proximal
-  // we don't need proximal term
 
   L = L_m + L_s;
   rhs = rhs_m + rhs_s;
@@ -880,17 +662,11 @@ void solve_weighted_arap(SCAFData &d_, Eigen::MatrixXd &uv)
 
 double perform_iteration(SCAFData &d_)
 {
-  auto &w_uv = d_.w_uv;
-  Eigen::MatrixXd V_out = w_uv;
-  {
-    auto &uv_new = V_out;
-    compute_jacobians(d_, uv_new, true);
-    update_weights_and_closest_rotations2(d_.Ji_m, d_.slim_energy,
-                                            d_.W_m, d_.Ri_m);
-    update_weights_and_closest_rotations2(d_.Ji_s, d_.scaf_energy,
-                                            d_.W_s, d_.Ri_s);
-    solve_weighted_arap(d_, uv_new);
-  }
+  Eigen::MatrixXd V_out = d_.w_uv;
+  compute_jacobians(d_, V_out, true);
+  igl::slim::update_weights_and_closest_rotations_with_jacobians(d_.Ji_m, d_.slim_energy, 0, d_.W_m, d_.Ri_m);
+  igl::slim::update_weights_and_closest_rotations_with_jacobians(d_.Ji_s, d_.scaf_energy, 0, d_.W_s, d_.Ri_s);
+  solve_weighted_arap(d_, V_out);
   auto whole_E = [&d_](Eigen::MatrixXd &uv) { return compute_energy(d_, uv, true); };
 
   Eigen::MatrixXi w_T;
@@ -898,9 +674,8 @@ double perform_iteration(SCAFData &d_)
     igl::cat(1, d_.m_T, d_.s_T, w_T);
   else
     w_T = d_.s_T;
-  double energy = igl::flip_avoiding_line_search(w_T, w_uv, V_out,
+  return igl::flip_avoiding_line_search(w_T, d_.w_uv, V_out,
                                                  whole_E, -1) / d_.mesh_measure;
-  return energy;
 }
 }
 }
@@ -951,7 +726,7 @@ IGL_INLINE void igl::scaf_precompute(
   }
 }
 
-IGL_INLINE Eigen::MatrixXd igl::scaf_solve(SCAFData &d_, int iter_num, const Eigen::VectorXi& cstrs = Eigen::VectorXi())
+IGL_INLINE Eigen::MatrixXd igl::scaf_solve(SCAFData &d_, int iter_num, const Eigen::VectorXi& cstrs)
 {
   using namespace std;
   using namespace Eigen;
