@@ -157,15 +157,15 @@ IGL_INLINE void igl::shape_diameter_function(
 {
   if (per_face)
   {
-    Eigen::PlainObjectBase<DerivedV> N;
+    DerivedV N;
     igl::per_face_normals(V, F, N);
-    Eigen::PlainObjectBase<DerivedV> P;
+    DerivedV P;
     igl::barycenter(V, F, P);
     return igl::shape_diameter_function(V, F, P, N, num_samples, S);
   }
   else
   {
-    Eigen::PlainObjectBase<DerivedV> N;
+    DerivedV N;
     igl::per_vertex_normals(V, F, N);
     return igl::shape_diameter_function(V, F, V, N, num_samples, S);
   }
