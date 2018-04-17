@@ -708,13 +708,9 @@ IGL_INLINE double igl::scaf_solve(SCAFData &s, int iter_num, const Eigen::Vector
   using namespace Eigen;
   double last_mesh_energy = igl::scaf::compute_energy(s, s.w_uv, false) / s.mesh_measure;
 
-  std::cout << "Initial Energy" << last_mesh_energy << std::endl;
-  cout << "Initial V_num: " << s.mv_num << " F_num: " << s.mf_num << endl;
   for (int it = 0; it < iter_num; it++)
   {
     s.energy = igl::scaf::compute_energy(s, s.w_uv, true) / s.mesh_measure;
-    igl::Timer timer;
-    timer.start();
     s.rect_frame_V = Eigen::MatrixXd();
     igl::scaf::mesh_improve(s);
 
@@ -725,14 +721,9 @@ IGL_INLINE double igl::scaf_solve(SCAFData &s, int iter_num, const Eigen::Vector
 
     s.energy = igl::scaf::perform_iteration(s);
 
-    cout << "Iteration time = " << timer.getElapsedTime() << endl;
     double current_mesh_energy =
         igl::scaf::compute_energy(s, s.w_uv, false) / s.mesh_measure;
     double mesh_energy_decrease = last_mesh_energy - current_mesh_energy;
-    cout << "Energy After:" << s.energy
-         << "\tMesh Energy:" << current_mesh_energy
-         << "\tEnergy Decrease" << mesh_energy_decrease << endl;
-    cout << "V_num: " << s.v_num << " F_num: " << s.f_num << endl;
     last_mesh_energy = current_mesh_energy;
   }
 
