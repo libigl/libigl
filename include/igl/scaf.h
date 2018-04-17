@@ -86,12 +86,13 @@ namespace igl
         double soft_p);
 
 
-// Run iter_num iterations of SCAF
+// Run iter_num iterations of SCAF, with precomputed data
 // Outputs:
 //    V_o (in SLIMData): #V by dim list of mesh vertex positions
-//   IGL_INLINE Eigen::MatrixXd scaf_solve(SCAFData &data, int iter_num);
-  IGL_INLINE Eigen::MatrixXd scaf_solve(SCAFData &data, int iter_num, const Eigen::VectorXi& cstrs = Eigen::VectorXi());
+  IGL_INLINE double scaf_solve(SCAFData &data, int iter_num, const Eigen::VectorXi& constraints = Eigen::VectorXi());
 
+  IGL_INLINE double scaf_solve(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, const Eigen::MatrixXd &V_init, 
+        SLIMData::SLIM_ENERGY slim_energy, int iter_num, Eigen::MatrixXd& uv);
   }
 
 #ifndef IGL_STATIC_LIBRARY

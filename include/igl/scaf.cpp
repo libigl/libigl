@@ -702,7 +702,7 @@ IGL_INLINE void igl::scaf_precompute(
   }
 }
 
-IGL_INLINE Eigen::MatrixXd igl::scaf_solve(SCAFData &s, int iter_num, const Eigen::VectorXi& cstrs)
+IGL_INLINE double igl::scaf_solve(SCAFData &s, int iter_num, const Eigen::VectorXi& cstrs)
 {
   using namespace std;
   using namespace Eigen;
@@ -735,5 +735,20 @@ IGL_INLINE Eigen::MatrixXd igl::scaf_solve(SCAFData &s, int iter_num, const Eige
     cout << "V_num: " << s.v_num << " F_num: " << s.f_num << endl;
     last_mesh_energy = current_mesh_energy;
   }
-  return s.w_uv;
+
+  return last_mesh_energy;
+}
+
+
+IGL_INLINE double igl::scaf_solve(const Eigen::MatrixXd &V,
+      const Eigen::MatrixXi &F, const Eigen::MatrixXd &V_init, SLIMData::SLIM_ENERGY slim_energy, int iter_num, Eigen::MatrixXd& uv)
+{
+  igl::SCAFData data;
+  Eigen::VectorXi b;
+  Eigen::MatrixXd bc;
+  igl::scaf_precompute(V,F,V_init,data,
+    igl::SLIMData::SLIM_ENERGY::SYMMETRIC_DIRICHLET, b, bc, 0);
+  double energy = igl::scaf_solve(data, iter_num);
+  uv = data.w_uv.topRows(V.rows());
+  return energy;
 }
