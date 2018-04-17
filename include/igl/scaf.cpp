@@ -55,32 +55,32 @@ void update_scaffold(igl::SCAFData &s)
   s.s_M = Eigen::VectorXd::Constant(s.sf_num, s.scaffold_factor);
 }
 
-void compute_scaffold_gradient_matrix(SCAFData &d_,
+void compute_scaffold_gradient_matrix(SCAFData &s,
                                       Eigen::SparseMatrix<double> &D1,
                                       Eigen::SparseMatrix<double> &D2)
 {
   using namespace Eigen;
   Eigen::SparseMatrix<double> G;
-  MatrixXi F_s = d_.s_T;
-  int vn = d_.v_num;
+  MatrixXi F_s = s.s_T;
+  int vn = s.v_num;
   MatrixXd V = MatrixXd::Zero(vn, 3);
-  V.leftCols(2) = d_.w_uv;
+  V.leftCols(2) = s.w_uv;
 
   double min_bnd_edge_len = INFINITY;
   int acc_bnd = 0;
-  for (int i = 0; i < d_.bnd_sizes.size(); i++)
+  for (int i = 0; i < s.bnd_sizes.size(); i++)
   {
-    int current_size = d_.bnd_sizes[i];
+    int current_size = s.bnd_sizes[i];
 
     for (int e = acc_bnd; e < acc_bnd + current_size - 1; e++)
     {
       min_bnd_edge_len = (std::min)(min_bnd_edge_len,
-                                  (d_.w_uv.row(d_.internal_bnd(e)) -
-                                   d_.w_uv.row(d_.internal_bnd(e + 1))) .squaredNorm());
+                                  (s.w_uv.row(s.internal_bnd(e)) -
+                                   s.w_uv.row(s.internal_bnd(e + 1))) .squaredNorm());
     }
     min_bnd_edge_len = (std::min)(min_bnd_edge_len,
-                                (d_.w_uv.row(d_.internal_bnd(acc_bnd)) -
-                                 d_.w_uv.row(d_.internal_bnd(acc_bnd + current_size - 1))) .squaredNorm());
+                                (s.w_uv.row(s.internal_bnd(acc_bnd)) -
+                                 s.w_uv.row(s.internal_bnd(acc_bnd + current_size - 1))) .squaredNorm());
     acc_bnd += current_size;
   }
 
@@ -196,31 +196,51 @@ void mesh_improve(igl::SCAFData &s)
 
   update_scaffold(s);
 
-  auto& d_ = s;
-  const auto&v_n = d_.v_num;
   // after_mesh_improve
-  if (d_.dim == 2)
-  {
-    compute_scaffold_gradient_matrix(d_, d_.Dx_s, d_.Dy_s);
-  }
-  else
-  {
-    Eigen::SparseMatrix<double> Gs;
-    igl::grad(d_.w_uv, d_.s_T, Gs);
-    int sf_n = d_.s_T.rows();
-    d_.Dx_s = Gs.block(0, 0, sf_n, v_n);
-    d_.Dy_s = Gs.block(sf_n, 0, sf_n, v_n);
-    d_.Dz_s = Gs.block(2 * sf_n, 0, sf_n, v_n);
-  }
-
-  d_.Dx_s.makeCompressed();
-  d_.Dy_s.makeCompressed();
-  d_.Dz_s.makeCompressed();
-  d_.Ri_s = MatrixXd::Zero(d_.Dx_s.rows(),d_.dim * d_.dim);
-  d_.Ji_s.resize(d_.Dx_s.rows(), d_.dim * d_.dim);
-  d_.W_s.resize(d_.Dx_s.rows(), d_.dim * d_.dim);
+  compute_scaffold_gradient_matrix(s, s.Dx_s, s.Dy_s);
+  
+  s.Dx_s.makeCompressed();
+  s.Dy_s.makeCompressed();
+  s.Dz_s.makeCompressed();
+  s.Ri_s = MatrixXd::Zero(s.Dx_s.rows(),s.dim * s.dim);
+  s.Ji_s.resize(s.Dx_s.rows(), s.dim * s.dim);
+  s.W_s.resize(s.Dx_s.rows(), s.dim * s.dim);
 }
 
+void harmonic_with_holes(const Eigen::MatrixXd& V, const Eigen::MatrixXi& F, const Eigen::VectorXi& primary_bnd, Eigen::MatrixXd& bnd_uv, 
+                         std::vector<std::vector<int>> all_holes, Eigen::MatrixXd & uv_init)
+{
+  int n_filled_faces = 0;
+  int num_holes = all_holes.size();
+  int real_F_num = F.rows();
+
+  for (int i = 0; i < num_holes; i++)
+    n_filled_faces += all_holes[i].size();
+  Eigen::MatrixXi F_filled(n_filled_faces + real_F_num, 3);
+  F_filled.topRows(real_F_num) = F;
+
+  int new_vert_id = V.rows();
+  int new_face_id = real_F_num;
+
+  for (int i = 0; i < num_holes; i++, new_vert_id++)
+  {
+    int cur_bnd_size = all_holes[i].size();
+    auto it = all_holes[i].begin();
+    auto back = all_holes[i].end() - 1;
+    F_filled.row(new_face_id++) << *it, *back, new_vert_id;
+    while (it != back)
+    {
+      F_filled.row(new_face_id++)
+          << *(it + 1), *(it), new_vert_id;
+      it++;
+    }
+  }
+  assert(new_face_id == F_filled.rows());
+  assert(new_vert_id == V.rows() + num_holes);
+
+  igl::harmonic(F_filled, primary_bnd, bnd_uv, 1, uv_init);
+  uv_init.conservativeResize(V.rows(), 2);
+}
 
 void add_new_patch(igl::SCAFData &s, const Eigen::MatrixXd &V_in,
   const Eigen::MatrixXi &F_ref,
@@ -245,28 +265,23 @@ void add_new_patch(igl::SCAFData &s, const Eigen::MatrixXd &V_in,
   std::sort(all_bnds.begin(), all_bnds.end(), [](const std::vector<int> &a, const std::vector<int> &b) {
   return a.size() > b.size();});
 
-
   s.mesh_measure += M.sum() / 2;
   std::cout << "Mesh Measure" << M.sum() / 2 << std::endl;
 
   uv_init = uv_input;
-  if (uv_init.rows() == 0)
+  if (uv_init.rows() == 0) // generate initialization
   {
     bnd = Map<Eigen::VectorXi>(all_bnds[0].data(), all_bnds[0].size());
     igl::map_vertices_to_circle(V_ref, bnd, bnd_uv);
     bnd_uv *= sqrt(M.sum() / (2 * igl::PI));
     bnd_uv.rowwise() += center;
-
     if (num_holes == 0)
     {
-      if (bnd.rows() == V_ref.rows())
+      if (bnd.rows() == V_ref.rows()) // all vertex on boundary
       {
-        std::cout << "All vert on boundary" << std::endl;
         uv_init.resize(V_ref.rows(), 2);
         for (int i = 0; i < bnd.rows(); i++)
-        {
           uv_init.row(bnd(i)) = bnd_uv.row(i);
-        }
       }
       else
       {
@@ -280,46 +295,8 @@ void add_new_patch(igl::SCAFData &s, const Eigen::MatrixXd &V_in,
     }
     else
     {
-      auto &F = F_ref;
-      auto &V = V_in;
-      auto &primary_bnd = bnd;
-      // fill holes
-      int n_filled_faces = 0;
-      int real_F_num = F.rows();
-      for (int i = 0; i < num_holes; i++)
-      {
-        n_filled_faces += all_bnds[i + 1].size();
-      }
-      Eigen::MatrixXi F_filled(n_filled_faces + real_F_num, 3);
-      F_filled.topRows(real_F_num) = F;
-
-      int new_vert_id = V.rows();
-      int new_face_id = real_F_num;
-
-      for (int i = 0; i < num_holes; i++)
-      {
-        int cur_bnd_size = all_bnds[i + 1].size();
-        auto it = all_bnds[i + 1].begin();
-        auto back = all_bnds[i + 1].end() - 1;
-        F_filled.row(new_face_id++) << *it, *back, new_vert_id;
-        while (it != back)
-        {
-          F_filled.row(new_face_id++)
-              << *(it + 1),
-              *(it), new_vert_id;
-          it++;
-        }
-        new_vert_id++;
-      }
-      assert(new_face_id == F_filled.rows());
-      assert(new_vert_id == V.rows() + num_holes);
-
-      igl::harmonic(F_filled, primary_bnd, bnd_uv, 1, uv_init);
-      uv_init.conservativeResize(V.rows(), 2);
-      if (igl::flipped_triangles(uv_init, F_ref).size() != 0)
-      {
-        std::cout << "Wrong Choice of Outer bnd:" << std::endl;
-      }
+      auto all_holes = std::vector<std::vector<int>>(all_bnds.begin() + 1, all_bnds.end());
+      harmonic_with_holes(V_in, F_ref, bnd, bnd_uv, all_holes, uv_init);
     }
   }
 
@@ -333,10 +310,9 @@ void add_new_patch(igl::SCAFData &s, const Eigen::MatrixXd &V_in,
 
   for (auto cur_bnd : all_bnds)
   {
-  s.internal_bnd.conservativeResize(s.internal_bnd.size() + cur_bnd.size());
-  s.internal_bnd.bottomRows(cur_bnd.size()) =
-  Map<ArrayXi>(cur_bnd.data(), cur_bnd.size()) + s.mv_num;
-  s.bnd_sizes.push_back(cur_bnd.size());
+    s.internal_bnd.conservativeResize(s.internal_bnd.size() + cur_bnd.size());
+    s.internal_bnd.bottomRows(cur_bnd.size()) = Map<ArrayXi>(cur_bnd.data(), cur_bnd.size()) + s.mv_num;
+    s.bnd_sizes.push_back(cur_bnd.size());
   }
 
   s.m_T.conservativeResize(s.mf_num + F_ref.rows(), 3);
@@ -352,7 +328,7 @@ void add_new_patch(igl::SCAFData &s, const Eigen::MatrixXd &V_in,
   mesh_improve(s);
 }
 
-void compute_jacobians(SCAFData &d_, const Eigen::MatrixXd &V_new, bool whole)
+void compute_jacobians(SCAFData &s, const Eigen::MatrixXd &V_new, bool whole)
 {
   auto comp_J2 = [](const Eigen::MatrixXd &uv,
                     const Eigen::SparseMatrix<double> &Dx,
@@ -366,10 +342,10 @@ void compute_jacobians(SCAFData &d_, const Eigen::MatrixXd &V_new, bool whole)
     Ji.col(3) = Dy * uv.col(1);
   };
 
-  Eigen::MatrixXd m_V_new = V_new.topRows(d_.mv_num);
-  comp_J2(m_V_new, d_.Dx_m, d_.Dy_m, d_.Ji_m);
+  Eigen::MatrixXd m_V_new = V_new.topRows(s.mv_num);
+  comp_J2(m_V_new, s.Dx_m, s.Dy_m, s.Ji_m);
   if (whole)
-    comp_J2(V_new, d_.Dx_s, d_.Dy_s, d_.Ji_s);
+    comp_J2(V_new, s.Dx_s, s.Dy_s, s.Ji_s);
 
 }
 
@@ -384,24 +360,24 @@ double compute_energy_from_jacobians(const Eigen::MatrixXd &Ji,
   return energy + igl::slim::compute_energy_with_jacobians(Ji, areas, energy_type, 0);
 }
 
-double compute_soft_constraint_energy(const SCAFData &d_)
+double compute_soft_constraint_energy(const SCAFData &s)
 {
   double e = 0;
-  for (auto const &x : d_.soft_cons)
-    e += d_.soft_const_p * (x.second - d_.w_uv.row(x.first)).squaredNorm();
+  for (auto const &x : s.soft_cons)
+    e += s.soft_const_p * (x.second - s.w_uv.row(x.first)).squaredNorm();
 
   return e;
 }
 
-double compute_energy(SCAFData &d_, Eigen::MatrixXd &w_uv, bool whole)
+double compute_energy(SCAFData &s, Eigen::MatrixXd &w_uv, bool whole)
 {
-  if (w_uv.rows() != d_.v_num) assert(!whole);
-  compute_jacobians(d_, w_uv, whole);
-  double energy = compute_energy_from_jacobians(d_.Ji_m, d_.m_M, d_.slim_energy);
+  if (w_uv.rows() != s.v_num) assert(!whole);
+  compute_jacobians(s, w_uv, whole);
+  double energy = compute_energy_from_jacobians(s.Ji_m, s.m_M, s.slim_energy);
 
   if (whole)
-    energy += compute_energy_from_jacobians(d_.Ji_s, d_.s_M, d_.scaf_energy);
-  energy += compute_soft_constraint_energy(d_);
+    energy += compute_energy_from_jacobians(s.Ji_s, s.s_M, s.scaf_energy);
+  energy += compute_soft_constraint_energy(s);
   return energy;
 }
 
@@ -465,25 +441,25 @@ void get_complement(const Eigen::VectorXi& bnd_ids, int v_n, Eigen::ArrayXi& unk
   assert(assign + bnd_ids.size() == v_n);
 }
 
-void build_surface_linear_system(const SCAFData &d_, Eigen::SparseMatrix<double> &L, Eigen::VectorXd &rhs)
+void build_surface_linear_system(const SCAFData &s, Eigen::SparseMatrix<double> &L, Eigen::VectorXd &rhs)
 {
   using namespace Eigen;
   using namespace std;
 
-  const int v_n = d_.v_num - (d_.frame_ids.size());
-  const int dim = d_.dim;
-  const int f_n = d_.mf_num;
+  const int v_n = s.v_num - (s.frame_ids.size());
+  const int dim = s.dim;
+  const int f_n = s.mf_num;
 
   // to get the  complete A
-  Eigen::VectorXd sqrtM = d_.m_M.array().sqrt();
+  Eigen::VectorXd sqrtM = s.m_M.array().sqrt();
   Eigen::SparseMatrix<double> A(dim * dim * f_n, dim * v_n);
-  auto decoy_Dx_m = d_.Dx_m;
-  decoy_Dx_m.conservativeResize(d_.W_m.rows(), v_n);
-  auto decoy_Dy_m = d_.Dy_m;
-  decoy_Dy_m.conservativeResize(d_.W_m.rows(), v_n);
-  buildAm(sqrtM, decoy_Dx_m, decoy_Dy_m, d_.W_m, A);
+  auto decoy_Dx_m = s.Dx_m;
+  decoy_Dx_m.conservativeResize(s.W_m.rows(), v_n);
+  auto decoy_Dy_m = s.Dy_m;
+  decoy_Dy_m.conservativeResize(s.W_m.rows(), v_n);
+  buildAm(sqrtM, decoy_Dx_m, decoy_Dy_m, s.W_m, A);
 
-  const VectorXi & bnd_ids = d_.fixed_ids;
+  const VectorXi & bnd_ids = s.fixed_ids;
   auto bnd_n = bnd_ids.size();
   if (bnd_n == 0) {
 
@@ -496,11 +472,11 @@ void build_surface_linear_system(const SCAFData &d_, Eigen::SparseMatrix<double>
     L = At * A;
 
     Eigen::VectorXd frhs;
-    buildRhs(sqrtM, d_.W_m, d_.Ri_m, frhs);
+    buildRhs(sqrtM, s.W_m, s.Ri_m, frhs);
     rhs = At * frhs;
   } else {
     MatrixXd bnd_pos;
-    igl::slice(d_.w_uv, bnd_ids, 1, bnd_pos);
+    igl::slice(s.w_uv, bnd_ids, 1, bnd_pos);
     ArrayXi known_ids(bnd_ids.size() * dim);
     ArrayXi unknown_ids((v_n - bnd_ids.rows()) * dim);
     get_complement(bnd_ids, v_n, unknown_ids);
@@ -524,44 +500,44 @@ void build_surface_linear_system(const SCAFData &d_, Eigen::SparseMatrix<double>
     L = Aut * Au;
 
     Eigen::VectorXd frhs;
-    buildRhs(sqrtM, d_.W_m, d_.Ri_m, frhs);
+    buildRhs(sqrtM, s.W_m, s.Ri_m, frhs);
 
     rhs = Aut * (frhs - Ae * known_pos);
   }
 
   // add soft constraints.
-  for (auto const &x : d_.soft_cons)
+  for (auto const &x : s.soft_cons)
   {
     int v_idx = x.first;
 
     for (int d = 0; d < dim; d++)
     {
-      rhs(d * (v_n) + v_idx) += d_.soft_const_p * x.second(d); // rhs
+      rhs(d * (v_n) + v_idx) += s.soft_const_p * x.second(d); // rhs
       L.coeffRef(d * v_n + v_idx,
-                 d * v_n + v_idx) += d_.soft_const_p; // diagonal
+                 d * v_n + v_idx) += s.soft_const_p; // diagonal
     }
   }
 }
 
-void build_scaffold_linear_system(const SCAFData &d_, Eigen::SparseMatrix<double> &L, Eigen::VectorXd &rhs)
+void build_scaffold_linear_system(const SCAFData &s, Eigen::SparseMatrix<double> &L, Eigen::VectorXd &rhs)
 {
   using namespace Eigen;
 
-  const int f_n = d_.W_s.rows();
-  const int v_n = d_.Dx_s.cols();
-  const int dim = d_.dim;
+  const int f_n = s.W_s.rows();
+  const int v_n = s.Dx_s.cols();
+  const int dim = s.dim;
 
-  Eigen::VectorXd sqrtM = d_.s_M.array().sqrt();
+  Eigen::VectorXd sqrtM = s.s_M.array().sqrt();
   Eigen::SparseMatrix<double> A(dim * dim * f_n, dim * v_n);
-  buildAm(sqrtM, d_.Dx_s, d_.Dy_s, d_.W_s, A);
+  buildAm(sqrtM, s.Dx_s, s.Dy_s, s.W_s, A);
 
   VectorXi bnd_ids;
-  igl::cat(1, d_.fixed_ids, d_.frame_ids, bnd_ids);
+  igl::cat(1, s.fixed_ids, s.frame_ids, bnd_ids);
 
   auto bnd_n = bnd_ids.size();
   assert(bnd_n > 0);
   MatrixXd bnd_pos;
-  igl::slice(d_.w_uv, bnd_ids, 1, bnd_pos);
+  igl::slice(s.w_uv, bnd_ids, 1, bnd_pos);
 
   ArrayXi known_ids(bnd_ids.size() * dim);
   ArrayXi unknown_ids((v_n - bnd_ids.rows()) * dim);
@@ -577,7 +553,7 @@ void build_scaffold_linear_system(const SCAFData &d_, Eigen::SparseMatrix<double
     unknown_ids.block(d * (v_n - n_b), 0, v_n - n_b, unknown_ids.cols()) =
         unknown_ids.topRows(v_n - n_b) + d * v_n;
   }
-  Eigen::VectorXd sqrt_M = d_.s_M.array().sqrt();
+  Eigen::VectorXd sqrt_M = s.s_M.array().sqrt();
 
   // manual slicing for A(:, unknown/known)'
   Eigen::SparseMatrix<double> Au, Ae;
@@ -590,26 +566,26 @@ void build_scaffold_linear_system(const SCAFData &d_, Eigen::SparseMatrix<double
   L = Aut * Au;
 
   Eigen::VectorXd frhs;
-  buildRhs(sqrtM, d_.W_s, d_.Ri_s, frhs);
+  buildRhs(sqrtM, s.W_s, s.Ri_s, frhs);
 
   rhs = Aut * (frhs - Ae * known_pos);
 }
 
-void solve_weighted_arap(SCAFData &d_, Eigen::MatrixXd &uv)
+void solve_weighted_arap(SCAFData &s, Eigen::MatrixXd &uv)
 {
   using namespace Eigen;
   using namespace std;
-  int dim = d_.dim;
+  int dim = s.dim;
   igl::Timer timer;
   timer.start();
 
   VectorXi bnd_ids;
-  igl::cat(1, d_.fixed_ids, d_.frame_ids, bnd_ids);
-  const auto v_n = d_.v_num;
+  igl::cat(1, s.fixed_ids, s.frame_ids, bnd_ids);
+  const auto v_n = s.v_num;
   const auto bnd_n = bnd_ids.size();
   assert(bnd_n > 0);
   MatrixXd bnd_pos;
-  igl::slice(d_.w_uv, bnd_ids, 1, bnd_pos);
+  igl::slice(s.w_uv, bnd_ids, 1, bnd_pos);
 
   ArrayXi known_ids(bnd_n * dim);
   ArrayXi unknown_ids((v_n - bnd_n) * dim);
@@ -643,14 +619,14 @@ void solve_weighted_arap(SCAFData &d_, Eigen::MatrixXd &uv)
   //
   Eigen::SparseMatrix<double> L_m, L_s;
   Eigen::VectorXd rhs_m, rhs_s;
-  build_surface_linear_system(d_, L_m, rhs_m);  // complete Am, with soft
-  build_scaffold_linear_system(d_, L_s, rhs_s); // complete As, without proximal
+  build_surface_linear_system(s, L_m, rhs_m);  // complete Am, with soft
+  build_scaffold_linear_system(s, L_s, rhs_s); // complete As, without proximal
 
   L = L_m + L_s;
   rhs = rhs_m + rhs_s;
   L.makeCompressed();
 
-  Eigen::VectorXd unknown_Uc((v_n - d_.frame_ids.size() - d_.fixed_ids.size()) * dim), Uc(dim * v_n);
+  Eigen::VectorXd unknown_Uc((v_n - s.frame_ids.size() - s.fixed_ids.size()) * dim), Uc(dim * v_n);
 
   SimplicialLDLT<Eigen::SparseMatrix<double>> solver;
   unknown_Uc = solver.compute(L).solve(rhs);
@@ -660,22 +636,22 @@ void solve_weighted_arap(SCAFData &d_, Eigen::MatrixXd &uv)
   uv = Map<Matrix<double, -1, -1, Eigen::ColMajor>>(Uc.data(), v_n, dim);
 }
 
-double perform_iteration(SCAFData &d_)
+double perform_iteration(SCAFData &s)
 {
-  Eigen::MatrixXd V_out = d_.w_uv;
-  compute_jacobians(d_, V_out, true);
-  igl::slim::update_weights_and_closest_rotations_with_jacobians(d_.Ji_m, d_.slim_energy, 0, d_.W_m, d_.Ri_m);
-  igl::slim::update_weights_and_closest_rotations_with_jacobians(d_.Ji_s, d_.scaf_energy, 0, d_.W_s, d_.Ri_s);
-  solve_weighted_arap(d_, V_out);
-  auto whole_E = [&d_](Eigen::MatrixXd &uv) { return compute_energy(d_, uv, true); };
+  Eigen::MatrixXd V_out = s.w_uv;
+  compute_jacobians(s, V_out, true);
+  igl::slim::update_weights_and_closest_rotations_with_jacobians(s.Ji_m, s.slim_energy, 0, s.W_m, s.Ri_m);
+  igl::slim::update_weights_and_closest_rotations_with_jacobians(s.Ji_s, s.scaf_energy, 0, s.W_s, s.Ri_s);
+  solve_weighted_arap(s, V_out);
+  auto whole_E = [&s](Eigen::MatrixXd &uv) { return compute_energy(s, uv, true); };
 
   Eigen::MatrixXi w_T;
-  if (d_.m_T.cols() == d_.s_T.cols())
-    igl::cat(1, d_.m_T, d_.s_T, w_T);
+  if (s.m_T.cols() == s.s_T.cols())
+    igl::cat(1, s.m_T, s.s_T, w_T);
   else
-    w_T = d_.s_T;
-  return igl::flip_avoiding_line_search(w_T, d_.w_uv, V_out,
-                                                 whole_E, -1) / d_.mesh_measure;
+    w_T = s.s_T;
+  return igl::flip_avoiding_line_search(w_T, s.w_uv, V_out,
+                                                 whole_E, -1) / s.mesh_measure;
 }
 }
 }
@@ -698,66 +674,66 @@ IGL_INLINE void igl::scaf_precompute(
     data.soft_cons[b(i)] = bc.row(i);
   data.slim_energy = slim_energy;
 
-  auto &d_ = data;
+  auto &s = data;
 
   if (!data.has_pre_calc)
   {
-    int v_n = d_.mv_num + d_.sv_num;
-    int f_n = d_.mf_num + d_.sf_num;
-    int dim = d_.dim;
+    int v_n = s.mv_num + s.sv_num;
+    int f_n = s.mf_num + s.sf_num;
+    int dim = s.dim;
     Eigen::MatrixXd F1, F2, F3;
-    igl::local_basis(d_.m_V, d_.m_T, F1, F2, F3);
-    igl::slim::compute_surface_gradient_matrix(d_.m_V, d_.m_T, F1, F2, d_.Dx_m, d_.Dy_m);
-    igl::scaf::compute_scaffold_gradient_matrix(d_, d_.Dx_s, d_.Dy_s);
+    igl::local_basis(s.m_V, s.m_T, F1, F2, F3);
+    igl::slim::compute_surface_gradient_matrix(s.m_V, s.m_T, F1, F2, s.Dx_m, s.Dy_m);
+    igl::scaf::compute_scaffold_gradient_matrix(s, s.Dx_s, s.Dy_s);
 
-    d_.Dx_m.makeCompressed();
-    d_.Dy_m.makeCompressed();
-    d_.Ri_m = Eigen::MatrixXd::Zero(d_.Dx_m.rows(), dim * dim);
-    d_.Ji_m.resize(d_.Dx_m.rows(), dim * dim);
-    d_.W_m.resize(d_.Dx_m.rows(), dim * dim);
+    s.Dx_m.makeCompressed();
+    s.Dy_m.makeCompressed();
+    s.Ri_m = Eigen::MatrixXd::Zero(s.Dx_m.rows(), dim * dim);
+    s.Ji_m.resize(s.Dx_m.rows(), dim * dim);
+    s.W_m.resize(s.Dx_m.rows(), dim * dim);
 
-    d_.Dx_s.makeCompressed();
-    d_.Dy_s.makeCompressed();
-    d_.Ri_s = Eigen::MatrixXd::Zero(d_.Dx_s.rows(), dim * dim);
-    d_.Ji_s.resize(d_.Dx_s.rows(), dim * dim);
-    d_.W_s.resize(d_.Dx_s.rows(), dim * dim);
+    s.Dx_s.makeCompressed();
+    s.Dy_s.makeCompressed();
+    s.Ri_s = Eigen::MatrixXd::Zero(s.Dx_s.rows(), dim * dim);
+    s.Ji_s.resize(s.Dx_s.rows(), dim * dim);
+    s.W_s.resize(s.Dx_s.rows(), dim * dim);
 
     data.has_pre_calc = true;
   }
 }
 
-IGL_INLINE Eigen::MatrixXd igl::scaf_solve(SCAFData &d_, int iter_num, const Eigen::VectorXi& cstrs)
+IGL_INLINE Eigen::MatrixXd igl::scaf_solve(SCAFData &s, int iter_num, const Eigen::VectorXi& cstrs)
 {
   using namespace std;
   using namespace Eigen;
-  double last_mesh_energy = igl::scaf::compute_energy(d_, d_.w_uv, false) / d_.mesh_measure;
+  double last_mesh_energy = igl::scaf::compute_energy(s, s.w_uv, false) / s.mesh_measure;
 
   std::cout << "Initial Energy" << last_mesh_energy << std::endl;
-  cout << "Initial V_num: " << d_.mv_num << " F_num: " << d_.mf_num << endl;
+  cout << "Initial V_num: " << s.mv_num << " F_num: " << s.mf_num << endl;
   for (int it = 0; it < iter_num; it++)
   {
-    d_.energy = igl::scaf::compute_energy(d_, d_.w_uv, true) / d_.mesh_measure;
+    s.energy = igl::scaf::compute_energy(s, s.w_uv, true) / s.mesh_measure;
     igl::Timer timer;
     timer.start();
-    d_.rect_frame_V = Eigen::MatrixXd();
-    igl::scaf::mesh_improve(d_);
+    s.rect_frame_V = Eigen::MatrixXd();
+    igl::scaf::mesh_improve(s);
 
-    d_.fixed_ids = cstrs;
-    double new_weight = d_.mesh_measure * last_mesh_energy / (d_.sf_num * 100);
-    d_.scaffold_factor = new_weight;
-    igl::scaf::update_scaffold(d_);
+    s.fixed_ids = cstrs;
+    double new_weight = s.mesh_measure * last_mesh_energy / (s.sf_num * 100);
+    s.scaffold_factor = new_weight;
+    igl::scaf::update_scaffold(s);
 
-    d_.energy = igl::scaf::perform_iteration(d_);
+    s.energy = igl::scaf::perform_iteration(s);
 
     cout << "Iteration time = " << timer.getElapsedTime() << endl;
     double current_mesh_energy =
-        igl::scaf::compute_energy(d_, d_.w_uv, false) / d_.mesh_measure;
+        igl::scaf::compute_energy(s, s.w_uv, false) / s.mesh_measure;
     double mesh_energy_decrease = last_mesh_energy - current_mesh_energy;
-    cout << "Energy After:" << d_.energy
+    cout << "Energy After:" << s.energy
          << "\tMesh Energy:" << current_mesh_energy
          << "\tEnergy Decrease" << mesh_energy_decrease << endl;
-    cout << "V_num: " << d_.v_num << " F_num: " << d_.f_num << endl;
+    cout << "V_num: " << s.v_num << " F_num: " << s.f_num << endl;
     last_mesh_energy = current_mesh_energy;
   }
-  return d_.w_uv;
+  return s.w_uv;
 }
