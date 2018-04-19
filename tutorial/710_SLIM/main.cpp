@@ -108,10 +108,12 @@ void param_2d_demo_iter(igl::opengl::glfw::Viewer& viewer) {
 
     first_iter = false;
   } else {
+    timer.start();
     slim_solve(sData,1); // 1 iter
     viewer.data().set_uv(sData.V_o*uv_scale_param);
-    cout << "time = " << timer.getElapsedTime() << endl;
   }
+  cout << "time = " << timer.getElapsedTime() << endl;
+  cout << "energy = " << sData.energy << endl;
 }
 
 void soft_const_demo_iter(igl::opengl::glfw::Viewer& viewer) {
@@ -143,6 +145,7 @@ void soft_const_demo_iter(igl::opengl::glfw::Viewer& viewer) {
 
 void deform_3d_demo_iter(igl::opengl::glfw::Viewer& viewer) {
   if (first_iter) {
+    timer.start();
     igl::readOBJ(TUTORIAL_SHARED_PATH "/cube_40k.obj", V, F);
 
     Eigen::MatrixXd V_0 = V;
@@ -158,9 +161,12 @@ void deform_3d_demo_iter(igl::opengl::glfw::Viewer& viewer) {
     display_3d_mesh(viewer);
 
   } else {
+    timer.start();
     slim_solve(sData,1); // 1 iter
     display_3d_mesh(viewer);
   }
+  cout << "time = " << timer.getElapsedTime() << endl;
+  cout << "energy = " << sData.energy << endl;
 }
 
 void display_3d_mesh(igl::opengl::glfw::Viewer& viewer) {
