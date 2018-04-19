@@ -934,6 +934,23 @@ IGL_INLINE Eigen::MatrixXd igl::slim_solve(SLIMData &data, int iter_num)
   return data.V_o;
 }
 
+IGL_INLINE double igl::slim_solve(
+  const Eigen::MatrixXd& V,
+  const Eigen::MatrixXi& F,
+  const Eigen::MatrixXd& V_init,
+  igl::SLIMData::SLIM_ENERGY slim_energy,
+  Eigen::VectorXi& b,
+  Eigen::MatrixXd& bc,
+  double soft_p,
+  int iter_num,
+  Eigen::MatrixXd& V_out) 
+{
+  igl::SLIMData data;
+  igl::slim_precompute(V, F, V_init, data, slim_energy, b, bc, soft_p);
+  V_out = igl::slim_solve(data, iter_num);
+  return data.energy;
+}
+
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instantiation
 #endif

@@ -102,6 +102,30 @@ IGL_INLINE void slim_precompute(
 //    V_o (in SLIMData): #V by dim list of mesh vertex positions
 IGL_INLINE Eigen::MatrixXd slim_solve(SLIMData& data, int iter_num);
 
+// Direct Interface for SLIM algorithm, 
+// combining slim_precompute and slim_solve and hiding SLIMData
+// Inputs:
+//		V           #V by 3 list of mesh vertex positions
+//		F           #F by 3/3 list of mesh faces (triangles/tets)
+//    b           list of boundary indices into V
+//    bc          #b by dim list of boundary conditions
+//    soft_p      Soft penalty factor (can be zero)
+//    slim_energy Energy to minimize
+//    iter_num    Run iter_num iterations of SLIM
+//
+// Outputs:
+//    V_o (in SLIMData): #V by dim list of mesh vertex positions
+IGL_INLINE double slim_solve(
+  const Eigen::MatrixXd& V,
+  const Eigen::MatrixXi& F,
+  const Eigen::MatrixXd& V_init,
+  SLIMData::SLIM_ENERGY slim_energy,
+  Eigen::VectorXi& b,
+  Eigen::MatrixXd& bc,
+  double soft_p,
+  int iter_num,
+  Eigen::MatrixXd& V_out);
+
 } // END NAMESPACE
 
 #ifndef IGL_STATIC_LIBRARY
