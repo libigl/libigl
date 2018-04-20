@@ -71,6 +71,55 @@ IGL_INLINE bool igl::harmonic(
 }
 
 template <
+  typename DerivedF,
+  typename Derivedb,
+  typename Derivedbc,
+  typename VectorIndex,
+  typename DerivedW>
+IGL_INLINE bool igl::harmonic(
+  const Eigen::MatrixBase<DerivedF> & F,
+  const Eigen::MatrixBase<Derivedb> & b,
+  const Eigen::MatrixBase<Derivedbc> & bc,
+  const std::vector<VectorIndex> & holes,
+  const int k,
+  Eigen::PlainObjectBase<DerivedW> & W)
+{
+  int n_filled_faces = 0;
+  int num_holes = holes.size();
+  int real_F_num = F.rows();
+  const int V_rows = F.maxCoeff()+1;
+
+  for (int i = 0; i < num_holes; i++)
+    n_filled_faces += holes[i].size();
+  DerivedF F_filled(n_filled_faces + real_F_num, 3);
+  F_filled.topRows(real_F_num) = F;
+
+  int new_vert_id = V_rows;
+  int new_face_id = real_F_num;
+
+  for (int i = 0; i < num_holes; i++, new_vert_id++)
+  {
+    int cur_bnd_size = holes[i].size();
+    int it = 0;
+    int back = holes[i].size() - 1;
+    F_filled.row(new_face_id++) << holes[i][it], holes[i][back], new_vert_id;
+    while (it != back)
+    {
+      F_filled.row(new_face_id++)
+          << holes[i][(it + 1)],
+          holes[i][(it)], new_vert_id;
+      it++;
+    }
+  }
+  assert(new_face_id == F_filled.rows());
+  assert(new_vert_id == V_rows + num_holes);
+
+  bool flag = harmonic(F_filled, b, bc, k, W);
+  W.conservativeResize(V_rows, 2);
+  return flag;
+}
+
+template <
   typename DerivedL,
   typename DerivedM,
   typename Derivedb,
