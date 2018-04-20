@@ -6,6 +6,15 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 
+py::enum_<igl::SLIMData::SLIM_ENERGY>(m, "SlimEnergyType")
+    .value("SLIM_ENERGY_TYPE_ARAP", igl::SLIMData::ARAP)
+    .value("SLIM_ENERGY_TYPE_LOG_ARAP", igl::SLIMData::LOG_ARAP)
+    .value("SLIM_ENERGY_TYPE_SYMMETRIC_DIRICHLET", igl::SLIMData::SYMMETRIC_DIRICHLET)
+    .value("SLIM_ENERGY_TYPE_CONFORMAL", igl::SLIMData::CONFORMAL)
+    .value("SLIM_ENERGY_TYPE_EXP_CONFORMAL", igl::SLIMData::EXP_CONFORMAL)
+    .value("SLIM_ENERGY_TYPE_EXP_SYMMETRIC_DIRICHLET", igl::SLIMData::EXP_SYMMETRIC_DIRICHLET)
+    .export_values();
+    
 m.def("slim", []
 (
   const Eigen::MatrixXd& V,
