@@ -38,8 +38,8 @@ extern void python_export_igl_copyleft(py::module &);
 extern void python_export_igl_png(py::module &);
 #endif
 
-PYBIND11_PLUGIN(pyigl) {
-    py::module m("pyigl", R"pyigldoc(
+PYBIND11_MODULE(pyigl, m) {
+    m.doc() = R"pyigldoc(
         Python wrappers for libigl
         --------------------------
 
@@ -52,7 +52,7 @@ PYBIND11_PLUGIN(pyigl) {
            ${f}
            % endfor
 
-    )pyigldoc");
+    )pyigldoc";
 
     python_export_vector(m);
     python_export_igl(m);
@@ -90,5 +90,4 @@ PYBIND11_PLUGIN(pyigl) {
     python_export_igl_png(m);
     #endif
 
-    return m.ptr();
 }
