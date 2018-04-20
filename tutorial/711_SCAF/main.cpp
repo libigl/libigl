@@ -55,9 +55,46 @@ int main(int argc, char *argv[])
   // Load a mesh in OFF format
   igl::readOBJ(TUTORIAL_SHARED_PATH "/camel_b.obj", V, F);
 
-  Eigen::VectorXi b;
-  Eigen::MatrixXd bc, V_init;
-  igl::scaf_precompute(V, F, V_init, scaf_data, igl::SLIMData::SYMMETRIC_DIRICHLET, b, bc, 0);
+  Eigen::MatrixXd bnd_uv, uv_init;
+
+  Eigen::VectorXd M;
+  igl::doublearea(V, F, M);
+  std::vector<std::vector<int>> all_bnds;
+  igl::boundary_loop(F, all_bnds);
+
+  // The primary boundary choice is a heuristic
+  auto primary_bnd = std::max_element(all_bnds.begin(), all_bnds.end(), [](const std::vector<int> &a, const std::vector<int> &b) { return a.size()<b.size(); });
+
+  int num_holes = all_bnds.size() - 1;
+
+  Eigen::VectorXi bnd = Eigen::Map<Eigen::VectorXi>(primary_bnd->data(), primary_bnd->size());
+
+  igl::map_vertices_to_circle(V, bnd, bnd_uv);
+  bnd_uv *= sqrt(M.sum() / (2 * igl::PI));
+  if (num_holes == 0)
+  {
+    if (bnd.rows() == V.rows()) // case: all vertex on boundary
+    {
+      uv_init.resize(V.rows(), 2);
+      for (int i = 0; i < bnd.rows(); i++)
+        uv_init.row(bnd(i)) = bnd_uv.row(i);
+    }
+    else
+    {
+      igl::harmonic(V, F, bnd, bnd_uv, 1, uv_init);
+      if (igl::flipped_triangles(uv_init, F).size() != 0)
+        igl::harmonic(F, bnd, bnd_uv, 1, uv_init); // fallback uniform laplacian
+    }
+  }
+  else
+  {
+    all_bnds.erase(primary_bnd);
+    // std::vector<std::vector<int>> all_holes = std::vector<std::vector<int>>(all_bnds.begin() + 1, all_bnds.end());
+    igl::harmonic(F, bnd, bnd_uv, all_bnds ,1, uv_init);
+  }
+
+  Eigen::VectorXi b; Eigen::MatrixXd bc;
+  igl::scaf_precompute(V, F, uv_init, scaf_data, igl::SLIMData::SYMMETRIC_DIRICHLET, b, bc, 0);
 
   // Plot the mesh
   igl::opengl::glfw::Viewer viewer;

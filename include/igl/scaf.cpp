@@ -209,98 +209,25 @@ void mesh_improve(igl::SCAFData &s)
   s.W_s.resize(s.Dx_s.rows(), s.dim * s.dim);
 }
 
-void harmonic_with_holes(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, const Eigen::VectorXi &primary_bnd, Eigen::MatrixXd &bnd_uv,
-                         std::vector<std::vector<int>> all_holes, Eigen::MatrixXd &uv_init)
-{
-  int n_filled_faces = 0;
-  int num_holes = all_holes.size();
-  int real_F_num = F.rows();
-
-  for (int i = 0; i < num_holes; i++)
-    n_filled_faces += all_holes[i].size();
-  Eigen::MatrixXi F_filled(n_filled_faces + real_F_num, 3);
-  F_filled.topRows(real_F_num) = F;
-
-  int new_vert_id = V.rows();
-  int new_face_id = real_F_num;
-
-  for (int i = 0; i < num_holes; i++, new_vert_id++)
-  {
-    int cur_bnd_size = all_holes[i].size();
-    auto it = all_holes[i].begin();
-    auto back = all_holes[i].end() - 1;
-    F_filled.row(new_face_id++) << *it, *back, new_vert_id;
-    while (it != back)
-    {
-      F_filled.row(new_face_id++)
-          << *(it + 1),
-          *(it), new_vert_id;
-      it++;
-    }
-  }
-  assert(new_face_id == F_filled.rows());
-  assert(new_vert_id == V.rows() + num_holes);
-
-  igl::harmonic(F_filled, primary_bnd, bnd_uv, 1, uv_init);
-  uv_init.conservativeResize(V.rows(), 2);
-}
-
-void add_new_patch(igl::SCAFData &s, const Eigen::MatrixXd &V_in,
+void add_new_patch(igl::SCAFData &s, const Eigen::MatrixXd &V_ref,
                    const Eigen::MatrixXi &F_ref,
                    const Eigen::RowVectorXd &center,
-                   const Eigen::MatrixXd &uv_input)
+                   const Eigen::MatrixXd &uv_init)
 {
   using namespace std;
   using namespace Eigen;
 
-  VectorXd M;
-  igl::doublearea(V_in, F_ref, M);
+  assert (uv_init.rows() != 0);
+  Eigen::VectorXd M;
+  igl::doublearea(V_ref, F_ref, M);
+  s.mesh_measure += M.sum() / 2;
 
-  Eigen::MatrixXd V_ref = V_in; // / sqrt(M.sum()/2/igl::PI);
-  Eigen::MatrixXd uv_init;
   Eigen::VectorXi bnd;
   Eigen::MatrixXd bnd_uv;
 
   std::vector<std::vector<int>> all_bnds;
   igl::boundary_loop(F_ref, all_bnds);
   int num_holes = all_bnds.size() - 1;
-
-  std::sort(all_bnds.begin(), all_bnds.end(), [](const std::vector<int> &a, const std::vector<int> &b) { return a.size() > b.size(); });
-
-  s.mesh_measure += M.sum() / 2;
-
-  uv_init = uv_input;
-  if (uv_init.rows() == 0) // generate initialization
-  {
-    bnd = Map<Eigen::VectorXi>(all_bnds[0].data(), all_bnds[0].size());
-    igl::map_vertices_to_circle(V_ref, bnd, bnd_uv);
-    bnd_uv *= sqrt(M.sum() / (2 * igl::PI));
-    bnd_uv.rowwise() += center;
-    if (num_holes == 0)
-    {
-      if (bnd.rows() == V_ref.rows()) // all vertex on boundary
-      {
-        uv_init.resize(V_ref.rows(), 2);
-        for (int i = 0; i < bnd.rows(); i++)
-          uv_init.row(bnd(i)) = bnd_uv.row(i);
-      }
-      else
-      {
-        igl::harmonic(V_ref, F_ref, bnd, bnd_uv, 1, uv_init);
-        if (igl::flipped_triangles(uv_init, F_ref).size() != 0)
-          igl::harmonic(F_ref, bnd, bnd_uv, 1, uv_init); // use uniform laplacian
-      }
-    }
-    else
-    {
-      auto all_holes = std::vector<std::vector<int>>(all_bnds.begin() + 1, all_bnds.end());
-      harmonic_with_holes(V_in, F_ref, bnd, bnd_uv, all_holes, uv_init);
-    }
-  }
-  else // starting from existing, handle holes
-  {
-    assert(num_holes == 0);
-  }
 
   s.component_sizes.push_back(F_ref.rows());
 
@@ -356,9 +283,7 @@ double compute_energy_from_jacobians(const Eigen::MatrixXd &Ji,
 {
   double energy = 0;
   if (energy_type == igl::SLIMData::SYMMETRIC_DIRICHLET)
-  {
-    energy = -4;
-  }
+    energy = -4; // comply with paper description
   return energy + igl::slim::compute_energy_with_jacobians(Ji, areas, energy_type, 0);
 }
 
