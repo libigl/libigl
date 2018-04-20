@@ -99,6 +99,8 @@ extern const char *__doc_igl_readTGF;
 extern const char *__doc_igl_read_triangle_mesh;
 extern const char *__doc_igl_remove_duplicate_vertices;
 extern const char *__doc_igl_rotate_vectors;
+extern const char *__doc_igl_scaf;
+extern const char *__doc_igl_slim;
 extern const char *__doc_igl_seam_edges;
 extern const char *__doc_igl_setdiff;
 extern const char *__doc_igl_signed_distance;

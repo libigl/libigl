@@ -1494,3 +1494,28 @@ const char *__doc_igl_seam_edges=R"igl_Qu8mg5v7(// Finds all UV-space boundaries
   //       F[ foldovers( i, 0 ), foldovers( i, 1 ) ], F[ foldovers( i, 0 ), (foldovers( i, 1 ) + 1) % 3 ]
   //     and the other side is the edge:
   //       F[ foldovers( i, 2 ), foldovers( i, 3 ) ], F[ foldovers( i, 2 ), (foldovers( i, 3 ) + 1) % 3 ])igl_Qu8mg5v7";
+
+const char *__doc_igl_slim=R"igl_Qu8mg5v7(// Direct Interface for SLIM algorithm, 
+  // combining slim_precompute and slim_solve and hiding SLIMData
+  // Inputs:
+  //		V           #V by 3 list of mesh vertex positions
+  //		F           #F by 3/3 list of mesh faces (triangles/tets)
+  //    b           list of boundary indices into V
+  //    bc          #b by dim list of boundary conditions
+  //    soft_p      Soft penalty factor (can be zero)
+  //    slim_energy Energy to minimize
+  //    iter_num    Run iter_num iterations of SLIM
+  //
+  // Outputs:
+  //    V_o (in SLIMData): #V by dim list of mesh vertex positions)igl_Qu8mg5v7";
+
+const char *__doc_igl_scaf=R"igl_Qu8mg5v7(// Direct Interface for SCAF algorithm, 
+  // combining slim_precompute and slim_solve and hiding SLIMData
+  // Inputs:
+  //		V           #V by 3 list of mesh vertex positions
+  //		F           #F by 3/3 list of mesh faces (triangles/tets)
+  //    slim_energy Energy to minimize
+  //    iter_num    Run iter_num iterations of SLIM
+  //
+  // Outputs:
+  //    V_o        #V by dim list of mesh vertex positions)igl_Qu8mg5v7";
