@@ -1,5 +1,23 @@
 cmake_minimum_required(VERSION 3.1)
 
+# https://github.com/libigl/libigl/issues/751
+# http://lists.llvm.org/pipermail/llvm-commits/Week-of-Mon-20160425/351643.html
+if(APPLE)
+  if(NOT CMAKE_LIBTOOL)
+    find_program(CMAKE_LIBTOOL NAMES libtool)
+  endif()
+  if(CMAKE_LIBTOOL)
+    set(CMAKE_LIBTOOL ${CMAKE_LIBTOOL} CACHE PATH "libtool executable")
+    message(STATUS "Found libtool - ${CMAKE_LIBTOOL}")
+    get_property(languages GLOBAL PROPERTY ENABLED_LANGUAGES)
+    foreach(lang ${languages})
+      # Added -c 
+      set(CMAKE_${lang}_CREATE_STATIC_LIBRARY
+        "${CMAKE_LIBTOOL} -c -static -o <TARGET> <LINK_FLAGS> <OBJECTS> ")
+    endforeach()
+  endif()
+endif()
+
 ### Find packages to populate default options ###
 #
 # COMPONENTS should match subsequent calls
