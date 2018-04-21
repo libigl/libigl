@@ -3293,11 +3293,6 @@ The Simplicial Complex Augmentation Framework  [#jiang_2017] algorithm allows to
 compute bijective maps efficiently and robustly.
 The algorithm constructed a scaffold structure to take advantage of efficient locally injective mapping algorithms like SLIM[#slim], guarantees a overlapping free map with low distortion while being efficient and scalable.
 
-[Example 713](713_SCAF/main.cpp) contains a demo of bijective parameterizing a camel mesh.
-
-![A bijective parametrization of a mesh
-using the SCAF algorithm in 10 iterations.](images/713_SCAF.png)
-# Miscellaneous [chapter7:miscellaneous]
 
 Our input is a set of points $P_0$ (not necessarily part of any mesh), and a set of constraints $S=\left\{S_1,S_2,...S_m\right\}$, where each constraint is defined on a different, and sparse, subset of $P_0$. We wish to create a new set of points $P$ that are close to the original set $P_0$ (each point with corresponding indices), while adhering to the constraints. Other objectives, such as smoothness, can be employed. The constraints can be nonlinear, which makes the problem nonconvex, difficult, and without a guaranteed global optimum. A very popular lightweight approach to such problems is a local-global iterative algorithm, comprising these two steps:
 
@@ -3305,7 +3300,7 @@ For iteration $k$:
 1. *Local step*: compute the projections of the set $P_{k-1}$ onto $S$, individually per constraint; that would mean fragmenting each point that appears in multiple constraints. That can be a nonlinear operation, but if the constraints are sparse, it is a a set of many small systems.
 2. *Global step*: integrate the set $P_k$ to be as close as possible to the projected fragmented set, with auxiliary objective functions possible. That results in a global, but quadratic objective function. Moreover, the resulting linear system has a constant matrix, and therefore can be pre-factored.
 
-The version we implement in libigl is the general version described by [#bouaziz_2012], and is in two files: ``<igl/shapeup.h>`` and ``<igl/shapeup_local_projections.h>``. A demo implementing regularity constraints (creating a mesh in which each face is as regular as possible) is in [Example 713](713_Shapeup/main.cpp). 
+The version we implement in libigl is the general version described by [#bouaziz_2012], and is in two files: ``<igl/shapeup.h>`` and ``<igl/shapeup_local_projections.h>``. A demo implementing regularity constraints (creating a mesh in which each face is as regular as possible) is in [Example 714](714_Shapeup/main.cpp). 
 
 The local step is instantiated by a function of type ``igl::shapeup_projection_function``. The global step is done by two functions: ``igl::shapeup_precomputation()``, which precomputes the matrices required for the global step, and ``igl::shapeup_solve()``, which solves the problem, according to the initial solution $P_0$ and the input local projection function. The data struct ``igl::ShapeUpData`` contains the information necessary to run the algorithm, and can be configured; for instance, the self-explanatory variable ``Maxiterations``.
 
@@ -3315,7 +3310,7 @@ $$E_{total}=\lambda_{shape}E_{shape}+\lambda_{close}E_{close}+\lambda_{smooth}E_
 
 where the $\lambda$ coefficients are encoded in ``igl::ShapeUpData``, and can be updated **prior** to calling ``igl::shapeup_precomputation()``. The $E_{shape}$ component is the integration energy (fitting $P_k$ to the local projections). The $E_{close}$ component is adherence to positional constraints, given by ``b`` and ``bc`` parameters. The $E_{smooth}$ component is an optional objective function, to minimize differences (in the Dirichlet sense) between points, encodes by "edges" in parameter `E`. Both $E_{close}$ and $E_{shape}$ are also weighted by ``wClose`` and ``wShape`` function parameters, respectively.
 
-![([Example 713](713_ShapeUp/main.cpp)) The half-tunnel mesh (left) has been optimized to be almost perfectly regular (right). The color scale is between $[0,0.05]$, measuring the average normalized deviation of the angles of each face from $90^{\circ}$.](images/713_ShapeUp.png)
+![([Example 714](714_ShapeUp/main.cpp)) The half-tunnel mesh (left) has been optimized to be almost perfectly regular (right). The color scale is between $[0,0.05]$, measuring the average normalized deviation of the angles of each face from $90^{\circ}$.](images/714_ShapeUp.png)
 
 
 

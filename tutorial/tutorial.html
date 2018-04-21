@@ -475,49 +475,81 @@ using overlays.</figcaption>
 <a href="https://github.com/wjakob/nanogui">nanogui</a> with <a href="https://github.com/ocornut/imgui">Dear ImGui</a>. To extend the default menu of the
 viewer and to expose more user defined variables you have to implement a custom interface, as in <a href="106_ViewerMenu/main.cpp">Example 106</a>:</p>
 
-<pre><code class="cpp">igl::opengl::glfw::Viewer viewer;
-
-bool boolVariable = true;
-float floatVariable = 0.1f;
-enum Orientation { Up=0,Down,Left,Right } dir = Up;
-
-// Extend viewer menu
-viewer.callback_init = [&amp;](igl::opengl::glfw::Viewer&amp; viewer)
+<pre><code class="cpp">// Add content to the default menu window
+menu.callback_draw_viewer_menu = [&amp;]()
 {
+  // Draw parent menu content
+  menu.draw_viewer_menu();
+
   // Add new group
-  viewer.ngui-&gt;addGroup(&quot;New Group&quot;);
+  if (ImGui::CollapsingHeader(&quot;New Group&quot;, ImGuiTreeNodeFlags_DefaultOpen))
+  {
+    // Expose variable directly ...
+    ImGui::InputFloat(&quot;float&quot;, &amp;floatVariable, 0, 0, 3);
 
-  // Expose a variable directly ...
-  viewer.ngui-&gt;addVariable(&quot;float&quot;,floatVariable);
+    // ... or using a custom callback
+    static bool boolVariable = true;
+    if (ImGui::Checkbox(&quot;bool&quot;, &amp;boolVariable))
+    {
+      // do something
+      std::cout &lt;&lt; &quot;boolVariable: &quot; &lt;&lt; std::boolalpha &lt;&lt; boolVariable &lt;&lt; std::endl;
+    }
 
-  // Expose an enumaration type
-  viewer.ngui-&gt;addVariable&lt;Orientation&gt;(&quot;Direction&quot;,dir)-&gt;setItems({&quot;Up&quot;,&quot;Down&quot;,&quot;Left&quot;,&quot;Right&quot;});
+    // Expose an enumeration type
+    enum Orientation { Up=0, Down, Left, Right };
+    static Orientation dir = Up;
+    ImGui::Combo(&quot;Direction&quot;, (int *)(&amp;dir), &quot;Up\0Down\0Left\0Right\0\0&quot;);
 
-  // Add a button
-  viewer.ngui-&gt;addButton(&quot;Print Hello&quot;,[](){ std::cout &lt;&lt; &quot;Hello\n&quot;; });
+    // We can also use a std::vector&lt;std::string&gt; defined dynamically
+    static int num_choices = 3;
+    static std::vector&lt;std::string&gt; choices;
+    static int idx_choice = 0;
+    if (ImGui::InputInt(&quot;Num letters&quot;, &amp;num_choices))
+    {
+      num_choices = std::max(1, std::min(26, num_choices));
+    }
+    if (num_choices != (int) choices.size())
+    {
+      choices.resize(num_choices);
+      for (int i = 0; i &lt; num_choices; ++i)
+        choices[i] = std::string(1, 'A' + i);
+      if (idx_choice &gt;= num_choices)
+        idx_choice = num_choices - 1;
+    }
+    ImGui::Combo(&quot;Letter&quot;, &amp;idx_choice, choices);
 
-  // call to generate menu
-  viewer.screen-&gt;performLayout();
-  return false;
+    // Add a button
+    if (ImGui::Button(&quot;Print Hello&quot;, ImVec2(-1,0)))
+    {
+      std::cout &lt;&lt; &quot;Hello\n&quot;;
+    }
+  }
 };
-
-// start viewer
-viewer.launch();
 </code></pre>
 
-<p>If you need a separate new menu window use:</p>
+<p>If you need a separate new menu window implement:</p>
 
-<pre><code class="cpp">viewer.ngui-&gt;addWindow(Eigen::Vector2i(220,10),&quot;New Window&quot;);
-</code></pre>
+<pre><code class="cpp">// Draw additional windows
+menu.callback_draw_custom_window = [&amp;]()
+{
+  // Define next window position + size
+  ImGui::SetNextWindowPos(ImVec2(180.f * menu.menu_scaling(), 10), ImGuiSetCond_FirstUseEver);
+  ImGui::SetNextWindowSize(ImVec2(200, 160), ImGuiSetCond_FirstUseEver);
+  ImGui::Begin(
+      &quot;New Window&quot;, nullptr,
+      ImGuiWindowFlags_NoSavedSettings
+  );
 
-<p>If you do not want to expose variables directly but rather use the get/set functionality:</p>
+  // Expose the same variable directly ...
+  ImGui::PushItemWidth(-80);
+  ImGui::DragFloat(&quot;float&quot;, &amp;floatVariable, 0.0, 0.0, 3.0);
+  ImGui::PopItemWidth();
 
-<pre><code class="cpp">// ... or using a custom callback
-viewer.ngui-&gt;addVariable&lt;bool&gt;(&quot;bool&quot;,[&amp;](bool val) {
-  boolVariable = val; // setter
-},[&amp;]() {
-  return boolVariable; // getter
-});
+  static std::string str = &quot;bunny&quot;;
+  ImGui::InputText(&quot;Name&quot;, str);
+
+  ImGui::End();
+};
 </code></pre>
 
 <figure>
@@ -2835,7 +2867,7 @@ required to get a smooth result) and the result is returned in <code>AO</code>, 
 single scalar for each sample.</p>
 
 <p>Ambient occlusion can be used to darken the surface colors, as shown in
-<a href="606_AmbientOcclusion/main.c">Example 606</a></p>
+<a href="606_AmbientOcclusion/main.cpp">Example 606</a></p>
 
 <figure>
 <img src="images/606_AmbientOcclusion.png" alt="A mesh rendered without (left) and with (right) ambient
@@ -3583,9 +3615,9 @@ using the SLIM algorithm in 10 iterations.</figcaption>
 
 <h2 id="scaf"><a href="#scaf">Bijective Maps with Simpliciaol Complex Augmentation Framework</a> </h2>
 
-<p>The Simplicial Complex Augmentation Framework <a href="#cn:45" id="cnref:45" title="see citation" class="citation">(45)</a> algorithm allows to
+<p>The Simplicial Complex Augmentation Framework <a href="#cn:41" id="cnref:41" title="see citation" class="citation">(41)</a> algorithm allows to
 compute bijective maps (most notably, UV mapping) efficiently and robustly.
-The algorithm constructed a scaffold structure to take advantage of efficient locally injective mapping algorithms like SLIM<a href="#cn:46" id="cnref:46" title="see citation" class="citation">(46)</a>, guarantees a overlapping free map with low distortion while being efficient and scalable.</p>
+The algorithm constructed a scaffold structure to take advantage of efficient locally injective mapping algorithms like SLIM<a href="#cn:42" id="cnref:42" title="see citation" class="citation">(42)</a>, guarantees a overlapping free map with low distortion while being efficient and scalable.</p>
 
 <p><a href="711_SCAF/main.cpp">Example 711</a> contains a demo of bijective parameterizing a camel mesh.</p>
 
@@ -3620,7 +3652,7 @@ a finer and finer mesh.</p>
 
 <p>The subdivision method of <code>igl::loop</code> is not in plane. The vertices of the
 refined mesh are moved to weight combinations of their neighbors: the mesh is
-smoothed as it is refined <a href="#cn:45" id="cnref:45" title="see citation" class="citation">(45)</a>. This and other <em>smooth subdivision</em>
+smoothed as it is refined <a href="#cn:43" id="cnref:43" title="see citation" class="citation">(43)</a>. This and other <em>smooth subdivision</em>
 methods can be understood as generalizations of spline curves to surfaces. In
 particular the Loop subdivision method will converge to a <span class="math">\(C^1\)</span> surface as we
 consider the limit of recursive applications of subdivision. Away from
@@ -3687,12 +3719,33 @@ with the Laplacian energy and zero Neumann boundary conditions, and the
 result of smoothing with the Hessian energy.</figcaption>
 </figure>
 
-<h1 id="chapter7:miscellaneous">Miscellaneous </h1>
+<p>The Simplicial Complex Augmentation Framework <a href="#cn:41" title="see citation" class="citation">(41)</a> algorithm allows to
+compute bijective maps efficiently and robustly.
+The algorithm constructed a scaffold structure to take advantage of efficient locally injective mapping algorithms like SLIM<a href="#cn:44" id="cnref:44" title="see citation" class="citation">(44)</a>, guarantees a overlapping free map with low distortion while being efficient and scalable.</p>
 
-<p>Libigl contains a <em>wide</em> variety of geometry processing tools and functions for
-dealing with meshes and the linear algebra related to them: far too many to
-discuss in this introductory tutorial. We&#8217;ve pulled out a couple of the
-interesting functions in this chapter to highlight.</p>
+<p>Our input is a set of points <span class="math">\(P_0\)</span> (not necessarily part of any mesh), and a set of constraints <span class="math">\(S=\left\{S_1,S_2,...S_m\right\}\)</span>, where each constraint is defined on a different, and sparse, subset of <span class="math">\(P_0\)</span>. We wish to create a new set of points <span class="math">\(P\)</span> that are close to the original set <span class="math">\(P_0\)</span> (each point with corresponding indices), while adhering to the constraints. Other objectives, such as smoothness, can be employed. The constraints can be nonlinear, which makes the problem nonconvex, difficult, and without a guaranteed global optimum. A very popular lightweight approach to such problems is a local-global iterative algorithm, comprising these two steps:</p>
+
+<p>For iteration <span class="math">\(k\)</span>:</p>
+
+<ol>
+<li><em>Local step</em>: compute the projections of the set <span class="math">\(P_{k-1}\)</span> onto <span class="math">\(S\)</span>, individually per constraint; that would mean fragmenting each point that appears in multiple constraints. That can be a nonlinear operation, but if the constraints are sparse, it is a a set of many small systems.</li>
+<li><em>Global step</em>: integrate the set <span class="math">\(P_k\)</span> to be as close as possible to the projected fragmented set, with auxiliary objective functions possible. That results in a global, but quadratic objective function. Moreover, the resulting linear system has a constant matrix, and therefore can be pre-factored.</li>
+</ol>
+
+<p>The version we implement in libigl is the general version described by <a href="#cn:30" title="see citation" class="citation">(30)</a>, and is in two files: <code>&lt;igl/shapeup.h&gt;</code> and <code>&lt;igl/shapeup_local_projections.h&gt;</code>. A demo implementing regularity constraints (creating a mesh in which each face is as regular as possible) is in <a href="714_Shapeup/main.cpp">Example 714</a>.</p>
+
+<p>The local step is instantiated by a function of type <code>igl::shapeup_projection_function</code>. The global step is done by two functions: <code>igl::shapeup_precomputation()</code>, which precomputes the matrices required for the global step, and <code>igl::shapeup_solve()</code>, which solves the problem, according to the initial solution <span class="math">\(P_0\)</span> and the input local projection function. The data struct <code>igl::ShapeUpData</code> contains the information necessary to run the algorithm, and can be configured; for instance, the self-explanatory variable <code>Maxiterations</code>.</p>
+
+<p>The global step minimizes the following energy:</p>
+
+<p><span class="math">\[E_{total}=\lambda_{shape}E_{shape}+\lambda_{close}E_{close}+\lambda_{smooth}E_{smooth},\]</span></p>
+
+<p>where the <span class="math">\(\lambda\)</span> coefficients are encoded in <code>igl::ShapeUpData</code>, and can be updated <strong>prior</strong> to calling <code>igl::shapeup_precomputation()</code>. The <span class="math">\(E_{shape}\)</span> component is the integration energy (fitting <span class="math">\(P_k\)</span> to the local projections). The <span class="math">\(E_{close}\)</span> component is adherence to positional constraints, given by <code>b</code> and <code>bc</code> parameters. The <span class="math">\(E_{smooth}\)</span> component is an optional objective function, to minimize differences (in the Dirichlet sense) between points, encodes by &#8220;edges&#8221; in parameter <code>E</code>. Both <span class="math">\(E_{close}\)</span> and <span class="math">\(E_{shape}\)</span> are also weighted by <code>wClose</code> and <code>wShape</code> function parameters, respectively.</p>
+
+<figure>
+<img src="images/714_ShapeUp.png" alt="([Example 714](714_ShapeUp/main.cpp)) The half-tunnel mesh (left) has been optimized to be almost perfectly regular (right). The color scale is between $[0,0.05]$, measuring the average normalized deviation of the angles of each face from $90^{\circ}$." />
+<figcaption>(<a href="714_ShapeUp/main.cpp">Example 714</a>) The half-tunnel mesh (left) has been optimized to be almost perfectly regular (right). The color scale is between <span class="math">\([0,0.05]\)</span>, measuring the average normalized deviation of the angles of each face from <span class="math">\(90^{\circ}\)</span>.</figcaption>
+</figure>
 
 <h1 id="future">Outlook for continuing development </h1>
 
@@ -3990,10 +4043,22 @@ Sorkine&#8211;Hornung. <a href="http://cs.nyu.edu/~panozzo/papers/SLIM-2016.pdf"
 Mappings</a>, 2016. <a href="#cnref:40" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
 </li>
 
-<li id="cn:45">
+<li id="cn:41">
+<p>Zhongshi Jiang, Scott Schaefer, Daniele Panozzo. <a href="https://doi.org/10.1145/3130800.3130895">SCAF: Simplicial Complex Augmentation Framework for Bijective Maps</a>, 2017 <a href="#cnref:41" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
+</li>
+
+<li id="cn:42">
+<p>slim <a href="#cnref:42" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
+</li>
+
+<li id="cn:43">
 <p>Charles Loop. <a href="https://www.google.com/search?q=smooth+subdivision+surfaces+based+on+triangles">Smooth Subdivision Surfaces Based on
 Triangles</a>,
-1987. <a href="#cnref:45" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
+1987. <a href="#cnref:43" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
+</li>
+
+<li id="cn:44">
+<p>slim <a href="#cnref:44" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
 </li>
 
 </ol>
