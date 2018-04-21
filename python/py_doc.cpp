@@ -464,6 +464,26 @@ const char *__doc_igl_deform_skeleton = R"igl_Qu8mg5v7(// Deform a skeleton.
   //   CT  #BE*2 by 3 list of deformed joint positions
   //   BET  #BE by 2 list of bone edge indices (maintains order)
   //)igl_Qu8mg5v7";
+const char *__doc_igl_dirac_operator = R"igl_Qu8mg5v7(// 
+  // Constructs the dirac operator with 4x4 matrix in place of quanternions
+  // for a given mesh (V,F).
+  // Templates:
+  //   DerivedV  derived type of eigen matrix for V (e.g. derived from
+  //     MatrixXd)
+  //   DerivedF  derived type of eigen matrix for F (e.g. derived from
+  //     MatrixXi)
+  //   Scalar  scalar type for eigen sparse matrix (e.g. double)
+  // Inputs:
+  //   V  #V by dim list of mesh vertex positions
+  //   F  #F by simplex_size list of mesh faces (must be triangles)
+  // Outputs:
+  //   D  4*#F by 4*#V dirac matrix
+  //   DA  4*#V by 4*#F adjoint to dirac matrix
+  //
+  //
+  // Note: This Dirac matrix uses a 4x4 matrix in place of quanternions
+  //
+  //)igl_Qu8mg5v7";
 const char *__doc_igl_directed_edge_orientations = R"igl_Qu8mg5v7(// Determine rotations that take each edge from the x-axis to its given rest
   // orientation.
   //
