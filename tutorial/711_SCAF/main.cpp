@@ -4,6 +4,7 @@
 #include <igl/harmonic.h>
 #include <igl/map_vertices_to_circle.h>
 #include <igl/readOBJ.h>
+#include <igl/Timer.h>
 #include <igl/opengl/glfw/Viewer.h>
 
 #include "tutorial_shared_path.h"
@@ -11,7 +12,7 @@
 Eigen::MatrixXd V;
 Eigen::MatrixXi F;
 Eigen::MatrixXd V_uv;
-Eigen::MatrixXd initial_guess;
+igl::Timer timer;
 igl::SCAFData scaf_data;
 
 bool show_uv = false;
@@ -24,10 +25,12 @@ bool key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier
   else if (key == '2')
     show_uv = true;
 
-  if (key == 'q')
-    V_uv = initial_guess;
   if (key == ' ')
+  {
+    timer.start();
     igl::scaf_solve(scaf_data, 1);
+    std::cout << "time = " << timer.getElapsedTime() << endl;
+  }
 
   const auto& V_uv = uv_scale * scaf_data.w_uv.topRows(V.rows());
   if (show_uv)
@@ -62,16 +65,14 @@ int main(int argc, char *argv[])
   std::vector<std::vector<int>> all_bnds;
   igl::boundary_loop(F, all_bnds);
 
-  // The primary boundary choice is a heuristic
+  // Heuristic primary boundary choice: longest
   auto primary_bnd = std::max_element(all_bnds.begin(), all_bnds.end(), [](const std::vector<int> &a, const std::vector<int> &b) { return a.size()<b.size(); });
-
-  int num_holes = all_bnds.size() - 1;
 
   Eigen::VectorXi bnd = Eigen::Map<Eigen::VectorXi>(primary_bnd->data(), primary_bnd->size());
 
   igl::map_vertices_to_circle(V, bnd, bnd_uv);
   bnd_uv *= sqrt(M.sum() / (2 * igl::PI));
-  if (num_holes == 0)
+  if (all_bnds.size() == 1)
   {
     if (bnd.rows() == V.rows()) // case: all vertex on boundary
     {
@@ -89,7 +90,6 @@ int main(int argc, char *argv[])
   else
   {
     all_bnds.erase(primary_bnd);
-    // std::vector<std::vector<int>> all_holes = std::vector<std::vector<int>>(all_bnds.begin() + 1, all_bnds.end());
     igl::harmonic(F, bnd, bnd_uv, all_bnds ,1, uv_init);
   }
 
@@ -108,6 +108,10 @@ int main(int argc, char *argv[])
 
   // Draw checkerboard texture
   viewer.data().show_texture = true;
+
+
+  std::cerr << "Press space for running an iteration." << std::endl;
+  std::cerr << "Press 1 for Mesh 2 for UV" << std::endl;
 
   // Launch the viewer
   viewer.launch();
