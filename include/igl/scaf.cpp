@@ -37,6 +37,9 @@
 #include <set>
 #include <vector>
 
+#ifdef IGL_STATIC_LIBRARY
+#include "slim.cpp"
+#endif
 namespace igl
 {
 namespace scaf
@@ -53,6 +56,45 @@ void update_scaffold(igl::SCAFData &s)
   s.f_num = s.sf_num + s.mf_num;
 
   s.s_M = Eigen::VectorXd::Constant(s.sf_num, s.scaffold_factor);
+}
+
+void adjusted_grad(Eigen::MatrixXd &V,
+                   Eigen::MatrixXi &F,
+                   double area_threshold,
+                   Eigen::SparseMatrix<double> &Dx,
+                   Eigen::SparseMatrix<double> &Dy,
+                   Eigen::SparseMatrix<double> &Dz)
+{
+  Eigen::VectorXd M;
+  igl::doublearea(V, F, M);
+  std::vector<int> degen;
+  for (int i = 0; i < M.size(); i++)
+    if (M(i) < area_threshold)
+      degen.push_back(i);
+
+  Eigen::SparseMatrix<double> G;
+  igl::grad(V, F, G);
+
+  Dx = G.topRows(F.rows());
+  Dy = G.block(F.rows(), 0, F.rows(), V.rows());
+  Dz = G.bottomRows(F.rows());
+
+  // handcraft uniform gradient for faces area falling below threshold.
+  double sin60 = std::sin(M_PI / 3);
+  double cos60 = std::cos(M_PI / 3);
+  double deno = std::sqrt(sin60 * area_threshold);
+  Eigen::MatrixXd standard_grad(3, 3);
+  standard_grad << -sin60 / deno, sin60 / deno, 0,
+      -cos60 / deno, -cos60 / deno, 1 / deno,
+      0, 0, 0;
+
+  for (auto k : degen)
+    for (int j = 0; j < 3; j++)
+    {
+      Dx.coeffRef(k, F(k, j)) = standard_grad(0, j);
+      Dy.coeffRef(k, F(k, j)) = standard_grad(1, j);
+      Dz.coeffRef(k, F(k, j)) = standard_grad(2, j);
+    }
 }
 
 void compute_scaffold_gradient_matrix(SCAFData &s,
@@ -87,11 +129,8 @@ void compute_scaffold_gradient_matrix(SCAFData &s,
   }
 
   double area_threshold = min_bnd_edge_len / 4.0;
-
-  adjusted_grad(V, F_s, G, area_threshold);
-  Eigen::SparseMatrix<double> Dx = G.block(0, 0, F_s.rows(), vn);
-  Eigen::SparseMatrix<double> Dy = G.block(F_s.rows(), 0, F_s.rows(), vn);
-  Eigen::SparseMatrix<double> Dz = G.block(2 * F_s.rows(), 0, F_s.rows(), vn);
+  Eigen::SparseMatrix<double> Dx, Dy, Dz;
+  adjusted_grad(V, F_s, area_threshold, Dx, Dy, Dz);
 
   MatrixXd F1, F2, F3;
   igl::local_basis(V, F_s, F1, F2, F3);
@@ -217,7 +256,7 @@ void add_new_patch(igl::SCAFData &s, const Eigen::MatrixXd &V_ref,
   using namespace std;
   using namespace Eigen;
 
-  assert (uv_init.rows() != 0);
+  assert(uv_init.rows() != 0);
   Eigen::VectorXd M;
   igl::doublearea(V_ref, F_ref, M);
   s.mesh_measure += M.sum() / 2;
@@ -673,3 +712,7 @@ IGL_INLINE double igl::scaf_solve(const Eigen::MatrixXd &V,
   uv = data.w_uv.topRows(V.rows());
   return energy;
 }
+
+#ifdef IGL_STATIC_LIBRARY
+template void igl::triangle::triangulate<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>>(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>> const &, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1>> const &, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>> const &, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>> &, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1>> &);
+#endif
