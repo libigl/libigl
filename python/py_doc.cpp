@@ -1495,27 +1495,30 @@ const char *__doc_igl_seam_edges=R"igl_Qu8mg5v7(// Finds all UV-space boundaries
   //     and the other side is the edge:
   //       F[ foldovers( i, 2 ), foldovers( i, 3 ) ], F[ foldovers( i, 2 ), (foldovers( i, 3 ) + 1) % 3 ])igl_Qu8mg5v7";
 
-const char *__doc_igl_slim=R"igl_Qu8mg5v7(// Direct Interface for SLIM algorithm, 
-  // combining slim_precompute and slim_solve and hiding SLIMData
+const char *__doc_igl_scaf_precompute = R"igl_Qu8mg5v7( // Compute necessary information to start using SCAF
+  // Inputs:
+  //		V           #V by 3 list of mesh vertex positions
+  //		F           #F by 3/3 list of mesh faces (triangles/tets)
+  //    data          igl::SCAFData
+  //    slim_energy Energy type to minimize
+  //    b           list of boundary indices into V (soft constraint)
+  //    bc          #b by dim list of boundary conditions (soft constraint)
+  //    soft_p      Soft penalty factor (can be zero))igl_Qu8mg5v7";
+
+const char *__doc_igl_scaf_solve = R"igl_Qu8mg5v7(
+  // Run iter_num iterations of SCAF, with precomputed data
+  // Outputs:
+  //    V_o (in SLIMData): #V by dim list of mesh vertex positions)igl_Qu8mg5v7";
+
+const char *__doc_igl_slim_precompute = R"igl_Qu8mg5v7( // Compute necessary information to start using SLIM
   // Inputs:
   //		V           #V by 3 list of mesh vertex positions
   //		F           #F by 3/3 list of mesh faces (triangles/tets)
   //    b           list of boundary indices into V
   //    bc          #b by dim list of boundary conditions
   //    soft_p      Soft penalty factor (can be zero)
-  //    slim_energy Energy to minimize
-  //    iter_num    Run iter_num iterations of SLIM
-  //
-  // Outputs:
-  //    V_o (in SLIMData): #V by dim list of mesh vertex positions)igl_Qu8mg5v7";
+  //    slim_energy Energy to minimize)igl_Qu8mg5v7";
 
-const char *__doc_igl_scaf=R"igl_Qu8mg5v7(// Direct Interface for SCAF algorithm, 
-  // combining slim_precompute and slim_solve and hiding SLIMData
-  // Inputs:
-  //		V           #V by 3 list of mesh vertex positions
-  //		F           #F by 3/3 list of mesh faces (triangles/tets)
-  //    slim_energy Energy to minimize
-  //    iter_num    Run iter_num iterations of SLIM
-  //
-  // Outputs:
-  //    V_o        #V by dim list of mesh vertex positions)igl_Qu8mg5v7";
+const char *__doc_igl_slim_solve = R"igl_Qu8mg5v7( // Run iter_num iterations of SLIM, with precomputed data
+  // Outputs: 
+  //    V_o (in SLIMData): #V by dim list of mesh vertex positions)igl_Qu8mg5v7";

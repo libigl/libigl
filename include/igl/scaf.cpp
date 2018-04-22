@@ -692,44 +692,29 @@ IGL_INLINE void igl::scaf_precompute(
   }
 }
 
-IGL_INLINE double igl::scaf_solve(SCAFData &s, int iter_num, const Eigen::VectorXi &cstrs)
+IGL_INLINE double igl::scaf_solve(SCAFData &s, int iter_num)
 {
   using namespace std;
   using namespace Eigen;
-  double last_mesh_energy = igl::scaf::compute_energy(s, s.w_uv, false) / s.mesh_measure;
+  s.energy = igl::scaf::compute_energy(s, s.w_uv, false) / s.mesh_measure;
 
   for (int it = 0; it < iter_num; it++)
   {
-    s.energy = igl::scaf::compute_energy(s, s.w_uv, true) / s.mesh_measure;
+    s.whole_energy = igl::scaf::compute_energy(s, s.w_uv, true) / s.mesh_measure;
     s.rect_frame_V = Eigen::MatrixXd();
     igl::scaf::mesh_improve(s);
 
-    s.fixed_ids = cstrs;
-    double new_weight = s.mesh_measure * last_mesh_energy / (s.sf_num * 100);
+    double new_weight = s.mesh_measure * s.energy / (s.sf_num * 100);
     s.scaffold_factor = new_weight;
     igl::scaf::update_scaffold(s);
 
-    s.energy = igl::scaf::perform_iteration(s);
+    s.whole_energy = igl::scaf::perform_iteration(s);
 
-    double current_mesh_energy =
+    s.energy =
         igl::scaf::compute_energy(s, s.w_uv, false) / s.mesh_measure;
-    double mesh_energy_decrease = last_mesh_energy - current_mesh_energy;
-    last_mesh_energy = current_mesh_energy;
   }
 
-  return last_mesh_energy;
-}
-
-IGL_INLINE double igl::scaf_solve(const Eigen::MatrixXd &V,
-                                  const Eigen::MatrixXi &F, const Eigen::MatrixXd &V_init, igl::SLIMData::SLIM_ENERGY slim_energy, int iter_num, Eigen::MatrixXd &uv)
-{
-  igl::SCAFData data;
-  Eigen::VectorXi b;
-  Eigen::MatrixXd bc;
-  igl::scaf_precompute(V, F, V_init, data, slim_energy, b, bc, 0);
-  double energy = igl::scaf_solve(data, iter_num);
-  uv = data.w_uv.topRows(V.rows());
-  return energy;
+  return data.w_uv.topRows(V.rows());
 }
 
 #ifdef IGL_STATIC_LIBRARY

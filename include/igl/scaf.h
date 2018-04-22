@@ -89,20 +89,7 @@ namespace igl
 // Run iter_num iterations of SCAF, with precomputed data
 // Outputs:
 //    V_o (in SLIMData): #V by dim list of mesh vertex positions
-  IGL_INLINE double scaf_solve(SCAFData &data, int iter_num, const Eigen::VectorXi& constraints = Eigen::VectorXi());
-
-// Direct Interface for SCAF algorithm, 
-// combining slim_precompute and slim_solve and hiding SLIMData
-// Inputs:
-//		V           #V by 3 list of mesh vertex positions
-//		F           #F by 3/3 list of mesh faces (triangles/tets)
-//    slim_energy Energy to minimize
-//    iter_num    Run iter_num iterations of SLIM
-//
-// Outputs:
-//    V_o        #V by dim list of mesh vertex positions
-  IGL_INLINE double scaf_solve(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, const Eigen::MatrixXd &V_init, 
-        SLIMData::SLIM_ENERGY slim_energy, int iter_num, Eigen::MatrixXd& uv);
+  IGL_INLINE Eigen::MatrixXd scaf_solve(SCAFData &data, int iter_num);
   }
 
 #ifndef IGL_STATIC_LIBRARY
