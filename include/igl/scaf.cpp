@@ -37,11 +37,30 @@
 #include <set>
 #include <vector>
 
-#ifdef IGL_STATIC_LIBRARY
-#include "slim.cpp"
-#endif
 namespace igl
 {
+#ifdef IGL_STATIC_LIBRARY
+namespace slim
+{
+  extern  double compute_energy_with_jacobians(const Eigen::MatrixXd &Ji, 
+                                                    const Eigen::VectorXd &areas, 
+                                                    igl::SLIMData::SLIM_ENERGY slim_energy, 
+                                                    double exp_factor);
+  extern void update_weights_and_closest_rotations_with_jacobians(const Eigen::MatrixXd &Ji,
+                                                                        igl::SLIMData::SLIM_ENERGY slim_energy,
+                                                                        double exp_factor,
+                                                                        Eigen::MatrixXd &W,
+                                                                        Eigen::MatrixXd &Ri); 
+   extern void buildA(const Eigen::SparseMatrix<double> &Dx,
+                            const Eigen::SparseMatrix<double> &Dy,
+                            const Eigen::SparseMatrix<double> &Dz,
+                            const Eigen::MatrixXd &W,
+                            std::vector<Eigen::Triplet<double> > & IJV);
+  extern void compute_surface_gradient_matrix(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F,
+                                                    const Eigen::MatrixXd &F1, const Eigen::MatrixXd &F2,
+                                         Eigen::SparseMatrix<double> &D1, Eigen::SparseMatrix<double> &D2);
+}
+#endif
 namespace scaf
 {
 void update_scaffold(igl::SCAFData &s)
@@ -218,7 +237,7 @@ void mesh_improve(igl::SCAFData &s)
   H /= 3.;
 
   MatrixXd uv2;
-  igl::triangle::triangulate(V, E, H, "qYYQ", uv2, s.s_T);
+  igl::triangle::triangulate(V, E, H, std::basic_string<char>("qYYQ"), uv2, s.s_T);
   auto bnd_n = s.internal_bnd.size();
 
   for (auto i = 0; i < s.s_T.rows(); i++)
@@ -714,5 +733,4 @@ IGL_INLINE double igl::scaf_solve(const Eigen::MatrixXd &V,
 }
 
 #ifdef IGL_STATIC_LIBRARY
-template void igl::triangle::triangulate<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>>(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>> const &, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1>> const &, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>> const &, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>> &, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1>> &);
 #endif
