@@ -145,9 +145,9 @@ transformations</a>
 <li><a href="#pickingverticesandfaces">708 Picking Vertices and Faces</a></li>
 <li><a href="#vectorfieldvisualizer">709 Vector Field Visualization</a></li>
 <li><a href="#slim">710 Scalable Locally Injective Maps</a></li>
-<li><a href="#scaf">711 Bijective Maps</a></li>
-<li><a href="#subdivision">712 Subdivision surfaces</a></li>
-<li><a href="#datasmoothing">713 Data smoothing</a></li>
+<li><a href="#subdivision">711 Subdivision surfaces</a></li>
+<li><a href="#datasmoothing">712 Data smoothing</a></li>
+<li><a href="#shapeup">713 ShapeUp projection</a></li>
 </ul></li>
 <li><a href="#future">Chapter 8: Outlook for continuing development</a></li>
 </ul>
@@ -300,7 +300,7 @@ converter from OFF to OBJ format.</p>
 
 <h2 id="visualizingsurfaces"><a href="#visualizingsurfaces">Visualizing surfaces</a> </h2>
 
-<p>Libigl provides an glfw-based OpenGL 3.3 viewer to visualize surfaces, their
+<p>Libigl provides an glfw-based OpenGL 3.2 viewer to visualize surfaces, their
 properties and additional debugging information.</p>
 
 <p>The following code (<a href="102_DrawMesh/main.cpp">Example 102</a>) is a basic skeleton
@@ -2867,7 +2867,7 @@ required to get a smooth result) and the result is returned in <code>AO</code>, 
 single scalar for each sample.</p>
 
 <p>Ambient occlusion can be used to darken the surface colors, as shown in
-<a href="606_AmbientOcclusion/main.cpp">Example 606</a></p>
+<a href="606_AmbientOcclusion/main.c">Example 606</a></p>
 
 <figure>
 <img src="images/606_AmbientOcclusion.png" alt="A mesh rendered without (left) and with (right) ambient
@@ -3613,21 +3613,6 @@ using the SLIM algorithm in 10 iterations." />
 using the SLIM algorithm in 10 iterations.</figcaption>
 </figure>
 
-<h2 id="scaf"><a href="#scaf">Bijective Maps with Simpliciaol Complex Augmentation Framework</a> </h2>
-
-<p>The Simplicial Complex Augmentation Framework <a href="#cn:41" id="cnref:41" title="see citation" class="citation">(41)</a> algorithm allows to
-compute bijective maps (most notably, UV mapping) efficiently and robustly.
-The algorithm constructed a scaffold structure to take advantage of efficient locally injective mapping algorithms like SLIM<a href="#cn:42" id="cnref:42" title="see citation" class="citation">(42)</a>, guarantees a overlapping free map with low distortion while being efficient and scalable.</p>
-
-<p><a href="711_SCAF/main.cpp">Example 711</a> contains a demo of bijective parameterizing a camel mesh.</p>
-
-<figure>
-<img src="images/711_SCAF.png" alt="A bijective parametrization of a mesh
-using the SCAF algorithm in 10 iterations." />
-<figcaption>A bijective parametrization of a mesh
-using the SCAF algorithm in 10 iterations.</figcaption>
-</figure>
-
 <h2 id="subdivision"><a href="#subdivision">Subdivision surfaces</a> </h2>
 
 <p>Given a coarse mesh (aka cage) with vertices <code>V</code> and faces <code>F</code>, one can createa
@@ -3652,7 +3637,7 @@ a finer and finer mesh.</p>
 
 <p>The subdivision method of <code>igl::loop</code> is not in plane. The vertices of the
 refined mesh are moved to weight combinations of their neighbors: the mesh is
-smoothed as it is refined <a href="#cn:43" id="cnref:43" title="see citation" class="citation">(43)</a>. This and other <em>smooth subdivision</em>
+smoothed as it is refined <a href="#cn:41" id="cnref:41" title="see citation" class="citation">(41)</a>. This and other <em>smooth subdivision</em>
 methods can be understood as generalizations of spline curves to surfaces. In
 particular the Loop subdivision method will converge to a <span class="math">\(C^1\)</span> surface as we
 consider the limit of recursive applications of subdivision. Away from
@@ -3700,7 +3685,7 @@ Hessian boundary conditions instead, which corresponds to the hessian energy
 with the matrix <code>QH = H'*(M2\H)</code>, where <code>H</code> is a finite element Hessian and
 <code>M2</code> is a stacked mass matrix. The matrices <code>H</code> and <code>QH</code> are implemented in
 libigl as <code>igl::hessian</code> and <code>igl::hessian_energy</code> respectively. An example
-of how to use the function is given in <a href="713_DataSmoothing/main.cpp">Example 713</a>.</p>
+of how to use the function is given in <a href="712_DataSmoothing/main.cpp">Example 712</a>.</p>
 
 <p>In the following image the differences between the Laplacian energy with
 zero Neumann boundary conditions and the Hessian energy can be clearly seen:
@@ -3709,19 +3694,17 @@ of the function to be perpendicular to the boundary, the Hessian energy gives
 an unbiased result.</p>
 
 <figure>
-<img src="images/713_beetles.jpg" alt="([Example 713](713_DataSmoothing/main.cpp)) From left to right: a function
+<img src="images/712_beetles.jpg" alt="([Example 712](712_DataSmoothing/main.cpp)) From left to right: a function
 on the beetle mesh, the function with added noise, the result of smoothing
 with the Laplacian energy and zero Neumann boundary conditions, and the
 result of smoothing with the Hessian energy." />
-<figcaption>(<a href="713_DataSmoothing/main.cpp">Example 713</a>) From left to right: a function
+<figcaption>(<a href="712_DataSmoothing/main.cpp">Example 712</a>) From left to right: a function
 on the beetle mesh, the function with added noise, the result of smoothing
 with the Laplacian energy and zero Neumann boundary conditions, and the
 result of smoothing with the Hessian energy.</figcaption>
 </figure>
 
-<p>The Simplicial Complex Augmentation Framework <a href="#cn:41" title="see citation" class="citation">(41)</a> algorithm allows to
-compute bijective maps efficiently and robustly.
-The algorithm constructed a scaffold structure to take advantage of efficient locally injective mapping algorithms like SLIM<a href="#cn:44" id="cnref:44" title="see citation" class="citation">(44)</a>, guarantees a overlapping free map with low distortion while being efficient and scalable.</p>
+<h2 id="shapeup"><a href="#shapeup">ShapeUp Projections</a> </h2>
 
 <p>Our input is a set of points <span class="math">\(P_0\)</span> (not necessarily part of any mesh), and a set of constraints <span class="math">\(S=\left\{S_1,S_2,...S_m\right\}\)</span>, where each constraint is defined on a different, and sparse, subset of <span class="math">\(P_0\)</span>. We wish to create a new set of points <span class="math">\(P\)</span> that are close to the original set <span class="math">\(P_0\)</span> (each point with corresponding indices), while adhering to the constraints. Other objectives, such as smoothness, can be employed. The constraints can be nonlinear, which makes the problem nonconvex, difficult, and without a guaranteed global optimum. A very popular lightweight approach to such problems is a local-global iterative algorithm, comprising these two steps:</p>
 
@@ -3732,7 +3715,7 @@ The algorithm constructed a scaffold structure to take advantage of efficient lo
 <li><em>Global step</em>: integrate the set <span class="math">\(P_k\)</span> to be as close as possible to the projected fragmented set, with auxiliary objective functions possible. That results in a global, but quadratic objective function. Moreover, the resulting linear system has a constant matrix, and therefore can be pre-factored.</li>
 </ol>
 
-<p>The version we implement in libigl is the general version described by <a href="#cn:30" title="see citation" class="citation">(30)</a>, and is in two files: <code>&lt;igl/shapeup.h&gt;</code> and <code>&lt;igl/shapeup_local_projections.h&gt;</code>. A demo implementing regularity constraints (creating a mesh in which each face is as regular as possible) is in <a href="714_Shapeup/main.cpp">Example 714</a>.</p>
+<p>The version we implement in libigl is the general version described by <a href="#cn:30" title="see citation" class="citation">(30)</a>, and is in two files: <code>&lt;igl/shapeup.h&gt;</code> and <code>&lt;igl/shapeup_local_projections.h&gt;</code>. A demo implementing regularity constraints (creating a mesh in which each face is as regular as possible) is in <a href="713_Shapeup/main.cpp">Example 713</a>.</p>
 
 <p>The local step is instantiated by a function of type <code>igl::shapeup_projection_function</code>. The global step is done by two functions: <code>igl::shapeup_precomputation()</code>, which precomputes the matrices required for the global step, and <code>igl::shapeup_solve()</code>, which solves the problem, according to the initial solution <span class="math">\(P_0\)</span> and the input local projection function. The data struct <code>igl::ShapeUpData</code> contains the information necessary to run the algorithm, and can be configured; for instance, the self-explanatory variable <code>Maxiterations</code>.</p>
 
@@ -3743,8 +3726,8 @@ The algorithm constructed a scaffold structure to take advantage of efficient lo
 <p>where the <span class="math">\(\lambda\)</span> coefficients are encoded in <code>igl::ShapeUpData</code>, and can be updated <strong>prior</strong> to calling <code>igl::shapeup_precomputation()</code>. The <span class="math">\(E_{shape}\)</span> component is the integration energy (fitting <span class="math">\(P_k\)</span> to the local projections). The <span class="math">\(E_{close}\)</span> component is adherence to positional constraints, given by <code>b</code> and <code>bc</code> parameters. The <span class="math">\(E_{smooth}\)</span> component is an optional objective function, to minimize differences (in the Dirichlet sense) between points, encodes by &#8220;edges&#8221; in parameter <code>E</code>. Both <span class="math">\(E_{close}\)</span> and <span class="math">\(E_{shape}\)</span> are also weighted by <code>wClose</code> and <code>wShape</code> function parameters, respectively.</p>
 
 <figure>
-<img src="images/714_ShapeUp.png" alt="([Example 714](714_ShapeUp/main.cpp)) The half-tunnel mesh (left) has been optimized to be almost perfectly regular (right). The color scale is between $[0,0.05]$, measuring the average normalized deviation of the angles of each face from $90^{\circ}$." />
-<figcaption>(<a href="714_ShapeUp/main.cpp">Example 714</a>) The half-tunnel mesh (left) has been optimized to be almost perfectly regular (right). The color scale is between <span class="math">\([0,0.05]\)</span>, measuring the average normalized deviation of the angles of each face from <span class="math">\(90^{\circ}\)</span>.</figcaption>
+<img src="images/713_ShapeUp.png" alt="([Example 713](713_ShapeUp/main.cpp)) The half-tunnel mesh (left) has been optimized to be almost perfectly regular (right). The color scale is between $[0,0.05]$, measuring the average normalized deviation of the angles of each face from $90^{\circ}$." />
+<figcaption>(<a href="713_ShapeUp/main.cpp">Example 713</a>) The half-tunnel mesh (left) has been optimized to be almost perfectly regular (right). The color scale is between <span class="math">\([0,0.05]\)</span>, measuring the average normalized deviation of the angles of each face from <span class="math">\(90^{\circ}\)</span>.</figcaption>
 </figure>
 
 <h1 id="future">Outlook for continuing development </h1>
@@ -4044,21 +4027,9 @@ Mappings</a>, 2016. <a href="#cnref:40" title="return to body" class="reversecit
 </li>
 
 <li id="cn:41">
-<p>Zhongshi Jiang, Scott Schaefer, Daniele Panozzo. <a href="https://doi.org/10.1145/3130800.3130895">SCAF: Simplicial Complex Augmentation Framework for Bijective Maps</a>, 2017 <a href="#cnref:41" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
-</li>
-
-<li id="cn:42">
-<p>slim <a href="#cnref:42" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
-</li>
-
-<li id="cn:43">
 <p>Charles Loop. <a href="https://www.google.com/search?q=smooth+subdivision+surfaces+based+on+triangles">Smooth Subdivision Surfaces Based on
 Triangles</a>,
-1987. <a href="#cnref:43" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
-</li>
-
-<li id="cn:44">
-<p>slim <a href="#cnref:44" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
+1987. <a href="#cnref:41" title="return to body" class="reversecitation">&#160;&#8617;</a></p>
 </li>
 
 </ol>

@@ -6,6 +6,9 @@
 #include <igl/readOBJ.h>
 #include <igl/Timer.h>
 #include <igl/opengl/glfw/Viewer.h>
+#include <igl/doublearea.h>
+#include <igl/PI.h>
+#include <igl/flipped_triangles.h>
 
 #include "tutorial_shared_path.h"
 
@@ -29,7 +32,7 @@ bool key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier
   {
     timer.start();
     igl::scaf_solve(scaf_data, 1);
-    std::cout << "time = " << timer.getElapsedTime() << endl;
+    std::cout << "time = " << timer.getElapsedTime() << std::endl;
   }
 
   const auto& V_uv = uv_scale * scaf_data.w_uv.topRows(V.rows());

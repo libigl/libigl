@@ -100,9 +100,9 @@ lecture notes links to a cross-platform example application.
     * [708 Picking Vertices and Faces](#pickingverticesandfaces)
     * [709 Vector Field Visualization](#vectorfieldvisualizer)
     * [710 Scalable Locally Injective Maps](#slim)
-    * [711 Bijective Maps](#scaf)
-    * [712 Subdivision surfaces](#subdivision)
-    * [713 Data smoothing](#datasmoothing)
+    * [711 Subdivision surfaces](#subdivision)
+    * [712 Data smoothing](#datasmoothing)
+    * [713 ShapeUp projection](#shapeup)
 * [Chapter 8: Outlook for continuing development](#future)
 
 # Chapter 1 [chapter1:introductiontolibigl]
@@ -255,7 +255,7 @@ converter from OFF to OBJ format.
 
 ## [Visualizing surfaces](#visualizingsurfaces) [visualizingsurfaces]
 
-Libigl provides an glfw-based OpenGL 3.3 viewer to visualize surfaces, their
+Libigl provides an glfw-based OpenGL 3.2 viewer to visualize surfaces, their
 properties and additional debugging information.
 
 The following code ([Example 102](102_DrawMesh/main.cpp)) is a basic skeleton
@@ -3195,18 +3195,6 @@ on Pardiso is available
 ![A locally injective parametrization of a mesh with 50k faces is computed
 using the SLIM algorithm in 10 iterations.](images/slim.png)
 
-
-## [Bijective Maps with Simpliciaol Complex Augmentation Framework](#scaf) [scaf]
-
-The Simplicial Complex Augmentation Framework  [#jiang_2017] algorithm allows to
-compute bijective maps (most notably, UV mapping) efficiently and robustly.
-The algorithm constructed a scaffold structure to take advantage of efficient locally injective mapping algorithms like SLIM[#slim], guarantees a overlapping free map with low distortion while being efficient and scalable.
-
-[Example 711](711_SCAF/main.cpp) contains a demo of bijective parameterizing a camel mesh.
-
-![A bijective parametrization of a mesh
-using the SCAF algorithm in 10 iterations.](images/711_SCAF.png)
-
 ## [Subdivision surfaces](#subdivision) [subdivision]
 
 Given a coarse mesh (aka cage) with vertices `V` and faces `F`, one can createa
@@ -3274,7 +3262,7 @@ Hessian boundary conditions instead, which corresponds to the hessian energy
 with the matrix `QH = H'*(M2\H)`, where `H` is a finite element Hessian and
 `M2` is a stacked mass matrix. The matrices `H` and `QH` are implemented in
 libigl as `igl::hessian` and `igl::hessian_energy` respectively. An example
-of how to use the function is given in [Example 713](713_DataSmoothing/main.cpp).
+of how to use the function is given in [Example 712](712_DataSmoothing/main.cpp).
 
 In the following image the differences between the Laplacian energy with
 zero Neumann boundary conditions and the Hessian energy can be clearly seen:
@@ -3282,17 +3270,12 @@ whereas the zero Neumann boundary condition in the third image bias the isolines
 of the function to be perpendicular to the boundary, the Hessian energy gives
 an unbiased result.
 
-![([Example 713](713_DataSmoothing/main.cpp)) From left to right: a function
+![([Example 712](712_DataSmoothing/main.cpp)) From left to right: a function
 on the beetle mesh, the function with added noise, the result of smoothing
 with the Laplacian energy and zero Neumann boundary conditions, and the
-result of smoothing with the Hessian energy.](images/713_beetles.jpg)
+result of smoothing with the Hessian energy.](images/712_beetles.jpg)
 
-
-
-The Simplicial Complex Augmentation Framework  [#jiang_2017] algorithm allows to
-compute bijective maps efficiently and robustly.
-The algorithm constructed a scaffold structure to take advantage of efficient locally injective mapping algorithms like SLIM[#slim], guarantees a overlapping free map with low distortion while being efficient and scalable.
-
+## [ShapeUp Projections](#shapeup) [shapeup]
 
 Our input is a set of points $P_0$ (not necessarily part of any mesh), and a set of constraints $S=\left\{S_1,S_2,...S_m\right\}$, where each constraint is defined on a different, and sparse, subset of $P_0$. We wish to create a new set of points $P$ that are close to the original set $P_0$ (each point with corresponding indices), while adhering to the constraints. Other objectives, such as smoothness, can be employed. The constraints can be nonlinear, which makes the problem nonconvex, difficult, and without a guaranteed global optimum. A very popular lightweight approach to such problems is a local-global iterative algorithm, comprising these two steps:
 
@@ -3300,7 +3283,7 @@ For iteration $k$:
 1. *Local step*: compute the projections of the set $P_{k-1}$ onto $S$, individually per constraint; that would mean fragmenting each point that appears in multiple constraints. That can be a nonlinear operation, but if the constraints are sparse, it is a a set of many small systems.
 2. *Global step*: integrate the set $P_k$ to be as close as possible to the projected fragmented set, with auxiliary objective functions possible. That results in a global, but quadratic objective function. Moreover, the resulting linear system has a constant matrix, and therefore can be pre-factored.
 
-The version we implement in libigl is the general version described by [#bouaziz_2012], and is in two files: ``<igl/shapeup.h>`` and ``<igl/shapeup_local_projections.h>``. A demo implementing regularity constraints (creating a mesh in which each face is as regular as possible) is in [Example 714](714_Shapeup/main.cpp). 
+The version we implement in libigl is the general version described by [#bouaziz_2012], and is in two files: ``<igl/shapeup.h>`` and ``<igl/shapeup_local_projections.h>``. A demo implementing regularity constraints (creating a mesh in which each face is as regular as possible) is in [Example 713](713_Shapeup/main.cpp). 
 
 The local step is instantiated by a function of type ``igl::shapeup_projection_function``. The global step is done by two functions: ``igl::shapeup_precomputation()``, which precomputes the matrices required for the global step, and ``igl::shapeup_solve()``, which solves the problem, according to the initial solution $P_0$ and the input local projection function. The data struct ``igl::ShapeUpData`` contains the information necessary to run the algorithm, and can be configured; for instance, the self-explanatory variable ``Maxiterations``.
 
@@ -3310,7 +3293,7 @@ $$E_{total}=\lambda_{shape}E_{shape}+\lambda_{close}E_{close}+\lambda_{smooth}E_
 
 where the $\lambda$ coefficients are encoded in ``igl::ShapeUpData``, and can be updated **prior** to calling ``igl::shapeup_precomputation()``. The $E_{shape}$ component is the integration energy (fitting $P_k$ to the local projections). The $E_{close}$ component is adherence to positional constraints, given by ``b`` and ``bc`` parameters. The $E_{smooth}$ component is an optional objective function, to minimize differences (in the Dirichlet sense) between points, encodes by "edges" in parameter `E`. Both $E_{close}$ and $E_{shape}$ are also weighted by ``wClose`` and ``wShape`` function parameters, respectively.
 
-![([Example 714](714_ShapeUp/main.cpp)) The half-tunnel mesh (left) has been optimized to be almost perfectly regular (right). The color scale is between $[0,0.05]$, measuring the average normalized deviation of the angles of each face from $90^{\circ}$.](images/714_ShapeUp.png)
+![([Example 713](713_ShapeUp/main.cpp)) The half-tunnel mesh (left) has been optimized to be almost perfectly regular (right). The color scale is between $[0,0.05]$, measuring the average normalized deviation of the angles of each face from $90^{\circ}$.](images/713_ShapeUp.png)
 
 
 
@@ -3517,4 +3500,3 @@ pseudonormal](https://www.google.com/search?q=Signed+distance+computation+using+
   Geometry](https://www.google.com/search?q=Mesh+Arrangements+for+Solid+Geometry),
   2016
 [#mitchell_1987]: Joseph S. B. Mitchell, David M. Mount, Christos H. Papadimitriou. [The Discrete Geodesic Problem](https://www.google.com/search?q=The+Discrete+Geodesic+Problem), 1987
-[#jiang_2017]: Zhongshi Jiang, Scott Schaefer, Daniele Panozzo. [SCAF: Simplicial Complex Augmentation Framework for Bijective Maps](https://doi.org/10.1145/3130800.3130895), 2017
