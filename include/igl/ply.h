@@ -229,7 +229,7 @@ inline PlyProperty **ply_get_element_description(PlyFile *, const char *, int*, 
 inline void ply_get_element_setup( PlyFile *, const char *, int, PlyProperty *);
 inline void ply_get_property(PlyFile *, const char *, PlyProperty *);
 inline PlyOtherProp *ply_get_other_properties(PlyFile *, const char *, int);
-inline void ply_get_element(PlyFile *, void *);
+inline void ply_get_element(PlyFile *, void *, int *);
 inline char **ply_get_comments(PlyFile *, int *);
 inline char **ply_get_obj_info(PlyFile *, int *);
 inline void ply_close(PlyFile *);
@@ -1609,10 +1609,11 @@ inline PlyOtherElems *ply_get_other_element (
                          offsetof(OtherData,other_props));
 
   /* grab all these elements */
+  int native_binary_type = get_native_binary_type2();
   for (i = 0; i < other->elem_count; i++) {
     /* grab and element from the file */
     other->other_data[i] = (OtherData *) malloc (sizeof (OtherData));
-    ply_get_element (plyfile, (void *) other->other_data[i]);
+    ply_get_element (plyfile, (void *) other->other_data[i], &native_binary_type);
   }
 
   /* return pointer to the other elements data */
