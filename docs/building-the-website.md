@@ -24,6 +24,15 @@ If you want to preview changes to the libigl website before a commit, you can fo
 !!! tip
     Be careful to not have any `<>` characters in your email in your `.gitconfig`, otherwise the `gh-deploy` script will fail.
 
+!!! tip
+    Dead links can be checked using the [LinkChecker](https://wummel.github.io/linkchecker/) tool. Run the website locally, then run LinkChecker on it:
+    ```bash
+    linkchecker http://127.0.0.1:8000
+    ```
+
+!!! note
+    The reason we are using `python -m mkdocs serve` instead of `mkdocs serve` directly is because we are using local extensions for mkdocs. Those extensions are located in the `scripts/` folder of libigl. Running `mkdocs` as a module adds the current directory to the `PYTHONPATH`, allowing us to load those extensions without installing them on the system or in a virtualenv.
+
 ## References
 
 - [MkDocs](http://www.mkdocs.org/)
