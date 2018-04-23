@@ -49,15 +49,15 @@ extra_css:
   - 'css/style.css'
 pages:
   - Home: index.md
-  - Tutorial:
-    - "Chapter 1: Introduction to libigl": tutorial/chapter-1.md
-    - "Chapter 2: Discrete Geometric Quantities and Operators": tutorial/chapter-2.md
-    - "Chapter 3: Matrices and Linear Algebra": tutorial/chapter-3.md
-    - "Chapter 4: Shape Deformation": tutorial/chapter-4.md
-    - "Chapter 5: Parametrization": tutorial/chapter-5.md
-    - "Chapter 6: External libraries": tutorial/chapter-6.md
-    - "Chapter 7: Miscellaneous": tutorial/chapter-7.md
-    - "Chapter 8: Outlook for continuing development": tutorial/chapter-8.md
+  - Tutorial: tutorial/tutorial.md
+    # - "Chapter 1: Introduction to libigl": tutorial/chapter-1.md
+    # - "Chapter 2: Discrete Geometric Quantities and Operators": tutorial/chapter-2.md
+    # - "Chapter 3: Matrices and Linear Algebra": tutorial/chapter-3.md
+    # - "Chapter 4: Shape Deformation": tutorial/chapter-4.md
+    # - "Chapter 5: Parametrization": tutorial/chapter-5.md
+    # - "Chapter 6: External libraries": tutorial/chapter-6.md
+    # - "Chapter 7: Miscellaneous": tutorial/chapter-7.md
+    # - "Chapter 8: Outlook for continuing development": tutorial/chapter-8.md
   - Compilation:
     - Example Project: example-project.md
     - Static Library: static-library.md
@@ -78,6 +78,7 @@ pages:
       - rbr: file-formats/rbr.md
       - tgf: file-formats/tgf.md
       - xml: file-formats/xml.md
+    - Building the Website: building-the-website.md
   - FAQ: faq.md
   - About:
     - Release History: RELEASE_HISTORY.md

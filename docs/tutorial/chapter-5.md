@@ -306,9 +306,10 @@ surface continuity and the local step to enforce planarity.
 [Example 507]({{ repo_url }}/tutorial/507_Planarization/main.cpp) planarizes a quad mesh until it
 satisfies a user-given planarity threshold.
 
+![A non-planar quad mesh (left) is planarized using the libigl function igl::planarize (right). The colors represent the planarity of the quads.](images/509_Planarization.png)
+
 ## References
 
-![A non-planar quad mesh (left) is planarized using the libigl function igl::planarize (right). The colors represent the planarity of the quads.](images/509_Planarization.png)
 [^bommes_2009]: David Bommes, Henrik Zimmer, Leif Kobbelt. [Mixed-integer quadrangulation](http://www-sop.inria.fr/members/David.Bommes/publications/miq.pdf), 2009.
 [^bouaziz_2012]: Sofien Bouaziz, Mario Deuss, Yuliy Schwartzburg, Thibaut Weise, Mark Pauly [Shape-Up: Shaping Discrete Geometry with Projections](http://lgg.epfl.ch/publications/2012/shapeup.pdf), 2012
 [^eck_2005]: Matthias Eck, Tony DeRose, Tom Duchamp, Hugues Hoppe, Michael Lounsbery, Werner Stuetzle.  [Multiresolution Analysis of Arbitrary Meshes](http://research.microsoft.com/en-us/um/people/hoppe/mra.pdf), 2005.

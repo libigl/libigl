@@ -7,7 +7,7 @@ project using libigl.
 
 ## See the tutorial first
 
-Then build, run and understand the [libigl tutorial](./tutorial/chapter-1.md).
+Then build, run and understand the [libigl tutorial](./tutorial/tutorial.md).
 
 ## Compile
 
