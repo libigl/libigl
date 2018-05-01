@@ -121,12 +121,13 @@ namespace glfw
     size_t selected_data_index;
     int next_data_id;
     GLFWwindow* window;
-    // Stores all the viewing options
+    
+	// Stores all the viewing options
 	IGL_INLINE int append_core(Eigen::Vector4f viewport);
 	IGL_INLINE bool erase_core(const size_t index);
 	IGL_INLINE size_t core_index(const int id) const;
 
-    ViewerCore *core;
+	IGL_INLINE ViewerCore& core();
 	std::vector<ViewerCore> core_list;
 	size_t selected_core_index;
 	int next_core_id;

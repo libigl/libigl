@@ -198,13 +198,11 @@ namespace glfw
     highdpi = windowWidth/width_window;
     glfw_window_size(window,width_window,height_window);
     //opengl.init();
-    core->align_camera_center(data().V,data().F);
+    core().align_camera_center(data().V,data().F);
     // Initialize IGL viewer
     init();
     return EXIT_SUCCESS;
   }
-
-
 
   IGL_INLINE bool Viewer::launch_rendering(bool loop)
   {
@@ -217,12 +215,12 @@ namespace glfw
       double tic = get_seconds();
       draw();
       glfwSwapBuffers(window);
-      if(core->is_animating || frame_counter++ < num_extra_frames)
+      if(core().is_animating || frame_counter++ < num_extra_frames)
       {
         glfwPollEvents();
         // In microseconds
         double duration = 1000000.*(get_seconds()-tic);
-        const double min_duration = 1000000./core->animation_max_fps;
+        const double min_duration = 1000000./core().animation_max_fps;
         if(duration<min_duration)
         {
           std::this_thread::sleep_for(std::chrono::microseconds((int)(min_duration-duration)));
@@ -245,7 +243,7 @@ namespace glfw
     {
       data.meshgl.free();
     }
-    core->shut(); // Doesn't do anything
+    core().shut(); // Doesn't do anything
     shutdown_plugins();
     glfwDestroyWindow(window);
     glfwTerminate();
@@ -254,7 +252,7 @@ namespace glfw
 
   IGL_INLINE void Viewer::init()
   {
-    core->init(); // Doesn't do anything
+    core().init(); // Doesn't do anything
 
     if (callback_init)
       if (callback_init(*this))
@@ -292,8 +290,8 @@ namespace glfw
     data_list.front().id = 0;
 
 	core_list.emplace_back(ViewerCore());
-	core = &core_list[0];
 	core_list.front().id = 0;
+	coreDataPairs.insert({ 0,0 });
 
 	// Temporary variables initialization
     down = false;
@@ -498,7 +496,7 @@ namespace glfw
       case 'A':
       case 'a':
       {
-        core->is_animating = !core->is_animating;
+        core().is_animating = !core().is_animating;
         return true;
       }
       case 'F':
@@ -523,7 +521,7 @@ namespace glfw
       case 'O':
       case 'o':
       {
-        core->orthographic = !core->orthographic;
+        core().orthographic = !core().orthographic;
         return true;
       }
       case 'T':
@@ -540,10 +538,10 @@ namespace glfw
       case '[':
       case ']':
       {
-        if(core->rotation_type == ViewerCore::ROTATION_TYPE_TRACKBALL)
-          core->set_rotation_type(ViewerCore::ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP);
+        if(core().rotation_type == ViewerCore::ROTATION_TYPE_TRACKBALL)
+			core().set_rotation_type(ViewerCore::ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP);
         else
-          core->set_rotation_type(ViewerCore::ROTATION_TYPE_TRACKBALL);
+          core().set_rotation_type(ViewerCore::ROTATION_TYPE_TRACKBALL);
 
         return true;
       }
@@ -605,7 +603,7 @@ namespace glfw
 
     down = true;
 
-    down_translation = core->model_translation;
+    down_translation = core().model_translation;
 
 
     // Initialization code for the trackball
@@ -621,18 +619,18 @@ namespace glfw
     Eigen::Vector3f coord =
       igl::project(
         Eigen::Vector3f(center(0),center(1),center(2)),
-        (core->view * core->model).eval(),
-        core->proj,
-        core->viewport);
+        (core().view * core().model).eval(),
+        core().proj,
+        core().viewport);
     down_mouse_z = coord[2];
-    down_rotation = core->trackball_angle;
+    down_rotation = core().trackball_angle;
 
     mouse_mode = MouseMode::Rotation;
 
     switch (button)
     {
       case MouseButton::Left:
-        if (core->rotation_type == ViewerCore::ROTATION_TYPE_NO_ROTATION) {
+        if (core().rotation_type == ViewerCore::ROTATION_TYPE_NO_ROTATION) {
           mouse_mode = MouseMode::Translation;
         } else {
           mouse_mode = MouseMode::Rotation;
@@ -694,7 +692,7 @@ namespace glfw
 		if (mouse_x > viewport[0] && mouse_x < viewport[0] + viewport[2] &&
 			mouse_y > viewport[1] && mouse_y < viewport[1] + viewport[3])
 		{
-			core = &core_list[i];
+			selected_core_index = i;
 			break;
 		}
 	}
@@ -704,7 +702,7 @@ namespace glfw
       {
         case MouseMode::Rotation:
         {
-          switch(core->rotation_type)
+          switch(core().rotation_type)
           {
             default:
               assert(false && "Unknown rotation type");
@@ -712,23 +710,23 @@ namespace glfw
               break;
             case ViewerCore::ROTATION_TYPE_TRACKBALL:
               igl::trackball(
-                core->viewport(2),
-                core->viewport(3),
+                core().viewport(2),
+                core().viewport(3),
                 2.0f,
                 down_rotation,
                 down_mouse_x,
                 down_mouse_y,
                 mouse_x,
                 mouse_y,
-                core->trackball_angle);
+                core().trackball_angle);
               break;
             case ViewerCore::ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP:
               igl::two_axis_valuator_fixed_up(
-                core->viewport(2),core->viewport(3),
+                core().viewport(2),core().viewport(3),
                 2.0,
                 down_rotation,
                 down_mouse_x, down_mouse_y, mouse_x, mouse_y,
-                core->trackball_angle);
+                core().trackball_angle);
               break;
           }
           //Eigen::Vector4f snapq = core->trackball_angle;
@@ -739,18 +737,18 @@ namespace glfw
         case MouseMode::Translation:
         {
           //translation
-          Eigen::Vector3f pos1 = igl::unproject(Eigen::Vector3f(mouse_x, core->viewport[3] - mouse_y, down_mouse_z), (core->view * core->model).eval(), core->proj, core->viewport);
-          Eigen::Vector3f pos0 = igl::unproject(Eigen::Vector3f(down_mouse_x, core->viewport[3] - down_mouse_y, down_mouse_z), (core->view * core->model).eval(), core->proj, core->viewport);
+          Eigen::Vector3f pos1 = igl::unproject(Eigen::Vector3f(mouse_x, core().viewport[3] - mouse_y, down_mouse_z), (core().view * core().model).eval(), core().proj, core().viewport);
+          Eigen::Vector3f pos0 = igl::unproject(Eigen::Vector3f(down_mouse_x, core().viewport[3] - down_mouse_y, down_mouse_z), (core().view * core().model).eval(), core().proj, core().viewport);
 
           Eigen::Vector3f diff = pos1 - pos0;
-          core->model_translation = down_translation + Eigen::Vector3f(diff[0],diff[1],diff[2]);
+          core().model_translation = down_translation + Eigen::Vector3f(diff[0],diff[1],diff[2]);
 
           break;
         }
         case MouseMode::Zoom:
         {
           float delta = 0.001f * (mouse_x - down_mouse_x + mouse_y - down_mouse_y);
-          core->camera_zoom *= 1 + delta;
+          core().camera_zoom *= 1 + delta;
           down_mouse_x = mouse_x;
           down_mouse_y = mouse_y;
           break;
@@ -780,7 +778,7 @@ namespace glfw
     {
       float mult = (1.0+((delta_y>0)?1.:-1.)*0.05);
       const float min_zoom = 0.1f;
-      core->camera_zoom = (core->camera_zoom * mult > min_zoom ? core->camera_zoom * mult : min_zoom);
+      core().camera_zoom = (core().camera_zoom * mult > min_zoom ? core().camera_zoom * mult : min_zoom);
     }
     return true;
   }
@@ -795,7 +793,7 @@ namespace glfw
 
   IGL_INLINE bool Viewer::load_scene(std::string fname)
   {
-    igl::deserialize(core,"Core",fname.c_str());
+    igl::deserialize(core(),"Core",fname.c_str());
     igl::deserialize(data(),"Data",fname.c_str());
     return true;
   }
@@ -810,7 +808,7 @@ namespace glfw
 
   IGL_INLINE bool Viewer::save_scene(std::string fname)
   {
-    igl::serialize(core,"Core",fname.c_str(),true);
+    igl::serialize(core(),"Core",fname.c_str(),true);
     igl::serialize(data(),"Data",fname.c_str());
 
     return true;
@@ -882,7 +880,7 @@ namespace glfw
   IGL_INLINE void Viewer::post_resize(int w,int h)
   {
 	if(core_list.size()==1)
-		core->viewport = Eigen::Vector4f(0,0,w,h);
+		core().viewport = Eigen::Vector4f(0,0,w,h);
     for (unsigned int i = 0; i<plugins.size(); ++i)
     {
       plugins[i]->post_resize(w, h);
@@ -891,8 +889,8 @@ namespace glfw
 
   IGL_INLINE void Viewer::snap_to_canonical_quaternion()
   {
-    Eigen::Quaternionf snapq = this->core->trackball_angle;
-    igl::snap_to_canonical_view_quat(snapq,1.0f,this->core->trackball_angle);
+    Eigen::Quaternionf snapq = this->core().trackball_angle;
+    igl::snap_to_canonical_view_quat(snapq,1.0f,this->core().trackball_angle);
   }
 
   IGL_INLINE void Viewer::open_dialog_load_mesh()
@@ -951,6 +949,14 @@ namespace glfw
     {
       selected_data_index--;
     }
+
+	for (auto iter = coreDataPairs.begin(); iter != coreDataPairs.end();)
+	{
+		if (iter->second == index)
+			iter = coreDataPairs.erase(iter);
+		else
+			++iter;
+	}
     return true;
   }
 
@@ -961,6 +967,15 @@ namespace glfw
         return i;
     }
     return 0;
+  }
+
+  IGL_INLINE ViewerCore& Viewer::core()
+  {
+	  assert(!core_list.empty() && "core_list should never be empty");
+	  assert(
+		  (selected_core_index >= 0 && selected_core_index < core_list.size()) &&
+		  "selected_core_index should be in bounds");
+	  return core_list[selected_core_index];
   }
 
   IGL_INLINE bool Viewer::erase_core(const size_t index)
@@ -992,7 +1007,7 @@ namespace glfw
 
   IGL_INLINE int Viewer::append_core(Eigen::Vector4f viewport)
   {
-	  core_list.push_back(*core);
+	  core_list.push_back(core()); //copies the previous core and only changes the viewport
 	  core_list.back().viewport = viewport;
 	  core_list.back().id = next_core_id++;
 	  for (int i = 0; i < data_list.size(); i++)
