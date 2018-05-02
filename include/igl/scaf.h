@@ -27,6 +27,7 @@ namespace igl
 
       // Output
       int dim = 2;
+      double total_energy; // scaffold + isometric 
       double energy; // objective value
 
       long mv_num = 0, mf_num = 0;

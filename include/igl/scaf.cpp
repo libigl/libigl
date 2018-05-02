@@ -60,7 +60,14 @@ namespace slim
                                                     const Eigen::MatrixXd &F1, const Eigen::MatrixXd &F2,
                                          Eigen::SparseMatrix<double> &D1, Eigen::SparseMatrix<double> &D2);
 }
+#else
+#include "slim.cpp"
 #endif
+}
+
+namespace igl
+{
+
 namespace scaf
 {
 void update_scaffold(igl::SCAFData &s)
@@ -365,15 +372,6 @@ double compute_energy(SCAFData &s, Eigen::MatrixXd &w_uv, bool whole)
     energy += compute_energy_from_jacobians(s.Ji_s, s.s_M, s.scaf_energy);
   energy += compute_soft_constraint_energy(s);
   return energy;
-}
-
-void update_weights_and_closest_rotations2(
-    const Eigen::MatrixXd &Ji,
-    igl::SLIMData::SLIM_ENERGY energy_type,
-    Eigen::MatrixXd &W,
-    Eigen::MatrixXd &Ri)
-{
-  igl::slim::update_weights_and_closest_rotations_with_jacobians(Ji, energy_type, 0, W, Ri);
 }
 
 void buildAm(const Eigen::VectorXd &sqrt_M,
@@ -692,7 +690,7 @@ IGL_INLINE void igl::scaf_precompute(
   }
 }
 
-IGL_INLINE double igl::scaf_solve(SCAFData &s, int iter_num)
+IGL_INLINE Eigen::MatrixXd igl::scaf_solve(SCAFData &s, int iter_num)
 {
   using namespace std;
   using namespace Eigen;
@@ -700,7 +698,7 @@ IGL_INLINE double igl::scaf_solve(SCAFData &s, int iter_num)
 
   for (int it = 0; it < iter_num; it++)
   {
-    s.whole_energy = igl::scaf::compute_energy(s, s.w_uv, true) / s.mesh_measure;
+    s.total_energy = igl::scaf::compute_energy(s, s.w_uv, true) / s.mesh_measure;
     s.rect_frame_V = Eigen::MatrixXd();
     igl::scaf::mesh_improve(s);
 
@@ -708,13 +706,13 @@ IGL_INLINE double igl::scaf_solve(SCAFData &s, int iter_num)
     s.scaffold_factor = new_weight;
     igl::scaf::update_scaffold(s);
 
-    s.whole_energy = igl::scaf::perform_iteration(s);
+    s.total_energy = igl::scaf::perform_iteration(s);
 
     s.energy =
         igl::scaf::compute_energy(s, s.w_uv, false) / s.mesh_measure;
   }
 
-  return data.w_uv.topRows(V.rows());
+  return s.w_uv.topRows(s.mv_num);
 }
 
 #ifdef IGL_STATIC_LIBRARY
