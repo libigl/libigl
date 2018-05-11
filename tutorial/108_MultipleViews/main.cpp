@@ -32,9 +32,10 @@ int main(int argc, char * argv[])
     {
 		// by default, when a core is appended, all loaded meshes will be displayed in that core
 		// displaying can be controlled by changing viewer.coreDataPairs
-		viewer.coreDataPairs.clear();
-		viewer.coreDataPairs.insert({ viewer.core_index(leftView), viewer.mesh_index(cubeID) });
-		viewer.coreDataPairs.insert({ viewer.core_index(rightView), viewer.mesh_index(sphereID) });
+		viewer.data_list[viewer.mesh_index(cubeID)].is_visible = 0;
+		viewer.data_list[viewer.mesh_index(cubeID)].set_visible(true, viewer.core_index(leftView));
+		viewer.data_list[viewer.mesh_index(sphereID)].is_visible = 0;
+		viewer.data_list[viewer.mesh_index(sphereID)].set_visible(true, viewer.core_index(rightView));
     }
     return false;
   };

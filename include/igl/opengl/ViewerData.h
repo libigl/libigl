@@ -42,6 +42,7 @@ public:
   IGL_INLINE void set_vertices(const Eigen::MatrixXd& V);
   IGL_INLINE void set_normals(const Eigen::MatrixXd& N);
 
+  IGL_INLINE void set_visible(bool value, int core_id = 1);
   // Set the color of the mesh
   //
   // Inputs:
@@ -179,6 +180,7 @@ public:
   bool face_based;
 
   // Visualization options
+  unsigned int is_visible;
   bool show_overlay;
   bool show_overlay_depth;
   bool show_texture;

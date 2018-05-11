@@ -283,15 +283,14 @@ namespace glfw
     selected_data_index(0),
     next_data_id(1),
     selected_core_index(0),
-	next_core_id(1)
+	next_core_id(2)
 
   {
     window = nullptr;
     data_list.front().id = 0;
 
 	core_list.emplace_back(ViewerCore());
-	core_list.front().id = 0;
-	coreDataPairs.insert({ 0,0 });
+	core_list.front().id = 1;
 
 	// Temporary variables initialization
     down = false;
@@ -833,7 +832,7 @@ namespace glfw
       highdpi=highdpi_tmp;
     }
 	for (auto& core : core_list)
-		core.clear_framebuffers();
+	  core.clear_framebuffers();
 
     if (callback_pre_draw)
     {
@@ -850,8 +849,16 @@ namespace glfw
       }
     }
 
-	for (auto& pair : coreDataPairs)
-		core_list[pair.first].draw(data_list[pair.second]);
+	for (auto& mesh : data_list)
+	{
+	  for (auto& core : core_list)
+	  {
+	    if (mesh.is_visible & core.id)
+		{
+		  core.draw(mesh);
+		}
+	  }
+	}
 
     if (callback_post_draw)
     {
@@ -930,7 +937,7 @@ namespace glfw
     selected_data_index = data_list.size()-1;
     data_list.back().id = next_data_id++;
 	for (int i = 0; i < core_list.size(); i++)
-		coreDataPairs.insert(std::pair<int,int>(core_list[i].id, data_list.back().id));
+	  data_list.back().is_visible |= core_list[i].id;
     return data_list.back().id;
   }
 
@@ -950,13 +957,6 @@ namespace glfw
       selected_data_index--;
     }
 
-	for (auto iter = coreDataPairs.begin(); iter != coreDataPairs.end();)
-	{
-		if (iter->second == index)
-			iter = coreDataPairs.erase(iter);
-		else
-			++iter;
-	}
     return true;
   }
 
@@ -971,11 +971,9 @@ namespace glfw
 
   IGL_INLINE ViewerCore& Viewer::core()
   {
-	  assert(!core_list.empty() && "core_list should never be empty");
-	  assert(
-		  (selected_core_index >= 0 && selected_core_index < core_list.size()) &&
-		  "selected_core_index should be in bounds");
-	  return core_list[selected_core_index];
+	assert(!core_list.empty() && "core_list should never be empty");
+	assert((selected_core_index >= 0 && selected_core_index < core_list.size()) && "selected_core_index should be in bounds");
+	return core_list[selected_core_index];
   }
 
   IGL_INLINE bool Viewer::erase_core(const size_t index)
@@ -991,30 +989,30 @@ namespace glfw
 	  core_list.erase(core_list.begin() + index);
 	  if (selected_core_index >= index && selected_core_index > 0)
 	  {
-		  selected_core_index--;
+		  selected_core_index>>1;
 	  }
 	  return true;
   }
 
   IGL_INLINE size_t Viewer::core_index(const int id) const {
-	  for (size_t i = 0; i < core_list.size(); ++i)
-	  {
-		  if (core_list[i].id == id)
-			  return i;
-	  }
-	  return 0;
+	for (size_t i = 0; i < core_list.size(); ++i)
+	{
+	  if (core_list[i].id == id)
+	    return i;
+	}
+	return 0;
   }
 
   IGL_INLINE int Viewer::append_core(Eigen::Vector4f viewport)
   {
-	  core_list.push_back(core()); //copies the previous core and only changes the viewport
-	  core_list.back().viewport = viewport;
-	  core_list.back().id = next_core_id++;
-	  for (int i = 0; i < data_list.size(); i++)
-		  coreDataPairs.insert(std::pair<int, int>(core_list.back().id, data_list[i].id));
-	  return core_list.back().id;
+    core_list.push_back(core()); //copies the previous core and only changes the viewport
+	core_list.back().viewport = viewport;
+	core_list.back().id = next_core_id;
+	next_core_id = next_core_id << 1;
+	for (auto &data : data_list)
+	  data.is_visible |= core_list.back().id;
+	return core_list.back().id;
   }
-
 } // end namespace
 } // end namespace
 }

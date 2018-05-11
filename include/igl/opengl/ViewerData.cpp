@@ -114,6 +114,12 @@ IGL_INLINE void igl::opengl::ViewerData::set_normals(const Eigen::MatrixXd& N)
   dirty |= MeshGL::DIRTY_NORMAL;
 }
 
+IGL_INLINE void igl::opengl::ViewerData::set_visible(bool value, int core_id /*= 1*/)
+{
+  // https://stackoverflow.com/questions/47981/how-do-you-set-clear-and-toggle-a-single-bit
+  is_visible ^= (-value ^ is_visible) & (1UL << core_id);
+}
+
 IGL_INLINE void igl::opengl::ViewerData::set_colors(const Eigen::MatrixXd &C)
 {
   using namespace std;

@@ -132,7 +132,6 @@ namespace glfw
 	size_t selected_core_index;
 	int next_core_id;
 
-	std::set<std::pair<int, int>> coreDataPairs;
     // List of registered plugins
     std::vector<ViewerPlugin*> plugins;
     // Temporary data stored when the mouse button is pressed
