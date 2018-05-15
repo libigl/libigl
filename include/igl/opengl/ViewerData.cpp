@@ -30,7 +30,8 @@ IGL_INLINE igl::opengl::ViewerData::ViewerData()
   line_width(0.5f),
   line_color(0,0,0,1),
   shininess(35.0f),
-  id(-1)
+  id(-1),
+  is_visible(1)
 {
   tex_col1 << 0.368f, 0.477f, 0.933f, 1.0f;
   tex_col2 << 1.0f, 0.903f, 0.649f, 1.0f;
@@ -114,10 +115,12 @@ IGL_INLINE void igl::opengl::ViewerData::set_normals(const Eigen::MatrixXd& N)
   dirty |= MeshGL::DIRTY_NORMAL;
 }
 
-IGL_INLINE void igl::opengl::ViewerData::set_visible(bool value, int core_id /*= 1*/)
+IGL_INLINE void igl::opengl::ViewerData::set_visible(bool value, unsigned int core_id /*= 1*/)
 {
-  // https://stackoverflow.com/questions/47981/how-do-you-set-clear-and-toggle-a-single-bit
-  is_visible ^= (-value ^ is_visible) & (1UL << core_id);
+	if (value)
+		is_visible |= core_id;
+	else
+		is_visible &= ~core_id;
 }
 
 IGL_INLINE void igl::opengl::ViewerData::set_colors(const Eigen::MatrixXd &C)

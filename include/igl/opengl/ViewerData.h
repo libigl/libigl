@@ -42,7 +42,7 @@ public:
   IGL_INLINE void set_vertices(const Eigen::MatrixXd& V);
   IGL_INLINE void set_normals(const Eigen::MatrixXd& N);
 
-  IGL_INLINE void set_visible(bool value, int core_id = 1);
+  IGL_INLINE void set_visible(bool value, unsigned int core_id = 1);
   // Set the color of the mesh
   //
   // Inputs:

@@ -920,14 +920,19 @@ namespace glfw
     this->save_mesh_to_file(fname.c_str());
   }
 
-  IGL_INLINE ViewerData& Viewer::data()
-  {
-    assert(!data_list.empty() && "data_list should never be empty");
-    assert(
-      (selected_data_index >= 0 && selected_data_index < data_list.size()) &&
-      "selected_data_index should be in bounds");
-    return data_list[selected_data_index];
-  }
+  IGL_INLINE ViewerData& Viewer::data(int mesh_id /*= -1*/)
+{
+  assert(!data_list.empty() && "data_list should never be empty");
+  int mesh_ind;
+  if (mesh_id == -1)
+    mesh_ind = selected_data_index;
+  else
+    mesh_ind = mesh_index(mesh_id);
+
+  assert((mesh_ind >= 0 && mesh_ind < data_list.size()) &&
+    "selected_data_index and mesh_id should be in bounds");
+  return data_list[mesh_ind];
+}
 
   IGL_INLINE int Viewer::append_mesh()
   {
@@ -969,12 +974,17 @@ namespace glfw
     return 0;
   }
 
-  IGL_INLINE ViewerCore& Viewer::core()
-  {
-	assert(!core_list.empty() && "core_list should never be empty");
-	assert((selected_core_index >= 0 && selected_core_index < core_list.size()) && "selected_core_index should be in bounds");
-	return core_list[selected_core_index];
-  }
+  IGL_INLINE ViewerCore& Viewer::core(unsigned core_id /*= 0*/)
+{
+  assert(!core_list.empty() && "core_list should never be empty");
+  int core_ind;
+  if (core_id == 0)
+    core_ind = selected_core_index;
+  else
+	core_ind = mesh_index(core_id);
+  assert((core_ind >= 0 && core_ind < core_list.size()) && "selected_core_index should be in bounds");
+  return core_list[core_ind];
+}
 
   IGL_INLINE bool Viewer::erase_core(const size_t index)
   {

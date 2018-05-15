@@ -79,7 +79,7 @@ namespace glfw
     IGL_INLINE void snap_to_canonical_quaternion();
     IGL_INLINE void open_dialog_load_mesh();
     IGL_INLINE void open_dialog_save_mesh();
-    IGL_INLINE ViewerData& data();
+    IGL_INLINE ViewerData& data(int mesh_id = -1);
 
     // Append a new "slot" for a mesh (i.e., create empty entires at the end of
     // the data_list and opengl_state_list.
@@ -127,7 +127,7 @@ namespace glfw
 	IGL_INLINE bool erase_core(const size_t index);
 	IGL_INLINE size_t core_index(const int id) const;
 
-	IGL_INLINE ViewerCore& core();
+	IGL_INLINE ViewerCore& core(unsigned core_id = 0);
 	std::vector<ViewerCore> core_list;
 	size_t selected_core_index;
 	int next_core_id;
