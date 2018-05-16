@@ -221,7 +221,9 @@ IGL_INLINE void ImGuiMenu::draw_viewer_menu()
     ImGui::DragFloat("Zoom", &(viewer->core().camera_zoom), 0.05f, 0.1f, 20.0f);
 
     // Select rotation type
+
     int rotation_type = static_cast<int>(viewer->core().rotation_type);
+
     static Eigen::Quaternionf trackball_angle = Eigen::Quaternionf::Identity();
     static bool orthographic = true;
     if (ImGui::Combo("Camera Type", &rotation_type, "Trackball\0Two Axes\0002D Mode\0\0"))
