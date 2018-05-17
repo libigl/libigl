@@ -135,7 +135,7 @@ namespace glfw
   IGL_INLINE int  Viewer::launch_init(bool resizable,bool fullscreen, int windowWidth, int windowHeight)
   {
 
-	glfwSetErrorCallback(glfw_error_callback);
+    glfwSetErrorCallback(glfw_error_callback);
     if (!glfwInit())
     {
       return EXIT_FAILURE;
@@ -282,17 +282,17 @@ namespace glfw
     data_list(1),
     selected_data_index(0),
     next_data_id(1),
-    selected_core_index(0),
-	next_core_id(2)
+    selected_core_index(1),
+    next_core_id(2)
 
   {
     window = nullptr;
     data_list.front().id = 0;
 
-	core_list.emplace_back(ViewerCore());
-	core_list.front().id = 1;
+    core_list.emplace_back(ViewerCore());
+    core_list.front().id = 1;
 
-	// Temporary variables initialization
+    // Temporary variables initialization
     down = false;
     hack_never_moved = true;
     scroll_position = 0.0f;
@@ -422,8 +422,8 @@ namespace glfw
     {
       data().grid_texture();
     }
-	for(int i=0;i<core_list.size(); i++)
-		core_list[i].align_camera_center(data().V,data().F);
+    for(int i=0;i<core_list.size(); i++)
+        core_list[i].align_camera_center(data().V,data().F);
 
     for (unsigned int i = 0; i<plugins.size(); ++i)
       if (plugins[i]->post_load())
@@ -538,7 +538,7 @@ namespace glfw
       case ']':
       {
         if(core().rotation_type == ViewerCore::ROTATION_TYPE_TRACKBALL)
-			core().set_rotation_type(ViewerCore::ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP);
+            core().set_rotation_type(ViewerCore::ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP);
         else
           core().set_rotation_type(ViewerCore::ROTATION_TYPE_TRACKBALL);
 
@@ -684,17 +684,17 @@ namespace glfw
       if (plugins[i]->mouse_move(mouse_x, mouse_y))
         return true;
 
-	for (int i = 0; i < core_list.size(); i++)
-	{
-		Eigen::Vector4f viewport = core_list[i].viewport;
+    for (int i = 0; i < core_list.size(); i++)
+    {
+        Eigen::Vector4f viewport = core_list[i].viewport;
 
-		if (mouse_x > viewport[0] && mouse_x < viewport[0] + viewport[2] &&
-			mouse_y > viewport[1] && mouse_y < viewport[1] + viewport[3])
-		{
-			selected_core_index = i;
-			break;
-		}
-	}
+        if (mouse_x > viewport[0] && mouse_x < viewport[0] + viewport[2] &&
+            mouse_y > viewport[1] && mouse_y < viewport[1] + viewport[3])
+        {
+            selected_core_index = i;
+            break;
+        }
+    }
     if (down)
     {
       switch (mouse_mode)
@@ -831,8 +831,8 @@ namespace glfw
       post_resize(width, height);
       highdpi=highdpi_tmp;
     }
-	for (auto& core : core_list)
-	  core.clear_framebuffers();
+    for (auto& core : core_list)
+      core.clear_framebuffers();
 
     if (callback_pre_draw)
     {
@@ -849,16 +849,16 @@ namespace glfw
       }
     }
 
-	for (auto& mesh : data_list)
-	{
-	  for (auto& core : core_list)
-	  {
-	    if (mesh.is_visible & core.id)
-		{
-		  core.draw(mesh);
-		}
-	  }
-	}
+    for (auto& core : core_list)
+    {
+        for (auto& mesh : data_list)
+      {
+        if (mesh.is_visible & core.id)
+        {
+          core.draw(mesh);
+        }
+      }
+    }
 
     if (callback_post_draw)
     {
@@ -886,8 +886,8 @@ namespace glfw
 
   IGL_INLINE void Viewer::post_resize(int w,int h)
   {
-	if(core_list.size()==1)
-		core().viewport = Eigen::Vector4f(0,0,w,h);
+    if(core_list.size()==1)
+        core().viewport = Eigen::Vector4f(0,0,w,h);
     for (unsigned int i = 0; i<plugins.size(); ++i)
     {
       plugins[i]->post_resize(w, h);
@@ -941,8 +941,8 @@ namespace glfw
     data_list.emplace_back();
     selected_data_index = data_list.size()-1;
     data_list.back().id = next_data_id++;
-	for (int i = 0; i < core_list.size(); i++)
-	  data_list.back().is_visible |= core_list[i].id;
+    for (int i = 0; i < core_list.size(); i++)
+      data_list.back().set_visible(true,core_list[i].id);
     return data_list.back().id;
   }
 
@@ -981,47 +981,47 @@ namespace glfw
   if (core_id == 0)
     core_ind = selected_core_index;
   else
-	core_ind = mesh_index(core_id);
+    core_ind = mesh_index(core_id);
   assert((core_ind >= 0 && core_ind < core_list.size()) && "selected_core_index should be in bounds");
   return core_list[core_ind];
 }
 
   IGL_INLINE bool Viewer::erase_core(const size_t index)
   {
-	  assert((index >= 0 && index < core_list.size()) && "index should be in bounds");
-	  assert(data_list.size() >= 1);
-	  if (core_list.size() == 1)
-	  {
-		  // Cannot remove last mesh
-		  return false;
-	  }
-	  core_list[index].shut(); // does nothing
-	  core_list.erase(core_list.begin() + index);
-	  if (selected_core_index >= index && selected_core_index > 0)
-	  {
-		  selected_core_index>>1;
-	  }
-	  return true;
+    assert((index >= 0 && index < core_list.size()) && "index should be in bounds");
+    assert(data_list.size() >= 1);
+    if (core_list.size() == 1)
+    {
+      // Cannot remove last mesh
+      return false;
+    }
+    core_list[index].shut(); // does nothing
+    core_list.erase(core_list.begin() + index);
+    if (selected_core_index >= index && selected_core_index > 0)
+    {
+      selected_core_index>>=1;
+    }
+    return true;
   }
 
   IGL_INLINE size_t Viewer::core_index(const int id) const {
-	for (size_t i = 0; i < core_list.size(); ++i)
-	{
-	  if (core_list[i].id == id)
-	    return i;
-	}
-	return 0;
+    for (size_t i = 0; i < core_list.size(); ++i)
+    {
+      if (core_list[i].id == id)
+        return i;
+    }
+    return 0;
   }
 
   IGL_INLINE int Viewer::append_core(Eigen::Vector4f viewport)
   {
     core_list.push_back(core()); //copies the previous core and only changes the viewport
-	core_list.back().viewport = viewport;
-	core_list.back().id = next_core_id;
-	next_core_id = next_core_id << 1;
-	for (auto &data : data_list)
-	  data.is_visible |= core_list.back().id;
-	return core_list.back().id;
+    core_list.back().viewport = viewport;
+    core_list.back().id = next_core_id;
+    next_core_id <<= 1;
+    for (auto &data : data_list)
+      data.set_visible(true,core_list.back().id);
+    return core_list.back().id;
   }
 } // end namespace
 } // end namespace

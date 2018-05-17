@@ -12,15 +12,15 @@ int main(int argc, char * argv[])
   viewer.load_mesh_from_file(std::string(TUTORIAL_SHARED_PATH) + "/cube.obj");
   viewer.load_mesh_from_file(std::string(TUTORIAL_SHARED_PATH) + "/sphere.obj");
   
-  int leftView, rightView;
-  int cubeID = viewer.data_list[0].id, sphereID = viewer.data_list[1].id;
+  int left_view, right_view;
+  int cube_id = viewer.data_list[0].id, sphere_id = viewer.data_list[1].id;
   viewer.callback_init = 
 	  [&](igl::opengl::glfw::Viewer &)
   {
     viewer.core().viewport = Eigen::Vector4f(0, 0, 640, 800);
-	leftView = viewer.core_list[0].id;
+	left_view = viewer.core_list[0].id;
 	
-	rightView = viewer.append_core(Eigen::Vector4f(640, 0, 640, 800));
+	right_view = viewer.append_core(Eigen::Vector4f(640, 0, 640, 800));
 
 	return true;
   };
@@ -32,8 +32,8 @@ int main(int argc, char * argv[])
     {
 		// by default, when a core is appended, all loaded meshes will be displayed in that core
 		// displaying can be controlled by changing viewer.coreDataPairs
-		viewer.data(cubeID).set_visible(false, leftView);
-		viewer.data(sphereID).set_visible(false, rightView);
+		viewer.data(cube_id).set_visible(false, left_view);
+		viewer.data(sphere_id).set_visible(false, right_view);
     }
     return false;
   };

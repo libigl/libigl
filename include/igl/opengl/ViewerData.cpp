@@ -117,10 +117,10 @@ IGL_INLINE void igl::opengl::ViewerData::set_normals(const Eigen::MatrixXd& N)
 
 IGL_INLINE void igl::opengl::ViewerData::set_visible(bool value, unsigned int core_id /*= 1*/)
 {
-	if (value)
-		is_visible |= core_id;
-	else
-		is_visible &= ~core_id;
+  if (value)
+    is_visible |= core_id;
+  else
+  is_visible &= ~core_id;
 }
 
 IGL_INLINE void igl::opengl::ViewerData::set_colors(const Eigen::MatrixXd &C)
