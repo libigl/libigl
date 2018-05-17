@@ -30,41 +30,14 @@
 #include <igl/slice_into.h>
 #include <igl/slim.h>
 #include <igl/triangle/triangulate.h>
+#include "mapping_energy_with_jacobians.h"
+#include "surface_gradient.h"
 
 #include <iostream>
 #include <map>
 #include <algorithm>
 #include <set>
 #include <vector>
-
-#ifdef IGL_STATIC_LIBRARY
-namespace igl
-{
-namespace slim
-{
-  extern  double compute_energy_with_jacobians(const Eigen::MatrixXd &Ji, 
-                                                    const Eigen::VectorXd &areas, 
-                                                    igl::MappingEnergyType slim_energy, 
-                                                    double exp_factor);
-  extern void update_weights_and_closest_rotations_with_jacobians(const Eigen::MatrixXd &Ji,
-                                                                        igl::MappingEnergyType slim_energy,
-                                                                        double exp_factor,
-                                                                        Eigen::MatrixXd &W,
-                                                                        Eigen::MatrixXd &Ri); 
-   extern void buildA(const Eigen::SparseMatrix<double> &Dx,
-                            const Eigen::SparseMatrix<double> &Dy,
-                            const Eigen::SparseMatrix<double> &Dz,
-                            const Eigen::MatrixXd &W,
-                            std::vector<Eigen::Triplet<double> > & IJV);
-  extern void compute_surface_gradient_matrix(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F,
-                                                    const Eigen::MatrixXd &F1, const Eigen::MatrixXd &F2,
-                                         Eigen::SparseMatrix<double> &D1, Eigen::SparseMatrix<double> &D2);
-}
-}
-#else
-#include "slim.cpp"
-#endif
-
 namespace igl
 {
 
@@ -349,7 +322,7 @@ double compute_energy_from_jacobians(const Eigen::MatrixXd &Ji,
   double energy = 0;
   if (energy_type == igl::MappingEnergyType::SYMMETRIC_DIRICHLET)
     energy = -4; // comply with paper description
-  return energy + igl::slim::compute_energy_with_jacobians(Ji, areas, energy_type, 0);
+  return energy + igl::mapping_energy_with_jacobians(Ji, areas, energy_type, 0);
 }
 
 double compute_soft_constraint_energy(const SCAFData &s)
@@ -385,7 +358,7 @@ void buildAm(const Eigen::VectorXd &sqrt_M,
 
   Eigen::SparseMatrix<double> MDx = sqrt_M.asDiagonal() * Dx;
   Eigen::SparseMatrix<double> MDy = sqrt_M.asDiagonal() * Dy;
-  igl::slim::buildA(MDx, MDy, Dz, W, IJV);
+  igl::slim_buildA(MDx, MDy, Dz, W, IJV);
 
   Am.setFromTriplets(IJV.begin(), IJV.end());
   Am.makeCompressed();
@@ -627,8 +600,8 @@ double perform_iteration(SCAFData &s)
 {
   Eigen::MatrixXd V_out = s.w_uv;
   compute_jacobians(s, V_out, true);
-  igl::slim::update_weights_and_closest_rotations_with_jacobians(s.Ji_m, s.slim_energy, 0, s.W_m, s.Ri_m);
-  igl::slim::update_weights_and_closest_rotations_with_jacobians(s.Ji_s, s.scaf_energy, 0, s.W_s, s.Ri_s);
+  igl::slim_update_weights_and_closest_rotations_with_jacobians(s.Ji_m, s.slim_energy, 0, s.W_m, s.Ri_m);
+  igl::slim_update_weights_and_closest_rotations_with_jacobians(s.Ji_s, s.scaf_energy, 0, s.W_s, s.Ri_s);
   solve_weighted_arap(s, V_out);
   auto whole_E = [&s](Eigen::MatrixXd &uv) { return compute_energy(s, uv, true); };
 
@@ -671,7 +644,7 @@ IGL_INLINE void igl::scaf_precompute(
     int dim = s.dim;
     Eigen::MatrixXd F1, F2, F3;
     igl::local_basis(s.m_V, s.m_T, F1, F2, F3);
-    igl::slim::compute_surface_gradient_matrix(s.m_V, s.m_T, F1, F2, s.Dx_m, s.Dy_m);
+    igl::surface_gradient(s.m_V, s.m_T, F1, F2, s.Dx_m, s.Dy_m);
     igl::scaf::compute_scaffold_gradient_matrix(s, s.Dx_s, s.Dy_s);
 
     s.Dx_m.makeCompressed();

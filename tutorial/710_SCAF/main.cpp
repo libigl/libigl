@@ -6,6 +6,7 @@
 #include <igl/readOBJ.h>
 #include <igl/Timer.h>
 #include <igl/opengl/glfw/Viewer.h>
+#include <igl/MappingEnergyType.h>
 #include <igl/doublearea.h>
 #include <igl/PI.h>
 #include <igl/flipped_triangles.h>
@@ -97,7 +98,7 @@ int main(int argc, char *argv[])
   }
 
   Eigen::VectorXi b; Eigen::MatrixXd bc;
-  igl::scaf_precompute(V, F, uv_init, scaf_data, igl::SLIMData::SYMMETRIC_DIRICHLET, b, bc, 0);
+  igl::scaf_precompute(V, F, uv_init, scaf_data, igl::MappingEnergyType::SYMMETRIC_DIRICHLET, b, bc, 0);
 
   // Plot the mesh
   igl::opengl::glfw::Viewer viewer;

@@ -94,6 +94,18 @@ IGL_INLINE void slim_precompute(
 //    V_o (in SLIMData): #V by dim list of mesh vertex positions
 IGL_INLINE Eigen::MatrixXd slim_solve(SLIMData& data, int iter_num);
 
+// Internal Routine. Exposed for Integration with SCAF
+IGL_INLINE void slim_update_weights_and_closest_rotations_with_jacobians(const Eigen::MatrixXd &Ji,
+                                                                    igl::MappingEnergyType slim_energy,
+                                                                    double exp_factor,
+                                                                    Eigen::MatrixXd &W,
+                                                                    Eigen::MatrixXd &Ri);
+
+IGL_INLINE void slim_buildA(const Eigen::SparseMatrix<double> &Dx,
+                        const Eigen::SparseMatrix<double> &Dy,
+                        const Eigen::SparseMatrix<double> &Dz,
+                        const Eigen::MatrixXd &W,
+                        std::vector<Eigen::Triplet<double> > & IJV);
 } // END NAMESPACE
 
 #ifndef IGL_STATIC_LIBRARY
