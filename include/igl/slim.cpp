@@ -878,8 +878,8 @@ IGL_INLINE void igl::slim_precompute(
   const Eigen::MatrixXd &V, 
   const Eigen::MatrixXi &F, 
   const Eigen::MatrixXd &V_init, 
-  SLIMData &data,
-  SLIMData::SLIM_ENERGY slim_energy, 
+  igl::SLIMData &data,
+  igl::SLIMData::SLIM_ENERGY slim_energy, 
   Eigen::VectorXi &b, 
   Eigen::MatrixXd &bc,
   double soft_p)
@@ -912,7 +912,7 @@ IGL_INLINE void igl::slim_precompute(
   data.energy = igl::slim::compute_energy(data,data.V_o) / data.mesh_area;
 }
 
-IGL_INLINE Eigen::MatrixXd igl::slim_solve(SLIMData &data, int iter_num)
+IGL_INLINE Eigen::MatrixXd igl::slim_solve(igl::SLIMData &data, int iter_num)
 {
   for (int i = 0; i < iter_num; i++)
   {

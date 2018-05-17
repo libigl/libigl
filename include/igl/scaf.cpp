@@ -37,9 +37,9 @@
 #include <set>
 #include <vector>
 
+#ifdef IGL_STATIC_LIBRARY
 namespace igl
 {
-#ifdef IGL_STATIC_LIBRARY
 namespace slim
 {
   extern  double compute_energy_with_jacobians(const Eigen::MatrixXd &Ji, 
@@ -60,10 +60,10 @@ namespace slim
                                                     const Eigen::MatrixXd &F1, const Eigen::MatrixXd &F2,
                                          Eigen::SparseMatrix<double> &D1, Eigen::SparseMatrix<double> &D2);
 }
+}
 #else
 #include "slim.cpp"
 #endif
-}
 
 namespace igl
 {
