@@ -16,6 +16,7 @@
 #include <igl/SolverStatus.h>
 #include <igl/active_set.h>
 #include <igl/adjacency_list.h>
+#include <igl/adjacency_matrix.h>
 #include <igl/arap.h>
 #include <igl/avg_edge_length.h>
 #include <igl/barycenter.h>
@@ -86,6 +87,7 @@
 #include <igl/remove_duplicate_vertices.h>
 #include <igl/rotate_vectors.h>
 #include <igl/setdiff.h>
+#include <igl/shape_diameter_function.h>
 #include <igl/signed_distance.h>
 #include <igl/slice.h>
 #include <igl/slice_into.h>
@@ -113,6 +115,7 @@ void python_export_igl(py::module &m)
 #include "py_igl/py_SolverStatus.cpp"
 #include "py_igl/py_active_set.cpp"
 #include "py_igl/py_adjacency_list.cpp"
+#include "py_igl/py_adjacency_matrix.cpp"
 #include "py_igl/py_arap.cpp"
 #include "py_igl/py_avg_edge_length.cpp"
 #include "py_igl/py_barycenter.cpp"
@@ -183,6 +186,7 @@ void python_export_igl(py::module &m)
 #include "py_igl/py_remove_duplicate_vertices.cpp"
 #include "py_igl/py_rotate_vectors.cpp"
 #include "py_igl/py_setdiff.cpp"
+#include "py_igl/py_shape_diameter_function.cpp"
 #include "py_igl/py_signed_distance.cpp"
 #include "py_igl/py_slice.cpp"
 #include "py_igl/py_slice_into.cpp"
