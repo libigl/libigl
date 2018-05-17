@@ -64,10 +64,10 @@ namespace igl
                                                 Eigen::MatrixXd &V_o);
     IGL_INLINE double compute_energy_with_jacobians(const Eigen::MatrixXd &Ji, 
                                                     const Eigen::VectorXd &areas, 
-                                                    igl::SLIMData::SLIM_ENERGY slim_energy, 
+                                                    igl::MappingEnergyType slim_energy, 
                                                     double exp_factor);
     IGL_INLINE void update_weights_and_closest_rotations_with_jacobians(const Eigen::MatrixXd &Ji,
-                                                                        igl::SLIMData::SLIM_ENERGY slim_energy,
+                                                                        igl::MappingEnergyType slim_energy,
                                                                         double exp_factor,
                                                                         Eigen::MatrixXd &W,
                                                                         Eigen::MatrixXd &Ri);
@@ -131,7 +131,7 @@ namespace igl
     
 
     IGL_INLINE void update_weights_and_closest_rotations_with_jacobians(const Eigen::MatrixXd &Ji,
-                                              igl::SLIMData::SLIM_ENERGY slim_energy,
+                                              igl::MappingEnergyType slim_energy,
                                               double exp_factor,
                                               Eigen::MatrixXd &W,
                                               Eigen::MatrixXd &Ri)
@@ -167,26 +167,26 @@ namespace igl
           // Update Weights according to energy
           switch (slim_energy)
           {
-            case igl::SLIMData::ARAP:
+            case igl::MappingEnergyType::ARAP:
             {
               m_sing_new << 1, 1;
               break;
             }
-            case igl::SLIMData::SYMMETRIC_DIRICHLET:
+            case igl::MappingEnergyType::SYMMETRIC_DIRICHLET:
             {
               double s1_g = 2 * (s1 - pow(s1, -3));
               double s2_g = 2 * (s2 - pow(s2, -3));
               m_sing_new << sqrt(s1_g / (2 * (s1 - 1))), sqrt(s2_g / (2 * (s2 - 1)));
               break;
             }
-            case igl::SLIMData::LOG_ARAP:
+            case igl::MappingEnergyType::LOG_ARAP:
             {
               double s1_g = 2 * (log(s1) / s1);
               double s2_g = 2 * (log(s2) / s2);
               m_sing_new << sqrt(s1_g / (2 * (s1 - 1))), sqrt(s2_g / (2 * (s2 - 1)));
               break;
             }
-            case igl::SLIMData::CONFORMAL:
+            case igl::MappingEnergyType::CONFORMAL:
             {
               double s1_g = 1 / (2 * s2) - s2 / (2 * pow(s1, 2));
               double s2_g = 1 / (2 * s1) - s1 / (2 * pow(s2, 2));
@@ -202,7 +202,7 @@ namespace igl
               ri = ui * closest_sing_vec.asDiagonal() * vi.transpose();
               break;
             }
-            case igl::SLIMData::EXP_CONFORMAL:
+            case igl::MappingEnergyType::EXP_CONFORMAL:
             {
               double s1_g = 2 * (s1 - pow(s1, -3));
               double s2_g = 2 * (s2 - pow(s2, -3));
@@ -220,7 +220,7 @@ namespace igl
               m_sing_new << sqrt(s1_g / (2 * (s1 - 1))), sqrt(s2_g / (2 * (s2 - 1)));
               break;
             }
-            case igl::SLIMData::EXP_SYMMETRIC_DIRICHLET:
+            case igl::MappingEnergyType::EXP_SYMMETRIC_DIRICHLET:
             {
               double s1_g = 2 * (s1 - pow(s1, -3));
               double s2_g = 2 * (s2 - pow(s2, -3));
@@ -271,12 +271,12 @@ namespace igl
           // 1) Update Weights
           switch (slim_energy)
           {
-            case igl::SLIMData::ARAP:
+            case igl::MappingEnergyType::ARAP:
             {
               m_sing_new << 1, 1, 1;
               break;
             }
-            case igl::SLIMData::LOG_ARAP:
+            case igl::MappingEnergyType::LOG_ARAP:
             {
               double s1_g = 2 * (log(s1) / s1);
               double s2_g = 2 * (log(s2) / s2);
@@ -284,7 +284,7 @@ namespace igl
               m_sing_new << sqrt(s1_g / (2 * (s1 - 1))), sqrt(s2_g / (2 * (s2 - 1))), sqrt(s3_g / (2 * (s3 - 1)));
               break;
             }
-            case igl::SLIMData::SYMMETRIC_DIRICHLET:
+            case igl::MappingEnergyType::SYMMETRIC_DIRICHLET:
             {
               double s1_g = 2 * (s1 - pow(s1, -3));
               double s2_g = 2 * (s2 - pow(s2, -3));
@@ -292,7 +292,7 @@ namespace igl
               m_sing_new << sqrt(s1_g / (2 * (s1 - 1))), sqrt(s2_g / (2 * (s2 - 1))), sqrt(s3_g / (2 * (s3 - 1)));
               break;
             }
-            case igl::SLIMData::EXP_SYMMETRIC_DIRICHLET:
+            case igl::MappingEnergyType::EXP_SYMMETRIC_DIRICHLET:
             {
               double s1_g = 2 * (s1 - pow(s1, -3));
               double s2_g = 2 * (s2 - pow(s2, -3));
@@ -310,7 +310,7 @@ namespace igl
 
               break;
             }
-            case igl::SLIMData::CONFORMAL:
+            case igl::MappingEnergyType::CONFORMAL:
             {
               double common_div = 9 * (pow(s1 * s2 * s3, 5. / 3.));
 
@@ -331,7 +331,7 @@ namespace igl
               ri = ui * closest_sing_vec.asDiagonal() * vi.transpose();
               break;
             }
-            case igl::SLIMData::EXP_CONFORMAL:
+            case igl::MappingEnergyType::EXP_CONFORMAL:
             {
               // E_conf = (s1^2 + s2^2 + s3^2)/(3*(s1*s2*s3)^(2/3) )
               // dE_conf/ds1 = (-2*(s2*s3)*(s2^2+s3^2 -2*s1^2) ) / (9*(s1*s2*s3)^(5/3))
@@ -564,7 +564,7 @@ namespace igl
     }
 
     IGL_INLINE double compute_energy_with_jacobians(const Eigen::MatrixXd &Ji, const Eigen::VectorXd &areas, 
-    igl::SLIMData::SLIM_ENERGY slim_energy, double exp_factor)
+    igl::MappingEnergyType slim_energy, double exp_factor)
     {
 
       double energy = 0;
@@ -588,32 +588,32 @@ namespace igl
 
           switch (slim_energy)
           {
-            case igl::SLIMData::ARAP:
+            case igl::MappingEnergyType::ARAP:
             {
               energy += areas(i) * (pow(s1 - 1, 2) + pow(s2 - 1, 2));
               break;
             }
-            case igl::SLIMData::SYMMETRIC_DIRICHLET:
+            case igl::MappingEnergyType::SYMMETRIC_DIRICHLET:
             {
               energy += areas(i) * (pow(s1, 2) + pow(s1, -2) + pow(s2, 2) + pow(s2, -2));
               break;
             }
-            case igl::SLIMData::EXP_SYMMETRIC_DIRICHLET:
+            case igl::MappingEnergyType::EXP_SYMMETRIC_DIRICHLET:
             {
               energy += areas(i) * exp(exp_factor * (pow(s1, 2) + pow(s1, -2) + pow(s2, 2) + pow(s2, -2)));
               break;
             }
-            case igl::SLIMData::LOG_ARAP:
+            case igl::MappingEnergyType::LOG_ARAP:
             {
               energy += areas(i) * (pow(log(s1), 2) + pow(log(s2), 2));
               break;
             }
-            case igl::SLIMData::CONFORMAL:
+            case igl::MappingEnergyType::CONFORMAL:
             {
               energy += areas(i) * ((pow(s1, 2) + pow(s2, 2)) / (2 * s1 * s2));
               break;
             }
-            case igl::SLIMData::EXP_CONFORMAL:
+            case igl::MappingEnergyType::EXP_CONFORMAL:
             {
               energy += areas(i) * exp(exp_factor * ((pow(s1, 2) + pow(s2, 2)) / (2 * s1 * s2)));
               break;
@@ -649,33 +649,33 @@ namespace igl
 
           switch (slim_energy)
           {
-            case igl::SLIMData::ARAP:
+            case igl::MappingEnergyType::ARAP:
             {
               energy += areas(i) * (pow(s1 - 1, 2) + pow(s2 - 1, 2) + pow(s3 - 1, 2));
               break;
             }
-            case igl::SLIMData::SYMMETRIC_DIRICHLET:
+            case igl::MappingEnergyType::SYMMETRIC_DIRICHLET:
             {
               energy += areas(i) * (pow(s1, 2) + pow(s1, -2) + pow(s2, 2) + pow(s2, -2) + pow(s3, 2) + pow(s3, -2));
               break;
             }
-            case igl::SLIMData::EXP_SYMMETRIC_DIRICHLET:
+            case igl::MappingEnergyType::EXP_SYMMETRIC_DIRICHLET:
             {
               energy += areas(i) * exp(exp_factor *
                                        (pow(s1, 2) + pow(s1, -2) + pow(s2, 2) + pow(s2, -2) + pow(s3, 2) + pow(s3, -2)));
               break;
             }
-            case igl::SLIMData::LOG_ARAP:
+            case igl::MappingEnergyType::LOG_ARAP:
             {
               energy += areas(i) * (pow(log(s1), 2) + pow(log(std::abs(s2)), 2) + pow(log(std::abs(s3)), 2));
               break;
             }
-            case igl::SLIMData::CONFORMAL:
+            case igl::MappingEnergyType::CONFORMAL:
             {
               energy += areas(i) * ((pow(s1, 2) + pow(s2, 2) + pow(s3, 2)) / (3 * pow(s1 * s2 * s3, 2. / 3.)));
               break;
             }
-            case igl::SLIMData::EXP_CONFORMAL:
+            case igl::MappingEnergyType::EXP_CONFORMAL:
             {
               energy += areas(i) * exp((pow(s1, 2) + pow(s2, 2) + pow(s3, 2)) / (3 * pow(s1 * s2 * s3, 2. / 3.)));
               break;
@@ -879,7 +879,7 @@ IGL_INLINE void igl::slim_precompute(
   const Eigen::MatrixXi &F, 
   const Eigen::MatrixXd &V_init, 
   igl::SLIMData &data,
-  igl::SLIMData::SLIM_ENERGY slim_energy, 
+  igl::MappingEnergyType slim_energy, 
   Eigen::VectorXi &b, 
   Eigen::MatrixXd &bc,
   double soft_p)

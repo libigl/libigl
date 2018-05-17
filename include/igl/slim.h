@@ -9,6 +9,7 @@
 #define SLIM_H
 
 #include "igl_inline.h"
+#include "MappingEnergyType.h"
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 
@@ -29,16 +30,7 @@ struct SLIMData
   // Input
   Eigen::MatrixXd V; // #V by 3 list of mesh vertex positions
   Eigen::MatrixXi F; // #F by 3/3 list of mesh faces (triangles/tets)
-  enum SLIM_ENERGY
-  {
-    ARAP,
-    LOG_ARAP,
-    SYMMETRIC_DIRICHLET,
-    CONFORMAL,
-    EXP_CONFORMAL,
-    EXP_SYMMETRIC_DIRICHLET
-  };
-  SLIM_ENERGY slim_energy;
+  MappingEnergyType slim_energy;
 
   // Optional Input
   // soft constraints
@@ -92,7 +84,7 @@ IGL_INLINE void slim_precompute(
   const Eigen::MatrixXi& F,
   const Eigen::MatrixXd& V_init,
   SLIMData& data,
-  SLIMData::SLIM_ENERGY slim_energy,
+  MappingEnergyType slim_energy,
   Eigen::VectorXi& b,
   Eigen::MatrixXd& bc,
   double soft_p);

@@ -8,8 +8,9 @@
 #ifndef SCAF_H
 #define SCAF_H
 
-#include <igl/slim.h>
-#include <igl/igl_inline.h>
+#include "slim.h"
+#include "igl_inline.h"
+#include "MappingEnergyType.h"
 
 namespace igl
 {
@@ -22,8 +23,8 @@ namespace igl
     struct SCAFData
     {
       double scaffold_factor = 10;
-      igl::SLIMData::SLIM_ENERGY scaf_energy = igl::SLIMData::SYMMETRIC_DIRICHLET;
-      igl::SLIMData::SLIM_ENERGY slim_energy = igl::SLIMData::SYMMETRIC_DIRICHLET;
+      igl::MappingEnergyType scaf_energy = igl::MappingEnergyType::SYMMETRIC_DIRICHLET;
+      igl::MappingEnergyType slim_energy = igl::MappingEnergyType::SYMMETRIC_DIRICHLET;
 
       // Output
       int dim = 2;
@@ -81,7 +82,7 @@ namespace igl
         const Eigen::MatrixXi &F,
         const Eigen::MatrixXd &V_init,
         SCAFData &data,
-        SLIMData::SLIM_ENERGY slim_energy,
+        MappingEnergyType slim_energy,
         Eigen::VectorXi& b,
         Eigen::MatrixXd& bc,
         double soft_p);

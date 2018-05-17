@@ -44,10 +44,10 @@ namespace slim
 {
   extern  double compute_energy_with_jacobians(const Eigen::MatrixXd &Ji, 
                                                     const Eigen::VectorXd &areas, 
-                                                    igl::SLIMData::SLIM_ENERGY slim_energy, 
+                                                    igl::MappingEnergyType slim_energy, 
                                                     double exp_factor);
   extern void update_weights_and_closest_rotations_with_jacobians(const Eigen::MatrixXd &Ji,
-                                                                        igl::SLIMData::SLIM_ENERGY slim_energy,
+                                                                        igl::MappingEnergyType slim_energy,
                                                                         double exp_factor,
                                                                         Eigen::MatrixXd &W,
                                                                         Eigen::MatrixXd &Ri); 
@@ -344,10 +344,10 @@ void compute_jacobians(SCAFData &s, const Eigen::MatrixXd &V_new, bool whole)
 
 double compute_energy_from_jacobians(const Eigen::MatrixXd &Ji,
                                      const Eigen::VectorXd &areas,
-                                     igl::SLIMData::SLIM_ENERGY energy_type)
+                                     igl::MappingEnergyType energy_type)
 {
   double energy = 0;
-  if (energy_type == igl::SLIMData::SYMMETRIC_DIRICHLET)
+  if (energy_type == igl::MappingEnergyType::SYMMETRIC_DIRICHLET)
     energy = -4; // comply with paper description
   return energy + igl::slim::compute_energy_with_jacobians(Ji, areas, energy_type, 0);
 }
@@ -649,7 +649,7 @@ IGL_INLINE void igl::scaf_precompute(
     const Eigen::MatrixXi &F,
     const Eigen::MatrixXd &V_init,
     igl::SCAFData &data,
-    SLIMData::SLIM_ENERGY slim_energy,
+    igl::MappingEnergyType slim_energy,
     Eigen::VectorXi &b,
     Eigen::MatrixXd &bc,
     double soft_p)
