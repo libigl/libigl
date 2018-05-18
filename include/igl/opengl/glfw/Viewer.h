@@ -122,15 +122,15 @@ namespace glfw
     int next_data_id;
     GLFWwindow* window;
     
-	// Stores all the viewing options
-	IGL_INLINE int append_core(Eigen::Vector4f viewport);
-	IGL_INLINE bool erase_core(const size_t index);
-	IGL_INLINE size_t core_index(const int id) const;
+    // Stores all the viewing options
+    IGL_INLINE int append_core(Eigen::Vector4f viewport);
+    IGL_INLINE bool erase_core(const size_t index);
+    IGL_INLINE size_t core_index(const int id) const;
 
-	IGL_INLINE ViewerCore& core(unsigned core_id = 0);
-	std::vector<ViewerCore> core_list;
-	size_t selected_core_index;
-	int next_core_id;
+    IGL_INLINE ViewerCore& core(unsigned core_id = 0);
+    std::vector<ViewerCore> core_list;
+    size_t selected_core_index;
+    int next_core_id;
 
     // List of registered plugins
     std::vector<ViewerPlugin*> plugins;
