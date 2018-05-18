@@ -282,7 +282,7 @@ namespace glfw
     data_list(1),
     selected_data_index(0),
     next_data_id(1),
-    selected_core_index(1),
+    selected_core_index(0),
     next_core_id(2)
 
   {
@@ -981,7 +981,7 @@ namespace glfw
   if (core_id == 0)
     core_ind = selected_core_index;
   else
-    core_ind = mesh_index(core_id);
+    core_ind = core_index(core_id);
   assert((core_ind >= 0 && core_ind < core_list.size()) && "selected_core_index should be in bounds");
   return core_list[core_ind];
 }

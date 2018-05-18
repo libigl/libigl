@@ -173,7 +173,7 @@ namespace glfw
     void* callback_key_up_data;
 
   public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
 } // end namespace
