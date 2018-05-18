@@ -33,8 +33,6 @@ IGL_INLINE igl::opengl::ViewerData::ViewerData()
   id(-1),
   is_visible(1)
 {
-  tex_col1 << 0.368f, 0.477f, 0.933f, 1.0f;
-  tex_col2 << 1.0f, 0.903f, 0.649f, 1.0f;
   clear();
 };
 
@@ -448,34 +446,19 @@ IGL_INLINE void igl::opengl::ViewerData::grid_texture()
 
   unsigned size = 128;
   unsigned size2 = size/2;
-
-  texture_R.resize(size, size); texture_R.setZero();
-  texture_G.resize(size, size); texture_G.setZero();
-  texture_B.resize(size, size); texture_B.setZero();
-
-  Eigen::Matrix<unsigned char, 3, 1> t1 = (255.0f * tex_col1.block<3, 1>(0, 0)).cast<unsigned char>();
-  Eigen::Matrix<unsigned char, 3, 1> t2 = (255.0f * tex_col2.block<3, 1>(0, 0)).cast<unsigned char>();
-  int b = 2;
-  for (unsigned i = b; i<size - b; ++i)
+  texture_R.resize(size, size);
+  for (unsigned i=0; i<size; ++i)
   {
-	  for (unsigned j = b; j<size - b; ++j)
-	  {
-		  if ((i > size2 + b && j < size2 - b) || (i < size2 - b && j > size2 + b))
-		  {
-			  texture_R(i, j) = t1(0);
-			  texture_G(i, j) = t1(1);
-			  texture_B(i, j) = t1(2);
-		  }
-		  if ((i < size2 - b && j < size2 - b) || (i > size2 + b && j > size2 + b))
-		  {
-			  texture_R(i, j) = t2(0);
-			  texture_G(i, j) = t2(1);
-			  texture_B(i, j) = t2(2);
-		  }
-	  }
+    for (unsigned j=0; j<size; ++j)
+    {
+      texture_R(i,j) = 0;
+      if ((i<size2 && j<size2) || (i>=size2 && j>=size2))
+        texture_R(i,j) = 255;
+    }
   }
 
-
+  texture_G = texture_R;
+  texture_B = texture_R;
   texture_A = Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>::Constant(texture_R.rows(),texture_R.cols(),255);
   dirty |= MeshGL::DIRTY_TEXTURE;
 }

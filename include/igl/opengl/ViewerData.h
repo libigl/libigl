@@ -153,8 +153,6 @@ public:
   Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> texture_B;
   Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> texture_A;
 
-  // Texture square colors
-  Eigen::Vector4f tex_col1, tex_col2;
   // Overlays
 
   // Lines plotted over the scene
