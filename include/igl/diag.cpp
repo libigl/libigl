@@ -72,7 +72,7 @@ IGL_INLINE void igl::diag(
   Eigen::SparseMatrix<T>& X)
 {
   // clear and resize output
-  Eigen::SparseMatrix<T, Eigen::RowMajor> dyn_X(V.size(),V.size());
+  Eigen::DynamicSparseMatrix<T, Eigen::RowMajor> dyn_X(V.size(),V.size());
   dyn_X.reserve(V.size());
   // loop over non-zeros
   for(typename Eigen::SparseVector<T>::InnerIterator it(V); it; ++it)
