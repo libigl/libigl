@@ -2959,7 +2959,7 @@ it's best to reuse the AABB hierarchy that's being built during
 `igl::point_mesh_squared_distance`:
 
 ```cpp
-igl::AABB tree;
+igl::AABB<MatrixXd,3> tree;
 tree.init(V,F);
 tree.squared_distance(V,F,P,sqrD,I,C);
 ... // P changes, but (V,F) does not
