@@ -112,28 +112,33 @@ target_link_libraries(igl_common INTERFACE ${CMAKE_THREAD_LIBS_INIT})
 
 function(compile_igl_module module_dir)
   string(REPLACE "/" "_" module_name "${module_dir}")
+  if(module_name STREQUAL "core")
+    set(module_libname "igl")
+  else()
+    set(module_libname "igl_${module_name}")
+  endif()
   if(LIBIGL_USE_STATIC_LIBRARY)
     file(GLOB SOURCES_IGL_${module_name}
       "${LIBIGL_SOURCE_DIR}/igl/${module_dir}/*.cpp"
       "${LIBIGL_SOURCE_DIR}/igl/copyleft/${module_dir}/*.cpp")
-    add_library(igl_${module_name} STATIC ${SOURCES_IGL_${module_name}} ${ARGN})
+    add_library(${module_libname} STATIC ${SOURCES_IGL_${module_name}} ${ARGN})
     if(MSVC)
-      target_compile_options(igl_${module_name} PRIVATE /w) # disable all warnings (not ideal but...)
+      target_compile_options(${module_libname} PRIVATE /w) # disable all warnings (not ideal but...)
     else()
-      #target_compile_options(igl_${module_name} PRIVATE -w) # disable all warnings (not ideal but...)
+      #target_compile_options(${module_libname} PRIVATE -w) # disable all warnings (not ideal but...)
     endif()
   else()
-    add_library(igl_${module_name} INTERFACE)
+    add_library(${module_libname} INTERFACE)
   endif()
 
-  target_link_libraries(igl_${module_name} ${IGL_SCOPE} igl_common)
+  target_link_libraries(${module_libname} ${IGL_SCOPE} igl_common)
   if(NOT module_name STREQUAL "core")
-    target_link_libraries(igl_${module_name} ${IGL_SCOPE} igl_core)
+    target_link_libraries(${module_libname} ${IGL_SCOPE} igl)
   endif()
 
   # Alias target because it looks nicer
-  message(STATUS "Creating target: igl::${module_name}")
-  add_library(igl::${module_name} ALIAS igl_${module_name})
+  message(STATUS "Creating target: igl::${module_name} (${module_libname})")
+  add_library(igl::${module_name} ALIAS ${module_libname})
 endfunction()
 
 ################################################################################
