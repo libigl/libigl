@@ -78,7 +78,7 @@ pages:
       - rbr: file-formats/rbr.md
       - tgf: file-formats/tgf.md
       - xml: file-formats/xml.md
-    - Building the Website: README.md
+    - Building the Website: readme.md
   - FAQ: faq.md
   - About:
     - Release History: RELEASE_HISTORY.md
