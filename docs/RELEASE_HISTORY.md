@@ -1,16 +1,8 @@
-title: libigl Tutorial
-author: Alec Jacobson
-date: 17 June 2015
-css: tutorial/style.css
-html header:   <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-<link rel="stylesheet" href="http://yandex.st/highlightjs/7.3/styles/default.min.css">
-<script src="http://yandex.st/highlightjs/7.3/highlight.min.js"></script>
-<script>hljs.initHighlightingOnLoad();</script>
-
 # Libigl version tracking
 
 Version | Short description
 --------|----------------------------------------------------------------------
+1.3.0   | Modernized cmake build, multi-mesh viewer, replace nanogui with imgui
 1.2.1   | Reorganization opengl-dependent functions: opengl and opengl2 extras
 1.2.0   | Reorganization of "extras", rm deprecated funcs, absorb boost & svd3x3
 1.1.7   | Switch build for static library to cmake.
@@ -44,14 +36,33 @@ Version | Short description
 0.1.5   | Compilation on windows, bug fix for compilation with cygwin
 0.1.1   | Alpha release with core functions, extras, examples
 
-## Version 1.2 Changes ##
+## Version 1.3 Changes
+List of changes related to this version:
+
+- The CMake build system has been rewritten to be more modular and modern.
+libigl modules are now available as CMake target, e.g. `igl::triangle` or
+`igl::opengl`. See the libigl-example-project for an example of typical usage.
+
+- `igl/antweakbar` and `igl/opengl2` support has been removed from the CMake.
+The files are still available, but their use is discouraged.
+
+- The viewer has been refactored and now supports multiple meshes. See related
+tutorial entry for more information. The viewer files are now split according
+to their dependencies. E.g. `igl::viewer::Viewer` has been renamed
+`igl::opengl::glfw::Viewer`.
+
+- NanoGui has been replaced by ImGui, and is now available as a viewer plugin
+instead of `#define`
+
+
+## Version 1.2 Changes
 This change introduces better organization of dependencies and removes some
 deprecated/repeated functions. The 3x3 svd code and dependent functions
 (including ARAP) were absorbed into the main library. Similarly, the boost
 dependency extra was absorbed.
 
 
-### External libraries as git subrepos ###
+### External libraries as git subrepos
 The core functionality of libigl (still) just depends on stl, c++11 and Eigen.
 There are additional _optional_ dependencies (e.g. CGAL, embree, glfw, tetgen,
 triangle). Libigl functions using these are located (still) in sub-folders of
@@ -63,7 +74,7 @@ libigl _before version 1.2_ then you should issue
 
     git submodule update --init --recursive
 
-### Deprecated/repeated functions ###
+### Deprecated/repeated functions
 
 Old                                     | New
 --------------------------------------- | -----------------------------------
@@ -82,12 +93,12 @@ Old                                     | New
 `#include <igl/svd3x3/svd3x3_sse.h>`    | `#include <igl/svd3x3_sse.h>`
 
 
-## Version 1.0 Changes ##
+## Version 1.0 Changes
 Our beta release marks our confidence that this library can be used outside of
 casual experimenting. To maintain order, we have made a few changes which
 current users should read and adapt their code accordingly.
 
-### Renamed functions ###
+### Renamed functions
 The following table lists functions which have changed name as of version
 1.0.0:
 
@@ -122,7 +133,7 @@ Old                              | New
 `igl::is_manifold`               | `igl::is_edge_manifold`
 `igl::triangle_wrapper`          | `igl::triangulate`
 
-### Miscellaneous ###
+### Miscellaneous
  - To match interfaces provided by (all) other quadratic optimization
    libraries, `igl::min_quad_with_fixed` and `igl::active_set` now expect as
    input twice the quadratic coefficients matrix, i.e. the Hessian. For

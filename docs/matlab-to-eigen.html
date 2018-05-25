@@ -1,6 +1,6 @@
 <html> <head>
     <title>MATLAB to Eigen</title>
-    <link href="./style.css" rel="stylesheet" type="text/css">
+    <link href="./css/cheatsheet.css" rel="stylesheet" type="text/css">
   </head>
   <body>
     <table>
@@ -216,7 +216,7 @@ I = VectorXi::LinSpaced(size,low,low+step*(size-1));</code></pre></td>
 
 A = IM(A);
   </code></pre></td>
-        <td><pre><code>B = A.unaryExpr(bind1st(mem_fun( 
+        <td><pre><code>B = A.unaryExpr(bind1st(mem_fun(
   static_cast&lt;VectorXi::Scalar&amp;(VectorXi::*)(VectorXi::Index)&gt;
   (&amp;VectorXi::operator())), &amp;IM)).eval();
 // or
@@ -251,8 +251,8 @@ IP = I(P==0);</code></pre></td>
 ...
 VectorXi IP = I;
 IP.conservativeResize(stable_partition(
-  IP.data(), 
-  IP.data()+IP.size(), 
+  IP.data(),
+  IP.data()+IP.size(),
   [&amp;P](int i){return P(i)==0;})-IP.data());
         </code></pre></td>
         <td>Where I is a vector of increasing indices from 0 to n, and P is a vector. <i>Requires C++11 and <code>#include &lt;algorithm&gt;</code></i></td>
@@ -312,6 +312,6 @@ bool a = A.array().any();
     <a href="http://eigen.tuxfamily.org/dox/AsciiQuickReference.txt">Eigen's
     "ASCII Quick Reference" with MATLAB translations</a>
     <br>
-    <a href="./tutorial.html">IGL Lib Tutorial</a>
+    <a href="./tutorial/tutorial/">IGL Lib Tutorial</a>
   </body>
 </html>

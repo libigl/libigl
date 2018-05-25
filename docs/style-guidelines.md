@@ -1,10 +1,13 @@
+<!-- Hide h3+ from toc  -->
+<style>.md-nav--secondary .md-nav__list .md-nav__list { display: none }</style>
+
 # Libigl Style Guidelines
 
 Libigl is used and developed by many people. This document highlights some
 style guidelines for _developers_ of the library, but also acts as
 best-practices for users.
 
-## One function, one .h/.cpp pair [filefunction]
+## One function, one .h/.cpp pair
 
 The structure of libigl is very flat and function-based. For every
 function/sub-routine, create a single .h and .cpp file. For example, if you have
@@ -55,7 +58,7 @@ namespace igl
 
 #### `example_fun.cpp`
 
-```
+```cpp
 // This file is part of libigl, a simple c++ geometry processing library.
 // 
 // Copyright (C) 2015 [Your Name] [your email address]
@@ -134,7 +137,7 @@ header file. A typical documentation consists of four parts:
 
 For example the header `barycenter.h`
 
-```
+```cpp
 // Computes the barycenter of every simplex
 //
 // Inputs:
@@ -222,7 +225,7 @@ void DerivedV fit_to_unit_cube(const Eigen::PlainObjectBase<DerivedV> & V);
 
 In `igl/fit_in_unit_cube.cpp`:
 
-```
+```cpp
 template <typename DerivedV, typename DerivedW>
 void fit_to_unit_cube(
   const Eigen::MatrixBase<DerivedV> & V,
@@ -251,7 +254,7 @@ will be #V and may not match the number of rows in `DerivedF` (#F).
 
 ## Function naming conventions 
 
-Functions (and [thus also files](#filefunction)) should have simple,
+Functions (and [thus also files](#one-function-one-hcpp-pair-filefunction)) should have simple,
 descriptive names using lowercase letters and underscores between words. Avoid
 unnecessary prefaces. For example, instead of `compute_adjacency_matrix`,
 `construct_adjacency_matrix`, `extract_adjacency_matrix`,

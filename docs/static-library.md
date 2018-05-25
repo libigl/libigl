@@ -1,3 +1,6 @@
+<!-- Hide h3+ from toc  -->
+<style>.md-nav--secondary .md-nav__list .md-nav__list { display: none }</style>
+
 # Compiling libigl as a static library
 
 > Warning: compiling libigl as a static library is considerably more difficult
@@ -5,10 +8,9 @@
 > it only if you are experienced with C++, cmake and make, and you want to
 > improve your compilation times.
 
-Libigl is developed most often on Mac OS X, though has current users in Linux
-and Windows.
+Libigl is developed most often on Mac OS X, though has current users in Linux and Windows.
 
-### Linux/Mac OS X/Cygwin ###
+### Linux/Mac OS X/Cygwin
 
 Libigl may also be compiled to a static library. This is advantageous when
 building a project with libigl, since when used as an header-only library can
@@ -18,12 +20,14 @@ To build the entire libigl library producing at least `libigl/lib/libigl.a` and
 possible other (automatically detected) extras, e.g. `libigl/lib/libiglcgal.a`
 from _this current directory_: issue:
 
+```bash
     mkdir -p ../lib
     cd ../lib
     cmake -DCMAKE_BUILD_TYPE=Release ../optional
     make
+```
 
-#### Warnings ####
+#### Warnings
 
 You should expect to see a few linker warnings of the form:
 
@@ -32,7 +36,7 @@ You should expect to see a few linker warnings of the form:
 These are (admittedly unpopular) functions that have never been used by us
 statically so we haven't explicit instantiations (yet).
 
-#### External ####
+#### External
 
 Finally there are a number of external libraries that we include in
 `./external/` because they are either difficult to obtain or they have been
@@ -40,73 +44,72 @@ patched for easier use with libigl. Please see the respective readmes in those
 directories or build the tutorial using cmake, which will recursively build all
 dependencies.
 
-##### Installing Embree 2.0 #####
+##### Installing Embree 2.0
 To build the embree library and executables on Mac OS X issue:
 
-    cd external/embree
-    mkdir build
-    cd build
-    cmake ..
-    # Or using a different compiler
-    #cmake .. -DCMAKE_C_COMPILER=/opt/local/bin/gcc -DCMAKE_CXX_COMPILER=/opt/local/bin/g++
-    make
-    # Could also install embree to your root, but libigl examples don't expect
-    # this
-    #sudo make install
+```bash
+cd external/embree
+mkdir build
+cd build
+cmake ..
+# Or using a different compiler
+#cmake .. -DCMAKE_C_COMPILER=/opt/local/bin/gcc -DCMAKE_CXX_COMPILER=/opt/local/bin/g++
+make
+# Could also install embree to your root, but libigl examples don't expect this
+#sudo make install
+```
 
-## Extras ##
+## Extras
 
-### bbw ###
-This library extra contains functions for computing Bounded Biharmonic Weights, can
-be used with and without the [mosek](#mosek) extra via the `IGL_NO_MOSEK`
-macro.
+### bbw
+This library extra contains functions for computing Bounded Biharmonic Weights, can be used with and without the [mosek](#mosek) extra via the `IGL_NO_MOSEK` macro.
 
-### boolean ##
+### boolean
 This library extra contains functions for computing mesh-mesh booleans,
 depending on CGAL and optionally Cork.
 
-### cgal ###
+### cgal
 This library extra utilizes CGAL's efficient and exact intersection and
 proximity queries.
 
-### embree ###
+### embree
 This library extra utilizes embree's efficient ray tracing queries.
 
-### matlab ###
+### matlab
 This library extra provides support for reading and writing `.mat` workspace
 files, interfacing with Matlab at run time and compiling mex functions.
 
-### mosek ###
+### mosek
 This library extra utilizes mosek's efficient interior-point solver for
 quadratic programs.
 
-### png ###
+### png
 This library extra uses `libpng` and `YImage` to read and write `.png` files.
 
-### tetgen ###
+### tetgen
 This library extra provides a simplified wrapper to the tetgen 3d tetrahedral
 meshing library.
 
-### Triangle ###
+### Triangle
 This library extra provides a simplified wrapper to the triangle 2d triangle
 meshing library.
 
-### viewer ###
+### viewer
 This library extra utilizes glfw and glew to open an opengl context and launch
 a simple mesh viewer.
 
-### xml ###
+### xml
 This library extra utilizes tinyxml2 to read and write serialized classes
 containing Eigen matrices and other standard simple data-structures.
 
-## Development ##
+## Development
 Further documentation for developers is listed in 
-[style_guidelines.html](../style_guidelines.html).
+[style_guidelines.html](./style-guidelines.md).
 
-## License ##
+## License
 See `LICENSE.txt`
 
-## Zipping ##
+## Zipping
 Zip this directory without .git litter and binaries using:
 
     git archive -prefix=libigl/ -o libigl.zip master
@@ -141,7 +144,6 @@ using the makefile in the `libigl` directory:
 Now if we try to compile a project and link against it we may get
 an error like:
 
-
     Undefined symbols for architecture x86_64:
     "Eigen::Matrix<int, -1, -1, 0, -1, -1> igl::cat<Eigen::Matrix<int, -1, -1, 0, -1, -1> >(int, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&)", referenced from:
     uniform_sample(Eigen::Matrix<double, -1, -1, 0, -1, -1> const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, int, double, Eigen::Matrix<double, -1, -1, 0, -1, -1>&)in Skinning.o
@@ -173,9 +175,10 @@ Then you must recompile the IGL static library.
 And try to compile your project again, potentially repeating this
 process until no more symbols are undefined.
 
-`It may be useful to check that you code compiles with
-no errors first using the headers-only version to be sure that all errors are from missing template
-instantiations.`
+!!! note
+    It may be useful to check that you code compiles with
+    no errors first using the headers-only version to be sure that all errors are from missing template
+    instantiations.
 
 If you're using make then the following command will
 reveal each missing symbol on its own line:
@@ -194,25 +197,23 @@ Repeat this process until convergence:
     make clean
     make
 
-
 ### Benefits of static library
 
-* **Faster compile time**: Because the libigl library
+- **Faster compile time**: Because the libigl library
     is already compiled, only the new code in ones project must be
     compiled and then linked to IGL. This means compile times are
     generally faster.
-* **Debug or optimized**: The IGL static
+
+- **Debug or optimized**: The IGL static
     library may be compiled in debug mode or optimized release mode
     regardless of whether one's project is being optimized or
     debugged.
 
 ### Drawbacks of static library
 
-*  **Hard to use templates**: Special
-    care</a> (by the developers of the library) needs to be taken when
-    exposing templated functions.
+- **Hard to use templates**: Special care (by the developers of the library) needs to be taken when exposing templated functions.
 
-# Compressed .h/.cpp pair
+## Compressed .h/.cpp pair
 Calling the script:
 
     scripts/compress.sh igl.h igl.cpp
@@ -225,16 +226,16 @@ Alternatively, you can also compress everything into a single header file:
 
 ### Benefits of compressed .h/.cpp pair
 
-* **Easy incorporation**: This can be easily incorporated
+- **Easy incorporation**: This can be easily incorporated
   into external projects.
 
 ### Drawbacks of compressed .h/.cpp pair
 
-* **Hard to debug/edit**: The compressed files are
+- **Hard to debug/edit**: The compressed files are
   automatically generated. They're huge and should not be edited. Thus
   debugging and editing are near impossible.
 
-* **Compounded dependencies**:
+- **Compounded dependencies**:
   An immediate disadvantage of this
   seems to be that even to use a single function (e.g.
   `cotmatrix`), compiling and linking against
@@ -245,21 +246,23 @@ Alternatively, you can also compress everything into a single header file:
   `#ifndef` guards (e.g. `#ifndef IGL_NO_OPENGL`, it
   is possible to ignore certain functions that have such dependencies.
 
-* **Long compile**: 
+- **Long compile**: 
   Compiling `igl.cpp` takes a long time and isn't easily parallelized (no `make
   -j12` equivalent).
 
 Here's a tiny test example using `igl.h` and `igl.cpp`. Save the following in `test.cpp`:
 
-    #include <igl.h>
-    #include <Eigen/Core>
+```cpp
+#include <igl.h>
+#include <Eigen/Core>
 
-    int main(int argc, char * argv[])
-    {
-    Eigen::MatrixXd V;
-    Eigen::MatrixXi F;
-    return (argc>=2 && igl::read_triangle_mesh(argv[1],V,F)?0:1);
-    }
+int main(int argc, char * argv[])
+{
+Eigen::MatrixXd V;
+Eigen::MatrixXi F;
+return (argc>=2 && igl::read_triangle_mesh(argv[1],V,F)?0:1);
+}
+```
 
 Then compile `igl.cpp` with:
 
@@ -280,7 +283,8 @@ The following bash one-liner will find all source files that contain the string 
 
     grep OpenGL `grep -L IGL_NO_OPENGL include/igl/*`
 
-### Optional ###
+## Optional
+
 - OpenGL (disable with `IGL_NO_OPENGL`)
     * OpenGL >= 4 (enable with `IGL_OPENGL_4`)
 - AntTweakBar  (disable with `IGL_NO_ANTTWEAKBAR`) Last tested 1.16 (see
@@ -298,7 +302,8 @@ The following bash one-liner will find all source files that contain the string 
     * mpfr
 - CoMiSo libcomiso extra only
 
-### Optional (included in external/) ###
+### Optional (included in external/)
+
 - TetGen  libigltetgen extra only
 - Embree  libiglembree extra only
 - tinyxml2  libiglxml extra only
