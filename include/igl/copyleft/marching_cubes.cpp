@@ -126,7 +126,7 @@ public:
 
       // determine cube type
       for (i=0; i<8; ++i)
-        if (values[corner[i]] > 0.0)
+        if (values(corner[i]) > 0.0)
           cubetype |= (1<<i);
 
 
@@ -202,8 +202,8 @@ public:
     const Eigen::Matrix<typename Derivedpoints::Scalar, 1, 3> & p0 = points.row(i0);
     const Eigen::Matrix<typename Derivedpoints::Scalar, 1, 3> & p1 = points.row(i1);
 
-    typename Derivedvalues::Scalar s0 = fabs(values[i0]);
-    typename Derivedvalues::Scalar s1 = fabs(values[i1]);
+    typename Derivedvalues::Scalar s0 = fabs(values(i0));
+    typename Derivedvalues::Scalar s1 = fabs(values(i1));
     typename Derivedvalues::Scalar t  = s0 / (s0+s1);
 
 
