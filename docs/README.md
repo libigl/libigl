@@ -6,13 +6,13 @@ If you want to preview changes to the libigl website before a commit, you can fo
    pip3 install -U --user mkdocs mkdocs-material
    ```
 2. Preview the website locally (in the root folder of the libigl project):
-  ```bash
-  python3 -m mkdocs serve
-  ```
+   ```bash
+   python3 -m mkdocs serve
+   ```
 3. Build the website to generate the html locally (optional):
-  ```bash
-  python3 -m mkdocs build
-  ```
+   ```bash
+   python3 -m mkdocs build
+   ```
 4. Deploy the website directly to github (will overwrite the gh-pages branch of the remote repository):
    ```
    python3 -m mkdocs gh-deploy
