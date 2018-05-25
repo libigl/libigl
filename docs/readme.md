@@ -1,3 +1,5 @@
+# Building the Website
+
 For developers who want to contribute to the website/documentation of libigl.
 If you want to preview changes to the libigl website before a commit, you can follow the instructions below.
 
