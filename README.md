@@ -41,7 +41,7 @@ and Windows with Visual Studio 2015 Community Edition.
 ## Tutorial
 
 As of version 1.0, libigl includes an introductory
-[tutorial](http://libigl.github.io/libigl/tutorial/tutorial.html) that covers many functionalities.
+[tutorial](http://libigl.github.io/libigl/tutorial) that covers many functionalities.
 
 ## libigl Example Project
 
@@ -100,7 +100,7 @@ Hello, mesh:
 Dependencies are on a per-include basis and the majority of the functions in
 libigl depends only on the [Eigen](http://eigen.tuxfamily.org) library.
 
-For more information see our [tutorial](http://libigl.github.io/libigl/tutorial/tutorial.html).
+For more information see our [tutorial](http://libigl.github.io/libigl/tutorial).
 
 ### Optional Dependencies
 
@@ -150,7 +150,7 @@ a major _todo_ for our development.
 ## Git Submodules
 Libigl uses git submodules for its _optional_ dependencies,
 in particular, those needed by the OpenGL viewer to run the examples in the
-[tutorial](http://libigl.github.io/libigl/tutorial/tutorial.html). Git submodules allow use to treat clones of
+[tutorial](http://libigl.github.io/libigl/tutorial). Git submodules allow use to treat clones of
 other libraries as sub-directories within ours while separating our commits.
 Read the [documentation](http://git-scm.com/docs/git-submodule) for a detailed
 explanation, but essentially our libigl repo stores a hash for each of its
