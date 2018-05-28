@@ -1895,7 +1895,7 @@ a reference implementation of the most popular ones. For a complete categorizati
 of fields used in various applications see Vaxman et al. 2016 [^vaxman_2016].
 
 
-#### Global, seamless integer-grid parametrization
+### Global, seamless integer-grid parametrization
 
 The previous parametrization methods were focusing on creating parametrizations
 of surface patches aimed at texture mapping or baking of other surface
@@ -1908,8 +1908,8 @@ proposed in the mixed integer quadrangulation paper [^bommes_2009].
 The first step involves the design of a 4-RoSy field (sometimes called *cross*
 field) that describes the alignment of the edges of the desired quadrilateral
 remeshing. The field constraints are usually manually specified or extracted
-from the principal curvature directions. In [[Example
-506]({{ repo_url }}/tutorial/506_FrameField/main.cpp)], we simply fix one face in a random direction.
+from the principal curvature directions. In [Example
+506]({{ repo_url }}/tutorial/506_FrameField/main.cpp), we simply fix one face in a random direction.
 
 ![Initial cross field prescribing the edge alignment.](images/505_MIQ_1.png)
 

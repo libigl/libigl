@@ -12,6 +12,6 @@ Before opening an issue on creating a pull request, please check the following:
 
 - Make sure your read the [**FAQ**](https://github.com/libigl/libigl/wiki/FAQ) before asking a new question, and search [**existing issues**](https://github.com/libigl/libigl/issues?q=is%3Aissue+is%3Aclosed) for a problem similar to yours.
 
-- Make sure you read the informations contained in the libigl [homepage](https://github.com/libigl/libigl) as well as the [tutorials](http://libigl.github.io/libigl/tutorial/tutorial.html).
+- Make sure you read the informations contained in the libigl [homepage](https://github.com/libigl/libigl) as well as the [tutorials](http://libigl.github.io/libigl/tutorial).
 
 - If none of these solve your problem, then please report your issue in the bug tracker!

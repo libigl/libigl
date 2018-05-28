@@ -6,7 +6,7 @@ site_description: "Simple C++ geometry processing library"
 strict: true
 theme:
   name: material
-  favicon: 'img/favicon.ico'
+  favicon: 'favicon.ico'
   logo:
     icon: ' '
   palette:
@@ -49,7 +49,7 @@ extra_css:
   - 'css/style.css'
 pages:
   - Home: index.md
-  - Tutorial: tutorial/tutorial.md
+  - Tutorial: tutorial.md
     # - "Chapter 1: Introduction to libigl": tutorial/chapter-1.md
     # - "Chapter 2: Discrete Geometric Quantities and Operators": tutorial/chapter-2.md
     # - "Chapter 3: Matrices and Linear Algebra": tutorial/chapter-3.md
