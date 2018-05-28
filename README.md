@@ -26,7 +26,7 @@ header file contains a single function (e.g. `igl/cotmatrix.h` contains
 stored in an n-by-3 matrix of vertex positions `V` and an m-by-3 matrix of
 triangle indices `F`.
 
-_Optionally_ the library may also be [pre-compiled](http://libigl.github.io/static-library/) into a statically
+_Optionally_ the library may also be [pre-compiled](http://libigl.github.io/libigl/static-library/) into a statically
 linked library, for faster compile times with your projects. This only effects
 compile time (run-time performance and behavior is identical). If in doubt, use
 the header-only default mode: (i.e. just include the headers you want to use).
