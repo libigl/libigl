@@ -2382,7 +2382,7 @@ required to get a smooth result) and the result is returned in `AO`, as a
 single scalar for each sample.
 
 Ambient occlusion can be used to darken the surface colors, as shown in
-[Example 606]({{ repo_url }}/tutorial/606_AmbientOcclusion/main.c)
+[Example 606]({{ repo_url }}/tutorial/606_AmbientOcclusion/main.cpp)
 
 ![A mesh rendered without (left) and with (right) ambient occlusion.](images/606_AmbientOcclusion.png)
 
