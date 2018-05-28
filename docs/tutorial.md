@@ -553,7 +553,7 @@ Alternatively, a robust method for determining principal curvatures is via
 quadric fitting [^panozzo_2010]. In the neighborhood around every vertex, a
 best-fit quadric is found and principal curvature values and directions are
 analytically computed on this quadric ([Example
-203]({{ repo_url }}/tutorial/203_curvatureDirections/main.cpp)).
+203]({{ repo_url }}/tutorial/203_CurvatureDirections/main.cpp)).
 
 ![The `CurvatureDirections` example computes principal curvatures via quadric fitting and visualizes mean curvature in pseudocolor and principal directions with a cross field.](images/fertility-principal-curvature.jpg)
 
