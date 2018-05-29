@@ -553,7 +553,7 @@ Alternatively, a robust method for determining principal curvatures is via
 quadric fitting [^panozzo_2010]. In the neighborhood around every vertex, a
 best-fit quadric is found and principal curvature values and directions are
 analytically computed on this quadric ([Example
-203]({{ repo_url }}/tutorial/203_curvatureDirections/main.cpp)).
+203]({{ repo_url }}/tutorial/203_CurvatureDirections/main.cpp)).
 
 ![The `CurvatureDirections` example computes principal curvatures via quadric fitting and visualizes mean curvature in pseudocolor and principal directions with a cross field.](images/fertility-principal-curvature.jpg)
 
@@ -2382,7 +2382,7 @@ required to get a smooth result) and the result is returned in `AO`, as a
 single scalar for each sample.
 
 Ambient occlusion can be used to darken the surface colors, as shown in
-[Example 606]({{ repo_url }}/tutorial/606_AmbientOcclusion/main.c)
+[Example 606]({{ repo_url }}/tutorial/606_AmbientOcclusion/main.cpp)
 
 ![A mesh rendered without (left) and with (right) ambient occlusion.](images/606_AmbientOcclusion.png)
 
