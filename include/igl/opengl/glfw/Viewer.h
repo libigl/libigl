@@ -123,7 +123,7 @@ namespace glfw
     GLFWwindow* window;
     
     // Stores all the viewing options
-    IGL_INLINE int append_core(Eigen::Vector4f viewport);
+    IGL_INLINE int append_core(Eigen::Vector4f viewport, bool append_empty = false);
     IGL_INLINE bool erase_core(const size_t index);
     IGL_INLINE size_t core_index(const int id) const;
 

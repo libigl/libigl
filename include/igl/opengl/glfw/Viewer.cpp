@@ -683,13 +683,15 @@ namespace glfw
     for (unsigned int i = 0; i<plugins.size(); ++i)
       if (plugins[i]->mouse_move(mouse_x, mouse_y))
         return true;
-
+    
+    int width_window, height_window;
+    glfwGetWindowSize(window, &width_window, &height_window);
     for (int i = 0; i < core_list.size(); i++)
     {
         Eigen::Vector4f viewport = core_list[i].viewport;
 
         if (mouse_x > viewport[0] && mouse_x < viewport[0] + viewport[2] &&
-            mouse_y > viewport[1] && mouse_y < viewport[1] + viewport[3])
+            height_window-mouse_y > viewport[1] && height_window-mouse_y < viewport[1] + viewport[3])
         {
             selected_core_index = i;
             break;
@@ -941,9 +943,11 @@ namespace glfw
     data_list.emplace_back();
     selected_data_index = data_list.size()-1;
     data_list.back().id = next_data_id++;
-    if(visible)
-      for (int i = 0; i < core_list.size(); i++)
-        data_list.back().set_visible(true,core_list[i].id);
+    if (visible)
+        for (int i = 0; i < core_list.size(); i++)
+            data_list.back().set_visible(true, core_list[i].id);
+    else
+        data_list.back().is_visible = 0;
     return data_list.back().id;
   }
 
@@ -1014,14 +1018,15 @@ namespace glfw
     return 0;
   }
 
-  IGL_INLINE int Viewer::append_core(Eigen::Vector4f viewport)
+  IGL_INLINE int Viewer::append_core(Eigen::Vector4f viewport, bool append_empty /*= false*/)
   {
     core_list.push_back(core()); //copies the previous core and only changes the viewport
     core_list.back().viewport = viewport;
     core_list.back().id = next_core_id;
     next_core_id <<= 1;
-    for (auto &data : data_list)
-      data.set_visible(true,core_list.back().id);
+    if(!append_empty)
+      for (auto &data : data_list)
+        data.set_visible(true,core_list.back().id);
     return core_list.back().id;
   }
 } // end namespace
