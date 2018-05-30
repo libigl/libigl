@@ -934,15 +934,16 @@ namespace glfw
   return data_list[mesh_ind];
 }
 
-  IGL_INLINE int Viewer::append_mesh()
-  {
+  IGL_INLINE int Viewer::append_mesh(bool visible /*= true*/)
+{
     assert(data_list.size() >= 1);
 
     data_list.emplace_back();
     selected_data_index = data_list.size()-1;
     data_list.back().id = next_data_id++;
-    for (int i = 0; i < core_list.size(); i++)
-      data_list.back().set_visible(true,core_list[i].id);
+    if(visible)
+      for (int i = 0; i < core_list.size(); i++)
+        data_list.back().set_visible(true,core_list[i].id);
     return data_list.back().id;
   }
 

@@ -89,7 +89,7 @@ namespace glfw
     // Side Effects:
     //   selected_data_index is set this newly created, last entry (i.e.,
     //   #meshes-1)
-    IGL_INLINE int append_mesh();
+    IGL_INLINE int append_mesh(bool visible = true);
 
     // Erase a mesh (i.e., its corresponding data and state entires in data_list
     // and opengl_state_list)
