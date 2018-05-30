@@ -10,6 +10,7 @@
 #include "igl_inline.h"
 
 #include <Eigen/Dense>
+#include <string>
 
 namespace igl
 {
