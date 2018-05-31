@@ -145,6 +145,19 @@ namespace igl
           Eigen::PlainObjectBase<DerivedVC > & VC,
           Eigen::PlainObjectBase<DerivedFC > & FC,
           Eigen::PlainObjectBase<DerivedJ > & J);
+      template <
+        typename DerivedV,
+        typename DerivedF,
+        typename DerivedVC,
+        typename DerivedFC,
+        typename DerivedJ>
+      IGL_INLINE bool mesh_boolean(
+          const std::vector<DerivedV > & Vlist,
+          const std::vector<DerivedF > & Flist,
+          const MeshBooleanType & type,
+          Eigen::PlainObjectBase<DerivedVC > & VC,
+          Eigen::PlainObjectBase<DerivedFC > & FC,
+          Eigen::PlainObjectBase<DerivedJ > & J);
       // Given a merged mesh (V,F) and list of sizes of inputs
       //
       // Inputs:
