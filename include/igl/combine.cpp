@@ -39,10 +39,10 @@ IGL_INLINE void igl::combine(
     const auto & Fi = FF[i];
     Vsizes(i) = Vi.rows();
     n+=Vi.rows();
-    assert(dim == Vi.cols() && "All vertex lists should have same #columns");
+    assert((Vi.size()==0 || dim == Vi.cols()) && "All vertex lists should have same #columns");
     Fsizes(i) = Fi.rows();
     m+=Fi.rows();
-    assert(ss == Fi.cols() && "All face lists should have same #columns");
+    assert((Fi.size()==0 || ss == Fi.cols()) && "All face lists should have same #columns");
   }
   V.resize(n,dim);
   F.resize(m,ss);
@@ -55,9 +55,15 @@ IGL_INLINE void igl::combine(
       const int ni = Vi.rows();
       const auto & Fi = FF[i];
       const int mi = Fi.rows();
-      F.block(kf,0,mi,ss) = Fi.array()+kv;
+      if(Fi.size() >0)
+      {
+        F.block(kf,0,mi,ss) = Fi.array()+kv;
+      }
       kf+=mi;
-      V.block(kv,0,ni,dim) = Vi;
+      if(Vi.size() >0)
+      {
+        V.block(kv,0,ni,dim) = Vi;
+      }
       kv+=ni;
     }
     assert(kv == V.rows());
