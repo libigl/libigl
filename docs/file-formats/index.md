@@ -5,7 +5,7 @@ libigl file formats
 - [.dmat](./dmat) uncompressed ASCII/binary files for dense matrices
 - *.ele* Element (triangle or tet) list. This format comes in similar flavors: [tetgen's](http://tetgen.berlios.de/fformats.ele.html), [stellar's](http://www.cs.berkeley.edu/~jrs/stellar/#fileformats), and [triangle's](https://www.cs.cmu.edu/~quake/triangle.ele.html). The formats of TetGen and stellar are identical upto conventions on index ordering and number of allowed attributes (unverified).
 - [.face](http://wias-berlin.de/software/tetgen/fformats.face.html) TetGen's file format for simplicial facets.
-- [.mesh](http://www.ann.jussieu.fr/frey/publications/RT-0253.pdf#page=33) Medit's triangle surface mesh + tetrahedral volume mesh file format, see page 33, section 7.2.1
+- [.mesh](https://www.ljll.math.upmc.fr/frey/publications/RT-0253.pdf#page=33) Medit's triangle surface mesh + tetrahedral volume mesh file format, see page 33, section 7.2.1
 - *.node* List of points (vertices). Described identically (upto accepted dimensions, use of attributes and boundary markers) by [Triangle](https://www.cs.cmu.edu/~quake/triangle.node.html), [TetGen](http://tetgen.berlios.de/fformats.node.html), and [Stellar](http://www.cs.berkeley.edu/~jrs/stellar/#fileformats).
 - [.off](http://wias-berlin.de/software/tetgen/fformats.off.html) Geomview's polyhedral file format
 - [.obj](http://en.wikipedia.org/wiki/Wavefront_.obj_file#File_format) Wavefront object file format. Usually unsafe to assume anything more than vertex positions and triangle indices are supported
