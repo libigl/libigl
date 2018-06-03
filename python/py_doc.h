@@ -86,6 +86,7 @@ extern const char *__doc_igl_per_vertex_normals;
 extern const char *__doc_igl_planarize_quad_mesh;
 extern const char *__doc_igl_png_readPNG;
 extern const char *__doc_igl_png_writePNG;
+extern const char *__doc_igl_writeDMAT;
 extern const char *__doc_igl_point_mesh_squared_distance;
 extern const char *__doc_igl_polar_svd;
 extern const char *__doc_igl_principal_curvature;

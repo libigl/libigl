@@ -100,6 +100,7 @@
 #include <igl/upsample.h>
 #include <igl/winding_number.h>
 #include <igl/writeMESH.h>
+#include <igl/writeDMAT.h>
 #include <igl/writeOBJ.h>
 #include <igl/writePLY.h>
 #include <igl/readPLY.h>
@@ -178,6 +179,7 @@ void python_export_igl(py::module &m)
 #include "py_igl/py_quad_planarity.cpp"
 #include "py_igl/py_randperm.cpp"
 #include "py_igl/py_readDMAT.cpp"
+#include "py_igl/py_writeDMAT.cpp"
 #include "py_igl/py_readMESH.cpp"
 #include "py_igl/py_readOBJ.cpp"
 #include "py_igl/py_readOFF.cpp"
