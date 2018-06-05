@@ -9,7 +9,8 @@
 #define IGL_OPENGL_VIEWERCORE_H
 
 #include <igl/opengl/MeshGL.h>
-#include <igl/opengl/ViewerData.h>
+#include <igl/opengl/MeshData.h>
+#include <igl/opengl/VolumeData.h>
 
 #include <igl/igl_inline.h>
 #include <Eigen/Geometry>
@@ -69,17 +70,23 @@ public:
   // Clear the frame buffers
   IGL_INLINE void clear_framebuffers();
 
+  // Draw a volume
+  IGL_INLINE void draw_volume(VolumeData& data) {
+    data.draw(*this);
+  }
+
   // Draw everything
   //
   // data cannot be const because it is being set to "clean"
-  IGL_INLINE void draw(ViewerData& data, bool update_matrices = true);
+  IGL_INLINE void draw(MeshData& data, bool update_matrices = true);
   IGL_INLINE void draw_buffer(
-    ViewerData& data,
+    MeshData& data,
     bool update_matrices,
     Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& R,
     Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& G,
     Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& B,
     Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& A);
+
 
   // Trackball angle (quaternion)
   enum RotationType

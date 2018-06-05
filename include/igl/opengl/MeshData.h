@@ -26,10 +26,10 @@ namespace igl
 namespace opengl
 {
 
-class ViewerData
+class MeshData
 {
 public:
-  ViewerData();
+  MeshData();
 
   // Empty all fields
   IGL_INLINE void clear();
@@ -202,7 +202,7 @@ public:
 
   // Update contents from a 'Data' instance
   IGL_INLINE void updateGL(
-    const igl::opengl::ViewerData& data,
+    const igl::opengl::MeshData& data,
     const bool invert_normals,
     igl::opengl::MeshGL& meshgl);
 };
@@ -217,7 +217,7 @@ namespace igl
 {
   namespace serialization
   {
-    inline void serialization(bool s, igl::opengl::ViewerData& obj, std::vector<char>& buffer)
+    inline void serialization(bool s, igl::opengl::MeshData& obj, std::vector<char>& buffer)
     {
       SERIALIZE_MEMBER(V);
       SERIALIZE_MEMBER(F);
@@ -256,12 +256,12 @@ namespace igl
       SERIALIZE_MEMBER(id);
     }
     template<>
-    inline void serialize(const igl::opengl::ViewerData& obj, std::vector<char>& buffer)
+    inline void serialize(const igl::opengl::MeshData& obj, std::vector<char>& buffer)
     {
-      serialization(true, const_cast<igl::opengl::ViewerData&>(obj), buffer);
+      serialization(true, const_cast<igl::opengl::MeshData&>(obj), buffer);
     }
     template<>
-    inline void deserialize(igl::opengl::ViewerData& obj, const std::vector<char>& buffer)
+    inline void deserialize(igl::opengl::MeshData& obj, const std::vector<char>& buffer)
     {
       serialization(false, obj, const_cast<std::vector<char>&>(buffer));
       obj.dirty = igl::opengl::MeshGL::DIRTY_ALL;

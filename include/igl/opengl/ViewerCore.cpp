@@ -95,7 +95,7 @@ IGL_INLINE void igl::opengl::ViewerCore::clear_framebuffers()
 }
 
 IGL_INLINE void igl::opengl::ViewerCore::draw(
-  ViewerData& data,
+  MeshData& data,
   bool update_matrices)
 {
   using namespace std;
@@ -127,7 +127,7 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
     proj  = Eigen::Matrix4f::Identity();
 
     // Set view
-    look_at( camera_eye, camera_center, camera_up, view);
+    look_at(camera_eye, camera_center, camera_up, view);
 
     float width  = viewport(2);
     float height = viewport(3);
@@ -250,7 +250,7 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
 
 }
 
-IGL_INLINE void igl::opengl::ViewerCore::draw_buffer(ViewerData& data,
+IGL_INLINE void igl::opengl::ViewerCore::draw_buffer(MeshData& data,
   bool update_matrices,
   Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& R,
   Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& G,

@@ -15,7 +15,8 @@
 #include "../../igl_inline.h"
 #include "../MeshGL.h"
 #include "../ViewerCore.h"
-#include "../ViewerData.h"
+#include "../MeshData.h"
+#include "../VolumeData.h"
 #include "ViewerPlugin.h"
 
 #include <Eigen/Core>
@@ -79,7 +80,8 @@ namespace glfw
     IGL_INLINE void snap_to_canonical_quaternion();
     IGL_INLINE void open_dialog_load_mesh();
     IGL_INLINE void open_dialog_save_mesh();
-    IGL_INLINE ViewerData& data();
+    IGL_INLINE MeshData& data();
+    IGL_INLINE VolumeData& volume();
 
     // Append a new "slot" for a mesh (i.e., create empty entires at the end of
     // the data_list and opengl_state_list.
@@ -109,6 +111,9 @@ namespace glfw
     //
     IGL_INLINE bool erase_mesh(const size_t index);
 
+    IGL_INLINE int append_volume();
+    IGL_INLINE bool erase_volume(const size_t index);
+
     // Retrieve mesh index from its unique identifier
     // Returns 0 if not found
     IGL_INLINE size_t mesh_index(const int id) const;
@@ -116,10 +121,14 @@ namespace glfw
     // Alec: I call this data_list instead of just data to avoid confusion with
     // old "data" variable.
     // Stores all the data that should be visualized
-    std::vector<ViewerData> data_list;
+    std::vector<MeshData> mesh_data_list;
+    std::vector<VolumeData> volume_data_list;
 
-    size_t selected_data_index;
-    int next_data_id;
+    size_t selected_mesh_index;
+    size_t selected_volume_index;
+
+    int next_mesh_id;
+    int next_volume_id;
     GLFWwindow* window;
     // Stores all the viewing options
     ViewerCore core;
