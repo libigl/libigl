@@ -34,17 +34,22 @@ IGL_INLINE void igl::slice_into(
 #endif
 
   // create temporary dynamic sparse matrix
-  Eigen::DynamicSparseMatrix<T, Eigen::RowMajor>  dyn_Y(Y);
+  //  Eigen::DynamicSparseMatrix<T, Eigen::RowMajor>  dyn_Y(Y);
+  Eigen::SparseMatrix<T> tempY(Y);
+  std::vector<Eigen::Triplet<double>> triplets;
   // Iterate over outside
   for(int k=0; k<X.outerSize(); ++k)
   {
     // Iterate over inside
     for(typename Eigen::SparseMatrix<T>::InnerIterator it (X,k); it; ++it)
     {
-      dyn_Y.coeffRef(R(it.row()),C(it.col())) = it.value();
+      //dyn_Y.coeffRef(R(it.row()),C(it.col())) = it.value();
+      triplets.push_back(Eigen::Triplet<double>(R(it.row()), C(it.col()), it.value()));
     }
   }
-  Y = Eigen::SparseMatrix<T>(dyn_Y);
+  tempY.setFromTriplets(triplets.begin(), triplets.end());
+  Y = Y + tempY;
+  //Y = Eigen::SparseMatrix<T>(dyn_Y);
 }
 
 template <typename DerivedX, typename DerivedY>
