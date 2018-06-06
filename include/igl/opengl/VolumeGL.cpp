@@ -12,8 +12,10 @@ igl::opengl::VolumeGL::BoundingBox::UniformLocation igl::opengl::VolumeGL::Bound
 GLuint igl::opengl::VolumeGL::VolumeRendering::program = 0;
 igl::opengl::VolumeGL::VolumeRendering::Uniform_Location igl::opengl::VolumeGL::VolumeRendering::uniform_location;
 
-void igl::opengl::VolumeGL::free() {
-  if (!_is_initialized) {
+void igl::opengl::VolumeGL::free()
+{
+  if (!_is_initialized)
+  {
     return;
   }
 
@@ -34,7 +36,8 @@ void igl::opengl::VolumeGL::free() {
 }
 
 // TODO: Check opengl status codes and return false on failure
-bool igl::opengl::VolumeGL::resize_framebuffer_textures(ViewerCore& core) {
+bool igl::opengl::VolumeGL::resize_framebuffer_textures(ViewerCore& core)
+{
   // Entry point texture and frame buffer
   glBindTexture(GL_TEXTURE_2D, bounding_box.entry_texture);
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, core.viewport[2],
@@ -49,7 +52,8 @@ bool igl::opengl::VolumeGL::resize_framebuffer_textures(ViewerCore& core) {
 }
 
 // TODO: Check opengl status codes and return false on failure
-bool igl::opengl::VolumeGL::init(igl::opengl::ViewerCore& core) {
+bool igl::opengl::VolumeGL::init(igl::opengl::ViewerCore& core)
+{
   //
   //   Bounding box information
   //
@@ -155,7 +159,8 @@ bool igl::opengl::VolumeGL::init(igl::opengl::ViewerCore& core) {
 
 
 // TODO: Check opengl status codes and return false on failure
-bool igl::opengl::VolumeGL::set_data(const Eigen::RowVector3i& dimensions, const Eigen::VectorXd& data) {
+bool igl::opengl::VolumeGL::set_data(const Eigen::RowVector3i& dimensions, const Eigen::VectorXd& data)
+{
   volume_rendering_parameters.volume_dimensions = {
     static_cast<GLuint>(dimensions[0]),
     static_cast<GLuint>(dimensions[1]),
@@ -180,7 +185,8 @@ bool igl::opengl::VolumeGL::set_data(const Eigen::RowVector3i& dimensions, const
 
 
 // TODO: Check opengl status codes and return false on failure
-bool igl::opengl::VolumeGL::draw(igl::opengl::ViewerCore& core, GLfloat sampling_rate) {
+bool igl::opengl::VolumeGL::draw(igl::opengl::ViewerCore& core, GLfloat sampling_rate)
+{
   //
   //  Setup
   //
@@ -298,24 +304,28 @@ bool igl::opengl::VolumeGL::upload_volume_data(const Eigen::RowVector3i& tex_siz
 
   glBindTexture(GL_TEXTURE_3D, volume_rendering.volume_texture);
   glTexImage3D(GL_TEXTURE_3D, 0, GL_RED, tex_size[0], tex_size[1], tex_size[2], 0,
-      GL_RED, GL_UNSIGNED_BYTE, volume_data.data());
+               GL_RED, GL_UNSIGNED_BYTE, volume_data.data());
   glBindTexture(GL_TEXTURE_3D, 0);
 }
 
 
 // TODO: Real transfer function
 // TODO: Check opengl status codes and return false on failure
-bool igl::opengl::VolumeGL::upload_transferfunction_data(float offset, float incline) {
+bool igl::opengl::VolumeGL::upload_transferfunction_data(float offset, float incline)
+{
   constexpr const int TransferFunctionWidth = 512;
   std::vector<std::array<uint8_t, 4>> transfer_function_data(512);
 
   // Create greyscale ramp
-  for (int i = 0; i < TransferFunctionWidth; ++i) {
+  for (int i = 0; i < TransferFunctionWidth; ++i)
+  {
       float v = static_cast<float>(i * incline) / (TransferFunctionWidth - 1) + offset;
-      if (v > 1.f) {
+      if (v > 1.f)
+      {
           v = 1.f;
       }
-      if (v < 0.f) {
+      if (v < 0.f)
+      {
           v = 0.f;
       }
       const int val = v * std::numeric_limits<uint8_t>::max();
@@ -331,8 +341,8 @@ bool igl::opengl::VolumeGL::upload_transferfunction_data(float offset, float inc
 }
 
 
-bool igl::opengl::VolumeGL::init_shaders() {
-
+bool igl::opengl::VolumeGL::init_shaders()
+{
   // Shader transforming the vertices from model coordinates to clip space
   constexpr const char* BoundingBoxVertexShader = R"(#include "glsl/volume_ray_direction_vert.glsl")";
 

@@ -28,11 +28,13 @@ public:
   // TODO: Check opengl status codes and return false on failure
   bool resize_framebuffer_textures(ViewerCore& core);
 
-  bool is_initialized() const {
+  bool is_initialized() const
+  {
     return _is_initialized;
   }
 
-  Eigen::Vector3i volume_dimensions() const {
+  Eigen::Vector3i volume_dimensions() const
+  {
     return Eigen::Vector3i(
         volume_rendering_parameters.volume_dimensions[0],
         volume_rendering_parameters.volume_dimensions[1],
@@ -53,7 +55,8 @@ private:
 
   bool _is_initialized = false;
 
-  struct BoundingBox {
+  struct BoundingBox
+  {
     // The shader program gets initialized once and for all when init_shaders() gets called
     static GLuint program;
 
@@ -75,7 +78,8 @@ private:
     static UniformLocation uniform_location;
   } bounding_box;
 
-  struct VolumeRendering {
+  struct VolumeRendering
+  {
     // The shader program gets initialized once and for all when init_shaders() gets called
     static GLuint program;
 
@@ -101,7 +105,8 @@ private:
     static Uniform_Location uniform_location;
   } volume_rendering;
 
-  struct VolumeRenderingParameters {
+  struct VolumeRenderingParameters
+  {
     std::array<GLuint, 3> volume_dimensions;
     std::array<GLfloat, 3> volume_dimensions_rcp;
     std::array<float, 3> normalized_volume_dimensions;

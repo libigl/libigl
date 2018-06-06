@@ -30,11 +30,13 @@ public:
 
   IGL_INLINE void draw(igl::opengl::ViewerCore& core);
 
-  ~VolumeData() {
+  ~VolumeData()
+  {
     volumegl.free();
   }
 
-  int id() const {
+  int id() const
+  {
     return _id;
   }
 
