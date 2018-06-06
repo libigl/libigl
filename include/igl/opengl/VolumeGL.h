@@ -70,7 +70,8 @@ private:
     GLuint exit_framebuffer;
     GLuint exit_texture;
 
-    struct UniformLocation {
+    struct UniformLocation
+    {
       GLint model_matrix = -1;
       GLint view_matrix = -1;
       GLint projection_matrix = -1;
@@ -86,7 +87,8 @@ private:
     GLuint volume_texture;
     GLuint transfer_function_texture;
 
-    struct Uniform_Location {
+    struct Uniform_Location
+    {
       GLint entry_texture = -1;
       GLint exit_texture = -1;
       GLint volume_texture = -1;
