@@ -67,8 +67,8 @@ int main(int argc, char *argv[])
 
   // Plot the mesh
   igl::opengl::glfw::Viewer viewer;
-  viewer.core.background_color = Eigen::RowVector4f(0., 0., 0., 1.);
-  int volume_id = viewer.append_volume();
+//  viewer.core.background_color = Eigen::RowVector4f(0., 0., 0., 1.);
+  viewer.append_volume();
   viewer.volume().set_data(dims, data);
 
   viewer.data().set_mesh(V, F);

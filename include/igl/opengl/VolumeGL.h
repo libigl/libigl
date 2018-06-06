@@ -15,25 +15,32 @@ class ViewerCore;
 class VolumeGL
 {
 public:
-  bool draw_volume(igl::opengl::ViewerCore& core);
-
   // TODO: Check opengl status codes and return false on failure
   bool init(igl::opengl::ViewerCore& core);
+
+  void free();
 
   // TODO: Check opengl status codes and return false on failure
   bool set_data(const Eigen::RowVector3i& dimensions, const Eigen::VectorXd& data);
 
-  bool is_initialized() {
+  bool draw(igl::opengl::ViewerCore& core, GLfloat sampling_rate);
+
+  // TODO: Check opengl status codes and return false on failure
+  bool resize_framebuffer_textures(ViewerCore& core);
+
+  bool is_initialized() const {
     return _is_initialized;
   }
 
-  // TODO: Check opengl status codes and return false on failure
-  bool resize_framebuffer_textures(const Eigen::RowVector4f& viewport);
+  Eigen::Vector3i volume_dimensions() const {
+    return Eigen::Vector3i(
+        volume_rendering_parameters.volume_dimensions[0],
+        volume_rendering_parameters.volume_dimensions[1],
+        volume_rendering_parameters.volume_dimensions[2]);
+  }
 
   // TODO: Check opengl status codes and return false on failure
   static bool init_shaders();
-
-  void free();
 
 private:
   // TODO: Check opengl status codes and return false on failure
@@ -94,13 +101,10 @@ private:
     static Uniform_Location uniform_location;
   } volume_rendering;
 
-  struct Volume_Rendering_Parameters {
+  struct VolumeRenderingParameters {
     std::array<GLuint, 3> volume_dimensions;
     std::array<GLfloat, 3> volume_dimensions_rcp;
-
     std::array<float, 3> normalized_volume_dimensions;
-
-    GLfloat sampling_rate = 10.0;
   } volume_rendering_parameters;
 };
 

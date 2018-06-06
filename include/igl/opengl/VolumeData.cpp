@@ -31,11 +31,12 @@ IGL_INLINE void igl::opengl::VolumeData::draw(igl::opengl::ViewerCore& core) {
   }
 
   if (core.viewport[0] != viewport_size[0] || core.viewport[1] != viewport_size[1] || core.viewport[2] != viewport_size[2] || core.viewport[3] != viewport_size[3]) {
-    volumegl.resize_framebuffer_textures(core.viewport);
-    viewport_size = core.viewport;
+    if (volumegl.resize_framebuffer_textures(core)) {
+      viewport_size = core.viewport;
+    }
   }
 
   dirty = VolumeData::DIRTY_NONE;
 
-  volumegl.draw_volume(core);
+  volumegl.draw(core, sampling_rate);
 }

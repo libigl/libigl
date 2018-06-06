@@ -248,6 +248,8 @@ namespace glfw
     {
       data.meshgl.free();
     }
+    volume_data_list.clear();
+
     core.shut();
     shutdown_plugins();
     glfwDestroyWindow(window);

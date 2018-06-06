@@ -37,6 +37,9 @@ public:
   int id() const {
     return _id;
   }
+
+  float sampling_rate = 128.0;
+
 private:
   enum DirtyFlags
   {

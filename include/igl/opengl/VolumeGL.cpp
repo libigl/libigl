@@ -1,11 +1,11 @@
 #include "VolumeGL.h"
 #include "ViewerCore.h"
+#include <GL/glu.h>
 
-#include <GLFW/glfw3.h>
 #include <iostream>
+#include <string>
 
 using namespace std;
-
 
 GLuint igl::opengl::VolumeGL::BoundingBox::program = 0;
 igl::opengl::VolumeGL::BoundingBox::UniformLocation igl::opengl::VolumeGL::BoundingBox::uniform_location;
@@ -16,10 +16,10 @@ void igl::opengl::VolumeGL::free() {
   if (!_is_initialized) {
     return;
   }
-  // Bail out if there's no GL context
-  if (nullptr == glfwGetCurrentContext()) {
-    return;
-  }
+
+  volume_rendering_parameters.volume_dimensions = { 0, 0, 0 };
+  volume_rendering_parameters.normalized_volume_dimensions = { 0.0f, 0.0f, 0.0f };
+  volume_rendering_parameters.volume_dimensions_rcp = { 0.0f, 0.0f, 0.0f };
 
   glDeleteVertexArrays(1, &bounding_box.vao);
   glDeleteBuffers(1, &bounding_box.vbo);
@@ -28,36 +28,28 @@ void igl::opengl::VolumeGL::free() {
   glDeleteTextures(1, &bounding_box.exit_texture);
   glDeleteFramebuffers(1, &bounding_box.entry_framebuffer);
   glDeleteFramebuffers(1, &bounding_box.exit_framebuffer);
-
   glDeleteTextures(1, &volume_rendering.volume_texture);
   glDeleteTextures(1, &volume_rendering.transfer_function_texture);
   _is_initialized = false;
 }
 
-// TODO: Make resizing actually work
 // TODO: Check opengl status codes and return false on failure
-bool igl::opengl::VolumeGL::resize_framebuffer_textures(const Eigen::RowVector4f& viewport) {
-  cout << "resize framebuffer textures..." << endl;
-  cout << "viewport is " << viewport << endl;
+bool igl::opengl::VolumeGL::resize_framebuffer_textures(ViewerCore& core) {
+  // Entry point texture and frame buffer
   glBindTexture(GL_TEXTURE_2D, bounding_box.entry_texture);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, viewport[2],
-               viewport[3], 0, GL_RGBA, GL_FLOAT, nullptr);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, core.viewport[2],
+               core.viewport[3], 0, GL_RGBA, GL_FLOAT, nullptr);
 
-  glBindTexture(GL_TEXTURE_2D, bounding_box.entry_texture);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, viewport[2],            viewport[3], 0, GL_RGBA, GL_FLOAT, nullptr);
+  // Exit point texture and frame buffer
+  glBindTexture(GL_TEXTURE_2D, bounding_box.exit_texture);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, core.viewport[2],
+               core.viewport[3], 0, GL_RGBA, GL_FLOAT, nullptr);
 
-  glBindTexture(GL_TEXTURE_2D, 0);
-  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+  return true;
 }
 
 // TODO: Check opengl status codes and return false on failure
 bool igl::opengl::VolumeGL::init(igl::opengl::ViewerCore& core) {
-  cout << "init called!" << endl;
-  // This should be enabled by default
-  glEnable(GL_TEXTURE_1D);
-  glEnable(GL_TEXTURE_2D);
-  glEnable(GL_TEXTURE_3D);
-
   //
   //   Bounding box information
   //
@@ -152,6 +144,11 @@ bool igl::opengl::VolumeGL::init(igl::opengl::ViewerCore& core) {
 
   glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 
+  // The size of the volume is zero until you call set_data
+  volume_rendering_parameters.volume_dimensions = { 0, 0, 0 };
+  volume_rendering_parameters.normalized_volume_dimensions = { 0.0f, 0.0f, 0.0f };
+  volume_rendering_parameters.volume_dimensions_rcp = { 0.0f, 0.0f, 0.0f };
+
   _is_initialized = true;
   return true;
 }
@@ -183,7 +180,7 @@ bool igl::opengl::VolumeGL::set_data(const Eigen::RowVector3i& dimensions, const
 
 
 // TODO: Check opengl status codes and return false on failure
-bool igl::opengl::VolumeGL::draw_volume(igl::opengl::ViewerCore& core) {
+bool igl::opengl::VolumeGL::draw(igl::opengl::ViewerCore& core, GLfloat sampling_rate) {
   //
   //  Setup
   //
@@ -203,31 +200,32 @@ bool igl::opengl::VolumeGL::draw_volume(igl::opengl::ViewerCore& core) {
   glBindVertexArray(bounding_box.vao);
   glUseProgram(bounding_box.program);
 
-  Eigen::Matrix4f scaling = Eigen::Matrix4f::Zero();
-  scaling.diagonal() << volume_rendering_parameters.normalized_volume_dimensions[0],
-                        volume_rendering_parameters.normalized_volume_dimensions[1],
-                        volume_rendering_parameters.normalized_volume_dimensions[2],
-                        1.f;
-  Eigen::Matrix4f model = core.model * scaling;
+  // Center the box vertices about the origin
+  const Eigen::Vector4f voldims(volume_rendering_parameters.normalized_volume_dimensions[0],
+                                volume_rendering_parameters.normalized_volume_dimensions[1],
+                                volume_rendering_parameters.normalized_volume_dimensions[2],
+                                1.0f);
+  Eigen::Matrix4f scale_and_center = Eigen::Matrix4f::Zero();
+  scale_and_center.col(3) = -0.5*voldims;
+  scale_and_center.diagonal() = voldims;
 
+  Eigen::Matrix4f model = core.model * scale_and_center;
   glUniformMatrix4fv(BoundingBox::uniform_location.model_matrix, 1, GL_FALSE,
                      model.data());
-
   glUniformMatrix4fv(BoundingBox::uniform_location.view_matrix, 1, GL_FALSE,
                      core.view.data());
-
   glUniformMatrix4fv(BoundingBox::uniform_location.projection_matrix, 1, GL_FALSE,
                      core.proj.data());
 
   // Render entry points of bounding box
   glBindFramebuffer(GL_FRAMEBUFFER, bounding_box.entry_framebuffer);
-  glClear(GL_COLOR_BUFFER_BIT);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glCullFace(GL_FRONT);
   glDrawElements(GL_TRIANGLES, 12 * 3, GL_UNSIGNED_BYTE, nullptr);
 
   // Render exit points of bounding box
   glBindFramebuffer(GL_FRAMEBUFFER, bounding_box.exit_framebuffer);
-  glClear(GL_COLOR_BUFFER_BIT);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glCullFace(GL_BACK);
   glDrawElements(GL_TRIANGLES, 12 * 3, GL_UNSIGNED_BYTE, nullptr);
 
@@ -259,8 +257,7 @@ bool igl::opengl::VolumeGL::draw_volume(igl::opengl::ViewerCore& core) {
   glBindTexture(GL_TEXTURE_1D, volume_rendering.transfer_function_texture);
   glUniform1i(VolumeRendering::uniform_location.transfer_function, 3);
 
-  glUniform1f(VolumeRendering::uniform_location.sampling_rate,
-              volume_rendering_parameters.sampling_rate);
+  glUniform1f(VolumeRendering::uniform_location.sampling_rate, sampling_rate);
 
 
   // Rendering parameters
@@ -337,31 +334,10 @@ bool igl::opengl::VolumeGL::upload_transferfunction_data(float offset, float inc
 bool igl::opengl::VolumeGL::init_shaders() {
 
   // Shader transforming the vertices from model coordinates to clip space
-  constexpr const char* BoundingBoxVertexShader = R"(
-    #version 150
-      in vec3 in_position;
-      out vec3 color;
-
-      uniform mat4 model_matrix;
-      uniform mat4 view_matrix;
-      uniform mat4 projection_matrix;
-
-      void main() {
-        gl_Position = projection_matrix * view_matrix * model_matrix * vec4(in_position, 1.0);
-        color = in_position.xyz;
-      }
-    )";
+  constexpr const char* BoundingBoxVertexShader = R"(#include "glsl/volume_ray_direction_vert.glsl")";
 
   // Using Krueger-Westermann rendering encodes the position of the vertex as its color
-  constexpr const char* EntryBoxFragmentShader = R"(
-    #version 150
-      in vec3 color;
-      out vec4 out_color;
-
-      void main() {
-        out_color = vec4(color, 1.0);
-      }
-    )";
+  constexpr const char* EntryBoxFragmentShader = R"(#include "glsl/volume_ray_direction_frag.glsl")";
 
   BoundingBox::program = igl::opengl::create_shader_program(
         BoundingBoxVertexShader,
@@ -375,35 +351,9 @@ bool igl::opengl::VolumeGL::init_shaders() {
   BoundingBox::uniform_location.projection_matrix = glGetUniformLocation(
         BoundingBox::program, "projection_matrix");
 
-  cout << "BoundingBox program: " << BoundingBox::program << endl;
-  cout << "BoundingBox uniform model_matrix: " << BoundingBox::uniform_location.model_matrix << endl;
-  cout << "BoundingBox uniform view_matrix: " << BoundingBox::uniform_location.view_matrix << endl;
-  cout << "BoundingBox uniform projection_matrix: " << BoundingBox::uniform_location.projection_matrix << endl;
-
   // Vertex shader that is used to trigger the volume rendering by rendering a static
   // screen-space filling quad.
-  constexpr const char* VolumeRenderingVertexShader = R"(
-    #version 150
-    // Create two triangles that are filling the entire screen [-1, 1]
-    vec2 positions[6] = vec2[](
-      vec2(-1.0, -1.0),
-      vec2( 1.0, -1.0),
-      vec2( 1.0,  1.0),
-
-      vec2(-1.0, -1.0),
-      vec2( 1.0,  1.0),
-      vec2(-1.0,  1.0)
-    );
-
-    out vec2 uv;
-
-    void main() {
-      // Clipspace \in [-1, 1]
-      gl_Position = vec4(positions[gl_VertexID], 0.0, 1.0);
-
-      // uv coordinate s\in [0, 1]
-      uv = (positions[gl_VertexID] + 1.0) / 2.0;
-    })";
+  constexpr const char* VolumeRenderingVertexShader = R"(#include "glsl/volume_rendering_vert.glsl")";
 
   // Shader that performs the actual volume rendering
   // Steps:
@@ -415,119 +365,7 @@ bool igl::opengl::VolumeGL::init_shaders() {
   // 6. Perform front-to-back compositing
   // 7. Stop if either the ray is exhausted or the combined transparency is above an
   //    early-ray termination threshold (0.99 in this case)
-  constexpr const char* VolumeRenderingFragmentShader = R"(
-    #version 150
-    in vec2 uv;
-    out vec4 out_color;
-
-    uniform sampler2D entry_texture;
-    uniform sampler2D exit_texture;
-
-    uniform sampler3D volume_texture;
-    uniform sampler1D transfer_function;
-
-    uniform ivec3 volume_dimensions;
-    uniform vec3 volume_dimensions_rcp;
-    uniform float sampling_rate;
-
-    struct Light_Parameters {
-      vec3 position;
-      vec3 ambient_color;
-      vec3 diffuse_color;
-      vec3 specular_color;
-      float specular_exponent;
-    };
-    uniform Light_Parameters light_parameters;
-
-
-    // Early-ray termination
-    const float ERT_THRESHOLD = 0.99;
-    const float REF_SAMPLING_INTERVAL = 150.0;
-
-    vec3 centralDifferenceGradient(vec3 pos) {
-      vec3 f;
-      f.x = texture(volume_texture, pos + vec3(volume_dimensions_rcp.x, 0.0, 0.0)).a;
-      f.y = texture(volume_texture, pos + vec3(0.0, volume_dimensions_rcp.y, 0.0)).a;
-      f.z = texture(volume_texture, pos + vec3(0.0, 0.0, volume_dimensions_rcp.z)).a;
-
-      vec3 b;
-      b.x = texture(volume_texture, pos - vec3(volume_dimensions_rcp.x, 0.0, 0.0)).a;
-      b.y = texture(volume_texture, pos - vec3(0.0, volume_dimensions_rcp.y, 0.0)).a;
-      b.z = texture(volume_texture, pos - vec3(0.0, 0.0, volume_dimensions_rcp.z)).a;
-
-      return (f - b) / 2.0;
-    }
-
-    vec3 blinn_phong(Light_Parameters light, vec3 material_ambient_color,
-                     vec3 material_diffuse_color, vec3 material_specular_color,
-                     vec3 position, vec3 normal, vec3 direction_to_camera)
-    {
-      vec3 direction_to_light = normalize(light.position - position);
-      vec3 ambient = material_ambient_color * light.ambient_color;
-      vec3 diffuse = material_diffuse_color * light.diffuse_color *
-                     max(dot(normal, direction_to_light), 0.0);
-      vec3 specular;
-      {
-        vec3 half_way_vector = normalize(direction_to_camera + direction_to_light);
-        specular = material_specular_color * light.specular_color *
-                   pow(max(dot(normal, half_way_vector), 0.0), light.specular_exponent);
-      }
-
-      return ambient + diffuse + specular;
-    }
-
-    void main() {
-      vec3 entry = texture(entry_texture, uv).rgb;
-      vec3 exit = texture(exit_texture, uv).rgb;
-      if (entry == exit) {
-        out_color = vec4(0.0, 0.0, 0.0, 0.0);
-        return;
-      }
-
-      // Combined final color that the volume rendering computed
-      vec4 result = vec4(0.0);
-
-      vec3 ray_direction = exit - entry;
-
-      float t_end = length(ray_direction);
-      float t_incr = min(
-        t_end,
-        t_end / (sampling_rate * length(ray_direction * volume_dimensions))
-      );
-      t_incr = 0.01;
-
-      vec3 normalized_ray_direction = normalize(ray_direction);
-
-      float t = 0.0;
-      while (t < t_end) {
-        vec3 sample_pos = entry + t * normalized_ray_direction;
-        float value = texture(volume_texture, sample_pos).r;
-        vec4 color = texture(transfer_function, value);
-        if (color.a > 0) {
-          // Gradient
-          vec3 gradient = centralDifferenceGradient(sample_pos);
-
-          // Lighting
-          //color.rgb = blinn_phong(light_parameters, color.rgb, color.rgb, vec3(1.0),
-                                  //sample_pos, gradient, -normalized_ray_direction);
-
-          // Front-to-back Compositing
-          color.a = 1.0 - pow(1.0 - color.a, t_incr * REF_SAMPLING_INTERVAL);
-          result.rgb = result.rgb + (1.0 - result.a) * color.a * color.rgb;
-          result.a = result.a + (1.0 - result.a) * color.a;
-        }
-
-        if (result.a > ERT_THRESHOLD) {
-          t = t_end;
-        }
-        else {
-          t += t_incr;
-        }
-      }
-
-      result.a = length(result.rgb);
-      out_color = result;
-    })";
+  constexpr const char* VolumeRenderingFragmentShader = R"(#include "glsl/volume_frag.glsl")";
   VolumeRendering::program = igl::opengl::create_shader_program(
         VolumeRenderingVertexShader,
         VolumeRenderingFragmentShader, {});
@@ -556,19 +394,4 @@ bool igl::opengl::VolumeGL::init_shaders() {
       VolumeRendering::program, "light_parameters.specular_color");
   VolumeRendering::uniform_location.light_exponent_specular = glGetUniformLocation(
       VolumeRendering::program, "light_parameters.specular_exponent");
-
-
-  cout << "VolumeRendering program: " << VolumeRendering::program << endl;
-  cout << "VolumeRendering uniform entry_texture: " << VolumeRendering::uniform_location.entry_texture << endl;
-  cout << "VolumeRendering uniform exit_texture: " << VolumeRendering::uniform_location.exit_texture << endl;
-  cout << "VolumeRendering uniform volume_texture: " << VolumeRendering::uniform_location.volume_texture << endl;
-  cout << "VolumeRendering uniform volume_dimensions: " << VolumeRendering::uniform_location.volume_dimensions << endl;
-  cout << "VolumeRendering uniform volume_dimensions_rcp: " << VolumeRendering::uniform_location.volume_dimensions_rcp << endl;
-  cout << "VolumeRendering uniform transfer_function: " << VolumeRendering::uniform_location.transfer_function << endl;
-  cout << "VolumeRendering uniform sampling_rate: " << VolumeRendering::uniform_location.sampling_rate << endl;
-  cout << "VolumeRendering uniform light_position: " << VolumeRendering::uniform_location.light_position << endl;
-  cout << "VolumeRendering uniform light_color_ambient: " << VolumeRendering::uniform_location.light_color_ambient << endl;
-  cout << "VolumeRendering uniform light_color_diffuse: " << VolumeRendering::uniform_location.light_color_diffuse << endl;
-  cout << "VolumeRendering uniform light_color_specular: " << VolumeRendering::uniform_location.light_color_specular << endl;
-  cout << "VolumeRendering uniform light_exponent_specular: " << VolumeRendering::uniform_location.light_exponent_specular << endl;
 }
