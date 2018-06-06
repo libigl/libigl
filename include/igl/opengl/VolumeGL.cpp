@@ -1,9 +1,7 @@
 #include "VolumeGL.h"
 #include "ViewerCore.h"
-#include <GL/glu.h>
 
 #include <iostream>
-#include <string>
 
 using namespace std;
 
