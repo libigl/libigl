@@ -58,7 +58,7 @@ IGL_INLINE bool igl::readPLY(
      void *other_props;       /* other properties */
    } Face;
 
-  PlyProperty vert_props[] = { /* list of property information for a vertex */
+  external::ply::PlyProperty vert_props[] = { /* list of property information for a vertex */
     {"x", PLY_DOUBLE, PLY_DOUBLE, offsetof(Vertex,x), 0, 0, 0, 0},
     {"y", PLY_DOUBLE, PLY_DOUBLE, offsetof(Vertex,y), 0, 0, 0, 0},
     {"z", PLY_DOUBLE, PLY_DOUBLE, offsetof(Vertex,z), 0, 0, 0, 0},
@@ -69,14 +69,14 @@ IGL_INLINE bool igl::readPLY(
     {"t", PLY_DOUBLE, PLY_DOUBLE, offsetof(Vertex,t), 0, 0, 0, 0},
   };
 
-  PlyProperty face_props[] = { /* list of property information for a face */
+  external::ply::PlyProperty face_props[] = { /* list of property information for a face */
     {"vertex_indices", PLY_INT, PLY_INT, offsetof(Face,verts),
       1, PLY_UCHAR, PLY_UCHAR, offsetof(Face,nverts)},
   };
 
   int nelems;
   char ** elem_names;
-  PlyFile * in_ply = ply_read(ply_file,&nelems,&elem_names);
+  external::ply::PlyFile * in_ply = external::ply::ply_read(ply_file,&nelems,&elem_names);
   if(in_ply==NULL)
   {
     return false;
@@ -84,11 +84,11 @@ IGL_INLINE bool igl::readPLY(
 
   bool has_normals = false;
   bool has_texture_coords = false;
-  PlyProperty **plist;
+  external::ply::PlyProperty **plist;
   int nprops;
   int elem_count;
   plist = ply_get_element_description (in_ply,"vertex", &elem_count, &nprops);
-  int native_binary_type = get_native_binary_type2();
+  int native_binary_type = external::ply::get_native_binary_type2();
   if (plist != NULL)
   {
     /* set up for getting vertex elements */
@@ -97,18 +97,18 @@ IGL_INLINE bool igl::readPLY(
     ply_get_property (in_ply,"vertex",&vert_props[2]);
     for (int j = 0; j < nprops; j++)
     {
-      PlyProperty * prop = plist[j];
-      if (equal_strings ("nx", prop->name) 
-        || equal_strings ("ny", prop->name)
-        || equal_strings ("nz", prop->name))
+      external::ply::PlyProperty * prop = plist[j];
+      if (external::ply::equal_strings ("nx", prop->name) 
+        || external::ply::equal_strings ("ny", prop->name)
+        || external::ply::equal_strings ("nz", prop->name))
       {
         ply_get_property (in_ply,"vertex",&vert_props[3]);
         ply_get_property (in_ply,"vertex",&vert_props[4]);
         ply_get_property (in_ply,"vertex",&vert_props[5]);
         has_normals = true;
       }
-      if (equal_strings ("s", prop->name) ||
-        equal_strings ("t", prop->name))
+      if (external::ply::equal_strings ("s", prop->name) ||
+        external::ply::equal_strings ("t", prop->name))
       {
         ply_get_property(in_ply,"vertex",&vert_props[6]);
         ply_get_property(in_ply,"vertex",&vert_props[7]);
