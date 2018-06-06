@@ -9,7 +9,7 @@
 #define IGL_OPENGL_VIEWERCORE_H
 
 #include <igl/opengl/MeshGL.h>
-#include <igl/opengl/MeshData.h>
+#include <igl/opengl/ViewerData.h>
 #include <igl/opengl/VolumeData.h>
 
 #include <igl/igl_inline.h>
@@ -78,9 +78,9 @@ public:
   // Draw everything
   //
   // data cannot be const because it is being set to "clean"
-  IGL_INLINE void draw(MeshData& data, bool update_matrices = true);
+  IGL_INLINE void draw(ViewerData& data, bool update_matrices = true);
   IGL_INLINE void draw_buffer(
-    MeshData& data,
+    ViewerData& data,
     bool update_matrices,
     Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& R,
     Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& G,

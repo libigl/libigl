@@ -310,7 +310,7 @@ IGL_INLINE void ImGuiMenu::draw_labels_window()
   ImGui::PopStyleVar();
 }
 
-IGL_INLINE void ImGuiMenu::draw_labels(const igl::opengl::MeshData &data)
+IGL_INLINE void ImGuiMenu::draw_labels(const igl::opengl::ViewerData &data)
 {
   if (data.show_vertid)
   {

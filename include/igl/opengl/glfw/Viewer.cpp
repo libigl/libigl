@@ -914,7 +914,7 @@ namespace glfw
     return volume_data_list[selected_volume_index];
   }
 
-  IGL_INLINE MeshData& Viewer::data()
+  IGL_INLINE ViewerData& Viewer::data()
   {
     assert(!mesh_data_list.empty() && "data_list should never be empty");
     assert(

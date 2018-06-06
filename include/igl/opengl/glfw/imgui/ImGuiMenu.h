@@ -87,7 +87,7 @@ public:
 
   IGL_INLINE void draw_labels_window();
 
-  IGL_INLINE void draw_labels(const igl::opengl::MeshData &data);
+  IGL_INLINE void draw_labels(const igl::opengl::ViewerData &data);
 
   IGL_INLINE void draw_text(Eigen::Vector3d pos, Eigen::Vector3d normal, const std::string &text);
 

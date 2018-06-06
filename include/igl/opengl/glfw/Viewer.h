@@ -15,7 +15,7 @@
 #include "../../igl_inline.h"
 #include "../MeshGL.h"
 #include "../ViewerCore.h"
-#include "../MeshData.h"
+#include "../ViewerData.h"
 #include "../VolumeData.h"
 #include "ViewerPlugin.h"
 
@@ -80,7 +80,7 @@ namespace glfw
     IGL_INLINE void snap_to_canonical_quaternion();
     IGL_INLINE void open_dialog_load_mesh();
     IGL_INLINE void open_dialog_save_mesh();
-    IGL_INLINE MeshData& data();
+    IGL_INLINE ViewerData& data();
     IGL_INLINE VolumeData& volume();
 
     // Append a new "slot" for a mesh (i.e., create empty entires at the end of
@@ -121,7 +121,7 @@ namespace glfw
     // Alec: I call this data_list instead of just data to avoid confusion with
     // old "data" variable.
     // Stores all the data that should be visualized
-    std::vector<MeshData> mesh_data_list;
+    std::vector<ViewerData> mesh_data_list;
     std::vector<VolumeData> volume_data_list;
 
     size_t selected_mesh_index;
