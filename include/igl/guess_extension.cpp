@@ -21,7 +21,7 @@ IGL_INLINE void igl::guess_extension(FILE * fp, std::string & guess)
   {
     int nelems;
     char ** elem_names;
-    PlyFile * in_ply = ply_read(ply_file,&nelems,&elem_names);
+    external::ply::PlyFile * in_ply = external::ply::ply_read(ply_file,&nelems,&elem_names);
     if(in_ply==NULL)
     {
       return false;
