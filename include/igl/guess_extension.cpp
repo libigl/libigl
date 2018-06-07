@@ -1,4 +1,7 @@
 #include "guess_extension.h"
+
+#include <string.h>
+
 #include "is_stl.h"
 #include "ply.h"
 
@@ -21,7 +24,7 @@ IGL_INLINE void igl::guess_extension(FILE * fp, std::string & guess)
   {
     int nelems;
     char ** elem_names;
-    external::ply::PlyFile * in_ply = external::ply::ply_read(ply_file,&nelems,&elem_names);
+    igl::ply::PlyFile * in_ply = igl::ply::ply_read(ply_file,&nelems,&elem_names);
     if(in_ply==NULL)
     {
       return false;
