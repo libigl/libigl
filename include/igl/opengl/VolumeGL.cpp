@@ -1,9 +1,6 @@
 #include "VolumeGL.h"
 #include "ViewerCore.h"
 
-#include <iostream>
-
-using namespace std;
 
 GLuint igl::opengl::VolumeGL::BoundingBox::program = 0;
 igl::opengl::VolumeGL::BoundingBox::UniformLocation igl::opengl::VolumeGL::BoundingBox::uniform_location;
