@@ -33,18 +33,21 @@ IGL_INLINE void igl::slice_into(
   assert(C.maxCoeff() < yn);
 #endif
 
-  // create temporary dynamic sparse matrix
-  Eigen::DynamicSparseMatrix<T, Eigen::RowMajor>  dyn_Y(Y);
+  // create temporary matrix.
+  Eigen::SparseMatrix<T> tempY(Y);
+  std::vector<Eigen::Triplet<double>> triplets;
   // Iterate over outside
   for(int k=0; k<X.outerSize(); ++k)
   {
     // Iterate over inside
     for(typename Eigen::SparseMatrix<T>::InnerIterator it (X,k); it; ++it)
     {
-      dyn_Y.coeffRef(R(it.row()),C(it.col())) = it.value();
+      triplets.push_back(Eigen::Triplet<double>(R(it.row()), C(it.col()), it.value()));
     }
   }
-  Y = Eigen::SparseMatrix<T>(dyn_Y);
+  tempY.setFromTriplets(triplets.begin(), triplets.end());
+  // accumulate the values from the current into the provided matrix Y
+  Y = Y + tempY;
 }
 
 template <typename DerivedX, typename DerivedY>
