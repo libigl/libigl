@@ -72,14 +72,15 @@ properly to target OSs with binary files.
 #ifndef __PLY_H__
 #define __PLY_H__
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <stddef.h>
 #include <string.h>
+
+namespace igl {
+    namespace ply {
     
 #define PLY_ASCII         1      /* ascii PLY file */
 #define PLY_BINARY_BE     2      /* binary PLY file, big endian */
@@ -105,6 +106,8 @@ extern "C" {
 
 #define  PLY_SCALAR  0
 #define  PLY_LIST    1
+
+
 
 
 typedef struct PlyProperty {    /* description of a property */
@@ -243,9 +246,8 @@ inline void ply_describe_other_properties(PlyFile *, PlyOtherProp *, int);
 inline int equal_strings(const char *, const char *);
 
 
-#ifdef __cplusplus
 }
-#endif
+}
 #endif /* !__PLY_H__ */
 /*
 
@@ -322,6 +324,11 @@ properly to target OSs with binary files.
 #include <math.h>
 #include <string.h>
 //#include "ply.h"
+
+
+namespace igl {
+    namespace ply {
+
 
 // Use unnamed namespace to avoid duplicate symbols
 /*
@@ -3156,5 +3163,6 @@ inline char *my_alloc(int size, int lnum, const char *fe)
   return (ptr);
 }
 
-
+}
+}
 #endif
