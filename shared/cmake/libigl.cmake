@@ -8,7 +8,7 @@ find_package(Boost 1.48 COMPONENTS thread system) # --> BOOST_FOUND
 if(CGAL_FOUND AND BOOST_FOUND)
   set(CGAL_AND_BOOST_FOUND TRUE)
 endif()
-find_package(Matlab COMPONENTS MEX_COMPILER MX_LIBRARY ENG_LIBRARY) # --> Matlab_FOUND
+
 find_package(MOSEK) # --> MOSEK_FOUND
 find_package(OpenGL) # --> OPENGL_FOUND
 
@@ -20,7 +20,7 @@ option(LIBIGL_WITH_COMISO            "Use CoMiso"         ON)
 option(LIBIGL_WITH_CORK              "Use Cork"           OFF)
 option(LIBIGL_WITH_EMBREE            "Use Embree"         OFF)
 option(LIBIGL_WITH_LIM               "Use LIM"            ON)
-option(LIBIGL_WITH_MATLAB            "Use Matlab"         "${Matlab_FOUND}")
+option(LIBIGL_WITH_MATLAB            "Use Matlab"         ON)
 option(LIBIGL_WITH_MOSEK             "Use MOSEK"          "${MOSEK_FOUND}")
 option(LIBIGL_WITH_OPENGL            "Use OpenGL"         "${OPENGL_FOUND}")
 option(LIBIGL_WITH_OPENGL_GLFW       "Use GLFW"           "${OPENGL_FOUND}")
@@ -31,6 +31,14 @@ option(LIBIGL_WITH_TRIANGLE          "Use Triangle"       ON)
 option(LIBIGL_WITH_VIEWER            "Use OpenGL viewer"  "${OPENGL_FOUND}")
 option(LIBIGL_WITH_XML               "Use XML"            ON)
 option(LIBIGL_WITH_PYTHON            "Use Python"         OFF)
+
+if(LIBIGL_WITH_MATLAB)
+  find_package(Matlab COMPONENTS MEX_COMPILER MX_LIBRARY ENG_LIBRARY) # --> Matlab_FOUND
+  if(NOT ${Matlab_FOUND})
+    set(LIBIGL_WITH_MATLAB OFF)
+    message(WARNNING "Disabling matlab")
+  endif()
+endif()
 
 if(LIBIGL_WITH_VIEWER AND (NOT LIBIGL_WITH_OPENGL_GLFW OR NOT LIBIGL_WITH_OPENGL) )
   message(FATAL_ERROR "LIBIGL_WITH_VIEWER=ON requires LIBIGL_WITH_OPENGL_GLFW=ON and LIBIGL_WITH_OPENGL=ON")
