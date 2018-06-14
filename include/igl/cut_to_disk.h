@@ -5,10 +5,6 @@
 #include <Eigen/Core>
 
 #include <vector>
-#include <map>
-#include <set>
-#include <deque>
-#include <algorithm>
 
 namespace igl
 {
