@@ -1,5 +1,5 @@
-#ifndef IGL_CUT_TO_DISK
-#define IGL_CUT_TO_DISK
+#ifndef IGL_CUT_TO_DISK_H
+#define IGL_CUT_TO_DISK_H
 #include "igl_inline.h"
 
 #include <Eigen/Core>
@@ -45,7 +45,7 @@ namespace igl
     typename DerivedF,
     typename Index>
   IGL_INLINE void cut_to_disk(
-    const Eigen::PlainObjectBase<DerivedF> &F,
+    const Eigen::MatrixBase<DerivedF> &F,
     std::vector<std::vector<Index> > &cuts);    
 };
 
