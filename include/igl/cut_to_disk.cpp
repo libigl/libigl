@@ -3,7 +3,7 @@
 namespace igl {
   template <typename DerivedF, typename Index>
   void cut_to_disk(
-    const Eigen::PlainObjectBase<DerivedF> &F,
+    const Eigen::MatrixBase<DerivedF> &F,
     std::vector<std::vector<Index> > &cuts) 
   {
     cuts.clear();
