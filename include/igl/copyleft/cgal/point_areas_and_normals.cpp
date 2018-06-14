@@ -20,14 +20,14 @@ typedef CGAL::Delaunay_triangulation_2<Kernel, Tds>                   Delaunay;
 typedef Kernel::Point_2                                               Point;
 
 namespace igl {
-	namespace copyleft{
-		namespace cgal{
+  namespace copyleft{
+    namespace cgal{
       template <typename DerivedP, typename DerivedI, typename DerivedO,
       typename DerivedA, typename DerivedN>
       IGL_INLINE void point_areas_and_normals(
                                         const Eigen::MatrixBase<DerivedP>& P,
                                         const Eigen::MatrixBase<DerivedI>& I,
-                                      	const Eigen::MatrixBase<DerivedO>& O,
+                                        const Eigen::MatrixBase<DerivedO>& O,
                                         Eigen::PlainObjectBase<DerivedA> & A,
                                         Eigen::PlainObjectBase<DerivedN> & N)
       {
@@ -40,9 +40,9 @@ namespace igl {
         typedef Eigen::Matrix<real, Eigen::Dynamic, Eigen::Dynamic> MatrixP;
         typedef Eigen::Matrix<scalarO, Eigen::Dynamic, Eigen::Dynamic> MatrixO;
         typedef Eigen::Matrix<typename DerivedO::Scalar,
-        					Eigen::Dynamic, Eigen::Dynamic> VecotorO;
+                  Eigen::Dynamic, Eigen::Dynamic> VecotorO;
         typedef Eigen::Matrix<typename DerivedI::Scalar,
-        					Eigen::Dynamic, Eigen::Dynamic> MatrixI;
+                  Eigen::Dynamic, Eigen::Dynamic> MatrixI;
         
         
         
@@ -66,7 +66,7 @@ namespace igl {
             igl::slice(O,neighbor_index,1,neighbor_normals);
             Eigen::Matrix<scalarO,1,3> poi_normal = neighbor_normals.row(0);
             Eigen::Matrix<scalarO,Eigen::Dynamic,1> dotprod =
-            								poi_normal(0)*neighbor_normals.col(0)
+                            poi_normal(0)*neighbor_normals.col(0)
             + poi_normal(1)*neighbor_normals.col(1)
             + poi_normal(2)*neighbor_normals.col(2);
             Eigen::Array<bool,Eigen::Dynamic,1> keep = dotprod.array() > 0;
@@ -105,7 +105,7 @@ namespace igl {
             int f_row = 0;
             for(Delaunay::Finite_faces_iterator fit =
                 triangulation.finite_faces_begin();
-              	fit != triangulation.finite_faces_end(); ++fit) {
+                fit != triangulation.finite_faces_end(); ++fit) {
               Delaunay::Face_handle face = fit;
               F.row(f_row) = Eigen::RowVector3i((int)face->vertex(0)->info(),
                                                 (int)face->vertex(1)->info(),
@@ -140,7 +140,7 @@ namespace igl {
                 scalarA full_area = 0.25*std::sqrt(
                                     (x+(y+z))*(z-(x-y))*(z+(x-y))*(x+(y-z)));
                 Eigen::Matrix<scalarA,1,3> partial_area =
-                																		barycentric * full_area;
+                                                    barycentric * full_area;
                 if(cosX < 0){
                   area_accumulator += 0.5*full_area;
                 } else if (cosY < 0 || cosZ < 0){
@@ -159,8 +159,8 @@ namespace igl {
           }
         },1000);
       }
-		}
-	}
+    }
+  }
 }
 
 

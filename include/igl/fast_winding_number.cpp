@@ -7,7 +7,7 @@
 
 namespace igl {
 template <typename DerivedP, typename DerivedA, typename DerivedN,
-  	typename Index, typename DerivedCM, typename DerivedR, typename DerivedEC>
+    typename Index, typename DerivedCM, typename DerivedR, typename DerivedEC>
   IGL_INLINE void fast_winding_number(const Eigen::MatrixBase<DerivedP>& P,
             const Eigen::MatrixBase<DerivedN>& N,
             const Eigen::MatrixBase<DerivedA>& A,
@@ -73,7 +73,7 @@ template <typename DerivedP, typename DerivedA, typename DerivedN,
               //Get max distance from center of mass:
               int curr_point_index = point_indices.at(index).at(i);
               Eigen::Matrix<real_r,1,3> point =
-            			P.row(curr_point_index)-masscenter;
+                  P.row(curr_point_index)-masscenter;
               curr_norm = point.norm();
               if(curr_norm > max_norm){
                   max_norm = curr_norm;
@@ -83,7 +83,7 @@ template <typename DerivedP, typename DerivedA, typename DerivedN,
               Eigen::Matrix<real_ec,3,3> TempCoeffs;
               if(EC.cols() >= (3+9)){
                   TempCoeffs = A(curr_point_index)*point.transpose()*
-                									N.row(curr_point_index);
+                                  N.row(curr_point_index);
                   EC.block(index,3,1,9) +=
                   Eigen::Map<Eigen::Matrix<real_ec,1,9> >(TempCoeffs.data(),
                                                           TempCoeffs.size());
@@ -94,7 +94,7 @@ template <typename DerivedP, typename DerivedA, typename DerivedN,
                       TempCoeffs = 0.5 * point(k) * (A(curr_point_index)*
                                     point.transpose()*N.row(curr_point_index));
                       EC.block(index,12+9*k,1,9) += Eigen::Map<
-                    		Eigen::Matrix<real_ec,1,9> >(TempCoeffs.data(),
+                        Eigen::Matrix<real_ec,1,9> >(TempCoeffs.data(),
                                                      TempCoeffs.size());
                   }
               }
@@ -113,8 +113,8 @@ template <typename DerivedP, typename DerivedA, typename DerivedN,
   }
   
   template <typename DerivedP, typename DerivedA, typename DerivedN,
-  	typename Index, typename DerivedCM, typename DerivedR, typename DerivedEC,
-  	typename DerivedQ, typename BetaType, typename DerivedWN>
+    typename Index, typename DerivedCM, typename DerivedR, typename DerivedEC,
+    typename DerivedQ, typename BetaType, typename DerivedWN>
   IGL_INLINE void fast_winding_number(const Eigen::MatrixBase<DerivedP>& P,
             const Eigen::MatrixBase<DerivedN>& N,
             const Eigen::MatrixBase<DerivedA>& A,
@@ -144,7 +144,7 @@ template <typename DerivedP, typename DerivedA, typename DerivedN,
     auto direct_eval = [](const RowVec & loc,
                           const Eigen::Matrix<real_ec,1,3> & anorm){
         real_wn wn = (loc(0)*anorm(0)+loc(1)*anorm(1)+loc(2)*anorm(2))
-      															/(4.0*M_PI*std::pow(loc.norm(),3));
+                                    /(4.0*M_PI*std::pow(loc.norm(),3));
         if(std::isnan(wn)){
             return 0.5;
         }else{
@@ -158,10 +158,10 @@ template <typename DerivedP, typename DerivedA, typename DerivedN,
       double r = loc.norm();
       if(EC.size()>3){
         Eigen::Matrix<real_ec,3,3> SecondDerivative =
-          	Eigen::Matrix<real_ec,3,3>::Identity()/(4.0*M_PI*std::pow(r,3));
+            Eigen::Matrix<real_ec,3,3>::Identity()/(4.0*M_PI*std::pow(r,3));
         SecondDerivative += -3.0*loc.transpose()*loc/(4.0*M_PI*std::pow(r,5));
         Eigen::Matrix<real_ec,1,9> derivative_vector =
-        	Eigen::Map<Eigen::Matrix<real_ec,1,9> >(SecondDerivative.data(),
+          Eigen::Map<Eigen::Matrix<real_ec,1,9> >(SecondDerivative.data(),
                                                   SecondDerivative.size());
         wn += derivative_vector.cwiseProduct(EC.segment<9>(3)).sum();
       }
@@ -169,7 +169,7 @@ template <typename DerivedP, typename DerivedA, typename DerivedN,
           Eigen::Matrix<real_ec,3,3> ThirdDerivative;
           for(int i = 0; i < 3; i++){
               ThirdDerivative =
-            			15.0*loc(i)*loc.transpose()*loc/(4.0*M_PI*std::pow(r,7));
+                  15.0*loc(i)*loc.transpose()*loc/(4.0*M_PI*std::pow(r,7));
               Eigen::Matrix<real_ec,3,3> Diagonal;
               Diagonal << loc(i), 0, 0,
               0, loc(i), 0,
@@ -179,9 +179,9 @@ template <typename DerivedP, typename DerivedA, typename DerivedN,
               RowCol.row(i) = loc;
               RowCol = RowCol + RowCol.transpose();
               ThirdDerivative +=
-            			-3.0/(4.0*M_PI*std::pow(r,5))*(RowCol+Diagonal);
+                  -3.0/(4.0*M_PI*std::pow(r,5))*(RowCol+Diagonal);
               Eigen::Matrix<real_ec,1,9> derivative_vector =
-            		Eigen::Map<Eigen::Matrix<real_ec,1,9> >(ThirdDerivative.data(),
+                Eigen::Map<Eigen::Matrix<real_ec,1,9> >(ThirdDerivative.data(),
                                                         ThirdDerivative.size());
               wn += derivative_vector.cwiseProduct(
                                               EC.segment<9>(12 + i*9)).sum();
@@ -260,7 +260,7 @@ template <typename DerivedP, typename DerivedA, typename DerivedN,
   }
   
   template <typename DerivedP, typename DerivedA, typename DerivedN,
-  	typename DerivedQ, typename BetaType, typename DerivedWN>
+    typename DerivedQ, typename BetaType, typename DerivedWN>
   IGL_INLINE void fast_winding_number(const Eigen::MatrixBase<DerivedP>& P,
                                       const Eigen::MatrixBase<DerivedN>& N,
                                       const Eigen::MatrixBase<DerivedA>& A,
@@ -291,7 +291,7 @@ template <typename DerivedP, typename DerivedA, typename DerivedN,
   }
   
   template <typename DerivedP, typename DerivedA, typename DerivedN,
-  	typename DerivedQ, typename DerivedWN>
+    typename DerivedQ, typename DerivedWN>
   IGL_INLINE void fast_winding_number(const Eigen::MatrixBase<DerivedP>& P,
                                       const Eigen::MatrixBase<DerivedN>& N,
                                       const Eigen::MatrixBase<DerivedA>& A,
@@ -302,7 +302,7 @@ template <typename DerivedP, typename DerivedA, typename DerivedN,
   }
   
   template <typename DerivedP, typename DerivedN, typename DerivedQ,
-  	typename BetaType, typename DerivedWN>
+    typename BetaType, typename DerivedWN>
   IGL_INLINE void fast_winding_number(const Eigen::MatrixBase<DerivedP>& P,
                                       const Eigen::MatrixBase<DerivedN>& N,
                                       const Eigen::MatrixBase<DerivedQ>& Q,
@@ -315,7 +315,7 @@ template <typename DerivedP, typename DerivedA, typename DerivedN,
   
     std::vector<std::vector<int> > point_indices;
     std::vector<Eigen::Matrix<int,8,1>,
-    	Eigen::aligned_allocator<Eigen::Matrix<int,8,1> > > children;
+      Eigen::aligned_allocator<Eigen::Matrix<int,8,1> > > children;
     std::vector<RowVec, Eigen::aligned_allocator<RowVec> > centers;
     std::vector<real> widths;
     Eigen::MatrixXi I;
@@ -334,7 +334,7 @@ template <typename DerivedP, typename DerivedA, typename DerivedN,
   }
   
   template <typename DerivedP, typename DerivedN,
-  	typename DerivedQ, typename DerivedWN>
+    typename DerivedQ, typename DerivedWN>
   IGL_INLINE void fast_winding_number(
                             const Eigen::MatrixBase<DerivedP>& P,
                             const Eigen::MatrixBase<DerivedN>& N,
