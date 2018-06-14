@@ -1,5 +1,10 @@
 #include <igl/cut_to_disk.h>
 
+#include <map>
+#include <set>
+#include <deque>
+#include <algorithm>
+
 namespace igl {
   template <typename DerivedF, typename Index>
   void cut_to_disk(
