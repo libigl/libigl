@@ -9,16 +9,16 @@ namespace igl {
 template <typename DerivedP, typename DerivedA, typename DerivedN,
   	typename Index, typename DerivedCM, typename DerivedR, typename DerivedEC>
   IGL_INLINE void fast_winding_number(const Eigen::MatrixBase<DerivedP>& P,
-              const Eigen::MatrixBase<DerivedN>& N,
-              const Eigen::MatrixBase<DerivedA>& A,
-              const std::vector<std::vector<Index> > & point_indices,
-              const std::vector<Eigen::Matrix<Index,8,1>,
-              	Eigen::aligned_allocator<Eigen::Matrix<Index,8,1>>> & children,
-              const int expansion_order,
-              Eigen::PlainObjectBase<DerivedCM>& CM,
-              Eigen::PlainObjectBase<DerivedR>& R,
-              Eigen::PlainObjectBase<DerivedEC>& EC
-              ){
+            const Eigen::MatrixBase<DerivedN>& N,
+            const Eigen::MatrixBase<DerivedA>& A,
+            const std::vector<std::vector<Index> > & point_indices,
+            const std::vector<Eigen::Matrix<Index,8,1>,
+              Eigen::aligned_allocator<Eigen::Matrix<Index,8,1> > > & children,
+            const int expansion_order,
+            Eigen::PlainObjectBase<DerivedCM>& CM,
+            Eigen::PlainObjectBase<DerivedR>& R,
+            Eigen::PlainObjectBase<DerivedEC>& EC
+            ){
       typedef typename DerivedP::Scalar real_p;
       typedef typename DerivedN::Scalar real_n;
       typedef typename DerivedA::Scalar real_a;
@@ -116,18 +116,18 @@ template <typename DerivedP, typename DerivedA, typename DerivedN,
   	typename Index, typename DerivedCM, typename DerivedR, typename DerivedEC,
   	typename DerivedQ, typename BetaType, typename DerivedWN>
   IGL_INLINE void fast_winding_number(const Eigen::MatrixBase<DerivedP>& P,
-              const Eigen::MatrixBase<DerivedN>& N,
-              const Eigen::MatrixBase<DerivedA>& A,
-              const std::vector<std::vector<Index> > & point_indices,
-              const std::vector<Eigen::Matrix<Index,8,1>,
-                Eigen::aligned_allocator<Eigen::Matrix<Index,8,1>>> & children,
-              const Eigen::MatrixBase<DerivedCM>& CM,
-              const Eigen::MatrixBase<DerivedR>& R,
-              const Eigen::MatrixBase<DerivedEC>& EC,
-              const Eigen::MatrixBase<DerivedQ>& Q,
-              const BetaType beta,
-              Eigen::PlainObjectBase<DerivedWN>& WN
-              ){
+            const Eigen::MatrixBase<DerivedN>& N,
+            const Eigen::MatrixBase<DerivedA>& A,
+            const std::vector<std::vector<Index> > & point_indices,
+            const std::vector<Eigen::Matrix<Index,8,1>,
+              Eigen::aligned_allocator<Eigen::Matrix<Index,8,1> > > & children,
+            const Eigen::MatrixBase<DerivedCM>& CM,
+            const Eigen::MatrixBase<DerivedR>& R,
+            const Eigen::MatrixBase<DerivedEC>& EC,
+            const Eigen::MatrixBase<DerivedQ>& Q,
+            const BetaType beta,
+            Eigen::PlainObjectBase<DerivedWN>& WN
+            ){
   
     typedef typename DerivedP::Scalar real_p;
     typedef typename DerivedN::Scalar real_n;
@@ -272,7 +272,7 @@ template <typename DerivedP, typename DerivedA, typename DerivedN,
     typedef typename DerivedWN::Scalar real;
     typedef typename Eigen::Matrix<real,1,3> RowVec;
   
-    std::vector<std::vector<int>> point_indices;
+    std::vector<std::vector<int> > point_indices;
     std::vector<Eigen::Matrix<int,8,1>,
       Eigen::aligned_allocator<Eigen::Matrix<int,8,1> > > children;
     std::vector<RowVec, Eigen::aligned_allocator<RowVec> > centers;
@@ -313,7 +313,7 @@ template <typename DerivedP, typename DerivedA, typename DerivedN,
     typedef typename DerivedWN::Scalar real;
     typedef typename Eigen::Matrix<real,1,3> RowVec;
   
-    std::vector<std::vector<int>> point_indices;
+    std::vector<std::vector<int> > point_indices;
     std::vector<Eigen::Matrix<int,8,1>,
     	Eigen::aligned_allocator<Eigen::Matrix<int,8,1> > > children;
     std::vector<RowVec, Eigen::aligned_allocator<RowVec> > centers;

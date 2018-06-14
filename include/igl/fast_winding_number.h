@@ -37,7 +37,7 @@ namespace igl
                                       const Eigen::MatrixBase<DerivedN>& N,
                                       const Eigen::MatrixBase<DerivedA>& A,
             const std::vector<std::vector<Index> > & point_indices,
-            const std::vector<Eigen::Matrix<Index,8,1>, Eigen::aligned_allocator<Eigen::Matrix<Index,8,1>>> & children,
+            const std::vector<Eigen::Matrix<Index,8,1>, Eigen::aligned_allocator<Eigen::Matrix<Index,8,1> > > & children,
             const int exansion_order,
             Eigen::PlainObjectBase<DerivedCM>& CM,
             Eigen::PlainObjectBase<DerivedR>& R,
@@ -74,14 +74,14 @@ namespace igl
   IGL_INLINE void fast_winding_number(const Eigen::MatrixBase<DerivedP>& P,
                                       const Eigen::MatrixBase<DerivedN>& N,
                                       const Eigen::MatrixBase<DerivedA>& A,
-              const std::vector<std::vector<Index> > & point_indices,
-              const std::vector<Eigen::Matrix<Index,8,1>, Eigen::aligned_allocator<Eigen::Matrix<Index,8,1>>> & children,
-              const Eigen::MatrixBase<DerivedCM>& CM,
-              const Eigen::MatrixBase<DerivedR>& R,
-              const Eigen::MatrixBase<DerivedEC>& EC,
-              const Eigen::MatrixBase<DerivedQ>& Q,
-              const BetaType beta,
-              Eigen::PlainObjectBase<DerivedWN>& WN);
+            const std::vector<std::vector<Index> > & point_indices,
+            const std::vector<Eigen::Matrix<Index,8,1>, Eigen::aligned_allocator<Eigen::Matrix<Index,8,1> > > & children,
+            const Eigen::MatrixBase<DerivedCM>& CM,
+            const Eigen::MatrixBase<DerivedR>& R,
+            const Eigen::MatrixBase<DerivedEC>& EC,
+            const Eigen::MatrixBase<DerivedQ>& Q,
+            const BetaType beta,
+            Eigen::PlainObjectBase<DerivedWN>& WN);
   
   // Evaluate the fast winding number for point data.
   //
