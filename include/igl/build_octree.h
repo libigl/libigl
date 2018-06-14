@@ -42,14 +42,14 @@ namespace igl
   //                  octree cell
   //
   template <typename DerivedP, typename IndexType, typename CentersType,
-  	typename WidthsType>
+    typename WidthsType>
   IGL_INLINE void build_octree(const Eigen::MatrixBase<DerivedP>& P,
     std::vector<std::vector<IndexType> > & point_indices,
     std::vector<Eigen::Matrix<IndexType,8,1>,
-    	Eigen::aligned_allocator<Eigen::Matrix<IndexType,8,1> > > & children,
+      Eigen::aligned_allocator<Eigen::Matrix<IndexType,8,1> > > & children,
     std::vector<Eigen::Matrix<CentersType,1,3>,
       Eigen::aligned_allocator<Eigen::Matrix<CentersType,1,3> > > & centers,
-  	std::vector<WidthsType> & widths);
+    std::vector<WidthsType> & widths);
 }
 
 #ifndef IGL_STATIC_LIBRARY

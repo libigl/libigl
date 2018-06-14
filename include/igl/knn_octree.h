@@ -22,15 +22,15 @@ namespace igl
   //
   // Inputs:
   //   P  #P by 3 list of point locations
-  //	 k  number of neighbors to find
+  //   k  number of neighbors to find
   //   point_indices  a vector of vectors, where the ith entry is a vector of
   //                  the indices into P that are the ith octree cell's points
-  //   children 			a vector of vectors, where the ith entry is a vector of
-  //									the ith octree cell's of octree children
-  //	 centers				a vector where the ith entry is a 3d row vector
-  //									representing the position of the ith cell's center
-  //   widths					a vector where the ith entry is the width of the ith
-  //									octree cell
+  //   children       a vector of vectors, where the ith entry is a vector of
+  //                  the ith octree cell's of octree children
+  //   centers        a vector where the ith entry is a 3d row vector
+  //                  representing the position of the ith cell's center
+  //   widths         a vector where the ith entry is the width of the ith
+  //                  octree cell
   // Outputs:
   //   I  #P by k list of k-nearest-neighbor indices into P
   template <typename DerivedP, typename KType, typename IndexType,

@@ -12,14 +12,14 @@
 #include <Eigen/Core>
 namespace igl
 {
-	namespace copyleft
+  namespace copyleft
   {
-  	namespace cgal
+    namespace cgal
     {
     // Given a 3D set of points P, each with a list of k-nearest-neighbours,
     // estimate the geodesic voronoi area associated with each point.
     //
-  	// The k nearest neighbours may be known from running igl::knn_octree on
+    // The k nearest neighbours may be known from running igl::knn_octree on
     // the output data from igl::build_octree. We reccomend using a k value
     // between 15 and 20 inclusive for accurate area estimation.
     //
@@ -38,7 +38,7 @@ namespace igl
     // Outputs:
     //   A  #P list of estimated areas
     //   N  #P by 3 list of estimated normals
-		template <typename DerivedP, typename DerivedI, typename DerivedO,
+    template <typename DerivedP, typename DerivedI, typename DerivedO,
       typename DerivedA, typename DerivedN>
     IGL_INLINE void point_areas_and_normals(
                                         const Eigen::MatrixBase<DerivedP>& P,
