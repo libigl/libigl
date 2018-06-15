@@ -2,6 +2,7 @@
 #include "parallel_for.h"
 
 #include <cmath>
+#include <queue>
 
 namespace igl {
   template <typename DerivedP, typename KType, typename IndexType,
@@ -20,7 +21,7 @@ namespace igl {
     
     typedef Eigen::Matrix<typename DerivedP::Scalar, 1, 3> RowVector3PType;
     
-    const int n = P.rows();
+    int n = P.rows();
     const KType real_k = std::min(n,k);
     
     auto distance_to_width_one_cube = [](RowVector3PType point){
