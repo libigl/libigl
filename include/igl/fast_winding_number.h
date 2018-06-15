@@ -2,6 +2,7 @@
 #define IGL_FAST_WINDING_NUMBER
 #include "igl_inline.h"
 #include <Eigen/Core>
+#include <vector>
 namespace igl
 {
   // Generate the precomputation for the fast winding number for point data

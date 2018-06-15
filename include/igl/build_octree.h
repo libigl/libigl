@@ -8,8 +8,12 @@
 
 #ifndef IGL_BUILD_OCTREE
 #define IGL_BUILD_OCTREE
-#include <Eigen/Core>
 #include "igl_inline.h"
+#include <Eigen/Core>
+#include <vector>
+
+
+
 
 namespace igl
 {
