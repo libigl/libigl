@@ -6,7 +6,7 @@
 #include "../../slice_mask.h"
 #include "../../parallel_for.h"
 
-#include "CGAL/Exact_predicates_exact_constructions_kernel.h"
+#include "CGAL/Exact_predicates_inexact_constructions_kernel.h"
 #include "CGAL/Triangulation_vertex_base_with_info_2.h"
 #include "CGAL/Triangulation_data_structure_2.h"
 #include "CGAL/Delaunay_triangulation_2.h"
