@@ -236,6 +236,7 @@ if(LIBIGL_WITH_CORK)
   compile_igl_module("cork")
   target_include_directories(igl_cork ${IGL_SCOPE} cork)
   target_include_directories(igl_cork ${IGL_SCOPE} "${CORK_DIR}/src")
+  target_link_libraries(igl_cork ${IGL_SCOPE} cork)
 endif()
 
 ################################################################################
