@@ -1,11 +1,13 @@
 // This file is part of libigl, a simple c++ geometry processing library.
 //
+// Copyright (C) 2018 Alec Jacobson, Marc Alexa
 // Copyright (C) 2014 Daniele Panozzo <daniele.panozzo@gmail.com>
 //
 // This Source Code Form is subject to the terms of the Mozilla Public License
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "triangle_triangle_adjacency.h"
+#include "vertex_triangle_adjacency.h"
 #include "parallel_for.h"
 #include "unique_edge_map.h"
 #include <algorithm>
@@ -37,8 +39,35 @@ IGL_INLINE void igl::triangle_triangle_adjacency(
   const Eigen::MatrixBase<DerivedF>& F,
   Eigen::PlainObjectBase<DerivedTT>& TT)
 {
-  DerivedTT TTi;
-  return triangle_triangle_adjacency(F,TT,TTi);
+  const int n = F.maxCoeff()+1;
+  typedef Eigen::Matrix<typename DerivedTT::Scalar,Eigen::Dynamic,1> VectorXI;
+  VectorXI VF,NI;
+  vertex_triangle_adjacency(F,n,VF,NI);
+  TT = DerivedTT::Constant(F.rows(),3,-1);
+  // Loop over faces
+  igl::parallel_for(F.rows(),[&](int f)
+  {
+    // Loop over corners
+    for (int k = 0; k < 3; k++)
+    {
+      int vi = F(f,k), vin = F(f,(k+1)%3);
+      // Loop over face neighbors incident on this corner
+      for (int j = NI[vi]; j < NI[vi+1]; j++)
+      {
+        int fn = VF[j];
+        // Not this face
+        if (fn != f)
+        {
+          // Face neighbor also has [vi,vin] edge
+          if (F(fn,0) == vin || F(fn,1) == vin || F(fn,2) == vin)
+          {
+            TT(f,k) = fn;
+            break;
+          }
+        }
+      }
+    }
+  });
 }
 
 template <typename DerivedF, typename TTT_type>
@@ -89,10 +118,29 @@ IGL_INLINE void igl::triangle_triangle_adjacency(
   Eigen::PlainObjectBase<DerivedTT>& TT,
   Eigen::PlainObjectBase<DerivedTTi>& TTi)
 {
-  std::vector<std::vector<int> > TTT;
-  triangle_triangle_adjacency_preprocess(F,TTT);
-  triangle_triangle_adjacency_extractTT(F,TTT,TT);
-  triangle_triangle_adjacency_extractTTi(F,TTT,TTi);
+  triangle_triangle_adjacency(F,TT);
+  TTi = DerivedTTi::Constant(TT.rows(),TT.cols(),-1);
+  //for(int f = 0; f<F.rows(); f++)
+  igl::parallel_for(F.rows(),[&](int f)
+  {
+    for(int k = 0;k<3;k++)
+    {
+      int vi = F(f,k), vj = F(f,(k+1)%3);
+      int fn = TT(f,k);
+      if(fn >= 0)
+      {
+        for(int kn = 0;kn<3;kn++)
+        {
+          int vin = F(fn,kn), vjn = F(fn,(kn+1)%3);
+          if(vi == vjn && vin == vj)
+          {
+            TTi(f,k) = kn;
+            break;
+          }
+        }
+      }
+    }
+  });
 }
 
 template <
