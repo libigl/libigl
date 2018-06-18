@@ -414,7 +414,7 @@ Libigl's `igl::opengl::glfw::Viewer` provides basic support for rendering
 multiple meshes.
 
 Which mesh is _selected_ is controlled via the `viewer.selected_data_index`
-field. By default it his is set to `0`, so in the typical case of a single mesh
+field. By default the index is set to `0`, so in the typical case of a single mesh
 `viewer.data()` returns the `igl::ViewerData` corresponding to the one
 and only mesh.
 
