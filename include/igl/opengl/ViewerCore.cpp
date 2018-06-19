@@ -90,7 +90,7 @@ IGL_INLINE void igl::opengl::ViewerCore::clear_framebuffers()
   glClearColor(background_color[0],
                background_color[1],
                background_color[2],
-               1.0f);
+               background_color[3]);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
