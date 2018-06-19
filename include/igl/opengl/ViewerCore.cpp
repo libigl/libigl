@@ -90,7 +90,7 @@ IGL_INLINE void igl::opengl::ViewerCore::clear_framebuffers()
   glClearColor(background_color[0],
                background_color[1],
                background_color[2],
-               1.0f);
+               background_color[3]);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
@@ -260,64 +260,81 @@ IGL_INLINE void igl::opengl::ViewerCore::draw_buffer(ViewerData& data,
   assert(R.rows() == G.rows() && G.rows() == B.rows() && B.rows() == A.rows());
   assert(R.cols() == G.cols() && G.cols() == B.cols() && B.cols() == A.cols());
 
-  unsigned x = R.rows();
-  unsigned y = R.cols();
+  unsigned width = R.rows();
+  unsigned height = R.cols();
 
-  // Create frame buffer
-  GLuint frameBuffer;
-  glGenFramebuffers(1, &frameBuffer);
-  glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
+  // https://learnopengl.com/Advanced-OpenGL/Anti-Aliasing
+  unsigned int framebuffer;
+  glGenFramebuffers(1, &framebuffer);
+  glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+  // create a multisampled color attachment texture
+  unsigned int textureColorBufferMultiSampled;
+  glGenTextures(1, &textureColorBufferMultiSampled);
+  glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, textureColorBufferMultiSampled);
+  glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGBA, width, height, GL_TRUE);
+  glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, textureColorBufferMultiSampled, 0);
+  // create a (also multisampled) renderbuffer object for depth and stencil attachments
+  unsigned int rbo;
+  glGenRenderbuffers(1, &rbo);
+  glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+  glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_DEPTH24_STENCIL8, width, height);
+  glBindRenderbuffer(GL_RENDERBUFFER, 0);
+  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
+  assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-  // Create texture to hold color buffer
-  GLuint texColorBuffer;
-  glGenTextures(1, &texColorBuffer);
-  glBindTexture(GL_TEXTURE_2D, texColorBuffer);
-
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, x, y, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-
+  // configure second post-processing framebuffer
+  unsigned int intermediateFBO;
+  glGenFramebuffers(1, &intermediateFBO);
+  glBindFramebuffer(GL_FRAMEBUFFER, intermediateFBO);
+  // create a color attachment texture
+  unsigned int screenTexture;
+  glGenTextures(1, &screenTexture);
+  glBindTexture(GL_TEXTURE_2D, screenTexture);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texColorBuffer, 0);
-
-  // Create Renderbuffer Object to hold depth and stencil buffers
-  GLuint rboDepthStencil;
-  glGenRenderbuffers(1, &rboDepthStencil);
-  glBindRenderbuffer(GL_RENDERBUFFER, rboDepthStencil);
-  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, x, y);
-  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rboDepthStencil);
-
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, screenTexture, 0);	// we only need a color buffer
   assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-  glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
+  glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
 
   // Clear the buffer
   glClearColor(background_color(0), background_color(1), background_color(2), 0.f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
   // Save old viewport
   Eigen::Vector4f viewport_ori = viewport;
-  viewport << 0,0,x,y;
-
+  viewport << 0,0,width,height;
   // Draw
   draw(data,update_matrices);
-
   // Restore viewport
   viewport = viewport_ori;
 
+  glBindFramebuffer(GL_READ_FRAMEBUFFER, framebuffer);
+  glBindFramebuffer(GL_DRAW_FRAMEBUFFER, intermediateFBO);
+  glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+
+  glBindFramebuffer(GL_FRAMEBUFFER, intermediateFBO);
   // Copy back in the given Eigen matrices
-  GLubyte* pixels = (GLubyte*)calloc(x*y*4,sizeof(GLubyte));
-  glReadPixels
-  (
-   0, 0,
-   x, y,
-   GL_RGBA, GL_UNSIGNED_BYTE, pixels
-   );
+  GLubyte* pixels = (GLubyte*)calloc(width*height*4,sizeof(GLubyte));
+  glReadPixels(0, 0,width, height,GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+
+  // Clean up
+  glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+  glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+  glDeleteTextures(1, &screenTexture);
+  glDeleteTextures(1, &textureColorBufferMultiSampled);
+  glDeleteFramebuffers(1, &framebuffer);
+  glDeleteFramebuffers(1, &intermediateFBO);
+  glDeleteRenderbuffers(1, &rbo);
 
   int count = 0;
-  for (unsigned j=0; j<y; ++j)
+  for (unsigned j=0; j<height; ++j)
   {
-    for (unsigned i=0; i<x; ++i)
+    for (unsigned i=0; i<width; ++i)
     {
       R(i,j) = pixels[count*4+0];
       G(i,j) = pixels[count*4+1];
@@ -326,13 +343,8 @@ IGL_INLINE void igl::opengl::ViewerCore::draw_buffer(ViewerData& data,
       ++count;
     }
   }
-
   // Clean up
   free(pixels);
-  glBindFramebuffer(GL_FRAMEBUFFER, 0);
-  glDeleteRenderbuffers(1, &rboDepthStencil);
-  glDeleteTextures(1, &texColorBuffer);
-  glDeleteFramebuffers(1, &frameBuffer);
 }
 
 IGL_INLINE void igl::opengl::ViewerCore::set_rotation_type(
