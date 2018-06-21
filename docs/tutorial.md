@@ -1384,7 +1384,7 @@ set solver or by calling out to [Mosek](http://www.mosek.com).
 
 ### Dual quaternion skinning
 Even with high quality weights, linear blend skinning is limited. In
-particular, it suffers from known artifacts stemming from blending rotations as
+particular, it suffers from known artifacts stemming from blending rotations
 as matrices: a weight combination of rotation matrices is not necessarily a
 rotation. Consider an equal blend between rotating by $-\pi/2$ and by $\pi/2$
 about the $z$-axis. Intuitively one might expect to get the identity matrix,
