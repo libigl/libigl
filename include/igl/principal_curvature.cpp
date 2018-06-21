@@ -780,7 +780,7 @@ template <
   typename DerivedPD2,
   typename DerivedPV1,
   typename DerivedPV2>
-IGL_INLINE void igl::principal_curvature(
+IGL_INLINE bool igl::principal_curvature(
   const Eigen::PlainObjectBase<DerivedV>& V,
   const Eigen::PlainObjectBase<DerivedF>& F,
   Eigen::PlainObjectBase<DerivedPD1>& PD1,
@@ -817,6 +817,8 @@ IGL_INLINE void igl::principal_curvature(
 
   // Compute
   cc.computeCurvature();
+  if (!cc.curvatureComputed)
+    return false;
 
   // Copy it back
   for (unsigned i=0; i<V.rows(); ++i)
@@ -842,6 +844,8 @@ IGL_INLINE void igl::principal_curvature(
       PD2.row(i) *= 0;
     }
   }
+
+  return true;
 
 }
 
