@@ -49,7 +49,7 @@ template <
   typename DerivedPD2, 
   typename DerivedPV1, 
   typename DerivedPV2>
-IGL_INLINE void principal_curvature(
+IGL_INLINE bool principal_curvature(
   const Eigen::PlainObjectBase<DerivedV>& V,
   const Eigen::PlainObjectBase<DerivedF>& F,
   Eigen::PlainObjectBase<DerivedPD1>& PD1,
