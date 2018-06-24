@@ -30,14 +30,14 @@ template <typename DerivedP, typename DerivedA, typename DerivedN,
     
       int m = children.size();
       int num_terms;
+    
+      assert(expansion_order < 3 && expansion_order >= 0 && "m must be less than n");
       if(expansion_order == 0){
           num_terms = 3;
       } else if(expansion_order ==1){
           num_terms = 3 + 9;
       } else if(expansion_order == 2){
           num_terms = 3 + 9 + 27;
-      } else {
-          assert(false);
       }
     
       R.resize(m);
@@ -52,7 +52,7 @@ template <typename DerivedP, typename DerivedA, typename DerivedN,
           Eigen::Matrix<real_cm,1,3> masscenter;
           masscenter << 0,0,0;
           Eigen::Matrix<real_ec,1,3> zeroth_expansion;
-          masscenter << 0,0,0;
+          zeroth_expansion << 0,0,0;
           real_p areatotal = 0.0;
           for(int j = 0; j < point_indices.at(index).size(); j++){
               int curr_point_index = point_indices.at(index).at(j);
