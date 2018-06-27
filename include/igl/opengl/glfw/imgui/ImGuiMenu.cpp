@@ -301,7 +301,7 @@ IGL_INLINE void ImGuiMenu::draw_labels_window()
       | ImGuiWindowFlags_NoCollapse
       | ImGuiWindowFlags_NoSavedSettings
       | ImGuiWindowFlags_NoInputs);
-  for (const auto & data : viewer->data_list)
+  for (const auto & data : viewer->mesh_data_list)
   {
     draw_labels(data);
   }

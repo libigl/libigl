@@ -84,7 +84,7 @@ public:
     const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& B,
     const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& A);
 
-  // Sets points given a list of point vertices. In constrast to `set_points`
+  // Sets points given a list of point vertices. In constrast to `add_points`
   // this will (purposefully) clober existing points.
   //
   // Inputs:

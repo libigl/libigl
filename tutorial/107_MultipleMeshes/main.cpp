@@ -24,7 +24,7 @@ int main(int argc, char * argv[])
     if(key == GLFW_KEY_BACKSPACE)
     {
       int old_id = viewer.data().id;
-      if (viewer.erase_mesh(viewer.selected_data_index))
+      if (viewer.erase_mesh(viewer.selected_mesh_index))
       {
         colors.erase(old_id);
         last_selected = -1;
@@ -38,14 +38,14 @@ int main(int argc, char * argv[])
   viewer.callback_pre_draw =
     [&](igl::opengl::glfw::Viewer &)
   {
-    if (last_selected != viewer.selected_data_index)
+    if (last_selected != viewer.selected_mesh_index)
     {
-      for (auto &data : viewer.data_list)
+      for (auto &data : viewer.mesh_data_list)
       {
         data.set_colors(colors[data.id]);
       }
-      viewer.data_list[viewer.selected_data_index].set_colors(Eigen::RowVector3d(0.9,0.1,0.1));
-      last_selected = viewer.selected_data_index;
+      viewer.mesh_data_list[viewer.selected_mesh_index].set_colors(Eigen::RowVector3d(0.9,0.1,0.1));
+      last_selected = viewer.selected_mesh_index;
     }
     return false;
   };

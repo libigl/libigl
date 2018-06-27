@@ -127,7 +127,7 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
     proj  = Eigen::Matrix4f::Identity();
 
     // Set view
-    look_at( camera_eye, camera_center, camera_up, view);
+    look_at(camera_eye, camera_center, camera_up, view);
 
     float width  = viewport(2);
     float height = viewport(3);

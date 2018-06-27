@@ -244,10 +244,12 @@ namespace glfw
 
   IGL_INLINE void Viewer::launch_shut()
   {
-    for(auto & data : data_list)
+    for(auto & data : mesh_data_list)
     {
       data.meshgl.free();
     }
+    volume_data_list.clear();
+
     core.shut();
     shutdown_plugins();
     glfwDestroyWindow(window);
@@ -258,6 +260,7 @@ namespace glfw
   IGL_INLINE void Viewer::init()
   {
     core.init();
+    VolumeGL::init_shaders();
 
     if (callback_init)
       if (callback_init(*this))
@@ -284,12 +287,13 @@ namespace glfw
   }
 
   IGL_INLINE Viewer::Viewer():
-    data_list(1),
-    selected_data_index(0),
-    next_data_id(1)
+    mesh_data_list(1),
+    selected_mesh_index(0),
+    selected_volume_index(0),
+    next_mesh_id(1)
   {
     window = nullptr;
-    data_list.front().id = 0;
+    mesh_data_list.front().id = 0;
 
     // Temporary variables initialization
     down = false;
@@ -546,8 +550,8 @@ namespace glfw
       case '<':
       case '>':
       {
-        selected_data_index =
-          (selected_data_index + data_list.size() + (unicode_key=='>'?1:-1))%data_list.size();
+        selected_mesh_index =
+          (selected_mesh_index + mesh_data_list.size() + (unicode_key=='>'?1:-1))%mesh_data_list.size();
         return true;
       }
       case ';':
@@ -835,9 +839,12 @@ namespace glfw
         return;
       }
     }
-    for(int i = 0;i<data_list.size();i++)
+    for(int i = 0;i<mesh_data_list.size();i++)
     {
-      core.draw(data_list[i]);
+      core.draw(mesh_data_list[i]);
+    }
+    for (int i = 0; i < volume_data_list.size(); i++) {
+      core.draw_volume(volume_data_list[i]);
     }
     if (callback_post_draw)
     {
@@ -898,47 +905,72 @@ namespace glfw
     this->save_mesh_to_file(fname.c_str());
   }
 
+  IGL_INLINE VolumeData& Viewer::volume()
+  {
+    assert(!volume_data_list.empty() && "data_list should never be empty");
+    assert(
+      (selected_volume_index >= 0 && selected_volume_index < volume_data_list.size()) &&
+      "selected_volume_index should be in bounds");
+    return volume_data_list[selected_volume_index];
+  }
+
   IGL_INLINE ViewerData& Viewer::data()
   {
-    assert(!data_list.empty() && "data_list should never be empty");
+    assert(!mesh_data_list.empty() && "data_list should never be empty");
     assert(
-      (selected_data_index >= 0 && selected_data_index < data_list.size()) &&
+      (selected_mesh_index >= 0 && selected_mesh_index < mesh_data_list.size()) &&
       "selected_data_index should be in bounds");
-    return data_list[selected_data_index];
+    return mesh_data_list[selected_mesh_index];
+  }
+
+  IGL_INLINE int Viewer::append_volume()
+  {
+    volume_data_list.emplace_back(next_volume_id++);
+    selected_volume_index = volume_data_list.size()-1;
+    return volume_data_list.back().id();
+  }
+
+  IGL_INLINE bool Viewer::erase_volume(const size_t index)
+  {
+    assert((index >= 0 && index < volume_data_list.size()) && "index should be in bounds");
+    assert(volume_data_list.size() >= 1);
+    volume_data_list.erase(volume_data_list.begin() + index);
+
+    return true;
   }
 
   IGL_INLINE int Viewer::append_mesh()
   {
-    assert(data_list.size() >= 1);
+    assert(mesh_data_list.size() >= 1);
 
-    data_list.emplace_back();
-    selected_data_index = data_list.size()-1;
-    data_list.back().id = next_data_id++;
-    return data_list.back().id;
+    mesh_data_list.emplace_back();
+    selected_mesh_index = mesh_data_list.size()-1;
+    mesh_data_list.back().id = next_mesh_id++;
+    return mesh_data_list.back().id;
   }
 
   IGL_INLINE bool Viewer::erase_mesh(const size_t index)
   {
-    assert((index >= 0 && index < data_list.size()) && "index should be in bounds");
-    assert(data_list.size() >= 1);
-    if(data_list.size() == 1)
+    assert((index >= 0 && index < mesh_data_list.size()) && "index should be in bounds");
+    assert(mesh_data_list.size() >= 1);
+    if(mesh_data_list.size() == 1)
     {
       // Cannot remove last mesh
       return false;
     }
-    data_list[index].meshgl.free();
-    data_list.erase(data_list.begin() + index);
-    if(selected_data_index >= index && selected_data_index>0)
+    mesh_data_list[index].meshgl.free();
+    mesh_data_list.erase(mesh_data_list.begin() + index);
+    if(selected_mesh_index >= index && selected_mesh_index>0)
     {
-      selected_data_index--;
+      selected_mesh_index--;
     }
     return true;
   }
 
   IGL_INLINE size_t Viewer::mesh_index(const int id) const {
-    for (size_t i = 0; i < data_list.size(); ++i)
+    for (size_t i = 0; i < mesh_data_list.size(); ++i)
     {
-      if (data_list[i].id == id)
+      if (mesh_data_list[i].id == id)
         return i;
     }
     return 0;
