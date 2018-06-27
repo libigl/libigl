@@ -176,6 +176,8 @@ bool igl::opengl::VolumeGL::set_data(const Eigen::RowVector3i& dimensions, const
 
   upload_volume_data(dimensions, data);
   upload_transferfunction_data(-0.1f, 1.2f);
+
+  return true;
 }
 
 
@@ -301,6 +303,8 @@ bool igl::opengl::VolumeGL::upload_volume_data(const Eigen::RowVector3i& tex_siz
   glTexImage3D(GL_TEXTURE_3D, 0, GL_RED, tex_size[0], tex_size[1], tex_size[2], 0,
                GL_RED, GL_UNSIGNED_BYTE, volume_data.data());
   glBindTexture(GL_TEXTURE_3D, 0);
+
+  return true;
 }
 
 
@@ -333,6 +337,8 @@ bool igl::opengl::VolumeGL::upload_transferfunction_data(float offset, float inc
   glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA, TransferFunctionWidth, 0, GL_RGBA,
                GL_UNSIGNED_BYTE, transfer_function_data.data());
   glBindTexture(GL_TEXTURE_1D, 0);
+
+  return true;
 }
 
 
@@ -399,4 +405,6 @@ bool igl::opengl::VolumeGL::init_shaders()
       VolumeRendering::program, "light_parameters.specular_color");
   VolumeRendering::uniform_location.light_exponent_specular = glGetUniformLocation(
       VolumeRendering::program, "light_parameters.specular_exponent");
+
+  return true;
 }
