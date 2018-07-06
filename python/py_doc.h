@@ -20,6 +20,7 @@ extern const char *__doc_igl_boundary_loop;
 extern const char *__doc_igl_cat;
 extern const char *__doc_igl_collapse_edge;
 extern const char *__doc_igl_colon;
+extern const char *__doc_igl_colormap;
 extern const char *__doc_igl_column_to_quats;
 extern const char *__doc_igl_comb_cross_field;
 extern const char *__doc_igl_comb_frame_field;
