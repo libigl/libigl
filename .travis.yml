@@ -33,8 +33,12 @@ matrix:
             - g++-4.8
             - cmake
             - cmake-data
+            - libmpfr-dev
             - libblas-dev
             - liblapack-dev
+            - libboost-filesystem-dev
+            - libboost-system-dev
+            - libboost-thread-dev
     #         - binutils
     #         - libx11-dev
     #         - mesa-common-dev
