@@ -27,7 +27,6 @@ build_script:
   - mkdir build
   - cd build
   - cmake -DLIBIGL_WITH_EMBREE=OFF -DLIBIGL_USE_STATIC_LIBRARY=ON ../
-  - make -j 2
   - msbuild %MSBuildOptions% pyigl.sln
   - cd ../tutorial
   - ${PYTHON} 101_FileIO.py
