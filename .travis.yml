@@ -5,7 +5,7 @@ cache: ccache
 matrix:
   include:
   - os: linux
-    compiler: gcc # 4.8.2 by default on Trusty
+    compiler: gcc # 4.8.4 by default on Trusty
     addons:
       apt:
         sources:
@@ -15,6 +15,8 @@ matrix:
         - libboost-filesystem-dev
         - libboost-system-dev
         - libboost-thread-dev
+        - libblas-dev
+        - liblapack-dev
     env:
     - MATRIX_EVAL="export CHECK_UNDEFINED=ON"
   - os: linux
@@ -30,6 +32,8 @@ matrix:
         - libboost-filesystem-dev
         - libboost-system-dev
         - libboost-thread-dev
+        - libblas-dev
+        - liblapack-dev
     env:
     - MATRIX_EVAL="export CC=gcc-7 && CXX=g++-7 && CHECK_UNDEFINED=OFF"
   - os: osx
