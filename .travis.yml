@@ -20,7 +20,7 @@ matrix:
         - xorg-dev
         - libglu1-mesa-dev
     env:
-    - MATRIX_EVAL="export CHECK_UNDEFINED=ON"
+    - MATRIX_EVAL="export CONFIG=Debug && CHECK_UNDEFINED=ON && PYTHON=python3"
   - os: linux
     compiler: gcc-7
     addons:
@@ -39,11 +39,11 @@ matrix:
         - xorg-dev
         - libglu1-mesa-dev
     env:
-    - MATRIX_EVAL="export CC=gcc-7 && CXX=g++-7 && CHECK_UNDEFINED=OFF"
+    - MATRIX_EVAL="export CC=gcc-7 && CXX=g++-7 && CONFIG=Debug && CHECK_UNDEFINED=OFF && PYTHON=python3"
   - os: osx
     compiler: clang
     env:
-    - MATRIX_EVAL="export CHECK_UNDEFINED=OFF"
+    - MATRIX_EVAL="export CONFIG=Debug && CHECK_UNDEFINED=OFF && PYTHON=python"
 
 install:
 - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install ccache; fi
@@ -55,14 +55,14 @@ script:
 - cd python
 - mkdir build
 - cd build
-- cmake -DLIBIGL_WITH_EMBREE=OFF -DLIBIGL_USE_STATIC_LIBRARY=ON -DCHECK_UNDEFINED=${CHECK_UNDEFINED} ../
+- cmake -DCMAKE_BUILD_TYPE=$CONFIG -DLIBIGL_WITH_EMBREE=OFF -DLIBIGL_USE_STATIC_LIBRARY=ON -DCHECK_UNDEFINED=${CHECK_UNDEFINED} ../
 - make -j 2
 - cd ../tutorial
-- python3 101_FileIO.py
+- ${PYTHON} 101_FileIO.py
 - cd ../../
 # Tutorials
 - cd tutorial
 - mkdir build
 - cd build
-- cmake -DLIBIGL_USE_STATIC_LIBRARY=ON ../
+- cmake -DCMAKE_BUILD_TYPE=$CONFIG -DLIBIGL_USE_STATIC_LIBRARY=ON ../
 - make -j 2
