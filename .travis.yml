@@ -1,5 +1,5 @@
-sudo: required
 dist: trusty
+sudo: false
 language: cpp
 cache: ccache
 matrix:
@@ -49,6 +49,7 @@ install:
 - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install ccache; fi
 - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export PATH="/usr/local/opt/ccache/libexec:$PATH"; fi
 - eval "${MATRIX_EVAL}"
+- ccache -V && ccache --show-stats && ccache --zero-stats
 
 script:
 # Python bindings
@@ -66,3 +67,4 @@ script:
 - cd build
 - cmake -DCMAKE_BUILD_TYPE=$CONFIG -DLIBIGL_USE_STATIC_LIBRARY=ON ../
 - make -j 2
+- ccache --show-stats
