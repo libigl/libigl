@@ -17,6 +17,8 @@ matrix:
         - libboost-thread-dev
         - libblas-dev
         - liblapack-dev
+        - xorg-dev
+        - libglu1-mesa-dev
     env:
     - MATRIX_EVAL="export CHECK_UNDEFINED=ON"
   - os: linux
@@ -34,6 +36,8 @@ matrix:
         - libboost-thread-dev
         - libblas-dev
         - liblapack-dev
+        - xorg-dev
+        - libglu1-mesa-dev
     env:
     - MATRIX_EVAL="export CC=gcc-7 && CXX=g++-7 && CHECK_UNDEFINED=OFF"
   - os: osx
