@@ -168,6 +168,8 @@ endif()
 ### Compile the CGAL part ###
 if(LIBIGL_WITH_CGAL)
   # Try to find the CGAL library
+  # CGAL Core is needed for
+  # `Exact_predicates_exact_constructions_kernel_with_sqrt`
   if(NOT TARGET CGAL::CGAL)
     set(CGAL_DIR "${LIBIGL_EXTERNAL}/cgal")
     igl_download_cgal_deps()
@@ -175,13 +177,13 @@ if(LIBIGL_WITH_CGAL)
       set(BOOST_ROOT "${LIBIGL_EXTERNAL}/boost")
     endif()
     set(CGAL_Boost_USE_STATIC_LIBS ON CACHE BOOL "" FORCE)
-    find_package(CGAL CONFIG COMPONENTS PATHS ${CGAL_DIR} NO_DEFAULT_PATH)
+    find_package(CGAL CONFIG COMPONENTS Core PATHS ${CGAL_DIR} NO_DEFAULT_PATH)
   endif()
 
   # If CGAL has been found, then build the libigl module
-  if(TARGET CGAL::CGAL)
+  if(TARGET CGAL::CGAL AND TARGET CGAL::CGAL_Core)
     compile_igl_module("cgal")
-    target_link_libraries(igl_cgal ${IGL_SCOPE} CGAL::CGAL)
+    target_link_libraries(igl_cgal ${IGL_SCOPE} CGAL::CGAL CGAL::CGAL_Core)
   else()
     set(LIBIGL_WITH_CGAL OFF CACHE BOOL "" FORCE)
   endif()
@@ -205,6 +207,7 @@ endfunction()
 function(igl_copy_cgal_dll target)
   if(WIN32 AND LIBIGL_WITH_CGAL)
     igl_copy_imported_dll(CGAL::CGAL ${target})
+    igl_copy_imported_dll(CGAL::CGAL_Core ${target})
   endif()
 endfunction()
 
