@@ -23,14 +23,14 @@ build_script:
   # - msbuild %MSBuildOptions% libigl_external.sln
   # - cd ../..
   # Python bindings
-  - cd python
-  - mkdir build
-  - cd build
-  - cmake -DLIBIGL_WITH_EMBREE=OFF -DLIBIGL_USE_STATIC_LIBRARY=ON ../
-  - msbuild %MSBuildOptions% pyigl.sln
-  - cd ../tutorial
-  - ${PYTHON} 101_FileIO.py
-  - cd ../../
+  # - cd python
+  # - mkdir build
+  # - cd build
+  # - cmake -DLIBIGL_WITH_EMBREE=OFF -DLIBIGL_USE_STATIC_LIBRARY=ON ../
+  # - msbuild %MSBuildOptions% pyigl.sln
+  # - cd ../tutorial
+  # - ${PYTHON} 101_FileIO.py
+  # - cd ../../
   # Tutorials
   - cd tutorial
   - mkdir build
