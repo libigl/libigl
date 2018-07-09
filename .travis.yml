@@ -49,7 +49,7 @@ install:
 - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install ccache; fi
 - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export PATH="/usr/local/opt/ccache/libexec:$PATH"; fi
 - eval "${MATRIX_EVAL}"
-- ccache --set-config=max_size=5.0G
+- ccache --max-size=5.0G
 - ccache -V && ccache --show-stats && ccache --zero-stats
 
 script:
