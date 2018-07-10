@@ -46,7 +46,7 @@ bool pre_draw(igl::opengl::glfw::Viewer & viewer)
 {
   using namespace Eigen;
   using namespace std;
-  if(viewer.core.is_animating)
+  if(viewer.core().is_animating)
   {
     // Interpolate pose and identity
     RotationList anim_pose(pose.size());
@@ -97,7 +97,7 @@ bool key_down(igl::opengl::glfw::Viewer &viewer, unsigned char key, int mods)
   switch(key)
   {
     case ' ':
-      viewer.core.is_animating = !viewer.core.is_animating;
+      viewer.core().is_animating = !viewer.core().is_animating;
       break;
     case '.':
       selected++;
@@ -169,8 +169,8 @@ int main(int argc, char *argv[])
   viewer.data().line_width = 1;
   viewer.callback_pre_draw = &pre_draw;
   viewer.callback_key_down = &key_down;
-  viewer.core.is_animating = false;
-  viewer.core.animation_max_fps = 30.;
+  viewer.core().is_animating = false;
+  viewer.core().animation_max_fps = 30.;
   cout<<
     "Press '.' to show next weight function."<<endl<<
     "Press ',' to show previous weight function."<<endl<<

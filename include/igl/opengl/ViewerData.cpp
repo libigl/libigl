@@ -30,7 +30,8 @@ IGL_INLINE igl::opengl::ViewerData::ViewerData()
   line_width(0.5f),
   line_color(0,0,0,1),
   shininess(35.0f),
-  id(-1)
+  id(-1),
+  is_visible(1)
 {
   clear();
 };
@@ -110,6 +111,14 @@ IGL_INLINE void igl::opengl::ViewerData::set_normals(const Eigen::MatrixXd& N)
   else
     cerr << "ERROR (set_normals): Please provide a normal per face, per corner or per vertex."<<endl;
   dirty |= MeshGL::DIRTY_NORMAL;
+}
+
+IGL_INLINE void igl::opengl::ViewerData::set_visible(bool value, unsigned int core_id /*= 1*/)
+{
+  if (value)
+    is_visible |= core_id;
+  else
+  is_visible &= ~core_id;
 }
 
 IGL_INLINE void igl::opengl::ViewerData::set_colors(const Eigen::MatrixXd &C)
