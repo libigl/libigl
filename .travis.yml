@@ -62,6 +62,7 @@ script:
 - cd ../tutorial
 - ${PYTHON} 101_FileIO.py
 - cd ../../
+- rm -rf python/build
 # Tutorials
 - cd tutorial
 - mkdir build
