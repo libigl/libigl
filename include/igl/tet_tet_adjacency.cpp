@@ -8,7 +8,6 @@
 
 
 #include "tet_tet_adjacency.h"
-#include "parallel_for.h"
 
 #include "parallel_for.h"
 
