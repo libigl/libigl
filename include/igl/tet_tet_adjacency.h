@@ -40,7 +40,7 @@ namespace igl
   IGL_INLINE void tet_tet_adjacency(
                                     const Eigen::MatrixBase<DerivedT>& T,
                                     Eigen::PlainObjectBase<DerivedTT>& TT);
-  
+    
 }
 
 #ifndef IGL_STATIC_LIBRARY
