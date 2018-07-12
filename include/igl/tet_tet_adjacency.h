@@ -15,32 +15,32 @@
 
 namespace igl
 {
-    
-    // Constructs the tet_tet adjacency matrix for a given tet mesh with tets T
-    //
-    // Inputs:
-    //   T  #T by 4 list of tets
-    // Outputs:
-    //   TT   #T by #4 adjacency matrix, the element i,j is the id of the tet
-    //        adjacent to the j face of tet i
-    //   TTi  #T by #4 adjacency matrix, the element i,j is the id of face of
-    //        the tet TT(i,j) that is adjacent to tet i
-    //
-    // NOTE: the first face of a tet is [0,1,2], the second [0,1,3], the third
-    //       [1,2,3], and the fourth [2,0,3].
-    
-    template <typename DerivedT, typename DerivedTT, typename DerivedTTi>
-    IGL_INLINE void tet_tet_adjacency(
-                                      const Eigen::MatrixBase<DerivedT>& T,
-                                      Eigen::PlainObjectBase<DerivedTT>& TT,
-                                      Eigen::PlainObjectBase<DerivedTTi>& TTi);
-    
-    
-    template <typename DerivedT, typename DerivedTT>
-    IGL_INLINE void tet_tet_adjacency(
-                                      const Eigen::MatrixBase<DerivedT>& T,
-                                      Eigen::PlainObjectBase<DerivedTT>& TT);
-    
+  
+  // Constructs the tet_tet adjacency matrix for a given tet mesh with tets T
+  //
+  // Inputs:
+  //   T  #T by 4 list of tets
+  // Outputs:
+  //   TT   #T by #4 adjacency matrix, the element i,j is the id of the tet
+  //        adjacent to the j face of tet i
+  //   TTi  #T by #4 adjacency matrix, the element i,j is the id of face of
+  //        the tet TT(i,j) that is adjacent to tet i
+  //
+  // NOTE: the first face of a tet is [0,1,2], the second [0,1,3], the third
+  //       [1,2,3], and the fourth [2,0,3].
+  
+  template <typename DerivedT, typename DerivedTT, typename DerivedTTi>
+  IGL_INLINE void tet_tet_adjacency(
+                                    const Eigen::MatrixBase<DerivedT>& T,
+                                    Eigen::PlainObjectBase<DerivedTT>& TT,
+                                    Eigen::PlainObjectBase<DerivedTTi>& TTi);
+  
+  
+  template <typename DerivedT, typename DerivedTT>
+  IGL_INLINE void tet_tet_adjacency(
+                                    const Eigen::MatrixBase<DerivedT>& T,
+                                    Eigen::PlainObjectBase<DerivedTT>& TT);
+  
 }
 
 #ifndef IGL_STATIC_LIBRARY
