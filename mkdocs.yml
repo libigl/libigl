@@ -1,0 +1,85 @@
+site_name: libigl
+site_url: 'http://libigl.github.io/libigl/'
+repo_name: 'libigl/libigl'
+repo_url: 'https://github.com/libigl/libigl'
+site_description: "Simple C++ geometry processing library"
+strict: true
+theme:
+  name: material
+  favicon: 'favicon.ico'
+  logo:
+    icon: ' '
+  palette:
+    primary: 'light blue'
+    accent: 'blue'
+extra:
+  social:
+    - type: 'github'
+      link: 'https://github.com/libigl'
+markdown_extensions:
+  - codehilite
+  - footnotes
+  - admonition
+  - toc:
+      permalink: true
+  - scripts.figureAltCaption
+  - markdown.extensions.smarty
+  - markdown.extensions.toc:
+      permalink: true
+  - pymdownx.arithmatex
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.critic
+  - pymdownx.details
+  - pymdownx.inlinehilite
+  - pymdownx.magiclink
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.superfences
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+  - scripts.fixPaths:
+      variables:
+        repo_url: 'https://github.com/libigl/libigl/tree/master'
+extra_javascript:
+  - 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML'
+extra_css:
+  - 'css/style.css'
+pages:
+  - Home: index.md
+  - Tutorial: tutorial.md
+    # - "Chapter 1: Introduction to libigl": tutorial/chapter-1.md
+    # - "Chapter 2: Discrete Geometric Quantities and Operators": tutorial/chapter-2.md
+    # - "Chapter 3: Matrices and Linear Algebra": tutorial/chapter-3.md
+    # - "Chapter 4: Shape Deformation": tutorial/chapter-4.md
+    # - "Chapter 5: Parametrization": tutorial/chapter-5.md
+    # - "Chapter 6: External libraries": tutorial/chapter-6.md
+    # - "Chapter 7: Miscellaneous": tutorial/chapter-7.md
+    # - "Chapter 8: Outlook for continuing development": tutorial/chapter-8.md
+  - Compilation:
+    - Example Project: example-project.md
+    - Static Library: static-library.md
+    - External Dependencies: third-party.md
+    - Python Bindings: python-bindings.md
+  - Contributing:
+    - Style Guidelines: style-guidelines.md
+    - Bug Report: CONTRIBUTING.md
+    - Creating a Pull Request: before-submitting-pull-request.md
+    - Unit Tests: unit-tests.md
+  - Misc:
+    - Matlab-libigl Cheatsheet: matlab-to-eigen.md
+    - Coding Tips: coding-guidelines.md
+    - File Formats:
+      - Index: file-formats/index.md
+      - bf: file-formats/bf.md
+      - dmat: file-formats/dmat.md
+      - rbr: file-formats/rbr.md
+      - tgf: file-formats/tgf.md
+      - xml: file-formats/xml.md
+    - Building the Website: readme.md
+  - FAQ: faq.md
+  - About:
+    - Release History: RELEASE_HISTORY.md
+    - License: LICENSE.md
