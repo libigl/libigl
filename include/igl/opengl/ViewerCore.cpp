@@ -26,7 +26,7 @@ IGL_INLINE void igl::opengl::ViewerCore::align_camera_center(
   if(V.rows() == 0)
     return;
 
-  get_scale_and_shift_to_fit_mesh(V,F,model_zoom,model_translation);
+  get_scale_and_shift_to_fit_mesh(V,F,camera_base_zoom,camera_base_translation);
   // Rather than crash on empty mesh...
   if(V.size() > 0)
   {
@@ -60,7 +60,7 @@ IGL_INLINE void igl::opengl::ViewerCore::align_camera_center(
   if(V.rows() == 0)
     return;
 
-  get_scale_and_shift_to_fit_mesh(V,model_zoom,model_translation);
+  get_scale_and_shift_to_fit_mesh(V,camera_base_zoom,camera_base_translation);
   // Rather than crash on empty mesh...
   if(V.size() > 0)
   {
@@ -122,15 +122,20 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
 
   if(update_matrices)
   {
-    model = Eigen::Matrix4f::Identity();
-    view  = Eigen::Matrix4f::Identity();
-    proj  = Eigen::Matrix4f::Identity();
-
-    // Set view
-    look_at( camera_eye, camera_center, camera_up, view);
+    view = Eigen::Matrix4f::Identity();
+    proj = Eigen::Matrix4f::Identity();
+    norm = Eigen::Matrix4f::Identity();
 
     float width  = viewport(2);
     float height = viewport(3);
+
+    // Set view
+    look_at( camera_eye, camera_center, camera_up, view);
+    view = view
+      * (trackball_angle * Eigen::Scaling(camera_zoom * camera_base_zoom)
+      * Eigen::Translation3f(camera_translation + camera_base_translation)).matrix();
+
+    norm = view.inverse().transpose();
 
     // Set projection
     if (orthographic)
@@ -145,40 +150,25 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
       float fW = fH * (double)width/(double)height;
       frustum(-fW, fW, -fH, fH, camera_dnear, camera_dfar,proj);
     }
-    // end projection
-
-    // Set model transformation
-    float mat[16];
-    igl::quat_to_mat(trackball_angle.coeffs().data(), mat);
-
-    for (unsigned i=0;i<4;++i)
-      for (unsigned j=0;j<4;++j)
-        model(i,j) = mat[i+4*j];
-
-    // Why not just use Eigen::Transform<double,3,Projective> for model...?
-    model.topLeftCorner(3,3)*=camera_zoom;
-    model.topLeftCorner(3,3)*=model_zoom;
-    model.col(3).head(3) += model.topLeftCorner(3,3)*model_translation;
   }
 
   // Send transformations to the GPU
-  GLint modeli = glGetUniformLocation(data.meshgl.shader_mesh,"model");
   GLint viewi  = glGetUniformLocation(data.meshgl.shader_mesh,"view");
   GLint proji  = glGetUniformLocation(data.meshgl.shader_mesh,"proj");
-  glUniformMatrix4fv(modeli, 1, GL_FALSE, model.data());
+  GLint normi  = glGetUniformLocation(data.meshgl.shader_mesh,"normal_matrix");
   glUniformMatrix4fv(viewi, 1, GL_FALSE, view.data());
   glUniformMatrix4fv(proji, 1, GL_FALSE, proj.data());
+  glUniformMatrix4fv(normi, 1, GL_FALSE, norm.data());
 
   // Light parameters
   GLint specular_exponenti    = glGetUniformLocation(data.meshgl.shader_mesh,"specular_exponent");
-  GLint light_position_worldi = glGetUniformLocation(data.meshgl.shader_mesh,"light_position_world");
+  GLint light_position_eyei = glGetUniformLocation(data.meshgl.shader_mesh,"light_position_eye");
   GLint lighting_factori      = glGetUniformLocation(data.meshgl.shader_mesh,"lighting_factor");
   GLint fixed_colori          = glGetUniformLocation(data.meshgl.shader_mesh,"fixed_color");
   GLint texture_factori       = glGetUniformLocation(data.meshgl.shader_mesh,"texture_factor");
 
   glUniform1f(specular_exponenti, data.shininess);
-  Vector3f rev_light = -1.*light_position;
-  glUniform3fv(light_position_worldi, 1, rev_light.data());
+  glUniform3fv(light_position_eyei, 1, light_position.data());
   glUniform1f(lighting_factori, lighting_factor); // enables lighting
   glUniform4f(fixed_colori, 0.0, 0.0, 0.0, 0.0);
 
@@ -197,8 +187,8 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
     if (data.show_lines)
     {
       glLineWidth(data.line_width);
-      glUniform4f(fixed_colori, 
-        data.line_color[0], 
+      glUniform4f(fixed_colori,
+        data.line_color[0],
         data.line_color[1],
         data.line_color[2], 1.0f);
       data.meshgl.draw_mesh(false);
@@ -216,11 +206,9 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
     if (data.lines.rows() > 0)
     {
       data.meshgl.bind_overlay_lines();
-      modeli = glGetUniformLocation(data.meshgl.shader_overlay_lines,"model");
       viewi  = glGetUniformLocation(data.meshgl.shader_overlay_lines,"view");
       proji  = glGetUniformLocation(data.meshgl.shader_overlay_lines,"proj");
 
-      glUniformMatrix4fv(modeli, 1, GL_FALSE, model.data());
       glUniformMatrix4fv(viewi, 1, GL_FALSE, view.data());
       glUniformMatrix4fv(proji, 1, GL_FALSE, proj.data());
       // This must be enabled, otherwise glLineWidth has no effect
@@ -233,11 +221,9 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
     if (data.points.rows() > 0)
     {
       data.meshgl.bind_overlay_points();
-      modeli = glGetUniformLocation(data.meshgl.shader_overlay_points,"model");
       viewi  = glGetUniformLocation(data.meshgl.shader_overlay_points,"view");
       proji  = glGetUniformLocation(data.meshgl.shader_overlay_points,"proj");
 
-      glUniformMatrix4fv(modeli, 1, GL_FALSE, model.data());
       glUniformMatrix4fv(viewi, 1, GL_FALSE, view.data());
       glUniformMatrix4fv(proji, 1, GL_FALSE, proj.data());
       glPointSize(data.point_size);
@@ -368,23 +354,22 @@ IGL_INLINE igl::opengl::ViewerCore::ViewerCore()
   background_color << 0.3f, 0.3f, 0.5f, 1.0f;
 
   // Default lights settings
-  light_position << 0.0f, -0.30f, -5.0f;
+  light_position << 0.0f, 0.3f, 0.0f;
   lighting_factor = 1.0f; //on
 
   // Default trackball
   trackball_angle = Eigen::Quaternionf::Identity();
   set_rotation_type(ViewerCore::ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP);
 
-  // Defalut model viewing parameters
-  model_zoom = 1.0f;
-  model_translation << 0,0,0;
-
   // Camera parameters
+  camera_base_zoom = 1.0f;
   camera_zoom = 1.0f;
   orthographic = false;
   camera_view_angle = 45.0;
   camera_dnear = 1.0;
   camera_dfar = 100.0;
+  camera_base_translation << 0, 0, 0;
+  camera_translation << 0, 0, 0;
   camera_eye << 0, 0, 5;
   camera_center << 0, 0, 0;
   camera_up << 0, 1, 0;
