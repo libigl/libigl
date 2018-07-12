@@ -8,8 +8,10 @@
 
 
 #include "tet_tet_adjacency.h"
+#include "parallel_for.h"
 
 #include <array>
+#include <vector>
 
 template <typename DerivedT, typename DerivedTT, typename DerivedTTi>
 IGL_INLINE void
@@ -22,16 +24,20 @@ igl::tet_tet_adjacency(
     
     //Preprocess
     using Array = std::array<int, 5>;
-    std::vector<Array> TTT;
-    for(int t=0; t<T.rows(); ++t) {
-        TTT.push_back({T(t,0),T(t,1),T(t,2),t,0});
-        TTT.push_back({T(t,0),T(t,1),T(t,3),t,1});
-        TTT.push_back({T(t,1),T(t,2),T(t,3),t,2});
-        TTT.push_back({T(t,2),T(t,0),T(t,3),t,3});
+    std::vector<Array> TTT(4*T.rows());
+    const auto loop_f = [&](const int t) {
+        TTT[4*t] = {T(t,0),T(t,1),T(t,2),t,0};
+        TTT[4*t+1] = {T(t,0),T(t,1),T(t,3),t,1};
+        TTT[4*t+2] = {T(t,1),T(t,2),T(t,3),t,2};
+        TTT[4*t+3] = {T(t,2),T(t,0),T(t,3),t,3};
         for(int i=0; i<4; ++i)
-            std::sort(TTT[TTT.size()-4+i].begin(),
-                      TTT[TTT.size()-4+i].begin()+3);
-    }
+            std::sort(TTT[4*t+i].begin(), TTT[4*t+i].begin()+3);
+    };
+    
+    //for(int t=0; t<T.rows(); ++t)
+    //    loop_f(t);
+    igl::parallel_for(T.rows(), loop_f);
+    
     std::sort(TTT.begin(),TTT.end());
     
     //Compute TT and TTi
