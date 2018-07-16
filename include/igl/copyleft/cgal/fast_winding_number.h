@@ -1,5 +1,5 @@
-#ifndef IGL_FAST_WINDING_NUMBER_CGAL
-#define IGL_FAST_WINDING_NUMBER_CGAL
+#ifndef IGL_COPYLEFT_CGAL_FAST_WINDING_NUMBER
+#define IGL_COPYLEFT_CGAL_FAST_WINDING_NUMBER
 #include "../../igl_inline.h"
 #include <Eigen/Core>
 #include <vector>
