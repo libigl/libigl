@@ -1,4 +1,4 @@
-#include "point_areas_and_normals.h"
+#include "point_areas.h"
 #include "delaunay_triangulation.h"
 
 #include "../../colon.h"
@@ -22,24 +22,38 @@ typedef Kernel::Point_2                                               Point;
 namespace igl {
   namespace copyleft{
     namespace cgal{
-      template <typename DerivedP, typename DerivedI, typename DerivedO,
-      typename DerivedA, typename DerivedN>
-      IGL_INLINE void point_areas_and_normals(
+      
+      template <typename DerivedP, typename DerivedI, typename DerivedN,
+      typename DerivedA>
+      IGL_INLINE void point_areas(
+                                  const Eigen::MatrixBase<DerivedP>& P,
+                                  const Eigen::MatrixBase<DerivedI>& I,
+                                  const Eigen::MatrixBase<DerivedN>& N,
+                                  Eigen::PlainObjectBase<DerivedA> & A)
+      {
+        Eigen::MatrixXd T;
+        point_areas(P,I,N,A,T);
+      }
+      
+      
+      template <typename DerivedP, typename DerivedI, typename DerivedN,
+      typename DerivedA, typename DerivedT>
+      IGL_INLINE void point_areas(
                                         const Eigen::MatrixBase<DerivedP>& P,
                                         const Eigen::MatrixBase<DerivedI>& I,
-                                        const Eigen::MatrixBase<DerivedO>& O,
+                                        const Eigen::MatrixBase<DerivedN>& N,
                                         Eigen::PlainObjectBase<DerivedA> & A,
-                                        Eigen::PlainObjectBase<DerivedN> & N)
+                                        Eigen::PlainObjectBase<DerivedT> & T)
       {
         typedef typename DerivedP::Scalar real;
-        typedef typename DerivedO::Scalar scalarO;
+        typedef typename DerivedN::Scalar scalarN;
         typedef typename DerivedA::Scalar scalarA;
         typedef Eigen::Matrix<real,1,3> RowVec3;
         typedef Eigen::Matrix<real,1,2> RowVec2;
         
         typedef Eigen::Matrix<real, Eigen::Dynamic, Eigen::Dynamic> MatrixP;
-        typedef Eigen::Matrix<scalarO, Eigen::Dynamic, Eigen::Dynamic> MatrixO;
-        typedef Eigen::Matrix<typename DerivedO::Scalar,
+        typedef Eigen::Matrix<scalarN, Eigen::Dynamic, Eigen::Dynamic> MatrixN;
+        typedef Eigen::Matrix<typename DerivedN::Scalar,
                   Eigen::Dynamic, Eigen::Dynamic> VecotorO;
         typedef Eigen::Matrix<typename DerivedI::Scalar,
                   Eigen::Dynamic, Eigen::Dynamic> MatrixI;
@@ -49,23 +63,23 @@ namespace igl {
         const int n = P.rows();
         
         assert(P.cols() == 3 && "P must have exactly 3 columns");
-        assert(P.rows() == O.rows()
-               && "P and O must have the same number of rows");
+        assert(P.rows() == N.rows()
+               && "P and N must have the same number of rows");
         assert(P.rows() == I.rows()
                && "P and I must have the same number of rows");
         
         A.setZero(n,1);
-        N.setZero(n,3);
+        T.setZero(n,3);
         igl::parallel_for(P.rows(),[&](int i)
         {
           MatrixI neighbor_index = I.row(i);
           MatrixP neighbors;
           igl::slice(P,neighbor_index,1,neighbors);
-          if(O.rows() && neighbors.rows() > 1){
-            MatrixO neighbor_normals;
-            igl::slice(O,neighbor_index,1,neighbor_normals);
-            Eigen::Matrix<scalarO,1,3> poi_normal = neighbor_normals.row(0);
-            Eigen::Matrix<scalarO,Eigen::Dynamic,1> dotprod =
+          if(N.rows() && neighbors.rows() > 1){
+            MatrixN neighbor_normals;
+            igl::slice(N,neighbor_index,1,neighbor_normals);
+            Eigen::Matrix<scalarN,1,3> poi_normal = neighbor_normals.row(0);
+            Eigen::Matrix<scalarN,Eigen::Dynamic,1> dotprod =
                             poi_normal(0)*neighbor_normals.col(0)
             + poi_normal(1)*neighbor_normals.col(1)
             + poi_normal(2)*neighbor_normals.col(2);
@@ -74,7 +88,6 @@ namespace igl {
           }
           if(neighbors.rows() <= 2){
             A(i) = 0;
-            N.row(i) = Eigen::RowVector3d::Zero();
           } else {
             //subtract the mean from neighbors, then take svd,
             //the scores will be U*S. This is our pca plane fitting
@@ -84,9 +97,9 @@ namespace igl {
                                     Eigen::ComputeThinU | Eigen::ComputeThinV);
             MatrixP scores = svd.matrixU() * svd.singularValues().asDiagonal();
             
-            N.row(i) = svd.matrixV().col(2).transpose();
-            if(N.row(i).dot(O.row(i)) < 0){
-              N.row(i) *= -1;
+            T.row(i) = svd.matrixV().col(2).transpose();
+            if(T.row(i).dot(N.row(i)) < 0){
+              T.row(i) *= -1;
             }
             
             MatrixP plane;
