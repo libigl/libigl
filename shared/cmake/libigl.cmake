@@ -299,8 +299,8 @@ if(LIBIGL_WITH_EMBREE)
   if(NOT MSVC)
     target_compile_definitions(igl_embree ${IGL_SCOPE} -DENABLE_STATIC_LIB)
   endif()
-  list(APPEND ALL_MODULES igl_embree)
-  list(APPEND INSTALL_HEADERS igl/embree)
+  # list(APPEND ALL_MODULES igl_embree)
+  # list(APPEND INSTALL_HEADERS igl/embree)
 endif()
 
 ################################################################################
