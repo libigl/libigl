@@ -491,3 +491,14 @@ install(EXPORT igl-export NAMESPACE igl::
 )
 export(TARGETS ${LIBIGL_ALL_MODULES} NAMESPACE igl:: FILE igl-export.cmake)
 
+# Write and install package configuration file
+configure_package_config_file(
+  ${CMAKE_CURRENT_LIST_DIR}/libigl-config.cmake.in
+  ${CMAKE_CURRENT_BINARY_DIR}/libigl-config.cmake
+  INSTALL_DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/igl/cmake
+)
+install(FILES
+  ${CMAKE_CURRENT_BINARY_DIR}/libigl-config.cmake
+  DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/igl/cmake
+)
+
