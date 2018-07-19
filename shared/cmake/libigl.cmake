@@ -80,8 +80,8 @@ target_include_directories(igl_common SYSTEM INTERFACE
 if(LIBIGL_USE_STATIC_LIBRARY)
   target_compile_definitions(igl_common INTERFACE -DIGL_STATIC_LIBRARY)
 endif()
-LIST(APPEND ALL_MODULES igl_common)
-LIST(APPEND INSTALL_HEADERS igl)
+list(APPEND ALL_MODULES igl_common)
+list(APPEND INSTALL_HEADERS igl)
 
 # Transitive C++11 flags
 include(CXXFeatures)
@@ -165,7 +165,7 @@ if(LIBIGL_USE_STATIC_LIBRARY)
     "${LIBIGL_SOURCE_DIR}/igl/copyleft/*.cpp")
 endif()
 compile_igl_module("core" ${SOURCES_IGL})
-LIST(APPEND ALL_MODULES igl)
+list(APPEND ALL_MODULES igl)
 
 ################################################################################
 ## Compile the AntTweakBar part ###
