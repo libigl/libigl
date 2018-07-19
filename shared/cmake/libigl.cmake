@@ -108,12 +108,12 @@ if(TARGET Eigen3::Eigen)
 else()
   target_include_directories(igl_common SYSTEM INTERFACE 
     $<BUILD_INTERFACE:${LIBIGL_EXTERNAL}/eigen>
-    $<INSTALL_INTERFACE:include/igl/private>
+    $<INSTALL_INTERFACE:include>
   )
   # need to install eigen headers
   install(
     DIRECTORY ${LIBIGL_EXTERNAL}/eigen/Eigen
-    DESTINATION include/igl/private
+    DESTINATION include
   )
 endif()
 
