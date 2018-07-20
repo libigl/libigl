@@ -13,7 +13,9 @@
 namespace igl
 {
   // Compute connected components of a graph represented by an adjacency
-  // matrix. This version is faster than the previous version using boost.
+  // matrix.
+  //
+  // Returns a component ID per vertex of the graph where connectivity is established by edges.
   //
   // Inputs:
   //   A  n by n adjacency matrix
@@ -22,23 +24,28 @@ namespace igl
   //   counts  #components list of counts for each component
   //
   template <typename AScalar, typename DerivedC, typename Derivedcounts>
-  IGL_INLINE void components(
+  IGL_INLINE void vertex_components(
     const Eigen::SparseMatrix<AScalar> & A,
     Eigen::PlainObjectBase<DerivedC> & C,
     Eigen::PlainObjectBase<Derivedcounts> & counts);
+
   template <typename AScalar, typename DerivedC>
-  IGL_INLINE void components(
+  IGL_INLINE void vertex_components(
     const Eigen::SparseMatrix<AScalar> & A,
     Eigen::PlainObjectBase<DerivedC> & C);
-  // Ditto but for mesh faces as input. This computes connected components of
-  // **vertices** where **edges** establish connectivity.
+
+  // Compute the connected components for a mesh given its faces.
+  // Returns a component ID per vertex of the mesh where connectivity is established by edges.
+  //
+  // For computing connected components per face see igl::facet_components
+  //
   //
   // Inputs:
   //   F  n by 3 list of triangle indices
   // Outputs:
   //   C  max(F) list of component ids
   template <typename DerivedF, typename DerivedC>
-  IGL_INLINE void components(
+  IGL_INLINE void vertex_components(
     const Eigen::MatrixBase<DerivedF> & F,
     Eigen::PlainObjectBase<DerivedC> & C);
 
