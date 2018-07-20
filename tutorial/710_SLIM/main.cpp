@@ -255,7 +255,7 @@ void check_mesh_for_issues(Eigen::MatrixXd& V, Eigen::MatrixXi& F) {
   igl::adjacency_matrix(F,A);
 
   Eigen::MatrixXi C, Ci;
-  igl::components(A, C, Ci);
+  igl::vertex_components(A, C, Ci);
 
   int connected_components = Ci.rows();
   if (connected_components!=1) {

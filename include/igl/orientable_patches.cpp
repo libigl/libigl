@@ -82,10 +82,10 @@ IGL_INLINE void igl::orientable_patches(
     }
   }
   //% Connected components are patches
-  //%C = components(A); % alternative to graphconncomp from matlab_bgl
+  //%C = vertex_components(A); % alternative to graphconncomp from matlab_bgl
   //[~,C] = graphconncomp(A);
   // graph connected components 
-  components(A,C);
+  vertex_components(A,C);
 
 }
 

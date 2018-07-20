@@ -199,7 +199,7 @@ IGL_INLINE void igl::straighten_seams(
     // Doesn't Compile on older Eigen:
     //SparseMatrix<bool> A = OTVT * (!SV).matrix().asDiagonal() * VTOT;
     SparseMatrix<bool> A = OTVT * (SV!=true).matrix().asDiagonal() * VTOT;
-    components(A,C);
+    vertex_components(A,C);
     nc = C.maxCoeff()+1;
   }
   //std::cout<<"nc: "<<nc<<std::endl;
