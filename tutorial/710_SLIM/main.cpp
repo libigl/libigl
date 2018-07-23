@@ -2,7 +2,7 @@
 
 #include "igl/slim.h"
 
-#include "igl/components.h"
+#include "igl/vertex_components.h"
 #include "igl/readOBJ.h"
 #include "igl/writeOBJ.h"
 #include "igl/Timer.h"
