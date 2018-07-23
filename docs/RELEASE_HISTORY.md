@@ -104,6 +104,7 @@ The following table lists functions which have changed name as of version
 
 Old                              | New
 -------------------------------- | -------------------------------------
+`igl::components		 | `igl::vertex_components`				 
 `igl::add_barycenter`            | `igl::false_barycentric_subdivision`
 `igl::areamatrix`                | `igl::vector_area_matrix`
 `igl::barycentric2global`        | `igl::barycentric_to_global`

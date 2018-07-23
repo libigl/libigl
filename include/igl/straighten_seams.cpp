@@ -19,7 +19,7 @@
 #include "setxor.h"
 #include "edges_to_path.h"
 #include "ramer_douglas_peucker.h"
-#include "components.h"
+#include "vertex_components.h"
 #include "list_to_matrix.h"
 #include "ears.h"
 #include "slice.h"

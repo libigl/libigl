@@ -52,7 +52,7 @@ namespace igl
 }
 
 #ifndef IGL_STATIC_LIBRARY
-#  include "components.cpp"
+#  include "vertex_components.cpp"
 #endif
 
 #endif
