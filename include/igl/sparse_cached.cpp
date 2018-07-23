@@ -117,7 +117,7 @@ IGL_INLINE void igl::sparse_cached(
 
 
 #ifdef IGL_STATIC_LIBRARY
-#if EIGEN_VERSION_AT_LEAST(3,2,9)
+#if EIGEN_VERSION_AT_LEAST(3,3,2)
 // SparseMatrixBase::StorageIndex was introduced in eigen 3.2.9
   template void igl::sparse_cached<double>(std::vector<Eigen::Triplet<double, Eigen::SparseMatrix<double, 0, int>::StorageIndex>, std::allocator<Eigen::Triplet<double, Eigen::SparseMatrix<double, 0, int>::StorageIndex> > > const&, Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, Eigen::SparseMatrix<double, 0, int>&);
   template void igl::sparse_cached_precompute<double>(std::vector<Eigen::Triplet<double, Eigen::SparseMatrix<double, 0, int>::StorageIndex>, std::allocator<Eigen::Triplet<double, Eigen::SparseMatrix<double, 0, int>::StorageIndex> > > const&, Eigen::Matrix<int, -1, 1, 0, -1, 1>&, Eigen::SparseMatrix<double, 0, int>&);
