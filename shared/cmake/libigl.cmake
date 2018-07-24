@@ -78,7 +78,7 @@ target_include_directories(igl_common SYSTEM INTERFACE
   $<INSTALL_INTERFACE:include>
 )
 # Export igl_common as igl::common
-set_property(TARGET igl_common PROPERTY EXPORT_NAME common)
+set_property(TARGET igl_common PROPERTY EXPORT_NAME igl::common)
 if(LIBIGL_USE_STATIC_LIBRARY)
   target_compile_definitions(igl_common INTERFACE -DIGL_STATIC_LIBRARY)
 endif()
@@ -148,7 +148,7 @@ function(compile_igl_module module_dir)
   message(STATUS "Creating target: igl::${module_name} (${module_libname})")
   add_library(igl::${module_name} ALIAS ${module_libname})
   # Export as igl::${module_name}
-  set_property(TARGET ${module_libname} PROPERTY EXPORT_NAME ${module_name})
+  set_property(TARGET ${module_libname} PROPERTY EXPORT_NAME igl::${module_name})
 endfunction()
 
 
@@ -472,7 +472,6 @@ export(
   TARGETS
     igl
     igl_common
-  NAMESPACE igl::
   FILE libigl-export.cmake
 )
 
@@ -496,7 +495,6 @@ install(
 # Write export file
 export(EXPORT igl-export
   FILE "${CMAKE_BINARY_DIR}/libigl-export.cmake"
-  NAMESPACE igl::
 )
 install(EXPORT igl-export DESTINATION ${CMAKE_INSTALL_DATADIR}/libigl/cmake FILE libigl-export.cmake)
 
