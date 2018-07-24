@@ -2,3 +2,9 @@
 
 include(${CMAKE_CURRENT_LIST_DIR}/libigl-export.cmake)
 
+if (TARGET igl::core)
+  set(libigl_core_FOUND TRUE)
+endif()
+
+check_required_components(libigl)
+
