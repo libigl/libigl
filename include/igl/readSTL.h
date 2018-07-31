@@ -28,7 +28,7 @@ namespace igl
   // Outputs:
   //   V  double matrix of vertex positions  #V*3 by 3
   //   F  index matrix of triangle indices #F by 3
-  //   N  double matrix of vertex positions  #F by 3
+  //   N  double matrix of surface normals #F by 3
   // Returns true on success, false on errors
   //
   // Example:
