@@ -347,10 +347,9 @@ IGL_INLINE void ImGuiMenu::draw_labels(const igl::opengl::ViewerData &data)
 
 IGL_INLINE void ImGuiMenu::draw_text(Eigen::Vector3d pos, Eigen::Vector3d normal, const std::string &text)
 {
-  Eigen::Matrix4f view_matrix = viewer->core.view * viewer->core.model;
   pos += normal * 0.005f * viewer->core.object_scale;
   Eigen::Vector3f coord = igl::project(Eigen::Vector3f(pos.cast<float>()),
-    view_matrix, viewer->core.proj, viewer->core.viewport);
+    viewer->core.view, viewer->core.proj, viewer->core.viewport);
 
   // Draw text labels slightly bigger than normal text
   ImDrawList* drawList = ImGui::GetWindowDrawList();
