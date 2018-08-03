@@ -256,7 +256,7 @@ IGL_INLINE void ImGuiMenu::draw_viewer_menu()
   {
     if (ImGui::Checkbox("Face-based", &(viewer->data().face_based)))
     {
-      viewer->data().set_face_based(viewer->data().face_based);
+      viewer->data().dirty = MeshGL::DIRTY_ALL;
     }
     ImGui::Checkbox("Show texture", &(viewer->data().show_texture));
     if (ImGui::Checkbox("Invert normals", &(viewer->data().invert_normals)))
