@@ -229,6 +229,7 @@ few labs/companies/institutions using libigl:
  - [TU Delft](http://www.tudelft.nl/en/), Netherlands
  - [TU Wien](https://www.tuwien.ac.at/en/tuwien_home/), Austria
  - [Telecom ParisTech](http://www.telecom-paristech.fr/en/formation-et-innovation-dans-le-numerique.html), Paris, France
+ - [UBISOFT](https://www.ubisoft.com/en-us/), USA
  - [Utrecht University](http://www.staff.science.uu.nl/~vaxma001/), The Netherlands
  - [Universidade Federal de Santa Catarina](http://mtm.ufsc.br/~leo/), Brazil
  - [University College London](http://vecg.cs.ucl.ac.uk/), England
