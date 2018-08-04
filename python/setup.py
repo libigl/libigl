@@ -10,6 +10,11 @@ from distutils.version import LooseVersion
 from distutils.sysconfig import get_config_var
 from distutils.sysconfig import get_python_inc
 
+CMAKE_ADDITIONAL_OPT = []
+if '--' in sys.argv:
+    i = sys.argv.index('--')
+    CMAKE_ADDITIONAL_OPT = sys.argv[i+1:]
+    sys.argv = sys.argv[:i]
 
 class CMakeExtension(Extension):
 
@@ -60,6 +65,7 @@ class CMakeBuild(build_ext):
         else:
             cmake_args += ['-DCMAKE_BUILD_TYPE=' + cfg]
             build_args += ['--', '-j2']
+        cmake_args += CMAKE_ADDITIONAL_OPT
 
         env = os.environ.copy()
         env['CXXFLAGS'] = '{} -DVERSION_INFO=\\"{}\\"'.format(env.get('CXXFLAGS', ''),
