@@ -11,7 +11,7 @@ if(APPLE)
     message(STATUS "Found libtool - ${CMAKE_LIBTOOL}")
     get_property(languages GLOBAL PROPERTY ENABLED_LANGUAGES)
     foreach(lang ${languages})
-      # Added -c 
+      # Added -c
       set(CMAKE_${lang}_CREATE_STATIC_LIBRARY
         "${CMAKE_LIBTOOL} -c -static -o <TARGET> <LINK_FLAGS> <OBJECTS> ")
     endforeach()
@@ -42,7 +42,7 @@ option(LIBIGL_WITH_MATLAB            "Use Matlab"         "${Matlab_FOUND}")
 option(LIBIGL_WITH_MOSEK             "Use MOSEK"          "${MOSEK_FOUND}")
 option(LIBIGL_WITH_OPENGL            "Use OpenGL"         "${OPENGL_FOUND}")
 option(LIBIGL_WITH_OPENGL_GLFW       "Use GLFW"           "${OPENGL_FOUND}")
-option(LIBIGL_WITH_OPENGL_GLFW_IMGUI "Use ImGui"          OFF)
+option(LIBIGL_WITH_OPENGL_GLFW_IMGUI "Use ImGui"          ON)
 option(LIBIGL_WITH_PNG               "Use PNG"            ON)
 option(LIBIGL_WITH_TETGEN            "Use Tetgen"         ON)
 option(LIBIGL_WITH_TRIANGLE          "Use Triangle"       ON)

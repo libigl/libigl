@@ -4,10 +4,11 @@ add_library(imgui
 		imgui/imgui.cpp
 		imgui/imgui_demo.cpp
 		imgui/imgui_draw.cpp
-		imgui_impl_glfw_gl3.cpp
+		imgui/examples/imgui_impl_glfw.cpp
+		imgui/examples/imgui_impl_opengl3.cpp
 )
 
 target_include_directories(imgui PRIVATE imgui)
-target_include_directories(imgui SYSTEM INTERFACE .)
+target_include_directories(imgui INTERFACE . imgui/examples)
 
 target_link_libraries(imgui PRIVATE glad glfw)

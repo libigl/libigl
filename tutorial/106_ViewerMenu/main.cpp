@@ -6,7 +6,6 @@
 #include <iostream>
 #include "tutorial_shared_path.h"
 
-
 int main(int argc, char *argv[])
 {
   Eigen::MatrixXd V;
@@ -23,7 +22,7 @@ int main(int argc, char *argv[])
   viewer.plugins.push_back(&menu);
 
   // Customize the menu
-  float floatVariable = 0.1f; // Shared between two menus
+  double doubleVariable = 0.1f; // Shared between two menus
 
   // Add content to the default menu window
   menu.callback_draw_viewer_menu = [&]()
@@ -35,7 +34,7 @@ int main(int argc, char *argv[])
     if (ImGui::CollapsingHeader("New Group", ImGuiTreeNodeFlags_DefaultOpen))
     {
       // Expose variable directly ...
-      ImGui::InputFloat("float", &floatVariable, 0, 0, 3);
+      ImGui::InputDouble("double", &doubleVariable, 0, 0, "%.4f");
 
       // ... or using a custom callback
       static bool boolVariable = true;
@@ -87,9 +86,10 @@ int main(int argc, char *argv[])
         ImGuiWindowFlags_NoSavedSettings
     );
 
+
     // Expose the same variable directly ...
     ImGui::PushItemWidth(-80);
-    ImGui::DragFloat("float", &floatVariable, 0.0, 0.0, 3.0);
+    ImGui::DragScalar("double", ImGuiDataType_Double, &doubleVariable, 0.1, 0, 0, "%.4f");
     ImGui::PopItemWidth();
 
     static std::string str = "bunny";
