@@ -57,7 +57,7 @@ install:
 script:
 # Python bindings
 - cd python
-- ${PYTHON} setup.py develop --user
+- ${PYTHON} setup.py develop --user -- -DCMAKE_BUILD_TYPE=${CONFIG} -DLIBIGL_WITH_EMBREE=OFF -DLIBIGL_USE_STATIC_LIBRARY=ON -DCHECK_UNDEFINED=${CHECK_UNDEFINED}
 - cd tutorial
 - ${PYTHON} 101_FileIO.py
 - cd ../../
