@@ -5,7 +5,7 @@ add_library(imgui
 		imgui/imgui_demo.cpp
 		imgui/imgui_draw.cpp
 		imgui/examples/imgui_impl_glfw.cpp
-		imgui/examples/imgui_impl_opengl3.cpp
+		imgui_impl_opengl3.cpp
 )
 
 target_include_directories(imgui PRIVATE imgui)
