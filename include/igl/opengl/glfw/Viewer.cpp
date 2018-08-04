@@ -496,10 +496,6 @@ namespace glfw
 
   IGL_INLINE bool Viewer::key_pressed(unsigned int unicode_key,int modifiers)
   {
-    if (callback_key_pressed)
-      if (callback_key_pressed(*this,unicode_key,modifiers))
-        return true;
-
     for (unsigned int i = 0; i<plugins.size(); ++i)
     {
       if (plugins[i]->key_pressed(unicode_key, modifiers))
@@ -507,6 +503,10 @@ namespace glfw
         return true;
       }
     }
+
+    if (callback_key_pressed)
+      if (callback_key_pressed(*this,unicode_key,modifiers))
+        return true;
 
     switch(unicode_key)
     {
@@ -582,23 +582,25 @@ namespace glfw
 
   IGL_INLINE bool Viewer::key_down(int key,int modifiers)
   {
-    if (callback_key_down)
-      if (callback_key_down(*this,key,modifiers))
-        return true;
     for (unsigned int i = 0; i<plugins.size(); ++i)
       if (plugins[i]->key_down(key, modifiers))
         return true;
+
+    if (callback_key_down)
+      if (callback_key_down(*this,key,modifiers))
+        return true;
+
     return false;
   }
 
   IGL_INLINE bool Viewer::key_up(int key,int modifiers)
   {
-    if (callback_key_up)
-      if (callback_key_up(*this,key,modifiers))
-        return true;
-
     for (unsigned int i = 0; i<plugins.size(); ++i)
       if (plugins[i]->key_up(key, modifiers))
+        return true;
+
+    if (callback_key_up)
+      if (callback_key_up(*this,key,modifiers))
         return true;
 
     return false;
@@ -610,12 +612,12 @@ namespace glfw
     down_mouse_x = current_mouse_x;
     down_mouse_y = current_mouse_y;
 
-    if (callback_mouse_down)
-      if (callback_mouse_down(*this,static_cast<int>(button),modifier))
-        return true;
-
     for (unsigned int i = 0; i<plugins.size(); ++i)
       if(plugins[i]->mouse_down(static_cast<int>(button),modifier))
+        return true;
+
+    if (callback_mouse_down)
+      if (callback_mouse_down(*this,static_cast<int>(button),modifier))
         return true;
 
     down = true;
@@ -670,13 +672,13 @@ namespace glfw
   {
     down = false;
 
-    if (callback_mouse_up)
-      if (callback_mouse_up(*this,static_cast<int>(button),modifier))
-        return true;
-
     for (unsigned int i = 0; i<plugins.size(); ++i)
       if(plugins[i]->mouse_up(static_cast<int>(button),modifier))
           return true;
+
+    if (callback_mouse_up)
+      if (callback_mouse_up(*this,static_cast<int>(button),modifier))
+        return true;
 
     mouse_mode = MouseMode::None;
 
@@ -694,12 +696,12 @@ namespace glfw
     current_mouse_x = mouse_x;
     current_mouse_y = mouse_y;
 
-    if (callback_mouse_move)
-      if (callback_mouse_move(*this,mouse_x,mouse_y))
-        return true;
-
     for (unsigned int i = 0; i<plugins.size(); ++i)
       if (plugins[i]->mouse_move(mouse_x, mouse_y))
+        return true;
+
+    if (callback_mouse_move)
+      if (callback_mouse_move(*this,mouse_x,mouse_y))
         return true;
 
     if (down)
@@ -771,12 +773,12 @@ namespace glfw
   {
     scroll_position += delta_y;
 
-    if (callback_mouse_scroll)
-      if (callback_mouse_scroll(*this,delta_y))
-        return true;
-
     for (unsigned int i = 0; i<plugins.size(); ++i)
       if (plugins[i]->mouse_scroll(delta_y))
+        return true;
+
+    if (callback_mouse_scroll)
+      if (callback_mouse_scroll(*this,delta_y))
         return true;
 
     // Only zoom if there's actually a change
@@ -840,16 +842,16 @@ namespace glfw
     }
 
     core.clear_framebuffers();
-    if (callback_pre_draw)
+    for (unsigned int i = 0; i<plugins.size(); ++i)
     {
-      if (callback_pre_draw(*this))
+      if (plugins[i]->pre_draw())
       {
         return;
       }
     }
-    for (unsigned int i = 0; i<plugins.size(); ++i)
+    if (callback_pre_draw)
     {
-      if (plugins[i]->pre_draw())
+      if (callback_pre_draw(*this))
       {
         return;
       }
@@ -858,18 +860,18 @@ namespace glfw
     {
       core.draw(data_list[i]);
     }
-    if (callback_post_draw)
-    {
-      if (callback_post_draw(*this))
-      {
-        return;
-      }
-    }
     for (unsigned int i = 0; i<plugins.size(); ++i)
     {
       if (plugins[i]->post_draw())
       {
         break;
+      }
+    }
+    if (callback_post_draw)
+    {
+      if (callback_post_draw(*this))
+      {
+        return;
       }
     }
   }
