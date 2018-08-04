@@ -137,17 +137,9 @@ namespace glfw
   IGL_INLINE int  Viewer::launch_init(bool resizable,bool fullscreen)
   {
     glfwSetErrorCallback(glfw_error_callback);
-    static bool glfw_initialized = false;
-    if (!glfw_initialized)
+    if (!glfwInit())
     {
-      if (!glfwInit())
-      {
-        return EXIT_FAILURE;
-      }
-      else
-      {
-        glfw_initialized = true;
-      }
+      return EXIT_FAILURE;
     }
     glfwWindowHint(GLFW_SAMPLES, 8);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
