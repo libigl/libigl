@@ -9,6 +9,6 @@ add_library(imgui
 )
 
 target_include_directories(imgui PRIVATE imgui)
-target_include_directories(imgui INTERFACE . imgui/examples)
+target_include_directories(imgui PUBLIC . imgui/examples)
 
 target_link_libraries(imgui PRIVATE glad glfw)
