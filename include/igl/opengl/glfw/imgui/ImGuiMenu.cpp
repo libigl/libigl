@@ -9,7 +9,8 @@
 #include "ImGuiMenu.h"
 #include <igl/project.h>
 #include <imgui/imgui.h>
-#include <imgui_impl_glfw_gl3.h>
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_opengl3.h>
 #include <imgui_fonts_droid_sans.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
@@ -30,11 +31,16 @@ IGL_INLINE void ImGuiMenu::init(igl::opengl::glfw::Viewer *_viewer)
   // Setup ImGui binding
   if (_viewer)
   {
-    if (context_ == nullptr)
+    IMGUI_CHECKVERSION();
+    if (!context_)
     {
-      context_ = ImGui::CreateContext();
+      // Single global context by default, but can be overridden by the user
+      static ImGuiContext * __global_context = ImGui::CreateContext();
+      context_ = __global_context;
     }
-    ImGui_ImplGlfwGL3_Init(viewer->window, false);
+    const char* glsl_version = "#version 150";
+    ImGui_ImplGlfw_InitForOpenGL(viewer->window, false);
+    ImGui_ImplOpenGL3_Init(glsl_version);
     ImGui::GetIO().IniFilename = nullptr;
     ImGui::StyleColorsDark();
     ImGuiStyle& style = ImGui::GetStyle();
@@ -57,9 +63,10 @@ IGL_INLINE void ImGuiMenu::reload_font(int font_size)
 IGL_INLINE void ImGuiMenu::shutdown()
 {
   // Cleanup
-  ImGui_ImplGlfwGL3_Shutdown();
-  ImGui::DestroyContext(context_);
-  context_ = nullptr;
+  ImGui_ImplOpenGL3_Shutdown();
+  ImGui_ImplGlfw_Shutdown();
+  // User is responsible for destroying context if a custom context is given
+  // ImGui::DestroyContext(*context_);
 }
 
 IGL_INLINE bool ImGuiMenu::pre_draw()
@@ -71,10 +78,12 @@ IGL_INLINE bool ImGuiMenu::pre_draw()
   if (std::abs(scaling - hidpi_scaling_) > 1e-5)
   {
     reload_font();
-    ImGui_ImplGlfwGL3_InvalidateDeviceObjects();
+    ImGui_ImplOpenGL3_DestroyDeviceObjects();
   }
 
-  ImGui_ImplGlfwGL3_NewFrame();
+  ImGui_ImplOpenGL3_NewFrame();
+  ImGui_ImplGlfw_NewFrame();
+  ImGui::NewFrame();
   return false;
 }
 
@@ -82,6 +91,7 @@ IGL_INLINE bool ImGuiMenu::post_draw()
 {
   draw_menu();
   ImGui::Render();
+  ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
   return false;
 }
 
@@ -97,7 +107,7 @@ IGL_INLINE void ImGuiMenu::post_resize(int width, int height)
 // Mouse IO
 IGL_INLINE bool ImGuiMenu::mouse_down(int button, int modifier)
 {
-  ImGui_ImplGlfwGL3_MouseButtonCallback(viewer->window, button, GLFW_PRESS, modifier);
+  ImGui_ImplGlfw_MouseButtonCallback(viewer->window, button, GLFW_PRESS, modifier);
   return ImGui::GetIO().WantCaptureMouse;
 }
 
@@ -113,26 +123,26 @@ IGL_INLINE bool ImGuiMenu::mouse_move(int mouse_x, int mouse_y)
 
 IGL_INLINE bool ImGuiMenu::mouse_scroll(float delta_y)
 {
-  ImGui_ImplGlfwGL3_ScrollCallback(viewer->window, 0.f, delta_y);
+  ImGui_ImplGlfw_ScrollCallback(viewer->window, 0.f, delta_y);
   return ImGui::GetIO().WantCaptureMouse;
 }
 
 // Keyboard IO
 IGL_INLINE bool ImGuiMenu::key_pressed(unsigned int key, int modifiers)
 {
-  ImGui_ImplGlfwGL3_CharCallback(nullptr, key);
+  ImGui_ImplGlfw_CharCallback(nullptr, key);
   return ImGui::GetIO().WantCaptureKeyboard;
 }
 
 IGL_INLINE bool ImGuiMenu::key_down(int key, int modifiers)
 {
-  ImGui_ImplGlfwGL3_KeyCallback(viewer->window, key, 0, GLFW_PRESS, modifiers);
+  ImGui_ImplGlfw_KeyCallback(viewer->window, key, 0, GLFW_PRESS, modifiers);
   return ImGui::GetIO().WantCaptureKeyboard;
 }
 
 IGL_INLINE bool ImGuiMenu::key_up(int key, int modifiers)
 {
-  ImGui_ImplGlfwGL3_KeyCallback(viewer->window, key, 0, GLFW_RELEASE, modifiers);
+  ImGui_ImplGlfw_KeyCallback(viewer->window, key, 0, GLFW_RELEASE, modifiers);
   return ImGui::GetIO().WantCaptureKeyboard;
 }
 
