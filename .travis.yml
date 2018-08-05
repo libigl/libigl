@@ -20,8 +20,9 @@ matrix:
         - xorg-dev
         - libglu1-mesa-dev
         - python3-setuptools
+        - libpython3-dev
     env:
-    - MATRIX_EVAL="export CONFIG=Debug && CHECK_UNDEFINED=OFF && PYTHON=python3"
+    - MATRIX_EVAL="export CONFIG=Debug && CHECK_UNDEFINED=ON && PYTHON=python3"
   - os: linux
     compiler: gcc-7
     addons:
@@ -40,12 +41,13 @@ matrix:
         - xorg-dev
         - libglu1-mesa-dev
         - python3-setuptools
+        - libpython3-dev
     env:
-    - MATRIX_EVAL="export CC=gcc-7 && CXX=g++-7 && CONFIG=Debug && CHECK_UNDEFINED=OFF && PYTHON=python3"
+    - MATRIX_EVAL="export CC=gcc-7 && CXX=g++-7 && CONFIG=Debug && CHECK_UNDEFINED=ON && PYTHON=python3"
   - os: osx
     compiler: clang
     env:
-    - MATRIX_EVAL="export CONFIG=Debug && CHECK_UNDEFINED=OFF && PYTHON=python"
+    - MATRIX_EVAL="export CONFIG=Debug && CHECK_UNDEFINED=ON && PYTHON=python"
 
 install:
 - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install ccache; fi
