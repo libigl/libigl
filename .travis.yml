@@ -21,7 +21,7 @@ matrix:
         - libglu1-mesa-dev
         - python3-setuptools
     env:
-    - MATRIX_EVAL="export CONFIG=Debug && CHECK_UNDEFINED=ON && PYTHON=python3"
+    - MATRIX_EVAL="export CONFIG=Debug && CHECK_UNDEFINED=OFF && PYTHON=python3"
   - os: linux
     compiler: gcc-7
     addons:
