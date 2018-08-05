@@ -52,7 +52,7 @@ class CMakeBuild(build_ext):
                       '-DPYTHON_EXECUTABLE=' + sys.executable,
                       '-DPYTHON_LIBRARY=' + python_library,
                       '-DPYTHON_INCLUDE_DIR=' + python_include_directory, ]
-
+        print('FROM SETUP.PY:', cmake_args)
         cfg = 'Debug' if self.debug else 'Release'
         build_args = ['--config', cfg]
 
