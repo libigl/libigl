@@ -27,7 +27,7 @@ IGL_INLINE double igl::avg_edge_length(
     avg += (V.row(E(i,0)) - V.row(E(i,1))).norm();
   }
 
-  return avg / (double) E.size();
+  return avg / (double) E.rows();
 }
 
 #ifdef IGL_STATIC_LIBRARY
