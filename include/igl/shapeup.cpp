@@ -206,7 +206,7 @@ namespace igl
         for (int j=0;j<sudata.SC(i);j++)
           rhs.row(currRow++)=projP.block(i, 3*j, 1,3);
       
-      Eigen::PlainObjectBase<DerivedP> lsrhs=-sudata.At*sudata.W*rhs;
+      DerivedP lsrhs=-sudata.At*sudata.W*rhs;
       MatrixXd Y(0,3), Beq(0,3);  //We do not use the min_quad_solver fixed variables mechanism; they are treated with the closeness energy of ShapeUp.
       min_quad_with_fixed_solve(sudata.solver_data, lsrhs,Y,Beq,currP);
       
