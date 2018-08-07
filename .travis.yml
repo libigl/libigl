@@ -1,67 +1,73 @@
+dist: trusty
+sudo: true
 language: cpp
-sudo: false
-dist: precise
+cache: ccache
 matrix:
   include:
-    - os: linux
-      compiler: gcc-4.8.1
-      script:
-        - git submodule update --init --recursive
-        - mkdir external/glfw/include/GL
-        - wget --no-check-certificate -P external/glfw/include/GL http://www.opengl.org/registry/api/GL/glcorearb.h
-        - cd python
-        - mkdir build
-        - cd build
-        - cmake -DCMAKE_CXX_COMPILER=g++-4.8 -DCMAKE_C_COMPILER=gcc-4.8 -DLIBIGL_WITH_EMBREE=OFF -DLIBIGL_USE_STATIC_LIBRARY=ON ../
-        - make -j 2
-        - cd ../tutorial
-        - python3 101_FileIO.py || { cd ../; mkdir build2; cd build2; cmake -DCMAKE_CXX_COMPILER=g++-4.8 -DCMAKE_C_COMPILER=gcc-4.8 -DLIBIGL_WITH_EMBREE=OFF -DLIBIGL_USE_STATIC_LIBRARY=ON - DCHECK_UNDEFINED=ON ../; make -j 2; }
-        - cd ../../
-        - cd tutorial
-        - mkdir build
-        - cd build
-        - cmake -DLIBIGL_USE_STATIC_LIBRARY=ON  -DCMAKE_CXX_COMPILER=g++-4.8 -DCMAKE_C_COMPILER=gcc-4.8 -DLIBIGL_WITH_EMBREE=OFF ../
-        - make -j 2
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-            - george-edison55-precise-backports
-          packages:
-            - xorg-dev
-            - libglu1-mesa-dev
-            - g++-4.8
-            - cmake
-            - cmake-data
-            - libblas-dev
-            - liblapack-dev
-    #         - binutils
-    #         - libx11-dev
-    #         - mesa-common-dev
-    #         - libgl1-mesa-dev
-    #         - libglu1-mesa-dev
-    #         - libxrandr-dev
-    #         - libxi-dev
-    #         - libxmu-dev
-    #         - libblas-dev
-    #         - xorg-dev
-    - os: osx
-      compiler: clang
-      script:
-        # - brew update
-        # - brew upgrade cmake
-        # - brew upgrade cgal
-        - git submodule update --init --recursive
-        - cd python
-        - mkdir build
-        - cd build
-        - cmake ../
-        - make -j 2
-        - cd ../tutorial
-        - python 101_FileIO.py
-        - cd ../../
-        - cd tutorial
-        - mkdir build
-        - cd build
-        - cmake -DLIBIGL_USE_STATIC_LIBRARY=ON ../
-        - make -j 2
+  - os: linux
+    compiler: gcc # 4.8.4 by default on Trusty
+    addons:
+      apt:
+        sources:
+        - ubuntu-toolchain-r-test
+        packages:
+        - libmpfr-dev
+        - libboost-filesystem-dev
+        - libboost-system-dev
+        - libboost-thread-dev
+        - libblas-dev
+        - liblapack-dev
+        - xorg-dev
+        - libglu1-mesa-dev
+        - python3-setuptools
+        - libpython3-dev
+    env:
+    - MATRIX_EVAL="export CONFIG=Debug && CHECK_UNDEFINED=ON && PYTHON=python3"
+  - os: linux
+    compiler: gcc-7
+    addons:
+      apt:
+        sources:
+        - ubuntu-toolchain-r-test
+        packages:
+        - gcc-7
+        - g++-7
+        - libmpfr-dev
+        - libboost-filesystem-dev
+        - libboost-system-dev
+        - libboost-thread-dev
+        - libblas-dev
+        - liblapack-dev
+        - xorg-dev
+        - libglu1-mesa-dev
+        - python3-setuptools
+        - libpython3-dev
+    env:
+    - MATRIX_EVAL="export CC=gcc-7 && CXX=g++-7 && CONFIG=Debug && CHECK_UNDEFINED=ON && PYTHON=python3"
+  - os: osx
+    compiler: clang
+    env:
+    - MATRIX_EVAL="export CONFIG=Debug && CHECK_UNDEFINED=ON && PYTHON=python3"
+
+install:
+- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install ccache; fi
+- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export PATH="/usr/local/opt/ccache/libexec:$PATH"; fi
+- eval "${MATRIX_EVAL}"
+- ccache --max-size=5.0G
+- ccache -V && ccache --show-stats && ccache --zero-stats
+
+script:
+# Python bindings
+- cd python
+- ${PYTHON} setup.py develop --user -- -DCMAKE_BUILD_TYPE=${CONFIG} -DLIBIGL_WITH_EMBREE=OFF -DLIBIGL_USE_STATIC_LIBRARY=ON -DCHECK_UNDEFINED=${CHECK_UNDEFINED}
+- cd tutorial
+- ${PYTHON} 101_FileIO.py
+- cd ../../
+- rm -rf python/build
+# Tutorials
+- cd tutorial
+- mkdir build
+- cd build
+- cmake -DCMAKE_BUILD_TYPE=$CONFIG -DLIBIGL_USE_STATIC_LIBRARY=ON ../
+- make -j 2
+- ccache --show-stats
