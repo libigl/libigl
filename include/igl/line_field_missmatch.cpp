@@ -65,7 +65,7 @@ private:
 
         double angle_diff = atan2(dir1Rot.dot(PD2.row(f0)),dir1Rot.dot(PD1.row(f0)));
 
-        double step=M_PI;
+        double step=igl::PI;
         int i=(int)std::floor((angle_diff/step)+0.5);
         assert((i>=-2)&&(i<=2));
         int k=0;
@@ -133,7 +133,7 @@ IGL_INLINE void igl::line_field_missmatch(const Eigen::PlainObjectBase<DerivedV>
     }
     Eigen::MatrixXd B1,B2,B3;
     igl::local_basis(V,F,B1,B2,B3);
-    PD2_combed = igl::rotate_vectors(PD1_combed, Eigen::VectorXd::Constant(1,M_PI/2), B1, B2);
+    PD2_combed = igl::rotate_vectors(PD1_combed, Eigen::VectorXd::Constant(1,igl::PI/2), B1, B2);
     igl::MissMatchCalculatorLine<DerivedV, DerivedF, DerivedO> sf(V, F, PD1_combed, PD2_combed);
     sf.calculateMissmatchLine(missmatch);
 }

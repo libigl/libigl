@@ -2,6 +2,7 @@
 #include <igl/internal_angles.h>
 #include <igl/is_irregular_vertex.h>
 #include <igl/readOBJ.h>
+#include <igl/PI.h>
 #include <Eigen/Core>
 #include <iostream>
 
@@ -44,7 +45,7 @@ int main(int argc, char *argv[])
   // Compute per face angles, min, max and standard deviation
   MatrixXd angles;
   igl::internal_angles(V,F,angles);
-  angles = 360.0 * (angles/(2*M_PI)); // Convert to degrees
+  angles = 360.0 * (angles/(2*igl::PI)); // Convert to degrees
 
   double angle_avg   = angles.mean();
   double angle_min   = angles.minCoeff();

@@ -55,7 +55,7 @@ IGL_INLINE void igl::copyleft::cgal::extract_feature(
   const size_t num_faces = F.rows();
   // NOTE: CGAL's definition of dihedral angle measures the angle between two
   // facets instead of facet normals.
-  const double cos_tol = cos(M_PI - tol);
+  const double cos_tol = cos(igl::PI - tol);
   std::vector<size_t> result; // Indices into uE
 
   auto is_non_manifold = [&uE2E](size_t ei) -> bool {

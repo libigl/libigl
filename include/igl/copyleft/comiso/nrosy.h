@@ -13,6 +13,7 @@
 #include <Eigen/Sparse>
 #include <vector>
 #include "../../igl_inline.h"
+#include "../../PI.h"
 
 namespace igl
 {
