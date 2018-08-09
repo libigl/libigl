@@ -102,3 +102,4 @@ tutorial/cmake-build-debug
 .idea/
 site/
 *.egg-info/
+.vs/
