@@ -44,7 +44,7 @@ void representative_to_nrosy(
 
     for (unsigned j=0; j<N;++j)
     {
-      double anglej = angle + 2*M_PI*double(j)/double(N);
+      double anglej = angle + 2*igl::PI*double(j)/double(N);
       double xj = cos(anglej);
       double yj = sin(anglej);
       Y.row(i*N+j) = xj * B1.row(i) + yj * B2.row(i);

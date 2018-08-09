@@ -50,7 +50,7 @@ namespace igl
   
       //creating perfectly regular source polygon
       for (int j=0;j<N;j++)
-        sourcePolygon.row(j)<<cos(2*M_PI*(double)j/(double(N))), sin(2*M_PI*(double)j/(double(N))),0.0;
+        sourcePolygon.row(j)<<cos(2*igl::PI*(double)j/(double(N))), sin(2*igl::PI*(double)j/(double(N))),0.0;
   
       //finding closest similarity transformation between source and target
       Eigen::MatrixXd corrMat=sourcePolygon.transpose()*targetPolygon;
