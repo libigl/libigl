@@ -23,7 +23,7 @@ namespace igl
   //   max_m  desired number of output faces
   // Outputs:
   //   U  #U by dim list of output vertex posistions (can be same ref as V)
-  //   G  #G by 3 list of output face indices into U (can be same ref as G)
+  //   G  #G by 3 list of output face indices into U (can be same ref as F)
   //   J  #G list of indices into F of birth face
   //   I  #U list of indices into V of birth vertices
   IGL_INLINE bool qslim(
