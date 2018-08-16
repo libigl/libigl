@@ -9,6 +9,7 @@
 #include <Eigen/Geometry>
 #include <vector>
 
+#include "PI.h"
 #include "per_face_normals.h"
 #include "volume.h"
 #include "doublearea.h"
