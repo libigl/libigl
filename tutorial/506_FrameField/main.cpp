@@ -11,6 +11,7 @@
 #include <igl/copyleft/comiso/miq.h>
 #include <igl/copyleft/comiso/frame_field.h>
 #include <igl/opengl/glfw/Viewer.h>
+#include <igl/PI.h>
 
 #include "tutorial_shared_path.h"
 

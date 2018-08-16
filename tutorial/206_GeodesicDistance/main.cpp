@@ -3,6 +3,7 @@
 #include <igl/exact_geodesic.h>
 #include <igl/colormap.h>
 #include <igl/unproject_onto_mesh.h>
+#include <igl/PI.h>
 #include <iostream>
 #include "tutorial_shared_path.h"
 

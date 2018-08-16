@@ -4,6 +4,7 @@
 #include <igl/readOFF.h>
 #include <igl/copyleft/comiso/nrosy.h>
 #include <igl/opengl/glfw/Viewer.h>
+#include <igl/PI.h>
 
 #include "tutorial_shared_path.h"
 
