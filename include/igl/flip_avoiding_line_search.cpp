@@ -7,6 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "flip_avoiding_line_search.h"
 #include "line_search.h"
+#include "PI.h"
 
 #include <Eigen/Dense>
 #include <vector>

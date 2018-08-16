@@ -20,6 +20,7 @@
 #include <igl/triangle_triangle_adjacency.h>
 #include <igl/rotation_matrix_from_directions.h>
 #include <igl/local_basis.h>
+#include <igl/PI.h>
 
 namespace igl {
 template <typename DerivedV, typename DerivedF, typename DerivedO>

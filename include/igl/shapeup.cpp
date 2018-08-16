@@ -11,6 +11,7 @@
 #include <igl/igl_inline.h>
 #include <igl/setdiff.h>
 #include <igl/cat.h>
+#include <igl/PI.h>
 #include <Eigen/Core>
 #include <vector>
 
