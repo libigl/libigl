@@ -13,6 +13,7 @@
 
 #include "compute_frame_field_bisectors.h"
 #include "igl/local_basis.h"
+#include "PI.h"
 
 template <typename DerivedV, typename DerivedF>
 IGL_INLINE void igl::compute_frame_field_bisectors(
