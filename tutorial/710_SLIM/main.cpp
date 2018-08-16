@@ -20,6 +20,7 @@
 #include <igl/is_edge_manifold.h>
 #include <igl/doublearea.h>
 #include <igl/cat.h>
+#include <igl/PI.h>
 
 #include <stdlib.h>
 
