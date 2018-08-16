@@ -13,6 +13,7 @@
 
 #include "comb_frame_field.h"
 #include "local_basis.h"
+#include "PI.h"
 
 template <typename DerivedV, typename DerivedF, typename DerivedP>
 IGL_INLINE void igl::comb_frame_field(const Eigen::PlainObjectBase<DerivedV> &V,
