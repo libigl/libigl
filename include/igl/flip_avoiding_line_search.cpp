@@ -7,6 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "flip_avoiding_line_search.h"
 #include "line_search.h"
+#include "PI.h"
 
 #include <Eigen/Dense>
 #include <vector>
@@ -38,8 +39,8 @@ namespace igl
           t=acos(t);
           a/=3; q=-2*sqrt(q);
           x[0]=q*cos(t/3)-a;
-          x[1]=q*cos((t+(2*M_PI))/3)-a;
-          x[2]=q*cos((t-(2*M_PI))/3)-a;
+          x[1]=q*cos((t+(2*igl::PI))/3)-a;
+          x[2]=q*cos((t-(2*igl::PI))/3)-a;
           return(3);
         }
         else

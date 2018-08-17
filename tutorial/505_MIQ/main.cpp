@@ -12,6 +12,7 @@
 #include <igl/copyleft/comiso/miq.h>
 #include <igl/copyleft/comiso/nrosy.h>
 #include <igl/opengl/glfw/Viewer.h>
+#include <igl/PI.h>
 #include <sstream>
 
 #include "tutorial_shared_path.h"
@@ -260,7 +261,7 @@ int main(int argc, char *argv[])
     // Find the orthogonal vector
     MatrixXd B1, B2, B3;
     igl::local_basis(V, F, B1, B2, B3);
-    X2 = igl::rotate_vectors(X1, VectorXd::Constant(1, M_PI / 2), B1, B2);
+    X2 = igl::rotate_vectors(X1, VectorXd::Constant(1, igl::PI / 2), B1, B2);
 
     // Always work on the bisectors, it is more general
     igl::compute_frame_field_bisectors(V, F, X1, X2, BIS1, BIS2);

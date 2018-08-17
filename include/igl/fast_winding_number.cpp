@@ -2,6 +2,7 @@
 #include "octree.h"
 #include "knn.h"
 #include "parallel_for.h"
+#include "PI.h"
 #include <vector>
 
 namespace igl {
@@ -142,7 +143,7 @@ namespace igl {
     auto direct_eval = [](const RowVec & loc,
                           const Eigen::Matrix<real_ec,1,3> & anorm){
         real_wn wn = (loc(0)*anorm(0)+loc(1)*anorm(1)+loc(2)*anorm(2))
-                                    /(4.0*M_PI*std::pow(loc.norm(),3));
+                                    /(4.0*igl::PI*std::pow(loc.norm(),3));
         if(std::isnan(wn)){
             return 0.5;
         }else{
@@ -156,8 +157,8 @@ namespace igl {
       double r = loc.norm();
       if(EC.size()>3){
         Eigen::Matrix<real_ec,3,3> SecondDerivative =
-            Eigen::Matrix<real_ec,3,3>::Identity()/(4.0*M_PI*std::pow(r,3));
-        SecondDerivative += -3.0*loc.transpose()*loc/(4.0*M_PI*std::pow(r,5));
+            Eigen::Matrix<real_ec,3,3>::Identity()/(4.0*igl::PI*std::pow(r,3));
+        SecondDerivative += -3.0*loc.transpose()*loc/(4.0*igl::PI*std::pow(r,5));
         Eigen::Matrix<real_ec,1,9> derivative_vector =
           Eigen::Map<Eigen::Matrix<real_ec,1,9> >(SecondDerivative.data(),
                                                   SecondDerivative.size());
@@ -167,7 +168,7 @@ namespace igl {
           Eigen::Matrix<real_ec,3,3> ThirdDerivative;
           for(int i = 0; i < 3; i++){
               ThirdDerivative =
-                  15.0*loc(i)*loc.transpose()*loc/(4.0*M_PI*std::pow(r,7));
+                  15.0*loc(i)*loc.transpose()*loc/(4.0*igl::PI*std::pow(r,7));
               Eigen::Matrix<real_ec,3,3> Diagonal;
               Diagonal << loc(i), 0, 0,
               0, loc(i), 0,
@@ -178,7 +179,7 @@ namespace igl {
               Eigen::Matrix<real_ec,3,3> RowColT = RowCol.transpose();
               RowCol = RowCol + RowColT;
               ThirdDerivative +=
-                  -3.0/(4.0*M_PI*std::pow(r,5))*(RowCol+Diagonal);
+                  -3.0/(4.0*igl::PI*std::pow(r,5))*(RowCol+Diagonal);
               Eigen::Matrix<real_ec,1,9> derivative_vector =
                 Eigen::Map<Eigen::Matrix<real_ec,1,9> >(ThirdDerivative.data(),
                                                         ThirdDerivative.size());

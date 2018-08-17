@@ -7,6 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "piecewise_constant_winding_number.h"
 #include "unique_edge_map.h"
+#include "PI.h"
 
 template <
   typename DerivedF,

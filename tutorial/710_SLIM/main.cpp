@@ -20,6 +20,7 @@
 #include <igl/is_edge_manifold.h>
 #include <igl/doublearea.h>
 #include <igl/cat.h>
+#include <igl/PI.h>
 
 #include <stdlib.h>
 
@@ -372,7 +373,7 @@ void get_cube_corner_constraints(Eigen::MatrixXd& V, Eigen::MatrixXi& F, Eigen::
   b = igl::cat(1,b,edge4);
 
   bc.resize(b.rows(),3);
-  Eigen::Matrix3d m; m = Eigen::AngleAxisd(0.3 * M_PI, Eigen::Vector3d(1./sqrt(2.),1./sqrt(2.),0.)/*Eigen::Vector3d::UnitX()*/);
+  Eigen::Matrix3d m; m = Eigen::AngleAxisd(0.3 * igl::PI, Eigen::Vector3d(1./sqrt(2.),1./sqrt(2.),0.)/*Eigen::Vector3d::UnitX()*/);
   int i = 0;
   for (; i < cube_edge1.size(); i++) {
     Eigen::RowVector3d edge_rot_center(min_x,min_y,(min_z+max_z)/2.);

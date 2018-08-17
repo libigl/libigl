@@ -11,6 +11,7 @@
 #include <igl/copyleft/comiso/miq.h>
 #include <igl/copyleft/comiso/frame_field.h>
 #include <igl/opengl/glfw/Viewer.h>
+#include <igl/PI.h>
 
 #include "tutorial_shared_path.h"
 
@@ -231,7 +232,7 @@ int main(int argc, char *argv[])
   MatrixXd B1,B2,B3;
   igl::local_basis(V_deformed,F,B1,B2,B3);
   X2_deformed =
-    igl::rotate_vectors(X1_deformed, VectorXd::Constant(1,M_PI/2), B1, B2);
+    igl::rotate_vectors(X1_deformed, VectorXd::Constant(1,igl::PI/2), B1, B2);
 
   // Global seamless parametrization
   igl::copyleft::comiso::miq(V_deformed,
