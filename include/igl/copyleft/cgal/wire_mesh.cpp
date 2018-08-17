@@ -2,6 +2,7 @@
 
 #include "../../list_to_matrix.h"
 #include "../../slice.h"
+#include "../../PI.h"
 #include "convex_hull.h"
 #include "mesh_boolean.h"
 #include <Eigen/Geometry>
