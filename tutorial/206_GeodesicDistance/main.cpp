@@ -3,6 +3,7 @@
 #include <igl/exact_geodesic.h>
 #include <igl/colormap.h>
 #include <igl/unproject_onto_mesh.h>
+#include <igl/PI.h>
 #include <iostream>
 #include "tutorial_shared_path.h"
 
@@ -30,7 +31,7 @@ int main(int argc, char *argv[])
     igl::exact_geodesic(V,F,VS,FS,VT,FT,d);
     const double strip_size = 0.05;
     // The function should be 1 on each integer coordinate
-    d = (d/strip_size*M_PI).array().sin().abs().eval();
+    d = (d/strip_size*igl::PI).array().sin().abs().eval();
     // Compute per-vertex colors
     Eigen::MatrixXd C;
     igl::colormap(igl::COLOR_MAP_TYPE_INFERNO,d,false,C);
