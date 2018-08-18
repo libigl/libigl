@@ -241,14 +241,18 @@ IGL_INLINE void igl::opengl::ViewerData::set_texture(
 
 IGL_INLINE void igl::opengl::ViewerData::set_points(
   const Eigen::MatrixXd& P,
-  const Eigen::MatrixXd& C)
+  const Eigen::MatrixXd& C,
+  const Eigen::VectorXd& R)
 {
   // clear existing points
   points.resize(0,0);
-  add_points(P,C);
+  add_points(P,C,R);
 }
 
-IGL_INLINE void igl::opengl::ViewerData::add_points(const Eigen::MatrixXd& P,  const Eigen::MatrixXd& C)
+IGL_INLINE void igl::opengl::ViewerData::add_points(
+  const Eigen::MatrixXd& P,
+  const Eigen::MatrixXd& C,
+  const Eigen::VectorXd& R)
 {
   Eigen::MatrixXd P_temp;
 
@@ -261,10 +265,17 @@ IGL_INLINE void igl::opengl::ViewerData::add_points(const Eigen::MatrixXd& P,  c
   else
     P_temp = P;
 
+  assert(R.size() == 0 || R.size() == 1 || R.size() == P.rows());
   int lastid = points.rows();
-  points.conservativeResize(points.rows() + P_temp.rows(),6);
+  points.conservativeResize(points.rows() + P_temp.rows(),R.size() ? 7 : 6);
   for (unsigned i=0; i<P_temp.rows(); ++i)
-    points.row(lastid+i) << P_temp.row(i), i<C.rows() ? C.row(i) : C.row(C.rows()-1);
+  {
+    points.row(lastid+i).head<6>() << P_temp.row(i), i<C.rows() ? C.row(i) : C.row(C.rows()-1);
+    if (R.size() > 0)
+    {
+      points.row(lastid+i).tail<1>() << R(std::min(i, unsigned(R.size()-1)));
+    }
+  }
 
   dirty |= MeshGL::DIRTY_OVERLAY_POINTS;
 }
@@ -679,12 +690,14 @@ IGL_INLINE void igl::opengl::ViewerData::updateGL(
   if (meshgl.dirty & MeshGL::DIRTY_OVERLAY_POINTS)
   {
     meshgl.points_V_vbo.resize(data.points.rows(),3);
+    meshgl.points_V_radius_vbo.resize(data.points.rows(),1);
     meshgl.points_V_colors_vbo.resize(data.points.rows(),3);
     meshgl.points_F_vbo.resize(data.points.rows(),1);
     for (unsigned i=0; i<data.points.rows();++i)
     {
       meshgl.points_V_vbo.row(i) = data.points.block<1, 3>(i, 0).cast<float>();
       meshgl.points_V_colors_vbo.row(i) = data.points.block<1, 3>(i, 3).cast<float>();
+      meshgl.points_V_radius_vbo(i, 0) = (data.points.cols() > 6 ? data.points.cast<float>()(i, 6) : 1.0f);
       meshgl.points_F_vbo(i) = i;
     }
   }

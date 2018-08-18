@@ -223,10 +223,22 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
       data.meshgl.bind_overlay_points();
       viewi  = glGetUniformLocation(data.meshgl.shader_overlay_points,"view");
       proji  = glGetUniformLocation(data.meshgl.shader_overlay_points,"proj");
+      GLint scaling_factori = glGetUniformLocation(data.meshgl.shader_overlay_points,"scaling_factor");
+      specular_exponenti = glGetUniformLocation(data.meshgl.shader_overlay_points,"specular_exponent");
+      light_position_eyei = glGetUniformLocation(data.meshgl.shader_overlay_points,"light_position_eye");
+      lighting_factori = glGetUniformLocation(data.meshgl.shader_mesh,"lighting_factor");
+      fixed_colori = glGetUniformLocation(data.meshgl.shader_mesh,"fixed_color");
 
+      float scaling = (radius_in_screen_space ? 1.0f : view.topLeftCorner<1, 3>().norm()) / camera_base_zoom;
       glUniformMatrix4fv(viewi, 1, GL_FALSE, view.data());
       glUniformMatrix4fv(proji, 1, GL_FALSE, proj.data());
-      glPointSize(data.point_size);
+      glUniform1f(scaling_factori, scaling);
+      glUniform1f(specular_exponenti, data.shininess);
+      glUniform3fv(light_position_eyei, 1, light_position.data());
+      glUniform1f(lighting_factori, lighting_factor); // enables lighting
+      glUniform4f(fixed_colori, 0.0, 0.0, 0.0, 0.0);
+
+      // glPointSize(data.point_size);
 
       data.meshgl.draw_overlay_points();
     }
@@ -365,6 +377,7 @@ IGL_INLINE igl::opengl::ViewerCore::ViewerCore()
   camera_base_zoom = 1.0f;
   camera_zoom = 1.0f;
   orthographic = false;
+  radius_in_screen_space = false;
   camera_view_angle = 45.0;
   camera_dnear = 1.0;
   camera_dfar = 100.0;

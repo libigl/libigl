@@ -92,8 +92,14 @@ public:
   //   C  #P|1 by 3 color(s)
   IGL_INLINE void set_points(
     const Eigen::MatrixXd& P,
-    const Eigen::MatrixXd& C);
-  IGL_INLINE void add_points(const Eigen::MatrixXd& P,  const Eigen::MatrixXd& C);
+    const Eigen::MatrixXd& C,
+    const Eigen::VectorXd& R = Eigen::VectorXd());
+
+  IGL_INLINE void add_points(
+    const Eigen::MatrixXd& P,
+    const Eigen::MatrixXd& C,
+    const Eigen::VectorXd& R = Eigen::VectorXd());
+
   // Sets edges given a list of edge vertices and edge indices. In constrast
   // to `add_edges` this will (purposefully) clober existing edges.
   //
@@ -103,7 +109,7 @@ public:
   //   C  #E|1 by 3 color(s)
   IGL_INLINE void set_edges (const Eigen::MatrixXd& P, const Eigen::MatrixXi& E, const Eigen::MatrixXd& C);
   // Alec: This is very confusing. Why does add_edges have a different API from
-  // set_edges? 
+  // set_edges?
   IGL_INLINE void add_edges (const Eigen::MatrixXd& P1, const Eigen::MatrixXd& P2, const Eigen::MatrixXd& C);
   IGL_INLINE void add_label (const Eigen::VectorXd& P,  const std::string& str);
 
@@ -160,8 +166,9 @@ public:
   Eigen::MatrixXd lines;
 
   // Points plotted over the scene
-  // (Every row contains 6 doubles in the following format P_x, P_y, P_z, C_r, C_g, C_b),
-  // with P the position in global coordinates of the center of the point, and C the color in floating point rgb format
+  // (Every row contains 7 doubles in the following format P_x, P_y, P_z, C_r, C_g, C_b, R),
+  // with P the position in global coordinates of the center of the point, C the color in floating point rgb format
+  // and R the radius of the point
   Eigen::MatrixXd points;
 
   // Text labels plotted over the scene

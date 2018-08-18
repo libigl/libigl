@@ -107,6 +107,7 @@ public:
   float camera_base_zoom;
   float camera_zoom;
   bool orthographic;
+  bool radius_in_screen_space;
   Eigen::Vector3f camera_base_translation;
   Eigen::Vector3f camera_translation;
   Eigen::Vector3f camera_eye;
