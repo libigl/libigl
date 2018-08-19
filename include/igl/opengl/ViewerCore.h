@@ -98,6 +98,7 @@ public:
 
   // Lighting
   Eigen::Vector3f light_position;
+  Eigen::Vector3f light_vector;
   float lighting_factor;
 
   RotationType rotation_type;
