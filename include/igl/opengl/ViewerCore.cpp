@@ -131,6 +131,7 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
 
     // Set view
     look_at(camera_eye, camera_center, camera_up, view);
+    Eigen::Vector3f camera_center_eye = (view * camera_center.homogeneous()).colwise().hnormalized();
     view = view
       * (trackball_angle * Eigen::Scaling(camera_zoom * camera_base_zoom)
       * Eigen::Translation3f(camera_translation + camera_base_translation)).matrix();
@@ -143,7 +144,6 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
       float length = (camera_eye - camera_center).norm();
       float h = tan(camera_view_angle/360.0 * igl::PI) * (length);
       ortho(-h*width/height, h*width/height, -h, h, camera_dnear, camera_dfar, proj);
-      auto camera_center_eye = (view * camera_center.homogeneous()).colwise().hnormalized();
       light_vector = (camera_center_eye - light_position).normalized(); // light direction
     }
     else
