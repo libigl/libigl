@@ -139,17 +139,15 @@ IGL_INLINE void igl::opengl::MeshGL::draw_mesh(bool solid)
   glPolygonMode(GL_FRONT_AND_BACK, solid ? GL_FILL : GL_LINE);
 
   /* Avoid Z-buffer fighting between filled triangles & wireframe lines */
-  if (solid)
+  if (!solid)
   {
-    glEnable(GL_POLYGON_OFFSET_FILL);
-  }
-  else
-  {
-    glPolygonOffset(1.0, -1.0);
+    glEnable(GL_POLYGON_OFFSET_LINE);
+    glPolygonOffset(-1.0, -1.0);
   }
   glDrawElements(GL_TRIANGLES, 3*F_vbo.rows(), GL_UNSIGNED_INT, 0);
 
-  glDisable(GL_POLYGON_OFFSET_FILL);
+  if (!solid)
+    glDisable(GL_POLYGON_OFFSET_LINE);
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
@@ -213,7 +211,7 @@ uniform mat4 proj;
 
 // Lights
 uniform vec4 fixed_color;
-uniform vec3 light_position_eye;
+uniform vec3 light_vector_eye;
 uniform bool orthographic;
 
 const vec3 Ls = vec3 (1, 1, 1);
@@ -240,14 +238,13 @@ void main()
 {
   vec3 Ia = La * vec3(Kai); // ambient intensity
 
-  vec3 vector_to_light_eye = light_position_eye - position_eye;
-  vec3 direction_to_light_eye = normalize(vector_to_light_eye);
+  vec3 direction_to_light_eye = (orthographic ? -light_vector_eye : normalize(light_vector_eye - position_eye));
   float dot_prod = dot(direction_to_light_eye, normalize(normal_eye));
   float clamped_dot_prod = clamp(dot_prod, 0, 1);
   vec3 Id = Ld * vec3(Kdi) * clamped_dot_prod; // diffuse intensity
 
   vec3 reflection_eye = reflect(-direction_to_light_eye, normalize(normal_eye));
-  vec3 surface_to_viewer_eye = (orthographic ? vec3(0,0,-1) : normalize(-position_eye));
+  vec3 surface_to_viewer_eye = (orthographic ? vec3(0,0,1) : normalize(-position_eye));
   float dot_prod_specular = dot(reflection_eye, surface_to_viewer_eye);
   dot_prod_specular = float(abs(dot_prod)==dot_prod) * max(dot_prod_specular, 0.0);
   float specular_factor = pow(dot_prod_specular, specular_exponent);
