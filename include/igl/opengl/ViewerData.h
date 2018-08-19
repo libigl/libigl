@@ -8,11 +8,13 @@
 #ifndef IGL_VIEWERDATA_H
 #define IGL_VIEWERDATA_H
 
+
 #include "../igl_inline.h"
+#include "gl.h"
 #include "MeshGL.h"
+#include <Eigen/Core>
 #include <cassert>
 #include <cstdint>
-#include <Eigen/Core>
 #include <memory>
 #include <vector>
 
