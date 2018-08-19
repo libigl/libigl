@@ -270,7 +270,7 @@ R"(#version 150
 R"(#version 330
 
 // View parameters
-uniform float scaling_factor; // ‖ diag(view) ‖
+uniform float scaling_factor;
 uniform mat4 view;
 
 // Input
@@ -280,20 +280,21 @@ layout(location = 2) in vec3  color;
 
 // Output
 out VertexData {
-  vec3 cameraSpherePos;
-  float sphereRadius;
-  vec4 ambientColor;
-  vec4 diffuseColor;
-  vec4 specularColor;
-} outData;
+  vec3 sphere_position_eye;
+  float sphere_radius;
+  vec4 ambient_color;
+  vec4 diffuse_color;
+  vec4 specular_color;
+} vertex;
 
-void main() {
-  outData.cameraSpherePos = vec3(view * vec4(position.xyz, 1.0));
-  outData.sphereRadius = radius * scaling_factor;
-  outData.ambientColor = vec4(0.1 * color, 1.0);
-  outData.diffuseColor = vec4(color, 1.0);
+void main()
+{
+  vertex.sphere_position_eye = vec3(view * vec4(position.xyz, 1.0));
+  vertex.sphere_radius = radius * scaling_factor;
+  vertex.ambient_color = vec4(0.1 * color, 1.0);
+  vertex.diffuse_color = vec4(color, 1.0);
   vec3 grey = vec3(0.3);
-  outData.specularColor = vec4(grey + 0.1 * (color.xyz- grey), 1.0);
+  vertex.specular_color = vec4(grey + 0.1 * (color.xyz- grey), 1.0);
 })";
 
   std::string point_geom_shader_string =
@@ -307,42 +308,44 @@ uniform mat4 proj;
 
 // Input
 in VertexData {
-  vec3 cameraSpherePos;
-  float sphereRadius;
-  vec4 ambientColor;
-  vec4 diffuseColor;
-  vec4 specularColor;
+  vec3 sphere_position_eye;
+  float sphere_radius;
+  vec4 ambient_color;
+  vec4 diffuse_color;
+  vec4 specular_color;
 } vert[];
 
 // Output
 out FragData {
-  flat vec3 cameraSpherePos;
-  flat float sphereRadius;
-  flat vec4 ambientColor;
-  flat vec4 diffuseColor;
-  flat vec4 specularColor;
+  flat vec3 sphere_position_eye;
+  flat float sphere_radius;
+  flat vec4 ambient_color;
+  flat vec4 diffuse_color;
+  flat vec4 specular_color;
   smooth vec2 mapping;
 } frag;
 
 // Constant
-const float g_BoxCorrection = 1.5;
+const float BOX_CORRECTION = 1.5;
 
 // Emit a corner vertex
-void corner(vec2 coord) {
-  frag.cameraSpherePos = vec3(vert[0].cameraSpherePos);
-  frag.sphereRadius = vert[0].sphereRadius;
-  frag.mapping = coord * g_BoxCorrection;
-  frag.ambientColor = vert[0].ambientColor;
-  frag.diffuseColor = vert[0].diffuseColor;
-  frag.specularColor = vert[0].specularColor;
-  vec4 cameraCornerPos = vec4(vert[0].cameraSpherePos, 1.0);
-  cameraCornerPos.xy += vert[0].sphereRadius * coord * g_BoxCorrection;
-  gl_Position = proj * cameraCornerPos;
+void corner(vec2 coord)
+{
+  frag.sphere_position_eye = vec3(vert[0].sphere_position_eye);
+  frag.sphere_radius = vert[0].sphere_radius;
+  frag.mapping = coord * BOX_CORRECTION;
+  frag.ambient_color = vert[0].ambient_color;
+  frag.diffuse_color = vert[0].diffuse_color;
+  frag.specular_color = vert[0].specular_color;
+  vec4 corner_position_eye = vec4(vert[0].sphere_position_eye, 1.0);
+  corner_position_eye.xy += vert[0].sphere_radius * coord * BOX_CORRECTION;
+  gl_Position = proj * corner_position_eye;
   gl_PrimitiveID = gl_PrimitiveIDIn;
   EmitVertex();
 }
 
-void main() {
+void main()
+{
   corner(vec2(-1.0, -1.0)); // Bottom-left
   corner(vec2(-1.0, 1.0));  // Top-left
   corner(vec2(1.0, -1.0));  // Bottom-right
@@ -350,7 +353,8 @@ void main() {
 })";
 
   std::string point_fragment_shader_string =
-R"(// -----------------------------------------------------------------------------
+R"(
+// -----------------------------------------------------------------------------
 // Code adapted from:
 // https://alfonse.bitbucket.io/oldtut/Illumination/Tutorial%2013.html
 // -----------------------------------------------------------------------------
@@ -366,87 +370,105 @@ uniform vec3 light_position_eye;
 uniform float lighting_factor;
 
 // View parameters
+uniform bool orthographic;
 uniform mat4 proj;
 
 // Input
 in FragData {
-  flat vec3 cameraSpherePos;
-  flat float sphereRadius;
-  flat vec4 ambientColor;
-  flat vec4 diffuseColor;
-  flat vec4 specularColor;
+  flat vec3 sphere_position_eye;
+  flat float sphere_radius;
+  flat vec4 ambient_color;
+  flat vec4 diffuse_color;
+  flat vec4 specular_color;
   smooth vec2 mapping;
 };
 
 // Output
-layout(location = 0) out vec4 fragColor;
+layout(location = 0) out vec4 frag_color;
 
 // -----------------------------------------------------------------------------
 
 // Lighting equation
-vec4 ComputeLighting(
+vec4 compute_lighting(
   in vec3 light_position_eye,
   in vec3 position_eye, in vec3 normal_eye,
   in vec3 La, in vec3 Ld, in vec3 Ls,
   in vec4 Ka, in vec4 Kd, in vec4 Ks)
 {
-  vec3 Ia = La * vec3(Ka);    // ambient intensity
+  vec3 Ia = La * vec3(Ka); // ambient intensity
 
   vec3 vector_to_light_eye = light_position_eye - position_eye;
   vec3 direction_to_light_eye = normalize(vector_to_light_eye);
-  float dot_prod = dot (direction_to_light_eye, normal_eye);
+  float dot_prod = dot(direction_to_light_eye, normal_eye);
   float clamped_dot_prod = max (dot_prod, 0.0);
-  vec3 Id = vec3(Kd) * clamped_dot_prod;    // Diffuse intensity
+  vec3 Id = vec3(Kd) * clamped_dot_prod; // diffuse intensity
 
-  vec3 reflection_eye = reflect (-direction_to_light_eye, normal_eye);
-  vec3 surface_to_viewer_eye = normalize (-position_eye);
-  float dot_prod_specular = dot (reflection_eye, surface_to_viewer_eye);
-  dot_prod_specular = float(abs(dot_prod)==dot_prod) * max (dot_prod_specular, 0.0);
-  float specular_factor = pow (dot_prod_specular, specular_exponent);
-  vec3 Is = Ls * vec3(Ks) * specular_factor;    // specular intensity
+  vec3 reflection_eye = reflect(-direction_to_light_eye, normal_eye);
+  vec3 surface_to_viewer_eye = normalize(-position_eye);
+  float dot_prod_specular = dot(reflection_eye, surface_to_viewer_eye);
+  dot_prod_specular = float(abs(dot_prod)==dot_prod) * max(dot_prod_specular, 0.0);
+  float specular_factor = pow(dot_prod_specular, specular_exponent);
+  vec3 Is = Ls * vec3(Ks) * specular_factor; // specular intensity
+
   vec4 outColor = vec4(lighting_factor * (Is + Id) + Ia + (1.0-lighting_factor) * vec3(Ka), (Ka.a+Ks.a+Kd.a)/3);
   if (fixed_color != vec4(0.0)) outColor = fixed_color;
   return outColor;
 }
 
 // Compute sphere position and normal in camera space
-void Impostor(out vec3 cameraPos, out vec3 cameraNormal) {
-  vec3 cameraPlanePos = vec3(mapping * sphereRadius, 0.0) + cameraSpherePos;
-  vec3 rayDirection = normalize(cameraPlanePos);
+void impostor(out vec3 hit_position_eye, out vec3 hit_normal_eye)
+{
+  vec3 hit_plane_position_eye = vec3(mapping * sphere_radius, 0.0) + sphere_position_eye;
 
-  float B = 2.0 * dot(rayDirection, -cameraSpherePos);
-  float C = dot(cameraSpherePos, cameraSpherePos) - (sphereRadius * sphereRadius);
+  vec3 ray_origin;
+  vec3 ray_direction;
+  if (orthographic)
+  {
+    ray_origin = vec3(sphere_position_eye.xy, 0);
+    ray_direction = normalize(hit_plane_position_eye - ray_origin);
+  }
+  else
+  {
+    ray_origin = vec3(0.0);
+    ray_direction = normalize(hit_plane_position_eye);
+  }
+  vec3 camera_to_sphere = ray_origin - sphere_position_eye;
+
+  float B = 2.0 * dot(ray_direction, camera_to_sphere);
+  float C = dot(camera_to_sphere, camera_to_sphere) - (sphere_radius * sphere_radius);
 
   float det = (B * B) - (4 * C);
-  if (det < 0.0) {
+  if (det < 0.0)
+  {
     discard;
   }
 
-  float sqrtDet = sqrt(det);
-  float posT = (-B + sqrtDet)/2;
-  float negT = (-B - sqrtDet)/2;
+  float sqrt_det = sqrt(det);
+  float t1 = (-B + sqrt_det)/2;
+  float t2 = (-B - sqrt_det)/2;
+  float t = min(t1, t2);
 
-  float intersectT = min(posT, negT);
-  cameraPos = rayDirection * intersectT;
-  cameraNormal = normalize(cameraPos - cameraSpherePos);
+  hit_position_eye = ray_origin + ray_direction * t;
+  hit_normal_eye = normalize(hit_position_eye - sphere_position_eye);
 }
 
-void main() {
-  vec3 cameraPos;
-  vec3 cameraNormal;
+void main()
+{
+  vec3 hit_position_eye;
+  vec3 hit_normal_eye;
 
-  Impostor(cameraPos, cameraNormal);
+  impostor(hit_position_eye, hit_normal_eye);
 
-  // Set the depth based on the new cameraPos.
-  vec4 clipPos = proj * vec4(cameraPos, 1.0);
+  // Set the depth based on the new hit_position_eye.
+  vec4 clipPos = proj * vec4(hit_position_eye, 1.0);
   float ndcDepth = clipPos.z / clipPos.w;
   gl_FragDepth = ((gl_DepthRange.diff * ndcDepth) + gl_DepthRange.near + gl_DepthRange.far) / 2.0;
 
   // Compute lighting
-  fragColor = ComputeLighting(
-    light_position_eye, cameraPos, cameraNormal,
+  frag_color = compute_lighting(
+    light_position_eye, hit_position_eye, hit_normal_eye,
     vec3(1.0), vec3(1.0), vec3(1.0),
-    ambientColor, diffuseColor, specularColor);
+    ambient_color, diffuse_color, specular_color);
 })";
 
   init_buffers();
