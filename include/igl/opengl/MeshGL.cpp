@@ -381,7 +381,7 @@ uniform float specular_exponent;
 
 // Light
 uniform vec4 fixed_color;
-uniform vec3 light_position_eye;
+uniform vec3 light_vector_eye;
 uniform float lighting_factor;
 
 // View parameters
@@ -405,27 +405,25 @@ layout(location = 0) out vec4 frag_color;
 
 // Lighting equation
 vec4 compute_lighting(
-  in vec3 light_position_eye,
   in vec3 position_eye, in vec3 normal_eye,
   in vec3 La, in vec3 Ld, in vec3 Ls,
-  in vec4 Ka, in vec4 Kd, in vec4 Ks)
+  in vec4 Kai, in vec4 Kdi, in vec4 Ksi)
 {
-  vec3 Ia = La * vec3(Ka); // ambient intensity
+  vec3 Ia = La * vec3(Kai); // ambient intensity
 
-  vec3 vector_to_light_eye = light_position_eye - position_eye;
-  vec3 direction_to_light_eye = normalize(vector_to_light_eye);
-  float dot_prod = dot(direction_to_light_eye, normal_eye);
-  float clamped_dot_prod = max (dot_prod, 0.0);
-  vec3 Id = vec3(Kd) * clamped_dot_prod; // diffuse intensity
+  vec3 direction_to_light_eye = (orthographic ? -light_vector_eye : normalize(light_vector_eye - position_eye));
+  float dot_prod = dot(direction_to_light_eye, normalize(normal_eye));
+  float clamped_dot_prod = clamp(dot_prod, 0, 1);
+  vec3 Id = Ld * vec3(Kdi) * clamped_dot_prod; // diffuse intensity
 
-  vec3 reflection_eye = reflect(-direction_to_light_eye, normal_eye);
-  vec3 surface_to_viewer_eye = normalize(-position_eye);
+  vec3 reflection_eye = reflect(-direction_to_light_eye, normalize(normal_eye));
+  vec3 surface_to_viewer_eye = (orthographic ? vec3(0,0,1) : normalize(-position_eye));
   float dot_prod_specular = dot(reflection_eye, surface_to_viewer_eye);
   dot_prod_specular = float(abs(dot_prod)==dot_prod) * max(dot_prod_specular, 0.0);
   float specular_factor = pow(dot_prod_specular, specular_exponent);
-  vec3 Is = Ls * vec3(Ks) * specular_factor; // specular intensity
+  vec3 Is = Ls * vec3(Ksi) * specular_factor; // specular intensity
 
-  vec4 outColor = vec4(lighting_factor * (Is + Id) + Ia + (1.0-lighting_factor) * vec3(Ka), (Ka.a+Ks.a+Kd.a)/3);
+  vec4 outColor = vec4(lighting_factor * (Is + Id) + Ia + (1.0-lighting_factor) * vec3(Kdi),(Kai.a+Ksi.a+Kdi.a)/3);
   if (fixed_color != vec4(0.0)) outColor = fixed_color;
   return outColor;
 }
@@ -481,7 +479,7 @@ void main()
 
   // Compute lighting
   frag_color = compute_lighting(
-    light_position_eye, hit_position_eye, hit_normal_eye,
+    hit_position_eye, hit_normal_eye,
     vec3(1.0), vec3(1.0), vec3(1.0),
     ambient_color, diffuse_color, specular_color);
 })";
