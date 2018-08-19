@@ -161,16 +161,18 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
   glUniformMatrix4fv(normi, 1, GL_FALSE, norm.data());
 
   // Light parameters
-  GLint specular_exponenti    = glGetUniformLocation(data.meshgl.shader_mesh,"specular_exponent");
+  GLint specular_exponenti  = glGetUniformLocation(data.meshgl.shader_mesh,"specular_exponent");
   GLint light_position_eyei = glGetUniformLocation(data.meshgl.shader_mesh,"light_position_eye");
-  GLint lighting_factori      = glGetUniformLocation(data.meshgl.shader_mesh,"lighting_factor");
-  GLint fixed_colori          = glGetUniformLocation(data.meshgl.shader_mesh,"fixed_color");
-  GLint texture_factori       = glGetUniformLocation(data.meshgl.shader_mesh,"texture_factor");
+  GLint lighting_factori    = glGetUniformLocation(data.meshgl.shader_mesh,"lighting_factor");
+  GLint fixed_colori        = glGetUniformLocation(data.meshgl.shader_mesh,"fixed_color");
+  GLint texture_factori     = glGetUniformLocation(data.meshgl.shader_mesh,"texture_factor");
+  GLint orthographici       = glGetUniformLocation(data.meshgl.shader_mesh,"orthographic");
 
   glUniform1f(specular_exponenti, data.shininess);
   glUniform3fv(light_position_eyei, 1, light_position.data());
   glUniform1f(lighting_factori, lighting_factor); // enables lighting
   glUniform4f(fixed_colori, 0.0, 0.0, 0.0, 0.0);
+  glUniform1i(orthographici, orthographic);
 
   if (data.V.rows()>0)
   {

@@ -12,7 +12,8 @@
 // compatible format The class includes a shader and the opengl calls to plot
 // the data
 
-#include <igl/igl_inline.h>
+#include "../igl_inline.h"
+#include "gl.h"
 #include <Eigen/Core>
 
 namespace igl
