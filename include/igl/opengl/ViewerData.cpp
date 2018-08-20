@@ -267,7 +267,7 @@ IGL_INLINE void igl::opengl::ViewerData::add_points(
 
   assert(R.size() == 0 || R.size() == 1 || R.size() == P.rows());
   int lastid = points.rows();
-  points.conservativeResize(points.rows() + P_temp.rows(),R.size() ? 7 : 6);
+  points.conservativeResize(points.rows() + P_temp.rows(), R.size() ? 7 : 6);
   for (unsigned i=0; i<P_temp.rows(); ++i)
   {
     points.row(lastid+i).head<6>() << P_temp.row(i), i<C.rows() ? C.row(i) : C.row(C.rows()-1);
@@ -283,11 +283,13 @@ IGL_INLINE void igl::opengl::ViewerData::add_points(
 IGL_INLINE void igl::opengl::ViewerData::set_edges(
   const Eigen::MatrixXd& P,
   const Eigen::MatrixXi& E,
-  const Eigen::MatrixXd& C)
+  const Eigen::MatrixXd& C,
+  const Eigen::VectorXd& R)
 {
   using namespace Eigen;
-  lines.resize(E.rows(),9);
+  lines.resize(E.rows(), R.size() ? 9 : 11);
   assert(C.cols() == 3);
+  assert(R.size() == 0 || R.size() == P.rows());
   for(int e = 0;e<E.rows();e++)
   {
     RowVector3d color;
@@ -298,7 +300,11 @@ IGL_INLINE void igl::opengl::ViewerData::set_edges(
     {
       color<<C.row(e);
     }
-    lines.row(e)<< P.row(E(e,0)), P.row(E(e,1)), color;
+    lines.row(e).head<9>() << P.row(E(e,0)), P.row(E(e,1)), color;
+    if (R.size() > 0)
+    {
+      lines.row(e).tail<2>() << R.row(E(e,0)), R.row(E(e,1));
+    }
   }
   dirty |= MeshGL::DIRTY_OVERLAY_LINES;
 }
@@ -674,6 +680,7 @@ IGL_INLINE void igl::opengl::ViewerData::updateGL(
   if (meshgl.dirty & MeshGL::DIRTY_OVERLAY_LINES)
   {
     meshgl.lines_V_vbo.resize(data.lines.rows()*2,3);
+    meshgl.lines_V_radius_vbo.resize(data.lines.rows()*2,1);
     meshgl.lines_V_colors_vbo.resize(data.lines.rows()*2,3);
     meshgl.lines_F_vbo.resize(data.lines.rows()*2,1);
     for (unsigned i=0; i<data.lines.rows();++i)
@@ -682,6 +689,8 @@ IGL_INLINE void igl::opengl::ViewerData::updateGL(
       meshgl.lines_V_vbo.row(2*i+1) = data.lines.block<1, 3>(i, 3).cast<float>();
       meshgl.lines_V_colors_vbo.row(2*i+0) = data.lines.block<1, 3>(i, 6).cast<float>();
       meshgl.lines_V_colors_vbo.row(2*i+1) = data.lines.block<1, 3>(i, 6).cast<float>();
+      meshgl.lines_V_radius_vbo(2*i+0,0) = (data.lines.cols() > 7 ? data.lines.cast<float>()(i, 7) : 1.0f);
+      meshgl.lines_V_radius_vbo(2*i+1,0) = (data.lines.cols() > 8 ? data.lines.cast<float>()(i, 8) : meshgl.lines_V_radius_vbo(2*i+0, 0));
       meshgl.lines_F_vbo(2*i+0) = 2*i+0;
       meshgl.lines_F_vbo(2*i+1) = 2*i+1;
     }

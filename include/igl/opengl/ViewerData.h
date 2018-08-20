@@ -109,10 +109,12 @@ public:
   //   P  #P by 3 list of vertex positions
   //   E  #E by 2 list of edge indices into P
   //   C  #E|1 by 3 color(s)
-  IGL_INLINE void set_edges (const Eigen::MatrixXd& P, const Eigen::MatrixXi& E, const Eigen::MatrixXd& C);
+  //   R  #P by 1 list of vertex radii
+  IGL_INLINE void set_edges (const Eigen::MatrixXd& P, const Eigen::MatrixXi& E, const Eigen::MatrixXd& C, const Eigen::VectorXd &R = Eigen::VectorXd());
   // Alec: This is very confusing. Why does add_edges have a different API from
   // set_edges?
   IGL_INLINE void add_edges (const Eigen::MatrixXd& P1, const Eigen::MatrixXd& P2, const Eigen::MatrixXd& C);
+
   IGL_INLINE void add_label (const Eigen::VectorXd& P,  const std::string& str);
 
   // Computes the normals of the mesh
@@ -163,8 +165,9 @@ public:
   // Overlays
 
   // Lines plotted over the scene
-  // (Every row contains 9 doubles in the following format S_x, S_y, S_z, T_x, T_y, T_z, C_r, C_g, C_b),
+  // (Every row contains 11 doubles in the following format S_x, S_y, S_z, T_x, T_y, T_z, C_r, C_g, C_b, R_s, R_t),
   // with S and T the coordinates of the two vertices of the line in global coordinates, and C the color in floating point rgb format
+  // and R the radius of the lines at the their respective endpoints
   Eigen::MatrixXd lines;
 
   // Points plotted over the scene

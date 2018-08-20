@@ -63,6 +63,7 @@ public:
 
   GLuint vbo_lines_F;         // Indices of the line overlay
   GLuint vbo_lines_V;         // Vertices of the line overlay
+  GLuint vbo_lines_V_radius;  // Radius values of the line overlay
   GLuint vbo_lines_V_colors;  // Color values of the line overlay
   GLuint vbo_points_F;        // Indices of the point overlay
   GLuint vbo_points_V;        // Vertices of the point overlay
@@ -78,6 +79,7 @@ public:
   RowMatrixXf V_specular_vbo;
   RowMatrixXf V_uv_vbo;
   RowMatrixXf lines_V_vbo;
+  RowMatrixXf lines_V_radius_vbo;
   RowMatrixXf lines_V_colors_vbo;
   RowMatrixXf points_V_vbo;
   RowMatrixXf points_V_radius_vbo;
