@@ -287,7 +287,7 @@ IGL_INLINE void igl::opengl::ViewerData::set_edges(
   const Eigen::VectorXd& R)
 {
   using namespace Eigen;
-  lines.resize(E.rows(), R.size() ? 9 : 11);
+  lines.resize(E.rows(), R.size() ? 11 : 9);
   assert(C.cols() == 3);
   assert(R.size() == 0 || R.size() == P.rows());
   for(int e = 0;e<E.rows();e++)
@@ -689,8 +689,8 @@ IGL_INLINE void igl::opengl::ViewerData::updateGL(
       meshgl.lines_V_vbo.row(2*i+1) = data.lines.block<1, 3>(i, 3).cast<float>();
       meshgl.lines_V_colors_vbo.row(2*i+0) = data.lines.block<1, 3>(i, 6).cast<float>();
       meshgl.lines_V_colors_vbo.row(2*i+1) = data.lines.block<1, 3>(i, 6).cast<float>();
-      meshgl.lines_V_radius_vbo(2*i+0,0) = (data.lines.cols() > 7 ? data.lines.cast<float>()(i, 7) : 1.0f);
-      meshgl.lines_V_radius_vbo(2*i+1,0) = (data.lines.cols() > 8 ? data.lines.cast<float>()(i, 8) : meshgl.lines_V_radius_vbo(2*i+0, 0));
+      meshgl.lines_V_radius_vbo(2*i+0,0) = (data.lines.cols() > 9 ? data.lines.cast<float>()(i, 9) : 1.0f);
+      meshgl.lines_V_radius_vbo(2*i+1,0) = (data.lines.cols() > 10 ? data.lines.cast<float>()(i, 10) : meshgl.lines_V_radius_vbo(2*i+0, 0));
       meshgl.lines_F_vbo(2*i+0) = 2*i+0;
       meshgl.lines_F_vbo(2*i+1) = 2*i+1;
     }

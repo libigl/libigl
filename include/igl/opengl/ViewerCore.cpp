@@ -238,6 +238,7 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
     if (data.points.rows() > 0)
     {
       data.meshgl.bind_overlay_points();
+
       viewi               = glGetUniformLocation(data.meshgl.shader_overlay_points,"view");
       proji               = glGetUniformLocation(data.meshgl.shader_overlay_points,"proj");
       specular_exponenti  = glGetUniformLocation(data.meshgl.shader_overlay_points,"specular_exponent");

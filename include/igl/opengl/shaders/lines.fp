@@ -24,9 +24,9 @@ in FragData {
   flat vec4 a, b;         // endpoints in camera space, last coordinate = radius
   flat vec3 ex, ey, ez;   // impostor frame
   flat float alpha, beta; // precomputed per impostor
-  smooth vec4 ambient_color;
-  smooth vec4 diffuse_color;
-  smooth vec4 specular_color;
+  flat vec4 ambient_color;
+  flat vec4 diffuse_color;
+  flat vec4 specular_color;
   smooth vec2 mapping;
 };
 
@@ -63,9 +63,11 @@ vec4 compute_lighting(
 // Compute cylinder position and normal in camera space
 void impostor(out vec3 hit_position_eye, out vec3 hit_normal_eye)
 {
-  vec3 hit_plane_position_eye =
-     (1.0-mapping.t)/2.0*(mapping.s*a.w*ex + a.xyz)
-    +(1.0+mapping.t)/2.0*(mapping.s*b.w*ex + b.xyz);
+  // vec3 hit_plane_position_eye =
+  //    (1.0-mapping.t)/2.0*(mapping.s*a.w*ex + a.xyz)
+  //   +(1.0+mapping.t)/2.0*(mapping.s*b.w*ex + b.xyz);
+  float radius = a.w;
+  vec3 hit_plane_position_eye = mix(a.xyz, b.xyz, 0.5*mapping.t+0.5) + mapping.s * radius * ex;
 
   vec3 ray_origin;
   vec3 ray_direction;
@@ -77,13 +79,24 @@ void impostor(out vec3 hit_position_eye, out vec3 hit_normal_eye)
     ray_direction = normalize(hit_plane_position_eye);
   }
 
-  float A = dot(ray_direction.xz, ray_direction.xz) - dot(ray_direction.y*alpha+beta, ray_direction.y*alpha+beta);
-  float B = 2.0 * (dot(ray_origin.xz, ray_direction.xz) - ray_origin.y * alpha * (ray_direction.y * alpha + beta));
-  float C = dot(ray_origin.xz, ray_origin.xz) - dot(ray_origin.y*alpha, ray_origin.y*alpha);
+  vec3 ctr = vec3(dot(a.xyz, ex), dot(a.xyz, ey), dot(a.xyz, ez));
+  vec3 org = vec3(dot(ray_origin, ex), dot(ray_origin, ey), dot(ray_origin, ez));
+  vec3 dir = vec3(dot(ray_direction, ex), dot(ray_direction, ey), dot(ray_direction, ez));
 
-  float det = (B * B) - (4 * C);
+  // float A = dot(dir.xz, dir.xz) - dot(dir.y*alpha+beta, dir.y*alpha+beta);
+  // float B = 2.0 * (dot(org.xz, dir.xz) - org.y * alpha * (dir.y * alpha + beta));
+  // float C = dot(org.xz, org.xz) - dot(org.y*alpha, org.y*alpha);
+  float A = dot(dir.xz, dir.xz);
+  float B = 2.0 * dot(org.xz - ctr.xz, dir.xz);
+  float C = dot(org.xz - ctr.xz, org.xz - ctr.xz) - radius*radius;
+
+  // float A = 1.0;
+  // float B = 2.0 * dot(ray_direction, camera_to_center);
+  // float C = dot(camera_to_center, camera_to_center) - (radius * radius);
+
+  float det = (B * B) - (4 * A * C);
   if (det < 0.0) {
-    discard;
+      discard;
   }
 
   float sqrt_det = sqrt(det);
@@ -92,29 +105,31 @@ void impostor(out vec3 hit_position_eye, out vec3 hit_normal_eye)
   float t = min(t1, t2);
 
   hit_position_eye = ray_origin + ray_direction * t;
-  vec3 hit_proj = hit_position_eye - a.xyz;
-  hit_proj = dot(hit_proj, ex) * ex + dot(hit_proj, ez) * ez;
-  hit_normal_eye = normalize(hit_proj);
+  vec3 plane_to_hit = hit_position_eye - a.xyz;
+  plane_to_hit = vec3(dot(plane_to_hit, ex), dot(plane_to_hit, ey), dot(plane_to_hit, ez));
+  if (plane_to_hit.y < 0 || plane_to_hit.y > dot(b.xyz - a.xyz, ey)) {
+    discard;
+  }
+  hit_normal_eye = normalize(plane_to_hit.x * ex + plane_to_hit.z * ez);
 }
 
 void main()
 {
-  frag_color = vec4(0.5*mapping+0.5,0,1);
-  // vec3 hit_position_eye;
-  // vec3 hit_normal_eye;
+  vec3 hit_position_eye;
+  vec3 hit_normal_eye;
 
-  // impostor(hit_position_eye, hit_normal_eye);
+  impostor(hit_position_eye, hit_normal_eye);
 
-  // // Set the depth based on the new hit_position_eye.
-  // vec4 clipPos = proj * vec4(hit_position_eye, 1.0);
-  // float ndcDepth = clipPos.z / clipPos.w;
-  // gl_FragDepth = ((gl_DepthRange.diff * ndcDepth) + gl_DepthRange.near + gl_DepthRange.far) / 2.0;
+  // Set the depth based on the new hit_position_eye.
+  vec4 clipPos = proj * vec4(hit_position_eye, 1.0);
+  float ndcDepth = clipPos.z / clipPos.w;
+  gl_FragDepth = ((gl_DepthRange.diff * ndcDepth) + gl_DepthRange.near + gl_DepthRange.far) / 2.0;
 
-  // // Compute lighting
-  // frag_color = compute_lighting(
-  //   hit_position_eye, hit_normal_eye,
-  //   vec3(1.0), vec3(1.0), vec3(1.0),
-  //   ambient_color, diffuse_color, specular_color);
+  // Compute lighting
+  frag_color = compute_lighting(
+    hit_position_eye, hit_normal_eye,
+    vec3(1.0), vec3(1.0), vec3(1.0),
+    ambient_color, diffuse_color, specular_color);
 }
 
 )";

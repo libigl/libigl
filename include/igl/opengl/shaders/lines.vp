@@ -27,7 +27,7 @@ void main()
   vertex.ambient_color = vec4(0.1 * color, 1.0);
   vertex.diffuse_color = vec4(color, 1.0);
   vec3 grey = vec3(0.3);
-  vertex.specular_color = vec4(grey + 0.1 * (color.xyz- grey), 1.0);
+  vertex.specular_color = vec4(grey + 0.1 * (color.xyz - grey), 1.0);
 }
 
 )";

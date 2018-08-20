@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
   viewer.core.radius_in_screen_space = false;
   Eigen::VectorXd radius(V.rows());
   radius.setConstant(igl::avg_edge_length(V, F) / 10.0 * viewer.core.camera_base_zoom);
-  // E.conservativeResize(2, E.cols());
+  viewer.data().set_points(V, Eigen::RowVector3d(1, 0, 0), radius);
   viewer.data().set_edges(V, E, Eigen::RowVector3d(1, 0, 0), radius);
   viewer.data().show_overlay = true;
   viewer.data().show_overlay_depth = true;
