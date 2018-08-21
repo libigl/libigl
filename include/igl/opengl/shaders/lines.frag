@@ -66,6 +66,8 @@ void impostor(out vec3 hit_position_eye, out vec3 hit_normal_eye)
   vec4 p = mix(a, b, 0.5*mapping.t+0.5);
   float radius = p.w;
   vec3 hit_plane_position_eye = p.xyz + max(a.w, b.w) * (mapping.s * ex + mapping.p * ez);
+  vec3 midpoint = vec3(mix(a, b, 0.5));
+  float half_len = abs(dot(midpoint - a.xyz, ey));
 
   vec3 ray_origin;
   vec3 ray_direction;
@@ -90,24 +92,35 @@ void impostor(out vec3 hit_position_eye, out vec3 hit_normal_eye)
 
   float det = (B * B) - (4 * A * C);
   if (det < 0.0) {
-      discard;
+    discard;
   }
 
   float sqrt_det = sqrt(det);
   float t1 = (-B + sqrt_det)/(2.0 * A);
   float t2 = (-B - sqrt_det)/(2.0 * A);
-  float t = min(t1, t2);
+
+  vec3 h1 = ray_origin + ray_direction * t1;
+  vec3 h2 = ray_origin + ray_direction * t2;
+
+  float t;
+  if (abs(dot(h1 - midpoint, ey)) > half_len) {
+    t = t2;
+  } else if (abs(dot(h2 - midpoint, ey)) > half_len) {
+    t = t1;
+  } else {
+    t = (min(t1, t2) < 0 ? max(t1, t2) : min(t1, t2));
+  }
 
   hit_position_eye = ray_origin + ray_direction * t;
-  vec3 midpoint = vec3(mix(a, b, 0.5));
+
   vec3 axis_to_hit = hit_position_eye - midpoint;
   axis_to_hit = vec3(dot(axis_to_hit, ex), dot(axis_to_hit, ey), dot(axis_to_hit, ez));
   hit_normal_eye = normalize(axis_to_hit.x * ex + axis_to_hit.z * ez);
 
-  float half_len = abs(dot(midpoint - a.xyz, ey));
-  if (abs(axis_to_hit.y) > half_len) {
-    vec2 axis_to_hit_plane = vec2(dot(hit_plane_position_eye - midpoint, ex), dot(hit_plane_position_eye - midpoint, ez));
-    float cap_sq_radius = dot(axis_to_hit_plane, axis_to_hit_plane);
+  float t3 = dot(hit_plane_position_eye - ray_origin, ray_direction);
+  vec2 axis_to_hit_plane = vec2(dot(hit_plane_position_eye - midpoint, ex), dot(hit_plane_position_eye - midpoint, ez));
+  float cap_sq_radius = dot(axis_to_hit_plane, axis_to_hit_plane);
+  if (abs(axis_to_hit.y) > half_len || (abs(mapping.t) == 1.0 && t3 < t && cap_sq_radius < radius*radius)) {
     if (cap_sq_radius > radius * radius) {
       discard;
     }
@@ -122,14 +135,13 @@ void main()
   vec3 hit_normal_eye;
 
   impostor(hit_position_eye, hit_normal_eye);
-  // frag_color = vec4(0.5 * mapping + 0.5, 1);
 
   // Set the depth based on the new hit_position_eye.
   vec4 clipPos = proj * vec4(hit_position_eye, 1.0);
   float ndcDepth = clipPos.z / clipPos.w;
   gl_FragDepth = ((gl_DepthRange.diff * ndcDepth) + gl_DepthRange.near + gl_DepthRange.far) / 2.0;
-  // return;
 
+  frag_color = vec4(0.5*mapping.ttt+0.5, 1);
   // Compute lighting
   frag_color = compute_lighting(
     hit_position_eye, hit_normal_eye,

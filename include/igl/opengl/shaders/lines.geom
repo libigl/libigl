@@ -3,7 +3,7 @@ std::string lines_geom_shader = R"(
 #version 330
 
 layout(lines) in;
-layout(triangle_strip, max_vertices=8) out;
+layout(triangle_strip, max_vertices=24) out;
 
 // View parameters
 uniform bool orthographic;
@@ -71,12 +71,13 @@ void corner(vec3 coord)
   frag.diffuse_color  = mix(vert[0].diffuse_color, vert[1].diffuse_color, 0.5*coord.t+0.5);
   frag.specular_color = mix(vert[0].specular_color, vert[1].specular_color, 0.5*coord.t+0.5);
 
-  frag.mapping = coord;
-
   vec4 p = mix(frag.a, frag.b, 0.5 * coord.t + 0.5);
-  float r = max(frag.a.w, frag.b.w);
-  vec3 corner_position_eye = p.xyz + r * (coord.s * frag.ex + coord.p * frag.ez);
+  float r = p.w;
+  float rmax = max(frag.a.w, frag.b.w);
+  vec3 corner_position_eye = p.xyz + rmax * (coord.s * frag.ex + coord.p * frag.ez);
   gl_Position = proj * vec4(corner_position_eye, 1.0);
+
+  frag.mapping = coord;
 
   gl_PrimitiveID = gl_PrimitiveIDIn;
   EmitVertex();
@@ -90,11 +91,31 @@ void main()
   corner(vec3( 1.0, -1.0, -1.0));
   corner(vec3( 1.0,  1.0, -1.0));
   EndPrimitive();
+  // corner(vec3(-1.0, -1.0,  1.0));
+  // corner(vec3(-1.0,  1.0,  1.0));
+  // corner(vec3( 1.0, -1.0,  1.0));
+  // corner(vec3( 1.0,  1.0,  1.0));
+  // EndPrimitive();
+  // corner(vec3(-1.0, -1.0, -1.0));
+  // corner(vec3(-1.0,  1.0, -1.0));
+  // corner(vec3(-1.0, -1.0,  1.0));
+  // corner(vec3(-1.0,  1.0,  1.0));
+  // EndPrimitive();
+  // corner(vec3( 1.0, -1.0, -1.0));
+  // corner(vec3( 1.0,  1.0, -1.0));
+  // corner(vec3( 1.0, -1.0,  1.0));
+  // corner(vec3( 1.0,  1.0,  1.0));
+  // EndPrimitive();
   corner(vec3(-1.0, -sign, -1.0));
   corner(vec3(-1.0, -sign,  1.0));
   corner(vec3( 1.0, -sign, -1.0));
   corner(vec3( 1.0, -sign,  1.0));
   EndPrimitive();
+  // corner(vec3(-1.0, sign, -1.0));
+  // corner(vec3(-1.0, sign,  1.0));
+  // corner(vec3( 1.0, sign, -1.0));
+  // corner(vec3( 1.0, sign,  1.0));
+  // EndPrimitive();
 }
 
 )";
