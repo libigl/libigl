@@ -20,9 +20,9 @@ in VertexData {
 
 // Output
 out FragData {
-  flat vec4 a, b;         // endpoints in camera space, last coordinate = radius
-  flat vec3 ex, ey, ez;   // impostor frame
-  flat float alpha, beta; // precomputed per impostor
+  flat vec4 a, b;       // endpoints in camera space, last coordinate = radius
+  flat vec3 ex, ey, ez; // impostor frame
+  flat float alpha;     // precomputed per impostor
   smooth vec4 ambient_color;
   smooth vec4 diffuse_color;
   smooth vec4 specular_color;
@@ -46,18 +46,21 @@ float prepare()
     ray_direction = normalize(axis_center);
   }
 
-  frag.ey = normalize(vert[1].point_position_eye - vert[0].point_position_eye);
+  frag.ey = normalize(vec3(frag.b - frag.a));
   float sign = (dot(frag.ey, ray_direction) > 0 ? 1 : -1);
   frag.ey *= sign;
   frag.ex = normalize(cross(frag.ey, ray_direction));
   frag.ez = normalize(cross(frag.ex, frag.ey));
 
+  // if (sign < 0) {
+  //   vec4 tmp = frag.b;
+  //   frag.b = frag.a;
+  //   frag.a = tmp;
+  // }
+
   float ra = frag.a.w;
   float rb = frag.b.w;
-  float ay = dot(vec3(frag.a), frag.ey);
-  float by = dot(vec3(frag.b), frag.ey);
-  frag.alpha = (rb - ra) / (by - ay);
-  frag.beta = (ra * by - ay * rb) / (by - ay);
+  frag.alpha = (rb - ra) / dot(vec3(frag.b - frag.a), frag.ey);
 
   return sign;
 }
@@ -71,7 +74,7 @@ void corner(vec3 coord)
   frag.mapping = coord;
 
   vec4 p = mix(frag.a, frag.b, 0.5 * coord.t + 0.5);
-  float r = p.w;
+  float r = p.w; // max(frag.a.w, frag.b.w);
   vec3 corner_position_eye = p.xyz + r * (coord.s * frag.ex + coord.p * frag.ez);
   gl_Position = proj * vec4(corner_position_eye, 1.0);
 

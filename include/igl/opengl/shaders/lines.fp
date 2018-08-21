@@ -23,7 +23,7 @@ uniform mat4 proj;
 in FragData {
   flat vec4 a, b;         // endpoints in camera space, last coordinate = radius
   flat vec3 ex, ey, ez;   // impostor frame
-  flat float alpha, beta; // precomputed per impostor
+  flat float alpha;       // precomputed per impostor
   smooth vec4 ambient_color;
   smooth vec4 diffuse_color;
   smooth vec4 specular_color;
@@ -65,7 +65,7 @@ void impostor(out vec3 hit_position_eye, out vec3 hit_normal_eye)
 {
   vec4 p = mix(a, b, 0.5*mapping.t+0.5);
   float radius = p.w;
-  vec3 hit_plane_position_eye = p.xyz + radius * (mapping.s * ex + mapping.p * ez);
+  vec3 hit_plane_position_eye = p.xyz + p.w * (mapping.s * ex + mapping.p * ez);
 
   vec3 ray_origin;
   vec3 ray_direction;
@@ -81,16 +81,12 @@ void impostor(out vec3 hit_position_eye, out vec3 hit_normal_eye)
   vec3 org = vec3(dot(ray_origin, ex), dot(ray_origin, ey), dot(ray_origin, ez));
   vec3 dir = vec3(dot(ray_direction, ex), dot(ray_direction, ey), dot(ray_direction, ez));
 
-  // float A = dot(dir.xz, dir.xz) - dot(dir.y*alpha+beta, dir.y*alpha+beta);
-  // float B = 2.0 * (dot(org.xz, dir.xz) - org.y * alpha * (dir.y * alpha + beta));
-  // float C = dot(org.xz, org.xz) - dot(org.y*alpha, org.y*alpha);
-  float A = dot(dir.xz, dir.xz);
-  float B = 2.0 * dot(org.xz - ctr.xz, dir.xz);
-  float C = dot(org.xz - ctr.xz, org.xz - ctr.xz) - radius*radius;
-
-  // float A = 1.0;
-  // float B = 2.0 * dot(ray_direction, camera_to_center);
-  // float C = dot(camera_to_center, camera_to_center) - (radius * radius);
+  float A = dot(dir.xz, dir.xz) - dot(dir.y*alpha, dir.y*alpha);
+  float B = 2.0 * (dot(org.xz - ctr.xz, dir.xz) - dir.y*alpha * (a.w + (org.y - ctr.y)*alpha));
+  float C = dot(org.xz - ctr.xz, org.xz - ctr.xz) - dot(a.w + (org.y - ctr.y)*alpha, a.w + (org.y - ctr.y)*alpha);
+  // float A = dot(dir.xz, dir.xz);
+  // float B = 2.0 * dot(org.xz - ctr.xz, dir.xz);
+  // float C = dot(org.xz - ctr.xz, org.xz - ctr.xz) - radius*radius;
 
   float det = (B * B) - (4 * A * C);
   if (det < 0.0) {
@@ -126,11 +122,13 @@ void main()
   vec3 hit_normal_eye;
 
   impostor(hit_position_eye, hit_normal_eye);
+  // frag_color = vec4(0.5 * mapping + 0.5, 1);
 
   // Set the depth based on the new hit_position_eye.
   vec4 clipPos = proj * vec4(hit_position_eye, 1.0);
   float ndcDepth = clipPos.z / clipPos.w;
   gl_FragDepth = ((gl_DepthRange.diff * ndcDepth) + gl_DepthRange.near + gl_DepthRange.far) / 2.0;
+  // return;
 
   // Compute lighting
   frag_color = compute_lighting(

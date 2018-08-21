@@ -4,6 +4,7 @@
 #include <igl/avg_edge_length.h>
 #include <igl/opengl/glfw/Viewer.h>
 #include "tutorial_shared_path.h"
+#include <random>
 
 Eigen::MatrixXd V;
 Eigen::MatrixXi F, E;
@@ -11,7 +12,9 @@ Eigen::MatrixXi F, E;
 int main(int argc, char *argv[])
 {
   // Load a mesh in OFF format
-  igl::read_triangle_mesh(TUTORIAL_SHARED_PATH "/cube.obj", V, F);
+  // std::string filename = "/home/jdumas/resources/models/dragon.obj";
+  std::string filename = TUTORIAL_SHARED_PATH "/cube.obj";
+  igl::read_triangle_mesh(filename, V, F);
   igl::edges(F, E);
 
   // Plot the mesh
@@ -21,7 +24,11 @@ int main(int argc, char *argv[])
   viewer.core.radius_in_screen_space = false;
   Eigen::VectorXd radius(V.rows());
   // E.conservativeResize(2, E.cols());
-  radius.setConstant(igl::avg_edge_length(V, F) / 10.0 * viewer.core.camera_base_zoom);
+  double r = igl::avg_edge_length(V, F) / 10.0 * viewer.core.camera_base_zoom;
+  std::default_random_engine gen;
+  std::uniform_real_distribution<double> dist(-1, 1);
+  // radius = radius.unaryExpr([&](double x) { return r + 0.8 * r * dist(gen); });
+  radius.setConstant(r);
   // viewer.data().set_points(V, Eigen::RowVector3d(1, 0, 0), radius);
   viewer.data().set_edges(V, E, Eigen::RowVector3d(1, 0, 0), radius);
   viewer.data().show_overlay = true;
