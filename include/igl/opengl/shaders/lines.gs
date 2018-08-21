@@ -3,9 +3,10 @@ std::string lines_geom_shader = R"(
 #version 330
 
 layout(lines) in;
-layout(triangle_strip, max_vertices=4) out;
+layout(triangle_strip, max_vertices=8) out;
 
 // View parameters
+uniform bool orthographic;
 uniform mat4 proj;
 
 // Input
@@ -22,25 +23,34 @@ out FragData {
   flat vec4 a, b;         // endpoints in camera space, last coordinate = radius
   flat vec3 ex, ey, ez;   // impostor frame
   flat float alpha, beta; // precomputed per impostor
-  flat vec4 ambient_color;
-  flat vec4 diffuse_color;
-  flat vec4 specular_color;
-  smooth vec2 mapping;
+  smooth vec4 ambient_color;
+  smooth vec4 diffuse_color;
+  smooth vec4 specular_color;
+  smooth vec3 mapping;
 } frag;
 
-// Constant
-const float BOX_CORRECTION = 1.5;
-
 // Emit a corner vertex
-void corner(vec2 coord)
+float prepare()
 {
   frag.a = vec4(vert[0].point_position_eye, vert[0].point_radius);
   frag.b = vec4(vert[1].point_position_eye, vert[1].point_radius);
-  frag.mapping = coord * BOX_CORRECTION;
+
+  vec3 axis_center = vec3(mix(frag.a, frag.b, 0.5));
+  vec3 ray_origin;
+  vec3 ray_direction;
+  if (orthographic) {
+    ray_origin = vec3(axis_center.xy, 0);
+    ray_direction = normalize(axis_center - ray_origin);
+  } else {
+    ray_origin = vec3(0.0);
+    ray_direction = normalize(axis_center);
+  }
 
   frag.ey = normalize(vert[1].point_position_eye - vert[0].point_position_eye);
-  frag.ez = normalize(cross(frag.ey, vec3(-frag.ey.y, frag.ey.x, 0)));
-  frag.ex = normalize(cross(frag.ey, frag.ez));
+  float sign = (dot(frag.ey, ray_direction) > 0 ? 1 : -1);
+  frag.ey *= sign;
+  frag.ex = normalize(cross(frag.ey, ray_direction));
+  frag.ez = normalize(cross(frag.ex, frag.ey));
 
   float ra = frag.a.w;
   float rb = frag.b.w;
@@ -49,12 +59,20 @@ void corner(vec2 coord)
   frag.alpha = (rb - ra) / (by - ay);
   frag.beta = (ra * by - ay * rb) / (by - ay);
 
-  frag.ambient_color  = vert[0].ambient_color; //mix(vert[0].ambient_color, vert[1].ambient_color, 0.5*coord.t+0.5);
-  frag.diffuse_color  = vert[0].diffuse_color; //mix(vert[0].diffuse_color, vert[1].diffuse_color, 0.5*coord.t+0.5);
-  frag.specular_color = vert[0].specular_color; //mix(vert[0].specular_color, vert[1].specular_color, 0.5*coord.t+0.5);
+  return sign;
+}
 
-  vec3 corner_position_eye = mix(vert[0].point_position_eye, vert[1].point_position_eye, 0.5*coord.t*BOX_CORRECTION+0.5);
-  corner_position_eye += coord.s * BOX_CORRECTION * max(vert[0].point_radius, vert[1].point_radius) * frag.ex;
+void corner(vec3 coord)
+{
+  frag.ambient_color  = mix(vert[0].ambient_color, vert[1].ambient_color, 0.5*coord.t+0.5);
+  frag.diffuse_color  = mix(vert[0].diffuse_color, vert[1].diffuse_color, 0.5*coord.t+0.5);
+  frag.specular_color = mix(vert[0].specular_color, vert[1].specular_color, 0.5*coord.t+0.5);
+
+  frag.mapping = coord;
+
+  vec4 p = mix(frag.a, frag.b, 0.5 * coord.t + 0.5);
+  float r = p.w;
+  vec3 corner_position_eye = p.xyz + r * (coord.s * frag.ex + coord.p * frag.ez);
   gl_Position = proj * vec4(corner_position_eye, 1.0);
 
   gl_PrimitiveID = gl_PrimitiveIDIn;
@@ -63,10 +81,17 @@ void corner(vec2 coord)
 
 void main()
 {
-  corner(vec2(-1.0, -1.0)); // Bottom-left
-  corner(vec2(-1.0, 1.0));  // Top-left
-  corner(vec2(1.0, -1.0));  // Bottom-right
-  corner(vec2(1.0, 1.0));   // Top-right
+  float sign = prepare();
+  corner(vec3(-1.0, -1.0, -1.0));
+  corner(vec3(-1.0,  1.0, -1.0));
+  corner(vec3( 1.0, -1.0, -1.0));
+  corner(vec3( 1.0,  1.0, -1.0));
+  EndPrimitive();
+  corner(vec3(-1.0, -sign, -1.0));
+  corner(vec3(-1.0, -sign,  1.0));
+  corner(vec3( 1.0, -sign, -1.0));
+  corner(vec3( 1.0, -sign,  1.0));
+  EndPrimitive();
 }
 
 )";

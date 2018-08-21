@@ -24,10 +24,10 @@ in FragData {
   flat vec4 a, b;         // endpoints in camera space, last coordinate = radius
   flat vec3 ex, ey, ez;   // impostor frame
   flat float alpha, beta; // precomputed per impostor
-  flat vec4 ambient_color;
-  flat vec4 diffuse_color;
-  flat vec4 specular_color;
-  smooth vec2 mapping;
+  smooth vec4 ambient_color;
+  smooth vec4 diffuse_color;
+  smooth vec4 specular_color;
+  smooth vec3 mapping;
 };
 
 // Output
@@ -63,11 +63,9 @@ vec4 compute_lighting(
 // Compute cylinder position and normal in camera space
 void impostor(out vec3 hit_position_eye, out vec3 hit_normal_eye)
 {
-  // vec3 hit_plane_position_eye =
-  //    (1.0-mapping.t)/2.0*(mapping.s*a.w*ex + a.xyz)
-  //   +(1.0+mapping.t)/2.0*(mapping.s*b.w*ex + b.xyz);
-  float radius = a.w;
-  vec3 hit_plane_position_eye = mix(a.xyz, b.xyz, 0.5*mapping.t+0.5) + mapping.s * radius * ex;
+  vec4 p = mix(a, b, 0.5*mapping.t+0.5);
+  float radius = p.w;
+  vec3 hit_plane_position_eye = p.xyz + radius * (mapping.s * ex + mapping.p * ez);
 
   vec3 ray_origin;
   vec3 ray_direction;
@@ -105,12 +103,21 @@ void impostor(out vec3 hit_position_eye, out vec3 hit_normal_eye)
   float t = min(t1, t2);
 
   hit_position_eye = ray_origin + ray_direction * t;
-  vec3 plane_to_hit = hit_position_eye - a.xyz;
-  plane_to_hit = vec3(dot(plane_to_hit, ex), dot(plane_to_hit, ey), dot(plane_to_hit, ez));
-  if (plane_to_hit.y < 0 || plane_to_hit.y > dot(b.xyz - a.xyz, ey)) {
-    discard;
+  vec3 midpoint = vec3(mix(a, b, 0.5));
+  vec3 axis_to_hit = hit_position_eye - midpoint;
+  axis_to_hit = vec3(dot(axis_to_hit, ex), dot(axis_to_hit, ey), dot(axis_to_hit, ez));
+  hit_normal_eye = normalize(axis_to_hit.x * ex + axis_to_hit.z * ez);
+
+  float half_len = abs(dot(midpoint - a.xyz, ey));
+  if (abs(axis_to_hit.y) > half_len) {
+    vec2 axis_to_hit_plane = vec2(dot(hit_plane_position_eye - midpoint, ex), dot(hit_plane_position_eye - midpoint, ez));
+    float cap_sq_radius = dot(axis_to_hit_plane, axis_to_hit_plane);
+    if (cap_sq_radius > radius * radius) {
+      discard;
+    }
+    hit_position_eye = hit_plane_position_eye;
+    hit_normal_eye = -ey;
   }
-  hit_normal_eye = normalize(plane_to_hit.x * ex + plane_to_hit.z * ez);
 }
 
 void main()

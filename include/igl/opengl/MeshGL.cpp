@@ -183,7 +183,6 @@ IGL_INLINE void igl::opengl::MeshGL::init()
   #include "shaders/points.gs"
   #include "shaders/points.vp"
 
-
   init_buffers();
   create_shader_program(
     mesh_vertex_shader,
