@@ -172,16 +172,16 @@ IGL_INLINE void igl::opengl::MeshGL::init()
   }
   is_initialized = true;
 
-  #include "shaders/lines.fp"
-  #include "shaders/lines.gp"
-  #include "shaders/lines.vp"
+  #include "shaders/lines.frag"
+  #include "shaders/lines.geom"
+  #include "shaders/lines.vert"
 
-  #include "shaders/mesh.fp"
-  #include "shaders/mesh.vp"
+  #include "shaders/mesh.frag"
+  #include "shaders/mesh.vert"
 
-  #include "shaders/points.fp"
-  #include "shaders/points.gp"
-  #include "shaders/points.vp"
+  #include "shaders/points.frag"
+  #include "shaders/points.geom"
+  #include "shaders/points.vert"
 
   init_buffers();
   create_shader_program(

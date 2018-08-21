@@ -74,7 +74,7 @@ void corner(vec3 coord)
   frag.mapping = coord;
 
   vec4 p = mix(frag.a, frag.b, 0.5 * coord.t + 0.5);
-  float r = p.w; // max(frag.a.w, frag.b.w);
+  float r = max(frag.a.w, frag.b.w);
   vec3 corner_position_eye = p.xyz + r * (coord.s * frag.ex + coord.p * frag.ez);
   gl_Position = proj * vec4(corner_position_eye, 1.0);
 

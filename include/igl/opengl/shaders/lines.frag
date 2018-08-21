@@ -65,7 +65,7 @@ void impostor(out vec3 hit_position_eye, out vec3 hit_normal_eye)
 {
   vec4 p = mix(a, b, 0.5*mapping.t+0.5);
   float radius = p.w;
-  vec3 hit_plane_position_eye = p.xyz + p.w * (mapping.s * ex + mapping.p * ez);
+  vec3 hit_plane_position_eye = p.xyz + max(a.w, b.w) * (mapping.s * ex + mapping.p * ez);
 
   vec3 ray_origin;
   vec3 ray_direction;
