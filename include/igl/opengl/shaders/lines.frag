@@ -116,6 +116,9 @@ void impostor(out vec3 hit_position_eye, out vec3 hit_normal_eye)
   vec3 axis_to_hit = hit_position_eye - midpoint;
   axis_to_hit = vec3(dot(axis_to_hit, ex), dot(axis_to_hit, ey), dot(axis_to_hit, ez));
   hit_normal_eye = normalize(axis_to_hit.x * ex + axis_to_hit.z * ez);
+  vec3 tangent = (b.xyz + b.w  * hit_normal_eye) - (a.xyz + a.w  * hit_normal_eye);
+  vec3 normal = normalize(cross(normalize(cross(tangent, hit_normal_eye)), tangent));
+  hit_normal_eye = dot(normal, hit_normal_eye) > 0 ? normal : -normal;
 
   float t3 = dot(hit_plane_position_eye - ray_origin, ray_direction);
   vec2 axis_to_hit_plane = vec2(dot(hit_plane_position_eye - midpoint, ex), dot(hit_plane_position_eye - midpoint, ez));
@@ -141,7 +144,9 @@ void main()
   float ndcDepth = clipPos.z / clipPos.w;
   gl_FragDepth = ((gl_DepthRange.diff * ndcDepth) + gl_DepthRange.near + gl_DepthRange.far) / 2.0;
 
-  frag_color = vec4(0.5*mapping.ttt+0.5, 1);
+  // frag_color = vec4(abs(hit_normal_eye), 1);
+  // return;
+
   // Compute lighting
   frag_color = compute_lighting(
     hit_position_eye, hit_normal_eye,
