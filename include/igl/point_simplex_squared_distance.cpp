@@ -117,7 +117,7 @@ IGL_INLINE void igl::point_simplex_squared_distance(
   assert((Derivedb::RowsAtCompileTime == 1 || Derivedb::ColsAtCompileTime == 1) && "bary must be Eigen Vector or Eigen RowVector");
   assert(
     ((Derivedb::RowsAtCompileTime == -1 || Derivedb::ColsAtCompileTime == -1) ||
-      (Derivedb::RowsAtCompileTime == Ele.cols() || Derivedb::ColsAtCompileTime == -Ele.cols())
+      (Derivedb::RowsAtCompileTime == Ele.cols() || Derivedb::ColsAtCompileTime == Ele.cols())
     ) && "bary must be Dynamic or size of Ele.cols()");
 
   BaryPoint tmp_bary;
