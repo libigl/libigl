@@ -16,6 +16,7 @@
 
 #include <Eigen/Geometry>
 #include <Eigen/Core>
+#include <PI.h>
 
 #define IGL_CAMERA_MIN_ANGLE 5.0
 namespace igl
@@ -174,7 +175,7 @@ inline Eigen::Matrix4d igl::Camera::projection() const
     const double tx = (right+left)/(right-left);
     const double ty = (top+bottom)/(top-bottom);
     const double tz = (far+near)/(far-near);
-    const double z_fix = 0.5 /m_at_dist / tan(m_angle*0.5 * (M_PI/180.) );
+    const double z_fix = 0.5 /m_at_dist / tan(m_angle*0.5 * (igl::PI/180.) );
     P<<
       z_fix*2./(right-left), 0, 0, -tx,
       0, z_fix*2./(top-bottom), 0, -ty,
@@ -283,8 +284,8 @@ inline void igl::Camera::dolly_zoom(const double da)
     m_angle = min(89.,max(IGL_CAMERA_MIN_ANGLE,m_angle));
     // change in distance
     const double s = 
-      (2.*tan(old_angle/2./180.*M_PI)) /
-      (2.*tan(m_angle/2./180.*M_PI)) ;
+      (2.*tan(old_angle/2./180.*igl::PI)) /
+      (2.*tan(m_angle/2./180.*igl::PI)) ;
     const double old_at_dist = m_at_dist;
     m_at_dist = old_at_dist * s;
     dolly(Vector3d(0,0,1)*(m_at_dist - old_at_dist));

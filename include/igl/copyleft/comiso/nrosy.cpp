@@ -297,7 +297,7 @@ void igl::copyleft::comiso::NRosyField::prepareSystemMatrix(const int N)
       row = tag_t[i];
       if (isFixed_i) b(row) += -2               * hard[i]; else T.push_back(Eigen::Triplet<double>(row,tag_t[i]  , 2             ));
       if (isFixed_j) b(row) +=  2               * hard[j]; else T.push_back(Eigen::Triplet<double>(row,tag_t[j]  ,-2             ));
-      if (isFixed_p) b(row) += -((4 * M_PI)/Nd) * p[eid] ; else T.push_back(Eigen::Triplet<double>(row,tag_p[eid],((4 * M_PI)/Nd)));
+      if (isFixed_p) b(row) += -((4 * igl::PI)/Nd) * p[eid] ; else T.push_back(Eigen::Triplet<double>(row,tag_p[eid],((4 * igl::PI)/Nd)));
       b(row) += -2 * k[eid];
       assert(hard[i] == hard[i]);
       assert(hard[j] == hard[j]);
@@ -311,7 +311,7 @@ void igl::copyleft::comiso::NRosyField::prepareSystemMatrix(const int N)
       row = tag_t[j];
       if (isFixed_i) b(row) += 2               * hard[i]; else T.push_back(Eigen::Triplet<double>(row,tag_t[i]  , -2             ));
       if (isFixed_j) b(row) += -2              * hard[j]; else T.push_back(Eigen::Triplet<double>(row,tag_t[j] ,  2              ));
-      if (isFixed_p) b(row) += ((4 * M_PI)/Nd) * p[eid] ; else T.push_back(Eigen::Triplet<double>(row,tag_p[eid],-((4 * M_PI)/Nd)));
+      if (isFixed_p) b(row) += ((4 * igl::PI)/Nd) * p[eid] ; else T.push_back(Eigen::Triplet<double>(row,tag_p[eid],-((4 * igl::PI)/Nd)));
       b(row) += 2 * k[eid];
       assert(k[eid] == k[eid]);
       assert(b(row) == b(row));
@@ -320,10 +320,10 @@ void igl::copyleft::comiso::NRosyField::prepareSystemMatrix(const int N)
     if (!isFixed_p)
     {
       row = tag_p[eid];
-      if (isFixed_i) b(row) += -(4 * M_PI)/Nd              * hard[i]; else T.push_back(Eigen::Triplet<double>(row,tag_t[i] ,   (4 * M_PI)/Nd             ));
-      if (isFixed_j) b(row) +=  (4 * M_PI)/Nd              * hard[j]; else T.push_back(Eigen::Triplet<double>(row,tag_t[j] ,  -(4 * M_PI)/Nd             ));
-      if (isFixed_p) b(row) += -(2 * pow(((2*M_PI)/Nd),2)) * p[eid] ;  else T.push_back(Eigen::Triplet<double>(row,tag_p[eid],  (2 * pow(((2*M_PI)/Nd),2))));
-      b(row) += - (4 * M_PI)/Nd * k[eid];
+      if (isFixed_i) b(row) += -(4 * igl::PI)/Nd              * hard[i]; else T.push_back(Eigen::Triplet<double>(row,tag_t[i] ,   (4 * igl::PI)/Nd             ));
+      if (isFixed_j) b(row) +=  (4 * igl::PI)/Nd              * hard[j]; else T.push_back(Eigen::Triplet<double>(row,tag_t[j] ,  -(4 * igl::PI)/Nd             ));
+      if (isFixed_p) b(row) += -(2 * pow(((2*igl::PI)/Nd),2)) * p[eid] ;  else T.push_back(Eigen::Triplet<double>(row,tag_p[eid],  (2 * pow(((2*igl::PI)/Nd),2))));
+      b(row) += - (4 * igl::PI)/Nd * k[eid];
       assert(k[eid] == k[eid]);
       assert(b(row) == b(row));
     }
@@ -759,7 +759,7 @@ void igl::copyleft::comiso::NRosyField::reduceSpace()
           int fid1 = EF(eid,1);
 
           pFixed[eid] = true;
-          p[eid] = roundl(2.0/M_PI*(hard(fid1) - hard(fid0) - k(eid)));
+          p[eid] = roundl(2.0/igl::PI*(hard(fid1) - hard(fid0) - k(eid)));
         }
       }
     }
@@ -795,7 +795,7 @@ Eigen::Vector3d igl::copyleft::comiso::NRosyField::convertLocalto3D(unsigned fid
 
 Eigen::VectorXd igl::copyleft::comiso::NRosyField::angleDefect()
 {
-  Eigen::VectorXd A = Eigen::VectorXd::Constant(V.rows(),-2*M_PI);
+  Eigen::VectorXd A = Eigen::VectorXd::Constant(V.rows(),-2*igl::PI);
 
   for (unsigned i=0; i < F.rows(); ++i)
   {
@@ -834,7 +834,7 @@ void igl::copyleft::comiso::NRosyField::findCones(int N)
   I0 = I0 + A;
 
   // normalize
-  I0 = I0 / (2*M_PI);
+  I0 = I0 / (2*igl::PI);
 
   // round to integer (remove numerical noise)
   for (unsigned i=0; i < I0.size(); ++i)
