@@ -2402,7 +2402,7 @@ Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> B(1280,800);
 Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> A(1280,800);
 
 // Draw the scene in the buffers
-viewer.core.draw_buffer(viewer.data,viewer.opengl,false,R,G,B,A);
+viewer.core.draw_buffer(viewer.data(),false,R,G,B,A);
 
 // Save it to a PNG
 igl::png::writePNG(R,G,B,A,"out.png");
