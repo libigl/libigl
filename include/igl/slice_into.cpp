@@ -25,8 +25,8 @@ IGL_INLINE void igl::slice_into(
   int xn = X.cols();
   assert(R.size() == xm);
   assert(C.size() == xn);
-  int ym = Y.size();
-  int yn = Y.size();
+  int ym = Y.rows();
+  int yn = Y.cols();
   assert(R.minCoeff() >= 0);
   assert(R.maxCoeff() < ym);
   assert(C.minCoeff() >= 0);
@@ -60,8 +60,8 @@ IGL_INLINE void igl::slice_into(
 #ifndef NDEBUG
   assert(R.size() == xm);
   assert(C.size() == xn);
-  int ym = Y.size();
-  int yn = Y.size();
+  int ym = Y.rows();
+  int yn = Y.cols();
   assert(R.minCoeff() >= 0);
   assert(R.maxCoeff() < ym);
   assert(C.minCoeff() >= 0);
