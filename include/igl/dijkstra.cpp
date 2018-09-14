@@ -11,6 +11,7 @@ template <typename IndexType, typename DerivedD, typename DerivedP>
 IGL_INLINE int igl::dijkstra_compute_paths(const IndexType &source,
                                            const std::set<IndexType> &targets,
                                            const std::vector<std::vector<IndexType> >& VV,
+                                           const std::vector<double>& weights,
                                            Eigen::PlainObjectBase<DerivedD> &min_distance,
                                            Eigen::PlainObjectBase<DerivedP> &previous)
 {
@@ -37,7 +38,7 @@ IGL_INLINE int igl::dijkstra_compute_paths(const IndexType &source,
          neighbor_iter++)
     {
       IndexType v = *neighbor_iter;
-      typename DerivedD::Scalar distance_through_u = dist + 1.;
+      typename DerivedD::Scalar distance_through_u = dist + weights[u];
       if (distance_through_u < min_distance[v]) {
         vertex_queue.erase(std::make_pair(min_distance[v], v));
 
@@ -51,6 +52,17 @@ IGL_INLINE int igl::dijkstra_compute_paths(const IndexType &source,
   }
   //we should never get here
   return -1;
+}
+
+template <typename IndexType, typename DerivedD, typename DerivedP>
+IGL_INLINE int igl::dijkstra_compute_paths(const IndexType &source,
+                                           const std::set<IndexType> &targets,
+                                           const std::vector<std::vector<IndexType> >& VV,
+                                           Eigen::PlainObjectBase<DerivedD> &min_distance,
+                                           Eigen::PlainObjectBase<DerivedP> &previous)
+{
+  std::vector<double> weights(VV.size(), 1.0);
+  return dijkstra_compute_paths(source, targets, VV, weights, min_distance, previous);
 }
 
 template <typename IndexType, typename DerivedP>
