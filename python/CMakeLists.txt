@@ -145,7 +145,7 @@ elseif(UNIX)
   # .SO file extension on Linux/Mac OS
   set_target_properties(pyigl PROPERTIES SUFFIX ".so")
 
-  #Enable flag if undefined symbols appear on pyigl module import to get notified about the missing symbols at link time
+  # Enable flag if undefined symbols appear on pyigl module import to get notified about the missing symbols at link time
   option(CHECK_UNDEFINED        "Check for undefined symbols"    OFF)
 
   # Strip unnecessary sections of the binary on Linux/Mac OS
