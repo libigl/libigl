@@ -40,7 +40,7 @@ namespace igl
                                       const Eigen::MatrixBase<DerivedA>& A,
             const std::vector<std::vector<Index> > & point_indices,
             const Eigen::MatrixBase<DerivedCH>& CH,
-            const int exansion_order,
+            const int expansion_order,
             Eigen::PlainObjectBase<DerivedCM>& CM,
             Eigen::PlainObjectBase<DerivedR>& R,
             Eigen::PlainObjectBase<DerivedEC>& EC);
@@ -98,10 +98,6 @@ namespace igl
   //   N  #P by 3 list of point normals
   //   A  #P by 1 list of point areas
   //   Q  #Q by 3 list of query points for the winding number
-  //   beta  This is a Barnes-Hut style accuracy term that separates near feild
-  //         from far field. The higher the beta, the more accurate and slower
-  //         the evaluation. We reccommend using a beta value of 2.
-  //   expansion_order    the order of the taylor expansion. We support 0,1,2.
   // Outputs:
   //   WN  #Q by 1 list of windinng number values at each query point
   //
