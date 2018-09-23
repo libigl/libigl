@@ -16,7 +16,7 @@
 
 #include <Eigen/Geometry>
 #include <Eigen/Core>
-#include <PI.h>
+#include "PI.h"
 
 #define IGL_CAMERA_MIN_ANGLE 5.0
 namespace igl
