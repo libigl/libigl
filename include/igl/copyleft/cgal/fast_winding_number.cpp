@@ -1,3 +1,4 @@
+#include "fast_winding_number.h"
 #include "../../fast_winding_number.h"
 #include "../../octree.h"
 #include "../../knn.h"
