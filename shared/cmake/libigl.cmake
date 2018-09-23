@@ -185,6 +185,7 @@ if(LIBIGL_WITH_ANTTWEAKBAR)
   endif()
   compile_igl_module("anttweakbar")
   target_link_libraries(igl_anttweakbar ${IGL_SCOPE} AntTweakBar)
+  target_include_directories(igl_anttweakbar ${IGL_SCOPE} "${ANTTWEAKBAR_DIR}/include")
 endif()
 
 ################################################################################
