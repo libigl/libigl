@@ -33,7 +33,7 @@ IGL_INLINE std::string igl::dirname(const std::string & path)
   }else if(1 == (last_slash.base() - path.begin()))
   {
     // Slash is first char
-    return std::string(&del);
+    return std::string(1,del);
   }else if(path.end() == last_slash.base() )
   {
     // Slash is last char
