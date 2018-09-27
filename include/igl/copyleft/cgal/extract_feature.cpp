@@ -7,7 +7,8 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 
 #include "extract_feature.h"
-#include <igl/unique_edge_map.h>
+#include "../../unique_edge_map.h"
+#include "../../PI.h"
 #include <CGAL/Kernel/global_functions.h>
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 

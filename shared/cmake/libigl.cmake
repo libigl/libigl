@@ -21,19 +21,14 @@ endif()
 ### Find packages to populate default options ###
 #
 # COMPONENTS should match subsequent calls
-find_package(CGAL COMPONENTS Core) # --> CGAL_FOUND
-find_package(Boost 1.48 COMPONENTS thread system) # --> BOOST_FOUND
-if(CGAL_FOUND AND BOOST_FOUND)
-  set(CGAL_AND_BOOST_FOUND TRUE)
-endif()
 find_package(Matlab COMPONENTS MEX_COMPILER MX_LIBRARY ENG_LIBRARY) # --> Matlab_FOUND
 find_package(MOSEK) # --> MOSEK_FOUND
 find_package(OpenGL) # --> OPENGL_FOUND
 
 ### Available options ###
-option(LIBIGL_USE_STATIC_LIBRARY     "Use libigl as static library" OFF)
+option(LIBIGL_USE_STATIC_LIBRARY     "Use libigl as static library" ON)
 option(LIBIGL_WITH_ANTTWEAKBAR       "Use AntTweakBar"    OFF)
-option(LIBIGL_WITH_CGAL              "Use CGAL"           "${CGAL_AND_BOOST_FOUND}")
+option(LIBIGL_WITH_CGAL              "Use CGAL"           ON)
 option(LIBIGL_WITH_COMISO            "Use CoMiso"         ON)
 option(LIBIGL_WITH_CORK              "Use Cork"           OFF)
 option(LIBIGL_WITH_EMBREE            "Use Embree"         OFF)
@@ -86,9 +81,6 @@ target_compile_features(igl_common INTERFACE ${CXX11_FEATURES})
 if(MSVC)
   # Enable parallel compilation for Visual Studio
   target_compile_options(igl_common INTERFACE /MP /bigobj)
-  if(LIBIGL_WITH_CGAL)
-    target_compile_options(igl_common INTERFACE "/MD$<$<CONFIG:Debug>:d>")
-  endif()
 endif()
 
 if(BUILD_SHARED_LIBS)
@@ -107,6 +99,38 @@ endif()
 # C++11 Thread library
 find_package(Threads REQUIRED)
 target_link_libraries(igl_common INTERFACE ${CMAKE_THREAD_LIBS_INIT})
+
+################################################################################
+
+include(DownloadProject)
+
+# Shortcut function
+function(igl_download_project name)
+  download_project(
+    PROJ         ${name}
+    SOURCE_DIR   ${LIBIGL_EXTERNAL}/${name}
+    DOWNLOAD_DIR ${LIBIGL_EXTERNAL}/.cache/${name}
+    ${ARGN}
+  )
+endfunction()
+
+################################################################################
+
+## CGAL dependencies on Windows: GMP & MPFR
+function(igl_download_cgal_deps)
+  if(WIN32)
+    igl_download_project(gmp
+        URL     https://cgal.geometryfactory.com/CGAL/precompiled_libs/auxiliary/x64/GMP/5.0.1/gmp-all-CGAL-3.9.zip
+        URL_MD5 508c1292319c832609329116a8234c9f
+    )
+    igl_download_project(mpfr
+        URL https://cgal.geometryfactory.com/CGAL/precompiled_libs/auxiliary/x64/MPFR/3.0.0/mpfr-all-CGAL-3.9.zip
+        URL_MD5 48840454eef0ff18730050c05028734b
+    )
+    set(ENV{GMP_DIR} "${LIBIGL_EXTERNAL}/gmp")
+    set(ENV{MPFR_DIR} "${LIBIGL_EXTERNAL}/mpfr")
+  endif()
+endfunction()
 
 ################################################################################
 
@@ -161,26 +185,29 @@ if(LIBIGL_WITH_ANTTWEAKBAR)
   endif()
   compile_igl_module("anttweakbar")
   target_link_libraries(igl_anttweakbar ${IGL_SCOPE} AntTweakBar)
+  target_include_directories(igl_anttweakbar ${IGL_SCOPE} "${ANTTWEAKBAR_DIR}/include")
 endif()
 
 ################################################################################
-### Compile the cgal parts ###
+### Compile the CGAL part ###
 if(LIBIGL_WITH_CGAL)
+  # Try to find the CGAL library
   # CGAL Core is needed for
   # `Exact_predicates_exact_constructions_kernel_with_sqrt`
-  if(EXISTS ${LIBIGL_EXTERNAL}/boost)
-    set(BOOST_ROOT "${LIBIGL_EXTERNAL}/boost")
-  endif()
-  find_package(CGAL COMPONENTS Core)
-  if(CGAL_FOUND)
-    compile_igl_module("cgal")
-    if(WIN32)
-      set(Boost_USE_STATIC_LIBS ON) # Favor static Boost libs on Windows
+  if(NOT TARGET CGAL::CGAL)
+    set(CGAL_DIR "${LIBIGL_EXTERNAL}/cgal")
+    igl_download_cgal_deps()
+    if(EXISTS ${LIBIGL_EXTERNAL}/boost)
+      set(BOOST_ROOT "${LIBIGL_EXTERNAL}/boost")
     endif()
-    target_include_directories(igl_cgal ${IGL_SCOPE} "${GMP_INCLUDE_DIR}" "${MPFR_INCLUDE_DIR}")
-    find_package(Boost 1.48 REQUIRED thread system)
-    target_include_directories(igl_cgal ${IGL_SCOPE} ${CGAL_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
-    target_link_libraries(igl_cgal ${IGL_SCOPE} CGAL::CGAL CGAL::CGAL_Core ${Boost_LIBRARIES})
+    set(CGAL_Boost_USE_STATIC_LIBS ON CACHE BOOL "" FORCE)
+    find_package(CGAL CONFIG COMPONENTS Core PATHS ${CGAL_DIR} NO_DEFAULT_PATH)
+  endif()
+
+  # If CGAL has been found, then build the libigl module
+  if(TARGET CGAL::CGAL AND TARGET CGAL::CGAL_Core)
+    compile_igl_module("cgal")
+    target_link_libraries(igl_cgal ${IGL_SCOPE} CGAL::CGAL CGAL::CGAL_Core)
   else()
     set(LIBIGL_WITH_CGAL OFF CACHE BOOL "" FORCE)
   endif()
@@ -188,19 +215,15 @@ endif()
 
 # Helper function for `igl_copy_cgal_dll()`
 function(igl_copy_imported_dll src_target dst_target)
-  get_target_property(configurations ${src_target} IMPORTED_CONFIGURATIONS)
-  foreach(config ${configurations})
-    get_target_property(main_lib ${src_target} IMPORTED_LOCATION_${config})
-    get_target_property(other_libs ${src_target} IMPORTED_LINK_INTERFACE_LIBRARIES_${config})
-    set(locations)
-    list(APPEND locations ${main_lib} ${other_libs})
-    foreach(location ${locations})
-      string(REGEX MATCH "^(.*)\\.[^.]*$" dummy ${location})
-      set(location "${CMAKE_MATCH_1}.dll")
-      if(EXISTS "${location}" AND location MATCHES "^.*\\.dll$")
-        add_custom_command(TARGET ${dst_target} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different "${location}" $<TARGET_FILE_DIR:${dst_target}>)
-      endif()
-    endforeach()
+  get_target_property(other_libs ${src_target} INTERFACE_LINK_LIBRARIES)
+  set(locations)
+  list(APPEND locations ${main_lib} ${other_libs})
+  foreach(location ${locations})
+    string(REGEX MATCH "^(.*)\\.[^.]*$" dummy ${location})
+    set(location "${CMAKE_MATCH_1}.dll")
+    if(EXISTS "${location}" AND location MATCHES "^.*\\.dll$")
+      add_custom_command(TARGET ${dst_target} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different "${location}" $<TARGET_FILE_DIR:${dst_target}>)
+    endif()
   endforeach()
 endfunction()
 
@@ -213,7 +236,7 @@ function(igl_copy_cgal_dll target)
 endfunction()
 
 ################################################################################
-# Compile CoMISo
+### Compile the CoMISo part ###
 # NOTE: this cmakefile works only with the
 # comiso available here: https://github.com/libigl/CoMISo
 if(LIBIGL_WITH_COMISO)
@@ -225,7 +248,7 @@ if(LIBIGL_WITH_COMISO)
 endif()
 
 ################################################################################
-### Compile the cork parts ###
+### Compile the cork part ###
 if(LIBIGL_WITH_CORK)
   set(CORK_DIR "${LIBIGL_EXTERNAL}/cork")
   if(NOT TARGET cork)
@@ -248,6 +271,7 @@ if(LIBIGL_WITH_EMBREE)
   set(EMBREE_TASKING_SYSTEM "INTERNAL" CACHE BOOL " " FORCE)
   set(EMBREE_TUTORIALS OFF CACHE BOOL " " FORCE)
   set(EMBREE_MAX_ISA NONE CACHE STRINGS " " FORCE)
+  set(BUILD_TESTING OFF CACHE BOOL " " FORCE)
 
   # set(ENABLE_INSTALLER OFF CACHE BOOL " " FORCE)
   if(MSVC)
@@ -309,8 +333,7 @@ if(LIBIGL_WITH_MOSEK)
 endif()
 
 ################################################################################
-### Compile the opengl parts ###
-
+### Compile the opengl part ###
 if(LIBIGL_WITH_OPENGL)
   # OpenGL module
   find_package(OpenGL REQUIRED)
@@ -327,7 +350,6 @@ endif()
 
 ################################################################################
 ### Compile the GLFW part ###
-
 if(LIBIGL_WITH_OPENGL_GLFW)
   if(TARGET igl::opengl)
     # GLFW module
@@ -345,7 +367,6 @@ endif()
 
 ################################################################################
 ### Compile the ImGui part ###
-
 if(LIBIGL_WITH_OPENGL_GLFW_IMGUI)
   if(TARGET igl::opengl_glfw)
     # ImGui module

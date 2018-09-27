@@ -28,6 +28,11 @@ external/embree/bin/*
 external/embree/bin
 external/embree/doc/html/*
 external/embree/doc/latex/*
+external/gmp
+external/mpfr
+external/boost
+external/.cache
+external/build
 .DS_Store
 libigl.zip
 *tags
