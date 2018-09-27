@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2016 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "ray_mesh_intersect.h"
 
@@ -15,8 +15,8 @@ extern "C"
 template <
   typename Derivedsource,
   typename Deriveddir,
-  typename DerivedV, 
-  typename DerivedF> 
+  typename DerivedV,
+  typename DerivedF>
 IGL_INLINE bool igl::ray_mesh_intersect(
   const Eigen::MatrixBase<Derivedsource> & s,
   const Eigen::MatrixBase<Deriveddir> & dir,
@@ -26,14 +26,14 @@ IGL_INLINE bool igl::ray_mesh_intersect(
 {
   using namespace Eigen;
   using namespace std;
-  // Should be but can't be const 
+  // Should be but can't be const
   Vector3d s_d = s.template cast<double>();
   Vector3d dir_d = dir.template cast<double>();
   hits.clear();
   // loop over all triangles
   for(int f = 0;f<F.rows();f++)
   {
-    // Should be but can't be const 
+    // Should be but can't be const
     RowVector3d v0 = V.row(F(f,0)).template cast<double>();
     RowVector3d v1 = V.row(F(f,1)).template cast<double>();
     RowVector3d v2 = V.row(F(f,2)).template cast<double>();
@@ -57,8 +57,8 @@ IGL_INLINE bool igl::ray_mesh_intersect(
 template <
   typename Derivedsource,
   typename Deriveddir,
-  typename DerivedV, 
-  typename DerivedF> 
+  typename DerivedV,
+  typename DerivedF>
 IGL_INLINE bool igl::ray_mesh_intersect(
   const Eigen::MatrixBase<Derivedsource> & source,
   const Eigen::MatrixBase<Deriveddir> & dir,

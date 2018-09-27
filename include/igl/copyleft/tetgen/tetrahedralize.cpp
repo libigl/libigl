@@ -1,15 +1,15 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2013 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "tetrahedralize.h"
 #include "mesh_to_tetgenio.h"
 #include "tetgenio_to_tetmesh.h"
 
-// IGL includes 
+// IGL includes
 #include "../../matrix_to_list.h"
 #include "../../list_to_matrix.h"
 #include "../../boundary_facets.h"
@@ -19,11 +19,11 @@
 #include <iostream>
 
 IGL_INLINE int igl::copyleft::tetgen::tetrahedralize(
-  const std::vector<std::vector<REAL > > & V, 
-  const std::vector<std::vector<int> > & F, 
+  const std::vector<std::vector<REAL > > & V,
+  const std::vector<std::vector<int> > & F,
   const std::string switches,
-  std::vector<std::vector<REAL > > & TV, 
-  std::vector<std::vector<int > > & TT, 
+  std::vector<std::vector<REAL > > & TV,
+  std::vector<std::vector<int > > & TT,
   std::vector<std::vector<int> > & TF)
 {
   using namespace std;
@@ -60,10 +60,10 @@ IGL_INLINE int igl::copyleft::tetgen::tetrahedralize(
 }
 
 template <
-  typename DerivedV, 
-  typename DerivedF, 
-  typename DerivedTV, 
-  typename DerivedTT, 
+  typename DerivedV,
+  typename DerivedF,
+  typename DerivedTV,
+  typename DerivedTT,
   typename DerivedTF>
 IGL_INLINE int igl::copyleft::tetgen::tetrahedralize(
   const Eigen::PlainObjectBase<DerivedV>& V,
@@ -101,12 +101,12 @@ IGL_INLINE int igl::copyleft::tetgen::tetrahedralize(
 }
 
 template <
-  typename DerivedV, 
-  typename DerivedF, 
-  typename DerivedVM, 
-  typename DerivedFM, 
-  typename DerivedTV, 
-  typename DerivedTT, 
+  typename DerivedV,
+  typename DerivedF,
+  typename DerivedVM,
+  typename DerivedFM,
+  typename DerivedTV,
+  typename DerivedTT,
   typename DerivedTF,
   typename DerivedTM>
 IGL_INLINE int igl::copyleft::tetgen::tetrahedralize(
@@ -124,7 +124,7 @@ IGL_INLINE int igl::copyleft::tetgen::tetrahedralize(
   vector<vector<REAL> > vV,vTV;
   vector<vector<int> > vF,vTT,vTF;
   vector<int> vTM;
-	
+
   matrix_to_list(V,vV);
   matrix_to_list(F,vF);
 	vector<int> vVM = matrix_to_list(VM);
@@ -156,13 +156,13 @@ IGL_INLINE int igl::copyleft::tetgen::tetrahedralize(
   return e;
 }
 IGL_INLINE int igl::copyleft::tetgen::tetrahedralize(
-  const std::vector<std::vector<REAL > > & V, 
-  const std::vector<std::vector<int> > & F, 
-  const std::vector<int> & VM, 
+  const std::vector<std::vector<REAL > > & V,
+  const std::vector<std::vector<int> > & F,
+  const std::vector<int> & VM,
 	const std::vector<int> & FM,
   const std::string switches,
-  std::vector<std::vector<REAL > > & TV, 
-  std::vector<std::vector<int > > & TT, 
+  std::vector<std::vector<REAL > > & TV,
+  std::vector<std::vector<int > > & TT,
   std::vector<std::vector<int> > & TF,
   std::vector<int> & TM)
 {

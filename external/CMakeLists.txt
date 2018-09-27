@@ -54,38 +54,7 @@ if(WIN32)
     UPDATE_COMMAND ""
     PATCH_COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_LIST_DIR}/os.jam" "tools/build/src/util/os.jam"
     CONFIGURE_COMMAND ${BOOST_BOOTSTRAP_COMMAND} --prefix=${BOOST_DIR}/lib
-    BUILD_COMMAND ${BOOST_B2_COMMAND} install -j8 -d0 --prefix=${BOOST_DIR} --with-filesystem --with-system --with-thread --with-serialization --with-date_time address-model=${BOOST_ADDRESS_MODEL} link=static runtime-link=shared ${BOOST_TOOLSET}
+    BUILD_COMMAND ${BOOST_B2_COMMAND} install -j8 -d0 --prefix=${BOOST_DIR} --with-filesystem --with-system --with-thread --with-serialization --with-date_time address-model=${BOOST_ADDRESS_MODEL} link=static runtime-link=static ${BOOST_TOOLSET}
     INSTALL_COMMAND ""
   )
-  set(CGAL_DEPENDS Boost_Project)
 endif()
-
-# CGAL
-set(CGAL_DIR "${CMAKE_CURRENT_LIST_DIR}/cgal")
-ExternalProject_Add(CGAL_Project
-  DEPENDS ${CGAL_DEPENDS}
-
-  PREFIX "${CGAL_DIR}"
-
-  URL "https://github.com/CGAL/cgal/releases/download/releases%2FCGAL-4.11/CGAL-4.11.zip"
-  URL_MD5 320d70f7fd2a98537d20e21eeaea5a25
-
-  UPDATE_COMMAND ""
-  PATCH_COMMAND ""
-
-  CMAKE_ARGS
-    -DCMAKE_PREFIX_PATH=${CGAL_DIR}/auxiliary/gmp
-    "-DBOOST_ROOT=${BOOST_DIR}"
-    -DBUILD_SHARED_LIBS=OFF
-    "-DCMAKE_INSTALL_PREFIX=${CGAL_DIR}/"
-    -DCMAKE_INSTALL_LIBDIR=lib
-
-  TEST_COMMAND ""
-)
-
-ExternalProject_Add_Step(
-  CGAL_Project download_auxiliary
-  COMMAND ${CMAKE_COMMAND} -DCGAL_DIR=${CGAL_DIR} -P ${CMAKE_CURRENT_LIST_DIR}/download.cmake
-  DEPENDEES download
-  DEPENDERS configure
-)

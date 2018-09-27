@@ -14,8 +14,7 @@
 namespace igl
 {
   // Constructs a list of unique edges represented in a given mesh (V,F)
-  // Templates:
-  //   T  should be a eigen sparse matrix primitive type like int or double
+  //
   // Inputs:
   //   F  #F by 3 list of mesh faces (must be triangles)
   //   or
