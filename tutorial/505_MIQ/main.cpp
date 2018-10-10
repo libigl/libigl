@@ -240,7 +240,6 @@ int main(int argc, char *argv[])
   double iter = 0;
   double stiffness = 5.0;
   bool direct_round = 0;
-  std::string filename = "/Users/daniele/x.dat";
 
   // Compute face barycenters
   igl::barycenter(V, F, B);
