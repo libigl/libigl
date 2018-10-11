@@ -6,7 +6,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "orientable_patches.h"
-#include "components.h"
+#include "vertex_components.h"
 #include "sort.h"
 #include "unique_rows.h"
 #include <vector>
@@ -82,10 +82,10 @@ IGL_INLINE void igl::orientable_patches(
     }
   }
   //% Connected components are patches
-  //%C = components(A); % alternative to graphconncomp from matlab_bgl
+  //%C = vertex_components(A); % alternative to graphconncomp from matlab_bgl
   //[~,C] = graphconncomp(A);
   // graph connected components 
-  components(A,C);
+  vertex_components(A,C);
 
 }
 
