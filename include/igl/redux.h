@@ -34,7 +34,6 @@ namespace igl
 
 // Implementation
 
-#include "redux.h"
 #include "for_each.h"
 
 template <typename AType, typename Func, typename DerivedB>
