@@ -12,7 +12,8 @@
 // compatible format The class includes a shader and the opengl calls to plot
 // the data
 
-#include <igl/igl_inline.h>
+#include "../igl_inline.h"
+#include "gl.h"
 #include <Eigen/Core>
 
 namespace igl
@@ -62,9 +63,11 @@ public:
 
   GLuint vbo_lines_F;         // Indices of the line overlay
   GLuint vbo_lines_V;         // Vertices of the line overlay
+  GLuint vbo_lines_V_radius;  // Radius values of the line overlay
   GLuint vbo_lines_V_colors;  // Color values of the line overlay
   GLuint vbo_points_F;        // Indices of the point overlay
   GLuint vbo_points_V;        // Vertices of the point overlay
+  GLuint vbo_points_V_radius; // Radius values of the point overlay
   GLuint vbo_points_V_colors; // Color values of the point overlay
 
   // Temporary copy of the content of each VBO
@@ -76,8 +79,10 @@ public:
   RowMatrixXf V_specular_vbo;
   RowMatrixXf V_uv_vbo;
   RowMatrixXf lines_V_vbo;
+  RowMatrixXf lines_V_radius_vbo;
   RowMatrixXf lines_V_colors_vbo;
   RowMatrixXf points_V_vbo;
+  RowMatrixXf points_V_radius_vbo;
   RowMatrixXf points_V_colors_vbo;
 
   int tex_u;

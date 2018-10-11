@@ -1,10 +1,13 @@
 #include <igl/readOFF.h>
 #include <igl/opengl/glfw/Viewer.h>
+#include <igl/bounding_box_diagonal.h>
+#include <igl/avg_edge_length.h>
+#include <igl/read_triangle_mesh.h>
 #include <iostream>
 #include "tutorial_shared_path.h"
 
-Eigen::MatrixXd V1,V2;
-Eigen::MatrixXi F1,F2;
+Eigen::MatrixXd V;
+Eigen::MatrixXi F;
 
 // This function is called every time a keyboard button is pressed
 bool key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier)
@@ -14,17 +17,22 @@ bool key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier
   {
     // Clear should be called before drawing the mesh
     viewer.data().clear();
-    // Draw_mesh creates or updates the vertices and faces of the displayed mesh.
-    // If a mesh is already displayed, draw_mesh returns an error if the given V and
-    // F have size different than the current ones
-    viewer.data().set_mesh(V1, F1);
-    viewer.core.align_camera_center(V1,F1);
+    viewer.data().set_mesh(V, F);
+    viewer.core.align_camera_center(V,F);
+    viewer.core.radius_in_screen_space = false;
+    Eigen::VectorXd radius(V.rows());
+    radius.setConstant(igl::avg_edge_length(V, F) / 4.0 * viewer.core.camera_base_zoom);
+    viewer.data().set_points(V, Eigen::RowVector3d(1, 0, 0), radius);
   }
   else if (key == '2')
   {
     viewer.data().clear();
-    viewer.data().set_mesh(V2, F2);
-    viewer.core.align_camera_center(V2,F2);
+    viewer.data().set_mesh(V, F);
+    viewer.core.align_camera_center(V,F);
+    viewer.core.radius_in_screen_space = true;
+    Eigen::VectorXd radius(V.rows());
+    radius.setConstant(0.05 * viewer.core.camera_base_zoom);
+    viewer.data().set_points(V, Eigen::RowVector3d(1, 0, 0), radius);
   }
 
   return false;
@@ -34,17 +42,10 @@ bool key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier
 int main(int argc, char *argv[])
 {
   // Load two meshes
-  igl::readOFF(TUTORIAL_SHARED_PATH "/bumpy.off", V1, F1);
-  igl::readOFF(TUTORIAL_SHARED_PATH "/fertility.off", V2, F2);
-  std::cout<<R"(
-1 Switch to bump mesh
-2 Switch to fertility mesh
-    )";
-
+  igl::read_triangle_mesh(TUTORIAL_SHARED_PATH "/bumpy.off", V, F);
   igl::opengl::glfw::Viewer viewer;
-  // Register a keyboard callback that allows to switch between
-  // the two loaded meshes
+  // Register a keyboard callback that allows to switch
   viewer.callback_key_down = &key_down;
-  viewer.data().set_mesh(V1, F1);
+  viewer.data().set_mesh(V, F);
   viewer.launch();
 }

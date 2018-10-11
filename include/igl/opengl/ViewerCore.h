@@ -8,10 +8,10 @@
 #ifndef IGL_OPENGL_VIEWERCORE_H
 #define IGL_OPENGL_VIEWERCORE_H
 
+#include "../igl_inline.h"
+#include "gl.h"
 #include <igl/opengl/MeshGL.h>
 #include <igl/opengl/ViewerData.h>
-
-#include <igl/igl_inline.h>
 #include <Eigen/Geometry>
 #include <Eigen/Core>
 
@@ -98,6 +98,7 @@ public:
 
   // Lighting
   Eigen::Vector3f light_position;
+  Eigen::Vector3f light_vector;
   float lighting_factor;
 
   RotationType rotation_type;
@@ -107,6 +108,7 @@ public:
   float camera_base_zoom;
   float camera_zoom;
   bool orthographic;
+  bool radius_in_screen_space;
   Eigen::Vector3f camera_base_translation;
   Eigen::Vector3f camera_translation;
   Eigen::Vector3f camera_eye;

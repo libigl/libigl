@@ -120,7 +120,7 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
   // Initialize uniform
   glViewport(viewport(0), viewport(1), viewport(2), viewport(3));
 
-  if(update_matrices)
+  if (update_matrices)
   {
     view = Eigen::Matrix4f::Identity();
     proj = Eigen::Matrix4f::Identity();
@@ -130,7 +130,8 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
     float height = viewport(3);
 
     // Set view
-    look_at( camera_eye, camera_center, camera_up, view);
+    look_at(camera_eye, camera_center, camera_up, view);
+    Eigen::Vector3f camera_center_eye = (view * camera_center.homogeneous()).colwise().hnormalized();
     view = view
       * (trackball_angle * Eigen::Scaling(camera_zoom * camera_base_zoom)
       * Eigen::Translation3f(camera_translation + camera_base_translation)).matrix();
@@ -142,13 +143,15 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
     {
       float length = (camera_eye - camera_center).norm();
       float h = tan(camera_view_angle/360.0 * igl::PI) * (length);
-      ortho(-h*width/height, h*width/height, -h, h, camera_dnear, camera_dfar,proj);
+      ortho(-h*width/height, h*width/height, -h, h, camera_dnear, camera_dfar, proj);
+      light_vector = (camera_center_eye - light_position).normalized(); // light direction
     }
     else
     {
       float fH = tan(camera_view_angle / 360.0 * igl::PI) * camera_dnear;
       float fW = fH * (double)width/(double)height;
       frustum(-fW, fW, -fH, fH, camera_dnear, camera_dfar,proj);
+      light_vector = light_position;
     }
   }
 
@@ -161,16 +164,18 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
   glUniformMatrix4fv(normi, 1, GL_FALSE, norm.data());
 
   // Light parameters
-  GLint specular_exponenti    = glGetUniformLocation(data.meshgl.shader_mesh,"specular_exponent");
-  GLint light_position_eyei = glGetUniformLocation(data.meshgl.shader_mesh,"light_position_eye");
-  GLint lighting_factori      = glGetUniformLocation(data.meshgl.shader_mesh,"lighting_factor");
-  GLint fixed_colori          = glGetUniformLocation(data.meshgl.shader_mesh,"fixed_color");
-  GLint texture_factori       = glGetUniformLocation(data.meshgl.shader_mesh,"texture_factor");
+  GLint specular_exponenti = glGetUniformLocation(data.meshgl.shader_mesh,"specular_exponent");
+  GLint light_vector_eyei  = glGetUniformLocation(data.meshgl.shader_mesh,"light_vector_eye");
+  GLint lighting_factori   = glGetUniformLocation(data.meshgl.shader_mesh,"lighting_factor");
+  GLint fixed_colori       = glGetUniformLocation(data.meshgl.shader_mesh,"fixed_color");
+  GLint texture_factori    = glGetUniformLocation(data.meshgl.shader_mesh,"texture_factor");
+  GLint orthographici      = glGetUniformLocation(data.meshgl.shader_mesh,"orthographic");
 
   glUniform1f(specular_exponenti, data.shininess);
-  glUniform3fv(light_position_eyei, 1, light_position.data());
+  glUniform3fv(light_vector_eyei, 1, light_vector.data());
   glUniform1f(lighting_factori, lighting_factor); // enables lighting
   glUniform4f(fixed_colori, 0.0, 0.0, 0.0, 0.0);
+  glUniform1i(orthographici, orthographic);
 
   if (data.V.rows()>0)
   {
@@ -206,14 +211,26 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
     if (data.lines.rows() > 0)
     {
       data.meshgl.bind_overlay_lines();
-      viewi  = glGetUniformLocation(data.meshgl.shader_overlay_lines,"view");
-      proji  = glGetUniformLocation(data.meshgl.shader_overlay_lines,"proj");
 
+      viewi               = glGetUniformLocation(data.meshgl.shader_overlay_lines,"view");
+      proji               = glGetUniformLocation(data.meshgl.shader_overlay_lines,"proj");
+      specular_exponenti  = glGetUniformLocation(data.meshgl.shader_overlay_lines,"specular_exponent");
+      light_vector_eyei   = glGetUniformLocation(data.meshgl.shader_overlay_lines,"light_vector_eye");
+      lighting_factori    = glGetUniformLocation(data.meshgl.shader_overlay_lines,"lighting_factor");
+      fixed_colori        = glGetUniformLocation(data.meshgl.shader_overlay_lines,"fixed_color");
+      orthographici       = glGetUniformLocation(data.meshgl.shader_overlay_lines,"orthographic");
+      GLint scaling_factori = glGetUniformLocation(data.meshgl.shader_overlay_lines,"scaling_factor");
+
+      // float scaling = (radius_in_screen_space ? 1.0f : view.topLeftCorner<1, 3>().norm()) / camera_base_zoom;
+      float scaling = (radius_in_screen_space ? 1.0f : camera_base_zoom * camera_zoom) / camera_base_zoom;
       glUniformMatrix4fv(viewi, 1, GL_FALSE, view.data());
       glUniformMatrix4fv(proji, 1, GL_FALSE, proj.data());
-      // This must be enabled, otherwise glLineWidth has no effect
-      glEnable(GL_LINE_SMOOTH);
-      glLineWidth(data.line_width);
+      glUniform1f(specular_exponenti, data.shininess);
+      glUniform3fv(light_vector_eyei, 1, light_vector.data());
+      glUniform1f(lighting_factori, lighting_factor); // enables lighting
+      glUniform4f(fixed_colori, 0.0, 0.0, 0.0, 0.0);
+      glUniform1i(orthographici, orthographic);
+      glUniform1f(scaling_factori, scaling);
 
       data.meshgl.draw_overlay_lines();
     }
@@ -221,12 +238,26 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
     if (data.points.rows() > 0)
     {
       data.meshgl.bind_overlay_points();
-      viewi  = glGetUniformLocation(data.meshgl.shader_overlay_points,"view");
-      proji  = glGetUniformLocation(data.meshgl.shader_overlay_points,"proj");
 
+      viewi               = glGetUniformLocation(data.meshgl.shader_overlay_points,"view");
+      proji               = glGetUniformLocation(data.meshgl.shader_overlay_points,"proj");
+      specular_exponenti  = glGetUniformLocation(data.meshgl.shader_overlay_points,"specular_exponent");
+      light_vector_eyei   = glGetUniformLocation(data.meshgl.shader_overlay_points,"light_vector_eye");
+      lighting_factori    = glGetUniformLocation(data.meshgl.shader_overlay_points,"lighting_factor");
+      fixed_colori        = glGetUniformLocation(data.meshgl.shader_overlay_points,"fixed_color");
+      orthographici       = glGetUniformLocation(data.meshgl.shader_overlay_points,"orthographic");
+      GLint scaling_factori = glGetUniformLocation(data.meshgl.shader_overlay_points,"scaling_factor");
+
+      // float scaling = (radius_in_screen_space ? 1.0f : view.topLeftCorner<1, 3>().norm()) / camera_base_zoom;
+      float scaling = (radius_in_screen_space ? 1.0f : camera_base_zoom * camera_zoom) / camera_base_zoom;
       glUniformMatrix4fv(viewi, 1, GL_FALSE, view.data());
       glUniformMatrix4fv(proji, 1, GL_FALSE, proj.data());
-      glPointSize(data.point_size);
+      glUniform1f(specular_exponenti, data.shininess);
+      glUniform3fv(light_vector_eyei, 1, light_vector.data());
+      glUniform1f(lighting_factori, lighting_factor); // enables lighting
+      glUniform4f(fixed_colori, 0.0, 0.0, 0.0, 0.0);
+      glUniform1i(orthographici, orthographic);
+      glUniform1f(scaling_factori, scaling);
 
       data.meshgl.draw_overlay_points();
     }
@@ -355,6 +386,7 @@ IGL_INLINE igl::opengl::ViewerCore::ViewerCore()
 
   // Default lights settings
   light_position << 0.0f, 0.3f, 0.0f;
+  light_vector = light_position;
   lighting_factor = 1.0f; //on
 
   // Default trackball
@@ -365,6 +397,7 @@ IGL_INLINE igl::opengl::ViewerCore::ViewerCore()
   camera_base_zoom = 1.0f;
   camera_zoom = 1.0f;
   orthographic = false;
+  radius_in_screen_space = true;
   camera_view_angle = 45.0;
   camera_dnear = 1.0;
   camera_dfar = 100.0;
