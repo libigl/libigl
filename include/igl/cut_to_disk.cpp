@@ -1,4 +1,4 @@
-#include <igl/cut_to_disk.h>
+#include "cut_to_disk.h"
 
 #include <map>
 #include <set>
