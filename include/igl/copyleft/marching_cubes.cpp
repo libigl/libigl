@@ -33,44 +33,45 @@ extern const int edgeTable[256];
 extern const int triTable[256][2][17];
 extern const int polyTable[8][16];
 
-struct EdgeKey
-{
-  EdgeKey(unsigned i0, unsigned i1) : i0_(i0), i1_(i1) {}
 
-  bool operator==(const EdgeKey& _rhs) const
-  {
-    return i0_ == _rhs.i0_ && i1_ == _rhs.i1_;
-  }
-
-  unsigned i0_, i1_;
-};
-
-struct EdgeHash
-{
-    std::size_t operator()(const EdgeKey& key) const {
-        std::size_t seed = 0;
-        seed ^= key.i0_ + 0x9e3779b9 + (seed<<6) + (seed>>2); // Copied from boost::hash_combine
-        seed ^= key.i1_ + 0x9e3779b9 + (seed<<6) + (seed>>2);
-        return std::hash<std::size_t>()(seed);
-    }
-};
-
-
-template <typename Derivedvalues, typename Derivedpoints,typename Derivedvertices, typename DerivedF>
+template <typename DerivedValues, typename DerivedPoints, typename DerivedVertices, typename DerivedIndices, typename DerivedFaces>
 class MarchingCubes
 {
+  struct EdgeKey
+  {
+    EdgeKey(unsigned i0, unsigned i1) : i0_(i0), i1_(i1) {}
+
+    bool operator==(const EdgeKey& _rhs) const
+    {
+      return i0_ == _rhs.i0_ && i1_ == _rhs.i1_;
+    }
+
+    unsigned i0_, i1_;
+  };
+
+  struct EdgeHash
+  {
+    std::size_t operator()(const EdgeKey& key) const {
+      std::size_t seed = 0;
+      seed ^= key.i0_ + 0x9e3779b9 + (seed<<6) + (seed>>2); // Copied from boost::hash_combine
+      seed ^= key.i1_ + 0x9e3779b9 + (seed<<6) + (seed>>2);
+      return std::hash<std::size_t>()(seed);
+    }
+  };
+
   typedef std::unordered_map<EdgeKey, unsigned, EdgeHash> MyMap;
   typedef typename MyMap::const_iterator                  MyMapIterator;
 
 public:
-  MarchingCubes(
-                const Eigen::PlainObjectBase<Derivedvalues> &values,
-                const Eigen::PlainObjectBase<Derivedpoints> &points,
+  // Dense index grid version
+  MarchingCubes(const Eigen::MatrixBase<DerivedValues> &values,
+                const Eigen::MatrixBase<DerivedPoints> &points,
                 const unsigned x_res,
                 const unsigned y_res,
                 const unsigned z_res,
-                Eigen::PlainObjectBase<Derivedvertices> &vertices,
-                Eigen::PlainObjectBase<DerivedF> &faces)
+                const double isovalue,
+                Eigen::PlainObjectBase<DerivedVertices> &vertices,
+                Eigen::PlainObjectBase<DerivedFaces> &faces)
   {
     assert(values.cols() == 1);
     assert(points.cols() == 3);
@@ -101,7 +102,7 @@ public:
     {
 
       unsigned         corner[8];
-      typename DerivedF::Scalar samples[12];
+      typename DerivedFaces::Scalar samples[12];
       unsigned char    cubetype(0);
       unsigned int     i;
 
@@ -126,7 +127,7 @@ public:
 
       // determine cube type
       for (i=0; i<8; ++i)
-        if (values(corner[i]) > 0.0)
+        if (values(corner[i]) > isovalue)
           cubetype |= (1<<i);
 
 
@@ -182,77 +183,220 @@ public:
     vertices.conservativeResize(num_vertices, Eigen::NoChange);
     faces.conservativeResize(num_faces, Eigen::NoChange);
 
-  };
+  }
 
-  static typename DerivedF::Scalar  add_vertex(const Eigen::PlainObjectBase<Derivedvalues> &values,
-                                               const Eigen::PlainObjectBase<Derivedpoints> &points,
-                                               unsigned int i0,
-                                               unsigned int i1,
-                                               Eigen::PlainObjectBase<Derivedvertices> &vertices,
-                                               int &num_vertices,
-                                               MyMap &edge2vertex)
+  // Sparse index grid version
+  MarchingCubes(const Eigen::MatrixBase<DerivedValues> &values,
+                const Eigen::MatrixBase<DerivedPoints> &points,
+                const Eigen::MatrixBase<DerivedIndices> &cubes,
+                const double isovalue,
+                Eigen::PlainObjectBase<DerivedVertices> &vertices,
+                Eigen::PlainObjectBase<DerivedFaces> &faces)
+  {
+    assert(values.cols() == 1);
+    assert(points.cols() == 3);
+    assert(cubes.cols() == 8);
+
+    if(cubes.rows() == 0)
+    {
+      return;
+    }
+
+    faces.resize(10000,3);
+    int num_faces = 0;
+
+    vertices.resize(10000,3);
+    int num_vertices = 0;
+
+
+    unsigned n_cubes  = cubes.rows();
+
+    for (unsigned cube_it =0 ; cube_it < n_cubes; ++cube_it)
+    {
+      typedef Eigen::Matrix<typename DerivedIndices::Scalar, 1, 8> CubeIndexVector;
+      typedef typename DerivedFaces::Scalar SampleScalar;
+
+      CubeIndexVector  cube = cubes.row(cube_it);
+      SampleScalar     samples[12];
+      unsigned char    cubetype(0);
+
+      // determine cube type
+      for (int i=0; i<8; ++i)
+      {
+        if (values[cube[i]] > isovalue)
+        {
+          cubetype |= (1<<i);
+        }
+      }
+
+
+      // trivial reject ?
+      if (cubetype == 0 || cubetype == 255)
+      {
+        continue;
+      }
+
+      // compute samples on cube's edges
+      if (edgeTable[cubetype]&1)
+        samples[0]  = add_vertex(values, points, cube[0], cube[1], vertices, num_vertices, edge2vertex);
+      if (edgeTable[cubetype]&2)
+        samples[1]  = add_vertex(values, points, cube[1], cube[2], vertices, num_vertices, edge2vertex);
+      if (edgeTable[cubetype]&4)
+        samples[2]  = add_vertex(values, points, cube[3], cube[2], vertices, num_vertices, edge2vertex);
+      if (edgeTable[cubetype]&8)
+        samples[3]  = add_vertex(values, points, cube[0], cube[3], vertices, num_vertices, edge2vertex);
+      if (edgeTable[cubetype]&16)
+        samples[4]  = add_vertex(values, points, cube[4], cube[5], vertices, num_vertices, edge2vertex);
+      if (edgeTable[cubetype]&32)
+        samples[5]  = add_vertex(values, points, cube[5], cube[6], vertices, num_vertices, edge2vertex);
+      if (edgeTable[cubetype]&64)
+        samples[6]  = add_vertex(values, points, cube[7], cube[6], vertices, num_vertices, edge2vertex);
+      if (edgeTable[cubetype]&128)
+        samples[7]  = add_vertex(values, points, cube[4], cube[7], vertices, num_vertices, edge2vertex);
+      if (edgeTable[cubetype]&256)
+        samples[8]  = add_vertex(values, points, cube[0], cube[4], vertices, num_vertices, edge2vertex);
+      if (edgeTable[cubetype]&512)
+        samples[9]  = add_vertex(values, points, cube[1], cube[5], vertices, num_vertices, edge2vertex);
+      if (edgeTable[cubetype]&1024)
+        samples[10] = add_vertex(values, points, cube[2], cube[6], vertices, num_vertices, edge2vertex);
+      if (edgeTable[cubetype]&2048)
+        samples[11] = add_vertex(values, points, cube[3], cube[7], vertices, num_vertices, edge2vertex);
+
+      // connect samples by triangles
+      for (int i=0; triTable[cubetype][0][i] != -1; i+=3 )
+      {
+        num_faces++;
+        if (num_faces > faces.rows())
+        {
+          faces.conservativeResize(faces.rows()+10000, Eigen::NoChange);
+        }
+        faces.row(num_faces-1) <<
+        samples[triTable[cubetype][0][i  ]],
+        samples[triTable[cubetype][0][i+1]],
+        samples[triTable[cubetype][0][i+2]];
+
+      }
+
+    }
+
+    vertices.conservativeResize(num_vertices, Eigen::NoChange);
+    faces.conservativeResize(num_faces, Eigen::NoChange);
+
+  }
+
+  static typename DerivedFaces::Scalar add_vertex(const Eigen::MatrixBase<DerivedValues> &values,
+                                                  const Eigen::MatrixBase<DerivedPoints> &points,
+                                                  unsigned int i0,
+                                                  unsigned int i1,
+                                                  Eigen::PlainObjectBase<DerivedVertices> &vertices,
+                                                  int &num_vertices,
+                                                  MyMap &edge2vertex)
   {
     // find vertex if it has been computed already
     MyMapIterator it = edge2vertex.find(EdgeKey(i0, i1));
     if (it != edge2vertex.end())
+    {
       return it->second;
-    ;
+    }
 
     // generate new vertex
-    const Eigen::Matrix<typename Derivedpoints::Scalar, 1, 3> & p0 = points.row(i0);
-    const Eigen::Matrix<typename Derivedpoints::Scalar, 1, 3> & p1 = points.row(i1);
+    const Eigen::Matrix<typename DerivedPoints::Scalar, 1, 3> & p0 = points.row(i0);
+    const Eigen::Matrix<typename DerivedPoints::Scalar, 1, 3> & p1 = points.row(i1);
 
-    typename Derivedvalues::Scalar s0 = fabs(values(i0));
-    typename Derivedvalues::Scalar s1 = fabs(values(i1));
-    typename Derivedvalues::Scalar t  = s0 / (s0+s1);
-
+    typename DerivedValues::Scalar s0 = fabs(values[i0]);
+    typename DerivedValues::Scalar s1 = fabs(values[i1]);
+    typename DerivedValues::Scalar t  = s0 / (s0+s1);
 
     num_vertices++;
     if (num_vertices > vertices.rows())
+    {
       vertices.conservativeResize(vertices.rows()+10000, Eigen::NoChange);
+    }
 
     // Linear interpolation based on linearly interpolating values
-    vertices.row(num_vertices-1)  = ((1.0f-t)*p0 + t*p1).template cast<typename Derivedvertices::Scalar>();
+    vertices.row(num_vertices-1)  = ((1.0f-t)*p0 + t*p1).template cast<typename DerivedVertices::Scalar>();
     edge2vertex[EdgeKey(i0, i1)] = num_vertices-1;
 
     return num_vertices-1;
   }
-  ;
 
   // maps an edge to the sample vertex generated on it
   MyMap  edge2vertex;
 };
 
 
-template <typename Derivedvalues, typename Derivedpoints, typename Derivedvertices, typename DerivedF>
+template <typename DerivedValues, typename DerivedPoints, typename DerivedVertices, typename DerivedFaces>
 IGL_INLINE void igl::copyleft::marching_cubes(
-  const Eigen::PlainObjectBase<Derivedvalues> &values,
-  const Eigen::PlainObjectBase<Derivedpoints> &points,
+  const Eigen::MatrixBase<DerivedValues> &values,
+  const Eigen::MatrixBase<DerivedPoints> &points,
   const unsigned x_res,
   const unsigned y_res,
   const unsigned z_res,
-  Eigen::PlainObjectBase<Derivedvertices> &vertices,
-  Eigen::PlainObjectBase<DerivedF> &faces)
+  const double isovalue,
+  Eigen::PlainObjectBase<DerivedVertices> &vertices,
+  Eigen::PlainObjectBase<DerivedFaces> &faces)
 {
-  MarchingCubes<Derivedvalues, Derivedpoints, Derivedvertices, DerivedF> mc(values,
-                                       points,
-                                       x_res,
-                                       y_res,
-                                       z_res,
-                                       vertices,
-                                       faces);
+  typedef Eigen::MatrixXi Shim; /* DerivedIndices shim type is unused in this instantiation*/
+  MarchingCubes<DerivedValues, DerivedPoints, DerivedVertices, Shim, DerivedFaces>
+          mc(values, points, x_res, y_res, z_res, isovalue, vertices, faces);
 }
+
+template <typename DerivedValues, typename DerivedPoints, typename DerivedVertices, typename DerivedFaces>
+IGL_INLINE void igl::copyleft::marching_cubes(
+  const Eigen::MatrixBase<DerivedValues> &values,
+  const Eigen::MatrixBase<DerivedPoints> &points,
+  const unsigned x_res,
+  const unsigned y_res,
+  const unsigned z_res,
+  Eigen::PlainObjectBase<DerivedVertices> &vertices,
+  Eigen::PlainObjectBase<DerivedFaces> &faces)
+{
+  typedef Eigen::MatrixXi Shim; /* DerivedIndices shim type is unused in this instantiation*/
+  MarchingCubes<DerivedValues, DerivedPoints, DerivedVertices, Shim, DerivedFaces>
+          mc(values, points, x_res, y_res, z_res, 0.0 /*isovalue*/, vertices, faces);
+}
+
+template <typename DerivedValues, typename DerivedPoints, typename DerivedVertices, typename DerivedIndices, typename DerivedFaces>
+IGL_INLINE void igl::copyleft::marching_cubes(
+  const Eigen::MatrixBase<DerivedValues>& values,
+  const Eigen::MatrixBase<DerivedPoints>& points,
+  const Eigen::MatrixBase<DerivedIndices>& indices,
+  const double isovalue,
+  Eigen::PlainObjectBase<DerivedVertices>& vertices,
+  Eigen::PlainObjectBase<DerivedFaces> &faces)
+{
+  MarchingCubes<DerivedValues, DerivedPoints, DerivedVertices, DerivedIndices, DerivedFaces> mc(values, points, indices, isovalue, vertices, faces);
+}
+
+template <typename DerivedValues, typename DerivedPoints, typename DerivedVertices, typename DerivedIndices, typename DerivedFaces>
+IGL_INLINE void igl::copyleft::marching_cubes(
+  const Eigen::MatrixBase<DerivedValues> &values,
+  const Eigen::MatrixBase<DerivedPoints> &points,
+  const Eigen::MatrixBase<DerivedIndices> & indices,
+  Eigen::PlainObjectBase<DerivedVertices> &vertices,
+  Eigen::PlainObjectBase<DerivedFaces> &faces)
+{
+  MarchingCubes<DerivedValues, DerivedPoints, DerivedVertices, DerivedIndices, DerivedFaces> mc(values, points, indices, 0.0 /*isovalue*/, vertices, faces);
+}
+
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instantiation
+
 // generated by autoexplicit.sh
-template void igl::copyleft::marching_cubes<Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, 3, 1, -1, 3>, Eigen::Matrix<int, -1, 3, 1, -1, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, unsigned int, unsigned int, unsigned int, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 1, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 1, -1, 3> >&);
+template void igl::copyleft::marching_cubes<Eigen::Matrix<float, -1, 1, 0, -1, 1>, Eigen::Matrix<float, -1, 3, 0, -1, 3>, Eigen::Matrix<float, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3> >(Eigen::MatrixBase<Eigen::Matrix<float, -1, 1, 0, -1, 1> > const&, Eigen::MatrixBase<Eigen::Matrix<float, -1, 3, 0, -1, 3> > const&, unsigned int, unsigned int, unsigned int, Eigen::PlainObjectBase<Eigen::Matrix<float, -1, 3, 0, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> >&);
 // generated by autoexplicit.sh
-template void igl::copyleft::marching_cubes<Eigen::Matrix<float, -1, 1, 0, -1, 1>, Eigen::Matrix<float, -1, 3, 0, -1, 3>, Eigen::Matrix<float, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<float, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<float, -1, 3, 0, -1, 3> > const&, unsigned int, unsigned int, unsigned int, Eigen::PlainObjectBase<Eigen::Matrix<float, -1, 3, 0, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> >&);
+template void igl::copyleft::marching_cubes<Eigen::Matrix<float, -1, 1, 0, -1, 1>, Eigen::Matrix<float, -1, 3, 1, -1, 3>, Eigen::Matrix<float, -1, 3, 1, -1, 3>, Eigen::Matrix<int, -1, 3, 1, -1, 3> >(Eigen::MatrixBase<Eigen::Matrix<float, -1, 1, 0, -1, 1> > const&, Eigen::MatrixBase<Eigen::Matrix<float, -1, 3, 1, -1, 3> > const&, unsigned int, unsigned int, unsigned int, Eigen::PlainObjectBase<Eigen::Matrix<float, -1, 3, 1, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 1, -1, 3> >&);
 // generated by autoexplicit.sh
-template void igl::copyleft::marching_cubes<Eigen::Matrix<float, -1, 1, 0, -1, 1>, Eigen::Matrix<float, -1, 3, 1, -1, 3>, Eigen::Matrix<float, -1, 3, 1, -1, 3>, Eigen::Matrix<int, -1, 3, 1, -1, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<float, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<float, -1, 3, 1, -1, 3> > const&, unsigned int, unsigned int, unsigned int, Eigen::PlainObjectBase<Eigen::Matrix<float, -1, 3, 1, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 1, -1, 3> >&);
+template void igl::copyleft::marching_cubes<Eigen::Matrix<float, -1, 1, 0, -1, 1>, Eigen::Matrix<float, -1, -1, 0, -1, -1>, Eigen::Matrix<float, -1, 3, 1, -1, 3>, Eigen::Matrix<int, -1, 3, 1, -1, 3> >(Eigen::MatrixBase<Eigen::Matrix<float, -1, 1, 0, -1, 1> > const&, Eigen::MatrixBase<Eigen::Matrix<float, -1, -1, 0, -1, -1> > const&, unsigned int, unsigned int, unsigned int, Eigen::PlainObjectBase<Eigen::Matrix<float, -1, 3, 1, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 1, -1, 3> >&);
 // generated by autoexplicit.sh
-template void igl::copyleft::marching_cubes<Eigen::Matrix<float, -1, 1, 0, -1, 1>, Eigen::Matrix<float, -1, -1, 0, -1, -1>, Eigen::Matrix<float, -1, 3, 1, -1, 3>, Eigen::Matrix<int, -1, 3, 1, -1, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<float, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<float, -1, -1, 0, -1, -1> > const&, unsigned int, unsigned int, unsigned int, Eigen::PlainObjectBase<Eigen::Matrix<float, -1, 3, 1, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 1, -1, 3> >&);
-// generated by autoexplicit.sh
-template void igl::copyleft::marching_cubes<Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<float, -1, 3, 1, -1, 3>, Eigen::Matrix<int, -1, 3, 1, -1, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, unsigned int, unsigned int, unsigned int, Eigen::PlainObjectBase<Eigen::Matrix<float, -1, 3, 1, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 1, -1, 3> >&);
-template void igl::copyleft::marching_cubes< Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, unsigned int, unsigned int, unsigned int, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
+template void igl::copyleft::marching_cubes<Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<float, -1, 3, 1, -1, 3>, Eigen::Matrix<int, -1, 3, 1, -1, 3> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, unsigned int, unsigned int, unsigned int, Eigen::PlainObjectBase<Eigen::Matrix<float, -1, 3, 1, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 1, -1, 3> >&);
+template void igl::copyleft::marching_cubes<Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, unsigned int, unsigned int, unsigned int, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
+template void igl::copyleft::marching_cubes<Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(const Eigen::MatrixBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&, const Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, const Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
+template void igl::copyleft::marching_cubes<Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(const Eigen::MatrixBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&, const Eigen::MatrixBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> >&, const Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
+template void igl::copyleft::marching_cubes<Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(const Eigen::MatrixBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&, const Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, const Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
+template void igl::copyleft::marching_cubes<Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(const Eigen::MatrixBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&, const Eigen::MatrixBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> >&, const Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
+template void igl::copyleft::marching_cubes<Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 8, 0, -1, 8>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(const Eigen::MatrixBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&, const Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, const Eigen::MatrixBase<Eigen::Matrix<int, -1, 8, 0, -1, 8> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
+template void igl::copyleft::marching_cubes<Eigen::Matrix<double, -1, 1, 0, -1, 1>,Eigen::Matrix<double, -1, -1, 0, -1, -1>,Eigen::Matrix<double, -1, -1, 0, -1, -1>,Eigen::Matrix<int, -1, -1, 0, -1, -1>,Eigen::Matrix<int, -1, 3, 0, -1, 3> >(const Eigen::MatrixBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&,const Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&,const Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&,Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&,Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> >&);
+template void igl::copyleft::marching_cubes<Eigen::Matrix<double, -1, 1, 0, -1, 1>,Eigen::Matrix<double, -1, -1, 0, -1, -1>,Eigen::Matrix<double, -1, -1, 0, -1, -1>,Eigen::Matrix<int, -1, 8, 0, -1, 8>,Eigen::Matrix<int, -1, 3, 0, -1, 3> >(const Eigen::MatrixBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&,const Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&,const Eigen::MatrixBase<Eigen::Matrix<int, -1, 8, 0, -1, 8> >&,Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&,Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> >&);
+template void igl::copyleft::marching_cubes<Eigen::Matrix<double, -1, 1, 0, -1, 1>,Eigen::Matrix<double, -1, 3, 0, -1, 3>,Eigen::Matrix<double, -1, 3, 0, -1, 3>,Eigen::Matrix<int, -1, 8, 0, -1, 8>,Eigen::Matrix<int, -1, 3, 0, -1, 3> >(const Eigen::MatrixBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&,const Eigen::MatrixBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> >&,const Eigen::MatrixBase<Eigen::Matrix<int, -1, 8, 0, -1, 8> >&,Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> >&,Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> >&);
 #endif
