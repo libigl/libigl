@@ -63,11 +63,13 @@ class MarchingCubes
   typedef typename MyMap::const_iterator                  MyMapIterator;
 
 public:
+  // Dense index grid version
   MarchingCubes(const Eigen::MatrixBase<DerivedValues> &values,
                 const Eigen::MatrixBase<DerivedPoints> &points,
                 const unsigned x_res,
                 const unsigned y_res,
                 const unsigned z_res,
+                const double isovalue,
                 Eigen::PlainObjectBase<DerivedVertices> &vertices,
                 Eigen::PlainObjectBase<DerivedFaces> &faces)
   {
@@ -125,7 +127,7 @@ public:
 
       // determine cube type
       for (i=0; i<8; ++i)
-        if (values(corner[i]) > 0.0)
+        if (values(corner[i]) > isovalue)
           cubetype |= (1<<i);
 
 
@@ -183,10 +185,11 @@ public:
 
   }
 
-
+  // Sparse index grid version
   MarchingCubes(const Eigen::MatrixBase<DerivedValues> &values,
                 const Eigen::MatrixBase<DerivedPoints> &points,
                 const Eigen::MatrixBase<DerivedIndices> &cubes,
+                const double isovalue,
                 Eigen::PlainObjectBase<DerivedVertices> &vertices,
                 Eigen::PlainObjectBase<DerivedFaces> &faces)
   {
@@ -220,7 +223,7 @@ public:
       // determine cube type
       for (int i=0; i<8; ++i)
       {
-        if (values[cube[i]] > 0.0)
+        if (values[cube[i]] > isovalue)
         {
           cubetype |= (1<<i);
         }
@@ -259,8 +262,6 @@ public:
       if (edgeTable[cubetype]&2048)
         samples[11] = add_vertex(values, points, cube[3], cube[7], vertices, num_vertices, edge2vertex);
 
-
-
       // connect samples by triangles
       for (int i=0; triTable[cubetype][0][i] != -1; i+=3 )
       {
@@ -283,13 +284,13 @@ public:
 
   }
 
-  static typename DerivedFaces::Scalar  add_vertex(const Eigen::MatrixBase<DerivedValues> &values,
-                                               const Eigen::MatrixBase<DerivedPoints> &points,
-                                               unsigned int i0,
-                                               unsigned int i1,
-                                               Eigen::PlainObjectBase<DerivedVertices> &vertices,
-                                               int &num_vertices,
-                                               MyMap &edge2vertex)
+  static typename DerivedFaces::Scalar add_vertex(const Eigen::MatrixBase<DerivedValues> &values,
+                                                  const Eigen::MatrixBase<DerivedPoints> &points,
+                                                  unsigned int i0,
+                                                  unsigned int i1,
+                                                  Eigen::PlainObjectBase<DerivedVertices> &vertices,
+                                                  int &num_vertices,
+                                                  MyMap &edge2vertex)
   {
     // find vertex if it has been computed already
     MyMapIterator it = edge2vertex.find(EdgeKey(i0, i1));
@@ -331,12 +332,40 @@ IGL_INLINE void igl::copyleft::marching_cubes(
   const unsigned x_res,
   const unsigned y_res,
   const unsigned z_res,
+  const double isovalue,
   Eigen::PlainObjectBase<DerivedVertices> &vertices,
   Eigen::PlainObjectBase<DerivedFaces> &faces)
 {
   typedef Eigen::MatrixXi Shim; /* DerivedIndices shim type is unused in this instantiation*/
   MarchingCubes<DerivedValues, DerivedPoints, DerivedVertices, Shim, DerivedFaces>
-          mc(values, points, x_res, y_res, z_res, vertices, faces);
+          mc(values, points, x_res, y_res, z_res, isovalue, vertices, faces);
+}
+
+template <typename DerivedValues, typename DerivedPoints, typename DerivedVertices, typename DerivedFaces>
+IGL_INLINE void igl::copyleft::marching_cubes(
+  const Eigen::MatrixBase<DerivedValues> &values,
+  const Eigen::MatrixBase<DerivedPoints> &points,
+  const unsigned x_res,
+  const unsigned y_res,
+  const unsigned z_res,
+  Eigen::PlainObjectBase<DerivedVertices> &vertices,
+  Eigen::PlainObjectBase<DerivedFaces> &faces)
+{
+  typedef Eigen::MatrixXi Shim; /* DerivedIndices shim type is unused in this instantiation*/
+  MarchingCubes<DerivedValues, DerivedPoints, DerivedVertices, Shim, DerivedFaces>
+          mc(values, points, x_res, y_res, z_res, 0.0 /*isovalue*/, vertices, faces);
+}
+
+template <typename DerivedValues, typename DerivedPoints, typename DerivedVertices, typename DerivedIndices, typename DerivedFaces>
+IGL_INLINE void igl::copyleft::marching_cubes(
+  const Eigen::MatrixBase<DerivedValues>& values,
+  const Eigen::MatrixBase<DerivedPoints>& points,
+  const Eigen::MatrixBase<DerivedIndices>& indices,
+  const double isovalue,
+  Eigen::PlainObjectBase<DerivedVertices>& vertices,
+  Eigen::PlainObjectBase<DerivedFaces> &faces)
+{
+  MarchingCubes<DerivedValues, DerivedPoints, DerivedVertices, DerivedIndices, DerivedFaces> mc(values, points, indices, isovalue, vertices, faces);
 }
 
 template <typename DerivedValues, typename DerivedPoints, typename DerivedVertices, typename DerivedIndices, typename DerivedFaces>
@@ -347,7 +376,7 @@ IGL_INLINE void igl::copyleft::marching_cubes(
   Eigen::PlainObjectBase<DerivedVertices> &vertices,
   Eigen::PlainObjectBase<DerivedFaces> &faces)
 {
-  MarchingCubes<DerivedValues, DerivedPoints, DerivedVertices, DerivedIndices, DerivedFaces> mc(values, points, indices, vertices, faces);
+  MarchingCubes<DerivedValues, DerivedPoints, DerivedVertices, DerivedIndices, DerivedFaces> mc(values, points, indices, 0.0 /*isovalue*/, vertices, faces);
 }
 
 #ifdef IGL_STATIC_LIBRARY
