@@ -73,6 +73,7 @@ PYBIND11_PLUGIN(pyigl) {
            cat
            collapse_edge
            colon
+           colormap
            column_to_quats
            comb_cross_field
            comb_frame_field

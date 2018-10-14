@@ -29,6 +29,7 @@
 #include <igl/cat.h>
 #include <igl/collapse_edge.h>
 #include <igl/colon.h>
+#include <igl/colormap.h>
 #include <igl/column_to_quats.h>
 #include <igl/comb_cross_field.h>
 #include <igl/comb_frame_field.h>
@@ -128,6 +129,7 @@ void python_export_igl(py::module &m)
 #include "py_igl/py_cat.cpp"
 #include "py_igl/py_collapse_edge.cpp"
 #include "py_igl/py_colon.cpp"
+#include "py_igl/py_colormap.cpp"	
 #include "py_igl/py_column_to_quats.cpp"
 #include "py_igl/py_comb_cross_field.cpp"
 #include "py_igl/py_comb_frame_field.cpp"

@@ -211,6 +211,12 @@ const char *__doc_igl_colon = R"igl_Qu8mg5v7(// Colon operator like matlab's col
   //     than hi, vice versa if hi<low
   // Output:
   //   I  list of values from low to hi with step size step)igl_Qu8mg5v7";
+const char *__doc_igl_colormap = R"igl_Qu8mg5v7(  // Inputs:
+  //   cm selected colormap palette to interpolate from
+  //   Z  #Z list of factors
+  //   normalize  whether to normalize Z to be tightly between [0,1]
+  // Outputs:
+  //   C  #C by 3 list of rgb colors)igl_Qu8mg5v7";
 const char *__doc_igl_column_to_quats = R"igl_Qu8mg5v7(// "Columnize" a list of quaternions (q1x,q1y,q1z,q1w,q2x,q2y,q2z,q2w,...)
   //
   // Inputs:
