@@ -39,7 +39,7 @@ namespace igl
   // Example:
   //   Eigen::SparseMatrix<double> A;
   //   std::vector<Eigen::Triplet<double> > IJV;
-  //   buildA(IJV);
+  //   slim_buildA(IJV);
   //   if (A.rows() == 0)
   //   {
   //     A = Eigen::SparseMatrix<double>(rows,cols);
