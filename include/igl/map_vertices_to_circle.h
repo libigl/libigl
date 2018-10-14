@@ -8,6 +8,7 @@
 #ifndef IGL_MAP_VERTICES_TO_CIRCLE_H
 #define IGL_MAP_VERTICES_TO_CIRCLE_H
 #include "igl_inline.h"
+#include "PI.h"
 
 #include <Eigen/Dense>
 #include <vector>

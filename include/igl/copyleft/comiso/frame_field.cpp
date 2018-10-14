@@ -164,25 +164,25 @@ FrameInterpolator::~FrameInterpolator()
 double FrameInterpolator::mod2pi(double d)
 {
   while(d<0)
-    d = d + (2.0*M_PI);
+    d = d + (2.0*igl::PI);
 
-  return fmod(d, (2.0*M_PI));
+  return fmod(d, (2.0*igl::PI));
 }
 
 double FrameInterpolator::modpi2(double d)
 {
   while(d<0)
-    d = d + (M_PI/2.0);
+    d = d + (igl::PI/2.0);
 
-  return fmod(d, (M_PI/2.0));
+  return fmod(d, (igl::PI/2.0));
 }
 
 double FrameInterpolator::modpi(double d)
 {
   while(d<0)
-    d = d + (M_PI);
+    d = d + (igl::PI);
 
-  return fmod(d, (M_PI));
+  return fmod(d, (igl::PI));
 }
 
 
@@ -276,7 +276,7 @@ void FrameInterpolator::compute_edge_consistency()
 
       double r = modpi(theta0-theta1);
 
-      edge_consistency[eid] = r < M_PI/4.0 || r > 3*(M_PI/4.0);
+      edge_consistency[eid] = r < igl::PI/4.0 || r > 3*(igl::PI/4.0);
 
       // Copy it into edge_consistency_TT
       int i1 = -1;

@@ -18,12 +18,16 @@ namespace igl
   // mesh can have open boundaries but should be edge-manifold.
   //
   // Inputs:
-  //   V  #V by dim list of vertex positions. Assumes that vertices w
+  //   V  #V by dim list of vertex positions. Assumes that vertices with
+  //     infinite coordinates are "points at infinity" being used to close up
+  //     boundary edges with faces. This allows special subspace quadrice for
+  //     boundary edges: There should never be more than one "point at
+  //     infinity" in a single triangle.
   //   F  #F by 3 list of triangle indices into V
   //   max_m  desired number of output faces
   // Outputs:
   //   U  #U by dim list of output vertex posistions (can be same ref as V)
-  //   G  #G by 3 list of output face indices into U (can be same ref as G)
+  //   G  #G by 3 list of output face indices into U (can be same ref as F)
   //   J  #G list of indices into F of birth face
   //   I  #U list of indices into V of birth vertices
   IGL_INLINE bool qslim(

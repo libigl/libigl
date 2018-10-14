@@ -29,22 +29,7 @@ IGL_INLINE void igl::setdiff(
   {
     C.resize(0,1);
     IA.resize(0,1);
-  }
-  if(B.size() == 0)
-  {
-    C.resize(A.size(),1);
-    int k = 0;
-    for(int j = 0;j<A.cols();j++)
-    {
-      for(int i = 0;i<A.rows();i++)
-      {
-        C(k++) = A(i,j);
-      }
-    }
-    assert(k == C.size());
-    // Have to use << instead of = because Eigen's PlainObjectBase is annoying
-    IA << igl::LinSpaced<Eigen::Matrix<typename DerivedIA::Scalar,Eigen::Dynamic,1> >(
-      C.size(),0,C.size()-1);
+    return;
   }
 
   // Get rid of any duplicates
@@ -69,14 +54,15 @@ IGL_INLINE void igl::setdiff(
   int bi = 0;
   // loop over sA
   bool past = false;
+  bool sBempty = sB.size()==0;
   for(int a = 0;a<sA.size();a++)
   {
-    while(!past && sA(a)>sB(bi))
+    while(!sBempty && !past && sA(a)>sB(bi))
     {
       bi++;
       past = bi>=sB.size();
     }
-    if(past || sA(a)<sB(bi))
+    if(sBempty || past || sA(a)<sB(bi))
     {
       // then sA(a) did not appear in sB
       vC.push_back(sA(a));

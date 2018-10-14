@@ -10,8 +10,9 @@ project(pyigl)
 # set(PYTHON_INCLUDE_DIR "/usr/local/Cellar/python3/3.5.0/Frameworks/Python.framework/Versions/3.5/include/python3.5m")
 
 set(Python_ADDITIONAL_VERSIONS 3.4 3.5 3.6)
-find_package(PythonLibs REQUIRED)
 find_package(PythonInterp REQUIRED)
+find_package(PythonLibs REQUIRED)
+
 
 string(TOUPPER "${CMAKE_BUILD_TYPE}" U_CMAKE_BUILD_TYPE)
 if(UNIX)
@@ -144,7 +145,7 @@ elseif(UNIX)
   # .SO file extension on Linux/Mac OS
   set_target_properties(pyigl PROPERTIES SUFFIX ".so")
 
-  #Enable flag if undefined symbols appear on pyigl module import to get notified about the missing symbols at link time
+  # Enable flag if undefined symbols appear on pyigl module import to get notified about the missing symbols at link time
   option(CHECK_UNDEFINED        "Check for undefined symbols"    OFF)
 
   # Strip unnecessary sections of the binary on Linux/Mac OS

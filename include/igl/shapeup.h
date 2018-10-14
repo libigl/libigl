@@ -14,6 +14,7 @@
 #include <igl/cat.h>
 #include <Eigen/Core>
 #include <vector>
+#include <igl/PI.h>
 
 
 //This file implements the following algorithm:

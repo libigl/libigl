@@ -26,7 +26,7 @@ IGL_INLINE void igl::opengl::ViewerCore::align_camera_center(
   if(V.rows() == 0)
     return;
 
-  get_scale_and_shift_to_fit_mesh(V,F,model_zoom,model_translation);
+  get_scale_and_shift_to_fit_mesh(V,F,camera_base_zoom,camera_base_translation);
   // Rather than crash on empty mesh...
   if(V.size() > 0)
   {
@@ -60,7 +60,7 @@ IGL_INLINE void igl::opengl::ViewerCore::align_camera_center(
   if(V.rows() == 0)
     return;
 
-  get_scale_and_shift_to_fit_mesh(V,model_zoom,model_translation);
+  get_scale_and_shift_to_fit_mesh(V,camera_base_zoom,camera_base_translation);
   // Rather than crash on empty mesh...
   if(V.size() > 0)
   {
@@ -90,7 +90,7 @@ IGL_INLINE void igl::opengl::ViewerCore::clear_framebuffers()
   glClearColor(background_color[0],
                background_color[1],
                background_color[2],
-               1.0f);
+               background_color[3]);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
@@ -122,15 +122,20 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
 
   if(update_matrices)
   {
-    model = Eigen::Matrix4f::Identity();
-    view  = Eigen::Matrix4f::Identity();
-    proj  = Eigen::Matrix4f::Identity();
-
-    // Set view
-    look_at( camera_eye, camera_center, camera_up, view);
+    view = Eigen::Matrix4f::Identity();
+    proj = Eigen::Matrix4f::Identity();
+    norm = Eigen::Matrix4f::Identity();
 
     float width  = viewport(2);
     float height = viewport(3);
+
+    // Set view
+    look_at( camera_eye, camera_center, camera_up, view);
+    view = view
+      * (trackball_angle * Eigen::Scaling(camera_zoom * camera_base_zoom)
+      * Eigen::Translation3f(camera_translation + camera_base_translation)).matrix();
+
+    norm = view.inverse().transpose();
 
     // Set projection
     if (orthographic)
@@ -145,40 +150,25 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
       float fW = fH * (double)width/(double)height;
       frustum(-fW, fW, -fH, fH, camera_dnear, camera_dfar,proj);
     }
-    // end projection
-
-    // Set model transformation
-    float mat[16];
-    igl::quat_to_mat(trackball_angle.coeffs().data(), mat);
-
-    for (unsigned i=0;i<4;++i)
-      for (unsigned j=0;j<4;++j)
-        model(i,j) = mat[i+4*j];
-
-    // Why not just use Eigen::Transform<double,3,Projective> for model...?
-    model.topLeftCorner(3,3)*=camera_zoom;
-    model.topLeftCorner(3,3)*=model_zoom;
-    model.col(3).head(3) += model.topLeftCorner(3,3)*model_translation;
   }
 
   // Send transformations to the GPU
-  GLint modeli = glGetUniformLocation(data.meshgl.shader_mesh,"model");
   GLint viewi  = glGetUniformLocation(data.meshgl.shader_mesh,"view");
   GLint proji  = glGetUniformLocation(data.meshgl.shader_mesh,"proj");
-  glUniformMatrix4fv(modeli, 1, GL_FALSE, model.data());
+  GLint normi  = glGetUniformLocation(data.meshgl.shader_mesh,"normal_matrix");
   glUniformMatrix4fv(viewi, 1, GL_FALSE, view.data());
   glUniformMatrix4fv(proji, 1, GL_FALSE, proj.data());
+  glUniformMatrix4fv(normi, 1, GL_FALSE, norm.data());
 
   // Light parameters
   GLint specular_exponenti    = glGetUniformLocation(data.meshgl.shader_mesh,"specular_exponent");
-  GLint light_position_worldi = glGetUniformLocation(data.meshgl.shader_mesh,"light_position_world");
+  GLint light_position_eyei = glGetUniformLocation(data.meshgl.shader_mesh,"light_position_eye");
   GLint lighting_factori      = glGetUniformLocation(data.meshgl.shader_mesh,"lighting_factor");
   GLint fixed_colori          = glGetUniformLocation(data.meshgl.shader_mesh,"fixed_color");
   GLint texture_factori       = glGetUniformLocation(data.meshgl.shader_mesh,"texture_factor");
 
   glUniform1f(specular_exponenti, data.shininess);
-  Vector3f rev_light = -1.*light_position;
-  glUniform3fv(light_position_worldi, 1, rev_light.data());
+  glUniform3fv(light_position_eyei, 1, light_position.data());
   glUniform1f(lighting_factori, lighting_factor); // enables lighting
   glUniform4f(fixed_colori, 0.0, 0.0, 0.0, 0.0);
 
@@ -197,8 +187,8 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
     if (data.show_lines)
     {
       glLineWidth(data.line_width);
-      glUniform4f(fixed_colori, 
-        data.line_color[0], 
+      glUniform4f(fixed_colori,
+        data.line_color[0],
         data.line_color[1],
         data.line_color[2], 1.0f);
       data.meshgl.draw_mesh(false);
@@ -216,11 +206,9 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
     if (data.lines.rows() > 0)
     {
       data.meshgl.bind_overlay_lines();
-      modeli = glGetUniformLocation(data.meshgl.shader_overlay_lines,"model");
       viewi  = glGetUniformLocation(data.meshgl.shader_overlay_lines,"view");
       proji  = glGetUniformLocation(data.meshgl.shader_overlay_lines,"proj");
 
-      glUniformMatrix4fv(modeli, 1, GL_FALSE, model.data());
       glUniformMatrix4fv(viewi, 1, GL_FALSE, view.data());
       glUniformMatrix4fv(proji, 1, GL_FALSE, proj.data());
       // This must be enabled, otherwise glLineWidth has no effect
@@ -233,11 +221,9 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
     if (data.points.rows() > 0)
     {
       data.meshgl.bind_overlay_points();
-      modeli = glGetUniformLocation(data.meshgl.shader_overlay_points,"model");
       viewi  = glGetUniformLocation(data.meshgl.shader_overlay_points,"view");
       proji  = glGetUniformLocation(data.meshgl.shader_overlay_points,"proj");
 
-      glUniformMatrix4fv(modeli, 1, GL_FALSE, model.data());
       glUniformMatrix4fv(viewi, 1, GL_FALSE, view.data());
       glUniformMatrix4fv(proji, 1, GL_FALSE, proj.data());
       glPointSize(data.point_size);
@@ -260,64 +246,81 @@ IGL_INLINE void igl::opengl::ViewerCore::draw_buffer(ViewerData& data,
   assert(R.rows() == G.rows() && G.rows() == B.rows() && B.rows() == A.rows());
   assert(R.cols() == G.cols() && G.cols() == B.cols() && B.cols() == A.cols());
 
-  unsigned x = R.rows();
-  unsigned y = R.cols();
+  unsigned width = R.rows();
+  unsigned height = R.cols();
 
-  // Create frame buffer
-  GLuint frameBuffer;
-  glGenFramebuffers(1, &frameBuffer);
-  glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
+  // https://learnopengl.com/Advanced-OpenGL/Anti-Aliasing
+  unsigned int framebuffer;
+  glGenFramebuffers(1, &framebuffer);
+  glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+  // create a multisampled color attachment texture
+  unsigned int textureColorBufferMultiSampled;
+  glGenTextures(1, &textureColorBufferMultiSampled);
+  glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, textureColorBufferMultiSampled);
+  glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGBA, width, height, GL_TRUE);
+  glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, textureColorBufferMultiSampled, 0);
+  // create a (also multisampled) renderbuffer object for depth and stencil attachments
+  unsigned int rbo;
+  glGenRenderbuffers(1, &rbo);
+  glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+  glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_DEPTH24_STENCIL8, width, height);
+  glBindRenderbuffer(GL_RENDERBUFFER, 0);
+  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
+  assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-  // Create texture to hold color buffer
-  GLuint texColorBuffer;
-  glGenTextures(1, &texColorBuffer);
-  glBindTexture(GL_TEXTURE_2D, texColorBuffer);
-
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, x, y, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-
+  // configure second post-processing framebuffer
+  unsigned int intermediateFBO;
+  glGenFramebuffers(1, &intermediateFBO);
+  glBindFramebuffer(GL_FRAMEBUFFER, intermediateFBO);
+  // create a color attachment texture
+  unsigned int screenTexture;
+  glGenTextures(1, &screenTexture);
+  glBindTexture(GL_TEXTURE_2D, screenTexture);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texColorBuffer, 0);
-
-  // Create Renderbuffer Object to hold depth and stencil buffers
-  GLuint rboDepthStencil;
-  glGenRenderbuffers(1, &rboDepthStencil);
-  glBindRenderbuffer(GL_RENDERBUFFER, rboDepthStencil);
-  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, x, y);
-  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rboDepthStencil);
-
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, screenTexture, 0);	// we only need a color buffer
   assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-  glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
+  glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
 
   // Clear the buffer
   glClearColor(background_color(0), background_color(1), background_color(2), 0.f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
   // Save old viewport
   Eigen::Vector4f viewport_ori = viewport;
-  viewport << 0,0,x,y;
-
+  viewport << 0,0,width,height;
   // Draw
   draw(data,update_matrices);
-
   // Restore viewport
   viewport = viewport_ori;
 
+  glBindFramebuffer(GL_READ_FRAMEBUFFER, framebuffer);
+  glBindFramebuffer(GL_DRAW_FRAMEBUFFER, intermediateFBO);
+  glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+
+  glBindFramebuffer(GL_FRAMEBUFFER, intermediateFBO);
   // Copy back in the given Eigen matrices
-  GLubyte* pixels = (GLubyte*)calloc(x*y*4,sizeof(GLubyte));
-  glReadPixels
-  (
-   0, 0,
-   x, y,
-   GL_RGBA, GL_UNSIGNED_BYTE, pixels
-   );
+  GLubyte* pixels = (GLubyte*)calloc(width*height*4,sizeof(GLubyte));
+  glReadPixels(0, 0,width, height,GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+
+  // Clean up
+  glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+  glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+  glDeleteTextures(1, &screenTexture);
+  glDeleteTextures(1, &textureColorBufferMultiSampled);
+  glDeleteFramebuffers(1, &framebuffer);
+  glDeleteFramebuffers(1, &intermediateFBO);
+  glDeleteRenderbuffers(1, &rbo);
 
   int count = 0;
-  for (unsigned j=0; j<y; ++j)
+  for (unsigned j=0; j<height; ++j)
   {
-    for (unsigned i=0; i<x; ++i)
+    for (unsigned i=0; i<width; ++i)
     {
       R(i,j) = pixels[count*4+0];
       G(i,j) = pixels[count*4+1];
@@ -326,13 +329,8 @@ IGL_INLINE void igl::opengl::ViewerCore::draw_buffer(ViewerData& data,
       ++count;
     }
   }
-
   // Clean up
   free(pixels);
-  glBindFramebuffer(GL_FRAMEBUFFER, 0);
-  glDeleteRenderbuffers(1, &rboDepthStencil);
-  glDeleteTextures(1, &texColorBuffer);
-  glDeleteFramebuffers(1, &frameBuffer);
 }
 
 IGL_INLINE void igl::opengl::ViewerCore::set_rotation_type(
@@ -356,23 +354,22 @@ IGL_INLINE igl::opengl::ViewerCore::ViewerCore()
   background_color << 0.3f, 0.3f, 0.5f, 1.0f;
 
   // Default lights settings
-  light_position << 0.0f, -0.30f, -5.0f;
+  light_position << 0.0f, 0.3f, 0.0f;
   lighting_factor = 1.0f; //on
 
   // Default trackball
   trackball_angle = Eigen::Quaternionf::Identity();
   set_rotation_type(ViewerCore::ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP);
 
-  // Defalut model viewing parameters
-  model_zoom = 1.0f;
-  model_translation << 0,0,0;
-
   // Camera parameters
+  camera_base_zoom = 1.0f;
   camera_zoom = 1.0f;
   orthographic = false;
   camera_view_angle = 45.0;
   camera_dnear = 1.0;
   camera_dfar = 100.0;
+  camera_base_translation << 0, 0, 0;
+  camera_translation << 0, 0, 0;
   camera_eye << 0, 0, 5;
   camera_center << 0, 0, 0;
   camera_up << 0, 1, 0;

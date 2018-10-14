@@ -1,5 +1,6 @@
 // This file is part of libigl, a simple c++ geometry processing library.
 // 
+// Copyright (C) 2018 Alec Jacobson <alecjacobson@gmail.com>
 // Copyright (C) 2013 Alec Jacobson <alecjacobson@gmail.com>
 // 
 // This Source Code Form is subject to the terms of the Mozilla Public License 
@@ -19,6 +20,10 @@ namespace igl
   // Returns string containing dirname (see php's dirname)
   //
   // See also: basename, pathinfo
+  //
+  // **Note:** This function will have undefined behavior if **file names** in
+  // the path contain \ and / characters. This function interprets \ and / as
+  // file path separators.
   IGL_INLINE std::string dirname(const std::string & path);
 }
 

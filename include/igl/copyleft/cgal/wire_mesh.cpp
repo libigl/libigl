@@ -2,6 +2,7 @@
 
 #include "../../list_to_matrix.h"
 #include "../../slice.h"
+#include "../../PI.h"
 #include "convex_hull.h"
 #include "mesh_boolean.h"
 #include <Eigen/Geometry>
@@ -30,7 +31,7 @@ IGL_INLINE void igl::copyleft::cgal::wire_mesh(
   MatrixX3S PV(poly_size,3);
   for(int p =0;p<PV.rows();p++)
   {
-    const Scalar phi = (Scalar(p)/Scalar(PV.rows()))*2.*M_PI;
+    const Scalar phi = (Scalar(p)/Scalar(PV.rows()))*2.*igl::PI;
     PV(p,0) = 0.5*cos(phi);
     PV(p,1) = 0.5*sin(phi);
     PV(p,2) = 0;
