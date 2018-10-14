@@ -5,8 +5,8 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
-#ifndef SCAF_H
-#define SCAF_H
+#ifndef IGL_SCAF_H
+#define IGL_SCAF_H
 
 #include "slim.h"
 #include "igl_inline.h"
@@ -98,4 +98,4 @@ namespace igl
 #  include "scaf.cpp"
 #endif
 
-#endif //SCAF_H
+#endif //IGL_SCAF_H

@@ -7,15 +7,16 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 
 #include "topological_hole_fill.h"
-template <
+  template <
   typename DerivedF,
   typename Derivedb,
-  typename VectorIndex>
+  typename VectorIndex,
+  typename DerivedF_filled>
 IGL_INLINE void igl::topological_hole_fill(
   const Eigen::MatrixBase<DerivedF> & F,
   const Eigen::MatrixBase<Derivedb> & b,
   const std::vector<VectorIndex> & holes,
-  Eigen::PlainObjectBase<DerivedF> &F_filled)
+  Eigen::PlainObjectBase<DerivedF_filled> &F_filled)
 {
   int n_filled_faces = 0;
   int num_holes = holes.size();

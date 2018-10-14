@@ -1,15 +1,15 @@
 #include <iostream>
 
-#include "igl/slim.h"
+#include <igl/slim.h>
 
-#include "igl/vertex_components.h"
-#include "igl/readOBJ.h"
-#include "igl/writeOBJ.h"
-#include "igl/Timer.h"
+#include <igl/vertex_components.h>
+#include <igl/readOBJ.h>
+#include <igl/writeOBJ.h>
+#include <igl/Timer.h>
 
-#include "igl/boundary_loop.h"
-#include "igl/map_vertices_to_circle.h"
-#include "igl/harmonic.h"
+#include <igl/boundary_loop.h>
+#include <igl/map_vertices_to_circle.h>
+#include <igl/harmonic.h>
 #include <igl/MappingEnergyType.h>
 #include <igl/serialize.h>
 #include <igl/read_triangle_mesh.h>

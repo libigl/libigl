@@ -14,6 +14,7 @@ namespace igl
 {
     
   // Topological fill hole on a mesh, with one additional vertex each hole
+  // Index of new abstract vertices will be F.maxCoeff() + (index of hole)
   //
   // Inputs:
   //   F  #F by simplex-size list of element indices
@@ -25,12 +26,13 @@ namespace igl
   template <
   typename DerivedF,
   typename Derivedb,
-  typename VectorIndex>
+  typename VectorIndex,
+  typename DerivedF_filled>
 IGL_INLINE void topological_hole_fill(
   const Eigen::MatrixBase<DerivedF> & F,
   const Eigen::MatrixBase<Derivedb> & b,
   const std::vector<VectorIndex> & holes,
-  Eigen::PlainObjectBase<DerivedF> &F_filled);
+  Eigen::PlainObjectBase<DerivedF_filled> &F_filled);
 
 }
 
