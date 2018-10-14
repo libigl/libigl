@@ -27,17 +27,15 @@ find_package(OpenGL) # --> OPENGL_FOUND
 
 ### Available options ###
 option(LIBIGL_USE_STATIC_LIBRARY     "Use libigl as static library" ON)
-option(LIBIGL_WITH_ANTTWEAKBAR       "Use AntTweakBar"    OFF)
 option(LIBIGL_WITH_CGAL              "Use CGAL"           ON)
 option(LIBIGL_WITH_COMISO            "Use CoMiso"         ON)
 option(LIBIGL_WITH_CORK              "Use Cork"           OFF)
 option(LIBIGL_WITH_EMBREE            "Use Embree"         OFF)
-option(LIBIGL_WITH_LIM               "Use LIM"            ON)
 option(LIBIGL_WITH_MATLAB            "Use Matlab"         "${Matlab_FOUND}")
 option(LIBIGL_WITH_MOSEK             "Use MOSEK"          "${MOSEK_FOUND}")
 option(LIBIGL_WITH_OPENGL            "Use OpenGL"         "${OPENGL_FOUND}")
 option(LIBIGL_WITH_OPENGL_GLFW       "Use GLFW"           "${OPENGL_FOUND}")
-option(LIBIGL_WITH_OPENGL_GLFW_IMGUI "Use ImGui"          ON)
+option(LIBIGL_WITH_OPENGL_GLFW_IMGUI "Use ImGui"          "${OPENGL_FOUND}")
 option(LIBIGL_WITH_PNG               "Use PNG"            ON)
 option(LIBIGL_WITH_TETGEN            "Use Tetgen"         ON)
 option(LIBIGL_WITH_TRIANGLE          "Use Triangle"       ON)
@@ -52,7 +50,7 @@ endif()
 ################################################################################
 
 ### Configuration
-set(LIBIGL_ROOT "${CMAKE_CURRENT_LIST_DIR}/../..")
+set(LIBIGL_ROOT "${CMAKE_CURRENT_LIST_DIR}/..")
 set(LIBIGL_SOURCE_DIR "${LIBIGL_ROOT}/include")
 set(LIBIGL_EXTERNAL "${LIBIGL_ROOT}/external")
 
@@ -62,6 +60,10 @@ if(LIBIGL_USE_STATIC_LIBRARY)
 else()
   set(IGL_SCOPE INTERFACE)
 endif()
+
+# Download and update 3rdparty libraries
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR})
+include(LibiglDownloadExternal)
 
 ################################################################################
 ### IGL Common
@@ -86,6 +88,9 @@ target_compile_features(igl_common INTERFACE ${CXX11_FEATURES})
 if(MSVC)
   # Enable parallel compilation for Visual Studio
   target_compile_options(igl_common INTERFACE /MP /bigobj)
+  if(LIBIGL_WITH_CGAL)
+    target_compile_options(igl_common INTERFACE "/MD$<$<CONFIG:Debug>:d>")
+  endif()
 endif()
 
 if(BUILD_SHARED_LIBS)
@@ -98,7 +103,8 @@ if(TARGET Eigen3::Eigen)
   # If an imported target already exists, use it
   target_link_libraries(igl_common INTERFACE Eigen3::Eigen)
 else()
-  target_include_directories(igl_common SYSTEM INTERFACE 
+  igl_download_eigen()
+  target_include_directories(igl_common SYSTEM INTERFACE
     $<BUILD_INTERFACE:${LIBIGL_EXTERNAL}/eigen>
     $<INSTALL_INTERFACE:include>
   )
@@ -107,20 +113,6 @@ endif()
 # C++11 Thread library
 find_package(Threads REQUIRED)
 target_link_libraries(igl_common INTERFACE ${CMAKE_THREAD_LIBS_INIT})
-
-################################################################################
-
-include(DownloadProject)
-
-# Shortcut function
-function(igl_download_project name)
-  download_project(
-    PROJ         ${name}
-    SOURCE_DIR   ${LIBIGL_EXTERNAL}/${name}
-    DOWNLOAD_DIR ${LIBIGL_EXTERNAL}/.cache/${name}
-    ${ARGN}
-  )
-endfunction()
 
 ################################################################################
 
@@ -175,7 +167,6 @@ function(compile_igl_module module_dir)
   set_property(TARGET ${module_libname} PROPERTY EXPORT_NAME igl::${module_name})
 endfunction()
 
-
 ################################################################################
 ### IGL Core
 ################################################################################
@@ -186,18 +177,6 @@ if(LIBIGL_USE_STATIC_LIBRARY)
     "${LIBIGL_SOURCE_DIR}/igl/copyleft/*.cpp")
 endif()
 compile_igl_module("core" ${SOURCES_IGL})
-
-################################################################################
-## Compile the AntTweakBar part ###
-if(LIBIGL_WITH_ANTTWEAKBAR)
-  set(ANTTWEAKBAR_DIR "${LIBIGL_EXTERNAL}/AntTweakBar")
-  if(NOT TARGET AntTweakBar)
-    add_subdirectory("${ANTTWEAKBAR_DIR}" AntTweakBar)
-  endif()
-  compile_igl_module("anttweakbar")
-  target_link_libraries(igl_anttweakbar ${IGL_SCOPE} AntTweakBar)
-  target_include_directories(igl_anttweakbar ${IGL_SCOPE} "${ANTTWEAKBAR_DIR}/include")
-endif()
 
 ################################################################################
 ### Compile the CGAL part ###
@@ -253,6 +232,7 @@ endfunction()
 if(LIBIGL_WITH_COMISO)
   compile_igl_module("comiso")
   if(NOT TARGET CoMISo)
+    igl_download_comiso()
     add_subdirectory("${LIBIGL_EXTERNAL}/CoMISo" CoMISo)
   endif()
   target_link_libraries(igl_comiso ${IGL_SCOPE} CoMISo)
@@ -265,6 +245,7 @@ if(LIBIGL_WITH_CORK)
   if(NOT TARGET cork)
     # call this "lib-cork" instead of "cork", otherwise cmake gets confused about
     # "cork" executable
+    igl_download_cork()
     add_subdirectory("${CORK_DIR}" "lib-cork")
   endif()
   compile_igl_module("cork")
@@ -293,6 +274,7 @@ if(LIBIGL_WITH_EMBREE)
   endif()
 
   if(NOT TARGET embree)
+    igl_download_embree()
     add_subdirectory("${EMBREE_DIR}" "embree")
   endif()
 
@@ -310,18 +292,6 @@ if(LIBIGL_WITH_EMBREE)
   if(NOT MSVC)
     target_compile_definitions(igl_embree ${IGL_SCOPE} -DENABLE_STATIC_LIB)
   endif()
-endif()
-
-################################################################################
-### Compile the lim part ###
-if(LIBIGL_WITH_LIM)
-  set(LIM_DIR "${LIBIGL_EXTERNAL}/lim")
-  if(NOT TARGET lim)
-    add_subdirectory("${LIM_DIR}" "lim")
-  endif()
-  compile_igl_module("lim")
-  target_link_libraries(igl_lim ${IGL_SCOPE} lim)
-  target_include_directories(igl_lim ${IGL_SCOPE} ${LIM_DIR})
 endif()
 
 ################################################################################
@@ -370,6 +340,7 @@ if(LIBIGL_WITH_OPENGL_GLFW)
       set(GLFW_BUILD_TESTS OFF CACHE BOOL " " FORCE)
       set(GLFW_BUILD_DOCS OFF CACHE BOOL " " FORCE)
       set(GLFW_INSTALL OFF CACHE BOOL " " FORCE)
+      igl_download_glfw()
       add_subdirectory(${LIBIGL_EXTERNAL}/glfw glfw)
     endif()
     target_link_libraries(igl_opengl_glfw ${IGL_SCOPE} igl_opengl glfw)
@@ -383,6 +354,7 @@ if(LIBIGL_WITH_OPENGL_GLFW_IMGUI)
     # ImGui module
     compile_igl_module("opengl/glfw/imgui")
     if(NOT TARGET imgui)
+      igl_download_imgui()
       add_subdirectory(${LIBIGL_EXTERNAL}/imgui imgui)
     endif()
     target_link_libraries(igl_opengl_glfw_imgui ${IGL_SCOPE} igl_opengl_glfw imgui)
@@ -409,6 +381,7 @@ endif()
 if(LIBIGL_WITH_TETGEN)
   set(TETGEN_DIR "${LIBIGL_EXTERNAL}/tetgen")
   if(NOT TARGET tetgen)
+    igl_download_tetgen()
     add_subdirectory("${TETGEN_DIR}" "tetgen")
   endif()
   compile_igl_module("tetgen")
@@ -421,6 +394,7 @@ endif()
 if(LIBIGL_WITH_TRIANGLE)
   set(TRIANGLE_DIR "${LIBIGL_EXTERNAL}/triangle")
   if(NOT TARGET triangle)
+    igl_download_triangle()
     add_subdirectory("${TRIANGLE_DIR}" "triangle")
   endif()
   compile_igl_module("triangle")
@@ -433,7 +407,9 @@ endif()
 if(LIBIGL_WITH_XML)
   set(TINYXML2_DIR "${LIBIGL_EXTERNAL}/tinyxml2")
   if(NOT TARGET tinyxml2)
+    igl_download_tinyxml2()
     add_library(tinyxml2 STATIC ${TINYXML2_DIR}/tinyxml2.cpp ${TINYXML2_DIR}/tinyxml2.h)
+    target_include_directories(tinyxml2 PUBLIC ${TINYXML2_DIR})
     set_target_properties(tinyxml2 PROPERTIES
             COMPILE_DEFINITIONS "TINYXML2_EXPORT"
             VERSION "3.0.0"
