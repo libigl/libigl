@@ -43,6 +43,38 @@ namespace igl
         const Eigen::PlainObjectBase<DerivedV>& V,
         const Eigen::PlainObjectBase<DerivedF>& F,
         tetgenio & in);
+    
+
+      // Load a vertex list and face list into a tetgenio object
+      // Inputs:
+      //   V  #V by 3 vertex position list
+      //   F  #F list of polygon face indices into V (0-indexed)
+      //   H  #H list of seed point inside each hole
+      //   R  #R list of seed point inside each region	
+      // Outputs:
+      //   in  tetgenio input object
+      // Returns true on success, false on error
+      IGL_INLINE bool mesh_to_tetgenio(
+        const std::vector<std::vector<REAL> > & V,
+	const std::vector<std::vector<int> > & F,
+	const std::vector<std::vector<REAL > > & H, 
+	const std::vector<std::vector<REAL > > & R, 
+	tetgenio & in);	
+
+
+      // Wrapper with Eigen types
+      // Templates:
+      //   DerivedV  real-value: i.e. from MatrixXd
+      //   DerivedF  integer-value: i.e. from MatrixXi
+      //   DerivedH  real-value
+      //   DerivedR  real-value		      
+      template <typename DerivedV, typename DerivedF, typename DerivedH, typename DerivedR>
+      IGL_INLINE bool mesh_to_tetgenio(
+	const Eigen::PlainObjectBase<DerivedV>& V,
+	const Eigen::PlainObjectBase<DerivedF>& F,
+	const Eigen::PlainObjectBase<DerivedH>& H, 
+	const Eigen::PlainObjectBase<DerivedR>& R, 
+	tetgenio& in);	
     }
   }
 }
