@@ -5,7 +5,7 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
-m.def("slice_tets", []
+m.def("marching_tets", []
 (
   const Eigen::MatrixXd& V,
   const Eigen::MatrixXi& T,
@@ -21,8 +21,8 @@ m.def("slice_tets", []
   if (plane.size() != 0)
     planev = plane;
   Eigen::VectorXi Jv;
-  igl::slice_tets(V, T, planev, U, G, Jv, BC);
+  igl::marching_tets(V, T, planev, U, G, Jv, BC);
   J = Jv;
-}, __doc_igl_slice_tets,
+}, __doc_igl_marching_tets,
 py::arg("V"), py::arg("T"), py::arg("plane"), py::arg("U"), py::arg("G"), py::arg("J"), py::arg("BC"));
 
