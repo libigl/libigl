@@ -32,7 +32,7 @@ namespace igl
   //   Scalar  scalar type for eigen sparse matrix (e.g. double)
   // Inputs:
   //   V  #V by dim list of mesh vertex positions
-  //   F  #F by simplex_size list of mesh faces (must be triangles)
+  //   F  #F by simplex_size list of mesh elements (triangles or tetrahedra)
   // Outputs: 
   //   L  #V by #V cotangent matrix, each row i corresponding to V(i,:)
   //

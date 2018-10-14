@@ -35,7 +35,7 @@ namespace igl
   //   Scalar  scalar type for eigen sparse matrix (e.g. double)
   // Inputs:
   //   V  #V by dim list of mesh vertex positions
-  //   F  #F by simplex_size list of mesh faces (must be triangles)
+  //   F  #F by simplex_size list of mesh elements (triangles or tetrahedra)
   //   type  one of the following ints:
   //     MASSMATRIX_TYPE_BARYCENTRIC  barycentric
   //     MASSMATRIX_TYPE_VORONOI voronoi-hybrid {default}
