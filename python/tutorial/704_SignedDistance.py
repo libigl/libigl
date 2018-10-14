@@ -55,7 +55,7 @@ def update_visualization(viewer):
     # Extract triangle mesh slice through volume mesh and subdivide nasty triangles
     J = igl.eigen.MatrixXi()
     bary = igl.eigen.SparseMatrixd()
-    igl.marching_tets(V, T, plane, V_vis, F_vis, J, bary)
+    igl.slice_tets(V, T, plane, V_vis, F_vis, J, bary)
     max_l = 0.03
     while True:
         l = igl.eigen.MatrixXd()

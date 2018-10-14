@@ -3,7 +3,7 @@
 #include <igl/parula.h>
 #include <igl/readMESH.h>
 #include <igl/slice.h>
-#include <igl/marching_tets.h>
+#include <igl/slice_tets.h>
 #include <igl/winding_number.h>
 #include <igl/opengl/glfw/Viewer.h>
 #include <Eigen/Sparse>
@@ -40,7 +40,7 @@ void update_visualization(igl::opengl::glfw::Viewer & viewer)
         V.col(1)*plane(1) + 
         V.col(2)*plane(2)).array()
       + plane(3);
-    igl::marching_tets(V,T,IV,V_vis,F_vis,J,bary);
+    igl::slice_tets(V,T,IV,V_vis,F_vis,J,bary);
   }
   VectorXd W_vis;
   igl::slice(W,J,W_vis);

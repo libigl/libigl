@@ -1275,7 +1275,7 @@ const char *__doc_igl_slice_mask = R"igl_Qu8mg5v7(// Act like the matlab X(row_m
   //   Y  #trues-in-R by #trues-in-C matrix
   //
   // See also: slice_mask)igl_Qu8mg5v7";
-const char *__doc_igl_marching_tets = R"igl_Qu8mg5v7(// SLICE_TETS Slice through a tet mesh (V,T) along a given plane (via its
+const char *__doc_igl_slice_tets = R"igl_Qu8mg5v7(// SLICE_TETS Slice through a tet mesh (V,T) along a given plane (via its
   // implicit equation).
   //
   // Inputs:
