@@ -48,7 +48,7 @@ option(LIBIGL_WITH_COPYLEFT          "Use Copyleft"       ON)
 
 ## libigl
 if(NOT TARGET igl::core)
-  list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/../shared/cmake")
+  list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/../cmake")
   include(libigl)
 endif()
 
