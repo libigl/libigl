@@ -108,7 +108,7 @@ extern const char *__doc_igl_signed_distance_winding_number;
 extern const char *__doc_igl_slice;
 extern const char *__doc_igl_slice_into;
 extern const char *__doc_igl_slice_mask;
-extern const char *__doc_igl_slice_tets;
+extern const char *__doc_igl_marching_tets;
 extern const char *__doc_igl_sortrows;
 extern const char *__doc_igl_streamlines_init;
 extern const char *__doc_igl_streamlines_next;
