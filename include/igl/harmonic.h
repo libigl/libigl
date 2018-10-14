@@ -58,32 +58,6 @@ namespace igl
     const Eigen::MatrixBase<Derivedbc> & bc,
     const int k,
     Eigen::PlainObjectBase<DerivedW> & W);
-  
-  // Compute harmonic map with holes using uniform laplacian operator
-  //
-  // Inputs:
-  //   F  #F by simplex-size list of element indices
-  //   b  #b boundary indices into V
-  //   bc #b by #W list of boundary values
-  //   holes vector of hole loops
-  //   k  power of harmonic operation (1: harmonic, 2: biharmonic, etc)
-  // Outputs:
-  //   W  #V by #W list of weights
-  //
-  template <
-    typename DerivedF,
-    typename Derivedb,
-    typename Derivedbc,
-    typename VectorIndex,
-    typename DerivedW>
-  IGL_INLINE bool harmonic(
-    const Eigen::MatrixBase<DerivedF> & F,
-    const Eigen::MatrixBase<Derivedb> & b,
-    const Eigen::MatrixBase<Derivedbc> & bc,
-    const std::vector<VectorIndex> & holes,
-    const int k,
-    Eigen::PlainObjectBase<DerivedW> & W);
-
   // Compute a harmonic map using a given Laplacian and mass matrix
   //
   // Inputs:
@@ -107,7 +81,6 @@ namespace igl
     const Eigen::MatrixBase<Derivedbc> & bc,
     const int k,
     Eigen::PlainObjectBase<DerivedW> & W);
-
   // Build the discrete k-harmonic operator (computing integrated quantities).
   // That is, if the k-harmonic PDE is Q x = 0, then this minimizes x' Q x
   //
@@ -141,8 +114,6 @@ namespace igl
     const Eigen::MatrixBase<DerivedF> & F,
     const int k,
     Eigen::SparseMatrix<DerivedQ> & Q);
-
-  //
 };
 
 #ifndef IGL_STATIC_LIBRARY
