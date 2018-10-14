@@ -8,21 +8,34 @@ branches:
     - alecjacobson
     - cmake
     - cgal
+environment:
+  BOOST_ROOT: C:/Libraries/boost_1_65_1
 install:
   - git submodule update --init --recursive
   - cinstall: python
 build_script:
-  - echo Running cmake...
   - cd c:\projects\libigl
-  - cd external
+  # External libraries (boost)
+  # - cd external
+  # - mkdir build
+  # - cd build
+  # - cmake -G "Visual Studio 15 2017 Win64" -T "host=x64" ..
+  # - msbuild %MSBuildOptions% libigl_external.sln
+  # - cd ../..
+  # Python bindings
+  # - cd python
+  # - mkdir build
+  # - cd build
+  # - cmake -DLIBIGL_WITH_EMBREE=OFF -DLIBIGL_USE_STATIC_LIBRARY=ON ../
+  # - msbuild %MSBuildOptions% pyigl.sln
+  # - cd ../tutorial
+  # - ${PYTHON} 101_FileIO.py
+  # - cd ../../
+  # Tutorials
+  - cd tutorial
   - mkdir build
   - cd build
-  - cmake -G "Visual Studio 15 2017 Win64" -T "host=x64" ..
-  - msbuild %MSBuildOptions% libigl_external.sln
-  - cd ../../tutorial
-  - mkdir build
-  - cd build
-  - cmake -D "LIBIGL_USE_STATIC_LIBRARY=ON" -D "LIBIGL_WITH_ANTTWEAKBAR=OFF" -D "BOOST_ROOT=../external/boost/" -G "Visual Studio 15 2017 Win64" ../
+  - cmake -DLIBIGL_USE_STATIC_LIBRARY=ON -G "Visual Studio 15 2017 Win64" ../
   - set MSBuildLogger="C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
   - set MSBuildOptions=/v:m /p:Configuration=Debug /logger:%MSBuildLogger%
   - msbuild %MSBuildOptions% libigl_tutorials.sln

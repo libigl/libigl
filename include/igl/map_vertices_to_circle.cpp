@@ -7,6 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 
 #include "map_vertices_to_circle.h"
+#include "PI.h"
 
 IGL_INLINE void igl::map_vertices_to_circle(
   const Eigen::MatrixXd& V,
@@ -46,7 +47,7 @@ IGL_INLINE void igl::map_vertices_to_circle(
   UV.resize(bnd.size(),2);
   for (int i = 0; i < bnd.size(); i++)
   {
-    double frac = len[i] * 2. * M_PI / total_len;
+    double frac = len[i] * 2. * igl::PI / total_len;
     UV.row(map_ij[bnd[i]]) << cos(frac), sin(frac);
   }
 

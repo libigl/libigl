@@ -13,6 +13,7 @@
 #include "edges.h"
 #include "verbose.h"
 #include "cat.h"
+#include "PI.h"
 
 IGL_INLINE void igl::covariance_scatter_matrix(
   const Eigen::MatrixXd & V, 

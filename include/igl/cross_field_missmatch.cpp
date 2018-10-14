@@ -17,6 +17,7 @@
 #include <igl/vertex_triangle_adjacency.h>
 #include <igl/triangle_triangle_adjacency.h>
 #include <igl/rotation_matrix_from_directions.h>
+#include <igl/PI.h>
 
 namespace igl {
   template <typename DerivedV, typename DerivedF, typename DerivedM>
@@ -65,7 +66,7 @@ namespace igl {
 
       //    std::cerr << "Dani: " << dir0(0) << " " << dir0(1) << " " << dir0(2) << " " << dir1Rot(0) << " " << dir1Rot(1) << " " << dir1Rot(2) << " " << angle_diff << std::endl;
 
-      double step=M_PI/2.0;
+      double step=igl::PI/2.0;
       int i=(int)std::floor((angle_diff/step)+0.5);
       int k=0;
       if (i>=0)

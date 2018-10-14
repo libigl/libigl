@@ -85,6 +85,12 @@ IGL_INLINE bool igl::read_triangle_mesh(
   // Convert extension to lower case
   transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
   FILE * fp = fopen(filename.c_str(),"rb");
+  if(NULL==fp)
+  {
+    fprintf(stderr,"IOError: %s could not be opened...\n",
+            filename.c_str());
+    return false;
+  }
   return read_triangle_mesh(ext,fp,V,F);
 }
 
