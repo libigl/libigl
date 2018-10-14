@@ -4,7 +4,7 @@
 #include <igl/cotmatrix.h>
 #include <igl/jet.h>
 #include <igl/edges.h>
-#include <igl/components.h>
+#include <igl/vertex_components.h>
 #include <igl/remove_unreferenced.h>
 #include <igl/opengl/glfw/Viewer.h>
 
