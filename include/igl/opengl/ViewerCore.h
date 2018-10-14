@@ -8,10 +8,10 @@
 #ifndef IGL_OPENGL_VIEWERCORE_H
 #define IGL_OPENGL_VIEWERCORE_H
 
+#include "../igl_inline.h"
+#include "gl.h"
 #include <igl/opengl/MeshGL.h>
 #include <igl/opengl/ViewerData.h>
-
-#include <igl/igl_inline.h>
 #include <Eigen/Geometry>
 #include <Eigen/Core>
 
@@ -98,6 +98,7 @@ public:
 
   // Lighting
   Eigen::Vector3f light_position;
+  Eigen::Vector3f light_vector;
   float lighting_factor;
 
   RotationType rotation_type;
