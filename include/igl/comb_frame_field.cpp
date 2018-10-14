@@ -13,6 +13,7 @@
 
 #include "comb_frame_field.h"
 #include "local_basis.h"
+#include "PI.h"
 
 template <typename DerivedV, typename DerivedF, typename DerivedP>
 IGL_INLINE void igl::comb_frame_field(const Eigen::PlainObjectBase<DerivedV> &V,
@@ -49,9 +50,9 @@ IGL_INLINE void igl::comb_frame_field(const Eigen::PlainObjectBase<DerivedV> &V,
     {
       a[j] = atan2(B2.row(i).dot(DIRs.row(j)),B1.row(i).dot(DIRs.row(j))) - a_combed;
       //make it positive by adding some multiple of 2pi
-      a[j] += std::ceil (std::max(0., -a[j]) / (M_PI*2.)) * (M_PI*2.);
+      a[j] += std::ceil (std::max(0., -a[j]) / (igl::PI*2.)) * (igl::PI*2.);
       //take modulo 2pi
-      a[j] = fmod(a[j], (M_PI*2.));
+      a[j] = fmod(a[j], (igl::PI*2.));
     }
     // now the max is u and the min is v
 

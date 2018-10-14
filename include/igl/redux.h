@@ -34,7 +34,6 @@ namespace igl
 
 // Implementation
 
-#include "redux.h"
 #include "for_each.h"
 
 template <typename AType, typename Func, typename DerivedB>
@@ -44,13 +43,14 @@ inline void igl::redux(
   const Func & func,
   Eigen::PlainObjectBase<DerivedB> & B)
 {
+  typedef typename Eigen::SparseMatrix<AType>::StorageIndex Index;
   assert((dim == 1 || dim == 2) && "dim must be 2 or 1");
   // Get size of input
   int m = A.rows();
   int n = A.cols();
   // resize output
   B = DerivedB::Zero(dim==1?n:m);
-  const auto func_wrap = [&func,&B,&dim](const int i, const int j, const int v)
+  const auto func_wrap = [&func,&B,&dim](const Index i, const Index j, const AType v)
   {
     if(dim == 1)
     {

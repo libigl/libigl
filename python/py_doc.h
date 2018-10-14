@@ -105,6 +105,7 @@ extern const char *__doc_igl_slim_precompute;
 extern const char *__doc_igl_slim_solve;
 extern const char *__doc_igl_seam_edges;
 extern const char *__doc_igl_setdiff;
+extern const char *__doc_igl_shape_diameter_function;
 extern const char *__doc_igl_signed_distance;
 extern const char *__doc_igl_signed_distance_pseudonormal;
 extern const char *__doc_igl_signed_distance_winding_number;

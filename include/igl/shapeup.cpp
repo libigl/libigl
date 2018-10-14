@@ -11,6 +11,7 @@
 #include <igl/igl_inline.h>
 #include <igl/setdiff.h>
 #include <igl/cat.h>
+#include <igl/PI.h>
 #include <Eigen/Core>
 #include <vector>
 
@@ -50,7 +51,7 @@ namespace igl
   
       //creating perfectly regular source polygon
       for (int j=0;j<N;j++)
-        sourcePolygon.row(j)<<cos(2*M_PI*(double)j/(double(N))), sin(2*M_PI*(double)j/(double(N))),0.0;
+        sourcePolygon.row(j)<<cos(2*igl::PI*(double)j/(double(N))), sin(2*igl::PI*(double)j/(double(N))),0.0;
   
       //finding closest similarity transformation between source and target
       Eigen::MatrixXd corrMat=sourcePolygon.transpose()*targetPolygon;
@@ -206,7 +207,7 @@ namespace igl
         for (int j=0;j<sudata.SC(i);j++)
           rhs.row(currRow++)=projP.block(i, 3*j, 1,3);
       
-      Eigen::PlainObjectBase<DerivedP> lsrhs=-sudata.At*sudata.W*rhs;
+      DerivedP lsrhs=-sudata.At*sudata.W*rhs;
       MatrixXd Y(0,3), Beq(0,3);  //We do not use the min_quad_solver fixed variables mechanism; they are treated with the closeness energy of ShapeUp.
       min_quad_with_fixed_solve(sudata.solver_data, lsrhs,Y,Beq,currP);
       

@@ -1,7 +1,7 @@
 # libigl - A simple C++ geometry processing library
 [![Build Status](https://travis-ci.org/libigl/libigl.svg?branch=master)](https://travis-ci.org/libigl/libigl)
 [![Build status](https://ci.appveyor.com/api/projects/status/mf3t9rnhco0vhly8/branch/master?svg=true)](https://ci.appveyor.com/project/danielepanozzo/libigl-6hjk1/branch/master)
-![](libigl-teaser.png)
+![](https://github.com/libigl/libigl/raw/5ff6387765fa85ca46f1a6222728e35e2b8b8961/libigl-teaser.png)
 
 <https://github.com/libigl/libigl/>
 
@@ -26,7 +26,7 @@ header file contains a single function (e.g. `igl/cotmatrix.h` contains
 stored in an n-by-3 matrix of vertex positions `V` and an m-by-3 matrix of
 triangle indices `F`.
 
-_Optionally_ the library may also be [pre-compiled](optional/) into a statically
+_Optionally_ the library may also be [pre-compiled](http://libigl.github.io/libigl/static-library/) into a statically
 linked library, for faster compile times with your projects. This only effects
 compile time (run-time performance and behavior is identical). If in doubt, use
 the header-only default mode: (i.e. just include the headers you want to use).
@@ -41,7 +41,7 @@ and Windows with Visual Studio 2015 Community Edition.
 ## Tutorial
 
 As of version 1.0, libigl includes an introductory
-[tutorial](http://libigl.github.io/libigl/tutorial/tutorial.html) that covers many functionalities.
+[tutorial](http://libigl.github.io/libigl/tutorial) that covers many functionalities.
 
 ## libigl Example Project
 
@@ -49,7 +49,7 @@ We provide a [blank project example](https://github.com/libigl/libigl-example-pr
 
 ## Coding Guidelines and Tips
 
-libigl follows strict coding guidelines, please take a look [here](http://libigl.github.io/libigl/style-guidelines.html) before submitting your pull requests. We also have a set of [general coding tips](http://libigl.github.io/libigl/coding-guidelines.html) on how to code a geometry processing research project.
+libigl follows strict coding guidelines, please take a look [here](http://libigl.github.io/libigl/style-guidelines) before submitting your pull requests. We also have a set of [general coding tips](http://libigl.github.io/libigl/coding-guidelines) on how to code a geometry processing research project.
 
 ## Installation
 
@@ -100,7 +100,7 @@ Hello, mesh:
 Dependencies are on a per-include basis and the majority of the functions in
 libigl depends only on the [Eigen](http://eigen.tuxfamily.org) library.
 
-For more information see our [tutorial](tutorial/tutorial.html).
+For more information see our [tutorial](http://libigl.github.io/libigl/tutorial).
 
 ### Optional Dependencies
 
@@ -150,7 +150,7 @@ a major _todo_ for our development.
 ## Git Submodules
 Libigl uses git submodules for its _optional_ dependencies,
 in particular, those needed by the OpenGL viewer to run the examples in the
-[tutorial](tutorial/tutorial.html). Git submodules allow use to treat clones of
+[tutorial](http://libigl.github.io/libigl/tutorial). Git submodules allow use to treat clones of
 other libraries as sub-directories within ours while separating our commits.
 Read the [documentation](http://git-scm.com/docs/git-submodule) for a detailed
 explanation, but essentially our libigl repo stores a hash for each of its
@@ -175,7 +175,7 @@ repository](https://github.com/libigl/libigl-unit-tests) for unit testing.
 
 If you are interested in joining development, please fork the repository and
 submit a [pull request](https://help.github.com/articles/using-pull-requests/)
-with your changes. libigl follows strict coding guidelines, please take a look at our  [style guidelines](style-guidelines.html) before submitting your pull requests.
+with your changes. libigl follows strict coding guidelines, please take a look at our  [style guidelines](http://libigl.github.io/libigl/style-guidelines) before submitting your pull requests.
 
 ## License
 libigl is primarily [MPL2](http://www.mozilla.org/MPL/2.0/) licensed
@@ -229,6 +229,7 @@ few labs/companies/institutions using libigl:
  - [TU Delft](http://www.tudelft.nl/en/), Netherlands
  - [TU Wien](https://www.tuwien.ac.at/en/tuwien_home/), Austria
  - [Telecom ParisTech](http://www.telecom-paristech.fr/en/formation-et-innovation-dans-le-numerique.html), Paris, France
+ - [UBISOFT](https://www.ubisoft.com/en-us/), USA
  - [Utrecht University](http://www.staff.science.uu.nl/~vaxma001/), The Netherlands
  - [Universidade Federal de Santa Catarina](http://mtm.ufsc.br/~leo/), Brazil
  - [University College London](http://vecg.cs.ucl.ac.uk/), England

@@ -148,6 +148,8 @@ IGL_INLINE void igl::copyleft::cgal::remesh_intersections(
     std::vector<Index> source_faces;
     std::vector<Point_3> new_vertices;
     EdgeMap edge_vertices;
+    // face_vertices: Given a face Index, find vertices inside the face
+    std::unordered_map<Index, std::vector<Index>> face_vertices;
 
     // Run constraint Delaunay triangulation on the plane.
     // 
@@ -252,8 +254,15 @@ IGL_INLINE void igl::copyleft::cgal::remesh_intersections(
         }
 
         // p must be in the middle of the triangle.
+        auto & existing_face_vertices = face_vertices[ori_f];
+        for(const auto vid : existing_face_vertices) {
+          if (p == new_vertices[vid - num_base_vertices]) {
+            return vid;
+          }
+        }
         const size_t index = num_base_vertices + new_vertices.size();
         new_vertices.push_back(p);
+        existing_face_vertices.push_back(index);
         return index;
       }
     };

@@ -221,7 +221,7 @@ IGL_INLINE void ImGuiMenu::draw_viewer_menu()
     ImGui::DragFloat("Zoom", &(viewer->core.camera_zoom), 0.05f, 0.1f, 20.0f);
 
     // Select rotation type
-    static int rotation_type = static_cast<int>(viewer->core.rotation_type);
+    int rotation_type = static_cast<int>(viewer->core.rotation_type);
     static Eigen::Quaternionf trackball_angle = Eigen::Quaternionf::Identity();
     static bool orthographic = true;
     if (ImGui::Combo("Camera Type", &rotation_type, "Trackball\0Two Axes\0002D Mode\0\0"))
@@ -347,10 +347,9 @@ IGL_INLINE void ImGuiMenu::draw_labels(const igl::opengl::ViewerData &data)
 
 IGL_INLINE void ImGuiMenu::draw_text(Eigen::Vector3d pos, Eigen::Vector3d normal, const std::string &text)
 {
-  Eigen::Matrix4f view_matrix = viewer->core.view * viewer->core.model;
   pos += normal * 0.005f * viewer->core.object_scale;
   Eigen::Vector3f coord = igl::project(Eigen::Vector3f(pos.cast<float>()),
-    view_matrix, viewer->core.proj, viewer->core.viewport);
+    viewer->core.view, viewer->core.proj, viewer->core.viewport);
 
   // Draw text labels slightly bigger than normal text
   ImDrawList* drawList = ImGui::GetWindowDrawList();

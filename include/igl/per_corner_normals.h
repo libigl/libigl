@@ -23,8 +23,8 @@ namespace igl
   //     for corner F(i,j) is at CN(i*3+j,:) 
   template <typename DerivedV, typename DerivedF, typename DerivedCN>
   IGL_INLINE void per_corner_normals(
-    const Eigen::PlainObjectBase<DerivedV>& V,
-    const Eigen::PlainObjectBase<DerivedF>& F,
+    const Eigen::MatrixBase<DerivedV>& V,
+    const Eigen::MatrixBase<DerivedF>& F,
     const double corner_threshold,
     Eigen::PlainObjectBase<DerivedCN> & CN);
   // Other Inputs:
@@ -35,9 +35,9 @@ namespace igl
     typename DerivedFN, 
     typename DerivedCN>
   IGL_INLINE void per_corner_normals(
-    const Eigen::PlainObjectBase<DerivedV>& V,
-    const Eigen::PlainObjectBase<DerivedF>& F,
-    const Eigen::PlainObjectBase<DerivedFN>& FN,
+    const Eigen::MatrixBase<DerivedV>& V,
+    const Eigen::MatrixBase<DerivedF>& F,
+    const Eigen::MatrixBase<DerivedFN>& FN,
     const double corner_threshold,
     Eigen::PlainObjectBase<DerivedCN> & CN);
   // Other Inputs:
@@ -49,9 +49,9 @@ namespace igl
     typename IndexType,
     typename DerivedCN>
   IGL_INLINE void per_corner_normals(
-    const Eigen::PlainObjectBase<DerivedV>& V,
-    const Eigen::PlainObjectBase<DerivedF>& F,
-    const Eigen::PlainObjectBase<DerivedFN>& FN,
+    const Eigen::MatrixBase<DerivedV>& V,
+    const Eigen::MatrixBase<DerivedF>& F,
+    const Eigen::MatrixBase<DerivedFN>& FN,
     const std::vector<std::vector<IndexType> >& VF,
     const double corner_threshold,
     Eigen::PlainObjectBase<DerivedCN> & CN);

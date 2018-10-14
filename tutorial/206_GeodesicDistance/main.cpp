@@ -3,6 +3,7 @@
 #include <igl/exact_geodesic.h>
 #include <igl/colormap.h>
 #include <igl/unproject_onto_mesh.h>
+#include <igl/PI.h>
 #include <iostream>
 #include "tutorial_shared_path.h"
 
@@ -30,7 +31,7 @@ int main(int argc, char *argv[])
     igl::exact_geodesic(V,F,VS,FS,VT,FT,d);
     const double strip_size = 0.05;
     // The function should be 1 on each integer coordinate
-    d = (d/strip_size*M_PI).array().sin().abs().eval();
+    d = (d/strip_size*igl::PI).array().sin().abs().eval();
     // Compute per-vertex colors
     Eigen::MatrixXd C;
     igl::colormap(igl::COLOR_MAP_TYPE_INFERNO,d,false,C);
@@ -49,13 +50,13 @@ int main(int argc, char *argv[])
     double x = viewer.current_mouse_x;
     double y = viewer.core.viewport(3) - viewer.current_mouse_y;
     if(igl::unproject_onto_mesh(
-      Eigen::Vector2f(x,y), 
-      viewer.core.view * viewer.core.model,
-      viewer.core.proj, 
-      viewer.core.viewport, 
-      V, 
-      F, 
-      fid, 
+      Eigen::Vector2f(x,y),
+      viewer.core.view,
+      viewer.core.proj,
+      viewer.core.viewport,
+      V,
+      F,
+      fid,
       bc))
     {
       int max;

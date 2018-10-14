@@ -56,7 +56,7 @@ IGL_INLINE bool igl::writePLY(
     FScalar *verts;              /* vertex index list */
   } Face;
 
-  PlyProperty vert_props[] =
+  igl::ply::PlyProperty vert_props[] =
   { /* list of property information for a vertex */
     {"x", ply_type<VScalar>(), ply_type<VScalar>(),offsetof(Vertex,x),0,0,0,0},
     {"y", ply_type<VScalar>(), ply_type<VScalar>(),offsetof(Vertex,y),0,0,0,0},
@@ -68,7 +68,7 @@ IGL_INLINE bool igl::writePLY(
     {"t", ply_type<UVScalar>(),ply_type<UVScalar>(),offsetof(Vertex,t),0,0,0,0},
   };
 
-  PlyProperty face_props[] =
+  igl::ply::PlyProperty face_props[] =
   { /* list of property information for a face */
     {"vertex_indices", ply_type<FScalar>(), ply_type<FScalar>(), 
       offsetof(Face,verts), 1, PLY_UCHAR, PLY_UCHAR, offsetof(Face,nverts)},
@@ -110,14 +110,14 @@ IGL_INLINE bool igl::writePLY(
   {
     return false;
   }
-  PlyFile * ply = ply_write(fp, 2,elem_names,
+  igl::ply::PlyFile * ply = igl::ply::ply_write(fp, 2,elem_names,
       (ascii ? PLY_ASCII : PLY_BINARY_LE));
   if(ply==NULL)
   {
     return false;
   }
 
-  std::vector<PlyProperty> plist;
+  std::vector<igl::ply::PlyProperty> plist;
   plist.push_back(vert_props[0]);
   plist.push_back(vert_props[1]);
   plist.push_back(vert_props[2]);
@@ -137,7 +137,7 @@ IGL_INLINE bool igl::writePLY(
 
   ply_describe_element(ply, "face", F.rows(),1,&face_props[0]);
   ply_header_complete(ply);
-  int native_binary_type = get_native_binary_type2();
+  int native_binary_type = igl::ply::get_native_binary_type2();
   ply_put_element_setup(ply, "vertex");
   for(const auto v : vlist)
   {

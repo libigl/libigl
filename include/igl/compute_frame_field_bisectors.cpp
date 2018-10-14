@@ -13,6 +13,7 @@
 
 #include "compute_frame_field_bisectors.h"
 #include "igl/local_basis.h"
+#include "PI.h"
 
 template <typename DerivedV, typename DerivedF>
 IGL_INLINE void igl::compute_frame_field_bisectors(
@@ -34,26 +35,26 @@ IGL_INLINE void igl::compute_frame_field_bisectors(
     // Convert to angle
     double a1 = atan2(B2.row(i).dot(PD1.row(i)),B1.row(i).dot(PD1.row(i)));
     //make it positive by adding some multiple of 2pi
-    a1 += std::ceil (std::max(0., -a1) / (M_PI*2.)) * (M_PI*2.);
+    a1 += std::ceil (std::max(0., -a1) / (igl::PI*2.)) * (igl::PI*2.);
     //take modulo 2pi
-    a1 = fmod(a1, (M_PI*2.));
+    a1 = fmod(a1, (igl::PI*2.));
     double a2 = atan2(B2.row(i).dot(PD2.row(i)),B1.row(i).dot(PD2.row(i)));
     //make it positive by adding some multiple of 2pi
-    a2 += std::ceil (std::max(0., -a2) / (M_PI*2.)) * (M_PI*2.);
+    a2 += std::ceil (std::max(0., -a2) / (igl::PI*2.)) * (igl::PI*2.);
     //take modulo 2pi
-    a2 = fmod(a2, (M_PI*2.));
+    a2 = fmod(a2, (igl::PI*2.));
 
     double b1 = (a1+a2)/2.0;
     //make it positive by adding some multiple of 2pi
-    b1 += std::ceil (std::max(0., -b1) / (M_PI*2.)) * (M_PI*2.);
+    b1 += std::ceil (std::max(0., -b1) / (igl::PI*2.)) * (igl::PI*2.);
     //take modulo 2pi
-    b1 = fmod(b1, (M_PI*2.));
+    b1 = fmod(b1, (igl::PI*2.));
 
-    double b2 = b1+(M_PI/2.);
+    double b2 = b1+(igl::PI/2.);
     //make it positive by adding some multiple of 2pi
-    b2 += std::ceil (std::max(0., -b2) / (M_PI*2.)) * (M_PI*2.);
+    b2 += std::ceil (std::max(0., -b2) / (igl::PI*2.)) * (igl::PI*2.);
     //take modulo 2pi
-    b2 = fmod(b2, (M_PI*2.));
+    b2 = fmod(b2, (igl::PI*2.));
 
     BIS1.row(i) = cos(b1) * B1.row(i) + sin(b1) * B2.row(i);
     BIS2.row(i) = cos(b2) * B1.row(i) + sin(b2) * B2.row(i);

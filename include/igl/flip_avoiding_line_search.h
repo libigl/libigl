@@ -8,6 +8,7 @@
 #ifndef IGL_FLIP_AVOIDING_LINE_SEARCH_H
 #define IGL_FLIP_AVOIDING_LINE_SEARCH_H
 #include "igl_inline.h"
+#include "PI.h"
 
 #include <Eigen/Dense>
 

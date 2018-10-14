@@ -6,6 +6,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "random_quaternion.h"
+#include "PI.h"
 
 template <typename Scalar>
 IGL_INLINE Eigen::Quaternion<Scalar> igl::random_quaternion()
@@ -16,9 +17,9 @@ IGL_INLINE Eigen::Quaternion<Scalar> igl::random_quaternion()
   };
 #ifdef false
   // http://mathproofs.blogspot.com/2005/05/uniformly-distributed-random-unit.html
-  const Scalar t0 = 2.*M_PI*unit_rand();
+  const Scalar t0 = 2.*igl::PI*unit_rand();
   const Scalar t1 = acos(1.-2.*unit_rand());
-  const Scalar t2 = 0.5*(M_PI*unit_rand() + acos(unit_rand()));
+  const Scalar t2 = 0.5*(igl::PI*unit_rand() + acos(unit_rand()));
   return Eigen::Quaternion<Scalar>(
     1.*sin(t0)*sin(t1)*sin(t2),
     1.*cos(t0)*sin(t1)*sin(t2),
@@ -63,8 +64,8 @@ IGL_INLINE Eigen::Quaternion<Scalar> igl::random_quaternion()
   const Scalar x2 = unit_rand();
   const Scalar r1 = sqrt(1.0 - x0);
   const Scalar r2 = sqrt(x0);
-  const Scalar t1 = 2.*M_PI*x1;
-  const Scalar t2 = 2.*M_PI*x2;
+  const Scalar t1 = 2.*igl::PI*x1;
+  const Scalar t2 = 2.*igl::PI*x2;
   const Scalar c1 = cos(t1);
   const Scalar s1 = sin(t1);
   const Scalar c2 = cos(t2);
