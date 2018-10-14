@@ -2888,6 +2888,32 @@ igl::marching_cubes(S,GV,nx,ny,nz,V,F);
 
 ![([Example 705]({{ repo_url }}/tutorial/705_MarchingCubes/main.cpp)) samples signed distance to the input mesh (left) and then reconstructs the surface using marching cubes to contour the 0-level set (center). For comparison, clamping this signed distance field to an indicator function and contouring reveals serious aliasing artifacts.](images/armadillo-marching-cubes.jpg)
 
+### Marching Tetrahedra
+
+Often 3D data is captured as scalar field defined over space $f(\mathbf{x}) :
+\mathcal{R}^3 \rightarrow \mathcal{R}$. Lurking within this field,
+_iso-surfaces_ of the scalar field are often salient geometric objects. The
+iso-surface at value $v$ is composed of all points $\mathbf{x}$ in
+$\mathcal{R}^3$ such that $f(\mathbf{x}) = v$. A core problem in geometry
+processing is to extract an iso-surface as a triangle mesh for further
+mesh-based processing or visualization. This is referred to as iso-contouring.
+
+"Marching Tetrahedra" [^treece_1999] is a [famous
+method](https://en.wikipedia.org/wiki/Marching_tetrahedra) for iso-contouring
+tri-linear functions $f$ on a 3D simplicial complex (aka a tet mesh). The core idea of this
+method is to contour the iso-surface passing through each cell  (if it does at
+all) with a predefined topology (aka connectivity) chosen from a look up table
+depending on the function values at each vertex of the cell. The method
+iterates ("marches") over all cells ("tetrahedra") in the complex and stitches together
+the final mesh.
+
+In libigl, `igl::marching_tets` constructs a triangle mesh `(V,F)` approximating the iso-level set
+for the value `isovalue` from an input scalar field `S` sampled at the vertices of a tet mesh locations `(TV, TT)`:
+
+```cpp
+igl::marching_tets(TV,TT,S, isovalue ,V,F);
+```
+
 ### Facet Orientation
 
 Models from the web occasionally arrive _unorientated_ in the sense that
@@ -3227,3 +3253,4 @@ repository](https://github.com/libigl/libigl).
 [^rabinovich_2016]: Michael Rabinovich, Roi Poranne, Daniele Panozzo, Olga Sorkine-Hornung. [Scalable Locally Injective Mappings](http://cs.nyu.edu/~panozzo/papers/SLIM-2016.pdf), 2016.
 [^schroeder_1994]: William J. Schroeder, William E. Lorensen, and Steve Linthicum. [Implicit Modeling of Swept Surfaces and Volumes](https://www.google.com/search?q=implicit+modeling+of+swept+surfaces+and+volumes), 1994.
 [^takayama14]: Kenshi Takayama, Alec Jacobson, Ladislav Kavan, Olga Sorkine-Hornung. [A Simple Method for Correcting Facet Orientations in Polygon Meshes Based on Ray Casting](https://www.google.com/search?q=A+Simple+Method+for+Correcting+Facet+Orientations+in+Polygon+Meshes+Based+on+Ray+Casting), 2014.
+[^treece_1999]: G.M. Treece, R.W. Prager, and A.H.Gee [Regularised marching tetrahedra: improved iso-surface extraction](https://www.sciencedirect.com/science/article/pii/S009784939900076X), 1999.
