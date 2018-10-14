@@ -33,32 +33,32 @@ extern const int edgeTable[256];
 extern const int triTable[256][2][17];
 extern const int polyTable[8][16];
 
-struct EdgeKey
-{
-  EdgeKey(unsigned i0, unsigned i1) : i0_(i0), i1_(i1) {}
-
-  bool operator==(const EdgeKey& _rhs) const
-  {
-    return i0_ == _rhs.i0_ && i1_ == _rhs.i1_;
-  }
-
-  unsigned i0_, i1_;
-};
-
-struct EdgeHash
-{
-  std::size_t operator()(const EdgeKey& key) const {
-    std::size_t seed = 0;
-    seed ^= key.i0_ + 0x9e3779b9 + (seed<<6) + (seed>>2); // Copied from boost::hash_combine
-    seed ^= key.i1_ + 0x9e3779b9 + (seed<<6) + (seed>>2);
-    return std::hash<std::size_t>()(seed);
-  }
-};
-
 
 template <typename DerivedValues, typename DerivedPoints, typename DerivedVertices, typename DerivedIndices, typename DerivedFaces>
 class MarchingCubes
 {
+  struct EdgeKey
+  {
+    EdgeKey(unsigned i0, unsigned i1) : i0_(i0), i1_(i1) {}
+
+    bool operator==(const EdgeKey& _rhs) const
+    {
+      return i0_ == _rhs.i0_ && i1_ == _rhs.i1_;
+    }
+
+    unsigned i0_, i1_;
+  };
+
+  struct EdgeHash
+  {
+    std::size_t operator()(const EdgeKey& key) const {
+      std::size_t seed = 0;
+      seed ^= key.i0_ + 0x9e3779b9 + (seed<<6) + (seed>>2); // Copied from boost::hash_combine
+      seed ^= key.i1_ + 0x9e3779b9 + (seed<<6) + (seed>>2);
+      return std::hash<std::size_t>()(seed);
+    }
+  };
+
   typedef std::unordered_map<EdgeKey, unsigned, EdgeHash> MyMap;
   typedef typename MyMap::const_iterator                  MyMapIterator;
 
