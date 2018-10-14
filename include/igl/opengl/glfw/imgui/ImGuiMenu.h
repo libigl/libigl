@@ -12,6 +12,7 @@
 #include <igl/opengl/glfw/Viewer.h>
 #include <igl/opengl/glfw/ViewerPlugin.h>
 #include <igl/igl_inline.h>
+#include <memory>
 ////////////////////////////////////////////////////////////////////////////////
 
 // Forward declarations

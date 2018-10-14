@@ -112,7 +112,7 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
   /* Bind and potentially refresh mesh/line/point data */
   if (data.dirty)
   {
-    data.updateGL(data, data.invert_normals,data.meshgl);
+    data.updateGL(data, data.invert_normals, data.meshgl);
     data.dirty = MeshGL::DIRTY_NONE;
   }
   data.meshgl.bind_mesh();

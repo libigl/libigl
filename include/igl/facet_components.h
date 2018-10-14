@@ -14,6 +14,8 @@ namespace igl
 {
   // Compute connected components of facets based on edge-edge adjacency.
   //
+  // For connected components on vertices see igl::vertex_components
+  //
   // Inputs:
   //   F  #F by 3 list of triangle indices
   // Outputs:
@@ -22,6 +24,11 @@ namespace igl
   IGL_INLINE void facet_components(
     const Eigen::PlainObjectBase<DerivedF> & F,
     Eigen::PlainObjectBase<DerivedC> & C);
+
+  // Compute connected components of facets based on edge-edge adjacency.
+  //
+  // For connected components on vertices see igl::vertex_components
+  //
   // Inputs:
   //   TT  #TT by 3 list of list of adjacency triangles (see
   //   triangle_triangle_adjacency.h)
