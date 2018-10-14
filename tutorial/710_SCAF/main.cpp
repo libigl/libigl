@@ -10,6 +10,7 @@
 #include <igl/doublearea.h>
 #include <igl/PI.h>
 #include <igl/flipped_triangles.h>
+#include <igl/topological_hole_fill.h>
 
 #include "tutorial_shared_path.h"
 
@@ -93,8 +94,12 @@ int main(int argc, char *argv[])
   }
   else
   {
+    // if there is a hole, fill it and erase additional vertices.
     all_bnds.erase(primary_bnd);
-    igl::harmonic(F, bnd, bnd_uv, all_bnds ,1, uv_init);
+    Eigen::MatrixXi F_filled;
+    igl::topological_hole_fill(F, bnd, all_bnds, F_filled);
+    igl::harmonic(F_filled, bnd, bnd_uv ,1, uv_init);
+    uv_init = uv_init.topRows(V.rows());
   }
 
   Eigen::VectorXi b; Eigen::MatrixXd bc;

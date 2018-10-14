@@ -10,12 +10,10 @@
 template <
   typename DerivedF,
   typename Derivedb,
-  typename Derivedbc,
   typename VectorIndex>
 IGL_INLINE void igl::topological_hole_fill(
   const Eigen::MatrixBase<DerivedF> & F,
   const Eigen::MatrixBase<Derivedb> & b,
-  const Eigen::MatrixBase<Derivedbc> & bc,
   const std::vector<VectorIndex> & holes,
   Eigen::PlainObjectBase<DerivedF> &F_filled)
 {
@@ -50,3 +48,7 @@ IGL_INLINE void igl::topological_hole_fill(
   assert(new_vert_id == V_rows + num_holes);
 
 }
+
+#ifdef IGL_STATIC_LIBRARY
+template void igl::topological_hole_fill<Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, std::vector<int, std::allocator<int> > >(Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 1,0, -1, 1> > const&, std::vector<std::vector<int, std::allocator<int> >, std::allocator<std::vector<int, std::allocator<int> > > > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
+#endif

@@ -25,7 +25,6 @@
 #include "polar_svd.h"
 #include "flip_avoiding_line_search.h"
 #include "mapping_energy_with_jacobians.h"
-#include "surface_gradient.h"
 
 #include <iostream>
 #include <map>
@@ -161,7 +160,25 @@ namespace igl
           s.dim = 2;
           Eigen::MatrixXd F1, F2, F3;
           igl::local_basis(s.V, s.F, F1, F2, F3);
-          surface_gradient(s.V, s.F, F1, F2, s.Dx, s.Dy);
+          Eigen::SparseMatrix<double> G;
+          igl::grad(s.V, s.F, G);
+          Eigen::SparseMatrix<double> Face_Proj;
+
+          auto face_proj = [](Eigen::MatrixXd& F){
+            std::vector<Eigen::Triplet<double> >IJV;
+            int f_num = F.rows();
+            for(int i=0; i<F.rows(); i++) {
+              IJV.push_back(Eigen::Triplet<double>(i, i, F(i,0)));
+              IJV.push_back(Eigen::Triplet<double>(i, i+f_num, F(i,1)));
+              IJV.push_back(Eigen::Triplet<double>(i, i+2*f_num, F(i,2)));
+            }
+            Eigen::SparseMatrix<double> P(f_num, 3*f_num);
+            P.setFromTriplets(IJV.begin(), IJV.end());
+            return P;
+          };
+          
+          s.Dx = face_proj(F1) * G;
+          s.Dy = face_proj(F2) * G;
         }
         else
         {

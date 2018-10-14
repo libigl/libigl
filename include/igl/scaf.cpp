@@ -31,7 +31,6 @@
 #include <igl/slim.h>
 #include <igl/triangle/triangulate.h>
 #include "mapping_energy_with_jacobians.h"
-#include "surface_gradient.h"
 
 #include <iostream>
 #include <map>
@@ -644,7 +643,23 @@ IGL_INLINE void igl::scaf_precompute(
     int dim = s.dim;
     Eigen::MatrixXd F1, F2, F3;
     igl::local_basis(s.m_V, s.m_T, F1, F2, F3);
-    igl::surface_gradient(s.m_V, s.m_T, F1, F2, s.Dx_m, s.Dy_m);
+    auto face_proj = [](Eigen::MatrixXd& F){
+      std::vector<Eigen::Triplet<double> >IJV;
+      int f_num = F.rows();
+      for(int i=0; i<F.rows(); i++) {
+        IJV.push_back(Eigen::Triplet<double>(i, i, F(i,0)));
+        IJV.push_back(Eigen::Triplet<double>(i, i+f_num, F(i,1)));
+        IJV.push_back(Eigen::Triplet<double>(i, i+2*f_num, F(i,2)));
+      }
+      Eigen::SparseMatrix<double> P(f_num, 3*f_num);
+      P.setFromTriplets(IJV.begin(), IJV.end());
+      return P;
+    };
+    Eigen::SparseMatrix<double> G;
+    igl::grad(s.m_V, s.m_T, G);
+    s.Dx_m = face_proj(F1) * G;
+    s.Dy_m = face_proj(F2) * G;
+
     igl::scaf::compute_scaffold_gradient_matrix(s, s.Dx_s, s.Dy_s);
 
     s.Dx_m.makeCompressed();

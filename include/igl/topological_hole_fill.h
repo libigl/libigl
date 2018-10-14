@@ -5,8 +5,8 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
-#ifndef IGL_HARMONIC_H
-#define IGL_HARMONIC_H
+#ifndef IGL_TOPOLOGICAL_HOLE_FILL_H
+#define IGL_TOPOLOGICAL_HOLE_FILL_H
 #include "igl_inline.h"
 #include <Eigen/Core>
 #include <Eigen/Sparse>
@@ -25,12 +25,18 @@ namespace igl
   template <
   typename DerivedF,
   typename Derivedb,
-  typename Derivedbc,
   typename VectorIndex>
-IGL_INLINE void igl::topological_hole_fill(
+IGL_INLINE void topological_hole_fill(
   const Eigen::MatrixBase<DerivedF> & F,
   const Eigen::MatrixBase<Derivedb> & b,
   const std::vector<VectorIndex> & holes,
   Eigen::PlainObjectBase<DerivedF> &F_filled);
 
 }
+
+
+#ifndef IGL_STATIC_LIBRARY
+#  include "topological_hole_fill.cpp"
+#endif
+
+#endif
