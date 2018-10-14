@@ -35,7 +35,7 @@ def update(viewer):
     F_vis = igl.eigen.MatrixXi()
     J = igl.eigen.MatrixXi()
     bary = igl.eigen.SparseMatrixd()
-    igl.marching_tets(V, T, plane, V_vis, F_vis, J, bary)
+    igl.slice_tets(V, T, plane, V_vis, F_vis, J, bary)
     W_vis = igl.eigen.MatrixXd()
     igl.slice(W, J, W_vis)
     C_vis = igl.eigen.MatrixXd()

@@ -149,9 +149,6 @@ if(TUTORIALS_CHAPTER7)
   add_subdirectory("711_Subdivision")
   add_subdirectory("712_DataSmoothing")
   add_subdirectory("713_ShapeUp")
-  if(LIBIGL_WITH_TETGEN)
-    add_subdirectory("714_MarchingTets")
-  endif()
 endif()
 
 
