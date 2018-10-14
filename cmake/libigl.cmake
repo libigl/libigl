@@ -179,6 +179,12 @@ endif()
 compile_igl_module("core" ${SOURCES_IGL})
 
 ################################################################################
+### Download the python part ###
+if(LIBIGL_WITH_PYTHON)
+  igl_download_pybind11()
+endif()
+
+################################################################################
 ### Compile the CGAL part ###
 if(LIBIGL_WITH_CGAL)
   # Try to find the CGAL library
@@ -186,6 +192,7 @@ if(LIBIGL_WITH_CGAL)
   # `Exact_predicates_exact_constructions_kernel_with_sqrt`
   if(NOT TARGET CGAL::CGAL)
     set(CGAL_DIR "${LIBIGL_EXTERNAL}/cgal")
+    igl_download_cgal()
     igl_download_cgal_deps()
     if(EXISTS ${LIBIGL_EXTERNAL}/boost)
       set(BOOST_ROOT "${LIBIGL_EXTERNAL}/boost")
