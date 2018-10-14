@@ -13,7 +13,7 @@ namespace igl
   // Refer to SLIM [Rabinovich et al. 2017] for more details
   // Todo: Integrate with ARAPEnergyType
   
-  enum class MappingEnergyType
+  enum MappingEnergyType
   {
     ARAP,
     LOG_ARAP,
