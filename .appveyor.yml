@@ -8,6 +8,7 @@ branches:
     - alecjacobson
     - cmake
     - cgal
+    - dev
 environment:
   BOOST_ROOT: C:/Libraries/boost_1_65_1
 install:
