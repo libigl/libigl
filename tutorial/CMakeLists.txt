@@ -32,13 +32,13 @@ else()
 endif()
 
 ### Choose which chapters to compile
-option(TUTORIALS_CHAPTER1 "Compile chapter 1" OFF)
+option(TUTORIALS_CHAPTER1 "Compile chapter 1" ON)
 option(TUTORIALS_CHAPTER2 "Compile chapter 2" ON)
-option(TUTORIALS_CHAPTER3 "Compile chapter 3" OFF)
-option(TUTORIALS_CHAPTER4 "Compile chapter 4" OFF)
-option(TUTORIALS_CHAPTER5 "Compile chapter 5" OFF)
-option(TUTORIALS_CHAPTER6 "Compile chapter 6" OFF)
-option(TUTORIALS_CHAPTER7 "Compile chapter 7" OFF)
+option(TUTORIALS_CHAPTER3 "Compile chapter 3" ON)
+option(TUTORIALS_CHAPTER4 "Compile chapter 4" ON)
+option(TUTORIALS_CHAPTER5 "Compile chapter 5" ON)
+option(TUTORIALS_CHAPTER6 "Compile chapter 6" ON)
+option(TUTORIALS_CHAPTER7 "Compile chapter 7" ON)
 
 # Store location of tutorial/shared directory
 set(TUTORIAL_SHARED_PATH ${CMAKE_CURRENT_SOURCE_DIR}/shared CACHE PATH "location of shared tutorial resources")
