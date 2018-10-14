@@ -8,7 +8,7 @@
 #include <igl/readMESH.h>
 #include <igl/signed_distance.h>
 #include <igl/slice_mask.h>
-#include <igl/slice_tets.h>
+#include <igl/marching_tets.h>
 #include <igl/upsample.h>
 #include <igl/opengl/glfw/Viewer.h>
 #include <igl/writeOBJ.h>
@@ -48,7 +48,7 @@ void update_visualization(igl::opengl::glfw::Viewer & viewer)
          V.col(1)*plane(1) + 
          V.col(2)*plane(2)).array()
         + plane(3);
-      igl::slice_tets(V,T,IV,V_vis,F_vis,J,bary);
+      igl::marching_tets(V,T,IV,V_vis,F_vis,J,bary);
       igl::writeOBJ("vis.obj",V_vis,F_vis);
     }
     while(true)

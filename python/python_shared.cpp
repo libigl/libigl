@@ -147,7 +147,7 @@ PYBIND11_PLUGIN(pyigl) {
            slice
            slice_into
            slice_mask
-           slice_tets
+           marching_tets
            sortrows
            streamlines
            triangle_triangle_adjacency

@@ -92,7 +92,7 @@
 #include <igl/slice.h>
 #include <igl/slice_into.h>
 #include <igl/slice_mask.h>
-#include <igl/slice_tets.h>
+#include <igl/marching_tets.h>
 #include <igl/sortrows.h>
 #include <igl/triangle_triangle_adjacency.h>
 #include <igl/unique.h>
@@ -191,7 +191,7 @@ void python_export_igl(py::module &m)
 #include "py_igl/py_slice.cpp"
 #include "py_igl/py_slice_into.cpp"
 #include "py_igl/py_slice_mask.cpp"
-#include "py_igl/py_slice_tets.cpp"
+#include "py_igl/py_marching_tets.cpp"
 #include "py_igl/py_sortrows.cpp"
 #include "py_igl/py_triangle_triangle_adjacency.cpp"
 #include "py_igl/py_unique.cpp"
