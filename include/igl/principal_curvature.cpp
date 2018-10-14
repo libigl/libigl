@@ -692,8 +692,8 @@ IGL_INLINE void CurvatureCalculator::computeCurvature()
 
     if (vv.size()<6)
     {
-      std::cerr << "Could not compute curvature of radius " << scaledRadius << std::endl;
-      return;
+      //std::cerr << "Could not compute curvature of radius " << scaledRadius << std::endl;
+      continue;
     }
 
 
@@ -720,8 +720,8 @@ IGL_INLINE void CurvatureCalculator::computeCurvature()
     }
     if (vv.size()<6)
     {
-      std::cerr << "Could not compute curvature of radius " << scaledRadius << std::endl;
-      return;
+      //std::cerr << "Could not compute curvature of radius " << scaledRadius << std::endl;
+      continue;
     }
     if (montecarlo)
     {
@@ -770,6 +770,92 @@ IGL_INLINE void CurvatureCalculator::printCurvature(const std::string& outpath)
   }
 
   of.close();
+
+}
+
+template <
+  typename DerivedV,
+  typename DerivedF,
+  typename DerivedPD1,
+  typename DerivedPD2,
+  typename DerivedPV1,
+  typename DerivedPV2,
+  typename Index>
+IGL_INLINE void igl::principal_curvature(
+  const Eigen::PlainObjectBase<DerivedV>& V,
+  const Eigen::PlainObjectBase<DerivedF>& F,
+  Eigen::PlainObjectBase<DerivedPD1>& PD1,
+  Eigen::PlainObjectBase<DerivedPD2>& PD2,
+  Eigen::PlainObjectBase<DerivedPV1>& PV1,
+  Eigen::PlainObjectBase<DerivedPV2>& PV2,
+  std::vector<Index>& bad_vertices,
+  unsigned radius,
+  bool useKring)
+{
+
+  if (radius < 2)
+  {
+    radius = 2;
+    std::cout << "WARNING: igl::principal_curvature needs a radius >= 2, fixing it to 2." << std::endl;
+  }
+
+  // Preallocate memory
+  PD1.resize(V.rows(),3);
+  PD2.resize(V.rows(),3);
+
+  // Preallocate memory
+  PV1.resize(V.rows(),1);
+  PV2.resize(V.rows(),1);
+
+  // Precomputation
+  CurvatureCalculator cc;
+  cc.init(V.template cast<double>(),F.template cast<int>());
+  cc.sphereRadius = radius;
+
+  if (useKring)
+  {
+    cc.kRing = radius;
+    cc.st = K_RING_SEARCH;
+  }
+
+  // Compute
+  cc.computeCurvature();
+
+  // Copy it back
+  for (unsigned i=0; i<V.rows(); ++i)
+  {
+    if (!cc.curv[i].empty())
+    {
+      PD1.row(i) << cc.curvDir[i][0][0], cc.curvDir[i][0][1], cc.curvDir[i][0][2];
+      PD2.row(i) << cc.curvDir[i][1][0], cc.curvDir[i][1][1], cc.curvDir[i][1][2];
+      PD1.row(i).normalize();
+      PD2.row(i).normalize();
+
+      if (std::isnan(PD1(i,0)) || std::isnan(PD1(i,1)) || std::isnan(PD1(i,2)) || std::isnan(PD2(i,0)) || std::isnan(PD2(i,1)) || std::isnan(PD2(i,2)))
+      {
+        PD1.row(i) << 0,0,0;
+        PD2.row(i) << 0,0,0;
+      }
+
+      PV1(i) = cc.curv[i][0];
+      PV2(i) = cc.curv[i][1];
+
+      if (PD1.row(i) * PD2.row(i).transpose() > 10e-6)
+      {
+        bad_vertices.push_back((Index)i);
+
+        PD1.row(i) *= 0;
+        PD2.row(i) *= 0;
+      }
+    } else {
+      bad_vertices.push_back((Index)i);
+
+      PV1(i) = 0;
+      PV2(i) = 0;
+      PD1.row(i) << 0,0,0;
+      PD2.row(i) << 0,0,0;
+    }
+  }
 
 }
 
@@ -851,4 +937,5 @@ IGL_INLINE void igl::principal_curvature(
 template void igl::principal_curvature<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&, unsigned int, bool);
 template void igl::principal_curvature<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&, unsigned int, bool);
 template void igl::principal_curvature<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, unsigned int, bool);
+template void igl::principal_curvature<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, int>(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&, std::vector<int, std::allocator<int> >&, unsigned int, bool);
 #endif
