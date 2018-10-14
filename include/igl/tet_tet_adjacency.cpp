@@ -24,7 +24,7 @@ igl::tet_tet_adjacency(
   assert(T.cols()==4 && "Tets have four vertices.");
   
   //Preprocess
-  using Array = std::array<int, 5>;
+  using Array = std::array<typename DerivedT::Scalar, 5>;
   std::vector<Array> TTT(4*T.rows());
   const auto loop_f = [&](const int t) {
     TTT[4*t] = {T(t,0),T(t,1),T(t,2),t,0};
