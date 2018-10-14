@@ -54,6 +54,23 @@ to their dependencies. E.g. `igl::viewer::Viewer` has been renamed
 - NanoGui has been replaced by ImGui, and is now available as a viewer plugin
 instead of `#define`
 
+- Deprecated/repeated functions
+
+Old                                     | New
+--------------------------------------- | -----------------------------------
+`igl::angles`                           | `igl::internal_angles`
+`igl::get_modifiers`                    | [deleted]
+`igl::nchoosek(offset,K,N,std::vector)` | `igl::nchoosek(Eigen,K,Eigen)`
+`#include <igl/boost/components.h>`     | `#include <igl/components.h>`
+`#include <igl/boost/bfs_orient.h>`     | `#include <igl/bfs_orient.h>`
+`#include <igl/boost/orientable_patches.h>` | `#include <igl/orientable_patches.h>`
+`#include <igl/svd3x3/arap.h>`          | `#include <igl/arap.h>`
+`#include <igl/svd3x3/arap_dof.h>`      | `#include <igl/arap_dof.h>`
+`#include <igl/svd3x3/fit_rotations.h>` | `#include <igl/fit_rotations.h>`
+`#include <igl/svd3x3/polar_svd3x3.h>`  | `#include <igl/polar_svd3x3.h>`
+`#include <igl/svd3x3/svd3x3.h>`        | `#include <igl/svd3x3.h>`
+`#include <igl/svd3x3/svd3x3_avx.h>`    | `#include <igl/svd3x3_avx.h>`
+`#include <igl/svd3x3/svd3x3_sse.h>`    | `#include <igl/svd3x3_sse.h>`
 
 ## Version 1.2 Changes
 This change introduces better organization of dependencies and removes some
@@ -74,24 +91,6 @@ libigl _before version 1.2_ then you should issue
 
     git submodule update --init --recursive
 
-### Deprecated/repeated functions
-
-Old                                     | New
---------------------------------------- | -----------------------------------
-`igl::angles`                           | `igl::internal_angles`
-`igl::get_modifiers`                    | [deleted]
-`igl::nchoosek(offset,K,N,std::vector)` | `igl::nchoosek(Eigen,K,Eigen)`
-`#include <igl/boost/components.h>`     | `#include <igl/components.h>`
-`#include <igl/boost/bfs_orient.h>`     | `#include <igl/bfs_orient.h>`
-`#include <igl/boost/orientable_patches.h>` | `#include <igl/orientable_patches.h>`
-`#include <igl/svd3x3/arap.h>`          | `#include <igl/arap.h>`
-`#include <igl/svd3x3/arap_dof.h>`      | `#include <igl/arap_dof.h>`
-`#include <igl/svd3x3/fit_rotations.h>` | `#include <igl/fit_rotations.h>`
-`#include <igl/svd3x3/polar_svd3x3.h>`  | `#include <igl/polar_svd3x3.h>`
-`#include <igl/svd3x3/svd3x3.h>`        | `#include <igl/svd3x3.h>`
-`#include <igl/svd3x3/svd3x3_avx.h>`    | `#include <igl/svd3x3_avx.h>`
-`#include <igl/svd3x3/svd3x3_sse.h>`    | `#include <igl/svd3x3_sse.h>`
-
 
 ## Version 1.0 Changes
 Our beta release marks our confidence that this library can be used outside of
@@ -104,6 +103,7 @@ The following table lists functions which have changed name as of version
 
 Old                              | New
 -------------------------------- | -------------------------------------
+`igl::components		 | `igl::vertex_components`				 
 `igl::add_barycenter`            | `igl::false_barycentric_subdivision`
 `igl::areamatrix`                | `igl::vector_area_matrix`
 `igl::barycentric2global`        | `igl::barycentric_to_global`
