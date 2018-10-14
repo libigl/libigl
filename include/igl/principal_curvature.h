@@ -54,7 +54,7 @@ template <
   typename DerivedPD2,
   typename DerivedPV1,
   typename DerivedPV2>
-IGL_INLINE std::vector<size_t> principal_curvature(
+IGL_INLINE void principal_curvature(
   const Eigen::PlainObjectBase<DerivedV>& V,
   const Eigen::PlainObjectBase<DerivedF>& F,
   Eigen::PlainObjectBase<DerivedPD1>& PD1,
@@ -63,6 +63,26 @@ IGL_INLINE std::vector<size_t> principal_curvature(
   Eigen::PlainObjectBase<DerivedPV2>& PV2,
   unsigned radius = 5,
   bool useKring = true);
+
+template <
+  typename DerivedV,
+  typename DerivedF,
+  typename DerivedPD1,
+  typename DerivedPD2,
+  typename DerivedPV1,
+  typename DerivedPV2,
+  typename Index>
+IGL_INLINE void principal_curvature(
+  const Eigen::PlainObjectBase<DerivedV>& V,
+  const Eigen::PlainObjectBase<DerivedF>& F,
+  Eigen::PlainObjectBase<DerivedPD1>& PD1,
+  Eigen::PlainObjectBase<DerivedPD2>& PD2,
+  Eigen::PlainObjectBase<DerivedPV1>& PV1,
+  Eigen::PlainObjectBase<DerivedPV2>& PV2,
+  std::vector<Index>& bad_vertices,
+  unsigned radius = 5,
+  bool useKring = true);
+
 }
 
 
