@@ -55,7 +55,7 @@ IGL_INLINE int igl::copyleft::tetgen::tetrahedralize(
   {
     return -1;
   }
-  //boundary_facets(TT,TF);
+  boundary_facets(TT,TF);
   return 0;
 }
 
@@ -208,7 +208,7 @@ IGL_INLINE int igl::copyleft::tetgen::tetrahedralize(
 	for (int i = 0; i < out.numberofpoints; ++i) {
 		TM[i] = out.pointmarkerlist[i];
 	}
-  //boundary_facets(TT,TF);
+  boundary_facets(TT,TF);
   return 0;
 }
 
