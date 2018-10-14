@@ -104,7 +104,7 @@ void update_visualization(igl::opengl::glfw::Viewer & viewer)
   viewer.data().clear();
   viewer.data().set_mesh(V_vis,F_vis);
   viewer.data().set_colors(C_vis);
-  viewer.core.lighting_factor = overlay;
+  viewer.core().lighting_factor = overlay;
 }
 
 bool key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int mod)

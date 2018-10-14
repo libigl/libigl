@@ -123,17 +123,18 @@ namespace opengl
 namespace glfw
 {
 
-  IGL_INLINE int Viewer::launch(bool resizable,bool fullscreen)
+  IGL_INLINE int Viewer::launch(bool resizable /*= true*/,bool fullscreen /*= false*/, int windowWidth /*= 1280*/, int windowHeight /*= 800*/)
   {
     // TODO return values are being ignored...
-    launch_init(resizable,fullscreen);
+    launch_init(resizable,fullscreen,windowWidth,windowHeight);
     launch_rendering(true);
     launch_shut();
     return EXIT_SUCCESS;
   }
 
-  IGL_INLINE int  Viewer::launch_init(bool resizable,bool fullscreen)
+  IGL_INLINE int  Viewer::launch_init(bool resizable,bool fullscreen, int windowWidth, int windowHeight)
   {
+
     glfwSetErrorCallback(glfw_error_callback);
     if (!glfwInit())
     {
@@ -154,11 +155,7 @@ namespace glfw
     }
     else
     {
-      if (core.viewport.tail<2>().any()) {
-        window = glfwCreateWindow(core.viewport(2),core.viewport(3),"libigl viewer",nullptr,nullptr);
-      } else {
-        window = glfwCreateWindow(1280,800,"libigl viewer",nullptr,nullptr);
-      }
+        window = glfwCreateWindow(windowWidth,windowHeight,"libigl viewer",nullptr,nullptr);
     }
     if (!window)
     {
@@ -198,16 +195,14 @@ namespace glfw
     glfwGetFramebufferSize(window, &width, &height);
     int width_window, height_window;
     glfwGetWindowSize(window, &width_window, &height_window);
-    highdpi = width/width_window;
+    highdpi = windowWidth/width_window;
     glfw_window_size(window,width_window,height_window);
     //opengl.init();
-    core.align_camera_center(data().V,data().F);
+    core().align_camera_center(data().V,data().F);
     // Initialize IGL viewer
     init();
     return EXIT_SUCCESS;
   }
-
-
 
   IGL_INLINE bool Viewer::launch_rendering(bool loop)
   {
@@ -220,12 +215,12 @@ namespace glfw
       double tic = get_seconds();
       draw();
       glfwSwapBuffers(window);
-      if(core.is_animating || frame_counter++ < num_extra_frames)
+      if(core().is_animating || frame_counter++ < num_extra_frames)
       {
         glfwPollEvents();
         // In microseconds
         double duration = 1000000.*(get_seconds()-tic);
-        const double min_duration = 1000000./core.animation_max_fps;
+        const double min_duration = 1000000./core().animation_max_fps;
         if(duration<min_duration)
         {
           std::this_thread::sleep_for(std::chrono::microseconds((int)(min_duration-duration)));
@@ -248,7 +243,7 @@ namespace glfw
     {
       data.meshgl.free();
     }
-    core.shut();
+    core().shut(); // Doesn't do anything
     shutdown_plugins();
     glfwDestroyWindow(window);
     glfwTerminate();
@@ -257,7 +252,7 @@ namespace glfw
 
   IGL_INLINE void Viewer::init()
   {
-    core.init();
+    core().init(); // Doesn't do anything
 
     if (callback_init)
       if (callback_init(*this))
@@ -286,10 +281,16 @@ namespace glfw
   IGL_INLINE Viewer::Viewer():
     data_list(1),
     selected_data_index(0),
-    next_data_id(1)
+    next_data_id(1),
+    selected_core_index(0),
+    next_core_id(2)
+
   {
     window = nullptr;
     data_list.front().id = 0;
+
+    core_list.emplace_back(ViewerCore());
+    core_list.front().id = 1;
 
     // Temporary variables initialization
     down = false;
@@ -421,8 +422,8 @@ namespace glfw
     {
       data().grid_texture();
     }
-
-    core.align_camera_center(data().V,data().F);
+    for(int i=0;i<core_list.size(); i++)
+        core_list[i].align_camera_center(data().V,data().F);
 
     for (unsigned int i = 0; i<plugins.size(); ++i)
       if (plugins[i]->post_load())
@@ -494,7 +495,7 @@ namespace glfw
       case 'A':
       case 'a':
       {
-        core.is_animating = !core.is_animating;
+        core().is_animating = !core().is_animating;
         return true;
       }
       case 'F':
@@ -519,7 +520,7 @@ namespace glfw
       case 'O':
       case 'o':
       {
-        core.orthographic = !core.orthographic;
+        core().orthographic = !core().orthographic;
         return true;
       }
       case 'T':
@@ -536,10 +537,10 @@ namespace glfw
       case '[':
       case ']':
       {
-        if(core.rotation_type == ViewerCore::ROTATION_TYPE_TRACKBALL)
-          core.set_rotation_type(ViewerCore::ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP);
+        if(core().rotation_type == ViewerCore::ROTATION_TYPE_TRACKBALL)
+            core().set_rotation_type(ViewerCore::ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP);
         else
-          core.set_rotation_type(ViewerCore::ROTATION_TYPE_TRACKBALL);
+          core().set_rotation_type(ViewerCore::ROTATION_TYPE_TRACKBALL);
 
         return true;
       }
@@ -601,7 +602,7 @@ namespace glfw
 
     down = true;
 
-    down_translation = core.camera_translation;
+    down_translation = core().camera_translation;
 
 
     // Initialization code for the trackball
@@ -617,18 +618,18 @@ namespace glfw
     Eigen::Vector3f coord =
       igl::project(
         Eigen::Vector3f(center(0),center(1),center(2)),
-        core.view,
-        core.proj,
-        core.viewport);
+        core().view,
+        core().proj,
+        core().viewport);
     down_mouse_z = coord[2];
-    down_rotation = core.trackball_angle;
+    down_rotation = core().trackball_angle;
 
     mouse_mode = MouseMode::Rotation;
 
     switch (button)
     {
       case MouseButton::Left:
-        if (core.rotation_type == ViewerCore::ROTATION_TYPE_NO_ROTATION) {
+        if (core().rotation_type == ViewerCore::ROTATION_TYPE_NO_ROTATION) {
           mouse_mode = MouseMode::Translation;
         } else {
           mouse_mode = MouseMode::Rotation;
@@ -683,13 +684,26 @@ namespace glfw
       if (plugins[i]->mouse_move(mouse_x, mouse_y))
         return true;
 
+    int width_window, height_window;
+    glfwGetWindowSize(window, &width_window, &height_window);
+    for (int i = 0; i < core_list.size(); i++)
+    {
+        Eigen::Vector4f viewport = core_list[i].viewport;
+
+        if (mouse_x > viewport[0] && mouse_x < viewport[0] + viewport[2] &&
+            height_window-mouse_y > viewport[1] && height_window-mouse_y < viewport[1] + viewport[3])
+        {
+            selected_core_index = i;
+            break;
+        }
+    }
     if (down)
     {
       switch (mouse_mode)
       {
         case MouseMode::Rotation:
         {
-          switch(core.rotation_type)
+          switch(core().rotation_type)
           {
             default:
               assert(false && "Unknown rotation type");
@@ -697,26 +711,26 @@ namespace glfw
               break;
             case ViewerCore::ROTATION_TYPE_TRACKBALL:
               igl::trackball(
-                core.viewport(2),
-                core.viewport(3),
+                core().viewport(2),
+                core().viewport(3),
                 2.0f,
                 down_rotation,
                 down_mouse_x,
                 down_mouse_y,
                 mouse_x,
                 mouse_y,
-                core.trackball_angle);
+                core().trackball_angle);
               break;
             case ViewerCore::ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP:
               igl::two_axis_valuator_fixed_up(
-                core.viewport(2),core.viewport(3),
+                core().viewport(2),core().viewport(3),
                 2.0,
                 down_rotation,
                 down_mouse_x, down_mouse_y, mouse_x, mouse_y,
-                core.trackball_angle);
+                core().trackball_angle);
               break;
           }
-          //Eigen::Vector4f snapq = core.trackball_angle;
+          //Eigen::Vector4f snapq = core->trackball_angle;
 
           break;
         }
@@ -724,18 +738,18 @@ namespace glfw
         case MouseMode::Translation:
         {
           //translation
-          Eigen::Vector3f pos1 = igl::unproject(Eigen::Vector3f(mouse_x, core.viewport[3] - mouse_y, down_mouse_z), core.view, core.proj, core.viewport);
-          Eigen::Vector3f pos0 = igl::unproject(Eigen::Vector3f(down_mouse_x, core.viewport[3] - down_mouse_y, down_mouse_z), core.view, core.proj, core.viewport);
+          Eigen::Vector3f pos1 = igl::unproject(Eigen::Vector3f(mouse_x, core().viewport[3] - mouse_y, down_mouse_z), core().view, core().proj, core().viewport);
+          Eigen::Vector3f pos0 = igl::unproject(Eigen::Vector3f(down_mouse_x, core().viewport[3] - down_mouse_y, down_mouse_z), core().view, core().proj, core().viewport);
 
           Eigen::Vector3f diff = pos1 - pos0;
-          core.camera_translation = down_translation + Eigen::Vector3f(diff[0],diff[1],diff[2]);
+          core().camera_translation = down_translation + Eigen::Vector3f(diff[0],diff[1],diff[2]);
 
           break;
         }
         case MouseMode::Zoom:
         {
           float delta = 0.001f * (mouse_x - down_mouse_x + mouse_y - down_mouse_y);
-          core.camera_zoom *= 1 + delta;
+          core().camera_zoom *= 1 + delta;
           down_mouse_x = mouse_x;
           down_mouse_y = mouse_y;
           break;
@@ -765,7 +779,7 @@ namespace glfw
     {
       float mult = (1.0+((delta_y>0)?1.:-1.)*0.05);
       const float min_zoom = 0.1f;
-      core.camera_zoom = (core.camera_zoom * mult > min_zoom ? core.camera_zoom * mult : min_zoom);
+      core().camera_zoom = (core().camera_zoom * mult > min_zoom ? core().camera_zoom * mult : min_zoom);
     }
     return true;
   }
@@ -780,7 +794,7 @@ namespace glfw
 
   IGL_INLINE bool Viewer::load_scene(std::string fname)
   {
-    igl::deserialize(core,"Core",fname.c_str());
+    igl::deserialize(core(),"Core",fname.c_str());
     igl::deserialize(data(),"Data",fname.c_str());
     return true;
   }
@@ -795,7 +809,7 @@ namespace glfw
 
   IGL_INLINE bool Viewer::save_scene(std::string fname)
   {
-    igl::serialize(core,"Core",fname.c_str(),true);
+    igl::serialize(core(),"Core",fname.c_str(),true);
     igl::serialize(data(),"Data",fname.c_str());
 
     return true;
@@ -819,8 +833,11 @@ namespace glfw
       post_resize(width, height);
       highdpi=highdpi_tmp;
     }
+    for (auto& core : core_list)
+    {
+      core.clear_framebuffers();
+    }
 
-    core.clear_framebuffers();
     if (callback_pre_draw)
     {
       if (callback_pre_draw(*this))
@@ -835,10 +852,18 @@ namespace glfw
         return;
       }
     }
-    for(int i = 0;i<data_list.size();i++)
+
+    for (auto& core : core_list)
     {
-      core.draw(data_list[i]);
+      for (auto& mesh : data_list)
+      {
+        if (mesh.is_visible & core.id)
+        {
+          core.draw(mesh);
+        }
+      }
     }
+
     if (callback_post_draw)
     {
       if (callback_post_draw(*this))
@@ -865,7 +890,8 @@ namespace glfw
 
   IGL_INLINE void Viewer::post_resize(int w,int h)
   {
-    core.viewport = Eigen::Vector4f(0,0,w,h);
+    if(core_list.size()==1)
+        core().viewport = Eigen::Vector4f(0,0,w,h);
     for (unsigned int i = 0; i<plugins.size(); ++i)
     {
       plugins[i]->post_resize(w, h);
@@ -874,8 +900,8 @@ namespace glfw
 
   IGL_INLINE void Viewer::snap_to_canonical_quaternion()
   {
-    Eigen::Quaternionf snapq = this->core.trackball_angle;
-    igl::snap_to_canonical_view_quat(snapq,1.0f,this->core.trackball_angle);
+    Eigen::Quaternionf snapq = this->core().trackball_angle;
+    igl::snap_to_canonical_view_quat(snapq,1.0f,this->core().trackball_angle);
   }
 
   IGL_INLINE void Viewer::open_dialog_load_mesh()
@@ -898,22 +924,32 @@ namespace glfw
     this->save_mesh_to_file(fname.c_str());
   }
 
-  IGL_INLINE ViewerData& Viewer::data()
-  {
-    assert(!data_list.empty() && "data_list should never be empty");
-    assert(
-      (selected_data_index >= 0 && selected_data_index < data_list.size()) &&
-      "selected_data_index should be in bounds");
-    return data_list[selected_data_index];
-  }
+  IGL_INLINE ViewerData& Viewer::data(int mesh_id /*= -1*/)
+{
+  assert(!data_list.empty() && "data_list should never be empty");
+  int mesh_ind;
+  if (mesh_id == -1)
+    mesh_ind = selected_data_index;
+  else
+    mesh_ind = mesh_index(mesh_id);
 
-  IGL_INLINE int Viewer::append_mesh()
-  {
+  assert((mesh_ind >= 0 && mesh_ind < data_list.size()) &&
+    "selected_data_index and mesh_id should be in bounds");
+  return data_list[mesh_ind];
+}
+
+  IGL_INLINE int Viewer::append_mesh(bool visible /*= true*/)
+{
     assert(data_list.size() >= 1);
 
     data_list.emplace_back();
     selected_data_index = data_list.size()-1;
     data_list.back().id = next_data_id++;
+    if (visible)
+        for (int i = 0; i < core_list.size(); i++)
+            data_list.back().set_visible(true, core_list[i].id);
+    else
+        data_list.back().is_visible = 0;
     return data_list.back().id;
   }
 
@@ -932,6 +968,7 @@ namespace glfw
     {
       selected_data_index--;
     }
+
     return true;
   }
 
@@ -944,7 +981,56 @@ namespace glfw
     return 0;
   }
 
+  IGL_INLINE ViewerCore& Viewer::core(unsigned core_id /*= 0*/)
+{
+  assert(!core_list.empty() && "core_list should never be empty");
+  int core_ind;
+  if (core_id == 0)
+    core_ind = selected_core_index;
+  else
+    core_ind = core_index(core_id);
+  assert((core_ind >= 0 && core_ind < core_list.size()) && "selected_core_index should be in bounds");
+  return core_list[core_ind];
+}
 
+  IGL_INLINE bool Viewer::erase_core(const size_t index)
+  {
+    assert((index >= 0 && index < core_list.size()) && "index should be in bounds");
+    assert(data_list.size() >= 1);
+    if (core_list.size() == 1)
+    {
+      // Cannot remove last mesh
+      return false;
+    }
+    core_list[index].shut(); // does nothing
+    core_list.erase(core_list.begin() + index);
+    if (selected_core_index >= index && selected_core_index > 0)
+    {
+      selected_core_index>>=1;
+    }
+    return true;
+  }
+
+  IGL_INLINE size_t Viewer::core_index(const int id) const {
+    for (size_t i = 0; i < core_list.size(); ++i)
+    {
+      if (core_list[i].id == id)
+        return i;
+    }
+    return 0;
+  }
+
+  IGL_INLINE int Viewer::append_core(Eigen::Vector4f viewport, bool append_empty /*= false*/)
+  {
+    core_list.push_back(core()); //copies the previous core and only changes the viewport
+    core_list.back().viewport = viewport;
+    core_list.back().id = next_core_id;
+    next_core_id <<= 1;
+    if(!append_empty)
+      for (auto &data : data_list)
+        data.set_visible(true,core_list.back().id);
+    return core_list.back().id;
+  }
 } // end namespace
 } // end namespace
 }
