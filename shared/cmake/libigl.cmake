@@ -68,7 +68,12 @@ endif()
 ################################################################################
 
 add_library(igl_common INTERFACE)
-target_include_directories(igl_common SYSTEM INTERFACE ${LIBIGL_SOURCE_DIR})
+target_include_directories(igl_common SYSTEM INTERFACE
+  $<BUILD_INTERFACE:${LIBIGL_SOURCE_DIR}>
+  $<INSTALL_INTERFACE:include>
+)
+# Export igl_common as igl::common
+set_property(TARGET igl_common PROPERTY EXPORT_NAME igl::common)
 if(LIBIGL_USE_STATIC_LIBRARY)
   target_compile_definitions(igl_common INTERFACE -DIGL_STATIC_LIBRARY)
 endif()
@@ -93,7 +98,10 @@ if(TARGET Eigen3::Eigen)
   # If an imported target already exists, use it
   target_link_libraries(igl_common INTERFACE Eigen3::Eigen)
 else()
-  target_include_directories(igl_common SYSTEM INTERFACE ${LIBIGL_EXTERNAL}/eigen)
+  target_include_directories(igl_common SYSTEM INTERFACE 
+    $<BUILD_INTERFACE:${LIBIGL_EXTERNAL}/eigen>
+    $<INSTALL_INTERFACE:include>
+  )
 endif()
 
 # C++11 Thread library
@@ -163,7 +171,10 @@ function(compile_igl_module module_dir)
   # Alias target because it looks nicer
   message(STATUS "Creating target: igl::${module_name} (${module_libname})")
   add_library(igl::${module_name} ALIAS ${module_libname})
+  # Export as igl::${module_name}
+  set_property(TARGET ${module_libname} PROPERTY EXPORT_NAME igl::${module_name})
 endfunction()
+
 
 ################################################################################
 ### IGL Core
@@ -432,3 +443,82 @@ if(LIBIGL_WITH_XML)
   target_link_libraries(igl_xml ${IGL_SCOPE} tinyxml2)
   target_include_directories(igl_xml ${IGL_SCOPE} ${TINYXML2_DIR})
 endif()
+
+################################################################################
+### Install and export all modules
+
+function(install_dir_files dir_name)
+  if (dir_name STREQUAL "core")
+    set(subpath "")
+  else()
+    set(subpath "/${dir_name}")
+  endif()
+
+  file(GLOB public_headers
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/igl${subpath}/*.h
+  )
+
+  set(files_to_install ${public_headers})
+
+  if(NOT LIBIGL_USE_STATIC_LIBRARY)
+    file(GLOB public_sources
+      ${CMAKE_CURRENT_SOURCE_DIR}/include/igl${subpath}/*.cpp
+    )
+  endif()
+  list(APPEND files_to_install ${public_sources})
+
+  install(
+    FILES ${files_to_install}
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/igl${subpath}
+  )
+endfunction()
+
+################################################################################
+
+include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
+
+# Install and export core library
+install(
+   TARGETS
+     igl
+     igl_common
+   EXPORT igl-export
+   PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+   RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+)
+export(
+  TARGETS
+    igl
+    igl_common
+  FILE libigl-export.cmake
+)
+
+# Install headers for core library
+install_dir_files(core)
+install_dir_files(copyleft)
+
+# Write package configuration file
+configure_package_config_file(
+  ${CMAKE_CURRENT_LIST_DIR}/libigl-config.cmake.in
+  ${CMAKE_BINARY_DIR}/libigl-config.cmake
+  INSTALL_DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/libigl/cmake
+)
+install(
+  FILES
+    ${CMAKE_BINARY_DIR}/libigl-config.cmake
+  DESTINATION
+    ${CMAKE_INSTALL_DATADIR}/libigl/cmake
+)
+
+# Write export file
+export(EXPORT igl-export
+  FILE "${CMAKE_BINARY_DIR}/libigl-export.cmake"
+)
+install(EXPORT igl-export DESTINATION ${CMAKE_INSTALL_DATADIR}/libigl/cmake FILE libigl-export.cmake)
+
+
+export(PACKAGE libigl)
+

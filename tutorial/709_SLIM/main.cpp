@@ -1,15 +1,16 @@
 #include <iostream>
 
-#include "igl/slim.h"
+#include <igl/slim.h>
 
-#include "igl/vertex_components.h"
-#include "igl/readOBJ.h"
-#include "igl/writeOBJ.h"
-#include "igl/Timer.h"
+#include <igl/vertex_components.h>
+#include <igl/readOBJ.h>
+#include <igl/writeOBJ.h>
+#include <igl/Timer.h>
 
-#include "igl/boundary_loop.h"
-#include "igl/map_vertices_to_circle.h"
-#include "igl/harmonic.h"
+#include <igl/boundary_loop.h>
+#include <igl/map_vertices_to_circle.h>
+#include <igl/harmonic.h>
+#include <igl/MappingEnergyType.h>
 #include <igl/serialize.h>
 #include <igl/read_triangle_mesh.h>
 #include <igl/opengl/glfw/Viewer.h>
@@ -96,9 +97,9 @@ void param_2d_demo_iter(igl::opengl::glfw::Viewer& viewer) {
 
     cout << "initialized parametrization" << endl;
 
-    sData.slim_energy = igl::SLIMData::SYMMETRIC_DIRICHLET;
+    sData.slim_energy = igl::MappingEnergyType::SYMMETRIC_DIRICHLET;
     Eigen::VectorXi b; Eigen::MatrixXd bc;
-    slim_precompute(V,F,uv_init,sData, igl::SLIMData::SYMMETRIC_DIRICHLET, b,bc,0);
+    slim_precompute(V,F,uv_init,sData, igl::MappingEnergyType::SYMMETRIC_DIRICHLET, b,bc,0);
 
     uv_scale_param = 15 * (1./sqrt(sData.mesh_area));
     viewer.data().set_mesh(V, F);
@@ -109,10 +110,12 @@ void param_2d_demo_iter(igl::opengl::glfw::Viewer& viewer) {
 
     first_iter = false;
   } else {
+    timer.start();
     slim_solve(sData,1); // 1 iter
     viewer.data().set_uv(sData.V_o*uv_scale_param);
-    cout << "time = " << timer.getElapsedTime() << endl;
   }
+  cout << "time = " << timer.getElapsedTime() << endl;
+  cout << "energy = " << sData.energy << endl;
 }
 
 void soft_const_demo_iter(igl::opengl::glfw::Viewer& viewer) {
@@ -127,7 +130,7 @@ void soft_const_demo_iter(igl::opengl::glfw::Viewer& viewer) {
     Eigen::VectorXi b; Eigen::MatrixXd bc;
     get_soft_constraint_for_circle(V_0,F,b,bc);
     double soft_const_p = 1e5;
-    slim_precompute(V,F,V_0,sData,igl::SLIMData::SYMMETRIC_DIRICHLET,b,bc,soft_const_p);
+    slim_precompute(V,F,V_0,sData,igl::MappingEnergyType::SYMMETRIC_DIRICHLET,b,bc,soft_const_p);
 
     viewer.data().set_mesh(V, F);
     viewer.core.align_camera_center(V,F);
@@ -144,6 +147,7 @@ void soft_const_demo_iter(igl::opengl::glfw::Viewer& viewer) {
 
 void deform_3d_demo_iter(igl::opengl::glfw::Viewer& viewer) {
   if (first_iter) {
+    timer.start();
     igl::readOBJ(TUTORIAL_SHARED_PATH "/cube_40k.obj", V, F);
 
     Eigen::MatrixXd V_0 = V;
@@ -152,16 +156,19 @@ void deform_3d_demo_iter(igl::opengl::glfw::Viewer& viewer) {
 
     double soft_const_p = 1e5;
     sData.exp_factor = 5.0;
-    slim_precompute(V,F,V_0,sData,igl::SLIMData::EXP_CONFORMAL,b,bc,soft_const_p);
+    slim_precompute(V,F,V_0,sData,igl::MappingEnergyType::EXP_CONFORMAL,b,bc,soft_const_p);
     //cout << "precomputed" << endl;
 
     first_iter = false;
     display_3d_mesh(viewer);
 
   } else {
+    timer.start();
     slim_solve(sData,1); // 1 iter
     display_3d_mesh(viewer);
   }
+  cout << "time = " << timer.getElapsedTime() << endl;
+  cout << "energy = " << sData.energy << endl;
 }
 
 void display_3d_mesh(igl::opengl::glfw::Viewer& viewer) {
