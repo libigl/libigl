@@ -63,8 +63,6 @@ IGL_INLINE bool igl::copyleft::tetgen::tetgenio_to_tetmesh(
   assert(max_index >= 0);
   assert(max_index < (int)V.size());
 
-  cout<<out.numberoftrifaces<<endl;
-
   // When would this not be 4?
   F.clear();
   // loop over tetrahedra
