@@ -39,8 +39,7 @@ int main(int argc, char *argv[])
   // Compute curvature directions via quadric fitting
   MatrixXd PD1,PD2;
   VectorXd PV1,PV2;
-  std::vector<int> Z;
-  igl::principal_curvature(V,F,PD1,PD2,PV1,PV2,Z);
+  igl::principal_curvature(V,F,PD1,PD2,PV1,PV2);
   // mean curvature
   H = 0.5*(PV1+PV2);
 
