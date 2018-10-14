@@ -118,7 +118,7 @@ LIMData* InitLIM(
   const Eigen::SparseMatrix<double>& constraintMatrix,
   const Eigen::Matrix<double,Eigen::Dynamic,1>& constraintTargets,
   EnergyType energyType,
-  bool enableOuput = true,
+  bool enableOutput = true,
   bool enableBarriers = true,
   bool enableAlphaUpdate = true,
   double beta = -1,
@@ -248,8 +248,8 @@ LIMData* InitLIM(
     }
   }
   
+  solver->EnableOutput = enableOutput;
   solver->Init(mesh);
-
   solver->EnableBarriers = enableBarriers;
   if(beta != -1) solver->Beta = beta;
 
@@ -267,7 +267,7 @@ LIMData* InitLIM(
   const Eigen::SparseMatrix<double>& constraintMatrix,
   const Eigen::Matrix<double,Eigen::Dynamic,1>& constraintTargets,
   EnergyType energyType,
-  bool enableOuput = true,
+  bool enableOutput = true,
   bool enableBarriers = true,
   bool enableAlphaUpdate = true,
   double beta = -1,
@@ -285,7 +285,7 @@ LIMData* InitLIM(
     constraintMatrix,
     constraintTargets,
     energyType,
-    enableOuput,
+    enableOutput,
     enableBarriers,
     enableAlphaUpdate,
     beta,
@@ -346,13 +346,13 @@ SolverState ComputeLIM(
   double tolerance,
   int maxIteration,
   bool findLocalMinima,
-  bool enableOuput = true,
+  bool enableOutput = true,
   bool enableBarriers = true,
   bool enableAlphaUpdate = true,
   double beta = -1,
   double eps = -1)
 {
-  LIMData* data = InitLIM(vertices, initialVertices, elements, borderVertices, gradients, constraintMatrix, constraintTargets, energyType, enableOuput, enableBarriers, enableAlphaUpdate, beta, eps);
+  LIMData* data = InitLIM(vertices, initialVertices, elements, borderVertices, gradients, constraintMatrix, constraintTargets, energyType, enableOutput, enableBarriers, enableAlphaUpdate, beta, eps);
 
   const double MIN_STEPSIZE = 1e-15;
 
@@ -403,7 +403,7 @@ SolverState ComputeLIM(
   double tolerance,
   int maxIteration,
   bool findLocalMinima,
-  bool enableOuput = true,
+  bool enableOutput = true,
   bool enableBarriers = true,
   bool enableAlphaUpdate = true,
   double beta = -1,
@@ -424,7 +424,7 @@ SolverState ComputeLIM(
     tolerance,
     maxIteration,
     findLocalMinima,
-    enableOuput,
+    enableOutput,
     enableBarriers,
     enableAlphaUpdate,
     beta,

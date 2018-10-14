@@ -3173,7 +3173,7 @@ IGL_INLINE void igl::exact_geodesic(
   Eigen::PlainObjectBase<DerivedD> &D)
 {
   assert(V.cols() == 3 && F.cols() == 3 && "Only support 3D triangle mesh");
-  assert(VS.cols() ==1 && FS.cols() == 1 && VT.cols() == 1 && FT.cols() ==1 && "Only support one dimensional inputs");
+  assert(VS.cols() <=1 && FS.cols() <= 1 && VT.cols() <= 1 && FT.cols() <=1 && "Only support one dimensional inputs");
   std::vector<typename DerivedV::Scalar> points(V.rows() * V.cols());
   std::vector<typename DerivedF::Scalar> faces(F.rows() * F.cols());
   for (int i = 0; i < points.size(); i++)
