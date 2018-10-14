@@ -1015,6 +1015,14 @@ const char *__doc_igl_png_writePNG = R"igl_Qu8mg5v7(// Writes an image to a png 
     //  png_file  path to .png file
     // Returns true on success, false on failure
     //)igl_Qu8mg5v7";
+const char *__doc_igl_writeDMAT = R"igl_Qu8mg5v7(// Writes a DMAT
+    //
+    // Input:
+    //  str filename
+    //  W matrix to save as DMAT
+    //  b boolean for ascii or binary
+    // Returns true on success, false on failure
+    //)igl_Qu8mg5v7";
 const char *__doc_igl_point_mesh_squared_distance = R"igl_Qu8mg5v7(// Compute distances from a set of points P to a triangle mesh (V,F)
   //
   // Inputs:

@@ -25,3 +25,4 @@ igl.readOFF(TUTORIAL_SHARED_PATH + "cube.off", V, F)
 
 # Save the mesh in OBJ format
 igl.writeOBJ("cube.obj",V,F)
+igl.writeDMAT("cubeV.dmat", V, False)
