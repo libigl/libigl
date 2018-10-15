@@ -104,7 +104,7 @@ bool pre_draw(igl::opengl::glfw::Viewer & viewer)
     viewer.data().set_vertices(U);
     viewer.data().set_points(bc,sea_green);
     viewer.data().compute_normals();
-    if(viewer.core.is_animating)
+    if(viewer.core().is_animating)
     {
       anim_t += anim_t_dir;
     }else
@@ -132,8 +132,8 @@ bool key_down(igl::opengl::glfw::Viewer &viewer, unsigned char key, int mods)
       resolve = true;
       return true;
     case ' ':
-      viewer.core.is_animating = !viewer.core.is_animating;
-      if(viewer.core.is_animating)
+      viewer.core().is_animating = !viewer.core().is_animating;
+      if(viewer.core().is_animating)
       {
         resolve = true;
       }
@@ -212,8 +212,8 @@ int main(int argc, char *argv[])
   viewer.data().show_lines = false;
   viewer.callback_pre_draw = &pre_draw;
   viewer.callback_key_down = &key_down;
-  viewer.core.is_animating = false;
-  viewer.core.animation_max_fps = 30.;
+  viewer.core().is_animating = false;
+  viewer.core().animation_max_fps = 30.;
   cout<<
     "Press [space] to toggle animation."<<endl<<
     "Press '0' to reset pose."<<endl<<

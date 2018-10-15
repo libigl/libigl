@@ -61,10 +61,10 @@ bool key_down(igl::opengl::glfw::Viewer &viewer, unsigned char key, int mods)
           igl::NUM_MESH_BOOLEAN_TYPES);
       break;
     case '[':
-      viewer.core.camera_dnear -= 0.1;
+      viewer.core().camera_dnear -= 0.1;
       return true;
     case ']':
-      viewer.core.camera_dnear += 0.1;
+      viewer.core().camera_dnear += 0.1;
       return true;
   }
   update(viewer);
@@ -85,7 +85,7 @@ int main(int argc, char *argv[])
 
   viewer.data().show_lines = true;
   viewer.callback_key_down = &key_down;
-  viewer.core.camera_dnear = 3.9;
+  viewer.core().camera_dnear = 3.9;
   cout<<
     "Press '.' to switch to next boolean operation type."<<endl<<
     "Press ',' to switch to previous boolean operation type."<<endl<<
