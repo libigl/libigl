@@ -74,6 +74,7 @@ external/yimg/showpng
 README.html
 tutorial/readme.html
 tutorial/*/build/*
+tutorial/data
 tutorial/*/Makefile
 external/glew/build
 external/glfw/build
