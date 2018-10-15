@@ -124,7 +124,7 @@ endfunction()
 function(igl_download_googletest)
 	igl_download_project(googletest
 		GIT_REPOSITORY https://github.com/google/googletest
-		GIT_TAG        v1.8.1
+		GIT_TAG        release-1.8.1
 	)
 endfunction()
 
