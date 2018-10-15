@@ -1,36 +1,8 @@
 cmake_minimum_required(VERSION 3.1)
 project(libigl_tests)
-message(STATUS "CMAKE_C_COMPILER: ${CMAKE_C_COMPILER}")
-message(STATUS "CMAKE_CXX_COMPILER: ${CMAKE_CXX_COMPILER}")
 
 ### conditionally compile certain modules depending on libraries found on the system
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../cmake)
-#find_package(CGAL QUIET COMPONENTS Core)
-find_package(MATLAB QUIET)
-find_package(MOSEK)
-
-### libIGL options: choose between header only and compiled static library
-option(LIBIGL_USE_STATIC_LIBRARY "Use LibIGL as static library" ON)
-option(LIBIGL_WITH_EMBREE      "Use Embree"         OFF)
-
-### libIGL options: choose your dependencies (by default everything is OFF, in this example we need the viewer)
-option(LIBIGL_USE_STATIC_LIBRARY     "Use libigl as static library" ON)
-option(LIBIGL_WITH_CGAL              "Use CGAL"           OFF)
-option(LIBIGL_WITH_COMISO            "Use CoMiso"         OFF)
-option(LIBIGL_WITH_CORK              "Use Cork"           OFF)
-option(LIBIGL_WITH_EMBREE            "Use Embree"         OFF)
-option(LIBIGL_WITH_MATLAB            "Use Matlab"         OFF)
-option(LIBIGL_WITH_MOSEK             "Use MOSEK"          OFF)
-option(LIBIGL_WITH_OPENGL            "Use OpenGL"         OFF)
-option(LIBIGL_WITH_OPENGL_GLFW       "Use GLFW"           OFF)
-option(LIBIGL_WITH_OPENGL_GLFW_IMGUI "Use ImGui"          OFF)
-option(LIBIGL_WITH_PNG               "Use PNG"            OFF)
-option(LIBIGL_WITH_TETGEN            "Use Tetgen"         OFF)
-option(LIBIGL_WITH_TRIANGLE          "Use Triangle"       OFF)
-option(LIBIGL_WITH_VIEWER            "Use OpenGL viewer"  OFF)
-option(LIBIGL_WITH_XML               "Use XML"            OFF)
-option(LIBIGL_WITH_PYTHON            "Use Python"         OFF)
-### End
 
 ### Adding libIGL: choose the path to your local copy libIGL
 if(NOT TARGET igl_common)
@@ -46,7 +18,7 @@ set(IGL_TEST_DATA ${LIBIGL_EXTERNAL}/../tests/data)
 ### Download Google unit test framework.
 igl_download_googletest()
 
-SET(TEST_ROOT_DIR ${CMAKE_CURRENT_LIST_DIR}) 
+SET(TEST_ROOT_DIR ${CMAKE_CURRENT_LIST_DIR})
 INCLUDE_DIRECTORIES(${TEST_ROOT_DIR})
 
 # Set TEST_DIR definition
