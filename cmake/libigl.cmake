@@ -18,28 +18,21 @@ if(APPLE)
   endif()
 endif()
 
-### Find packages to populate default options ###
-#
-# COMPONENTS should match subsequent calls
-find_package(Matlab COMPONENTS MEX_COMPILER MX_LIBRARY ENG_LIBRARY) # --> Matlab_FOUND
-find_package(MOSEK) # --> MOSEK_FOUND
-find_package(OpenGL) # --> OPENGL_FOUND
-
 ### Available options ###
 option(LIBIGL_USE_STATIC_LIBRARY     "Use libigl as static library" ON)
 option(LIBIGL_WITH_CGAL              "Use CGAL"           ON)
 option(LIBIGL_WITH_COMISO            "Use CoMiso"         ON)
 option(LIBIGL_WITH_CORK              "Use Cork"           OFF)
 option(LIBIGL_WITH_EMBREE            "Use Embree"         OFF)
-option(LIBIGL_WITH_MATLAB            "Use Matlab"         "${Matlab_FOUND}")
-option(LIBIGL_WITH_MOSEK             "Use MOSEK"          "${MOSEK_FOUND}")
-option(LIBIGL_WITH_OPENGL            "Use OpenGL"         "${OPENGL_FOUND}")
-option(LIBIGL_WITH_OPENGL_GLFW       "Use GLFW"           "${OPENGL_FOUND}")
-option(LIBIGL_WITH_OPENGL_GLFW_IMGUI "Use ImGui"          "${OPENGL_FOUND}")
+option(LIBIGL_WITH_MATLAB            "Use Matlab"         OFF)
+option(LIBIGL_WITH_MOSEK             "Use MOSEK"          OFF)
+option(LIBIGL_WITH_OPENGL            "Use OpenGL"         OFF)
+option(LIBIGL_WITH_OPENGL_GLFW       "Use GLFW"           OFF)
+option(LIBIGL_WITH_OPENGL_GLFW_IMGUI "Use ImGui"          OFF)
 option(LIBIGL_WITH_PNG               "Use PNG"            ON)
 option(LIBIGL_WITH_TETGEN            "Use Tetgen"         ON)
 option(LIBIGL_WITH_TRIANGLE          "Use Triangle"       ON)
-option(LIBIGL_WITH_VIEWER            "Use OpenGL viewer"  "${OPENGL_FOUND}")
+option(LIBIGL_WITH_VIEWER            "Use OpenGL viewer"  OFF)
 option(LIBIGL_WITH_XML               "Use XML"            ON)
 option(LIBIGL_WITH_PYTHON            "Use Python"         OFF)
 
