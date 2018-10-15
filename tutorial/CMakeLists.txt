@@ -40,6 +40,15 @@ target_include_directories(tutorials INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
 # Chapter 1
 if(TUTORIALS_CHAPTER1)
   add_subdirectory("101_FileIO")
+endif()
+
+#######################
+if(NOT (LIBIGL_WITH_OPENGL AND LIBIGL_WITH_OPENGL_GLFW) )
+  message(WARNING "Most tutorial executables depend on OpenGL and glfw")
+  return()
+endif()
+
+if(TUTORIALS_CHAPTER1)
   add_subdirectory("102_DrawMesh")
   add_subdirectory("103_Events")
   add_subdirectory("104_Colors")
@@ -142,5 +151,3 @@ if(TUTORIALS_CHAPTER7)
   endif()
   add_subdirectory("715_MeshImplicitFunction")
 endif()
-
-
