@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2013 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "cat.h"
 
@@ -14,14 +14,14 @@
 #include <unsupported/Eigen/SparseExtra>
 
 
-// Sparse matrices need to be handled carefully. Because C++ does not 
+// Sparse matrices need to be handled carefully. Because C++ does not
 // Template:
 //   Scalar  sparse matrix scalar type, e.g. double
 template <typename Scalar>
 IGL_INLINE void igl::cat(
-    const int dim, 
-    const Eigen::SparseMatrix<Scalar> & A, 
-    const Eigen::SparseMatrix<Scalar> & B, 
+    const int dim,
+    const Eigen::SparseMatrix<Scalar> & A,
+    const Eigen::SparseMatrix<Scalar> & B,
     Eigen::SparseMatrix<Scalar> & C)
 {
 
@@ -108,13 +108,13 @@ IGL_INLINE void igl::cat(
 
   }
 
-  C = SparseMatrix<Scalar>( 
+  C = SparseMatrix<Scalar>(
       dim == 1 ? A.rows()+B.rows() : A.rows(),
       dim == 1 ? A.cols()          : A.cols()+B.cols());
   C.reserve(A.nonZeros() + B.nonZeros());
   C.setFromTriplets(CIJV.begin(),CIJV.end());
 #else
-  C = SparseMatrix<Scalar>( 
+  C = SparseMatrix<Scalar>(
       dim == 1 ? A.rows()+B.rows() : A.rows(),
       dim == 1 ? A.cols()          : A.cols()+B.cols());
   Eigen::VectorXi per_col = Eigen::VectorXi::Zero(C.cols());
@@ -189,7 +189,7 @@ IGL_INLINE void igl::cat(
 template <typename Derived, class MatC>
 IGL_INLINE void igl::cat(
   const int dim,
-  const Eigen::MatrixBase<Derived> & A, 
+  const Eigen::MatrixBase<Derived> & A,
   const Eigen::MatrixBase<Derived> & B,
   MatC & C)
 {
@@ -264,4 +264,5 @@ template Eigen::Matrix<int, -1, 1, 0, -1, 1> igl::cat<Eigen::Matrix<int, -1, 1, 
 template Eigen::Matrix<double, -1, 1, 0, -1, 1> igl::cat<Eigen::Matrix<double, -1, 1, 0, -1, 1> >(int, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, Eigen::Matrix<double, -1, 1, 0, -1, 1> const&);
 template void igl::cat<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(int, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::Matrix<double, -1, -1, 0, -1, -1>&);
 template void igl::cat<Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(int, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::Matrix<int, -1, -1, 0, -1, -1>&);
+template void igl::cat<Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(int, Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, Eigen::Matrix<int, -1, 1, 0, -1, 1>&);
 #endif
