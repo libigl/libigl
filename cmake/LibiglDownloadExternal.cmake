@@ -68,6 +68,14 @@ function(igl_download_embree)
 	)
 endfunction()
 
+## glad
+function(igl_download_glad)
+	igl_download_project(glad
+		GIT_REPOSITORY https://github.com/libigl/libigl-glad.git
+		GIT_TAG        71e35fe685a0cc160068a2f2f971c40b82d14af0
+	)
+endfunction()
+
 ## GLFW
 function(igl_download_glfw)
 	igl_download_project(glfw
@@ -78,12 +86,13 @@ endfunction()
 
 ## ImGui
 function(igl_download_imgui)
-	download_project(
-		PROJ           imgui
-		SOURCE_DIR     ${LIBIGL_EXTERNAL}/imgui/imgui
-		DOWNLOAD_DIR   ${LIBIGL_EXTERNAL}/.cache/${name}
+	igl_download_project(imgui
 		GIT_REPOSITORY https://github.com/ocornut/imgui.git
 		GIT_TAG        bc6ac8b2aee0614debd940e45bc9cd0d9b355c86
+	)
+	igl_download_project(libigl-imgui
+		GIT_REPOSITORY https://github.com/libigl/libigl-imgui.git
+		GIT_TAG        a37e6e59e72fb07bd787dc7e90f72b9e1928dae7
 	)
 endfunction()
 
@@ -92,6 +101,14 @@ function(igl_download_pybind11)
 	igl_download_project(pybind11
 		GIT_REPOSITORY https://github.com/pybind/pybind11.git
 		GIT_TAG        2d0507db43cd5a117f7843e053b17dffca114107
+	)
+endfunction()
+
+## stb_image
+function(igl_download_stb)
+	igl_download_project(stb
+		GIT_REPOSITORY https://github.com/libigl/libigl-stb.git
+		GIT_TAG        e671ceb3def5e7029a23de14c55dc16301ad4dab
 	)
 endfunction()
 
@@ -119,7 +136,6 @@ function(igl_download_triangle)
 	)
 endfunction()
 
-
 ## Google test
 function(igl_download_googletest)
 	igl_download_project(googletest
@@ -127,8 +143,6 @@ function(igl_download_googletest)
 		GIT_TAG        release-1.8.1
 	)
 endfunction()
-
-
 
 ################################################################################
 
