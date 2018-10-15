@@ -153,7 +153,7 @@ function(igl_download_test_data)
 		DOWNLOAD_DIR ${LIBIGL_EXTERNAL}/.cache/test_data
 		QUIET
 		GIT_REPOSITORY https://github.com/libigl/libigl-tests-data
-		GIT_TAG        bdb158c9695d5932bb6fc1cde078d8210bb13436
+		GIT_TAG        c81bb3b3db4cfd78bac6d359d845c45bc1059c9a
 		${LIBIGL_EXTRA_OPTIONS}
 	)
 endfunction()
