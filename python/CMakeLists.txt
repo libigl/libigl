@@ -23,12 +23,6 @@ if(UNIX)
   endif()
 endif()
 
-## libigl
-if(NOT TARGET igl::core)
-  list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/../cmake")
-  include(libigl)
-endif()
-
 ## include pybind
 set(PYBIND11_DIR ${PROJECT_SOURCE_DIR}/../external/pybind11 CACHE PATH "Path to pybind11")
 add_subdirectory(${PYBIND11_DIR} pybind11)
