@@ -33,6 +33,7 @@ external/mpfr
 external/boost
 external/.cache
 external/build
+external/pybind11
 .DS_Store
 libigl.zip
 *tags
