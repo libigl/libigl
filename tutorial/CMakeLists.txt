@@ -142,6 +142,7 @@ if(TUTORIALS_CHAPTER7)
   if(LIBIGL_WITH_TETGEN)
     add_subdirectory("714_MarchingTets")
   endif()
+  add_subdirectory("715_MeshImplicitFunction")
 endif()
 
 
