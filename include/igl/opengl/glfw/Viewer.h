@@ -45,8 +45,8 @@ namespace glfw
     // UI Enumerations
     enum class MouseButton {Left, Middle, Right};
     enum class MouseMode { None, Rotation, Zoom, Pan, Translation} mouse_mode;
-    IGL_INLINE int launch(bool resizable = true,bool fullscreen = false);
-    IGL_INLINE int launch_init(bool resizable = true,bool fullscreen = false);
+    IGL_INLINE int launch(bool resizable = true,bool fullscreen = false, int width = 1280, int height = 800);
+    IGL_INLINE int launch_init(bool resizable = true,bool fullscreen = false, int width = 1280, int height = 800);
     IGL_INLINE bool launch_rendering(bool loop = true);
     IGL_INLINE void launch_shut();
     IGL_INLINE void init();
@@ -79,7 +79,7 @@ namespace glfw
     IGL_INLINE void snap_to_canonical_quaternion();
     IGL_INLINE void open_dialog_load_mesh();
     IGL_INLINE void open_dialog_save_mesh();
-    IGL_INLINE ViewerData& data();
+    IGL_INLINE ViewerData& data(int mesh_id = -1);
 
     // Append a new "slot" for a mesh (i.e., create empty entires at the end of
     // the data_list and opengl_state_list.
@@ -89,7 +89,7 @@ namespace glfw
     // Side Effects:
     //   selected_data_index is set this newly created, last entry (i.e.,
     //   #meshes-1)
-    IGL_INLINE int append_mesh();
+    IGL_INLINE int append_mesh(bool visible = true);
 
     // Erase a mesh (i.e., its corresponding data and state entires in data_list
     // and opengl_state_list)
@@ -121,8 +121,17 @@ namespace glfw
     size_t selected_data_index;
     int next_data_id;
     GLFWwindow* window;
+    
     // Stores all the viewing options
-    ViewerCore core;
+    IGL_INLINE int append_core(Eigen::Vector4f viewport, bool append_empty = false);
+    IGL_INLINE bool erase_core(const size_t index);
+    IGL_INLINE size_t core_index(const int id) const;
+
+    IGL_INLINE ViewerCore& core(unsigned core_id = 0);
+    std::vector<ViewerCore> core_list;
+    size_t selected_core_index;
+    int next_core_id;
+
     // List of registered plugins
     std::vector<ViewerPlugin*> plugins;
     // Temporary data stored when the mouse button is pressed
@@ -164,7 +173,7 @@ namespace glfw
     void* callback_key_up_data;
 
   public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
 } // end namespace

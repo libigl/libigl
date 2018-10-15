@@ -110,6 +110,6 @@ int main(int argc, char *argv[])
   viewer.callback_key_down = &key_down;
   viewer.data().set_mesh(V1, F);
   viewer.data().show_lines = true;
-  viewer.core.lighting_factor = 0.0f;
+  viewer.core().lighting_factor = 0.0f;
   viewer.launch();
 }

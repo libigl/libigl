@@ -93,6 +93,9 @@ public:
 
   // ------------------- Properties
 
+  // Unique identifier
+  int id;
+
   // Colors
   Eigen::Vector4f background_color;
 
