@@ -44,7 +44,7 @@ endif()
 
 #######################
 if(NOT (LIBIGL_WITH_OPENGL AND LIBIGL_WITH_OPENGL_GLFW) )
-  message(WARNING "Most tutorial executables depend on OpenGL and glfw")
+  message(WARNING "Most tutorial executables depend on OpenGL and glfw. Use `cmake ../ -DLIBIGL_WITH_OPENGL=ON -DLIBIGL_WITH_OPENGL_GLFW=ON`")
   return()
 endif()
 
