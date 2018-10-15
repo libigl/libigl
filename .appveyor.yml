@@ -32,11 +32,10 @@ build_script:
   # - cd ../tutorial
   # - ${PYTHON} 101_FileIO.py
   # - cd ../../
-  # Tutorials
-  - cd tutorial
+  # Tutorials and tests
   - mkdir build
   - cd build
-  - cmake -DLIBIGL_USE_STATIC_LIBRARY=ON -G "Visual Studio 15 2017 Win64" ../
+  - cmake -DLIBIGL_BUILD_TESTS=ON -DLIBIGL_BUILD_TUTORIALS=ON -G "Visual Studio 15 2017 Win64" ../
   - set MSBuildLogger="C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
   - set MSBuildOptions=/v:m /p:Configuration=Debug /logger:%MSBuildLogger%
   - msbuild %MSBuildOptions% libigl_tutorials.sln
