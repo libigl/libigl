@@ -1,6 +1,14 @@
 ################################################################################
 include(DownloadProject)
 
+# With CMake 3.8 and above, we can hide warnings about git being in a
+# detached head by passing an extra GIT_CONFIG option
+if(NOT (${CMAKE_VERSION} VERSION_LESS "3.8.0"))
+	set(LIBIGL_EXTRA_OPTIONS "GIT_CONFIG advice.detachedHead=false")
+else()
+	set(LIBIGL_EXTRA_OPTIONS "")
+endif()
+
 # Shortcut function
 function(igl_download_project name)
 	download_project(
@@ -8,18 +16,7 @@ function(igl_download_project name)
 		SOURCE_DIR   ${LIBIGL_EXTERNAL}/${name}
 		DOWNLOAD_DIR ${LIBIGL_EXTERNAL}/.cache/${name}
 		QUIET
-		${ARGN}
-	)
-endfunction()
-
-
-# Shortcut function
-function(igl_download_data folder name)
-	download_project(
-		PROJ         ${name}
-		SOURCE_DIR   ${folder}/data
-		DOWNLOAD_DIR ${folder}/.cache/data
-		QUIET
+		${LIBIGL_EXTRA_OPTIONS}
 		${ARGN}
 	)
 endfunction()
@@ -68,6 +65,14 @@ function(igl_download_embree)
 	)
 endfunction()
 
+## glad
+function(igl_download_glad)
+	igl_download_project(glad
+		GIT_REPOSITORY https://github.com/libigl/libigl-glad.git
+		GIT_TAG        71e35fe685a0cc160068a2f2f971c40b82d14af0
+	)
+endfunction()
+
 ## GLFW
 function(igl_download_glfw)
 	igl_download_project(glfw
@@ -78,12 +83,13 @@ endfunction()
 
 ## ImGui
 function(igl_download_imgui)
-	download_project(
-		PROJ           imgui
-		SOURCE_DIR     ${LIBIGL_EXTERNAL}/imgui/imgui
-		DOWNLOAD_DIR   ${LIBIGL_EXTERNAL}/.cache/${name}
+	igl_download_project(imgui
 		GIT_REPOSITORY https://github.com/ocornut/imgui.git
 		GIT_TAG        bc6ac8b2aee0614debd940e45bc9cd0d9b355c86
+	)
+	igl_download_project(libigl-imgui
+		GIT_REPOSITORY https://github.com/libigl/libigl-imgui.git
+		GIT_TAG        a37e6e59e72fb07bd787dc7e90f72b9e1928dae7
 	)
 endfunction()
 
@@ -92,6 +98,14 @@ function(igl_download_pybind11)
 	igl_download_project(pybind11
 		GIT_REPOSITORY https://github.com/pybind/pybind11.git
 		GIT_TAG        2d0507db43cd5a117f7843e053b17dffca114107
+	)
+endfunction()
+
+## stb_image
+function(igl_download_stb)
+	igl_download_project(stb
+		GIT_REPOSITORY https://github.com/libigl/libigl-stb.git
+		GIT_TAG        e671ceb3def5e7029a23de14c55dc16301ad4dab
 	)
 endfunction()
 
@@ -119,7 +133,6 @@ function(igl_download_triangle)
 	)
 endfunction()
 
-
 ## Google test
 function(igl_download_googletest)
 	igl_download_project(googletest
@@ -128,10 +141,7 @@ function(igl_download_googletest)
 	)
 endfunction()
 
-
-
 ################################################################################
-
 
 ## Test data
 function(igl_download_test_data)
@@ -144,9 +154,9 @@ function(igl_download_test_data)
 		QUIET
 		GIT_REPOSITORY https://github.com/libigl/libigl-tests-data
 		GIT_TAG        c81bb3b3db4cfd78bac6d359d845c45bc1059c9a
+		${LIBIGL_EXTRA_OPTIONS}
 	)
 endfunction()
-
 
 ## Tutorial data
 function(igl_download_tutorial_data)
@@ -159,6 +169,7 @@ function(igl_download_tutorial_data)
 		QUIET
 		GIT_REPOSITORY https://github.com/libigl/libigl-tutorial-data
 		GIT_TAG        5c6a1ea809c043d71e5595775709c15325a7158c
+		${LIBIGL_EXTRA_OPTIONS}
 	)
 endfunction()
 
