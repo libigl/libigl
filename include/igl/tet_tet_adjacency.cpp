@@ -66,3 +66,8 @@ igl::tet_tet_adjacency(
   DerivedTT TTi;
   tet_tet_adjacency(T, TT, TTi);
 }
+
+#ifdef IGL_STATIC_LIBRARY
+template void igl::tet_tet_adjacency<Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
+#endif
+

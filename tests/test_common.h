@@ -76,7 +76,7 @@ namespace test_common
   };
   inline std::string data_path(std::string s)
   {
-    return std::string(LIBIGL_DATA_DIR) + "/data/" + s;
+    return std::string(LIBIGL_DATA_DIR) + "/" + s;
   };
 
   // TODO: this seems like a pointless indirection. Should just find and

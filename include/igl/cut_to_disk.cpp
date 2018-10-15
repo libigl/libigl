@@ -9,7 +9,7 @@ namespace igl {
   template <typename DerivedF, typename Index>
   void cut_to_disk(
     const Eigen::MatrixBase<DerivedF> &F,
-    std::vector<std::vector<Index> > &cuts) 
+    std::vector<std::vector<Index> > &cuts)
   {
     cuts.clear();
 
@@ -20,7 +20,7 @@ namespace igl {
 
     std::map<std::pair<Index, Index>, std::vector<Index> > edges;
     // build edges
-    
+
     for (Index i = 0; i < nfaces; i++)
     {
         for (int j = 0; j < 3; j++)
@@ -70,13 +70,13 @@ namespace igl {
             faceEdges(i, j) = edgeidx[e];
         }
     }
-    
+
     bool *deleted = new bool[nfaces];
     for (Index i = 0; i < nfaces; i++)
         deleted[i] = false;
 
     std::set<Index> deletededges;
-    
+
     // loop over faces
     for (Index face = 0; face < nfaces; face++)
     {
@@ -146,7 +146,7 @@ namespace igl {
         spinevertedges[edgeVerts(i, 0)].push_back(i);
         spinevertedges[edgeVerts(i, 1)].push_back(i);
     }
-    
+
     std::deque<Index> vertsProcess;
     std::map<Index, int> spinevertnbs;
     for (auto it : spinevertedges)
@@ -190,7 +190,7 @@ namespace igl {
         loopvertedges[edgeVerts(e, 0)].push_back(e);
         loopvertedges[edgeVerts(e, 1)].push_back(e);
     }
-    
+
     std::set<Index> usededges;
     for (Index e : loopedges)
     {
@@ -250,9 +250,9 @@ namespace igl {
                     {
                         cycleidx[nextvert] = cycleverts.size();
                         cycleverts.push_back(nextvert);
-                        cycleedges.push_back(nexte);                        
+                        cycleedges.push_back(nexte);
                     }
-                }                
+                }
                 curvert = nextvert;
                 cure = nexte;
             }
@@ -303,9 +303,9 @@ namespace igl {
                         {
                             cycleidx[nextvert] = cycleverts.size();
                             cycleverts.push_back(nextvert);
-                            cycleedges.push_back(nexte);                        
+                            cycleedges.push_back(nexte);
                         }
-                    }                
+                    }
                     curvert = nextvert;
                     cure = nexte;
                 }
@@ -321,10 +321,16 @@ namespace igl {
                     for (Index i = 0; i < cycleedges.size(); i++)
                     {
                         usededges.insert(cycleedges[i]);
-                    }                    
+                    }
                 }
             }
         }
     }
   }
 }
+
+#ifdef IGL_STATIC_LIBRARY
+// Explicit template instantiation
+template void igl::cut_to_disk<Eigen::Matrix<int, -1, -1, 0, -1, -1>, int>(Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, std::vector<std::vector<int, std::allocator<int> >, std::allocator<std::vector<int, std::allocator<int> > > >&);
+
+#endif
