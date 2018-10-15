@@ -1,6 +1,14 @@
 ################################################################################
 include(DownloadProject)
 
+# With CMake 3.8 and above, we can hide warnings about git being in a
+# detached head by passing an extra GIT_CONFIG option
+if(NOT (${CMAKE_VERSION} VERSION_LESS "3.8.0"))
+	set(LIBIGL_EXTRA_OPTIONS "GIT_CONFIG advice.detachedHead=false")
+else()
+	set(LIBIGL_EXTRA_OPTIONS "")
+endif()
+
 # Shortcut function
 function(igl_download_project name)
 	download_project(
@@ -8,18 +16,7 @@ function(igl_download_project name)
 		SOURCE_DIR   ${LIBIGL_EXTERNAL}/${name}
 		DOWNLOAD_DIR ${LIBIGL_EXTERNAL}/.cache/${name}
 		QUIET
-		${ARGN}
-	)
-endfunction()
-
-
-# Shortcut function
-function(igl_download_data folder name)
-	download_project(
-		PROJ         ${name}
-		SOURCE_DIR   ${folder}/data
-		DOWNLOAD_DIR ${folder}/.cache/data
-		QUIET
+		${LIBIGL_EXTRA_OPTIONS}
 		${ARGN}
 	)
 endfunction()
@@ -146,7 +143,6 @@ endfunction()
 
 ################################################################################
 
-
 ## Test data
 function(igl_download_test_data)
 	set(IGL_TEST_DATA ${LIBIGL_EXTERNAL}/../tests/data)
@@ -158,9 +154,9 @@ function(igl_download_test_data)
 		QUIET
 		GIT_REPOSITORY https://github.com/libigl/libigl-tests-data
 		GIT_TAG        bdb158c9695d5932bb6fc1cde078d8210bb13436
+		${LIBIGL_EXTRA_OPTIONS}
 	)
 endfunction()
-
 
 ## Tutorial data
 function(igl_download_tutorial_data)
@@ -173,6 +169,7 @@ function(igl_download_tutorial_data)
 		QUIET
 		GIT_REPOSITORY https://github.com/libigl/libigl-tutorial-data
 		GIT_TAG        5c6a1ea809c043d71e5595775709c15325a7158c
+		${LIBIGL_EXTRA_OPTIONS}
 	)
 endfunction()
 
