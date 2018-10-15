@@ -1,6 +1,0 @@
-# This file should contain the current version number of libigl
-# World.Major.Minor
-# Anyone may increment Minor to indicate a small change.
-# Major indicates a large change or large number of changes (upload to website)
-# World indicates a substantial change or release
-1.2.1
