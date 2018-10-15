@@ -74,11 +74,11 @@ external/yimg/showpng
 README.html
 tutorial/readme.html
 tutorial/*/build/*
+tutorial/data
 tutorial/*/Makefile
 external/glew/build
 external/glfw/build
 *buildXcode*
-tutorial/build*
 tutorial/*/*.mexmaci64
 external/libpng/build
 external/tinyxml2/build

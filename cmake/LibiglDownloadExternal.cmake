@@ -151,6 +151,7 @@ endfunction()
 ## Tutorial data
 function(igl_download_tutorial_data)
 	set(IGL_TUTORIAL_DATA ${LIBIGL_EXTERNAL}/../tutorial/data)
+
 	download_project(
 		PROJ         tutorial_data
 		SOURCE_DIR   ${IGL_TUTORIAL_DATA}
