@@ -34,7 +34,7 @@ int main(int argc, char * argv[])
   Eigen::MatrixXi CI;
 
   // Construct the voxel grid, populating CS, CV, and CI
-  igl::sparse_voxel_grid(p0, scalar_func, eps, CS, CV, CI);
+  igl::sparse_voxel_grid(p0, scalar_func, eps, 1024 /*expected_number_of_cubes*/, CS, CV, CI);
 
   // Given the sparse voxel grid, use Marching Cubes to construct a triangle mesh of the surface
   Eigen::MatrixXi F;

@@ -5,14 +5,14 @@
 #include <vector>
 
 
-template <typename DerivedS, typename DerivedP0, typename DerivedV, typename DerivedI>
+template <typename DerivedP0, typename Func, typename DerivedS, typename DerivedV, typename DerivedI>
 IGL_INLINE void igl::sparse_voxel_grid(const Eigen::MatrixBase<DerivedP0>& p0,
-                                       const std::function<typename DerivedS::Scalar(const DerivedP0&)>& scalarFunc,
+                                       const Func& scalarFunc,
                                        const double eps,
+                                       const int expected_number_of_cubes,
                                        Eigen::PlainObjectBase<DerivedS>& CS,
                                        Eigen::PlainObjectBase<DerivedV>& CV,
-                                       Eigen::PlainObjectBase<DerivedI>& CI,
-                                       int expected_number_of_cubes)
+                                       Eigen::PlainObjectBase<DerivedI>& CI)
 {
   typedef typename DerivedV::Scalar ScalarV;
   typedef typename DerivedS::Scalar ScalarS;
@@ -38,16 +38,23 @@ IGL_INLINE void igl::sparse_voxel_grid(const Eigen::MatrixBase<DerivedP0>& p0,
 
   ScalarV half_eps = 0.5 * eps;
 
-  std::vector<IndexRowVector> CI_vector(expected_number_of_cubes);
-  std::vector<VertexRowVector> CV_vector(8*expected_number_of_cubes);
-  std::vector<ScalarS> CS_vector(8*expected_number_of_cubes);
+  std::vector<IndexRowVector> CI_vector;
+  std::vector<VertexRowVector> CV_vector;
+  std::vector<ScalarS> CS_vector;
+  CI_vector.reserve(expected_number_of_cubes);
+  CV_vector.reserve(8 * expected_number_of_cubes);
+  CS_vector.reserve(8 * expected_number_of_cubes);
 
   // Track visisted neighbors
-  std::unordered_map<Eigen::RowVector3i, int, IndexRowVectorHash> visited(6*expected_number_of_cubes);
+  std::unordered_map<Eigen::RowVector3i, int, IndexRowVectorHash> visited;
+  visited.reserve(6 * expected_number_of_cubes);
+  visited.max_load_factor(0.5);
 
   // BFS Queue
-  std::vector<Eigen::RowVector3i> queue(expected_number_of_cubes*8);
+  std::vector<Eigen::RowVector3i> queue;
+  queue.reserve(expected_number_of_cubes * 8);
   queue.push_back(Eigen::RowVector3i(0, 0, 0));
+
   while (queue.size() > 0)
   {
     Eigen::RowVector3i pi = queue.back();
@@ -136,5 +143,6 @@ IGL_INLINE void igl::sparse_voxel_grid(const Eigen::MatrixBase<DerivedP0>& p0,
 
 
 #ifdef IGL_STATIC_LIBRARY
-template void igl::sparse_voxel_grid<Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, 1, 3, 1, 1, 3>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > const&, std::function<Eigen::Matrix<double, -1, 1, 0, -1, 1>::Scalar (Eigen::Matrix<double, 1, 3, 1, 1, 3> const&)> const&, double, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, int);
+template void igl::sparse_voxel_grid<class Eigen::Matrix<double, -1, -1, 0, -1, -1>, class std::function<double(class Eigen::Matrix<double, -1, -1, 0, -1, -1> const &)>, class Eigen::Matrix<double, -1, 1, 0, -1, 1>, class Eigen::Matrix<double, -1, -1, 0, -1, -1>, class Eigen::Matrix<int, -1, -1, 0, -1, -1> >(class Eigen::MatrixBase<class Eigen::Matrix<double, -1, -1, 0, -1, -1> > const &, class std::function<double(class Eigen::Matrix<double, -1, -1, 0, -1, -1> const &)> const &, double, int, class Eigen::PlainObjectBase<class Eigen::Matrix<double, -1, 1, 0, -1, 1> > &, class Eigen::PlainObjectBase<class Eigen::Matrix<double, -1, -1, 0, -1, -1> > &, class Eigen::PlainObjectBase<class Eigen::Matrix<int, -1, -1, 0, -1, -1> > &);
+template void igl::sparse_voxel_grid<Eigen::Matrix<double, 1, 3, 1, 1, 3>, std::function<double (Eigen::Matrix<double, 1, 3, 1, 1, 3> const&)>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > const&, std::function<double (Eigen::Matrix<double, 1, 3, 1, 1, 3> const&)> const&, double, int, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
 #endif
