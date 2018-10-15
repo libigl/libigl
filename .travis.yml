@@ -57,14 +57,6 @@ install:
 - ccache -V && ccache --show-stats && ccache --zero-stats
 
 script:
-# Python bindings
-- cd python
-- ${PYTHON} setup.py develop --user -- -DCMAKE_BUILD_TYPE=${CONFIG} -DLIBIGL_WITH_EMBREE=OFF -DLIBIGL_USE_STATIC_LIBRARY=ON -DCHECK_UNDEFINED=${CHECK_UNDEFINED}
-- cd tutorial
-- ${PYTHON} 101_FileIO.py
-- cd ../../
-- rm -rf python/build
-
 # Tutorials and tests
 - mkdir build
 - cd build
@@ -72,3 +64,13 @@ script:
 - make -j 2
 - ctest --verbose
 - ccache --show-stats
+- cd ../
+- rm -rf build
+
+# Python bindings (do these last; they are the least important)
+- cd python
+- ${PYTHON} setup.py develop --user -- -DCMAKE_BUILD_TYPE=${CONFIG} -DLIBIGL_WITH_EMBREE=OFF -DLIBIGL_USE_STATIC_LIBRARY=ON -DCHECK_UNDEFINED=${CHECK_UNDEFINED}
+- cd tutorial
+- ${PYTHON} 101_FileIO.py
+- cd ../../
+- rm -rf python/build
