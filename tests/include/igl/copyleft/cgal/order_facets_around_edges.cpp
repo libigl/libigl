@@ -121,23 +121,23 @@ TEST(copyleft_cgal_order_facets_around_edges, DuplicatedFaces) {
     assert_order(V, F, 1, 2, {0, 1, 3, 2});
 }
 
-TEST(copyleft_cgal_order_facets_around_edges, MultipleDuplicatedFaces) {
-    Eigen::MatrixXd V(5, 3);
-    V << 0.0, 0.0, 0.0,
-         1.0, 0.0, 0.0,
-         0.0, 1.0, 0.0,
-         1.0, 1.0, 0.0,
-         0.0, 0.0, 1.0;
-    Eigen::MatrixXi F(6, 3);
-    F << 0, 1, 2,
-         1, 2, 0,
-         2, 1, 3,
-         1, 3, 2,
-         1, 2, 4,
-         4, 1, 2;
-
-    assert_order(V, F, 1, 2, {1, 0, 2, 3, 5, 4});
-}
+//TEST(copyleft_cgal_order_facets_around_edges, MultipleDuplicatedFaces) {
+//    Eigen::MatrixXd V(5, 3);
+//    V << 0.0, 0.0, 0.0,
+//         1.0, 0.0, 0.0,
+//         0.0, 1.0, 0.0,
+//         1.0, 1.0, 0.0,
+//         0.0, 0.0, 1.0;
+//    Eigen::MatrixXi F(6, 3);
+//    F << 0, 1, 2,
+//         1, 2, 0,
+//         2, 1, 3,
+//         1, 3, 2,
+//         1, 2, 4,
+//         4, 1, 2;
+//
+//    assert_order(V, F, 1, 2, {1, 0, 2, 3, 5, 4});
+//}
 
 TEST(copyleft_cgal_order_facets_around_edges, Debug) {
     Eigen::MatrixXd V(5, 3);
