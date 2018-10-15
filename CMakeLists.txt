@@ -1,20 +1,25 @@
 cmake_minimum_required(VERSION 3.1)
 project(libigl)
 
+# Detects whether this is a top-level project
+if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+	set(LIBIGL_TOPLEVEL_PROJECT ON)
+else()
+	set(LIBIGL_TOPLEVEL_PROJECT OFF)
+endif()
 
-option(LIBIGL_BUILD_TESTS      "Build libigl unit test"        OFF)
-option(LIBIGL_BUILD_TUTORIALS  "Build libigl tutorial"         OFF)
-option(LIBIGL_BUILD_PYTHON     "Build libigl python bindings"  OFF)
+# Build tests, tutorials and python bindings
+option(LIBIGL_BUILD_TESTS      "Build libigl unit test"        ${LIBIGL_TOPLEVEL_PROJECT})
+option(LIBIGL_BUILD_TUTORIALS  "Build libigl tutorial"         ${LIBIGL_TOPLEVEL_PROJECT})
+option(LIBIGL_BUILD_PYTHON     "Build libigl python bindings"  ${LIBIGL_TOPLEVEL_PROJECT})
 
-
-# USE_STATIC_LIBRARY speeds up the generation of multiple binaries, 
+# USE_STATIC_LIBRARY speeds up the generation of multiple binaries,
 # at the cost of a longer initial compilation time
 # (by default, static build is off since libigl is a header-only library)
 option(LIBIGL_USE_STATIC_LIBRARY "Use LibIGL as static library" ON)
 
 # All dependencies that are downloaded as cmake projects and tested on the auto-builds are ON
 # (by default, all build options are off)
-option(LIBIGL_WITH_CGAL              "Use CGAL"                     ON)
 option(LIBIGL_WITH_COMISO            "Use CoMiso"                   ON)
 option(LIBIGL_WITH_EMBREE            "Use Embree"                   ON)
 option(LIBIGL_WITH_OPENGL            "Use OpenGL"                   ON)
@@ -28,10 +33,8 @@ option(LIBIGL_WITH_XML               "Use XML"                      ON)
 option(LIBIGL_WITH_PYTHON            "Use Python"                   ${LIBIGL_BUILD_PYTHON})
 ### End
 
-# These ensure that lib*.a are placed in the directory where `cmake
-# ../optional/` was issued.
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})		
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})		
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
 ### conditionally compile certain modules depending on libraries found on the system
