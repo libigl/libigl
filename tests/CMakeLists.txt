@@ -1,13 +1,8 @@
 cmake_minimum_required(VERSION 3.1)
 project(libigl_tests)
-message(STATUS "CMAKE_C_COMPILER: ${CMAKE_C_COMPILER}")
-message(STATUS "CMAKE_CXX_COMPILER: ${CMAKE_CXX_COMPILER}")
 
 ### conditionally compile certain modules depending on libraries found on the system
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../cmake)
-#find_package(CGAL QUIET COMPONENTS Core)
-find_package(MATLAB QUIET)
-find_package(MOSEK)
 
 ### libIGL options: choose between header only and compiled static library
 option(LIBIGL_USE_STATIC_LIBRARY "Use LibIGL as static library" ON)
@@ -46,7 +41,7 @@ set(IGL_TEST_DATA ${LIBIGL_EXTERNAL}/../tests/data)
 ### Download Google unit test framework.
 igl_download_googletest()
 
-SET(TEST_ROOT_DIR ${CMAKE_CURRENT_LIST_DIR}) 
+SET(TEST_ROOT_DIR ${CMAKE_CURRENT_LIST_DIR})
 INCLUDE_DIRECTORIES(${TEST_ROOT_DIR})
 
 # Set TEST_DIR definition

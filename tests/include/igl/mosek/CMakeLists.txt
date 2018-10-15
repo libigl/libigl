@@ -1,5 +1,4 @@
-file(GLOB TEST_SRC_FILES *.cpp main.cpp)
-file(GLOB TEST_INC_FILES *.h *.inl)
+set(TEST_SRC_FILES bbw.cpp main.cpp)
 
 add_executable(igl_mosek_tests ${TEST_SRC_FILES} ${TEST_INC_FILES})
 target_link_libraries(igl_mosek_tests igl::core igl::mosek gtest_main)
