@@ -12,6 +12,18 @@ function(igl_download_project name)
 	)
 endfunction()
 
+
+# Shortcut function
+function(igl_download_data folder name)
+	download_project(
+		PROJ         ${name}
+		SOURCE_DIR   ${folder}/data
+		DOWNLOAD_DIR ${folder}/.cache/data
+		QUIET
+		${ARGN}
+	)
+endfunction()
+
 ################################################################################
 
 ## CGAL
@@ -104,6 +116,48 @@ function(igl_download_triangle)
 	igl_download_project(triangle
 		GIT_REPOSITORY https://github.com/libigl/triangle.git
 		GIT_TAG        d6761dd691e2e1318c83bf7773fea88d9437464a
+	)
+endfunction()
+
+
+## Google test
+function(igl_download_googletest)
+	igl_download_project(googletest
+		GIT_REPOSITORY https://github.com/google/googletest
+		GIT_TAG        v1.8.1
+	)
+endfunction()
+
+
+
+################################################################################
+
+
+## Test data
+function(igl_download_test_data)
+	set(IGL_TEST_DATA ${LIBIGL_EXTERNAL}/../tests/data)
+
+	download_project(
+		PROJ         test_data
+		SOURCE_DIR   ${IGL_TEST_DATA}
+		DOWNLOAD_DIR ${LIBIGL_EXTERNAL}/.cache/test_data
+		QUIET
+		GIT_REPOSITORY https://github.com/libigl/libigl-tests-data
+		GIT_TAG        bdb158c9695d5932bb6fc1cde078d8210bb13436
+	)
+endfunction()
+
+
+## Tutorial data
+function(igl_download_tutorial_data)
+	set(IGL_TUTORIAL_DATA ${LIBIGL_EXTERNAL}/../tutorial/data)
+	download_project(
+		PROJ         tutorial_data
+		SOURCE_DIR   ${IGL_TUTORIAL_DATA}
+		DOWNLOAD_DIR ${LIBIGL_EXTERNAL}/.cache/tutorial_data
+		QUIET
+		GIT_REPOSITORY https://github.com/libigl/libigl-tutorial-data
+		GIT_TAG        5c6a1ea809c043d71e5595775709c15325a7158c
 	)
 endfunction()
 
