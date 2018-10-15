@@ -23,10 +23,10 @@ if(UNIX)
   endif()
 endif()
 
-## libigl
-if(NOT TARGET igl::core)
-  list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/../cmake")
-  include(libigl)
+## libigl		
+if(NOT TARGET igl::core)		
+  list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/../cmake")		
+  include(libigl)		
 endif()
 
 ## include pybind

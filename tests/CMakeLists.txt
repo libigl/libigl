@@ -1,14 +1,13 @@
 cmake_minimum_required(VERSION 3.1)
 project(libigl_tests)
 
-### conditionally compile certain modules depending on libraries found on the system
-list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../cmake)
-
-### Adding libIGL: choose the path to your local copy libIGL
-if(NOT TARGET igl_common)
-  include(libigl)
-else()
-  include(LibiglDownloadExternal)
+list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../cmake)		
+		
+### Adding libIGL: choose the path to your local copy libIGL		
+if(NOT TARGET igl_common)		
+  include(libigl)		
+else()		
+  include(LibiglDownloadExternal)		
 endif()
 
 ### Download data
