@@ -893,8 +893,29 @@ namespace glfw
 
   IGL_INLINE void Viewer::post_resize(int w,int h)
   {
-    if(core_list.size()==1)
-        core().viewport = Eigen::Vector4f(0,0,w,h);
+    if (core_list.size() == 1) 
+    {
+      core().viewport = Eigen::Vector4f(0,0,w,h);
+    } 
+    else
+    {
+      int original_w = 0;
+      int original_h = 0;
+      for (auto c: core_list) 
+      {
+        int cur_x = c.viewport(0) + c.viewport(2);
+        int cur_y = c.viewport(1) + c.viewport(3);
+        if (original_w < cur_x) original_w = cur_x;
+        if (original_h < cur_y) original_h = cur_y;
+      }
+      for (auto &c: core_list) 
+      {
+        c.viewport(0) *= w/original_w;
+        c.viewport(2) *= w/original_w;
+        c.viewport(1) *= h/original_h;
+        c.viewport(3) *= h/original_h;
+      }
+    }
     for (unsigned int i = 0; i<plugins.size(); ++i)
     {
       plugins[i]->post_resize(w, h);
