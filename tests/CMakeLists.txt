@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.1)
-project(libigl_tutorials)
+project(libigl_tests)
 message(STATUS "CMAKE_C_COMPILER: ${CMAKE_C_COMPILER}")
 message(STATUS "CMAKE_CXX_COMPILER: ${CMAKE_CXX_COMPILER}")
 
@@ -33,7 +33,11 @@ option(LIBIGL_WITH_PYTHON            "Use Python"         OFF)
 ### End
 
 ### Adding libIGL: choose the path to your local copy libIGL
-include(libigl)
+if(NOT TARGET igl_common)
+  include(libigl)
+else()
+  include(LibiglDownloadExternal)
+endif()
 
 ### Download data
 igl_download_test_data()
