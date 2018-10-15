@@ -94,3 +94,5 @@ tutorial/cmake-build-debug
 site/
 *.egg-info/
 .vs/
+tutorial/build
+build
