@@ -42,3 +42,6 @@ if(LIBIGL_BUILD_TUTORIALS)
 	add_subdirectory(tutorial)
 endif()
 
+if(LIBIGL_BUILD_TESTS)
+	add_subdirectory(tests)
+endif()
