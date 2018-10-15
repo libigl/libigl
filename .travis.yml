@@ -70,5 +70,5 @@ script:
 - cd build
 - cmake -DCMAKE_BUILD_TYPE=$CONFIG -DLIBIGL_BUILD_TESTS=ON -DLIBIGL_BUILD_TUTORIALS=ON ../
 - make -j 2
-- ctest --verbose
+- make test
 - ccache --show-stats
