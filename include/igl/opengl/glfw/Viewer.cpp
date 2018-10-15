@@ -688,7 +688,7 @@ namespace glfw
         return true;
 
     int width_window, height_window;
-    glfwGetWindowSize(window, &width_window, &height_window);
+    glfwGetFramebufferSize(window, &width_window, &height_window);
     for (int i = 0; i < core_list.size(); i++)
     {
         Eigen::Vector4f viewport = core_list[i].viewport;
