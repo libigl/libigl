@@ -195,7 +195,7 @@ if(LIBIGL_WITH_CGAL)
     if(EXISTS ${LIBIGL_EXTERNAL}/boost)
       set(BOOST_ROOT "${LIBIGL_EXTERNAL}/boost")
     endif()
-    set(CGAL_Boost_USE_STATIC_LIBS ON CACHE BOOL "" FORCE)
+    option(CGAL_Boost_USE_STATIC_LIBS "Use static Boost libs with CGAL" ON)
     find_package(CGAL CONFIG COMPONENTS Core PATHS ${CGAL_DIR} NO_DEFAULT_PATH)
   endif()
 
