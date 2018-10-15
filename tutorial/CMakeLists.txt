@@ -24,7 +24,11 @@ option(LIBIGL_WITH_VIEWER            "Use OpenGL viewer" ON)
 
 
 ### Adding libIGL: choose the path to your local copy libIGL
-include(libigl)
+if(NOT TARGET igl_common)
+  include(libigl)
+else()
+  include(LibiglDownloadExternal)
+endif()
 
 ### Download data
 igl_download_tutorial_data()
@@ -47,7 +51,7 @@ option(TUTORIALS_CHAPTER6 "Compile chapter 6" ON)
 option(TUTORIALS_CHAPTER7 "Compile chapter 7" ON)
 
 # Store location of tutorial/shared directory
-set(TUTORIAL_SHARED_PATH ${IGL_TUTORIAL_DATA} CACHE PATH "location of shared tutorial resources")
+set(TUTORIAL_SHARED_PATH ${LIBIGL_EXTERNAL}/../tutorial/data CACHE PATH "location of shared tutorial resources")
 add_library(tutorials INTERFACE)
 target_compile_definitions(tutorials INTERFACE "-DTUTORIAL_SHARED_PATH=\"${TUTORIAL_SHARED_PATH}\"")
 target_include_directories(tutorials INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
