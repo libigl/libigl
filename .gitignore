@@ -29,6 +29,8 @@ external/embree/bin
 external/embree/doc/html/*
 external/embree/doc/latex/*
 external/gmp
+external/cgal
+external/cork
 external/mpfr
 external/boost
 external/.cache

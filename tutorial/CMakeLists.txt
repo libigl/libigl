@@ -20,8 +20,13 @@ option(LIBIGL_WITH_MATLAB           "Use Matlab"         "${MATLAB_FOUND}")
 option(LIBIGL_WITH_MOSEK            "Use MOSEK"          "${MOSEK_FOUND}")
 ### End
 
+
+
 ### Adding libIGL: choose the path to your local copy libIGL
 include(libigl)
+
+### Download data
+igl_download_tutorial_data()
 
 ### Output directories
 if(MSVC)
