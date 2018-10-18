@@ -35,6 +35,7 @@ option(LIBIGL_WITH_TRIANGLE          "Use Triangle"                 OFF)
 option(LIBIGL_WITH_XML               "Use XML"                      OFF)
 option(LIBIGL_WITH_PYTHON            "Use Python"                   OFF)
 option(LIBIGL_WITHOUT_COPYLEFT       "Disable Copyleft libraries"   OFF)
+option(LIBIGL_EXPORT_TARGETS         "Export libigl CMake targets"  OFF)
 
 ################################################################################
 
@@ -428,6 +429,10 @@ endif()
 
 ################################################################################
 ### Install and export all modules
+
+if(NOT LIBIGL_EXPORT_TARGETS)
+  return()
+endif()
 
 function(install_dir_files dir_name)
   if (dir_name STREQUAL "core")
