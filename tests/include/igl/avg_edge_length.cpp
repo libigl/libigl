@@ -3,7 +3,7 @@
 #include <iostream>
 
 
-TEST(avg_edge_length, cube)
+TEST_CASE("avg_edge_length: cube", "[igl]")
 {
   //The allowed error for this test
   const double epsilon = 1e-15;
@@ -31,32 +31,32 @@ TEST(avg_edge_length, cube)
   double avg;
 
   avg = igl::avg_edge_length(V,F);
-  ASSERT_NEAR((12.*sqrt(side_sq) + 6.*sqrt(diag_sq))/(12.+6.), avg, epsilon);
+  REQUIRE (avg == Approx ((12.*sqrt(side_sq) + 6.*sqrt(diag_sq))/(12.+6.)).margin( epsilon));
 
   //Check the regular tetrahedron
   avg = igl::avg_edge_length(V,F_tet);
-  ASSERT_NEAR(sqrt(diag_sq), avg, epsilon);
+  REQUIRE (avg == Approx (sqrt(diag_sq)).margin( epsilon));
 
 
   //Scale the cube to have huge sides
   side_sq = huge_scale * huge_scale;  //squared lenght of a side
   diag_sq = 2.0 * side_sq;  //squared lenght of a diagonal
   avg = igl::avg_edge_length(V_huge,F);
-  ASSERT_NEAR((12.*sqrt(side_sq) + 6.*sqrt(diag_sq))/(12.+6.), avg, epsilon*huge_scale);
+  REQUIRE (avg == Approx ((12.*sqrt(side_sq) + 6.*sqrt(diag_sq))/(12.+6.)).margin( epsilon*huge_scale));
 
   //Check the equilateral triangles
   avg = igl::avg_edge_length(V_huge,F_tet);
-  ASSERT_NEAR(sqrt(diag_sq), avg, epsilon*huge_scale);
+  REQUIRE (avg == Approx (sqrt(diag_sq)).margin( epsilon*huge_scale));
 
 
   //Scale the cube to have tiny sides
   side_sq = tiny_scale * tiny_scale;  //squared lenght of a side
   diag_sq = 2.0 * side_sq;  //squared lenght of a diagonal
   avg = igl::avg_edge_length(V_tiny,F);
-  ASSERT_NEAR((12.*sqrt(side_sq) + 6.*sqrt(diag_sq))/(12.+6.), avg, epsilon*tiny_scale);
+  REQUIRE (avg == Approx ((12.*sqrt(side_sq) + 6.*sqrt(diag_sq))/(12.+6.)).margin( epsilon*tiny_scale));
 
   //Check the regular tetrahedron
   avg = igl::avg_edge_length(V_tiny,F_tet);
-  ASSERT_NEAR(sqrt(diag_sq), avg, epsilon*tiny_scale);
+  REQUIRE (avg == Approx (sqrt(diag_sq)).margin( epsilon*tiny_scale));
 
 }

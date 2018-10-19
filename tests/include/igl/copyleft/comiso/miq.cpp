@@ -1,4 +1,3 @@
-#include <gtest/gtest.h>
 #include <test_common.h>
 #include <igl/avg_edge_length.h>
 #include <igl/barycenter.h>
@@ -18,7 +17,7 @@
 #include <sstream>
 #include <igl/writeDMAT.h>
 
-TEST(miq, 3_holes)
+TEST_CASE("miq: 3_holes", "[igl/copyleft/comiso]")
 {
 using namespace Eigen;
 
@@ -126,6 +125,6 @@ igl::copyleft::comiso::miq(V,
   igl::readDMAT(test_common::data_path("3holes-miq-UV.dmat"),UV_ref);
   igl::readDMAT(test_common::data_path("3holes-miq-FUV.dmat"),FUV_ref);
 
-  ASSERT_LT((UV-UV_ref).array().abs().maxCoeff() ,1e-6);
-  ASSERT_LT((FUV-FUV_ref).array().abs().maxCoeff() ,1e-6);
+  REQUIRE (1e-6 > (UV-UV_ref).array().abs().maxCoeff());
+  REQUIRE (1e-6 > (FUV-FUV_ref).array().abs().maxCoeff());
 }

@@ -47,6 +47,7 @@ if(LIBIGL_BUILD_TUTORIALS)
 endif()
 
 if(LIBIGL_BUILD_TESTS)
+	include(CTest)
 	enable_testing()
 	add_subdirectory(tests)
 endif()
