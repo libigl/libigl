@@ -1,7 +1,7 @@
 #include <test_common.h>
 #include <igl/unique_simplices.h>
 
-TEST(igl_unique_simples, duplicate_triangles)
+TEST(igl_unique_simplices, duplicate_triangles)
 {
   const Eigen::MatrixXi F = (Eigen::MatrixXi(2,3)<<0,1,2,0,1,2).finished();
 
@@ -10,9 +10,9 @@ TEST(igl_unique_simples, duplicate_triangles)
   {
     for(int dj = -1;dj<2;dj+=2)
     {
-      for(int i = 0;i<3;i+=di)
+      for(int i = 0;i<3;i++)
       {
-        for(int j = 0;j<3;j+=dj)
+        for(int j = 0;j<3;j++)
         {
           Eigen::MatrixXi Fij = F;
           for(int c = 0;c<3;c++)
