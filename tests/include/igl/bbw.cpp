@@ -8,6 +8,9 @@
 
 TEST(bbw, decimated_knight)
 {
+  #ifdef WIN32
+    return;
+  #endif
   Eigen::MatrixXd V,C;
   Eigen::MatrixXi T,F,E;
   igl::readMESH(test_common::data_path("decimated-knight.mesh"),V,T,F);
