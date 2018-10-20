@@ -38,3 +38,22 @@ TEST(grid,3d)
       1,  1,  1).finished();
   test_common::assert_eq(GV,GVgt);
 }
+
+TEST(grid,2d)
+{
+  Eigen::Vector2i res(3,3);
+  Eigen::MatrixXd GV;
+  igl::grid(res,GV);
+  const Eigen::MatrixXd GVgt = 
+    (Eigen::MatrixXd(9,2)<<
+      0,  0,
+    0.5,  0,
+      1,  0,
+      0,0.5,
+    0.5,0.5,
+      1,0.5,
+      0,  1,
+    0.5,  1,
+      1,  1).finished();
+  test_common::assert_eq(GV,GVgt);
+}
