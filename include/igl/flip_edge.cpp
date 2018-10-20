@@ -25,6 +25,14 @@ IGL_INLINE void igl::flip_edge(
   typedef typename DerivedF::Scalar Index;
   const size_t num_faces = F.rows();
   assert(F.cols() == 3);
+  // Edge to flip [v1,v2] --> [v3,v4]
+  // Before:
+  // F(f1,:) = [v1,v2,v4] // in some cyclic order
+  // F(f2,:) = [v1,v3,v2] // in some cyclic order
+  // After: 
+  // F(f1,:) = [v1,v3,v4] // in *this* order 
+  // F(f2,:) = [v2,v4,v3] // in *this* order
+  //
   //          v1                 v1
   //          /|\                / \
   //         / | \              /f1 \
