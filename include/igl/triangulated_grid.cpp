@@ -21,7 +21,6 @@ IGL_INLINE void igl::triangulated_grid(
   Eigen::PlainObjectBase<DerivedGF> & GF)
 {
   using namespace Eigen;
-  assert(res.size() == 2 && "Only 2D grids supported");
   Eigen::Matrix<XType,2,1> res(nx,ny);
   igl::grid(res,GV);
   GF.resize((nx-1)*(ny-1)*2,3);
