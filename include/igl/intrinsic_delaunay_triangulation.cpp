@@ -41,6 +41,12 @@ IGL_INLINE void igl::intrinsic_delaunay_triangulation(
   typedef typename Derivedl::Scalar Scalar;
   const Index num_faces = F.rows();
 
+  std::vector<Index> face_queue;
+  face_queue.reserve(32);
+  std::vector<Index> pushed;
+  // 32 is faster than 8
+  pushed.reserve(32);
+
   // Does edge (a,b) exist in the edges of all faces incident on
   // existing unique edge uei.
   //
@@ -51,11 +57,6 @@ IGL_INLINE void igl::intrinsic_delaunay_triangulation(
   //   uE2E  map from unique edges to half-edges (see unique_edge_map)
   //   E  #F*3 by 2 list of half-edges
   //
-  std::vector<Index> face_queue;
-  face_queue.reserve(32);
-  std::vector<Index> pushed;
-  // 32 is faster than 8
-  pushed.reserve(32);
   const auto edge_exists_near = 
     [&](const Index & a,const Index & b,const Index & uei)->bool
     {
