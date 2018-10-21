@@ -10,7 +10,11 @@
 #include "tan_half_angle.h"
 #include "unique_edge_map.h"
 #include "flip_edge.h"
+#include "EPS.h"
+#include "matlab_format.h"
 #include <iostream>
+#include <queue>
+#include <map>
 
 template <
   typename Derivedl_in,
@@ -39,6 +43,8 @@ IGL_INLINE void igl::intrinsic_delaunay_triangulation(
 
   // Copied from delaunay_triangulation
   bool all_delaunay = false;
+  // Dumb O(#E * #flips). Use queue and gather only edges that could have
+  // changed to make this O(#E + #flips). 
   while(!all_delaunay) 
   {
     all_delaunay = true;
@@ -48,7 +54,6 @@ IGL_INLINE void igl::intrinsic_delaunay_triangulation(
       {
         if(!is_intrinsic_delaunay(l,F,uE2E,uei)) 
         {
-          all_delaunay = false;
           // update l just before flipping edge
           //      .        //
           //     /|\       //
@@ -61,30 +66,6 @@ IGL_INLINE void igl::intrinsic_delaunay_triangulation(
           //   b\α|δ/c     //
           //     \|/       //
           //      .        //
-          // Compute intrinsic length of oppposite edge
-          assert(uE2E[uei].size() == 2 && "edge should have 2 incident faces");
-          const Index he1 = uE2E[uei][0];
-          const Index he2 = uE2E[uei][1];
-          const Index f1 = he1%num_faces;
-          const Index c1 = he1/num_faces;
-          const Index f2 = he2%num_faces;
-          const Index c2 = he2/num_faces;
-          assert( std::abs(l(f1,c1)-l(f2,c2) < igl::EPS<Scalar>()) );
-          const Scalar e = l(f1,c1);
-          const Scalar a = l(f1,(c1+1)%3);
-          const Scalar b = l(f1,(c1+2)%3);
-          const Scalar c = l(f2,(c2+1)%3);
-          const Scalar d = l(f2,(c2+2)%3);
-          // tan(α/2)
-          const Scalar tan_a_2= tan_half_angle(a,b,e);
-          // tan(δ/2)
-          const Scalar tan_d_2 = tan_half_angle(d,e,c);
-          // tan((α+δ)/2)
-          const Scalar tan_a_d_2 = (tan_a_2 + tan_d_2)/(1.0-tan_a_2*tan_d_2);
-          // cos(α+δ)
-          const Scalar cos_a_d = 
-            (1.0 - tan_a_d_2*tan_a_d_2)/(1.0+tan_a_d_2*tan_a_d_2);
-          const Scalar f = sqrt(b*b + c*c - 2.0*b*c*cos_a_d);
           // Annotated from flip_edge:
           // Edge to flip [v1,v2] --> [v3,v4]
           // Before:
@@ -103,13 +84,131 @@ IGL_INLINE void igl::intrinsic_delaunay_triangulation(
           //          \|/                \ /
           //          v2                 v2
           //
-          l(f1,0) = f;
-          l(f1,1) = b;
-          l(f1,2) = c;
-          l(f2,0) = f;
-          l(f2,1) = d;
-          l(f2,2) = a;
-          flip_edge(F, E, uE, EMAP, uE2E, uei);
+          // Compute intrinsic length of oppposite edge
+          assert(uE2E[uei].size() == 2 && "edge should have 2 incident faces");
+          const Index f1 = uE2E[uei][0]%num_faces;
+          const Index f2 = uE2E[uei][1]%num_faces;
+          const Index c1 = uE2E[uei][0]/num_faces;
+          const Index c2 = uE2E[uei][1]/num_faces;
+          assert(c1 < 3);
+          assert(c2 < 3);
+          assert(f1 != f2);
+          const Index v1 = F(f1, (c1+1)%3);
+          const Index v2 = F(f1, (c1+2)%3);
+          const Index v4 = F(f1, c1);
+          const Index v3 = F(f2, c2);
+          assert(F(f2, (c2+2)%3) == v1);
+          assert(F(f2, (c2+1)%3) == v2);
+          // From gptoolbox/mesh/flip_edge.m
+          // "If edge-after-flip already  exists then this will create a non-manifold
+          // edge"
+          // Yes, this can happen: e.g., an edge of a tetrahedron."
+          // "If two edges will be the same edge after flip then this will create a
+          // non-manifold edge."
+          // I dont' think this can happen if we flip one at a time. gptoolbox
+          // flips in parallel.
+          //
+          // Does edge (a,b) exist in the edges of all faces incident on
+          // existing unique edge uei.
+          //
+          // Inputs:
+          //   a  1st end-point of query edge
+          //   b  2nd end-point of query edge
+          //   uei  index into uE/uE2E of unique edge
+          //   uE2E  map from unique edges to half-edges (see unique_edge_map)
+          //   E  #F*3 by 2 list of half-edges
+          //
+          const auto edge_exists_near = 
+            [&](const Index & a,const Index & b,const Index & uei)->bool
+          {
+            assert(a!=b);
+            // Not handling case where (a,b) is edge of face incident on uei
+            // since this can't happen for edge-flipping.
+            assert(a!=uE(uei,0));
+            assert(a!=uE(uei,1));
+            assert(b!=uE(uei,0));
+            assert(b!=uE(uei,1));
+            // starting with the (2) faces incident on e, consider all faces
+            // incident on edges containing either a or b.
+            //
+            // face_queue  Queue containing faces incident on exactly one of a/b
+            std::queue<Index> face_queue;
+            const Index f1 = uE2E[uei][0]%num_faces;
+            const Index f2 = uE2E[uei][1]%num_faces;
+            std::map<Index,bool> pushed;
+            face_queue.push(f1);
+            pushed[f1] = true;
+            face_queue.push(f2);
+            pushed[f2] = true;
+            while(!face_queue.empty())
+            {
+              const Index f = face_queue.front();
+              face_queue.pop();
+              pushed[f] = true;
+              // consider each edge of this face
+              for(int c = 0;c<3;c++)
+              {
+                // Unique edge id
+                const Index uec = EMAP(c*num_faces+f);
+                const Index s = uE(uec,0);
+                const Index d = uE(uec,1);
+                const bool ona = s == a || d == a;
+                const bool onb = s == b || d == b;
+                // Is this the edge we're looking for?
+                if(ona && onb)
+                {
+                  return true;
+                }
+                // not incident on either?
+                if(!ona && !onb)
+                {
+                  continue;
+                }
+                // loop over all incident half-edges
+                for(const auto & he : uE2E[uec])
+                {
+                  // face of this he
+                  const Index fhe = he%num_faces;
+                  if(!pushed[fhe])
+                  {
+                    pushed[fhe] = true;
+                    face_queue.push(fhe);
+                  }
+                }
+              }
+            }
+            return false;
+          };
+
+          bool flippable = !edge_exists_near(v3,v4,uei);
+          if(flippable)
+          {
+            all_delaunay = false;
+
+            assert( std::abs(l(f1,c1)-l(f2,c2)) < igl::EPS<Scalar>() );
+            const Scalar e = l(f1,c1);
+            const Scalar a = l(f1,(c1+1)%3);
+            const Scalar b = l(f1,(c1+2)%3);
+            const Scalar c = l(f2,(c2+1)%3);
+            const Scalar d = l(f2,(c2+2)%3);
+            // tan(α/2)
+            const Scalar tan_a_2= tan_half_angle(a,b,e);
+            // tan(δ/2)
+            const Scalar tan_d_2 = tan_half_angle(d,e,c);
+            // tan((α+δ)/2)
+            const Scalar tan_a_d_2 = (tan_a_2 + tan_d_2)/(1.0-tan_a_2*tan_d_2);
+            // cos(α+δ)
+            const Scalar cos_a_d = 
+              (1.0 - tan_a_d_2*tan_a_d_2)/(1.0+tan_a_d_2*tan_a_d_2);
+            const Scalar f = sqrt(b*b + c*c - 2.0*b*c*cos_a_d);
+            l(f1,0) = f;
+            l(f1,1) = b;
+            l(f1,2) = c;
+            l(f2,0) = f;
+            l(f2,1) = d;
+            l(f2,2) = a;
+            flip_edge(F, E, uE, EMAP, uE2E, uei);
+          }
         }
       }
     }
