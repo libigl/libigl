@@ -106,7 +106,7 @@ IGL_INLINE void igl::cotmatrix_entries(
 {
   using namespace Eigen;
   const int m = l.rows();
-  assert(l.cols() == 4 && "Only triangles accepted");
+  assert(l.cols() == 3 && "Only triangles accepted");
   //Compute squared Edge lengths 
   Matrix<typename DerivedC::Scalar,Dynamic,3> l2;
   l2 = l.array().square();
