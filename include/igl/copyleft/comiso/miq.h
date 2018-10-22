@@ -66,10 +66,8 @@ namespace igl
     // Helper function that allows to directly provided pre-combed bisectors for an already cut mesh
     // Additional input:
     // PD1_combed, PD2_combed  :   #F by 3 combed jacobian
-    // BIS1_combed, BIS2_combed:   #F by 3 pre combed bi-sectors
     // MMatch:                     #F by 3 list of per-corner integer PI/2 rotations
     // Singular:                   #V list of flag that denotes if a vertex is singular or not
-    // SingularDegree:             #V list of flag that denotes the degree of the singularity
     // Seams:                      #F by 3 list of per-corner flag that denotes seams
 
     template <typename DerivedV, typename DerivedF, typename DerivedU>
