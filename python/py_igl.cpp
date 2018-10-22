@@ -35,7 +35,7 @@
 #include <igl/compute_frame_field_bisectors.h>
 #include <igl/cotmatrix.h>
 #include <igl/covariance_scatter_matrix.h>
-#include <igl/cross_field_missmatch.h>
+#include <igl/cross_field_mismatch.h>
 #include <igl/cut_mesh_from_singularities.h>
 #include <igl/deform_skeleton.h>
 #include <igl/directed_edge_orientations.h>

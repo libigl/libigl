@@ -9,11 +9,10 @@
 #include "find_cross_field_singularities.h"
 
 #include <vector>
-#include <igl/cross_field_missmatch.h>
+#include <igl/cross_field_mismatch.h>
 #include <igl/is_border_vertex.h>
 #include <igl/vertex_triangle_adjacency.h>
 #include <igl/is_border_vertex.h>
-#include <igl/cross_field_missmatch.h>
 
 
 template <typename DerivedV, typename DerivedF, typename DerivedM, typename DerivedO>
@@ -70,7 +69,7 @@ IGL_INLINE void igl::find_cross_field_singularities(const Eigen::PlainObjectBase
 {
   Eigen::Matrix<typename DerivedF::Scalar, Eigen::Dynamic, 3> Handle_MMatch;
 
-  igl::cross_field_missmatch(V, F, PD1, PD2, isCombed, Handle_MMatch);
+    igl::cross_field_mismatch(V, F, PD1, PD2, isCombed, Handle_MMatch);
   igl::find_cross_field_singularities(V, F, Handle_MMatch, isSingularity, singularityIndex);
 }
 

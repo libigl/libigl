@@ -28,7 +28,7 @@
 #include <CoMISo/Solver/GMM_Tools.hh>
 
 //
-#include "../../cross_field_missmatch.h"
+#include "igl/cross_field_mismatch.h"
 #include "../../comb_frame_field.h"
 #include "../../comb_cross_field.h"
 #include "../../cut_mesh_from_singularities.h"
@@ -1494,7 +1494,7 @@ IGL_INLINE void igl::copyleft::comiso::miq(
   igl::comb_cross_field(V, F, BIS1, BIS2, BIS1_combed, BIS2_combed);
 
   DerivedF Handle_MMatch;
-  igl::cross_field_missmatch(V, F, BIS1_combed, BIS2_combed, true, Handle_MMatch);
+    igl::cross_field_mismatch(V, F, BIS1_combed, BIS2_combed, true, Handle_MMatch);
 
   Eigen::Matrix<int, Eigen::Dynamic, 1> isSingularity, singularityIndex;
   igl::find_cross_field_singularities(V, F, Handle_MMatch, isSingularity, singularityIndex);

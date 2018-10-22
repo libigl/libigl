@@ -5,7 +5,7 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
-m.def("cross_field_missmatch", []
+m.def("cross_field_mismatch", []
 (
   const Eigen::MatrixXd &V,
   const Eigen::MatrixXi &F,

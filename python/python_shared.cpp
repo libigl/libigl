@@ -87,7 +87,7 @@ PYBIND11_PLUGIN(pyigl) {
            copyleft_tetgen_tetrahedralize
            cotmatrix
            covariance_scatter_matrix
-           cross_field_missmatch
+           cross_field_mismatch
            cut_mesh_from_singularities
            deform_skeleton
            directed_edge_orientations
