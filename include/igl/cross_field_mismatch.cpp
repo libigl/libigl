@@ -55,16 +55,7 @@ namespace igl {
       Eigen::Matrix<typename DerivedV::Scalar, 3, 1> dir1Rot = igl::rotation_matrix_from_directions(n1,n0)*dir1;
       dir1Rot.normalize();
 
-      // TODO: this should be equivalent to the other code below, to check!
-      // Compute the angle between the two vectors
-      //    double a0 = atan2(dir0.dot(B2.row(f0)),dir0.dot(B1.row(f0)));
-      //    double a1 = atan2(dir1Rot.dot(B2.row(f0)),dir1Rot.dot(B1.row(f0)));
-      //
-      //    double angle_diff = a1-a0;   //VectToAngle(f0,dir1Rot);
-
       double angle_diff = atan2(dir1Rot.dot(PD2.row(f0)),dir1Rot.dot(PD1.row(f0)));
-
-      //    std::cerr << "Dani: " << dir0(0) << " " << dir0(1) << " " << dir0(2) << " " << dir1Rot(0) << " " << dir1Rot(1) << " " << dir1Rot(2) << " " << angle_diff << std::endl;
 
       double step=igl::PI/2.0;
       int i=(int)std::floor((angle_diff/step)+0.5);
