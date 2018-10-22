@@ -70,7 +70,7 @@ TEST_CASE("cotmatrix_entries: simple", "[igl]")
   //All angles still measure 45 or 90 degrees
   //Their (half)cotangent must value 0.5 or 0.0
   for(int f = 0;f<C1.rows();f++)
-  {    
+  {
 #ifdef IGL_EDGE_LENGTHS_SQUARED_H
       //Hard assert if we have edge_lenght_squared
       for(int v = 0;v<3;v++)

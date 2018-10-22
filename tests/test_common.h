@@ -14,23 +14,18 @@
 #include <algorithm>
 #include <tuple>
 
-namespace test_common 
+namespace test_common
 {
-  // // Input:
-  // //   s  arbitrary string
-  // // Returns s with all non-alphanumeric characters replaced with underscores '_'
-  // inline std::string safe_test_name(std::string s)
-  // {
-  //   std::for_each(s.begin(),s.end(),[](char &c){if(!std::isalnum(c)) c='_';});
-  //   return s;
-  // };
-  // inline std::string string_test_name(const ::testing::TestParamInfo<std::string>& info)
-  // {
-  //   return test_common::safe_test_name(info.param);
-  // };
+  template<typename Param, typename Fun>
+  void run_test_cases(const std::vector<Param> &params,  Fun test_case)
+  {
+    for(const auto &p : params)
+      test_case(p);
+  }
+
   inline std::vector<std::string> closed_genus_0_meshes()
   {
-    return 
+    return
     {
       "cube.obj",
       "decimated-knight.obj",
@@ -97,7 +92,7 @@ namespace test_common
   template<typename Derived>
   void load_matrix(
     const std::string& filename,
-    Eigen::PlainObjectBase<Derived>& M) 
+    Eigen::PlainObjectBase<Derived>& M)
   {
     igl::readDMAT(data_path(filename), M);
   }

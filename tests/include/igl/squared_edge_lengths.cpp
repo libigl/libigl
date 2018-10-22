@@ -75,7 +75,7 @@ TEST_CASE("squared_edge_lengths: cube", "[igl]")
     //All sides sum exactly side_sq + side_sq + diag_sq
     REQUIRE (side_sq + side_sq + diag_sq == L_sq.row(f).sum());
   }
- 
+
   //Check the equilateral triangles
   igl::squared_edge_lengths(V_huge,F_tet,L_sq);
   REQUIRE (L_sq.rows() == F_tet.rows());

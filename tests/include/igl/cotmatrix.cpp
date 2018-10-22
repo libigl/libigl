@@ -1,33 +1,29 @@
 #include <test_common.h>
 #include <igl/cotmatrix.h>
 
-// class cotmatrix : public ::testing::TestWithParam<std::string> {};
 
-// TEST_P(cotmatrix, constant_in_null_space)
-// {
-//   Eigen::MatrixXd V;
-//   Eigen::MatrixXi F;
-//   Eigen::SparseMatrix<double> L;
-//   // Load example mesh: GetParam() will be name of mesh file
-//   test_common::load_mesh(GetParam(), V, F);
-//   igl::cotmatrix(V,F,L);
-//   REQUIRE (L.rows() == V.rows());
-//   REQUIRE (L.cols() == L.rows());
-//   Eigen::VectorXd C = Eigen::VectorXd::Ones(L.rows());
-//   Eigen::VectorXd Z = Eigen::VectorXd::Zero(L.rows());
-//   REQUIRE (b == a);
-//   REQUIRE (a==b);
-//   // ASSERT_NEAR(a,b,1e-15)
-//   REQUIRE (1e-12 > ((L*C)-(Z)).norm());
-// }
+TEST_CASE("cotmatrix: constant_in_null_space", "[igl]")
+{
+  const auto test_case = [](const std::string &param)
+  {
+    Eigen::MatrixXd V;
+    Eigen::MatrixXi F;
+    Eigen::SparseMatrix<double> L;
+    // Load example mesh: GetParam() will be name of mesh file
+    test_common::load_mesh(param, V, F);
+    igl::cotmatrix(V,F,L);
+    REQUIRE (L.rows() == V.rows());
+    REQUIRE (L.cols() == L.rows());
+    Eigen::VectorXd C = Eigen::VectorXd::Ones(L.rows());
+    Eigen::VectorXd Z = Eigen::VectorXd::Zero(L.rows());
+    // REQUIRE (b == a);
+    // REQUIRE (a==b);
+    // ASSERT_NEAR(a,b,1e-15)
+    REQUIRE (1e-12 > ((L*C)-(Z)).norm());
+  };
 
-// INSTANTIATE_TEST_CASE_P
-// (
-//  all_meshes,
-//  cotmatrix,
-//  ::testing::ValuesIn(test_common::all_meshes()),
-//  test_common::string_test_name
-// );
+  test_common::run_test_cases(test_common::all_meshes(), test_case);
+}
 
 TEST_CASE("cotmatrix: cube", "[igl]")
 {
