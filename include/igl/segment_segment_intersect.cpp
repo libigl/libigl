@@ -53,7 +53,7 @@ IGL_INLINE bool igl::segments_intersect(
     t = t1.norm() / rxs.norm();
     t = t * sign;
 
-    if (t < -eps || fabs(t) < eps)
+    if ((t - 1.) > eps || t < -eps)
         return false;
 
     a_t = t;
