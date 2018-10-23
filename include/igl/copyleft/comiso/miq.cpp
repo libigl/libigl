@@ -635,7 +635,7 @@ IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::SolveP
   // add user defined constraints
   BuildUserDefinedConstraints();
 
-  ////add the lagrange multiplier
+  ////add the Lagrange multiplier
   FixBlockedVertex();
 
   if (DEBUGPRINT)
