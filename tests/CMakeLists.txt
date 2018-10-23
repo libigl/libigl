@@ -16,7 +16,7 @@ set(IGL_TEST_DATA ${LIBIGL_EXTERNAL}/../tests/data)
 
 ### Download Google unit test framework.
 igl_download_catch2()
-list(APPEND CMAKE_MODULE_PATH ${LIBIGL_EXTERNAL}/Catch2/contrib)
+list(APPEND CMAKE_MODULE_PATH ${LIBIGL_EXTERNAL}/catch2/contrib)
 
 
 
