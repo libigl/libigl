@@ -16,6 +16,8 @@
 #include <iostream>
 #include <fstream>
 
+#include <stdexcept>
+
 #include <Eigen/Geometry>
 #include <Eigen/Sparse>
 #include <queue>
@@ -803,8 +805,16 @@ Eigen::VectorXd igl::copyleft::comiso::NRosyField::angleDefect()
     {
       Eigen::VectorXd a = V.row(F(i,(j+1)%3)) - V.row(F(i,j));
       Eigen::VectorXd b = V.row(F(i,(j+2)%3)) - V.row(F(i,j));
-      double t = a.transpose()*b;
-      t /= (a.norm() * b.norm());
+      double t = a.transpose() * b;
+      double norm_prod = a.norm() * b.norm();
+      if (norm_prod > 0.)
+        t /= norm_prod;
+      else
+        throw std::runtime_error("Error in 'igl::copyleft::comiso::NRosyField::angleDefect': division by zero!");
+      if (t > 1.)
+        t = 1.;
+      else if (t < -1.)
+        t = -1.;
       A(F(i,j)) += acos(t);
     }
   }
