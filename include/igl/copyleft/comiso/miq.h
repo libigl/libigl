@@ -17,7 +17,7 @@ namespace igl
   {
   namespace comiso
   {
-    // Global seamless parametrization aligned with a given per-face jacobian (PD1,PD2).
+    // Global seamless parametrization aligned with a given per-face Jacobian (PD1, PD2).
     // The algorithm is based on
     // "Mixed-Integer Quadrangulation" by D. Bommes, H. Zimmer, L. Kobbelt
     // ACM SIGGRAPH 2009, Article No. 77 (http://dl.acm.org/citation.cfm?id=1531383)

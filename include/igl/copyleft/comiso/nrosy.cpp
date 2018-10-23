@@ -302,7 +302,7 @@ void igl::copyleft::comiso::NRosyField::prepareSystemMatrix(const int N)
       if (isFixed_j)
         b(row) +=  2 * hard[j];
       else
-        T.push_back ( Eigen::Triplet<double>(row, tag_t[j],-2 ) );
+        T.push_back ( Eigen::Triplet<double>(row, tag_t[j], -2 ) );
       if (isFixed_p)
         b(row) += -( ( 4 * igl::PI ) / Nd ) * p[eid];
       else
