@@ -1133,12 +1133,7 @@ template <typename DerivedV, typename DerivedF>
 IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::addSharpEdgeConstraint(int fid, int vid)
 {
   // prepare constraint
-  std::vector<int> c(Handle_SystemInfo.num_vert_variables*2 + 1);
-
-  for (size_t i = 0; i < c.size(); ++i)
-  {
-    c[i] = 0;
-  }
+  std::vector<int> c(Handle_SystemInfo.num_vert_variables*2 + 1, 0);
 
   int v1 = Fcut(fid,vid);
   int v2 = Fcut(fid,(vid+1)%3);
