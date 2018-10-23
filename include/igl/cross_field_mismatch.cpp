@@ -21,7 +21,7 @@
 
 namespace igl {
   template <typename DerivedV, typename DerivedF, typename DerivedM>
-  class MissMatchCalculator
+  class MismatchCalculator
   {
   public:
 
@@ -44,8 +44,8 @@ namespace igl {
 
   private:
     ///compute the mismatch between 2 faces
-    inline int MissMatchByCross(const int f0,
-                         const int f1)
+    inline int MismatchByCross(const int f0,
+                               const int f1)
     {
       Eigen::Matrix<typename DerivedV::Scalar, 3, 1> dir0 = PD1.row(f0);
       Eigen::Matrix<typename DerivedV::Scalar, 3, 1> dir1 = PD1.row(f1);
@@ -69,7 +69,7 @@ namespace igl {
 
 
 public:
-  inline MissMatchCalculator(const Eigen::PlainObjectBase<DerivedV> &_V,
+  inline MismatchCalculator(const Eigen::PlainObjectBase<DerivedV> &_V,
                       const Eigen::PlainObjectBase<DerivedF> &_F,
                       const Eigen::PlainObjectBase<DerivedV> &_PD1,
                       const Eigen::PlainObjectBase<DerivedV> &_PD2
@@ -85,7 +85,7 @@ public:
     igl::triangle_triangle_adjacency(F,TT,TTi);
   }
 
-  inline void calculateMissmatch(Eigen::PlainObjectBase<DerivedM> &Handle_MMatch)
+  inline void calculateMismatch(Eigen::PlainObjectBase<DerivedM> &Handle_MMatch)
   {
     Handle_MMatch.setConstant(F.rows(),3,-1);
     for (size_t i=0;i<F.rows();i++)
@@ -95,7 +95,7 @@ public:
         if (((int)i)==TT(i,j) || TT(i,j) == -1)
           Handle_MMatch(i,j)=0;
         else
-          Handle_MMatch(i,j) = MissMatchByCross(i,TT(i,j));
+          Handle_MMatch(i,j) = MismatchByCross(i, TT(i, j));
       }
     }
   }
@@ -108,7 +108,7 @@ IGL_INLINE void igl::cross_field_mismatch(const Eigen::PlainObjectBase<DerivedV>
                                           const Eigen::PlainObjectBase<DerivedV> &PD1,
                                           const Eigen::PlainObjectBase<DerivedV> &PD2,
                                           const bool isCombed,
-                                          Eigen::PlainObjectBase<DerivedM> &missmatch)
+                                          Eigen::PlainObjectBase<DerivedM> &mismatch)
 {
   DerivedV PD1_combed;
   DerivedV PD2_combed;
@@ -120,8 +120,8 @@ IGL_INLINE void igl::cross_field_mismatch(const Eigen::PlainObjectBase<DerivedV>
     PD1_combed = PD1;
     PD2_combed = PD2;
   }
-  igl::MissMatchCalculator<DerivedV, DerivedF, DerivedM> sf(V, F, PD1_combed, PD2_combed);
-  sf.calculateMissmatch(missmatch);
+  igl::MismatchCalculator<DerivedV, DerivedF, DerivedM> sf(V, F, PD1_combed, PD2_combed);
+  sf.calculateMismatch(mismatch);
 }
 
 #ifdef IGL_STATIC_LIBRARY

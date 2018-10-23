@@ -6,8 +6,8 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 
-#ifndef IGL_CROSS_FIELD_MISSMATCH_H
-#define IGL_CROSS_FIELD_MISSMATCH_H
+#ifndef IGL_CROSS_FIELD_MISMATCH_H
+#define IGL_CROSS_FIELD_MISMATCH_H
 #include "igl_inline.h"
 #include <Eigen/Core>
 namespace igl
@@ -34,7 +34,7 @@ namespace igl
                                        const Eigen::PlainObjectBase<DerivedV> &PD1,
                                        const Eigen::PlainObjectBase<DerivedV> &PD2,
                                        const bool isCombed,
-                                       Eigen::PlainObjectBase<DerivedM> &Handle_MMatch);
+                                       Eigen::PlainObjectBase<DerivedM> &mismatch);
 }
 #ifndef IGL_STATIC_LIBRARY
 #include "cross_field_mismatch.cpp"

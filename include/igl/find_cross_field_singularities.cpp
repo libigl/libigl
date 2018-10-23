@@ -37,7 +37,7 @@ IGL_INLINE void igl::find_cross_field_singularities(const Eigen::PlainObjectBase
     if (V_border[vid])
       continue;
 
-    int missmatch=0;
+    int mismatch=0;
     for (unsigned int i=0;i<VF[vid].size();i++)
     {
       // look for the vertex
@@ -47,12 +47,12 @@ IGL_INLINE void igl::find_cross_field_singularities(const Eigen::PlainObjectBase
           j=z;
       assert(j!=-1);
 
-      missmatch+=Handle_MMatch(VF[vid][i],j);
+      mismatch+=Handle_MMatch(VF[vid][i],j);
     }
-    missmatch=missmatch%4;
+    mismatch=mismatch%4;
 
-    isSingularity(vid)=(missmatch!=0);
-    singularityIndex(vid)=missmatch;
+    isSingularity(vid)=(mismatch!=0);
+    singularityIndex(vid)=mismatch;
   }
 
 

@@ -229,7 +229,7 @@ namespace comiso {
 
     ///START COMMON MATH FUNCTIONS
     ///return the complex encoding the rotation
-    ///for a given missmatch interval
+    ///for a given mismatch interval
     IGL_INLINE std::complex<double> GetRotationComplex(int interval);
     ///END COMMON MATH FUNCTIONS
 
@@ -696,7 +696,7 @@ Handle_SystemInfo(_Handle_SystemInfo)
 
 ///START COMMON MATH FUNCTIONS
 ///return the complex encoding the rotation
-///for a given missmatch interval
+///for a given mismatch interval
 template <typename DerivedV, typename DerivedF>
 IGL_INLINE std::complex<double> igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::GetRotationComplex(int interval)
 {

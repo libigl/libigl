@@ -12,8 +12,8 @@
 #include <Eigen/Core>
 namespace igl
 {
-  // Calculates the missmatch (integer), at each face edge, of a cross field defined on the mesh faces.
-  // The integer missmatch is a multiple of pi/2 that transforms the cross on one side of the edge to
+  // Calculates the mismatch (integer), at each face edge, of a cross field defined on the mesh faces.
+  // The integer mismatch is a multiple of pi/2 that transforms the cross on one side of the edge to
   // the cross on the other side. It represents the deviation from a Lie connection across the edge.
 
   // Inputs:
@@ -24,19 +24,19 @@ namespace igl
   //   isCombed  boolean, specifying whether the field is combed (i.e. matching has been precomputed.
   //             If not, the field is combed first.
   // Output:
-  //   Handle_MMatch    #F by 3 eigen Matrix containing the integer missmatch of the cross field
+  //   Handle_MMatch    #F by 3 eigen Matrix containing the integer mismatch of the cross field
   //                    across all face edges
   //
 
     template <typename DerivedV, typename DerivedF, typename DerivedO>
-    IGL_INLINE void line_field_missmatch(const Eigen::PlainObjectBase<DerivedV> &V,
-                                         const Eigen::PlainObjectBase<DerivedF> &F,
-                                         const Eigen::PlainObjectBase<DerivedV> &PD1,
-                                         const bool isCombed,
-                                         Eigen::PlainObjectBase<DerivedO> &missmatch);
+    IGL_INLINE void line_field_mismatch(const Eigen::PlainObjectBase<DerivedV> &V,
+                                        const Eigen::PlainObjectBase<DerivedF> &F,
+                                        const Eigen::PlainObjectBase<DerivedV> &PD1,
+                                        const bool isCombed,
+                                        Eigen::PlainObjectBase<DerivedO> &mismatch);
 }
 #ifndef IGL_STATIC_LIBRARY
-#include "line_field_missmatch.cpp"
+#include "line_field_mismatch.cpp"
 #endif
 
 #endif
