@@ -810,7 +810,7 @@ Eigen::VectorXd igl::copyleft::comiso::NRosyField::angleDefect()
       if (norm_prod > 0.)
         t /= norm_prod;
       else
-        throw std::runtime_error ("Error in 'igl::copyleft::comiso::NRosyField::angleDefect': division by zero!");
+        throw std::runtime_error("Error in 'igl::copyleft::comiso::NRosyField::angleDefect': division by zero!");
       if (t > 1.)
         t = 1.;
       else if (t < -1.)
