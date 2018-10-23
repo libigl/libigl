@@ -33,7 +33,7 @@ namespace igl
     // PD2               #V by 3 second line of the Jacobian per triangle
     //                   (optional, if empty it will be a vector in the tangent plane orthogonal to PD1)
     // GradientSize      global scaling for the gradient (controls the quads resolution)
-    // Stiffness         weight for the stiffness iterations
+    // Stiffness         weight for the stiffness iterations (Reserved but not used!)
     // DirectRound       greedily round all integer variables at once (greatly improves optimization speed but lowers quality)
     // iter              stiffness iterations (0 = no stiffness)
     // localIter         number of local iterations for the integer rounding
@@ -78,7 +78,7 @@ namespace igl
 
     // Input;
     // GradientSize       global scaling for the gradient (controls the quads resolution)
-    // Stiffness          weight for the stiffness iterations
+    // Stiffness          weight for the stiffness iterations (Reserved but not used!)
     // DirectRound        greedily round all integer variables at once (greatly improves optimization speed but lowers quality)
     // iter               stiffness iterations (0 = no stiffness)
     // localIter          number of local iterations for the integer rounding
