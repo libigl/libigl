@@ -361,16 +361,6 @@ void igl::copyleft::comiso::NRosyField::prepareSystemMatrix(const int N)
     SparseMatrix<double> ASoft(count_t + count_p, count_t + count_p);
     ASoft.setFromTriplets(TSoft.begin(), TSoft.end());
 
-//    ofstream s("/Users/daniele/As.txt");
-//    for(unsigned i=0; i<TSoft.size(); ++i)
-//      s << TSoft[i].row() << " " << TSoft[i].col() << " " << TSoft[i].value() << endl;
-//    s.close();
-
-//    ofstream s2("/Users/daniele/bs.txt");
-//    for(unsigned i=0; i<bSoft.rows(); ++i)
-//      s2 << bSoft(i) << endl;
-//    s2.close();
-
     // Stupid Eigen bug
     SparseMatrix<double> Atmp (count_t + count_p, count_t + count_p);
     SparseMatrix<double> Atmp2(count_t + count_p, count_t + count_p);
@@ -384,19 +374,6 @@ void igl::copyleft::comiso::NRosyField::prepareSystemMatrix(const int N)
     A = Atmp3;
     b = b*(1.0 - softAlpha) + bSoft * softAlpha;
   }
-
-//  ofstream s("/Users/daniele/A.txt");
-//  for (int k=0; k<A.outerSize(); ++k)
-//    for (SparseMatrix<double>::InnerIterator it(A,k); it; ++it)
-//    {
-//      s << it.row() << " " << it.col() << " " << it.value() << endl;
-//    }
-//  s.close();
-//
-//  ofstream s2("/Users/daniele/b.txt");
-//  for(unsigned i=0; i<b.rows(); ++i)
-//    s2 << b(i) << endl;
-//  s2.close();
 }
 
 void igl::copyleft::comiso::NRosyField::solveNoRoundings()
@@ -458,7 +435,6 @@ void igl::copyleft::comiso::NRosyField::solveRoundings()
   gmm::row_matrix< gmm::wsvector< double > > gmm_C(0, n);
 
   COMISO::ConstrainedSolver cs;
-  //print_miso_settings(cs.misolver());
   cs.solve(gmm_C, gmm_A, x, gmm_b, ids_to_round, 0.0, false, true);
 
   // Copy the result back
@@ -500,19 +476,6 @@ void igl::copyleft::comiso::NRosyField::solve(const int N)
 
   // Solve with integer roundings
   solveRoundings();
-
-  // This is a very greedy solving strategy
-  // // Solve with no roundings
-  // solveNoRoundings();
-  //
-  // // Round all p and fix them
-  // roundAndFix();
-  //
-  // // Build the system
-  // prepareSystemMatrix(N);
-  //
-  // // Solve with no roundings (they are all fixed)
-  // solveNoRoundings();
 
   // Find the cones
   findCones(N);
@@ -686,11 +649,6 @@ void igl::copyleft::comiso::NRosyField::reduceSpace()
 
   vector<VectorXd> debug;
 
-  // debug
-//  MatrixXd B(F.rows(),3);
-//  for(unsigned i=0; i<F.rows(); ++i)
-//    B.row(i) = 1./3. * (V.row(F(i,0)) + V.row(F(i,1)) + V.row(F(i,2)));
-
   vector<bool> visited(EV.rows());
   for(unsigned i=0; i<EV.rows(); ++i)
     visited[i] = false;
@@ -764,12 +722,6 @@ void igl::copyleft::comiso::NRosyField::reduceSpace()
       }
     }
   }
-
-//  std::ofstream s("/Users/daniele/debug.txt");
-//  for(unsigned i=0; i<debug.size(); i += 2)
-//    s << debug[i].transpose() << " " << debug[i+1].transpose() << endl;
-//  s.close();
-
 }
 
 double igl::copyleft::comiso::NRosyField::convert3DtoLocal(unsigned fid, const Eigen::Vector3d& v)
