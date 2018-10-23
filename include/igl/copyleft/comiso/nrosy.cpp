@@ -295,9 +295,18 @@ void igl::copyleft::comiso::NRosyField::prepareSystemMatrix(const int N)
     if (!isFixed_i)
     {
       row = tag_t[i];
-      if (isFixed_i) b(row) += -2               * hard[i]; else T.push_back(Eigen::Triplet<double>(row,tag_t[i]  , 2             ));
-      if (isFixed_j) b(row) +=  2               * hard[j]; else T.push_back(Eigen::Triplet<double>(row,tag_t[j]  ,-2             ));
-      if (isFixed_p) b(row) += -((4 * igl::PI)/Nd) * p[eid] ; else T.push_back(Eigen::Triplet<double>(row,tag_p[eid],((4 * igl::PI)/Nd)));
+      if (isFixed_i)
+        b(row) += -2 * hard[i];
+      else
+        T.push_back ( Eigen::Triplet<double>( row, tag_t[i], 2 ) );
+      if (isFixed_j)
+        b(row) +=  2 * hard[j];
+      else
+        T.push_back ( Eigen::Triplet<double>(row, tag_t[j],-2 ) );
+      if (isFixed_p)
+        b(row) += -( ( 4 * igl::PI ) / Nd ) * p[eid];
+      else
+        T.push_back ( Eigen::Triplet<double> ( row, tag_p[eid],( ( 4 * igl::PI ) / Nd ) ));
       b(row) += -2 * k[eid];
       assert(hard[i] == hard[i]);
       assert(hard[j] == hard[j]);
@@ -309,9 +318,18 @@ void igl::copyleft::comiso::NRosyField::prepareSystemMatrix(const int N)
     if (!isFixed_j)
     {
       row = tag_t[j];
-      if (isFixed_i) b(row) += 2               * hard[i]; else T.push_back(Eigen::Triplet<double>(row,tag_t[i]  , -2             ));
-      if (isFixed_j) b(row) += -2              * hard[j]; else T.push_back(Eigen::Triplet<double>(row,tag_t[j] ,  2              ));
-      if (isFixed_p) b(row) += ((4 * igl::PI)/Nd) * p[eid] ; else T.push_back(Eigen::Triplet<double>(row,tag_p[eid],-((4 * igl::PI)/Nd)));
+      if (isFixed_i)
+        b(row) += 2 * hard[i];
+      else
+        T.push_back ( Eigen::Triplet<double> ( row,tag_t[i], -2 ) );
+      if (isFixed_j)
+        b(row) += -2 * hard[j];
+      else
+        T.push_back ( Eigen::Triplet<double> ( row, tag_t[j], 2 ));
+      if (isFixed_p)
+        b(row) += ( ( 4. * igl::PI ) / Nd) * p[eid];
+      else
+        T.push_back ( Eigen::Triplet<double> ( row, tag_p[eid], -( ( 4. * igl::PI ) / Nd ) ) );
       b(row) += 2 * k[eid];
       assert(k[eid] == k[eid]);
       assert(b(row) == b(row));
@@ -320,10 +338,19 @@ void igl::copyleft::comiso::NRosyField::prepareSystemMatrix(const int N)
     if (!isFixed_p)
     {
       row = tag_p[eid];
-      if (isFixed_i) b(row) += -(4 * igl::PI)/Nd              * hard[i]; else T.push_back(Eigen::Triplet<double>(row,tag_t[i] ,   (4 * igl::PI)/Nd             ));
-      if (isFixed_j) b(row) +=  (4 * igl::PI)/Nd              * hard[j]; else T.push_back(Eigen::Triplet<double>(row,tag_t[j] ,  -(4 * igl::PI)/Nd             ));
-      if (isFixed_p) b(row) += -(2 * pow(((2*igl::PI)/Nd),2)) * p[eid] ;  else T.push_back(Eigen::Triplet<double>(row,tag_p[eid],  (2 * pow(((2*igl::PI)/Nd),2))));
-      b(row) += - (4 * igl::PI)/Nd * k[eid];
+      if (isFixed_i)
+        b(row) += -( 4. * igl::PI ) / Nd * hard[i];
+      else
+        T.push_back ( Eigen::Triplet<double> ( row, tag_t[i], ( 4. * igl::PI ) / Nd ) );
+      if (isFixed_j)
+        b(row) += ( 4. * igl::PI ) / Nd * hard[j];
+      else
+        T.push_back ( Eigen::Triplet<double> ( row, tag_t[j], -( 4. * igl::PI ) / Nd ) );
+      if (isFixed_p)
+        b(row) += -( 2. * pow ( ( ( 2. * igl::PI ) / Nd ), 2 ) ) * p[eid];
+      else
+        T.push_back ( Eigen::Triplet<double> ( row, tag_p[eid], ( 2. * pow ( ( (2. * igl::PI ) / Nd ), 2 ) ) ) );
+      b(row) += - ( 4. * igl::PI ) / Nd * k[eid];
       assert(k[eid] == k[eid]);
       assert(b(row) == b(row));
     }
