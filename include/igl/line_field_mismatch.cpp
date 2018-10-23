@@ -46,7 +46,7 @@ private:
 private:
 
     //compute the mismatch between 2 faces
-    inline int MisMatchByLine(const int f0,
+    inline int MismatchByLine(const int f0,
                               const int f1)
     {
         Eigen::Matrix<typename DerivedV::Scalar, 3, 1> dir0 = PD1.row(f0);
