@@ -258,7 +258,7 @@ namespace comiso {
     IGL_INLINE void AddToRoundVertices(std::vector<int> ids);
 
     ///START GENERIC SYSTEM FUNCTIONS
-    //build the laplacian matrix cyclyng over all rangemaps
+    //build the Laplacian matrix cycling over all range maps
     //and over all faces
     IGL_INLINE void BuildLaplacianMatrix(double vfscale=1);
 
@@ -626,7 +626,7 @@ IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::SolveP
   if (DEBUGPRINT)
     printf("\n ALLOCATED THE MATRIX \n");
 
-  ///build the laplacian system
+  ///build the Laplacian system
   BuildLaplacianMatrix(vector_field_scale);
 
   // add seam constraints
@@ -1334,7 +1334,7 @@ IGL_INLINE double igl::copyleft::comiso::MIQ_class<DerivedV, DerivedF, DerivedU>
 }
 
 ////////////////////////////////////////////////////////////////////////////
-// Approximate the distortion laplacian using a uniform laplacian on
+// Approximate the distortion Laplacian using a uniform Laplacian on
 //  the dual mesh:
 //      ___________
 //      \-1 / \-1 /
@@ -1343,9 +1343,9 @@ IGL_INLINE double igl::copyleft::comiso::MIQ_class<DerivedV, DerivedF, DerivedU>
 //         \-1 /
 //          \ /
 //
-//  @param[in]  f   facet on which to compute distortion laplacian
+//  @param[in]  f   facet on which to compute distortion Laplacian
 //  @param[in]  h   scaling factor applied to cross field
-//  @return     distortion laplacian for f
+//  @return     distortion Laplacian for f
 ///////////////////////////////////////////////////////////////////////////
 template <typename DerivedV, typename DerivedF, typename DerivedU>
 IGL_INLINE double igl::copyleft::comiso::MIQ_class<DerivedV, DerivedF, DerivedU>::LaplaceDistortion(const int f, double h, const Eigen::MatrixXd& WUV)
