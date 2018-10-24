@@ -91,7 +91,7 @@ namespace comiso {
 
 
     ///this handle for mesh TODO: move with the other global variables
-    MeshSystemInfo Handle_SystemInfo;
+    MeshSystemInfo systemInfo;
 
     IGL_INLINE VertexIndexing(const Eigen::PlainObjectBase<DerivedV> &_V,
                               const Eigen::PlainObjectBase<DerivedF> &_F,
@@ -400,8 +400,8 @@ seams(_Handle_Seams)
   cerr<<igl::matlab_format(Handle_Seams,"Handle_Seams");
 #endif
 
-  Handle_SystemInfo.num_vert_variables=Vcut.rows();
-  Handle_SystemInfo.num_integer_cuts=0;
+  systemInfo.num_vert_variables=Vcut.rows();
+  systemInfo.num_integer_cuts=0;
 }
 
 template <typename DerivedV, typename DerivedF>
@@ -530,7 +530,7 @@ template <typename DerivedV, typename DerivedF>
 IGL_INLINE void igl::copyleft::comiso::VertexIndexing<DerivedV, DerivedF>::initSeamInfo()
 {
   auto verticesPerSeam = getVerticesPerSeam();
-  Handle_SystemInfo.edgeSeamInfo.clear();
+  systemInfo.edgeSeamInfo.clear();
   int integerVar = 0;
   // Loop over each seam
   for(auto seam : verticesPerSeam){
@@ -570,16 +570,16 @@ IGL_INLINE void igl::copyleft::comiso::VertexIndexing<DerivedV, DerivedF>::initS
       int vtx0,vtx0p,vtx1,vtx1p;
       unsigned char MM;
       getSeamInfo(f, ff, k, vtx0, vtx1, vtx0p, vtx1p, MM);
-      Handle_SystemInfo.edgeSeamInfo.push_back(SeamInfo(vtx0,vtx0p,MM,integerVar));
+      systemInfo.edgeSeamInfo.push_back(SeamInfo(vtx0,vtx0p,MM,integerVar));
       if(it == seam.end() -1){
-        Handle_SystemInfo.edgeSeamInfo.push_back(SeamInfo(vtx1,vtx1p,MM,integerVar));
+        systemInfo.edgeSeamInfo.push_back(SeamInfo(vtx1,vtx1p,MM,integerVar));
       }
       priorVertexIdx = vtx1;
     }
     // use the same integer for each seam
     integerVar++;
   }
-  Handle_SystemInfo.num_integer_cuts = integerVar;
+  systemInfo.num_integer_cuts = integerVar;
 
 #ifndef NDEBUG
   int totalNVerticesOnSeams = 0;
@@ -1206,7 +1206,7 @@ F(F_)
                                             PD1_combed,
                                             PD2_combed,
                                             singular,
-                                            VInd.Handle_SystemInfo);
+                                            VInd.systemInfo);
   Handle_Stiffness = Eigen::VectorXd::Constant(F.rows(),1);
 
 
