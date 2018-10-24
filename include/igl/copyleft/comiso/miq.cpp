@@ -1489,7 +1489,7 @@ IGL_INLINE void igl::copyleft::comiso::miq(
   igl::comb_cross_field(V, F, BIS1, BIS2, BIS1_combed, BIS2_combed);
 
   DerivedF Handle_MMatch;
-    igl::cross_field_mismatch(V, F, BIS1_combed, BIS2_combed, true, Handle_MMatch);
+  igl::cross_field_mismatch(V, F, BIS1_combed, BIS2_combed, true, Handle_MMatch);
 
   Eigen::Matrix<int, Eigen::Dynamic, 1> isSingularity, singularityIndex;
   igl::find_cross_field_singularities(V, F, Handle_MMatch, isSingularity, singularityIndex);
