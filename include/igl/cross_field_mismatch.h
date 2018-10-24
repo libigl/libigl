@@ -24,8 +24,8 @@ namespace igl
   //   isCombed  boolean, specifying whether the field is combed (i.e. matching has been precomputed.
   //             If not, the field is combed first.
   // Output:
-  //   Handle_MMatch    #F by 3 eigen Matrix containing the integer mismatch of the cross field
-  //                    across all face edges
+  //   mismatch  #F by 3 eigen Matrix containing the integer mismatch of the cross field
+  //             across all face edges
   //
 
   template <typename DerivedV, typename DerivedF, typename DerivedM>
