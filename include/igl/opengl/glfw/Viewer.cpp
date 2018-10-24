@@ -145,7 +145,6 @@ namespace glfw
     #ifdef __APPLE__
       glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
       glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-      glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
     #endif
     if(fullscreen)
     {
@@ -218,6 +217,7 @@ namespace glfw
     int frame_counter = 0;
     while (!glfwWindowShouldClose(window))
     {
+
       double tic = get_seconds();
       draw();
       glfwSwapBuffers(window);
@@ -239,6 +239,15 @@ namespace glfw
       }
       if (!loop)
         return !glfwWindowShouldClose(window);
+
+      #ifdef __APPLE__
+        static bool first_time_hack  = true;
+        if(first_time_hack) {
+          glfwHideWindow(window);
+          glfwShowWindow(window);
+          first_time_hack = false;
+        }
+      #endif
     }
     return EXIT_SUCCESS;
   }
@@ -815,7 +824,7 @@ namespace glfw
     int width_window, height_window;
     glfwGetWindowSize(window, &width_window, &height_window);
 
-    auto highdpi_tmp = width/width_window;
+    auto highdpi_tmp = (width_window == 0 ||  width == 0) ? highdpi : (width/width_window);
 
     if(fabs(highdpi_tmp-highdpi)>1e-8)
     {

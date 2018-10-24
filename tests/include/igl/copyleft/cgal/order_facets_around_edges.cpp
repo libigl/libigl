@@ -62,11 +62,17 @@ void assert_order(
           V, F, uE, uE2E, uE2oE, uE2C);
     }
 
+    const size_t num_faces = F.rows();
     const size_t num_uE = uE.rows();
     for (size_t i=0; i<num_uE; i++) {
         const auto& order = uE2oE[i];
         const auto& cons  = uE2C[i];
-        Eigen::VectorXi e = uE.row(i);
+        const auto ref_edge = uE2E[i][0];
+        const auto ref_face = ref_edge % num_faces;
+        const auto ref_corner = ref_edge / num_faces;
+        const Eigen::Vector2i e{
+            F(ref_face, (ref_corner+1)%3),
+            F(ref_face, (ref_corner+2)%3) };
         if (order.size() <= 1) continue;
         if (e[0] != v0 && e[0] != v1) continue;
         if (e[1] != v0 && e[1] != v1) continue;
@@ -121,23 +127,23 @@ TEST(copyleft_cgal_order_facets_around_edges, DuplicatedFaces) {
     assert_order(V, F, 1, 2, {0, 1, 3, 2});
 }
 
-//TEST(copyleft_cgal_order_facets_around_edges, MultipleDuplicatedFaces) {
-//    Eigen::MatrixXd V(5, 3);
-//    V << 0.0, 0.0, 0.0,
-//         1.0, 0.0, 0.0,
-//         0.0, 1.0, 0.0,
-//         1.0, 1.0, 0.0,
-//         0.0, 0.0, 1.0;
-//    Eigen::MatrixXi F(6, 3);
-//    F << 0, 1, 2,
-//         1, 2, 0,
-//         2, 1, 3,
-//         1, 3, 2,
-//         1, 2, 4,
-//         4, 1, 2;
-//
-//    assert_order(V, F, 1, 2, {1, 0, 2, 3, 5, 4});
-//}
+TEST(copyleft_cgal_order_facets_around_edges, MultipleDuplicatedFaces) {
+    Eigen::MatrixXd V(5, 3);
+    V << 0.0, 0.0, 0.0,
+         1.0, 0.0, 0.0,
+         0.0, 1.0, 0.0,
+         1.0, 1.0, 0.0,
+         0.0, 0.0, 1.0;
+    Eigen::MatrixXi F(6, 3);
+    F << 0, 1, 2,
+         1, 2, 0,
+         2, 1, 3,
+         1, 3, 2,
+         1, 2, 4,
+         4, 1, 2;
+
+    assert_order(V, F, 1, 2, {1, 0, 2, 3, 5, 4});
+}
 
 TEST(copyleft_cgal_order_facets_around_edges, Debug) {
     Eigen::MatrixXd V(5, 3);
