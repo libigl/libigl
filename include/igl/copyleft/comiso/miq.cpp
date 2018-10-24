@@ -327,7 +327,7 @@ namespace comiso {
                          int iter = 5,
                          int localIter = 5,
                          bool DoRound = true,
-                         bool SingularityRound=true,
+                         bool SingularityRound = true,
                          std::vector<int> roundVertices = std::vector<int>(),
                          std::vector<std::vector<int> > hardFeatures = std::vector<std::vector<int> >());
 
@@ -1169,30 +1169,30 @@ IGL_INLINE igl::copyleft::comiso::MIQ_class<DerivedV, DerivedF, DerivedU>::MIQ_c
                                                                    const Eigen::PlainObjectBase<DerivedF> &F_,
                                                                    const Eigen::PlainObjectBase<DerivedV> &PD1_combed,
                                                                    const Eigen::PlainObjectBase<DerivedV> &PD2_combed,
-                                                                   const Eigen::Matrix<int, Eigen::Dynamic, 3> &Handle_MMatch,
-                                                                   const Eigen::Matrix<int, Eigen::Dynamic, 1> &Handle_Singular,
-                                                                   const Eigen::Matrix<int, Eigen::Dynamic, 3> &Handle_Seams,
+                                                                   const Eigen::Matrix<int, Eigen::Dynamic, 3> &mismatch,
+                                                                   const Eigen::Matrix<int, Eigen::Dynamic, 1> &singular,
+                                                                   const Eigen::Matrix<int, Eigen::Dynamic, 3> &seams,
                                                                    Eigen::PlainObjectBase<DerivedU> &UV,
                                                                    Eigen::PlainObjectBase<DerivedF> &FUV,
-                                                                   double GradientSize,
-                                                                   double Stiffness,
-                                                                   bool DirectRound,
+                                                                   double gradientSize,
+                                                                   double stiffness,
+                                                                   bool directRound,
                                                                    int iter,
                                                                    int localIter,
-                                                                   bool DoRound,
-                                                                   bool SingularityRound,
+                                                                   bool doRound,
+                                                                   bool singularityRound,
                                                                    std::vector<int> roundVertices,
                                                                    std::vector<std::vector<int> > hardFeatures):
 V(V_),
 F(F_)
 {
-  igl::cut_mesh(V, F, Handle_Seams, Vcut, Fcut);
+  igl::cut_mesh(V, F, seams, Vcut, Fcut);
 
   igl::local_basis(V,F,B1,B2,B3);
   igl::triangle_triangle_adjacency(F,TT,TTi);
 
   // Prepare indexing for the linear system
-  VertexIndexing<DerivedV, DerivedF> VInd(V, F, Vcut, Fcut, TT, TTi, Handle_MMatch, Handle_Singular, Handle_Seams);
+  VertexIndexing<DerivedV, DerivedF> VInd(V, F, Vcut, Fcut, TT, TTi, mismatch, singular, seams);
 
   VInd.InitSeamInfo();
 
@@ -1205,7 +1205,7 @@ F(F_)
                                             TTi,
                                             PD1_combed,
                                             PD2_combed,
-                                            Handle_Singular,
+                                            singular,
                                             VInd.Handle_SystemInfo);
   Handle_Stiffness = Eigen::VectorXd::Constant(F.rows(),1);
 
@@ -1214,16 +1214,16 @@ F(F_)
   {
     for (int i=0;i<iter;i++)
     {
-      PSolver.SolvePoisson(Handle_Stiffness, GradientSize,1.f,DirectRound,localIter,DoRound,SingularityRound,roundVertices,hardFeatures);
+      PSolver.SolvePoisson(Handle_Stiffness, gradientSize,1.f,directRound,localIter,doRound,singularityRound,roundVertices,hardFeatures);
       int nflips=NumFlips(PSolver.WUV);
-      bool folded = updateStiffeningJacobianDistorsion(GradientSize,PSolver.WUV);
+      bool folded = updateStiffeningJacobianDistorsion(gradientSize,PSolver.WUV);
       printf("ITERATION %d FLIPS %d \n",i,nflips);
       if (!folded)break;
     }
   }
   else
   {
-    PSolver.SolvePoisson(Handle_Stiffness,GradientSize,1.f,DirectRound,localIter,DoRound,SingularityRound,roundVertices,hardFeatures);
+    PSolver.SolvePoisson(Handle_Stiffness,gradientSize,1.f,directRound,localIter,doRound,singularityRound,roundVertices,hardFeatures);
   }
 
   int nflips=NumFlips(PSolver.WUV);
@@ -1424,7 +1424,7 @@ IGL_INLINE void igl::copyleft::comiso::miq(
   const Eigen::PlainObjectBase<DerivedF> &F,
   const Eigen::PlainObjectBase<DerivedV> &PD1_combed,
   const Eigen::PlainObjectBase<DerivedV> &PD2_combed,
-  const Eigen::Matrix<int, Eigen::Dynamic, 3> &MMatch,
+  const Eigen::Matrix<int, Eigen::Dynamic, 3> &mismatch,
   const Eigen::Matrix<int, Eigen::Dynamic, 1> &singular,
   const Eigen::Matrix<int, Eigen::Dynamic, 3> &seams,
   Eigen::PlainObjectBase<DerivedU> &UV,
@@ -1445,7 +1445,7 @@ IGL_INLINE void igl::copyleft::comiso::miq(
     F,
     PD1_combed,
     PD2_combed,
-    MMatch,
+    mismatch,
     singular,
     seams,
     UV,

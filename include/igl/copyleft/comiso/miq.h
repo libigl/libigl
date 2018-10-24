@@ -75,9 +75,9 @@ namespace igl
     // Additional Input:
     // PD1_combed         #F by 3 first combed Jacobian
     // PD2_combed         #F by 3 second combed Jacobian
-    // MMatch             #F by 3 list of per-corner integer PI/2 rotations
-    // Singular           #V list of flag that denotes if a vertex is singular or not
-    // Seams              #F by 3 list of per-corner flag that denotes seams
+    // mismatch             #F by 3 list of per-corner integer PI/2 rotations
+    // singular           #V list of flag that denotes if a vertex is singular or not
+    // seams              #F by 3 list of per-corner flag that denotes seams
 
     // Input:
     // gradientSize       global scaling for the gradient (controls the quads resolution)
@@ -99,7 +99,7 @@ namespace igl
       const Eigen::PlainObjectBase<DerivedF> &F,
       const Eigen::PlainObjectBase<DerivedV> &PD1_combed,
       const Eigen::PlainObjectBase<DerivedV> &PD2_combed,
-      const Eigen::Matrix<int, Eigen::Dynamic, 3> &MMatch,
+      const Eigen::Matrix<int, Eigen::Dynamic, 3> &mismatch,
       const Eigen::Matrix<int, Eigen::Dynamic, 1> &singular,
       const Eigen::Matrix<int, Eigen::Dynamic, 3> &seams,
       Eigen::PlainObjectBase<DerivedU> &UV,
