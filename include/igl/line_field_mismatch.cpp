@@ -107,7 +107,7 @@ public:
                 if (i==TT(i,j) || TT(i,j) == -1)
                     Handle_MMatch(i,j)=0;
                 else
-                    Handle_MMatch(i,j) = MisMatchByLine(i, TT(i, j));
+                    Handle_MMatch(i,j) = mismatchByLine(i, TT(i, j));
             }
         }
     }
