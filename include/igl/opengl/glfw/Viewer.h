@@ -200,6 +200,7 @@ public:
     std::function<bool(Viewer& viewer, int mouse_x, int mouse_y)> callback_mouse_move;
     std::function<bool(Viewer& viewer, float delta_y)> callback_mouse_scroll;
     std::function<bool(Viewer& viewer, unsigned int key, int modifiers)> callback_key_pressed;
+    std::function<bool(Viewer& viewer, int w, int h)> callback_post_resize;
     // THESE SHOULD BE DEPRECATED:
     std::function<bool(Viewer& viewer, unsigned int key, int modifiers)> callback_key_down;
     std::function<bool(Viewer& viewer, unsigned int key, int modifiers)> callback_key_up;
