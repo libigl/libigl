@@ -70,10 +70,9 @@ namespace igl {
 
 public:
   inline MismatchCalculator(const Eigen::PlainObjectBase<DerivedV> &_V,
-                      const Eigen::PlainObjectBase<DerivedF> &_F,
-                      const Eigen::PlainObjectBase<DerivedV> &_PD1,
-                      const Eigen::PlainObjectBase<DerivedV> &_PD2
-                      ):
+                            const Eigen::PlainObjectBase<DerivedF> &_F,
+                            const Eigen::PlainObjectBase<DerivedV> &_PD1,
+                            const Eigen::PlainObjectBase<DerivedV> &_PD2):
   V(_V),
   F(_F),
   PD1(_PD1),
