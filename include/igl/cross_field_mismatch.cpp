@@ -95,7 +95,7 @@ public:
         if (((int)i)==TT(i,j) || TT(i,j) == -1)
           Handle_MMatch(i,j)=0;
         else
-          Handle_MMatch(i,j) = MismatchByCross(i, TT(i, j));
+          Handle_MMatch(i,j) = mismatchByCross(i, TT(i, j));
       }
     }
   }
