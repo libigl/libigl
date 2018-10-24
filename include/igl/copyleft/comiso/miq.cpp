@@ -69,7 +69,7 @@ namespace comiso {
     ///num of integer for cuts
     int num_integer_cuts;
     ///this are used for drawing purposes
-    std::vector<SeamInfo> EdgeSeamInfo;
+    std::vector<SeamInfo> edgeSeamInfo;
   };
 
 
@@ -85,9 +85,9 @@ namespace comiso {
     const Eigen::PlainObjectBase<DerivedF> &TT;
     const Eigen::PlainObjectBase<DerivedF> &TTi;
 
-    const Eigen::Matrix<int, Eigen::Dynamic, 3> &Handle_MMatch;
-    const Eigen::Matrix<int, Eigen::Dynamic, 1> &Handle_Singular; // bool
-    const Eigen::Matrix<int, Eigen::Dynamic, 3> &Handle_Seams; // 3 bool
+    const Eigen::Matrix<int, Eigen::Dynamic, 3> &mismatch;
+    const Eigen::Matrix<int, Eigen::Dynamic, 1> &singular; // bool
+    const Eigen::Matrix<int, Eigen::Dynamic, 3> &seams; // 3 bool
 
 
     ///this handle for mesh TODO: move with the other global variables
@@ -99,13 +99,13 @@ namespace comiso {
                               const Eigen::PlainObjectBase<DerivedF> &_Fcut,
                               const Eigen::PlainObjectBase<DerivedF> &_TT,
                               const Eigen::PlainObjectBase<DerivedF> &_TTi,
-                              const Eigen::Matrix<int, Eigen::Dynamic, 3> &_Handle_MMatch,
-                              const Eigen::Matrix<int, Eigen::Dynamic, 1> &_Handle_Singular,
-                              const Eigen::Matrix<int, Eigen::Dynamic, 3> &_Handle_Seams
+                              const Eigen::Matrix<int, Eigen::Dynamic, 3> &_mismatch,
+                              const Eigen::Matrix<int, Eigen::Dynamic, 1> &_singular,
+                              const Eigen::Matrix<int, Eigen::Dynamic, 3> &_seams
                               );
 
     // provide information about every vertex per seam
-    IGL_INLINE void InitSeamInfo();
+    IGL_INLINE void initSeamInfo();
 
 
   private:
@@ -120,14 +120,14 @@ namespace comiso {
       }
     };
 
-    IGL_INLINE void GetSeamInfo(const int f0,
+    IGL_INLINE void getSeamInfo(const int f0,
                                 const int f1,
                                 const int indexE,
-                                int &v0,int &v1,
-                                int &v0p,int &v1p,
-                                unsigned char &_MMatch);
+                                int &v0, int &v1,
+                                int &v0p, int &v1p,
+                                unsigned char &_mismatch);
 
-    IGL_INLINE std::vector<std::vector<VertexInfo> > GetVerticesPerSeam();
+    IGL_INLINE std::vector<std::vector<VertexInfo> > getVerticesPerSeam();
   };
 
 
@@ -136,13 +136,13 @@ namespace comiso {
   {
 
   public:
-    IGL_INLINE void SolvePoisson(Eigen::VectorXd Stiffness,
-                                 double vector_field_scale=0.1f,
-                                 double grid_res=1.f,
-                                 bool direct_round=true,
-                                 int localIter=0,
-                                 bool _integer_rounding=true,
-                                 bool _singularity_rounding=true,
+    IGL_INLINE void solvePoisson(Eigen::VectorXd Stiffness,
+                                 double gredientSize = 0.1,
+                                 double grid_res = 1.,
+                                 bool direct_round = true,
+                                 int localIter = 0,
+                                 bool _doRound = true,
+                                 bool _singularity_rounding = true,
                                  std::vector<int> roundVertices = std::vector<int>(),
                                  std::vector<std::vector<int> > hardFeatures = std::vector<std::vector<int> >());
 
@@ -166,9 +166,9 @@ namespace comiso {
     const Eigen::PlainObjectBase<DerivedF> &TTi;
     const Eigen::PlainObjectBase<DerivedV> &PD1;
     const Eigen::PlainObjectBase<DerivedV> &PD2;
-    const Eigen::Matrix<int, Eigen::Dynamic, 1> &Handle_Singular; // bool
+    const Eigen::Matrix<int, Eigen::Dynamic, 1> &singular; // bool
 
-    const MeshSystemInfo &Handle_SystemInfo;
+    const MeshSystemInfo &systemInfo;
 
     // Internal:
     Eigen::VectorXd Handle_Stiffness;
@@ -230,61 +230,61 @@ namespace comiso {
     ///START COMMON MATH FUNCTIONS
     ///return the complex encoding the rotation
     ///for a given mismatch interval
-    IGL_INLINE std::complex<double> GetRotationComplex(int interval);
+    IGL_INLINE std::complex<double> getRotationComplex(int interval);
     ///END COMMON MATH FUNCTIONS
 
     ///START FIXING VERTICES
     ///set a given vertex as fixed
-    IGL_INLINE void AddFixedVertex(int v);
+    IGL_INLINE void addFixedVertex(int v);
 
     ///find vertex to fix in case we're using
     ///a vector field NB: multiple components not handled
-    IGL_INLINE void FindFixedVertField();
+    IGL_INLINE void findFixedVertField();
 
     ///find hard constraint depending if using or not
     ///a vector field
-    IGL_INLINE void FindFixedVert();
+    IGL_INLINE void findFixedVert();
 
-    IGL_INLINE int GetFirstVertexIndex(int v);
+    IGL_INLINE int getFirstVertexIndex(int v);
 
     ///fix the vertices which are flagged as fixed
-    IGL_INLINE void FixBlockedVertex();
+    IGL_INLINE void fixBlockedVertex();
     ///END FIXING VERTICES
 
     ///HANDLING SINGULARITY
     //set the singularity round to integer location
-    IGL_INLINE void AddSingularityRound();
+    IGL_INLINE void addSingularityRound();
 
-    IGL_INLINE void AddToRoundVertices(std::vector<int> ids);
+    IGL_INLINE void addToRoundVertices(std::vector<int> ids);
 
     ///START GENERIC SYSTEM FUNCTIONS
     //build the Laplacian matrix cycling over all range maps
     //and over all faces
-    IGL_INLINE void BuildLaplacianMatrix(double vfscale=1);
+    IGL_INLINE void buildLaplacianMatrix(double vfscale = 1);
 
     ///find different sized of the system
-    IGL_INLINE void FindSizes();
+    IGL_INLINE void findSizes();
 
-    IGL_INLINE void AllocateSystem();
+    IGL_INLINE void allocateSystem();
 
     ///intitialize the whole matrix
-    IGL_INLINE void InitMatrix();
+    IGL_INLINE void initMatrix();
 
     ///map back coordinates after that
     ///the system has been solved
-    IGL_INLINE void MapCoords();
+    IGL_INLINE void mapCoords();
     ///END GENERIC SYSTEM FUNCTIONS
 
     ///set the constraints for the inter-range cuts
-    IGL_INLINE void BuildSeamConstraintsExplicitTranslation();
+    IGL_INLINE void buildSeamConstraintsExplicitTranslation();
 
     ///set the constraints for the inter-range cuts
-    IGL_INLINE void BuildUserDefinedConstraints();
+    IGL_INLINE void buildUserDefinedConstraints();
 
     ///call of the mixed integer solver
-    IGL_INLINE void MixedIntegerSolve(double cone_grid_res=1,
-                                      bool direct_round=true,
-                                      int localIter=0);
+    IGL_INLINE void mixedIntegerSolve(double cone_grid_res = 1,
+                                      bool direct_round = true,
+                                      int localIter = 0);
 
     IGL_INLINE void clearUserConstraint();
 
@@ -392,9 +392,9 @@ Vcut(_Vcut),
 Fcut(_Fcut),
 TT(_TT),
 TTi(_TTi),
-Handle_MMatch(_Handle_MMatch),
-Handle_Singular(_Handle_Singular),
-Handle_Seams(_Handle_Seams)
+mismatch(_Handle_MMatch),
+singular(_Handle_Singular),
+seams(_Handle_Seams)
 {
   #ifdef DEBUG_PRINT
   cerr<<igl::matlab_format(Handle_Seams,"Handle_Seams");
@@ -405,12 +405,12 @@ Handle_Seams(_Handle_Seams)
 }
 
 template <typename DerivedV, typename DerivedF>
-IGL_INLINE void igl::copyleft::comiso::VertexIndexing<DerivedV, DerivedF>::GetSeamInfo(const int f0,
-                                                                     const int f1,
-                                                                     const int indexE,
-                                                                     int &v0,int &v1,
-                                                                     int &v0p,int &v1p,
-                                                                     unsigned char &_MMatch)
+IGL_INLINE void igl::copyleft::comiso::VertexIndexing<DerivedV, DerivedF>::getSeamInfo(const int f0,
+                                                                                       const int f1,
+                                                                                       const int indexE,
+                                                                                       int &v0, int &v1,
+                                                                                       int &v0p, int &v1p,
+                                                                                       unsigned char &_mismatch)
 {
   int edgef0 = indexE;
   v0 = Fcut(f0,edgef0);
@@ -421,13 +421,13 @@ IGL_INLINE void igl::copyleft::comiso::VertexIndexing<DerivedV, DerivedF>::GetSe
   v1p = Fcut(f1,edgef1);
   v0p = Fcut(f1,(edgef1+1)%3);
 
-  _MMatch = Handle_MMatch(f0,edgef0);
+  _mismatch = mismatch(f0,edgef0);
   assert(F(f0,edgef0)         == F(f1,((edgef1+1)%3)));
   assert(F(f0,((edgef0+1)%3)) == F(f1,edgef1));
 }
 
 template <typename DerivedV, typename DerivedF>
-IGL_INLINE std::vector<std::vector<typename igl::copyleft::comiso::VertexIndexing<DerivedV, DerivedF>::VertexInfo> > igl::copyleft::comiso::VertexIndexing<DerivedV, DerivedF>::GetVerticesPerSeam()
+IGL_INLINE std::vector<std::vector<typename igl::copyleft::comiso::VertexIndexing<DerivedV, DerivedF>::VertexInfo> > igl::copyleft::comiso::VertexIndexing<DerivedV, DerivedF>::getVerticesPerSeam()
 {
   // Return value
   std::vector<std::vector<VertexInfo> >verticesPerSeam;
@@ -444,7 +444,7 @@ IGL_INLINE std::vector<std::vector<typename igl::copyleft::comiso::VertexIndexin
       if(f1 == -1)
         continue;
 
-      bool seam = Handle_Seams(f0,k0);
+      bool seam = seams(f0,k0);
       if (seam && F_hit(f0,k0) == 0)
       {
         int v0 = F(f0, k0);
@@ -465,7 +465,7 @@ IGL_INLINE std::vector<std::vector<typename igl::copyleft::comiso::VertexIndexin
   {
     isStartVertex[i] = false;
     // vertices with two neighbors are regular vertices, unless the vertex is a singularity, in which case it qualifies as a start vertex
-    if (VVSeam[i].size() > 0 && VVSeam[i].size() != 2 || Handle_Singular(i) == true)
+    if (VVSeam[i].size() > 0 && VVSeam[i].size() != 2 || singular(i) == true)
     {
       startVertexIndices.push_back(i);
       isStartVertex[i] = true;
@@ -527,10 +527,10 @@ IGL_INLINE std::vector<std::vector<typename igl::copyleft::comiso::VertexIndexin
 }
 
 template <typename DerivedV, typename DerivedF>
-IGL_INLINE void igl::copyleft::comiso::VertexIndexing<DerivedV, DerivedF>::InitSeamInfo()
+IGL_INLINE void igl::copyleft::comiso::VertexIndexing<DerivedV, DerivedF>::initSeamInfo()
 {
-  auto verticesPerSeam = GetVerticesPerSeam();
-  Handle_SystemInfo.EdgeSeamInfo.clear();
+  auto verticesPerSeam = getVerticesPerSeam();
+  Handle_SystemInfo.edgeSeamInfo.clear();
   int integerVar = 0;
   // Loop over each seam
   for(auto seam : verticesPerSeam){
@@ -569,10 +569,10 @@ IGL_INLINE void igl::copyleft::comiso::VertexIndexing<DerivedV, DerivedF>::InitS
 
       int vtx0,vtx0p,vtx1,vtx1p;
       unsigned char MM;
-      GetSeamInfo(f,ff,k,vtx0,vtx1,vtx0p,vtx1p,MM);
-      Handle_SystemInfo.EdgeSeamInfo.push_back(SeamInfo(vtx0,vtx0p,MM,integerVar));
+      getSeamInfo(f, ff, k, vtx0, vtx1, vtx0p, vtx1p, MM);
+      Handle_SystemInfo.edgeSeamInfo.push_back(SeamInfo(vtx0,vtx0p,MM,integerVar));
       if(it == seam.end() -1){
-        Handle_SystemInfo.EdgeSeamInfo.push_back(SeamInfo(vtx1,vtx1p,MM,integerVar));
+        Handle_SystemInfo.edgeSeamInfo.push_back(SeamInfo(vtx1,vtx1p,MM,integerVar));
       }
       priorVertexIdx = vtx1;
     }
@@ -586,27 +586,27 @@ IGL_INLINE void igl::copyleft::comiso::VertexIndexing<DerivedV, DerivedF>::InitS
   for(auto seam : verticesPerSeam){
     totalNVerticesOnSeams += seam.size();
   }
-  assert(Handle_SystemInfo.EdgeSeamInfo.size() == totalNVerticesOnSeams);
+  assert(systemInfo.edgeSeamInfo.size() == totalNVerticesOnSeams);
 #endif
 }
 
 
 
 template <typename DerivedV, typename DerivedF>
-IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::SolvePoisson(Eigen::VectorXd Stiffness,
-                                                                     double vector_field_scale,
-                                                                     double grid_res,
-                                                                     bool direct_round,
+IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::solvePoisson(Eigen::VectorXd Stiffness,
+                                                                     double gradientSize,
+                                                                     double gridResolution,
+                                                                     bool directRound,
                                                                      int localIter,
-                                                                     bool _integer_rounding,
-                                                                     bool _singularity_rounding,
+                                                                     bool doRound,
+                                                                     bool singularityRound,
                                                                      std::vector<int> roundVertices,
                                                                      std::vector<std::vector<int> > hardFeatures)
 {
   Handle_Stiffness = Stiffness;
 
   //initialization of flags and data structures
-  integer_rounding=_integer_rounding;
+  integer_rounding=doRound;
 
   ids_to_round.clear();
 
@@ -618,46 +618,45 @@ IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::SolveP
   }
 
   ///Initializing Matrix
-
   int t0=clock();
 
   ///initialize the matrix ALLOCATING SPACE
-  InitMatrix();
+  initMatrix();
   if (DEBUGPRINT)
     printf("\n ALLOCATED THE MATRIX \n");
 
   ///build the Laplacian system
-  BuildLaplacianMatrix(vector_field_scale);
+  buildLaplacianMatrix(gradientSize);
 
   // add seam constraints
-  BuildSeamConstraintsExplicitTranslation();
+  buildSeamConstraintsExplicitTranslation();
 
   // add user defined constraints
-  BuildUserDefinedConstraints();
+  buildUserDefinedConstraints();
 
   ////add the Lagrange multiplier
-  FixBlockedVertex();
+  fixBlockedVertex();
 
   if (DEBUGPRINT)
     printf("\n BUILT THE MATRIX \n");
 
   if (integer_rounding)
-    AddToRoundVertices(roundVertices);
+    addToRoundVertices(roundVertices);
 
-  if (_singularity_rounding)
-    AddSingularityRound();
+  if (singularityRound)
+    addSingularityRound();
 
   int t1=clock();
   if (DEBUGPRINT) printf("\n time:%d \n",t1-t0);
   if (DEBUGPRINT) printf("\n SOLVING \n");
 
-  MixedIntegerSolve(grid_res,direct_round,localIter);
+  mixedIntegerSolve(gridResolution, directRound, localIter);
 
   int t2=clock();
   if (DEBUGPRINT) printf("\n time:%d \n",t2-t1);
   if (DEBUGPRINT) printf("\n ASSIGNING COORDS \n");
 
-  MapCoords();
+  mapCoords();
 
   int t3=clock();
   if (DEBUGPRINT) printf("\n time:%d \n",t3-t2);
@@ -674,8 +673,8 @@ IGL_INLINE igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>
                 const Eigen::PlainObjectBase<DerivedF> &_TTi,
                 const Eigen::PlainObjectBase<DerivedV> &_PD1,
                 const Eigen::PlainObjectBase<DerivedV> &_PD2,
-                const Eigen::Matrix<int, Eigen::Dynamic, 1>&_Handle_Singular,
-                const MeshSystemInfo &_Handle_SystemInfo
+                const Eigen::Matrix<int, Eigen::Dynamic, 1>&_singular,
+                const MeshSystemInfo &_systemInfo
 ):
 V(_V),
 F(_F),
@@ -685,8 +684,8 @@ TT(_TT),
 TTi(_TTi),
 PD1(_PD1),
 PD2(_PD2),
-Handle_Singular(_Handle_Singular),
-Handle_SystemInfo(_Handle_SystemInfo)
+singular(_singular),
+systemInfo(_systemInfo)
 {
   UV        = Eigen::MatrixXd(V.rows(),2);
   WUV       = Eigen::MatrixXd(F.rows(),6);
@@ -698,7 +697,8 @@ Handle_SystemInfo(_Handle_SystemInfo)
 ///return the complex encoding the rotation
 ///for a given mismatch interval
 template <typename DerivedV, typename DerivedF>
-IGL_INLINE std::complex<double> igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::GetRotationComplex(int interval)
+IGL_INLINE std::complex<double> igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::getRotationComplex(
+        int interval)
 {
   assert((interval>=0)&&(interval<4));
 
@@ -716,7 +716,7 @@ IGL_INLINE std::complex<double> igl::copyleft::comiso::PoissonSolver<DerivedV, D
 ///START FIXING VERTICES
 ///set a given vertex as fixed
 template <typename DerivedV, typename DerivedF>
-IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::AddFixedVertex(int v)
+IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::addFixedVertex(int v)
 {
   n_fixed_vars++;
   Hard_constraints.push_back(v);
@@ -725,7 +725,7 @@ IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::AddFix
 ///find vertex to fix in case we're using
 ///a vector field NB: multiple components not handled
 template <typename DerivedV, typename DerivedF>
-IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::FindFixedVertField()
+IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::findFixedVertField()
 {
   Hard_constraints.clear();
 
@@ -733,16 +733,16 @@ IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::FindFi
   //fix the first singularity
   for (unsigned int v=0;v<V.rows();v++)
   {
-    if (Handle_Singular(v))
+    if (singular(v))
     {
-      AddFixedVertex(v);
+      addFixedVertex(v);
       UV.row(v) << 0,0;
       return;
     }
   }
 
   ///if anything fixed fix the first
-  AddFixedVertex(0);
+  addFixedVertex(0);
   UV.row(0) << 0,0;
   std::cerr << "No vertices to fix, I am fixing the first vertex to the origin!" << std::endl;
 }
@@ -750,21 +750,21 @@ IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::FindFi
 ///find hard constraint depending if using or not
 ///a vector field
 template <typename DerivedV, typename DerivedF>
-IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::FindFixedVert()
+IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::findFixedVert()
 {
   Hard_constraints.clear();
-  FindFixedVertField();
+  findFixedVertField();
 }
 
 template <typename DerivedV, typename DerivedF>
-IGL_INLINE int igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::GetFirstVertexIndex(int v)
+IGL_INLINE int igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::getFirstVertexIndex(int v)
 {
   return Fcut(VF[v][0],VFi[v][0]);
 }
 
 ///fix the vertices which are flagged as fixed
 template <typename DerivedV, typename DerivedF>
-IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::FixBlockedVertex()
+IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::fixBlockedVertex()
 {
   int offset_row = num_cut_constraint*2;
 
@@ -775,7 +775,7 @@ IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::FixBlo
 
     ///get first index of the vertex that must blocked
     //int index=v->vertex_index[0];
-    int index = GetFirstVertexIndex(v);
+    int index = getFirstVertexIndex(v);
 
     ///multiply times 2 because of uv
     int indexvert = index*2;
@@ -801,13 +801,13 @@ IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::FixBlo
 ///HANDLING SINGULARITY
 //set the singularity round to integer location
 template <typename DerivedV, typename DerivedF>
-IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::AddSingularityRound()
+IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::addSingularityRound()
 {
   for (unsigned int v=0;v<V.rows();v++)
   {
-    if (Handle_Singular(v))
+    if (singular(v))
     {
-      int index0=GetFirstVertexIndex(v);
+      int index0= getFirstVertexIndex(v);
       ids_to_round.push_back( index0*2   );
       ids_to_round.push_back((index0*2)+1);
     }
@@ -815,13 +815,13 @@ IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::AddSin
 }
 
 template <typename DerivedV, typename DerivedF>
-IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::AddToRoundVertices(std::vector<int> ids)
+IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::addToRoundVertices(std::vector<int> ids)
 {
   for (size_t i = 0; i < ids.size(); ++i)
   {
     if (ids[i] < 0 || ids[i] >= V.rows())
       std::cerr << "WARNING: Ignored round vertex constraint, vertex " << ids[i] << " does not exist in the mesh." << std::endl;
-    int index0 = GetFirstVertexIndex(ids[i]);
+    int index0 = getFirstVertexIndex(ids[i]);
     ids_to_round.push_back( index0*2   );
     ids_to_round.push_back((index0*2)+1);
   }
@@ -829,7 +829,7 @@ IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::AddToR
 
 ///START GENERIC SYSTEM FUNCTIONS
 template <typename DerivedV, typename DerivedF>
-IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::BuildLaplacianMatrix(double vfscale)
+IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::buildLaplacianMatrix(double vfscale)
 {
   Eigen::VectorXi idx  = igl::LinSpaced<Eigen::VectorXi >(Vcut.rows(), 0, 2*Vcut.rows()-2);
   Eigen::VectorXi idx2 = igl::LinSpaced<Eigen::VectorXi >(Vcut.rows(), 1, 2*Vcut.rows()-1);
@@ -866,20 +866,20 @@ IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::BuildL
 
 ///find different sized of the system
 template <typename DerivedV, typename DerivedF>
-IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::FindSizes()
+IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::findSizes()
 {
   ///find the vertex that need to be fixed
-  FindFixedVert();
+  findFixedVert();
 
   ///REAL PART
-  n_vert_vars = Handle_SystemInfo.num_vert_variables;
+  n_vert_vars = systemInfo.num_vert_variables;
 
   ///INTEGER PART
   ///the total number of integer variables
-  n_integer_vars = Handle_SystemInfo.num_integer_cuts;
+  n_integer_vars = systemInfo.num_integer_cuts;
 
   ///CONSTRAINT PART
-  num_cut_constraint = Handle_SystemInfo.EdgeSeamInfo.size();
+  num_cut_constraint = systemInfo.edgeSeamInfo.size();
 
   num_constraint_equations = num_cut_constraint * 2 + n_fixed_vars * 2 + num_userdefined_constraint;
 
@@ -905,7 +905,7 @@ IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::FindSi
 }
 
 template <typename DerivedV, typename DerivedF>
-IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::AllocateSystem()
+IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::allocateSystem()
 {
   Lhs.resize(n_vert_vars * 2, n_vert_vars * 2);
   Constraints.resize(num_constraint_equations, num_total_vars);
@@ -920,16 +920,16 @@ IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::Alloca
 
 ///intitialize the whole matrix
 template <typename DerivedV, typename DerivedF>
-IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::InitMatrix()
+IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::initMatrix()
 {
-  FindSizes();
-  AllocateSystem();
+  findSizes();
+  allocateSystem();
 }
 
 ///map back coordinates after that
 ///the system has been solved
 template <typename DerivedV, typename DerivedF>
-IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::MapCoords()
+IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::mapCoords()
 {
   ///map coords to faces
   for (unsigned int f=0;f<Fcut.rows();f++)
@@ -959,27 +959,27 @@ IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::MapCoo
 
 ///set the constraints for the inter-range cuts
 template <typename DerivedV, typename DerivedF>
-IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::BuildSeamConstraintsExplicitTranslation()
+IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::buildSeamConstraintsExplicitTranslation()
 {
   ///current constraint row
   int constr_row = 0;
 
   for (unsigned int i=0; i<num_cut_constraint; i++)
   {
-    unsigned char interval = Handle_SystemInfo.EdgeSeamInfo[i].MMatch;
+    unsigned char interval = systemInfo.edgeSeamInfo[i].MMatch;
     if (interval==1)
       interval=3;
     else
       if(interval==3)
         interval=1;
 
-    int p0  = Handle_SystemInfo.EdgeSeamInfo[i].v0;
-    int p0p = Handle_SystemInfo.EdgeSeamInfo[i].v0p;
+    int p0  = systemInfo.edgeSeamInfo[i].v0;
+    int p0p = systemInfo.edgeSeamInfo[i].v0p;
 
-    std::complex<double> rot = GetRotationComplex(interval);
+    std::complex<double> rot = getRotationComplex(interval);
 
     ///get the integer variable
-    int integerVar = n_vert_vars + Handle_SystemInfo.EdgeSeamInfo[i].integerVar;
+    int integerVar = n_vert_vars + systemInfo.edgeSeamInfo[i].integerVar;
 
     if (integer_rounding)
     {
@@ -1009,7 +1009,7 @@ IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::BuildS
 
 ///set the constraints for the inter-range cuts
 template <typename DerivedV, typename DerivedF>
-IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::BuildUserDefinedConstraints()
+IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::buildUserDefinedConstraints()
 {
   /// the user defined constraints are at the end
   int offset_row = num_cut_constraint*2 + n_fixed_vars*2;
@@ -1033,9 +1033,9 @@ IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::BuildU
 
 ///call of the mixed integer solver
 template <typename DerivedV, typename DerivedF>
-IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::MixedIntegerSolve(double cone_grid_res,
-                                                                          bool direct_round,
-                                                                          int localIter)
+IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::mixedIntegerSolve(double cone_grid_res,
+                                                                                            bool direct_round,
+                                                                                            int localIter)
 {
   X = std::vector<double>((n_vert_vars+n_integer_vars)*2);
   if (DEBUGPRINT)
@@ -1133,7 +1133,7 @@ template <typename DerivedV, typename DerivedF>
 IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::addSharpEdgeConstraint(int fid, int vid)
 {
   // prepare constraint
-  std::vector<int> c(Handle_SystemInfo.num_vert_variables*2 + 1, 0);
+  std::vector<int> c(systemInfo.num_vert_variables*2 + 1, 0);
 
   int v1 = Fcut(fid,vid);
   int v2 = Fcut(fid,(vid+1)%3);
@@ -1194,7 +1194,7 @@ F(F_)
   // Prepare indexing for the linear system
   VertexIndexing<DerivedV, DerivedF> VInd(V, F, Vcut, Fcut, TT, TTi, mismatch, singular, seams);
 
-  VInd.InitSeamInfo();
+  VInd.initSeamInfo();
 
   // Assemble the system and solve
   PoissonSolver<DerivedV, DerivedF> PSolver(V,
@@ -1214,7 +1214,8 @@ F(F_)
   {
     for (int i=0;i<iter;i++)
     {
-      PSolver.SolvePoisson(Handle_Stiffness, gradientSize,1.f,directRound,localIter,doRound,singularityRound,roundVertices,hardFeatures);
+      PSolver.solvePoisson(Handle_Stiffness, gradientSize, 1.f, directRound, localIter, doRound, singularityRound,
+                           roundVertices, hardFeatures);
       int nflips=NumFlips(PSolver.WUV);
       bool folded = updateStiffeningJacobianDistorsion(gradientSize,PSolver.WUV);
       printf("ITERATION %d FLIPS %d \n",i,nflips);
@@ -1223,7 +1224,8 @@ F(F_)
   }
   else
   {
-    PSolver.SolvePoisson(Handle_Stiffness,gradientSize,1.f,directRound,localIter,doRound,singularityRound,roundVertices,hardFeatures);
+    PSolver.solvePoisson(Handle_Stiffness, gradientSize, 1.f, directRound, localIter, doRound, singularityRound,
+                         roundVertices, hardFeatures);
   }
 
   int nflips=NumFlips(PSolver.WUV);
