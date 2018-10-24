@@ -24,7 +24,9 @@ namespace igl
     // We thank Nico Pietroni for providing a reference implementation of MIQ
     // on which our code is based.
 
-    //  Warning;     Due to the way of handling of hardFeatures the algorithm  may fail in difficult cases.
+    //  Limitations:
+    //  -  Due to the way of handling of hardFeatures the algorithm  may fail in difficult cases.
+    //  -  Meshes with boundaries are not hendled properly i.e., jagged edges along the boundary are possible
 
     // Input:
     // V                 #V by 3 list of mesh vertex 3D positions
