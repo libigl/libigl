@@ -17,7 +17,7 @@ bool key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier
     Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> A(1280,800);
 
     // Draw the scene in the buffers
-    viewer.core.draw_buffer(
+    viewer.core().draw_buffer(
       viewer.data(),false,R,G,B,A);
 
     // Save it to a PNG
@@ -53,7 +53,7 @@ bool key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier
     viewer.data().clear();
     viewer.data().set_mesh(V,F);
     viewer.data().set_uv(UV);
-    viewer.core.align_camera_center(V);
+    viewer.core().align_camera_center(V);
     viewer.data().show_texture = true;
 
     // Use the image as a texture
