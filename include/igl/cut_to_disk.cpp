@@ -261,6 +261,12 @@ namespace igl {
                 // we've hit a dead end. reverse and try the other direction
                 std::reverse(cycleverts.begin(), cycleverts.end());
                 std::reverse(cycleedges.begin(), cycleedges.end());
+                cycleidx.clear();
+                for (Index i = 0; i < cycleverts.size(); i++)
+                {
+                    cycleidx[cycleverts[i]] = i;
+                }
+                
                 curvert = cycleverts.back();
                 cure = cycleedges.back();
                 while (curvert != -1 && !foundcycle)
