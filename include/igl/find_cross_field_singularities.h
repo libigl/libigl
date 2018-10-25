@@ -18,7 +18,7 @@ namespace igl
   // Inputs:
   //   V                #V by 3 eigen Matrix of mesh vertex 3D positions
   //   F                #F by 3 eigen Matrix of face (quad) indices
-  //   Handle_MMatch    #F by 3 eigen Matrix containing the integer missmatch of the cross field
+  //   mismatch         #F by 3 eigen Matrix containing the integer mismatch of the cross field
   //                    across all face edges
   // Output:
   //   isSingularity    #V by 1 boolean eigen Vector indicating the presence of a singularity on a vertex
@@ -27,11 +27,11 @@ namespace igl
   template <typename DerivedV, typename DerivedF, typename DerivedM, typename DerivedO>
   IGL_INLINE void find_cross_field_singularities(const Eigen::PlainObjectBase<DerivedV> &V,
                                                  const Eigen::PlainObjectBase<DerivedF> &F,
-                                                 const Eigen::PlainObjectBase<DerivedM> &Handle_MMatch,
+                                                 const Eigen::PlainObjectBase<DerivedM> &mismatch,
                                                  Eigen::PlainObjectBase<DerivedO> &isSingularity,
                                                  Eigen::PlainObjectBase<DerivedO> &singularityIndex);
 
-  // Wrapper that calculates the missmatch if it is not provided.
+  // Wrapper that calculates the mismatch if it is not provided.
   // Note that the field in PD1 and PD2 MUST BE combed (see igl::comb_cross_field).
   // Inputs:
   //   V                #V by 3 eigen Matrix of mesh vertex 3D positions

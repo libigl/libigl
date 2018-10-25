@@ -69,10 +69,6 @@ IGL_INLINE void igl::comb_frame_field(const Eigen::PlainObjectBase<DerivedV> &V,
     PD2_combed.row(i) = DIRs.row(M);
 
   }
-
-
-  //    PD1_combed = BIS1_combed;
-  //    PD2_combed = BIS2_combed;
 }
 
 #ifdef IGL_STATIC_LIBRARY
