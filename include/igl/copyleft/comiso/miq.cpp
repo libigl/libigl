@@ -618,7 +618,7 @@ IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::solveP
   }
 
   ///Initializing Matrix
-  int t0=clock();
+  clock_t t0 = clock();
 
   ///initialize the matrix ALLOCATING SPACE
   initMatrix();
@@ -646,19 +646,19 @@ IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::solveP
   if (singularityRound)
     addSingularityRound();
 
-  int t1=clock();
+  clock_t t1 = clock();
   if (DEBUGPRINT) printf("\n time:%d \n",t1-t0);
   if (DEBUGPRINT) printf("\n SOLVING \n");
 
   mixedIntegerSolve(gridResolution, directRound, localIter);
 
-  int t2=clock();
+  clock_t t2 = clock();
   if (DEBUGPRINT) printf("\n time:%d \n",t2-t1);
   if (DEBUGPRINT) printf("\n ASSIGNING COORDS \n");
 
   mapCoords();
 
-  int t3=clock();
+  clock_t t3 = clock();
   if (DEBUGPRINT) printf("\n time:%d \n",t3-t2);
   if (DEBUGPRINT) printf("\n FINISHED \n");
 }
