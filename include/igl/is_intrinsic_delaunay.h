@@ -29,26 +29,37 @@ namespace igl
     const Eigen::MatrixBase<Derivedl> & l,
     const Eigen::MatrixBase<DerivedF> & F,
     Eigen::PlainObjectBase<DerivedD> & D);
+  // Inputs:
+  //   uE2E  #uE list of lists mapping unique edges to (half-)edges
+  template <
+    typename Derivedl,
+    typename DerivedF,
+    typename uE2EType,
+    typename DerivedD>
+  IGL_INLINE void is_intrinsic_delaunay(
+    const Eigen::MatrixBase<Derivedl> & l,
+    const Eigen::MatrixBase<DerivedF> & F,
+    const std::vector<std::vector<uE2EType> > & uE2E,
+    Eigen::PlainObjectBase<DerivedD> & D);
   // Determine whether a single edge is Delaunay using a provided (extrinsic) incirle
   // test.
   //
   // Inputs:
   //   l  #l by dim list of edge lengths
-  //   F  #F by 3 list of triangles indices
   //   uE2E  #uE list of lists of indices into E of coexisting edges (see
   //     unique_edge_map)
+  //   num_faces  number of faces (==#F)
   //   uei  index into uE2E of edge to check
   // Returns true iff edge is Delaunay
   template <
     typename Derivedl,
-    typename DerivedF,
     typename uE2EType,
-    typename ueiType>
+    typename Index>
   IGL_INLINE bool is_intrinsic_delaunay(
     const Eigen::MatrixBase<Derivedl> & l,
-    const Eigen::MatrixBase<DerivedF> & F,
     const std::vector<std::vector<uE2EType> > & uE2E,
-    const ueiType uei);
+    const Index num_faces,
+    const Index uei);
 
 }
 #ifndef IGL_STATIC_LIBRARY

@@ -34,6 +34,33 @@ namespace igl
     const Eigen::MatrixBase<DerivedF_in> & F_in,
     Eigen::PlainObjectBase<Derivedl> & l,
     Eigen::PlainObjectBase<DerivedF> & F);
+  // Outputs:
+  //   E  #F*3 by 2 list of all directed edges, such that E.row(f+#F*c) is the
+  //     edge opposite F(f,c)
+  //   uE  #uE by 2 list of unique undirected edges
+  //   EMAP #F*3 list of indices into uE, mapping each directed edge to unique
+  //     undirected edge
+  //   uE2E  #uE list of lists of indices into E of coexisting edges
+  //
+  // See also: unique_edge_map
+  template <
+    typename Derivedl_in,
+    typename DerivedF_in,
+    typename Derivedl,
+    typename DerivedF,
+    typename DerivedE,
+    typename DeriveduE,
+    typename DerivedEMAP,
+    typename uE2EType>
+  IGL_INLINE void intrinsic_delaunay_triangulation(
+    const Eigen::MatrixBase<Derivedl_in> & l_in,
+    const Eigen::MatrixBase<DerivedF_in> & F_in,
+    Eigen::PlainObjectBase<Derivedl> & l,
+    Eigen::PlainObjectBase<DerivedF> & F,
+    Eigen::PlainObjectBase<DerivedE> & E,
+    Eigen::PlainObjectBase<DeriveduE> & uE,
+    Eigen::PlainObjectBase<DerivedEMAP> & EMAP,
+    std::vector<std::vector<uE2EType> > & uE2E);
 }
 
 #ifndef IGL_STATIC_LIBRARY
