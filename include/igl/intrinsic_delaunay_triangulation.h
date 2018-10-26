@@ -21,7 +21,15 @@ namespace igl
   //   F_in  #F_in by 3 list of face indices into some unspecified vertex list V
   // Outputs:
   //   l  #F by 3 list of edge lengths
-  //   F  #F by 3 list of new face indices
+  //   F  #F by 3 list of new face indices. Note: Combinatorially F may contain
+  //     non-manifold edges, duplicate faces and self-loops (e.g., an edge [1,1]
+  //     or a face [1,1,1]). However, the *intrinsic geometry* is still
+  //     well-defined and correct. See [Fisher et al. 2007] Figure 3 and 2nd to
+  //     last paragraph of 1st page. Since F may be "non-eddge-manifold" in the
+  //     usual combinatorial sense, it may be useful to call the more verbose
+  //     overload below if disentangling edges will be necessary later on.
+  //     Calling unique_edge_map on this F will give a _different_ result than
+  //     those outputs.
   //
   // See also: is_intrinsic_delaunay
   template <
