@@ -22,13 +22,16 @@ namespace igl
   //   F  #F by 3 list of triangle indices
   // Returns #V vector of bools revealing whether vertices are on boundary
   //
-  // Known Bugs: - does not depend on V
-  //             - assumes mesh is edge manifold
+  // Known Bugs: - assumes mesh is edge manifold
   // 
+  template <typename DerivedF>
+  IGL_INLINE std::vector<bool> is_border_vertex(
+   const Eigen::MatrixBase<DerivedF> &F);
+  // Deprecated:
   template <typename DerivedV, typename DerivedF>
   IGL_INLINE std::vector<bool> is_border_vertex(
-   const Eigen::PlainObjectBase<DerivedV> &V,
-   const Eigen::PlainObjectBase<DerivedF> &F);
+   const Eigen::MatrixBase<DerivedV> &V,
+   const Eigen::MatrixBase<DerivedF> &F);
 }
 
 #ifndef IGL_STATIC_LIBRARY
