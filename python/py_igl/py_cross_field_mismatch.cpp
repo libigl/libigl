@@ -5,16 +5,16 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
-m.def("cross_field_missmatch", []
+m.def("cross_field_mismatch", []
 (
   const Eigen::MatrixXd &V,
   const Eigen::MatrixXi &F,
   const Eigen::MatrixXd &PD1,
   const Eigen::MatrixXd &PD2,
   const bool isCombed,
-  Eigen::MatrixXi &missmatch
+  Eigen::MatrixXi &mismatch
 )
 {
-  return igl::cross_field_missmatch(V,F,PD1,PD2,isCombed,missmatch);
-}, __doc_igl_cross_field_missmatch,
-py::arg("V"), py::arg("F"), py::arg("PD1"), py::arg("PD2"), py::arg("isCombed"), py::arg("missmatch"));
+  return igl::cross_field_mismatch(V,F,PD1,PD2,isCombed,mismatch);
+}, __doc_igl_cross_field_mismatch,
+py::arg("V"), py::arg("F"), py::arg("PD1"), py::arg("PD2"), py::arg("isCombed"), py::arg("mismatch"));
