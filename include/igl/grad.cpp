@@ -15,10 +15,12 @@
 #include "doublearea.h"
 
 template <typename DerivedV, typename DerivedF>
-IGL_INLINE void grad_tet(const Eigen::MatrixBase<DerivedV>&V,
-                     const Eigen::MatrixBase<DerivedF>&T,
-                            Eigen::SparseMatrix<typename DerivedV::Scalar> &G,
-                            bool uniform) {
+IGL_INLINE void grad_tet(
+  const Eigen::MatrixBase<DerivedV>&V,
+  const Eigen::MatrixBase<DerivedF>&T,
+  Eigen::SparseMatrix<typename DerivedV::Scalar> &G,
+  bool uniform) 
+{
   using namespace Eigen;
   assert(T.cols() == 4);
   const int n = V.rows(); int m = T.rows();
@@ -116,15 +118,22 @@ IGL_INLINE void grad_tet(const Eigen::MatrixBase<DerivedV>&V,
 }
 
 template <typename DerivedV, typename DerivedF>
-IGL_INLINE void grad_tri(const Eigen::MatrixBase<DerivedV>&V,
-                     const Eigen::MatrixBase<DerivedF>&F,
-                    Eigen::SparseMatrix<typename DerivedV::Scalar> &G,
-                    bool uniform)
+IGL_INLINE void grad_tri(
+  const Eigen::MatrixBase<DerivedV>&V,
+  const Eigen::MatrixBase<DerivedF>&F,
+  Eigen::SparseMatrix<typename DerivedV::Scalar> &G,
+  bool uniform)
 {
+  // Number of faces
+  const int m = F.rows();
+  // Number of vertices
+  const int n = V.rows();
+  // Number of dimensions
+  const int dims = V.cols();
   Eigen::Matrix<typename DerivedV::Scalar,Eigen::Dynamic,3>
-    eperp21(F.rows(),3), eperp13(F.rows(),3);
+    eperp21(m,3), eperp13(m,3);
 
-  for (int i=0;i<F.rows();++i)
+  for (int i=0;i<m;++i)
   {
     // renaming indices of vertices of triangles for convenience
     int i1 = F(i,0);
@@ -174,66 +183,40 @@ IGL_INLINE void grad_tri(const Eigen::MatrixBase<DerivedV>&V,
     eperp13.row(i) *= norm13 / dblA;
   }
 
-  std::vector<int> rs;
-  rs.reserve(F.rows()*4*3);
-  std::vector<int> cs;
-  cs.reserve(F.rows()*4*3);
-  std::vector<double> vs;
-  vs.reserve(F.rows()*4*3);
-
-  // row indices
-  for(int r=0;r<3;r++)
+  // create sparse gradient operator matrix
+  G.resize(dims*m,n);
+  std::vector<Eigen::Triplet<typename DerivedV::Scalar> > Gijv;
+  Gijv.reserve(4*dims*m);
+  for(int f = 0;f<F.rows();f++)
   {
-    for(int j=0;j<4;j++)
+    for(int d = 0;d<dims;d++)
     {
-      for(int i=r*F.rows();i<(r+1)*F.rows();i++) rs.push_back(i);
+      Gijv.emplace_back(f+d*m,F(f,1), eperp13(f,d));
+      Gijv.emplace_back(f+d*m,F(f,0),-eperp13(f,d));
+      Gijv.emplace_back(f+d*m,F(f,2), eperp21(f,d));
+      Gijv.emplace_back(f+d*m,F(f,0),-eperp21(f,d));
     }
   }
-
-  // column indices
-  for(int r=0;r<3;r++)
-  {
-    for(int i=0;i<F.rows();i++) cs.push_back(F(i,1));
-    for(int i=0;i<F.rows();i++) cs.push_back(F(i,0));
-    for(int i=0;i<F.rows();i++) cs.push_back(F(i,2));
-    for(int i=0;i<F.rows();i++) cs.push_back(F(i,0));
-  }
-
-  // values
-  for(int i=0;i<F.rows();i++) vs.push_back(eperp13(i,0));
-  for(int i=0;i<F.rows();i++) vs.push_back(-eperp13(i,0));
-  for(int i=0;i<F.rows();i++) vs.push_back(eperp21(i,0));
-  for(int i=0;i<F.rows();i++) vs.push_back(-eperp21(i,0));
-  for(int i=0;i<F.rows();i++) vs.push_back(eperp13(i,1));
-  for(int i=0;i<F.rows();i++) vs.push_back(-eperp13(i,1));
-  for(int i=0;i<F.rows();i++) vs.push_back(eperp21(i,1));
-  for(int i=0;i<F.rows();i++) vs.push_back(-eperp21(i,1));
-  for(int i=0;i<F.rows();i++) vs.push_back(eperp13(i,2));
-  for(int i=0;i<F.rows();i++) vs.push_back(-eperp13(i,2));
-  for(int i=0;i<F.rows();i++) vs.push_back(eperp21(i,2));
-  for(int i=0;i<F.rows();i++) vs.push_back(-eperp21(i,2));
-
-  // create sparse gradient operator matrix
-  G.resize(3*F.rows(),V.rows());
-  std::vector<Eigen::Triplet<typename DerivedV::Scalar> > triplets;
-  for (int i=0;i<(int)vs.size();++i)
-  {
-    triplets.push_back(Eigen::Triplet<typename DerivedV::Scalar>(rs[i],cs[i],vs[i]));
-  }
-  G.setFromTriplets(triplets.begin(), triplets.end());
+  G.setFromTriplets(Gijv.begin(), Gijv.end());
 }
 
 template <typename DerivedV, typename DerivedF>
-IGL_INLINE void igl::grad(const Eigen::MatrixBase<DerivedV>&V,
-                     const Eigen::MatrixBase<DerivedF>&F,
-                    Eigen::SparseMatrix<typename DerivedV::Scalar> &G,
-                    bool uniform)
+IGL_INLINE void igl::grad(
+  const Eigen::MatrixBase<DerivedV>&V,
+  const Eigen::MatrixBase<DerivedF>&F,
+  Eigen::SparseMatrix<typename DerivedV::Scalar> &G,
+  bool uniform)
 {
   assert(F.cols() == 3 || F.cols() == 4);
-  if (F.cols() == 3)
-    return grad_tri(V,F,G,uniform);
-  if (F.cols() == 4)
-    return grad_tet(V,F,G,uniform);
+  switch(F.cols())
+  {
+    case 3:
+      return grad_tri(V,F,G,uniform);
+    case 4:
+      return grad_tet(V,F,G,uniform);
+    default:
+      assert(false);
+  }
 }
 
 #ifdef IGL_STATIC_LIBRARY

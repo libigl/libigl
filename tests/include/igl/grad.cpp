@@ -13,6 +13,7 @@ TEST(grad,laplace_grid)
   igl::triangulated_grid(3,3,V2,F);
   Eigen::MatrixXd V = Eigen::MatrixXd::Zero(V2.rows(),3);
   V.topLeftCorner(V2.rows(),2) = V2;
+  V.col(2) = V.col(1).array() * V.col(0).array() + V.col(1).array();
   Eigen::SparseMatrix<double> L;
   igl::cotmatrix(V,F,L);
   Eigen::SparseMatrix<double> G;
