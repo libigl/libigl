@@ -15,8 +15,8 @@
 #include "doublearea.h"
 
 template <typename DerivedV, typename DerivedF>
-IGL_INLINE void grad_tet(const Eigen::PlainObjectBase<DerivedV>&V,
-                     const Eigen::PlainObjectBase<DerivedF>&T,
+IGL_INLINE void grad_tet(const Eigen::MatrixBase<DerivedV>&V,
+                     const Eigen::MatrixBase<DerivedF>&T,
                             Eigen::SparseMatrix<typename DerivedV::Scalar> &G,
                             bool uniform) {
   using namespace Eigen;
@@ -116,8 +116,8 @@ IGL_INLINE void grad_tet(const Eigen::PlainObjectBase<DerivedV>&V,
 }
 
 template <typename DerivedV, typename DerivedF>
-IGL_INLINE void grad_tri(const Eigen::PlainObjectBase<DerivedV>&V,
-                     const Eigen::PlainObjectBase<DerivedF>&F,
+IGL_INLINE void grad_tri(const Eigen::MatrixBase<DerivedV>&V,
+                     const Eigen::MatrixBase<DerivedF>&F,
                     Eigen::SparseMatrix<typename DerivedV::Scalar> &G,
                     bool uniform)
 {
@@ -224,8 +224,8 @@ IGL_INLINE void grad_tri(const Eigen::PlainObjectBase<DerivedV>&V,
 }
 
 template <typename DerivedV, typename DerivedF>
-IGL_INLINE void igl::grad(const Eigen::PlainObjectBase<DerivedV>&V,
-                     const Eigen::PlainObjectBase<DerivedF>&F,
+IGL_INLINE void igl::grad(const Eigen::MatrixBase<DerivedV>&V,
+                     const Eigen::MatrixBase<DerivedF>&F,
                     Eigen::SparseMatrix<typename DerivedV::Scalar> &G,
                     bool uniform)
 {
@@ -238,6 +238,6 @@ IGL_INLINE void igl::grad(const Eigen::PlainObjectBase<DerivedV>&V,
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instantiation
-template void igl::grad<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::SparseMatrix<Eigen::Matrix<double, -1, -1, 0, -1, -1>::Scalar, 0, int>&, bool);
-template void igl::grad<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::SparseMatrix<Eigen::Matrix<double, -1, 3, 0, -1, 3>::Scalar, 0, int>&, bool);
+template void igl::grad<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::SparseMatrix<Eigen::Matrix<double, -1, -1, 0, -1, -1>::Scalar, 0, int>&, bool);
+template void igl::grad<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::SparseMatrix<Eigen::Matrix<double, -1, 3, 0, -1, 3>::Scalar, 0, int>&, bool);
 #endif
