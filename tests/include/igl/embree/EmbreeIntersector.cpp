@@ -1,7 +1,7 @@
 #include <test_common.h>
 #include <igl/embree/EmbreeIntersector.h>
 
-TEST(EmbreeIntersector, cube)
+TEST_CASE("EmbreeIntersector: cube", "[igl/embree]")
 {
   //The allowed error for this test
   const double epsilon = 1e-6;
@@ -28,11 +28,11 @@ TEST(EmbreeIntersector, cube)
     dir[dim/2] = dim%2 ? -1 : 1;
     igl::Hit hit;
     bool hitP = embree.intersectRay(pos, dir, hit);
-    ASSERT_TRUE(hitP);
-    ASSERT_NEAR(hit.t, 0.5, epsilon);
-    EXPECT_EQ(hit.id, expected_id[dim]);
-    EXPECT_NEAR(hit.u, expected_u[dim], epsilon);
-    EXPECT_NEAR(hit.v, expected_v[dim], epsilon);
+    CHECK(hitP);
+    REQUIRE(hit.t == Approx(0.5).margin(epsilon));
+    REQUIRE(hit.id == expected_id[dim]);
+    REQUIRE(hit.u == Approx(expected_u[dim]).margin(epsilon));
+    REQUIRE(hit.v == Approx(expected_v[dim]).margin(epsilon));
   }
 
   // Shoot ray from outside in
@@ -46,11 +46,11 @@ TEST(EmbreeIntersector, cube)
 
     igl::Hit hit;
     bool hitP = embree.intersectRay(pos, dir, hit);
-    ASSERT_TRUE(hitP);
-    EXPECT_NEAR(hit.t, 0.5, epsilon);
-    EXPECT_EQ(hit.id, expected_id[dim]);
-    EXPECT_NEAR(hit.u, expected_u[dim], epsilon);
-    EXPECT_NEAR(hit.v, expected_v[dim], epsilon);
+    CHECK(hitP);
+    REQUIRE(hit.t == Approx(0.5).margin(epsilon));
+    REQUIRE(hit.id == expected_id[dim]);
+    REQUIRE(hit.u == Approx(expected_u[dim]).margin(epsilon));
+    REQUIRE(hit.v == Approx(expected_v[dim]).margin(epsilon));
   }
 
   // Rays that miss
@@ -64,7 +64,7 @@ TEST(EmbreeIntersector, cube)
 
     igl::Hit hit;
     bool hitP = embree.intersectRay(pos, dir, hit);
-    ASSERT_FALSE(hitP);
+    CHECK_FALSE(hitP);
   }
 
   // intersect beam
@@ -74,11 +74,11 @@ TEST(EmbreeIntersector, cube)
 
     igl::Hit hit;
     bool hitP = embree.intersectBeam(pos, dir, hit);
-    ASSERT_TRUE(hitP);
-    EXPECT_NEAR(hit.t, 0.5, epsilon);
-    EXPECT_EQ(hit.id, 7);
-    EXPECT_NEAR(hit.u, 0, epsilon);
-    EXPECT_NEAR(hit.v, 1, epsilon);
+    CHECK(hitP);
+    REQUIRE(hit.t == Approx(0.5).margin(epsilon));
+    REQUIRE(hit.id == 7);
+    REQUIRE(hit.u == Approx(0).margin(epsilon));
+    REQUIRE(hit.v == Approx(1).margin(epsilon));
   }
 
   {
@@ -87,11 +87,11 @@ TEST(EmbreeIntersector, cube)
 
     igl::Hit hit;
     bool hitP = embree.intersectBeam(pos, dir, hit);
-    ASSERT_TRUE(hitP);
-    EXPECT_NEAR(hit.t, 0.5, epsilon);
-    EXPECT_EQ(hit.id, 2);
-    EXPECT_NEAR(hit.u, 0, epsilon);
-    EXPECT_NEAR(hit.v, 0, epsilon);
+    CHECK(hitP);
+    REQUIRE(hit.t == Approx(0.5).margin(epsilon));
+    REQUIRE(hit.id == 2);
+    REQUIRE(hit.u == Approx(0).margin(epsilon));
+    REQUIRE(hit.v == Approx(0).margin(epsilon));
   }
 }
 
