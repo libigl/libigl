@@ -13,6 +13,7 @@
 #include "intrinsic_delaunay_cotmatrix.h"
 #include "massmatrix.h"
 #include "massmatrix_intrinsic.h"
+#include "grad_intrinsic.h"
 #include "boundary_facets.h"
 #include "unique.h"
 #include "slice.h"
@@ -40,25 +41,30 @@ IGL_INLINE bool igl::heat_geodesics_precompute(
 {
   typedef Eigen::Matrix<Scalar,Eigen::Dynamic,1> VectorXS;
   typedef Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic> MatrixXS;
-  igl::grad(V,F,data.Grad);
-  // div
-  VectorXS dblA;
-  assert(F.cols() == 3 && "Only triangles are supported");
-  igl::doublearea(V,F,dblA);
-  data.Div = -0.25*data.Grad.transpose()*
-    dblA.replicate(V.cols(),1).asDiagonal();
   Eigen::SparseMatrix<Scalar> L,M;
   Eigen::Matrix<Scalar,Eigen::Dynamic,3> l_intrinsic;
   DerivedF F_intrinsic;
+  VectorXS dblA;
   if(data.use_intrinsic_delaunay)
   {
     igl::intrinsic_delaunay_cotmatrix(V,F,L,l_intrinsic,F_intrinsic);
     igl::massmatrix_intrinsic(l_intrinsic,F_intrinsic,MASSMATRIX_TYPE_DEFAULT,M);
+    igl::doublearea(l_intrinsic,0,dblA);
+    igl::grad_intrinsic(l_intrinsic,F_intrinsic,data.Grad);
   }else
   {
     igl::cotmatrix(V,F,L);
     igl::massmatrix(V,F,MASSMATRIX_TYPE_DEFAULT,M);
+    igl::doublearea(V,F,dblA);
+    igl::grad(V,F,data.Grad);
   }
+  // div
+  assert(F.cols() == 3 && "Only triangles are supported");
+  // number of gradient components
+  data.ng = data.Grad.rows() / F.rows();
+  assert(data.ng == 3 || data.ng == 2);
+  data.Div = -0.25*data.Grad.transpose()*dblA.replicate(data.ng,1).asDiagonal();
+
   Eigen::SparseMatrix<Scalar> Q = M - t*L;
   Eigen::MatrixXi O;
   igl::boundary_facets(F,O);
@@ -116,23 +122,21 @@ IGL_INLINE void igl::heat_geodesics_solve(
     u *= 0.5;
   }
   DerivedD grad_u = data.Grad*u;
-  const int m = data.Grad.rows()/3;
+  const int m = data.Grad.rows()/data.ng;
   for(int i = 0;i<m;i++)
   {
-    const Scalar norm = sqrt(
-      grad_u(0*m+i)*grad_u(0*m+i)+
-      grad_u(1*m+i)*grad_u(1*m+i)+
-      grad_u(2*m+i)*grad_u(2*m+i));
+    Scalar norm = 0;
+    for(int d = 0;d<data.ng;d++)
+    {
+      norm += grad_u(d*m+i)*grad_u(d*m+i);
+    }
+    norm = sqrt(norm);
     if(norm == 0)
     {
-      grad_u(0*m+i) = 0;
-      grad_u(1*m+i) = 0;
-      grad_u(2*m+i) = 0;
+      for(int d = 0;d<data.ng;d++) { grad_u(d*m+i) = 0; }
     }else
     {
-      grad_u(0*m+i) /= norm;
-      grad_u(1*m+i) /= norm;
-      grad_u(2*m+i) /= norm;
+      for(int d = 0;d<data.ng;d++) { grad_u(d*m+i) /= norm; }
     }
   }
   const DerivedD div_X = -data.Div*grad_u;

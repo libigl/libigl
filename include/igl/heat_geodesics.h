@@ -18,6 +18,8 @@ namespace igl
   {
     // Gradient and Divergence operators
     Eigen::SparseMatrix<Scalar> Grad,Div;
+    // Number of gradient components
+    int ng;
     // List of boundary vertex indices
     Eigen::VectorXi b;
     // Solvers for Dirichet, Neumann problems
