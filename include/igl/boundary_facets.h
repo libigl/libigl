@@ -37,12 +37,12 @@ namespace igl
   //   DerivedF  integer-value: i.e. from MatrixXi
   template <typename DerivedT, typename DerivedF>
   IGL_INLINE void boundary_facets(
-    const Eigen::PlainObjectBase<DerivedT>& T,
+    const Eigen::MatrixBase<DerivedT>& T,
     Eigen::PlainObjectBase<DerivedF>& F);
   // Same as above but returns F
   template <typename DerivedT, typename Ret>
   Ret boundary_facets(
-    const Eigen::PlainObjectBase<DerivedT>& T);
+    const Eigen::MatrixBase<DerivedT>& T);
 }
 
 #ifndef IGL_STATIC_LIBRARY

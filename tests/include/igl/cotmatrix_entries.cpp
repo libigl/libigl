@@ -1,5 +1,7 @@
 #include <test_common.h>
 #include <igl/cotmatrix_entries.h>
+#include <igl/edge_lengths.h>
+#include <igl/EPS.h>
 
 TEST_CASE("cotmatrix_entries: simple", "[igl]")
 {
@@ -30,7 +32,7 @@ TEST_CASE("cotmatrix_entries: simple", "[igl]")
   for(int f = 0;f<C1.rows();f++)
   {
 #ifdef IGL_EDGE_LENGTHS_SQUARED_H
-      //Hard assert if we have edge_lenght_squared
+      //Hard assert if we have edge_length_squared
       for(int v = 0;v<3;v++)
         if (C1(f,v) > 0.1)
             REQUIRE (C1(f,v) == 0.5);
@@ -39,7 +41,7 @@ TEST_CASE("cotmatrix_entries: simple", "[igl]")
        //All cotangents sum 1.0 for those triangles
        REQUIRE (C1.row(f).sum() == 1.0);
 #else
-      //Soft assert if we have not edge_lenght_squared
+      //Soft assert if we have not edge_length_squared
       for(int v = 0;v<3;v++)
         if (C1(f,v) > 0.1)
             REQUIRE (C1(f,v) == Approx (0.5).margin( epsilon));
@@ -72,7 +74,7 @@ TEST_CASE("cotmatrix_entries: simple", "[igl]")
   for(int f = 0;f<C1.rows();f++)
   {
 #ifdef IGL_EDGE_LENGTHS_SQUARED_H
-      //Hard assert if we have edge_lenght_squared
+      //Hard assert if we have edge_length_squared
       for(int v = 0;v<3;v++)
         if (C1(f,v) > 0.1)
             REQUIRE (C1(f,v) == 0.5);
@@ -81,7 +83,7 @@ TEST_CASE("cotmatrix_entries: simple", "[igl]")
        //All cotangents sum 1.0 for those triangles
        REQUIRE (C1.row(f).sum() == 1.0);
 #else
-      //Soft assert if we have not edge_lenght_squared
+      //Soft assert if we have not edge_length_squared
       for(int v = 0;v<3;v++)
         if (C1(f,v) > 0.1)
             REQUIRE (C1(f,v) == Approx (0.5).margin( epsilon));
@@ -132,4 +134,20 @@ TEST_CASE("cotmatrix_entries: simple", "[igl]")
     for(int v = 0;v<3;v++)
        REQUIRE (C2(f,v) == Approx (0.5 / tan(M_PI / 3.0)).margin( epsilon));
   }
+}//TEST(cotmatrix_entries, simple)
+
+TEST_CASE("cotmatrix_entries: intrinsic", "[igl]")
+{
+  Eigen::MatrixXd V;
+  Eigen::MatrixXi F;
+  //This is a cube of dimensions 1.0x1.0x1.0
+  test_common::load_mesh("cube.obj", V, F);
+  Eigen::MatrixXd Cext,Cint;
+  // compute C extrinsically
+  igl::cotmatrix_entries(V,F,Cext);
+  // compute C intrinsically
+  Eigen::MatrixXd l;
+  igl::edge_lengths(V,F,l);
+  igl::cotmatrix_entries(l,Cint);
+  test_common::assert_near(Cext,Cint,igl::EPS<double>());
 }
