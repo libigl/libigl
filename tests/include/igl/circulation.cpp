@@ -26,7 +26,6 @@ TEST(circulation,single_edge)
   Eigen::VectorXi EMAP;
   std::vector<std::vector<int> > uE2E;
   igl::unique_edge_map(F, E, uE, EMAP, uE2E);
-  std::cout<<igl::matlab_format(uE,"uE")<<std::endl;
   Eigen::MatrixXi EI,EF;
   {
     const auto & cuE = uE;
@@ -43,7 +42,7 @@ TEST(circulation,single_edge)
   }
   Eigen::VectorXi Nccw;
   igl::circulation(ei,!flip,EMAP,EF,EI,Nccw);
-  const Eigen::VectorXi Nccwgt = 
+  Eigen::VectorXi Nccwgt = 
     (Eigen::VectorXi(6)<<
      4,
      5,
@@ -51,19 +50,20 @@ TEST(circulation,single_edge)
      6,
      2,
      3).finished();
-  std::cout<<igl::matlab_format(Nccw,"Nccw")<<std::endl;
-  std::cout<<igl::matlab_format(Nccwgt,"Nccwgt")<<std::endl;
-  test_common::assert_eq(Nccw,Nccwgt);
-  Eigen::VectorXi Ncw;
-  igl::circulation(ei, flip,EMAP,EF,EI,Ncw);
-  const Eigen::VectorXi Ncwgt = 
+  Eigen::VectorXi Ncwgt = 
     (Eigen::VectorXi(4)<<
      4,
      1,
      0,
      3).finished();
-  std::cout<<igl::matlab_format(Ncw,"Ncw")<<std::endl;
-  std::cout<<igl::matlab_format(Ncwgt,"Ncwgt")<<std::endl;
+  if(flip)
+  {
+    Nccwgt = Nccwgt.reverse().eval();
+    Ncwgt = Ncwgt.reverse().eval();
+  }
+  test_common::assert_eq(Nccw,Nccwgt);
+  Eigen::VectorXi Ncw;
+  igl::circulation(ei, flip,EMAP,EF,EI,Ncw);
   test_common::assert_eq(Ncw,Ncwgt);
 }
 
