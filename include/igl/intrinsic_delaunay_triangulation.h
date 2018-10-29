@@ -9,6 +9,7 @@
 #define IGL_INTRINSIC_DELAUNAY_TRIANGULATION_H
 #include "igl_inline.h"
 #include <Eigen/Core>
+#include <vector>
 namespace igl
 {
   // INTRINSIC_DELAUNAY_TRIANGULATION Flip edges _intrinsically_ until all are
