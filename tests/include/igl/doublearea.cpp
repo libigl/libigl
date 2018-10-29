@@ -32,7 +32,7 @@ TEST_P(doublearea, VF_vs_ABC )
 
 INSTANTIATE_TEST_CASE_P
 (
- all_meshes,
+ VF_vs_ABC,
  doublearea,
  ::testing::ValuesIn(test_common::all_meshes()),
  test_common::string_test_name

@@ -1,6 +1,5 @@
 #include <test_common.h>
 #include <igl/is_delaunay.h>
-#include <igl/matlab_format.h>
 
 TEST(is_delaunay, two_triangles)
 {
