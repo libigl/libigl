@@ -5,7 +5,7 @@
 #include <igl/copyleft/cgal/point_mesh_squared_distance.h>
 #include <igl/upsample.h>
 
-TEST(hausdorff, knightVScheburashka) 
+TEST_CASE("hausdorff: knightVScheburashka", "[igl/copyleft/cgal]")
 {
   Eigen::MatrixXd VA,VB;
   Eigen::MatrixXi FA,FB;
@@ -46,7 +46,7 @@ TEST(hausdorff, knightVScheburashka)
         {
           u4 = std::min(u4,U[j](i-u));
         }
-        ASSERT_LE(u4,U[j-1](i/4));
+        REQUIRE (U[j-1](i/4) >= u4);
       }
     }
     break;

@@ -2,9 +2,8 @@
 #include <test_common.h>
 #include <igl/upsample.h>
 
-class upsample : public ::testing::TestWithParam<std::string> {};
 
-TEST(upsample, single_triangle)
+TEST_CASE("upsample: single_triangle", "[igl]")
 {
   Eigen::MatrixXi NF_groundtruth(4,3);
   NF_groundtruth << 0,3,5 ,1,4,3 ,3,4,5 ,4,2,5;
@@ -28,30 +27,27 @@ TEST(upsample, single_triangle)
   test_common::assert_eq(NV_groundtruth,NV);
 }
 
-TEST_P(upsample, V_comes_first_F_ordering)
+TEST_CASE("upsample: V_comes_first_F_ordering", "[igl]")
 {
-  Eigen::MatrixXd V,NV;
-  Eigen::MatrixXi F,NF;
-  // Load example mesh: GetParam() will be name of mesh file
-  test_common::load_mesh(GetParam(), V, F);
-  igl::upsample(V,F,NV,NF);
-  ASSERT_GE(NV.rows(),V.rows());
-  ASSERT_EQ(NF.rows(),4*F.rows());
-  // V should be first part of V
-  test_common::assert_eq(V,NV.topLeftCorner(V.rows(),V.cols()));
-  // Expect a particular order 
-  for(int f = 0;f<F.rows();f++)
+  const auto test_case = [](const std::string &param)
   {
-    ASSERT_EQ( F(f,0), NF((f*4)+0,0) );
-    ASSERT_EQ( F(f,1), NF((f*4)+1,0) );
-    ASSERT_EQ( F(f,2), NF((f*4)+3,1) );
-  }
-}
+    Eigen::MatrixXd V,NV;
+    Eigen::MatrixXi F,NF;
+    // Load example mesh: GetParam() will be name of mesh file
+    test_common::load_mesh(param, V, F);
+    igl::upsample(V,F,NV,NF);
+    REQUIRE (V.rows() <= NV.rows());
+    REQUIRE (4*F.rows() == NF.rows());
+    // V should be first part of V
+    test_common::assert_eq(V,NV.topLeftCorner(V.rows(),V.cols()));
+    // Expect a particular order
+    for(int f = 0;f<F.rows();f++)
+    {
+      REQUIRE (NF((f*4)+0,0) == F(f,0));
+      REQUIRE (NF((f*4)+1,0) == F(f,1));
+      REQUIRE (NF((f*4)+3,1) == F(f,2));
+    }
+  };
 
-INSTANTIATE_TEST_CASE_P
-(
-  manifold_meshes,
-  upsample,
-  ::testing::ValuesIn(test_common::manifold_meshes()),
-  test_common::string_test_name
-);
+  test_common::run_test_cases(test_common::manifold_meshes(), test_case);
+}

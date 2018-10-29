@@ -2,7 +2,7 @@
 #include <igl/edge_lengths.h>
 #include <iostream>
 
-TEST(edge_lengths, cube)
+TEST_CASE("edge_lengths: cube", "[igl]")
 {
   //The allowed error for this test
   const double epsilon = 1e-15;
@@ -29,19 +29,19 @@ TEST(edge_lengths, cube)
   double diag = sqrt(2.0); //lenght of a diagonal
   Eigen::MatrixXd L;
   igl::edge_lengths(V,F,L);
-  ASSERT_EQ(F.rows(), L.rows());
-  ASSERT_EQ(3, L.cols());
+  REQUIRE (L.rows() == F.rows());
+  REQUIRE (L.cols() == 3);
   //All edges in unit cube measure 1.0 or sqrt(2) in diagonals
   for(int f = 0;f<L.rows();f++)
   {
     //All edge_lengths_squared must be exactly "side" or "diag"
     for(int e = 0;e<3;e++)
         if (L(f,e) > 1.1*side)
-           ASSERT_EQ(diag, L(f,e));
+           REQUIRE (L(f,e) == diag);
         else
-           ASSERT_EQ(side, L(f,e));
+           REQUIRE (L(f,e) == side);
     //All sides sum exactly side + side + diag
-    ASSERT_EQ(L.row(f).sum(), side + side + diag);
+    REQUIRE (side + side + diag == L.row(f).sum());
   }
 
   //Check the cube of huge sides
@@ -49,18 +49,18 @@ TEST(edge_lengths, cube)
   side = scale;       //lenght of a side
   diag = scale*sqrt(2.0); //lenght of a diagonal
   igl::edge_lengths(V_huge,F,L);
-  ASSERT_EQ(F.rows(), L.rows());
-  ASSERT_EQ(3, L.cols());
+  REQUIRE (L.rows() == F.rows());
+  REQUIRE (L.cols() == 3);
   for(int f = 0;f<L.rows();f++)
   {
     //All edge_lengths_squared must be exactly "side" or "diag"
     for(int e = 0;e<3;e++)
         if (L(f,e) > 1.1*side)
-           ASSERT_EQ(diag, L(f,e));
+           REQUIRE (L(f,e) == diag);
         else
-           ASSERT_EQ(side, L(f,e));
+           REQUIRE (L(f,e) == side);
     //All sides sum exactly side + side + diag
-    ASSERT_NEAR(L.row(f).sum(), side + side + diag, epsilon);
+    REQUIRE (side + side + diag == Approx (L.row(f).sum()).margin( epsilon));
   }
 
   //Check the cube of tiny sides
@@ -68,18 +68,18 @@ TEST(edge_lengths, cube)
   side = scale;       //lenght of a side
   diag = scale*sqrt(2.0); //lenght of a diagonal
   igl::edge_lengths(V_tiny,F,L);
-  ASSERT_EQ(F.rows(), L.rows());
-  ASSERT_EQ(3, L.cols());
+  REQUIRE (L.rows() == F.rows());
+  REQUIRE (L.cols() == 3);
   for(int f = 0;f<L.rows();f++)
   {
     //All edge_lengths_squared must be exactly "side" or "diag"
     for(int e = 0;e<3;e++)
         if (L(f,e) > 1.1*side)
-           ASSERT_EQ(diag, L(f,e));
+           REQUIRE (L(f,e) == diag);
         else
-           ASSERT_EQ(side, L(f,e));
+           REQUIRE (L(f,e) == side);
     //All sides sum exactly side + side + diag
-    ASSERT_EQ(L.row(f).sum(), side + side + diag);
+    REQUIRE (side + side + diag == L.row(f).sum());
   }
 
 }
