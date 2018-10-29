@@ -4,9 +4,7 @@
 #include <igl/triangulated_grid.h>
 #include <igl/is_border_vertex.h>
 
-class intrinsic_delaunay_cotmatrix : public ::testing::TestWithParam<std::string> {};
-
-TEST(intrinsic_delaunay_cotmatrix,skewed_grid)
+TEST_CASE("intrinsic_delaunay_cotmatrix: skewed_grid", "[igl]")
 {
   Eigen::MatrixXd V;
   Eigen::MatrixXi F;
@@ -34,40 +32,38 @@ TEST(intrinsic_delaunay_cotmatrix,skewed_grid)
   {
     if(LI(k) != LJ(k) && !is_boundary_edge(LI(k),LJ(k),s))
     {
-      ASSERT_GT(LV(k),-igl::EPS<double>());
+      REQUIRE (-igl::EPS<double>() < LV(k));
     }
   }
 }
 
-TEST_P(intrinsic_delaunay_cotmatrix,manifold_meshes)
+TEST_CASE("intrinsic_delaunay_cotmatrix: manifold_meshes", "[igl]")
 {
-  Eigen::MatrixXd V;
-  Eigen::MatrixXi F;
-  test_common::load_mesh(GetParam(), V, F);
-  Eigen::SparseMatrix<double> L;
-  Eigen::MatrixXi F_intrinsic;
-  Eigen::MatrixXd l_intrinsic;
-  igl::intrinsic_delaunay_cotmatrix(V,F,L,l_intrinsic,F_intrinsic);
-  Eigen::VectorXi LI,LJ;
-  Eigen::VectorXd LV;
-  igl::find(L,LI,LJ,LV);
-
-  const std::vector<bool> is_boundary_vertex = igl::is_border_vertex(F);
-  // Off diagonals should be all non-positive
-  for(int k = 0;k<LI.size();k++)
+  auto test_case = [](const std::string &param)
   {
-    if(LI(k) != LJ(k) && 
-      !(is_boundary_vertex[LI(k)] && is_boundary_vertex[LJ(k)]))
+    Eigen::MatrixXd V;
+    Eigen::MatrixXi F;
+    test_common::load_mesh(param, V, F);
+    Eigen::SparseMatrix<double> L;
+    Eigen::MatrixXi F_intrinsic;
+    Eigen::MatrixXd l_intrinsic;
+    igl::intrinsic_delaunay_cotmatrix(V,F,L,l_intrinsic,F_intrinsic);
+    Eigen::VectorXi LI,LJ;
+    Eigen::VectorXd LV;
+    igl::find(L,LI,LJ,LV);
+
+    const std::vector<bool> is_boundary_vertex = igl::is_border_vertex(F);
+    // Off diagonals should be all non-positive
+    for(int k = 0;k<LI.size();k++)
     {
-      ASSERT_GT(LV(k),-igl::EPS<double>());
+      if(LI(k) != LJ(k) && 
+        !(is_boundary_vertex[LI(k)] && is_boundary_vertex[LJ(k)]))
+      {
+        REQUIRE (-igl::EPS<double>() < LV(k));
+      }
     }
-  }
+  };
+
+  test_common::run_test_cases(test_common::manifold_meshes(), test_case);
 }
 
-INSTANTIATE_TEST_CASE_P
-(
- manifold_meshes,
- intrinsic_delaunay_cotmatrix,
- ::testing::ValuesIn(test_common::manifold_meshes()),
- test_common::string_test_name
-);

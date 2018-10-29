@@ -2,7 +2,7 @@
 #include <igl/edge_exists_near.h>
 #include <igl/unique_edge_map.h>
 
-TEST(edge_exists_near,tet)
+TEST_CASE("edge_exists_near: tet", "[igl]")
 {
   const Eigen::MatrixXi F = (Eigen::MatrixXi(4,3)<<
      0,1,2,
@@ -21,7 +21,7 @@ TEST(edge_exists_near,tet)
       {
         if(i != j)
         {
-          ASSERT_TRUE(igl::edge_exists_near(uE,EMAP,uE2E,i,j,uei));
+          REQUIRE (igl::edge_exists_near(uE,EMAP,uE2E,i,j,uei));
         }
       }
     }

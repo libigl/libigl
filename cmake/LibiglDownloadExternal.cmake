@@ -134,10 +134,10 @@ function(igl_download_triangle)
 endfunction()
 
 ## Google test
-function(igl_download_googletest)
-	igl_download_project(googletest
-		GIT_REPOSITORY https://github.com/google/googletest
-		GIT_TAG        release-1.8.1
+function(igl_download_catch2)
+	igl_download_project(catch2
+		GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+		GIT_TAG        1faccd601d904a951142d8fba82914a8325b764e
 	)
 endfunction()
 

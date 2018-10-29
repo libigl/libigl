@@ -2,7 +2,7 @@
 #include <igl/is_intrinsic_delaunay.h>
 #include <igl/edge_lengths.h>
 
-TEST(is_intrinsic_delaunay, two_triangles)
+TEST_CASE("is_intrinsic_delaunay: two_triangles", "[igl]")
 {
   const Eigen::MatrixXd V = 
     (Eigen::MatrixXd(4,2)<<
@@ -22,7 +22,7 @@ TEST(is_intrinsic_delaunay, two_triangles)
   {
     for(int c=0;c<DD.cols();c++)
     {
-      ASSERT_TRUE(DD(f,c));
+      REQUIRE (DD(f,c));
     }
   }
   const Eigen::MatrixXi FN = 
@@ -32,6 +32,6 @@ TEST(is_intrinsic_delaunay, two_triangles)
   Eigen::MatrixXd lN;
   igl::edge_lengths(V,FN,lN);
   igl::is_intrinsic_delaunay(lN,FN,DN);
-  ASSERT_FALSE(DN(0,0));
-  ASSERT_FALSE(DN(1,2));
+  REQUIRE (!DN(0,0));
+  REQUIRE (!DN(1,2));
 }

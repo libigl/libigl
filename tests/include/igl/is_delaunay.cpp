@@ -1,7 +1,7 @@
 #include <test_common.h>
 #include <igl/is_delaunay.h>
 
-TEST(is_delaunay, two_triangles)
+TEST_CASE("is_delaunay: two_triangles", "[igl]")
 {
   const Eigen::MatrixXd V = 
     (Eigen::MatrixXd(4,2)<<
@@ -19,7 +19,7 @@ TEST(is_delaunay, two_triangles)
   {
     for(int c=0;c<DD.cols();c++)
     {
-      ASSERT_TRUE(DD(f,c));
+      REQUIRE (DD(f,c));
     }
   }
   const Eigen::MatrixXi FN = 
@@ -27,6 +27,6 @@ TEST(is_delaunay, two_triangles)
      0,1,2,
      2,1,3).finished();
   igl::is_delaunay(V,FN,DN);
-  ASSERT_FALSE(DN(0,0));
-  ASSERT_FALSE(DN(1,2));
+  REQUIRE (!DN(0,0));
+  REQUIRE (!DN(1,2));
 }

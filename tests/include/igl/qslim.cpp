@@ -6,7 +6,7 @@
 //#include <igl/hausdorff.h>
 #include <igl/writePLY.h>
 
-TEST(qslim,cylinder)
+TEST_CASE("qslim: cylinder", "[igl]")
 {
   using namespace igl;
   const int axis_devisions = 5;
@@ -18,7 +18,7 @@ TEST(qslim,cylinder)
   Eigen::MatrixXi G;
   Eigen::VectorXi I,J;
   qslim(V,F,2*axis_devisions,U,G,I,J);
-  ASSERT_EQ(axis_devisions*2,U.rows());
+  REQUIRE (U.rows() == axis_devisions*2);
   double l,u;
   igl::writePLY("qslim-cylinder-vf.ply",V,F);
   igl::writePLY("qslim-cylinder-ug.ply",U,G);
@@ -38,7 +38,7 @@ TEST(qslim,cylinder)
     return D.array().sqrt().maxCoeff();
   };
   //igl::hausdorff(V,F,U,G,1e-14,l,u);
-  ASSERT_NEAR(hausdorff_lower_bound(V,F,U,G),0,2e-10);
+  REQUIRE (0 == Approx (hausdorff_lower_bound(V,F,U,G)).margin(2e-10));
   //igl::hausdorff(U,G,V,F,1e-14,l,u);
-  ASSERT_NEAR(hausdorff_lower_bound(U,G,V,F),0,2e-10);
+  REQUIRE (0 == Approx (hausdorff_lower_bound(U,G,V,F)).margin(2e-10));
 }

@@ -6,7 +6,7 @@
 #include <igl/doublearea.h>
 #include <igl/EPS.h>
 
-TEST(grad,laplace_grid)
+TEST_CASE("grad: laplace_grid", "[igl]")
 {
   Eigen::MatrixXd V2;
   Eigen::MatrixXi F;

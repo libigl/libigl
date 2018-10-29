@@ -3,7 +3,7 @@
 #include <igl/unique_simplices.h>
 #include <igl/matlab_format.h>
 
-TEST(igl_copyleft_cgal_delaunay_triangulation, two_triangles)
+TEST_CASE("igl_copyleft_cgal_delaunay_triangulation: two_triangles", "[igl/copyleft/cgal]")
 {
   const Eigen::MatrixXd V = 
     (Eigen::MatrixXd(4,2)<<
@@ -15,12 +15,12 @@ TEST(igl_copyleft_cgal_delaunay_triangulation, two_triangles)
   igl::copyleft::cgal::delaunay_triangulation(V,F);
   // Ground truth
   Eigen::MatrixXi Fgt = (Eigen::MatrixXi(2,3)<<0,1,3,0,3,2).finished();
-  ASSERT_EQ(F.rows(),2);
+  REQUIRE (2 == F.rows());
   Eigen::MatrixXi Fu;
   Eigen::VectorXi IA,IC;
   igl::unique_simplices(
     (Eigen::MatrixXi(4,3)<<F,Fgt).finished(),
     Fu,IA,IC);
   // Now new faces w.r.t. ground truth
-  ASSERT_EQ(Fu.rows(),2);
+  REQUIRE (2 == Fu.rows());
 }
