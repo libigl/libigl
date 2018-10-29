@@ -26,12 +26,6 @@ IGL_INLINE bool igl::edge_exists_near(
   // 32 is faster than 8
   pushed.reserve(32);
   assert(a!=b);
-  // Not handling case where (a,b) is edge on face incident on uei
-  // since this can't happen for edge-flipping.
-  assert(a!=uE(uei,0));
-  assert(a!=uE(uei,1));
-  assert(b!=uE(uei,0));
-  assert(b!=uE(uei,1));
   // starting with the (2) faces incident on e, consider all faces
   // incident on edges containing either a or b.
   //
