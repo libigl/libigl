@@ -34,14 +34,15 @@ TEST(circulation,single_edge)
   }
   // Find (2,5) in uE
   int ei = 0;
+  bool flip = false;
   for(;ei<E.rows();ei++)
   {
-    if(uE(ei,0) == 2 && uE(ei,1) == 5) break;
-    if(uE(ei,1) == 2 && uE(ei,0) == 5) break;
+    if(uE(ei,0) == 2 && uE(ei,1) == 5){flip=false;break;}
+    if(uE(ei,1) == 2 && uE(ei,0) == 5){flip=true;break;}
   }
   Eigen::VectorXi Nccw;
-  igl::circulation(ei,true,EMAP,EF,EI,Nccw);
-  const Eigen::VectorXi Nccwgt = 
+  igl::circulation(ei,!flip,EMAP,EF,EI,Nccw);
+  Eigen::VectorXi Nccwgt = 
     (Eigen::VectorXi(6)<<
      4,
      5,
@@ -49,14 +50,20 @@ TEST(circulation,single_edge)
      6,
      2,
      3).finished();
-  test_common::assert_eq(Nccw,Nccwgt);
-  Eigen::VectorXi Ncw;
-  igl::circulation(ei,false,EMAP,EF,EI,Ncw);
-  const Eigen::VectorXi Ncwgt = 
+  Eigen::VectorXi Ncwgt = 
     (Eigen::VectorXi(4)<<
      4,
      1,
      0,
      3).finished();
+  if(flip)
+  {
+    Nccwgt = Nccwgt.reverse().eval();
+    Ncwgt = Ncwgt.reverse().eval();
+  }
+  test_common::assert_eq(Nccw,Nccwgt);
+  Eigen::VectorXi Ncw;
+  igl::circulation(ei, flip,EMAP,EF,EI,Ncw);
   test_common::assert_eq(Ncw,Ncwgt);
 }
+
