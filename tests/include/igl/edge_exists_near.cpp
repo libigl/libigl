@@ -19,7 +19,10 @@ TEST(edge_exists_near,tet)
     {
       for(int j = 0;j<4;j++)
       {
-        ASSERT_TRUE(igl::edge_exists_near(uE,EMAP,uE2E,i,j,uei));
+        if(i != j)
+        {
+          ASSERT_TRUE(igl::edge_exists_near(uE,EMAP,uE2E,i,j,uei));
+        }
       }
     }
   }
