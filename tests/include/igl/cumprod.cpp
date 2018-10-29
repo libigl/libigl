@@ -1,7 +1,7 @@
 #include <test_common.h>
 #include <igl/cumprod.h>
 
-TEST(cumprod,col_factorial)
+TEST_CASE("cumprod: col_factorial", "[igl]")
 {
   Eigen::Vector4d X(1,2,3,4);
   Eigen::Vector4d Y;
@@ -10,7 +10,7 @@ TEST(cumprod,col_factorial)
   test_common::assert_eq(Y,Ygt);
 }
 
-TEST(cumprod,row_factorial)
+TEST_CASE("cumprod: row_factorial", "[igl]")
 {
   Eigen::RowVector4d X(1,2,3,4);
   Eigen::RowVector4d Y;

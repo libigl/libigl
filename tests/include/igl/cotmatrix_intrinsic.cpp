@@ -5,9 +5,7 @@
 #include <igl/matlab_format.h>
 #include <igl/EPS.h>
 
-class cotmatrix_intrinsic : public ::testing::TestWithParam<std::string> {};
-
-TEST(cotmatrix_intrinsic, periodic)
+TEST_CASE("cotmatrix_intrinsic: periodic", "[igl]")
 {
   const Eigen::MatrixXi F = (Eigen::MatrixXi(18,3)<<
     0,3,1,
@@ -63,28 +61,26 @@ TEST(cotmatrix_intrinsic, periodic)
   test_common::assert_near(L_d,L_gt,igl::EPS<double>());
 }
 
-TEST_P(cotmatrix_intrinsic , manifold_meshes)
+TEST_CASE("cotmatrix_intrinsic: manifold_meshes", "[igl]")
 {
-  Eigen::MatrixXd V;
-  Eigen::MatrixXi F;
-  test_common::load_mesh(GetParam(), V, F);
-  Eigen::MatrixXd l;
-  igl::edge_lengths(V,F,l);
-  Eigen::SparseMatrix<double> L,Li;
-  igl::cotmatrix(V,F,L);
-  igl::cotmatrix_intrinsic(l,F,Li);
-  // Augh, we don't have assert_near for sparse matrices...
-  // Instead test that bilinear form is near equal for 2 random vectors
-  const Eigen::VectorXd u = Eigen::VectorXd::Random(V.rows(),1);
-  const Eigen::VectorXd v = Eigen::VectorXd::Random(V.rows(),1);
-  const double uv = u.norm()*v.norm();
-  ASSERT_NEAR( u.dot(L*v)/uv, u.dot(Li*v)/uv, igl::EPS<double>());
+  auto test_case = [](const std::string &param)
+  {
+    Eigen::MatrixXd V;
+    Eigen::MatrixXi F;
+    test_common::load_mesh(param, V, F);
+    Eigen::MatrixXd l;
+    igl::edge_lengths(V,F,l);
+    Eigen::SparseMatrix<double> L,Li;
+    igl::cotmatrix(V,F,L);
+    igl::cotmatrix_intrinsic(l,F,Li);
+    // Augh, we don't have assert_near for sparse matrices...
+    // Instead test that bilinear form is near equal for 2 random vectors
+    const Eigen::VectorXd u = Eigen::VectorXd::Random(V.rows(),1);
+    const Eigen::VectorXd v = Eigen::VectorXd::Random(V.rows(),1);
+    const double uv = u.norm()*v.norm();
+    REQUIRE (u.dot(Li*v)/uv == Approx (u.dot(L*v)/uv).margin( igl::EPS<double>()));
+  };
+
+  test_common::run_test_cases(test_common::manifold_meshes(), test_case);
 }
 
-INSTANTIATE_TEST_CASE_P
-(
- manifold_meshes,
- cotmatrix_intrinsic,
- ::testing::ValuesIn(test_common::manifold_meshes()),
- test_common::string_test_name
-);

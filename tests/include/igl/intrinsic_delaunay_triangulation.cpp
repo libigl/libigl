@@ -9,7 +9,7 @@
 #include <igl/get_seconds.h>
 #include <igl/matlab_format.h>
 
-TEST(intrinsic_delaunay_triangulation, two_triangles)
+TEST_CASE("intrinsic_delaunay_triangulation: two_triangles", "[igl]")
 {
   const Eigen::MatrixXd V = 
     (Eigen::MatrixXd(4,2)<<
@@ -31,7 +31,7 @@ TEST(intrinsic_delaunay_triangulation, two_triangles)
   test_common::assert_near(l,lext,1e-10);
 }
 
-TEST(intrinsic_delaunay_triangulation, skewed_grid)
+TEST_CASE("intrinsic_delaunay_triangulation: skewed_grid", "[igl]")
 {
   Eigen::MatrixXd V;
   Eigen::MatrixXi F_in;
@@ -53,7 +53,7 @@ TEST(intrinsic_delaunay_triangulation, skewed_grid)
   test_common::assert_eq(D,Dtrue);
 }
 
-TEST(intrinsic_delaunay_triangulation, peaks)
+TEST_CASE("intrinsic_delaunay_triangulation: peaks", "[igl]")
 {
   Eigen::MatrixXd V2;
   Eigen::MatrixXi F_in;
@@ -86,7 +86,7 @@ TEST(intrinsic_delaunay_triangulation, peaks)
   test_common::assert_eq(D,D_gt);
 }
 
-TEST(intrinsic_delaunay_triangulation,tet)
+TEST_CASE("intrinsic_delaunay_triangulation: tet", "[igl]")
 {
   const Eigen::MatrixXd V = (Eigen::MatrixXd(4,3)<<
     10, 4,7,

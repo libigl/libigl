@@ -1,7 +1,7 @@
 #include <test_common.h>
 #include <igl/cumsum.h>
 
-TEST(cumsum,col)
+TEST_CASE("cumsum: col", "[igl]")
 {
   Eigen::Vector4d X(1,2,3,4);
   Eigen::Vector4d Y;
@@ -10,7 +10,7 @@ TEST(cumsum,col)
   test_common::assert_eq(Y,Ygt);
 }
 
-TEST(cumsum,row)
+TEST_CASE("cumsum: row", "[igl]")
 {
   Eigen::RowVector4d X(1,2,3,4);
   Eigen::RowVector4d Y;

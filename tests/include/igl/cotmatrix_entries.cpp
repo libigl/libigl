@@ -134,7 +134,7 @@ TEST_CASE("cotmatrix_entries: simple", "[igl]")
     for(int v = 0;v<3;v++)
        REQUIRE (C2(f,v) == Approx (0.5 / tan(M_PI / 3.0)).margin( epsilon));
   }
-}//TEST(cotmatrix_entries, simple)
+}// TEST_CASE("cotmatrix_entries: simple", "[igl]")
 
 TEST_CASE("cotmatrix_entries: intrinsic", "[igl]")
 {

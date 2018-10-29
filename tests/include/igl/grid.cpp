@@ -2,7 +2,7 @@
 #include <igl/grid.h>
 #include <igl/matlab_format.h>
 
-TEST(grid,3d)
+TEST_CASE("grid: 3d", "[igl]")
 {
   Eigen::Vector3i res(3,3,3);
   Eigen::MatrixXd GV;
@@ -39,7 +39,7 @@ TEST(grid,3d)
   test_common::assert_eq(GV,GVgt);
 }
 
-TEST(grid,2d)
+TEST_CASE("grid: 2d", "[igl]")
 {
   Eigen::Vector2i res(3,3);
   Eigen::MatrixXd GV;

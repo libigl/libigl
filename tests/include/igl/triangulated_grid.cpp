@@ -2,18 +2,18 @@
 #include <igl/triangulated_grid.h>
 #include <igl/doublearea.h>
 
-TEST(triangulated_grid,area)
+TEST_CASE("triangulated_grid: area", "[igl]")
 {
   Eigen::MatrixXd V;
   Eigen::MatrixXi F;
   const int nx = 4;
   const int ny = 7;
   igl::triangulated_grid(nx,ny,V,F);
-  ASSERT_EQ(V.rows(),nx*ny);
-  ASSERT_EQ(F.rows(),2*(nx-1)*(ny-1));
+  REQUIRE (nx*ny == V.rows());
+  REQUIRE (2*(nx-1)*(ny-1) == F.rows());
   Eigen::VectorXd dblA;
   igl::doublearea(V,F,dblA);
-  ASSERT_NEAR(dblA.array().sum(),2.0,1e-10);
+  REQUIRE (2.0 == Approx (dblA.array().sum()).margin(1e-10));
   const Eigen::VectorXd dblAgt = 
     Eigen::VectorXd::Constant(
       2*(nx-1)*(ny-1),

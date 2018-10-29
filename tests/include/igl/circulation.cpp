@@ -4,7 +4,7 @@
 #include <igl/unique_edge_map.h>
 #include <igl/matlab_format.h>
 
-TEST(circulation,single_edge)
+TEST_CASE("circulation: single_edge", "[igl]")
 {
   //       7    
   //     /₆|₇\

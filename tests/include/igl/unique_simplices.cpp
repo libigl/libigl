@@ -1,7 +1,7 @@
 #include <test_common.h>
 #include <igl/unique_simplices.h>
 
-TEST(igl_unique_simplices, duplicate_triangles)
+TEST_CASE("igl_unique_simplices: duplicate_triangles", "[igl]")
 {
   const Eigen::MatrixXi F = (Eigen::MatrixXi(2,3)<<0,1,2,0,1,2).finished();
 
@@ -24,7 +24,7 @@ TEST(igl_unique_simplices, duplicate_triangles)
           Eigen::VectorXi IA,IC;
           igl::unique_simplices(Fij,Fu,IA,IC);
           // There's only one unique simplex
-          ASSERT_EQ(Fu.rows(),1);
+          REQUIRE (1 == Fu.rows());
         }
       }
     }
