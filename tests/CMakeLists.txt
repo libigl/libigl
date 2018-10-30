@@ -74,7 +74,7 @@ IF(LIBIGL_WITH_EMBREE)
   file(GLOB TEST_SRC_FILES ./include/igl/embree/*.cpp)
   file(GLOB TEST_INC_FILES ./include/igl/embree/*.h ./include/igl/embree/*.inl)
   target_sources(libigl_tests PRIVATE ${TEST_SRC_FILES} ${TEST_INC_FILES})
-  
+
   target_link_libraries(libigl_tests PUBLIC igl::embree)
 ENDIF()
 
