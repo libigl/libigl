@@ -36,3 +36,4 @@ build_script:
   - set MSBuildOptions=/v:m /p:Configuration=Debug /logger:%MSBuildLogger%
   - msbuild %MSBuildOptions% libigl.sln
   - ctest -C Debug --verbose
+  - .\Debug\libigl_tests.exe
