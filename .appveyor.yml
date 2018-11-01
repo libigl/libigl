@@ -1,6 +1,6 @@
 version: 1.0.{build}
 os: Visual Studio 2017
-test: off
+
 clone_folder: C:\projects\libigl
 branches:
   only:
@@ -35,5 +35,7 @@ build_script:
   - set MSBuildLogger="C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
   - set MSBuildOptions=/v:m /p:Configuration=Debug /logger:%MSBuildLogger%
   - msbuild %MSBuildOptions% libigl.sln
+
+test_script:
   - ctest -C Debug --verbose
   - .\Debug\libigl_tests.exe
