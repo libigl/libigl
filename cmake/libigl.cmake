@@ -265,6 +265,8 @@ endif()
 if(LIBIGL_WITH_EMBREE)
   set(EMBREE_DIR "${LIBIGL_EXTERNAL}/embree")
 
+  set(OLD_BUILD_TESTING ${BUILD_TESTING} CACHE BOOL "" FORCE)
+
   set(EMBREE_ISPC_SUPPORT OFF CACHE BOOL " " FORCE)
   set(EMBREE_TASKING_SYSTEM "INTERNAL" CACHE BOOL " " FORCE)
   set(EMBREE_TUTORIALS OFF CACHE BOOL " " FORCE)
@@ -298,6 +300,8 @@ if(LIBIGL_WITH_EMBREE)
   if(NOT MSVC)
     target_compile_definitions(igl_embree ${IGL_SCOPE} -DENABLE_STATIC_LIB)
   endif()
+
+  set(BUILD_TESTING ${OLD_BUILD_TESTING} CACHE BOOL "" FORCE)
 endif()
 
 ################################################################################
