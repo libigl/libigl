@@ -37,4 +37,4 @@ build_script:
   - msbuild %MSBuildOptions% libigl.sln
 
 test_script:
-  - ctest -C Debug --verbose
+  - ctest -C Debug --verbose --output-on-failure -j 2

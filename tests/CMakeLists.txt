@@ -38,45 +38,45 @@ target_compile_definitions(libigl_tests PUBLIC -DLIBIGL_DATA_DIR="${IGL_TEST_DAT
 
 # Process code in each subdirectories: add in decreasing order of complexity
 # (last added will run first and those should be the fastest tests)
-IF(LIBIGL_WITH_MOSEK)
+if(LIBIGL_WITH_MOSEK)
   file(GLOB TEST_SRC_FILES ./include/igl/mosek/*.cpp)
   file(GLOB TEST_INC_FILES ./include/igl/mosek/*.h ./include/igl/mosek/*.inl)
   target_sources(libigl_tests PRIVATE ${TEST_SRC_FILES} ${TEST_INC_FILES})
 
   target_link_libraries(libigl_tests PUBLIC igl::mosek)
-ENDIF()
+endif()
 
-IF(LIBIGL_WITH_CGAL)
+if(LIBIGL_WITH_CGAL)
   file(GLOB TEST_SRC_FILES ./include/igl/copyleft/boolean/*.cpp ./include/igl/copyleft/cgal/*.cpp)
   file(GLOB TEST_INC_FILES ./include/igl/copyleft/boolean/*.h ./include/igl/copyleft/cgal/*.h ./include/igl/copyleft/boolean/*.inl ./include/igl/copyleft/cgal/*.inl)
   target_sources(libigl_tests PRIVATE ${TEST_SRC_FILES} ${TEST_INC_FILES})
 
   target_link_libraries(libigl_tests PUBLIC igl::cgal)
-ENDIF()
+endif()
 
-IF(LIBIGL_WITH_TETGEN)
+if(LIBIGL_WITH_TETGEN)
   file(GLOB TEST_SRC_FILES ./include/igl/copyleft/tetgen/*.cpp)
   file(GLOB TEST_INC_FILES ./include/igl/copyleft/tetgen/*.h ./include/igl/copyleft/tetgen/*.inl)
   target_sources(libigl_tests PRIVATE ${TEST_SRC_FILES} ${TEST_INC_FILES})
 
   target_link_libraries(libigl_tests PUBLIC igl::tetgen)
-ENDIF()
+endif()
 
-IF(LIBIGL_WITH_COMISO)
+if(LIBIGL_WITH_COMISO)
   file(GLOB TEST_SRC_FILES ./include/igl/copyleft/comiso/*.cpp)
   file(GLOB TEST_INC_FILES ./include/igl/copyleft/comiso/*.h ./include/igl/copyleft/comiso/*.inl)
   target_sources(libigl_tests PRIVATE ${TEST_SRC_FILES} ${TEST_INC_FILES})
 
   target_link_libraries(libigl_tests PUBLIC igl::comiso)
-ENDIF()
+endif()
 
-IF(LIBIGL_WITH_EMBREE)
+if(LIBIGL_WITH_EMBREE)
   file(GLOB TEST_SRC_FILES ./include/igl/embree/*.cpp)
   file(GLOB TEST_INC_FILES ./include/igl/embree/*.h ./include/igl/embree/*.inl)
   target_sources(libigl_tests PRIVATE ${TEST_SRC_FILES} ${TEST_INC_FILES})
 
   target_link_libraries(libigl_tests PUBLIC igl::embree)
-ENDIF()
+endif()
 
 
 file(GLOB TEST_SRC_FILES ./include/igl/*.cpp)
