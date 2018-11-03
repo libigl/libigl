@@ -276,24 +276,16 @@ if(LIBIGL_WITH_EMBREE)
   endif()
 
   if(NOT TARGET embree)
+    # TODO: Should probably save/restore the CMAKE_CXX_FLAGS_*, since embree seems to be
+    # overriding them on Windows. But well... it works for now.
     igl_download_embree()
     add_subdirectory("${EMBREE_DIR}" "embree")
   endif()
 
-  # if(MSVC)
-  #   add_custom_target(Copy-Embree-DLL ALL # Adds a post-build event
-  #       COMMAND ${CMAKE_COMMAND} -E copy_if_different # which executes "cmake - E
-  #       $<TARGET_FILE:embree> # <--this is in-file
-  #       "${CMAKE_BINARY_DIR}" # <--this is out-file path
-  #       DEPENDS embree) # Execute after embree target has been built
-  # endif()
-
   compile_igl_module("embree")
   target_link_libraries(igl_embree ${IGL_SCOPE} embree)
   target_include_directories(igl_embree ${IGL_SCOPE} ${EMBREE_DIR}/include)
-  # if(NOT MSVC)
-  target_compile_definitions(igl_embree ${IGL_SCOPE} -DENABLE_STATIC_LIB)
-  # endif()
+  target_compile_definitions(igl_embree ${IGL_SCOPE} -DEMBREE_STATIC_LIB)
 
 endif()
 
