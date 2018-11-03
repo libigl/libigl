@@ -40,6 +40,12 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 ### conditionally compile certain modules depending on libraries found on the system
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake)
 
+### Enable testing before doing anything else
+if(LIBIGL_BUILD_TESTS)
+	include(CTest)
+	enable_testing()
+endif()
+
 ### Set compiler flags for building the tests on Windows with Visual Studio
 include(LibiglWindows)
 
@@ -51,8 +57,6 @@ if(LIBIGL_BUILD_TUTORIALS)
 endif()
 
 if(LIBIGL_BUILD_TESTS)
-	include(CTest)
-	enable_testing()
 	add_subdirectory(tests)
 endif()
 
