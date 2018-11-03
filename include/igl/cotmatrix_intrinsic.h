@@ -34,7 +34,7 @@ namespace igl
 }
 
 #ifndef IGL_STATIC_LIBRARY
-#  include "cotmatrix.cpp"
+#  include "cotmatrix_intrinsic.cpp"
 #endif
 
 #endif
