@@ -38,4 +38,3 @@ build_script:
 
 test_script:
   - ctest -C Debug --verbose
-  - .\Debug\libigl_tests.exe

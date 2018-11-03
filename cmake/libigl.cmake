@@ -265,17 +265,14 @@ endif()
 if(LIBIGL_WITH_EMBREE)
   set(EMBREE_DIR "${LIBIGL_EXTERNAL}/embree")
 
-  set(OLD_BUILD_TESTING ${BUILD_TESTING} CACHE BOOL "" FORCE)
-
+  set(EMBREE_TESTING_INTENSITY 0 CACHE INT "" FORCE)
   set(EMBREE_ISPC_SUPPORT OFF CACHE BOOL " " FORCE)
   set(EMBREE_TASKING_SYSTEM "INTERNAL" CACHE BOOL " " FORCE)
   set(EMBREE_TUTORIALS OFF CACHE BOOL " " FORCE)
   set(EMBREE_MAX_ISA NONE CACHE STRINGS " " FORCE)
-  set(BUILD_TESTING OFF CACHE BOOL " " FORCE)
 
-  # set(ENABLE_INSTALLER OFF CACHE BOOL " " FORCE)
   if(MSVC)
-    # set(EMBREE_STATIC_RUNTIME OFF CACHE BOOL " " FORCE)
+    set(EMBREE_STATIC_RUNTIME ON CACHE BOOL " " FORCE)
     set(EMBREE_STATIC_LIB OFF CACHE BOOL " " FORCE)
   else()
     set(EMBREE_STATIC_LIB ON CACHE BOOL " " FORCE)
@@ -286,22 +283,21 @@ if(LIBIGL_WITH_EMBREE)
     add_subdirectory("${EMBREE_DIR}" "embree")
   endif()
 
-  if(MSVC)
-    add_custom_target(Copy-Embree-DLL ALL # Adds a post-build event
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different # which executes "cmake - E
-        $<TARGET_FILE:embree> # <--this is in-file
-        "${CMAKE_BINARY_DIR}" # <--this is out-file path
-        DEPENDS embree) # Execute after embree target has been built
-  endif()
+  # if(MSVC)
+  #   add_custom_target(Copy-Embree-DLL ALL # Adds a post-build event
+  #       COMMAND ${CMAKE_COMMAND} -E copy_if_different # which executes "cmake - E
+  #       $<TARGET_FILE:embree> # <--this is in-file
+  #       "${CMAKE_BINARY_DIR}" # <--this is out-file path
+  #       DEPENDS embree) # Execute after embree target has been built
+  # endif()
 
   compile_igl_module("embree")
   target_link_libraries(igl_embree ${IGL_SCOPE} embree)
   target_include_directories(igl_embree ${IGL_SCOPE} ${EMBREE_DIR}/include)
-  if(NOT MSVC)
-    target_compile_definitions(igl_embree ${IGL_SCOPE} -DENABLE_STATIC_LIB)
-  endif()
+  # if(NOT MSVC)
+  target_compile_definitions(igl_embree ${IGL_SCOPE} -DENABLE_STATIC_LIB)
+  # endif()
 
-  set(BUILD_TESTING ${OLD_BUILD_TESTING} CACHE BOOL "" FORCE)
 endif()
 
 ################################################################################
