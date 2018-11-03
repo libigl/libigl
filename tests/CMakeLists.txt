@@ -4,7 +4,7 @@ project(libigl_tests)
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../cmake)
 
 ### Adding libIGL: choose the path to your local copy libIGL
-if(NOT TARGET igl_common)
+if(NOT TARGET igl::core)
   include(libigl)
 else()
   include(LibiglDownloadExternal)
@@ -14,24 +14,21 @@ endif()
 igl_download_test_data()
 set(IGL_TEST_DATA ${LIBIGL_EXTERNAL}/../tests/data)
 
-### Download Google unit test framework.
+### Download Catch2 unit test framework
 igl_download_catch2()
 list(APPEND CMAKE_MODULE_PATH ${LIBIGL_EXTERNAL}/catch2/contrib)
 
 
-
-
 # Add catch2
-add_library(catch INTERFACE)
-target_include_directories(catch SYSTEM INTERFACE ${LIBIGL_EXTERNAL}/catch2/single_include)
+add_subdirectory(${LIBIGL_EXTERNAL}/catch2 catch2)
 
 
 # Create test executable
 add_executable(libigl_tests main.cpp test_common.h)
-target_link_libraries(libigl_tests PUBLIC igl::core catch)
+target_link_libraries(libigl_tests PUBLIC igl::core Catch2::Catch2)
 target_include_directories(libigl_tests PUBLIC ${CMAKE_CURRENT_LIST_DIR})
 
-# Set TEST_DIR definition
+# Set DATA_DIR definition
 set(DATA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/data/")
 target_compile_definitions(libigl_tests PUBLIC -DLIBIGL_DATA_DIR="${IGL_TEST_DATA}")
 
@@ -78,17 +75,12 @@ if(LIBIGL_WITH_EMBREE)
   target_link_libraries(libigl_tests PUBLIC igl::embree)
 endif()
 
-
 file(GLOB TEST_SRC_FILES ./include/igl/*.cpp)
 file(GLOB TEST_INC_FILES ./include/igl/*.h ./include/igl/*.inl)
 target_sources(libigl_tests PRIVATE ${TEST_SRC_FILES} ${TEST_INC_FILES})
-
-
 
 
 # Register tests
 set(PARSE_CATCH_TESTS_ADD_TO_CONFIGURE_DEPENDS ON)
 include(Catch)
 catch_discover_tests(libigl_tests)
-
-
