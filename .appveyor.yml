@@ -9,7 +9,6 @@ branches:
 environment:
   BOOST_ROOT: C:/Libraries/boost_1_65_1
 install:
-  - git submodule update --init --recursive
   - cinstall: python
 build_script:
   - cd c:\projects\libigl
@@ -32,7 +31,8 @@ build_script:
   # Tutorials and tests
   - mkdir build
   - cd build
-  - cmake -DLIBIGL_BUILD_TESTS=OFF -DLIBIGL_BUILD_TUTORIALS=ON -DLIBIGL_BUILD_PYTHON=OFF -G "Visual Studio 15 2017 Win64" ../
+  - cmake -DLIBIGL_BUILD_TESTS=ON -DLIBIGL_WITH_COMISO=OFF -DLIBIGL_BUILD_TUTORIALS=ON -DLIBIGL_BUILD_PYTHON=OFF -G "Visual Studio 15 2017 Win64" ../
   - set MSBuildLogger="C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
   - set MSBuildOptions=/v:m /p:Configuration=Debug /logger:%MSBuildLogger%
   - msbuild %MSBuildOptions% libigl.sln
+  - ctest -C Debug --verbose

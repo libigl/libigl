@@ -431,7 +431,7 @@ const char *__doc_igl_covariance_scatter_matrix = R"igl_Qu8mg5v7(// Construct th
   //   CSM dim*#V/#F by dim*#V sparse matrix containing special laplacians along
   //     the diagonal so that when multiplied by V gives covariance matrix
   //     elements, can be used to speed up covariance matrix computation)igl_Qu8mg5v7";
-const char *__doc_igl_cross_field_missmatch = R"igl_Qu8mg5v7(// Inputs:
+const char *__doc_igl_cross_field_mismatch = R"igl_Qu8mg5v7(// Inputs:
   //   V         #V by 3 eigen Matrix of mesh vertex 3D positions
   //   F         #F by 3 eigen Matrix of face (quad) indices
   //   PD1       #F by 3 eigen Matrix of the first per face cross field vector
@@ -439,7 +439,7 @@ const char *__doc_igl_cross_field_missmatch = R"igl_Qu8mg5v7(// Inputs:
   //   isCombed  boolean, specifying whether the field is combed (i.e. matching has been precomputed.
   //             If not, the field is combed first.
   // Output:
-  //   Handle_MMatch    #F by 3 eigen Matrix containing the integer missmatch of the cross field
+  //   Handle_MMatch    #F by 3 eigen Matrix containing the integer mismatch of the cross field
   //                    across all face edges
   //)igl_Qu8mg5v7";
 const char *__doc_igl_cut_mesh_from_singularities = R"igl_Qu8mg5v7(// Given a mesh (V,F) and the integer mismatch of a cross field per edge
@@ -618,7 +618,7 @@ const char *__doc_igl_exact_geodesic = R"igl_Qu8mg5v7(
 const char *__doc_igl_find_cross_field_singularities = R"igl_Qu8mg5v7(// Inputs:
   //   V                #V by 3 eigen Matrix of mesh vertex 3D positions
   //   F                #F by 3 eigen Matrix of face (quad) indices
-  //   Handle_MMatch    #F by 3 eigen Matrix containing the integer missmatch of the cross field
+  //   Handle_MMatch    #F by 3 eigen Matrix containing the integer mismatch of the cross field
   //                    across all face edges
   // Output:
   //   isSingularity    #V by 1 boolean eigen Vector indicating the presence of a singularity on a vertex

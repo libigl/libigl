@@ -6,7 +6,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 
-#include "line_field_missmatch.h"
+#include "line_field_mismatch.h"
 
 #include <vector>
 #include <deque>
@@ -24,7 +24,7 @@
 
 namespace igl {
 template <typename DerivedV, typename DerivedF, typename DerivedO>
-class MissMatchCalculatorLine
+class MismatchCalculatorLine
 {
 public:
 
@@ -46,8 +46,8 @@ private:
 private:
 
     //compute the mismatch between 2 faces
-    inline int MissMatchByLine(const int f0,
-                               const int f1)
+    inline int mismatchByLine(const int f0,
+                              const int f1)
     {
         Eigen::Matrix<typename DerivedV::Scalar, 3, 1> dir0 = PD1.row(f0);
         Eigen::Matrix<typename DerivedV::Scalar, 3, 1> dir1 = PD1.row(f1);
@@ -81,7 +81,7 @@ private:
 
 public:
 
-    inline MissMatchCalculatorLine(const Eigen::PlainObjectBase<DerivedV> &_V,
+    inline MismatchCalculatorLine(const Eigen::PlainObjectBase<DerivedV> &_V,
                                const Eigen::PlainObjectBase<DerivedF> &_F,
                                const Eigen::PlainObjectBase<DerivedV> &_PD1,
                                const Eigen::PlainObjectBase<DerivedV> &_PD2
@@ -97,7 +97,7 @@ public:
         igl::triangle_triangle_adjacency(F,TT,TTi);
     }
 
-    inline void calculateMissmatchLine(Eigen::PlainObjectBase<DerivedO> &Handle_MMatch)
+    inline void calculateMismatchLine(Eigen::PlainObjectBase<DerivedO> &Handle_MMatch)
     {
         Handle_MMatch.setConstant(F.rows(),3,-1);
         for (unsigned int i=0;i<F.rows();i++)
@@ -107,7 +107,7 @@ public:
                 if (i==TT(i,j) || TT(i,j) == -1)
                     Handle_MMatch(i,j)=0;
                 else
-                    Handle_MMatch(i,j) = MissMatchByLine(i,TT(i,j));
+                    Handle_MMatch(i,j) = mismatchByLine(i, TT(i, j));
             }
         }
     }
@@ -117,11 +117,11 @@ public:
 
 
 template <typename DerivedV, typename DerivedF, typename DerivedO>
-IGL_INLINE void igl::line_field_missmatch(const Eigen::PlainObjectBase<DerivedV> &V,
-                                const Eigen::PlainObjectBase<DerivedF> &F,
-                                const Eigen::PlainObjectBase<DerivedV> &PD1,
-                                const bool isCombed,
-                                Eigen::PlainObjectBase<DerivedO> &missmatch)
+IGL_INLINE void igl::line_field_mismatch(const Eigen::PlainObjectBase<DerivedV> &V,
+                                         const Eigen::PlainObjectBase<DerivedF> &F,
+                                         const Eigen::PlainObjectBase<DerivedV> &PD1,
+                                         const bool isCombed,
+                                         Eigen::PlainObjectBase<DerivedO> &mismatch)
 {
     DerivedV PD1_combed;
     DerivedV PD2_combed;
@@ -135,8 +135,8 @@ IGL_INLINE void igl::line_field_missmatch(const Eigen::PlainObjectBase<DerivedV>
     Eigen::MatrixXd B1,B2,B3;
     igl::local_basis(V,F,B1,B2,B3);
     PD2_combed = igl::rotate_vectors(PD1_combed, Eigen::VectorXd::Constant(1,igl::PI/2), B1, B2);
-    igl::MissMatchCalculatorLine<DerivedV, DerivedF, DerivedO> sf(V, F, PD1_combed, PD2_combed);
-    sf.calculateMissmatchLine(missmatch);
+    igl::MismatchCalculatorLine<DerivedV, DerivedF, DerivedO> sf(V, F, PD1_combed, PD2_combed);
+    sf.calculateMismatchLine(mismatch);
 }
 
 #ifdef IGL_STATIC_LIBRARY
