@@ -13,6 +13,11 @@ set(Python_ADDITIONAL_VERSIONS 3.4 3.5 3.6)
 find_package(PythonInterp REQUIRED)
 find_package(PythonLibs REQUIRED)
 
+# Force setup.py to find igl headers and Eigen under external
+set(EIGEN3_INCLUDE_DIR "${CMAKE_CURRENT_LIST_DIR}/../external/eigen")
+include_directories(${EIGEN3_INCLUDE_DIR})
+set(IGL_INCLUDE_DIR "${CMAKE_CURRENT_LIST_DIR}/../include")
+include_directories(${IGL_INCLUDE_DIR})
 
 string(TOUPPER "${CMAKE_BUILD_TYPE}" U_CMAKE_BUILD_TYPE)
 if(UNIX)
@@ -23,10 +28,10 @@ if(UNIX)
   endif()
 endif()
 
-## libigl		
-if(NOT TARGET igl::core)		
-  list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/../cmake")		
-  include(libigl)		
+## libigl
+if(NOT TARGET igl::core)
+  list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/../cmake")
+  include(libigl)
 endif()
 
 ## include pybind
@@ -152,4 +157,3 @@ elseif(UNIX)
     endif()
   endif()
 endif()
-
