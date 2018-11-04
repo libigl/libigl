@@ -9,7 +9,7 @@
 #include <igl/unique_edge_map.h>
 #include <igl/is_edge_manifold.h>
 
-namespace mesh_boolean_test {
+namespace {
 
     template<typename DerivedF>
     void assert_no_exterior_edges(
