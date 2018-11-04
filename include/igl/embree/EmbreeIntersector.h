@@ -432,6 +432,7 @@ inline bool igl::embree::EmbreeIntersector::intersectBeam(
   const float eps= 1e-5;
 
   Eigen::RowVector3f up(0,1,0);
+  if (direction.cross(up).norm() < eps) up = Eigen::RowVector3f(1,0,0);
   Eigen::RowVector3f offset = direction.cross(up).normalized();
 
   Eigen::Matrix3f rot = Eigen::AngleAxis<float>(2*3.14159265358979/samples,direction).toRotationMatrix();

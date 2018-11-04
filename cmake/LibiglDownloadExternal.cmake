@@ -133,11 +133,11 @@ function(igl_download_triangle)
 	)
 endfunction()
 
-## Google test
+## Catch2
 function(igl_download_catch2)
 	igl_download_project(catch2
 		GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-		GIT_TAG        1faccd601d904a951142d8fba82914a8325b764e
+		GIT_TAG        03d122a35c3f5c398c43095a87bc82ed44642516
 	)
 endfunction()
 
