@@ -187,7 +187,7 @@ TEST_CASE("copyleft_cgal_order_facets_around_edges: Debug2", "[igl/copyleft/cgal
 }
 
 TEST_CASE("copyleft_cgal_order_facets_around_edges: NormalSensitivity", "[igl/copyleft/cgal]")
-
+{
     // This example shows that epsilon difference in normal vectors could
     // results in very different ordering of facets.
 
