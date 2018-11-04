@@ -13,6 +13,11 @@ set(Python_ADDITIONAL_VERSIONS 3.4 3.5 3.6)
 find_package(PythonInterp REQUIRED)
 find_package(PythonLibs REQUIRED)
 
+## libigl
+if(NOT TARGET igl::core)
+  list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/../cmake")
+  include(libigl)
+endif()
 
 string(TOUPPER "${CMAKE_BUILD_TYPE}" U_CMAKE_BUILD_TYPE)
 if(UNIX)
@@ -21,12 +26,6 @@ if(UNIX)
   if(NOT ${U_CMAKE_BUILD_TYPE} MATCHES DEBUG)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden -flto")
   endif()
-endif()
-
-## libigl		
-if(NOT TARGET igl::core)		
-  list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/../cmake")		
-  include(libigl)		
 endif()
 
 ## include pybind

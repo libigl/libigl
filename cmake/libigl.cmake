@@ -78,10 +78,10 @@ target_compile_features(igl_common INTERFACE ${CXX11_FEATURES})
 if(MSVC)
   # Enable parallel compilation for Visual Studio
   target_compile_options(igl_common INTERFACE /MP /bigobj)
-  if(LIBIGL_WITH_CGAL)
-    target_compile_options(igl_common INTERFACE "/MD$<$<CONFIG:Debug>:d>")
-  endif()
 endif()
+
+### Set compiler flags for building the tests on Windows with Visual Studio
+include(LibiglWindows)
 
 if(BUILD_SHARED_LIBS)
   # Generate position independent code
@@ -286,7 +286,6 @@ if(LIBIGL_WITH_EMBREE)
   target_link_libraries(igl_embree ${IGL_SCOPE} embree)
   target_include_directories(igl_embree ${IGL_SCOPE} ${EMBREE_DIR}/include)
   target_compile_definitions(igl_embree ${IGL_SCOPE} -DEMBREE_STATIC_LIB)
-
 endif()
 
 ################################################################################
