@@ -78,6 +78,7 @@ target_compile_features(igl_common INTERFACE ${CXX11_FEATURES})
 if(MSVC)
   # Enable parallel compilation for Visual Studio
   target_compile_options(igl_common INTERFACE /MP /bigobj)
+  target_compile_definitions(igl_common INTERFACE -DNOMINMAX)
 endif()
 
 ### Set compiler flags for building the tests on Windows with Visual Studio

@@ -12,10 +12,10 @@
 
 template<typename Scalar>
 IGL_INLINE short igl::copyleft::cgal::incircle(
-    const Scalar pa[2],
-    const Scalar pb[2],
-    const Scalar pc[2],
-    const Scalar pd[2])
+    const Scalar *pa,
+    const Scalar *pb,
+    const Scalar *pc,
+    const Scalar *pd)
 {
   typedef CGAL::Exact_predicates_exact_constructions_kernel Epeck;
   typedef CGAL::Exact_predicates_inexact_constructions_kernel Epick;
