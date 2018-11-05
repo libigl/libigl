@@ -3,8 +3,6 @@
 #include <igl/copyleft/cgal/points_inside_component.h>
 #include <limits>
 
-namespace PointInsideComponentHelper {
-
 TEST_CASE("PointInsideComponent: simple", "[igl/copyleft/cgal]")
 {
     Eigen::MatrixXd V1;
