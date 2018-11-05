@@ -77,7 +77,7 @@ endfunction()
 function(igl_download_glfw)
 	igl_download_project(glfw
 		GIT_REPOSITORY https://github.com/glfw/glfw.git
-		GIT_TAG        5afcd0981bf2fe9b9550f24ba298857aac6c35c2
+		GIT_TAG        53c8c72c676ca97c10aedfe3d0eb4271c5b23dba
 	)
 endfunction()
 
