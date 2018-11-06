@@ -1433,24 +1433,24 @@ IGL_INLINE bool igl::copyleft::comiso::MIQ_class<DerivedV, DerivedF, DerivedU>::
 
 template <typename DerivedV, typename DerivedF, typename DerivedU>
 IGL_INLINE void igl::copyleft::comiso::miq(
-        const Eigen::PlainObjectBase<DerivedV> &V,
-        const Eigen::PlainObjectBase<DerivedF> &F,
-        const Eigen::PlainObjectBase<DerivedV> &PD1_combed,
-        const Eigen::PlainObjectBase<DerivedV> &PD2_combed,
-        const Eigen::Matrix<int, Eigen::Dynamic, 3> &mismatch,
-        const Eigen::Matrix<int, Eigen::Dynamic, 1> &singular,
-        const Eigen::Matrix<int, Eigen::Dynamic, 3> &seams,
-        Eigen::PlainObjectBase<DerivedU> &UV,
-        Eigen::PlainObjectBase<DerivedF> &FUV,
-        double gradientSize,
-        double stiffness,
-        bool directRound,
-        unsigned int iter,
-        unsigned int localIter,
-        bool doRound,
-        bool singularityRound,
-        const std::vector<int> &roundVertices,
-        const std::vector<std::vector<int>> &hardFeatures)
+  const Eigen::PlainObjectBase<DerivedV> &V,
+  const Eigen::PlainObjectBase<DerivedF> &F,
+  const Eigen::PlainObjectBase<DerivedV> &PD1_combed,
+  const Eigen::PlainObjectBase<DerivedV> &PD2_combed,
+  const Eigen::Matrix<int, Eigen::Dynamic, 3> &mismatch,
+  const Eigen::Matrix<int, Eigen::Dynamic, 1> &singular,
+  const Eigen::Matrix<int, Eigen::Dynamic, 3> &seams,
+  Eigen::PlainObjectBase<DerivedU> &UV,
+  Eigen::PlainObjectBase<DerivedF> &FUV,
+  double gradientSize,
+  double stiffness,
+  bool directRound,
+  unsigned int iter,
+  unsigned int localIter,
+  bool doRound,
+  bool singularityRound,
+  const std::vector<int> &roundVertices,
+  const std::vector<std::vector<int>> &hardFeatures)
 {
   gradientSize = gradientSize/(V.colwise().maxCoeff()-V.colwise().minCoeff()).norm();
 
@@ -1478,21 +1478,21 @@ IGL_INLINE void igl::copyleft::comiso::miq(
 
 template <typename DerivedV, typename DerivedF, typename DerivedU>
 IGL_INLINE void igl::copyleft::comiso::miq(
-        const Eigen::PlainObjectBase<DerivedV> &V,
-        const Eigen::PlainObjectBase<DerivedF> &F,
-        const Eigen::PlainObjectBase<DerivedV> &PD1,
-        const Eigen::PlainObjectBase<DerivedV> &PD2,
-        Eigen::PlainObjectBase<DerivedU> &UV,
-        Eigen::PlainObjectBase<DerivedF> &FUV,
-        double gradientSize,
-        double stiffness,
-        bool directRound,
-        unsigned int iter,
-        unsigned int localIter,
-        bool doRound,
-        bool singularityRound,
-        const std::vector<int> &roundVertices,
-        const std::vector<std::vector<int>> &hardFeatures)
+  const Eigen::PlainObjectBase<DerivedV> &V,
+  const Eigen::PlainObjectBase<DerivedF> &F,
+  const Eigen::PlainObjectBase<DerivedV> &PD1,
+  const Eigen::PlainObjectBase<DerivedV> &PD2,
+  Eigen::PlainObjectBase<DerivedU> &UV,
+  Eigen::PlainObjectBase<DerivedF> &FUV,
+  double gradientSize,
+  double stiffness,
+  bool directRound,
+  unsigned int iter,
+  unsigned int localIter,
+  bool doRound,
+  bool singularityRound,
+  const std::vector<int> &roundVertices,
+  const std::vector<std::vector<int>> &hardFeatures)
 {
 
   DerivedV BIS1, BIS2;
