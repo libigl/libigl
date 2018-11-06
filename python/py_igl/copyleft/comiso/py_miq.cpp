@@ -55,7 +55,7 @@ m.def("miq", []
   std::vector<int> roundVertices;
   std::vector<std::vector<int> > hardFeatures;
 
-  igl::copyleft::comiso::miq(V,F,PD1_combed,PD2_combed, mismatch, singular, seams, UV, FUV, gradientSize, stiffness, directRound, iter, localIter, doRound, singularityRound, roundVertices, hardFeatures);
+  igl::copyleft::comiso::miq(V, F, PD1_combed, PD2_combed, mismatch, singular, seams, UV, FUV, gradientSize, stiffness, directRound, iter, localIter, doRound, singularityRound, roundVertices, hardFeatures);
 }, __doc_igl_copyleft_comiso_miq,
 py::arg("V"), py::arg("F"), py::arg("PD1_combed"), py::arg("PD2_combed"),
 py::arg("mismatch"), py::arg("singular"), py::arg("seams"),
