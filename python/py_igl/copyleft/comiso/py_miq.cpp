@@ -22,8 +22,8 @@ m.def("miq", []
   bool singularityRound
 )
 {
-  std::vector<int> round_vertices;
-  std::vector<std::vector<int> > hard_features;
+  std::vector<int> roundVertices;
+  std::vector<std::vector<int> > hardFeatures;
 
   igl::copyleft::comiso::miq(V, F, PD1, PD2, UV, FUV, scale, stiffness, directRound, iter, localIter, doRound, singularityRound, roundVertices, hardFeatures);
 }, __doc_igl_copyleft_comiso_miq,
