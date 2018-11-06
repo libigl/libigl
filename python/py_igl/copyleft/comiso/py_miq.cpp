@@ -18,13 +18,14 @@ m.def("miq", []
   bool directRound,
   int iter,
   int localIter,
-  bool doRound,bool singularityRound
+  bool doRound,
+  bool singularityRound
 )
 {
   std::vector<int> round_vertices;
   std::vector<std::vector<int> > hard_features;
 
-  igl::copyleft::comiso::miq(V,F,PD1,PD2,UV,FUV,scale,stiffness,direct_round,iter,local_iter,DoRound, SingularityRound, round_vertices, hard_features);
+  igl::copyleft::comiso::miq(V, F, PD1, PD2, UV, FUV, scale, stiffness, directRound, iter, localIter, doRound, singularityRound, roundVertices, hardFeatures);
 }, __doc_igl_copyleft_comiso_miq,
 py::arg("V"), py::arg("F"), py::arg("PD1"), py::arg("PD2"), py::arg("UV"), py::arg("FUV"), py::arg("scale") = 30.0, py::arg("stiffness") = 5.0, py::arg("directRound") = false, py::arg("iter") = 5, py::arg("localIter") = 5, py::arg("doRound") = true, py::arg("singularityRound") = true
 );
@@ -44,7 +45,9 @@ m.def("miq", []
   double stiffness,
   bool directRound,
   int iter,
-  int localIter, bool doRound, bool singularityRound
+  int localIter,
+  bool doRound,
+  bool singularityRound
 )
 {
   assert_is_VectorX("Singular",Singular);
@@ -52,7 +55,7 @@ m.def("miq", []
   std::vector<int> roundVertices;
   std::vector<std::vector<int> > hardFeatures;
 
-  igl::copyleft::comiso::miq(V,F,PD1_combed,PD2_combed,MMatch,Singular,Seams,UV,FUV,GradientSize,Stiffness,DirectRound,iter,localIter,DoRound, SingularityRound, roundVertices, hardFeatures);
+  igl::copyleft::comiso::miq(V,F,PD1_combed,PD2_combed, mismatch, singular, seams, UV, FUV, gradientSize, stiffness, directRound, iter, localIter, doRound, singularityRound, roundVertices, hardFeatures);
 }, __doc_igl_copyleft_comiso_miq,
 py::arg("V"), py::arg("F"), py::arg("PD1_combed"), py::arg("PD2_combed"),
 py::arg("mismatch"), py::arg("singular"), py::arg("seams"),
