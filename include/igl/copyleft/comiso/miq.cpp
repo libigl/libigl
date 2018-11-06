@@ -70,9 +70,9 @@ namespace comiso {
       num_integer_cuts = 0;
     }
     ////number of vertices variables
-    int num_vert_variables;
+    unsigned int num_vert_variables;
     ///num of integer for cuts
-    int num_integer_cuts;
+    unsigned int num_integer_cuts;
     ///this are used for drawing purposes
     std::vector<SeamInfo> edgeSeamInfo;
   };
@@ -197,28 +197,28 @@ namespace comiso {
 
     ////REAL PART
     ///number of fixed vertex
-    int n_fixed_vars;
+    unsigned int n_fixed_vars;
 
     ///the number of REAL variables for vertices
-    int n_vert_vars;
+    unsigned int n_vert_vars;
 
     ///total number of variables of the system,
     ///do not consider constraints, but consider integer vars
-    int num_total_vars;
+    unsigned int num_total_vars;
 
     //////INTEGER PART
     ///the total number of integer variables
-    int n_integer_vars;
+    unsigned int n_integer_vars;
 
     ///CONSTRAINT PART
     ///number of cuts constraints
-    int num_cut_constraint;
+    unsigned int num_cut_constraint;
 
     // number of user-defined constraints
-    int num_userdefined_constraint;
+    unsigned int num_userdefined_constraint;
 
     ///total number of constraints equations
-    int num_constraint_equations;
+    unsigned int num_constraint_equations;
 
     ///vector of blocked vertices
     std::vector<int> Hard_constraints;
@@ -480,11 +480,11 @@ IGL_INLINE std::vector<std::vector<typename igl::copyleft::comiso::VertexIndexin
   for (auto element : startVertexIndices)
   {
     auto startVertexNeighbors = &VVSeam[element];
-    const int neighborSize = startVertexNeighbors->size();
+    size_t neighborSize = startVertexNeighbors->size();
 
     // explore every seam to which this vertex is a start vertex
     // note: a vertex can never be a start vertex and a regular vertex simultaneously
-    for (unsigned int j=0;j<neighborSize;j++)
+    for (size_t j = 0; j < neighborSize; j++)
     {
       std::vector<VertexInfo> thisSeam; // temporary container
 
@@ -779,7 +779,7 @@ IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::fixBlo
 {
   int offset_row = num_cut_constraint*2;
 
-  int constr_num = 0;
+  unsigned int constr_num = 0;
   for (unsigned int i=0;i<Hard_constraints.size();i++)
   {
     int v = Hard_constraints[i];
@@ -900,19 +900,19 @@ IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::findSi
   ///initialize matrix size
 
   if (DEBUGPRINT)     printf("\n*** SYSTEM VARIABLES *** \n");
-  if (DEBUGPRINT)     printf("* NUM REAL VERTEX VARIABLES %d \n",n_vert_vars);
+  if (DEBUGPRINT)     printf("* NUM REAL VERTEX VARIABLES %ud \n",n_vert_vars);
 
   if (DEBUGPRINT)     printf("\n*** INTEGER VARIABLES *** \n");
-  if (DEBUGPRINT)     printf("* NUM INTEGER VARIABLES %d \n",n_integer_vars);
+  if (DEBUGPRINT)     printf("* NUM INTEGER VARIABLES %ud \n",n_integer_vars);
 
   if (DEBUGPRINT)     printf("\n*** CONSTRAINTS *** \n ");
-  if (DEBUGPRINT)     printf("* NUM FIXED CONSTRAINTS %d\n",n_fixed_vars);
-  if (DEBUGPRINT)     printf("* NUM CUTS CONSTRAINTS %d\n",num_cut_constraint);
-  if (DEBUGPRINT)     printf("* NUM USER DEFINED CONSTRAINTS %d\n",num_userdefined_constraint);
+  if (DEBUGPRINT)     printf("* NUM FIXED CONSTRAINTS %ud\n",n_fixed_vars);
+  if (DEBUGPRINT)     printf("* NUM CUTS CONSTRAINTS %ud\n",num_cut_constraint);
+  if (DEBUGPRINT)     printf("* NUM USER DEFINED CONSTRAINTS %ud\n",num_userdefined_constraint);
 
   if (DEBUGPRINT)     printf("\n*** TOTAL SIZE *** \n");
-  if (DEBUGPRINT)     printf("* TOTAL VARIABLE SIZE (WITH INTEGER TRASL) %d \n",num_total_vars);
-  if (DEBUGPRINT)     printf("* TOTAL CONSTRAINTS %d \n",num_constraint_equations);
+  if (DEBUGPRINT)     printf("* TOTAL VARIABLE SIZE (WITH INTEGER TRASL) %ud \n",num_total_vars);
+  if (DEBUGPRINT)     printf("* TOTAL CONSTRAINTS %ud \n",num_constraint_equations);
 }
 
 template <typename DerivedV, typename DerivedF>
@@ -923,10 +923,10 @@ IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::alloca
   rhs.resize(n_vert_vars * 2);
   constraints_rhs.resize(num_constraint_equations);
 
-  printf("\n INITIALIZED SPARSE MATRIX OF %d x %d \n",n_vert_vars*2, n_vert_vars*2);
-  printf("\n INITIALIZED SPARSE MATRIX OF %d x %d \n",num_constraint_equations, num_total_vars);
-  printf("\n INITIALIZED VECTOR OF %d x 1 \n",n_vert_vars*2);
-  printf("\n INITIALIZED VECTOR OF %d x 1 \n",num_constraint_equations);
+  printf("\n INITIALIZED SPARSE MATRIX OF %ud x %ud \n",n_vert_vars*2, n_vert_vars*2);
+  printf("\n INITIALIZED SPARSE MATRIX OF %ud x %ud \n",num_constraint_equations, num_total_vars);
+  printf("\n INITIALIZED VECTOR OF %ud x 1 \n",n_vert_vars*2);
+  printf("\n INITIALIZED VECTOR OF %ud x 1 \n",num_constraint_equations);
 }
 
 ///intitialize the whole matrix
@@ -960,7 +960,7 @@ IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::mapCoo
 
   }
 
-  for(int i = 0; i < Vcut.rows(); i++){
+  for(unsigned int i = 0; i < Vcut.rows(); i++){
     UV_out(i,0) = X[i*2];
     UV_out(i,1) = X[i*2+1];
   }
@@ -1030,9 +1030,9 @@ IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::buildU
 
   assert(num_userdefined_constraint == userdefined_constraints.size());
 
-  for (int i=0; i<num_userdefined_constraint; i++)
+  for (unsigned int i = 0; i < num_userdefined_constraint; i++)
   {
-    for (int j=0; j<userdefined_constraints[i].size()-1; ++j)
+    for (unsigned int j = 0; j < userdefined_constraints[i].size()-1; ++j)
     {
       Constraints.coeffRef(constr_row, j) = userdefined_constraints[i][j];
     }
@@ -1104,7 +1104,7 @@ IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::mixedI
     printf("\n SET RHS \n");
 
   // copy RHS
-  for(int i = 0; i < n_vert_vars * 2; ++i)
+  for(unsigned int i = 0; i < n_vert_vars * 2; ++i)
   {
     B[i] = rhs[i] * coneGridRes;
   }
