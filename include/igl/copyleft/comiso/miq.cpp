@@ -51,13 +51,13 @@ namespace comiso {
   struct SeamInfo
   {
     int v0,v0p;
-    int integerVar;
+    unsigned int integerVar;
     int mismatch;
 
     IGL_INLINE SeamInfo(int _v0,
                         int _v0p,
                         int _mismatch,
-                        int _integerVar);
+                        unsigned int _integerVar);
 
     IGL_INLINE SeamInfo(const SeamInfo &S1);
   };
@@ -149,7 +149,7 @@ namespace comiso {
                                  bool doRound = true,
                                  bool singularityRound = true,
                                  const std::vector<int> &roundVertices = std::vector<int>(),
-                                 std::vector<std::vector<int> > hardFeatures = std::vector<std::vector<int> >());
+                                 const std::vector<std::vector<int>> &hardFeatures = std::vector<std::vector<int> >());
 
     IGL_INLINE PoissonSolver(const Eigen::PlainObjectBase<DerivedV> &_V,
                              const Eigen::PlainObjectBase<DerivedF> &_F,
@@ -363,7 +363,7 @@ namespace comiso {
 IGL_INLINE igl::copyleft::comiso::SeamInfo::SeamInfo(int _v0,
                                                      int _v0p,
                                                      int _mismatch,
-                                                     int _integerVar)
+                                                     unsigned int _integerVar)
 {
   v0=_v0;
   v0p=_v0p;
@@ -491,7 +491,6 @@ IGL_INLINE std::vector<std::vector<typename igl::copyleft::comiso::VertexIndexin
       // Create vertexInfo struct for start vertex
       VertexInfo startVertex = VertexInfo(element, -1, -1, -1, -1);// -1 values are arbitrary (will never be used)
       VertexInfo currentVertex = startVertex;
-      VertexInfo prevVertex = startVertex;
       // Add start vertex to the seam
       thisSeam.push_back(currentVertex);
 
@@ -500,6 +499,8 @@ IGL_INLINE std::vector<std::vector<typename igl::copyleft::comiso::VertexIndexin
       auto nextVertex = currentVertexNeighbors->front();
       currentVertexNeighbors->pop_front();
 
+      // bogus initialization due to lack of def. constructor
+      VertexInfo prevVertex = startVertex;
       while (true)
       {
         // move to the next vertex
@@ -535,7 +536,7 @@ IGL_INLINE void igl::copyleft::comiso::VertexIndexing<DerivedV, DerivedF>::initS
 {
   auto verticesPerSeam = getVerticesPerSeam();
   systemInfo.edgeSeamInfo.clear();
-  int integerVar = 0;
+  unsigned int integerVar = 0;
   // Loop over each seam
   for(auto seam : verticesPerSeam){
     //choose initial side of the seam such that the start vertex corresponds to Fcut(f, k) and the end vertex corresponds to Fcut(f, (k+1)%3) and not vice versa.
@@ -605,7 +606,7 @@ IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::solveP
                                                                                        bool doRound,
                                                                                        bool singularityRound,
                                                                                        const std::vector<int> &roundVertices,
-                                                                                       std::vector<std::vector<int> > hardFeatures)
+                                                                                       const std::vector<std::vector<int>> &hardFeatures)
 {
   Handle_Stiffness = stiffness;
 
@@ -616,8 +617,10 @@ IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::solveP
 
   clearUserConstraint();
   // copy the user constraints number
-  for (auto element : hardFeatures)
+  for (const auto & element : hardFeatures)
+  {
     addSharpEdgeConstraint(element[0], element[1]);
+  }
 
   ///Initializing Matrix
   clock_t t0 = clock();
@@ -689,7 +692,6 @@ PD2(_PD2),
 singular(_singular),
 systemInfo(_systemInfo)
 {
-
   n_fixed_vars = 0;
   n_vert_vars = 0;
   num_total_vars = 0;
@@ -990,7 +992,7 @@ IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::buildS
     std::complex<double> rot = getRotationComplex(interval);
 
     ///get the integer variable
-    int integerVar = n_vert_vars + systemInfo.edgeSeamInfo[i].integerVar;
+    unsigned int integerVar = n_vert_vars + systemInfo.edgeSeamInfo[i].integerVar;
 
     if (integer_rounding)
     {
@@ -1053,7 +1055,8 @@ IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::mixedI
     printf("\n ALLOCATED X \n");
 
   ///variables part
-  int sizeMatrix = (n_vert_vars+n_integer_vars)*2;
+  const int sizeMatrix = (n_vert_vars + n_integer_vars) * 2;
+  const int scalarSize = n_vert_vars * 2;
 
   ///matrix A
   gmm::col_matrix< gmm::wsvector< double > > A(sizeMatrix,sizeMatrix); // lhs matrix variables
@@ -1093,7 +1096,7 @@ IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::mixedI
 
   ///add penalization term for integer variables
   double penalization = 0.000001;
-  int offline_index = n_vert_vars * 2;
+  int offline_index = scalarSize;
   for(unsigned int i = 0; i < n_integer_vars*2; ++i)
   {
     int index=offline_index+i;
@@ -1104,7 +1107,7 @@ IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::mixedI
     printf("\n SET RHS \n");
 
   // copy RHS
-  for(unsigned int i = 0; i < n_vert_vars * 2; ++i)
+  for(unsigned int i = 0; i < scalarSize; ++i)
   {
     B[i] = rhs[i] * coneGridRes;
   }
@@ -1449,8 +1452,8 @@ IGL_INLINE void igl::copyleft::comiso::miq(
         unsigned int localIter,
         bool doRound,
         bool singularityRound,
-        std::vector<int> roundVertices,
-        std::vector<std::vector<int> > hardFeatures)
+        const std::vector<int> &roundVertices,
+        const std::vector<std::vector<int>> &hardFeatures)
 {
   gradientSize = gradientSize/(V.colwise().maxCoeff()-V.colwise().minCoeff()).norm();
 
@@ -1491,8 +1494,8 @@ IGL_INLINE void igl::copyleft::comiso::miq(
         unsigned int localIter,
         bool doRound,
         bool singularityRound,
-        std::vector<int> roundVertices,
-        std::vector<std::vector<int> > hardFeatures)
+        const std::vector<int> &roundVertices,
+        const std::vector<std::vector<int>> &hardFeatures)
 {
 
   DerivedV BIS1, BIS2;
@@ -1535,7 +1538,7 @@ IGL_INLINE void igl::copyleft::comiso::miq(
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instantiation
-template void igl::copyleft::comiso::miq<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const &, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const &, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const &, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const &, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > &, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > &, double, double, bool, unsigned int, unsigned int, bool, bool, std::vector<int, std::allocator<int> >, std::vector<std::vector<int, std::allocator<int> >, std::allocator<std::vector<int, std::allocator<int> > > >);
-template void igl::copyleft::comiso::miq<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const &, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const &, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const &, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const &, Eigen::Matrix<int, -1, 3, 0, -1, 3> const &, Eigen::Matrix<int, -1, 1, 0, -1, 1> const &, Eigen::Matrix<int, -1, 3, 0, -1, 3> const &, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > &, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > &, double, double, bool, unsigned int, unsigned int, bool, bool, std::vector<int, std::allocator<int> >, std::vector<std::vector<int, std::allocator<int> >, std::allocator<std::vector<int, std::allocator<int> > > >);
-template void igl::copyleft::comiso::miq<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const &, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const &, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const &, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const &, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > &, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > &, double, double, bool, unsigned int, unsigned int, bool, bool, std::vector<int, std::allocator<int> >, std::vector<std::vector<int, std::allocator<int> >, std::allocator<std::vector<int, std::allocator<int> > > >);
+template void igl::copyleft::comiso::miq<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const &, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const &, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const &, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const &, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > &, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > &, double, double, bool, unsigned int, unsigned int, bool, bool, const std::vector<int> &, const std::vector<std::vector<int>> &);
+template void igl::copyleft::comiso::miq<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const &, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const &, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const &, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const &, Eigen::Matrix<int, -1, 3, 0, -1, 3> const &, Eigen::Matrix<int, -1, 1, 0, -1, 1> const &, Eigen::Matrix<int, -1, 3, 0, -1, 3> const &, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > &, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > &, double, double, bool, unsigned int, unsigned int, bool, bool, const std::vector<int> &, const std::vector<std::vector<int>> &);
+template void igl::copyleft::comiso::miq<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const &, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const &, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const &, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const &, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > &, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > &, double, double, bool, unsigned int, unsigned int, bool, bool, const std::vector<int> &, const std::vector<std::vector<int>> &);
 #endif

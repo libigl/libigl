@@ -63,8 +63,8 @@ namespace igl
             unsigned int localIter = 5,
             bool doRound = true,
             bool singularityRound = true,
-            std::vector<int> roundVertices = std::vector<int>(),
-            std::vector<std::vector<int> > hardFeatures = std::vector<std::vector<int> >());
+            const std::vector<int> &roundVertices = std::vector<int>(),
+            const std::vector<std::vector<int>> &hardFeatures = std::vector<std::vector<int> >());
 
     // Helper function that allows to directly provided pre-combed bisectors for an already cut mesh
 
@@ -95,24 +95,25 @@ namespace igl
     // FUV                #FUV by 3 list of face indices in UV
     //
     template <typename DerivedV, typename DerivedF, typename DerivedU>
-    IGL_INLINE void miq(const Eigen::PlainObjectBase<DerivedV> &V,
-                        const Eigen::PlainObjectBase<DerivedF> &F,
-                        const Eigen::PlainObjectBase<DerivedV> &PD1_combed,
-                        const Eigen::PlainObjectBase<DerivedV> &PD2_combed,
-                        const Eigen::Matrix<int, Eigen::Dynamic, 3> &mismatch,
-                        const Eigen::Matrix<int, Eigen::Dynamic, 1> &singular,
-                        const Eigen::Matrix<int, Eigen::Dynamic, 3> &seams,
-                        Eigen::PlainObjectBase<DerivedU> &UV,
-                        Eigen::PlainObjectBase<DerivedF> &FUV,
-                        double gradientSize = 30.0,
-                        double stiffness = 5.0,
-                        bool directRound = false,
-                        unsigned int iter = 5,
-                        unsigned int localIter = 5,
-                        bool doRound = true,
-                        bool singularityRound = true,
-                        std::vector<int> roundVertices = std::vector<int>(),
-                        std::vector<std::vector<int> > hardFeatures = std::vector<std::vector<int> >());
+    IGL_INLINE void miq(
+            const Eigen::PlainObjectBase<DerivedV> &V,
+            const Eigen::PlainObjectBase<DerivedF> &F,
+            const Eigen::PlainObjectBase<DerivedV> &PD1_combed,
+            const Eigen::PlainObjectBase<DerivedV> &PD2_combed,
+            const Eigen::Matrix<int, Eigen::Dynamic, 3> &mismatch,
+            const Eigen::Matrix<int, Eigen::Dynamic, 1> &singular,
+            const Eigen::Matrix<int, Eigen::Dynamic, 3> &seams,
+            Eigen::PlainObjectBase<DerivedU> &UV,
+            Eigen::PlainObjectBase<DerivedF> &FUV,
+            double gradientSize = 30.0,
+            double stiffness = 5.0,
+            bool directRound = false,
+            unsigned int iter = 5,
+            unsigned int localIter = 5,
+            bool doRound = true,
+            bool singularityRound = true,
+            const std::vector<int> &roundVertices = std::vector<int>(),
+            const std::vector<std::vector<int>> &hardFeatures = std::vector<std::vector<int> >());
   };
 };
 };
