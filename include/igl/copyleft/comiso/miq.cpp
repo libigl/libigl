@@ -1025,10 +1025,7 @@ template <typename DerivedV, typename DerivedF>
 IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::buildUserDefinedConstraints()
 {
   /// the user defined constraints are at the end
-  int offset_row = num_cut_constraint*2 + n_fixed_vars*2;
-
-  ///current constraint row
-  int constr_row = offset_row;
+  unsigned int constr_row = num_cut_constraint*2 + n_fixed_vars*2;
 
   assert(num_userdefined_constraint == userdefined_constraints.size());
 
