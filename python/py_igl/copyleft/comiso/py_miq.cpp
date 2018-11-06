@@ -50,7 +50,7 @@ m.def("miq", []
   bool singularityRound
 )
 {
-  assert_is_VectorX("Singular",Singular);
+  assert_is_VectorX("singular",singular);
 
   std::vector<int> roundVertices;
   std::vector<std::vector<int> > hardFeatures;
