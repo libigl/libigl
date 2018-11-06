@@ -35,10 +35,9 @@ build_script:
   # - ${PYTHON} 101_FileIO.py
   # - cd ../../
   # Tutorials and tests
-  - SET PATH=C:\Python%PYTHON_VERSION%_64;%PATH%
   - mkdir build
   - cd build
-  - cmake -DCMAKE_BUILD_TYPE=%config% -DLIBIGL_WITH_CGAL=ON -DLIBIGL_WITH_COMISO=OFF -G "Visual Studio 15 2017 Win64" ../
+  - cmake -DCMAKE_BUILD_TYPE=%config% -DLIBIGL_WITH_CGAL=ON -DLIBIGL_WITH_COMISO=OFF -DPYTHON_EXECUTABLE="C:\Python%PYTHON_VERSION%_64\python.exe" -G "Visual Studio 15 2017 Win64" ../
   - set MSBuildLogger="C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
   - set MSBuildOptions=/v:m /p:Configuration=%config% /logger:%MSBuildLogger%
   - msbuild %MSBuildOptions% libigl.sln
