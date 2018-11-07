@@ -139,6 +139,10 @@ namespace comiso {
   template <typename DerivedV, typename DerivedF>
   class PoissonSolver
   {
+  private:
+
+    // Penalization term for integer variables used in mixedIntegerSolve
+    const double INT_PENALIZATION = 0.000001;
 
   public:
     IGL_INLINE void solvePoisson(Eigen::VectorXd stiffness,
@@ -1091,13 +1095,11 @@ IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::mixedI
   if (DEBUGPRINT)
     printf("\n SET %d INTEGER VALUES \n",n_integer_vars);
 
-  ///add penalization term for integer variables
-  double penalization = 0.000001;
   int offline_index = scalarSize;
   for(unsigned int i = 0; i < n_integer_vars*2; ++i)
   {
     int index=offline_index+i;
-    A(index,index)=penalization;
+    A(index, index) = INT_PENALIZATION;
   }
 
   if (DEBUGPRINT)
