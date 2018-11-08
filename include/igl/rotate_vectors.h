@@ -12,7 +12,7 @@
 #include <Eigen/Core>
 namespace igl
 {
-  // Rotate the vectors V by A radiants on the tangent plane spanned by B1 and
+  // Rotate the vectors V by A radians on the tangent plane spanned by B1 and
   // B2
   //
   // Inputs:

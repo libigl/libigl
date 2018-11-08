@@ -40,7 +40,7 @@ IGL_INLINE bool igl::collapse_edge(
   }
 
   // Important to grab neighbors of d before monkeying with edges
-  const std::vector<int> nV2Fd = circulation(e,!eflip,F,E,EMAP,EF,EI);
+  const std::vector<int> nV2Fd = circulation(e,!eflip,EMAP,EF,EI);
 
   // The following implementation strongly relies on s<d
   assert(s<d && "s should be less than d");
@@ -339,8 +339,8 @@ IGL_INLINE bool igl::collapse_edge(
   Q.erase(Q.begin());
   e = p.second;
   Qit[e] = Q.end();
-  std::vector<int> N  = circulation(e, true,F,E,EMAP,EF,EI);
-  std::vector<int> Nd = circulation(e,false,F,E,EMAP,EF,EI);
+  std::vector<int> N  = circulation(e, true,EMAP,EF,EI);
+  std::vector<int> Nd = circulation(e,false,EMAP,EF,EI);
   N.insert(N.begin(),Nd.begin(),Nd.end());
   bool collapsed = true;
   if(pre_collapse(V,F,E,EMAP,EF,EI,Q,Qit,C,e))

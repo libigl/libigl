@@ -55,7 +55,7 @@ IGL_INLINE void igl::simplify_polyhedron(
       const auto vi = E(e,positive);
       const auto vj = E(e,!positive);
       p = V.row(vj);
-      std::vector<int> faces = igl::circulation(e,positive,F,E,EMAP,EF,EI);
+      std::vector<int> faces = igl::circulation(e,positive,EMAP,EF,EI);
       cost = 0;
       for(auto f : faces)
       {
