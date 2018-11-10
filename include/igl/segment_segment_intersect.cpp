@@ -32,7 +32,7 @@ IGL_INLINE bool igl::segments_intersect(
   // (r x s) ~ 0 --> directions are parallel, they will never cross
   Eigen::RowVector3d rxs = r.cross(s);
   if (rxs.norm() <= eps)
-	return false;
+    return false;
 
   int sign;
 
@@ -54,10 +54,10 @@ IGL_INLINE bool igl::segments_intersect(
   a_u = u;
 
   if ((u - 1.) > eps || u < -eps)
-	return false;
+    return false;
 
   if ((t - 1.) > eps || t < -eps)
-	return false;
+    return false;
 
   return true;
 };
