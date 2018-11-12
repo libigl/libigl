@@ -88,11 +88,6 @@ if(BUILD_SHARED_LIBS)
   set_target_properties(igl_common PROPERTIES INTERFACE_POSITION_INDEPENDENT_CODE ON)
 endif()
 
-if(UNIX)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
-endif()
-
 # Eigen
 if(TARGET Eigen3::Eigen)
   # If an imported target already exists, use it
