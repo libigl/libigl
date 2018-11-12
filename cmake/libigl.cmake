@@ -36,6 +36,8 @@ option(LIBIGL_WITH_XML               "Use XML"                      OFF)
 option(LIBIGL_WITH_PYTHON            "Use Python"                   OFF)
 option(LIBIGL_WITHOUT_COPYLEFT       "Disable Copyleft libraries"   OFF)
 
+set(EIGEN_ROOT "Default" CACHE FILEPATH "Path to Eigen library")
+
 ################################################################################
 
 ### Configuration
@@ -93,16 +95,10 @@ if(UNIX)
 endif()
 
 # Eigen
-if(TARGET Eigen3::Eigen)
-  # If an imported target already exists, use it
-  target_link_libraries(igl_common INTERFACE Eigen3::Eigen)
-else()
-  igl_download_eigen()
-  target_include_directories(igl_common SYSTEM INTERFACE
-    $<BUILD_INTERFACE:${LIBIGL_EXTERNAL}/eigen>
-    $<INSTALL_INTERFACE:include>
-  )
-endif()
+target_include_directories(igl_common SYSTEM INTERFACE
+  $<BUILD_INTERFACE:${EIGEN_ROOT}>
+  $<INSTALL_INTERFACE:include>
+)
 
 # C++11 Thread library
 find_package(Threads REQUIRED)
@@ -237,7 +233,6 @@ endfunction()
 if(LIBIGL_WITH_COMISO)
   compile_igl_module("comiso")
   if(NOT TARGET CoMISo)
-    igl_download_comiso()
     add_subdirectory("${LIBIGL_EXTERNAL}/CoMISo" CoMISo)
   endif()
   target_link_libraries(igl_comiso ${IGL_SCOPE} CoMISo)

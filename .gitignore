@@ -30,6 +30,7 @@
 .vs/
 .vscode/
 /external
+!/external/CoMISo
 Debug/
 README.html
 Release/
