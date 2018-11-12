@@ -58,8 +58,8 @@ endfunction()
 ## Embree
 function(igl_download_embree)
 	igl_download_project(embree
-		URL            https://github.com/embree/embree/archive/v2.17.4.tar.gz
-		URL_MD5        2038f3216b1d626e87453aee72c470e5
+		URL            https://github.com/embree/embree/archive/v3.2.3.tar.gz
+		URL_MD5        1868cda1c97d83d7a0b67b0b64b18cef
 		# GIT_REPOSITORY https://github.com/embree/embree.git
 		# GIT_TAG        cb61322db3bb7082caed21913ad14869b436fe78
 	)
@@ -77,7 +77,7 @@ endfunction()
 function(igl_download_glfw)
 	igl_download_project(glfw
 		GIT_REPOSITORY https://github.com/glfw/glfw.git
-		GIT_TAG        58cc4b2c5c2c9a245e09451437dd6f5af4d60c84
+		GIT_TAG        53c8c72c676ca97c10aedfe3d0eb4271c5b23dba
 	)
 endfunction()
 
@@ -133,11 +133,11 @@ function(igl_download_triangle)
 	)
 endfunction()
 
-## Google test
-function(igl_download_googletest)
-	igl_download_project(googletest
-		GIT_REPOSITORY https://github.com/google/googletest
-		GIT_TAG        release-1.8.1
+## Catch2
+function(igl_download_catch2)
+	igl_download_project(catch2
+		GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+		GIT_TAG        03d122a35c3f5c398c43095a87bc82ed44642516
 	)
 endfunction()
 

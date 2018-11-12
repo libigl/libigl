@@ -20,8 +20,6 @@ namespace igl
   //   e  index into E of edge to circulate
   //   ccw  whether to _continue_ in ccw direction of edge (circulate around
   //     E(e,1))
-  //   F  #F by 3 list of face indices
-  //   E  #E by 2 list of edge indices
   //   EMAP #F*3 list of indices into E, mapping each directed edge to unique
   //     unique edge in E
   //   EF  #E by 2 list of edge flaps, EF(e,0)=f means e=(i-->j) is the edge of
@@ -30,11 +28,10 @@ namespace igl
   //   EI  #E by 2 list of edge flap corners (see above).
   // Returns list of faces touched by circulation (in cyclically order).
   //   
+  // See also: edge_flaps
   IGL_INLINE std::vector<int> circulation(
     const int e,
     const bool ccw,
-    const Eigen::MatrixXi & F,
-    const Eigen::MatrixXi & E,
     const Eigen::VectorXi & EMAP,
     const Eigen::MatrixXi & EF,
     const Eigen::MatrixXi & EI);
@@ -42,8 +39,6 @@ namespace igl
   IGL_INLINE void circulation(
     const int e,
     const bool ccw,
-    const Eigen::MatrixXi & F,
-    const Eigen::MatrixXi & E,
     const Eigen::VectorXi & EMAP,
     const Eigen::MatrixXi & EF,
     const Eigen::MatrixXi & EI,

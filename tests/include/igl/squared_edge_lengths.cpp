@@ -3,7 +3,7 @@
 #include <iostream>
 
 
-TEST(squared_edge_lengths, cube)
+TEST_CASE("squared_edge_lengths: cube", "[igl]")
 {
   //The allowed error for this test
   const double epsilon = 1e-15;
@@ -30,31 +30,31 @@ TEST(squared_edge_lengths, cube)
   double diag_sq = 2.0; //squared lenght of a diagonal
   Eigen::MatrixXd L_sq;
   igl::squared_edge_lengths(V,F,L_sq);
-  ASSERT_EQ(F.rows(), L_sq.rows());
-  ASSERT_EQ(3, L_sq.cols());
+  REQUIRE (L_sq.rows() == F.rows());
+  REQUIRE (L_sq.cols() == 3);
   //All edges in unit cube measure 1.0 or sqrt(2) in diagonals
   for(int f = 0;f<L_sq.rows();f++)
   {
     //All edge_lengths_squared must be exactly "side_sq" or "diag_sq"
     for(int e = 0;e<3;e++)
         if (L_sq(f,e) > 1.1)
-           ASSERT_EQ(diag_sq, L_sq(f,e));
+           REQUIRE (L_sq(f,e) == diag_sq);
         else
-           ASSERT_EQ(side_sq, L_sq(f,e));
+           REQUIRE (L_sq(f,e) == side_sq);
     //All sides sum exactly side_sq + side_sq + diag_sq
-    ASSERT_EQ(L_sq.row(f).sum(), side_sq + side_sq + diag_sq);
+    REQUIRE (side_sq + side_sq + diag_sq == L_sq.row(f).sum());
   }
 
   //Check the regular tetrahedron
   igl::squared_edge_lengths(V,F_tet,L_sq);
-  ASSERT_EQ(F_tet.rows(), L_sq.rows());
-  ASSERT_EQ(3, L_sq.cols());
+  REQUIRE (L_sq.rows() == F_tet.rows());
+  REQUIRE (L_sq.cols() == 3);
   //All edges measure sqrt(2)
   for(int f = 0;f<L_sq.rows();f++)
   {
       //All edge_lengths_squared must be exactly "diag_sq"
     for(int e = 0;e<3;e++)
-       ASSERT_EQ(2.0, L_sq(f,e));
+       REQUIRE (L_sq(f,e) == 2.0);
   }
 
 
@@ -62,60 +62,60 @@ TEST(squared_edge_lengths, cube)
   side_sq = huge_scale * huge_scale;  //squared lenght of a side
   diag_sq = 2.0 * side_sq;  //squared lenght of a diagonal
   igl::squared_edge_lengths(V_huge,F,L_sq);
-  ASSERT_EQ(F.rows(), L_sq.rows());
-  ASSERT_EQ(3, L_sq.cols());
+  REQUIRE (L_sq.rows() == F.rows());
+  REQUIRE (L_sq.cols() == 3);
   for(int f = 0;f<L_sq.rows();f++)
   {
     //All edge_lengths_squared must be exactly side_sq or diag_sq
     for(int e = 0;e<3;e++)
         if (L_sq(f,e) > 1.1*side_sq)
-           ASSERT_EQ(diag_sq, L_sq(f,e));
+           REQUIRE (L_sq(f,e) == diag_sq);
         else
-           ASSERT_EQ(side_sq, L_sq(f,e));
+           REQUIRE (L_sq(f,e) == side_sq);
     //All sides sum exactly side_sq + side_sq + diag_sq
-    ASSERT_EQ(L_sq.row(f).sum(), side_sq + side_sq + diag_sq);
+    REQUIRE (side_sq + side_sq + diag_sq == L_sq.row(f).sum());
   }
- 
+
   //Check the equilateral triangles
   igl::squared_edge_lengths(V_huge,F_tet,L_sq);
-  ASSERT_EQ(F_tet.rows(), L_sq.rows());
-  ASSERT_EQ(3, L_sq.cols());
+  REQUIRE (L_sq.rows() == F_tet.rows());
+  REQUIRE (L_sq.cols() == 3);
   //All edges measure sqrt(2)
   for(int f = 0;f<L_sq.rows();f++)
   {
     //All edge_lengths_squared must be exactly "diag_sq"
     for(int e = 0;e<3;e++)
-       ASSERT_EQ(diag_sq, L_sq(f,e));
+       REQUIRE (L_sq(f,e) == diag_sq);
   }
 
   //Scale the cube to have tiny sides
   side_sq = tiny_scale * tiny_scale;  //squared lenght of a side
   diag_sq = 2.0 * side_sq;  //squared lenght of a diagonal
   igl::squared_edge_lengths(V_tiny,F,L_sq);
-  ASSERT_EQ(F.rows(), L_sq.rows());
-  ASSERT_EQ(3, L_sq.cols());
+  REQUIRE (L_sq.rows() == F.rows());
+  REQUIRE (L_sq.cols() == 3);
   for(int f = 0;f<L_sq.rows();f++)
   {
     //All edge_lengths_squared must be exactly side_sq or diag_sq
     for(int e = 0;e<3;e++)
         if (L_sq(f,e) > 1.1*side_sq)
-           ASSERT_EQ(diag_sq, L_sq(f,e));
+           REQUIRE (L_sq(f,e) == diag_sq);
         else
-           ASSERT_EQ(side_sq, L_sq(f,e));
+           REQUIRE (L_sq(f,e) == side_sq);
     //All sides sum exactly side_sq + side_sq + diag_sq
-    ASSERT_EQ(L_sq.row(f).sum(), side_sq + side_sq + diag_sq);
+    REQUIRE (side_sq + side_sq + diag_sq == L_sq.row(f).sum());
   }
 
   //Check the regular tetrahedron
   igl::squared_edge_lengths(V_tiny,F_tet,L_sq);
-  ASSERT_EQ(F_tet.rows(), L_sq.rows());
-  ASSERT_EQ(3, L_sq.cols());
+  REQUIRE (L_sq.rows() == F_tet.rows());
+  REQUIRE (L_sq.cols() == 3);
   //All edges measure sqrt(2)
   for(int f = 0;f<L_sq.rows();f++)
   {
     //All edge_lengths_squared must be exactly "diag_sq"
     for(int e = 0;e<3;e++)
-       ASSERT_EQ(diag_sq, L_sq(f,e));
+       REQUIRE (L_sq(f,e) == diag_sq);
   }
 
 }
