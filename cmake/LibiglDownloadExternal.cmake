@@ -35,7 +35,7 @@ endfunction()
 function(igl_download_comiso)
 	igl_download_project(CoMISo
                 GIT_REPOSITORY https://github.com/libigl/CoMISo.git
-		GIT_TAG        fea3ee0ba7d42ee3eca202d484e4fad855e4d6aa
+                GIT_TAG        fea3ee0ba7d42ee3eca202d484e4fad855e4d6aa
 	)
 endfunction()
 
@@ -44,14 +44,6 @@ function(igl_download_cork)
 	igl_download_project(cork
 		GIT_REPOSITORY https://github.com/libigl/cork.git
 		GIT_TAG        27ad8a285838f5a480d856429e39d3d56d4338f9
-	)
-endfunction()
-
-## Eigen
-function(igl_download_eigen)
-	igl_download_project(eigen
-		URL           http://bitbucket.org/eigen/eigen/get/3.2.10.tar.gz
-		URL_MD5       8ad10ac703a78143a4062c9bda9d8fd3
 	)
 endfunction()
 
