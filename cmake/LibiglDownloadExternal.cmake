@@ -34,8 +34,8 @@ endfunction()
 ## CoMISo
 function(igl_download_comiso)
 	igl_download_project(CoMISo
-               GIT_REPOSITORY https://github.com/libigl/CoMISo.git
-               GIT_TAG        fea3ee0ba7d42ee3eca202d484e4fad855e4d6aa
+               GIT_REPOSITORY https://github.com/Anatoscope/CoMISo.git
+               GIT_TAG        2014196618d072ce7c9dbf6bd56f64f37829e679
 	)
 endfunction()
 
