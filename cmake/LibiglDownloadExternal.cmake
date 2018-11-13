@@ -105,7 +105,7 @@ endfunction()
 function(igl_download_stb)
 	igl_download_project(stb
 		GIT_REPOSITORY https://github.com/libigl/libigl-stb.git
-		GIT_TAG        e671ceb3def5e7029a23de14c55dc16301ad4dab
+		GIT_TAG        edfa26e389060c21b9dd7812a0b19c00208b7224
 	)
 endfunction()
 
