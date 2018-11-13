@@ -112,8 +112,8 @@ endfunction()
 ## TetGen
 function(igl_download_tetgen)
 	igl_download_project(tetgen
-		GIT_REPOSITORY https://github.com/libigl/tetgen.git
-		GIT_TAG        d2dcc33cb8551f16e302c8130ce12fa52992cd09
+		GIT_REPOSITORY https://github.com/jdumas/tetgen.git
+		GIT_TAG        63b4bdc5b947f9db75f01e0da36af54074ace5c9
 	)
 endfunction()
 
@@ -128,8 +128,8 @@ endfunction()
 ## Triangle
 function(igl_download_triangle)
 	igl_download_project(triangle
-		GIT_REPOSITORY https://github.com/libigl/triangle.git
-		GIT_TAG        d6761dd691e2e1318c83bf7773fea88d9437464a
+		GIT_REPOSITORY https://github.com/jdumas/triangle.git
+		GIT_TAG        2cd0672ff1f67f9f6bb8e556e84901293e637b76
 	)
 endfunction()
 
