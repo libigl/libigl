@@ -35,6 +35,7 @@ option(LIBIGL_WITH_TRIANGLE          "Use Triangle"                 OFF)
 option(LIBIGL_WITH_XML               "Use XML"                      OFF)
 option(LIBIGL_WITH_PYTHON            "Use Python"                   OFF)
 option(LIBIGL_WITHOUT_COPYLEFT       "Disable Copyleft libraries"   OFF)
+option(LIBIGL_EXPORT_TARGETS         "Export libigl CMake targets"  OFF)
 
 ################################################################################
 
@@ -264,39 +265,28 @@ endif()
 if(LIBIGL_WITH_EMBREE)
   set(EMBREE_DIR "${LIBIGL_EXTERNAL}/embree")
 
+  set(EMBREE_TESTING_INTENSITY 0 CACHE INT "" FORCE)
   set(EMBREE_ISPC_SUPPORT OFF CACHE BOOL " " FORCE)
   set(EMBREE_TASKING_SYSTEM "INTERNAL" CACHE BOOL " " FORCE)
   set(EMBREE_TUTORIALS OFF CACHE BOOL " " FORCE)
   set(EMBREE_MAX_ISA NONE CACHE STRINGS " " FORCE)
-  set(BUILD_TESTING OFF CACHE BOOL " " FORCE)
-
-  # set(ENABLE_INSTALLER OFF CACHE BOOL " " FORCE)
+  set(EMBREE_STATIC_LIB ON CACHE BOOL " " FORCE)
   if(MSVC)
-    # set(EMBREE_STATIC_RUNTIME OFF CACHE BOOL " " FORCE)
-    set(EMBREE_STATIC_LIB OFF CACHE BOOL " " FORCE)
-  else()
-    set(EMBREE_STATIC_LIB ON CACHE BOOL " " FORCE)
+    set(EMBREE_STATIC_RUNTIME ON CACHE BOOL " " FORCE)
   endif()
 
   if(NOT TARGET embree)
+    # TODO: Should probably save/restore the CMAKE_CXX_FLAGS_*, since embree seems to be
+    # overriding them on Windows. But well... it works for now.
     igl_download_embree()
     add_subdirectory("${EMBREE_DIR}" "embree")
-  endif()
-
-  if(MSVC)
-    add_custom_target(Copy-Embree-DLL ALL # Adds a post-build event
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different # which executes "cmake - E
-        $<TARGET_FILE:embree> # <--this is in-file
-        "${CMAKE_BINARY_DIR}" # <--this is out-file path
-        DEPENDS embree) # Execute after embree target has been built
   endif()
 
   compile_igl_module("embree")
   target_link_libraries(igl_embree ${IGL_SCOPE} embree)
   target_include_directories(igl_embree ${IGL_SCOPE} ${EMBREE_DIR}/include)
-  if(NOT MSVC)
-    target_compile_definitions(igl_embree ${IGL_SCOPE} -DENABLE_STATIC_LIB)
-  endif()
+  target_compile_definitions(igl_embree ${IGL_SCOPE} -DEMBREE_STATIC_LIB)
+
 endif()
 
 ################################################################################
@@ -322,10 +312,19 @@ endif()
 ### Compile the opengl part ###
 if(LIBIGL_WITH_OPENGL)
   # OpenGL module
-  find_package(OpenGL REQUIRED)
   compile_igl_module("opengl")
-  target_link_libraries(igl_opengl ${IGL_SCOPE} ${OPENGL_gl_LIBRARY})
-  target_include_directories(igl_opengl SYSTEM ${IGL_SCOPE} ${OPENGL_INCLUDE_DIR})
+
+  # OpenGL library
+  if (NOT CMAKE_VERSION VERSION_LESS "3.11")
+    cmake_policy(SET CMP0072 NEW)
+  endif()
+  find_package(OpenGL REQUIRED)
+  if(TARGET OpenGL::GL)
+    target_link_libraries(igl_opengl ${IGL_SCOPE} OpenGL::GL)
+  else()
+    target_link_libraries(igl_opengl ${IGL_SCOPE} ${OPENGL_gl_LIBRARY})
+    target_include_directories(igl_opengl SYSTEM ${IGL_SCOPE} ${OPENGL_INCLUDE_DIR})
+  endif()
 
   # glad module
   if(NOT TARGET glad)
@@ -428,6 +427,10 @@ endif()
 
 ################################################################################
 ### Install and export all modules
+
+if(NOT LIBIGL_EXPORT_TARGETS)
+  return()
+endif()
 
 function(install_dir_files dir_name)
   if (dir_name STREQUAL "core")

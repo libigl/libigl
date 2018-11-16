@@ -10,14 +10,13 @@
 
 #include "triangle_triangle_adjacency.h"
 
-template <typename DerivedV, typename DerivedF>
+template <typename DerivedF>
 IGL_INLINE std::vector<bool> igl::is_border_vertex(
-    const Eigen::MatrixBase<DerivedV> &V,
-    const Eigen::MatrixBase<DerivedF> &F)
+  const Eigen::MatrixBase<DerivedF> &F)
 {
   DerivedF FF;
   igl::triangle_triangle_adjacency(F,FF);
-  std::vector<bool> ret(V.rows());
+  std::vector<bool> ret(F.maxCoeff()+1);
   for(unsigned i=0; i<ret.size();++i)
     ret[i] = false;
 
@@ -29,6 +28,14 @@ IGL_INLINE std::vector<bool> igl::is_border_vertex(
         ret[F(i,(j+1)%F.cols())] = true;
       }
   return ret;
+}
+
+template <typename DerivedV, typename DerivedF>
+IGL_INLINE std::vector<bool> igl::is_border_vertex(
+  const Eigen::MatrixBase<DerivedV> &/*V*/,
+  const Eigen::MatrixBase<DerivedF> &F)
+{
+  return igl::is_border_vertex(F);
 }
 
 #ifdef IGL_STATIC_LIBRARY
