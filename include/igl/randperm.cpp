@@ -20,7 +20,7 @@ IGL_INLINE void igl::randperm(
   I = II;
   std::random_device rd;
   std::mt19937 mt(rd());
-  std::random(I.data(),I.data()+n, mt);
+  std::shuffle(I.data(),I.data()+n, mt);
 }
 
 #ifdef IGL_STATIC_LIBRARY
