@@ -8,6 +8,7 @@
 #include "randperm.h"
 #include "colon.h"
 #include <algorithm> 
+#include <random>
 
 template <typename DerivedI>
 IGL_INLINE void igl::randperm(
@@ -17,7 +18,9 @@ IGL_INLINE void igl::randperm(
   Eigen::VectorXi II;
   igl::colon(0,1,n-1,II);
   I = II;
-  std::random_shuffle(I.data(),I.data()+n);
+  std::random_device rd;
+  std::mt19937 mt(rd());
+  std::random(I.data(),I.data()+n, mt);
 }
 
 #ifdef IGL_STATIC_LIBRARY
