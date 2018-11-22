@@ -14,10 +14,12 @@
 #include <igl/triangle_triangle_adjacency.h>
 #include <igl/edge_topology.h>
 #include <igl/per_face_normals.h>
+#include "../../PI.h"
 
 #include <Eigen/Geometry>
 #include <Eigen/Sparse>
 #include <queue>
+#include <vector>
 
 #include <gmm/gmm.h>
 #include <CoMISo/Solver/ConstrainedSolver.hh>
@@ -595,7 +597,6 @@ void igl::copyleft::comiso::NRosyField::reduceSpace()
           p[eid] = 0;
           visited[fid] = true;
           q.push(fid);
-
         }
       }
       else
