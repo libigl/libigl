@@ -8,6 +8,8 @@
 
 #include "nrosy.h"
 
+#include <stdexcept>
+
 #include <igl/copyleft/comiso/nrosy.h>
 #include <igl/triangle_triangle_adjacency.h>
 #include <igl/edge_topology.h>
@@ -661,7 +663,10 @@ Eigen::VectorXd igl::copyleft::comiso::NRosyField::angleDefect()
       Eigen::VectorXd a = V.row(F(i,(j+1)%3)) - V.row(F(i,j));
       Eigen::VectorXd b = V.row(F(i,(j+2)%3)) - V.row(F(i,j));
       double t = a.transpose() * b;
-      t /= (a.norm() * b.norm());
+      if(a.norm() > 0. && b.norm() > 0.)
+        t /= (a.norm() * b.norm());
+      else
+        throw std::runtime_error("igl::copyleft::comiso::NRosyField::angleDefect: Division by zero!");
       A(F(i, j)) += std::acos(std::max(std::min(t, 1.), -1.));
     }
   }
