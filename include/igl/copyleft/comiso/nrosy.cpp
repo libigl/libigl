@@ -151,7 +151,6 @@ igl::copyleft::comiso::NRosyField::NRosyField(const Eigen::MatrixXd& _V, const E
   assert(V.rows() > 0);
   assert(F.rows() > 0);
 
-
   // Generate topological relations
   igl::triangle_triangle_adjacency(F,TT,TTi);
   igl::edge_topology(V,F, EV, FE, EF);
@@ -191,7 +190,6 @@ igl::copyleft::comiso::NRosyField::NRosyField(const Eigen::MatrixXd& _V, const E
 
   // Compute k, differences between reference frames
   computek();
-
   softAlpha = 0.5;
 }
 
@@ -397,7 +395,7 @@ void igl::copyleft::comiso::NRosyField::solveRoundings()
     }
 
   // Copy b
-  for(unsigned i=0; i<n;++i)
+  for(unsigned int i = 0; i < n;++i)
     gmm_b[i] = b[i];
 
   // Set variables to round
@@ -458,7 +456,7 @@ void igl::copyleft::comiso::NRosyField::resetConstraints()
   using namespace Eigen;
 
   isHard.resize(F.rows());
-  for(unsigned i=0; i<F.rows(); ++i)
+  for(unsigned int i = 0; i < F.rows(); ++i)
     isHard[i] = false;
   hard   = VectorXd::Zero(F.rows());
 
@@ -472,7 +470,7 @@ Eigen::MatrixXd igl::copyleft::comiso::NRosyField::getFieldPerFace()
   using namespace Eigen;
 
   MatrixXd result(F.rows(),3);
-  for(unsigned i=0; i<F.rows(); ++i)
+  for(unsigned int i = 0; i < F.rows(); ++i)
     result.row(i) = convertLocalto3D(i, angles(i));
   return result;
 }
@@ -483,7 +481,7 @@ void igl::copyleft::comiso::NRosyField::computek()
   using namespace Eigen;
 
   // For every non-border edge
-  for (unsigned eid=0; eid<EF.rows(); ++eid)
+  for (unsigned eid = 0; eid < EF.rows(); ++eid)
   {
     if (!isBorderEdge[eid])
     {
@@ -636,7 +634,6 @@ void igl::copyleft::comiso::NRosyField::reduceSpace()
         p[eid] = 0;
       }
     }
-
   }
 
   // Force matchings between fixed faces
