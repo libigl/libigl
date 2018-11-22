@@ -13,9 +13,6 @@
 #include <igl/edge_topology.h>
 #include <igl/per_face_normals.h>
 
-#include <iostream>
-#include <fstream>
-
 #include <Eigen/Geometry>
 #include <Eigen/Sparse>
 #include <queue>
