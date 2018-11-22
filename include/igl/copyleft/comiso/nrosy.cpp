@@ -447,7 +447,9 @@ void igl::copyleft::comiso::NRosyField::setConstraintSoft(const int fid, const d
 
 void igl::copyleft::comiso::NRosyField::resetConstraints()
 {
-  isHard.resize(F.rows(), false);
+  isHard.resize(F.rows());
+  for(unsigned i = 0; i < F.rows(); ++i)
+    isHard[i] = false;
   hard   = Eigen::VectorXd::Zero(F.rows());
   wSoft = Eigen::VectorXd::Zero(F.rows());
   soft = Eigen::VectorXd::Zero(F.rows());
