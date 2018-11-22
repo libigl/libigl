@@ -334,7 +334,7 @@ void igl::copyleft::comiso::NRosyField::prepareSystemMatrix(const int N)
 
   if (addSoft)
   {
-    Eigen::VectorXd bSoft = VectorXd::Zero(count_t + count_p);
+    Eigen::VectorXd bSoft = Eigen::VectorXd::Zero(count_t + count_p);
     std::vector<Eigen::Triplet<double> > TSoft;
     TSoft.reserve(2 * count_p);
 
@@ -662,7 +662,7 @@ Eigen::VectorXd igl::copyleft::comiso::NRosyField::angleDefect()
       Eigen::VectorXd b = V.row(F(i,(j+2)%3)) - V.row(F(i,j));
       double t = a.transpose() * b;
       t /= (a.norm() * b.norm());
-      A(F(i,j)) += std::acos(t);
+      A(F(i, j)) += std::acos(std::max(std::min(t, 1.), -1.));
     }
   }
 
