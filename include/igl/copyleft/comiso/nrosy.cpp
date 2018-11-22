@@ -342,10 +342,7 @@ void igl::copyleft::comiso::NRosyField::prepareSystemMatrix(const int N)
 
   if (addSoft)
   {
-    cerr << " Adding soft here: " << endl;
-    cerr << " softAplha: " << softAlpha << endl;
     VectorXd bSoft = VectorXd::Zero(count_t + count_p);
-
     std::vector<Eigen::Triplet<double> > TSoft;
     TSoft.reserve(2 * count_p);
 
