@@ -561,7 +561,6 @@ void igl::copyleft::comiso::NRosyField::reduceSpace()
   for(unsigned int i = 0; i < EV.rows(); ++i)
     pFixed[i] = false;
 
-  std::vector<Eigen::VectorXd> debug;
   std::vector<bool> visited(EV.rows(), false);
   std::vector<bool> starting(EV.rows(), false);
 
