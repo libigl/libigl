@@ -142,9 +142,6 @@ private:
 
 igl::copyleft::comiso::NRosyField::NRosyField(const Eigen::MatrixXd& _V, const Eigen::MatrixXi& _F)
 {
-  using namespace std;
-  using namespace Eigen;
-
   V = _V;
   F = _F;
 
@@ -167,23 +164,23 @@ igl::copyleft::comiso::NRosyField::NRosyField(const Eigen::MatrixXd& _V, const E
   for(unsigned fid=0; fid<F.rows(); ++fid)
   {
     // First edge
-    Vector3d e1 = V.row(F(fid,1)) - V.row(F(fid,0));
+    Eigen::Vector3d e1 = V.row(F(fid,1)) - V.row(F(fid,0));
     e1.normalize();
-    Vector3d e2 = N.row(fid);
+    Eigen::Vector3d e2 = N.row(fid);
     e2 = e2.cross(e1);
     e2.normalize();
 
-    MatrixXd TP(2,3);
+    Eigen::MatrixXd TP(2,3);
     TP << e1.transpose(), e2.transpose();
     TPs.push_back(TP);
   }
 
   // Alloc internal variables
-  angles = VectorXd::Zero(F.rows());
-  p = VectorXi::Zero(EV.rows());
+  angles = Eigen::VectorXd::Zero(F.rows());
+  p = Eigen::VectorXi::Zero(EV.rows());
   pFixed.resize(EV.rows());
-  k = VectorXd::Zero(EV.rows());
-  singularityIndex = VectorXd::Zero(V.rows());
+  k = Eigen::VectorXd::Zero(EV.rows());
+  singularityIndex = Eigen::VectorXd::Zero(V.rows());
 
   // Reset the constraints
   resetConstraints();
@@ -202,9 +199,6 @@ void igl::copyleft::comiso::NRosyField::setSoftAlpha(double alpha)
 
 void igl::copyleft::comiso::NRosyField::prepareSystemMatrix(const int N)
 {
-  using namespace std;
-  using namespace Eigen;
-
   double Nd = N;
 
   // Minimize the MIQ energy
@@ -221,8 +215,8 @@ void igl::copyleft::comiso::NRosyField::prepareSystemMatrix(const int N)
   // pij [   4pi/N   -4pi/N    2*(2pi/N)^2   4pi/N  ]
 
   // Count and tag the variables
-  tag_t = VectorXi::Constant(F.rows(),-1);
-  vector<int> id_t;
+  tag_t = Eigen::VectorXi::Constant(F.rows(),-1);
+  std::vector<int> id_t;
   int count = 0;
   for(unsigned i=0; i<F.rows(); ++i)
     if (!isHard[i])
@@ -233,8 +227,8 @@ void igl::copyleft::comiso::NRosyField::prepareSystemMatrix(const int N)
 
   unsigned long count_t = id_t.size();
 
-  tag_p = VectorXi::Constant(EF.rows(),-1);
-  vector<int> id_p;
+  tag_p = Eigen::VectorXi::Constant(EF.rows(),-1);
+  std::vector<int> id_p;
   for(unsigned i=0; i<EF.rows(); ++i)
   {
     if (!pFixed[i])
@@ -259,7 +253,7 @@ void igl::copyleft::comiso::NRosyField::prepareSystemMatrix(const int N)
   // System sizes: A (count_t + count_p) x (count_t + count_p)
   //               b (count_t + count_p)
 
-  b = VectorXd::Zero(count_t + count_p);
+  b = Eigen::VectorXd::Zero(count_t + count_p);
 
   std::vector<Eigen::Triplet<double> > T;
   T.reserve(3 * 4 * count_p);
@@ -328,7 +322,7 @@ void igl::copyleft::comiso::NRosyField::prepareSystemMatrix(const int N)
     }
   }
 
-  A = SparseMatrix<double>(count_t + count_p, count_t + count_p);
+  A = Eigen::SparseMatrix<double>(count_t + count_p, count_t + count_p);
   A.setFromTriplets(T.begin(), T.end());
 
   // Soft constraints
@@ -340,7 +334,7 @@ void igl::copyleft::comiso::NRosyField::prepareSystemMatrix(const int N)
 
   if (addSoft)
   {
-    VectorXd bSoft = VectorXd::Zero(count_t + count_p);
+    Eigen::VectorXd bSoft = VectorXd::Zero(count_t + count_p);
     std::vector<Eigen::Triplet<double> > TSoft;
     TSoft.reserve(2 * count_p);
 
@@ -353,13 +347,13 @@ void igl::copyleft::comiso::NRosyField::prepareSystemMatrix(const int N)
         bSoft[varid] += wSoft[i] * soft[i];
       }
     }
-    SparseMatrix<double> ASoft(count_t + count_p, count_t + count_p);
+    Eigen::SparseMatrix<double> ASoft(count_t + count_p, count_t + count_p);
     ASoft.setFromTriplets(TSoft.begin(), TSoft.end());
 
     // Stupid Eigen bug
-    SparseMatrix<double> Atmp (count_t + count_p, count_t + count_p);
-    SparseMatrix<double> Atmp2(count_t + count_p, count_t + count_p);
-    SparseMatrix<double> Atmp3(count_t + count_p, count_t + count_p);
+    Eigen::SparseMatrix<double> Atmp (count_t + count_p, count_t + count_p);
+    Eigen::SparseMatrix<double> Atmp2(count_t + count_p, count_t + count_p);
+    Eigen::SparseMatrix<double> Atmp3(count_t + count_p, count_t + count_p);
 
     // Merge the two part of the energy
     Atmp = (1.0 - softAlpha)*A;
@@ -373,9 +367,6 @@ void igl::copyleft::comiso::NRosyField::prepareSystemMatrix(const int N)
 
 void igl::copyleft::comiso::NRosyField::solveRoundings()
 {
-  using namespace std;
-  using namespace Eigen;
-
   unsigned n = A.rows();
 
   gmm::col_matrix< gmm::wsvector< double > > gmm_A;
@@ -389,7 +380,7 @@ void igl::copyleft::comiso::NRosyField::solveRoundings()
 
   // Copy A
   for (int k=0; k<A.outerSize(); ++k)
-    for (SparseMatrix<double>::InnerIterator it(A,k); it; ++it)
+    for (Eigen::SparseMatrix<double>::InnerIterator it(A, k); it; ++it)
     {
       gmm_A(it.row(),it.col()) += it.value();
     }
@@ -466,10 +457,7 @@ void igl::copyleft::comiso::NRosyField::resetConstraints()
 
 Eigen::MatrixXd igl::copyleft::comiso::NRosyField::getFieldPerFace()
 {
-  using namespace std;
-  using namespace Eigen;
-
-  MatrixXd result(F.rows(),3);
+  Eigen::MatrixXd result(F.rows(),3);
   for(unsigned int i = 0; i < F.rows(); ++i)
     result.row(i) = convertLocalto3D(i, angles(i));
   return result;
@@ -477,9 +465,6 @@ Eigen::MatrixXd igl::copyleft::comiso::NRosyField::getFieldPerFace()
 
 void igl::copyleft::comiso::NRosyField::computek()
 {
-  using namespace std;
-  using namespace Eigen;
-
   // For every non-border edge
   for (unsigned eid = 0; eid < EF.rows(); ++eid)
   {
@@ -488,8 +473,8 @@ void igl::copyleft::comiso::NRosyField::computek()
       int fid0 = EF(eid,0);
       int fid1 = EF(eid,1);
 
-      Vector3d N0 = N.row(fid0);
-      Vector3d N1 = N.row(fid1);
+      Eigen::Vector3d N0 = N.row(fid0);
+      Eigen::Vector3d N1 = N.row(fid1);
 
       // find common edge on triangle 0 and 1
       int fid0_vc = -1;
@@ -504,18 +489,18 @@ void igl::copyleft::comiso::NRosyField::computek()
       assert(fid0_vc != -1);
       assert(fid1_vc != -1);
 
-      Vector3d common_edge = V.row(F(fid0,(fid0_vc+1)%3)) - V.row(F(fid0,fid0_vc));
+      Eigen::Vector3d common_edge = V.row(F(fid0,(fid0_vc+1)%3)) - V.row(F(fid0,fid0_vc));
       common_edge.normalize();
 
       // Map the two triangles in a new space where the common edge is the x axis and the N0 the z axis
-      MatrixXd P(3,3);
-      VectorXd o = V.row(F(fid0,fid0_vc));
-      VectorXd tmp = -N0.cross(common_edge);
+      Eigen::MatrixXd P(3,3);
+      Eigen::VectorXd o = V.row(F(fid0,fid0_vc));
+      Eigen::VectorXd tmp = -N0.cross(common_edge);
       P << common_edge, tmp, N0;
       P.transposeInPlace();
 
 
-      MatrixXd V0(3,3);
+      Eigen::MatrixXd V0(3,3);
       V0.row(0) = V.row(F(fid0,0)).transpose() -o;
       V0.row(1) = V.row(F(fid0,1)).transpose() -o;
       V0.row(2) = V.row(F(fid0,2)).transpose() -o;
@@ -526,7 +511,7 @@ void igl::copyleft::comiso::NRosyField::computek()
       assert(V0(1,2) < 10e-10);
       assert(V0(2,2) < 10e-10);
 
-      MatrixXd V1(3,3);
+      Eigen::MatrixXd V1(3,3);
       V1.row(0) = V.row(F(fid1,0)).transpose() -o;
       V1.row(1) = V.row(F(fid1,1)).transpose() -o;
       V1.row(2) = V.row(F(fid1,2)).transpose() -o;
@@ -539,7 +524,7 @@ void igl::copyleft::comiso::NRosyField::computek()
       // i.e. map both triangles to the same plane
       double alpha = -atan2(V1((fid1_vc+2)%3,2),V1((fid1_vc+2)%3,1));
 
-      MatrixXd R(3,3);
+      Eigen::MatrixXd R(3,3);
       R << 1,          0,            0,
            0, cos(alpha), -sin(alpha) ,
            0, sin(alpha),  cos(alpha);
@@ -551,8 +536,8 @@ void igl::copyleft::comiso::NRosyField::computek()
 
       // measure the angle between the reference frames
       // k_ij is the angle between the triangle on the left and the one on the right
-      VectorXd ref0 = V0.row(1) - V0.row(0);
-      VectorXd ref1 = V1.row(1) - V1.row(0);
+      Eigen::VectorXd ref0 = V0.row(1) - V0.row(0);
+      Eigen::VectorXd ref1 = V1.row(1) - V1.row(0);
 
       ref0.normalize();
       ref1.normalize();
@@ -560,7 +545,7 @@ void igl::copyleft::comiso::NRosyField::computek()
       double ktemp = atan2(ref1(1),ref1(0)) - atan2(ref0(1),ref0(0));
 
       // just to be sure, rotate ref0 using angle ktemp...
-      MatrixXd R2(2,2);
+      Eigen::MatrixXd R2(2,2);
       R2 << cos(ktemp), -sin(ktemp), sin(ktemp), cos(ktemp);
 
       tmp = R2*ref0.head<2>();
@@ -576,25 +561,16 @@ void igl::copyleft::comiso::NRosyField::computek()
 
 void igl::copyleft::comiso::NRosyField::reduceSpace()
 {
-  using namespace std;
-  using namespace Eigen;
-
   // All variables are free in the beginning
-  for(unsigned i=0; i<EV.rows(); ++i)
+  for(unsigned int i = 0; i < EV.rows(); ++i)
     pFixed[i] = false;
 
-  vector<VectorXd> debug;
+  std::vector<Eigen::VectorXd> debug;
+  std::vector<bool> visited(EV.rows(), false);
+  std::vector<bool> starting(EV.rows(), false);
 
-  vector<bool> visited(EV.rows());
-  for(unsigned i=0; i<EV.rows(); ++i)
-    visited[i] = false;
-
-  vector<bool> starting(EV.rows());
-  for(unsigned i=0; i<EV.rows(); ++i)
-    starting[i] = false;
-
-  queue<int> q;
-  for(unsigned i=0; i<F.rows(); ++i)
+  std::queue<int> q;
+  for(unsigned int i = 0; i < F.rows(); ++i)
     if (isHard[i] || wSoft[i] != 0)
     {
       q.push(i);
@@ -637,11 +613,11 @@ void igl::copyleft::comiso::NRosyField::reduceSpace()
   }
 
   // Force matchings between fixed faces
-  for(unsigned i=0; i<F.rows();++i)
+  for(unsigned int i = 0; i < F.rows();++i)
   {
     if (isHard[i])
     {
-      for(unsigned int j=0; j<3; ++j)
+      for(unsigned int j = 0; j < 3; ++j)
       {
         int fid = TT(i,j);
         if ((fid!=-1) && (isHard[fid]))
@@ -661,22 +637,16 @@ void igl::copyleft::comiso::NRosyField::reduceSpace()
 
 double igl::copyleft::comiso::NRosyField::convert3DtoLocal(unsigned fid, const Eigen::Vector3d& v)
 {
-  using namespace std;
-  using namespace Eigen;
-
   // Project onto the tangent plane
-  Vector2d vp = TPs[fid] * v;
+  Eigen::Vector2d vp = TPs[fid] * v;
 
   // Convert to angle
-  return atan2(vp(1),vp(0));
+  return std::atan2(vp(1), vp(0));
 }
 
 Eigen::Vector3d igl::copyleft::comiso::NRosyField::convertLocalto3D(unsigned fid, double a)
 {
-  using namespace std;
-  using namespace Eigen;
-
-  Vector2d vp(cos(a),sin(a));
+  Eigen::Vector2d vp(std::cos(a), std::sin(a));
   return vp.transpose() * TPs[fid];
 }
 
@@ -684,15 +654,15 @@ Eigen::VectorXd igl::copyleft::comiso::NRosyField::angleDefect()
 {
   Eigen::VectorXd A = Eigen::VectorXd::Constant(V.rows(),-2*igl::PI);
 
-  for (unsigned i=0; i < F.rows(); ++i)
+  for (unsigned int i = 0; i < F.rows(); ++i)
   {
     for (int j = 0; j < 3; ++j)
     {
       Eigen::VectorXd a = V.row(F(i,(j+1)%3)) - V.row(F(i,j));
       Eigen::VectorXd b = V.row(F(i,(j+2)%3)) - V.row(F(i,j));
-      double t = a.transpose()*b;
+      double t = a.transpose() * b;
       t /= (a.norm() * b.norm());
-      A(F(i,j)) += acos(t);
+      A(F(i,j)) += std::acos(t);
     }
   }
 
