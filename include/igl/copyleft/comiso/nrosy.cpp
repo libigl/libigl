@@ -518,12 +518,12 @@ void igl::copyleft::comiso::NRosyField::computek()
 
       // compute rotation R such that R * N1 = N0
       // i.e. map both triangles to the same plane
-      double alpha = -atan2(V1((fid1_vc+2)%3,2),V1((fid1_vc+2)%3,1));
+      double alpha = -std::atan2(V1((fid1_vc + 2) % 3, 2), V1((fid1_vc + 2) % 3, 1));
 
       Eigen::MatrixXd R(3,3);
       R << 1,          0,            0,
-           0, cos(alpha), -sin(alpha) ,
-           0, sin(alpha),  cos(alpha);
+           0, std::cos(alpha), -std::sin(alpha) ,
+           0, std::sin(alpha),  std::cos(alpha);
       V1 = (R*V1.transpose()).transpose();
 
       assert(V1(0,2) < 10e-10);
@@ -538,11 +538,11 @@ void igl::copyleft::comiso::NRosyField::computek()
       ref0.normalize();
       ref1.normalize();
 
-      double ktemp = atan2(ref1(1),ref1(0)) - atan2(ref0(1),ref0(0));
+      double ktemp = std::atan2(ref1(1), ref1(0)) - std::atan2(ref0(1), ref0(0));
 
       // just to be sure, rotate ref0 using angle ktemp...
       Eigen::MatrixXd R2(2,2);
-      R2 << cos(ktemp), -sin(ktemp), sin(ktemp), cos(ktemp);
+      R2 << std::cos(ktemp), -std::sin(ktemp), std::sin(ktemp), std::cos(ktemp);
 
       tmp = R2*ref0.head<2>();
 
