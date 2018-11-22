@@ -445,16 +445,10 @@ void igl::copyleft::comiso::NRosyField::setConstraintSoft(const int fid, const d
 
 void igl::copyleft::comiso::NRosyField::resetConstraints()
 {
-  using namespace std;
-  using namespace Eigen;
-
-  isHard.resize(F.rows());
-  for(unsigned int i = 0; i < F.rows(); ++i)
-    isHard[i] = false;
-  hard   = VectorXd::Zero(F.rows());
-
-  wSoft  = VectorXd::Zero(F.rows());
-  soft   = VectorXd::Zero(F.rows());
+  isHard.resize(F.rows(), false);
+  hard   = Eigen::VectorXd::Zero(F.rows());
+  wSoft = Eigen::VectorXd::Zero(F.rows());
+  soft = Eigen::VectorXd::Zero(F.rows());
 }
 
 Eigen::MatrixXd igl::copyleft::comiso::NRosyField::getFieldPerFace()
