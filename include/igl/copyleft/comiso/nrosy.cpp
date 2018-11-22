@@ -347,7 +347,7 @@ void igl::copyleft::comiso::NRosyField::prepareSystemMatrix(const int N)
       int varid = tag_t[i];
       if (varid != -1) // if it is a variable in the system
       {
-        TSoft.push_back(Eigen::Triplet<double>(varid,varid,wSoft[i]));
+        TSoft.emplace_back(varid, varid, wSoft[i]);
         bSoft[varid] += wSoft[i] * soft[i];
       }
     }
