@@ -46,8 +46,8 @@ namespace igl
       const Eigen::VectorXi& b_soft,
       const Eigen::VectorXd& w_soft,
       const Eigen::MatrixXd& bc_soft,
-      const int N,
-      const double soft,
+      int N,
+      double soft,
       Eigen::MatrixXd& R,
       Eigen::VectorXd& S
       );
@@ -57,7 +57,7 @@ namespace igl
      const Eigen::MatrixXi& F,
      const Eigen::VectorXi& b,
      const Eigen::MatrixXd& bc,
-     const int N,
+     int N,
      Eigen::MatrixXd& R,
      Eigen::VectorXd& S
       );

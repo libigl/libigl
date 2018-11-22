@@ -13,7 +13,8 @@
 #include <igl/edge_topology.h>
 #include <igl/per_face_normals.h>
 
-#include <stdexcept>
+#include <iostream>
+#include <fstream>
 
 #include <Eigen/Geometry>
 #include <Eigen/Sparse>
@@ -39,19 +40,19 @@ public:
 
   // Generate the N-rosy field
   // N degree of the rosy field
-  // roundseparately: round the integer variables one at a time, slower but higher quality
-  IGL_INLINE void solve(const int N = 4);
+  // round separately: round the integer variables one at a time, slower but higher quality
+  IGL_INLINE void solve(int N = 4);
 
   // Set a hard constraint on fid
   // fid: face id
   // v: direction to fix (in 3d)
-  IGL_INLINE void setConstraintHard(const int fid, const Eigen::Vector3d& v);
+  IGL_INLINE void setConstraintHard(int fid, const Eigen::Vector3d& v);
 
   // Set a soft constraint on fid
   // fid: face id
   // w: weight of the soft constraint, clipped between 0 and 1
   // v: direction to fix (in 3d)
-  IGL_INLINE void setConstraintSoft(const int fid, const double w, const Eigen::Vector3d& v);
+  IGL_INLINE void setConstraintSoft(int fid, double w, const Eigen::Vector3d& v);
 
   // Set the ratio between smoothness and soft constraints (0 -> smoothness only, 1 -> soft constr only)
   IGL_INLINE void setSoftAlpha(double alpha);
@@ -62,9 +63,6 @@ public:
   // Return the current field
   IGL_INLINE Eigen::MatrixXd getFieldPerFace();
 
-  // Return the current field (in Ahish's ffield format)
-  IGL_INLINE Eigen::MatrixXd getFFieldPerFace();
-
   // Compute singularity indexes
   IGL_INLINE void findCones(int N);
 
@@ -72,7 +70,6 @@ public:
   IGL_INLINE Eigen::VectorXd getSingularityIndexPerVertex();
 
 private:
-
   // Compute angle differences between reference frames
   IGL_INLINE void computek();
 
@@ -80,19 +77,10 @@ private:
   IGL_INLINE void reduceSpace();
 
   // Prepare the system matrix
-  IGL_INLINE void prepareSystemMatrix(const int N);
-
-  // Solve without roundings
-  IGL_INLINE void solveNoRoundings();
+  IGL_INLINE void prepareSystemMatrix(int N);
 
   // Solve with roundings using CoMIso
   IGL_INLINE void solveRoundings();
-
-  // Round all p to 0 and fix
-  IGL_INLINE void roundAndFixToZero();
-
-  // Round all p and fix
-  IGL_INLINE void roundAndFix();
 
   // Convert a vector in 3d to an angle wrt the local reference system
   IGL_INLINE double convert3DtoLocal(unsigned fid, const Eigen::Vector3d& v);
@@ -113,7 +101,7 @@ private:
   // Soft constraints
   Eigen::VectorXd soft;
   Eigen::VectorXd wSoft;
-  double          softAlpha;
+  double softAlpha;
 
   // Face Topology
   Eigen::MatrixXi TT, TTi;
@@ -248,7 +236,7 @@ void igl::copyleft::comiso::NRosyField::prepareSystemMatrix(const int N)
       id_t.push_back(i);
     }
 
-  unsigned count_t = id_t.size();
+  unsigned long count_t = id_t.size();
 
   tag_p = VectorXi::Constant(EF.rows(),-1);
   vector<int> id_p;
@@ -281,11 +269,10 @@ void igl::copyleft::comiso::NRosyField::prepareSystemMatrix(const int N)
   std::vector<Eigen::Triplet<double> > T;
   T.reserve(3 * 4 * count_p);
 
-  for(unsigned r=0; r<id_p.size(); ++r)
+  for(auto eid : id_p)
   {
-    int eid = id_p[r];
-    int i = EF(eid,0);
-    int j = EF(eid,1);
+    int i = EF(eid, 0);
+    int j = EF(eid, 1);
     bool isFixed_i = isHard[i];
     bool isFixed_j = isHard[j];
     bool isFixed_p = pFixed[eid];
@@ -294,18 +281,15 @@ void igl::copyleft::comiso::NRosyField::prepareSystemMatrix(const int N)
     if (!isFixed_i)
     {
       row = tag_t[i];
-      if (isFixed_i)
-        b(row) += -2 * hard[i];
-      else
-        T.emplace_back(row, tag_t[i], 2);
+      T.push_back(Eigen::Triplet<double>(row, tag_t[i], 2));
       if (isFixed_j)
         b(row) +=  2 * hard[j];
       else
-        T.emplace_back(row, tag_t[j], -2);
+        T.push_back(Eigen::Triplet<double>(row, tag_t[j], -2));
       if (isFixed_p)
-        b(row) += -((4 * igl::PI)/Nd) * p[eid];
+        b(row) += -((4. * igl::PI) / Nd) * p[eid];
       else
-        T.emplace_back(row, tag_p[eid],((4 * igl::PI)/Nd));
+        T.push_back(Eigen::Triplet<double>(row, tag_p[eid], ((4. * igl::PI) / Nd)));
       b(row) += -2 * k[eid];
       assert(hard[i] == hard[i]);
       assert(hard[j] == hard[j]);
@@ -317,18 +301,15 @@ void igl::copyleft::comiso::NRosyField::prepareSystemMatrix(const int N)
     if (!isFixed_j)
     {
       row = tag_t[j];
+      T.push_back(Eigen::Triplet<double>(row, tag_t[j], 2));
       if (isFixed_i)
         b(row) += 2 * hard[i];
       else
-        T.emplace_back(row,tag_t[i], -2);
-      if (isFixed_j)
-        b(row) += -2 * hard[j];
-      else
-        T.emplace_back(row, tag_t[j], 2);
+        T.push_back(Eigen::Triplet<double>(row, tag_t[i], -2));
       if (isFixed_p)
-        b(row) += (( 4. * igl::PI)/Nd) * p[eid];
+        b(row) += ((4. * igl::PI) / Nd) * p[eid];
       else
-        T.emplace_back(row, tag_p[eid], -((4. * igl::PI)/Nd));
+        T.push_back(Eigen::Triplet<double>(row, tag_p[eid], -((4. * igl::PI) / Nd)));
       b(row) += 2 * k[eid];
       assert(k[eid] == k[eid]);
       assert(b(row) == b(row));
@@ -337,23 +318,19 @@ void igl::copyleft::comiso::NRosyField::prepareSystemMatrix(const int N)
     if (!isFixed_p)
     {
       row = tag_p[eid];
+      T.push_back(Eigen::Triplet<double>(row, tag_p[eid], (2. * pow(((2. * igl::PI) / Nd), 2))));
       if (isFixed_i)
-        b(row) += -(4. * igl::PI)/Nd * hard[i];
+        b(row) += -(4. * igl::PI) / Nd * hard[i];
       else
-        T.emplace_back(row, tag_t[i], (4. * igl::PI)/Nd);
+        T.push_back(Eigen::Triplet<double>(row, tag_t[i], (4. * igl::PI) / Nd));
       if (isFixed_j)
-        b(row) += (4. * igl::PI)/Nd * hard[j];
+        b(row) += (4. * igl::PI) / Nd * hard[j];
       else
-        T.emplace_back(row, tag_t[j], -(4. * igl::PI)/Nd);
-      if (isFixed_p)
-        b(row) += -(2. * pow (((2. * igl::PI)/Nd), 2)) * p[eid];
-      else
-        T.emplace_back(row, tag_p[eid], (2. * pow(((2. * igl::PI)/Nd), 2)));
-      b(row) += - ( 4. * igl::PI ) / Nd * k[eid];
+        T.push_back(Eigen::Triplet<double>(row,tag_t[j], -(4. * igl::PI) / Nd));
+      b(row) += - (4 * igl::PI)/Nd * k[eid];
       assert(k[eid] == k[eid]);
       assert(b(row) == b(row));
     }
-
   }
 
   A = SparseMatrix<double>(count_t + count_p, count_t + count_p);
@@ -400,28 +377,6 @@ void igl::copyleft::comiso::NRosyField::prepareSystemMatrix(const int N)
     A = Atmp3;
     b = b*(1.0 - softAlpha) + bSoft * softAlpha;
   }
-}
-
-void igl::copyleft::comiso::NRosyField::solveNoRoundings()
-{
-  using namespace std;
-  using namespace Eigen;
-
-  // Solve the linear system
-  SimplicialLDLT<SparseMatrix<double> > solver;
-  solver.compute(A);
-  VectorXd x = solver.solve(b);
-
-  // Copy the result back
-  for(unsigned i=0; i<F.rows(); ++i)
-    if (tag_t[i] != -1)
-      angles[i] = x(tag_t[i]);
-    else
-      angles[i] = hard[i];
-
-  for(unsigned i=0; i<EF.rows(); ++i)
-    if(tag_p[i]  != -1)
-      p[i] = roundl(x[tag_p[i]]);
 }
 
 void igl::copyleft::comiso::NRosyField::solveRoundings()
@@ -472,25 +427,9 @@ void igl::copyleft::comiso::NRosyField::solveRoundings()
 
   for(unsigned i=0; i<EF.rows(); ++i)
     if(tag_p[i]  != -1)
-      p[i] = roundl(x[tag_p[i]]);
-
+      p[i] = (int)std::round(x[tag_p[i]]);
 }
 
-
-void igl::copyleft::comiso::NRosyField::roundAndFix()
-{
-  for(unsigned i=0; i<p.rows(); ++i)
-    pFixed[i] = true;
-}
-
-void igl::copyleft::comiso::NRosyField::roundAndFixToZero()
-{
-  for(unsigned i=0; i<p.rows(); ++i)
-  {
-    pFixed[i] = true;
-    p[i] = 0;
-  }
-}
 
 void igl::copyleft::comiso::NRosyField::solve(const int N)
 {
@@ -543,27 +482,6 @@ Eigen::MatrixXd igl::copyleft::comiso::NRosyField::getFieldPerFace()
     result.row(i) = convertLocalto3D(i, angles(i));
   return result;
 }
-
-Eigen::MatrixXd igl::copyleft::comiso::NRosyField::getFFieldPerFace()
-{
-  using namespace std;
-  using namespace Eigen;
-
-  MatrixXd result(F.rows(),6);
-  for(unsigned i=0; i<F.rows(); ++i)
-  {
-      Vector3d v1 = convertLocalto3D(i, angles(i));
-      Vector3d n = N.row(i);
-      Vector3d v2 = n.cross(v1);
-      v1.normalize();
-      v2.normalize();
-
-      result.block(i,0,1,3) = v1.transpose();
-      result.block(i,3,1,3) = v2.transpose();
-  }
-  return result;
-}
-
 
 void igl::copyleft::comiso::NRosyField::computek()
 {
@@ -743,7 +661,7 @@ void igl::copyleft::comiso::NRosyField::reduceSpace()
           int fid1 = EF(eid,1);
 
           pFixed[eid] = true;
-          p[eid] = roundl(2.0/igl::PI*(hard(fid1) - hard(fid0) - k(eid)));
+          p[eid] = (int)std::round(2.0 / igl::PI * (hard(fid1) - hard(fid0) - k(eid)));
         }
       }
     }
@@ -781,16 +699,8 @@ Eigen::VectorXd igl::copyleft::comiso::NRosyField::angleDefect()
     {
       Eigen::VectorXd a = V.row(F(i,(j+1)%3)) - V.row(F(i,j));
       Eigen::VectorXd b = V.row(F(i,(j+2)%3)) - V.row(F(i,j));
-      double t = a.transpose() * b;
-      double norm_prod = a.norm() * b.norm();
-      if (norm_prod > 0.)
-        t /= norm_prod;
-      else
-        throw std::runtime_error("Error in 'igl::copyleft::comiso::NRosyField::angleDefect': division by zero!");
-      if (t > 1.)
-        t = 1.;
-      else if (t < -1.)
-        t = -1.;
+      double t = a.transpose()*b;
+      t /= (a.norm() * b.norm());
       A(F(i,j)) += acos(t);
     }
   }
@@ -875,15 +785,15 @@ IGL_INLINE void igl::copyleft::comiso::nrosy(
   )
 {
   // Init solver
-  igl::copyleft::comiso::NRosyField solver(V,F);
+  igl::copyleft::comiso::NRosyField solver(V, F);
 
   // Add hard constraints
-  for (unsigned i=0; i<b.size();++i)
-    solver.setConstraintHard(b(i),bc.row(i));
+  for (unsigned i = 0; i < b.size(); ++i)
+    solver.setConstraintHard(b(i), bc.row(i));
 
   // Add soft constraints
-  for (unsigned i=0; i<b_soft.size();++i)
-    solver.setConstraintSoft(b_soft(i),w_soft(i),bc_soft.row(i));
+  for (unsigned i = 0; i < b_soft.size(); ++i)
+    solver.setConstraintSoft(b_soft(i), w_soft(i), bc_soft.row(i));
 
   // Set the soft constraints global weight
   solver.setSoftAlpha(soft);
@@ -910,11 +820,11 @@ IGL_INLINE void igl::copyleft::comiso::nrosy(
                            )
 {
   // Init solver
-  igl::copyleft::comiso::NRosyField solver(V,F);
+  igl::copyleft::comiso::NRosyField solver(V, F);
 
   // Add hard constraints
-  for (unsigned i=0; i<b.size();++i)
-    solver.setConstraintHard(b(i),bc.row(i));
+  for (unsigned i= 0; i < b.size(); ++i)
+    solver.setConstraintHard(b(i), bc.row(i));
 
   // Interpolate
   solver.solve(N);
