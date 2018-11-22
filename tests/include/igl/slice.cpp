@@ -2,7 +2,7 @@
 #include <igl/slice.h>
 #include <igl/LinSpaced.h>
 
-TEST(slice, dense_identity)
+TEST_CASE("slice: dense_identity", "[igl]")
 {
   // https://en.wikipedia.org/wiki/Monkey_testing
   Eigen::MatrixXd A = Eigen::MatrixXd::Random(10,9);
@@ -25,7 +25,7 @@ TEST(slice, dense_identity)
   }
 }
 
-TEST(slice, sparse_identity)
+TEST_CASE("slice: sparse_identity", "[igl]")
 {
   Eigen::SparseMatrix<double> A = Eigen::MatrixXd::Random(10,9).sparseView();
   Eigen::VectorXi I = igl::LinSpaced<Eigen::VectorXi >(A.rows(),0,A.rows()-1);
@@ -47,7 +47,7 @@ TEST(slice, sparse_identity)
   }
 }
 
-TEST(slice,density_reverse)
+TEST_CASE("slice: density_reverse", "[igl]")
 {
   {
     Eigen::MatrixXd A = Eigen::MatrixXd::Random(10,9);
@@ -71,7 +71,7 @@ TEST(slice,density_reverse)
   }
 }
 
-TEST(slice,random)
+TEST_CASE("slice: random", "[igl]")
 {
   // Test whether unsorted indices are handled correctly by Randomly grow and
   // shrink a matrix by slicing out rows and columns: note that growing will

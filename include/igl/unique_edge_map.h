@@ -18,7 +18,8 @@ namespace igl
   // Inputs:
   //   F  #F by 3  list of simplices
   // Outputs:
-  //   E  #F*3 by 2 list of all of directed edges
+  //   E  #F*3 by 2 list of all directed edges, such that E.row(f+#F*c) is the
+  //     edge opposite F(f,c)
   //   uE  #uE by 2 list of unique undirected edges
   //   EMAP #F*3 list of indices into uE, mapping each directed edge to unique
   //     undirected edge

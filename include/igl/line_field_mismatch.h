@@ -1,19 +1,19 @@
 // This file is part of libigl, a simple c++ geometry processing library.
 //
-// Copyright (C) 2014 Daniele Panozzo <daniele.panozzo@gmail.com>, Olga Diamanti <olga.diam@gmail.com>
+// Copyright (C) 2014 Nico Pietroni <nico.pietroni@gmail.com>
 //
 // This Source Code Form is subject to the terms of the Mozilla Public License
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 
-#ifndef IGL_CROSS_FIELD_MISSMATCH_H
-#define IGL_CROSS_FIELD_MISSMATCH_H
+#ifndef IGL_LINE_FIELD_MISSMATCH_H
+#define IGL_LINE_FIELD_MISSMATCH_H
 #include "igl_inline.h"
 #include <Eigen/Core>
 namespace igl
 {
-  // Calculates the missmatch (integer), at each face edge, of a cross field defined on the mesh faces.
-  // The integer missmatch is a multiple of pi/2 that transforms the cross on one side of the edge to
+  // Calculates the mismatch (integer), at each face edge, of a cross field defined on the mesh faces.
+  // The integer mismatch is a multiple of pi/2 that transforms the cross on one side of the edge to
   // the cross on the other side. It represents the deviation from a Lie connection across the edge.
 
   // Inputs:
@@ -24,20 +24,19 @@ namespace igl
   //   isCombed  boolean, specifying whether the field is combed (i.e. matching has been precomputed.
   //             If not, the field is combed first.
   // Output:
-  //   Handle_MMatch    #F by 3 eigen Matrix containing the integer missmatch of the cross field
-  //                    across all face edges
+  //   mismatch  #F by 3 eigen Matrix containing the integer mismatch of the cross field
+  //             across all face edges
   //
 
-  template <typename DerivedV, typename DerivedF, typename DerivedM>
-  IGL_INLINE void cross_field_missmatch(const Eigen::PlainObjectBase<DerivedV> &V,
+    template <typename DerivedV, typename DerivedF, typename DerivedO>
+    IGL_INLINE void line_field_mismatch(const Eigen::PlainObjectBase<DerivedV> &V,
                                         const Eigen::PlainObjectBase<DerivedF> &F,
                                         const Eigen::PlainObjectBase<DerivedV> &PD1,
-                                        const Eigen::PlainObjectBase<DerivedV> &PD2,
                                         const bool isCombed,
-                                        Eigen::PlainObjectBase<DerivedM> &missmatch);
+                                        Eigen::PlainObjectBase<DerivedO> &mismatch);
 }
 #ifndef IGL_STATIC_LIBRARY
-#include "cross_field_missmatch.cpp"
+#include "line_field_mismatch.cpp"
 #endif
 
 #endif
