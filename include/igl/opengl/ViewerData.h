@@ -205,6 +205,9 @@ public:
     const igl::opengl::ViewerData& data,
     const bool invert_normals,
     igl::opengl::MeshGL& meshgl);
+  
+public:
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 } // namespace opengl
