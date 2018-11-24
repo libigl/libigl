@@ -15,17 +15,56 @@ TEST(randperm, default_rng_reproduce_identity)
   test_common::assert_eq(I1, I2);
 }
 
-TEST(randperm, custom_rng_reproduce_identity)
+namespace randperm
 {
-  int n = 100;
-  Eigen::VectorXi I1, I2;
-  std::minstd_rand rng1(6);
-  std::minstd_rand rng2(6);
+  template<typename URBG>
+  void test_reproduce()
+  {
+    int n = 100;
+    Eigen::VectorXi I1, I2;
+    URBG rng1(6);
+    URBG rng2(6);
 
-  igl::randperm(100, I1, rng1.min(), rng1.max(),
-                [&rng1]()->int64_t { return rng1(); });
-  igl::randperm(100, I2, rng2.min(), rng2.max(),
-                [&rng2]()->int64_t { return rng2(); });
+    igl::randperm(100, I1, rng1);
+    igl::randperm(100, I2, rng2);
 
-  test_common::assert_eq(I1, I2);
+    test_common::assert_eq(I1, I2);
+  }
+}
+
+TEST(randperm, minstd_rand0_reproduce_identity)
+{
+  randperm::test_reproduce<std::minstd_rand0>();
+}
+TEST(randperm, minstd_rand_reproduce_identity)
+{
+  randperm::test_reproduce<std::minstd_rand>();
+}
+TEST(randperm, mt19937_reproduce_identity)
+{
+  randperm::test_reproduce<std::mt19937>();
+}
+TEST(randperm, mt19937_64_reproduce_identity)
+{
+  randperm::test_reproduce<std::mt19937_64>();
+}
+TEST(randperm, ranlux24_base_reproduce_identity)
+{
+  randperm::test_reproduce<std::ranlux24_base>();
+}
+TEST(randperm, ranlux48_base_reproduce_identity)
+{
+  randperm::test_reproduce<std::ranlux48_base>();
+}
+TEST(randperm, ranlux24_reproduce_identity)
+{
+  randperm::test_reproduce<std::ranlux24>();
+}
+TEST(randperm, ranlux48_reproduce_identity)
+{
+  randperm::test_reproduce<std::ranlux48>();
+}
+TEST(randperm, knuth_b_reproduce_identity)
+{
+  randperm::test_reproduce<std::knuth_b>();
 }
