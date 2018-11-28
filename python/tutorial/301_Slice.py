@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 #
 # This file is part of libigl, a simple c++ geometry processing library.
 #
