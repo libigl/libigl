@@ -715,8 +715,13 @@ namespace glfw
       if (callback_mouse_move(*this, mouse_x, mouse_y))
         return true;
 
+
     if (down)
     {
+      // We need the window height to transform the mouse click coordinates into viewport-mouse-click coordinates
+      // for igl::trackball and igl::two_axis_valuator_fixed_up
+      int width_window, height_window;
+      glfwGetWindowSize(window, &width_window, &height_window);
       switch (mouse_mode)
       {
         case MouseMode::Rotation:
@@ -733,10 +738,10 @@ namespace glfw
                 core().viewport(3),
                 2.0f,
                 down_rotation,
-                down_mouse_x,
-                down_mouse_y,
-                mouse_x,
-                mouse_y,
+                down_mouse_x - core().viewport(0),
+                down_mouse_y - (height_window - core().viewport(1) - core().viewport(3)),
+                mouse_x - core().viewport(0),
+                mouse_y - (height_window - core().viewport(1) - core().viewport(3)),
                 core().trackball_angle);
               break;
             case ViewerCore::ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP:
@@ -744,7 +749,10 @@ namespace glfw
                 core().viewport(2),core().viewport(3),
                 2.0,
                 down_rotation,
-                down_mouse_x, down_mouse_y, mouse_x, mouse_y,
+                down_mouse_x - core().viewport(0),
+                down_mouse_y - (height_window - core().viewport(1) - core().viewport(3)),
+                mouse_x - core().viewport(0),
+                mouse_y - (height_window - core().viewport(1) - core().viewport(3)),
                 core().trackball_angle);
               break;
           }
