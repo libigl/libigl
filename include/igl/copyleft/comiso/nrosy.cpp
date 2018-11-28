@@ -257,7 +257,8 @@ void igl::copyleft::comiso::NRosyField::prepareSystemMatrix(const int N)
   // System sizes: A (count_t + count_p) x (count_t + count_p)
   //               b (count_t + count_p)
 
-  b = Eigen::VectorXd::Zero(count_t + count_p);
+  b.resize(count_t + count_p);
+  b.setZero();
 
   std::vector<Eigen::Triplet<double> > T;
   T.reserve(3 * 4 * count_p);
@@ -326,7 +327,7 @@ void igl::copyleft::comiso::NRosyField::prepareSystemMatrix(const int N)
     }
   }
 
-  A = Eigen::SparseMatrix<double>(count_t + count_p, count_t + count_p);
+  A.resize(count_t + count_p, count_t + count_p);
   A.setFromTriplets(T.begin(), T.end());
 
   // Soft constraints
@@ -373,14 +374,10 @@ void igl::copyleft::comiso::NRosyField::solveRoundings()
 {
   unsigned n = A.rows();
 
-  gmm::col_matrix< gmm::wsvector< double > > gmm_A;
-  std::vector<double> gmm_b;
+  gmm::col_matrix< gmm::wsvector< double > > gmm_A(n, n);
+  std::vector<double> gmm_b(n);
   std::vector<int> ids_to_round;
-  std::vector<double> x;
-
-  gmm_A.resize(n,n);
-  gmm_b.resize(n);
-  x.resize(n);
+  std::vector<double> x(n);
 
   // Copy A
   for (int k=0; k<A.outerSize(); ++k)
