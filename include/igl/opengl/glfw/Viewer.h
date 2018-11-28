@@ -156,6 +156,10 @@ namespace glfw
     // Returns 0 if not found
     IGL_INLINE size_t core_index(const int id) const;
 
+    // Change selected_core_index to the viewport containing the mouse
+    // (current_mouse_x, current_mouse_y)
+    IGL_INLINE void select_hovered_core();
+
 public:
     //////////////////////
     // Member variables //

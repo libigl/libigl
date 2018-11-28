@@ -595,6 +595,25 @@ namespace glfw
     return false;
   }
 
+  IGL_INLINE void Viewer::select_hovered_core()
+  {
+    int width_window, height_window;
+    glfwGetFramebufferSize(window, &width_window, &height_window);
+    for (int i = 0; i < core_list.size(); i++)
+    {
+      Eigen::Vector4f viewport = core_list[i].viewport;
+
+      if ((current_mouse_x > viewport[0]) &&
+          (current_mouse_x < viewport[0] + viewport[2]) &&
+          (height_window - current_mouse_y > viewport[1]) &&
+          (height_window -current_mouse_y < viewport[1] + viewport[3]))
+      {
+        selected_core_index = i;
+        break;
+      }
+    }
+  }
+
   IGL_INLINE bool Viewer::mouse_down(MouseButton button,int modifier)
   {
     // Remember mouse location at down even if used by callback/plugin
@@ -610,6 +629,9 @@ namespace glfw
         return true;
 
     down = true;
+
+    // Select the core containing the click location.
+    select_hovered_core();
 
     down_translation = core().camera_translation;
 
@@ -693,20 +715,6 @@ namespace glfw
       if (callback_mouse_move(*this, mouse_x, mouse_y))
         return true;
 
-    int width_window, height_window;
-    glfwGetFramebufferSize(window, &width_window, &height_window);
-    for (int i = 0; i < core_list.size(); i++)
-    {
-        Eigen::Vector4f viewport = core_list[i].viewport;
-
-        if (mouse_x > viewport[0] && mouse_x < viewport[0] + viewport[2] &&
-            height_window-mouse_y > viewport[1] && height_window-mouse_y < viewport[1] + viewport[3])
-        {
-            selected_core_index = i;
-            break;
-        }
-    }
-
     if (down)
     {
       switch (mouse_mode)
@@ -774,6 +782,10 @@ namespace glfw
 
   IGL_INLINE bool Viewer::mouse_scroll(float delta_y)
   {
+    // Direct the scrolling operation to the appropriate viewport
+    // (unless the core selection is locked by an ongoing mouse interaction).
+    if (!down)
+      select_hovered_core();
     scroll_position += delta_y;
 
     for (unsigned int i = 0; i<plugins.size(); ++i)
