@@ -83,15 +83,8 @@ if(MSVC)
   endif()
 endif()
 
-if(BUILD_SHARED_LIBS)
-  # Generate position independent code
-  set_target_properties(igl_common PROPERTIES INTERFACE_POSITION_INDEPENDENT_CODE ON)
-endif()
-
-if(UNIX)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
-endif()
+# Generate position independent code
+set_target_properties(igl_common PROPERTIES INTERFACE_POSITION_INDEPENDENT_CODE ON)
 
 # Eigen
 if(TARGET Eigen3::Eigen)
