@@ -2,7 +2,7 @@
 #include <igl/seam_edges.h>
 #include <igl/readOBJ.h>
 
-TEST(seam_edges, tet)
+TEST_CASE("seam_edges: tet", "[igl]")
 {
   Eigen::MatrixXd V,TC,CN;
   Eigen::MatrixXi F,FTC,FN;
@@ -17,7 +17,7 @@ TEST(seam_edges, tet)
     3,0,0,2,
     1,0,3,2;
   test_common::assert_eq(seams,seams_gt);
-  ASSERT_EQ(boundaries.size(),0);
-  ASSERT_EQ(foldovers.size(),0);
+  REQUIRE (0 == boundaries.size());
+  REQUIRE (0 == foldovers.size());
 }
 

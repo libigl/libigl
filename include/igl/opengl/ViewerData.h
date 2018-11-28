@@ -19,6 +19,14 @@
 // Alec: This is a mesh class containing a variety of data types (normals,
 // overlays, material colors, etc.)
 //
+// WARNING: Eigen data members (such as Eigen::Vector4f) should explicitly
+// disable alignment (e.g. use `Eigen::Matrix<float, 4, 1, Eigen::DontAlign>`),
+// in order to avoid alignment issues further down the line (esp. if the
+// structure are stored in a std::vector).
+//
+// See this thread for a more detailed discussion:
+// https://github.com/libigl/libigl/pull/1029
+//
 namespace igl
 {
 
@@ -105,7 +113,7 @@ public:
   //   C  #E|1 by 3 color(s)
   IGL_INLINE void set_edges (const Eigen::MatrixXd& P, const Eigen::MatrixXi& E, const Eigen::MatrixXd& C);
   // Alec: This is very confusing. Why does add_edges have a different API from
-  // set_edges? 
+  // set_edges?
   IGL_INLINE void add_edges (const Eigen::MatrixXd& P1, const Eigen::MatrixXd& P2, const Eigen::MatrixXd& C);
   IGL_INLINE void add_label (const Eigen::VectorXd& P,  const std::string& str);
 
@@ -192,7 +200,7 @@ public:
   // Point size / line width
   float point_size;
   float line_width;
-  Eigen::Vector4f line_color;
+  Eigen::Matrix<float, 4, 1, Eigen::DontAlign> line_color;
 
   // Shape material
   float shininess;

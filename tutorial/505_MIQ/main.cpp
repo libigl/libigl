@@ -3,7 +3,7 @@
 #include <igl/comb_cross_field.h>
 #include <igl/comb_frame_field.h>
 #include <igl/compute_frame_field_bisectors.h>
-#include <igl/cross_field_missmatch.h>
+#include <igl/cross_field_mismatch.h>
 #include <igl/cut_mesh_from_singularities.h>
 #include <igl/find_cross_field_singularities.h>
 #include <igl/local_basis.h>
@@ -269,7 +269,7 @@ int main(int argc, char *argv[])
     igl::comb_cross_field(V, F, BIS1, BIS2, BIS1_combed, BIS2_combed);
 
     // Find the integer mismatches
-    igl::cross_field_missmatch(V, F, BIS1_combed, BIS2_combed, true, MMatch);
+    igl::cross_field_mismatch(V, F, BIS1_combed, BIS2_combed, true, MMatch);
 
     // Find the singularities
     igl::find_cross_field_singularities(V, F, MMatch, isSingularity, singularityIndex);
