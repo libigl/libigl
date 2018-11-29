@@ -355,18 +355,8 @@ void igl::copyleft::comiso::NRosyField::prepareSystemMatrix(const int N)
     Eigen::SparseMatrix<double> ASoft(count_t + count_p, count_t + count_p);
     ASoft.setFromTriplets(TSoft.begin(), TSoft.end());
 
-    // Stupid Eigen bug
-    Eigen::SparseMatrix<double> Atmp (count_t + count_p, count_t + count_p);
-    Eigen::SparseMatrix<double> Atmp2(count_t + count_p, count_t + count_p);
-    Eigen::SparseMatrix<double> Atmp3(count_t + count_p, count_t + count_p);
-
-    // Merge the two part of the energy
-    Atmp = (1.0 - softAlpha)*A;
-    Atmp2 = softAlpha * ASoft;
-    Atmp3 = Atmp+Atmp2;
-
-    A = Atmp3;
-    b = b*(1.0 - softAlpha) + bSoft * softAlpha;
+    A = (1.0 - softAlpha) * A + softAlpha * ASoft;
+    b = b * (1.0 - softAlpha) + bSoft * softAlpha;
   }
 }
 
