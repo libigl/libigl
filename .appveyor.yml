@@ -1,16 +1,20 @@
 version: 1.0.{build}
 os: Visual Studio 2017
-test: off
+platform: x64
 clone_folder: C:\projects\libigl
+shallow_clone: true
 branches:
   only:
     - master
     - dev
 environment:
-  BOOST_ROOT: C:/Libraries/boost_1_65_1
+  matrix:
+  - config: Debug
+    BOOST_ROOT: C:/Libraries/boost_1_65_1
 install:
-  - git submodule update --init --recursive
   - cinstall: python
+build:
+  parallel: true
 build_script:
   - cd c:\projects\libigl
   # External libraries (boost)
@@ -32,7 +36,10 @@ build_script:
   # Tutorials and tests
   - mkdir build
   - cd build
-  - cmake -DLIBIGL_BUILD_TESTS=OFF -DLIBIGL_BUILD_TUTORIALS=ON -DLIBIGL_BUILD_PYTHON=OFF -G "Visual Studio 15 2017 Win64" ../
+  - cmake -DCMAKE_BUILD_TYPE=%config% -DLIBIGL_WITH_COMISO=OFF -DLIBIGL_BUILD_PYTHON=OFF -G "Visual Studio 15 2017 Win64" ../
   - set MSBuildLogger="C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
-  - set MSBuildOptions=/v:m /p:Configuration=Debug /logger:%MSBuildLogger%
+  - set MSBuildOptions=/v:m /p:Configuration=%config% /logger:%MSBuildLogger%
   - msbuild %MSBuildOptions% libigl.sln
+
+test_script:
+  - ctest -C %config% --verbose --output-on-failure -j 2

@@ -3,7 +3,8 @@
 #include <igl/setxor.h>
 #include <igl/copyleft/tetgen/tetrahedralize.h>
 
-TEST(tetrahedralize, single_tet) {
+TEST_CASE("tetrahedralize: single_tet", "[igl/copyleft/tetgen]")
+{
   const Eigen::MatrixXd V = (Eigen::MatrixXd(4,3)<<
     0,0,0,
     1,0,0,
@@ -13,19 +14,20 @@ TEST(tetrahedralize, single_tet) {
   Eigen::MatrixXd TV;
   Eigen::MatrixXi TT,TF;
   igl::copyleft::tetgen::tetrahedralize(V,F,"cpQ",TV,TT,TF);
-  ASSERT_EQ(TV.rows() , 4);
-  ASSERT_EQ(TT.rows() , 1);
-  ASSERT_EQ(TF.rows() , 4);
+  REQUIRE (4 == TV.rows());
+  REQUIRE (1 == TT.rows());
+  REQUIRE (4 == TF.rows());
   Eigen::MatrixXi TTcorrect = (Eigen::MatrixXi(1,4)<<0,1,2,3).finished();
   {
     Eigen::VectorXi TT_XOR,IA,IB;
     igl::setxor(TT,TTcorrect,TT_XOR,IA,IB);
-    ASSERT_EQ(TT_XOR.size(),0);
+    REQUIRE (0 == TT_XOR.size());
   }
   test_common::assert_eq(TV,V);
 }
 
-TEST(tetrahedralize, schoenhardt) {
+TEST_CASE("tetrahedralize: schoenhardt", "[igl/copyleft/tetgen]")
+{
   const Eigen::MatrixXd V = (Eigen::MatrixXd(6,3)<<
     -246.2,-43.412,500,
      160.7,-191.51,500,
@@ -45,5 +47,5 @@ TEST(tetrahedralize, schoenhardt) {
   Eigen::MatrixXd TV;
   Eigen::MatrixXi TT,TF;
   igl::copyleft::tetgen::tetrahedralize(V,F,"pQ",TV,TT,TF);
-  ASSERT_GE(TV.rows() , V.rows());
+  REQUIRE (V.rows() <= TV.rows());
 }

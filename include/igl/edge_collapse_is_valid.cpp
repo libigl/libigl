@@ -49,7 +49,7 @@ IGL_INLINE bool igl::edge_collapse_is_valid(
       const Eigen::MatrixXi & EI) 
     {
       vector<int> N,uN;
-      vector<int> V2Fe = circulation(e, ccw,F,E,EMAP,EF,EI);
+      vector<int> V2Fe = circulation(e, ccw,EMAP,EF,EI);
       for(auto f : V2Fe)
       {
         N.push_back(F(f,0));

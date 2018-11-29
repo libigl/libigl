@@ -35,7 +35,7 @@ endfunction()
 function(igl_download_comiso)
 	igl_download_project(CoMISo
 		GIT_REPOSITORY https://github.com/libigl/CoMISo.git
-		GIT_TAG        fea3ee0ba7d42ee3eca202d484e4fad855e4d6aa
+		GIT_TAG        1f9618cf9b7bd77370d817976470d59091928606
 	)
 endfunction()
 
@@ -58,8 +58,8 @@ endfunction()
 ## Embree
 function(igl_download_embree)
 	igl_download_project(embree
-		URL            https://github.com/embree/embree/archive/v2.17.4.tar.gz
-		URL_MD5        2038f3216b1d626e87453aee72c470e5
+		URL            https://github.com/embree/embree/archive/v3.2.3.tar.gz
+		URL_MD5        1868cda1c97d83d7a0b67b0b64b18cef
 		# GIT_REPOSITORY https://github.com/embree/embree.git
 		# GIT_TAG        cb61322db3bb7082caed21913ad14869b436fe78
 	)
@@ -69,7 +69,7 @@ endfunction()
 function(igl_download_glad)
 	igl_download_project(glad
 		GIT_REPOSITORY https://github.com/libigl/libigl-glad.git
-		GIT_TAG        71e35fe685a0cc160068a2f2f971c40b82d14af0
+		GIT_TAG        09b4969c56779f7ddf8e6176ec1873184aec890f
 	)
 endfunction()
 
@@ -77,7 +77,7 @@ endfunction()
 function(igl_download_glfw)
 	igl_download_project(glfw
 		GIT_REPOSITORY https://github.com/glfw/glfw.git
-		GIT_TAG        58cc4b2c5c2c9a245e09451437dd6f5af4d60c84
+		GIT_TAG        53c8c72c676ca97c10aedfe3d0eb4271c5b23dba
 	)
 endfunction()
 
@@ -105,15 +105,15 @@ endfunction()
 function(igl_download_stb)
 	igl_download_project(stb
 		GIT_REPOSITORY https://github.com/libigl/libigl-stb.git
-		GIT_TAG        e671ceb3def5e7029a23de14c55dc16301ad4dab
+		GIT_TAG        edfa26e389060c21b9dd7812a0b19c00208b7224
 	)
 endfunction()
 
 ## TetGen
 function(igl_download_tetgen)
 	igl_download_project(tetgen
-		GIT_REPOSITORY https://github.com/libigl/tetgen.git
-		GIT_TAG        d2dcc33cb8551f16e302c8130ce12fa52992cd09
+		GIT_REPOSITORY https://github.com/jdumas/tetgen.git
+		GIT_TAG        63b4bdc5b947f9db75f01e0da36af54074ace5c9
 	)
 endfunction()
 
@@ -128,16 +128,16 @@ endfunction()
 ## Triangle
 function(igl_download_triangle)
 	igl_download_project(triangle
-		GIT_REPOSITORY https://github.com/libigl/triangle.git
-		GIT_TAG        d6761dd691e2e1318c83bf7773fea88d9437464a
+		GIT_REPOSITORY https://github.com/jdumas/triangle.git
+		GIT_TAG        2cd0672ff1f67f9f6bb8e556e84901293e637b76
 	)
 endfunction()
 
-## Google test
-function(igl_download_googletest)
-	igl_download_project(googletest
-		GIT_REPOSITORY https://github.com/google/googletest
-		GIT_TAG        release-1.8.1
+## Catch2
+function(igl_download_catch2)
+	igl_download_project(catch2
+		GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+		GIT_TAG        03d122a35c3f5c398c43095a87bc82ed44642516
 	)
 endfunction()
 

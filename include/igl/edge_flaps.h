@@ -16,14 +16,16 @@ namespace igl
   //
   // Inputs:
   //   F  #F by 3 list of face indices
-  //   E  #E by 2 list of edge indices into V.
-  //   EMAP #F*3 list of indices into E, mapping each directed edge to unique
-  //     unique edge in E
+  //   uE  #uE by 2 list of edge indices into V.
+  //   EMAP #F*3 list of indices into uE, mapping each directed edge to unique
+  //     unique edge in uE
   // Outputs:
   //   EF  #E by 2 list of edge flaps, EF(e,0)=f means e=(i-->j) is the edge of
   //     F(f,:) opposite the vth corner, where EI(e,0)=v. Similarly EF(e,1) "
   //     e=(j->i)
   //   EI  #E by 2 list of edge flap corners (see above).
+  //
+  // See also: unique_edge_map
   //
   // TODO: This seems to be a duplicate of edge_topology.h
   // igl::edge_topology(V,F,etEV,etFE,etEF);
@@ -34,14 +36,14 @@ namespace igl
   // all(efEMAP(sub2ind(size(F),repmat(1:size(F,1),3,1)',repmat([1 2 3],size(F,1),1))) == etFE(:,[2 3 1]))
   IGL_INLINE void edge_flaps(
     const Eigen::MatrixXi & F,
-    const Eigen::MatrixXi & E,
+    const Eigen::MatrixXi & uE,
     const Eigen::VectorXi & EMAP,
     Eigen::MatrixXi & EF,
     Eigen::MatrixXi & EI);
   // Only faces as input
   IGL_INLINE void edge_flaps(
     const Eigen::MatrixXi & F,
-    Eigen::MatrixXi & E,
+    Eigen::MatrixXi & uE,
     Eigen::VectorXi & EMAP,
     Eigen::MatrixXi & EF,
     Eigen::MatrixXi & EI);
