@@ -605,8 +605,8 @@ namespace glfw
 
       if ((current_mouse_x > viewport[0]) &&
           (current_mouse_x < viewport[0] + viewport[2]) &&
-          (height_window - current_mouse_y > viewport[1]) &&
-          (height_window -current_mouse_y < viewport[1] + viewport[3]))
+          ((height_window - current_mouse_y) > viewport[1]) &&
+          ((height_window - current_mouse_y) < viewport[1] + viewport[3]))
       {
         selected_core_index = i;
         break;
@@ -721,7 +721,7 @@ namespace glfw
       // We need the window height to transform the mouse click coordinates into viewport-mouse-click coordinates
       // for igl::trackball and igl::two_axis_valuator_fixed_up
       int width_window, height_window;
-      glfwGetWindowSize(window, &width_window, &height_window);
+      glfwGetFramebufferSize(window, &width_window, &height_window);
       switch (mouse_mode)
       {
         case MouseMode::Rotation:
