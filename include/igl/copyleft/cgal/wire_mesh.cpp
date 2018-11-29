@@ -64,7 +64,7 @@ IGL_INLINE void igl::copyleft::cgal::wire_mesh(
   };
 
   // Count each vertex's indicident edges.
-  std::vector<int> nedges(WV.rows());
+  std::vector<int> nedges(WV.rows(), 0);
   for(int e = 0;e<WE.rows();e++)
   {
     ++nedges[WE(e, 0)];
