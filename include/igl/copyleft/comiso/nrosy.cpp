@@ -661,57 +661,46 @@ void igl::copyleft::comiso::NRosyField::findCones(int N)
 {
   // Compute I0, see http://www.graphics.rwth-aachen.de/media/papers/bommes_zimmer_2009_siggraph_011.pdf for details
 
-  Eigen::VectorXd I0 = Eigen::VectorXd::Zero(V.rows());
+  singularityIndex = Eigen::VectorXd::Zero(V.rows());
 
   // first the k
-  for (unsigned i=0; i < EV.rows(); ++i)
+  for (unsigned i = 0; i < EV.rows(); ++i)
   {
     if (!isBorderEdge[i])
     {
-      I0(EV(i,0)) -= k(i);
-      I0(EV(i,1)) += k(i);
+      singularityIndex(EV(i, 0)) -= k(i);
+      singularityIndex(EV(i, 1)) += k(i);
     }
   }
 
   // then the A
   Eigen::VectorXd A = angleDefect();
-
-  I0 = I0 + A;
-
+  singularityIndex += A;
   // normalize
-  I0 = I0 / (2*igl::PI);
+  singularityIndex /= (2 * igl::PI);
 
   // round to integer (remove numerical noise)
-  for (unsigned i=0; i < I0.size(); ++i)
-    I0(i) = round(I0(i));
+  for (unsigned i = 0; i < singularityIndex.size(); ++i)
+    singularityIndex(i) = round(singularityIndex(i));
 
-  // compute I
-  Eigen::VectorXd I = I0;
-
-  for (unsigned i=0; i < EV.rows(); ++i)
+  for (unsigned i = 0; i < EV.rows(); ++i)
   {
     if (!isBorderEdge[i])
     {
-      I(EV(i,0)) -= double(p(i))/double(N);
-      I(EV(i,1)) += double(p(i))/double(N);
+      singularityIndex(EV(i, 0)) -= double(p(i)) / double(N);
+      singularityIndex(EV(i, 1)) += double(p(i)) / double(N);
     }
   }
 
   // Clear the vertices on the edges
-  for (unsigned i=0; i < EV.rows(); ++i)
+  for (unsigned i = 0; i < EV.rows(); ++i)
   {
     if (isBorderEdge[i])
     {
-      I0(EV(i,0)) = 0;
-      I0(EV(i,1)) = 0;
-      I(EV(i,0)) = 0;
-      I(EV(i,1)) = 0;
-      A(EV(i,0)) = 0;
-      A(EV(i,1)) = 0;
+      singularityIndex(EV(i,0)) = 0;
+      singularityIndex(EV(i,1)) = 0;
     }
   }
-
-  singularityIndex = I;
 }
 
 Eigen::VectorXd igl::copyleft::comiso::NRosyField::getSingularityIndexPerVertex()
