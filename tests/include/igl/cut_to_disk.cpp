@@ -139,7 +139,6 @@ TEST_CASE("cut_to_disk: annulus", "[igl][PR984][bug]") {
 
   std::vector<std::vector<int>> cuts;
   cut_to_disk(F, cuts);
-  REQUIRE (cuts.size() == 1);
 
   cut_to_disk_helper::assert_is_disk(V, F, cuts);
 }
