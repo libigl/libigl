@@ -309,5 +309,6 @@ IGL_INLINE void igl::opengl::MeshGL::free()
     free(shader_overlay_lines);
     free(shader_overlay_points);
     free_buffers();
+    is_initialized = false;
   }
 }

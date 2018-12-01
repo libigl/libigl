@@ -25,14 +25,27 @@ int main(int argc, char *argv[])
     if (key == '1')
     {
       nested.emplace_back();
+
       // Attach a menu plugin
       // igl::opengl::glfw::imgui::ImGuiMenu menu;
       // viewer.plugins.push_back(&menu);
 
       nested.back().data().set_mesh(V2, F2);
       nested.back().data().set_face_based(true);
-      nested.back().launch_init();
       nested.back().launch_with(&viewer);
+      return true;
+    }
+    if (key == '2')
+    {
+      igl::opengl::glfw::Viewer subviewer;
+
+      // Attach a menu plugin
+      // igl::opengl::glfw::imgui::ImGuiMenu menu;
+      // viewer.plugins.push_back(&menu);
+
+      subviewer.data().set_mesh(V2, F2);
+      subviewer.data().set_face_based(true);
+      subviewer.launch();
       return true;
     }
     return false;

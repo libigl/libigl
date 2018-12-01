@@ -44,9 +44,6 @@
 #include <igl/unproject.h>
 #include <igl/serialize.h>
 
-// Internal global stack of windows for nested glfw viewers
-static std::vector<GLFWwindow *> __windows;
-
 static void glfw_refresh_callback(GLFWwindow* window)
 {
   auto * viewer = reinterpret_cast<igl::opengl::glfw::Viewer *>(glfwGetWindowUserPointer(window));
@@ -140,6 +137,32 @@ namespace glfw
     return EXIT_SUCCESS;
   }
 
+  IGL_INLINE int Viewer::launch_with(Viewer *shared,bool resizable,bool fullscreen)
+  {
+    if (!shared || shared == this)
+      return EXIT_FAILURE;
+    Viewer *root = shared;
+    while (root->parent)
+    {
+      if (!root->children.empty())
+      {
+        // Any parent viewer that is not the root shouldn't have a list of children
+        // to render!
+        return EXIT_FAILURE;
+      }
+      root = root->parent;
+    }
+
+    parent = root;
+    launch_init(resizable,fullscreen);
+    if (root->children.empty())
+    {
+      root->children.push_back(root);
+    }
+    root->children.push_back(this);
+    return EXIT_SUCCESS;
+  }
+
   IGL_INLINE int Viewer::launch_init(bool resizable,bool fullscreen)
   {
     glfwSetErrorCallback(glfw_error_callback);
@@ -154,19 +177,19 @@ namespace glfw
       glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
       glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
     #endif
-    GLFWwindow *prev_window = (__windows.empty() ? nullptr : __windows.back());
+    GLFWwindow *share = (parent ? parent->window : nullptr);
     if(fullscreen)
     {
       GLFWmonitor *monitor = glfwGetPrimaryMonitor();
       const GLFWvidmode *mode = glfwGetVideoMode(monitor);
-      window = glfwCreateWindow(mode->width,mode->height,"libigl viewer",monitor,prev_window);
+      window = glfwCreateWindow(mode->width,mode->height,"libigl viewer",monitor,share);
     }
     else
     {
       if (core.viewport.tail<2>().any()) {
-        window = glfwCreateWindow(core.viewport(2),core.viewport(3),"libigl viewer",nullptr,prev_window);
+        window = glfwCreateWindow(core.viewport(2),core.viewport(3),"libigl viewer",nullptr,share);
       } else {
-        window = glfwCreateWindow(1280,800,"libigl viewer",nullptr,prev_window);
+        window = glfwCreateWindow(1280,800,"libigl viewer",nullptr,share);
       }
     }
     if (!window)
@@ -174,7 +197,6 @@ namespace glfw
       glfwTerminate();
       return EXIT_FAILURE;
     }
-    __windows.push_back(window);
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1); // Enable vsync
     // Load OpenGL and its extensions
@@ -279,29 +301,6 @@ namespace glfw
     return EXIT_SUCCESS;
   }
 
-  IGL_INLINE bool Viewer::launch_with(Viewer *parent)
-  {
-    if (!parent || parent == this)
-      return EXIT_FAILURE;
-    Viewer *root = parent;
-    while (root->parent)
-    {
-      if (!root->children.empty())
-      {
-        // Any parent viewer that is not the root shouldn't have a list of children
-        // to render!
-        return EXIT_FAILURE;
-      }
-      root = root->parent;
-    }
-    if (root->children.empty())
-    {
-      root->children.push_back(root);
-    }
-    root->children.push_back(this);
-    return EXIT_SUCCESS;
-  }
-
   IGL_INLINE void Viewer::launch_shut()
   {
     for(Viewer *viewer : children)
@@ -313,6 +312,7 @@ namespace glfw
       }
     }
     children.clear();
+    glfwMakeContextCurrent(window);
     for(auto & data : data_list)
     {
       data.meshgl.free();
@@ -320,24 +320,8 @@ namespace glfw
     core.shut();
     shutdown_plugins();
     glfwDestroyWindow(window);
-    __windows.pop_back();
-    // If the current window stack is empty, terminate GLFW.
-    // Otherwise, restore previous window's context
-    if (__windows.empty())
-    {
-      glfwTerminate();
-    }
-    else
-    {
-      GLFWwindow *prev_window = __windows.back();
-      auto * prev_viewer = reinterpret_cast<igl::opengl::glfw::Viewer *>(glfwGetWindowUserPointer(prev_window));
-      // Restore OpenGL context a plugin states
-      glfwMakeContextCurrent(prev_window);
-      for (unsigned int i = 0; i<prev_viewer->plugins.size(); ++i)
-      {
-        prev_viewer->plugins[i]->restore();
-      }
-    }
+    // There may be other windows out there, so don't call glfwTerminate()
+    // glfwTerminate();
     return;
   }
 
