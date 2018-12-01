@@ -54,6 +54,11 @@ namespace glfw
     IGL_INLINE void shutdown_plugins();
     Viewer();
     ~Viewer();
+    // Delete copy and move constructors, since GLFWwindow holds a pointer to `this`
+    Viewer(Viewer&&) = delete;
+    Viewer& operator=(Viewer&&) = delete;
+    Viewer(const Viewer&) = delete;
+    Viewer& operator=(const Viewer&) = delete;
     // Mesh IO
     IGL_INLINE bool load_mesh_from_file(const std::string & mesh_file_name);
     IGL_INLINE bool   save_mesh_to_file(const std::string & mesh_file_name);
@@ -120,7 +125,13 @@ namespace glfw
 
     size_t selected_data_index;
     int next_data_id;
+
+    // GLFW event handling
     GLFWwindow* window;
+    double highdpi;
+    double scroll_x;
+    double scroll_y;
+
     // Stores all the viewing options
     ViewerCore core;
     // List of registered plugins

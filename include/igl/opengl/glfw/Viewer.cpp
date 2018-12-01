@@ -44,14 +44,12 @@
 #include <igl/unproject.h>
 #include <igl/serialize.h>
 
-// Internal global variables used for glfw event handling
-static igl::opengl::glfw::Viewer * __viewer;
-static double highdpi = 1;
-static double scroll_x = 0;
-static double scroll_y = 0;
+// Internal global stack of windows for nested glfw viewers
+static std::vector<GLFWwindow *> __windows;
 
 static void glfw_mouse_press(GLFWwindow* window, int button, int action, int modifier)
 {
+  auto * viewer = reinterpret_cast<igl::opengl::glfw::Viewer *>(glfwGetWindowUserPointer(window));
 
   igl::opengl::glfw::Viewer::MouseButton mb;
 
@@ -63,9 +61,9 @@ static void glfw_mouse_press(GLFWwindow* window, int button, int action, int mod
     mb = igl::opengl::glfw::Viewer::MouseButton::Middle;
 
   if (action == GLFW_PRESS)
-    __viewer->mouse_down(mb,modifier);
+    viewer->mouse_down(mb,modifier);
   else
-    __viewer->mouse_up(mb,modifier);
+    viewer->mouse_up(mb,modifier);
 }
 
 static void glfw_error_callback(int error, const char* description)
@@ -75,41 +73,45 @@ static void glfw_error_callback(int error, const char* description)
 
 static void glfw_char_mods_callback(GLFWwindow* window, unsigned int codepoint, int modifier)
 {
-  __viewer->key_pressed(codepoint, modifier);
+  auto * viewer = reinterpret_cast<igl::opengl::glfw::Viewer *>(glfwGetWindowUserPointer(window));
+  viewer->key_pressed(codepoint, modifier);
 }
 
 static void glfw_key_callback(GLFWwindow* window, int key, int scancode, int action, int modifier)
 {
+  auto * viewer = reinterpret_cast<igl::opengl::glfw::Viewer *>(glfwGetWindowUserPointer(window));
+
   if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
     glfwSetWindowShouldClose(window, GL_TRUE);
 
   if (action == GLFW_PRESS)
-    __viewer->key_down(key, modifier);
+    viewer->key_down(key, modifier);
   else if(action == GLFW_RELEASE)
-    __viewer->key_up(key, modifier);
+    viewer->key_up(key, modifier);
 }
 
 static void glfw_window_size(GLFWwindow* window, int width, int height)
 {
-  int w = width*highdpi;
-  int h = height*highdpi;
+  auto * viewer = reinterpret_cast<igl::opengl::glfw::Viewer *>(glfwGetWindowUserPointer(window));
 
-  __viewer->post_resize(w, h);
+  int w = width*viewer->highdpi;
+  int h = height*viewer->highdpi;
 
+  viewer->post_resize(w, h);
 }
 
 static void glfw_mouse_move(GLFWwindow* window, double x, double y)
 {
-  __viewer->mouse_move(x*highdpi, y*highdpi);
+  auto * viewer = reinterpret_cast<igl::opengl::glfw::Viewer *>(glfwGetWindowUserPointer(window));
+  viewer->mouse_move(x*viewer->highdpi, y*viewer->highdpi);
 }
 
 static void glfw_mouse_scroll(GLFWwindow* window, double x, double y)
 {
-  using namespace std;
-  scroll_x += x;
-  scroll_y += y;
-
-  __viewer->mouse_scroll(y);
+  auto * viewer = reinterpret_cast<igl::opengl::glfw::Viewer *>(glfwGetWindowUserPointer(window));
+  viewer->scroll_x += x;
+  viewer->scroll_y += y;
+  viewer->mouse_scroll(y);
 }
 
 static void glfw_drop_callback(GLFWwindow *window,int count,const char **filenames)
@@ -146,18 +148,19 @@ namespace glfw
       glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
       glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
     #endif
+    GLFWwindow *prev_window = (__windows.empty() ? nullptr : __windows.back());
     if(fullscreen)
     {
       GLFWmonitor *monitor = glfwGetPrimaryMonitor();
       const GLFWvidmode *mode = glfwGetVideoMode(monitor);
-      window = glfwCreateWindow(mode->width,mode->height,"libigl viewer",monitor,nullptr);
+      window = glfwCreateWindow(mode->width,mode->height,"libigl viewer",monitor,prev_window);
     }
     else
     {
       if (core.viewport.tail<2>().any()) {
-        window = glfwCreateWindow(core.viewport(2),core.viewport(3),"libigl viewer",nullptr,nullptr);
+        window = glfwCreateWindow(core.viewport(2),core.viewport(3),"libigl viewer",nullptr,prev_window);
       } else {
-        window = glfwCreateWindow(1280,800,"libigl viewer",nullptr,nullptr);
+        window = glfwCreateWindow(1280,800,"libigl viewer",nullptr,prev_window);
       }
     }
     if (!window)
@@ -165,7 +168,9 @@ namespace glfw
       glfwTerminate();
       return EXIT_FAILURE;
     }
+    __windows.push_back(window);
     glfwMakeContextCurrent(window);
+    glfwSwapInterval(1); // Enable vsync
     // Load OpenGL and its extensions
     if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress))
     {
@@ -182,9 +187,8 @@ namespace glfw
       printf("Supported OpenGL is %s\n", (const char*)glGetString(GL_VERSION));
       printf("Supported GLSL is %s\n", (const char*)glGetString(GL_SHADING_LANGUAGE_VERSION));
     #endif
+    glfwSetWindowUserPointer(window,this);
     glfwSetInputMode(window,GLFW_CURSOR,GLFW_CURSOR_NORMAL);
-    // Initialize FormScreen
-    __viewer = this;
     // Register callbacks
     glfwSetKeyCallback(window, glfw_key_callback);
     glfwSetCursorPosCallback(window,glfw_mouse_move);
@@ -261,7 +265,24 @@ namespace glfw
     core.shut();
     shutdown_plugins();
     glfwDestroyWindow(window);
-    glfwTerminate();
+    __windows.pop_back();
+    // If the current window stack is empty, terminate GLFW.
+    // Otherwise, restore previous window's context
+    if (__windows.empty())
+    {
+      glfwTerminate();
+    }
+    else
+    {
+      GLFWwindow *prev_window = __windows.back();
+      auto * prev_viewer = reinterpret_cast<igl::opengl::glfw::Viewer *>(glfwGetWindowUserPointer(prev_window));
+      // Restore OpenGL context a plugin states
+      glfwMakeContextCurrent(prev_window);
+      for (unsigned int i = 0; i<prev_viewer->plugins.size(); ++i)
+      {
+        prev_viewer->plugins[i]->restore();
+      }
+    }
     return;
   }
 
@@ -296,7 +317,10 @@ namespace glfw
   IGL_INLINE Viewer::Viewer():
     data_list(1),
     selected_data_index(0),
-    next_data_id(1)
+    next_data_id(1),
+    highdpi(1),
+    scroll_x(0),
+    scroll_y(0)
   {
     window = nullptr;
     data_list.front().id = 0;

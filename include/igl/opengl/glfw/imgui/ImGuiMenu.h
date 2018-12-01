@@ -11,8 +11,10 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include <igl/opengl/glfw/Viewer.h>
 #include <igl/opengl/glfw/ViewerPlugin.h>
+#include <igl/opengl/gl.h>
 #include <igl/igl_inline.h>
 #include <memory>
+#include <exception>
 ////////////////////////////////////////////////////////////////////////////////
 
 // Forward declarations
@@ -27,8 +29,26 @@ namespace glfw
 namespace imgui
 {
 
+struct AbortFrame : public std::exception {
+  AbortFrame(std::function<void(void)> func) : deferred_callback_(func) { }
+  std::function<void(void)> deferred_callback_;
+};
+
 class ImGuiMenu : public igl::opengl::glfw::ViewerPlugin
 {
+  static ImGuiMenu * active_menu_;
+
+public:
+  ImGuiMenu() = default;
+  virtual ~ImGuiMenu() = default;
+
+private:
+  // Delete copy and move constructors, since we need to manage the internal ImGuiContext *
+  ImGuiMenu(ImGuiMenu&&) = delete;
+  ImGuiMenu& operator=(ImGuiMenu&&) = delete;
+  ImGuiMenu(const ImGuiMenu&) = delete;
+  ImGuiMenu& operator=(const ImGuiMenu&) = delete;
+
 protected:
   // Hidpi scaling to be used for text rendering.
   float hidpi_scaling_;
@@ -40,12 +60,22 @@ protected:
   // ImGui Context
   ImGuiContext * context_ = nullptr;
 
+  // Skip rendering current frame
+  bool skip_frame_ = false;
+
+  // Texture ID of the ImGui font atlas (hack for nested viewers)
+  GLuint tex_id_ = 0;
+
 public:
   IGL_INLINE virtual void init(igl::opengl::glfw::Viewer *_viewer) override;
+
+  IGL_INLINE void init_imgui();
 
   IGL_INLINE virtual void reload_font(int font_size = 13);
 
   IGL_INLINE virtual void shutdown() override;
+
+  IGL_INLINE virtual void restore() override;
 
   IGL_INLINE virtual bool pre_draw() override;
 
@@ -97,6 +127,8 @@ public:
   IGL_INLINE float hidpi_scaling();
 
   float menu_scaling() { return hidpi_scaling_ / pixel_ratio_; }
+
+  void skip_frame() { skip_frame_ = true; }
 };
 
 } // end namespace

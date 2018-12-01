@@ -56,6 +56,11 @@ public:
   {
   }
 
+  // Restore state after nested a plugin/viewer has shutdown
+  IGL_INLINE virtual void restore()
+  {
+  }
+
   // This function is called before a mesh is loaded
   IGL_INLINE virtual bool load(std::string filename)
   {

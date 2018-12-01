@@ -1,14 +1,14 @@
 cmake_minimum_required(VERSION 3.1)
 project(libigl_tutorials)
 
-### conditionally compile certain modules depending on libraries found on the system		
-list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../cmake)		
-	
-### Adding libIGL: choose the path to your local copy libIGL		
-if(NOT TARGET igl_common)		
-  include(libigl)		
-else()		
-  include(LibiglDownloadExternal)		
+### conditionally compile certain modules depending on libraries found on the system
+list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../cmake)
+
+### Adding libIGL: choose the path to your local copy libIGL
+if(NOT TARGET igl_common)
+  include(libigl)
+else()
+  include(LibiglDownloadExternal)
 endif()
 
 ### Download data
@@ -57,6 +57,9 @@ if(TUTORIALS_CHAPTER1)
     add_subdirectory("106_ViewerMenu")
   endif()
   add_subdirectory("107_MultipleMeshes")
+  if(LIBIGL_WITH_OPENGL_GLFW_IMGUI)
+    add_subdirectory("109_NestedMenus")
+  endif()
 endif()
 
 # Chapter 2
