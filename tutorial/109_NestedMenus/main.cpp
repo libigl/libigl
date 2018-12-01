@@ -4,6 +4,7 @@
 #include <igl/opengl/glfw/imgui/ImGuiHelpers.h>
 #include <imgui/imgui.h>
 #include <iostream>
+#include <list>
 #include "tutorial_shared_path.h"
 
 int main(int argc, char *argv[])
@@ -17,20 +18,21 @@ int main(int argc, char *argv[])
 
   // Init the viewer
   igl::opengl::glfw::Viewer viewer;
+  std::list<igl::opengl::glfw::Viewer> nested;
 
   viewer.callback_key_down = [&](igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier) {
     std::cout<<"Key: "<<key<<" "<<(unsigned int)key<<std::endl;
-    if (key == 'V')
+    if (key == '1')
     {
-      igl::opengl::glfw::Viewer nested;
-
+      nested.emplace_back();
       // Attach a menu plugin
       // igl::opengl::glfw::imgui::ImGuiMenu menu;
       // viewer.plugins.push_back(&menu);
 
-      nested.data().set_mesh(V2, F2);
-      nested.data().set_face_based(true);
-      nested.launch();
+      nested.back().data().set_mesh(V2, F2);
+      nested.back().data().set_face_based(true);
+      nested.back().launch_init();
+      nested.back().launch_with(&viewer);
       return true;
     }
     return false;
@@ -42,5 +44,6 @@ int main(int argc, char *argv[])
 
   // Plot the mesh
   viewer.data().set_mesh(V1, F1);
+  // viewer.core.is_animating = true;
   viewer.launch();
 }

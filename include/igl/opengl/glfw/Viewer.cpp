@@ -47,6 +47,12 @@
 // Internal global stack of windows for nested glfw viewers
 static std::vector<GLFWwindow *> __windows;
 
+static void glfw_refresh_callback(GLFWwindow* window)
+{
+  auto * viewer = reinterpret_cast<igl::opengl::glfw::Viewer *>(glfwGetWindowUserPointer(window));
+  viewer->draw();
+}
+
 static void glfw_mouse_press(GLFWwindow* window, int button, int action, int modifier)
 {
   auto * viewer = reinterpret_cast<igl::opengl::glfw::Viewer *>(glfwGetWindowUserPointer(window));
@@ -134,7 +140,7 @@ namespace glfw
     return EXIT_SUCCESS;
   }
 
-  IGL_INLINE int  Viewer::launch_init(bool resizable,bool fullscreen)
+  IGL_INLINE int Viewer::launch_init(bool resizable,bool fullscreen)
   {
     glfwSetErrorCallback(glfw_error_callback);
     if (!glfwInit())
@@ -190,7 +196,8 @@ namespace glfw
     glfwSetWindowUserPointer(window,this);
     glfwSetInputMode(window,GLFW_CURSOR,GLFW_CURSOR_NORMAL);
     // Register callbacks
-    glfwSetKeyCallback(window, glfw_key_callback);
+    glfwSetWindowRefreshCallback(window,glfw_refresh_callback);
+    glfwSetKeyCallback(window,glfw_key_callback);
     glfwSetCursorPosCallback(window,glfw_mouse_move);
     glfwSetWindowSizeCallback(window,glfw_window_size);
     glfwSetMouseButtonCallback(window,glfw_mouse_press);
@@ -211,20 +218,36 @@ namespace glfw
     return EXIT_SUCCESS;
   }
 
-
-
   IGL_INLINE bool Viewer::launch_rendering(bool loop)
   {
     // glfwMakeContextCurrent(window);
     // Rendering loop
     const int num_extra_frames = 5;
     int frame_counter = 0;
+    if (children.empty())
+    {
+      // List of viewers to render in the loop
+      children.push_back(this);
+    }
     while (!glfwWindowShouldClose(window))
     {
-
       double tic = get_seconds();
-      draw();
-      glfwSwapBuffers(window);
+      for (size_t i = 0; i < children.size();)
+      {
+        Viewer *viewer = children[i];
+        if (glfwWindowShouldClose(viewer->window))
+        {
+          viewer->launch_shut();
+          children.erase(children.begin() + i);
+        }
+        else
+        {
+          glfwMakeContextCurrent(viewer->window);
+          viewer->draw();
+          glfwSwapBuffers(viewer->window);
+          ++i;
+        }
+      }
       if(core.is_animating || frame_counter++ < num_extra_frames)
       {
         glfwPollEvents();
@@ -256,8 +279,40 @@ namespace glfw
     return EXIT_SUCCESS;
   }
 
+  IGL_INLINE bool Viewer::launch_with(Viewer *parent)
+  {
+    if (!parent || parent == this)
+      return EXIT_FAILURE;
+    Viewer *root = parent;
+    while (root->parent)
+    {
+      if (!root->children.empty())
+      {
+        // Any parent viewer that is not the root shouldn't have a list of children
+        // to render!
+        return EXIT_FAILURE;
+      }
+      root = root->parent;
+    }
+    if (root->children.empty())
+    {
+      root->children.push_back(root);
+    }
+    root->children.push_back(this);
+    return EXIT_SUCCESS;
+  }
+
   IGL_INLINE void Viewer::launch_shut()
   {
+    for(Viewer *viewer : children)
+    {
+      if (viewer != this)
+      {
+        glfwWindowShouldClose(viewer->window);
+        viewer->launch_shut();
+      }
+    }
+    children.clear();
     for(auto & data : data_list)
     {
       data.meshgl.free();
@@ -638,7 +693,6 @@ namespace glfw
     down = true;
 
     down_translation = core.camera_translation;
-
 
     // Initialization code for the trackball
     Eigen::RowVector3d center;

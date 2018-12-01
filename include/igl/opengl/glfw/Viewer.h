@@ -48,6 +48,7 @@ namespace glfw
     IGL_INLINE int launch(bool resizable = true,bool fullscreen = false);
     IGL_INLINE int launch_init(bool resizable = true,bool fullscreen = false);
     IGL_INLINE bool launch_rendering(bool loop = true);
+    IGL_INLINE bool launch_with(Viewer *parent);
     IGL_INLINE void launch_shut();
     IGL_INLINE void init();
     IGL_INLINE void init_plugins();
@@ -131,6 +132,10 @@ namespace glfw
     double highdpi;
     double scroll_x;
     double scroll_y;
+
+    // Handle multiple viewers
+    Viewer *parent = nullptr;
+    std::vector<Viewer *> children;
 
     // Stores all the viewing options
     ViewerCore core;
