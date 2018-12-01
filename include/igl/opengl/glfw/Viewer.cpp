@@ -123,16 +123,18 @@ namespace opengl
 namespace glfw
 {
 
-  IGL_INLINE int Viewer::launch(bool resizable /*= true*/,bool fullscreen /*= false*/, int windowWidth /*= 1280*/, int windowHeight /*= 800*/)
+  IGL_INLINE int Viewer::launch(bool resizable /*= true*/, bool fullscreen /*= false*/,
+    const std::string &name, int windowWidth /*= 1280*/, int windowHeight /*= 800*/)
   {
     // TODO return values are being ignored...
-    launch_init(resizable,fullscreen,windowWidth,windowHeight);
+    launch_init(resizable,fullscreen,name,windowWidth,windowHeight);
     launch_rendering(true);
     launch_shut();
     return EXIT_SUCCESS;
   }
 
-  IGL_INLINE int  Viewer::launch_init(bool resizable,bool fullscreen, int windowWidth, int windowHeight)
+  IGL_INLINE int  Viewer::launch_init(bool resizable, bool fullscreen,
+    const std::string &name, int windowWidth, int windowHeight)
   {
     glfwSetErrorCallback(glfw_error_callback);
     if (!glfwInit())
@@ -150,11 +152,11 @@ namespace glfw
     {
       GLFWmonitor *monitor = glfwGetPrimaryMonitor();
       const GLFWvidmode *mode = glfwGetVideoMode(monitor);
-      window = glfwCreateWindow(mode->width,mode->height,"libigl viewer",monitor,nullptr);
+      window = glfwCreateWindow(mode->width,mode->height,name.c_str(),monitor,nullptr);
     }
     else
     {
-      window = glfwCreateWindow(windowWidth,windowHeight,"libigl viewer",nullptr,nullptr);
+      window = glfwCreateWindow(windowWidth,windowHeight,name.c_str(),nullptr,nullptr);
     }
     if (!window)
     {
