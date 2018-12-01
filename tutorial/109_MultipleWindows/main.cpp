@@ -1,8 +1,5 @@
 #include <igl/read_triangle_mesh.h>
 #include <igl/opengl/glfw/Viewer.h>
-#include <igl/opengl/glfw/imgui/ImGuiMenu.h>
-#include <igl/opengl/glfw/imgui/ImGuiHelpers.h>
-#include <imgui/imgui.h>
 #include <iostream>
 #include <list>
 #include "tutorial_shared_path.h"
@@ -26,10 +23,6 @@ int main(int argc, char *argv[])
     {
       nested.emplace_back();
 
-      // Attach a menu plugin
-      // igl::opengl::glfw::imgui::ImGuiMenu menu;
-      // viewer.plugins.push_back(&menu);
-
       nested.back().data().set_mesh(V2, F2);
       nested.back().data().set_face_based(true);
       nested.back().launch_with(&viewer);
@@ -39,10 +32,6 @@ int main(int argc, char *argv[])
     {
       igl::opengl::glfw::Viewer subviewer;
 
-      // Attach a menu plugin
-      // igl::opengl::glfw::imgui::ImGuiMenu menu;
-      // viewer.plugins.push_back(&menu);
-
       subviewer.data().set_mesh(V2, F2);
       subviewer.data().set_face_based(true);
       subviewer.launch();
@@ -50,10 +39,6 @@ int main(int argc, char *argv[])
     }
     return false;
   };
-
-  // Attach a menu plugin
-  // igl::opengl::glfw::imgui::ImGuiMenu menu;
-  // viewer.plugins.push_back(&menu);
 
   // Plot the mesh
   viewer.data().set_mesh(V1, F1);
