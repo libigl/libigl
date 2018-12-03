@@ -11,14 +11,14 @@ endif()
 
 # Shortcut function
 function(igl_download_project name)
-	# download_project(
-	# 	PROJ         ${name}
-	# 	SOURCE_DIR   ${LIBIGL_EXTERNAL}/${name}
-	# 	DOWNLOAD_DIR ${LIBIGL_EXTERNAL}/.cache/${name}
-	# 	QUIET
-	# 	${LIBIGL_EXTRA_OPTIONS}
-	# 	${ARGN}
-	# )
+	download_project(
+		PROJ         ${name}
+		SOURCE_DIR   ${LIBIGL_EXTERNAL}/${name}
+		DOWNLOAD_DIR ${LIBIGL_EXTERNAL}/.cache/${name}
+		QUIET
+		${LIBIGL_EXTRA_OPTIONS}
+		${ARGN}
+	)
 endfunction()
 
 ################################################################################
@@ -147,29 +147,29 @@ endfunction()
 function(igl_download_test_data)
 	set(IGL_TEST_DATA ${LIBIGL_EXTERNAL}/../tests/data)
 
-	# download_project(
-	# 	PROJ         test_data
-	# 	SOURCE_DIR   ${IGL_TEST_DATA}
-	# 	DOWNLOAD_DIR ${LIBIGL_EXTERNAL}/.cache/test_data
-	# 	QUIET
-	# 	GIT_REPOSITORY https://github.com/libigl/libigl-tests-data
-	# 	GIT_TAG        c81bb3b3db4cfd78bac6d359d845c45bc1059c9a
-	# 	${LIBIGL_EXTRA_OPTIONS}
-	# )
+	download_project(
+		PROJ         test_data
+		SOURCE_DIR   ${IGL_TEST_DATA}
+		DOWNLOAD_DIR ${LIBIGL_EXTERNAL}/.cache/test_data
+		QUIET
+		GIT_REPOSITORY https://github.com/libigl/libigl-tests-data
+		GIT_TAG        c81bb3b3db4cfd78bac6d359d845c45bc1059c9a
+		${LIBIGL_EXTRA_OPTIONS}
+	)
 endfunction()
 
 ## Tutorial data
 function(igl_download_tutorial_data)
 	set(IGL_TUTORIAL_DATA ${LIBIGL_EXTERNAL}/../tutorial/data)
 
-	# download_project(
-	# 	PROJ         tutorial_data
-	# 	SOURCE_DIR   ${IGL_TUTORIAL_DATA}
-	# 	DOWNLOAD_DIR ${LIBIGL_EXTERNAL}/.cache/tutorial_data
-	# 	QUIET
-	# 	GIT_REPOSITORY https://github.com/libigl/libigl-tutorial-data
-	# 	GIT_TAG        5c6a1ea809c043d71e5595775709c15325a7158c
-	# 	${LIBIGL_EXTRA_OPTIONS}
-	# )
+	download_project(
+		PROJ         tutorial_data
+		SOURCE_DIR   ${IGL_TUTORIAL_DATA}
+		DOWNLOAD_DIR ${LIBIGL_EXTERNAL}/.cache/tutorial_data
+		QUIET
+		GIT_REPOSITORY https://github.com/libigl/libigl-tutorial-data
+		GIT_TAG        5c6a1ea809c043d71e5595775709c15325a7158c
+		${LIBIGL_EXTRA_OPTIONS}
+	)
 endfunction()
 
