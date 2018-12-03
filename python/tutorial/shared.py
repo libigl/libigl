@@ -9,7 +9,7 @@ import pyigl as igl
 import sys
 import os
 
-TUTORIAL_SHARED_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../tutorial/shared/")
+TUTORIAL_SHARED_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../tutorial/data/")
 
 def check_dependencies(deps):
     available = [hasattr(igl, m) for m in deps]
