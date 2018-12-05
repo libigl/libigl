@@ -106,6 +106,10 @@ IGL_INLINE void slim_buildA(const Eigen::SparseMatrix<double> &Dx,
                         const Eigen::SparseMatrix<double> &Dz,
                         const Eigen::MatrixXd &W,
                         std::vector<Eigen::Triplet<double> > & IJV);
+
+  namespace slim {
+    IGL_INLINE double compute_energy(igl::SLIMData& s, Eigen::MatrixXd &V_new);
+  }
 } // END NAMESPACE
 
 #ifndef IGL_STATIC_LIBRARY
