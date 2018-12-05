@@ -53,6 +53,7 @@ namespace glfw
     IGL_INLINE void init();
     IGL_INLINE void init_plugins();
     IGL_INLINE void shutdown_plugins();
+    IGL_INLINE void terminate_plugins();
     Viewer();
     ~Viewer();
     // Delete copy and move constructors, since GLFWwindow holds a pointer to `this`

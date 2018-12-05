@@ -63,6 +63,8 @@ public:
 
   IGL_INLINE virtual void shutdown() override;
 
+  IGL_INLINE virtual void terminate() override;
+
   IGL_INLINE virtual bool pre_draw() override;
 
   IGL_INLINE  virtual bool post_draw() override;

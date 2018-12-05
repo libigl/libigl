@@ -25,7 +25,7 @@ namespace glfw
 namespace imgui
 {
 
-// TODO: Can we initialize this way in header-only mode?
+// TODO: Is this the correct way to initialize in header-only mode?
 ImGuiContext * ImGuiMenu::context_ = nullptr;
 
 IGL_INLINE void ImGuiMenu::init(igl::opengl::glfw::Viewer *_viewer)
@@ -76,17 +76,18 @@ IGL_INLINE void ImGuiMenu::reload_font(int font_size)
 
 IGL_INLINE void ImGuiMenu::shutdown()
 {
+  // Keep existing bindings, since we share the OpenGL context between windows.
+}
+
+IGL_INLINE void ImGuiMenu::terminate()
+{
   // Cleanup
-  if (0)
-  {
-    // To support multiple menus, we could refcount the number of active menus,
-    // but it is easier to just have the OS do the cleanup when the app shuts down
-    glfwMakeContextCurrent(viewer->window);
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplGlfw_Shutdown();
-    ImGui::DestroyContext(context_);
-    context_ = nullptr;
-  }
+  assert(context_);
+  glfwMakeContextCurrent(viewer->window);
+  ImGui_ImplOpenGL3_Shutdown();
+  ImGui_ImplGlfw_Shutdown();
+  ImGui::DestroyContext(context_);
+  context_ = nullptr;
 }
 
 IGL_INLINE bool ImGuiMenu::pre_draw()
