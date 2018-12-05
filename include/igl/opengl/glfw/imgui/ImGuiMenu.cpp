@@ -48,8 +48,8 @@ IGL_INLINE void ImGuiMenu::init_imgui()
     const char* glsl_version = "#version 150";
     ImGui::GetIO().IniFilename = nullptr;
     // ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
-    ImGui_ImplGlfw_InitForOpenGL(viewer->window, false);
     glfwMakeContextCurrent(viewer->window);
+    ImGui_ImplGlfw_InitForOpenGL(viewer->window, false);
     ImGui_ImplOpenGL3_Init(glsl_version);
     ImGui::StyleColorsDark();
     ImGuiStyle& style = ImGui::GetStyle();
@@ -57,6 +57,9 @@ IGL_INLINE void ImGuiMenu::init_imgui()
     // style.WindowRounding = 0.0f;              // When viewports are enabled it is preferable to disable WinodwRounding
     // style.Colors[ImGuiCol_WindowBg].w = 1.0f; // When viewports are enabled it is preferable to disable WindowBg alpha
     reload_font();
+  } else {
+    hidpi_scaling_ = hidpi_scaling();
+    pixel_ratio_ = pixel_ratio();
   }
 }
 
@@ -89,6 +92,7 @@ IGL_INLINE void ImGuiMenu::shutdown()
 IGL_INLINE bool ImGuiMenu::pre_draw()
 {
   glfwPollEvents();
+  glfwMakeContextCurrent(viewer->window);
 
   // Check whether window dpi has changed
   float scaling = hidpi_scaling();
@@ -108,7 +112,6 @@ IGL_INLINE bool ImGuiMenu::post_draw()
 {
   draw_menu();
   ImGui::Render();
-  glfwMakeContextCurrent(viewer->window);
   ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
   return false;
 }

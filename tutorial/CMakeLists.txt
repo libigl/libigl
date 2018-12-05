@@ -60,7 +60,9 @@ if(TUTORIALS_CHAPTER1)
     add_subdirectory("106_ViewerMenu")
   endif()
   add_subdirectory("107_MultipleMeshes")
-  add_subdirectory("109_MultipleWindows")
+  if(LIBIGL_WITH_OPENGL_GLFW_IMGUI)
+    add_subdirectory("109_MultipleWindows")
+  endif()
 endif()
 
 # Chapter 2

@@ -127,6 +127,8 @@ namespace opengl
 namespace glfw
 {
 
+  Viewer * Viewer::master = nullptr;
+
   IGL_INLINE int Viewer::launch(bool resizable,bool fullscreen)
   {
     // TODO return values are being ignored...
@@ -176,7 +178,9 @@ namespace glfw
       glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
       glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
     #endif
-    GLFWwindow *share = (parent ? parent->window : nullptr);
+    GLFWwindow *share = (parent ? parent->window : (master ? master->window : nullptr));
+    if (!master)
+      master = this;
     if(fullscreen)
     {
       GLFWmonitor *monitor = glfwGetPrimaryMonitor();
@@ -318,8 +322,11 @@ namespace glfw
     core.shut();
     shutdown_plugins();
     glfwDestroyWindow(window);
-    // There may be other windows out there, so don't call glfwTerminate()
-    // glfwTerminate();
+    if (master == this)
+    {
+      glfwTerminate();
+      master = nullptr;
+    }
     return;
   }
 

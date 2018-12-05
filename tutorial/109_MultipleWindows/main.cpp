@@ -40,8 +40,8 @@ int main(int argc, char *argv[])
       igl::opengl::glfw::Viewer subviewer;
 
       // Attach a menu plugin
-      igl::opengl::glfw::imgui::ImGuiMenu menu;
-      subviewer.plugins.push_back(&menu);
+      igl::opengl::glfw::imgui::ImGuiMenu submenu;
+      subviewer.plugins.push_back(&submenu);
 
       subviewer.data().set_mesh(V2, F2);
       subviewer.data().set_face_based(true);

@@ -134,6 +134,7 @@ namespace glfw
     double scroll_y;
 
     // Handle multiple viewers
+    static Viewer *master; // first viewer ever created
     Viewer *parent = nullptr;
     std::vector<Viewer *> children;
 
