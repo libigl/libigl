@@ -46,8 +46,7 @@
 
 static void glfw_refresh_callback(GLFWwindow* window)
 {
-  auto * viewer = reinterpret_cast<igl::opengl::glfw::Viewer *>(glfwGetWindowUserPointer(window));
-  viewer->draw();
+  // auto * viewer = reinterpret_cast<igl::opengl::glfw::Viewer *>(glfwGetWindowUserPointer(window));
 }
 
 static void glfw_mouse_press(GLFWwindow* window, int button, int action, int modifier)
@@ -254,6 +253,7 @@ namespace glfw
     while (!glfwWindowShouldClose(window))
     {
       double tic = get_seconds();
+      // Main rendering loop
       for (size_t i = 0; i < children.size();)
       {
         Viewer *viewer = children[i];

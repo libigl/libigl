@@ -29,14 +29,8 @@ namespace glfw
 namespace imgui
 {
 
-struct AbortFrame : public std::exception {
-  AbortFrame(std::function<void(void)> func) : deferred_callback_(func) { }
-  std::function<void(void)> deferred_callback_;
-};
-
 class ImGuiMenu : public igl::opengl::glfw::ViewerPlugin
 {
-  static ImGuiMenu * active_menu_;
 
 public:
   ImGuiMenu() = default;
@@ -58,13 +52,7 @@ protected:
   float pixel_ratio_;
 
   // ImGui Context
-  ImGuiContext * context_ = nullptr;
-
-  // Skip rendering current frame
-  bool skip_frame_ = false;
-
-  // Texture ID of the ImGui font atlas (hack for nested viewers)
-  GLuint tex_id_ = 0;
+  static ImGuiContext * context_;
 
 public:
   IGL_INLINE virtual void init(igl::opengl::glfw::Viewer *_viewer) override;
@@ -74,8 +62,6 @@ public:
   IGL_INLINE virtual void reload_font(int font_size = 13);
 
   IGL_INLINE virtual void shutdown() override;
-
-  IGL_INLINE virtual void restore() override;
 
   IGL_INLINE virtual bool pre_draw() override;
 
@@ -127,8 +113,6 @@ public:
   IGL_INLINE float hidpi_scaling();
 
   float menu_scaling() { return hidpi_scaling_ / pixel_ratio_; }
-
-  void skip_frame() { skip_frame_ = true; }
 };
 
 } // end namespace

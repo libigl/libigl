@@ -1,5 +1,6 @@
 #include <igl/read_triangle_mesh.h>
 #include <igl/opengl/glfw/Viewer.h>
+#include <igl/opengl/glfw/imgui/ImGuiMenu.h>
 #include <iostream>
 #include <list>
 #include "tutorial_shared_path.h"
@@ -17,11 +18,16 @@ int main(int argc, char *argv[])
   igl::opengl::glfw::Viewer viewer;
   std::list<igl::opengl::glfw::Viewer> nested;
 
-  viewer.callback_key_down = [&](igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier) {
+  viewer.callback_key_down = [&](igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier)
+  {
     std::cout<<"Key: "<<key<<" "<<(unsigned int)key<<std::endl;
     if (key == '1')
     {
       nested.emplace_back();
+
+      // Attach a menu plugin
+      // igl::opengl::glfw::imgui::ImGuiMenu menu;
+      // nested.back().plugins.push_back(&menu);
 
       nested.back().data().set_mesh(V2, F2);
       nested.back().data().set_face_based(true);
@@ -32,6 +38,10 @@ int main(int argc, char *argv[])
     {
       igl::opengl::glfw::Viewer subviewer;
 
+      // Attach a menu plugin
+      // igl::opengl::glfw::imgui::ImGuiMenu menu;
+      // subviewer.plugins.push_back(&menu);
+
       subviewer.data().set_mesh(V2, F2);
       subviewer.data().set_face_based(true);
       subviewer.launch();
@@ -39,6 +49,10 @@ int main(int argc, char *argv[])
     }
     return false;
   };
+
+  // Attach a menu plugin
+  igl::opengl::glfw::imgui::ImGuiMenu menu;
+  viewer.plugins.push_back(&menu);
 
   // Plot the mesh
   viewer.data().set_mesh(V1, F1);
