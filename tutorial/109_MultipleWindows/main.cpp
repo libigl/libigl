@@ -16,22 +16,23 @@ int main(int argc, char *argv[])
 
   // Init the viewer
   igl::opengl::glfw::Viewer viewer;
-  std::list<igl::opengl::glfw::Viewer> nested;
+  std::list<igl::opengl::glfw::Viewer> nested_viewers;
+  std::list<igl::opengl::glfw::imgui::ImGuiMenu> nested_menus;
 
   viewer.callback_key_down = [&](igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier)
   {
     std::cout<<"Key: "<<key<<" "<<(unsigned int)key<<std::endl;
     if (key == '1')
     {
-      nested.emplace_back();
+      nested_viewers.emplace_back();
 
       // Attach a menu plugin
-      // igl::opengl::glfw::imgui::ImGuiMenu menu;
-      // nested.back().plugins.push_back(&menu);
+      nested_menus.emplace_back();
+      nested_viewers.back().plugins.push_back(&nested_menus.back());
 
-      nested.back().data().set_mesh(V2, F2);
-      nested.back().data().set_face_based(true);
-      nested.back().launch_with(&viewer);
+      nested_viewers.back().data().set_mesh(V2, F2);
+      nested_viewers.back().data().set_face_based(true);
+      nested_viewers.back().launch_with(&viewer);
       return true;
     }
     if (key == '2')
@@ -39,8 +40,8 @@ int main(int argc, char *argv[])
       igl::opengl::glfw::Viewer subviewer;
 
       // Attach a menu plugin
-      // igl::opengl::glfw::imgui::ImGuiMenu menu;
-      // subviewer.plugins.push_back(&menu);
+      igl::opengl::glfw::imgui::ImGuiMenu menu;
+      subviewer.plugins.push_back(&menu);
 
       subviewer.data().set_mesh(V2, F2);
       subviewer.data().set_face_based(true);

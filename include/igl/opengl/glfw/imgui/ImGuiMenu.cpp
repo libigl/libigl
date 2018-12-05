@@ -49,6 +49,7 @@ IGL_INLINE void ImGuiMenu::init_imgui()
     ImGui::GetIO().IniFilename = nullptr;
     // ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
     ImGui_ImplGlfw_InitForOpenGL(viewer->window, false);
+    glfwMakeContextCurrent(viewer->window);
     ImGui_ImplOpenGL3_Init(glsl_version);
     ImGui::StyleColorsDark();
     ImGuiStyle& style = ImGui::GetStyle();
@@ -73,13 +74,13 @@ IGL_INLINE void ImGuiMenu::reload_font(int font_size)
 IGL_INLINE void ImGuiMenu::shutdown()
 {
   // Cleanup
-  glfwMakeContextCurrent(viewer->window);
-  ImGui_ImplOpenGL3_Shutdown();
-  ImGui_ImplGlfw_Shutdown();
   if (0)
   {
     // To support multiple menus, we could refcount the number of active menus,
     // but it is easier to just have the OS do the cleanup when the app shuts down
+    glfwMakeContextCurrent(viewer->window);
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext(context_);
     context_ = nullptr;
   }
@@ -109,13 +110,6 @@ IGL_INLINE bool ImGuiMenu::post_draw()
   ImGui::Render();
   glfwMakeContextCurrent(viewer->window);
   ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-  // Update and Render additional Platform Windows
-  ImGuiIO& io = ImGui::GetIO();
-  if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-  {
-    ImGui::UpdatePlatformWindows();
-    ImGui::RenderPlatformWindowsDefault();
-  }
   return false;
 }
 

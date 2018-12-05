@@ -241,7 +241,6 @@ namespace glfw
 
   IGL_INLINE bool Viewer::launch_rendering(bool loop)
   {
-    // glfwMakeContextCurrent(window);
     // Rendering loop
     const int num_extra_frames = 5;
     int frame_counter = 0;
@@ -264,7 +263,6 @@ namespace glfw
         }
         else
         {
-          glfwMakeContextCurrent(viewer->window);
           viewer->draw();
           glfwSwapBuffers(viewer->window);
           ++i;
@@ -879,6 +877,8 @@ namespace glfw
   {
     using namespace std;
     using namespace Eigen;
+
+    glfwMakeContextCurrent(window);
 
     int width, height;
     glfwGetFramebufferSize(window, &width, &height);
