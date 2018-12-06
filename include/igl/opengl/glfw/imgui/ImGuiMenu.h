@@ -13,12 +13,10 @@
 #include <igl/opengl/glfw/ViewerPlugin.h>
 #include <igl/opengl/gl.h>
 #include <igl/igl_inline.h>
+#include <imgui/imgui.h>
 #include <memory>
 #include <exception>
 ////////////////////////////////////////////////////////////////////////////////
-
-// Forward declarations
-struct ImGuiContext;
 
 namespace igl
 {
@@ -31,6 +29,19 @@ namespace imgui
 
 class ImGuiMenu : public igl::opengl::glfw::ViewerPlugin
 {
+  // RAII for ImGuiContext
+  struct ScopedContext
+  {
+    ImGuiContext *old_context_;
+
+    ScopedContext(ImGuiContext *ctx) : old_context_(ImGui::GetCurrentContext()) { ImGui::SetCurrentContext(ctx); }
+    ~ScopedContext() { ImGui::SetCurrentContext(old_context_); }
+
+    ScopedContext(ScopedContext &&) = delete;
+    ScopedContext &operator=(ScopedContext &&) = delete;
+    ScopedContext(const ScopedContext &) = delete;
+    ScopedContext &operator=(ScopedContext &) = delete;
+  };
 
 public:
   ImGuiMenu() = default;
@@ -52,7 +63,8 @@ protected:
   float pixel_ratio_;
 
   // ImGui Context
-  static ImGuiContext * context_;
+  ImGuiContext * old_context_ = nullptr;
+  ImGuiContext * context_ = nullptr;
 
 public:
   IGL_INLINE virtual void init(igl::opengl::glfw::Viewer *_viewer) override;
@@ -62,8 +74,6 @@ public:
   IGL_INLINE virtual void reload_font(int font_size = 13);
 
   IGL_INLINE virtual void shutdown() override;
-
-  IGL_INLINE virtual void terminate() override;
 
   IGL_INLINE virtual bool pre_draw() override;
 

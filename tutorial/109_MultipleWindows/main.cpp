@@ -28,6 +28,10 @@ int main(int argc, char *argv[])
 
       // Attach a menu plugin
       nested_menus.emplace_back();
+      // nested_menus.back().callback_draw_viewer_menu = [&]()
+      // {
+      //   ImGui::Button("Yay");
+      // };
       nested_viewers.back().plugins.push_back(&nested_menus.back());
 
       nested_viewers.back().data().set_mesh(V2, F2);

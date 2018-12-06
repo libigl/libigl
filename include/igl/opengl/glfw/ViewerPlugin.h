@@ -56,11 +56,6 @@ public:
   {
   }
 
-  // This function is called before glfwTerminate() when the master viewer is shutdown
-  IGL_INLINE virtual void terminate()
-  {
-  }
-
   // This function is called before a mesh is loaded
   IGL_INLINE virtual bool load(std::string filename)
   {

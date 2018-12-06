@@ -25,9 +25,6 @@ namespace glfw
 namespace imgui
 {
 
-// TODO: Is this the correct way to initialize in header-only mode?
-ImGuiContext * ImGuiMenu::context_ = nullptr;
-
 IGL_INLINE void ImGuiMenu::init(igl::opengl::glfw::Viewer *_viewer)
 {
   ViewerPlugin::init(_viewer);
@@ -41,21 +38,20 @@ IGL_INLINE void ImGuiMenu::init_imgui()
 {
   // Setup ImGui binding
   IMGUI_CHECKVERSION();
-  if (!context_)
+  ImGuiContext *ctx = ImGui::GetCurrentContext();
+  ImFontAtlas* shared_font_atlas = (ctx ? ImGui::GetIO().Fonts : nullptr);
+  context_ = ImGui::CreateContext(shared_font_atlas);
+  ScopedContext scope(context_);
+  ImGui::GetIO().IniFilename = nullptr;
+  ImGui::StyleColorsDark();
+  ImGuiStyle& style = ImGui::GetStyle();
+  style.FrameRounding = 5.0f;
+  const char* glsl_version = "#version 150";
+  glfwMakeContextCurrent(viewer->window);
+  ImGui_ImplGlfw_InitForOpenGL(viewer->window, false);
+  ImGui_ImplOpenGL3_Init(glsl_version);
+  if (!ctx)
   {
-    context_ = ImGui::CreateContext();
-    ImGui::SetCurrentContext(context_);
-    const char* glsl_version = "#version 150";
-    ImGui::GetIO().IniFilename = nullptr;
-    // ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
-    glfwMakeContextCurrent(viewer->window);
-    ImGui_ImplGlfw_InitForOpenGL(viewer->window, false);
-    ImGui_ImplOpenGL3_Init(glsl_version);
-    ImGui::StyleColorsDark();
-    ImGuiStyle& style = ImGui::GetStyle();
-    style.FrameRounding = 5.0f;
-    // style.WindowRounding = 0.0f;              // When viewports are enabled it is preferable to disable WinodwRounding
-    // style.Colors[ImGuiCol_WindowBg].w = 1.0f; // When viewports are enabled it is preferable to disable WindowBg alpha
     reload_font();
   } else {
     hidpi_scaling_ = hidpi_scaling();
@@ -77,13 +73,8 @@ IGL_INLINE void ImGuiMenu::reload_font(int font_size)
 IGL_INLINE void ImGuiMenu::shutdown()
 {
   // Keep existing bindings, since we share the OpenGL context between windows.
-}
-
-IGL_INLINE void ImGuiMenu::terminate()
-{
-  // Cleanup
-  assert(context_);
   glfwMakeContextCurrent(viewer->window);
+  ScopedContext scope(context_);
   ImGui_ImplOpenGL3_Shutdown();
   ImGui_ImplGlfw_Shutdown();
   ImGui::DestroyContext(context_);
@@ -94,6 +85,8 @@ IGL_INLINE bool ImGuiMenu::pre_draw()
 {
   glfwPollEvents();
   glfwMakeContextCurrent(viewer->window);
+  old_context_ = ImGui::GetCurrentContext();
+  ImGui::SetCurrentContext(context_);
 
   // Check whether window dpi has changed
   float scaling = hidpi_scaling();
@@ -106,14 +99,17 @@ IGL_INLINE bool ImGuiMenu::pre_draw()
   ImGui_ImplOpenGL3_NewFrame();
   ImGui_ImplGlfw_NewFrame();
   ImGui::NewFrame();
+  ImGui::PushID((long long) this);
   return false;
 }
 
 IGL_INLINE bool ImGuiMenu::post_draw()
 {
   draw_menu();
+  ImGui::PopID();
   ImGui::Render();
   ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+  ImGui::SetCurrentContext(old_context_);
   return false;
 }
 
@@ -121,6 +117,7 @@ IGL_INLINE void ImGuiMenu::post_resize(int width, int height)
 {
   if (context_)
   {
+    ScopedContext scope(context_);
     ImGui::GetIO().DisplaySize.x = float(width);
     ImGui::GetIO().DisplaySize.y = float(height);
   }
@@ -129,22 +126,26 @@ IGL_INLINE void ImGuiMenu::post_resize(int width, int height)
 // Mouse IO
 IGL_INLINE bool ImGuiMenu::mouse_down(int button, int modifier)
 {
+  ScopedContext scope(context_);
   ImGui_ImplGlfw_MouseButtonCallback(viewer->window, button, GLFW_PRESS, modifier);
   return ImGui::GetIO().WantCaptureMouse;
 }
 
 IGL_INLINE bool ImGuiMenu::mouse_up(int button, int modifier)
 {
+  ScopedContext scope(context_);
   return ImGui::GetIO().WantCaptureMouse;
 }
 
 IGL_INLINE bool ImGuiMenu::mouse_move(int mouse_x, int mouse_y)
 {
+  ScopedContext scope(context_);
   return ImGui::GetIO().WantCaptureMouse;
 }
 
 IGL_INLINE bool ImGuiMenu::mouse_scroll(float delta_y)
 {
+  ScopedContext scope(context_);
   ImGui_ImplGlfw_ScrollCallback(viewer->window, 0.f, delta_y);
   return ImGui::GetIO().WantCaptureMouse;
 }
@@ -152,18 +153,21 @@ IGL_INLINE bool ImGuiMenu::mouse_scroll(float delta_y)
 // Keyboard IO
 IGL_INLINE bool ImGuiMenu::key_pressed(unsigned int key, int modifiers)
 {
+  ScopedContext scope(context_);
   ImGui_ImplGlfw_CharCallback(nullptr, key);
   return ImGui::GetIO().WantCaptureKeyboard;
 }
 
 IGL_INLINE bool ImGuiMenu::key_down(int key, int modifiers)
 {
+  ScopedContext scope(context_);
   ImGui_ImplGlfw_KeyCallback(viewer->window, key, 0, GLFW_PRESS, modifiers);
   return ImGui::GetIO().WantCaptureKeyboard;
 }
 
 IGL_INLINE bool ImGuiMenu::key_up(int key, int modifiers)
 {
+  ScopedContext scope(context_);
   ImGui_ImplGlfw_KeyCallback(viewer->window, key, 0, GLFW_RELEASE, modifiers);
   return ImGui::GetIO().WantCaptureKeyboard;
 }
@@ -171,6 +175,8 @@ IGL_INLINE bool ImGuiMenu::key_up(int key, int modifiers)
 // Draw menu
 IGL_INLINE void ImGuiMenu::draw_menu()
 {
+  ScopedContext scope(context_);
+
   // Text labels
   draw_labels_window();
 
@@ -185,6 +191,8 @@ IGL_INLINE void ImGuiMenu::draw_menu()
 
 IGL_INLINE void ImGuiMenu::draw_viewer_window()
 {
+  ScopedContext scope(context_);
+
   float menu_width = 180.f * menu_scaling();
   ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiSetCond_FirstUseEver);
   ImGui::SetNextWindowSize(ImVec2(0.0f, 0.0f), ImGuiSetCond_FirstUseEver);
@@ -204,8 +212,10 @@ IGL_INLINE void ImGuiMenu::draw_viewer_window()
 
 IGL_INLINE void ImGuiMenu::draw_viewer_menu()
 {
+  ScopedContext scope(context_);
+
   // Workspace
-  if (ImGui::CollapsingHeader("Workspace", ImGuiTreeNodeFlags_DefaultOpen))
+  if (ImGui::CollapsingHeader(("Workspace##" + std::to_string((long long) this)).c_str(), ImGuiTreeNodeFlags_DefaultOpen))
   {
     float w = ImGui::GetContentRegionAvailWidth();
     float p = ImGui::GetStyle().FramePadding.x;
@@ -318,6 +328,8 @@ IGL_INLINE void ImGuiMenu::draw_viewer_menu()
 
 IGL_INLINE void ImGuiMenu::draw_labels_window()
 {
+  ScopedContext scope(context_);
+
   // Text labels
   ImGui::SetNextWindowPos(ImVec2(0,0), ImGuiSetCond_Always);
   ImGui::SetNextWindowSize(ImGui::GetIO().DisplaySize, ImGuiSetCond_Always);
@@ -344,6 +356,8 @@ IGL_INLINE void ImGuiMenu::draw_labels_window()
 
 IGL_INLINE void ImGuiMenu::draw_labels(const igl::opengl::ViewerData &data)
 {
+  ScopedContext scope(context_);
+
   if (data.show_vertid)
   {
     for (int i = 0; i < data.V.rows(); ++i)
@@ -379,6 +393,8 @@ IGL_INLINE void ImGuiMenu::draw_labels(const igl::opengl::ViewerData &data)
 
 IGL_INLINE void ImGuiMenu::draw_text(Eigen::Vector3d pos, Eigen::Vector3d normal, const std::string &text)
 {
+  ScopedContext scope(context_);
+
   pos += normal * 0.005f * viewer->core.object_scale;
   Eigen::Vector3f coord = igl::project(Eigen::Vector3f(pos.cast<float>()),
     viewer->core.view, viewer->core.proj, viewer->core.viewport);

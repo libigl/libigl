@@ -324,7 +324,6 @@ namespace glfw
     glfwDestroyWindow(window);
     if (master == this)
     {
-      terminate_plugins();
       glfwTerminate();
       master = nullptr;
     }
@@ -356,14 +355,6 @@ namespace glfw
     for (unsigned int i = 0; i<plugins.size(); ++i)
     {
       plugins[i]->shutdown();
-    }
-  }
-
-  IGL_INLINE void Viewer::terminate_plugins()
-  {
-    for (unsigned int i = 0; i<plugins.size(); ++i)
-    {
-      plugins[i]->terminate();
     }
   }
 

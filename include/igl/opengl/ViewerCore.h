@@ -37,7 +37,6 @@ public:
   // Serialization code
   IGL_INLINE void InitSerialization();
 
-
   // ------------------- Camera control functions
 
   // Adjust the view to see the entire model

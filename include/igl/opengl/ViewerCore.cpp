@@ -347,7 +347,6 @@ IGL_INLINE void igl::opengl::ViewerCore::set_rotation_type(
   }
 }
 
-
 IGL_INLINE igl::opengl::ViewerCore::ViewerCore()
 {
   // Default colors
@@ -359,7 +358,8 @@ IGL_INLINE igl::opengl::ViewerCore::ViewerCore()
 
   // Default trackball
   trackball_angle = Eigen::Quaternionf::Identity();
-  set_rotation_type(ViewerCore::ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP);
+  rotation_type = ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP;
+  // set_rotation_type(ViewerCore::ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP);
 
   // Camera parameters
   camera_base_zoom = 1.0f;
