@@ -13,10 +13,13 @@
 #include <igl/opengl/glfw/ViewerPlugin.h>
 #include <igl/opengl/gl.h>
 #include <igl/igl_inline.h>
-#include <imgui/imgui.h>
 #include <memory>
 #include <exception>
 ////////////////////////////////////////////////////////////////////////////////
+
+// Forward declaration
+struct ImGuiContext;
+struct ImGui_ImplGlfw_Data;
 
 namespace igl
 {
@@ -33,9 +36,10 @@ class ImGuiMenu : public igl::opengl::glfw::ViewerPlugin
   struct ScopedContext
   {
     ImGuiContext *old_context_;
+    ImGui_ImplGlfw_Data *old_binding_data_;
 
-    ScopedContext(ImGuiContext *ctx) : old_context_(ImGui::GetCurrentContext()) { ImGui::SetCurrentContext(ctx); }
-    ~ScopedContext() { ImGui::SetCurrentContext(old_context_); }
+    ScopedContext(ImGuiContext *ctx, ImGui_ImplGlfw_Data *binding_data);
+    ~ScopedContext();
 
     ScopedContext(ScopedContext &&) = delete;
     ScopedContext &operator=(ScopedContext &&) = delete;
@@ -62,9 +66,13 @@ protected:
   // May be different from the hipdi scaling!
   float pixel_ratio_;
 
-  // ImGui Context
-  ImGuiContext * old_context_ = nullptr;
+  // ImGui context
   ImGuiContext * context_ = nullptr;
+  ImGuiContext * old_context_ = nullptr;
+
+  // ImGui binding data
+  ImGui_ImplGlfw_Data * binding_data_ = nullptr;
+  ImGui_ImplGlfw_Data * old_binding_data_ = nullptr;
 
 public:
   IGL_INLINE virtual void init(igl::opengl::glfw::Viewer *_viewer) override;

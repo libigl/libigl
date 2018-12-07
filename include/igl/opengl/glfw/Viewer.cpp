@@ -246,7 +246,7 @@ namespace glfw
   IGL_INLINE bool Viewer::launch_rendering(bool loop)
   {
     // Rendering loop
-    const int num_extra_frames = 5;
+    const int num_extra_frames = 10;
     int frame_counter = 0;
     if (children.empty())
     {
