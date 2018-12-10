@@ -1,6 +1,19 @@
 cmake_minimum_required(VERSION 2.8.12)
 project(pyigl)
 
+### Adding libIGL: choose the path to your local copy libIGL
+if(NOT TARGET igl::core)
+  ### Prefer header-only mode for compiling Python bindings
+  if(NOT LIBIGL_WITH_PYTHON OR NOT LIBIGL_USE_STATIC_LIBRARY)
+    message(FATAL_ERROR
+      "Trying to compile Python bindings without -DLIBIGL_WITH_PYTHON=ON. "
+      "Either enable manually all the necessary options, or compile from "
+      "the root folder with -DLIBIGL_USE_STATIC_LIBRARY=OFF")
+  endif()
+  list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/../cmake")
+  include(libigl)
+endif()
+
 # Force a specific python version
 # set(PYTHON_LIBRARIES "D:/Python34/libs/python34.lib")
 # set(PYTHON_INCLUDE_DIR "D:/Python34/include")
@@ -13,20 +26,11 @@ set(Python_ADDITIONAL_VERSIONS 3.4 3.5 3.6)
 find_package(PythonInterp REQUIRED)
 find_package(PythonLibs REQUIRED)
 
-
 string(TOUPPER "${CMAKE_BUILD_TYPE}" U_CMAKE_BUILD_TYPE)
 if(UNIX)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
   if(NOT ${U_CMAKE_BUILD_TYPE} MATCHES DEBUG)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden -flto")
   endif()
-endif()
-
-## libigl		
-if(NOT TARGET igl::core)		
-  list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/../cmake")		
-  include(libigl)		
 endif()
 
 ## include pybind
@@ -42,7 +46,7 @@ pybind11_add_module(pyigl
 )
 
 ## Add dependencies
-target_include_directories(pyigl PUBLIC igl::core)
+target_link_libraries(pyigl PUBLIC igl::core)
 
 ## Optional modules
 if(LIBIGL_WITH_OPENGL_GLFW)
