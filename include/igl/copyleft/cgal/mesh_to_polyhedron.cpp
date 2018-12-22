@@ -9,13 +9,13 @@
 #include <CGAL/Polyhedron_3.h>
 #include <CGAL/Polyhedron_incremental_builder_3.h>
 
-
-template <typename Polyhedron, typename DerivedV>
+template <
+	typename Polyhedron,
+	typename DerivedV,
+	typename DerivedF>
 IGL_INLINE bool igl::copyleft::cgal::mesh_to_polyhedron(
-  const Eigen::MatrixBase<DerivedV> & V,
-  const Eigen::MatrixXi & F,
-  Polyhedron & poly)
-{
+    const Eigen::MatrixBase<DerivedV>& V, const Eigen::MatrixBase<DerivedF>& F,
+    Polyhedron& poly) {
   typedef typename Polyhedron::HalfedgeDS HalfedgeDS;
   // Postcondition: hds is a valid polyhedral surface.
   CGAL::Polyhedron_incremental_builder_3<HalfedgeDS> B(poly.hds());
