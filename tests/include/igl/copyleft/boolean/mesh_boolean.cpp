@@ -9,7 +9,7 @@
 #include <igl/unique_edge_map.h>
 #include <igl/is_edge_manifold.h>
 
-namespace mesh_boolean_test {
+namespace {
 
     template<typename DerivedF>
     void assert_no_exterior_edges(
@@ -50,7 +50,9 @@ namespace mesh_boolean_test {
         REQUIRE (2 - 2 * genus == euler);
     }
 
-TEST_CASE("MeshBoolean: TwoCubes", "[igl/copyleft/boolean]")
+}
+
+TEST_CASE("MeshBoolean: TwoCubes", "[igl/copyleft/boolean]") {
     Eigen::MatrixXd V1;
     Eigen::MatrixXi F1;
     test_common::load_mesh("two-boxes-bad-self-union.ply", V1, F1);
@@ -70,7 +72,7 @@ TEST_CASE("MeshBoolean: TwoCubes", "[igl/copyleft/boolean]")
     assert_genus_eq(Vo, Fo, 0);
 }
 
-TEST_CASE("MeshBoolean: MinusTest", "[igl/copyleft/boolean]")
+TEST_CASE("MeshBoolean: MinusTest", "[igl/copyleft/boolean]") {
     // Many thanks to Eric Yao for submitting this test case.
     Eigen::MatrixXd V1, V2, Vo;
     Eigen::MatrixXi F1, F2, Fo;
@@ -86,7 +88,7 @@ TEST_CASE("MeshBoolean: MinusTest", "[igl/copyleft/boolean]")
     assert_genus_eq(Vo, Fo, 1);
 }
 
-TEST_CASE("MeshBoolean: IntersectWithSelf", "[igl/copyleft/boolean]")
+TEST_CASE("MeshBoolean: IntersectWithSelf", "[igl/copyleft/boolean]") {
     Eigen::MatrixXd V1, Vo;
     Eigen::MatrixXi F1, Fo;
     test_common::load_mesh("cube.obj", V1, F1);
@@ -98,6 +100,4 @@ TEST_CASE("MeshBoolean: IntersectWithSelf", "[igl/copyleft/boolean]")
     assert_no_exterior_edges(Fo);
     assert_is_manifold(Vo, Fo);
     assert_genus_eq(Vo, Fo, 0);
-}
-
 }

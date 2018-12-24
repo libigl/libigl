@@ -78,13 +78,21 @@ target_compile_features(igl_common INTERFACE ${CXX11_FEATURES})
 if(MSVC)
   # Enable parallel compilation for Visual Studio
   target_compile_options(igl_common INTERFACE /MP /bigobj)
-  if(LIBIGL_WITH_CGAL)
-    target_compile_options(igl_common INTERFACE "/MD$<$<CONFIG:Debug>:d>")
-  endif()
+  target_compile_definitions(igl_common INTERFACE -DNOMINMAX)
 endif()
 
-# Generate position independent code
-set_target_properties(igl_common PROPERTIES INTERFACE_POSITION_INDEPENDENT_CODE ON)
+### Set compiler flags for building the tests on Windows with Visual Studio
+include(LibiglWindows)
+
+if(BUILD_SHARED_LIBS)
+  # Generate position independent code
+  set_target_properties(igl_common PROPERTIES INTERFACE_POSITION_INDEPENDENT_CODE ON)
+endif()
+
+if(UNIX)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
+endif()
 
 # Eigen
 if(TARGET Eigen3::Eigen)
@@ -279,7 +287,6 @@ if(LIBIGL_WITH_EMBREE)
   target_link_libraries(igl_embree ${IGL_SCOPE} embree)
   target_include_directories(igl_embree ${IGL_SCOPE} ${EMBREE_DIR}/include)
   target_compile_definitions(igl_embree ${IGL_SCOPE} -DEMBREE_STATIC_LIB)
-
 endif()
 
 ################################################################################

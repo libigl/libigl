@@ -14,12 +14,16 @@
 #include "volume.h"
 #include "doublearea.h"
 
+namespace igl {
+
+namespace {
+
 template <typename DerivedV, typename DerivedF>
 IGL_INLINE void grad_tet(
   const Eigen::MatrixBase<DerivedV>&V,
   const Eigen::MatrixBase<DerivedF>&T,
   Eigen::SparseMatrix<typename DerivedV::Scalar> &G,
-  bool uniform) 
+  bool uniform)
 {
   using namespace Eigen;
   assert(T.cols() == 4);
@@ -39,7 +43,7 @@ IGL_INLINE void grad_tet(
     F.row(3*m + i) << T(i,1), T(i,3), T(i,2);
   }
   // compute volume of each tet
-  Eigen::Matrix<typename DerivedV::Scalar, Eigen::Dynamic, 1> vol; 
+  Eigen::Matrix<typename DerivedV::Scalar, Eigen::Dynamic, 1> vol;
   igl::volume(V,T,vol);
 
   Eigen::Matrix<typename DerivedV::Scalar, Eigen::Dynamic, 1> A(F.rows());
@@ -203,6 +207,10 @@ IGL_INLINE void grad_tri(
   }
   G.setFromTriplets(Gijv.begin(), Gijv.end());
 }
+
+} // anonymous namespace
+
+} // namespace igl
 
 template <typename DerivedV, typename DerivedF>
 IGL_INLINE void igl::grad(

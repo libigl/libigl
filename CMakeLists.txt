@@ -40,9 +40,6 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 ### conditionally compile certain modules depending on libraries found on the system
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake)
 
-### Set compiler flags for building the tests on Windows with Visual Studio
-include(LibiglWindows)
-
 ### Adding libIGL: choose the path to your local copy libIGL
 include(libigl)
 
