@@ -4,6 +4,7 @@
 #include <igl/copyleft/cgal/outer_hull.h>
 
 TEST_CASE("OuterHull: CubeWithFold", "[igl/copyleft/cgal]")
+{
     Eigen::MatrixXd V;
     Eigen::MatrixXi F;
     test_common::load_mesh("cube_with_fold.ply", V, F);

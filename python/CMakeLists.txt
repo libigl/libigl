@@ -22,9 +22,15 @@ endif()
 # set(PYTHON_LIBRARIES "/usr/local/Cellar/python3/3.5.0/Frameworks/Python.framework/Versions/3.5/lib/libpython3.5m.dylib")
 # set(PYTHON_INCLUDE_DIR "/usr/local/Cellar/python3/3.5.0/Frameworks/Python.framework/Versions/3.5/include/python3.5m")
 
-set(Python_ADDITIONAL_VERSIONS 3.4 3.5 3.6)
-find_package(PythonInterp REQUIRED)
-find_package(PythonLibs REQUIRED)
+set(Python_ADDITIONAL_VERSIONS 3.4 3.5 3.6 3.7)
+find_package(PythonInterp 3.4 REQUIRED)
+find_package(PythonLibs 3.4 REQUIRED)
+
+## libigl
+if(NOT TARGET igl::core)
+  list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/../cmake")
+  include(libigl)
+endif()
 
 string(TOUPPER "${CMAKE_BUILD_TYPE}" U_CMAKE_BUILD_TYPE)
 if(UNIX)

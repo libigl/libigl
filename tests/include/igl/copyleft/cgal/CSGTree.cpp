@@ -2,7 +2,7 @@
 
 #include <igl/copyleft/cgal/CSGTree.h>
 
-TEST_CASE("CSGTree: extrusion", "[igl/copyleft/cgal]")
+TEST_CASE("CSGTree: extrusion", "[igl/copyleft/cgal]") {
     Eigen::MatrixXd V;
     Eigen::MatrixXi F;
     test_common::load_mesh("extrusion.obj", V, F);

@@ -10,7 +10,7 @@
 #include <igl/readDMAT.h>
 #include <igl/per_face_normals.h>
 
-namespace order_facets_around_edges_test {
+namespace {
 
 typedef CGAL::Exact_predicates_exact_constructions_kernel Kernel;
 
@@ -83,7 +83,10 @@ void assert_order(
     }
 }
 
+} // anonymous namespace
+
 TEST_CASE("copyleft_cgal_order_facets_around_edges: Simple", "[igl/copyleft/cgal]")
+{
     Eigen::MatrixXd V(4, 3);
     V << 0.0, 0.0, 0.0,
          1.0, 0.0, 0.0,
@@ -97,6 +100,7 @@ TEST_CASE("copyleft_cgal_order_facets_around_edges: Simple", "[igl/copyleft/cgal
 }
 
 TEST_CASE("copyleft_cgal_order_facets_around_edges: TripletFaces", "[igl/copyleft/cgal]")
+{
     Eigen::MatrixXd V(5, 3);
     V << 0.0, 0.0, 0.0,
          1.0, 0.0, 0.0,
@@ -112,6 +116,7 @@ TEST_CASE("copyleft_cgal_order_facets_around_edges: TripletFaces", "[igl/copylef
 }
 
 TEST_CASE("copyleft_cgal_order_facets_around_edges: DuplicatedFaces", "[igl/copyleft/cgal]")
+{
     Eigen::MatrixXd V(5, 3);
     V << 0.0, 0.0, 0.0,
          1.0, 0.0, 0.0,
@@ -128,6 +133,7 @@ TEST_CASE("copyleft_cgal_order_facets_around_edges: DuplicatedFaces", "[igl/copy
 }
 
 TEST_CASE("copyleft_cgal_order_facets_around_edges: MultipleDuplicatedFaces", "[igl/copyleft/cgal]")
+{
     Eigen::MatrixXd V(5, 3);
     V << 0.0, 0.0, 0.0,
          1.0, 0.0, 0.0,
@@ -146,6 +152,7 @@ TEST_CASE("copyleft_cgal_order_facets_around_edges: MultipleDuplicatedFaces", "[
 }
 
 TEST_CASE("copyleft_cgal_order_facets_around_edges: Debug", "[igl/copyleft/cgal]")
+{
     Eigen::MatrixXd V(5, 3);
     V <<
         -44.3205080756887781, 4.22994972382184579e-15, 75,
@@ -163,6 +170,7 @@ TEST_CASE("copyleft_cgal_order_facets_around_edges: Debug", "[igl/copyleft/cgal]
 }
 
 TEST_CASE("copyleft_cgal_order_facets_around_edges: Debug2", "[igl/copyleft/cgal]")
+{
     Eigen::MatrixXd V(5, 3);
     V <<
         -22.160254037844382, 38.3826859021798441, 75,
@@ -179,6 +187,7 @@ TEST_CASE("copyleft_cgal_order_facets_around_edges: Debug2", "[igl/copyleft/cgal
 }
 
 TEST_CASE("copyleft_cgal_order_facets_around_edges: NormalSensitivity", "[igl/copyleft/cgal]")
+{
     // This example shows that epsilon difference in normal vectors could
     // results in very different ordering of facets.
 
@@ -189,7 +198,4 @@ TEST_CASE("copyleft_cgal_order_facets_around_edges: NormalSensitivity", "[igl/co
 
     assert_order(V, F, 223, 224, {2, 0, 3, 1}, "duplicated_faces_N1.dmat");
     assert_order(V, F, 223, 224, {0, 3, 2, 1}, "duplicated_faces_N2.dmat");
-}
-
-
 }
