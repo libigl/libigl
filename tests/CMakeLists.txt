@@ -49,6 +49,7 @@ if(LIBIGL_WITH_CGAL)
   target_sources(libigl_tests PRIVATE ${TEST_SRC_FILES} ${TEST_INC_FILES})
 
   target_link_libraries(libigl_tests PUBLIC igl::cgal)
+  igl_copy_cgal_dll(libigl_tests)
 endif()
 
 if(LIBIGL_WITH_TETGEN)

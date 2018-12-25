@@ -53,8 +53,8 @@ int main(int argc, char *argv[])
           (V.row(F(fid,2))-m3).squaredNorm()).minCoeff(&cid);
       const int vid = F(fid,cid);
       C.row(vid)<<1,0,0;
-      Eigen::VectorXd D = Eigen::VectorXd::Zero(data.Grad.cols(),1);
-      D(vid) = 1;
+      Eigen::VectorXd D = Eigen::VectorXd::Zero(data.Grad.cols());
+	  D(vid) = 1;
       igl::heat_geodesics_solve(data,(Eigen::VectorXi(1,1)<<vid).finished(),D);
       viewer.data().set_colors((D/D.maxCoeff()).replicate(1,3));
       return true;

@@ -218,5 +218,6 @@ template void igl::unique<int>(std::vector<int, std::allocator<int> > const&, st
 template void igl::unique<long>(std::vector<long, std::allocator<long> > const&, std::vector<long, std::allocator<long> >&, std::vector<size_t, std::allocator<size_t> >&, std::vector<size_t, std::allocator<size_t> >&);
 #ifdef WIN32
 template void igl::unique<class Eigen::Matrix<int,-1,1,0,-1,1>,class Eigen::Matrix<int,-1,1,0,-1,1>,class Eigen::Matrix<__int64,-1,1,0,-1,1>,class Eigen::Matrix<__int64,-1,1,0,-1,1> >(class Eigen::DenseBase<class Eigen::Matrix<int,-1,1,0,-1,1> > const &,class Eigen::PlainObjectBase<class Eigen::Matrix<int,-1,1,0,-1,1> > &,class Eigen::PlainObjectBase<class Eigen::Matrix<__int64,-1,1,0,-1,1> > &,class Eigen::PlainObjectBase<class Eigen::Matrix<__int64,-1,1,0,-1,1> > &);
+template void igl::unique<__int64>(class std::vector<__int64,class std::allocator<__int64> > const &,class std::vector<__int64,class std::allocator<__int64> > &,class std::vector<unsigned __int64,class std::allocator<unsigned __int64> > &,class std::vector<unsigned __int64,class std::allocator<unsigned __int64> > &);
 #endif
 #endif
