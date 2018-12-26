@@ -28,9 +28,9 @@ namespace igl
       // Returns true only if (V,F) can be converted to a valid polyhedron (i.e. if
       // (V,F) is vertex and edge manifold).
       template <
-		  typename Polyhedron,
-		  typename DerivedV,
-		  typename DerivedF>
+        typename DerivedV,
+        typename DerivedF,
+        typename Polyhedron>
       IGL_INLINE bool mesh_to_polyhedron(
         const Eigen::MatrixBase<DerivedV> & V,
         const Eigen::MatrixBase<DerivedF> & F,
