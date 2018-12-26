@@ -15,11 +15,31 @@
 #include <map>
 #include <iostream>
 
+#include "list_to_matrix.h"
+#include "matrix_to_list.h"
+
+template <typename DerivedT, typename DerivedF>
+IGL_INLINE void igl::boundary_facets(
+  const Eigen::MatrixBase<DerivedT>& T,
+  Eigen::PlainObjectBase<DerivedF>& F)
+{
+  assert(T.cols() == 0 || T.cols() == 4 || T.cols() == 3);
+  using namespace std;
+  using namespace Eigen;
+  // Cop out: use vector of vectors version
+  vector<vector<typename DerivedT::Scalar> > vT;
+  matrix_to_list(T,vT);
+  vector<vector<typename DerivedF::Scalar> > vF;
+  boundary_facets(vT,vF);
+  list_to_matrix(vF,F);
+}
+
 template <typename IntegerT, typename IntegerF>
 IGL_INLINE void igl::boundary_facets(
   const std::vector<std::vector<IntegerT> > & T,
   std::vector<std::vector<IntegerF> > & F)
 {
+  // Kept for legacy reasons. Could probably just delete.
   using namespace std;
 
   if(T.size() == 0)
@@ -96,25 +116,6 @@ IGL_INLINE void igl::boundary_facets(
   //  printf("%d =? %d\n",k,F.size());
   //}
 
-}
-
-#include "list_to_matrix.h"
-#include "matrix_to_list.h"
-
-template <typename DerivedT, typename DerivedF>
-IGL_INLINE void igl::boundary_facets(
-  const Eigen::MatrixBase<DerivedT>& T,
-  Eigen::PlainObjectBase<DerivedF>& F)
-{
-  assert(T.cols() == 0 || T.cols() == 4 || T.cols() == 3);
-  using namespace std;
-  using namespace Eigen;
-  // Cop out: use vector of vectors version
-  vector<vector<typename DerivedT::Scalar> > vT;
-  matrix_to_list(T,vT);
-  vector<vector<typename DerivedF::Scalar> > vF;
-  boundary_facets(vT,vF);
-  list_to_matrix(vF,F);
 }
 
 template <typename DerivedT, typename Ret>
