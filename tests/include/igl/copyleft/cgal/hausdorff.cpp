@@ -14,8 +14,8 @@ TEST_CASE("hausdorff: knightVScheburashka", "[igl/copyleft/cgal]")
   //typedef CGAL::Epeck Kernel;
   typedef CGAL::Simple_cartesian<double> Kernel;
   CGAL::AABB_tree<
-    CGAL::AABB_traits<Kernel, 
-      CGAL::AABB_triangle_primitive<Kernel, 
+    CGAL::AABB_traits<Kernel,
+      CGAL::AABB_triangle_primitive<Kernel,
         typename std::vector<CGAL::Triangle_3<Kernel> >::iterator
       >
     >
@@ -52,4 +52,3 @@ TEST_CASE("hausdorff: knightVScheburashka", "[igl/copyleft/cgal]")
     break;
   }
 }
-

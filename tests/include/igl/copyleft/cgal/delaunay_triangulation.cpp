@@ -5,7 +5,7 @@
 
 TEST_CASE("igl_copyleft_cgal_delaunay_triangulation: two_triangles", "[igl/copyleft/cgal]")
 {
-  const Eigen::MatrixXd V = 
+  const Eigen::MatrixXd V =
     (Eigen::MatrixXd(4,2)<<
      0,10,
      1,0,

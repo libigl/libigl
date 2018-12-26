@@ -19,7 +19,16 @@ IGL_INLINE void igl::grad_intrinsic(
   const int n = F.maxCoeff()+1;
   // number of faces
   const int m = F.rows();
-  typedef Eigen::Matrix<Gtype,Eigen::Dynamic,2> MatrixX2S;
+  // JD: There is a pretty subtle bug when using a fixed column size for this matrix.
+  // When calling igl::grad(V, ...), the two code paths `grad_tet` and `grad_tri`
+  // will be compiled. It turns out that `igl::grad_tet` calls `igl::volume`, which
+  // reads the coordinates of the `V` matrix into `RowVector3d`. If the matrix `V`
+  // has a known compile-time size of 2, this produces a compilation error when
+  // libigl is compiled in header-only mode. In static mode this doesn't happen
+  // because the matrix `V` is probably implicitly copied into a `Eigen::MatrixXd`.
+  // This is a situation that could be solved using `if constexpr` in C++17.
+  // In C++11, the alternative is to use SFINAE and `std::enable_if` (ugh).
+  typedef Eigen::Matrix<Gtype,Eigen::Dynamic,Eigen::Dynamic> MatrixX2S;
   MatrixX2S V2 = MatrixX2S::Zero(3*m,2);
   //     1=[x,y]
   //     /\
@@ -37,10 +46,10 @@ IGL_INLINE void igl::grad_intrinsic(
   V2.block(2*m,0,m,1) = l.col(0);
   // Place second vertex at [0 0]
   // Place third vertex at [x y]
-  V2.block(0,0,m,1) = 
+  V2.block(0,0,m,1) =
     (l.col(1).cwiseAbs2()-l.col(0).cwiseAbs2()-l.col(2).cwiseAbs2()).array()/
     (-2.*l.col(0)).array();
-  V2.block(0,1,m,1) = 
+  V2.block(0,1,m,1) =
     (l.col(2).cwiseAbs2() - V2.block(0,0,m,1).cwiseAbs2()).array().sqrt();
   DerivedF F2(F.rows(),F.cols());
   std::vector<Eigen::Triplet<Gtype> > Pijv;
