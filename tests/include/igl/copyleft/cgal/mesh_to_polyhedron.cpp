@@ -1,6 +1,7 @@
 #include <test_common.h>
 #include <igl/copyleft/cgal/mesh_to_polyhedron.h>
 #include <CGAL/Simple_cartesian.h>
+#include <CGAL/Polyhedron_3.h>
 #include <CGAL/Polyhedron_items_with_id_3.h>
 
 TEST_CASE(
