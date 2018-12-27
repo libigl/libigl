@@ -27,16 +27,6 @@ namespace igl
     const int n,
     Eigen::PlainObjectBase<DerivedI> & I,
     URBG urbg);
-
-  // Like matlab's randperm(n) but minus 1
-  //
-  //
-  // Inputs:
-  //   n  number of elements
-  //
-  //
-  // Outputs:
-  //   I  n list of rand permutation of 0:n-1
   template <typename DerivedI>
   IGL_INLINE void randperm(
     const int n,
