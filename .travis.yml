@@ -44,6 +44,27 @@ matrix:
         - libpython3-dev
     env:
     - MATRIX_EVAL="export CC=gcc-7 && CXX=g++-7 && CONFIG=Debug && PYTHON=python3"
+  - os: linux
+    compiler: gcc-7
+    addons:
+      apt:
+        sources:
+        - ubuntu-toolchain-r-test
+        packages:
+        - gcc-7
+        - g++-7
+        - libmpfr-dev
+        - libboost-filesystem-dev
+        - libboost-system-dev
+        - libboost-thread-dev
+        - libblas-dev
+        - liblapack-dev
+        - xorg-dev
+        - libglu1-mesa-dev
+        - python3-setuptools
+        - libpython3-dev
+    env:
+    - MATRIX_EVAL="export CC=gcc-7 && CXX=g++-7 && CONFIG=Debug && PYTHON=python3 CMAKE_EXTRA='-DLIBIGL_EIGEN_VERSION=3.3.7 -DLIBIGL_EIGEN_MD5=f2a417d083fe8ca4b8ed2bc613d20f07'"
   - os: osx
     compiler: clang
     env:
@@ -60,7 +81,7 @@ script:
 # Tutorials and tests
 - mkdir build
 - pushd build
-- cmake -DCMAKE_BUILD_TYPE=$CONFIG -DLIBIGL_CHECK_UNDEFINED=ON -DLIBIGL_WITH_CGAL=ON -DEMBREE_ISA_AVX=OFF -DEMBREE_ISA_AVX2=OFF -DEMBREE_ISA_AVX512SKX=OFF ../
+- cmake ${CMAKE_EXTRA} -DCMAKE_BUILD_TYPE=$CONFIG -DLIBIGL_CHECK_UNDEFINED=ON -DLIBIGL_WITH_CGAL=ON -DEMBREE_ISA_AVX=OFF -DEMBREE_ISA_AVX2=OFF -DEMBREE_ISA_AVX512SKX=OFF ../
 - make -j 2
 - ctest --verbose
 - popd

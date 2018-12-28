@@ -1,7 +1,6 @@
 #include <test_common.h>
 #include <igl/cotmatrix.h>
 
-
 TEST_CASE("cotmatrix: constant_in_null_space", "[igl]")
 {
   const auto test_case = [](const std::string &param)
