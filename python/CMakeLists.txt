@@ -137,13 +137,13 @@ elseif(UNIX)
   set_target_properties(pyigl PROPERTIES SUFFIX ".so")
 
   # Enable flag if undefined symbols appear on pyigl module import to get notified about the missing symbols at link time
-  option(CHECK_UNDEFINED        "Check for undefined symbols"    OFF)
+  option(LIBIGL_CHECK_UNDEFINED        "Check for undefined symbols"    OFF)
 
   # Strip unnecessary sections of the binary on Linux/Mac OS
   if(APPLE)
     set_target_properties(pyigl PROPERTIES MACOSX_RPATH ".")
 
-    if(NOT CHECK_UNDEFINED)
+    if(NOT LIBIGL_CHECK_UNDEFINED)
       set_target_properties(pyigl PROPERTIES LINK_FLAGS "-undefined dynamic_lookup -dead_strip")
     endif()
 
@@ -152,7 +152,7 @@ elseif(UNIX)
     endif()
   else()
 
-    if(CHECK_UNDEFINED)
+    if(LIBIGL_CHECK_UNDEFINED)
       target_link_libraries(pyigl PRIVATE ${PYTHON_LIBRARIES})
       set_target_properties(pyigl PROPERTIES LINK_FLAGS "-Wl,--no-undefined")
     endif()
