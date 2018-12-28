@@ -59,10 +59,13 @@ install:
 script:
 # Tutorials and tests
 - mkdir build
-- cd build
+- pushd build
 - cmake -DCMAKE_BUILD_TYPE=$CONFIG -DLIBIGL_CHECK_UNDEFINED=ON -DLIBIGL_WITH_PYTHON=ON -DLIBIGL_WITH_CGAL=ON -DEMBREE_ISA_AVX=OFF -DEMBREE_ISA_AVX2=OFF -DEMBREE_ISA_AVX512SKX=OFF ../
 - make -j 2
 - ctest --verbose
-- ccache --show-stats
-- cd ../
+- popd
+- pushd python/tutorial
+- ${PYTHON} 101_FileIO.py
+- popd
 - rm -rf build
+- ccache --show-stats
