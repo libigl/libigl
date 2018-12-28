@@ -12,36 +12,24 @@ environment:
   - CONFIG: Debug
     BOOST_ROOT: C:/Libraries/boost_1_65_1
     PYTHON: 37
+  - CONFIG: Release
+    BOOST_ROOT: C:/Libraries/boost_1_65_1
+    PYTHON: 37
 install:
   - cinstall: python
 build:
   parallel: true
 build_script:
   - cd c:\projects\libigl
-  # External libraries (boost)
-  # - cd external
-  # - mkdir build
-  # - cd build
-  # - cmake -G "Visual Studio 15 2017 Win64" -T "host=x64" ..
-  # - msbuild %MSBuildOptions% libigl_external.sln
-  # - cd ../..
-  # Python bindings
-  # - cd python
-  # - mkdir build
-  # - cd build
-  # - cmake -DLIBIGL_WITH_EMBREE=OFF -DLIBIGL_USE_STATIC_LIBRARY=ON ../
-  # - msbuild %MSBuildOptions% pyigl.sln
-  # - cd ../tutorial
-  # - ${PYTHON} 101_FileIO.py
-  # - cd ../../
   # Tutorials and tests
   - set PATH=C:\Python%PYTHON%-x64;C:\Python%PYTHON%-x64\Scripts;%PATH%
   - mkdir build
   - cd build
-  - cmake -DCMAKE_BUILD_TYPE=%CONFIG% -DLIBIGL_WITH_CGAL=ON -DLIBIGL_WITH_COMISO=OFF -G "Visual Studio 15 2017 Win64" ../
+  - cmake -DCMAKE_BUILD_TYPE=%CONFIG% -DLIBIGL_WITH_CGAL=ON -DLIBIGL_WITH_COMISO=OFF -DEMBREE_ISA_AVX=OFF -DEMBREE_ISA_AVX2=OFF -DEMBREE_ISA_AVX512SKX=OFF -G "Visual Studio 15 2017 Win64" ../
   - set MSBuildLogger="C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
-  - set MSBuildOptions=/v:m /p:Configuration=%CONFIG% /logger:%MSBuildLogger%
+  - set MSBuildOptions=/v:m /m /p:BuildInParallel=true /p:Configuration=%CONFIG% /logger:%MSBuildLogger%
   - msbuild %MSBuildOptions% libigl.sln
 
 test_script:
+  - set CTEST_OUTPUT_ON_FAILURE=1
   - ctest -C %CONFIG% --verbose --output-on-failure -j 2

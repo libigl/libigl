@@ -48,10 +48,14 @@ function(igl_download_cork)
 endfunction()
 
 ## Eigen
+# 3.2.10 8ad10ac703a78143a4062c9bda9d8fd3
+# 3.3.7  f2a417d083fe8ca4b8ed2bc613d20f07
+set(LIBIGL_EIGEN_VERSION 3.2.10                           CACHE STRING "Default version of Eigen used by libigl.")
+set(LIBIGL_EIGEN_MD5     8ad10ac703a78143a4062c9bda9d8fd3 CACHE STRING "md5sum of the tar.gz archive corresponding to this version.")
 function(igl_download_eigen)
 	igl_download_project(eigen
-		URL           http://bitbucket.org/eigen/eigen/get/3.2.10.tar.gz
-		URL_MD5       8ad10ac703a78143a4062c9bda9d8fd3
+		URL           http://bitbucket.org/eigen/eigen/get/${LIBIGL_EIGEN_VERSION}.tar.gz
+		URL_MD5       ${LIBIGL_EIGEN_MD5}
 	)
 endfunction()
 
@@ -113,7 +117,7 @@ endfunction()
 function(igl_download_tetgen)
 	igl_download_project(tetgen
 		GIT_REPOSITORY https://github.com/jdumas/tetgen.git
-		GIT_TAG        63b4bdc5b947f9db75f01e0da36af54074ace5c9
+		GIT_TAG        c63e7a6434652b8a2065c835bd9d6d298db1a0bc
 	)
 endfunction()
 
