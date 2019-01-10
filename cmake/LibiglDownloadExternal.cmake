@@ -15,7 +15,7 @@ function(igl_download_project_aux name source)
 	if(NOT LIBIGL_SKIP_DOWNLOAD)
 		download_project(
 			PROJ         ${name}
-			SOURCE_DIR   "${LIBIGL_EXTERNAL}/${name}"
+			SOURCE_DIR   "${source}"
 			DOWNLOAD_DIR "${LIBIGL_EXTERNAL}/.cache/${name}"
 			QUIET
 			${LIBIGL_EXTRA_OPTIONS}
