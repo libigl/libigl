@@ -27,15 +27,15 @@ matrix:
   - os: linux
     compiler: gcc # 4.8.4 by default on Trusty
     env:
-    - MATRIX_EVAL="export CONFIG=Debug && PYTHON=python3"
+    - MATRIX_EVAL="export CONFIG=Release && PYTHON=python3"
   - os: linux
     compiler: gcc-7
     env:
-    - MATRIX_EVAL="export CC=gcc-7 && CXX=g++-7 && CONFIG=Debug && PYTHON=python3"
+    - MATRIX_EVAL="export CC=gcc-7 && CXX=g++-7 && CONFIG=Release && PYTHON=python3"
   - os: linux
     compiler: gcc-7
     env:
-    - MATRIX_EVAL="export CC=gcc-7 && CXX=g++-7 && CONFIG=Debug && PYTHON=python3 CMAKE_EXTRA='-DLIBIGL_EIGEN_VERSION=3.3.7 -DLIBIGL_EIGEN_MD5=f2a417d083fe8ca4b8ed2bc613d20f07'"
+    - MATRIX_EVAL="export CC=gcc-7 && CXX=g++-7 && CONFIG=Release && PYTHON=python3 CMAKE_EXTRA='-DLIBIGL_EIGEN_VERSION=3.3.7 -DLIBIGL_EIGEN_MD5=f2a417d083fe8ca4b8ed2bc613d20f07'"
   - os: osx
     compiler: clang
     env:
