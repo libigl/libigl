@@ -3,22 +3,29 @@ include(DownloadProject)
 
 # With CMake 3.8 and above, we can hide warnings about git being in a
 # detached head by passing an extra GIT_CONFIG option
+set(LIBIGL_EXTRA_OPTIONS TLS_VERIFY OFF)
 if(NOT (${CMAKE_VERSION} VERSION_LESS "3.8.0"))
-	set(LIBIGL_EXTRA_OPTIONS "GIT_CONFIG advice.detachedHead=false")
-else()
-	set(LIBIGL_EXTRA_OPTIONS "")
+	list(APPEND LIBIGL_EXTRA_OPTIONS GIT_CONFIG advice.detachedHead=false)
 endif()
 
-# Shortcut function
+option(LIBIGL_SKIP_DOWNLOAD "Skip downloading external libraries" OFF)
+
+# Shortcut functions
+function(igl_download_project_aux name source)
+	if(NOT LIBIGL_SKIP_DOWNLOAD)
+		download_project(
+			PROJ         ${name}
+			SOURCE_DIR   "${source}"
+			DOWNLOAD_DIR "${LIBIGL_EXTERNAL}/.cache/${name}"
+			QUIET
+			${LIBIGL_EXTRA_OPTIONS}
+			${ARGN}
+		)
+	endif()
+endfunction()
+
 function(igl_download_project name)
-	download_project(
-		PROJ         ${name}
-		SOURCE_DIR   ${LIBIGL_EXTERNAL}/${name}
-		DOWNLOAD_DIR ${LIBIGL_EXTERNAL}/.cache/${name}
-		QUIET
-		${LIBIGL_EXTRA_OPTIONS}
-		${ARGN}
-	)
+	igl_download_project_aux(${name} "${LIBIGL_EXTERNAL}/${name}" ${ARGN})
 endfunction()
 
 ################################################################################
@@ -149,31 +156,19 @@ endfunction()
 
 ## Test data
 function(igl_download_test_data)
-	set(IGL_TEST_DATA ${LIBIGL_EXTERNAL}/../tests/data)
-
-	download_project(
-		PROJ         test_data
-		SOURCE_DIR   ${IGL_TEST_DATA}
-		DOWNLOAD_DIR ${LIBIGL_EXTERNAL}/.cache/test_data
-		QUIET
+	igl_download_project_aux(test_data
+		"${LIBIGL_EXTERNAL}/../tests/data"
 		GIT_REPOSITORY https://github.com/libigl/libigl-tests-data
 		GIT_TAG        adc66cabf712a0bd68ac182b4e7f8b5ba009c3dd
-		${LIBIGL_EXTRA_OPTIONS}
 	)
 endfunction()
 
 ## Tutorial data
 function(igl_download_tutorial_data)
-	set(IGL_TUTORIAL_DATA ${LIBIGL_EXTERNAL}/../tutorial/data)
-
-	download_project(
-		PROJ         tutorial_data
-		SOURCE_DIR   ${IGL_TUTORIAL_DATA}
-		DOWNLOAD_DIR ${LIBIGL_EXTERNAL}/.cache/tutorial_data
-		QUIET
+	igl_download_project_aux(tutorial_data
+		"${LIBIGL_EXTERNAL}/../tutorial/data"
 		GIT_REPOSITORY https://github.com/libigl/libigl-tutorial-data
 		GIT_TAG        5c6a1ea809c043d71e5595775709c15325a7158c
-		${LIBIGL_EXTRA_OPTIONS}
 	)
 endfunction()
 
