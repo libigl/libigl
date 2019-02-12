@@ -294,7 +294,7 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
     SparseMatrix<T> AeqTR,AeqTQ;
     AeqTR = data.AeqTQR.matrixR();
     // This shouldn't be necessary
-    AeqTR.prune(0.0);
+    AeqTR.prune(static_cast<T>(0.0));
 #ifdef MIN_QUAD_WITH_FIXED_CPP_DEBUG
     cout<<"    matrixQ"<<endl;
 #endif
@@ -306,7 +306,7 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
     cout<<"      nnz: "<<AeqTQ.nonZeros()<<endl;
 #endif
     // This shouldn't be necessary
-    AeqTQ.prune(0.0);
+    AeqTQ.prune(static_cast<T>(0.0));
     //cout<<"AeqTQ: "<<AeqTQ.rows()<<" "<<AeqTQ.cols()<<endl;
     //cout<<matlab_format(AeqTQ,"AeqTQ")<<endl;
     //cout<<"    perms"<<endl;
@@ -314,7 +314,7 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
     cout<<"      nnz: "<<AeqTQ.nonZeros()<<endl;
     cout<<"    perm"<<endl;
 #endif
-    SparseMatrix<double> I(neq,neq);
+    SparseMatrix<T> I(neq,neq);
     I.setIdentity();
     data.AeqTE = data.AeqTQR.colsPermutation() * I;
     data.AeqTET = data.AeqTQR.colsPermutation().transpose() * I;
