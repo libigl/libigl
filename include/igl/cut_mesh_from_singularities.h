@@ -13,13 +13,13 @@
 namespace igl
 {
   // Given a mesh (V,F) and the integer mismatch of a cross field per edge
-  // (MMatch), finds the cut_graph connecting the singularities (seams) and the
+  // (mismatch), finds the cut_graph connecting the singularities (seams) and the
   // degree of the singularities singularity_index
   //
   // Input:
   //   V  #V by 3 list of mesh vertex positions
   //   F  #F by 3 list of faces
-  //   MMatch  #F by 3 list of per corner integer mismatch
+  //   mismatch  #F by 3 list of per corner integer mismatch
   // Outputs:
   //   seams  #F by 3 list of per corner booleans that denotes if an edge is a
   //     seam or not

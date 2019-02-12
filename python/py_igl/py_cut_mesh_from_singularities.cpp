@@ -15,4 +15,4 @@ m.def("cut_mesh_from_singularities", []
 {
   return igl::cut_mesh_from_singularities(V,F,MMatch,seams);
 }, __doc_igl_cut_mesh_from_singularities,
-py::arg("V"), py::arg("F"), py::arg("MMatch"), py::arg("seams"));
+py::arg("V"), py::arg("F"), py::arg("mismatch"), py::arg("seams"));
