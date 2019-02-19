@@ -1007,7 +1007,7 @@ namespace glfw
     }
     data_list[index].meshgl.free();
     data_list.erase(data_list.begin() + index);
-    if(selected_data_index >= index && selected_data_index>0)
+    if(selected_data_index >= index && selected_data_index > 0)
     {
       selected_data_index--;
     }
@@ -1027,13 +1027,13 @@ namespace glfw
   IGL_INLINE ViewerCore& Viewer::core(unsigned core_id /*= 0*/)
   {
     assert(!core_list.empty() && "core_list should never be empty");
-    int core_ind;
+    int core_index;
     if (core_id == 0)
-      core_ind = selected_core_index;
+      core_index = selected_core_index;
     else
-      core_ind = core_index(core_id);
-    assert((core_ind >= 0 && core_ind < core_list.size()) && "selected_core_index should be in bounds");
-    return core_list[core_ind];
+      core_index = this->core_index(core_id);
+    assert((core_index >= 0 && core_index < core_list.size()) && "selected_core_index should be in bounds");
+    return core_list[core_index];
   }
 
   IGL_INLINE bool Viewer::erase_core(const size_t index)
@@ -1042,14 +1042,14 @@ namespace glfw
     assert(data_list.size() >= 1);
     if (core_list.size() == 1)
     {
-      // Cannot remove last mesh
+      // Cannot remove last viewport
       return false;
     }
     core_list[index].shut(); // does nothing
     core_list.erase(core_list.begin() + index);
     if (selected_core_index >= index && selected_core_index > 0)
     {
-      selected_core_index>>=1;
+      selected_core_index--;
     }
     return true;
   }
@@ -1065,13 +1065,13 @@ namespace glfw
 
   IGL_INLINE int Viewer::append_core(Eigen::Vector4f viewport, bool append_empty /*= false*/)
   {
-    core_list.push_back(core()); //copies the previous core and only changes the viewport
+    core_list.push_back(core()); // copies the previous active core and only changes the viewport
     core_list.back().viewport = viewport;
     core_list.back().id = next_core_id;
     next_core_id <<= 1;
-    if(!append_empty)
+    if (!append_empty)
       for (auto &data : data_list)
-        data.set_visible(true,core_list.back().id);
+        data.set_visible(true, core_list.back().id);
     return core_list.back().id;
   }
 
