@@ -523,7 +523,7 @@ namespace glfw
       case 'L':
       case 'l':
       {
-        data().show_lines = !data().show_lines;
+        core().toggle(data().show_lines);
         return true;
       }
       case 'O':
@@ -535,7 +535,7 @@ namespace glfw
       case 'T':
       case 't':
       {
-        data().show_faces = !data().show_faces;
+        core().toggle(data().show_faces);
         return true;
       }
       case 'Z':
@@ -558,6 +558,13 @@ namespace glfw
       {
         selected_data_index =
           (selected_data_index + data_list.size() + (unicode_key=='>'?1:-1))%data_list.size();
+        return true;
+      }
+      case '{':
+      case '}':
+      {
+        selected_core_index =
+          (selected_core_index + core_list.size() + (unicode_key=='}'?1:-1))%core_list.size();
         return true;
       }
       case ';':
@@ -1070,8 +1077,14 @@ namespace glfw
     core_list.back().id = next_core_id;
     next_core_id <<= 1;
     if (!append_empty)
+    {
       for (auto &data : data_list)
+      {
         data.set_visible(true, core_list.back().id);
+        data.copy_options(core(), core_list.back());
+      }
+    }
+    selected_core_index = core_list.size()-1;
     return core_list.back().id;
   }
 

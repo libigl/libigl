@@ -86,7 +86,6 @@ int main(int argc, char *argv[])
         ImGuiWindowFlags_NoSavedSettings
     );
 
-
     // Expose the same variable directly ...
     ImGui::PushItemWidth(-80);
     ImGui::DragScalar("double", ImGuiDataType_Double, &doubleVariable, 0.1, 0, 0, "%.4f");

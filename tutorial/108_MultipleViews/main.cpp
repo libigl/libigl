@@ -19,7 +19,7 @@ int main(int argc, char * argv[])
     viewer.core().viewport = Eigen::Vector4f(0, 0, 640, 800);
     left_view = viewer.core_list[0].id;
     right_view = viewer.append_core(Eigen::Vector4f(640, 0, 640, 800));
-    return true;
+    return false;
   };
 
   viewer.callback_key_down = [&](igl::opengl::glfw::Viewer &, unsigned int key, int mod)

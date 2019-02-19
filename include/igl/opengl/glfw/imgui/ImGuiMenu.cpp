@@ -7,6 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 ////////////////////////////////////////////////////////////////////////////////
 #include "ImGuiMenu.h"
+#include "ImGuiHelpers.h"
 #include <igl/project.h>
 #include <imgui/imgui.h>
 #include <imgui_impl_glfw.h>
@@ -261,6 +262,15 @@ IGL_INLINE void ImGuiMenu::draw_viewer_menu()
     ImGui::PopItemWidth();
   }
 
+  // Helper for setting viewport specific mesh options
+  auto make_checkbox = [&](const char *label, unsigned int &option)
+  {
+    return ImGui::Checkbox(label,
+      [&]() { return viewer->core().is_set(option); },
+      [&](bool value) { return viewer->core().set(option, value); }
+    );
+  };
+
   // Draw options
   if (ImGui::CollapsingHeader("Draw Options", ImGuiTreeNodeFlags_DefaultOpen))
   {
@@ -268,13 +278,13 @@ IGL_INLINE void ImGuiMenu::draw_viewer_menu()
     {
       viewer->data().dirty = MeshGL::DIRTY_ALL;
     }
-    ImGui::Checkbox("Show texture", &(viewer->data().show_texture));
+    make_checkbox("Show texture", viewer->data().show_texture);
     if (ImGui::Checkbox("Invert normals", &(viewer->data().invert_normals)))
     {
       viewer->data().dirty |= igl::opengl::MeshGL::DIRTY_NORMAL;
     }
-    ImGui::Checkbox("Show overlay", &(viewer->data().show_overlay));
-    ImGui::Checkbox("Show overlay depth", &(viewer->data().show_overlay_depth));
+    make_checkbox("Show overlay", viewer->data().show_overlay);
+    make_checkbox("Show overlay depth", viewer->data().show_overlay_depth);
     ImGui::ColorEdit4("Background", viewer->core().background_color.data(),
         ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_PickerHueWheel);
     ImGui::ColorEdit4("Line color", viewer->data().line_color.data(),
@@ -287,8 +297,8 @@ IGL_INLINE void ImGuiMenu::draw_viewer_menu()
   // Overlays
   if (ImGui::CollapsingHeader("Overlays", ImGuiTreeNodeFlags_DefaultOpen))
   {
-    ImGui::Checkbox("Wireframe", &(viewer->data().show_lines));
-    ImGui::Checkbox("Fill", &(viewer->data().show_faces));
+    make_checkbox("Wireframe", viewer->data().show_lines);
+    make_checkbox("Fill", viewer->data().show_faces);
     ImGui::Checkbox("Show vertex labels", &(viewer->data().show_vertid));
     ImGui::Checkbox("Show faces labels", &(viewer->data().show_faceid));
   }
