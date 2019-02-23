@@ -28,6 +28,9 @@ namespace igl
   // vertices) in 2D and its convex hull. The Hausdorff distance is defined by
   // the midpoint in the middle of the segment across the concavity and some
   // non-vertex point _on the edge_ of the V.
+  // Known issue: due to the issue above, this also means that unreferenced
+  // vertices can give unexpected results. Therefore, we assume the inputs have 
+  // no unreferenced vertices.
   //
   // Inputs:
   //   VA  #VA by 3 list of vertex positions

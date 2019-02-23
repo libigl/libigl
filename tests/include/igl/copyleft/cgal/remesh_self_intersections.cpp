@@ -6,7 +6,8 @@
 
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 
-TEST(RemeshSelfIntersections, CubeWithFold) {
+TEST_CASE("RemeshSelfIntersections: CubeWithFold", "[igl/copyleft/cgal]")
+{
     Eigen::MatrixXd V;
     Eigen::MatrixXi F;
     test_common::load_mesh("cube_with_fold.ply", V, F);

@@ -5,7 +5,7 @@
 #include <vector>
 #include <tuple>
 
-TEST(pathinfo, examples)
+TEST_CASE("pathinfo: examples", "[igl]")
 {
   const std::vector<
     std::tuple<std::string,std::string,std::string,std::string,std::string> >
@@ -27,9 +27,9 @@ TEST(pathinfo, examples)
   {
     std::string d,b,e,f;
     igl::pathinfo(std::get<0>(example),d,b,e,f);
-    ASSERT_EQ(std::get<1>(example),d);
-    ASSERT_EQ(std::get<2>(example),b);
-    ASSERT_EQ(std::get<3>(example),e);
-    ASSERT_EQ(std::get<4>(example),f);
+    REQUIRE (d == std::get<1>(example));
+    REQUIRE (b == std::get<2>(example));
+    REQUIRE (e == std::get<3>(example));
+    REQUIRE (f == std::get<4>(example));
   }
 }

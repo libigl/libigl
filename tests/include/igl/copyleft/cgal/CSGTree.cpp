@@ -2,7 +2,7 @@
 
 #include <igl/copyleft/cgal/CSGTree.h>
 
-TEST(CSGTree, extrusion) {
+TEST_CASE("CSGTree: extrusion", "[igl/copyleft/cgal]") {
     Eigen::MatrixXd V;
     Eigen::MatrixXi F;
     test_common::load_mesh("extrusion.obj", V, F);
@@ -12,6 +12,6 @@ TEST(CSGTree, extrusion) {
     Eigen::MatrixXd V2 = inter.cast_V<Eigen::MatrixXd>();
     Eigen::MatrixXi F2 = inter.F();
 
-    ASSERT_EQ(V.rows(), V2.rows());
-    ASSERT_EQ(F.rows(), F2.rows());
+    REQUIRE (V2.rows() == V.rows());
+    REQUIRE (F2.rows() == F.rows());
 }

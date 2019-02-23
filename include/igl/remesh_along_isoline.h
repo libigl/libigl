@@ -75,7 +75,7 @@ namespace igl
 }
 
 #ifndef IGL_STATIC_LIBRARY
-#  include "remesh_along_isoline.h"
+#  include "remesh_along_isoline.cpp"
 #endif
 
 #endif

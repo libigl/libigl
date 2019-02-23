@@ -5,7 +5,7 @@
 #include <igl/readTGF.h>
 #include <igl/mosek/bbw.h>
 
-TEST(mosek_bbw, decimated_knight)
+TEST_CASE("mosek_bbw: decimated_knight", "[igl/copyleft/mosek]")
 {
   Eigen::MatrixXd V,C;
   Eigen::MatrixXi T,F,E;
@@ -22,5 +22,5 @@ TEST(mosek_bbw, decimated_knight)
   igl::mosek::bbw(V,T,b,bc,params,mosek_params,Wmo);
   igl::writeDMAT("decimated-knight-mo.dmat",Wmo);
   // Mosek is less accurate
-  ASSERT_LT( (Wmo-W_groundtruth).array().abs().maxCoeff() ,1e-3);
+  REQUIRE (1e-3 > (Wmo-W_groundtruth).array().abs().maxCoeff());
 }
