@@ -85,7 +85,7 @@ endfunction()
 function(igl_download_imgui)
 	igl_download_project(imgui
 		GIT_REPOSITORY https://github.com/ocornut/imgui.git
-		GIT_TAG        v1.66b
+		GIT_TAG        v1.68
 	)
 	igl_download_project(libigl-imgui
 		GIT_REPOSITORY https://github.com/libigl/libigl-imgui.git
