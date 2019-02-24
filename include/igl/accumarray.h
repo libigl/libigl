@@ -28,6 +28,19 @@ namespace igl
     const Eigen::MatrixBase<DerivedS> & S,
     const Eigen::MatrixBase<DerivedV> & V,
     Eigen::PlainObjectBase<DerivedA> & A);
+  // Inputs:
+  //   S  #S list of subscripts
+  //   V  single value used for all
+  // Outputs:
+  //   A  max(subs)+1 list of accumulated values
+  template <
+    typename DerivedS,
+    typename DerivedA
+    >
+  void accumarray(
+    const Eigen::MatrixBase<DerivedS> & S,
+    const typename DerivedA::Scalar V,
+    Eigen::PlainObjectBase<DerivedA> & A);
 }
 
 #ifndef IGL_STATIC_LIBRARY

@@ -20,3 +20,14 @@ TEST_CASE("accumarray: matlab_help", "[igl]")
     (Eigen::VectorXd(4) << 101,0,206,208).finished();
   test_common::assert_eq(A,Agt);
 }
+
+TEST_CASE("accumarray: scalar", "[igl]")
+{
+  const auto n = 
+    (Eigen::VectorXi(5) << 1,2,2,4,5).finished();
+  Eigen::VectorXi C;
+  igl::accumarray(n,1,C);
+  const auto Cgt = 
+    (Eigen::VectorXi(6) << 0,1,2,0,1,1).finished();
+  test_common::assert_eq(C,Cgt);
+}

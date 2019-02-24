@@ -40,22 +40,14 @@ namespace igl
   IGL_INLINE void boundary_facets(
     const Eigen::MatrixBase<DerivedT>& T,
     Eigen::PlainObjectBase<DerivedF>& F);
-  template <typename IntegerT, typename IntegerF>
-  IGL_INLINE void boundary_facets(
-    const std::vector<std::vector<IntegerT> > & T,
-    std::vector<std::vector<IntegerF> > & F);
-
-  // Templates:
-  //   DerivedT  integer-value: i.e. from MatrixXi
-  //   DerivedF  integer-value: i.e. from MatrixXi
-  template <typename DerivedT, typename DerivedF>
-  IGL_INLINE void boundary_facets(
-    const Eigen::MatrixBase<DerivedT>& T,
-    Eigen::PlainObjectBase<DerivedF>& F);
   // Same as above but returns F
   template <typename DerivedT, typename Ret>
   Ret boundary_facets(
     const Eigen::MatrixBase<DerivedT>& T);
+  template <typename IntegerT, typename IntegerF>
+  IGL_INLINE void boundary_facets(
+    const std::vector<std::vector<IntegerT> > & T,
+    std::vector<std::vector<IntegerF> > & F);
 }
 
 #ifndef IGL_STATIC_LIBRARY

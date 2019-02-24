@@ -6,14 +6,12 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "vector_area_matrix.h"
+#include "boundary_facets.h"
 #include <vector>
 
 // Bug in unsupported/Eigen/SparseExtra needs iostream first
 #include <iostream>
 #include <unsupported/Eigen/SparseExtra>
-
-//#include <igl/boundary_loop.h>
-#include <igl/boundary_facets.h>
 
 template <typename DerivedF, typename Scalar>
 IGL_INLINE void igl::vector_area_matrix(
