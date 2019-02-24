@@ -42,6 +42,7 @@ template void igl::reorder<int>(std::vector<int, std::allocator<int> > const&, s
 #  endif
 template void igl::reorder<long>(std::vector<long, std::allocator<long> > const&, std::vector<size_t, std::allocator<size_t> > const&, std::vector<long, std::allocator<long> >&);
 #ifdef WIN32
+template void igl::reorder<unsigned int>(class std::vector<unsigned int,class std::allocator<unsigned int> > const &,class std::vector<unsigned __int64,class std::allocator<unsigned __int64> > const &,class std::vector<unsigned int,class std::allocator<unsigned int> > &);
 template void igl::reorder<float>(class std::vector<float,class std::allocator<float> > const &,class std::vector<unsigned __int64,class std::allocator<unsigned __int64> > const &,class std::vector<float,class std::allocator<float> > &);
 template void igl::reorder<__int64>(class std::vector<__int64,class std::allocator<__int64> > const &,class std::vector<unsigned __int64,class std::allocator<unsigned __int64> > const &,class std::vector<__int64,class std::allocator<__int64> > &);
 #endif
