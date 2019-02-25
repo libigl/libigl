@@ -15,21 +15,19 @@ m.def("miq", []
   Eigen::MatrixXi &FUV,
   double scale,
   double stiffness,
-  bool direct_round,
+  bool directRound,
   int iter,
-  int local_iter,
-  bool DoRound,bool SingularityRound
-  //  std::vector<int> round_vertices,
-  //  std::vector<std::vector<int> > hard_features
+  int localIter,
+  bool doRound,
+  bool singularityRound
 )
 {
-  std::vector<int> round_vertices;
-  std::vector<std::vector<int> > hard_features;
+  std::vector<int> roundVertices;
+  std::vector<std::vector<int> > hardFeatures;
 
-  igl::copyleft::comiso::miq(V,F,PD1,PD2,UV,FUV,scale,stiffness,direct_round,iter,local_iter,DoRound, SingularityRound, round_vertices, hard_features);
+  igl::copyleft::comiso::miq(V, F, PD1, PD2, UV, FUV, scale, stiffness, directRound, iter, localIter, doRound, singularityRound, roundVertices, hardFeatures);
 }, __doc_igl_copyleft_comiso_miq,
-py::arg("V"), py::arg("F"), py::arg("PD1"), py::arg("PD2"), py::arg("UV"), py::arg("FUV"), py::arg("scale") = 30.0, py::arg("stiffness") = 5.0, py::arg("direct_round") = false, py::arg("iter") = 5, py::arg("local_iter") = 5, py::arg("DoRound") = true, py::arg("SingularityRound") = true
-// , py::arg("round_vertices"), py::arg("hard_features")
+py::arg("V"), py::arg("F"), py::arg("PD1"), py::arg("PD2"), py::arg("UV"), py::arg("FUV"), py::arg("scale") = 30.0, py::arg("stiffness") = 5.0, py::arg("directRound") = false, py::arg("iter") = 5, py::arg("localIter") = 5, py::arg("doRound") = true, py::arg("singularityRound") = true
 );
 
 m.def("miq", []
@@ -38,29 +36,28 @@ m.def("miq", []
   const Eigen::MatrixXi &F,
   const Eigen::MatrixXd &PD1_combed,
   const Eigen::MatrixXd &PD2_combed,
-  const Eigen::MatrixXi &MMatch,
-  const Eigen::MatrixXi &Singular,
-  const Eigen::MatrixXi &Seams,
+  const Eigen::MatrixXi &mismatch,
+  const Eigen::MatrixXi &singular,
+  const Eigen::MatrixXi &seams,
   Eigen::MatrixXd &UV,
   Eigen::MatrixXi &FUV,
-  double GradientSize,
-  double Stiffness,
-  bool DirectRound,
+  double gradientSize,
+  double stiffness,
+  bool directRound,
   int iter,
-  int localIter, bool DoRound, bool SingularityRound
-  // std::vector<int> roundVertices,
-  // std::vector<std::vector<int> > hardFeatures
+  int localIter,
+  bool doRound,
+  bool singularityRound
 )
 {
-  assert_is_VectorX("Singular",Singular);
+  assert_is_VectorX("singular",singular);
 
   std::vector<int> roundVertices;
   std::vector<std::vector<int> > hardFeatures;
 
-  igl::copyleft::comiso::miq(V,F,PD1_combed,PD2_combed,MMatch,Singular,Seams,UV,FUV,GradientSize,Stiffness,DirectRound,iter,localIter,DoRound, SingularityRound, roundVertices, hardFeatures);
+  igl::copyleft::comiso::miq(V, F, PD1_combed, PD2_combed, mismatch, singular, seams, UV, FUV, gradientSize, stiffness, directRound, iter, localIter, doRound, singularityRound, roundVertices, hardFeatures);
 }, __doc_igl_copyleft_comiso_miq,
 py::arg("V"), py::arg("F"), py::arg("PD1_combed"), py::arg("PD2_combed"),
-py::arg("MMatch"), py::arg("Singular"), py::arg("Seams"),
-py::arg("UV"), py::arg("FUV"), py::arg("GradientSize") = 30.0, py::arg("Stiffness") = 5.0, py::arg("DirectRound") = false, py::arg("iter") = 5, py::arg("localIter") = 5, py::arg("DoRound") = true, py::arg("SingularityRound") = true
-// , py::arg("roundVertices"), py::arg("hardFeatures")
+py::arg("mismatch"), py::arg("singular"), py::arg("seams"),
+py::arg("UV"), py::arg("FUV"), py::arg("gradientSize") = 30.0, py::arg("stiffness") = 5.0, py::arg("directRound") = false, py::arg("iter") = 5, py::arg("localIter") = 5, py::arg("doRound") = true, py::arg("singularityRound") = true
 );

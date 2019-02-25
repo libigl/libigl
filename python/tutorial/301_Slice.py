@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+#
 # This file is part of libigl, a simple c++ geometry processing library.
 #
 # Copyright (C) 2017 Sebastian Koch <s.koch@tu-berlin.de> and Daniele Panozzo <daniele.panozzo@gmail.com>

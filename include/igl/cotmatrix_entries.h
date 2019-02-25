@@ -1,6 +1,7 @@
 // This file is part of libigl, a simple c++ geometry processing library.
 // 
 // Copyright (C) 2014 Alec Jacobson <alecjacobson@gmail.com>
+// Copyright (C) 2018 Alec Jacobson <alecjacobson@gmail.com>
 // 
 // This Source Code Form is subject to the terms of the Mozilla Public License 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
@@ -27,6 +28,17 @@ namespace igl
   IGL_INLINE void cotmatrix_entries(
     const Eigen::MatrixBase<DerivedV>& V,
     const Eigen::MatrixBase<DerivedF>& F,
+    Eigen::PlainObjectBase<DerivedC>& C);
+  // Intrinsic version.
+  //
+  // Inputs:
+  //   l  #F by 3 list of triangle edge lengths (see edge_lengths)
+  // Outputs:
+  //   C  #F by 3 list of 1/2*cotangents corresponding angles
+  //     for triangles, columns correspond to edges [1,2],[2,0],[0,1]
+  template <typename Derivedl, typename DerivedC>
+  IGL_INLINE void cotmatrix_entries(
+    const Eigen::MatrixBase<Derivedl>& l,
     Eigen::PlainObjectBase<DerivedC>& C);
 }
 

@@ -164,7 +164,6 @@ inline igl::WindingNumberTree<Point,DerivedV,DerivedF>::WindingNumberTree():
   V(dummyV),
   SV(),
   F(),
-  //boundary(igl::boundary_facets<Eigen::MatrixXi,Eigen::MatrixXi>(F))
   cap(),
   radius(std::numeric_limits<typename DerivedV::Scalar>::infinity()),
   center(0,0,0)
@@ -180,7 +179,6 @@ inline igl::WindingNumberTree<Point,DerivedV,DerivedF>::WindingNumberTree(
   V(dummyV),
   SV(),
   F(),
-  //boundary(igl::boundary_facets<Eigen::MatrixXi,Eigen::MatrixXi>(F))
   cap(),
   radius(std::numeric_limits<typename DerivedV::Scalar>::infinity()),
   center(0,0,0)

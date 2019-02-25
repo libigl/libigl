@@ -33,7 +33,7 @@ extern const char *__doc_igl_copyleft_swept_volume;
 extern const char *__doc_igl_copyleft_tetgen_tetrahedralize;
 extern const char *__doc_igl_cotmatrix;
 extern const char *__doc_igl_covariance_scatter_matrix;
-extern const char *__doc_igl_cross_field_missmatch;
+extern const char *__doc_igl_cross_field_mismatch;
 extern const char *__doc_igl_cut_mesh_from_singularities;
 extern const char *__doc_igl_deform_skeleton;
 extern const char *__doc_igl_directed_edge_orientations;

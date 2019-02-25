@@ -1,6 +1,19 @@
 cmake_minimum_required(VERSION 2.8.12)
 project(pyigl)
 
+### Adding libIGL: choose the path to your local copy libIGL
+if(NOT TARGET igl::core)
+  ### Prefer header-only mode for compiling Python bindings
+  if(NOT LIBIGL_WITH_PYTHON OR NOT LIBIGL_USE_STATIC_LIBRARY)
+    message(FATAL_ERROR
+      "Trying to compile Python bindings without -DLIBIGL_WITH_PYTHON=ON. "
+      "Either enable manually all the necessary options, or compile from "
+      "the root folder with -DLIBIGL_USE_STATIC_LIBRARY=OFF")
+  endif()
+  list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/../cmake")
+  include(libigl)
+endif()
+
 # Force a specific python version
 # set(PYTHON_LIBRARIES "D:/Python34/libs/python34.lib")
 # set(PYTHON_INCLUDE_DIR "D:/Python34/include")
@@ -9,24 +22,21 @@ project(pyigl)
 # set(PYTHON_LIBRARIES "/usr/local/Cellar/python3/3.5.0/Frameworks/Python.framework/Versions/3.5/lib/libpython3.5m.dylib")
 # set(PYTHON_INCLUDE_DIR "/usr/local/Cellar/python3/3.5.0/Frameworks/Python.framework/Versions/3.5/include/python3.5m")
 
-set(Python_ADDITIONAL_VERSIONS 3.4 3.5 3.6)
-find_package(PythonInterp REQUIRED)
-find_package(PythonLibs REQUIRED)
+set(Python_ADDITIONAL_VERSIONS 3.4 3.5 3.6 3.7)
+find_package(PythonInterp 3.4 REQUIRED)
+find_package(PythonLibs 3.4 REQUIRED)
 
+## libigl
+if(NOT TARGET igl::core)
+  list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/../cmake")
+  include(libigl)
+endif()
 
 string(TOUPPER "${CMAKE_BUILD_TYPE}" U_CMAKE_BUILD_TYPE)
 if(UNIX)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
   if(NOT ${U_CMAKE_BUILD_TYPE} MATCHES DEBUG)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden -flto")
   endif()
-endif()
-
-## libigl		
-if(NOT TARGET igl::core)		
-  list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/../cmake")		
-  include(libigl)		
 endif()
 
 ## include pybind
@@ -42,7 +52,7 @@ pybind11_add_module(pyigl
 )
 
 ## Add dependencies
-target_include_directories(pyigl PUBLIC igl::core)
+target_link_libraries(pyigl PUBLIC igl::core)
 
 ## Optional modules
 if(LIBIGL_WITH_OPENGL_GLFW)
@@ -127,13 +137,13 @@ elseif(UNIX)
   set_target_properties(pyigl PROPERTIES SUFFIX ".so")
 
   # Enable flag if undefined symbols appear on pyigl module import to get notified about the missing symbols at link time
-  option(CHECK_UNDEFINED        "Check for undefined symbols"    OFF)
+  option(LIBIGL_CHECK_UNDEFINED        "Check for undefined symbols"    OFF)
 
   # Strip unnecessary sections of the binary on Linux/Mac OS
   if(APPLE)
     set_target_properties(pyigl PROPERTIES MACOSX_RPATH ".")
 
-    if(NOT CHECK_UNDEFINED)
+    if(NOT LIBIGL_CHECK_UNDEFINED)
       set_target_properties(pyigl PROPERTIES LINK_FLAGS "-undefined dynamic_lookup -dead_strip")
     endif()
 
@@ -142,7 +152,7 @@ elseif(UNIX)
     endif()
   else()
 
-    if(CHECK_UNDEFINED)
+    if(LIBIGL_CHECK_UNDEFINED)
       target_link_libraries(pyigl PRIVATE ${PYTHON_LIBRARIES})
       set_target_properties(pyigl PROPERTIES LINK_FLAGS "-Wl,--no-undefined")
     endif()

@@ -62,6 +62,15 @@ IGL_INLINE void igl::copyleft::cgal::wire_mesh(
     v = v-c*(PV.rows());
     p = v;
   };
+
+  // Count each vertex's indicident edges.
+  std::vector<int> nedges(WV.rows(), 0);
+  for(int e = 0;e<WE.rows();e++)
+  {
+    ++nedges[WE(e, 0)];
+    ++nedges[WE(e, 1)];
+  }
+
   // loop over all edges
   for(int e = 0;e<WE.rows();e++)
   {
@@ -88,7 +97,8 @@ IGL_INLINE void igl::copyleft::cgal::wire_mesh(
         // Start with factor of thickness;
         // Max out amount at 1/3 of edge length so that there's always some
         // amount of edge
-        Scalar dist = std::min(1.*th,len/3.0);
+        // Zero out if vertex is incident on only one edge
+        Scalar dist = std::min(1.*th,len/3.0) * (nedges[WE(e,c)] > 1);
         // Move to endpoint, offset by amount
         V.row(index(e,c,p)) = 
           qp+WV.row(WE(e,c)) + dist*dir*uv;

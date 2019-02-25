@@ -25,7 +25,7 @@ namespace igl
   //
   template <typename DerivedF, typename Index>
   IGL_INLINE void boundary_loop(
-    const Eigen::PlainObjectBase<DerivedF>& F, 
+    const Eigen::MatrixBase<DerivedF>& F, 
     std::vector<std::vector<Index> >& L);
 
 
@@ -41,7 +41,7 @@ namespace igl
   //
   template <typename DerivedF, typename Index>
   IGL_INLINE void boundary_loop(
-    const Eigen::PlainObjectBase<DerivedF>& F, 
+    const Eigen::MatrixBase<DerivedF>& F, 
     std::vector<Index>& L);
 
   // Compute ordered boundary loops for a manifold mesh and return the 
@@ -56,7 +56,7 @@ namespace igl
   //
   template <typename DerivedF, typename DerivedL>
   IGL_INLINE void boundary_loop(
-    const Eigen::PlainObjectBase<DerivedF>& F, 
+    const Eigen::MatrixBase<DerivedF>& F, 
     Eigen::PlainObjectBase<DerivedL>& L);
 }
 
