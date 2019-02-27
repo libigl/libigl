@@ -96,6 +96,7 @@ namespace test_common
   {
     igl::readDMAT(data_path(filename), M);
   }
+
   template <typename DerivedA, typename DerivedB>
   void assert_eq(
     const Eigen::MatrixBase<DerivedA> & A,
@@ -116,6 +117,29 @@ namespace test_common
       }
     }
   }
+
+  template <typename DerivedA, typename DerivedB>
+  void assert_neq(
+    const Eigen::MatrixBase<DerivedA> & A,
+    const Eigen::MatrixBase<DerivedB> & B)
+  {
+    // Sizes should match
+    REQUIRE(A.rows() == B.rows());
+    REQUIRE(A.cols() == B.cols());
+    bool all_equals = true;
+    for(int i = 0;i<A.rows();i++)
+    {
+      for(int j = 0;j<A.cols();j++)
+      {
+        if (A(i,j) != B(i,j))
+        {
+          all_equals = false;
+        }
+      }
+    }
+    REQUIRE_FALSE(all_equals);
+  }
+
   template <typename DerivedA, typename DerivedB>
   void assert_eq(
     const Eigen::SparseMatrix<DerivedA> & A,

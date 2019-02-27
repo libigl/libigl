@@ -34,6 +34,9 @@ namespace randperm
 
     test_common::assert_eq(I1, I2);
     test_common::assert_eq(Ix1, Ix2);
+
+    test_common::assert_neq(I1, Ix1);
+    test_common::assert_neq(I2, Ix2);
   }
 }
 
