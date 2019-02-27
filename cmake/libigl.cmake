@@ -452,6 +452,7 @@ function(install_dir_files dir_name)
   if(NOT LIBIGL_USE_STATIC_LIBRARY)
     file(GLOB public_sources
       ${CMAKE_CURRENT_SOURCE_DIR}/include/igl${subpath}/*.cpp
+      ${CMAKE_CURRENT_SOURCE_DIR}/include/igl${subpath}/*.c
     )
   endif()
   list(APPEND files_to_install ${public_sources})
