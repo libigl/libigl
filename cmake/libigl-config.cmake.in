@@ -25,5 +25,28 @@ if (TARGET igl::core)
 
 endif()
 
+if (TARGET igl::common)
+  if (NOT TARGET Eigen3::Eigen)
+    find_package(Eigen3 QUIET)
+    if (NOT Eigen3_FOUND)
+      # try with PkgCOnfig
+      find_package(PkgConfig REQUIRED)
+      pkg_check_modules(Eigen3 QUIET IMPORTED_TARGET eigen3)
+    endif()
+
+    if (NOT Eigen3_FOUND)
+      message(FATAL_ERROR "Could not find required dependency Eigen3")
+      set(libigl_common_FOUND FALSE)
+    else()
+      target_link_libraries(igl::common INTERFACE PkgConfig::Eigen3)
+      set(libigl_common_FOUND TRUE)
+    endif()
+  else()
+    target_link_libraries(igl::commoon INTERFACE Eigen3::Eigen)
+    set(libigl_common_FOUND TRUE)
+  endif()
+
+endif()
+
 check_required_components(libigl)
 
