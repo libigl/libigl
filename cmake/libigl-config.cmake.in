@@ -2,50 +2,52 @@
 
 include(${CMAKE_CURRENT_LIST_DIR}/libigl-export.cmake)
 
-if (TARGET igl::core)
-  if (NOT TARGET Eigen3::Eigen)
+# Check if Eigen3 target is avaiable, if not try to locate it,
+# either with find_package or with PkgConfig. On success sets
+# LIBIGL_Eigen3_Target to the located Eigen3 target. Of failure
+# the variable is empty.
+function(LIBIGL_find_Eigen3)
+  set(LIBIGL_Eigen3_Target "" PARENT_SCOPE)
+
+  if (TARGET Eigen3::Eigen)
+    set(LIBIGL_Eigen3_Target Eigen3::Eigen PARENT_SCOPE)
+  else()
+    # First try if Eigen3 can be found with find_package
     find_package(Eigen3 QUIET)
     if (NOT Eigen3_FOUND)
-      # try with PkgCOnfig
+      # find_package failed, next try with PkgConfig
       find_package(PkgConfig REQUIRED)
       pkg_check_modules(Eigen3 QUIET IMPORTED_TARGET eigen3)
-    endif()
 
-    if (NOT Eigen3_FOUND)
-      message(FATAL_ERROR "Could not find required dependency Eigen3")
-      set(libigl_core_FOUND FALSE)
+      if (NOT Eigen3_FOUND)
+        # Both, find_package and PkgConfig failed to locate Eigen3
+        message(FATAL_ERROR "Could not find required dependency Eigen3")
+      else()
+        # PkgConfig succeeded, link against PkgConfig::Eigen3
+        set(LIBIGL_Eigen3_Target PkgConfig::Eigen3 PARENT_SCOPE)
+      endif()
     else()
-      set_target_properties(igl::core PROPERTIES INTERFACE_LINK_LIBRARIES PkgConfig::Eigen3)
-      set(libigl_core_FOUND TRUE)
+      # find_package succeeded, link against Eigen3::Eigen
+      set(LIBIGL_Eigen3_Target Eigen3::Eigen PARENT_SCOPE)
     endif()
-  else()
-    set_target_properties(igl::core PROPERTIES INTERFACE_LINK_LIBRARIES Eigen3::Eigen)
+  endif()
+endfunction()
+
+
+if (TARGET igl::core)
+  LIBIGL_find_Eigen3()
+  if (TARGET ${LIBIGL_Eigen3_Target})
+    set_target_properties(igl::core PROPERTIES INTERFACE_LINK_LIBRARIES ${LIBIGL_Eigen3_Target})
     set(libigl_core_FOUND TRUE)
   endif()
-
 endif()
 
 if (TARGET igl::common)
-  if (NOT TARGET Eigen3::Eigen)
-    find_package(Eigen3 QUIET)
-    if (NOT Eigen3_FOUND)
-      # try with PkgCOnfig
-      find_package(PkgConfig REQUIRED)
-      pkg_check_modules(Eigen3 QUIET IMPORTED_TARGET eigen3)
-    endif()
-
-    if (NOT Eigen3_FOUND)
-      message(FATAL_ERROR "Could not find required dependency Eigen3")
-      set(libigl_common_FOUND FALSE)
-    else()
-      set_target_properties(igl::common PROPERTIES INTERFACE_LINK_LIBRARIES PkgConfig::Eigen3)
-      set(libigl_common_FOUND TRUE)
-    endif()
-  else()
-    set_target_properties(igl::common PROPERTIES INTERFACE_LINK_LIBRARIES Eigen3::Eigen)
+  LIBIGL_find_Eigen3()
+  if (TARGET ${LIBIGL_Eigen3_Target})
+    set_target_properties(igl::common PROPERTIES INTERFACE_LINK_LIBRARIES ${LIBIGL_Eigen3_Target})
     set(libigl_common_FOUND TRUE)
   endif()
-
 endif()
 
 check_required_components(libigl)
