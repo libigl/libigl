@@ -62,6 +62,16 @@ namespace igl
   //   C
   template <class Mat>
   IGL_INLINE void cat(const std::vector<std::vector< Mat > > & A, Mat & C);
+
+  // Concatenate a std::vector of matrices along the specified dimension
+  //
+  // Inputs:
+  //   dim  dimension along which to concatenate, 1 or 2
+  //   A  std::vector of eigen matrices or vectors with identical dimensions
+  // Outputs:
+  //   C  output matrix
+  template <typename T, typename DerivedC>
+  IGL_INLINE void cat(const int dim, const std::vector<T> & A, Eigen::PlainObjectBase<DerivedC> & C);
 }
 
 #ifndef IGL_STATIC_LIBRARY
