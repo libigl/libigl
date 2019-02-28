@@ -67,7 +67,7 @@ namespace igl
   //
   // Inputs:
   //   dim  dimension along which to concatenate, 1 or 2
-  //   A  std::vector of eigen matrices or vectors with identical dimensions
+  //   A  std::vector of eigen matrices. Must have identical # cols if dim == 1 or rows if dim == 2
   // Outputs:
   //   C  output matrix
   template <typename T, typename DerivedC>

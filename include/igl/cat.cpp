@@ -257,29 +257,50 @@ IGL_INLINE void igl::cat(const int dim, const std::vector<T> & A, Eigen::PlainOb
   assert(dim == 1 || dim == 2);
   using namespace Eigen;
 
-  int num_mat = A.size();
+  const int num_mat = A.size();
   if(num_mat == 0)
   {
     C.resize(0,0);
     return;
   }
 
-  int Arows = A[0].rows();
-  int Acols = A[0].cols();
-
   if(dim == 1)
   {
-    C.resize(Arows*num_mat,Acols);
+    const int A_cols = A[0].cols();
+
+    int tot_rows = 0;
+    for(const auto & m : A)
+    {
+      tot_rows += m.rows();
+    }
+
+    C.resize(tot_rows, A_cols);
+
+    int cur_row = 0;
     for(int i = 0; i < num_mat; i++)
     {
-      C.block(i*Arows,0,Arows,Acols) = A[i];
+      assert(A_cols == A[i].cols());
+      C.block(cur_row,0,A[i].rows(),A_cols) = A[i];
+      cur_row += A[i].rows();
     }
   }else if(dim == 2)
   {
-    C.resize(Arows,Acols*num_mat);
+    const int A_rows = A[0].rows();
+
+    int tot_cols = 0;
+    for(const auto & m : A)
+    {
+      tot_cols += m.cols();
+    }
+
+    C.resize(A_rows,tot_cols);
+
+    int cur_col = 0;
     for(int i = 0; i < num_mat; i++)
     {
-      C.block(0,Acols*i,Arows,Acols) = A[i];
+      assert(A_rows == A[i].rows());
+      C.block(0,cur_col,A_rows,A[i].cols()) = A[i];
+      cur_col += A[i].cols();
     }
   }else
   {
