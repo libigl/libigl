@@ -3,40 +3,26 @@
 include(${CMAKE_CURRENT_LIST_DIR}/libigl-export.cmake)
 
 # Check if Eigen3 target is avaiable, if not try to locate it
-# with find_package. On success sets LIBIGL_Eigen3_Target to
-# the located Eigen3 target. On failure the variable is empty.
-function(LIBIGL_find_Eigen3)
-  set(LIBIGL_Eigen3_Target "" PARENT_SCOPE)
-
-  if (TARGET Eigen3::Eigen)
-    set(LIBIGL_Eigen3_Target Eigen3::Eigen PARENT_SCOPE)
-  else()
-    # Try if Eigen3 can be found with find_package
-    find_package(Eigen3 CONFIG QUIET)
-    if (NOT Eigen3_FOUND)
-      message(SEND_ERROR "libigl depends on Eigen3 but Eigen3 could not be found.")
-      # run find_package again to print its error message
-      find_package(Eigen3 CONFIG REQUIRED)
-    else()
-      # find_package succeeded, link against Eigen3::Eigen
-      set(LIBIGL_Eigen3_Target Eigen3::Eigen PARENT_SCOPE)
-    endif()
-  endif()
-endfunction()
+# with find_package.
+message(STATUS "[libigl] Looking for Eigen3")
+if (NOT TARGET Eigen3::Eigen)
+  # Try if Eigen3 can be found with find_package
+  find_package(Eigen3 CONFIG REQUIRED)
+endif()
 
 
 if (TARGET igl::core)
-  LIBIGL_find_Eigen3()
-  if (TARGET ${LIBIGL_Eigen3_Target})
-    set_target_properties(igl::core PROPERTIES INTERFACE_LINK_LIBRARIES ${LIBIGL_Eigen3_Target})
+  if (TARGET Eigen3::Eigen)
+    # Inject dependency
+    set_target_properties(igl::core PROPERTIES INTERFACE_LINK_LIBRARIES Eigen3::Eigen)
     set(libigl_core_FOUND TRUE)
   endif()
 endif()
 
 if (TARGET igl::common)
-  LIBIGL_find_Eigen3()
-  if (TARGET ${LIBIGL_Eigen3_Target})
-    set_target_properties(igl::common PROPERTIES INTERFACE_LINK_LIBRARIES ${LIBIGL_Eigen3_Target})
+  if (TARGET Eigen3::Eigen)
+    # Inject dependency
+    set_target_properties(igl::common PROPERTIES INTERFACE_LINK_LIBRARIES Eigen3::Eigen)
     set(libigl_common_FOUND TRUE)
   endif()
 endif()
