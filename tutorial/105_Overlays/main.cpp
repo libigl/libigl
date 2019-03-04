@@ -1,5 +1,6 @@
 #include <igl/readOFF.h>
 #include <igl/opengl/glfw/Viewer.h>
+#include <igl/opengl/glfw/imgui/ImGuiMenu.h>
 #include <sstream>
 #include "tutorial_shared_path.h"
 
@@ -66,6 +67,12 @@ int main(int argc, char *argv[])
   std::stringstream l2;
   l2 << M(0) << ", " << M(1) << ", " << M(2);
   viewer.data().add_label(M,l2.str());
+
+  // Rendering of text labels is handled by ImGui, so we need to enable the ImGui
+  // plugin to show text labels.
+  igl::opengl::glfw::imgui::ImGuiMenu menu;
+  menu.callback_draw_viewer_window = [](){};
+  viewer.plugins.push_back(&menu);
 
   // Launch the viewer
   viewer.launch();

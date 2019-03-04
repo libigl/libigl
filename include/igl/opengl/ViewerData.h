@@ -113,6 +113,9 @@ public:
   // Alec: This is very confusing. Why does add_edges have a different API from
   // set_edges?
   IGL_INLINE void add_edges (const Eigen::MatrixXd& P1, const Eigen::MatrixXd& P2, const Eigen::MatrixXd& C);
+
+  // Adds text labels at the given positions in 3D.
+  // Note: This requires the ImGui viewer plugin to display text labels.
   IGL_INLINE void add_label (const Eigen::VectorXd& P,  const std::string& str);
 
   // Computes the normals of the mesh
