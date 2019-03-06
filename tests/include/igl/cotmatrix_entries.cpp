@@ -1,4 +1,5 @@
 #include <test_common.h>
+#include <igl/PI.h>
 #include <igl/cotmatrix_entries.h>
 #include <igl/edge_lengths.h>
 #include <igl/EPS.h>
@@ -59,9 +60,9 @@ TEST_CASE("cotmatrix_entries: simple", "[igl]")
   REQUIRE (C2.cols() == 3);
   for(int f = 0;f<C2.rows();f++)
   {
-    //Their (half)cotangent must value 0.5 / tan(M_PI / 3.0)
+    //Their (half)cotangent must value 0.5 / tan(igl::PI / 3.0)
     for(int v = 0;v<3;v++)
-       REQUIRE (C2(f,v) == Approx (0.5 / tan(M_PI / 3.0)).margin( epsilon));
+       REQUIRE (C2(f,v) == Approx (0.5 / tan(igl::PI / 3.0)).margin( epsilon));
   }
 
   //Scale the cube to have huge sides
@@ -101,9 +102,9 @@ TEST_CASE("cotmatrix_entries: simple", "[igl]")
   REQUIRE (C2.cols() == 3);
   for(int f = 0;f<C2.rows();f++)
   {
-    //Their (half)cotangent must value 0.5 / tan(M_PI / 3.0)
+    //Their (half)cotangent must value 0.5 / tan(igl::PI / 3.0)
     for(int v = 0;v<3;v++)
-       REQUIRE (C2(f,v) == Approx (0.5 / tan(M_PI / 3.0)).margin( epsilon));
+       REQUIRE (C2(f,v) == Approx (0.5 / tan(igl::PI / 3.0)).margin( epsilon));
   }
 
   //Scale the cube to have tiny sides
@@ -130,9 +131,9 @@ TEST_CASE("cotmatrix_entries: simple", "[igl]")
   REQUIRE (C2.cols() == 3);
   for(int f = 0;f<C2.rows();f++)
   {
-    //Their (half)cotangent must value 0.5 / tan(M_PI / 3.0)
+    //Their (half)cotangent must value 0.5 / tan(igl::PI / 3.0)
     for(int v = 0;v<3;v++)
-       REQUIRE (C2(f,v) == Approx (0.5 / tan(M_PI / 3.0)).margin( epsilon));
+       REQUIRE (C2(f,v) == Approx (0.5 / tan(igl::PI / 3.0)).margin( epsilon));
   }
 }// TEST_CASE("cotmatrix_entries: simple", "[igl]")
 

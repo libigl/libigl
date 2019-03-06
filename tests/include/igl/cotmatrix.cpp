@@ -1,4 +1,5 @@
 #include <test_common.h>
+#include <igl/PI.h>
 #include <igl/cotmatrix.h>
 
 TEST_CASE("cotmatrix: constant_in_null_space", "[igl]")
@@ -140,7 +141,7 @@ TEST_CASE("cotmatrix: tetrahedron", "[igl]")
   {
     //Check the diagonal. Only can value 0.0 for unused vertex or -3 / tan(60)
     if (L1.coeff(f,f) < -0.1)
-        REQUIRE (L1.coeff(f,f) == Approx (-3 / tan(M_PI / 3.0)).margin( epsilon));
+        REQUIRE (L1.coeff(f,f) == Approx (-3 / tan(igl::PI / 3.0)).margin( epsilon));
     else
         REQUIRE (L1.coeff(f,f) == Approx (0.0).margin( epsilon));
 #ifdef IGL_EDGE_LENGTHS_SQUARED_H
@@ -163,7 +164,7 @@ TEST_CASE("cotmatrix: tetrahedron", "[igl]")
   {
     //Check the diagonal. Only can value 0.0 for unused vertex or -3 / tan(60)
     if (L1.coeff(f,f) < -0.1)
-        REQUIRE (L1.coeff(f,f) == Approx (-3 / tan(M_PI / 3.0)).margin( epsilon));
+        REQUIRE (L1.coeff(f,f) == Approx (-3 / tan(igl::PI / 3.0)).margin( epsilon));
     else
         REQUIRE (L1.coeff(f,f) == Approx (0.0).margin( epsilon));
     REQUIRE (L1.row(f).sum() == Approx (0.0).margin( epsilon));
@@ -179,7 +180,7 @@ TEST_CASE("cotmatrix: tetrahedron", "[igl]")
   {
     //Check the diagonal. Only can value 0.0 for unused vertex or -3 / tan(60)
     if (L1.coeff(f,f) < -0.1)
-        REQUIRE (L1.coeff(f,f) == Approx (-3 / tan(M_PI / 3.0)).margin( epsilon));
+        REQUIRE (L1.coeff(f,f) == Approx (-3 / tan(igl::PI / 3.0)).margin( epsilon));
     else
         REQUIRE (L1.coeff(f,f) == Approx (0.0).margin( epsilon));
     REQUIRE (L1.row(f).sum() == Approx (0.0).margin( epsilon));
