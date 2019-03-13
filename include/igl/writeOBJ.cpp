@@ -118,11 +118,11 @@ IGL_INLINE bool igl::writeOBJ(
   return true;
 }
 
-template <typename DerivedV>
+template <typename DerivedV, typename T>
 IGL_INLINE bool igl::writeOBJ(
-  const std::string str,
+  const std::string &str,
   const Eigen::MatrixBase<DerivedV>& V,
-  const std::vector<std::vector<typename DerivedV::Index> >& F)
+  const std::vector<std::vector<T> >& F)
 {
   using namespace std;
   using namespace Eigen;
@@ -137,7 +137,7 @@ IGL_INLINE bool igl::writeOBJ(
   
   for(const auto& face : F) {
     int face_size = face.size();
-    assert(face_size == 3 || face_size == 4);
+    assert(face_size >= 2);
     s<<"f";
     for(const auto& vi : face) {
       s<<" "<<vi; 

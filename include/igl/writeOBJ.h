@@ -57,11 +57,11 @@ namespace igl
   //   V  #V by 3 mesh vertex positions
   //   F  #F std::vector of std::vector<Index> of size 3 or 4 mesh indices into V
   // Returns true on success, false on error
-  template <typename DerivedV>
+  template <typename DerivedV, typename T>
   IGL_INLINE bool writeOBJ(
-    const std::string str,
+    const std::string &str,
     const Eigen::MatrixBase<DerivedV>& V,
-    const std::vector<std::vector<typename DerivedV::Index> >& F);
+    const std::vector<std::vector<T> >& F);
 
 }
 
