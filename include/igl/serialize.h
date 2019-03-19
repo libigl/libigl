@@ -502,10 +502,8 @@ namespace igl
       std::vector<char> buffer(size);
       file.read(&buffer[0],size);
  
-      deserialize(obj,objectName,buffer);
+      success = deserialize(obj, objectName, buffer);
       file.close();
- 
-      success = true;
     }
     else
     {

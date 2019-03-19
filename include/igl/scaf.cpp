@@ -78,8 +78,8 @@ void adjusted_grad(Eigen::MatrixXd &V,
   Dz = G.bottomRows(F.rows());
 
   // handcraft uniform gradient for faces area falling below threshold.
-  double sin60 = std::sin(M_PI / 3);
-  double cos60 = std::cos(M_PI / 3);
+  double sin60 = std::sin(igl::PI / 3);
+  double cos60 = std::cos(igl::PI / 3);
   double deno = std::sqrt(sin60 * area_threshold);
   Eigen::MatrixXd standard_grad(3, 3);
   standard_grad << -sin60 / deno, sin60 / deno, 0,
