@@ -137,8 +137,16 @@ IGL_INLINE bool igl::writeOBJ(
   
   for(const auto& face : F) {
     int face_size = face.size();
-    assert(face_size >= 2);
-    s<<"f";
+    
+    assert(face_size != 0);
+    
+    if(face_size == 2) {
+      s<<"l";
+    }else
+    {
+      s<<"f";
+    }
+
     for(const auto& vi : face) {
       s<<" "<<vi; 
     }
