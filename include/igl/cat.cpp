@@ -283,7 +283,8 @@ IGL_INLINE void igl::cat(const int dim, const std::vector<T> & A, Eigen::PlainOb
       C.block(cur_row,0,A[i].rows(),A_cols) = A[i];
       cur_row += A[i].rows();
     }
-  }else if(dim == 2)
+  }
+  else if(dim == 2)
   {
     const int A_rows = A[0].rows();
 

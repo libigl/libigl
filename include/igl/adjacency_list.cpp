@@ -136,8 +136,10 @@ IGL_INLINE void igl::adjacency_list(
   
   // Find maxCoeff
   int maxCoeff = 0;
-  for(const auto &vec : F) {
-    for(int coeff : vec) {
+  for(const auto &vec : F)
+  {
+    for(int coeff : vec)
+    {
       maxCoeff = std::max(coeff, maxCoeff);
     }
   }
