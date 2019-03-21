@@ -135,19 +135,15 @@ IGL_INLINE bool igl::writeOBJ(
   }
   s<<V.format(IOFormat(FullPrecision,DontAlignCols," ","\n","v ","","","\n"));
   
-  for(const auto& face : F) {
+  for(const auto& face : F)
+  {
     int face_size = face.size();
-    
     assert(face_size != 0);
-    
-    if(face_size == 2) {
-      s<<"l";
-    }else
-    {
-      s<<"f";
-    }
 
-    for(const auto& vi : face) {
+    s << (face_size == 2 ? "l" : "f");
+
+    for(const auto& vi : face)
+    {
       s<<" "<<vi; 
     }
     s<<"\n";
