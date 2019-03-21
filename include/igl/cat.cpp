@@ -303,7 +303,8 @@ IGL_INLINE void igl::cat(const int dim, const std::vector<T> & A, Eigen::PlainOb
       C.block(0,cur_col,A_rows,A[i].cols()) = A[i];
       cur_col += A[i].cols();
     }
-  }else
+  }
+  else
   {
     fprintf(stderr,"cat.h: Error: Unsupported dimension %d\n",dim);
   }
