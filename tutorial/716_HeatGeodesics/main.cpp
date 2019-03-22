@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
   Eigen::MatrixXi F;
   Eigen::MatrixXd V;
   igl::read_triangle_mesh( argc>1?argv[1]: TUTORIAL_SHARED_PATH "/beetle.off",V,F);
-  
+
   // Precomputation
   igl::HeatGeodesicsData<double> data;
   double t = std::pow(igl::avg_edge_length(V,F),2);
@@ -39,12 +39,12 @@ int main(int argc, char *argv[])
     Eigen::Vector3f bc;
     // Cast a ray in the view direction starting from the mouse position
     double x = viewer.current_mouse_x;
-    double y = viewer.core.viewport(3) - viewer.current_mouse_y;
-    if(igl::unproject_onto_mesh(Eigen::Vector2f(x,y), viewer.core.view,
-      viewer.core.proj, viewer.core.viewport, V, F, fid, bc))
+    double y = viewer.core().viewport(3) - viewer.current_mouse_y;
+    if(igl::unproject_onto_mesh(Eigen::Vector2f(x,y), viewer.core().view,
+      viewer.core().proj, viewer.core().viewport, V, F, fid, bc))
     {
       // 3d position of hit
-      const Eigen::RowVector3d m3 = 
+      const Eigen::RowVector3d m3 =
         V.row(F(fid,0))*bc(0) + V.row(F(fid,1))*bc(1) + V.row(F(fid,2))*bc(2);
       int cid = 0;
       Eigen::Vector3d(
@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
     }
     return false;
   };
-  viewer.callback_mouse_move = 
+  viewer.callback_mouse_move =
     [&](igl::opengl::glfw::Viewer& viewer, int, int)->bool
     {
       if(down_on_mesh)
@@ -94,7 +94,7 @@ int main(int argc, char *argv[])
 
 )";
 
-  viewer.callback_key_pressed = 
+  viewer.callback_key_pressed =
     [&](igl::opengl::glfw::Viewer& /*viewer*/, unsigned int key, int mod)->bool
   {
     switch(key)
@@ -184,7 +184,7 @@ void main()
 {
 vec3 Ia = La * vec3(Kai);    // ambient intensity
 float ni = 30.0; // number of intervals
-float t = 1.0-round(ni*Kdi.r)/ni; // quantize and reverse 
+float t = 1.0-round(ni*Kdi.r)/ni; // quantize and reverse
 vec3 Kdiq = clamp(vec3(2.*t,2.*t-1.,6.*t-5.),0,1); // heat map
 
 vec3 vector_to_light_eye = light_position_eye - position_eye;

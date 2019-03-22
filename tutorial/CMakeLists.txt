@@ -60,6 +60,7 @@ if(TUTORIALS_CHAPTER1)
     add_subdirectory("106_ViewerMenu")
   endif()
   add_subdirectory("107_MultipleMeshes")
+  add_subdirectory("108_MultipleViews")
 endif()
 
 # Chapter 2

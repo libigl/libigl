@@ -16,13 +16,13 @@ bool key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier
   {
     // Plot the 3D mesh
     viewer.data().set_mesh(V,F);
-    viewer.core.align_camera_center(V,F);
+    viewer.core().align_camera_center(V,F);
   }
   else if (key == '2')
   {
     // Plot the mesh in 2D using the UV coordinates as vertex coordinates
     viewer.data().set_mesh(V_uv,F);
-    viewer.core.align_camera_center(V_uv,F);
+    viewer.core().align_camera_center(V_uv,F);
   }
 
   viewer.data().compute_normals();

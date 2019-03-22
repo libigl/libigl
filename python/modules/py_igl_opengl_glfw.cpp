@@ -380,7 +380,7 @@ py::class_<igl::opengl::ViewerCore> viewercore_class(me, "ViewerCore");
 
     .def("data", &igl::opengl::glfw::Viewer::data,pybind11::return_value_policy::reference)
 
-    .def_readwrite("core", &igl::opengl::glfw::Viewer::core)
+    //.def_readwrite("core", &igl::opengl::glfw::Viewer::core)
     //.def_readwrite("opengl", &igl::opengl::glfw::Viewer::opengl)
 
     #ifdef IGL_VIEWER_WITH_NANOGUI
@@ -388,15 +388,19 @@ py::class_<igl::opengl::ViewerCore> viewercore_class(me, "ViewerCore");
     .def_readwrite("screen", &igl::opengl::glfw::Viewer::screen)
     #endif
 
-    .def("launch", &igl::opengl::glfw::Viewer::launch, py::arg("resizable") = true, py::arg("fullscreen") = false)
-    .def("launch_init", &igl::opengl::glfw::Viewer::launch_init, py::arg("resizable") = true, py::arg("fullscreen") = false)
+    .def("launch", &igl::opengl::glfw::Viewer::launch, py::arg("resizable") = true,
+      py::arg("fullscreen") = false, py::arg("name") = "libigl viewer",
+      py::arg("windowWidth") = 1280, py::arg("windowHeight") = 800)
+    .def("launch_init", &igl::opengl::glfw::Viewer::launch_init, py::arg("resizable") = true,
+      py::arg("fullscreen") = false, py::arg("name") = "libigl viewer",
+      py::arg("windowWidth") = 1280, py::arg("windowHeight") = 800)
     .def("launch_rendering", &igl::opengl::glfw::Viewer::launch_rendering, py::arg("loop") = true)
     .def("launch_shut", &igl::opengl::glfw::Viewer::launch_shut)
     .def("init", &igl::opengl::glfw::Viewer::init)
     .def("serialize", [](igl::opengl::glfw::Viewer& viewer)
     {
       std::vector<char> a;
-      igl::serialize(viewer.core,"Core",a);
+      //igl::serialize(viewer.core,"Core",a);
       //igl::serialize(viewer.data,"Data",a); TODO
 
       return a;
@@ -404,7 +408,7 @@ py::class_<igl::opengl::ViewerCore> viewercore_class(me, "ViewerCore");
 
     .def("deserialize", [](igl::opengl::glfw::Viewer& viewer, const std::vector<char>& a)
     {
-      igl::deserialize(viewer.core,"Core",a);
+      //igl::deserialize(viewer.core,"Core",a);
       //igl::deserialize(viewer.data,"Data",a);
       return;
     })

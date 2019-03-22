@@ -7,6 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 ////////////////////////////////////////////////////////////////////////////////
 #include "ImGuiMenu.h"
+#include "ImGuiHelpers.h"
 #include <igl/project.h>
 #include <imgui/imgui.h>
 #include <imgui_impl_glfw.h>
@@ -219,7 +220,7 @@ IGL_INLINE void ImGuiMenu::draw_viewer_menu()
   {
     if (ImGui::Button("Center object", ImVec2(-1, 0)))
     {
-      viewer->core.align_camera_center(viewer->data().V, viewer->data().F);
+      viewer->core().align_camera_center(viewer->data().V, viewer->data().F);
     }
     if (ImGui::Button("Snap canonical view", ImVec2(-1, 0)))
     {
@@ -228,38 +229,47 @@ IGL_INLINE void ImGuiMenu::draw_viewer_menu()
 
     // Zoom
     ImGui::PushItemWidth(80 * menu_scaling());
-    ImGui::DragFloat("Zoom", &(viewer->core.camera_zoom), 0.05f, 0.1f, 20.0f);
+    ImGui::DragFloat("Zoom", &(viewer->core().camera_zoom), 0.05f, 0.1f, 20.0f);
 
     // Select rotation type
-    int rotation_type = static_cast<int>(viewer->core.rotation_type);
+    int rotation_type = static_cast<int>(viewer->core().rotation_type);
     static Eigen::Quaternionf trackball_angle = Eigen::Quaternionf::Identity();
     static bool orthographic = true;
     if (ImGui::Combo("Camera Type", &rotation_type, "Trackball\0Two Axes\0002D Mode\0\0"))
     {
       using RT = igl::opengl::ViewerCore::RotationType;
       auto new_type = static_cast<RT>(rotation_type);
-      if (new_type != viewer->core.rotation_type)
+      if (new_type != viewer->core().rotation_type)
       {
         if (new_type == RT::ROTATION_TYPE_NO_ROTATION)
         {
-          trackball_angle = viewer->core.trackball_angle;
-          orthographic = viewer->core.orthographic;
-          viewer->core.trackball_angle = Eigen::Quaternionf::Identity();
-          viewer->core.orthographic = true;
+          trackball_angle = viewer->core().trackball_angle;
+          orthographic = viewer->core().orthographic;
+          viewer->core().trackball_angle = Eigen::Quaternionf::Identity();
+          viewer->core().orthographic = true;
         }
-        else if (viewer->core.rotation_type == RT::ROTATION_TYPE_NO_ROTATION)
+        else if (viewer->core().rotation_type == RT::ROTATION_TYPE_NO_ROTATION)
         {
-          viewer->core.trackball_angle = trackball_angle;
-          viewer->core.orthographic = orthographic;
+          viewer->core().trackball_angle = trackball_angle;
+          viewer->core().orthographic = orthographic;
         }
-        viewer->core.set_rotation_type(new_type);
+        viewer->core().set_rotation_type(new_type);
       }
     }
 
     // Orthographic view
-    ImGui::Checkbox("Orthographic view", &(viewer->core.orthographic));
+    ImGui::Checkbox("Orthographic view", &(viewer->core().orthographic));
     ImGui::PopItemWidth();
   }
+
+  // Helper for setting viewport specific mesh options
+  auto make_checkbox = [&](const char *label, unsigned int &option)
+  {
+    return ImGui::Checkbox(label,
+      [&]() { return viewer->core().is_set(option); },
+      [&](bool value) { return viewer->core().set(option, value); }
+    );
+  };
 
   // Draw options
   if (ImGui::CollapsingHeader("Draw Options", ImGuiTreeNodeFlags_DefaultOpen))
@@ -268,14 +278,14 @@ IGL_INLINE void ImGuiMenu::draw_viewer_menu()
     {
       viewer->data().dirty = MeshGL::DIRTY_ALL;
     }
-    ImGui::Checkbox("Show texture", &(viewer->data().show_texture));
+    make_checkbox("Show texture", viewer->data().show_texture);
     if (ImGui::Checkbox("Invert normals", &(viewer->data().invert_normals)))
     {
       viewer->data().dirty |= igl::opengl::MeshGL::DIRTY_NORMAL;
     }
-    ImGui::Checkbox("Show overlay", &(viewer->data().show_overlay));
-    ImGui::Checkbox("Show overlay depth", &(viewer->data().show_overlay_depth));
-    ImGui::ColorEdit4("Background", viewer->core.background_color.data(),
+    make_checkbox("Show overlay", viewer->data().show_overlay);
+    make_checkbox("Show overlay depth", viewer->data().show_overlay_depth);
+    ImGui::ColorEdit4("Background", viewer->core().background_color.data(),
         ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_PickerHueWheel);
     ImGui::ColorEdit4("Line color", viewer->data().line_color.data(),
         ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_PickerHueWheel);
@@ -287,8 +297,8 @@ IGL_INLINE void ImGuiMenu::draw_viewer_menu()
   // Overlays
   if (ImGui::CollapsingHeader("Overlays", ImGuiTreeNodeFlags_DefaultOpen))
   {
-    ImGui::Checkbox("Wireframe", &(viewer->data().show_lines));
-    ImGui::Checkbox("Fill", &(viewer->data().show_faces));
+    make_checkbox("Wireframe", viewer->data().show_lines);
+    make_checkbox("Fill", viewer->data().show_faces);
     ImGui::Checkbox("Show vertex labels", &(viewer->data().show_vertid));
     ImGui::Checkbox("Show faces labels", &(viewer->data().show_faceid));
   }
@@ -357,14 +367,14 @@ IGL_INLINE void ImGuiMenu::draw_labels(const igl::opengl::ViewerData &data)
 
 IGL_INLINE void ImGuiMenu::draw_text(Eigen::Vector3d pos, Eigen::Vector3d normal, const std::string &text)
 {
-  pos += normal * 0.005f * viewer->core.object_scale;
+  pos += normal * 0.005f * viewer->core().object_scale;
   Eigen::Vector3f coord = igl::project(Eigen::Vector3f(pos.cast<float>()),
-    viewer->core.view, viewer->core.proj, viewer->core.viewport);
+    viewer->core().view, viewer->core().proj, viewer->core().viewport);
 
   // Draw text labels slightly bigger than normal text
   ImDrawList* drawList = ImGui::GetWindowDrawList();
   drawList->AddText(ImGui::GetFont(), ImGui::GetFontSize() * 1.2,
-      ImVec2(coord[0]/pixel_ratio_, (viewer->core.viewport[3] - coord[1])/pixel_ratio_),
+      ImVec2(coord[0]/pixel_ratio_, (viewer->core().viewport[3] - coord[1])/pixel_ratio_),
       ImGui::GetColorU32(ImVec4(0, 0, 10, 255)),
       &text[0], &text[0] + text.size());
 }

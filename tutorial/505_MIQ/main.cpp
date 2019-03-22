@@ -224,7 +224,7 @@ bool key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier
   line_texture(texture_R, texture_G, texture_B);
   viewer.data().set_texture(texture_R, texture_B, texture_G);
 
-  viewer.core.align_camera_center(viewer.data().V,viewer.data().F);
+  viewer.core().align_camera_center(viewer.data().V,viewer.data().F);
 
   return false;
 }
