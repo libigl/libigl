@@ -328,7 +328,13 @@ IGL_INLINE bool igl::readMSH(
     for (size_t i=0; i<num_int_tags; i++)
         fin >> int_tags[i];
 
-    if (num_string_tags <= 0 || num_int_tags <= 2) { assert(false && "invalid format"); return; }
+    if (num_string_tags <= 0 || num_int_tags <= 2) {
+        delete[] str_tags;
+        delete[] real_tags;
+        delete[] int_tags;
+        assert(false && "invalid format");
+        return;
+    }
     std::string fieldname = str_tags[0];
     int num_components = int_tags[1];
     int num_entries = int_tags[2];
@@ -397,7 +403,13 @@ IGL_INLINE bool igl::readMSH(
     for (size_t i=0; i<num_int_tags; i++)
         fin >> int_tags[i];
 
-    if (num_string_tags <= 0 || num_int_tags <= 2) { assert(false && "invalid format"); return; }
+    if (num_string_tags <= 0 || num_int_tags <= 2) {
+        delete[] str_tags;
+        delete[] real_tags;
+        delete[] int_tags;
+        assert(false && "invalid format");
+        return;
+    }
     std::string fieldname = str_tags[0];
     int num_components = int_tags[1];
     int num_entries = int_tags[2];
