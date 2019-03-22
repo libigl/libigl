@@ -522,8 +522,12 @@ IGL_INLINE void CurvatureCalculator::getSphere(const int start, const double r, 
       }
     }
   }
-  free(extra_candidates);
-  free(queue);
+  while(!extra_candidates->empty()){
+      extra_candidates->pop();
+  }
+  delete extra_candidates;
+  queue.clear();
+  delete queue;
   free(visited);
 }
 
