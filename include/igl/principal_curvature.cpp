@@ -448,7 +448,8 @@ IGL_INLINE void CurvatureCalculator::getKRing(const int start, const double r, s
   int bufsize=vertices.rows();
   vv.reserve(bufsize);
   std::list<std::pair<int,int> > queue;
-  bool* visited = (bool*)calloc(bufsize,sizeof(bool));
+  std::vector<bool> visited;
+  visited.resize(bufsize);
   queue.push_back(std::pair<int,int>(start,0));
   visited[start]=true;
   while (!queue.empty())
@@ -470,8 +471,6 @@ IGL_INLINE void CurvatureCalculator::getKRing(const int start, const double r, s
       }
     }
   }
-  free(visited);
-  return;
 }
 
 
@@ -480,7 +479,8 @@ IGL_INLINE void CurvatureCalculator::getSphere(const int start, const double r, 
   int bufsize=vertices.rows();
   vv.reserve(bufsize);
   std::list<int> queue;
-  bool* visited = (bool*)calloc(bufsize,sizeof(bool));
+  std::vector<bool> visited;
+  visited.resize(bufsize);
   queue.push_back(start);
   visited[start]=true;
   Eigen::Vector3d me=vertices.row(start);
@@ -522,7 +522,6 @@ IGL_INLINE void CurvatureCalculator::getSphere(const int start, const double r, 
       }
     }
   }
-  free(visited);
 }
 
 IGL_INLINE Eigen::Vector3d CurvatureCalculator::project(const Eigen::Vector3d& v, const Eigen::Vector3d& vp, const Eigen::Vector3d& ppn)
