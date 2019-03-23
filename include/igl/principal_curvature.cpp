@@ -480,7 +480,7 @@ IGL_INLINE void CurvatureCalculator::getSphere(const int start, const double r, 
   int bufsize=vertices.rows();
   vv.reserve(bufsize);
   std::list<int> queue;
-  bool visited[bufsize];
+  bool* visited = (bool*)calloc(bufsize,sizeof(bool));
   queue.push_back(start);
   visited[start]=true;
   Eigen::Vector3d me=vertices.row(start);
@@ -522,6 +522,7 @@ IGL_INLINE void CurvatureCalculator::getSphere(const int start, const double r, 
       }
     }
   }
+  free(visited);
 }
 
 IGL_INLINE Eigen::Vector3d CurvatureCalculator::project(const Eigen::Vector3d& v, const Eigen::Vector3d& vp, const Eigen::Vector3d& ppn)
