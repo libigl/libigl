@@ -26,8 +26,10 @@ namespace igl
   // Outputs:
   //   NV  #NV by dim list of mesh vertex positions
   //   NF  #NF by ss list of simplices
-  //   IM  #V by 1 list of indices such that: NF = IM(F) and NT = IM(T)
+  //   I   #V by 1 list of indices such that: NF = IM(F) and NT = IM(T)
   //      and V(find(IM<=size(NV,1)),:) = NV
+  //   J  #NV by 1 list, such that NV = V(J,:)
+  //   
   //
   template <
     typename DerivedV,

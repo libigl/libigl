@@ -9,7 +9,6 @@
 #include "unique_edge_map.h"
 #include "tan_half_angle.h"
 #include "EPS.h"
-#include "matlab_format.h"
 #include "cotmatrix_entries.h"
 #include <iostream>
 #include <cassert>

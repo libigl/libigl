@@ -9,7 +9,6 @@
 #include "face_occurrences.h"
 #include "list_to_matrix.h"
 #include "matrix_to_list.h"
-#include "matlab_format.h"
 #include "sort.h"
 #include "unique_rows.h"
 #include "accumarray.h"
