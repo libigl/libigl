@@ -117,6 +117,8 @@ public:
   // Adds text labels at the given positions in 3D.
   // Note: This requires the ImGui viewer plugin to display text labels.
   IGL_INLINE void add_label (const Eigen::VectorXd& P,  const std::string& str);
+  // Clear the label data
+  IGL_INLINE void clear_labels ();
 
   // Computes the normals of the mesh
   IGL_INLINE void compute_normals();
@@ -201,6 +203,7 @@ public:
   float point_size;
   float line_width;
   Eigen::Matrix<float, 4, 1, Eigen::DontAlign> line_color;
+  Eigen::Matrix<float, 4, 1, Eigen::DontAlign> label_color;
 
   // Shape material
   float shininess;

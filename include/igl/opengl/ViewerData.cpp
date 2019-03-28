@@ -29,6 +29,7 @@ IGL_INLINE igl::opengl::ViewerData::ViewerData()
   point_size(30),
   line_width(0.5f),
   line_color(0,0,0,1),
+  label_color(0,0,0.04,1),
   shininess(35.0f),
   id(-1)
 {
@@ -335,6 +336,12 @@ IGL_INLINE void igl::opengl::ViewerData::add_label(const Eigen::VectorXd& P,  co
   labels_positions.conservativeResize(lastid+1, 3);
   labels_positions.row(lastid) = P_temp;
   labels_strings.push_back(str);
+}
+
+IGL_INLINE void igl::opengl::ViewerData::clear_labels()
+{
+  labels_positions.resize(0,3);
+  labels_strings.clear();
 }
 
 IGL_INLINE void igl::opengl::ViewerData::clear()
