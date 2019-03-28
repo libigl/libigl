@@ -9,9 +9,10 @@
 #include "exterior_edges.h"
 #include "list_to_matrix.h"
 
+template <typename DerivedE, typename Derivedcap>
 IGL_INLINE void igl::triangle_fan(
-  const Eigen::MatrixXi & E,
-  Eigen::MatrixXi & cap)
+  const Eigen::MatrixBase<DerivedE> & E,
+  Eigen::PlainObjectBase<Derivedcap> & cap)
 {
   using namespace std;
   using namespace Eigen;
@@ -52,3 +53,6 @@ IGL_INLINE Eigen::MatrixXi igl::triangle_fan( const Eigen::MatrixXi & E)
   triangle_fan(E,cap);
   return cap;
 }
+
+#if IGL_STATIC_LIBRARY
+#endif

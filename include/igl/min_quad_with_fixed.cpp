@@ -12,7 +12,6 @@
 #include "find.h"
 #include "sparse.h"
 #include "repmat.h"
-#include "matlab_format.h"
 #include "EPS.h"
 #include "cat.h"
 
@@ -142,7 +141,7 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
       "#cols in Aequ should match #unknowns");
     data.AeqTQR.compute(data.Aequ.transpose().eval());
 #ifdef MIN_QUAD_WITH_FIXED_CPP_DEBUG
-    cout<<endl<<matlab_format(SparseMatrix<T>(data.Aequ.transpose().eval()),"AeqT")<<endl<<endl;
+    //cout<<endl<<matlab_format(SparseMatrix<T>(data.Aequ.transpose().eval()),"AeqT")<<endl<<endl;
 #endif
     switch(data.AeqTQR.info())
     {

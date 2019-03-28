@@ -25,7 +25,6 @@
 #include <igl/local_basis.h>
 #include <igl/map_vertices_to_circle.h>
 #include <igl/polar_svd.h>
-#include <igl/readOBJ.h>
 #include <igl/slice.h>
 #include <igl/slice_into.h>
 #include <igl/slim.h>

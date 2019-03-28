@@ -10,7 +10,7 @@
 #include <Eigen/Geometry>
 
 template<typename DerivedSource, typename DerivedDir>
-IGL_INLINE bool igl::segments_intersect(
+IGL_INLINE bool igl::segment_segment_intersect(
   const Eigen::PlainObjectBase <DerivedSource> &p,
   const Eigen::PlainObjectBase <DerivedDir> &r,
   const Eigen::PlainObjectBase <DerivedSource> &q,
@@ -63,5 +63,5 @@ IGL_INLINE bool igl::segments_intersect(
 };
 
 #ifdef IGL_STATIC_LIBRARY
-template bool igl::segments_intersect<Eigen::Matrix<double, 1, 3, 1, 1, 3>, Eigen::Matrix<double, 1, 3, 1, 1, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > const&, double&, double&, double);
+template bool igl::segment_segment_intersect<Eigen::Matrix<double, 1, 3, 1, 1, 3>, Eigen::Matrix<double, 1, 3, 1, 1, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > const&, double&, double&, double);
 #endif
