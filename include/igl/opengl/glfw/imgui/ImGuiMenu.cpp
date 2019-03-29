@@ -391,7 +391,7 @@ IGL_INLINE void ImGuiMenu::draw_text(
   // Draw text labels slightly bigger than normal text
   ImDrawList* drawList = ImGui::GetWindowDrawList();
   drawList->AddText(ImGui::GetFont(), ImGui::GetFontSize() * 1.2,
-      ImVec2(coord[0]/pixel_ratio_, (viewer->core.viewport[3] - coord[1])/pixel_ratio_),
+      ImVec2(coord[0]/pixel_ratio_, (viewer->core().viewport[3] - coord[1])/pixel_ratio_),
       ImGui::GetColorU32(ImVec4(
         color(0),
         color(1),
