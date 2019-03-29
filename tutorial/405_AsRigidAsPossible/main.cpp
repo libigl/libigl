@@ -70,7 +70,7 @@ bool pre_draw(igl::opengl::glfw::Viewer & viewer)
     igl::arap_solve(bc,arap_data,U);
     viewer.data().set_vertices(U);
     viewer.data().compute_normals();
-  if(viewer.core.is_animating)
+  if(viewer.core().is_animating)
   {
     anim_t += anim_t_dir;
   }
@@ -82,7 +82,7 @@ bool key_down(igl::opengl::glfw::Viewer &viewer, unsigned char key, int mods)
   switch(key)
   {
     case ' ':
-      viewer.core.is_animating = !viewer.core.is_animating;
+      viewer.core().is_animating = !viewer.core().is_animating;
       return true;
   }
   return false;
@@ -127,8 +127,8 @@ int main(int argc, char *argv[])
   viewer.data().set_colors(C);
   viewer.callback_pre_draw = &pre_draw;
   viewer.callback_key_down = &key_down;
-  viewer.core.is_animating = false;
-  viewer.core.animation_max_fps = 30.;
+  viewer.core().is_animating = false;
+  viewer.core().animation_max_fps = 30.;
   cout<<
     "Press [space] to toggle animation"<<endl;
   viewer.launch();

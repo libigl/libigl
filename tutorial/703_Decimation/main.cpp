@@ -68,7 +68,7 @@ int main(int argc, char * argv[])
   const auto &pre_draw = [&](igl::opengl::glfw::Viewer & viewer)->bool
   {
     // If animating then collapse 10% of edges
-    if(viewer.core.is_animating && !Q.empty())
+    if(viewer.core().is_animating && !Q.empty())
     {
       bool something_collapsed = false;
       // collapse edge
@@ -100,7 +100,7 @@ int main(int argc, char * argv[])
     switch(key)
     {
       case ' ':
-        viewer.core.is_animating ^= 1;
+        viewer.core().is_animating ^= 1;
         break;
       case 'R':
       case 'r':
@@ -113,8 +113,8 @@ int main(int argc, char * argv[])
   };
 
   reset();
-  viewer.core.background_color.setConstant(1);
-  viewer.core.is_animating = true;
+  viewer.core().background_color.setConstant(1);
+  viewer.core().is_animating = true;
   viewer.callback_key_down = key_down;
   viewer.callback_pre_draw = pre_draw;
   return viewer.launch();

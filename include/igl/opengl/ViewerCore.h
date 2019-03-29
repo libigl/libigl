@@ -37,7 +37,6 @@ public:
   // Serialization code
   IGL_INLINE void InitSerialization();
 
-
   // ------------------- Camera control functions
 
   // Adjust the view to see the entire model
@@ -91,7 +90,24 @@ public:
   };
   IGL_INLINE void set_rotation_type(const RotationType & value);
 
+  // ------------------- Option helpers
+
+  // Set a ViewerData visualization option for this viewport
+  IGL_INLINE void set(unsigned int &property_mask, bool value = true) const;
+
+  // Unset a ViewerData visualization option for this viewport
+  IGL_INLINE void unset(unsigned int &property_mask) const;
+
+  // Toggle a ViewerData visualization option for this viewport
+  IGL_INLINE void toggle(unsigned int &property_mask) const;
+
+  // Check whether a ViewerData visualization option is set for this viewport
+  IGL_INLINE bool is_set(unsigned int property_mask) const;
+
   // ------------------- Properties
+
+  // Unique identifier
+  unsigned int id = 1u;
 
   // Colors
   Eigen::Vector4f background_color;

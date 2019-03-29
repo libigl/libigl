@@ -34,6 +34,9 @@ namespace igl
 namespace opengl
 {
 
+// Forward declaration
+class ViewerCore;
+
 class ViewerData
 {
 public:
@@ -49,6 +52,8 @@ public:
   IGL_INLINE void set_mesh(const Eigen::MatrixXd& V, const Eigen::MatrixXi& F);
   IGL_INLINE void set_vertices(const Eigen::MatrixXd& V);
   IGL_INLINE void set_normals(const Eigen::MatrixXd& N);
+
+  IGL_INLINE void set_visible(bool value, unsigned int core_id = 1);
 
   // Set the color of the mesh
   //
@@ -138,6 +143,9 @@ public:
   // Generates a default grid texture
   IGL_INLINE void grid_texture();
 
+  // Copy visualization options from one viewport to another
+  IGL_INLINE void copy_options(const ViewerCore &from, const ViewerCore &to);
+
   Eigen::MatrixXd V; // Vertices of the current mesh (#V x 3)
   Eigen::MatrixXi F; // Faces of the mesh (#F x 3)
 
@@ -189,15 +197,20 @@ public:
   // Enable per-face or per-vertex properties
   bool face_based;
 
-  // Visualization options
-  bool show_overlay;
-  bool show_overlay_depth;
-  bool show_texture;
-  bool show_faces;
-  bool show_lines;
-  bool show_vertid;
-  bool show_faceid;
+  // Invert mesh normals
   bool invert_normals;
+
+  // Visualization options
+  // Each option is a binary mask specifying on which viewport each option is set.
+  // When using a single viewport, standard boolean can still be used for simplicity.
+  unsigned int is_visible;
+  unsigned int show_overlay;
+  unsigned int show_overlay_depth;
+  unsigned int show_texture;
+  unsigned int show_faces;
+  unsigned int show_lines;
+  bool show_vertid; // shared across viewports for now
+  bool show_faceid; // shared across viewports for now
 
   // Point size / line width
   float point_size;
