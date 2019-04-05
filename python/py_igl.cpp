@@ -46,6 +46,7 @@
 #include <igl/edge_topology.h>
 #include <igl/eigs.h>
 #include <igl/exact_geodesic.h>
+#include <igl/heat_geodesics.h>
 #include <igl/find_cross_field_singularities.h>
 #include <igl/fit_rotations.h>
 #include <igl/floor.h>
@@ -145,6 +146,7 @@ void python_export_igl(py::module &m)
 #include "py_igl/py_edge_topology.cpp"
 #include "py_igl/py_eigs.cpp"
 #include "py_igl/py_exact_geodesic.cpp"
+#include "py_igl/py_heat_geodesics.cpp"
 #include "py_igl/py_find_cross_field_singularities.cpp"
 #include "py_igl/py_fit_rotations.cpp"
 #include "py_igl/py_floor.cpp"
