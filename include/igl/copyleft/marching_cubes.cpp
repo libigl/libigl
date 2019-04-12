@@ -84,7 +84,6 @@ public:
     vertices.resize(10000,3);
     int num_vertices = 0;
 
-
     unsigned n_cubes  = (x_res-1) * (y_res-1) * (z_res-1);
     assert(unsigned(points.rows()) == x_res * y_res * z_res);
 
@@ -191,29 +190,29 @@ public:
 
     // compute samples on cube's edges
     if (edgeTable[cubetype]&1)
-      samples[0]  = add_vertex(values, points, corner[0], corner[1], vertices, num_vertices, edge2vertex);
+      samples[0]  = add_vertex(values, points, isovalue, corner[0], corner[1], vertices, num_vertices, edge2vertex);
     if (edgeTable[cubetype]&2)
-      samples[1]  = add_vertex(values, points, corner[1], corner[2], vertices, num_vertices, edge2vertex);
+      samples[1]  = add_vertex(values, points, isovalue, corner[1], corner[2], vertices, num_vertices, edge2vertex);
     if (edgeTable[cubetype]&4)
-      samples[2]  = add_vertex(values, points, corner[3], corner[2], vertices, num_vertices, edge2vertex);
+      samples[2]  = add_vertex(values, points, isovalue, corner[3], corner[2], vertices, num_vertices, edge2vertex);
     if (edgeTable[cubetype]&8)
-      samples[3]  = add_vertex(values, points, corner[0], corner[3], vertices, num_vertices, edge2vertex);
+      samples[3]  = add_vertex(values, points, isovalue, corner[0], corner[3], vertices, num_vertices, edge2vertex);
     if (edgeTable[cubetype]&16)
-      samples[4]  = add_vertex(values, points, corner[4], corner[5], vertices, num_vertices, edge2vertex);
+      samples[4]  = add_vertex(values, points, isovalue, corner[4], corner[5], vertices, num_vertices, edge2vertex);
     if (edgeTable[cubetype]&32)
-      samples[5]  = add_vertex(values, points, corner[5], corner[6], vertices, num_vertices, edge2vertex);
+      samples[5]  = add_vertex(values, points, isovalue, corner[5], corner[6], vertices, num_vertices, edge2vertex);
     if (edgeTable[cubetype]&64)
-      samples[6]  = add_vertex(values, points, corner[7], corner[6], vertices, num_vertices, edge2vertex);
+      samples[6]  = add_vertex(values, points, isovalue, corner[7], corner[6], vertices, num_vertices, edge2vertex);
     if (edgeTable[cubetype]&128)
-      samples[7]  = add_vertex(values, points, corner[4], corner[7], vertices, num_vertices, edge2vertex);
+      samples[7]  = add_vertex(values, points, isovalue, corner[4], corner[7], vertices, num_vertices, edge2vertex);
     if (edgeTable[cubetype]&256)
-      samples[8]  = add_vertex(values, points, corner[0], corner[4], vertices, num_vertices, edge2vertex);
+      samples[8]  = add_vertex(values, points, isovalue, corner[0], corner[4], vertices, num_vertices, edge2vertex);
     if (edgeTable[cubetype]&512)
-      samples[9]  = add_vertex(values, points, corner[1], corner[5], vertices, num_vertices, edge2vertex);
+      samples[9]  = add_vertex(values, points, isovalue, corner[1], corner[5], vertices, num_vertices, edge2vertex);
     if (edgeTable[cubetype]&1024)
-      samples[10] = add_vertex(values, points, corner[2], corner[6], vertices, num_vertices, edge2vertex);
+      samples[10] = add_vertex(values, points, isovalue, corner[2], corner[6], vertices, num_vertices, edge2vertex);
     if (edgeTable[cubetype]&2048)
-      samples[11] = add_vertex(values, points, corner[3], corner[7], vertices, num_vertices, edge2vertex);
+      samples[11] = add_vertex(values, points, isovalue, corner[3], corner[7], vertices, num_vertices, edge2vertex);
 
     // connect samples by triangles
     for (int i=0; triTable[cubetype][0][i] != -1; i+=3 )
@@ -230,13 +229,15 @@ public:
     }
   };
 
-  static typename DerivedFaces::Scalar add_vertex(const Eigen::MatrixBase<DerivedValues> &values,
-                                                  const Eigen::MatrixBase<DerivedPoints> &points,
-                                                  unsigned int i0,
-                                                  unsigned int i1,
-                                                  Eigen::PlainObjectBase<DerivedVertices> &vertices,
-                                                  int &num_vertices,
-                                                  MyMap &edge2vertex)
+  static typename DerivedFaces::Scalar add_vertex(
+    const Eigen::MatrixBase<DerivedValues> &values,
+    const Eigen::MatrixBase<DerivedPoints> &points,
+    const double isovalue, 
+    unsigned int i0,
+    unsigned int i1,
+    Eigen::PlainObjectBase<DerivedVertices> &vertices,
+    int &num_vertices,
+    MyMap &edge2vertex)
   {
     // find vertex if it has been computed already
     MyMapIterator it = edge2vertex.find(EdgeKey(i0, i1));
@@ -249,8 +250,8 @@ public:
     const Eigen::Matrix<typename DerivedPoints::Scalar, 1, 3> & p0 = points.row(i0);
     const Eigen::Matrix<typename DerivedPoints::Scalar, 1, 3> & p1 = points.row(i1);
 
-    typename DerivedValues::Scalar s0 = fabs(values[i0]);
-    typename DerivedValues::Scalar s1 = fabs(values[i1]);
+    typename DerivedValues::Scalar s0 = fabs(values[i0]-isovalue);
+    typename DerivedValues::Scalar s1 = fabs(values[i1]-isovalue);
     typename DerivedValues::Scalar t  = s0 / (s0+s1);
 
     num_vertices++;
