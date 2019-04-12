@@ -100,15 +100,9 @@ public:
 
     for (unsigned cube_it =0 ; cube_it < n_cubes; ++cube_it)
     {
-
       unsigned         corner[8];
-      typename DerivedFaces::Scalar samples[12];
-      unsigned char    cubetype(0);
-      unsigned int     i;
-
-
       // get point indices of corner vertices
-      for (i=0; i<8; ++i)
+      for (int i=0; i<8; ++i)
       {
         // get cube coordinates
         unsigned int _idx = cube_it;
@@ -116,73 +110,15 @@ public:
         unsigned int x = _idx % X;  _idx /= X;
         unsigned int y = _idx % Y;  _idx /= Y;
         unsigned int z = _idx;
-
         // transform to point coordinates
         _idx = x + y*x_res + z*x_res*y_res;
-
         // add offset
         corner[i] = _idx + offsets_[i];
       }
-
-
-      // determine cube type
-      for (i=0; i<8; ++i)
-        if (values(corner[i]) > isovalue)
-          cubetype |= (1<<i);
-
-
-      // trivial reject ?
-      if (cubetype == 0 || cubetype == 255)
-        continue;
-
-
-      // compute samples on cube's edges
-      if (edgeTable[cubetype]&1)
-        samples[0]  = add_vertex(values, points, corner[0], corner[1], vertices, num_vertices, edge2vertex);
-      if (edgeTable[cubetype]&2)
-        samples[1]  = add_vertex(values, points, corner[1], corner[2], vertices, num_vertices, edge2vertex);
-      if (edgeTable[cubetype]&4)
-        samples[2]  = add_vertex(values, points, corner[3], corner[2], vertices, num_vertices, edge2vertex);
-      if (edgeTable[cubetype]&8)
-        samples[3]  = add_vertex(values, points, corner[0], corner[3], vertices, num_vertices, edge2vertex);
-      if (edgeTable[cubetype]&16)
-        samples[4]  = add_vertex(values, points, corner[4], corner[5], vertices, num_vertices, edge2vertex);
-      if (edgeTable[cubetype]&32)
-        samples[5]  = add_vertex(values, points, corner[5], corner[6], vertices, num_vertices, edge2vertex);
-      if (edgeTable[cubetype]&64)
-        samples[6]  = add_vertex(values, points, corner[7], corner[6], vertices, num_vertices, edge2vertex);
-      if (edgeTable[cubetype]&128)
-        samples[7]  = add_vertex(values, points, corner[4], corner[7], vertices, num_vertices, edge2vertex);
-      if (edgeTable[cubetype]&256)
-        samples[8]  = add_vertex(values, points, corner[0], corner[4], vertices, num_vertices, edge2vertex);
-      if (edgeTable[cubetype]&512)
-        samples[9]  = add_vertex(values, points, corner[1], corner[5], vertices, num_vertices, edge2vertex);
-      if (edgeTable[cubetype]&1024)
-        samples[10] = add_vertex(values, points, corner[2], corner[6], vertices, num_vertices, edge2vertex);
-      if (edgeTable[cubetype]&2048)
-        samples[11] = add_vertex(values, points, corner[3], corner[7], vertices, num_vertices, edge2vertex);
-
-
-
-      // connect samples by triangles
-      for (i=0; triTable[cubetype][0][i] != -1; i+=3 )
-      {
-        num_faces++;
-        if (num_faces > faces.rows())
-          faces.conservativeResize(faces.rows()+10000, Eigen::NoChange);
-
-        faces.row(num_faces-1) <<
-        samples[triTable[cubetype][0][i  ]],
-        samples[triTable[cubetype][0][i+1]],
-        samples[triTable[cubetype][0][i+2]];
-
-      }
-
+      add_cube(values,points,isovalue,corner,vertices,num_vertices,faces,num_faces,edge2vertex);
     }
-
     vertices.conservativeResize(num_vertices, Eigen::NoChange);
     faces.conservativeResize(num_faces, Eigen::NoChange);
-
   }
 
   // Sparse index grid version
@@ -214,75 +150,85 @@ public:
     for (unsigned cube_it =0 ; cube_it < n_cubes; ++cube_it)
     {
       typedef Eigen::Matrix<typename DerivedIndices::Scalar, 1, 8> CubeIndexVector;
-      typedef typename DerivedFaces::Scalar SampleScalar;
 
-      CubeIndexVector  cube = cubes.row(cube_it);
-      SampleScalar     samples[12];
-      unsigned char    cubetype(0);
+      CubeIndexVector  corner = cubes.row(cube_it);
+      add_cube(values,points,isovalue,corner.data(),vertices,num_vertices,faces,num_faces,edge2vertex);
+    }
+    vertices.conservativeResize(num_vertices, Eigen::NoChange);
+    faces.conservativeResize(num_faces, Eigen::NoChange);
+  }
 
-      // determine cube type
-      for (int i=0; i<8; ++i)
+  template <typename CubeIndexType>
+  static void add_cube(
+      const Eigen::MatrixBase<DerivedValues> &values,
+      const Eigen::MatrixBase<DerivedPoints> &points,
+      const double isovalue,
+      const CubeIndexType corner[],
+      Eigen::PlainObjectBase<DerivedVertices> &vertices,
+      int &num_vertices,
+      Eigen::PlainObjectBase<DerivedFaces> &faces,
+      int & num_faces,
+      MyMap &edge2vertex)
+  {
+    typedef typename DerivedFaces::Scalar SampleScalar;
+    SampleScalar     samples[12];
+    unsigned char    cubetype(0);
+
+    // determine cube type
+    for (int i=0; i<8; ++i)
+    {
+      if (values(corner[i]) > isovalue)
       {
-        if (values[cube[i]] > isovalue)
-        {
-          cubetype |= (1<<i);
-        }
+        cubetype |= (1<<i);
       }
+    }
 
+    // trivial reject ?
+    if (cubetype == 0 || cubetype == 255)
+    {
+      return;
+    }
 
-      // trivial reject ?
-      if (cubetype == 0 || cubetype == 255)
+    // compute samples on cube's edges
+    if (edgeTable[cubetype]&1)
+      samples[0]  = add_vertex(values, points, corner[0], corner[1], vertices, num_vertices, edge2vertex);
+    if (edgeTable[cubetype]&2)
+      samples[1]  = add_vertex(values, points, corner[1], corner[2], vertices, num_vertices, edge2vertex);
+    if (edgeTable[cubetype]&4)
+      samples[2]  = add_vertex(values, points, corner[3], corner[2], vertices, num_vertices, edge2vertex);
+    if (edgeTable[cubetype]&8)
+      samples[3]  = add_vertex(values, points, corner[0], corner[3], vertices, num_vertices, edge2vertex);
+    if (edgeTable[cubetype]&16)
+      samples[4]  = add_vertex(values, points, corner[4], corner[5], vertices, num_vertices, edge2vertex);
+    if (edgeTable[cubetype]&32)
+      samples[5]  = add_vertex(values, points, corner[5], corner[6], vertices, num_vertices, edge2vertex);
+    if (edgeTable[cubetype]&64)
+      samples[6]  = add_vertex(values, points, corner[7], corner[6], vertices, num_vertices, edge2vertex);
+    if (edgeTable[cubetype]&128)
+      samples[7]  = add_vertex(values, points, corner[4], corner[7], vertices, num_vertices, edge2vertex);
+    if (edgeTable[cubetype]&256)
+      samples[8]  = add_vertex(values, points, corner[0], corner[4], vertices, num_vertices, edge2vertex);
+    if (edgeTable[cubetype]&512)
+      samples[9]  = add_vertex(values, points, corner[1], corner[5], vertices, num_vertices, edge2vertex);
+    if (edgeTable[cubetype]&1024)
+      samples[10] = add_vertex(values, points, corner[2], corner[6], vertices, num_vertices, edge2vertex);
+    if (edgeTable[cubetype]&2048)
+      samples[11] = add_vertex(values, points, corner[3], corner[7], vertices, num_vertices, edge2vertex);
+
+    // connect samples by triangles
+    for (int i=0; triTable[cubetype][0][i] != -1; i+=3 )
+    {
+      num_faces++;
+      if (num_faces > faces.rows())
       {
-        continue;
+        faces.conservativeResize(faces.rows()+10000, Eigen::NoChange);
       }
-
-      // compute samples on cube's edges
-      if (edgeTable[cubetype]&1)
-        samples[0]  = add_vertex(values, points, cube[0], cube[1], vertices, num_vertices, edge2vertex);
-      if (edgeTable[cubetype]&2)
-        samples[1]  = add_vertex(values, points, cube[1], cube[2], vertices, num_vertices, edge2vertex);
-      if (edgeTable[cubetype]&4)
-        samples[2]  = add_vertex(values, points, cube[3], cube[2], vertices, num_vertices, edge2vertex);
-      if (edgeTable[cubetype]&8)
-        samples[3]  = add_vertex(values, points, cube[0], cube[3], vertices, num_vertices, edge2vertex);
-      if (edgeTable[cubetype]&16)
-        samples[4]  = add_vertex(values, points, cube[4], cube[5], vertices, num_vertices, edge2vertex);
-      if (edgeTable[cubetype]&32)
-        samples[5]  = add_vertex(values, points, cube[5], cube[6], vertices, num_vertices, edge2vertex);
-      if (edgeTable[cubetype]&64)
-        samples[6]  = add_vertex(values, points, cube[7], cube[6], vertices, num_vertices, edge2vertex);
-      if (edgeTable[cubetype]&128)
-        samples[7]  = add_vertex(values, points, cube[4], cube[7], vertices, num_vertices, edge2vertex);
-      if (edgeTable[cubetype]&256)
-        samples[8]  = add_vertex(values, points, cube[0], cube[4], vertices, num_vertices, edge2vertex);
-      if (edgeTable[cubetype]&512)
-        samples[9]  = add_vertex(values, points, cube[1], cube[5], vertices, num_vertices, edge2vertex);
-      if (edgeTable[cubetype]&1024)
-        samples[10] = add_vertex(values, points, cube[2], cube[6], vertices, num_vertices, edge2vertex);
-      if (edgeTable[cubetype]&2048)
-        samples[11] = add_vertex(values, points, cube[3], cube[7], vertices, num_vertices, edge2vertex);
-
-      // connect samples by triangles
-      for (int i=0; triTable[cubetype][0][i] != -1; i+=3 )
-      {
-        num_faces++;
-        if (num_faces > faces.rows())
-        {
-          faces.conservativeResize(faces.rows()+10000, Eigen::NoChange);
-        }
-        faces.row(num_faces-1) <<
+      faces.row(num_faces-1) <<
         samples[triTable[cubetype][0][i  ]],
         samples[triTable[cubetype][0][i+1]],
         samples[triTable[cubetype][0][i+2]];
-
-      }
-
     }
-
-    vertices.conservativeResize(num_vertices, Eigen::NoChange);
-    faces.conservativeResize(num_faces, Eigen::NoChange);
-
-  }
+  };
 
   static typename DerivedFaces::Scalar add_vertex(const Eigen::MatrixBase<DerivedValues> &values,
                                                   const Eigen::MatrixBase<DerivedPoints> &points,
@@ -381,14 +327,9 @@ IGL_INLINE void igl::copyleft::marching_cubes(
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instantiation
-
-// generated by autoexplicit.sh
 template void igl::copyleft::marching_cubes<Eigen::Matrix<float, -1, 1, 0, -1, 1>, Eigen::Matrix<float, -1, 3, 0, -1, 3>, Eigen::Matrix<float, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3> >(Eigen::MatrixBase<Eigen::Matrix<float, -1, 1, 0, -1, 1> > const&, Eigen::MatrixBase<Eigen::Matrix<float, -1, 3, 0, -1, 3> > const&, unsigned int, unsigned int, unsigned int, Eigen::PlainObjectBase<Eigen::Matrix<float, -1, 3, 0, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> >&);
-// generated by autoexplicit.sh
 template void igl::copyleft::marching_cubes<Eigen::Matrix<float, -1, 1, 0, -1, 1>, Eigen::Matrix<float, -1, 3, 1, -1, 3>, Eigen::Matrix<float, -1, 3, 1, -1, 3>, Eigen::Matrix<int, -1, 3, 1, -1, 3> >(Eigen::MatrixBase<Eigen::Matrix<float, -1, 1, 0, -1, 1> > const&, Eigen::MatrixBase<Eigen::Matrix<float, -1, 3, 1, -1, 3> > const&, unsigned int, unsigned int, unsigned int, Eigen::PlainObjectBase<Eigen::Matrix<float, -1, 3, 1, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 1, -1, 3> >&);
-// generated by autoexplicit.sh
 template void igl::copyleft::marching_cubes<Eigen::Matrix<float, -1, 1, 0, -1, 1>, Eigen::Matrix<float, -1, -1, 0, -1, -1>, Eigen::Matrix<float, -1, 3, 1, -1, 3>, Eigen::Matrix<int, -1, 3, 1, -1, 3> >(Eigen::MatrixBase<Eigen::Matrix<float, -1, 1, 0, -1, 1> > const&, Eigen::MatrixBase<Eigen::Matrix<float, -1, -1, 0, -1, -1> > const&, unsigned int, unsigned int, unsigned int, Eigen::PlainObjectBase<Eigen::Matrix<float, -1, 3, 1, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 1, -1, 3> >&);
-// generated by autoexplicit.sh
 template void igl::copyleft::marching_cubes<Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<float, -1, 3, 1, -1, 3>, Eigen::Matrix<int, -1, 3, 1, -1, 3> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, unsigned int, unsigned int, unsigned int, Eigen::PlainObjectBase<Eigen::Matrix<float, -1, 3, 1, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 1, -1, 3> >&);
 template void igl::copyleft::marching_cubes<Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, unsigned int, unsigned int, unsigned int, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
 template void igl::copyleft::marching_cubes<Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(const Eigen::MatrixBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&, const Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, const Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
