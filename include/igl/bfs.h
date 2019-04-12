@@ -42,7 +42,7 @@ namespace igl
     typename DType,
     typename PType>
   IGL_INLINE void bfs(
-    const Eigen::SparseMatrix<AType> & A,
+    const AType & A,
     const size_t s,
     std::vector<DType> & D,
     std::vector<PType> & P);
