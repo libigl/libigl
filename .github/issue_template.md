@@ -1,4 +1,6 @@
-[Describe your issue]
+#### Describe your issue
+
+...
 
 #### Check all that apply (change to `[x]`)
 - [ ] Windows
