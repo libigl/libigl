@@ -56,8 +56,8 @@ namespace igl
   //
   template <typename DerivedF, typename DerivedL>
   IGL_INLINE void boundary_loop(
-    const Eigen::PlainObjectBase<DerivedF>& F, 
-    Eigen::PlainObjectBase<DerivedL>& L);
+    const Eigen::MatrixBase<DerivedF>& F, 
+    Eigen::MatrixBase<DerivedL>& L);
 }
 
 #ifndef IGL_STATIC_LIBRARY

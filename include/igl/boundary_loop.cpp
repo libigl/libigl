@@ -130,8 +130,8 @@ IGL_INLINE void igl::boundary_loop(
 
 template <typename DerivedF, typename DerivedL>
 IGL_INLINE void igl::boundary_loop(
-  const Eigen::PlainObjectBase<DerivedF>& F,
-  Eigen::PlainObjectBase<DerivedL>& L)
+  const Eigen::MatrixBase<DerivedF>& F,
+  Eigen::MatrixBase<DerivedL>& L)
 {
   using namespace Eigen;
   using namespace std;

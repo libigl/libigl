@@ -135,7 +135,7 @@ IGL_INLINE void igl::adjacency_list(
   A.clear();
   
   // Find maxCoeff
-  int maxCoeff = 0;
+  Index maxCoeff = 0;
   for(const auto &vec : F)
   {
     for(int coeff : vec)
