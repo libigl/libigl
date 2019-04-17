@@ -25,7 +25,7 @@ namespace igl
   IGL_INLINE void average_onto_vertices(const Eigen::MatrixBase<DerivedV> &V,
     const Eigen::MatrixBase<DerivedF> &F,
     const Eigen::MatrixBase<DerivedS> &S,
-    Eigen::MatrixBase<DerivedSV> &SV);
+    Eigen::PlainObjectBase<DerivedSV> &SV);
 }
 
 #ifndef IGL_STATIC_LIBRARY

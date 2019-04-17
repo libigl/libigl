@@ -11,7 +11,7 @@ template<typename DerivedV,typename DerivedF,typename DerivedS,typename DerivedS
 IGL_INLINE void igl::average_onto_vertices(const Eigen::MatrixBase<DerivedV> &V,
   const Eigen::MatrixBase<DerivedF> &F,
   const Eigen::MatrixBase<DerivedS> &S,
-  Eigen::MatrixBase<DerivedSV> &SV)
+  Eigen::PlainObjectBase<DerivedSV> &SV)
 {
   SV = DerivedS::Zero(V.rows(),S.cols());
   Eigen::Matrix<typename DerivedF::Scalar,Eigen::Dynamic,1> COUNT(V.rows());
