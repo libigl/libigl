@@ -62,6 +62,7 @@ template void igl::colon<double, double, double, double>(double, double, double,
 template void igl::colon<int, int, long>(int, int, Eigen::Matrix<long, -1, 1, 0, -1, 1>&);
 template void igl::colon<int, int, double>(int, int, Eigen::Matrix<double, -1, 1, 0, -1, 1>&);
 #ifdef WIN32
+template void igl::colon<int,__int64,double>(int,__int64,class Eigen::Matrix<double,-1,1,0,-1,1> &);
 template void igl::colon<int, long long,long>(int, long long, class Eigen::Matrix<long,-1,1,0,-1,1> &);
 template void igl::colon<int, __int64, __int64>(int, __int64, class Eigen::Matrix<__int64, -1, 1, 0, -1, 1> &);
 #endif
