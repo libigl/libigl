@@ -59,7 +59,7 @@ template <
   typename DType,
   typename PType>
 IGL_INLINE void igl::bfs(
-  const AType & A,
+  const Eigen::SparseCompressedBase<AType> & A,
   const size_t s,
   std::vector<DType> & D,
   std::vector<PType> & P)

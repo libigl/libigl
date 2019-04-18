@@ -35,7 +35,7 @@ namespace igl
     const Eigen::MatrixBase<DerivedF> & F,
     const int dim,
     const igl::ARAPEnergyType energy,
-    Eigen::SparseMatrixBase<DerivedK>& K);
+    Eigen::SparseCompressedBase<DerivedK>& K);
 }
 #ifndef IGL_STATIC_LIBRARY
 #include "arap_rhs.cpp"
