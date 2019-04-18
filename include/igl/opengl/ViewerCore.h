@@ -9,7 +9,6 @@
 #define IGL_OPENGL_VIEWERCORE_H
 
 #include <igl/opengl/MeshGL.h>
-#include <igl/opengl/ViewerData.h>
 
 #include <igl/igl_inline.h>
 #include <Eigen/Geometry>
@@ -20,9 +19,11 @@ namespace igl
 namespace opengl
 {
 
+// Forward declaration
+class ViewerData;
+
 // Basic class of the 3D mesh viewer
 // TODO: write documentation
-
 class ViewerCore
 {
 public:

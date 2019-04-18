@@ -32,10 +32,18 @@ matrix:
     compiler: gcc-7
     env:
     - MATRIX_EVAL="export CC=gcc-7 CXX=g++-7 CONFIG=Release PYTHON=python3"
+  - os: linux # same config like above but with -DLIBIGL_USE_STATIC_LIBRARY=OFF to test static and header-only builds
+    compiler: gcc-7
+    env:
+    - MATRIX_EVAL="export CC=gcc-7 CXX=g++-7 CONFIG=Release PYTHON=python3 CMAKE_EXTRA='-DLIBIGL_USE_STATIC_LIBRARY=OFF'"
   - os: osx
     compiler: clang
     env:
     - MATRIX_EVAL="export CONFIG=Debug PYTHON=python3 LIBIGL_NUM_THREADS=1"
+  - os: osx # same config like above but with -DLIBIGL_USE_STATIC_LIBRARY=OFF to test static and header-only builds
+    compiler: clang
+    env:
+    - MATRIX_EVAL="export CONFIG=Debug PYTHON=python3 LIBIGL_NUM_THREADS=1 CMAKE_EXTRA='-DLIBIGL_USE_STATIC_LIBRARY=OFF'"
 
 install:
 - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export PATH="/usr/local/opt/ccache/libexec:$PATH"; fi

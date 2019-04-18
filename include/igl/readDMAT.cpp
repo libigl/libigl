@@ -195,8 +195,8 @@ IGL_INLINE bool igl::readDMAT(
     assert(W.size() == 0);
     // Resize for output
     W.resize(num_rows,typename std::vector<Scalar>(num_cols));
-    double * Wraw = new double[num_rows*num_cols];
-    fread(Wraw, sizeof(double), num_cols*num_rows, fp);
+    std::unique_ptr<double[]> Wraw(new double[num_rows*num_cols]);
+    fread(Wraw.get(), sizeof(double), num_cols*num_rows, fp);
     // Loop over columns slowly
     for(int j = 0;j < num_cols;j++)
     {
