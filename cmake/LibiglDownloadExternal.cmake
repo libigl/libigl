@@ -64,7 +64,10 @@ function(igl_download_cork)
 endfunction()
 
 ## Eigen
-set(LIBIGL_EIGEN_VERSION 3.2.10 CACHE STRING "Default version of Eigen used by libigl.")
+# 3.2.10 8ad10ac703a78143a4062c9bda9d8fd3
+# 3.3.7  f2a417d083fe8ca4b8ed2bc613d20f07
+set(LIBIGL_EIGEN_VERSION 3.3.7                            CACHE STRING "Default version of Eigen used by libigl.")
+set(LIBIGL_EIGEN_MD5     f2a417d083fe8ca4b8ed2bc613d20f07 CACHE STRING "md5sum of the tar.gz archive corresponding to this version.")
 function(igl_download_eigen)
 	igl_download_project(eigen
 		GIT_REPOSITORY https://github.com/eigenteam/eigen-git-mirror.git

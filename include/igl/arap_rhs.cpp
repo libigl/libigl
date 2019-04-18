@@ -18,7 +18,7 @@ IGL_INLINE void igl::arap_rhs(
     const Eigen::MatrixBase<DerivedF> & F,
     const int dim,
     const igl::ARAPEnergyType energy,
-    Eigen::SparseMatrixBase<DerivedK>& K)
+    Eigen::SparseCompressedBase<DerivedK>& K)
 {
   using namespace std;
   using namespace Eigen;
@@ -91,5 +91,5 @@ IGL_INLINE void igl::arap_rhs(
 
 
 #ifdef IGL_STATIC_LIBRARY
-template void igl::arap_rhs(const Eigen::MatrixBase<Eigen::MatrixXd> & V, const Eigen::MatrixBase<Eigen::MatrixXi> & F,const int dim, const igl::ARAPEnergyType energy,Eigen::SparseMatrixBase<Eigen::SparseMatrix<double>>& K);
+template void igl::arap_rhs(const Eigen::MatrixBase<Eigen::MatrixXd> & V, const Eigen::MatrixBase<Eigen::MatrixXi> & F,const int dim, const igl::ARAPEnergyType energy,Eigen::SparseCompressedBase<Eigen::SparseMatrix<double>>& K);
 #endif
