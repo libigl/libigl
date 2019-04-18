@@ -69,7 +69,7 @@ IGL_INLINE void igl::vertex_components(
 
 template <typename SparseT, typename DerivedC>
 IGL_INLINE void igl::vertex_components(
-  const SparseT & A,
+  const Eigen::SparseCompressedBase<SparseT> & A,
   Eigen::PlainObjectBase<DerivedC> & C)
 {
   Eigen::VectorXi counts;

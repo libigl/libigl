@@ -31,7 +31,7 @@ namespace igl
 
   template <typename SparseT, typename DerivedC>
   IGL_INLINE void vertex_components(
-    const SparseT & A,
+    const Eigen::SparseCompressedBase<SparseT> & A,
     Eigen::PlainObjectBase<DerivedC> & C);
 
   // Compute the connected components for a mesh given its faces.
