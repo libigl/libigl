@@ -10,7 +10,7 @@ namespace igl {
     enum class Orientation {
       POSITIVE=1, INSIDE=1,
       NEGATIVE=-1, OUTSIDE=-1,
-      COLINEAR=0, COPLANAR=0, COCIRCULAR=0, COSPHERICAL=0, DEGENERATE=0
+      COLLINEAR=0, COPLANAR=0, COCIRCULAR=0, COSPHERICAL=0, DEGENERATE=0
     };
 
     template<typename Vector2D>

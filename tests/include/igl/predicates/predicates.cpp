@@ -1,0 +1,54 @@
+#include <test_common.h>
+#include <igl/predicates/predicates.h>
+#include <limits>
+
+TEST_CASE("predicates", "[igl][predicates]") {
+    using namespace igl::predicates;
+    using Scalar = double;
+
+    SECTION("2D") {
+        using Point = Eigen::Matrix<Scalar, -1, -1>;
+        Point a(2,1),b(2,1),c(2,1),d(2,1),e(2,1),f(2,1);
+        a << 0.0, 0.0;
+        b << 1.0, 0.0;
+        c << 1.0, 1.0;
+        d << 2.0, 0.0;
+        e << 0.0, 1.0;
+        f << 0.5, 0.5;
+
+        REQUIRE(orient2d(a, b, c) == Orientation::POSITIVE);
+        REQUIRE(orient2d(a, c, b) == Orientation::NEGATIVE);
+        REQUIRE(orient2d(a, b, b) == Orientation::COLLINEAR);
+        REQUIRE(orient2d(a, a, a) == Orientation::COLLINEAR);
+        REQUIRE(orient2d(a, b, d) == Orientation::COLLINEAR);
+        REQUIRE(orient2d(a, f, c) == Orientation::COLLINEAR);
+
+        REQUIRE(incircle(a,b,c,e) == Orientation::COCIRCULAR);
+        REQUIRE(incircle(a,b,c,a) == Orientation::COCIRCULAR);
+        REQUIRE(incircle(a,b,c,d) == Orientation::OUTSIDE);
+        REQUIRE(incircle(a,b,c,f) == Orientation::INSIDE);
+    }
+
+    SECTION("3D") {
+        using Point = Eigen::Matrix<Scalar, -1, -1>;
+        Point a(3,1),b(3,1),c(3,1),d(3,1),e(3,1),f(3,1);
+        a << 0.0, 0.0, 0.0;
+        b << 1.0, 0.0, 0.0;
+        c << 0.0, 1.0, 0.0;
+        d << 0.0, 0.0, 1.0;
+        e << 1.0, 1.0, 1.0;
+        f << std::numeric_limits<Scalar>::epsilon(), 0.0, 0.0;
+
+        REQUIRE(orient3d(a, b, c, d) == Orientation::NEGATIVE);
+        REQUIRE(orient3d(a, b, d, c) == Orientation::POSITIVE);
+        REQUIRE(orient3d(a, b, d, d) == Orientation::COPLANAR);
+        REQUIRE(orient3d(a, a, a, a) == Orientation::COPLANAR);
+        REQUIRE(orient3d(a, b, f, c) == Orientation::COPLANAR);
+
+        REQUIRE(insphere(a, b, c, d, e) == Orientation::COSPHERICAL);
+        REQUIRE(insphere(a, b, d, e, c) == Orientation::COSPHERICAL);
+        REQUIRE(insphere(b, c, e, d, ((a+b)*0.5).eval()) == Orientation::INSIDE);
+        REQUIRE(insphere(b, c, e, d, (-f).eval()) == Orientation::OUTSIDE);
+        REQUIRE(insphere(f, b, d, c, e) == Orientation::INSIDE);
+    }
+}

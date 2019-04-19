@@ -24,7 +24,7 @@ IGL_INLINE Orientation orient2d(
 
     if (r > 0) return Orientation::POSITIVE;
     else if (r < 0) return Orientation::NEGATIVE;
-    else return Orientation::COLINEAR;
+    else return Orientation::COLLINEAR;
 }
 
 template<typename Vector3D>
@@ -123,6 +123,22 @@ const Eigen::MatrixBase<Eigen::Matrix<float, -1, -1, 1, -1, -1>>&,
 const Eigen::MatrixBase<Eigen::Matrix<float, -1, -1, 1, -1, -1>>&,
 const Eigen::MatrixBase<Eigen::Matrix<float, -1, -1, 1, -1, -1>>&
 );
+template
+igl::predicates::Orientation
+igl::predicates::orient2d<Eigen::Matrix<double, -1, -1, 0, -1, -1>>
+(
+const Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>>&,
+const Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>>&,
+const Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>>&
+);
+template
+igl::predicates::Orientation
+igl::predicates::orient2d<Eigen::Matrix<float, -1, -1, 0, -1, -1>>
+(
+const Eigen::MatrixBase<Eigen::Matrix<float, -1, -1, 0, -1, -1>>&,
+const Eigen::MatrixBase<Eigen::Matrix<float, -1, -1, 0, -1, -1>>&,
+const Eigen::MatrixBase<Eigen::Matrix<float, -1, -1, 0, -1, -1>>&
+);
 
 
 template
@@ -143,6 +159,24 @@ const Eigen::MatrixBase<Eigen::Matrix<float, -1, -1, 1, -1, -1>>&,
 const Eigen::MatrixBase<Eigen::Matrix<float, -1, -1, 1, -1, -1>>&,
 const Eigen::MatrixBase<Eigen::Matrix<float, -1, -1, 1, -1, -1>>&
 );
+template
+igl::predicates::Orientation
+igl::predicates::orient3d<Eigen::Matrix<double, -1, -1, 0, -1, -1>>
+(
+const Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>>&,
+const Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>>&,
+const Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>>&,
+const Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>>&
+);
+template
+igl::predicates::Orientation
+igl::predicates::orient3d<Eigen::Matrix<float, -1, -1, 0, -1, -1>>
+(
+const Eigen::MatrixBase<Eigen::Matrix<float, -1, -1, 0, -1, -1>>&,
+const Eigen::MatrixBase<Eigen::Matrix<float, -1, -1, 0, -1, -1>>&,
+const Eigen::MatrixBase<Eigen::Matrix<float, -1, -1, 0, -1, -1>>&,
+const Eigen::MatrixBase<Eigen::Matrix<float, -1, -1, 0, -1, -1>>&
+);
 
 
 template
@@ -162,6 +196,24 @@ const Eigen::MatrixBase<Eigen::Matrix<float, -1, -1, 1, -1, -1>>&,
 const Eigen::MatrixBase<Eigen::Matrix<float, -1, -1, 1, -1, -1>>&,
 const Eigen::MatrixBase<Eigen::Matrix<float, -1, -1, 1, -1, -1>>&,
 const Eigen::MatrixBase<Eigen::Matrix<float, -1, -1, 1, -1, -1>>&
+);
+template
+igl::predicates::Orientation
+igl::predicates::incircle<Eigen::Matrix<double, -1, -1, 0, -1, -1>>
+(
+const Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>>&,
+const Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>>&,
+const Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>>&,
+const Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>>&
+);
+template
+igl::predicates::Orientation
+igl::predicates::incircle<Eigen::Matrix<float, -1, -1, 0, -1, -1>>
+(
+const Eigen::MatrixBase<Eigen::Matrix<float, -1, -1, 0, -1, -1>>&,
+const Eigen::MatrixBase<Eigen::Matrix<float, -1, -1, 0, -1, -1>>&,
+const Eigen::MatrixBase<Eigen::Matrix<float, -1, -1, 0, -1, -1>>&,
+const Eigen::MatrixBase<Eigen::Matrix<float, -1, -1, 0, -1, -1>>&
 );
 
 
@@ -184,6 +236,26 @@ const Eigen::MatrixBase<Eigen::Matrix<float, -1, -1, 1, -1, -1>>&,
 const Eigen::MatrixBase<Eigen::Matrix<float, -1, -1, 1, -1, -1>>&,
 const Eigen::MatrixBase<Eigen::Matrix<float, -1, -1, 1, -1, -1>>&,
 const Eigen::MatrixBase<Eigen::Matrix<float, -1, -1, 1, -1, -1>>&
+);
+template
+igl::predicates::Orientation
+igl::predicates::insphere<Eigen::Matrix<double, -1, -1, 0, -1, -1>>
+(
+const Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>>&,
+const Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>>&,
+const Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>>&,
+const Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>>&,
+const Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>>&
+);
+template
+igl::predicates::Orientation
+igl::predicates::insphere<Eigen::Matrix<float, -1, -1, 0, -1, -1>>
+(
+const Eigen::MatrixBase<Eigen::Matrix<float, -1, -1, 0, -1, -1>>&,
+const Eigen::MatrixBase<Eigen::Matrix<float, -1, -1, 0, -1, -1>>&,
+const Eigen::MatrixBase<Eigen::Matrix<float, -1, -1, 0, -1, -1>>&,
+const Eigen::MatrixBase<Eigen::Matrix<float, -1, -1, 0, -1, -1>>&,
+const Eigen::MatrixBase<Eigen::Matrix<float, -1, -1, 0, -1, -1>>&
 );
 
 #endif
