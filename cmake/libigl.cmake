@@ -34,7 +34,6 @@ option(LIBIGL_WITH_TETGEN            "Use Tetgen"                   OFF)
 option(LIBIGL_WITH_TRIANGLE          "Use Triangle"                 OFF)
 option(LIBIGL_WITH_PREDICATES        "Use exact predicates"         OFF)
 option(LIBIGL_WITH_XML               "Use XML"                      OFF)
-option(LIBIGL_WITH_PYTHON            "Use Python"                   OFF)
 option(LIBIGL_WITHOUT_COPYLEFT       "Disable Copyleft libraries"   OFF)
 option(LIBIGL_EXPORT_TARGETS         "Export libigl CMake targets"  OFF)
 
@@ -195,7 +194,6 @@ compile_igl_module("core" ${SOURCES_IGL})
 ################################################################################
 ### Download the python part ###
 if(LIBIGL_WITH_PYTHON)
-  igl_download_pybind11()
 endif()
 
 ################################################################################
@@ -211,11 +209,7 @@ if(LIBIGL_WITH_CGAL)
     if(EXISTS ${LIBIGL_EXTERNAL}/boost)
       set(BOOST_ROOT "${LIBIGL_EXTERNAL}/boost")
     endif()
-    if(LIBIGL_WITH_PYTHON)
-      option(CGAL_Boost_USE_STATIC_LIBS "Use static Boost libs with CGAL" OFF)
-    else()
-      option(CGAL_Boost_USE_STATIC_LIBS "Use static Boost libs with CGAL" ON)
-    endif()
+
     find_package(CGAL CONFIG COMPONENTS Core PATHS ${CGAL_DIR} NO_DEFAULT_PATH)
   endif()
 

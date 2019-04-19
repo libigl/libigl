@@ -9,10 +9,9 @@ else()
 	set(LIBIGL_TOPLEVEL_PROJECT OFF)
 endif()
 
-# Build tests, tutorials and python bindings
+# Build tests and tutorials
 option(LIBIGL_BUILD_TESTS      "Build libigl unit test"        ${LIBIGL_TOPLEVEL_PROJECT})
 option(LIBIGL_BUILD_TUTORIALS  "Build libigl tutorial"         ${LIBIGL_TOPLEVEL_PROJECT})
-option(LIBIGL_BUILD_PYTHON     "Build libigl python bindings"  ${LIBIGL_TOPLEVEL_PROJECT})
 option(LIBIGL_EXPORT_TARGETS   "Export libigl CMake targets"   ${LIBIGL_TOPLEVEL_PROJECT})
 
 # USE_STATIC_LIBRARY speeds up the generation of multiple binaries,
@@ -32,7 +31,6 @@ option(LIBIGL_WITH_TETGEN            "Use Tetgen"                   ON)
 option(LIBIGL_WITH_TRIANGLE          "Use Triangle"                 ON)
 option(LIBIGL_WITH_PREDICATES        "Use exact predicates"         ON)
 option(LIBIGL_WITH_XML               "Use XML"                      ON)
-option(LIBIGL_WITH_PYTHON            "Use Python"                   ${LIBIGL_BUILD_PYTHON})
 ### End
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
@@ -53,8 +51,4 @@ if(LIBIGL_BUILD_TESTS)
 	include(CTest)
 	enable_testing()
 	add_subdirectory(tests)
-endif()
-
-if(LIBIGL_WITH_PYTHON)
-	add_subdirectory(python)
 endif()
