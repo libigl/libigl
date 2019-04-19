@@ -26,7 +26,7 @@ namespace igl {
     //   pa, pb, pc  2D points.
     //
     // Output:
-    //   Return POSITIVE if pa, pb, pc is counterclockwise oriented.
+    //   Return POSITIVE if pa, pb, pc are counterclockwise oriented.
     //          NEGATIVE if they are clockwise oriented.
     //          COLLINEAR if they are collinear.
     template<typename Vector2D>

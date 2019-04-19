@@ -7,7 +7,7 @@ TEST_CASE("predicates", "[igl][predicates]") {
     using Scalar = double;
 
     SECTION("2D") {
-        using Point = Eigen::Matrix<Scalar, -1, -1>;
+        using Point = Eigen::Matrix<Scalar, 2, 1>;
         Point a(2,1),b(2,1),c(2,1),d(2,1),e(2,1),f(2,1);
         a << 0.0, 0.0;
         b << 1.0, 0.0;
@@ -30,7 +30,7 @@ TEST_CASE("predicates", "[igl][predicates]") {
     }
 
     SECTION("3D") {
-        using Point = Eigen::Matrix<Scalar, -1, -1>;
+        using Point = Eigen::Matrix<Scalar, 3, 1>;
         Point a(3,1),b(3,1),c(3,1),d(3,1),e(3,1),f(3,1);
         a << 0.0, 0.0, 0.0;
         b << 1.0, 0.0, 0.0;
