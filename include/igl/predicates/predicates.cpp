@@ -125,45 +125,25 @@ IGL_INLINE Orientation insphere(
 #define IGL_ORIENT3D(Vector) template igl::predicates::Orientation igl::predicates::orient3d<Vector>(const Eigen::MatrixBase<Vector>&, const Eigen::MatrixBase<Vector>&, const Eigen::MatrixBase<Vector>&, const Eigen::MatrixBase<Vector>&)
 #define IGL_INSPHERE(Vector) template igl::predicates::Orientation igl::predicates::insphere<Vector>(const Eigen::MatrixBase<Vector>&, const Eigen::MatrixBase<Vector>&, const Eigen::MatrixBase<Vector>&, const Eigen::MatrixBase<Vector>&, const Eigen::MatrixBase<Vector>&)
 
-#define IGL_Vector2D Eigen::Matrix<float, 1, 2>
-IGL_ORIENT2D(IGL_Vector2D);
-IGL_INCIRCLE(IGL_Vector2D);
-#undef IGL_Vector2D
+#define IGL_MATRIX(T, R, C) Eigen::Matrix<T, R, C>
+IGL_ORIENT2D(IGL_MATRIX(float, 1, 2));
+IGL_INCIRCLE(IGL_MATRIX(float, 1, 2));
+IGL_ORIENT2D(IGL_MATRIX(double, 1, 2));
+IGL_INCIRCLE(IGL_MATRIX(double, 1, 2));
+IGL_ORIENT2D(IGL_MATRIX(float, 2, 1));
+IGL_INCIRCLE(IGL_MATRIX(float, 2, 1));
+IGL_ORIENT2D(IGL_MATRIX(double, 2, 1));
+IGL_INCIRCLE(IGL_MATRIX(double, 2, 1));
 
-#define IGL_Vector2D Eigen::Matrix<double, 1, 2>
-IGL_ORIENT2D(IGL_Vector2D);
-IGL_INCIRCLE(IGL_Vector2D);
-#undef IGL_Vector2D
-
-#define IGL_Vector2D Eigen::Matrix<float, 2, 1>
-IGL_ORIENT2D(IGL_Vector2D);
-IGL_INCIRCLE(IGL_Vector2D);
-#undef IGL_Vector2D
-
-#define IGL_Vector2D Eigen::Matrix<double, 2, 1>
-IGL_ORIENT2D(IGL_Vector2D);
-IGL_INCIRCLE(IGL_Vector2D);
-#undef IGL_Vector2D
-
-#define IGL_Vector3D Eigen::Matrix<float, 1, 3>
-IGL_ORIENT3D(IGL_Vector3D);
-IGL_INSPHERE(IGL_Vector3D);
-#undef IGL_Vector3D
-
-#define IGL_Vector3D Eigen::Matrix<float, 3, 1>
-IGL_ORIENT3D(IGL_Vector3D);
-IGL_INSPHERE(IGL_Vector3D);
-#undef IGL_Vector3D
-
-#define IGL_Vector3D Eigen::Matrix<double, 1, 3>
-IGL_ORIENT3D(IGL_Vector3D);
-IGL_INSPHERE(IGL_Vector3D);
-#undef IGL_Vector3D
-
-#define IGL_Vector3D Eigen::Matrix<double, 3, 1>
-IGL_ORIENT3D(IGL_Vector3D);
-IGL_INSPHERE(IGL_Vector3D);
-#undef IGL_Vector3D
+IGL_ORIENT3D(IGL_MATRIX(float, 1, 3));
+IGL_INSPHERE(IGL_MATRIX(float, 1, 3));
+IGL_ORIENT3D(IGL_MATRIX(float, 3, 1));
+IGL_INSPHERE(IGL_MATRIX(float, 3, 1));
+IGL_ORIENT3D(IGL_MATRIX(double, 1, 3));
+IGL_INSPHERE(IGL_MATRIX(double, 1, 3));
+IGL_ORIENT3D(IGL_MATRIX(double, 3, 1));
+IGL_INSPHERE(IGL_MATRIX(double, 3, 1));
+#undef IGL_MATRIX
 
 #undef IGL_ORIENT2D
 #undef IGL_ORIENT3D
