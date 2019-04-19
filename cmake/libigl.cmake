@@ -32,6 +32,7 @@ option(LIBIGL_WITH_OPENGL_GLFW_IMGUI "Use ImGui"                    OFF)
 option(LIBIGL_WITH_PNG               "Use PNG"                      OFF)
 option(LIBIGL_WITH_TETGEN            "Use Tetgen"                   OFF)
 option(LIBIGL_WITH_TRIANGLE          "Use Triangle"                 OFF)
+option(LIBIGL_WITH_PREDICATES        "Use exact predicates"         OFF)
 option(LIBIGL_WITH_XML               "Use XML"                      OFF)
 option(LIBIGL_WITH_PYTHON            "Use Python"                   OFF)
 option(LIBIGL_WITHOUT_COPYLEFT       "Disable Copyleft libraries"   OFF)
@@ -409,6 +410,19 @@ if(LIBIGL_WITH_TRIANGLE)
   compile_igl_module("triangle")
   target_link_libraries(igl_triangle ${IGL_SCOPE} triangle)
   target_include_directories(igl_triangle ${IGL_SCOPE} ${TRIANGLE_DIR})
+endif()
+
+################################################################################
+### Compile the predicates part ###
+if(LIBIGL_WITH_PREDICATES)
+  set(PREDICATES_DIR "${LIBIGL_EXTERNAL}/predicates")
+  if(NOT TARGET predicates)
+    igl_download_predicates()
+    add_subdirectory("${PREDICATES_DIR}" "predicates")
+  endif()
+  compile_igl_module("predicates")
+  target_link_libraries(igl_predicates ${IGL_SCOPE} predicates)
+  target_include_directories(igl_predicates ${IGL_SCOPE} ${PREDICATES_DIR})
 endif()
 
 ################################################################################

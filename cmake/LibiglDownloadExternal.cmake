@@ -152,6 +152,14 @@ function(igl_download_catch2)
 	)
 endfunction()
 
+## Predicates
+function(igl_download_predicates)
+	igl_download_project(predicates
+		GIT_REPOSITORY https://github.com/libigl/libigl-predicates
+		GIT_TAG        55c9251878f54cb3c3b8f25f93a7ce4dd60d9317
+	)
+endfunction()
+
 ################################################################################
 
 ## Test data
