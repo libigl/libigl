@@ -423,6 +423,7 @@ if(LIBIGL_WITH_PREDICATES)
   compile_igl_module("predicates")
   target_link_libraries(igl_predicates ${IGL_SCOPE} predicates)
   target_include_directories(igl_predicates ${IGL_SCOPE} ${PREDICATES_DIR})
+  target_compile_definitions(igl_predicates ${IGL_SCOPE} -DLIBIGL_WITH_PREDICATES)
 endif()
 
 ################################################################################
