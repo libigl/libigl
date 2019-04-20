@@ -8,11 +8,12 @@
 #ifndef IGL_FACE_OCCURRENCES
 #define IGL_FACE_OCCURRENCES
 #include "igl_inline.h"
+#include <Eigen/Core>
 
 #include <vector>
 namespace igl
 {
-  // Count the occruances of each face (row) in a list of face indices
+  // Count the occurances of each face (row) in a list of face indices
   // (irrespecitive of order)
   // Inputs:
   //   F  #F by simplex-size
@@ -23,6 +24,10 @@ namespace igl
   IGL_INLINE void face_occurrences(
     const std::vector<std::vector<IntegerF> > & F,
     std::vector<IntegerC> & C);
+  template <typename DerivedF, typename DerivedC>
+  IGL_INLINE void face_occurrences(
+    const Eigen::MatrixBase<DerivedF> & F,
+    Eigen::PlainObjectBase<DerivedC> & C);
 }
 
 #ifndef IGL_STATIC_LIBRARY

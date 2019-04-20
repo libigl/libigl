@@ -18,13 +18,13 @@ bool key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier
     // If a mesh is already displayed, draw_mesh returns an error if the given V and
     // F have size different than the current ones
     viewer.data().set_mesh(V1, F1);
-    viewer.core.align_camera_center(V1,F1);
+    viewer.core().align_camera_center(V1,F1);
   }
   else if (key == '2')
   {
     viewer.data().clear();
     viewer.data().set_mesh(V2, F2);
-    viewer.core.align_camera_center(V2,F2);
+    viewer.core().align_camera_center(V2,F2);
   }
 
   return false;

@@ -130,3 +130,17 @@ TEST_CASE("cut_to_disk: cube", "[igl]")
 
   cut_to_disk_helper::assert_is_disk(V, F, cuts);
 }
+
+TEST_CASE("cut_to_disk: annulus", "[igl]") {
+  // Unit test for https://github.com/libigl/libigl/pull/984
+  using namespace igl;
+  Eigen::MatrixXd V;
+  Eigen::MatrixXi F;
+  test_common::load_mesh("annulus.obj", V, F);
+
+  std::vector<std::vector<int>> cuts;
+  cut_to_disk(F, cuts);
+
+  cut_to_disk_helper::assert_is_disk(V, F, cuts);
+}
+

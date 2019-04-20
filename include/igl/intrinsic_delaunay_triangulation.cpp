@@ -11,7 +11,6 @@
 #include "unique_edge_map.h"
 #include "flip_edge.h"
 #include "EPS.h"
-#include "matlab_format.h"
 #include <iostream>
 #include <queue>
 #include <map>

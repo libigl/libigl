@@ -78,10 +78,11 @@ target_compile_features(igl_common INTERFACE ${CXX11_FEATURES})
 if(MSVC)
   # Enable parallel compilation for Visual Studio
   target_compile_options(igl_common INTERFACE /MP /bigobj)
-  if(LIBIGL_WITH_CGAL)
-    target_compile_options(igl_common INTERFACE "/MD$<$<CONFIG:Debug>:d>")
-  endif()
+  target_compile_definitions(igl_common INTERFACE -DNOMINMAX)
 endif()
+
+### Set compiler flags for building the tests on Windows with Visual Studio
+include(LibiglWindows)
 
 if(BUILD_SHARED_LIBS)
   # Generate position independent code
@@ -196,7 +197,11 @@ if(LIBIGL_WITH_CGAL)
     if(EXISTS ${LIBIGL_EXTERNAL}/boost)
       set(BOOST_ROOT "${LIBIGL_EXTERNAL}/boost")
     endif()
-    option(CGAL_Boost_USE_STATIC_LIBS "Use static Boost libs with CGAL" ON)
+    if(LIBIGL_WITH_PYTHON)
+      option(CGAL_Boost_USE_STATIC_LIBS "Use static Boost libs with CGAL" OFF)
+    else()
+      option(CGAL_Boost_USE_STATIC_LIBS "Use static Boost libs with CGAL" ON)
+    endif()
     find_package(CGAL CONFIG COMPONENTS Core PATHS ${CGAL_DIR} NO_DEFAULT_PATH)
   endif()
 
@@ -265,39 +270,27 @@ endif()
 if(LIBIGL_WITH_EMBREE)
   set(EMBREE_DIR "${LIBIGL_EXTERNAL}/embree")
 
+  set(EMBREE_TESTING_INTENSITY 0 CACHE INT "" FORCE)
   set(EMBREE_ISPC_SUPPORT OFF CACHE BOOL " " FORCE)
   set(EMBREE_TASKING_SYSTEM "INTERNAL" CACHE BOOL " " FORCE)
   set(EMBREE_TUTORIALS OFF CACHE BOOL " " FORCE)
   set(EMBREE_MAX_ISA NONE CACHE STRINGS " " FORCE)
-  set(BUILD_TESTING OFF CACHE BOOL " " FORCE)
-
-  # set(ENABLE_INSTALLER OFF CACHE BOOL " " FORCE)
+  set(EMBREE_STATIC_LIB ON CACHE BOOL " " FORCE)
   if(MSVC)
-    # set(EMBREE_STATIC_RUNTIME OFF CACHE BOOL " " FORCE)
-    set(EMBREE_STATIC_LIB OFF CACHE BOOL " " FORCE)
-  else()
-    set(EMBREE_STATIC_LIB ON CACHE BOOL " " FORCE)
+    set(EMBREE_STATIC_RUNTIME ON CACHE BOOL " " FORCE)
   endif()
 
   if(NOT TARGET embree)
+    # TODO: Should probably save/restore the CMAKE_CXX_FLAGS_*, since embree seems to be
+    # overriding them on Windows. But well... it works for now.
     igl_download_embree()
     add_subdirectory("${EMBREE_DIR}" "embree")
-  endif()
-
-  if(MSVC)
-    add_custom_target(Copy-Embree-DLL ALL # Adds a post-build event
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different # which executes "cmake - E
-        $<TARGET_FILE:embree> # <--this is in-file
-        "${CMAKE_BINARY_DIR}" # <--this is out-file path
-        DEPENDS embree) # Execute after embree target has been built
   endif()
 
   compile_igl_module("embree")
   target_link_libraries(igl_embree ${IGL_SCOPE} embree)
   target_include_directories(igl_embree ${IGL_SCOPE} ${EMBREE_DIR}/include)
-  if(NOT MSVC)
-    target_compile_definitions(igl_embree ${IGL_SCOPE} -DENABLE_STATIC_LIB)
-  endif()
+  target_compile_definitions(igl_embree ${IGL_SCOPE} -DEMBREE_STATIC_LIB)
 endif()
 
 ################################################################################
@@ -459,6 +452,7 @@ function(install_dir_files dir_name)
   if(NOT LIBIGL_USE_STATIC_LIBRARY)
     file(GLOB public_sources
       ${CMAKE_CURRENT_SOURCE_DIR}/include/igl${subpath}/*.cpp
+      ${CMAKE_CURRENT_SOURCE_DIR}/include/igl${subpath}/*.c
     )
   endif()
   list(APPEND files_to_install ${public_sources})

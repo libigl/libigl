@@ -121,7 +121,7 @@ int main(int argc, char * argv[])
       default: 
         return false;
       case ' ':
-        viewer.core.is_animating = !viewer.core.is_animating;
+        viewer.core().is_animating = !viewer.core().is_animating;
         return true;
       case 'r':
         low.U = low.V;
@@ -131,7 +131,7 @@ int main(int argc, char * argv[])
   viewer.callback_pre_draw = [&](igl::opengl::glfw::Viewer & viewer)->bool
   {
     glEnable(GL_CULL_FACE);
-    if(viewer.core.is_animating)
+    if(viewer.core().is_animating)
     {
       arap_solve(MatrixXd(0,3),arap_data,low.U);
       for(int v = 0;v<low.U.rows();v++)
@@ -157,14 +157,14 @@ int main(int argc, char * argv[])
     return false;
   };
   viewer.data().show_lines = false;
-  viewer.core.is_animating = true;
-  viewer.core.animation_max_fps = 30.;
+  viewer.core().is_animating = true;
+  viewer.core().animation_max_fps = 30.;
   viewer.data().set_face_based(true);
   cout<<R"(
 [space] to toggle animation
 'r'     to reset positions 
       )";
-  viewer.core.rotation_type = 
+  viewer.core().rotation_type = 
     igl::opengl::ViewerCore::ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP;
   viewer.launch();
 }

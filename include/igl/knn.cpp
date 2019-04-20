@@ -68,7 +68,7 @@ namespace igl {
                                              CN.row(right-n),
                                              W(right-n));
         }
-        return leftdistance >= rightdistance;
+        return leftdistance > rightdistance;
       };
       
       std::priority_queue<IndexType, std::vector<IndexType>,

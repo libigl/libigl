@@ -22,8 +22,11 @@ namespace igl
   //     edge opposite F(f,c)
   //   uE  #uE by 2 list of unique undirected edges
   //   EMAP #F*3 list of indices into uE, mapping each directed edge to unique
-  //     undirected edge
-  //   uE2E  #uE list of lists of indices into E of coexisting edges
+  //     undirected edge so that uE(EMAP(f+#F*c)) is the unique edge
+  //     corresponding to E.row(f+#F*c)
+  //   uE2E  #uE list of lists of indices into E of coexisting edges, so that
+  //     E.row(uE2E[i][j]) corresponds to uE.row(i) for all j in
+  //     0..uE2E[i].size()-1.
   template <
     typename DerivedF,
     typename DerivedE,

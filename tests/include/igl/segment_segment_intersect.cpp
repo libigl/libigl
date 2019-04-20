@@ -13,7 +13,7 @@ TEST_CASE("segment_segment_intersect: examples", "[igl]")
   auto dir2 = Eigen::RowVector3d(-2.79, 0.96, 0.39);
 
   double a1, a2;
-  bool sect1 = igl::segments_intersect(s1, dir1, s2, dir2, a1, a2);
+  bool sect1 = igl::segment_segment_intersect(s1, dir1, s2, dir2, a1, a2);
 
   bool intersectCondition1 = (a1 >= 0 && a1 <= 1 && a2 >= 0 && a2 <= 1);
 
@@ -30,7 +30,7 @@ TEST_CASE("segment_segment_intersect: examples", "[igl]")
   auto dir4 = Eigen::RowVector3d(15.4, 0, 1.9);
 
   double a3, a4;
-  bool sect2 = igl::segments_intersect(s3, dir3, s4, dir4, a3, a4);
+  bool sect2 = igl::segment_segment_intersect(s3, dir3, s4, dir4, a3, a4);
 
   bool intersectCondition2 = (a3 >= 0 && a3 <= 1 && a4 >= 0 && a4 <= 1);
 

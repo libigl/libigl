@@ -47,7 +47,7 @@ namespace igl
         {
           A =-pow(fabs(r)+sqrt(r2-q3),1./3);
           if( r<0 ) A=-A;
-          B = A==0? 0 : B=q/A;
+          B = A==0? 0 : q/A;
 
           a/=3;
           x[0] =(A+B)-a;

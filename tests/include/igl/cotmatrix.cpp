@@ -1,6 +1,6 @@
 #include <test_common.h>
+#include <igl/PI.h>
 #include <igl/cotmatrix.h>
-
 
 TEST_CASE("cotmatrix: constant_in_null_space", "[igl]")
 {
@@ -50,21 +50,33 @@ TEST_CASE("cotmatrix: cube", "[igl]")
   igl::cotmatrix(V,F,L1);
   REQUIRE (L1.rows() == V.rows());
   REQUIRE (L1.cols() == V.rows());
-  for(int f = 0;f<L1.rows();f++)
-  {
+//// This is hitting an Eigen bug.  https://github.com/libigl/libigl/pull/1064
+//  for(int f = 0;f<L1.rows();f++)
+//  {
+//#ifdef IGL_EDGE_LENGTHS_SQUARED_H
+//    //Hard assert if we have edge_lenght_squared
+//    REQUIRE (L1.coeff(f,f) == -3.0);
+//    REQUIRE (L1.row(f).sum() == 0.0);
+//    REQUIRE (L1.col(f).sum() == 0.0);
+//#else
+//    //Soft assert if we have not edge_lenght_squared
+//    REQUIRE (L1.coeff(f,f) == Approx (-3.0).margin( epsilon));
+//    REQUIRE (L1.row(f).sum() == Approx (0.0).margin( epsilon));
+//    REQUIRE (L1.col(f).sum() == Approx (0.0).margin( epsilon));
+//#endif
+//  }
+  Eigen::VectorXd row_sum = L1 * Eigen::VectorXd::Constant(L1.rows(),1,1);
+  Eigen::RowVectorXd col_sum = Eigen::RowVectorXd::Constant(1,L1.rows(),1) * L1;
+  Eigen::VectorXd diag = L1.diagonal();
 #ifdef IGL_EDGE_LENGTHS_SQUARED_H
-    //Hard assert if we have edge_lenght_squared
-    REQUIRE (L1.coeff(f,f) == -3.0);
-    REQUIRE (L1.row(f).sum() == 0.0);
-    REQUIRE (L1.col(f).sum() == 0.0);
+  test_common::assert_eq( row_sum, Eigen::VectorXd::Zero(L1.rows()) );
+  test_common::assert_eq( col_sum, Eigen::RowVectorXd::Zero(L1.rows()) );
+  test_common::assert_eq(    diag, Eigen::VectorXd::Constant(L1.rows(),1,-3) );
 #else
-    //Soft assert if we have not edge_lenght_squared
-    REQUIRE (L1.coeff(f,f) == Approx (-3.0).margin( epsilon));
-    REQUIRE (L1.row(f).sum() == Approx (0.0).margin( epsilon));
-    REQUIRE (L1.col(f).sum() == Approx (0.0).margin( epsilon));
+  test_common::assert_near( row_sum, Eigen::VectorXd::Zero(L1.rows()) , epsilon);
+  test_common::assert_near( col_sum, Eigen::RowVectorXd::Zero(L1.rows()) , epsilon);
+  test_common::assert_near(    diag, Eigen::VectorXd::Constant(L1.rows(),1,-3) , epsilon);
 #endif
-
-  }
 
   //Same for huge cube.
   igl::cotmatrix(V_huge,F,L1);
@@ -129,7 +141,7 @@ TEST_CASE("cotmatrix: tetrahedron", "[igl]")
   {
     //Check the diagonal. Only can value 0.0 for unused vertex or -3 / tan(60)
     if (L1.coeff(f,f) < -0.1)
-        REQUIRE (L1.coeff(f,f) == Approx (-3 / tan(M_PI / 3.0)).margin( epsilon));
+        REQUIRE (L1.coeff(f,f) == Approx (-3 / tan(igl::PI / 3.0)).margin( epsilon));
     else
         REQUIRE (L1.coeff(f,f) == Approx (0.0).margin( epsilon));
 #ifdef IGL_EDGE_LENGTHS_SQUARED_H
@@ -152,7 +164,7 @@ TEST_CASE("cotmatrix: tetrahedron", "[igl]")
   {
     //Check the diagonal. Only can value 0.0 for unused vertex or -3 / tan(60)
     if (L1.coeff(f,f) < -0.1)
-        REQUIRE (L1.coeff(f,f) == Approx (-3 / tan(M_PI / 3.0)).margin( epsilon));
+        REQUIRE (L1.coeff(f,f) == Approx (-3 / tan(igl::PI / 3.0)).margin( epsilon));
     else
         REQUIRE (L1.coeff(f,f) == Approx (0.0).margin( epsilon));
     REQUIRE (L1.row(f).sum() == Approx (0.0).margin( epsilon));
@@ -168,7 +180,7 @@ TEST_CASE("cotmatrix: tetrahedron", "[igl]")
   {
     //Check the diagonal. Only can value 0.0 for unused vertex or -3 / tan(60)
     if (L1.coeff(f,f) < -0.1)
-        REQUIRE (L1.coeff(f,f) == Approx (-3 / tan(M_PI / 3.0)).margin( epsilon));
+        REQUIRE (L1.coeff(f,f) == Approx (-3 / tan(igl::PI / 3.0)).margin( epsilon));
     else
         REQUIRE (L1.coeff(f,f) == Approx (0.0).margin( epsilon));
     REQUIRE (L1.row(f).sum() == Approx (0.0).margin( epsilon));
