@@ -28,7 +28,7 @@ namespace igl
   //  U  #U by dim list of mesh vertex positions #U>=#V
   //  G  #G by 3 list of mesh triangle indices into U, #G>=#F
   //  SU  #U list of scalar field values over new mesh
-  //  J  #G list of indices into G revealing birth triangles
+  //  J  #G list of indices into F revealing birth triangles
   //  BC  #U by #V sparse matrix of barycentric coordinates so that U = BC*V
   //  L  #G list of bools whether scalar field in triangle below or above val
   template <
