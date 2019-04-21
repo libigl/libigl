@@ -353,14 +353,6 @@ py::class_<igl::opengl::ViewerCore> viewercore_class(me, "ViewerCore");
 // UI Enumerations
     py::class_<igl::opengl::glfw::Viewer> viewer_class(me, "Viewer");
 
-//    #ifdef IGL_VIEWER_WITH_NANOGUI
-//    py::object fh = (py::object) py::module::import("nanogui").attr("FormHelper");
-//    py::class_<nanogui::FormHelper> form_helper_class(me, "FormHelper", fh);
-
-//    py::object screen = (py::object) py::module::import("nanogui").attr("Screen");
-//    py::class_<nanogui::Screen> screen_class(me, "Screen", screen);
-//    #endif
-
     py::enum_<igl::opengl::glfw::Viewer::MouseButton>(viewer_class, "MouseButton")
         .value("Left", igl::opengl::glfw::Viewer::MouseButton::Left)
         .value("Middle", igl::opengl::glfw::Viewer::MouseButton::Middle)
@@ -378,15 +370,11 @@ py::class_<igl::opengl::ViewerCore> viewercore_class(me, "ViewerCore");
     //   viewer.data() = data;
     // })
 
-    .def("data", &igl::opengl::glfw::Viewer::data,pybind11::return_value_policy::reference)
+    .def("data", (igl::opengl::ViewerData & (igl::opengl::glfw::Viewer::*)(int)) &igl::opengl::glfw::Viewer::data,pybind11::return_value_policy::reference)
+    // .def("data", (const igl::opengl::ViewerData & (igl::opengl::glfw::Viewer::*)(int) const) &igl::opengl::glfw::Viewer::data,pybind11::return_value_policy::reference)
 
     //.def_readwrite("core", &igl::opengl::glfw::Viewer::core)
     //.def_readwrite("opengl", &igl::opengl::glfw::Viewer::opengl)
-
-    #ifdef IGL_VIEWER_WITH_NANOGUI
-    .def_readwrite("ngui", &igl::opengl::glfw::Viewer::ngui)
-    .def_readwrite("screen", &igl::opengl::glfw::Viewer::screen)
-    #endif
 
     .def("launch", &igl::opengl::glfw::Viewer::launch, py::arg("resizable") = true,
       py::arg("fullscreen") = false, py::arg("name") = "libigl viewer",
