@@ -16,7 +16,6 @@ TEST_CASE("dijkstra: cube", "[igl]")
   Eigen::VectorXd min_distance;
   Eigen::VectorXi previous;
   igl::dijkstra(V, VV, 0, {7}, min_distance, previous);
-  std::cout<<"Dijkstra"<<std::endl;
 
   REQUIRE(min_distance(0) == 0);
   REQUIRE(min_distance(7) == Approx(sqrt(2)).margin(1e-10));
