@@ -19,16 +19,16 @@ namespace igl
 {
   namespace predicates
   {
-      // check whether 2d point lies inside 2d polygon
-      // Inputs:
-      //   P: n*2 polygon, n >= 3
-      //   q: 2d query point
-      // Returns true if point is inside polygon
-      template <typename Scalar>
-      bool point_inside_polygon(
-          const Eigen::Matrix<Scalar,-1,2>& P,
-          const Eigen::Matrix<Scalar,1,2>& q
-      );
+    // check whether 2d point lies inside 2d polygon
+    // Inputs:
+    //   P: n*2 polygon, n >= 3
+    //   q: 2d query point
+    // Returns true if point is inside polygon
+    template <typename DerivedP, typename DerivedQ>
+    IGL_INLINE bool point_inside_polygon(
+        const Eigen::MatrixBase<DerivedP>& P,
+        const Eigen::MatrixBase<DerivedQ>& q
+    );
   }
 }
 

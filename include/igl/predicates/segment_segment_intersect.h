@@ -14,18 +14,17 @@
 #include <igl/predicates/predicates.h>
 namespace igl
 {
-namespace predicates
-{
+  namespace predicates
+  {
   
     // Given two segments in 2d test whether they intersect each other
-    // using orient2D
+    // using predicates orient2d
     // 
     // Inputs:
     //   A:   1st endpoint of segment 1
     //   B:   2st endpoint of segment 1
     //   C:   1st endpoint of segment 2
     //   D:   2st endpoint of segment 2
-    //   eps: precision used for colinear case
     // Returns true if they intersect
     
     template <typename DerivedP>
@@ -37,8 +36,7 @@ namespace predicates
       const Eigen::MatrixBase<DerivedP>& D
     );
 
-}
-
+  }
 }
 #ifndef IGL_STATIC_LIBRARY
 #   include "segment_segment_intersect.cpp"

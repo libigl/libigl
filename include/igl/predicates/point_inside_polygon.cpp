@@ -8,10 +8,10 @@
 
 #include "point_inside_polygon.h"
 
-template <typename Scalar>
-bool igl::predicates::point_inside_polygon(
-    const Eigen::Matrix<Scalar,-1,2>& P,
-    const Eigen::Matrix<Scalar,1,2>& q
+template <typename DerivedP, typename DerivedQ>
+IGL_INLINE bool igl::predicates::point_inside_polygon(
+  const Eigen::MatrixBase<DerivedP>& P,
+  const Eigen::MatrixBase<DerivedQ>& q
 ){
   for(int i=0;i<P.rows();i++){
     int i_1 = (i+1) % P.rows();
@@ -26,5 +26,5 @@ bool igl::predicates::point_inside_polygon(
 }
 
 #ifdef IGL_STATIC_LIBRARY
-template bool igl::predicates::point_inside_polygon<double>(Eigen::Matrix<double, -1, 2, 0, -1, 2> const&, Eigen::Matrix<double, 1, 2, 1, 1, 2> const&);
+template bool igl::predicates::point_inside_polygon<Eigen::Matrix<double, -1, 2, 0, -1, 2>, Eigen::Matrix<double, 1, 2, 1, 1, 2> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, 2, 0, -1, 2> > const&, Eigen::MatrixBase<Eigen::Matrix<double, 1, 2, 1, 1, 2> > const&);
 #endif

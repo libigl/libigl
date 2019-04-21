@@ -16,23 +16,30 @@ namespace igl
 {
   namespace predicates
   {
-    template <typename DerivedP>
+
+    // Implementation of ear clipping triangulation algorithm for a 2D polygon.
+    // https://www.geometrictools.com/Documentation/TriangulationByEarClipping.pdf
+    // If the polygon is simple, all vertices will be clipped and the result mesh is (P,eF)
+    // Otherwise, the function will try to clip as many ears as possible.
+    //
+    // Input:
+    // P : n*2, size n 2D polygon
+    // RT: n*1, preserved vertices (do not clip) marked as 1, otherwise 0
+    // Output:
+    // I : size #nP vector, maps index from nP to P, e.g. nP's ith vertex is origianlly I(i) in P
+    // eF: clipped ears, in original index of P
+    // nP: leftover vertices after clipping
+
+    template <typename DerivedP, typename DerivedRT,
+              typename DerivedF, typename DerivedI>
     IGL_INLINE void ear_clipping(
       const Eigen::MatrixBase<DerivedP>& P,
-      const Eigen::VectorXi& RT,
-      Eigen::VectorXi& I,
-      Eigen::MatrixXi& eF, 
+      const Eigen::MatrixBase<DerivedRT>& RT,
+      Eigen::PlainObjectBase<DerivedI>& I,
+      Eigen::PlainObjectBase<DerivedF>& eF, 
       Eigen::PlainObjectBase<DerivedP>& nP
     );
 
-    template <typename DerivedP>
-    IGL_INLINE bool is_ear(
-      const Eigen::MatrixBase<DerivedP>& P,
-      const Eigen::VectorXi& RT,
-      const Eigen::VectorXi& L,
-      const Eigen::VectorXi& R, 
-      const int i
-    );
   }
 }
 
