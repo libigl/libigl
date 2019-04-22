@@ -6,6 +6,7 @@
 TEST_CASE("predicates", "[igl][predicates]") {
     using namespace igl::predicates;
     using Scalar = double;
+    exactinit();
 
     SECTION("2D") {
         using Point = Eigen::Matrix<Scalar, 2, 1>;
@@ -65,7 +66,12 @@ TEST_CASE("predicates", "[igl][predicates]") {
         Eigen::Matrix<double, -1, -1> out_vertices;
         Eigen::Matrix<int, -1, -1> out_faces;
 
-        igl::triangle::triangulate(vertices, edges, holes, "qpYY",
+        // Run constrained Delaunay.
+        igl::triangle::triangulate(vertices, edges, holes, "QcYY",
                 out_vertices, out_faces);
+        REQUIRE(out_vertices.rows() == 4);
+        REQUIRE(out_vertices.cols() == 2);
+        REQUIRE(out_faces.rows() == 2);
+        REQUIRE(out_faces.cols() == 3);
     }
 }
