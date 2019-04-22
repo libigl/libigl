@@ -12,7 +12,9 @@ endif()
 # The shallow clone option only works with real tags, not SHA1, so we use a separate option.
 set(LIBIGL_BRANCH_OPTIONS)
 if(NOT (${CMAKE_VERSION} VERSION_LESS "3.6.3"))
-	list(APPEND LIBIGL_BRANCH_OPTIONS GIT_SHALLOW 1)
+	# Disabled for now until we can make sure that it has no adverse effects
+	# (Downside is that the eigen mirror is huge again)
+	# list(APPEND LIBIGL_BRANCH_OPTIONS GIT_SHALLOW 1)
 endif()
 
 option(LIBIGL_SKIP_DOWNLOAD "Skip downloading external libraries" OFF)

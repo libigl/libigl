@@ -28,11 +28,6 @@ build_script:
   - cmake -DCMAKE_BUILD_TYPE=%CONFIG%
       -DLIBIGL_WITH_CGAL=ON
       -DLIBIGL_WITH_COMISO=OFF
-      -DEMBREE_ISA_SSE42=OFF
-      -DEMBREE_ISA_AVX=OFF
-      -DEMBREE_ISA_AVX2=OFF
-      -DEMBREE_ISA_AVX512KNL=OFF
-      -DEMBREE_ISA_AVX512SKX=OFF
       -G "Visual Studio 15 2017 Win64"
       ../
   - set MSBuildLogger="C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
