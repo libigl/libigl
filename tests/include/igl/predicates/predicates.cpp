@@ -6,7 +6,7 @@
 TEST_CASE("predicates", "[igl][predicates]") {
     using namespace igl::predicates;
     using Scalar = double;
-    exactinit();
+    igl::predicates::exactinit();
 
     SECTION("2D") {
         using Point = Eigen::Matrix<Scalar, 2, 1>;
