@@ -29,6 +29,7 @@ option(LIBIGL_WITH_OPENGL_GLFW_IMGUI "Use ImGui"                    ON)
 option(LIBIGL_WITH_PNG               "Use PNG"                      ON)
 option(LIBIGL_WITH_TETGEN            "Use Tetgen"                   ON)
 option(LIBIGL_WITH_TRIANGLE          "Use Triangle"                 ON)
+option(LIBIGL_WITH_PREDICATES        "Use exact predicates"         ON)
 option(LIBIGL_WITH_XML               "Use XML"                      ON)
 option(LIBIGL_WITH_PYTHON            "Use Python"                   ${LIBIGL_BUILD_PYTHON})
 ### End

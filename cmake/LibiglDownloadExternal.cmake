@@ -139,8 +139,8 @@ endfunction()
 ## Triangle
 function(igl_download_triangle)
 	igl_download_project(triangle
-		GIT_REPOSITORY https://github.com/jdumas/triangle.git
-		GIT_TAG        2cd0672ff1f67f9f6bb8e556e84901293e637b76
+		GIT_REPOSITORY https://github.com/libigl/triangle.git
+		GIT_TAG        d284c4a843efac043c310f5fa640b17cf7d96170
 	)
 endfunction()
 
@@ -149,6 +149,14 @@ function(igl_download_catch2)
 	igl_download_project(catch2
 		GIT_REPOSITORY https://github.com/catchorg/Catch2.git
 		GIT_TAG        03d122a35c3f5c398c43095a87bc82ed44642516
+	)
+endfunction()
+
+## Predicates
+function(igl_download_predicates)
+	igl_download_project(predicates
+		GIT_REPOSITORY https://github.com/libigl/libigl-predicates.git
+		GIT_TAG        4c57c1d3f31646b010d1d58bfbe201e75c2b2ad8
 	)
 endfunction()
 
