@@ -71,6 +71,7 @@ template <
   }
 
   // Loop over each face
+  std::unordered_map<int, std::unordered_map<int, int>> edgeToBirthVert;
   for(int f = 0;f<F.rows();f++)
   {
     bool Psign[2];
@@ -116,18 +117,23 @@ template <
         // Create two new vertices
         for(int i = 0;i<2;i++)
         {
-          const double bci = (isoval - S(F(f,(P[i]+1)%3)))/
-            (S(F(f,P[i]))-S(F(f,(P[i]+1)%3)));
-          vBC.emplace_back(Ucount,F(f,P[i]),bci);
-          vBC.emplace_back(Ucount,F(f,(P[i]+1)%3),1.0-bci);
-          Ucount++;
+          if ((edgeToBirthVert.find(F(f, P[i])) == edgeToBirthVert.end()) || (edgeToBirthVert.at(F(f, P[i])).find(F(f, (P[i] + 1) % 3)) == edgeToBirthVert.at(F(f, P[i])).end()))
+          {
+            const double bci = (isoval - S(F(f,(P[i]+1)%3)))/
+              (S(F(f,P[i]))-S(F(f,(P[i]+1)%3)));
+            vBC.emplace_back(Ucount,F(f,P[i]),bci);
+            vBC.emplace_back(Ucount,F(f,(P[i]+1)%3),1.0-bci);
+            edgeToBirthVert[F(f, P[i])][F(f, (P[i] + 1) % 3)] = Ucount;
+            edgeToBirthVert[F(f, (P[i] + 1) % 3)][F(f, P[i])] = Ucount;
+            Ucount++;
+          }
         }
         const int v0 = F(f,P[0]);
-        const int v01 = Ucount-2;
         assert(((P[0]+1)%3) == P[1]);
         const int v1 = F(f,P[1]);
-        const int v12 = Ucount-1;
         const int v2 = F(f,(P[1]+1)%3);
+        const int v01 = edgeToBirthVert[v0][v1];
+        const int v12 = edgeToBirthVert[v1][v2];
         // v0
         // |  \
         // |   \
