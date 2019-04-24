@@ -7,6 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "remesh_along_isoline.h"
 #include "list_to_matrix.h"
+#include <unordered_map>
 
 template <
   typename DerivedV,
