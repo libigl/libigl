@@ -106,7 +106,7 @@ namespace igl {
         for(ChildrenType i = 0; i < 8; i++){
           children.emplace_back(neg_ones);
           point_indices.emplace_back(std::vector<IndexType>());
-          centers.emplace_back(translate_center(curr_center,h,i));
+          centers.emplace_back(translate_center(curr_center,h/2,i));
           widths.emplace_back(h);
         }
 
