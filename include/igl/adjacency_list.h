@@ -31,7 +31,7 @@ namespace igl
   // See also: edges, cotmatrix, diag
   template <typename Index, typename IndexVector>
   IGL_INLINE void adjacency_list(
-    const Eigen::MatrixBase<Index> & F, 
+    const Eigen::MatrixBase<Index>  & F,
     std::vector<std::vector<IndexVector> >& A,
     bool sorted = false);
 
