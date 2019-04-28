@@ -27,6 +27,14 @@ using REAL = IGL_PREDICATES_REAL;
     "Shewchuk's exact predicates only support float and double")
 #endif
 
+IGL_INLINE void exactinit() {
+  static bool initialized = false;
+  if (! initialized) {
+    ::exactinit();
+    initialized = true;
+  }
+}
+
 template<typename Vector2D>
 IGL_INLINE Orientation orient2d(
     const Eigen::MatrixBase<Vector2D>& pa,

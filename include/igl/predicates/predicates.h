@@ -20,6 +20,10 @@ namespace igl {
       COLLINEAR=0, COPLANAR=0, COCIRCULAR=0, COSPHERICAL=0, DEGENERATE=0
     };
 
+    // Initialize internal variable used by predciates.  Must be called before
+    // using exact predicates.
+    IGL_INLINE void exactinit();
+
     // Compute the orientation of the triangle formed by pa, pb, pc.
     //
     // Input:
