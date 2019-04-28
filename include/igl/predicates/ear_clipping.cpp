@@ -1,7 +1,14 @@
+// This file is part of libigl, a simple c++ geometry processing library.
+//
+// Copyright (C) 2019 Hanxiao Shen <hanxiao@cs.nyu.edu>
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
+// obtain one at http://mozilla.org/MPL/2.0/.
 
 #include <igl/slice.h>
 #include "ear_clipping.h"
-#include "point_inside_polygon.h"
+#include "point_inside_convex_polygon.h"
 #include "predicates.h"
 
 template <typename DerivedP, typename DerivedRT,
@@ -13,20 +20,26 @@ IGL_INLINE void igl::predicates::ear_clipping(
   Eigen::PlainObjectBase<DerivedF>& eF,
   Eigen::PlainObjectBase<DerivedP>& nP
 ){
+  typedef typename DerivedF::Scalar Index;
+  typedef typename DerivedP::Scalar Scalar;
+  static_assert(std::is_same<typename DerivedI::Scalar,
+                             typename DerivedF::Scalar>::value,
+                "index type should be consistent");
   
   // check whether vertex i is an ear
   auto is_ear = [](
     const Eigen::MatrixBase<DerivedP>& P,
     const Eigen::MatrixBase<DerivedRT>& RT,
-    const Eigen::VectorXi& L,
-    const Eigen::VectorXi& R,
-    const int i
+    const Eigen::Matrix<Index,-1,1>& L,
+    const Eigen::Matrix<Index,-1,1>& R,
+    const Index i
   ){
-    int a = L(i), b = R(i);
+    
+    Index a = L(i), b = R(i);
     if(RT(i) != 0 || RT(a) != 0 || RT(b) != 0) return false;
-    Eigen::RowVector2d pa = P.row(a);
-    Eigen::RowVector2d pb = P.row(b);
-    Eigen::RowVector2d pi = P.row(i);
+    Eigen::Matrix<Scalar,1,2> pa = P.row(a);
+    Eigen::Matrix<Scalar,1,2> pb = P.row(b);
+    Eigen::Matrix<Scalar,1,2> pi = P.row(i);
     auto r = igl::predicates::orient2d(pa,pi,pb);
     if(r == igl::predicates::Orientation::NEGATIVE || 
        r == igl::predicates::Orientation::COLLINEAR) return false;
@@ -34,21 +47,21 @@ IGL_INLINE void igl::predicates::ear_clipping(
     // check if any vertex is lying inside triangle (a,b,i);
     int k=R(b);
     while(k!=a){
-      Eigen::MatrixX2d T(3,2);
+      Eigen::Matrix<Scalar,-1,2> T(3,2);
       T<<P.row(a),P.row(i),P.row(b);
-      Eigen::RowVector2d q=P.row(k);
-      if(igl::predicates::point_inside_polygon(T,q)) 
+      Eigen::Matrix<Scalar,1,2> q=P.row(k);
+      if(igl::predicates::point_inside_convex_polygon(T,q))
         return false;
       k=R(k);
     }
     return true;
   };
 
-  Eigen::VectorXi L(P.rows());
-  Eigen::VectorXi R(P.rows());
+  Eigen::Matrix<Index,-1,1> L(P.rows());
+  Eigen::Matrix<Index,-1,1> R(P.rows());
   for(int i=0;i<P.rows();i++){
-    L(i) = (i-1+P.rows())%P.rows();
-    R(i) = (i+1)%P.rows();
+    L(i) = Index((i-1+P.rows())%P.rows());
+    R(i) = Index((i+1)%P.rows());
   }
 
   Eigen::VectorXi ears; // mark ears
@@ -65,11 +78,11 @@ IGL_INLINE void igl::predicates::ear_clipping(
   while(ears.maxCoeff()==1){
     
     // find the first ear
-    int e = 0;
+    Index e = 0;
     while(e<ears.rows()&&ears(e)!=1) e++;
     
     // find valid neighbors
-    int a = L(e), b = R(e);
+    Index a = L(e), b = R(e);
     if(a == b) break;
 
     // clip ear and store face
@@ -98,8 +111,8 @@ IGL_INLINE void igl::predicates::ear_clipping(
   for(int i=0;i<X.rows();i++)
     X(i) = 1-X(i);
   I.resize(X.sum());
-  int j=0;
-  for(int i=0;i<X.rows();i++)
+  Index j=0;
+  for(Index i=0;i<X.rows();i++)
     if(X(i)==1){
       I(j++) = i;
     }

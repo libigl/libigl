@@ -6,8 +6,8 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 
-#ifndef PREDICATE_POINT_INSIDE_POLYGON_H
-#define PREDICATE_POINT_INSIDE_POLYGON_H
+#ifndef PREDICATE_POINT_INSIDE_CONVEX_POLYGON_H
+#define PREDICATE_POINT_INSIDE_CONVEX_POLYGON_H
 
 
 
@@ -25,7 +25,7 @@ namespace igl
     //   q: 2d query point
     // Returns true if point is inside polygon
     template <typename DerivedP, typename DerivedQ>
-    IGL_INLINE bool point_inside_polygon(
+    IGL_INLINE bool point_inside_convex_polygon(
         const Eigen::MatrixBase<DerivedP>& P,
         const Eigen::MatrixBase<DerivedQ>& q
     );
@@ -33,7 +33,7 @@ namespace igl
 }
 
 #ifndef IGL_STATIC_LIBRARY
-#  include "point_inside_polygon.cpp"
+#  include "point_inside_convex_polygon.cpp"
 #endif
 
 #endif
