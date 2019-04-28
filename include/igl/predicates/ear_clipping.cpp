@@ -30,8 +30,8 @@ IGL_INLINE void igl::predicates::ear_clipping(
   auto is_ear = [](
     const Eigen::MatrixBase<DerivedP>& P,
     const Eigen::MatrixBase<DerivedRT>& RT,
-    const Eigen::Matrix<Index,-1,1>& L,
-    const Eigen::Matrix<Index,-1,1>& R,
+    const Eigen::Matrix<Index,Eigen::Dynamic,1>& L,
+    const Eigen::Matrix<Index,Eigen::Dynamic,1>& R,
     const Index i
   ){
     
@@ -57,8 +57,8 @@ IGL_INLINE void igl::predicates::ear_clipping(
     return true;
   };
 
-  Eigen::Matrix<Index,-1,1> L(P.rows());
-  Eigen::Matrix<Index,-1,1> R(P.rows());
+  Eigen::Matrix<Index,Eigen::Dynamic,1> L(P.rows());
+  Eigen::Matrix<Index,Eigen::Dynamic,1> R(P.rows());
   for(int i=0;i<P.rows();i++){
     L(i) = Index((i-1+P.rows())%P.rows());
     R(i) = Index((i+1)%P.rows());

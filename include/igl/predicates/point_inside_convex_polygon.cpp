@@ -13,7 +13,7 @@ IGL_INLINE bool igl::predicates::point_inside_convex_polygon(
   const Eigen::MatrixBase<DerivedP>& P,
   const Eigen::MatrixBase<DerivedQ>& q
 ){
-  EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE(DerivedP, -1, 2);
+  EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE(DerivedP, Eigen::Dynamic, 2);
   EIGEN_STATIC_ASSERT_MATRIX_SPECIFIC_SIZE(DerivedQ, 1, 2);
   typedef typename DerivedP::Scalar Scalar;
   for(int i=0;i<P.rows();i++){
