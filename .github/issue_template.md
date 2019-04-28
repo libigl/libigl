@@ -6,6 +6,6 @@
 - [ ] Windows
 - [ ] Mac OS X
 - [ ] Linux
-- [ ] Issue also occurs on the `dev` branch
+- [ ] I have tried the `dev` branch and the problem persists
 
 See https://libigl.github.io/CONTRIBUTING/#bugreport for more tips.
