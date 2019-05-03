@@ -51,6 +51,7 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
     assert(n == Aeq.cols() && "#Aeq.cols() should match A.rows()");
   }
 
+  assert(known.cols() == 1 && "known should be a vector");
   assert(A.rows() == n && "A should be square");
   assert(A.cols() == n && "A should be square");
 
@@ -70,7 +71,7 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
   unknown_mask.resize(n,true);
   for(int i = 0;i<kr;i++)
   {
-    unknown_mask[known(i)] = false;
+    unknown_mask[known(i, 0)] = false;
   }
   int u = 0;
   for(int i = 0;i<n;i++)
