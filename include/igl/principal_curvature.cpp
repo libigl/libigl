@@ -918,8 +918,8 @@ IGL_INLINE void igl::principal_curvature(
       PD2.row(i) << 0,0,0;
     }
 
-    PV1(i) = cc.curv[i][0];
-    PV2(i) = cc.curv[i][1];
+    PV2(i) = cc.curv[i][0];
+    PV1(i) = cc.curv[i][1];
 
     if (PD1.row(i) * PD2.row(i).transpose() > 10e-6)
     {
