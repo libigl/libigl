@@ -2,7 +2,8 @@ cmake_minimum_required(VERSION 3.1)
 project(libigl)
 
 # Detects whether this is a top-level project
-if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+get_directory_property(LIBIGL_PARENT_DIR PARENT_DIRECTORY)
+if(NOT LIBIGL_PARENT_DIR)
 	set(LIBIGL_TOPLEVEL_PROJECT ON)
 else()
 	set(LIBIGL_TOPLEVEL_PROJECT OFF)
