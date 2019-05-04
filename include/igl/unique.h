@@ -39,7 +39,7 @@ namespace igl
     typename DerivedIA,
     typename DerivedIC>
   IGL_INLINE void unique(
-      const Eigen::DenseBase<DerivedA> & A,
+      const Eigen::MatrixBase<DerivedA> & A,
       Eigen::PlainObjectBase<DerivedC> & C,
       Eigen::PlainObjectBase<DerivedIA> & IA,
       Eigen::PlainObjectBase<DerivedIC> & IC);
@@ -47,7 +47,7 @@ namespace igl
     typename DerivedA,
     typename DerivedC>
   IGL_INLINE void unique(
-      const Eigen::DenseBase<DerivedA> & A,
+      const Eigen::MatrixBase<DerivedA> & A,
       Eigen::PlainObjectBase<DerivedC> & C);
 }
 
