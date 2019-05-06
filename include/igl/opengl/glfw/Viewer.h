@@ -45,8 +45,8 @@ namespace glfw
     // UI Enumerations
     enum class MouseButton {Left, Middle, Right};
     enum class MouseMode { None, Rotation, Zoom, Pan, Translation} mouse_mode;
-    IGL_INLINE int launch(bool resizable = true, bool fullscreen = false, const std::string &name = "libigl viewer", int width = 1280, int height = 800);
-    IGL_INLINE int launch_init(bool resizable = true, bool fullscreen = false, const std::string &name = "libigl viewer", int width = 1280, int height = 800);
+    IGL_INLINE int launch(bool resizable = true, bool fullscreen = false, const std::string &name = "libigl viewer", int width = 0, int height = 0);
+    IGL_INLINE int launch_init(bool resizable = true, bool fullscreen = false, const std::string &name = "libigl viewer", int width = 0, int height = 0);
     IGL_INLINE bool launch_rendering(bool loop = true);
     IGL_INLINE void launch_shut();
     IGL_INLINE void init();
@@ -89,6 +89,7 @@ namespace glfw
     // Inputs:
     //   mesh_id  unique identifier associated to the desired mesh (current mesh if -1)
     IGL_INLINE ViewerData& data(int mesh_id = -1);
+    IGL_INLINE const ViewerData& data(int mesh_id = -1) const;
 
     // Append a new "slot" for a mesh (i.e., create empty entries at the end of
     // the data_list and opengl_state_list.
@@ -133,6 +134,7 @@ namespace glfw
     // Inputs:
     //   core_id  unique identifier corresponding to the desired viewport (current viewport if 0)
     IGL_INLINE ViewerCore& core(unsigned core_id = 0);
+    IGL_INLINE const ViewerCore& core(unsigned core_id = 0) const;
 
     // Append a new "slot" for a viewport (i.e., copy properties of the current viewport, only
     // changing the viewport size/position)
