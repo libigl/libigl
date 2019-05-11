@@ -33,6 +33,7 @@ int main(int argc, char * argv[])
   using namespace Eigen;
   using namespace std;
   using namespace igl;
+  
   // read the mesh, if the code is prepared outside of tutorial, the TUTORIAL_SHARED_PATH
   // should be the data folder
   if(!readMESH(TUTORIAL_SHARED_PATH "/octopus-low.mesh",low.V,low.T,low.F))
