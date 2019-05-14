@@ -11,9 +11,11 @@
 #endif
 #if defined(_WIN32)
 #  include <windows.h>
+#else
+  #include <unistd.h>
 #endif
 #include <stdint.h>
-#include <unistd.h>
+
 IGL_INLINE std::string igl::path_to_executable()
 {
   // http://pastebin.com/ffzzxPzi
