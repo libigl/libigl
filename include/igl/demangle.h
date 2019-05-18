@@ -33,6 +33,7 @@ namespace igl
     replaceAll(str, "std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >", "std::string");
     replaceAll(str, "std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > >", "std::string>");
     replaceAll(str, "std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >", "std::string");
+    replaceAll(str, "std::__1", "std");
   }
 
 #ifdef _MSC_VER
