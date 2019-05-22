@@ -2,6 +2,10 @@
 
 include(${CMAKE_CURRENT_LIST_DIR}/libigl-export.cmake)
 
+if(@HUNTER_ENABLED@)
+  find_package(Eigen3 CONFIG REQUIRED)
+endif()
+
 if (TARGET igl::core)
   if (NOT TARGET Eigen3::Eigen)
     find_package(Eigen3 QUIET)
