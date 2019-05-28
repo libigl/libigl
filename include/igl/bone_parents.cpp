@@ -9,7 +9,7 @@
 
 template <typename DerivedBE, typename DerivedP>
 IGL_INLINE void igl::bone_parents(
-  const Eigen::PlainObjectBase<DerivedBE>& BE,
+  const Eigen::MatrixBase<DerivedBE>& BE,
   Eigen::PlainObjectBase<DerivedP>& P)
 {
   P.resize(BE.rows(),1);
