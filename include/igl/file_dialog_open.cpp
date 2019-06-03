@@ -21,6 +21,7 @@ IGL_INLINE std::string igl::file_dialog_open()
 {
   const int FILE_DIALOG_MAX_BUFFER = 1024;
   char buffer[FILE_DIALOG_MAX_BUFFER];
+  buffer[0] = '\0';
   
 #ifdef __APPLE__
   // For apple use applescript hack
@@ -32,8 +33,9 @@ IGL_INLINE std::string igl::file_dialog_open()
     "   end tell\n"
     "   set existing_file_path to (POSIX path of (existing_file))\n"
     "\" 2>/dev/null | tr -d '\n' ","r");
-  while ( fgets(buffer, FILE_DIALOG_MAX_BUFFER, output) != NULL )
+  if( !output || fgets(buffer, FILE_DIALOG_MAX_BUFFER, output) == NULL || fgets(buffer, FILE_DIALOG_MAX_BUFFER, output) != NULL)
   {
+    buffer[0] = '\0';
   }
 #elif defined _WIN32
   
@@ -74,14 +76,16 @@ IGL_INLINE std::string igl::file_dialog_open()
   
   // For linux use zenity
   FILE * output = popen("/usr/bin/zenity --file-selection","r");
-  while ( fgets(buffer, FILE_DIALOG_MAX_BUFFER, output) != NULL )
+  if( !output || fgets(buffer, FILE_DIALOG_MAX_BUFFER, output) == NULL || fgets(buffer, FILE_DIALOG_MAX_BUFFER, output) != NULL)
   {
+    buffer[0] = '\0';
   }
-  
-  if (strlen(buffer) > 0)
+
+  if(strlen(buffer) > 0)
   {
-    buffer[strlen(buffer)-1] = 0;
+    buffer[strlen(buffer)-1] = '\0';
   }
+
 #endif
   return std::string(buffer);
 }
