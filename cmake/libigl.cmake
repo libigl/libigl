@@ -142,10 +142,10 @@ function(compile_igl_module module_dir)
   endif()
   if(LIBIGL_USE_STATIC_LIBRARY)
     file(GLOB SOURCES_IGL_${module_name}
-      "${LIBIGL_SOURCE_DIR}/igl/${module_dir}/*.cpp")
+      "${LIBIGL_SOURCE_DIR}/igl/${module_dir}/*.c*")
     if(NOT LIBIGL_WITHOUT_COPYLEFT)
       file(GLOB COPYLEFT_SOURCES_IGL_${module_name}
-        "${LIBIGL_SOURCE_DIR}/igl/copyleft/${module_dir}/*.cpp")
+        "${LIBIGL_SOURCE_DIR}/igl/copyleft/${module_dir}/*.c*")
       list(APPEND SOURCES_IGL_${module_name} ${COPYLEFT_SOURCES_IGL_${module_name}})
     endif()
     add_library(${module_libname} STATIC ${SOURCES_IGL_${module_name}} ${ARGN})
@@ -176,8 +176,8 @@ endfunction()
 
 if(LIBIGL_USE_STATIC_LIBRARY)
   file(GLOB SOURCES_IGL
-    "${LIBIGL_SOURCE_DIR}/igl/*.cpp"
-    "${LIBIGL_SOURCE_DIR}/igl/copyleft/*.cpp")
+    "${LIBIGL_SOURCE_DIR}/igl/*.c*"
+    "${LIBIGL_SOURCE_DIR}/igl/copyleft/*.c*")
 endif()
 compile_igl_module("core" ${SOURCES_IGL})
 
@@ -449,7 +449,7 @@ function(install_dir_files dir_name)
 
   if(NOT LIBIGL_USE_STATIC_LIBRARY)
     file(GLOB public_sources
-      ${CMAKE_CURRENT_SOURCE_DIR}/include/igl${subpath}/*.cpp
+      ${CMAKE_CURRENT_SOURCE_DIR}/include/igl${subpath}/*.c*
     )
   endif()
   list(APPEND files_to_install ${public_sources})
