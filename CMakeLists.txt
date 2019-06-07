@@ -2,7 +2,8 @@ cmake_minimum_required(VERSION 3.1)
 project(libigl)
 
 # Detects whether this is a top-level project
-if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+get_directory_property(LIBIGL_PARENT_DIR PARENT_DIRECTORY)
+if(NOT LIBIGL_PARENT_DIR)
 	set(LIBIGL_TOPLEVEL_PROJECT ON)
 else()
 	set(LIBIGL_TOPLEVEL_PROJECT OFF)
@@ -29,6 +30,7 @@ option(LIBIGL_WITH_OPENGL_GLFW_IMGUI "Use ImGui"                    ON)
 option(LIBIGL_WITH_PNG               "Use PNG"                      ON)
 option(LIBIGL_WITH_TETGEN            "Use Tetgen"                   ON)
 option(LIBIGL_WITH_TRIANGLE          "Use Triangle"                 ON)
+option(LIBIGL_WITH_PREDICATES        "Use exact predicates"         ON)
 option(LIBIGL_WITH_XML               "Use XML"                      ON)
 option(LIBIGL_WITH_PYTHON            "Use Python"                   ${LIBIGL_BUILD_PYTHON})
 ### End

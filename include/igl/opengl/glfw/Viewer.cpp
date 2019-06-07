@@ -124,7 +124,7 @@ namespace glfw
 {
 
   IGL_INLINE int Viewer::launch(bool resizable /*= true*/, bool fullscreen /*= false*/,
-    const std::string &name, int windowWidth /*= 1280*/, int windowHeight /*= 800*/)
+    const std::string &name, int windowWidth /*= 0*/, int windowHeight /*= 0*/)
   {
     // TODO return values are being ignored...
     launch_init(resizable,fullscreen,name,windowWidth,windowHeight);
@@ -153,9 +153,21 @@ namespace glfw
       GLFWmonitor *monitor = glfwGetPrimaryMonitor();
       const GLFWvidmode *mode = glfwGetVideoMode(monitor);
       window = glfwCreateWindow(mode->width,mode->height,name.c_str(),monitor,nullptr);
+      windowWidth = mode->width;
+      windowHeight = mode->height;
     }
     else
     {
+      // Set default windows width
+      if (windowWidth <= 0 & core_list.size() == 1 && core().viewport[2] > 0)
+        windowWidth = core().viewport[2];
+      else if (windowWidth <= 0)
+        windowWidth = 1280;
+      // Set default windows height
+      if (windowHeight <= 0 & core_list.size() == 1 && core().viewport[3] > 0)
+        windowHeight = core().viewport[3];
+      else if (windowHeight <= 0)
+        windowHeight = 800;
       window = glfwCreateWindow(windowWidth,windowHeight,name.c_str(),nullptr,nullptr);
     }
     if (!window)
@@ -988,6 +1000,20 @@ namespace glfw
     return data_list[index];
   }
 
+  IGL_INLINE const ViewerData& Viewer::data(int mesh_id /*= -1*/) const
+  {
+    assert(!data_list.empty() && "data_list should never be empty");
+    int index;
+    if (mesh_id == -1)
+      index = selected_data_index;
+    else
+      index = mesh_index(mesh_id);
+
+    assert((index >= 0 && index < data_list.size()) &&
+      "selected_data_index or mesh_id should be in bounds");
+    return data_list[index];
+  }
+
   IGL_INLINE int Viewer::append_mesh(bool visible /*= true*/)
   {
     assert(data_list.size() >= 1);
@@ -1032,6 +1058,18 @@ namespace glfw
   }
 
   IGL_INLINE ViewerCore& Viewer::core(unsigned core_id /*= 0*/)
+  {
+    assert(!core_list.empty() && "core_list should never be empty");
+    int core_index;
+    if (core_id == 0)
+      core_index = selected_core_index;
+    else
+      core_index = this->core_index(core_id);
+    assert((core_index >= 0 && core_index < core_list.size()) && "selected_core_index should be in bounds");
+    return core_list[core_index];
+  }
+
+  IGL_INLINE const ViewerCore& Viewer::core(unsigned core_id /*= 0*/) const
   {
     assert(!core_list.empty() && "core_list should never be empty");
     int core_index;

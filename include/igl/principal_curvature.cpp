@@ -448,7 +448,7 @@ IGL_INLINE void CurvatureCalculator::getKRing(const int start, const double r, s
   int bufsize=vertices.rows();
   vv.reserve(bufsize);
   std::list<std::pair<int,int> > queue;
-  bool* visited = (bool*)calloc(bufsize,sizeof(bool));
+  std::vector<bool> visited(bufsize, false);
   queue.push_back(std::pair<int,int>(start,0));
   visited[start]=true;
   while (!queue.empty())
@@ -470,8 +470,6 @@ IGL_INLINE void CurvatureCalculator::getKRing(const int start, const double r, s
       }
     }
   }
-  free(visited);
-  return;
 }
 
 
@@ -479,16 +477,16 @@ IGL_INLINE void CurvatureCalculator::getSphere(const int start, const double r, 
 {
   int bufsize=vertices.rows();
   vv.reserve(bufsize);
-  std::list<int>* queue= new std::list<int>();
-  bool* visited = (bool*)calloc(bufsize,sizeof(bool));
-  queue->push_back(start);
+  std::list<int> queue;
+  std::vector<bool> visited(bufsize, false);
+  queue.push_back(start);
   visited[start]=true;
   Eigen::Vector3d me=vertices.row(start);
-  std::priority_queue<std::pair<int, double>, std::vector<std::pair<int, double> >, comparer >* extra_candidates= new  std::priority_queue<std::pair<int, double>, std::vector<std::pair<int, double> >, comparer >();
-  while (!queue->empty())
+  std::priority_queue<std::pair<int, double>, std::vector<std::pair<int, double> >, comparer > extra_candidates;
+  while (!queue.empty())
   {
-    int toVisit=queue->front();
-    queue->pop_front();
+    int toVisit=queue.front();
+    queue.pop_front();
     vv.push_back(toVisit);
     for (unsigned int i=0; i<vertex_to_vertices[toVisit].size(); ++i)
     {
@@ -498,17 +496,17 @@ IGL_INLINE void CurvatureCalculator::getSphere(const int start, const double r, 
         Eigen::Vector3d neigh=vertices.row(neighbor);
         double distance=(me-neigh).norm();
         if (distance<r)
-          queue->push_back(neighbor);
+          queue.push_back(neighbor);
         else if ((int)vv.size()<min)
-          extra_candidates->push(std::pair<int,double>(neighbor,distance));
+          extra_candidates.push(std::pair<int,double>(neighbor,distance));
         visited[neighbor]=true;
       }
     }
   }
-  while (!extra_candidates->empty() && (int)vv.size()<min)
+  while (!extra_candidates.empty() && (int)vv.size()<min)
   {
-    std::pair<int, double> cand=extra_candidates->top();
-    extra_candidates->pop();
+    std::pair<int, double> cand=extra_candidates.top();
+    extra_candidates.pop();
     vv.push_back(cand.first);
     for (unsigned int i=0; i<vertex_to_vertices[cand.first].size(); ++i)
     {
@@ -517,14 +515,11 @@ IGL_INLINE void CurvatureCalculator::getSphere(const int start, const double r, 
       {
         Eigen::Vector3d neigh=vertices.row(neighbor);
         double distance=(me-neigh).norm();
-        extra_candidates->push(std::pair<int,double>(neighbor,distance));
+        extra_candidates.push(std::pair<int,double>(neighbor,distance));
         visited[neighbor]=true;
       }
     }
   }
-  free(extra_candidates);
-  free(queue);
-  free(visited);
 }
 
 IGL_INLINE Eigen::Vector3d CurvatureCalculator::project(const Eigen::Vector3d& v, const Eigen::Vector3d& vp, const Eigen::Vector3d& ppn)

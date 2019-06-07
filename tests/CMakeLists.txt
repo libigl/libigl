@@ -76,6 +76,14 @@ if(LIBIGL_WITH_EMBREE)
   target_link_libraries(libigl_tests PUBLIC igl::embree)
 endif()
 
+if(LIBIGL_WITH_PREDICATES)
+  file(GLOB TEST_SRC_FILES ./include/igl/predicates/*.cpp)
+  file(GLOB TEST_INC_FILES ./include/igl/predicates/*.h ./include/igl/predicates/*.inl)
+  target_sources(libigl_tests PRIVATE ${TEST_SRC_FILES} ${TEST_INC_FILES})
+
+  target_link_libraries(libigl_tests PUBLIC igl::predicates igl::triangle)
+endif()
+
 file(GLOB TEST_SRC_FILES ./include/igl/*.cpp)
 file(GLOB TEST_INC_FILES ./include/igl/*.h ./include/igl/*.inl)
 target_sources(libigl_tests PRIVATE ${TEST_SRC_FILES} ${TEST_INC_FILES})

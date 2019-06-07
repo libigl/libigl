@@ -615,6 +615,26 @@ const char *__doc_igl_exact_geodesic = R"igl_Qu8mg5v7(
     // Note:  
     //      Specifying a face as target/source means its center.  
     //)igl_Qu8mg5v7";
+const char *__doc_igl_heat_geodesics_precompute = R"igl_Qu8mg5v7(
+    // Precompute factorized solvers for computing a fast approximation of
+    // geodesic distances on a mesh (V,F). [Crane et al. 2013]
+    //
+    // Inputs:
+    //   V  #V by dim list of mesh vertex positions
+    //   F  #F by 3 list of mesh face indices into V
+    // Outputs:
+    //   data  precomputation data (see heat_geodesics_solve)
+    //)igl_Qu8mg5v7";
+const char *__doc_igl_heat_geodesics_solve = R"igl_Qu8mg5v7(
+    // Compute fast approximate geodesic distances using precomputed data from a
+    // set of selected source vertices (gamma)
+    //
+    // Inputs:
+    //   data  precomputation data (see heat_geodesics_precompute)
+    //   gamma  #gamma list of indices into V of source vertices
+    // Outputs:
+    //   D  #V list of distances to gamma
+    //)igl_Qu8mg5v7";
 const char *__doc_igl_find_cross_field_singularities = R"igl_Qu8mg5v7(// Inputs:
   //   V                #V by 3 eigen Matrix of mesh vertex 3D positions
   //   F                #F by 3 eigen Matrix of face (quad) indices

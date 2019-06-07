@@ -7,6 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 
 #include "ViewerCore.h"
+#include "ViewerData.h"
 #include "gl.h"
 #include "../quat_to_mat.h"
 #include "../snap_to_fixed_up.h"
