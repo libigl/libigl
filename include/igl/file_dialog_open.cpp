@@ -33,7 +33,7 @@ IGL_INLINE std::string igl::file_dialog_open()
     "   end tell\n"
     "   set existing_file_path to (POSIX path of (existing_file))\n"
     "\" 2>/dev/null | tr -d '\n' ","r");
-  if( !output || fgets(buffer, FILE_DIALOG_MAX_BUFFER, output) == NULL || fgets(buffer, FILE_DIALOG_MAX_BUFFER, output) != NULL)
+  if( !output || fgets(buffer, FILE_DIALOG_MAX_BUFFER, output) == NULL || fgets(buffer, FILE_DIALOG_MAX_BUFFER, output) != NULL || ferror(output))
   {
     buffer[0] = '\0';
   }
@@ -76,7 +76,7 @@ IGL_INLINE std::string igl::file_dialog_open()
   
   // For linux use zenity
   FILE * output = popen("/usr/bin/zenity --file-selection","r");
-  if( !output || fgets(buffer, FILE_DIALOG_MAX_BUFFER, output) == NULL || fgets(buffer, FILE_DIALOG_MAX_BUFFER, output) != NULL)
+  if( !output || fgets(buffer, FILE_DIALOG_MAX_BUFFER, output) == NULL || fgets(buffer, FILE_DIALOG_MAX_BUFFER, output) != NULL || ferror(output))
   {
     buffer[0] = '\0';
   }
