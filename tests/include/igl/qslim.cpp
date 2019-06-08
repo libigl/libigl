@@ -19,7 +19,7 @@ TEST(qslim,cylinder)
   Eigen::VectorXi I,J;
   qslim(V,F,2*axis_devisions,U,G,I,J);
   ASSERT_EQ(axis_devisions*2,U.rows());
-  double l,u;
+  //double l,u;
   igl::writePLY("qslim-cylinder-vf.ply",V,F);
   igl::writePLY("qslim-cylinder-ug.ply",U,G);
   const auto & hausdorff_lower_bound = [](

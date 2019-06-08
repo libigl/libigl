@@ -16,7 +16,9 @@ TEST_P(guess_extension, all_meshes)
   igl::pathinfo(path,d,b,e,f);
   // Convert extension to lower case
   std::transform(e.begin(), e.end(), e.begin(), ::tolower);
-  FILE * fp = fopen(path.c_str(),"r");
+  FILE* fp = nullptr;
+  auto err = fopen_s(&fp, path.c_str(), "r");
+  ASSERT_EQ(err,0);
   std::string guess = igl::guess_extension(fp);
   ASSERT_EQ(guess,e);
 }

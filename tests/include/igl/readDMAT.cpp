@@ -13,7 +13,7 @@ TEST(readDMAT, Comp) {
     const size_t cols = N1.cols();
     for (size_t i=0; i<rows; i++) {
         for (size_t j=0; j<cols; j++) {
-            ASSERT_FLOAT_EQ(N1(i,j), N2(i,j));
+            ASSERT_DOUBLE_EQ(N1(i,j), N2(i,j));
         }
     }
 }
