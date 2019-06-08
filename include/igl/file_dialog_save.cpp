@@ -32,7 +32,7 @@ IGL_INLINE std::string igl::file_dialog_save()
     "   end tell\n"
     "   set existing_file_path to (POSIX path of (existing_file))\n"
     "\" 2>/dev/null | tr -d '\n' ","r");
-  if( !output || fgets(buffer, FILE_DIALOG_MAX_BUFFER, output) == NULL || fgets(buffer, FILE_DIALOG_MAX_BUFFER, output) != NULL)
+  if( !output || fgets(buffer, FILE_DIALOG_MAX_BUFFER, output) == NULL || fgets(buffer, FILE_DIALOG_MAX_BUFFER, output) != NULL || ferror(output))
   {
     buffer[0] = '\0';
   }
@@ -75,7 +75,7 @@ IGL_INLINE std::string igl::file_dialog_save()
 #else
   // For every other machine type use zenity
   FILE * output = popen("/usr/bin/zenity --file-selection --save","r");
-  if( !output || fgets(buffer, FILE_DIALOG_MAX_BUFFER, output) == NULL || fgets(buffer, FILE_DIALOG_MAX_BUFFER, output) != NULL)
+  if( !output || fgets(buffer, FILE_DIALOG_MAX_BUFFER, output) == NULL || fgets(buffer, FILE_DIALOG_MAX_BUFFER, output) != NULL || ferror(output))
   {
     buffer[0] = '\0';
   }
