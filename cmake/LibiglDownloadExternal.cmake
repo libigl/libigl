@@ -2,23 +2,39 @@
 include(DownloadProject)
 
 # With CMake 3.8 and above, we can hide warnings about git being in a
-# detached head by passing an extra GIT_CONFIG option
+# detached head by passing an extra GIT_CONFIG option.
+set(LIBIGL_EXTRA_OPTIONS TLS_VERIFY OFF)
 if(NOT (${CMAKE_VERSION} VERSION_LESS "3.8.0"))
-	set(LIBIGL_EXTRA_OPTIONS "GIT_CONFIG advice.detachedHead=false")
-else()
-	set(LIBIGL_EXTRA_OPTIONS "")
+	list(APPEND LIBIGL_EXTRA_OPTIONS GIT_CONFIG advice.detachedHead=false)
 endif()
 
-# Shortcut function
+# On CMake 3.6.3 and above, there is an option to use shallow clones of git repositories.
+# The shallow clone option only works with real tags, not SHA1, so we use a separate option.
+set(LIBIGL_BRANCH_OPTIONS)
+if(NOT (${CMAKE_VERSION} VERSION_LESS "3.6.3"))
+	# Disabled for now until we can make sure that it has no adverse effects
+	# (Downside is that the eigen mirror is huge again)
+	# list(APPEND LIBIGL_BRANCH_OPTIONS GIT_SHALLOW 1)
+endif()
+
+option(LIBIGL_SKIP_DOWNLOAD "Skip downloading external libraries" OFF)
+
+# Shortcut functions
+function(igl_download_project_aux name source)
+	if(NOT LIBIGL_SKIP_DOWNLOAD)
+		download_project(
+			PROJ         ${name}
+			SOURCE_DIR   "${source}"
+			DOWNLOAD_DIR "${LIBIGL_EXTERNAL}/.cache/${name}"
+			QUIET
+			${LIBIGL_EXTRA_OPTIONS}
+			${ARGN}
+		)
+	endif()
+endfunction()
+
 function(igl_download_project name)
-	download_project(
-		PROJ         ${name}
-		SOURCE_DIR   ${LIBIGL_EXTERNAL}/${name}
-		DOWNLOAD_DIR ${LIBIGL_EXTERNAL}/.cache/${name}
-		QUIET
-		${LIBIGL_EXTRA_OPTIONS}
-		${ARGN}
-	)
+	igl_download_project_aux(${name} "${LIBIGL_EXTERNAL}/${name}" ${ARGN})
 endfunction()
 
 ################################################################################
@@ -35,7 +51,7 @@ endfunction()
 function(igl_download_comiso)
 	igl_download_project(CoMISo
 		GIT_REPOSITORY https://github.com/libigl/CoMISo.git
-		GIT_TAG        fea3ee0ba7d42ee3eca202d484e4fad855e4d6aa
+		GIT_TAG        1f9618cf9b7bd77370d817976470d59091928606
 	)
 endfunction()
 
@@ -48,20 +64,21 @@ function(igl_download_cork)
 endfunction()
 
 ## Eigen
+set(LIBIGL_EIGEN_VERSION 3.2.10 CACHE STRING "Default version of Eigen used by libigl.")
 function(igl_download_eigen)
 	igl_download_project(eigen
-		URL           http://bitbucket.org/eigen/eigen/get/3.2.10.tar.gz
-		URL_MD5       8ad10ac703a78143a4062c9bda9d8fd3
+		GIT_REPOSITORY https://github.com/eigenteam/eigen-git-mirror.git
+		GIT_TAG        ${LIBIGL_EIGEN_VERSION}
+		${LIBIGL_BRANCH_OPTIONS}
 	)
 endfunction()
 
 ## Embree
 function(igl_download_embree)
 	igl_download_project(embree
-		URL            https://github.com/embree/embree/archive/v2.17.4.tar.gz
-		URL_MD5        2038f3216b1d626e87453aee72c470e5
-		# GIT_REPOSITORY https://github.com/embree/embree.git
-		# GIT_TAG        cb61322db3bb7082caed21913ad14869b436fe78
+		GIT_REPOSITORY https://github.com/embree/embree.git
+		GIT_TAG        v3.5.2
+		${LIBIGL_BRANCH_OPTIONS}
 	)
 endfunction()
 
@@ -69,7 +86,7 @@ endfunction()
 function(igl_download_glad)
 	igl_download_project(glad
 		GIT_REPOSITORY https://github.com/libigl/libigl-glad.git
-		GIT_TAG        71e35fe685a0cc160068a2f2f971c40b82d14af0
+		GIT_TAG        09b4969c56779f7ddf8e6176ec1873184aec890f
 	)
 endfunction()
 
@@ -77,7 +94,8 @@ endfunction()
 function(igl_download_glfw)
 	igl_download_project(glfw
 		GIT_REPOSITORY https://github.com/glfw/glfw.git
-		GIT_TAG        58cc4b2c5c2c9a245e09451437dd6f5af4d60c84
+		GIT_TAG        3.3
+		${LIBIGL_BRANCH_OPTIONS}
 	)
 endfunction()
 
@@ -85,11 +103,12 @@ endfunction()
 function(igl_download_imgui)
 	igl_download_project(imgui
 		GIT_REPOSITORY https://github.com/ocornut/imgui.git
-		GIT_TAG        bc6ac8b2aee0614debd940e45bc9cd0d9b355c86
+		GIT_TAG        v1.69
+		${LIBIGL_BRANCH_OPTIONS}
 	)
 	igl_download_project(libigl-imgui
 		GIT_REPOSITORY https://github.com/libigl/libigl-imgui.git
-		GIT_TAG        a37e6e59e72fb07bd787dc7e90f72b9e1928dae7
+		GIT_TAG        07ecd3858acc71e70f0f9b2dea20a139bdddf8ae
 	)
 endfunction()
 
@@ -105,15 +124,15 @@ endfunction()
 function(igl_download_stb)
 	igl_download_project(stb
 		GIT_REPOSITORY https://github.com/libigl/libigl-stb.git
-		GIT_TAG        e671ceb3def5e7029a23de14c55dc16301ad4dab
+		GIT_TAG        cd0fa3fcd90325c83be4d697b00214e029f94ca3
 	)
 endfunction()
 
 ## TetGen
 function(igl_download_tetgen)
 	igl_download_project(tetgen
-		GIT_REPOSITORY https://github.com/libigl/tetgen.git
-		GIT_TAG        d2dcc33cb8551f16e302c8130ce12fa52992cd09
+		GIT_REPOSITORY https://github.com/jdumas/tetgen.git
+		GIT_TAG        c63e7a6434652b8a2065c835bd9d6d298db1a0bc
 	)
 endfunction()
 
@@ -129,15 +148,23 @@ endfunction()
 function(igl_download_triangle)
 	igl_download_project(triangle
 		GIT_REPOSITORY https://github.com/libigl/triangle.git
-		GIT_TAG        d6761dd691e2e1318c83bf7773fea88d9437464a
+		GIT_TAG        d284c4a843efac043c310f5fa640b17cf7d96170
 	)
 endfunction()
 
-## Google test
-function(igl_download_googletest)
-	igl_download_project(googletest
-		GIT_REPOSITORY https://github.com/google/googletest
-		GIT_TAG        release-1.8.1
+## Catch2
+function(igl_download_catch2)
+	igl_download_project(catch2
+		GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+		GIT_TAG        03d122a35c3f5c398c43095a87bc82ed44642516
+	)
+endfunction()
+
+## Predicates
+function(igl_download_predicates)
+	igl_download_project(predicates
+		GIT_REPOSITORY https://github.com/libigl/libigl-predicates.git
+		GIT_TAG        4c57c1d3f31646b010d1d58bfbe201e75c2b2ad8
 	)
 endfunction()
 
@@ -145,31 +172,19 @@ endfunction()
 
 ## Test data
 function(igl_download_test_data)
-	set(IGL_TEST_DATA ${LIBIGL_EXTERNAL}/../tests/data)
-
-	download_project(
-		PROJ         test_data
-		SOURCE_DIR   ${IGL_TEST_DATA}
-		DOWNLOAD_DIR ${LIBIGL_EXTERNAL}/.cache/test_data
-		QUIET
+	igl_download_project_aux(test_data
+		"${LIBIGL_EXTERNAL}/../tests/data"
 		GIT_REPOSITORY https://github.com/libigl/libigl-tests-data
-		GIT_TAG        c81bb3b3db4cfd78bac6d359d845c45bc1059c9a
-		${LIBIGL_EXTRA_OPTIONS}
+		GIT_TAG        adc66cabf712a0bd68ac182b4e7f8b5ba009c3dd
 	)
 endfunction()
 
 ## Tutorial data
 function(igl_download_tutorial_data)
-	set(IGL_TUTORIAL_DATA ${LIBIGL_EXTERNAL}/../tutorial/data)
-
-	download_project(
-		PROJ         tutorial_data
-		SOURCE_DIR   ${IGL_TUTORIAL_DATA}
-		DOWNLOAD_DIR ${LIBIGL_EXTERNAL}/.cache/tutorial_data
-		QUIET
+	igl_download_project_aux(tutorial_data
+		"${LIBIGL_EXTERNAL}/../tutorial/data"
 		GIT_REPOSITORY https://github.com/libigl/libigl-tutorial-data
 		GIT_TAG        5c6a1ea809c043d71e5595775709c15325a7158c
-		${LIBIGL_EXTRA_OPTIONS}
 	)
 endfunction()
 

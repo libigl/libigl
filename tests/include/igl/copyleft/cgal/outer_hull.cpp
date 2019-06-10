@@ -3,7 +3,8 @@
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 #include <igl/copyleft/cgal/outer_hull.h>
 
-TEST(OuterHull, CubeWithFold) {
+TEST_CASE("OuterHull: CubeWithFold", "[igl/copyleft/cgal]")
+{
     Eigen::MatrixXd V;
     Eigen::MatrixXi F;
     test_common::load_mesh("cube_with_fold.ply", V, F);

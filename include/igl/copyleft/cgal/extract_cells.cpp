@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2015 Qingnan Zhou <qnzhou@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 //
 #include "extract_cells.h"
@@ -56,7 +56,7 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells(
     igl::copyleft::cgal::extract_cells(V,F,P,E,uE,uE2E,EMAP,per_patch_cells);
   // Distribute per-patch cell information to each face
   cells.resize(num_faces, 2);
-  for (size_t i=0; i<num_faces; i++) 
+  for (size_t i=0; i<num_faces; i++)
   {
     cells.row(i) = per_patch_cells.row(P[i]);
   }
@@ -81,7 +81,7 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells(
   const Eigen::PlainObjectBase<DeriveduE>& uE,
   const std::vector<std::vector<uE2EType> >& uE2E,
   const Eigen::PlainObjectBase<DerivedEMAP>& EMAP,
-  Eigen::PlainObjectBase<DerivedC>& cells) 
+  Eigen::PlainObjectBase<DerivedC>& cells)
 {
   // Trivial base case
   if(P.size() == 0)
@@ -143,7 +143,7 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells(
   // components[c] --> list of face indices into F of faces in component c
   std::vector<std::vector<size_t> > components(num_components);
   // Loop over all faces
-  for (size_t i=0; i<num_faces; i++) 
+  for (size_t i=0; i<num_faces; i++)
   {
     components[C[i]].push_back(i);
   }
@@ -155,11 +155,11 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells(
   std::vector<
     CGAL::AABB_tree<
       CGAL::AABB_traits<
-        Kernel, 
+        Kernel,
         CGAL::AABB_triangle_primitive<
           Kernel, std::vector<
             Kernel::Triangle_3 >::iterator > > > > trees(num_components);
-  std::vector< std::vector<Kernel::Triangle_3 > > 
+  std::vector< std::vector<Kernel::Triangle_3 > >
     triangle_lists(num_components);
   std::vector<std::vector<bool> > in_Is(num_components);
 
@@ -185,7 +185,7 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells(
   // Inputs:
   //   fid  index into F
   // Returns row-vector of barycenter coordinates
-  const auto get_triangle_center = [&V,&F](const size_t fid) 
+  const auto get_triangle_center = [&V,&F](const size_t fid)
   {
     return ((V.row(F(fid,0))+V.row(F(fid,1))+V.row(F(fid,2)))/3.0).eval();
   };
@@ -193,7 +193,7 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells(
   std::vector<std::vector<size_t> > ambient_cells(num_raw_cells);
   std::vector<std::vector<size_t> > ambient_comps(num_components);
   // Only bother if there's more than one component
-  if(num_components > 1) 
+  if(num_components > 1)
   {
     // construct bounding boxes for each component
     DerivedV bbox_min(num_components, 3);
@@ -207,7 +207,7 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells(
       // component of this face
       const auto comp_id = C[i];
       const auto& f = F.row(i);
-      for (size_t j=0; j<3; j++) 
+      for (size_t j=0; j<3; j++)
       {
         for(size_t d=0;d<3;d++)
         {
@@ -227,7 +227,7 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells(
         bbox_max(cj,1) < bbox_min(ci,1) ||
         bbox_max(cj,2) < bbox_min(ci,2));
     };
-    
+
     // Loop over components. This section is O(m²)
     for (size_t i=0; i<num_components; i++)
     {
@@ -235,7 +235,7 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells(
       std::vector<size_t> candidate_comps;
       candidate_comps.reserve(num_components);
       // Loop over components
-      for (size_t j=0; j<num_components; j++) 
+      for (size_t j=0; j<num_components; j++)
       {
         if (i == j) continue;
         if (bbox_intersects(i,j)) candidate_comps.push_back(j);
@@ -248,7 +248,7 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells(
       submesh_aabb_tree(V,F,Is[i],trees[i],triangle_lists[i],in_Is[i]);
 
       // Get query points on each candidate component: barycenter of
-      // outer-facet 
+      // outer-facet
       DerivedV queries(num_candidate_comps, 3);
       for (size_t j=0; j<num_candidate_comps; j++)
       {
@@ -266,17 +266,17 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells(
       Eigen::VectorXi closest_facets, closest_facet_orientations;
       closest_facet(
         V,
-        F, 
-        I, 
+        F,
+        I,
         queries,
-        uE2E, 
-        EMAP, 
+        uE2E,
+        EMAP,
         VF,
         VFi,
         tree,
         triangles,
         in_I,
-        closest_facets, 
+        closest_facets,
         closest_facet_orientations);
       // Loop over all candidates
       for (size_t j=0; j<num_candidate_comps; j++)
@@ -402,13 +402,13 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells_single_component(
   };
   // Determine if a face (containing undirected edge {s,d} is consistently
   // oriented with directed edge {s,d} (or otherwise it is with {d,s})
-  // 
+  //
   // Inputs:
   //   fid  face index into F
   //   s  source index of edge
   //   d  destination index of edge
   // Returns true if face F(fid,:) is consistent with {s,d}
-  const auto is_consistent = 
+  const auto is_consistent =
     [&F](const size_t fid, const size_t s, const size_t d) -> bool
   {
     if ((size_t)F(fid, 0) == s && (size_t)F(fid, 1) == d) return false;
@@ -543,5 +543,6 @@ template unsigned long igl::copyleft::cgal::extract_cells<Eigen::Matrix<CGAL::La
 template unsigned __int64 igl::copyleft::cgal::extract_cells<class Eigen::Matrix<class CGAL::Lazy_exact_nt<class CGAL::Gmpq>, -1, -1, 0, -1, -1>, class Eigen::Matrix<int, -1, -1, 0, -1, -1>, class Eigen::Matrix<int, -1, 1, 0, -1, 1>, class Eigen::Matrix<int, -1, -1, 0, -1, -1>, class Eigen::Matrix<int, -1, -1, 0, -1, -1>, unsigned __int64, class Eigen::Matrix<int, -1, 1, 0, -1, 1>, class Eigen::Matrix<int, -1, -1, 0, -1, -1>>(class Eigen::PlainObjectBase<class Eigen::Matrix<class CGAL::Lazy_exact_nt<class CGAL::Gmpq>, -1, -1, 0, -1, -1>> const &, class Eigen::PlainObjectBase<class Eigen::Matrix<int, -1, -1, 0, -1, -1>> const &, class Eigen::PlainObjectBase<class Eigen::Matrix<int, -1, 1, 0, -1, 1>> const &, class Eigen::PlainObjectBase<class Eigen::Matrix<int, -1, -1, 0, -1, -1>> const &, class Eigen::PlainObjectBase<class Eigen::Matrix<int, -1, -1, 0, -1, -1>> const &, class std::vector<class std::vector<unsigned __int64, class std::allocator<unsigned __int64>>, class std::allocator<class std::vector<unsigned __int64, class std::allocator<unsigned __int64>>>> const &, class Eigen::PlainObjectBase<class Eigen::Matrix<int, -1, 1, 0, -1, 1>> const &, class Eigen::PlainObjectBase<class Eigen::Matrix<int, -1, -1, 0, -1, -1>> &);
 template unsigned __int64 igl::copyleft::cgal::extract_cells<class Eigen::Matrix<class CGAL::Lazy_exact_nt<class CGAL::Gmpq>, -1, -1, 1, -1, -1>, class Eigen::Matrix<int, -1, -1, 0, -1, -1>, class Eigen::Matrix<int, -1, 1, 0, -1, 1>, class Eigen::Matrix<int, -1, -1, 0, -1, -1>, class Eigen::Matrix<int, -1, -1, 0, -1, -1>, unsigned __int64, class Eigen::Matrix<int, -1, 1, 0, -1, 1>, class Eigen::Matrix<int, -1, -1, 0, -1, -1>>(class Eigen::PlainObjectBase<class Eigen::Matrix<class CGAL::Lazy_exact_nt<class CGAL::Gmpq>, -1, -1, 1, -1, -1>> const &, class Eigen::PlainObjectBase<class Eigen::Matrix<int, -1, -1, 0, -1, -1>> const &, class Eigen::PlainObjectBase<class Eigen::Matrix<int, -1, 1, 0, -1, 1>> const &, class Eigen::PlainObjectBase<class Eigen::Matrix<int, -1, -1, 0, -1, -1>> const &, class Eigen::PlainObjectBase<class Eigen::Matrix<int, -1, -1, 0, -1, -1>> const &, class std::vector<class std::vector<unsigned __int64, class std::allocator<unsigned __int64>>, class std::allocator<class std::vector<unsigned __int64, class std::allocator<unsigned __int64>>>> const &, class Eigen::PlainObjectBase<class Eigen::Matrix<int, -1, 1, 0, -1, 1>> const &, class Eigen::PlainObjectBase<class Eigen::Matrix<int, -1, -1, 0, -1, -1>> &);
 template unsigned __int64 igl::copyleft::cgal::extract_cells<class Eigen::Matrix<class CGAL::Lazy_exact_nt<class CGAL::Gmpq>, -1, -1, 1, -1, -1>, class Eigen::Matrix<int, -1, 3, 1, -1, 3>, class Eigen::Matrix<int, -1, 1, 0, -1, 1>, class Eigen::Matrix<int, -1, -1, 0, -1, -1>, class Eigen::Matrix<int, -1, -1, 0, -1, -1>, unsigned __int64, class Eigen::Matrix<int, -1, 1, 0, -1, 1>, class Eigen::Matrix<int, -1, -1, 0, -1, -1>>(class Eigen::PlainObjectBase<class Eigen::Matrix<class CGAL::Lazy_exact_nt<class CGAL::Gmpq>, -1, -1, 1, -1, -1>> const &, class Eigen::PlainObjectBase<class Eigen::Matrix<int, -1, 3, 1, -1, 3>> const &, class Eigen::PlainObjectBase<class Eigen::Matrix<int, -1, 1, 0, -1, 1>> const &, class Eigen::PlainObjectBase<class Eigen::Matrix<int, -1, -1, 0, -1, -1>> const &, class Eigen::PlainObjectBase<class Eigen::Matrix<int, -1, -1, 0, -1, -1>> const &, class std::vector<class std::vector<unsigned __int64, class std::allocator<unsigned __int64>>, class std::allocator<class std::vector<unsigned __int64, class std::allocator<unsigned __int64>>>> const &, class Eigen::PlainObjectBase<class Eigen::Matrix<int, -1, 1, 0, -1, 1>> const &, class Eigen::PlainObjectBase<class Eigen::Matrix<int, -1, -1, 0, -1, -1>> &);
+template unsigned __int64 igl::copyleft::cgal::extract_cells<class Eigen::Matrix<class CGAL::Lazy_exact_nt<class CGAL::Gmpq>,-1,-1,0,-1,-1>,class Eigen::Matrix<int,-1,-1,0,-1,-1>,class Eigen::Matrix<int,-1,-1,0,-1,-1> >(class Eigen::PlainObjectBase<class Eigen::Matrix<class CGAL::Lazy_exact_nt<class CGAL::Gmpq>,-1,-1,0,-1,-1> > const &,class Eigen::PlainObjectBase<class Eigen::Matrix<int,-1,-1,0,-1,-1> > const &,class Eigen::PlainObjectBase<class Eigen::Matrix<int,-1,-1,0,-1,-1> > &);
 #endif
 #endif

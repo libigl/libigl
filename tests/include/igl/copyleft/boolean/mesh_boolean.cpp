@@ -9,7 +9,7 @@
 #include <igl/unique_edge_map.h>
 #include <igl/is_edge_manifold.h>
 
-namespace mesh_boolean_test {
+namespace {
 
     template<typename DerivedF>
     void assert_no_exterior_edges(
@@ -17,7 +17,7 @@ namespace mesh_boolean_test {
         Eigen::MatrixXi Eb;
         igl::exterior_edges(F, Eb);
 
-        ASSERT_EQ(0, Eb.rows());
+        REQUIRE (Eb.rows() == 0);
     }
 
     template<typename DerivedV, typename DerivedF>
@@ -25,8 +25,8 @@ namespace mesh_boolean_test {
             const Eigen::PlainObjectBase<DerivedV>& V,
             const Eigen::PlainObjectBase<DerivedF>& F) {
         Eigen::MatrixXi B;
-        ASSERT_TRUE(igl::is_vertex_manifold(F, B));
-        ASSERT_TRUE(igl::is_edge_manifold(F));
+        REQUIRE (igl::is_vertex_manifold(F, B));
+        REQUIRE (igl::is_edge_manifold(F));
     }
 
     template<typename DerivedV, typename DerivedF>
@@ -47,10 +47,12 @@ namespace mesh_boolean_test {
 
         const int num_edges = uE.rows();
         const int euler = num_vertices - num_edges + num_faces;
-        ASSERT_EQ(euler, 2 - 2 * genus);
+        REQUIRE (2 - 2 * genus == euler);
     }
 
-TEST(MeshBoolean, TwoCubes) {
+}
+
+TEST_CASE("MeshBoolean: TwoCubes", "[igl/copyleft/boolean]") {
     Eigen::MatrixXd V1;
     Eigen::MatrixXi F1;
     test_common::load_mesh("two-boxes-bad-self-union.ply", V1, F1);
@@ -70,7 +72,7 @@ TEST(MeshBoolean, TwoCubes) {
     assert_genus_eq(Vo, Fo, 0);
 }
 
-TEST(MeshBoolean, MinusTest) {
+TEST_CASE("MeshBoolean: MinusTest", "[igl/copyleft/boolean]") {
     // Many thanks to Eric Yao for submitting this test case.
     Eigen::MatrixXd V1, V2, Vo;
     Eigen::MatrixXi F1, F2, Fo;
@@ -86,7 +88,7 @@ TEST(MeshBoolean, MinusTest) {
     assert_genus_eq(Vo, Fo, 1);
 }
 
-TEST(MeshBoolean, IntersectWithSelf) {
+TEST_CASE("MeshBoolean: IntersectWithSelf", "[igl/copyleft/boolean]") {
     Eigen::MatrixXd V1, Vo;
     Eigen::MatrixXi F1, Fo;
     test_common::load_mesh("cube.obj", V1, F1);
@@ -98,6 +100,4 @@ TEST(MeshBoolean, IntersectWithSelf) {
     assert_no_exterior_edges(Fo);
     assert_is_manifold(Vo, Fo);
     assert_genus_eq(Vo, Fo, 0);
-}
-
 }

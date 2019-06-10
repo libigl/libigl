@@ -17,7 +17,7 @@ namespace igl
   // Inputs:
   //   prefix  path to containing dir and filename prefix
   //   zeros number of leading zeros as if digit printed with printf
-  //   suffix  suffix of filename and extension (should included dot)
+  //   suffix  suffix of filename and extension (should include dot)
   // Outputs:
   //   next  path to next file
   // Returns true if found, false if exceeding range in zeros

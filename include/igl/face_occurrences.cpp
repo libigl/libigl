@@ -6,6 +6,8 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "face_occurrences.h"
+#include "list_to_matrix.h"
+#include "matrix_to_list.h"
 
 #include <map>
 #include "sort.h"
@@ -48,6 +50,19 @@ IGL_INLINE void igl::face_occurrences(
     assert(counts.find(sortedF[i]) != counts.end());
     C[i] = counts[sortedF[i]];
   }
+}
+
+template <typename DerivedF, typename DerivedC>
+IGL_INLINE void igl::face_occurrences(
+  const Eigen::MatrixBase<DerivedF> & F,
+  Eigen::PlainObjectBase<DerivedC> & C)
+{
+  // Should really just rewrite using Eigen+libigl ...
+  std::vector<std::vector<typename DerivedF::Scalar> > vF;
+  matrix_to_list(F,vF);
+  std::vector<std::vector<typename DerivedC::Scalar> > vC;
+  igl::face_occurrences(vF,vC);
+  list_to_matrix(vC,C);
 }
 
 #ifdef IGL_STATIC_LIBRARY

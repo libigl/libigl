@@ -9,7 +9,6 @@
 #define IGL_OPENGL_VIEWERCORE_H
 
 #include <igl/opengl/MeshGL.h>
-#include <igl/opengl/ViewerData.h>
 
 #include <igl/igl_inline.h>
 #include <Eigen/Geometry>
@@ -20,9 +19,11 @@ namespace igl
 namespace opengl
 {
 
+// Forward declaration
+class ViewerData;
+
 // Basic class of the 3D mesh viewer
 // TODO: write documentation
-
 class ViewerCore
 {
 public:
@@ -36,7 +37,6 @@ public:
 
   // Serialization code
   IGL_INLINE void InitSerialization();
-
 
   // ------------------- Camera control functions
 
@@ -91,7 +91,24 @@ public:
   };
   IGL_INLINE void set_rotation_type(const RotationType & value);
 
+  // ------------------- Option helpers
+
+  // Set a ViewerData visualization option for this viewport
+  IGL_INLINE void set(unsigned int &property_mask, bool value = true) const;
+
+  // Unset a ViewerData visualization option for this viewport
+  IGL_INLINE void unset(unsigned int &property_mask) const;
+
+  // Toggle a ViewerData visualization option for this viewport
+  IGL_INLINE void toggle(unsigned int &property_mask) const;
+
+  // Check whether a ViewerData visualization option is set for this viewport
+  IGL_INLINE bool is_set(unsigned int property_mask) const;
+
   // ------------------- Properties
+
+  // Unique identifier
+  unsigned int id = 1u;
 
   // Colors
   Eigen::Vector4f background_color;

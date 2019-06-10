@@ -70,7 +70,7 @@ IGL_INLINE bool igl::writePLY(
 
   igl::ply::PlyProperty face_props[] =
   { /* list of property information for a face */
-    {"vertex_indices", ply_type<FScalar>(), ply_type<FScalar>(), 
+    {"vertex_indices", ply_type<FScalar>(), ply_type<FScalar>(),
       offsetof(Face,verts), 1, PLY_UCHAR, PLY_UCHAR, offsetof(Face,nverts)},
   };
   const bool has_normals = N.rows() > 0;

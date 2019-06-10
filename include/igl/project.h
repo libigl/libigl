@@ -34,7 +34,7 @@ namespace igl
   //   P  #V by 3 list of screen space points
   template <typename DerivedV, typename DerivedM, typename DerivedN, typename DerivedO, typename DerivedP>
   IGL_INLINE void project(
-    const    Eigen::PlainObjectBase<DerivedV>&  V,
+    const    Eigen::MatrixBase<DerivedV>&  V,
     const    Eigen::MatrixBase<DerivedM>& model,
     const    Eigen::MatrixBase<DerivedN>& proj,
     const    Eigen::MatrixBase<DerivedO>&  viewport,

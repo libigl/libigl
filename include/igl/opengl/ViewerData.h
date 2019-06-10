@@ -19,12 +19,23 @@
 // Alec: This is a mesh class containing a variety of data types (normals,
 // overlays, material colors, etc.)
 //
+// WARNING: Eigen data members (such as Eigen::Vector4f) should explicitly
+// disable alignment (e.g. use `Eigen::Matrix<float, 4, 1, Eigen::DontAlign>`),
+// in order to avoid alignment issues further down the line (esp. if the
+// structure are stored in a std::vector).
+//
+// See this thread for a more detailed discussion:
+// https://github.com/libigl/libigl/pull/1029
+//
 namespace igl
 {
 
 // TODO: write documentation
 namespace opengl
 {
+
+// Forward declaration
+class ViewerCore;
 
 class ViewerData
 {
@@ -41,6 +52,8 @@ public:
   IGL_INLINE void set_mesh(const Eigen::MatrixXd& V, const Eigen::MatrixXi& F);
   IGL_INLINE void set_vertices(const Eigen::MatrixXd& V);
   IGL_INLINE void set_normals(const Eigen::MatrixXd& N);
+
+  IGL_INLINE void set_visible(bool value, unsigned int core_id = 1);
 
   // Set the color of the mesh
   //
@@ -103,9 +116,14 @@ public:
   //   C  #E|1 by 3 color(s)
   IGL_INLINE void set_edges (const Eigen::MatrixXd& P, const Eigen::MatrixXi& E, const Eigen::MatrixXd& C);
   // Alec: This is very confusing. Why does add_edges have a different API from
-  // set_edges? 
+  // set_edges?
   IGL_INLINE void add_edges (const Eigen::MatrixXd& P1, const Eigen::MatrixXd& P2, const Eigen::MatrixXd& C);
+
+  // Adds text labels at the given positions in 3D.
+  // Note: This requires the ImGui viewer plugin to display text labels.
   IGL_INLINE void add_label (const Eigen::VectorXd& P,  const std::string& str);
+  // Clear the label data
+  IGL_INLINE void clear_labels ();
 
   // Computes the normals of the mesh
   IGL_INLINE void compute_normals();
@@ -124,6 +142,9 @@ public:
 
   // Generates a default grid texture
   IGL_INLINE void grid_texture();
+
+  // Copy visualization options from one viewport to another
+  IGL_INLINE void copy_options(const ViewerCore &from, const ViewerCore &to);
 
   Eigen::MatrixXd V; // Vertices of the current mesh (#V x 3)
   Eigen::MatrixXi F; // Faces of the mesh (#F x 3)
@@ -176,20 +197,26 @@ public:
   // Enable per-face or per-vertex properties
   bool face_based;
 
-  // Visualization options
-  bool show_overlay;
-  bool show_overlay_depth;
-  bool show_texture;
-  bool show_faces;
-  bool show_lines;
-  bool show_vertid;
-  bool show_faceid;
+  // Invert mesh normals
   bool invert_normals;
+
+  // Visualization options
+  // Each option is a binary mask specifying on which viewport each option is set.
+  // When using a single viewport, standard boolean can still be used for simplicity.
+  unsigned int is_visible;
+  unsigned int show_overlay;
+  unsigned int show_overlay_depth;
+  unsigned int show_texture;
+  unsigned int show_faces;
+  unsigned int show_lines;
+  bool show_vertid; // shared across viewports for now
+  bool show_faceid; // shared across viewports for now
 
   // Point size / line width
   float point_size;
   float line_width;
-  Eigen::Vector4f line_color;
+  Eigen::Matrix<float, 4, 1, Eigen::DontAlign> line_color;
+  Eigen::Matrix<float, 4, 1, Eigen::DontAlign> label_color;
 
   // Shape material
   float shininess;

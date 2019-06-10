@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2015 Qingnan Zhou <qnzhou@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 
 #include "outer_facet.h"
@@ -39,7 +39,7 @@ IGL_INLINE void igl::copyleft::cgal::outer_facet(
     //    implemnetation of outer_edge()). The first adjacent facet is facing
     //    outside (i.e. flipped=false) if it has positive X normal component.
     //    If it has zero normal component, it is facing outside if it contains
-    //    directed edge (s, d).  
+    //    directed edge (s, d).
 
     //typedef typename DerivedV::Scalar Scalar;
     typedef typename DerivedV::Index Index;
@@ -118,7 +118,7 @@ IGL_INLINE void igl::copyleft::cgal::outer_facet(
     Scalar max_nx = 0;
     size_t outer_fid = INVALID;
     const size_t num_incident_faces = incident_faces.size();
-    for (size_t i=0; i<num_incident_faces; i++) 
+    for (size_t i=0; i<num_incident_faces; i++)
     {
         const auto& fid = incident_faces(i);
         const Scalar nx = N(fid, 0);
@@ -176,5 +176,8 @@ template void igl::copyleft::cgal::outer_facet<Eigen::Matrix<double, -1, -1, 0, 
 template void igl::copyleft::cgal::outer_facet<class Eigen::Matrix<class CGAL::Lazy_exact_nt<class CGAL::Gmpq>, -1, -1, 0, -1, -1>, class Eigen::Matrix<int, -1, -1, 0, -1, -1>, class Eigen::Matrix<int, -1, 1, 0, -1, 1>, unsigned __int64>(class Eigen::PlainObjectBase<class Eigen::Matrix<class CGAL::Lazy_exact_nt<class CGAL::Gmpq>, -1, -1, 0, -1, -1>> const &, class Eigen::PlainObjectBase<class Eigen::Matrix<int, -1, -1, 0, -1, -1>> const &, class Eigen::PlainObjectBase<class Eigen::Matrix<int, -1, 1, 0, -1, 1>> const &, unsigned __int64 &, bool &);
 template void igl::copyleft::cgal::outer_facet<class Eigen::Matrix<class CGAL::Lazy_exact_nt<class CGAL::Gmpq>, -1, -1, 1, -1, -1>, class Eigen::Matrix<int, -1, -1, 0, -1, -1>, class Eigen::Matrix<int, -1, 1, 0, -1, 1>, unsigned __int64>(class Eigen::PlainObjectBase<class Eigen::Matrix<class CGAL::Lazy_exact_nt<class CGAL::Gmpq>, -1, -1, 1, -1, -1>> const &, class Eigen::PlainObjectBase<class Eigen::Matrix<int, -1, -1, 0, -1, -1>> const &, class Eigen::PlainObjectBase<class Eigen::Matrix<int, -1, 1, 0, -1, 1>> const &, unsigned __int64 &, bool &);
 template void igl::copyleft::cgal::outer_facet<class Eigen::Matrix<class CGAL::Lazy_exact_nt<class CGAL::Gmpq>, -1, -1, 1, -1, -1>, class Eigen::Matrix<int, -1, 3, 1, -1, 3>, class Eigen::Matrix<int, -1, 1, 0, -1, 1>, unsigned __int64>(class Eigen::PlainObjectBase<class Eigen::Matrix<class CGAL::Lazy_exact_nt<class CGAL::Gmpq>, -1, -1, 1, -1, -1>> const &, class Eigen::PlainObjectBase<class Eigen::Matrix<int, -1, 3, 1, -1, 3>> const &, class Eigen::PlainObjectBase<class Eigen::Matrix<int, -1, 1, 0, -1, 1>> const &, unsigned __int64 &, bool &);
+template void igl::copyleft::cgal::outer_facet<class Eigen::Matrix<class CGAL::Lazy_exact_nt<class CGAL::Gmpq>,-1,-1,0,-1,-1>,class Eigen::Matrix<int,-1,-1,0,-1,-1>,class Eigen::Matrix<__int64,-1,1,0,-1,1>,int>(class Eigen::PlainObjectBase<class Eigen::Matrix<class CGAL::Lazy_exact_nt<class CGAL::Gmpq>,-1,-1,0,-1,-1> > const &,class Eigen::PlainObjectBase<class Eigen::Matrix<int,-1,-1,0,-1,-1> > const &,class Eigen::PlainObjectBase<class Eigen::Matrix<__int64,-1,1,0,-1,1> > const &,int &,bool &);
+template void igl::copyleft::cgal::outer_facet<class Eigen::Matrix<double,-1,-1,0,-1,-1>,class Eigen::Matrix<int,-1,-1,0,-1,-1>,class Eigen::Matrix<int,-1,1,0,-1,1>,unsigned __int64>(class Eigen::PlainObjectBase<class Eigen::Matrix<double,-1,-1,0,-1,-1> > const &,class Eigen::PlainObjectBase<class Eigen::Matrix<int,-1,-1,0,-1,-1> > const &,class Eigen::PlainObjectBase<class Eigen::Matrix<int,-1,1,0,-1,1> > const &,unsigned __int64 &,bool &);
+template void igl::copyleft::cgal::outer_facet<class Eigen::Matrix<double,-1,3,0,-1,3>,class Eigen::Matrix<int,-1,3,0,-1,3>,class Eigen::Matrix<__int64,-1,1,0,-1,1>,int>(class Eigen::PlainObjectBase<class Eigen::Matrix<double,-1,3,0,-1,3> > const &,class Eigen::PlainObjectBase<class Eigen::Matrix<int,-1,3,0,-1,3> > const &,class Eigen::PlainObjectBase<class Eigen::Matrix<__int64,-1,1,0,-1,1> > const &,int &,bool &);
 #endif
 #endif

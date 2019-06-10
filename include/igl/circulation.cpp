@@ -7,12 +7,11 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "circulation.h"
 #include "list_to_matrix.h"
+#include <cassert>
 
 IGL_INLINE std::vector<int> igl::circulation(
   const int e,
   const bool ccw,
-  const Eigen::MatrixXi & F,
-  const Eigen::MatrixXi & E,
   const Eigen::VectorXi & EMAP,
   const Eigen::MatrixXi & EF,
   const Eigen::MatrixXi & EI)
@@ -20,7 +19,8 @@ IGL_INLINE std::vector<int> igl::circulation(
   // prepare output
   std::vector<int> N;
   N.reserve(6);
-  const int m = F.rows();
+  const int m = EMAP.size()/3;
+  assert(m*3 == EMAP.size());
   const auto & step = [&](
     const int e, 
     const int ff,
@@ -59,13 +59,11 @@ IGL_INLINE std::vector<int> igl::circulation(
 IGL_INLINE void igl::circulation(
   const int e,
   const bool ccw,
-  const Eigen::MatrixXi & F,
-  const Eigen::MatrixXi & E,
   const Eigen::VectorXi & EMAP,
   const Eigen::MatrixXi & EF,
   const Eigen::MatrixXi & EI,
   Eigen::VectorXi & vN)
 {
-  std::vector<int> N = circulation(e,ccw,F,E,EMAP,EF,EI);
+  std::vector<int> N = circulation(e,ccw,EMAP,EF,EI);
   igl::list_to_matrix(N,vN);
 }

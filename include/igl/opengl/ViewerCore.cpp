@@ -7,6 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 
 #include "ViewerCore.h"
+#include "ViewerData.h"
 #include "gl.h"
 #include "../quat_to_mat.h"
 #include "../snap_to_fixed_up.h"
@@ -87,11 +88,16 @@ IGL_INLINE void igl::opengl::ViewerCore::get_scale_and_shift_to_fit_mesh(
 
 IGL_INLINE void igl::opengl::ViewerCore::clear_framebuffers()
 {
+  // The glScissor call ensures we only clear this core's buffers,
+  // (in case the user wants different background colors in each viewport.)
+  glScissor(viewport(0), viewport(1), viewport(2), viewport(3));
+  glEnable(GL_SCISSOR_TEST);
   glClearColor(background_color[0],
                background_color[1],
                background_color[2],
                background_color[3]);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  glDisable(GL_SCISSOR_TEST);
 }
 
 IGL_INLINE void igl::opengl::ViewerCore::draw(
@@ -175,16 +181,16 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
   if (data.V.rows()>0)
   {
     // Render fill
-    if (data.show_faces)
+    if (is_set(data.show_faces))
     {
       // Texture
-      glUniform1f(texture_factori, data.show_texture ? 1.0f : 0.0f);
+      glUniform1f(texture_factori, is_set(data.show_texture) ? 1.0f : 0.0f);
       data.meshgl.draw_mesh(true);
       glUniform1f(texture_factori, 0.0f);
     }
 
     // Render wireframe
-    if (data.show_lines)
+    if (is_set(data.show_lines))
     {
       glLineWidth(data.line_width);
       glUniform4f(fixed_colori,
@@ -196,9 +202,9 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
     }
   }
 
-  if (data.show_overlay)
+  if (is_set(data.show_overlay))
   {
-    if (data.show_overlay_depth)
+    if (is_set(data.show_overlay_depth))
       glEnable(GL_DEPTH_TEST);
     else
       glDisable(GL_DEPTH_TEST);
@@ -347,6 +353,28 @@ IGL_INLINE void igl::opengl::ViewerCore::set_rotation_type(
   }
 }
 
+IGL_INLINE void igl::opengl::ViewerCore::set(unsigned int &property_mask, bool value) const
+{
+  if (!value)
+    unset(property_mask);
+  else
+    property_mask |= id;
+}
+
+IGL_INLINE void igl::opengl::ViewerCore::unset(unsigned int &property_mask) const
+{
+  property_mask &= ~id;
+}
+
+IGL_INLINE void igl::opengl::ViewerCore::toggle(unsigned int &property_mask) const
+{
+  property_mask ^= id;
+}
+
+IGL_INLINE bool igl::opengl::ViewerCore::is_set(unsigned int property_mask) const
+{
+  return (property_mask & id);
+}
 
 IGL_INLINE igl::opengl::ViewerCore::ViewerCore()
 {

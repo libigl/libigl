@@ -34,7 +34,7 @@ int main(int argc, char * argv[])
   igl::opengl::glfw::Viewer viewer;
   viewer.data().set_mesh(V,F);
   viewer.data().set_face_based(true);
-  viewer.core.is_animating = !show_swept_volume;
+  viewer.core().is_animating = !show_swept_volume;
   const int grid_size = 50;
   const int time_steps = 200;
   const double isolevel = 0.1;
@@ -79,7 +79,7 @@ int main(int argc, char * argv[])
           {
             viewer.data().set_mesh(V,F);
           }
-          viewer.core.is_animating = !show_swept_volume;
+          viewer.core().is_animating = !show_swept_volume;
           viewer.data().set_face_based(true);
           break;
       }

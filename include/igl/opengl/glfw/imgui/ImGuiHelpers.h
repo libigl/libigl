@@ -101,6 +101,15 @@ inline bool SliderScalar(const char *label, T* value, T min = 0, T max = 0, cons
   return SliderScalar(label, ImGuiDataTypeTraits<T>::value, value, &min, &max, fmt);
 }
 
+template<typename Getter, typename Setter>
+inline bool Checkbox(const char* label, Getter get, Setter set)
+{
+  bool value = get();
+  bool ret = ImGui::Checkbox(label, &value);
+  set(value);
+  return ret;
+}
+
 } // namespace ImGui
 
 #endif // IGL_OPENGL_GLFW_IMGUI_IMGUIHELPERS_H

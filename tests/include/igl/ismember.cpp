@@ -2,7 +2,7 @@
 #include <igl/ismember.h>
 #include <igl/matlab_format.h>
 
-TEST(ismember, simple)
+TEST_CASE("ismember: simple", "[igl]")
 {
   Eigen::MatrixXi A(3,4);
   A<<11,12,13,14,21,22,23,24,31,32,33,34;
@@ -29,14 +29,14 @@ TEST(ismember, simple)
       }
       if(IA(i,j))
       {
-        ASSERT_GE(LOCB(i,j),0);
-        ASSERT_LT(LOCB(i,j),B.size());
-        ASSERT_EQ(vB(LOCB(i,j)),A(i,j));
-        ASSERT_EQ(LOCB(i,j),bi);
+        REQUIRE (0 <= LOCB(i,j));
+        REQUIRE (B.size() > LOCB(i,j));
+        REQUIRE (A(i,j) == vB(LOCB(i,j)));
+        REQUIRE (bi == LOCB(i,j));
       }else
       {
-        ASSERT_EQ(LOCB(i,j),-1);
-        ASSERT_EQ(bi,B.size());
+        REQUIRE (-1 == LOCB(i,j));
+        REQUIRE (B.size() == bi);
       }
     }
   }

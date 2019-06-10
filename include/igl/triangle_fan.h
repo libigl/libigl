@@ -18,9 +18,10 @@ namespace igl
   //   E  #E by simplex_size-1  list of exterior edges (see exterior_edges.h)
   // Outputs:
   //   cap  #cap by simplex_size  list of "faces" tessellating the boundary edges
+  template <typename DerivedE, typename Derivedcap>
   IGL_INLINE void triangle_fan(
-    const Eigen::MatrixXi & E,
-    Eigen::MatrixXi & cap);
+    const Eigen::MatrixBase<DerivedE> & E,
+    Eigen::PlainObjectBase<Derivedcap> & cap);
   // In-line version
   IGL_INLINE Eigen::MatrixXi triangle_fan( const Eigen::MatrixXi & E);
 }

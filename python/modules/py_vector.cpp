@@ -641,7 +641,11 @@ void python_export_vector(py::module &m) {
     //py::implicitly_convertible<double, Eigen::MatrixXi>();
 
     /* Bindings for MatrixXb */
+    #if EIGEN_VERSION_AT_LEAST(3,3,0)
+    // Temporarily disabled with Eigen 3.3
+    #else
     bind_eigen_2<Eigen::Matrix<bool,Eigen::Dynamic,Eigen::Dynamic> > (me, "MatrixXb");
+    #endif
 
     /* Bindings for MatrixXuc */
     bind_eigen_2<Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> > (me, "MatrixXuc");
@@ -723,7 +727,7 @@ void python_export_vector(py::module &m) {
     ;
     // Bindings for Quaterniond
     py::class_<Eigen::Quaterniond > quaterniond(me, "Quaterniond");
-    
+
     quaterniond
     .def(py::init<>())
     .def(py::init<double, double, double, double>())
@@ -765,7 +769,7 @@ void python_export_vector(py::module &m) {
 //    })
     ;
 
-    
+
 
 
 

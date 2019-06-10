@@ -7,6 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 
 #include "ViewerData.h"
+#include "ViewerCore.h"
 
 #include "../per_face_normals.h"
 #include "../material_colors.h"
@@ -29,8 +30,10 @@ IGL_INLINE igl::opengl::ViewerData::ViewerData()
   point_size(30),
   line_width(0.5f),
   line_color(0,0,0,1),
+  label_color(0,0,0.04,1),
   shininess(35.0f),
-  id(-1)
+  id(-1),
+  is_visible(1)
 {
   clear();
 };
@@ -110,6 +113,23 @@ IGL_INLINE void igl::opengl::ViewerData::set_normals(const Eigen::MatrixXd& N)
   else
     cerr << "ERROR (set_normals): Please provide a normal per face, per corner or per vertex."<<endl;
   dirty |= MeshGL::DIRTY_NORMAL;
+}
+
+IGL_INLINE void igl::opengl::ViewerData::set_visible(bool value, unsigned int core_id /*= 1*/)
+{
+  if (value)
+    is_visible |= core_id;
+  else
+  is_visible &= ~core_id;
+}
+
+IGL_INLINE void igl::opengl::ViewerData::copy_options(const ViewerCore &from, const ViewerCore &to)
+{
+  to.set(show_overlay      , from.is_set(show_overlay)      );
+  to.set(show_overlay_depth, from.is_set(show_overlay_depth));
+  to.set(show_texture      , from.is_set(show_texture)      );
+  to.set(show_faces        , from.is_set(show_faces)        );
+  to.set(show_lines        , from.is_set(show_lines)        );
 }
 
 IGL_INLINE void igl::opengl::ViewerData::set_colors(const Eigen::MatrixXd &C)
@@ -212,7 +232,6 @@ IGL_INLINE void igl::opengl::ViewerData::set_uv(const Eigen::MatrixXd& UV_V, con
   F_uv = UV_F;
   dirty |= MeshGL::DIRTY_UV;
 }
-
 
 IGL_INLINE void igl::opengl::ViewerData::set_texture(
   const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& R,
@@ -335,6 +354,12 @@ IGL_INLINE void igl::opengl::ViewerData::add_label(const Eigen::VectorXd& P,  co
   labels_positions.conservativeResize(lastid+1, 3);
   labels_positions.row(lastid) = P_temp;
   labels_strings.push_back(str);
+}
+
+IGL_INLINE void igl::opengl::ViewerData::clear_labels()
+{
+  labels_positions.resize(0,3);
+  labels_strings.clear();
 }
 
 IGL_INLINE void igl::opengl::ViewerData::clear()

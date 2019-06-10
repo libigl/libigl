@@ -2,7 +2,7 @@
 
 #include <igl/copyleft/cgal/outer_facet.h>
 
-namespace OuterFacetHelper {
+namespace {
 
 /**
  * Check if the outer facet is indeed valid.
@@ -16,7 +16,10 @@ void assert_outer_facet_is_correct(
     // Todo.
 }
 
-TEST(OuterFacet, Simple) {
+} // anonymous namespace
+
+TEST_CASE("OuterFacet: Simple", "[igl/copyleft/cgal]")
+{
     Eigen::MatrixXd V;
     Eigen::MatrixXi F;
     test_common::load_mesh("cube.obj", V, F);
@@ -30,11 +33,12 @@ TEST(OuterFacet, Simple) {
     bool flipped;
     igl::copyleft::cgal::outer_facet(V, F, I, fid, flipped);
 
-    ASSERT_LT(fid, num_faces);
-    ASSERT_FALSE(flipped);
+    REQUIRE (num_faces > fid);
+    REQUIRE (!flipped);
 }
 
-TEST(OuterFacet, DuplicatedOppositeFaces) {
+TEST_CASE("OuterFacet: DuplicatedOppositeFaces", "[igl/copyleft/cgal]")
+{
     Eigen::MatrixXd V;
     Eigen::MatrixXi F1;
     test_common::load_mesh("cube.obj", V, F1);
@@ -52,11 +56,12 @@ TEST(OuterFacet, DuplicatedOppositeFaces) {
     bool flipped;
     igl::copyleft::cgal::outer_facet(V, F, I, fid, flipped);
 
-    ASSERT_LT(fid, F.rows());
-    ASSERT_FALSE(flipped);
+    REQUIRE (F.rows() > fid);
+    REQUIRE (!flipped);
 }
 
-TEST(OuterFacet, FullyDegnerated) {
+TEST_CASE("OuterFacet: FullyDegnerated", "[igl/copyleft/cgal]")
+{
     Eigen::MatrixXd V;
     Eigen::MatrixXi F;
     test_common::load_mesh("degenerated.obj", V, F);
@@ -68,11 +73,12 @@ TEST(OuterFacet, FullyDegnerated) {
     bool flipped;
     igl::copyleft::cgal::outer_facet(V, F, I, fid, flipped);
 
-    ASSERT_LT(fid, F.rows());
-    ASSERT_FALSE(flipped);
+    REQUIRE (F.rows() > fid);
+    REQUIRE (!flipped);
 }
 
-TEST(OuterFacet, InvertedNormal) {
+TEST_CASE("OuterFacet: InvertedNormal", "[igl/copyleft/cgal]")
+{
     Eigen::MatrixXd V;
     Eigen::MatrixXi F;
     test_common::load_mesh("cube.obj", V, F);
@@ -85,11 +91,12 @@ TEST(OuterFacet, InvertedNormal) {
     bool flipped;
     igl::copyleft::cgal::outer_facet(V, F, I, fid, flipped);
 
-    ASSERT_LT(fid, F.rows());
-    ASSERT_TRUE(flipped);
+    REQUIRE (F.rows() > fid);
+    REQUIRE (flipped);
 }
 
-TEST(OuterFacet, SliverTet) {
+TEST_CASE("OuterFacet: SliverTet", "[igl/copyleft/cgal]")
+{
     Eigen::MatrixXd V;
     Eigen::MatrixXi F;
     test_common::load_mesh("sliver_tet.ply", V, F);
@@ -101,8 +108,6 @@ TEST(OuterFacet, SliverTet) {
     bool flipped;
     igl::copyleft::cgal::outer_facet(V, F, I, fid, flipped);
 
-    ASSERT_LT(fid, F.rows());
-    ASSERT_FALSE(flipped);
-}
-
+    REQUIRE (F.rows() > fid);
+    REQUIRE (!flipped);
 }
