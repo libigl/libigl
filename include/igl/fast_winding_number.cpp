@@ -403,7 +403,7 @@ IGL_INLINE void igl::fast_winding_number(
       W(p) = fwn_bvh.ut_solid_angle.computeSolidAngle(
         Qp,
         accuracy_scale) 
-        / (4.0*M_PI);
+        / (4.0*igl::PI);
     },1000);
 }
 
