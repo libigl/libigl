@@ -297,7 +297,7 @@ endif()
 ################################################################################
 ### Compile the matlab part ###
 if(LIBIGL_WITH_MATLAB)
-  find_package(Matlab REQUIRED COMPONENTS MEX_COMPILER MX_LIBRARY ENG_LIBRARY)
+  find_package(Matlab REQUIRED COMPONENTS MEX_COMPILER MX_LIBRARY ENG_LIBRARY MAT_LIBRARY)
   compile_igl_module("matlab")
   target_link_libraries(igl_matlab ${IGL_SCOPE} ${Matlab_LIBRARIES})
   target_include_directories(igl_matlab ${IGL_SCOPE} ${Matlab_INCLUDE_DIRS})
