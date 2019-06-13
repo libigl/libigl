@@ -35,11 +35,11 @@ def key_pressed(viewer, key, modifier):
         # # If a mesh is already displayed, draw_mesh returns an error if the given V and
         # # F have size different than the current ones
         viewer.data().set_mesh(V1, F1)
-        viewer.core.align_camera_center(V1,F1)
+        viewer.core().align_camera_center(V1,F1)
     elif key == ord('2'):
         viewer.data().clear()
         viewer.data().set_mesh(V2, F2)
-        viewer.core.align_camera_center(V2,F2)
+        viewer.core().align_camera_center(V2,F2)
     return False
 
 
