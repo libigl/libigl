@@ -30,7 +30,7 @@ IGL_INLINE void igl::bounding_box(
   const auto & minV = V.colwise().minCoeff().array()-pad;
   const auto & maxV = V.colwise().maxCoeff().array()+pad;
   // 2^n vertices
-  BV.resize((1<<dim),dim);
+  BV.resize((1ull<<dim),dim);
 
   // Recursive lambda to generate all 2^n combinations
   const std::function<void(const int,const int,int*,int)> combos =
