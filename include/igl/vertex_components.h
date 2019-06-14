@@ -23,15 +23,15 @@ namespace igl
   //   C  n list of component ids (starting with 0)
   //   counts  #components list of counts for each component
   //
-  template <typename AScalar, typename DerivedC, typename Derivedcounts>
+  template <typename DerivedA, typename DerivedC, typename Derivedcounts>
   IGL_INLINE void vertex_components(
-    const Eigen::SparseMatrix<AScalar> & A,
+    const Eigen::SparseCompressedBase<DerivedA> & A,
     Eigen::PlainObjectBase<DerivedC> & C,
     Eigen::PlainObjectBase<Derivedcounts> & counts);
 
-  template <typename AScalar, typename DerivedC>
+  template <typename DerivedA, typename DerivedC>
   IGL_INLINE void vertex_components(
-    const Eigen::SparseMatrix<AScalar> & A,
+    const Eigen::SparseCompressedBase<DerivedA> & A,
     Eigen::PlainObjectBase<DerivedC> & C);
 
   // Compute the connected components for a mesh given its faces.

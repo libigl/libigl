@@ -29,12 +29,13 @@ namespace igl
   //     b = K * reshape(permute(R,[3 1 2]),size(V|F,1)*size(V,2)*size(V,2),1);
   //   
   // See also: arap_linear_block
+  template<typename DerivedV, typename DerivedF, typename DerivedK>
   IGL_INLINE void arap_rhs(
-    const Eigen::MatrixXd & V, 
-    const Eigen::MatrixXi & F,
+    const Eigen::MatrixBase<DerivedV> & V, 
+    const Eigen::MatrixBase<DerivedF> & F,
     const int dim,
     const igl::ARAPEnergyType energy,
-    Eigen::SparseMatrix<double>& K);
+    Eigen::SparseCompressedBase<DerivedK>& K);
 }
 #ifndef IGL_STATIC_LIBRARY
 #include "arap_rhs.cpp"

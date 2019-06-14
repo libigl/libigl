@@ -70,7 +70,7 @@ IGL_INLINE void igl::vertex_triangle_adjacency(
   // vfd now acts as a counter
   vfd = NI;
 
-  VF.derived()= Eigen::VectorXi(3*F.rows());
+  VF.derived()= Eigen::Matrix<typename DerivedVF::Scalar, Eigen::Dynamic, 1>(3*F.rows(), 1);
   for (int i = 0; i < F.rows(); i++)
   {
     for (int j = 0; j < 3; j++)
@@ -99,5 +99,6 @@ template void igl::vertex_triangle_adjacency<Eigen::Matrix<int, -1, 3, 0, -1, 3>
 #ifdef WIN32
 template void igl::vertex_triangle_adjacency<class Eigen::Matrix<int, -1, -1, 0, -1, -1>, unsigned __int64, unsigned __int64>(int, class Eigen::MatrixBase<class Eigen::Matrix<int, -1, -1, 0, -1, -1>> const &, class std::vector<class std::vector<unsigned __int64, class std::allocator<unsigned __int64>>, class std::allocator<class std::vector<unsigned __int64, class std::allocator<unsigned __int64>>>> &, class std::vector<class std::vector<unsigned __int64, class std::allocator<unsigned __int64>>, class std::allocator<class std::vector<unsigned __int64, class std::allocator<unsigned __int64>>>> &);
 template void igl::vertex_triangle_adjacency<class Eigen::Matrix<int, -1, 3, 1, -1, 3>, unsigned __int64, unsigned __int64>(int, class Eigen::MatrixBase<class Eigen::Matrix<int, -1, 3, 1, -1, 3>> const &, class std::vector<class std::vector<unsigned __int64, class std::allocator<unsigned __int64>>, class std::allocator<class std::vector<unsigned __int64, class std::allocator<unsigned __int64>>>> &, class std::vector<class std::vector<unsigned __int64, class std::allocator<unsigned __int64>>, class std::allocator<class std::vector<unsigned __int64, class std::allocator<unsigned __int64>>>> &);
+template void igl::vertex_triangle_adjacency<class Eigen::Matrix<int,-1,-1,0,-1,-1>,__int64,__int64>(int,class Eigen::MatrixBase<class Eigen::Matrix<int,-1,-1,0,-1,-1> > const &,class std::vector<class std::vector<__int64,class std::allocator<__int64> >,class std::allocator<class std::vector<__int64,class std::allocator<__int64> > > > &,class std::vector<class std::vector<__int64,class std::allocator<__int64> >,class std::allocator<class std::vector<__int64,class std::allocator<__int64> > > > &);
 #endif
 #endif

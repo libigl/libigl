@@ -6,6 +6,7 @@
 #include <array>
 #include <iostream>
 #include <vector>
+#include <set>
 
 namespace cut_to_disk_helper {
   template<typename DerivedV, typename DerivedF>
@@ -55,11 +56,12 @@ namespace cut_to_disk_helper {
     Eigen::MatrixXi E2;
     edges(F2, E2);
     const auto euler = V2.rows() - E2.rows() + F2.rows();
-    ASSERT_TRUE(1 == euler || 2 == euler);
+    CHECK ((1 == euler || 2 == euler));
   }
 }
 
-TEST(cut_to_disk, simple_tet) {
+TEST_CASE("cut_to_disk: simple_tet", "[igl]")
+{
   using namespace igl;
   Eigen::MatrixXi F(4, 3);
   F << 0, 2, 1,
@@ -68,10 +70,11 @@ TEST(cut_to_disk, simple_tet) {
        0, 1, 3;
   std::vector<std::vector<int>> cuts;
   cut_to_disk(F, cuts);
-  ASSERT_EQ(0, cuts.size());
+  REQUIRE (cuts.size() == 0);
 }
 
-TEST(cut_to_disk, two_disconnected_tet) {
+TEST_CASE("cut_to_disk: two_disconnected_tet", "[igl]")
+{
   using namespace igl;
   Eigen::MatrixXi F(8, 3);
   F << 0, 2, 1,
@@ -84,22 +87,24 @@ TEST(cut_to_disk, two_disconnected_tet) {
        4, 5, 7;
   std::vector<std::vector<int>> cuts;
   cut_to_disk(F, cuts);
-  ASSERT_EQ(0, cuts.size());
+  REQUIRE (cuts.size() == 0);
 }
 
-TEST(cut_to_disk, simple_square) {
+TEST_CASE("cut_to_disk: simple_square", "[igl]")
+{
   using namespace igl;
   Eigen::MatrixXi F(2, 3);
   F << 0, 1, 2,
        2, 1, 3;
   std::vector<std::vector<int>> cuts;
   cut_to_disk(F, cuts);
-  ASSERT_EQ(1, cuts.size());
-  ASSERT_EQ(5, cuts[0].size());
-  ASSERT_EQ(cuts[0][0], cuts[0][4]);
+  REQUIRE (cuts.size() == 1);
+  REQUIRE (cuts[0].size() == 5);
+  REQUIRE (cuts[0][4] == cuts[0][0]);
 }
 
-TEST(cut_to_disk, torus) {
+TEST_CASE("cut_to_disk: torus", "[igl]")
+{
   using namespace igl;
   Eigen::MatrixXd V;
   Eigen::MatrixXi F;
@@ -107,12 +112,13 @@ TEST(cut_to_disk, torus) {
 
   std::vector<std::vector<int>> cuts;
   cut_to_disk(F, cuts);
-  ASSERT_EQ(2, cuts.size());
+  REQUIRE (cuts.size() == 2);
 
   cut_to_disk_helper::assert_is_disk(V, F, cuts);
 }
 
-TEST(cut_to_disk, cube) {
+TEST_CASE("cut_to_disk: cube", "[igl]")
+{
   using namespace igl;
   Eigen::MatrixXd V;
   Eigen::MatrixXi F;
@@ -120,7 +126,21 @@ TEST(cut_to_disk, cube) {
 
   std::vector<std::vector<int>> cuts;
   cut_to_disk(F, cuts);
-  ASSERT_EQ(0, cuts.size());
+  REQUIRE (cuts.size() == 0);
 
   cut_to_disk_helper::assert_is_disk(V, F, cuts);
 }
+
+TEST_CASE("cut_to_disk: annulus", "[igl]") {
+  // Unit test for https://github.com/libigl/libigl/pull/984
+  using namespace igl;
+  Eigen::MatrixXd V;
+  Eigen::MatrixXi F;
+  test_common::load_mesh("annulus.obj", V, F);
+
+  std::vector<std::vector<int>> cuts;
+  cut_to_disk(F, cuts);
+
+  cut_to_disk_helper::assert_is_disk(V, F, cuts);
+}
+

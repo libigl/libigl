@@ -37,9 +37,9 @@ namespace igl
   //     e=(j->i)
   //   EI  #E by 2 list of edge flap corners (see above).
   //   e1  index into E of edge collpased on left
-  //   e2  index into E of edge collpased on left
-  //   f1  index into E of edge collpased on left
-  //   f2  index into E of edge collpased on left
+  //   e2  index into E of edge collpased on right
+  //   f1  index into F of face collpased on left
+  //   f2  index into F of face collpased on right
   // Returns true if edge was collapsed
   #define IGL_COLLAPSE_EDGE_NULL 0
   IGL_INLINE bool collapse_edge(

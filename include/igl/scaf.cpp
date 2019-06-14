@@ -25,7 +25,6 @@
 #include <igl/local_basis.h>
 #include <igl/map_vertices_to_circle.h>
 #include <igl/polar_svd.h>
-#include <igl/readOBJ.h>
 #include <igl/slice.h>
 #include <igl/slice_into.h>
 #include <igl/slim.h>
@@ -78,8 +77,8 @@ void adjusted_grad(Eigen::MatrixXd &V,
   Dz = G.bottomRows(F.rows());
 
   // handcraft uniform gradient for faces area falling below threshold.
-  double sin60 = std::sin(M_PI / 3);
-  double cos60 = std::cos(M_PI / 3);
+  double sin60 = std::sin(igl::PI / 3);
+  double cos60 = std::cos(igl::PI / 3);
   double deno = std::sqrt(sin60 * area_threshold);
   Eigen::MatrixXd standard_grad(3, 3);
   standard_grad << -sin60 / deno, sin60 / deno, 0,
@@ -382,7 +381,7 @@ void buildRhs(const Eigen::VectorXd &sqrt_M,
   }
 }
 
-void get_complement(const Eigen::VectorXi &bnd_ids, int v_n, Eigen::ArrayXi &unknown_ids)
+void get_complement(const Eigen::VectorXi &bnd_ids, int v_n, Eigen::VectorXi &unknown_ids)
 { // get the complement of bnd_ids.
   int assign = 0, i = 0;
   for (int get = 0; i < v_n && get < bnd_ids.size(); i++)
@@ -436,8 +435,8 @@ void build_surface_linear_system(const SCAFData &s, Eigen::SparseMatrix<double> 
   {
     MatrixXd bnd_pos;
     igl::slice(s.w_uv, bnd_ids, 1, bnd_pos);
-    ArrayXi known_ids(bnd_ids.size() * dim);
-    ArrayXi unknown_ids((v_n - bnd_ids.rows()) * dim);
+    VectorXi known_ids(bnd_ids.size() * dim);
+    VectorXi unknown_ids((v_n - bnd_ids.rows()) * dim);
     get_complement(bnd_ids, v_n, unknown_ids);
     VectorXd known_pos(bnd_ids.size() * dim);
     for (int d = 0; d < dim; d++)
@@ -446,7 +445,7 @@ void build_surface_linear_system(const SCAFData &s, Eigen::SparseMatrix<double> 
       known_ids.segment(d * n_b, n_b) = bnd_ids.array() + d * v_n;
       known_pos.segment(d * n_b, n_b) = bnd_pos.col(d);
       unknown_ids.block(d * (v_n - n_b), 0, v_n - n_b, unknown_ids.cols()) =
-          unknown_ids.topRows(v_n - n_b) + d * v_n;
+          unknown_ids.topRows(v_n - n_b).array() + d * v_n;
     }
 
     Eigen::SparseMatrix<double> Au, Ae;
@@ -498,8 +497,8 @@ void build_scaffold_linear_system(const SCAFData &s, Eigen::SparseMatrix<double>
   MatrixXd bnd_pos;
   igl::slice(s.w_uv, bnd_ids, 1, bnd_pos);
 
-  ArrayXi known_ids(bnd_ids.size() * dim);
-  ArrayXi unknown_ids((v_n - bnd_ids.rows()) * dim);
+  VectorXi known_ids(bnd_ids.size() * dim);
+  VectorXi unknown_ids((v_n - bnd_ids.rows()) * dim);
 
   get_complement(bnd_ids, v_n, unknown_ids);
 
@@ -510,7 +509,7 @@ void build_scaffold_linear_system(const SCAFData &s, Eigen::SparseMatrix<double>
     known_ids.segment(d * n_b, n_b) = bnd_ids.array() + d * v_n;
     known_pos.segment(d * n_b, n_b) = bnd_pos.col(d);
     unknown_ids.block(d * (v_n - n_b), 0, v_n - n_b, unknown_ids.cols()) =
-        unknown_ids.topRows(v_n - n_b) + d * v_n;
+        unknown_ids.topRows(v_n - n_b).array() + d * v_n;
   }
   Eigen::VectorXd sqrt_M = s.s_M.array().sqrt();
 
@@ -546,8 +545,8 @@ void solve_weighted_arap(SCAFData &s, Eigen::MatrixXd &uv)
   MatrixXd bnd_pos;
   igl::slice(s.w_uv, bnd_ids, 1, bnd_pos);
 
-  ArrayXi known_ids(bnd_n * dim);
-  ArrayXi unknown_ids((v_n - bnd_n) * dim);
+  Eigen::VectorXi known_ids(bnd_n * dim);
+  Eigen::VectorXi unknown_ids((v_n - bnd_n) * dim);
 
   get_complement(bnd_ids, v_n, unknown_ids);
 
@@ -558,7 +557,7 @@ void solve_weighted_arap(SCAFData &s, Eigen::MatrixXd &uv)
     known_ids.segment(d * n_b, n_b) = bnd_ids.array() + d * v_n;
     known_pos.segment(d * n_b, n_b) = bnd_pos.col(d);
     unknown_ids.block(d * (v_n - n_b), 0, v_n - n_b, unknown_ids.cols()) =
-        unknown_ids.topRows(v_n - n_b) + d * v_n;
+        unknown_ids.topRows(v_n - n_b).array() + d * v_n;
   }
 
   Eigen::SparseMatrix<double> L;
@@ -589,8 +588,8 @@ void solve_weighted_arap(SCAFData &s, Eigen::MatrixXd &uv)
 
   SimplicialLDLT<Eigen::SparseMatrix<double>> solver;
   unknown_Uc = solver.compute(L).solve(rhs);
-  igl::slice_into(unknown_Uc, unknown_ids.matrix(), 1, Uc);
-  igl::slice_into(known_pos, known_ids.matrix(), 1, Uc);
+  igl::slice_into(unknown_Uc, unknown_ids, 1, Uc);
+  igl::slice_into(known_pos, known_ids, 1, Uc);
 
   uv = Map<Matrix<double, -1, -1, Eigen::ColMajor>>(Uc.data(), v_n, dim);
 }

@@ -539,8 +539,11 @@ inline PlyFile *ply_open_for_writing(
 
   fp = fopen (name, "w");
   if (fp == NULL) {
+    free(name);
     return (NULL);
   }
+
+  free(name);
 
   /* create the actual PlyFile structure */
 
@@ -2253,6 +2256,7 @@ inline char **get_words(FILE *fp, int *nwords, char **orig_line)
   if (result == NULL) {
     *nwords = 0;
     *orig_line = NULL;
+    free(words);
     return (NULL);
   }
 
@@ -2316,7 +2320,15 @@ inline char **get_words(FILE *fp, int *nwords, char **orig_line)
     /* save pointer to beginning of word */
     if (num_words >= max_words) {
       max_words += 10;
-      words = (char **) realloc (words, sizeof (char *) * max_words);
+      char **temp = (char **) realloc (words, sizeof (char *) * max_words);
+
+      if(temp){
+          words = temp;
+      }
+      else{
+          free(words);
+          return NULL;
+      }
     }
     words[num_words++] = ptr;
 
@@ -2330,7 +2342,7 @@ inline char **get_words(FILE *fp, int *nwords, char **orig_line)
 
   /* return the list of words */
   *nwords = num_words;
-  *orig_line = str_copy;
+  *orig_line = str_copy; // ToDo: This looks like UB, returns pointer to local variable on stack.
   return (words);
 }
 

@@ -29,7 +29,7 @@ namespace igl
     //   u  scalar point of intersection along segment B, u \in [0,1]
     // Returns true if intersection
     template<typename DerivedSource, typename DerivedDir>
-    IGL_INLINE bool segments_intersect(
+    IGL_INLINE bool segment_segment_intersect(
             const Eigen::PlainObjectBase <DerivedSource> &p,
             const Eigen::PlainObjectBase <DerivedDir> &r,
             const Eigen::PlainObjectBase <DerivedSource> &q,

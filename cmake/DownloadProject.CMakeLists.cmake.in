@@ -14,5 +14,4 @@ ExternalProject_Add(${DL_ARGS_PROJ}-download
                     BUILD_COMMAND       ""
                     INSTALL_COMMAND     ""
                     TEST_COMMAND        ""
-                    TLS_VERIFY          OFF
 )

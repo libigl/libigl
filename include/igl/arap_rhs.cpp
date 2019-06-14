@@ -12,12 +12,13 @@
 #include "cat.h"
 #include <iostream>
 
+template<typename DerivedV, typename DerivedF, typename DerivedK>
 IGL_INLINE void igl::arap_rhs(
-  const Eigen::MatrixXd & V, 
-  const Eigen::MatrixXi & F,
-  const int dim,
-  const igl::ARAPEnergyType energy,
-  Eigen::SparseMatrix<double>& K)
+    const Eigen::MatrixBase<DerivedV> & V, 
+    const Eigen::MatrixBase<DerivedF> & F,
+    const int dim,
+    const igl::ARAPEnergyType energy,
+    Eigen::SparseCompressedBase<DerivedK>& K)
 {
   using namespace std;
   using namespace Eigen;
@@ -48,7 +49,7 @@ IGL_INLINE void igl::arap_rhs(
       return;
   }
 
-  SparseMatrix<double> KX,KY,KZ;
+  DerivedK KX,KY,KZ;
   arap_linear_block(V,F,0,energy,KX);
   arap_linear_block(V,F,1,energy,KY);
   if(Vdim == 2)
@@ -62,7 +63,7 @@ IGL_INLINE void igl::arap_rhs(
       K = cat(2,cat(2,repdiag(KX,dim),repdiag(KY,dim)),repdiag(KZ,dim));
     }else if(dim ==2)
     {
-      SparseMatrix<double> ZZ(KX.rows()*2,KX.cols());
+      DerivedK ZZ(KX.rows()*2,KX.cols());
       K = cat(2,cat(2,
             cat(2,repdiag(KX,dim),ZZ),
             cat(2,repdiag(KY,dim),ZZ)),
@@ -87,3 +88,8 @@ IGL_INLINE void igl::arap_rhs(
   
 }
 
+
+
+#ifdef IGL_STATIC_LIBRARY
+template void igl::arap_rhs(const Eigen::MatrixBase<Eigen::MatrixXd> & V, const Eigen::MatrixBase<Eigen::MatrixXi> & F,const int dim, const igl::ARAPEnergyType energy,Eigen::SparseCompressedBase<Eigen::SparseMatrix<double>>& K);
+#endif

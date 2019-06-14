@@ -110,7 +110,7 @@ IGL_INLINE void igl::ramer_douglas_peucker(
   // Find index in original list of "start" vertices
   slice(J,B,s);
   // Find index in original list of "destination" vertices
-  slice(J,(B.array()+1).eval(),d);
+  slice(J,(B.array()+1).matrix().eval(),d);
   // Parameter between start and destination is linear in arc-length
   VectorXS Ts,Td;
   slice(T,s,Ts);

@@ -103,7 +103,7 @@ void param_2d_demo_iter(igl::opengl::glfw::Viewer& viewer) {
 
     uv_scale_param = 15 * (1./sqrt(sData.mesh_area));
     viewer.data().set_mesh(V, F);
-    viewer.core.align_camera_center(V,F);
+    viewer.core().align_camera_center(V,F);
     viewer.data().set_uv(sData.V_o*uv_scale_param);
     viewer.data().compute_normals();
     viewer.data().show_texture = true;
@@ -133,7 +133,7 @@ void soft_const_demo_iter(igl::opengl::glfw::Viewer& viewer) {
     slim_precompute(V,F,V_0,sData,igl::MappingEnergyType::SYMMETRIC_DIRICHLET,b,bc,soft_const_p);
 
     viewer.data().set_mesh(V, F);
-    viewer.core.align_camera_center(V,F);
+    viewer.core().align_camera_center(V,F);
     viewer.data().compute_normals();
     viewer.data().show_lines = true;
 
@@ -204,7 +204,7 @@ void display_3d_mesh(igl::opengl::glfw::Viewer& viewer) {
     F_temp.row(i*4+3) << (i*4)+1, (i*4)+2, (i*4)+3;
   }
   viewer.data().set_mesh(V_temp,F_temp);
-  viewer.core.align_camera_center(V_temp,F_temp);
+  viewer.core().align_camera_center(V_temp,F_temp);
   viewer.data().set_face_based(true);
   viewer.data().show_lines = true;
 }
