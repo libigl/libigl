@@ -205,7 +205,7 @@ def key_down(viewer, key, modifier):
 
     viewer.data().set_texture(texture_R, texture_B, texture_G)
 
-    viewer.core.align_camera_center(viewer.data().V, viewer.data().F)
+    viewer.core().align_camera_center(viewer.data().V, viewer.data().F)
 
     return False
 

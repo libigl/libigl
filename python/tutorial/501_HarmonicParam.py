@@ -28,11 +28,11 @@ def key_down(viewer, key, modifier):
     if key == ord('1'):
         # Plot the 3D mesh
         viewer.data().set_mesh(V, F)
-        viewer.core.align_camera_center(V, F)
+        viewer.core().align_camera_center(V, F)
     elif key == ord('2'):
         # Plot the mesh in 2D using the UV coordinates as vertex coordinates
         viewer.data().set_mesh(V_uv, F)
-        viewer.core.align_camera_center(V_uv, F)
+        viewer.core().align_camera_center(V_uv, F)
     viewer.data().compute_normals()
     return False
 
