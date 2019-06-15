@@ -53,7 +53,7 @@ def representative_to_nrosy(V, F, R, N, Y):
 
 
 def pre_draw(viewer):
-    if not viewer.core.is_animating:
+    if not viewer.core().is_animating:
         return False
 
     global anim_t
@@ -77,7 +77,7 @@ def pre_draw(viewer):
 
 def key_down(viewer, key, modifier):
     if key == ord(' '):
-        viewer.core.is_animating = not viewer.core.is_animating
+        viewer.core().is_animating = not viewer.core().is_animating
         return True
 
     return False
@@ -107,10 +107,10 @@ def main():
     viewer.callback_pre_draw = pre_draw
     viewer.callback_key_down = key_down
 
-    viewer.core.show_lines = False
+    viewer.core().show_lines = False
 
-    viewer.core.is_animating = False
-    viewer.core.animation_max_fps = 30.0
+    viewer.core().is_animating = False
+    viewer.core().animation_max_fps = 30.0
 
     # Paint mesh grayish
     C = igl.eigen.MatrixXd()

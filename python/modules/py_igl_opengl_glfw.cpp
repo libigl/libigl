@@ -370,9 +370,10 @@ py::class_<igl::opengl::ViewerCore> viewercore_class(me, "ViewerCore");
     //   viewer.data() = data;
     // })
 
-    .def("data", (igl::opengl::ViewerData & (igl::opengl::glfw::Viewer::*)(int)) &igl::opengl::glfw::Viewer::data,pybind11::return_value_policy::reference)
+    .def("data", (igl::opengl::ViewerData & (igl::opengl::glfw::Viewer::*)(int)) &igl::opengl::glfw::Viewer::data, pybind11::return_value_policy::reference, py::arg("mesh_id")=-1)
     // .def("data", (const igl::opengl::ViewerData & (igl::opengl::glfw::Viewer::*)(int) const) &igl::opengl::glfw::Viewer::data,pybind11::return_value_policy::reference)
 
+    .def("core", (igl::opengl::ViewerCore & (igl::opengl::glfw::Viewer::*)(unsigned)) &igl::opengl::glfw::Viewer::core, pybind11::return_value_policy::reference, py::arg("core_id")=0)
     //.def_readwrite("core", &igl::opengl::glfw::Viewer::core)
     //.def_readwrite("opengl", &igl::opengl::glfw::Viewer::opengl)
 

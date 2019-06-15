@@ -46,7 +46,7 @@ def pre_draw(viewer):
     viewer.data().set_vertices(U)
     viewer.data().compute_normals()
 
-    if viewer.core.is_animating:
+    if viewer.core().is_animating:
         z_max += z_dir
         z_dir *= (-1.0 if z_max >= 1.0 or z_max <= 0.0 else 1.0)
 
@@ -57,7 +57,7 @@ def key_down(viewer, key, mods):
     global z_max, z_dir, k, resolve, V, U, Z, F, b, bc
 
     if key == ord(' '):
-        viewer.core.is_animating = not viewer.core.is_animating
+        viewer.core().is_animating = not viewer.core().is_animating
     elif key == ord('.'):
         k = k + 1
         k = (4 if k > 4 else k)
@@ -102,12 +102,12 @@ viewer = igl.glfw.Viewer()
 viewer.data().set_mesh(U, F)
 viewer.data().show_lines = False
 viewer.data().set_colors(C)
-viewer.core.trackball_angle = igl.eigen.Quaterniond(0.81,-0.58,-0.03,-0.03)
-viewer.core.trackball_angle.normalize()
+viewer.core().trackball_angle = igl.eigen.Quaterniond(0.81,-0.58,-0.03,-0.03)
+viewer.core().trackball_angle.normalize()
 viewer.callback_pre_draw = pre_draw
 viewer.callback_key_down = key_down
-viewer.core.is_animating = True
-viewer.core.animation_max_fps = 30.0
+viewer.core().is_animating = True
+viewer.core().animation_max_fps = 30.0
 print("Press [space] to toggle animation.")
 print("Press '.' to increase k.")
 print("Press ',' to decrease k.")
