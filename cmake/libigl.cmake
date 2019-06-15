@@ -37,6 +37,10 @@ option(LIBIGL_WITH_XML               "Use XML"                      OFF)
 option(LIBIGL_WITHOUT_COPYLEFT       "Disable Copyleft libraries"   OFF)
 option(LIBIGL_EXPORT_TARGETS         "Export libigl CMake targets"  OFF)
 
+if(LIBIGL_BUILD_PYTHON)
+  message(FATAL_ERROR "Python bindings have been removed in this version. Please use an older version of libigl, or wait for the new bindings to be released.")
+endif()
+
 ################################################################################
 
 ### Configuration
@@ -148,7 +152,7 @@ function(compile_igl_module module_dir)
     add_library(${module_libname} STATIC ${SOURCES_IGL_${module_name}} ${ARGN})
     if(MSVC)
       # Silencing some compile warnings
-      target_compile_options(${module_libname} PRIVATE 
+      target_compile_options(${module_libname} PRIVATE
         # Type conversion warnings. These can be fixed with some effort and possibly more verbose code.
         /wd4267 # conversion from 'size_t' to 'type', possible loss of data
         /wd4244 # conversion from 'type1' to 'type2', possible loss of data
