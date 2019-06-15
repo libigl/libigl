@@ -31,7 +31,12 @@ option(LIBIGL_WITH_TETGEN            "Use Tetgen"                   ON)
 option(LIBIGL_WITH_TRIANGLE          "Use Triangle"                 ON)
 option(LIBIGL_WITH_PREDICATES        "Use exact predicates"         ON)
 option(LIBIGL_WITH_XML               "Use XML"                      ON)
+option(LIBIGL_WITH_PYTHON            "Use Python"                   OFF)
 ### End
+
+if(${LIBIGL_WITH_PYTHON})
+	MESSAGE(FATAL_ERROR "Python binding are in the process of being redone. Please use the master branch or refer to https://github.com/geometryprocessing/libigl-python-bindings for the developement version or https://anaconda.org/conda-forge/igl for the stable version.")
+endif()
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
