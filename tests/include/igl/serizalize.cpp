@@ -2,8 +2,6 @@
 #include <igl/serialize.h>
 
 
-
-
 TEST_CASE("serialize: serialize data", "[igl]")
 {
     Eigen::MatrixXd V;
@@ -16,7 +14,6 @@ TEST_CASE("serialize: serialize data", "[igl]")
     REQUIRE(V.rows() == 2956);
     REQUIRE(F.rows() == 4770);
 }
-
 
 TEST_CASE("serialize: deserialize data", "[igl]")
 {
@@ -31,5 +28,22 @@ TEST_CASE("serialize: deserialize data", "[igl]")
 
     test_common::assert_eq(V, V_orig);
     test_common::assert_eq(F, F_orig);
-
 }
+
+TEST_CASE("serialize: serialize string", "[igl]")
+{
+    std::string description = "libigl - A simple C++ geometry processing library.";
+
+    REQUIRE(igl::serialize(description, "description", "string.serialized"));
+}
+
+TEST_CASE("serialize: deserialize string", "[igl]")
+{
+    std::string deserialized;
+    std::string description = "libigl - A simple C++ geometry processing library.";
+
+    REQUIRE(igl::deserialize(deserialized, "description", test_common::data_path("string.serialized")));
+
+    REQUIRE(deserialized == description);
+}
+
