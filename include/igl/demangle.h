@@ -13,35 +13,13 @@
 #else // clang or gcc
 #include <cxxabi.h>
 #include <cstdlib>
+#include <type_traits> // std::is_same<T1,T2>
 #endif // clang or gcc branch of _MSC_VER
 
 namespace igl
 {
 
-  inline void replaceAll(std::string& str, const std::string& from, const std::string& to) {
-    if(from.empty())
-        return;
-    size_t start_pos = 0;
-    while((start_pos = str.find(from, start_pos)) != std::string::npos) {
-        str.replace(start_pos, from.length(), to);
-        start_pos += to.length(); // In case 'to' contains 'from', like replacing 'x' with 'yx'
-    }
-  }
-
-  inline void replaceString(std::string& str) {
-    replaceAll(str, "std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >", "std::string>");
-    replaceAll(str, "std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >", "std::string");
-    replaceAll(str, "std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > >", "std::string>");
-    replaceAll(str, "std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >", "std::string");
-    replaceAll(str, "std::__1", "std");
-  }
-
 #ifdef _MSC_VER
-  //! Demangles the type encoded in a string
-  /*! @internal */
-  inline std::string demangle( std::string const & name )
-  { std::string str = name; replaceString(str); return str; }
-
   //! Gets the demangled name of a type
   /*! @internal */
   template <class T> inline
@@ -62,8 +40,6 @@ namespace igl
 
     std::string retName(demangledName);
     free(demangledName);
-
-    replaceString(retName);
     return retName;
   }
 
@@ -71,8 +47,13 @@ namespace igl
   /*! @internal */
   template<class T> inline
   std::string demangledName()
-  { return demangle(typeid(T).name()); }
-
+  {
+    if(std::is_same<T,std::string>::value)
+    {
+      return std::string("std::string");
+    }
+    return demangle(typeid(T).name());
+  }
 #endif // clang or gcc branch of _MSC_VER
 
 } // namespace libigl
