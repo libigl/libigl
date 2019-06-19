@@ -24,34 +24,38 @@
 
 template <typename Scalar, typename Index>
 IGL_INLINE bool igl::read_triangle_mesh(
-  const std::string str,
+  const std::string path,
   std::vector<std::vector<Scalar> > & V,
   std::vector<std::vector<Index> > & F)
 {
   using namespace std;
-  // dirname, basename, extension and filename
-  string d,b,e,f;
-  pathinfo(str,d,b,e,f);
+  // Decompose path into dirname, basename, extension and filename
+  string dir,base,ext,filename;
+  igl::pathinfo(path,dir,base,ext,filename);
   // Convert extension to lower case
-  std::transform(e.begin(), e.end(), e.begin(), ::tolower);
+  std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
   vector<vector<Scalar> > TC, N, C;
   vector<vector<Index> > FTC, FN;
-  if(e == "obj")
+  if(ext == "obj")
   {
     // Annoyingly obj can store 4 coordinates, truncate to xyz for this generic
     // read_triangle_mesh
-    bool success = readOBJ(str,V,TC,N,F,FTC,FN);
+    bool success = readOBJ(path,V,TC,N,F,FTC,FN);
     for(auto & v : V)
     {
       v.resize(std::min(v.size(),(size_t)3));
     }
     return success;
-  }else if(e == "off")
+  } else if(ext == "off")
   {
-    return readOFF(str,V,F,N,C);
+    return readOFF(path,V,F,N,C);
+  } else if(ext == "ply")
+  {
+    return readPLY(path,V,F,N,C);
   }
+
   cerr<<"Error: "<<__FUNCTION__<<": "<<
-    str<<" is not a recognized mesh file format."<<endl;
+    path<<" is not a recognized mesh file format."<<endl;
   return false;
 }
 
@@ -59,17 +63,17 @@ IGL_INLINE bool igl::read_triangle_mesh(
 #ifndef IGL_NO_EIGN
 template <typename DerivedV, typename DerivedF>
 IGL_INLINE bool igl::read_triangle_mesh(
-  const std::string str,
+  const std::string path,
   Eigen::PlainObjectBase<DerivedV>& V,
   Eigen::PlainObjectBase<DerivedF>& F)
 {
   std::string _1,_2,_3,_4;
-  return read_triangle_mesh(str,V,F,_1,_2,_3,_4);
+  return read_triangle_mesh(path,V,F,_1,_2,_3,_4);
 }
 
 template <typename DerivedV, typename DerivedF>
 IGL_INLINE bool igl::read_triangle_mesh(
-  const std::string filename,
+  const std::string path,
   Eigen::PlainObjectBase<DerivedV>& V,
   Eigen::PlainObjectBase<DerivedF>& F,
   std::string & dir,
@@ -80,15 +84,20 @@ IGL_INLINE bool igl::read_triangle_mesh(
   using namespace std;
   using namespace Eigen;
 
-  // dirname, basename, extension and filename
-  pathinfo(filename,dir,base,ext,name);
+  // Decompose path into dirname, basename, extension and filename
+  pathinfo(path,dir,base,ext,name);
   // Convert extension to lower case
   transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
-  FILE * fp = fopen(filename.c_str(),"rb");
-  if(NULL==fp)
+
+  if(ext == "ply")
   {
-    fprintf(stderr,"IOError: %s could not be opened...\n",
-            filename.c_str());
+      return readPLY(path,V,F);
+  }
+
+  FILE * fp = fopen(path.c_str(),"rb");
+  if(!fp)
+  {
+    cerr << "IOError: " << path << " could not be opened...\n";
     return false;
   }
   return read_triangle_mesh(ext,fp,V,F);
@@ -111,10 +120,10 @@ IGL_INLINE bool igl::read_triangle_mesh(
     MatrixXi T;
     if(!readMESH(fp,V,T,F))
     {
-      return 1;
+      return false;
     }
     //if(F.size() > T.size() || F.size() == 0)
-    {
+    {      
       boundary_facets(T,F);
     }
   }else if(ext == "obj")
@@ -137,10 +146,9 @@ IGL_INLINE bool igl::read_triangle_mesh(
     }
   }else if(ext == "ply")
   {
-    if(!readPLY(fp,vV,vF,vN,vTC))
-    {
-      return false;
-    }
+    cerr << "PLY read from file descriptor not supported. "
+         << "Call readPLY(filename, ...) instead.\n";
+    return false;
   }else if(ext == "stl")
   {
     if(!readSTL(fp,vV,vF,vN))
@@ -156,6 +164,41 @@ IGL_INLINE bool igl::read_triangle_mesh(
   }else
   {
     cerr<<"Error: unknown extension: "<<ext<<endl;
+    return false;
+  }
+  if(vV.size() > 0)
+  {
+    if(!list_to_matrix(vV,V))
+    {
+      return false;
+    }
+    polygon_mesh_to_triangle_mesh(vF,F);
+  }
+  return true;
+}
+
+template <typename DerivedV, typename DerivedF>
+IGL_INLINE bool igl::read_triangle_mesh(
+  const std::string & ext,
+  std::istream & is,
+  Eigen::PlainObjectBase<DerivedV>& V,
+  Eigen::PlainObjectBase<DerivedF>& F)
+{
+  using namespace std;
+  using namespace Eigen;
+  vector<vector<double > > vV,vN,vTC,vC;
+  vector<vector<int > > vF,vFTC,vFN;
+  if(ext == "ply")
+  {
+    if(!readPLY(is,vV,vF,vN,vTC))
+    {
+      return false;
+    }
+  }
+  // Should other file formats be added here??
+  else
+  {
+    cerr << __FUNCTION__ << "() Error: unknown extension: "<< ext <<endl;
     return false;
   }
   if(vV.size() > 0)

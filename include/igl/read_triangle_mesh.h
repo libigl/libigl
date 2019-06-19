@@ -29,20 +29,20 @@ namespace igl
   //     to Scalar)
   //   Index  type for indices (will be read as int and cast to Index)
   // Inputs:
-  //   str  path to file
+  //   path  path to file
   // Outputs:
   //   V  eigen double matrix #V by 3
   //   F  eigen int matrix #F by 3
-  // Returns true iff success
+  // Returns true if success
   template <typename Scalar, typename Index>
   IGL_INLINE bool read_triangle_mesh(
-    const std::string str,
+    const std::string path,
     std::vector<std::vector<Scalar> > & V,
     std::vector<std::vector<Index> > & F);
 #ifndef IGL_NO_EIGEN
   template <typename DerivedV, typename DerivedF>
   IGL_INLINE bool read_triangle_mesh(
-    const std::string str,
+    const std::string path,
     Eigen::PlainObjectBase<DerivedV>& V,
     Eigen::PlainObjectBase<DerivedF>& F);
   // Outputs:
@@ -52,7 +52,7 @@ namespace igl
   //  name  filename (see pathinfo.h)
   template <typename DerivedV, typename DerivedF>
   IGL_INLINE bool read_triangle_mesh(
-    const std::string str,
+    const std::string path,
     Eigen::PlainObjectBase<DerivedV>& V,
     Eigen::PlainObjectBase<DerivedF>& F,
     std::string & dir,
@@ -68,6 +68,18 @@ namespace igl
   IGL_INLINE bool read_triangle_mesh(
     const std::string & ext,
     FILE * fp,
+    Eigen::PlainObjectBase<DerivedV>& V,
+    Eigen::PlainObjectBase<DerivedF>& F);
+
+  // Inputs:
+  //   ext  file extension
+  //   is  pointer to already opened .ext stream
+  // Outputs:
+  //   is  consumed stream
+  template <typename DerivedV, typename DerivedF>
+  IGL_INLINE bool read_triangle_mesh(
+    const std::string & ext,
+    std::istream & is,
     Eigen::PlainObjectBase<DerivedV>& V,
     Eigen::PlainObjectBase<DerivedF>& F);
 #endif
