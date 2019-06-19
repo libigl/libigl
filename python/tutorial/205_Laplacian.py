@@ -101,7 +101,7 @@ def key_pressed(viewer, key, modifier):
     # Send new positions, update normals, recenter
     viewer.data().set_vertices(U)
     viewer.data().compute_normals()
-    viewer.core.align_camera_center(U, F)
+    viewer.core().align_camera_center(U, F)
     return True
 
 

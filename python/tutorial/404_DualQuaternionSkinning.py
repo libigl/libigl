@@ -62,7 +62,7 @@ def pre_draw(viewer):
         viewer.data().set_vertices(U)
         viewer.data().set_edges(CT, BET, sea_green)
         viewer.data().compute_normals()
-        if viewer.core.is_animating:
+        if viewer.core().is_animating:
             anim_t += anim_t_dir
         else:
             recompute = False
@@ -75,7 +75,7 @@ def key_down(viewer, key, mods):
     recompute = True
     if key == ord('D') or key == ord('d'):
         use_dqs = not use_dqs
-        viewer.core.is_animating = False
+        viewer.core().is_animating = False
         animation = False
         if use_dqs:
             print("Switched to Dual Quaternion Skinning")
@@ -83,10 +83,10 @@ def key_down(viewer, key, mods):
             print("Switched to Linear Blend Skinning")
     elif key == ord(' '):
         if animation:
-            viewer.core.is_animating = False
+            viewer.core().is_animating = False
             animation = False
         else:
-            viewer.core.is_animating = True
+            viewer.core().is_animating = True
             animation = True
     return False
 
@@ -111,7 +111,7 @@ if __name__ == "__main__":
     anim_t_dir = 0.015
     use_dqs = False
     recompute = True
-    animation = False  # Flag needed as there is some synchronization problem with viewer.core.is_animating
+    animation = False  # Flag needed as there is some synchronization problem with viewer.core().is_animating
 
     poses = [[]]
 
@@ -140,10 +140,10 @@ if __name__ == "__main__":
     viewer.data().show_lines = False
     viewer.data().show_overlay_depth = False
     viewer.data().line_width = 1
-    viewer.core.trackball_angle.normalize()
+    viewer.core().trackball_angle.normalize()
     viewer.callback_pre_draw = pre_draw
     viewer.callback_key_down = key_down
-    viewer.core.is_animating = False
-    viewer.core.camera_zoom = 2.5
-    viewer.core.animation_max_fps = 30.0
+    viewer.core().is_animating = False
+    viewer.core().camera_zoom = 2.5
+    viewer.core().animation_max_fps = 30.0
     viewer.launch()

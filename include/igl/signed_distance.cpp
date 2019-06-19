@@ -291,7 +291,7 @@ IGL_INLINE void igl::signed_distance_pseudonormal(
   C.resize(np,3);
   typedef typename AABB<DerivedV,3>::RowVectorDIMS RowVector3S;
 # pragma omp parallel for if(np>1000)
-  for(size_t p = 0;p<np;p++)
+  for(std::ptrdiff_t p = 0;p<np;p++)
   {
     typename DerivedV::Scalar s,sqrd;
     RowVector3S n,c;

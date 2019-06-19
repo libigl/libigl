@@ -60,7 +60,7 @@ def pre_draw(viewer):
     viewer.data().set_vertices(U)
     viewer.data().compute_normals()
 
-    if viewer.core.is_animating:
+    if viewer.core().is_animating:
         anim_t += anim_t_dir
 
     return False
@@ -68,7 +68,7 @@ def pre_draw(viewer):
 
 def key_down(viewer, key, mods):
     if key == ord(' '):
-        viewer.core.is_animating = not viewer.core.is_animating
+        viewer.core().is_animating = not viewer.core().is_animating
         return True
     return False
 
@@ -105,7 +105,7 @@ viewer.data().set_mesh(U, F)
 viewer.data().set_colors(C)
 viewer.callback_pre_draw = pre_draw
 viewer.callback_key_down = key_down
-viewer.core.is_animating = True
-viewer.core.animation_max_fps = 30.
+viewer.core().is_animating = True
+viewer.core().animation_max_fps = 30.
 print("Press [space] to toggle animation")
 viewer.launch()
