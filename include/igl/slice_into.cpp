@@ -34,7 +34,7 @@ IGL_INLINE void igl::slice_into(
 #endif
 
   // create temporary dynamic sparse matrix
-  Eigen::SparseMatrix<T, Eigen::RowMajor>  dyn_Y(Y);
+  Eigen::DynamicSparseMatrix<T, Eigen::RowMajor> dyn_Y(Y);
   // Iterate over outside
   for(int k=0; k<X.outerSize(); ++k)
   {
