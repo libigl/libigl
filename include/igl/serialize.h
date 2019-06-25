@@ -460,7 +460,7 @@ namespace igl
     auto it = tmp.begin();
     serialization::serialize(obj,tmp,it);
 
-    std::string objectType(demangledName<T>());
+    std::string objectType(demangled_name<T>());
     size_t newObjectSize = tmp.size();
     size_t newHeaderSize = serialization::getByteSize(objectName) + serialization::getByteSize(objectType) + sizeof(size_t);
     size_t curSize = buffer.size();
@@ -532,7 +532,7 @@ namespace igl
       serialization::deserialize(type,iter);
       serialization::deserialize(size,iter);
 
-      if(name == objectName && type == demangledName<T>())
+      if(name == objectName && type == demangled_name<T>())
       {
         objectIter = iter;
         //break; // find first suitable object header
@@ -1135,7 +1135,7 @@ namespace igl
       {
         if(obj)
         {
-          std::cout << "serialization: possible memory leak in serialization for '" << demangledName<T>() << "'" << std::endl;
+          std::cout << "serialization: possible memory leak in serialization for '" << demangled_name<T>() << "'" << std::endl;
           obj = nullptr;
         }
       }
@@ -1143,7 +1143,7 @@ namespace igl
       {
         if(obj)
         {
-          std::cout << "serialization: possible memory corruption in deserialization for '" << demangledName<T>() << "'" << std::endl;
+          std::cout << "serialization: possible memory corruption in deserialization for '" << demangled_name<T>() << "'" << std::endl;
         }
         else
         {
@@ -1208,13 +1208,13 @@ namespace igl
     template <typename T>
     inline void serialize(const T& obj,std::vector<char>& buffer)
     {
-      std::cerr << demangledName<T>() << " is not serializable: derive from igl::Serializable or spezialize the template function igl::serialization::serialize(const T& obj,std::vector<char>& buffer)" << std::endl;
+      std::cerr << demangled_name<T>() << " is not serializable: derive from igl::Serializable or spezialize the template function igl::serialization::serialize(const T& obj,std::vector<char>& buffer)" << std::endl;
     }
 
     template <typename T>
     inline void deserialize(T& obj,const std::vector<char>& buffer)
     {
-      std::cerr << demangledName<T>() << " is not deserializable: derive from igl::Serializable or spezialize the template function igl::serialization::deserialize(T& obj, const std::vector<char>& buffer)" << std::endl;
+      std::cerr << demangled_name<T>() << " is not deserializable: derive from igl::Serializable or spezialize the template function igl::serialization::deserialize(T& obj, const std::vector<char>& buffer)" << std::endl;
     }
 
     // helper functions

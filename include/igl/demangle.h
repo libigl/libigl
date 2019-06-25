@@ -63,7 +63,7 @@ namespace igl
   //! Gets the demangled name of a type
   /*! @internal */
   template<class T> inline
-  std::string demangledName()
+  std::string demangled_name()
   {
     if (std::is_same<T, std::string>::value)
     {
