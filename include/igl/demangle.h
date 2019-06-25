@@ -51,7 +51,7 @@ namespace igl
 
     std::string retName(demangledName);
     free(demangledName);
-	  // MSVC does not add spaces after semicolon in gcc and clang sth. like this: "class<T1, T2, T3>"
+    // MSVC does not add spaces after semicolon in gcc and clang sth. like this: "class<T1, T2, T3>"
     // thus remove blanks
     std::string::iterator end_pos = std::remove(retName.begin(), retName.end(), ' ');
     retName.erase(end_pos, retName.end());
@@ -69,7 +69,7 @@ namespace igl
     {
       return std::string("std::string");
     }
-	  return demangle(typeid(T).name());
+    return demangle(typeid(T).name());
   }
 
 } // namespace libigl
