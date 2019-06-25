@@ -21,6 +21,19 @@
 
 namespace igl
 {
+  inline void replace_all(std::string& str, const std::string& from, const std::string& to)
+  {
+    if(from.empty())
+    {
+      return;
+    }
+    size_t start_pos = 0;
+    while((start_pos = str.find(from, start_pos)) != std::string::npos)
+    {
+      str.replace(start_pos, from.length(), to);
+      start_pos += to.length(); // In case 'to' contains 'from', like replacing 'x' with 'yx'
+    }
+  }
 
 #ifdef _MSC_VER
   //! Demangles the type encoded in a string
@@ -28,12 +41,8 @@ namespace igl
   inline std::string demangle(std::string mangledName)
   {
     std::string prefix = "class "; // MSVC does "class myClass" see: https://docs.microsoft.com/en-us/cpp/cpp/typeid-operator
-    std::size_t found = mangledName.find(prefix);
-    if (0 == found)
-    {
-      // trim "class " prefix if exists
-      mangledName = mangledName.substr(prefix.length());
-    }
+    // remove "class " prefixes
+    replace_all(mangledName,prefix,"");
     return mangledName;
   }
 
@@ -51,10 +60,10 @@ namespace igl
 
     std::string retName(demangledName);
     free(demangledName);
-    // MSVC does not add spaces after semicolon in gcc and clang sth. like this: "class<T1, T2, T3>"
+    // MSVC does not add spaces after comma.
+    // gcc and clang do sth. like this: "class<T1, T2, T3>"
     // thus remove blanks
-    std::string::iterator end_pos = std::remove(retName.begin(), retName.end(), ' ');
-    retName.erase(end_pos, retName.end());
+    replace_all(retName,", ",",");
     return retName;
   }
 
