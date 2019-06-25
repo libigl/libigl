@@ -24,7 +24,7 @@
 
 template <typename Scalar, typename Index>
 IGL_INLINE bool igl::read_triangle_mesh(
-  const std::string path,
+  const std::string & path,
   std::vector<std::vector<Scalar> > & V,
   std::vector<std::vector<Index> > & F)
 {
@@ -63,7 +63,7 @@ IGL_INLINE bool igl::read_triangle_mesh(
 #ifndef IGL_NO_EIGN
 template <typename DerivedV, typename DerivedF>
 IGL_INLINE bool igl::read_triangle_mesh(
-  const std::string path,
+  const std::string & path,
   Eigen::PlainObjectBase<DerivedV>& V,
   Eigen::PlainObjectBase<DerivedF>& F)
 {
@@ -73,7 +73,7 @@ IGL_INLINE bool igl::read_triangle_mesh(
 
 template <typename DerivedV, typename DerivedF>
 IGL_INLINE bool igl::read_triangle_mesh(
-  const std::string path,
+  const std::string & path,
   Eigen::PlainObjectBase<DerivedV>& V,
   Eigen::PlainObjectBase<DerivedF>& F,
   std::string & dir,

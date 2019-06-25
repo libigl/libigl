@@ -29,7 +29,7 @@
 #include <unordered_map>
 #include <map>
 
-namespace igl::tinyply {
+namespace igl { namespace tinyply {
 
     enum class Type : uint8_t {
         INVALID,
@@ -161,7 +161,7 @@ namespace igl::tinyply {
             const size_t listCount);
     };
 
-} // end namespace igl::tinyply
+}  } // end namespace igl::tinyply
 
 #ifndef IGL_STATIC_LIBRARY
 #  include "tinyply.cpp"

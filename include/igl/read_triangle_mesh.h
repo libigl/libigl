@@ -36,13 +36,13 @@ namespace igl
   // Returns true if success
   template <typename Scalar, typename Index>
   IGL_INLINE bool read_triangle_mesh(
-    const std::string path,
+    const std::string & path,
     std::vector<std::vector<Scalar> > & V,
     std::vector<std::vector<Index> > & F);
 #ifndef IGL_NO_EIGEN
   template <typename DerivedV, typename DerivedF>
   IGL_INLINE bool read_triangle_mesh(
-    const std::string path,
+    const std::string & path,
     Eigen::PlainObjectBase<DerivedV>& V,
     Eigen::PlainObjectBase<DerivedF>& F);
   // Outputs:
@@ -52,7 +52,7 @@ namespace igl
   //  name  filename (see pathinfo.h)
   template <typename DerivedV, typename DerivedF>
   IGL_INLINE bool read_triangle_mesh(
-    const std::string path,
+    const std::string & path,
     Eigen::PlainObjectBase<DerivedV>& V,
     Eigen::PlainObjectBase<DerivedF>& F,
     std::string & dir,

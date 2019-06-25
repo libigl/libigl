@@ -10,8 +10,7 @@
 #include <iostream>
 #include <cstring>
 
-namespace igl::tinyply {
-  using namespace igl::tinyply;
+namespace igl { namespace tinyply {
   
   template<typename T, typename T2> inline T2 endian_swap(const T & v) { return v; }
   template<> inline uint16_t endian_swap<uint16_t, uint16_t>(const uint16_t & v) { return (v << 8) | (v >> 8); }
@@ -716,5 +715,5 @@ namespace igl::tinyply {
       return impl->add_properties_to_element(elementKey, propertyKeys, type, count, data, listType, listCount);
   }
   
-} // end namespace igl::tinyply
+}  } // end namespace igl::tinyply
   
