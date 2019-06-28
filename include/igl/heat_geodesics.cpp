@@ -84,7 +84,7 @@ IGL_INLINE bool igl::heat_geodesics_precompute(
         return false;
       }
     }
-    const Eigen::SparseMatrix<double> Aeq = M.diagonal().transpose().sparseView();
+    const Eigen::SparseMatrix<double> Aeq = M.diagonal().sparseView().transpose();
     L *= -0.5;
     if(!igl::min_quad_with_fixed_precompute(
       L,Eigen::VectorXi(),Aeq,true,data.Poisson))
