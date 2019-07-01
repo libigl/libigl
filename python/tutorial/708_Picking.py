@@ -25,9 +25,9 @@ def mouse_down(viewer, a, b):
 
     # Cast a ray in the view direction starting from the mouse position
     fid = igl.eigen.MatrixXi(np.array([-1]))
-    coord = igl.eigen.MatrixXd([viewer.current_mouse_x, viewer.core.viewport[3] - viewer.current_mouse_y])
-    hit = igl.unproject_onto_mesh(coord, viewer.core.view,
-      viewer.core.proj, viewer.core.viewport, V, F, fid, bc)
+    coord = igl.eigen.MatrixXd([viewer.current_mouse_x, viewer.core().viewport[3] - viewer.current_mouse_y])
+    hit = igl.unproject_onto_mesh(coord, viewer.core().view,
+      viewer.core().proj, viewer.core().viewport, V, F, fid, bc)
     if hit:
         # paint hit red
         C.setRow(fid[0, 0], igl.eigen.MatrixXd([[1, 0, 0]]))
