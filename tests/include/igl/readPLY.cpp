@@ -1,5 +1,6 @@
 #include <test_common.h>
 #include <igl/readPLY.h>
+#include <fstream>
 
 TEST_CASE("readPLY: cube_with_fold.ply", "[igl]")
 {
@@ -15,6 +16,10 @@ TEST_CASE("readPLY: cube_with_fold.ply", "[igl]")
 
 TEST_CASE("readPLY: bunny.ply", "[igl]")
 {
+    std::ifstream f(test_common::data_path("bunny.ply"));
+    REQUIRE (f.good());
+    f.close();
+    
     Eigen::MatrixXd V;
     Eigen::MatrixXi F;
     REQUIRE (igl::readPLY(test_common::data_path("bunny.ply"), V, F));
@@ -26,6 +31,10 @@ TEST_CASE("readPLY: bunny.ply", "[igl]")
 
 TEST_CASE("readPLY: mesh_error.ply", "[igl]")
 {
+    std::ifstream f(test_common::data_path("mesh_error.ply"));
+    REQUIRE (f.good() == false);
+    f.close();
+
     Eigen::MatrixXd V;
     Eigen::MatrixXi F;
     REQUIRE (igl::readPLY(test_common::data_path("mesh_error.ply"), V, F) == false);
