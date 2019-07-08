@@ -11,8 +11,11 @@
 #endif
 #if defined(_WIN32)
 #  include <windows.h>
+#else
+  #include <unistd.h>
 #endif
 #include <stdint.h>
+
 IGL_INLINE std::string igl::path_to_executable()
 {
   // http://pastebin.com/ffzzxPzi
@@ -28,10 +31,11 @@ IGL_INLINE std::string igl::path_to_executable()
   {
     path = buffer;
   }
-#elif defined(UNIX)
-  if (readlink("/proc/self/exe", buffer, sizeof(buffer)) == -1)
+#elif defined(UNIX) || defined(unix) || defined(__unix) || defined(__unix__)
+  int byte_count = readlink("/proc/self/exe", buffer, size);
+  if (byte_count  != -1)
   {
-    path = buffer;
+    path = std::string(buffer, byte_count);
   }
 #elif defined(__FreeBSD__)
   int mib[4];

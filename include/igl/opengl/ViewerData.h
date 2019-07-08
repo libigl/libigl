@@ -107,6 +107,10 @@ public:
     const Eigen::MatrixXd& P,
     const Eigen::MatrixXd& C);
   IGL_INLINE void add_points(const Eigen::MatrixXd& P,  const Eigen::MatrixXd& C);
+
+  // Clear the point data
+  IGL_INLINE void clear_points();
+
   // Sets edges given a list of edge vertices and edge indices. In constrast
   // to `add_edges` this will (purposefully) clober existing edges.
   //
@@ -114,14 +118,20 @@ public:
   //   P  #P by 3 list of vertex positions
   //   E  #E by 2 list of edge indices into P
   //   C  #E|1 by 3 color(s)
+
   IGL_INLINE void set_edges (const Eigen::MatrixXd& P, const Eigen::MatrixXi& E, const Eigen::MatrixXd& C);
   // Alec: This is very confusing. Why does add_edges have a different API from
   // set_edges?
   IGL_INLINE void add_edges (const Eigen::MatrixXd& P1, const Eigen::MatrixXd& P2, const Eigen::MatrixXd& C);
 
-  // Adds text labels at the given positions in 3D.
+  // Clear the edge data
+  IGL_INLINE void clear_edges();
+
+  // Sets / Adds text labels at the given positions in 3D.
   // Note: This requires the ImGui viewer plugin to display text labels.
   IGL_INLINE void add_label (const Eigen::VectorXd& P,  const std::string& str);
+  IGL_INLINE void set_labels (const Eigen::MatrixXd& P,  const std::vector<std::string>& str);
+
   // Clear the label data
   IGL_INLINE void clear_labels ();
 
@@ -211,6 +221,7 @@ public:
   unsigned int show_lines;
   bool show_vertid; // shared across viewports for now
   bool show_faceid; // shared across viewports for now
+  bool show_labels; // shared across viewports for now
 
   // Point size / line width
   float point_size;
@@ -275,6 +286,7 @@ namespace igl
       SERIALIZE_MEMBER(show_overlay_depth);
       SERIALIZE_MEMBER(show_vertid);
       SERIALIZE_MEMBER(show_faceid);
+      SERIALIZE_MEMBER(show_labels);
       SERIALIZE_MEMBER(show_texture);
       SERIALIZE_MEMBER(point_size);
       SERIALIZE_MEMBER(line_width);

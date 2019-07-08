@@ -43,13 +43,13 @@ def key_down(viewer, key, modifier):
             C.setRow(i, C.row(i) * AO[i, 0])
         viewer.data().set_colors(C)
     elif key == ord('.'):
-        viewer.core.lighting_factor += 0.1
+        viewer.core().lighting_factor += 0.1
     elif key == ord(','):
-        viewer.core.lighting_factor -= 0.1
+        viewer.core().lighting_factor -= 0.1
     else:
         return False
 
-    viewer.core.lighting_factor = min(max(viewer.core.lighting_factor, 0.0), 1.0)
+    viewer.core().lighting_factor = min(max(viewer.core().lighting_factor, 0.0), 1.0)
     return True
 
 
@@ -70,5 +70,5 @@ viewer.data().set_mesh(V, F)
 key_down(viewer, ord('2'), 0)
 viewer.callback_key_down = key_down
 viewer.data().show_lines = False
-viewer.core.lighting_factor = 0.0
+viewer.core().lighting_factor = 0.0
 viewer.launch()

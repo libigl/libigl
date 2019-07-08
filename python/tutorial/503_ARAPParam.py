@@ -38,10 +38,10 @@ def key_down(viewer, key, modifier):
 
     if show_uv:
         viewer.data().set_mesh(V_uv, F)
-        viewer.core.align_camera_center(V_uv, F)
+        viewer.core().align_camera_center(V_uv, F)
     else:
         viewer.data().set_mesh(V, F)
-        viewer.core.align_camera_center(V, F)
+        viewer.core().align_camera_center(V, F)
 
     viewer.data().compute_normals()
     return False

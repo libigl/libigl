@@ -22,7 +22,7 @@ check_dependencies(dependencies)
 def pre_draw(viewer):
     global pose, anim_t, C, BE, P, U, M, anim_t_dir
 
-    if viewer.core.is_animating:
+    if viewer.core().is_animating:
         # Interpolate pose and identity
         anim_pose = igl.RotationList(len(pose))
 
@@ -69,7 +69,7 @@ def key_down(viewer, key, mods):
         selected = min(max(selected, 0), W.cols()-1)
         set_color(viewer)
     elif key == ord(' '):
-        viewer.core.is_animating = not viewer.core.is_animating
+        viewer.core().is_animating = not viewer.core().is_animating
 
     return True
 
@@ -146,9 +146,9 @@ if __name__ == "__main__":
     viewer.data().show_lines = False
     viewer.data().show_overlay_depth = False
     viewer.data().line_width = 1
-    viewer.core.trackball_angle.normalize()
+    viewer.core().trackball_angle.normalize()
     viewer.callback_pre_draw = pre_draw
     viewer.callback_key_down = key_down
-    viewer.core.is_animating = False
-    viewer.core.animation_max_fps = 30.0
+    viewer.core().is_animating = False
+    viewer.core().animation_max_fps = 30.0
     viewer.launch()

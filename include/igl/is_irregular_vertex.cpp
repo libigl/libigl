@@ -13,7 +13,7 @@
 template <typename DerivedV, typename DerivedF>
 IGL_INLINE std::vector<bool> igl::is_irregular_vertex(const Eigen::PlainObjectBase<DerivedV> &V, const Eigen::PlainObjectBase<DerivedF> &F)
 {
-  Eigen::VectorXi count = Eigen::VectorXi::Zero(F.maxCoeff());
+  Eigen::VectorXi count = Eigen::VectorXi::Zero(F.maxCoeff()+1);
 
   for(unsigned i=0; i<F.rows();++i)
   {
