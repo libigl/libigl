@@ -27,22 +27,29 @@ namespace igl
   // Outputs:
   //   V  double matrix of vertex positions  #V by 3
   //   F  #F list of face indices into vertex positions
+  //   VC double matrix of vertex colors  #V by 3
   // Returns true on success, false on errors
   template <typename Scalar, typename Index>
   IGL_INLINE bool readWRL(
-    const std::string wrl_file_name, 
+    const std::string wrl_file_name,
     std::vector<std::vector<Scalar > > & V,
     std::vector<std::vector<Index > > & F);
-  // Inputs:
-  //   wrl_file  pointer to already opened .wrl file 
-  // Outputs:
-  //   wrl_file  closed file
+  template <typename Scalar, typename Index>
+  IGL_INLINE bool readWRL(
+    const std::string wrl_file_name,
+    std::vector<std::vector<Scalar > > & V,
+    std::vector<std::vector<Index > > & F,
+    std::vector<std::vector<Scalar > >& VC);
   template <typename Scalar, typename Index>
   IGL_INLINE bool readWRL(
     FILE * wrl_file,
     std::vector<std::vector<Scalar > > & V,
-    std::vector<std::vector<Index > > & F);
-
+    std::vector<std::vector<Index > > & F,
+    std::vector<std::vector<Scalar > >& VC);
+  // Inputs:
+  //   wrl_file  pointer to already opened .wrl file 
+  // Outputs:
+  //   wrl_file  closed file
 }
 
 #ifndef IGL_STATIC_LIBRARY
