@@ -15,7 +15,8 @@ IGL_INLINE bool igl::readWRL(
   std::vector<std::vector<Index > > & F)
 {
   using namespace std;
-  FILE * wrl_file = fopen(wrl_file_name.c_str(),"r");
+  // for using fseek/ftell, open with binary mode.
+  FILE * wrl_file = fopen(wrl_file_name.c_str(),"rb");
   if(NULL==wrl_file)
   {
     printf("IOError: %s could not be opened...",wrl_file_name.c_str());
@@ -40,6 +41,7 @@ IGL_INLINE bool igl::readWRL(
   string haystack;
   while(still_comments)
   {
+    long thisLine = ftell(wrl_file);
     if(fgets(line,1000,wrl_file) == NULL)
     {
       std::cerr<<"readWRL, reached EOF without finding \"point [\""<<std::endl;
@@ -53,7 +55,10 @@ IGL_INLINE bool igl::readWRL(
     // i.e. "point[ %lf %lf %lf,"
     if(!still_comments)
     {
-      fseek(wrl_file, -static_cast<long>(haystack.size()) + static_cast<long>(haystack.find(needle) + needle.size()), SEEK_CUR);
+      fseek(wrl_file, thisLine, SEEK_SET);
+      while(fgetc(wrl_file) != '[')
+      {
+      }
     }
   }
 
@@ -84,7 +89,13 @@ IGL_INLINE bool igl::readWRL(
   needle = string("coordIndex [");
   while(still_comments)
   {
-    fgets(line,1000,wrl_file);
+    long thisLine = ftell(wrl_file);
+    if(fgets(line,1000,wrl_file) == NULL)
+    {
+      std::cerr<<"readWRL, reached EOF without finding \"coordIndex [\""<<std::endl;
+      fclose(wrl_file);
+      return false;
+    }
     haystack = string(line);
     still_comments = string::npos == haystack.find(needle);
 
@@ -92,7 +103,10 @@ IGL_INLINE bool igl::readWRL(
     // i.e. "coordIndex [ %d %d %d -1,"
     if(!still_comments)
     {
-      fseek(wrl_file, -static_cast<long>(haystack.size()) + static_cast<long>(haystack.find(needle) + needle.size()), SEEK_CUR);
+      fseek(wrl_file, thisLine, SEEK_SET);
+      while(fgetc(wrl_file) != '[')
+      {
+      }
     }
   }
   // read F
@@ -118,6 +132,11 @@ IGL_INLINE bool igl::readWRL(
         }
       }else
       {
+        // for the last entry, there are not '-1'
+        if(fgetc(wrl_file) == ']')
+        {
+          F.push_back(face);
+        }
         break;
       }
     }
