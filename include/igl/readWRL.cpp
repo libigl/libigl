@@ -53,18 +53,7 @@ IGL_INLINE bool igl::readWRL(
     // i.e. "point[ %lf %lf %lf,"
     if(!still_comments)
     {
-      double x,y,z;
-      line = line+7;
-      int floats_read = sscanf(line," %lf %lf %lf,",&x,&y,&z);
-      if(floats_read == 3)
-      {
-      vector<Scalar > point;
-      point.resize(3);
-      point[0] = x;
-      point[1] = y;
-      point[2] = z;
-      V.push_back(point);
-      }
+      fseek(wrl_file, -static_cast<long>(haystack.size()) + static_cast<long>(haystack.find(needle) + needle.size()), SEEK_CUR);
     }
   }
 
@@ -99,34 +88,11 @@ IGL_INLINE bool igl::readWRL(
     haystack = string(line);
     still_comments = string::npos == haystack.find(needle);
 
-    line = line+12;
     // in case first vertex position is written in the same line.
     // i.e. "coordIndex [ %d %d %d -1,"
     if(!still_comments)
     {
-      int ints_read = 1;
-      // read new face indices (until hit -1)
-      vector<Index > face;
-      while(true)
-      {
-        // indices are 0-indexed
-        int i;
-        ints_read = fscanf(line," %d,",&i);
-        if(ints_read > 0)
-        {
-          if(i>=0)
-          {
-            face.push_back(i);
-          }else
-          {
-            F.push_back(face);
-            break;
-          }
-        }else
-        {
-          break;
-        }
-      }
+      fseek(wrl_file, -static_cast<long>(haystack.size()) + static_cast<long>(haystack.find(needle) + needle.size()), SEEK_CUR);
     }
   }
   // read F
