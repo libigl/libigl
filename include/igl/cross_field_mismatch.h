@@ -29,10 +29,10 @@ namespace igl
   //
 
   template <typename DerivedV, typename DerivedF, typename DerivedM>
-  IGL_INLINE void cross_field_mismatch(const Eigen::PlainObjectBase<DerivedV> &V,
-                                       const Eigen::PlainObjectBase<DerivedF> &F,
-                                       const Eigen::PlainObjectBase<DerivedV> &PD1,
-                                       const Eigen::PlainObjectBase<DerivedV> &PD2,
+  IGL_INLINE void cross_field_mismatch(const Eigen::MatrixBase<DerivedV> &V,
+                                       const Eigen::MatrixBase<DerivedF> &F,
+                                       const Eigen::MatrixBase<DerivedV> &PD1,
+                                       const Eigen::MatrixBase<DerivedV> &PD2,
                                        const bool isCombed,
                                        Eigen::PlainObjectBase<DerivedM> &mismatch);
 }
