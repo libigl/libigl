@@ -33,15 +33,15 @@ namespace igl
   template <typename DerivedV, typename DerivedF, typename DerivedN>
   IGL_INLINE bool writeSTL(
     const std::string & filename,
-    const Eigen::PlainObjectBase<DerivedV> & V,
-    const Eigen::PlainObjectBase<DerivedF> & F,
-    const Eigen::PlainObjectBase<DerivedN> & N,
+    const Eigen::MatrixBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedF> & F,
+    const Eigen::MatrixBase<DerivedN> & N,
     const bool ascii=true);
   template <typename DerivedV, typename DerivedF>
   IGL_INLINE bool writeSTL(
     const std::string & filename,
-    const Eigen::PlainObjectBase<DerivedV> & V,
-    const Eigen::PlainObjectBase<DerivedF> & F,
+    const Eigen::MatrixBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedF> & F,
     const bool ascii=true);
 }
 
