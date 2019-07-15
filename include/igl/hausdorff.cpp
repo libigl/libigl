@@ -15,10 +15,10 @@ template <
   typename DerivedFB,
   typename Scalar>
 IGL_INLINE void igl::hausdorff(
-  const Eigen::PlainObjectBase<DerivedVA> & VA, 
-  const Eigen::PlainObjectBase<DerivedFA> & FA,
-  const Eigen::PlainObjectBase<DerivedVB> & VB, 
-  const Eigen::PlainObjectBase<DerivedFB> & FB,
+  const Eigen::MatrixBase<DerivedVA> & VA, 
+  const Eigen::MatrixBase<DerivedFA> & FA,
+  const Eigen::MatrixBase<DerivedVB> & VB, 
+  const Eigen::MatrixBase<DerivedFB> & FB,
   Scalar & d)
 {
   using namespace Eigen;
@@ -85,6 +85,6 @@ IGL_INLINE void igl::hausdorff(
 }
 
 #ifdef IGL_STATIC_LIBRARY
-template void igl::hausdorff<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, double>(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, double&);
+template void igl::hausdorff<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, double>(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, double&);
 template void igl::hausdorff<Eigen::Matrix<double, -1, -1, 0, -1, -1>, double>(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, std::function<double (double const&, double const&, double const&)> const&, double&, double&);
 #endif

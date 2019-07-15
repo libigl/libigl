@@ -49,10 +49,10 @@ namespace igl
     typename DerivedFB,
     typename Scalar>
   IGL_INLINE void hausdorff(
-    const Eigen::PlainObjectBase<DerivedVA> & VA, 
-    const Eigen::PlainObjectBase<DerivedFA> & FA,
-    const Eigen::PlainObjectBase<DerivedVB> & VB, 
-    const Eigen::PlainObjectBase<DerivedFB> & FB,
+    const Eigen::MatrixBase<DerivedVA> & VA, 
+    const Eigen::MatrixBase<DerivedFA> & FA,
+    const Eigen::MatrixBase<DerivedVB> & VB, 
+    const Eigen::MatrixBase<DerivedFB> & FB,
     Scalar & d);
   // Compute lower and upper bounds (l,u) on the Hausdorff distance between a triangle
   // (V) and a pointset (e.g., mesh, triangle soup) given by a distance function
