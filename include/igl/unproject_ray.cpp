@@ -27,8 +27,8 @@ IGL_INLINE void igl::unproject_ray(
   using namespace Eigen;
   // Source and direction on screen
   typedef Eigen::Matrix<typename Deriveds::Scalar,3,1> Vec3;
-  Vec3 win_s(pos(0),pos(1),0);
-  Vec3 win_d(pos(0),pos(1),1);
+  Vec3 win_s(pos(0, 0),pos(1, 0),0);
+  Vec3 win_d(pos(0, 0),pos(1, 0),1);
   // Source, destination and direction in world
   Vec3 d;
   igl::unproject(win_s,model,proj,viewport,s);

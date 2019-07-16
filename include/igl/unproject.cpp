@@ -38,13 +38,13 @@ IGL_INLINE void igl::unproject(
   for(int i = 0;i<n;i++)
   {
     typedef typename Derivedscene::Scalar Scalar;
-    Eigen::Matrix<Scalar,4,4> Inverse = 
+    Eigen::Matrix<Scalar,4,4> Inverse =
       (proj.template cast<Scalar>() * model.template cast<Scalar>()).inverse();
 
     Eigen::Matrix<Scalar,4,1> tmp;
     tmp << win.row(i).head(3).transpose(), 1;
-    tmp(0) = (tmp(0) - viewport(0)) / viewport(2);
-    tmp(1) = (tmp(1) - viewport(1)) / viewport(3);
+    tmp(0) = (tmp(0) - viewport(0, 0)) / viewport(2, 0);
+    tmp(1) = (tmp(1) - viewport(1, 0)) / viewport(3, 0);
     tmp = tmp.array() * 2.0f - 1.0f;
 
     Eigen::Matrix<Scalar,4,1> obj = Inverse * tmp;
