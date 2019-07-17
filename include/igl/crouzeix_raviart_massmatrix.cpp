@@ -18,14 +18,14 @@
 
 template <typename MT, typename DerivedV, typename DerivedF, typename DerivedE, typename DerivedEMAP>
 void igl::crouzeix_raviart_massmatrix(
-    const Eigen::MatrixBase<DerivedV> & V, 
-    const Eigen::MatrixBase<DerivedF> & F, 
+    const Eigen::MatrixBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedF> & F,
     Eigen::SparseMatrix<MT> & M,
     Eigen::PlainObjectBase<DerivedE> & E,
     Eigen::PlainObjectBase<DerivedEMAP> & EMAP)
 {
   // All occurrences of directed "facets"
-  Eigen::MatrixXi allE;
+  Eigen::Matrix<typename DerivedF::Scalar, Eigen::Dynamic, Eigen::Dynamic> allE;
   oriented_facets(F,allE);
   Eigen::VectorXi _1;
   unique_simplices(allE,E,_1,EMAP);
