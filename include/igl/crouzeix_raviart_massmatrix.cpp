@@ -69,7 +69,7 @@ void igl::crouzeix_raviart_massmatrix(
   {
     for(int c = 0;c<ss;c++)
     {
-      MIJV[f+m*c] = Triplet<MT>(EMAP(f+m*c),EMAP(f+m*c),TA(f)/(double)(ss));
+      MIJV[f+m*c] = Triplet<MT>(EMAP(f+m*c, 0),EMAP(f+m*c, 0),TA(f)/(double)(ss));
     }
   }
   M.resize(E.rows(),E.rows());
