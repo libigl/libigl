@@ -64,7 +64,7 @@ IGL_INLINE bool igl::unproject_onto_mesh(
   {
     return false;
   }
-  bc.resize(3);
+  bc.resize(3, 1);
   bc << 1.0-hit.u-hit.v, hit.u, hit.v;
   fid = hit.id;
   return true;
