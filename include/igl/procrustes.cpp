@@ -48,8 +48,8 @@ IGL_INLINE void igl::procrustes(
   }
 
   // Rotation
-  MatrixXd S = XC.transpose() * YC;
-  MatrixXd T;
+  Matrix<typename DerivedX::Scalar, Dynamic, Dynamic> S = XC.transpose() * YC;
+  Matrix<typename DerivedT::Scalar, Dynamic, Dynamic> T;
   if (includeReflections)
   {
     polar_dec(S,R,T);
