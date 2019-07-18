@@ -31,8 +31,10 @@ IGL_INLINE void igl::procrustes(
   // Center data
   const VectorXd Xmean = X.colwise().mean();
   const VectorXd Ymean = Y.colwise().mean();
-  MatrixXd XC = X.rowwise() - Xmean.transpose();
-  MatrixXd YC = Y.rowwise() - Ymean.transpose();
+  Matrix<typename DerivedX::Scalar, Dynamic, Dynamic> XC
+    = X.rowwise() - Xmean.transpose();
+  Matrix<typename DerivedY::Scalar, Dynamic, Dynamic> YC
+    = Y.rowwise() - Ymean.transpose();
 
   // Scale
   scale = 1.;
