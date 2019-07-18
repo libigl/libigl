@@ -16,8 +16,8 @@ template <
   typename DerivedR,
   typename DerivedT>
 IGL_INLINE void igl::procrustes(
-    const Eigen::PlainObjectBase<DerivedX>& X,
-    const Eigen::PlainObjectBase<DerivedY>& Y,
+    const Eigen::MatrixBase<DerivedX>& X,
+    const Eigen::MatrixBase<DerivedY>& Y,
     bool includeScaling,
     bool includeReflections,
     Scalar& scale,
@@ -69,8 +69,8 @@ template <
   int DIM,
   int TType>
 IGL_INLINE void igl::procrustes(
-    const Eigen::PlainObjectBase<DerivedX>& X,
-    const Eigen::PlainObjectBase<DerivedY>& Y,
+    const Eigen::MatrixBase<DerivedX>& X,
+    const Eigen::MatrixBase<DerivedY>& Y,
     bool includeScaling,
     bool includeReflections,
     Eigen::Transform<Scalar,DIM,TType>& T)
@@ -91,8 +91,8 @@ template <
   typename DerivedR,
   typename DerivedT>
 IGL_INLINE void igl::procrustes(
-    const Eigen::PlainObjectBase<DerivedX>& X,
-    const Eigen::PlainObjectBase<DerivedY>& Y,
+    const Eigen::MatrixBase<DerivedX>& X,
+    const Eigen::MatrixBase<DerivedY>& Y,
     bool includeScaling,
     bool includeReflections,
     Eigen::PlainObjectBase<DerivedR>& S,
@@ -109,8 +109,8 @@ template <
   typename DerivedR,
   typename DerivedT>
 IGL_INLINE void igl::procrustes(
-    const Eigen::PlainObjectBase<DerivedX>& X,
-    const Eigen::PlainObjectBase<DerivedY>& Y,
+    const Eigen::MatrixBase<DerivedX>& X,
+    const Eigen::MatrixBase<DerivedY>& Y,
     Eigen::PlainObjectBase<DerivedR>& R,
     Eigen::PlainObjectBase<DerivedT>& t)
 {
@@ -123,8 +123,8 @@ template <
   typename Scalar,
   typename DerivedT>
 IGL_INLINE void igl::procrustes(
-    const Eigen::PlainObjectBase<DerivedX>& X,
-    const Eigen::PlainObjectBase<DerivedY>& Y,
+    const Eigen::MatrixBase<DerivedX>& X,
+    const Eigen::MatrixBase<DerivedY>& Y,
     Eigen::Rotation2D<Scalar>& R,
     Eigen::PlainObjectBase<DerivedT>& t)
 {
@@ -136,5 +136,5 @@ IGL_INLINE void igl::procrustes(
 }
 
 #ifdef IGL_STATIC_LIBRARY
-template void igl::procrustes<Eigen::Matrix<double, 3, 2, 0, 3, 2>, Eigen::Matrix<double, 3, 2, 0, 3, 2>, double, Eigen::Matrix<double, 2, 2, 0, 2, 2>, Eigen::Matrix<double, 2, 1, 0, 2, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 2, 0, 3, 2> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 2, 0, 3, 2> > const&, bool, bool, double&, Eigen::PlainObjectBase<Eigen::Matrix<double, 2, 2, 0, 2, 2> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, 2, 1, 0, 2, 1> >&);
+template void igl::procrustes<Eigen::Matrix<double, 3, 2, 0, 3, 2>, Eigen::Matrix<double, 3, 2, 0, 3, 2>, double, Eigen::Matrix<double, 2, 2, 0, 2, 2>, Eigen::Matrix<double, 2, 1, 0, 2, 1> >(Eigen::MatrixBase<Eigen::Matrix<double, 3, 2, 0, 3, 2> > const&, Eigen::MatrixBase<Eigen::Matrix<double, 3, 2, 0, 3, 2> > const&, bool, bool, double&, Eigen::PlainObjectBase<Eigen::Matrix<double, 2, 2, 0, 2, 2> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, 2, 1, 0, 2, 1> >&);
 #endif
