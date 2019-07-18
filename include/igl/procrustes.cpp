@@ -29,12 +29,12 @@ IGL_INLINE void igl::procrustes(
   assert(X.cols() == Y.cols() && "Points have same dimensions");
 
   // Center data
-  const VectorXd Xmean = X.colwise().mean();
-  const VectorXd Ymean = Y.colwise().mean();
+  const Matrix<typename DerivedX::Scalar, Dynamic, 1> Xmean = X.colwise().mean();
+  const Matrix<typename DerivedY::Scalar, Dynamic, 1> Ymean = Y.colwise().mean();
   Matrix<typename DerivedX::Scalar, Dynamic, Dynamic> XC
-    = X.rowwise() - Xmean.transpose();
+      = X.rowwise() - Xmean.transpose();
   Matrix<typename DerivedY::Scalar, Dynamic, Dynamic> YC
-    = Y.rowwise() - Ymean.transpose();
+      = Y.rowwise() - Ymean.transpose();
 
   // Scale
   scale = 1.;
