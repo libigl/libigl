@@ -22,7 +22,7 @@ IGL_INLINE void igl::resolve_duplicated_faces(
     Eigen::PlainObjectBase<DerivedJ>& J) {
 
   //typedef typename DerivedF1::Scalar Index;
-  Eigen::VectorXi IA,IC;
+  Eigen::Matrix<typename DerivedF1::Scalar, Eigen::Dynamic, 1> IA,IC;
   DerivedF1 uF;
   igl::unique_simplices(F1,uF,IA,IC);
 
