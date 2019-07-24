@@ -747,8 +747,8 @@ IGL_INLINE void igl::slim_precompute(
   const Eigen::MatrixXd &V_init, 
   igl::SLIMData &data,
   igl::MappingEnergyType slim_energy, 
-  Eigen::VectorXi &b, 
-  Eigen::MatrixXd &bc,
+  const Eigen::VectorXi &b,
+  const Eigen::MatrixXd &bc,
   double soft_p)
 {
 
