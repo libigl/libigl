@@ -22,18 +22,21 @@ namespace igl
   //
   // Inputs:
   //   I  #I list of vertex indices
+  //   is_loop bool If true, include an edge connecting I[N-1] to I[0]
   // Outputs:
   //   E  #I-1 by 2 list of edges
   // 
   template <typename DerivedI, typename DerivedE>
   IGL_INLINE void path_to_edges(
     const Eigen::MatrixBase<DerivedI> & I,
-    Eigen::PlainObjectBase<DerivedE> & E);
+    Eigen::PlainObjectBase<DerivedE> & E,
+    bool is_loop=false);
   
   template <typename Index, typename DerivedE>
   IGL_INLINE void path_to_edges(
     const std::vector<Index> & I,
-    Eigen::PlainObjectBase<DerivedE> & E);
+    Eigen::PlainObjectBase<DerivedE> & E,
+    bool is_loop=false);
 
 }
 #ifndef IGL_STATIC_LIBRARY
