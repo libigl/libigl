@@ -12,14 +12,14 @@ IGL_INLINE void igl::path_to_edges(
   if(is_loop) {
     E.conservativeResize(I.size(), 2);
     for(int i = 0; i < I.size(); i++) {
-      E(i, 0) = I[i];
-      E(i, 1) = I[(i + 1) % I.size()];
+      E(i, 0) = I(i);
+      E(i, 1) = I(i + 1) % I.size()];
     }
   } else {
     E.conservativeResize(I.size()-1, 2);
     for(int i = 0; i < I.size()-1; i++) {
-      E(i, 0) = I[i];
-      E(i, 1) = I[i+1];
+      E(i, 0) = I(i);
+      E(i, 1) = I(i+1);
     }
   }
 }
