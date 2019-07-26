@@ -14,6 +14,7 @@ TEST_CASE("igl_path_to_edges: basic_test", "[igl]")
   test_common::assert_eq(Eactual, Eexpected);
 }
 
+#include <iostream> 
 
 TEST_CASE("igl_path_to_edges: loop_test", "[igl]")
 {
@@ -21,9 +22,9 @@ TEST_CASE("igl_path_to_edges: loop_test", "[igl]")
   const Eigen::MatrixXi Eexpected = (Eigen::MatrixXi(6,2)<<0,1, 1,2, 2,3, 3,4, 4,5, 5,0).finished();
 
   Eigen::MatrixXi Eactual;
-  const bool is_loop = true;
-  igl::path_to_edges(I, Eactual, is_loop);
-
+  const bool make_loop = true;
+  igl::path_to_edges(I, Eactual, make_loop);
+  std::cout << Eactual << std::endl;
   test_common::assert_eq(Eactual, Eexpected);
 }
 
@@ -45,8 +46,8 @@ TEST_CASE("igl_path_to_edges: vector_loop_test", "[igl]")
   const Eigen::MatrixXi Eexpected = (Eigen::MatrixXi(6,2)<<0,1, 1,2, 2,3, 3,4, 4,5, 5,0).finished();
 
   Eigen::MatrixXi Eactual;
-  const bool is_loop = true;
-  igl::path_to_edges(I, Eactual, is_loop);
+  const bool make_loop = true;
+  igl::path_to_edges(I, Eactual, make_loop);
 
   test_common::assert_eq(Eactual, Eexpected);
 }

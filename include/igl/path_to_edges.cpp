@@ -4,17 +4,19 @@ template <typename DerivedI, typename DerivedE>
 IGL_INLINE void igl::path_to_edges(
   const Eigen::MatrixBase<DerivedI> & I,
   Eigen::PlainObjectBase<DerivedE> & E,
-  bool is_loop)
+  bool make_loop)
 {
   // Check that I is 1 dimensional
   assert(I.size() == I.rows() || I.size() == I.cols());
 
-  if(is_loop) {
+  if(make_loop) {
     E.conservativeResize(I.size(), 2);
-    for(int i = 0; i < I.size(); i++) {
+    for(int i = 0; i < I.size() - 1; i++) {
       E(i, 0) = I(i);
-      E(i, 1) = I(i + 1) % I.size();
+      E(i, 1) = I(i + 1);
     }
+    E(I.size() - 1, 0) = I(I.size() - 1);
+    E(I.size() - 1, 1) = I(0);
   } else {
     E.conservativeResize(I.size()-1, 2);
     for(int i = 0; i < I.size()-1; i++) {
@@ -28,9 +30,9 @@ template <typename Index, typename DerivedE>
 IGL_INLINE void igl::path_to_edges(
   const std::vector<Index> & I,
   Eigen::PlainObjectBase<DerivedE> & E,
-  bool is_loop)
+  bool make_loop)
 {
-  igl::path_to_edges(Eigen::Map<const Eigen::Matrix<Index, -1, 1>>(I.data(), I.size()), E, is_loop);
+  igl::path_to_edges(Eigen::Map<const Eigen::Matrix<Index, -1, 1>>(I.data(), I.size()), E, make_loop);
 }
 
 #ifdef IGL_STATIC_LIBRARY
