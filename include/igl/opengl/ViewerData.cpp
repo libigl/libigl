@@ -209,7 +209,7 @@ IGL_INLINE void igl::opengl::ViewerData::set_colors(const Eigen::MatrixXd &C)
   }
   else
     cerr << "ERROR (set_colors): Please provide a single color, or a color per face or per vertex."<<endl;
-  dirty |= MeshGL::DIRTY_DIFFUSE;
+  dirty |= MeshGL::DIRTY_DIFFUSE | MeshGL::DIRTY_SPECULAR | MeshGL::DIRTY_AMBIENT;
 
 }
 
