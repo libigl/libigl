@@ -33,6 +33,26 @@ namespace igl
     const Eigen::MatrixBase<DerivedR> & R,
     const Eigen::MatrixBase<DerivedC> & C,
     Eigen::SparseMatrix<TY>& Y);
+  template <
+    typename TX,
+    typename TY,
+    typename DerivedR,
+    typename DerivedC>
+  IGL_INLINE void slice(
+    const Eigen::SparseMatrix<TX>& X,
+    const Eigen::ArrayBase<DerivedR> & R,
+    const Eigen::MatrixBase<DerivedC> & C,
+    Eigen::SparseMatrix<TY>& Y);
+  template <
+    typename TX,
+    typename TY,
+    typename DerivedR,
+    typename DerivedC>
+  IGL_INLINE void slice(
+    const Eigen::SparseMatrix<TX>& X,
+    const Eigen::MatrixBase<DerivedR> & R,
+    const Eigen::ArrayBase<DerivedC> & C,
+    Eigen::SparseMatrix<TY>& Y);
   // Wrapper to only slice in one direction
   //
   // Inputs:
@@ -46,6 +66,15 @@ namespace igl
   IGL_INLINE void slice(
     const MatX& X,
     const Eigen::MatrixBase<DerivedR> & R,
+    const int dim,
+    MatY& Y);
+  template <
+    typename MatX,
+    typename DerivedR,
+    typename MatY>
+  IGL_INLINE void slice(
+    const MatX& X,
+    const Eigen::ArrayBase<DerivedR> & R,
     const int dim,
     MatY& Y);
   template <

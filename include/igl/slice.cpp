@@ -139,10 +139,178 @@ IGL_INLINE void igl::slice(
 #endif
 }
 
+template <
+    typename TX,
+    typename TY,
+    typename DerivedR,
+    typename DerivedC>
+IGL_INLINE void igl::slice(
+    const Eigen::SparseMatrix<TX> &X,
+    const Eigen::ArrayBase<DerivedR> &R,
+    const Eigen::MatrixBase<DerivedC> &C,
+    Eigen::SparseMatrix<TY> &Y)
+{
+  int xm = X.rows();
+  int xn = X.cols();
+  int ym = R.size();
+  int yn = C.size();
+
+  // special case when R or C is empty
+  if (ym == 0 || yn == 0)
+  {
+    Y.resize(ym, yn);
+    return;
+  }
+
+  assert(R.minCoeff() >= 0);
+  assert(R.maxCoeff() < xm);
+  assert(C.minCoeff() >= 0);
+  assert(C.maxCoeff() < xn);
+
+  // Build reindexing maps for columns and rows, -1 means not in map
+  std::vector<std::vector<typename DerivedR::Scalar>> RI;
+  RI.resize(xm);
+  for (int i = 0; i < ym; i++)
+  {
+    RI[R(i)].push_back(i);
+  }
+  std::vector<std::vector<typename DerivedC::Scalar>> CI;
+  CI.resize(xn);
+  // initialize to -1
+  for (int i = 0; i < yn; i++)
+  {
+    CI[C(i)].push_back(i);
+  }
+  // Resize output
+  Eigen::DynamicSparseMatrix<TY, Eigen::RowMajor> dyn_Y(ym, yn);
+  // Take a guess at the number of nonzeros (this assumes uniform distribution
+  // not banded or heavily diagonal)
+  dyn_Y.reserve((X.nonZeros() / (X.rows() * X.cols())) * (ym * yn));
+  // Iterate over outside
+  for (int k = 0; k < X.outerSize(); ++k)
+  {
+    // Iterate over inside
+    for (typename Eigen::SparseMatrix<TX>::InnerIterator it(X, k); it; ++it)
+    {
+      typename std::vector<typename DerivedR::Scalar>::iterator rit;
+      typename std::vector<typename DerivedC::Scalar>::iterator cit;
+      for (rit = RI[it.row()].begin(); rit != RI[it.row()].end(); rit++)
+      {
+        for (cit = CI[it.col()].begin(); cit != CI[it.col()].end(); cit++)
+        {
+          dyn_Y.coeffRef(*rit, *cit) = it.value();
+        }
+      }
+    }
+  }
+  Y = Eigen::SparseMatrix<TY>(dyn_Y);
+}
+
+template <
+    typename TX,
+    typename TY,
+    typename DerivedR,
+    typename DerivedC>
+IGL_INLINE void igl::slice(
+    const Eigen::SparseMatrix<TX> &X,
+    const Eigen::MatrixBase<DerivedR> &R,
+    const Eigen::ArrayBase<DerivedC> &C,
+    Eigen::SparseMatrix<TY> &Y)
+{
+  int xm = X.rows();
+  int xn = X.cols();
+  int ym = R.size();
+  int yn = C.size();
+
+  // special case when R or C is empty
+  if (ym == 0 || yn == 0)
+  {
+    Y.resize(ym, yn);
+    return;
+  }
+
+  assert(R.minCoeff() >= 0);
+  assert(R.maxCoeff() < xm);
+  assert(C.minCoeff() >= 0);
+  assert(C.maxCoeff() < xn);
+
+  // Build reindexing maps for columns and rows, -1 means not in map
+  std::vector<std::vector<typename DerivedR::Scalar>> RI;
+  RI.resize(xm);
+  for (int i = 0; i < ym; i++)
+  {
+    RI[R(i)].push_back(i);
+  }
+  std::vector<std::vector<typename DerivedC::Scalar>> CI;
+  CI.resize(xn);
+  // initialize to -1
+  for (int i = 0; i < yn; i++)
+  {
+    CI[C(i)].push_back(i);
+  }
+  // Resize output
+  Eigen::DynamicSparseMatrix<TY, Eigen::RowMajor> dyn_Y(ym, yn);
+  // Take a guess at the number of nonzeros (this assumes uniform distribution
+  // not banded or heavily diagonal)
+  dyn_Y.reserve((X.nonZeros() / (X.rows() * X.cols())) * (ym * yn));
+  // Iterate over outside
+  for (int k = 0; k < X.outerSize(); ++k)
+  {
+    // Iterate over inside
+    for (typename Eigen::SparseMatrix<TX>::InnerIterator it(X, k); it; ++it)
+    {
+      typename std::vector<typename DerivedR::Scalar>::iterator rit;
+      typename std::vector<typename DerivedC::Scalar>::iterator cit;
+      for (rit = RI[it.row()].begin(); rit != RI[it.row()].end(); rit++)
+      {
+        for (cit = CI[it.col()].begin(); cit != CI[it.col()].end(); cit++)
+        {
+          dyn_Y.coeffRef(*rit, *cit) = it.value();
+        }
+      }
+    }
+  }
+  Y = Eigen::SparseMatrix<TY>(dyn_Y);
+}
+
 template <typename MatX, typename DerivedR, typename MatY>
 IGL_INLINE void igl::slice(
     const MatX &X,
     const Eigen::MatrixBase<DerivedR> &R,
+    const int dim,
+    MatY &Y)
+{
+  Eigen::Matrix<typename DerivedR::Scalar, Eigen::Dynamic, 1> C;
+  switch (dim)
+  {
+  case 1:
+    // boring base case
+    if (X.cols() == 0)
+    {
+      Y.resize(R.size(), 0);
+      return;
+    }
+    igl::colon(0, X.cols() - 1, C);
+    return slice(X, R, C, Y);
+  case 2:
+    // boring base case
+    if (X.rows() == 0)
+    {
+      Y.resize(0, R.size());
+      return;
+    }
+    igl::colon(0, X.rows() - 1, C);
+    return slice(X, C, R, Y);
+  default:
+    assert(false && "Unsupported dimension");
+    return;
+  }
+}
+
+template <typename MatX, typename DerivedR, typename MatY>
+IGL_INLINE void igl::slice(
+    const MatX &X,
+    const Eigen::ArrayBase<DerivedR> &R,
     const int dim,
     MatY &Y)
 {
@@ -347,4 +515,5 @@ template void igl::slice<Eigen::MatrixBase<Eigen::Matrix<int, -1, 3, 1, -1, 3> >
 template void igl::slice<Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1>>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1>>>(Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1>> const &, Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1>> const &, int, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1>> &);
 template void igl::slice<Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >, Eigen::Matrix<long, -1, 1, 0, -1, 1>, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > >(Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<long, -1, 1, 0, -1, 1> > const&, int, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
 template void igl::slice<Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1>>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1>>>(Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1>> const &, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1>> const &, int, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1>> &);
+template void igl::slice<Eigen::SparseMatrix<double, 0, int>, Eigen::Array<int, -1, 1, 0, -1, 1>, Eigen::SparseMatrix<double, 0, int> >(Eigen::SparseMatrix<double, 0, int> const&, Eigen::ArrayBase<Eigen::Array<int, -1, 1, 0, -1, 1> > const&, int, Eigen::SparseMatrix<double, 0, int>&);
 #endif
