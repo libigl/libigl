@@ -179,6 +179,48 @@ template <
     typename DerivedC,
     typename DerivedY>
 IGL_INLINE void igl::slice(
+    const Eigen::ArrayBase<DerivedX> &X,
+    const Eigen::MatrixBase<DerivedR> &R,
+    const Eigen::MatrixBase<DerivedC> &C,
+    Eigen::PlainObjectBase<DerivedY> &Y)
+{
+#ifndef NDEBUG
+  int xm = X.rows();
+  int xn = X.cols();
+#endif
+  int ym = R.size();
+  int yn = C.size();
+
+  // special case when R or C is empty
+  if (ym == 0 || yn == 0)
+  {
+    Y.resize(ym, yn);
+    return;
+  }
+
+  assert(R.minCoeff() >= 0);
+  assert(R.maxCoeff() < xm);
+  assert(C.minCoeff() >= 0);
+  assert(C.maxCoeff() < xn);
+
+  // Resize output
+  Y.resize(ym, yn);
+  // loop over output rows, then columns
+  for (int i = 0; i < ym; i++)
+  {
+    for (int j = 0; j < yn; j++)
+    {
+      Y(i, j) = X(R(i, 0), C(j, 0));
+    }
+  }
+}
+
+template <
+    typename DerivedX,
+    typename DerivedR,
+    typename DerivedC,
+    typename DerivedY>
+IGL_INLINE void igl::slice(
     const Eigen::MatrixBase<DerivedX> &X,
     const Eigen::MatrixBase<DerivedR> &R,
     const Eigen::MatrixBase<DerivedC> &C,
