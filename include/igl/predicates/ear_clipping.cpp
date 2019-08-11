@@ -45,7 +45,7 @@ IGL_INLINE void igl::predicates::ear_clipping(
        r == igl::predicates::Orientation::COLLINEAR) return false;
     
     // check if any vertex is lying inside triangle (a,b,i);
-    int k=R(b);
+    Index k=R(b);
     while(k!=a){
       Eigen::Matrix<Scalar,-1,2> T(3,2);
       T<<P.row(a),P.row(i),P.row(b);
@@ -64,8 +64,8 @@ IGL_INLINE void igl::predicates::ear_clipping(
     R(i) = Index((i+1)%P.rows());
   }
 
-  Eigen::VectorXi ears; // mark ears
-  Eigen::VectorXi X; // clipped vertices
+  Eigen::Matrix<Index,Eigen::Dynamic,1> ears; // mark ears
+  Eigen::Matrix<Index,Eigen::Dynamic,1> X; // clipped vertices
   ears.setZero(P.rows());
   X.setZero(P.rows());
 
