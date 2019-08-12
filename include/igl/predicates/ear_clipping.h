@@ -6,7 +6,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 
-#ifndef EAR_CLIPPING
+#ifndef IGL_PREDICATES_EAR_CLIPPING_H
 #define EAR_CLIPPING
 
 #include <Eigen/Core>
