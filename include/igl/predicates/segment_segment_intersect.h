@@ -11,7 +11,7 @@
 
 #include <igl/igl_inline.h>
 #include <Eigen/Core>
-#include <igl/predicates/predicates.h>
+#include "predicates.h"
 namespace igl
 {
   namespace predicates
