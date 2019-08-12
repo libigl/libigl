@@ -98,9 +98,8 @@ int main(int argc, char *argv[])
     all_bnds.erase(primary_bnd);
     Eigen::MatrixXi F_filled;
     igl::topological_hole_fill(F, bnd, all_bnds, F_filled);
-    igl::harmonic(F_filled, bnd, bnd_uv, 1, uv_init);
-    Eigen::MatrixXd tmpr_uv_init = uv_init.topRows(V.rows()); // copy to a temporary
-    uv_init = std::move(tmpr_uv_init); // and move over to prevent another copy
+    igl::harmonic(F_filled, bnd, bnd_uv ,1, uv_init);
+    uv_init.conservativeResize(V.rows(), 2);
   }
 
   Eigen::VectorXi b; Eigen::MatrixXd bc;
