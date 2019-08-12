@@ -7,7 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 
 #ifndef IGL_PREDICATES_EAR_CLIPPING_H
-#define EAR_CLIPPING
+#define IGL_PREDICATES_EAR_CLIPPING_H
 
 #include <Eigen/Core>
 #include "../igl_inline.h"
