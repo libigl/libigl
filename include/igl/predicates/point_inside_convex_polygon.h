@@ -19,7 +19,7 @@ namespace igl
 {
   namespace predicates
   {
-    // check whether 2d point lies inside 2d polygon
+    // check whether 2d point lies inside 2d convex polygon
     // Inputs:
     //   P: n*2 polygon, n >= 3
     //   q: 2d query point
