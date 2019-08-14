@@ -64,7 +64,9 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
 
 
   // cache known
-  data.known = known;
+  // FIXME: This is *NOT* generic and introduces a copy.
+  data.known = known.template cast<int>();
+
   // get list of unknown indices
   data.unknown.resize(n-kr);
   std::vector<bool> unknown_mask;

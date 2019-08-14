@@ -36,10 +36,10 @@ IGL_INLINE void igl::per_edge_normals(
   // number of faces
   const int m = F.rows();
   // All occurrences of directed edges
-  MatrixXi allE;
+  Matrix<typename DerivedF::Scalar, Dynamic, Dynamic> allE;
   oriented_facets(F,allE);
   // Find unique undirected edges and mapping
-  VectorXi _;
+  Matrix<typename DerivedF::Scalar, Dynamic, 1> _;
   unique_simplices(allE,E,_,EMAP);
   // now sort(allE,2) == E(EMAP,:), that is, if EMAP(i) = j, then E.row(j) is
   // the undirected edge corresponding to the directed edge allE.row(i).
@@ -67,10 +67,10 @@ IGL_INLINE void igl::per_edge_normals(
     {
       if(weighting == PER_EDGE_NORMALS_WEIGHTING_TYPE_UNIFORM)
       {
-        N.row(EMAP(f+c*m)) += FN.row(f);
+        N.row(EMAP(f+c*m, 0)) += FN.row(f);
       }else
       {
-        N.row(EMAP(f+c*m)) += W(f) * FN.row(f);
+        N.row(EMAP(f+c*m, 0)) += W(f) * FN.row(f);
       }
     }
   }

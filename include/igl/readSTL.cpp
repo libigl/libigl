@@ -85,14 +85,14 @@ IGL_INLINE bool igl::readSTL(
 
   // Specifically 80 character header
   char header[80];
-  char solid[80];
+  char solid[80] = {0};
   bool is_ascii = true;
   if(fread(header,1,80,stl_file) != 80)
   {
     cerr<<"IOError: too short (1)."<<endl;
     goto close_false;
   }
-  sscanf(header,"%s",solid);
+  sscanf(header,"%79s",solid);
   if(string("solid") != solid)
   {
     // definitely **not** ascii 
