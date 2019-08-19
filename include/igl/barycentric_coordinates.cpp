@@ -93,7 +93,7 @@ IGL_INLINE void igl::barycentric_coordinates(
   VectorS d11 = (v1*v1).rowwise().sum();
   VectorS d20 = (v2*v0).rowwise().sum();
   VectorS d21 = (v2*v1).rowwise().sum();
-  VectorS denom = d00 * d11 - d01 * d01;
+  VectorS denom = d00 * d11 - d01 * d01 + std::numeric_limits<typename DerivedP::Scalar>::epsilon();
   L.resize(P.rows(),3);
   L.col(1) = (d11 * d20 - d01 * d21) / denom;
   L.col(2) = (d00 * d21 - d01 * d20) / denom;
