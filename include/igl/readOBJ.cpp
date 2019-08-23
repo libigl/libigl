@@ -281,7 +281,12 @@ IGL_INLINE bool igl::readOBJ(
 #  define IGL_LINE_MAX 2048
 #endif
 
+#ifndef MATERIAL_LINE_MAX
+#  define MATERIAL_LINE_MAX 2048
+#endif
+
   char line[IGL_LINE_MAX];
+  char currentmaterialref[MATERIAL_LINE_MAX];
   int line_no = 1;
   while (fgets(line, IGL_LINE_MAX, obj_file) != NULL)
   {
@@ -407,6 +412,7 @@ IGL_INLINE bool igl::readOBJ(
           F.push_back(f);
           FTC.push_back(ftc);
           FN.push_back(fn);
+          FM.push_back(std::make_tuple (f,ftc,fn,currentmaterialref));
         }else
         {
           fprintf(stderr,
@@ -414,10 +420,13 @@ IGL_INLINE bool igl::readOBJ(
           fclose(obj_file);
           return false;
         }
-      }else if(strlen(type) >= 1 && (type[0] == '#' ||
+      }else if(strlen(type) >= 1 && strcmp("usemtl",type)==0 )
+      {
+        sscanf(l,"%s\n",&currentmaterialref);
+      }
+      else if(strlen(type) >= 1 && (type[0] == '#' ||
             type[0] == 'g'  ||
             type[0] == 's'  ||
-            strcmp("usemtl",type)==0 ||
             strcmp("mtllib",type)==0))
       {
         //ignore comments or other shit
