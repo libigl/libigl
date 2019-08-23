@@ -14,7 +14,6 @@
 #include <functional>
 #include <algorithm>
 #include <tuple>
-#include <iostream>
 
 namespace test_common
 {
@@ -99,8 +98,6 @@ namespace test_common
     std::vector<std::vector<DerivedF >> & FN,
     std::vector<std::tuple<std::vector<DerivedF > , std::vector<DerivedF > , std::vector<DerivedF > , std::string> > & FM)
   {
-    std::cout << "coucou" << std::endl;
-    //igl::read_triangle_mesh(data_path(filename), V, F);
     igl::readOBJ(data_path(filename), V, TC, N, F, FTC, FN, FM);
   }
 
