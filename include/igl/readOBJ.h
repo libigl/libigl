@@ -76,21 +76,8 @@ namespace igl
     std::vector<std::vector<Index > > & F,
     std::vector<std::vector<Index > > & FTC,
     std::vector<std::vector<Index > > & FN,
-    std::vector<std::tuple<std::vector<Index > , std::vector<Index > , std::vector<Index > , std::string> > & FM
+    std::vector<std::tuple<std::string, Index, Index >> &FM
     );
-  // Inputs:
-  //   obj_file  pointer to already opened .obj file 
-  // Outputs:
-  //   obj_file  closed file
-  template <typename Scalar, typename Index>
-  IGL_INLINE bool readOBJ(
-    FILE * obj_file,
-    std::vector<std::vector<Scalar > > & V,
-    std::vector<std::vector<Scalar > > & TC,
-    std::vector<std::vector<Scalar > > & N,
-    std::vector<std::vector<Index > > & F,
-    std::vector<std::vector<Index > > & FTC,
-    std::vector<std::vector<Index > > & FN);
 
   // Inputs:
   //   obj_file  pointer to already opened .obj file 
@@ -105,7 +92,7 @@ namespace igl
     std::vector<std::vector<Index > > & F,
     std::vector<std::vector<Index > > & FTC,
     std::vector<std::vector<Index > > & FN,
-    std::vector<std::tuple<std::vector<Index > , std::vector<Index > , std::vector<Index > , std::string> > & FM);
+    std::vector<std::tuple<std::string, Index, Index >> &FM);
   // Just V and F
   template <typename Scalar, typename Index>
   IGL_INLINE bool readOBJ(

@@ -96,7 +96,7 @@ namespace test_common
     std::vector<std::vector<DerivedF >> & F,
     std::vector<std::vector<DerivedF >> & FTC,
     std::vector<std::vector<DerivedF >> & FN,
-    std::vector<std::tuple<std::vector<DerivedF > , std::vector<DerivedF > , std::vector<DerivedF > , std::string> > & FM)
+    std::vector<std::tuple<std::string, DerivedF, DerivedF >> &FM)
   {
     igl::readOBJ(data_path(filename), V, TC, N, F, FTC, FN, FM);
   }
