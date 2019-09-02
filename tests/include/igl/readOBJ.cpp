@@ -23,7 +23,7 @@ TEST_CASE("readOBJ: Obj with material", "[igl]")
     std::vector<std::vector<int > > FTC;
     std::vector<std::vector<int > >  FN;
     std::vector<std::tuple<std::string, int, int>> FM;
-    test_common::load_obj_with_material<double, int>("objwithmaterial.obj", V, TC, N, F, FTC, FN, FM);
+    test_common::load_obj_with_material<double, int>("cubewithmaterial.obj", V, TC, N, F, FTC, FN, FM);
     REQUIRE (V.size() == 8);
     REQUIRE (F.size() == 6);
     for ( const auto& i : FM ) {
@@ -35,6 +35,5 @@ TEST_CASE("readOBJ: Obj with material", "[igl]")
         std::cout << std::get<2>(i) << ' ';
         std::cout << std::endl;
     }
-    //REQUIRE (FM.size() == 6);
-
+    REQUIRE (FM.size() == 2);
 }

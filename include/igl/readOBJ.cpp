@@ -96,8 +96,9 @@ IGL_INLINE bool igl::readOBJ(
 #endif
 
   char line[IGL_LINE_MAX];
-  char currentmaterialref[MATERIAL_LINE_MAX];
-  int line_no = 1;
+  char currentmaterialref[MATERIAL_LINE_MAX] = "";
+  bool FMwasinit = false;
+  int line_no = 1, previous_face_no=0, current_face_no = 0;
   while (fgets(line, IGL_LINE_MAX, obj_file) != NULL)
   {
     char type[IGL_LINE_MAX];
@@ -222,7 +223,7 @@ IGL_INLINE bool igl::readOBJ(
           F.push_back(f);
           FTC.push_back(ftc);
           FN.push_back(fn);
-          //FM.push_back(std::make_tuple (f,ftc,fn,currentmaterialref));
+          current_face_no++;
         }else
         {
           fprintf(stderr,
@@ -232,7 +233,14 @@ IGL_INLINE bool igl::readOBJ(
         }
       }else if(strlen(type) >= 1 && strcmp("usemtl",type)==0 )
       {
-        sscanf(l,"%s\n",&currentmaterialref);
+        if(FMwasinit){
+          FM.push_back(std::make_tuple(currentmaterialref,previous_face_no,current_face_no-1));
+          previous_face_no = current_face_no;
+        }
+        else{
+          FMwasinit=true;
+        }
+        sscanf(l, "%s\n", &currentmaterialref);
       }
       else if(strlen(type) >= 1 && (type[0] == '#' ||
             type[0] == 'g'  ||
@@ -254,6 +262,8 @@ IGL_INLINE bool igl::readOBJ(
     }
     line_no++;
   }
+  if(strcmp(currentmaterialref,"")!=0)
+    FM.push_back(std::make_tuple(currentmaterialref,previous_face_no,current_face_no-1));
   fclose(obj_file);
 
   assert(F.size() == FN.size());
