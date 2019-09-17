@@ -34,9 +34,12 @@ option(LIBIGL_WITH_TETGEN            "Use Tetgen"                   OFF)
 option(LIBIGL_WITH_TRIANGLE          "Use Triangle"                 OFF)
 option(LIBIGL_WITH_PREDICATES        "Use exact predicates"         OFF)
 option(LIBIGL_WITH_XML               "Use XML"                      OFF)
-option(LIBIGL_WITH_PYTHON            "Use Python"                   OFF)
 option(LIBIGL_WITHOUT_COPYLEFT       "Disable Copyleft libraries"   OFF)
 option(LIBIGL_EXPORT_TARGETS         "Export libigl CMake targets"  OFF)
+
+if(LIBIGL_BUILD_PYTHON)
+  message(FATAL_ERROR "Python bindings have been removed in this version. Please use an older version of libigl, or wait for the new bindings to be released.")
+endif()
 
 ################################################################################
 
@@ -154,7 +157,7 @@ function(compile_igl_module module_dir)
     add_library(${module_libname} STATIC ${SOURCES_IGL_${module_name}} ${ARGN})
     if(MSVC)
       # Silencing some compile warnings
-      target_compile_options(${module_libname} PRIVATE 
+      target_compile_options(${module_libname} PRIVATE
         # Type conversion warnings. These can be fixed with some effort and possibly more verbose code.
         /wd4267 # conversion from 'size_t' to 'type', possible loss of data
         /wd4244 # conversion from 'type1' to 'type2', possible loss of data
@@ -200,7 +203,6 @@ compile_igl_module("core" ${SOURCES_IGL})
 ################################################################################
 ### Download the python part ###
 if(LIBIGL_WITH_PYTHON)
-  igl_download_pybind11()
 endif()
 
 ################################################################################
@@ -216,11 +218,8 @@ if(LIBIGL_WITH_CGAL)
     if(EXISTS ${LIBIGL_EXTERNAL}/boost)
       set(BOOST_ROOT "${LIBIGL_EXTERNAL}/boost")
     endif()
-    if(LIBIGL_WITH_PYTHON)
-      option(CGAL_Boost_USE_STATIC_LIBS "Use static Boost libs with CGAL" OFF)
-    else()
-      option(CGAL_Boost_USE_STATIC_LIBS "Use static Boost libs with CGAL" ON)
-    endif()
+    option(CGAL_Boost_USE_STATIC_LIBS "Use static Boost libs with CGAL" ON)
+
     find_package(CGAL CONFIG COMPONENTS Core PATHS ${CGAL_DIR} NO_DEFAULT_PATH)
   endif()
 

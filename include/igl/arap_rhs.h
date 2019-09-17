@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2013 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_ARAP_RHS_H
 #define IGL_ARAP_RHS_H
@@ -25,16 +25,17 @@ namespace igl
   //   energy  igl::ARAPEnergyType enum value defining which energy is being
   //     used. See igl::ARAPEnergyType.h for valid options and explanations.
   // Outputs:
-  //   K  #V*dim by #(F|V)*dim*dim matrix such that: 
+  //   K  #V*dim by #(F|V)*dim*dim matrix such that:
   //     b = K * reshape(permute(R,[3 1 2]),size(V|F,1)*size(V,2)*size(V,2),1);
-  //   
+  //
   // See also: arap_linear_block
+  template<typename DerivedV, typename DerivedF, typename DerivedK>
   IGL_INLINE void arap_rhs(
-    const Eigen::MatrixXd & V, 
-    const Eigen::MatrixXi & F,
+    const Eigen::MatrixBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedF> & F,
     const int dim,
     const igl::ARAPEnergyType energy,
-    Eigen::SparseMatrix<double>& K);
+    Eigen::SparseCompressedBase<DerivedK>& K);
 }
 #ifndef IGL_STATIC_LIBRARY
 #include "arap_rhs.cpp"

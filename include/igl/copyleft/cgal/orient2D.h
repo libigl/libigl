@@ -21,7 +21,7 @@ namespace igl
       //   pa,pb,pc   2D points.
       // Output:
       //   1 if pa,pb,pc are counterclockwise oriented.
-      //   0 if pa,pb,pc are counterclockwise oriented.
+      //   0 if pa,pb,pc are collinear.
       //  -1 if pa,pb,pc are clockwise oriented.
       template <typename Scalar>
       IGL_INLINE short orient2D(
