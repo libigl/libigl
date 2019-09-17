@@ -15,7 +15,7 @@ IGL_INLINE bool igl::readWRL(
   std::vector<std::vector<Index > > & F)
 {
   std::vector<std::vector<Scalar> > VC;
-  return readWRL(wrl_file,V,F,VC);
+  return readWRL(wrl_file_name,V,F,VC);
 }
 
 template <typename Scalar, typename Index>
