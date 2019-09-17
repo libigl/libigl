@@ -149,7 +149,7 @@ IGL_INLINE bool igl::read_triangle_mesh(
     }
   }else if(ext == "wrl")
   {
-    if(!readWRL(fp,vV,vF))
+    if(!readWRL(fp,vV,vF,vC))
     {
       return false;
     }
