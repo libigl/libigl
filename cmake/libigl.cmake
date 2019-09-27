@@ -98,7 +98,8 @@ endif()
 # Eigen
 if(NOT TARGET Eigen3::Eigen)
   igl_download_eigen()
-  add_library(Eigen3_Eigen SYSTEM INTERFACE
+  add_library(Eigen3_Eigen INTERFACE)
+  target_include_directories(Eigen3_Eigen SYSTEM INTERFACE
     $<BUILD_INTERFACE:${LIBIGL_EXTERNAL}/eigen>
     $<INSTALL_INTERFACE:include>
   )
