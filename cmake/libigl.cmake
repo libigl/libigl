@@ -105,7 +105,7 @@ if(NOT TARGET Eigen3::Eigen)
   )
   add_library(Eigen3::Eigen ALIAS Eigen3_Eigen)
 endif()
-target_link_libraries(igl_common PUBLIC Eigen3::Eigen)
+target_link_libraries(igl_common INTERFACE Eigen3::Eigen)
 
 # C++11 Thread library
 find_package(Threads REQUIRED)
