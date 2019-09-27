@@ -96,16 +96,15 @@ if(UNIX)
 endif()
 
 # Eigen
-if(TARGET Eigen3::Eigen)
-  # If an imported target already exists, use it
-  target_link_libraries(igl_common INTERFACE Eigen3::Eigen)
-else()
+if(NOT TARGET Eigen3::Eigen)
   igl_download_eigen()
-  target_include_directories(igl_common SYSTEM INTERFACE
+  add_library(Eigen3_Eigen SYSTEM INTERFACE
     $<BUILD_INTERFACE:${LIBIGL_EXTERNAL}/eigen>
     $<INSTALL_INTERFACE:include>
   )
+  add_library(Eigen3::Eigen ALIAS Eigen3_Eigen)
 endif()
+target_link_libraries(igl_common PUBLIC Eigen3::Eigen)
 
 # C++11 Thread library
 find_package(Threads REQUIRED)
