@@ -85,13 +85,13 @@ void plot_mesh_nrosy(
 
   viewer.data().add_edges(Be,Be+Y*(avg/2),RowVector3d(0,0,1));
 
-  // Plot the singularities as colored dots (red for negative, blue for positive)
+  // Plot the singularities as colored dots (red for positive, blue for negative)
   for (unsigned i=0; i<S.size();++i)
   {
     if (S(i) < -0.001)
-      viewer.data().add_points(V.row(i),RowVector3d(1,0,0));
+      viewer.data().add_points(V.row(i),RowVector3d(0,0,1));
     else if (S(i) > 0.001)
-      viewer.data().add_points(V.row(i),RowVector3d(0,1,0));
+      viewer.data().add_points(V.row(i),RowVector3d(1,0,0));
   }
 
   // Highlight in red the constrained faces
