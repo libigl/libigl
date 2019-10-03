@@ -541,7 +541,7 @@ void igl::copyleft::comiso::NRosyField::computek()
       
       // just to be sure, rotate ref0 using angle ktemp...
       Eigen::MatrixXd R2(2,2);
-      R2 << std::cos(ktemp), -std::sin(ktemp), std::sin(ktemp), std::cos(ktemp);
+      R2 << std::cos(-ktemp), -std::sin(-ktemp), std::sin(-ktemp), std::cos(-ktemp);
 
       tmp = R2*ref0.head<2>();
 
