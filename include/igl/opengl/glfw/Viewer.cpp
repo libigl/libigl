@@ -159,12 +159,12 @@ namespace glfw
     else
     {
       // Set default windows width
-      if (windowWidth <= 0 & core_list.size() == 1 && core().viewport[2] > 0)
+      if (windowWidth <= 0 && core_list.size() == 1 && core().viewport[2] > 0)
         windowWidth = core().viewport[2];
       else if (windowWidth <= 0)
         windowWidth = 1280;
       // Set default windows height
-      if (windowHeight <= 0 & core_list.size() == 1 && core().viewport[3] > 0)
+      if (windowHeight <= 0 && core_list.size() == 1 && core().viewport[3] > 0)
         windowHeight = core().viewport[3];
       else if (windowHeight <= 0)
         windowHeight = 800;
