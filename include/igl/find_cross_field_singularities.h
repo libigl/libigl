@@ -25,9 +25,9 @@ namespace igl
   //   singularityIndex #V by 1 integer eigen Vector containing the singularity indices
   //
   template <typename DerivedV, typename DerivedF, typename DerivedM, typename DerivedO>
-  IGL_INLINE void find_cross_field_singularities(const Eigen::PlainObjectBase<DerivedV> &V,
-                                                 const Eigen::PlainObjectBase<DerivedF> &F,
-                                                 const Eigen::PlainObjectBase<DerivedM> &mismatch,
+  IGL_INLINE void find_cross_field_singularities(const Eigen::MatrixBase<DerivedV> &V,
+                                                 const Eigen::MatrixBase<DerivedF> &F,
+                                                 const Eigen::MatrixBase<DerivedM> &mismatch,
                                                  Eigen::PlainObjectBase<DerivedO> &isSingularity,
                                                  Eigen::PlainObjectBase<DerivedO> &singularityIndex);
 
@@ -43,10 +43,10 @@ namespace igl
   //   singularityIndex #V by 1 integer eigen Vector containing the singularity indices
   //
   template <typename DerivedV, typename DerivedF, typename DerivedO>
-  IGL_INLINE void find_cross_field_singularities(const Eigen::PlainObjectBase<DerivedV> &V,
-                                                 const Eigen::PlainObjectBase<DerivedF> &F,
-                                                 const Eigen::PlainObjectBase<DerivedV> &PD1,
-                                                 const Eigen::PlainObjectBase<DerivedV> &PD2,
+  IGL_INLINE void find_cross_field_singularities(const Eigen::MatrixBase<DerivedV> &V,
+                                                 const Eigen::MatrixBase<DerivedF> &F,
+                                                 const Eigen::MatrixBase<DerivedV> &PD1,
+                                                 const Eigen::MatrixBase<DerivedV> &PD2,
                                                  Eigen::PlainObjectBase<DerivedO> &isSingularity,
                                                  Eigen::PlainObjectBase<DerivedO> &singularityIndex,
                                                  bool isCombed = false);
