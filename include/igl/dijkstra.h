@@ -67,7 +67,7 @@ namespace igl {
   //   previous         #V by 1 list of the previous visited vertices (for each vertex) - result of Dijkstra's algorithm
   //
   // Output:
-  //   path             #P by 1 list of vertex indices in the shortest path from source to vertex
+  //   path             #P by 1 list of vertex indices in the shortest path from vertex to source
   //
   template <typename IndexType, typename DerivedP>
   IGL_INLINE void dijkstra(
