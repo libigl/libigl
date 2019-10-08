@@ -98,12 +98,13 @@ endif()
 # Eigen
 if(NOT TARGET Eigen3::Eigen)
   igl_download_eigen()
-  add_library(Eigen3_Eigen INTERFACE)
-  target_include_directories(Eigen3_Eigen SYSTEM INTERFACE
+  add_library(igl_eigen INTERFACE)
+  target_include_directories(igl_eigen SYSTEM INTERFACE
     $<BUILD_INTERFACE:${LIBIGL_EXTERNAL}/eigen>
     $<INSTALL_INTERFACE:include>
   )
-  add_library(Eigen3::Eigen ALIAS Eigen3_Eigen)
+  set_property(TARGET igl_eigen PROPERTY EXPORT_NAME Eigen3::Eigen)
+  add_library(Eigen3::Eigen ALIAS igl_eigen)
 endif()
 target_link_libraries(igl_common INTERFACE Eigen3::Eigen)
 
@@ -483,21 +484,30 @@ endfunction()
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 
+if(TARGET igl_eigen)
+  set(IGL_EIGEN igl_eigen)
+else()
+  set(IGL_EIGEN)
+  message(WARNING "Trying to export igl targets while using an imported target for Eigen.")
+endif()
+
 # Install and export core library
 install(
-   TARGETS
-     igl
-     igl_common
-   EXPORT igl-export
-   PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-   RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  TARGETS
+    igl
+    igl_common
+    ${IGL_EIGEN}
+  EXPORT igl-export
+  PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
 )
 export(
   TARGETS
     igl
     igl_common
+    ${IGL_EIGEN}
   FILE libigl-export.cmake
 )
 
