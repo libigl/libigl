@@ -35,7 +35,7 @@ b = igl.eigen.MatrixXi()
 def pre_draw(viewer):
     global bc_frac, bc_dir, deformation_field, V, U, V_bc, U_bc, F, b
     # Determine boundary conditions
-    if (viewer.core.is_animating):
+    if (viewer.core().is_animating):
         bc_frac += bc_dir
         bc_dir *= (-1.0 if bc_frac >= 1.0 or bc_frac <= 0.0 else 1.0)
 
@@ -58,7 +58,7 @@ def key_down(viewer, key, mods):
     global bc_frac, bc_dir, deformation_field, V, U, V_bc, U_bc, F, b
 
     if key == ord(' '):
-        viewer.core.is_animating = not viewer.core.is_animating
+        viewer.core().is_animating = not viewer.core().is_animating
         return True
     if key == ord('D') or key == ord('d'):
         deformation_field = not deformation_field
@@ -110,13 +110,13 @@ viewer = igl.glfw.Viewer()
 viewer.data().set_mesh(U, F)
 viewer.data().show_lines = False
 viewer.data().set_colors(C)
-# viewer.core.trackball_angle = igl.eigen.Quaterniond(sqrt(2.0),0,sqrt(2.0),0)
-# viewer.core.trackball_angle.normalize()
+# viewer.core().trackball_angle = igl.eigen.Quaterniond(sqrt(2.0),0,sqrt(2.0),0)
+# viewer.core().trackball_angle.normalize()
 
 viewer.callback_pre_draw = pre_draw
 viewer.callback_key_down = key_down
 
-viewer.core.animation_max_fps = 30.0
+viewer.core().animation_max_fps = 30.0
 print("Press [space] to toggle deformation.")
 print("Press 'd' to toggle between biharmonic surface or displacements.")
 viewer.launch()

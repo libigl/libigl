@@ -56,6 +56,7 @@ IGL_INLINE int igl::launch_medit(
     return system(command.str().c_str());
   }catch(int e)
   {
+    (void)e;
     cerr<<"^"<<__FUNCTION__<<": Calling to medit crashed..."<<endl;
     return -1;
   }

@@ -33,7 +33,7 @@ def key_down(viewer, key, modifier):
         else:
             viewer.data().set_mesh(V, F)
 
-        viewer.core.is_animating = not show_swept_volume
+        viewer.core().is_animating = not show_swept_volume
         viewer.data().set_face_based(True)
 
     return True
@@ -86,7 +86,7 @@ if __name__ == "__main__":
     viewer = igl.glfw.Viewer()
     viewer.data().set_mesh(V, F)
     viewer.data().set_face_based(True)
-    viewer.core.is_animating = not show_swept_volume
+    viewer.core().is_animating = not show_swept_volume
     viewer.callback_pre_draw = pre_draw
     viewer.callback_key_down = key_down
     viewer.launch()

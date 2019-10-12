@@ -29,7 +29,7 @@ def key_down(viewer, key, modifier):
         A = igl.eigen.MatrixXuc(1280, 800)
 
         # Draw the scene in the buffers
-        viewer.core.draw_buffer(viewer.data(), False, R, G, B, A)
+        viewer.core().draw_buffer(viewer.data(), False, R, G, B, A)
 
         # Save it to a PNG
         igl.png.writePNG(R, G, B, A, temp_png)
@@ -56,7 +56,7 @@ def key_down(viewer, key, modifier):
         viewer.data().clear()
         viewer.data().set_mesh(V, F)
         viewer.data().set_uv(UV)
-        viewer.core.align_camera_center(V)
+        viewer.core().align_camera_center(V)
         viewer.data().show_texture = True
 
         # Use the image as a texture

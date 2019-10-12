@@ -97,7 +97,7 @@ def update_visualization(viewer):
     viewer.data().clear()
     viewer.data().set_mesh(V_vis, F_vis)
     viewer.data().set_colors(C_vis)
-    viewer.core.lighting_factor = overlay
+    viewer.core().lighting_factor = overlay
 
 
 def key_down(viewer, key, modifier):
