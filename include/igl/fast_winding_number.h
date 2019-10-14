@@ -206,6 +206,19 @@ namespace igl
     const float accuracy_scale,
     const Eigen::MatrixBase<DerivedQ> & Q,
     Eigen::PlainObjectBase<DerivedW> & W);
+  // After precomputation, compute winding number at a a single point
+  //
+  // Inputs:
+  //   fwn_bvh  Precomputed bounding volume hierarchy
+  //   accuracy_scale  parameter controlling accuracy (e.g., 2)
+  //   p single position
+  // Outputs:
+  //   w  winding number of this point
+  template <typename Derivedp>
+  IGL_INLINE typename Derivedp::Scalar fast_winding_number(
+    const FastWindingNumberBVH & fwn_bvh,
+    const float accuracy_scale,
+    const Eigen::MatrixBase<Derivedp> & p);
 }
 #ifndef IGL_STATIC_LIBRARY
 #  include "fast_winding_number.cpp"
