@@ -11,6 +11,7 @@
 #include "igl_inline.h"
 #include "AABB.h"
 #include "WindingNumberAABB.h"
+#include "fast_winding_number.h"
 #include <Eigen/Core>
 #include <vector>
 namespace igl
@@ -18,11 +19,12 @@ namespace igl
   enum SignedDistanceType
   {
     // Use fast pseudo-normal test [Bærentzen & Aanæs 2005]
-    SIGNED_DISTANCE_TYPE_PSEUDONORMAL   = 0,
-    SIGNED_DISTANCE_TYPE_WINDING_NUMBER = 1,
-    SIGNED_DISTANCE_TYPE_DEFAULT        = 2,
-    SIGNED_DISTANCE_TYPE_UNSIGNED       = 3,
-    NUM_SIGNED_DISTANCE_TYPE            = 4
+    SIGNED_DISTANCE_TYPE_PSEUDONORMAL         = 0,
+    SIGNED_DISTANCE_TYPE_WINDING_NUMBER       = 1,
+    SIGNED_DISTANCE_TYPE_DEFAULT              = 2,
+    SIGNED_DISTANCE_TYPE_UNSIGNED             = 3,
+    SIGNED_DISTANCE_TYPE_FAST_WINDING_NUMBER  = 4,
+    NUM_SIGNED_DISTANCE_TYPE                  = 5
   };
   // Computes signed distance to a mesh
   //

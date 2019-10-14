@@ -13,6 +13,7 @@
 #include "per_vertex_normals.h"
 #include "point_mesh_squared_distance.h"
 #include "pseudonormal_test.h"
+#include "fast_winding_number.h"
 
 
 template <
@@ -66,6 +67,15 @@ IGL_INLINE void igl::signed_distance(
   Eigen::Matrix<typename DerivedF::Scalar,Eigen::Dynamic,2> E;
   Eigen::Matrix<typename DerivedF::Scalar,Eigen::Dynamic,1> EMAP;
   WindingNumberAABB<RowVector3S,DerivedV,DerivedF> hier3;
+  igl::FastWindingNumberBVH fwn_bvh;
+  Eigen::VectorXf W;
+
+  // This is not correct, but I don't understand explicit templating...
+  // we just ensure type is all good for input to fast_winding_number...
+  Eigen::MatrixXd tV = V.template cast<double>(); //ideally tV would be V.template cast<float>() 
+  Eigen::MatrixXi tF = F.template cast<int>();
+  Eigen::MatrixXd tP = V.template cast<double>();
+
   switch(sign_type)
   {
     default:
@@ -87,6 +97,17 @@ IGL_INLINE void igl::signed_distance(
           break;
       }
       break;
+    case SIGNED_DISTANCE_TYPE_FAST_WINDING_NUMBER:
+      switch(dim)
+      {
+        default:
+        case 3:
+          //pre compute
+          igl::fast_winding_number(tV.cast<float>(), tF, 2, fwn_bvh);
+        case 2:
+          //is this correct?
+          break;
+      }
     case SIGNED_DISTANCE_TYPE_PSEUDONORMAL:
       switch(dim)
       {
@@ -182,8 +203,19 @@ IGL_INLINE void igl::signed_distance(
           {
             assert(!V.derived().IsRowMajor);
             assert(!F.derived().IsRowMajor);
+            std::cout << "HERE" <<winding_number(V,F,q2) << std::endl;
             s = 1.-2.*winding_number(V,F,q2);
           }
+          break;
+        }
+        case SIGNED_DISTANCE_TYPE_FAST_WINDING_NUMBER:
+        {
+          //TODO: once again just doing this avoid compile complaints...
+          MatrixXf tq3 = q3.template cast<float>();
+          if (dim == 3){
+            Scalar w = fast_winding_number(fwn_bvh,2,tq3);
+            s = 1.f-2.f*w;
+          }          
           break;
         }
         case SIGNED_DISTANCE_TYPE_PSEUDONORMAL:
