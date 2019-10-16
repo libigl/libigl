@@ -302,7 +302,7 @@ if(LIBIGL_WITH_EMBREE)
     # TODO: Should probably save/restore the CMAKE_CXX_FLAGS_*, since embree seems to be
     # overriding them on Windows. But well... it works for now.
     igl_download_embree()
-    add_subdirectory("${EMBREE_DIR}" "embree")
+    add_subdirectory("${EMBREE_DIR}" "embree" EXCLUDE_FROM_ALL)
   endif()
 
   compile_igl_module("embree")
