@@ -117,7 +117,7 @@ public:
   Eigen::Vector3f light_position;
   float lighting_factor;
 
-  RotationType rotation_type;
+  RotationType rotation_type = RotationType::ROTATION_TYPE_TRACKBALL;
   Eigen::Quaternionf trackball_angle;
 
   // Camera parameters
