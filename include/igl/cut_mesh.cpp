@@ -313,9 +313,9 @@ IGL_INLINE void igl::cut_mesh(
   std::vector<std::vector<int> > VF, VFi;
   igl::vertex_triangle_adjacency(V,F,VF,VFi);
   // Alec: Cast? Why? This is likely to break.
-  Eigen::MatrixXd Vt = V;
-  Eigen::MatrixXi Ft = F;
-  Eigen::MatrixXi TT, TTi;
+  DerivedV Vt = V;
+  DerivedF Ft = F;
+  DerivedF TT, TTi;
   igl::triangle_triangle_adjacency(Ft,TT,TTi);
   std::vector<bool> V_border = igl::is_border_vertex(V,F);
   igl::cut_mesh(V, F, VF, VFi, TT, TTi, V_border, cuts, Vcut, Fcut);

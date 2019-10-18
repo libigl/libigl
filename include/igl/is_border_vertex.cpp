@@ -14,7 +14,7 @@ template <typename DerivedF>
 IGL_INLINE std::vector<bool> igl::is_border_vertex(
   const Eigen::MatrixBase<DerivedF> &F)
 {
-  DerivedF FF;
+  Eigen::Matrix<typename DerivedF::Scalar, Eigen::Dynamic, Eigen::Dynamic> FF;
   igl::triangle_triangle_adjacency(F,FF);
   std::vector<bool> ret(F.maxCoeff()+1);
   for(unsigned i=0; i<ret.size();++i)

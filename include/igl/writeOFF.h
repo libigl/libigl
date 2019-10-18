@@ -32,15 +32,15 @@ namespace igl
   template <typename DerivedV, typename DerivedF, typename DerivedC>
   IGL_INLINE bool writeOFF(
     const std::string str,
-    const Eigen::PlainObjectBase<DerivedV>& V,
-    const Eigen::PlainObjectBase<DerivedF>& F,
-    const Eigen::PlainObjectBase<DerivedC>& C);
+    const Eigen::MatrixBase<DerivedV>& V,
+    const Eigen::MatrixBase<DerivedF>& F,
+    const Eigen::MatrixBase<DerivedC>& C);
 
   template <typename DerivedV, typename DerivedF>
   IGL_INLINE bool writeOFF(
     const std::string str,
-    const Eigen::PlainObjectBase<DerivedV>& V,
-    const Eigen::PlainObjectBase<DerivedF>& F);
+    const Eigen::MatrixBase<DerivedV>& V,
+    const Eigen::MatrixBase<DerivedF>& F);
 }
 
 #ifndef IGL_STATIC_LIBRARY

@@ -29,7 +29,7 @@ IGL_INLINE void igl::remove_duplicate_vertices(
     DerivedV rV,rSV;
     round((V/(10.0*epsilon)).eval(),rV);
     unique_rows(rV,rSV,SVI,SVJ);
-    slice(V,SVI,colon<int>(0,V.cols()-1),SV);
+    slice(V,SVI,colon<typename DerivedSVI::Scalar>(0,V.cols()-1),SV);
   }else
   {
     unique_rows(V,SV,SVI,SVJ);

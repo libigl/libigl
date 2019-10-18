@@ -134,7 +134,7 @@ IGL_INLINE void igl::sparse_voxel_grid(const Eigen::MatrixBase<DerivedP0>& p0,
     CV.row(i) = CV_vector[i];
   }
   for (int i = 0; i < CS_vector.size(); i++) {
-    CS[i] = CS_vector[i];
+    CS(i) = CS_vector[i];
   }
   for (int i = 0; i < CI_vector.size(); i++) {
     CI.row(i) = CI_vector[i];
@@ -145,4 +145,5 @@ IGL_INLINE void igl::sparse_voxel_grid(const Eigen::MatrixBase<DerivedP0>& p0,
 #ifdef IGL_STATIC_LIBRARY
 template void igl::sparse_voxel_grid<class Eigen::Matrix<double, -1, -1, 0, -1, -1>, class std::function<double(class Eigen::Matrix<double, -1, -1, 0, -1, -1> const &)>, class Eigen::Matrix<double, -1, 1, 0, -1, 1>, class Eigen::Matrix<double, -1, -1, 0, -1, -1>, class Eigen::Matrix<int, -1, -1, 0, -1, -1> >(class Eigen::MatrixBase<class Eigen::Matrix<double, -1, -1, 0, -1, -1> > const &, class std::function<double(class Eigen::Matrix<double, -1, -1, 0, -1, -1> const &)> const &, double, int, class Eigen::PlainObjectBase<class Eigen::Matrix<double, -1, 1, 0, -1, 1> > &, class Eigen::PlainObjectBase<class Eigen::Matrix<double, -1, -1, 0, -1, -1> > &, class Eigen::PlainObjectBase<class Eigen::Matrix<int, -1, -1, 0, -1, -1> > &);
 template void igl::sparse_voxel_grid<Eigen::Matrix<double, 1, 3, 1, 1, 3>, std::function<double (Eigen::Matrix<double, 1, 3, 1, 1, 3> const&)>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > const&, std::function<double (Eigen::Matrix<double, 1, 3, 1, 1, 3> const&)> const&, double, int, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
+template void igl::sparse_voxel_grid<Eigen::Matrix<double, 1, 3, 1, 1, 3>, std::function<double (Eigen::Matrix<double, 1, 3, 1, 1, 3> const&)>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > const&, std::function<double (Eigen::Matrix<double, 1, 3, 1, 1, 3> const&)> const&, double, int, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
 #endif
