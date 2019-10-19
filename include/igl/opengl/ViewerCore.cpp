@@ -387,6 +387,7 @@ IGL_INLINE igl::opengl::ViewerCore::ViewerCore()
 
   // Default trackball
   trackball_angle = Eigen::Quaternionf::Identity();
+  rotation_type == ViewerCore::ROTATION_TYPE_TRACKBALL;
   set_rotation_type(ViewerCore::ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP);
 
   // Camera parameters
