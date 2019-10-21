@@ -281,7 +281,7 @@ namespace igl
     const AABB<DerivedV,3> & tree,
     const Eigen::MatrixBase<DerivedV> & V,
     const Eigen::MatrixBase<DerivedF> & F,
-    const igl::FastWindingNumberBVH & bvh,
+    const igl::FastWindingNumberBVH & fwn_bvh,
     const Eigen::MatrixBase<DerivedP> & P,
     const Eigen::PlainObjectBase<DerivedS> & S
   );
@@ -309,7 +309,7 @@ namespace igl
     const AABB<DerivedV,3> & tree,
     const Eigen::MatrixBase<DerivedV> & V,
     const Eigen::MatrixBase<DerivedF> & F,
-    const igl::FastWindingNumberBVH & bvh,
+    const igl::FastWindingNumberBVH & fwn_bvh,
     const Eigen::MatrixBase<Derivedq> & q
   );
 }

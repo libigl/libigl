@@ -484,7 +484,7 @@ IGL_INLINE void igl::signed_distance_fast_winding_number(
     const AABB<DerivedV,3> & tree,
     const Eigen::MatrixBase<DerivedV> & V,
     const Eigen::MatrixBase<DerivedF> & F,
-    const igl::FastWindingNumberBVH & bvh,
+    const igl::FastWindingNumberBVH & fwn_bvh,
     const Eigen::MatrixBase<DerivedP> & P,
     const Eigen::PlainObjectBase<DerivedS> & S)
   {
@@ -496,7 +496,7 @@ IGL_INLINE void igl::signed_distance_fast_winding_number(
       RowVector3S q;
       q.head(P.row(p).size()) = P.row(p);
       // get sdf for single point, update result matrix
-      S(p) = signed_distance_fast_winding_number(tree, V, F, bvh, q);
+      S(p) = signed_distance_fast_winding_number(tree, V, F, fwn_bvh, q);
     }
     ,min_parallel);  
   }
@@ -510,7 +510,7 @@ IGL_INLINE typename DerivedV::Scalar igl::signed_distance_fast_winding_number(
     const AABB<DerivedV,3> & tree,
     const Eigen::MatrixBase<DerivedV> & V,
     const Eigen::MatrixBase<DerivedF> & F,
-    const igl::FastWindingNumberBVH & bvh,
+    const igl::FastWindingNumberBVH & fwn_bvh,
     const Eigen::MatrixBase<Derivedq> & q)
   {
     typedef typename DerivedV::Scalar Scalar;
@@ -518,7 +518,7 @@ IGL_INLINE typename DerivedV::Scalar igl::signed_distance_fast_winding_number(
     Eigen::Matrix<Scalar,1,3> c;
     int i = -1;
     sqrd = tree.squared_distance(V,F,q,i,c);
-    Scalar w = fast_winding_number(bvh,2,q.template cast<float>());
+    Scalar w = fast_winding_number(fwn_bvh,2,q.template cast<float>());
     return 1.-2.*w;
   }
 
