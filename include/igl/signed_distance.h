@@ -260,38 +260,38 @@ namespace igl
   // Calculates signed distance at query points P, using fast winding number
   //   for sign.
   //
-  // NOTE: form of inputs matches first overide for general case, not the other
-  //           sign type specific funcs... I don't like their seperation of 
-  //           s and sqrd.
+  // Usage:
+  //     VectorXd S;  
+  //     VectorXd V, P; //where V is mesh vertices, P are query points
+  //     VectorXi F;  
+  //     igl::FastWindingNumberBVH fwn_bvh;
+  //     igl::fast_winding_number(V.cast<float>(), F, 2, fwn_bvh);
+  //     igl::signed_distance_fast_winding_number(P,V,F,tree,fwn_bvh,S);
   //
   // Inputs:
-  //   tree  AABB acceleration tree (see AABB.h)
+  //   P  #P by 3 list of query point positions
   //   V  #V by 3 list of triangle indices
   //   F  #F by 3 list of triangle normals 
+  //   tree  AABB acceleration tree (see AABB.h)
   //   bvh fast winding precomputation (see Fast_Winding_Number.h)   
-  //   P  #P by 3 list of query point positions
   // Outputs:
   //   S  #P list of signed distances of each point in P
   template <
+    typename DerivedP,
     typename DerivedV,
     typename DerivedF,
-    typename DerivedP,
     typename DerivedS>
   IGL_INLINE void signed_distance_fast_winding_number(
-    const AABB<DerivedV,3> & tree,
+    const Eigen::MatrixBase<DerivedP> & P,
     const Eigen::MatrixBase<DerivedV> & V,
     const Eigen::MatrixBase<DerivedF> & F,
+    const AABB<DerivedV,3> & tree,
     const igl::FastWindingNumberBVH & fwn_bvh,
-    const Eigen::MatrixBase<DerivedP> & P,
-    const Eigen::PlainObjectBase<DerivedS> & S
+    Eigen::PlainObjectBase<DerivedS> & S
   );
 
-    // Calculates signed distance at query point q, using fast winding number
+  // Calculates signed distance at query point q, using fast winding number
   //   for sign.
-  //
-  // NOTE: form of inputs matches first overide for general case, not the other
-  //           sign type specific funcs... I don't like their seperation of 
-  //           s and sqrd.
   //
   // Inputs:
   //   tree  AABB acceleration tree (see AABB.h)
@@ -302,15 +302,15 @@ namespace igl
   // Outputs:
   //   S  #P list of signed distances of each point in P
   template <
+    typename Derivedq,
     typename DerivedV,
-    typename DerivedF,
-    typename Derivedq>
+    typename DerivedF>
   IGL_INLINE typename DerivedV::Scalar signed_distance_fast_winding_number(
-    const AABB<DerivedV,3> & tree,
+    const Eigen::MatrixBase<Derivedq> & q,
     const Eigen::MatrixBase<DerivedV> & V,
     const Eigen::MatrixBase<DerivedF> & F,
-    const igl::FastWindingNumberBVH & fwn_bvh,
-    const Eigen::MatrixBase<Derivedq> & q
+    const AABB<DerivedV,3> & tree,
+    const igl::FastWindingNumberBVH & fwn_bvh
   );
 }
 

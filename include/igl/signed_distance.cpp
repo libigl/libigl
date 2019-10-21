@@ -476,42 +476,42 @@ IGL_INLINE void igl::signed_distance_winding_number(
 
 //Multi point by parrallel for on single point
 template <
+  typename DerivedP,
   typename DerivedV,
   typename DerivedF,
-  typename DerivedP,
   typename DerivedS>
 IGL_INLINE void igl::signed_distance_fast_winding_number(
-    const AABB<DerivedV,3> & tree,
+    const Eigen::MatrixBase<DerivedP> & P,
     const Eigen::MatrixBase<DerivedV> & V,
     const Eigen::MatrixBase<DerivedF> & F,
+    const AABB<DerivedV,3> & tree,
     const igl::FastWindingNumberBVH & fwn_bvh,
-    const Eigen::MatrixBase<DerivedP> & P,
-    const Eigen::PlainObjectBase<DerivedS> & S)
+    Eigen::PlainObjectBase<DerivedS> & S)
   {
     typedef Eigen::Matrix<typename DerivedV::Scalar,1,3> RowVector3S;
-
+    S.resize(P.rows(),1);
     int min_parallel = 10000; //using default seen elsewhere...
     parallel_for(P.rows(), [&](const int p)
     {
       RowVector3S q;
       q.head(P.row(p).size()) = P.row(p);
       // get sdf for single point, update result matrix
-      S(p) = signed_distance_fast_winding_number(tree, V, F, fwn_bvh, q);
+      S(p) = signed_distance_fast_winding_number(q, V, F, tree,fwn_bvh);
     }
     ,min_parallel);  
   }
 
 //Single Point
 template <
+  typename Derivedq,
   typename DerivedV,
-  typename DerivedF,
-  typename Derivedq>
+  typename DerivedF>
 IGL_INLINE typename DerivedV::Scalar igl::signed_distance_fast_winding_number(
-    const AABB<DerivedV,3> & tree,
+    const Eigen::MatrixBase<Derivedq> & q,
     const Eigen::MatrixBase<DerivedV> & V,
     const Eigen::MatrixBase<DerivedF> & F,
-    const igl::FastWindingNumberBVH & fwn_bvh,
-    const Eigen::MatrixBase<Derivedq> & q)
+    const AABB<DerivedV,3> & tree,
+    const igl::FastWindingNumberBVH & fwn_bvh)
   {
     typedef typename DerivedV::Scalar Scalar;
     Scalar s,sqrd;
@@ -519,7 +519,8 @@ IGL_INLINE typename DerivedV::Scalar igl::signed_distance_fast_winding_number(
     int i = -1;
     sqrd = tree.squared_distance(V,F,q,i,c);
     Scalar w = fast_winding_number(fwn_bvh,2,q.template cast<float>());
-    return 1.-2.*w;
+    //0.5 is on surface
+    return sqrt(sqrd)*(1.-2.*w);
   }
 
 #ifdef IGL_STATIC_LIBRARY
