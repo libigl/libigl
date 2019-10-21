@@ -20,9 +20,11 @@ namespace igl
   {
     // Use fast pseudo-normal test [Bærentzen & Aanæs 2005]
     SIGNED_DISTANCE_TYPE_PSEUDONORMAL         = 0,
+    // Use winding number [Jacobson, Kavan Sorking-Hornug 2013]
     SIGNED_DISTANCE_TYPE_WINDING_NUMBER       = 1,
     SIGNED_DISTANCE_TYPE_DEFAULT              = 2,
     SIGNED_DISTANCE_TYPE_UNSIGNED             = 3,
+    // Use Fast winding number [Barill, Dickson, Schmidt, Levin, Jacobson 2018]
     SIGNED_DISTANCE_TYPE_FAST_WINDING_NUMBER  = 4,
     NUM_SIGNED_DISTANCE_TYPE                  = 5
   };
@@ -64,7 +66,22 @@ namespace igl
     Eigen::PlainObjectBase<DerivedI> & I,
     Eigen::PlainObjectBase<DerivedC> & C,
     Eigen::PlainObjectBase<DerivedN> & N);
-  // Default bounds
+  // Computes signed distance to a mesh, with default bounds
+  //
+  // Inputs:
+  //   P  #P by 3 list of query point positions
+  //   V  #V by 3 list of vertex positions
+  //   F  #F by ss list of triangle indices, ss should be 3 unless sign_type ==
+  //     SIGNED_DISTANCE_TYPE_UNSIGNED
+  //   sign_type  method for computing distance _sign_ S
+  //   lower_bound  lower bound of distances needed {std::numeric_limits::min}
+  //   upper_bound  lower bound of distances needed {std::numeric_limits::max}
+  // Outputs:
+  //   S  #P list of smallest signed distances
+  //   I  #P list of facet indices corresponding to smallest distances
+  //   C  #P by 3 list of closest points
+  //   N  #P by 3 list of closest normals (only set if
+  //     sign_type=SIGNED_DISTANCE_TYPE_PSEUDONORMAL)
   template <
     typename DerivedP,
     typename DerivedV,
@@ -82,7 +99,7 @@ namespace igl
     Eigen::PlainObjectBase<DerivedI> & I,
     Eigen::PlainObjectBase<DerivedC> & C,
     Eigen::PlainObjectBase<DerivedN> & N);
-  // Computes signed distance to mesh
+  // Computes signed distance to mesh using pseudonormal with precomputed AABB tree and edge/vertice normals
   //
   // Inputs:
   //   tree  AABB acceleration tree (see AABB.h)
@@ -238,6 +255,63 @@ namespace igl
     Scalar & sqrd,
     int & i,
     Eigen::PlainObjectBase<Derivedc> & c);
+
+
+  // Calculates signed distance at query points P, using fast winding number
+  //   for sign.
+  //
+  // NOTE: form of inputs matches first overide for general case, not the other
+  //           sign type specific funcs... I don't like their seperation of 
+  //           s and sqrd.
+  //
+  // Inputs:
+  //   tree  AABB acceleration tree (see AABB.h)
+  //   V  #V by 3 list of triangle indices
+  //   F  #F by 3 list of triangle normals 
+  //   bvh fast winding precomputation (see Fast_Winding_Number.h)   
+  //   P  #P by 3 list of query point positions
+  // Outputs:
+  //   S  #P list of signed distances of each point in P
+  template <
+    typename DerivedV,
+    typename DerivedF,
+    typename DerivedP,
+    typename DerivedS>
+  IGL_INLINE void signed_distance_fast_winding_number(
+    const AABB<DerivedV,3> & tree,
+    const Eigen::MatrixBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedF> & F,
+    const igl::FastWindingNumberBVH & bvh,
+    const Eigen::MatrixBase<DerivedP> & P,
+    const Eigen::PlainObjectBase<DerivedS> & S
+  );
+
+    // Calculates signed distance at query point q, using fast winding number
+  //   for sign.
+  //
+  // NOTE: form of inputs matches first overide for general case, not the other
+  //           sign type specific funcs... I don't like their seperation of 
+  //           s and sqrd.
+  //
+  // Inputs:
+  //   tree  AABB acceleration tree (see AABB.h)
+  //   V  #V by 3 list of triangle indices
+  //   F  #F by 3 list of triangle normals 
+  //   bvh fast winding precomputation (see Fast_Winding_Number.h)   
+  //   q  1 by 3 list of query point positions
+  // Outputs:
+  //   S  #P list of signed distances of each point in P
+  template <
+    typename DerivedV,
+    typename DerivedF,
+    typename Derivedq>
+  IGL_INLINE typename DerivedV::Scalar signed_distance_fast_winding_number(
+    const AABB<DerivedV,3> & tree,
+    const Eigen::MatrixBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedF> & F,
+    const igl::FastWindingNumberBVH & bvh,
+    const Eigen::MatrixBase<Derivedq> & q
+  );
 }
 
 #ifndef IGL_STATIC_LIBRARY

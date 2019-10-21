@@ -105,7 +105,7 @@ IGL_INLINE void igl::signed_distance(
           //pre compute
           igl::fast_winding_number(tV.cast<float>(), tF, 2, fwn_bvh);
         case 2:
-          //is this correct?
+          //this will cause error :) 
           break;
       }
     case SIGNED_DISTANCE_TYPE_PSEUDONORMAL:
@@ -203,7 +203,6 @@ IGL_INLINE void igl::signed_distance(
           {
             assert(!V.derived().IsRowMajor);
             assert(!F.derived().IsRowMajor);
-            std::cout << "HERE" <<winding_number(V,F,q2) << std::endl;
             s = 1.-2.*winding_number(V,F,q2);
           }
           break;
@@ -468,13 +467,60 @@ IGL_INLINE void igl::signed_distance_winding_number(
   using namespace std;
   typedef Eigen::Matrix<typename DerivedV::Scalar,1,2> RowVector2S;
   sqrd = tree.squared_distance(V,F,RowVector2S(q),i,(RowVector2S&)c);
-  Scalar w;
   // TODO: using .data() like this is very dangerous... This is assuming
   // colmajor order
   assert(!V.derived().IsRowMajor);
   assert(!F.derived().IsRowMajor);
   s = 1.-2.*winding_number(V,F,q);
 }
+
+//Multi point by parrallel for on single point
+template <
+  typename DerivedV,
+  typename DerivedF,
+  typename DerivedP,
+  typename DerivedS>
+IGL_INLINE void igl::signed_distance_fast_winding_number(
+    const AABB<DerivedV,3> & tree,
+    const Eigen::MatrixBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedF> & F,
+    const igl::FastWindingNumberBVH & bvh,
+    const Eigen::MatrixBase<DerivedP> & P,
+    const Eigen::PlainObjectBase<DerivedS> & S)
+  {
+    typedef Eigen::Matrix<typename DerivedV::Scalar,1,3> RowVector3S;
+
+    int min_parallel = 10000; //using default seen elsewhere...
+    parallel_for(P.rows(), [&](const int p)
+    {
+      RowVector3S q;
+      q.head(P.row(p).size()) = P.row(p);
+      // get sdf for single point, update result matrix
+      S(p) = signed_distance_fast_winding_number(tree, V, F, bvh, q);
+    }
+    ,min_parallel);  
+  }
+
+//Single Point
+template <
+  typename DerivedV,
+  typename DerivedF,
+  typename Derivedq>
+IGL_INLINE typename DerivedV::Scalar igl::signed_distance_fast_winding_number(
+    const AABB<DerivedV,3> & tree,
+    const Eigen::MatrixBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedF> & F,
+    const igl::FastWindingNumberBVH & bvh,
+    const Eigen::MatrixBase<Derivedq> & q)
+  {
+    typedef typename DerivedV::Scalar Scalar;
+    Scalar s,sqrd;
+    Eigen::Matrix<Scalar,1,3> c;
+    int i = -1;
+    sqrd = tree.squared_distance(V,F,q,i,c);
+    Scalar w = fast_winding_number(bvh,2,q.template cast<float>());
+    return 1.-2.*w;
+  }
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instantiation
