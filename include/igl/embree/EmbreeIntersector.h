@@ -20,9 +20,10 @@
 #include <Eigen/Geometry>
 #include <Eigen/Core>
 #include <Eigen/Geometry>
-
-#include <embree3/rtcore.h>
-#include <embree3/rtcore_ray.h>
+#include <embree/include/embree3/rtcore.h>
+#include <embree/include/embree3/rtcore_ray.h>
+//#include <embree3/rtcore.h>
+//#include <embree3/rtcore_ray.h>
 #include <iostream>
 #include <vector>
 
@@ -613,4 +614,4 @@ igl::embree::EmbreeIntersector
   ray.hit.primID = RTC_INVALID_GEOMETRY_ID;
 }
 
-#endif //EMBREE_INTERSECTOR_H
+#endif //IGL_EMBREE_EMBREE_INTERSECTOR_H
