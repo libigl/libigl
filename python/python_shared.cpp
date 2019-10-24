@@ -103,6 +103,7 @@ PYBIND11_PLUGIN(pyigl) {
            find_cross_field_singularities
            fit_rotations
            floor
+           fast_winding_number
            forward_kinematics
            gaussian_curvature
            get_seconds
