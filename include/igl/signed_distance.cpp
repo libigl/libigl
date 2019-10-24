@@ -70,12 +70,6 @@ IGL_INLINE void igl::signed_distance(
   igl::FastWindingNumberBVH fwn_bvh;
   Eigen::VectorXf W;
 
-  // This is not correct, but I don't understand explicit templating...
-  // we just ensure type is all good for input to fast_winding_number...
-  Eigen::MatrixXd tV = V.template cast<double>(); //ideally tV would be V.template cast<float>() 
-  Eigen::MatrixXi tF = F.template cast<int>();
-  Eigen::MatrixXd tP = V.template cast<double>();
-
   switch(sign_type)
   {
     default:
@@ -103,7 +97,7 @@ IGL_INLINE void igl::signed_distance(
         default:
         case 3:
           //pre compute
-          igl::fast_winding_number(tV.cast<float>(), tF, 2, fwn_bvh);
+          igl::fast_winding_number(V.template cast<float>(), F, 2, fwn_bvh);
         case 2:
           //this will cause error :) 
           break;
@@ -209,10 +203,8 @@ IGL_INLINE void igl::signed_distance(
         }
         case SIGNED_DISTANCE_TYPE_FAST_WINDING_NUMBER:
         {
-          //TODO: once again just doing this avoid compile complaints...
-          MatrixXf tq3 = q3.template cast<float>();
           if (dim == 3){
-            Scalar w = fast_winding_number(fwn_bvh,2,tq3);
+            Scalar w = fast_winding_number(fwn_bvh,2,q3.template cast<float>());
             s = 1.f-2.f*w;
           }          
           break;
@@ -539,4 +531,5 @@ template void igl::signed_distance_pseudonormal<Eigen::Matrix<double, -1, -1, 0,
 template void igl::signed_distance<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, igl::SignedDistanceType, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
 template void igl::signed_distance_winding_number<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, 1, 3, 1, 1, 3>, double, Eigen::Matrix<double, 1, 3, 1, 1, 3> >(igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3> const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, igl::WindingNumberAABB<Eigen::Matrix<double, 1, 3, 1, 1, 3>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > const&, double&, double&, int&, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> >&);
 template Eigen::Matrix<double, -1, -1, 0, -1, -1>::Scalar igl::signed_distance_winding_number<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, 3, 1, 0, 3, 1> >(igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3> const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, igl::WindingNumberAABB<Eigen::Matrix<double, 3, 1, 0, 3, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<double, 3, 1, 0, 3, 1> > const&);
+template void igl::signed_distance_fast_winding_number<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, 1, 0, -1, 1> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3> const&, igl::FastWindingNumberBVH const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&);
 #endif
