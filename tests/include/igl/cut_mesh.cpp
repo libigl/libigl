@@ -1,6 +1,5 @@
 #include <test_common.h>
 #include <igl/cut_mesh.h>
-#include <igl/boundary_loop.h>
 #include <igl/vertex_components.h>
 #include <igl/edges.h>
 
@@ -27,15 +26,14 @@ TEST_CASE("seperate mesh", "[igl]") {
        7,0,8;
   
   Eigen::MatrixXi C(8,3);
-  C << 1,0,0,
-       1,0,0,
-       1,1,0,
-       1,1,1,
-       1,1,1,
-       1,1,1,
-       1,1,1,
-       1,0,1;
-  C = 1 - C.array();
+  C << 0,1,1,
+       0,1,1,
+       0,0,1,
+       0,0,0,
+       0,0,0,
+       0,0,0,
+       0,0,0,
+       0,1,0;
   Eigen::VectorXi I;
   igl::cut_mesh(V,F,C,I);
   Eigen::VectorXi count;
@@ -67,22 +65,22 @@ TEST_CASE("single edge", "[igl]") {
        7,0,8;
   
   Eigen::MatrixXi C(8,3);
-  C << 1,0,1,
-       1,1,0,
-       1,1,1,
-       1,1,1,
-       1,1,1,
-       1,1,1,
-       1,1,1,
-       1,1,1;
-  C = 1 - C.array();
+  C << 0,1,0,
+       0,0,1,
+       0,0,0,
+       0,0,0,
+       0,0,0,
+       0,0,0,
+       0,0,0,
+       0,0,0;
   Eigen::VectorXi I;
   igl::cut_mesh(V,F,C,I);
   Eigen::VectorXi count;
   igl::vertex_components(F, count);
+  REQUIRE(0 == count.maxCoeff());
   Eigen::MatrixXi E;
   igl::edges(F, E);
   const auto euler = V.rows() - E.rows() + F.rows();
-  CHECK ( 1 == euler );
+  REQUIRE ( 1 == euler );
 
 }
