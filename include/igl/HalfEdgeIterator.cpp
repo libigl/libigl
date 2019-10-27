@@ -150,9 +150,13 @@ template int  igl::HalfEdgeIterator<Eigen::Matrix<int, -1, -1, 0, -1, -1>,Eigen:
 template      igl::HalfEdgeIterator<Eigen::Matrix<int, -1, -1, 0, -1, -1>,Eigen::Matrix<int, -1, -1, 0, -1, -1>,Eigen::Matrix<int, -1, -1, 0, -1, -1> >::HalfEdgeIterator(Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, int, int, bool);
 template int  igl::HalfEdgeIterator<Eigen::Matrix<int, -1, -1, 0, -1, -1>,Eigen::Matrix<int, -1, -1, 0, -1, -1>,Eigen::Matrix<int, -1, -1, 0, -1, -1> >::Fi();
 template void igl::HalfEdgeIterator<Eigen::Matrix<int, -1, -1, 0, -1, -1>,Eigen::Matrix<int, -1, -1, 0, -1, -1>,Eigen::Matrix<int, -1, -1, 0, -1, -1> >::flipE();
+template void igl::HalfEdgeIterator<Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3> >::flipE();
 template void igl::HalfEdgeIterator<Eigen::Matrix<int, -1, -1, 0, -1, -1>,Eigen::Matrix<int, -1, -1, 0, -1, -1>,Eigen::Matrix<int, -1, -1, 0, -1, -1> >::flipF();
+template void igl::HalfEdgeIterator<Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3> >::flipF();
 template void igl::HalfEdgeIterator<Eigen::Matrix<int, -1, -1, 0, -1, -1>,Eigen::Matrix<int, -1, -1, 0, -1, -1>,Eigen::Matrix<int, -1, -1, 0, -1, -1> >::flipV();
 template bool igl::HalfEdgeIterator<Eigen::Matrix<int, -1, -1, 0, -1, -1>,Eigen::Matrix<int, -1, -1, 0, -1, -1>,Eigen::Matrix<int, -1, -1, 0, -1, -1> >::operator==(igl::HalfEdgeIterator<Eigen::Matrix<int, -1, -1, 0, -1, -1>,Eigen::Matrix<int, -1, -1, 0, -1, -1>,Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
 template int igl::HalfEdgeIterator<Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >::Fi();
 template bool igl::HalfEdgeIterator<Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >::NextFE();
+template bool igl::HalfEdgeIterator<Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3> >::isBorder();
+template bool igl::HalfEdgeIterator<Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >::isBorder();
 #endif
