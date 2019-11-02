@@ -151,6 +151,10 @@ void igl::marching_tets(
     {
       const int vi = faces[f].first[v];
       const int ti = faces[f].second;
+      assert(ti>=0);
+      assert(ti<TT.rows());
+      // this will overwrite, but should be with the same value
+      J(f) = ti;
       const pair<int32_t, int32_t> edge = edge_table[vi];
       const int64_t key = make_edge_key(edge);
       auto it = emap.find(key);
@@ -173,7 +177,6 @@ void igl::marching_tets(
         const typename DerivedTV::Scalar v_w = static_cast<typename DerivedTV::Scalar>(w);
         outV.row(num_unique) = (1-v_w)*v1 + v_w*v2;
         outF(f, v) = num_unique;
-        J[f] = ti;
 
         emap.emplace(key, num_unique);
         num_unique += 1;
@@ -183,7 +186,6 @@ void igl::marching_tets(
     }
   }
   outV.conservativeResize(num_unique, 3);
-  J.conservativeResize(num_unique, 1);
   BC.resize(num_unique, TV.rows());
   BC.setFromTriplets(bc_triplets.begin(), bc_triplets.end());
 }
