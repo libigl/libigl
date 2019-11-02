@@ -147,14 +147,13 @@ void igl::marching_tets(
 
   for (int f = 0; f < faces.size(); f++)
   {
+    const int ti = faces[f].second;
+    assert(ti>=0);
+    assert(ti<TT.rows());
+    J(f) = ti;
     for (int v = 0; v < 3; v++)
     {
       const int vi = faces[f].first[v];
-      const int ti = faces[f].second;
-      assert(ti>=0);
-      assert(ti<TT.rows());
-      // this will overwrite, but should be with the same value
-      J(f) = ti;
       const pair<int32_t, int32_t> edge = edge_table[vi];
       const int64_t key = make_edge_key(edge);
       auto it = emap.find(key);
