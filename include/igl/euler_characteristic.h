@@ -34,8 +34,8 @@ namespace igl
   // Returns An int containing the Euler characteristic
   template <typename Scalar, typename Index>
   IGL_INLINE int euler_characteristic(
-    const Eigen::PlainObjectBase<Scalar> & V,
-    const Eigen::PlainObjectBase<Index> & F);
+    const Eigen::MatrixBase<Scalar> & V,
+    const Eigen::MatrixBase<Index> & F);
 
 }
 

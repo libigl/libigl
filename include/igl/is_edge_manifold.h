@@ -16,7 +16,6 @@ namespace igl
   // check if the mesh is edge-manifold
   //
   // Inputs:
-  //   V  #V by dim list of mesh vertex positions **unneeded**
   //   F  #F by 3 list of triangle indices
   // Returns whether mesh is edge manifold.
   //

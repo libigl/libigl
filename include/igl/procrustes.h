@@ -49,8 +49,8 @@ namespace igl
     typename DerivedR, 
     typename DerivedT>
   IGL_INLINE void procrustes(
-    const Eigen::PlainObjectBase<DerivedX>& X,
-    const Eigen::PlainObjectBase<DerivedY>& Y,
+    const Eigen::MatrixBase<DerivedX>& X,
+    const Eigen::MatrixBase<DerivedY>& Y,
     bool includeScaling,
     bool includeReflections,
     Scalar& scale,
@@ -84,8 +84,8 @@ namespace igl
     int DIM, 
     int TType>
   IGL_INLINE void procrustes(
-    const Eigen::PlainObjectBase<DerivedX>& X,
-    const Eigen::PlainObjectBase<DerivedY>& Y,
+    const Eigen::MatrixBase<DerivedX>& X,
+    const Eigen::MatrixBase<DerivedY>& Y,
     bool includeScaling,
     bool includeReflections,
     Eigen::Transform<Scalar,DIM,TType>& T);
@@ -98,8 +98,8 @@ namespace igl
     typename DerivedR, 
     typename DerivedT>
   IGL_INLINE void procrustes(
-    const Eigen::PlainObjectBase<DerivedX>& X,
-    const Eigen::PlainObjectBase<DerivedY>& Y,
+    const Eigen::MatrixBase<DerivedX>& X,
+    const Eigen::MatrixBase<DerivedY>& Y,
     bool includeScaling,
     bool includeReflections,
     Eigen::PlainObjectBase<DerivedR>& S,
@@ -112,8 +112,8 @@ namespace igl
     typename DerivedR, 
     typename DerivedT>
   IGL_INLINE void procrustes(
-    const Eigen::PlainObjectBase<DerivedX>& X,
-    const Eigen::PlainObjectBase<DerivedY>& Y,
+    const Eigen::MatrixBase<DerivedX>& X,
+    const Eigen::MatrixBase<DerivedY>& Y,
     Eigen::PlainObjectBase<DerivedR>& R,
     Eigen::PlainObjectBase<DerivedT>& t);
 
@@ -124,8 +124,8 @@ namespace igl
     typename Scalar, 
     typename DerivedT>
   IGL_INLINE void procrustes(
-    const Eigen::PlainObjectBase<DerivedX>& X,
-    const Eigen::PlainObjectBase<DerivedY>& Y,
+    const Eigen::MatrixBase<DerivedX>& X,
+    const Eigen::MatrixBase<DerivedY>& Y,
     Eigen::Rotation2D<Scalar>& R,
     Eigen::PlainObjectBase<DerivedT>& t);
 }

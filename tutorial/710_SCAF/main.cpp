@@ -21,7 +21,7 @@ igl::Timer timer;
 igl::SCAFData scaf_data;
 
 bool show_uv = false;
-float uv_scale = 0.2;
+float uv_scale = 0.2f;
 
 bool key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier)
 {
@@ -99,7 +99,7 @@ int main(int argc, char *argv[])
     Eigen::MatrixXi F_filled;
     igl::topological_hole_fill(F, bnd, all_bnds, F_filled);
     igl::harmonic(F_filled, bnd, bnd_uv ,1, uv_init);
-    uv_init = uv_init.topRows(V.rows());
+    uv_init.conservativeResize(V.rows(), 2);
   }
 
   Eigen::VectorXi b; Eigen::MatrixXd bc;
