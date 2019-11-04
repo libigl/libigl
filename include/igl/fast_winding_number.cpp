@@ -61,8 +61,8 @@ IGL_INLINE void igl::fast_winding_number(
       Eigen::Matrix<real_ec,1,3> zeroth_expansion;
       zeroth_expansion << 0,0,0;
       real_p areatotal = 0.0;
-      for(int j = 0; j < point_indices.at(index).size(); j++){
-          int curr_point_index = point_indices.at(index).at(j);
+      for(int j = 0; j < point_indices[index].size(); j++){
+          int curr_point_index = point_indices[index][j];
         
           areatotal += A(curr_point_index);
           masscenter += A(curr_point_index)*P.row(curr_point_index);
@@ -76,9 +76,9 @@ IGL_INLINE void igl::fast_winding_number(
       real_r max_norm = 0;
       real_r curr_norm;
     
-      for(int i = 0; i < point_indices.at(index).size(); i++){
+      for(int i = 0; i < point_indices[index].size(); i++){
           //Get max distance from center of mass:
-          int curr_point_index = point_indices.at(index).at(i);
+          int curr_point_index = point_indices[index][i];
           Eigen::Matrix<real_r,1,3> point =
               P.row(curr_point_index)-masscenter;
           curr_norm = point.norm();
@@ -153,57 +153,83 @@ IGL_INLINE void igl::fast_winding_number(
   typedef typename DerivedEC::Scalar real_ec;
   typedef typename DerivedQ::Scalar real_q;
   typedef typename DerivedWN::Scalar real_wn;
+  const real_wn PI_4 = 4.0*igl::PI;
+
+  typedef Eigen::Matrix<
+    typename DerivedEC::Scalar,
+    1,
+    DerivedEC::ColsAtCompileTime> ECRow;
 
   typedef Eigen::Matrix<real_q,1,3> RowVec;
   typedef Eigen::Matrix<real_ec,3,3> EC_3by3;
 
-  auto direct_eval = [](const RowVec & loc,
-                        const Eigen::Matrix<real_ec,1,3> & anorm)
+  auto direct_eval = [&PI_4](
+    const RowVec & loc,
+    const Eigen::Matrix<real_ec,1,3> & anorm)->real_wn
   {
-      real_wn wn = (loc(0)*anorm(0)+loc(1)*anorm(1)+loc(2)*anorm(2))
-                                  /(4.0*igl::PI*std::pow(loc.norm(),3));
-      if(std::isnan(wn)){
-          return 0.5;
-      }else{
-          return wn;
-      }
+    const typename RowVec::Scalar loc_norm = loc.norm();
+    if(loc_norm == 0)
+    {
+      return 0.5;
+    }else
+    {
+      return (loc(0)*anorm(0)+loc(1)*anorm(1)+loc(2)*anorm(2))
+                                  /(PI_4*(loc_norm*loc_norm*loc_norm));
+    }
   };
 
-  auto expansion_eval = [&direct_eval](const RowVec & loc,
-                                       const Eigen::RowVectorXd & EC){
-    real_wn wn = direct_eval(loc,EC.head<3>());
-    double r = loc.norm();
-    if(EC.size()>3){
-      Eigen::Matrix<real_ec,3,3> SecondDerivative =
-          Eigen::Matrix<real_ec,3,3>::Identity()/(4.0*igl::PI*std::pow(r,3));
-      SecondDerivative += -3.0*loc.transpose()*loc/(4.0*igl::PI*std::pow(r,5));
-      Eigen::Matrix<real_ec,1,9> derivative_vector =
-        Eigen::Map<Eigen::Matrix<real_ec,1,9> >(SecondDerivative.data(),
-                                                SecondDerivative.size());
-      wn += derivative_vector.cwiseProduct(EC.segment<9>(3)).sum();
+  auto expansion_eval = 
+    [&direct_eval,&EC,&PI_4](
+      const RowVec & loc,
+      const int & child_index)->real_wn
+  {
+    real_wn wn;
+    wn = direct_eval(loc,EC.row(child_index).template head<3>());
+    real_wn r = loc.norm();
+    real_wn PI_4_r3;
+    real_wn PI_4_r5;
+    real_wn PI_4_r7;
+    if(EC.row(child_index).size()>3)
+    {
+      PI_4_r3 = PI_4*r*r*r;
+      PI_4_r5 = PI_4_r3*r*r;
+      const real_ec d = 1.0/(PI_4_r3);
+      Eigen::Matrix<real_ec,3,3> SecondDerivative = 
+        loc.transpose()*loc*(-3.0/(PI_4_r5));
+      SecondDerivative(0,0) += d;
+      SecondDerivative(1,1) += d;
+      SecondDerivative(2,2) += d;
+      wn += 
+        Eigen::Map<Eigen::Matrix<real_ec,1,9> >(
+          SecondDerivative.data(),
+          SecondDerivative.size()).dot(
+            EC.row(child_index).template segment<9>(3));
     }
-    if(EC.size()>3+9){
-        Eigen::Matrix<real_ec,3,3> ThirdDerivative;
-        for(int i = 0; i < 3; i++){
-            ThirdDerivative =
-                15.0*loc(i)*loc.transpose()*loc/(4.0*igl::PI*std::pow(r,7));
-            Eigen::Matrix<real_ec,3,3> Diagonal;
-            Diagonal << loc(i), 0, 0,
-            0, loc(i), 0,
-            0, 0, loc(i);
-            Eigen::Matrix<real_ec,3,3> RowCol;
-            RowCol.setZero(3,3);
-            RowCol.row(i) = loc;
-            Eigen::Matrix<real_ec,3,3> RowColT = RowCol.transpose();
-            RowCol = RowCol + RowColT;
-            ThirdDerivative +=
-                -3.0/(4.0*igl::PI*std::pow(r,5))*(RowCol+Diagonal);
-            Eigen::Matrix<real_ec,1,9> derivative_vector =
-              Eigen::Map<Eigen::Matrix<real_ec,1,9> >(ThirdDerivative.data(),
-                                                      ThirdDerivative.size());
-            wn += derivative_vector.cwiseProduct(
-                                            EC.segment<9>(12 + i*9)).sum();
+    if(EC.row(child_index).size()>3+9)
+    {
+      PI_4_r7 = PI_4_r5*r*r;
+      const Eigen::Matrix<real_ec,3,3> locTloc = loc.transpose()*(loc/(PI_4_r7));
+      for(int i = 0; i < 3; i++)
+      {
+        Eigen::Matrix<real_ec,3,3> RowCol_Diagonal = 
+          Eigen::Matrix<real_ec,3,3>::Zero(3,3);
+        for(int u = 0;u<3;u++)
+        {
+          for(int v = 0;v<3;v++)
+          {
+            if(u==v) RowCol_Diagonal(u,v) += loc(i);
+            if(u==i) RowCol_Diagonal(u,v) += loc(v);
+            if(v==i) RowCol_Diagonal(u,v) += loc(u);
+          }
         }
+        Eigen::Matrix<real_ec,3,3> ThirdDerivative = 
+          15.0*loc(i)*locTloc + (-3.0/(PI_4_r5))*(RowCol_Diagonal);
+
+        wn += Eigen::Map<Eigen::Matrix<real_ec,1,9> >(
+                ThirdDerivative.data(),
+                ThirdDerivative.size()).dot(
+            EC.row(child_index).template segment<9>(12 + i*9));
+      }
     }
     return wn;
   };
@@ -211,65 +237,79 @@ IGL_INLINE void igl::fast_winding_number(
   int m = Q.rows();
   WN.resize(m,1);
 
-  std::function< real_wn(const RowVec, const std::vector<int>) > helper;
+  std::function< real_wn(const RowVec & , const std::vector<int> &) > helper;
   helper = [&helper,
             &P,&N,&A,
             &point_indices,&CH,
             &CM,&R,&EC,&beta,
             &direct_eval,&expansion_eval]
-  (const RowVec query, const std::vector<int> near_indices)-> real_wn
+  (const RowVec & query, const std::vector<int> & near_indices)-> real_wn
   {
-    std::vector<int> new_near_indices;
     real_wn wn = 0;
-    for(int i = 0; i < near_indices.size(); i++){
-      int index = near_indices.at(i);
+    std::vector<int> new_near_indices;
+    new_near_indices.reserve(8);
+    for(int i = 0; i < near_indices.size(); i++)
+    {
+      int index = near_indices[i];
       //Leaf Case, Brute force
-      if(CH(index,0) == -1){
-        for(int j = 0; j < point_indices.at(index).size(); j++){
-          int curr_row = point_indices.at(index).at(j);
+      if(CH(index,0) == -1)
+      {
+        for(int j = 0; j < point_indices[index].size(); j++)
+        {
+          int curr_row = point_indices[index][j];
           wn += direct_eval(P.row(curr_row)-query,
                             N.row(curr_row)*A(curr_row));
         }
       }
       //Non-Leaf Case
-      else {
-        for(int child = 0; child < 8; child++){
-            int child_index = CH(index,child);
-            if(point_indices.at(child_index).size() > 0){
-              if((CM.row(child_index)-query).norm() > beta*R(child_index)){
-                if(CH(child_index,0) == -1){
-                  for(int j=0;j<point_indices.at(child_index).size();j++){
-                    int curr_row = point_indices.at(child_index).at(j);
-                    wn += direct_eval(P.row(curr_row)-query,
-                                      N.row(curr_row)*A(curr_row));
-                  }
-                }else{
-                  wn += expansion_eval(CM.row(child_index)-query,
-                                       EC.row(child_index));
+      else 
+      {
+        for(int child = 0; child < 8; child++)
+        {
+          int child_index = CH(index,child);
+          if(point_indices[child_index].size() > 0)
+          {
+            const RowVec CMciq = (CM.row(child_index)-query);
+            if(CMciq.norm() > beta*R(child_index))
+            {
+              if(CH(child_index,0) == -1)
+              {
+                for(int j=0;j<point_indices[child_index].size();j++)
+                {
+                  int curr_row = point_indices[child_index][j];
+                  wn += direct_eval(P.row(curr_row)-query,
+                                    N.row(curr_row)*A(curr_row));
                 }
-              }else {
-                new_near_indices.emplace_back(child_index);
+              }else{
+                wn += expansion_eval(CMciq,child_index);
+              }
+            }else 
+            {
+              new_near_indices.emplace_back(child_index);
             }
           }
         }
       }
     }
-    if(new_near_indices.size() > 0){
-        wn += helper(query,new_near_indices);
+    if(new_near_indices.size() > 0)
+    {
+      wn += helper(query,new_near_indices);
     }
     return wn;
   };
 
-
-  if(beta > 0){
-    std::vector<int> near_indices_start = {0};
+  if(beta > 0)
+  {
+    const std::vector<int> near_indices_start = {0};
     igl::parallel_for(m,[&](int iter){
-      WN(iter) = helper(Q.row(iter),near_indices_start);
+      WN(iter) = helper(Q.row(iter).eval(),near_indices_start);
     },1000);
-  } else {
+  } else 
+  {
     igl::parallel_for(m,[&](int iter){
       double wn = 0;
-      for(int j = 0; j <P.rows(); j++){
+      for(int j = 0; j <P.rows(); j++)
+      {
         wn += direct_eval(P.row(j)-Q.row(iter),N.row(j)*A(j));
       }
       WN(iter) = wn;
@@ -387,11 +427,10 @@ template <
   typename DerivedW>
 IGL_INLINE void igl::fast_winding_number(
   const FastWindingNumberBVH & fwn_bvh,
-  const float _accuracy_scale,
+  const float accuracy_scale,
   const Eigen::MatrixBase<DerivedQ> & Q,
   Eigen::PlainObjectBase<DerivedW> & W)
 {
-  const double accuracy_scale = 2;
   assert(Q.cols() == 3 && "Q should be 3D");
   W.resize(Q.rows(),1);
   igl::parallel_for(Q.rows(),[&](int p)
@@ -407,12 +446,13 @@ IGL_INLINE void igl::fast_winding_number(
     },1000);
 }
 
+
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instantiation
-// generated by autoexplicit.sh
-template void igl::fast_winding_number<Eigen::CwiseUnaryOp<Eigen::internal::scalar_cast_op<double, float>, Eigen::Matrix<double, -1, -1, 0, -1, -1> const>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::CwiseUnaryOp<Eigen::internal::scalar_cast_op<double, float>, Eigen::Matrix<double, -1, -1, 0, -1, -1> const> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, int, igl::FastWindingNumberBVH&);
-// generated by autoexplicit.sh
-template void igl::fast_winding_number<Eigen::CwiseUnaryOp<Eigen::internal::scalar_cast_op<double, float>, Eigen::Matrix<double, -1, -1, 0, -1, -1> const>, Eigen::Matrix<float, -1, 1, 0, -1, 1> >(igl::FastWindingNumberBVH const&, float, Eigen::MatrixBase<Eigen::CwiseUnaryOp<Eigen::internal::scalar_cast_op<double, float>, Eigen::Matrix<double, -1, -1, 0, -1, -1> const> > const&, Eigen::PlainObjectBase<Eigen::Matrix<float, -1, 1, 0, -1, 1> >&);
 template void igl::fast_winding_number<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, int, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, int, Eigen::Matrix<double, -1, 1, 0, -1, 1> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, std::vector<std::vector<int, std::allocator<int> >, std::allocator<std::vector<int, std::allocator<int> > > > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, int, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&);
 template void igl::fast_winding_number<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, int, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, std::vector<std::vector<int, std::allocator<int> >, std::allocator<std::vector<int, std::allocator<int> > > > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, int, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
+template void igl::fast_winding_number<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, 1, 0, -1, 1> >(igl::FastWindingNumberBVH const&, float, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&);
+template void igl::fast_winding_number<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, int, igl::FastWindingNumberBVH&);
+template void igl::fast_winding_number<Eigen::Matrix<float, -1, -1, 0, -1, -1>, Eigen::Matrix<float, -1, 1, 0, -1, 1> >(igl::FastWindingNumberBVH const&, float, Eigen::MatrixBase<Eigen::Matrix<float, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<float, -1, 1, 0, -1, 1> >&);
+template void igl::fast_winding_number<Eigen::Matrix<float, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::Matrix<float, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, int, igl::FastWindingNumberBVH&);
 #endif
