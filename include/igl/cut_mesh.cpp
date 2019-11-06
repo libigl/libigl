@@ -40,7 +40,6 @@ IGL_INLINE void igl::cut_mesh(
   cut_mesh(Vn,Fn,C,I);
 }
 
-
 template <typename DerivedV, typename DerivedF, typename DerivedC, typename DerivedI>
 IGL_INLINE void igl::cut_mesh(
   Eigen::PlainObjectBase<DerivedV>& V,
@@ -48,10 +47,23 @@ IGL_INLINE void igl::cut_mesh(
   const Eigen::MatrixBase<DerivedC>& C,
   Eigen::PlainObjectBase<DerivedI>& I
 ){
-
   typedef typename DerivedF::Scalar Index;
   DerivedF FF, FFi;
   igl::triangle_triangle_adjacency(F,FF,FFi);
+  igl::cut_mesh(V,F,FF,FFi,C,I);
+}
+
+template <typename DerivedV, typename DerivedF, typename DerivedFF, typename DerivedFFi, typename DerivedC, typename DerivedI>
+IGL_INLINE void igl::cut_mesh(
+  Eigen::PlainObjectBase<DerivedV>& V,
+  Eigen::PlainObjectBase<DerivedF>& F,
+  Eigen::MatrixBase<DerivedFF>& FF,
+  Eigen::MatrixBase<DerivedFFi>& FFi,
+  const Eigen::MatrixBase<DerivedC>& C,
+  Eigen::PlainObjectBase<DerivedI>& I
+){
+
+  typedef typename DerivedF::Scalar Index;
 
   // store current number of occurance of each vertex as the alg proceed
   Eigen::Matrix<Index,Eigen::Dynamic,1> occurence(V.rows());
@@ -62,28 +74,23 @@ IGL_INLINE void igl::cut_mesh(
   eventual.setZero();
   for(Index i=0;i<F.rows();i++){
     for(Index k=0;k<3;k++){
-      if(C(i,k) == 1){
-        Index u = F(i,k);
-        Index v = F(i,(k+1)%3);
-        if(FF(i,k) == -1) continue;
-        if(u > v) continue; // only compute every (undirected) edge ones
+      Index u = F(i,k);
+      Index v = F(i,(k+1)%3);
+      if(FF(i,k) == -1){ // add one extra occurance for boundary vertices
+        eventual(u) += 1;
+      }else if(C(i,k) == 1 && u < v){ // only compute every (undirected) edge ones
         eventual(u) += 1;
         eventual(v) += 1;
       }
     }
   }
-  // add one extra occurance for boundary vertices
-  auto is_border = igl::is_border_vertex(F);
-  for(Index i=0;i<V.rows();i++)
-    if(is_border[i])
-      eventual(i) += 1;
   
   // original number of vertices
   Index n_v = V.rows(); 
   
   // estimate number of new vertices and resize V
   Index n_new = 0;
-  for(Index i=0;i<g.rows();i++)
+  for(Index i=0;i<eventual.rows();i++)
     n_new += ((eventual(i) > 0) ? eventual(i)-1 : 0);
   V.conservativeResize(n_v+n_new,Eigen::NoChange);
   I = DerivedI::LinSpaced(V.rows(),0,V.rows());

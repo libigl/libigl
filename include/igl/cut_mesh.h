@@ -41,6 +41,16 @@ namespace igl
     const Eigen::MatrixBase<DerivedC>& cuts,
     Eigen::PlainObjectBase<DerivedI>& I
   );
+  
+  template <typename DerivedV, typename DerivedF, typename DerivedFF, typename DerivedFFi, typename DerivedC, typename DerivedI>
+  IGL_INLINE void cut_mesh(
+    Eigen::PlainObjectBase<DerivedV>& V,
+    Eigen::PlainObjectBase<DerivedF>& F,
+    Eigen::MatrixBase<DerivedFF>& FF,
+    Eigen::MatrixBase<DerivedFFi>& FFi,
+    const Eigen::MatrixBase<DerivedC>& C,
+    Eigen::PlainObjectBase<DerivedI>& I
+  );
 
   template <typename DerivedV, typename DerivedF, typename DerivedC>
   IGL_INLINE void cut_mesh(
