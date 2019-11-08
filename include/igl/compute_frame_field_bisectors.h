@@ -26,22 +26,22 @@ namespace igl
   //
   template <typename DerivedV, typename DerivedF>
   IGL_INLINE void compute_frame_field_bisectors(
-                                                const Eigen::PlainObjectBase<DerivedV>& V,
-                                                const Eigen::PlainObjectBase<DerivedF>& F,
-                                                const Eigen::PlainObjectBase<DerivedV>& B1,
-                                                const Eigen::PlainObjectBase<DerivedV>& B2,
-                                                const Eigen::PlainObjectBase<DerivedV>& PD1,
-                                                const Eigen::PlainObjectBase<DerivedV>& PD2,
+                                                const Eigen::MatrixBase<DerivedV>& V,
+                                                const Eigen::MatrixBase<DerivedF>& F,
+                                                const Eigen::MatrixBase<DerivedV>& B1,
+                                                const Eigen::MatrixBase<DerivedV>& B2,
+                                                const Eigen::MatrixBase<DerivedV>& PD1,
+                                                const Eigen::MatrixBase<DerivedV>& PD2,
                                                 Eigen::PlainObjectBase<DerivedV>& BIS1,
                                                 Eigen::PlainObjectBase<DerivedV>& BIS2);
 
   // Wrapper without given basis vectors.
   template <typename DerivedV, typename DerivedF>
   IGL_INLINE void compute_frame_field_bisectors(
-                                                const Eigen::PlainObjectBase<DerivedV>& V,
-                                                const Eigen::PlainObjectBase<DerivedF>& F,
-                                                const Eigen::PlainObjectBase<DerivedV>& PD1,
-                                                const Eigen::PlainObjectBase<DerivedV>& PD2,
+                                                const Eigen::MatrixBase<DerivedV>& V,
+                                                const Eigen::MatrixBase<DerivedF>& F,
+                                                const Eigen::MatrixBase<DerivedV>& PD1,
+                                                const Eigen::MatrixBase<DerivedV>& PD2,
                                                 Eigen::PlainObjectBase<DerivedV>& BIS1,
                                                 Eigen::PlainObjectBase<DerivedV>& BIS2);
 }

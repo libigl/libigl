@@ -22,7 +22,11 @@ IGL_INLINE bool igl::list_to_matrix(const std::vector<std::vector<T > > & V,Eige
   int m = V.size();
   if(m == 0)
   {
-    M.resize(0,0);
+    M.resize(
+            Derived::RowsAtCompileTime>=0?Derived::RowsAtCompileTime:0
+            ,
+            Derived::ColsAtCompileTime>=0?Derived::ColsAtCompileTime:0
+            );
     return true;
   }
   // number of columns

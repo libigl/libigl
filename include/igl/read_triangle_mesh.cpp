@@ -105,6 +105,8 @@ IGL_INLINE bool igl::read_triangle_mesh(
   using namespace Eigen;
   vector<vector<double > > vV,vN,vTC,vC;
   vector<vector<int > > vF,vFTC,vFN;
+  vector<tuple<string, int, int>> FM;
+
   if(ext == "mesh")
   {
     // Convert extension to lower case
@@ -119,7 +121,7 @@ IGL_INLINE bool igl::read_triangle_mesh(
     }
   }else if(ext == "obj")
   {
-    if(!readOBJ(fp,vV,vTC,vN,vF,vFTC,vFN))
+    if(!readOBJ(fp,vV,vTC,vN,vF,vFTC,vFN,FM))
     {
       return false;
     }
