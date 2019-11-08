@@ -104,16 +104,17 @@ if(HUNTER_ENABLED)
 endif()
 
 # Eigen
-if(TARGET Eigen3::Eigen)
-  # If an imported target already exists, use it
-  target_link_libraries(igl_common INTERFACE Eigen3::Eigen)
-else()
+if(NOT TARGET Eigen3::Eigen)
   igl_download_eigen()
-  target_include_directories(igl_common SYSTEM INTERFACE
+  add_library(igl_eigen INTERFACE)
+  target_include_directories(igl_eigen SYSTEM INTERFACE
     $<BUILD_INTERFACE:${LIBIGL_EXTERNAL}/eigen>
     $<INSTALL_INTERFACE:include>
   )
+  set_property(TARGET igl_eigen PROPERTY EXPORT_NAME Eigen3::Eigen)
+  add_library(Eigen3::Eigen ALIAS igl_eigen)
 endif()
+target_link_libraries(igl_common INTERFACE Eigen3::Eigen)
 
 # C++11 Thread library
 find_package(Threads REQUIRED)
@@ -302,7 +303,7 @@ if(LIBIGL_WITH_EMBREE)
     # TODO: Should probably save/restore the CMAKE_CXX_FLAGS_*, since embree seems to be
     # overriding them on Windows. But well... it works for now.
     igl_download_embree()
-    add_subdirectory("${EMBREE_DIR}" "embree")
+    add_subdirectory("${EMBREE_DIR}" "embree" EXCLUDE_FROM_ALL)
   endif()
 
   compile_igl_module("embree")
@@ -500,21 +501,30 @@ endfunction()
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 
+if(TARGET igl_eigen)
+  set(IGL_EIGEN igl_eigen)
+else()
+  set(IGL_EIGEN)
+  message(WARNING "Trying to export igl targets while using an imported target for Eigen.")
+endif()
+
 # Install and export core library
 install(
-   TARGETS
-     igl
-     igl_common
-   EXPORT igl-export
-   PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-   RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  TARGETS
+    igl
+    igl_common
+    ${IGL_EIGEN}
+  EXPORT igl-export
+  PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
 )
 export(
   TARGETS
     igl
     igl_common
+    ${IGL_EIGEN}
   FILE libigl-export.cmake
 )
 
