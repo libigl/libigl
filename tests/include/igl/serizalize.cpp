@@ -8,8 +8,8 @@ TEST_CASE("serialize: serialize data", "[igl]")
     Eigen::MatrixXi F;
     test_common::load_mesh("truck.obj", V,F);
 
-    REQUIRE(igl::serialize(V, "V", "truck.serialized"));
-    REQUIRE(igl::serialize(F, "F", "truck.serialized"));
+    REQUIRE(igl::serialize(V, "V", test_common::data_path("truck.serialized")));
+    REQUIRE(igl::serialize(F, "F", test_common::data_path("truck.serialized")));
 
     REQUIRE(V.rows() == 2956);
     REQUIRE(F.rows() == 4770);
@@ -34,7 +34,7 @@ TEST_CASE("serialize: serialize string", "[igl]")
 {
     std::string description = "libigl - A simple C++ geometry processing library.";
 
-    REQUIRE(igl::serialize(description, "description", "string.serialized"));
+    REQUIRE(igl::serialize(description, "description", test_common::data_path("string.serialized")));
 }
 
 TEST_CASE("serialize: deserialize string", "[igl]")
