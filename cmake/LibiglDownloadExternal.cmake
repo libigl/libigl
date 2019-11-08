@@ -174,8 +174,8 @@ endfunction()
 function(igl_download_test_data)
 	igl_download_project_aux(test_data
 		"${LIBIGL_EXTERNAL}/../tests/data"
-		GIT_REPOSITORY https://github.com/BruegelN/libigl-tests-data
-		GIT_TAG        master
+		GIT_REPOSITORY https://github.com/libigl/libigl-tests-data
+		GIT_TAG        847416d149e23948157dc02dba4cf565d6c42884
 	)
 endfunction()
 

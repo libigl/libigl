@@ -55,8 +55,8 @@ TEST_CASE("serialize: cross platform deserialize", "[igl]")
   std::string description = "libigl - A simple C++ geometry processing library.";
   std::string str;
   // load serialized file under ubuntu (gcc 7.4.0)
-  igl::deserialize(str, "str", test_common::data_path("cross_platform_linux.serialized"),false);
-  igl::deserialize(L,"list",test_common::data_path("cross_platform_linux.serialized"),false);
+  igl::deserialize(str, "str", test_common::data_path("cross_platform.serialized"),false);
+  igl::deserialize(L,"list",test_common::data_path("cross_platform.serialized"),false);
   REQUIRE(L.size() == 2);
   REQUIRE(description == str);
 }
