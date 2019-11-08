@@ -106,20 +106,20 @@ namespace igl
   //   obj        object to load back serialization to
   //
   template <typename T>
-  inline bool deserialize(T& obj,const std::string& filename);
+  inline bool deserialize(T& obj,const std::string& filename,const bool warning = false);
   template <typename T>
-  inline bool deserialize(T& obj,const std::string& objectName,const std::string& filename);
+  inline bool deserialize(T& obj,const std::string& objectName,const std::string& filename,const bool warning = false);
   template <typename T>
-  inline bool deserialize(T& obj,const std::string& objectName,const std::vector<char>& buffer);
+  inline bool deserialize(T& obj,const std::string& objectName,const std::vector<char>& buffer,const bool warning = false);
 
   // Wrapper to expose both, the de- and serialization as one function
   //
   template <typename T>
-  inline bool serializer(bool serialize,T& obj,const std::string& filename);
+  inline bool serializer(bool serialize,T& obj,const std::string& filename, const bool warning = false);
   template <typename T>
-  inline bool serializer(bool serialize,T& obj,const std::string& objectName,const std::string& filename,bool overwrite = false);
+  inline bool serializer(bool serialize,T& obj,const std::string& objectName,const std::string& filename,bool overwrite = false,const bool warning = false);
   template <typename T>
-  inline bool serializer(bool serialize,T& obj,const std::string& objectName,std::vector<char>& buffer);
+  inline bool serializer(bool serialize,T& obj,const std::string& objectName,std::vector<char>& buffer, const bool warning = false);
 
   // User defined types have to either overload the function igl::serialization::serialize()
   // and igl::serialization::deserialize() for their type (non-intrusive serialization):
@@ -482,13 +482,13 @@ namespace igl
   }
 
   template <typename T>
-  inline bool deserialize(T& obj,const std::string& filename)
+  inline bool deserialize(T& obj,const std::string& filename, const bool warning)
   {
-    return deserialize(obj,"obj",filename);
+    return deserialize(obj,"obj",filename,warning);
   }
 
   template <typename T>
-  inline bool deserialize(T& obj,const std::string& objectName,const std::string& filename)
+  inline bool deserialize(T& obj,const std::string& objectName,const std::string& filename, const bool warning)
   {
     bool success = false;
 
@@ -503,7 +503,7 @@ namespace igl
       std::vector<char> buffer(size);
       file.read(&buffer[0],size);
 
-      success = deserialize(obj, objectName, buffer);
+      success = deserialize(obj, objectName, buffer, warning);
       file.close();
 
     }
@@ -516,7 +516,7 @@ namespace igl
   }
 
   template <typename T>
-  inline bool deserialize(T& obj,const std::string& objectName,const std::vector<char>& buffer)
+  inline bool deserialize(T& obj,const std::string& objectName,const std::vector<char>& buffer, const bool warning)
   {
     bool success = false;
 
@@ -532,10 +532,14 @@ namespace igl
       serialization::deserialize(type,iter);
       serialization::deserialize(size,iter);
 
-      if(name == objectName && type == demangled_name<T>())
+      if( name == objectName )
       {
+        if(warning && type != demangled_name<T>()){
+          std::cerr << "inconsistent types <<< " <<type<<std::endl;
+          std::cerr << "                   >>> " <<demangled_name<T>()<<std::endl;
+        }
         objectIter = iter;
-        //break; // find first suitable object header
+        break; // find first suitable object header
       }
 
       iter+=size;
@@ -556,21 +560,21 @@ namespace igl
 
   // Wrapper function which combines both, de- and serialization
   template <typename T>
-  inline bool serializer(bool s,T& obj,const std::string& filename)
+  inline bool serializer(bool s,T& obj,const std::string& filename, const bool warning)
   {
-    return s ? serialize(obj,filename) : deserialize(obj,filename);
+    return s ? serialize(obj,filename) : deserialize(obj,filename,warning);
   }
 
   template <typename T>
-  inline bool serializer(bool s,T& obj,const std::string& objectName,const std::string& filename,bool overwrite)
+  inline bool serializer(bool s,T& obj,const std::string& objectName,const std::string& filename,bool overwrite,const bool warning)
   {
-    return s ? serialize(obj,objectName,filename,overwrite) : deserialize(obj,objectName,filename);
+    return s ? serialize(obj,objectName,filename,overwrite) : deserialize(obj,objectName,filename,warning);
   }
 
   template <typename T>
-  inline bool serializer(bool s,T& obj,const std::string& objectName,std::vector<char>& buffer)
+  inline bool serializer(bool s,T& obj,const std::string& objectName,std::vector<char>& buffer,const bool warning)
   {
-    return s ? serialize(obj,objectName,buffer) : deserialize(obj,objectName,buffer);
+    return s ? serialize(obj,objectName,buffer) : deserialize(obj,objectName,buffer,warning);
   }
 
   inline bool Serializable::PreSerialization() const

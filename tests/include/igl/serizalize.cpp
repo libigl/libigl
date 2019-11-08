@@ -47,3 +47,23 @@ TEST_CASE("serialize: deserialize string", "[igl]")
     REQUIRE(deserialized == description);
 }
 
+TEST_CASE("serialize: cross platform serialize", "[igl]")
+{
+  
+  Eigen::MatrixXi a(10,10),b(5,5);
+  a.setConstant(10);
+  b.setConstant(5);
+  std::vector<Eigen::MatrixXi> L = {a,b};
+  REQUIRE(igl::serialize(L,"list",test_common::data_path("cross_platform.serialized")));
+  
+}
+
+// TEST_CASE("serialize: cross platform deserialize", "[igl]")
+// {
+  
+//   Eigen::MatrixXi a,b;
+//   std::vector<Eigen::MatrixXi> L;
+//   igl::deserialize(L,"list",test_common::data_path("cross_platform.serialized"),false);
+//   REQUIRE(L.size() == 2);
+// }
+
