@@ -47,23 +47,17 @@ TEST_CASE("serialize: deserialize string", "[igl]")
     REQUIRE(deserialized == description);
 }
 
-TEST_CASE("serialize: cross platform serialize", "[igl]")
+TEST_CASE("serialize: cross platform deserialize", "[igl]")
 {
   
-  Eigen::MatrixXi a(10,10),b(5,5);
-  a.setConstant(10);
-  b.setConstant(5);
-  std::vector<Eigen::MatrixXi> L = {a,b};
-  REQUIRE(igl::serialize(L,"list",test_common::data_path("cross_platform.serialized")));
-  
+  Eigen::MatrixXi a,b;
+  std::vector<Eigen::MatrixXi> L;
+  std::string description = "libigl - A simple C++ geometry processing library.";
+  std::string str;
+  // load serialized file under ubuntu (gcc 7.4.0)
+  igl::deserialize(str, "str", test_common::data_path("cross_platform_linux.serialized"),false);
+  igl::deserialize(L,"list",test_common::data_path("cross_platform_linux.serialized"),false);
+  REQUIRE(L.size() == 2);
+  REQUIRE(description == str);
 }
-
-// TEST_CASE("serialize: cross platform deserialize", "[igl]")
-// {
-  
-//   Eigen::MatrixXi a,b;
-//   std::vector<Eigen::MatrixXi> L;
-//   igl::deserialize(L,"list",test_common::data_path("cross_platform.serialized"),false);
-//   REQUIRE(L.size() == 2);
-// }
 
