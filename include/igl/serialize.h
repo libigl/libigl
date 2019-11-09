@@ -534,7 +534,8 @@ namespace igl
 
       if( name == objectName )
       {
-        if(warning && type != demangled_name<T>()){
+        if(warning && type != demangled_name<T>())
+        {
           std::cerr << "inconsistent types <<< " <<type<<std::endl;
           std::cerr << "                   >>> " <<demangled_name<T>()<<std::endl;
         }

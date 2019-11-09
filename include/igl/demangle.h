@@ -11,6 +11,7 @@
 #include <string>
 #include <typeinfo>
 #include <type_traits> // std::is_same<T1,T2>
+#include <vector>
 
 #ifdef _MSC_VER
 #else // clang or gcc
@@ -50,7 +51,7 @@ namespace igl
 
   //! Demangles the type encoded in a string
   /*! @internal */
-  inline std::string demangle(std::string mangledName)
+  inline std::string demangle(std::string mangledName, bool replace_string = true)
   {
     int status = 0;
     char *demangledName = nullptr;
@@ -64,6 +65,13 @@ namespace igl
     // gcc and clang do sth. like this: "class<T1, T2, T3>"
     // thus remove blanks
     replace_all(retName,", ",",");
+
+    // Try to produce consistent `std::string` type for strings
+    if (replace_string) {
+      static std::string nativeStringType(demangle(typeid(std::string).name(), false));
+      replace_all(retName,nativeStringType,"std::string");
+    }
+
     return retName;
   }
 
@@ -74,10 +82,6 @@ namespace igl
   template<class T> inline
   std::string demangled_name()
   {
-    if (std::is_same<T, std::string>::value)
-    {
-      return std::string("std::string");
-    }
     return demangle(typeid(T).name());
   }
 
