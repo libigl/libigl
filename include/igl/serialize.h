@@ -102,24 +102,31 @@ namespace igl
   //   buffer     binary serialization
   //   objectName unique object name, used for the identification
   //   filename   name of the file containing the serialization
+  //   typecheck  an enum value TypeCheck for choosing behavior of type check when deserializing
   // Outputs:
   //   obj        object to load back serialization to
   //
+  
+  enum TypeCheck : int {
+    SHOW_WARNING = 1,
+    ERROR_ON_MISMATCH = 2,
+  };
+  
   template <typename T>
-  inline bool deserialize(T& obj,const std::string& filename,const bool warning = false);
+  inline bool deserialize(T& obj,const std::string& filename,TypeCheck t=TypeCheck::SHOW_WARNING);
   template <typename T>
-  inline bool deserialize(T& obj,const std::string& objectName,const std::string& filename,const bool warning = false);
+  inline bool deserialize(T& obj,const std::string& objectName,const std::string& filename,TypeCheck t=TypeCheck::SHOW_WARNING);
   template <typename T>
-  inline bool deserialize(T& obj,const std::string& objectName,const std::vector<char>& buffer,const bool warning = false);
+  inline bool deserialize(T& obj,const std::string& objectName,const std::vector<char>& buffer,TypeCheck t=TypeCheck::SHOW_WARNING);
 
   // Wrapper to expose both, the de- and serialization as one function
   //
   template <typename T>
-  inline bool serializer(bool serialize,T& obj,const std::string& filename, const bool warning = false);
+  inline bool serializer(bool serialize,T& obj,const std::string& filename,TypeCheck t=TypeCheck::SHOW_WARNING);
   template <typename T>
-  inline bool serializer(bool serialize,T& obj,const std::string& objectName,const std::string& filename,bool overwrite = false,const bool warning = false);
+  inline bool serializer(bool serialize,T& obj,const std::string& objectName,const std::string& filename,bool overwrite = false,TypeCheck t=TypeCheck::SHOW_WARNING);
   template <typename T>
-  inline bool serializer(bool serialize,T& obj,const std::string& objectName,std::vector<char>& buffer, const bool warning = false);
+  inline bool serializer(bool serialize,T& obj,const std::string& objectName,std::vector<char>& buffer,TypeCheck t=TypeCheck::SHOW_WARNING);
 
   // User defined types have to either overload the function igl::serialization::serialize()
   // and igl::serialization::deserialize() for their type (non-intrusive serialization):
@@ -482,13 +489,13 @@ namespace igl
   }
 
   template <typename T>
-  inline bool deserialize(T& obj,const std::string& filename, const bool warning)
+  inline bool deserialize(T& obj,const std::string& filename, TypeCheck option)
   {
-    return deserialize(obj,"obj",filename,warning);
+    return deserialize(obj,"obj",filename,option);
   }
 
   template <typename T>
-  inline bool deserialize(T& obj,const std::string& objectName,const std::string& filename, const bool warning)
+  inline bool deserialize(T& obj,const std::string& objectName,const std::string& filename,TypeCheck option)
   {
     bool success = false;
 
@@ -503,7 +510,7 @@ namespace igl
       std::vector<char> buffer(size);
       file.read(&buffer[0],size);
 
-      success = deserialize(obj, objectName, buffer, warning);
+      success = deserialize(obj, objectName, buffer, option);
       file.close();
 
     }
@@ -516,7 +523,7 @@ namespace igl
   }
 
   template <typename T>
-  inline bool deserialize(T& obj,const std::string& objectName,const std::vector<char>& buffer, const bool warning)
+  inline bool deserialize(T& obj,const std::string& objectName,const std::vector<char>& buffer,TypeCheck option)
   {
     bool success = false;
 
@@ -534,11 +541,16 @@ namespace igl
 
       if( name == objectName )
       {
-        if(warning && type != demangled_name<T>())
-        {
+        if(type != demangled_name<T>()){
           std::cerr << "inconsistent types <<< " <<type<<std::endl;
           std::cerr << "                   >>> " <<demangled_name<T>()<<std::endl;
+          switch(option){
+            case TypeCheck::SHOW_WARNING: break;
+            case TypeCheck::ERROR_ON_MISMATCH: return false;
+            default: break;   // do not care about typcheck - try to load anyway
+          }
         }
+
         objectIter = iter;
         break; // find first suitable object header
       }
@@ -561,21 +573,21 @@ namespace igl
 
   // Wrapper function which combines both, de- and serialization
   template <typename T>
-  inline bool serializer(bool s,T& obj,const std::string& filename, const bool warning)
+  inline bool serializer(bool s,T& obj,const std::string& filename, TypeCheck option)
   {
-    return s ? serialize(obj,filename) : deserialize(obj,filename,warning);
+    return s ? serialize(obj,filename) : deserialize(obj,filename,option);
   }
 
   template <typename T>
-  inline bool serializer(bool s,T& obj,const std::string& objectName,const std::string& filename,bool overwrite,const bool warning)
+  inline bool serializer(bool s,T& obj,const std::string& objectName,const std::string& filename,bool overwrite,TypeCheck option)
   {
-    return s ? serialize(obj,objectName,filename,overwrite) : deserialize(obj,objectName,filename,warning);
+    return s ? serialize(obj,objectName,filename,overwrite) : deserialize(obj,objectName,filename,option);
   }
 
   template <typename T>
-  inline bool serializer(bool s,T& obj,const std::string& objectName,std::vector<char>& buffer,const bool warning)
+  inline bool serializer(bool s,T& obj,const std::string& objectName,std::vector<char>& buffer,TypeCheck option)
   {
-    return s ? serialize(obj,objectName,buffer) : deserialize(obj,objectName,buffer,warning);
+    return s ? serialize(obj,objectName,buffer) : deserialize(obj,objectName,buffer,option);
   }
 
   inline bool Serializable::PreSerialization() const
