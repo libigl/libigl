@@ -64,7 +64,7 @@ function(igl_download_cork)
 endfunction()
 
 ## Eigen
-set(LIBIGL_EIGEN_VERSION 3.2.10 CACHE STRING "Default version of Eigen used by libigl.")
+set(LIBIGL_EIGEN_VERSION 3.3.7 CACHE STRING "Default version of Eigen used by libigl.")
 function(igl_download_eigen)
 	igl_download_project(eigen
 		GIT_REPOSITORY https://github.com/eigenteam/eigen-git-mirror.git
@@ -175,7 +175,7 @@ function(igl_download_test_data)
 	igl_download_project_aux(test_data
 		"${LIBIGL_EXTERNAL}/../tests/data"
 		GIT_REPOSITORY https://github.com/libigl/libigl-tests-data
-		GIT_TAG        adc66cabf712a0bd68ac182b4e7f8b5ba009c3dd
+		GIT_TAG        5994ecdab65aebc6c218c4c6f35e7822acf6fe99
 	)
 endfunction()
 

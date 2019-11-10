@@ -11,18 +11,13 @@ environment:
   matrix:
   - CONFIG: Debug
     BOOST_ROOT: C:/Libraries/boost_1_65_1
-    PYTHON: 37
   - CONFIG: Release
     BOOST_ROOT: C:/Libraries/boost_1_65_1
-    PYTHON: 37
-install:
-  - cinstall: python
 build:
   parallel: true
 build_script:
   - cd c:\projects\libigl
   # Tutorials and tests
-  - set PATH=C:\Python%PYTHON%-x64;C:\Python%PYTHON%-x64\Scripts;%PATH%
   - mkdir build
   - cd build
   - cmake -DCMAKE_BUILD_TYPE=%CONFIG%

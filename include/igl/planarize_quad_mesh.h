@@ -33,8 +33,8 @@ namespace igl
   //
   
   template <typename DerivedV, typename DerivedF>
-  IGL_INLINE void planarize_quad_mesh(const Eigen::PlainObjectBase<DerivedV> &Vin,
-                                      const Eigen::PlainObjectBase<DerivedF> &F,
+  IGL_INLINE void planarize_quad_mesh(const Eigen::MatrixBase<DerivedV> &Vin,
+                                      const Eigen::MatrixBase<DerivedF> &F,
                                       const int maxIter,
                                       const double &threshold,
                                       Eigen::PlainObjectBase<DerivedV> &Vout);

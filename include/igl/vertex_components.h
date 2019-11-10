@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2015 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_COMPONENTS_H
 #define IGL_COMPONENTS_H
@@ -23,15 +23,15 @@ namespace igl
   //   C  n list of component ids (starting with 0)
   //   counts  #components list of counts for each component
   //
-  template <typename AScalar, typename DerivedC, typename Derivedcounts>
+  template <typename DerivedA, typename DerivedC, typename Derivedcounts>
   IGL_INLINE void vertex_components(
-    const Eigen::SparseMatrix<AScalar> & A,
+    const Eigen::SparseCompressedBase<DerivedA> & A,
     Eigen::PlainObjectBase<DerivedC> & C,
     Eigen::PlainObjectBase<Derivedcounts> & counts);
 
-  template <typename AScalar, typename DerivedC>
+  template <typename DerivedA, typename DerivedC>
   IGL_INLINE void vertex_components(
-    const Eigen::SparseMatrix<AScalar> & A,
+    const Eigen::SparseCompressedBase<DerivedA> & A,
     Eigen::PlainObjectBase<DerivedC> & C);
 
   // Compute the connected components for a mesh given its faces.
