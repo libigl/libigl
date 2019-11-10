@@ -39,7 +39,7 @@ namespace igl
 #ifdef _MSC_VER
   //! Demangles the type encoded in a string
   /*! @internal */
-  inline std::string demangle(std::string mangledName)
+  inline std::string demangle_no_string(std::string mangledName)
   {
     std::string prefix = "class "; // MSVC does "class myClass" see: https://docs.microsoft.com/en-us/cpp/cpp/typeid-operator
     // remove "class " prefixes
@@ -51,7 +51,7 @@ namespace igl
 
   //! Demangles the type encoded in a string
   /*! @internal */
-  inline std::string demangle(std::string mangledName, bool replace_string = true)
+  inline std::string demangle_no_string(std::string mangledName)
   {
     int status = 0;
     char *demangledName = nullptr;
@@ -66,16 +66,23 @@ namespace igl
     // thus remove blanks
     replace_all(retName,", ",",");
 
-    // Try to produce consistent `std::string` type for strings
-    if (replace_string) {
-      static std::string nativeStringType(demangle(typeid(std::string).name(), false));
-      replace_all(retName,nativeStringType,"std::string");
-    }
-
     return retName;
   }
 
 #endif // clang or gcc branch of _MSC_VER
+
+  //! Demangles the type encoded in a string
+  /*! @internal */
+  inline std::string demangle(std::string mangledName)
+  {
+    // Try to produce consistent `std::string` type for strings
+    static std::string nativeStringType(demangle_no_string(typeid(std::string).name()));
+    auto retName = demangle_no_string(mangledName);
+    std::cout << retName << std::endl;
+    replace_all(retName,nativeStringType,"std::string");
+    std::cout << retName << std::endl;
+    return retName;
+  }
 
   //! Gets the demangled name of a type
   /*! @internal */
