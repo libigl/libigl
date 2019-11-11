@@ -37,12 +37,16 @@ jobs:
       script: |
         set CTEST_OUTPUT_ON_FAILURE=1
         cd build
-        ctest  -C $(config) -V --output-on-failure -j --no-compress-output -O TEST-igl.xml
+        ctest  -C $(config) -V --output-on-failure -j --no-compress-output -T Test
+    displayName: 'Running Tests'
+
   
   - task: PublishTestResults@2
     inputs:
       testResultsFormat: 'CTest'
       testResultsFiles: '**/TEST-*.xml'
+      buildPlatform: 'windows'
+      buildConfiguration: '$(config)'
 
 
 - job: MainMacos
@@ -75,14 +79,18 @@ jobs:
       script: |
         cd build
         make -j
+    displayName: 'Building'
   
   - task: CmdLine@2
     inputs:
       script: |
         cd build
-        ctest -V --output-on-failure -j --no-compress-output -O TEST-igl.xml
+        ctest -V --output-on-failure -j --no-compress-output -T Test
+    displayName: 'Running Tests'
   
   - task: PublishTestResults@2
     inputs:
       testResultsFormat: 'CTest'
       testResultsFiles: '**/TEST-*.xml'
+      buildPlatform: 'macos'
+      buildConfiguration: '$(config)'
