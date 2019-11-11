@@ -56,12 +56,15 @@ jobs:
       release:
         config: 'Release'
         static: ON
+        tutorial: 'ON'
       debug:
         config: 'Debug'
         static: ON
+        tutorial: 'OFF'
       nonstatic:
         config: 'Debug'
         static: OFF
+        tutorial: 'ON'
 
 
   pool:
@@ -79,7 +82,7 @@ jobs:
   
   - task: CMake@1
     inputs:
-      cmakeArgs: '-DCMAKE_BUILD_TYPE=$(config) -DLIBIGL_WITH_CGAL=ON -DLIBIGL_CHECK_UNDEFINED=ON -DLIBIGL_USE_STATIC_LIBRARY=$(static) ..'
+      cmakeArgs: '-DCMAKE_BUILD_TYPE=$(config) -DLIBIGL_BUILD_TUTORIALS=$(tutorial) -DLIBIGL_WITH_CGAL=ON -DLIBIGL_CHECK_UNDEFINED=ON -DLIBIGL_USE_STATIC_LIBRARY=$(static) ..'
 
   - task: CmdLine@2
     inputs:
@@ -112,12 +115,15 @@ jobs:
       release:
         config: 'Release'
         static: ON
+        tutorial: 'ON'
       debug:
         config: 'Debug'
         static: ON
+        tutorial: 'OFF'
       nonstatic:
         config: 'Debug'
         static: OFF
+        tutorial: 'ON'
       
 
 
@@ -129,6 +135,8 @@ jobs:
   - task: CmdLine@2
     inputs:
       script: |
+        sudo apt-get install g++-7
+        sudo apt-get install gcc-7
         sudo apt-get install libblas-dev
         sudo apt-get install libboost-filesystem-dev
         sudo apt-get install libboost-system-dev
@@ -141,7 +149,7 @@ jobs:
 
   - task: CMake@1
     inputs:
-      cmakeArgs: '-DCMAKE_BUILD_TYPE=$(config) -DLIBIGL_WITH_CGAL=ON -DLIBIGL_CHECK_UNDEFINED=ON  -DLIBIGL_USE_STATIC_LIBRARY=$(static) ..'
+      cmakeArgs: '-DCMAKE_BUILD_TYPE=$(config) -DLIBIGL_BUILD_TUTORIALS=$(tutorial) -DLIBIGL_WITH_CGAL=ON -DLIBIGL_CHECK_UNDEFINED=ON  -DLIBIGL_USE_STATIC_LIBRARY=$(static) ..'
 
   - task: CmdLine@2
     inputs:
