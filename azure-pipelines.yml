@@ -63,6 +63,7 @@ jobs:
       script: |
         brew install gmp
         brew install mpfr
+        brew install boost
   - task: CMake@1
     inputs:
       cmakeArgs: '-DCMAKE_BUILD_TYPE=$(config) -DLIBIGL_WITH_CGAL=ON -DLIBIGL_CHECK_UNDEFINED=ON ..'
