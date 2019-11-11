@@ -49,22 +49,22 @@ jobs:
       buildConfiguration: '$(config)'
 
 
-- job: Macos
-  timeoutInMinutes: 0
-  strategy:
-    matrix:
-      release:
-        config: 'Release'
-        static: ON
-        tutorial: 'ON'
-      debug:
-        config: 'Debug'
-        static: ON
-        tutorial: 'OFF'
-      nonstatic:
-        config: 'Debug'
-        static: OFF
-        tutorial: 'ON'
+# - job: Macos
+#   timeoutInMinutes: 0
+#   strategy:
+#     matrix:
+#       release:
+#         config: 'Release'
+#         static: ON
+#         tutorial: 'ON'
+#       debug:
+#         config: 'Debug'
+#         static: ON
+#         tutorial: 'OFF'
+#       nonstatic:
+#         config: 'Debug'
+#         static: OFF
+#         tutorial: 'ON'
 
 
 #   pool:
