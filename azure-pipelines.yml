@@ -44,7 +44,7 @@ jobs:
   - task: PublishTestResults@2
     inputs:
       testResultsFormat: 'CTest'
-      testResultsFiles: '**/TEST-*.xml'
+      testResultsFiles: '**/Test.xml'
       buildPlatform: 'windows'
       buildConfiguration: '$(config)'
 
@@ -98,7 +98,7 @@ jobs:
   - task: PublishTestResults@2
     inputs:
       testResultsFormat: 'CTest'
-      testResultsFiles: '**/TEST-*.xml'
+      testResultsFiles: '**/Test.xml'
       buildPlatform: 'macos'
       buildConfiguration: '$(config)'
 
@@ -129,9 +129,9 @@ jobs:
   - task: CmdLine@2
     inputs:
       script: |
-        apt-get install gmp
-        apt-get install mpfr
-        apt-get install boost
+        sudo apt-get install gmp
+        sudo apt-get install mpfr
+        sudo apt-get install boost
     displayName: 'Dependencies'
 
   - task: CMake@1
@@ -155,6 +155,6 @@ jobs:
   - task: PublishTestResults@2
     inputs:
       testResultsFormat: 'CTest'
-      testResultsFiles: '**/TEST-*.xml'
+      testResultsFiles: '**/Test.xml'
       buildPlatform: 'linux'
       buildConfiguration: '$(config)'
