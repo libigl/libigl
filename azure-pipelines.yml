@@ -7,8 +7,6 @@ jobs:
   timeoutInMinutes: 0
   strategy:
     matrix:
-      windows:
-        imageName: 'vs2017-win2016'
       release:
         config: 'Release'
       debug:
@@ -16,7 +14,7 @@ jobs:
 
 
   pool:
-    vmImage: $(imageName)
+    vmImage: 'vs2017-win2016'
 
   steps:
   - task: CMake@1
