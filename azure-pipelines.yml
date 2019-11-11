@@ -3,7 +3,7 @@ trigger:
 
 
 jobs:
-- job: MainWindows
+- job: Windows
   timeoutInMinutes: 0
   strategy:
     matrix:
@@ -49,7 +49,7 @@ jobs:
       buildConfiguration: '$(config)'
 
 
-- job: MainMacos
+- job: Macos
   timeoutInMinutes: 0
   strategy:
     matrix:
@@ -93,4 +93,53 @@ jobs:
       testResultsFormat: 'CTest'
       testResultsFiles: '**/TEST-*.xml'
       buildPlatform: 'macos'
+      buildConfiguration: '$(config)'
+
+
+
+
+- job: Linux
+  timeoutInMinutes: 0
+  strategy:
+    matrix:
+      release:
+        config: 'Release'
+      debug:
+        config: 'Debug'
+
+
+  pool:
+    vmImage: 'ubuntu-16.04'
+
+  steps:
+
+  - task: CmdLine@2
+    inputs:
+      script: |
+        apt-get install gmp
+        apt-get install mpfr
+        apt-get install boost
+  - task: CMake@1
+    inputs:
+      cmakeArgs: '-DCMAKE_BUILD_TYPE=$(config) -DLIBIGL_WITH_CGAL=ON -DLIBIGL_CHECK_UNDEFINED=ON ..'
+
+  - task: CmdLine@2
+    inputs:
+      script: |
+        cd build
+        make -j
+    displayName: 'Building'
+  
+  - task: CmdLine@2
+    inputs:
+      script: |
+        cd build
+        ctest -V --output-on-failure -j --no-compress-output -T Test
+    displayName: 'Running Tests'
+  
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'CTest'
+      testResultsFiles: '**/TEST-*.xml'
+      buildPlatform: 'linux'
       buildConfiguration: '$(config)'
