@@ -55,8 +55,13 @@ jobs:
     matrix:
       release:
         config: 'Release'
+        static: ON
       debug:
         config: 'Debug'
+        static: ON
+      nonstatic:
+        config: 'Debug'
+        static: OFF
 
 
   pool:
@@ -70,9 +75,11 @@ jobs:
         brew install gmp
         brew install mpfr
         brew install boost
+    displayName: 'Dependencies'
+  
   - task: CMake@1
     inputs:
-      cmakeArgs: '-DCMAKE_BUILD_TYPE=$(config) -DLIBIGL_WITH_CGAL=ON -DLIBIGL_CHECK_UNDEFINED=ON ..'
+      cmakeArgs: '-DCMAKE_BUILD_TYPE=$(config) -DLIBIGL_WITH_CGAL=ON -DLIBIGL_CHECK_UNDEFINED=ON -DLIBIGL_USE_STATIC_LIBRARY=$(static) ..'
 
   - task: CmdLine@2
     inputs:
@@ -104,8 +111,14 @@ jobs:
     matrix:
       release:
         config: 'Release'
+        static: ON
       debug:
         config: 'Debug'
+        static: ON
+      nonstatic:
+        config: 'Debug'
+        static: OFF
+      
 
 
   pool:
@@ -119,9 +132,11 @@ jobs:
         apt-get install gmp
         apt-get install mpfr
         apt-get install boost
+    displayName: 'Dependencies'
+
   - task: CMake@1
     inputs:
-      cmakeArgs: '-DCMAKE_BUILD_TYPE=$(config) -DLIBIGL_WITH_CGAL=ON -DLIBIGL_CHECK_UNDEFINED=ON ..'
+      cmakeArgs: '-DCMAKE_BUILD_TYPE=$(config) -DLIBIGL_WITH_CGAL=ON -DLIBIGL_CHECK_UNDEFINED=ON  -DLIBIGL_USE_STATIC_LIBRARY=$(static) ..'
 
   - task: CmdLine@2
     inputs:
