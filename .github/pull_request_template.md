@@ -4,5 +4,4 @@
 - [ ] All changes meet [libigl style-guidelines](https://libigl.github.io/style-guidelines/).
 - [ ] Adds new .cpp file.
 - [ ] Adds corresponding unit test.
-- [ ] Adds corresponding python binding.
 - [ ] This is a minor change.
