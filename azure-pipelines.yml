@@ -129,9 +129,14 @@ jobs:
   - task: CmdLine@2
     inputs:
       script: |
-        sudo apt-get install gmp
-        sudo apt-get install mpfr
-        sudo apt-get install boost
+        sudo apt-get install libblas-dev
+        sudo apt-get install libboost-filesystem-dev
+        sudo apt-get install libboost-system-dev
+        sudo apt-get install libboost-thread-dev
+        sudo apt-get install libglu1-mesa-dev
+        sudo apt-get install liblapack-dev
+        sudo apt-get install libmpfr-dev
+        sudo apt-get install xorg-dev
     displayName: 'Dependencies'
 
   - task: CMake@1
