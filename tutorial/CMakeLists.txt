@@ -4,9 +4,6 @@ project(libigl_tutorials)
 ### Conditionally compile certain modules depending on libraries found on the system
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../cmake)
 
-### Compile libigl in header-only mode for Python bindings
-option(LIBIGL_USE_STATIC_LIBRARY "Use LibIGL as static library" ON)
-
 ### Adding libIGL: choose the path to your local copy libIGL
 if(NOT TARGET igl_common)
   include(libigl)

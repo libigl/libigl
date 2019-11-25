@@ -19,7 +19,6 @@ if(APPLE)
 endif()
 
 ### Available options ###
-option(LIBIGL_USE_STATIC_LIBRARY     "Use libigl as static library" OFF)
 option(LIBIGL_WITH_CGAL              "Use CGAL"                     OFF)
 option(LIBIGL_WITH_COMISO            "Use CoMiso"                   OFF)
 option(LIBIGL_WITH_CORK              "Use Cork"                     OFF)
@@ -46,10 +45,10 @@ set(LIBIGL_SOURCE_DIR "${LIBIGL_ROOT}/include")
 set(LIBIGL_EXTERNAL "${LIBIGL_ROOT}/external")
 
 # Dependencies are linked as INTERFACE targets unless libigl is compiled as a static library
-if(LIBIGL_USE_STATIC_LIBRARY)
-  set(IGL_SCOPE PUBLIC)
-else()
+if(BUILD_SHARED_LIBS)
   set(IGL_SCOPE INTERFACE)
+else()
+  set(IGL_SCOPE PUBLIC)
 endif()
 
 # Download and update 3rdparty libraries
@@ -67,7 +66,7 @@ target_include_directories(igl_common SYSTEM INTERFACE
 )
 # Export igl_common as igl::common
 set_property(TARGET igl_common PROPERTY EXPORT_NAME igl::common)
-if(LIBIGL_USE_STATIC_LIBRARY)
+if(NOT BUILD_SHARED_LIBS)
   target_compile_definitions(igl_common INTERFACE -DIGL_STATIC_LIBRARY)
 endif()
 
@@ -138,7 +137,7 @@ function(compile_igl_module module_dir)
   else()
     set(module_libname "igl_${module_name}")
   endif()
-  if(LIBIGL_USE_STATIC_LIBRARY)
+  if(NOT BUILD_SHARED_LIBS)
     file(GLOB SOURCES_IGL_${module_name}
       "${LIBIGL_SOURCE_DIR}/igl/${module_dir}/*.cpp")
     if(NOT LIBIGL_WITHOUT_COPYLEFT)
@@ -172,7 +171,7 @@ endfunction()
 ### IGL Core
 ################################################################################
 
-if(LIBIGL_USE_STATIC_LIBRARY)
+if(NOT BUILD_SHARED_LIBS)
   file(GLOB SOURCES_IGL
     "${LIBIGL_SOURCE_DIR}/igl/*.cpp"
     "${LIBIGL_SOURCE_DIR}/igl/copyleft/*.cpp")
@@ -464,7 +463,7 @@ function(install_dir_files dir_name)
 
   set(files_to_install ${public_headers})
 
-  if(NOT LIBIGL_USE_STATIC_LIBRARY)
+  if(BUILD_SHARED_LIBS)
     file(GLOB public_sources
       ${CMAKE_CURRENT_SOURCE_DIR}/include/igl${subpath}/*.cpp
       ${CMAKE_CURRENT_SOURCE_DIR}/include/igl${subpath}/*.c

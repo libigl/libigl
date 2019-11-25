@@ -4,11 +4,11 @@ project(pyigl)
 ### Adding libIGL: choose the path to your local copy libIGL
 if(NOT TARGET igl::core)
   ### Prefer header-only mode for compiling Python bindings
-  if(NOT LIBIGL_WITH_PYTHON OR NOT LIBIGL_USE_STATIC_LIBRARY)
+  if(NOT LIBIGL_WITH_PYTHON OR BUILD_SHARED_LIBS)
     message(FATAL_ERROR
       "Trying to compile Python bindings without -DLIBIGL_WITH_PYTHON=ON. "
       "Either enable manually all the necessary options, or compile from "
-      "the root folder with -DLIBIGL_USE_STATIC_LIBRARY=OFF")
+      "the root folder with -DBUILD_SHARED_LIBS=ON")
   endif()
   list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/../cmake")
   include(libigl)
