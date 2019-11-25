@@ -28,7 +28,7 @@ IGL_INLINE void igl::histc(
     if(B(j) >= 0)
     {
 #pragma omp atomic
-      N(B(j))++;
+      N(int(B(j)))++;
     }
   }
 }
