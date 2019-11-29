@@ -482,7 +482,7 @@ void igl::copyleft::comiso::NRosyField::computek()
       // Map the two triangles in a new space where the common edge is the x axis and the N0 the z axis
       Eigen::MatrixXd P(3,3);
       Eigen::VectorXd o = V.row(F(fid0,fid0_vc));
-      Eigen::VectorXd tmp = -N0.cross(common_edge);
+      Eigen::VectorXd tmp = N0.cross(common_edge);
       P << common_edge, tmp, N0;
       P.transposeInPlace();
 
@@ -494,9 +494,9 @@ void igl::copyleft::comiso::NRosyField::computek()
 
       V0 = (P*V0.transpose()).transpose();
 
-      assert(V0(0,2) < 10e-10);
-      assert(V0(1,2) < 10e-10);
-      assert(V0(2,2) < 10e-10);
+      assert(V0(0,2) < 1e-10);
+      assert(V0(1,2) < 1e-10);
+      assert(V0(2,2) < 1e-10);
 
       Eigen::MatrixXd V1(3,3);
       V1.row(0) = V.row(F(fid1,0)).transpose() -o;
@@ -504,22 +504,22 @@ void igl::copyleft::comiso::NRosyField::computek()
       V1.row(2) = V.row(F(fid1,2)).transpose() -o;
       V1 = (P*V1.transpose()).transpose();
 
-      assert(V1(fid1_vc,2) < 10e-10);
-      assert(V1((fid1_vc+1)%3,2) < 10e-10);
+      assert(V1(fid1_vc,2) < 1e-10);
+      assert(V1((fid1_vc+1)%3,2) < 1e-10);
 
       // compute rotation R such that R * N1 = N0
       // i.e. map both triangles to the same plane
-      double alpha = -std::atan2(V1((fid1_vc + 2) % 3, 2), V1((fid1_vc + 2) % 3, 1));
+      double alpha = -std::atan2(-V1((fid1_vc + 2) % 3, 2), -V1((fid1_vc + 2) % 3, 1));
 
       Eigen::MatrixXd R(3,3);
       R << 1,          0,            0,
-           0, std::cos(alpha), -std::sin(alpha) ,
+           0, std::cos(alpha), -std::sin(alpha),
            0, std::sin(alpha),  std::cos(alpha);
       V1 = (R*V1.transpose()).transpose();
 
-      assert(V1(0,2) < 10e-10);
-      assert(V1(1,2) < 10e-10);
-      assert(V1(2,2) < 10e-10);
+      assert(V1(0,2) < 1e-10);
+      assert(V1(1,2) < 1e-10);
+      assert(V1(2,2) < 1e-10);
 
       // measure the angle between the reference frames
       // k_ij is the angle between the triangle on the left and the one on the right
@@ -528,17 +528,25 @@ void igl::copyleft::comiso::NRosyField::computek()
 
       ref0.normalize();
       ref1.normalize();
-
-      double ktemp = std::atan2(ref1(1), ref1(0)) - std::atan2(ref0(1), ref0(0));
-
+      
+      double ktemp = - std::atan2(ref1(1), ref1(0)) + std::atan2(ref0(1), ref0(0));
+      
+      // make sure kappa is in corret range 
+      auto pos_fmod = [](double x, double y){
+        return (0 == y) ? x : x - y * floor(x/y);
+      };
+      ktemp = pos_fmod(ktemp, 2*igl::PI);
+      if (ktemp > igl::PI) 
+        ktemp -= 2*igl::PI;
+      
       // just to be sure, rotate ref0 using angle ktemp...
       Eigen::MatrixXd R2(2,2);
-      R2 << std::cos(ktemp), -std::sin(ktemp), std::sin(ktemp), std::cos(ktemp);
+      R2 << std::cos(-ktemp), -std::sin(-ktemp), std::sin(-ktemp), std::cos(-ktemp);
 
       tmp = R2*ref0.head<2>();
 
-      assert(tmp(0) - ref1(0) < 10^10);
-      assert(tmp(1) - ref1(1) < 10^10);
+      assert(tmp(0) - ref1(0) < 1e-10);
+      assert(tmp(1) - ref1(1) < 1e-10);
 
       k[eid] = ktemp;
     }
@@ -637,7 +645,7 @@ Eigen::Vector3d igl::copyleft::comiso::NRosyField::convertLocalto3D(unsigned fid
 
 Eigen::VectorXd igl::copyleft::comiso::NRosyField::angleDefect()
 {
-  Eigen::VectorXd A = Eigen::VectorXd::Constant(V.rows(),-2*igl::PI);
+  Eigen::VectorXd A = Eigen::VectorXd::Constant(V.rows(), 2*igl::PI);
 
   for (unsigned int i = 0; i < F.rows(); ++i)
   {
@@ -650,7 +658,7 @@ Eigen::VectorXd igl::copyleft::comiso::NRosyField::angleDefect()
         t /= (a.norm() * b.norm());
       else
         throw std::runtime_error("igl::copyleft::comiso::NRosyField::angleDefect: Division by zero!");
-      A(F(i, j)) += std::acos(std::max(std::min(t, 1.), -1.));
+      A(F(i, j)) -= std::acos(std::max(std::min(t, 1.), -1.));
     }
   }
 
@@ -668,8 +676,8 @@ void igl::copyleft::comiso::NRosyField::findCones(int N)
   {
     if (!isBorderEdge[i])
     {
-      singularityIndex(EV(i, 0)) -= k(i);
-      singularityIndex(EV(i, 1)) += k(i);
+      singularityIndex(EV(i, 0)) += k(i);
+      singularityIndex(EV(i, 1)) -= k(i);
     }
   }
 
@@ -687,8 +695,8 @@ void igl::copyleft::comiso::NRosyField::findCones(int N)
   {
     if (!isBorderEdge[i])
     {
-      singularityIndex(EV(i, 0)) -= double(p(i)) / double(N);
-      singularityIndex(EV(i, 1)) += double(p(i)) / double(N);
+      singularityIndex(EV(i, 0)) += double(p(i)) / double(N);
+      singularityIndex(EV(i, 1)) -= double(p(i)) / double(N);
     }
   }
 

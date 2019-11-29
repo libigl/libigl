@@ -148,7 +148,7 @@ IGL_INLINE void igl::signed_distance(
     }
     typename DerivedV::Scalar s=1,sqrd=0;
     Eigen::Matrix<typename DerivedV::Scalar,1,Eigen::Dynamic>  c;
-    RowVector3S c3;
+    Eigen::Matrix<typename DerivedV::Scalar,1,3> c3;
     Eigen::Matrix<typename DerivedV::Scalar,1,2>  c2;
     int i=-1;
     // in all cases compute squared unsiged distances
@@ -193,15 +193,15 @@ IGL_INLINE void igl::signed_distance(
           dim==3 ?
             pseudonormal_test(V,F,FN,VN,EN,EMAP,q3,i,c3,s,n3):
             pseudonormal_test(V,E,EN,VN,q2,i,c2,s,n2);
-          Eigen::Matrix<typename DerivedV::Scalar,1,Eigen::Dynamic>  n;
-          (dim==3 ? n = n3 : n = n2);
-          N.row(p) = n;
+          Eigen::Matrix<typename DerivedN::Scalar,1,Eigen::Dynamic>  n;
+          (dim==3 ? n = n3.template cast<typename DerivedN::Scalar>() : n = n2.template cast<typename DerivedN::Scalar>());
+          N.row(p) = n.template cast<typename DerivedN::Scalar>();
           break;
         }
       }
       I(p) = i;
       S(p) = s*sqrt(sqrd);
-      C.row(p) = (dim==3 ? c=c3 : c=c2);
+      C.row(p) = (dim==3 ? c=c3 : c=c2).template cast<typename DerivedC::Scalar>();
     }
   }
   ,10000);
@@ -291,7 +291,7 @@ IGL_INLINE void igl::signed_distance_pseudonormal(
   C.resize(np,3);
   typedef typename AABB<DerivedV,3>::RowVectorDIMS RowVector3S;
 # pragma omp parallel for if(np>1000)
-  for(size_t p = 0;p<np;p++)
+  for(std::ptrdiff_t p = 0;p<np;p++)
   {
     typename DerivedV::Scalar s,sqrd;
     RowVector3S n,c;

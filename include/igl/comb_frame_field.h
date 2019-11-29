@@ -31,12 +31,12 @@ namespace igl
 
 
   template <typename DerivedV, typename DerivedF, typename DerivedP>
-  IGL_INLINE void comb_frame_field(const Eigen::PlainObjectBase<DerivedV> &V,
-                                        const Eigen::PlainObjectBase<DerivedF> &F,
-                                        const Eigen::PlainObjectBase<DerivedP> &PD1,
-                                        const Eigen::PlainObjectBase<DerivedP> &PD2,
-                                        const Eigen::PlainObjectBase<DerivedP> &BIS1_combed,
-                                        const Eigen::PlainObjectBase<DerivedP> &BIS2_combed,
+  IGL_INLINE void comb_frame_field(const Eigen::MatrixBase<DerivedV> &V,
+                                        const Eigen::MatrixBase<DerivedF> &F,
+                                        const Eigen::MatrixBase<DerivedP> &PD1,
+                                        const Eigen::MatrixBase<DerivedP> &PD2,
+                                        const Eigen::MatrixBase<DerivedP> &BIS1_combed,
+                                        const Eigen::MatrixBase<DerivedP> &BIS2_combed,
                                         Eigen::PlainObjectBase<DerivedP> &PD1_combed,
                                         Eigen::PlainObjectBase<DerivedP> &PD2_combed);
 }
