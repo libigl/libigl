@@ -10,7 +10,7 @@ TEST_CASE("readOBJ: simple", "[igl]")
     Eigen::MatrixXi F;
     // wait... so this is actually testing test_common::load_mesh not readOBJ
     // directly...
-    test_common::load_mesh("cube.obj", V, F);
+    igl::read_triangle_mesh(test_common::data_path("cube.obj"), V, F);
     REQUIRE (V.rows() == 8);
     REQUIRE (F.rows() == 12);
 }

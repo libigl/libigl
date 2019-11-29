@@ -67,7 +67,7 @@ TEST_CASE("cotmatrix_intrinsic: manifold_meshes", "[igl]")
   {
     Eigen::MatrixXd V;
     Eigen::MatrixXi F;
-    test_common::load_mesh(param, V, F);
+    igl::read_triangle_mesh(test_common::data_path(param), V, F);
     Eigen::MatrixXd l;
     igl::edge_lengths(V,F,l);
     Eigen::SparseMatrix<double> L,Li;

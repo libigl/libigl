@@ -88,18 +88,6 @@ namespace test_common
   };
 
   // TODO: this seems like a pointless indirection. Should just find and
-  // replace test_common::load_mesh(X,...) with
-  // igl::read_triangle_mesh(test_common::data_path(X),...)
-  template<typename DerivedV, typename DerivedF>
-  void load_mesh(
-    const std::string& filename,
-    Eigen::PlainObjectBase<DerivedV>& V,
-    Eigen::PlainObjectBase<DerivedF>& F)
-  {
-    igl::read_triangle_mesh(data_path(filename), V, F);
-  }
-
-  // TODO: this seems like a pointless indirection. Should just find and
   // replace test_common::load_matrix(X,...) with
   // igl::readDMAT(test_common::data_path(X),...)
   template<typename Derived>
