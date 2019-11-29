@@ -20,6 +20,7 @@ namespace igl
   // Outputs:
   //   GV  res.array().prod() by #res list of mesh vertex positions.
   //   
+  //   See also: triangulated_grid, quad_grid
   template <
     typename Derivedres,
     typename DerivedGV>
