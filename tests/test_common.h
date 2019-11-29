@@ -4,7 +4,6 @@
 #include <igl/read_triangle_mesh.h>
 #include <igl/find.h>
 #include <igl/readDMAT.h>
-#include <igl/readOBJ.h>
 
 #include <Eigen/Core>
 #include <catch2/catch.hpp>
@@ -21,7 +20,20 @@ namespace test_common
   void run_test_cases(const std::vector<Param> &params,  Fun test_case)
   {
     for(const auto &p : params)
+    {
+      // Can't use INFO( p ) because we're not sure how to print p
       test_case(p);
+    }
+  }
+
+  template<typename Fun>
+  void run_test_cases(const std::vector<std::string> &params,  Fun test_case)
+  {
+    for(const auto &p : params)
+    {
+      INFO( p );
+      test_case(p);
+    }
   }
 
   inline std::vector<std::string> closed_genus_0_meshes()
@@ -86,24 +98,6 @@ namespace test_common
   {
     igl::read_triangle_mesh(data_path(filename), V, F);
   }
-
-  template<typename DerivedV, typename DerivedF>
-  void load_obj_with_material(
-    const std::string& filename,
-    std::vector<std::vector<DerivedV >> & V,
-    std::vector<std::vector<DerivedV >> & TC,
-    std::vector<std::vector<DerivedV >> & N,
-    std::vector<std::vector<DerivedF >> & F,
-    std::vector<std::vector<DerivedF >> & FTC,
-    std::vector<std::vector<DerivedF >> & FN,
-    std::vector<std::tuple<std::string, DerivedF, DerivedF >> &FM)
-  {
-    igl::readOBJ(data_path(filename), V, TC, N, F, FTC, FN, FM);
-  }
-
-
-
-
 
   // TODO: this seems like a pointless indirection. Should just find and
   // replace test_common::load_matrix(X,...) with
