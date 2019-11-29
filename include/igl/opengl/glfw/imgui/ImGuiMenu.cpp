@@ -334,6 +334,7 @@ IGL_INLINE void ImGuiMenu::draw_labels_window()
 
 IGL_INLINE void ImGuiMenu::draw_labels(const igl::opengl::ViewerData &data)
 {
+  // Alec: How can we get these to respect (optionally) the depth of the scene?
   if (data.show_vertid)
   {
     for (int i = 0; i < data.V.rows(); ++i)

@@ -19,21 +19,22 @@
 
 IGL_INLINE igl::opengl::ViewerData::ViewerData()
 : dirty(MeshGL::DIRTY_ALL),
-  show_faces(true),
-  show_lines(true),
-  invert_normals(false),
-  show_overlay(true),
-  show_overlay_depth(true),
-  show_vertid(false),
-  show_faceid(false),
-  show_texture(false),
+  // UINT_MAX sets all bits to 1 so these defaults get applied to all view cores
+  show_faces        (UINT_MAX),
+  show_lines        (UINT_MAX),
+  invert_normals    (false),
+  show_overlay      (UINT_MAX),
+  show_overlay_depth(UINT_MAX),
+  show_vertid       (false),
+  show_faceid       (false),
+  show_texture      (false),
   point_size(30),
   line_width(0.5f),
   line_color(0,0,0,1),
   label_color(0,0,0.04,1),
   shininess(35.0f),
   id(-1),
-  is_visible(1)
+  is_visible        (UINT_MAX)
 {
   clear();
 };
