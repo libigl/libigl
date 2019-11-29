@@ -31,5 +31,4 @@ void igl::unproject_on_plane(
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instantiation
-template  void igl::unproject_on_plane<Eigen::Transpose<Eigen::Matrix<double, 1, 2, 1, 1, 2> >, Eigen::CoeffBasedProduct<Eigen::Matrix<float, 4, 4, 0, 4, 4> const&, Eigen::Matrix<float, 4, 4, 0, 4, 4> const&, 6>, Eigen::Matrix<float, 4, 1, 0, 4, 1>, Eigen::Matrix<double, 1, 4, 1, 1, 4>, Eigen::Matrix<double, 3, 1, 0, 3, 1> >(Eigen::MatrixBase<Eigen::Transpose<Eigen::Matrix<double, 1, 2, 1, 1, 2> > > const&, Eigen::MatrixBase<Eigen::CoeffBasedProduct<Eigen::Matrix<float, 4, 4, 0, 4, 4> const&, Eigen::Matrix<float, 4, 4, 0, 4, 4> const&, 6> > const&, Eigen::MatrixBase<Eigen::Matrix<float, 4, 1, 0, 4, 1> > const&, Eigen::MatrixBase<Eigen::Matrix<double, 1, 4, 1, 1, 4> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 1, 0, 3, 1> >&);
 #endif
