@@ -1,3 +1,4 @@
+#include <igl/readOBJ.h>
 #include <test_common.h>
 #include <iostream>
 #include <string>
@@ -23,7 +24,8 @@ TEST_CASE("readOBJ: Obj with material", "[igl]")
     std::vector<std::vector<int > > FTC;
     std::vector<std::vector<int > >  FN;
     std::vector<std::tuple<std::string, int, int>> FM;
-    test_common::load_obj_with_material<double, int>("cubewithmaterial.obj", V, TC, N, F, FTC, FN, FM);
+    igl::readOBJ(test_common::data_path("cubewithmaterial.obj"), V, TC, N, F, FTC, FN, FM);
+
     REQUIRE (V.size() == 8);
     REQUIRE (F.size() == 6);
     for ( const auto& i : FM ) {
