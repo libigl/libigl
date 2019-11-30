@@ -17,8 +17,8 @@ namespace igl
   // Inputs:
   //   A  m by n sparse matrix
   // Returns true iff and only if the matrix is diagonal.
-  template <typename Scalar>
-  IGL_INLINE bool isdiag(const Eigen::SparseMatrix<Scalar> & A);
+  template <typename Derived>
+  IGL_INLINE bool isdiag(const Eigen::SparseCompressedBase<Derived> & A);
 };
 #ifndef IGL_STATIC_LIBRARY
 #  include "isdiag.cpp"

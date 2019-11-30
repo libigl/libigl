@@ -49,9 +49,9 @@ namespace igl
   public:
     // Init the HalfEdgeIterator by specifying Face,Edge Index and Orientation
     IGL_INLINE HalfEdgeIterator(
-        const Eigen::PlainObjectBase<DerivedF>& _F,
-        const Eigen::PlainObjectBase<DerivedFF>& _FF,
-        const Eigen::PlainObjectBase<DerivedFFi>& _FFi,
+        const Eigen::MatrixBase<DerivedF>& _F,
+        const Eigen::MatrixBase<DerivedFF>& _FF,
+        const Eigen::MatrixBase<DerivedFFi>& _FFi,
         int _fi,
         int _ei,
         bool _reverse = false
@@ -100,9 +100,9 @@ namespace igl
     bool reverse;
 
     // All the same type? This is likely to break.
-    const Eigen::PlainObjectBase<DerivedF> & F;
-    const Eigen::PlainObjectBase<DerivedFF> & FF;
-    const Eigen::PlainObjectBase<DerivedFFi> & FFi;
+    const Eigen::MatrixBase<DerivedF> & F;
+    const Eigen::MatrixBase<DerivedFF> & FF;
+    const Eigen::MatrixBase<DerivedFFi> & FFi;
   };
 
 }

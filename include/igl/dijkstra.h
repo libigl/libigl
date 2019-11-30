@@ -67,15 +67,39 @@ namespace igl {
   //   previous         #V by 1 list of the previous visited vertices (for each vertex) - result of Dijkstra's algorithm
   //
   // Output:
-  //   path             #P by 1 list of vertex indices in the shortest path from source to vertex
+  //   path             #P by 1 list of vertex indices in the shortest path from vertex to source
   //
   template <typename IndexType, typename DerivedP>
   IGL_INLINE void dijkstra(
     const IndexType &vertex,
     const Eigen::MatrixBase<DerivedP> &previous,
     std::vector<IndexType> &path);
-};
 
+
+  // Dijkstra's algorithm for shortest paths on a mesh, with multiple targets, using edge length
+  //
+  // Inputs:
+  //   V                #V by 3 list of vertex positions
+  //   VV               #V list of lists of incident vertices (adjacency list), e.g.
+  //                    as returned by igl::adjacency_list, will be generated if empty.
+  //   source           index of source vertex
+  //   targets          target vector set
+  //
+  // Output:
+  //   min_distance     #V by 1 list of the minimum distances from source to all vertices
+  //   previous         #V by 1 list of the previous visited vertices (for each vertex) - used for backtracking
+  //
+  template <typename IndexType, typename DerivedV,
+  typename DerivedD, typename DerivedP>
+  IGL_INLINE int dijkstra(
+    const Eigen::MatrixBase<DerivedV> &V,
+    const std::vector<std::vector<IndexType> >& VV,
+    const IndexType &source,
+    const std::set<IndexType> &targets,
+    Eigen::PlainObjectBase<DerivedD> &min_distance,
+    Eigen::PlainObjectBase<DerivedP> &previous);
+
+}
 
 #ifndef IGL_STATIC_LIBRARY
 #include "dijkstra.cpp"

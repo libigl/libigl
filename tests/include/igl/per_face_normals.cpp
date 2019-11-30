@@ -10,7 +10,7 @@ TEST_CASE("per_face_normals: dot", "[igl]")
 	  Eigen::MatrixXd V,N;
 	  Eigen::MatrixXi F;
 	  // Load example mesh: GetParam() will be name of mesh file
-	  test_common::load_mesh(param, V, F);
+	  igl::read_triangle_mesh(test_common::data_path(param), V, F);
 	  igl::per_face_normals(V,F,N);
 	  REQUIRE (N.rows() == F.rows());
 	  for(int f = 0;f<N.rows();f++)

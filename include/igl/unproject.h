@@ -20,6 +20,10 @@ namespace igl
   //   viewport  4-long viewport vector
   // Outputs:
   //   scene  #P by 3 or 3-vector (#P=1) the unprojected x, y, and z coordinates
+  //
+  // Known issue:
+  //   The compiler will not complain if V and P are Vector3d, but the result
+  //   will be incorrect.
   template <
     typename Derivedwin,
     typename Derivedmodel,

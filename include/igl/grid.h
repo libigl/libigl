@@ -16,7 +16,8 @@ namespace igl
   // `igl::marching_cubes`
   //
   // Inputs:
-  //   res  #res list of number of vertices along each dimension
+  //   res  #res list of number of vertices along each dimension filling a unit
+  //     #res-cube
   // Outputs:
   //   GV  res.array().prod() by #res list of mesh vertex positions.
   //   

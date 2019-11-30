@@ -44,7 +44,7 @@ IGL_INLINE void igl::jet(const T x_in, T & r, T & g, T & b)
     b = (bone - (x - 3. / 8.) / (5. / 8. - 3. / 8.));
   } else if (x<7. / 8.)
   {
-    r = rone;
+    r = T(rone);
     g = (gone - (x - 5. / 8.) / (7. / 8. - 5. / 8.));
     b = 0;
   } else

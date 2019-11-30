@@ -108,7 +108,7 @@ TEST_CASE("cut_to_disk: torus", "[igl]")
   using namespace igl;
   Eigen::MatrixXd V;
   Eigen::MatrixXi F;
-  test_common::load_mesh("TinyTorus.obj", V, F);
+  igl::read_triangle_mesh(test_common::data_path("TinyTorus.obj"), V, F);
 
   std::vector<std::vector<int>> cuts;
   cut_to_disk(F, cuts);
@@ -122,7 +122,7 @@ TEST_CASE("cut_to_disk: cube", "[igl]")
   using namespace igl;
   Eigen::MatrixXd V;
   Eigen::MatrixXi F;
-  test_common::load_mesh("cube.obj", V, F);
+  igl::read_triangle_mesh(test_common::data_path("cube.obj"), V, F);
 
   std::vector<std::vector<int>> cuts;
   cut_to_disk(F, cuts);
@@ -136,7 +136,7 @@ TEST_CASE("cut_to_disk: annulus", "[igl]") {
   using namespace igl;
   Eigen::MatrixXd V;
   Eigen::MatrixXi F;
-  test_common::load_mesh("annulus.obj", V, F);
+  igl::read_triangle_mesh(test_common::data_path("annulus.obj"), V, F);
 
   std::vector<std::vector<int>> cuts;
   cut_to_disk(F, cuts);
