@@ -27,7 +27,6 @@ namespace igl
   template<
     typename DerivedV,
     typename DerivedQ,
-    typename DerivedF,
     typename DerivedE>
   IGL_INLINE void quad_grid(
     const int nx,
