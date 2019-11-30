@@ -1,9 +1,12 @@
 #pragma once
 
 
+// These are not directly used but would otherwise be included in most files.
+// Leaving them included here. 
 #include <igl/read_triangle_mesh.h>
-#include <igl/find.h>
 #include <igl/readDMAT.h>
+
+#include <igl/find.h>
 
 #include <Eigen/Core>
 #include <catch2/catch.hpp>
@@ -86,17 +89,6 @@ namespace test_common
   {
     return std::string(LIBIGL_DATA_DIR) + "/" + s;
   };
-
-  // TODO: this seems like a pointless indirection. Should just find and
-  // replace test_common::load_matrix(X,...) with
-  // igl::readDMAT(test_common::data_path(X),...)
-  template<typename Derived>
-  void load_matrix(
-    const std::string& filename,
-    Eigen::PlainObjectBase<Derived>& M)
-  {
-    igl::readDMAT(data_path(filename), M);
-  }
 
   template <typename DerivedA, typename DerivedB>
   void assert_eq(
