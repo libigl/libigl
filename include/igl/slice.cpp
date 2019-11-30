@@ -9,7 +9,6 @@
 #include "colon.h"
 
 #include <vector>
-#include <unsupported/Eigen/SparseExtra>
 
 template <typename TX, typename TY>
 IGL_INLINE void igl::slice(
@@ -51,10 +50,12 @@ IGL_INLINE void igl::slice(
     CI[C(i)].push_back(i);
   }
   // Resize output
-  Eigen::DynamicSparseMatrix<TY, Eigen::RowMajor> dyn_Y(ym,yn);
+  using Triplet = Eigen::Triplet<TY>;
+  std::vector<Triplet> entries;
   // Take a guess at the number of nonzeros (this assumes uniform distribution
   // not banded or heavily diagonal)
-  dyn_Y.reserve((X.nonZeros()/(X.rows()*X.cols())) * (ym*yn));
+  entries.reserve((X.nonZeros()/(X.rows()*X.cols())) * (ym*yn));
+
   // Iterate over outside
   for(int k=0; k<X.outerSize(); ++k)
   {
@@ -66,12 +67,13 @@ IGL_INLINE void igl::slice(
       {
         for(cit = CI[it.col()].begin();cit != CI[it.col()].end(); cit++)
         {
-          dyn_Y.coeffRef(*rit,*cit) = it.value();
+          entries.push_back({*rit, *cit, it.value()});
         }
       }
     }
   }
-  Y = Eigen::SparseMatrix<TY>(dyn_Y);
+  Y.resize(ym, yn);
+  Y.setFromTriplets(entries.begin(), entries.end());
 #else
 
   // Alec: This is _not_ valid for arbitrary R,C since they don't necessary
