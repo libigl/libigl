@@ -22,8 +22,8 @@ namespace igl
   template <typename DerivedV, typename DerivedF>
   IGL_INLINE bool writeWRL(
     const std::string & str,
-    const Eigen::PlainObjectBase<DerivedV> & V,
-    const Eigen::PlainObjectBase<DerivedF> & F);
+    const Eigen::MatrixBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedF> & F);
 
   // Write mesh to a .wrl file
   //
@@ -36,9 +36,9 @@ namespace igl
   template <typename DerivedV, typename DerivedF, typename DerivedC>
   IGL_INLINE bool writeWRL(
     const std::string & str,
-    const Eigen::PlainObjectBase<DerivedV> & V,
-    const Eigen::PlainObjectBase<DerivedF> & F,
-    const Eigen::PlainObjectBase<DerivedC> & C);
+    const Eigen::MatrixBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedF> & F,
+    const Eigen::MatrixBase<DerivedC> & C);
 }
 #ifndef IGL_STATIC_LIBRARY
 #include "writeWRL.cpp"

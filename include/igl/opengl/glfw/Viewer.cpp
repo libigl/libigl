@@ -159,12 +159,12 @@ namespace glfw
     else
     {
       // Set default windows width
-      if (windowWidth <= 0 & core_list.size() == 1 && core().viewport[2] > 0)
+      if (windowWidth <= 0 && core_list.size() == 1 && core().viewport[2] > 0)
         windowWidth = core().viewport[2];
       else if (windowWidth <= 0)
         windowWidth = 1280;
       // Set default windows height
-      if (windowHeight <= 0 & core_list.size() == 1 && core().viewport[3] > 0)
+      if (windowHeight <= 0 && core_list.size() == 1 && core().viewport[3] > 0)
         windowHeight = core().viewport[3];
       else if (windowHeight <= 0)
         windowHeight = 800;
@@ -211,7 +211,10 @@ namespace glfw
     highdpi = windowWidth/width_window;
     glfw_window_size(window,width_window,height_window);
     //opengl.init();
-    core().align_camera_center(data().V,data().F);
+    for(int i=0;i<core_list.size(); i++)
+    {
+      core_list[i].align_camera_center(data().V,data().F);
+    }
     // Initialize IGL viewer
     init();
     return EXIT_SUCCESS;

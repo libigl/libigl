@@ -22,13 +22,13 @@ namespace igl
   //     edge-manifold).
   template <typename DerivedF, typename DerivedFO>
   IGL_INLINE void connect_boundary_to_infinity(
-    const Eigen::PlainObjectBase<DerivedF> & F,
+    const Eigen::MatrixBase<DerivedF> & F,
     Eigen::PlainObjectBase<DerivedFO> & FO);
   // Inputs:
   //   inf_index  index of point at infinity (usually V.rows() or F.maxCoeff())
   template <typename DerivedF, typename DerivedFO>
   IGL_INLINE void connect_boundary_to_infinity(
-    const Eigen::PlainObjectBase<DerivedF> & F,
+    const Eigen::MatrixBase<DerivedF> & F,
     const typename DerivedF::Scalar inf_index,
     Eigen::PlainObjectBase<DerivedFO> & FO);
   // Inputs:
@@ -45,8 +45,8 @@ namespace igl
     typename DerivedVO, 
     typename DerivedFO>
   IGL_INLINE void connect_boundary_to_infinity(
-    const Eigen::PlainObjectBase<DerivedV> & V,
-    const Eigen::PlainObjectBase<DerivedF> & F,
+    const Eigen::MatrixBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedF> & F,
     Eigen::PlainObjectBase<DerivedVO> & VO,
     Eigen::PlainObjectBase<DerivedFO> & FO);
 }

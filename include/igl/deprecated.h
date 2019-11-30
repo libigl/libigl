@@ -10,7 +10,7 @@
 // Macro for marking a function as deprecated.
 // 
 // http://stackoverflow.com/a/295229/148668
-#ifdef __GNUC__
+#if defined(__GNUC__) || defined(__clang__)
 #define IGL_DEPRECATED(func) func __attribute__ ((deprecated))
 #elif defined(_MSC_VER)
 #define IGL_DEPRECATED(func) __declspec(deprecated) func
