@@ -110,7 +110,7 @@ public:
   // Use min(D) and max(D) to set caxis.
   IGL_INLINE void set_data(const Eigen::VectorXd & D);
   // Not to be confused with set_colors, this creates a _texture_ that will be
-  // referenced to pseudocolor accordint to the scalar field passed to set_data.
+  // referenced to pseudocolor according to the scalar field passed to set_data.
   //
   // Inputs:
   //   CM  #CM by 3 list of colors
