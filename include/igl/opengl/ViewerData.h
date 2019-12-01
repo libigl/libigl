@@ -82,7 +82,6 @@ public:
     const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& R,
     const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& G,
     const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& B);
-
   // Set the texture associated with the mesh.
   //
   // Inputs:
@@ -96,6 +95,26 @@ public:
     const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& G,
     const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& B,
     const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& A);
+  // Set pseudo-colorable scalar data associated with the mesh.
+  //
+  // Inputs:
+  //   caxis_min  caxis minimum bound
+  //   caxis_max  caxis maximum bound
+  //   D  #V by 3 list of colors
+  //
+  // To-do: support #F by 1 per-face data
+  IGL_INLINE void set_data(
+    const double caxis_min, 
+    const double caxis_max, 
+    const Eigen::VectorXd & D);
+  // Use min(D) and max(D) to set caxis.
+  IGL_INLINE void set_data(const Eigen::VectorXd & D);
+  // Not to be confused with set_colors, this creates a _texture_ that will be
+  // referenced to pseudocolor according to the scalar field passed to set_data.
+  //
+  // Inputs:
+  //   CM  #CM by 3 list of colors
+  IGL_INLINE void set_colormap(const Eigen::MatrixXd & CM);
 
   // Sets points given a list of point vertices. In constrast to `add_points`
   // this will (purposefully) clober existing points.

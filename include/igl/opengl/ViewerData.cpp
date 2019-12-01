@@ -14,6 +14,9 @@
 #include "../parula.h"
 #include "../per_vertex_normals.h"
 
+// Really? Just for GL_NEAREST?
+#include "gl.h"
+
 #include <iostream>
 
 
@@ -138,11 +141,12 @@ IGL_INLINE void igl::opengl::ViewerData::set_colors(const Eigen::MatrixXd &C)
 {
   using namespace std;
   using namespace Eigen;
+  // This Gouraud coloring should be deprecated in favor of Phong coloring in
+  // set-data
   if(C.rows()>0 && C.cols() == 1)
   {
-    Eigen::MatrixXd C3;
-    igl::parula(C,true,C3);
-    return set_colors(C3);
+    assert(false && "deprecated: call set_data directly instead");
+    return set_data(C);
   }
   // Ambient color should be darker color
   const auto ambient = [](const MatrixXd & C)->MatrixXd
@@ -258,6 +262,44 @@ IGL_INLINE void igl::opengl::ViewerData::set_texture(
   texture_B = B;
   texture_A = A;
   dirty |= MeshGL::DIRTY_TEXTURE;
+}
+
+IGL_INLINE void igl::opengl::ViewerData::set_data(
+  const double caxis_min,
+  const double caxis_max,
+  const Eigen::VectorXd & D)
+{
+  if(!show_texture)
+  {
+    Eigen::MatrixXd CM;
+    igl::parula(Eigen::VectorXd::LinSpaced(21,0,1).eval(),false,CM);
+    set_colormap(CM);
+  } 
+  set_uv(((D.array()-caxis_min)/(caxis_max-caxis_min)).replicate(1,2));
+}
+
+IGL_INLINE void igl::opengl::ViewerData::set_data( const Eigen::VectorXd & D)
+{
+  const double caxis_min = D.minCoeff();
+  const double caxis_max = D.maxCoeff();
+  return set_data(caxis_min,caxis_max,D);
+}
+
+IGL_INLINE void igl::opengl::ViewerData::set_colormap(const Eigen::MatrixXd & CM)
+{
+  assert(CM.cols() == 3 && "colormap CM should have 3 columns");
+  // Convert to R,G,B textures
+  const Eigen::Matrix<unsigned char,Eigen::Dynamic, Eigen::Dynamic> R =
+    (CM.col(0)*255.0).cast<unsigned char>();
+  const Eigen::Matrix<unsigned char,Eigen::Dynamic, Eigen::Dynamic> G =
+    (CM.col(1)*255.0).cast<unsigned char>();
+  const Eigen::Matrix<unsigned char,Eigen::Dynamic, Eigen::Dynamic> B = 
+    (CM.col(2)*255.0).cast<unsigned char>();
+  set_colors(Eigen::RowVector3d(1,1,1));
+  set_texture(R,G,B);
+  show_texture = true;
+  meshgl.tex_filter = GL_NEAREST;
+  meshgl.tex_wrap = GL_CLAMP_TO_EDGE;
 }
 
 IGL_INLINE void igl::opengl::ViewerData::set_points(
@@ -407,6 +449,7 @@ IGL_INLINE void igl::opengl::ViewerData::clear()
   labels_strings.clear();
 
   face_based = false;
+  show_texture = false;
 }
 
 IGL_INLINE void igl::opengl::ViewerData::compute_normals()
