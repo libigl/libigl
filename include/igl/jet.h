@@ -13,7 +13,7 @@
 //#endif
 namespace igl
 {
-  // Jet like MATLAB's jet.
+  // JET like MATLAB's jet.
   //
   // Note that we actually use the Turbo colormap instead, since jet is a bad colormap:
   // https://ai.googleblog.com/2019/08/turbo-improved-rainbow-colormap-for.html

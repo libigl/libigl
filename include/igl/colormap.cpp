@@ -6,7 +6,6 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "colormap.h"
-#include "jet.h"
 #include <algorithm>
 
 // One of the new matplotlib colormaps by Nathaniel J.Smith, Stefan van der Walt, and (in the case of viridis) Eric Firing.
@@ -1588,7 +1587,8 @@ IGL_INLINE void igl::colormap(
     case COLOR_MAP_TYPE_JET:
       // jet is bad so we use turbo instead
       // https://ai.googleblog.com/2019/08/turbo-improved-rainbow-colormap-for.html
-      colormap(jet_cm, x_in, r, g, b);
+    case COLOR_MAP_TYPE_TURBO:
+      colormap(turbo_cm, x_in, r, g, b);
       break;
     case COLOR_MAP_TYPE_MAGMA:
       colormap(magma_cm, x_in, r, g, b);
