@@ -14,6 +14,9 @@
 #include "../parula.h"
 #include "../per_vertex_normals.h"
 
+// Really? Just for GL_NEAREST?
+#include "gl.h"
+
 #include <iostream>
 
 
@@ -258,6 +261,27 @@ IGL_INLINE void igl::opengl::ViewerData::set_texture(
   texture_B = B;
   texture_A = A;
   dirty |= MeshGL::DIRTY_TEXTURE;
+}
+
+IGL_INLINE void igl::opengl::ViewerData::set_data(const Eigen::VectorXd & D)
+{
+  set_uv((D/D.maxCoeff()).replicate(1,2));
+}
+
+IGL_INLINE void igl::opengl::ViewerData::set_colormap(const Eigen::MatrixXd & CM)
+{
+  assert(CM.cols() == 3 && "colormap CM should have 3 columns");
+  // Convert to R,G,B textures
+  const Eigen::Matrix<unsigned char,Eigen::Dynamic, Eigen::Dynamic> R =
+    (CM.col(0)*255.0).cast<unsigned char>();
+  const Eigen::Matrix<unsigned char,Eigen::Dynamic, Eigen::Dynamic> G =
+    (CM.col(1)*255.0).cast<unsigned char>();
+  const Eigen::Matrix<unsigned char,Eigen::Dynamic, Eigen::Dynamic> B = 
+    (CM.col(2)*255.0).cast<unsigned char>();
+  set_colors(Eigen::RowVector3d(1,1,1));
+  set_texture(R,G,B);
+  show_texture = true;
+  meshgl.tex_filter = GL_NEAREST;
 }
 
 IGL_INLINE void igl::opengl::ViewerData::set_points(
