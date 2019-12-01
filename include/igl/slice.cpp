@@ -71,7 +71,7 @@ IGL_INLINE void igl::slice(
       {
         for (cit = CI[it.col()].begin(); cit != CI[it.col()].end(); cit++)
         {
-          entries.push_back({*rit, *cit, it.value()});
+          entries.emplace_back(*rit, *cit, it.value());
         }
       }
     }
@@ -200,7 +200,7 @@ IGL_INLINE void igl::slice(
       {
         for (cit = CI[it.col()].begin(); cit != CI[it.col()].end(); cit++)
         {
-          entries.push_back({*rit, *cit, it.value()});
+          entries.emplace_back(*rit, *cit, it.value());
         }
       }
     }
@@ -269,7 +269,7 @@ IGL_INLINE void igl::slice(
       {
         for (cit = CI[it.col()].begin(); cit != CI[it.col()].end(); cit++)
         {
-          entries.push_back({*rit, *cit, it.value()});
+          entries.emplace_back(*rit, *cit, it.value());
         }
       }
     }
