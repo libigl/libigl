@@ -8,8 +8,9 @@
 #ifndef IGL_VIEWERDATA_H
 #define IGL_VIEWERDATA_H
 
-#include "../igl_inline.h"
 #include "MeshGL.h"
+#include <igl/igl_inline.h>
+#include <igl/colormap.h>
 #include <cassert>
 #include <cstdint>
 #include <Eigen/Core>
@@ -60,17 +61,20 @@ public:
   // Inputs:
   //   C  #V|#F|1 by 3 list of colors
   IGL_INLINE void set_colors(const Eigen::MatrixXd &C);
+
   // Set per-vertex UV coordinates
   //
   // Inputs:
   //   UV  #V by 2 list of UV coordinates (indexed by F)
   IGL_INLINE void set_uv(const Eigen::MatrixXd& UV);
+
   // Set per-corner UV coordinates
   //
   // Inputs:
   //   UV_V  #UV by 2 list of UV coordinates
   //   UV_F  #F by 3 list of UV indices into UV_V
   IGL_INLINE void set_uv(const Eigen::MatrixXd& UV_V, const Eigen::MatrixXi& UV_F);
+
   // Set the texture associated with the mesh.
   //
   // Inputs:
@@ -82,6 +86,7 @@ public:
     const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& R,
     const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& G,
     const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& B);
+
   // Set the texture associated with the mesh.
   //
   // Inputs:
@@ -95,20 +100,24 @@ public:
     const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& G,
     const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& B,
     const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& A);
+
   // Set pseudo-colorable scalar data associated with the mesh.
   //
   // Inputs:
   //   caxis_min  caxis minimum bound
   //   caxis_max  caxis maximum bound
-  //   D  #V by 3 list of colors
+  //   D  #V by 1 list of scalar values
   //
   // To-do: support #F by 1 per-face data
   IGL_INLINE void set_data(
-    const double caxis_min, 
-    const double caxis_max, 
-    const Eigen::VectorXd & D);
+    const Eigen::VectorXd & D,
+    double caxis_min,
+    double caxis_max,
+    igl::ColorMapType cmap = igl::COLOR_MAP_TYPE_PARULA);
+
   // Use min(D) and max(D) to set caxis.
-  IGL_INLINE void set_data(const Eigen::VectorXd & D);
+  IGL_INLINE void set_data(const Eigen::VectorXd & D, igl::ColorMapType cmap = igl::COLOR_MAP_TYPE_PARULA);
+
   // Not to be confused with set_colors, this creates a _texture_ that will be
   // referenced to pseudocolor according to the scalar field passed to set_data.
   //
