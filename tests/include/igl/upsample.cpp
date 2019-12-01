@@ -34,7 +34,7 @@ TEST_CASE("upsample: V_comes_first_F_ordering", "[igl]")
     Eigen::MatrixXd V,NV;
     Eigen::MatrixXi F,NF;
     // Load example mesh: GetParam() will be name of mesh file
-    test_common::load_mesh(param, V, F);
+    igl::read_triangle_mesh(test_common::data_path(param), V, F);
     igl::upsample(V,F,NV,NF);
     REQUIRE (V.rows() <= NV.rows());
     REQUIRE (4*F.rows() == NF.rows());

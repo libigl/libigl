@@ -43,7 +43,7 @@ TEST_CASE("intrinsic_delaunay_cotmatrix: manifold_meshes", "[igl]")
   {
     Eigen::MatrixXd V;
     Eigen::MatrixXi F;
-    test_common::load_mesh(param, V, F);
+    igl::read_triangle_mesh(test_common::data_path(param), V, F);
     Eigen::SparseMatrix<double> L;
     Eigen::MatrixXi F_intrinsic;
     Eigen::MatrixXd l_intrinsic;

@@ -16,7 +16,7 @@ TEST_CASE("iterative_closest_point: identity","[igl]")
     Eigen::MatrixXd VX,VY;
     Eigen::MatrixXi FX,FY;
     // Load example mesh: GetParam() will be name of mesh file
-    test_common::load_mesh(param, VY, FY);
+    igl::read_triangle_mesh(test_common::data_path(param), VY, FY);
     VX = VY;
     FX = FY;
     // Single iteration should find a identity

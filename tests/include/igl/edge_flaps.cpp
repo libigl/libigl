@@ -8,7 +8,7 @@ TEST_CASE("edge_flaps: verify", "[igl]")
 	{
 	  Eigen::MatrixXd V;
 	  Eigen::MatrixXi F;
-	  test_common::load_mesh(param, V, F);
+	  igl::read_triangle_mesh(test_common::data_path(param), V, F);
 
 	  Eigen::MatrixXi efE,efEF,efEI;
 	  Eigen::VectorXi efEMAP;
