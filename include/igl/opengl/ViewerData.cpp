@@ -266,22 +266,23 @@ IGL_INLINE void igl::opengl::ViewerData::set_data(
   const Eigen::VectorXd & D,
   double caxis_min,
   double caxis_max,
-  igl::ColorMapType cmap)
+  igl::ColorMapType cmap,
+  int num_steps)
 {
   if(!show_texture)
   {
     Eigen::MatrixXd CM;
-    igl::colormap(cmap,Eigen::VectorXd::LinSpaced(256,0,1).eval(),0,1,CM);
+    igl::colormap(cmap,Eigen::VectorXd::LinSpaced(num_steps,0,1).eval(),0,1,CM);
     set_colormap(CM);
   }
   set_uv(((D.array()-caxis_min)/(caxis_max-caxis_min)).replicate(1,2));
 }
 
-IGL_INLINE void igl::opengl::ViewerData::set_data( const Eigen::VectorXd & D, igl::ColorMapType cmap)
+IGL_INLINE void igl::opengl::ViewerData::set_data(const Eigen::VectorXd & D, igl::ColorMapType cmap, int num_steps)
 {
   const double caxis_min = D.minCoeff();
   const double caxis_max = D.maxCoeff();
-  return set_data(D,caxis_min,caxis_max,cmap);
+  return set_data(D,caxis_min,caxis_max,cmap,num_steps);
 }
 
 IGL_INLINE void igl::opengl::ViewerData::set_colormap(const Eigen::MatrixXd & CM)

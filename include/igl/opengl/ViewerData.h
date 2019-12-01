@@ -107,16 +107,21 @@ public:
   //   caxis_min  caxis minimum bound
   //   caxis_max  caxis maximum bound
   //   D  #V by 1 list of scalar values
+  //   cmap colormap type
+  //   num_steps number of intervals to discretize the colormap
   //
   // To-do: support #F by 1 per-face data
   IGL_INLINE void set_data(
     const Eigen::VectorXd & D,
     double caxis_min,
     double caxis_max,
-    igl::ColorMapType cmap = igl::COLOR_MAP_TYPE_PARULA);
+    igl::ColorMapType cmap = igl::COLOR_MAP_TYPE_PARULA,
+    int num_steps = 21);
 
   // Use min(D) and max(D) to set caxis.
-  IGL_INLINE void set_data(const Eigen::VectorXd & D, igl::ColorMapType cmap = igl::COLOR_MAP_TYPE_PARULA);
+  IGL_INLINE void set_data(const Eigen::VectorXd & D,
+    igl::ColorMapType cmap = igl::COLOR_MAP_TYPE_PARULA,
+    int num_steps = 21);
 
   // Not to be confused with set_colors, this creates a _texture_ that will be
   // referenced to pseudocolor according to the scalar field passed to set_data.
