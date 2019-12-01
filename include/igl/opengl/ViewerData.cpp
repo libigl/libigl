@@ -141,11 +141,12 @@ IGL_INLINE void igl::opengl::ViewerData::set_colors(const Eigen::MatrixXd &C)
 {
   using namespace std;
   using namespace Eigen;
+  // This Gouraud coloring should be deprecated in favor of Phong coloring in
+  // set-data
   if(C.rows()>0 && C.cols() == 1)
   {
-    Eigen::MatrixXd C3;
-    igl::parula(C,true,C3);
-    return set_colors(C3);
+    assert(false && "deprecated: call set_data directly instead");
+    return set_data(C);
   }
   // Ambient color should be darker color
   const auto ambient = [](const MatrixXd & C)->MatrixXd
@@ -263,9 +264,25 @@ IGL_INLINE void igl::opengl::ViewerData::set_texture(
   dirty |= MeshGL::DIRTY_TEXTURE;
 }
 
-IGL_INLINE void igl::opengl::ViewerData::set_data(const Eigen::VectorXd & D)
+IGL_INLINE void igl::opengl::ViewerData::set_data(
+  const double caxis_min,
+  const double caxis_max,
+  const Eigen::VectorXd & D)
 {
-  set_uv((D/D.maxCoeff()).replicate(1,2));
+  if(!show_texture)
+  {
+    Eigen::MatrixXd CM;
+    igl::parula(Eigen::VectorXd::LinSpaced(21,0,1).eval(),false,CM);
+    set_colormap(CM);
+  } 
+  set_uv(((D.array()-caxis_min)/(caxis_max-caxis_min)).replicate(1,2));
+}
+
+IGL_INLINE void igl::opengl::ViewerData::set_data( const Eigen::VectorXd & D)
+{
+  const double caxis_min = D.minCoeff();
+  const double caxis_max = D.maxCoeff();
+  return set_data(caxis_min,caxis_max,D);
 }
 
 IGL_INLINE void igl::opengl::ViewerData::set_colormap(const Eigen::MatrixXd & CM)
@@ -282,6 +299,7 @@ IGL_INLINE void igl::opengl::ViewerData::set_colormap(const Eigen::MatrixXd & CM
   set_texture(R,G,B);
   show_texture = true;
   meshgl.tex_filter = GL_NEAREST;
+  meshgl.tex_wrap = GL_CLAMP_TO_EDGE;
 }
 
 IGL_INLINE void igl::opengl::ViewerData::set_points(
@@ -431,6 +449,7 @@ IGL_INLINE void igl::opengl::ViewerData::clear()
   labels_strings.clear();
 
   face_based = false;
+  show_texture = false;
 }
 
 IGL_INLINE void igl::opengl::ViewerData::compute_normals()

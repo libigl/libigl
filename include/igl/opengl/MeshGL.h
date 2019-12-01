@@ -84,6 +84,7 @@ public:
   int tex_u;
   int tex_v;
   GLint tex_filter;
+  GLint tex_wrap;
   Eigen::Matrix<char,Eigen::Dynamic,1> tex;
 
   Eigen::Matrix<unsigned, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> F_vbo;

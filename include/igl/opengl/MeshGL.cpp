@@ -13,7 +13,8 @@
 #include <iostream>
 
 IGL_INLINE igl::opengl::MeshGL::MeshGL():
-  tex_filter(GL_LINEAR)
+  tex_filter(GL_LINEAR),
+  tex_wrap(GL_REPEAT)
 {
 }
 
@@ -93,8 +94,8 @@ IGL_INLINE void igl::opengl::MeshGL::bind_mesh()
   glBindTexture(GL_TEXTURE_2D, vbo_tex);
   if (dirty & MeshGL::DIRTY_TEXTURE)
   {
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, tex_wrap);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, tex_wrap);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, tex_filter);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, tex_filter);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);

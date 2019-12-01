@@ -61,30 +61,23 @@ int main(int argc, char *argv[])
   }
 
 
-  // Pseudo-color based on solution
-  struct Data{
-    MatrixXd C,C_const;
-  } data;
   // Use same color axes
   const double min_z = std::min(Z.minCoeff(),Z_const.minCoeff());
   const double max_z = std::max(Z.maxCoeff(),Z_const.maxCoeff());
-  igl::jet(      Z,min_z,max_z,data.C);
-  igl::jet(Z_const,min_z,max_z,data.C_const);
 
   // Plot the mesh with pseudocolors
   igl::opengl::glfw::Viewer viewer;
   viewer.data().set_mesh(V, F);
   viewer.data().show_lines = false;
-  viewer.data().set_colors(data.C);
+  viewer.data().set_data(min_z,max_z,Z);
 
   viewer.callback_key_down = 
-    [](igl::opengl::glfw::Viewer& viewer,unsigned char key,int mod)->bool
+    [&Z,&Z_const,&min_z,&max_z](igl::opengl::glfw::Viewer& viewer,unsigned char key,int mod)->bool
     {
       if(key == ' ')
       {
-        Data & data = *static_cast<Data*>(viewer.callback_key_down_data);
         static bool toggle = true;
-        viewer.data().set_colors(toggle?data.C_const:data.C);
+        viewer.data().set_data(min_z,max_z,toggle?Z_const:Z);
         toggle = !toggle;
         return true;
       }else
@@ -92,7 +85,6 @@ int main(int argc, char *argv[])
         return false;
       }
     };
-  viewer.callback_key_down_data = &data;
   cout<<
     "Press [space] to toggle between unconstrained and constrained."<<endl;
   viewer.launch();

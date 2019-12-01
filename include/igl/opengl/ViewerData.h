@@ -98,8 +98,16 @@ public:
   // Set pseudo-colorable scalar data associated with the mesh.
   //
   // Inputs:
+  //   caxis_min  caxis minimum bound
+  //   caxis_max  caxis maximum bound
   //   D  #V by 3 list of colors
+  //
   // To-do: support #F by 1 per-face data
+  IGL_INLINE void set_data(
+    const double caxis_min, 
+    const double caxis_max, 
+    const Eigen::VectorXd & D);
+  // Use min(D) and max(D) to set caxis.
   IGL_INLINE void set_data(const Eigen::VectorXd & D);
   // Not to be confused with set_colors, this creates a _texture_ that will be
   // referenced to pseudocolor accordint to the scalar field passed to set_data.

@@ -4,6 +4,7 @@
 #include <igl/heat_geodesics.h>
 #include <igl/unproject_onto_mesh.h>
 #include <igl/avg_edge_length.h>
+#include <igl/isolines_map.h>
 #include <igl/opengl/glfw/Viewer.h>
 #include <igl/opengl/create_shader_program.h>
 #include <igl/opengl/destroy_shader_program.h>
@@ -21,6 +22,7 @@ void set_colormap(igl::opengl::glfw::Viewer & viewer)
     CM(i,1) = std::max(std::min(2.0*t-1.0,1.0),0.0);
     CM(i,2) = std::max(std::min(6.0*t-5.0,1.0),0.0);
   }
+  igl::isolines_map(Eigen::MatrixXd(CM),CM);
   viewer.data().set_colormap(CM);
 }
 
@@ -56,19 +58,32 @@ int main(int argc, char *argv[])
     if(igl::unproject_onto_mesh(Eigen::Vector2f(x,y), viewer.core().view,
       viewer.core().proj, viewer.core().viewport, V, F, fid, bc))
     {
-      // 3d position of hit
-      const Eigen::RowVector3d m3 =
-        V.row(F(fid,0))*bc(0) + V.row(F(fid,1))*bc(1) + V.row(F(fid,2))*bc(2);
-      int cid = 0;
-      Eigen::Vector3d(
-          (V.row(F(fid,0))-m3).squaredNorm(),
-          (V.row(F(fid,1))-m3).squaredNorm(),
-          (V.row(F(fid,2))-m3).squaredNorm()).minCoeff(&cid);
-      const int vid = F(fid,cid);
-      C.row(vid)<<1,0,0;
-      Eigen::VectorXd D = Eigen::VectorXd::Zero(data.Grad.cols());
-	  D(vid) = 1;
-      igl::heat_geodesics_solve(data,(Eigen::VectorXi(1,1)<<vid).finished(),D);
+      Eigen::VectorXd D;
+      // if big mesh, just use closest vertex. Otherwise, blend distances to
+      // vertices of face using barycentric coordinates.
+      if(F.rows()>100000)
+      {
+        // 3d position of hit
+        const Eigen::RowVector3d m3 =
+          V.row(F(fid,0))*bc(0) + V.row(F(fid,1))*bc(1) + V.row(F(fid,2))*bc(2);
+        int cid = 0;
+        Eigen::Vector3d(
+            (V.row(F(fid,0))-m3).squaredNorm(),
+            (V.row(F(fid,1))-m3).squaredNorm(),
+            (V.row(F(fid,2))-m3).squaredNorm()).minCoeff(&cid);
+        const int vid = F(fid,cid);
+        igl::heat_geodesics_solve(data,(Eigen::VectorXi(1,1)<<vid).finished(),D);
+      }else
+      {
+        D = Eigen::VectorXd::Zero(V.rows());
+        for(int cid = 0;cid<3;cid++)
+        {
+          const int vid = F(fid,cid);
+          Eigen::VectorXd Dc;
+          igl::heat_geodesics_solve(data,(Eigen::VectorXi(1,1)<<vid).finished(),Dc);
+          D += Dc*bc(cid);
+        }
+      }
       viewer.data().set_data(D);
       return true;
     }
