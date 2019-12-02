@@ -11,7 +11,6 @@
 
 #include "../per_face_normals.h"
 #include "../material_colors.h"
-#include "../parula.h"
 #include "../per_vertex_normals.h"
 
 // Really? Just for GL_NEAREST?
@@ -22,12 +21,11 @@
 
 IGL_INLINE igl::opengl::ViewerData::ViewerData()
 : dirty(MeshGL::DIRTY_ALL),
-  // UINT_MAX sets all bits to 1 so these defaults get applied to all view cores
-  show_faces        (UINT_MAX),
-  show_lines        (UINT_MAX),
+  show_faces        (~unsigned(0)),
+  show_lines        (~unsigned(0)),
   invert_normals    (false),
-  show_overlay      (UINT_MAX),
-  show_overlay_depth(UINT_MAX),
+  show_overlay      (~unsigned(0)),
+  show_overlay_depth(~unsigned(0)),
   show_vertid       (false),
   show_faceid       (false),
   show_labels       (false),
@@ -38,7 +36,7 @@ IGL_INLINE igl::opengl::ViewerData::ViewerData()
   label_color(0,0,0.04,1),
   shininess(35.0f),
   id(-1),
-  is_visible        (UINT_MAX)
+  is_visible        (~unsigned(0))
 {
   clear();
 };
@@ -265,24 +263,26 @@ IGL_INLINE void igl::opengl::ViewerData::set_texture(
 }
 
 IGL_INLINE void igl::opengl::ViewerData::set_data(
-  const double caxis_min,
-  const double caxis_max,
-  const Eigen::VectorXd & D)
+  const Eigen::VectorXd & D,
+  double caxis_min,
+  double caxis_max,
+  igl::ColorMapType cmap,
+  int num_steps)
 {
   if(!show_texture)
   {
     Eigen::MatrixXd CM;
-    igl::parula(Eigen::VectorXd::LinSpaced(21,0,1).eval(),false,CM);
+    igl::colormap(cmap,Eigen::VectorXd::LinSpaced(num_steps,0,1).eval(),0,1,CM);
     set_colormap(CM);
-  } 
+  }
   set_uv(((D.array()-caxis_min)/(caxis_max-caxis_min)).replicate(1,2));
 }
 
-IGL_INLINE void igl::opengl::ViewerData::set_data( const Eigen::VectorXd & D)
+IGL_INLINE void igl::opengl::ViewerData::set_data(const Eigen::VectorXd & D, igl::ColorMapType cmap, int num_steps)
 {
   const double caxis_min = D.minCoeff();
   const double caxis_max = D.maxCoeff();
-  return set_data(caxis_min,caxis_max,D);
+  return set_data(D,caxis_min,caxis_max,cmap,num_steps);
 }
 
 IGL_INLINE void igl::opengl::ViewerData::set_colormap(const Eigen::MatrixXd & CM)
@@ -293,7 +293,7 @@ IGL_INLINE void igl::opengl::ViewerData::set_colormap(const Eigen::MatrixXd & CM
     (CM.col(0)*255.0).cast<unsigned char>();
   const Eigen::Matrix<unsigned char,Eigen::Dynamic, Eigen::Dynamic> G =
     (CM.col(1)*255.0).cast<unsigned char>();
-  const Eigen::Matrix<unsigned char,Eigen::Dynamic, Eigen::Dynamic> B = 
+  const Eigen::Matrix<unsigned char,Eigen::Dynamic, Eigen::Dynamic> B =
     (CM.col(2)*255.0).cast<unsigned char>();
   set_colors(Eigen::RowVector3d(1,1,1));
   set_texture(R,G,B);

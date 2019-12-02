@@ -60,7 +60,6 @@ int main(int argc, char *argv[])
     igl::min_quad_with_fixed_solve(mqwf,B,bc,Beq,Z_const);
   }
 
-
   // Use same color axes
   const double min_z = std::min(Z.minCoeff(),Z_const.minCoeff());
   const double max_z = std::max(Z.maxCoeff(),Z_const.maxCoeff());
@@ -69,15 +68,15 @@ int main(int argc, char *argv[])
   igl::opengl::glfw::Viewer viewer;
   viewer.data().set_mesh(V, F);
   viewer.data().show_lines = false;
-  viewer.data().set_data(min_z,max_z,Z);
+  viewer.data().set_data(Z,min_z,max_z);
 
-  viewer.callback_key_down = 
+  viewer.callback_key_down =
     [&Z,&Z_const,&min_z,&max_z](igl::opengl::glfw::Viewer& viewer,unsigned char key,int mod)->bool
     {
       if(key == ' ')
       {
         static bool toggle = true;
-        viewer.data().set_data(min_z,max_z,toggle?Z_const:Z);
+        viewer.data().set_data(toggle?Z_const:Z,min_z,max_z);
         toggle = !toggle;
         return true;
       }else
