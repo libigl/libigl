@@ -65,7 +65,7 @@ IGL_INLINE void igl::flood_fill(
       int signed_xi = -1;
       if(yi != 0)
       {
-        s = S(int(0+res(0)*(yi-1 + res(1)*zi)));
+        s = S(0+int(res(0))*(yi-1 + int(res(1))*zi));
       }
       for(int xi = 0;xi<res(0);xi++)
       {
