@@ -8,7 +8,6 @@
 #ifndef IGL_READOBJ_H
 #define IGL_READOBJ_H
 #include "igl_inline.h"
-#include "deprecated.h"
 // History:
 //  return type changed from void to bool  Alec 18 Sept 2011
 //  added pure vector of vectors version that has much more support Alec 31 Oct
