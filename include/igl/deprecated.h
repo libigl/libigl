@@ -17,6 +17,12 @@
 #  define IGL_HAS_CPP_ATTRIBUTE(x) 0
 #endif
 
+#ifdef _MSC_VER
+#  define IGL_MSC_VER _MSC_VER
+#else
+#  define IGL_MSC_VER 0
+#endif
+
 #ifndef IGL_DEPRECATED
 #  if (IGL_HAS_CPP_ATTRIBUTE(deprecated) && __cplusplus >= 201402L) || \
       IGL_MSC_VER >= 1900
@@ -27,6 +33,7 @@
 #    elif IGL_MSC_VER
 #      define IGL_DEPRECATED __declspec(deprecated)
 #    else
+#      pragma message("WARNING: You need to implement IGL_DEPRECATED for this compiler")
 #      define IGL_DEPRECATED /* deprecated */
 #    endif
 #  endif
