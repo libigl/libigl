@@ -27,9 +27,9 @@ namespace igl
   // show up once for each direction and non-manifold edges may appear more than
   // once for each direction).
   template <typename DerivedF, typename DerivedE>
-  IGL_INLINE void IGL_DEPRECATED(all_edges(
+  IGL_DEPRECATED IGL_INLINE void all_edges(
     const Eigen::MatrixBase<DerivedF> & F,
-    Eigen::PlainObjectBase<DerivedE> & E));
+    Eigen::PlainObjectBase<DerivedE> & E);
 }
 
 #ifndef IGL_STATIC_LIBRARY

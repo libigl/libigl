@@ -29,9 +29,9 @@ namespace igl
    const Eigen::MatrixBase<DerivedF> &F);
   // Deprecated:
   template <typename DerivedV, typename DerivedF>
-  IGL_INLINE std::vector<bool> IGL_DEPRECATED(is_border_vertex(
+  IGL_DEPRECATED IGL_INLINE std::vector<bool> is_border_vertex(
    const Eigen::MatrixBase<DerivedV> &V,
-   const Eigen::MatrixBase<DerivedF> &F));
+   const Eigen::MatrixBase<DerivedF> &F);
 }
 
 #ifndef IGL_STATIC_LIBRARY

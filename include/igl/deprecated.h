@@ -8,21 +8,37 @@
 #ifndef IGL_DEPRECATED_H
 #define IGL_DEPRECATED_H
 // Macro for marking a function as deprecated.
-// 
-// http://stackoverflow.com/a/295229/148668
-#if defined(__GNUC__) || defined(__clang__)
-#define IGL_DEPRECATED(func) func __attribute__ ((deprecated))
-#elif defined(_MSC_VER)
-#define IGL_DEPRECATED(func) __declspec(deprecated) func
+// Use C++14 feature [[deprecated]] if available.
+// See also https://stackoverflow.com/questions/295120/c-mark-as-deprecated/21265197#21265197
+
+#ifdef __has_cpp_attribute
+#  define IGL_HAS_CPP_ATTRIBUTE(x) __has_cpp_attribute(x)
 #else
-#pragma message("WARNING: You need to implement IGL_DEPRECATED for this compiler")
-#define IGL_DEPRECATED(func) func
+#  define IGL_HAS_CPP_ATTRIBUTE(x) 0
 #endif
+
+#ifndef IGL_DEPRECATED
+#  if (IGL_HAS_CPP_ATTRIBUTE(deprecated) && __cplusplus >= 201402L) || \
+      IGL_MSC_VER >= 1900
+#    define IGL_DEPRECATED [[deprecated]]
+#  else
+#    if defined(__GNUC__) || defined(__clang__)
+#      define IGL_DEPRECATED __attribute__((deprecated))
+#    elif IGL_MSC_VER
+#      define IGL_DEPRECATED __declspec(deprecated)
+#    else
+#      define IGL_DEPRECATED /* deprecated */
+#    endif
+#  endif
+#endif
+
 // Usage:
 //
-//     template <typename T> IGL_INLINE void my_func(Arg1 a);
+//     template <typename T>
+//     IGL_INLINE void my_func(Arg1 a);
 //
-// becomes 
+// becomes
 //
-//     template <typename T> IGL_INLINE IGL_DEPRECATED(void my_func(Arg1 a));
+//     template <typename T>
+//     IGL_DEPRECATED IGL_INLINE void my_func(Arg1 a);
 #endif
