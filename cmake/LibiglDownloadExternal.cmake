@@ -156,7 +156,7 @@ endfunction()
 function(igl_download_catch2)
 	igl_download_project(catch2
 		GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-		GIT_TAG        03d122a35c3f5c398c43095a87bc82ed44642516
+		GIT_TAG        v2.11.0
 	)
 endfunction()
 

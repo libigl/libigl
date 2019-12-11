@@ -27,6 +27,7 @@ add_subdirectory(${LIBIGL_EXTERNAL}/catch2 catch2)
 add_executable(libigl_tests main.cpp test_common.h)
 target_link_libraries(libigl_tests PUBLIC igl::core Catch2::Catch2)
 target_include_directories(libigl_tests PUBLIC ${CMAKE_CURRENT_LIST_DIR})
+target_compile_definitions(libigl_tests PUBLIC CATCH_CONFIG_ENABLE_BENCHMARKING)
 
 # Set DATA_DIR definition
 set(DATA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/data/")

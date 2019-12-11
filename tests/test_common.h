@@ -1,8 +1,7 @@
 #pragma once
 
-
 // These are not directly used but would otherwise be included in most files.
-// Leaving them included here. 
+// Leaving them included here.
 #include <igl/read_triangle_mesh.h>
 #include <igl/readDMAT.h>
 
@@ -16,6 +15,13 @@
 #include <functional>
 #include <algorithm>
 #include <tuple>
+
+// Disable lengthy tests in debug mode
+#ifdef NDEBUG
+#define IGL_DEBUG_OFF ""
+#else
+#define IGL_DEBUG_OFF "[!hide]"
+#endif
 
 namespace test_common
 {
