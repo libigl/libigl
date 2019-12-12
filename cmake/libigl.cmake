@@ -478,6 +478,7 @@ function(install_dir_files dir_name)
 
   file(GLOB public_headers
     ${CMAKE_CURRENT_SOURCE_DIR}/include/igl${subpath}/*.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/igl${subpath}/*.hpp
   )
 
   set(files_to_install ${public_headers})
