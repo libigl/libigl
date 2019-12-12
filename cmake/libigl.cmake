@@ -59,6 +59,9 @@ endif()
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR})
 include(LibiglDownloadExternal)
 
+# Provides igl_set_folders() to set folders for Visual Studio/Xcode
+include(LibiglFolders)
+
 ################################################################################
 ### IGL Common
 ################################################################################
@@ -149,10 +152,14 @@ function(compile_igl_module module_dir)
   endif()
   if(LIBIGL_USE_STATIC_LIBRARY)
     file(GLOB SOURCES_IGL_${module_name}
-      "${LIBIGL_SOURCE_DIR}/igl/${module_dir}/*.cpp")
+      "${LIBIGL_SOURCE_DIR}/igl/${module_dir}/*.cpp"
+      "${LIBIGL_SOURCE_DIR}/igl/${module_dir}/*.h*"
+    )
     if(NOT LIBIGL_WITHOUT_COPYLEFT)
       file(GLOB COPYLEFT_SOURCES_IGL_${module_name}
-        "${LIBIGL_SOURCE_DIR}/igl/copyleft/${module_dir}/*.cpp")
+        "${LIBIGL_SOURCE_DIR}/igl/copyleft/${module_dir}/*.cpp"
+        "${LIBIGL_SOURCE_DIR}/igl/copyleft/${module_dir}/*.h*"
+      )
       list(APPEND SOURCES_IGL_${module_name} ${COPYLEFT_SOURCES_IGL_${module_name}})
     endif()
     add_library(${module_libname} STATIC ${SOURCES_IGL_${module_name}} ${ARGN})
@@ -197,7 +204,10 @@ endfunction()
 if(LIBIGL_USE_STATIC_LIBRARY)
   file(GLOB SOURCES_IGL
     "${LIBIGL_SOURCE_DIR}/igl/*.cpp"
-    "${LIBIGL_SOURCE_DIR}/igl/copyleft/*.cpp")
+    "${LIBIGL_SOURCE_DIR}/igl/*.h*"
+    "${LIBIGL_SOURCE_DIR}/igl/copyleft/*.cpp"
+    "${LIBIGL_SOURCE_DIR}/igl/copyleft/*.h*"
+  )
 endif()
 compile_igl_module("core" ${SOURCES_IGL})
 
