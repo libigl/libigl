@@ -210,13 +210,18 @@ namespace glfw
     glfwGetWindowSize(window, &width_window, &height_window);
     highdpi = windowWidth/width_window;
     glfw_window_size(window,width_window,height_window);
-    //opengl.init();
-    for(int i=0;i<core_list.size(); i++)
-    {
-      core_list[i].align_camera_center(data().V,data().F);
-    }
     // Initialize IGL viewer
     init();
+    for(auto &core : this->core_list)
+    {
+      for(auto &data : this->data_list)
+      {
+        if(data.is_visible & core.id)
+        {
+          this->core(core.id).align_camera_center(data.V, data.F);
+        }
+      }
+    }
     return EXIT_SUCCESS;
   }
 
