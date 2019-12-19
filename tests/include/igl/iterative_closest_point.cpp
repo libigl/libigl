@@ -9,7 +9,7 @@
 #include <igl/iterative_closest_point.h>
 
 
-TEST_CASE("iterative_closest_point: identity","[igl]" IGL_DEBUG_OFF)
+TEST_CASE("iterative_closest_point: identity","[igl]" "[slow]")
 {
   const auto test_case = [](const std::string &param)
   {

@@ -3,7 +3,7 @@
 #include <igl/per_face_normals.h>
 #include <Eigen/Geometry>
 
-TEST_CASE("per_face_normals: dot", "[igl]" IGL_DEBUG_OFF)
+TEST_CASE("per_face_normals: dot", "[igl]" "[slow]")
 {
   const auto test_case = [](const std::string &param)
   {

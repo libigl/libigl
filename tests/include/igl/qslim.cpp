@@ -6,7 +6,7 @@
 //#include <igl/hausdorff.h>
 #include <igl/writePLY.h>
 
-TEST_CASE("qslim: cylinder", "[igl]" IGL_DEBUG_OFF)
+TEST_CASE("qslim: cylinder", "[igl]" "[slow]")
 {
   using namespace igl;
   const int axis_devisions = 5;
