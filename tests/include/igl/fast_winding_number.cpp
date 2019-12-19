@@ -52,7 +52,7 @@ TEST_CASE("fast_winding_number: one_point_cloud", "[igl]")
   test_common::assert_near(WiP,WiP_cached,1e-15);
 }
 
-TEST_CASE("fast_winding_number: meshes", "[igl]" IGL_DEBUG_OFF)
+TEST_CASE("fast_winding_number: meshes", "[igl]" "[slow]")
 {
   const auto test_case = [](const std::string &param)
   {

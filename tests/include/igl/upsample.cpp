@@ -27,7 +27,7 @@ TEST_CASE("upsample: single_triangle", "[igl]")
   test_common::assert_eq(NV_groundtruth,NV);
 }
 
-TEST_CASE("upsample: V_comes_first_F_ordering", "[igl]" IGL_DEBUG_OFF)
+TEST_CASE("upsample: V_comes_first_F_ordering", "[igl]" "[slow]")
 {
   const auto test_case = [](const std::string &param)
   {

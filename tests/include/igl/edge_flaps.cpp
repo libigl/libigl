@@ -1,7 +1,7 @@
 #include <test_common.h>
 #include <igl/edge_flaps.h>
 
-TEST_CASE("edge_flaps: verify", "[igl]" IGL_DEBUG_OFF)
+TEST_CASE("edge_flaps: verify", "[igl]" "[slow]")
 {
   const auto test_case = [](const std::string &param)
   {

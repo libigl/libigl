@@ -37,7 +37,7 @@ TEST_CASE("intrinsic_delaunay_cotmatrix: skewed_grid", "[igl]")
   }
 }
 
-TEST_CASE("intrinsic_delaunay_cotmatrix: manifold_meshes", "[igl]" IGL_DEBUG_OFF)
+TEST_CASE("intrinsic_delaunay_cotmatrix: manifold_meshes", "[igl]" "[slow]")
 {
   auto test_case = [](const std::string &param)
   {

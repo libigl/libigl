@@ -17,12 +17,6 @@
 #include <algorithm>
 #include <tuple>
 
-#ifdef NDEBUG
-#define IGL_DEBUG_OFF ""
-#else
-#define IGL_DEBUG_OFF "[!hide]"
-#endif
-
 namespace test_common
 {
   template<typename Param, typename Fun>

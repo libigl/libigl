@@ -1,7 +1,7 @@
 #include <test_common.h>
 #include <igl/doublearea.h>
 
-TEST_CASE("doublearea: VF_vs_ABC", "[igl]" IGL_DEBUG_OFF)
+TEST_CASE("doublearea: VF_vs_ABC", "[igl]" "[slow]")
 {
     auto test_case = [](const std::string &param)
     {
