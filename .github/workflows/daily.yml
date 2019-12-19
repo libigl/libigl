@@ -1,0 +1,169 @@
+name: Daily
+
+on:
+  schedule:
+    - cron:  '0 4 * * *'
+
+env:
+  CTEST_OUTPUT_ON_FAILURE: ON
+  CTEST_PARALLEL_LEVEL: 2
+
+jobs:
+  ####################
+  # Linux / macOS
+  ####################
+
+  # Part of this file is inspired from
+  # https://github.com/onqtam/doctest/blob/dev/.github/workflows/main.yml
+
+  Unix:
+    name: ${{ matrix.name }} (${{ matrix.config }}, ${{ matrix.static }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        name: [
+          ubuntu-18.04-gcc-7,
+          ubuntu-18.04-gcc-8,
+          ubuntu-18.04-gcc-9,
+          ubuntu-18.04-clang-7,
+          ubuntu-18.04-clang-8,
+          ubuntu-18.04-clang-9,
+          macOS-latest,
+        ]
+        config: [Debug, Release]
+        static: [ON, OFF]
+        include:
+          - name: ubuntu-18.04-gcc-7
+            os: ubuntu-18.04
+            compiler: gcc
+            version: "7"
+
+          - name: ubuntu-18.04-gcc-8
+            os: ubuntu-18.04
+            compiler: gcc
+            version: "8"
+
+          - name: ubuntu-18.04-gcc-9
+            os: ubuntu-18.04
+            compiler: gcc
+            version: "9"
+
+          - name: ubuntu-18.04-clang-7
+            os: ubuntu-18.04
+            compiler: clang
+            version: "7"
+
+          - name: ubuntu-18.04-clang-8
+            os: ubuntu-18.04
+            compiler: clang
+            version: "8"
+
+          - name: ubuntu-18.04-clang-9
+            os: ubuntu-18.04
+            compiler: clang
+            version: "9"
+
+          - name: macOS-latest
+            os: macOS-latest
+    env:
+      LIBIGL_NUM_THREADS: 1  # See https://github.com/libigl/libigl/pull/996
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v1
+        with:
+          fetch-depth: 1
+
+      - name: Dependencies (Linux)
+        if: runner.os == 'Linux'
+        run: |
+            # LLVM 9 is not in Bionic's repositories so we add the official LLVM repository.
+            if [ "${{ matrix.compiler }}" = "clang" ] && [ "${{ matrix.version }}" = "9" ]; then
+              sudo add-apt-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-9 main"
+            fi
+            sudo apt-get update
+
+            if [ "${{ matrix.compiler }}" = "gcc" ]; then
+              sudo apt-get install -y g++-${{ matrix.version }}
+              echo "::set-env name=CC::gcc-${{ matrix.version }}"
+              echo "::set-env name=CXX::g++-${{ matrix.version }}"
+            else
+              sudo apt-get install -y clang-${{ matrix.version }}
+              echo "::set-env name=CC::clang-${{ matrix.version }}"
+              echo "::set-env name=CXX::clang++-${{ matrix.version }}"
+            fi
+
+            sudo apt-get install \
+              libblas-dev \
+              libboost-filesystem-dev \
+              libboost-system-dev \
+              libboost-thread-dev \
+              libglu1-mesa-dev \
+              liblapack-dev \
+              libmpfr-dev \
+              xorg-dev
+
+      - name: Dependencies (macOS)
+        if: runner.os == 'macOS'
+        run: brew install boost gmp mpfr
+
+      - name: Configure
+        run: |
+          mkdir -p build
+          cd build
+          cmake .. \
+            -DCMAKE_BUILD_TYPE=${{ matrix.config }} \
+            -DLIBIGL_USE_STATIC_LIBRARY=${{ matrix.static }} \
+            -DLIBIGL_WITH_CGAL=ON \
+            -DLIBIGL_WITH_COMISO=ON
+
+      - name: Build
+        run: cd build; make -j2
+
+      - name: Tests
+        run: cd build; ctest --verbose
+
+  ####################
+  # Windows
+  ####################
+
+  Windows:
+    runs-on: windows-2019
+    env:
+      CC: cl.exe
+      CXX: cl.exe
+    strategy:
+      fail-fast: false
+      matrix:
+        config: [Debug, Release]
+        static: [ON, OFF]
+        include:
+          - config: Debug
+            tutorials: OFF
+          - config: Release
+            tutorials: ON
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v1
+        with:
+          fetch-depth: 1
+      - uses: seanmiddleditch/gha-setup-ninja@master
+
+        # We run configure + build in the same step, since they both need to call VsDevCmd
+        # Also, cmd uses ^ to break commands into multiple lines (in powershell this is `)
+      - name: Configure and build
+        shell: cmd
+        run: |
+          call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=x64
+          cmake -G Ninja ^
+            -DCMAKE_BUILD_TYPE=${{ matrix.config }} ^
+            -DLIBIGL_USE_STATIC_LIBRARY=${{ matrix.static }} ^
+            -DLIBIGL_BUILD_TUTORIALS=${{ matrix.tutorials }} ^
+            -DLIBIGL_WITH_CGAL=ON ^
+            -DLIBIGL_WITH_COMISO=OFF ^
+            -B build ^
+            -S .
+          cmake --build build
+
+      - name: Tests
+        run: cd build; ctest --verbose

@@ -16,7 +16,10 @@
 #include <algorithm>
 #include <tuple>
 
+<<<<<<< refs/remotes/origin/python
 // Disable lengthy tests in debug mode
+=======
+>>>>>>> Add workflows for GitHub Actions + misc fixes.
 #ifdef NDEBUG
 #define IGL_DEBUG_OFF ""
 #else

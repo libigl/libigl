@@ -1,0 +1,141 @@
+name: Build
+
+on:
+  push: {}
+  pull_request: {}
+
+env:
+  CTEST_OUTPUT_ON_FAILURE: ON
+  CTEST_PARALLEL_LEVEL: 2
+
+jobs:
+  ####################
+  # Linux / macOS
+  ####################
+
+  Unix:
+    name: ${{ matrix.name }} (${{ matrix.config }}, ${{ matrix.static }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-18.04, macos-latest]
+        config: [Release]
+        static: [ON, OFF]
+        include:
+          - os: macos-latest
+            name: macOS
+          - os: ubuntu-18.04
+            name: Linux
+    env:
+      LIBIGL_NUM_THREADS: 1  # See https://github.com/libigl/libigl/pull/996
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v1
+        with:
+          fetch-depth: 1
+
+      - name: Dependencies (Linux)
+        if: runner.os == 'Linux'
+        run: |
+            sudo apt-get install \
+            libblas-dev \
+            libboost-filesystem-dev \
+            libboost-system-dev \
+            libboost-thread-dev \
+            libglu1-mesa-dev \
+            liblapack-dev \
+            libmpfr-dev \
+            xorg-dev \
+            ccache
+
+      - name: Dependencies (macOS)
+        if: runner.os == 'macOS'
+        run: brew install boost gmp mpfr ccache
+
+      - name: Cache Build
+        id: cache-build
+        uses: actions/cache@v1
+        with:
+          path: ~/.ccache
+          key: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.static }}-cache
+
+      - name: Prepare ccache
+        run: |
+          ccache --max-size=1.0G
+          ccache -V && ccache --show-stats && ccache --zero-stats
+
+      - name: Configure
+        run: |
+          mkdir -p build
+          cd build
+          cmake .. \
+            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+            -DCMAKE_BUILD_TYPE=${{ matrix.config }} \
+            -DLIBIGL_USE_STATIC_LIBRARY=${{ matrix.static }} \
+            -DLIBIGL_WITH_CGAL=ON \
+            -DLIBIGL_WITH_COMISO=ON
+
+      - name: Build
+        run: cd build; make -j2; ccache --show-stats
+
+      - name: Tests
+        run: cd build; ctest --verbose
+
+  ####################
+  # Windows
+  ####################
+
+  Windows:
+    runs-on: windows-2019
+    env:
+      CC: cl.exe
+      CXX: cl.exe
+    strategy:
+      fail-fast: false
+      matrix:
+        config: [Release]
+        static: [ON, OFF]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v1
+        with:
+          fetch-depth: 1
+      - uses: seanmiddleditch/gha-setup-ninja@master
+
+        # https://github.com/actions/cache/issues/101
+      - name: Set env
+        run: echo "::set-env name=appdata::$($env:LOCALAPPDATA)"
+
+      - name: Cache build
+        id: cache-build
+        uses: actions/cache@v1
+        with:
+          path: ${{ env.appdata }}\Mozilla\sccache
+          key: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.static }}-cache
+
+      - name: Prepare sccache
+        run: |
+          Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://get.scoop.sh')
+          scoop install sccache --global
+          # Scoop modifies the PATH so we make the modified PATH global.
+          echo "::set-env name=PATH::$env:PATH"
+
+        # We run configure + build in the same step, since they both need to call VsDevCmd
+        # Also, cmd uses ^ to break commands into multiple lines (in powershell this is `)
+      - name: Configure and build
+        shell: cmd
+        run: |
+          call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=x64
+          cmake -G Ninja ^
+            -DCMAKE_CXX_COMPILER_LAUNCHER=sccache ^
+            -DCMAKE_BUILD_TYPE=${{ matrix.config }} ^
+            -DLIBIGL_USE_STATIC_LIBRARY=${{ matrix.static }} ^
+            -DLIBIGL_WITH_CGAL=ON ^
+            -DLIBIGL_WITH_COMISO=OFF ^
+            -B build ^
+            -S .
+          cmake --build build
+
+      - name: Tests
+        run: cd build; ctest --verbose
