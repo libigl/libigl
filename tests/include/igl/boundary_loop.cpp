@@ -19,7 +19,7 @@ TEST_CASE("boundary_loop: cube", "[igl]")
   REQUIRE (boundary.size() == 0);
 }
 
-TEST_CASE("boundary_loop: bunny", "[igl]")
+TEST_CASE("boundary_loop: bunny", "[igl]" IGL_DEBUG_OFF)
 {
   Eigen::MatrixXd V;
   Eigen::MatrixXi F;
