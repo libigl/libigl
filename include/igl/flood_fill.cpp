@@ -35,7 +35,7 @@ IGL_INLINE void igl::flood_fill(
       {
         for(int xi = 0;xi<res(0);xi++)
         {
-          S(int(xi+res(0)*(byi + res(1)*zi))) = s;
+          S(xi+int(res(0))*(byi + int(res(1))*zi)) = s;
         }
       }
       // flood fill this value back on any previous "sheets"
@@ -45,7 +45,7 @@ IGL_INLINE void igl::flood_fill(
         {
           for(int xi = 0;xi<res(0);xi++)
           {
-            S(int(xi+res(0)*(yi + res(1)*bzi))) = s;
+            S(xi+int(res(0))*(yi + int(res(1))*bzi)) = s;
           }
         }
       }
@@ -57,7 +57,7 @@ IGL_INLINE void igl::flood_fill(
     int signed_yi = -1;
     if(zi != 0)
     {
-      s = S(int(0+res(0)*(0 + res(1)*(zi-1))));
+      s = S(0+int(res(0))*(0 + int(res(1))*(zi-1)));
     }
     for(int yi = 0;yi<res(1);yi++)
     {
