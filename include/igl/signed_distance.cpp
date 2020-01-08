@@ -62,7 +62,8 @@ IGL_INLINE void igl::signed_distance(
       break;
   }
 
-  Eigen::Matrix<typename DerivedV::Scalar,Eigen::Dynamic,3> FN,VN,EN;
+  // Need to be Dynamic columns to work with both 2d and 3d
+  Eigen::Matrix<typename DerivedV::Scalar,Eigen::Dynamic,Eigen::Dynamic> FN,VN,EN;
   Eigen::Matrix<typename DerivedF::Scalar,Eigen::Dynamic,2> E;
   Eigen::Matrix<typename DerivedF::Scalar,Eigen::Dynamic,1> EMAP;
   WindingNumberAABB<RowVector3S,DerivedV,DerivedF> hier3;
