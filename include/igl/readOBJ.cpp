@@ -240,7 +240,7 @@ IGL_INLINE bool igl::readOBJ(
         else{
           FMwasinit=true;
         }
-        sscanf(l, "%s\n", &currentmaterialref);
+        sscanf(l, "%s\n", currentmaterialref);
       }
       else if(strlen(type) >= 1 && (type[0] == '#' ||
             type[0] == 'g'  ||
