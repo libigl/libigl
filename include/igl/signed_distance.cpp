@@ -193,9 +193,9 @@ IGL_INLINE void igl::signed_distance(
           Eigen::Matrix<typename DerivedV::Scalar,1,2>  n2;
           dim==3 ?
             pseudonormal_test(V,F,FN,VN,EN,EMAP,q3,i,c3,s,n3):
-            // This should use (V,F), not (V,E) since E is auxiliary for 3D
-            // case, not the input "F"acets.
-            pseudonormal_test(V,F,EN,VN,q2,i,c2,s,n2);
+            // This should use (V,F,FN), not (V,E,EN) since E is auxiliary for
+            // 3D case, not the input "F"acets.
+            pseudonormal_test(V,F,FN,VN,q2,i,c2,s,n2);
           Eigen::Matrix<typename DerivedN::Scalar,1,Eigen::Dynamic>  n;
           (dim==3 ? n = n3.template cast<typename DerivedN::Scalar>() : n = n2.template cast<typename DerivedN::Scalar>());
           N.row(p) = n.template cast<typename DerivedN::Scalar>();
