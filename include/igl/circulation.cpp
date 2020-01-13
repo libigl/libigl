@@ -49,7 +49,7 @@ IGL_INLINE std::vector<int> igl::circulation(
     // back to start?
     if(fi == f0)
     {
-      assert(ei == e);
+     // assert(ei == e);
       break;
     }
   }
