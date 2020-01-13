@@ -241,7 +241,7 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
       // Ideally we'd use LDLT but Eigen doesn't support positive semi-definite
       // matrices:
       // http://forum.kde.org/viewtopic.php?f=74&t=106962&p=291990#p291990
-      if(data.Auu_sym && false)
+      if(data.Auu_sym)
       {
         data.ldlt.compute(NA);
         switch(data.ldlt.info())
