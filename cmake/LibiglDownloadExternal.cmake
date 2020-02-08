@@ -120,14 +120,6 @@ function(igl_download_pybind11)
 	)
 endfunction()
 
-## stb_image
-function(igl_download_stb)
-	igl_download_project(stb
-		GIT_REPOSITORY https://github.com/libigl/libigl-stb.git
-		GIT_TAG        cd0fa3fcd90325c83be4d697b00214e029f94ca3
-	)
-endfunction()
-
 ## TetGen
 function(igl_download_tetgen)
 	igl_download_project(tetgen

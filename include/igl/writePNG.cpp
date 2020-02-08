@@ -6,10 +6,10 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "writePNG.h"
-#include <igl_stb_image.h>
+#include "igl_stb_image.h"
 #include <vector>
 
-IGL_INLINE bool igl::png::writePNG(
+IGL_INLINE bool igl::writePNG(
   const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& R,
   const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& G,
   const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& B,

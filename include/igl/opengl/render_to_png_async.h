@@ -5,16 +5,16 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
-#ifndef IGL_PNG_RENDER_TO_PNG_ASYNC_H
-#define IGL_PNG_RENDER_TO_PNG_ASYNC_H
-#include <igl/igl_inline.h>
+#ifndef IGL_OPENGL_RENDER_TO_PNG_ASYNC_H
+#define IGL_OPENGL_RENDER_TO_PNG_ASYNC_H
+#include "../igl_inline.h"
 #include <thread>
 //#include <boost/thread/thread.hpp>
 
 #include <string>
 namespace igl
 {
-  namespace png
+  namespace opengl
   {
     // History:
     //  added multithreaded parameter and support, Alec Sept 3, 2012

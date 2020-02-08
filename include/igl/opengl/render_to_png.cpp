@@ -6,11 +6,11 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "render_to_png.h"
-#include <igl_stb_image.h>
+#include "../igl_stb_image.h"
 
-#include "../opengl/gl.h"
+#include "gl.h"
 
-IGL_INLINE bool igl::png::render_to_png(
+IGL_INLINE bool igl::opengl::render_to_png(
   const std::string png_file,
   const int width,
   const int height,

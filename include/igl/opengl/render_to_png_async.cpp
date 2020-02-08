@@ -6,8 +6,8 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "render_to_png_async.h"
-#include "../opengl/gl.h"
-#include <igl_stb_image.h>
+#include "gl.h"
+#include "../igl_stb_image.h"
 
 static IGL_INLINE bool render_to_png_async_helper(
   unsigned char * img, int width, int height,
@@ -30,7 +30,7 @@ static IGL_INLINE bool render_to_png_async_helper(
   return ret;
 }
 
-IGL_INLINE std::thread igl::png::render_to_png_async(
+IGL_INLINE std::thread igl::opengl::render_to_png_async(
   const std::string png_file,
   const int width,
   const int height,

@@ -2,8 +2,8 @@
 #include <igl/opengl/glfw/Viewer.h>
 #include <iostream>
 #include "tutorial_shared_path.h"
-#include <igl/png/writePNG.h>
-#include <igl/png/readPNG.h>
+#include <igl/writePNG.h>
+#include <igl/readPNG.h>
 
 // This function is called every time a keyboard button is pressed
 bool key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier)
@@ -21,7 +21,7 @@ bool key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier
       viewer.data(),false,R,G,B,A);
 
     // Save it to a PNG
-    igl::png::writePNG(R,G,B,A,"out.png");
+    igl::writePNG(R,G,B,A,"out.png");
   }
 
   if (key == '2')
@@ -30,7 +30,7 @@ bool key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier
     Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> R,G,B,A;
 
     // Read the PNG
-    igl::png::readPNG("out.png",R,G,B,A);
+    igl::readPNG("out.png",R,G,B,A);
 
     // Replace the mesh with a triangulated square
     Eigen::MatrixXd V(4,3);

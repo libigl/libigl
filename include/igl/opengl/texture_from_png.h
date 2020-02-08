@@ -5,17 +5,17 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
-#ifndef IGL_PNG_TEXTURE_FROM_PNG_H
-#define IGL_PNG_TEXTURE_FROM_PNG_H
+#ifndef IGL_OPENGL_TEXTURE_FROM_PNG_H
+#define IGL_OPENGL_TEXTURE_FROM_PNG_H
 #include "../igl_inline.h"
 #include <Eigen/Core>
 #include <string>
 
-#include "../opengl/gl.h"
+#include "gl.h"
 
 namespace igl
 {
-  namespace png
+  namespace opengl
   {
     // Read an image from a .png file and use it as a texture
     //

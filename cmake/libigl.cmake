@@ -29,7 +29,6 @@ option(LIBIGL_WITH_MOSEK             "Use MOSEK"                    OFF)
 option(LIBIGL_WITH_OPENGL            "Use OpenGL"                   OFF)
 option(LIBIGL_WITH_OPENGL_GLFW       "Use GLFW"                     OFF)
 option(LIBIGL_WITH_OPENGL_GLFW_IMGUI "Use ImGui"                    OFF)
-option(LIBIGL_WITH_PNG               "Use PNG"                      OFF)
 option(LIBIGL_WITH_TETGEN            "Use Tetgen"                   OFF)
 option(LIBIGL_WITH_TRIANGLE          "Use Triangle"                 OFF)
 option(LIBIGL_WITH_PREDICATES        "Use exact predicates"         OFF)
@@ -396,21 +395,6 @@ if(LIBIGL_WITH_OPENGL_GLFW_IMGUI)
       add_subdirectory(${LIBIGL_EXTERNAL}/libigl-imgui imgui)
     endif()
     target_link_libraries(igl_opengl_glfw_imgui ${IGL_SCOPE} igl_opengl_glfw imgui)
-  endif()
-endif()
-
-################################################################################
-### Compile the png part ###
-if(LIBIGL_WITH_PNG)
-  # png/ module is anomalous because it also depends on opengl it really should
-  # be moved into the opengl/ directory and namespace ...
-  if(TARGET igl_opengl)
-    if(NOT TARGET stb_image)
-      igl_download_stb()
-      add_subdirectory(${LIBIGL_EXTERNAL}/stb stb_image)
-    endif()
-    compile_igl_module("png" "")
-    target_link_libraries(igl_png ${IGL_SCOPE} igl_stb_image igl_opengl)
   endif()
 endif()
 

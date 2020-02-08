@@ -6,11 +6,9 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "texture_from_png.h"
+#include "../igl_stb_image.h"
 
-#include "../opengl/report_gl_error.h"
-#include <igl_stb_image.h>
-
-IGL_INLINE bool igl::png::texture_from_png(const std::string png_file, const bool flip, GLuint & id)
+IGL_INLINE bool igl::opengl::texture_from_png(const std::string png_file, const bool flip, GLuint & id)
 {
   int width,height,n;
   unsigned char *data = igl::stbi_load(png_file.c_str(), &width, &height, &n, 4);
@@ -40,13 +38,13 @@ IGL_INLINE bool igl::png::texture_from_png(const std::string png_file, const boo
   return true;
 }
 
-IGL_INLINE bool igl::png::texture_from_png(const std::string png_file, GLuint & id)
+IGL_INLINE bool igl::opengl::texture_from_png(const std::string png_file, GLuint & id)
 {
   return texture_from_png(png_file,false,id);
 }
 
 
-IGL_INLINE bool igl::png::texture_from_png(
+IGL_INLINE bool igl::opengl::texture_from_png(
   const std::string png_file,
   Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& R,
   Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& G,

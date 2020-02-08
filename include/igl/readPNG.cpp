@@ -6,9 +6,9 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "readPNG.h"
-#include <igl_stb_image.h>
+#include "igl_stb_image.h"
 
-IGL_INLINE bool igl::png::readPNG(
+IGL_INLINE bool igl::readPNG(
   const std::string png_file,
   Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& R,
   Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& G,
