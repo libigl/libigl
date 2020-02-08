@@ -59,7 +59,7 @@ TEST_CASE("signed_distance: single_triangle", "[igl]")
     Eigen::VectorXi I;
     Eigen::MatrixXd C,N;
     igl::signed_distance( P,V,F,type,S,I,C,N);
-    //Eigen::VectorXd Sexact (1,1);Sexact<<sqrt(2.)/2.;
-    //test_common::assert_near(S,Sexact,1e-15);
+    Eigen::VectorXd Sexact (1,1);Sexact<<sqrt(2.)/2.;
+    test_common::assert_near(S,Sexact,1e-15);
   }
 }
