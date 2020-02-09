@@ -59,6 +59,9 @@ endif()
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR})
 include(LibiglDownloadExternal)
 
+# Provides igl_set_folders() to set folders for Visual Studio/Xcode
+include(LibiglFolders)
+
 ################################################################################
 ### IGL Common
 ################################################################################
@@ -104,16 +107,17 @@ if(HUNTER_ENABLED)
 endif()
 
 # Eigen
-if(TARGET Eigen3::Eigen)
-  # If an imported target already exists, use it
-  target_link_libraries(igl_common INTERFACE Eigen3::Eigen)
-else()
+if(NOT TARGET Eigen3::Eigen)
   igl_download_eigen()
-  target_include_directories(igl_common SYSTEM INTERFACE
+  add_library(igl_eigen INTERFACE)
+  target_include_directories(igl_eigen SYSTEM INTERFACE
     $<BUILD_INTERFACE:${LIBIGL_EXTERNAL}/eigen>
     $<INSTALL_INTERFACE:include>
   )
+  set_property(TARGET igl_eigen PROPERTY EXPORT_NAME Eigen3::Eigen)
+  add_library(Eigen3::Eigen ALIAS igl_eigen)
 endif()
+target_link_libraries(igl_common INTERFACE Eigen3::Eigen)
 
 # C++11 Thread library
 find_package(Threads REQUIRED)
@@ -148,10 +152,14 @@ function(compile_igl_module module_dir)
   endif()
   if(LIBIGL_USE_STATIC_LIBRARY)
     file(GLOB SOURCES_IGL_${module_name}
-      "${LIBIGL_SOURCE_DIR}/igl/${module_dir}/*.cpp")
+      "${LIBIGL_SOURCE_DIR}/igl/${module_dir}/*.cpp"
+      "${LIBIGL_SOURCE_DIR}/igl/${module_dir}/*.h*"
+    )
     if(NOT LIBIGL_WITHOUT_COPYLEFT)
       file(GLOB COPYLEFT_SOURCES_IGL_${module_name}
-        "${LIBIGL_SOURCE_DIR}/igl/copyleft/${module_dir}/*.cpp")
+        "${LIBIGL_SOURCE_DIR}/igl/copyleft/${module_dir}/*.cpp"
+        "${LIBIGL_SOURCE_DIR}/igl/copyleft/${module_dir}/*.h*"
+      )
       list(APPEND SOURCES_IGL_${module_name} ${COPYLEFT_SOURCES_IGL_${module_name}})
     endif()
     add_library(${module_libname} STATIC ${SOURCES_IGL_${module_name}} ${ARGN})
@@ -196,7 +204,10 @@ endfunction()
 if(LIBIGL_USE_STATIC_LIBRARY)
   file(GLOB SOURCES_IGL
     "${LIBIGL_SOURCE_DIR}/igl/*.cpp"
-    "${LIBIGL_SOURCE_DIR}/igl/copyleft/*.cpp")
+    "${LIBIGL_SOURCE_DIR}/igl/*.h*"
+    "${LIBIGL_SOURCE_DIR}/igl/copyleft/*.cpp"
+    "${LIBIGL_SOURCE_DIR}/igl/copyleft/*.h*"
+  )
 endif()
 compile_igl_module("core" ${SOURCES_IGL})
 
@@ -302,7 +313,7 @@ if(LIBIGL_WITH_EMBREE)
     # TODO: Should probably save/restore the CMAKE_CXX_FLAGS_*, since embree seems to be
     # overriding them on Windows. But well... it works for now.
     igl_download_embree()
-    add_subdirectory("${EMBREE_DIR}" "embree")
+    add_subdirectory("${EMBREE_DIR}" "embree" EXCLUDE_FROM_ALL)
   endif()
 
   compile_igl_module("embree")
@@ -477,6 +488,7 @@ function(install_dir_files dir_name)
 
   file(GLOB public_headers
     ${CMAKE_CURRENT_SOURCE_DIR}/include/igl${subpath}/*.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/igl${subpath}/*.hpp
   )
 
   set(files_to_install ${public_headers})
@@ -500,21 +512,30 @@ endfunction()
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 
+if(TARGET igl_eigen)
+  set(IGL_EIGEN igl_eigen)
+else()
+  set(IGL_EIGEN)
+  message(WARNING "Trying to export igl targets while using an imported target for Eigen.")
+endif()
+
 # Install and export core library
 install(
-   TARGETS
-     igl
-     igl_common
-   EXPORT igl-export
-   PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-   RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  TARGETS
+    igl
+    igl_common
+    ${IGL_EIGEN}
+  EXPORT igl-export
+  PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
 )
 export(
   TARGETS
     igl
     igl_common
+    ${IGL_EIGEN}
   FILE libigl-export.cmake
 )
 

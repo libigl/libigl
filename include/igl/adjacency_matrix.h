@@ -21,7 +21,7 @@ namespace igl
   // Inputs:
   //   F  #F by dim list of mesh simplices
   // Outputs: 
-  //   A  max(F) by max(F) cotangent matrix, each row i corresponding to V(i,:)
+  //   A  max(F) by max(F) adjacency matrix, each row i corresponding to V(i,:)
   //
   // Example:
   //   // Mesh in (V,F)

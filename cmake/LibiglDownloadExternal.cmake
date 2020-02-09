@@ -164,7 +164,7 @@ endfunction()
 function(igl_download_predicates)
 	igl_download_project(predicates
 		GIT_REPOSITORY https://github.com/libigl/libigl-predicates.git
-		GIT_TAG        4c57c1d3f31646b010d1d58bfbe201e75c2b2ad8
+		GIT_TAG        5a1d2194ec114bff51d5a33230586cafb83adc86
 	)
 endfunction()
 
@@ -175,7 +175,7 @@ function(igl_download_test_data)
 	igl_download_project_aux(test_data
 		"${LIBIGL_EXTERNAL}/../tests/data"
 		GIT_REPOSITORY https://github.com/libigl/libigl-tests-data
-		GIT_TAG        adc66cabf712a0bd68ac182b4e7f8b5ba009c3dd
+		GIT_TAG        5994ecdab65aebc6c218c4c6f35e7822acf6fe99
 	)
 endfunction()
 
