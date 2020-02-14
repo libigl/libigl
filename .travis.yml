@@ -51,7 +51,7 @@ matrix:
     - MATRIX_EVAL="export CONFIG=Debug PYTHON=python3 LIBIGL_NUM_THREADS=1 CMAKE_EXTRA='-DLIBIGL_EIGEN_VERSION=3.3.7'""
 
 install:
-- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export PATH="/usr/local/opt/ccache/libexec:$PATH"; fi
+- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install ccache;export PATH="/usr/local/opt/ccache/libexec:$PATH"; fi
 - eval "${MATRIX_EVAL}"
 - ccache --max-size=5.0G
 - ccache -V && ccache --show-stats && ccache --zero-stats
