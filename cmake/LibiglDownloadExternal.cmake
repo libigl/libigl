@@ -164,7 +164,7 @@ endfunction()
 function(igl_download_predicates)
 	igl_download_project(predicates
 		GIT_REPOSITORY https://github.com/libigl/libigl-predicates.git
-		GIT_TAG        4c57c1d3f31646b010d1d58bfbe201e75c2b2ad8
+		GIT_TAG        5a1d2194ec114bff51d5a33230586cafb83adc86
 	)
 endfunction()
 

@@ -22,7 +22,7 @@ IGL_INLINE void igl::find_cross_field_singularities(const Eigen::MatrixBase<Deri
                                                     Eigen::PlainObjectBase<DerivedO> &isSingularity,
                                                     Eigen::PlainObjectBase<DerivedO> &singularityIndex)
 {
-  std::vector<bool> V_border = igl::is_border_vertex(V,F);
+  std::vector<bool> V_border = igl::is_border_vertex(F);
 
   std::vector<std::vector<int> > VF;
   std::vector<std::vector<int> > VFi;
