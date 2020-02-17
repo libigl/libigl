@@ -30,8 +30,12 @@ IGL_INLINE bool igl::readCSV(
     std::istringstream iss(line);
     vector<Scalar> temp;
     Scalar a;
-    while (iss >> a)
+    char ch;
+    while (iss >> a){
       temp.push_back(a);
+      if(!(iss >> ch))
+        break;
+    }
 
     if (temp.size() != 0) // skip empty lines
       Mt.push_back(temp);
