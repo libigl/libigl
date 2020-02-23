@@ -21,7 +21,7 @@ IGL_INLINE bool igl::copyleft::cgal::mesh_to_polyhedron(
   typedef typename Polyhedron::HalfedgeDS HalfedgeDS;
   // Postcondition: hds is a valid polyhedral surface.
   CGAL::Polyhedron_incremental_builder_3<HalfedgeDS> B(poly.hds());
-  B.begin_surface(V.rows(),F.rows(),3*F.rows());
+  B.begin_surface(V.rows(),F.rows(),3*F.rows()+1);
   typedef typename HalfedgeDS::Vertex   Vertex;
   typedef typename Vertex::Point Point;
   assert(V.cols() == 3 && "V must be #V by 3");
