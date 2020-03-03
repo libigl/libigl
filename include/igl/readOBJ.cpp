@@ -74,7 +74,7 @@ IGL_INLINE bool igl::readOBJ(
             obj_file_name.c_str());
     return false;
   }
-  return igl::readOBJ(obj_file_name,V,TC,N,F,FTC,FN,FM);
+  return igl::readOBJ(obj_file,V,TC,N,VC,F,FTC,FN,FM);
 }
 
 template <typename Scalar, typename Index>
@@ -315,7 +315,7 @@ IGL_INLINE bool igl::readOBJ(
   VC.reserve(V.size());
 	if (C.length() > 0)
 	{
-		for (int v = 0; v < C.length()/4; ++v)
+		for (int v = 0; v < C.length()/8; ++v)
 		{
       const Scalar m = std::stoi(C.substr(v * 8 + 0 * 2, 2), nullptr, 16) / 255.;
       const Scalar r = std::stoi(C.substr(v * 8 + 1 * 2, 2), nullptr, 16) / 255.;
