@@ -54,6 +54,22 @@ template <
   typename Vtype,
   typename Ftype,
   typename Ntype,
+  typename UVtype>
+IGL_INLINE bool igl::readPLY(
+  FILE * ply_file,
+  std::vector<std::vector<Vtype> > & V,
+  std::vector<std::vector<Ftype> > & F,
+  std::vector<std::vector<Ntype> > & N,
+  std::vector<std::vector<UVtype> >  & UV)
+{
+  std::vector<std::vector<double> > VC;
+  return readPLY(ply_file,V,F,N,VC,UV);
+}
+
+template <
+  typename Vtype,
+  typename Ftype,
+  typename Ntype,
   typename VCtype,
   typename UVtype>
 IGL_INLINE bool igl::readPLY(
