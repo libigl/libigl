@@ -22,6 +22,24 @@ IGL_INLINE bool igl::readPLY(
   std::vector<std::vector<Ntype> > & N,
   std::vector<std::vector<UVtype> >  & UV)
 {
+  std::vector<std::vector<double> > VC;
+  return readPLY(filename,V,F,N,VC,UV);
+}
+
+template <
+  typename Vtype,
+  typename Ftype,
+  typename Ntype,
+  typename VCtype,
+  typename UVtype>
+IGL_INLINE bool igl::readPLY(
+  const std::string filename,
+  std::vector<std::vector<Vtype> > & V,
+  std::vector<std::vector<Ftype> > & F,
+  std::vector<std::vector<Ntype> > & N,
+  std::vector<std::vector<VCtype> > & VC,
+  std::vector<std::vector<UVtype> >  & UV)
+{
   using namespace std;
   // Largely follows ply2iv.c
   FILE * ply_file = fopen(filename.c_str(),"r");
@@ -29,23 +47,7 @@ IGL_INLINE bool igl::readPLY(
   {
     return false;
   }
-  return readPLY(ply_file,V,F,N,UV);
-}
-
-template <
-  typename Vtype,
-  typename Ftype,
-  typename Ntype,
-  typename UVtype>
-IGL_INLINE bool igl::readPLY(
-  FILE * ply_file,
-  std::vector<std::vector<Vtype> > & V,
-  std::vector<std::vector<Ftype> > & F,
-  std::vector<std::vector<Ntype> > & N,
-  std::vector<std::vector<UVtype> >  & UV)
-{
-  std::vector<std::vector<double> > VC;
-  return readPLY(V,F,N,VC,UV);
+  return readPLY(ply_file,V,F,N,VC,UV);
 }
 
 template <
@@ -262,6 +264,8 @@ IGL_INLINE bool igl::readPLY(
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instantiation
 template bool igl::readPLY<double, int, double, double>(std::basic_string<char, std::char_traits<char>, std::allocator<char> > const, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > >&, std::vector<std::vector<int, std::allocator<int> >, std::allocator<std::vector<int, std::allocator<int> > > >&, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > >&, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > >&);
+
+template bool igl::readPLY<double, int, double, double>(std::basic_string<char, std::char_traits<char>, std::allocator<char> > const, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > >&, std::vector<std::vector<int, std::allocator<int> >, std::allocator<std::vector<int, std::allocator<int> > > >&, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > >&, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > >&, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > >&);
 
 template bool igl::readPLY<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>, Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic>, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> >(std::basic_string<char, std::char_traits<char>, std::allocator<char> > const, Eigen::PlainObjectBase<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> > &, Eigen::PlainObjectBase<Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic> > &, Eigen::PlainObjectBase<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> > &, Eigen::PlainObjectBase<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> > &);
 

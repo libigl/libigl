@@ -50,6 +50,23 @@ IGL_INLINE bool igl::readOBJ(
   std::vector<std::vector<Index > > & FN,
   std::vector<std::tuple<std::string, Index, Index >> &FM)
 {
+  std::vector<std::vector<Scalar > > VC;
+  return igl::readOBJ(obj_file,V,TC,N,VC,F,FTC,FN,FM);
+
+}
+
+template <typename Scalar, typename Index>
+IGL_INLINE bool igl::readOBJ(
+  const std::string obj_file_name,
+  std::vector<std::vector<Scalar > > & V,
+  std::vector<std::vector<Scalar > > & TC,
+  std::vector<std::vector<Scalar > > & N,
+  std::vector<std::vector<Scalar > > & VC,
+  std::vector<std::vector<Index > > & F,
+  std::vector<std::vector<Index > > & FTC,
+  std::vector<std::vector<Index > > & FN,
+  std::vector<std::tuple<std::string, Index, Index >> &FM)
+{
   // Open file, and check for error
   FILE * obj_file = fopen(obj_file_name.c_str(),"r");
   if(NULL==obj_file)
@@ -58,22 +75,7 @@ IGL_INLINE bool igl::readOBJ(
             obj_file_name.c_str());
     return false;
   }
-  return igl::readOBJ(obj_file,V,TC,N,F,FTC,FN,FM);
-}
-
-template <typename Scalar, typename Index>
-IGL_INLINE bool igl::readOBJ(
-  FILE * obj_file,
-  std::vector<std::vector<Scalar > > & V,
-  std::vector<std::vector<Scalar > > & TC,
-  std::vector<std::vector<Scalar > > & N,
-  std::vector<std::vector<Index > > & F,
-  std::vector<std::vector<Index > > & FTC,
-  std::vector<std::vector<Index > > & FN,
-  std::vector<std::tuple<std::string, Index, Index >> &FM)
-{
-  std::vector<std::vector<Scalar > > VC;
-  return igl::readOBJ(obj_file,V,TC,N,VC,F,FTC,FN,FM);
+  return igl::readOBJ(obj_file_name,V,TC,N,F,FTC,FN,FM);
 }
 
 template <typename Scalar, typename Index>

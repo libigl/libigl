@@ -40,16 +40,18 @@ namespace igl
     typename Vtype,
     typename Ftype,
     typename Ntype,
+    typename VCtype,
     typename UVtype>
   // Inputs:
   //   ply_file  pointer to already opened .ply file 
   // Outputs:
   //   ply_file  closed file
   IGL_INLINE bool readPLY(
-    FILE * ply_file,
+    const std::string filename,
     std::vector<std::vector<Vtype> > & V,
     std::vector<std::vector<Ftype> > & F,
     std::vector<std::vector<Ntype> > & N,
+    std::vector<std::vector<VCtype> > & VC,
     std::vector<std::vector<UVtype> >  & UV);
   template <
     typename Vtype,
@@ -65,7 +67,7 @@ namespace igl
     std::vector<std::vector<Vtype> > & V,
     std::vector<std::vector<Ftype> > & F,
     std::vector<std::vector<Ntype> > & N,
-    std::vector<std::vector<Ntype> > & VC,
+    std::vector<std::vector<VCtype> > & VC,
     std::vector<std::vector<UVtype> >  & UV);
     template <
     typename DerivedV,
