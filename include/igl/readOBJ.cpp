@@ -51,7 +51,7 @@ IGL_INLINE bool igl::readOBJ(
   std::vector<std::tuple<std::string, Index, Index >> &FM)
 {
   std::vector<std::vector<Scalar > > VC;
-  return igl::readOBJ(obj_file,V,TC,N,VC,F,FTC,FN,FM);
+  return igl::readOBJ(obj_file_name,V,TC,N,VC,F,FTC,FN,FM);
 
 }
 
