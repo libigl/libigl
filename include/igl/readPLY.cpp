@@ -86,9 +86,9 @@ IGL_INLINE bool igl::readPLY(
     {"nx", PLY_DOUBLE, PLY_DOUBLE, offsetof(Vertex,nx), 0, 0, 0, 0},
     {"ny", PLY_DOUBLE, PLY_DOUBLE, offsetof(Vertex,ny), 0, 0, 0, 0},
     {"nz", PLY_DOUBLE, PLY_DOUBLE, offsetof(Vertex,nz), 0, 0, 0, 0},
-    {"r", PLY_DOUBLE, PLY_DOUBLE, offsetof(Vertex,r), 0, 0, 0, 0},
-    {"g", PLY_DOUBLE, PLY_DOUBLE, offsetof(Vertex,g), 0, 0, 0, 0},
-    {"b", PLY_DOUBLE, PLY_DOUBLE, offsetof(Vertex,b), 0, 0, 0, 0},
+    {"red", PLY_DOUBLE, PLY_DOUBLE, offsetof(Vertex,r), 0, 0, 0, 0},
+    {"green", PLY_DOUBLE, PLY_DOUBLE, offsetof(Vertex,g), 0, 0, 0, 0},
+    {"blue", PLY_DOUBLE, PLY_DOUBLE, offsetof(Vertex,b), 0, 0, 0, 0},
     {"s", PLY_DOUBLE, PLY_DOUBLE, offsetof(Vertex,s), 0, 0, 0, 0},
     {"t", PLY_DOUBLE, PLY_DOUBLE, offsetof(Vertex,t), 0, 0, 0, 0},
   };
