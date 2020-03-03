@@ -72,10 +72,28 @@ IGL_INLINE bool igl::readOBJ(
   std::vector<std::vector<Index > > & FN,
   std::vector<std::tuple<std::string, Index, Index >> &FM)
 {
+  std::vector<std::vector<Scalar > > VC;
+  return igl::readOBJ(obj_file,V,TC,N,VC,F,FTC,FN,FM);
+}
+
+template <typename Scalar, typename Index>
+IGL_INLINE bool igl::readOBJ(
+  FILE * obj_file,
+  std::vector<std::vector<Scalar > > & V,
+  std::vector<std::vector<Scalar > > & TC,
+  std::vector<std::vector<Scalar > > & N,
+  std::vector<std::vector<Scalar > > & VC,
+  std::vector<std::vector<Index > > & F,
+  std::vector<std::vector<Index > > & FTC,
+  std::vector<std::vector<Index > > & FN,
+  std::vector<std::tuple<std::string, Index, Index >> &FM)
+{
+
   // File open was successful so clear outputs
   V.clear();
   TC.clear();
   N.clear();
+  VC.clear();
   F.clear();
   FTC.clear();
   FN.clear();
@@ -86,7 +104,12 @@ IGL_INLINE bool igl::readOBJ(
   std::string vn("vn");
   std::string vt("vt");
   std::string f("f");
+  std::string MRGB("#MRGB");
   std::string tic_tac_toe("#");
+
+  // string for ZBrush style vertex color
+  std::string C("");
+
 #ifndef IGL_LINE_MAX
 #  define IGL_LINE_MAX 2048
 #endif
@@ -242,6 +265,12 @@ IGL_INLINE bool igl::readOBJ(
         }
         sscanf(l, "%s\n", &currentmaterialref);
       }
+      else if (strlen(type) >= 1 && type == MRGB)
+			{
+				char body[IGL_LINE_MAX];
+				int count = sscanf(l, "%s\n", body);
+				C.append(body);
+			}
       else if(strlen(type) >= 1 && (type[0] == '#' ||
             type[0] == 'g'  ||
             type[0] == 's'  ||
@@ -266,8 +295,23 @@ IGL_INLINE bool igl::readOBJ(
     FM.push_back(std::make_tuple(currentmaterialref,previous_face_no,current_face_no-1));
   fclose(obj_file);
 
+  // convert string to vertex color
+  VC.reserve(V.size());
+	if (C.length() > 0)
+	{
+		for (int v = 0; v < C.length()/4; ++v)
+		{
+      const Scalar m = std::stoi(C.substr(v * 8 + 0 * 2, 2), nullptr, 16) / 255.;
+      const Scalar r = std::stoi(C.substr(v * 8 + 1 * 2, 2), nullptr, 16) / 255.;
+      const Scalar g = std::stoi(C.substr(v * 8 + 2 * 2, 2), nullptr, 16) / 255.;
+      const Scalar b = std::stoi(C.substr(v * 8 + 3 * 2, 2), nullptr, 16) / 255.;
+      VC.push_back(std::vector<Scalar>({r,g,b}));
+		}
+	}
+
   assert(F.size() == FN.size());
   assert(F.size() == FTC.size());
+  assert(V.size() == VC.size());
 
   return true;
 }
@@ -408,4 +452,5 @@ template bool igl::readOBJ<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matr
 template bool igl::readOBJ<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(std::basic_string<char, std::char_traits<char>, std::allocator<char> >, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
 template bool igl::readOBJ<double, int>(std::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > >&, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > >&, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > >&, std::vector<std::vector<int, std::allocator<int> >, std::allocator<std::vector<int, std::allocator<int> > > >&, std::vector<std::vector<int, std::allocator<int> >, std::allocator<std::vector<int, std::allocator<int> > > >&, std::vector<std::vector<int, std::allocator<int> >, std::allocator<std::vector<int, std::allocator<int> > > >&);
 template bool igl::readOBJ<double, int>(std::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > >&, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > >&, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > >&, std::vector<std::vector<int, std::allocator<int> >, std::allocator<std::vector<int, std::allocator<int> > > >&, std::vector<std::vector<int, std::allocator<int> >, std::allocator<std::vector<int, std::allocator<int> > > >&, std::vector<std::vector<int, std::allocator<int> >, std::allocator<std::vector<int, std::allocator<int> > > >&, std::vector<std::tuple<std::basic_string<char, std::char_traits<char>, std::allocator<char> >, int, int>, std::allocator<std::tuple<std::basic_string<char, std::char_traits<char>, std::allocator<char> >, int, int> > >&);
+template bool igl::readOBJ<double, int>(std::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > >&,std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > >&, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > >&, std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > >&, std::vector<std::vector<int, std::allocator<int> >, std::allocator<std::vector<int, std::allocator<int> > > >&, std::vector<std::vector<int, std::allocator<int> >, std::allocator<std::vector<int, std::allocator<int> > > >&, std::vector<std::vector<int, std::allocator<int> >, std::allocator<std::vector<int, std::allocator<int> > > >&, std::vector<std::tuple<std::basic_string<char, std::char_traits<char>, std::allocator<char> >, int, int>, std::allocator<std::tuple<std::basic_string<char, std::char_traits<char>, std::allocator<char> >, int, int> > >&);
 #endif

@@ -44,10 +44,29 @@ IGL_INLINE bool igl::readPLY(
   std::vector<std::vector<Ntype> > & N,
   std::vector<std::vector<UVtype> >  & UV)
 {
+  std::vector<std::vector<doubble> > VC;
+  return readPLY(V,F,N,VC,UV);
+}
+
+template <
+  typename Vtype,
+  typename Ftype,
+  typename Ntype,
+  typename VCtype,
+  typename UVtype>
+IGL_INLINE bool igl::readPLY(
+  FILE * ply_file,
+  std::vector<std::vector<Vtype> > & V,
+  std::vector<std::vector<Ftype> > & F,
+  std::vector<std::vector<Ntype> > & N,
+  std::vector<std::vector<VCtype> > & VC,
+  std::vector<std::vector<UVtype> >  & UV)
+{
   using namespace std;
    typedef struct Vertex {
      double x,y,z;          /* position */
      double nx,ny,nz;         /* surface normal */
+     double r,g,b;            /* vertex color */
      double s,t;              /* texture coordinates */
      void *other_props;       /* other properties */
    } Vertex;
@@ -65,6 +84,9 @@ IGL_INLINE bool igl::readPLY(
     {"nx", PLY_DOUBLE, PLY_DOUBLE, offsetof(Vertex,nx), 0, 0, 0, 0},
     {"ny", PLY_DOUBLE, PLY_DOUBLE, offsetof(Vertex,ny), 0, 0, 0, 0},
     {"nz", PLY_DOUBLE, PLY_DOUBLE, offsetof(Vertex,nz), 0, 0, 0, 0},
+    {"r", PLY_DOUBLE, PLY_DOUBLE, offsetof(Vertex,r), 0, 0, 0, 0},
+    {"g", PLY_DOUBLE, PLY_DOUBLE, offsetof(Vertex,g), 0, 0, 0, 0},
+    {"b", PLY_DOUBLE, PLY_DOUBLE, offsetof(Vertex,b), 0, 0, 0, 0},
     {"s", PLY_DOUBLE, PLY_DOUBLE, offsetof(Vertex,s), 0, 0, 0, 0},
     {"t", PLY_DOUBLE, PLY_DOUBLE, offsetof(Vertex,t), 0, 0, 0, 0},
   };
@@ -83,6 +105,7 @@ IGL_INLINE bool igl::readPLY(
   }
 
   bool has_normals = false;
+  bool has_colors = false;
   bool has_texture_coords = false;
   igl::ply::PlyProperty **plist;
   int nprops;
@@ -107,11 +130,20 @@ IGL_INLINE bool igl::readPLY(
         ply_get_property (in_ply,"vertex",&vert_props[5]);
         has_normals = true;
       }
+      if (igl::ply::equal_strings ("red", prop->name) 
+        || igl::ply::equal_strings ("green", prop->name)
+        || igl::ply::equal_strings ("blue", prop->name))
+      {
+        ply_get_property (in_ply,"vertex",&vert_props[6]);
+        ply_get_property (in_ply,"vertex",&vert_props[7]);
+        ply_get_property (in_ply,"vertex",&vert_props[8]);
+        has_colors = true;
+      }
       if (igl::ply::equal_strings ("s", prop->name) ||
         igl::ply::equal_strings ("t", prop->name))
       {
-        ply_get_property(in_ply,"vertex",&vert_props[6]);
-        ply_get_property(in_ply,"vertex",&vert_props[7]);
+        ply_get_property(in_ply,"vertex",&vert_props[9]);
+        ply_get_property(in_ply,"vertex",&vert_props[10]);
         has_texture_coords = true;
       }
     }
@@ -125,6 +157,13 @@ IGL_INLINE bool igl::readPLY(
     }else
     {
       N.resize(0);
+    }
+    if(has_colors)
+    {
+      VC.resize(elem_count,std::vector<VCtype>(3));
+    }else
+    {
+      VC.resize(0);
     }
     if(has_texture_coords)
     {
@@ -147,6 +186,13 @@ IGL_INLINE bool igl::readPLY(
         N[j][0] = v.nx;
         N[j][1] = v.ny;
         N[j][2] = v.nz;
+      }
+      if(has_colors)
+      {
+        // normalize
+        VC[j][0] = v.r / 255.;
+        VC[j][1] = v.g / 255.;
+        VC[j][2] = v.b / 255.;
       }
       if(has_texture_coords)
       {
