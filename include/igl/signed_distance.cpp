@@ -155,7 +155,7 @@ IGL_INLINE void igl::signed_distance(
     sqrd = dim==3?
       tree3.squared_distance(V,F,q3,low_sqr_d,up_sqr_d,i,c3):
       tree2.squared_distance(V,F,q2,low_sqr_d,up_sqr_d,i,c2);
-    if(sqrd >= up_sqr_d || sqrd <= low_sqr_d)
+    if(sqrd >= up_sqr_d || sqrd < low_sqr_d)
     {
       // Out of bounds gets a nan (nans on grids can be flood filled later using
       // igl::flood_fill)
