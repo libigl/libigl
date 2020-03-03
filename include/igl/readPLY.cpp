@@ -44,7 +44,7 @@ IGL_INLINE bool igl::readPLY(
   std::vector<std::vector<Ntype> > & N,
   std::vector<std::vector<UVtype> >  & UV)
 {
-  std::vector<std::vector<doubble> > VC;
+  std::vector<std::vector<double> > VC;
   return readPLY(V,F,N,VC,UV);
 }
 
