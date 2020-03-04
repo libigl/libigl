@@ -45,6 +45,23 @@ namespace igl
     const Eigen::MatrixBase<DerivedFN>& FN,
     const Eigen::MatrixBase<DerivedTC>& TC,
     const Eigen::MatrixBase<DerivedFTC>& FTC);
+  template <
+    typename DerivedV, 
+    typename DerivedF,
+    typename DerivedVC, 
+    typename DerivedCN, 
+    typename DerivedFN,
+    typename DerivedTC, 
+    typename DerivedFTC>
+  IGL_INLINE bool writeOBJ(
+    const std::string str,
+    const Eigen::MatrixBase<DerivedV>& V,
+    const Eigen::MatrixBase<DerivedF>& F,
+    const Eigen::MatrixBase<DerivedVC>& VC,
+    const Eigen::MatrixBase<DerivedCN>& CN,
+    const Eigen::MatrixBase<DerivedFN>& FN,
+    const Eigen::MatrixBase<DerivedTC>& TC,
+    const Eigen::MatrixBase<DerivedFTC>& FTC);
   template <typename DerivedV, typename DerivedF>
   IGL_INLINE bool writeOBJ(
     const std::string str,

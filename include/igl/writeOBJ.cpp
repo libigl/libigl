@@ -97,6 +97,111 @@ IGL_INLINE bool igl::writeOBJ(
   return true;
 }
 
+template <
+  typename DerivedV, 
+  typename DerivedF,
+  typename DerivedVC, 
+  typename DerivedCN, 
+  typename DerivedFN,
+  typename DerivedTC, 
+  typename DerivedFTC>
+IGL_INLINE bool igl::writeOBJ(
+  const std::string str,
+  const Eigen::MatrixBase<DerivedV>& V,
+  const Eigen::MatrixBase<DerivedF>& F,
+  const Eigen::MatrixBase<DerivedVC>& VC,
+  const Eigen::MatrixBase<DerivedCN>& CN,
+  const Eigen::MatrixBase<DerivedFN>& FN,
+  const Eigen::MatrixBase<DerivedTC>& TC,
+  const Eigen::MatrixBase<DerivedFTC>& FTC)
+{
+  FILE * obj_file = fopen(str.c_str(),"w");
+  if(NULL==obj_file)
+  {
+    printf("IOError: %s could not be opened for writing...",str.c_str());
+    return false;
+  }
+  // Loop over V
+  for(int i = 0;i<(int)V.rows();i++)
+  {
+    fprintf(obj_file,"v");
+    for(int j = 0;j<(int)V.cols();++j)
+    {
+      fprintf(obj_file," %0.17g", V(i,j));
+    }
+    fprintf(obj_file,"\n");
+  }
+  bool write_VC = (VC.rows() >0 && V.rows() == VC.rows());
+
+  if(write_VC)
+  {
+    for (int v = 0; v < VC.rows(); v++)
+		{
+			if (v % 64 == 0)
+			{
+				fprintf(obj_file, "#MRGB ");
+			}
+
+			fprintf(obj_file, "%02x%02x%02x%02x", 255, std::round(VC(v, 0)*255), std::round(VC(v, 1)*255), std::round(VC(v, 2)*255));
+
+			if (v % 64 == 63 || (v == (VC.rows() - 1)))
+			{
+				fprintf(obj_file, "\n");
+			}
+		}
+  }
+
+  bool write_N = CN.rows() >0;
+
+  if(write_N)
+  {
+    for(int i = 0;i<(int)CN.rows();i++)
+    {
+      fprintf(obj_file,"vn %0.17g %0.17g %0.17g\n",
+              CN(i,0),
+              CN(i,1),
+              CN(i,2)
+              );
+    }
+    fprintf(obj_file,"\n");
+  }
+
+  bool write_texture_coords = TC.rows() >0;
+
+  if(write_texture_coords)
+  {
+    for(int i = 0;i<(int)TC.rows();i++)
+    {
+      fprintf(obj_file, "vt %0.17g %0.17g\n",TC(i,0),TC(i,1));
+    }
+    fprintf(obj_file,"\n");
+  }
+
+  // loop over F
+  for(int i = 0;i<(int)F.rows();++i)
+  {
+    fprintf(obj_file,"f");
+    for(int j = 0; j<(int)F.cols();++j)
+    {
+      // OBJ is 1-indexed
+      fprintf(obj_file," %u",F(i,j)+1);
+
+      if(write_texture_coords)
+        fprintf(obj_file,"/%u",FTC(i,j)+1);
+      if(write_N)
+      {
+        if (write_texture_coords)
+          fprintf(obj_file,"/%u",FN(i,j)+1);
+        else
+          fprintf(obj_file,"//%u",FN(i,j)+1);
+      }
+    }
+    fprintf(obj_file,"\n");
+  }
+  fclose(obj_file);
+  return true;
+}
+
 template <typename DerivedV, typename DerivedF>
 IGL_INLINE bool igl::writeOBJ(
   const std::string str,
