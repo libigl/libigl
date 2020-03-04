@@ -200,7 +200,7 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells(
     DerivedV bbox_max(num_components, 3);
     // Assuming our mesh (in exact numbers) fits in the range of double.
     bbox_min.setConstant(std::numeric_limits<double>::max());
-    bbox_max.setConstant(std::numeric_limits<double>::min());
+    bbox_max.setConstant(std::numeric_limits<double>::lowest());
     // Loop over faces
     for (size_t i=0; i<num_faces; i++)
     {
