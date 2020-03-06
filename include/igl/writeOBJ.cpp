@@ -142,7 +142,20 @@ IGL_INLINE bool igl::writeOBJ(
 				fprintf(obj_file, "#MRGB ");
 			}
 
-			fprintf(obj_file, "%02x%02x%02x%02x", 255, static_cast<unsigned int>(std::round(VC(v, 0)*255)), static_cast<unsigned int>(std::round(VC(v, 1)*255)), static_cast<unsigned int>(std::round(VC(v, 2)*255)));
+      if(VC.maxCoeff() <= 1)
+      {
+  			fprintf(obj_file, "%02x%02x%02x%02x", 255,
+          static_cast<unsigned int>(std::round(VC(v, 0)*255)),
+          static_cast<unsigned int>(std::round(VC(v, 1)*255)),
+          static_cast<unsigned int>(std::round(VC(v, 2)*255)));
+      }
+      else
+      {
+  			fprintf(obj_file, "%02x%02x%02x%02x", 255,
+          static_cast<unsigned int>(VC(v, 0)),
+          static_cast<unsigned int>(VC(v, 1)),
+          static_cast<unsigned int>(VC(v, 2)));
+      }
 
 			if (v % 64 == 63 || (v == (VC.rows() - 1)))
 			{

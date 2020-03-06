@@ -28,13 +28,15 @@ template <
   typename DerivedV,
   typename DerivedF,
   typename DerivedN,
-  typename DerivedUV>
+  typename DerivedUV,
+  typename DerivedVC>
 IGL_INLINE bool igl::writePLY(
   const std::string & filename,
   const Eigen::MatrixBase<DerivedV> & V,
   const Eigen::MatrixBase<DerivedF> & F,
   const Eigen::MatrixBase<DerivedN> & N,
   const Eigen::MatrixBase<DerivedUV> & UV,
+  const Eigen::MatrixBase<DerivedVC> & VC,
   const bool ascii)
 {
   // Largely based on obj2ply.c
@@ -47,6 +49,7 @@ IGL_INLINE bool igl::writePLY(
   {
     VScalar x,y,z,w;          /* position */
     NScalar nx,ny,nz;         /* surface normal */
+    unsigned char red,green,blue;   /* vertex color */
     UVScalar s,t;              /* texture coordinates */
   } Vertex;
 
@@ -64,6 +67,9 @@ IGL_INLINE bool igl::writePLY(
     {"nx",ply_type<NScalar>(), ply_type<NScalar>(),offsetof(Vertex,nx),0,0,0,0},
     {"ny",ply_type<NScalar>(), ply_type<NScalar>(),offsetof(Vertex,ny),0,0,0,0},
     {"nz",ply_type<NScalar>(), ply_type<NScalar>(),offsetof(Vertex,nz),0,0,0,0},
+    {"red",ply_type<unsigned char>(), ply_type<unsigned char>(),offsetof(Vertex,red),0,0,0,0},
+    {"green",ply_type<unsigned char>(), ply_type<unsigned char>(),offsetof(Vertex,green),0,0,0,0},
+    {"blue",ply_type<unsigned char>(), ply_type<unsigned char>(),offsetof(Vertex,blue),0,0,0,0},
     {"s", ply_type<UVScalar>(),ply_type<UVScalar>(),offsetof(Vertex,s),0,0,0,0},
     {"t", ply_type<UVScalar>(),ply_type<UVScalar>(),offsetof(Vertex,t),0,0,0,0},
   };
@@ -74,6 +80,7 @@ IGL_INLINE bool igl::writePLY(
       offsetof(Face,verts), 1, PLY_UCHAR, PLY_UCHAR, offsetof(Face,nverts)},
   };
   const bool has_normals = N.rows() > 0;
+  const bool has_vertex_colors = VC.rows() > 0;
   const bool has_texture_coords = UV.rows() > 0;
   std::vector<Vertex> vlist(V.rows());
   std::vector<Face> flist(F.rows());
@@ -87,6 +94,21 @@ IGL_INLINE bool igl::writePLY(
       vlist[i].nx = N(i,0);
       vlist[i].ny = N(i,1);
       vlist[i].nz = N(i,2);
+    }
+    if(has_vertex_colors)
+    {
+      if(VC.maxCoeff() <= 1)
+      {
+        vlist[i].red = static_cast<unsigned char>(std::round(VC(i,0)*255));
+        vlist[i].green = static_cast<unsigned char>(std::round(VC(i,1)*255));
+        vlist[i].blue = static_cast<unsigned char>(std::round(VC(i,2)*255));
+      }
+      else
+      {
+        vlist[i].red = static_cast<unsigned char>(VC(i,0));
+        vlist[i].green = static_cast<unsigned char>(VC(i,1));
+        vlist[i].blue = static_cast<unsigned char>(VC(i,2));
+      }
     }
     if(has_texture_coords)
     {
@@ -127,10 +149,16 @@ IGL_INLINE bool igl::writePLY(
     plist.push_back(vert_props[4]);
     plist.push_back(vert_props[5]);
   }
-  if (has_texture_coords)
+  if (has_vertex_colors)
   {
     plist.push_back(vert_props[6]);
     plist.push_back(vert_props[7]);
+    plist.push_back(vert_props[8]);
+  }
+  if (has_texture_coords)
+  {
+    plist.push_back(vert_props[9]);
+    plist.push_back(vert_props[10]);
   }
   ply_describe_element(ply, "vertex", V.rows(),plist.size(),
     &plist[0]);
@@ -155,6 +183,23 @@ IGL_INLINE bool igl::writePLY(
     delete[] flist[i].verts;
   }
   return true;
+}
+
+template <
+  typename DerivedV,
+  typename DerivedF,
+  typename DerivedN,
+  typename DerivedUV>
+IGL_INLINE bool igl::writePLY(
+  const std::string & filename,
+  const Eigen::MatrixBase<DerivedV> & V,
+  const Eigen::MatrixBase<DerivedF> & F,
+  const Eigen::MatrixBase<DerivedN> & N,
+  const Eigen::MatrixBase<DerivedUV> & UV,
+  const bool ascii)
+{
+  Eigen::Matrix<typename DerivedV::Scalar,Eigen::Dynamic,Eigen::Dynamic> VC;
+  return writePLY(filename,V,F,N,UV,VC,ascii);
 }
 
 template <

@@ -26,6 +26,20 @@ namespace igl
     typename DerivedV,
     typename DerivedF,
     typename DerivedN,
+    typename DerivedUV,
+    typename DerivedVC>
+  IGL_INLINE bool writePLY(
+    const std::string & filename,
+    const Eigen::MatrixBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedF> & F,
+    const Eigen::MatrixBase<DerivedN> & N,
+    const Eigen::MatrixBase<DerivedUV> & UV,
+    const Eigen::MatrixBase<DerivedVC> & VC,
+    const bool ascii = true);
+  template <
+    typename DerivedV,
+    typename DerivedF,
+    typename DerivedN,
     typename DerivedUV>
   IGL_INLINE bool writePLY(
     const std::string & filename,
