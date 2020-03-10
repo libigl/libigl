@@ -8,7 +8,7 @@ TEST_CASE("remesh_along_isoline: triangle_mesh", "[igl]")
   Eigen::MatrixXd V;
   Eigen::MatrixXi F;
   //This is a cube of dimensions 1.0x1.0x1.0
-  test_common::load_mesh("cube.obj", V, F);
+  igl::read_triangle_mesh(test_common::data_path("cube.obj"), V, F);
   const double mean_z = V.col(2).mean();
 
   Eigen::VectorXi C;
