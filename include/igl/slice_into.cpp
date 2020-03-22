@@ -34,7 +34,7 @@ IGL_INLINE void igl::slice_into(
 #endif
 
   // create temporary dynamic sparse matrix
-  Eigen::DynamicSparseMatrix<T, Eigen::RowMajor> dyn_Y(Y);
+  Eigen::SparseMatrix<T, Eigen::RowMajor>  dyn_Y(Y);
   // Iterate over outside
   for(int k=0; k<X.outerSize(); ++k)
   {
@@ -137,5 +137,4 @@ template void igl::slice_into<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::M
 template void igl::slice_into<Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, int, Eigen::Matrix<double, -1, 1, 0, -1, 1>&);
 template void igl::slice_into<Eigen::SparseMatrix<double, 0, int>, Eigen::SparseMatrix<double, 0, int>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::SparseMatrix<double, 0, int> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, int, Eigen::SparseMatrix<double, 0, int>&);
 template void igl::slice_into<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
-template void igl::slice_into<Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::MatrixWrapper<Eigen::Array<int, -1, 1, 0, -1, 1> > >(Eigen::Matrix<double, -1, 1, 0, -1, 1> const&, Eigen::MatrixBase<Eigen::MatrixWrapper<Eigen::Array<int, -1, 1, 0, -1, 1> > > const&, int, Eigen::Matrix<double, -1, 1, 0, -1, 1>&);
 #endif
