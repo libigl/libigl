@@ -62,6 +62,23 @@ IGL_INLINE bool igl::segment_segment_intersect(
   return true;
 };
 
+template <> bool igl::segment_segment_intersect<Eigen::Matrix<double, 1, 2, 1, 1, 2>, Eigen::Matrix<double, 1, 2, 1, 1, 2> >(
+  Eigen::MatrixBase<Eigen::Matrix<double, 1, 2, 1, 1, 2> > const& p, 
+  Eigen::MatrixBase<Eigen::Matrix<double, 1, 2, 1, 1, 2> > const& r, 
+  Eigen::MatrixBase<Eigen::Matrix<double, 1, 2, 1, 1, 2> > const& q, 
+  Eigen::MatrixBase<Eigen::Matrix<double, 1, 2, 1, 1, 2> > const& s, 
+  double& t, 
+  double& u, 
+  double eps)
+{
+  const Eigen::Vector3d p3(p(0),p(1),0);
+  const Eigen::Vector3d r3(r(0),r(1),0);
+  const Eigen::Vector3d q3(q(0),q(1),0);
+  const Eigen::Vector3d s3(s(0),s(1),0);
+  return segment_segment_intersect(p3,r3,q3,s3,t,u,eps);
+}
+
 #ifdef IGL_STATIC_LIBRARY
+// Explicit template instantiation
 template bool igl::segment_segment_intersect<Eigen::Matrix<double, 1, 3, 1, 1, 3>, Eigen::Matrix<double, 1, 3, 1, 1, 3> >(Eigen::MatrixBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > const&, Eigen::MatrixBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > const&, Eigen::MatrixBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > const&, Eigen::MatrixBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > const&, double&, double&, double);
 #endif
