@@ -47,8 +47,8 @@ IGL_INLINE void igl::massmatrix_intrinsic(
   assert(F.cols() == 3 && "only triangles supported");
   Matrix<Scalar,Dynamic,1> dblA;
   doublearea(l,0.,dblA);
-  Matrix<int,Dynamic,1> MI;
-  Matrix<int,Dynamic,1> MJ;
+  Matrix<typename DerivedF::Scalar,Dynamic,1> MI;
+  Matrix<typename DerivedF::Scalar,Dynamic,1> MJ;
   Matrix<Scalar,Dynamic,1> MV;
 
   switch(eff_type)

@@ -78,10 +78,10 @@ template <
   typename DerivedTF,
   typename DerivedTR>
 IGL_INLINE int igl::copyleft::tetgen::tetrahedralize(
-  const Eigen::PlainObjectBase<DerivedV>& V,
-  const Eigen::PlainObjectBase<DerivedF>& F,
-  const Eigen::PlainObjectBase<DerivedH>& H,
-  const Eigen::PlainObjectBase<DerivedR>& R,
+  const Eigen::MatrixBase<DerivedV>& V,
+  const Eigen::MatrixBase<DerivedF>& F,
+  const Eigen::MatrixBase<DerivedH>& H,
+  const Eigen::MatrixBase<DerivedR>& R,
   const std::string switches,
   Eigen::PlainObjectBase<DerivedTV>& TV,
   Eigen::PlainObjectBase<DerivedTT>& TT,
@@ -191,8 +191,8 @@ template <
   typename DerivedTT,
   typename DerivedTF>
 IGL_INLINE int igl::copyleft::tetgen::tetrahedralize(
-  const Eigen::PlainObjectBase<DerivedV>& V,
-  const Eigen::PlainObjectBase<DerivedF>& F,
+  const Eigen::MatrixBase<DerivedV>& V,
+  const Eigen::MatrixBase<DerivedF>& F,
   const std::string switches,
   Eigen::PlainObjectBase<DerivedTV>& TV,
   Eigen::PlainObjectBase<DerivedTT>& TT,
@@ -235,10 +235,10 @@ template <
   typename DerivedTF,
   typename DerivedTM>
 IGL_INLINE int igl::copyleft::tetgen::tetrahedralize(
-  const Eigen::PlainObjectBase<DerivedV>& V,
-  const Eigen::PlainObjectBase<DerivedF>& F,
-  const Eigen::PlainObjectBase<DerivedVM>& VM,
-  const Eigen::PlainObjectBase<DerivedFM>& FM,
+  const Eigen::MatrixBase<DerivedV>& V,
+  const Eigen::MatrixBase<DerivedF>& F,
+  const Eigen::MatrixBase<DerivedVM>& VM,
+  const Eigen::MatrixBase<DerivedFM>& FM,
   const std::string switches,
   Eigen::PlainObjectBase<DerivedTV>& TV,
   Eigen::PlainObjectBase<DerivedTT>& TT,
@@ -339,7 +339,7 @@ IGL_INLINE int igl::copyleft::tetgen::tetrahedralize(
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instantiation
-template int igl::copyleft::tetgen::tetrahedralize<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, std::basic_string<char, std::char_traits<char>, std::allocator<char> >, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
-template int igl::copyleft::tetgen::tetrahedralize<Eigen::Matrix<double, -1, -1, 0, -1, -1>,Eigen::Matrix<int, -1, -1, 0, -1, -1>,Eigen::Matrix<int, -1, 1, 0, -1, 1>,Eigen::Matrix<int, -1, 1, 0, -1, 1>,Eigen::Matrix<double, -1, -1, 0, -1, -1>,Eigen::Matrix<int, -1, -1, 0, -1, -1>,Eigen::Matrix<int, -1, -1, 0, -1, -1>,Eigen::Matrix<int, -1, 1, 0, -1, 1> >(const Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > &,const Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > &,const Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > &,const Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > &,const std::basic_string<char, std::char_traits<char>, std::allocator<char> >,Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > &,Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > &,Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > &, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > &);
-template int igl::copyleft::tetgen::tetrahedralize<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, std::basic_string<char, std::char_traits<char>, std::allocator<char> >, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
+template int igl::copyleft::tetgen::tetrahedralize<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, std::basic_string<char, std::char_traits<char>, std::allocator<char> >, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
+template int igl::copyleft::tetgen::tetrahedralize<Eigen::Matrix<double, -1, -1, 0, -1, -1>,Eigen::Matrix<int, -1, -1, 0, -1, -1>,Eigen::Matrix<int, -1, 1, 0, -1, 1>,Eigen::Matrix<int, -1, 1, 0, -1, 1>,Eigen::Matrix<double, -1, -1, 0, -1, -1>,Eigen::Matrix<int, -1, -1, 0, -1, -1>,Eigen::Matrix<int, -1, -1, 0, -1, -1>,Eigen::Matrix<int, -1, 1, 0, -1, 1> >(const Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > &,const Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > &,const Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > &,const Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > &,const std::basic_string<char, std::char_traits<char>, std::allocator<char> >,Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > &,Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > &,Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > &, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > &);
+template int igl::copyleft::tetgen::tetrahedralize<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, std::basic_string<char, std::char_traits<char>, std::allocator<char> >, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
 #endif

@@ -18,8 +18,8 @@
 //                                 const double epsilon)
 template <typename DerivedV, typename DerivedF>
 IGL_INLINE void igl::remove_duplicates(
-  const Eigen::PlainObjectBase<DerivedV> &V,
-  const Eigen::PlainObjectBase<DerivedF> &F,
+  const Eigen::MatrixBase<DerivedV> &V,
+  const Eigen::MatrixBase<DerivedF> &F,
   Eigen::PlainObjectBase<DerivedV> &NV,
   Eigen::PlainObjectBase<DerivedF> &NF,
   Eigen::Matrix<typename DerivedF::Scalar, Eigen::Dynamic, 1> &I,
@@ -83,6 +83,6 @@ IGL_INLINE void igl::remove_duplicates(
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instantiation
-template void igl::remove_duplicates<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::Matrix<Eigen::Matrix<int, -1, -1, 0, -1, -1>::Scalar, -1, 1, 0, -1, 1>&, double);
-template void igl::remove_duplicates<Eigen::Matrix<double, -1, 3, 1, -1, 3>, Eigen::Matrix<int, -1, 3, 1, -1, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 1, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 1, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 1, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 1, -1, 3> >&, Eigen::Matrix<Eigen::Matrix<int, -1, 3, 1, -1, 3>::Scalar, -1, 1, 0, -1, 1>&, double);
+template void igl::remove_duplicates<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::Matrix<Eigen::Matrix<int, -1, -1, 0, -1, -1>::Scalar, -1, 1, 0, -1, 1>&, double);
+template void igl::remove_duplicates<Eigen::Matrix<double, -1, 3, 1, -1, 3>, Eigen::Matrix<int, -1, 3, 1, -1, 3> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, 3, 1, -1, 3> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 3, 1, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 1, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 1, -1, 3> >&, Eigen::Matrix<Eigen::Matrix<int, -1, 3, 1, -1, 3>::Scalar, -1, 1, 0, -1, 1>&, double);
 #endif

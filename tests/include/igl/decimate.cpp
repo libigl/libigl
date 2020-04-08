@@ -22,7 +22,7 @@ TEST_CASE("decimate: hemisphere", "[igl]")
   Eigen::MatrixXi F,G;
   Eigen::VectorXi J,I;
   // Load example mesh: GetParam() will be name of mesh file
-  test_common::load_mesh("hemisphere.obj", V, F);
+  igl::read_triangle_mesh(test_common::data_path("hemisphere.obj"), V, F);
   // Perfect normals from positions
   Eigen::MatrixXd NV = V.rowwise().normalized();
   // Remove half of the faces
@@ -48,7 +48,7 @@ TEST_CASE("decimate: closed", "[igl]")
     Eigen::MatrixXi F,G;
     Eigen::VectorXi J;
     // Load example mesh: GetParam() will be name of mesh file
-    test_common::load_mesh(param, V, F);
+    igl::read_triangle_mesh(test_common::data_path(param), V, F);
     igl::decimate(V,F,0,U,G,J);
     REQUIRE (4 == U.rows());
     REQUIRE (4 == G.rows());

@@ -7,7 +7,7 @@ TEST_CASE("OuterHull: CubeWithFold", "[igl/copyleft/cgal]")
 {
     Eigen::MatrixXd V;
     Eigen::MatrixXi F;
-    test_common::load_mesh("cube_with_fold.ply", V, F);
+    igl::read_triangle_mesh(test_common::data_path("cube_with_fold.ply"), V, F);
 
     Eigen::MatrixXi G,J,flip;
     // Is this just checking that it doesn't crash?

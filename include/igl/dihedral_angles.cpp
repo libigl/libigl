@@ -17,8 +17,8 @@ template <
   typename Derivedtheta,
   typename Derivedcos_theta>
 IGL_INLINE void igl::dihedral_angles(
-  const Eigen::PlainObjectBase<DerivedV>& V,
-  const Eigen::PlainObjectBase<DerivedT>& T,
+  const Eigen::MatrixBase<DerivedV>& V,
+  const Eigen::MatrixBase<DerivedT>& T,
   Eigen::PlainObjectBase<Derivedtheta>& theta,
   Eigen::PlainObjectBase<Derivedcos_theta>& cos_theta)
 {
@@ -37,8 +37,8 @@ template <
   typename Derivedtheta,
   typename Derivedcos_theta>
 IGL_INLINE void igl::dihedral_angles_intrinsic(
-  const Eigen::PlainObjectBase<DerivedL>& L,
-  const Eigen::PlainObjectBase<DerivedA>& A,
+  const Eigen::MatrixBase<DerivedL>& L,
+  const Eigen::MatrixBase<DerivedA>& A,
   Eigen::PlainObjectBase<Derivedtheta>& theta,
   Eigen::PlainObjectBase<Derivedcos_theta>& cos_theta)
 {
@@ -93,6 +93,6 @@ IGL_INLINE void igl::dihedral_angles_intrinsic(
 }
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instantiation
-template void igl::dihedral_angles_intrinsic< Eigen::Matrix<double, -1, 6, 0, -1, 6>, Eigen::Matrix<double, -1, 4, 0, -1, 4>, Eigen::Matrix<double, -1, 6, 0, -1, 6>, Eigen::Matrix<double, -1, 6, 0, -1, 6> >(const Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 6, 0, -1, 6> >&, const Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 4, 0, -1, 4> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 6, 0, -1, 6> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 6, 0, -1, 6> >&);
-template void igl::dihedral_angles<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
+template void igl::dihedral_angles_intrinsic< Eigen::Matrix<double, -1, 6, 0, -1, 6>, Eigen::Matrix<double, -1, 4, 0, -1, 4>, Eigen::Matrix<double, -1, 6, 0, -1, 6>, Eigen::Matrix<double, -1, 6, 0, -1, 6> >(const Eigen::MatrixBase<Eigen::Matrix<double, -1, 6, 0, -1, 6> >&, const Eigen::MatrixBase<Eigen::Matrix<double, -1, 4, 0, -1, 4> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 6, 0, -1, 6> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 6, 0, -1, 6> >&);
+template void igl::dihedral_angles<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
 #endif

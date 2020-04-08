@@ -148,14 +148,14 @@ IGL_INLINE void igl::signed_distance(
     }
     typename DerivedV::Scalar s=1,sqrd=0;
     Eigen::Matrix<typename DerivedV::Scalar,1,Eigen::Dynamic>  c;
-    RowVector3S c3;
+    Eigen::Matrix<typename DerivedV::Scalar,1,3> c3;
     Eigen::Matrix<typename DerivedV::Scalar,1,2>  c2;
     int i=-1;
     // in all cases compute squared unsiged distances
     sqrd = dim==3?
       tree3.squared_distance(V,F,q3,low_sqr_d,up_sqr_d,i,c3):
       tree2.squared_distance(V,F,q2,low_sqr_d,up_sqr_d,i,c2);
-    if(sqrd >= up_sqr_d || sqrd <= low_sqr_d)
+    if(sqrd >= up_sqr_d || sqrd < low_sqr_d)
     {
       // Out of bounds gets a nan (nans on grids can be flood filled later using
       // igl::flood_fill)
@@ -193,15 +193,15 @@ IGL_INLINE void igl::signed_distance(
           dim==3 ?
             pseudonormal_test(V,F,FN,VN,EN,EMAP,q3,i,c3,s,n3):
             pseudonormal_test(V,E,EN,VN,q2,i,c2,s,n2);
-          Eigen::Matrix<typename DerivedV::Scalar,1,Eigen::Dynamic>  n;
-          (dim==3 ? n = n3 : n = n2);
-          N.row(p) = n;
+          Eigen::Matrix<typename DerivedN::Scalar,1,Eigen::Dynamic>  n;
+          (dim==3 ? n = n3.template cast<typename DerivedN::Scalar>() : n = n2.template cast<typename DerivedN::Scalar>());
+          N.row(p) = n.template cast<typename DerivedN::Scalar>();
           break;
         }
       }
       I(p) = i;
       S(p) = s*sqrt(sqrd);
-      C.row(p) = (dim==3 ? c=c3 : c=c2);
+      C.row(p) = (dim==3 ? c=c3 : c=c2).template cast<typename DerivedC::Scalar>();
     }
   }
   ,10000);

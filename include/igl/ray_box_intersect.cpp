@@ -6,7 +6,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "ray_box_intersect.h"
-#include <vector>
+#include <array>
 
 template <
   typename Derivedsource,
@@ -101,11 +101,11 @@ IGL_INLINE bool igl::ray_box_intersect(
   // This should be precomputed and provided as input
   typedef Matrix<Scalar,1,3>  RowVector3S;
   const RowVector3S inv_dir( 1./dir(0),1./dir(1),1./dir(2));
-  const std::vector<bool> sign = { inv_dir(0)<0, inv_dir(1)<0, inv_dir(2)<0};
+  const std::array<bool, 3> sign = { inv_dir(0)<0, inv_dir(1)<0, inv_dir(2)<0};
   // http://people.csail.mit.edu/amy/papers/box-jgt.pdf
   // "An Efficient and Robust Ray–Box Intersection Algorithm"
   Scalar tymin, tymax, tzmin, tzmax;
-  std::vector<RowVector3S> bounds = {box.min(),box.max()};
+  std::array<RowVector3S, 2> bounds = {box.min(),box.max()};
   tmin = ( bounds[sign[0]](0)   - origin(0)) * inv_dir(0);
   tmax = ( bounds[1-sign[0]](0) - origin(0)) * inv_dir(0);
   tymin = (bounds[sign[1]](1)   - origin(1)) * inv_dir(1);

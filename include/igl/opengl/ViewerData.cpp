@@ -11,29 +11,32 @@
 
 #include "../per_face_normals.h"
 #include "../material_colors.h"
-#include "../parula.h"
 #include "../per_vertex_normals.h"
+
+// Really? Just for GL_NEAREST?
+#include "gl.h"
 
 #include <iostream>
 
 
 IGL_INLINE igl::opengl::ViewerData::ViewerData()
 : dirty(MeshGL::DIRTY_ALL),
-  show_faces(true),
-  show_lines(true),
-  invert_normals(false),
-  show_overlay(true),
-  show_overlay_depth(true),
-  show_vertid(false),
-  show_faceid(false),
-  show_texture(false),
+  show_faces        (~unsigned(0)),
+  show_lines        (~unsigned(0)),
+  invert_normals    (false),
+  show_overlay      (~unsigned(0)),
+  show_overlay_depth(~unsigned(0)),
+  show_vertid       (false),
+  show_faceid       (false),
+  show_labels       (false),
+  show_texture      (false),
   point_size(30),
   line_width(0.5f),
   line_color(0,0,0,1),
   label_color(0,0,0.04,1),
   shininess(35.0f),
   id(-1),
-  is_visible(1)
+  is_visible        (~unsigned(0))
 {
   clear();
 };
@@ -136,11 +139,12 @@ IGL_INLINE void igl::opengl::ViewerData::set_colors(const Eigen::MatrixXd &C)
 {
   using namespace std;
   using namespace Eigen;
+  // This Gouraud coloring should be deprecated in favor of Phong coloring in
+  // set-data
   if(C.rows()>0 && C.cols() == 1)
   {
-    Eigen::MatrixXd C3;
-    igl::parula(C,true,C3);
-    return set_colors(C3);
+    assert(false && "deprecated: call set_data directly instead");
+    return set_data(C);
   }
   // Ambient color should be darker color
   const auto ambient = [](const MatrixXd & C)->MatrixXd
@@ -208,7 +212,7 @@ IGL_INLINE void igl::opengl::ViewerData::set_colors(const Eigen::MatrixXd &C)
   }
   else
     cerr << "ERROR (set_colors): Please provide a single color, or a color per face or per vertex."<<endl;
-  dirty |= MeshGL::DIRTY_DIFFUSE;
+  dirty |= MeshGL::DIRTY_DIFFUSE | MeshGL::DIRTY_SPECULAR | MeshGL::DIRTY_AMBIENT;
 
 }
 
@@ -258,6 +262,46 @@ IGL_INLINE void igl::opengl::ViewerData::set_texture(
   dirty |= MeshGL::DIRTY_TEXTURE;
 }
 
+IGL_INLINE void igl::opengl::ViewerData::set_data(
+  const Eigen::VectorXd & D,
+  double caxis_min,
+  double caxis_max,
+  igl::ColorMapType cmap,
+  int num_steps)
+{
+  if(!show_texture)
+  {
+    Eigen::MatrixXd CM;
+    igl::colormap(cmap,Eigen::VectorXd::LinSpaced(num_steps,0,1).eval(),0,1,CM);
+    set_colormap(CM);
+  }
+  set_uv(((D.array()-caxis_min)/(caxis_max-caxis_min)).replicate(1,2));
+}
+
+IGL_INLINE void igl::opengl::ViewerData::set_data(const Eigen::VectorXd & D, igl::ColorMapType cmap, int num_steps)
+{
+  const double caxis_min = D.minCoeff();
+  const double caxis_max = D.maxCoeff();
+  return set_data(D,caxis_min,caxis_max,cmap,num_steps);
+}
+
+IGL_INLINE void igl::opengl::ViewerData::set_colormap(const Eigen::MatrixXd & CM)
+{
+  assert(CM.cols() == 3 && "colormap CM should have 3 columns");
+  // Convert to R,G,B textures
+  const Eigen::Matrix<unsigned char,Eigen::Dynamic, Eigen::Dynamic> R =
+    (CM.col(0)*255.0).cast<unsigned char>();
+  const Eigen::Matrix<unsigned char,Eigen::Dynamic, Eigen::Dynamic> G =
+    (CM.col(1)*255.0).cast<unsigned char>();
+  const Eigen::Matrix<unsigned char,Eigen::Dynamic, Eigen::Dynamic> B =
+    (CM.col(2)*255.0).cast<unsigned char>();
+  set_colors(Eigen::RowVector3d(1,1,1));
+  set_texture(R,G,B);
+  show_texture = true;
+  meshgl.tex_filter = GL_NEAREST;
+  meshgl.tex_wrap = GL_CLAMP_TO_EDGE;
+}
+
 IGL_INLINE void igl::opengl::ViewerData::set_points(
   const Eigen::MatrixXd& P,
   const Eigen::MatrixXd& C)
@@ -286,6 +330,11 @@ IGL_INLINE void igl::opengl::ViewerData::add_points(const Eigen::MatrixXd& P,  c
     points.row(lastid+i) << P_temp.row(i), i<C.rows() ? C.row(i) : C.row(C.rows()-1);
 
   dirty |= MeshGL::DIRTY_OVERLAY_POINTS;
+}
+
+IGL_INLINE void igl::opengl::ViewerData::clear_points()
+{
+  points.resize(0, 6);
 }
 
 IGL_INLINE void igl::opengl::ViewerData::set_edges(
@@ -337,6 +386,11 @@ IGL_INLINE void igl::opengl::ViewerData::add_edges(const Eigen::MatrixXd& P1, co
   dirty |= MeshGL::DIRTY_OVERLAY_LINES;
 }
 
+IGL_INLINE void igl::opengl::ViewerData::clear_edges()
+{
+  lines.resize(0, 9);
+}
+
 IGL_INLINE void igl::opengl::ViewerData::add_label(const Eigen::VectorXd& P,  const std::string& str)
 {
   Eigen::RowVectorXd P_temp;
@@ -354,6 +408,14 @@ IGL_INLINE void igl::opengl::ViewerData::add_label(const Eigen::VectorXd& P,  co
   labels_positions.conservativeResize(lastid+1, 3);
   labels_positions.row(lastid) = P_temp;
   labels_strings.push_back(str);
+}
+
+IGL_INLINE void igl::opengl::ViewerData::set_labels(const Eigen::MatrixXd& P, const std::vector<std::string>& str)
+{
+  assert(P.rows() == str.size() && "position # and label # do not match!");
+  assert(P.cols() == 3 && "dimension of label positions incorrect!");
+  labels_positions = P;
+  labels_strings = str;
 }
 
 IGL_INLINE void igl::opengl::ViewerData::clear_labels()
@@ -387,6 +449,7 @@ IGL_INLINE void igl::opengl::ViewerData::clear()
   labels_strings.clear();
 
   face_based = false;
+  show_texture = false;
 }
 
 IGL_INLINE void igl::opengl::ViewerData::compute_normals()
