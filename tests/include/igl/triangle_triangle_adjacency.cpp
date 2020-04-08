@@ -3,8 +3,7 @@
 #include <igl/triangle_triangle_adjacency.h>
 #include <Eigen/Geometry>
 
-
-TEST_CASE("triangle_triangle_adjacency: dot", "[igl]")
+TEST_CASE("triangle_triangle_adjacency: dot", "[igl]" "[slow]")
 {
   const auto test_case = [](const std::string &param)
   {

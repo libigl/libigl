@@ -5,7 +5,7 @@
 #include <igl/readTGF.h>
 #include <igl/bbw.h>
 
-TEST_CASE("bbw: decimated_knight", "[igl]")
+TEST_CASE("bbw: decimated_knight", "[igl]" "[slow]")
 {
   Eigen::MatrixXd V,C;
   Eigen::MatrixXi T,F,E;
