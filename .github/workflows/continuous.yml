@@ -1,4 +1,4 @@
-name: Build
+name: Continuous
 
 on:
   push: {}
@@ -14,7 +14,7 @@ jobs:
   ####################
 
   Unix:
-    name: ${{ matrix.name }} (${{ matrix.config }}, ${{ matrix.static }})
+    name: ${{ matrix.name }} (${{ matrix.config }}, Static=${{ matrix.static }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -87,6 +87,7 @@ jobs:
   ####################
 
   Windows:
+    name: Windows (${{ matrix.config }}, Static=${{ matrix.static }})
     runs-on: windows-2019
     env:
       CC: cl.exe
