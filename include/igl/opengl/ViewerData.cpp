@@ -11,20 +11,21 @@
 
 #include "../per_face_normals.h"
 #include "../material_colors.h"
-#include "../parula.h"
 #include "../per_vertex_normals.h"
+
+// Really? Just for GL_NEAREST?
+#include "gl.h"
 
 #include <iostream>
 
 
 IGL_INLINE igl::opengl::ViewerData::ViewerData()
 : dirty(MeshGL::DIRTY_ALL),
-  // UINT_MAX sets all bits to 1 so these defaults get applied to all view cores
-  show_faces        (UINT_MAX),
-  show_lines        (UINT_MAX),
+  show_faces        (~unsigned(0)),
+  show_lines        (~unsigned(0)),
   invert_normals    (false),
-  show_overlay      (UINT_MAX),
-  show_overlay_depth(UINT_MAX),
+  show_overlay      (~unsigned(0)),
+  show_overlay_depth(~unsigned(0)),
   show_vertid       (false),
   show_faceid       (false),
   show_labels       (false),
@@ -35,7 +36,7 @@ IGL_INLINE igl::opengl::ViewerData::ViewerData()
   label_color(0,0,0.04,1),
   shininess(35.0f),
   id(-1),
-  is_visible        (UINT_MAX)
+  is_visible        (~unsigned(0))
 {
   clear();
 };
@@ -138,11 +139,12 @@ IGL_INLINE void igl::opengl::ViewerData::set_colors(const Eigen::MatrixXd &C)
 {
   using namespace std;
   using namespace Eigen;
+  // This Gouraud coloring should be deprecated in favor of Phong coloring in
+  // set-data
   if(C.rows()>0 && C.cols() == 1)
   {
-    Eigen::MatrixXd C3;
-    igl::parula(C,true,C3);
-    return set_colors(C3);
+    assert(false && "deprecated: call set_data directly instead");
+    return set_data(C);
   }
   // Ambient color should be darker color
   const auto ambient = [](const MatrixXd & C)->MatrixXd
@@ -258,6 +260,46 @@ IGL_INLINE void igl::opengl::ViewerData::set_texture(
   texture_B = B;
   texture_A = A;
   dirty |= MeshGL::DIRTY_TEXTURE;
+}
+
+IGL_INLINE void igl::opengl::ViewerData::set_data(
+  const Eigen::VectorXd & D,
+  double caxis_min,
+  double caxis_max,
+  igl::ColorMapType cmap,
+  int num_steps)
+{
+  if(!show_texture)
+  {
+    Eigen::MatrixXd CM;
+    igl::colormap(cmap,Eigen::VectorXd::LinSpaced(num_steps,0,1).eval(),0,1,CM);
+    set_colormap(CM);
+  }
+  set_uv(((D.array()-caxis_min)/(caxis_max-caxis_min)).replicate(1,2));
+}
+
+IGL_INLINE void igl::opengl::ViewerData::set_data(const Eigen::VectorXd & D, igl::ColorMapType cmap, int num_steps)
+{
+  const double caxis_min = D.minCoeff();
+  const double caxis_max = D.maxCoeff();
+  return set_data(D,caxis_min,caxis_max,cmap,num_steps);
+}
+
+IGL_INLINE void igl::opengl::ViewerData::set_colormap(const Eigen::MatrixXd & CM)
+{
+  assert(CM.cols() == 3 && "colormap CM should have 3 columns");
+  // Convert to R,G,B textures
+  const Eigen::Matrix<unsigned char,Eigen::Dynamic, Eigen::Dynamic> R =
+    (CM.col(0)*255.0).cast<unsigned char>();
+  const Eigen::Matrix<unsigned char,Eigen::Dynamic, Eigen::Dynamic> G =
+    (CM.col(1)*255.0).cast<unsigned char>();
+  const Eigen::Matrix<unsigned char,Eigen::Dynamic, Eigen::Dynamic> B =
+    (CM.col(2)*255.0).cast<unsigned char>();
+  set_colors(Eigen::RowVector3d(1,1,1));
+  set_texture(R,G,B);
+  show_texture = true;
+  meshgl.tex_filter = GL_NEAREST;
+  meshgl.tex_wrap = GL_CLAMP_TO_EDGE;
 }
 
 IGL_INLINE void igl::opengl::ViewerData::set_points(
@@ -407,6 +449,7 @@ IGL_INLINE void igl::opengl::ViewerData::clear()
   labels_strings.clear();
 
   face_based = false;
+  show_texture = false;
 }
 
 IGL_INLINE void igl::opengl::ViewerData::compute_normals()

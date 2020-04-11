@@ -61,13 +61,13 @@ TEST_CASE("cotmatrix_intrinsic: periodic", "[igl]")
   test_common::assert_near(L_d,L_gt,igl::EPS<double>());
 }
 
-TEST_CASE("cotmatrix_intrinsic: manifold_meshes", "[igl]")
+TEST_CASE("cotmatrix_intrinsic: manifold_meshes", "[igl]" "[slow]")
 {
   auto test_case = [](const std::string &param)
   {
     Eigen::MatrixXd V;
     Eigen::MatrixXi F;
-    test_common::load_mesh(param, V, F);
+    igl::read_triangle_mesh(test_common::data_path(param), V, F);
     Eigen::MatrixXd l;
     igl::edge_lengths(V,F,l);
     Eigen::SparseMatrix<double> L,Li;

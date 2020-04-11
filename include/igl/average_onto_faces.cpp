@@ -8,7 +8,7 @@
 #include "average_onto_faces.h"
 
 template <typename DerivedF, typename DerivedS, typename DerivedSF>
-IGL_INLINE void average_onto_faces(
+IGL_INLINE void igl::average_onto_faces(
   const Eigen::MatrixBase<DerivedF> & F,
   const Eigen::MatrixBase<DerivedS> & S,
   Eigen::PlainObjectBase<DerivedSF> & SF)

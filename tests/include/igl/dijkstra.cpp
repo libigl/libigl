@@ -8,7 +8,7 @@ TEST_CASE("dijkstra: cube", "[igl]")
   Eigen::MatrixXd V;
   Eigen::MatrixXi F;
   //This is a cube of dimensions 1.0x1.0x1.0
-  test_common::load_mesh("cube.off", V, F);
+  igl::read_triangle_mesh(test_common::data_path("cube.off"), V, F);
 
   std::vector<std::vector<int>> VV;
   igl::adjacency_list(F, VV);
