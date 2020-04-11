@@ -39,7 +39,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v1
         with:
-          fetch-depth: 1
+          fetch-depth: 10
 
       - name: Dependencies (Linux)
         if: runner.os == 'Linux'
@@ -106,7 +106,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v1
         with:
-          fetch-depth: 1
+          fetch-depth: 10
       - uses: seanmiddleditch/gha-setup-ninja@master
 
         # https://github.com/actions/cache/issues/101
