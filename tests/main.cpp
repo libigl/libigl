@@ -4,7 +4,7 @@
 
 #define CATCH_CONFIG_MAIN
 #include <catch2/catch.hpp>
-
+ 
 #ifndef NDEBUG
 #ifdef __linux__
 #include <fenv.h>
