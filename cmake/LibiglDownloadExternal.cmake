@@ -1,6 +1,6 @@
 ################################################################################
 include(DownloadProject)
-
+ 
 # With CMake 3.8 and above, we can hide warnings about git being in a
 # detached head by passing an extra GIT_CONFIG option.
 set(LIBIGL_EXTRA_OPTIONS TLS_VERIFY OFF)
