@@ -5,8 +5,8 @@ option(HUNTER_ENABLED "Enable Hunter package manager support" OFF)
 
 include("cmake/HunterGate.cmake")
 HunterGate(
-    URL "https://github.com/ruslo/hunter/archive/v0.23.171.tar.gz"
-    SHA1 "5d68bcca78eee347239ca5f4d34f4b6c12683154"
+	URL "https://github.com/ruslo/hunter/archive/v0.23.171.tar.gz"
+	SHA1 "5d68bcca78eee347239ca5f4d34f4b6c12683154"
 )
 
 project(libigl)
@@ -45,7 +45,7 @@ option(LIBIGL_WITH_PYTHON            "Use Python"                   OFF)
 ### End
 
 if(${LIBIGL_WITH_PYTHON})
-	MESSAGE(FATAL_ERROR "Python binding are in the process of being redone. Please use the master branch or refer to https://github.com/geometryprocessing/libigl-python-bindings for the developement version or https://anaconda.org/conda-forge/igl for the stable version.")
+	message(FATAL_ERROR "Python binding are in the process of being redone. Please use the master branch or refer to https://github.com/geometryprocessing/libigl-python-bindings for the developement version or https://anaconda.org/conda-forge/igl for the stable version.")
 endif()
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
@@ -66,4 +66,9 @@ if(LIBIGL_BUILD_TESTS)
 	include(CTest)
 	enable_testing()
 	add_subdirectory(tests)
+endif()
+
+if(LIBIGL_TOPLEVEL_PROJECT)
+	# Set folders for Visual Studio/Xcode
+	igl_set_folders()
 endif()

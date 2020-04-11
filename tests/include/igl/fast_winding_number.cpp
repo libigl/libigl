@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2019 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include <test_common.h>
 #include <igl/read_triangle_mesh.h>
@@ -52,7 +52,7 @@ TEST_CASE("fast_winding_number: one_point_cloud", "[igl]")
   test_common::assert_near(WiP,WiP_cached,1e-15);
 }
 
-TEST_CASE("fast_winding_number: meshes", "[igl]")
+TEST_CASE("fast_winding_number: meshes", "[igl]" "[slow]")
 {
   const auto test_case = [](const std::string &param)
   {
@@ -62,10 +62,10 @@ TEST_CASE("fast_winding_number: meshes", "[igl]")
     igl::read_triangle_mesh(test_common::data_path(param),V,F);
     // vertex centroid will be our query
     Eigen::MatrixXd Q = V.array().colwise().mean();
-  
+
     Eigen::VectorXd Wexact(1,1);
     Wexact(0,0) = igl::winding_number(V,F,Eigen::RowVector3d(Q));
-  
+
     // SOUP
     {
       INFO("soup");
@@ -75,7 +75,7 @@ TEST_CASE("fast_winding_number: meshes", "[igl]")
       igl::fast_winding_number(fwn_bvh,2,Q,Wfwn_soup);
       test_common::assert_near(Wfwn_soup,Wexact,1e-2);
     }
-    
+
     // CLOUD
     // triangle barycenters, normals and areas will be our point cloud
     {

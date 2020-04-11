@@ -20,6 +20,8 @@ namespace igl
   // Outputs:
   //   GV  nx*ny by 2 list of mesh vertex positions.
   //   GF  2*(nx-1)*(ny-1) by 3  list of triangle indices
+  //
+  //   See also: grid, quad_grid
   template <
     typename XType,
     typename YType,
@@ -29,6 +31,14 @@ namespace igl
     const XType & nx,
     const YType & ny,
     Eigen::PlainObjectBase<DerivedGV> & GV,
+    Eigen::PlainObjectBase<DerivedGF> & GF);
+  template <
+    typename XType,
+    typename YType,
+    typename DerivedGF>
+  IGL_INLINE void triangulated_grid(
+    const XType & nx,
+    const YType & ny,
     Eigen::PlainObjectBase<DerivedGF> & GF);
 }
 #ifndef IGL_STATIC_LIBRARY

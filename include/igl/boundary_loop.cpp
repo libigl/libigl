@@ -29,7 +29,7 @@ IGL_INLINE void igl::boundary_loop(
   triangle_triangle_adjacency(F,TT,TTi);
   vertex_triangle_adjacency(Vdummy,F,VF,VFi);
 
-  vector<bool> unvisited = is_border_vertex(Vdummy,F);
+  vector<bool> unvisited = is_border_vertex(F);
   set<int> unseen;
   for (size_t i = 0; i < unvisited.size(); ++i)
   {

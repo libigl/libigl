@@ -55,7 +55,7 @@ namespace {
 TEST_CASE("MeshBoolean: TwoCubes", "[igl/copyleft/boolean]") {
     Eigen::MatrixXd V1;
     Eigen::MatrixXi F1;
-    test_common::load_mesh("two-boxes-bad-self-union.ply", V1, F1);
+    igl::read_triangle_mesh(test_common::data_path("two-boxes-bad-self-union.ply"), V1, F1);
 
     Eigen::MatrixXd V2(0, 3);
     Eigen::MatrixXi F2(0, 3);
@@ -76,8 +76,8 @@ TEST_CASE("MeshBoolean: MinusTest", "[igl/copyleft/boolean]") {
     // Many thanks to Eric Yao for submitting this test case.
     Eigen::MatrixXd V1, V2, Vo;
     Eigen::MatrixXi F1, F2, Fo;
-    test_common::load_mesh("boolean_minus_test_cube.obj", V1, F1);
-    test_common::load_mesh("boolean_minus_test_green.obj", V2, F2);
+    igl::read_triangle_mesh(test_common::data_path("boolean_minus_test_cube.obj"), V1, F1);
+    igl::read_triangle_mesh(test_common::data_path("boolean_minus_test_green.obj"), V2, F2);
 
     igl::copyleft::cgal::mesh_boolean(V1, F1, V2, F2,
             igl::MESH_BOOLEAN_TYPE_MINUS,
@@ -91,7 +91,7 @@ TEST_CASE("MeshBoolean: MinusTest", "[igl/copyleft/boolean]") {
 TEST_CASE("MeshBoolean: IntersectWithSelf", "[igl/copyleft/boolean]") {
     Eigen::MatrixXd V1, Vo;
     Eigen::MatrixXi F1, Fo;
-    test_common::load_mesh("cube.obj", V1, F1);
+    igl::read_triangle_mesh(test_common::data_path("cube.obj"), V1, F1);
 
     igl::copyleft::cgal::mesh_boolean(V1, F1, V1, F1,
             igl::MESH_BOOLEAN_TYPE_INTERSECT,

@@ -54,7 +54,7 @@ void assert_order(
         Eigen::MatrixXd N;
         //igl::per_face_normals_stable(V, F, N);
         //igl::per_face_normals(V, F, N);
-        test_common::load_matrix(normal, N);
+        igl::readDMAT(test_common::data_path(normal), N);
         igl::copyleft::cgal::order_facets_around_edges(
           V, F, N, uE, uE2E, uE2oE, uE2C);
     } else {
@@ -192,9 +192,9 @@ TEST_CASE("copyleft_cgal_order_facets_around_edges: NormalSensitivity", "[igl/co
     // results in very different ordering of facets.
 
     Eigen::MatrixXd V;
-    test_common::load_matrix("duplicated_faces_V.dmat", V);
+    igl::readDMAT(test_common::data_path("duplicated_faces_V.dmat"), V);
     Eigen::MatrixXi F;
-    test_common::load_matrix("duplicated_faces_F.dmat", F);
+    igl::readDMAT(test_common::data_path("duplicated_faces_F.dmat"), F);
 
     assert_order(V, F, 223, 224, {2, 0, 3, 1}, "duplicated_faces_N1.dmat");
     assert_order(V, F, 223, 224, {0, 3, 2, 1}, "duplicated_faces_N2.dmat");

@@ -23,6 +23,18 @@ IGL_INLINE void igl::triangulated_grid(
   using namespace Eigen;
   Eigen::Matrix<XType,2,1> res(nx,ny);
   igl::grid(res,GV);
+  return igl::triangulated_grid(nx,ny,GF);
+};
+
+template <
+  typename XType,
+  typename YType,
+  typename DerivedGF>
+IGL_INLINE void igl::triangulated_grid(
+  const XType & nx,
+  const YType & ny,
+  Eigen::PlainObjectBase<DerivedGF> & GF)
+{
   GF.resize((nx-1)*(ny-1)*2,3);
   for(int y = 0;y<ny-1;y++)
   {
