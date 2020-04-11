@@ -187,7 +187,7 @@ IGL_INLINE DerivedX igl::slice(
 }
 
 #ifdef IGL_STATIC_LIBRARY
-
+// Explicit template instantiation
 template Eigen::Matrix<double, -1, -1, 0, -1, -1> igl::slice<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>>(Eigen::DenseBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>> const &, Eigen::DenseBase<Eigen::Matrix<int, -1, 1, 0, -1, 1>> const &, int);
 template Eigen::Matrix<int, -1, -1, 0, -1, -1> igl::slice<Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>>(Eigen::DenseBase<Eigen::Matrix<int, -1, -1, 0, -1, -1>> const &, Eigen::DenseBase<Eigen::Matrix<int, -1, -1, 0, -1, -1>> const &);
 template void igl::slice<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>>(Eigen::DenseBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>> const &, Eigen::DenseBase<Eigen::Matrix<int, -1, -1, 0, -1, -1>> const &, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>> &);
