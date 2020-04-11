@@ -50,8 +50,8 @@ TEST_CASE("signed_distance: single_triangle", "[igl]")
   for(const igl::SignedDistanceType type :
       {
       igl::SIGNED_DISTANCE_TYPE_PSEUDONORMAL  ,
-      //igl::SIGNED_DISTANCE_TYPE_WINDING_NUMBER,
-      //igl::SIGNED_DISTANCE_TYPE_DEFAULT       ,
+      igl::SIGNED_DISTANCE_TYPE_WINDING_NUMBER,
+      igl::SIGNED_DISTANCE_TYPE_DEFAULT       ,
       igl::SIGNED_DISTANCE_TYPE_UNSIGNED      
       })
   {
