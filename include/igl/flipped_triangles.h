@@ -22,13 +22,13 @@ namespace igl
   // Wrapper with return type
   template <typename DerivedV, typename DerivedF, typename DerivedX>
   IGL_INLINE void flipped_triangles(
-    const Eigen::PlainObjectBase<DerivedV> & V,
-    const Eigen::PlainObjectBase<DerivedF> & F,
+    const Eigen::MatrixBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedF> & F,
     Eigen::PlainObjectBase<DerivedX> & X);
   template <typename Scalar, typename Index>
   IGL_INLINE Eigen::VectorXi flipped_triangles(
-    const Eigen::PlainObjectBase<Scalar> & V,
-    const Eigen::PlainObjectBase<Index> & F);
+    const Eigen::MatrixBase<Scalar> & V,
+    const Eigen::MatrixBase<Index> & F);
 
 }
 

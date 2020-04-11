@@ -59,6 +59,9 @@ endif()
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR})
 include(LibiglDownloadExternal)
 
+# Provides igl_set_folders() to set folders for Visual Studio/Xcode
+include(LibiglFolders)
+
 ################################################################################
 ### IGL Common
 ################################################################################
@@ -85,7 +88,7 @@ if(MSVC)
   target_compile_definitions(igl_common INTERFACE -DNOMINMAX)
 endif()
 
-### Set compiler flags for building the tests on Windows with Visual Studio
+# Controls whether to use the static MSVC runtime or not
 include(LibiglWindows)
 
 if(BUILD_SHARED_LIBS)
@@ -149,10 +152,14 @@ function(compile_igl_module module_dir)
   endif()
   if(LIBIGL_USE_STATIC_LIBRARY)
     file(GLOB SOURCES_IGL_${module_name}
-      "${LIBIGL_SOURCE_DIR}/igl/${module_dir}/*.cpp")
+      "${LIBIGL_SOURCE_DIR}/igl/${module_dir}/*.cpp"
+      "${LIBIGL_SOURCE_DIR}/igl/${module_dir}/*.h*"
+    )
     if(NOT LIBIGL_WITHOUT_COPYLEFT)
       file(GLOB COPYLEFT_SOURCES_IGL_${module_name}
-        "${LIBIGL_SOURCE_DIR}/igl/copyleft/${module_dir}/*.cpp")
+        "${LIBIGL_SOURCE_DIR}/igl/copyleft/${module_dir}/*.cpp"
+        "${LIBIGL_SOURCE_DIR}/igl/copyleft/${module_dir}/*.h*"
+      )
       list(APPEND SOURCES_IGL_${module_name} ${COPYLEFT_SOURCES_IGL_${module_name}})
     endif()
     add_library(${module_libname} STATIC ${SOURCES_IGL_${module_name}} ${ARGN})
@@ -171,8 +178,6 @@ function(compile_igl_module module_dir)
         # This one is when using bools in adjacency matrices
         /wd4804 #'+=': unsafe use of type 'bool' in operation
       )
-    else()
-      #target_compile_options(${module_libname} PRIVATE -w) # disable all warnings (not ideal but...)
     endif()
   else()
     add_library(${module_libname} INTERFACE)
@@ -197,7 +202,10 @@ endfunction()
 if(LIBIGL_USE_STATIC_LIBRARY)
   file(GLOB SOURCES_IGL
     "${LIBIGL_SOURCE_DIR}/igl/*.cpp"
-    "${LIBIGL_SOURCE_DIR}/igl/copyleft/*.cpp")
+    "${LIBIGL_SOURCE_DIR}/igl/*.h*"
+    "${LIBIGL_SOURCE_DIR}/igl/copyleft/*.cpp"
+    "${LIBIGL_SOURCE_DIR}/igl/copyleft/*.h*"
+  )
 endif()
 compile_igl_module("core" ${SOURCES_IGL})
 
@@ -216,6 +224,7 @@ if(LIBIGL_WITH_CGAL)
     set(CGAL_DIR "${LIBIGL_EXTERNAL}/cgal")
     igl_download_cgal()
     igl_download_cgal_deps()
+    message("BOOST_ROOT: ${BOOST_ROOT}")
     if(EXISTS ${LIBIGL_EXTERNAL}/boost)
       set(BOOST_ROOT "${LIBIGL_EXTERNAL}/boost")
     endif()
@@ -229,7 +238,7 @@ if(LIBIGL_WITH_CGAL)
     compile_igl_module("cgal")
     target_link_libraries(igl_cgal ${IGL_SCOPE} CGAL::CGAL CGAL::CGAL_Core)
   else()
-    set(LIBIGL_WITH_CGAL OFF CACHE BOOL "" FORCE)
+    message(FATAL_ERROR "Could not define CGAL::CGAL and CGAL::CGAL_Core.")
   endif()
 endif()
 
@@ -289,20 +298,19 @@ endif()
 if(LIBIGL_WITH_EMBREE)
   set(EMBREE_DIR "${LIBIGL_EXTERNAL}/embree")
 
-  set(EMBREE_TESTING_INTENSITY 0 CACHE STRING "" FORCE)
-  set(EMBREE_ISPC_SUPPORT OFF CACHE BOOL " " FORCE)
-  set(EMBREE_TASKING_SYSTEM "INTERNAL" CACHE BOOL " " FORCE)
-  set(EMBREE_TUTORIALS OFF CACHE BOOL " " FORCE)
-  set(EMBREE_MAX_ISA "SSE2" CACHE STRING " " FORCE)
-  set(EMBREE_STATIC_LIB ON CACHE BOOL " " FORCE)
-  if(MSVC)
-    set(EMBREE_STATIC_RUNTIME ON CACHE BOOL " " FORCE)
-  endif()
-
   if(NOT TARGET embree)
-    # TODO: Should probably save/restore the CMAKE_CXX_FLAGS_*, since embree seems to be
-    # overriding them on Windows. But well... it works for now.
     igl_download_embree()
+
+    set(EMBREE_TESTING_INTENSITY 0 CACHE STRING "")
+    set(EMBREE_ISPC_SUPPORT OFF CACHE BOOL " ")
+    set(EMBREE_TASKING_SYSTEM "INTERNAL" CACHE BOOL " ")
+    set(EMBREE_TUTORIALS OFF CACHE BOOL " ")
+    set(EMBREE_MAX_ISA "SSE2" CACHE STRING " ")
+    set(EMBREE_STATIC_LIB ON CACHE BOOL " ")
+    if(MSVC)
+      set(EMBREE_STATIC_RUNTIME ${IGL_STATIC_RUNTIME} CACHE BOOL "Use the static version of the C/C++ runtime library.")
+    endif()
+
     add_subdirectory("${EMBREE_DIR}" "embree" EXCLUDE_FROM_ALL)
   endif()
 
@@ -364,11 +372,16 @@ if(LIBIGL_WITH_OPENGL_GLFW)
     # GLFW module
     compile_igl_module("opengl/glfw")
     if(NOT TARGET glfw)
-      set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL " " FORCE)
-      set(GLFW_BUILD_TESTS OFF CACHE BOOL " " FORCE)
-      set(GLFW_BUILD_DOCS OFF CACHE BOOL " " FORCE)
-      set(GLFW_INSTALL OFF CACHE BOOL " " FORCE)
       igl_download_glfw()
+      option(GLFW_BUILD_EXAMPLES "Build the GLFW example programs" OFF)
+      option(GLFW_BUILD_TESTS "Build the GLFW test programs" OFF)
+      option(GLFW_BUILD_DOCS "Build the GLFW documentation" OFF)
+      option(GLFW_INSTALL "Generate installation target" OFF)
+      if(IGL_STATIC_RUNTIME)
+        set(USE_MSVC_RUNTIME_LIBRARY_DLL OFF CACHE BOOL "Use MSVC runtime library DLL" FORCE)
+      else()
+        set(USE_MSVC_RUNTIME_LIBRARY_DLL ON CACHE BOOL "Use MSVC runtime library DLL" FORCE)
+      endif()
       add_subdirectory(${LIBIGL_EXTERNAL}/glfw glfw)
     endif()
     target_link_libraries(igl_opengl_glfw ${IGL_SCOPE} igl_opengl glfw)
@@ -478,6 +491,7 @@ function(install_dir_files dir_name)
 
   file(GLOB public_headers
     ${CMAKE_CURRENT_SOURCE_DIR}/include/igl${subpath}/*.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/igl${subpath}/*.hpp
   )
 
   set(files_to_install ${public_headers})

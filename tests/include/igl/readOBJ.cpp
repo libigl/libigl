@@ -1,3 +1,4 @@
+#include <igl/readOBJ.h>
 #include <test_common.h>
 #include <iostream>
 #include <string>
@@ -9,7 +10,7 @@ TEST_CASE("readOBJ: simple", "[igl]")
     Eigen::MatrixXi F;
     // wait... so this is actually testing test_common::load_mesh not readOBJ
     // directly...
-    test_common::load_mesh("cube.obj", V, F);
+    igl::read_triangle_mesh(test_common::data_path("cube.obj"), V, F);
     REQUIRE (V.rows() == 8);
     REQUIRE (F.rows() == 12);
 }
@@ -23,7 +24,8 @@ TEST_CASE("readOBJ: Obj with material", "[igl]")
     std::vector<std::vector<int > > FTC;
     std::vector<std::vector<int > >  FN;
     std::vector<std::tuple<std::string, int, int>> FM;
-    test_common::load_obj_with_material<double, int>("cubewithmaterial.obj", V, TC, N, F, FTC, FN, FM);
+    igl::readOBJ(test_common::data_path("cubewithmaterial.obj"), V, TC, N, F, FTC, FN, FM);
+
     REQUIRE (V.size() == 8);
     REQUIRE (F.size() == 6);
     for ( const auto& i : FM ) {

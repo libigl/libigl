@@ -3,8 +3,8 @@
 TEST_CASE("readDMAT: Comp", "[igl]")
 {
     Eigen::MatrixXd N1, N2;
-    test_common::load_matrix("duplicated_faces_N1.dmat", N1);
-    test_common::load_matrix("duplicated_faces_N2.dmat", N2);
+    igl::readDMAT(test_common::data_path("duplicated_faces_N1.dmat"), N1);
+    igl::readDMAT(test_common::data_path("duplicated_faces_N2.dmat"), N2);
 
     REQUIRE (N2.rows() == N1.rows());
     REQUIRE (N2.cols() == N1.cols());
