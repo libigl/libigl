@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.1)
- 
+
 # https://github.com/libigl/libigl/issues/751
 # http://lists.llvm.org/pipermail/llvm-commits/Week-of-Mon-20160425/351643.html
 if(APPLE)
@@ -278,7 +278,7 @@ if(LIBIGL_WITH_EMBREE)
   set(EMBREE_MAX_ISA "SSE2" CACHE STRING " " FORCE)
   set(EMBREE_STATIC_LIB ON CACHE BOOL " " FORCE)
   if(MSVC)
-    if(${MSVC_RUNTIME} STREQUAL "static")
+    if(IGL_STATIC_RUNTIME)
       set(EMBREE_STATIC_RUNTIME ON CACHE BOOL " " FORCE)
     else()
       set(EMBREE_STATIC_RUNTIME OFF CACHE BOOL " " FORCE)
