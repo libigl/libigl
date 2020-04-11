@@ -1,4 +1,4 @@
-#include "is_stl.h"
+#include "is_stl.h" 
 #include <string>
 IGL_INLINE bool igl::is_stl(FILE * stl_file, bool & is_ascii)
 {
