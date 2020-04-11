@@ -16,8 +16,8 @@ template <
   typename DerivedEle,
   typename Scalar>
 IGL_INLINE void igl::normal_derivative(
-  const Eigen::PlainObjectBase<DerivedV> & V,
-  const Eigen::PlainObjectBase<DerivedEle> & Ele,
+  const Eigen::MatrixBase<DerivedV> & V,
+  const Eigen::MatrixBase<DerivedEle> & Ele,
   Eigen::SparseMatrix<Scalar>& DD)
 {
   using namespace Eigen;
@@ -114,5 +114,5 @@ IGL_INLINE void igl::normal_derivative(
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instantiation
-template void igl::normal_derivative<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, double>(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::SparseMatrix<double, 0, int>&);
+template void igl::normal_derivative<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, double>(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::SparseMatrix<double, 0, int>&);
 #endif

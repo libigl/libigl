@@ -1,8 +1,7 @@
 #include <test_common.h>
 #include <igl/is_edge_manifold.h>
 
-
-TEST_CASE("is_edge_manifold: positive", "[igl]")
+TEST_CASE("is_edge_manifold: positive", "[igl]" "[slow]")
 {
   const auto test_case = [](const std::string &param)
   {
