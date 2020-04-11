@@ -1,4 +1,4 @@
-// This file is part of libigl, a simple c++ geometry processing library.
+// This file is part of libigl, a simple c++ geometry processing library. 
 // 
 // Copyright (C) 2015 Alec Jacobson <alecjacobson@gmail.com>
 // 
