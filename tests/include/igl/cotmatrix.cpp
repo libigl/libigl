@@ -2,7 +2,7 @@
 #include <igl/PI.h>
 #include <igl/cotmatrix.h>
 
-TEST_CASE("cotmatrix: constant_in_null_space", "[igl]")
+TEST_CASE("cotmatrix: constant_in_null_space", "[igl]" "[slow]")
 {
   const auto test_case = [](const std::string &param)
   {

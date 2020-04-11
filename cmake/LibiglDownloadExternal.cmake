@@ -156,7 +156,7 @@ endfunction()
 function(igl_download_catch2)
 	igl_download_project(catch2
 		GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-		GIT_TAG        03d122a35c3f5c398c43095a87bc82ed44642516
+		GIT_TAG        v2.11.0
 	)
 endfunction()
 
@@ -175,7 +175,7 @@ function(igl_download_test_data)
 	igl_download_project_aux(test_data
 		"${LIBIGL_EXTERNAL}/../tests/data"
 		GIT_REPOSITORY https://github.com/libigl/libigl-tests-data
-		GIT_TAG        5994ecdab65aebc6c218c4c6f35e7822acf6fe99
+		GIT_TAG        b5dddf45e329af685cd107e38770a28cfc18eb15
 	)
 endfunction()
 
