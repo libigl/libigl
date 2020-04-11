@@ -75,7 +75,7 @@ IGL_INLINE void igl::slice_into(
   {
     for(int j = 0;j<xn;j++)
     {
-      Y(R(i),C(j)) = X(i,j);
+      Y(int(R(i)),int(C(j))) = X(i,j);
     }
   }
 }
