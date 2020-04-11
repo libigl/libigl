@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.1) 
 
 # Toggles the use of the hunter package manager
 option(HUNTER_ENABLED "Enable Hunter package manager support" OFF)
