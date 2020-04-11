@@ -1,6 +1,6 @@
 // This file is part of libigl, a simple c++ geometry processing library.
 //
-// Copyright (C) 2014 Christian Schüller <schuellchr@gmail.com>
+// Copyright (C) 2014 Christian Schüller <schuellchr@gmail.com> 
 //
 // This Source Code Form is subject to the terms of the Mozilla Public License
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
@@ -248,6 +248,8 @@ namespace igl
     struct is_eigen_type { static const bool value = false; };
     template <typename T,int R,int C,int P,int MR,int MC>
     struct is_eigen_type<Eigen::Matrix<T,R,C,P,MR,MC> > { static const bool value = true; };
+    template <typename T,int R,int C,int P,int MR,int MC>
+    struct is_eigen_type<Eigen::Array<T,R,C,P,MR,MC> > { static const bool value = true; };
     template <typename T,int P,typename I>
     struct is_eigen_type<Eigen::SparseMatrix<T,P,I> > { static const bool value = true; };
  
@@ -353,6 +355,13 @@ namespace igl
     inline void serialize(const Eigen::Matrix<T,R,C,P,MR,MC>& obj,std::vector<char>& buffer,std::vector<char>::iterator& iter);
     template<typename T,int R,int C,int P,int MR,int MC>
     inline void deserialize(Eigen::Matrix<T,R,C,P,MR,MC>& obj,std::vector<char>::const_iterator& iter);
+ 
+    template<typename T,int R,int C,int P,int MR,int MC>
+    inline size_t getByteSize(const Eigen::Array<T,R,C,P,MR,MC>& obj);
+    template<typename T,int R,int C,int P,int MR,int MC>
+    inline void serialize(const Eigen::Array<T,R,C,P,MR,MC>& obj,std::vector<char>& buffer,std::vector<char>::iterator& iter);
+    template<typename T,int R,int C,int P,int MR,int MC>
+    inline void deserialize(Eigen::Array<T,R,C,P,MR,MC>& obj,std::vector<char>::const_iterator& iter);
  
     template<typename T,int P,typename I>
     inline size_t getByteSize(const Eigen::SparseMatrix<T,P,I>& obj);
@@ -1018,6 +1027,36 @@ namespace igl
     inline void deserialize(Eigen::Matrix<T,R,C,P,MR,MC>& obj,std::vector<char>::const_iterator& iter)
     {
       typename Eigen::Matrix<T,R,C,P,MR,MC>::Index rows,cols;
+      serialization::deserialize(rows,iter);
+      serialization::deserialize(cols,iter);
+      size_t size = sizeof(T)*rows*cols;
+      obj.resize(rows,cols);
+      auto ptr = reinterpret_cast<uint8_t*>(obj.data());
+      std::copy(iter,iter+size,ptr);
+      iter+=size;
+    }
+ 
+    template<typename T,int R,int C,int P,int MR,int MC>
+    inline size_t getByteSize(const Eigen::Array<T,R,C,P,MR,MC>& obj)
+    {
+      // space for numbers of rows,cols and data
+      return 2*sizeof(typename Eigen::Array<T,R,C,P,MR,MC>::Index)+sizeof(T)*obj.rows()*obj.cols();
+    }
+ 
+    template<typename T,int R,int C,int P,int MR,int MC>
+    inline void serialize(const Eigen::Array<T,R,C,P,MR,MC>& obj,std::vector<char>& buffer,std::vector<char>::iterator& iter)
+    {
+      serialization::serialize(obj.rows(),buffer,iter);
+      serialization::serialize(obj.cols(),buffer,iter);
+      size_t size = sizeof(T)*obj.rows()*obj.cols();
+      auto ptr = reinterpret_cast<const uint8_t*>(obj.data());
+      iter = std::copy(ptr,ptr+size,iter);
+    }
+ 
+    template<typename T,int R,int C,int P,int MR,int MC>
+    inline void deserialize(Eigen::Array<T,R,C,P,MR,MC>& obj,std::vector<char>::const_iterator& iter)
+    {
+      typename Eigen::Array<T,R,C,P,MR,MC>::Index rows,cols;
       serialization::deserialize(rows,iter);
       serialization::deserialize(cols,iter);
       size_t size = sizeof(T)*rows*cols;
