@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.1)
-
+ 
 # https://github.com/libigl/libigl/issues/751
 # http://lists.llvm.org/pipermail/llvm-commits/Week-of-Mon-20160425/351643.html
 if(APPLE)
