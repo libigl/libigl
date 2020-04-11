@@ -139,10 +139,8 @@ IGL_INLINE bool igl::read_triangle_mesh(
     }
   }else if(ext == "ply")
   {
-    if(!readPLY(fp,vV,vF,vN,vTC))
-    {
-      return false;
-    }
+    return readPLY(fp, V, F);
+    
   }else if(ext == "stl")
   {
     if(!readSTL(fp,vV,vF,vN))
