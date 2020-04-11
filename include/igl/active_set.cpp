@@ -345,7 +345,7 @@ IGL_INLINE igl::SolverStatus igl::active_set(
     {
       if(Lambda_Aieq_i(a) < params.inactive_threshold)
       {
-        as_ieq(as_ieq_list(a)) = FALSE;
+        as_ieq(int(as_ieq_list(a))) = FALSE;
       }
     }
 
