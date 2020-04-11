@@ -3,7 +3,7 @@
 #include <igl/mat_max.h>
 #include <igl/read_triangle_mesh.h>
 #include <igl/winding_number.h>
-
+ 
 template <typename DerivedV, typename DerivedF, typename DerivedMC>
 IGL_INLINE void igl::voxelization(
 	const Eigen::MatrixBase<DerivedV> &V,
