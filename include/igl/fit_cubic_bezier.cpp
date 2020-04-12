@@ -44,10 +44,18 @@ IGL_INLINE void igl::fit_cubic_bezier(
     }
     return t.normalized();
   };
-  const Eigen::RowVectorXd tHat1 = tangent(0,+1);
-  const Eigen::RowVectorXd tHat2 = tangent(nPts-1,-1);
+  Eigen::RowVectorXd tHat1 = tangent(0,+1);
+  Eigen::RowVectorXd tHat2 = tangent(nPts-1,-1);
+  // If first and last points are identically equal, then consider closed
+  const bool closed = (d.row(0) - d.row(d.rows()-1)).squaredNorm() == 0;
+  // If closed loop make tangents match
+  if(closed)
+  {
+    tHat1 = (tHat1 - tHat2).eval().normalized();
+    tHat2 = -tHat1;
+  }
   cubics.clear();
-  fit_cubic_bezier_substring(d,0,nPts-1,tHat1,tHat2,error,cubics);
+  fit_cubic_bezier_substring(d,0,nPts-1,tHat1,tHat2,error,closed,cubics);
 };
 
 IGL_INLINE void igl::fit_cubic_bezier_substring(
@@ -57,6 +65,7 @@ IGL_INLINE void igl::fit_cubic_bezier_substring(
   const Eigen::RowVectorXd & tHat1,
   const Eigen::RowVectorXd & tHat2,
   const double error,
+  const bool force_split,
   std::vector<Eigen::MatrixXd> & cubics)
 {
   // Helper functions
@@ -252,7 +261,7 @@ IGL_INLINE void igl::fit_cubic_bezier_substring(
 
   int splitPoint;
   double maxError = ComputeMaxError(d, first, last, bezCurve, u, splitPoint);
-  if (maxError < error)
+  if (!force_split && maxError < error)
   {
     cubics.push_back(bezCurve);
     return;
@@ -272,7 +281,7 @@ IGL_INLINE void igl::fit_cubic_bezier_substring(
       }
       GenerateBezier(d, first, last, uPrime, tHat1, tHat2, bezCurve);
       maxError = ComputeMaxError(d, first, last, bezCurve, uPrime, splitPoint);
-      if (maxError < error) {
+      if (!force_split && maxError < error) {
         cubics.push_back(bezCurve);
         return;
       }
@@ -284,8 +293,10 @@ IGL_INLINE void igl::fit_cubic_bezier_substring(
   const Eigen::RowVectorXd tHatCenter = 
     (d.row(splitPoint-1)-d.row(splitPoint+1)).normalized();
   //foobar
-  fit_cubic_bezier_substring(d,first,splitPoint,tHat1,tHatCenter,error,cubics);
-  fit_cubic_bezier_substring(d,splitPoint,last,(-tHatCenter).eval(),tHat2,error,cubics);
+  fit_cubic_bezier_substring(
+    d,first,splitPoint,tHat1,tHatCenter,error,false,cubics);
+  fit_cubic_bezier_substring(
+    d,splitPoint,last,(-tHatCenter).eval(),tHat2,error,false,cubics);
 }
 
 
