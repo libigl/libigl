@@ -18,7 +18,8 @@ namespace igl
   //
   // Inputs:
   //   d  #d by dim list of points along a curve to be fit with a cubic bezier
-  //     spline (should probably be roughly uniformly spaced)
+  //     spline (should probably be roughly uniformly spaced). If d(0)==d(end),
+  //     then will treat as a closed curve.
   //   error  maximum squared distance allowed
   // Output:
   //   cubics #cubics list of 4 by dim lists of cubic control points
@@ -34,6 +35,7 @@ namespace igl
   //    tHat1  tangent to use at beginning of spline
   //    tHat2  tangent to use at end of spline
   //    error  see above
+  //    force_split  whether to force a split (i.e., force a recursive call)
   //    cubics  running list of cubics so far
   // Outputs
   //    cubics  running list of cubics so far (new cubics appended)
@@ -44,6 +46,7 @@ namespace igl
     const Eigen::RowVectorXd & tHat1,
     const Eigen::RowVectorXd & tHat2,
     const double error,
+    const bool force_split, 
     std::vector<Eigen::MatrixXd> & cubics);
 }
 
