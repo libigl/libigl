@@ -240,6 +240,9 @@ public:
   // Enable per-face or per-vertex properties
   bool face_based;
 
+  // Enable double-sided lighting on faces
+  bool double_sided;
+
   // Invert mesh normals
   bool invert_normals;
 
@@ -250,7 +253,6 @@ public:
   unsigned int show_overlay;
   unsigned int show_overlay_depth;
   unsigned int show_texture;
-  unsigned int double_sided;
   unsigned int show_faces;
   unsigned int show_lines;
   bool show_vertid; // shared across viewports for now

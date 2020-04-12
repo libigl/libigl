@@ -186,7 +186,7 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
     {
       // Texture
       glUniform1f(texture_factori, is_set(data.show_texture) ? 1.0f : 0.0f);
-      glUniform1f(double_sidedi, is_set(data.double_sided) ? 1.0f : 0.0f);
+      glUniform1f(double_sidedi, data.double_sided ? 1.0f : 0.0f);
       data.meshgl.draw_mesh(true);
       glUniform1f(texture_factori, 0.0f);
     }
