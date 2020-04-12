@@ -250,6 +250,7 @@ public:
   unsigned int show_overlay;
   unsigned int show_overlay_depth;
   unsigned int show_texture;
+  unsigned int double_sided;
   unsigned int show_faces;
   unsigned int show_lines;
   bool show_vertid; // shared across viewports for now
@@ -321,6 +322,7 @@ namespace igl
       SERIALIZE_MEMBER(show_faceid);
       SERIALIZE_MEMBER(show_labels);
       SERIALIZE_MEMBER(show_texture);
+      SERIALIZE_MEMBER(double_sided);
       SERIALIZE_MEMBER(point_size);
       SERIALIZE_MEMBER(line_width);
       SERIALIZE_MEMBER(line_color);

@@ -220,6 +220,7 @@ R"(#version 150
   uniform float specular_exponent;
   uniform float lighting_factor;
   uniform float texture_factor;
+  uniform float double_sided;
   out vec4 outColor;
   void main()
   {
@@ -228,13 +229,13 @@ R"(#version 150
     vec3 vector_to_light_eye = light_position_eye - position_eye;
     vec3 direction_to_light_eye = normalize (vector_to_light_eye);
     float dot_prod = dot (direction_to_light_eye, normalize(normal_eye));
-    float clamped_dot_prod = max (dot_prod, 0.0);
+    float clamped_dot_prod = abs(max (dot_prod, -double_sided));
     vec3 Id = Ld * vec3(Kdi) * clamped_dot_prod;    // Diffuse intensity
 
     vec3 reflection_eye = reflect (-direction_to_light_eye, normalize(normal_eye));
     vec3 surface_to_viewer_eye = normalize (-position_eye);
     float dot_prod_specular = dot (reflection_eye, surface_to_viewer_eye);
-    dot_prod_specular = float(abs(dot_prod)==dot_prod) * max (dot_prod_specular, 0.0);
+    dot_prod_specular = float(abs(dot_prod)==dot_prod) * abs(max (dot_prod_specular, -double_sided));
     float specular_factor = pow (dot_prod_specular, specular_exponent);
     vec3 Is = Ls * vec3(Ksi) * specular_factor;    // specular intensity
     vec4 color = vec4(lighting_factor * (Is + Id) + Ia + (1.0-lighting_factor) * vec3(Kdi),(Kai.a+Ksi.a+Kdi.a)/3);

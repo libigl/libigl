@@ -30,6 +30,7 @@ IGL_INLINE igl::opengl::ViewerData::ViewerData()
   show_faceid       (false),
   show_labels       (false),
   show_texture      (false),
+  double_sided      (false),
   point_size(30),
   line_width(0.5f),
   line_color(0,0,0,1),
@@ -131,6 +132,7 @@ IGL_INLINE void igl::opengl::ViewerData::copy_options(const ViewerCore &from, co
   to.set(show_overlay      , from.is_set(show_overlay)      );
   to.set(show_overlay_depth, from.is_set(show_overlay_depth));
   to.set(show_texture      , from.is_set(show_texture)      );
+  to.set(double_sided      , from.is_set(double_sided)      );
   to.set(show_faces        , from.is_set(show_faces)        );
   to.set(show_lines        , from.is_set(show_lines)        );
 }
@@ -450,6 +452,7 @@ IGL_INLINE void igl::opengl::ViewerData::clear()
 
   face_based = false;
   show_texture = false;
+  double_sided = false;
 }
 
 IGL_INLINE void igl::opengl::ViewerData::compute_normals()
