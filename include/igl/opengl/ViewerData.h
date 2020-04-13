@@ -183,6 +183,8 @@ public:
     const Eigen::Vector4d& diffuse,
     const Eigen::Vector4d& specular);
 
+  // Generate a normal image matcap
+  IGL_INLINE void normal_matcap();
   // Generates a default grid texture
   IGL_INLINE void grid_texture();
 
@@ -250,6 +252,7 @@ public:
   unsigned int show_overlay;
   unsigned int show_overlay_depth;
   unsigned int show_texture;
+  unsigned int use_matcap;
   unsigned int show_faces;
   unsigned int show_lines;
   bool show_vertid; // shared across viewports for now

@@ -30,6 +30,7 @@ IGL_INLINE igl::opengl::ViewerData::ViewerData()
   show_faceid       (false),
   show_labels       (false),
   show_texture      (false),
+  use_matcap        (false),
   point_size(30),
   line_width(0.5f),
   line_color(0,0,0,1),
@@ -78,7 +79,10 @@ IGL_INLINE void igl::opengl::ViewerData::set_mesh(
       Eigen::Vector3d(GOLD_DIFFUSE[0], GOLD_DIFFUSE[1], GOLD_DIFFUSE[2]),
       Eigen::Vector3d(GOLD_SPECULAR[0], GOLD_SPECULAR[1], GOLD_SPECULAR[2]));
 
-    grid_texture();
+    // Alec: is anyone really using this default? It uses trivial UVs and
+    // produces an anisotropic checkerboard...
+    //grid_texture();
+    normal_matcap();
   }
   else
   {
@@ -131,6 +135,7 @@ IGL_INLINE void igl::opengl::ViewerData::copy_options(const ViewerCore &from, co
   to.set(show_overlay      , from.is_set(show_overlay)      );
   to.set(show_overlay_depth, from.is_set(show_overlay_depth));
   to.set(show_texture      , from.is_set(show_texture)      );
+  to.set(use_matcap        , from.is_set(use_matcap)        );
   to.set(show_faces        , from.is_set(show_faces)        );
   to.set(show_lines        , from.is_set(show_lines)        );
 }
@@ -450,6 +455,7 @@ IGL_INLINE void igl::opengl::ViewerData::clear()
 
   face_based = false;
   show_texture = false;
+  use_matcap = false;
 }
 
 IGL_INLINE void igl::opengl::ViewerData::compute_normals()
@@ -502,6 +508,31 @@ IGL_INLINE void igl::opengl::ViewerData::uniform_colors(
     F_material_specular.row(i) = specular;
   }
   dirty |= MeshGL::DIRTY_SPECULAR | MeshGL::DIRTY_DIFFUSE | MeshGL::DIRTY_AMBIENT;
+}
+
+IGL_INLINE void igl::opengl::ViewerData::normal_matcap()
+{
+  const int size = 512;
+  texture_R.resize(size, size);
+  texture_G.resize(size, size);
+  texture_B.resize(size, size);
+  const Eigen::Vector3d navy(0.3,0.3,0.5);
+  static const auto clamp = [](double t){ return std::max(std::min(t,1.0),0.0);};
+  for(int i = 0;i<size;i++)
+  {
+    const double x = (double(i)/double(size-1)*2.-1.);
+    for(int j = 0;j<size;j++)
+    {
+      const double y = (double(j)/double(size-1)*2.-1.);
+      const double z = sqrt(1.0-std::min(x*x+y*y,1.0));
+      Eigen::Vector3d C = Eigen::Vector3d(x*0.5+0.5,y*0.5+0.5,z);
+      texture_R(i,j) = clamp(C(0))*255;
+      texture_G(i,j) = clamp(C(1))*255;
+      texture_B(i,j) = clamp(C(2))*255;
+    }
+  }
+  texture_A.setConstant(texture_R.rows(),texture_R.cols(),255);
+  dirty |= MeshGL::DIRTY_TEXTURE;
 }
 
 IGL_INLINE void igl::opengl::ViewerData::grid_texture()
@@ -684,8 +715,7 @@ IGL_INLINE void igl::opengl::ViewerData::updateGL(
                 data.F_uv(i,j) : data.F(i,j)).cast<float>();
       }
     }
-  }
-  else
+  } else
   {
     if (meshgl.dirty & MeshGL::DIRTY_POSITION)
     {
@@ -725,7 +755,7 @@ IGL_INLINE void igl::opengl::ViewerData::updateGL(
         meshgl.F_vbo.row(i) << i*3+0, i*3+1, i*3+2;
     }
 
-    if (meshgl.dirty & MeshGL::DIRTY_UV)
+    if( (meshgl.dirty & MeshGL::DIRTY_UV) && data.V_uv.rows()>0)
     {
         meshgl.V_uv_vbo.resize(data.F.rows()*3,2);
         for (unsigned i=0; i<data.F.rows();++i)
