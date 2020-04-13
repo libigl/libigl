@@ -23,6 +23,8 @@ IGL_INLINE igl::opengl::ViewerData::ViewerData()
 : dirty(MeshGL::DIRTY_ALL),
   show_faces        (~unsigned(0)),
   show_lines        (~unsigned(0)),
+  face_based        (false),
+  double_sided      (false),
   invert_normals    (false),
   show_overlay      (~unsigned(0)),
   show_overlay_depth(~unsigned(0)),
@@ -449,6 +451,8 @@ IGL_INLINE void igl::opengl::ViewerData::clear()
   labels_strings.clear();
 
   face_based = false;
+  double_sided = false;
+  invert_normals = false;
   show_texture = false;
 }
 

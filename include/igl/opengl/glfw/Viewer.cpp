@@ -1,4 +1,4 @@
-// This file is part of libigl, a simple c++ geometry processing library. 
+// This file is part of libigl, a simple c++ geometry processing library.
 //
 // Copyright (C) 2014 Daniele Panozzo <daniele.panozzo@gmail.com>
 //
@@ -354,6 +354,7 @@ namespace glfw
     const std::string usage(R"(igl::opengl::glfw::Viewer usage:
   [drag]  Rotate scene
   A,a     Toggle animation (tight draw loop)
+  D,d     Toggle double sided lighting
   F,f     Toggle face based
   I,i     Toggle invert normals
   L,l     Toggle wireframe
@@ -525,6 +526,12 @@ namespace glfw
       case 'a':
       {
         core().is_animating = !core().is_animating;
+        return true;
+      }
+      case 'D':
+      case 'd':
+      {
+        data().double_sided = !data().double_sided;
         return true;
       }
       case 'F':
