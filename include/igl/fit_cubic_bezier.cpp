@@ -22,9 +22,12 @@ IGL_INLINE void igl::fit_cubic_bezier(
   // Don't attempt to fit curve to single point
   if(nPts==1) { return; }
   // Avoid using zero tangent
-  const static auto tangent = [&](const int i,const int dir)->Eigen::RowVectorXd
+  const static auto tangent = [](
+    const Eigen::MatrixXd & d,
+    const int i,const int dir)->Eigen::RowVectorXd
   {
     int j = i;
+    const int nPts = d.rows();
     Eigen::RowVectorXd t;
     while(true)
     {
@@ -44,8 +47,8 @@ IGL_INLINE void igl::fit_cubic_bezier(
     }
     return t.normalized();
   };
-  Eigen::RowVectorXd tHat1 = tangent(0,+1);
-  Eigen::RowVectorXd tHat2 = tangent(nPts-1,-1);
+  Eigen::RowVectorXd tHat1 = tangent(d,0,+1);
+  Eigen::RowVectorXd tHat2 = tangent(d,nPts-1,-1);
   // If first and last points are identically equal, then consider closed
   const bool closed = (d.row(0) - d.row(d.rows()-1)).squaredNorm() == 0;
   // If closed loop make tangents match
