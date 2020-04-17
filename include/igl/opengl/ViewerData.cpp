@@ -299,7 +299,7 @@ IGL_INLINE void igl::opengl::ViewerData::set_colormap(const Eigen::MatrixXd & CM
     (CM.col(2)*255.0).cast<unsigned char>();
   set_colors(Eigen::RowVector3d(1,1,1));
   set_texture(R,G,B);
-  show_texture = true;
+  show_texture = ~unsigned(0);
   meshgl.tex_filter = GL_NEAREST;
   meshgl.tex_wrap = GL_CLAMP_TO_EDGE;
 }
