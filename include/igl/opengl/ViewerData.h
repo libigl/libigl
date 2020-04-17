@@ -240,6 +240,9 @@ public:
   // Enable per-face or per-vertex properties
   bool face_based;
 
+  // Enable double-sided lighting on faces
+  bool double_sided;
+
   // Invert mesh normals
   bool invert_normals;
 
@@ -321,6 +324,7 @@ namespace igl
       SERIALIZE_MEMBER(show_faceid);
       SERIALIZE_MEMBER(show_labels);
       SERIALIZE_MEMBER(show_texture);
+      SERIALIZE_MEMBER(double_sided);
       SERIALIZE_MEMBER(point_size);
       SERIALIZE_MEMBER(line_width);
       SERIALIZE_MEMBER(line_color);

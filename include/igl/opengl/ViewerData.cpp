@@ -23,6 +23,8 @@ IGL_INLINE igl::opengl::ViewerData::ViewerData()
 : dirty(MeshGL::DIRTY_ALL),
   show_faces        (~unsigned(0)),
   show_lines        (~unsigned(0)),
+  face_based        (false),
+  double_sided      (false),
   invert_normals    (false),
   show_overlay      (~unsigned(0)),
   show_overlay_depth(~unsigned(0)),
@@ -297,7 +299,7 @@ IGL_INLINE void igl::opengl::ViewerData::set_colormap(const Eigen::MatrixXd & CM
     (CM.col(2)*255.0).cast<unsigned char>();
   set_colors(Eigen::RowVector3d(1,1,1));
   set_texture(R,G,B);
-  show_texture = true;
+  show_texture = ~unsigned(0);
   meshgl.tex_filter = GL_NEAREST;
   meshgl.tex_wrap = GL_CLAMP_TO_EDGE;
 }
@@ -449,6 +451,8 @@ IGL_INLINE void igl::opengl::ViewerData::clear()
   labels_strings.clear();
 
   face_based = false;
+  double_sided = false;
+  invert_normals = false;
   show_texture = false;
 }
 
