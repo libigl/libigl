@@ -15,9 +15,21 @@ IGL_INLINE void igl::cumsum(
   const int dim,
   Eigen::PlainObjectBase<DerivedY > & Y)
 {
+  return cumsum(X,dim,false,Y);
+}
+
+template <typename DerivedX, typename DerivedY>
+IGL_INLINE void igl::cumsum(
+  const Eigen::MatrixBase<DerivedX > & X,
+  const int dim,
+  const bool zero_prefix,
+  Eigen::PlainObjectBase<DerivedY > & Y)
+{
   using namespace Eigen;
   using namespace std;
-  Y.resizeLike(X);
+  Y.resize(
+    X.rows()+(zero_prefix&&dim==1?1:0),
+    X.cols()+(zero_prefix&&dim==2?1:0));
   // get number of columns (or rows)
   int num_outer = (dim == 1 ? X.cols() : X.rows() );
   // get number of rows (or columns)
@@ -26,6 +38,10 @@ IGL_INLINE void igl::cumsum(
   // (Optimizations assume ColMajor order)
   if(dim == 1)
   {
+    if(zero_prefix)
+    {
+      Y.row(0).setConstant(0);
+    }
 #pragma omp parallel for
     for(int o = 0;o<num_outer;o++)
     {
@@ -33,13 +49,19 @@ IGL_INLINE void igl::cumsum(
       for(int i = 0;i<num_inner;i++)
       {
         sum += X(i,o);
-        Y(i,o) = sum;
+        const int yi = zero_prefix?i+1:i;
+        Y(yi,o) = sum;
       }
     }
   }else
   {
+    if(zero_prefix)
+    {
+      Y.col(0).setConstant(0);
+    }
     for(int i = 0;i<num_inner;i++)
     {
+      const int yi = zero_prefix?i+1:i;
       // Notice that it is *not* OK to put this above the inner loop
       // Though here it doesn't seem to pay off...
 //#pragma omp parallel for
@@ -47,10 +69,10 @@ IGL_INLINE void igl::cumsum(
       {
         if(i == 0)
         {
-          Y(o,i) = X(o,i);
+          Y(o,yi) = X(o,i);
         }else
         {
-          Y(o,i) = Y(o,i-1) + X(o,i);
+          Y(o,yi) = Y(o,yi-1) + X(o,i);
         }
       }
     }
