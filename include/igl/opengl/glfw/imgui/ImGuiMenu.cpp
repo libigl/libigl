@@ -310,8 +310,8 @@ IGL_INLINE void ImGuiMenu::draw_viewer_menu()
 IGL_INLINE void ImGuiMenu::draw_labels_window()
 {
   // Text labels
-  ImGui::SetNextWindowPos(ImVec2(0,0), ImGuiSetCond_Always);
-  ImGui::SetNextWindowSize(ImGui::GetIO().DisplaySize, ImGuiSetCond_Always);
+  ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiCond_FirstUseEver);
+  ImGui::SetNextWindowSize(ImVec2(0.0f, 0.0f), ImGuiCond_FirstUseEver);
   bool visible = true;
   ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0,0,0,0));
   ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0);
