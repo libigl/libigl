@@ -80,11 +80,6 @@ IGL_INLINE void igl::opengl::ViewerData::set_mesh(
       Eigen::Vector3d(GOLD_AMBIENT[0], GOLD_AMBIENT[1], GOLD_AMBIENT[2]),
       Eigen::Vector3d(GOLD_DIFFUSE[0], GOLD_DIFFUSE[1], GOLD_DIFFUSE[2]),
       Eigen::Vector3d(GOLD_SPECULAR[0], GOLD_SPECULAR[1], GOLD_SPECULAR[2]));
-
-    // Alec: is anyone really using this default? It uses trivial UVs and
-    // produces an anisotropic checkerboard...
-    //grid_texture();
-    normal_matcap();
   }
   else
   {
@@ -536,44 +531,6 @@ IGL_INLINE void igl::opengl::ViewerData::normal_matcap()
     }
   }
   texture_A.setConstant(texture_R.rows(),texture_R.cols(),255);
-  dirty |= MeshGL::DIRTY_TEXTURE;
-}
-
-IGL_INLINE void igl::opengl::ViewerData::grid_texture()
-{
-  // Don't do anything for an empty mesh
-  if(V.rows() == 0)
-  {
-    V_uv.resize(V.rows(),2);
-    return;
-  }
-  if (V_uv.rows() == 0)
-  {
-    V_uv = V.block(0, 0, V.rows(), 2);
-    V_uv.col(0) = V_uv.col(0).array() - V_uv.col(0).minCoeff();
-    V_uv.col(0) = V_uv.col(0).array() / V_uv.col(0).maxCoeff();
-    V_uv.col(1) = V_uv.col(1).array() - V_uv.col(1).minCoeff();
-    V_uv.col(1) = V_uv.col(1).array() / V_uv.col(1).maxCoeff();
-    V_uv = V_uv.array() * 10;
-    dirty |= MeshGL::DIRTY_TEXTURE;
-  }
-
-  unsigned size = 128;
-  unsigned size2 = size/2;
-  texture_R.resize(size, size);
-  for (unsigned i=0; i<size; ++i)
-  {
-    for (unsigned j=0; j<size; ++j)
-    {
-      texture_R(i,j) = 0;
-      if ((i<size2 && j<size2) || (i>=size2 && j>=size2))
-        texture_R(i,j) = 255;
-    }
-  }
-
-  texture_G = texture_R;
-  texture_B = texture_R;
-  texture_A = Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>::Constant(texture_R.rows(),texture_R.cols(),255);
   dirty |= MeshGL::DIRTY_TEXTURE;
 }
 
