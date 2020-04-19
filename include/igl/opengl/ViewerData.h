@@ -186,6 +186,9 @@ public:
   // Generate a normal image matcap
   IGL_INLINE void normal_matcap();
 
+  // Generates a default grid texture (without uvs)
+  IGL_INLINE void grid_texture();
+
   // Copy visualization options from one viewport to another
   IGL_INLINE void copy_options(const ViewerCore &from, const ViewerCore &to);
 

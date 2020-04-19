@@ -80,6 +80,9 @@ IGL_INLINE void igl::opengl::ViewerData::set_mesh(
       Eigen::Vector3d(GOLD_AMBIENT[0], GOLD_AMBIENT[1], GOLD_AMBIENT[2]),
       Eigen::Vector3d(GOLD_DIFFUSE[0], GOLD_DIFFUSE[1], GOLD_DIFFUSE[2]),
       Eigen::Vector3d(GOLD_SPECULAR[0], GOLD_SPECULAR[1], GOLD_SPECULAR[2]));
+
+    // Generates a checkerboard texture
+    grid_texture();
   }
   else
   {
@@ -531,6 +534,27 @@ IGL_INLINE void igl::opengl::ViewerData::normal_matcap()
     }
   }
   texture_A.setConstant(texture_R.rows(),texture_R.cols(),255);
+  dirty |= MeshGL::DIRTY_TEXTURE;
+}
+
+IGL_INLINE void igl::opengl::ViewerData::grid_texture()
+{
+  unsigned size = 128;
+  unsigned size2 = size/2;
+  texture_R.resize(size, size);
+  for (unsigned i=0; i<size; ++i)
+  {
+    for (unsigned j=0; j<size; ++j)
+    {
+      texture_R(i,j) = 0;
+      if ((i<size2 && j<size2) || (i>=size2 && j>=size2))
+        texture_R(i,j) = 255;
+    }
+  }
+
+  texture_G = texture_R;
+  texture_B = texture_R;
+  texture_A = Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>::Constant(texture_R.rows(),texture_R.cols(),255);
   dirty |= MeshGL::DIRTY_TEXTURE;
 }
 
