@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2013 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "cumsum.h"
 #include <numeric>
@@ -31,9 +31,9 @@ IGL_INLINE void igl::cumsum(
     X.rows()+(zero_prefix&&dim==1?1:0),
     X.cols()+(zero_prefix&&dim==2?1:0));
   // get number of columns (or rows)
-  int num_outer = (dim == 1 ? X.cols() : X.rows() );
+  Eigen::Index num_outer = (dim == 1 ? X.cols() : X.rows() );
   // get number of rows (or columns)
-  int num_inner = (dim == 1 ? X.rows() : X.cols() );
+  Eigen::Index num_inner = (dim == 1 ? X.rows() : X.cols() );
   // This has been optimized so that dim = 1 or 2 is roughly the same cost.
   // (Optimizations assume ColMajor order)
   if(dim == 1)
@@ -43,13 +43,13 @@ IGL_INLINE void igl::cumsum(
       Y.row(0).setConstant(0);
     }
 #pragma omp parallel for
-    for(int o = 0;o<num_outer;o++)
+    for(Eigen::Index o = 0;o<num_outer;o++)
     {
       typename DerivedX::Scalar sum = 0;
-      for(int i = 0;i<num_inner;i++)
+      for(Eigen::Index i = 0;i<num_inner;i++)
       {
         sum += X(i,o);
-        const int yi = zero_prefix?i+1:i;
+        const Eigen::Index yi = zero_prefix?i+1:i;
         Y(yi,o) = sum;
       }
     }
@@ -59,13 +59,13 @@ IGL_INLINE void igl::cumsum(
     {
       Y.col(0).setConstant(0);
     }
-    for(int i = 0;i<num_inner;i++)
+    for(Eigen::Index i = 0;i<num_inner;i++)
     {
-      const int yi = zero_prefix?i+1:i;
+      const Eigen::Index yi = zero_prefix?i+1:i;
       // Notice that it is *not* OK to put this above the inner loop
       // Though here it doesn't seem to pay off...
 //#pragma omp parallel for
-      for(int o = 0;o<num_outer;o++)
+      for(Eigen::Index o = 0;o<num_outer;o++)
       {
         if(i == 0)
         {

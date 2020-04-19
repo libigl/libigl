@@ -14,7 +14,7 @@ IGL_INLINE void igl::facet_adjacency_matrix(
 {
   using namespace Eigen;
   typedef typename DerivedF::Scalar Index;
-  const int m = F.rows();
+  const auto m = F.rows();
   Eigen::Matrix<Index,Dynamic,1> EMAP,uEE,uEC;
   Eigen::Matrix<Index,Dynamic,2> E,uE;
   igl::unique_edge_map(F,E,uE,EMAP,uEC,uEE);

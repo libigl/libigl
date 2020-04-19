@@ -23,8 +23,8 @@ IGL_INLINE int igl::connected_components(
   C.setConstant(m,1,m);
   // Could use amortized dynamic array but didn't see real win.
   K.setZero(m,1);
-  int c = 0;
-  for(int f = 0;f<m;f++)
+  typename DerivedC::Scalar c = 0;
+  for(Eigen::Index f = 0;f<m;f++)
   {
     // already seen
     if(C(f)<m) continue;
