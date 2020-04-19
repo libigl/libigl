@@ -83,7 +83,7 @@ IGL_INLINE void igl::unique_edge_map(
   igl::unique_edge_map(F,E,uE,EMAP);
   assert(EMAP.maxCoeff() < uE.rows());
   // counts of each unique edge
-  typedef Eigen::Matrix<typename DeriveduEC::Scalar,Eigen::Dynamic,1> VectorXI; 
+  typedef Eigen::Matrix<typename DeriveduEC::Scalar,Eigen::Dynamic,1> VectorXI;
   VectorXI uEK;
   igl::accumarray(EMAP,1,uEK);
   assert(uEK.rows() == uE.rows());
@@ -94,7 +94,7 @@ IGL_INLINE void igl::unique_edge_map(
   VectorXI uEO = VectorXI::Zero(uE.rows(),1);
   // flat array of faces incide on each uE
   uEE.resize(EMAP.rows(),1);
-  for(int e = 0;e<EMAP.rows();e++)
+  for(Eigen::Index e = 0;e<EMAP.rows();e++)
   {
     const typename DerivedEMAP::Scalar ue = EMAP(e);
     const typename DeriveduEC::Scalar i = uEC(ue)+ uEO(ue);
