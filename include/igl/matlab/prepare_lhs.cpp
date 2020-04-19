@@ -84,6 +84,27 @@ IGL_INLINE void igl::matlab::prepare_lhs_double(
 
 }
 
+
+template <typename Vtype>
+IGL_INLINE void igl::prepare_lhs_double(
+  const std::vector<Vtype> & V,
+  mxArray *plhs[])
+{
+  plhs[0] = mxCreateCellMatrix(V.size(), 1);
+  for(int  i=0; i<V.size(); i++)
+  {
+    const int m = V[i].rows();
+    const int n = V[i].cols();
+    mxArray * ai = mxCreateDoubleMatrix(m,n, mxREAL);
+    Eigen::Map< Eigen::Matrix<double,Eigen::Dynamic,Eigen::Dynamic> >
+      map(mxGetPr(ai),m,n);
+    map = V[i].template cast<double>();
+    mxSetCell(plhs[0],i,ai);
+  }
+}
+
+
+
 #ifdef IGL_STATIC_LIBRARY
 template void igl::matlab::prepare_lhs_double<Eigen::Matrix<double, 3, 3, 0, 3, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 3, 0, 3, 3> > const&, mxArray_tag**);
 template void igl::matlab::prepare_lhs_double<Eigen::Matrix<double, 1, 3, 1, 1, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > const&, mxArray_tag**);
