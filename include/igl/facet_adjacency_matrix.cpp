@@ -10,8 +10,7 @@
 
 template <typename DerivedF, typename Atype>
 IGL_INLINE void igl::facet_adjacency_matrix(
-  const Eigen::MatrixBase<DerivedF> & F,
-  Eigen::SparseMatrix<Atype> & A)
+  const Eigen::MatrixBase<DerivedF> & F, Eigen::SparseMatrix<Atype> & A)
 {
   using namespace Eigen;
   typedef typename DerivedF::Scalar Index;
@@ -21,18 +20,18 @@ IGL_INLINE void igl::facet_adjacency_matrix(
   igl::unique_edge_map(F,E,uE,EMAP,uEC,uEE);
   std::vector<Eigen::Triplet<Index> > AIJV;
   AIJV.reserve(2*uE.rows());
-  const int nu = uE.rows();
-  for(int ue = 0;ue<nu;ue++)
+  const Eigen::Index nu = uE.rows();
+  for(Eigen::Index ue = 0;ue<nu;ue++)
   {
     // number of faces incident on this unique edge
-    const int mue = uEC(ue+1)-uEC(ue);
+    const Eigen::Index mue = uEC(ue+1)-uEC(ue);
     // base offset in uEE
-    const int uECue = uEC(ue);
+    const Eigen::Index uECue = uEC(ue);
     assert(uECue < uEE.rows());
-    for(int i = 0;i<mue;i++)
+    for(Eigen::Index i = 0;i<mue;i++)
     {
       const auto ii = uEE(uECue+i)%m;
-      for(int j = 0;j<mue;j++)
+      for(Eigen::Index j = 0;j<mue;j++)
       {
         const auto jj = uEE(uECue+j)%m;
         if(ii != jj){ AIJV.emplace_back(ii,jj,1);}
@@ -43,7 +42,7 @@ IGL_INLINE void igl::facet_adjacency_matrix(
   A.resize(m,m);
   A.setFromTriplets(AIJV.begin(),AIJV.end());
   // Set all non-zerro values to 1
-  for(int g = 0;g<A.outerSize();g++)
+  for(Eigen::Index g = 0;g<A.outerSize();g++)
   {
     for(typename Eigen::SparseMatrix<Atype>::InnerIterator it (A,g); it; ++it)
     {
