@@ -1,26 +1,29 @@
 // This file is part of libigl, a simple c++ geometry processing library.
 //
 // Copyright (C) 2015 Alec Jacobson <alecjacobson@gmail.com>
+// Copyright (C) 2020 Alec Jacobson <alecjacobson@gmail.com>
 //
 // This Source Code Form is subject to the terms of the Mozilla Public License
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "facet_components.h"
-#include <igl/triangle_triangle_adjacency.h>
+#include "triangle_triangle_adjacency.h"
+#include "facet_adjacency_matrix.h"
+#include "connected_components.h"
 #include <vector>
 #include <queue>
+
 template <typename DerivedF, typename DerivedC>
 IGL_INLINE void igl::facet_components(
   const Eigen::MatrixBase<DerivedF> & F,
   Eigen::PlainObjectBase<DerivedC> & C)
 {
-  using namespace std;
-  typedef typename DerivedF::Index Index;
-  vector<vector<vector<Index > > > TT;
-  vector<vector<vector<Index > > > TTi;
-  triangle_triangle_adjacency(F,TT,TTi);
-  Eigen::VectorXi counts;
-  return facet_components(TT,C,counts);
+  typedef typename DerivedF::Scalar Index;
+  Eigen::SparseMatrix<Index> A;
+  igl::facet_adjacency_matrix(F,A);
+  Eigen::Matrix<Index,Eigen::Dynamic,1> counts;
+  C = DerivedC::Zero(1,1);
+  connected_components(A,C,counts);
 }
 
 template <
