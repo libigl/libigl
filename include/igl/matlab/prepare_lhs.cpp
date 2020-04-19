@@ -85,6 +85,8 @@ IGL_INLINE void igl::matlab::prepare_lhs_double(
 }
 
 #ifdef IGL_STATIC_LIBRARY
+template void igl::matlab::prepare_lhs_double<Eigen::Matrix<double, 3, 3, 0, 3, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 3, 0, 3, 3> > const&, mxArray_tag**);
+template void igl::matlab::prepare_lhs_double<Eigen::Matrix<double, 1, 3, 1, 1, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > const&, mxArray_tag**);
 template void igl::matlab::prepare_lhs_index<Eigen::Matrix<double, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, mxArray_tag**);
 template void igl::matlab::prepare_lhs_index<Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, mxArray_tag**);
 template void igl::matlab::prepare_lhs_double<Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, mxArray_tag**);
@@ -96,4 +98,7 @@ template void igl::matlab::prepare_lhs_index<Eigen::Matrix<int, -1, 3, 1, -1, 3>
 template void igl::matlab::prepare_lhs_double<Eigen::Matrix<double, -1, 3, 1, -1, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 1, -1, 3> > const&, mxArray_tag**);
 template void igl::matlab::prepare_lhs_double<Eigen::Matrix<int, 1, -1, 1, 1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<int, 1, -1, 1, 1, -1> > const&, mxArray_tag**);
 template void igl::matlab::prepare_lhs_double<Eigen::Matrix<int, 1, 3, 1, 1, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<int, 1, 3, 1, 1, 3> > const&, mxArray_tag**);
+template void igl::matlab::prepare_lhs_double<Eigen::Matrix<float, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<float, -1, 1, 0, -1, 1> > const&, mxArray_tag**);
+template void igl::matlab::prepare_lhs_double<Eigen::Matrix<float, -1, 3, 0, -1, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<float, -1, 3, 0, -1, 3> > const&, mxArray_tag**);
+template void igl::matlab::prepare_lhs_double<double>(Eigen::SparseMatrix<double, 0, int> const&, mxArray_tag**);
 #endif
