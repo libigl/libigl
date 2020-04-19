@@ -81,6 +81,9 @@ public:
   // Can be overwritten by `callback_draw_custom_window`
   IGL_INLINE virtual void draw_custom_window() { }
 
+  // Helper Functions
+  IGL_INLINE virtual void filterLabelsByDepth();
+
   // Easy-to-customize callbacks
   std::function<void(void)> callback_draw_viewer_window;
   std::function<void(void)> callback_draw_viewer_menu;

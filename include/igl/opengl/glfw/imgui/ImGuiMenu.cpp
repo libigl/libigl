@@ -112,8 +112,107 @@ IGL_INLINE bool ImGuiMenu::mouse_down(int button, int modifier)
   return ImGui::GetIO().WantCaptureMouse;
 }
 
+IGL_INLINE void ImGuiMenu::filterLabelsByDepth(
+)
+{
+
+  float closestDepth = -100.;
+  float farthestDepth = 100.;
+
+  int width = viewer->core().viewport(2);
+  int height = viewer->core().viewport(3);
+  bool faceVisible;
+  std::vector<int> faces;
+
+    auto data = viewer->data();
+    viewer->data().vertex_label_mask = Eigen::MatrixXi::Zero(data.V.rows(), 1);
+    viewer->data().face_label_mask = Eigen::MatrixXi::Zero(data.F.rows(), 1);
+
+    Eigen::MatrixXi viableVertIds = Eigen::MatrixXi::Zero(data.V.rows(), 1);
+
+
+    Eigen::MatrixXf faceNormals = data.F_normals.cast <float> ();
+    Eigen::MatrixXf normalMatrix = (((viewer->core().view).block<3,3>(0,0)).inverse()).transpose();
+    Eigen::MatrixXf transformedFACENormals = normalMatrix*faceNormals.transpose();
+
+    for(int f=0; f<data.F.rows(); f++)
+    {
+      float dotProduct = (-1*viewer->core().camera_eye.normalized()).dot(transformedFACENormals.col(f).normalized());
+      if(dotProduct <= -0.9)
+      {
+        faceVisible = true;
+        Eigen::Vector3f currScreenCoords;
+        for(int i=0;i<=2;i++)
+        {
+          if(viableVertIds(data.F.row(f)(i), 0)) continue;
+          
+          int vertIdx = data.F.row(f)(i);
+          Eigen::Vector3d p = data.V.row(vertIdx) + data.V_normals.row(vertIdx) * 0.005f * viewer->core().object_scale;
+          currScreenCoords = project(
+            Eigen::Vector3f(p.cast<float>()) , 
+            viewer->core().view, viewer->core().proj, viewer->core().viewport);
+          int x = round(currScreenCoords(0));
+          int y = round(currScreenCoords(1));
+
+          Eigen::Vector4f currentVertex(
+          data.V.row(vertIdx)(0), 
+          data.V.row(vertIdx)(1), 
+          data.V.row(vertIdx)(2), 
+          1.0);
+          Eigen::MatrixXf viewSpaceVertex = viewer->core().view*( currentVertex );
+          if(viewSpaceVertex(2) > closestDepth)
+          {
+            closestDepth = viewSpaceVertex(2);
+          }
+          if(viewSpaceVertex(2) < farthestDepth)
+          {
+            farthestDepth = viewSpaceVertex(2);
+          }
+          if(x < 0 || x >= height || y < 0 || y >= width) {
+            faceVisible = false;
+            break;
+          }
+        }
+        if(faceVisible)
+        {
+          faces.push_back(f);
+          for(int i=0;i<=2;i++)
+          {
+            viableVertIds(data.F.row(f)(i), 0) = 1;
+          }
+        }
+      }
+    }
+
+    for(int f=0; f < faces.size(); f++)
+    {
+      int v1 = data.F.row(faces[f])(0) ; 
+      int v2 = data.F.row(faces[f])(1) ; 
+      int v3 = data.F.row(faces[f])(2) ;
+      
+      Eigen::Vector4f currentVertex(
+      data.V.row(v1)(0), 
+      data.V.row(v1)(1), 
+      data.V.row(v1)(2), 
+      1.0);
+      Eigen::MatrixXf viewSpaceVertex = viewer->core().view*( currentVertex );
+      if(viewSpaceVertex(2) >= closestDepth-2)
+      {
+        viewer->data().face_label_mask(faces[f], 0) = 1;
+        viewer->data().vertex_label_mask(v1,0)=1;
+        viewer->data().vertex_label_mask(v2,0)=1;
+        viewer->data().vertex_label_mask(v3,0)=1;
+      }
+    }
+}
+
 IGL_INLINE bool ImGuiMenu::mouse_up(int button, int modifier)
 {
+
+  if(viewer->data().filter_labels)
+  {
+    filterLabelsByDepth();
+  }
   //return ImGui::GetIO().WantCaptureMouse;
   // !! Should not steal mouse up
   return false;
@@ -121,6 +220,10 @@ IGL_INLINE bool ImGuiMenu::mouse_up(int button, int modifier)
 
 IGL_INLINE bool ImGuiMenu::mouse_move(int mouse_x, int mouse_y)
 {
+  if(viewer->data().filter_labels && mouse_x%50==0)
+  {
+    filterLabelsByDepth();
+  }
   return ImGui::GetIO().WantCaptureMouse;
 }
 
@@ -167,8 +270,8 @@ IGL_INLINE void ImGuiMenu::draw_menu()
 IGL_INLINE void ImGuiMenu::draw_viewer_window()
 {
   float menu_width = 180.f * menu_scaling();
-  ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiSetCond_FirstUseEver);
-  ImGui::SetNextWindowSize(ImVec2(0.0f, 0.0f), ImGuiSetCond_FirstUseEver);
+  ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiCond_FirstUseEver);
+  ImGui::SetNextWindowSize(ImVec2(0.0f, 0.0f), ImGuiCond_FirstUseEver);
   ImGui::SetNextWindowSizeConstraints(ImVec2(menu_width, -1.0f), ImVec2(menu_width, -1.0f));
   bool _viewer_menu_visible = true;
   ImGui::Begin(
@@ -304,14 +407,20 @@ IGL_INLINE void ImGuiMenu::draw_viewer_menu()
     ImGui::Checkbox("Show vertex labels", &(viewer->data().show_vertid));
     ImGui::Checkbox("Show faces labels", &(viewer->data().show_faceid));
     ImGui::Checkbox("Show extra labels", &(viewer->data().show_labels));
+    if(viewer->data().show_vertid 
+    || viewer->data().show_faceid
+    || viewer->data().show_labels)
+    {
+      ImGui::Checkbox("Use depth testing", &(viewer->data().filter_labels));
+    }
   }
 }
 
 IGL_INLINE void ImGuiMenu::draw_labels_window()
 {
   // Text labels
-  ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiCond_FirstUseEver);
-  ImGui::SetNextWindowSize(ImVec2(0.0f, 0.0f), ImGuiCond_FirstUseEver);
+  ImGui::SetNextWindowPos(ImVec2(0,0), ImGuiCond_Always);
+  ImGui::SetNextWindowSize(ImGui::GetIO().DisplaySize, ImGuiCond_Always);
   bool visible = true;
   ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0,0,0,0));
   ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0);
@@ -340,11 +449,14 @@ IGL_INLINE void ImGuiMenu::draw_labels(const igl::opengl::ViewerData &data)
   {
     for (int i = 0; i < data.V.rows(); ++i)
     {
-      draw_text(
-        data.V.row(i), 
-        data.V_normals.row(i), 
-        std::to_string(i),
-        data.label_color);
+      int show_label  = data.filter_labels ? viewer->data().vertex_label_mask(i,0) : 1;
+      if(show_label) {
+        draw_text(
+          data.V.row(i), 
+          data.V_normals.row(i), 
+          std::to_string(i),
+          data.label_color);
+      }
     }
   }
 
@@ -352,18 +464,21 @@ IGL_INLINE void ImGuiMenu::draw_labels(const igl::opengl::ViewerData &data)
   {
     for (int i = 0; i < data.F.rows(); ++i)
     {
-      Eigen::RowVector3d p = Eigen::RowVector3d::Zero();
-      for (int j = 0; j < data.F.cols(); ++j)
-      {
-        p += data.V.row(data.F(i,j));
-      }
-      p /= (double) data.F.cols();
+      int show_label  = data.filter_labels ? viewer->data().face_label_mask(i,0) : 1;
+      if(show_label) {
+        Eigen::RowVector3d p = Eigen::RowVector3d::Zero();
+        for (int j = 0; j < data.F.cols(); ++j)
+        {
+          p += data.V.row(data.F(i,j));
+        }
+        p /= (double) data.F.cols();
 
-      draw_text(
-        p, 
-        data.F_normals.row(i), 
-        std::to_string(i),
-        data.label_color);
+        draw_text(
+          p, 
+          data.F_normals.row(i), 
+          std::to_string(i),
+          data.label_color);
+      }
     }
   }
 

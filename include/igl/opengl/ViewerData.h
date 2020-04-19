@@ -256,6 +256,12 @@ public:
   bool show_faceid; // shared across viewports for now
   bool show_labels; // shared across viewports for now
 
+  // Variables for storing label
+  // depth test data
+  bool filter_labels;
+  Eigen::MatrixXi vertex_label_mask ;
+  Eigen::MatrixXi face_label_mask ; 
+
   // Point size / line width
   float point_size;
   float line_width;

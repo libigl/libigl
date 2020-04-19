@@ -30,6 +30,7 @@ IGL_INLINE igl::opengl::ViewerData::ViewerData()
   show_faceid       (false),
   show_labels       (false),
   show_texture      (false),
+  filter_labels     (false),
   point_size(30),
   line_width(0.5f),
   line_color(0,0,0,1),
@@ -91,6 +92,11 @@ IGL_INLINE void igl::opengl::ViewerData::set_mesh(
       cerr << "ERROR (set_mesh): The new mesh has a different number of vertices/faces. Please clear the mesh before plotting."<<endl;
   }
   dirty |= MeshGL::DIRTY_FACE | MeshGL::DIRTY_POSITION;
+  
+  // Now that we have V anf F we can
+  // initialize the label masks
+  vertex_label_mask = Eigen::MatrixXi::Zero(V.rows(), 1);
+  face_label_mask   = Eigen::MatrixXi::Zero(F.rows(), 1); 
 }
 
 IGL_INLINE void igl::opengl::ViewerData::set_vertices(const Eigen::MatrixXd& _V)
