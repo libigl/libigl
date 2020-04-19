@@ -26,7 +26,6 @@ IGL_INLINE void igl::facet_adjacency_matrix(
   {
     // number of faces incident on this unique edge
     const int mue = uEC(ue+1)-uEC(ue);
-    assert(mue <= 3 && "DEBUGGING, DELETE THIS ASSERTION");
     // base offset in uEE
     const int uECue = uEC(ue);
     assert(uECue < uEE.rows());
