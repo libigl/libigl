@@ -138,7 +138,7 @@ jobs:
             -DCMAKE_BUILD_TYPE=${{ matrix.config }} ^
             -DLIBIGL_USE_STATIC_LIBRARY=${{ matrix.static }} ^
             -DLIBIGL_WITH_CGAL=ON ^
-            -DBoost_NO_BOOST_CMAKE=ON ^
+            -DBOOST_ROOT=${BOOST_ROOT_1_72_0} ^
             -DLIBIGL_WITH_COMISO=OFF ^
             -B build ^
             -S .
