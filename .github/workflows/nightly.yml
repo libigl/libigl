@@ -177,6 +177,7 @@ jobs:
             -DLIBIGL_USE_STATIC_LIBRARY=${{ matrix.static }} ^
             -DLIBIGL_BUILD_TUTORIALS=${{ matrix.tutorials }} ^
             -DLIBIGL_WITH_CGAL=ON ^
+            -DBoost_NO_BOOST_CMAKE=ON ^
             -DLIBIGL_WITH_COMISO=OFF ^
             -B build ^
             -S .
