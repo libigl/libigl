@@ -111,7 +111,9 @@ jobs:
 
         # https://github.com/actions/cache/issues/101
       - name: Set env
-        run: echo "::set-env name=appdata::$($env:LOCALAPPDATA)"
+        run: |
+          echo "::set-env name=appdata::$($env:LOCALAPPDATA)"
+          echo "::set-env name=Boost_ROOT::$BOOST_ROOT_1_72_0"
 
       - name: Cache build
         id: cache-build
@@ -138,7 +140,6 @@ jobs:
             -DCMAKE_BUILD_TYPE=${{ matrix.config }} ^
             -DLIBIGL_USE_STATIC_LIBRARY=${{ matrix.static }} ^
             -DLIBIGL_WITH_CGAL=ON ^
-            -DBOOST_ROOT=${{ env.BOOST_ROOT_1_72_0 }} ^
             -DLIBIGL_WITH_COMISO=OFF ^
             -B build ^
             -S .
