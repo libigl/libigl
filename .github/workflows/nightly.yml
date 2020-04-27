@@ -168,7 +168,7 @@ jobs:
 
       - name: Set env
         run: |
-          echo "::set-env name=Boost_ROOT::$BOOST_ROOT_1_72_0"
+          echo "::set-env name=BOOST_ROOT::$BOOST_ROOT_1_72_0"
 
         # We run configure + build in the same step, since they both need to call VsDevCmd
         # Also, cmd uses ^ to break commands into multiple lines (in powershell this is `)
