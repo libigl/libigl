@@ -17,7 +17,7 @@ IGL_INLINE int igl::dijkstra(
   Eigen::PlainObjectBase<DerivedP> &previous)
 {
   int numV = VV.size();
-  min_distance.setConstant(numV, 1, std::numeric_limits<typename DerivedD::Scalar>::infinity());
+  min_distance.setConstant(numV, 1, std::numeric_limits<typename DerivedD::Scalar>::max());
   min_distance[source] = 0;
   previous.setConstant(numV, 1, -1);
   std::set<std::pair<typename DerivedD::Scalar, IndexType> > vertex_queue;
