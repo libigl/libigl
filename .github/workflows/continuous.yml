@@ -97,6 +97,7 @@ jobs:
     env:
       CC: cl.exe
       CXX: cl.exe
+      BOOST_ROOT: ${{ env.BOOST_ROOT_1_69_0 }}
     strategy:
       fail-fast: false
       matrix:
@@ -112,8 +113,7 @@ jobs:
         # https://github.com/actions/cache/issues/101
       - name: Set env
         run: |
-          echo "::set-env name=appdata::$($env:LOCALAPPDATA)"
-          echo "::set-env name=BOOST_ROOT::$BOOST_ROOT_1_72_0"
+          echo "::set-env name=appdata::$($env:LOCALAPPDATA)""
 
       - name: Cache build
         id: cache-build
