@@ -13,7 +13,7 @@ on:
 env:
   CTEST_OUTPUT_ON_FAILURE: ON
   CTEST_PARALLEL_LEVEL: 2
- 
+
 jobs:
   ####################
   # Linux / macOS
@@ -97,7 +97,6 @@ jobs:
     env:
       CC: cl.exe
       CXX: cl.exe
-      BOOST_ROOT: ${{ env.BOOST_ROOT_1_69_0 }}
     strategy:
       fail-fast: false
       matrix:
@@ -114,6 +113,7 @@ jobs:
       - name: Set env
         run: |
           echo "::set-env name=appdata::$($env:LOCALAPPDATA)""
+          echo "::set-env name=BOOST_ROOT::$env:BOOST_ROOT_1_69_0"
 
       - name: Cache build
         id: cache-build
