@@ -447,11 +447,6 @@ namespace glfw
                    Eigen::Vector3d(255.0/255.0,228.0/255.0,58.0/255.0),
                    Eigen::Vector3d(255.0/255.0,235.0/255.0,80.0/255.0));
 
-    // Alec: why?
-    if (data().V_uv.rows() == 0)
-    {
-      data().grid_texture();
-    }
     for(int i=0;i<core_list.size(); i++)
         core_list[i].align_camera_center(data().V,data().F);
 
