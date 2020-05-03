@@ -149,7 +149,6 @@ jobs:
     env:
       CC: cl.exe
       CXX: cl.exe
-      BOOST_ROOT: ${{ env.BOOST_ROOT_1_69_0 }}
     strategy:
       fail-fast: false
       matrix:
