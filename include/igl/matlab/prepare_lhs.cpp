@@ -86,7 +86,7 @@ IGL_INLINE void igl::matlab::prepare_lhs_double(
 
 
 template <typename Vtype>
-IGL_INLINE void igl::prepare_lhs_double(
+IGL_INLINE void igl::matlab::prepare_lhs_double(
   const std::vector<Vtype> & V,
   mxArray *plhs[])
 {
