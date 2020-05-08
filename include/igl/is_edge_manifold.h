@@ -13,15 +13,14 @@
 
 namespace igl 
 {
-  // check if the mesh is edge-manifold (every edge is incident one one face
-  // (boundary) or two oppositely oriented faces).
+  // check if the mesh is edge-manifold
   //
   // Inputs:
   //   F  #F by 3 list of triangle indices
-  // Outputs:
-  //   BF  #F by 3 list of flags revealing if edge opposite corresponding vertex
-  //   is non-manifold.
-  // Returns true iff all edges are manifold
+  // Returns whether mesh is edge manifold.
+  //
+  // Known Bugs:
+  //  Does not check for non-manifold vertices
   //
   // See also: is_vertex_manifold
   template <
