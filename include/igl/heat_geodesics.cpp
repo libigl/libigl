@@ -152,7 +152,7 @@ IGL_INLINE void igl::heat_geodesics_solve(
   }
   const DerivedD div_X = -data.Div*grad_u;
   const DerivedD Beq = (DerivedD(1,1)<<0).finished();
-  igl::min_quad_with_fixed_solve(data.Poisson,(-2.0*div_X).eval(),DerivedD(),Beq,D);
+  igl::min_quad_with_fixed_solve(data.Poisson,(-div_X).eval(),DerivedD(),Beq,D);
   DerivedD Dgamma;
   igl::slice(D,gamma,Dgamma);
   D.array() -= Dgamma.mean();
