@@ -9,6 +9,7 @@
 #include "ImGuiMenu.h"
 #include "ImGuiHelpers.h"
 #include <igl/project.h>
+#include <igl/unproject_ray.h>
 #include <imgui/imgui.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
@@ -112,98 +113,113 @@ IGL_INLINE bool ImGuiMenu::mouse_down(int button, int modifier)
   return ImGui::GetIO().WantCaptureMouse;
 }
 
-IGL_INLINE void ImGuiMenu::filterLabelsByDepth(
-)
+IGL_INLINE void ImGuiMenu::filterLabelsByDepth()
 {
 
   float closestDepth = -100.;
-  float farthestDepth = 100.;
+  float colinearityThreshold = -0.1;
+  float depthThreshold = 1;
 
   int width = viewer->core().viewport(2);
   int height = viewer->core().viewport(3);
   bool faceVisible;
-  std::vector<int> faces;
+  std::vector<int> candidateFaceIds;
+  viewer->data().vertex_label_mask = Eigen::MatrixXi::Zero(viewer->data().V.rows(), 1);
+  viewer->data().face_label_mask = Eigen::MatrixXi::Zero(viewer->data().F.rows(), 1);
 
-    auto data = viewer->data();
-    viewer->data().vertex_label_mask = Eigen::MatrixXi::Zero(data.V.rows(), 1);
-    viewer->data().face_label_mask = Eigen::MatrixXi::Zero(data.F.rows(), 1);
+  Eigen::MatrixXi viableVertIds = Eigen::MatrixXi::Zero(viewer->data().V.rows(), 1);
 
-    Eigen::MatrixXi viableVertIds = Eigen::MatrixXi::Zero(data.V.rows(), 1);
+  // Get unprojected ray shooting into the middle of the screen
+  Eigen::Vector3f s,dir;
+  igl::unproject_ray(
+    Eigen::Vector2f(width/2, height/2),
+    viewer->core().view, 
+    viewer->core().proj, 
+    viewer->core().viewport,
+    s,
+    dir);
 
+  // We use unprojected face normals to detemrmine which are pointing towards the ray
+  Eigen::MatrixXf faceNormals = (viewer->data().F_normals.cast <float> ()).transpose();
+  // Original transformation matrix for projecting the face normals
+  // Eigen::MatrixXf normalMatrix = (((viewer->core().view).block<3,3>(0,0)).inverse()).transpose();
 
-    Eigen::MatrixXf faceNormals = data.F_normals.cast <float> ();
-    Eigen::MatrixXf normalMatrix = (((viewer->core().view).block<3,3>(0,0)).inverse()).transpose();
-    Eigen::MatrixXf transformedFACENormals = normalMatrix*faceNormals.transpose();
-
-    for(int f=0; f<data.F.rows(); f++)
+  // See which face ids are in the viewport AND are facing the camera
+  for(int f=0; f<viewer->data().F.rows(); f++)
+  {
+    float dotProduct = ((dir).normalized()).dot(faceNormals.col(f).normalized());
+    // Ray and face normal are coliniear and opposite direction
+    if(dotProduct <= colinearityThreshold)
     {
-      float dotProduct = (-1*viewer->core().camera_eye.normalized()).dot(transformedFACENormals.col(f).normalized());
-      if(dotProduct <= -0.9)
+      faceVisible = true; // Reset boolean
+      // Get screen coordinates of each vertex of current face
+      Eigen::Vector3f currScreenCoords;
+      for(int i=0; i<=2; i++)
       {
-        faceVisible = true;
-        Eigen::Vector3f currScreenCoords;
-        for(int i=0;i<=2;i++)
-        {
-          if(viableVertIds(data.F.row(f)(i), 0)) continue;
-          
-          int vertIdx = data.F.row(f)(i);
-          Eigen::Vector3d p = data.V.row(vertIdx) + data.V_normals.row(vertIdx) * 0.005f * viewer->core().object_scale;
-          currScreenCoords = project(
-            Eigen::Vector3f(p.cast<float>()) , 
-            viewer->core().view, viewer->core().proj, viewer->core().viewport);
-          int x = round(currScreenCoords(0));
-          int y = round(currScreenCoords(1));
+        int vertIdx = viewer->data().F.row(f)(i);
+        if(viableVertIds(vertIdx, 0)) continue;
 
-          Eigen::Vector4f currentVertex(
-          data.V.row(vertIdx)(0), 
-          data.V.row(vertIdx)(1), 
-          data.V.row(vertIdx)(2), 
+        // Eigen::Vector3d p = viewer->data().V.row(vertIdx) + viewer->data().V_normals.row(vertIdx) * 0.005f * viewer->core().object_scale;
+        Eigen::Vector3d p = viewer->data().V.row(vertIdx);
+        currScreenCoords = igl::project(
+          Eigen::Vector3f(p.cast<float>()), 
+          viewer->core().view, 
+          viewer->core().proj, 
+          viewer->core().viewport
+        );
+        float x = currScreenCoords(0);
+        float y = currScreenCoords(1);
+        if(x < 0 || x >= width || y < 0 || y >= height) 
+        {
+          faceVisible = false;
+          break;
+        }
+
+        // Obtain depth of vertex relative to the camera
+        Eigen::Vector4f currentVertex(
+          viewer->data().V.row(vertIdx)(0), 
+          viewer->data().V.row(vertIdx)(1), 
+          viewer->data().V.row(vertIdx)(2), 
           1.0);
-          Eigen::MatrixXf viewSpaceVertex = viewer->core().view*( currentVertex );
-          if(viewSpaceVertex(2) > closestDepth)
-          {
-            closestDepth = viewSpaceVertex(2);
-          }
-          if(viewSpaceVertex(2) < farthestDepth)
-          {
-            farthestDepth = viewSpaceVertex(2);
-          }
-          if(x < 0 || x >= height || y < 0 || y >= width) {
-            faceVisible = false;
-            break;
-          }
-        }
-        if(faceVisible)
-        {
-          faces.push_back(f);
-          for(int i=0;i<=2;i++)
-          {
-            viableVertIds(data.F.row(f)(i), 0) = 1;
-          }
-        }
+        Eigen::MatrixXf viewSpaceVertex = viewer->core().view*(currentVertex);
+        if(viewSpaceVertex(2) > closestDepth)
+          closestDepth = viewSpaceVertex(2);
       }
-    }
-
-    for(int f=0; f < faces.size(); f++)
-    {
-      int v1 = data.F.row(faces[f])(0) ; 
-      int v2 = data.F.row(faces[f])(1) ; 
-      int v3 = data.F.row(faces[f])(2) ;
-      
-      Eigen::Vector4f currentVertex(
-      data.V.row(v1)(0), 
-      data.V.row(v1)(1), 
-      data.V.row(v1)(2), 
-      1.0);
-      Eigen::MatrixXf viewSpaceVertex = viewer->core().view*( currentVertex );
-      if(viewSpaceVertex(2) >= closestDepth-2)
+      if(faceVisible)
       {
-        viewer->data().face_label_mask(faces[f], 0) = 1;
-        viewer->data().vertex_label_mask(v1,0)=1;
-        viewer->data().vertex_label_mask(v2,0)=1;
-        viewer->data().vertex_label_mask(v3,0)=1;
+        candidateFaceIds.push_back(f);
+        // Cache visited verts to optimize this nested for loop
+        for(int i=0;i<=2;i++)
+          viableVertIds(viewer->data().F.row(f)(i), 0) = 1;
       }
     }
+  }
+
+  // Of the candidate faces only select ones that are closest to screen.
+  // This calculation is fast enough so that this function can
+  // be invoked on mouse_move, not just on mouse_up.
+  // Alternatively we use the unproject_onto_mesh function which 
+  // is more accurate but much slower.
+  for(int f=0; f < candidateFaceIds.size(); f++)
+  {
+    int v1 = viewer->data().F.row(candidateFaceIds[f])(0) ; 
+    int v2 = viewer->data().F.row(candidateFaceIds[f])(1) ; 
+    int v3 = viewer->data().F.row(candidateFaceIds[f])(2) ;
+
+    Eigen::Vector4f currentVertex(
+      viewer->data().V.row(v1)(0), 
+      viewer->data().V.row(v1)(1), 
+      viewer->data().V.row(v1)(2), 
+      1.0);
+    Eigen::MatrixXf viewSpaceVertex = viewer->core().view*( currentVertex );
+    if(viewSpaceVertex(2) >= closestDepth-depthThreshold)
+    {
+      viewer->data().face_label_mask(candidateFaceIds[f], 0) = 1;
+      viewer->data().vertex_label_mask(v1,0)=1;
+      viewer->data().vertex_label_mask(v2,0)=1;
+      viewer->data().vertex_label_mask(v3,0)=1;
+    }
+  }
 }
 
 IGL_INLINE bool ImGuiMenu::mouse_up(int button, int modifier)
