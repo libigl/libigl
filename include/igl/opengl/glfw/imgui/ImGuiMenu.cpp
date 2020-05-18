@@ -15,7 +15,6 @@
 #include <imgui_impl_opengl3.h>
 #include <imgui_fonts_droid_sans.h>
 #include <GLFW/glfw3.h>
-#include <iostream>
 ////////////////////////////////////////////////////////////////////////////////
 
 namespace igl
@@ -113,11 +112,24 @@ IGL_INLINE bool ImGuiMenu::mouse_down(int button, int modifier)
   return ImGui::GetIO().WantCaptureMouse;
 }
 
-IGL_INLINE void ImGuiMenu::filterLabelsByDepth()
+/**
+ * Determines which faces have normals collinear
+ * and facing the camera, and filters labels of faces
+ * and vertices which are
+ * 1) outside the viewport
+ * 2) occluded from the current angle
+ * 
+ * */ 
+IGL_INLINE void ImGuiMenu::filter_labels_by_depth()
 {
 
-  float closestDepth = -100.;
+  // Threshold for dot prod of view ray at center of screen
+  // to the face normals. Negative since face normal is
+  // pointing in opposite direction to view ray
   float colinearityThreshold = -0.1;
+  // For all vertices facing camera, 
+  // occlude those past the closest of them all
+  float closestDepth = -100.;
   float depthThreshold = 1;
 
   int width = viewer->core().viewport(2);
@@ -131,7 +143,7 @@ IGL_INLINE void ImGuiMenu::filterLabelsByDepth()
 
   // Get unprojected ray shooting into the middle of the screen
   Eigen::Vector3f s,dir;
-  igl::unproject_ray(
+  unproject_ray(
     Eigen::Vector2f(width/2, height/2),
     viewer->core().view, 
     viewer->core().proj, 
@@ -141,8 +153,6 @@ IGL_INLINE void ImGuiMenu::filterLabelsByDepth()
 
   // We use unprojected face normals to detemrmine which are pointing towards the ray
   Eigen::MatrixXf faceNormals = (viewer->data().F_normals.cast <float> ()).transpose();
-  // Original transformation matrix for projecting the face normals
-  // Eigen::MatrixXf normalMatrix = (((viewer->core().view).block<3,3>(0,0)).inverse()).transpose();
 
   // See which face ids are in the viewport AND are facing the camera
   for(int f=0; f<viewer->data().F.rows(); f++)
@@ -159,7 +169,6 @@ IGL_INLINE void ImGuiMenu::filterLabelsByDepth()
         int vertIdx = viewer->data().F.row(f)(i);
         if(viableVertIds(vertIdx, 0)) continue;
 
-        // Eigen::Vector3d p = viewer->data().V.row(vertIdx) + viewer->data().V_normals.row(vertIdx) * 0.005f * viewer->core().object_scale;
         Eigen::Vector3d p = viewer->data().V.row(vertIdx);
         currScreenCoords = igl::project(
           Eigen::Vector3f(p.cast<float>()), 
@@ -197,7 +206,7 @@ IGL_INLINE void ImGuiMenu::filterLabelsByDepth()
 
   // Of the candidate faces only select ones that are closest to screen.
   // This calculation is fast enough so that this function can
-  // be invoked on mouse_move, not just on mouse_up.
+  // be invoked at refresh rate, not just on mouse IO.
   // Alternatively we use the unproject_onto_mesh function which 
   // is more accurate but much slower.
   for(int f=0; f < candidateFaceIds.size(); f++)
@@ -455,7 +464,7 @@ IGL_INLINE void ImGuiMenu::draw_labels(const igl::opengl::ViewerData &data)
   // Perform label occlusion detection
   if(viewer->data().filter_labels)
   {
-    filterLabelsByDepth();
+    filter_labels_by_depth();
   }
 
   // Alec: How can we get these to respect (optionally) the depth of the scene?

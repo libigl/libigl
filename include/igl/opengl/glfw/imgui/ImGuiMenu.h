@@ -82,7 +82,7 @@ public:
   IGL_INLINE virtual void draw_custom_window() { }
 
   // Helper Functions
-  IGL_INLINE virtual void filterLabelsByDepth();
+  IGL_INLINE virtual void filter_labels_by_depth();
 
   // Easy-to-customize callbacks
   std::function<void(void)> callback_draw_viewer_window;
