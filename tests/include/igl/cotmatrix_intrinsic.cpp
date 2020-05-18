@@ -61,7 +61,7 @@ TEST_CASE("cotmatrix_intrinsic: periodic", "[igl]")
   test_common::assert_near(L_d,L_gt,igl::EPS<double>());
 }
 
-TEST_CASE("cotmatrix_intrinsic: manifold_meshes", "[igl]")
+TEST_CASE("cotmatrix_intrinsic: manifold_meshes", "[igl]" "[slow]")
 {
   auto test_case = [](const std::string &param)
   {

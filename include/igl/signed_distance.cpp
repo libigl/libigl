@@ -62,7 +62,8 @@ IGL_INLINE void igl::signed_distance(
       break;
   }
 
-  Eigen::Matrix<typename DerivedV::Scalar,Eigen::Dynamic,3> FN,VN,EN;
+  // Need to be Dynamic columns to work with both 2d and 3d
+  Eigen::Matrix<typename DerivedV::Scalar,Eigen::Dynamic,Eigen::Dynamic> FN,VN,EN;
   Eigen::Matrix<typename DerivedF::Scalar,Eigen::Dynamic,2> E;
   Eigen::Matrix<typename DerivedF::Scalar,Eigen::Dynamic,1> EMAP;
   WindingNumberAABB<RowVector3S,DerivedV,DerivedF> hier3;
@@ -192,7 +193,9 @@ IGL_INLINE void igl::signed_distance(
           Eigen::Matrix<typename DerivedV::Scalar,1,2>  n2;
           dim==3 ?
             pseudonormal_test(V,F,FN,VN,EN,EMAP,q3,i,c3,s,n3):
-            pseudonormal_test(V,E,EN,VN,q2,i,c2,s,n2);
+            // This should use (V,F,FN), not (V,E,EN) since E is auxiliary for
+            // 3D case, not the input "F"acets.
+            pseudonormal_test(V,F,FN,VN,q2,i,c2,s,n2);
           Eigen::Matrix<typename DerivedN::Scalar,1,Eigen::Dynamic>  n;
           (dim==3 ? n = n3.template cast<typename DerivedN::Scalar>() : n = n2.template cast<typename DerivedN::Scalar>());
           N.row(p) = n.template cast<typename DerivedN::Scalar>();

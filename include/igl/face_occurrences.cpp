@@ -48,7 +48,7 @@ IGL_INLINE void igl::face_occurrences(
   {
     // sorted face should definitely be in counts map
     assert(counts.find(sortedF[i]) != counts.end());
-    C[i] = counts[sortedF[i]];
+    C[i] = static_cast<IntegerC>(counts[sortedF[i]]);
   }
 }
 

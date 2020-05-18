@@ -22,7 +22,8 @@ namespace igl
   // Output:
   //   Y  #R by #C matrix
   //
-  // See also: slice_mask
+  // See also: slice_mask, and Eigen's unaryExpr
+  //   https://stackoverflow.com/a/49411587/148668
   template <
     typename TX,
     typename TY,

@@ -29,6 +29,25 @@ namespace igl
     const Eigen::MatrixBase<DerivedX > & X,
     const int dim,
     Eigen::PlainObjectBase<DerivedY > & Y);
+  // Computes a cumulative sum of the columns of [0;X]
+  //
+  // Inputs:
+  //   X  m by n Matrix to be cumulatively summed.
+  //   dim  dimension to take cumulative sum (1 or 2)
+  //   zero_prefix whe
+  // Output:
+  //   if zero_prefix == false
+  //     Y  m by n Matrix containing cumulative sum
+  //   else
+  //     Y  m+1 by n Matrix containing cumulative sum if dim=1
+  //     or 
+  //     Y  m by n+1 Matrix containing cumulative sum if dim=2
+  template <typename DerivedX, typename DerivedY>
+  IGL_INLINE void cumsum(
+    const Eigen::MatrixBase<DerivedX > & X,
+    const int dim,
+    const bool zero_prefix,
+    Eigen::PlainObjectBase<DerivedY > & Y);
   //template <typename DerivedX, typename DerivedY>
   //IGL_INLINE void cumsum(
   //  const Eigen::MatrixBase<DerivedX > & X,

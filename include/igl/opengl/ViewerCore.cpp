@@ -172,6 +172,8 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
   GLint lighting_factori      = glGetUniformLocation(data.meshgl.shader_mesh,"lighting_factor");
   GLint fixed_colori          = glGetUniformLocation(data.meshgl.shader_mesh,"fixed_color");
   GLint texture_factori       = glGetUniformLocation(data.meshgl.shader_mesh,"texture_factor");
+  GLint matcap_factori        = glGetUniformLocation(data.meshgl.shader_mesh,"matcap_factor");
+  GLint double_sidedi         = glGetUniformLocation(data.meshgl.shader_mesh,"double_sided");
 
   glUniform1f(specular_exponenti, data.shininess);
   glUniform3fv(light_position_eyei, 1, light_position.data());
@@ -185,7 +187,10 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
     {
       // Texture
       glUniform1f(texture_factori, is_set(data.show_texture) ? 1.0f : 0.0f);
+      glUniform1f(matcap_factori, is_set(data.use_matcap) ? 1.0f : 0.0f);
+      glUniform1f(double_sidedi, data.double_sided ? 1.0f : 0.0f);
       data.meshgl.draw_mesh(true);
+      glUniform1f(matcap_factori, 0.0f);
       glUniform1f(texture_factori, 0.0f);
     }
 

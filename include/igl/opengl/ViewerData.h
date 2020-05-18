@@ -183,7 +183,10 @@ public:
     const Eigen::Vector4d& diffuse,
     const Eigen::Vector4d& specular);
 
-  // Generates a default grid texture
+  // Generate a normal image matcap
+  IGL_INLINE void normal_matcap();
+
+  // Generates a default grid texture (without uvs)
   IGL_INLINE void grid_texture();
 
   // Copy visualization options from one viewport to another
@@ -240,6 +243,9 @@ public:
   // Enable per-face or per-vertex properties
   bool face_based;
 
+  // Enable double-sided lighting on faces
+  bool double_sided;
+
   // Invert mesh normals
   bool invert_normals;
 
@@ -250,6 +256,7 @@ public:
   unsigned int show_overlay;
   unsigned int show_overlay_depth;
   unsigned int show_texture;
+  unsigned int use_matcap;
   unsigned int show_faces;
   unsigned int show_lines;
   bool show_vertid; // shared across viewports for now
@@ -327,6 +334,7 @@ namespace igl
       SERIALIZE_MEMBER(show_faceid);
       SERIALIZE_MEMBER(show_labels);
       SERIALIZE_MEMBER(show_texture);
+      SERIALIZE_MEMBER(double_sided);
       SERIALIZE_MEMBER(point_size);
       SERIALIZE_MEMBER(line_width);
       SERIALIZE_MEMBER(line_color);

@@ -210,13 +210,18 @@ namespace glfw
     glfwGetWindowSize(window, &width_window, &height_window);
     highdpi = windowWidth/width_window;
     glfw_window_size(window,width_window,height_window);
-    //opengl.init();
-    for(int i=0;i<core_list.size(); i++)
-    {
-      core_list[i].align_camera_center(data().V,data().F);
-    }
     // Initialize IGL viewer
     init();
+    for(auto &core : this->core_list)
+    {
+      for(auto &data : this->data_list)
+      {
+        if(data.is_visible & core.id)
+        {
+          this->core(core.id).align_camera_center(data.V, data.F);
+        }
+      }
+    }
     return EXIT_SUCCESS;
   }
 
@@ -349,6 +354,7 @@ namespace glfw
     const std::string usage(R"(igl::opengl::glfw::Viewer usage:
   [drag]  Rotate scene
   A,a     Toggle animation (tight draw loop)
+  D,d     Toggle double sided lighting
   F,f     Toggle face based
   I,i     Toggle invert normals
   L,l     Toggle wireframe
@@ -441,11 +447,6 @@ namespace glfw
                    Eigen::Vector3d(255.0/255.0,228.0/255.0,58.0/255.0),
                    Eigen::Vector3d(255.0/255.0,235.0/255.0,80.0/255.0));
 
-    // Alec: why?
-    if (data().V_uv.rows() == 0)
-    {
-      data().grid_texture();
-    }
     for(int i=0;i<core_list.size(); i++)
         core_list[i].align_camera_center(data().V,data().F);
 
@@ -520,6 +521,12 @@ namespace glfw
       case 'a':
       {
         core().is_animating = !core().is_animating;
+        return true;
+      }
+      case 'D':
+      case 'd':
+      {
+        data().double_sided = !data().double_sided;
         return true;
       }
       case 'F':
