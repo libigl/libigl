@@ -15,11 +15,11 @@ namespace igl
   // tolerance (epsilon)
   //
   // Inputs:
-  //   V  #SV by dim list of vertex positions
+  //   V  #V by dim list of vertex positions
   //   epsilon  uniqueness tolerance (significant digit), can probably think of
   //     this as a tolerance on L1 distance
   // Outputs:
-  //   SV  #V by dim new list of vertex positions
+  //   SV  #SV by dim new list of vertex positions
   //   SVI #SV by 1 list of indices so SV = V(SVI,:) 
   //   SVJ #V by 1 list of indices so V = SV(SVJ,:)
   //
