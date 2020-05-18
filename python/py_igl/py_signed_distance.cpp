@@ -11,6 +11,7 @@ py::enum_<igl::SignedDistanceType>(m, "SignedDistanceType")
     .value("SIGNED_DISTANCE_TYPE_WINDING_NUMBER", igl::SIGNED_DISTANCE_TYPE_WINDING_NUMBER)
     .value("SIGNED_DISTANCE_TYPE_DEFAULT", igl::SIGNED_DISTANCE_TYPE_DEFAULT)
     .value("SIGNED_DISTANCE_TYPE_UNSIGNED", igl::SIGNED_DISTANCE_TYPE_UNSIGNED)
+    .value("SIGNED_DISTANCE_TYPE_FAST_WINDING_NUMBER", igl::SIGNED_DISTANCE_TYPE_FAST_WINDING_NUMBER)
     .value("NUM_SIGNED_DISTANCE_TYPE", igl::NUM_SIGNED_DISTANCE_TYPE)
     .export_values();
 
@@ -80,6 +81,22 @@ m.def("signed_distance_pseudonormal", []
   I = Iv;
 }, __doc_igl_signed_distance_pseudonormal,
 py::arg("P"), py::arg("V"), py::arg("F"), py::arg("tree"), py::arg("FN"), py::arg("VN"), py::arg("EN"), py::arg("EMAP"), py::arg("S"), py::arg("I"), py::arg("C"), py::arg("N"));
+
+m.def("signed_distance_fast_winding_number", []
+(
+    const Eigen::MatrixXd& P,
+    const Eigen::MatrixXd& V,
+    const Eigen::MatrixXi & F,
+    const igl::AABB<Eigen::MatrixXd,3> & tree,
+    const igl::FastWindingNumberBVH & fwn_bvh,
+    Eigen::MatrixXd & S
+)
+{
+  Eigen::VectorXd Sv;
+  igl::signed_distance_fast_winding_number(P,V,F,tree,fwn_bvh,Sv);
+  S = Sv;
+}, __doc_igl_signed_distance_pseudonormal,
+py::arg("P"), py::arg("V"), py::arg("F"), py::arg("tree"), py::arg("fwn_bvh"), py::arg("S"));
 
 //m.def("signed_distance_pseudonormal", []
 //(

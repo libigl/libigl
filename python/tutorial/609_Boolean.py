@@ -50,9 +50,9 @@ def key_down(viewer, key, modifier):
     elif key == ord(','):
         boolean_type = boolean_types[(boolean_types.index(boolean_type) + len(boolean_types) - 1) % len(boolean_types)]
     elif key == ord('['):
-        viewer.core.camera_dnear -= 0.1
+        viewer.core().camera_dnear -= 0.1
     elif key == ord(']'):
-        viewer.core.camera_dnear += 0.1
+        viewer.core().camera_dnear += 0.1
     else:
         return False
 
@@ -88,5 +88,5 @@ if __name__ == "__main__":
 
     viewer.data().show_lines = True
     viewer.callback_key_down = key_down
-    viewer.core.camera_dnear = 3.9
+    viewer.core().camera_dnear = 3.9
     viewer.launch()
