@@ -224,11 +224,6 @@ IGL_INLINE void ImGuiMenu::filterLabelsByDepth()
 
 IGL_INLINE bool ImGuiMenu::mouse_up(int button, int modifier)
 {
-
-  if(viewer->data().filter_labels)
-  {
-    filterLabelsByDepth();
-  }
   //return ImGui::GetIO().WantCaptureMouse;
   // !! Should not steal mouse up
   return false;
@@ -236,10 +231,6 @@ IGL_INLINE bool ImGuiMenu::mouse_up(int button, int modifier)
 
 IGL_INLINE bool ImGuiMenu::mouse_move(int mouse_x, int mouse_y)
 {
-  if(viewer->data().filter_labels && mouse_x%50==0)
-  {
-    filterLabelsByDepth();
-  }
   return ImGui::GetIO().WantCaptureMouse;
 }
 
@@ -460,6 +451,13 @@ IGL_INLINE void ImGuiMenu::draw_labels_window()
 
 IGL_INLINE void ImGuiMenu::draw_labels(const igl::opengl::ViewerData &data)
 {
+
+  // Perform label occlusion detection
+  if(viewer->data().filter_labels)
+  {
+    filterLabelsByDepth();
+  }
+
   // Alec: How can we get these to respect (optionally) the depth of the scene?
   if (data.show_vertid)
   {
