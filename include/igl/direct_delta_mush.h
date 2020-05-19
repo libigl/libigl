@@ -8,10 +8,12 @@
 #ifndef IGL_DIRECT_DELTA_MUSH_H
 #define IGL_DIRECT_DELTA_MUSH_H
 
-#include <igl/igl_inline.h>
+#include "igl_inline.h"
 
 #include <Eigen/Core>
-#include <Eigen/Geometry>
+// #include <Eigen/Geometry>
+#include <Eigen/Sparse>
+// #include <Eigen/LU>
 #include <vector>
 
 namespace igl {
@@ -31,15 +33,17 @@ namespace igl {
     typename DerivedF,
     typename DerivedC,
     typename DerivedE,
+    typename DerivedW,
     typename DerivedT,
+    typename DerivedTAlloc,
     typename DerivedU>
   IGL_INLINE void direct_delta_mush(
     const Eigen::MatrixBase<DerivedV> &V,
     const Eigen::MatrixBase<DerivedF> &F,
     const Eigen::MatrixBase<DerivedC> &C,
     const Eigen::MatrixBase<DerivedE> &E,
-    const std::vector<
-      Eigen::Affine3d, Eigen::aligned_allocator<Eigen::Affine3d>> &T, /* should eventually be templated more generally than double */
+    const Eigen::MatrixBase<DerivedW> &W,
+    const std::vector<DerivedT, DerivedTAlloc> &T,
     Eigen::PlainObjectBase<DerivedU> &U);
 
   // Precomputation
@@ -49,6 +53,7 @@ namespace igl {
   //   F  #F by 3 list of triangle indices into rows of V
   //   C  #C by 3 list of rest pose bone endpoint positions
   //   E  #T by 2 list of bone edge indices into rows of C
+  //   W  #V by #C list of weights // TODO: this could be a sparse matrix?
   //   p  number of smoothing iterations
   //   lambda  smoothing step size
   //   kappa  smoothness parameter (section 3.3)
@@ -59,12 +64,14 @@ namespace igl {
     typename DerivedF,
     typename DerivedC,
     typename DerivedE,
+    typename DerivedW,
     typename DerivedOmega>
-  IGL_INLINE void precomputation(
+  IGL_INLINE void direct_delta_mush_precomputation(
     const Eigen::MatrixBase<DerivedV> &V,
     const Eigen::MatrixBase<DerivedF> &F,
     const Eigen::MatrixBase<DerivedC> &C,
     const Eigen::MatrixBase<DerivedE> &E,
+    const Eigen::MatrixBase<DerivedW> &W,
     const int p,
     const typename DerivedV::Scalar lambda,
     const typename DerivedV::Scalar kappa,
@@ -76,18 +83,18 @@ namespace igl {
   // Outputs:
   //   U  #V by 3 list of output vertex positions
   template <
-    typename DerivedV,
-    typename DerivedF,
-    typename DerivedC,
-    typename DerivedE,
     typename DerivedT,
+    typename DerivedTAlloc,
     typename DerivedOmega,
     typename DerivedU>
-  IGL_INLINE void pose_evaluation(
-    const std::vector<
-      Eigen::Affine3d, Eigen::aligned_allocator<Eigen::Affine3d>> &T, /* should eventually be templated more generally than double */
+  IGL_INLINE void direct_delta_mush_pose_evaluation(
+    const std::vector<DerivedT, DerivedTAlloc> &T,
     const Eigen::MatrixBase<DerivedOmega> &Omega,
     Eigen::PlainObjectBase<DerivedU> &U);
 } // namespace igl
+
+#ifndef IGL_STATIC_LIBRARY
+#  include "direct_delta_mush.cpp"
+#endif
 
 #endif
