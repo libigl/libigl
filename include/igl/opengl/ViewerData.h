@@ -60,7 +60,13 @@ public:
   //
   // Inputs:
   //   C  #V|#F|1 by 3 list of colors
-  IGL_INLINE void set_colors(const Eigen::MatrixXd &C);
+  enum ColorDataType 
+  {
+    COLOR_DATA_TYPE_AUTO = 0,  //  infer if the input color matrix is applied to verticies or faces
+    COLOR_DATA_TYPE_VERTICIES = 1, // color matrix is applied to verticies
+    COLOR_DATA_TYPE_FACES = 2 // color matrix is applied to faces
+  };
+  IGL_INLINE void set_colors(const Eigen::MatrixXd &C, ColorDataType cdt = COLOR_DATA_TYPE_AUTO);
 
   // Set per-vertex UV coordinates
   //

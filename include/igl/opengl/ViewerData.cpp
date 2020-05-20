@@ -140,7 +140,7 @@ IGL_INLINE void igl::opengl::ViewerData::copy_options(const ViewerCore &from, co
   to.set(show_lines        , from.is_set(show_lines)        );
 }
 
-IGL_INLINE void igl::opengl::ViewerData::set_colors(const Eigen::MatrixXd &C)
+IGL_INLINE void igl::opengl::ViewerData::set_colors(const Eigen::MatrixXd &C, ColorDataType cdt)
 {
   using namespace std;
   using namespace Eigen;
@@ -189,7 +189,7 @@ IGL_INLINE void igl::opengl::ViewerData::set_colors(const Eigen::MatrixXd &C)
     F_material_ambient = ambient(F_material_diffuse);
     F_material_specular = specular(F_material_diffuse);
   }
-  else if (C.rows() == V.rows())
+  else if (C.rows() == V.rows() && (cdt == COLOR_DATA_TYPE_AUTO || cdt == COLOR_DATA_TYPE_VERTICIES))
   {
     set_face_based(false);
     for (unsigned i=0;i<V_material_diffuse.rows();++i)
@@ -202,7 +202,7 @@ IGL_INLINE void igl::opengl::ViewerData::set_colors(const Eigen::MatrixXd &C)
     V_material_ambient = ambient(V_material_diffuse);
     V_material_specular = specular(V_material_diffuse);
   }
-  else if (C.rows() == F.rows())
+  else if (C.rows() == F.rows() && (cdt == COLOR_DATA_TYPE_AUTO || cdt == COLOR_DATA_TYPE_FACES))
   {
     set_face_based(true);
     for (unsigned i=0;i<F_material_diffuse.rows();++i)
