@@ -11,9 +11,9 @@
 #include "igl_inline.h"
 
 #include <Eigen/Core>
-// #include <Eigen/Geometry>
+#include <Eigen/Geometry>
 #include <Eigen/Sparse>
-// #include <Eigen/LU>
+#include <Eigen/LU>
 #include <vector>
 
 namespace igl {
@@ -42,7 +42,7 @@ namespace igl {
     const Eigen::MatrixBase<DerivedF> &F,
     const Eigen::MatrixBase<DerivedC> &C,
     const Eigen::MatrixBase<DerivedE> &E,
-    const Eigen::MatrixBase<DerivedW> &W,
+    const Eigen::SparseMatrix<DerivedW> &W,
     const std::vector<DerivedT, DerivedTAlloc> &T,
     Eigen::PlainObjectBase<DerivedU> &U);
 
@@ -71,7 +71,7 @@ namespace igl {
     const Eigen::MatrixBase<DerivedF> &F,
     const Eigen::MatrixBase<DerivedC> &C,
     const Eigen::MatrixBase<DerivedE> &E,
-    const Eigen::MatrixBase<DerivedW> &W,
+    const Eigen::SparseMatrix<DerivedW> &W,
     const int p,
     const typename DerivedV::Scalar lambda,
     const typename DerivedV::Scalar kappa,

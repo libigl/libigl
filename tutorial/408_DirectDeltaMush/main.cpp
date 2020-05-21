@@ -13,6 +13,7 @@
 
 #include <Eigen/Geometry>
 #include <Eigen/StdVector>
+#include <Eigen/Sparse>
 #include <vector>
 #include <algorithm>
 #include <iostream>
@@ -29,14 +30,15 @@ const Eigen::RowVector3d sea_green(70. / 255., 252. / 255., 167. / 255.);
 Eigen::MatrixXd V, W, C, U, M, Omega;
 Eigen::MatrixXi F, BE;
 Eigen::VectorXi P;
+Eigen::SparseMatrix<double> W_sparse;
 std::vector<RotationList> poses;
 double anim_t = 0.0;
 double anim_t_dir = 0.015;
-bool use_dqs = false;
+bool use_ddm = false;
 bool recompute = true;
-float p = 10;
-float lambda = 1.;
-float kappa = 1.;
+float p = 3.;
+float lambda = 0.5;
+float kappa = 0.4; // kappa < lambda to keep R_i well-defined
 
 bool pre_draw(igl::opengl::glfw::Viewer &viewer)
 {
@@ -68,8 +70,9 @@ bool pre_draw(igl::opengl::glfw::Viewer &viewer)
         a.matrix().transpose().block(0, 0, dim + 1, dim);
     }
     // Compute deformation via LBS as matrix multiplication
-    if (use_dqs) {
-      igl::direct_delta_mush(V, F, C, BE, W, T_list, U);
+    if (use_ddm) {
+      igl::direct_delta_mush_pose_evaluation(T_list, Omega, U);
+      igl::direct_delta_mush(V, F, C, BE, W_sparse, T_list, U);
     }
     else {
       U = M * T;
@@ -99,7 +102,7 @@ bool key_down(igl::opengl::glfw::Viewer &viewer, unsigned char key, int mods)
   switch (key) {
     case 'D':
     case 'd':
-      use_dqs = !use_dqs;
+      use_ddm = !use_ddm;
       return true;
     case ' ':
       viewer.core().is_animating = !viewer.core().is_animating;
@@ -127,11 +130,12 @@ int main(int argc, char *argv[])
   poses[3][2] = rest_pose[2] * bend * rest_pose[2].conjugate();
 
   igl::readDMAT(TUTORIAL_SHARED_PATH "/arm-weights.dmat", W);
+  W_sparse = W.sparseView();
   igl::lbs_matrix(V, W, M);
 
   // Precomputation for Direct Delta Mush
   cout<<"Initializing Direct Delta Mush..."<<endl;
-  igl::direct_delta_mush_precomputation(V, F, C, BE, W, p, lambda, kappa, Omega);
+  igl::direct_delta_mush_precomputation(V, F, C, BE, W_sparse, p, lambda, kappa, Omega);
 
   // Plot the mesh with pseudocolors
   igl::opengl::glfw::Viewer viewer;
