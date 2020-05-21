@@ -432,6 +432,7 @@ namespace glfw
       }
 
       data().set_mesh(V,F);
+      if(!UV_V.empty() && !UV_F.empty()) // not every obj file contains UV_V,UV_F information.
       data().set_uv(UV_V,UV_F);
 
     }
