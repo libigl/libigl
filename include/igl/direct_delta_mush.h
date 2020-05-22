@@ -75,6 +75,7 @@ namespace igl {
     const int p,
     const typename DerivedV::Scalar lambda,
     const typename DerivedV::Scalar kappa,
+    const typename DerivedV::Scalar alpha,
     Eigen::PlainObjectBase<DerivedOmega> &Omega);
 
   // Pose evaluation

@@ -39,6 +39,7 @@ bool recompute = true;
 float p = 3.;
 float lambda = 0.5;
 float kappa = 0.4; // kappa < lambda to keep R_i well-defined
+float alpha = 0.5;
 
 bool pre_draw(igl::opengl::glfw::Viewer &viewer)
 {
@@ -135,7 +136,7 @@ int main(int argc, char *argv[])
 
   // Precomputation for Direct Delta Mush
   cout<<"Initializing Direct Delta Mush..."<<endl;
-  igl::direct_delta_mush_precomputation(V, F, C, BE, W_sparse, p, lambda, kappa, Omega);
+  igl::direct_delta_mush_precomputation(V, F, C, BE, W_sparse, p, lambda, kappa, alpha, Omega);
 
   // Plot the mesh with pseudocolors
   igl::opengl::glfw::Viewer viewer;
