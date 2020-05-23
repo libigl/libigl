@@ -15,6 +15,7 @@
 #include <imgui_impl_opengl3.h>
 #include <imgui_fonts_droid_sans.h>
 #include <GLFW/glfw3.h>
+#include <iostream>
 ////////////////////////////////////////////////////////////////////////////////
 
 namespace igl
