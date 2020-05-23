@@ -371,6 +371,14 @@ if(LIBIGL_WITH_OPENGL_GLFW_IMGUI)
   endif()
 endif()
 
+igl_download_imguizmo()
+add_library(imguizmo
+	${LIBIGL_EXTERNAL}/imguizmo/ImGuizmo.cpp
+	${LIBIGL_EXTERNAL}/imguizmo/ImGuizmo.h
+)
+target_link_libraries(imguizmo ${IGL_SCOPE} igl_opengl_glfw igl_opengl_glfw_imgui imgui)
+# target_link_libraries(imguizmo ${IGL_SCOPE} )
+
 ################################################################################
 ### Compile the png part ###
 if(LIBIGL_WITH_PNG)
