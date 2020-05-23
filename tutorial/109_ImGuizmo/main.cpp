@@ -1,7 +1,7 @@
 #include <igl/opengl/glfw/Viewer.h>
 #include <igl/opengl/glfw/imgui/ImGuiMenu.h>
+#include <igl/opengl/glfw/imgui/ImGuizmoMenu.h>
 #include <imgui/imgui.h>
-#include "slicing_plugin.h"
 #include <igl/readSTL.h>
 
 int main(int argc, char *argv[])
