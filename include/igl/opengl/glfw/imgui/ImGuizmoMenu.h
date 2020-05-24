@@ -36,14 +36,15 @@ void EditTransform(const float *cameraView, float *cameraProjection, float* matr
 	ImGui::InputFloat3("Sc", matrixScale, 3);
 	ImGuizmo::RecomposeMatrixFromComponents(matrixTranslation, matrixRotation, matrixScale, matrix);
 
-	if (mCurrentGizmoOperation != ImGuizmo::SCALE)
-	{
-		if (ImGui::RadioButton("Local", mCurrentGizmoMode == ImGuizmo::LOCAL))
-			mCurrentGizmoMode = ImGuizmo::LOCAL;
-		ImGui::SameLine();
-		if (ImGui::RadioButton("World", mCurrentGizmoMode == ImGuizmo::WORLD))
-			mCurrentGizmoMode = ImGuizmo::WORLD;
-	}
+	// if (mCurrentGizmoOperation != ImGuizmo::SCALE)
+	// {
+	// 	if (ImGui::RadioButton("Local", mCurrentGizmoMode == ImGuizmo::LOCAL))
+	// 		mCurrentGizmoMode = ImGuizmo::LOCAL;
+	// 	ImGui::SameLine();
+	// 	if (ImGui::RadioButton("World", mCurrentGizmoMode == ImGuizmo::WORLD))
+	// 		mCurrentGizmoMode = ImGuizmo::WORLD;
+	// }
+	
 	// if (ImGui::IsKeyPressed(83))
 	// 	useSnap = !useSnap;
 	// ImGui::Checkbox("##Snap", &useSnap);
