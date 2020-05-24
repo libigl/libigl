@@ -2,7 +2,7 @@
 #define tutorial_shared_path_h_included
 
 #ifndef TUTORIAL_SHARED_PATH
-#define TUTORIAL_SHARED_PATH "../shared"
+#define TUTORIAL_SHARED_PATH "../data"
 #endif
 
 #endif
