@@ -38,13 +38,13 @@ namespace igl {
     typename DerivedTAlloc,
     typename DerivedU>
   IGL_INLINE void direct_delta_mush(
-    const Eigen::MatrixBase<DerivedV> &V,
-    const Eigen::MatrixBase<DerivedF> &F,
-    const Eigen::MatrixBase<DerivedC> &C,
-    const Eigen::MatrixBase<DerivedE> &E,
-    const Eigen::SparseMatrix<DerivedW> &W,
-    const std::vector<DerivedT, DerivedTAlloc> &T,
-    Eigen::PlainObjectBase<DerivedU> &U);
+    const Eigen::MatrixBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedF> & F,
+    const Eigen::MatrixBase<DerivedC> & C,
+    const Eigen::MatrixBase<DerivedE> & E,
+    const Eigen::SparseMatrix<DerivedW> & W,
+    const std::vector<DerivedT, DerivedTAlloc> & T,
+    Eigen::PlainObjectBase<DerivedU> & U);
 
   // Precomputation
   //
@@ -52,8 +52,8 @@ namespace igl {
   //   V  #V by 3 list of rest pose vertex positions
   //   F  #F by 3 list of triangle indices into rows of V
   //   C  #C by 3 list of rest pose bone endpoint positions
-  //   E  #T by 2 list of bone edge indices into rows of C
-  //   W  #V by #C list of weights // TODO: this could be a sparse matrix?
+  //   E  #E by 2 list of bone edge indices into rows of C
+  //   W  #V by #E list of weights
   //   p  number of smoothing iterations
   //   lambda  smoothing step size
   //   kappa  smoothness parameter (section 3.3)
@@ -67,16 +67,16 @@ namespace igl {
     typename DerivedW,
     typename DerivedOmega>
   IGL_INLINE void direct_delta_mush_precomputation(
-    const Eigen::MatrixBase<DerivedV> &V,
-    const Eigen::MatrixBase<DerivedF> &F,
-    const Eigen::MatrixBase<DerivedC> &C,
-    const Eigen::MatrixBase<DerivedE> &E,
-    const Eigen::SparseMatrix<DerivedW> &W,
+    const Eigen::MatrixBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedF> & F,
+    const Eigen::MatrixBase<DerivedC> & C,
+    const Eigen::MatrixBase<DerivedE> & E,
+    const Eigen::SparseMatrix<DerivedW> & W,
     const int p,
     const typename DerivedV::Scalar lambda,
     const typename DerivedV::Scalar kappa,
     const typename DerivedV::Scalar alpha,
-    Eigen::PlainObjectBase<DerivedOmega> &Omega);
+    Eigen::PlainObjectBase<DerivedOmega> & Omega);
 
   // Pose evaluation
   //   Omega  #V by #T*10 list of precomputated matrix values
@@ -89,9 +89,9 @@ namespace igl {
     typename DerivedOmega,
     typename DerivedU>
   IGL_INLINE void direct_delta_mush_pose_evaluation(
-    const std::vector<DerivedT, DerivedTAlloc> &T,
-    const Eigen::MatrixBase<DerivedOmega> &Omega,
-    Eigen::PlainObjectBase<DerivedU> &U);
+    const std::vector<DerivedT, DerivedTAlloc> & T,
+    const Eigen::MatrixBase<DerivedOmega> & Omega,
+    Eigen::PlainObjectBase<DerivedU> & U);
 } // namespace igl
 
 #ifndef IGL_STATIC_LIBRARY

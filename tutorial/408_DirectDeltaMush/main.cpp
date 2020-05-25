@@ -10,6 +10,7 @@
 #include <igl/readOBJ.h>
 #include <igl/readTGF.h>
 #include <igl/opengl/glfw/Viewer.h>
+#include <igl/embree/bone_heat.h>
 
 #include <Eigen/Geometry>
 #include <Eigen/StdVector>
@@ -41,19 +42,21 @@ float lambda = 0.5;
 float kappa = 0.4; // kappa < lambda to keep R_i well-defined
 float alpha = 0.5;
 
-bool pre_draw(igl::opengl::glfw::Viewer &viewer)
+bool pre_draw(igl::opengl::glfw::Viewer & viewer)
 {
   using namespace Eigen;
   using namespace std;
-  if (recompute) {
+  if (recompute)
+  {
     // Find pose interval
-    const int begin = (int)floor(anim_t) % poses.size();
-    const int end = (int)(floor(anim_t) + 1) % poses.size();
+    const int begin = (int) floor(anim_t) % poses.size();
+    const int end = (int) (floor(anim_t) + 1) % poses.size();
     const double t = anim_t - floor(anim_t);
 
     // Interpolate pose and identity
     RotationList anim_pose(poses[begin].size());
-    for (int e = 0; e < poses[begin].size(); e++) {
+    for (int e = 0; e < poses[begin].size(); e++)
+    {
       anim_pose[e] = poses[begin][e].slerp(t, poses[end][e]);
     }
     // Propagate relative rotations via FK to retrieve absolute transformations
@@ -63,7 +66,8 @@ bool pre_draw(igl::opengl::glfw::Viewer &viewer)
     const int dim = C.cols();
     MatrixXd T(BE.rows() * (dim + 1), dim);
     TransformationList T_list(BE.rows());
-    for (int e = 0; e < BE.rows(); e++) {
+    for (int e = 0; e < BE.rows(); e++)
+    {
       Affine3d a = Affine3d::Identity();
       a.translate(vT[e]);
       a.rotate(vQ[e]);
@@ -71,11 +75,12 @@ bool pre_draw(igl::opengl::glfw::Viewer &viewer)
         a.matrix().transpose().block(0, 0, dim + 1, dim);
     }
     // Compute deformation via LBS as matrix multiplication
-    if (use_ddm) {
+    if (use_ddm)
+    {
       igl::direct_delta_mush_pose_evaluation(T_list, Omega, U);
       igl::direct_delta_mush(V, F, C, BE, W_sparse, T_list, U);
-    }
-    else {
+    } else
+    {
       U = M * T;
     }
 
@@ -87,20 +92,22 @@ bool pre_draw(igl::opengl::glfw::Viewer &viewer)
     viewer.data().set_vertices(U);
     viewer.data().set_edges(CT, BET, sea_green);
     viewer.data().compute_normals();
-    if (viewer.core().is_animating) {
+    if (viewer.core().is_animating)
+    {
       anim_t += anim_t_dir;
-    }
-    else {
+    } else
+    {
       recompute = false;
     }
   }
   return false;
 }
 
-bool key_down(igl::opengl::glfw::Viewer &viewer, unsigned char key, int mods)
+bool key_down(igl::opengl::glfw::Viewer & viewer, unsigned char key, int mods)
 {
   recompute = true;
-  switch (key) {
+  switch (key)
+  {
     case 'D':
     case 'd':
       use_ddm = !use_ddm;
@@ -135,7 +142,6 @@ int main(int argc, char *argv[])
   igl::lbs_matrix(V, W, M);
 
   // Precomputation for Direct Delta Mush
-  cout<<"Initializing Direct Delta Mush..."<<endl;
   igl::direct_delta_mush_precomputation(V, F, C, BE, W_sparse, p, lambda, kappa, alpha, Omega);
 
   // Plot the mesh with pseudocolors
