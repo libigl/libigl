@@ -20,8 +20,8 @@ namespace igl
   //     this as a tolerance on L1 distance
   // Outputs:
   //   SV  #SV by dim new list of vertex positions
-  //   SVI #V by 1 list of indices so SV = V(SVI,:) 
-  //   SVJ #SV by 1 list of indices so V = SV(SVJ,:)
+  //   SVI #SV by 1 list of indices so SV = V(SVI,:) 
+  //   SVJ #V by 1 list of indices so V = SV(SVJ,:)
   //
   // Example:
   //   % Mesh in (V,F)
