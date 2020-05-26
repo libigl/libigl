@@ -5,18 +5,12 @@
 #include <igl/PI.h>
 #include <igl/lbs_matrix.h>
 #include <igl/deform_skeleton.h>
-#include <igl/dqs.h>
 #include <igl/readDMAT.h>
 #include <igl/readOBJ.h>
 #include <igl/readTGF.h>
 #include <igl/opengl/glfw/Viewer.h>
-#include <igl/embree/bone_heat.h>
 
-#include <Eigen/Geometry>
-#include <Eigen/StdVector>
-#include <Eigen/Sparse>
 #include <vector>
-#include <algorithm>
 #include <iostream>
 
 #include "tutorial_shared_path.h"
@@ -37,9 +31,9 @@ double anim_t = 0.0;
 double anim_t_dir = 0.015;
 bool use_ddm = false;
 bool recompute = true;
-float p = 3.;
+int p = 3;
 float lambda = 0.5;
-float kappa = 0.4; // kappa < lambda to keep R_i well-defined
+float kappa = 0.4;
 float alpha = 0.5;
 
 bool pre_draw(igl::opengl::glfw::Viewer & viewer)
@@ -73,6 +67,7 @@ bool pre_draw(igl::opengl::glfw::Viewer & viewer)
       a.rotate(vQ[e]);
       T.block(e * (dim + 1), 0, dim + 1, dim) =
         a.matrix().transpose().block(0, 0, dim + 1, dim);
+      T_list.push_back(a);
     }
     // Compute deformation via LBS as matrix multiplication
     if (use_ddm)
@@ -115,8 +110,9 @@ bool key_down(igl::opengl::glfw::Viewer & viewer, unsigned char key, int mods)
     case ' ':
       viewer.core().is_animating = !viewer.core().is_animating;
       return true;
+    default:
+      return false;
   }
-  return false;
 }
 
 int main(int argc, char *argv[])
@@ -157,7 +153,7 @@ int main(int argc, char *argv[])
   viewer.core().is_animating = false;
   viewer.core().camera_zoom = 2.5;
   viewer.core().animation_max_fps = 30.;
-  cout << "Press [d] to toggle between LBS and DQS" << endl
+  cout << "Press [d] to toggle between LBS and DDM" << endl
        << "Press [space] to toggle animation" << endl;
   viewer.launch();
 }
