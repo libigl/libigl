@@ -8,7 +8,6 @@
 #include "direct_delta_mush.h"
 #include "cotmatrix.h"
 
-#include <Eigen/Dense>
 #include <iostream>
 
 // TODOs
@@ -20,22 +19,79 @@ template <
   typename DerivedF,
   typename DerivedC,
   typename DerivedE,
-  typename DerivedW,
-  typename DerivedT,
-  typename DerivedTAlloc,
+  typename DerivedOmega,
   typename DerivedU>
 IGL_INLINE void igl::direct_delta_mush(
   const Eigen::MatrixBase<DerivedV> & V,
   const Eigen::MatrixBase<DerivedF> & F,
   const Eigen::MatrixBase<DerivedC> & C,
   const Eigen::MatrixBase<DerivedE> & E,
-  const Eigen::SparseMatrix<DerivedW> & W,
-  const std::vector<DerivedT, DerivedTAlloc> & T,
+  const std::vector<Eigen::Affine3d, Eigen::aligned_allocator<Eigen::Affine3d> > & T,
+  const Eigen::MatrixBase<DerivedOmega> & Omega,
   Eigen::PlainObjectBase<DerivedU> & U)
 {
   using namespace std;
   using namespace Eigen;
   cout << "START DDM" << endl;
+
+  cout << "V: " << V.rows() << " x " << V.cols() << " Sum: " << V.sum()
+       << "\nF: " << F.rows() << " x " << F.cols() << " Sum: " << F.sum()
+       << "\nC: " << C.rows() << " x " << C.cols() << " Sum: " << C.sum()
+       << "\nE: " << E.rows() << " x " << E.cols() << " Sum: " << E.sum()
+       << "\nT: " << T.size()
+       << "\nOmega: " << Omega.rows() << " x " << Omega.cols() << " Sum: " << Omega.sum()
+       << endl;
+
+  assert(V.cols() == 3 && "V should contain 3D positions.");
+  assert(F.cols() == 3 && "F should contain triangles.");
+  assert(C.cols() == 3 && "C should contain 3D bone endpoint positions.");
+  assert(E.cols() == 2 && "E should contain 2 endpoint indices forming bone edges.");
+  assert(E.rows() == T.size() && "E.rows() should equal to T.size()");
+  assert(Omega.rows() == V.rows() && "Omega contain the same number of rows as V.");
+  assert(Omega.cols() == T.size() * 16 && "Omega should have #T*10 columns.");
+
+  int n = V.rows();
+  int m = T.size();
+
+  Eigen::MatrixXd U_homogeneous(n, 4);
+  U_homogeneous << V, Eigen::VectorXd::Ones(n);
+  U.resize(n, 3);
+
+  // R matrix
+  Eigen::MatrixXd R_matrices(n, 9);
+  Eigen::MatrixXd T_matrices(n, 3);
+  for (int i = 0; i < n; i++)
+  {
+    Eigen::MatrixXd Q_mat = Eigen::MatrixXd::Zero(4, 4);
+    for (int j = 0; j < m; j++)
+    {
+      Eigen::MatrixXd Omega_curr = Omega.block(i, j * 16, 1, 16);
+      Omega_curr.resize(4, 4);
+      Eigen::Affine3d M_curr = T[j];
+      Q_mat += M_curr.matrix() * Omega_curr;
+    }
+    Eigen::MatrixXd Q_i = Q_mat.block(0, 0, 3, 3);
+    Eigen::MatrixXd q_i = Q_mat.block(0, 3, 3, 1);
+    Eigen::MatrixXd p_i = Q_mat.block(3, 0, 1, 3); // .transpose()
+
+    Eigen::MatrixXd SVD_i = Q_i - q_i * p_i;
+    Eigen::JacobiSVD<MatrixXd> svd;
+    svd.compute(SVD_i, Eigen::ComputeFullU | Eigen::ComputeFullV );
+
+    // rotation and translation
+    Eigen::MatrixXd R_i = svd.matrixU() * svd.matrixV().transpose();
+    Eigen::VectorXd t_i = q_i - R_i * p_i.transpose();
+
+    // Gamma
+    Eigen::MatrixXd Gamma_i(3, 4);
+    Gamma_i.block(0, 0, 3, 3) = R_i;
+    Gamma_i.block(0, 3, 3, 1) = t_i;
+
+    // transform
+    Eigen::VectorXd u_i = U_homogeneous.row(i);
+    U.row(i) = Gamma_i * u_i;
+  }
+
   cout << "END DDM" << endl;
 }
 
@@ -60,18 +116,9 @@ IGL_INLINE void igl::direct_delta_mush_precomputation(
 {
   using namespace std;
   using namespace Eigen;
-  assert(V.cols() == 3 && "V should contain 3D positions.");
-  assert(F.cols() == 3 && "F should contain triangles.");
-  assert(C.cols() == 3 && "C should contain 3D bone endpoint positions.");
-  assert(E.cols() == 2 && "E should contain 2 endpoint indices forming bone edges.");
-  assert(W.rows() == V.rows() && "W.rows() should be equal to V.rows().");
-  assert(E.cols() == E.cols() && "W.cols() should be equal to V.cols().");
-  assert(p > 0 && "Laplacian iteration p should be positive.");
-  assert(lambda > 0 && "lambda should be positive.");
-  assert(kappa > 0 && kappa < lambda && "kappa should be positive and less than lambda.");
-  assert(alpha >= 0 && alpha < 1 && "alpha should be non-negative and less than 1.");
 
   cout << "START DDM Precomputation" << endl;
+
   cout << "Using params:"
        << "\np: " << p
        << "\nlambda: " << lambda
@@ -83,6 +130,17 @@ IGL_INLINE void igl::direct_delta_mush_precomputation(
        << "\nE: " << E.rows() << " x " << E.cols() << " Sum: " << E.sum()
        << "\nW: " << W.rows() << " x " << W.cols() << " Sum: " << W.sum()
        << endl;
+
+  assert(V.cols() == 3 && "V should contain 3D positions.");
+  assert(F.cols() == 3 && "F should contain triangles.");
+  assert(C.cols() == 3 && "C should contain 3D bone endpoint positions.");
+  assert(E.cols() == 2 && "E should contain 2 endpoint indices forming bone edges.");
+  assert(W.rows() == V.rows() && "W.rows() should be equal to V.rows().");
+  assert(W.cols() == E.rows() && "W.cols() should be equal to E.rows().");
+  assert(p > 0 && "Laplacian iteration p should be positive.");
+  assert(lambda > 0 && "lambda should be positive.");
+  assert(kappa > 0 && kappa < lambda && "kappa should be positive and less than lambda.");
+  assert(alpha >= 0 && alpha < 1 && "alpha should be non-negative and less than 1.");
 
   const int n = V.rows();
   const int m = E.rows();
@@ -117,7 +175,8 @@ IGL_INLINE void igl::direct_delta_mush_precomputation(
     W_prime.makeCompressed();
     W_prime = ldlt_W_prime.solve(W_prime);
   }
-  cout << "W_prime: " << W_prime.rows() << " x " << W_prime.cols() << " Sum: " << W_prime.sum() << endl;
+  cout << "W_prime: " << W_prime.rows() << " x " << W_prime.cols()
+       << " Sum: " << W_prime.sum() << endl;
 
   // Psi was hard to solve iteratively since i couldn't express u_k \times u_k^T as matrix form
   Eigen::SimplicialLDLT<Eigen::SparseMatrix<double>> ldlt_U_tilde;
@@ -131,20 +190,21 @@ IGL_INLINE void igl::direct_delta_mush_precomputation(
     U_tilde.makeCompressed();
     U_tilde = ldlt_U_tilde.solve(U_tilde);
   }
-  cout << "U_tilde: " << U_tilde.rows() << " x " << U_tilde.cols() << " Sum: " << U_tilde.sum() << endl;
+  cout << "U_tilde: " << U_tilde.rows() << " x " << U_tilde.cols()
+       << " Sum: " << U_tilde.sum() << endl;
 
   // TODO: sparse didn't work here - malloc error
   Eigen::MatrixXd U_tilde_dense = U_tilde.toDense();
-  Eigen::MatrixXd B_inv_dense = U_homogeneous.transpose().householderQr().solve(U_tilde_dense.transpose());
+  Eigen::MatrixXd B_inv_dense = U_homogeneous.transpose().householderQr().solve(
+    U_tilde_dense.transpose());
   Eigen::SparseMatrix<double> B_inv = B_inv_dense.sparseView();
-
-  Eigen::SparseMatrix<double> U_sparse = U_homogeneous.sparseView();
-  Eigen::SparseQR<Eigen::SparseMatrix<double>, Eigen::COLAMDOrdering<int>> qr_B;
-  Eigen::SparseMatrix<double> V_sparse_transpose(U_sparse.transpose()), V_tilde_transpose(U_tilde.transpose());
-  V_sparse_transpose.makeCompressed();
-  qr_B.compute(V_sparse_transpose);
+  // Eigen::SparseQR<Eigen::SparseMatrix<double>, Eigen::COLAMDOrdering<int>> qr_B;
+  // Eigen::SparseMatrix<double> U_sparse = U_homogeneous.sparseView();
+  // Eigen::SparseMatrix<double> V_sparse_transpose(U_sparse.transpose());
+  // Eigen::SparseMatrix<double> V_tilde_transpose(U_tilde.transpose());
+  // V_sparse_transpose.makeCompressed();
+  // qr_B.compute(V_sparse_transpose);
   // Eigen::SparseMatrix<double> B_inv = qr_B.solve(V_tilde_transpose);
-
   cout << "B_inv: " << B_inv.rows() << " x " << B_inv.cols() << " Sum: " << B_inv.sum() << endl;
 
   // U_precomputed: #V by 16(10)
@@ -153,11 +213,12 @@ IGL_INLINE void igl::direct_delta_mush_precomputation(
   for (int k = 0; k < n; k++)
   {
     Eigen::MatrixXd u_full = U_homogeneous.row(k).transpose() * U_homogeneous.row(k);
-    Eigen::VectorXd u_full_vector(Eigen::Map<Eigen::VectorXd>(u_full.data(), u_full.cols() * u_full.rows()));
+    Eigen::VectorXd u_full_vector(
+      Eigen::Map<Eigen::VectorXd>(u_full.data(), u_full.cols() * u_full.rows()));
     U_precomputed.row(k) = u_full_vector;
   }
-  cout << "U_precomputed: " << U_precomputed.rows() << " x " << U_precomputed.cols() << " Sum: " << U_precomputed.sum()
-       << endl;
+  cout << "U_precomputed: " << U_precomputed.rows() << " x " << U_precomputed.cols()
+       << " Sum: " << U_precomputed.sum() << endl;
 
   // Psi: #V by #T*16 (10) of \Psi_{ij}s.
   // this takes a while since it is not vectorized
@@ -196,9 +257,11 @@ IGL_INLINE void igl::direct_delta_mush_precomputation(
     p_matrix.block(3, 0, 1, 3) = p_i.transpose();
     p_matrix.block(0, 3, 3, 1) = p_i;
     p_matrix(3, 3) = 1;
-    P_vectors.row(i) = Eigen::Map<Eigen::VectorXd>(p_matrix.data(), p_matrix.cols() * p_matrix.rows());
+    P_vectors.row(i) = Eigen::Map<Eigen::VectorXd>(
+      p_matrix.data(), p_matrix.cols() * p_matrix.rows());
   }
-  cout << "P_vectors: " << P_vectors.rows() << " x " << P_vectors.cols() << " Sum: " << P_vectors.sum() << endl;
+  cout << "P_vectors: " << P_vectors.rows() << " x " << P_vectors.cols() << " Sum: "
+       << P_vectors.sum() << endl;
 
   // Omega
   Omega.resize(n, m * 16);
@@ -219,18 +282,18 @@ IGL_INLINE void igl::direct_delta_mush_precomputation(
 }
 
 template <
-  typename DerivedT,
-  typename DerivedTAlloc,
   typename DerivedOmega,
   typename DerivedU>
 IGL_INLINE void igl::direct_delta_mush_pose_evaluation(
-  const std::vector<DerivedT, DerivedTAlloc> & T,
+  const std::vector<Eigen::Affine3d, Eigen::aligned_allocator<Eigen::Affine3d> > & T,
   const Eigen::MatrixBase<DerivedOmega> & Omega,
   Eigen::PlainObjectBase<DerivedU> & U)
 {
   using namespace std;
   using namespace Eigen;
+
   cout << "START DDM Pose Eval" << endl;
+  // not sure what this is
   cout << "END DDM Pose Eval" << endl;
 }
 
@@ -238,12 +301,13 @@ IGL_INLINE void igl::direct_delta_mush_pose_evaluation(
 
 // Explicit template instantiation
 template void
-igl::direct_delta_mush<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, double, Eigen::Transform<double, 3, 2, 0>, Eigen::aligned_allocator<Eigen::Transform<double, 3, 2, 0> >, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(
+igl::direct_delta_mush<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(
   Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const &,
   Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const &,
   Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const &,
-  Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const &, Eigen::SparseMatrix<double, 0, int> const &,
+  Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const &,
   std::__1::vector<Eigen::Transform<double, 3, 2, 0>, Eigen::aligned_allocator<Eigen::Transform<double, 3, 2, 0> > > const &,
+  Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const &,
   Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > &);
 
 template void
@@ -251,13 +315,15 @@ igl::direct_delta_mush_precomputation<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 
   Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const &,
   Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const &,
   Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const &,
-  Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const &, Eigen::SparseMatrix<double, 0, int> const &, int,
-  Eigen::Matrix<double, -1, -1, 0, -1, -1>::Scalar, Eigen::Matrix<double, -1, -1, 0, -1, -1>::Scalar,
+  Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const &,
+  Eigen::SparseMatrix<double, 0, int> const &, int,
+  Eigen::Matrix<double, -1, -1, 0, -1, -1>::Scalar,
+  Eigen::Matrix<double, -1, -1, 0, -1, -1>::Scalar,
   Eigen::Matrix<double, -1, -1, 0, -1, -1>::Scalar,
   Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > &);
 
 template void
-igl::direct_delta_mush_pose_evaluation<Eigen::Transform<double, 3, 2, 0>, Eigen::aligned_allocator<Eigen::Transform<double, 3, 2, 0> >, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(
+igl::direct_delta_mush_pose_evaluation<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(
   std::__1::vector<Eigen::Transform<double, 3, 2, 0>, Eigen::aligned_allocator<Eigen::Transform<double, 3, 2, 0> > > const &,
   Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const &,
   Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > &);

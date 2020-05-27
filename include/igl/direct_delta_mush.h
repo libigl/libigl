@@ -12,6 +12,7 @@
 
 #include <Eigen/Core>
 #include <Eigen/Sparse>
+#include <Eigen/Geometry>
 #include <vector>
 
 namespace igl {
@@ -24,6 +25,7 @@ namespace igl {
   //   C  #C by 3 list of rest pose bone endpoint positions
   //   E  #T by 2 list of bone edge indices into rows of C
   //   T  #T list of bone pose transformations
+  //   Omega #V by #T*10 list of precomputated matrix values
   // Outputs:
   //   U  #V by 3 list of output vertex positions
   template <
@@ -31,17 +33,17 @@ namespace igl {
     typename DerivedF,
     typename DerivedC,
     typename DerivedE,
-    typename DerivedW,
-    typename DerivedT,
-    typename DerivedTAlloc,
+    typename DerivedOmega,
     typename DerivedU>
   IGL_INLINE void direct_delta_mush(
     const Eigen::MatrixBase<DerivedV> & V,
     const Eigen::MatrixBase<DerivedF> & F,
     const Eigen::MatrixBase<DerivedC> & C,
     const Eigen::MatrixBase<DerivedE> & E,
-    const Eigen::SparseMatrix<DerivedW> & W,
-    const std::vector<DerivedT, DerivedTAlloc> & T,
+    const std::vector<
+      Eigen::Affine3d, Eigen::aligned_allocator<Eigen::Affine3d>
+    > & T, /* should eventually be templated more generally than double */
+    const Eigen::MatrixBase<DerivedOmega> & Omega,
     Eigen::PlainObjectBase<DerivedU> & U);
 
   // Precomputation
@@ -77,17 +79,16 @@ namespace igl {
     Eigen::PlainObjectBase<DerivedOmega> & Omega);
 
   // Pose evaluation
+  //
   //   Omega  #V by #T*10 list of precomputated matrix values
   //   T  #T list of bone pose transformations
   // Outputs:
   //   U  #V by 3 list of output vertex positions
   template <
-    typename DerivedT,
-    typename DerivedTAlloc,
     typename DerivedOmega,
     typename DerivedU>
   IGL_INLINE void direct_delta_mush_pose_evaluation(
-    const std::vector<DerivedT, DerivedTAlloc> & T,
+    const std::vector<Eigen::Affine3d, Eigen::aligned_allocator<Eigen::Affine3d> > & T,
     const Eigen::MatrixBase<DerivedOmega> & Omega,
     Eigen::PlainObjectBase<DerivedU> & U);
 } // namespace igl

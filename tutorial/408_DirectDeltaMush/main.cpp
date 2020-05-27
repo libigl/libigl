@@ -15,6 +15,10 @@
 
 #include "tutorial_shared_path.h"
 
+#include <igl/writeDMAT.h>
+
+const bool USE_SAVED_OMEGA = false;
+
 typedef std::vector<Eigen::Quaterniond, Eigen::aligned_allocator<Eigen::Quaterniond>>
   RotationList;
 
@@ -59,7 +63,7 @@ bool pre_draw(igl::opengl::glfw::Viewer & viewer)
     igl::forward_kinematics(C, BE, P, anim_pose, vQ, vT);
     const int dim = C.cols();
     MatrixXd T(BE.rows() * (dim + 1), dim);
-    TransformationList T_list(BE.rows());
+    TransformationList T_list;
     for (int e = 0; e < BE.rows(); e++)
     {
       Affine3d a = Affine3d::Identity();
@@ -72,8 +76,8 @@ bool pre_draw(igl::opengl::glfw::Viewer & viewer)
     // Compute deformation via LBS as matrix multiplication
     if (use_ddm)
     {
-      igl::direct_delta_mush_pose_evaluation(T_list, Omega, U);
-      igl::direct_delta_mush(V, F, C, BE, W_sparse, T_list, U);
+      // igl::direct_delta_mush_pose_evaluation(T_list, Omega, U);
+      igl::direct_delta_mush(V, F, C, BE, T_list, Omega, U);
     } else
     {
       U = M * T;
@@ -126,19 +130,22 @@ int main(int argc, char *argv[])
   igl::directed_edge_parents(BE, P);
   RotationList rest_pose;
   igl::directed_edge_orientations(C, BE, rest_pose);
-  poses.resize(4, RotationList(4, Quaterniond::Identity()));
-  // poses[1] // twist
-  const Quaterniond twist(AngleAxisd(igl::PI, Vector3d(1, 0, 0)));
-  poses[1][2] = rest_pose[2] * twist * rest_pose[2].conjugate();
+  poses.resize(2, RotationList(4, Quaterniond::Identity()));
   const Quaterniond bend(AngleAxisd(-igl::PI * 0.7, Vector3d(0, 0, 1)));
-  poses[3][2] = rest_pose[2] * bend * rest_pose[2].conjugate();
+  poses[1][2] = rest_pose[2] * bend * rest_pose[2].conjugate();
 
   igl::readDMAT(TUTORIAL_SHARED_PATH "/arm-weights.dmat", W);
   W_sparse = W.sparseView();
   igl::lbs_matrix(V, W, M);
 
   // Precomputation for Direct Delta Mush
-  igl::direct_delta_mush_precomputation(V, F, C, BE, W_sparse, p, lambda, kappa, alpha, Omega);
+  if (USE_SAVED_OMEGA) {
+    igl::readDMAT(TUTORIAL_SHARED_PATH "/arm-weights-ddm-omega.dmat", Omega);
+  }
+  else {
+    igl::direct_delta_mush_precomputation(V, F, C, BE, W_sparse, p, lambda, kappa, alpha, Omega);
+    igl::writeDMAT(TUTORIAL_SHARED_PATH "/arm-weights-ddm-omega.dmat", Omega);
+  }
 
   // Plot the mesh with pseudocolors
   igl::opengl::glfw::Viewer viewer;
