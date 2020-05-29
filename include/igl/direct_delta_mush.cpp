@@ -156,19 +156,30 @@ IGL_INLINE void igl::direct_delta_mush_precomputation(
   // Laplacian: L_bar = L \times D_L^{-1}
   Eigen::SparseMatrix<double> L;
   igl::cotmatrix(V, F, L);
-  Eigen::MatrixXd D_L = L.diagonal().asDiagonal();
-  Eigen::SparseMatrix<double> D_L_sparse = D_L.sparseView();
-  Eigen::SimplicialLDLT<Eigen::SparseMatrix<double>> ldlt;
-  ldlt.compute(D_L_sparse); // this will take quite a while to compute
-  Eigen::SparseMatrix<double> L_bar = ldlt.solve(L).transpose();
+  L = -L;
+  // inverse of diagonal matrix = reciprocal elements in diagonal
+  Eigen::VectorXd D_L = L.diagonal();
+  // tempted to use this but diagonal could have 0 in it
+  // D_L = D_L.array().pow(-1);
+  for (int i = 0; i < D_L.size(); ++i)
+  {
+    if (D_L(i) != 0)
+    {
+      D_L(i) = 1 / D_L(i);
+    }
+  }
+  Eigen::SparseMatrix<double> D_L_inv = D_L.asDiagonal().toDenseMatrix().sparseView();
+  Eigen::SparseMatrix<double> L_bar = L * D_L_inv;
 
   // Implicitly and iteratively solve
-  // w'_{ij} = \sum_{k=1}^{n}{C_{ki} w_{kj}}, C = (I + kappa L_bar)^{-p}:
-  // W' = C^T \times W
+  // w'_{ij} = \sum_{k=1}^{n}{C_{ki} w_{kj}}        where C = (I + kappa L_bar)^{-p}:
+  // W' = C^T \times W  =>  c^T W_k = W_{k-1}       where c = (I + kappa L_bar)
+  // C positive semi-definite => ldlt solver
   Eigen::SimplicialLDLT<Eigen::SparseMatrix<double>> ldlt_W_prime;
-  Eigen::SparseMatrix<double> C_calc((I + kappa * L_bar).transpose());
+  Eigen::SparseMatrix<double> c((I + kappa * L_bar).transpose());
   Eigen::SparseMatrix<double> W_prime(W);
-  ldlt_W_prime.compute(C_calc);
+  ldlt_W_prime.compute(c);
+  cout << "c: " << c.rows() << " x " << c.cols() << " Sum: " << c.sum() << endl;
   cout << "computing W" << endl;
   for (int iter = 0; iter < p; iter++)
   {
@@ -180,8 +191,8 @@ IGL_INLINE void igl::direct_delta_mush_precomputation(
 
   // Psi was hard to solve iteratively since i couldn't express u_k \times u_k^T as matrix form
   Eigen::SimplicialLDLT<Eigen::SparseMatrix<double>> ldlt_U_tilde;
-  Eigen::SparseMatrix<double> B_calc((I + lambda * L_bar).transpose());
-  ldlt_U_tilde.compute(B_calc);
+  Eigen::SparseMatrix<double> b(I + lambda * L_bar);
+  ldlt_U_tilde.compute(b);
 
   Eigen::SparseMatrix<double> U_tilde = U_homogeneous.sparseView();
   cout << "computing U_tilde" << endl;
