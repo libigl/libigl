@@ -14,6 +14,8 @@
 // 1. U_precomputed, Psi, Omega should be #V by 10 instead of #V by 16
 // 2. Vectorize Psi computation.
 
+bool use_10_float = true;
+
 template <
   typename DerivedV,
   typename DerivedF,
@@ -48,13 +50,20 @@ IGL_INLINE void igl::direct_delta_mush(
   assert(E.cols() == 2 && "E should contain 2 endpoint indices forming bone edges.");
   assert(E.rows() == T.size() && "E.rows() should equal to T.size()");
   assert(Omega.rows() == V.rows() && "Omega contain the same number of rows as V.");
-  assert(Omega.cols() == T.size() * 16 && "Omega should have #T*10 columns.");
+  if (use_10_float)
+  {
+    assert(Omega.cols() == T.size() * 10 && "Omega should have #T*10 columns.");
+  }
+  else
+  {
+    assert(Omega.cols() == T.size() * 16 && "Omega should have #T*16 columns.");
+  }
 
   int n = V.rows();
   int m = T.size();
 
-  Eigen::MatrixXd U_homogeneous(n, 4);
-  U_homogeneous << V, Eigen::VectorXd::Ones(n);
+  Eigen::MatrixXd V_homogeneous(n, 4);
+  V_homogeneous << V, Eigen::VectorXd::Ones(n);
   U.resize(n, 3);
 
   // R matrix
@@ -65,8 +74,23 @@ IGL_INLINE void igl::direct_delta_mush(
     Eigen::MatrixXd Q_mat = Eigen::MatrixXd::Zero(4, 4);
     for (int j = 0; j < m; j++)
     {
-      Eigen::MatrixXd Omega_curr = Omega.block(i, j * 16, 1, 16);
-      Omega_curr.resize(4, 4);
+      Eigen::MatrixXd Omega_curr;
+      if (use_10_float)
+      {
+        Eigen::MatrixXd curr = Omega.block(i, j * 10, 1, 10);
+        Eigen::VectorXd curr_vec(
+          Eigen::Map<Eigen::VectorXd>(curr.data(), curr.cols() * curr.rows()));
+        Omega_curr.resize(4, 4);
+        Omega_curr << curr_vec(0), curr_vec(1), curr_vec(2), curr_vec(3),
+          curr_vec(1), curr_vec(4), curr_vec(5), curr_vec(6),
+          curr_vec(2), curr_vec(5), curr_vec(7), curr_vec(8),
+          curr_vec(3), curr_vec(6), curr_vec(8), curr_vec(9);
+      }
+      else
+      {
+        Omega_curr = Omega.block(i, j * 16, 1, 16);
+        Omega_curr.resize(4, 4);
+      }
       Eigen::Affine3d M_curr = T[j];
       Q_mat += M_curr.matrix() * Omega_curr;
     }
@@ -76,7 +100,7 @@ IGL_INLINE void igl::direct_delta_mush(
 
     Eigen::MatrixXd SVD_i = Q_i - q_i * p_i;
     Eigen::JacobiSVD<MatrixXd> svd;
-    svd.compute(SVD_i, Eigen::ComputeFullU | Eigen::ComputeFullV );
+    svd.compute(SVD_i, Eigen::ComputeFullU | Eigen::ComputeFullV);
 
     // rotation and translation
     Eigen::MatrixXd R_i = svd.matrixU() * svd.matrixV().transpose();
@@ -88,8 +112,8 @@ IGL_INLINE void igl::direct_delta_mush(
     Gamma_i.block(0, 3, 3, 1) = t_i;
 
     // transform
-    Eigen::VectorXd u_i = U_homogeneous.row(i);
-    U.row(i) = Gamma_i * u_i;
+    Eigen::VectorXd v_i = V_homogeneous.row(i);
+    U.row(i) = Gamma_i * v_i;
   }
 
   cout << "END DDM" << endl;
@@ -146,8 +170,9 @@ IGL_INLINE void igl::direct_delta_mush_precomputation(
   const int m = E.rows();
 
   // U: #V by 4, homogeneous version of V
-  Eigen::MatrixXd U_homogeneous(n, 4);
-  U_homogeneous << V, Eigen::VectorXd::Ones(n);
+  // Using U to match notation from the paper
+  Eigen::MatrixXd U(n, 4);
+  U << V, Eigen::VectorXd::Ones(n);
 
   // Identity of #V by #V
   Eigen::SparseMatrix<double> I(n, n);
@@ -171,7 +196,7 @@ IGL_INLINE void igl::direct_delta_mush_precomputation(
   Eigen::SparseMatrix<double> D_L_inv = D_L.asDiagonal().toDenseMatrix().sparseView();
   Eigen::SparseMatrix<double> L_bar = L * D_L_inv;
 
-  // Implicitly and iteratively solve
+  // Implicitly and iteratively solve for W'
   // w'_{ij} = \sum_{k=1}^{n}{C_{ki} w_{kj}}        where C = (I + kappa L_bar)^{-p}:
   // W' = C^T \times W  =>  c^T W_k = W_{k-1}       where c = (I + kappa L_bar)
   // C positive semi-definite => ldlt solver
@@ -189,12 +214,15 @@ IGL_INLINE void igl::direct_delta_mush_precomputation(
   cout << "W_prime: " << W_prime.rows() << " x " << W_prime.cols()
        << " Sum: " << W_prime.sum() << endl;
 
-  // Psi was hard to solve iteratively since i couldn't express u_k \times u_k^T as matrix form
+  // Using U~ = UB to solve for B
+  // NOTE
+  // - B is calculated explicitly because Psi was not vectorized
+  // - U~ = UB is used to calculate B because using B b^{-p} = I does not work
+  // B is positive semi-definite => ldlt solver
   Eigen::SimplicialLDLT<Eigen::SparseMatrix<double>> ldlt_U_tilde;
-  Eigen::SparseMatrix<double> b(I + lambda * L_bar);
+  Eigen::SparseMatrix<double> b((I + lambda * L_bar).transpose());
   ldlt_U_tilde.compute(b);
-
-  Eigen::SparseMatrix<double> U_tilde = U_homogeneous.sparseView();
+  Eigen::SparseMatrix<double> U_tilde = U.sparseView();
   cout << "computing U_tilde" << endl;
   for (int i = 0; i < p; i++)
   {
@@ -204,47 +232,100 @@ IGL_INLINE void igl::direct_delta_mush_precomputation(
   cout << "U_tilde: " << U_tilde.rows() << " x " << U_tilde.cols()
        << " Sum: " << U_tilde.sum() << endl;
 
-  // TODO: sparse didn't work here - malloc error
+  // Solving for B
+  // Using Dense instead of Sparse since sparse cannot solve the linear system (hangs)
   Eigen::MatrixXd U_tilde_dense = U_tilde.toDense();
-  Eigen::MatrixXd B_inv_dense = U_homogeneous.transpose().householderQr().solve(
+  Eigen::MatrixXd B_inv_dense = U.transpose().householderQr().solve(
     U_tilde_dense.transpose());
   Eigen::SparseMatrix<double> B_inv = B_inv_dense.sparseView();
+  // // this won't work
   // Eigen::SparseQR<Eigen::SparseMatrix<double>, Eigen::COLAMDOrdering<int>> qr_B;
-  // Eigen::SparseMatrix<double> U_sparse = U_homogeneous.sparseView();
-  // Eigen::SparseMatrix<double> V_sparse_transpose(U_sparse.transpose());
-  // Eigen::SparseMatrix<double> V_tilde_transpose(U_tilde.transpose());
-  // V_sparse_transpose.makeCompressed();
-  // qr_B.compute(V_sparse_transpose);
-  // Eigen::SparseMatrix<double> B_inv = qr_B.solve(V_tilde_transpose);
+  // Eigen::SparseMatrix<double> U_sparse_transpose(U.transpose().sparseView());
+  // Eigen::SparseMatrix<double> U_tilde_transpose(U_tilde.toDense().transpose().sparseView());
+  // U_sparse_transpose.makeCompressed();
+  // qr_B.compute(U_sparse_transpose);
+  // Eigen::SparseMatrix<double> B_inv = qr_B.solve(U_tilde_transpose);
+  // // This won't work
+  // Eigen::SparseMatrix<double> B_inv(I);
+  // Eigen::SimplicialLDLT<Eigen::SparseMatrix<double>> ldlt_B;
+  // ldlt_B.compute(b);
+  // for (int i = 0; i < p; ++i)
+  // {
+  //   cout << i << endl;
+  //   B_inv.makeCompressed();
+  //   B_inv = ldlt_B.solve(B_inv);
+  // }
+  // B_inv = B_inv.toDense().inverse().sparseView();
   cout << "B_inv: " << B_inv.rows() << " x " << B_inv.cols() << " Sum: " << B_inv.sum() << endl;
 
   // U_precomputed: #V by 16(10)
   // U_precomputed.row(i) = u_i \dot u_i^T \in R^{4 x 4}
-  Eigen::MatrixXd U_precomputed(n, 16);
-  for (int k = 0; k < n; k++)
+  Eigen::MatrixXd U_precomputed;
+  if (use_10_float)
   {
-    Eigen::MatrixXd u_full = U_homogeneous.row(k).transpose() * U_homogeneous.row(k);
-    Eigen::VectorXd u_full_vector(
-      Eigen::Map<Eigen::VectorXd>(u_full.data(), u_full.cols() * u_full.rows()));
-    U_precomputed.row(k) = u_full_vector;
+    U_precomputed.resize(n, 10);
+    for (int k = 0; k < n; k++)
+    {
+      Eigen::MatrixXd u_full = U.row(k).transpose() * U.row(k);
+      // TODO: extract this as a lambda function
+      int vector_idx = 0;
+      for (int i = 0; i < u_full.rows(); i++)
+      {
+        for (int j = i; j < u_full.cols(); ++j)
+        {
+          U_precomputed(k, vector_idx) = u_full(i, j);
+          vector_idx++;
+        }
+      }
+    }
+  }
+  else
+  {
+    U_precomputed.resize(n, 16);
+    for (int k = 0; k < n; k++)
+    {
+      Eigen::MatrixXd u_full = U.row(k).transpose() * U.row(k);
+      Eigen::VectorXd u_full_vector(
+        Eigen::Map<Eigen::VectorXd>(u_full.data(), u_full.cols() * u_full.rows()));
+      U_precomputed.row(k) = u_full_vector;
+    }
   }
   cout << "U_precomputed: " << U_precomputed.rows() << " x " << U_precomputed.cols()
        << " Sum: " << U_precomputed.sum() << endl;
 
   // Psi: #V by #T*16 (10) of \Psi_{ij}s.
   // this takes a while since it is not vectorized
-  // Eigen::MatrixXd Psi = Eigen::MatrixXd::Ones(n, m * 16); // for debugging to skip computation
-  Eigen::MatrixXd Psi(n, m * 16);
-  for (int i = 0; i < n; i++)
+  Eigen::MatrixXd Psi;
+  if (use_10_float)
   {
-    for (int j = 0; j < m; j++)
+    Psi.resize(n, m * 10);
+    for (int i = 0; i < n; i++)
     {
-      Eigen::VectorXd Psi_curr = Eigen::VectorXd::Zero(16);
-      for (int k = 0; k < n; k++)
+      for (int j = 0; j < m; j++)
       {
-        Psi_curr += B_inv.coeff(k, i) * W.coeff(k, j) * U_precomputed.row(k);
+        Eigen::VectorXd Psi_curr = Eigen::VectorXd::Zero(10);
+        for (int k = 0; k < n; k++)
+        {
+          Psi_curr += B_inv.coeff(k, i) * W.coeff(k, j) * U_precomputed.row(k);
+        }
+        Psi.block(i, j * 10, 1, 10) = Psi_curr.transpose();
       }
-      Psi.block(i, j * 16, 1, 16) = Psi_curr.transpose();
+    }
+  }
+  else
+  {
+    Psi.resize(n, m * 16);
+    for (int i = 0; i < n; i++)
+    {
+      for (int j = 0; j < m; j++)
+      {
+        Eigen::VectorXd Psi_curr = Eigen::VectorXd::Zero(16);
+        for (int k = 0; k < n; k++)
+        {
+          Psi_curr += B_inv.coeff(k, i) * W.coeff(k, j) * U_precomputed.row(k);
+        }
+        Psi.block(i, j * 16, 1, 16) = Psi_curr.transpose();
+      }
     }
   }
   cout << "Psi: " << Psi.rows() << " x " << Psi.cols() << " Sum: " << Psi.sum() << endl;
@@ -253,38 +334,88 @@ IGL_INLINE void igl::direct_delta_mush_precomputation(
   // p_i p_i^T , p_i
   // p_i^T     , 1
   // p_i: sum_{j=1}^{n} Psi_{ij} top right 3 by 1 column
-  Eigen::MatrixXd P_vectors(n, 16);
-  for (int i = 0; i < n; i++)
+  Eigen::MatrixXd P;
+  if (use_10_float)
   {
-    Eigen::Vector3d p_i = Eigen::Vector3d::Zero(3);
-    for (int j = 0; j < m; j++)
+    P.resize(n, 10);
+    for (int i = 0; i < n; i++)
     {
-      Eigen::Vector3d p_i_curr(3);
-      p_i_curr << Psi(i, j * 16 + 3), Psi(i, j * 16 + 7), Psi(i, j * 16 + 11);
-      p_i += p_i_curr;
+      Eigen::Vector3d p_i = Eigen::Vector3d::Zero(3);
+      for (int j = 0; j < m; j++)
+      {
+        Eigen::Vector3d p_i_curr(3);
+        p_i_curr << Psi(i, j * 10 + 3), Psi(i, j * 10 + 6), Psi(i, j * 10 + 8);
+        p_i += p_i_curr;
+      }
+      Eigen::MatrixXd p_matrix(4, 4);
+      p_matrix.block(0, 0, 3, 3) = p_i * p_i.transpose();
+      p_matrix.block(3, 0, 1, 3) = p_i.transpose();
+      p_matrix.block(0, 3, 3, 1) = p_i;
+      p_matrix(3, 3) = 1;
+      int vector_idx = 0;
+      for (int ii = 0; ii < p_matrix.rows(); ii++)
+      {
+        for (int jj = ii; jj < p_matrix.cols(); jj++)
+        {
+          P(i, vector_idx) = p_matrix(ii, jj);
+          vector_idx++;
+        }
+      }
     }
-    Eigen::MatrixXd p_matrix(4, 4);
-    p_matrix.block(0, 0, 3, 3) = p_i * p_i.transpose();
-    p_matrix.block(3, 0, 1, 3) = p_i.transpose();
-    p_matrix.block(0, 3, 3, 1) = p_i;
-    p_matrix(3, 3) = 1;
-    P_vectors.row(i) = Eigen::Map<Eigen::VectorXd>(
-      p_matrix.data(), p_matrix.cols() * p_matrix.rows());
   }
-  cout << "P_vectors: " << P_vectors.rows() << " x " << P_vectors.cols() << " Sum: "
-       << P_vectors.sum() << endl;
+  else
+  {
+    P.resize(n, 16);
+    for (int i = 0; i < n; i++)
+    {
+      Eigen::Vector3d p_i = Eigen::Vector3d::Zero(3);
+      for (int j = 0; j < m; j++)
+      {
+        Eigen::Vector3d p_i_curr(3);
+        p_i_curr << Psi(i, j * 16 + 3), Psi(i, j * 16 + 7), Psi(i, j * 16 + 11);
+        p_i += p_i_curr;
+      }
+      Eigen::MatrixXd p_matrix(4, 4);
+      p_matrix.block(0, 0, 3, 3) = p_i * p_i.transpose();
+      p_matrix.block(3, 0, 1, 3) = p_i.transpose();
+      p_matrix.block(0, 3, 3, 1) = p_i;
+      p_matrix(3, 3) = 1;
+      P.row(i) = Eigen::Map<Eigen::VectorXd>(
+        p_matrix.data(), p_matrix.cols() * p_matrix.rows());
+    }
+  }
+  cout << "P: " << P.rows() << " x " << P.cols() << " Sum: " << P.sum() << endl;
 
   // Omega
-  Omega.resize(n, m * 16);
-  for (int i = 0; i < n; i++)
+  if (use_10_float)
   {
-    Eigen::MatrixXd p_vector = P_vectors.row(i);
-    for (int j = 0; j < m; j++)
+    Omega.resize(n, m * 10);
+    for (int i = 0; i < n; i++)
     {
-      Eigen::MatrixXd Omega_curr(1, 16);
-      Eigen::MatrixXd Psi_curr = Psi.block(i, j * 16, 1, 16);
-      Omega_curr = (1 - alpha) * Psi_curr + alpha * W_prime.coeff(i, j) * p_vector;
-      Omega.block(i, j * 16, 1, 16) = Omega_curr;
+      Eigen::MatrixXd p_vector = P.row(i);
+      for (int j = 0; j < m; j++)
+      {
+        Eigen::MatrixXd Omega_curr(1, 10);
+        Eigen::MatrixXd Psi_curr = Psi.block(i, j * 10, 1, 10);
+        Omega_curr = (1 - alpha) * Psi_curr + alpha * W_prime.coeff(i, j) * p_vector;
+        Omega.block(i, j * 10, 1, 10) = Omega_curr;
+      }
+    }
+
+  }
+  else
+  {
+    Omega.resize(n, m * 16);
+    for (int i = 0; i < n; i++)
+    {
+      Eigen::MatrixXd p_vector = P.row(i);
+      for (int j = 0; j < m; j++)
+      {
+        Eigen::MatrixXd Omega_curr(1, 16);
+        Eigen::MatrixXd Psi_curr = Psi.block(i, j * 16, 1, 16);
+        Omega_curr = (1 - alpha) * Psi_curr + alpha * W_prime.coeff(i, j) * p_vector;
+        Omega.block(i, j * 16, 1, 16) = Omega_curr;
+      }
     }
   }
   cout << "Omega: " << Omega.rows() << " x " << Omega.cols() << " Sum: " << Omega.sum() << endl;

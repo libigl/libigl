@@ -17,7 +17,7 @@
 
 #include <igl/writeDMAT.h>
 
-const bool USE_SAVED_OMEGA = false;
+const bool USE_SAVED_OMEGA = true;
 
 typedef std::vector<Eigen::Quaterniond, Eigen::aligned_allocator<Eigen::Quaterniond>>
   RotationList;
@@ -36,8 +36,8 @@ double anim_t_dir = 0.015;
 bool use_ddm = false;
 bool recompute = true;
 int p = 3;
-float lambda = 0.5;
-float kappa = 0.4;
+float lambda = 0.75;
+float kappa = 0.5;
 float alpha = 0.5;
 
 bool pre_draw(igl::opengl::glfw::Viewer & viewer)
