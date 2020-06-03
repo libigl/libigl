@@ -12,6 +12,7 @@
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 
+
 namespace igl
 {
   // Project each triangle to the plane
