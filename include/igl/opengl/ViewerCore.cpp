@@ -232,6 +232,16 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
 
       glUniformMatrix4fv(viewi, 1, GL_FALSE, view.data());
       glUniformMatrix4fv(proji, 1, GL_FALSE, proj.data());
+
+      glUniform3f(glGetUniformLocation(data.meshgl.shader_overlay_points, "TextColor"), 1, 1, 1);
+      float width  = viewport(2);
+      float height = viewport(3);
+      glUniform2f(glGetUniformLocation(data.meshgl.shader_overlay_points, "CellSize"), 1.0f / 16, (300.0f / 384) / 6);
+      glUniform2f(glGetUniformLocation(data.meshgl.shader_overlay_points, "CellOffset"), 0.5 / 256.0, 0.5 / 256.0);
+      glUniform2f(glGetUniformLocation(data.meshgl.shader_overlay_points, "RenderSize"), 0.75 * 16 / (1280/2), 0.75 * 33.33 / (720/2));
+      glUniform2f(glGetUniformLocation(data.meshgl.shader_overlay_points, "RenderOrigin"), -0.96, 0.9);
+
+
       glPointSize(data.point_size);
 
       data.meshgl.draw_overlay_points();

@@ -105,8 +105,14 @@ public:
   //   C  #P|1 by 3 color(s)
   IGL_INLINE void set_points(
     const Eigen::MatrixXd& P,
-    const Eigen::MatrixXd& C);
-  IGL_INLINE void add_points(const Eigen::MatrixXd& P,  const Eigen::MatrixXd& C);
+    const Eigen::MatrixXd& C,
+    const Eigen::VectorXd& T
+  );
+  IGL_INLINE void add_points(
+    const Eigen::MatrixXd& P,  
+    const Eigen::MatrixXd& C,
+    const Eigen::VectorXd& T
+  );
   // Sets edges given a list of edge vertices and edge indices. In constrast
   // to `add_edges` this will (purposefully) clober existing edges.
   //

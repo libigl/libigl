@@ -10,6 +10,10 @@
 #include "bind_vertex_attrib_array.h"
 #include "create_shader_program.h"
 #include "destroy_shader_program.h"
+#include "shaders/text.vert"
+#include "shaders/text.geom"
+#include "shaders/text.frag"
+#include <igl/png/texture_from_png.h>
 #include <iostream>
 
 IGL_INLINE void igl::opengl::MeshGL::init_buffers()
@@ -39,6 +43,7 @@ IGL_INLINE void igl::opengl::MeshGL::init_buffers()
   glGenBuffers(1, &vbo_points_F);
   glGenBuffers(1, &vbo_points_V);
   glGenBuffers(1, &vbo_points_V_colors);
+  glGenBuffers(1, &vbo_points_V_text);
 
   dirty = MeshGL::DIRTY_ALL;
 }
@@ -64,6 +69,7 @@ IGL_INLINE void igl::opengl::MeshGL::free_buffers()
     glDeleteBuffers(1, &vbo_points_F);
     glDeleteBuffers(1, &vbo_points_V);
     glDeleteBuffers(1, &vbo_points_V_colors);
+    glDeleteBuffers(1, &vbo_points_V_text);
 
     glDeleteTextures(1, &vbo_tex);
   }
@@ -121,8 +127,23 @@ IGL_INLINE void igl::opengl::MeshGL::bind_overlay_points()
 
   glBindVertexArray(vao_overlay_points);
   glUseProgram(shader_overlay_points);
- bind_vertex_attrib_array(shader_overlay_points,"position", vbo_points_V, points_V_vbo, is_dirty);
- bind_vertex_attrib_array(shader_overlay_points,"color", vbo_points_V_colors, points_V_colors_vbo, is_dirty);
+  bind_vertex_attrib_array(shader_overlay_points,"position", vbo_points_V, points_V_vbo, is_dirty);
+  bind_vertex_attrib_array(shader_overlay_points,"color", vbo_points_V_colors, points_V_colors_vbo, is_dirty);
+
+  //---------- Text render
+  // Bind Vert Array already done
+  GLint id = glGetAttribLocation(shader_overlay_points, "text");
+  glBindBuffer(GL_ARRAY_BUFFER, vbo_points_V_text);
+  if(is_dirty)
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float)*points_V_text_vbo.size(), points_V_text_vbo.data(), GL_DYNAMIC_DRAW);
+  glEnableVertexAttribArray(id);
+  glVertexAttribIPointer(id, points_V_text_vbo.cols(), GL_UNSIGNED_BYTE, 1, 0);
+  //---------- Text render
+
+  const std::string path = "/home/michelle/Documents/LIBIGL/opengl_text_rendering/libigl-example-project/verasansmono.png";
+  GLuint texture_handle;
+  igl::png::texture_from_png(path, texture_handle);
+  glBindTexture(GL_TEXTURE_2D, texture_handle);
 
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_points_F);
   if (is_dirty)
@@ -286,8 +307,9 @@ R"(#version 150
     {},
     shader_overlay_lines);
   create_shader_program(
-    overlay_vertex_shader_string,
-    overlay_point_fragment_shader_string,
+    text_geom_shader,
+    text_vert_shader,
+    text_frag_shader,
     {},
     shader_overlay_points);
 }

@@ -260,14 +260,18 @@ IGL_INLINE void igl::opengl::ViewerData::set_texture(
 
 IGL_INLINE void igl::opengl::ViewerData::set_points(
   const Eigen::MatrixXd& P,
-  const Eigen::MatrixXd& C)
+  const Eigen::MatrixXd& C,
+  const Eigen::VectorXd& T)
 {
   // clear existing points
   points.resize(0,0);
-  add_points(P,C);
+  add_points(P,C,T);
 }
 
-IGL_INLINE void igl::opengl::ViewerData::add_points(const Eigen::MatrixXd& P,  const Eigen::MatrixXd& C)
+IGL_INLINE void igl::opengl::ViewerData::add_points(
+  const Eigen::MatrixXd& P,  
+  const Eigen::MatrixXd& C, 
+  const Eigen::VectorXd& T)
 {
   Eigen::MatrixXd P_temp;
 
@@ -281,9 +285,17 @@ IGL_INLINE void igl::opengl::ViewerData::add_points(const Eigen::MatrixXd& P,  c
     P_temp = P;
 
   int lastid = points.rows();
-  points.conservativeResize(points.rows() + P_temp.rows(),6);
+  assert(T.size() == 0 || T.size() == 1 || T.size() == T.rows());
+  points.conservativeResize(points.rows() + P_temp.rows(), 7);
   for (unsigned i=0; i<P_temp.rows(); ++i)
-    points.row(lastid+i) << P_temp.row(i), i<C.rows() ? C.row(i) : C.row(C.rows()-1);
+  {
+    // points.row(lastid+i) << P_temp.row(i), i<C.rows() ? C.row(i) : C.row(C.rows()-1);
+    points.row(lastid+i).head<6>() << P_temp.row(i), i<C.rows() ? C.row(i) : C.row(C.rows()-1);
+    if (T.size() > 0)
+    {
+      points.row(lastid+i).tail<1>() << T( 0 );
+    }
+  }
 
   dirty |= MeshGL::DIRTY_OVERLAY_POINTS;
 }
@@ -689,6 +701,7 @@ IGL_INLINE void igl::opengl::ViewerData::updateGL(
   {
     meshgl.lines_V_vbo.resize(data.lines.rows()*2,3);
     meshgl.lines_V_colors_vbo.resize(data.lines.rows()*2,3);
+    meshgl.points_V_text_vbo.resize(data.points.rows(),1);
     meshgl.lines_F_vbo.resize(data.lines.rows()*2,1);
     for (unsigned i=0; i<data.lines.rows();++i)
     {
@@ -696,6 +709,7 @@ IGL_INLINE void igl::opengl::ViewerData::updateGL(
       meshgl.lines_V_vbo.row(2*i+1) = data.lines.block<1, 3>(i, 3).cast<float>();
       meshgl.lines_V_colors_vbo.row(2*i+0) = data.lines.block<1, 3>(i, 6).cast<float>();
       meshgl.lines_V_colors_vbo.row(2*i+1) = data.lines.block<1, 3>(i, 6).cast<float>();
+      meshgl.points_V_text_vbo(i, 0) = (data.points.cols() > 6 ? data.points.cast<float>()(i, 6) : 1.0f);
       meshgl.lines_F_vbo(2*i+0) = 2*i+0;
       meshgl.lines_F_vbo(2*i+1) = 2*i+1;
     }

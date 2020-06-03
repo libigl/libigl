@@ -66,6 +66,7 @@ public:
   GLuint vbo_points_F;        // Indices of the point overlay
   GLuint vbo_points_V;        // Vertices of the point overlay
   GLuint vbo_points_V_colors; // Color values of the point overlay
+  GLuint vbo_points_V_text; // TEXT of the point overlay
 
   // Temporary copy of the content of each VBO
   typedef Eigen::Matrix<float,Eigen::Dynamic,Eigen::Dynamic,Eigen::RowMajor> RowMatrixXf;
@@ -79,6 +80,7 @@ public:
   RowMatrixXf lines_V_colors_vbo;
   RowMatrixXf points_V_vbo;
   RowMatrixXf points_V_colors_vbo;
+  RowMatrixXf points_V_text_vbo;
 
   int tex_u;
   int tex_v;
