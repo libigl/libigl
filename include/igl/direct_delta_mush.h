@@ -57,6 +57,7 @@ namespace igl {
   //   p  number of smoothing iterations
   //   lambda  smoothing step size
   //   kappa  smoothness parameter (section 3.3)
+  //   alpha  translation smoothness blending weight
   // Outputs:
   //   Omega  #V by #T*10 list of precomputated matrix values
   template <
@@ -77,20 +78,6 @@ namespace igl {
     const typename DerivedV::Scalar kappa,
     const typename DerivedV::Scalar alpha,
     Eigen::PlainObjectBase<DerivedOmega> & Omega);
-
-  // Pose evaluation
-  //
-  //   Omega  #V by #T*10 list of precomputated matrix values
-  //   T  #T list of bone pose transformations
-  // Outputs:
-  //   U  #V by 3 list of output vertex positions
-  template <
-    typename DerivedOmega,
-    typename DerivedU>
-  IGL_INLINE void direct_delta_mush_pose_evaluation(
-    const std::vector<Eigen::Affine3d, Eigen::aligned_allocator<Eigen::Affine3d> > & T,
-    const Eigen::MatrixBase<DerivedOmega> & Omega,
-    Eigen::PlainObjectBase<DerivedU> & U);
 } // namespace igl
 
 #ifndef IGL_STATIC_LIBRARY

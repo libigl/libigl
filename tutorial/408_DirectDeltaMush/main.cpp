@@ -15,10 +15,6 @@
 
 #include "tutorial_shared_path.h"
 
-#include <igl/writeDMAT.h>
-
-const bool USE_SAVED_OMEGA = true;
-
 typedef std::vector<Eigen::Quaterniond, Eigen::aligned_allocator<Eigen::Quaterniond>>
   RotationList;
 
@@ -29,16 +25,21 @@ const Eigen::RowVector3d sea_green(70. / 255., 252. / 255., 167. / 255.);
 Eigen::MatrixXd V, W, C, U, M, Omega;
 Eigen::MatrixXi F, BE;
 Eigen::VectorXi P;
-Eigen::SparseMatrix<double> W_sparse;
 std::vector<RotationList> poses;
 double anim_t = 0.0;
 double anim_t_dir = 0.015;
 bool use_ddm = false;
 bool recompute = true;
-int p = 3;
-float lambda = 0.75;
-float kappa = 0.5;
-float alpha = 0.5;
+
+// precomputation parameters
+// lambda controls the precision of smoothness
+// p * lambda   controls the rotation smoothness amount
+// p * kappa    controls the translation smoothness amount
+// alpha        controls the translation smoothness blending weight
+int p = 10;
+float lambda = 0.9; // 0 < lambda <= 1
+float kappa = 0.7; // 0 < kappa < lambda
+float alpha = 0.8; // 0 <= alpha < 1
 
 bool pre_draw(igl::opengl::glfw::Viewer & viewer)
 {
@@ -73,13 +74,13 @@ bool pre_draw(igl::opengl::glfw::Viewer & viewer)
         a.matrix().transpose().block(0, 0, dim + 1, dim);
       T_list.push_back(a);
     }
-    // Compute deformation via LBS as matrix multiplication
     if (use_ddm)
     {
-      // igl::direct_delta_mush_pose_evaluation(T_list, Omega, U);
       igl::direct_delta_mush(V, F, C, BE, T_list, Omega, U);
-    } else
+    }
+    else
     {
+      // Compute deformation via LBS as matrix multiplication
       U = M * T;
     }
 
@@ -94,7 +95,8 @@ bool pre_draw(igl::opengl::glfw::Viewer & viewer)
     if (viewer.core().is_animating)
     {
       anim_t += anim_t_dir;
-    } else
+    }
+    else
     {
       recompute = false;
     }
@@ -130,22 +132,23 @@ int main(int argc, char *argv[])
   igl::directed_edge_parents(BE, P);
   RotationList rest_pose;
   igl::directed_edge_orientations(C, BE, rest_pose);
-  poses.resize(2, RotationList(4, Quaterniond::Identity()));
+  poses.resize(4, RotationList(4, Quaterniond::Identity()));
+  const Quaterniond twist(AngleAxisd(igl::PI, Vector3d(1, 0, 0)));
+  poses[1][2] = rest_pose[2] * twist * rest_pose[2].conjugate();
   const Quaterniond bend(AngleAxisd(-igl::PI * 0.7, Vector3d(0, 0, 1)));
-  poses[1][2] = rest_pose[2] * bend * rest_pose[2].conjugate();
+  poses[3][2] = rest_pose[2] * bend * rest_pose[2].conjugate();
 
   igl::readDMAT(TUTORIAL_SHARED_PATH "/arm-weights.dmat", W);
-  W_sparse = W.sparseView();
+  SparseMatrix<double> W_sparse = W.sparseView();
   igl::lbs_matrix(V, W, M);
 
   // Precomputation for Direct Delta Mush
-  if (USE_SAVED_OMEGA) {
-    igl::readDMAT(TUTORIAL_SHARED_PATH "/arm-weights-ddm-omega.dmat", Omega);
-  }
-  else {
-    igl::direct_delta_mush_precomputation(V, F, C, BE, W_sparse, p, lambda, kappa, alpha, Omega);
-    igl::writeDMAT(TUTORIAL_SHARED_PATH "/arm-weights-ddm-omega.dmat", Omega);
-  }
+  cout << "Precomputing with parameters:" << endl
+       << "- p: " << p << endl
+       << "- lambda: " << lambda << endl
+       << "- kappa: " << kappa << endl
+       << "- alpha: " << alpha << endl;
+  igl::direct_delta_mush_precomputation(V, F, C, BE, W_sparse, p, lambda, kappa, alpha, Omega);
 
   // Plot the mesh with pseudocolors
   igl::opengl::glfw::Viewer viewer;
