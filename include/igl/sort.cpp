@@ -242,12 +242,12 @@ IGL_INLINE void igl::sort3(
 
   const auto & inner = [&IX,&Y,&dim,&ascending](const Index & i)
   {
-    YScalar & a = (dim==1 ? Y(0,i) : Y(i,0));
-    YScalar & b = (dim==1 ? Y(1,i) : Y(i,1));
-    YScalar & c = (dim==1 ? Y(2,i) : Y(i,2));
-    Index & ai = (dim==1 ? IX(0,i) : IX(i,0));
-    Index & bi = (dim==1 ? IX(1,i) : IX(i,1));
-    Index & ci = (dim==1 ? IX(2,i) : IX(i,2));
+    YScalar & a = (dim==1 ? Y.coeffRef(0,i) : Y.coeffRef(i,0));
+    YScalar & b = (dim==1 ? Y.coeffRef(1,i) : Y.coeffRef(i,1));
+    YScalar & c = (dim==1 ? Y.coeffRef(2,i) : Y.coeffRef(i,2));
+    Index & ai = (dim==1 ? IX.coeffRef(0,i) : IX.coeffRef(i,0));
+    Index & bi = (dim==1 ? IX.coeffRef(1,i) : IX.coeffRef(i,1));
+    Index & ci = (dim==1 ? IX.coeffRef(2,i) : IX.coeffRef(i,2));
     if(ascending)
     {
       // 123 132 213 231 312 321
