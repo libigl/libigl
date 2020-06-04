@@ -285,7 +285,7 @@ igl::direct_delta_mush<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<i
   Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const &,
   Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const &,
   Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const &,
-  std::__1::vector<Eigen::Transform<double, 3, 2, 0>, Eigen::aligned_allocator<Eigen::Transform<double, 3, 2, 0> > > const &,
+  std::vector<Eigen::Transform<double, 3, 2, 0>, Eigen::aligned_allocator<Eigen::Transform<double, 3, 2, 0> > > const &,
   Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const &,
   Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > &);
 
