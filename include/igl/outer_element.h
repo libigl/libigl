@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2015 Qingan Zhou <qnzhou@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_OUTER_ELEMENT_H
 #define IGL_OUTER_ELEMENT_H
@@ -33,9 +33,9 @@ namespace igl
       typename DerivedA
       >
   IGL_INLINE void outer_vertex(
-          const Eigen::PlainObjectBase<DerivedV> & V,
-          const Eigen::PlainObjectBase<DerivedF> & F,
-          const Eigen::PlainObjectBase<DerivedI> & I,
+          const Eigen::MatrixBase<DerivedV> & V,
+          const Eigen::MatrixBase<DerivedF> & F,
+          const Eigen::MatrixBase<DerivedI> & I,
           IndexType & v_index,
           Eigen::PlainObjectBase<DerivedA> & A);
 
@@ -64,9 +64,9 @@ namespace igl
       typename DerivedA
       >
   IGL_INLINE void outer_edge(
-          const Eigen::PlainObjectBase<DerivedV> & V,
-          const Eigen::PlainObjectBase<DerivedF> & F,
-          const Eigen::PlainObjectBase<DerivedI> & I,
+          const Eigen::MatrixBase<DerivedV> & V,
+          const Eigen::MatrixBase<DerivedF> & F,
+          const Eigen::MatrixBase<DerivedI> & I,
           IndexType & v1,
           IndexType & v2,
           Eigen::PlainObjectBase<DerivedA> & A);
@@ -96,10 +96,10 @@ namespace igl
       typename IndexType
       >
   IGL_INLINE void outer_facet(
-          const Eigen::PlainObjectBase<DerivedV> & V,
-          const Eigen::PlainObjectBase<DerivedF> & F,
-          const Eigen::PlainObjectBase<DerivedN> & N,
-          const Eigen::PlainObjectBase<DerivedI> & I,
+          const Eigen::MatrixBase<DerivedV> & V,
+          const Eigen::MatrixBase<DerivedF> & F,
+          const Eigen::MatrixBase<DerivedN> & N,
+          const Eigen::MatrixBase<DerivedI> & I,
           IndexType & f,
           bool & flipped);
 }
