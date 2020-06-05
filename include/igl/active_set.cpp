@@ -108,6 +108,12 @@ IGL_INLINE igl::SolverStatus igl::active_set(
   Matrix<BOOL,Dynamic,1> as_ux = Matrix<BOOL,Dynamic,1>::Constant(n,1,FALSE);
   Matrix<BOOL,Dynamic,1> as_ieq = Matrix<BOOL,Dynamic,1>::Constant(Aieq.rows(),1,FALSE);
 
+  Matrix<BOOL,Dynamic,1> fixed = Matrix<BOOL,Dynamic,1>::Constant(n,1,FALSE);
+  for(int k = 0;k<known.size();k++)
+  {
+    fixed[known(k)] = TRUE;
+  }
+
   // Keep track of previous Z for comparison
   DerivedZ old_Z;
   old_Z = DerivedZ::Constant(
@@ -128,17 +134,21 @@ IGL_INLINE igl::SolverStatus igl::active_set(
     {
       for(int z = 0;z < n;z++)
       {
-        if(Z(z) < lx(z))
+        // only check non-fixed values
+        if(!fixed(z))
         {
-          new_as_lx += (as_lx(z)?0:1);
-          //new_as_lx++;
-          as_lx(z) = TRUE;
-        }
-        if(Z(z) > ux(z))
-        {
-          new_as_ux += (as_ux(z)?0:1);
-          //new_as_ux++;
-          as_ux(z) = TRUE;
+          if(Z(z) < lx(z))
+          {
+            new_as_lx += (as_lx(z)?0:1);
+            //new_as_lx++;
+            as_lx(z) = TRUE;
+          }
+          if(Z(z) > ux(z))
+          {
+            new_as_ux += (as_ux(z)?0:1);
+            //new_as_ux++;
+            as_ux(z) = TRUE;
+          }
         }
       }
       if(Aieq.rows() > 0)
@@ -253,11 +263,11 @@ IGL_INLINE igl::SolverStatus igl::active_set(
 #ifndef NDEBUG
     {
       // NO DUPES!
-      Matrix<BOOL,Dynamic,1> fixed = Matrix<BOOL,Dynamic,1>::Constant(n,1,FALSE);
+      Matrix<BOOL,Dynamic,1> fixed_i = Matrix<BOOL,Dynamic,1>::Constant(n,1,FALSE);
       for(int k = 0;k<known_i.size();k++)
       {
-        assert(!fixed[known_i(k)]);
-        fixed[known_i(k)] = TRUE;
+        assert(!fixed_i[known_i(k)]);
+        fixed_i[known_i(k)] = TRUE;
       }
     }
 #endif
