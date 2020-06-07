@@ -42,8 +42,11 @@ IGL_INLINE void igl::opengl::MeshGL::init_buffers()
   glBindVertexArray(vao_overlay_points);
   glGenBuffers(1, &vbo_points_F);
   glGenBuffers(1, &vbo_points_V);
-  glGenBuffers(1, &vbo_points_V_colors);
-  glGenBuffers(1, &vbo_points_V_text);
+
+  // Text Rendering
+  glGenBuffers(1, &vbo_points_V_characters);
+  glGenBuffers(1, &vbo_points_V_offset);
+  glGenBuffers(1, &vbo_points_V_indices);
 
   dirty = MeshGL::DIRTY_ALL;
 }
@@ -68,8 +71,11 @@ IGL_INLINE void igl::opengl::MeshGL::free_buffers()
     glDeleteBuffers(1, &vbo_lines_V_colors);
     glDeleteBuffers(1, &vbo_points_F);
     glDeleteBuffers(1, &vbo_points_V);
-    glDeleteBuffers(1, &vbo_points_V_colors);
-    glDeleteBuffers(1, &vbo_points_V_text);
+    
+    // Text Rendering
+    glDeleteBuffers(1, &vbo_points_V_characters);
+    glDeleteBuffers(1, &vbo_points_V_offset);
+    glDeleteBuffers(1, &vbo_points_V_indices);
 
     glDeleteTextures(1, &vbo_tex);
   }
@@ -127,27 +133,23 @@ IGL_INLINE void igl::opengl::MeshGL::bind_overlay_points()
 
   glBindVertexArray(vao_overlay_points);
   glUseProgram(shader_overlay_points);
+
+
   bind_vertex_attrib_array(shader_overlay_points,"position", vbo_points_V, points_V_vbo, is_dirty);
-  // bind_vertex_attrib_array(shader_overlay_points,"text", vbo_points_V_text, points_V_text_vbo, is_dirty);
+  bind_vertex_attrib_array(shader_overlay_points,"character", vbo_points_V_characters, points_V_characters_vbo, is_dirty);
+  bind_vertex_attrib_array(shader_overlay_points,"offset", vbo_points_V_offset, points_V_offset_vbo, is_dirty);
 
-
-  // GLint id2 = glGetAttribLocation(shader_overlay_points, "position");
-  // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_points_V);
+  // GLint id = glGetAttribLocation(shader_overlay_points, "character");
+  // glBindBuffer(GL_ARRAY_BUFFER, vbo_points_V_characters);
   // if (is_dirty)
-  //   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(float)*points_V_vbo.size(), points_V_vbo.data(), GL_DYNAMIC_DRAW);
-  // glVertexAttribPointer(id2, points_V_vbo.cols(), GL_FLOAT, GL_FALSE, 0, 0);
-  // glEnableVertexAttribArray(id2);
+  //   glBufferData(GL_ARRAY_BUFFER, sizeof(int)*points_V_characters_vbo.size(), points_V_characters_vbo.data(), GL_DYNAMIC_DRAW);
+  // glVertexAttribPointer(id, points_V_characters_vbo.cols(), GL_INT, GL_FALSE, 0, 0);
+  // glEnableVertexAttribArray(id);
 
-  // std::cout << points_V_vbo << std::endl;
-  // Bind Vert Array already done
-  GLint id = glGetAttribLocation(shader_overlay_points, "text");
-  glBindBuffer(GL_ARRAY_BUFFER, vbo_points_V_text);
-  if(is_dirty)
-    glBufferData(GL_ARRAY_BUFFER, sizeof(int)*points_V_text_vbo.size(), points_V_text_vbo.data(), GL_DYNAMIC_DRAW);
-  glEnableVertexAttribArray(id);
-  glVertexAttribIPointer(id, points_V_text_vbo.cols(), GL_INT, 0, 0);
-  // glVertexAttribPointer(id, points_V_text_vbo.cols(), GL_INT, GL_FALSE, 0, 0);
-  //---------- Text render
+
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_points_V_indices);
+  if (is_dirty)
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned)*points_V_indices_vbo.size(), points_V_indices_vbo.data(), GL_DYNAMIC_DRAW);
 
   const std::string path = "/home/michelle/Documents/LIBIGL/opengl_text_rendering/libigl-example-project/verasansmono.png";
   GLuint texture_handle;
@@ -180,11 +182,7 @@ IGL_INLINE void igl::opengl::MeshGL::draw_overlay_lines()
 
 IGL_INLINE void igl::opengl::MeshGL::draw_overlay_points()
 {
-  std::string v_label = std::to_string(12);
-
-  glDrawArrays(GL_POINTS, 0, 2);
-  // glDrawArrays(GL_POINTS, 0, 2);
-  // glDrawElements(GL_POINTS, 2, GL_UNSIGNED_INT, 0);
+  glDrawElements(GL_POINTS, points_V_indices_vbo.rows(), GL_UNSIGNED_INT, 0);
 }
 
 IGL_INLINE void igl::opengl::MeshGL::init()

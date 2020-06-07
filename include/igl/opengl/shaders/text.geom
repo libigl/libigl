@@ -18,6 +18,7 @@ std::string text_geom_shader = R"(
 
     in int vPosition[1];
     in int vCharacter[1];
+    in float vOffset[1];
 
     void main()
     {
@@ -30,7 +31,8 @@ std::string text_geom_shader = R"(
         // vec4 P = vec4(x, y, 0, 1);
         
         
-        vec4 P = gl_in[0].gl_Position + vec4( float(vPosition[0])*0.04, 0.0, 0.0, 0.0 );
+        // vec4 P = gl_in[0].gl_Position;
+        vec4 P = gl_in[0].gl_Position + vec4( vOffset[0]*0.04, 0.0, 0.0, 0.0 );
         // P = proj * view * P;
 
 
@@ -39,7 +41,9 @@ std::string text_geom_shader = R"(
 
         // Determine the texture coordinates:
         int letter = vCharacter[0]; // used to be the character
+
         // int letter = 97; // used to be the character
+
         letter = clamp(letter - 32, 0, 96);
         int row = letter / 16 + 1;
         int col = letter % 16;

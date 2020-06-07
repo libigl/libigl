@@ -65,8 +65,11 @@ public:
   GLuint vbo_lines_V_colors;  // Color values of the line overlay
   GLuint vbo_points_F;        // Indices of the point overlay
   GLuint vbo_points_V;        // Vertices of the point overlay
-  GLuint vbo_points_V_colors; // Color values of the point overlay
-  GLuint vbo_points_V_text; // TEXT of the point overlay
+
+  // Text rendering
+  GLuint vbo_points_V_characters;
+  GLuint vbo_points_V_indices; 
+  GLuint vbo_points_V_offset; 
 
   // Temporary copy of the content of each VBO
   typedef Eigen::Matrix<float,Eigen::Dynamic,Eigen::Dynamic,Eigen::RowMajor> RowMatrixXf;
@@ -79,7 +82,8 @@ public:
   RowMatrixXf lines_V_vbo;
   RowMatrixXf lines_V_colors_vbo;
   RowMatrixXf points_V_vbo;
-  RowMatrixXf points_V_colors_vbo;
+  RowMatrixXf points_V_characters_vbo;
+  RowMatrixXf points_V_offset_vbo;
 
   int tex_u;
   int tex_v;
@@ -88,7 +92,10 @@ public:
   Eigen::Matrix<unsigned, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> F_vbo;
   Eigen::Matrix<unsigned, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> lines_F_vbo;
   Eigen::Matrix<unsigned, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> points_F_vbo;
-  Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> points_V_text_vbo;
+
+  // Text rendering
+  // Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> points_V_characters_vbo;
+  Eigen::Matrix<unsigned, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> points_V_indices_vbo;
 
   // Marks dirty buffers that need to be uploaded to OpenGL
   uint32_t dirty;
