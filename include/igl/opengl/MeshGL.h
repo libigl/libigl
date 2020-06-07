@@ -80,7 +80,6 @@ public:
   RowMatrixXf lines_V_colors_vbo;
   RowMatrixXf points_V_vbo;
   RowMatrixXf points_V_colors_vbo;
-  RowMatrixXf points_V_text_vbo;
 
   int tex_u;
   int tex_v;
@@ -89,6 +88,7 @@ public:
   Eigen::Matrix<unsigned, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> F_vbo;
   Eigen::Matrix<unsigned, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> lines_F_vbo;
   Eigen::Matrix<unsigned, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> points_F_vbo;
+  Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> points_V_text_vbo;
 
   // Marks dirty buffers that need to be uploaded to OpenGL
   uint32_t dirty;

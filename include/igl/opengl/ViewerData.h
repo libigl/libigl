@@ -189,7 +189,7 @@ public:
   // Points plotted over the scene
   // (Every row contains 6 doubles in the following format P_x, P_y, P_z, C_r, C_g, C_b),
   // with P the position in global coordinates of the center of the point, and C the color in floating point rgb format
-  Eigen::MatrixXd points;
+  Eigen::MatrixXi points;
 
   // Text labels plotted over the scene
   // Textp contains, in the i-th row, the position in global coordinates where the i-th label should be anchored

@@ -17,16 +17,29 @@ std::string text_geom_shader = R"(
     uniform vec2 RenderOrigin;
 
     in int vPosition[1];
+    in int vCharacter[1];
 
     void main()
     {
         // Determine the final quad's position and size:
-        vec4 P = gl_in[0].gl_Position;
+        // vec4 P = gl_in[0].gl_Position;
+
+
+        // float x = RenderOrigin.x + float(vPosition[0]) * RenderSize.x * 2;
+        // float y = RenderOrigin.y;
+        // vec4 P = vec4(x, y, 0, 1);
+        
+        
+        vec4 P = gl_in[0].gl_Position + vec4( float(vPosition[0])*0.04, 0.0, 0.0, 0.0 );
+        // P = proj * view * P;
+
+
         vec4 U = vec4(1, 0, 0, 0) * RenderSize.x;
         vec4 V = vec4(0, 1, 0, 0) * RenderSize.y;
 
         // Determine the texture coordinates:
-        int letter = 97; // used to be the character
+        int letter = vCharacter[0]; // used to be the character
+        // int letter = 97; // used to be the character
         letter = clamp(letter - 32, 0, 96);
         int row = letter / 16 + 1;
         int col = letter % 16;

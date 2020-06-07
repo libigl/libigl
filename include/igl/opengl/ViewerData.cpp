@@ -285,16 +285,12 @@ IGL_INLINE void igl::opengl::ViewerData::add_points(
     P_temp = P;
 
   int lastid = points.rows();
-  assert(T.size() == 0 || T.size() == 1 || T.size() == T.rows());
-  points.conservativeResize(points.rows() + P_temp.rows(), 7);
-  for (unsigned i=0; i<P_temp.rows(); ++i)
+
+  std::string v_label = std::to_string(12);
+  points.conservativeResize( v_label.length() , 1);
+  for (unsigned i=0; i<points.rows(); ++i)
   {
-    // points.row(lastid+i) << P_temp.row(i), i<C.rows() ? C.row(i) : C.row(C.rows()-1);
-    points.row(lastid+i).head<6>() << P_temp.row(i), i<C.rows() ? C.row(i) : C.row(C.rows()-1);
-    if (T.size() > 0)
-    {
-      points.row(lastid+i).tail<1>() << T( 0 );
-    }
+    points.row(i) << (int)(v_label.at(i));
   }
 
   dirty |= MeshGL::DIRTY_OVERLAY_POINTS;
@@ -394,7 +390,7 @@ IGL_INLINE void igl::opengl::ViewerData::clear()
   F_uv                    = Eigen::MatrixXi (0,3);
 
   lines                   = Eigen::MatrixXd (0,9);
-  points                  = Eigen::MatrixXd (0,6);
+  points                  = Eigen::MatrixXi (0,1);
   labels_positions        = Eigen::MatrixXd (0,3);
   labels_strings.clear();
 
@@ -701,7 +697,6 @@ IGL_INLINE void igl::opengl::ViewerData::updateGL(
   {
     meshgl.lines_V_vbo.resize(data.lines.rows()*2,3);
     meshgl.lines_V_colors_vbo.resize(data.lines.rows()*2,3);
-    meshgl.points_V_text_vbo.resize(data.points.rows(),1);
     meshgl.lines_F_vbo.resize(data.lines.rows()*2,1);
     for (unsigned i=0; i<data.lines.rows();++i)
     {
@@ -709,7 +704,6 @@ IGL_INLINE void igl::opengl::ViewerData::updateGL(
       meshgl.lines_V_vbo.row(2*i+1) = data.lines.block<1, 3>(i, 3).cast<float>();
       meshgl.lines_V_colors_vbo.row(2*i+0) = data.lines.block<1, 3>(i, 6).cast<float>();
       meshgl.lines_V_colors_vbo.row(2*i+1) = data.lines.block<1, 3>(i, 6).cast<float>();
-      meshgl.points_V_text_vbo(i, 0) = (data.points.cols() > 6 ? data.points.cast<float>()(i, 6) : 1.0f);
       meshgl.lines_F_vbo(2*i+0) = 2*i+0;
       meshgl.lines_F_vbo(2*i+1) = 2*i+1;
     }
@@ -718,13 +712,11 @@ IGL_INLINE void igl::opengl::ViewerData::updateGL(
   if (meshgl.dirty & MeshGL::DIRTY_OVERLAY_POINTS)
   {
     meshgl.points_V_vbo.resize(data.points.rows(),3);
-    meshgl.points_V_colors_vbo.resize(data.points.rows(),3);
-    meshgl.points_F_vbo.resize(data.points.rows(),1);
-    for (unsigned i=0; i<data.points.rows();++i)
+    meshgl.points_V_text_vbo.resize(data.points.rows(),1);
+    for (int i=0; i<data.points.rows();++i)
     {
-      meshgl.points_V_vbo.row(i) = data.points.block<1, 3>(i, 0).cast<float>();
-      meshgl.points_V_colors_vbo.row(i) = data.points.block<1, 3>(i, 3).cast<float>();
-      meshgl.points_F_vbo(i) = i;
+      meshgl.points_V_vbo.row(i) << ((data.V_normals.normalized()*0.1).row(12) + data.V.row(12)).cast<float>();
+      meshgl.points_V_text_vbo.row(i) << data.points.row(i).cast<int>();
     }
   }
 }
