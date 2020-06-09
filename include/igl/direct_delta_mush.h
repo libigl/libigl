@@ -55,9 +55,9 @@ namespace igl {
   //   E  #E by 2 list of bone edge indices into rows of C
   //   W  #V by #E list of weights
   //   p  number of smoothing iterations
-  //   lambda  smoothing step size
-  //   kappa  smoothness parameter (section 3.3)
-  //   alpha  translation smoothness blending weight
+  //   lambda  rotation smoothing step size
+  //   kappa   translation smoothness step size
+  //   alpha   translation smoothness blending weight
   // Outputs:
   //   Omega  #V by #T*10 list of precomputated matrix values
   template <

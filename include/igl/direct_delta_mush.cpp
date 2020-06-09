@@ -42,7 +42,7 @@ IGL_INLINE void igl::direct_delta_mush(
 
   // V_homogeneous: #V by 4, homogeneous version of V
   // Note:
-  // in the paper, the rest pose vertices are represented in U \in R^{4 \times #V}
+  // In the paper, the rest pose vertices are represented in U \in R^{4 x #V}
   // Thus the formulae involving U would differ from the paper by a transpose.
   Matrix<Scalar, Dynamic, 4> V_homogeneous(n, 4);
   V_homogeneous << V, Matrix<Scalar, Dynamic, 1>::Ones(n, 1);
@@ -124,9 +124,6 @@ IGL_INLINE void igl::direct_delta_mush_precomputation(
   assert(lambda > 0 && "lambda should be positive.");
   assert(kappa > 0 && kappa < lambda && "kappa should be positive and less than lambda.");
   assert(alpha >= 0 && alpha < 1 && "alpha should be non-negative and less than 1.");
-  // This constraint is due to the explicit calculation of Psi.
-  // If Psi is calculated implicitly, this upper bound would not be needed.
-  assert(lambda <= 1 && "lambda should be less than or equal to 0");
 
   typedef typename DerivedV::Scalar Scalar;
 
@@ -200,7 +197,7 @@ IGL_INLINE void igl::direct_delta_mush_precomputation(
   }
 
   // U_precomputed: #V by 10
-  // Cache u_i^T \dot u_i \in R^{4 x 4} to reduce computation time in Psi.
+  // Cache u_i^T \dot u_i \in R^{4 x 4} to reduce computation time.
   Matrix<Scalar, Dynamic, 10> U_precomputed(n, 10);
   for (int k = 0; k < n; ++k)
   {
@@ -208,33 +205,41 @@ IGL_INLINE void igl::direct_delta_mush_precomputation(
     U_precomputed.row(k) = extract_upper_triangle(u_full);
   }
 
-  // Psi: #V by #T*10 of \Psi_{ij}s.
-  // Note: this step deviates from the original paper
-  // - The original paper calculates Psi implicitly and iteratively using
-  //   B = (I + lambda * L_bar)^{-p}, similar to the implicit calculation of W' using C (see above).
-  // - I was not able to successfully vectorize Psi, so here I am explicitly computing Psi using
-  //   A = (I - lambda * L_bar)^{p} instead.
-  // - The explicit method should produce similar result as the implicit method, but it poses
-  //   an additional constraint to the parameter: lambda <= 1.
-  Matrix<Scalar, Dynamic, Dynamic> Psi(n, m * 10);
-  SparseMatrix<Scalar> a(I - lambda * L_bar);
-  SparseMatrix<Scalar> A(I);
-  for (int i = 0; i < p; ++i)
+  // U_prime: #V by #T*10 of u_{jx}
+  // Each column of U_prime (u_{jx}) is the element-wise product of
+  // W_j and U_precomputed_x where j \in {1...m}, x \in {1...10}
+  Matrix<Scalar, Dynamic, Dynamic> U_prime(n, m * 10);
+  for (int j = 0; j < m; ++j)
   {
-    A = A * a;
-  }
-  for (int i = 0; i < n; ++i)
-  {
-    for (int j = 0; j < m; ++j)
+    Matrix<Scalar, Dynamic, 1> w_j = W.col(j);
+    for (int x = 0; x < 10; ++x)
     {
-      Matrix<Scalar, 10, 1> Psi_curr = Matrix<Scalar, 10, 1>::Zero(10);
-      for (int k = 0; k < n; ++k)
-      {
-        Psi_curr += A.coeff(k, i) * W.coeff(k, j) * U_precomputed.row(k);
-      }
-      Psi.block(i, j * 10, 1, 10) = Psi_curr.transpose();
+      Matrix<Scalar, Dynamic, 1> u_x = U_precomputed.col(x);
+      U_prime.col(10 * j + x) = w_j.array() * u_x.array();
     }
   }
+
+  // Implicitly and iteratively solve for Psi: #V by #T*10 of \Psi_{ij}s.
+  // Note: Using dense matrices to solve for Psi will cause the program to hang.
+  // The following won't work
+  // Matrix<Scalar, Dynamic, Dynamic> Psi(U_prime);
+  // Matrix<Scalar, Dynamic, Dynamic> b((I + lambda * L_bar).transpose());
+  // for (int iter = 0; iter < p; ++iter)
+  // {
+  //   Psi = b.ldlt().solve(Psi);  // hangs here
+  // }
+  // Convert to sparse matrices and compute
+  Matrix<Scalar, Dynamic, Dynamic> Psi;
+  SparseMatrix<Scalar> Psi_sparse = U_prime.sparseView();
+  SparseMatrix<Scalar> b = (I + lambda * L_bar).transpose();
+  SimplicialLDLT<SparseMatrix<Scalar>> ldlt_Psi;
+  ldlt_Psi.compute(b);
+  for (int iter = 0; iter < p; ++iter)
+  {
+    Psi_sparse.makeCompressed();
+    Psi_sparse = ldlt_Psi.solve(Psi_sparse);
+  }
+  Psi = Psi_sparse.toDense();
 
   // P: #V by 10 precomputed upper triangle of
   //    p_i p_i^T , p_i

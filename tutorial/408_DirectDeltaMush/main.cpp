@@ -36,9 +36,9 @@ bool recompute = true;
 // p * lambda   controls the rotation smoothness amount
 // p * kappa    controls the translation smoothness amount
 // alpha        controls the translation smoothness blending weight
-int p = 10;
-float lambda = 0.9; // 0 < lambda <= 1
-float kappa = 0.7; // 0 < kappa < lambda
+int p = 20;
+float lambda = 3; // 0 < lambda
+float kappa = 1; // 0 < kappa < lambda
 float alpha = 0.8; // 0 <= alpha < 1
 
 bool pre_draw(igl::opengl::glfw::Viewer & viewer)
@@ -133,7 +133,7 @@ int main(int argc, char *argv[])
   RotationList rest_pose;
   igl::directed_edge_orientations(C, BE, rest_pose);
   poses.resize(4, RotationList(4, Quaterniond::Identity()));
-  const Quaterniond twist(AngleAxisd(igl::PI, Vector3d(1, 0, 0)));
+  const Quaterniond twist(AngleAxisd(igl::PI * 0.8, Vector3d(1, 0, 0)));
   poses[1][2] = rest_pose[2] * twist * rest_pose[2].conjugate();
   const Quaterniond bend(AngleAxisd(-igl::PI * 0.7, Vector3d(0, 0, 1)));
   poses[3][2] = rest_pose[2] * bend * rest_pose[2].conjugate();
