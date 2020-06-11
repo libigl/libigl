@@ -103,12 +103,12 @@ endfunction()
 function(igl_download_imgui)
 	igl_download_project(imgui
 		GIT_REPOSITORY https://github.com/ocornut/imgui.git
-		GIT_TAG        v1.69
+		GIT_TAG        v1.76
 		${LIBIGL_BRANCH_OPTIONS}
 	)
 	igl_download_project(libigl-imgui
-		GIT_REPOSITORY https://github.com/libigl/libigl-imgui.git
-		GIT_TAG        07ecd3858acc71e70f0f9b2dea20a139bdddf8ae
+		GIT_REPOSITORY https://github.com/gmin7/libigl-imgui.git
+		GIT_TAG        92fbf1318ebd044beaf3a70e2e549081816851cc
 	)
 endfunction()
 
