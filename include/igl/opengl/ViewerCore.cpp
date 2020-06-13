@@ -241,7 +241,7 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
 
   if (is_set(data.show_vertid) || is_set(data.show_faceid))
   {
-    data.add_vertexid_labels(is_set(data.show_vertid), is_set(data.show_faceid));
+    data.add_id_labels(is_set(data.show_vertid), is_set(data.show_faceid));
     if (data.vertid_labels.rows() > 0)
     {
       data.meshgl.bind_vertid_labels();
@@ -254,7 +254,7 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
       float width  = viewport(2);
       float height = viewport(3);
       float text_shift_scale_factor = orthographic ? 0.015 : 0.04;
-      float render_scale = orthographic ? 0.5 : 1.7;
+      float render_scale = orthographic ? 0.6 : 1.7;
 
       glUniformMatrix4fv(viewi, 1, GL_FALSE, view.data());
       glUniformMatrix4fv(proji, 1, GL_FALSE, proj.data());
