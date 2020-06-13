@@ -357,11 +357,11 @@ IGL_INLINE void ImGuiMenu::draw_labels(const igl::opengl::ViewerData &data)
       }
       p /= (double) data.F.cols();
 
-      draw_text(
-        p, 
-        data.F_normals.row(i), 
-        std::to_string(i),
-        data.label_color);
+      // draw_text(
+      //   p, 
+      //   data.F_normals.row(i), 
+      //   std::to_string(i),
+      //   data.label_color);
     }
   }
 

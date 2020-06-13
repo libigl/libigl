@@ -190,9 +190,9 @@ public:
   Eigen::MatrixXd points;
 
   Eigen::MatrixXi vertid_labels;
-  IGL_INLINE void add_vertid_labels(
-    const Eigen::MatrixXd& P,  
-    const Eigen::MatrixXd& C
+  IGL_INLINE void add_vertexid_labels(
+    const bool show_vertids,
+    const bool show_faceids
   );
 
   // Text labels plotted over the scene

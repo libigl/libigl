@@ -239,8 +239,9 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
     glEnable(GL_DEPTH_TEST);
   }
 
-  if (is_set(data.show_vertid))
+  if (is_set(data.show_vertid) || is_set(data.show_faceid))
   {
+    data.add_vertexid_labels(is_set(data.show_vertid), is_set(data.show_faceid));
     if (data.vertid_labels.rows() > 0)
     {
       data.meshgl.bind_vertid_labels();
@@ -253,16 +254,14 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
       float width  = viewport(2);
       float height = viewport(3);
       float text_shift_scale_factor = orthographic ? 0.015 : 0.04;
-      float render_scale = orthographic ? 0.7 : 1.7;
-
+      float render_scale = orthographic ? 0.5 : 1.7;
 
       glUniformMatrix4fv(viewi, 1, GL_FALSE, view.data());
       glUniformMatrix4fv(proji, 1, GL_FALSE, proj.data());
       glUniform1f(glGetUniformLocation(data.meshgl.shader_overlay_points, "TextShiftFactor"), text_shift_scale_factor);
-      glUniform3f(glGetUniformLocation(data.meshgl.shader_overlay_points, "TextColor"), 0, 0, 1);
+      glUniform3f(glGetUniformLocation(data.meshgl.shader_overlay_points, "TextColor"), 0, 0, 0);
       glUniform2f(glGetUniformLocation(data.meshgl.shader_overlay_points, "CellSize"), 1.0f / 16, (300.0f / 384) / 6);
       glUniform2f(glGetUniformLocation(data.meshgl.shader_overlay_points, "CellOffset"), 0.5 / 256.0, 0.5 / 256.0);
-
       glUniform2f(glGetUniformLocation(data.meshgl.shader_overlay_points, "RenderSize"), render_scale * 0.75 * 16 / (width), render_scale * 0.75 * 33.33 / (height));
       glUniform2f(glGetUniformLocation(data.meshgl.shader_overlay_points, "RenderOrigin"), -2, 2);
 

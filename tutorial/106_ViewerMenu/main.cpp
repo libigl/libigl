@@ -99,6 +99,5 @@ int main(int argc, char *argv[])
 
   // Plot the mesh
   viewer.data().set_mesh(V, F);
-  viewer.data().add_vertid_labels(viewer.data().V_normals.normalized() * 0.005f * viewer.core().object_scale + V, Eigen::RowVector3d(0, 0, 1));
   viewer.launch();
 }
