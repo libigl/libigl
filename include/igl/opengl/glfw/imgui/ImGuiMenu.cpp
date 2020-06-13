@@ -336,14 +336,14 @@ IGL_INLINE void ImGuiMenu::draw_labels(const igl::opengl::ViewerData &data)
 {
   if (data.show_vertid)
   {
-    for (int i = 0; i < data.V.rows(); ++i)
-    {
-      draw_text(
-        data.V.row(i), 
-        data.V_normals.row(i), 
-        std::to_string(i),
-        data.label_color);
-    }
+    // for (int i = 0; i < data.V.rows(); ++i)
+    // {
+    //   draw_text(
+    //     data.V.row(i), 
+    //     data.V_normals.row(i), 
+    //     std::to_string(i),
+    //     data.label_color);
+    // }
   }
 
   if (data.show_faceid)

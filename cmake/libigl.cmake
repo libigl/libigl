@@ -353,7 +353,7 @@ if(LIBIGL_WITH_OPENGL_GLFW)
       igl_download_glfw()
       add_subdirectory(${LIBIGL_EXTERNAL}/glfw glfw)
     endif()
-    target_link_libraries(igl_opengl_glfw ${IGL_SCOPE} igl_opengl glfw)
+    target_link_libraries(igl_opengl_glfw ${IGL_SCOPE} igl_opengl igl_png glfw)
   endif()
 endif()
 

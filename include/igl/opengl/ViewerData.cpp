@@ -16,7 +16,6 @@
 
 #include <iostream>
 
-
 IGL_INLINE igl::opengl::ViewerData::ViewerData()
 : dirty(MeshGL::DIRTY_ALL),
   show_faces(true),
@@ -260,19 +259,20 @@ IGL_INLINE void igl::opengl::ViewerData::set_texture(
 
 IGL_INLINE void igl::opengl::ViewerData::set_points(
   const Eigen::MatrixXd& P,
-  const Eigen::MatrixXd& C,
-  const Eigen::VectorXd& T)
+  const Eigen::MatrixXd& C)
 {
   // clear existing points
   points.resize(0,0);
-  add_points(P,C,T);
+  add_points(P,C);
 }
 
-IGL_INLINE void igl::opengl::ViewerData::add_points(
-  const Eigen::MatrixXd& P,  
-  const Eigen::MatrixXd& C, 
-  const Eigen::VectorXd& T)
+IGL_INLINE void igl::opengl::ViewerData::add_vertid_labels(
+  const Eigen::MatrixXd& P,
+  const Eigen::MatrixXd& C)
 {
+  // clear existing points
+  vertid_labels.resize(0,0);
+
   Eigen::MatrixXd P_temp;
 
   // If P only has two columns, pad with a column of zeros
@@ -284,7 +284,7 @@ IGL_INLINE void igl::opengl::ViewerData::add_points(
   else
     P_temp = P;
 
-  int lastid = points.rows();
+  int lastid = vertid_labels.rows();
 
   std::string vertCount = std::to_string(V.rows());
   int totalCharacters = 0;
@@ -309,19 +309,40 @@ IGL_INLINE void igl::opengl::ViewerData::add_points(
   // }
   // std::cout << "sanity check: " << sanityCheck << std::endl;
 
-  points.conservativeResize(totalCharacters , 3);
+  vertid_labels.conservativeResize(totalCharacters , 3);
   int j=0;
   for (int v=0; v<V.rows(); ++v)
   {
     std::string vertName = std::to_string(v);
     for(int c=0; c<vertName.length(); c++)
     {
-      points(j,0) = v; // vertex position to use
-      points(j,1) = (int)(vertName.at(c)); // the character as ASCII
-      points(j,2) = c; // character offset for the current vert name
+      vertid_labels(j,0) = v; // vertex position to use
+      vertid_labels(j,1) = (int)(vertName.at(c)); // the character as ASCII
+      vertid_labels(j,2) = c; // character offset for the current vert name
       j++;
     }
   }
+
+  dirty |= MeshGL::DIRTY_VERTID_LABELS;
+}
+
+IGL_INLINE void igl::opengl::ViewerData::add_points(const Eigen::MatrixXd& P,  const Eigen::MatrixXd& C)
+{
+  Eigen::MatrixXd P_temp;
+
+  // If P only has two columns, pad with a column of zeros
+  if (P.cols() == 2)
+  {
+    P_temp = Eigen::MatrixXd::Zero(P.rows(),3);
+    P_temp.block(0,0,P.rows(),2) = P;
+  }
+  else
+    P_temp = P;
+
+  int lastid = points.rows();
+  points.conservativeResize(points.rows() + P_temp.rows(),6);
+  for (unsigned i=0; i<P_temp.rows(); ++i)
+    points.row(lastid+i) << P_temp.row(i), i<C.rows() ? C.row(i) : C.row(C.rows()-1);
 
   dirty |= MeshGL::DIRTY_OVERLAY_POINTS;
 }
@@ -420,7 +441,7 @@ IGL_INLINE void igl::opengl::ViewerData::clear()
   F_uv                    = Eigen::MatrixXi (0,3);
 
   lines                   = Eigen::MatrixXd (0,9);
-  points                  = Eigen::MatrixXi (0,1);
+  points                  = Eigen::MatrixXd (0,1);
   labels_positions        = Eigen::MatrixXd (0,3);
   labels_strings.clear();
 
@@ -739,27 +760,20 @@ IGL_INLINE void igl::opengl::ViewerData::updateGL(
     }
   }
 
-  if (meshgl.dirty & MeshGL::DIRTY_OVERLAY_POINTS)
+  if (meshgl.dirty & MeshGL::DIRTY_VERTID_LABELS)
   {
-    meshgl.points_V_vbo.resize(data.points.rows(),3);
-
-    meshgl.points_V_characters_vbo.resize(data.points.rows(),1);
-    meshgl.points_V_offset_vbo.resize(data.points.rows(),1);
-    meshgl.points_V_indices_vbo.resize(data.points.rows(),1);
-
+    meshgl.points_V_vbo.resize(data.vertid_labels.rows(),3);
+    meshgl.points_V_characters_vbo.resize(data.vertid_labels.rows(),1);
+    meshgl.points_V_offset_vbo.resize(data.vertid_labels.rows(),1);
+    meshgl.points_V_indices_vbo.resize(data.vertid_labels.rows(),1);
     Eigen::MatrixXd normalized = data.V_normals.normalized();
-    
-    // for(int i=0; i<V.rows(); i++)
-    // {
-    //   meshgl.points_V_vbo.row(i) << ((normalized*0.1).row(i) + data.V.row(i)).cast<float>();
-    // }
-    for (int i=0; i<data.points.rows();++i)
+    for (int i=0; i<data.vertid_labels.rows();++i)
     {
-      int vIdx = data.points(i, 0);
+      int vIdx = data.vertid_labels(i, 0);
       meshgl.points_V_vbo.row(i) = ((normalized*0.1).row(vIdx) + data.V.row(vIdx)).cast<float>();
       meshgl.points_V_indices_vbo(i) = i;
-      meshgl.points_V_characters_vbo(i) = (float)data.points(i, 1);
-      meshgl.points_V_offset_vbo(i) = (float)data.points(i, 2);
+      meshgl.points_V_characters_vbo(i) = (float)data.vertid_labels(i, 1);
+      meshgl.points_V_offset_vbo(i) = (float)data.vertid_labels(i, 2);
     }
   }
 }

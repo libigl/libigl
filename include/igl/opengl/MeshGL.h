@@ -27,19 +27,20 @@ public:
 
   enum DirtyFlags
   {
-    DIRTY_NONE           = 0x0000,
-    DIRTY_POSITION       = 0x0001,
-    DIRTY_UV             = 0x0002,
-    DIRTY_NORMAL         = 0x0004,
-    DIRTY_AMBIENT        = 0x0008,
-    DIRTY_DIFFUSE        = 0x0010,
-    DIRTY_SPECULAR       = 0x0020,
-    DIRTY_TEXTURE        = 0x0040,
-    DIRTY_FACE           = 0x0080,
-    DIRTY_MESH           = 0x00FF,
-    DIRTY_OVERLAY_LINES  = 0x0100,
-    DIRTY_OVERLAY_POINTS = 0x0200,
-    DIRTY_ALL            = 0x03FF
+    DIRTY_NONE                  = 0x0000,
+    DIRTY_POSITION              = 0x0001,
+    DIRTY_UV                    = 0x0002,
+    DIRTY_NORMAL                = 0x0004,
+    DIRTY_AMBIENT               = 0x0008,
+    DIRTY_DIFFUSE               = 0x0010,
+    DIRTY_SPECULAR              = 0x0020,
+    DIRTY_TEXTURE               = 0x0040,
+    DIRTY_FACE                  = 0x0080,
+    DIRTY_MESH                  = 0x00FF,
+    DIRTY_OVERLAY_LINES         = 0x0100,
+    DIRTY_OVERLAY_POINTS        = 0x0200,
+    DIRTY_VERTID_LABELS = 0x0300,
+    DIRTY_ALL                   = 0x03FF
   };
 
   bool is_initialized = false;
@@ -65,6 +66,7 @@ public:
   GLuint vbo_lines_V_colors;  // Color values of the line overlay
   GLuint vbo_points_F;        // Indices of the point overlay
   GLuint vbo_points_V;        // Vertices of the point overlay
+  GLuint vbo_points_V_colors; // Color values of the point overlay
 
   // Text rendering
   GLuint vbo_points_V_characters;
@@ -82,6 +84,9 @@ public:
   RowMatrixXf lines_V_vbo;
   RowMatrixXf lines_V_colors_vbo;
   RowMatrixXf points_V_vbo;
+  RowMatrixXf points_V_colors_vbo;
+
+  // Text Rendering
   RowMatrixXf points_V_characters_vbo;
   RowMatrixXf points_V_offset_vbo;
 
@@ -94,7 +99,6 @@ public:
   Eigen::Matrix<unsigned, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> points_F_vbo;
 
   // Text rendering
-  // Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> points_V_characters_vbo;
   Eigen::Matrix<unsigned, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> points_V_indices_vbo;
 
   // Marks dirty buffers that need to be uploaded to OpenGL
@@ -124,8 +128,12 @@ public:
   // Bind the underlying OpenGL buffer objects for subsequent point overlay draw calls
   IGL_INLINE void bind_overlay_points();
 
+  IGL_INLINE void bind_vertid_labels();
+
   /// Draw the currently buffered point overlay
   IGL_INLINE void draw_overlay_points();
+
+  IGL_INLINE void draw_vertid_labels();
 
   // Release the OpenGL buffer objects
   IGL_INLINE void free_buffers();

@@ -42,6 +42,7 @@ IGL_INLINE void igl::opengl::MeshGL::init_buffers()
   glBindVertexArray(vao_overlay_points);
   glGenBuffers(1, &vbo_points_F);
   glGenBuffers(1, &vbo_points_V);
+  glGenBuffers(1, &vbo_points_V_colors);
 
   // Text Rendering
   glGenBuffers(1, &vbo_points_V_characters);
@@ -71,6 +72,7 @@ IGL_INLINE void igl::opengl::MeshGL::free_buffers()
     glDeleteBuffers(1, &vbo_lines_V_colors);
     glDeleteBuffers(1, &vbo_points_F);
     glDeleteBuffers(1, &vbo_points_V);
+    glDeleteBuffers(1, &vbo_points_V_colors);
     
     // Text Rendering
     glDeleteBuffers(1, &vbo_points_V_characters);
@@ -133,19 +135,26 @@ IGL_INLINE void igl::opengl::MeshGL::bind_overlay_points()
 
   glBindVertexArray(vao_overlay_points);
   glUseProgram(shader_overlay_points);
+ bind_vertex_attrib_array(shader_overlay_points,"position", vbo_points_V, points_V_vbo, is_dirty);
+ bind_vertex_attrib_array(shader_overlay_points,"color", vbo_points_V_colors, points_V_colors_vbo, is_dirty);
 
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_points_F);
+  if (is_dirty)
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned)*points_F_vbo.size(), points_F_vbo.data(), GL_DYNAMIC_DRAW);
+
+  dirty &= ~MeshGL::DIRTY_OVERLAY_POINTS;
+}
+
+IGL_INLINE void igl::opengl::MeshGL::bind_vertid_labels()
+{
+  bool is_dirty = dirty & MeshGL::DIRTY_OVERLAY_POINTS;
+
+  glBindVertexArray(vao_overlay_points);
+  glUseProgram(shader_overlay_points);
 
   bind_vertex_attrib_array(shader_overlay_points,"position", vbo_points_V, points_V_vbo, is_dirty);
   bind_vertex_attrib_array(shader_overlay_points,"character", vbo_points_V_characters, points_V_characters_vbo, is_dirty);
   bind_vertex_attrib_array(shader_overlay_points,"offset", vbo_points_V_offset, points_V_offset_vbo, is_dirty);
-
-  // GLint id = glGetAttribLocation(shader_overlay_points, "character");
-  // glBindBuffer(GL_ARRAY_BUFFER, vbo_points_V_characters);
-  // if (is_dirty)
-  //   glBufferData(GL_ARRAY_BUFFER, sizeof(int)*points_V_characters_vbo.size(), points_V_characters_vbo.data(), GL_DYNAMIC_DRAW);
-  // glVertexAttribPointer(id, points_V_characters_vbo.cols(), GL_INT, GL_FALSE, 0, 0);
-  // glEnableVertexAttribArray(id);
-
 
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_points_V_indices);
   if (is_dirty)
@@ -181,6 +190,11 @@ IGL_INLINE void igl::opengl::MeshGL::draw_overlay_lines()
 }
 
 IGL_INLINE void igl::opengl::MeshGL::draw_overlay_points()
+{
+  glDrawElements(GL_POINTS, points_F_vbo.rows(), GL_UNSIGNED_INT, 0);
+}
+
+IGL_INLINE void igl::opengl::MeshGL::draw_vertid_labels()
 {
   glDrawElements(GL_POINTS, points_V_indices_vbo.rows(), GL_UNSIGNED_INT, 0);
 }

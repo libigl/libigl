@@ -105,13 +105,11 @@ public:
   //   C  #P|1 by 3 color(s)
   IGL_INLINE void set_points(
     const Eigen::MatrixXd& P,
-    const Eigen::MatrixXd& C,
-    const Eigen::VectorXd& T
+    const Eigen::MatrixXd& C
   );
   IGL_INLINE void add_points(
     const Eigen::MatrixXd& P,  
-    const Eigen::MatrixXd& C,
-    const Eigen::VectorXd& T
+    const Eigen::MatrixXd& C
   );
   // Sets edges given a list of edge vertices and edge indices. In constrast
   // to `add_edges` this will (purposefully) clober existing edges.
@@ -189,7 +187,13 @@ public:
   // Points plotted over the scene
   // (Every row contains 6 doubles in the following format P_x, P_y, P_z, C_r, C_g, C_b),
   // with P the position in global coordinates of the center of the point, and C the color in floating point rgb format
-  Eigen::MatrixXi points;
+  Eigen::MatrixXd points;
+
+  Eigen::MatrixXi vertid_labels;
+  IGL_INLINE void add_vertid_labels(
+    const Eigen::MatrixXd& P,  
+    const Eigen::MatrixXd& C
+  );
 
   // Text labels plotted over the scene
   // Textp contains, in the i-th row, the position in global coordinates where the i-th label should be anchored
