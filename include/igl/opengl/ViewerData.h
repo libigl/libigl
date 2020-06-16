@@ -186,8 +186,16 @@ public:
   // with P the position in global coordinates of the center of the point, and C the color in floating point rgb format
   Eigen::MatrixXd points;
 
+
+  // OpenGL Text Rendering
   Eigen::MatrixXi vertid_labels;
+  Eigen::MatrixXi faceid_labels;
+  Eigen::MatrixXi extra_labels;
   IGL_INLINE void add_id_labels(
+    const bool show_vertids,
+    const bool show_faceids
+  );
+  IGL_INLINE void set_id_labels(
     const bool show_vertids,
     const bool show_faceids
   );

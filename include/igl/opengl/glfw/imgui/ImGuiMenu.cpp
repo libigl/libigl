@@ -367,14 +367,14 @@ IGL_INLINE void ImGuiMenu::draw_labels(const igl::opengl::ViewerData &data)
 
   if (data.labels_positions.rows() > 0)
   {
-    for (int i = 0; i < data.labels_positions.rows(); ++i)
-    {
-      draw_text(
-        data.labels_positions.row(i), 
-        Eigen::Vector3d(0.0,0.0,0.0),
-        data.labels_strings[i],
-        data.label_color);
-    }
+    // for (int i = 0; i < data.labels_positions.rows(); ++i)
+    // {
+    //   draw_text(
+    //     data.labels_positions.row(i), 
+    //     Eigen::Vector3d(0.0,0.0,0.0),
+    //     data.labels_strings[i],
+    //     data.label_color);
+    // }
   }
 }
 
