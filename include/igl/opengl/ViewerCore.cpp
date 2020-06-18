@@ -244,6 +244,7 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
     if(is_set(data.show_vertid))
     {
       data.meshgl.bind_vid_labels();
+      data.meshgl.bind_font_atlas();
       viewi = glGetUniformLocation(data.meshgl.shader_text,"view");
       proji = glGetUniformLocation(data.meshgl.shader_text,"proj");
       float width  = viewport(2);
@@ -263,6 +264,7 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
     if(is_set(data.show_faceid))
     {
       data.meshgl.bind_fid_labels();
+      data.meshgl.bind_font_atlas();
       viewi = glGetUniformLocation(data.meshgl.shader_text,"view");
       proji = glGetUniformLocation(data.meshgl.shader_text,"proj");
       float width  = viewport(2);
@@ -282,6 +284,7 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
     if(is_set(data.show_extralabels)&&data.labels_positions.rows()>0)
     {
       data.meshgl.bind_extra_labels();
+      data.meshgl.bind_font_atlas();
       viewi = glGetUniformLocation(data.meshgl.shader_text,"view");
       proji = glGetUniformLocation(data.meshgl.shader_text,"proj");
       float width  = viewport(2);

@@ -153,6 +153,7 @@ public:
   IGL_INLINE void bind_overlay_points();
 
   // Text Binding and Draw functions
+  IGL_INLINE void bind_font_atlas();
   IGL_INLINE void bind_vid_labels();
   IGL_INLINE void bind_fid_labels();
   IGL_INLINE void bind_extra_labels();

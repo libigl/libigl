@@ -176,6 +176,14 @@ IGL_INLINE void igl::opengl::MeshGL::bind_overlay_points()
   dirty &= ~MeshGL::DIRTY_OVERLAY_POINTS;
 }
 
+IGL_INLINE void igl::opengl::MeshGL::bind_font_atlas()
+{
+  const std::string font_atlas = "/home/michelle/Documents/LIBIGL/opengl_text_rendering/libigl/include/igl/opengl/shaders/verasansmono.png";
+  GLuint texture_handle;
+  igl::png::texture_from_png(font_atlas, texture_handle);
+  glBindTexture(GL_TEXTURE_2D, texture_handle);
+}
+
 IGL_INLINE void igl::opengl::MeshGL::bind_vid_labels()
 {
   bool is_dirty = dirty & MeshGL::DIRTY_VID_LABELS;
@@ -187,10 +195,6 @@ IGL_INLINE void igl::opengl::MeshGL::bind_vid_labels()
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_vid_labels_indices);
   if (is_dirty)
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned)*vid_label_indices_vbo.size(), vid_label_indices_vbo.data(), GL_DYNAMIC_DRAW);
-  const std::string path = "/home/michelle/Documents/LIBIGL/opengl_text_rendering/libigl-example-project/verasansmono.png";
-  GLuint texture_handle;
-  igl::png::texture_from_png(path, texture_handle);
-  glBindTexture(GL_TEXTURE_2D, texture_handle);
   dirty &= ~MeshGL::DIRTY_VID_LABELS;
 }
 
@@ -205,11 +209,6 @@ IGL_INLINE void igl::opengl::MeshGL::bind_fid_labels()
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_fid_labels_indices);
   if (is_dirty)
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned)*fid_label_indices_vbo.size(), fid_label_indices_vbo.data(), GL_DYNAMIC_DRAW);
-
-  const std::string path = "/home/michelle/Documents/LIBIGL/opengl_text_rendering/libigl-example-project/verasansmono.png";
-  GLuint texture_handle;
-  igl::png::texture_from_png(path, texture_handle);
-  glBindTexture(GL_TEXTURE_2D, texture_handle);
   dirty &= ~MeshGL::DIRTY_FID_LABELS;
 }
 
@@ -224,11 +223,6 @@ IGL_INLINE void igl::opengl::MeshGL::bind_extra_labels()
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_extra_labels_indices);
   if (is_dirty)
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned)*extra_label_indices_vbo.size(), extra_label_indices_vbo.data(), GL_DYNAMIC_DRAW);
-
-  const std::string path = "/home/michelle/Documents/LIBIGL/opengl_text_rendering/libigl-example-project/verasansmono.png";
-  GLuint texture_handle;
-  igl::png::texture_from_png(path, texture_handle);
-  glBindTexture(GL_TEXTURE_2D, texture_handle);
   dirty &= ~MeshGL::DIRTY_EXTRA_LABELS;
 }
 

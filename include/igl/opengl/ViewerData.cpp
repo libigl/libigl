@@ -267,73 +267,6 @@ IGL_INLINE void igl::opengl::ViewerData::set_points(
   add_points(P,C);
 }
 
-// IGL_INLINE void igl::opengl::ViewerData::set_faceid_labels(const Eigen::MatrixXd& _V, const Eigen::MatrixXd& _F_normals, const Eigen::MatrixXi& _F) const
-// {
-//   std::string faceCount = std::to_string(F.rows());
-//   int totalFaceCharacters = 0;
-//   int i=1;
-//   while(i<faceCount.length())
-//   {
-//     totalFaceCharacters += (i)*9*pow(10,i-1); i++;
-//   }
-//   totalFaceCharacters += (i*(F.rows() - pow(10,i-1)));
-//   totalFaceCharacters += 1;
-
-//   /// Populate the vbo
-//   faceid_label_pos.resize(totalFaceCharacters,3);
-//   faceid_label_char.resize(totalFaceCharacters,1);
-//   faceid_label_offset.resize(totalFaceCharacters,1);
-//   faceid_label_indices.resize(totalFaceCharacters,1);
-
-//   Eigen::MatrixXd faceNormals = _F_normals.normalized();
-//   int i=0;
-//   for (int f=0; f<_F.rows();++f)
-//   {
-//     std::string faceName = std::to_string(f);
-//     for(int c=0; c<faceName.length(); c++)
-//     {
-//       faceid_label_pos.row(i) =  _V.row(_F.row(f)(0)).cast<float>();
-//       faceid_label_pos.row(i) += _V.row(_F.row(f)(1)).cast<float>();
-//       faceid_label_pos.row(i) += _V.row(_F.row(f)(2)).cast<float>();
-//       faceid_label_pos.row(i) /= 3.;
-//       faceid_label_pos.row(i).row(i) = (faceNormals*0.05).row(f).cast<float>() + faceid_label_pos.row(i).row(i);
-//       faceid_label_char(i) = (float)(faceName.at(c));
-//       faceid_label_offset(i) = c;
-//       faceid_label_indices(i) = i;
-//       i++;
-//     }
-//   }
-//   dirty |= MeshGL::DIRTY_ID_LABELS;
-// }
-
-// IGL_INLINE void igl::opengl::ViewerData::set_extra_labels() const
-// {
-//   int numCustomChars = 0;
-//   for(int i=0; i<labels_positions.rows(); i++)
-//   {
-//     numCustomChars += labels_strings.at(i).length();
-//   }
-//   extra_label_pos.resize(numCustomChars, 3);
-//   extra_label_char.resize(numCustomChars, 1);
-//   extra_label_offset.resize(numCustomChars, 1);
-//   extra_label_indices.resize(numCustomChars, 1);
-
-//   int i=0;
-//   assert(labels_strings.size() == labels_positions.rows());
-//   for(int s=0; s<labels_strings.size(); s++)
-//   {
-//     std::string temp = labels_strings.at(s);
-//     for(int c=0; c<temp.length(); c++)
-//     {
-//       extra_label_pos.row(i) = labels_positions.row(s).cast<float>();
-//       extra_label_char(i) = (float)(temp.at(c));
-//       extra_label_offset(i) = c;
-//       extra_label_indices(i) = i;
-//       i++;
-//     }
-//   }
-// }
-
 IGL_INLINE void igl::opengl::ViewerData::add_points(const Eigen::MatrixXd& P,  const Eigen::MatrixXd& C)
 {
   Eigen::MatrixXd P_temp;
@@ -422,7 +355,7 @@ IGL_INLINE void igl::opengl::ViewerData::add_label(const Eigen::VectorXd& P,  co
   labels_positions.row(lastid) = P_temp;
   labels_strings.push_back(str);
 
-  // dirty |= MeshGL::DIRTY_EXTRA_LABELS;
+  dirty |= MeshGL::DIRTY_EXTRA_LABELS;
 }
 
 IGL_INLINE void igl::opengl::ViewerData::clear_labels()
