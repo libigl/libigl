@@ -167,8 +167,8 @@ IGL_INLINE void ImGuiMenu::draw_menu()
 IGL_INLINE void ImGuiMenu::draw_viewer_window()
 {
   float menu_width = 180.f * menu_scaling();
-  ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiSetCond_FirstUseEver);
-  ImGui::SetNextWindowSize(ImVec2(0.0f, 0.0f), ImGuiSetCond_FirstUseEver);
+  ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiCond_FirstUseEver);
+  ImGui::SetNextWindowSize(ImVec2(0.0f, 0.0f), ImGuiCond_FirstUseEver);
   ImGui::SetNextWindowSizeConstraints(ImVec2(menu_width, -1.0f), ImVec2(menu_width, -1.0f));
   bool _viewer_menu_visible = true;
   ImGui::Begin(
@@ -303,15 +303,15 @@ IGL_INLINE void ImGuiMenu::draw_viewer_menu()
     make_checkbox("Fill", viewer->data().show_faces);
     ImGui::Checkbox("Show vertex labels", &(viewer->data().show_vertid));
     ImGui::Checkbox("Show faces labels", &(viewer->data().show_faceid));
-    ImGui::Checkbox("Show extra labels", &(viewer->data().show_extralabels));
+    ImGui::Checkbox("Show extra labels", &(viewer->data().show_labels));
   }
 }
 
 IGL_INLINE void ImGuiMenu::draw_labels_window()
 {
   // Text labels
-  ImGui::SetNextWindowPos(ImVec2(0,0), ImGuiSetCond_Always);
-  ImGui::SetNextWindowSize(ImGui::GetIO().DisplaySize, ImGuiSetCond_Always);
+  ImGui::SetNextWindowPos(ImVec2(0,0), ImGuiCond_Always);
+  ImGui::SetNextWindowSize(ImGui::GetIO().DisplaySize, ImGuiCond_Always);
   bool visible = true;
   ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0,0,0,0));
   ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0);
@@ -336,48 +336,48 @@ IGL_INLINE void ImGuiMenu::draw_labels_window()
 IGL_INLINE void ImGuiMenu::draw_labels(const igl::opengl::ViewerData &data)
 {
   // Alec: How can we get these to respect (optionally) the depth of the scene?
-  // if (data.show_vertid)
-  // {
-  //   for (int i = 0; i < data.V.rows(); ++i)
-  //   {
-  //     draw_text(
-  //       data.V.row(i), 
-  //       data.V_normals.row(i), 
-  //       std::to_string(i),
-  //       data.label_color);
-  //   }
-  // }
+  if (data.show_vertid)
+  {
+    for (int i = 0; i < data.V.rows(); ++i)
+    {
+      draw_text(
+        data.V.row(i), 
+        data.V_normals.row(i), 
+        std::to_string(i),
+        data.label_color);
+    }
+  }
 
-  // if (data.show_faceid)
-  // {
-  //   for (int i = 0; i < data.F.rows(); ++i)
-  //   {
-  //     Eigen::RowVector3d p = Eigen::RowVector3d::Zero();
-  //     for (int j = 0; j < data.F.cols(); ++j)
-  //     {
-  //       p += data.V.row(data.F(i,j));
-  //     }
-  //     p /= (double) data.F.cols();
+  if (data.show_faceid)
+  {
+    for (int i = 0; i < data.F.rows(); ++i)
+    {
+      Eigen::RowVector3d p = Eigen::RowVector3d::Zero();
+      for (int j = 0; j < data.F.cols(); ++j)
+      {
+        p += data.V.row(data.F(i,j));
+      }
+      p /= (double) data.F.cols();
 
-  //     draw_text(
-  //       p, 
-  //       data.F_normals.row(i), 
-  //       std::to_string(i),
-  //       data.label_color);
-  //   }
-  // }
+      draw_text(
+        p, 
+        data.F_normals.row(i), 
+        std::to_string(i),
+        data.label_color);
+    }
+  }
 
-  // if (data.show_labels)
-  // {
-  //   for (int i = 0; i < data.labels_positions.rows(); ++i)
-  //   {
-  //     draw_text(
-  //       data.labels_positions.row(i), 
-  //       Eigen::Vector3d(0.0,0.0,0.0),
-  //       data.labels_strings[i],
-  //       data.label_color);
-  //   }
-  // }
+  if (data.show_labels)
+  {
+    for (int i = 0; i < data.labels_positions.rows(); ++i)
+    {
+      draw_text(
+        data.labels_positions.row(i), 
+        Eigen::Vector3d(0.0,0.0,0.0),
+        data.labels_strings[i],
+        data.label_color);
+    }
+  }
 }
 
 IGL_INLINE void ImGuiMenu::draw_text(

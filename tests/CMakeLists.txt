@@ -27,11 +27,22 @@ add_subdirectory(${LIBIGL_EXTERNAL}/catch2 catch2)
 add_executable(libigl_tests main.cpp test_common.h)
 target_link_libraries(libigl_tests PUBLIC igl::core Catch2::Catch2)
 target_include_directories(libigl_tests PUBLIC ${CMAKE_CURRENT_LIST_DIR})
+target_compile_definitions(libigl_tests PUBLIC CATCH_CONFIG_ENABLE_BENCHMARKING)
 
 # Set DATA_DIR definition
 set(DATA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/data/")
 target_compile_definitions(libigl_tests PUBLIC -DLIBIGL_DATA_DIR="${IGL_TEST_DATA}")
 
+# Silencing some compile warnings
+if(MSVC)
+  target_compile_options(libigl_tests PRIVATE
+    # Type conversion warnings. These can be fixed with some effort and possibly more verbose code.
+    /wd4267 # conversion from 'size_t' to 'type', possible loss of data
+    /wd4244 # conversion from 'type1' to 'type2', possible loss of data
+    /wd4018 # signed/unsigned mismatch
+    /wd4305 # truncation from 'double' to 'float'
+  )
+endif(MSVC)
 
 # Process code in each subdirectories: add in decreasing order of complexity
 # (last added will run first and those should be the fastest tests)

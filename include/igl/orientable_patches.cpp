@@ -14,7 +14,7 @@
 
 template <typename DerivedF, typename DerivedC, typename AScalar>
 IGL_INLINE void igl::orientable_patches(
-  const Eigen::PlainObjectBase<DerivedF> & F,
+  const Eigen::MatrixBase<DerivedF> & F,
   Eigen::PlainObjectBase<DerivedC> & C,
   Eigen::SparseMatrix<AScalar> & A)
 {
@@ -27,7 +27,7 @@ IGL_INLINE void igl::orientable_patches(
   // List of all "half"-edges: 3*#F by 2
   Matrix<typename DerivedF::Scalar, Dynamic, 2> allE,sortallE,uE;
   allE.resize(F.rows()*3,2);
-  Matrix<int,Dynamic,2> IX;
+  Matrix<typename DerivedF::Scalar,Dynamic,2> IX;
   VectorXi IA,IC;
   allE.block(0*F.rows(),0,F.rows(),1) = F.col(1);
   allE.block(0*F.rows(),1,F.rows(),1) = F.col(2);
@@ -91,7 +91,7 @@ IGL_INLINE void igl::orientable_patches(
 
 template <typename DerivedF, typename DerivedC>
 IGL_INLINE void igl::orientable_patches(
-  const Eigen::PlainObjectBase<DerivedF> & F,
+  const Eigen::MatrixBase<DerivedF> & F,
   Eigen::PlainObjectBase<DerivedC> & C)
 {
   Eigen::SparseMatrix<typename DerivedF::Scalar> A;
@@ -100,6 +100,6 @@ IGL_INLINE void igl::orientable_patches(
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instantiation
-template void igl::orientable_patches<Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, int>(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&, Eigen::SparseMatrix<int, 0, int>&);
-template void igl::orientable_patches<Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
+template void igl::orientable_patches<Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, int>(Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&, Eigen::SparseMatrix<int, 0, int>&);
+template void igl::orientable_patches<Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
 #endif

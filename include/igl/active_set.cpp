@@ -223,7 +223,7 @@ IGL_INLINE igl::SolverStatus igl::active_set(
     }
     //cout<<matlab_format((known_i.array()+1).eval(),"known_i")<<endl;
     // PREPARE EQUALITY CONSTRAINTS
-    VectorXi as_ieq_list(as_ieq_count,1);
+    Eigen::Matrix<typename DerivedY::Scalar, Eigen::Dynamic, 1> as_ieq_list(as_ieq_count,1);
     // Gather active constraints and resp. rhss
     DerivedBeq Beq_i;
     Beq_i.resize(Beq.rows()+as_ieq_count,1);
@@ -345,7 +345,7 @@ IGL_INLINE igl::SolverStatus igl::active_set(
     {
       if(Lambda_Aieq_i(a) < params.inactive_threshold)
       {
-        as_ieq(as_ieq_list(a)) = FALSE;
+        as_ieq(int(as_ieq_list(a))) = FALSE;
       }
     }
 

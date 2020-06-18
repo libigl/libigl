@@ -30,6 +30,7 @@
 #include <map>
 #include <set>
 #include <vector>
+#include <cassert>
 
 #include <Eigen/IterativeLinearSolvers>
 #include <Eigen/SparseCholesky>
@@ -465,6 +466,7 @@ IGL_INLINE void igl::slim_update_weights_and_closest_rotations_with_jacobians(co
           m_sing_new << sqrt(s1_g / (2 * (s1 - 1))), sqrt(s2_g / (2 * (s2 - 1)));
           break;
         }
+        default: assert(false);
       }
 
       if (std::abs(s1 - 1) < eps) m_sing_new(0) = 1;
@@ -592,6 +594,7 @@ IGL_INLINE void igl::slim_update_weights_and_closest_rotations_with_jacobians(co
           closest_sing_vec << s1_min, s2_min, s3_min;
           ri = ui * closest_sing_vec.asDiagonal() * vi.transpose();
         }
+        default: assert(false);
       }
       if (std::abs(s1 - 1) < eps) m_sing_new(0) = 1;
       if (std::abs(s2 - 1) < eps) m_sing_new(1) = 1;
@@ -747,8 +750,8 @@ IGL_INLINE void igl::slim_precompute(
   const Eigen::MatrixXd &V_init, 
   igl::SLIMData &data,
   igl::MappingEnergyType slim_energy, 
-  Eigen::VectorXi &b, 
-  Eigen::MatrixXd &bc,
+  const Eigen::VectorXi &b,
+  const Eigen::MatrixXd &bc,
   double soft_p)
 {
 

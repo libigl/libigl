@@ -15,8 +15,8 @@
 template <typename DerivedV, typename DerivedF, typename DerivedB, typename DerivedFI>
 IGL_INLINE void igl::random_points_on_mesh(
   const int n,
-  const Eigen::PlainObjectBase<DerivedV > & V,
-  const Eigen::PlainObjectBase<DerivedF > & F,
+  const Eigen::MatrixBase<DerivedV > & V,
+  const Eigen::MatrixBase<DerivedF > & F,
   Eigen::PlainObjectBase<DerivedB > & B,
   Eigen::PlainObjectBase<DerivedFI > & FI)
 {
@@ -26,7 +26,6 @@ IGL_INLINE void igl::random_points_on_mesh(
   typedef Matrix<Scalar,Dynamic,1> VectorXs;
   VectorXs A;
   doublearea(V,F,A);
-  A /= A.array().sum();
   // Should be traingle mesh. Although Turk's method 1 generalizes...
   assert(F.cols() == 3);
   VectorXs C;
@@ -35,6 +34,10 @@ IGL_INLINE void igl::random_points_on_mesh(
   A0.bottomRightCorner(A.size(),1) = A;
   // Even faster would be to use the "Alias Table Method"
   cumsum(A0,1,C);
+  const Scalar Cmax = C(C.size()-1);
+  assert(Cmax > 0 && "Total surface area should be positive");
+  // Why is this more accurate than `C /= C(C.size()-1)` ?
+  for(int i = 0;i<C.size();i++) { C(i) = C(i)/Cmax; }
   const VectorXs R = (VectorXs::Random(n,1).array() + 1.)/2.;
   assert(R.minCoeff() >= 0);
   assert(R.maxCoeff() <= 1);
@@ -47,11 +50,36 @@ IGL_INLINE void igl::random_points_on_mesh(
   B.col(2) = S.array() * T.array().sqrt();
 }
 
+template <
+  typename DerivedV, 
+  typename DerivedF, 
+  typename DerivedB, 
+  typename DerivedFI,
+  typename DerivedX>
+IGL_INLINE void igl::random_points_on_mesh(
+  const int n,
+  const Eigen::MatrixBase<DerivedV > & V,
+  const Eigen::MatrixBase<DerivedF > & F,
+  Eigen::PlainObjectBase<DerivedB > & B,
+  Eigen::PlainObjectBase<DerivedFI > & FI,
+  Eigen::PlainObjectBase<DerivedX> & X)
+{
+  random_points_on_mesh(n,V,F,B,FI);
+  X = DerivedX::Zero(B.rows(),V.cols());
+  for(int x = 0;x<B.rows();x++)
+  {
+    for(int b = 0;b<B.cols();b++)
+    {
+      X.row(x) += B(x,b)*V.row(F(FI(x),b));
+    }
+  }
+}
+
 template <typename DerivedV, typename DerivedF, typename ScalarB, typename DerivedFI>
 IGL_INLINE void igl::random_points_on_mesh(
   const int n,
-  const Eigen::PlainObjectBase<DerivedV > & V,
-  const Eigen::PlainObjectBase<DerivedF > & F,
+  const Eigen::MatrixBase<DerivedV > & V,
+  const Eigen::MatrixBase<DerivedF > & F,
   Eigen::SparseMatrix<ScalarB > & B,
   Eigen::PlainObjectBase<DerivedFI > & FI)
 {
@@ -78,6 +106,9 @@ IGL_INLINE void igl::random_points_on_mesh(
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instantiation
-template void igl::random_points_on_mesh<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, double, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(int, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::SparseMatrix<double, 0, int>&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
-template void igl::random_points_on_mesh<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, double, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(int, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::SparseMatrix<double, 0, int>&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
+template void igl::random_points_on_mesh<Eigen::Matrix<float, -1, 3, 1, -1, 3>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<float, -1, 3, 1, -1, 3>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<float, -1, 3, 1, -1, 3> >(int, Eigen::MatrixBase<Eigen::Matrix<float, -1, 3, 1, -1, 3> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<float, -1, 3, 1, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<float, -1, 3, 1, -1, 3> >&);
+template void igl::random_points_on_mesh<Eigen::Matrix<float, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, float, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(int, Eigen::MatrixBase<Eigen::Matrix<float, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::SparseMatrix<float, 0, int>&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
+template void igl::random_points_on_mesh<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(int, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
+template void igl::random_points_on_mesh<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, double, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(int, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::SparseMatrix<double, 0, int>&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
+template void igl::random_points_on_mesh<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, double, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(int, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::SparseMatrix<double, 0, int>&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
 #endif

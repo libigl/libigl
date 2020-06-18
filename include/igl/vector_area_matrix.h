@@ -30,7 +30,7 @@ namespace igl
   //
   template <typename DerivedF, typename Scalar>
   IGL_INLINE void vector_area_matrix(
-    const Eigen::PlainObjectBase<DerivedF> & F,
+    const Eigen::MatrixBase<DerivedF> & F,
     Eigen::SparseMatrix<Scalar>& A);
 }
 
