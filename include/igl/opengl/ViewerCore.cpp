@@ -244,7 +244,7 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
     glEnable(GL_DEPTH_TEST);
   }
 
-  if (is_set(data.show_vertid) || is_set(data.show_faceid) || is_set(data.show_extralabels))
+  if (is_set(data.show_vertid) || is_set(data.show_faceid) || is_set(data.show_labels))
   {
     if(is_set(data.show_vertid))
     {
@@ -286,7 +286,7 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
       glUniform2f(glGetUniformLocation(data.meshgl.shader_text, "RenderOrigin"), -2, 2);
       data.meshgl.draw_fid_labels();
     }
-    if(is_set(data.show_extralabels)&&data.labels_positions.rows()>0)
+    if(is_set(data.show_labels)&&data.labels_positions.rows()>0)
     {
       data.meshgl.bind_extra_labels();
       data.meshgl.bind_font_atlas();
