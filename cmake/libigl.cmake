@@ -344,7 +344,8 @@ endif()
 if(LIBIGL_WITH_OPENGL)
   # OpenGL module
   compile_igl_module("opengl")
-
+  set(FONT_ATLAS_PATH ${LIBIGL_SOURCE_DIR}/igl/opengl/shaders CACHE PATH "location of font atlas")
+  target_compile_definitions(igl_opengl PUBLIC "-DFONT_ATLAS_PATH=\"${FONT_ATLAS_PATH}\"")
   # OpenGL library
   if (NOT CMAKE_VERSION VERSION_LESS "3.11")
     cmake_policy(SET CMP0072 NEW)

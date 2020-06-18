@@ -13,6 +13,7 @@
 #include "shaders/text.vert"
 #include "shaders/text.geom"
 #include "shaders/text.frag"
+#include "font_atlas_path.h"
 #include <igl/png/texture_from_png.h>
 #include <iostream>
 
@@ -184,9 +185,8 @@ IGL_INLINE void igl::opengl::MeshGL::bind_overlay_points()
 
 IGL_INLINE void igl::opengl::MeshGL::bind_font_atlas()
 {
-  const std::string font_atlas = "/home/michelle/Documents/LIBIGL/opengl_text_rendering/libigl/include/igl/opengl/shaders/verasansmono.png";
   GLuint texture_handle;
-  igl::png::texture_from_png(font_atlas, texture_handle);
+  igl::png::texture_from_png(std::string(FONT_ATLAS_PATH) + "/verasansmono.png", texture_handle);
   glBindTexture(GL_TEXTURE_2D, texture_handle);
 }
 
