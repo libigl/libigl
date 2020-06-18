@@ -16,6 +16,7 @@
 
 #include <iostream>
 
+
 IGL_INLINE igl::opengl::ViewerData::ViewerData()
 : dirty(MeshGL::DIRTY_ALL),
   show_faces(true),
@@ -266,72 +267,72 @@ IGL_INLINE void igl::opengl::ViewerData::set_points(
   add_points(P,C);
 }
 
-IGL_INLINE void igl::opengl::ViewerData::add_id_labels(
-  const bool show_vertids,
-  const bool show_faceids
-){
-  // Clear existing points
-  vertid_labels.resize(0,0);
-  faceid_labels.resize(0,0);
+// IGL_INLINE void igl::opengl::ViewerData::set_faceid_labels(const Eigen::MatrixXd& _V, const Eigen::MatrixXd& _F_normals, const Eigen::MatrixXi& _F) const
+// {
+//   std::string faceCount = std::to_string(F.rows());
+//   int totalFaceCharacters = 0;
+//   int i=1;
+//   while(i<faceCount.length())
+//   {
+//     totalFaceCharacters += (i)*9*pow(10,i-1); i++;
+//   }
+//   totalFaceCharacters += (i*(F.rows() - pow(10,i-1)));
+//   totalFaceCharacters += 1;
 
-  if(show_vertids)
-  {
-    // Get number of characters to render in total
-    std::string vertCount = std::to_string(V.rows());
-    int totalVertCharacters = 0;
-    int i=1;
-    while(i<vertCount.length())
-    {
-      totalVertCharacters += (i)*9*pow(10,i-1); i++;
-    }
-    totalVertCharacters += (i*(V.rows() - pow(10,i-1)));
-    totalVertCharacters += 1;
+//   /// Populate the vbo
+//   faceid_label_pos.resize(totalFaceCharacters,3);
+//   faceid_label_char.resize(totalFaceCharacters,1);
+//   faceid_label_offset.resize(totalFaceCharacters,1);
+//   faceid_label_indices.resize(totalFaceCharacters,1);
 
-    vertid_labels.conservativeResize(totalVertCharacters , 3);
-    int j=0;
-    for (int v=0; v<V.rows(); ++v)
-    {
-      std::string vertName = std::to_string(v);
-      for(int c=0; c<vertName.length(); c++)
-      {
-        vertid_labels(j,0) = v; // vertex position to use
-        vertid_labels(j,1) = (int)(vertName.at(c)); // the character as ASCII
-        vertid_labels(j,2) = c; // character offset for the current vert name
-        j++;
-      }
-    }
+//   Eigen::MatrixXd faceNormals = _F_normals.normalized();
+//   int i=0;
+//   for (int f=0; f<_F.rows();++f)
+//   {
+//     std::string faceName = std::to_string(f);
+//     for(int c=0; c<faceName.length(); c++)
+//     {
+//       faceid_label_pos.row(i) =  _V.row(_F.row(f)(0)).cast<float>();
+//       faceid_label_pos.row(i) += _V.row(_F.row(f)(1)).cast<float>();
+//       faceid_label_pos.row(i) += _V.row(_F.row(f)(2)).cast<float>();
+//       faceid_label_pos.row(i) /= 3.;
+//       faceid_label_pos.row(i).row(i) = (faceNormals*0.05).row(f).cast<float>() + faceid_label_pos.row(i).row(i);
+//       faceid_label_char(i) = (float)(faceName.at(c));
+//       faceid_label_offset(i) = c;
+//       faceid_label_indices(i) = i;
+//       i++;
+//     }
+//   }
+//   dirty |= MeshGL::DIRTY_ID_LABELS;
+// }
 
-  }
+// IGL_INLINE void igl::opengl::ViewerData::set_extra_labels() const
+// {
+//   int numCustomChars = 0;
+//   for(int i=0; i<labels_positions.rows(); i++)
+//   {
+//     numCustomChars += labels_strings.at(i).length();
+//   }
+//   extra_label_pos.resize(numCustomChars, 3);
+//   extra_label_char.resize(numCustomChars, 1);
+//   extra_label_offset.resize(numCustomChars, 1);
+//   extra_label_indices.resize(numCustomChars, 1);
 
-  if(show_faceids)
-  {
-    // Same procedure for faces
-    std::string faceCount = std::to_string(F.rows());
-    int totalFaceCharacters = 0;
-    int i=1;
-    while(i<faceCount.length())
-    {
-      totalFaceCharacters += (i)*9*pow(10,i-1); i++;
-    }
-    totalFaceCharacters += (i*(F.rows() - pow(10,i-1)));
-    totalFaceCharacters += 1;
-    faceid_labels.conservativeResize(totalFaceCharacters , 3);
-    int j=0;
-    for (int f=0; f<F.rows(); ++f)
-    {
-      std::string faceidName = std::to_string(f);
-      for(int c=0; c<faceidName.length(); c++)
-      {
-        faceid_labels(j,0) = f;
-        faceid_labels(j,1) = (int)(faceidName.at(c)); 
-        faceid_labels(j,2) = c;
-        j++;
-      }
-    }
-  }
-
-  dirty |= MeshGL::DIRTY_ID_LABELS;
-}
+//   int i=0;
+//   assert(labels_strings.size() == labels_positions.rows());
+//   for(int s=0; s<labels_strings.size(); s++)
+//   {
+//     std::string temp = labels_strings.at(s);
+//     for(int c=0; c<temp.length(); c++)
+//     {
+//       extra_label_pos.row(i) = labels_positions.row(s).cast<float>();
+//       extra_label_char(i) = (float)(temp.at(c));
+//       extra_label_offset(i) = c;
+//       extra_label_indices(i) = i;
+//       i++;
+//     }
+//   }
+// }
 
 IGL_INLINE void igl::opengl::ViewerData::add_points(const Eigen::MatrixXd& P,  const Eigen::MatrixXd& C)
 {
@@ -780,65 +781,119 @@ IGL_INLINE void igl::opengl::ViewerData::updateGL(
     }
   }
 
-  if (meshgl.dirty & MeshGL::DIRTY_ID_LABELS)
+  if (meshgl.dirty & MeshGL::DIRTY_VID_LABELS)
   {
-
-    int idCharCount = data.vertid_labels.rows() + data.faceid_labels.rows();
-    // Vertex IDs
-    meshgl.label_pos_vbo.resize(idCharCount,3);
-    meshgl.label_char_vbo.resize(idCharCount,1);
-    meshgl.label_offset_vbo.resize(idCharCount,1);
-    meshgl.label_indices_vbo.resize(idCharCount,1);
-
-    Eigen::MatrixXd normalized = data.V_normals.normalized();
-    for (int i=0; i<data.vertid_labels.rows();++i)
+    std::string vertCount = std::to_string(V.rows());
+    int totalVertCharacters = 0;
+    int i=1;
+    while(i<vertCount.length())
     {
-      int vIdx = data.vertid_labels(i, 0);
-      meshgl.label_pos_vbo.row(i) = ((normalized*0.1).row(vIdx) + data.V.row(vIdx)).cast<float>();
-      meshgl.label_char_vbo(i) = (float)data.vertid_labels(i, 1);
-      meshgl.label_offset_vbo(i) = (float)data.vertid_labels(i, 2);
-      meshgl.label_indices_vbo(i) = i;
+      totalVertCharacters += (i)*9*pow(10,i-1); i++;
     }
+    totalVertCharacters += (i*(V.rows() - pow(10,i-1)));
+    totalVertCharacters += 1;
 
-    // Face IDs
-    Eigen::MatrixXd faceNormals = data.F_normals.normalized();
-    for (int i=0; i<data.faceid_labels.rows(); ++i)
-    {
-      int fIdx = data.faceid_labels(i, 0);
-      meshgl.label_pos_vbo.row(data.vertid_labels.rows() + i) = data.V.row(data.F.row(fIdx)(0)).cast<float>();
-      meshgl.label_pos_vbo.row(data.vertid_labels.rows() + i) += data.V.row(data.F.row(fIdx)(1)).cast<float>();
-      meshgl.label_pos_vbo.row(data.vertid_labels.rows() + i) += data.V.row(data.F.row(fIdx)(2)).cast<float>();
-      meshgl.label_pos_vbo.row(data.vertid_labels.rows() + i) /= 3.;
+    /// Populate the vbo
+    meshgl.vid_label_pos_vbo.resize(totalVertCharacters,3);
+    meshgl.vid_label_char_vbo.resize(totalVertCharacters,1);
+    meshgl.vid_label_offset_vbo.resize(totalVertCharacters,1);
+    meshgl.vid_label_indices_vbo.resize(totalVertCharacters,1);
 
-      meshgl.label_pos_vbo.row(data.vertid_labels.rows() + i) = (faceNormals*0.05).row(fIdx).cast<float>() + meshgl.label_pos_vbo.row(data.vertid_labels.rows() + i);
-      meshgl.label_char_vbo(data.vertid_labels.rows() + i) = (float)data.faceid_labels(i, 1);
-      meshgl.label_offset_vbo(data.vertid_labels.rows() + i) = (float)data.faceid_labels(i, 2);
-      meshgl.label_indices_vbo(data.vertid_labels.rows() + i) = data.vertid_labels.rows() + i;
-    }
-
-    // labels_positions.rows()
-    int numCustomChars = 0;
-    for(int i=0; i<labels_positions.rows(); i++)
+    Eigen::MatrixXd normalized = V_normals.normalized();
+    int charCount=0;
+    for (int v=0; v<V.rows();++v)
     {
-      numCustomChars += labels_strings.at(i).length();
-    }
-    meshgl.label_pos_vbo.resize(idCharCount+numCustomChars, 3);
-    meshgl.label_char_vbo.resize(idCharCount+numCustomChars, 1);
-    meshgl.label_offset_vbo.resize(idCharCount+numCustomChars, 1);
-    meshgl.label_indices_vbo.resize(idCharCount+numCustomChars, 1);
-    int i=0;
-    assert(labels_strings.size() == labels_positions.rows());
-    for(int s=0; s<labels_strings.size(); s++)
-    {
-      std::string temp = labels_strings.at(s);
-      for(int c=0; c<temp.length(); c++)
+      std::string vertName = std::to_string(v);
+      for(int c=0; c<vertName.length(); c++)
       {
-        meshgl.label_pos_vbo.row(i+idCharCount) = labels_positions.row(s).cast<float>();
-        meshgl.label_char_vbo(idCharCount+i) = (float)(temp.at(c));
-        meshgl.label_offset_vbo(idCharCount+i) = c;
-        meshgl.label_indices_vbo(i+idCharCount) = i+idCharCount;
-        i++;
+        meshgl.vid_label_pos_vbo.row(charCount) = ((normalized*0.1).row(v) + V.row(v)).cast<float>();
+        meshgl.vid_label_char_vbo(charCount) = (float)(vertName.at(c));
+        meshgl.vid_label_offset_vbo(charCount) = c;
+        meshgl.vid_label_indices_vbo(charCount) = charCount;
+        charCount++;
       }
     }
   }
+
+  if (meshgl.dirty & MeshGL::DIRTY_FID_LABELS)
+  {
+    std::cout << "populate fid vbo" << std::endl;
+    std::string faceCount = std::to_string(F.rows());
+    int totalFaceCharacters = 0;
+    int i=1;
+    while(i<faceCount.length())
+    {
+      totalFaceCharacters += (i)*9*pow(10,i-1); i++;
+    }
+    totalFaceCharacters += (i*(F.rows() - pow(10,i-1)));
+    totalFaceCharacters += 1;
+
+    /// Populate the vbo
+    meshgl.fid_label_pos_vbo.resize(totalFaceCharacters,3);
+    meshgl.fid_label_char_vbo.resize(totalFaceCharacters,1);
+    meshgl.fid_label_offset_vbo.resize(totalFaceCharacters,1);
+    meshgl.fid_label_indices_vbo.resize(totalFaceCharacters,1);
+
+    Eigen::MatrixXd faceNormals = F_normals.normalized();
+    int charCount=0;
+    for (int f=0; f<F.rows();++f)
+    {
+      std::string faceName = std::to_string(f);
+      for(int c=0; c<faceName.length(); c++)
+      {
+        meshgl.fid_label_pos_vbo.row(charCount) =  V.row(F.row(f)(0)).cast<float>();
+        meshgl.fid_label_pos_vbo.row(charCount) += V.row(F.row(f)(1)).cast<float>();
+        meshgl.fid_label_pos_vbo.row(charCount) += V.row(F.row(f)(2)).cast<float>();
+        meshgl.fid_label_pos_vbo.row(charCount) /= 3.;
+        meshgl.fid_label_pos_vbo.row(charCount) = (faceNormals*0.05).row(f).cast<float>() + meshgl.fid_label_pos_vbo.row(charCount);
+
+        meshgl.fid_label_char_vbo(charCount) = (float)(faceName.at(c));
+        meshgl.fid_label_offset_vbo(charCount) = c;
+        meshgl.fid_label_indices_vbo(charCount) = charCount;
+        charCount++;
+      }
+    }
+  }
+
+    // Face IDs
+    // Eigen::MatrixXd faceNormals = data.F_normals.normalized();
+    // for (int i=0; i<data.faceid_labels.rows(); ++i)
+    // {
+    //   int fIdx = data.faceid_labels(i, 0);
+    //   meshgl.label_pos_vbo.row(data.vertid_labels.rows() + i) = data.V.row(data.F.row(fIdx)(0)).cast<float>();
+    //   meshgl.label_pos_vbo.row(data.vertid_labels.rows() + i) += data.V.row(data.F.row(fIdx)(1)).cast<float>();
+    //   meshgl.label_pos_vbo.row(data.vertid_labels.rows() + i) += data.V.row(data.F.row(fIdx)(2)).cast<float>();
+    //   meshgl.label_pos_vbo.row(data.vertid_labels.rows() + i) /= 3.;
+
+    //   meshgl.label_pos_vbo.row(data.vertid_labels.rows() + i) = (faceNormals*0.05).row(fIdx).cast<float>() + meshgl.label_pos_vbo.row(data.vertid_labels.rows() + i);
+    //   meshgl.label_char_vbo(data.vertid_labels.rows() + i) = (float)data.faceid_labels(i, 1);
+    //   meshgl.label_offset_vbo(data.vertid_labels.rows() + i) = (float)data.faceid_labels(i, 2);
+    //   meshgl.label_indices_vbo(data.vertid_labels.rows() + i) = data.vertid_labels.rows() + i;
+    // }
+
+    // // labels_positions.rows()
+    // int numCustomChars = 0;
+    // for(int i=0; i<labels_positions.rows(); i++)
+    // {
+    //   numCustomChars += labels_strings.at(i).length();
+    // }
+    // meshgl.label_pos_vbo.resize(idCharCount+numCustomChars, 3);
+    // meshgl.label_char_vbo.resize(idCharCount+numCustomChars, 1);
+    // meshgl.label_offset_vbo.resize(idCharCount+numCustomChars, 1);
+    // meshgl.label_indices_vbo.resize(idCharCount+numCustomChars, 1);
+    // int i=0;
+    // assert(labels_strings.size() == labels_positions.rows());
+    // for(int s=0; s<labels_strings.size(); s++)
+    // {
+    //   std::string temp = labels_strings.at(s);
+    //   for(int c=0; c<temp.length(); c++)
+    //   {
+    //     meshgl.label_pos_vbo.row(i+idCharCount) = labels_positions.row(s).cast<float>();
+    //     meshgl.label_char_vbo(idCharCount+i) = (float)(temp.at(c));
+    //     meshgl.label_offset_vbo(idCharCount+i) = c;
+    //     meshgl.label_indices_vbo(i+idCharCount) = i+idCharCount;
+    //     i++;
+    //   }
+    // }
+  // }
 }

@@ -186,19 +186,18 @@ public:
   // with P the position in global coordinates of the center of the point, and C the color in floating point rgb format
   Eigen::MatrixXd points;
 
-
   // OpenGL Text Rendering
-  Eigen::MatrixXi vertid_labels;
-  Eigen::MatrixXi faceid_labels;
-  Eigen::MatrixXi extra_labels;
-  IGL_INLINE void add_id_labels(
-    const bool show_vertids,
-    const bool show_faceids
-  );
-  IGL_INLINE void set_id_labels(
-    const bool show_vertids,
-    const bool show_faceids
-  );
+  Eigen::MatrixXd vid_labels;
+  typedef Eigen::Matrix<float,Eigen::Dynamic,Eigen::Dynamic,Eigen::RowMajor> RowMatrixXf;
+  RowMatrixXf vertid_label_pos;
+  RowMatrixXf vertid_label_char;
+  RowMatrixXf vertid_label_offset;
+  Eigen::Matrix<unsigned, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> vid_label_indices;
+
+  // Prepopulate the vbos for each of these for dynamic construction of the vbo which is bound
+  IGL_INLINE void set_vertid_labels();
+  IGL_INLINE void set_faceid_labels(const Eigen::MatrixXd& _V, const Eigen::MatrixXd& _F_normals, const Eigen::MatrixXi& _F);
+  IGL_INLINE void set_extra_labels();
 
   // Text labels plotted over the scene
   // Textp contains, in the i-th row, the position in global coordinates where the i-th label should be anchored

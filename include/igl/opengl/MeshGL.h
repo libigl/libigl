@@ -39,8 +39,10 @@ public:
     DIRTY_MESH           = 0x00FF,
     DIRTY_OVERLAY_LINES  = 0x0100,
     DIRTY_OVERLAY_POINTS = 0x0200,
-    DIRTY_ID_LABELS      = 0x0300,
-    DIRTY_ALL            = 0x03FF
+    DIRTY_VID_LABELS     = 0x0300,
+    DIRTY_FID_LABELS     = 0x0400,
+    DIRTY_EXTRA_LABELS   = 0x0500,
+    DIRTY_ALL            = 0x05FF
   };
 
   bool is_initialized = false;
@@ -68,7 +70,6 @@ public:
   GLuint vbo_points_V;        // Vertices of the point overlay
   GLuint vbo_points_V_colors; // Color values of the point overlay
 
-
   // Temporary copy of the content of each VBO
   typedef Eigen::Matrix<float,Eigen::Dynamic,Eigen::Dynamic,Eigen::RowMajor> RowMatrixXf;
   RowMatrixXf V_vbo;
@@ -83,31 +84,27 @@ public:
   RowMatrixXf points_V_colors_vbo;
 
   /////Text rendering
-  GLuint vbo_labels_pos;
-  GLuint vbo_labels_characters;
-  GLuint vbo_labels_offset; 
-  GLuint vbo_labels_indices;
 
-  RowMatrixXf label_pos_vbo;
-  RowMatrixXf label_char_vbo;
-  RowMatrixXf label_offset_vbo;
-  Eigen::Matrix<unsigned, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> label_indices_vbo;
+  GLuint vao_vid_labels;
+  GLuint vbo_vid_labels_pos;
+  GLuint vbo_vid_labels_characters;
+  GLuint vbo_vid_labels_offset; 
+  GLuint vbo_vid_labels_indices;
+  RowMatrixXf vid_label_pos_vbo;
+  RowMatrixXf vid_label_char_vbo;
+  RowMatrixXf vid_label_offset_vbo;
+  Eigen::Matrix<unsigned, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> vid_label_indices_vbo;
 
-  RowMatrixXf  extra_label_pos_vbo;
-  RowMatrixXf vertid_label_pos_vbo;
-  RowMatrixXf faceid_label_pos_vbo;
+  GLuint vao_fid_labels;
+  GLuint vbo_fid_labels_pos;
+  GLuint vbo_fid_labels_characters;
+  GLuint vbo_fid_labels_offset; 
+  GLuint vbo_fid_labels_indices;
+  RowMatrixXf fid_label_pos_vbo;
+  RowMatrixXf fid_label_char_vbo;
+  RowMatrixXf fid_label_offset_vbo;
+  Eigen::Matrix<unsigned, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> fid_label_indices_vbo;
 
-  RowMatrixXf  extra_label_char_vbo;
-  RowMatrixXf vertid_label_char_vbo;
-  RowMatrixXf faceid_label_char_vbo;
-
-  RowMatrixXf  extra_label_offset_vbo;
-  RowMatrixXf vertid_label_offset_vbo;
-  RowMatrixXf faceid_label_offset_vbo;
-
-  Eigen::Matrix<unsigned, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> extra_label_indices_vbo;
-  Eigen::Matrix<unsigned, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> vertid_label_indices_vbo;
-  Eigen::Matrix<unsigned, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> faceid_label_indices_vbo;
   /////End Text Rendering
 
   int tex_u;
@@ -145,12 +142,16 @@ public:
   // Bind the underlying OpenGL buffer objects for subsequent point overlay draw calls
   IGL_INLINE void bind_overlay_points();
 
-  IGL_INLINE void bind_text_labels();
+  IGL_INLINE void bind_vid_labels();
+  IGL_INLINE void bind_fid_labels();
+  IGL_INLINE void bind_extra_labels();
+  IGL_INLINE void draw_vid_labels();
+  IGL_INLINE void draw_fid_labels();
+  IGL_INLINE void draw_extra_labels();
 
   /// Draw the currently buffered point overlay
   IGL_INLINE void draw_overlay_points();
 
-  IGL_INLINE void draw_text_labels();
 
   // Release the OpenGL buffer objects
   IGL_INLINE void free_buffers();

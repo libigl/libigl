@@ -303,6 +303,7 @@ IGL_INLINE void ImGuiMenu::draw_viewer_menu()
     make_checkbox("Fill", viewer->data().show_faces);
     ImGui::Checkbox("Show vertex labels", &(viewer->data().show_vertid));
     ImGui::Checkbox("Show faces labels", &(viewer->data().show_faceid));
+    // ImGui::Checkbox("Show extra labels", &(viewer->data().show));
   }
 }
 
@@ -336,45 +337,14 @@ IGL_INLINE void ImGuiMenu::draw_labels(const igl::opengl::ViewerData &data)
 {
   if (data.show_vertid)
   {
-    // for (int i = 0; i < data.V.rows(); ++i)
-    // {
-    //   draw_text(
-    //     data.V.row(i), 
-    //     data.V_normals.row(i), 
-    //     std::to_string(i),
-    //     data.label_color);
-    // }
   }
 
   if (data.show_faceid)
   {
-    for (int i = 0; i < data.F.rows(); ++i)
-    {
-      Eigen::RowVector3d p = Eigen::RowVector3d::Zero();
-      for (int j = 0; j < data.F.cols(); ++j)
-      {
-        p += data.V.row(data.F(i,j));
-      }
-      p /= (double) data.F.cols();
-
-      // draw_text(
-      //   p, 
-      //   data.F_normals.row(i), 
-      //   std::to_string(i),
-      //   data.label_color);
-    }
   }
 
   if (data.labels_positions.rows() > 0)
   {
-    // for (int i = 0; i < data.labels_positions.rows(); ++i)
-    // {
-    //   draw_text(
-    //     data.labels_positions.row(i), 
-    //     Eigen::Vector3d(0.0,0.0,0.0),
-    //     data.labels_strings[i],
-    //     data.label_color);
-    // }
   }
 }
 

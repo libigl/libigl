@@ -45,10 +45,19 @@ IGL_INLINE void igl::opengl::MeshGL::init_buffers()
   glGenBuffers(1, &vbo_points_V_colors);
 
   // Text Rendering
-  glGenBuffers(1, &vbo_labels_pos);
-  glGenBuffers(1, &vbo_labels_characters);
-  glGenBuffers(1, &vbo_labels_offset);
-  glGenBuffers(1, &vbo_labels_indices);
+  glGenVertexArrays(1, &vao_vid_labels);
+  glBindVertexArray(vao_vid_labels);
+  glGenBuffers(1, &vbo_vid_labels_pos);
+  glGenBuffers(1, &vbo_vid_labels_characters);
+  glGenBuffers(1, &vbo_vid_labels_offset);
+  glGenBuffers(1, &vbo_vid_labels_indices);
+
+  glGenVertexArrays(1, &vao_fid_labels);
+  glBindVertexArray(vao_fid_labels);
+  glGenBuffers(1, &vbo_fid_labels_pos);
+  glGenBuffers(1, &vbo_fid_labels_characters);
+  glGenBuffers(1, &vbo_fid_labels_offset);
+  glGenBuffers(1, &vbo_fid_labels_indices);
 
   dirty = MeshGL::DIRTY_ALL;
 }
@@ -60,6 +69,9 @@ IGL_INLINE void igl::opengl::MeshGL::free_buffers()
     glDeleteVertexArrays(1, &vao_mesh);
     glDeleteVertexArrays(1, &vao_overlay_lines);
     glDeleteVertexArrays(1, &vao_overlay_points);
+
+    glDeleteVertexArrays(1, &vao_vid_labels);
+    glDeleteVertexArrays(1, &vao_fid_labels);
 
     glDeleteBuffers(1, &vbo_V);
     glDeleteBuffers(1, &vbo_V_normals);
@@ -76,10 +88,15 @@ IGL_INLINE void igl::opengl::MeshGL::free_buffers()
     glDeleteBuffers(1, &vbo_points_V_colors);
     
     // Text Rendering
-    glDeleteBuffers(1, &vbo_labels_pos);
-    glDeleteBuffers(1, &vbo_labels_characters);
-    glDeleteBuffers(1, &vbo_labels_offset);
-    glDeleteBuffers(1, &vbo_labels_indices);
+    glDeleteBuffers(1, &vbo_vid_labels_pos);
+    glDeleteBuffers(1, &vbo_vid_labels_characters);
+    glDeleteBuffers(1, &vbo_vid_labels_offset);
+    glDeleteBuffers(1, &vbo_vid_labels_indices);
+
+    glDeleteBuffers(1, &vbo_fid_labels_pos);
+    glDeleteBuffers(1, &vbo_fid_labels_characters);
+    glDeleteBuffers(1, &vbo_fid_labels_offset);
+    glDeleteBuffers(1, &vbo_fid_labels_indices);
 
     glDeleteTextures(1, &vbo_tex);
   }
@@ -147,27 +164,41 @@ IGL_INLINE void igl::opengl::MeshGL::bind_overlay_points()
   dirty &= ~MeshGL::DIRTY_OVERLAY_POINTS;
 }
 
-IGL_INLINE void igl::opengl::MeshGL::bind_text_labels()
+IGL_INLINE void igl::opengl::MeshGL::bind_vid_labels()
 {
-  bool is_dirty = dirty & MeshGL::DIRTY_OVERLAY_POINTS;
-
-  glBindVertexArray(vao_overlay_points);
+  bool is_dirty = dirty & MeshGL::DIRTY_VID_LABELS;
+  glBindVertexArray(vao_vid_labels);
   glUseProgram(shader_overlay_points);
-
-  bind_vertex_attrib_array(shader_overlay_points,"position", vbo_labels_pos, label_pos_vbo, is_dirty);
-  bind_vertex_attrib_array(shader_overlay_points,"character", vbo_labels_characters, label_char_vbo, is_dirty);
-  bind_vertex_attrib_array(shader_overlay_points,"offset", vbo_labels_offset, label_offset_vbo, is_dirty);
-
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_labels_indices);
+  bind_vertex_attrib_array(shader_overlay_points, "position" , vbo_vid_labels_pos       , vid_label_pos_vbo   , is_dirty);
+  bind_vertex_attrib_array(shader_overlay_points, "character", vbo_vid_labels_characters, vid_label_char_vbo  , is_dirty);
+  bind_vertex_attrib_array(shader_overlay_points, "offset"   , vbo_vid_labels_offset    , vid_label_offset_vbo, is_dirty);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_vid_labels_indices);
   if (is_dirty)
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned)*label_indices_vbo.size(), label_indices_vbo.data(), GL_DYNAMIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned)*vid_label_indices_vbo.size(), vid_label_indices_vbo.data(), GL_DYNAMIC_DRAW);
+  const std::string path = "/home/michelle/Documents/LIBIGL/opengl_text_rendering/libigl-example-project/verasansmono.png";
+  GLuint texture_handle;
+  igl::png::texture_from_png(path, texture_handle);
+  glBindTexture(GL_TEXTURE_2D, texture_handle);
+  dirty &= ~MeshGL::DIRTY_VID_LABELS;
+}
+
+IGL_INLINE void igl::opengl::MeshGL::bind_fid_labels()
+{
+  bool is_dirty = dirty & MeshGL::DIRTY_FID_LABELS;
+  glBindVertexArray(vao_fid_labels);
+  glUseProgram(shader_overlay_points);
+  bind_vertex_attrib_array(shader_overlay_points, "position" , vbo_fid_labels_pos       , fid_label_pos_vbo   , is_dirty);
+  bind_vertex_attrib_array(shader_overlay_points, "character", vbo_fid_labels_characters, fid_label_char_vbo  , is_dirty);
+  bind_vertex_attrib_array(shader_overlay_points, "offset"   , vbo_fid_labels_offset    , fid_label_offset_vbo, is_dirty);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_fid_labels_indices);
+  if (is_dirty)
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned)*fid_label_indices_vbo.size(), fid_label_indices_vbo.data(), GL_DYNAMIC_DRAW);
 
   const std::string path = "/home/michelle/Documents/LIBIGL/opengl_text_rendering/libigl-example-project/verasansmono.png";
   GLuint texture_handle;
   igl::png::texture_from_png(path, texture_handle);
   glBindTexture(GL_TEXTURE_2D, texture_handle);
-
-  dirty &= ~MeshGL::DIRTY_OVERLAY_POINTS;
+  dirty &= ~MeshGL::DIRTY_FID_LABELS;
 }
 
 IGL_INLINE void igl::opengl::MeshGL::draw_mesh(bool solid)
@@ -196,9 +227,14 @@ IGL_INLINE void igl::opengl::MeshGL::draw_overlay_points()
   glDrawElements(GL_POINTS, points_F_vbo.rows(), GL_UNSIGNED_INT, 0);
 }
 
-IGL_INLINE void igl::opengl::MeshGL::draw_text_labels()
+IGL_INLINE void igl::opengl::MeshGL::draw_vid_labels()
 {
-  glDrawElements(GL_POINTS, label_indices_vbo.rows(), GL_UNSIGNED_INT, 0);
+  glDrawElements(GL_POINTS, vid_label_indices_vbo.rows(), GL_UNSIGNED_INT, 0);
+}
+
+IGL_INLINE void igl::opengl::MeshGL::draw_fid_labels()
+{
+  glDrawElements(GL_POINTS, fid_label_indices_vbo.rows(), GL_UNSIGNED_INT, 0);
 }
 
 IGL_INLINE void igl::opengl::MeshGL::init()
