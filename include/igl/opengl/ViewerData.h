@@ -225,6 +225,7 @@ public:
   unsigned int show_lines;
   bool show_vertid; // shared across viewports for now
   bool show_faceid; // shared across viewports for now
+  bool show_extralabels; // shared across viewports for now
 
   // Point size / line width
   float point_size;

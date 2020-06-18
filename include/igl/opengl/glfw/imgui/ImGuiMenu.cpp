@@ -303,7 +303,7 @@ IGL_INLINE void ImGuiMenu::draw_viewer_menu()
     make_checkbox("Fill", viewer->data().show_faces);
     ImGui::Checkbox("Show vertex labels", &(viewer->data().show_vertid));
     ImGui::Checkbox("Show faces labels", &(viewer->data().show_faceid));
-    // ImGui::Checkbox("Show extra labels", &(viewer->data().show));
+    ImGui::Checkbox("Show extra labels", &(viewer->data().show_extralabels));
   }
 }
 

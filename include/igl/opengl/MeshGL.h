@@ -41,8 +41,8 @@ public:
     DIRTY_OVERLAY_POINTS = 0x0200,
     DIRTY_VID_LABELS     = 0x0300,
     DIRTY_FID_LABELS     = 0x0400,
-    DIRTY_EXTRA_LABELS   = 0x0500,
-    DIRTY_ALL            = 0x05FF
+    DIRTY_EXTRA_LABELS   = 0x0800,
+    DIRTY_ALL            = 0x0FFF
   };
 
   bool is_initialized = false;
@@ -52,6 +52,7 @@ public:
   GLuint shader_mesh;
   GLuint shader_overlay_lines;
   GLuint shader_overlay_points;
+  GLuint shader_text;
 
   GLuint vbo_V; // Vertices of the current mesh (#V x 3)
   GLuint vbo_V_uv; // UV coordinates for the current mesh (#V x 2)
@@ -84,7 +85,6 @@ public:
   RowMatrixXf points_V_colors_vbo;
 
   /////Text rendering
-
   GLuint vao_vid_labels;
   GLuint vbo_vid_labels_pos;
   GLuint vbo_vid_labels_characters;
@@ -104,6 +104,16 @@ public:
   RowMatrixXf fid_label_char_vbo;
   RowMatrixXf fid_label_offset_vbo;
   Eigen::Matrix<unsigned, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> fid_label_indices_vbo;
+
+  GLuint vao_extra_labels;
+  GLuint vbo_extra_labels_pos;
+  GLuint vbo_extra_labels_characters;
+  GLuint vbo_extra_labels_offset; 
+  GLuint vbo_extra_labels_indices;
+  RowMatrixXf extra_label_pos_vbo;
+  RowMatrixXf extra_label_char_vbo;
+  RowMatrixXf extra_label_offset_vbo;
+  Eigen::Matrix<unsigned, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> extra_label_indices_vbo;
 
   /////End Text Rendering
 
@@ -142,6 +152,7 @@ public:
   // Bind the underlying OpenGL buffer objects for subsequent point overlay draw calls
   IGL_INLINE void bind_overlay_points();
 
+  // Text Binding and Draw functions
   IGL_INLINE void bind_vid_labels();
   IGL_INLINE void bind_fid_labels();
   IGL_INLINE void bind_extra_labels();
