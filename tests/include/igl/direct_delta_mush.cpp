@@ -1,5 +1,5 @@
 #include <test_common.h>
-#include <igl/direct_delta_mush.cpp>
+#include <igl/direct_delta_mush.h>
 #include <igl/adjacency_list.h>
 #include <iostream>
 
