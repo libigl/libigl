@@ -11,15 +11,11 @@
 template <
   typename DerivedV,
   typename DerivedF,
-  typename DerivedC,
-  typename DerivedE,
   typename DerivedOmega,
   typename DerivedU>
 IGL_INLINE void igl::direct_delta_mush(
   const Eigen::MatrixBase<DerivedV> & V,
   const Eigen::MatrixBase<DerivedF> & F,
-  const Eigen::MatrixBase<DerivedC> & C,
-  const Eigen::MatrixBase<DerivedE> & E,
   const std::vector<Eigen::Affine3d, Eigen::aligned_allocator<Eigen::Affine3d> > & T,
   const Eigen::MatrixBase<DerivedOmega> & Omega,
   Eigen::PlainObjectBase<DerivedU> & U)
@@ -29,9 +25,6 @@ IGL_INLINE void igl::direct_delta_mush(
   // Shape checks
   assert(V.cols() == 3 && "V should contain 3D positions.");
   assert(F.cols() == 3 && "F should contain triangles.");
-  assert(C.cols() == 3 && "C should contain 3D bone endpoint positions.");
-  assert(E.cols() == 2 && "E should contain 2 endpoint indices forming bone edges.");
-  assert(E.rows() == T.size() && "E.rows() should equal to T.size()");
   assert(Omega.rows() == V.rows() && "Omega contain the same number of rows as V.");
   assert(Omega.cols() == T.size() * 10 && "Omega should have #T*10 columns.");
 
@@ -93,15 +86,11 @@ IGL_INLINE void igl::direct_delta_mush(
 template <
   typename DerivedV,
   typename DerivedF,
-  typename DerivedC,
-  typename DerivedE,
   typename DerivedW,
   typename DerivedOmega>
 IGL_INLINE void igl::direct_delta_mush_precomputation(
   const Eigen::MatrixBase<DerivedV> & V,
   const Eigen::MatrixBase<DerivedF> & F,
-  const Eigen::MatrixBase<DerivedC> & C,
-  const Eigen::MatrixBase<DerivedE> & E,
   const Eigen::SparseMatrix<DerivedW> & W,
   const int p,
   const typename DerivedV::Scalar lambda,
@@ -114,10 +103,7 @@ IGL_INLINE void igl::direct_delta_mush_precomputation(
   // Shape checks
   assert(V.cols() == 3 && "V should contain 3D positions.");
   assert(F.cols() == 3 && "F should contain triangles.");
-  assert(C.cols() == 3 && "C should contain 3D bone endpoint positions.");
-  assert(E.cols() == 2 && "E should contain 2 endpoint indices forming bone edges.");
   assert(W.rows() == V.rows() && "W.rows() should be equal to V.rows().");
-  assert(W.cols() == E.rows() && "W.cols() should be equal to E.rows().");
 
   // Parameter checks
   assert(p > 0 && "Laplacian iteration p should be positive.");
@@ -151,7 +137,7 @@ IGL_INLINE void igl::direct_delta_mush_precomputation(
   };
 
   const int n = V.rows();
-  const int m = E.rows();
+  const int m = W.cols();
 
   // V_homogeneous: #V by 4, homogeneous version of V
   // Note:
@@ -188,11 +174,10 @@ IGL_INLINE void igl::direct_delta_mush_precomputation(
   // C positive semi-definite => ldlt solver
   SimplicialLDLT<SparseMatrix<DerivedW>> ldlt_W_prime;
   SparseMatrix<Scalar> c(I + kappa * L_bar);
-  SparseMatrix<DerivedW> W_prime(W);
+  Matrix<DerivedW, Dynamic, Dynamic> W_prime(W);
   ldlt_W_prime.compute(c.transpose());
   for (int iter = 0; iter < p; ++iter)
   {
-    W_prime.makeCompressed();
     W_prime = ldlt_W_prime.solve(W_prime);
   }
 
@@ -229,17 +214,14 @@ IGL_INLINE void igl::direct_delta_mush_precomputation(
   //   Psi = b.ldlt().solve(Psi);  // hangs here
   // }
   // Convert to sparse matrices and compute
-  Matrix<Scalar, Dynamic, Dynamic> Psi;
-  SparseMatrix<Scalar> Psi_sparse = U_prime.sparseView();
+  Matrix<Scalar, Dynamic, Dynamic> Psi = U_prime.sparseView();
   SparseMatrix<Scalar> b = (I + lambda * L_bar).transpose();
   SimplicialLDLT<SparseMatrix<Scalar>> ldlt_Psi;
   ldlt_Psi.compute(b);
   for (int iter = 0; iter < p; ++iter)
   {
-    Psi_sparse.makeCompressed();
-    Psi_sparse = ldlt_Psi.solve(Psi_sparse);
+    Psi = ldlt_Psi.solve(Psi);
   }
-  Psi = Psi_sparse.toDense();
 
   // P: #V by 10 precomputed upper triangle of
   //    p_i p_i^T , p_i
@@ -285,9 +267,7 @@ IGL_INLINE void igl::direct_delta_mush_precomputation(
 
 // Explicit template instantiation
 template void
-igl::direct_delta_mush<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(
-  Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const &,
-  Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const &,
+igl::direct_delta_mush<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(
   Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const &,
   Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const &,
   std::vector<Eigen::Transform<double, 3, 2, 0>, Eigen::aligned_allocator<Eigen::Transform<double, 3, 2, 0> > > const &,
@@ -295,9 +275,7 @@ igl::direct_delta_mush<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<i
   Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > &);
 
 template void
-igl::direct_delta_mush_precomputation<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, double, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(
-  Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const &,
-  Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const &,
+igl::direct_delta_mush_precomputation<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, double, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(
   Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const &,
   Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const &,
   Eigen::SparseMatrix<double, 0, int> const &, int,

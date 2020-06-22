@@ -22,8 +22,6 @@ namespace igl {
   // Inputs:
   //   V  #V by 3 list of rest pose vertex positions
   //   F  #F by 3 list of triangle indices into rows of V
-  //   C  #C by 3 list of rest pose bone endpoint positions
-  //   E  #T by 2 list of bone edge indices into rows of C
   //   T  #T list of bone pose transformations
   //   Omega #V by #T*10 list of precomputated matrix values
   // Outputs:
@@ -31,15 +29,11 @@ namespace igl {
   template <
     typename DerivedV,
     typename DerivedF,
-    typename DerivedC,
-    typename DerivedE,
     typename DerivedOmega,
     typename DerivedU>
   IGL_INLINE void direct_delta_mush(
     const Eigen::MatrixBase<DerivedV> & V,
     const Eigen::MatrixBase<DerivedF> & F,
-    const Eigen::MatrixBase<DerivedC> & C,
-    const Eigen::MatrixBase<DerivedE> & E,
     const std::vector<
       Eigen::Affine3d, Eigen::aligned_allocator<Eigen::Affine3d>
     > & T, /* should eventually be templated more generally than double */
@@ -51,9 +45,7 @@ namespace igl {
   // Inputs:
   //   V  #V by 3 list of rest pose vertex positions
   //   F  #F by 3 list of triangle indices into rows of V
-  //   C  #C by 3 list of rest pose bone endpoint positions
-  //   E  #E by 2 list of bone edge indices into rows of C
-  //   W  #V by #E list of weights
+  //   W  #V by #Edges list of weights
   //   p  number of smoothing iterations
   //   lambda  rotation smoothing step size
   //   kappa   translation smoothness step size
@@ -63,15 +55,11 @@ namespace igl {
   template <
     typename DerivedV,
     typename DerivedF,
-    typename DerivedC,
-    typename DerivedE,
     typename DerivedW,
     typename DerivedOmega>
   IGL_INLINE void direct_delta_mush_precomputation(
     const Eigen::MatrixBase<DerivedV> & V,
     const Eigen::MatrixBase<DerivedF> & F,
-    const Eigen::MatrixBase<DerivedC> & C,
-    const Eigen::MatrixBase<DerivedE> & E,
     const Eigen::SparseMatrix<DerivedW> & W,
     const int p,
     const typename DerivedV::Scalar lambda,

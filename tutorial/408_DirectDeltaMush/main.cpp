@@ -15,6 +15,10 @@
 
 #include "tutorial_shared_path.h"
 
+// TODO:
+// This tutorial example shares a lot of code with 404_DualQuaternionSkinning.
+// We should either combine them or pull out the shared code.
+
 typedef std::vector<Eigen::Quaterniond, Eigen::aligned_allocator<Eigen::Quaterniond>>
   RotationList;
 
@@ -76,7 +80,7 @@ bool pre_draw(igl::opengl::glfw::Viewer & viewer)
     }
     if (use_ddm)
     {
-      igl::direct_delta_mush(V, F, C, BE, T_list, Omega, U);
+      igl::direct_delta_mush(V, F, T_list, Omega, U);
     }
     else
     {
@@ -139,6 +143,15 @@ int main(int argc, char *argv[])
   poses[3][2] = rest_pose[2] * bend * rest_pose[2].conjugate();
 
   igl::readDMAT(TUTORIAL_SHARED_PATH "/arm-weights.dmat", W);
+  // convert weight to piecewise-rigid weights
+  for (int i = 0; i < W.rows(); ++i)
+  {
+    const double Wi_max = W.row(i).maxCoeff();
+    for (int j = 0; j < W.cols(); j++)
+    {
+      W(i, j) = double(W(i, j) == Wi_max);
+    }
+  }
   SparseMatrix<double> W_sparse = W.sparseView();
   igl::lbs_matrix(V, W, M);
 
@@ -148,7 +161,7 @@ int main(int argc, char *argv[])
        << "- lambda: " << lambda << endl
        << "- kappa: " << kappa << endl
        << "- alpha: " << alpha << endl;
-  igl::direct_delta_mush_precomputation(V, F, C, BE, W_sparse, p, lambda, kappa, alpha, Omega);
+  igl::direct_delta_mush_precomputation(V, F, W_sparse, p, lambda, kappa, alpha, Omega);
 
   // Plot the mesh with pseudocolors
   igl::opengl::glfw::Viewer viewer;
