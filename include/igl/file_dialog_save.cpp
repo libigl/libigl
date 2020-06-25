@@ -60,7 +60,7 @@ IGL_INLINE std::string igl::file_dialog_save()
   ZeroMemory(&ofn, sizeof(ofn));
   ofn.lStructSize = sizeof(ofn);
   ofn.hwndOwner = NULL;//hwnd;
-  ofn.lpstrFile = new char[100];
+  ofn.lpstrFile = szFile;
   // Set lpstrFile[0] to '\0' so that GetOpenFileName does not
   // use the contents of szFile to initialize itself.
   ofn.lpstrFile[0] = '\0';
