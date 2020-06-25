@@ -92,6 +92,7 @@ if(TUTORIALS_CHAPTER4)
   add_subdirectory("405_AsRigidAsPossible")
   add_subdirectory("406_FastAutomaticSkinningTransformations")
   add_subdirectory("407_BiharmonicCoordinates")
+  add_subdirectory("408_DirectDeltaMush")
 endif()
 
 # Chapter 5
