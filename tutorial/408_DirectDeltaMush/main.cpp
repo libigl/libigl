@@ -1,182 +1,125 @@
-#include <igl/direct_delta_mush.h>
-#include <igl/directed_edge_orientations.h>
-#include <igl/directed_edge_parents.h>
-#include <igl/forward_kinematics.h>
-#include <igl/PI.h>
+#include <igl/read_triangle_mesh.h>
+#include <igl/readTGF.h>
+#include <igl/readDMAT.h>
 #include <igl/lbs_matrix.h>
 #include <igl/deform_skeleton.h>
-#include <igl/readDMAT.h>
-#include <igl/readOBJ.h>
-#include <igl/readTGF.h>
+#include <igl/direct_delta_mush.h>
 #include <igl/opengl/glfw/Viewer.h>
-
-#include <vector>
-#include <iostream>
-
 #include "tutorial_shared_path.h"
+#include <Eigen/Geometry>
+#include <vector>
 
-// TODO:
-// This tutorial example shares a lot of code with 404_DualQuaternionSkinning.
-// We should either combine them or pull out the shared code.
-
-typedef std::vector<Eigen::Quaterniond, Eigen::aligned_allocator<Eigen::Quaterniond>>
-  RotationList;
-
-typedef std::vector<Eigen::Affine3d, Eigen::aligned_allocator<Eigen::Affine3d>>
-  TransformationList;
-
-const Eigen::RowVector3d sea_green(70. / 255., 252. / 255., 167. / 255.);
-Eigen::MatrixXd V, W, C, U, M, Omega;
-Eigen::MatrixXi F, BE;
-Eigen::VectorXi P;
-std::vector<RotationList> poses;
-double anim_t = 0.0;
-double anim_t_dir = 0.015;
-bool use_ddm = false;
-bool recompute = true;
-
-// precomputation parameters
-// lambda controls the precision of smoothness
-// p * lambda   controls the rotation smoothness amount
-// p * kappa    controls the translation smoothness amount
-// alpha        controls the translation smoothness blending weight
-int p = 20;
-float lambda = 3; // 0 < lambda
-float kappa = 1; // 0 < kappa < lambda
-float alpha = 0.8; // 0 <= alpha < 1
-
-bool pre_draw(igl::opengl::glfw::Viewer & viewer)
+int main(int argc, char * argv[]) 
 {
-  using namespace Eigen;
-  using namespace std;
-  if (recompute)
+
+  Eigen::MatrixXd V,U,C,W,T,M,Omega;
+  Eigen::MatrixXi F,BE;
+  igl::read_triangle_mesh(TUTORIAL_SHARED_PATH "/elephant.obj",V,F);
+  igl::readTGF(           TUTORIAL_SHARED_PATH "/elephant.tgf",C,BE);
+  igl::readDMAT(          TUTORIAL_SHARED_PATH "/elephant-weights.dmat",W);
+  igl::readDMAT(          TUTORIAL_SHARED_PATH "/elephant-anim.dmat",T);
+  // convert weight to piecewise-rigid weights to stress test DDM
+  for (int i = 0; i < W.rows(); ++i)
   {
-    // Find pose interval
-    const int begin = (int) floor(anim_t) % poses.size();
-    const int end = (int) (floor(anim_t) + 1) % poses.size();
-    const double t = anim_t - floor(anim_t);
-
-    // Interpolate pose and identity
-    RotationList anim_pose(poses[begin].size());
-    for (int e = 0; e < poses[begin].size(); e++)
+    int maxj;
+    W.row(i).maxCoeff(&maxj);
+    for (int j = 0; j < W.cols(); j++)
     {
-      anim_pose[e] = poses[begin][e].slerp(t, poses[end][e]);
-    }
-    // Propagate relative rotations via FK to retrieve absolute transformations
-    RotationList vQ;
-    vector<Vector3d> vT;
-    igl::forward_kinematics(C, BE, P, anim_pose, vQ, vT);
-    const int dim = C.cols();
-    MatrixXd T(BE.rows() * (dim + 1), dim);
-    TransformationList T_list;
-    for (int e = 0; e < BE.rows(); e++)
-    {
-      Affine3d a = Affine3d::Identity();
-      a.translate(vT[e]);
-      a.rotate(vQ[e]);
-      T.block(e * (dim + 1), 0, dim + 1, dim) =
-        a.matrix().transpose().block(0, 0, dim + 1, dim);
-      T_list.push_back(a);
-    }
-    if (use_ddm)
-    {
-      igl::direct_delta_mush(V, F, T_list, Omega, U);
-    }
-    else
-    {
-      // Compute deformation via LBS as matrix multiplication
-      U = M * T;
-    }
-
-    // Also deform skeleton edges
-    MatrixXd CT;
-    MatrixXi BET;
-    igl::deform_skeleton(C, BE, T, CT, BET);
-
-    viewer.data().set_vertices(U);
-    viewer.data().set_edges(CT, BET, sea_green);
-    viewer.data().compute_normals();
-    if (viewer.core().is_animating)
-    {
-      anim_t += anim_t_dir;
-    }
-    else
-    {
-      recompute = false;
+      W(i, j) = double(maxj == j);
     }
   }
-  return false;
-}
 
-bool key_down(igl::opengl::glfw::Viewer & viewer, unsigned char key, int mods)
-{
-  recompute = true;
-  switch (key)
+  igl::lbs_matrix(V,W,M);
+
+  int p = 20;
+  float lambda = 3; // 0 < lambda
+  float kappa = 1; // 0 < kappa < lambda
+  float alpha = 0.8; // 0 <= alpha < 1
+  Eigen::SparseMatrix<double> Wsparse =  W.sparseView();
+  igl::direct_delta_mush_precomputation(V, F,Wsparse, p, lambda, kappa, alpha, Omega);
+
+  igl::opengl::glfw::Viewer viewer;
+  int frame = 0;
+  const int pr_id = viewer.selected_data_index;
+  viewer.append_mesh();
+  const int ddm_id = viewer.selected_data_index;
+  Eigen::RowVector3d offset(1.1*(V.col(0).maxCoeff()-V.col(0).minCoeff()),0,0);
+
+  viewer.callback_pre_draw = [&](igl::opengl::glfw::Viewer &) -> bool
   {
-    case 'D':
-    case 'd':
-      use_ddm = !use_ddm;
-      return true;
+    if(viewer.core().is_animating)
+    {
+      const Eigen::Map<Eigen::MatrixXd> Tf(
+        T.data()+frame*T.rows(),4*W.cols(),3);
+      U = (M*Tf).rowwise()-offset;
+
+      Eigen::MatrixXd Cf;
+      Eigen::MatrixXi BEf;
+      igl::deform_skeleton(C,BE,Tf,Cf,BEf);
+      viewer.data(pr_id).set_edges(Cf,BEf, Eigen::RowVector3d(1,1,1));
+
+      viewer.data(pr_id).set_vertices(U);
+      viewer.data(pr_id).compute_normals();
+
+      {
+        std::vector<Eigen::Affine3d, Eigen::aligned_allocator<Eigen::Affine3d>> 
+          T_list(BE.rows());
+        for (int e = 0; e < BE.rows(); e++)
+        {
+          T_list[e] = Eigen::Affine3d::Identity();
+          T_list[e].matrix().block(0, 0, 3, 4) = Tf.block(e*4,0,4,3).transpose();
+        }
+        igl::direct_delta_mush(V, F, T_list, Omega, U);
+      }
+      U.rowwise() += offset;
+      viewer.data(ddm_id).set_vertices(U);
+      viewer.data(ddm_id).compute_normals();
+
+      frame++;
+      if(frame == T.cols())
+      {
+        frame = 0;
+        viewer.core().is_animating = false;
+      }
+    }
+    return false;
+  };
+  viewer.callback_key_pressed = [&](igl::opengl::glfw::Viewer &, unsigned int key, int mod)
+  {
+    switch(key)
+    {
     case ' ':
       viewer.core().is_animating = !viewer.core().is_animating;
       return true;
-    default:
-      return false;
-  }
-}
-
-int main(int argc, char *argv[])
-{
-  using namespace Eigen;
-  using namespace std;
-  igl::readOBJ(TUTORIAL_SHARED_PATH "/arm.obj", V, F);
-  U = V;
-  igl::readTGF(TUTORIAL_SHARED_PATH "/arm.tgf", C, BE);
-  // retrieve parents for forward kinematics
-  igl::directed_edge_parents(BE, P);
-  RotationList rest_pose;
-  igl::directed_edge_orientations(C, BE, rest_pose);
-  poses.resize(4, RotationList(4, Quaterniond::Identity()));
-  const Quaterniond twist(AngleAxisd(igl::PI * 0.8, Vector3d(1, 0, 0)));
-  poses[1][2] = rest_pose[2] * twist * rest_pose[2].conjugate();
-  const Quaterniond bend(AngleAxisd(-igl::PI * 0.7, Vector3d(0, 0, 1)));
-  poses[3][2] = rest_pose[2] * bend * rest_pose[2].conjugate();
-
-  igl::readDMAT(TUTORIAL_SHARED_PATH "/arm-weights.dmat", W);
-  // convert weight to piecewise-rigid weights
-  for (int i = 0; i < W.rows(); ++i)
-  {
-    const double Wi_max = W.row(i).maxCoeff();
-    for (int j = 0; j < W.cols(); j++)
-    {
-      W(i, j) = double(W(i, j) == Wi_max);
     }
+    return false;
+  };
+
+
+
+  for(auto & id : {pr_id,ddm_id})
+  {
+    if(id == pr_id)
+    {
+      viewer.data(id).set_mesh( (V.rowwise()-offset*1.0).eval() ,F);
+      viewer.data(id).set_colors(Eigen::RowVector3d(214./255.,170./255.,148./255.));
+      viewer.data(id).set_edges(C,BE, Eigen::RowVector3d(1,1,1));
+    }else if(id == ddm_id){
+      viewer.data(id).set_mesh( (V.rowwise()+offset*1.0).eval() ,F);
+      viewer.data(id).set_colors(Eigen::RowVector3d(132./255.,214./255.,105./255.));
+    }
+    viewer.data(id).show_lines = false;
+    viewer.data(id).set_face_based(true);
+    viewer.data(id).show_overlay_depth = false;
   }
-  SparseMatrix<double> W_sparse = W.sparseView();
-  igl::lbs_matrix(V, W, M);
-
-  // Precomputation for Direct Delta Mush
-  cout << "Precomputing with parameters:" << endl
-       << "- p: " << p << endl
-       << "- lambda: " << lambda << endl
-       << "- kappa: " << kappa << endl
-       << "- alpha: " << alpha << endl;
-  igl::direct_delta_mush_precomputation(V, F, W_sparse, p, lambda, kappa, alpha, Omega);
-
-  // Plot the mesh with pseudocolors
-  igl::opengl::glfw::Viewer viewer;
-  viewer.data().set_mesh(U, F);
-  viewer.data().set_edges(C, BE, sea_green);
-  viewer.data().show_lines = false;
-  viewer.data().show_overlay_depth = false;
-  viewer.data().line_width = 1;
-  viewer.core().trackball_angle.normalize();
-  viewer.callback_pre_draw = &pre_draw;
-  viewer.callback_key_down = &key_down;
   viewer.core().is_animating = false;
-  viewer.core().camera_zoom = 2.5;
-  viewer.core().animation_max_fps = 30.;
-  cout << "Press [d] to toggle between LBS and DDM" << endl
-       << "Press [space] to toggle animation" << endl;
-  viewer.launch();
+  viewer.core().animation_max_fps = 24.;
+  //viewer.data().set_colors(V,F);
+
+
+  viewer.launch_init();
+  viewer.core().align_camera_center(V);
+
+  viewer.launch_rendering(true);
+  viewer.launch_shut();
 }
