@@ -51,11 +51,11 @@ namespace igl
     // Definitions of internal functions
     IGL_INLINE void buildRhs(igl::SLIMData& s, const Eigen::SparseMatrix<double> &A);
     IGL_INLINE void add_soft_constraints(igl::SLIMData& s, Eigen::SparseMatrix<double> &L);
-    IGL_INLINE double compute_energy(igl::SLIMData& s, Eigen::MatrixXd &V_new);
+    IGL_INLINE double compute_energy(igl::SLIMData& s, const Eigen::MatrixXd &V_new);
     IGL_INLINE double compute_soft_const_energy(igl::SLIMData& s,
                                                 const Eigen::MatrixXd &V,
                                                 const Eigen::MatrixXi &F,
-                                                Eigen::MatrixXd &V_o);
+                                                const Eigen::MatrixXd &V_o);
 
     IGL_INLINE void solve_weighted_arap(igl::SLIMData& s,
                                         const Eigen::MatrixXd &V,
@@ -287,7 +287,7 @@ namespace igl
       }
     }
 
-    IGL_INLINE double compute_energy(igl::SLIMData& s, Eigen::MatrixXd &V_new)
+    IGL_INLINE double compute_energy(igl::SLIMData& s, const Eigen::MatrixXd &V_new)
     {
       compute_jacobians(s,V_new);
       return mapping_energy_with_jacobians(s.Ji, s.M, s.slim_energy, s.exp_factor) +
@@ -297,7 +297,7 @@ namespace igl
     IGL_INLINE double compute_soft_const_energy(igl::SLIMData& s,
                                                 const Eigen::MatrixXd &V,
                                                 const Eigen::MatrixXi &F,
-                                                Eigen::MatrixXd &V_o)
+                                                const Eigen::MatrixXd &V_o)
     {
       double e = 0;
       for (int i = 0; i < s.b.rows(); i++)
