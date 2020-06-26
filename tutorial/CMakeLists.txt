@@ -92,6 +92,7 @@ if(TUTORIALS_CHAPTER4)
   add_subdirectory("405_AsRigidAsPossible")
   add_subdirectory("406_FastAutomaticSkinningTransformations")
   add_subdirectory("407_BiharmonicCoordinates")
+  add_subdirectory("408_DirectDeltaMush")
 endif()
 
 # Chapter 5
@@ -159,4 +160,5 @@ if(TUTORIALS_CHAPTER7)
     add_subdirectory("717_FastWindingNumber")
   endif()
   add_subdirectory("718_IterativeClosestPoint")
+  add_subdirectory("719_ExplodedView")
 endif()

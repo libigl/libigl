@@ -189,31 +189,35 @@ IGL_INLINE void igl::opengl::ViewerData::set_colors(const Eigen::MatrixXd &C)
     F_material_ambient = ambient(F_material_diffuse);
     F_material_specular = specular(F_material_diffuse);
   }
-  else if (C.rows() == V.rows())
+  else if(C.rows() == V.rows() || C.rows() == F.rows())
   {
-    set_face_based(false);
-    for (unsigned i=0;i<V_material_diffuse.rows();++i)
+    // face based colors? 
+    if((C.rows()==F.rows()) && (C.rows() != V.rows() || face_based))
     {
-      if (C.cols() == 3)
-        V_material_diffuse.row(i) << C.row(i), 1;
-      else if (C.cols() == 4)
-        V_material_diffuse.row(i) << C.row(i);
+      set_face_based(true);
+      for (unsigned i=0;i<F_material_diffuse.rows();++i)
+      {
+        if (C.cols() == 3)
+          F_material_diffuse.row(i) << C.row(i), 1;
+        else if (C.cols() == 4)
+          F_material_diffuse.row(i) << C.row(i);
+      }
+      F_material_ambient = ambient(F_material_diffuse);
+      F_material_specular = specular(F_material_diffuse);
     }
-    V_material_ambient = ambient(V_material_diffuse);
-    V_material_specular = specular(V_material_diffuse);
-  }
-  else if (C.rows() == F.rows())
-  {
-    set_face_based(true);
-    for (unsigned i=0;i<F_material_diffuse.rows();++i)
+    else/*(C.rows() == V.rows())*/
     {
-      if (C.cols() == 3)
-        F_material_diffuse.row(i) << C.row(i), 1;
-      else if (C.cols() == 4)
-        F_material_diffuse.row(i) << C.row(i);
+      set_face_based(false);
+      for (unsigned i=0;i<V_material_diffuse.rows();++i)
+      {
+        if (C.cols() == 3)
+          V_material_diffuse.row(i) << C.row(i), 1;
+        else if (C.cols() == 4)
+          V_material_diffuse.row(i) << C.row(i);
+      }
+      V_material_ambient = ambient(V_material_diffuse);
+      V_material_specular = specular(V_material_diffuse);
     }
-    F_material_ambient = ambient(F_material_diffuse);
-    F_material_specular = specular(F_material_diffuse);
   }
   else
     cerr << "ERROR (set_colors): Please provide a single color, or a color per face or per vertex."<<endl;

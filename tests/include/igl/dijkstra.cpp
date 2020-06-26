@@ -20,3 +20,21 @@ TEST_CASE("dijkstra: cube", "[igl]")
   REQUIRE(min_distance(0) == 0);
   REQUIRE(min_distance(7) == Approx(sqrt(2)).margin(1e-10));
 }
+
+TEST_CASE("dijkstra: discrete distances", "[igl]")
+{
+  Eigen::MatrixXd V;
+  Eigen::MatrixXi F;
+  igl::read_triangle_mesh(test_common::data_path("cube.off"), V, F);
+
+  std::vector<std::vector<int>> VV;
+  igl::adjacency_list(F, VV);
+
+  Eigen::VectorXi min_distance, previous;
+  int out = igl::dijkstra(0, {3}, VV, min_distance, previous);
+  REQUIRE(out != -1);
+  REQUIRE(out == 3);
+  REQUIRE(min_distance[3] == 1);
+  REQUIRE(min_distance[0] == 0);
+}
+

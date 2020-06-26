@@ -16,6 +16,7 @@
 #include <algorithm>
 #include <tuple>
 
+
 // Disable lengthy tests in debug mode
 #ifdef NDEBUG
 #define IGL_DEBUG_OFF ""

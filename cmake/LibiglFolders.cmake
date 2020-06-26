@@ -82,6 +82,7 @@ igl_folder_targets("Tutorials"
     405_AsRigidAsPossible_bin
     406_FastAutomaticSkinningTransformations_bin
     407_BiharmonicCoordinates_bin
+    408_DirectDeltaMush_bin
     501_HarmonicParam_bin
     502_LSCMParam_bin
     503_ARAPParam_bin
@@ -111,6 +112,7 @@ igl_folder_targets("Tutorials"
     715_MeshImplicitFunction_bin
     716_HeatGeodesics_bin
     718_IterativeClosestPoint_bin
+    719_ExplodedView_bin
 )
 
 endfunction()
