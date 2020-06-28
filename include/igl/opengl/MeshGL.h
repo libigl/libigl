@@ -40,9 +40,9 @@ public:
     DIRTY_MESH           = 0x00FF,
     DIRTY_OVERLAY_LINES  = 0x0100,
     DIRTY_OVERLAY_POINTS = 0x0200,
-    DIRTY_VID_LABELS     = 0x0400,
-    DIRTY_FID_LABELS     = 0x0800,
-    DIRTY_EXTRA_LABELS   = 0x1000,
+    DIRTY_VERTEX_LABELS  = 0x0400,
+    DIRTY_FACE_LABELS    = 0x0800,
+    DIRTY_CUSTOM_LABELS  = 0x1000,
     DIRTY_ALL            = 0xFFFF
   };
 
@@ -85,38 +85,24 @@ public:
   RowMatrixXf points_V_vbo;
   RowMatrixXf points_V_colors_vbo;
 
-  /////Text rendering
-  GLuint vao_vid_labels;
-  GLuint vbo_vid_labels_pos;
-  GLuint vbo_vid_labels_characters;
-  GLuint vbo_vid_labels_offset; 
-  GLuint vbo_vid_labels_indices;
-  RowMatrixXf vid_label_pos_vbo;
-  RowMatrixXf vid_label_char_vbo;
-  RowMatrixXf vid_label_offset_vbo;
-  Eigen::Matrix<unsigned, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> vid_label_indices_vbo;
-
-  GLuint vao_fid_labels;
-  GLuint vbo_fid_labels_pos;
-  GLuint vbo_fid_labels_characters;
-  GLuint vbo_fid_labels_offset; 
-  GLuint vbo_fid_labels_indices;
-  RowMatrixXf fid_label_pos_vbo;
-  RowMatrixXf fid_label_char_vbo;
-  RowMatrixXf fid_label_offset_vbo;
-  Eigen::Matrix<unsigned, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> fid_label_indices_vbo;
-
-  GLuint vao_extra_labels;
-  GLuint vbo_extra_labels_pos;
-  GLuint vbo_extra_labels_characters;
-  GLuint vbo_extra_labels_offset; 
-  GLuint vbo_extra_labels_indices;
-  RowMatrixXf extra_label_pos_vbo;
-  RowMatrixXf extra_label_char_vbo;
-  RowMatrixXf extra_label_offset_vbo;
-  Eigen::Matrix<unsigned, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> extra_label_indices_vbo;
-
-  /////End Text Rendering
+  // Text Rendering
+  typedef struct 
+  { 
+    uint32_t dirty_flag;
+    GLuint vao_labels;
+    GLuint vbo_labels_pos;
+    GLuint vbo_labels_characters;
+    GLuint vbo_labels_offset; 
+    GLuint vbo_labels_indices;
+    RowMatrixXf label_pos_vbo;
+    RowMatrixXf label_char_vbo;
+    RowMatrixXf label_offset_vbo;
+    Eigen::Matrix<unsigned, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> label_indices_vbo;
+  } TextGL;
+  TextGL vertex_labels = {.dirty_flag = DirtyFlags::DIRTY_VERTEX_LABELS};
+  TextGL face_labels   = {.dirty_flag = DirtyFlags::DIRTY_FACE_LABELS};
+  TextGL custom_labels = {.dirty_flag = DirtyFlags::DIRTY_CUSTOM_LABELS};
+  GLuint font_atlas; // Texture
 
   int tex_u;
   int tex_v;
@@ -157,18 +143,14 @@ public:
   // Bind the underlying OpenGL buffer objects for subsequent point overlay draw calls
   IGL_INLINE void bind_overlay_points();
 
-  // Text Binding and Draw functions
-  IGL_INLINE void bind_font_atlas();
-  IGL_INLINE void bind_vid_labels();
-  IGL_INLINE void bind_fid_labels();
-  IGL_INLINE void bind_extra_labels();
-  IGL_INLINE void draw_vid_labels();
-  IGL_INLINE void draw_fid_labels();
-  IGL_INLINE void draw_extra_labels();
-
   /// Draw the currently buffered point overlay
   IGL_INLINE void draw_overlay_points();
 
+  // Text Binding and Draw functions
+  IGL_INLINE void init_font_atlas();
+  IGL_INLINE void bind_font_atlas();
+  IGL_INLINE void bind_labels(TextGL labels);
+  IGL_INLINE void draw_labels(igl::opengl::MeshGL::TextGL& labels);
 
   // Release the OpenGL buffer objects
   IGL_INLINE void free_buffers();

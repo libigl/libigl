@@ -301,9 +301,9 @@ IGL_INLINE void ImGuiMenu::draw_viewer_menu()
   {
     make_checkbox("Wireframe", viewer->data().show_lines);
     make_checkbox("Fill", viewer->data().show_faces);
-    ImGui::Checkbox("Show vertex labels", &(viewer->data().show_vertid));
-    ImGui::Checkbox("Show faces labels", &(viewer->data().show_faceid));
-    ImGui::Checkbox("Show extra labels", &(viewer->data().show_labels));
+    ImGui::Checkbox("Show vertex labels", &(viewer->data().show_vertex_labels));
+    ImGui::Checkbox("Show faces labels", &(viewer->data().show_face_labels));
+    ImGui::Checkbox("Show extra labels", &(viewer->data().show_custom_labels));
   }
 }
 
@@ -332,7 +332,7 @@ IGL_INLINE void ImGuiMenu::draw_labels_window()
 IGL_INLINE void ImGuiMenu::draw_labels(const igl::opengl::ViewerData &data)
 {
   // Alec: How can we get these to respect (optionally) the depth of the scene?
-  if (data.show_vertid)
+  if (data.show_vertex_labels)
   {
     for (int i = 0; i < data.V.rows(); ++i)
     {
@@ -344,7 +344,7 @@ IGL_INLINE void ImGuiMenu::draw_labels(const igl::opengl::ViewerData &data)
     }
   }
 
-  if (data.show_faceid)
+  if (data.show_face_labels)
   {
     for (int i = 0; i < data.F.rows(); ++i)
     {
@@ -363,7 +363,7 @@ IGL_INLINE void ImGuiMenu::draw_labels(const igl::opengl::ViewerData &data)
     }
   }
 
-  if (data.show_labels)
+  if (data.show_custom_labels)
   {
     for (int i = 0; i < data.labels_positions.rows(); ++i)
     {
