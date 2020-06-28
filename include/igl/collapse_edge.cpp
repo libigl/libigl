@@ -8,7 +8,7 @@
 #include "collapse_edge.h"
 #include "circulation.h"
 #include "edge_collapse_is_valid.h"
-#include "always_try_never_care.h"
+#include "decimate_always_try_never_care.h"
 #include <vector>
 
 IGL_INLINE bool igl::collapse_edge(
@@ -207,7 +207,7 @@ IGL_INLINE bool igl::collapse_edge(
   int e,e1,e2,f1,f2;
   decimate_pre_collapse_func always_try;
   decimate_post_collapse_func never_care;
-  always_try_never_care(always_try,never_care);
+  decimate_always_try_never_care(always_try,never_care);
   return 
     collapse_edge(
       cost_and_placement,always_try,never_care,

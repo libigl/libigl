@@ -8,7 +8,7 @@
 #include "decimate.h"
 #include "collapse_edge.h"
 #include "edge_flaps.h"
-#include "always_try_never_care.h"
+#include "decimate_always_try_never_care.h"
 #include "is_edge_manifold.h"
 #include "remove_unreferenced.h"
 #include "slice_mask.h"
@@ -52,7 +52,7 @@ IGL_INLINE bool igl::decimate(
   }
   decimate_pre_collapse_func always_try;
   decimate_post_collapse_func never_care;
-  always_try_never_care(always_try,never_care);
+  decimate_always_try_never_care(always_try,never_care);
   bool ret = decimate(
     VO,
     FO,
@@ -102,7 +102,7 @@ IGL_INLINE bool igl::decimate(
 {
   decimate_pre_collapse_func always_try;
   decimate_post_collapse_func never_care;
-  always_try_never_care(always_try,never_care);
+  decimate_always_try_never_care(always_try,never_care);
   return igl::decimate(
     OV,OF,cost_and_placement,stopping_condition,always_try,never_care,U,G,J,I);
 }
