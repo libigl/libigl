@@ -344,7 +344,7 @@ endif()
 if(LIBIGL_WITH_OPENGL)
   # OpenGL module
   compile_igl_module("opengl")
-  
+
   # OpenGL library
   if (NOT CMAKE_VERSION VERSION_LESS "3.11")
     cmake_policy(SET CMP0072 NEW)
