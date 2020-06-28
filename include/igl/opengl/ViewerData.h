@@ -239,11 +239,6 @@ public:
   RowMatrixXf vertid_label_offset;
   Eigen::Matrix<unsigned, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> vid_label_indices;
 
-  // Prepopulate the vbos for each of these for dynamic construction of the vbo which is bound
-  IGL_INLINE void set_vertid_labels();
-  IGL_INLINE void set_faceid_labels(const Eigen::MatrixXd& _V, const Eigen::MatrixXd& _F_normals, const Eigen::MatrixXi& _F);
-  IGL_INLINE void set_extra_labels();
-
   // Text labels plotted over the scene
   // Textp contains, in the i-th row, the position in global coordinates where the i-th label should be anchored
   // Texts contains in the i-th position the text of the i-th label

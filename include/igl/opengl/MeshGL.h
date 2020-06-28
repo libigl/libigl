@@ -40,10 +40,10 @@ public:
     DIRTY_MESH           = 0x00FF,
     DIRTY_OVERLAY_LINES  = 0x0100,
     DIRTY_OVERLAY_POINTS = 0x0200,
-    DIRTY_VID_LABELS     = 0x0300,
-    DIRTY_FID_LABELS     = 0x0400,
-    DIRTY_EXTRA_LABELS   = 0x0800,
-    DIRTY_ALL            = 0x0FFF
+    DIRTY_VID_LABELS     = 0x0400,
+    DIRTY_FID_LABELS     = 0x0800,
+    DIRTY_EXTRA_LABELS   = 0x1000,
+    DIRTY_ALL            = 0xFFFF
   };
 
   bool is_initialized = false;

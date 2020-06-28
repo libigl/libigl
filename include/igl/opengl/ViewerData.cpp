@@ -800,15 +800,11 @@ IGL_INLINE void igl::opengl::ViewerData::updateGL(
 
   if (meshgl.dirty & MeshGL::DIRTY_VID_LABELS)
   {
-    std::string vertCount = std::to_string(V.rows());
-    int totalVertCharacters = 0;
-    int i=1;
-    while(i<vertCount.length())
+    int totalVertCharacters = 1; // 0th Index
+    for(int i=1; i<V.rows(); i*=10)
     {
-      totalVertCharacters += (i)*9*pow(10,i-1); i++;
+      totalVertCharacters += (V.rows() - i);
     }
-    totalVertCharacters += (i*(V.rows() - pow(10,i-1)));
-    totalVertCharacters += 1;
     meshgl.vid_label_pos_vbo.resize(totalVertCharacters,3);
     meshgl.vid_label_char_vbo.resize(totalVertCharacters,1);
     meshgl.vid_label_offset_vbo.resize(totalVertCharacters,1);
@@ -831,15 +827,11 @@ IGL_INLINE void igl::opengl::ViewerData::updateGL(
 
   if (meshgl.dirty & MeshGL::DIRTY_FID_LABELS)
   {
-    std::string faceCount = std::to_string(F.rows());
-    int totalFaceCharacters = 0;
-    int i=1;
-    while(i<faceCount.length())
+    int totalFaceCharacters = 1; // 0th Index
+    for(int i=1; i<F.rows(); i*=10)
     {
-      totalFaceCharacters += (i)*9*pow(10,i-1); i++;
+      totalFaceCharacters += (F.rows() - i);
     }
-    totalFaceCharacters += (i*(F.rows() - pow(10,i-1)));
-    totalFaceCharacters += 1;
     meshgl.fid_label_pos_vbo.resize(totalFaceCharacters,3);
     meshgl.fid_label_char_vbo.resize(totalFaceCharacters,1);
     meshgl.fid_label_offset_vbo.resize(totalFaceCharacters,1);
@@ -880,13 +872,13 @@ IGL_INLINE void igl::opengl::ViewerData::updateGL(
       meshgl.extra_label_indices_vbo.resize(numCustomChars, 1);
       int charCount=0;
       assert(labels_strings.size() == labels_positions.rows());
-      for(int s=0; s<labels_strings.size(); s++)
+      for(size_t s=0; s<labels_strings.size(); s++)
       {
-        std::string temp = labels_strings.at(s);
-        for(int c=0; c<temp.length(); c++)
+        const auto & label = labels_strings.at(s);
+        for(size_t c=0; c<label.length(); c++)
         {
           meshgl.extra_label_pos_vbo.row(charCount) = labels_positions.row(s).cast<float>();
-          meshgl.extra_label_char_vbo(charCount) = (float)(temp.at(c));
+          meshgl.extra_label_char_vbo(charCount) = (float)(label.at(c));
           meshgl.extra_label_offset_vbo(charCount) = c;
           meshgl.extra_label_indices_vbo(charCount) = charCount;
           charCount++;

@@ -10,11 +10,7 @@
 #include "bind_vertex_attrib_array.h"
 #include "create_shader_program.h"
 #include "destroy_shader_program.h"
-#include "shaders/text.vert"
-#include "shaders/text.geom"
-#include "shaders/text.frag"
-#include "font_atlas_path.h"
-#include <igl/png/texture_from_png.h>
+#include "verasansmono.h"
 #include <iostream>
 
 IGL_INLINE igl::opengl::MeshGL::MeshGL():
@@ -186,8 +182,15 @@ IGL_INLINE void igl::opengl::MeshGL::bind_overlay_points()
 IGL_INLINE void igl::opengl::MeshGL::bind_font_atlas()
 {
   GLuint texture_handle;
-  igl::png::texture_from_png(std::string(FONT_ATLAS_PATH) + "/verasansmono.png", texture_handle);
+  glGenTextures(1, &texture_handle);
   glBindTexture(GL_TEXTURE_2D, texture_handle);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexImage2D(
+    GL_TEXTURE_2D, 0, GL_RED,
+    256, 256, 0, GL_RED, GL_UNSIGNED_BYTE, verasansmono_font_atlas);
 }
 
 IGL_INLINE void igl::opengl::MeshGL::bind_vid_labels()
@@ -397,6 +400,81 @@ R"(#version 150
       discard;
     outColor = vec4(color_frag, 1.0);
   }
+)";
+
+  std::string text_vert_shader = 
+R"(#version 330
+    in vec3 position;
+    in float character;
+    in float offset;
+    uniform mat4 view;
+    uniform mat4 proj;
+    out int vPosition;
+    out int vCharacter;
+    out float vOffset;
+    void main()
+    {
+      vCharacter = int(character);
+      vOffset = offset;
+      vPosition = gl_VertexID;
+      gl_Position = proj * view * vec4(position, 1.0);
+    }
+)";
+
+  std::string text_geom_shader = 
+R"(#version 150 core
+    layout(points) in;
+    layout(triangle_strip, max_vertices = 4) out;
+    out vec2 gTexCoord;
+    uniform mat4 view;
+    uniform mat4 proj;
+    uniform vec2 CellSize;
+    uniform vec2 CellOffset;
+    uniform vec2 RenderSize;
+    uniform vec2 RenderOrigin;
+    uniform float TextShiftFactor;
+    in int vPosition[1];
+    in int vCharacter[1];
+    in float vOffset[1];
+    void main()
+    {
+      // Code taken from https://prideout.net/strings-inside-vertex-buffers
+      // Determine the final quad's position and size:
+      vec4 P = gl_in[0].gl_Position + vec4( vOffset[0]*TextShiftFactor, 0.0, 0.0, 0.0 ); // 0.04
+      vec4 U = vec4(1, 0, 0, 0) * RenderSize.x; // 1.0
+      vec4 V = vec4(0, 1, 0, 0) * RenderSize.y; // 1.0
+
+      // Determine the texture coordinates:
+      int letter = vCharacter[0]; // used to be the character
+      letter = clamp(letter - 32, 0, 96);
+      int row = letter / 16 + 1;
+      int col = letter % 16;
+      float S0 = CellOffset.x + CellSize.x * col;
+      float T0 = CellOffset.y + 1 - CellSize.y * row;
+      float S1 = S0 + CellSize.x - CellOffset.x;
+      float T1 = T0 + CellSize.y;
+
+      // Output the quad's vertices:
+      gTexCoord = vec2(S0, T1); gl_Position = P - U - V; EmitVertex();
+      gTexCoord = vec2(S1, T1); gl_Position = P + U - V; EmitVertex();
+      gTexCoord = vec2(S0, T0); gl_Position = P - U + V; EmitVertex();
+      gTexCoord = vec2(S1, T0); gl_Position = P + U + V; EmitVertex();
+      EndPrimitive();
+    }
+)";
+
+
+  std::string text_frag_shader = 
+R"(#version 330
+    out vec4 outColor;
+    in vec2 gTexCoord;
+    uniform sampler2D Sampler;
+    uniform vec3 TextColor;
+    void main()
+    {
+      float A = texture(Sampler, gTexCoord).r;
+      outColor = vec4(TextColor, A);
+    }
 )";
 
   init_buffers();
