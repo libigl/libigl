@@ -9,7 +9,7 @@
 #define IGL_COLLAPSE_EDGE_H
 #include "igl_inline.h"
 #include "min_heap.h"
-#include "decimate.h" // for decimate_*_func types
+#include "decimate_func_types.h"
 #include <Eigen/Core>
 #include <vector>
 #include <set>

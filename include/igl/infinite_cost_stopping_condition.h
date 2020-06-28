@@ -8,7 +8,7 @@
 #ifndef IGL_INFINITE_COST_STOPPING_CONDITION_H
 #define IGL_INFINITE_COST_STOPPING_CONDITION_H
 #include "igl_inline.h"
-#include "decimate.h" // decimate_*_func type definitions
+#include "decimate_func_types.h"
 #include <Eigen/Core>
 #include <vector>
 #include <set>

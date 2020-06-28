@@ -1,7 +1,7 @@
 #ifndef IGL_ALWAYS_TRY_NEVER_CARE_H
 #define IGL_ALWAYS_TRY_NEVER_CARE_H
 #include "igl_inline.h"
-#include "decimate.h" // for decimate_*_func types
+#include "decimate_func_types.h"
 namespace igl
 {
   // Outputs:

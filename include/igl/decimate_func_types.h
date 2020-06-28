@@ -7,6 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_DECIMATE_FUNC_TYPES_H
 #define IGL_DECIMATE_FUNC_TYPES_H
+#include <Eigen/Core>
 #include "min_heap.h"
 namespace igl
 {

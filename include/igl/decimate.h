@@ -8,73 +8,10 @@
 #ifndef IGL_DECIMATE_H
 #define IGL_DECIMATE_H
 #include "igl_inline.h"
-#include "min_heap.h"
+#include "decimate_func_types.h"
 #include <Eigen/Core>
-#include <vector>
-#include <set>
 namespace igl
 {
-  // Function handles used to customize the `igl::decimate` command.
-  using decimate_cost_and_placement_func = 
-    std::function<void(
-      const int                                           ,/*e*/
-      const Eigen::MatrixXd &                             ,/*V*/
-      const Eigen::MatrixXi &                             ,/*F*/
-      const Eigen::MatrixXi &                             ,/*E*/
-      const Eigen::VectorXi &                             ,/*EMAP*/
-      const Eigen::MatrixXi &                             ,/*EF*/
-      const Eigen::MatrixXi &                             ,/*EI*/
-      double &                                            ,/*cost*/
-      Eigen::RowVectorXd &                                 /*p*/
-      )>;
-  using decimate_stopping_condition_func = 
-    std::function<bool(
-      const Eigen::MatrixXd &                             ,/*V*/
-      const Eigen::MatrixXi &                             ,/*F*/
-      const Eigen::MatrixXi &                             ,/*E*/
-      const Eigen::VectorXi &                             ,/*EMAP*/
-      const Eigen::MatrixXi &                             ,/*EF*/
-      const Eigen::MatrixXi &                             ,/*EI*/
-      const igl::min_heap< std::tuple<double,int,int> > & ,/*Q*/
-      const Eigen::VectorXi &                             ,/*EQ*/
-      const Eigen::MatrixXd &                             ,/*C*/
-      const int                                           ,/*e*/
-      const int                                           ,/*e1*/
-      const int                                           ,/*e2*/
-      const int                                           ,/*f1*/
-      const int                                            /*f2*/
-      )>;
-  using decimate_pre_collapse_func = 
-    std::function<bool(
-      const Eigen::MatrixXd &                             ,/*V*/
-      const Eigen::MatrixXi &                             ,/*F*/
-      const Eigen::MatrixXi &                             ,/*E*/
-      const Eigen::VectorXi &                             ,/*EMAP*/
-      const Eigen::MatrixXi &                             ,/*EF*/
-      const Eigen::MatrixXi &                             ,/*EI*/
-      const igl::min_heap< std::tuple<double,int,int> > & ,/*Q*/
-      const Eigen::VectorXi &                             ,/*EQ*/
-      const Eigen::MatrixXd &                             ,/*C*/
-      const int                                            /*e*/
-      )>;
-  using decimate_post_collapse_func = 
-    std::function<void(
-      const Eigen::MatrixXd &                             ,/*V*/
-      const Eigen::MatrixXi &                             ,/*F*/
-      const Eigen::MatrixXi &                             ,/*E*/
-      const Eigen::VectorXi &                             ,/*EMAP*/
-      const Eigen::MatrixXi &                             ,/*EF*/
-      const Eigen::MatrixXi &                             ,/*EI*/
-      const igl::min_heap< std::tuple<double,int,int> > & ,/*Q*/
-      const Eigen::VectorXi &                             ,/*EQ*/
-      const Eigen::MatrixXd &                             ,/*C*/
-      const int                                           ,/*e*/
-      const int                                           ,/*e1*/
-      const int                                           ,/*e2*/
-      const int                                           ,/*f1*/
-      const int                                           ,/*f2*/
-      const bool                                           /*collapsed*/
-      )>;
   // Assumes (V,F) is a manifold mesh (possibly with boundary) Collapses edges
   // until desired number of faces is achieved. This uses default edge cost and
   // merged vertex placement functions {edge length, edge midpoint}.
