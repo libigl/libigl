@@ -43,6 +43,20 @@ namespace igl
     const Eigen::MatrixXi & EF,
     const Eigen::MatrixXi & EI,
     Eigen::VectorXi & vN);
+  // Outputs:
+  ////   Ne  2*#Nf list of indices into E of "next" rim-spoke-rim-spoke-...
+  //   Nv  #Nv list of "next" vertex indices
+  //   Nf  #Nf list of face indices
+  IGL_INLINE void circulation(
+    const int e,
+    const bool ccw,
+    const Eigen::MatrixXi & F,
+    const Eigen::VectorXi & EMAP,
+    const Eigen::MatrixXi & EF,
+    const Eigen::MatrixXi & EI,
+    /*std::vector<int> & Ne,*/
+    std::vector<int> & Nv,
+    std::vector<int> & Nf);
 }
 
 #ifndef IGL_STATIC_LIBRARY
