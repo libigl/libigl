@@ -15,9 +15,9 @@ IGL_INLINE void igl::qslim_optimal_collapse_edge_callbacks(
     quadrics,
   int & v1,
   int & v2,
-  decimate_cost_and_placement_func & cost_and_placement,
-  decimate_pre_collapse_func       & pre_collapse,
-  decimate_post_collapse_func      & post_collapse)
+  decimate_cost_and_placement_callback & cost_and_placement,
+  decimate_pre_collapse_callback       & pre_collapse,
+  decimate_post_collapse_callback      & post_collapse)
 {
   typedef std::tuple<Eigen::MatrixXd,Eigen::RowVectorXd,double> Quadric;
   cost_and_placement = [&quadrics,&v1,&v2](

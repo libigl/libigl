@@ -11,7 +11,7 @@ IGL_INLINE void igl::max_faces_stopping_condition(
   int & m,
   const int orig_m,
   const int max_m,
-  decimate_stopping_condition_func & stopping_condition)
+  decimate_stopping_condition_callback & stopping_condition)
 {
   stopping_condition = 
     [orig_m,max_m,&m](
@@ -37,13 +37,13 @@ IGL_INLINE void igl::max_faces_stopping_condition(
     };
 }
 
-IGL_INLINE igl::decimate_stopping_condition_func
+IGL_INLINE igl::decimate_stopping_condition_callback
 igl::max_faces_stopping_condition(
   int & m,
   const int orig_m,
   const int max_m)
 {
-  decimate_stopping_condition_func stopping_condition;
+  decimate_stopping_condition_callback stopping_condition;
   max_faces_stopping_condition(m,orig_m,max_m,stopping_condition);
   return stopping_condition;
 }

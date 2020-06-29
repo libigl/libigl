@@ -8,7 +8,7 @@
 #include "collapse_edge.h"
 #include "circulation.h"
 #include "edge_collapse_is_valid.h"
-#include "decimate_always_try_never_care.h"
+#include "decimate_trivial_callbacks.h"
 #include <vector>
 
 IGL_INLINE bool igl::collapse_edge(
@@ -193,7 +193,7 @@ IGL_INLINE bool igl::collapse_edge(
 }
 
 IGL_INLINE bool igl::collapse_edge(
-  const decimate_cost_and_placement_func & cost_and_placement,
+  const decimate_cost_and_placement_callback & cost_and_placement,
   Eigen::MatrixXd & V,
   Eigen::MatrixXi & F,
   Eigen::MatrixXi & E,
@@ -205,9 +205,9 @@ IGL_INLINE bool igl::collapse_edge(
   Eigen::MatrixXd & C)
 {
   int e,e1,e2,f1,f2;
-  decimate_pre_collapse_func always_try;
-  decimate_post_collapse_func never_care;
-  decimate_always_try_never_care(always_try,never_care);
+  decimate_pre_collapse_callback always_try;
+  decimate_post_collapse_callback never_care;
+  decimate_trivial_callbacks(always_try,never_care);
   return 
     collapse_edge(
       cost_and_placement,always_try,never_care,
@@ -215,9 +215,9 @@ IGL_INLINE bool igl::collapse_edge(
 }
 
 IGL_INLINE bool igl::collapse_edge(
-  const decimate_cost_and_placement_func & cost_and_placement,
-  const decimate_pre_collapse_func       & pre_collapse,
-  const decimate_post_collapse_func      & post_collapse,
+  const decimate_cost_and_placement_callback & cost_and_placement,
+  const decimate_pre_collapse_callback       & pre_collapse,
+  const decimate_post_collapse_callback      & post_collapse,
   Eigen::MatrixXd & V,
   Eigen::MatrixXi & F,
   Eigen::MatrixXi & E,
@@ -237,9 +237,9 @@ IGL_INLINE bool igl::collapse_edge(
 
 
 IGL_INLINE bool igl::collapse_edge(
-  const decimate_cost_and_placement_func & cost_and_placement,
-  const decimate_pre_collapse_func       & pre_collapse,
-  const decimate_post_collapse_func      & post_collapse,
+  const decimate_cost_and_placement_callback & cost_and_placement,
+  const decimate_pre_collapse_callback       & pre_collapse,
+  const decimate_post_collapse_callback      & post_collapse,
   Eigen::MatrixXd & V,
   Eigen::MatrixXi & F,
   Eigen::MatrixXi & E,

@@ -8,7 +8,7 @@
 #include "decimate.h"
 #include "collapse_edge.h"
 #include "edge_flaps.h"
-#include "decimate_always_try_never_care.h"
+#include "decimate_trivial_callbacks.h"
 #include "is_edge_manifold.h"
 #include "remove_unreferenced.h"
 #include "slice_mask.h"
@@ -50,9 +50,9 @@ IGL_INLINE bool igl::decimate(
       return false;
     }
   }
-  decimate_pre_collapse_func always_try;
-  decimate_post_collapse_func never_care;
-  decimate_always_try_never_care(always_try,never_care);
+  decimate_pre_collapse_callback always_try;
+  decimate_post_collapse_callback never_care;
+  decimate_trivial_callbacks(always_try,never_care);
   bool ret = decimate(
     VO,
     FO,
@@ -92,17 +92,17 @@ IGL_INLINE bool igl::decimate(
 IGL_INLINE bool igl::decimate(
   const Eigen::MatrixXd & OV,
   const Eigen::MatrixXi & OF,
-  const decimate_cost_and_placement_func & cost_and_placement,
-  const decimate_stopping_condition_func & stopping_condition,
+  const decimate_cost_and_placement_callback & cost_and_placement,
+  const decimate_stopping_condition_callback & stopping_condition,
   Eigen::MatrixXd & U,
   Eigen::MatrixXi & G,
   Eigen::VectorXi & J,
   Eigen::VectorXi & I
   )
 {
-  decimate_pre_collapse_func always_try;
-  decimate_post_collapse_func never_care;
-  decimate_always_try_never_care(always_try,never_care);
+  decimate_pre_collapse_callback always_try;
+  decimate_post_collapse_callback never_care;
+  decimate_trivial_callbacks(always_try,never_care);
   return igl::decimate(
     OV,OF,cost_and_placement,stopping_condition,always_try,never_care,U,G,J,I);
 }
@@ -110,10 +110,10 @@ IGL_INLINE bool igl::decimate(
 IGL_INLINE bool igl::decimate(
   const Eigen::MatrixXd & OV,
   const Eigen::MatrixXi & OF,
-  const decimate_cost_and_placement_func & cost_and_placement,
-  const decimate_stopping_condition_func & stopping_condition,
-  const decimate_pre_collapse_func       & pre_collapse,
-  const decimate_post_collapse_func      & post_collapse,
+  const decimate_cost_and_placement_callback & cost_and_placement,
+  const decimate_stopping_condition_callback & stopping_condition,
+  const decimate_pre_collapse_callback       & pre_collapse,
+  const decimate_post_collapse_callback      & post_collapse,
   Eigen::MatrixXd & U,
   Eigen::MatrixXi & G,
   Eigen::VectorXi & J,
@@ -133,10 +133,10 @@ IGL_INLINE bool igl::decimate(
 IGL_INLINE bool igl::decimate(
   const Eigen::MatrixXd & OV,
   const Eigen::MatrixXi & OF,
-  const decimate_cost_and_placement_func & cost_and_placement,
-  const decimate_stopping_condition_func & stopping_condition,
-  const decimate_pre_collapse_func       & pre_collapse,
-  const decimate_post_collapse_func      & post_collapse,
+  const decimate_cost_and_placement_callback & cost_and_placement,
+  const decimate_stopping_condition_callback & stopping_condition,
+  const decimate_pre_collapse_callback       & pre_collapse,
+  const decimate_post_collapse_callback      & post_collapse,
   const Eigen::MatrixXi & OE,
   const Eigen::VectorXi & OEMAP,
   const Eigen::MatrixXi & OEF,

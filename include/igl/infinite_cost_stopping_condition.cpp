@@ -8,8 +8,8 @@
 #include "infinite_cost_stopping_condition.h"
 
 IGL_INLINE void igl::infinite_cost_stopping_condition(
-  const decimate_cost_and_placement_func & cost_and_placement,
-  decimate_stopping_condition_func & stopping_condition)
+  const decimate_cost_and_placement_callback & cost_and_placement,
+  decimate_stopping_condition_callback & stopping_condition)
 {
   stopping_condition = 
     [&cost_and_placement]
@@ -36,11 +36,11 @@ IGL_INLINE void igl::infinite_cost_stopping_condition(
     };
 }
 
-IGL_INLINE igl::decimate_stopping_condition_func
+IGL_INLINE igl::decimate_stopping_condition_callback
   igl::infinite_cost_stopping_condition(
-  const decimate_cost_and_placement_func & cost_and_placement)
+  const decimate_cost_and_placement_callback & cost_and_placement)
 {
-  decimate_stopping_condition_func stopping_condition;
+  decimate_stopping_condition_callback stopping_condition;
   infinite_cost_stopping_condition(cost_and_placement,stopping_condition);
   return stopping_condition;
 }

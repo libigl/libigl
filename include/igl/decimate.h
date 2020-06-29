@@ -8,7 +8,7 @@
 #ifndef IGL_DECIMATE_H
 #define IGL_DECIMATE_H
 #include "igl_inline.h"
-#include "decimate_func_types.h"
+#include "decimate_callback_types.h"
 #include <Eigen/Core>
 namespace igl
 {
@@ -67,8 +67,8 @@ namespace igl
   IGL_INLINE bool decimate(
     const Eigen::MatrixXd & V,
     const Eigen::MatrixXi & F,
-    const decimate_cost_and_placement_func & cost_and_placement,
-    const decimate_stopping_condition_func & stopping_condition,
+    const decimate_cost_and_placement_callback & cost_and_placement,
+    const decimate_stopping_condition_callback & stopping_condition,
     Eigen::MatrixXd & U,
     Eigen::MatrixXi & G,
     Eigen::VectorXi & J,
@@ -82,10 +82,10 @@ namespace igl
   IGL_INLINE bool decimate(
     const Eigen::MatrixXd & V,
     const Eigen::MatrixXi & F,
-    const decimate_cost_and_placement_func & cost_and_placement,
-    const decimate_stopping_condition_func & stopping_condition,
-    const decimate_pre_collapse_func       & pre_collapse,
-    const decimate_post_collapse_func      & post_collapse,
+    const decimate_cost_and_placement_callback & cost_and_placement,
+    const decimate_stopping_condition_callback & stopping_condition,
+    const decimate_pre_collapse_callback       & pre_collapse,
+    const decimate_post_collapse_callback      & post_collapse,
     Eigen::MatrixXd & U,
     Eigen::MatrixXi & G,
     Eigen::VectorXi & J,
@@ -100,10 +100,10 @@ namespace igl
   IGL_INLINE bool decimate(
     const Eigen::MatrixXd & V,
     const Eigen::MatrixXi & F,
-    const decimate_cost_and_placement_func & cost_and_placement,
-    const decimate_stopping_condition_func & stopping_condition,
-    const decimate_pre_collapse_func       & pre_collapse,
-    const decimate_post_collapse_func      & post_collapse,
+    const decimate_cost_and_placement_callback & cost_and_placement,
+    const decimate_stopping_condition_callback & stopping_condition,
+    const decimate_pre_collapse_callback       & pre_collapse,
+    const decimate_post_collapse_callback      & post_collapse,
     const Eigen::MatrixXi & E,
     const Eigen::VectorXi & EMAP,
     const Eigen::MatrixXi & EF,

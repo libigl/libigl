@@ -8,7 +8,7 @@
 #ifndef IGL_INFINITE_COST_STOPPING_CONDITION_H
 #define IGL_INFINITE_COST_STOPPING_CONDITION_H
 #include "igl_inline.h"
-#include "decimate_func_types.h"
+#include "decimate_callback_types.h"
 #include <Eigen/Core>
 #include <vector>
 #include <set>
@@ -24,11 +24,11 @@ namespace igl
   //   stopping_condition
   //
   IGL_INLINE void infinite_cost_stopping_condition(
-    const decimate_cost_and_placement_func & cost_and_placement,
-    decimate_stopping_condition_func & stopping_condition);
-  IGL_INLINE decimate_stopping_condition_func
+    const decimate_cost_and_placement_callback & cost_and_placement,
+    decimate_stopping_condition_callback & stopping_condition);
+  IGL_INLINE decimate_stopping_condition_callback
     infinite_cost_stopping_condition(
-    const decimate_cost_and_placement_func & cost_and_placement);
+    const decimate_cost_and_placement_callback & cost_and_placement);
 }
 
 #ifndef IGL_STATIC_LIBRARY

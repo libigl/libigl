@@ -9,7 +9,7 @@
 #define IGL_COLLAPSE_EDGE_H
 #include "igl_inline.h"
 #include "min_heap.h"
-#include "decimate_func_types.h"
+#include "decimate_callback_types.h"
 #include <Eigen/Core>
 #include <vector>
 #include <set>
@@ -97,7 +97,7 @@ namespace igl
   //   EQ  #E list of "time" of last time pushed into Q
   //   C  #E by dim list of stored placements
   IGL_INLINE bool collapse_edge(
-    const decimate_cost_and_placement_func & cost_and_placement,
+    const decimate_cost_and_placement_callback & cost_and_placement,
     Eigen::MatrixXd & V,
     Eigen::MatrixXi & F,
     Eigen::MatrixXi & E,
@@ -116,9 +116,9 @@ namespace igl
   //   post_collapse  callback called with index of edge whose collapse was
   //     just attempted and a flag revealing whether this was successful.
   IGL_INLINE bool collapse_edge(
-    const decimate_cost_and_placement_func & cost_and_placement,
-    const decimate_pre_collapse_func       & pre_collapse,
-    const decimate_post_collapse_func      & post_collapse,
+    const decimate_cost_and_placement_callback & cost_and_placement,
+    const decimate_pre_collapse_callback       & pre_collapse,
+    const decimate_post_collapse_callback      & post_collapse,
     Eigen::MatrixXd & V,
     Eigen::MatrixXi & F,
     Eigen::MatrixXi & E,
@@ -130,9 +130,9 @@ namespace igl
     Eigen::MatrixXd & C);
 
   IGL_INLINE bool collapse_edge(
-    const decimate_cost_and_placement_func & cost_and_placement,
-    const decimate_pre_collapse_func       & pre_collapse,
-    const decimate_post_collapse_func      & post_collapse,
+    const decimate_cost_and_placement_callback & cost_and_placement,
+    const decimate_pre_collapse_callback       & pre_collapse,
+    const decimate_post_collapse_callback      & post_collapse,
     Eigen::MatrixXd & V,
     Eigen::MatrixXi & F,
     Eigen::MatrixXi & E,
