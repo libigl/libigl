@@ -355,7 +355,6 @@ IGL_INLINE void igl::opengl::ViewerCore::draw_labels(
   igl::opengl::MeshGL::TextGL& labels
 ){
   glDisable(GL_LINE_SMOOTH); // Clear settings if overlay is activated
-  data.meshgl.bind_font_atlas();
   data.meshgl.bind_labels(labels);
   GLint viewi = glGetUniformLocation(data.meshgl.shader_text,"view");
   GLint proji = glGetUniformLocation(data.meshgl.shader_text,"proj");

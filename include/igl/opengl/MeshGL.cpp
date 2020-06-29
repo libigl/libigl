@@ -174,24 +174,26 @@ IGL_INLINE void igl::opengl::MeshGL::bind_overlay_points()
   dirty &= ~MeshGL::DIRTY_OVERLAY_POINTS;
 }
 
-IGL_INLINE void igl::opengl::MeshGL::bind_font_atlas()
+IGL_INLINE void igl::opengl::MeshGL::init_text_rendering()
 {
+  // Load in font atlas
   glBindTexture(GL_TEXTURE_2D, font_atlas);
-}
-
-IGL_INLINE void igl::opengl::MeshGL::init_font_atlas()
-{
-  bind_font_atlas();
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 256, 256, 0, GL_RED, GL_UNSIGNED_BYTE, verasansmono_font_atlas);
+
+  // TextGL initialization
+  vertex_labels.dirty_flag = MeshGL::DIRTY_VERTEX_LABELS;
+  face_labels.dirty_flag = MeshGL::DIRTY_FACE_LABELS;
+  custom_labels.dirty_flag = MeshGL::DIRTY_CUSTOM_LABELS;
 }
 
 IGL_INLINE void igl::opengl::MeshGL::bind_labels(igl::opengl::MeshGL::TextGL labels)
 {
   bool is_dirty = dirty & labels.dirty_flag;
+  glBindTexture(GL_TEXTURE_2D, font_atlas);
   glBindVertexArray(labels.vao_labels);
   glUseProgram(shader_text);
   bind_vertex_attrib_array(shader_text, "position" , labels.vbo_labels_pos       , labels.label_pos_vbo   , is_dirty);
@@ -435,7 +437,7 @@ R"(#version 330
 )";
 
   init_buffers();
-  init_font_atlas();
+  init_text_rendering();
   create_shader_program(
     mesh_vertex_shader_string,
     mesh_fragment_shader_string,

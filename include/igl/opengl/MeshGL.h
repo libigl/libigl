@@ -99,10 +99,10 @@ public:
     RowMatrixXf label_offset_vbo;
     Eigen::Matrix<unsigned, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> label_indices_vbo;
   } TextGL;
-  TextGL vertex_labels = {.dirty_flag = DirtyFlags::DIRTY_VERTEX_LABELS};
-  TextGL face_labels   = {.dirty_flag = DirtyFlags::DIRTY_FACE_LABELS};
-  TextGL custom_labels = {.dirty_flag = DirtyFlags::DIRTY_CUSTOM_LABELS};
-  GLuint font_atlas; // Texture
+  TextGL vertex_labels;
+  TextGL face_labels;  
+  TextGL custom_labels;
+  GLuint font_atlas;
 
   int tex_u;
   int tex_v;
@@ -147,8 +147,7 @@ public:
   IGL_INLINE void draw_overlay_points();
 
   // Text Binding and Draw functions
-  IGL_INLINE void init_font_atlas();
-  IGL_INLINE void bind_font_atlas();
+  IGL_INLINE void init_text_rendering();
   IGL_INLINE void bind_labels(TextGL labels);
   IGL_INLINE void draw_labels(igl::opengl::MeshGL::TextGL& labels);
 
