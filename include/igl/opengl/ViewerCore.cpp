@@ -237,7 +237,6 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
 
       glUniformMatrix4fv(viewi, 1, GL_FALSE, view.data());
       glUniformMatrix4fv(proji, 1, GL_FALSE, proj.data());
-      glUniform3f(glGetUniformLocation(data.meshgl.shader_overlay_points, "TextColor"), 1, 1, 1);
       glPointSize(data.point_size);
       data.meshgl.draw_overlay_points();
     }
