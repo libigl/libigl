@@ -35,8 +35,7 @@ int main(int argc, char * argv[])
   float lambda = 3; // 0 < lambda
   float kappa = 1; // 0 < kappa < lambda
   float alpha = 0.8; // 0 <= alpha < 1
-  Eigen::SparseMatrix<double> Wsparse =  W.sparseView();
-  igl::direct_delta_mush_precomputation(V, F,Wsparse, p, lambda, kappa, alpha, Omega);
+  igl::direct_delta_mush_precomputation(V, F,W, p, lambda, kappa, alpha, Omega);
 
   igl::opengl::glfw::Viewer viewer;
   int frame = 0;
@@ -67,9 +66,9 @@ int main(int argc, char * argv[])
         for (int e = 0; e < BE.rows(); e++)
         {
           T_list[e] = Eigen::Affine3d::Identity();
-          T_list[e].matrix().block(0, 0, 3, 4) = Tf.block(e*4,0,4,3).transpose();
+          T_list[e].matrix().block(0,0,3,4) = Tf.block(e*4,0,4,3).transpose();
         }
-        igl::direct_delta_mush(V, F, T_list, Omega, U);
+        igl::direct_delta_mush(V, T_list, Omega, U);
       }
       U.rowwise() += offset;
       viewer.data(ddm_id).set_vertices(U);

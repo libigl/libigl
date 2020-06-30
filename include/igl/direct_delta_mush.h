@@ -21,19 +21,16 @@ namespace igl {
   //
   // Inputs:
   //   V  #V by 3 list of rest pose vertex positions
-  //   F  #F by 3 list of triangle indices into rows of V
   //   T  #T list of bone pose transformations
   //   Omega #V by #T*10 list of precomputated matrix values
   // Outputs:
   //   U  #V by 3 list of output vertex positions
   template <
     typename DerivedV,
-    typename DerivedF,
     typename DerivedOmega,
     typename DerivedU>
   IGL_INLINE void direct_delta_mush(
     const Eigen::MatrixBase<DerivedV> & V,
-    const Eigen::MatrixBase<DerivedF> & F,
     const std::vector<
       Eigen::Affine3d, Eigen::aligned_allocator<Eigen::Affine3d>
     > & T, /* should eventually be templated more generally than double */
@@ -60,7 +57,7 @@ namespace igl {
   IGL_INLINE void direct_delta_mush_precomputation(
     const Eigen::MatrixBase<DerivedV> & V,
     const Eigen::MatrixBase<DerivedF> & F,
-    const Eigen::SparseMatrix<DerivedW> & W,
+    const Eigen::MatrixBase<DerivedW> & W,
     const int p,
     const typename DerivedV::Scalar lambda,
     const typename DerivedV::Scalar kappa,
