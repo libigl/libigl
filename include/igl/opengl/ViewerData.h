@@ -283,7 +283,7 @@ public:
   igl::opengl::MeshGL meshgl;
 
   // Update contents from a 'Data' instance
-  IGL_INLINE void updateLabels(
+  IGL_INLINE void update_labels(
     igl::opengl::MeshGL& meshgl, 
     igl::opengl::MeshGL::TextGL& GL_labels,
     const Eigen::MatrixXd& positions,

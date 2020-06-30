@@ -49,24 +49,9 @@ IGL_INLINE void igl::opengl::MeshGL::init_buffers()
   glGenBuffers(1, &vbo_points_V_colors);
 
   // Text Labels
-  glGenVertexArrays(1, &vertex_labels.vao_labels);
-  glBindVertexArray(vertex_labels.vao_labels);
-  glGenBuffers(1, &vertex_labels.vbo_labels_pos);
-  glGenBuffers(1, &vertex_labels.vbo_labels_characters);
-  glGenBuffers(1, &vertex_labels.vbo_labels_offset);
-  glGenBuffers(1, &vertex_labels.vbo_labels_indices);
-  glGenVertexArrays(1, &face_labels.vao_labels);
-  glBindVertexArray(face_labels.vao_labels);
-  glGenBuffers(1, &face_labels.vbo_labels_pos);
-  glGenBuffers(1, &face_labels.vbo_labels_characters);
-  glGenBuffers(1, &face_labels.vbo_labels_offset);
-  glGenBuffers(1, &face_labels.vbo_labels_indices);
-  glGenVertexArrays(1, &custom_labels.vao_labels);
-  glBindVertexArray(custom_labels.vao_labels);
-  glGenBuffers(1, &custom_labels.vbo_labels_pos);
-  glGenBuffers(1, &custom_labels.vbo_labels_characters);
-  glGenBuffers(1, &custom_labels.vbo_labels_offset);
-  glGenBuffers(1, &custom_labels.vbo_labels_indices);
+  vertex_labels.init_buffers();
+  face_labels.init_buffers();
+  custom_labels.init_buffers();
 
   dirty = MeshGL::DIRTY_ALL;
 }
@@ -94,22 +79,31 @@ IGL_INLINE void igl::opengl::MeshGL::free_buffers()
     glDeleteBuffers(1, &vbo_points_V_colors);
     
     // Text Labels 
-    glDeleteBuffers(1, &vertex_labels.vbo_labels_pos);
-    glDeleteBuffers(1, &vertex_labels.vbo_labels_characters);
-    glDeleteBuffers(1, &vertex_labels.vbo_labels_offset);
-    glDeleteBuffers(1, &vertex_labels.vbo_labels_indices);
-    glDeleteBuffers(1, &face_labels.vbo_labels_pos);
-    glDeleteBuffers(1, &face_labels.vbo_labels_characters);
-    glDeleteBuffers(1, &face_labels.vbo_labels_offset);
-    glDeleteBuffers(1, &face_labels.vbo_labels_indices);
-    glDeleteBuffers(1, &custom_labels.vbo_labels_pos);
-    glDeleteBuffers(1, &custom_labels.vbo_labels_characters);
-    glDeleteBuffers(1, &custom_labels.vbo_labels_offset);
-    glDeleteBuffers(1, &custom_labels.vbo_labels_indices);
+    vertex_labels.free_buffers();
+    face_labels.free_buffers();
+    custom_labels.free_buffers();
 
     glDeleteTextures(1, &vbo_tex);
     glDeleteTextures(1, &font_atlas);
   }
+}
+
+IGL_INLINE void igl::opengl::MeshGL::TextGL::init_buffers()
+{
+  glGenVertexArrays(1, &vao_labels);
+  glBindVertexArray(vao_labels);
+  glGenBuffers(1, &vbo_labels_pos);
+  glGenBuffers(1, &vbo_labels_characters);
+  glGenBuffers(1, &vbo_labels_offset);
+  glGenBuffers(1, &vbo_labels_indices);
+}
+
+IGL_INLINE void igl::opengl::MeshGL::TextGL::free_buffers()
+{
+  glDeleteBuffers(1, &vbo_labels_pos);
+  glDeleteBuffers(1, &vbo_labels_characters);
+  glDeleteBuffers(1, &vbo_labels_offset);
+  glDeleteBuffers(1, &vbo_labels_indices);
 }
 
 IGL_INLINE void igl::opengl::MeshGL::bind_mesh()
@@ -153,7 +147,9 @@ IGL_INLINE void igl::opengl::MeshGL::bind_overlay_lines()
 
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_lines_F);
   if (is_dirty)
+  {
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned)*lines_F_vbo.size(), lines_F_vbo.data(), GL_DYNAMIC_DRAW);
+  }
 
   dirty &= ~MeshGL::DIRTY_OVERLAY_LINES;
 }
@@ -169,7 +165,9 @@ IGL_INLINE void igl::opengl::MeshGL::bind_overlay_points()
 
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_points_F);
   if (is_dirty)
+  {
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned)*points_F_vbo.size(), points_F_vbo.data(), GL_DYNAMIC_DRAW);
+  }
 
   dirty &= ~MeshGL::DIRTY_OVERLAY_POINTS;
 }
@@ -190,7 +188,7 @@ IGL_INLINE void igl::opengl::MeshGL::init_text_rendering()
   custom_labels.dirty_flag = MeshGL::DIRTY_CUSTOM_LABELS;
 }
 
-IGL_INLINE void igl::opengl::MeshGL::bind_labels(igl::opengl::MeshGL::TextGL labels)
+IGL_INLINE void igl::opengl::MeshGL::bind_labels(const TextGL& labels)
 {
   bool is_dirty = dirty & labels.dirty_flag;
   glBindTexture(GL_TEXTURE_2D, font_atlas);
@@ -201,7 +199,9 @@ IGL_INLINE void igl::opengl::MeshGL::bind_labels(igl::opengl::MeshGL::TextGL lab
   bind_vertex_attrib_array(shader_text, "offset"   , labels.vbo_labels_offset    , labels.label_offset_vbo, is_dirty);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, labels.vbo_labels_indices);
   if (is_dirty)
+  {
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned)*labels.label_indices_vbo.size(), labels.label_indices_vbo.data(), GL_DYNAMIC_DRAW);
+  }
   dirty &= ~labels.dirty_flag;
 }
 
@@ -231,7 +231,7 @@ IGL_INLINE void igl::opengl::MeshGL::draw_overlay_points()
   glDrawElements(GL_POINTS, points_F_vbo.rows(), GL_UNSIGNED_INT, 0);
 }
 
-IGL_INLINE void igl::opengl::MeshGL::draw_labels(igl::opengl::MeshGL::TextGL& labels)
+IGL_INLINE void igl::opengl::MeshGL::draw_labels(const TextGL& labels)
 {
   glDrawElements(GL_POINTS, labels.label_indices_vbo.rows(), GL_UNSIGNED_INT, 0);
 }

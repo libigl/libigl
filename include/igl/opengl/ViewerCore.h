@@ -82,7 +82,7 @@ public:
     Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& A);
   IGL_INLINE void draw_labels(
     ViewerData& data,
-    igl::opengl::MeshGL::TextGL& labels
+    const igl::opengl::MeshGL::TextGL& labels
   );
 
   // Trackball angle (quaternion)

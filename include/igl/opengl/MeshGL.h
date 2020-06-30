@@ -86,7 +86,7 @@ public:
   RowMatrixXf points_V_colors_vbo;
 
   // Text Rendering
-  typedef struct 
+  struct TextGL
   { 
     uint32_t dirty_flag;
     GLuint vao_labels;
@@ -98,7 +98,9 @@ public:
     RowMatrixXf label_char_vbo;
     RowMatrixXf label_offset_vbo;
     Eigen::Matrix<unsigned, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> label_indices_vbo;
-  } TextGL;
+    void init_buffers();
+    void free_buffers();
+  };
   TextGL vertex_labels;
   TextGL face_labels;  
   TextGL custom_labels;
@@ -148,8 +150,8 @@ public:
 
   // Text Binding and Draw functions
   IGL_INLINE void init_text_rendering();
-  IGL_INLINE void bind_labels(TextGL labels);
-  IGL_INLINE void draw_labels(igl::opengl::MeshGL::TextGL& labels);
+  IGL_INLINE void bind_labels(const TextGL& labels);
+  IGL_INLINE void draw_labels(const TextGL& labels);
 
   // Release the OpenGL buffer objects
   IGL_INLINE void free_buffers();

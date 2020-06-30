@@ -351,7 +351,7 @@ IGL_INLINE void igl::opengl::ViewerCore::draw_buffer(ViewerData& data,
 // Define uniforms for text labels
 IGL_INLINE void igl::opengl::ViewerCore::draw_labels(
   ViewerData& data,
-  igl::opengl::MeshGL::TextGL& labels
+  const igl::opengl::MeshGL::TextGL& labels
 ){
   glDisable(GL_LINE_SMOOTH); // Clear settings if overlay is activated
   data.meshgl.bind_labels(labels);

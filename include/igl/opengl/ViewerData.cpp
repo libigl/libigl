@@ -570,7 +570,7 @@ IGL_INLINE void igl::opengl::ViewerData::grid_texture()
 }
 
 // Populate VBOs of a particular label stype (Vert, Face, Custom)
-IGL_INLINE void igl::opengl::ViewerData::updateLabels(
+IGL_INLINE void igl::opengl::ViewerData::update_labels(
   igl::opengl::MeshGL& meshgl, 
   igl::opengl::MeshGL::TextGL& GL_labels,
   const Eigen::MatrixXd& positions,
@@ -855,7 +855,7 @@ IGL_INLINE void igl::opengl::ViewerData::updateGL(
         face_labels_strings.push_back(faceName);
       }
     }
-    updateLabels(
+    update_labels(
       meshgl, 
       meshgl.face_labels,
       face_labels_positions,
@@ -876,7 +876,7 @@ IGL_INLINE void igl::opengl::ViewerData::updateGL(
         vertex_labels_strings.push_back(vertName);
       }
     }
-    updateLabels(
+    update_labels(
       meshgl, 
       meshgl.vertex_labels,
       vertex_labels_positions,
@@ -886,7 +886,7 @@ IGL_INLINE void igl::opengl::ViewerData::updateGL(
 
   if (meshgl.dirty & MeshGL::DIRTY_CUSTOM_LABELS)
   {
-    updateLabels(
+    update_labels(
       meshgl, 
       meshgl.custom_labels,
       labels_positions,
