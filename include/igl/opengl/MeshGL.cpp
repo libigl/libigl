@@ -11,6 +11,7 @@
 #include "create_shader_program.h"
 #include "destroy_shader_program.h"
 #include "verasansmono.h"
+#include "fontatlas_compressed.h"
 #include <iostream>
 
 IGL_INLINE igl::opengl::MeshGL::MeshGL():
@@ -174,7 +175,11 @@ IGL_INLINE void igl::opengl::MeshGL::bind_overlay_points()
 
 IGL_INLINE void igl::opengl::MeshGL::init_text_rendering()
 {
-  // Load in font atlas
+  // Decompress the png of the font atlas
+  unsigned char verasansmono_font_atlas[256*256];
+  decompress_atlas(verasansmono_font_atlas);
+
+  // Bind atlas
   glBindTexture(GL_TEXTURE_2D, font_atlas);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
