@@ -8,8 +8,8 @@
 
 #include <igl/slice.h>
 #include "ear_clipping.h"
-#include "point_inside_convex_polygon.h"
 #include "predicates.h"
+#include "segment_segment_intersect.h"
 
 template <typename DerivedP, typename DerivedRT,
           typename DerivedF, typename DerivedI>
@@ -35,43 +35,75 @@ IGL_INLINE void igl::predicates::ear_clipping(
     const Index i
   ){
     
+    // check if any edge in the leftover polygon intersects triangle (a,b,i)
+
     Index a = L(i), b = R(i);
     if(RT(i) != 0 || RT(a) != 0 || RT(b) != 0) return false;
     Eigen::Matrix<Scalar,1,2> pa = P.row(a);
     Eigen::Matrix<Scalar,1,2> pb = P.row(b);
     Eigen::Matrix<Scalar,1,2> pi = P.row(i);
-    auto r = igl::predicates::orient2d(pa,pi,pb);
-    if(r == igl::predicates::Orientation::NEGATIVE || 
+    auto r = igl::predicates::orient2d(pa, pi, pb);
+    if(r == igl::predicates::Orientation::NEGATIVE ||
        r == igl::predicates::Orientation::COLLINEAR) return false;
-    
-    // check if any vertex is lying inside triangle (a,b,i);
-    Index k=R(b);
-    while(k!=a){
-      Eigen::Matrix<Scalar,-1,2> T(3,2);
-      T<<P.row(a),P.row(i),P.row(b);
-      Eigen::Matrix<Scalar,1,2> q=P.row(k);
-      if(igl::predicates::point_inside_convex_polygon(T,q))
-        return false;
-      k=R(k);
+
+    // check edge (b, R(b))
+    Index k = b;
+    Index l = R(b);
+    Eigen::Matrix<Scalar, 1, 2> pk = P.row(k);
+    Eigen::Matrix<Scalar, 1, 2> pl = P.row(l);
+    auto r1 = igl::predicates::orient2d(pb, pl, pa);
+    auto r2 = igl::predicates::orient2d(pi, pl, pb);
+    if (l == a) return true;  // single triangle
+    if (r1 != igl::predicates::Orientation::POSITIVE &&
+        r2 != igl::predicates::Orientation::POSITIVE) {
+      return false;
     }
+    
+    // iterate through all edges do not have common endpoints with a, b
+    k = l;
+    l = R(k);
+    while (l != a) {
+      pk = P.row(k);
+      pl = P.row(l);
+      if (igl::predicates::segment_segment_intersect(pa, pb, pk, pl) ||
+          igl::predicates::segment_segment_intersect(pa, pi, pk, pl) ||
+          igl::predicates::segment_segment_intersect(pi, pb, pk, pl)
+      ){
+        return false;
+      }
+      k = l;
+      l = R(k);
+    }
+
+    // check edge (L(a), a)
+    pk = P.row(k);
+    pl = P.row(l);
+    r1 = igl::predicates::orient2d(pb, pk, pl);
+    r2 = igl::predicates::orient2d(pi, pa, pk);
+    if (r1 != igl::predicates::Orientation::POSITIVE &&
+        r2 != igl::predicates::Orientation::POSITIVE
+    ){
+      return false;
+    }
+
     return true;
   };
 
   Eigen::Matrix<Index,Eigen::Dynamic,1> L(P.rows());
   Eigen::Matrix<Index,Eigen::Dynamic,1> R(P.rows());
-  for(int i=0;i<P.rows();i++){
-    L(i) = Index((i-1+P.rows())%P.rows());
-    R(i) = Index((i+1)%P.rows());
+  for(int i = 0;i < P.rows(); i++){
+    L(i) = Index((i - 1 + P.rows()) % P.rows());
+    R(i) = Index((i + 1) % P.rows());
   }
 
-  Eigen::Matrix<Index,Eigen::Dynamic,1> ears; // mark ears
-  Eigen::Matrix<Index,Eigen::Dynamic,1> X; // clipped vertices
+  Eigen::Matrix<Index, Eigen::Dynamic, 1> ears; // mark ears
+  Eigen::Matrix<Index, Eigen::Dynamic, 1> X; // clipped vertices
   ears.setZero(P.rows());
   X.setZero(P.rows());
 
   // initialize ears
-  for(int i=0;i<P.rows();i++){
-    ears(i) = is_ear(P,RT,L,R,i);
+  for(int i = 0; i < P.rows(); i++){
+    ears(i) = is_ear(P, RT, L, R, i);
   }
 
   // clip ears until none left
@@ -79,7 +111,7 @@ IGL_INLINE void igl::predicates::ear_clipping(
     
     // find the first ear
     Index e = 0;
-    while(e<ears.rows()&&ears(e)!=1) e++;
+    while(e < ears.rows() && ears(e) != 1) e++;
     
     // find valid neighbors
     Index a = L(e), b = R(e);
@@ -87,7 +119,7 @@ IGL_INLINE void igl::predicates::ear_clipping(
 
     // clip ear and store face
     eF.conservativeResize(eF.rows()+1,3);
-    eF.bottomRows(1)<<a,e,b;
+    eF.bottomRows(1)<<a, e, b;
     L(b) = a;
     L(e) = -1;
     R(a) = b;
@@ -95,28 +127,28 @@ IGL_INLINE void igl::predicates::ear_clipping(
     ears(e) = 0; // mark vertex e as non-ear
 
     // update neighbor's ear status
-    ears(a) = is_ear(P,RT,L,R,a);
-    ears(b) = is_ear(P,RT,L,R,b);
+    ears(a) = is_ear(P, RT, L, R, a);
+    ears(b) = is_ear(P, RT, L, R, b);
     X(e) = 1;
 
     // when only one edge left
     // mark the endpoints as clipped
-    if(L(a)==b && R(b)==a){
+    if(L(a) == b && R(b) == a){
       X(a) = 1;
       X(b) = 1;
     }
   }
   
   // collect remaining vertices if theres any
-  for(int i=0;i<X.rows();i++)
-    X(i) = 1-X(i);
+  for(int i = 0;i < X.rows(); i++)
+    X(i) = 1 - X(i);
   I.resize(X.sum());
   Index j=0;
-  for(Index i=0;i<X.rows();i++)
-    if(X(i)==1){
+  for(Index i = 0;i < X.rows(); i++)
+    if(X(i) == 1){
       I(j++) = i;
     }
-  igl::slice(P,I,1,nP);
+  igl::slice(P, I, 1, nP);
 }
 
 #ifdef IGL_STATIC_LIBRARY

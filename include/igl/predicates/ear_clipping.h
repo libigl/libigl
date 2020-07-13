@@ -23,7 +23,7 @@ namespace igl
     // Otherwise, the function will try to clip as many ears as possible.
     //
     // Input:
-    // P : n*2, size n 2D polygon
+    // P : n*2, size n 2D polygon (*assume vertices are ordered ccw)
     // RT: n*1, preserved vertices (do not clip) marked as 1, otherwise 0
     // Output:
     // I : size #nP vector, maps index from nP to P, e.g. nP's ith vertex is origianlly I(i) in P
