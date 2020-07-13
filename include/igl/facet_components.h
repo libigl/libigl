@@ -21,8 +21,8 @@ namespace igl
   // Outputs:
   //   C  #F list of connected component ids
   template <typename DerivedF, typename DerivedC>
-  IGL_INLINE void facet_components(
-    const Eigen::PlainObjectBase<DerivedF> & F,
+  IGL_INLINE int facet_components(
+    const Eigen::MatrixBase<DerivedF> & F,
     Eigen::PlainObjectBase<DerivedC> & C);
 
   // Compute connected components of facets based on edge-edge adjacency.

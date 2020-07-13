@@ -15,8 +15,7 @@ namespace igl
   // box
   //
   // Inputs:
-  //   V  #V by 3 list of vertex positions
-  //   F  #F by 3 list of triangle indices into V
+  //   V  #V by 3 list of vertex/point positions
   // Returns length of bounding box diagonal
   IGL_INLINE double bounding_box_diagonal( const Eigen::MatrixXd & V);
 }

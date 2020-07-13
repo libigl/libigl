@@ -8,6 +8,7 @@
 #ifndef IGL_REMOVE_DUPLICATES_H
 #define IGL_REMOVE_DUPLICATES_H
 #include "igl_inline.h"
+#include "deprecated.h"
 
 #include <Eigen/Core>
 namespace igl 
@@ -32,9 +33,9 @@ namespace igl
 //                                   const double epsilon = 2.2204e-15);
   
   template <typename DerivedV, typename DerivedF>
-  IGL_INLINE void remove_duplicates(
-    const Eigen::PlainObjectBase<DerivedV> &V,
-    const Eigen::PlainObjectBase<DerivedF> &F,
+  IGL_DEPRECATED IGL_INLINE void remove_duplicates(
+    const Eigen::MatrixBase<DerivedV> &V,
+    const Eigen::MatrixBase<DerivedF> &F,
     Eigen::PlainObjectBase<DerivedV> &NV,
     Eigen::PlainObjectBase<DerivedF> &NF,
     Eigen::Matrix<typename DerivedF::Scalar, Eigen::Dynamic, 1> &I,

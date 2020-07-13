@@ -24,6 +24,7 @@ class MeshGL
 {
 public:
   typedef unsigned int GLuint;
+  typedef unsigned int GLint;
 
   enum DirtyFlags
   {
@@ -82,6 +83,8 @@ public:
 
   int tex_u;
   int tex_v;
+  GLint tex_filter;
+  GLint tex_wrap;
   Eigen::Matrix<char,Eigen::Dynamic,1> tex;
 
   Eigen::Matrix<unsigned, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> F_vbo;
@@ -90,6 +93,8 @@ public:
 
   // Marks dirty buffers that need to be uploaded to OpenGL
   uint32_t dirty;
+
+  IGL_INLINE MeshGL();
 
   // Initialize shaders and buffers
   IGL_INLINE void init();

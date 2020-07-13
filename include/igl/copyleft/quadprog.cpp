@@ -139,7 +139,7 @@ IGL_INLINE bool igl::copyleft::quadprog(
 #ifdef TRACE_SOLVER
     std::cerr << "Add constraint " << iq << '/';
 #endif
-    int i, j, k;
+    int j, k;
     double cc, ss, h, t1, t2, xny;
     
     /* we have to find the Givens rotation which will reduce the element
@@ -284,7 +284,7 @@ IGL_INLINE bool igl::copyleft::quadprog(
     }
   };
 
-  int i, j, k, l; /* indices */
+  int i, k, l; /* indices */
   int ip, me, mi;
   int n=g0.size();  int p=ce0.size();  int m=ci0.size();  
   MatrixXd R(G.rows(),G.cols()), J(G.rows(),G.cols());

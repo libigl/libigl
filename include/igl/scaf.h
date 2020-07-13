@@ -68,15 +68,15 @@ namespace igl
     };
 
 
-// Compute necessary information to start using SCAF
-// Inputs:
-//		V           #V by 3 list of mesh vertex positions
-//		F           #F by 3/3 list of mesh faces (triangles/tets)
-//    data          igl::SCAFData
-//    slim_energy Energy type to minimize
-//    b           list of boundary indices into V (soft constraint)
-//    bc          #b by dim list of boundary conditions (soft constraint)
-//    soft_p      Soft penalty factor (can be zero)
+    // Compute necessary information to start using SCAF
+    // Inputs:
+    //		V           #V by 3 list of mesh vertex positions
+    //		F           #F by 3/3 list of mesh faces (triangles/tets)
+    //    data          igl::SCAFData
+    //    slim_energy Energy type to minimize
+    //    b           list of boundary indices into V (soft constraint)
+    //    bc          #b by dim list of boundary conditions (soft constraint)
+    //    soft_p      Soft penalty factor (can be zero)
     IGL_INLINE void scaf_precompute(
         const Eigen::MatrixXd &V,
         const Eigen::MatrixXi &F,
@@ -87,12 +87,30 @@ namespace igl
         Eigen::MatrixXd& bc,
         double soft_p);
 
+    // Run iter_num iterations of SCAF, with precomputed data
+    // Outputs:
+    //    V_o (in SLIMData): #V by dim list of mesh vertex positions
+    IGL_INLINE Eigen::MatrixXd scaf_solve(SCAFData &data, int iter_num);
 
-// Run iter_num iterations of SCAF, with precomputed data
-// Outputs:
-//    V_o (in SLIMData): #V by dim list of mesh vertex positions
-  IGL_INLINE Eigen::MatrixXd scaf_solve(SCAFData &data, int iter_num);
-  }
+    // Set up the SCAF system L * uv = rhs, without solving it.
+    // Inputs:
+    //    s:   igl::SCAFData. Will be modified by energy and Jacobian computation.
+    // Outputs:
+    //    L:   m by m matrix
+    //    rhs: m by 1 vector
+    //         with m = dim * (#V_mesh + #V_scaf - #V_frame)
+    IGL_INLINE void scaf_system(SCAFData &s, Eigen::SparseMatrix<double> &L, Eigen::VectorXd &rhs);
+
+    namespace scaf
+    {
+        // Compute SCAF energy
+        // Inputs:
+        //    s:     igl::SCAFData
+        //    w_uv:  (#V_mesh + #V_scaf) by dim matrix
+        //    whole: Include scaffold if true
+        IGL_INLINE double compute_energy(SCAFData &s, const Eigen::MatrixXd &w_uv, bool whole);
+    }
+}
 
 #ifndef IGL_STATIC_LIBRARY
 #  include "scaf.cpp"

@@ -8,6 +8,7 @@
 #ifndef IGL_INTERNAL_ANGLES_H
 #define IGL_INTERNAL_ANGLES_H
 #include "igl_inline.h"
+#include "deprecated.h"
 #include <Eigen/Core>
 namespace igl
 {
@@ -49,9 +50,10 @@ namespace igl
   //   Usage of internal_angles_using_squared_edge_lengths is preferred to internal_angles_using_squared_edge_lengths
   //   This function is deprecated and probably will be removed in future versions
   template <typename DerivedL, typename DerivedK>
-  IGL_INLINE void internal_angles_using_edge_lengths(
+  IGL_DEPRECATED IGL_INLINE void internal_angles_using_edge_lengths(
     const Eigen::MatrixBase<DerivedL>& L,
-    Eigen::PlainObjectBase<DerivedK> & K);}
+    Eigen::PlainObjectBase<DerivedK> & K);
+}
 
 #ifndef IGL_STATIC_LIBRARY
 #  include "internal_angles.cpp"

@@ -12,8 +12,8 @@
 
 template <typename Scalar, typename Index>
 IGL_INLINE int igl::euler_characteristic(
-  const Eigen::PlainObjectBase<Scalar> & V,
-  const Eigen::PlainObjectBase<Index> & F)
+  const Eigen::MatrixBase<Scalar> & V,
+  const Eigen::MatrixBase<Index> & F)
 {
 
   int euler_v = V.rows();
@@ -41,6 +41,6 @@ IGL_INLINE int igl::euler_characteristic(
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instantiation
-template int igl::euler_characteristic<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&);
+template int igl::euler_characteristic<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&);
 template int igl::euler_characteristic<Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&);
 #endif

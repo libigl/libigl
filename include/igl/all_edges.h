@@ -8,6 +8,7 @@
 #ifndef IGL_ALL_EDGES_H
 #define IGL_ALL_EDGES_H
 #include "igl_inline.h"
+#include "deprecated.h"
 #include <Eigen/Dense>
 namespace igl
 {
@@ -26,7 +27,7 @@ namespace igl
   // show up once for each direction and non-manifold edges may appear more than
   // once for each direction).
   template <typename DerivedF, typename DerivedE>
-  IGL_INLINE void all_edges(
+  IGL_DEPRECATED IGL_INLINE void all_edges(
     const Eigen::MatrixBase<DerivedF> & F,
     Eigen::PlainObjectBase<DerivedE> & E);
 }

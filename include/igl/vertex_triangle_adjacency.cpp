@@ -70,7 +70,7 @@ IGL_INLINE void igl::vertex_triangle_adjacency(
   // vfd now acts as a counter
   vfd = NI;
 
-  VF.derived()= Eigen::VectorXi(3*F.rows());
+  VF.derived()= Eigen::Matrix<typename DerivedVF::Scalar, Eigen::Dynamic, 1>(3*F.rows(), 1);
   for (int i = 0; i < F.rows(); i++)
   {
     for (int j = 0; j < 3; j++)

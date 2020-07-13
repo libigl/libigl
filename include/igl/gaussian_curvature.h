@@ -22,8 +22,8 @@ namespace igl
   //
   template <typename DerivedV, typename DerivedF, typename DerivedK>
   IGL_INLINE void gaussian_curvature(
-    const Eigen::PlainObjectBase<DerivedV>& V,
-    const Eigen::PlainObjectBase<DerivedF>& F,
+    const Eigen::MatrixBase<DerivedV>& V,
+    const Eigen::MatrixBase<DerivedF>& F,
     Eigen::PlainObjectBase<DerivedK> & K);
 }
 

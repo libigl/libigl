@@ -34,8 +34,8 @@ namespace igl
         const Eigen::Vector3f&,
         const Eigen::Vector3f&)
         > & shoot_ray,
-    const Eigen::PlainObjectBase<DerivedP> & P,
-    const Eigen::PlainObjectBase<DerivedN> & N,
+    const Eigen::MatrixBase<DerivedP> & P,
+    const Eigen::MatrixBase<DerivedN> & N,
     const int num_samples,
     Eigen::PlainObjectBase<DerivedS> & S);
   // Inputs:
@@ -49,10 +49,10 @@ namespace igl
     typename DerivedS >
   IGL_INLINE void ambient_occlusion(
     const igl::AABB<DerivedV,DIM> & aabb,
-    const Eigen::PlainObjectBase<DerivedV> & V,
-    const Eigen::PlainObjectBase<DerivedF> & F,
-    const Eigen::PlainObjectBase<DerivedP> & P,
-    const Eigen::PlainObjectBase<DerivedN> & N,
+    const Eigen::MatrixBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedF> & F,
+    const Eigen::MatrixBase<DerivedP> & P,
+    const Eigen::MatrixBase<DerivedN> & N,
     const int num_samples,
     Eigen::PlainObjectBase<DerivedS> & S);
   // Inputs:
@@ -65,10 +65,10 @@ namespace igl
     typename DerivedN,
     typename DerivedS >
   IGL_INLINE void ambient_occlusion(
-    const Eigen::PlainObjectBase<DerivedV> & V,
-    const Eigen::PlainObjectBase<DerivedF> & F,
-    const Eigen::PlainObjectBase<DerivedP> & P,
-    const Eigen::PlainObjectBase<DerivedN> & N,
+    const Eigen::MatrixBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedF> & F,
+    const Eigen::MatrixBase<DerivedP> & P,
+    const Eigen::MatrixBase<DerivedN> & N,
     const int num_samples,
     Eigen::PlainObjectBase<DerivedS> & S);
 

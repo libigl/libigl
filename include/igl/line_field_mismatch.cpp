@@ -92,7 +92,7 @@ public:
         PD2(_PD2)
     {
         igl::per_face_normals(V,F,N);
-        V_border = igl::is_border_vertex(V,F);
+        V_border = igl::is_border_vertex(F);
         igl::vertex_triangle_adjacency(V,F,VF,VFi);
         igl::triangle_triangle_adjacency(F,TT,TTi);
     }

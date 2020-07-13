@@ -167,8 +167,8 @@ IGL_INLINE void ImGuiMenu::draw_menu()
 IGL_INLINE void ImGuiMenu::draw_viewer_window()
 {
   float menu_width = 180.f * menu_scaling();
-  ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiSetCond_FirstUseEver);
-  ImGui::SetNextWindowSize(ImVec2(0.0f, 0.0f), ImGuiSetCond_FirstUseEver);
+  ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiCond_FirstUseEver);
+  ImGui::SetNextWindowSize(ImVec2(0.0f, 0.0f), ImGuiCond_FirstUseEver);
   ImGui::SetNextWindowSizeConstraints(ImVec2(menu_width, -1.0f), ImVec2(menu_width, -1.0f));
   bool _viewer_menu_visible = true;
   ImGui::Begin(
@@ -303,14 +303,15 @@ IGL_INLINE void ImGuiMenu::draw_viewer_menu()
     make_checkbox("Fill", viewer->data().show_faces);
     ImGui::Checkbox("Show vertex labels", &(viewer->data().show_vertid));
     ImGui::Checkbox("Show faces labels", &(viewer->data().show_faceid));
+    ImGui::Checkbox("Show extra labels", &(viewer->data().show_labels));
   }
 }
 
 IGL_INLINE void ImGuiMenu::draw_labels_window()
 {
   // Text labels
-  ImGui::SetNextWindowPos(ImVec2(0,0), ImGuiSetCond_Always);
-  ImGui::SetNextWindowSize(ImGui::GetIO().DisplaySize, ImGuiSetCond_Always);
+  ImGui::SetNextWindowPos(ImVec2(0,0), ImGuiCond_Always);
+  ImGui::SetNextWindowSize(ImGui::GetIO().DisplaySize, ImGuiCond_Always);
   bool visible = true;
   ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0,0,0,0));
   ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0);
@@ -334,6 +335,7 @@ IGL_INLINE void ImGuiMenu::draw_labels_window()
 
 IGL_INLINE void ImGuiMenu::draw_labels(const igl::opengl::ViewerData &data)
 {
+  // Alec: How can we get these to respect (optionally) the depth of the scene?
   if (data.show_vertid)
   {
     for (int i = 0; i < data.V.rows(); ++i)
@@ -365,7 +367,7 @@ IGL_INLINE void ImGuiMenu::draw_labels(const igl::opengl::ViewerData &data)
     }
   }
 
-  if (data.labels_positions.rows() > 0)
+  if (data.show_labels)
   {
     for (int i = 0; i < data.labels_positions.rows(); ++i)
     {

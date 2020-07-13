@@ -12,7 +12,7 @@ TEST_CASE("cotmatrix_entries: simple", "[igl]")
   Eigen::MatrixXd V;
   Eigen::MatrixXi F;
   //This is a cube of dimensions 1.0x1.0x1.0
-  test_common::load_mesh("cube.obj", V, F);
+  igl::read_triangle_mesh(test_common::data_path("cube.obj"), V, F);
 
   //Prepare another mesh with triangles along side diagonals of the cube
   //These triangles are form a regular tetrahedron of side sqrt(2)
@@ -142,7 +142,7 @@ TEST_CASE("cotmatrix_entries: intrinsic", "[igl]")
   Eigen::MatrixXd V;
   Eigen::MatrixXi F;
   //This is a cube of dimensions 1.0x1.0x1.0
-  test_common::load_mesh("cube.obj", V, F);
+  igl::read_triangle_mesh(test_common::data_path("cube.obj"), V, F);
   Eigen::MatrixXd Cext,Cint;
   // compute C extrinsically
   igl::cotmatrix_entries(V,F,Cext);

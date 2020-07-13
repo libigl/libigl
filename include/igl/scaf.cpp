@@ -1,7 +1,7 @@
 // This file is part of libigl, a simple c++ geometry processing library.
 //
 // Copyright (C) 2018 Zhongshi Jiang <jiangzs@nyu.edu>
-//
+// 
 // This Source Code Form is subject to the terms of the Mozilla Public License
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
@@ -41,7 +41,7 @@ namespace igl
 
 namespace scaf
 {
-void update_scaffold(igl::SCAFData &s)
+IGL_INLINE void update_scaffold(igl::SCAFData &s)
 {
   s.mv_num = s.m_V.rows();
   s.mf_num = s.m_T.rows();
@@ -55,7 +55,7 @@ void update_scaffold(igl::SCAFData &s)
   s.s_M = Eigen::VectorXd::Constant(s.sf_num, s.scaffold_factor);
 }
 
-void adjusted_grad(Eigen::MatrixXd &V,
+IGL_INLINE void adjusted_grad(Eigen::MatrixXd &V,
                    Eigen::MatrixXi &F,
                    double area_threshold,
                    Eigen::SparseMatrix<double> &Dx,
@@ -94,7 +94,7 @@ void adjusted_grad(Eigen::MatrixXd &V,
     }
 }
 
-void compute_scaffold_gradient_matrix(SCAFData &s,
+IGL_INLINE void compute_scaffold_gradient_matrix(SCAFData &s,
                                       Eigen::SparseMatrix<double> &D1,
                                       Eigen::SparseMatrix<double> &D2)
 {
@@ -137,7 +137,7 @@ void compute_scaffold_gradient_matrix(SCAFData &s,
        F2.col(2).asDiagonal() * Dz;
 }
 
-void mesh_improve(igl::SCAFData &s)
+IGL_INLINE void mesh_improve(igl::SCAFData &s)
 {
   using namespace Eigen;
   MatrixXd m_uv = s.w_uv.topRows(s.mv_num);
@@ -245,7 +245,7 @@ void mesh_improve(igl::SCAFData &s)
   s.W_s.resize(s.Dx_s.rows(), s.dim * s.dim);
 }
 
-void add_new_patch(igl::SCAFData &s, const Eigen::MatrixXd &V_ref,
+IGL_INLINE void add_new_patch(igl::SCAFData &s, const Eigen::MatrixXd &V_ref,
                    const Eigen::MatrixXi &F_ref,
                    const Eigen::RowVectorXd &center,
                    const Eigen::MatrixXd &uv_init)
@@ -293,7 +293,7 @@ void add_new_patch(igl::SCAFData &s, const Eigen::MatrixXd &V_ref,
   mesh_improve(s);
 }
 
-void compute_jacobians(SCAFData &s, const Eigen::MatrixXd &V_new, bool whole)
+IGL_INLINE void compute_jacobians(SCAFData &s, const Eigen::MatrixXd &V_new, bool whole)
 {
   auto comp_J2 = [](const Eigen::MatrixXd &uv,
                     const Eigen::SparseMatrix<double> &Dx,
@@ -313,7 +313,7 @@ void compute_jacobians(SCAFData &s, const Eigen::MatrixXd &V_new, bool whole)
     comp_J2(V_new, s.Dx_s, s.Dy_s, s.Ji_s);
 }
 
-double compute_energy_from_jacobians(const Eigen::MatrixXd &Ji,
+IGL_INLINE double compute_energy_from_jacobians(const Eigen::MatrixXd &Ji,
                                      const Eigen::VectorXd &areas,
                                      igl::MappingEnergyType energy_type)
 {
@@ -323,7 +323,7 @@ double compute_energy_from_jacobians(const Eigen::MatrixXd &Ji,
   return energy + igl::mapping_energy_with_jacobians(Ji, areas, energy_type, 0);
 }
 
-double compute_soft_constraint_energy(const SCAFData &s)
+IGL_INLINE double compute_soft_constraint_energy(const SCAFData &s)
 {
   double e = 0;
   for (auto const &x : s.soft_cons)
@@ -332,7 +332,7 @@ double compute_soft_constraint_energy(const SCAFData &s)
   return e;
 }
 
-double compute_energy(SCAFData &s, Eigen::MatrixXd &w_uv, bool whole)
+IGL_INLINE double compute_energy(SCAFData &s, const Eigen::MatrixXd &w_uv, bool whole)
 {
   if (w_uv.rows() != s.v_num)
     assert(!whole);
@@ -345,7 +345,7 @@ double compute_energy(SCAFData &s, Eigen::MatrixXd &w_uv, bool whole)
   return energy;
 }
 
-void buildAm(const Eigen::VectorXd &sqrt_M,
+IGL_INLINE void buildAm(const Eigen::VectorXd &sqrt_M,
              const Eigen::SparseMatrix<double> &Dx,
              const Eigen::SparseMatrix<double> &Dy,
              const Eigen::MatrixXd &W,
@@ -362,7 +362,7 @@ void buildAm(const Eigen::VectorXd &sqrt_M,
   Am.makeCompressed();
 }
 
-void buildRhs(const Eigen::VectorXd &sqrt_M,
+IGL_INLINE void buildRhs(const Eigen::VectorXd &sqrt_M,
               const Eigen::MatrixXd &W,
               const Eigen::MatrixXd &Ri,
               Eigen::VectorXd &f_rhs)
@@ -381,7 +381,7 @@ void buildRhs(const Eigen::VectorXd &sqrt_M,
   }
 }
 
-void get_complement(const Eigen::VectorXi &bnd_ids, int v_n, Eigen::ArrayXi &unknown_ids)
+IGL_INLINE void get_complement(const Eigen::VectorXi &bnd_ids, int v_n, Eigen::ArrayXi &unknown_ids)
 { // get the complement of bnd_ids.
   int assign = 0, i = 0;
   for (int get = 0; i < v_n && get < bnd_ids.size(); i++)
@@ -396,7 +396,7 @@ void get_complement(const Eigen::VectorXi &bnd_ids, int v_n, Eigen::ArrayXi &unk
   assert(assign + bnd_ids.size() == v_n);
 }
 
-void build_surface_linear_system(const SCAFData &s, Eigen::SparseMatrix<double> &L, Eigen::VectorXd &rhs)
+IGL_INLINE void build_surface_linear_system(const SCAFData &s, Eigen::SparseMatrix<double> &L, Eigen::VectorXd &rhs)
 {
   using namespace Eigen;
   using namespace std;
@@ -477,7 +477,7 @@ void build_surface_linear_system(const SCAFData &s, Eigen::SparseMatrix<double> 
   }
 }
 
-void build_scaffold_linear_system(const SCAFData &s, Eigen::SparseMatrix<double> &L, Eigen::VectorXd &rhs)
+IGL_INLINE void build_scaffold_linear_system(const SCAFData &s, Eigen::SparseMatrix<double> &L, Eigen::VectorXd &rhs)
 {
   using namespace Eigen;
 
@@ -529,7 +529,31 @@ void build_scaffold_linear_system(const SCAFData &s, Eigen::SparseMatrix<double>
   rhs = Aut * (frhs - Ae * known_pos);
 }
 
-void solve_weighted_arap(SCAFData &s, Eigen::MatrixXd &uv)
+IGL_INLINE void build_weighted_arap_system(SCAFData &s, Eigen::SparseMatrix<double> &L, Eigen::VectorXd &rhs)
+{
+  // fixed frame solving:
+  // x_e as the fixed frame, x_u for unknowns (mesh + unknown scaffold)
+  // min ||(A_u*x_u + A_e*x_e) - b||^2
+  // => A_u'*A_u*x_u  = Au'* (b - A_e*x_e) := Au'* b_u
+  //
+  // separate matrix build:
+  // min ||A_m x_m - b_m||^2 + ||A_s x_all - b_s||^2 + soft + proximal
+  // First change dimension of A_m to fit for x_all
+  // (Not just at the end, since x_all is flattened along dimensions)
+  // L = A_m'*A_m + A_s'*A_s + soft + proximal
+  // rhs = A_m'* b_m + A_s' * b_s + soft + proximal
+  //
+  Eigen::SparseMatrix<double> L_m, L_s;
+  Eigen::VectorXd rhs_m, rhs_s;
+  build_surface_linear_system(s, L_m, rhs_m);  // complete Am, with soft
+  build_scaffold_linear_system(s, L_s, rhs_s); // complete As, without proximal
+
+  L = L_m + L_s;
+  rhs = rhs_m + rhs_s;
+  L.makeCompressed();
+}
+
+IGL_INLINE void solve_weighted_arap(SCAFData &s, Eigen::MatrixXd &uv)
 {
   using namespace Eigen;
   using namespace std;
@@ -562,27 +586,7 @@ void solve_weighted_arap(SCAFData &s, Eigen::MatrixXd &uv)
 
   Eigen::SparseMatrix<double> L;
   Eigen::VectorXd rhs;
-
-  // fixed frame solving:
-  // x_e as the fixed frame, x_u for unknowns (mesh + unknown scaffold)
-  // min ||(A_u*x_u + A_e*x_e) - b||^2
-  // => A_u'*A_u*x_u  = Au'* (b - A_e*x_e) := Au'* b_u
-  //
-  // separate matrix build:
-  // min ||A_m x_m - b_m||^2 + ||A_s x_all - b_s||^2 + soft + proximal
-  // First change dimension of A_m to fit for x_all
-  // (Not just at the end, since x_all is flattened along dimensions)
-  // L = A_m'*A_m + A_s'*A_s + soft + proximal
-  // rhs = A_m'* b_m + A_s' * b_s + soft + proximal
-  //
-  Eigen::SparseMatrix<double> L_m, L_s;
-  Eigen::VectorXd rhs_m, rhs_s;
-  build_surface_linear_system(s, L_m, rhs_m);  // complete Am, with soft
-  build_scaffold_linear_system(s, L_s, rhs_s); // complete As, without proximal
-
-  L = L_m + L_s;
-  rhs = rhs_m + rhs_s;
-  L.makeCompressed();
+  build_weighted_arap_system(s, L, rhs);
 
   Eigen::VectorXd unknown_Uc((v_n - s.frame_ids.size() - s.fixed_ids.size()) * dim), Uc(dim * v_n);
 
@@ -594,7 +598,7 @@ void solve_weighted_arap(SCAFData &s, Eigen::MatrixXd &uv)
   uv = Map<Matrix<double, -1, -1, Eigen::ColMajor>>(Uc.data(), v_n, dim);
 }
 
-double perform_iteration(SCAFData &s)
+IGL_INLINE double perform_iteration(SCAFData &s)
 {
   Eigen::MatrixXd V_out = s.w_uv;
   compute_jacobians(s, V_out, true);
@@ -612,6 +616,7 @@ double perform_iteration(SCAFData &s)
                                         whole_E, -1) /
          s.mesh_measure;
 }
+
 }
 }
 
@@ -700,6 +705,25 @@ IGL_INLINE Eigen::MatrixXd igl::scaf_solve(SCAFData &s, int iter_num)
   }
 
   return s.w_uv.topRows(s.mv_num);
+}
+
+IGL_INLINE void igl::scaf_system(SCAFData &s, Eigen::SparseMatrix<double> &L, Eigen::VectorXd &rhs)
+{
+    s.energy = igl::scaf::compute_energy(s, s.w_uv, false) / s.mesh_measure;
+
+    s.total_energy = igl::scaf::compute_energy(s, s.w_uv, true) / s.mesh_measure;
+    s.rect_frame_V = Eigen::MatrixXd();
+    igl::scaf::mesh_improve(s);
+
+    double new_weight = s.mesh_measure * s.energy / (s.sf_num * 100);
+    s.scaffold_factor = new_weight;
+    igl::scaf::update_scaffold(s);
+
+    igl::scaf::compute_jacobians(s, s.w_uv, true);
+    igl::slim_update_weights_and_closest_rotations_with_jacobians(s.Ji_m, s.slim_energy, 0, s.W_m, s.Ri_m);
+    igl::slim_update_weights_and_closest_rotations_with_jacobians(s.Ji_s, s.scaf_energy, 0, s.W_s, s.Ri_s);
+
+    igl::scaf::build_weighted_arap_system(s, L, rhs);
 }
 
 #ifdef IGL_STATIC_LIBRARY

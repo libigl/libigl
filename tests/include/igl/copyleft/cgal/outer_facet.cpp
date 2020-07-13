@@ -22,7 +22,7 @@ TEST_CASE("OuterFacet: Simple", "[igl/copyleft/cgal]")
 {
     Eigen::MatrixXd V;
     Eigen::MatrixXi F;
-    test_common::load_mesh("cube.obj", V, F);
+    igl::read_triangle_mesh(test_common::data_path("cube.obj"), V, F);
 
     const size_t num_faces = F.rows();
 
@@ -41,7 +41,7 @@ TEST_CASE("OuterFacet: DuplicatedOppositeFaces", "[igl/copyleft/cgal]")
 {
     Eigen::MatrixXd V;
     Eigen::MatrixXi F1;
-    test_common::load_mesh("cube.obj", V, F1);
+    igl::read_triangle_mesh(test_common::data_path("cube.obj"), V, F1);
 
     Eigen::MatrixXi F2 = F1;
     F2.col(0).swap(F2.col(1));
@@ -64,7 +64,7 @@ TEST_CASE("OuterFacet: FullyDegnerated", "[igl/copyleft/cgal]")
 {
     Eigen::MatrixXd V;
     Eigen::MatrixXi F;
-    test_common::load_mesh("degenerated.obj", V, F);
+    igl::read_triangle_mesh(test_common::data_path("degenerated.obj"), V, F);
 
     Eigen::VectorXi I(F.rows());
     I.setLinSpaced(F.rows(), 0, F.rows()-1);
@@ -81,7 +81,7 @@ TEST_CASE("OuterFacet: InvertedNormal", "[igl/copyleft/cgal]")
 {
     Eigen::MatrixXd V;
     Eigen::MatrixXi F;
-    test_common::load_mesh("cube.obj", V, F);
+    igl::read_triangle_mesh(test_common::data_path("cube.obj"), V, F);
     F.col(0).swap(F.col(1));
 
     Eigen::VectorXi I(F.rows());
@@ -99,7 +99,7 @@ TEST_CASE("OuterFacet: SliverTet", "[igl/copyleft/cgal]")
 {
     Eigen::MatrixXd V;
     Eigen::MatrixXi F;
-    test_common::load_mesh("sliver_tet.ply", V, F);
+    igl::read_triangle_mesh(test_common::data_path("sliver_tet.ply"), V, F);
 
     Eigen::VectorXi I(F.rows());
     I.setLinSpaced(F.rows(), 0, F.rows()-1);

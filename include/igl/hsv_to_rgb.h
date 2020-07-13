@@ -14,7 +14,7 @@ namespace igl
   // Convert RGB to HSV
   //
   // Inputs:
-  //   h  hue value (degrees: [0,360])
+  //   h  hue value (degrees: [0,360]. Values outside this range will be mapped periodically to [0,360].)
   //   s  saturation value ([0,1])
   //   v  value value ([0,1])
   // Outputs:

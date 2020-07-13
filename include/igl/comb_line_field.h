@@ -19,17 +19,14 @@ namespace igl
   //   V          #V by 3 eigen Matrix of mesh vertex 3D positions
   //   F          #F by 4 eigen Matrix of face (quad) indices
   //   PD1in      #F by 3 eigen Matrix of the first per face cross field vector
-  //   PD2in      #F by 3 eigen Matrix of the second per face cross field vector
   // Output:
   //   PD1out      #F by 3 eigen Matrix of the first combed cross field vector
-  //   PD2out      #F by 3 eigen Matrix of the second combed cross field vector
-  //
 
 
   template <typename DerivedV, typename DerivedF>
-  IGL_INLINE void comb_line_field(const Eigen::PlainObjectBase<DerivedV> &V,
-                                  const Eigen::PlainObjectBase<DerivedF> &F,
-                                  const Eigen::PlainObjectBase<DerivedV> &PD1in,
+  IGL_INLINE void comb_line_field(const Eigen::MatrixBase<DerivedV> &V,
+                                  const Eigen::MatrixBase<DerivedF> &F,
+                                  const Eigen::MatrixBase<DerivedV> &PD1in,
                                   Eigen::PlainObjectBase<DerivedV> &PD1out);
 }
 #ifndef IGL_STATIC_LIBRARY

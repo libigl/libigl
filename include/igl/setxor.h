@@ -29,8 +29,8 @@ namespace igl
     typename DerivedIA,
     typename DerivedIB>
   IGL_INLINE void setxor(
-    const Eigen::DenseBase<DerivedA> & A,
-    const Eigen::DenseBase<DerivedB> & B,
+    const Eigen::MatrixBase<DerivedA> & A,
+    const Eigen::MatrixBase<DerivedB> & B,
     Eigen::PlainObjectBase<DerivedC> & C,
     Eigen::PlainObjectBase<DerivedIA> & IA,
     Eigen::PlainObjectBase<DerivedIB> & IB);

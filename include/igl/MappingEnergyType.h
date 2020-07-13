@@ -15,12 +15,13 @@ namespace igl
   
   enum MappingEnergyType
   {
-    ARAP,
-    LOG_ARAP,
-    SYMMETRIC_DIRICHLET,
-    CONFORMAL,
-    EXP_CONFORMAL,
-    EXP_SYMMETRIC_DIRICHLET
+    ARAP = 0,
+    LOG_ARAP = 1,
+    SYMMETRIC_DIRICHLET = 2,
+    CONFORMAL = 3,
+    EXP_CONFORMAL = 4,
+    EXP_SYMMETRIC_DIRICHLET = 5,
+    NUM_SLIM_ENERGY_TYPES = 6
   };
 }
 #endif

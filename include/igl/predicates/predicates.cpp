@@ -28,11 +28,17 @@ using REAL = IGL_PREDICATES_REAL;
 #endif
 
 IGL_INLINE void exactinit() {
-  static bool initialized = false;
-  if (! initialized) {
-    ::exactinit();
-    initialized = true;
-  }
+  // Thread-safe initialization using Meyers' singleton
+  class MySingleton {
+  public:
+    static MySingleton& instance() {
+      static MySingleton instance;
+      return instance;
+    }
+  private:
+    MySingleton() { ::exactinit(); }
+  };
+  MySingleton::instance();
 }
 
 template<typename Vector2D>

@@ -67,6 +67,8 @@ int main(int argc, char *argv[])
   std::stringstream l2;
   l2 << M(0) << ", " << M(1) << ", " << M(2);
   viewer.data().add_label(M,l2.str());
+  // activate label rendering
+  viewer.data().show_labels = true;
 
   // Rendering of text labels is handled by ImGui, so we need to enable the ImGui
   // plugin to show text labels.

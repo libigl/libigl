@@ -15,8 +15,8 @@
 namespace igl
 {
   // write mesh to a file with automatic detection of file format.  supported:
-  // obj, off, stl, wrl, ply, mesh). 
-  // 
+  // obj, off, stl, wrl, ply, mesh).
+  //
   // Templates:
   //   Scalar  type for positions and vectors (will be read as double and cast
   //     to Scalar)
@@ -25,13 +25,13 @@ namespace igl
   //   str  path to file
   //   V  eigen double matrix #V by 3
   //   F  eigen int matrix #F by 3
-  //   force_ascii  force ascii format even if binary is available 
+  //   force_ascii  force ascii format even if binary is available
   // Returns true iff success
   template <typename DerivedV, typename DerivedF>
   IGL_INLINE bool write_triangle_mesh(
     const std::string str,
-    const Eigen::PlainObjectBase<DerivedV>& V,
-    const Eigen::PlainObjectBase<DerivedF>& F,
+    const Eigen::MatrixBase<DerivedV>& V,
+    const Eigen::MatrixBase<DerivedF>& F,
     const bool force_ascii = true);
 }
 

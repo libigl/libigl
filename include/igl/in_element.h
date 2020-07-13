@@ -30,9 +30,9 @@ namespace igl
   //     containing element)
   template <typename DerivedV, typename DerivedQ, int DIM>
   IGL_INLINE void in_element(
-    const Eigen::PlainObjectBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedV> & V,
     const Eigen::MatrixXi & Ele,
-    const Eigen::PlainObjectBase<DerivedQ> & Q,
+    const Eigen::MatrixBase<DerivedQ> & Q,
     const AABB<DerivedV,DIM> & aabb,
     Eigen::VectorXi & I);
   // Outputs:
@@ -40,9 +40,9 @@ namespace igl
   //     point: I(q,e) means point q is in element e
   template <typename DerivedV, typename DerivedQ, int DIM, typename Scalar>
   IGL_INLINE void in_element(
-    const Eigen::PlainObjectBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedV> & V,
     const Eigen::MatrixXi & Ele,
-    const Eigen::PlainObjectBase<DerivedQ> & Q,
+    const Eigen::MatrixBase<DerivedQ> & Q,
     const AABB<DerivedV,DIM> & aabb,
     Eigen::SparseMatrix<Scalar> & I);
 };
