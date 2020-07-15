@@ -47,19 +47,21 @@ class SlicingPlugin : public igl::opengl::glfw::imgui::ImGuiMenu
 	virtual void draw_custom_window() override {
 		static Eigen::Matrix4f matrix = Eigen::Matrix4f::Identity();
 		Eigen::Affine3f rescale = Eigen::Scaling(0.5f * viewer->core().camera_base_zoom)
-			* Eigen::Translation3f(viewer->core().camera_base_translation);
-		Eigen::Affine3f view = Eigen::Affine3f(viewer->core().view*(1./viewer->core().camera_zoom)) 
-                            * rescale.inverse();
+														* Eigen::Translation3f(viewer->core().camera_base_translation);
+		Eigen::Affine3f view = Eigen::Affine3f( viewer->core().view * 1./viewer->core().camera_zoom ) * rescale.inverse();
 		Eigen::Matrix4f proj = viewer->core().proj;
-		
-		// Pass Viewer transformation matrices to ImGuizmo
-		ImGuizmo::EditTransform(view.matrix().data(), proj.data(), matrix.data());
+		if(viewer->core().orthographic)
+		{
+			view(2,3) -= 50;
+		} 
+			
+		ImGuizmo::EditTransform(view.matrix().data(), proj.data(), matrix.data(), viewer->core().orthographic);
 
 		// Transform the slicing plane according to 
 		// ImGuizmo tool manipulations in the viewer
 		Eigen::Affine3f model = Eigen::Affine3f(matrix) * rescale.inverse();
 		Eigen::MatrixXd V = (SlicingPlugin::OV.rowwise().homogeneous() 
-        * model.matrix().cast<double>().transpose()).rowwise().hnormalized();
+        								 * model.matrix().cast<double>().transpose()).rowwise().hnormalized();
 
 		if (data.V.rows() == V.rows())
 			data.set_vertices(V);
