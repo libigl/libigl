@@ -12,8 +12,6 @@ void EditTransform(const float *cameraView, float *cameraProjection, float* matr
 {
 	static ImGuizmo::OPERATION mCurrentGizmoOperation(ImGuizmo::ROTATE);
 	static ImGuizmo::MODE mCurrentGizmoMode(ImGuizmo::WORLD);
-	static bool useSnap = false;
-	static float snap[3] = { 1.f, 1.f, 1.f };
 
 	if (ImGui::IsKeyPressed(90))
 		mCurrentGizmoOperation = ImGuizmo::TRANSLATE;
@@ -39,6 +37,6 @@ void EditTransform(const float *cameraView, float *cameraProjection, float* matr
 
 	ImGuiIO& io = ImGui::GetIO();
 	ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
-	ImGuizmo::Manipulate(cameraView, cameraProjection, mCurrentGizmoOperation, mCurrentGizmoMode, matrix, NULL, useSnap ? &snap[0] : NULL);
+	ImGuizmo::Manipulate(cameraView, cameraProjection, mCurrentGizmoOperation, mCurrentGizmoMode, matrix, NULL, NULL);
 }
 } // namespace ImGuizmo
