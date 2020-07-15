@@ -409,7 +409,6 @@ add_library(imguizmo
 )
 target_include_directories(imguizmo ${IGL_SCOPE} "${LIBIGL_EXTERNAL}/imgui")
 target_link_libraries(imguizmo ${IGL_SCOPE} imgui igl_opengl_glfw igl_opengl_glfw_imgui)
-# target_link_libraries(imguizmo ${IGL_SCOPE} )
 
 ################################################################################
 ### Compile the png part ###
