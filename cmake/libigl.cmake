@@ -410,9 +410,10 @@ if(LIBIGL_WITH_OPENGL_GLFW_IMGUIZMO)
     if(NOT TARGET imguizmo)
       igl_download_imguizmo()
       add_library( igl_opengl_glfw_imguizmo 
-        ${LIBIGL_EXTERNAL}/imguizmo/ImGuizmo.cpp 
-        ${LIBIGL_EXTERNAL}/imguizmo/ImGuizmo.cpp
+      ${LIBIGL_EXTERNAL}/imguizmo/ImGuizmo.cpp 
+      ${LIBIGL_EXTERNAL}/imguizmo/ImGuizmo.cpp
       )
+      target_include_directories(igl_opengl_glfw_imguizmo ${IGL_SCOPE} ${LIBIGL_EXTERNAL/imgui})
     endif()
     target_link_libraries(igl_opengl_glfw_imguizmo ${IGL_SCOPE} igl_opengl_glfw igl_opengl_glfw_imgui)
   endif()
