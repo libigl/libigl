@@ -19,23 +19,24 @@ if(APPLE)
 endif()
 
 ### Available options ###
-option(LIBIGL_USE_STATIC_LIBRARY     "Use libigl as static library" OFF)
-option(LIBIGL_WITH_CGAL              "Use CGAL"                     OFF)
-option(LIBIGL_WITH_COMISO            "Use CoMiso"                   OFF)
-option(LIBIGL_WITH_CORK              "Use Cork"                     OFF)
-option(LIBIGL_WITH_EMBREE            "Use Embree"                   OFF)
-option(LIBIGL_WITH_MATLAB            "Use Matlab"                   OFF)
-option(LIBIGL_WITH_MOSEK             "Use MOSEK"                    OFF)
-option(LIBIGL_WITH_OPENGL            "Use OpenGL"                   OFF)
-option(LIBIGL_WITH_OPENGL_GLFW       "Use GLFW"                     OFF)
-option(LIBIGL_WITH_OPENGL_GLFW_IMGUI "Use ImGui"                    OFF)
-option(LIBIGL_WITH_PNG               "Use PNG"                      OFF)
-option(LIBIGL_WITH_TETGEN            "Use Tetgen"                   OFF)
-option(LIBIGL_WITH_TRIANGLE          "Use Triangle"                 OFF)
-option(LIBIGL_WITH_PREDICATES        "Use exact predicates"         OFF)
-option(LIBIGL_WITH_XML               "Use XML"                      OFF)
-option(LIBIGL_WITHOUT_COPYLEFT       "Disable Copyleft libraries"   OFF)
-option(LIBIGL_EXPORT_TARGETS         "Export libigl CMake targets"  OFF)
+option(LIBIGL_USE_STATIC_LIBRARY        "Use libigl as static library" OFF)
+option(LIBIGL_WITH_CGAL                 "Use CGAL"                     OFF)
+option(LIBIGL_WITH_COMISO               "Use CoMiso"                   OFF)
+option(LIBIGL_WITH_CORK                 "Use Cork"                     OFF)
+option(LIBIGL_WITH_EMBREE               "Use Embree"                   OFF)
+option(LIBIGL_WITH_MATLAB               "Use Matlab"                   OFF)
+option(LIBIGL_WITH_MOSEK                "Use MOSEK"                    OFF)
+option(LIBIGL_WITH_OPENGL               "Use OpenGL"                   OFF)
+option(LIBIGL_WITH_OPENGL_GLFW          "Use GLFW"                     OFF)
+option(LIBIGL_WITH_OPENGL_GLFW_IMGUI    "Use ImGui"                    OFF)
+option(LIBIGL_WITH_OPENGL_GLFW_IMGUIZMO "Use ImGuizmo"                 OFF)
+option(LIBIGL_WITH_PNG                  "Use PNG"                      OFF)
+option(LIBIGL_WITH_TETGEN               "Use Tetgen"                   OFF)
+option(LIBIGL_WITH_TRIANGLE             "Use Triangle"                 OFF)
+option(LIBIGL_WITH_PREDICATES           "Use exact predicates"         OFF)
+option(LIBIGL_WITH_XML                  "Use XML"                      OFF)
+option(LIBIGL_WITHOUT_COPYLEFT          "Disable Copyleft libraries"   OFF)
+option(LIBIGL_EXPORT_TARGETS            "Export libigl CMake targets"  OFF)
 
 if(LIBIGL_BUILD_PYTHON)
   message(FATAL_ERROR "Python bindings have been removed in this version. Please use an older version of libigl, or wait for the new bindings to be released.")
@@ -402,13 +403,20 @@ if(LIBIGL_WITH_OPENGL_GLFW_IMGUI)
   endif()
 endif()
 
-igl_download_imguizmo()
-add_library(imguizmo
-	${LIBIGL_EXTERNAL}/imguizmo/ImGuizmo.cpp
-	${LIBIGL_EXTERNAL}/imguizmo/ImGuizmo.h
-)
-target_include_directories(imguizmo ${IGL_SCOPE} "${LIBIGL_EXTERNAL}/imgui")
-target_link_libraries(imguizmo ${IGL_SCOPE} imgui igl_opengl_glfw igl_opengl_glfw_imgui)
+################################################################################
+### Compile the ImGuizmo part ###
+if(LIBIGL_WITH_OPENGL_GLFW_IMGUIZMO)
+  if(TARGET igl::opengl_glfw_imgui)
+    if(NOT TARGET imguizmo)
+      igl_download_imguizmo()
+      add_library( igl_opengl_glfw_imguizmo 
+        ${LIBIGL_EXTERNAL}/imguizmo/ImGuizmo.cpp 
+        ${LIBIGL_EXTERNAL}/imguizmo/ImGuizmo.cpp
+      )
+    endif()
+    target_link_libraries(igl_opengl_glfw_imguizmo ${IGL_SCOPE} igl_opengl_glfw igl_opengl_glfw_imgui)
+  endif()
+endif()
 
 ################################################################################
 ### Compile the png part ###

@@ -61,7 +61,9 @@ if(TUTORIALS_CHAPTER1)
   endif()
   add_subdirectory("107_MultipleMeshes")
   add_subdirectory("108_MultipleViews")
-  add_subdirectory("109_ImGuizmo")
+  if(LIBIGL_WITH_OPENGL_GLFW_IMGUIZMO)
+    add_subdirectory("109_ImGuizmo")
+  endif()
 endif()
 
 # Chapter 2

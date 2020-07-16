@@ -28,6 +28,7 @@ void EditTransform(const float *cameraView, float *cameraProjection, float* matr
 	ImGui::SameLine();
 	if (ImGui::RadioButton("Scale", mCurrentGizmoOperation == ImGuizmo::SCALE))
 		mCurrentGizmoOperation = ImGuizmo::SCALE;
+		
 	float matrixTranslation[3], matrixRotation[3], matrixScale[3];
 	ImGuizmo::DecomposeMatrixToComponents(matrix, matrixTranslation, matrixRotation, matrixScale);
 	ImGui::InputFloat3("Tr", matrixTranslation, 3);
