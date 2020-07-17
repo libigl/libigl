@@ -29,7 +29,12 @@
 #if !defined(_MSC_VER)
 #define _malloca(x) alloca(x)
 #endif
+// Change adapted from https://github.com/CedricGuillemet/ImGuizmo/issues/113
+#if __APPLE__
+#include <stdlib.h>
+#else
 #include <malloc.h>
+#endif
 
 // includes patches for multiview from
 // https://github.com/CedricGuillemet/ImGuizmo/issues/15
