@@ -1,14 +1,9 @@
-name: Build
+name: CMake Test
 
 on:
-  push:
+  push: 
     branches:
-      - master
-      - stable
-  pull_request:
-    branches:
-      - master
-      - stable
+    - gmin7-cmake_imguizmo_integration
 
 env:
   CTEST_OUTPUT_ON_FAILURE: ON
