@@ -58,12 +58,10 @@ if(TUTORIALS_CHAPTER1)
   if(LIBIGL_WITH_OPENGL_GLFW_IMGUI)
     add_subdirectory("105_Overlays")
     add_subdirectory("106_ViewerMenu")
+    add_subdirectory("109_ImGuizmo")
   endif()
   add_subdirectory("107_MultipleMeshes")
   add_subdirectory("108_MultipleViews")
-  if(LIBIGL_WITH_OPENGL_GLFW_IMGUIZMO)
-    add_subdirectory("109_ImGuizmo")
-  endif()
 endif()
 
 # Chapter 2

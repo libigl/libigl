@@ -1,10 +1,9 @@
+#include <igl/material_colors.h>
+#include <igl/readSTL.h>
 #include <igl/opengl/glfw/Viewer.h>
 #include <igl/opengl/glfw/imgui/ImGuiMenu.h>
-#include <igl/opengl/glfw/imgui/ImGuizmoMenu.h>
-#include <igl/readSTL.h>
-#include <igl/material_colors.h>
+#include <igl/opengl/glfw/imgui/imguizmo/ImGuizmoMenu.h>
 #include <imgui/imgui.h>
-#include <iostream>
 #include "tutorial_shared_path.h"
 
 class SlicingPlugin : public igl::opengl::glfw::imgui::ImGuiMenu 
@@ -52,7 +51,7 @@ class SlicingPlugin : public igl::opengl::glfw::imgui::ImGuiMenu
 		Eigen::Matrix4f proj = viewer->core().proj;
 		if(viewer->core().orthographic)
 		{
-			view(2,3) -= 50;
+			view(2,3) -= 50; // Adjust depth for view transform
 		} 
 			
 		ImGuizmo::EditTransform(view.matrix().data(), proj.data(), matrix.data(), viewer->core().orthographic);
