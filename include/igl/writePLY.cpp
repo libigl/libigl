@@ -59,7 +59,7 @@ bool writePLY(
     typedef typename DerivedED::Scalar EDScalar;
     
     // temporary storage for data to be passed to tinyply internals
-    std::vector<NScalar> _v;
+    std::vector<VScalar> _v;
     std::vector<NScalar> _n;
     std::vector<UVScalar> _uv;
     std::vector<VDScalar> _vd;
