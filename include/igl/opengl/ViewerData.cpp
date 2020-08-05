@@ -694,7 +694,7 @@ IGL_INLINE void igl::opengl::ViewerData::updateGL(
           meshgl.F_vbo.row(i) << i*3+0, i*3+1, i*3+2;
       }
 
-      if (meshgl.dirty & MeshGL::DIRTY_UV)
+      if ( (meshgl.dirty & MeshGL::DIRTY_UV) && data.V_uv.rows()>0)
       {
         meshgl.V_uv_vbo.resize(data.F.rows()*3,2);
         for (unsigned i=0; i<data.F.rows();++i)
