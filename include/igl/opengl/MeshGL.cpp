@@ -10,8 +10,7 @@
 #include "bind_vertex_attrib_array.h"
 #include "create_shader_program.h"
 #include "destroy_shader_program.h"
-#include "verasansmono.h"
-#include "fontatlas_compressed.h"
+#include "verasansmono_compressed.h"
 #include <iostream>
 
 IGL_INLINE igl::opengl::MeshGL::MeshGL():
@@ -78,8 +77,8 @@ IGL_INLINE void igl::opengl::MeshGL::free_buffers()
     glDeleteBuffers(1, &vbo_points_F);
     glDeleteBuffers(1, &vbo_points_V);
     glDeleteBuffers(1, &vbo_points_V_colors);
-    
-    // Text Labels 
+
+    // Text Labels
     vertex_labels.free_buffers();
     face_labels.free_buffers();
     custom_labels.free_buffers();
@@ -177,7 +176,7 @@ IGL_INLINE void igl::opengl::MeshGL::init_text_rendering()
 {
   // Decompress the png of the font atlas
   unsigned char verasansmono_font_atlas[256*256];
-  decompress_atlas(verasansmono_font_atlas);
+  decompress_verasansmono_atlas(verasansmono_font_atlas);
 
   // Bind atlas
   glBindTexture(GL_TEXTURE_2D, font_atlas);
@@ -367,7 +366,7 @@ R"(#version 150
   }
 )";
 
-  std::string text_vert_shader = 
+  std::string text_vert_shader =
 R"(#version 330
     in vec3 position;
     in float character;
@@ -386,7 +385,7 @@ R"(#version 330
     }
 )";
 
-  std::string text_geom_shader = 
+  std::string text_geom_shader =
 R"(#version 150 core
     layout(points) in;
     layout(triangle_strip, max_vertices = 4) out;
@@ -428,7 +427,7 @@ R"(#version 150 core
     }
 )";
 
-  std::string text_frag_shader = 
+  std::string text_frag_shader =
 R"(#version 330
     out vec4 outColor;
     in vec2 gTexCoord;
