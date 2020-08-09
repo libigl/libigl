@@ -86,13 +86,9 @@ public:
   std::function<void(void)> callback_draw_viewer_menu;
   std::function<void(void)> callback_draw_custom_window;
 
-  IGL_INLINE void draw_labels_window();
-
-  IGL_INLINE void draw_labels(const igl::opengl::ViewerData &data);
-
   IGL_INLINE void draw_text(
-    Eigen::Vector3d pos, 
-    Eigen::Vector3d normal, 
+    Eigen::Vector3d pos,
+    Eigen::Vector3d normal,
     const std::string &text,
     const Eigen::Vector4f color = Eigen::Vector4f(0,0,0.04,1)); // old default color
 

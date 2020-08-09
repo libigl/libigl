@@ -40,7 +40,10 @@ public:
     DIRTY_MESH           = 0x00FF,
     DIRTY_OVERLAY_LINES  = 0x0100,
     DIRTY_OVERLAY_POINTS = 0x0200,
-    DIRTY_ALL            = 0x03FF
+    DIRTY_VERTEX_LABELS  = 0x0400,
+    DIRTY_FACE_LABELS    = 0x0800,
+    DIRTY_CUSTOM_LABELS  = 0x1000,
+    DIRTY_ALL            = 0xFFFF
   };
 
   bool is_initialized = false;
@@ -50,6 +53,7 @@ public:
   GLuint shader_mesh;
   GLuint shader_overlay_lines;
   GLuint shader_overlay_points;
+  GLuint shader_text;
 
   GLuint vbo_V; // Vertices of the current mesh (#V x 3)
   GLuint vbo_V_uv; // UV coordinates for the current mesh (#V x 2)
@@ -80,6 +84,27 @@ public:
   RowMatrixXf lines_V_colors_vbo;
   RowMatrixXf points_V_vbo;
   RowMatrixXf points_V_colors_vbo;
+
+  // Text Rendering
+  struct TextGL
+  { 
+    uint32_t dirty_flag;
+    GLuint vao_labels;
+    GLuint vbo_labels_pos;
+    GLuint vbo_labels_characters;
+    GLuint vbo_labels_offset; 
+    GLuint vbo_labels_indices;
+    RowMatrixXf label_pos_vbo;
+    RowMatrixXf label_char_vbo;
+    RowMatrixXf label_offset_vbo;
+    Eigen::Matrix<unsigned, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> label_indices_vbo;
+    void init_buffers();
+    void free_buffers();
+  };
+  TextGL vertex_labels;
+  TextGL face_labels;  
+  TextGL custom_labels;
+  GLuint font_atlas;
 
   int tex_u;
   int tex_v;
@@ -122,6 +147,11 @@ public:
 
   /// Draw the currently buffered point overlay
   IGL_INLINE void draw_overlay_points();
+
+  // Text Binding and Draw functions
+  IGL_INLINE void init_text_rendering();
+  IGL_INLINE void bind_labels(const TextGL& labels);
+  IGL_INLINE void draw_labels(const TextGL& labels);
 
   // Release the OpenGL buffer objects
   IGL_INLINE void free_buffers();
