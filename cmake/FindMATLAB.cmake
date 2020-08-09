@@ -224,7 +224,14 @@ if(NOT MATLAB_ADDITIONAL_VERSIONS)
   set(MATLAB_ADDITIONAL_VERSIONS)
 endif()
 
+# Is this mapping necessary? It's always causing trouble to need to bump these
+# for each new version.
 set(MATLAB_VERSIONS_MAPPING
+  "R2020b=9.9"
+  "R2020a=9.8"
+  "R2019b=9.7"
+  "R2019a=9.6"
+  "R2018b=9.5"
   "R2018a=9.4"
   "R2017b=9.3"
   "R2017a=9.2"
