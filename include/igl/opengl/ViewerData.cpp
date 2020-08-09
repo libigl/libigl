@@ -28,9 +28,9 @@ IGL_INLINE igl::opengl::ViewerData::ViewerData()
   invert_normals    (false),
   show_overlay      (~unsigned(0)),
   show_overlay_depth(~unsigned(0)),
-  show_vertex_labels  (false),
-  show_face_labels    (false),
-  show_custom_labels  (false),
+  show_vertex_labels(0),
+  show_face_labels  (0),
+  show_custom_labels(0),
   show_texture      (false),
   use_matcap        (false),
   point_size(30),
@@ -191,7 +191,7 @@ IGL_INLINE void igl::opengl::ViewerData::set_colors(const Eigen::MatrixXd &C)
   }
   else if(C.rows() == V.rows() || C.rows() == F.rows())
   {
-    // face based colors? 
+    // face based colors?
     if((C.rows()==F.rows()) && (C.rows() != V.rows() || face_based))
     {
       set_face_based(true);
@@ -571,7 +571,7 @@ IGL_INLINE void igl::opengl::ViewerData::grid_texture()
 
 // Populate VBOs of a particular label stype (Vert, Face, Custom)
 IGL_INLINE void igl::opengl::ViewerData::update_labels(
-  igl::opengl::MeshGL& meshgl, 
+  igl::opengl::MeshGL& meshgl,
   igl::opengl::MeshGL::TextGL& GL_labels,
   const Eigen::MatrixXd& positions,
   const std::vector<std::string>& strings
@@ -856,7 +856,7 @@ IGL_INLINE void igl::opengl::ViewerData::updateGL(
       }
     }
     update_labels(
-      meshgl, 
+      meshgl,
       meshgl.face_labels,
       face_labels_positions,
       face_labels_strings
@@ -877,7 +877,7 @@ IGL_INLINE void igl::opengl::ViewerData::updateGL(
       }
     }
     update_labels(
-      meshgl, 
+      meshgl,
       meshgl.vertex_labels,
       vertex_labels_positions,
       vertex_labels_strings
@@ -887,7 +887,7 @@ IGL_INLINE void igl::opengl::ViewerData::updateGL(
   if (meshgl.dirty & MeshGL::DIRTY_CUSTOM_LABELS)
   {
     update_labels(
-      meshgl, 
+      meshgl,
       meshgl.custom_labels,
       labels_positions,
       labels_strings

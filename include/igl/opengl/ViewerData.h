@@ -263,9 +263,9 @@ public:
   unsigned int use_matcap;
   unsigned int show_faces;
   unsigned int show_lines;
-  bool show_vertex_labels;
-  bool show_face_labels;
-  bool show_custom_labels;
+  unsigned int show_vertex_labels;
+  unsigned int show_face_labels;
+  unsigned int show_custom_labels;
 
   // Point size / line width
   float point_size;
@@ -284,7 +284,7 @@ public:
 
   // Update contents from a 'Data' instance
   IGL_INLINE void update_labels(
-    igl::opengl::MeshGL& meshgl, 
+    igl::opengl::MeshGL& meshgl,
     igl::opengl::MeshGL::TextGL& GL_labels,
     const Eigen::MatrixXd& positions,
     const std::vector<std::string>& strings
