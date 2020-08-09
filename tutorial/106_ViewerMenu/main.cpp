@@ -99,5 +99,6 @@ int main(int argc, char *argv[])
 
   // Plot the mesh
   viewer.data().set_mesh(V, F);
+  viewer.data().add_label(viewer.data().V.row(0) + viewer.data().V_normals.row(0).normalized()*0.005, "Hello World!");
   viewer.launch();
 }
