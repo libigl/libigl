@@ -2,7 +2,7 @@
 #include <igl/readSTL.h>
 #include <igl/opengl/glfw/Viewer.h>
 #include <igl/opengl/glfw/imgui/ImGuiMenu.h>
-#include <igl/opengl/glfw/imgui/imguizmo/ImGuizmoMenu.h>
+#include <igl/opengl/glfw/imgui/ImGuizmoMenu.h>
 #include <imgui/imgui.h>
 #include "tutorial_shared_path.h"
 

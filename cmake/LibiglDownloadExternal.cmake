@@ -112,6 +112,15 @@ function(igl_download_imgui)
 	)
 endfunction()
 
+## ImGuizmo
+function(igl_download_imguizmo)
+	igl_download_project(imguizmo
+		GIT_REPOSITORY https://github.com/CedricGuillemet/ImGuizmo.git
+		GIT_TAG        32edce948ddc454275d468986e37c79e26dcd2c2
+		${LIBIGL_BRANCH_OPTIONS}
+	)
+endfunction()
+
 ## pybind11
 function(igl_download_pybind11)
 	igl_download_project(pybind11
