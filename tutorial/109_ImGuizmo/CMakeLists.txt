@@ -3,4 +3,4 @@ project(${PROJECT_NAME})
 
 set(IMGUIZMO_PATH ${LIBIGL_SOURCE_DIR}/igl/opengl/glfw/imgui/imguizmo)
 add_executable(${PROJECT_NAME}_bin main.cpp)
-target_link_libraries( ${PROJECT_NAME}_bin igl::core igl::opengl igl::opengl_glfw igl::opengl_glfw_imgui igl::opengl_glfw_imguizmo tutorials)
+target_link_libraries( ${PROJECT_NAME}_bin igl::core igl::opengl igl::opengl_glfw igl::opengl_glfw_imgui tutorials)
