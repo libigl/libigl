@@ -54,7 +54,7 @@ class SlicingPlugin : public igl::opengl::glfw::imgui::ImGuiMenu
 			view(2,3) -= 50; // Adjust depth for view transform
 		} 
 			
-		ImGuizmo::EditTransform(view.matrix().data(), proj.data(), matrix.data(), viewer->core().orthographic);
+		igl::opengl::glfw::imgui::EditTransform(view.matrix().data(), proj.data(), matrix.data(), viewer->core().orthographic);
 
 		// Transform the slicing plane according to 
 		// ImGuizmo tool manipulations in the viewer

@@ -7,7 +7,15 @@
 #include <vector>
 ////////////////////////////////////////////////////////////////////////////////
 
-namespace ImGuizmo {
+namespace igl
+{
+namespace opengl
+{
+namespace glfw
+{
+namespace imgui
+{
+
 void EditTransform(const float *cameraView, float *cameraProjection, float* matrix, bool isOrthographic)
 {
 	static ImGuizmo::OPERATION mCurrentGizmoOperation(ImGuizmo::ROTATE);
@@ -40,4 +48,8 @@ void EditTransform(const float *cameraView, float *cameraProjection, float* matr
 	ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
 	ImGuizmo::Manipulate(cameraView, cameraProjection, mCurrentGizmoOperation, mCurrentGizmoMode, matrix, NULL, NULL);
 }
-} // namespace ImGuizmo
+
+} // end namespace
+} // end namespace
+} // end namespace
+} // end namespace
