@@ -198,15 +198,6 @@ IGL_INLINE bool igl::decimate(
 
   while(true)
   {
-    if(Q.empty())
-    {
-      break;
-    }
-    if(std::get<0>(Q.top()) == std::numeric_limits<double>::infinity())
-    {
-      // min cost edge is infinite cost
-      break;
-    }
     int e,e1,e2,f1,f2;
     if(collapse_edge(
       cost_and_placement, pre_collapse, post_collapse,
@@ -219,6 +210,11 @@ IGL_INLINE bool igl::decimate(
       }
     }else
     {
+      if(e == -1)
+      {
+        // a candidate edge was not even found in Q.
+        break;
+      }
       if(prev_e == e)
       {
         assert(false && "Edge collapse no progress... bad stopping condition?");

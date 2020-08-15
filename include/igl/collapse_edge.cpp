@@ -264,12 +264,14 @@ IGL_INLINE bool igl::collapse_edge(
     if(Q.empty())
     {
       // no edges to collapse
+      e = -1;
       return false;
     }
     // pop from Q
     p = Q.top();
     if(std::get<0>(p) == std::numeric_limits<double>::infinity())
     {
+      e = -1;
       // min cost edge is infinite cost
       return false;
     }

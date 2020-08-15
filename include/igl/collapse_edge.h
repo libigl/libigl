@@ -128,7 +128,13 @@ namespace igl
     igl::min_heap< std::tuple<double,int,int> > & Q,
     Eigen::VectorXi & EQ,
     Eigen::MatrixXd & C);
-
+  // Outputs:
+  //   e  index into E of attempted collapsed edge. Set to -1 if Q is empty or
+  //     contains only infinite cost edges.
+  //   e1  index into E of edge collpased on left.
+  //   e2  index into E of edge collpased on right.
+  //   f1  index into F of face collpased on left.
+  //   f2  index into F of face collpased on right.
   IGL_INLINE bool collapse_edge(
     const decimate_cost_and_placement_callback & cost_and_placement,
     const decimate_pre_collapse_callback       & pre_collapse,
