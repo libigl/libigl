@@ -8,12 +8,14 @@
 #ifndef IGL_SCAF_H
 #define IGL_SCAF_H
 
-#include "slim.h"
-#include "igl_inline.h"
-#include "MappingEnergyType.h"
+#include "../slim.h"
+#include "../igl_inline.h"
+#include "../MappingEnergyType.h"
 
 namespace igl
 {
+  namespace triangle
+  {
     // Use a similar interface to igl::slim
     // Implement ready-to-use 2D version of the algorithm described in 
     // SCAF: Simplicial Complex Augmentation Framework for Bijective Maps
@@ -81,7 +83,7 @@ namespace igl
         const Eigen::MatrixXd &V,
         const Eigen::MatrixXi &F,
         const Eigen::MatrixXd &V_init,
-        SCAFData &data,
+        triangle::SCAFData &data,
         MappingEnergyType slim_energy,
         Eigen::VectorXi& b,
         Eigen::MatrixXd& bc,
@@ -90,7 +92,7 @@ namespace igl
     // Run iter_num iterations of SCAF, with precomputed data
     // Outputs:
     //    V_o (in SLIMData): #V by dim list of mesh vertex positions
-    IGL_INLINE Eigen::MatrixXd scaf_solve(SCAFData &data, int iter_num);
+    IGL_INLINE Eigen::MatrixXd scaf_solve(triangle::SCAFData &data, int iter_num);
 
     // Set up the SCAF system L * uv = rhs, without solving it.
     // Inputs:
@@ -99,7 +101,7 @@ namespace igl
     //    L:   m by m matrix
     //    rhs: m by 1 vector
     //         with m = dim * (#V_mesh + #V_scaf - #V_frame)
-    IGL_INLINE void scaf_system(SCAFData &s, Eigen::SparseMatrix<double> &L, Eigen::VectorXd &rhs);
+    IGL_INLINE void scaf_system(triangle::SCAFData &s, Eigen::SparseMatrix<double> &L, Eigen::VectorXd &rhs);
 
     namespace scaf
     {
@@ -110,6 +112,7 @@ namespace igl
         //    whole: Include scaffold if true
         IGL_INLINE double compute_energy(SCAFData &s, const Eigen::MatrixXd &w_uv, bool whole);
     }
+  }
 }
 
 #ifndef IGL_STATIC_LIBRARY
