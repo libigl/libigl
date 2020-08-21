@@ -269,6 +269,7 @@ public:
 
   // Point size / line width
   float point_size;
+  // line_width is NOT SUPPORTED on Mac OS and Windows
   float line_width;
   Eigen::Matrix<float, 4, 1, Eigen::DontAlign> line_color;
   Eigen::Matrix<float, 4, 1, Eigen::DontAlign> label_color;
