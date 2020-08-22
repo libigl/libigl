@@ -1,6 +1,6 @@
 #include <test_common.h>
 #include <igl/cat.h>
-#include <igl/scaf.h>
+#include <igl/triangle/scaf.h>
 #include <igl/slice.h>
 #include <igl/harmonic.h>
 #include <igl/boundary_loop.h>
@@ -36,20 +36,20 @@ TEST_CASE("scaf_system: Test scaf_system() vs scaf_solve()", "[igl]")
   Eigen::MatrixXd bc;
 
   // Run one scaf iteration as reference
-  igl::SCAFData s_ref;
+  igl::triangle::SCAFData s_ref;
   {
-      igl::scaf_precompute(V, F, uv_init, s_ref, igl::MappingEnergyType::SYMMETRIC_DIRICHLET, b, bc, 0);
-      igl::scaf_solve(s_ref, 1);
+      igl::triangle::scaf_precompute(V, F, uv_init, s_ref, igl::MappingEnergyType::SYMMETRIC_DIRICHLET, b, bc, 0);
+      igl::triangle::scaf_solve(s_ref, 1);
   }
 
   // Obtain SCAF linear system perform iteration manually
-  igl::SCAFData s_test;
+  igl::triangle::SCAFData s_test;
   {
       // Set up system
-      igl::scaf_precompute(V, F, uv_init, s_test, igl::MappingEnergyType::SYMMETRIC_DIRICHLET, b, bc, 0);
+      igl::triangle::scaf_precompute(V, F, uv_init, s_test, igl::MappingEnergyType::SYMMETRIC_DIRICHLET, b, bc, 0);
       Eigen::SparseMatrix<double> L;
       Eigen::VectorXd rhs;
-      igl::scaf_system(s_test, L, rhs);
+      igl::triangle::scaf_system(s_test, L, rhs);
 
       // Solve
       Eigen::SimplicialLDLT<Eigen::SparseMatrix<double>> solver;
@@ -69,7 +69,7 @@ TEST_CASE("scaf_system: Test scaf_system() vs scaf_solve()", "[igl]")
       }
 
       // Line search
-      auto E = [&s_test](Eigen::MatrixXd &uv) { return igl::scaf::compute_energy(s_test, uv, true); };
+      auto E = [&s_test](Eigen::MatrixXd &uv) { return igl::triangle::scaf::compute_energy(s_test, uv, true); };
       Eigen::MatrixXi w_T;
       igl::cat(1, s_test.m_T, s_test.s_T, w_T);
       igl::flip_avoiding_line_search(w_T, s_test.w_uv, uv_target, E, -1);
