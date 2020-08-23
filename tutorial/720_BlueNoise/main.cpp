@@ -14,6 +14,7 @@
 #include <igl/blue_noise.h>
 #include <igl/doublearea.h>
 #include <igl/random_points_on_mesh.h>
+#include <igl/PI.h>
 
 
 int main(int argc, char *argv[])
@@ -38,7 +39,7 @@ int main(int argc, char *argv[])
     {
       Eigen::VectorXd A;
       igl::doublearea(V,F,A);
-      return sqrt(((A.sum()*0.5/(n*0.6162910373))/M_PI));
+      return sqrt(((A.sum()*0.5/(n*0.6162910373))/igl::PI));
     }(n_desired);
     printf("blue noise radius: %g\n",r);
     Eigen::MatrixXd B;
