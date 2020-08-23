@@ -6,8 +6,8 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/
 
-#ifndef IGL_KNN
-#define IGL_KNN
+#ifndef IGL_KNN_H
+#define IGL_KNN_H
 #include "igl_inline.h"
 #include <Eigen/Core>
 #include <vector>
@@ -34,10 +34,16 @@ namespace igl
   //          of the ith octree cell
   // Outputs:
   //   I  #P by k list of k-nearest-neighbor indices into P
-  template <typename DerivedP, typename KType, typename IndexType,
-    typename DerivedCH, typename DerivedCN, typename DerivedW,
+  template <
+    typename DerivedP, 
+    typename KType, 
+    typename IndexType,
+    typename DerivedCH, 
+    typename DerivedCN, 
+    typename DerivedW,
     typename DerivedI>
-  IGL_INLINE void knn(const Eigen::MatrixBase<DerivedP>& P,
+  IGL_INLINE void knn(
+    const Eigen::MatrixBase<DerivedP>& P,
     const KType & k,
     const std::vector<std::vector<IndexType> > & point_indices,
     const Eigen::MatrixBase<DerivedCH>& CH,

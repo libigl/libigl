@@ -25,6 +25,7 @@ int main(int argc, char *argv[])
     argc>1?argv[1]: TUTORIAL_SHARED_PATH "/elephant.obj",V,F);
   Eigen::MatrixXd N;
   igl::per_vertex_normals(V,F,N);
+  const double bbd = (V.colwise().maxCoeff()- V.colwise().minCoeff()).norm();
 
   Eigen::MatrixXd P_blue;
   Eigen::MatrixXd N_blue;
@@ -39,6 +40,7 @@ int main(int argc, char *argv[])
       igl::doublearea(V,F,A);
       return sqrt(((A.sum()*0.5/(n*0.6162910373))/M_PI));
     }(n_desired);
+    printf("blue noise radius: %g\n",r);
     Eigen::MatrixXd B;
     Eigen::VectorXi I;
     igl::blue_noise(V,F,r,B,I,P_blue);
@@ -74,11 +76,11 @@ int main(int argc, char *argv[])
     if(use_blue)
     {
       viewer.data().set_points(P_blue,Eigen::RowVector3d(0.3,0.4,1.0));
-      viewer.data().set_edges_from_vector_field(P_blue,N_blue,orange);
+      viewer.data().set_edges_from_vector_field(P_blue,bbd*0.01*N_blue,orange);
     }else
     {
       viewer.data().set_points(P_white,Eigen::RowVector3d(1,1,1));
-      viewer.data().set_edges_from_vector_field(P_white,N_white,orange);
+      viewer.data().set_edges_from_vector_field(P_white,bbd*0.01*N_white,orange);
     }
   };
   update();
