@@ -36,5 +36,5 @@ TEST_CASE("blue_noise: decimated-knight", "[igl]")
   Eigen::MatrixXd P2;
   igl::slice(P,I.col(1).eval(),1,P2);
   Eigen::VectorXd D = (P-P2).rowwise().norm();
-  REQUIRE(D.minCoeff() > r*0.99);
+  REQUIRE(D.minCoeff() > r);
 }
