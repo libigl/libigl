@@ -313,7 +313,7 @@ bool writePLY(
   std::vector<std::string> _dummy_header;
 
   return writePLY(filename,V,F,_dummy, _dummy,_dummy, _dummy, _dummy_header,
-                         _dummy, _dummy_header, _dummy, _dummy_header, _dummy_header, force_ascii);
+                         _dummy, _dummy_header, _dummy, _dummy_header, _dummy_header, !force_ascii);
 }
 
 template <
@@ -333,7 +333,7 @@ bool writePLY(
   std::vector<std::string> _dummy_header;
 
   return writePLY(filename,V,F,E, _dummy,_dummy, _dummy, _dummy_header,
-                         _dummy, _dummy_header, _dummy, _dummy_header, _dummy_header, force_ascii);
+                         _dummy, _dummy_header, _dummy, _dummy_header, _dummy_header, !force_ascii);
 }
 
 
