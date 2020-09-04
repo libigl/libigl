@@ -103,8 +103,8 @@ endif()
 
 if(HUNTER_ENABLED)
   hunter_add_package(Eigen)
-  find_package(Eigen3 CONFIG REQUIRED)
 endif()
+find_package(Eigen3 CONFIG QUIET)
 
 # Eigen
 if(NOT TARGET Eigen3::Eigen)
