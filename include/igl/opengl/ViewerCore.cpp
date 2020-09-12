@@ -238,13 +238,17 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
       glUniformMatrix4fv(viewi, 1, GL_FALSE, view.data());
       glUniformMatrix4fv(proji, 1, GL_FALSE, proj.data());
       glPointSize(data.point_size);
-
       data.meshgl.draw_overlay_points();
     }
-
     glEnable(GL_DEPTH_TEST);
   }
 
+  if(is_set(data.show_vertex_labels)&&data.vertex_labels_positions.rows()>0) 
+    draw_labels(data, data.meshgl.vertex_labels);
+  if(is_set(data.show_face_labels)&&data.face_labels_positions.rows()>0) 
+    draw_labels(data, data.meshgl.face_labels);
+  if(is_set(data.show_custom_labels)&&data.labels_positions.rows()>0) 
+    draw_labels(data, data.meshgl.custom_labels);
 }
 
 IGL_INLINE void igl::opengl::ViewerCore::draw_buffer(ViewerData& data,
@@ -342,6 +346,34 @@ IGL_INLINE void igl::opengl::ViewerCore::draw_buffer(ViewerData& data,
   }
   // Clean up
   free(pixels);
+}
+
+// Define uniforms for text labels
+IGL_INLINE void igl::opengl::ViewerCore::draw_labels(
+  ViewerData& data,
+  const igl::opengl::MeshGL::TextGL& labels
+){
+  glDisable(GL_LINE_SMOOTH); // Clear settings if overlay is activated
+  data.meshgl.bind_labels(labels);
+  GLint viewi = glGetUniformLocation(data.meshgl.shader_text,"view");
+  GLint proji = glGetUniformLocation(data.meshgl.shader_text,"proj");
+  glUniformMatrix4fv(viewi, 1, GL_FALSE, view.data());
+  glUniformMatrix4fv(proji, 1, GL_FALSE, proj.data());
+  // Parameters for mapping characters from font atlass
+  float width  = viewport(2);
+  float height = viewport(3);
+  float text_shift_scale_factor = orthographic ? 0.01 : 0.03;
+  float render_scale = orthographic ? 0.6 : 1.7;
+  glUniform1f(glGetUniformLocation(data.meshgl.shader_text, "TextShiftFactor"), text_shift_scale_factor);
+  glUniform3f(glGetUniformLocation(data.meshgl.shader_text, "TextColor"), 0, 0, 0);
+  glUniform2f(glGetUniformLocation(data.meshgl.shader_text, "CellSize"), 1.0f / 16, (300.0f / 384) / 6);
+  glUniform2f(glGetUniformLocation(data.meshgl.shader_text, "CellOffset"), 0.5 / 256.0, 0.5 / 256.0);
+  glUniform2f(glGetUniformLocation(data.meshgl.shader_text, "RenderSize"), 
+                                    render_scale * 0.75 * 16 / (width), 
+                                    render_scale * 0.75 * 33.33 / (height));
+  glUniform2f(glGetUniformLocation(data.meshgl.shader_text, "RenderOrigin"), -2, 2);
+  data.meshgl.draw_labels(labels);
+  glEnable(GL_DEPTH_TEST);
 }
 
 IGL_INLINE void igl::opengl::ViewerCore::set_rotation_type(

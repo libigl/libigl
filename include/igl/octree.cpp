@@ -19,8 +19,9 @@ namespace igl {
     typedef typename DerivedCH::Scalar ChildrenType;
     typedef typename DerivedCN::Scalar CentersType;
     typedef typename DerivedW::Scalar WidthsType;
+    typedef typename DerivedP::Scalar PointScalar;
     typedef Eigen::Matrix<ChildrenType,8,1> Vector8i;
-    typedef Eigen::Matrix<typename DerivedP::Scalar, 1, 3> RowVector3PType;
+    typedef Eigen::Matrix<PointScalar, 1, 3> RowVector3PType;
     typedef Eigen::Matrix<CentersType, 1, 3>       RowVector3CentersType;
     
     std::vector<Eigen::Matrix<ChildrenType,8,1>,
@@ -29,8 +30,8 @@ namespace igl {
         Eigen::aligned_allocator<Eigen::Matrix<CentersType,1,3> > > centers;
     std::vector<WidthsType> widths;
     
-    auto get_octant = [](RowVector3PType location,
-                         RowVector3CentersType center){
+    auto get_octant = [](const RowVector3PType& location,
+                         const RowVector3CentersType& center){
       // We use a binary numbering of children. Treating the parent cell's
       // center as the origin, we number the octants in the following manner:
       // The first bit is 1 iff the octant's x coordinate is positive
@@ -85,7 +86,7 @@ namespace igl {
   
     // Useful list of number 0..7
     const Vector8i zero_to_seven = (Vector8i()<<0,1,2,3,4,5,6,7).finished();
-    const Vector8i neg_ones = (Vector8i()<<-1,-1,-1,-1,-1,-1,-1,-1).finished();
+    const Vector8i neg_ones = Vector8i::Constant(-1);
   
     std::function< void(const ChildrenType, const int) > helper;
     helper = [&helper,&translate_center,&get_octant,&m,
@@ -138,17 +139,10 @@ namespace igl {
     children.emplace_back(neg_ones);
   
     //Get the minimum AABB for the points
-    RowVector3PType backleftbottom(P.col(0).minCoeff(),
-                                   P.col(1).minCoeff(),
-                                   P.col(2).minCoeff());
-    RowVector3PType frontrighttop(P.col(0).maxCoeff(),
-                                  P.col(1).maxCoeff(),
-                                  P.col(2).maxCoeff());
-    RowVector3CentersType aabb_center = (backleftbottom+frontrighttop)/2.0;
-    WidthsType aabb_width = std::max(std::max(
-                                          frontrighttop(0) - backleftbottom(0),
-                                          frontrighttop(1) - backleftbottom(1)),
-                                          frontrighttop(2) - backleftbottom(2));
+    RowVector3PType backleftbottom = P.colwise().minCoeff();
+    RowVector3PType frontrighttop = P.colwise().maxCoeff();
+    RowVector3CentersType aabb_center = (backleftbottom+frontrighttop)/PointScalar(2.0);
+    WidthsType aabb_width = (frontrighttop - backleftbottom).maxCoeff();
     centers.emplace_back( aabb_center );
   
     //Widths are the side length of the cube, (not half the side length):

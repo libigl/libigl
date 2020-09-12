@@ -51,7 +51,7 @@ endfunction()
 function(igl_download_comiso)
 	igl_download_project(CoMISo
 		GIT_REPOSITORY https://github.com/libigl/CoMISo.git
-		GIT_TAG        1f9618cf9b7bd77370d817976470d59091928606
+		GIT_TAG        d60aa4759fba76b0b793b1efb090b7a771dd7c56
 	)
 endfunction()
 
@@ -109,6 +109,15 @@ function(igl_download_imgui)
 	igl_download_project(libigl-imgui
 		GIT_REPOSITORY https://github.com/libigl/libigl-imgui.git
 		GIT_TAG        99f0643089b19f6daf5b3efd9544a65c9a851966
+	)
+endfunction()
+
+## ImGuizmo
+function(igl_download_imguizmo)
+	igl_download_project(imguizmo
+		GIT_REPOSITORY https://github.com/CedricGuillemet/ImGuizmo.git
+		GIT_TAG        a23567269f6617342bcc112394bdad937b54b2d7
+		${LIBIGL_BRANCH_OPTIONS}
 	)
 endfunction()
 

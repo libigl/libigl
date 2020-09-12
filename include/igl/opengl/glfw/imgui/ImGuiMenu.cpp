@@ -152,9 +152,6 @@ IGL_INLINE bool ImGuiMenu::key_up(int key, int modifiers)
 // Draw menu
 IGL_INLINE void ImGuiMenu::draw_menu()
 {
-  // Text labels
-  draw_labels_window();
-
   // Viewer settings
   if (callback_draw_viewer_window) { callback_draw_viewer_window(); }
   else { draw_viewer_window(); }
@@ -301,105 +298,10 @@ IGL_INLINE void ImGuiMenu::draw_viewer_menu()
   {
     make_checkbox("Wireframe", viewer->data().show_lines);
     make_checkbox("Fill", viewer->data().show_faces);
-    ImGui::Checkbox("Show vertex labels", &(viewer->data().show_vertid));
-    ImGui::Checkbox("Show faces labels", &(viewer->data().show_faceid));
-    ImGui::Checkbox("Show extra labels", &(viewer->data().show_labels));
+    make_checkbox("Show vertex labels", viewer->data().show_vertex_labels);
+    make_checkbox("Show faces labels", viewer->data().show_face_labels);
+    make_checkbox("Show extra labels", viewer->data().show_custom_labels);
   }
-}
-
-IGL_INLINE void ImGuiMenu::draw_labels_window()
-{
-  // Text labels
-  ImGui::SetNextWindowPos(ImVec2(0,0), ImGuiCond_Always);
-  ImGui::SetNextWindowSize(ImGui::GetIO().DisplaySize, ImGuiCond_Always);
-  bool visible = true;
-  ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0,0,0,0));
-  ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0);
-  ImGui::Begin("ViewerLabels", &visible,
-      ImGuiWindowFlags_NoTitleBar
-      | ImGuiWindowFlags_NoResize
-      | ImGuiWindowFlags_NoMove
-      | ImGuiWindowFlags_NoScrollbar
-      | ImGuiWindowFlags_NoScrollWithMouse
-      | ImGuiWindowFlags_NoCollapse
-      | ImGuiWindowFlags_NoSavedSettings
-      | ImGuiWindowFlags_NoInputs);
-  for (const auto & data : viewer->data_list)
-  {
-    draw_labels(data);
-  }
-  ImGui::End();
-  ImGui::PopStyleColor();
-  ImGui::PopStyleVar();
-}
-
-IGL_INLINE void ImGuiMenu::draw_labels(const igl::opengl::ViewerData &data)
-{
-  // Alec: How can we get these to respect (optionally) the depth of the scene?
-  if (data.show_vertid)
-  {
-    for (int i = 0; i < data.V.rows(); ++i)
-    {
-      draw_text(
-        data.V.row(i), 
-        data.V_normals.row(i), 
-        std::to_string(i),
-        data.label_color);
-    }
-  }
-
-  if (data.show_faceid)
-  {
-    for (int i = 0; i < data.F.rows(); ++i)
-    {
-      Eigen::RowVector3d p = Eigen::RowVector3d::Zero();
-      for (int j = 0; j < data.F.cols(); ++j)
-      {
-        p += data.V.row(data.F(i,j));
-      }
-      p /= (double) data.F.cols();
-
-      draw_text(
-        p, 
-        data.F_normals.row(i), 
-        std::to_string(i),
-        data.label_color);
-    }
-  }
-
-  if (data.show_labels)
-  {
-    for (int i = 0; i < data.labels_positions.rows(); ++i)
-    {
-      draw_text(
-        data.labels_positions.row(i), 
-        Eigen::Vector3d(0.0,0.0,0.0),
-        data.labels_strings[i],
-        data.label_color);
-    }
-  }
-}
-
-IGL_INLINE void ImGuiMenu::draw_text(
-  Eigen::Vector3d pos, 
-  Eigen::Vector3d normal, 
-  const std::string &text,
-  const Eigen::Vector4f color)
-{
-  pos += normal * 0.005f * viewer->core().object_scale;
-  Eigen::Vector3f coord = igl::project(Eigen::Vector3f(pos.cast<float>()),
-    viewer->core().view, viewer->core().proj, viewer->core().viewport);
-
-  // Draw text labels slightly bigger than normal text
-  ImDrawList* drawList = ImGui::GetWindowDrawList();
-  drawList->AddText(ImGui::GetFont(), ImGui::GetFontSize() * 1.2,
-      ImVec2(coord[0]/pixel_ratio_, (viewer->core().viewport[3] - coord[1])/pixel_ratio_),
-      ImGui::GetColorU32(ImVec4(
-        color(0),
-        color(1),
-        color(2),
-        color(3))),
-      &text[0], &text[0] + text.size());
 }
 
 IGL_INLINE float ImGuiMenu::pixel_ratio()
