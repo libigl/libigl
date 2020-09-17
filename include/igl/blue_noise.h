@@ -18,13 +18,14 @@ namespace igl
   // Sets" [Yuksel 2015]. YMMV
   //
   // Inputs:
-  //    V  #V by dim list of mesh vertex positions
-  //    F  #F by 3 list of mesh triangle indices into rows of V
-  //    r  Poisson disk radius (evaluated according to Euclidean distance on V)
-  //   B  n by 3 list of barycentric coordinates, ith row are coordinates of
+  //   V  #V by dim list of mesh vertex positions
+  //   F  #F by 3 list of mesh triangle indices into rows of V
+  //   r  Poisson disk radius (evaluated according to Euclidean distance on V)
+  // Outputs:
+  //   B  #P by 3 list of barycentric coordinates, ith row are coordinates of
   //     ith sampled point in face FI(i)
-  //   FI  n list of indices into F 
-  //   P  n by dim list of sample positions.
+  //   FI  #P list of indices into F 
+  //   P  #P by dim list of sample positions.
   // See also: random_points_on_mesh
   template <
     typename DerivedV,
