@@ -37,7 +37,7 @@ namespace igl
   //   z  subscript along z direction
   // Returns index value
   //
-  inline BlueNoiseKeyType key(
+  inline BlueNoiseKeyType blue_noise_key(
     const BlueNoiseKeyType w, // pass by copy --> int64_t so that multiplication is OK
     const BlueNoiseKeyType x, // pass by copy --> int64_t so that multiplication is OK
     const BlueNoiseKeyType y, // pass by copy --> int64_t so that multiplication is OK
@@ -59,7 +59,7 @@ namespace igl
   template <
     typename DerivedX,
     typename DerivedXs>
-  inline bool far_enough(
+  inline bool blue_noise_far_enough(
     const Eigen::MatrixBase<DerivedX> & X,
     const Eigen::MatrixBase<DerivedXs> & Xs,
     const std::unordered_map<BlueNoiseKeyType,int> & S,
@@ -70,7 +70,7 @@ namespace igl
     const int xi = Xs(i,0);
     const int yi = Xs(i,1);
     const int zi = Xs(i,2);
-    BlueNoiseKeyType k = key(w,xi,yi,zi);
+    BlueNoiseKeyType k = blue_noise_key(w,xi,yi,zi);
     int g = 2; // ceil(r/s)
     for(int x = std::max(xi-g,0);x<=std::min(xi+g,w-1);x++)
     for(int y = std::max(yi-g,0);y<=std::min(yi+g,w-1);y++)
@@ -78,7 +78,7 @@ namespace igl
     {
       if(x!=xi || y!=yi || z!=zi)
       {
-        const BlueNoiseKeyType nk = key(w,x,y,z);
+        const BlueNoiseKeyType nk = blue_noise_key(w,x,y,z);
         // have already selected from this cell
         const auto Siter = S.find(nk);
         if(Siter !=S.end() && Siter->second >= 0)
@@ -137,7 +137,7 @@ namespace igl
       {
         // too far skip (reject)
        miter++;
-      } else if(far_enough(X,Xs,S,rr,w,mi))
+      } else if(blue_noise_far_enough(X,Xs,S,rr,w,mi))
       {
         active.push_back(mi);
         S.find(nk)->second = mi;
@@ -189,7 +189,7 @@ namespace igl
       if(x!=xi || y!=yi || z!=zi)
       {
         //printf("  %d %d %d\n",x,y,z);
-        const BlueNoiseKeyType nk = key(w,x,y,z);
+        const BlueNoiseKeyType nk = blue_noise_key(w,x,y,z);
         // haven't yet selected from this cell?
         const auto Siter = S.find(nk);
         if(Siter !=S.end() && Siter->second < 0)
@@ -242,14 +242,6 @@ IGL_INLINE void igl::blue_noise(
     Eigen::PlainObjectBase<DerivedFI> & FI,
     Eigen::PlainObjectBase<DerivedP> & P)
 {
-  const auto & tictoc = []() -> double
-  {
-    static double t_start = igl::get_seconds();
-    double diff = igl::get_seconds()-t_start;
-    t_start += diff;
-    return diff;
-  };
-  tictoc();
   typedef typename DerivedV::Scalar Scalar;
   typedef Eigen::Matrix<Scalar,Eigen::Dynamic,1> VectorXS;
   // float+RowMajor is faster...
@@ -302,7 +294,7 @@ IGL_INLINE void igl::blue_noise(
   S.reserve(Xs.rows());
   for(int i = 0;i<Xs.rows();i++)
   {
-    BlueNoiseKeyType k = key(w,Xs(i,0),Xs(i,1),Xs(i,2)); 
+    BlueNoiseKeyType k = blue_noise_key(w,Xs(i,0),Xs(i,1),Xs(i,2)); 
     const auto Miter = M.find(k);
     if(Miter  == M.end())
     {
@@ -321,7 +313,6 @@ IGL_INLINE void igl::blue_noise(
   const double rr = r*r;
   std::vector<int> collected;
   collected.reserve(2.0*expected_number_of_points);
-  //printf("  init: %g secs\n",tictoc());
 
   auto Mouter = M.begin();
   // Just take the first point as the initial seed
@@ -352,7 +343,6 @@ IGL_INLINE void igl::blue_noise(
       step(X,Xs,rr,w,M,S,active,collected);
     }
   }
-  //printf(" while: %g secs\n",tictoc());
   {
     const int n = collected.size();
     P.resize(n,3);
@@ -366,7 +356,6 @@ IGL_INLINE void igl::blue_noise(
       FI(i) = XFI(c);
     }
   }
-  //printf("collec: %g secs\n",tictoc());
 }
 
 #ifdef IGL_STATIC_LIBRARY
