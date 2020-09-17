@@ -36,15 +36,45 @@ namespace igl
   //   I  #P by k list of k-nearest-neighbor indices into P
   template <
     typename DerivedP, 
-    typename KType, 
     typename IndexType,
-    typename DerivedCH, 
-    typename DerivedCN, 
+    typename DerivedCH,
+    typename DerivedCN,
     typename DerivedW,
     typename DerivedI>
   IGL_INLINE void knn(
     const Eigen::MatrixBase<DerivedP>& P,
-    const KType & k,
+    size_t k,
+    const std::vector<std::vector<IndexType> > & point_indices,
+    const Eigen::MatrixBase<DerivedCH>& CH,
+    const Eigen::MatrixBase<DerivedCN>& CN,
+    const Eigen::MatrixBase<DerivedW>& W,
+    Eigen::PlainObjectBase<DerivedI> & I);
+  // Inputs:
+  //   P  #P by 3 list of point locations for which which we want the neighbors of
+  //   V  #V by 3 list of point locations for which may be neighbors 
+  //   k  number of neighbors to find
+  //   point_indices  a vector of vectors, where the ith entry is a vector of
+  //                  the indices into P that are the ith octree cell's points
+  //   CH     #OctreeCells by 8, where the ith row is the indices of
+  //          the ith octree cell's children
+  //   CN     #OctreeCells by 3, where the ith row is a 3d row vector
+  //          representing the position of the ith cell's center
+  //   W      #OctreeCells, a vector where the ith entry is the width
+  //          of the ith octree cell
+  // Outputs:
+  //   I  #P by k list of k-nearest-neighbor indices into V
+  template <
+    typename DerivedP, 
+    typename DerivedV,
+    typename IndexType,
+    typename DerivedCH,
+    typename DerivedCN,
+    typename DerivedW,
+    typename DerivedI>
+  IGL_INLINE void knn(
+    const Eigen::MatrixBase<DerivedP>& P,
+    const Eigen::MatrixBase<DerivedV>& V,
+    size_t k,
     const std::vector<std::vector<IndexType> > & point_indices,
     const Eigen::MatrixBase<DerivedCH>& CH,
     const Eigen::MatrixBase<DerivedCN>& CN,
