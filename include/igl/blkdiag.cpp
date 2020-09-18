@@ -72,6 +72,6 @@ IGL_INLINE void igl::blkdiag(
 
 #ifdef IGL_STATIC_LIBRARY
 // explicit template instantiations
-template void igl::blkdiag<Eigen::Matrix<double, -1, -1, 0, -1, -1> >(std::__1::vector<Eigen::Matrix<double, -1, -1, 0, -1, -1>, std::__1::allocator<Eigen::Matrix<double, -1, -1, 0, -1, -1> > > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
-template void igl::blkdiag<double>(std::__1::vector<Eigen::SparseMatrix<double, 0, int>, std::__1::allocator<Eigen::SparseMatrix<double, 0, int> > > const&, Eigen::SparseMatrix<double, 0, int>&);
+template void igl::blkdiag<Eigen::Matrix<double, -1, -1, 0, -1, -1> >(std::vector<Eigen::Matrix<double, -1, -1, 0, -1, -1>, std::allocator<Eigen::Matrix<double, -1, -1, 0, -1, -1> > > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
+template void igl::blkdiag<double>(std::vector<Eigen::SparseMatrix<double, 0, int>, std::allocator<Eigen::SparseMatrix<double, 0, int> > > const&, Eigen::SparseMatrix<double, 0, int>&);
 #endif
