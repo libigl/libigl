@@ -21,12 +21,6 @@ IGL_INLINE void igl::blkdiag(
     nc += A.cols();
   }
   Y.resize(nr,nc);
-  Eigen::VectorXi per_col = Eigen::VectorXi::Zero(nc);
-  for(int j = 0;j<L.size();j++)
-  {
-    per_col(j) = L[j].cols();
-  }
-  Y.reserve(per_col);
   {
     int i = 0;
     int j = 0;
