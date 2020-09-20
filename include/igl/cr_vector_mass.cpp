@@ -46,10 +46,9 @@ igl::cr_vector_mass(
    oE.cols()!=F.cols())
     orient_halfedges(F, E, oE);
 
-  cr_vector_mass(V, F,
-    const_cast<const Eigen::PlainObjectBase<DerivedE>& >(E),
-    const_cast<const Eigen::PlainObjectBase<DerivedOE>& >(oE),
-    M);
+  const Eigen::PlainObjectBase<DerivedE>& cE = E;
+  const Eigen::PlainObjectBase<DerivedOE>& coE = oE;
+  cr_vector_mass(V, F, cE, coE, M);
 }
 
 
@@ -86,14 +85,14 @@ igl::cr_vector_mass_intrinsic(
   assert(E.rows()==F.rows() && E.cols()==F.cols() && oE.rows()==F.rows() &&
    oE.cols()==F.cols() && "Wrong dimension in edge vectors");
 
-  const int m = F.rows();
-  const int nE = E.maxCoeff() + 1;
+  const Eigen::Index m = F.rows();
+  const typename DerivedE::Scalar nE = E.maxCoeff() + 1;
 
   std::vector<Eigen::Triplet<ScalarM> > tripletList;
   tripletList.reserve(2*3*m);
-  for(int f=0; f<m; ++f) {
+  for(Eigen::Index f=0; f<m; ++f) {
     for(int e=0; e<3; ++e) {
-      const int v1=F(f,(e+1)%3), v2=F(f,(e+2)%3);
+      const typename DerivedF::Scalar v1=F(f,(e+1)%3), v2=F(f,(e+2)%3);
       //Scaled
       const ScalarM entry = dA(f) / 6;
       tripletList.emplace_back(E(f,e), E(f,e), entry);

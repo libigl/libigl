@@ -49,13 +49,10 @@ igl::cr_vector_curvature_correction(
   if(E.rows()!=F.rows() || E.cols()!=F.cols() || oE.rows()!=F.rows() ||
    oE.cols()!=F.cols())
     orient_halfedges(F, E, oE);
-  
-  cr_vector_curvature_correction(V, F,
-    const_cast
-    <const Eigen::PlainObjectBase<DerivedE>& >(E),
-    const_cast
-    <const Eigen::PlainObjectBase<DerivedOE>& >(oE),
-    K);
+
+  const Eigen::PlainObjectBase<DerivedE>& cE = E;
+  const Eigen::PlainObjectBase<DerivedOE>& coE = oE;
+  cr_vector_curvature_correction(V, F, cE, coE, K);
 }
 
 
@@ -90,18 +87,22 @@ igl::cr_vector_curvature_correction_intrinsic(
   Eigen::SparseMatrix<ScalarK>& K)
 {
   // Compute the angle defect kappa, set it to 0 at the boundary
-  const int n = F.maxCoeff() + 1;
+  const Eigen::Index n = F.maxCoeff() + 1;
   Eigen::Matrix<typename DerivedL_sq::Scalar,Eigen::Dynamic,1> kappa(n);
   kappa.setZero();
-  for(int i=0; i<F.rows(); ++i)
-    for(int j=0; j<3; ++j)
+  for(Eigen::Index i=0; i<F.rows(); ++i) {
+    for(int j=0; j<3; ++j) {
       kappa(F(i,j)) -= theta(i,j);
+    }
+  }
   kappa.array() += 2 * PI;
-  std::vector<std::vector<int> > b;
+  std::vector<std::vector<typename DerivedF::Scalar> > b;
   boundary_loop(F, b);
-  for(const auto& loop : b)
-    for(auto v : loop)
+  for(const auto& loop : b) {
+    for(auto v : loop) {
       kappa(v) = 0;
+    }
+  }
     
   cr_vector_curvature_correction_intrinsic(F, l_sq, theta, kappa, E, oE, K);
 }
@@ -127,26 +128,28 @@ igl::cr_vector_curvature_correction_intrinsic(
   assert(kappa.rows()==F.maxCoeff()+1 &&
    "Wrong dimension in theta or kappa");
   
-  const int m = F.rows();
-  const int nE = E.maxCoeff() + 1;
+  const Eigen::Index m = F.rows();
+  const Eigen::Index nE = E.maxCoeff() + 1;
   
   //Divide kappa by the actual angle sum to weigh consistently.
   Derivedtheta angleSum = Derivedtheta::Zero(kappa.rows(), 1);
-  for(int i=0; i<F.rows(); ++i)
-    for(int j=0; j<3; ++j)
+  for(Eigen::Index i=0; i<F.rows(); ++i) {
+    for(int j=0; j<3; ++j) {
       angleSum(F(i,j)) += theta(i,j);
+    }
+  }
   const Eigen::Matrix<typename Derivedkappa::Scalar, Eigen::Dynamic, 1>
   scaledKappa = kappa.array() / angleSum.array();
   
   std::vector<Eigen::Triplet<ScalarK> > tripletList;
   tripletList.reserve(10*3*m);
-  for(int f=0; f<m; ++f) {
+  for(Eigen::Index f=0; f<m; ++f) {
     for(int e=0; e<3; ++e) {
       const ScalarK eij=l_sq(f,e), ejk=l_sq(f,(e+1)%3),
       eki=l_sq(f,(e+2)%3); //These are squared quantities.
       const ScalarK lens = sqrt(eij*eki);
       const ScalarK o = oE(f,e)*oE(f,(e+2)%3);
-      const int i=F(f,(e+1)%3), j=F(f,(e+2)%3), k=F(f,e);
+      const typename DerivedF::Scalar i=F(f,(e+1)%3), j=F(f,(e+2)%3), k=F(f,e);
       const ScalarK ki=scaledKappa(i)*theta(f,(e+1)%3),
       kj=scaledKappa(j)*theta(f,(e+2)%3), kk=scaledKappa(k)*theta(f,e);
       

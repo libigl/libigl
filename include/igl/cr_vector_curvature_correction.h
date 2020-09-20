@@ -34,7 +34,7 @@ namespace igl
   //
   // Outputs:
   //  K: computed curvature correction matrix
-  //  E, oE: these are computed if they are not present
+  //  E, oE: these are computed if they are not present, as described above
 
   template <typename DerivedV, typename DerivedF, typename DerivedE,
   typename DerivedOE, typename ScalarK>

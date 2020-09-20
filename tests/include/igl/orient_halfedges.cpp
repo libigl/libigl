@@ -29,9 +29,11 @@ TEST_CASE("orient_halfedges: sanity checks", "[igl]")
       perm.indices() = Eigen::Vector3i(1,2,0);
       TT = (TT*perm).eval();
       TTi = (TTi*perm).eval();
-      for(int i=0;i<TTi.rows();i++)
-        for(int j=0;j<TTi.cols();j++)
+      for(int i=0;i<TTi.rows();i++) {
+        for(int j=0;j<TTi.cols();j++) {
           TTi(i,j)=TTi(i,j)==-1?-1:(TTi(i,j)+3-1)%3;
+        }
+      }
     }
 
     Eigen::MatrixXi E, oE;
@@ -39,13 +41,17 @@ TEST_CASE("orient_halfedges: sanity checks", "[igl]")
 
     const int m = E.maxCoeff()+1;
     std::vector<bool> b(m);
-    for(int i=0; i<F.rows(); ++i)
-      for(int j=0; j<3; ++j)
+    for(int i=0; i<F.rows(); ++i) {
+      for(int j=0; j<3; ++j) {
         b[E(i,j)] = TT(i,j)<0;
-      int nb = 0;
-      for(int i=0; i<b.size(); ++i)
-        if(b[i])
-          ++nb;
+      }
+    }
+    int nb = 0;
+    for(int i=0; i<b.size(); ++i) {
+      if(b[i]) {
+        ++nb;
+      }
+    }
 
 
     //Perform a variety of sanity checks.
@@ -65,27 +71,32 @@ TEST_CASE("orient_halfedges: sanity checks", "[igl]")
     std::vector<int> appeared1(m,0), appearedm1(m,0);
     for(int i=0; i<F.rows(); ++i) {
       for(int j=0; j<3; ++j) {
-        if(oE(i,j)==1)
+        if(oE(i,j)==1) {
           ++appeared1[E(i,j)];
-        else if(oE(i,j)==-1)
+        } else if(oE(i,j)==-1) {
           ++appearedm1[E(i,j)];
-        else
+        } else {
           REQUIRE(false); //Only 1 and -1 should occur.
+        }
       }
     }
     for(int i=0; i<m; ++i) {
       REQUIRE(appeared1[i]==1);
-      if(b[i])
+      if(b[i]) {
         REQUIRE(appearedm1[i]==0);
-      else
+      } else {
         REQUIRE(appearedm1[i]==1);
+      }
     }
 
     //Two opposite halfedges always map to the same edge
-    for(int i=0; i<F.rows(); ++i)
-      for(int j=0; j<3; ++j)
-        if(TT(i,j)>=0)
+    for(int i=0; i<F.rows(); ++i) {
+      for(int j=0; j<3; ++j) {
+        if(TT(i,j)>=0) {
           REQUIRE(E(i,j) == E(TT(i,j),TTi(i,j)));
+        }
+      }
+    }
   }
 }
 

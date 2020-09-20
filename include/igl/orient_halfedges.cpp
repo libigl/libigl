@@ -22,7 +22,7 @@ igl::orient_halfedges(
   
   using Int = typename DerivedF::Scalar;
   
-  const Int m = F.rows();
+  const Eigen::Index m = F.rows();
   
   DerivedE allE, EE;
   oriented_facets(F, allE);
@@ -31,7 +31,7 @@ igl::orient_halfedges(
   
   E.resize(m, 3);
   oE.resize(m, 3);
-  for(int f=0; f<m; ++f) {
+  for(Eigen::Index f=0; f<m; ++f) {
     for(int e=0; e<3; ++e) {
       const Int ind = f + m*e;
       E(f,e) = IC(ind);

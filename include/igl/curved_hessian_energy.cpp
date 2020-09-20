@@ -59,12 +59,9 @@ igl::curved_hessian_energy(
    oE.cols()!=F.cols())
     orient_halfedges(F, E, oE);
 
-  curved_hessian_energy(V, F,
-    const_cast
-    <const Eigen::PlainObjectBase<DerivedE>& >(E),
-    const_cast
-    <const Eigen::PlainObjectBase<DerivedOE>& >(oE),
-    Q);
+  const Eigen::PlainObjectBase<DerivedE>& cE = E;
+  const Eigen::PlainObjectBase<DerivedOE>& coE = oE;
+  curved_hessian_energy(V, F, cE, coE, Q);
 }
 
 
@@ -107,11 +104,14 @@ igl::curved_hessian_energy_intrinsic(
 
   //Invert M
   std::vector<Eigen::Triplet<ScalarQ> > tripletListMi;
-  for(int k=0; k<M.outerSize(); ++k)
+  for(Eigen::Index k=0; k<M.outerSize(); ++k) {
     for(typename Eigen::SparseMatrix<ScalarQ>::InnerIterator it(M,k);
-      it; ++it)
-      if(it.value() > 0)
+      it; ++it) {
+      if(it.value() > 0) {
         tripletListMi.emplace_back(it.row(), it.col(), 1./it.value());
+      }
+    }
+  }
   Eigen::SparseMatrix<ScalarQ> Mi(M.rows(), M.cols());
   Mi.setFromTriplets(tripletListMi.begin(), tripletListMi.end());
 

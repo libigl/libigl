@@ -47,7 +47,7 @@ namespace igl
   //
   // Outputs:
   //  Q: computed Hessian energy matrix
-  //  E, oE: these are computed if they are not present
+  //  E, oE: these are computed if they are not present, as described above
   template <typename DerivedV, typename DerivedF, typename DerivedE,
   typename DerivedOE, typename ScalarQ>
   IGL_INLINE void
