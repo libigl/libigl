@@ -5,6 +5,7 @@ on:
     branches:
       - master
       - stable
+      - jdumas-changes
   pull_request:
     branches:
       - master
