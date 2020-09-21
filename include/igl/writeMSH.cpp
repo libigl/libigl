@@ -12,19 +12,22 @@
 #include <iostream>
 
 
-namespace {
+namespace igl {
+namespace internal {
+
     // helper function, appends contents of Eigen matrix to an std::vector, in RowMajor fashion
-    template <typename T, typename Derived> 
-    void append_mat_to_vec(std::vector<T> &vec, const Eigen::PlainObjectBase<Derived> & mat) 
+    template <typename T, typename Derived>
+    void append_mat_to_vec(std::vector<T> &vec, const Eigen::PlainObjectBase<Derived> & mat)
     {
         size_t st = vec.size();
         vec.resize(st + mat.size());
 
-        Eigen::Map< Eigen::Matrix<typename Derived::Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> > 
+        Eigen::Map< Eigen::Matrix<typename Derived::Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> >
             _map_vec( reinterpret_cast<T *>( vec.data() + st ), mat.rows(), mat.cols() );
         _map_vec = mat;
     }
 
+}
 }
 
 IGL_INLINE bool igl::writeMSH(
@@ -41,7 +44,9 @@ IGL_INLINE bool igl::writeMSH(
              const std::vector<Eigen::MatrixXd> &TetF
              )
 {
-    try 
+    using namespace internal;
+
+    try
     {
         // error checks
         if(!XFields.empty())
@@ -59,7 +64,7 @@ IGL_INLINE bool igl::writeMSH(
                 throw std::invalid_argument("Triangle field count mismatch");
             if(EFields.size()!=TetF.size())
                 throw std::invalid_argument("Tetrahedra field count mismatch");
-            
+
             for(int i=0;i<EFields.size();++i)
             {
                 if(TriF[i].rows()!=Tri.rows())
@@ -91,7 +96,7 @@ IGL_INLINE bool igl::writeMSH(
         igl::MshSaver msh_saver(msh, true);
         msh_saver.save_mesh( _X,
             _Tri_Tet,
-            _Tri_Tet_len, 
+            _Tri_Tet_len,
             _Tri_Tet_type,
             _Tri_Tet_tag);
 
@@ -133,7 +138,7 @@ IGL_INLINE bool igl::writeMSH(
             else
             {
                 throw std::invalid_argument("unsupported node field dimensionality");
-            } 
+            }
         }
     } catch(const std::exception& e) {
         std::cerr << e.what() << std::endl;
