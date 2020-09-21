@@ -56,8 +56,9 @@ igl::curved_hessian_energy(
   Eigen::SparseMatrix<ScalarQ>& Q)
 {
   if(E.rows()!=F.rows() || E.cols()!=F.cols() || oE.rows()!=F.rows() ||
-   oE.cols()!=F.cols())
+   oE.cols()!=F.cols()) {
     orient_halfedges(F, E, oE);
+  }
 
   const Eigen::PlainObjectBase<DerivedE>& cE = E;
   const Eigen::PlainObjectBase<DerivedOE>& coE = oE;

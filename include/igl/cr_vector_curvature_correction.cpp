@@ -47,8 +47,9 @@ igl::cr_vector_curvature_correction(
   Eigen::SparseMatrix<ScalarK>& K)
 {
   if(E.rows()!=F.rows() || E.cols()!=F.cols() || oE.rows()!=F.rows() ||
-   oE.cols()!=F.cols())
+   oE.cols()!=F.cols()) {
     orient_halfedges(F, E, oE);
+  }
 
   const Eigen::PlainObjectBase<DerivedE>& cE = E;
   const Eigen::PlainObjectBase<DerivedOE>& coE = oE;
@@ -87,7 +88,7 @@ igl::cr_vector_curvature_correction_intrinsic(
   Eigen::SparseMatrix<ScalarK>& K)
 {
   // Compute the angle defect kappa, set it to 0 at the boundary
-  const Eigen::Index n = F.maxCoeff() + 1;
+  const typename DerivedF::Scalar n = F.maxCoeff() + 1;
   Eigen::Matrix<typename DerivedL_sq::Scalar,Eigen::Dynamic,1> kappa(n);
   kappa.setZero();
   for(Eigen::Index i=0; i<F.rows(); ++i) {
@@ -129,7 +130,7 @@ igl::cr_vector_curvature_correction_intrinsic(
    "Wrong dimension in theta or kappa");
   
   const Eigen::Index m = F.rows();
-  const Eigen::Index nE = E.maxCoeff() + 1;
+  const typename DerivedE::Scalar nE = E.maxCoeff() + 1;
   
   //Divide kappa by the actual angle sum to weigh consistently.
   Derivedtheta angleSum = Derivedtheta::Zero(kappa.rows(), 1);

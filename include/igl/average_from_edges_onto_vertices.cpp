@@ -34,8 +34,9 @@ igl::average_from_edges_onto_vertices(
   
   for(int i=0; i<F.rows(); ++i) {
     for(int j=0; j<3; ++j) {
-      if(oE(i,j)<0)
+      if(oE(i,j)<0) {
         continue;
+      }
       const int e = E(i,j);
       const int vi=F(i,(j+1)%3), vj=F(i,(j+2)%3);
       
@@ -52,8 +53,9 @@ igl::average_from_edges_onto_vertices(
   //Divide by valence
   for(int i=0; i<n; ++i) {
     const Scalar valence = edgesPerVertex(i);
-    if(valence>0)
+    if(valence>0) {
       uV(i) /= valence;
+    }
   }
 }
 

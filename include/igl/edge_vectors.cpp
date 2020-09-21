@@ -78,10 +78,11 @@ igl::edge_vectors(
       const typename DerivedE::Scalar e=E(i,j);
       const typename DerivedF::Scalar vi=F(i,(j+1)%3), vj=F(i,(j+2)%3);
       vecParallel.row(e) = (V.row(vj)-V.row(vi)).normalized();
-      if(computePerpendicular) //This should ideally be an if constexpr
+      if(computePerpendicular) { //This should ideally be an if constexpr
         vecPerpendicular.row(e) =
         Eigen::AngleAxis<Scalar>(0.5*PI, edgeN.row(e)) *
         vecParallel.row(e).transpose();
+      }
     }
   }
 }
