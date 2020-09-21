@@ -16,8 +16,8 @@ namespace igl
   //
   // Inputs:
   //   V  #V by dim list of vertex positions
-  //   epsilon  uniqueness tolerance (significant digit), can probably think of
-  //     this as a tolerance on L1 distance
+  //   epsilon  uniqueness tolerance used coordinate-wise: 1e0 --> integer
+  //     match, 1e-1 --> match up to first decimal, ... , 0 --> exact match.
   // Outputs:
   //   SV  #SV by dim new list of vertex positions
   //   SVI #SV by 1 list of indices so SV = V(SVI,:) 

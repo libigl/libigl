@@ -57,9 +57,9 @@ bool writePLY(
     typedef typename DerivedVD::Scalar VDScalar;
     typedef typename DerivedFD::Scalar FDScalar;
     typedef typename DerivedED::Scalar EDScalar;
-    
+
     // temporary storage for data to be passed to tinyply internals
-    std::vector<NScalar> _v;
+    std::vector<VScalar> _v;
     std::vector<NScalar> _n;
     std::vector<UVScalar> _uv;
     std::vector<VDScalar> _vd;
@@ -78,10 +78,10 @@ bool writePLY(
     _v.resize(V.size());
     Eigen::Map< Eigen::Matrix<VScalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor > >( &_v[0], V.rows(), V.cols() ) = V;
 
-    file.add_properties_to_element("vertex", { "x", "y", "z" }, 
+    file.add_properties_to_element("vertex", { "x", "y", "z" },
         tynyply_type<VScalar>(), V.rows(), reinterpret_cast<uint8_t*>( &_v[0] ), tinyply::Type::INVALID, 0);
 
-    if(N.rows()>0) 
+    if(N.rows()>0)
     {
         _n.resize(N.size());
         Eigen::Map<Eigen::Matrix<NScalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor > >( &_n[0], N.rows(), N.cols() ) = N;
@@ -89,7 +89,7 @@ bool writePLY(
             tynyply_type<NScalar>(), N.rows(), reinterpret_cast<uint8_t*>( &_n[0] ),tinyply::Type::INVALID, 0);
     }
 
-    if(UV.rows()>0) 
+    if(UV.rows()>0)
     {
         _uv.resize(UV.size());
         Eigen::Map<Eigen::Matrix<UVScalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor > >( &_uv[0], UV.rows(), UV.cols() ) = UV;
@@ -129,7 +129,7 @@ bool writePLY(
             tynyply_type<FDScalar>(), FD.rows(), reinterpret_cast<uint8_t*>( &_fd[0] ), tinyply::Type::INVALID, 0);
     }
 
-    if(E.rows()>0) 
+    if(E.rows()>0)
     {
         assert(E.cols()==2);
         _ev.resize(E.size());
@@ -233,7 +233,7 @@ bool writePLY(
 {
   Eigen::MatrixXd _dummy;
   std::vector<std::string> _dummy_header;
-  
+
   return writePLY(filename,V,F,_dummy, _dummy, _dummy, _dummy, _dummy_header, _dummy, _dummy_header, _dummy, _dummy_header, _dummy_header, true);
 }
 
@@ -251,7 +251,7 @@ bool writePLY(
 {
   Eigen::MatrixXd _dummy;
   std::vector<std::string> _dummy_header;
-  
+
   return writePLY(filename,V,F,E, _dummy, _dummy, _dummy, _dummy_header, _dummy, _dummy_header, _dummy, _dummy_header, _dummy_header, true);
 }
 
@@ -272,7 +272,7 @@ bool writePLY(
 {
   Eigen::MatrixXd _dummy;
   std::vector<std::string> _dummy_header;
-  
+
   return writePLY(filename,V,F,_dummy, N,UV, _dummy, _dummy_header, _dummy, _dummy_header, _dummy, _dummy_header, _dummy_header, true);
 }
 
@@ -294,7 +294,7 @@ bool writePLY(
 {
   Eigen::MatrixXd _dummy;
   std::vector<std::string> _dummy_header;
-  
+
   return writePLY(filename,V,F,E, N,UV, _dummy, _dummy_header, _dummy, _dummy_header, _dummy, _dummy_header, _dummy_header, true);
 }
 
@@ -311,8 +311,8 @@ bool writePLY(
 {
   Eigen::MatrixXd _dummy(0,0);
   std::vector<std::string> _dummy_header;
-  
-  return writePLY(filename,V,F,_dummy, _dummy,_dummy, _dummy, _dummy_header, 
+
+  return writePLY(filename,V,F,_dummy, _dummy,_dummy, _dummy, _dummy_header,
                          _dummy, _dummy_header, _dummy, _dummy_header, _dummy_header, force_ascii);
 }
 
@@ -331,7 +331,7 @@ bool writePLY(
 {
   Eigen::MatrixXd _dummy(0,0);
   std::vector<std::string> _dummy_header;
-  
+
   return writePLY(filename,V,F,E, _dummy,_dummy, _dummy, _dummy_header,
                          _dummy, _dummy_header, _dummy, _dummy_header, _dummy_header, force_ascii);
 }
@@ -359,8 +359,8 @@ bool writePLY(
 {
   Eigen::MatrixXd _dummy(0,0);
   std::vector<std::string> _dummy_header;
-  
-  return writePLY(filename,V,F,_dummy, N, UV, VD, VDheader, 
+
+  return writePLY(filename,V,F,_dummy, N, UV, VD, VDheader,
                          _dummy, _dummy_header, _dummy, _dummy_header, comments, true);
 }
 
@@ -389,8 +389,8 @@ bool writePLY(
 {
   Eigen::MatrixXd _dummy(0,0);
   std::vector<std::string> _dummy_header;
-  
-  return writePLY(filename,V,F,E, N, UV, VD, VDheader, 
+
+  return writePLY(filename,V,F,E, N, UV, VD, VDheader,
                          _dummy, _dummy_header, _dummy, _dummy_header, comments, true);
 
 }
@@ -405,4 +405,5 @@ bool writePLY(
 // Explicit template instantiation
 template bool igl::writePLY<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(std::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&);
 template bool igl::writePLY<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(std::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, std::vector<std::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::basic_string<char, std::char_traits<char>, std::allocator<char> > > > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, std::vector<std::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::basic_string<char, std::char_traits<char>, std::allocator<char> > > > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, std::vector<std::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::basic_string<char, std::char_traits<char>, std::allocator<char> > > > const&, std::vector<std::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::basic_string<char, std::char_traits<char>, std::allocator<char> > > > const&, bool);
+template bool igl::writePLY<Eigen::Matrix<float, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<float, -1, -1, 0, -1, -1>, Eigen::Matrix<float, -1, -1, 0, -1, -1>, Eigen::Matrix<float, -1, -1, 0, -1, -1>, Eigen::Matrix<float, -1, -1, 0, -1, -1>, Eigen::Matrix<float, -1, -1, 0, -1, -1> >(std::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, Eigen::MatrixBase<Eigen::Matrix<float, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<float, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<float, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<float, -1, -1, 0, -1, -1> > const&, std::vector<std::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::basic_string<char, std::char_traits<char>, std::allocator<char> > > > const&, Eigen::MatrixBase<Eigen::Matrix<float, -1, -1, 0, -1, -1> > const&, std::vector<std::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::basic_string<char, std::char_traits<char>, std::allocator<char> > > > const&, Eigen::MatrixBase<Eigen::Matrix<float, -1, -1, 0, -1, -1> > const&, std::vector<std::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::basic_string<char, std::char_traits<char>, std::allocator<char> > > > const&, std::vector<std::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::basic_string<char, std::char_traits<char>, std::allocator<char> > > > const&, bool);
 #endif

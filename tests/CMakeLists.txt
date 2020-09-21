@@ -95,6 +95,14 @@ if(LIBIGL_WITH_PREDICATES)
   target_link_libraries(libigl_tests PUBLIC igl::predicates igl::triangle)
 endif()
 
+if(LIBIGL_WITH_TRIANGLE)
+  file(GLOB TEST_SRC_FILES ./include/igl/triangle/*.cpp)
+  file(GLOB TEST_INC_FILES ./include/igl/triangle/*.h ./include/igl/triangle/*.inl)
+  target_sources(libigl_tests PRIVATE ${TEST_SRC_FILES} ${TEST_INC_FILES})
+
+  target_link_libraries(libigl_tests PUBLIC igl::triangle)
+endif()
+
 file(GLOB TEST_SRC_FILES ./include/igl/*.cpp)
 file(GLOB TEST_INC_FILES ./include/igl/*.h ./include/igl/*.inl)
 target_sources(libigl_tests PRIVATE ${TEST_SRC_FILES} ${TEST_INC_FILES})

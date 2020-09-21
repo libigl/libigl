@@ -10,6 +10,7 @@
 #include "bind_vertex_attrib_array.h"
 #include "create_shader_program.h"
 #include "destroy_shader_program.h"
+#include "verasansmono_compressed.h"
 #include <iostream>
 
 IGL_INLINE igl::opengl::MeshGL::MeshGL():
@@ -31,6 +32,7 @@ IGL_INLINE void igl::opengl::MeshGL::init_buffers()
   glGenBuffers(1, &vbo_V_uv);
   glGenBuffers(1, &vbo_F);
   glGenTextures(1, &vbo_tex);
+  glGenTextures(1, &font_atlas);
 
   // Line overlay
   glGenVertexArrays(1, &vao_overlay_lines);
@@ -45,6 +47,11 @@ IGL_INLINE void igl::opengl::MeshGL::init_buffers()
   glGenBuffers(1, &vbo_points_F);
   glGenBuffers(1, &vbo_points_V);
   glGenBuffers(1, &vbo_points_V_colors);
+
+  // Text Labels
+  vertex_labels.init_buffers();
+  face_labels.init_buffers();
+  custom_labels.init_buffers();
 
   dirty = MeshGL::DIRTY_ALL;
 }
@@ -71,8 +78,32 @@ IGL_INLINE void igl::opengl::MeshGL::free_buffers()
     glDeleteBuffers(1, &vbo_points_V);
     glDeleteBuffers(1, &vbo_points_V_colors);
 
+    // Text Labels
+    vertex_labels.free_buffers();
+    face_labels.free_buffers();
+    custom_labels.free_buffers();
+
     glDeleteTextures(1, &vbo_tex);
+    glDeleteTextures(1, &font_atlas);
   }
+}
+
+IGL_INLINE void igl::opengl::MeshGL::TextGL::init_buffers()
+{
+  glGenVertexArrays(1, &vao_labels);
+  glBindVertexArray(vao_labels);
+  glGenBuffers(1, &vbo_labels_pos);
+  glGenBuffers(1, &vbo_labels_characters);
+  glGenBuffers(1, &vbo_labels_offset);
+  glGenBuffers(1, &vbo_labels_indices);
+}
+
+IGL_INLINE void igl::opengl::MeshGL::TextGL::free_buffers()
+{
+  glDeleteBuffers(1, &vbo_labels_pos);
+  glDeleteBuffers(1, &vbo_labels_characters);
+  glDeleteBuffers(1, &vbo_labels_offset);
+  glDeleteBuffers(1, &vbo_labels_indices);
 }
 
 IGL_INLINE void igl::opengl::MeshGL::bind_mesh()
@@ -116,7 +147,9 @@ IGL_INLINE void igl::opengl::MeshGL::bind_overlay_lines()
 
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_lines_F);
   if (is_dirty)
+  {
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned)*lines_F_vbo.size(), lines_F_vbo.data(), GL_DYNAMIC_DRAW);
+  }
 
   dirty &= ~MeshGL::DIRTY_OVERLAY_LINES;
 }
@@ -132,9 +165,48 @@ IGL_INLINE void igl::opengl::MeshGL::bind_overlay_points()
 
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_points_F);
   if (is_dirty)
+  {
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned)*points_F_vbo.size(), points_F_vbo.data(), GL_DYNAMIC_DRAW);
+  }
 
   dirty &= ~MeshGL::DIRTY_OVERLAY_POINTS;
+}
+
+IGL_INLINE void igl::opengl::MeshGL::init_text_rendering()
+{
+  // Decompress the png of the font atlas
+  unsigned char verasansmono_font_atlas[256*256];
+  decompress_verasansmono_atlas(verasansmono_font_atlas);
+
+  // Bind atlas
+  glBindTexture(GL_TEXTURE_2D, font_atlas);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 256, 256, 0, GL_RED, GL_UNSIGNED_BYTE, verasansmono_font_atlas);
+
+  // TextGL initialization
+  vertex_labels.dirty_flag = MeshGL::DIRTY_VERTEX_LABELS;
+  face_labels.dirty_flag = MeshGL::DIRTY_FACE_LABELS;
+  custom_labels.dirty_flag = MeshGL::DIRTY_CUSTOM_LABELS;
+}
+
+IGL_INLINE void igl::opengl::MeshGL::bind_labels(const TextGL& labels)
+{
+  bool is_dirty = dirty & labels.dirty_flag;
+  glBindTexture(GL_TEXTURE_2D, font_atlas);
+  glBindVertexArray(labels.vao_labels);
+  glUseProgram(shader_text);
+  bind_vertex_attrib_array(shader_text, "position" , labels.vbo_labels_pos       , labels.label_pos_vbo   , is_dirty);
+  bind_vertex_attrib_array(shader_text, "character", labels.vbo_labels_characters, labels.label_char_vbo  , is_dirty);
+  bind_vertex_attrib_array(shader_text, "offset"   , labels.vbo_labels_offset    , labels.label_offset_vbo, is_dirty);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, labels.vbo_labels_indices);
+  if (is_dirty)
+  {
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned)*labels.label_indices_vbo.size(), labels.label_indices_vbo.data(), GL_DYNAMIC_DRAW);
+  }
+  dirty &= ~labels.dirty_flag;
 }
 
 IGL_INLINE void igl::opengl::MeshGL::draw_mesh(bool solid)
@@ -161,6 +233,11 @@ IGL_INLINE void igl::opengl::MeshGL::draw_overlay_lines()
 IGL_INLINE void igl::opengl::MeshGL::draw_overlay_points()
 {
   glDrawElements(GL_POINTS, points_F_vbo.rows(), GL_UNSIGNED_INT, 0);
+}
+
+IGL_INLINE void igl::opengl::MeshGL::draw_labels(const TextGL& labels)
+{
+  glDrawElements(GL_POINTS, labels.label_indices_vbo.rows(), GL_UNSIGNED_INT, 0);
 }
 
 IGL_INLINE void igl::opengl::MeshGL::init()
@@ -289,7 +366,82 @@ R"(#version 150
   }
 )";
 
+  std::string text_vert_shader =
+R"(#version 330
+    in vec3 position;
+    in float character;
+    in float offset;
+    uniform mat4 view;
+    uniform mat4 proj;
+    out int vPosition;
+    out int vCharacter;
+    out float vOffset;
+    void main()
+    {
+      vCharacter = int(character);
+      vOffset = offset;
+      vPosition = gl_VertexID;
+      gl_Position = proj * view * vec4(position, 1.0);
+    }
+)";
+
+  std::string text_geom_shader =
+R"(#version 150 core
+    layout(points) in;
+    layout(triangle_strip, max_vertices = 4) out;
+    out vec2 gTexCoord;
+    uniform mat4 view;
+    uniform mat4 proj;
+    uniform vec2 CellSize;
+    uniform vec2 CellOffset;
+    uniform vec2 RenderSize;
+    uniform vec2 RenderOrigin;
+    uniform float TextShiftFactor;
+    in int vPosition[1];
+    in int vCharacter[1];
+    in float vOffset[1];
+    void main()
+    {
+      // Code taken from https://prideout.net/strings-inside-vertex-buffers
+      // Determine the final quad's position and size:
+      vec4 P = gl_in[0].gl_Position + vec4( vOffset[0]*TextShiftFactor, 0.0, 0.0, 0.0 ); // 0.04
+      vec4 U = vec4(1, 0, 0, 0) * RenderSize.x; // 1.0
+      vec4 V = vec4(0, 1, 0, 0) * RenderSize.y; // 1.0
+
+      // Determine the texture coordinates:
+      int letter = vCharacter[0]; // used to be the character
+      letter = clamp(letter - 32, 0, 96);
+      int row = letter / 16 + 1;
+      int col = letter % 16;
+      float S0 = CellOffset.x + CellSize.x * col;
+      float T0 = CellOffset.y + 1 - CellSize.y * row;
+      float S1 = S0 + CellSize.x - CellOffset.x;
+      float T1 = T0 + CellSize.y;
+
+      // Output the quad's vertices:
+      gTexCoord = vec2(S0, T1); gl_Position = P - U - V; EmitVertex();
+      gTexCoord = vec2(S1, T1); gl_Position = P + U - V; EmitVertex();
+      gTexCoord = vec2(S0, T0); gl_Position = P - U + V; EmitVertex();
+      gTexCoord = vec2(S1, T0); gl_Position = P + U + V; EmitVertex();
+      EndPrimitive();
+    }
+)";
+
+  std::string text_frag_shader =
+R"(#version 330
+    out vec4 outColor;
+    in vec2 gTexCoord;
+    uniform sampler2D font_atlas;
+    uniform vec3 TextColor;
+    void main()
+    {
+      float A = texture(font_atlas, gTexCoord).r;
+      outColor = vec4(TextColor, A);
+    }
+)";
+
   init_buffers();
+  init_text_rendering();
   create_shader_program(
     mesh_vertex_shader_string,
     mesh_fragment_shader_string,
@@ -305,6 +457,12 @@ R"(#version 150
     overlay_point_fragment_shader_string,
     {},
     shader_overlay_points);
+  create_shader_program(
+    text_geom_shader,
+    text_vert_shader,
+    text_frag_shader,
+    {},
+    shader_text);
 }
 
 IGL_INLINE void igl::opengl::MeshGL::free()
@@ -323,6 +481,7 @@ IGL_INLINE void igl::opengl::MeshGL::free()
     free(shader_mesh);
     free(shader_overlay_lines);
     free(shader_overlay_points);
+    free(shader_text);
     free_buffers();
   }
 }

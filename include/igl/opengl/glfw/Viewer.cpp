@@ -592,10 +592,10 @@ namespace glfw
         return true;
       }
       case ';':
-        data().show_vertid = !data().show_vertid;
+        data().show_vertex_labels = !data().show_vertex_labels;
         return true;
       case ':':
-        data().show_faceid = !data().show_faceid;
+        data().show_face_labels = !data().show_face_labels;
         return true;
       default: break;//do nothing
     }

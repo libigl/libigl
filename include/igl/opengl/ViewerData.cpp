@@ -28,9 +28,9 @@ IGL_INLINE igl::opengl::ViewerData::ViewerData()
   invert_normals    (false),
   show_overlay      (~unsigned(0)),
   show_overlay_depth(~unsigned(0)),
-  show_vertid       (false),
-  show_faceid       (false),
-  show_labels       (false),
+  show_vertex_labels(0),
+  show_face_labels  (0),
+  show_custom_labels(0),
   show_texture      (false),
   use_matcap        (false),
   point_size(30),
@@ -191,7 +191,7 @@ IGL_INLINE void igl::opengl::ViewerData::set_colors(const Eigen::MatrixXd &C)
   }
   else if(C.rows() == V.rows() || C.rows() == F.rows())
   {
-    // face based colors? 
+    // face based colors?
     if((C.rows()==F.rows()) && (C.rows() != V.rows() || face_based))
     {
       set_face_based(true);
@@ -369,6 +369,24 @@ IGL_INLINE void igl::opengl::ViewerData::set_edges(
   dirty |= MeshGL::DIRTY_OVERLAY_LINES;
 }
 
+IGL_INLINE void igl::opengl::ViewerData::set_edges_from_vector_field(
+  const Eigen::MatrixXd& P, 
+  const Eigen::MatrixXd& V, 
+  const Eigen::MatrixXd& C)
+{
+  assert(P.rows() == V.rows());
+  Eigen::MatrixXi E(P.rows(),2);
+  const Eigen::MatrixXd PV = 
+    (Eigen::MatrixXd(P.rows()+V.rows(),3)<<P,P+V).finished();
+  for(int i = 0;i<P.rows();i++)
+  {
+    E(i,0) = i;
+    E(i,1) = i+P.rows();
+  }
+  const Eigen::MatrixXd CC = C.replicate<2,1>();
+  set_edges(PV,E, C.rows() == 1?C:C.replicate<2,1>());
+}
+
 IGL_INLINE void igl::opengl::ViewerData::add_edges(const Eigen::MatrixXd& P1, const Eigen::MatrixXd& P2, const Eigen::MatrixXd& C)
 {
   Eigen::MatrixXd P1_temp,P2_temp;
@@ -417,6 +435,8 @@ IGL_INLINE void igl::opengl::ViewerData::add_label(const Eigen::VectorXd& P,  co
   labels_positions.conservativeResize(lastid+1, 3);
   labels_positions.row(lastid) = P_temp;
   labels_strings.push_back(str);
+
+  dirty |= MeshGL::DIRTY_CUSTOM_LABELS;
 }
 
 IGL_INLINE void igl::opengl::ViewerData::set_labels(const Eigen::MatrixXd& P, const std::vector<std::string>& str)
@@ -454,7 +474,12 @@ IGL_INLINE void igl::opengl::ViewerData::clear()
 
   lines                   = Eigen::MatrixXd (0,9);
   points                  = Eigen::MatrixXd (0,6);
+
+  vertex_labels_positions = Eigen::MatrixXd (0,3);
+  face_labels_positions   = Eigen::MatrixXd (0,3);
   labels_positions        = Eigen::MatrixXd (0,3);
+  vertex_labels_strings.clear();
+  face_labels_strings.clear();
   labels_strings.clear();
 
   face_based = false;
@@ -560,6 +585,41 @@ IGL_INLINE void igl::opengl::ViewerData::grid_texture()
   texture_B = texture_R;
   texture_A = Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>::Constant(texture_R.rows(),texture_R.cols(),255);
   dirty |= MeshGL::DIRTY_TEXTURE;
+}
+
+// Populate VBOs of a particular label stype (Vert, Face, Custom)
+IGL_INLINE void igl::opengl::ViewerData::update_labels(
+  igl::opengl::MeshGL& meshgl,
+  igl::opengl::MeshGL::TextGL& GL_labels,
+  const Eigen::MatrixXd& positions,
+  const std::vector<std::string>& strings
+){
+  if (positions.rows()>0)
+  {
+    int numCharsToRender = 0;
+    for(size_t p=0; p<positions.rows(); p++)
+    {
+      numCharsToRender += strings.at(p).length();
+    }
+    GL_labels.label_pos_vbo.resize(numCharsToRender, 3);
+    GL_labels.label_char_vbo.resize(numCharsToRender, 1);
+    GL_labels.label_offset_vbo.resize(numCharsToRender, 1);
+    GL_labels.label_indices_vbo.resize(numCharsToRender, 1);
+    int idx=0;
+    assert(strings.size() == positions.rows());
+    for(size_t s=0; s<strings.size(); s++)
+    {
+      const auto & label = strings.at(s);
+      for(size_t c=0; c<label.length(); c++)
+      {
+        GL_labels.label_pos_vbo.row(idx) = positions.row(s).cast<float>();
+        GL_labels.label_char_vbo(idx) = (float)(label.at(c));
+        GL_labels.label_offset_vbo(idx) = c;
+        GL_labels.label_indices_vbo(idx) = idx;
+        idx++;
+      }
+    }
+  }
 }
 
 IGL_INLINE void igl::opengl::ViewerData::updateGL(
@@ -694,7 +754,7 @@ IGL_INLINE void igl::opengl::ViewerData::updateGL(
           meshgl.F_vbo.row(i) << i*3+0, i*3+1, i*3+2;
       }
 
-      if (meshgl.dirty & MeshGL::DIRTY_UV)
+      if ( (meshgl.dirty & MeshGL::DIRTY_UV) && data.V_uv.rows()>0)
       {
         meshgl.V_uv_vbo.resize(data.F.rows()*3,2);
         for (unsigned i=0; i<data.F.rows();++i)
@@ -794,5 +854,61 @@ IGL_INLINE void igl::opengl::ViewerData::updateGL(
       meshgl.points_V_colors_vbo.row(i) = data.points.block<1, 3>(i, 3).cast<float>();
       meshgl.points_F_vbo(i) = i;
     }
+  }
+
+  if (meshgl.dirty & MeshGL::DIRTY_FACE_LABELS)
+  {
+    if(face_labels_positions.rows()==0)
+    {
+      face_labels_positions.conservativeResize(F.rows(), 3);
+      Eigen::MatrixXd faceNormals = F_normals.normalized();
+      for (int f=0; f<F.rows();++f)
+      {
+        std::string faceName = std::to_string(f);
+        face_labels_positions.row(f) = V.row(F.row(f)(0));
+        face_labels_positions.row(f) += V.row(F.row(f)(1));
+        face_labels_positions.row(f) += V.row(F.row(f)(2));
+        face_labels_positions.row(f) /= 3.;
+        face_labels_positions.row(f) = (faceNormals*0.05).row(f) + face_labels_positions.row(f);
+        face_labels_strings.push_back(faceName);
+      }
+    }
+    update_labels(
+      meshgl,
+      meshgl.face_labels,
+      face_labels_positions,
+      face_labels_strings
+    );
+  }
+
+  if (meshgl.dirty & MeshGL::DIRTY_VERTEX_LABELS)
+  {
+    if(vertex_labels_positions.rows()==0)
+    {
+      vertex_labels_positions.conservativeResize(V.rows(), 3);
+      Eigen::MatrixXd normalized = V_normals.normalized();
+      for (int v=0; v<V.rows();++v)
+      {
+        std::string vertName = std::to_string(v);
+        vertex_labels_positions.row(v) = (normalized*0.1).row(v) + V.row(v);
+        vertex_labels_strings.push_back(vertName);
+      }
+    }
+    update_labels(
+      meshgl,
+      meshgl.vertex_labels,
+      vertex_labels_positions,
+      vertex_labels_strings
+    );
+  }
+
+  if (meshgl.dirty & MeshGL::DIRTY_CUSTOM_LABELS)
+  {
+    update_labels(
+      meshgl,
+      meshgl.custom_labels,
+      labels_positions,
+      labels_strings
+    );
   }
 }

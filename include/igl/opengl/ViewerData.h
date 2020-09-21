@@ -156,6 +156,11 @@ public:
   // Alec: This is very confusing. Why does add_edges have a different API from
   // set_edges?
   IGL_INLINE void add_edges (const Eigen::MatrixXd& P1, const Eigen::MatrixXd& P2, const Eigen::MatrixXd& C);
+  // Sets edges given a list of points and eminating vectors
+  IGL_INLINE void set_edges_from_vector_field(
+    const Eigen::MatrixXd& P, 
+    const Eigen::MatrixXd& V, 
+    const Eigen::MatrixXd& C);
 
   // Clear the edge data
   IGL_INLINE void clear_edges();
@@ -234,7 +239,11 @@ public:
   // Text labels plotted over the scene
   // Textp contains, in the i-th row, the position in global coordinates where the i-th label should be anchored
   // Texts contains in the i-th position the text of the i-th label
+  Eigen::MatrixXd           vertex_labels_positions;
+  Eigen::MatrixXd           face_labels_positions;
   Eigen::MatrixXd           labels_positions;
+  std::vector<std::string>  vertex_labels_strings;
+  std::vector<std::string>  face_labels_strings;
   std::vector<std::string>  labels_strings;
 
   // Marks dirty buffers that need to be uploaded to OpenGL
@@ -259,12 +268,13 @@ public:
   unsigned int use_matcap;
   unsigned int show_faces;
   unsigned int show_lines;
-  bool show_vertid; // shared across viewports for now
-  bool show_faceid; // shared across viewports for now
-  bool show_labels; // shared across viewports for now
+  unsigned int show_vertex_labels;
+  unsigned int show_face_labels;
+  unsigned int show_custom_labels;
 
   // Point size / line width
   float point_size;
+  // line_width is NOT SUPPORTED on Mac OS and Windows
   float line_width;
   Eigen::Matrix<float, 4, 1, Eigen::DontAlign> line_color;
   Eigen::Matrix<float, 4, 1, Eigen::DontAlign> label_color;
@@ -279,11 +289,17 @@ public:
   igl::opengl::MeshGL meshgl;
 
   // Update contents from a 'Data' instance
+  IGL_INLINE void update_labels(
+    igl::opengl::MeshGL& meshgl,
+    igl::opengl::MeshGL::TextGL& GL_labels,
+    const Eigen::MatrixXd& positions,
+    const std::vector<std::string>& strings
+  );
   IGL_INLINE void updateGL(
     const igl::opengl::ViewerData& data,
     const bool invert_normals,
     igl::opengl::MeshGL& meshgl);
-};
+  };
 
 } // namespace opengl
 } // namespace igl
@@ -324,9 +340,9 @@ namespace igl
       SERIALIZE_MEMBER(invert_normals);
       SERIALIZE_MEMBER(show_overlay);
       SERIALIZE_MEMBER(show_overlay_depth);
-      SERIALIZE_MEMBER(show_vertid);
-      SERIALIZE_MEMBER(show_faceid);
-      SERIALIZE_MEMBER(show_labels);
+      SERIALIZE_MEMBER(show_vertex_labels);
+      SERIALIZE_MEMBER(show_face_labels);
+      SERIALIZE_MEMBER(show_custom_labels);
       SERIALIZE_MEMBER(show_texture);
       SERIALIZE_MEMBER(double_sided);
       SERIALIZE_MEMBER(point_size);

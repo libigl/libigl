@@ -44,16 +44,17 @@ jobs:
       - name: Dependencies (Linux)
         if: runner.os == 'Linux'
         run: |
+            sudo apt-get update
             sudo apt-get install \
-            libblas-dev \
-            libboost-filesystem-dev \
-            libboost-system-dev \
-            libboost-thread-dev \
-            libglu1-mesa-dev \
-            liblapack-dev \
-            libmpfr-dev \
-            xorg-dev \
-            ccache
+              libblas-dev \
+              libboost-filesystem-dev \
+              libboost-system-dev \
+              libboost-thread-dev \
+              libglu1-mesa-dev \
+              liblapack-dev \
+              libmpfr-dev \
+              xorg-dev \
+              ccache
 
       - name: Dependencies (macOS)
         if: runner.os == 'macOS'

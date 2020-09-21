@@ -40,13 +40,14 @@ igl::scalar_to_cr_vector_gradient(
                                   Eigen::SparseMatrix<ScalarG>& G)
 {
   if(E.rows()!=F.rows() || E.cols()!=F.cols() || oE.rows()!=F.rows() ||
-     oE.cols()!=F.cols())
+     oE.cols()!=F.cols()) {
     orient_halfedges(F, E, oE);
+  }
   
-  scalar_to_cr_vector_gradient(V, F,
-                               const_cast<const Eigen::PlainObjectBase<DerivedE>& >(E),
-                               const_cast<const Eigen::PlainObjectBase<DerivedOE>& >(oE),
-                               G);
+  const Eigen::PlainObjectBase<DerivedE>& cE = E;
+  const Eigen::PlainObjectBase<DerivedOE>& coE = oE;
+
+  scalar_to_cr_vector_gradient(V, F, cE, coE, G);
 }
 
 
@@ -83,15 +84,15 @@ igl::scalar_to_cr_vector_gradient_intrinsic(
   assert(E.rows()==F.rows() && E.cols()==F.cols() && oE.rows()==F.rows() &&
          oE.cols()==F.cols() && "Wrong dimension in edge vectors");
   
-  const int m = F.rows();
-  const int n = F.maxCoeff() + 1;
-  const int nE = E.maxCoeff() + 1;
+  const Eigen::Index m = F.rows();
+  const typename DerivedF::Scalar n = F.maxCoeff() + 1;
+  const typename DerivedE::Scalar nE = E.maxCoeff() + 1;
   
   std::vector<Eigen::Triplet<ScalarG> > tripletList;
   tripletList.reserve(5*3*m);
-  for(int f=0; f<m; ++f) {
+  for(Eigen::Index f=0; f<m; ++f) {
     for(int e=0; e<3; ++e) {
-      const int i=F(f, (e+1)%3), j=F(f, (e+2)%3), k=F(f, e);
+      const typename DerivedF::Scalar i=F(f,(e+1)%3), j=F(f,(e+2)%3), k=F(f,e);
       const ScalarG o=oE(f,e),
       eij=l_sq(f,e), ejk=l_sq(f,(e+1)%3), eki=l_sq(f,(e+2)%3); //These are squared quantities.
       const ScalarG s_eij = sqrt(eij);

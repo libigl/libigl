@@ -52,32 +52,37 @@ igl::edge_vectors(
          "This method is for triangle meshes.");
   assert(F.maxCoeff()<V.rows() && "V does not seem to belong to F.");
   
-  const int m = E.maxCoeff()+1;
+  const typename DerivedE::Scalar m = E.maxCoeff()+1;
   
   //Compute edge-based normal
   MatX N, edgeN(m, 3);
   edgeN.setZero();
   per_face_normals(V, F, N);
-  for(int i=0; i<E.rows(); ++i)
-    for(int j=0; j<3; ++j)
+  for(Eigen::Index i=0; i<E.rows(); ++i) {
+    for(int j=0; j<3; ++j) {
       edgeN.row(E(i,j)) += N.row(i);
+    }
+  }
   edgeN.rowwise().normalize();
   
   //Compute edge vectors
   vecParallel.resize(m, 3);
-  if(computePerpendicular) //This should ideally be an if constexpr
+  if(computePerpendicular) { //This should ideally be an if constexpr
     vecPerpendicular.resize(m, 3);
-  for(int i=0; i<E.rows(); ++i) {
+  }
+  for(Eigen::Index i=0; i<E.rows(); ++i) {
     for(int j=0; j<3; ++j) {
-      if(oE(i,j)<0)
+      if(oE(i,j)<0) {
         continue;
-      const int e=E(i,j);
-      const int vi=F(i,(j+1)%3), vj=F(i,(j+2)%3);
+      }
+      const typename DerivedE::Scalar e=E(i,j);
+      const typename DerivedF::Scalar vi=F(i,(j+1)%3), vj=F(i,(j+2)%3);
       vecParallel.row(e) = (V.row(vj)-V.row(vi)).normalized();
-      if(computePerpendicular) //This should ideally be an if constexpr
+      if(computePerpendicular) { //This should ideally be an if constexpr
         vecPerpendicular.row(e) =
         Eigen::AngleAxis<Scalar>(0.5*PI, edgeN.row(e)) *
         vecParallel.row(e).transpose();
+      }
     }
   }
 }
