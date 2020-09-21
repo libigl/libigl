@@ -59,8 +59,9 @@ int main(int argc, char * argv[])
     for(int j=0; j<3; ++j) {
       const int e = E(i,j);
       EMAP(i+j*F.rows()) = e;
-      if(oE(i,j)>0)
+      if(oE(i,j)>0) {
         Elist.row(e) << F(i, (j+1)%3), F(i, (j+2)%3);
+      }
     }
   }
   SparseMat scalarL, scalarM;
@@ -120,8 +121,9 @@ int main(int argc, char * argv[])
   
   //Convert vector field for plotting
   Eigen::MatrixXd vecs(m, 3);
-  for(int i=0; i<edgeMps.rows(); ++i)
+  for(int i=0; i<edgeMps.rows(); ++i) {
     vecs.row(i) = Xt(i)*parVec.row(i) + Xt(i+edgeMps.rows())*perpVec.row(i);
+  }
   
   
   //Viewer that shows parallel transported vector
@@ -132,8 +134,9 @@ int main(int argc, char * argv[])
                          igl::COLOR_MAP_TYPE_VIRIDIS);
   const double s = 0.012; //How much to scale vectors during plotting
   Eigen::MatrixXd vecColors(m, 3);
-  for(int i=0; i<m; ++i)
+  for(int i=0; i<m; ++i) {
     vecColors.row(i) << 0.1, 0.1, 0.1;
+  }
   vecColors.row(initialIndex) << 0.9, 0.1, 0.1;
   viewer.data().add_edges(edgeMps, edgeMps + s*vecs, vecColors);
   
