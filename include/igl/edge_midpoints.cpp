@@ -31,8 +31,9 @@ igl::edge_midpoints(
   mps.resize(m, V.cols());
   for(Eigen::Index i=0; i<F.rows(); ++i) {
     for(int j=0; j<3; ++j) {
-      if(oE(i,j)<0)
+      if(oE(i,j)<0) {
         continue;
+      }
       const ScalarE e = E(i,j);
       const ScalarF vi=F(i,(j+1)%3), vj=F(i,(j+2)%3);
 
