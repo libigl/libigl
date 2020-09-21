@@ -19,15 +19,14 @@ igl::average_from_edges_onto_vertices(
 {
   using Scalar = typename DeriveduE::Scalar;
   using VecX = Eigen::Matrix<Scalar, Eigen::Dynamic, 1>;
+  using Int = typename DerivedF::Scalar;
   
   assert(E.rows()==F.rows() && "E does not match dimensions of F.");
   assert(oE.rows()==F.rows() && "oE does not match dimensions of F.");
   assert(E.cols()==3 && F.cols()==3 && oE.cols()==3 &&
    "This method is for triangle meshes.");
-    
-  using Int = typename DerivedF::Scalar;
   
-  const typename DerivedF::Scalar n = F.maxCoeff()+1;
+  const Int n = F.maxCoeff()+1;
   
   VecX edgesPerVertex(n);
   edgesPerVertex.setZero();
