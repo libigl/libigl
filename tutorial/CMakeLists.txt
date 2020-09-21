@@ -94,6 +94,7 @@ if(TUTORIALS_CHAPTER4)
   add_subdirectory("406_FastAutomaticSkinningTransformations")
   add_subdirectory("407_BiharmonicCoordinates")
   add_subdirectory("408_DirectDeltaMush")
+  add_subdirectory("409_Kelvinlets")
 endif()
 
 # Chapter 5
