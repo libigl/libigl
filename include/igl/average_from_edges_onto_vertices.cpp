@@ -24,21 +24,23 @@ igl::average_from_edges_onto_vertices(
   assert(oE.rows()==F.rows() && "oE does not match dimensions of F.");
   assert(E.cols()==3 && F.cols()==3 && oE.cols()==3 &&
    "This method is for triangle meshes.");
+    
+  using Int = typename DerivedF::Scalar;
   
-  const int n = F.maxCoeff()+1;
+  const typename DerivedF::Scalar n = F.maxCoeff()+1;
   
   VecX edgesPerVertex(n);
   edgesPerVertex.setZero();
   uV.resize(n,1);
   uV.setZero();
   
-  for(int i=0; i<F.rows(); ++i) {
+  for(Eigen::Index i=0; i<F.rows(); ++i) {
     for(int j=0; j<3; ++j) {
       if(oE(i,j)<0) {
         continue;
       }
-      const int e = E(i,j);
-      const int vi=F(i,(j+1)%3), vj=F(i,(j+2)%3);
+      const Int e = E(i,j);
+      const Int vi=F(i,(j+1)%3), vj=F(i,(j+2)%3);
       
       //Count vertex valence
       ++edgesPerVertex(vi);
@@ -51,7 +53,7 @@ igl::average_from_edges_onto_vertices(
   }
   
   //Divide by valence
-  for(int i=0; i<n; ++i) {
+  for(Int i=0; i<n; ++i) {
     const Scalar valence = edgesPerVertex(i);
     if(valence>0) {
       uV(i) /= valence;
