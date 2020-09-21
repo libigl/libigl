@@ -123,8 +123,9 @@ Usage:
   
   //Constructing a step function to smooth
   Eigen::VectorXd zstep = Eigen::VectorXd::Zero(V.rows());
-  for(int i=0; i<V.rows(); ++i)
+  for(int i=0; i<V.rows(); ++i) {
     zstep(i) = V(i,2)<-0.25 ? 1. : (V(i,2)>0.31 ? 2. : 0);
+  }
   
   //Smooth that function
   const double sl = 2e-5;
