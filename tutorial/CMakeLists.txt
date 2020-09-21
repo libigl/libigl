@@ -94,6 +94,7 @@ if(TUTORIALS_CHAPTER4)
   add_subdirectory("406_FastAutomaticSkinningTransformations")
   add_subdirectory("407_BiharmonicCoordinates")
   add_subdirectory("408_DirectDeltaMush")
+  add_subdirectory("409_Kelvinlets")
 endif()
 
 # Chapter 5
@@ -165,4 +166,5 @@ if(TUTORIALS_CHAPTER7)
   add_subdirectory("718_IterativeClosestPoint")
   add_subdirectory("719_ExplodedView")
   add_subdirectory("720_MshView")
+  add_subdirectory("720_BlueNoise")
 endif()

@@ -44,7 +44,7 @@ namespace igl
   //    pos        screen space coordinates
   //    model      model matrix
   //    proj       projection matrix
-  //    viewport   vieweport vector
+  //    viewport   viewport vector
   //    shoot_ray  function handle that outputs hits of a given ray against a
   //      mesh (embedded in function handles as captured variable/data)
   // Outputs:

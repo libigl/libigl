@@ -369,6 +369,24 @@ IGL_INLINE void igl::opengl::ViewerData::set_edges(
   dirty |= MeshGL::DIRTY_OVERLAY_LINES;
 }
 
+IGL_INLINE void igl::opengl::ViewerData::set_edges_from_vector_field(
+  const Eigen::MatrixXd& P, 
+  const Eigen::MatrixXd& V, 
+  const Eigen::MatrixXd& C)
+{
+  assert(P.rows() == V.rows());
+  Eigen::MatrixXi E(P.rows(),2);
+  const Eigen::MatrixXd PV = 
+    (Eigen::MatrixXd(P.rows()+V.rows(),3)<<P,P+V).finished();
+  for(int i = 0;i<P.rows();i++)
+  {
+    E(i,0) = i;
+    E(i,1) = i+P.rows();
+  }
+  const Eigen::MatrixXd CC = C.replicate<2,1>();
+  set_edges(PV,E, C.rows() == 1?C:C.replicate<2,1>());
+}
+
 IGL_INLINE void igl::opengl::ViewerData::add_edges(const Eigen::MatrixXd& P1, const Eigen::MatrixXd& P2, const Eigen::MatrixXd& C)
 {
   Eigen::MatrixXd P1_temp,P2_temp;
