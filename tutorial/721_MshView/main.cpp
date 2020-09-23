@@ -3,6 +3,9 @@
 #include <igl/colormap.h>
 
 #include <igl/readMSH.h>
+#include <igl/readMESH.h>
+
+
 
 Eigen::MatrixXd X,B;
 Eigen::MatrixXi Tri;
@@ -18,6 +21,47 @@ std::vector<std::string> EFields;
 std::vector<Eigen::MatrixXd> XF;
 std::vector<Eigen::MatrixXd> TriF;
 std::vector<Eigen::MatrixXd> TetF;
+
+
+/**
+ * Generating fake data
+ */
+ 
+
+/*
+#include <igl/volume.h>
+#include <igl/writeMSH.h>
+
+void generate_fake_data(void)
+{ 
+  Eigen::MatrixXd V;
+  Eigen::MatrixXi T,F;
+  igl::readMESH(TUTORIAL_SHARED_PATH "/hand.mesh",V,T,F);
+  // Some per-tet data
+  Eigen::VectorXd D,DF;
+  Eigen::RowVectorXd c;
+  {
+    Eigen::MatrixXd BC;
+    igl::barycenter(V,T,BC);
+    Eigen::VectorXd vol;
+    igl::volume(V,T,vol);
+    c = vol.transpose()*BC/vol.array().sum();
+    D = (BC.rowwise()-c).rowwise().norm();
+  }
+  {
+    Eigen::MatrixXd BC;
+    igl::barycenter(V,F,BC);
+    DF = (BC.rowwise()-c).rowwise().norm();
+  }
+
+  Eigen::VectorXi TriTag=Eigen::VectorXi::Ones(F.rows());
+  Eigen::VectorXi TetTag=Eigen::VectorXi::Ones(T.rows());
+
+  igl::writeMSH(TUTORIAL_SHARED_PATH "/hand.msh",
+      V, F, T, TriTag, TetTag, {}, {}, {"E"}, {DF}, {D});
+}
+*/
+
 
 
 // This function is called every time a keyboard button is pressed
@@ -65,8 +109,10 @@ bool key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier
     viewer.data().set_mesh(V_temp, F_temp);
 
     Eigen::MatrixXd C;
-    igl::colormap(igl::COLOR_MAP_TYPE_VIRIDIS,D_temp,true,C);
+    igl::colormap(igl::COLOR_MAP_TYPE_VIRIDIS, D_temp, true, C);
+    viewer.data().set_face_based(true);
     viewer.data().set_colors(C);
+
   }
 
 
@@ -78,10 +124,10 @@ int main(int argc, char *argv[])
   using namespace Eigen;
   using namespace std;
 
-  // Load a surface mesh
-  //igl::readOFF(TUTORIAL_SHARED_PATH "/fertility.off",V,F);
   if(argc<2)
-    igl::readMSH(TUTORIAL_SHARED_PATH "/", X, Tri, Tet, TriTag, TetTag, XFields, XF, EFields, TriF, TetF);
+  {
+    igl::readMSH(TUTORIAL_SHARED_PATH "/hand.msh", X, Tri, Tet, TriTag, TetTag, XFields, XF, EFields, TriF, TetF);
+  }
   else
     igl::readMSH(argv[1], X, Tri, Tet, TriTag, TetTag, XFields, XF, EFields, TriF, TetF);
 
@@ -105,6 +151,7 @@ int main(int argc, char *argv[])
 
   // Plot the generated mesh
   igl::opengl::glfw::Viewer viewer;
+  
   viewer.callback_key_down = &key_down;
   key_down(viewer,'5',0);
   viewer.launch();
