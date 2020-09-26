@@ -19,13 +19,17 @@ namespace imgui
 void EditTransform(const float *cameraView, const float *cameraProjection, float* matrix, bool isOrthographic)
 {
 	static ImGuizmo::OPERATION mCurrentGizmoOperation(ImGuizmo::ROTATE);
-	static ImGuizmo::MODE mCurrentGizmoMode(ImGuizmo::WORLD);
+        // Alec: This could be a parameter ImGuizmo::WORLD will make senze in some
+        // circumstances. For now, 109_ImGuizmo and my other use cases make more
+        // sense in LOCAL mode.
+	static ImGuizmo::MODE mCurrentGizmoMode(ImGuizmo::LOCAL);
 
-	if (ImGui::IsKeyPressed(90))
+        // Maya-style key bindings
+	if (ImGui::IsKeyPressed('W'))
 		mCurrentGizmoOperation = ImGuizmo::TRANSLATE;
-	if (ImGui::IsKeyPressed(69))
+	if (ImGui::IsKeyPressed('E'))
 		mCurrentGizmoOperation = ImGuizmo::ROTATE;
-	if (ImGui::IsKeyPressed(82)) // r Key
+	if (ImGui::IsKeyPressed('R'))
 		mCurrentGizmoOperation = ImGuizmo::SCALE;
 
 	if (ImGui::RadioButton("Translate", mCurrentGizmoOperation == ImGuizmo::TRANSLATE))

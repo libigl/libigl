@@ -10,20 +10,19 @@
 class SlicingPlugin : public igl::opengl::glfw::imgui::ImGuiMenu
 {
   igl::opengl::ViewerData data;
-
+  // Hard Coded Plane Mesh
   const Eigen::MatrixXd OV = (Eigen::MatrixXd(4, 3) <<
     -0.5, -0.5, 0.0,
     -0.5,  0.5, 0.0,
     0.5,  0.5, 0.0,
     0.5, -0.5, 0.0).finished();
-
   const Eigen::MatrixXi OF = (Eigen::MatrixXi(2, 3) <<
     0, 2, 1,
     0, 3, 2).finished();
 
-  virtual void init(igl::opengl::glfw::Viewer *_viewer) override {
+  virtual void init(igl::opengl::glfw::Viewer *_viewer) override
+  {
     ImGuiMenu::init(_viewer);
-
     // Load slicing plane into viewer (a square mesh)
     data.set_mesh(SlicingPlugin::OV, SlicingPlugin::OF);
     data.set_face_based(true);
@@ -64,7 +63,8 @@ class SlicingPlugin : public igl::opengl::glfw::imgui::ImGuiMenu
 
   virtual void draw_imguizmo_menu() {
     static Eigen::Matrix4f matrix = Eigen::Matrix4f::Identity();
-    Eigen::Affine3f rescale = Eigen::Scaling(0.5f * viewer->core().camera_base_zoom)
+    const float z = viewer->core().camera_base_zoom;
+    Eigen::Affine3f rescale = Eigen::Scaling(0.5f * z)
       * Eigen::Translation3f(viewer->core().camera_base_translation);
     Eigen::Affine3f view = Eigen::Affine3f( viewer->core().view * 1./viewer->core().camera_zoom ) * rescale.inverse();
     Eigen::Matrix4f proj = viewer->core().proj;
@@ -77,7 +77,7 @@ class SlicingPlugin : public igl::opengl::glfw::imgui::ImGuiMenu
 
     // Transform the slicing plane according to
     // ImGuizmo tool manipulations in the viewer
-    Eigen::Affine3f model = Eigen::Affine3f(matrix) * rescale.inverse();
+    Eigen::Affine3f model = Eigen::Affine3f(rescale.inverse()*matrix);
     Eigen::MatrixXd V = (SlicingPlugin::OV.rowwise().homogeneous()
       * model.matrix().cast<double>().transpose()).rowwise().hnormalized();
 
@@ -91,8 +91,7 @@ int main(int argc, char *argv[])
 {
   // Plot the mesh
   igl::opengl::glfw::Viewer viewer;
-  std::string filename(TUTORIAL_SHARED_PATH "/cow.off");
-  viewer.load_mesh_from_file(filename);
+  viewer.load_mesh_from_file(argc>1?argv[1]: TUTORIAL_SHARED_PATH "/cow.off");
 
   // Custom menu
   SlicingPlugin menu;
