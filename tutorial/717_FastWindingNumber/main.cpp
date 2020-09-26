@@ -95,23 +95,27 @@ int main(int argc, char *argv[])
     Eigen::MatrixXd O_CM;
     Eigen::VectorXd O_R;
     Eigen::MatrixXd O_EC;
-    printf("  point cloud precomputation: %g secs\n",
+    printf("     point cloud precomputation (% 8ld points):    %g secs\n",
+      P.rows(),
       time([&](){igl::fast_winding_number(P,N,A,O_PI,O_CH,2,O_CM,O_R,O_EC);}));
     Eigen::VectorXd WiP;
-    printf("      point cloud evaluation: %g secs\n",
+    printf("        point cloud evaluation  (% 8ld queries):   %g secs\n",
+      Q.rows(),
       time([&](){igl::fast_winding_number(P,N,A,O_PI,O_CH,O_CM,O_R,O_EC,Q,2,WiP);}));
-    igl::slice_mask(Q,WiP.array()>0.5,1,QiP);
+    igl::slice_mask(Q,(WiP.array()>0.5).eval(),1,QiP);
   }
 
   // Positions of points inside of triangle soup (V,F)
   Eigen::MatrixXd QiV;
   {
     igl::FastWindingNumberBVH fwn_bvh;
-    printf("triangle soup precomputation: %g secs\n",
-      time([&](){igl::fast_winding_number(V.cast<float>(),F,2,fwn_bvh);}));
+    printf("triangle soup precomputation    (% 8ld triangles): %g secs\n",
+      F.rows(),
+      time([&](){igl::fast_winding_number(V.cast<float>().eval(),F,2,fwn_bvh);}));
     Eigen::VectorXf WiV;
-    printf("    triangle soup evaluation: %g secs\n",
-      time([&](){igl::fast_winding_number(fwn_bvh,2,Q.cast<float>(),WiV);}));
+    printf("      triangle soup evaluation  (% 8ld queries):   %g secs\n",
+      Q.rows(),
+      time([&](){igl::fast_winding_number(fwn_bvh,2,Q.cast<float>().eval(),WiV);}));
     igl::slice_mask(Q,WiV.array()>0.5,1,QiV);
   }
 
@@ -193,6 +197,12 @@ int main(int argc, char *argv[])
     update();
     return true;
   };
+
+  std::cout<<R"(
+FastWindingNumber
+  1  Toggle point cloud and triangle soup
+  2  Toggle hiding query points, showing query points, showing inside queries
+)";
 
   update();
   viewer.launch();

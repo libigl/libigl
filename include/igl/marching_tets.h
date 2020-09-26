@@ -40,9 +40,9 @@ namespace igl {
             typename DerivedJ,
             typename BCType>
   IGL_INLINE void marching_tets(
-      const Eigen::PlainObjectBase<DerivedTV>& TV,
-      const Eigen::PlainObjectBase<DerivedTT>& TT,
-      const Eigen::PlainObjectBase<DerivedS>& S,
+      const Eigen::MatrixBase<DerivedTV>& TV,
+      const Eigen::MatrixBase<DerivedTT>& TT,
+      const Eigen::MatrixBase<DerivedS>& S,
       double isovalue,
       Eigen::PlainObjectBase<DerivedSV>& SV,
       Eigen::PlainObjectBase<DerivedSF>& SF,
@@ -74,9 +74,9 @@ namespace igl {
             typename DerivedJ,
             typename BCType>
   IGL_INLINE void marching_tets(
-      const Eigen::PlainObjectBase<DerivedTV>& TV,
-      const Eigen::PlainObjectBase<DerivedTT>& TT,
-      const Eigen::PlainObjectBase<DerivedS>& S,
+      const Eigen::MatrixBase<DerivedTV>& TV,
+      const Eigen::MatrixBase<DerivedTT>& TT,
+      const Eigen::MatrixBase<DerivedS>& S,
       Eigen::PlainObjectBase<DerivedSV>& SV,
       Eigen::PlainObjectBase<DerivedSF>& SF,
       Eigen::PlainObjectBase<DerivedJ>& J,
@@ -108,9 +108,9 @@ namespace igl {
             typename DerivedSF,
             typename DerivedJ>
   IGL_INLINE void marching_tets(
-      const Eigen::PlainObjectBase<DerivedTV>& TV,
-      const Eigen::PlainObjectBase<DerivedTT>& TT,
-      const Eigen::PlainObjectBase<DerivedS>& S,
+      const Eigen::MatrixBase<DerivedTV>& TV,
+      const Eigen::MatrixBase<DerivedTT>& TT,
+      const Eigen::MatrixBase<DerivedS>& S,
       double isovalue,
       Eigen::PlainObjectBase<DerivedSV>& SV,
       Eigen::PlainObjectBase<DerivedSF>& SF,
@@ -143,9 +143,9 @@ namespace igl {
             typename DerivedSF,
             typename BCType>
   IGL_INLINE void marching_tets(
-      const Eigen::PlainObjectBase<DerivedTV>& TV,
-      const Eigen::PlainObjectBase<DerivedTT>& TT,
-      const Eigen::PlainObjectBase<DerivedS>& S,
+      const Eigen::MatrixBase<DerivedTV>& TV,
+      const Eigen::MatrixBase<DerivedTT>& TT,
+      const Eigen::MatrixBase<DerivedS>& S,
       double isovalue,
       Eigen::PlainObjectBase<DerivedSV>& SV,
       Eigen::PlainObjectBase<DerivedSF>& SF,
@@ -176,9 +176,9 @@ namespace igl {
             typename DerivedSV,
             typename DerivedSF>
   IGL_INLINE void marching_tets(
-      const Eigen::PlainObjectBase<DerivedTV>& TV,
-      const Eigen::PlainObjectBase<DerivedTT>& TT,
-      const Eigen::PlainObjectBase<DerivedS>& S,
+      const Eigen::MatrixBase<DerivedTV>& TV,
+      const Eigen::MatrixBase<DerivedTT>& TT,
+      const Eigen::MatrixBase<DerivedS>& S,
       double isovalue,
       Eigen::PlainObjectBase<DerivedSV>& SV,
       Eigen::PlainObjectBase<DerivedSF>& SF) {

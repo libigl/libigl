@@ -95,13 +95,12 @@ IGL_INLINE void igl::lexicographic_triangulation(
       for (auto itr=left_itr; itr!=right_itr; itr++) {
         if (itr == boundary.end()) itr = boundary.begin();
         if (itr == right_itr) break;
-        if (itr == left_itr || itr == right_itr) continue;
+        if (itr == left_itr) continue;
         itr = boundary.erase(itr);
         if (itr == boundary.begin()) {
             itr = boundary.end();
-        } else {
-            itr--;
         }
+        itr--;
       }
 
       if (right_itr == boundary.begin()) {

@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2013 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "tetgenio_to_tetmesh.h"
 
@@ -18,11 +18,11 @@ IGL_INLINE bool igl::copyleft::tetgen::tetgenio_to_tetmesh(
   std::vector<std::vector<REAL > > & V,
   std::vector<std::vector<int> > & T,
   std::vector<std::vector<int > > & F,
-  std::vector<std::vector<REAL > >&  R, 
+  std::vector<std::vector<REAL > >&  R,
   std::vector<std::vector<int > >& N,
   std::vector<std::vector<int > >& PT,
   std::vector<std::vector<int > >& FT,
-  size_t & nR ) 
+  size_t & nR )
 {
    using namespace std;
    // process points
@@ -63,11 +63,11 @@ IGL_INLINE bool igl::copyleft::tetgen::tetgenio_to_tetmesh(
        max_index = (max_index < index ? index : max_index);
      }
    }
-  
+
    assert(min_index >= 0);
    assert(max_index >= 0);
    assert(max_index < (int)V.size());
- 
+
    cout<<out.numberoftrifaces<<endl;
 
    // When would this not be 4?
@@ -96,30 +96,30 @@ IGL_INLINE bool igl::copyleft::tetgen::tetgenio_to_tetmesh(
    // extract region marks
    nR = hashUniqueRegions.size();
 
-   // extract neighbor list 
-   N.resize(out.numberoftetrahedra, vector<int>(4));   
+   // extract neighbor list
+   N.resize(out.numberoftetrahedra, vector<int>(4));
    for (size_t i = 0; i < out.numberoftetrahedra; i++)
    {
      for (size_t j = 0; j < 4; j++)
        N[i][j] = out.neighborlist[i * 4 + j];
-   } 
-  
-   // extract point 2 tetrahedron list 
+   }
+
+   // extract point 2 tetrahedron list
    PT.resize(out.numberofpoints, vector<int>(1));
    for (size_t i = 0; i < out.numberofpoints; i++)
    {
-     PT[i][0] = out.point2tetlist[i]; 
-   }	
- 
+     PT[i][0] = out.point2tetlist[i];
+   }
+
    //extract face to tetrahedron list
-   FT.resize(out.numberoftrifaces, vector<int>(2)); 
+   FT.resize(out.numberoftrifaces, vector<int>(2));
    int triface;
-   
+
    for (size_t i = 0; i < out.numberoftrifaces; i++)
    {
      for (size_t j = 0; j < 2; j++)
      {
-       FT[i][j] = out.face2tetlist[0]; 
+       FT[i][j] = out.face2tetlist[0];
      }
    }
 
@@ -129,7 +129,7 @@ IGL_INLINE bool igl::copyleft::tetgen::tetgenio_to_tetmesh(
 
 IGL_INLINE bool igl::copyleft::tetgen::tetgenio_to_tetmesh(
   const tetgenio & out,
-  std::vector<std::vector<REAL > > & V, 
+  std::vector<std::vector<REAL > > & V,
   std::vector<std::vector<int> > & T,
   std::vector<std::vector<int> > & F)
 {
@@ -182,7 +182,7 @@ IGL_INLINE bool igl::copyleft::tetgen::tetgenio_to_tetmesh(
   // loop over tetrahedra
   for(int i = 0; i < out.numberoftrifaces; i++)
   {
-    if(out.trifacemarkerlist[i]>=0)
+    if (out.trifacemarkerlist && out.trifacemarkerlist[i] >= 0)
     {
       vector<int> face(3);
       for(int j = 0; j<3; j++)
@@ -198,7 +198,7 @@ IGL_INLINE bool igl::copyleft::tetgen::tetgenio_to_tetmesh(
 
 IGL_INLINE bool igl::copyleft::tetgen::tetgenio_to_tetmesh(
   const tetgenio & out,
-  std::vector<std::vector<REAL > > & V, 
+  std::vector<std::vector<REAL > > & V,
   std::vector<std::vector<int> > & T)
 {
   std::vector<std::vector<int> > F;

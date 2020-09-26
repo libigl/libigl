@@ -46,9 +46,9 @@ namespace igl
   template <typename DerivedV, typename DerivedT, typename DerivedF>
   IGL_INLINE bool writeMESH(
     const std::string str,
-    const Eigen::PlainObjectBase<DerivedV> & V, 
-    const Eigen::PlainObjectBase<DerivedT> & T,
-    const Eigen::PlainObjectBase<DerivedF> & F);
+    const Eigen::MatrixBase<DerivedV> & V, 
+    const Eigen::MatrixBase<DerivedT> & T,
+    const Eigen::MatrixBase<DerivedF> & F);
 }
 
 #ifndef IGL_STATIC_LIBRARY

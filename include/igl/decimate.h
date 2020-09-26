@@ -8,9 +8,8 @@
 #ifndef IGL_DECIMATE_H
 #define IGL_DECIMATE_H
 #include "igl_inline.h"
+#include "decimate_callback_types.h"
 #include <Eigen/Core>
-#include <vector>
-#include <set>
 namespace igl
 {
   // Assumes (V,F) is a manifold mesh (possibly with boundary) Collapses edges
@@ -68,38 +67,12 @@ namespace igl
   IGL_INLINE bool decimate(
     const Eigen::MatrixXd & V,
     const Eigen::MatrixXi & F,
-    const std::function<void(
-      const int              /*e*/,
-      const Eigen::MatrixXd &/*V*/,
-      const Eigen::MatrixXi &/*F*/,
-      const Eigen::MatrixXi &/*E*/,
-      const Eigen::VectorXi &/*EMAP*/,
-      const Eigen::MatrixXi &/*EF*/,
-      const Eigen::MatrixXi &/*EI*/,
-      double &               /*cost*/,
-      Eigen::RowVectorXd &   /*p*/
-      )> & cost_and_placement,
-    const std::function<bool(
-      const Eigen::MatrixXd &                                         ,/*V*/
-      const Eigen::MatrixXi &                                         ,/*F*/
-      const Eigen::MatrixXi &                                         ,/*E*/
-      const Eigen::VectorXi &                                         ,/*EMAP*/
-      const Eigen::MatrixXi &                                         ,/*EF*/
-      const Eigen::MatrixXi &                                         ,/*EI*/
-      const std::set<std::pair<double,int> > &                        ,/*Q*/
-      const std::vector<std::set<std::pair<double,int> >::iterator > &,/*Qit*/
-      const Eigen::MatrixXd &                                         ,/*C*/
-      const int                                                       ,/*e*/
-      const int                                                       ,/*e1*/
-      const int                                                       ,/*e2*/
-      const int                                                       ,/*f1*/
-      const int                                                        /*f2*/
-      )> & stopping_condition,
+    const decimate_cost_and_placement_callback & cost_and_placement,
+    const decimate_stopping_condition_callback & stopping_condition,
     Eigen::MatrixXd & U,
     Eigen::MatrixXi & G,
     Eigen::VectorXi & J,
     Eigen::VectorXi & I);
-
   // Inputs:
   //   pre_collapse  callback called with index of edge whose collapse is about
   //     to be attempted (see collapse_edge)
@@ -109,67 +82,14 @@ namespace igl
   IGL_INLINE bool decimate(
     const Eigen::MatrixXd & V,
     const Eigen::MatrixXi & F,
-    const std::function<void(
-      const int              /*e*/,
-      const Eigen::MatrixXd &/*V*/,
-      const Eigen::MatrixXi &/*F*/,
-      const Eigen::MatrixXi &/*E*/,
-      const Eigen::VectorXi &/*EMAP*/,
-      const Eigen::MatrixXi &/*EF*/,
-      const Eigen::MatrixXi &/*EI*/,
-      double &               /*cost*/,
-      Eigen::RowVectorXd &   /*p*/
-      )> & cost_and_placement,
-    const std::function<bool(
-      const Eigen::MatrixXd &                                         ,/*V*/
-      const Eigen::MatrixXi &                                         ,/*F*/
-      const Eigen::MatrixXi &                                         ,/*E*/
-      const Eigen::VectorXi &                                         ,/*EMAP*/
-      const Eigen::MatrixXi &                                         ,/*EF*/
-      const Eigen::MatrixXi &                                         ,/*EI*/
-      const std::set<std::pair<double,int> > &                        ,/*Q*/
-      const std::vector<std::set<std::pair<double,int> >::iterator > &,/*Qit*/
-      const Eigen::MatrixXd &                                         ,/*C*/
-      const int                                                       ,/*e*/
-      const int                                                       ,/*e1*/
-      const int                                                       ,/*e2*/
-      const int                                                       ,/*f1*/
-      const int                                                        /*f2*/
-      )> & stopping_condition,
-    const std::function<bool(
-      const Eigen::MatrixXd &                                         ,/*V*/
-      const Eigen::MatrixXi &                                         ,/*F*/
-      const Eigen::MatrixXi &                                         ,/*E*/
-      const Eigen::VectorXi &                                         ,/*EMAP*/
-      const Eigen::MatrixXi &                                         ,/*EF*/
-      const Eigen::MatrixXi &                                         ,/*EI*/
-      const std::set<std::pair<double,int> > &                        ,/*Q*/
-      const std::vector<std::set<std::pair<double,int> >::iterator > &,/*Qit*/
-      const Eigen::MatrixXd &                                         ,/*C*/
-      const int                                                        /*e*/
-      )> & pre_collapse,
-    const std::function<void(
-      const Eigen::MatrixXd &                                         ,   /*V*/
-      const Eigen::MatrixXi &                                         ,   /*F*/
-      const Eigen::MatrixXi &                                         ,   /*E*/
-      const Eigen::VectorXi &                                         ,/*EMAP*/
-      const Eigen::MatrixXi &                                         ,  /*EF*/
-      const Eigen::MatrixXi &                                         ,  /*EI*/
-      const std::set<std::pair<double,int> > &                        ,   /*Q*/
-      const std::vector<std::set<std::pair<double,int> >::iterator > &, /*Qit*/
-      const Eigen::MatrixXd &                                         ,   /*C*/
-      const int                                                       ,   /*e*/
-      const int                                                       ,  /*e1*/
-      const int                                                       ,  /*e2*/
-      const int                                                       ,  /*f1*/
-      const int                                                       ,  /*f2*/
-      const bool                                                  /*collapsed*/
-      )> & post_collapse,
+    const decimate_cost_and_placement_callback & cost_and_placement,
+    const decimate_stopping_condition_callback & stopping_condition,
+    const decimate_pre_collapse_callback       & pre_collapse,
+    const decimate_post_collapse_callback      & post_collapse,
     Eigen::MatrixXd & U,
     Eigen::MatrixXi & G,
     Eigen::VectorXi & J,
     Eigen::VectorXi & I);
-
   // Inputs:
   //   EMAP #F*3 list of indices into E, mapping each directed edge to unique
   //     unique edge in E
@@ -177,66 +97,13 @@ namespace igl
   //     F(f,:) opposite the vth corner, where EI(e,0)=v. Similarly EF(e,1) "
   //     e=(j->i)
   //   EI  #E by 2 list of edge flap corners (see above).
-
   IGL_INLINE bool decimate(
     const Eigen::MatrixXd & V,
     const Eigen::MatrixXi & F,
-    const std::function<void(
-      const int              /*e*/,
-      const Eigen::MatrixXd &/*V*/,
-      const Eigen::MatrixXi &/*F*/,
-      const Eigen::MatrixXi &/*E*/,
-      const Eigen::VectorXi &/*EMAP*/,
-      const Eigen::MatrixXi &/*EF*/,
-      const Eigen::MatrixXi &/*EI*/,
-      double &               /*cost*/,
-      Eigen::RowVectorXd &   /*p*/
-      )> & cost_and_placement,
-    const std::function<bool(
-      const Eigen::MatrixXd &                                         ,/*V*/
-      const Eigen::MatrixXi &                                         ,/*F*/
-      const Eigen::MatrixXi &                                         ,/*E*/
-      const Eigen::VectorXi &                                         ,/*EMAP*/
-      const Eigen::MatrixXi &                                         ,/*EF*/
-      const Eigen::MatrixXi &                                         ,/*EI*/
-      const std::set<std::pair<double,int> > &                        ,/*Q*/
-      const std::vector<std::set<std::pair<double,int> >::iterator > &,/*Qit*/
-      const Eigen::MatrixXd &                                         ,/*C*/
-      const int                                                       ,/*e*/
-      const int                                                       ,/*e1*/
-      const int                                                       ,/*e2*/
-      const int                                                       ,/*f1*/
-      const int                                                        /*f2*/
-      )> & stopping_condition,
-    const std::function<bool(
-      const Eigen::MatrixXd &                                         ,/*V*/
-      const Eigen::MatrixXi &                                         ,/*F*/
-      const Eigen::MatrixXi &                                         ,/*E*/
-      const Eigen::VectorXi &                                         ,/*EMAP*/
-      const Eigen::MatrixXi &                                         ,/*EF*/
-      const Eigen::MatrixXi &                                         ,/*EI*/
-      const std::set<std::pair<double,int> > &                        ,/*Q*/
-      const std::vector<std::set<std::pair<double,int> >::iterator > &,/*Qit*/
-      const Eigen::MatrixXd &                                         ,/*C*/
-      const int                                                        /*e*/
-      )> & pre_collapse,
-    const std::function<void(
-      const Eigen::MatrixXd &                                         ,   /*V*/
-      const Eigen::MatrixXi &                                         ,   /*F*/
-      const Eigen::MatrixXi &                                         ,   /*E*/
-      const Eigen::VectorXi &                                         ,/*EMAP*/
-      const Eigen::MatrixXi &                                         ,  /*EF*/
-      const Eigen::MatrixXi &                                         ,  /*EI*/
-      const std::set<std::pair<double,int> > &                        ,   /*Q*/
-      const std::vector<std::set<std::pair<double,int> >::iterator > &, /*Qit*/
-      const Eigen::MatrixXd &                                         ,   /*C*/
-      const int                                                       ,   /*e*/
-      const int                                                       ,  /*e1*/
-      const int                                                       ,  /*e2*/
-      const int                                                       ,  /*f1*/
-      const int                                                       ,  /*f2*/
-      const bool                                                  /*collapsed*/
-      )> & post_collapse,
+    const decimate_cost_and_placement_callback & cost_and_placement,
+    const decimate_stopping_condition_callback & stopping_condition,
+    const decimate_pre_collapse_callback       & pre_collapse,
+    const decimate_post_collapse_callback      & post_collapse,
     const Eigen::MatrixXi & E,
     const Eigen::VectorXi & EMAP,
     const Eigen::MatrixXi & EF,

@@ -21,7 +21,7 @@ namespace igl
   //   pad_count  number of cells beyond box
   // Outputs:
   //   GV  side(0)*side(1)*side(2) by 3 list of cell center positions
-  //   side  3-long list of dimension of voxel grid
+  //   side  1 by 3 list of dimension of voxel grid
   template <
     typename Scalar,
     typename DerivedGV,

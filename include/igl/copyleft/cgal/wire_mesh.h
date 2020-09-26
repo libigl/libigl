@@ -14,7 +14,7 @@ namespace igl
       // Inputs:
       //   WV  #WV by 3 list of vertex positions
       //   WE  #WE by 2 list of edge indices into WV
-      //   th  diameter thickness of wire 
+      //   th  #WE diameter thicknesses of wire edges
       //   poly_size  number of sides on each wire (e.g., 4 would produce wires by
       //     connecting rectangular prisms).
       //   solid  whether to resolve self-intersections to
@@ -26,6 +26,22 @@ namespace igl
       //     output faces J(j) < #WV means the face corresponds to the J(j)th
       //     vertex in WV. J(j) >= #WV means the face corresponds to the
       //     (J(j)-#WV)th edge in WE.
+      template <
+        typename DerivedWV,
+        typename DerivedWE,
+        typename Derivedth,
+        typename DerivedV,
+        typename DerivedF,
+        typename DerivedJ>
+      IGL_INLINE void wire_mesh(
+        const Eigen::MatrixBase<DerivedWV> & WV,
+        const Eigen::MatrixBase<DerivedWE> & WE,
+        const Eigen::MatrixBase<Derivedth> & th,
+        const int poly_size,
+        const bool solid,
+        Eigen::PlainObjectBase<DerivedV> & V,
+        Eigen::PlainObjectBase<DerivedF> & F,
+        Eigen::PlainObjectBase<DerivedJ> & J);
       template <
         typename DerivedWV,
         typename DerivedWE,

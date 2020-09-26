@@ -37,8 +37,8 @@ namespace igl
         const Eigen::Vector3f&,
         const Eigen::Vector3f&)
         > & shoot_ray,
-    const Eigen::PlainObjectBase<DerivedP> & P,
-    const Eigen::PlainObjectBase<DerivedN> & N,
+    const Eigen::MatrixBase<DerivedP> & P,
+    const Eigen::MatrixBase<DerivedN> & N,
     const int num_samples,
     Eigen::PlainObjectBase<DerivedS> & S);
   // Inputs:
@@ -52,10 +52,10 @@ namespace igl
     typename DerivedS >
   IGL_INLINE void shape_diameter_function(
     const igl::AABB<DerivedV,DIM> & aabb,
-    const Eigen::PlainObjectBase<DerivedV> & V,
-    const Eigen::PlainObjectBase<DerivedF> & F,
-    const Eigen::PlainObjectBase<DerivedP> & P,
-    const Eigen::PlainObjectBase<DerivedN> & N,
+    const Eigen::MatrixBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedF> & F,
+    const Eigen::MatrixBase<DerivedP> & P,
+    const Eigen::MatrixBase<DerivedN> & N,
     const int num_samples,
     Eigen::PlainObjectBase<DerivedS> & S);
   // Inputs:
@@ -68,10 +68,10 @@ namespace igl
     typename DerivedN,
     typename DerivedS >
   IGL_INLINE void shape_diameter_function(
-    const Eigen::PlainObjectBase<DerivedV> & V,
-    const Eigen::PlainObjectBase<DerivedF> & F,
-    const Eigen::PlainObjectBase<DerivedP> & P,
-    const Eigen::PlainObjectBase<DerivedN> & N,
+    const Eigen::MatrixBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedF> & F,
+    const Eigen::MatrixBase<DerivedP> & P,
+    const Eigen::MatrixBase<DerivedN> & N,
     const int num_samples,
     Eigen::PlainObjectBase<DerivedS> & S);
   //   per_face  whether to compute per face (S is #F by 1) or per vertex (S is
@@ -81,8 +81,8 @@ namespace igl
     typename DerivedF,
     typename DerivedS>
   IGL_INLINE void shape_diameter_function(
-    const Eigen::PlainObjectBase<DerivedV> & V,
-    const Eigen::PlainObjectBase<DerivedF> & F,
+    const Eigen::MatrixBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedF> & F,
     const bool per_face,
     const int num_samples,
     Eigen::PlainObjectBase<DerivedS> & S);

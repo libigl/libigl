@@ -15,15 +15,15 @@ IGL_INLINE void igl::ears(
   Eigen::PlainObjectBase<Derivedear_opp> & ear_opp)
 {
   assert(F.cols() == 3 && "F should contain triangles");
-  Eigen::Array<bool,Eigen::Dynamic,3> B;
+  Eigen::Array<bool, Eigen::Dynamic, 3> B;
   {
-    Eigen::Array<bool,Eigen::Dynamic,1> I;
+    Eigen::Array<bool, Eigen::Dynamic, 1> I;
     on_boundary(F,I,B);
   }
-  find(B.rowwise().count() == 2,ear);
-  Eigen::Array<bool,Eigen::Dynamic,3> Bear;
-  slice(B,ear,1,Bear);
-  Eigen::Array<bool,Eigen::Dynamic,1> M;
+  find(B.rowwise().count() == 2, ear);
+  Eigen::Array<bool, Eigen::Dynamic, 3> Bear;
+  slice(B, ear, 1, Bear);
+  Eigen::Array<bool, Eigen::Dynamic, 1> M;
   mat_min(Bear,2,M,ear_opp);
 }
 

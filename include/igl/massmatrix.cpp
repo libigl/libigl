@@ -48,8 +48,8 @@ IGL_INLINE void igl::massmatrix(
     return massmatrix_intrinsic(l,F,type,M);
   }else if(simplex_size == 4)
   {
-    Matrix<int,Dynamic,1> MI;
-    Matrix<int,Dynamic,1> MJ;
+    Matrix<typename DerivedF::Scalar,Dynamic,1> MI;
+    Matrix<typename DerivedF::Scalar,Dynamic,1> MJ;
     Matrix<Scalar,Dynamic,1> MV;
     assert(V.cols() == 3);
     assert(eff_type == MASSMATRIX_TYPE_BARYCENTRIC);

@@ -22,10 +22,10 @@ namespace igl
   //   X  an m by n sparse matrix
   // Outputs:
   //   Y  an m by n sparse matrix
-  template <typename T>
+  template <typename DerivedX, typename MatY>
   IGL_INLINE void invert_diag(
-    const Eigen::SparseMatrix<T>& X, 
-    Eigen::SparseMatrix<T>& Y);
+    const Eigen::SparseCompressedBase<DerivedX>& X,
+    MatY& Y);
 }
 
 #ifndef IGL_STATIC_LIBRARY

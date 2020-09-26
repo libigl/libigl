@@ -8,8 +8,9 @@
 #ifndef IGL_VIEWERDATA_H
 #define IGL_VIEWERDATA_H
 
-#include "../igl_inline.h"
 #include "MeshGL.h"
+#include <igl/igl_inline.h>
+#include <igl/colormap.h>
 #include <cassert>
 #include <cstdint>
 #include <Eigen/Core>
@@ -60,17 +61,20 @@ public:
   // Inputs:
   //   C  #V|#F|1 by 3 list of colors
   IGL_INLINE void set_colors(const Eigen::MatrixXd &C);
+
   // Set per-vertex UV coordinates
   //
   // Inputs:
   //   UV  #V by 2 list of UV coordinates (indexed by F)
   IGL_INLINE void set_uv(const Eigen::MatrixXd& UV);
+
   // Set per-corner UV coordinates
   //
   // Inputs:
   //   UV_V  #UV by 2 list of UV coordinates
   //   UV_F  #F by 3 list of UV indices into UV_V
   IGL_INLINE void set_uv(const Eigen::MatrixXd& UV_V, const Eigen::MatrixXi& UV_F);
+
   // Set the texture associated with the mesh.
   //
   // Inputs:
@@ -97,7 +101,36 @@ public:
     const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& B,
     const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& A);
 
-  // Sets points given a list of point vertices. In constrast to `set_points`
+  // Set pseudo-colorable scalar data associated with the mesh.
+  //
+  // Inputs:
+  //   caxis_min  caxis minimum bound
+  //   caxis_max  caxis maximum bound
+  //   D  #V by 1 list of scalar values
+  //   cmap colormap type
+  //   num_steps number of intervals to discretize the colormap
+  //
+  // To-do: support #F by 1 per-face data
+  IGL_INLINE void set_data(
+    const Eigen::VectorXd & D,
+    double caxis_min,
+    double caxis_max,
+    igl::ColorMapType cmap = igl::COLOR_MAP_TYPE_VIRIDIS,
+    int num_steps = 21);
+
+  // Use min(D) and max(D) to set caxis.
+  IGL_INLINE void set_data(const Eigen::VectorXd & D,
+    igl::ColorMapType cmap = igl::COLOR_MAP_TYPE_VIRIDIS,
+    int num_steps = 21);
+
+  // Not to be confused with set_colors, this creates a _texture_ that will be
+  // referenced to pseudocolor according to the scalar field passed to set_data.
+  //
+  // Inputs:
+  //   CM  #CM by 3 list of colors
+  IGL_INLINE void set_colormap(const Eigen::MatrixXd & CM);
+
+  // Sets points given a list of point vertices. In constrast to `add_points`
   // this will (purposefully) clober existing points.
   //
   // Inputs:
@@ -107,6 +140,10 @@ public:
     const Eigen::MatrixXd& P,
     const Eigen::MatrixXd& C);
   IGL_INLINE void add_points(const Eigen::MatrixXd& P,  const Eigen::MatrixXd& C);
+
+  // Clear the point data
+  IGL_INLINE void clear_points();
+
   // Sets edges given a list of edge vertices and edge indices. In constrast
   // to `add_edges` this will (purposefully) clober existing edges.
   //
@@ -114,14 +151,25 @@ public:
   //   P  #P by 3 list of vertex positions
   //   E  #E by 2 list of edge indices into P
   //   C  #E|1 by 3 color(s)
+
   IGL_INLINE void set_edges (const Eigen::MatrixXd& P, const Eigen::MatrixXi& E, const Eigen::MatrixXd& C);
   // Alec: This is very confusing. Why does add_edges have a different API from
   // set_edges?
   IGL_INLINE void add_edges (const Eigen::MatrixXd& P1, const Eigen::MatrixXd& P2, const Eigen::MatrixXd& C);
+  // Sets edges given a list of points and eminating vectors
+  IGL_INLINE void set_edges_from_vector_field(
+    const Eigen::MatrixXd& P, 
+    const Eigen::MatrixXd& V, 
+    const Eigen::MatrixXd& C);
 
-  // Adds text labels at the given positions in 3D.
+  // Clear the edge data
+  IGL_INLINE void clear_edges();
+
+  // Sets / Adds text labels at the given positions in 3D.
   // Note: This requires the ImGui viewer plugin to display text labels.
   IGL_INLINE void add_label (const Eigen::VectorXd& P,  const std::string& str);
+  IGL_INLINE void set_labels (const Eigen::MatrixXd& P,  const std::vector<std::string>& str);
+
   // Clear the label data
   IGL_INLINE void clear_labels ();
 
@@ -140,7 +188,10 @@ public:
     const Eigen::Vector4d& diffuse,
     const Eigen::Vector4d& specular);
 
-  // Generates a default grid texture
+  // Generate a normal image matcap
+  IGL_INLINE void normal_matcap();
+
+  // Generates a default grid texture (without uvs)
   IGL_INLINE void grid_texture();
 
   // Copy visualization options from one viewport to another
@@ -188,7 +239,11 @@ public:
   // Text labels plotted over the scene
   // Textp contains, in the i-th row, the position in global coordinates where the i-th label should be anchored
   // Texts contains in the i-th position the text of the i-th label
+  Eigen::MatrixXd           vertex_labels_positions;
+  Eigen::MatrixXd           face_labels_positions;
   Eigen::MatrixXd           labels_positions;
+  std::vector<std::string>  vertex_labels_strings;
+  std::vector<std::string>  face_labels_strings;
   std::vector<std::string>  labels_strings;
 
   // Marks dirty buffers that need to be uploaded to OpenGL
@@ -196,6 +251,9 @@ public:
 
   // Enable per-face or per-vertex properties
   bool face_based;
+
+  // Enable double-sided lighting on faces
+  bool double_sided;
 
   // Invert mesh normals
   bool invert_normals;
@@ -207,13 +265,16 @@ public:
   unsigned int show_overlay;
   unsigned int show_overlay_depth;
   unsigned int show_texture;
+  unsigned int use_matcap;
   unsigned int show_faces;
   unsigned int show_lines;
-  bool show_vertid; // shared across viewports for now
-  bool show_faceid; // shared across viewports for now
+  unsigned int show_vertex_labels;
+  unsigned int show_face_labels;
+  unsigned int show_custom_labels;
 
   // Point size / line width
   float point_size;
+  // line_width is NOT SUPPORTED on Mac OS and Windows
   float line_width;
   Eigen::Matrix<float, 4, 1, Eigen::DontAlign> line_color;
   Eigen::Matrix<float, 4, 1, Eigen::DontAlign> label_color;
@@ -228,11 +289,17 @@ public:
   igl::opengl::MeshGL meshgl;
 
   // Update contents from a 'Data' instance
+  IGL_INLINE void update_labels(
+    igl::opengl::MeshGL& meshgl,
+    igl::opengl::MeshGL::TextGL& GL_labels,
+    const Eigen::MatrixXd& positions,
+    const std::vector<std::string>& strings
+  );
   IGL_INLINE void updateGL(
     const igl::opengl::ViewerData& data,
     const bool invert_normals,
     igl::opengl::MeshGL& meshgl);
-};
+  };
 
 } // namespace opengl
 } // namespace igl
@@ -273,9 +340,11 @@ namespace igl
       SERIALIZE_MEMBER(invert_normals);
       SERIALIZE_MEMBER(show_overlay);
       SERIALIZE_MEMBER(show_overlay_depth);
-      SERIALIZE_MEMBER(show_vertid);
-      SERIALIZE_MEMBER(show_faceid);
+      SERIALIZE_MEMBER(show_vertex_labels);
+      SERIALIZE_MEMBER(show_face_labels);
+      SERIALIZE_MEMBER(show_custom_labels);
       SERIALIZE_MEMBER(show_texture);
+      SERIALIZE_MEMBER(double_sided);
       SERIALIZE_MEMBER(point_size);
       SERIALIZE_MEMBER(line_width);
       SERIALIZE_MEMBER(line_color);
