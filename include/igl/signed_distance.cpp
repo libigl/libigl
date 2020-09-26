@@ -38,10 +38,17 @@ IGL_INLINE void igl::signed_distance(
 {
   using namespace Eigen;
   using namespace std;
+
   const int dim = V.cols();
+
   assert((V.cols() == 3||V.cols() == 2) && "V should have 3d or 2d positions");
   assert((P.cols() == 3||P.cols() == 2) && "P should have 3d or 2d positions");
   assert(V.cols() == P.cols() && "V should have same dimension as P");
+
+  if (sign_type == SIGNED_DISTANCE_TYPE_FAST_WINDING_NUMBER){
+    assert(V.cols() == 3 && "V should be 3D for fast winding number");
+  }
+
   // Only unsigned distance is supported for non-triangles
   if(sign_type != SIGNED_DISTANCE_TYPE_UNSIGNED)
   {
@@ -93,16 +100,9 @@ IGL_INLINE void igl::signed_distance(
       }
       break;
     case SIGNED_DISTANCE_TYPE_FAST_WINDING_NUMBER:
-      switch(dim)
-      {
-        default:
-        case 3:
-          //pre compute
-          igl::fast_winding_number(V.template cast<float>(), F, 2, fwn_bvh);
-        case 2:
-          //this will cause error :) 
-          break;
-      }
+      // assert above ensures dim == 3
+      igl::fast_winding_number(V.template cast<float>().eval(), F, 2, fwn_bvh);
+
     case SIGNED_DISTANCE_TYPE_PSEUDONORMAL:
       switch(dim)
       {
@@ -204,10 +204,9 @@ IGL_INLINE void igl::signed_distance(
         }
         case SIGNED_DISTANCE_TYPE_FAST_WINDING_NUMBER:
         {
-          if (dim == 3){
-            Scalar w = fast_winding_number(fwn_bvh,2,q3.template cast<float>());
-            s = 1.f-2.f*w;
-          }          
+          //assert above ensured 3D
+          Scalar w = fast_winding_number(fwn_bvh,2,q3.template cast<float>().eval());            
+          s = 1.-2.*std::abs(w);
           break;
         }
         case SIGNED_DISTANCE_TYPE_PSEUDONORMAL:
@@ -515,7 +514,7 @@ IGL_INLINE typename DerivedV::Scalar igl::signed_distance_fast_winding_number(
     sqrd = tree.squared_distance(V,F,q,i,c);
     Scalar w = fast_winding_number(fwn_bvh,2,q.template cast<float>());
     //0.5 is on surface
-    return sqrt(sqrd)*(1.-2.*w);
+    return sqrt(sqrd)*(1.-2.*std::abs(w));
   }
 
 #ifdef IGL_STATIC_LIBRARY
