@@ -277,8 +277,6 @@ IGL_INLINE void igl::blue_noise(
   const int nx = 30.0*expected_number_of_points;
   MatrixX3S X,XB;
   Eigen::VectorXi XFI;
-  std::cout << V.rows() << " " << V.cols() << std::endl;
-  std::cout << F.rows() << " " << F.cols() << std::endl;
   igl::random_points_on_mesh(nx,V,F,XB,XFI,X);
 
   // Rescale so that s = 1
