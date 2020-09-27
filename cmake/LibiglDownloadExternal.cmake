@@ -184,7 +184,7 @@ function(igl_download_test_data)
 	igl_download_project_aux(test_data
 		"${LIBIGL_EXTERNAL}/../tests/data"
 		GIT_REPOSITORY https://github.com/libigl/libigl-tests-data
-		GIT_TAG        b5dddf45e329af685cd107e38770a28cfc18eb15
+		GIT_TAG        19cedf96d70702d8b3a83eb27934780c542356fe
 	)
 endfunction()
 
@@ -193,7 +193,7 @@ function(igl_download_tutorial_data)
 	igl_download_project_aux(tutorial_data
 		"${LIBIGL_EXTERNAL}/../tutorial/data"
 		GIT_REPOSITORY https://github.com/libigl/libigl-tutorial-data
-		GIT_TAG        fb5fa00bc4ede64b36002d703ce541552370b6e9
+		GIT_TAG        37d4e836054c9c2d2125a817c489ed8e07cd56fc
 	)
 endfunction()
 
