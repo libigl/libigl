@@ -10,7 +10,7 @@ TEST_CASE("writePLY: bunny.ply", "[igl]")
     std::ifstream f(test_common::data_path("bunny.ply"));
     REQUIRE (f.good());
     f.close();
-    
+
     Eigen::MatrixXd V1,N1,UV1,VD1,FD1,ED1;
     std::vector<std::string> Vheader1,Fheader1,Eheader1,comments1;
 
@@ -19,7 +19,7 @@ TEST_CASE("writePLY: bunny.ply", "[igl]")
     // load test data first
     REQUIRE (igl::readPLY(test_common::data_path("bunny.ply"), V1, F1, E1, N1, UV1, VD1,Vheader1, FD1,Fheader1, ED1,Eheader1,comments1));
 
-    // add more data 
+    // add more data
     Vheader1.push_back("dummy_data");
     Eigen::VectorXd dummy_data(V1.rows());
     for(size_t i=0;i<V1.rows();++i)
@@ -29,7 +29,7 @@ TEST_CASE("writePLY: bunny.ply", "[igl]")
 
 
     // test that saving preserves all the data, including new data column
-    REQUIRE (igl::writePLY("test_bunny.ply", V1, F1, E1, N1, UV1, VD2, Vheader1, FD1,Fheader1, ED1, Eheader1, comments1, true));
+    REQUIRE (igl::writePLY("test_bunny.ply", V1, F1, E1, N1, UV1, VD2, Vheader1, FD1,Fheader1, ED1, Eheader1, comments1, igl::FileEncoding::Binary));
 
     Eigen::MatrixXd V,N,UV,VD,FD,ED;
     Eigen::MatrixXi F,E;
@@ -85,7 +85,7 @@ TEST_CASE("writePLY: bunny.ply float", "[igl]")
     std::ifstream f(test_common::data_path("bunny.ply"));
     REQUIRE (f.good());
     f.close();
-    
+
     Eigen::MatrixXf V1,N1,UV1,VD1,FD1,ED1;
     std::vector<std::string> Vheader1,Fheader1,Eheader1,comments1;
 
@@ -94,7 +94,7 @@ TEST_CASE("writePLY: bunny.ply float", "[igl]")
     // load test data first
     REQUIRE (igl::readPLY(test_common::data_path("bunny.ply"), V1, F1, E1, N1, UV1, VD1,Vheader1, FD1,Fheader1, ED1,Eheader1,comments1));
 
-    // add more data 
+    // add more data
     Vheader1.push_back("dummy_data");
     Eigen::VectorXf dummy_data(V1.rows());
     for(size_t i=0;i<V1.rows();++i)
@@ -104,7 +104,7 @@ TEST_CASE("writePLY: bunny.ply float", "[igl]")
 
 
     // test that saving preserves all the data, including new data column
-    REQUIRE (igl::writePLY("test_bunny.ply", V1, F1, E1, N1, UV1, VD2, Vheader1, FD1,Fheader1, ED1, Eheader1, comments1, true));
+    REQUIRE (igl::writePLY("test_bunny.ply", V1, F1, E1, N1, UV1, VD2, Vheader1, FD1,Fheader1, ED1, Eheader1, comments1, igl::FileEncoding::Binary));
 
     Eigen::MatrixXf V,N,UV,VD,FD,ED;
     Eigen::MatrixXi F,E;
