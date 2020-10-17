@@ -6,6 +6,7 @@
 #include <Eigen/Core>
 
 #include "tinyply.h"
+#include "file_utils.h"
 
 
 namespace igl
@@ -137,54 +138,6 @@ IGL_INLINE bool tinyply_tristrips_to_faces(
   }
 }
 
-
-inline void read_file_binary(FILE *fp, std::vector<uint8_t>& fileBufferBytes)
-{
-    if (!ferror(fp))
-    {
-        fseek(fp,0,SEEK_END);
-        size_t sizeBytes = ftell(fp);
-        fseek(fp,0,SEEK_SET);
-        fileBufferBytes.resize(sizeBytes);
-
-        if(fread((char*)fileBufferBytes.data(), 1, sizeBytes,fp)==sizeBytes)
-          return;
-    }
-
-    throw std::runtime_error("error reading from file");
-}
-
-struct ply_memory_buffer : public std::streambuf
-{
-    char * p_start {nullptr};
-    char * p_end {nullptr};
-    size_t size;
-
-    ply_memory_buffer(char const * first_elem, size_t size)
-        : p_start(const_cast<char*>(first_elem)), p_end(p_start + size), size(size)
-    {
-        setg(p_start, p_start, p_end);
-    }
-
-    pos_type seekoff(off_type off, std::ios_base::seekdir dir, std::ios_base::openmode which) override
-    {
-        if (dir == std::ios_base::cur) gbump(static_cast<int>(off));
-        else setg(p_start, (dir == std::ios_base::beg ? p_start : p_end) + off, p_end);
-        return gptr() - p_start;
-    }
-
-    pos_type seekpos(pos_type pos, std::ios_base::openmode which) override
-    {
-        return seekoff(pos, std::ios_base::beg, which);
-    }
-};
-
-struct ply_memory_stream : virtual ply_memory_buffer, public std::istream
-{
-    ply_memory_stream(char const * first_elem, size_t size)
-        : ply_memory_buffer(first_elem, size), std::istream(static_cast<std::streambuf*>(this)) {}
-};
-
 template <
   typename DerivedV,
   typename DerivedF,
@@ -218,7 +171,7 @@ IGL_INLINE bool readPLY(
   {
     std::vector<uint8_t> fileBufferBytes;
     read_file_binary(fp,fileBufferBytes);
-    ply_memory_stream stream((char*)fileBufferBytes.data(), fileBufferBytes.size());
+    file_memory_stream stream((char*)fileBufferBytes.data(), fileBufferBytes.size());
     return readPLY(stream,V,F,E,N,UV,VD,Vheader,FD,Fheader,ED,Eheader,comments);
   }
   catch(const std::exception& e)

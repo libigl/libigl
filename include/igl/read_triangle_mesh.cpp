@@ -103,6 +103,7 @@ IGL_INLINE bool igl::read_triangle_mesh(
 {
   using namespace std;
   using namespace Eigen;
+  Eigen::MatrixXd N;
   vector<vector<double > > vV,vN,vTC,vC;
   vector<vector<int > > vF,vFTC,vFN;
   vector<tuple<string, int, int>> FM;
@@ -140,10 +141,10 @@ IGL_INLINE bool igl::read_triangle_mesh(
   }else if(ext == "ply")
   {
     return readPLY(fp, V, F);
-    
+
   }else if(ext == "stl")
   {
-    if(!readSTL(fp,vV,vF,vN))
+    if(!readSTL(fp,V,F,N))
     {
       return false;
     }
