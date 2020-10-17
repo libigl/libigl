@@ -25,13 +25,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-18.04, macos-latest]
+        os: [ubuntu-20.04, macos-latest]
         config: [Release]
         static: [ON, OFF]
         include:
           - os: macos-latest
             name: macOS
-          - os: ubuntu-18.04
+          - os: ubuntu-20.04
             name: Linux
     env:
       LIBIGL_NUM_THREADS: 1  # See https://github.com/libigl/libigl/pull/996
