@@ -3,10 +3,6 @@ name: Nightly
 on:
   schedule:
     - cron:  '0 4 * * *'
-  pull_request:
-    branches:
-      - master
-      - stable
 
 env:
   CTEST_OUTPUT_ON_FAILURE: ON
