@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2020 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "blue_noise.h"
 #include "doublearea.h"
@@ -126,6 +126,7 @@ namespace igl
     std::unordered_map<BlueNoiseKeyType,int> & S,
     std::vector<int> & active)
   {
+    assert(M.count(nk));
     auto & Mvec = M.find(nk)->second;
     auto miter = Mvec.begin();
     while(miter != Mvec.end())
@@ -149,7 +150,14 @@ namespace igl
         // back)
         //std::swap(*miter,Mvec.back());
         *miter = Mvec.back();
+        bool was_last = (std::next(miter) == Mvec.end());
         Mvec.pop_back();
+        if (was_last) {
+          // popping from the vector can invalidate the iterator, if it was
+          // pointing to the last element that was popped. Alternatively,
+          // one could use indices directly...
+          miter = Mvec.end();
+        }
       }
     }
     return false;
@@ -259,10 +267,10 @@ IGL_INLINE void igl::blue_noise(
   // function of r and s; and removing the `if S=-1 checks`)
   const Scalar s = r/sqrt(3.0);
 
-  const double area = 
+  const double area =
     [&](){Eigen::VectorXd A;igl::doublearea(V,F,A);return A.array().sum()/2;}();
   // Circle packing in the plane has igl::PI*sqrt(3)/6 efficiency
-  const double expected_number_of_points = 
+  const double expected_number_of_points =
     area * (igl::PI * sqrt(3.0) / 6.0) / (igl::PI * min_r * min_r / 4.0);
 
   // Make a uniform random sampling with 30*expected_number_of_points.
@@ -272,7 +280,7 @@ IGL_INLINE void igl::blue_noise(
   igl::random_points_on_mesh(nx,V,F,XB,XFI,X);
 
   // Rescale so that s = 1
-  Eigen::Matrix<int,Eigen::Dynamic,3,Eigen::RowMajor> Xs = 
+  Eigen::Matrix<int,Eigen::Dynamic,3,Eigen::RowMajor> Xs =
     ((X.rowwise()-X.colwise().minCoeff())/s).template cast<int>();
   const int w = Xs.maxCoeff()+1;
   {
@@ -294,7 +302,7 @@ IGL_INLINE void igl::blue_noise(
   S.reserve(Xs.rows());
   for(int i = 0;i<Xs.rows();i++)
   {
-    BlueNoiseKeyType k = blue_noise_key(w,Xs(i,0),Xs(i,1),Xs(i,2)); 
+    BlueNoiseKeyType k = blue_noise_key(w,Xs(i,0),Xs(i,1),Xs(i,2));
     const auto Miter = M.find(k);
     if(Miter  == M.end())
     {
@@ -309,7 +317,7 @@ IGL_INLINE void igl::blue_noise(
 
   std::vector<int> active;
   // precompute r²
-  // Q: is this necessary? 
+  // Q: is this necessary?
   const double rr = r*r;
   std::vector<int> collected;
   collected.reserve(2.0*expected_number_of_points);

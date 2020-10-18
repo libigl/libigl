@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2014 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "random_points_on_mesh.h"
 #include "doublearea.h"
@@ -42,6 +42,7 @@ IGL_INLINE void igl::random_points_on_mesh(
   assert(R.minCoeff() >= 0);
   assert(R.maxCoeff() <= 1);
   histc(R,C,FI);
+  FI = FI.array().min(F.rows() - 1); // fix the bin when R(i) == 1 exactly
   const VectorXs S = (VectorXs::Random(n,1).array() + 1.)/2.;
   const VectorXs T = (VectorXs::Random(n,1).array() + 1.)/2.;
   B.resize(n,3);
@@ -51,9 +52,9 @@ IGL_INLINE void igl::random_points_on_mesh(
 }
 
 template <
-  typename DerivedV, 
-  typename DerivedF, 
-  typename DerivedB, 
+  typename DerivedV,
+  typename DerivedF,
+  typename DerivedB,
   typename DerivedFI,
   typename DerivedX>
 IGL_INLINE void igl::random_points_on_mesh(
@@ -70,7 +71,10 @@ IGL_INLINE void igl::random_points_on_mesh(
   {
     for(int b = 0;b<B.cols();b++)
     {
-      X.row(x) += B(x,b)*V.row(F(FI(x),b));
+        auto fi = FI(x);
+        auto f = F(fi, b);
+        auto bval = B(x, b);
+        X.row(x) += bval*V.row(f);
     }
   }
 }

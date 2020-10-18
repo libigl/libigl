@@ -1,6 +1,7 @@
 #ifndef IGL_WRITEPLY_H
 #define IGL_WRITEPLY_H
 #include <igl/igl_inline.h>
+#include <igl/FileEncoding.h>
 
 #include <string>
 #include <iostream>
@@ -16,7 +17,7 @@ namespace igl
   //   Derived from Eigen matrix parameters
   // Inputs:
   //  ply_stream  ply file output stream
-  //   V  (#V,3) matrix of vertex positions 
+  //   V  (#V,3) matrix of vertex positions
   //   F  (#F,3) list of face indices into vertex positions
   //   E  (#E,2) list of edge indices into vertex positions
   //   N  (#V,3) list of normals
@@ -28,7 +29,7 @@ namespace igl
   //   ED (#E,*) additional edge data
   //   Eheader (#E) list of edge data headers
   //   comments (*) file comments
-  //   isBinary - bool, to set binary or ascii file format
+  //   encoding - enum, to set binary or ascii file format
   // Returns true on success, false on errors
   template <
   typename DerivedV,
@@ -58,7 +59,7 @@ bool writePLY(
   const std::vector<std::string> & EDheader,
 
   const std::vector<std::string> & comments,
-  bool isBinary
+  FileEncoding encoding
    );
 
   // write triangular mesh to ply file
@@ -67,7 +68,7 @@ bool writePLY(
   //   Derived from Eigen matrix parameters
   // Inputs:
   //  filename  ply file name
-  //   V  (#V,3) matrix of vertex positions 
+  //   V  (#V,3) matrix of vertex positions
   //   F  (#F,3) list of face indices into vertex positions
   //   E  (#E,2) list of edge indices into vertex positions
   //   N  (#V,3) list of normals
@@ -79,7 +80,7 @@ bool writePLY(
   //   ED (#E,*) additional edge data
   //   Eheader (#E) list of edge data headers
   //   comments (*) file comments
-  //   isBinary - bool, to set binary or ascii file format
+  //   encoding - enum, to set binary or ascii file format
   // Returns true on success, false on errors
 template <
   typename DerivedV,
@@ -109,7 +110,7 @@ bool writePLY(
   const std::vector<std::string> & EDheader,
 
   const std::vector<std::string> & comments,
-  bool isBinary
+  FileEncoding encoding
    );
 
 template <
@@ -175,8 +176,8 @@ bool writePLY(
   const std::string & filename,
   const Eigen::MatrixBase<DerivedV> & V,
   const Eigen::MatrixBase<DerivedF> & F,
-  bool force_ascii
-   );   
+  FileEncoding encoding
+   );
 
 template <
   typename DerivedV,
@@ -188,7 +189,7 @@ bool writePLY(
   const Eigen::MatrixBase<DerivedV> & V,
   const Eigen::MatrixBase<DerivedF> & F,
   const Eigen::MatrixBase<DerivedE> & E,
-  bool force_ascii
+  FileEncoding encoding
    );
 
 template <
