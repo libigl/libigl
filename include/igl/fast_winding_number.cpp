@@ -443,8 +443,6 @@ IGL_INLINE void igl::fast_winding_number(
   },1000);
 }
 
-//TODO: there should be a function that given row id, we return solid angle
-//        however its weird without that function being private... so keeping like this.
 template <typename Derivedp>
 IGL_INLINE typename Derivedp::Scalar igl::fast_winding_number(
   const FastWindingNumberBVH & fwn_bvh,
