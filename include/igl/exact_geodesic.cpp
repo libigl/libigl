@@ -1027,7 +1027,6 @@ inline void Mesh::build_adjacencies()
 
 inline bool Mesh::verify()		//verifies connectivity of the mesh and prints some debug info
 {
-	std::cout << std::endl;
 	// make sure that all vertices are mentioned at least once.
 	// though the loose vertex is not a bug, it most likely indicates that something is wrong with the mesh
 	std::vector<bool> map(m_vertices.size(), false);
