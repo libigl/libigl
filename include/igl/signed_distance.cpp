@@ -205,8 +205,9 @@ IGL_INLINE void igl::signed_distance(
         case SIGNED_DISTANCE_TYPE_FAST_WINDING_NUMBER:
         {
           //assert above ensured 3D
-          Scalar w = fast_winding_number(fwn_bvh,2,q3.template cast<float>().eval());            
-          s = 1.-2.*std::abs(w);
+          Scalar w = fast_winding_number(fwn_bvh, 2, q3.template cast<float>().eval());         
+          s = 1.-2.*std::abs(w);  
+
           break;
         }
         case SIGNED_DISTANCE_TYPE_PSEUDONORMAL:
@@ -484,7 +485,7 @@ IGL_INLINE void igl::signed_distance_fast_winding_number(
   {
     typedef Eigen::Matrix<typename DerivedV::Scalar,1,3> RowVector3S;
     S.resize(P.rows(),1);
-    int min_parallel = 10000; //using default seen elsewhere...
+    int min_parallel = 10000; 
     parallel_for(P.rows(), [&](const int p)
     {
       RowVector3S q;
