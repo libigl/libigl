@@ -19,7 +19,10 @@
 
 Eigen::MatrixXd V;
 Eigen::MatrixXi T,F;
+
 igl::AABB<Eigen::MatrixXd,3> tree;
+igl::FastWindingNumberBVH fwn_bvh;
+
 Eigen::MatrixXd FN,VN,EN;
 Eigen::MatrixXi E;
 Eigen::VectorXi EMAP;
@@ -27,6 +30,8 @@ double max_distance = 1;
 
 double slice_z = 0.5;
 bool overlay = false;
+
+bool useFastWindingNumber = false;
 
 void update_visualization(igl::opengl::glfw::Viewer & viewer)
 {
@@ -72,12 +77,16 @@ void update_visualization(igl::opengl::glfw::Viewer & viewer)
 
   // Compute signed distance
   VectorXd S_vis;
+
+  if (!useFastWindingNumber)
   {
     VectorXi I;
     MatrixXd N,C;
     // Bunny is a watertight mesh so use pseudonormal for signing
     signed_distance_pseudonormal(V_vis,V,F,tree,FN,VN,EN,EMAP,S_vis,I,C,N);
-  }
+  } else {
+    signed_distance_fast_winding_number(V_vis, V, F, tree, fwn_bvh, S_vis);
+  }    
 
   const auto & append_mesh = [&F_vis,&V_vis](
     const Eigen::MatrixXd & V,
@@ -114,6 +123,12 @@ bool key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int mod)
     case ',':
       slice_z = std::max(slice_z-0.01,0.01);
       break;
+    case '1':
+      useFastWindingNumber = true;
+      break;
+    case '2':
+      useFastWindingNumber = false;
+      break;
   }
   update_visualization(viewer);
   return true;
@@ -127,6 +142,7 @@ int main(int argc, char *argv[])
   cout<<"Usage:"<<endl;
   cout<<"[space]  toggle showing surface."<<endl;
   cout<<"'.'/','  push back/pull forward slicing plane."<<endl;
+  cout<< "1/2 toggle between fast winding number (1) and pseudonormal (2) signing. \n";
   cout<<endl;
 
   // Load mesh: (V,T) tet-mesh of convex hull, F contains original surface
@@ -143,6 +159,9 @@ int main(int argc, char *argv[])
     max_distance = sqrt(sqrD.maxCoeff());
   }
 
+  // Fast winding and Pseudo normal depend on differnt AABB trees... We initialize both here.
+
+  // Pseudonormal setup...
   // Precompute signed distance AABB tree
   tree.init(V,F);
   // Precompute vertex,edge and face normals
@@ -151,6 +170,9 @@ int main(int argc, char *argv[])
     V,F,igl::PER_VERTEX_NORMALS_WEIGHTING_TYPE_ANGLE,FN,VN);
   igl::per_edge_normals(
     V,F,igl::PER_EDGE_NORMALS_WEIGHTING_TYPE_UNIFORM,FN,EN,E,EMAP);
+
+  // fast winding number setup (just init fwn bvh)
+  igl::fast_winding_number(V, F, 2, fwn_bvh);
 
   // Plot the generated mesh
   igl::opengl::glfw::Viewer viewer;

@@ -15,6 +15,7 @@ TEST_CASE("signed_distance: single_tet", "[igl]")
     0,2,1,
     0,3,2,
     1,2,3;
+
   Eigen::MatrixXd P(1,3);
   P<<0.5,0.5,0.5;
   for(const igl::SignedDistanceType type :
@@ -22,14 +23,23 @@ TEST_CASE("signed_distance: single_tet", "[igl]")
       igl::SIGNED_DISTANCE_TYPE_PSEUDONORMAL  ,
       igl::SIGNED_DISTANCE_TYPE_WINDING_NUMBER,
       igl::SIGNED_DISTANCE_TYPE_DEFAULT       ,
-      igl::SIGNED_DISTANCE_TYPE_UNSIGNED      })
+      igl::SIGNED_DISTANCE_TYPE_UNSIGNED      ,
+      igl::SIGNED_DISTANCE_TYPE_FAST_WINDING_NUMBER 
+      })
   {
     Eigen::VectorXd S;
     Eigen::VectorXi I;
     Eigen::MatrixXd C,N;
     igl::signed_distance( P,V,F,type,S,I,C,N);
     Eigen::VectorXd Sexact (1,1);Sexact<<sqrt(1./12.);
-    test_common::assert_near(S,Sexact,1e-15);
+
+    if (type == igl::SIGNED_DISTANCE_TYPE_FAST_WINDING_NUMBER) {
+      // loosen tolerance on fwn. 
+      test_common::assert_near(S,Sexact,1e-7);
+    } else {
+      test_common::assert_near(S,Sexact,1e-15);
+    }
+    
   }
 }
 
@@ -52,7 +62,7 @@ TEST_CASE("signed_distance: single_triangle", "[igl]")
       igl::SIGNED_DISTANCE_TYPE_PSEUDONORMAL  ,
       igl::SIGNED_DISTANCE_TYPE_WINDING_NUMBER,
       igl::SIGNED_DISTANCE_TYPE_DEFAULT       ,
-      igl::SIGNED_DISTANCE_TYPE_UNSIGNED      
+      igl::SIGNED_DISTANCE_TYPE_UNSIGNED
       })
   {
     Eigen::VectorXd S;
@@ -63,3 +73,4 @@ TEST_CASE("signed_distance: single_triangle", "[igl]")
     test_common::assert_near(S,Sexact,1e-15);
   }
 }
+
