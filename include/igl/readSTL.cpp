@@ -45,7 +45,7 @@ IGL_INLINE bool readSTL(std::istream &input,
 IGL_INLINE bool is_stl_binary(std::istream &input) {
   std::streampos start_pos = input.tellg();
 
-  const size_t HEADER_SIZE = 80;
+  constexpr size_t HEADER_SIZE = 80;
   char header[HEADER_SIZE];
   input.read(header, HEADER_SIZE);
   if (!starts_with(header, "solid")) {
@@ -76,7 +76,7 @@ IGL_INLINE bool read_stl_ascii(std::istream &input,
                                std::vector<std::array<TypeV, 3>> &V,
                                std::vector<std::array<TypeF, 3>> &F,
                                std::vector<std::array<TypeN, 3>> &N) {
-  const size_t LINE_SIZE = 256;
+  constexpr size_t LINE_SIZE = 256;
   char line[LINE_SIZE];
   bool success = true;
 
@@ -114,8 +114,8 @@ IGL_INLINE bool read_stl_ascii(std::istream &input,
   };
 
   auto parse_ascii_facet = [&parse_ascii_vertex, &parse_ascii_normal](std::istream &fin) {
-    const size_t LINE_SIZE = 256;
-    const size_t WORD_SIZE = 128;
+    constexpr size_t LINE_SIZE = 256;
+    constexpr size_t WORD_SIZE = 128;
     char line[LINE_SIZE];
     char first_word[WORD_SIZE];
     const char *face_begin = "facet";
@@ -195,9 +195,9 @@ IGL_INLINE bool read_stl_binary(std::istream &input,
     throw std::runtime_error("Failed to open file");
   }
 
-  const size_t FLOAT_SIZE = sizeof(float);
-  assert(FLOAT_SIZE == 4);
-  const size_t LINE_SIZE = 256;
+  constexpr size_t FLOAT_SIZE = sizeof(float);
+  static_assert(FLOAT_SIZE == 4, "float type is not 4 bytes");
+  constexpr size_t LINE_SIZE = 256;
   char buf[LINE_SIZE];
 
   // 80 bytes header, no data significance.
