@@ -48,6 +48,7 @@ IGL_INLINE bool is_stl_binary(std::istream &input) {
   constexpr size_t HEADER_SIZE = 80;
   char header[HEADER_SIZE];
   input.read(header, HEADER_SIZE);
+  input.seekg(start_pos);
   if (!starts_with(header, "solid")) {
     return true;
   }
