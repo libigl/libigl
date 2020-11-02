@@ -49,9 +49,11 @@ IGL_INLINE bool is_stl_binary(std::istream &input) {
   char header[HEADER_SIZE];
   input.read(header, HEADER_SIZE);
   if (!starts_with(header, "solid")) {
+    input.seekg(start_pos);
     return true;
   }
   if (!input.good()) {
+    input.seekg(start_pos);
     return false;
   }
 
