@@ -373,14 +373,12 @@ R"(#version 330
     in float offset;
     uniform mat4 view;
     uniform mat4 proj;
-    out int vPosition;
     out int vCharacter;
     out float vOffset;
     void main()
     {
       vCharacter = int(character);
       vOffset = offset;
-      vPosition = gl_VertexID;
       gl_Position = proj * view * vec4(position, 1.0);
     }
 )";
@@ -397,7 +395,6 @@ R"(#version 150 core
     uniform vec2 RenderSize;
     uniform vec2 RenderOrigin;
     uniform float TextShiftFactor;
-    in int vPosition[1];
     in int vCharacter[1];
     in float vOffset[1];
     void main()

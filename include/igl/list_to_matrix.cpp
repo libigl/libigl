@@ -52,6 +52,39 @@ IGL_INLINE bool igl::list_to_matrix(const std::vector<std::vector<T > > & V,Eige
   return true;
 }
 
+template <typename T, size_t N, typename Derived>
+IGL_INLINE bool igl::list_to_matrix(const std::vector<std::array<T, N> > & V,Eigen::PlainObjectBase<Derived>& M)
+{
+  // number of rows
+  int m = V.size();
+  if(m == 0)
+  {
+    M.resize(
+            Derived::RowsAtCompileTime>=0?Derived::RowsAtCompileTime:0
+            ,
+            Derived::ColsAtCompileTime>=0?Derived::ColsAtCompileTime:0
+            );
+    return true;
+  }
+  // number of columns
+  int n = static_cast<int>(N);
+  assert(n != -1);
+  // Resize output
+  M.resize(m,n);
+
+  // Loop over rows
+  for(int i = 0;i<m;i++)
+  {
+    // Loop over cols
+    for(int j = 0;j<n;j++)
+    {
+      M(i,j) = V[i][j];
+    }
+  }
+
+  return true;
+}
+
 template <typename T, typename Derived>
 IGL_INLINE bool igl::list_to_matrix(
   const std::vector<std::vector<T > > & V,
@@ -171,6 +204,18 @@ template bool igl::list_to_matrix<unsigned long, Eigen::Matrix<int, -1, -1, 0, -
 template bool igl::list_to_matrix<int, Eigen::Matrix<int, -1, 3, 1, -1, 3> >(std::vector<std::vector<int, std::allocator<int> >, std::allocator<std::vector<int, std::allocator<int> > > > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 1, -1, 3> >&);
 template bool igl::list_to_matrix<unsigned long, Eigen::Matrix<long, -1, 1, 0, -1, 1> >(std::vector<unsigned long, std::allocator<unsigned long> > const&, Eigen::PlainObjectBase<Eigen::Matrix<long, -1, 1, 0, -1, 1> >&);
 template bool igl::list_to_matrix<bool, Eigen::Matrix<bool, -1, 1, 0, -1, 1> >(std::vector<bool, std::allocator<bool> > const&, Eigen::PlainObjectBase<Eigen::Matrix<bool, -1, 1, 0, -1, 1> >&);
+
+template bool igl::list_to_matrix<double, 3ul, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(std::vector<std::array<double, 3ul>, std::allocator<std::array<double, 3ul> > > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
+template bool igl::list_to_matrix<double, 3ul, Eigen::Matrix<double, -1, -1, 1, -1, -1> >(std::vector<std::array<double, 3ul>, std::allocator<std::array<double, 3ul> > > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 1, -1, -1> >&);
+template bool igl::list_to_matrix<double, 3ul, Eigen::Matrix<double, -1, 3, 0, -1, 3> >(std::vector<std::array<double, 3ul>, std::allocator<std::array<double, 3ul> > > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> >&);
+template bool igl::list_to_matrix<double, 3ul, Eigen::Matrix<double, -1, 3, 1, -1, 3> >(std::vector<std::array<double, 3ul>, std::allocator<std::array<double, 3ul> > > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 1, -1, 3> >&);
+template bool igl::list_to_matrix<float, 3ul, Eigen::Matrix<float, -1, -1, 0, -1, -1> >(std::vector<std::array<float, 3ul>, std::allocator<std::array<float, 3ul> > > const&, Eigen::PlainObjectBase<Eigen::Matrix<float, -1, -1, 0, -1, -1> >&);
+template bool igl::list_to_matrix<float, 3ul, Eigen::Matrix<float, -1, 3, 0, -1, 3> >(std::vector<std::array<float, 3ul>, std::allocator<std::array<float, 3ul> > > const&, Eigen::PlainObjectBase<Eigen::Matrix<float, -1, 3, 0, -1, 3> >&);
+template bool igl::list_to_matrix<float, 3ul, Eigen::Matrix<float, -1, 3, 1, -1, 3> >(std::vector<std::array<float, 3ul>, std::allocator<std::array<float, 3ul> > > const&, Eigen::PlainObjectBase<Eigen::Matrix<float, -1, 3, 1, -1, 3> >&);
+template bool igl::list_to_matrix<int, 3ul, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(std::vector<std::array<int, 3ul>, std::allocator<std::array<int, 3ul> > > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
+template bool igl::list_to_matrix<int, 3ul, Eigen::Matrix<int, -1, 3, 0, -1, 3> >(std::vector<std::array<int, 3ul>, std::allocator<std::array<int, 3ul> > > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> >&);
+template bool igl::list_to_matrix<int, 3ul, Eigen::Matrix<int, -1, 3, 1, -1, 3> >(std::vector<std::array<int, 3ul>, std::allocator<std::array<int, 3ul> > > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 1, -1, 3> >&);
+template bool igl::list_to_matrix<unsigned int, 3ul, Eigen::Matrix<unsigned int, -1, 3, 1, -1, 3> >(std::vector<std::array<unsigned int, 3ul>, std::allocator<std::array<unsigned int, 3ul> > > const&, Eigen::PlainObjectBase<Eigen::Matrix<unsigned int, -1, 3, 1, -1, 3> >&);
 
 #ifdef WIN32
 template bool igl::list_to_matrix<double, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(std::vector<double, std::allocator<double> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);

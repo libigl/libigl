@@ -19,9 +19,8 @@ IGL_INLINE bool igl::xml::writeDAE(
 {
   using namespace std;
   using namespace Eigen;
-  using namespace tinyxml2;
 
-  XMLDocument* doc = new XMLDocument();
+  tinyxml2::XMLDocument* doc = new tinyxml2::XMLDocument();
 
   const auto & ele = [&doc](
     const std::string tag,
@@ -30,11 +29,11 @@ IGL_INLINE bool igl::xml::writeDAE(
     const std::map<std::string,std::string> attribs =
       std::map<std::string,std::string>(),
     const std::string text="",
-    const std::list<XMLElement *> children =
-       std::list<XMLElement *>()
-    )->XMLElement *
+    const std::list<tinyxml2::XMLElement *> children =
+       std::list<tinyxml2::XMLElement *>()
+    )->tinyxml2::XMLElement *
   {
-    XMLElement * element = doc->NewElement(tag.c_str());
+    tinyxml2::XMLElement * element = doc->NewElement(tag.c_str());
     for(const auto & key_value :  attribs)
     {
       element->SetAttribute(key_value.first.c_str(),key_value.second.c_str());
@@ -126,9 +125,9 @@ IGL_INLINE bool igl::xml::writeDAE(
     }));
   // tinyxml2 seems **not** to print the <?xml ...?> header by default, but it
   // also seems that that's OK
-  XMLError error = doc->SaveFile(filename.c_str());
+  tinyxml2::XMLError error = doc->SaveFile(filename.c_str());
   bool ret = true;
-  if(error != XML_NO_ERROR)
+  if(error != tinyxml2::XML_SUCCESS)
   {
     doc->PrintError();
     ret = false;

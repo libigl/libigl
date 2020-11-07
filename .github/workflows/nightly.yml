@@ -23,46 +23,46 @@ jobs:
       fail-fast: false
       matrix:
         name: [
-          ubuntu-18.04-gcc-7,
-          ubuntu-18.04-gcc-8,
-          ubuntu-18.04-gcc-9,
-          ubuntu-18.04-clang-7,
-          ubuntu-18.04-clang-8,
-          ubuntu-18.04-clang-9,
+          ubuntu-20.04-gcc-8,
+          ubuntu-20.04-gcc-9,
+          ubuntu-20.04-gcc-10,
+          ubuntu-20.04-clang-8,
+          ubuntu-20.04-clang-9,
+          ubuntu-20.04-clang-10,
           macOS-latest,
         ]
         config: [Debug, Release]
         static: [ON, OFF]
         include:
-          - name: ubuntu-18.04-gcc-7
-            os: ubuntu-18.04
-            compiler: gcc
-            version: "7"
-
-          - name: ubuntu-18.04-gcc-8
-            os: ubuntu-18.04
+          - name: ubuntu-20.04-gcc-8
+            os: ubuntu-20.04
             compiler: gcc
             version: "8"
 
-          - name: ubuntu-18.04-gcc-9
-            os: ubuntu-18.04
+          - name: ubuntu-20.04-gcc-9
+            os: ubuntu-20.04
             compiler: gcc
             version: "9"
 
-          - name: ubuntu-18.04-clang-7
-            os: ubuntu-18.04
-            compiler: clang
-            version: "7"
+          - name: ubuntu-20.04-gcc-10
+            os: ubuntu-20.04
+            compiler: gcc
+            version: "10"
 
-          - name: ubuntu-18.04-clang-8
-            os: ubuntu-18.04
+          - name: ubuntu-20.04-clang-8
+            os: ubuntu-20.04
             compiler: clang
             version: "8"
 
-          - name: ubuntu-18.04-clang-9
-            os: ubuntu-18.04
+          - name: ubuntu-20.04-clang-9
+            os: ubuntu-20.04
             compiler: clang
             version: "9"
+
+          - name: ubuntu-20.04-clang-10
+            os: ubuntu-20.04
+            compiler: clang
+            version: "10"
 
           - name: macOS-latest
             os: macOS-latest
@@ -84,10 +84,6 @@ jobs:
       - name: Dependencies (Linux)
         if: runner.os == 'Linux'
         run: |
-            # LLVM 9 is not in Bionic's repositories so we add the official LLVM repository.
-            if [ "${{ matrix.compiler }}" = "clang" ] && [ "${{ matrix.version }}" = "9" ]; then
-              sudo add-apt-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-9 main"
-            fi
             sudo apt-get update
 
             if [ "${{ matrix.compiler }}" = "gcc" ]; then
