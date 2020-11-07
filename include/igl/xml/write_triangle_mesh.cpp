@@ -15,7 +15,7 @@ IGL_INLINE bool igl::xml::write_triangle_mesh(
   const std::string str,
   const Eigen::PlainObjectBase<DerivedV>& V,
   const Eigen::PlainObjectBase<DerivedF>& F,
-  const bool ascii)
+  const FileEncoding fe)
 {
   using namespace std;
   // dirname, basename, extension and filename
@@ -28,6 +28,6 @@ IGL_INLINE bool igl::xml::write_triangle_mesh(
     return writeDAE(str,V,F);
   }else
   {
-    return igl::write_triangle_mesh(str,V,F,ascii);
+    return igl::write_triangle_mesh(str,V,F,fe);
   }
 }
