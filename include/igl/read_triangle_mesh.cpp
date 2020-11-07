@@ -8,6 +8,7 @@
 #include "read_triangle_mesh.h"
 
 #include "list_to_matrix.h"
+#include "readMSH.h"
 #include "readMESH.h"
 #include "readOBJ.h"
 #include "readOFF.h"
@@ -84,14 +85,38 @@ IGL_INLINE bool igl::read_triangle_mesh(
   pathinfo(filename,dir,base,ext,name);
   // Convert extension to lower case
   transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
-  FILE * fp = fopen(filename.c_str(),"rb");
-  if(NULL==fp)
+  // readMSH requires filename
+  if(ext == "msh")
   {
-    fprintf(stderr,"IOError: %s could not be opened...\n",
-            filename.c_str());
-    return false;
+    // readMSH is not properly templated
+    Eigen::MatrixXd mV;
+    Eigen::MatrixXi mF,T;
+    Eigen::VectorXi _1,_2;
+    // *TetWild doesn't use Tri field...
+    //bool res = readMSH(filename,mV,mF);
+    bool res = readMSH(filename,mV,mF,T,_1,_2);
+    V = mV.template cast<typename DerivedV::Scalar>();
+    if(mF.rows() == 0 && T.rows() > 0)
+    {
+      boundary_facets(T,F);
+      // outward facing
+      F = F.rowwise().reverse().eval();
+    }else
+    {
+      F = mF.template cast<typename DerivedF::Scalar>();
+    }
+    return res;
+  }else
+    {
+    FILE * fp = fopen(filename.c_str(),"rb");
+    if(NULL==fp)
+    {
+      fprintf(stderr,"IOError: %s could not be opened...\n",
+              filename.c_str());
+      return false;
+    }
+    return read_triangle_mesh(ext,fp,V,F);
   }
-  return read_triangle_mesh(ext,fp,V,F);
 }
 
 template <typename DerivedV, typename DerivedF>
@@ -118,6 +143,8 @@ IGL_INLINE bool igl::read_triangle_mesh(
     //if(F.size() > T.size() || F.size() == 0)
     {
       boundary_facets(T,F);
+      // outward facing
+      F = F.rowwise().reverse().eval();
     }
   }else if(ext == "obj")
   {
