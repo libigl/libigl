@@ -193,7 +193,7 @@ function(igl_download_tutorial_data)
 	igl_download_project_aux(tutorial_data
 		"${LIBIGL_EXTERNAL}/../tutorial/data"
 		GIT_REPOSITORY https://github.com/libigl/libigl-tutorial-data
-		GIT_TAG        37d4e836054c9c2d2125a817c489ed8e07cd56fc
+		GIT_TAG        1f8fab844173890f1e326d93c9ca6c50dad1c6b2
 	)
 endfunction()
 
