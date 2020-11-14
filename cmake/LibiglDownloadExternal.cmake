@@ -77,7 +77,7 @@ endfunction()
 function(igl_download_embree)
 	igl_download_project(embree
 		GIT_REPOSITORY https://github.com/embree/embree.git
-		GIT_TAG        v3.5.2
+		GIT_TAG        v3.12.1
 		${LIBIGL_BRANCH_OPTIONS}
 	)
 endfunction()
