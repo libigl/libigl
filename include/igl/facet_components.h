@@ -40,7 +40,7 @@ namespace igl
     typename DerivedC,
     typename Derivedcounts>
   IGL_INLINE void facet_components(
-    const std::vector<std::vector<std::vector<TTIndex > > > & TT,
+    const std::vector<std::vector<TTIndex > > & TT,
     Eigen::PlainObjectBase<DerivedC> & C,
     Eigen::PlainObjectBase<Derivedcounts> & counts);
 }
