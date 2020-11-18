@@ -3,6 +3,14 @@ name: Nightly
 on:
   schedule:
     - cron:  '0 4 * * *'
+  push:
+    branches:
+      - master
+      - stable
+  pull_request:
+    branches:
+      - master
+      - stable
 
 env:
   CTEST_OUTPUT_ON_FAILURE: ON
@@ -88,12 +96,12 @@ jobs:
 
             if [ "${{ matrix.compiler }}" = "gcc" ]; then
               sudo apt-get install -y g++-${{ matrix.version }}
-              echo "::set-env name=CC::gcc-${{ matrix.version }}"
-              echo "::set-env name=CXX::g++-${{ matrix.version }}"
+              echo "CC=gcc-${{ matrix.version }}" >> $GITHUB_ENV
+              echo "CXX=g++-${{ matrix.version }}" >> $GITHUB_ENV
             else
               sudo apt-get install -y clang-${{ matrix.version }}
-              echo "::set-env name=CC::clang-${{ matrix.version }}"
-              echo "::set-env name=CXX::clang++-${{ matrix.version }}"
+              echo "CC=clang-${{ matrix.version }}" >> $GITHUB_ENV
+              echo "CXX=clang++-${{ matrix.version }}" >> $GITHUB_ENV
             fi
 
             sudo apt-get install \
