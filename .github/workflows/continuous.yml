@@ -143,7 +143,7 @@ jobs:
             -DLIBIGL_WITH_COMISO=OFF ^
             -B build ^
             -S .
-          cmake --build build -j 2
+          cmake --build build
 
       - name: Tests
         run: cd build; ctest --verbose
