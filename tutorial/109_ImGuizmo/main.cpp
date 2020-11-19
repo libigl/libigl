@@ -38,6 +38,7 @@ int main(int argc, char *argv[])
   {
     switch(key)
     {
+      case ' ': plugin.visible = !plugin.visible; return true;
       case 'W': case 'w': plugin.operation = ImGuizmo::TRANSLATE; return true;
       case 'E': case 'e': plugin.operation = ImGuizmo::ROTATE;    return true;
       case 'R': case 'r': plugin.operation = ImGuizmo::SCALE;     return true;

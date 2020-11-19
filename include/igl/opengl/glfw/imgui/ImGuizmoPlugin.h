@@ -14,6 +14,8 @@ class ImGuizmoPlugin : public igl::opengl::glfw::imgui::ImGuiMenu
 public:
   // callback(T) called when the stored transform T changes
   std::function<void(const Eigen::Matrix4f &)> callback;
+  // Whether to display
+  bool visible = true;
   // whether rotating, translating or scaling
   ImGuizmo::OPERATION operation;
   // stored transformation

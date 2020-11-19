@@ -13,6 +13,7 @@ IGL_INLINE void ImGuizmoPlugin::init(igl::opengl::glfw::Viewer *_viewer)
 }
 IGL_INLINE bool ImGuizmoPlugin::pre_draw() 
 {
+  if(!visible){ return false; }
   ImGuiMenu::pre_draw();
   ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0);
   ImGuizmo::BeginFrame();
@@ -21,6 +22,7 @@ IGL_INLINE bool ImGuizmoPlugin::pre_draw()
 }
 IGL_INLINE bool ImGuizmoPlugin::post_draw() 
 {
+  if(!visible){ return false; }
   // Don't draw the Viewer's default menu: draw just the ImGuizmo
   Eigen::Matrix4f view = (viewer->core().view / viewer->core().camera_zoom);
   Eigen::Matrix4f proj = viewer->core().proj;
