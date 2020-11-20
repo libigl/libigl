@@ -21,7 +21,7 @@ namespace igl
   // Inputs:
   //   F  #F by dim list of mesh simplices
   // Outputs: 
-  //   A  max(F) by max(F) adjacency matrix, each row i corresponding to V(i,:)
+  //   A  max(F)+1 by max(F)+1 adjacency matrix, each row i corresponding to V(i,:)
   //
   // Example:
   //   // Mesh in (V,F)
@@ -41,6 +41,21 @@ namespace igl
   template <typename DerivedF, typename T>
   IGL_INLINE void adjacency_matrix(
     const Eigen::MatrixBase<DerivedF> & F, 
+    Eigen::SparseMatrix<T>& A);
+  // Constructs an vertex adjacency for a polygon mesh.
+  //
+  // Inputs:
+  //   I  #I vectorized list of polygon corner indices into rows of some matrix V
+  //   C  #polygons+1 list of cumulative polygon sizes so that C(i+1)-C(i) =
+  //     size of the ith polygon, and so I(C(i)) through I(C(i+1)-1) are the
+  //     indices of the ith polygon
+  // Outputs:
+  //   A  max(I)+1 by max(I)+1 adjacency matrix, each row i corresponding to V(i,:)
+  //
+  template <typename DerivedI, typename DerivedC, typename T>
+  IGL_INLINE void adjacency_matrix(
+    const Eigen::MatrixBase<DerivedI> & I,
+    const Eigen::MatrixBase<DerivedC> & C,
     Eigen::SparseMatrix<T>& A);
 }
 

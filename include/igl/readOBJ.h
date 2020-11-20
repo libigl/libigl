@@ -5,6 +5,7 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
+
 #ifndef IGL_READOBJ_H
 #define IGL_READOBJ_H
 #include "igl_inline.h"
@@ -121,6 +122,17 @@ namespace igl
     const std::string str,
     Eigen::PlainObjectBase<DerivedV>& V,
     Eigen::PlainObjectBase<DerivedF>& F);
+  // Outputs:
+  //   I  #I vectorized list of polygon corner indices into rows of some matrix V
+  //   C  #P+1 list of cumulative polygon sizes so that C(i+1)-C(i) = size of
+  //     the ith polygon, and so I(C(i)) through I(C(i+1)-1) are the indices of
+  //     the ith polygon
+  template <typename DerivedV, typename DerivedI, typename DerivedC>
+  IGL_INLINE bool readOBJ(
+    const std::string str,
+    Eigen::PlainObjectBase<DerivedV>& V,
+    Eigen::PlainObjectBase<DerivedI>& I,
+    Eigen::PlainObjectBase<DerivedC>& C);
 
 }
 

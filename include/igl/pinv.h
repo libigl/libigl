@@ -12,6 +12,9 @@ namespace igl
   // Outputs:
   //   X  n by m matrix so that A*X*A = A and X*A*X = X and A*X = (A*X)' and
   //     (X*A) = (X*A)'
+  //
+  // Obsolete: Use Eigen::CompleteOrthogonalDecomposition<Eigen::MatrixXd>
+  // .solve() or .pseudoinverse() instead.
   template <typename DerivedA, typename DerivedX>
   void pinv(
     const Eigen::MatrixBase<DerivedA> & A,
