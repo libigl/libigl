@@ -93,17 +93,17 @@ int main(int argc, char *argv[])
   const auto cmcf_step = [&]()
   {
     // take step
-    Eigen::SparseMatrix<double> & L = tL;
-    Eigen::SparseMatrix<double> & M = tM;
+    Eigen::SparseMatrix<double> * L = &tL;
+    Eigen::SparseMatrix<double> * M = &tM;
     if(use_poly)
     {
-      L = pL;
-      M = tM;
+      L = &pL;
+      M = &tM;
     }
-    const auto & S = (M - 0.05*L);
+    const auto & S = ((*M) - 0.05*(*L));
     Eigen::SimplicialLLT<Eigen::SparseMatrix<double > > solver(S);
     assert(solver.info() == Eigen::Success);
-    V = solver.solve(M*V).eval();
+    V = solver.solve((*M)*V).eval();
     // recompute just mass matrices
     recompute_M();
     // center
