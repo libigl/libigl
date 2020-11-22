@@ -374,4 +374,16 @@ inline typename DerivedV::Scalar
   return igl::winding_number(BV,PBF,p);
 }
 
+// This is a bullshit template because AABB annoyingly needs templates for bad
+// combinations of 3D V with DIM=2 AABB
+//
+// _Define_ as a no-op rather than monkeying around with the proper code above
+namespace igl
+{
+  template <> inline igl::WindingNumberAABB<Eigen::Matrix<double, 1, 3, 1, 1, 3>,Eigen::Matrix<double, -1, 2, 0, -1, 2>,Eigen::Matrix<int, -1, 2, 0, -1, 2>>::WindingNumberAABB(const Eigen::MatrixBase<Eigen::Matrix<double, -1, 2, 0, -1, 2>> & V, const Eigen::MatrixBase<Eigen::Matrix<int, -1, 2, 0, -1, 2>> & F){};
+  template <> inline void igl::WindingNumberAABB<Eigen::Matrix<double, 1, 3, 1, 1, 3>,Eigen::Matrix<double, -1, 2, 0, -1, 2>,Eigen::Matrix<int, -1, 2, 0, -1, 2>>::grow(){};
+  template <> inline void igl::WindingNumberAABB<Eigen::Matrix<double, 1, 3, 1, 1, 3>,Eigen::Matrix<double, -1, 2, 0, -1, 2>,Eigen::Matrix<int, -1, 2, 0, -1, 2>>::init(){};
+
+}
+
 #endif
