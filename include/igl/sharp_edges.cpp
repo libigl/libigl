@@ -44,6 +44,10 @@ IGL_INLINE void igl::sharp_edges(
   {
     bool u_is_sharp = false;
     // Consider every pair of incident faces
+    //
+    // if there are 3 faces (non-manifold) it appears to follow that the edge
+    // must be sharp if angle<60. Could skip those (they're likely small number
+    // anyway).
     for(int i = 0;i<uE2E[u].size();i++)
     for(int j = i+1;j<uE2E[u].size();j++)
     {
