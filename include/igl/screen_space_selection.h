@@ -30,7 +30,6 @@ namespace igl
     Eigen::PlainObjectBase<Deriveda> & and_visible);
   template <
     typename DerivedV,
-    typename DerivedF,
     typename DerivedM,
     typename DerivedN,
     typename DerivedO,
@@ -38,7 +37,6 @@ namespace igl
     typename DerivedW>
   IGL_INLINE void screen_space_selection(
     const Eigen::MatrixBase<DerivedV> & V,
-    const Eigen::MatrixBase<DerivedF> & F,
     const Eigen::MatrixBase<DerivedM>& model,
     const Eigen::MatrixBase<DerivedN>& proj,
     const Eigen::MatrixBase<DerivedO>& viewport,
@@ -46,7 +44,6 @@ namespace igl
     Eigen::PlainObjectBase<DerivedW> & W);
   template <
     typename DerivedV,
-    typename DerivedF,
     typename DerivedM,
     typename DerivedN,
     typename DerivedO,
@@ -55,7 +52,6 @@ namespace igl
     typename DerivedW>
   IGL_INLINE void screen_space_selection(
     const Eigen::MatrixBase<DerivedV> & V,
-    const Eigen::MatrixBase<DerivedF> & F,
     const Eigen::MatrixBase<DerivedM>& model,
     const Eigen::MatrixBase<DerivedN>& proj,
     const Eigen::MatrixBase<DerivedO>& viewport,
