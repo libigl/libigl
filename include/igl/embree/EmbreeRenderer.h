@@ -8,7 +8,6 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
-// igl function interface for Embree2.2
 //
 
 #ifndef IGL_EMBREE_EMBREE_RENDERER_H
@@ -24,6 +23,8 @@
 #include <embree3/rtcore_ray.h>
 #include <iostream>
 #include <vector>
+
+#include "EmbreeDevice.h"
 
 
 namespace igl
@@ -78,7 +79,9 @@ namespace igl
                     bool is_static=true);
       // Specify per-vertex or per-face color
       // Inputs:
-      //   C  #V x 3 matrix of vertex or face colors
+      //   C  #V x 3 matrix of vertex colors
+      //    or #F x 3 matrix of face colors
+      //    or 1 x 3 matrix of uniform color
       IGL_INLINE void set_colors(const Eigen::MatrixXd & C);
 
 
@@ -125,11 +128,6 @@ namespace igl
       //    f - orthographic or perspective projection
       IGL_INLINE void set_orthographic(bool f );
 
-      // Set the color to the whole mesh, when per-vertex or per-face color is not available
-      // Inputs:
-      //  c  - RGB vector [0:1]
-      IGL_INLINE void set_uniform_color(const Eigen::RowVector3d &c);
-
       // render full buffer
       // Outputs:
       //   all outputs should have the same size (size of the output picture)
@@ -154,7 +152,7 @@ namespace igl
       // Output:
       //   hit        information about hit
       // Returns true if and only if there was a hit
-      IGL_INLINE bool intersectRay(
+      IGL_INLINE bool intersect_ray(
         const Eigen::RowVector3f& origin,
         const Eigen::RowVector3f& direction,
         Hit& hit,
@@ -237,7 +235,9 @@ namespace igl
       unsigned geomID;
       bool initialized;
 
-      IGL_INLINE void createRay(
+      RTCDevice g_device;
+
+      IGL_INLINE void create_ray(
         RTCRayHit& ray,
         const Eigen::RowVector3f& origin,
         const Eigen::RowVector3f& direction,

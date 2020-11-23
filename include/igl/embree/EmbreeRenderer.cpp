@@ -12,39 +12,6 @@
 
 #include "../PI.h"
 
-// This unfortunately cannot be a static field of EmbreeRenderer because it
-// would depend on the template and then we might end up with initializing
-// embree twice. If only there was a way to ask embree if it's already
-// initialized...
-namespace igl
-{
-  namespace embree
-  {
-    // Keeps track of whether the **Global** Embree intersector has been
-    // initialized. This should never been done at the global scope.
-    static RTCDevice g_device = nullptr;
-  }
-}
-
-IGL_INLINE void igl::embree::EmbreeRenderer::global_init()
-{
-  if(!g_device)
-  {
-    g_device = rtcNewDevice (NULL);
-    if(rtcGetDeviceError (g_device) != RTC_ERROR_NONE)
-      std::cerr << "Embree: An error occurred while initializing embree core!" << std::endl;
-#ifdef IGL_VERBOSE
-    else
-      std::cerr << "Embree: core initialized." << std::endl;
-#endif
-  }
-}
-
-IGL_INLINE void igl::embree::EmbreeRenderer::global_deinit()
-{
-  rtcReleaseDevice (g_device);
-  g_device = nullptr;
-}
 
 IGL_INLINE void igl::embree::EmbreeRenderer::init_view()
 {
@@ -74,9 +41,10 @@ IGL_INLINE void igl::embree::EmbreeRenderer::init_view()
 
 IGL_INLINE igl::embree::EmbreeRenderer::EmbreeRenderer()
   :
-  //scene(NULL),
+  scene(NULL),
   geomID(0),
-  initialized(false)
+  initialized(false),
+  g_device(igl::embree::EmbreeDevice::get_device())
 {
   init_view();
 }
@@ -84,7 +52,7 @@ IGL_INLINE igl::embree::EmbreeRenderer::EmbreeRenderer()
 IGL_INLINE igl::embree::EmbreeRenderer::EmbreeRenderer(
   const EmbreeRenderer &)
   :// To make -Weffc++ happy
-  //scene(NULL),
+  scene(NULL),
   geomID(0),
   initialized(false)
 {
@@ -123,7 +91,6 @@ IGL_INLINE void igl::embree::EmbreeRenderer::init(
     deinit();
 
   using namespace std;
-  global_init();
 
   if(V.size() == 0 || F.size() == 0)
   {
@@ -181,11 +148,13 @@ IGL_INLINE igl::embree::EmbreeRenderer::~EmbreeRenderer()
 {
   if(initialized)
     deinit();
+  
+  igl::embree::EmbreeDevice::release_device();
 }
 
 IGL_INLINE void igl::embree::EmbreeRenderer::deinit()
 {
-  if(g_device && scene)
+  if(scene)
   {
     rtcReleaseScene(scene);
 
@@ -202,7 +171,7 @@ IGL_INLINE void igl::embree::EmbreeRenderer::deinit()
   }
 }
 
-IGL_INLINE bool igl::embree::EmbreeRenderer::intersectRay(
+IGL_INLINE bool igl::embree::EmbreeRenderer::intersect_ray(
   const Eigen::RowVector3f& origin,
   const Eigen::RowVector3f& direction,
   Hit&  hit,
@@ -212,7 +181,7 @@ IGL_INLINE bool igl::embree::EmbreeRenderer::intersectRay(
 {
   RTCRayHit ray;
   ray.ray.flags = 0;
-  createRay(ray, origin,direction,tnear,tfar,mask);
+  create_ray(ray, origin,direction,tnear,tfar,mask);
 
   // shot ray
   {
@@ -244,7 +213,7 @@ IGL_INLINE bool igl::embree::EmbreeRenderer::intersectRay(
 
 IGL_INLINE void 
 igl::embree::EmbreeRenderer
-::createRay(RTCRayHit& ray, const Eigen::RowVector3f& origin, 
+::create_ray(RTCRayHit& ray, const Eigen::RowVector3f& origin, 
  const Eigen::RowVector3f& direction, float tnear, float tfar, int mask) const
 {
   ray.ray.org_x = origin[0];
@@ -333,7 +302,7 @@ igl::embree::EmbreeRenderer
 
       auto clamp=[](float x)->unsigned char {return (unsigned char)(x<0?0:x>1.0?255:x*255);};
 
-      if(this->intersectRay(s,dir,hit))
+      if(this->intersect_ray(s,dir,hit))
       {
         if ( dir.dot(hit.N) > 0.0f)
         {
@@ -388,7 +357,11 @@ igl::embree::EmbreeRenderer
     face_based = true;
     this->C = C.cast<float>();
     this->uniform_color=false;
-  } else {
+  } else if (C.rows()==1) {
+    face_based = true;
+    this->uC = C.cast<float>();
+    this->uniform_color=true;
+  }else {
     // don't know what to do
     this->uniform_color=true;
     assert(false); //?
@@ -444,13 +417,6 @@ IGL_INLINE void
 igl::embree::EmbreeRenderer::set_orthographic(bool o)
 {
   this->orthographic=o;
-}
-
-IGL_INLINE void 
-igl::embree::EmbreeRenderer::set_uniform_color(const Eigen::RowVector3d &c)
-{
-  uC=c.cast<float>();
-  this->uniform_color=true;
 }
 
 #ifdef IGL_STATIC_LIBRARY
