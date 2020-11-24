@@ -169,7 +169,7 @@ namespace igl
       Triangle* triangles;
       bool initialized;
 
-      RTCDevice g_device;
+      RTCDevice device;
 
       inline void createRay(
         RTCRayHit& ray,
@@ -193,7 +193,7 @@ inline igl::embree::EmbreeIntersector::EmbreeIntersector()
   vertices(NULL),
   triangles(NULL),
   initialized(false),
-  g_device(igl::embree::EmbreeDevice::get_device())
+  device(igl::embree::EmbreeDevice::get_device())
 {
 }
 
@@ -252,14 +252,14 @@ inline void igl::embree::EmbreeIntersector::init(
   RTCBuildQuality buildQuality = isStatic ? RTC_BUILD_QUALITY_HIGH : RTC_BUILD_QUALITY_MEDIUM;
 
   // create a scene
-  scene = rtcNewScene(g_device);
+  scene = rtcNewScene(device);
   rtcSetSceneFlags(scene, RTC_SCENE_FLAG_ROBUST);
   rtcSetSceneBuildQuality(scene, buildQuality);
 
   for(int g=0;g<(int)V.size();g++)
   {
     // create triangle mesh geometry in that scene
-    RTCGeometry geom_0 = rtcNewGeometry (g_device, RTC_GEOMETRY_TYPE_TRIANGLE);
+    RTCGeometry geom_0 = rtcNewGeometry (device, RTC_GEOMETRY_TYPE_TRIANGLE);
     rtcSetGeometryBuildQuality(geom_0,buildQuality);
     rtcSetGeometryTimeStepCount(geom_0,1);
     geomID = rtcAttachGeometry(scene,geom_0);
@@ -291,7 +291,7 @@ inline void igl::embree::EmbreeIntersector::init(
 
   rtcCommitScene(scene);
 
-  if(rtcGetDeviceError (g_device) != RTC_ERROR_NONE)
+  if(rtcGetDeviceError (device) != RTC_ERROR_NONE)
       std::cerr << "Embree: An error occurred while initializing the provided geometry!" << endl;
 #ifdef IGL_VERBOSE
   else
@@ -311,11 +311,11 @@ igl::embree::EmbreeIntersector
 
 void igl::embree::EmbreeIntersector::deinit()
 {
-  if(g_device && scene)
+  if(device && scene)
   {
     rtcReleaseScene(scene);
 
-    if(rtcGetDeviceError (g_device) != RTC_ERROR_NONE)
+    if(rtcGetDeviceError (device) != RTC_ERROR_NONE)
     {
         std::cerr << "Embree: An error occurred while resetting!" << std::endl;
     }
@@ -350,7 +350,7 @@ inline bool igl::embree::EmbreeIntersector::intersectRay(
     ray.hit.Ng_z = -ray.hit.Ng_z;
   }
 #ifdef IGL_VERBOSE
-  if(rtcGetDeviceError (g_device) != RTC_ERROR_NONE)
+  if(rtcGetDeviceError (device) != RTC_ERROR_NONE)
       std::cerr << "Embree: An error occurred while resetting!" << std::endl;
 #endif
 

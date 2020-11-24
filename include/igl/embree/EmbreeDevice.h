@@ -19,32 +19,61 @@ namespace igl
   namespace embree
   {
      // keep track of embree device
-     class EmbreeDevice
+     struct EmbreeDevice
      {
-       private:
-        static RTCDevice g_device;
-        static int       g_cntr;
-       public:
-        static RTCDevice get_device(void)
+        RTCDevice embree_device;
+        int       embree_device_cntr;
+
+        static EmbreeDevice & instance()
         {
-            if(!g_device) 
+            static EmbreeDevice s;
+            return s;
+        } // instance
+
+        EmbreeDevice(const EmbreeDevice &) = delete;
+        EmbreeDevice & operator = (const EmbreeDevice &) = delete;
+
+        static RTCDevice get_device(const char *config=nullptr)
+        {
+            return instance().get(config);
+        }
+
+        static void release_device(void)
+        {
+            instance().release();
+        }
+
+    private:
+
+        EmbreeDevice():embree_device(nullptr),embree_device_cntr(0) {}
+
+        ~EmbreeDevice() 
+        { 
+            if(embree_device)
+                rtcReleaseDevice(embree_device);
+        }
+
+        RTCDevice get(const char *config=nullptr) 
+        {
+            if(!embree_device) 
             {
-                g_device = rtcNewDevice (NULL);
-                if(rtcGetDeviceError (g_device) != RTC_ERROR_NONE)
+                embree_device = rtcNewDevice (config);
+                if(rtcGetDeviceError (embree_device) != RTC_ERROR_NONE)
                     std::cerr << "Embree: An error occurred while initializing embree core!" << std::endl;
             #ifdef IGL_VERBOSE
                 else
                     std::cerr << "Embree: core initialized." << std::endl;
             #endif
             }
-            ++g_cntr;
-            return g_device;
+            ++embree_device_cntr;
+            return embree_device;
         }
-        static void release_device(void)
+
+        void release()
         {
-            if(!--g_cntr) {
-                rtcReleaseDevice (g_device);
-                g_device = nullptr;                
+            if(!--embree_device_cntr) {
+                rtcReleaseDevice (embree_device);
+                embree_device = nullptr;                
             #ifdef IGL_VERBOSE
                     std::cerr << "Embree: core released." << std::endl;
             #endif
@@ -53,9 +82,5 @@ namespace igl
      };
   }
 }
-
-#ifndef IGL_STATIC_LIBRARY
-#  include "EmbreeDevice.cpp"
-#endif
 
 #endif // IGL_EMBREE_EMBREE_DEVICE_H

@@ -235,7 +235,7 @@ namespace igl
       unsigned geomID;
       bool initialized;
 
-      RTCDevice g_device;
+      RTCDevice device;
 
       IGL_INLINE void create_ray(
         RTCRayHit& ray,
@@ -252,5 +252,4 @@ namespace igl
 #ifndef IGL_STATIC_LIBRARY
 #  include "EmbreeRenderer.cpp"
 #endif
-
 #endif //IGL_EMBREE_EMBREE_RENDERER_H

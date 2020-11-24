@@ -44,7 +44,7 @@ IGL_INLINE igl::embree::EmbreeRenderer::EmbreeRenderer()
   scene(NULL),
   geomID(0),
   initialized(false),
-  g_device(igl::embree::EmbreeDevice::get_device())
+  device(igl::embree::EmbreeDevice::get_device())
 {
   init_view();
 }
@@ -100,14 +100,14 @@ IGL_INLINE void igl::embree::EmbreeRenderer::init(
   RTCBuildQuality buildQuality = isStatic ? RTC_BUILD_QUALITY_HIGH : RTC_BUILD_QUALITY_MEDIUM;
 
   // create a scene
-  scene = rtcNewScene(g_device);
+  scene = rtcNewScene(device);
   rtcSetSceneFlags(scene, RTC_SCENE_FLAG_ROBUST);
   rtcSetSceneBuildQuality(scene, buildQuality);
 
   for(int g=0;g<(int)V.size();g++)
   {
     // create triangle mesh geometry in that scene
-    RTCGeometry geom_0 = rtcNewGeometry (g_device, RTC_GEOMETRY_TYPE_TRIANGLE);
+    RTCGeometry geom_0 = rtcNewGeometry (device, RTC_GEOMETRY_TYPE_TRIANGLE);
     rtcSetGeometryBuildQuality(geom_0, buildQuality);
     rtcSetGeometryTimeStepCount(geom_0,1);
     geomID = rtcAttachGeometry(scene,geom_0);
@@ -134,7 +134,7 @@ IGL_INLINE void igl::embree::EmbreeRenderer::init(
 
   rtcCommitScene(scene);
 
-  if(rtcGetDeviceError (g_device) != RTC_ERROR_NONE)
+  if(rtcGetDeviceError (device) != RTC_ERROR_NONE)
       std::cerr << "Embree: An error occurred while initializing the provided geometry!" << endl;
 #ifdef IGL_VERBOSE
   else
@@ -158,7 +158,7 @@ IGL_INLINE void igl::embree::EmbreeRenderer::deinit()
   {
     rtcReleaseScene(scene);
 
-    if(rtcGetDeviceError (g_device) != RTC_ERROR_NONE)
+    if(rtcGetDeviceError (device) != RTC_ERROR_NONE)
     {
         std::cerr << "Embree: An error occurred while resetting!" << std::endl;
     }
@@ -193,7 +193,7 @@ IGL_INLINE bool igl::embree::EmbreeRenderer::intersect_ray(
     ray.hit.Ng_z = -ray.hit.Ng_z;
   }
 #ifdef IGL_VERBOSE
-  if(rtcGetDeviceError (g_device) != RTC_ERROR_NONE)
+  if(rtcGetDeviceError (device) != RTC_ERROR_NONE)
       std::cerr << "Embree: An error occurred while resetting!" << std::endl;
 #endif
 
