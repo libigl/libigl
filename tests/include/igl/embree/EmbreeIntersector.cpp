@@ -15,9 +15,32 @@ TEST_CASE("EmbreeIntersector: cube", "[igl/embree]")
   igl::embree::EmbreeIntersector embree;
   embree.init(V.cast<float>(),F.cast<int>());
 
-  const int expected_id[] = {4,8,5,2,7,0};
+  // These are not expected to be exact if the hit is on a vertex of edge.
+  const int expected_id[] =  {4,8,5,2,7,0};
   const float expected_u[] = {0.5,0.5,0.5,0.5,0.5,0.5};
   const float expected_v[] = {0.5,0.0,0.0,0.0,0.5,0.0};
+  Eigen::MatrixXd hit_P(6,3);
+  for (int dim=0; dim<6; ++dim)
+  {
+    hit_P.row(dim) = 
+      V.row(F(expected_id[dim],0))*(1.f - expected_u[dim] - expected_v[dim])+
+      V.row(F(expected_id[dim],1))*expected_u[dim] + 
+      V.row(F(expected_id[dim],2))*expected_v[dim];
+  }
+  const auto test_hit = [&](const bool hitP, const igl::Hit& hit, const int dim)
+  {
+    CHECK(hitP);
+    if(hitP)
+    {
+      const Eigen::RowVectorXd hit_p = 
+        V.row(F(hit.id,0))*(1.f - hit.u - hit.v) +
+        V.row(F(hit.id,1))*hit.u + 
+        V.row(F(hit.id,2))*hit.v;
+      // hits will be along diagonal edge so expected_id may be different
+      test_common::assert_near(hit_P.row(dim),hit_p,epsilon);
+    }
+  };
+
 
   // Shoot ray from inside out
   for (int dim=0; dim<6; ++dim)
@@ -28,11 +51,7 @@ TEST_CASE("EmbreeIntersector: cube", "[igl/embree]")
     dir[dim/2] = dim%2 ? -1 : 1;
     igl::Hit hit;
     bool hitP = embree.intersectRay(pos, dir, hit);
-    CHECK(hitP);
-    REQUIRE(hit.t == Approx(0.5).margin(epsilon));
-    REQUIRE(hit.id == expected_id[dim]);
-    REQUIRE(hit.u == Approx(expected_u[dim]).margin(epsilon));
-    REQUIRE(hit.v == Approx(expected_v[dim]).margin(epsilon));
+    test_hit(hitP,hit,dim);
   }
 
   // Shoot ray from outside in
@@ -46,11 +65,7 @@ TEST_CASE("EmbreeIntersector: cube", "[igl/embree]")
 
     igl::Hit hit;
     bool hitP = embree.intersectRay(pos, dir, hit);
-    CHECK(hitP);
-    REQUIRE(hit.t == Approx(0.5).margin(epsilon));
-    REQUIRE(hit.id == expected_id[dim]);
-    REQUIRE(hit.u == Approx(expected_u[dim]).margin(epsilon));
-    REQUIRE(hit.v == Approx(expected_v[dim]).margin(epsilon));
+    test_hit(hitP,hit,dim);
   }
 
   // Rays that miss
@@ -69,29 +84,16 @@ TEST_CASE("EmbreeIntersector: cube", "[igl/embree]")
 
   // intersect beam
   {
-    Eigen::Vector3f pos(-0.5,-0.5,1);
-    Eigen::Vector3f dir(0,0,-1);
+    Eigen::Vector3f pos(1.75,0.25,0);
+    Eigen::Vector3f dir(-1,0,0);
 
     igl::Hit hit;
     bool hitP = embree.intersectBeam(pos, dir, hit);
     CHECK(hitP);
-    REQUIRE(hit.t == Approx(0.5).margin(epsilon));
-    REQUIRE(hit.id == 7);
-    REQUIRE(hit.u == Approx(0).margin(epsilon));
-    REQUIRE(hit.v == Approx(1).margin(epsilon));
-  }
-
-  {
-    Eigen::Vector3f pos(0.5,-1,0.5);
-    Eigen::Vector3f dir(0,1,0);
-
-    igl::Hit hit;
-    bool hitP = embree.intersectBeam(pos, dir, hit);
-    CHECK(hitP);
-    REQUIRE(hit.t == Approx(0.5).margin(epsilon));
-    REQUIRE(hit.id == 2);
-    REQUIRE(hit.u == Approx(0).margin(epsilon));
-    REQUIRE(hit.v == Approx(0).margin(epsilon));
+    REQUIRE(hit.t == Approx(1.25).margin(epsilon));
+    REQUIRE(hit.id == 4);
+    REQUIRE(hit.u == Approx(0.5).margin(epsilon));
+    REQUIRE(hit.v == Approx(0.25).margin(epsilon));
   }
 }
 
