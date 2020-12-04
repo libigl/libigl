@@ -14,10 +14,13 @@ IGL_INLINE void ImGuizmoPlugin::init(igl::opengl::glfw::Viewer *_viewer)
 IGL_INLINE bool ImGuizmoPlugin::pre_draw() 
 {
   if(!visible){ return false; }
+  /////////////////////////////////////////////////////////////////////////
+  // CAN ONLY HAVE ONE IMGUI PLUGIN
   ImGuiMenu::pre_draw();
   ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0);
   ImGuizmo::BeginFrame();
   ImGui::PopStyleVar();
+  /////////////////////////////////////////////////////////////////////////
   return false;
 }
 IGL_INLINE bool ImGuizmoPlugin::post_draw() 
@@ -42,10 +45,37 @@ IGL_INLINE bool ImGuizmoPlugin::post_draw()
   T = (S.inverse() * T).eval();
   const float diff = (T-T0).array().abs().maxCoeff();
   // Only call if actually changed; otherwise, triggers on all mouse events
-  if( diff > 1e-7) { callback(T); }
+  if( diff > 2e-6) { callback(T); }
+  /////////////////////////////////////////////////////////////////////////
+  // CAN ONLY HAVE ONE IMGUI PLUGIN
   ImGui::Render();
   ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+  /////////////////////////////////////////////////////////////////////////
   return false;
 }
+
+IGL_INLINE bool ImGuizmoPlugin::mouse_down(int button, int modifier)
+{
+  if(callback_mouse_down && callback_mouse_down(*this,button,modifier)) return true;
+  return ImGuiMenu::mouse_down(button,modifier);
+}
+
+IGL_INLINE bool ImGuizmoPlugin::mouse_up(int button, int modifier)
+{
+  if(callback_mouse_up && callback_mouse_up(*this,button,modifier)) return true;
+  return ImGuiMenu::mouse_up(button,modifier);
+}
+
+IGL_INLINE bool ImGuizmoPlugin::mouse_move(int mouse_x, int mouse_y)
+{
+  if(callback_mouse_move && callback_mouse_move(*this,mouse_x,mouse_y)) return true;
+  return ImGuiMenu::mouse_move(mouse_x,mouse_y);
+}
+
+IGL_INLINE bool ImGuizmoPlugin::mouse_scroll(float delta_y)
+{
+  return ImGuiMenu::mouse_scroll(delta_y);
+}
+
 
 }}}}

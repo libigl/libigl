@@ -14,6 +14,9 @@ class ImGuizmoPlugin : public igl::opengl::glfw::imgui::ImGuiMenu
 public:
   // callback(T) called when the stored transform T changes
   std::function<void(const Eigen::Matrix4f &)> callback;
+  std::function<bool(ImGuizmoPlugin & plugin, int button, int modifier)> callback_mouse_down = nullptr;
+  std::function<bool(ImGuizmoPlugin & plugin, int button, int modifier)> callback_mouse_up = nullptr;
+  std::function<bool(ImGuizmoPlugin & plugin, int mouse_x,int mouse_y )> callback_mouse_move = nullptr;
   // Whether to display
   bool visible = true;
   // whether rotating, translating or scaling
@@ -24,10 +27,13 @@ public:
   ImGuizmoPlugin():operation(ImGuizmo::ROTATE),T(Eigen::Matrix4f::Identity()){};
   /////////////////////////////////////////////////////////////////////////////
   // Boilerplate
-  virtual void init(igl::opengl::glfw::Viewer *_viewer) override;
-  virtual bool pre_draw() override;
-  /////////////////////////////////////////////////////////////////////////////
-  virtual bool post_draw() override;
+  IGL_INLINE virtual void init(igl::opengl::glfw::Viewer *_viewer) override;
+  IGL_INLINE virtual bool pre_draw() override;
+  IGL_INLINE virtual bool post_draw() override;
+  IGL_INLINE virtual bool mouse_down(int button, int modifier) override;
+  IGL_INLINE virtual bool mouse_up(int button, int modifier) override;
+  IGL_INLINE virtual bool mouse_move(int mouse_x, int mouse_y) override;
+  IGL_INLINE virtual bool mouse_scroll(float delta_y) override;
 };
 
 }}}}
