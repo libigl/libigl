@@ -19,12 +19,13 @@
 #include "../Hit.h"
 #include <Eigen/Geometry>
 #include <Eigen/Core>
-#include <Eigen/Geometry>
 
 #include <embree3/rtcore.h>
 #include <embree3/rtcore_ray.h>
 #include <iostream>
 #include <vector>
+
+#include "EmbreeDevice.h"
 
 namespace igl
 {
@@ -32,14 +33,6 @@ namespace igl
   {
     class EmbreeIntersector
     {
-    public:
-      // Initialize embree engine. This will be called on instance `init()`
-      // calls. If already inited then this function does nothing: it is harmless
-      // to call more than once.
-      static inline void global_init();
-    private:
-      // Deinitialize the embree engine.
-      static inline void global_deinit();
     public:
       typedef Eigen::Matrix<float,Eigen::Dynamic,3> PointMatrixType;
       typedef Eigen::Matrix<int,Eigen::Dynamic,3> FaceMatrixType;
@@ -176,6 +169,8 @@ namespace igl
       Triangle* triangles;
       bool initialized;
 
+      RTCDevice device;
+
       inline void createRay(
         RTCRayHit& ray,
         const Eigen::RowVector3f& origin,
@@ -189,39 +184,7 @@ namespace igl
 
 // Implementation
 #include <igl/EPS.h>
-// This unfortunately cannot be a static field of EmbreeIntersector because it
-// would depend on the template and then we might end up with initializing
-// embree twice. If only there was a way to ask embree if it's already
-// initialized...
-namespace igl
-{
-  namespace embree
-  {
-    // Keeps track of whether the **Global** Embree intersector has been
-    // initialized. This should never been done at the global scope.
-    static RTCDevice g_device = nullptr;
-  }
-}
 
-inline void igl::embree::EmbreeIntersector::global_init()
-{
-  if(!g_device)
-  {
-    g_device = rtcNewDevice (NULL);
-    if(rtcGetDeviceError (g_device) != RTC_ERROR_NONE)
-      std::cerr << "Embree: An error occurred while initializing embree core!" << std::endl;
-#ifdef IGL_VERBOSE
-    else
-      std::cerr << "Embree: core initialized." << std::endl;
-#endif
-  }
-}
-
-inline void igl::embree::EmbreeIntersector::global_deinit()
-{
-  rtcReleaseDevice (g_device);
-  g_device = nullptr;
-}
 
 inline igl::embree::EmbreeIntersector::EmbreeIntersector()
   :
@@ -229,7 +192,8 @@ inline igl::embree::EmbreeIntersector::EmbreeIntersector()
   geomID(0),
   vertices(NULL),
   triangles(NULL),
-  initialized(false)
+  initialized(false),
+  device(igl::embree::EmbreeDevice::get_device())
 {
 }
 
@@ -278,8 +242,7 @@ inline void igl::embree::EmbreeIntersector::init(
     deinit();
 
   using namespace std;
-  global_init();
-
+  
   if(V.size() == 0 || F.size() == 0)
   {
     std::cerr << "Embree: No geometry specified!";
@@ -289,14 +252,14 @@ inline void igl::embree::EmbreeIntersector::init(
   RTCBuildQuality buildQuality = isStatic ? RTC_BUILD_QUALITY_HIGH : RTC_BUILD_QUALITY_MEDIUM;
 
   // create a scene
-  scene = rtcNewScene(g_device);
+  scene = rtcNewScene(device);
   rtcSetSceneFlags(scene, RTC_SCENE_FLAG_ROBUST);
   rtcSetSceneBuildQuality(scene, buildQuality);
 
   for(int g=0;g<(int)V.size();g++)
   {
     // create triangle mesh geometry in that scene
-    RTCGeometry geom_0 = rtcNewGeometry (g_device, RTC_GEOMETRY_TYPE_TRIANGLE);
+    RTCGeometry geom_0 = rtcNewGeometry (device, RTC_GEOMETRY_TYPE_TRIANGLE);
     rtcSetGeometryBuildQuality(geom_0,buildQuality);
     rtcSetGeometryTimeStepCount(geom_0,1);
     geomID = rtcAttachGeometry(scene,geom_0);
@@ -328,7 +291,7 @@ inline void igl::embree::EmbreeIntersector::init(
 
   rtcCommitScene(scene);
 
-  if(rtcGetDeviceError (g_device) != RTC_ERROR_NONE)
+  if(rtcGetDeviceError (device) != RTC_ERROR_NONE)
       std::cerr << "Embree: An error occurred while initializing the provided geometry!" << endl;
 #ifdef IGL_VERBOSE
   else
@@ -343,15 +306,16 @@ igl::embree::EmbreeIntersector
 {
   if(initialized)
     deinit();
+  igl::embree::EmbreeDevice::release_device();
 }
 
 void igl::embree::EmbreeIntersector::deinit()
 {
-  if(g_device && scene)
+  if(device && scene)
   {
     rtcReleaseScene(scene);
 
-    if(rtcGetDeviceError (g_device) != RTC_ERROR_NONE)
+    if(rtcGetDeviceError (device) != RTC_ERROR_NONE)
     {
         std::cerr << "Embree: An error occurred while resetting!" << std::endl;
     }
@@ -386,7 +350,7 @@ inline bool igl::embree::EmbreeIntersector::intersectRay(
     ray.hit.Ng_z = -ray.hit.Ng_z;
   }
 #ifdef IGL_VERBOSE
-  if(rtcGetDeviceError (g_device) != RTC_ERROR_NONE)
+  if(rtcGetDeviceError (device) != RTC_ERROR_NONE)
       std::cerr << "Embree: An error occurred while resetting!" << std::endl;
 #endif
 
