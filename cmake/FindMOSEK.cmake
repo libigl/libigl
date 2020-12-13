@@ -12,6 +12,7 @@ set(SEARCH_PATHS
   ${CMAKE_SOURCE_DIR}/mosek/9.2/tools/platform/osx64x86/ 
   /usr/local/mosek/7/tools/platform/osx64x86/
   /usr/local/mosek/8/tools/platform/osx64x86/
+  /usr/local/mosek/9.2/tools/platform/osx64x86/
   /opt/mosek/7/tools/platform/linux64x86/
 )
 
