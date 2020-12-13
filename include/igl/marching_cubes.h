@@ -22,8 +22,8 @@ namespace igl
   //       i.e. S(x + y*xres + z*xres*yres) for corner (x,y,z)
   //   GV  nx*ny*nz by 3 array of corresponding grid corner vertex locations
   //   nx  resolutions of the grid in x dimension
-  //   nx  resolutions of the grid in y dimension
-  //   nx  resolutions of the grid in z dimension
+  //   ny  resolutions of the grid in y dimension
+  //   nz  resolutions of the grid in z dimension
   //   isovalue  the isovalue of the surface to reconstruct
   // Output:
   //   V  #V by 3 list of mesh vertex positions

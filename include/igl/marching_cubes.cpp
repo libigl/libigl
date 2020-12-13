@@ -355,7 +355,7 @@ IGL_INLINE void igl::marching_cubes(
   };
   //fGetOffset finds the approximate point of intersection of the surface
   // between two points with the values fValue1 and fValue2
-  const auto inv_lerp = [&isovalue](const Scalar & a, const Scalar & b)
+  const auto inv_lerp = [&isovalue](const Scalar & a, const Scalar & b)->Scalar
   {
     const Scalar delta = b-a;
     if(delta == 0) { return 0.5; }
