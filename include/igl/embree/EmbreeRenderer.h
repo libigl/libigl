@@ -1,6 +1,6 @@
 // This file is part of libigl, a simple c++ geometry processing library.
 //
-// 
+//
 // Copyright (C) 2020 Vladimir Fonov <vladimir.fonov@gmail.com>
 //               2013 Alec Jacobson <alecjacobson@gmail.com>
 //               2014 Christian Schüller <schuellchr@gmail.com>
@@ -49,32 +49,32 @@ namespace igl
       // Initialize embree engine. This will be called on instance `init()`
       // calls. If already inited then this function does nothing: it is harmless
       // to call more than once.
-      static IGL_INLINE void global_init();
+      static void global_init();
     private:
       // Deinitialize the embree engine.
-      static IGL_INLINE void global_deinit();
+      static void global_deinit();
     public:
       typedef Eigen::Matrix<float,Eigen::Dynamic,3> PointMatrixType;
       typedef Eigen::Matrix<float,Eigen::Dynamic,3> ColorMatrixType;
       typedef Eigen::Matrix<int,  Eigen::Dynamic,3> FaceMatrixType;
-      
+
       typedef Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> PixelMatrixType;
 
     public:
-      IGL_INLINE EmbreeRenderer();
+      EmbreeRenderer();
     private:
       // Copying and assignment are not allowed.
-      IGL_INLINE EmbreeRenderer(const EmbreeRenderer & that);
-      IGL_INLINE EmbreeRenderer & operator=(const EmbreeRenderer &);
+      EmbreeRenderer(const EmbreeRenderer & that);
+      EmbreeRenderer & operator=(const EmbreeRenderer &);
     public:
-      virtual inline ~EmbreeRenderer();
-      
+      virtual ~EmbreeRenderer() = default;
+
       // Specify mesh, this call reinitializes embree structures
       // Inputs:
       //   V  #V x dim matrix of vertex coordinates
       //   F  #F x simplex_size  matrix of indices of simplex corners into V
       //   is_static - optimize for static thene (HQ rendering)
-      IGL_INLINE void set_mesh(const Eigen::Matrix<double,Eigen::Dynamic,3> & V,
+      void set_mesh(const Eigen::Matrix<double,Eigen::Dynamic,3> & V,
                     const Eigen::Matrix<int,  Eigen::Dynamic,3>  & F,
                     bool is_static=true);
       // Specify per-vertex or per-face color
@@ -82,13 +82,13 @@ namespace igl
       //   C  #V x 3 matrix of vertex colors
       //    or #F x 3 matrix of face colors
       //    or 1 x 3 matrix of uniform color
-      IGL_INLINE void set_colors(const Eigen::MatrixXd & C);
+      void set_colors(const Eigen::MatrixXd & C);
 
 
       // Use min(D) and max(D) to set caxis.
-      IGL_INLINE void set_data(const Eigen::VectorXd & D,
+      void set_data(const Eigen::VectorXd & D,
                     igl::ColorMapType cmap = igl::COLOR_MAP_TYPE_VIRIDIS);
-  
+
       // Specify per-vertex or per-face scalar field
       //   that will be converted to color using jet color map
       // Inputs:
@@ -97,7 +97,7 @@ namespace igl
       //   D  #V by 1 list of scalar values
       //   cmap colormap type
       //   num_steps number of intervals to discretize the colormap
-      IGL_INLINE void set_data(
+      void set_data(
         const Eigen::VectorXd & D,
         double caxis_min,
         double caxis_max,
@@ -106,27 +106,27 @@ namespace igl
       // Specify mesh rotation
       // Inputs:
       //   r  3 x 3 rotaton matrix
-      IGL_INLINE void set_rot(const Eigen::Matrix3d &r);
+      void set_rot(const Eigen::Matrix3d &r);
 
       // Specify mesh magnification
       // Inputs:
       //   z  magnification ratio
-      IGL_INLINE void set_zoom(double z);
+      void set_zoom(double z);
 
       // Specify mesh translation
       // Inputs:
-      //   tr  translation vector 
-      IGL_INLINE void set_translation(const Eigen::Vector3d &tr);
+      //   tr  translation vector
+      void set_translation(const Eigen::Vector3d &tr);
 
       // Specify that color is face based
       // Inputs:
       //    f - face or vertex colours
-      IGL_INLINE void set_face_based(bool f);
+      void set_face_based(bool f);
 
       // Use orthographic projection
       // Inputs:
       //    f - orthographic or perspective projection
-      IGL_INLINE void set_orthographic(bool f );
+      void set_orthographic(bool f );
 
       // render full buffer
       // Outputs:
@@ -136,8 +136,8 @@ namespace igl
       //   G - green channel
       //   B - blue channel
       //   A - alpha channel
-      IGL_INLINE void render_buffer(PixelMatrixType &R,
-                         PixelMatrixType &G, 
+      void render_buffer(PixelMatrixType &R,
+                         PixelMatrixType &G,
                          PixelMatrixType &B,
                          PixelMatrixType &A);
 
@@ -152,7 +152,7 @@ namespace igl
       // Output:
       //   hit        information about hit
       // Returns true if and only if there was a hit
-      IGL_INLINE bool intersect_ray(
+      bool intersect_ray(
         const Eigen::RowVector3f& origin,
         const Eigen::RowVector3f& direction,
         Hit& hit,
@@ -170,7 +170,7 @@ namespace igl
       //   isStatic  scene is optimized for static geometry
       // Side effects:
       //   The first time this is ever called the embree engine is initialized.
-      IGL_INLINE void init(
+      void init(
         const PointMatrixType& V,
         const FaceMatrixType& F,
         bool isStatic = false);
@@ -184,7 +184,7 @@ namespace igl
       //   isStatic  scene is optimized for static geometry
       // Side effects:
       //   The first time this is ever called the embree engine is initialized.
-      IGL_INLINE void init(
+      void init(
         const std::vector<const PointMatrixType*>& V,
         const std::vector<const FaceMatrixType*>& F,
         const std::vector<int>& masks,
@@ -194,9 +194,9 @@ namespace igl
       // Deinitialize embree datasctructures for current mesh.  Also called on
       // destruction: no need to call if you just want to init() once and
       // destroy.
-      IGL_INLINE void deinit();
+      void deinit();
       // initialize view parameters
-      IGL_INLINE void init_view();
+      void init_view();
 
       // scene data
       PointMatrixType V; // vertices
@@ -211,7 +211,7 @@ namespace igl
       // Camera parameters
       float camera_base_zoom;
       float camera_zoom;
-      
+
       Eigen::Vector3f camera_base_translation;
       Eigen::Vector3f camera_translation;
       Eigen::Vector3f camera_eye;
@@ -221,7 +221,7 @@ namespace igl
       float camera_dnear;
       float camera_dfar;
 
-      // projection matrixes      
+      // projection matrixes
       Eigen::Matrix4f view;
       Eigen::Matrix4f proj;
       Eigen::Matrix4f norm;
@@ -237,7 +237,7 @@ namespace igl
 
       RTCDevice device;
 
-      IGL_INLINE void create_ray(
+      void create_ray(
         RTCRayHit& ray,
         const Eigen::RowVector3f& origin,
         const Eigen::RowVector3f& direction,
