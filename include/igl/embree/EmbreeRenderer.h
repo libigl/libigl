@@ -46,13 +46,6 @@ namespace igl
         Vec3f N;    // element normal
       };
 
-      // Initialize embree engine. This will be called on instance `init()`
-      // calls. If already inited then this function does nothing: it is harmless
-      // to call more than once.
-      static void global_init();
-    private:
-      // Deinitialize the embree engine.
-      static void global_deinit();
     public:
       typedef Eigen::Matrix<float,Eigen::Dynamic,3> PointMatrixType;
       typedef Eigen::Matrix<float,Eigen::Dynamic,3> ColorMatrixType;
