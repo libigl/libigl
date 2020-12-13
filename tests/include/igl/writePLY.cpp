@@ -27,9 +27,16 @@ TEST_CASE("writePLY: bunny.ply", "[igl]")
     Eigen::MatrixXd VD2(V1.rows(),VD1.cols()+1);
     VD2<<VD1,dummy_data;
 
+    Fheader1.push_back("face_data");
+    Eigen::VectorXd face_data(F1.rows());
+    for(size_t i=0;i<F1.rows();++i)
+        face_data(i)=(double)i;
+    Eigen::MatrixXd FD2(F1.rows(),FD1.cols()+1);
+    // there is no face data in the input file
+    FD2<<face_data;
 
     // test that saving preserves all the data, including new data column
-    REQUIRE (igl::writePLY("test_bunny.ply", V1, F1, E1, N1, UV1, VD2, Vheader1, FD1,Fheader1, ED1, Eheader1, comments1, igl::FileEncoding::Binary));
+    REQUIRE (igl::writePLY("test_bunny.ply", V1, F1, E1, N1, UV1, VD2, Vheader1, FD2,Fheader1, ED1, Eheader1, comments1, igl::FileEncoding::Binary));
 
     Eigen::MatrixXd V,N,UV,VD,FD,ED;
     Eigen::MatrixXi F,E;
@@ -65,10 +72,15 @@ TEST_CASE("writePLY: bunny.ply", "[igl]")
     REQUIRE (Vheader[1] == "intensity" );
     REQUIRE (Vheader[2] == "dummy_data" );
 
-    // no Face data or edge data
-    REQUIRE (FD.rows() == 0);
-    REQUIRE (FD.cols() == 0);
-    REQUIRE (Fheader.size() == 0);
+    // Face should have only one column
+    REQUIRE (Fheader.size() == 1);
+    REQUIRE (Fheader[0] == "face_data" );
+    REQUIRE (FD.rows() == F.rows());
+    REQUIRE (FD.cols() == 1);
+
+    // the dummy column contents check
+    for(size_t i=0;i<F.rows();++i)
+        REQUIRE (FD(i,0) == (double)i);
 
     REQUIRE (ED.rows() == 0);
     REQUIRE (ED.cols() == 0);
