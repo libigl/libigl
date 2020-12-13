@@ -59,6 +59,7 @@ IGL_INLINE void igl::tetrahedralized_grid(
           int v8 = (i+1)+nx*((j+1)+ny*(k+1));
           switch(type)
           {
+            default: assert(false); break;
             case TETRAHEDRALIZED_GRID_TYPE_6_ROTATIONAL:
               // Rotationally symmetric
               GT.row(u*nt+0) << v1,v3,v8,v7;
