@@ -593,6 +593,7 @@ IGL_INLINE void igl::slim_update_weights_and_closest_rotations_with_jacobians(co
           // change local step
           closest_sing_vec << s1_min, s2_min, s3_min;
           ri = ui * closest_sing_vec.asDiagonal() * vi.transpose();
+          break;
         }
         default: assert(false);
       }

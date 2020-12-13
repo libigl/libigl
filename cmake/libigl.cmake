@@ -301,11 +301,12 @@ if(LIBIGL_WITH_EMBREE)
   if(NOT TARGET embree)
     igl_download_embree()
 
+    # Note: On macOS, building embree as a static lib can only be done with a single ISA target.
+    set(EMBREE_MAX_ISA "DEFAULT" CACHE STRING "Selects highest ISA to support.")
     set(EMBREE_TESTING_INTENSITY 0 CACHE STRING "")
     set(EMBREE_ISPC_SUPPORT OFF CACHE BOOL " ")
     set(EMBREE_TASKING_SYSTEM "INTERNAL" CACHE BOOL " ")
     set(EMBREE_TUTORIALS OFF CACHE BOOL " ")
-    set(EMBREE_MAX_ISA "SSE2" CACHE STRING " ")
     set(EMBREE_STATIC_LIB ON CACHE BOOL " ")
     if(MSVC)
       set(EMBREE_STATIC_RUNTIME ${IGL_STATIC_RUNTIME} CACHE BOOL "Use the static version of the C/C++ runtime library.")
