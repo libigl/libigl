@@ -1,5 +1,5 @@
 
-#include "EmbreeRenderer.h"
+#include "EmbreeIntersector.h"
 
 // Implementation
 #include <igl/EPS.h>
