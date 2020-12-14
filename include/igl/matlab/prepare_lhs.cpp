@@ -122,5 +122,5 @@ template void igl::matlab::prepare_lhs_double<Eigen::Matrix<int, 1, 3, 1, 1, 3> 
 template void igl::matlab::prepare_lhs_double<Eigen::Matrix<float, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<float, -1, 1, 0, -1, 1> > const&, mxArray_tag**);
 template void igl::matlab::prepare_lhs_double<Eigen::Matrix<float, -1, 3, 0, -1, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<float, -1, 3, 0, -1, 3> > const&, mxArray_tag**);
 template void igl::matlab::prepare_lhs_double<double>(Eigen::SparseMatrix<double, 0, int> const&, mxArray_tag**);
-template void igl::matlab::prepare_lhs_double<Eigen::Matrix<double, -1, -1, 0, -1, -1> >(std::__1::vector<Eigen::Matrix<double, -1, -1, 0, -1, -1>, std::__1::allocator<Eigen::Matrix<double, -1, -1, 0, -1, -1> > > const&, mxArray_tag**);
+template void igl::matlab::prepare_lhs_double<Eigen::Matrix<double, -1, -1, 0, -1, -1> >(std::vector<Eigen::Matrix<double, -1, -1, 0, -1, -1>, std::allocator<Eigen::Matrix<double, -1, -1, 0, -1, -1> > > const&, mxArray_tag**);
 #endif

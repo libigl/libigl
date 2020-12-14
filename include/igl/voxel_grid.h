@@ -32,6 +32,17 @@ namespace igl
     const int pad_count,
     Eigen::PlainObjectBase<DerivedGV> & GV,
     Eigen::PlainObjectBase<Derivedside> & side);
+  template <
+    typename DerivedV,
+    typename DerivedGV,
+    typename Derivedside>
+  IGL_INLINE void voxel_grid(
+    const Eigen::MatrixBase<DerivedV> & V, 
+    const typename DerivedV::Scalar offset,
+    const int s,
+    const int pad_count,
+    Eigen::PlainObjectBase<DerivedGV> & GV,
+    Eigen::PlainObjectBase<Derivedside> & side);
 }
 #ifndef IGL_STATIC_LIBRARY
 #  include "voxel_grid.cpp"

@@ -9,7 +9,7 @@
 #define IGL_MOSEK_MOSEK_GUARDED_H
 #include "../igl_inline.h"
 
-#include "mosek.h"
+#include <mosek.h>
 namespace igl
 {
   namespace mosek

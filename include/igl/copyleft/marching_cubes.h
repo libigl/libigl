@@ -39,6 +39,7 @@ namespace igl
     //   vertices  #V by 3 list of mesh vertex positions
     //   faces  #F by 3 list of mesh triangle indices
     //
+    // See also: igl::marching_cubes
     template <typename DerivedValues, typename DerivedPoints, typename DerivedVertices, typename DerivedFaces>
     IGL_INLINE void marching_cubes(
         const Eigen::MatrixBase<DerivedValues> &values,
