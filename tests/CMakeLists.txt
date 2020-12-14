@@ -52,6 +52,11 @@ if(LIBIGL_WITH_MOSEK)
   target_sources(libigl_tests PRIVATE ${TEST_SRC_FILES} ${TEST_INC_FILES})
 
   target_link_libraries(libigl_tests PUBLIC igl::mosek)
+  # fix mosek
+  IF(APPLE)
+    INCLUDE(../cmake/OSXFixDylibReferences.cmake)
+    OSX_FIX_DYLIB_REFERENCES(libigl_tests "${MOSEK_LIBRARIES}")
+  ENDIF()
 endif()
 
 if(LIBIGL_WITH_CGAL)
