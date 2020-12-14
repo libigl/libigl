@@ -5,6 +5,7 @@
 #include <imgui_impl_opengl3.h>
 #include <imgui_fonts_droid_sans.h>
 #include <GLFW/glfw3.h>
+#include "../../../PI.h"
 
 namespace igl{ namespace opengl{ namespace glfw{ namespace imgui{
 
@@ -172,7 +173,7 @@ IGL_INLINE void SelectionPlugin::circle(const Eigen::Matrix<float,2,2> & M,  std
   L.clear();
   L.reserve(64);
   const float r = (M.row(1)-M.row(0)).norm();
-  for(float th = 0;th<2.*M_PI;th+=0.1)
+  for(float th = 0;th<2.*igl::PI;th+=0.1)
   {
     L.emplace_back(M(0,0)+r*cos(th),M(0,1)+r*sin(th));
   }
