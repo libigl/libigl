@@ -50,7 +50,9 @@ public:
   bool is_down = false;
   bool has_moved_since_down = false;
   bool is_drawing = false;
+  // min and max corners of 2D rectangular marquee
   Eigen::Matrix<float,2,2> M = Eigen::Matrix<float,2,2>::Zero();
+  // list of points of 2D lasso marquee
   std::vector<Eigen::RowVector2f> L;
 };
 
