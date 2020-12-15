@@ -3,6 +3,3 @@ project(${PROJECT_NAME})
 
 add_executable(${PROJECT_NAME} main.cpp)
 target_link_libraries(${PROJECT_NAME} igl::core igl::opengl igl::opengl_glfw tutorials)
-if(TARGET igl::mosek)
-  target_link_libraries(${PROJECT_NAME} igl::mosek)
-endif()

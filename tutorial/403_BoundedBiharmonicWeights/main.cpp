@@ -1,10 +1,4 @@
 // Because of Mosek complications, we don't use static library if Mosek is used.
-#ifdef LIBIGL_WITH_MOSEK
-#ifdef IGL_STATIC_LIBRARY
-#undef IGL_STATIC_LIBRARY
-#endif
-#endif
-
 #include <igl/boundary_conditions.h>
 #include <igl/colon.h>
 #include <igl/column_to_quats.h>
@@ -19,7 +13,6 @@
 #include <igl/readTGF.h>
 #include <igl/opengl/glfw/Viewer.h>
 #include <igl/bbw.h>
-//#include <igl/embree/bone_heat.h>
 
 #include <Eigen/Geometry>
 #include <Eigen/StdVector>
