@@ -1,4 +1,4 @@
-#include <igl/copyleft/marching_cubes.h>
+#include <igl/marching_cubes.h>
 #include <igl/signed_distance.h>
 #include <igl/read_triangle_mesh.h>
 #include <igl/opengl/glfw/Viewer.h>
@@ -55,8 +55,8 @@ int main(int argc, char * argv[])
   cout<<"Marching cubes..."<<endl;
   MatrixXd SV,BV;
   MatrixXi SF,BF;
-  igl::copyleft::marching_cubes(S,GV,res(0),res(1),res(2),SV,SF);
-  igl::copyleft::marching_cubes(B,GV,res(0),res(1),res(2),BV,BF);
+  igl::marching_cubes(S,GV,res(0),res(1),res(2),0,SV,SF);
+  igl::marching_cubes(B,GV,res(0),res(1),res(2),0,BV,BF);
 
   cout<<R"(Usage:
 '1'  Show original mesh.
