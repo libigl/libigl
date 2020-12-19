@@ -43,7 +43,7 @@ namespace igl
       EmbreeIntersector(const EmbreeIntersector & that);
       EmbreeIntersector & operator=(const EmbreeIntersector &);
     public:
-      virtual ~EmbreeIntersector()
+      virtual ~EmbreeIntersector();
 
       // Initialize with a given mesh.
       //
