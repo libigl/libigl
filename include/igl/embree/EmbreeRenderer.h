@@ -60,7 +60,7 @@ namespace igl
       EmbreeRenderer(const EmbreeRenderer & that);
       EmbreeRenderer & operator=(const EmbreeRenderer &);
     public:
-      virtual ~EmbreeRenderer() = default;
+      virtual ~EmbreeRenderer();
 
       // Specify mesh, this call reinitializes embree structures
       // Inputs:
