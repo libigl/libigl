@@ -20,19 +20,17 @@ igl::opengl::glfw::imgui::SelectionPlugin usage:
   V,v     Turn off interactive selection
 )";
 }
-IGL_INLINE bool SelectionPlugin::pre_draw() 
+IGL_INLINE bool SelectionPlugin::pre_draw()
 {
   if(!visible){ return false; }
   ImGuiMenu::pre_draw();
   return false;
 }
-IGL_INLINE bool SelectionPlugin::post_draw() 
+IGL_INLINE bool SelectionPlugin::post_draw()
 {
   if(mode == OFF){ return false; }
   ImGuiIO& io = ImGui::GetIO();
-  
-  ImGui::SetNextWindowPos( ImVec2(0,0) );
-  ImGui::Begin("testing", nullptr, ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs);
+
   float width, height;
   float highdpi = 1.0;
   {
@@ -45,8 +43,18 @@ IGL_INLINE bool SelectionPlugin::post_draw()
     width = (float)iwidth;
     height = (float)iheight;
   }
-  ImGui::SetWindowSize(ImVec2(width,height));
 
+  ImGui::SetNextWindowPos( ImVec2(0,0) );
+  ImGui::SetNextWindowSize(ImVec2(width,height), ImGuiCond_Always);
+
+  ImGui::Begin("testing", nullptr,
+               ImGuiWindowFlags_NoBackground
+               | ImGuiWindowFlags_NoTitleBar
+               | ImGuiWindowFlags_NoResize
+               | ImGuiWindowFlags_NoMove
+               | ImGuiWindowFlags_NoScrollbar
+               | ImGuiWindowFlags_NoSavedSettings
+               | ImGuiWindowFlags_NoInputs);
 
   ImDrawList* list = ImGui::GetWindowDrawList();
   for(int pass = 0;pass<2;pass++)
@@ -95,7 +103,7 @@ IGL_INLINE bool SelectionPlugin::mouse_up(int button, int modifier)
   is_down = false;
   // are we done? Check first and last lasso point (need at least 3 (2 real
   // points + 1 mouse-mouse point))
-  if(is_drawing && 
+  if(is_drawing &&
     (mode!=POLYGONAL_LASSO ||(L.size()>=3&&(L[0]-L[L.size()-1]).norm()<=10.0)))
   {
     if(callback){ callback();}
