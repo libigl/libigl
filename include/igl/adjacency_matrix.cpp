@@ -77,18 +77,19 @@ IGL_INLINE void igl::adjacency_matrix(
   typedef Triplet<T> IJV;
   vector<IJV > ijv;
   ijv.reserve(C(C.size()-1)*2);
-  const typename DerivedI::Scalar n = I.maxCoeff()+1;
+  typedef typename DerivedI::Scalar Index;
+  const Index n = I.maxCoeff()+1;
   {
     // loop over polygons
-    for(int p = 0;p<C.size()-1;p++)
+    for(Index p = 0;p<C.size()-1;p++)
     {
       // number of edges
-      const int np = C(p+1)-C(p);
+      const Index np = C(p+1)-C(p);
       // loop over edges
-      for(int c = 0;c<np;c++)
+      for(Index c = 0;c<np;c++)
       {
-        const int i = I(C(p)+c);
-        const int j = I(C(p)+((c+1)%np));
+        const Index i = I(C(p)+c);
+        const Index j = I(C(p)+((c+1)%np));
         ijv.emplace_back(i,j,1);
         ijv.emplace_back(j,i,1);
       }

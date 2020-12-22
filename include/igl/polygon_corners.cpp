@@ -16,13 +16,17 @@ IGL_INLINE void igl::polygon_corners(
   Eigen::PlainObjectBase<DerivedI> & I,
   Eigen::PlainObjectBase<DerivedC> & C)
 {
-  std::vector<int> vI;vI.reserve(P.size()*4);
+  typedef typename DerivedI::Scalar IType;
+  // JD: Honestly you could do a first loop over P, compute C, and then fill the
+  // entries of I directly. No need for guesses and push_back(), or the extra
+  // copy at the end. That would be more efficient.
+  std::vector<IType> vI;vI.reserve(P.size()*4);
   C.resize(P.size()+1);
   C(0) = 0;
-  for(int p = 0;p<P.size();p++)
+  for(size_t p = 0;p<P.size();p++)
   {
     C(p+1) = C(p)+P[p].size();
-    for(int c = 0;c<P[p].size();c++)
+    for(size_t c = 0;c<P[p].size();c++)
     {
       vI.push_back(P[p][c]);
     }

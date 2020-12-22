@@ -101,39 +101,40 @@ IGL_INLINE void igl::cotmatrix(
   typedef Eigen::Matrix<Scalar,1,3> RowVector3S;
   typedef Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic> MatrixXS;
   typedef Eigen::Matrix<Scalar,Eigen::Dynamic,1> VectorXS;
+  typedef Eigen::Index Index;
   // number of vertices
-  const int n = V.rows();
+  const Index n = V.rows();
   // number of polyfaces
-  const int m = C.size()-1;
+  const Index m = C.size()-1;
   assert(V.cols() == 2 || V.cols() == 3);
   std::vector<Eigen::Triplet<Scalar> > Lfijv;
   std::vector<Eigen::Triplet<Scalar> > Mfijv;
   std::vector<Eigen::Triplet<Scalar> > Pijv;
   // loop over vertices; set identity for original vertices
-  for(int i = 0;i<V.rows();i++) { Pijv.emplace_back(i,i,1); }
+  for(Index i = 0;i<V.rows();i++) { Pijv.emplace_back(i,i,1); }
   // loop over faces
-  for(int p = 0;p<C.size()-1;p++)
+  for(Index p = 0;p<C.size()-1;p++)
   {
     // number of faces/vertices in this simple polygon
-    const int np = C(p+1)-C(p);
+    const Index np = C(p+1)-C(p);
     // Working "local" list of vertices; last vertex is new one
     // this needs to have 3 columns so Eigen doesn't complain about cross
     // products below.
     Eigen::Matrix<Scalar,Eigen::Dynamic,3> X = decltype(X)::Zero(np+1,3);
-    for(int i = 0;i<np;i++){ X.row(i).head(V.cols()) = V.row(I(C(p)+i)); };
+    for(Index i = 0;i<np;i++){ X.row(i).head(V.cols()) = V.row(I(C(p)+i)); };
     // determine weights definig position of inserted vertex
     {
       MatrixXS A = decltype(A)::Zero(np+1,np);
       // My equation (38) would be A w = b.
       VectorXS b = decltype(b)::Zero(np+1);
-      for(int k = 0;k<np;k++)
+      for(Index k = 0;k<np;k++)
       { 
         const RowVector3S Xkp1mk = X.row((k+1)%np)-X.row(k);
         const RowVector3S Xkp1mkck = Xkp1mk.cross(X.row(k));
-        for(int i = 0;i<np;i++)
+        for(Index i = 0;i<np;i++)
         { 
           b(i) -= 2.*(X.row(i).cross(Xkp1mk)).dot(Xkp1mkck);
-          for(int j = 0;j<np;j++)
+          for(Index j = 0;j<np;j++)
           { 
             A(i,j) += 2.*(X.row(j).cross(Xkp1mk)).dot(X.row(i).cross(Xkp1mk));
           }
@@ -145,12 +146,12 @@ IGL_INLINE void igl::cotmatrix(
         Eigen::CompleteOrthogonalDecomposition<Eigen::MatrixXd>(A).solve(b);
       X.row(np) = w.transpose()*X.topRows(np);
       // scatter w into new row of P
-      for(int i = 0;i<np;i++) { Pijv.emplace_back(n+p,I(C(p)+i),w(i)); }
+      for(Index i = 0;i<np;i++) { Pijv.emplace_back(n+p,I(C(p)+i),w(i)); }
     }
     // "local" fan of faces. These could be statically cached, but this will
     // not be the bottleneck.
     Eigen::MatrixXi F(np,3);
-    for(int i = 0;i<np;i++)
+    for(Index i = 0;i<np;i++)
     { 
       F(i,0) = i; 
       F(i,1) = (i+1)%np; 
@@ -167,16 +168,16 @@ IGL_INLINE void igl::cotmatrix(
       Mp = M.diagonal();
     }
     // Scatter into fine Laplacian and mass matrices
-    const auto J = [&n,&np,&p,&I,&C](int i)->int{return i==np?n+p:I(C(p)+i);};
+    const auto J = [&n,&np,&p,&I,&C](Index i)->Index{return i==np?n+p:I(C(p)+i);};
     // Should just build Mf as a vector...
-    for(int i = 0;i<np+1;i++) { Mfijv.emplace_back(J(i),J(i),Mp(i)); }
+    for(Index i = 0;i<np+1;i++) { Mfijv.emplace_back(J(i),J(i),Mp(i)); }
     // loop over faces
-    for(int f = 0;f<np;f++)
+    for(Index f = 0;f<np;f++)
     {
-      for(int c = 0;c<3;c++)
+      for(Index c = 0;c<3;c++)
       {
-        const int i = F(f,(c+1)%3);
-        const int j = F(f,(c+2)%3);
+        const Index i = F(f,(c+1)%3);
+        const Index j = F(f,(c+2)%3);
         // symmetric off-diagonal
         Lfijv.emplace_back(J(i),J(j),K(f,c));
         Lfijv.emplace_back(J(j),J(i),K(f,c));
@@ -202,11 +203,11 @@ IGL_INLINE void igl::cotmatrix(
   MatrixXS Vf = P*V;
   Eigen::MatrixXi Ff(I.size(),3);
   {
-    int f = 0;
-    for(int p = 0;p<C.size()-1;p++)
+    Index f = 0;
+    for(Index p = 0;p<C.size()-1;p++)
     {
-      const int np = C(p+1)-C(p);
-      for(int c = 0;c<np;c++)
+      const Index np = C(p+1)-C(p);
+      for(Index c = 0;c<np;c++)
       {
         Ff(f,0) = I(C(p)+c);
         Ff(f,1) = I(C(p)+(c+1)%np);

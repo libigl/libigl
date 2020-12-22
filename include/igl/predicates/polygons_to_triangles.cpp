@@ -17,14 +17,15 @@ IGL_INLINE void igl::predicates::polygons_to_triangles(
   Eigen::PlainObjectBase<DerivedF> & F,
   Eigen::PlainObjectBase<DerivedJ> & J)
 {
+  typedef Eigen::Index Index;
   // Each polygon results in #sides-2 triangles. So ∑#sides-2
   F.resize(C(C.size()-1) - (C.size()-1)*2,3);
   J.resize(F.rows());
   {
-    int f = 0;
-    for(int p = 0;p<C.size()-1;p++)
+    Index f = 0;
+    for(Index p = 0;p<C.size()-1;p++)
     {
-      const int np = C(p+1)-C(p);
+      const Index np = C(p+1)-C(p);
       Eigen::MatrixXi pF;
       if(np == 3)
       {
@@ -33,7 +34,7 @@ IGL_INLINE void igl::predicates::polygons_to_triangles(
       {
         // Make little copy of this polygon with an initial fan
         DerivedV pV(np,V.cols());
-        for(int c = 0;c<np;c++)
+        for(Index c = 0;c<np;c++)
         {
           pV.row(c) = V.row(I(C(p)+c));
         }
@@ -69,11 +70,11 @@ IGL_INLINE void igl::predicates::polygons_to_triangles(
         // compute signed area
         {
           double area = 0;
-          for(int c = 0;c<np;c++)
+          for(Index c = 0;c<np;c++)
           {
             area += S((c+0)%np,0)*S((c+1)%np,1) - S((c+1)%np,0)*S((c+0)%np,1);
           }
-          //printf("area: %g\n",area);
+          //prIndexf("area: %g\n",area);
           if(area<0)
           {
             S.col(0) *= -1;
@@ -97,7 +98,7 @@ IGL_INLINE void igl::predicates::polygons_to_triangles(
           //std::cout<<std::endl;
 
           pF.resize(np-2,3);
-          for(int c = 0;c<np;c++)
+          for(Index c = 0;c<np;c++)
           {
             if(c>0 && c<np-1)
             {
@@ -117,13 +118,13 @@ IGL_INLINE void igl::predicates::polygons_to_triangles(
         //  Eigen::MatrixXd pl;
         //  igl::edge_lengths(pV,pF,pl);
 
-        //  typedef Eigen::Matrix<int,Eigen::Dynamic,2> MatrixX2I;
-        //  typedef Eigen::Matrix<int,Eigen::Dynamic,1> VectorXI;
+        //  typedef Eigen::Matrix<Index,Eigen::Dynamic,2> MatrixX2I;
+        //  typedef Eigen::Matrix<Index,Eigen::Dynamic,1> VectorXI;
         //  MatrixX2I E,uE;
         //  VectorXI EMAP;
-        //  std::vector<std::vector<int> > uE2E;
+        //  std::vector<std::vector<Index> > uE2E;
         //  igl::unique_edge_map(pF, E, uE, EMAP, uE2E);
-        //  typedef int Index;
+        //  typedef Index Index;
         //  typedef double Scalar;
         //  const Index num_faces = pF.rows();
         //  std::vector<Index> Q;
@@ -139,11 +140,11 @@ IGL_INLINE void igl::predicates::polygons_to_triangles(
         //    if (uE2E[uei].size() == 2) 
         //    {
         //      double w;
-        //      igl::is_intrinsic_delaunay(pl,uE2E,num_faces,uei,w);
-        //      printf("%d : %0.17f\n",uei,w);
+        //      igl::is_Indexrinsic_delaunay(pl,uE2E,num_faces,uei,w);
+        //      prIndexf("%d : %0.17f\n",uei,w);
         //      if(w<-1e-7) 
         //      {
-        //        printf("  flippin'\n");
+        //        prIndexf("  flippin'\n");
         //        //
         //        //          v1                 v1
         //        //          /|\                / \
@@ -187,7 +188,7 @@ IGL_INLINE void igl::predicates::polygons_to_triangles(
         //          pl(f2,1) = d;
         //          pl(f2,2) = a;
         //        }
-        //        printf("%d,%d %d,%d -> %d,%d\n",uE(uei,0),uE(uei,1),v1,v2,v3,v4);
+        //        prIndexf("%d,%d %d,%d -> %d,%d\n",uE(uei,0),uE(uei,1),v1,v2,v3,v4);
         //        igl::flip_edge(pF, E, uE, EMAP, uE2E, uei);
         //        std::cout<<"  "<<pl.row(f1)<<std::endl;
         //        std::cout<<"  "<<pl.row(f2)<<std::endl;
@@ -195,9 +196,9 @@ IGL_INLINE void igl::predicates::polygons_to_triangles(
         //        //igl::edge_lengths(pV,pF,pl);
         //        // recompute edge lengths of two faces. (extra work on untouched
         //        // edges)
-        //        for(int f : {f1,f2})
+        //        for(Index f : {f1,f2})
         //        {
-        //          for(int c=0;c<3;c++)
+        //          for(Index c=0;c<3;c++)
         //          {
         //            pl(f,c) = 
         //              (pV.row(pF(f,(c+1)%3))-pV.row(pF(f,(c+2)%3))).norm();
@@ -217,19 +218,19 @@ IGL_INLINE void igl::predicates::polygons_to_triangles(
 
 
         //  // check for self-loops (I claim these cannot happen)
-        //  for(int f = 0;f<pF.rows();f++)
+        //  for(Index f = 0;f<pF.rows();f++)
         //  {
-        //    for(int c =0;c<3;c++)
+        //    for(Index c =0;c<3;c++)
         //    {
         //      assert(pF(f,c) != pF(f,(c+1)%3) && "self loops should not exist");
         //    }
         //  }
         //}
       }
-      // Copy into global list
-      for(int i = 0;i<pF.rows();i++)
+      // Copy Indexo global list
+      for(Index i = 0;i<pF.rows();i++)
       {
-        for(int c =0;c<3;c++)
+        for(Index c =0;c<3;c++)
         {
           F(f,c) = I(C(p)+pF(i,c));
         }
