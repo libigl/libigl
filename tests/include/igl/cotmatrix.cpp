@@ -1,6 +1,32 @@
 #include <test_common.h>
 #include <igl/PI.h>
 #include <igl/cotmatrix.h>
+#include <igl/matrix_to_list.h>
+#include <igl/polygon_corners.h>
+
+TEST_CASE("cotmatrix: poly", "[igl]" )
+{
+  const auto test_case = [](const std::string &param)
+  {
+    Eigen::MatrixXd V;
+    Eigen::MatrixXi F;
+    // Load example mesh: GetParam() will be name of mesh file
+    igl::read_triangle_mesh(test_common::data_path(param), V, F);
+    Eigen::SparseMatrix<double> tL,pL,pM,pP;
+    igl::cotmatrix(V,F,tL);
+    std::vector<std::vector<int> > vF;
+    igl::matrix_to_list(F,vF);
+    // trivial polygon mesh
+    Eigen::VectorXi I,C;
+    igl::polygon_corners(vF,I,C);
+    igl::cotmatrix(V,I,C,pL,pM,pP);
+    REQUIRE (tL.cols() == pL.cols());
+    REQUIRE (tL.rows() == pL.rows());
+    REQUIRE ( tL.isApprox(pL,1e-7) );
+  };
+
+  test_common::run_test_cases(test_common::all_meshes(), test_case);
+}
 
 TEST_CASE("cotmatrix: constant_in_null_space", "[igl]" "[slow]")
 {

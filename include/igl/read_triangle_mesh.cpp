@@ -17,7 +17,8 @@
 #include "readWRL.h"
 #include "pathinfo.h"
 #include "boundary_facets.h"
-#include "polygon_mesh_to_triangle_mesh.h"
+#include "polygon_corners.h"
+#include "polygons_to_triangles.h"
 
 #include <algorithm>
 #include <iostream>
@@ -192,7 +193,12 @@ IGL_INLINE bool igl::read_triangle_mesh(
     {
       return false;
     }
-    polygon_mesh_to_triangle_mesh(vF,F);
+    {
+      Eigen::VectorXi I,C;
+      igl::polygon_corners(vF,I,C);
+      Eigen::VectorXi J;
+      igl::polygons_to_triangles(I,C,F,J);
+    }
   }
   return true;
 }

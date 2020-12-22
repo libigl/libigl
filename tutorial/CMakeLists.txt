@@ -76,6 +76,7 @@ if(TUTORIALS_CHAPTER2)
   add_subdirectory("204_Gradient")
   add_subdirectory("205_Laplacian")
   add_subdirectory("206_GeodesicDistance")
+  add_subdirectory("207_PolygonLaplacian")
 endif()
 
 # Chapter 3
