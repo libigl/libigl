@@ -17,9 +17,13 @@ namespace igl
   struct Hit
   {
     int id; // primitive id
-    int gid; // geometry id
-    float u,v; // barycentric coordinates
-    float t; // distance = direction*t to intersection
+    int gid; // geometry id (not used)
+    // barycentric coordinates so that 
+    //   pos = V.row(F(id,0))*(1-u-v)+V.row(F(id,1))*u+V.row(F(id,2))*v;
+    float u,v; 
+    // parametric distance so that
+    //   pos = origin + t * dir
+    float t; 
   };
 }
 #endif 

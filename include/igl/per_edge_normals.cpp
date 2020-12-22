@@ -74,6 +74,8 @@ IGL_INLINE void igl::per_edge_normals(
       }
     }
   }
+  // take average via normalization
+  N.rowwise().normalize();
 }
 
 template <

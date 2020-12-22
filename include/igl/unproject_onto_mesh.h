@@ -29,6 +29,12 @@ namespace igl
   //    fid  id of the first face hit
   //    bc  barycentric coordinates of hit
   // Returns true if there's a hit
+  //
+  // Example:
+  //   igl::opengl::glfw::Viewer vr;
+  //   ...
+  //   igl::unproject_onto_mesh(
+  //     pos,vr.core().view,vr.core().proj,vr.core().viewport,V,F,fid,bc);
   template < typename DerivedV, typename DerivedF, typename Derivedbc>
   IGL_INLINE bool unproject_onto_mesh(
     const Eigen::Vector2f& pos,
