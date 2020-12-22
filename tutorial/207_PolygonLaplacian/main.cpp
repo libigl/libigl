@@ -45,8 +45,9 @@ int main(int argc, char *argv[])
   Eigen::MatrixXd tHN;
   const auto update = [&]()
   {
-    pHN = (pL*V).array().colwise() / pM.diagonal().array();
-    tHN = (tL*V).array().colwise() / tM.diagonal().array();
+    // why does windows need this Eigen::VectorXd(...) ?
+    pHN = (pL*V).array().colwise() / Eigen::VectorXd(pM.diagonal()).array();
+    tHN = (tL*V).array().colwise() / Eigen::VectorXd(tM.diagonal()).array();
     pHN *= 1.0/pHN.rowwise().norm().maxCoeff();
     tHN *= 1.0/tHN.rowwise().norm().maxCoeff();
     const auto was_face_based  = vr.data_list[0].face_based;
@@ -92,18 +93,12 @@ int main(int argc, char *argv[])
   };
   const auto cmcf_step = [&]()
   {
-    // take step
-    Eigen::SparseMatrix<double> * L = &tL;
-    Eigen::SparseMatrix<double> * M = &tM;
-    if(use_poly)
-    {
-      L = &pL;
-      M = &tM;
-    }
-    const auto & S = ((*M) - 0.05*(*L));
+    const Eigen::SparseMatrix<double> S = 
+      use_poly? ((pM) - 0.05*(pL)): ((tM) - 0.05*(tL));
+    const Eigen::MatrixXd rhs = use_poly? pM*V : tM*V;
     Eigen::SimplicialLLT<Eigen::SparseMatrix<double > > solver(S);
     assert(solver.info() == Eigen::Success);
-    V = solver.solve((*M)*V).eval();
+    V = solver.solve(rhs).eval();
     // recompute just mass matrices
     recompute_M();
     // center
