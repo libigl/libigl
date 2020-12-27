@@ -424,7 +424,7 @@ namespace glfw
       }
 
       data().set_mesh(V,F);
-      if(!UV_V.rows() != 0 && UV_F.rows() != 0)
+      if(UV_V.rows() != 0 && UV_F.rows() != 0)
       {
         data().set_uv(UV_V,UV_F);
       }
