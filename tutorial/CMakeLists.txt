@@ -99,7 +99,9 @@ if(TUTORIALS_CHAPTER4)
   add_subdirectory("406_FastAutomaticSkinningTransformations")
   add_subdirectory("407_BiharmonicCoordinates")
   add_subdirectory("408_DirectDeltaMush")
-  add_subdirectory("409_Kelvinlets")
+  if(LIBIGL_WITH_OPENGL_GLFW_IMGUI)
+	  add_subdirectory("409_Kelvinlets")
+  endif()
 endif()
 
 # Chapter 5
