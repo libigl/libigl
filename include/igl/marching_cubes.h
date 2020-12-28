@@ -1,6 +1,6 @@
 // This file is part of libigl, a simple c++ geometry processing library.
 //
-// Copyright (C) 2014 Alec Jacobson <alecjacobson@gmail.com>
+// Copyright (C) 2020 Alec Jacobson <alecjacobson@gmail.com>
 //
 // This Source Code Form is subject to the terms of the Mozilla Public License
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
@@ -40,6 +40,19 @@ namespace igl
     const unsigned nx,
     const unsigned ny,
     const unsigned nz,
+    const typename DerivedS::Scalar isovalue,
+    Eigen::PlainObjectBase<DerivedV> &V,
+    Eigen::PlainObjectBase<DerivedF> &F);
+  template <
+    typename DerivedS, 
+    typename DerivedGV, 
+    typename DerivedGI, 
+    typename DerivedV, 
+    typename DerivedF>
+  IGL_INLINE void marching_cubes(
+    const Eigen::MatrixBase<DerivedS> & S,
+    const Eigen::MatrixBase<DerivedGV> & GV,
+    const Eigen::MatrixBase<DerivedGI> & GI,
     const typename DerivedS::Scalar isovalue,
     Eigen::PlainObjectBase<DerivedV> &V,
     Eigen::PlainObjectBase<DerivedF> &F);
