@@ -18,12 +18,7 @@ endif()
 igl_download_tutorial_data()
 
 ### Output directories
-if(MSVC)
-  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR})
-  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR})
-else()
-  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
-endif()
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
 ### Choose which chapters to compile
 option(TUTORIALS_CHAPTER1 "Compile chapter 1" ON)
