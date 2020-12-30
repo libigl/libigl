@@ -92,7 +92,7 @@ if(LIBIGL_WITH_EMBREE)
   target_link_libraries(libigl_tests PUBLIC igl::embree)
 endif()
 
-if(LIBIGL_WITH_PREDICATES)
+if(LIBIGL_WITH_PREDICATES AND LIBIGL_WITH_TRIANGLE)
   file(GLOB TEST_SRC_FILES ./include/igl/predicates/*.cpp)
   file(GLOB TEST_INC_FILES ./include/igl/predicates/*.h ./include/igl/predicates/*.inl)
   target_sources(libigl_tests PRIVATE ${TEST_SRC_FILES} ${TEST_INC_FILES})

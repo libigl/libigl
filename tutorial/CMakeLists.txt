@@ -18,12 +18,7 @@ endif()
 igl_download_tutorial_data()
 
 ### Output directories
-if(MSVC)
-  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR})
-  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR})
-else()
-  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
-endif()
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
 ### Choose which chapters to compile
 option(TUTORIALS_CHAPTER1 "Compile chapter 1" ON)
@@ -99,7 +94,9 @@ if(TUTORIALS_CHAPTER4)
   add_subdirectory("406_FastAutomaticSkinningTransformations")
   add_subdirectory("407_BiharmonicCoordinates")
   add_subdirectory("408_DirectDeltaMush")
-  add_subdirectory("409_Kelvinlets")
+  if(LIBIGL_WITH_OPENGL_GLFW_IMGUI)
+	  add_subdirectory("409_Kelvinlets")
+  endif()
 endif()
 
 # Chapter 5
