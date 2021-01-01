@@ -55,6 +55,38 @@ namespace igl
     const std::vector<std::vector<IndexType> >& VF,
     const double corner_threshold,
     Eigen::PlainObjectBase<DerivedCN> & CN);
+  // Inputs:
+  //   V  #V by 3 list of mesh vertex positions
+  //   I  #I vectorized list of polygon corner indices into rows of some matrix V
+  //   C  #polygons+1 list of cumulative polygon sizes so that C(i+1)-C(i) = size of
+  //     the ith polygon, and so I(C(i)) through I(C(i+1)-1) are the indices of
+  //     the ith polygon
+  //   corner_threshold  threshold in degrees on sharp angles
+  // Outputs:
+  //   N  #I by 3 list of per corner normals
+  //   VV  #I+#polygons by 3 list of auxiliary triangle mesh vertex positions
+  //   FF  #I by 3 list of triangle indices into rows of VV
+  //   J  #I list of indices into original polygons
+  //   NN  #FF by 3 list of normals for each auxiliary triangle
+  template <
+    typename DerivedV, 
+    typename DerivedI, 
+    typename DerivedC, 
+    typename DerivedN,
+    typename DerivedVV,
+    typename DerivedFF,
+    typename DerivedJ,
+    typename DerivedNN>
+  IGL_INLINE void per_corner_normals(
+    const Eigen::MatrixBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedI> & I,
+    const Eigen::MatrixBase<DerivedC> & C,
+    const typename DerivedV::Scalar corner_threshold,
+    Eigen::PlainObjectBase<DerivedN>  & N,
+    Eigen::PlainObjectBase<DerivedVV> & VV,
+    Eigen::PlainObjectBase<DerivedFF> & FF,
+    Eigen::PlainObjectBase<DerivedJ>  & J,
+    Eigen::PlainObjectBase<DerivedNN> & NN);
 }
 
 #ifndef IGL_STATIC_LIBRARY
