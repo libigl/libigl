@@ -32,6 +32,20 @@ namespace igl
     const std::vector<std::vector<PType> > & P,
     Eigen::PlainObjectBase<DerivedI> & I,
     Eigen::PlainObjectBase<DerivedC> & C);
+  // Convert a pure k-gon list of polygon mesh indices to list of polygon corners
+  // and sizes
+  //
+  // Inputs:
+  //   Q  #Q by k list of k-gon indices (Q(i,j) = -1 means that face i is a
+  //     j-gon)
+  template <
+    typename DerivedQ, 
+    typename DerivedI,
+    typename DerivedC>
+  IGL_INLINE void polygon_corners(
+    const Eigen::MatrixBase<DerivedQ> & Q,
+    Eigen::PlainObjectBase<DerivedI> & I,
+    Eigen::PlainObjectBase<DerivedC> & C);
 }
 
 #ifndef IGL_STATIC_LIBRARY
