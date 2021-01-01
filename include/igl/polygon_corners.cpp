@@ -45,12 +45,12 @@ IGL_INLINE void igl::polygon_corners(
 {
   I.resize(Q.size());
   C.resize(Q.rows()+1);
-  int c = 0;
+  Eigen::Index c = 0;
   C(0) = 0;
-  for(int p = 0;p<Q.rows();p++)
+  for(Eigen::Index p = 0;p<Q.rows();p++)
   {
-    int np = 0;
-    for(int i = 0;i<Q.cols();i++)
+    Eigen::Index np = 0;
+    for(Eigen::Index i = 0;i<Q.cols();i++)
     {
       if(Q(p,i) == -1){ break;}
       I(c++) = Q(p,i);
