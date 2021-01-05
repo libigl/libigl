@@ -7,8 +7,8 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_PNG_TEXTURE_FROM_FILE_H
 #define IGL_PNG_TEXTURE_FROM_FILE_H
-#include "../igl_inline.h"
-#include "../opengl/gl.h"
+#include "../../igl_inline.h"
+#include "../gl.h"
 
 #include <string>
 

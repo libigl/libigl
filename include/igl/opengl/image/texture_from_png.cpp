@@ -7,7 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "texture_from_png.h"
 
-#include "../opengl/report_gl_error.h"
+#include "../report_gl_error.h"
 #include <igl_stb_image.h>
 
 IGL_INLINE bool igl::png::texture_from_png(const std::string png_file, const bool flip, GLuint & id)

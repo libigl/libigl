@@ -8,7 +8,7 @@
 #include "render_to_png.h"
 #include <igl_stb_image.h>
 
-#include "../opengl/gl.h"
+#include "../gl.h"
 
 IGL_INLINE bool igl::png::render_to_png(
   const std::string png_file,

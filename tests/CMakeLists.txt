@@ -44,6 +44,15 @@ if(MSVC)
   )
 endif(MSVC)
 
+if(LIBIGL_WITH_STB)
+  file(GLOB TEST_SRC_FILES ./include/igl/stb/*.cpp )
+  file(GLOB TEST_INC_FILES ./include/igl/stb/*.h )
+  target_sources(libigl_tests PRIVATE ${TEST_SRC_FILES} ${TEST_INC_FILES})
+
+  target_link_libraries(libigl_tests PUBLIC igl::stb)
+endif()
+
+
 # Process code in each subdirectories: add in decreasing order of complexity
 # (last added will run first and those should be the fastest tests)
 if(LIBIGL_WITH_MOSEK)

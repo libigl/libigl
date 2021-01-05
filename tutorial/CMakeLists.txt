@@ -35,16 +35,30 @@ add_library(tutorials INTERFACE)
 target_compile_definitions(tutorials INTERFACE "-DTUTORIAL_SHARED_PATH=\"${TUTORIAL_SHARED_PATH}\"")
 target_include_directories(tutorials INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
 
+
+#######################
+if(NOT (LIBIGL_WITH_OPENGL AND LIBIGL_WITH_OPENGL_GLFW) )
+  message(WARNING 
+    "Most tutorial executables depend on OpenGL and glfw. Use `cmake ../ -DLIBIGL_WITH_OPENGL=ON -DLIBIGL_WITH_OPENGL_GLFW=ON`
+      will build non-visual tutorials only now."
+  )
+endif()
+
+# Non-visual tutorials
 # Chapter 1
 if(TUTORIALS_CHAPTER1)
   add_subdirectory("101_FileIO")
 endif()
 
-#######################
-if(NOT (LIBIGL_WITH_OPENGL AND LIBIGL_WITH_OPENGL_GLFW) )
-  message(WARNING "Most tutorial executables depend on OpenGL and glfw. Use `cmake ../ -DLIBIGL_WITH_OPENGL=ON -DLIBIGL_WITH_OPENGL_GLFW=ON`")
-  return()
+if(TUTORIALS_CHAPTER6)
+  if(LIBIGL_WITH_STB AND LIBIGL_WITH_EMBREE)
+    add_subdirectory("608_RayTrace")
+  endif()
 endif()
+
+
+if(LIBIGL_WITH_OPENGL AND LIBIGL_WITH_OPENGL_GLFW)
+# visual tutorials
 
 if(TUTORIALS_CHAPTER1)
   add_subdirectory("102_DrawMesh")
@@ -114,6 +128,7 @@ endif()
 
 # Chapter 6
 if(TUTORIALS_CHAPTER6)
+ if( LIBIGL_WITH_OPENGL AND LIBIGL_WITH_OPENGL_GLFW)
   if(LIBIGL_WITH_XML)
     add_subdirectory("601_Serialization")
   endif()
@@ -129,17 +144,15 @@ if(TUTORIALS_CHAPTER6)
   if(LIBIGL_WITH_EMBREE)
     add_subdirectory("606_AmbientOcclusion")
   endif()
-  if(LIBIGL_WITH_PNG)
+  if(LIBIGL_WITH_STB)
     add_subdirectory("111_MatCap")
     add_subdirectory("607_ScreenCapture")
-  endif()
-  if(LIBIGL_WITH_PNG AND LIBIGL_WITH_EMBREE)
-    add_subdirectory("608_RayTrace")
   endif()
   if(LIBIGL_WITH_CGAL)
     add_subdirectory("609_Boolean")
     add_subdirectory("610_CSGTree")
   endif()
+ endif()
 endif()
 
 # Chapter 7
@@ -174,4 +187,6 @@ if(TUTORIALS_CHAPTER7)
   add_subdirectory("720_BlueNoise")
   add_subdirectory("721_VectorFieldSmoothing")
   add_subdirectory("722_VectorParallelTransport")
+endif()
+
 endif()

@@ -8,9 +8,9 @@
 #include "texture_from_file.h"
 
 #include "texture_from_png.h"
-#include "../STR.h"
-#include "../pathinfo.h"
-#include "../opengl/report_gl_error.h"
+#include "../../STR.h"
+#include "../../pathinfo.h"
+#include "../report_gl_error.h"
 //#include "../opengl2/texture_from_tga.h"
 #include <string>
 #include <algorithm>

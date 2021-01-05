@@ -6,7 +6,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "render_to_png_async.h"
-#include "../opengl/gl.h"
+#include "../gl.h"
 #include <igl_stb_image.h>
 
 static IGL_INLINE bool render_to_png_async_helper(
