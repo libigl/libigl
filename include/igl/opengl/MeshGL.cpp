@@ -360,9 +360,13 @@ R"(#version 150
   out vec4 outColor;
   void main()
   {
-    if (length(gl_PointCoord - vec2(0.5)) > 0.5)
+    float d = length(gl_PointCoord - vec2(0.5));
+    if (d > 0.5)
       discard;
-    outColor = vec4(color_frag, 1.0);
+    if (d > 0.4)
+      outColor = vec4(0.0, 0.0, 0.0, 1.0);
+    else
+      outColor = vec4(color_frag, 1.0);
   }
 )";
 
