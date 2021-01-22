@@ -172,6 +172,7 @@ IGL_INLINE void ImGuiMenu::draw_viewer_window()
       "Viewer", &_viewer_menu_visible,
       ImGuiWindowFlags_NoSavedSettings
       | ImGuiWindowFlags_AlwaysAutoResize
+      | ImGuiWindowFlags_NoTitleBar
   );
   ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.4f);
   if (callback_draw_viewer_menu) { callback_draw_viewer_menu(); }
