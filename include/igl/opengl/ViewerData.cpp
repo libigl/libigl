@@ -713,33 +713,23 @@ IGL_INLINE void igl::opengl::ViewerData::updateGL(
       if (meshgl.dirty & MeshGL::DIRTY_AMBIENT)
       {
         meshgl.V_ambient_vbo.resize(data.F.rows()*3,4);
-        for (unsigned i=0; i<data.F.rows();++i)
-          for (unsigned j=0;j<3;++j)
-            meshgl.V_ambient_vbo.row(i*3+j) = data.V_material_ambient.row(data.F(i,j)).cast<float>();
+        per_corner(data.V_material_ambient,meshgl.V_ambient_vbo);
       }
       if (meshgl.dirty & MeshGL::DIRTY_DIFFUSE)
       {
         meshgl.V_diffuse_vbo.resize(data.F.rows()*3,4);
-        for (unsigned i=0; i<data.F.rows();++i)
-          for (unsigned j=0;j<3;++j)
-            meshgl.V_diffuse_vbo.row(i*3+j) = data.V_material_diffuse.row(data.F(i,j)).cast<float>();
+        per_corner(data.V_material_diffuse,meshgl.V_diffuse_vbo);
       }
       if (meshgl.dirty & MeshGL::DIRTY_SPECULAR)
       {
         meshgl.V_specular_vbo.resize(data.F.rows()*3,4);
-        for (unsigned i=0; i<data.F.rows();++i)
-          for (unsigned j=0;j<3;++j)
-            meshgl.V_specular_vbo.row(i*3+j) = data.V_material_specular.row(data.F(i,j)).cast<float>();
+        per_corner(data.V_material_specular,meshgl.V_specular_vbo);
       }
 
       if (meshgl.dirty & MeshGL::DIRTY_NORMAL)
       {
         meshgl.V_normals_vbo.resize(data.F.rows()*3,3);
-        for (unsigned i=0; i<data.F.rows();++i)
-          for (unsigned j=0;j<3;++j)
-            meshgl.V_normals_vbo.row(i*3+j) =
-               data.V_normals.row(data.F(i,j)).cast<float>();
-
+        per_corner(data.V_normals,meshgl.V_normals_vbo);
 
         if (invert_normals)
           meshgl.V_normals_vbo = -meshgl.V_normals_vbo;
