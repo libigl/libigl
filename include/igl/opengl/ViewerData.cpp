@@ -738,8 +738,6 @@ IGL_INLINE void igl::opengl::ViewerData::updateGL(
         for (unsigned i=0; i<data.F.rows();++i)
           for (unsigned j=0;j<3;++j)
             meshgl.V_normals_vbo.row(i*3+j) =
-                         per_corner_normals ?
-               data.F_normals.row(i*3+j).cast<float>() :
                data.V_normals.row(data.F(i,j)).cast<float>();
 
 
