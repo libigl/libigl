@@ -3,32 +3,6 @@
 #include <igl/EPS.h>
 
 
-TEST_CASE("quadprog: linear inequalities", "[igl]" )
-{
-  const Eigen::Matrix<double,6,6> H = (Eigen::Matrix<double,6,6>(6,6)<<111,126,120,107,165,130,126,172,134,148,192,163,120,134,164,131,177,144,107,148,131,207,205,169,165,192,177,205,310,219,130,163,144,169,219,190).finished();
-  const Eigen::Matrix<double,6,1> f = (Eigen::Matrix<double,6,1>(6,1)<<3,1,1,9,6,5).finished();
-  const Eigen::Matrix<double,2,6> A = (Eigen::Matrix<double,2,6>(2,6)<<8,4,2,0,0,8,7,7,7,3,1,7).finished();
-  const Eigen::Matrix<double,2,1> lbi = (Eigen::Matrix<double,2,1>(2,1)<<-0.5,-6).finished();
-  const Eigen::Matrix<double,2,1> ubi = (Eigen::Matrix<double,2,1>(2,1)<<0.5,6).finished();
-  const Eigen::Matrix<double,6,1> lb = (Eigen::Matrix<double,6,1>(6,1)<<-0.1,-0.1,-0.1,-0.1,-0.1,-0.1).finished();
-  const Eigen::Matrix<double,6,1> ub = (Eigen::Matrix<double,6,1>(6,1)<<0.1,0.1,0.1,0.1,0.1,0.1).finished();
-  Eigen::Matrix<double,6,1> x = igl::quadprog(H,f,A,lbi,ubi,lb,ub);
-  //std::cout<<igl::matlab_format(H,"H")<<std::endl;
-  //std::cout<<igl::matlab_format(f,"f")<<std::endl;
-  //std::cout<<igl::matlab_format(A,"A")<<std::endl;
-  //std::cout<<igl::matlab_format(lbi,"lbi")<<std::endl;
-  //std::cout<<igl::matlab_format(ubi,"ubi")<<std::endl;
-  //std::cout<<igl::matlab_format(lb,"lb")<<std::endl;
-  //std::cout<<igl::matlab_format(ub,"ub")<<std::endl;
-  //std::cout<<igl::matlab_format(x,"x")<<std::endl;
-  REQUIRE(abs(x(0)- -0.1)<1e-10);
-  REQUIRE(abs(x(1)-  0.1)<1e-10);
-  REQUIRE(abs(x(2)-  0.07227715420917860)<1e-10);
-  REQUIRE(abs(x(3)- -0.1)<1e-10);
-  REQUIRE(abs(x(4)-  0.01839231579976747)<1e-10);
-  REQUIRE(abs(x(5)- -0.03056928855229465)<1e-10);
-}
-
 TEST_CASE("quadprog: box3", "[igl]" )
 {
   {
