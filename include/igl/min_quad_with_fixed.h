@@ -136,8 +136,9 @@ namespace igl
   //   f  #H linear coefficients
   //   k  #H list of flags whether to fix value
   //   bc  #H value to fix to (if !k(i) then bc(i) is ignored)
-  //   A  #A by #H list of linear equality constraint coefficients
-  //   b  #A list of lienar equality right-hand sides
+  //   A  #A by #H list of linear equality constraint coefficients, must be
+  //     linearly independent (with self and fixed value constraints)
+  //   b  #A list of linear equality right-hand sides
   // Returns #H-long solution x
   template <typename Scalar, int n, int m, bool Hpd=true>
   IGL_INLINE Eigen::Matrix<Scalar,n,1> min_quad_with_fixed(

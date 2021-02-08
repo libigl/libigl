@@ -21,7 +21,8 @@
 #include <unsupported/Eigen/SparseExtra>
 #include <cassert>
 #include <cstdio>
-#include <iostream>
+#include <igl/matlab_format.h>
+#include <type_traits>
 
 template <typename T, typename Derivedknown>
 IGL_INLINE bool igl::min_quad_with_fixed_precompute(
@@ -582,9 +583,6 @@ IGL_INLINE bool igl::min_quad_with_fixed(
   return min_quad_with_fixed_solve(data,B,Y,Beq,Z);
 }
 
-//#include <igl/matlab_format.h>
-#include <iostream>
-#include <type_traits>
 
 template <typename Scalar, int n, int m, bool Hpd>
 IGL_INLINE Eigen::Matrix<Scalar,n,1> igl::min_quad_with_fixed(
