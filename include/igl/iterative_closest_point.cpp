@@ -8,12 +8,9 @@
 #include "iterative_closest_point.h"
 #include "AABB.h"
 #include "per_face_normals.h"
-#include "matlab_format.h"
 #include "slice.h"
 #include "random_points_on_mesh.h"
 #include "rigid_alignment.h"
-#include "writeOBJ.h"
-#include "writeDMAT.h"
 #include <cassert>
 #include <iostream>
 
