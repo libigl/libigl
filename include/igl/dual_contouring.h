@@ -47,6 +47,32 @@ namespace igl
     const bool root_finding,
     Eigen::PlainObjectBase<DerivedV> & V,
     Eigen::PlainObjectBase<DerivedQ> & Q);
+  // Inputs:
+  //   Gf  nx*ny*nz list of function values so that Gf(k) = f(GV.row(k)) (only
+  //   needs to be accurate near f=0 and correct sign elsewhere)
+  //   GV  nx*ny*nz list of grid positions so that the x,y,z grid position is at
+  //     GV.row(x+nx*(y+z*ny))
+  template <
+    typename DerivedGf,
+    typename DerivedGV,
+    typename DerivedV,
+    typename DerivedQ>
+  IGL_INLINE void dual_contouring(
+    const std::function<
+      typename DerivedV::Scalar(const Eigen::Matrix<typename DerivedV::Scalar,1,3> &)> & f,
+    const std::function<
+      Eigen::Matrix<typename DerivedV::Scalar,1,3>(
+        const Eigen::Matrix<typename DerivedV::Scalar,1,3> &)> & f_grad,
+    const Eigen::MatrixBase<DerivedGf> & Gf,
+    const Eigen::MatrixBase<DerivedGV> & GV,
+    const int nx,
+    const int ny,
+    const int nz,
+    const bool constrained,
+    const bool triangles,
+    const bool root_finding,
+    Eigen::PlainObjectBase<DerivedV> & V,
+    Eigen::PlainObjectBase<DerivedQ> & Q);
   // Sparse voxel grid
   //
   // Gf  #GV list of corresponding f values. If using root finding then only the
