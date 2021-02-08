@@ -1,4 +1,12 @@
+// This file is part of libigl, a simple c++ geometry processing library.
+// 
+// Copyright (C) 2021 Alec Jacobson <alecjacobson@gmail.com>
+// 
+// This Source Code Form is subject to the terms of the Mozilla Public License 
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+// obtain one at http://mozilla.org/MPL/2.0/.
 #include "marching_cubes.h"
+#include "march_cube.h"
 
 // Adapted from public domain code at
 // http://paulbourke.net/geometry/polygonise/marchingsource.cpp
@@ -54,7 +62,7 @@ IGL_INLINE void igl::marching_cubes(
       cS(c) = S(ic);
     }
 
-#include "march_cube.h"
+  march_cube(GV,cS,cI,isovalue,V,n,F,m,E2V);
 
   };
 
@@ -112,7 +120,7 @@ IGL_INLINE void igl::marching_cubes(
       cI(v) = GI(c,v);
       cS(v) = S(GI(c,v));
     }
-#include "march_cube.h"
+    march_cube(GV,cS,cI,isovalue,V,n,F,m,E2V);
   }
   V.conservativeResize(n,3);
   F.conservativeResize(m,3);
