@@ -119,7 +119,7 @@ IGL_INLINE void igl::embree::EmbreeIntersector::init(
   initialized = true;
 }
 
-igl::embree::EmbreeIntersector
+IGL_INLINE igl::embree::EmbreeIntersector
 ::~EmbreeIntersector()
 {
   if(initialized)
@@ -127,7 +127,7 @@ igl::embree::EmbreeIntersector
   igl::embree::EmbreeDevice::release_device();
 }
 
-void igl::embree::EmbreeIntersector::deinit()
+IGL_INLINE void igl::embree::EmbreeIntersector::deinit()
 {
   if(device && scene)
   {

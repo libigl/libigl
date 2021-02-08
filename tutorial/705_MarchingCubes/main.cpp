@@ -1,6 +1,7 @@
 #include <igl/marching_cubes.h>
 #include <igl/signed_distance.h>
 #include <igl/read_triangle_mesh.h>
+#include <igl/voxel_grid.h>
 #include <igl/opengl/glfw/Viewer.h>
 #include <Eigen/Core>
 #include <iostream>
@@ -17,30 +18,14 @@ int main(int argc, char * argv[])
   // Read in inputs as double precision floating point meshes
   read_triangle_mesh(
       TUTORIAL_SHARED_PATH "/armadillo.obj",V,F);
-  // number of vertices on the largest side
-  const int s = 50;
-  const RowVector3d Vmin = V.colwise().minCoeff();
-  const RowVector3d Vmax = V.colwise().maxCoeff();
-  const double h = (Vmax-Vmin).maxCoeff()/(double)s;
-  const RowVector3i res = (s*((Vmax-Vmin)/(Vmax-Vmin).maxCoeff())).cast<int>();
-  // create grid
   cout<<"Creating grid..."<<endl;
-  MatrixXd GV(res(0)*res(1)*res(2),3);
-  for(int zi = 0;zi<res(2);zi++)
-  {
-    const auto lerp = [&](const int di, const int d)->double
-      {return Vmin(d)+(double)di/(double)(res(d)-1)*(Vmax(d)-Vmin(d));};
-    const double z = lerp(zi,2);
-    for(int yi = 0;yi<res(1);yi++)
-    {
-      const double y = lerp(yi,1);
-      for(int xi = 0;xi<res(0);xi++)
-      {
-        const double x = lerp(xi,0);
-        GV.row(xi+res(0)*(yi + res(1)*zi)) = RowVector3d(x,y,z);
-      }
-    }
-  }
+  // number of vertices on the largest side
+  const int s = 100;
+  // create grid
+  MatrixXd GV;
+  Eigen::RowVector3i res;
+  igl::voxel_grid(V,0,s,1,GV,res);
+ 
   // compute values
   cout<<"Computing distances..."<<endl;
   VectorXd S,B;
