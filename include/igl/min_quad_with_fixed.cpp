@@ -602,7 +602,7 @@ IGL_INLINE Eigen::Matrix<Scalar,n,1> igl::min_quad_with_fixed(
   //std::cout<<igl::matlab_format(b,"b")<<std::endl;
   const auto dyn_n = n == Eigen::Dynamic ? H.rows() : n;
   const auto dyn_m = m == Eigen::Dynamic ? A.rows() : m;
-  const int nn = n == Eigen::Dynamic ? Eigen::Dynamic : n+m;
+  constexpr int nn = n == Eigen::Dynamic ? Eigen::Dynamic : n+m;
   const auto dyn_nn = nn == Eigen::Dynamic ? dyn_n+dyn_m : nn;
   if(dyn_m == 0)
   {
