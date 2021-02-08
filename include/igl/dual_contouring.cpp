@@ -2,6 +2,7 @@
 #include "quadprog.h"
 #include "parallel_for.h"
 #include <thread>
+#include <mutex>
 #include <vector>
 #include <unordered_map>
 #include <iostream>
