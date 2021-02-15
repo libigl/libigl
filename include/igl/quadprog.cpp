@@ -25,7 +25,8 @@ IGL_INLINE Eigen::Matrix<Scalar,n,1> igl::quadprog(
   {
     // For dual contouring 99% of the time the active set is empty.
     // Optimize for this common case.
-    x = min_quad_with_fixed(H,f,k,bc,A,b);
+    // Windows needs template arguments spelled out
+    x = min_quad_with_fixed<Scalar,n,m>(H,f,k,bc,A,b);
     //std::cout<<igl::matlab_format(x,"x")<<std::endl;
     // constraint violations 
     VectorSn vl = lb-x;
@@ -100,7 +101,8 @@ IGL_INLINE Eigen::Matrix<Scalar,n,1> igl::quadprog(
   const Eigen::Matrix<Scalar,n,1> & ub)
 {
   const int m = n == Eigen::Dynamic ? Eigen::Dynamic : 0;
-  return quadprog(
+  // Windows needs template parameters spelled out
+  return quadprog<Scalar,n,m>(
     H,f,
     Eigen::Matrix<Scalar,m,n>(0,H.cols()),
     Eigen::Matrix<Scalar,m,1>(0,1),
