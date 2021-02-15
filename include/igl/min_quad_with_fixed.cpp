@@ -792,8 +792,8 @@ IGL_INLINE Eigen::Matrix<Scalar,n,1> igl::min_quad_with_fixed(
   }
 }
 
-IGL_INLINE template <typename Scalar, int n, int kcount, bool Hpd>
-Eigen::Matrix<Scalar,n,1> igl::min_quad_with_fixed(
+template <typename Scalar, int n, int kcount, bool Hpd>
+IGL_INLINE Eigen::Matrix<Scalar,n,1> igl::min_quad_with_fixed(
   const Eigen::Matrix<Scalar,n,n> & H,
   const Eigen::Matrix<Scalar,n,1> & f,
   const Eigen::Array<bool,n,1> & k,
