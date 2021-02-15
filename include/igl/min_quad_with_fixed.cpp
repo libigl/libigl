@@ -611,7 +611,7 @@ IGL_INLINE Eigen::Matrix<Scalar,n,1> igl::min_quad_with_fixed(
   // min_x ½ xᵀ H x + xᵀ f   subject to A x = b and x(k) = bc(k)
   // let zᵀ = [xᵀ λᵀ]
   // min_z ½ zᵀ [H Aᵀ;A 0] z + zᵀ [f;-b]   z(k) = bc(k)
-  const auto make_HH = [&]()
+  const auto make_HH = [nn,dyn_nn,dyn_n,dyn_m,&A,&H]()
   {
     Eigen::Matrix<Scalar,nn,nn> HH =
       Eigen::Matrix<Scalar,nn,nn>::Zero(dyn_nn,dyn_nn);
@@ -621,7 +621,7 @@ IGL_INLINE Eigen::Matrix<Scalar,n,1> igl::min_quad_with_fixed(
     return HH;
   };
   const Eigen::Matrix<Scalar,nn,nn> HH = make_HH();
-  const auto make_ff  = [&]()
+  const auto make_ff  = [nn,dyn_nn,dyn_n,dyn_m,&f,&b]()
   {
     Eigen::Matrix<Scalar,nn,1> ff(dyn_nn);
     ff.head(dyn_n) =  f;
@@ -629,7 +629,7 @@ IGL_INLINE Eigen::Matrix<Scalar,n,1> igl::min_quad_with_fixed(
     return ff;
   };
   const Eigen::Matrix<Scalar,nn,1> ff = make_ff();
-  const auto make_kk  = [&]()
+  const auto make_kk  = [nn,dyn_nn,dyn_n,dyn_m,&k]()
   {
     Eigen::Array<bool,nn,1> kk =
       Eigen::Array<bool,nn,1>::Constant(dyn_nn,1,false);
@@ -637,7 +637,7 @@ IGL_INLINE Eigen::Matrix<Scalar,n,1> igl::min_quad_with_fixed(
     return kk;
   };
   const Eigen::Array<bool,nn,1> kk = make_kk();
-  const auto make_bcbc= [&]()
+  const auto make_bcbc= [nn,dyn_nn,dyn_n,&bc]()
   {
     Eigen::Matrix<Scalar,nn,1> bcbc(dyn_nn);
     bcbc.head(dyn_n) =  bc;
