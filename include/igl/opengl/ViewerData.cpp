@@ -491,8 +491,16 @@ IGL_INLINE void igl::opengl::ViewerData::clear()
 
 IGL_INLINE void igl::opengl::ViewerData::compute_normals()
 {
-  igl::per_face_normals(V, F, F_normals);
-  igl::per_vertex_normals(V, F, F_normals, V_normals);
+  if(V.cols() == 2)
+  {
+    F_normals = Eigen::RowVector3d(0,0,1).replicate(F.rows(),1);
+    V_normals = Eigen::RowVector3d(0,0,1).replicate(V.rows(),1);
+  }else
+  {
+    assert(V.cols() == 3);
+    igl::per_face_normals(V, F, F_normals);
+    igl::per_vertex_normals(V, F, F_normals, V_normals);
+  }
   dirty |= MeshGL::DIRTY_NORMAL;
 }
 
