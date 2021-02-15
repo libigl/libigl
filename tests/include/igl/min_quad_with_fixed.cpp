@@ -10,7 +10,8 @@ TEST_CASE("min_quad_with_fixed: dense", "[igl]" )
   const Eigen::Matrix<double,1,1> b = (Eigen::Matrix<double,1,1>(1,1)<<2).finished();
   const Eigen::Array<bool,3,1> k = (Eigen::Array<bool,3,1>()<<true,false,false).finished();
   const Eigen::Matrix<double,3,1> bc = (Eigen::Matrix<double,3,1>(3,1)<<1,0,0).finished();
-  const Eigen::Matrix<double,3,1> x = igl::min_quad_with_fixed(H,f,k,bc,A,b);
+  // Windows needs template args spelled out
+  const Eigen::Matrix<double,3,1> x = igl::min_quad_with_fixed<double,3,1>(H,f,k,bc,A,b);
   REQUIRE(abs(x(0)- 1.0)<igl::EPS<double>());
   REQUIRE(abs(x(1)- 1.5)<igl::EPS<double>());
   REQUIRE(abs(x(2)- -.5)<igl::EPS<double>());

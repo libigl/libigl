@@ -26,7 +26,8 @@ TEST_CASE("quadprog: box3", "[igl]" )
         1,
         1
         ).finished(); 
-    Eigen::Vector3d x = igl::quadprog(H,f,lb,ub);
+	// Windows needs template args spelled out
+    Eigen::Vector3d x = igl::quadprog<double,3>(H,f,lb,ub);
     //std::cout<<igl::matlab_format(x,"x")<<std::endl;
     REQUIRE(abs(x(0)- -0.118760635036839)<1e-7);
     REQUIRE(abs(x(1)- -1)<1e-7);
@@ -38,7 +39,8 @@ TEST_CASE("quadprog: box3", "[igl]" )
     Eigen::Vector3d f( 0.5,-0.5,-0.5);
     Eigen::Vector3d lb(0,0,0);
     Eigen::Vector3d ub(1,1,1);
-    Eigen::Vector3d x = igl::quadprog(H,f,lb,ub);
+	// Windows needs template args spelled out
+    Eigen::Vector3d x = igl::quadprog<double,3>(H,f,lb,ub);
     REQUIRE(x(0)==0.0);
     REQUIRE(x(1)==0.5);
     REQUIRE(x(1)==0.5);
@@ -64,7 +66,8 @@ TEST_CASE("quadprog: box3", "[igl]" )
         0.015625,
         0.015625
         ).finished();
-    Eigen::Vector3d x = igl::quadprog(H,f,lb,ub);
+	// Windows needs template args spelled out
+    Eigen::Vector3d x = igl::quadprog<double,3>(H,f,lb,ub);
     Eigen::Vector3d xexact(0.015625, 0.013732474124087, 0.0110593284260843);
     REQUIRE((x-xexact).array().abs().maxCoeff() < 1e-4);
   }
@@ -89,8 +92,8 @@ TEST_CASE("quadprog: box2", "[igl]" )
         1,
         1
         ).finished();
-  
-    Eigen::Vector2d x = igl::quadprog(H,f,lb,ub);
+	// Windows needs template args spelled out
+    Eigen::Vector2d x = igl::quadprog<double,2>(H,f,lb,ub);
     //std::cout<<igl::matlab_format(x,"x")<<std::endl;
     REQUIRE(abs(x(0)-0.99680848864073357)<1e-7);
     REQUIRE(abs(x(1)- -1.)<1e-7);
@@ -112,8 +115,8 @@ TEST_CASE("quadprog: box2", "[igl]" )
         1,
         1
         ).finished();
-
-    Eigen::Vector2d x = igl::quadprog(H,f,lb,ub);
+	// Windows needs template args spelled out
+    Eigen::Vector2d x = igl::quadprog<double,2>(H,f,lb,ub);
     //std::cout<<igl::matlab_format(x,"x")<<std::endl;
     REQUIRE(abs(x(0)- -0.69487761491492939)<1e-7);
     REQUIRE(abs(x(1)-1.0)<1e-7);
@@ -124,7 +127,8 @@ TEST_CASE("quadprog: box2", "[igl]" )
     Eigen::Vector2d f(-0.3000,4.0000);
     Eigen::Vector2d lb(0,0);
     Eigen::Vector2d ub(1,1);
-    Eigen::Vector2d x = igl::quadprog(H,f,lb,ub);
+	// Windows needs template args spelled out
+    Eigen::Vector2d x = igl::quadprog<double,2>(H,f,lb,ub);
     //std::cout<<igl::matlab_format(x,"x")<<std::endl;
     REQUIRE(abs(x(0)-0.75)<2e-16);
     REQUIRE(abs(x(1)-0.0)<2e-16);
