@@ -39,10 +39,9 @@ namespace igl
       using Matrix3S = Eigen::Matrix<Scalar,3,3>;
       using Vector3S = Eigen::Matrix<Scalar,3,1>;
       using KeyTriplet = std::tuple<int,int,int>;
-    // helper function
-    public:
-    // Working variables
     public: 
+    // Working variables
+    // see dual_contouring.h
       // f(x) returns >0 outside, <0 inside, and =0 on the surface
       std::function<Scalar(const RowVector3S &)> f;
       // f_grad(x) returns (df/dx)/‖df/dx‖ (normalization only important when
@@ -54,15 +53,26 @@ namespace igl
       RowVector3S min_corner;
       RowVector3S step;
       Eigen::Matrix<Scalar,Eigen::Dynamic,3> V;
+    // Internal variables
       // Running number of vertices added during contouring
       typename decltype(V)::Index n;
+      // map from cell subscript to index in V
       std::unordered_map< KeyTriplet, typename decltype(V)::Index, Hash > C2V;
+      // running list of aggregate vertex positions (used for spring
+      // regularization term)
       std::vector<RowVector3S,Eigen::aligned_allocator<RowVector3S>> vV;
+      // running list of subscripts corresponding to vertices
       std::vector<Eigen::RowVector3i,Eigen::aligned_allocator<Eigen::RowVector3i>> vI;
+      // running list of quadric matrices corresponding to inserted vertices
       std::vector<Matrix4S,Eigen::aligned_allocator<Matrix4S>> vH;
+      // running list of number of faces incident on this vertex (used to
+      // normalize spring regulatization term)
       std::vector<int> vcount;
+      // running list of output quad faces
       Eigen::Matrix<Eigen::Index,Eigen::Dynamic,Eigen::Dynamic> Q;
+      // running number of real quads in Q (used for dynamic array allocation)
       typename decltype(Q)::Index m;
+      // mutexes used to insert into Q and (vV,vI,vH,vcount) 
       std::mutex Qmut;
       std::mutex Vmut;
     public:
@@ -279,7 +289,6 @@ namespace igl
       {
         Q.conservativeResize(m,Q.cols());
         V.resize(n,3);
-        //for(int v = 0;v<n;v++)
         igl::parallel_for(n,[&](const Eigen::Index v)
         {
           RowVector3S mid = vV[v] / Scalar(vcount[v]);
@@ -325,7 +334,6 @@ namespace igl
         // Should do some reasonable reserves for C2V,vV,vI,vH,vcount
         Q.resize(std::pow(nx*ny*nz,2./3.),triangles?3:4);
         // loop over grid
-        //for(int x = 1;x<nx;x++)
         igl::parallel_for(nx,[&](const int x)
         {
           for(int y = 0;y<ny;y++)
@@ -369,7 +377,6 @@ namespace igl
         };
 
         // loop over grid
-        //for(int z = 0;z<nz;z++)
         igl::parallel_for(nz,[&](const int z)
         {
           for(int y = 0;y<ny;y++)

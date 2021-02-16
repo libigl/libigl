@@ -694,10 +694,15 @@ IGL_INLINE Eigen::Matrix<Scalar,n,1> igl::min_quad_with_fixed(
     x(u) /= H(u,u);
     return x;
   }
-  // Is there a smart template way to do this?
+  // Alec: Is there a smart template way to do this?
+  // jdumas: I guess you could do a templated for-loop starting from 16, and
+  // dispatching to the appropriate templated function when the argument matches
+  // (with a fallback to the dynamic version). Cf this example:
+  // https://gist.github.com/disconnect3d/13c2d035bb31b244df14
   switch(kcount)
   {
     case 0: assert(false && "Handled above."); return Eigen::Matrix<Scalar,n,1>();
+    // % Matlibberish for generating these case statements:
     // maxi=16;for i=1:maxi;fprintf('    case %d:\n    {\n     const bool D = (n-%d<=0)||(%d>=n)||(n>%d);\n     return min_quad_with_fixed<Scalar,D?Eigen::Dynamic:n,D?Eigen::Dynamic:%d,Hpd>(H,f,k,bc);\n    }\n',[i i i maxi i]);end
     case 1:
     {
