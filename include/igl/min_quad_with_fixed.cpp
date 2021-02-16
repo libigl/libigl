@@ -593,13 +593,6 @@ IGL_INLINE Eigen::Matrix<Scalar,n,1> igl::min_quad_with_fixed(
   const Eigen::Matrix<Scalar,m,n> & A,
   const Eigen::Matrix<Scalar,m,1> & b)
 {
-  //printf("igl::min_quad_with_fixed<S,n,m,Hpd>\n");
-  //std::cout<<igl::matlab_format(H,"H")<<std::endl;
-  //std::cout<<igl::matlab_format(f,"f")<<std::endl;
-  //std::cout<<igl::matlab_format(k,"k")<<std::endl;
-  //std::cout<<igl::matlab_format(bc,"bc")<<std::endl;
-  //std::cout<<igl::matlab_format(A,"A")<<std::endl;
-  //std::cout<<igl::matlab_format(b,"b")<<std::endl;
   const auto dyn_n = n == Eigen::Dynamic ? H.rows() : n;
   const auto dyn_m = m == Eigen::Dynamic ? A.rows() : m;
   constexpr const int nn = n == Eigen::Dynamic ? Eigen::Dynamic : n+m;
@@ -654,7 +647,6 @@ IGL_INLINE Eigen::Matrix<Scalar,n,1> igl::min_quad_with_fixed(
   const Eigen::Matrix<double,nn,1> bcbc = make_bcbc();
   const Eigen::Matrix<Scalar,nn,1> xx = 
     min_quad_with_fixed<Scalar,nn,false>(HH,ff,kk,bcbc);
-  //std::cout<<igl::matlab_format(xx.head(dyn_n).eval(),"x")<<std::endl;
   return xx.head(dyn_n);
 }
 
@@ -665,11 +657,6 @@ IGL_INLINE Eigen::Matrix<Scalar,n,1> igl::min_quad_with_fixed(
   const Eigen::Array<bool,n,1> & k,
   const Eigen::Matrix<Scalar,n,1> & bc)
 {
-  //printf("igl::min_quad_with_fixed<S,n,Hpd>\n");
-  //std::cout<<igl::matlab_format(H,"H")<<std::endl;
-  //std::cout<<igl::matlab_format(f,"f")<<std::endl;
-  //std::cout<<igl::matlab_format(k,"k")<<std::endl;
-  //std::cout<<igl::matlab_format(bc,"bc")<<std::endl;
   assert(H.isApprox(H.transpose(),1e-7)); 
   assert(H.rows() == H.cols());
   assert(H.rows() == f.size());
@@ -679,7 +666,6 @@ IGL_INLINE Eigen::Matrix<Scalar,n,1> igl::min_quad_with_fixed(
   // Everything fixed
   if(kcount == (Eigen::Dynamic?H.rows():n))
   {
-    //std::cout<<igl::matlab_format(bc,"x")<<std::endl;
     return bc;
   }
   // Nothing fixed
@@ -690,7 +676,6 @@ IGL_INLINE Eigen::Matrix<Scalar,n,1> igl::min_quad_with_fixed(
     typedef typename 
       std::conditional<Hpd,Eigen::LLT<MatrixSn>,Eigen::CompleteOrthogonalDecomposition<MatrixSn>>::type
       Solver;
-    //std::cout<<igl::matlab_format( Solver(H).solve(-f).eval() ,"x")<<std::endl;
     return Solver(H).solve(-f);
   }
   // All-but-one fixed
@@ -707,7 +692,6 @@ IGL_INLINE Eigen::Matrix<Scalar,n,1> igl::min_quad_with_fixed(
     x(u) = -f(u);
     for(int i=0;i<k.size();i++){ if(i!=u){ x(u)-=bc(i)*H(i,u); } } 
     x(u) /= H(u,u);
-    //std::cout<<igl::matlab_format(x,"x")<<std::endl;
     return x;
   }
   // Is there a smart template way to do this?
@@ -807,7 +791,6 @@ IGL_INLINE Eigen::Matrix<Scalar,n,1> igl::min_quad_with_fixed(
   const Eigen::Array<bool,n,1> & k,
   const Eigen::Matrix<Scalar,n,1> & bc)
 {
-  //printf("igl::min_quad_with_fixed<S,n,kcount,Hpd>\n");
   // 0 and n should be handle outside this function
   static_assert(kcount==Eigen::Dynamic || kcount>0                  ,"");
   static_assert(kcount==Eigen::Dynamic || kcount<n                  ,"");
@@ -893,7 +876,6 @@ IGL_INLINE Eigen::Matrix<Scalar,n,1> igl::min_quad_with_fixed(
       }
     }
   }
-  //std::cout<<igl::matlab_format(x,"x")<<std::endl;
   return x;
 }
 

@@ -36,8 +36,8 @@ namespace igl
   // and sizes
   //
   // Inputs:
-  //   Q  #Q by k list of k-gon indices (Q(i,j) = -1 means that face i is a
-  //     j-gon)
+  //   Q  #Q by k list of polygon indices (ith row is a k-gon, unless Q(i,j) =
+  //     -1 then it's a j-gon)
   template <
     typename DerivedQ, 
     typename DerivedI,

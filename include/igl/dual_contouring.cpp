@@ -33,12 +33,12 @@ namespace igl
   {
     // Types
     public:
-      typedef Eigen::Matrix<Scalar,1,3> RowVector3S;
-      typedef Eigen::Matrix<Scalar,1,4> RowVector4S;
-      typedef Eigen::Matrix<Scalar,4,4> Matrix4S;
-      typedef Eigen::Matrix<Scalar,3,3> Matrix3S;
-      typedef Eigen::Matrix<Scalar,3,1> Vector3S;
-      typedef std::tuple<int, int, int> KeyTriplet;
+      using RowVector3S = Eigen::Matrix<Scalar,1,3>;
+      using RowVector4S = Eigen::Matrix<Scalar,1,4>;
+      using Matrix4S = Eigen::Matrix<Scalar,4,4>;
+      using Matrix3S = Eigen::Matrix<Scalar,3,3>;
+      using Vector3S = Eigen::Matrix<Scalar,3,1>;
+      using KeyTriplet = std::tuple<int,int,int>;
     // helper function
     public:
     // Working variables

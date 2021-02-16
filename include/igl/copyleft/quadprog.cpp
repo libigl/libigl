@@ -1,4 +1,3 @@
-//#define TRACE_SOLVER
 #include "quadprog.h"
 #include "../matlab_format.h"
 #include <vector>

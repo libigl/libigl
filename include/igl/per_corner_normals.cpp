@@ -10,6 +10,7 @@
 #include "vertex_triangle_adjacency.h"
 #include "per_face_normals.h"
 #include "PI.h"
+#include "doublearea.h"
 
 template <typename DerivedV, typename DerivedF, typename DerivedCN>
 IGL_INLINE void igl::per_corner_normals(
@@ -102,7 +103,6 @@ IGL_INLINE void igl::per_corner_normals(
   }
 }
 
-#include "doublearea.h"
 
 template <
   typename DerivedV, 

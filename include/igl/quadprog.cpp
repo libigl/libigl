@@ -12,6 +12,23 @@ IGL_INLINE Eigen::Matrix<Scalar,n,1> igl::quadprog(
   const Eigen::Matrix<Scalar,n,1> & lb,
   const Eigen::Matrix<Scalar,n,1> & ub)
 {
+  // Alec 16/2/2021:
+  // igl::quadprog implements a very simple primal active set method. The new
+  // igl::min_quad_with_fixed is very fast for small dense problems so the
+  // iterations of igl::quadprog become very fast. Even if it ends up doing many
+  // more iterations than igl::copyleft::quadprog it would be much faster (in
+  // reality it doesn't do that many more iterations). It's a healthy 10-100x
+  // faster than igl::copyleft::quadprog for specific cases of QPs.
+  //
+  // Unfortunately, that set is limited. igl::quadprog is really good at tiny
+  // box-constrained QPs with a positive definite objective (like the kind that show
+  // up in dual contouring). igl::copyleft::quadprog handles more general problems
+  // (and also starts to beat igl::quadprog when the number of variables gets over
+  // ~20). I tried extending igl::quadprog so that we could use it for
+  // igl::copyleft::progressive_hulls and drop igl::copyleft::quadprog but it was
+  // trickier than I thought. Something like qpmad or the non GPL version of
+  // quadrog++ would be good future PR.
+  //
   typedef Eigen::Matrix<Scalar,n,1> VectorSn;
   typedef Eigen::Array<bool,n,1>    Arraybn;
   assert( (lb.array() < ub.array() ).all() );
@@ -27,7 +44,6 @@ IGL_INLINE Eigen::Matrix<Scalar,n,1> igl::quadprog(
     // Optimize for this common case.
     // Windows needs template arguments spelled out
     x = min_quad_with_fixed<Scalar,n,m>(H,f,k,bc,A,b);
-    //std::cout<<igl::matlab_format(x,"x")<<std::endl;
     // constraint violations 
     VectorSn vl = lb-x;
     VectorSn vu = x-ub;
@@ -55,10 +71,8 @@ IGL_INLINE Eigen::Matrix<Scalar,n,1> igl::quadprog(
       {
         const Scalar sign = bc(i)==ub(i)?1:-1;
         const Scalar lambda_i = sign * (H.row(i)*x+f(i));
-        //printf("  considering k(%d) (λ = %g)\n",i,lambda_i);
         if(lambda_i > worst_lambda)
         {
-          //printf("  removing k(%d) (λ = %g)\n",i,lambda_i);
           best_remove = i;
           worst_lambda = lambda_i;
         }
@@ -69,27 +83,20 @@ IGL_INLINE Eigen::Matrix<Scalar,n,1> igl::quadprog(
     {
       const auto i = best_add;
       assert(!k(i));
-      //add_lower ? printf("  adding lb(%d)\n",i) : printf("  adding lb(%d)\n",i);
       bc(i) = add_lower ? lb(i) : ub(i);
       k(i) = true;
     }else if(best_remove >= 0)
     {
       const auto i = best_remove;
       assert(k(i));
-      //printf("  removing k(%d) (λ = %g)\n",i,worst_lambda);
       k(i) = false;
     }else /*if(best_add < 0 && best_remove < 0)*/
     {
-      std::cout<<igl::matlab_format(x,"x")<<std::endl;
       return x;
     }
   }
   // Should never happen.
   assert(false && "quadprog failed after too many iterations");
-  //std::cout<<igl::eigen_format(H,"H")<<std::endl;
-  //std::cout<<igl::eigen_format(f,"f")<<std::endl;
-  //std::cout<<igl::eigen_format(lb,"lb")<<std::endl;
-  //std::cout<<igl::eigen_format(ub,"ub")<<std::endl;
   return VectorSn::Zero(dyn_n);
 }
 

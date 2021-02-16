@@ -186,11 +186,7 @@ IGL_INLINE bool igl::decimate(
       C.row(e) = p;
       costs(e) = cost;
     },
-#ifndef NDEBUG
-    SIZE_MAX
-#else
     10000
-#endif
     );
     for(int e = 0;e<E.rows();e++)
     {
