@@ -84,6 +84,7 @@ IGL_INLINE void igl::cotmatrix(
 #include "diag.h"
 #include "massmatrix.h"
 #include <Eigen/Geometry>
+#include <Eigen/QR>
 
 template <
   typename DerivedV, 

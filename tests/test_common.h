@@ -24,6 +24,28 @@
 #define IGL_DEBUG_OFF "[!hide]"
 #endif
 
+
+#include <igl/STR.h>
+template<>
+struct Catch::StringMaker<std::tuple<int,int,int> > 
+{
+  static std::string convert(std::tuple<int,int,int> const& t)
+  {
+    return 
+      STR("("<<std::get<0>(t)<<","<<std::get<1>(t)<<","<<std::get<2>(t)<<")");
+  }
+};
+template<>
+struct Catch::StringMaker<std::tuple<int,int,double> > 
+{
+  static std::string convert(std::tuple<int,int,double> const& t)
+  {
+    return 
+      STR("("<<std::get<0>(t)<<","<<std::get<1>(t)<<","<<std::get<2>(t)<<")");
+  }
+};
+
+
 namespace test_common
 {
   template<typename Param, typename Fun>
