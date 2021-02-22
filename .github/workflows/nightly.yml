@@ -130,7 +130,7 @@ jobs:
             df -h
 
       - name: Build
-        run: cd build; make -j2
+        run: cd build; make -j1
 
       - name: Tests
         run: cd build; ctest --verbose
