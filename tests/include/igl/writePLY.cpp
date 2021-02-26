@@ -36,14 +36,14 @@ TEST_CASE("writePLY: bunny.ply", "[igl]")
     FD2<<face_data;
 
     // test that saving preserves all the data, including new data column
-    REQUIRE (igl::writePLY("test_bunny.ply", V1, F1, E1, N1, UV1, VD2, Vheader1, FD2,Fheader1, ED1, Eheader1, comments1, igl::FileEncoding::Binary));
+    REQUIRE (igl::writePLY("writePLY_test_bunny.ply", V1, F1, E1, N1, UV1, VD2, Vheader1, FD2,Fheader1, ED1, Eheader1, comments1, igl::FileEncoding::Binary));
 
     Eigen::MatrixXd V,N,UV,VD,FD,ED;
     Eigen::MatrixXi F,E;
     std::vector<std::string> Vheader,Fheader,Eheader,comments;
 
     // test that saving preserves all the data
-    REQUIRE (igl::readPLY("test_bunny.ply", V, F, E, N, UV, VD,Vheader, FD,Fheader, ED,Eheader, comments));
+    REQUIRE (igl::readPLY("writePLY_test_bunny.ply", V, F, E, N, UV, VD,Vheader, FD,Fheader, ED,Eheader, comments));
 
     REQUIRE (V.rows() == 35947);
     REQUIRE (V.cols() == 3);
@@ -59,7 +59,7 @@ TEST_CASE("writePLY: bunny.ply", "[igl]")
     REQUIRE (UV.rows() == 0);
     REQUIRE (UV.cols() == 0);
 
-    // this bunny have additonal data
+    // this bunny have additional data
     REQUIRE (VD.rows() == 35947);
     REQUIRE (VD.cols() == 3);
 
@@ -116,14 +116,14 @@ TEST_CASE("writePLY: bunny.ply float", "[igl]")
 
 
     // test that saving preserves all the data, including new data column
-    REQUIRE (igl::writePLY("test_bunny.ply", V1, F1, E1, N1, UV1, VD2, Vheader1, FD1,Fheader1, ED1, Eheader1, comments1, igl::FileEncoding::Binary));
+    REQUIRE (igl::writePLY("writePLY_test_bunny_float.ply", V1, F1, E1, N1, UV1, VD2, Vheader1, FD1,Fheader1, ED1, Eheader1, comments1, igl::FileEncoding::Binary));
 
     Eigen::MatrixXf V,N,UV,VD,FD,ED;
     Eigen::MatrixXi F,E;
     std::vector<std::string> Vheader,Fheader,Eheader,comments;
 
     // test that saving preserves all the data
-    REQUIRE (igl::readPLY("test_bunny.ply", V, F, E, N, UV, VD,Vheader, FD,Fheader, ED,Eheader, comments));
+    REQUIRE (igl::readPLY("writePLY_test_bunny_float.ply", V, F, E, N, UV, VD,Vheader, FD,Fheader, ED,Eheader, comments));
 
     REQUIRE (V.rows() == 35947);
     REQUIRE (V.cols() == 3);
