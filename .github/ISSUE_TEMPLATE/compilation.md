@@ -1,6 +1,6 @@
 ---
 name: 😱 Compilation issue
-about: Report a problem when compiling the code 😬
+about: Report a problem when compiling the code
 title: ''
 labels: 'compilation'
 assignees: ''
