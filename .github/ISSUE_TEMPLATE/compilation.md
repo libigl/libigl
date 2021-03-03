@@ -14,7 +14,7 @@ assignees: ''
 #### Checklist
 <!-- Check all that apply (change to `[x]`) -->
 
-- [ ] I have read the [bug report](https://libigl.github.io/bug-report/)
+- [ ] I have read the [bug report](https://libigl.github.io/bug-report/) page
 - [ ] CMake issue: I have tried with a fresh clone/empty build directory
 
 #### Platform
