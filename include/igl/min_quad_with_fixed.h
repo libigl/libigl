@@ -121,8 +121,8 @@ namespace igl
   // Dense version optimized for very small, known at compile time sizes. Still
   // works for Eigen::Dynamic (and then everything needs to be Dynamic).
   //
-  // min_x ½ xᵀ H x + xᵀ f  
-  // subject to 
+  // min_x ½ xᵀ H x + xᵀ f
+  // subject to
   //   A x = b
   //   x(i) = bc(i) iff k(i)==true
   //
@@ -219,7 +219,7 @@ struct igl::min_quad_with_fixed_data
 };
 
 #ifndef IGL_STATIC_LIBRARY
-#  include "min_quad_with_fixed.cpp"
+#  include "min_quad_with_fixed.impl.h"
 #endif
 
 #endif
