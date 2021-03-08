@@ -7,7 +7,6 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "rigid_alignment.h"
 #include "polar_svd.h"
-#include "matlab_format.h"
 #include <Eigen/Sparse>
 #include <Eigen/Cholesky>
 #include <vector>

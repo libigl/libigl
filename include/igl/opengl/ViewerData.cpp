@@ -491,8 +491,16 @@ IGL_INLINE void igl::opengl::ViewerData::clear()
 
 IGL_INLINE void igl::opengl::ViewerData::compute_normals()
 {
-  igl::per_face_normals(V, F, F_normals);
-  igl::per_vertex_normals(V, F, F_normals, V_normals);
+  if(V.cols() == 2)
+  {
+    F_normals = Eigen::RowVector3d(0,0,1).replicate(F.rows(),1);
+    V_normals = Eigen::RowVector3d(0,0,1).replicate(V.rows(),1);
+  }else
+  {
+    assert(V.cols() == 3);
+    igl::per_face_normals(V, F, F_normals);
+    igl::per_vertex_normals(V, F, F_normals, V_normals);
+  }
   dirty |= MeshGL::DIRTY_NORMAL;
 }
 
@@ -713,35 +721,23 @@ IGL_INLINE void igl::opengl::ViewerData::updateGL(
       if (meshgl.dirty & MeshGL::DIRTY_AMBIENT)
       {
         meshgl.V_ambient_vbo.resize(data.F.rows()*3,4);
-        for (unsigned i=0; i<data.F.rows();++i)
-          for (unsigned j=0;j<3;++j)
-            meshgl.V_ambient_vbo.row(i*3+j) = data.V_material_ambient.row(data.F(i,j)).cast<float>();
+        per_corner(data.V_material_ambient,meshgl.V_ambient_vbo);
       }
       if (meshgl.dirty & MeshGL::DIRTY_DIFFUSE)
       {
         meshgl.V_diffuse_vbo.resize(data.F.rows()*3,4);
-        for (unsigned i=0; i<data.F.rows();++i)
-          for (unsigned j=0;j<3;++j)
-            meshgl.V_diffuse_vbo.row(i*3+j) = data.V_material_diffuse.row(data.F(i,j)).cast<float>();
+        per_corner(data.V_material_diffuse,meshgl.V_diffuse_vbo);
       }
       if (meshgl.dirty & MeshGL::DIRTY_SPECULAR)
       {
         meshgl.V_specular_vbo.resize(data.F.rows()*3,4);
-        for (unsigned i=0; i<data.F.rows();++i)
-          for (unsigned j=0;j<3;++j)
-            meshgl.V_specular_vbo.row(i*3+j) = data.V_material_specular.row(data.F(i,j)).cast<float>();
+        per_corner(data.V_material_specular,meshgl.V_specular_vbo);
       }
 
       if (meshgl.dirty & MeshGL::DIRTY_NORMAL)
       {
         meshgl.V_normals_vbo.resize(data.F.rows()*3,3);
-        for (unsigned i=0; i<data.F.rows();++i)
-          for (unsigned j=0;j<3;++j)
-            meshgl.V_normals_vbo.row(i*3+j) =
-                         per_corner_normals ?
-               data.F_normals.row(i*3+j).cast<float>() :
-               data.V_normals.row(data.F(i,j)).cast<float>();
-
+        per_corner(data.V_normals,meshgl.V_normals_vbo);
 
         if (invert_normals)
           meshgl.V_normals_vbo = -meshgl.V_normals_vbo;

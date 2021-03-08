@@ -21,7 +21,8 @@
 #include <unsupported/Eigen/SparseExtra>
 #include <cassert>
 #include <cstdio>
-#include <iostream>
+#include <igl/matlab_format.h>
+#include <type_traits>
 
 template <typename T, typename Derivedknown>
 IGL_INLINE bool igl::min_quad_with_fixed_precompute(
@@ -582,9 +583,317 @@ IGL_INLINE bool igl::min_quad_with_fixed(
   return min_quad_with_fixed_solve(data,B,Y,Beq,Z);
 }
 
+
+template <typename Scalar, int n, int m, bool Hpd>
+IGL_INLINE Eigen::Matrix<Scalar,n,1> igl::min_quad_with_fixed(
+  const Eigen::Matrix<Scalar,n,n> & H,
+  const Eigen::Matrix<Scalar,n,1> & f,
+  const Eigen::Array<bool,n,1> & k,
+  const Eigen::Matrix<Scalar,n,1> & bc,
+  const Eigen::Matrix<Scalar,m,n> & A,
+  const Eigen::Matrix<Scalar,m,1> & b)
+{
+  const auto dyn_n = n == Eigen::Dynamic ? H.rows() : n;
+  const auto dyn_m = m == Eigen::Dynamic ? A.rows() : m;
+  constexpr const int nn = n == Eigen::Dynamic ? Eigen::Dynamic : n+m;
+  const auto dyn_nn = nn == Eigen::Dynamic ? dyn_n+dyn_m : nn;
+  if(dyn_m == 0)
+  {
+    return igl::min_quad_with_fixed<Scalar,n,Hpd>(H,f,k,bc);
+  }
+  // min_x ½ xᵀ H x + xᵀ f   subject to A x = b and x(k) = bc(k)
+  // let zᵀ = [xᵀ λᵀ]
+  // min_z ½ zᵀ [H Aᵀ;A 0] z + zᵀ [f;-b]   z(k) = bc(k)
+  const auto make_HH = [&]()
+  {
+    // Windows can't remember that nn is const.
+    constexpr const int nn = n == Eigen::Dynamic ? Eigen::Dynamic : n+m;
+    Eigen::Matrix<Scalar,nn,nn> HH =
+      Eigen::Matrix<Scalar,nn,nn>::Zero(dyn_nn,dyn_nn);
+    HH.topLeftCorner(dyn_n,dyn_n) = H;
+    HH.bottomLeftCorner(dyn_m,dyn_n) = A;
+    HH.topRightCorner(dyn_n,dyn_m) = A.transpose();
+    return HH;
+  };
+  const Eigen::Matrix<Scalar,nn,nn> HH = make_HH();
+  const auto make_ff  = [&]()
+  {
+    // Windows can't remember that nn is const.
+    constexpr const int nn = n == Eigen::Dynamic ? Eigen::Dynamic : n+m;
+    Eigen::Matrix<Scalar,nn,1> ff(dyn_nn);
+    ff.head(dyn_n) =  f;
+    ff.tail(dyn_m) = -b;
+    return ff;
+  };
+  const Eigen::Matrix<Scalar,nn,1> ff = make_ff();
+  const auto make_kk  = [&]()
+  {
+    // Windows can't remember that nn is const.
+    constexpr const int nn = n == Eigen::Dynamic ? Eigen::Dynamic : n+m;
+    Eigen::Array<bool,nn,1> kk =
+      Eigen::Array<bool,nn,1>::Constant(dyn_nn,1,false);
+    kk.head(dyn_n) =  k;
+    return kk;
+  };
+  const Eigen::Array<bool,nn,1> kk = make_kk();
+  const auto make_bcbc= [&]()
+  {
+    // Windows can't remember that nn is const.
+    constexpr const int nn = n == Eigen::Dynamic ? Eigen::Dynamic : n+m;
+    Eigen::Matrix<Scalar,nn,1> bcbc(dyn_nn);
+    bcbc.head(dyn_n) =  bc;
+    return bcbc;
+  };
+  const Eigen::Matrix<double,nn,1> bcbc = make_bcbc();
+  const Eigen::Matrix<Scalar,nn,1> xx = 
+    min_quad_with_fixed<Scalar,nn,false>(HH,ff,kk,bcbc);
+  return xx.head(dyn_n);
+}
+
+template <typename Scalar, int n, bool Hpd>
+IGL_INLINE Eigen::Matrix<Scalar,n,1> igl::min_quad_with_fixed(
+  const Eigen::Matrix<Scalar,n,n> & H,
+  const Eigen::Matrix<Scalar,n,1> & f,
+  const Eigen::Array<bool,n,1> & k,
+  const Eigen::Matrix<Scalar,n,1> & bc)
+{
+  assert(H.isApprox(H.transpose(),1e-7)); 
+  assert(H.rows() == H.cols());
+  assert(H.rows() == f.size());
+  assert(H.rows() == k.size());
+  assert(H.rows() == bc.size());
+  const auto kcount = k.count();
+  // Everything fixed
+  if(kcount == (Eigen::Dynamic?H.rows():n))
+  {
+    return bc;
+  }
+  // Nothing fixed
+  if(kcount == 0)
+  {
+    // avoid function call
+    typedef Eigen::Matrix<Scalar,n,n> MatrixSn;
+    typedef typename 
+      std::conditional<Hpd,Eigen::LLT<MatrixSn>,Eigen::CompleteOrthogonalDecomposition<MatrixSn>>::type
+      Solver;
+    return Solver(H).solve(-f);
+  }
+  // All-but-one fixed
+  if( (Eigen::Dynamic?H.rows():n)-kcount == 1)
+  {
+    // which one is not fixed?
+    int u = -1;
+    for(int i=0;i<k.size();i++){ if(!k(i)){ u=i; break; } } 
+    assert(u>=0);
+    // min ½ x(u) Huu x(u) + x(u)(fu + H(u,k)bc(k))
+    // Huu x(u) = -(fu + H(u,k) bc(k))
+    // x(u) = (-fu + ∑ -Huj bcj)/Huu
+    Eigen::Matrix<Scalar,n,1> x = bc;
+    x(u) = -f(u);
+    for(int i=0;i<k.size();i++){ if(i!=u){ x(u)-=bc(i)*H(i,u); } } 
+    x(u) /= H(u,u);
+    return x;
+  }
+  // Alec: Is there a smart template way to do this?
+  // jdumas: I guess you could do a templated for-loop starting from 16, and
+  // dispatching to the appropriate templated function when the argument matches
+  // (with a fallback to the dynamic version). Cf this example:
+  // https://gist.github.com/disconnect3d/13c2d035bb31b244df14
+  switch(kcount)
+  {
+    case 0: assert(false && "Handled above."); return Eigen::Matrix<Scalar,n,1>();
+    // % Matlibberish for generating these case statements:
+    // maxi=16;for i=1:maxi;fprintf('    case %d:\n    {\n     const bool D = (n-%d<=0)||(%d>=n)||(n>%d);\n     return min_quad_with_fixed<Scalar,D?Eigen::Dynamic:n,D?Eigen::Dynamic:%d,Hpd>(H,f,k,bc);\n    }\n',[i i i maxi i]);end
+    case 1:
+    {
+     const bool D = (n-1<=0)||(1>=n)||(n>16);
+     return min_quad_with_fixed<Scalar,D?Eigen::Dynamic:n,D?Eigen::Dynamic:1,Hpd>(H,f,k,bc);
+    }
+    case 2:
+    {
+     const bool D = (n-2<=0)||(2>=n)||(n>16);
+     return min_quad_with_fixed<Scalar,D?Eigen::Dynamic:n,D?Eigen::Dynamic:2,Hpd>(H,f,k,bc);
+    }
+    case 3:
+    {
+     const bool D = (n-3<=0)||(3>=n)||(n>16);
+     return min_quad_with_fixed<Scalar,D?Eigen::Dynamic:n,D?Eigen::Dynamic:3,Hpd>(H,f,k,bc);
+    }
+    case 4:
+    {
+     const bool D = (n-4<=0)||(4>=n)||(n>16);
+     return min_quad_with_fixed<Scalar,D?Eigen::Dynamic:n,D?Eigen::Dynamic:4,Hpd>(H,f,k,bc);
+    }
+    case 5:
+    {
+     const bool D = (n-5<=0)||(5>=n)||(n>16);
+     return min_quad_with_fixed<Scalar,D?Eigen::Dynamic:n,D?Eigen::Dynamic:5,Hpd>(H,f,k,bc);
+    }
+    case 6:
+    {
+     const bool D = (n-6<=0)||(6>=n)||(n>16);
+     return min_quad_with_fixed<Scalar,D?Eigen::Dynamic:n,D?Eigen::Dynamic:6,Hpd>(H,f,k,bc);
+    }
+    case 7:
+    {
+     const bool D = (n-7<=0)||(7>=n)||(n>16);
+     return min_quad_with_fixed<Scalar,D?Eigen::Dynamic:n,D?Eigen::Dynamic:7,Hpd>(H,f,k,bc);
+    }
+    case 8:
+    {
+     const bool D = (n-8<=0)||(8>=n)||(n>16);
+     return min_quad_with_fixed<Scalar,D?Eigen::Dynamic:n,D?Eigen::Dynamic:8,Hpd>(H,f,k,bc);
+    }
+    case 9:
+    {
+     const bool D = (n-9<=0)||(9>=n)||(n>16);
+     return min_quad_with_fixed<Scalar,D?Eigen::Dynamic:n,D?Eigen::Dynamic:9,Hpd>(H,f,k,bc);
+    }
+    case 10:
+    {
+     const bool D = (n-10<=0)||(10>=n)||(n>16);
+     return min_quad_with_fixed<Scalar,D?Eigen::Dynamic:n,D?Eigen::Dynamic:10,Hpd>(H,f,k,bc);
+    }
+    case 11:
+    {
+     const bool D = (n-11<=0)||(11>=n)||(n>16);
+     return min_quad_with_fixed<Scalar,D?Eigen::Dynamic:n,D?Eigen::Dynamic:11,Hpd>(H,f,k,bc);
+    }
+    case 12:
+    {
+     const bool D = (n-12<=0)||(12>=n)||(n>16);
+     return min_quad_with_fixed<Scalar,D?Eigen::Dynamic:n,D?Eigen::Dynamic:12,Hpd>(H,f,k,bc);
+    }
+    case 13:
+    {
+     const bool D = (n-13<=0)||(13>=n)||(n>16);
+     return min_quad_with_fixed<Scalar,D?Eigen::Dynamic:n,D?Eigen::Dynamic:13,Hpd>(H,f,k,bc);
+    }
+    case 14:
+    {
+     const bool D = (n-14<=0)||(14>=n)||(n>16);
+     return min_quad_with_fixed<Scalar,D?Eigen::Dynamic:n,D?Eigen::Dynamic:14,Hpd>(H,f,k,bc);
+    }
+    case 15:
+    {
+     const bool D = (n-15<=0)||(15>=n)||(n>16);
+     return min_quad_with_fixed<Scalar,D?Eigen::Dynamic:n,D?Eigen::Dynamic:15,Hpd>(H,f,k,bc);
+    }
+    case 16:
+    {
+     const bool D = (n-16<=0)||(16>=n)||(n>16);
+     return min_quad_with_fixed<Scalar,D?Eigen::Dynamic:n,D?Eigen::Dynamic:16,Hpd>(H,f,k,bc);
+    }
+    default:
+      return min_quad_with_fixed<Scalar,Eigen::Dynamic,Eigen::Dynamic,Hpd>(H,f,k,bc);
+  }
+}
+
+template <typename Scalar, int n, int kcount, bool Hpd>
+IGL_INLINE Eigen::Matrix<Scalar,n,1> igl::min_quad_with_fixed(
+  const Eigen::Matrix<Scalar,n,n> & H,
+  const Eigen::Matrix<Scalar,n,1> & f,
+  const Eigen::Array<bool,n,1> & k,
+  const Eigen::Matrix<Scalar,n,1> & bc)
+{
+  // 0 and n should be handle outside this function
+  static_assert(kcount==Eigen::Dynamic || kcount>0                  ,"");
+  static_assert(kcount==Eigen::Dynamic || kcount<n                  ,"");
+  const int ucount = n==Eigen::Dynamic ? Eigen::Dynamic : n-kcount;
+  static_assert(kcount==Eigen::Dynamic || ucount+kcount == n        ,"");
+  static_assert((n==Eigen::Dynamic) == (ucount==Eigen::Dynamic),"");
+  static_assert((kcount==Eigen::Dynamic) == (ucount==Eigen::Dynamic),"");
+  assert((n==Eigen::Dynamic) || n == H.rows());
+  assert((kcount==Eigen::Dynamic) || kcount == k.count());
+  typedef Eigen::Matrix<Scalar,ucount,ucount> MatrixSuu;
+  typedef Eigen::Matrix<Scalar,ucount,kcount> MatrixSuk;
+  typedef Eigen::Matrix<Scalar,n,1>      VectorSn;
+  typedef Eigen::Matrix<Scalar,ucount,1> VectorSu;
+  typedef Eigen::Matrix<Scalar,kcount,1> VectorSk;
+  const auto dyn_n = n==Eigen::Dynamic ? H.rows() : n;
+  const auto dyn_kcount = kcount==Eigen::Dynamic ? k.count() : kcount;
+  const auto dyn_ucount = ucount==Eigen::Dynamic ? dyn_n- dyn_kcount : ucount;
+  // For ucount==2 or kcount==2 this calls the coefficient initiliazer rather
+  // than the size initilizer, but I guess that's ok.
+  MatrixSuu Huu(dyn_ucount,dyn_ucount);
+  MatrixSuk Huk(dyn_ucount,dyn_kcount);
+  VectorSu mrhs(dyn_ucount);
+  VectorSk  bck(dyn_kcount);
+  {
+    int ui = 0;
+    int ki = 0;
+    for(int i = 0;i<dyn_n;i++)
+    {
+      if(k(i))
+      {
+        bck(ki) = bc(i);
+        ki++;
+      }else
+      {
+        mrhs(ui) = f(i);
+        int uj = 0;
+        int kj = 0;
+        for(int j = 0;j<dyn_n;j++)
+        {
+          if(k(j))
+          {
+            Huk(ui,kj) = H(i,j);
+            kj++;
+          }else
+          {
+            Huu(ui,uj) = H(i,j);
+            uj++;
+          }
+        }
+        ui++;
+      }
+    }
+  }
+  mrhs += Huk * bck;
+  typedef typename 
+    std::conditional<Hpd,
+      Eigen::LLT<MatrixSuu>,
+      // LDLT should be faster for indefinite problems but already found some
+      // cases where it was too inaccurate when called via quadprog_primal.
+      // Ideally this function takes LLT,LDLT, or
+      // CompleteOrthogonalDecomposition as a template parameter.  "template
+      // template" parameters did work because LLT,LDLT have different number of
+      // template parameters from CompleteOrthogonalDecomposition.  Perhaps
+      // there's a way to take advantage of LLT and LDLT's default template
+      // parameters (I couldn't figure out how).
+      Eigen::CompleteOrthogonalDecomposition<MatrixSuu>>::type
+    Solver;
+  VectorSu xu = Solver(Huu).solve(-mrhs);
+  VectorSn x(dyn_n);
+  {
+    int ui = 0;
+    int ki = 0;
+    for(int i = 0;i<dyn_n;i++)
+    {
+      if(k(i))
+      {
+        x(i) = bck(ki);
+        ki++;
+      }else
+      {
+        x(i) = xu(ui);
+        ui++;
+      }
+    }
+  }
+  return x;
+}
+
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instantiation
 // generated by autoexplicit.sh
+template Eigen::Matrix<double, -1, 1, ((Eigen::StorageOptions)0) | ((((-1) == (1)) && ((1) != (1))) ? ((Eigen::StorageOptions)1) : ((((1) == (1)) && ((-1) != (1))) ? ((Eigen::StorageOptions)0) : ((Eigen::StorageOptions)0))), -1, 1> igl::min_quad_with_fixed<double, -1, -1, true>(Eigen::Matrix<double, -1, -1, ((Eigen::StorageOptions)0) | ((((-1) == (1)) && ((-1) != (1))) ? ((Eigen::StorageOptions)1) : ((((-1) == (1)) && ((-1) != (1))) ? ((Eigen::StorageOptions)0) : ((Eigen::StorageOptions)0))), -1, -1> const&, Eigen::Matrix<double, -1, 1, ((Eigen::StorageOptions)0) | ((((-1) == (1)) && ((1) != (1))) ? ((Eigen::StorageOptions)1) : ((((1) == (1)) && ((-1) != (1))) ? ((Eigen::StorageOptions)0) : ((Eigen::StorageOptions)0))), -1, 1> const&, Eigen::Array<bool, -1, 1, ((Eigen::StorageOptions)0) | ((((-1) == (1)) && ((1) != (1))) ? ((Eigen::StorageOptions)1) : ((((1) == (1)) && ((-1) != (1))) ? ((Eigen::StorageOptions)0) : ((Eigen::StorageOptions)0))), -1, 1> const&, Eigen::Matrix<double, -1, 1, ((Eigen::StorageOptions)0) | ((((-1) == (1)) && ((1) != (1))) ? ((Eigen::StorageOptions)1) : ((((1) == (1)) && ((-1) != (1))) ? ((Eigen::StorageOptions)0) : ((Eigen::StorageOptions)0))), -1, 1> const&, Eigen::Matrix<double, -1, -1, ((Eigen::StorageOptions)0) | ((((-1) == (1)) && ((-1) != (1))) ? ((Eigen::StorageOptions)1) : ((((-1) == (1)) && ((-1) != (1))) ? ((Eigen::StorageOptions)0) : ((Eigen::StorageOptions)0))), -1, -1> const&, Eigen::Matrix<double, -1, 1, ((Eigen::StorageOptions)0) | ((((-1) == (1)) && ((1) != (1))) ? ((Eigen::StorageOptions)1) : ((((1) == (1)) && ((-1) != (1))) ? ((Eigen::StorageOptions)0) : ((Eigen::StorageOptions)0))), -1, 1> const&);
+// generated by autoexplicit.sh
+template Eigen::Matrix<double, 8, 1, ((Eigen::StorageOptions)0) | ((((8) == (1)) && ((1) != (1))) ? ((Eigen::StorageOptions)1) : ((((1) == (1)) && ((8) != (1))) ? ((Eigen::StorageOptions)0) : ((Eigen::StorageOptions)0))), 8, 1> igl::min_quad_with_fixed<double, 8, 2, true>(Eigen::Matrix<double, 8, 8, ((Eigen::StorageOptions)0) | ((((8) == (1)) && ((8) != (1))) ? ((Eigen::StorageOptions)1) : ((((8) == (1)) && ((8) != (1))) ? ((Eigen::StorageOptions)0) : ((Eigen::StorageOptions)0))), 8, 8> const&, Eigen::Matrix<double, 8, 1, ((Eigen::StorageOptions)0) | ((((8) == (1)) && ((1) != (1))) ? ((Eigen::StorageOptions)1) : ((((1) == (1)) && ((8) != (1))) ? ((Eigen::StorageOptions)0) : ((Eigen::StorageOptions)0))), 8, 1> const&, Eigen::Array<bool, 8, 1, ((Eigen::StorageOptions)0) | ((((8) == (1)) && ((1) != (1))) ? ((Eigen::StorageOptions)1) : ((((1) == (1)) && ((8) != (1))) ? ((Eigen::StorageOptions)0) : ((Eigen::StorageOptions)0))), 8, 1> const&, Eigen::Matrix<double, 8, 1, ((Eigen::StorageOptions)0) | ((((8) == (1)) && ((1) != (1))) ? ((Eigen::StorageOptions)1) : ((((1) == (1)) && ((8) != (1))) ? ((Eigen::StorageOptions)0) : ((Eigen::StorageOptions)0))), 8, 1> const&, Eigen::Matrix<double, 2, 8, ((Eigen::StorageOptions)0) | ((((2) == (1)) && ((8) != (1))) ? ((Eigen::StorageOptions)1) : ((((8) == (1)) && ((2) != (1))) ? ((Eigen::StorageOptions)0) : ((Eigen::StorageOptions)0))), 2, 8> const&, Eigen::Matrix<double, 2, 1, ((Eigen::StorageOptions)0) | ((((2) == (1)) && ((1) != (1))) ? ((Eigen::StorageOptions)1) : ((((1) == (1)) && ((2) != (1))) ? ((Eigen::StorageOptions)0) : ((Eigen::StorageOptions)0))), 2, 1> const&);
+// generated by autoexplicit.sh
+template Eigen::Matrix<double, 3, 1, ((Eigen::StorageOptions)0) | ((((3) == (1)) && ((1) != (1))) ? ((Eigen::StorageOptions)1) : ((((1) == (1)) && ((3) != (1))) ? ((Eigen::StorageOptions)0) : ((Eigen::StorageOptions)0))), 3, 1> igl::min_quad_with_fixed<double, 3, 1, true>(Eigen::Matrix<double, 3, 3, ((Eigen::StorageOptions)0) | ((((3) == (1)) && ((3) != (1))) ? ((Eigen::StorageOptions)1) : ((((3) == (1)) && ((3) != (1))) ? ((Eigen::StorageOptions)0) : ((Eigen::StorageOptions)0))), 3, 3> const&, Eigen::Matrix<double, 3, 1, ((Eigen::StorageOptions)0) | ((((3) == (1)) && ((1) != (1))) ? ((Eigen::StorageOptions)1) : ((((1) == (1)) && ((3) != (1))) ? ((Eigen::StorageOptions)0) : ((Eigen::StorageOptions)0))), 3, 1> const&, Eigen::Array<bool, 3, 1, ((Eigen::StorageOptions)0) | ((((3) == (1)) && ((1) != (1))) ? ((Eigen::StorageOptions)1) : ((((1) == (1)) && ((3) != (1))) ? ((Eigen::StorageOptions)0) : ((Eigen::StorageOptions)0))), 3, 1> const&, Eigen::Matrix<double, 3, 1, ((Eigen::StorageOptions)0) | ((((3) == (1)) && ((1) != (1))) ? ((Eigen::StorageOptions)1) : ((((1) == (1)) && ((3) != (1))) ? ((Eigen::StorageOptions)0) : ((Eigen::StorageOptions)0))), 3, 1> const&, Eigen::Matrix<double, 1, 3, ((Eigen::StorageOptions)0) | ((((1) == (1)) && ((3) != (1))) ? ((Eigen::StorageOptions)1) : ((((3) == (1)) && ((1) != (1))) ? ((Eigen::StorageOptions)0) : ((Eigen::StorageOptions)0))), 1, 3> const&, Eigen::Matrix<double, 1, 1, ((Eigen::StorageOptions)0) | ((((1) == (1)) && ((1) != (1))) ? ((Eigen::StorageOptions)1) : ((((1) == (1)) && ((1) != (1))) ? ((Eigen::StorageOptions)0) : ((Eigen::StorageOptions)0))), 1, 1> const&);
+template Eigen::Matrix<double, 2, 1, ((Eigen::StorageOptions)0) | ((((2) == (1)) && ((1) != (1))) ? ((Eigen::StorageOptions)1) : ((((1) == (1)) && ((2) != (1))) ? ((Eigen::StorageOptions)0) : ((Eigen::StorageOptions)0))), 2, 1> igl::min_quad_with_fixed<double, 2, 0, true>(Eigen::Matrix<double, 2, 2, ((Eigen::StorageOptions)0) | ((((2) == (1)) && ((2) != (1))) ? ((Eigen::StorageOptions)1) : ((((2) == (1)) && ((2) != (1))) ? ((Eigen::StorageOptions)0) : ((Eigen::StorageOptions)0))), 2, 2> const&, Eigen::Matrix<double, 2, 1, ((Eigen::StorageOptions)0) | ((((2) == (1)) && ((1) != (1))) ? ((Eigen::StorageOptions)1) : ((((1) == (1)) && ((2) != (1))) ? ((Eigen::StorageOptions)0) : ((Eigen::StorageOptions)0))), 2, 1> const&, Eigen::Array<bool, 2, 1, ((Eigen::StorageOptions)0) | ((((2) == (1)) && ((1) != (1))) ? ((Eigen::StorageOptions)1) : ((((1) == (1)) && ((2) != (1))) ? ((Eigen::StorageOptions)0) : ((Eigen::StorageOptions)0))), 2, 1> const&, Eigen::Matrix<double, 2, 1, ((Eigen::StorageOptions)0) | ((((2) == (1)) && ((1) != (1))) ? ((Eigen::StorageOptions)1) : ((((1) == (1)) && ((2) != (1))) ? ((Eigen::StorageOptions)0) : ((Eigen::StorageOptions)0))), 2, 1> const&, Eigen::Matrix<double, 0, 2, ((Eigen::StorageOptions)0) | ((((0) == (1)) && ((2) != (1))) ? ((Eigen::StorageOptions)1) : ((((2) == (1)) && ((0) != (1))) ? ((Eigen::StorageOptions)0) : ((Eigen::StorageOptions)0))), 0, 2> const&, Eigen::Matrix<double, 0, 1, ((Eigen::StorageOptions)0) | ((((0) == (1)) && ((1) != (1))) ? ((Eigen::StorageOptions)1) : ((((1) == (1)) && ((0) != (1))) ? ((Eigen::StorageOptions)0) : ((Eigen::StorageOptions)0))), 0, 1> const&);
+template Eigen::Matrix<double, 3, 1, ((Eigen::StorageOptions)0) | ((((3) == (1)) && ((1) != (1))) ? ((Eigen::StorageOptions)1) : ((((1) == (1)) && ((3) != (1))) ? ((Eigen::StorageOptions)0) : ((Eigen::StorageOptions)0))), 3, 1> igl::min_quad_with_fixed<double, 3, 0, true>(Eigen::Matrix<double, 3, 3, ((Eigen::StorageOptions)0) | ((((3) == (1)) && ((3) != (1))) ? ((Eigen::StorageOptions)1) : ((((3) == (1)) && ((3) != (1))) ? ((Eigen::StorageOptions)0) : ((Eigen::StorageOptions)0))), 3, 3> const&, Eigen::Matrix<double, 3, 1, ((Eigen::StorageOptions)0) | ((((3) == (1)) && ((1) != (1))) ? ((Eigen::StorageOptions)1) : ((((1) == (1)) && ((3) != (1))) ? ((Eigen::StorageOptions)0) : ((Eigen::StorageOptions)0))), 3, 1> const&, Eigen::Array<bool, 3, 1, ((Eigen::StorageOptions)0) | ((((3) == (1)) && ((1) != (1))) ? ((Eigen::StorageOptions)1) : ((((1) == (1)) && ((3) != (1))) ? ((Eigen::StorageOptions)0) : ((Eigen::StorageOptions)0))), 3, 1> const&, Eigen::Matrix<double, 3, 1, ((Eigen::StorageOptions)0) | ((((3) == (1)) && ((1) != (1))) ? ((Eigen::StorageOptions)1) : ((((1) == (1)) && ((3) != (1))) ? ((Eigen::StorageOptions)0) : ((Eigen::StorageOptions)0))), 3, 1> const&, Eigen::Matrix<double, 0, 3, ((Eigen::StorageOptions)0) | ((((0) == (1)) && ((3) != (1))) ? ((Eigen::StorageOptions)1) : ((((3) == (1)) && ((0) != (1))) ? ((Eigen::StorageOptions)0) : ((Eigen::StorageOptions)0))), 0, 3> const&, Eigen::Matrix<double, 0, 1, ((Eigen::StorageOptions)0) | ((((0) == (1)) && ((1) != (1))) ? ((Eigen::StorageOptions)1) : ((((1) == (1)) && ((0) != (1))) ? ((Eigen::StorageOptions)0) : ((Eigen::StorageOptions)0))), 0, 1> const&);
 template bool igl::min_quad_with_fixed<double, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1> >(Eigen::SparseMatrix<double, 0, int> const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::SparseMatrix<double, 0, int> const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, bool, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&);
 #if EIGEN_VERSION_AT_LEAST(3,3,0)
 #else
