@@ -156,8 +156,8 @@ jobs:
         include:
           - config: Debug
             tutorials: OFF
-          - config: Release
-            tutorials: ON
+          # - config: Release
+          #   tutorials: ON
     steps:
       - name: Checkout repository
         uses: actions/checkout@v1
