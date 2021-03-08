@@ -32,6 +32,7 @@ namespace igl
   //   U  #U by #A list of indices into each attribute for each unique mesh
   //     vertex: U(v,a) is the attribute index of vertex v in attribute a.
   //   G  #F by 3 list of triangle indices into U
+  //   J  #F*3 by 1 list of indices so that A[](i,j) = U.row(i+j*#F)
   // Example:
   //   [V,F,TC,FTC] = readOBJ('~/Downloads/kiwis/kiwi.obj');
   //   [U,G] = unzip_corners(cat(3,F,FTC));
