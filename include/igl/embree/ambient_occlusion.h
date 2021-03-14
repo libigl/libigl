@@ -31,8 +31,8 @@ namespace igl
       typename DerivedS >
     IGL_INLINE void ambient_occlusion(
       const EmbreeIntersector & ei,
-      const Eigen::PlainObjectBase<DerivedP> & P,
-      const Eigen::PlainObjectBase<DerivedN> & N,
+      const Eigen::MatrixBase<DerivedP> & P,
+      const Eigen::MatrixBase<DerivedN> & N,
       const int num_samples,
       Eigen::PlainObjectBase<DerivedS> & S);
     // Wrapper which builds new EmbreeIntersector for (V,F). That's expensive so
@@ -44,10 +44,10 @@ namespace igl
       typename DerivedN,
       typename DerivedS >
     IGL_INLINE void ambient_occlusion(
-      const Eigen::PlainObjectBase<DerivedV> & V,
-      const Eigen::PlainObjectBase<DerivedF> & F,
-      const Eigen::PlainObjectBase<DerivedP> & P,
-      const Eigen::PlainObjectBase<DerivedN> & N,
+      const Eigen::MatrixBase<DerivedV> & V,
+      const Eigen::MatrixBase<DerivedF> & F,
+      const Eigen::MatrixBase<DerivedP> & P,
+      const Eigen::MatrixBase<DerivedN> & N,
       const int num_samples,
       Eigen::PlainObjectBase<DerivedS> & S);
   }
