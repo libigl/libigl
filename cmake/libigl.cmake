@@ -84,7 +84,7 @@ target_compile_features(igl_common INTERFACE ${CXX11_FEATURES})
 # Other compilation flags
 if(MSVC)
   # Enable parallel compilation for Visual Studio
-  target_compile_options(igl_common INTERFACE /MP $<$<COMPILE_LANGUAGE:CXX>:/bigobj>)
+  target_compile_options(igl_common INTERFACE $<$<COMPILE_LANGUAGE:CXX>:/MP> $<$<COMPILE_LANGUAGE:CXX>:/bigobj>)
   target_compile_definitions(igl_common INTERFACE -DNOMINMAX)
 endif()
 
