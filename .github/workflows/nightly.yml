@@ -169,6 +169,10 @@ jobs:
           environment-file: cmake/libigl-cgal.yml
           auto-activate-base: false
 
+      - name: Set env
+        run: |
+          echo "${env:PATH}" >> ${env:GITHUB_PATH}
+
         # We run configure + build in the same step, since they both need to call VsDevCmd
         # Also, cmd uses ^ to break commands into multiple lines (in powershell this is `)
       - name: Configure and build
