@@ -36,7 +36,6 @@ IGL_INLINE void igl::embree::EmbreeRenderer::init_view()
   orthographic = false;
   
 
-  uC << 1,0,0;
 }
 
 IGL_INLINE igl::embree::EmbreeRenderer::EmbreeRenderer()
@@ -47,6 +46,8 @@ IGL_INLINE igl::embree::EmbreeRenderer::EmbreeRenderer()
   device(igl::embree::EmbreeDevice::get_device())
 {
   init_view();
+  uC << 1,0,0;
+  double_sided = false;
 }
 
 IGL_INLINE igl::embree::EmbreeRenderer::EmbreeRenderer(
@@ -304,19 +305,21 @@ igl::embree::EmbreeRenderer
 
       if(this->intersect_ray(s,dir,hit))
       {
-        if ( dir.dot(hit.N) > 0.0f)
+        if ( double_sided || dir.dot(hit.N) > 0.0f )
         {
           // TODO: interpolate normals ?
           hit.N.normalize();
+
           // cos between ray and face normal
-          float face_proj=dir.dot(hit.N);
+          // negative projection will indicate back side
+          float face_proj = fabs(dir.dot(hit.N));
 
           Eigen::RowVector3f c;
 
           if(this->uniform_color)
           {
             // same color for the whole mesh
-            c=uC;
+            c=this->uC;
           } else if(this->face_based) {
             // flat color per face
             c=this->C.row(hit.id);
@@ -329,6 +332,11 @@ igl::embree::EmbreeRenderer
           R(x,y) = clamp(face_proj*c(0));
           G(x,y) = clamp(face_proj*c(1));
           B(x,y) = clamp(face_proj*c(2));
+        } else {
+          // backface?
+          R(x,y)=0;
+          G(x,y)=0;
+          B(x,y)=0;
         }
         // give the same alpha to all points with something behind
         A(x,y)=255; 
@@ -418,6 +426,13 @@ igl::embree::EmbreeRenderer::set_orthographic(bool o)
 {
   this->orthographic=o;
 }
+
+IGL_INLINE void 
+igl::embree::EmbreeRenderer::set_double_sided(bool d)
+{
+  this->double_sided=d;
+}
+
 
 #ifdef IGL_STATIC_LIBRARY
 #endif //IGL_STATIC_LIBRARY
