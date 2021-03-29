@@ -34,7 +34,7 @@ jobs:
           - os: ubuntu-20.04
             name: Linux
     env:
-      LIBIGL_NUM_THREADS: 1  # See https://github.com/libigl/libigl/pull/996
+      IGL_NUM_THREADS: 1  # See https://github.com/libigl/libigl/pull/996
     steps:
       - name: Checkout repository
         uses: actions/checkout@v1
