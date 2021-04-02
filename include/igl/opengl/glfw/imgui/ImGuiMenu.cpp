@@ -185,7 +185,7 @@ IGL_INLINE void ImGuiMenu::draw_viewer_menu()
   // Workspace
   if (ImGui::CollapsingHeader("Workspace", ImGuiTreeNodeFlags_DefaultOpen))
   {
-    float w = ImGui::GetContentRegionAvailWidth();
+    float w = ImGui::GetContentRegionAvail().x;
     float p = ImGui::GetStyle().FramePadding.x;
     if (ImGui::Button("Load##Workspace", ImVec2((w-p)/2.f, 0)))
     {
@@ -201,7 +201,7 @@ IGL_INLINE void ImGuiMenu::draw_viewer_menu()
   // Mesh
   if (ImGui::CollapsingHeader("Mesh", ImGuiTreeNodeFlags_DefaultOpen))
   {
-    float w = ImGui::GetContentRegionAvailWidth();
+    float w = ImGui::GetContentRegionAvail().x;
     float p = ImGui::GetStyle().FramePadding.x;
     if (ImGui::Button("Load##Mesh", ImVec2((w-p)/2.f, 0)))
     {

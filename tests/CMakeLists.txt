@@ -1,27 +1,13 @@
-cmake_minimum_required(VERSION 3.1)
-project(libigl_tests)
-
-list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../cmake)
-
-### Adding libIGL: choose the path to your local copy libIGL
-if(NOT TARGET igl::core)
-  include(libigl)
-else()
-  include(LibiglDownloadExternal)
-endif()
-
 ### Download data
-igl_download_test_data()
-set(IGL_TEST_DATA ${LIBIGL_EXTERNAL}/../tests/data)
+include(libigl_test_data)
 
 ### Download Catch2 unit test framework
 igl_download_catch2()
 list(APPEND CMAKE_MODULE_PATH ${LIBIGL_EXTERNAL}/catch2/contrib)
 
-
 # Add catch2
+include(catch2)
 add_subdirectory(${LIBIGL_EXTERNAL}/catch2 catch2)
-
 
 # Create test executable
 add_executable(libigl_tests main.cpp test_common.h)

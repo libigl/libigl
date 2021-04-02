@@ -1,26 +1,4 @@
-cmake_minimum_required(VERSION 3.1)
-project(libigl_tutorials)
-
-### Conditionally compile certain modules depending on libraries found on the system
-list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../cmake)
-
-### Compile libigl in header-only mode for Python bindings
-option(LIBIGL_USE_STATIC_LIBRARY "Use LibIGL as static library" ON)
-
-### Adding libIGL: choose the path to your local copy libIGL
-if(NOT TARGET igl_common)
-  include(libigl)
-else()
-  include(LibiglDownloadExternal)
-endif()
-
-### Download data
-igl_download_tutorial_data()
-
-### Output directories
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
-
-### Choose which chapters to compile
+# Choose which chapters to compile
 option(TUTORIALS_CHAPTER1 "Compile chapter 1" ON)
 option(TUTORIALS_CHAPTER2 "Compile chapter 2" ON)
 option(TUTORIALS_CHAPTER3 "Compile chapter 3" ON)
@@ -29,21 +7,20 @@ option(TUTORIALS_CHAPTER5 "Compile chapter 5" ON)
 option(TUTORIALS_CHAPTER6 "Compile chapter 6" ON)
 option(TUTORIALS_CHAPTER7 "Compile chapter 7" ON)
 
-# Store location of tutorial/shared directory
-set(TUTORIAL_SHARED_PATH ${LIBIGL_EXTERNAL}/../tutorial/data CACHE PATH "location of shared tutorial resources")
-add_library(tutorials INTERFACE)
-target_compile_definitions(tutorials INTERFACE "-DTUTORIAL_SHARED_PATH=\"${TUTORIAL_SHARED_PATH}\"")
-target_include_directories(tutorials INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
+# Download tutorial data
+include(libigl_tutorial_data)
 
 # Chapter 1
 if(TUTORIALS_CHAPTER1)
-  add_subdirectory("101_FileIO")
+    igl_add_tutorial(101_FileIO)
 endif()
 
 #######################
+return()
+
 if(NOT (LIBIGL_WITH_OPENGL AND LIBIGL_WITH_OPENGL_GLFW) )
-  message(WARNING "Most tutorial executables depend on OpenGL and glfw. Use `cmake ../ -DLIBIGL_WITH_OPENGL=ON -DLIBIGL_WITH_OPENGL_GLFW=ON`")
-  return()
+    message(WARNING "Most tutorial executables depend on OpenGL and glfw. Use `cmake ../ -DLIBIGL_WITH_OPENGL=ON -DLIBIGL_WITH_OPENGL_GLFW=ON`")
+    return()
 endif()
 
 if(TUTORIALS_CHAPTER1)
