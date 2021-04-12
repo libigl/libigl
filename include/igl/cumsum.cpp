@@ -96,5 +96,6 @@ template void igl::cumsum<Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int
 #ifdef WIN32
 template void igl::cumsum<class Eigen::Matrix<unsigned __int64, -1, 1, 0, -1, 1>, class Eigen::Matrix<unsigned __int64, -1, 1, 0, -1, 1>>(class Eigen::MatrixBase<class Eigen::Matrix<unsigned __int64, -1, 1, 0, -1, 1>> const &, int, class Eigen::PlainObjectBase<class Eigen::Matrix<unsigned __int64, -1, 1, 0, -1, 1>> &);
 template void igl::cumsum<class Eigen::Matrix<unsigned __int64, 2, 1, 0, 2, 1>, class Eigen::Matrix<unsigned __int64, 2, 1, 0, 2, 1>>(class Eigen::MatrixBase<class Eigen::Matrix<unsigned __int64, 2, 1, 0, 2, 1>> const &, int, class Eigen::PlainObjectBase<class Eigen::Matrix<unsigned __int64, 2, 1, 0, 2, 1>> &);
+template void igl::cumsum<class Eigen::Matrix<__int64, -1, 1, 0, -1, 1>, class Eigen::Matrix<__int64, -1, 1, 0, -1, 1> >(class Eigen::MatrixBase<class Eigen::Matrix<__int64, -1, 1, 0, -1, 1> > const&, int, class Eigen::PlainObjectBase<class Eigen::Matrix<__int64, -1, 1, 0, -1, 1> >&);
 #endif
 #endif
