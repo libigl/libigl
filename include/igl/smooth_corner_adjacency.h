@@ -24,6 +24,10 @@ namespace igl
     const double corner_threshold_radians,
     Eigen::VectorXi & CI,
     Eigen::VectorXi & CC);
+  // Determine the effective corner-to-face adjacency relationship implied by a
+  // set of indexed vertex positions (FV) and normals (FV) (e.g., those read in
+  // from a .obj file).
+  //
   // Inputs:
   //   FV  #F by 3 list of triangle mesh indices into rows of some V
   //   FN  #F by 3 list of triangle mesh indices into rows of some N
