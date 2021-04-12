@@ -20,7 +20,7 @@ jobs:
   ####################
 
   Unix:
-    name: ${{ matrix.name }} (${{ matrix.config }}, ${{ fromJSON('["Static", "HeaderOnly"]')[matrix.static == 'ON'] }})
+    name: ${{ matrix.name }} (${{ matrix.config }}, ${{ fromJSON('["HeaderOnly", "Static"]')[matrix.static == 'ON'] }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -34,7 +34,7 @@ jobs:
           - os: ubuntu-20.04
             name: Linux
     env:
-      LIBIGL_NUM_THREADS: 1  # See https://github.com/libigl/libigl/pull/996
+      IGL_NUM_THREADS: 1  # See https://github.com/libigl/libigl/pull/996
     steps:
       - name: Checkout repository
         uses: actions/checkout@v1
@@ -94,7 +94,7 @@ jobs:
   ####################
 
   Windows:
-    name: Windows (${{ matrix.config }}, ${{ fromJSON('["Static", "HeaderOnly"]')[matrix.static == 'ON'] }})
+    name: Windows (${{ matrix.config }}, ${{ fromJSON('["HeaderOnly", "Static"]')[matrix.static == 'ON'] }})
     runs-on: windows-2019
     env:
       CC: cl.exe
@@ -111,9 +111,15 @@ jobs:
           fetch-depth: 10
       - uses: seanmiddleditch/gha-setup-ninja@master
 
+      - name: Setup Conda
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          activate-environment: libigl-cgal
+          environment-file: cmake/libigl-cgal.yml
+          auto-activate-base: false
+
       - name: Set env
         run: |
-          echo "BOOST_ROOT=$env:BOOST_ROOT_1_72_0" >> ${env:GITHUB_ENV}
           echo "appdata=$env:LOCALAPPDATA" >> ${env:GITHUB_ENV}
 
       - name: Cache build

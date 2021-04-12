@@ -40,8 +40,8 @@ class CurvatureCalculator
 {
 public:
   /* Row number i represents the i-th vertex, whose columns are:
-   curv[i][0] : K2
-   curv[i][1] : K1
+   curv[i][0] : K1
+   curv[i][1] : K2
    curvDir[i][0] : PD1
    curvDir[i][1] : PD2
    */
@@ -425,20 +425,20 @@ IGL_INLINE void CurvatureCalculator::finalEigenStuff(int i, const std::vector<Ei
   if (c_val[0] > c_val[1])
   {
     curv[i]=std::vector<double>(2);
-    curv[i][0]=c_val(1);
-    curv[i][1]=c_val(0);
-    curvDir[i]=std::vector<Eigen::Vector3d>(2);
-    curvDir[i][0]=v2global;
-    curvDir[i][1]=v1global;
-  }
-  else
-  {
-    curv[i]=std::vector<double>(2);
     curv[i][0]=c_val(0);
     curv[i][1]=c_val(1);
     curvDir[i]=std::vector<Eigen::Vector3d>(2);
     curvDir[i][0]=v1global;
     curvDir[i][1]=v2global;
+  }
+  else
+  {
+    curv[i]=std::vector<double>(2);
+    curv[i][0]=c_val(1);
+    curv[i][1]=c_val(0);
+    curvDir[i]=std::vector<Eigen::Vector3d>(2);
+    curvDir[i][0]=v2global;
+    curvDir[i][1]=v1global;
   }
   // ---- end Eigen stuff
 }
