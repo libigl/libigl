@@ -49,7 +49,6 @@ IGL_INLINE void igl::per_corner_normals(
   Eigen::Matrix<Scalar,Eigen::Dynamic,3,Eigen::RowMajor> FN(F.rows(),3);
   // face areas
   Eigen::Matrix<Scalar,Eigen::Dynamic,1> FA(F.rows());
-  //for(Index f = 0;f<F.rows();f++)
   igl::parallel_for(F.rows(),[&](const Index f)
   {
     const Eigen::Matrix<Scalar,1,3> v10 = V.row(F(f,1))-V.row(F(f,0));

@@ -18,7 +18,6 @@ void igl::smooth_corner_adjacency(
   igl::vertex_triangle_adjacency(F,V.rows(),VF,NI);
   // unit normals
   Eigen::Matrix<Scalar,Eigen::Dynamic,3,Eigen::RowMajor> FN(F.rows(),3);
-  //for(Index f = 0;f<F.rows();f++)
   igl::parallel_for(F.rows(),[&](const Index f)
   {
     const Eigen::Matrix<Scalar,1,3> v10 = V.row(F(f,1))-V.row(F(f,0));
