@@ -58,7 +58,9 @@ jobs:
 
       - name: Dependencies (macOS)
         if: runner.os == 'macOS'
-        run: brew install boost gmp mpfr ccache
+        run: |
+          brew update
+          brew install boost gmp mpfr ccache
 
       - name: Cache Build
         id: cache-build
