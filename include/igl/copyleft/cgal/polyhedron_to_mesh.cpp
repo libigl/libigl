@@ -7,6 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "polyhedron_to_mesh.h"
 #include <CGAL/Polyhedron_3.h>
+#include "assign_scalar.h"
 
 template <
   typename Polyhedron,
@@ -29,9 +30,9 @@ IGL_INLINE void igl::copyleft::cgal::polyhedron_to_mesh(
       p != poly.vertices_end();
       p++)
     {
-      V(v,0) = p->point().x();
-      V(v,1) = p->point().y();
-      V(v,2) = p->point().z();
+      assign_scalar(p->point().x(),V(v,0));
+      assign_scalar(p->point().y(),V(v,1));
+      assign_scalar(p->point().z(),V(v,2));
       vertex_to_index[p] = v;
       v++;
     }
