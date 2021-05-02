@@ -21,9 +21,10 @@ endif()
 project(libigl VERSION 3.0.0)
 
 # Build tests and tutorials
-option(LIBIGL_BUILD_TESTS      "Build libigl unit test"      ${LIBIGL_TOPLEVEL_PROJECT})
-option(LIBIGL_BUILD_TUTORIALS  "Build libigl tutorial"       ${LIBIGL_TOPLEVEL_PROJECT})
-option(LIBIGL_EXPORT_TARGETS   "Export libigl CMake targets" ${LIBIGL_TOPLEVEL_PROJECT})
+option(LIBIGL_BUILD_TESTS      "Build libigl unit test"                ${LIBIGL_TOPLEVEL_PROJECT})
+option(LIBIGL_BUILD_TUTORIALS  "Build libigl tutorial"                 ${LIBIGL_TOPLEVEL_PROJECT})
+option(LIBIGL_EXPORT_TARGETS   "Export libigl CMake targets"           ${LIBIGL_TOPLEVEL_PROJECT})
+option(LIBIGL_INSTALL          "Enable installation of libigl targets" ${LIBIGL_TOPLEVEL_PROJECT})
 
 # USE_STATIC_LIBRARY speeds up the generation of multiple binaries,
 # at the cost of a longer initial compilation time
@@ -60,6 +61,7 @@ list(PREPEND CMAKE_MODULE_PATH
 include(igl_add_library)
 include(igl_add_tutorial)
 include(igl_target_sources)
+include(igl_install_headers)
 
 # Defines CMake targets for selected libigl modules
 include(libigl)
@@ -71,4 +73,37 @@ endif()
 if(LIBIGL_BUILD_TESTS)
     # include(CTest)
     # add_subdirectory(tests)
+endif()
+
+################################################################################
+# Install CMake config files
+################################################################################
+
+if(LIBIGL_INSTALL)
+    include(GNUInstallDirs)
+    set(project_config_in "${PROJECT_SOURCE_DIR}/cmake/igl/libigl-config.cmake.in")
+    set(project_config_out "${CMAKE_CURRENT_BINARY_DIR}/libigl-config.cmake")
+    set(config_targets_base "LibiglConfigTargets")
+    set(version_config_file "${CMAKE_CURRENT_BINARY_DIR}/LibiglConfigVersion.cmake")
+    set(export_dest_dir "${CMAKE_INSTALL_LIBDIR}/cmake/igl")
+
+    foreach(suffix IN ITEMS "") #"_nonfree" "_copyleft")
+        install(EXPORT LibiglTargets${suffix}
+            DESTINATION ${export_dest_dir}
+            NAMESPACE igl${suffix}::
+            FILE ${config_targets_base}${suffix}.cmake
+            COMPONENT LibiglDevelopment
+        )
+    endforeach()
+
+    include(CMakePackageConfigHelpers)
+    configure_package_config_file(
+            "${project_config_in}"
+            "${project_config_out}"
+        INSTALL_DESTINATION
+            ${CMAKE_INSTALL_DATAROOTDIR}/libigl/cmake
+    )
+
+    write_basic_package_version_file("${version_config_file}" COMPATIBILITY SameMajorVersion)
+    install(FILES "${project_config_out}" "${version_config_file}" DESTINATION "${export_dest_dir}")
 endif()
