@@ -14,7 +14,10 @@ file(GLOB INC_FILES "${PROJECT_SOURCE_DIR}/include/igl/*.h")
 file(GLOB SRC_FILES "${PROJECT_SOURCE_DIR}/include/igl/*.cpp")
 igl_target_sources(igl_core ${INC_FILES} ${SRC_FILES})
 
-# 4. Dependencies
+# 4. Install target & headers
+igl_install(igl_core ${INC_FILES} ${SRC_FILES})
+
+# 5. Dependencies
 include(eigen)
 find_package(Threads REQUIRED)
 target_link_libraries(igl_core ${IGL_SCOPE}

@@ -70,24 +70,4 @@ function(igl_add_library module_name)
 
     # Folder for IDE
     set_target_properties(${module_name} PROPERTIES FOLDER "Libigl")
-
-    # Installation
-    if(LIBIGL_INSTALL)
-        set_property(TARGET ${module_name} PROPERTY EXPORT_NAME ${module_export})
-
-        include(GNUInstallDirs)
-        install(TARGETS ${module_name}
-            EXPORT LibiglTargets${suffix}
-            RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-                    COMPONENT LibiglRuntime
-            LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-                    COMPONENT          LibiglRuntime
-                    NAMELINK_COMPONENT LibiglDevelopment
-            ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-                    COMPONENT LibiglRuntime
-            PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-                    COMPONENT LibiglDevelopment
-            INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-        )
-    endif()
 endfunction()

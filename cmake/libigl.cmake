@@ -20,7 +20,7 @@ include(igl_windows)
 
 # Libigl modules
 include(modules/core)
-include(modules/embree)
+# include(modules/embree)
 # include(modules/opengl)
 # include(modules/glfw)
 # include(modules/imgui)
@@ -31,7 +31,7 @@ include(modules/embree)
 # Libigl nonfree modules
 # include(modules/nonfree/matlab)
 # include(modules/nonfree/mosek)
-include(modules/nonfree/triangle)
+# include(modules/nonfree/triangle)
 
 # Libigl copyleft modules
 # include(modules/copyleft/core)

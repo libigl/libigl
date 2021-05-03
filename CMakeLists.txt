@@ -17,13 +17,26 @@ else()
     endif()
 endif()
 
+# Include user-provided default options if available. We do that before the main
+# `project()` so that we can define the C/C++ compilers from the option file.
+if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/LibiglOptions.cmake)
+    message(STATUS "Using local options file: ${CMAKE_CURRENT_SOURCE_DIR}/LibiglOptions.cmake")
+    include(${CMAKE_CURRENT_SOURCE_DIR}/LibiglOptions.cmake)
+endif()
+
+# If the CMake option HUNTER_ENABLED is ON, this will setup the Hunter package manager.
+include("cmake/misc/HunterGate.cmake")
+HunterGate(
+    URL "https://github.com/cpp-pm/hunter/archive/v0.23.300.tar.gz"
+    SHA1 "1151d539465d9cdbc880ee30f794864aec11c448"
+)
+
 ################################################################################
 project(libigl VERSION 3.0.0)
 
 # Build tests and tutorials
 option(LIBIGL_BUILD_TESTS      "Build libigl unit test"                ${LIBIGL_TOPLEVEL_PROJECT})
 option(LIBIGL_BUILD_TUTORIALS  "Build libigl tutorial"                 ${LIBIGL_TOPLEVEL_PROJECT})
-option(LIBIGL_EXPORT_TARGETS   "Export libigl CMake targets"           ${LIBIGL_TOPLEVEL_PROJECT})
 option(LIBIGL_INSTALL          "Enable installation of libigl targets" ${LIBIGL_TOPLEVEL_PROJECT})
 
 # USE_STATIC_LIBRARY speeds up the generation of multiple binaries,
@@ -31,21 +44,28 @@ option(LIBIGL_INSTALL          "Enable installation of libigl targets" ${LIBIGL_
 # (by default, static build is off since libigl is a header-only library)
 option(LIBIGL_USE_STATIC_LIBRARY "Use libigl as static library" ${LIBIGL_TOPLEVEL_PROJECT})
 
-# Available options
-option(LIBIGL_WITH_CGAL              "Use CGAL"             ${LIBIGL_TOPLEVEL_PROJECT})
-option(LIBIGL_WITH_COMISO            "Use CoMiso"           ${LIBIGL_TOPLEVEL_PROJECT})
-option(LIBIGL_WITH_CORK              "Use Cork"             ${LIBIGL_TOPLEVEL_PROJECT})
-option(LIBIGL_WITH_EMBREE            "Use Embree"           ${LIBIGL_TOPLEVEL_PROJECT})
-option(LIBIGL_WITH_MATLAB            "Use Matlab"           ${LIBIGL_TOPLEVEL_PROJECT})
-option(LIBIGL_WITH_MOSEK             "Use MOSEK"            ${LIBIGL_TOPLEVEL_PROJECT})
-option(LIBIGL_WITH_OPENGL            "Use OpenGL"           ${LIBIGL_TOPLEVEL_PROJECT})
-option(LIBIGL_WITH_OPENGL_GLFW       "Use GLFW"             ${LIBIGL_TOPLEVEL_PROJECT})
-option(LIBIGL_WITH_OPENGL_GLFW_IMGUI "Use ImGui"            ${LIBIGL_TOPLEVEL_PROJECT})
-option(LIBIGL_WITH_PNG               "Use PNG"              ${LIBIGL_TOPLEVEL_PROJECT})
-option(LIBIGL_WITH_TETGEN            "Use Tetgen"           ${LIBIGL_TOPLEVEL_PROJECT})
-option(LIBIGL_WITH_TRIANGLE          "Use Triangle"         ${LIBIGL_TOPLEVEL_PROJECT})
-option(LIBIGL_WITH_PREDICATES        "Use exact predicates" ${LIBIGL_TOPLEVEL_PROJECT})
-option(LIBIGL_WITH_XML               "Use XML"              ${LIBIGL_TOPLEVEL_PROJECT})
+# Main modules
+option(LIBIGL_WITH_CORE             "Build target igl::core"             ${LIBIGL_TOPLEVEL_PROJECT})
+option(LIBIGL_WITH_EMBREE           "Build target igl::embree"           ${LIBIGL_TOPLEVEL_PROJECT})
+option(LIBIGL_WITH_GLFW             "Build target igl::glfw"             ${LIBIGL_TOPLEVEL_PROJECT})
+option(LIBIGL_WITH_IMGUI            "Build target igl::imgui"            ${LIBIGL_TOPLEVEL_PROJECT})
+option(LIBIGL_WITH_OPENGL           "Build target igl::opengl"           ${LIBIGL_TOPLEVEL_PROJECT})
+option(LIBIGL_WITH_PNG              "Build target igl::png"              ${LIBIGL_TOPLEVEL_PROJECT})
+option(LIBIGL_WITH_PREDICATES       "Build target igl::predicates"       ${LIBIGL_TOPLEVEL_PROJECT})
+option(LIBIGL_WITH_XML              "Build target igl::xml"              ${LIBIGL_TOPLEVEL_PROJECT})
+
+# Copyleft modules
+option(LIBIGL_COPYLEFT_WITH_CGAL    "Build target igl_copyleft::cgal"    ${LIBIGL_TOPLEVEL_PROJECT})
+option(LIBIGL_COPYLEFT_WITH_COMISO  "Build target igl_copyleft::comiso"  ${LIBIGL_TOPLEVEL_PROJECT})
+option(LIBIGL_COPYLEFT_WITH_CORE    "Build target igl_copyleft::core"    ${LIBIGL_TOPLEVEL_PROJECT})
+option(LIBIGL_COPYLEFT_WITH_CORK    "Build target igl_copyleft::cork"    ${LIBIGL_TOPLEVEL_PROJECT})
+option(LIBIGL_COPYLEFT_WITH_TETGEN  "Build target igl_copyleft::tetgen"  ${LIBIGL_TOPLEVEL_PROJECT})
+
+# Nonfree modules
+option(LIBIGL_NONFREE_WITH_MATLAB   "Build target igl_nonfree::matlab"   ${LIBIGL_TOPLEVEL_PROJECT})
+option(LIBIGL_NONFREE_WITH_MOSEK    "Build target igl_nonfree::mosek"    ${LIBIGL_TOPLEVEL_PROJECT})
+option(LIBIGL_NONFREE_WITH_TRIANGLE "Build target igl_nonfree::triangle" ${LIBIGL_TOPLEVEL_PROJECT})
+
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
@@ -54,14 +74,20 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
 list(PREPEND CMAKE_MODULE_PATH
     ${CMAKE_CURRENT_LIST_DIR}/cmake/
     ${CMAKE_CURRENT_LIST_DIR}/cmake/igl
-    ${CMAKE_CURRENT_LIST_DIR}/cmake/recipes
+    ${CMAKE_CURRENT_LIST_DIR}/cmake/recipes/external
 )
+
+if(HUNTER_ENABLED)
+    list(PREPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake/recipes/hunter)
+else()
+    list(PREPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake/recipes/external)
+endif()
 
 # Include CMake helper functions
 include(igl_add_library)
 include(igl_add_tutorial)
 include(igl_target_sources)
-include(igl_install_headers)
+include(igl_install)
 
 # Defines CMake targets for selected libigl modules
 include(libigl)
