@@ -3,7 +3,7 @@ igl_add_library(igl_copyleft_cork)
 
 # 2. Include headers
 include(GNUInstallDirs)
-target_include_directories(igl_copyleft_cork PUBLIC
+target_include_directories(igl_copyleft_cork ${IGL_SCOPE}
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )

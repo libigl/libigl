@@ -4,7 +4,7 @@ set_target_properties(igl_core PROPERTIES OUTPUT_NAME igl)
 
 # 2. Include headers
 include(GNUInstallDirs)
-target_include_directories(igl_core PUBLIC
+target_include_directories(igl_core ${IGL_SCOPE}
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
