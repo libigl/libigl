@@ -19,7 +19,7 @@ add_library(CoMISo::CoMISo ALIAS CoMISo)
 # Copy .hh headers into a subfolder `CoMISo/`
 file(GLOB_RECURSE INC_FILES "${comiso_SOURCE_DIR}/*.hh" "${comiso_SOURCE_DIR}/*.cc")
 set(output_folder "${CMAKE_CURRENT_BINARY_DIR}/CoMISo/include/CoMISo")
-message(STATUS "Copying CoMISo headers to '${output_folder}'")
+message(VERBOSE "Copying CoMISo headers to '${output_folder}'")
 foreach(filepath IN ITEMS ${INC_FILES})
     file(RELATIVE_PATH filename "${comiso_SOURCE_DIR}" ${filepath})
     configure_file(${filepath} "${output_folder}/${filename}" COPYONLY)

@@ -18,7 +18,6 @@
 #include <limits>
 #include <stdlib.h>
 
-#include "tutorial_shared_path.h"
 
 
 

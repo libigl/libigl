@@ -11,7 +11,6 @@
 #include <igl/opengl/glfw/Viewer.h>
 
 #include <iostream>
-#include "tutorial_shared_path.h"
 
 Eigen::MatrixXd V,U;
 Eigen::MatrixXi F;

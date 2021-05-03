@@ -1,4 +1,3 @@
-#include "tutorial_shared_path.h"
 #include <igl/read_triangle_mesh.h>
 #include <igl/triangulated_grid.h>
 #include <igl/heat_geodesics.h>

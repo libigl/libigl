@@ -19,7 +19,7 @@ set(IMGUIZMO_SRC
 
 # Copy imguizmo source files into a subfolder `imguizmo/`
 set(output_folder "${CMAKE_CURRENT_BINARY_DIR}/imguizmo/include/imguizmo")
-message(STATUS "Copying imguizmo files to '${output_folder}'")
+message(VERBOSE "Copying imguizmo files to '${output_folder}'")
 foreach(filepath IN ITEMS ${IMGUIZMO_SRC})
     file(RELATIVE_PATH filename "${imguizmo_SOURCE_DIR}" ${filepath})
     configure_file(${filepath} "${output_folder}/${filename}" COPYONLY)

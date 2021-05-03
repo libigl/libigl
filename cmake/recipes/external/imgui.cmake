@@ -34,7 +34,7 @@ set(IMGUI_SRC
 
 # Copy imgui source files into a subfolder `imgui/`
 set(output_folder "${CMAKE_CURRENT_BINARY_DIR}/imgui/include/imgui")
-message(STATUS "Copying imgui files to '${output_folder}'")
+message(VERBOSE "Copying imgui files to '${output_folder}'")
 foreach(filepath IN ITEMS ${IMGUI_SRC})
     file(RELATIVE_PATH filename "${imgui_SOURCE_DIR}" ${filepath})
     configure_file(${filepath} "${output_folder}/${filename}" COPYONLY)

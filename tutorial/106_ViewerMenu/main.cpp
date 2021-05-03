@@ -4,7 +4,6 @@
 #include <igl/opengl/glfw/imgui/ImGuiHelpers.h>
 #include <imgui/imgui.h>
 #include <iostream>
-#include "tutorial_shared_path.h"
 
 int main(int argc, char *argv[])
 {

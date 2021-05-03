@@ -12,7 +12,6 @@
 #include <igl/flipped_triangles.h>
 #include <igl/topological_hole_fill.h>
 
-#include "tutorial_shared_path.h"
 
 Eigen::MatrixXd V;
 Eigen::MatrixXi F;

@@ -4,7 +4,6 @@
 #include <igl/per_face_normals.h>
 #include <igl/per_corner_normals.h>
 #include <iostream>
-#include "tutorial_shared_path.h"
 
 Eigen::MatrixXd V;
 Eigen::MatrixXi F;

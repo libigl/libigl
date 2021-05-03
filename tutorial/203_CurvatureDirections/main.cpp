@@ -9,7 +9,6 @@
 #include <igl/principal_curvature.h>
 #include <igl/read_triangle_mesh.h>
 #include <igl/opengl/glfw/Viewer.h>
-#include "tutorial_shared_path.h"
 
 Eigen::MatrixXd V;
 Eigen::MatrixXi F;
