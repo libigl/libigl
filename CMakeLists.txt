@@ -24,12 +24,15 @@ if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/LibiglOptions.cmake)
     include(${CMAKE_CURRENT_SOURCE_DIR}/LibiglOptions.cmake)
 endif()
 
-# If the CMake option HUNTER_ENABLED is ON, this will setup the Hunter package manager.
-include("cmake/misc/HunterGate.cmake")
-HunterGate(
-    URL "https://github.com/cpp-pm/hunter/archive/v0.23.300.tar.gz"
-    SHA1 "1151d539465d9cdbc880ee30f794864aec11c448"
-)
+# If this option is enabled, this will setup the Hunter package manager.
+option(HUNTER_ENABLED "Enable Hunter package manager support" OFF)
+if(HUNTER_ENABLED)
+    include("cmake/misc/HunterGate.cmake")
+    HunterGate(
+        URL "https://github.com/cpp-pm/hunter/archive/v0.23.300.tar.gz"
+        SHA1 "1151d539465d9cdbc880ee30f794864aec11c448"
+    )
+endif()
 
 ################################################################################
 project(libigl VERSION 3.0.0)
