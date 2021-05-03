@@ -74,7 +74,7 @@ jobs:
           - config: Debug
             tutorials: OFF
     env:
-      LIBIGL_NUM_THREADS: 1  # See https://github.com/libigl/libigl/pull/996
+      IGL_NUM_THREADS: 1  # See https://github.com/libigl/libigl/pull/996
     steps:
       - name: Checkout repository
         uses: actions/checkout@v1
@@ -108,7 +108,9 @@ jobs:
 
       - name: Dependencies (macOS)
         if: runner.os == 'macOS'
-        run: brew install boost gmp mpfr
+        run: |
+          brew update
+          brew install boost gmp mpfr
 
       - name: Configure
         run: |
@@ -162,9 +164,16 @@ jobs:
           fetch-depth: 10
       - uses: seanmiddleditch/gha-setup-ninja@master
 
+      - name: Setup Conda
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          activate-environment: libigl-cgal
+          environment-file: cmake/libigl-cgal.yml
+          auto-activate-base: false
+
       - name: Set env
         run: |
-          echo "BOOST_ROOT=$env:BOOST_ROOT_1_72_0" >> ${env:GITHUB_ENV}
+          echo "${env:PATH}" >> ${env:GITHUB_PATH}
 
         # We run configure + build in the same step, since they both need to call VsDevCmd
         # Also, cmd uses ^ to break commands into multiple lines (in powershell this is `)

@@ -22,7 +22,7 @@ igl::opengl::glfw::imgui::SelectionPlugin usage:
 }
 IGL_INLINE bool SelectionPlugin::pre_draw()
 {
-  if(!visible){ return false; }
+  if(mode == OFF){ return false; }
   ImGuiMenu::pre_draw();
   return false;
 }
@@ -84,7 +84,7 @@ IGL_INLINE bool SelectionPlugin::post_draw()
 
 IGL_INLINE bool SelectionPlugin::mouse_down(int button, int modifier)
 {
-  if(mode == OFF){ return false;}
+  if(mode == OFF || (modifier & IGL_MOD_ALT) ){ return false;}
   is_down = true;
   has_moved_since_down = false;
   if(!is_drawing)
@@ -143,13 +143,11 @@ IGL_INLINE bool SelectionPlugin::mouse_move(int mouse_x, int mouse_y)
 
 IGL_INLINE bool SelectionPlugin::key_pressed(unsigned int key, int modifiers)
 {
-  const auto clear = [&]() { M.setZero(); L.clear(); is_drawing = false; is_down = false; };
+  Mode old = mode;
   if(OFF_KEY.find(char(key)) != std::string::npos)
   {
-      mode = OFF;
-      return true;
-  }
-  if(LASSO_KEY.find(char(key)) != std::string::npos)
+    mode = OFF;
+  }else if(LASSO_KEY.find(char(key)) != std::string::npos)
   {
     if(mode == LASSO)
     {
@@ -158,10 +156,7 @@ IGL_INLINE bool SelectionPlugin::key_pressed(unsigned int key, int modifiers)
     {
       mode = LASSO;
     }
-    clear();
-    return true;
-  }
-  if(MARQUEE_KEY.find(char(key)) != std::string::npos)
+  }else if(MARQUEE_KEY.find(char(key)) != std::string::npos)
   {
     if(mode == RECTANGULAR_MARQUEE)
     {
@@ -170,11 +165,23 @@ IGL_INLINE bool SelectionPlugin::key_pressed(unsigned int key, int modifiers)
     {
       mode = RECTANGULAR_MARQUEE;
     }
+  }
+  if(old != mode)
+  {
     clear();
+    if(callback_post_mode_change){ callback_post_mode_change(old); } 
     return true;
   }
   return false;
 }
+
+IGL_INLINE void SelectionPlugin::clear()
+{ 
+  M.setZero(); 
+  L.clear(); 
+  is_drawing = false; 
+  is_down = false; 
+};
 
 IGL_INLINE void SelectionPlugin::circle(const Eigen::Matrix<float,2,2> & M,  std::vector<Eigen::RowVector2f> & L)
 {
