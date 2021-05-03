@@ -15,6 +15,7 @@ igl_target_sources(igl_copyleft_tetgen ${INC_FILES} ${SRC_FILES})
 
 # 4. Dependencies
 include(tetgen)
+igl_include(copyleft core)
 target_link_libraries(igl_copyleft_tetgen ${IGL_SCOPE}
     igl::core
     igl_copyleft::core

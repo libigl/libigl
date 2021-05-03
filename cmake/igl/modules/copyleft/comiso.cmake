@@ -15,6 +15,7 @@ igl_target_sources(igl_copyleft_comiso ${INC_FILES} ${SRC_FILES})
 
 # 4. Dependencies
 include(comiso)
+igl_include(copyleft core)
 target_link_libraries(igl_copyleft_comiso ${IGL_SCOPE}
     igl::core
     igl_copyleft::core

@@ -17,6 +17,7 @@ igl_target_sources(igl_imgui ${INC_FILES} ${SRC_FILES})
 include(imgui)
 include(imguizmo)
 include(imgui_fonts)
+igl_include(glfw)
 target_link_libraries(igl_imgui ${IGL_SCOPE}
     igl::core
     igl::glfw

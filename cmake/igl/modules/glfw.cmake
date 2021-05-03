@@ -15,6 +15,7 @@ igl_target_sources(igl_glfw ${INC_FILES} ${SRC_FILES})
 
 # 4. Dependencies
 include(glfw)
+igl_include(opengl)
 target_link_libraries(igl_glfw ${IGL_SCOPE}
     igl::core
     igl::opengl

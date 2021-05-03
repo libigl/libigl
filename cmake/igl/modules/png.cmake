@@ -15,6 +15,7 @@ igl_target_sources(igl_png ${INC_FILES} ${SRC_FILES})
 
 # 4. Dependencies
 include(stb)
+igl_include(opengl)
 target_link_libraries(igl_png ${IGL_SCOPE}
     igl::core
     igl::opengl
