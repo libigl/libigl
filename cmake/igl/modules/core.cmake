@@ -24,3 +24,7 @@ target_link_libraries(igl_core ${IGL_SCOPE}
     Eigen3::Eigen
     Threads::Threads
 )
+
+# 6. Unit tests
+file(GLOB SRC_FILES "${PROJECT_SOURCE_DIR}/tests/include/igl/*.cpp")
+igl_add_test(igl_core ${SRC_FILES})

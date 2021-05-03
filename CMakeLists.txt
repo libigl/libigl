@@ -88,20 +88,26 @@ endif()
 # Include CMake helper functions
 include(igl_add_library)
 include(igl_add_tutorial)
+include(igl_add_test)
 include(igl_target_sources)
 include(igl_install)
 include(igl_include)
+
+# Enable unit testing at the root level
+if(LIBIGL_BUILD_TESTS)
+    include(CTest)
+
+    # Include Catch2 and provide function `catch_discover_tests` to register tests.
+    include(catch2)
+    FetchContent_GetProperties(catch2)
+    include("${catch2_SOURCE_DIR}/contrib/Catch.cmake")
+endif()
 
 # Defines CMake targets for selected libigl modules
 include(libigl)
 
 if(LIBIGL_BUILD_TUTORIALS)
     add_subdirectory(tutorial)
-endif()
-
-if(LIBIGL_BUILD_TESTS)
-    # include(CTest)
-    # add_subdirectory(tests)
 endif()
 
 ################################################################################

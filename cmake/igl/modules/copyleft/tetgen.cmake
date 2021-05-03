@@ -21,3 +21,7 @@ target_link_libraries(igl_copyleft_tetgen ${IGL_SCOPE}
     igl_copyleft::core
     tetgen::tetgen
 )
+
+# 5. Unit tests
+file(GLOB SRC_FILES "${PROJECT_SOURCE_DIR}/tests/include/igl/copyleft/tetgen/*.cpp")
+igl_add_test(igl_copyleft_tetgen ${SRC_FILES})

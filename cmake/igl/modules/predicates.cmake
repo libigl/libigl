@@ -19,3 +19,7 @@ target_link_libraries(igl_predicates ${IGL_SCOPE}
     igl::core
     predicates::predicates
 )
+
+# 5. Unit tests
+file(GLOB SRC_FILES "${PROJECT_SOURCE_DIR}/tests/include/igl/predicates/*.cpp")
+igl_add_test(igl_predicates ${SRC_FILES})

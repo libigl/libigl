@@ -19,3 +19,9 @@ target_link_libraries(igl_nonfree_triangle ${IGL_SCOPE}
     igl::core
     triangle::triangle
 )
+
+# 5. Unit tests
+file(GLOB SRC_FILES "${PROJECT_SOURCE_DIR}/tests/include/igl/triangle/*.cpp")
+igl_add_test(igl_nonfree_triangle ${SRC_FILES})
+igl_include(predicates)
+target_link_libraries(test_igl_nonfree_triangle PUBLIC igl::predicates)

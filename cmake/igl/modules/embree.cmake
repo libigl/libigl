@@ -19,3 +19,7 @@ target_link_libraries(igl_embree ${IGL_SCOPE}
     igl::core
     embree::embree
 )
+
+# 5. Unit tests
+file(GLOB SRC_FILES "${PROJECT_SOURCE_DIR}/tests/include/igl/embree/*.cpp")
+igl_add_test(igl_embree ${SRC_FILES})

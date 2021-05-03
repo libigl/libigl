@@ -21,3 +21,7 @@ target_link_libraries(igl_copyleft_comiso ${IGL_SCOPE}
     igl_copyleft::core
     CoMISo::CoMISo
 )
+
+# 5. Unit tests
+file(GLOB SRC_FILES "${PROJECT_SOURCE_DIR}/tests/include/igl/copyleft/comiso/*.cpp")
+igl_add_test(igl_copyleft_comiso ${SRC_FILES})
