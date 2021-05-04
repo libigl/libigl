@@ -16,6 +16,12 @@
 
 #include <string.h>
 
+#ifdef OSS_FUZZ
+#define NO_ABORT_ON_THROW 1;
+#else
+#define NO_ABORT_ON_THROW 0;
+#endif
+
 namespace igl {
     // helper function
     void inline _msh_eat_white_space(std::ifstream& fin) {
@@ -28,11 +34,15 @@ namespace igl {
 }
 
 IGL_INLINE igl::MshLoader::MshLoader(const std::string &filename) {
+    // Used to prevent fuzzer from terminating on std::runtime_error;
+    int no_abort = NO_ABORT_ON_THROW;
+    
     std::ifstream fin(filename, std::ios::in | std::ios::binary);
 
     if (!fin.is_open()) {
         std::stringstream err_msg;
         err_msg << "failed to open file \"" << filename << "\"";
+        if(no_abort){ return; };
         throw std::ios_base::failure(err_msg.str());
     }
     // Parse header
@@ -40,7 +50,10 @@ IGL_INLINE igl::MshLoader::MshLoader(const std::string &filename) {
     double version;
     int type;
     fin >> buf;
-    if (buf != "$MeshFormat") { throw std::runtime_error("Unexpected .msh format"); }
+    if (buf != "$MeshFormat") {
+        if(no_abort){ return; };
+        throw std::runtime_error("Unexpected .msh format");
+    }
 
     fin >> version >> type >> m_data_size;
     m_binary = (type == 1);
@@ -49,6 +62,7 @@ IGL_INLINE igl::MshLoader::MshLoader(const std::string &filename) {
         // probably unsupported version
         std::stringstream err_msg;
         err_msg << "Error: Unsupported file version:" << version << std::endl;
+        if(no_abort){ return; };
         throw std::runtime_error(err_msg.str());
 
     }
@@ -56,11 +70,13 @@ IGL_INLINE igl::MshLoader::MshLoader(const std::string &filename) {
     if (m_data_size != 8) {
         std::stringstream err_msg;
         err_msg << "Error: data size must be 8 bytes." << std::endl;
+        if(no_abort){ return; };
         throw std::runtime_error(err_msg.str());
     }
     if (sizeof(int) != 4) {
         std::stringstream err_msg;
         err_msg << "Error: code must be compiled with int size 4 bytes." << std::endl;
+        if(no_abort){ return; };
         throw std::runtime_error(err_msg.str());
     }
 
@@ -74,6 +90,7 @@ IGL_INLINE igl::MshLoader::MshLoader(const std::string &filename) {
                 err_msg << "Binary msh file " << filename
                 << " is saved with different endianness than this machine."
                 << std::endl;
+            if(no_abort){ return; };
             throw std::runtime_error(err_msg.str());
         }
     }
@@ -83,6 +100,7 @@ IGL_INLINE igl::MshLoader::MshLoader(const std::string &filename) {
     { 
         std::stringstream err_msg;
         err_msg << "Unexpected contents in the file header." << std::endl;
+        if(no_abort){ return; };
         throw std::runtime_error(err_msg.str());
     }
 
@@ -92,19 +110,31 @@ IGL_INLINE igl::MshLoader::MshLoader(const std::string &filename) {
         if (buf == "$Nodes") {
             parse_nodes(fin);
             fin >> buf;
-            if (buf != "$EndNodes") { throw std::runtime_error("Unexpected tag"); }
+            if (buf != "$EndNodes") {
+                if(no_abort){ return; };
+                throw std::runtime_error("Unexpected tag");
+            }
         } else if (buf == "$Elements") {
             parse_elements(fin);
             fin >> buf;
-            if (buf != "$EndElements") { throw std::runtime_error("Unexpected tag"); }
+            if (buf != "$EndElements") {
+                if(no_abort){ return; };
+                throw std::runtime_error("Unexpected tag");
+            }
         } else if (buf == "$NodeData") {
             parse_node_field(fin);
             fin >> buf;
-            if (buf != "$EndNodeData") { throw std::runtime_error("Unexpected tag"); }
+            if (buf != "$EndNodeData") {
+                if(no_abort){ return; };
+                throw std::runtime_error("Unexpected tag");
+            }
         } else if (buf == "$ElementData") {
             parse_element_field(fin);
             fin >> buf;
-            if (buf != "$EndElementData") { throw std::runtime_error("Unexpected tag"); }
+            if (buf != "$EndElementData") {
+                if(no_abort){ return; };
+                throw std::runtime_error("Unexpected tag");
+            }
         } else if (fin.eof()) {
             break;
         } else {

@@ -68,6 +68,10 @@ if(LIBIGL_BUILD_TESTS)
 	add_subdirectory(tests)
 endif()
 
+# OSS-fuzz build
+# This is only used by OSS-fuzz
+option(OSS_FUZZ "Build for OSS-fuzz" OFF)
+
 if(LIBIGL_TOPLEVEL_PROJECT)
 	# Set folders for Visual Studio/Xcode
 	igl_set_folders()
