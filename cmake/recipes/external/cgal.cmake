@@ -39,6 +39,8 @@ function(cgal_import_target)
 
     include(boost)
     ignore_package(Boost)
+    set(Boost_INCLUDE_DIRS "")
+    set(Boost_LIBRARIES Boost::thread Boost::system)
 
     find_package(CGAL CONFIG COMPONENTS Core PATHS ${cgal_SOURCE_DIR} NO_DEFAULT_PATH)
 endfunction()
