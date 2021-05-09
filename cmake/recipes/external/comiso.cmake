@@ -26,3 +26,5 @@ foreach(filepath IN ITEMS ${INC_FILES})
 endforeach()
 
 target_include_directories(CoMISo PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/CoMISo/include)
+
+set_target_properties(CoMISo PROPERTIES FOLDER ThirdParty)

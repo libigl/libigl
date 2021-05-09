@@ -45,9 +45,6 @@
 # option(LIBIGL_INSTALL            "Enable installation of libigl targets" OFF)
 # option(LIBIGL_USE_STATIC_LIBRARY "Use libigl as static library"          OFF)
 
-# Meta option.
-# option(LIBIGL_ALL                   "Build all libigl modules"           OFF)
-
 # Module options
 # option(LIBIGL_WITH_EMBREE           "Build target igl::embree"           ON)
 # option(LIBIGL_WITH_GLFW             "Build target igl::glfw"             ON)

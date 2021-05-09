@@ -14,3 +14,4 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(predicates)
 add_library(predicates::predicates ALIAS predicates)
 
+set_target_properties(predicates PROPERTIES FOLDER ThirdParty)

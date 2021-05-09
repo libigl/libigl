@@ -34,6 +34,9 @@ function(cgal_import_target)
     # Prefer Config mode before Module mode to prevent CGAL from loading its own FindBoost.cmake
     set(CMAKE_FIND_PACKAGE_PREFER_CONFIG TRUE)
 
+    include(gmp)
+    include(mpfr)
+
     include(boost)
     ignore_package(Boost)
 

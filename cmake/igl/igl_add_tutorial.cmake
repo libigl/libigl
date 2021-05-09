@@ -13,4 +13,6 @@ function(igl_add_tutorial name)
         igl::tutorial_data
         ${ARGN}
     )
+
+    set_target_properties(${name} PROPERTIES FOLDER Libigl_Tutorials)
 endfunction()

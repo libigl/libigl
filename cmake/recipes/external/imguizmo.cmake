@@ -34,3 +34,5 @@ target_include_directories(imguizmo PUBLIC "${CMAKE_CURRENT_BINARY_DIR}/imguizmo
 
 include(imgui)
 target_link_libraries(imguizmo PUBLIC imgui::imgui)
+
+set_target_properties(imguizmo PROPERTIES FOLDER ThirdParty)

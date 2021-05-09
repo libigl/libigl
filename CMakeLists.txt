@@ -47,29 +47,26 @@ option(LIBIGL_INSTALL          "Enable installation of libigl targets" ${LIBIGL_
 # (by default, static build is off since libigl is a header-only library)
 option(LIBIGL_USE_STATIC_LIBRARY "Use libigl as static library" ${LIBIGL_TOPLEVEL_PROJECT})
 
-# Meta option.
-option(LIBIGL_ALL                   "Build all libigl modules"           ${LIBIGL_TOPLEVEL_PROJECT})
-
 # Main modules
-option(LIBIGL_WITH_EMBREE           "Build target igl::embree"           OFF)
-option(LIBIGL_WITH_GLFW             "Build target igl::glfw"             OFF)
-option(LIBIGL_WITH_IMGUI            "Build target igl::imgui"            OFF)
-option(LIBIGL_WITH_OPENGL           "Build target igl::opengl"           OFF)
-option(LIBIGL_WITH_PNG              "Build target igl::png"              OFF)
-option(LIBIGL_WITH_PREDICATES       "Build target igl::predicates"       OFF)
-option(LIBIGL_WITH_XML              "Build target igl::xml"              OFF)
+option(LIBIGL_WITH_EMBREE           "Build target igl::embree"           ${LIBIGL_TOPLEVEL_PROJECT})
+option(LIBIGL_WITH_GLFW             "Build target igl::glfw"             ${LIBIGL_TOPLEVEL_PROJECT})
+option(LIBIGL_WITH_IMGUI            "Build target igl::imgui"            ${LIBIGL_TOPLEVEL_PROJECT})
+option(LIBIGL_WITH_OPENGL           "Build target igl::opengl"           ${LIBIGL_TOPLEVEL_PROJECT})
+option(LIBIGL_WITH_PNG              "Build target igl::png"              ${LIBIGL_TOPLEVEL_PROJECT})
+option(LIBIGL_WITH_PREDICATES       "Build target igl::predicates"       ${LIBIGL_TOPLEVEL_PROJECT})
+option(LIBIGL_WITH_XML              "Build target igl::xml"              ${LIBIGL_TOPLEVEL_PROJECT})
 
 # Copyleft modules
-option(LIBIGL_COPYLEFT_WITH_CGAL    "Build target igl_copyleft::cgal"    OFF)
-option(LIBIGL_COPYLEFT_WITH_COMISO  "Build target igl_copyleft::comiso"  OFF)
-option(LIBIGL_COPYLEFT_WITH_CORE    "Build target igl_copyleft::core"    OFF)
-option(LIBIGL_COPYLEFT_WITH_CORK    "Build target igl_copyleft::cork"    OFF)
-option(LIBIGL_COPYLEFT_WITH_TETGEN  "Build target igl_copyleft::tetgen"  OFF)
+option(LIBIGL_COPYLEFT_WITH_CGAL    "Build target igl_copyleft::cgal"    ${LIBIGL_TOPLEVEL_PROJECT})
+option(LIBIGL_COPYLEFT_WITH_COMISO  "Build target igl_copyleft::comiso"  ${LIBIGL_TOPLEVEL_PROJECT})
+option(LIBIGL_COPYLEFT_WITH_CORE    "Build target igl_copyleft::core"    ${LIBIGL_TOPLEVEL_PROJECT})
+option(LIBIGL_COPYLEFT_WITH_CORK    "Build target igl_copyleft::cork"    ${LIBIGL_TOPLEVEL_PROJECT})
+option(LIBIGL_COPYLEFT_WITH_TETGEN  "Build target igl_copyleft::tetgen"  ${LIBIGL_TOPLEVEL_PROJECT})
 
 # Nonfree modules
-option(LIBIGL_NONFREE_WITH_MATLAB   "Build target igl_nonfree::matlab"   OFF)
-option(LIBIGL_NONFREE_WITH_MOSEK    "Build target igl_nonfree::mosek"    OFF)
-option(LIBIGL_NONFREE_WITH_TRIANGLE "Build target igl_nonfree::triangle" OFF)
+option(LIBIGL_NONFREE_WITH_MATLAB   "Build target igl_nonfree::matlab"   ${LIBIGL_TOPLEVEL_PROJECT})
+option(LIBIGL_NONFREE_WITH_MOSEK    "Build target igl_nonfree::mosek"    ${LIBIGL_TOPLEVEL_PROJECT})
+option(LIBIGL_NONFREE_WITH_TRIANGLE "Build target igl_nonfree::triangle" ${LIBIGL_TOPLEVEL_PROJECT})
 
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
@@ -79,6 +76,7 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
 list(PREPEND CMAKE_MODULE_PATH
     ${CMAKE_CURRENT_LIST_DIR}/cmake/
     ${CMAKE_CURRENT_LIST_DIR}/cmake/igl
+    ${CMAKE_CURRENT_LIST_DIR}/cmake/find
     ${CMAKE_CURRENT_LIST_DIR}/cmake/recipes/external
 )
 

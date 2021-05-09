@@ -13,3 +13,5 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(glad)
 add_library(glad::glad ALIAS glad)
+
+set_target_properties(glad PROPERTIES FOLDER ThirdParty)

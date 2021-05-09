@@ -38,6 +38,9 @@ function(igl_add_test module_name)
         Catch2::Catch2
     )
 
+    # IDE Folder
+    set_target_properties(test_${module_name} PROPERTIES FOLDER Libigl_Tests)
+
     # Output directory
     set_target_properties(test_${module_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/tests")
 

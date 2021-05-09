@@ -20,3 +20,5 @@ add_library(tinyxml2 STATIC ${tinyxml2_SOURCE_DIR}/tinyxml2.cpp ${tinyxml2_SOURC
 add_library(tinyxml2::tinyxml2 ALIAS tinyxml2)
 target_include_directories(tinyxml2 PUBLIC ${tinyxml2_SOURCE_DIR})
 set_target_properties(tinyxml2 PROPERTIES DEFINE_SYMBOL "TINYXML2_EXPORT")
+
+set_target_properties(tinyxml2 PROPERTIES FOLDER ThirdParty)

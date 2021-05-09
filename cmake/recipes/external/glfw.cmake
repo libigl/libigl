@@ -20,7 +20,7 @@ FetchContent_MakeAvailable(glfw)
 
 add_library(glfw::glfw ALIAS glfw)
 
-set_target_properties(glfw PROPERTIES FOLDER third_party)
+set_target_properties(glfw PROPERTIES FOLDER ThirdParty)
 
 # Warning config
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")

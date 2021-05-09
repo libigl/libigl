@@ -28,3 +28,5 @@ add_library(stb ${stb_BINARY_DIR}/stb_image.cpp)
 add_library(stb::stb ALIAS stb)
 
 target_include_directories(stb PUBLIC "${stb_SOURCE_DIR}")
+
+set_target_properties(stb PROPERTIES FOLDER ThirdParty)
