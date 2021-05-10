@@ -37,6 +37,32 @@ endif()
 ################################################################################
 project(libigl VERSION 3.0.0)
 
+# CMake module path
+list(PREPEND CMAKE_MODULE_PATH
+    ${CMAKE_CURRENT_LIST_DIR}/cmake/
+    ${CMAKE_CURRENT_LIST_DIR}/cmake/igl
+    ${CMAKE_CURRENT_LIST_DIR}/cmake/find
+    ${CMAKE_CURRENT_LIST_DIR}/cmake/recipes/external
+)
+
+if(HUNTER_ENABLED)
+    list(PREPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake/recipes/hunter)
+else()
+    list(PREPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake/recipes/external)
+endif()
+
+# Check for gmp + mpfr and enable cork / cgal modules accordingly
+set(LIBIGL_DEFAULT_CGAL_CORK ${LIBIGL_TOPLEVEL_PROJECT})
+if(LIBIGL_TOPLEVEL_PROJECT AND NOT WIN32)
+    find_package(GMP QUIET)
+    find_package(MPFR QUIET)
+    if(NOT (TARGET gmp::gmp AND TARGET mpfr::mpfr))
+        set(LIBIGL_DEFAULT_CGAL_CORK OFF)
+        message(WARNING "Missing dependencies GMP and MPFR. The libigl modules for cork and cgal "
+                        "will be disabled by default.")
+    endif()
+endif()
+
 # Build tests and tutorials
 option(LIBIGL_BUILD_TESTS      "Build libigl unit test"                ${LIBIGL_TOPLEVEL_PROJECT})
 option(LIBIGL_BUILD_TUTORIALS  "Build libigl tutorial"                 ${LIBIGL_TOPLEVEL_PROJECT})
@@ -57,10 +83,10 @@ option(LIBIGL_WITH_PREDICATES       "Build target igl::predicates"       ${LIBIG
 option(LIBIGL_WITH_XML              "Build target igl::xml"              ${LIBIGL_TOPLEVEL_PROJECT})
 
 # Copyleft modules
-option(LIBIGL_COPYLEFT_WITH_CGAL    "Build target igl_copyleft::cgal"    ${LIBIGL_TOPLEVEL_PROJECT})
-option(LIBIGL_COPYLEFT_WITH_COMISO  "Build target igl_copyleft::comiso"  ${LIBIGL_TOPLEVEL_PROJECT})
 option(LIBIGL_COPYLEFT_WITH_CORE    "Build target igl_copyleft::core"    ${LIBIGL_TOPLEVEL_PROJECT})
-option(LIBIGL_COPYLEFT_WITH_CORK    "Build target igl_copyleft::cork"    ${LIBIGL_TOPLEVEL_PROJECT})
+option(LIBIGL_COPYLEFT_WITH_CGAL    "Build target igl_copyleft::cgal"    ${LIBIGL_DEFAULT_CGAL_CORK})
+option(LIBIGL_COPYLEFT_WITH_COMISO  "Build target igl_copyleft::comiso"  ${LIBIGL_TOPLEVEL_PROJECT})
+option(LIBIGL_COPYLEFT_WITH_CORK    "Build target igl_copyleft::cork"    ${LIBIGL_DEFAULT_CGAL_CORK})
 option(LIBIGL_COPYLEFT_WITH_TETGEN  "Build target igl_copyleft::tetgen"  ${LIBIGL_TOPLEVEL_PROJECT})
 
 # Nonfree modules
@@ -73,35 +99,19 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
 
-list(PREPEND CMAKE_MODULE_PATH
-    ${CMAKE_CURRENT_LIST_DIR}/cmake/
-    ${CMAKE_CURRENT_LIST_DIR}/cmake/igl
-    ${CMAKE_CURRENT_LIST_DIR}/cmake/find
-    ${CMAKE_CURRENT_LIST_DIR}/cmake/recipes/external
-)
-
-if(HUNTER_ENABLED)
-    list(PREPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake/recipes/hunter)
-else()
-    list(PREPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake/recipes/external)
-endif()
 
 # Include CMake helper functions
 include(igl_add_library)
-include(igl_add_tutorial)
 include(igl_add_test)
-include(igl_target_sources)
-include(igl_install)
+include(igl_add_tutorial)
+include(igl_copy_dll)
 include(igl_include)
+include(igl_install)
+include(igl_target_sources)
 
 # Enable unit testing at the root level
 if(LIBIGL_BUILD_TESTS)
     include(CTest)
-
-    # Include Catch2 and provide function `catch_discover_tests` to register tests.
-    include(catch2)
-    FetchContent_GetProperties(catch2)
-    include("${catch2_SOURCE_DIR}/contrib/Catch.cmake")
 endif()
 
 # Defines CMake targets for selected libigl modules

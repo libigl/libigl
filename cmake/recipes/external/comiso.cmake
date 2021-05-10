@@ -8,10 +8,11 @@ include(FetchContent)
 FetchContent_Declare(
     comiso
     GIT_REPOSITORY https://github.com/libigl/CoMISo.git
-    GIT_TAG d60aa4759fba76b0b793b1efb090b7a771dd7c56
+    GIT_TAG 536440e714f412e7ef6c0b96b90ba37b1531bb39
 )
 
 include(eigen)
+
 FetchContent_MakeAvailable(comiso)
 
 add_library(CoMISo::CoMISo ALIAS CoMISo)

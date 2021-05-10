@@ -45,5 +45,7 @@ function(igl_add_test module_name)
     set_target_properties(test_${module_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/tests")
 
     # Register tests
+    FetchContent_GetProperties(catch2)
+    include("${catch2_SOURCE_DIR}/contrib/Catch.cmake")
     catch_discover_tests(test_${module_name})
 endfunction()

@@ -12,7 +12,6 @@ if(WIN32)
     # For CGAL and Cork
     set(ENV{GMP_DIR} "${gmp_mpfr_SOURCE_DIR}/gmp")
     set(ENV{MPFR_DIR} "${gmp_mpfr_SOURCE_DIR}/gmp")
-    message(STATUS "ENV GMP_DIR: $ENV{GMP_DIR}")
 else()
     # On Linux/macOS, gmp+mpfr should be installed system-wide
 endif()
