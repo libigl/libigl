@@ -28,14 +28,14 @@ igl_include_optional(predicates)
 igl_include_optional(png)
 igl_include_optional(xml)
 
-# Libigl nonfree modules
-igl_include_optional(nonfree matlab)
-igl_include_optional(nonfree mosek)
-igl_include_optional(nonfree triangle)
-
 # Libigl copyleft modules
 igl_include_optional(copyleft core)
 igl_include_optional(copyleft cgal)
 igl_include_optional(copyleft comiso)
 igl_include_optional(copyleft cork)
 igl_include_optional(copyleft tetgen)
+
+# Libigl nonfree modules
+igl_include_optional(nonfree matlab)
+igl_include_optional(nonfree mosek)
+igl_include_optional(nonfree triangle)

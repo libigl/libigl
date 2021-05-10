@@ -9,3 +9,5 @@ Documentation, tutorial, and instructions at <https://libigl.github.io>.
 
 
 💡 **Note**: [v2.3.0](https://github.com/libigl/libigl/releases/tag/v2.3.0) is our last stable release before some planned major reorganization (see #1696 for details). The upcoming reorganization is aimed at facilitating maintenance and packaging of various libigl components. The next release will be a new major version of libigl (3.0.0). Be mindful if you are updating to the latest commit on the `main` branch of libigl.
+
+🚨 When upgrading to the latest `main` branch from v2.3.0, there are a number of **breaking changes** you need to be aware of. Please read our [**upgrade guide**](https://libigl.github.io/upgrade-v2-to-v3/) for more information.
