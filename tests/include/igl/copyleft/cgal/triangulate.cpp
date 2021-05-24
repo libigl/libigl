@@ -1,5 +1,6 @@
 #include <test_common.h>
 #include <igl/copyleft/cgal/triangulate.h>
+#include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 
 TEST_CASE("igl_copyleft_cgal_triangulate: sqannulus", "[igl/copyleft/cgal]")
 {
@@ -13,7 +14,7 @@ TEST_CASE("igl_copyleft_cgal_triangulate: sqannulus", "[igl/copyleft/cgal]")
   H<<1.5,1.5;
   Eigen::MatrixXd TV;
   Eigen::MatrixXi TF;
-  igl::copyleft::cgal::triangulate(V,E,H,"",TV,TF);
+  igl::copyleft::cgal::triangulate<CGAL::Epeck>(V,E,H,"",TV,TF);
   Eigen::MatrixXd gt_TV(8,2);
   gt_TV<<
   0,0,
