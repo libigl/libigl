@@ -14,7 +14,7 @@ TEST_CASE("igl_copyleft_cgal_triangulate: sqannulus", "[igl/copyleft/cgal]")
   H<<1.5,1.5;
   Eigen::MatrixXd TV;
   Eigen::MatrixXi TF;
-  igl::copyleft::cgal::triangulate<CGAL::Epeck>(V,E,H,"",TV,TF);
+  igl::copyleft::cgal::triangulate<CGAL::Epeck>(V,E,H,false,TV,TF);
   Eigen::MatrixXd gt_TV(8,2);
   gt_TV<<
   0,0,

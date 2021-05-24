@@ -24,7 +24,9 @@ namespace igl
       //   V #V by 2 list of 2D vertex positions
       //   E #E by 2 list of vertex ids forming unoriented edges of the boundary of the polygon
       //   H #H by 2 coordinates of points contained inside holes of the polygon
-      //   flags  string of options pass to triangle (see triangle documentation)
+      //   retain_convex_hull  whether to retain convex hull {true} or trim away
+      //     all faces reachable from infinite by traversing across
+      //     non-constrained edges {false}.  {true → "c" flag in `triangle`}
       // Outputs:
       //   V2  #V2 by 2  coordinates of the vertives of the generated triangulation
       //   F2  #F2 by 3  list of indices forming the faces of the generated triangulation
@@ -41,7 +43,7 @@ namespace igl
         const Eigen::MatrixBase<DerivedV> & V,
         const Eigen::MatrixBase<DerivedE> & E,
         const Eigen::MatrixBase<DerivedH> & H,
-        const std::string flags,
+        const bool retain_convex_hull,
         Eigen::PlainObjectBase<DerivedV2> & V2,
         Eigen::PlainObjectBase<DerivedF2> & F2);
     }
