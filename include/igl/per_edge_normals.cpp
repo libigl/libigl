@@ -11,7 +11,6 @@
 #include "get_seconds.h"
 #include "per_face_normals.h"
 #include "unique_simplices.h"
-#include <vector>
 
 template <
   typename DerivedV, 
@@ -74,6 +73,7 @@ IGL_INLINE void igl::per_edge_normals(
       }
     }
   }
+ 
   // take average via normalization
   N.rowwise().normalize();
 }

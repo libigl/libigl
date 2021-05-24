@@ -50,7 +50,6 @@ namespace igl
       typedef Eigen::Matrix<float,Eigen::Dynamic,3> PointMatrixType;
       typedef Eigen::Matrix<float,Eigen::Dynamic,3> ColorMatrixType;
       typedef Eigen::Matrix<int,  Eigen::Dynamic,3> FaceMatrixType;
-
       typedef Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> PixelMatrixType;
 
     public:
@@ -120,6 +119,12 @@ namespace igl
       // Inputs:
       //    f - orthographic or perspective projection
       void set_orthographic(bool f );
+
+
+      // Render both sides of triangles
+      // Inputs:
+      //    f - double sided
+      void set_double_sided(bool f);
 
       // render full buffer
       // Outputs:
@@ -200,6 +205,7 @@ namespace igl
 
       bool face_based;
       bool uniform_color;
+      bool double_sided ;
 
       // Camera parameters
       float camera_base_zoom;

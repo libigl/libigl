@@ -445,6 +445,8 @@ IGL_INLINE void igl::opengl::ViewerData::set_labels(const Eigen::MatrixXd& P, co
   assert(P.cols() == 3 && "dimension of label positions incorrect!");
   labels_positions = P;
   labels_strings = str;
+
+  dirty |= MeshGL::DIRTY_CUSTOM_LABELS;
 }
 
 IGL_INLINE void igl::opengl::ViewerData::clear_labels()

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.8)
 
 # https://github.com/libigl/libigl/issues/751
 # http://lists.llvm.org/pipermail/llvm-commits/Week-of-Mon-20160425/351643.html
@@ -84,7 +84,7 @@ target_compile_features(igl_common INTERFACE ${CXX11_FEATURES})
 # Other compilation flags
 if(MSVC)
   # Enable parallel compilation for Visual Studio
-  target_compile_options(igl_common INTERFACE /MP /bigobj)
+  target_compile_options(igl_common INTERFACE $<$<COMPILE_LANGUAGE:CXX>:/MP> $<$<COMPILE_LANGUAGE:CXX>:/bigobj>)
   target_compile_definitions(igl_common INTERFACE -DNOMINMAX)
 endif()
 
@@ -350,12 +350,11 @@ if(LIBIGL_WITH_OPENGL)
   if (NOT CMAKE_VERSION VERSION_LESS "3.11")
     cmake_policy(SET CMP0072 NEW)
   endif()
-  find_package(OpenGL REQUIRED)
-  if(TARGET OpenGL::GL)
-    target_link_libraries(igl_opengl ${IGL_SCOPE} OpenGL::GL)
+  find_package(OpenGL REQUIRED OPTIONAL_COMPONENTS OpenGL)
+  if(TARGET OpenGL::OpenGL)
+    target_link_libraries(igl_opengl ${IGL_SCOPE} OpenGL::OpenGL)
   else()
-    target_link_libraries(igl_opengl ${IGL_SCOPE} ${OPENGL_gl_LIBRARY})
-    target_include_directories(igl_opengl SYSTEM ${IGL_SCOPE} ${OPENGL_INCLUDE_DIR})
+    target_link_libraries(igl_opengl ${IGL_SCOPE} OpenGL::GL)
   endif()
 
   # glad module
