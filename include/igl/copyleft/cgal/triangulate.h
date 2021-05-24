@@ -31,6 +31,7 @@ namespace igl
       //
       // See also: igl::triangle::triangulate
       template <
+        typename Kernel,
         typename DerivedV,
         typename DerivedE,
         typename DerivedH,
