@@ -141,7 +141,7 @@ endfunction()
 function(igl_download_tetgen)
 	igl_download_project(tetgen
 		GIT_REPOSITORY https://github.com/libigl/tetgen.git
-		GIT_TAG        6407f3962d4e24426a81955664391da74e2e2311
+		GIT_TAG        4f3bfba3997f20aa1f96cfaff604313a8c2c85b6
 	)
 endfunction()
 
