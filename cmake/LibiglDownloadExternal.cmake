@@ -157,7 +157,7 @@ endfunction()
 function(igl_download_triangle)
 	igl_download_project(triangle
 		GIT_REPOSITORY https://github.com/libigl/triangle.git
-		GIT_TAG        4df461c0083e0d768fe42ab41a617070b5acc5ef
+		GIT_TAG        3ee6cac2230f0fe1413879574f741c7b6da11221
 	)
 endfunction()
 
