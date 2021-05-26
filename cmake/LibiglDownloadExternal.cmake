@@ -140,8 +140,8 @@ endfunction()
 ## TetGen
 function(igl_download_tetgen)
 	igl_download_project(tetgen
-		GIT_REPOSITORY https://github.com/jdumas/tetgen.git
-		GIT_TAG        c63e7a6434652b8a2065c835bd9d6d298db1a0bc
+		GIT_REPOSITORY https://github.com/libigl/tetgen.git
+		GIT_TAG        6407f3962d4e24426a81955664391da74e2e2311
 	)
 endfunction()
 
