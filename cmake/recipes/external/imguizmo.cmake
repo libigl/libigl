@@ -30,6 +30,8 @@ file(GLOB_RECURSE IMGUIZMO_SRC "${output_folder}/*.h" "${output_folder}/*.cpp")
 add_library(imguizmo ${IMGUIZMO_SRC})
 add_library(imguizmo::imguizmo ALIAS imguizmo)
 
+target_compile_features(imguizmo PUBLIC cxx_std_11)
+
 target_include_directories(imguizmo PUBLIC "${CMAKE_CURRENT_BINARY_DIR}/imguizmo/include")
 
 include(imgui)
