@@ -69,5 +69,7 @@ function(igl_add_library module_name)
     endif()
 
     # Folder for IDE
-    set_target_properties(${module_name} PROPERTIES FOLDER "Libigl")
+    if(LIBIGL_USE_STATIC_LIBRARY OR CMAKE_VERSION VERSION_GREATER_EQUAL 3.19.0)
+        set_target_properties(${module_name} PROPERTIES FOLDER "Libigl")
+    endif()
 endfunction()

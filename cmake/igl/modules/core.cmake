@@ -1,6 +1,8 @@
 # 1. Define module
 igl_add_library(igl_core)
-set_target_properties(igl_core PROPERTIES OUTPUT_NAME igl)
+if(LIBIGL_USE_STATIC_LIBRARY)
+    set_target_properties(igl_core PROPERTIES OUTPUT_NAME igl)
+endif()
 
 # 2. Include headers
 include(GNUInstallDirs)
