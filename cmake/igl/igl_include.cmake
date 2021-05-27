@@ -17,7 +17,7 @@ function(_igl_include_full prefix name force)
     endif()
 
     # Include igl target definition
-    if(LIBIGL_ALL OR LIBIGL${prefix_uc}_WITH_${name_uc} OR ${force})
+    if(LIBIGL${prefix_uc}_WITH_${name_uc} OR ${force})
         include(${PROJECT_SOURCE_DIR}/cmake/igl/modules/${prefix}/${name}.cmake)
     endif()
 endfunction()
