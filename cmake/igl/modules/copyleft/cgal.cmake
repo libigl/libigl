@@ -29,4 +29,6 @@ file(GLOB SRC_FILES
     "${PROJECT_SOURCE_DIR}/tests/include/igl/copyleft/cgal/*.cpp"
 )
 igl_add_test(igl_copyleft_cgal ${SRC_FILES})
-igl_copy_dll(test_igl_copyleft_cgal)
+if(TARGET test_igl_copyleft_cgal)
+    igl_copy_dll(test_igl_copyleft_cgal)
+endif()
