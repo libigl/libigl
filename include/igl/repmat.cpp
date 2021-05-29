@@ -29,7 +29,7 @@ IGL_INLINE void igl::repmat(
   }
 }
 
-template <typename T>
+template <typename T, int majorType>
 IGL_INLINE void igl::repmat(
   const Eigen::SparseMatrix<T> & A,
   const int r,
@@ -38,24 +38,29 @@ IGL_INLINE void igl::repmat(
 {
   assert(r>0);
   assert(c>0);
-  B.resize(r*A.rows(),c*A.cols());
-  B.reserve(r*c*A.nonZeros());
-  for(int i = 0;i<r;i++)
+  B.resize(r*A.rows(), c*A.cols());
+  std::vector<Eigen::Triplet<T>> b;
+  b.reserve(r*c*A.nonZeros());
+
+  for(int i = 0; i < r; i++)
   {
-    for(int j = 0;j<c;j++)
+    for(int j = 0; j < c; j++)
     {
-      // Loop outer level
-      for (int k=0; k<A.outerSize(); ++k)
+      // loop outer level
+      for (int k = 0; k < A.outerSize(); ++k)
       {
         // loop inner level
-        for (typename Eigen::SparseMatrix<T>::InnerIterator it(A,k); it; ++it)
+        for (typename Eigen::SparseMatrix<T, majorType>::InnerIterator 
+          it(A,k); it; ++it)
         {
-          B.insert(i*A.rows()+it.row(),j*A.cols() + it.col()) = it.value();
+          Eigen::Triplet<T> triplet(i * A.rows() + it.row(), j * A.cols() 
+            + it.col(), it.value());
+          b.push_back(triplet);
         }
       }
     }
   }
-  B.finalize();
+    B.setFromTriplets(b.begin(), b.end());
 }
 
 #ifdef IGL_STATIC_LIBRARY
