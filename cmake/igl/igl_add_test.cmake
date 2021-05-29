@@ -7,11 +7,11 @@ function(igl_add_test module_name)
         message(FATAL_ERROR "'${module_name}' is not a CMake target")
     endif()
 
-    # Check if category is `copyleft` or `nonfree`
+    # Check if category is `copyleft` or `restricted`
     if(${module_name} MATCHES "^igl_copyleft")
         set(suffix "_copyleft")
-    elseif(${module_name} MATCHES "^igl_nonfree")
-        set(suffix "_nonfree")
+    elseif(${module_name} MATCHES "^igl_restricted")
+        set(suffix "_restricted")
     else()
         set(suffix "")
     endif()

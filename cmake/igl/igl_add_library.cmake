@@ -2,11 +2,11 @@
 # compilation flags, as well as installation rules for the target. Target sources and dependencies
 # need to be added separately.
 function(igl_add_library module_name)
-    # Check if category is `copyleft` or `nonfree`
+    # Check if category is `copyleft` or `restricted`
     if(${module_name} MATCHES "^igl_copyleft")
         set(suffix "_copyleft")
-    elseif(${module_name} MATCHES "^igl_nonfree")
-        set(suffix "_nonfree")
+    elseif(${module_name} MATCHES "^igl_restricted")
+        set(suffix "_restricted")
     else()
         set(suffix "")
     endif()
