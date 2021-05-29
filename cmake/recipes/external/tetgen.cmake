@@ -8,7 +8,7 @@ include(FetchContent)
 FetchContent_Declare(
     tetgen
     GIT_REPOSITORY https://github.com/libigl/tetgen.git
-    GIT_TAG        a754f2485470f1ac51503e273d7e74a281c67807
+    GIT_TAG        4f3bfba3997f20aa1f96cfaff604313a8c2c85b6
 )
 
 FetchContent_MakeAvailable(tetgen)
