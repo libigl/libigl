@@ -1,8 +1,14 @@
-# In order to persistently set default options for your project, copy this file
-# and remove the '.sample' suffix. Then uncomment the relevant options for your
-# project. Note that this file is included before `project(Libigl)` is defined,
-# so we can use it to define the C and C++ compilers, but some variables such as
-# PROJECT_SOURCE_DIR will not be defined yet. You can use CMAKE_SOURCE_DIR instead.
+# If you are cloning and compiling the libigl repository as a standalone, you
+# can use this file as a convenience to set default CMake options. Simply copy
+# this file and remove the '.sample' suffix. Then, uncomment the relevant
+# options as desired. Note that this file is included before `project(Libigl)`
+# is defined, so we can use it to define the C and C++ compilers, but some
+# variables such as PROJECT_SOURCE_DIR will not be defined yet. You can use
+# CMAKE_SOURCE_DIR instead.
+#
+# If you are using libigl as a subproject (e.g. see the libigl-example-project
+# template), then you do NOT need to use this file. Simply set your preferred
+# CMake options in the parent project, # before including libigl.
 
 ################################################################################
 # CMake Options
