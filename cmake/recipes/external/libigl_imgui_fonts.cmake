@@ -20,6 +20,6 @@ add_library(igl::imgui_fonts ALIAS igl_imgui_fonts)
 
 include(GNUInstallDirs)
 target_include_directories(igl_imgui_fonts SYSTEM INTERFACE
-    $<BUILD_INTERFACE:${imgui_fonts_SOURCE_DIR}>
+    $<BUILD_INTERFACE:${libigl_imgui_fonts_SOURCE_DIR}>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
