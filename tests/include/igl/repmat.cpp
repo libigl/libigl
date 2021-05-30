@@ -45,6 +45,12 @@ void testRepmat(
   checkRepmat<T, majorType>(A, B, rows, cols, r, c);
 }
 
+TEST_CASE("repmat: sparse rowMajor", "[igl]")
+{
+  testRepmat<double, Eigen::RowMajor>(4,  5, 2, 4);
+  testRepmat<   int, Eigen::RowMajor>(2,  8, 3, 4);
+  testRepmat< float, Eigen::RowMajor>(6, 10, 2, 2);
+}
 
 TEST_CASE("repmat: sparse colMajor", "[igl]")
 {
