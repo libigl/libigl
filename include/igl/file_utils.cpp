@@ -20,8 +20,8 @@ IGL_INLINE void read_file_binary(FILE *fp,
     fileBufferBytes.resize(sizeBytes);
 
     if (fread((char*)fileBufferBytes.data(), 1, sizeBytes, fp) == sizeBytes) {
-        fclose(fp);
-        return;
+      fclose(fp);
+      return;
     }
   }
 
