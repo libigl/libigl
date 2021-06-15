@@ -14,6 +14,7 @@
 #include "get_seconds.h"
 #include <unordered_map>
 #include <algorithm>
+#include <random>
 #include <vector>
 
 namespace igl
@@ -209,7 +210,9 @@ namespace igl
     }
         //printf("  --------\n");
     // randomize order: this might be a little paranoid...
-    std::random_shuffle(std::begin(N), std::end(N));
+    std::random_device rd;
+    std::mt19937 twister(rd());
+    std::shuffle(std::begin(N), std::end(N), twister);
     bool found = false;
     for(const BlueNoiseKeyType & nk : N)
     {
