@@ -1,4 +1,3 @@
-// Because of Mosek complications, we don't use static library if Mosek is used.
 #include <igl/boundary_conditions.h>
 #include <igl/colon.h>
 #include <igl/column_to_quats.h>
