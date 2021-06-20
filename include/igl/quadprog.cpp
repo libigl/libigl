@@ -1,6 +1,5 @@
 #include "quadprog.h"
 #include "min_quad_with_fixed.h"
-#include <igl/matlab_format.h>
 #include <iostream>
 
 template <typename Scalar, int n, int m>
