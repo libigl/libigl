@@ -34,7 +34,7 @@ TEST_CASE("fast_winding_number: one_point_cloud", "[igl]")
   Eigen::MatrixXd O_CM;
   Eigen::VectorXd O_R;
   Eigen::MatrixXd O_EC;
-  igl::fast_winding_number(P,N,A,O_PI,O_CH,2,O_CM,O_R,O_EC);
+  igl::fast_winding_number_cloud_precompute(P,N,A,O_PI,O_CH,2,O_CM,O_R,O_EC);
   Eigen::MatrixXd Q(4,3);
   Q<<
      0, 0, 0,
@@ -95,7 +95,7 @@ TEST_CASE("fast_winding_number: meshes", "[igl]" "[slow]")
       Eigen::MatrixXd O_CM;
       Eigen::VectorXd O_R;
       Eigen::MatrixXd O_EC;
-      igl::fast_winding_number(BC,N,A,O_PI,O_CH,2,O_CM,O_R,O_EC);
+      igl::fast_winding_number_cloud_precompute(BC,N,A,O_PI,O_CH,2,O_CM,O_R,O_EC);
       igl::fast_winding_number(BC,N,A,O_PI,O_CH,O_CM,O_R,O_EC,Q,2,Wfwn_cloud);
       test_common::assert_near(Wfwn_cloud,Wexact,1e-2);
     }
