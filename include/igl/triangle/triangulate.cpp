@@ -54,7 +54,8 @@ IGL_INLINE void igl::triangle::triangulate(
   Eigen::PlainObjectBase<DerivedF2> & F2)
 {
   Eigen::VectorXi VM,EM,VM2,EM2;
-  return triangulate(V,E,H,VM,EM,flags,V2,F2,VM2,EM2);
+  Eigen::MatrixXi E2;
+  return triangulate(V,E,H,VM,EM,flags,V2,F2,VM2,E2,EM2);
 }
 
 template <
@@ -66,6 +67,7 @@ template <
  typename DerivedV2,
  typename DerivedF2,
  typename DerivedVM2,
+ typename DerivedE2,
  typename DerivedEM2>
 IGL_INLINE void igl::triangle::triangulate(
   const Eigen::MatrixBase<DerivedV> & V,
@@ -77,6 +79,7 @@ IGL_INLINE void igl::triangle::triangulate(
   Eigen::PlainObjectBase<DerivedV2> & V2,
   Eigen::PlainObjectBase<DerivedF2> & F2,
   Eigen::PlainObjectBase<DerivedVM2> & VM2,
+  Eigen::PlainObjectBase<DerivedE2> & E2,
   Eigen::PlainObjectBase<DerivedEM2> & EM2)
 {
   using namespace std;
@@ -146,6 +149,7 @@ IGL_INLINE void igl::triangle::triangulate(
   // Return the mesh
   V2 = MapXdr(out.pointlist,out.numberofpoints,2).cast<typename DerivedV2::Scalar>();
   F2 = MapXir(out.trianglelist,out.numberoftriangles,3).cast<typename DerivedF2::Scalar>();
+  E2 = MapXir(out.segmentlist,out.numberofsegments,2).cast<typename DerivedE2::Scalar>();
   if(VM.size())
   {
     VM2 = MapXir(out.pointmarkerlist,out.numberofpoints,1).cast<typename DerivedVM2::Scalar>();

@@ -65,6 +65,7 @@ namespace igl
       typename DerivedV2,
       typename DerivedF2,
       typename DerivedVM2,
+      typename DerivedE2,
       typename DerivedEM2>
     IGL_INLINE void triangulate(
       const Eigen::MatrixBase<DerivedV> & V,
@@ -76,6 +77,7 @@ namespace igl
       Eigen::PlainObjectBase<DerivedV2> & V2,
       Eigen::PlainObjectBase<DerivedF2> & F2,
       Eigen::PlainObjectBase<DerivedVM2> & VM2,
+      Eigen::PlainObjectBase<DerivedE2>  & E2,
       Eigen::PlainObjectBase<DerivedEM2> & EM2);
   }
 }
