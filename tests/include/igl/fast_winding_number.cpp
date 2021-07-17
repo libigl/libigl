@@ -70,7 +70,7 @@ TEST_CASE("fast_winding_number: meshes", "[igl]" "[slow]")
     {
       INFO("soup");
       igl::FastWindingNumberBVH fwn_bvh;
-      igl::fast_winding_number(V,F,2,fwn_bvh);
+      igl::fast_winding_number_soup_precompute(V,F,2,fwn_bvh);
       Eigen::VectorXd Wfwn_soup;
       igl::fast_winding_number(fwn_bvh,2,Q,Wfwn_soup);
       test_common::assert_near(Wfwn_soup,Wexact,1e-2);
