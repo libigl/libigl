@@ -235,13 +235,14 @@ igl::embree::EmbreeRenderer
 }
 
 
+template <typename DerivedV, typename DerivedF>
 IGL_INLINE void
 igl::embree::EmbreeRenderer
-::set_mesh(const Eigen::Matrix<double,Eigen::Dynamic,3> & MV,
-           const Eigen::Matrix<int,  Eigen::Dynamic,3>  & MF,
+::set_mesh(const Eigen::MatrixBase<DerivedV> & MV,
+           const Eigen::MatrixBase<DerivedF> & MF,
            bool is_static)
 {
-  V = MV.cast<float>();
+  V = MV.template cast<float>();
   F = MF;
   this->init(V,F,is_static);
 
@@ -352,22 +353,23 @@ igl::embree::EmbreeRenderer
 }
 
 
+template <typename DerivedC>
 IGL_INLINE void
 igl::embree::EmbreeRenderer
-::set_colors(const Eigen::MatrixXd & C)
+::set_colors(const Eigen::MatrixBase<DerivedC> & C)
 {
   if(C.rows()==V.rows()) // per vertex color
   {
     face_based = false;
-    this->C = C.cast<float>();
+    this->C = C.template cast<float>();
     this->uniform_color=false;
   } else if (C.rows()==F.rows()) {
     face_based = true;
-    this->C = C.cast<float>();
+    this->C = C.template cast<float>();
     this->uniform_color=false;
   } else if (C.rows()==1) {
     face_based = true;
-    this->uC = C.cast<float>();
+    this->uC = C.template cast<float>();
     this->uniform_color=true;
   }else {
     // don't know what to do
@@ -376,43 +378,48 @@ igl::embree::EmbreeRenderer
   }
 }
 
+template <typename DerivedD>
 IGL_INLINE void
 igl::embree::EmbreeRenderer
-::set_data(const Eigen::VectorXd & D, igl::ColorMapType cmap)
+::set_data(const Eigen::MatrixBase<DerivedD> & D, igl::ColorMapType cmap)
 {
-  const double caxis_min = D.minCoeff();
-  const double caxis_max = D.maxCoeff();
+  const auto caxis_min = D.minCoeff();
+  const auto caxis_max = D.maxCoeff();
   return set_data(D,caxis_min,caxis_max,cmap);
 }
 
 
+template <typename DerivedD, typename T>
 IGL_INLINE void igl::embree::EmbreeRenderer::set_data(
-  const Eigen::VectorXd & D,
-  double caxis_min,
-  double caxis_max,
+  const Eigen::MatrixBase<DerivedD> & D,
+  T caxis_min,
+  T caxis_max,
   igl::ColorMapType cmap)
 {
-    Eigen::MatrixXd C;
+    Eigen::Matrix<T, -1, -1> C;
     igl::colormap(cmap,D,caxis_min,caxis_max,C);
     set_colors(C);
 }
 
+template <typename Derivedr>
 IGL_INLINE void 
-igl::embree::EmbreeRenderer::set_rot(const Eigen::Matrix3d &r)
+igl::embree::EmbreeRenderer::set_rot(const Eigen::MatrixBase<Derivedr> &r)
 {
-  this->rot_matrix = r.cast<float>();
+  this->rot_matrix = r.template cast<float>();
 }
 
+template <typename T>
 IGL_INLINE void 
-igl::embree::EmbreeRenderer::set_zoom(double zoom)
+igl::embree::EmbreeRenderer::set_zoom(T zoom)
 {
   this->camera_zoom=zoom;
 }
 
+template <typename Derivedtr>
 IGL_INLINE void 
-igl::embree::EmbreeRenderer::set_translation(const Eigen::Vector3d &tr)
+igl::embree::EmbreeRenderer::set_translation(const Eigen::MatrixBase<Derivedtr> &tr)
 {
-  this->camera_translation=tr.cast<float>();
+  this->camera_translation=tr.template cast<float>();
 }
 
 IGL_INLINE void 
@@ -435,4 +442,8 @@ igl::embree::EmbreeRenderer::set_double_sided(bool d)
 
 
 #ifdef IGL_STATIC_LIBRARY
+template void igl::embree::EmbreeRenderer::set_rot<Eigen::Matrix<double, 3, 3, 0, 3, 3> >(Eigen::MatrixBase<Eigen::Matrix<double, 3, 3, 0, 3, 3> > const&);
+template void igl::embree::EmbreeRenderer::set_data<Eigen::Matrix<double, -1, 1, 0, -1, 1> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, igl::ColorMapType);
+template void igl::embree::EmbreeRenderer::set_mesh<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, bool);
+template void igl::embree::EmbreeRenderer::set_zoom<double>(double);
 #endif //IGL_STATIC_LIBRARY

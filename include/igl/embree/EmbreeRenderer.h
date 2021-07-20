@@ -66,19 +66,22 @@ namespace igl
       //   V  #V x dim matrix of vertex coordinates
       //   F  #F x simplex_size  matrix of indices of simplex corners into V
       //   is_static - optimize for static thene (HQ rendering)
-      void set_mesh(const Eigen::Matrix<double,Eigen::Dynamic,3> & V,
-                    const Eigen::Matrix<int,  Eigen::Dynamic,3>  & F,
+      template <typename DerivedV, typename DerivedF>
+      void set_mesh(const Eigen::MatrixBase<DerivedV> & V,
+                    const Eigen::MatrixBase<DerivedF> & F,
                     bool is_static=true);
+
       // Specify per-vertex or per-face color
       // Inputs:
       //   C  #V x 3 matrix of vertex colors
       //    or #F x 3 matrix of face colors
       //    or 1 x 3 matrix of uniform color
-      void set_colors(const Eigen::MatrixXd & C);
-
+      template <typename DerivedC>
+      void set_colors(const Eigen::MatrixBase<DerivedC> & C);
 
       // Use min(D) and max(D) to set caxis.
-      void set_data(const Eigen::VectorXd & D,
+      template <typename DerivedD>
+      void set_data(const Eigen::MatrixBase<DerivedD> & D,
                     igl::ColorMapType cmap = igl::COLOR_MAP_TYPE_VIRIDIS);
 
       // Specify per-vertex or per-face scalar field
@@ -89,26 +92,30 @@ namespace igl
       //   D  #V by 1 list of scalar values
       //   cmap colormap type
       //   num_steps number of intervals to discretize the colormap
+      template <typename DerivedD, typename T>
       void set_data(
-        const Eigen::VectorXd & D,
-        double caxis_min,
-        double caxis_max,
+        const Eigen::MatrixBase<DerivedD> & D,
+        T caxis_min,
+        T caxis_max,
         igl::ColorMapType cmap = igl::COLOR_MAP_TYPE_VIRIDIS);
 
       // Specify mesh rotation
       // Inputs:
       //   r  3 x 3 rotaton matrix
-      void set_rot(const Eigen::Matrix3d &r);
+      template <typename Derivedr>
+      void set_rot(const Eigen::MatrixBase<Derivedr> &r);
 
       // Specify mesh magnification
       // Inputs:
       //   z  magnification ratio
-      void set_zoom(double z);
+      template <typename T>
+      void set_zoom(T z);
 
       // Specify mesh translation
       // Inputs:
       //   tr  translation vector
-      void set_translation(const Eigen::Vector3d &tr);
+      template <typename Derivedtr>
+      void set_translation(const Eigen::MatrixBase<Derivedtr> &tr);
 
       // Specify that color is face based
       // Inputs:
