@@ -1245,13 +1245,13 @@ namespace igl
     template <typename T>
     inline void serialize(const T& obj,std::vector<char>& buffer)
     {
-      std::cerr << typeid(obj).name() << " is not serializable: derive from igl::Serializable or spezialize the template function igl::serialization::serialize(const T& obj,std::vector<char>& buffer)" << std::endl;
+      std::cerr << typeid(obj).name() << " is not serializable: derive from igl::Serializable or specialize the template function igl::serialization::serialize(const T& obj,std::vector<char>& buffer)" << std::endl;
     }
  
     template <typename T>
     inline void deserialize(T& obj,const std::vector<char>& buffer)
     {
-      std::cerr << typeid(obj).name() << " is not deserializable: derive from igl::Serializable or spezialize the template function igl::serialization::deserialize(T& obj, const std::vector<char>& buffer)" << std::endl;
+      std::cerr << typeid(obj).name() << " is not deserializable: derive from igl::Serializable or specialize the template function igl::serialization::deserialize(T& obj, const std::vector<char>& buffer)" << std::endl;
     }
  
     // helper functions
