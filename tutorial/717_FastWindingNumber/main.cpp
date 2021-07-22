@@ -97,7 +97,7 @@ int main(int argc, char *argv[])
     Eigen::MatrixXd O_EC;
     printf("     point cloud precomputation (% 8ld points):    %g secs\n",
       P.rows(),
-      time([&](){igl::fast_winding_number(P,N,A,O_PI,O_CH,2,O_CM,O_R,O_EC);}));
+      time([&](){igl::fast_winding_number_cloud_precompute(P,N,A,O_PI,O_CH,2,O_CM,O_R,O_EC);}));
     Eigen::VectorXd WiP;
     printf("        point cloud evaluation  (% 8ld queries):   %g secs\n",
       Q.rows(),
@@ -111,7 +111,7 @@ int main(int argc, char *argv[])
     igl::FastWindingNumberBVH fwn_bvh;
     printf("triangle soup precomputation    (% 8ld triangles): %g secs\n",
       F.rows(),
-      time([&](){igl::fast_winding_number(V.cast<float>().eval(),F,2,fwn_bvh);}));
+      time([&](){igl::fast_winding_number_soup_precompute(V.cast<float>().eval(),F,2,fwn_bvh);}));
     Eigen::VectorXf WiV;
     printf("      triangle soup evaluation  (% 8ld queries):   %g secs\n",
       Q.rows(),

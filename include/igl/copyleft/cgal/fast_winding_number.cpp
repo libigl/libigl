@@ -39,7 +39,7 @@ IGL_INLINE void igl::copyleft::cgal::fast_winding_number(
   Eigen::Matrix<real,Eigen::Dynamic,3> CM;
   Eigen::Matrix<real,Eigen::Dynamic,1> R;
   
-  igl::fast_winding_number(
+  igl::fast_winding_number_cloud_precompute(
     P,N,A,point_indices,CH,expansion_order,CM,R,EC);
   igl::fast_winding_number(
     P,N,A,point_indices,CH,CM,R,EC,Q,beta,WN);
