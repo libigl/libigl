@@ -94,6 +94,10 @@ TEST_CASE("readPLY: quad_cube.ply", "[igl]")
 "property float t\n"
 "element face 6\n"
 "property list uchar uint vertex_indices\n"
+"property uchar red\n"
+"property uchar green\n"
+"property uchar blue\n"
+"property uchar alpha\n"
 "end_header\n"
 "1.000000 1.000000 1.000000 0.000000 -0.000000 1.000000 0.625000 0.500000\n"
 "-1.000000 1.000000 1.000000 0.000000 -0.000000 1.000000 0.875000 0.500000\n"
@@ -119,12 +123,13 @@ TEST_CASE("readPLY: quad_cube.ply", "[igl]")
 "-1.000000 1.000000 1.000000 0.000000 1.000000 0.000000 0.625000 0.250000\n"
 "1.000000 1.000000 1.000000 0.000000 1.000000 0.000000 0.625000 0.500000\n"
 "1.000000 1.000000 -1.000000 0.000000 1.000000 0.000000 0.375000 0.500000\n"
-"4 0 1 2 3\n"
-"4 4 5 6 7\n"
-"4 8 9 10 11\n"
-"4 12 13 14 15\n"
-"4 16 17 18 19\n"
-"4 20 21 22 23\n";
+"4 0 1 2 3 0 0 255 255\n"
+"4 4 5 6 7 0 0 255 255\n"
+"4 8 9 10 11 0 0 255 255\n"
+"4 12 13 14 15 0 0 255 255\n"
+"4 16 17 18 19 0 0 255 255\n"
+"4 20 21 22 23 0 0 255 255\n";
+
 
     std::ofstream f("quad_cube.ply");
     f.write(ply_quad_cube,strlen(ply_quad_cube));
@@ -137,4 +142,47 @@ TEST_CASE("readPLY: quad_cube.ply", "[igl]")
     REQUIRE (V.cols() == 3);
     REQUIRE (F.rows() == 6);
     REQUIRE (F.cols() == 4);
+
+    Eigen::MatrixXd N,UV,VD,FD,ED;
+    Eigen::MatrixXi E;
+    std::vector<std::string> headerV;
+    std::vector<std::string> headerF, headerE, comments;
+ 
+    REQUIRE (igl::readPLY("quad_cube.ply", V, F, E, N, UV, 
+              VD, headerV,
+              FD, headerF, 
+              ED, headerE, 
+              comments));
+    
+    REQUIRE (V.rows() == 24);
+    REQUIRE (V.cols() == 3);
+    REQUIRE (F.rows() == 6);
+    REQUIRE (F.cols() == 4);
+
+    REQUIRE (E.rows() == 0);
+    REQUIRE (E.cols() == 0);
+
+    REQUIRE (N.rows() == 24);
+    REQUIRE (N.cols() == 3);
+
+    REQUIRE (UV.rows() == 24);
+    REQUIRE (UV.cols() == 2);
+
+    REQUIRE (VD.rows() == 0);
+    REQUIRE (VD.cols() == 0);
+    REQUIRE (headerV.empty());
+
+    REQUIRE (FD.rows() == 6);
+    REQUIRE (FD.cols() == 4);
+    REQUIRE (headerF.size() == 4);
+
+    REQUIRE (headerF[0] == "red");
+    REQUIRE (headerF[1] == "green");
+    REQUIRE (headerF[2] == "blue");
+    REQUIRE (headerF[3] == "alpha");
+
+    REQUIRE (ED.rows() == 0);
+    REQUIRE (ED.cols() == 0);
+
+    REQUIRE (headerE.size() == 0);
 }

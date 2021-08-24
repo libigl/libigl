@@ -447,7 +447,7 @@ IGL_INLINE bool readPLY(
   else
   {
     FD.resize(faces->count, _face_header.size());
-    tinyply_buffer_to_matrix(*_face_data, FD, faces->count, 1);
+    tinyply_buffer_to_matrix(*_face_data, FD, faces->count, _face_header.size());
   }
 
   /// convert edge data:
