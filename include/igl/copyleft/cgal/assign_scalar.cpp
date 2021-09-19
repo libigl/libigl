@@ -7,6 +7,58 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "assign_scalar.h"
 
+template <>
+IGL_INLINE void igl::copyleft::cgal::assign_scalar(
+  const CGAL::Epeck::FT & rhs,
+  const bool & slow_and_more_precise,
+  double & lhs)
+{
+  if(slow_and_more_precise)
+  {
+    return assign_scalar(rhs,lhs);
+  }else
+  {
+    // While this is significantly faster (100x), this does not guarantee that
+    // two equivalent rationals produce the same double (e.g.,
+    // CGAL::to_double(⅓) ≠ CGAL::to_double(1-⅔))
+    // https://github.com/CGAL/cgal/discussions/6000 For remesh_intersections,
+    // `unique` is called _after_ rounding to floats, avoiding more expensive
+    // rational equality tests. To operate correctly, we need that a=b ⇒
+    // double(a)=double(b). Alternatively, we could require that
+    // remesh_intersections conduct its `unique` operation on rationals. This is
+    // even more expensive (4x) and most of the time probably overkill, though
+    // it is argueably more correct in terms of producing the correct topology
+    // (despite degeneracies that appear during rounding). On the other hand,
+    // this rounding-before-unique only occurs if the requested output is float,
+    // so its a question of combinatorial vs geometric degeneracies. Argueably,
+    // combinatorial degeneracies are more reliably detected.
+    //
+    //lhs = CGAL::to_double(rhs);
+    lhs = CGAL::to_double(rhs.exact());
+  }
+}
+
+template <>
+IGL_INLINE void igl::copyleft::cgal::assign_scalar(
+  const CGAL::Epeck::FT & rhs,
+  const bool & slow_and_more_precise,
+  float & lhs)
+{
+  double d;
+  igl::copyleft::cgal::assign_scalar(rhs,slow_and_more_precise,d);
+  lhs = float(d);
+}
+
+// If we haven't specialized the types then `slow_and_more_precise` doesn't make sense.
+template <typename RHS, typename LHS>
+IGL_INLINE void igl::copyleft::cgal::assign_scalar(
+  const RHS & rhs,
+  const bool & slow_and_more_precise,
+  LHS & lhs)
+{
+  return assign_scalar(rhs,lhs);
+}
+
 IGL_INLINE void igl::copyleft::cgal::assign_scalar(
   const CGAL::Epeck::FT & cgal,
   CGAL::Epeck::FT & d)
@@ -134,3 +186,10 @@ IGL_INLINE void igl::copyleft::cgal::assign_scalar(
 }
 
 #endif // WIN32
+
+#ifdef IGL_STATIC_LIBRARY
+// Explicit template instantiation
+template void igl::copyleft::cgal::assign_scalar<double, double>(double const&, bool const&, double&);
+template void igl::copyleft::cgal::assign_scalar<double, CGAL::Lazy_exact_nt<__gmp_expr<__mpq_struct [1], __mpq_struct [1]> > >(double const&, bool const&, CGAL::Lazy_exact_nt<__gmp_expr<__mpq_struct [1], __mpq_struct [1]> >&);
+template void igl::copyleft::cgal::assign_scalar<CGAL::Lazy_exact_nt<__gmp_expr<__mpq_struct [1], __mpq_struct [1]> >, CGAL::Lazy_exact_nt<__gmp_expr<__mpq_struct [1], __mpq_struct [1]> > >(CGAL::Lazy_exact_nt<__gmp_expr<__mpq_struct [1], __mpq_struct [1]> > const&, bool const&, CGAL::Lazy_exact_nt<__gmp_expr<__mpq_struct [1], __mpq_struct [1]> >&);
+#endif
