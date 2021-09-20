@@ -22,7 +22,12 @@
 #include <iostream>
 #include <cstdio>
 
-#define REMESH_INTERSECTIONS_TIMING
+//#define REMESH_INTERSECTIONS_TIMING
+
+#warning "factor out this function"
+template <typename T> void exact(T & v);
+template <> void exact(CGAL::Epeck::FT & v) { v = v.exact(); }
+template <typename T> void exact(T & v){}
 
 template <
   typename DerivedV,
@@ -406,13 +411,17 @@ IGL_INLINE void igl::copyleft::cgal::remesh_intersections(
 
     // Output resolved mesh.
     const size_t num_out_vertices = new_vertices.size() + num_base_vertices;
-    VV.resize(num_out_vertices, 3);
-    for (size_t i=0; i<num_base_vertices; i++) 
+    // Use scratch memory if we're stitching to avoid a copy below.
+    DerivedVV scratch;
+    Eigen::PlainObjectBase<DerivedVV> & U = stitch_all? scratch: VV;
+    U.resize(num_out_vertices, 3);
+
+    igl::parallel_for(num_base_vertices,[&](Eigen::Index i)
     {
-      assign_scalar(V(i,0), VV(i,0));
-      assign_scalar(V(i,1), VV(i,1));
-      assign_scalar(V(i,2), VV(i,2));
-    }
+      assign_scalar(V(i,0), U(i,0));
+      assign_scalar(V(i,1), U(i,1));
+      assign_scalar(V(i,2), U(i,2));
+    },1000);
 #ifdef REMESH_INTERSECTIONS_TIMING
     log_time("assigning0");
 #endif
@@ -420,9 +429,9 @@ IGL_INLINE void igl::copyleft::cgal::remesh_intersections(
     igl::parallel_for(num_out_vertices-num_base_vertices,[&](size_t i)
     {
       const size_t j = i+num_base_vertices;
-      assign_scalar(new_vertices[i][0],slow_and_more_precise_rounding,VV(j,0));
-      assign_scalar(new_vertices[i][1],slow_and_more_precise_rounding,VV(j,1));
-      assign_scalar(new_vertices[i][2],slow_and_more_precise_rounding,VV(j,2));
+      assign_scalar(new_vertices[i][0],slow_and_more_precise_rounding,U(j,0));
+      assign_scalar(new_vertices[i][1],slow_and_more_precise_rounding,U(j,1));
+      assign_scalar(new_vertices[i][2],slow_and_more_precise_rounding,U(j,2));
     },1000);
 #ifdef REMESH_INTERSECTIONS_TIMING
     log_time("assigning1");
@@ -447,14 +456,26 @@ IGL_INLINE void igl::copyleft::cgal::remesh_intersections(
 #endif
 
     // Extract unique vertex indices.
-    const size_t VV_size = VV.rows();
-    IM.resize(VV_size,1);
+    const size_t U_size = U.rows();
+    IM.resize(U_size,1);
 
-    DerivedVV unique_vv;
-    Eigen::VectorXi unique_to_vv, vv_to_unique;
-    // This is not stable... So even if offending is empty V != VV in
+    // Try to minimize any overhead here but avoid shinanigans trying to get
+    // .exact() call into a function containing the loop called on the matrix
+    // with so many Eigen parameters and possibly a type that doesn't have
+    // .exact()
+    igl::parallel_for(U.size(),[&](Eigen::Index &i){ exact(*(U.data()+i)); },
+      std::is_same<typename DerivedVV::Scalar,CGAL::Epeck::FT>()?
+        1000:U.size()+1);
+#ifdef REMESH_INTERSECTIONS_TIMING
+    log_time("exact");
+#endif
+    // Write directly into VV if stitching, else use scratch (in fact if not
+    // stitching then we don't need this output at all).
+    Eigen::PlainObjectBase<DerivedVV> & unique_vv = stitch_all ? VV : scratch;
+    // This is not stable... So even if offending is empty V != U in
     // general...
-    igl::unique_rows(VV, unique_vv, unique_to_vv, vv_to_unique);
+    Eigen::VectorXi unique_to_vv, vv_to_unique;
+    igl::unique_rows(U, unique_vv, unique_to_vv, vv_to_unique);
 #ifdef REMESH_INTERSECTIONS_TIMING
     log_time("unique");
 #endif
@@ -462,7 +483,6 @@ IGL_INLINE void igl::copyleft::cgal::remesh_intersections(
     {
       // Merge all vertices having the same coordinates into a single vertex
       // and set IM to identity map.
-      VV = unique_vv;
       std::transform(FF.data(), FF.data() + FF.rows()*FF.cols(),
           FF.data(), [&vv_to_unique](const typename DerivedFF::Scalar& a)
           { return vv_to_unique[a]; });
@@ -478,7 +498,7 @@ IGL_INLINE void igl::copyleft::cgal::remesh_intersections(
     {
       // Vertices with the same coordinates would be represented by one vertex.
       // The IM value of a vertex is the index of the representative vertex.
-      for (Index v=0; v<(Index)VV_size; v++) {
+      for (Index v=0; v<(Index)U_size; v++) {
         IM(v) = unique_to_vv[vv_to_unique[v]];
       }
     }

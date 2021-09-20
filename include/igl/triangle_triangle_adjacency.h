@@ -117,6 +117,19 @@ namespace igl
       const bool construct_TTi,
       std::vector<std::vector<std::vector<TTIndex> > > & TT,
       std::vector<std::vector<std::vector<TTiIndex> > > & TTi);
+  template <
+    typename DerivedEMAP,
+    typename DeriveduEC,
+    typename DeriveduEE,
+    typename TTIndex, 
+    typename TTiIndex>
+  IGL_INLINE void triangle_triangle_adjacency(
+    const Eigen::MatrixBase<DerivedEMAP> & EMAP,
+    const Eigen::MatrixBase<DeriveduEC> & uEC,
+    const Eigen::MatrixBase<DeriveduEE> & uEE,
+    const bool construct_TTi,
+    std::vector<std::vector<std::vector<TTIndex> > > & TT,
+    std::vector<std::vector<std::vector<TTiIndex> > > & TTi);
 }
 
 #ifndef IGL_STATIC_LIBRARY

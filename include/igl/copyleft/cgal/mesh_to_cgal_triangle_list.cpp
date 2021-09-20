@@ -41,11 +41,9 @@ IGL_INLINE void igl::copyleft::cgal::mesh_to_cgal_triangle_list(
     DerivedV::ColsAtCompileTime> 
     KV(V.rows(),V.cols());
   assign(V,KV);
-  printf("assign: %g\n",tictoc());
   // Must be triangles
   assert(F.cols() == 3);
   T.resize(F.rows());
-  printf("resize: %g\n",tictoc());
   igl::parallel_for(F.rows(),[&](const Eigen::Index f)
   {
     T[f] = 
@@ -54,7 +52,6 @@ IGL_INLINE void igl::copyleft::cgal::mesh_to_cgal_triangle_list(
         Point_3( KV(F(f,1),0), KV(F(f,1),1), KV(F(f,1),2)),
         Point_3( KV(F(f,2),0), KV(F(f,2),1), KV(F(f,2),2)));
   },1000);
-  printf("loop: %g\n",tictoc());
 }
 
 #ifdef IGL_STATIC_LIBRARY

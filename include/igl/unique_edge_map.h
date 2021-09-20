@@ -50,12 +50,32 @@ namespace igl
     Eigen::PlainObjectBase<DeriveduE> & uE,
     Eigen::PlainObjectBase<DerivedEMAP> & EMAP);
   // Outputs:
-  //   uEC  #uEC+1 list of cumulative counts of directed edges sharing each
+  //   uEC  #uE+1 list of cumulative counts of directed edges sharing each
   //     unique edge so the uEC(i+1)-uEC(i) is the number of directed edges
   //     sharing the ith unique edge.
   //   uEE  #E list of indices into E, so that the consecutive segment of
   //     indices uEE.segment(uEC(i),uEC(i+1)-uEC(i)) lists all directed edges
   //     sharing the ith unique edge.
+  //
+  // // Using uE2E
+  // for(int u = 0;u<uE2E.size();u++)
+  // {
+  //   for(int i = 0;i<uE2E[u].size();i++)
+  //   {
+  //     // eth directed-edge is ith edge equivalent to uth undirected edge
+  //     e = uE2E[u][i]; 
+  //   }
+  // }
+  // 
+  // // Using uEC,uEE
+  // for(int u = 0;u<uE.size();u++)
+  // {
+  //   for(int j = uEC(u);j<uEC(u+1);j++)
+  //   {
+  //     e = uEE(j); // i = j-uEC(u);
+  //   }
+  // }
+  //
   template <
     typename DerivedF,
     typename DerivedE,

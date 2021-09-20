@@ -23,54 +23,9 @@ template<
   typename DerivedF,
   typename DerivedI,
   typename DerivedP,
-  typename uE2EType,
   typename DerivedEMAP,
-  typename DerivedR,
-  typename DerivedS >
-IGL_INLINE void igl::copyleft::cgal::closest_facet(
-    const Eigen::PlainObjectBase<DerivedV>& V,
-    const Eigen::PlainObjectBase<DerivedF>& F,
-    const Eigen::PlainObjectBase<DerivedI>& I,
-    const Eigen::PlainObjectBase<DerivedP>& P,
-    const std::vector<std::vector<uE2EType> >& uE2E,
-    const Eigen::PlainObjectBase<DerivedEMAP>& EMAP,
-    Eigen::PlainObjectBase<DerivedR>& R,
-    Eigen::PlainObjectBase<DerivedS>& S)
-{
-
-  typedef CGAL::Exact_predicates_exact_constructions_kernel Kernel;
-  typedef Kernel::Point_3 Point_3;
-  typedef Kernel::Plane_3 Plane_3;
-  typedef Kernel::Segment_3 Segment_3;
-  typedef Kernel::Triangle_3 Triangle;
-  typedef std::vector<Triangle>::iterator Iterator;
-  typedef CGAL::AABB_triangle_primitive<Kernel, Iterator> Primitive;
-  typedef CGAL::AABB_traits<Kernel, Primitive> AABB_triangle_traits;
-  typedef CGAL::AABB_tree<AABB_triangle_traits> Tree;
-
-  if (F.rows() <= 0 || I.rows() <= 0) {
-    throw std::runtime_error(
-        "Closest facet cannot be computed on empty mesh.");
-  }
-
-  std::vector<std::vector<size_t> > VF, VFi;
-  igl::vertex_triangle_adjacency(V.rows(), F, VF, VFi);
-  std::vector<bool> in_I;
-  std::vector<Triangle> triangles;
-  Tree tree;
-  submesh_aabb_tree(V,F,I,tree,triangles,in_I);
-
-  return closest_facet(
-    V,F,I,P,uE2E,EMAP,VF,VFi,tree,triangles,in_I,R,S);
-}
-
-template<
-  typename DerivedV,
-  typename DerivedF,
-  typename DerivedI,
-  typename DerivedP,
-  typename uE2EType,
-  typename DerivedEMAP,
+  typename DeriveduEC,
+  typename DeriveduEE,
   typename Kernel,
   typename DerivedR,
   typename DerivedS >
@@ -79,8 +34,9 @@ IGL_INLINE void igl::copyleft::cgal::closest_facet(
     const Eigen::PlainObjectBase<DerivedF>& F,
     const Eigen::PlainObjectBase<DerivedI>& I,
     const Eigen::PlainObjectBase<DerivedP>& P,
-    const std::vector<std::vector<uE2EType> >& uE2E,
     const Eigen::PlainObjectBase<DerivedEMAP>& EMAP,
+    const Eigen::PlainObjectBase<DeriveduEC>& uEC,
+    const Eigen::PlainObjectBase<DeriveduEE>& uEE,
     const std::vector<std::vector<size_t> > & VF,
     const std::vector<std::vector<size_t> > & VFi,
     const CGAL::AABB_tree<
@@ -206,10 +162,12 @@ IGL_INLINE void igl::copyleft::cgal::closest_facet(
     }
 
     auto ueid = EMAP(preferred_facet + corner_idx * F.rows());
-    auto eids = uE2E[ueid];
     std::vector<size_t> intersected_face_indices;
-    for (auto eid : eids) 
+    //auto eids = uE2E[ueid];
+    //for (auto eid : eids) 
+    for(size_t j = uEC(ueid);j<uEC(ueid+1);j++)
     {
+      const size_t eid = uEE(j);
       const size_t fid = eid % F.rows();
       if (in_I[fid]) 
       {
@@ -471,28 +429,79 @@ IGL_INLINE void igl::copyleft::cgal::closest_facet(
 template<
   typename DerivedV,
   typename DerivedF,
+  typename DerivedI,
   typename DerivedP,
-  typename uE2EType,
   typename DerivedEMAP,
+  typename DeriveduEC,
+  typename DeriveduEE,
+  typename DerivedR,
+  typename DerivedS >
+IGL_INLINE void igl::copyleft::cgal::closest_facet(
+    const Eigen::PlainObjectBase<DerivedV>& V,
+    const Eigen::PlainObjectBase<DerivedF>& F,
+    const Eigen::PlainObjectBase<DerivedI>& I,
+    const Eigen::PlainObjectBase<DerivedP>& P,
+    const Eigen::PlainObjectBase<DerivedEMAP>& EMAP,
+    const Eigen::PlainObjectBase<DeriveduEC>& uEC,
+    const Eigen::PlainObjectBase<DeriveduEE>& uEE,
+    Eigen::PlainObjectBase<DerivedR>& R,
+    Eigen::PlainObjectBase<DerivedS>& S)
+{
+
+  typedef CGAL::Exact_predicates_exact_constructions_kernel Kernel;
+  typedef Kernel::Point_3 Point_3;
+  typedef Kernel::Plane_3 Plane_3;
+  typedef Kernel::Segment_3 Segment_3;
+  typedef Kernel::Triangle_3 Triangle;
+  typedef std::vector<Triangle>::iterator Iterator;
+  typedef CGAL::AABB_triangle_primitive<Kernel, Iterator> Primitive;
+  typedef CGAL::AABB_traits<Kernel, Primitive> AABB_triangle_traits;
+  typedef CGAL::AABB_tree<AABB_triangle_traits> Tree;
+
+  if (F.rows() <= 0 || I.rows() <= 0) {
+    throw std::runtime_error(
+        "Closest facet cannot be computed on empty mesh.");
+  }
+
+  std::vector<std::vector<size_t> > VF, VFi;
+  igl::vertex_triangle_adjacency(V.rows(), F, VF, VFi);
+  std::vector<bool> in_I;
+  std::vector<Triangle> triangles;
+  Tree tree;
+  submesh_aabb_tree(V,F,I,tree,triangles,in_I);
+
+  return closest_facet(
+    V,F,I,P,EMAP,uEC,uEE,VF,VFi,tree,triangles,in_I,R,S);
+}
+
+template<
+  typename DerivedV,
+  typename DerivedF,
+  typename DerivedP,
+  typename DerivedEMAP,
+  typename DeriveduEC,
+  typename DeriveduEE,
   typename DerivedR,
   typename DerivedS >
 IGL_INLINE void igl::copyleft::cgal::closest_facet(
     const Eigen::PlainObjectBase<DerivedV>& V,
     const Eigen::PlainObjectBase<DerivedF>& F,
     const Eigen::PlainObjectBase<DerivedP>& P,
-    const std::vector<std::vector<uE2EType> >& uE2E,
     const Eigen::PlainObjectBase<DerivedEMAP>& EMAP,
+    const Eigen::PlainObjectBase<DeriveduEC>& uEC,
+    const Eigen::PlainObjectBase<DeriveduEE>& uEE,
     Eigen::PlainObjectBase<DerivedR>& R,
     Eigen::PlainObjectBase<DerivedS>& S) {
   const size_t num_faces = F.rows();
   Eigen::VectorXi I = igl::LinSpaced<Eigen::VectorXi>(num_faces, 0, num_faces-1);
-  igl::copyleft::cgal::closest_facet(V, F, I, P, uE2E, EMAP, R, S);
+  igl::copyleft::cgal::closest_facet(V, F, I, P, EMAP, uEC, uEE, R, S);
 }
+
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instantiation
 // generated by autoexplicit.sh
-template void igl::copyleft::cgal::closest_facet<Eigen::Matrix<CGAL::Lazy_exact_nt<__gmp_expr<__mpq_struct [1], __mpq_struct [1]> >, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<CGAL::Lazy_exact_nt<__gmp_expr<__mpq_struct [1], __mpq_struct [1]> >, -1, -1, 0, -1, -1>, unsigned long, Eigen::Matrix<int, -1, 1, 0, -1, 1>, CGAL::Epeck, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Lazy_exact_nt<__gmp_expr<__mpq_struct [1], __mpq_struct [1]> >, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Lazy_exact_nt<__gmp_expr<__mpq_struct [1], __mpq_struct [1]> >, -1, -1, 0, -1, -1> > const&, std::vector<std::vector<unsigned long, std::allocator<unsigned long> >, std::allocator<std::vector<unsigned long, std::allocator<unsigned long> > > > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, std::vector<std::vector<unsigned long, std::allocator<unsigned long> >, std::allocator<std::vector<unsigned long, std::allocator<unsigned long> > > > const&, std::vector<std::vector<unsigned long, std::allocator<unsigned long> >, std::allocator<std::vector<unsigned long, std::allocator<unsigned long> > > > const&, CGAL::AABB_tree<CGAL::AABB_traits<CGAL::Epeck, CGAL::AABB_triangle_primitive<CGAL::Epeck, std::vector<CGAL::Epeck::Triangle_3, std::allocator<CGAL::Epeck::Triangle_3> >::iterator, CGAL::Boolean_tag<false> >, CGAL::Default> > const&, std::vector<CGAL::Epeck::Triangle_3, std::allocator<CGAL::Epeck::Triangle_3> > const&, std::vector<bool, std::allocator<bool> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
+template void igl::copyleft::cgal::closest_facet<Eigen::Matrix<CGAL::Lazy_exact_nt<__gmp_expr<__mpq_struct [1], __mpq_struct [1]> >, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<CGAL::Lazy_exact_nt<__gmp_expr<__mpq_struct [1], __mpq_struct [1]> >, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, CGAL::Epeck, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Lazy_exact_nt<__gmp_expr<__mpq_struct [1], __mpq_struct [1]> >, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Lazy_exact_nt<__gmp_expr<__mpq_struct [1], __mpq_struct [1]> >, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, std::vector<std::vector<unsigned long, std::allocator<unsigned long> >, std::allocator<std::vector<unsigned long, std::allocator<unsigned long> > > > const&, std::vector<std::vector<unsigned long, std::allocator<unsigned long> >, std::allocator<std::vector<unsigned long, std::allocator<unsigned long> > > > const&, CGAL::AABB_tree<CGAL::AABB_traits<CGAL::Epeck, CGAL::AABB_triangle_primitive<CGAL::Epeck, std::vector<CGAL::Epeck::Triangle_3, std::allocator<CGAL::Epeck::Triangle_3> >::iterator, CGAL::Boolean_tag<false> >, CGAL::Default> > const&, std::vector<CGAL::Epeck::Triangle_3, std::allocator<CGAL::Epeck::Triangle_3> > const&, std::vector<bool, std::allocator<bool> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
 #ifdef WIN32
 #endif
 #endif

@@ -8,7 +8,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 //
 #include "mesh_boolean.h"
-#include "assign.h"
+#include "assign_scalar.h"
 #include "extract_cells.h"
 #include "mesh_boolean_type_to_funcs.h"
 #include "propagate_winding_numbers.h"
@@ -19,6 +19,7 @@
 #include "../../cumsum.h"
 #include "../../extract_manifold_patches.h"
 #include "../../get_seconds.h"
+#include "../../parallel_for.h"
 #include "../../remove_unreferenced.h"
 #include "../../resolve_duplicated_faces.h"
 #include "../../slice.h"
@@ -29,7 +30,7 @@
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 #include <algorithm>
 
-#define MESH_BOOLEAN_TIMING
+//#define MESH_BOOLEAN_TIMING
 //#define DOUBLE_CHECK_EXACT_OUTPUT
 //#define SMALL_CELL_REMOVAL
 
@@ -235,15 +236,13 @@ IGL_INLINE bool igl::copyleft::cgal::mesh_boolean(
   log_time("resolve_self_intersection");
 #endif
 
-  // Compute edges of (F) --> (E,uE,EMAP,uE2E)
   Eigen::MatrixXi E, uE;
-  Eigen::VectorXi EMAP;
-  std::vector<std::vector<size_t> > uE2E;
-  igl::unique_edge_map(F, E, uE, EMAP, uE2E);
+  Eigen::VectorXi EMAP, uEC, uEE;
+  igl::unique_edge_map(F, E, uE, EMAP, uEC, uEE);
 
-  // Compute patches (F,EMAP,uE2E) --> (P)
+  // Compute patches (F,EMAP,uEC,uEE) --> (P)
   Eigen::VectorXi P;
-  const size_t num_patches = igl::extract_manifold_patches(F, EMAP, uE2E, P);
+  const size_t num_patches = igl::extract_manifold_patches(F,EMAP,uEC,uEE,P);
 #ifdef MESH_BOOLEAN_TIMING
   log_time("patch_extraction");
 #endif
@@ -251,8 +250,7 @@ IGL_INLINE bool igl::copyleft::cgal::mesh_boolean(
   // Compute cells (V,F,P,E,uE,EMAP) -> (per_patch_cells)
   Eigen::MatrixXi per_patch_cells;
   const size_t num_cells =
-    igl::copyleft::cgal::extract_cells(
-        V, F, P, E, uE, uE2E, EMAP, per_patch_cells);
+  extract_cells( V, F, P, E, uE, EMAP, uEC, uEE, per_patch_cells);
 #ifdef MESH_BOOLEAN_TIMING
   log_time("cell_extraction");
 #endif
@@ -287,9 +285,8 @@ IGL_INLINE bool igl::copyleft::cgal::mesh_boolean(
   bool valid = true;
   if (num_faces > 0) 
   {
-    valid = valid & 
-      igl::copyleft::cgal::propagate_winding_numbers(
-          V, F, uE, uE2E, num_patches, P, num_cells, per_patch_cells, labels, W);
+    valid = valid && propagate_winding_numbers(
+      V,F,uE,uEC,uEE,num_patches,P,num_cells,per_patch_cells,labels,W);
   } else 
   {
     W.resize(0, 2*num_inputs);
@@ -402,10 +399,25 @@ IGL_INLINE bool igl::copyleft::cgal::mesh_boolean(
     }
 #endif
 
-    MatrixX3S Vs;
-    assign(V,Vs);
-    Eigen::VectorXi newIM;
-    igl::remove_unreferenced(Vs,G,VC,FC,newIM);
+    // `assign` _after_ removing unreferenced vertices
+    {
+      Eigen::VectorXi I,J;
+      igl::remove_unreferenced(V.rows(),G,I,J);
+      FC = G;
+      std::for_each(FC.data(),FC.data()+FC.size(),
+          [&I](typename DerivedFC::Scalar & a){a=I(a);});
+      const bool slow_and_more_precise = false;
+      VC.resize(J.size(),3);
+      igl::parallel_for(J.size(),[&](Eigen::Index i)
+      {
+        for(Eigen::Index c = 0;c<3;c++)
+        {
+          assign_scalar(V(J(i),c),slow_and_more_precise,VC(i,c));
+        }
+      },1000);
+    }
+
+
   }
 #ifdef MESH_BOOLEAN_TIMING
   log_time("clean_up");

@@ -21,7 +21,7 @@
 #include <mutex>
 #include <cstdio>
 
-#define IGL_SELFINTERSECTMESH_DEBUG
+//#define IGL_SELFINTERSECTMESH_TIMING
 #ifndef IGL_FIRST_HIT_EXCEPTION
 #define IGL_FIRST_HIT_EXCEPTION 10
 #endif
@@ -310,7 +310,7 @@ inline igl::copyleft::cgal::SelfIntersectMesh<
   using namespace std;
   using namespace Eigen;
 
-#ifdef IGL_SELFINTERSECTMESH_DEBUG
+#ifdef IGL_SELFINTERSECTMESH_TIMING
   const auto & tictoc = []() -> double
   {
     static double t_start = igl::get_seconds();
@@ -327,7 +327,7 @@ inline igl::copyleft::cgal::SelfIntersectMesh<
 
   // Compute and process self intersections
   mesh_to_cgal_triangle_list(V,F,T);
-#ifdef IGL_SELFINTERSECTMESH_DEBUG
+#ifdef IGL_SELFINTERSECTMESH_TIMING
   log_time("convert_to_triangle_list");
 #endif
   // http://www.cgal.org/Manual/latest/doc_html/cgal_manual/Box_intersection_d/Chapter_main.html#Section_63.5
@@ -351,12 +351,12 @@ inline igl::copyleft::cgal::SelfIntersectMesh<
       // _1 etc. in global namespace)
       std::placeholders::_1,
       std::placeholders::_2);
-#ifdef IGL_SELFINTERSECTMESH_DEBUG
+#ifdef IGL_SELFINTERSECTMESH_TIMING
   log_time("box_and_bind");
 #endif
   // Run the self intersection algorithm with all defaults
   CGAL::box_self_intersection_d(boxes.begin(), boxes.end(),cb);
-#ifdef IGL_SELFINTERSECTMESH_DEBUG
+#ifdef IGL_SELFINTERSECTMESH_TIMING
   log_time("box_intersection_d");
 #endif
   try{
@@ -370,7 +370,7 @@ inline igl::copyleft::cgal::SelfIntersectMesh<
     }
     // Otherwise just fall through
   }
-#ifdef IGL_SELFINTERSECTMESH_DEBUG
+#ifdef IGL_SELFINTERSECTMESH_TIMING
   log_time("resolve_intersection");
 #endif
 
@@ -391,7 +391,7 @@ inline igl::copyleft::cgal::SelfIntersectMesh<
       i++;
     }
   }
-#ifdef IGL_SELFINTERSECTMESH_DEBUG
+#ifdef IGL_SELFINTERSECTMESH_TIMING
   log_time("store_intersecting_face_pairs");
 #endif
 
@@ -404,7 +404,7 @@ inline igl::copyleft::cgal::SelfIntersectMesh<
     V,F,T,offending,
     params.stitch_all,params.slow_and_more_precise_rounding,VV,FF,J,IM);
 
-#ifdef IGL_SELFINTERSECTMESH_DEBUG
+#ifdef IGL_SELFINTERSECTMESH_TIMING
   log_time("remesh_intersection");
 #endif
 }
@@ -900,7 +900,6 @@ inline void igl::copyleft::cgal::SelfIntersectMesh<
   const size_t num_pairs = candidate_triangle_pairs.size();
   const size_t chunk_size = num_pairs / num_threads;
   std::vector<std::thread> threads;
-  printf("Using %zu threads\n",num_threads);
   for (size_t i=0; i<num_threads-1; i++)
   {
     threads.emplace_back(process_chunk, i*chunk_size, (i+1)*chunk_size);
