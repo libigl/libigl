@@ -11,4 +11,5 @@
 #ifdef IGL_STATIC_LIBRARY
 #undef IGL_STATIC_LIBRARY
 #include "../../list_to_matrix.cpp"
+template bool igl::list_to_matrix<CGAL::Epeck::FT, Eigen::Matrix<CGAL::Epeck::FT, -1, 3, 0, -1, 3> >(std::vector<std::vector<CGAL::Epeck::FT, std::allocator<CGAL::Epeck::FT > >, std::allocator<std::vector<CGAL::Epeck::FT, std::allocator<CGAL::Epeck::FT > > > > const&, Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Epeck::FT, -1, 3, 0, -1, 3> >&);
 #endif

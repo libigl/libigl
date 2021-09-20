@@ -44,4 +44,5 @@ IGL_INLINE bool igl::copyleft::cgal::coplanar(
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instantiation
+template bool igl::copyleft::cgal::coplanar<Eigen::Matrix<double, -1, 3, 0, -1, 3> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&);
 #endif
