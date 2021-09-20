@@ -133,7 +133,6 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells(
   log_time("extract_cells_single_component");
 
   // Compute triangle-triangle adjacency data-structure
-#warning "factor out these vectors"
   std::vector<std::vector<std::vector<Index > > > TT,_1;
   igl::triangle_triangle_adjacency(EMAP, uEC, uEE, false, TT, _1);
   log_time("compute_face_adjacency");
@@ -145,7 +144,6 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells(
 
   const size_t num_components = counts.size();
   // components[c] --> list of face indices into F of faces in component c
-#warning "and factor out these vectors"
   std::vector<std::vector<size_t> > components(num_components);
   // Loop over all faces
   for (size_t i=0; i<num_faces; i++)

@@ -818,7 +818,6 @@ inline void igl::copyleft::cgal::SelfIntersectMesh<
         assert(fa < T.size());
         assert(fb < T.size());
 
-#warning "Removed locks"
         if(exception_fired) return;
 
         const Triangle_3& A = T[fa];

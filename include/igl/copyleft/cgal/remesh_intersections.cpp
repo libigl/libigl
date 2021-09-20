@@ -24,7 +24,7 @@
 
 //#define REMESH_INTERSECTIONS_TIMING
 
-#warning "factor out this function"
+// Helper function to invoke .exact() on CGAL::Epeck::FT and no-op on others
 template <typename T> void exact(T & v);
 template <> void exact(CGAL::Epeck::FT & v) { v = v.exact(); }
 template <typename T> void exact(T & v){}
