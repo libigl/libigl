@@ -190,6 +190,6 @@ IGL_INLINE void igl::copyleft::cgal::assign_scalar(
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instantiation
 template void igl::copyleft::cgal::assign_scalar<double, double>(double const&, bool const&, double&);
-template void igl::copyleft::cgal::assign_scalar<double, CGAL::Lazy_exact_nt<__gmp_expr<__mpq_struct [1], __mpq_struct [1]> > >(double const&, bool const&, CGAL::Lazy_exact_nt<__gmp_expr<__mpq_struct [1], __mpq_struct [1]> >&);
-template void igl::copyleft::cgal::assign_scalar<CGAL::Lazy_exact_nt<__gmp_expr<__mpq_struct [1], __mpq_struct [1]> >, CGAL::Lazy_exact_nt<__gmp_expr<__mpq_struct [1], __mpq_struct [1]> > >(CGAL::Lazy_exact_nt<__gmp_expr<__mpq_struct [1], __mpq_struct [1]> > const&, bool const&, CGAL::Lazy_exact_nt<__gmp_expr<__mpq_struct [1], __mpq_struct [1]> >&);
+template void igl::copyleft::cgal::assign_scalar<double, CGAL::Epeck::FT >(double const&, bool const&, CGAL::Epeck::FT&);
+template void igl::copyleft::cgal::assign_scalar<CGAL::Epeck::FT, CGAL::Epeck::FT >(CGAL::Epeck::FT const&, bool const&, CGAL::Epeck::FT&);
 #endif

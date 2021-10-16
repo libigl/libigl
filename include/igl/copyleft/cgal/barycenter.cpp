@@ -12,5 +12,5 @@
 #undef IGL_STATIC_LIBRARY
 #include "../../barycenter.cpp"
 // Explicit template instantiation
-template void igl::barycenter<Eigen::Matrix<CGAL::Lazy_exact_nt<__gmp_expr<__mpq_struct [1], __mpq_struct [1]> >, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<CGAL::Lazy_exact_nt<__gmp_expr<__mpq_struct [1], __mpq_struct [1]> >, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::Matrix<CGAL::Lazy_exact_nt<__gmp_expr<__mpq_struct [1], __mpq_struct [1]> >, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Lazy_exact_nt<__gmp_expr<__mpq_struct [1], __mpq_struct [1]> >, -1, -1, 0, -1, -1> >&);
+template void igl::barycenter<Eigen::Matrix<CGAL::Epeck::FT, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<CGAL::Epeck::FT, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::Matrix<CGAL::Epeck::FT, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Epeck::FT, -1, -1, 0, -1, -1> >&);
 #endif
