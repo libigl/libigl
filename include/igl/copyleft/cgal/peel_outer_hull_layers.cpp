@@ -30,8 +30,8 @@ IGL_INLINE size_t igl::copyleft::cgal::peel_outer_hull_layers(
 {
   using namespace Eigen;
   using namespace std;
-  typedef typename DerivedF::Index Index;
   typedef Matrix<typename DerivedF::Scalar,Dynamic,DerivedF::ColsAtCompileTime> MatrixXF;
+  typedef typename DerivedF::Scalar Index;
   typedef Matrix<Index,Dynamic,1> MatrixXI;
   typedef Matrix<typename Derivedflip::Scalar,Dynamic,Derivedflip::ColsAtCompileTime> MatrixXflip;
   const Index m = F.rows();

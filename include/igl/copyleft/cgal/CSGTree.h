@@ -30,9 +30,8 @@ namespace igl
           typedef CGAL::Epeck::FT ExactScalar;
           //typedef Eigen::PlainObjectBase<DerivedF> POBF;
           typedef Eigen::MatrixXi POBF;
-          typedef POBF::Index FIndex;
           typedef Eigen::Matrix<ExactScalar,Eigen::Dynamic,3> MatrixX3E;
-          typedef Eigen::Matrix<FIndex,Eigen::Dynamic,1> VectorJ;
+          typedef Eigen::VectorXi VectorJ;
         private:
           // Resulting mesh
           MatrixX3E m_V;

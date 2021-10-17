@@ -16,7 +16,6 @@
 #include "../../writePLY.h"
 #include "../../get_seconds.h"
 #include "../../LinSpaced.h"
-#include "order_facets_around_edge.h"
 #include "outer_facet.h"
 #include "assign.h"
 #include "extract_cells.h"
@@ -219,7 +218,7 @@ IGL_INLINE bool igl::copyleft::cgal::propagate_winding_numbers(
   }
 #endif
 
-  size_t outer_facet;
+  Eigen::Index outer_facet;
   bool flipped;
   Eigen::VectorXi I = igl::LinSpaced<Eigen::VectorXi>(num_faces, 0, num_faces-1);
   igl::copyleft::cgal::outer_facet(V, F, I, outer_facet, flipped);
