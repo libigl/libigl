@@ -5,4 +5,4 @@ name: libigl-cgal
 channels:
   - conda-forge
 dependencies:
-  - boost-cpp=1.65.0
+  - boost-cpp=1.66.0
