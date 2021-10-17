@@ -16,8 +16,6 @@ double compute_lscm_energy(
 
   assert(V.cols() == 3);
   assert(F.cols() == 3);
-  assert(V_uv.rows() == nV);
-  assert(V_uv.cols() == 2);
 
   // Compute gradient
   Eigen::SparseMatrix<double> G;
