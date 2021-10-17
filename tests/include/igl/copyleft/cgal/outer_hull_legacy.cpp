@@ -1,9 +1,9 @@
 #include <test_common.h>
 
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
-#include <igl/copyleft/cgal/outer_hull.h>
+#include <igl/copyleft/cgal/outer_hull_legacy.h>
 
-TEST_CASE("OuterHull: CubeWithFold", "[igl/copyleft/cgal]")
+TEST_CASE("outer_hull_legacy: CubeWithFold", "[igl/copyleft/cgal]")
 {
     Eigen::MatrixXd V;
     Eigen::MatrixXi F;

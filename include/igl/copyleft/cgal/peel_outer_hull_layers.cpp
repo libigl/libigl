@@ -6,7 +6,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "peel_outer_hull_layers.h"
-#include "outer_hull.h"
+#include "outer_hull_legacy.h"
 #include "../../LinSpaced.h"
 #include <vector>
 #include <iostream>
