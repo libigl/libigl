@@ -159,9 +159,9 @@ template void igl::copyleft::cgal::outer_facet<Eigen::Matrix<double,-1,-1,0,-1,-
 template void igl::copyleft::cgal::outer_facet<Eigen::Matrix<double,-1,-1,0,-1,-1>,Eigen::Matrix<int,-1,-1,0,-1,-1>,Eigen::Matrix<int,-1,1,0,-1,1>,int>(Eigen::PlainObjectBase<Eigen::Matrix<double,-1,-1,0,-1,-1> > const&,Eigen::PlainObjectBase<Eigen::Matrix<int,-1,-1,0,-1,-1> > const&,Eigen::PlainObjectBase<Eigen::Matrix<int,-1,1,0,-1,1> > const&,int&,bool&);
 template void igl::copyleft::cgal::outer_facet<Eigen::Matrix<double,-1,-1,0,-1,-1>,Eigen::Matrix<int,-1,-1,0,-1,-1>,Eigen::Matrix<int,-1,1,0,-1,1>,uint64_t>(Eigen::PlainObjectBase<Eigen::Matrix<double,-1,-1,0,-1,-1> > const&,Eigen::PlainObjectBase<Eigen::Matrix<int,-1,-1,0,-1,-1> > const&,Eigen::PlainObjectBase<Eigen::Matrix<int,-1,1,0,-1,1> > const&,uint64_t&,bool&);
 template void igl::copyleft::cgal::outer_facet<Eigen::Matrix<double,-1,3,0,-1,3>,Eigen::Matrix<int,-1,3,0,-1,3>,Eigen::Matrix<int64_t,-1,1,0,-1,1>,int>(Eigen::PlainObjectBase<Eigen::Matrix<double,-1,3,0,-1,3> > const&,Eigen::PlainObjectBase<Eigen::Matrix<int,-1,3,0,-1,3> > const&,Eigen::PlainObjectBase<Eigen::Matrix<int64_t,-1,1,0,-1,1> > const&,int&,bool&);
+#ifdef WIN32
 // On windows is long!=int64_t?
 template void igl::copyleft::cgal::outer_facet<Eigen::Matrix<CGAL::Epeck::FT,-1,-1,0,-1,-1>,Eigen::Matrix<int,-1,-1,0,-1,-1>,Eigen::Matrix<long,-1,1,0,-1,1>,int>(Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Epeck::FT,-1,-1,0,-1,-1> > const &,Eigen::PlainObjectBase<Eigen::Matrix<int,-1,-1,0,-1,-1> > const &,Eigen::PlainObjectBase<Eigen::Matrix<long,-1,1,0,-1,1> > const &,int &,bool &);
 template void igl::copyleft::cgal::outer_facet<Eigen::Matrix<double,-1,3,0,-1,3>,Eigen::Matrix<int,-1,3,0,-1,3>,Eigen::Matrix<long,-1,1,0,-1,1>,int>(Eigen::PlainObjectBase<Eigen::Matrix<double,-1,3,0,-1,3> > const &,Eigen::PlainObjectBase<Eigen::Matrix<int,-1,3,0,-1,3> > const &,Eigen::PlainObjectBase<Eigen::Matrix<long,-1,1,0,-1,1> > const &,int &,bool &);
-#ifdef WIN32
 #endif
 #endif
