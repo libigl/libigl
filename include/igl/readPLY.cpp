@@ -405,7 +405,7 @@ IGL_INLINE bool readPLY(
   }
 
   //HACK: Unfortunately, tinyply doesn't store list size as a separate variable
-  if (!faces || !tinyply_buffer_to_matrix(*faces, F, faces->count, faces->buffer.size_bytes()/(tinyply::PropertyTable[faces->t].stride*faces->count) )) {
+  if (!faces || !tinyply_buffer_to_matrix(*faces, F, faces->count, faces->count==0?0:faces->buffer.size_bytes()/(tinyply::PropertyTable[faces->t].stride*faces->count) )) {
 
     if(tristrips) { // need to convert to faces
       // code based on blender importer for ply
