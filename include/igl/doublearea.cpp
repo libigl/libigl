@@ -219,7 +219,7 @@ IGL_INLINE void igl::doublearea_quad(
   }
 
   // Compute areas
-  Eigen::VectorXd doublearea_tri;
+  Eigen::Matrix<typename DeriveddblA::Scalar, Eigen::Dynamic, 1> doublearea_tri;
   igl::doublearea(V,Ft,doublearea_tri);
 
   dblA.resize(F.rows(),1);
