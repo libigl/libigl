@@ -17,13 +17,11 @@ IGL_INLINE void igl::internal_angles(
   const Eigen::MatrixBase<DerivedF>& F,
   Eigen::PlainObjectBase<DerivedK> & K)
 {
-  using namespace Eigen;
-  using namespace std;
   typedef typename DerivedV::Scalar Scalar;
   if(F.cols() == 3)
   {
     // Edge lengths
-    Matrix<
+    Eigen::Matrix<
       Scalar,
       DerivedF::RowsAtCompileTime,
       DerivedF::ColsAtCompileTime> L_sq;
