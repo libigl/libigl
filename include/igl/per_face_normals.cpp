@@ -42,8 +42,7 @@ IGL_INLINE void igl::per_face_normals(
   const Eigen::MatrixBase<DerivedF>& F,
   Eigen::PlainObjectBase<DerivedN> & N)
 {
-  using namespace Eigen;
-  Matrix<typename DerivedN::Scalar,3,1> Z(0,0,0);
+  Eigen::Matrix<typename DerivedN::Scalar,3,1> Z(0,0,0);
   return per_face_normals(V,F,Z,N);
 }
 
@@ -53,8 +52,7 @@ IGL_INLINE void igl::per_face_normals_stable(
   const Eigen::MatrixBase<DerivedF>& F,
   Eigen::PlainObjectBase<DerivedN> & N)
 {
-  using namespace Eigen;
-  typedef Matrix<typename DerivedV::Scalar,1,3> RowVectorV3;
+  typedef Eigen::Matrix<typename DerivedV::Scalar,1,3> RowVectorV3;
   typedef typename DerivedV::Scalar Scalar;
 
   const size_t m = F.rows();
