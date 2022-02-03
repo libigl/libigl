@@ -667,13 +667,11 @@ namespace glfw
 
 
     // Initialization code for the trackball
-    Eigen::RowVector3d center;
-    if (data().V.rows() == 0)
+    Eigen::RowVector3d center = Eigen::RowVector3d(0,0,0);
+    if(data().V.rows() > 0)
     {
-      center << 0,0,0;
-    }else
-    {
-      center = data().V.colwise().sum()/data().V.rows();
+      // be careful that V may be 2D
+      center.head(data().V.cols()) = data().V.colwise().sum()/data().V.rows();
     }
 
     Eigen::Vector3f coord =

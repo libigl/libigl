@@ -134,13 +134,13 @@ namespace igl
       //       quality and area constraints
       //     "" will mesh the convex hull constrained to pass through V (ignores F)
       // Outputs:
-      //   TV  #V by 3 vertex position list
-      //   TT  #T by 4 list of tet face indices
-      //   TF  #F by 3 list of triangle face indices
-      //   TR  #T list of region ID for each tetrahedron      
-      //   TN  #T by 4 list of indices neighbors for each tetrahedron
-      //   PT  #V list of incident tetrahedron for a vertex
-      //   FT  #F by 2 list of tetrahedrons sharing a triface      
+      //   TV  #TV by 3 vertex position list
+      //   TT  #TT by 4 list of tet face indices
+      //   TF  #TF by 3 list of triangle face indices
+      //   TR  #TT list of region ID for each tetrahedron      
+      //   TN  #TT by 4 list of indices neighbors for each tetrahedron
+      //   PT  #TV list of incident tetrahedron for a vertex
+      //   FT  #TF by 2 list of tetrahedrons sharing a triface      
       //   numRegions Number of regions in output mesh
       // Returns status:
       //   0 success

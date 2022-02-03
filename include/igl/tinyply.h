@@ -1,7 +1,7 @@
 /*
  * tinyply 2.3.2 (https://github.com/ddiakopoulos/tinyply)
  *
- * A single-header, zero-dependency (except the C++ STL) public domain implementation 
+ * A single-header, zero-dependency (except the C++ STL) public domain implementation
  * of the PLY mesh file format. Requires C++11; errors are handled through exceptions.
  *
  * This software is in the public domain. Where that dedication is not
@@ -13,7 +13,7 @@
  * tinyply.h may be included in many files, however in a single compiled file,
  * the implementation must be created with the following defined prior to header inclusion
  * #define TINYPLY_IMPLEMENTATION
- * 
+ *
  */
 
 ////////////////////////
@@ -35,6 +35,8 @@
 #include <algorithm>
 #include <functional>
 
+namespace igl
+{
 namespace tinyply
 {
 
@@ -99,7 +101,7 @@ namespace tinyply
     {
         PlyProperty(std::istream & is);
         PlyProperty(Type type, std::string & _name) : name(_name), propertyType(type) {}
-        PlyProperty(Type list_type, Type prop_type, std::string & _name, size_t list_count) 
+        PlyProperty(Type list_type, Type prop_type, std::string & _name, size_t list_count)
             : name(_name), propertyType(prop_type), isList(true), listType(list_type), listCount(list_count) {}
         std::string name;
         Type propertyType{ Type::INVALID };
@@ -126,26 +128,26 @@ namespace tinyply
         ~PlyFile();
 
         /*
-         * The ply format requires an ascii header. This can be used to determine at 
-         * runtime which properties or elements exist in the file. Limited validation of the 
-         * header is performed; it is assumed the header correctly reflects the contents of the 
-         * payload. This function may throw. Returns true on success, false on failure. 
-         */ 
+         * The ply format requires an ascii header. This can be used to determine at
+         * runtime which properties or elements exist in the file. Limited validation of the
+         * header is performed; it is assumed the header correctly reflects the contents of the
+         * payload. This function may throw. Returns true on success, false on failure.
+         */
         bool parse_header(std::istream & is);
 
-        /* 
-         * Execute a read operation. Data must be requested via `request_properties_from_element(...)` 
+        /*
+         * Execute a read operation. Data must be requested via `request_properties_from_element(...)`
          * prior to calling this function.
          */
         void read(std::istream & is);
 
-        /* 
-         * `write` performs no validation and assumes that the data passed into 
-         * `add_properties_to_element` is well-formed. 
+        /*
+         * `write` performs no validation and assumes that the data passed into
+         * `add_properties_to_element` is well-formed.
          */
         void write(std::ostream & os, bool isBinary);
 
-        /* 
+        /*
          * These functions are valid after a call to `parse_header(...)`. In the case of
          * writing, get_comments() reference may also be used to add new comments to the ply header.
          */
@@ -161,19 +163,20 @@ namespace tinyply
          * an expected list length that will apply to this element. Doing so results in an up-front
          * memory allocation and a single-pass import, a 2x performance optimization.
          */
-        std::shared_ptr<PlyData> request_properties_from_element(const std::string & elementKey, 
+        std::shared_ptr<PlyData> request_properties_from_element(const std::string & elementKey,
             const std::vector<std::string> propertyKeys, const uint32_t list_size_hint = 0);
 
-        void add_properties_to_element(const std::string & elementKey, 
-            const std::vector<std::string> propertyKeys, 
-            const Type type, 
-            const size_t count, 
-            uint8_t * data, 
-            const Type listType, 
+        void add_properties_to_element(const std::string & elementKey,
+            const std::vector<std::string> propertyKeys,
+            const Type type,
+            const size_t count,
+            uint8_t * data,
+            const Type listType,
             const size_t listCount);
     };
 
 } // end namespace tinyply
+} // end namespace igl
 
 #ifndef IGL_STATIC_LIBRARY
 // implementation moved to tinyply.cpp

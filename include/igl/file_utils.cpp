@@ -19,8 +19,10 @@ IGL_INLINE void read_file_binary(FILE *fp,
     fseek(fp, 0, SEEK_SET);
     fileBufferBytes.resize(sizeBytes);
 
-    if (fread((char *)fileBufferBytes.data(), 1, sizeBytes, fp) == sizeBytes)
+    if (fread((char*)fileBufferBytes.data(), 1, sizeBytes, fp) == sizeBytes) {
+      fclose(fp);
       return;
+    }
   }
 
   throw std::runtime_error("error reading from file");
