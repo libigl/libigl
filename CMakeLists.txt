@@ -52,15 +52,29 @@ else()
 endif()
 
 # Check for gmp + mpfr and enable cork / cgal modules accordingly
-set(LIBIGL_DEFAULT_CGAL_CORK ${LIBIGL_TOPLEVEL_PROJECT})
+set(LIBIGL_DEFAULT_CGAL ${LIBIGL_TOPLEVEL_PROJECT})
 if(LIBIGL_TOPLEVEL_PROJECT AND NOT WIN32)
     find_package(GMP QUIET)
     find_package(MPFR QUIET)
     if(NOT (TARGET gmp::gmp AND TARGET mpfr::mpfr))
-        set(LIBIGL_DEFAULT_CGAL_CORK OFF)
+        set(LIBIGL_DEFAULT_CGAL OFF)
         message(WARNING "Missing dependencies GMP and MPFR. The libigl modules for cork and cgal "
                         "will be disabled by default.")
     endif()
+endif()
+set(LIBIGL_DEFAULT_MATLAB ${LIBIGL_TOPLEVEL_PROJECT})
+set(MATLAB_ADDITIONAL_VERSIONS
+  "R2022b=10.3"
+  "R2022a=10.2"
+  "R2021b=10.1"
+  "R2021a=10.0"
+  )
+if(LIBIGL_TOPLEVEL_PROJECT)
+  find_package(Matlab QUIET)
+  if(NOT Matlab_FOUND)
+    set(LIBIGL_DEFAULT_MATLAB OFF)
+    message(WARNING "Matlab not found, disabling igl_restricted::matlab module.")
+  endif()
 endif()
 
 # Build tests and tutorials
@@ -86,14 +100,13 @@ option(LIBIGL_WITH_XML              "Build target igl::xml"              ${LIBIG
 # Copyleft modules. These modules are available under GPL license, and their dependencies are
 # available under a copyleft license.
 option(LIBIGL_COPYLEFT_WITH_CORE    "Build target igl_copyleft::core"    ${LIBIGL_TOPLEVEL_PROJECT})
-option(LIBIGL_COPYLEFT_WITH_CGAL    "Build target igl_copyleft::cgal"    ${LIBIGL_DEFAULT_CGAL_CORK})
+option(LIBIGL_COPYLEFT_WITH_CGAL    "Build target igl_copyleft::cgal"    ${LIBIGL_DEFAULT_CGAL})
 option(LIBIGL_COPYLEFT_WITH_COMISO  "Build target igl_copyleft::comiso"  ${LIBIGL_TOPLEVEL_PROJECT})
-option(LIBIGL_COPYLEFT_WITH_CORK    "Build target igl_copyleft::cork"    ${LIBIGL_DEFAULT_CGAL_CORK})
 option(LIBIGL_COPYLEFT_WITH_TETGEN  "Build target igl_copyleft::tetgen"  ${LIBIGL_TOPLEVEL_PROJECT})
 
 # Restricted modules. These modules are available under MPL2 license, but their dependencies are
 # only available under a non-commercial or proprietary license.
-option(LIBIGL_RESTRICTED_WITH_MATLAB   "Build target igl_restricted::matlab"   ${LIBIGL_TOPLEVEL_PROJECT})
+option(LIBIGL_RESTRICTED_WITH_MATLAB   "Build target igl_restricted::matlab"   ${LIBIGL_DEFAULT_MATLAB})
 option(LIBIGL_RESTRICTED_WITH_MOSEK    "Build target igl_restricted::mosek"    ${LIBIGL_TOPLEVEL_PROJECT})
 option(LIBIGL_RESTRICTED_WITH_TRIANGLE "Build target igl_restricted::triangle" ${LIBIGL_TOPLEVEL_PROJECT})
 
