@@ -1,6 +1,19 @@
 # Try to find the GNU Multiple Precision Arithmetic Library (GMP)
 # See http://gmplib.org/
 
+if(${CMAKE_VERSION} VERSION_LESS "3.18.0")
+    set(REQUIRED_FLAG "")
+else()
+    set(REQUIRED_FLAG REQUIRED)
+endif()
+
+# On Windows, we must use the pre-compiled versions downloaded with libigl
+if(WIN32)
+    set(NO_DEFAULT_FLAG NO_DEFAULT_PATH)
+else()
+    set(NO_DEFAULT_FLAG "")
+endif()
+
 find_path(GMP_INCLUDES
     NAMES
         gmp.h
@@ -9,6 +22,8 @@ find_path(GMP_INCLUDES
         ${INCLUDE_INSTALL_DIR}
     PATH_SUFFIXES
         include
+    ${REQUIRED_FLAG}
+    ${NO_DEFAULT_FLAG}
 )
 
 find_library(GMP_LIBRARIES
@@ -20,6 +35,8 @@ find_library(GMP_LIBRARIES
         ${LIB_INSTALL_DIR}
     PATH_SUFFIXES
         lib
+    ${REQUIRED_FLAG}
+    ${NO_DEFAULT_FLAG}
 )
 
 set(GMP_EXTRA_VARS "")
@@ -34,6 +51,8 @@ if(WIN32)
             ${LIB_INSTALL_DIR}
         PATH_SUFFIXES
             lib
+        ${REQUIRED_FLAG}
+        ${NO_DEFAULT_FLAG}
     )
     list(APPEND GMP_EXTRA_VARS GMP_RUNTIME_LIB)
 endif()
@@ -45,7 +64,7 @@ find_package_handle_standard_args(GMP
         GMP_LIBRARIES
         ${GMP_EXTRA_VARS}
     REASON_FAILURE_MESSAGE
-        "GMP is not installed on your system. Either install GMP using your preferred package manager, or disable libigl modules that depend on GMP, such as CORK and CGAL. See LibiglOptions.cmake.sample for configuration options. Do not forget to delete your <build>/CMakeCache.txt for the changes to take effect."
+        "GMP is not installed on your system. Either install GMP using your preferred package manager, or disable libigl modules that depend on GMP, such as CGAL. See LibiglOptions.cmake.sample for configuration options. Do not forget to delete your <build>/CMakeCache.txt for the changes to take effect."
 )
 mark_as_advanced(GMP_INCLUDES GMP_LIBRARIES)
 

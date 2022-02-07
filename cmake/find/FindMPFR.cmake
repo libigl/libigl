@@ -1,6 +1,19 @@
 # Try to find the MPFR library
 # See http://www.mpfr.org/
 
+if(${CMAKE_VERSION} VERSION_LESS "3.18.0")
+    set(REQUIRED_FLAG "")
+else()
+    set(REQUIRED_FLAG REQUIRED)
+endif()
+
+# On Windows, we must use the pre-compiled versions downloaded with libigl
+if(WIN32)
+    set(NO_DEFAULT_FLAG NO_DEFAULT_PATH)
+else()
+    set(NO_DEFAULT_FLAG "")
+endif()
+
 find_path(MPFR_INCLUDES
     NAMES
         mpfr.h
@@ -9,6 +22,8 @@ find_path(MPFR_INCLUDES
         ${INCLUDE_INSTALL_DIR}
     PATH_SUFFIXES
         include
+    ${REQUIRED_FLAG}
+    ${NO_DEFAULT_FLAG}
 )
 
 find_library(MPFR_LIBRARIES
@@ -20,6 +35,8 @@ find_library(MPFR_LIBRARIES
         ${LIB_INSTALL_DIR}
     PATH_SUFFIXES
         lib
+    ${REQUIRED_FLAG}
+    ${NO_DEFAULT_FLAG}
 )
 
 set(MPFR_EXTRA_VARS "")
@@ -34,6 +51,8 @@ if(WIN32)
             ${LIB_INSTALL_DIR}
         PATH_SUFFIXES
             lib
+        ${REQUIRED_FLAG}
+        ${NO_DEFAULT_FLAG}
     )
     list(APPEND MPFR_EXTRA_VARS MPFR_RUNTIME_LIB)
 endif()

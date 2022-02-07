@@ -35,7 +35,7 @@ if(HUNTER_ENABLED)
 endif()
 
 ################################################################################
-project(libigl VERSION 3.0.0)
+project(libigl VERSION 2.4.0)
 
 # CMake module path
 list(PREPEND CMAKE_MODULE_PATH
@@ -54,33 +54,33 @@ endif()
 # Check for gmp + mpfr and enable cork / cgal modules accordingly
 set(LIBIGL_DEFAULT_CGAL ${LIBIGL_TOPLEVEL_PROJECT})
 set(MATLAB_ADDITIONAL_VERSIONS
-  "R2022b=10.3"
-  "R2022a=10.2"
-  "R2021b=10.1"
-  "R2021a=10.0"
-  )
+    "R2022b=10.3"
+    "R2022a=10.2"
+    "R2021b=10.1"
+    "R2021a=10.0"
+)
 set(LIBIGL_DEFAULT_MATLAB ${LIBIGL_TOPLEVEL_PROJECT})
 set(LIBIGL_DEFAULT_MOSEK ${LIBIGL_TOPLEVEL_PROJECT})
 if(LIBIGL_TOPLEVEL_PROJECT)
-  if(NOT WIN32)
-    find_package(GMP QUIET)
-    find_package(MPFR QUIET)
-    if(NOT (TARGET gmp::gmp AND TARGET mpfr::mpfr))
-        set(LIBIGL_DEFAULT_CGAL OFF)
-        message(WARNING "Missing dependencies GMP and MPFR. The libigl modules for cork and cgal "
-                        "will be disabled by default.")
+    if(NOT WIN32)
+        find_package(GMP QUIET)
+        find_package(MPFR QUIET)
+        if(NOT (TARGET gmp::gmp AND TARGET mpfr::mpfr))
+            set(LIBIGL_DEFAULT_CGAL OFF)
+            message(WARNING "Missing dependencies GMP and MPFR. The libigl modules for cork and cgal "
+                            "will be disabled by default.")
+        endif()
     endif()
-  endif()
-  find_package(Matlab QUIET)
-  if(NOT Matlab_FOUND)
-    set(LIBIGL_DEFAULT_MATLAB OFF)
-    message(WARNING "Matlab not found, disabling igl_restricted::matlab module.")
-  endif()
-  find_package(MOSEK QUIET)
-  if(NOT MOSEK_FOUND)
-    set(LIBIGL_DEFAULT_MOSEK OFF)
-    message(WARNING "Mosek not found, disabling igl_restricted::mosek module.")
-  endif()
+    find_package(Matlab QUIET)
+    if(NOT Matlab_FOUND)
+        set(LIBIGL_DEFAULT_MATLAB OFF)
+        message(WARNING "Matlab not found, disabling igl_restricted::matlab module.")
+    endif()
+    find_package(MOSEK QUIET)
+    if(NOT MOSEK_FOUND)
+        set(LIBIGL_DEFAULT_MOSEK OFF)
+        message(WARNING "Mosek not found, disabling igl_restricted::mosek module.")
+    endif()
 endif()
 
 # Build tests and tutorials
