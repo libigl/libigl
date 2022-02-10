@@ -10,7 +10,6 @@
 #include <vector>
 #include <cstdlib>
 
-#include "tutorial_shared_path.h"
 
 // Quad mesh generated from conjugate field
 Eigen::MatrixXd VQC;

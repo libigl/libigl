@@ -4,7 +4,6 @@
 #include <igl/slice_into.h>
 #include <igl/opengl/glfw/Viewer.h>
 #include <iostream>
-#include "tutorial_shared_path.h"
 
 int main(int argc, char *argv[])
 {
@@ -17,11 +16,11 @@ int main(int argc, char *argv[])
   // 100 random indices into rows of F
   VectorXi I;
   igl::floor((0.5*(VectorXd::Random(100,1).array()+1.)*F.rows()).eval(),I);
-  
+
   // 50 random indices into rows of I
   VectorXi J;
   igl::floor((0.5*(VectorXd::Random(50,1).array()+1.)*I.rows()).eval(),J);
-  
+
   // K = I(J);
   VectorXi K;
   igl::slice(I,J,K);

@@ -8,7 +8,6 @@
 #include <igl/opengl/glfw/Viewer.h>
 #include <Eigen/Sparse>
 #include <iostream>
-#include "tutorial_shared_path.h"
 
 int main(int argc, char *argv[])
 {
