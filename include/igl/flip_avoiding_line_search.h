@@ -37,7 +37,7 @@ namespace igl
     const Eigen::MatrixXi & F,
     Eigen::MatrixXd& cur_v,
     const Eigen::MatrixXd& dst_v,
-    std::function<double(Eigen::MatrixXd&)> energy,
+    std::function<double(Eigen::MatrixXd&)> & energy,
     double cur_energy = -1);
 
 }
