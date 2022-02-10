@@ -4,13 +4,13 @@ igl_add_library(igl_restricted_triangle)
 # 2. Include headers
 include(GNUInstallDirs)
 target_include_directories(igl_restricted_triangle ${IGL_SCOPE}
-    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+    $<BUILD_INTERFACE:${libigl_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 
 # 3. Target sources
-file(GLOB INC_FILES "${PROJECT_SOURCE_DIR}/include/igl/triangle/*.h")
-file(GLOB SRC_FILES "${PROJECT_SOURCE_DIR}/include/igl/triangle/*.cpp")
+file(GLOB INC_FILES "${libigl_SOURCE_DIR}/include/igl/triangle/*.h")
+file(GLOB SRC_FILES "${libigl_SOURCE_DIR}/include/igl/triangle/*.cpp")
 igl_target_sources(igl_restricted_triangle ${INC_FILES} ${SRC_FILES})
 
 # 4. Dependencies
@@ -21,7 +21,7 @@ target_link_libraries(igl_restricted_triangle ${IGL_SCOPE}
 )
 
 # 5. Unit tests
-file(GLOB SRC_FILES "${PROJECT_SOURCE_DIR}/tests/include/igl/triangle/*.cpp")
+file(GLOB SRC_FILES "${libigl_SOURCE_DIR}/tests/include/igl/triangle/*.cpp")
 igl_add_test(igl_restricted_triangle ${SRC_FILES})
 if(TARGET test_igl_restricted_triangle)
     igl_include(predicates)

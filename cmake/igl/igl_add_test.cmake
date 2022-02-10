@@ -18,13 +18,13 @@ function(igl_add_test module_name)
 
     # Create test executable
     add_executable(test_${module_name}
-        ${PROJECT_SOURCE_DIR}/tests/main.cpp
-        ${PROJECT_SOURCE_DIR}/tests/test_common.h
+        ${libigl_SOURCE_DIR}/tests/main.cpp
+        ${libigl_SOURCE_DIR}/tests/test_common.h
         ${ARGN}
     )
 
     # Include headers
-    target_include_directories(test_${module_name} PUBLIC ${PROJECT_SOURCE_DIR}/tests)
+    target_include_directories(test_${module_name} PUBLIC ${libigl_SOURCE_DIR}/tests)
 
     # Compile definitions
     target_compile_definitions(test_${module_name} PUBLIC CATCH_CONFIG_ENABLE_BENCHMARKING)

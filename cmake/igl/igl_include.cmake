@@ -16,9 +16,20 @@ function(_igl_include_full prefix name force)
         message(STATUS "Forcing include of libigl module: ${name}")
     endif()
 
+    # Dependencies are linked as INTERFACE targets unless libigl is compiled as a static library
+    if(LIBIGL_USE_STATIC_LIBRARY)
+        set(IGL_SCOPE PUBLIC)
+    else()
+        set(IGL_SCOPE INTERFACE)
+    endif()
+
+    # Retrieve module path use by libigl (necessary when calling igl_include() from a subproject)
+    get_property(igl_module_path GLOBAL PROPERTY __igl_module_path)
+    set(CMAKE_MODULE_PATH ${igl_module_path})
+
     # Include igl target definition
     if(LIBIGL${prefix_uc}_WITH_${name_uc} OR ${force})
-        include(${PROJECT_SOURCE_DIR}/cmake/igl/modules/${prefix}/${name}.cmake)
+        include(${libigl_SOURCE_DIR}/cmake/igl/modules/${prefix}/${name}.cmake)
     endif()
 endfunction()
 

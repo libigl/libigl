@@ -7,13 +7,13 @@ endif()
 # 2. Include headers
 include(GNUInstallDirs)
 target_include_directories(igl_core ${IGL_SCOPE}
-    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+    $<BUILD_INTERFACE:${libigl_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 
 # 3. Target sources
-file(GLOB INC_FILES "${PROJECT_SOURCE_DIR}/include/igl/*.h")
-file(GLOB SRC_FILES "${PROJECT_SOURCE_DIR}/include/igl/*.cpp")
+file(GLOB INC_FILES "${libigl_SOURCE_DIR}/include/igl/*.h")
+file(GLOB SRC_FILES "${libigl_SOURCE_DIR}/include/igl/*.cpp")
 igl_target_sources(igl_core ${INC_FILES} ${SRC_FILES})
 
 # 4. Install target & headers
@@ -28,5 +28,5 @@ target_link_libraries(igl_core ${IGL_SCOPE}
 )
 
 # 6. Unit tests
-file(GLOB SRC_FILES "${PROJECT_SOURCE_DIR}/tests/include/igl/*.cpp")
+file(GLOB SRC_FILES "${libigl_SOURCE_DIR}/tests/include/igl/*.cpp")
 igl_add_test(igl_core ${SRC_FILES})

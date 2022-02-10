@@ -40,7 +40,7 @@ function(igl_install module_name)
     # TODO: When moving module definition to their own CMakeLists.txt, we should
     # refactor this to use the folder where the target was defined (via the
     # target property SOURCE_DIR).
-    set(target_include_dir ${PROJECT_SOURCE_DIR}/include)
+    set(target_include_dir ${libigl_SOURCE_DIR}/include)
     foreach(source_path IN ITEMS ${ARGN})
         # Filter out .cpp files in "static lib" mode
         if(LIBIGL_USE_STATIC_LIBRARY)

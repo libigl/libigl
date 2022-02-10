@@ -4,13 +4,13 @@ igl_add_library(igl_restricted_matlab)
 # 2. Include headers
 include(GNUInstallDirs)
 target_include_directories(igl_restricted_matlab ${IGL_SCOPE}
-    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+    $<BUILD_INTERFACE:${libigl_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 
 # 3. Target sources
-file(GLOB INC_FILES "${PROJECT_SOURCE_DIR}/include/igl/matlab/*.h")
-file(GLOB SRC_FILES "${PROJECT_SOURCE_DIR}/include/igl/matlab/*.cpp")
+file(GLOB INC_FILES "${libigl_SOURCE_DIR}/include/igl/matlab/*.h")
+file(GLOB SRC_FILES "${libigl_SOURCE_DIR}/include/igl/matlab/*.cpp")
 igl_target_sources(igl_restricted_matlab ${INC_FILES} ${SRC_FILES})
 
 # 4. Dependencies
