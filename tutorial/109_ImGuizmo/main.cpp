@@ -2,11 +2,6 @@
 #include <igl/opengl/glfw/Viewer.h>
 #include <igl/opengl/glfw/imgui/ImGuizmoPlugin.h>
 #include <GLFW/glfw3.h>
-#include <imgui/imgui.h>
-#include <imgui/imgui_internal.h>
-#include <imgui_impl_glfw.h>
-#include <imgui_impl_opengl3.h>
-#include <imguizmo/ImGuizmo.h>
 
 int main(int argc, char *argv[])
 {
@@ -21,7 +16,7 @@ int main(int argc, char *argv[])
   igl::opengl::glfw::imgui::ImGuizmoPlugin plugin;
   vr.plugins.push_back(&plugin);
   // Initialize ImGuizmo at mesh centroid
-  plugin.T.block(0,3,3,1) = 
+  plugin.T.block(0,3,3,1) =
     0.5*(V.colwise().maxCoeff() + V.colwise().minCoeff()).transpose().cast<float>();
   // Update can be applied relative to this remembered initial transform
   const Eigen::Matrix4f T0 = plugin.T;

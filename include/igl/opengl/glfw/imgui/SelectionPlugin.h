@@ -2,9 +2,9 @@
 #define IGL_OPENGL_GFLW_IMGUI_IMGUIDRAWLISTPLUGIN_H
 #include <igl/igl_inline.h>
 #include <igl/opengl/glfw/imgui/ImGuiMenu.h>
-#include <imgui/imgui.h>
-#include <imgui/imgui_internal.h>
-#include <imguizmo/ImGuizmo.h>
+#include <imgui.h>
+#include <imgui_internal.h>
+#include <ImGuizmo.h>
 #include <Eigen/Dense>
 #include <vector>
 
@@ -36,7 +36,7 @@ public:
   std::vector<Eigen::RowVector2f> L;
   // callback called when slection is completed (usually on mouse_up)
   std::function<void(void)> callback;
-  // callback called after mode is changed 
+  // callback called after mode is changed
   std::function<void(Mode)> callback_post_mode_change;
   // whether rotating, translating or scaling
   ImGuizmo::OPERATION operation;
