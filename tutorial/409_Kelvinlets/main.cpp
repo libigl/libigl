@@ -4,7 +4,7 @@
 #include <igl/readOFF.h>
 #include <igl/unproject.h>
 #include <igl/unproject_onto_mesh.h>
-#include <imgui/imgui.h>
+#include <imgui.h>
 #include <iostream>
 
 namespace {

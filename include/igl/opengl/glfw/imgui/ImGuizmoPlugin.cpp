@@ -1,7 +1,7 @@
 #include "ImGuizmoPlugin.h"
-#include <imgui/imgui.h>
-#include <imgui_impl_glfw.h>
-#include <imgui_impl_opengl3.h>
+#include <imgui.h>
+#include <backends/imgui_impl_glfw.h>
+#include <backends/imgui_impl_opengl3.h>
 #include <imgui_fonts_droid_sans.h>
 #include <GLFW/glfw3.h>
 
@@ -11,7 +11,7 @@ IGL_INLINE void ImGuizmoPlugin::init(igl::opengl::glfw::Viewer *_viewer)
 {
   ImGuiMenu::init(_viewer);
 }
-IGL_INLINE bool ImGuizmoPlugin::pre_draw() 
+IGL_INLINE bool ImGuizmoPlugin::pre_draw()
 {
   if(!visible){ return false; }
   ImGuiMenu::pre_draw();
@@ -20,7 +20,7 @@ IGL_INLINE bool ImGuizmoPlugin::pre_draw()
   ImGui::PopStyleVar();
   return false;
 }
-IGL_INLINE bool ImGuizmoPlugin::post_draw() 
+IGL_INLINE bool ImGuizmoPlugin::post_draw()
 {
   if(!visible){ return false; }
   // Don't draw the Viewer's default menu: draw just the ImGuizmo
@@ -29,7 +29,7 @@ IGL_INLINE bool ImGuizmoPlugin::post_draw()
   if(viewer->core().orthographic){ view(2,3) -= 1000;/* Hack depth */ }
   // ImGuizmo doesn't like a lot of scaling in view, shift it to T
   const float z = viewer->core().camera_base_zoom;
-  const Eigen::Matrix4f S = 
+  const Eigen::Matrix4f S =
     (Eigen::Matrix4f()<< z,0,0,0, 0,z,0,0, 0,0,z,0, 0,0,0,1).finished();
   view = (view * S.inverse()).eval();
   const Eigen::Matrix4f T0 = T;

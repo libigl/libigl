@@ -8,7 +8,7 @@ include(FetchContent)
 FetchContent_Declare(
     imgui
     GIT_REPOSITORY https://github.com/ocornut/imgui.git
-    GIT_TAG 61b19489f1ba35934d9114c034b24eb5bff149e7 # 1.81 + patch for #1669
+    GIT_TAG v1.85
 )
 FetchContent_MakeAvailable(imgui)
 
@@ -32,26 +32,11 @@ set(IMGUI_SRC
     "${imgui_SOURCE_DIR}/misc/cpp/imgui_stdlib.cpp"
 )
 
-# Copy imgui source files into a subfolder `imgui/`
-set(output_folder "${CMAKE_CURRENT_BINARY_DIR}/imgui/include/imgui")
-message(VERBOSE "Copying imgui files to '${output_folder}'")
-foreach(filepath IN ITEMS ${IMGUI_SRC})
-    file(RELATIVE_PATH filename "${imgui_SOURCE_DIR}" ${filepath})
-    configure_file(${filepath} "${output_folder}/${filename}" COPYONLY)
-endforeach()
-
-file(GLOB_RECURSE IMGUI_SRC "${output_folder}/*.h" "${output_folder}/*.cpp")
-
 add_library(imgui ${IMGUI_SRC})
 add_library(imgui::imgui ALIAS imgui)
 
 # Include headers
-target_include_directories(imgui
-    PUBLIC
-        "${CMAKE_CURRENT_BINARY_DIR}/imgui/include"
-        "${CMAKE_CURRENT_BINARY_DIR}/imgui/include/imgui"
-        "${CMAKE_CURRENT_BINARY_DIR}/imgui/include/imgui/backends"
-)
+target_include_directories(imgui PUBLIC "${imgui_SOURCE_DIR}")
 
 # Compile definitions
 target_compile_definitions(imgui PUBLIC

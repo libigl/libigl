@@ -17,22 +17,12 @@ set(IMGUIZMO_SRC
     "${imguizmo_SOURCE_DIR}/ImGuizmo.cpp"
 )
 
-# Copy imguizmo source files into a subfolder `imguizmo/`
-set(output_folder "${CMAKE_CURRENT_BINARY_DIR}/imguizmo/include/imguizmo")
-message(VERBOSE "Copying imguizmo files to '${output_folder}'")
-foreach(filepath IN ITEMS ${IMGUIZMO_SRC})
-    file(RELATIVE_PATH filename "${imguizmo_SOURCE_DIR}" ${filepath})
-    configure_file(${filepath} "${output_folder}/${filename}" COPYONLY)
-endforeach()
-
-file(GLOB_RECURSE IMGUIZMO_SRC "${output_folder}/*.h" "${output_folder}/*.cpp")
-
 add_library(imguizmo ${IMGUIZMO_SRC})
 add_library(imguizmo::imguizmo ALIAS imguizmo)
 
 target_compile_features(imguizmo PUBLIC cxx_std_11)
 
-target_include_directories(imguizmo PUBLIC "${CMAKE_CURRENT_BINARY_DIR}/imguizmo/include")
+target_include_directories(imguizmo PUBLIC "${imguizmo_SOURCE_DIR}")
 
 include(imgui)
 target_link_libraries(imguizmo PUBLIC imgui::imgui)

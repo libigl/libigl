@@ -9,9 +9,9 @@
 #include "ImGuiMenu.h"
 #include "ImGuiHelpers.h"
 #include <igl/project.h>
-#include <imgui/imgui.h>
-#include <imgui_impl_glfw.h>
-#include <imgui_impl_opengl3.h>
+#include <backends/imgui_impl_glfw.h>
+#include <backends/imgui_impl_opengl3.h>
+#include <imgui.h>
 #include <imgui_fonts_droid_sans.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
