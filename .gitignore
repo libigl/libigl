@@ -39,3 +39,11 @@
 
 # Libigl specific
 LibiglOptions.cmake
+
+# vim debris
+.*.un~
+.*.swo
+.*.swp
+
+# macos debris
+.DS_Store
