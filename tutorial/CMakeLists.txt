@@ -11,7 +11,7 @@ option(LIBIGL_TUTORIALS_CHAPTER7 "Compile libigl tutorials chapter 7" ON)
 include(libigl_tutorial_data)
 
 if(NOT TARGET igl::glfw)
-    message(WARNING "Most tutorial executables depend on OpenGL and glfw. Use `cmake -DLIBIGL_WITH_GLFW=ON ..`")
+    message(WARNING "Most tutorial executables depend on OpenGL and glfw. Use `cmake -DLIBIGL_GLFW=ON ..`")
 endif()
 
 # Chapter 1
