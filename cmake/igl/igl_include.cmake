@@ -28,7 +28,7 @@ function(_igl_include_full prefix name force)
     set(CMAKE_MODULE_PATH ${igl_module_path})
 
     # Include igl target definition
-    if(LIBIGL_WITH${prefix_uc}_${name_uc} OR ${force})
+    if(LIBIGL${prefix_uc}_${name_uc} OR ${force})
         include(${libigl_SOURCE_DIR}/cmake/igl/modules/${prefix}/${name}.cmake)
     endif()
 endfunction()

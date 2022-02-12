@@ -97,26 +97,26 @@ option(LIBIGL_USE_STATIC_LIBRARY "Use libigl as static library" ${LIBIGL_TOPLEVE
 
 # Permissive modules. These modules are available under MPL2 license, and their dependencies are available
 # under a permissive or public domain license.
-option(LIBIGL_WITH_EMBREE           "Build target igl::embree"           ${LIBIGL_TOPLEVEL_PROJECT})
-option(LIBIGL_WITH_GLFW             "Build target igl::glfw"             ${LIBIGL_TOPLEVEL_PROJECT})
-option(LIBIGL_WITH_IMGUI            "Build target igl::imgui"            ${LIBIGL_TOPLEVEL_PROJECT})
-option(LIBIGL_WITH_OPENGL           "Build target igl::opengl"           ${LIBIGL_TOPLEVEL_PROJECT})
-option(LIBIGL_WITH_PNG              "Build target igl::png"              ${LIBIGL_TOPLEVEL_PROJECT})
-option(LIBIGL_WITH_PREDICATES       "Build target igl::predicates"       ${LIBIGL_TOPLEVEL_PROJECT})
-option(LIBIGL_WITH_XML              "Build target igl::xml"              ${LIBIGL_TOPLEVEL_PROJECT})
+option(LIBIGL_EMBREE           "Build target igl::embree"           ${LIBIGL_TOPLEVEL_PROJECT})
+option(LIBIGL_GLFW             "Build target igl::glfw"             ${LIBIGL_TOPLEVEL_PROJECT})
+option(LIBIGL_IMGUI            "Build target igl::imgui"            ${LIBIGL_TOPLEVEL_PROJECT})
+option(LIBIGL_OPENGL           "Build target igl::opengl"           ${LIBIGL_TOPLEVEL_PROJECT})
+option(LIBIGL_PNG              "Build target igl::png"              ${LIBIGL_TOPLEVEL_PROJECT})
+option(LIBIGL_PREDICATES       "Build target igl::predicates"       ${LIBIGL_TOPLEVEL_PROJECT})
+option(LIBIGL_XML              "Build target igl::xml"              ${LIBIGL_TOPLEVEL_PROJECT})
 
 # Copyleft modules. These modules are available under GPL license, and their dependencies are
 # available under a copyleft license.
-option(LIBIGL_COPYLEFT_WITH_CORE    "Build target igl_copyleft::core"    ${LIBIGL_TOPLEVEL_PROJECT})
-option(LIBIGL_COPYLEFT_WITH_CGAL    "Build target igl_copyleft::cgal"    ${LIBIGL_DEFAULT_CGAL})
-option(LIBIGL_COPYLEFT_WITH_COMISO  "Build target igl_copyleft::comiso"  ${LIBIGL_TOPLEVEL_PROJECT})
-option(LIBIGL_COPYLEFT_WITH_TETGEN  "Build target igl_copyleft::tetgen"  ${LIBIGL_TOPLEVEL_PROJECT})
+option(LIBIGL_COPYLEFT_CORE    "Build target igl_copyleft::core"    ${LIBIGL_TOPLEVEL_PROJECT})
+option(LIBIGL_COPYLEFT_CGAL    "Build target igl_copyleft::cgal"    ${LIBIGL_DEFAULT_CGAL})
+option(LIBIGL_COPYLEFT_COMISO  "Build target igl_copyleft::comiso"  ${LIBIGL_TOPLEVEL_PROJECT})
+option(LIBIGL_COPYLEFT_TETGEN  "Build target igl_copyleft::tetgen"  ${LIBIGL_TOPLEVEL_PROJECT})
 
 # Restricted modules. These modules are available under MPL2 license, but their dependencies are
 # only available under a non-commercial or proprietary license.
-option(LIBIGL_RESTRICTED_WITH_MATLAB   "Build target igl_restricted::matlab"   ${LIBIGL_DEFAULT_MATLAB})
-option(LIBIGL_RESTRICTED_WITH_MOSEK    "Build target igl_restricted::mosek"    ${LIBIGL_DEFAULT_MOSEK})
-option(LIBIGL_RESTRICTED_WITH_TRIANGLE "Build target igl_restricted::triangle" ${LIBIGL_TOPLEVEL_PROJECT})
+option(LIBIGL_RESTRICTED_MATLAB   "Build target igl_restricted::matlab"   ${LIBIGL_DEFAULT_MATLAB})
+option(LIBIGL_RESTRICTED_MOSEK    "Build target igl_restricted::mosek"    ${LIBIGL_DEFAULT_MOSEK})
+option(LIBIGL_RESTRICTED_TRIANGLE "Build target igl_restricted::triangle" ${LIBIGL_TOPLEVEL_PROJECT})
 
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
