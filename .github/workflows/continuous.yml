@@ -79,8 +79,7 @@ jobs:
             -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
             -DCMAKE_BUILD_TYPE=${{ matrix.config }} \
             -DLIBIGL_USE_STATIC_LIBRARY=${{ matrix.static }} \
-            -DLIBIGL_COPYLEFT_WITH_CGAL=ON \
-            -DLIBIGL_COPYLEFT_WITH_CORK=ON
+            -DLIBIGL_WITH_COPYLEFT_CGAL=ON 
 
       - name: Build
         run: cd build; make -j2; ccache --show-stats
@@ -138,8 +137,7 @@ jobs:
             -DCMAKE_CXX_COMPILER_LAUNCHER=sccache ^
             -DCMAKE_BUILD_TYPE=${{ matrix.config }} ^
             -DLIBIGL_USE_STATIC_LIBRARY=${{ matrix.static }} ^
-            -DLIBIGL_COPYLEFT_WITH_CGAL=ON ^
-            -DLIBIGL_COPYLEFT_WITH_CORK=ON ^
+            -DLIBIGL_WITH_COPYLEFT_CGAL=ON ^
             -DCMAKE_JOB_POOLS=pool-linking=1;pool-compilation=1 ^
             -DCMAKE_JOB_POOL_COMPILE:STRING=pool-compilation ^
             -DCMAKE_JOB_POOL_LINK:STRING=pool-linking ^
