@@ -1,4 +1,4 @@
-#include "ImGuizmoPlugin.h"
+#include "ImGuizmoWidget.h"
 #include <imgui.h>
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_opengl3.h>
@@ -7,22 +7,17 @@
 
 namespace igl{ namespace opengl{ namespace glfw{ namespace imgui{
 
-IGL_INLINE void ImGuizmoPlugin::init(igl::opengl::glfw::Viewer *_viewer)
+IGL_INLINE void ImGuizmoWidget::init(Viewer *_viewer, ImGuiPlugin *_plugin)
 {
-  ImGuiMenu::init(_viewer);
+  ImGuiWidget::init(_viewer,_plugin);
 }
-IGL_INLINE bool ImGuizmoPlugin::pre_draw()
+
+IGL_INLINE void ImGuizmoWidget::draw()
 {
-  if(!visible){ return false; }
-  ImGuiMenu::pre_draw();
+  if(!visible){ return; }
   ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0);
   ImGuizmo::BeginFrame();
   ImGui::PopStyleVar();
-  return false;
-}
-IGL_INLINE bool ImGuizmoPlugin::post_draw()
-{
-  if(!visible){ return false; }
   // Don't draw the Viewer's default menu: draw just the ImGuizmo
   Eigen::Matrix4f view = (viewer->core().view / viewer->core().camera_zoom);
   Eigen::Matrix4f proj = viewer->core().proj;
@@ -43,9 +38,6 @@ IGL_INLINE bool ImGuizmoPlugin::post_draw()
   const float diff = (T-T0).array().abs().maxCoeff();
   // Only call if actually changed; otherwise, triggers on all mouse events
   if( diff > 1e-7) { callback(T); }
-  ImGui::Render();
-  ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-  return false;
 }
 
 }}}}

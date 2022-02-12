@@ -1,4 +1,11 @@
-#include "SelectionPlugin.h"
+// This file is part of libigl, a simple c++ geometry processing library.
+//
+// Copyright (C) 2022 Alec Jacobson <alecjacobson@gmail.com>
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
+// obtain one at http://mozilla.org/MPL/2.0/.
+#include "SelectionWidget.h"
 
 #include <imgui.h>
 #include <backends/imgui_impl_glfw.h>
@@ -9,26 +16,20 @@
 
 namespace igl{ namespace opengl{ namespace glfw{ namespace imgui{
 
-IGL_INLINE void SelectionPlugin::init(igl::opengl::glfw::Viewer *_viewer)
+IGL_INLINE void SelectionWidget::init(Viewer *_viewer, ImGuiPlugin *_plugin)
 {
-  ImGuiMenu::init(_viewer);
+  ImGuiWidget::init(_viewer,_plugin);
   std::cout<<R"(
-igl::opengl::glfw::imgui::SelectionPlugin usage:
+igl::opengl::glfw::imgui::SelectionWidget usage:
   [drag]  Draw a 2D selection
   l       Turn on and toggle between lasso and polygonal lasso tool
   M,m     Turn on and toggle between rectangular and circular marquee tool
   V,v     Turn off interactive selection
 )";
 }
-IGL_INLINE bool SelectionPlugin::pre_draw()
+IGL_INLINE void SelectionWidget::draw()
 {
-  if(mode == OFF){ return false; }
-  ImGuiMenu::pre_draw();
-  return false;
-}
-IGL_INLINE bool SelectionPlugin::post_draw()
-{
-  if(mode == OFF){ return false; }
+  if(mode == OFF){ return; }
   ImGuiIO& io = ImGui::GetIO();
 
   float width, height;
@@ -78,11 +79,9 @@ IGL_INLINE bool SelectionPlugin::post_draw()
   ImGui::Render();
   ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-
-  return false;
 }
 
-IGL_INLINE bool SelectionPlugin::mouse_down(int button, int modifier)
+IGL_INLINE bool SelectionWidget::mouse_down(int button, int modifier)
 {
   if(mode == OFF || (modifier & IGL_MOD_ALT) ){ return false;}
   is_down = true;
@@ -98,7 +97,7 @@ IGL_INLINE bool SelectionPlugin::mouse_down(int button, int modifier)
   return true;
 }
 
-IGL_INLINE bool SelectionPlugin::mouse_up(int button, int modifier)
+IGL_INLINE bool SelectionWidget::mouse_up(int button, int modifier)
 {
   is_down = false;
   // are we done? Check first and last lasso point (need at least 3 (2 real
@@ -112,7 +111,7 @@ IGL_INLINE bool SelectionPlugin::mouse_up(int button, int modifier)
   return false;
 }
 
-IGL_INLINE bool SelectionPlugin::mouse_move(int mouse_x, int mouse_y)
+IGL_INLINE bool SelectionWidget::mouse_move(int mouse_x, int mouse_y)
 {
   if(!is_drawing){ return false; }
   if(!has_moved_since_down)
@@ -141,7 +140,7 @@ IGL_INLINE bool SelectionPlugin::mouse_move(int mouse_x, int mouse_y)
   return true;
 }
 
-IGL_INLINE bool SelectionPlugin::key_pressed(unsigned int key, int modifiers)
+IGL_INLINE bool SelectionWidget::key_pressed(unsigned int key, int modifiers)
 {
   Mode old = mode;
   if(OFF_KEY.find(char(key)) != std::string::npos)
@@ -175,7 +174,7 @@ IGL_INLINE bool SelectionPlugin::key_pressed(unsigned int key, int modifiers)
   return false;
 }
 
-IGL_INLINE void SelectionPlugin::clear()
+IGL_INLINE void SelectionWidget::clear()
 {
   M.setZero();
   L.clear();
@@ -183,7 +182,7 @@ IGL_INLINE void SelectionPlugin::clear()
   is_down = false;
 };
 
-IGL_INLINE void SelectionPlugin::circle(const Eigen::Matrix<float,2,2> & M,  std::vector<Eigen::RowVector2f> & L)
+IGL_INLINE void SelectionWidget::circle(const Eigen::Matrix<float,2,2> & M,  std::vector<Eigen::RowVector2f> & L)
 {
   L.clear();
   L.reserve(64);
@@ -194,7 +193,7 @@ IGL_INLINE void SelectionPlugin::circle(const Eigen::Matrix<float,2,2> & M,  std
   }
 }
 
-IGL_INLINE void SelectionPlugin::rect(const Eigen::Matrix<float,2,2> & M,  std::vector<Eigen::RowVector2f> & L)
+IGL_INLINE void SelectionWidget::rect(const Eigen::Matrix<float,2,2> & M,  std::vector<Eigen::RowVector2f> & L)
 {
   L.resize(4);
   L[0] = Eigen::RowVector2f(M(0,0),M(0,1));
@@ -203,7 +202,7 @@ IGL_INLINE void SelectionPlugin::rect(const Eigen::Matrix<float,2,2> & M,  std::
   L[3] = Eigen::RowVector2f(M(0,0),M(1,1));
 }
 
-IGL_INLINE Eigen::RowVector2f SelectionPlugin::xy(const Viewer * vr)
+IGL_INLINE Eigen::RowVector2f SelectionWidget::xy(const Viewer * vr)
 {
   return Eigen::RowVector2f(
     vr->current_mouse_x,

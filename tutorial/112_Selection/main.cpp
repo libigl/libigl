@@ -5,7 +5,8 @@
 #include <igl/AABB.h>
 #include <igl/screen_space_selection.h>
 
-#include <igl/opengl/glfw/imgui/SelectionPlugin.h>
+#include <igl/opengl/glfw/imgui/ImGuiPlugin.h>
+#include <igl/opengl/glfw/imgui/SelectionWidget.h>
 
 int main(int argc, char *argv[])
 {
@@ -17,7 +18,11 @@ int main(int argc, char *argv[])
 
   // Plot the mesh
   igl::opengl::glfw::Viewer vr;
-  igl::opengl::glfw::imgui::SelectionPlugin plugin;
+  igl::opengl::glfw::imgui::ImGuiPlugin imgui_plugin;
+  vr.plugins.push_back(&imgui_plugin);
+  igl::opengl::glfw::imgui::SelectionWidget widget;
+  imgui_plugin.widgets.push_back(&widget);
+
   Eigen::VectorXd W = Eigen::VectorXd::Zero(V.rows());
   Eigen::Array<double,Eigen::Dynamic,1> and_visible = 
     Eigen::Array<double,Eigen::Dynamic,1>::Zero(V.rows());
@@ -36,9 +41,9 @@ int main(int argc, char *argv[])
   };
   igl::AABB<Eigen::MatrixXd, 3> tree;
   tree.init(V,F);
-  plugin.callback = [&]()
+  widget.callback = [&]()
   {
-    screen_space_selection(V,F,tree,vr.core().view,vr.core().proj,vr.core().viewport,plugin.L,W,and_visible);
+    screen_space_selection(V,F,tree,vr.core().view,vr.core().proj,vr.core().viewport,widget.L,W,and_visible);
     update();
   };
   vr.callback_key_pressed = [&](decltype(vr) &,unsigned int key, int mod)
@@ -55,7 +60,6 @@ Usage:
   [space]  Toggle whether to take visibility into account
   D,d      Clear selection
 )";
-  vr.plugins.push_back(&plugin);
   vr.data().set_mesh(V,F);
   vr.data().set_face_based(true);
   vr.core().background_color.head(3) = CM.row(0).head(3).cast<float>();
