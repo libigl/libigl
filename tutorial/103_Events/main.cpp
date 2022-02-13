@@ -1,7 +1,6 @@
 #include <igl/readOFF.h>
 #include <igl/opengl/glfw/Viewer.h>
 #include <iostream>
-#include "tutorial_shared_path.h"
 
 Eigen::MatrixXd V1,V2;
 Eigen::MatrixXi F1,F2;

@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2016 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "assign.h"
 #include "assign_scalar.h"
@@ -24,23 +24,23 @@ IGL_INLINE void igl::copyleft::cgal::assign(
 }
 
 template <typename ReturnScalar, typename DerivedC>
-IGL_INLINE 
+IGL_INLINE
 Eigen::Matrix<
   ReturnScalar,
-  DerivedC::RowsAtCompileTime, 
-  DerivedC::ColsAtCompileTime, 
+  DerivedC::RowsAtCompileTime,
+  DerivedC::ColsAtCompileTime,
   1,
-  DerivedC::MaxRowsAtCompileTime, 
+  DerivedC::MaxRowsAtCompileTime,
   DerivedC::MaxColsAtCompileTime>
 igl::copyleft::cgal::assign(
   const Eigen::MatrixBase<DerivedC> & C)
 {
   Eigen::Matrix<
     ReturnScalar,
-    DerivedC::RowsAtCompileTime, 
-    DerivedC::ColsAtCompileTime, 
+    DerivedC::RowsAtCompileTime,
+    DerivedC::ColsAtCompileTime,
     1,
-    DerivedC::MaxRowsAtCompileTime, 
+    DerivedC::MaxRowsAtCompileTime,
     DerivedC::MaxColsAtCompileTime> D;
   assign(C,D);
   return D;

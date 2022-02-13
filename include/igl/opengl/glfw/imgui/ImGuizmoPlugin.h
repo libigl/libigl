@@ -2,9 +2,9 @@
 #define IGL_OPENGL_GFLW_IMGUI_IMGUIZMOPLUGIN_H
 #include "../../../igl_inline.h"
 #include "ImGuiMenu.h"
-#include <imgui/imgui.h>
-#include <imgui/imgui_internal.h>
-#include <imguizmo/ImGuizmo.h>
+#include <imgui.h>
+#include <imgui_internal.h>
+#include <ImGuizmo.h>
 #include <Eigen/Dense>
 
 namespace igl{ namespace opengl{ namespace glfw{ namespace imgui{

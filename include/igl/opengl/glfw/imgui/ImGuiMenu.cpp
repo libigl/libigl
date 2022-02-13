@@ -9,9 +9,9 @@
 #include "ImGuiMenu.h"
 #include "ImGuiHelpers.h"
 #include <igl/project.h>
-#include <imgui/imgui.h>
-#include <imgui_impl_glfw.h>
-#include <imgui_impl_opengl3.h>
+#include <backends/imgui_impl_glfw.h>
+#include <backends/imgui_impl_opengl3.h>
+#include <imgui.h>
 #include <imgui_fonts_droid_sans.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
@@ -185,7 +185,7 @@ IGL_INLINE void ImGuiMenu::draw_viewer_menu()
   // Workspace
   if (ImGui::CollapsingHeader("Workspace", ImGuiTreeNodeFlags_DefaultOpen))
   {
-    float w = ImGui::GetContentRegionAvailWidth();
+    float w = ImGui::GetContentRegionAvail().x;
     float p = ImGui::GetStyle().FramePadding.x;
     if (ImGui::Button("Load##Workspace", ImVec2((w-p)/2.f, 0)))
     {
@@ -201,7 +201,7 @@ IGL_INLINE void ImGuiMenu::draw_viewer_menu()
   // Mesh
   if (ImGui::CollapsingHeader("Mesh", ImGuiTreeNodeFlags_DefaultOpen))
   {
-    float w = ImGui::GetContentRegionAvailWidth();
+    float w = ImGui::GetContentRegionAvail().x;
     float p = ImGui::GetStyle().FramePadding.x;
     if (ImGui::Button("Load##Mesh", ImVec2((w-p)/2.f, 0)))
     {

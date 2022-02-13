@@ -1,8 +1,8 @@
 #include "SelectionPlugin.h"
 
-#include <imgui/imgui.h>
-#include <imgui_impl_glfw.h>
-#include <imgui_impl_opengl3.h>
+#include <imgui.h>
+#include <backends/imgui_impl_glfw.h>
+#include <backends/imgui_impl_opengl3.h>
 #include <imgui_fonts_droid_sans.h>
 #include <GLFW/glfw3.h>
 #include "../../../PI.h"
@@ -169,18 +169,18 @@ IGL_INLINE bool SelectionPlugin::key_pressed(unsigned int key, int modifiers)
   if(old != mode)
   {
     clear();
-    if(callback_post_mode_change){ callback_post_mode_change(old); } 
+    if(callback_post_mode_change){ callback_post_mode_change(old); }
     return true;
   }
   return false;
 }
 
 IGL_INLINE void SelectionPlugin::clear()
-{ 
-  M.setZero(); 
-  L.clear(); 
-  is_drawing = false; 
-  is_down = false; 
+{
+  M.setZero();
+  L.clear();
+  is_drawing = false;
+  is_down = false;
 };
 
 IGL_INLINE void SelectionPlugin::circle(const Eigen::Matrix<float,2,2> & M,  std::vector<Eigen::RowVector2f> & L)

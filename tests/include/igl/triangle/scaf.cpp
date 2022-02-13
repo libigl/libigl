@@ -69,7 +69,8 @@ TEST_CASE("scaf_system: Test scaf_system() vs scaf_solve()", "[igl]")
       }
 
       // Line search
-      auto E = [&s_test](Eigen::MatrixXd &uv) { return igl::triangle::scaf::compute_energy(s_test, uv, true); };
+      std::function<double(Eigen::MatrixXd&)> E = 
+        [&s_test](Eigen::MatrixXd &uv) { return igl::triangle::scaf::compute_energy(s_test, uv, true); };
       Eigen::MatrixXi w_T;
       igl::cat(1, s_test.m_T, s_test.s_T, w_T);
       igl::flip_avoiding_line_search(w_T, s_test.w_uv, uv_target, E, -1);

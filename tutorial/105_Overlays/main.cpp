@@ -2,7 +2,6 @@
 #include <igl/opengl/glfw/Viewer.h>
 #include <igl/opengl/glfw/imgui/ImGuiMenu.h>
 #include <sstream>
-#include "tutorial_shared_path.h"
 
 Eigen::MatrixXd V;
 Eigen::MatrixXi F;

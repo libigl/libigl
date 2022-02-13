@@ -10,7 +10,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 #include "ImGuiTraits.h"
-#include <imgui/imgui.h>
+#include <imgui.h>
 #include <vector>
 #include <string>
 #include <algorithm>
