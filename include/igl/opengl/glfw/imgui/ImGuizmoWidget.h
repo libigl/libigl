@@ -9,7 +9,7 @@
 
 namespace igl{ namespace opengl{ namespace glfw{ namespace imgui{
 
-class ImGuizmoPlugin : public igl::opengl::glfw::imgui::ImGuiMenu
+class ImGuizmoWidget : public ImGuiWidget
 {
 public:
   // callback(T) called when the stored transform T changes
@@ -21,19 +21,15 @@ public:
   // stored transformation
   Eigen::Matrix4f T;
   // Initilize with rotate operation on an identity transform (at origin)
-  ImGuizmoPlugin():operation(ImGuizmo::ROTATE),T(Eigen::Matrix4f::Identity()){};
-  /////////////////////////////////////////////////////////////////////////////
-  // Boilerplate
-  virtual void init(igl::opengl::glfw::Viewer *_viewer) override;
-  virtual bool pre_draw() override;
-  /////////////////////////////////////////////////////////////////////////////
-  virtual bool post_draw() override;
+  ImGuizmoWidget():operation(ImGuizmo::ROTATE),T(Eigen::Matrix4f::Identity()){};
+  IGL_INLINE virtual void init(Viewer *_viewer, ImGuiPlugin *_plugin) override;
+  IGL_INLINE virtual void draw() override;
 };
 
 }}}}
 
 #ifndef IGL_STATIC_LIBRARY
-#  include "ImGuizmoPlugin.cpp"
+#  include "ImGuizmoWidget.cpp"
 #endif
 
 #endif

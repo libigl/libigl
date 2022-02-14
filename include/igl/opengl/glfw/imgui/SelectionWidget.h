@@ -1,16 +1,15 @@
-#ifndef IGL_OPENGL_GFLW_IMGUI_IMGUIDRAWLISTPLUGIN_H
-#define IGL_OPENGL_GFLW_IMGUI_IMGUIDRAWLISTPLUGIN_H
-#include <igl/igl_inline.h>
-#include <igl/opengl/glfw/imgui/ImGuiMenu.h>
-#include <imgui.h>
-#include <imgui_internal.h>
-#include <ImGuizmo.h>
+#ifndef IGL_OPENGL_GFLW_IMGUI_SELECTIONWIDGET_H
+#define IGL_OPENGL_GFLW_IMGUI_SELECTIONWIDGET_H
+#include "../../../igl_inline.h"
+#include "ImGuiWidget.h"
 #include <Eigen/Dense>
 #include <vector>
+#include <string>
+#include <functional>
 
 namespace igl{ namespace opengl{ namespace glfw{ namespace imgui{
 
-class SelectionPlugin: public igl::opengl::glfw::imgui::ImGuiMenu
+class SelectionWidget: public ImGuiWidget
 {
 public:
   // customizable hotkeys
@@ -38,15 +37,8 @@ public:
   std::function<void(void)> callback;
   // callback called after mode is changed
   std::function<void(Mode)> callback_post_mode_change;
-  // whether rotating, translating or scaling
-  ImGuizmo::OPERATION operation;
-  // stored transformation
-  Eigen::Matrix4f T;
-  // Initilize with rotate operation on an identity transform (at origin)
-  SelectionPlugin():operation(ImGuizmo::ROTATE),T(Eigen::Matrix4f::Identity()){};
-  IGL_INLINE virtual void init(igl::opengl::glfw::Viewer *_viewer) override;
-  IGL_INLINE virtual bool pre_draw() override;
-  IGL_INLINE virtual bool post_draw() override;
+  IGL_INLINE virtual void init(Viewer *_viewer, ImGuiPlugin *_plugin) override;
+  IGL_INLINE virtual void draw() override;
   IGL_INLINE virtual bool mouse_down(int button, int modifier) override;
   IGL_INLINE virtual bool mouse_up(int button, int modifier) override;
   IGL_INLINE virtual bool mouse_move(int mouse_x, int mouse_y) override;
@@ -63,6 +55,6 @@ public:
 }}}}
 
 #ifndef IGL_STATIC_LIBRARY
-#include "SelectionPlugin.cpp"
+#include "SelectionWidget.cpp"
 #endif
 #endif
