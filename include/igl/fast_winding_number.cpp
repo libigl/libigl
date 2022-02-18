@@ -1,6 +1,5 @@
 #include "fast_winding_number.h"
 #include "octree.h"
-#include "knn.h"
 #include "parallel_for.h"
 #include "PI.h"
 #include <vector>

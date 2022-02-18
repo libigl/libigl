@@ -171,6 +171,7 @@ IGL_INLINE bool readPLY(
   try
   {
     std::vector<uint8_t> fileBufferBytes;
+    // read_file_binary will call fclose
     read_file_binary(fp,fileBufferBytes);
     FileMemoryStream stream((char*)fileBufferBytes.data(), fileBufferBytes.size());
     return readPLY(stream,V,F,E,N,UV,VD,Vheader,FD,Fheader,ED,Eheader,comments);
@@ -179,6 +180,7 @@ IGL_INLINE bool readPLY(
   {
     std::cerr << "ReadPLY error: " << e.what() << std::endl;
   }
+  fclose(fp);
   return false;
 }
 
@@ -448,7 +450,7 @@ IGL_INLINE bool readPLY(
   else
   {
     FD.resize(faces->count, _face_header.size());
-    tinyply_buffer_to_matrix(*_face_data, FD, faces->count, 1);
+    tinyply_buffer_to_matrix(*_face_data, FD, faces->count, _face_header.size());
   }
 
   /// convert edge data:

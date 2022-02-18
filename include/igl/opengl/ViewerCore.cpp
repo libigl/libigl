@@ -363,9 +363,9 @@ IGL_INLINE void igl::opengl::ViewerCore::draw_labels(
   float width  = viewport(2);
   float height = viewport(3);
   float text_shift_scale_factor = orthographic ? 0.01 : 0.03;
-  float render_scale = orthographic ? 0.6 : 1.7;
+  float render_scale = (orthographic ? 0.6 : 1.7) * data.label_size;
   glUniform1f(glGetUniformLocation(data.meshgl.shader_text, "TextShiftFactor"), text_shift_scale_factor);
-  glUniform3f(glGetUniformLocation(data.meshgl.shader_text, "TextColor"), 0, 0, 0);
+  glUniform3f(glGetUniformLocation(data.meshgl.shader_text, "TextColor"), data.label_color(0), data.label_color(1), data.label_color(2));
   glUniform2f(glGetUniformLocation(data.meshgl.shader_text, "CellSize"), 1.0f / 16, (300.0f / 384) / 6);
   glUniform2f(glGetUniformLocation(data.meshgl.shader_text, "CellOffset"), 0.5 / 256.0, 0.5 / 256.0);
   glUniform2f(glGetUniformLocation(data.meshgl.shader_text, "RenderSize"), 
