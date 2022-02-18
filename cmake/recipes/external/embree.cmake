@@ -8,7 +8,7 @@ include(FetchContent)
 FetchContent_Declare(
     embree
     GIT_REPOSITORY https://github.com/embree/embree.git
-    GIT_TAG        v3.12.1
+    GIT_TAG        v3.13.3
     GIT_SHALLOW    TRUE
 )
 
@@ -45,7 +45,6 @@ add_library(embree::embree ALIAS embree)
 
 # Some order for IDEs
 set_target_properties(embree PROPERTIES FOLDER "ThirdParty//Embree")
-set_target_properties(algorithms PROPERTIES FOLDER "ThirdParty//Embree")
 set_target_properties(lexers PROPERTIES FOLDER "ThirdParty//Embree")
 set_target_properties(math PROPERTIES FOLDER "ThirdParty//Embree")
 set_target_properties(simd PROPERTIES FOLDER "ThirdParty//Embree")
