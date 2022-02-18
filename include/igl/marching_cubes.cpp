@@ -52,8 +52,8 @@ IGL_INLINE void igl::marching_cubes(
     const unsigned i = xyz2i(x,y,z);
 
     //Make a local copy of the values at the cube's corners
-    static Eigen::Matrix<Scalar,8,1> cS;
-    static Eigen::Matrix<Index,8,1> cI;
+    Eigen::Matrix<Scalar,8,1> cS;
+    Eigen::Matrix<Index,8,1> cI;
     //Find which vertices are inside of the surface and which are outside
     for(int c = 0; c < 8; c++)
     {
@@ -62,7 +62,7 @@ IGL_INLINE void igl::marching_cubes(
       cS(c) = S(ic);
     }
 
-  march_cube(GV,cS,cI,isovalue,V,n,F,m,E2V);
+    march_cube(GV,cS,cI,isovalue,V,n,F,m,E2V);
 
   };
 
@@ -110,11 +110,12 @@ IGL_INLINE void igl::marching_cubes(
   Index m = 0;
 
   // march over cubes
+
+  //Make a local copy of the values at the cube's corners
+  Eigen::Matrix<Scalar, 8, 1> cS;
+  Eigen::Matrix<Index, 8, 1> cI;
   for(Index c = 0;c<GI.rows();c++)
   {
-    //Make a local copy of the values at the cube's corners
-    static Eigen::Matrix<Scalar,8,1> cS;
-    static Eigen::Matrix<Index,8,1> cI;
     for(int v = 0; v < 8; v++)
     {
       cI(v) = GI(c,v);
