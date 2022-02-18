@@ -170,9 +170,10 @@ IGL_INLINE bool readPLY(
   try
   {
     std::vector<uint8_t> fileBufferBytes;
+    // read_file_binary will call fclose
     read_file_binary(fp,fileBufferBytes);
-    file_memory_stream stream((char*)fileBufferBytes.data(), fileBufferBytes.size());
-    fclose(fp);
+    file_memory_stream 
+      stream((char*)fileBufferBytes.data(), fileBufferBytes.size());
     return readPLY(stream,V,F,E,N,UV,VD,Vheader,FD,Fheader,ED,Eheader,comments);
   }
   catch(const std::exception& e)
