@@ -6,7 +6,8 @@
 #include <Eigen/Core>
 
 #include "tinyply.h"
-#include "file_utils.h"
+#include "read_file_binary.h"
+#include "FileMemoryStream.h"
 
 
 namespace igl
@@ -171,7 +172,7 @@ IGL_INLINE bool readPLY(
   {
     std::vector<uint8_t> fileBufferBytes;
     read_file_binary(fp,fileBufferBytes);
-    file_memory_stream stream((char*)fileBufferBytes.data(), fileBufferBytes.size());
+    FileMemoryStream stream((char*)fileBufferBytes.data(), fileBufferBytes.size());
     return readPLY(stream,V,F,E,N,UV,VD,Vheader,FD,Fheader,ED,Eheader,comments);
   }
   catch(const std::exception& e)

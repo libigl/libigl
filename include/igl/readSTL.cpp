@@ -10,7 +10,8 @@
 #include "readSTL.h"
 #include "list_to_matrix.h"
 #include "string_utils.h"
-#include "file_utils.h"
+#include "read_file_binary.h"
+#include "FileMemoryStream.h"
 
 #include <iostream>
 
@@ -304,7 +305,7 @@ IGL_INLINE bool readSTL(
 {
   std::vector<uint8_t> fileBufferBytes;
   read_file_binary(fp,fileBufferBytes);
-  file_memory_stream stream((char*)fileBufferBytes.data(), fileBufferBytes.size());
+  FileMemoryStream stream((char*)fileBufferBytes.data(), fileBufferBytes.size());
   return readSTL(stream, V, F, N);
 }
 
