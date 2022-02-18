@@ -172,12 +172,14 @@ IGL_INLINE bool readPLY(
     std::vector<uint8_t> fileBufferBytes;
     read_file_binary(fp,fileBufferBytes);
     file_memory_stream stream((char*)fileBufferBytes.data(), fileBufferBytes.size());
+    fclose(fp);
     return readPLY(stream,V,F,E,N,UV,VD,Vheader,FD,Fheader,ED,Eheader,comments);
   }
   catch(const std::exception& e)
   {
     std::cerr << "ReadPLY error: " << e.what() << std::endl;
   }
+  fclose(fp);
   return false;
 }
 
