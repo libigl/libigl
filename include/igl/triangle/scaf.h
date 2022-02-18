@@ -46,7 +46,7 @@ namespace igl
       Eigen::VectorXd m_M; // mesh area or volume
       Eigen::VectorXd s_M; // scaffold area or volume
       Eigen::VectorXd w_M; // area/volume weights for whole
-      double mesh_measure; // area or volume
+      double mesh_measure = 0; // area or volume
       double proximal_p = 0;
 
       Eigen::VectorXi frame_ids;
