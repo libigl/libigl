@@ -35,6 +35,7 @@ IGL_INLINE igl::opengl::ViewerData::ViewerData()
   use_matcap        (false),
   point_size(30),
   line_width(0.5f),
+  label_size(1),
   line_color(0,0,0,1),
   label_color(0,0,0.04,1),
   shininess(35.0f),
