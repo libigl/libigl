@@ -66,6 +66,7 @@ IGL_INLINE double igl::mapping_energy_with_jacobians(
           energy += areas(i) * exp(exp_factor * ((pow(s1, 2) + pow(s2, 2)) / (2 * s1 * s2)));
           break;
         }
+        default: assert(false);
 
       }
 
@@ -128,6 +129,7 @@ IGL_INLINE double igl::mapping_energy_with_jacobians(
           energy += areas(i) * exp(exp_factor * (pow(s1, 2) + pow(s2, 2) + pow(s3, 2)) / (3 * pow(s1 * s2 * s3, 2. / 3.)));
           break;
         }
+        default: assert(false);
       }
     }
   }
