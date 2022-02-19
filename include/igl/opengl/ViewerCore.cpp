@@ -201,7 +201,8 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
       glUniform4f(fixed_colori,
         data.line_color[0],
         data.line_color[1],
-        data.line_color[2], 1.0f);
+        data.line_color[2],
+        data.line_color[3]);
       data.meshgl.draw_mesh(false);
       glUniform4f(fixed_colori, 0.0f, 0.0f, 0.0f, 0.0f);
     }
