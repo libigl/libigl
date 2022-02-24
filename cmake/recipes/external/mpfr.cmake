@@ -1,3 +1,7 @@
+# Expects
+#   gmp_INCLUDE_DIR
+#   gmp_LIB_DIR
+#   gmp_LIBRARIES
 if(TARGET mpfr::mpfr)
     return()
 endif()
@@ -41,6 +45,9 @@ else()
   file(MAKE_DIRECTORY ${mpfr_INCLUDE_DIR})  # avoid race condition
   target_include_directories(mpfr::mpfr INTERFACE ${mpfr_INCLUDE_DIR})
   target_link_libraries(mpfr::mpfr INTERFACE "${mpfr_LIBRARIES}")  # need the quotes to expand list
+  # This is necessary to ensure that mpfr appears before gmp in link order.
+  # Otherwise undefined reference errors occur at link time on Linux with gcc
+  target_link_libraries(mpfr::mpfr INTERFACE "${gmp_LIBRARIES}") 
   add_dependencies(mpfr::mpfr mpfr)
 endif()
 
