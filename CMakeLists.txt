@@ -53,7 +53,6 @@ endif()
 
 set_property(GLOBAL PROPERTY __igl_module_path ${CMAKE_MODULE_PATH})
 
-# Check for gmp + mpfr and enable cork / cgal modules accordingly
 set(LIBIGL_DEFAULT_CGAL ${LIBIGL_TOPLEVEL_PROJECT})
 set(MATLAB_ADDITIONAL_VERSIONS
     "R2022b=10.3"
