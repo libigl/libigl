@@ -17,25 +17,27 @@ namespace igl
   //   A  ma by na matrix
   //   B  mb by nb matrix
   // Outputs:
-  //   IA  ma by na matrix of flags whether corresponding element of A exists in
+  //   IA  ma by 1 lest of flags whether corresponding element of A exists in
   //     B
-  //   LOCB  ma by na matrix of indices in B locating matching element (-1 if
-  //     not found), indices assume column major ordering
+  //   LOCB  ma by 1 list matrix of indices in B locating matching element (-1
+  //   if not found), indices assume column major ordering
   //
   template <
     typename DerivedA,
     typename DerivedB,
     typename DerivedIA,
     typename DerivedLOCB>
-  IGL_INLINE void ismember(
+  IGL_INLINE void ismember_rows(
     const Eigen::MatrixBase<DerivedA> & A,
     const Eigen::MatrixBase<DerivedB> & B,
     Eigen::PlainObjectBase<DerivedIA> & IA,
     Eigen::PlainObjectBase<DerivedLOCB> & LOCB);
+
 }
 
 #ifndef IGL_STATIC_LIBRARY
-#  include "ismember.cpp"
+#  include "ismember_rows.cpp"
 #endif
 #endif
+
 
