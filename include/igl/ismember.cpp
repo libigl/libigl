@@ -122,14 +122,16 @@ IGL_INLINE void igl::ismember_rows(
   }
 
   // Get rid of any duplicates
-  DerivedA uA;
-  DerivedB uB;
+  typedef Eigen::Matrix<typename DerivedA::Scalar,DerivedA::RowsAtCompileTime,DerivedA::RowsAtCompileTime> MatrixA;
+  typedef Eigen::Matrix<typename DerivedB::Scalar,DerivedB::RowsAtCompileTime,DerivedB::RowsAtCompileTime> MatrixB;
+  MatrixA uA;
+  MatrixB uB;
   Eigen::Matrix<typename DerivedA::Index,Dynamic,1> uIA,uIuA,uIB,uIuB;
   unique_rows(A,uA,uIA,uIuA);
   unique_rows(B,uB,uIB,uIuB);
   // Sort both
-  DerivedA sA;
-  DerivedB sB;
+  MatrixA sA;
+  MatrixB sB;
   Eigen::Matrix<typename DerivedA::Index,Dynamic,1> sIA,sIB;
   sortrows(uA,true,sA,sIA);
   sortrows(uB,true,sB,sIB);
