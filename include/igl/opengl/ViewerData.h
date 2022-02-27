@@ -106,11 +106,9 @@ public:
   // Inputs:
   //   caxis_min  caxis minimum bound
   //   caxis_max  caxis maximum bound
-  //   D  #V by 1 list of scalar values
+  //   D  #V|#F by 1 list of scalar values
   //   cmap colormap type
   //   num_steps number of intervals to discretize the colormap
-  //
-  // To-do: support #F by 1 per-face data
   IGL_INLINE void set_data(
     const Eigen::VectorXd & D,
     double caxis_min,
