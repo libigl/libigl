@@ -58,7 +58,7 @@ int main(int argc, char * argv[])
       default:
       {
         CSGTree M;
-        Matrix<MatrixXi::Index,Dynamic,1> J;
+        Matrix<int,Dynamic,1> J;
         switch(view_id)
         {
           case 5:
