@@ -51,6 +51,24 @@ namespace igl
     const Eigen::MatrixBase<DerivedV> & V,
     const Eigen::MatrixBase<DerivedF> & F,
     igl::Hit & hit);
+
+  // Explicit function to check one triangle (given by index f) of the mesh.
+  // This function is used by ray_mesh_intersect to check each triangle.
+  // Outputs:
+  //   hit  hit with the given triangle, set only if it exists
+  // Returns true if there was a hit
+  template <
+    typename Derivedsource,
+    typename Deriveddir,
+    typename DerivedV,
+    typename DerivedF>
+  IGL_INLINE bool ray_triangle_intersect(
+    const Eigen::MatrixBase<Derivedsource> & source,
+    const Eigen::MatrixBase<Deriveddir> & dir,
+    const Eigen::MatrixBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedF> & F,
+    const int f,
+    igl::Hit& hit);
 }
 #ifndef IGL_STATIC_LIBRARY
 #  include "ray_mesh_intersect.cpp"
