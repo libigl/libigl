@@ -49,7 +49,6 @@ jobs:
               libblas-dev \
               libglu1-mesa-dev \
               liblapack-dev \
-              libmpfr-dev \
               xorg-dev \
               ccache
 
@@ -57,7 +56,7 @@ jobs:
         if: runner.os == 'macOS'
         run: |
           brew update
-          brew install gmp mpfr ccache
+          brew install ccache
 
       - name: Cache Build
         id: cache-build
