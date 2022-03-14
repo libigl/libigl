@@ -40,10 +40,8 @@ IGL_INLINE void ImGuiMenu::draw()
 
 IGL_INLINE void ImGuiMenu::draw_viewer_window()
 {
-  float menu_width = 180.f * menu_scaling();
   ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiCond_FirstUseEver);
   ImGui::SetNextWindowSize(ImVec2(0.0f, 0.0f), ImGuiCond_FirstUseEver);
-  ImGui::SetNextWindowSizeConstraints(ImVec2(menu_width, -1.0f), ImVec2(menu_width, -1.0f));
   bool _viewer_menu_visible = true;
   ImGui::Begin(
       "Viewer", &_viewer_menu_visible,
