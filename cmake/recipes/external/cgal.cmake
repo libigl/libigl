@@ -7,10 +7,10 @@ message(STATUS "Third-party: creating target 'CGAL::CGAL'")
 include(FetchContent)
 FetchContent_Declare(
     cgal
-    GIT_REPOSITORY https://github.com/CGAL/cgal.git
-    GIT_TAG        f7c3c8212b56c0d6dae63787efc99093f4383415
-    # URL https://github.com/CGAL/cgal/releases/download/releases%2FCGAL-4.12.2/CGAL-4.12.2.tar.xz
-    # URL_MD5 c94a0081c3836fd01ccb4d1e8bdd5d4f
+    #GIT_REPOSITORY https://github.com/CGAL/cgal.git
+    #GIT_TAG        f7c3c8212b56c0d6dae63787efc99093f4383415
+    URL https://github.com/CGAL/cgal/releases/download/releases%2FCGAL-4.12.2/CGAL-4.12.2.tar.xz
+    URL_MD5 c94a0081c3836fd01ccb4d1e8bdd5d4f
     # URL https://github.com/CGAL/cgal/releases/download/v5.2.1/CGAL-5.2.1-library.tar.xz
     # URL_MD5 c1c3a9abe9106b5f3ff8dccaf2ddc0b7
 )
