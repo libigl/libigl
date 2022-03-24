@@ -14,6 +14,7 @@
 #include <Eigen/LU>
 
 #include "../gl.h"
+#include "../report_gl_error.h"
 #include <GLFW/glfw3.h>
 
 #include <cmath>
@@ -938,6 +939,159 @@ namespace glfw
     }
   }
 
+  template <typename T>
+  IGL_INLINE void Viewer::draw_buffer(
+    igl::opengl::ViewerCore & core,
+    Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> & R,
+    Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> & G,
+    Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> & B,
+    Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> & A,
+    Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> & D)
+  {
+    // follows igl::opengl::ViewerCore::draw_buffer, image is transposed from
+    // typical matrix view
+    const int width = R.rows() ? R.rows() :  core.viewport(2);
+    const int height = R.cols() ? R.cols() : core.viewport(3);
+    R.resize(width,height);
+    G.resize(width,height);
+    B.resize(width,height);
+    A.resize(width,height);
+    D.resize(width,height);
+
+    ////////////////////////////////////////////////////////////////////////
+    // Create an initial multisampled framebuffer
+    ////////////////////////////////////////////////////////////////////////
+    unsigned int framebuffer;
+    unsigned int color_buffer;
+    unsigned int depth_buffer;
+    {
+      glGenFramebuffers(1, &framebuffer);
+      glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+      // create a multisampled color attachment texture (is a texture really
+      // needed? Could this be a renderbuffer instead?)
+      glGenTextures(1, &color_buffer);
+      glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, color_buffer);
+      glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGBA, width, height, GL_TRUE);
+      glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
+      glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, color_buffer, 0);
+      // create a (also multisampled) renderbuffer object for depth and stencil attachments
+      glGenRenderbuffers(1, &depth_buffer);
+      glBindRenderbuffer(GL_RENDERBUFFER, depth_buffer);
+      glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_DEPTH24_STENCIL8, width, height);
+      glBindRenderbuffer(GL_RENDERBUFFER, 0);
+      glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, depth_buffer);
+
+
+      assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
+      report_gl_error("glCheckFramebufferStatus: ");
+      glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
+
+    ////////////////////////////////////////////////////////////////////////
+    // configure second post-processing framebuffer
+    ////////////////////////////////////////////////////////////////////////
+    unsigned int intermediateFBO;
+    unsigned int screenTexture, depthTexture;
+    {
+      glGenFramebuffers(1, &intermediateFBO);
+      glBindFramebuffer(GL_FRAMEBUFFER, intermediateFBO);
+      // create a color attachment texture
+      glGenTextures(1, &screenTexture);
+      glBindTexture(GL_TEXTURE_2D, screenTexture);
+      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, screenTexture, 0);
+      
+      // create depth attachment texture
+      glGenTextures(1, &depthTexture);
+      glBindTexture(GL_TEXTURE_2D, depthTexture);
+      glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, width, height, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, depthTexture, 0);
+
+      assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
+      glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
+
+    ////////////////////////////////////////////////////////////////////////
+    // attach initial framebuffer and draw all `data`
+    ////////////////////////////////////////////////////////////////////////
+    glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+    // Clear the buffer
+    glClearColor(
+      core.background_color(0), 
+      core.background_color(1), 
+      core.background_color(2),
+      core.background_color(3));
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    // Save old viewport
+    Eigen::Vector4f viewport_ori = core.viewport;
+    core.viewport << 0,0,width,height;
+    // Draw all `data`
+    for (auto& data : data_list)
+    {
+      if (data.is_visible & core.id)
+      {
+        core.draw(data);
+      }
+    }
+    // Restore viewport
+    core.viewport = viewport_ori;
+
+    ////////////////////////////////////////////////////////////////////////
+    // attach second framebuffer and redraw (for anti-aliasing?)
+    ////////////////////////////////////////////////////////////////////////
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, framebuffer);
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, intermediateFBO);
+    report_gl_error("before: ");
+    glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+    report_gl_error("glBlitFramebuffer: ");
+
+
+    ////////////////////////////////////////////////////////////////////////
+    // Read pixel data from framebuffer, write into buffers
+    ////////////////////////////////////////////////////////////////////////
+    glBindFramebuffer(GL_FRAMEBUFFER, intermediateFBO);
+    // Copy back in the given Eigen matrices
+    {
+      typedef typename std::conditional< std::is_floating_point<T>::value,GLfloat,GLubyte>::type GLType;
+      GLenum type = std::is_floating_point<T>::value ?  GL_FLOAT : GL_UNSIGNED_BYTE;
+      GLType* pixels = (GLType*)calloc(width*height*4,sizeof(GLType));
+      GLType * depth = (GLType*)calloc(width*height*1,sizeof(GLType));
+      glReadPixels(0, 0,width, height,GL_RGBA,            type, pixels);
+      glReadPixels(0, 0,width, height,GL_DEPTH_COMPONENT, type, depth);
+      int count = 0;
+      for (unsigned j=0; j<height; ++j)
+      {
+        for (unsigned i=0; i<width; ++i)
+        {
+          R(i,j) = pixels[count*4+0];
+          G(i,j) = pixels[count*4+1];
+          B(i,j) = pixels[count*4+2];
+          A(i,j) = pixels[count*4+3];
+          D(i,j) = depth[count*1+0];
+          ++count;
+        }
+      }
+      // Clean up
+      free(pixels);
+      free(depth);
+    }
+
+    // Clean up
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glDeleteTextures(1, &screenTexture);
+    glDeleteTextures(1, &depthTexture);
+    glDeleteTextures(1, &color_buffer);
+    glDeleteRenderbuffers(1, &depth_buffer);
+    glDeleteFramebuffers(1, &framebuffer);
+    glDeleteFramebuffers(1, &intermediateFBO);
+  }
+
   IGL_INLINE void Viewer::resize(int w,int h)
   {
     if (window) {
@@ -1136,3 +1290,9 @@ namespace glfw
 } // end namespace
 } // end namespace
 }
+
+#ifdef IGL_STATIC_LIBRARY
+template void igl::opengl::glfw::Viewer::draw_buffer<unsigned char>(igl::opengl::ViewerCore&, Eigen::Matrix<unsigned char, -1, -1, 0, -1, -1>&, Eigen::Matrix<unsigned char, -1, -1, 0, -1, -1>&, Eigen::Matrix<unsigned char, -1, -1, 0, -1, -1>&, Eigen::Matrix<unsigned char, -1, -1, 0, -1, -1>&, Eigen::Matrix<unsigned char, -1, -1, 0, -1, -1>&);
+template void igl::opengl::glfw::Viewer::draw_buffer<double>(igl::opengl::ViewerCore&, Eigen::Matrix<double, -1, -1, 0, -1, -1>&, Eigen::Matrix<double, -1, -1, 0, -1, -1>&, Eigen::Matrix<double, -1, -1, 0, -1, -1>&, Eigen::Matrix<double, -1, -1, 0, -1, -1>&, Eigen::Matrix<double, -1, -1, 0, -1, -1>&);
+template void igl::opengl::glfw::Viewer::draw_buffer<float>(igl::opengl::ViewerCore&, Eigen::Matrix<float, -1, -1, 0, -1, -1>&, Eigen::Matrix<float, -1, -1, 0, -1, -1>&, Eigen::Matrix<float, -1, -1, 0, -1, -1>&, Eigen::Matrix<float, -1, -1, 0, -1, -1>&, Eigen::Matrix<float, -1, -1, 0, -1, -1>&);
+#endif
