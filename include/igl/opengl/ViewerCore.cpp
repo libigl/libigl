@@ -252,7 +252,8 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
     draw_labels(data, data.meshgl.custom_labels);
 }
 
-IGL_INLINE void igl::opengl::ViewerCore::draw_buffer(ViewerData& data,
+IGL_INLINE void igl::opengl::ViewerCore::draw_buffer(
+  ViewerData& data,
   bool update_matrices,
   Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& R,
   Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& G,
@@ -264,8 +265,28 @@ IGL_INLINE void igl::opengl::ViewerCore::draw_buffer(ViewerData& data,
 
   unsigned width = R.rows();
   unsigned height = R.cols();
+  if(width == 0 && height == 0)
+  {
+    width = viewport(2);
+    height = viewport(3);
+  }
+  R.resize(width,height);
+  G.resize(width,height);
+  B.resize(width,height);
+  A.resize(width,height);
 
+  ////////////////////////////////////////////////////////////////////////
+  // PREPARE width×height BUFFERS does *not* depend on `data`
+  //   framebuffer
+  //   textureColorBufferMultiSampled
+  //   rbo
+  //   intermediateFBO
+  //   screenTexture
+  //
+  ////////////////////////////////////////////////////////////////////////
   // https://learnopengl.com/Advanced-OpenGL/Anti-Aliasing
+
+  // Create an initial multisampled framebuffer
   unsigned int framebuffer;
   glGenFramebuffers(1, &framebuffer);
   glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
