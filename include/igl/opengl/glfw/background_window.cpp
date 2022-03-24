@@ -17,10 +17,12 @@ IGL_INLINE bool igl::opengl::glfw::background_window(GLFWwindow* & window)
   window = glfwCreateWindow(1, 1,"", NULL, NULL);
   if(!window) return false;
   glfwMakeContextCurrent(window);
+#ifndef __APPLE__
   if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress))
   {
     printf("Failed to load OpenGL and its extensions");
   }
+#endif
   glGetError(); // pull and safely ignore unhandled errors like GL_INVALID_ENUM
   return true;
 }

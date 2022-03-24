@@ -177,11 +177,13 @@ namespace glfw
     }
     glfwMakeContextCurrent(window);
     // Load OpenGL and its extensions
+#ifndef __APPLE__
     if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress))
     {
       printf("Failed to load OpenGL and its extensions\n");
       return(-1);
     }
+#endif
     #if defined(DEBUG) || defined(_DEBUG)
       printf("OpenGL Version %d.%d loaded\n", GLVersion.major, GLVersion.minor);
       int major, minor, rev;
