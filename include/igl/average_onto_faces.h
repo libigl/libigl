@@ -13,7 +13,7 @@
 namespace igl 
 {
   // average_onto_vertices 
-  // Move a scalar field defined on faces to vertices by averaging
+  // Move a scalar field defined on vertices to faces by averaging
   //
   // Input:
   //   F  #F by ss list of simples/faces
