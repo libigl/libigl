@@ -87,7 +87,7 @@ int main(int argc, char * argv[])
       + z(i+edgeMps.rows())*perpVec.row(i);
     }
     igl::average_from_edges_onto_vertices
-    (F, E, oE, vecs.rowwise().norm().eval(), colors);
+    (F, E, oE, vecs.rowwise().norm(), colors);
   };
   Eigen::MatrixXd noisyvecs, noisycolors, smoothedvecs, smoothedcolors,
   rawvecs, rawcolors;
