@@ -12,7 +12,6 @@
 #include <Eigen/Dense>
 namespace igl 
 {
-  // average_onto_vertices 
   // Move a scalar field defined on vertices to faces by averaging
   //
   // Input:
