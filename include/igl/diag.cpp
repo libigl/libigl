@@ -20,24 +20,6 @@ IGL_INLINE void igl::diag(
 {
   assert(false && "Just call X.diagonal().sparseView() directly");
   V = X.diagonal().sparseView();
-  //// Get size of input
-  //int m = X.rows();
-  //int n = X.cols();
-  //V = Eigen::SparseVector<T>((m>n?n:m));
-  //V.reserve(V.size());
-
-  //// Iterate over outside
-  //for(int k=0; k<X.outerSize(); ++k)
-  //{
-  //  // Iterate over inside
-  //  for(typename Eigen::SparseMatrix<T>::InnerIterator it (X,k); it; ++it)
-  //  {
-  //    if(it.col() == it.row())
-  //    {
-  //      V.coeffRef(it.col()) += it.value();
-  //    }
-  //  }
-  //}
 }
 
 template <typename T,typename DerivedV>
@@ -47,23 +29,6 @@ IGL_INLINE void igl::diag(
 {
   assert(false && "Just call X.diagonal() directly");
   V = X.diagonal();
-  //// Get size of input
-  //int m = X.rows();
-  //int n = X.cols();
-  //V.derived().resize((m>n?n:m),1);
-
-  //// Iterate over outside
-  //for(int k=0; k<X.outerSize(); ++k)
-  //{
-  //  // Iterate over inside
-  //  for(typename Eigen::SparseMatrix<T>::InnerIterator it (X,k); it; ++it)
-  //  {
-  //    if(it.col() == it.row())
-  //    {
-  //      V(it.col()) = it.value();
-  //    }
-  //  }
-  //}
 }
 
 template <typename T>
@@ -72,14 +37,17 @@ IGL_INLINE void igl::diag(
   Eigen::SparseMatrix<T>& X)
 {
   // clear and resize output
-  Eigen::DynamicSparseMatrix<T, Eigen::RowMajor> dyn_X(V.size(),V.size());
-  dyn_X.reserve(V.size());
+  std::vector<Eigen::Triplet<double> > Xijv;
+  const int n = V.size();
+  const int nnz = V.nonZeros();
+  Xijv.reserve(nnz);
   // loop over non-zeros
   for(typename Eigen::SparseVector<T>::InnerIterator it(V); it; ++it)
   {
-    dyn_X.coeffRef(it.index(),it.index()) += it.value();
+    Xijv.emplace_back(it.index(),it.index(),it.value());
   }
-  X = Eigen::SparseMatrix<T>(dyn_X);
+  X.resize(n,n);
+  X.setFromTriplets(Xijv.begin(),Xijv.end());
 }
 
 template <typename T, typename DerivedV>
@@ -89,14 +57,13 @@ IGL_INLINE void igl::diag(
 {
   assert(V.rows() == 1 || V.cols() == 1);
   // clear and resize output
-  Eigen::DynamicSparseMatrix<T, Eigen::RowMajor> dyn_X(V.size(),V.size());
-  dyn_X.reserve(V.size());
+  std::vector<Eigen::Triplet<double> > Xijv;
+  const int n = V.size();
+  Xijv.reserve(n);
   // loop over non-zeros
-  for(int i = 0;i<V.size();i++)
-  {
-    dyn_X.coeffRef(i,i) += V[i];
-  }
-  X = Eigen::SparseMatrix<T>(dyn_X);
+  for(int i = 0;i<n;i++) { Xijv.emplace_back(i,i,V(i)); }
+  X.resize(n,n);
+  X.setFromTriplets(Xijv.begin(),Xijv.end());
 }
 
 #ifdef IGL_STATIC_LIBRARY
