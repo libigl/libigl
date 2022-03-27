@@ -71,4 +71,9 @@ template void igl::repmat<double, 0>(Eigen::SparseMatrix<double, 0, int> const&,
 template void igl::repmat<Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, int, int, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
 template void igl::repmat<Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, int, int, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&);
 template void igl::repmat<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, int, int, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
+template void igl::repmat<double, 1>(Eigen::SparseMatrix<double, 1, int> const&, int, int, Eigen::SparseMatrix<double, 1, int>&);
+template void igl::repmat<int, 1>(Eigen::SparseMatrix<int, 1, int> const&, int, int, Eigen::SparseMatrix<int, 1, int>&);
+template void igl::repmat<float, 1>(Eigen::SparseMatrix<float, 1, int> const&, int, int, Eigen::SparseMatrix<float, 1, int>&);
+template void igl::repmat<int, 0>(Eigen::SparseMatrix<int, 0, int> const&, int, int, Eigen::SparseMatrix<int, 0, int>&);
+template void igl::repmat<float, 0>(Eigen::SparseMatrix<float, 0, int> const&, int, int, Eigen::SparseMatrix<float, 0, int>&);
 #endif
