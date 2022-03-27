@@ -72,6 +72,34 @@ namespace glfw
     IGL_INLINE bool save_scene(std::string fname);
     // Draw everything
     IGL_INLINE void draw();
+    // Render given ViewerCore to a buffer. The width and height are determined
+    // by non-zeros dimensions of R or – if both are zero — are set to this
+    // core's viewport sizes. Other buffers are resized to fit if needed.
+    //
+    // Template:
+    //   T  image storage type, e.g., unsigned char (values ∈ [0,255]), double
+    //     (values ∈ [0.0,1.0]).
+    // Inputs:
+    //   data  which ViewerData to draw
+    //   update_matrices  whether to update view, proj, and norm matrices in
+    //     shaders
+    // Outputs:
+    //   R  width by height red pixel color values
+    //   G  width by height green pixel color values
+    //   B  width by height blue pixel color values
+    //   A  width by height alpha pixel color values
+    //   D  width by height depth pixel values. Depth values are _not_
+    //     anti-aliased like RGBA.
+    //
+    template <typename T>
+    IGL_INLINE void draw_buffer(
+      // can't be const because of writing in and out of `core.viewport`
+      /*const*/ igl::opengl::ViewerCore & core, 
+      Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> & R,
+      Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> & G,
+      Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> & B,
+      Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> & A,
+      Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> & D);
     // OpenGL context resize
     IGL_INLINE void resize(int w,int h); // explicitly set window size
     IGL_INLINE void post_resize(int w,int h); // external resize due to user interaction
