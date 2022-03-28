@@ -13,6 +13,7 @@
 #include "../../parallel_for.h"
 #include "../../LinSpaced.h"
 #include "../../C_STR.h"
+#include "../../STR.h"
 #include "../../unique_rows.h"
 
 #include <vector>
@@ -315,13 +316,17 @@ IGL_INLINE void igl::copyleft::cgal::remesh_intersections(
                 corners[1] = find_or_append_point(v1, ori_f);
                 corners[2] = find_or_append_point(v2, ori_f);
               }
+              bool was_flipped = false;
               if(
-                CGAL::orientation(P.to_2d(v0),P.to_2d(v1),P.to_2d(v2)) == 
+                CGAL::orientation( P.to_2d(v0), P.to_2d(v1), P.to_2d(v2)) ==
                 CGAL::RIGHT_TURN)
               {
+                was_flipped = true;
                 std::swap(corners[0], corners[1]);
               }
               resolved_faces.emplace_back(corners);
+              // swap back
+              if(was_flipped) { std::swap(corners[0], corners[1]); }
               source_faces.push_back(ori_f);
             }
           }
