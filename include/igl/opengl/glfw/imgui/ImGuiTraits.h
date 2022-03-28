@@ -8,7 +8,7 @@
 #ifndef IGL_OPENGL_GLFW_IMGUI_IMGUITRAITS_H
 #define IGL_OPENGL_GLFW_IMGUI_IMGUITRAITS_H
 
-#include <imgui/imgui.h>
+#include <imgui.h>
 
 // Extend ImGui by populating its namespace directly
 namespace ImGui

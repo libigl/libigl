@@ -1,10 +1,11 @@
 #include <igl/kelvinlets.h>
 #include <igl/opengl/glfw/Viewer.h>
+#include <igl/opengl/glfw/imgui/ImGuiPlugin.h>
 #include <igl/opengl/glfw/imgui/ImGuiMenu.h>
 #include <igl/readOFF.h>
 #include <igl/unproject.h>
 #include <igl/unproject_onto_mesh.h>
-#include <imgui/imgui.h>
+#include <imgui.h>
 #include <iostream>
 
 namespace {
@@ -34,9 +35,10 @@ int main()
   F1 = OrigF;
 
   igl::opengl::glfw::Viewer viewer;
+  igl::opengl::glfw::imgui::ImGuiPlugin plugin;
+  viewer.plugins.push_back(&plugin);
   igl::opengl::glfw::imgui::ImGuiMenu menu;
-
-  viewer.plugins.push_back(&menu);
+  plugin.widgets.push_back(&menu);
 
   auto brushRadius = 1.;
   auto brushType = igl::BrushType::GRAB;
@@ -70,7 +72,6 @@ int main()
 
   viewer.callback_key_down =
     [&](igl::opengl::glfw::Viewer& viewer, unsigned char key, int) {
-      std::cout << "Key: " << key << " " << (unsigned int)key << std::endl;
       if (key == '1') {
         viewer.data().clear();
         viewer.data().set_mesh(OrigV, OrigF);
@@ -152,8 +153,8 @@ int main()
         mat,
         igl::KelvinletParams<double>(brushRadius, scale, brushType),
         result);
-      viewer.data().set_mesh(result, F1);
-      viewer.core().align_camera_center(result, F1);
+      viewer.data().set_vertices(result);
+      viewer.data().compute_normals();
       return true;
     }
     return false;

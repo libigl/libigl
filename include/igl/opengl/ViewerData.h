@@ -106,11 +106,9 @@ public:
   // Inputs:
   //   caxis_min  caxis minimum bound
   //   caxis_max  caxis maximum bound
-  //   D  #V by 1 list of scalar values
+  //   D  #V|#F by 1 list of scalar values
   //   cmap colormap type
   //   num_steps number of intervals to discretize the colormap
-  //
-  // To-do: support #F by 1 per-face data
   IGL_INLINE void set_data(
     const Eigen::VectorXd & D,
     double caxis_min,
@@ -276,6 +274,7 @@ public:
   float point_size;
   // line_width is NOT SUPPORTED on Mac OS and Windows
   float line_width;
+  float label_size;
   Eigen::Matrix<float, 4, 1, Eigen::DontAlign> line_color;
   Eigen::Matrix<float, 4, 1, Eigen::DontAlign> label_color;
 

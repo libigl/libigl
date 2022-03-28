@@ -201,7 +201,8 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
       glUniform4f(fixed_colori,
         data.line_color[0],
         data.line_color[1],
-        data.line_color[2], 1.0f);
+        data.line_color[2],
+        data.line_color[3]);
       data.meshgl.draw_mesh(false);
       glUniform4f(fixed_colori, 0.0f, 0.0f, 0.0f, 0.0f);
     }
@@ -251,7 +252,8 @@ IGL_INLINE void igl::opengl::ViewerCore::draw(
     draw_labels(data, data.meshgl.custom_labels);
 }
 
-IGL_INLINE void igl::opengl::ViewerCore::draw_buffer(ViewerData& data,
+IGL_INLINE void igl::opengl::ViewerCore::draw_buffer(
+  ViewerData& data,
   bool update_matrices,
   Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& R,
   Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& G,
@@ -263,8 +265,28 @@ IGL_INLINE void igl::opengl::ViewerCore::draw_buffer(ViewerData& data,
 
   unsigned width = R.rows();
   unsigned height = R.cols();
+  if(width == 0 && height == 0)
+  {
+    width = viewport(2);
+    height = viewport(3);
+  }
+  R.resize(width,height);
+  G.resize(width,height);
+  B.resize(width,height);
+  A.resize(width,height);
 
+  ////////////////////////////////////////////////////////////////////////
+  // PREPARE width×height BUFFERS does *not* depend on `data`
+  //   framebuffer
+  //   textureColorBufferMultiSampled
+  //   rbo
+  //   intermediateFBO
+  //   screenTexture
+  //
+  ////////////////////////////////////////////////////////////////////////
   // https://learnopengl.com/Advanced-OpenGL/Anti-Aliasing
+
+  // Create an initial multisampled framebuffer
   unsigned int framebuffer;
   glGenFramebuffers(1, &framebuffer);
   glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
@@ -363,9 +385,9 @@ IGL_INLINE void igl::opengl::ViewerCore::draw_labels(
   float width  = viewport(2);
   float height = viewport(3);
   float text_shift_scale_factor = orthographic ? 0.01 : 0.03;
-  float render_scale = orthographic ? 0.6 : 1.7;
+  float render_scale = (orthographic ? 0.6 : 1.7) * data.label_size;
   glUniform1f(glGetUniformLocation(data.meshgl.shader_text, "TextShiftFactor"), text_shift_scale_factor);
-  glUniform3f(glGetUniformLocation(data.meshgl.shader_text, "TextColor"), 0, 0, 0);
+  glUniform3f(glGetUniformLocation(data.meshgl.shader_text, "TextColor"), data.label_color(0), data.label_color(1), data.label_color(2));
   glUniform2f(glGetUniformLocation(data.meshgl.shader_text, "CellSize"), 1.0f / 16, (300.0f / 384) / 6);
   glUniform2f(glGetUniformLocation(data.meshgl.shader_text, "CellOffset"), 0.5 / 256.0, 0.5 / 256.0);
   glUniform2f(glGetUniformLocation(data.meshgl.shader_text, "RenderSize"), 

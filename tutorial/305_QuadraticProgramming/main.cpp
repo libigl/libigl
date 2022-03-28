@@ -8,7 +8,6 @@
 #include <igl/opengl/glfw/Viewer.h>
 #include <Eigen/Sparse>
 #include <iostream>
-#include "tutorial_shared_path.h"
   
 Eigen::VectorXi b;
 Eigen::VectorXd B,bc,lx,ux,Beq,Bieq,Z;

@@ -1,10 +1,9 @@
 #include <igl/readOFF.h>
 #include <igl/opengl/glfw/Viewer.h>
+#include <igl/opengl/glfw/imgui/ImGuiPlugin.h>
 #include <igl/opengl/glfw/imgui/ImGuiMenu.h>
 #include <igl/opengl/glfw/imgui/ImGuiHelpers.h>
-#include <imgui/imgui.h>
 #include <iostream>
-#include "tutorial_shared_path.h"
 
 int main(int argc, char *argv[])
 {
@@ -18,8 +17,10 @@ int main(int argc, char *argv[])
   igl::opengl::glfw::Viewer viewer;
 
   // Attach a menu plugin
+  igl::opengl::glfw::imgui::ImGuiPlugin plugin;
+  viewer.plugins.push_back(&plugin);
   igl::opengl::glfw::imgui::ImGuiMenu menu;
-  viewer.plugins.push_back(&menu);
+  plugin.widgets.push_back(&menu);
 
   // Customize the menu
   double doubleVariable = 0.1f; // Shared between two menus

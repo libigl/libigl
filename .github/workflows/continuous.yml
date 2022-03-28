@@ -47,12 +47,8 @@ jobs:
             sudo apt-get update
             sudo apt-get install \
               libblas-dev \
-              libboost-filesystem-dev \
-              libboost-system-dev \
-              libboost-thread-dev \
               libglu1-mesa-dev \
               liblapack-dev \
-              libmpfr-dev \
               xorg-dev \
               ccache
 
@@ -60,11 +56,11 @@ jobs:
         if: runner.os == 'macOS'
         run: |
           brew update
-          brew install boost gmp mpfr ccache
+          brew install ccache
 
       - name: Cache Build
         id: cache-build
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: ~/.ccache
           key: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.static }}-cache
@@ -82,8 +78,7 @@ jobs:
             -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
             -DCMAKE_BUILD_TYPE=${{ matrix.config }} \
             -DLIBIGL_USE_STATIC_LIBRARY=${{ matrix.static }} \
-            -DLIBIGL_WITH_CGAL=ON \
-            -DLIBIGL_WITH_COMISO=ON
+            -DLIBIGL_COPYLEFT_CGAL=ON
 
       - name: Build
         run: cd build; make -j2; ccache --show-stats
@@ -97,10 +92,7 @@ jobs:
 
   Windows:
     name: Windows (${{ matrix.config }}, ${{ fromJSON('["HeaderOnly", "Static"]')[matrix.static == 'ON'] }})
-    runs-on: windows-2019
-    env:
-      CC: cl.exe
-      CXX: cl.exe
+    runs-on: windows-2022
     strategy:
       fail-fast: false
       matrix:
@@ -111,51 +103,42 @@ jobs:
         uses: actions/checkout@v1
         with:
           fetch-depth: 10
-      - uses: seanmiddleditch/gha-setup-ninja@master
 
-      - name: Setup Conda
-        uses: conda-incubator/setup-miniconda@v2
-        with:
-          activate-environment: libigl-cgal
-          environment-file: cmake/libigl-cgal.yml
-          auto-activate-base: false
+      - name: Install Ninja
+        uses: seanmiddleditch/gha-setup-ninja@master
 
-      - name: Set env
+      - name: Set env variable for sccache
         run: |
           echo "appdata=$env:LOCALAPPDATA" >> ${env:GITHUB_ENV}
 
       - name: Cache build
         id: cache-build
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: ${{ env.appdata }}\Mozilla\sccache
           key: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.static }}-cache
 
       - name: Prepare sccache
         run: |
-          Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://get.scoop.sh')
+          iwr -useb 'https://raw.githubusercontent.com/scoopinstaller/install/master/install.ps1' -outfile 'install.ps1'
+          .\install.ps1 -RunAsAdmin
           scoop install sccache --global
           # Scoop modifies the PATH so we make it available for the next steps of the job
           echo "${env:PATH}" >> ${env:GITHUB_PATH}
 
-        # We run configure + build in the same step, since they both need to call VsDevCmd
-        # Also, cmd uses ^ to break commands into multiple lines (in powershell this is `)
       - name: Configure and build
         shell: cmd
         run: |
-          call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=x64
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=x64
           cmake -G Ninja ^
             -DCMAKE_CXX_COMPILER_LAUNCHER=sccache ^
             -DCMAKE_BUILD_TYPE=${{ matrix.config }} ^
             -DLIBIGL_USE_STATIC_LIBRARY=${{ matrix.static }} ^
-            -DLIBIGL_WITH_CGAL=ON ^
-            -DLIBIGL_WITH_COMISO=OFF ^
-            -DCMAKE_JOB_POOLS=pool-linking=1;pool-compilation=2 ^
-            -DCMAKE_JOB_POOL_COMPILE:STRING=pool-compilation ^
-            -DCMAKE_JOB_POOL_LINK:STRING=pool-linking ^
+            -DLIBIGL_COPYLEFT_CGAL=ON ^
             -B build ^
             -S .
-          cmake --build build
+          cmake --build build -j1
 
       - name: Tests
-        run: cd build; ctest --verbose
+        run: cd build; ctest --verbose -j2
+

@@ -457,15 +457,18 @@ IGL_INLINE void CurvatureCalculator::getKRing(const int start, const double r, s
     int distance=queue.front().second;
     queue.pop_front();
     vv.push_back(toVisit);
-    if (distance<(int)r)
+    if(toVisit<vertex_to_vertices.size())
     {
-      for (unsigned int i=0; i<vertex_to_vertices[toVisit].size(); ++i)
+      if (distance<(int)r)
       {
-        int neighbor=vertex_to_vertices[toVisit][i];
-        if (!visited[neighbor])
+        for (unsigned int i=0; i<vertex_to_vertices[toVisit].size(); ++i)
         {
-          queue.push_back(std::pair<int,int> (neighbor,distance+1));
-          visited[neighbor]=true;
+          int neighbor=vertex_to_vertices[toVisit][i];
+          if (!visited[neighbor])
+          {
+            queue.push_back(std::pair<int,int> (neighbor,distance+1));
+            visited[neighbor]=true;
+          }
         }
       }
     }

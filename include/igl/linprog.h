@@ -13,7 +13,7 @@ namespace igl
 {
   // Solve a linear program given in "standard form"
   //
-  // min  f'x
+  // min  c'x
   // s.t. A(    1:k,:) x <= b(1:k)
   //      A(k+1:end,:) x = b(k+1:end)
   //   ** x >= 0 **
@@ -33,7 +33,7 @@ namespace igl
     const Eigen::MatrixXd & A,
     const Eigen::VectorXd & b,
     const int k,
-    Eigen::VectorXd & f);
+    Eigen::VectorXd & x);
   
   // Wrapper in friendlier general form (no implicit bounds on x)
   //

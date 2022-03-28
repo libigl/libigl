@@ -605,16 +605,15 @@ IGL_INLINE double perform_iteration(SCAFData &s)
   igl::slim_update_weights_and_closest_rotations_with_jacobians(s.Ji_m, s.slim_energy, 0, s.W_m, s.Ri_m);
   igl::slim_update_weights_and_closest_rotations_with_jacobians(s.Ji_s, s.scaf_energy, 0, s.W_s, s.Ri_s);
   solve_weighted_arap(s, V_out);
-  auto whole_E = [&s](Eigen::MatrixXd &uv) { return compute_energy(s, uv, true); };
+  std::function<double(Eigen::MatrixXd&)> whole_E = [&s](Eigen::MatrixXd &uv) { return compute_energy(s, uv, true); };
 
   Eigen::MatrixXi w_T;
   if (s.m_T.cols() == s.s_T.cols())
     igl::cat(1, s.m_T, s.s_T, w_T);
   else
     w_T = s.s_T;
-  return igl::flip_avoiding_line_search(w_T, s.w_uv, V_out,
-                                        whole_E, -1) /
-         s.mesh_measure;
+  return igl::flip_avoiding_line_search( w_T, s.w_uv, V_out, whole_E, -1) /
+    s.mesh_measure;
 }
 
 }

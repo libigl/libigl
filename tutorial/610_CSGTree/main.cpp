@@ -4,7 +4,6 @@
 #include <igl/jet.h>
 #include <Eigen/Core>
 
-#include "tutorial_shared_path.h"
 
 int main(int argc, char * argv[])
 {

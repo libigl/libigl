@@ -17,7 +17,6 @@
 #include <iostream>
 #include <queue>
 
-#include "tutorial_shared_path.h"
 
 struct Mesh
 {

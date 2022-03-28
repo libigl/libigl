@@ -32,17 +32,6 @@ namespace igl
     const Eigen::MatrixBase<DerivedB> & B,
     Eigen::PlainObjectBase<DerivedIA> & IA,
     Eigen::PlainObjectBase<DerivedLOCB> & LOCB);
-  template <
-    typename DerivedA,
-    typename DerivedB,
-    typename DerivedIA,
-    typename DerivedLOCB>
-  IGL_INLINE void ismember_rows(
-    const Eigen::MatrixBase<DerivedA> & A,
-    const Eigen::MatrixBase<DerivedB> & B,
-    Eigen::PlainObjectBase<DerivedIA> & IA,
-    Eigen::PlainObjectBase<DerivedLOCB> & LOCB);
-
 }
 
 #ifndef IGL_STATIC_LIBRARY

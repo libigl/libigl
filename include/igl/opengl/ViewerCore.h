@@ -72,7 +72,26 @@ public:
   // Draw everything
   //
   // data cannot be const because it is being set to "clean"
+  //
+  // Inputs:
+  //   data  which ViewerData to draw
+  //   update_matrices  whether to update view, proj, and norm matrices in
+  //     shaders
   IGL_INLINE void draw(ViewerData& data, bool update_matrices = true);
+  // Render given ViewerData to a buffer. The width and height are determined by
+  // non-zeros dimensions of R (and G,B,A should match) or – if both are zero —
+  // are set to this core's viewport sizes.
+  //
+  // Inputs:
+  //   data  which ViewerData to draw
+  //   update_matrices  whether to update view, proj, and norm matrices in
+  //     shaders
+  // Outputs:
+  //   R  width by height red pixel color values
+  //   G  width by height green pixel color values
+  //   B  width by height blue pixel color values
+  //   A  width by height alpha pixel color values
+  //
   IGL_INLINE void draw_buffer(
     ViewerData& data,
     bool update_matrices,

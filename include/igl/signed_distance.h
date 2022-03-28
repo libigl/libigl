@@ -74,8 +74,6 @@ namespace igl
   //   F  #F by ss list of triangle indices, ss should be 3 unless sign_type ==
   //     SIGNED_DISTANCE_TYPE_UNSIGNED
   //   sign_type  method for computing distance _sign_ S
-  //   lower_bound  lower bound of distances needed {std::numeric_limits::min}
-  //   upper_bound  lower bound of distances needed {std::numeric_limits::max}
   // Outputs:
   //   S  #P list of smallest signed distances
   //   I  #P list of facet indices corresponding to smallest distances
