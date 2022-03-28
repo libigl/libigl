@@ -49,17 +49,6 @@ IGL_INLINE void igl::sparse(
   assert(J.rows() == V.rows());
   assert(I.cols() == J.cols());
   assert(J.cols() == V.cols());
-  //// number of values
-  //int nv = V.size();
-
-  //Eigen::DynamicSparseMatrix<T, Eigen::RowMajor> dyn_X(m,n);
-  //// over estimate the number of entries
-  //dyn_X.reserve(I.size());
-  //for(int i = 0;i < nv;i++)
-  //{
-  //  dyn_X.coeffRef((int)I(i),(int)J(i)) += (T)V(i);
-  //}
-  //X = Eigen::SparseMatrix<T>(dyn_X);
   vector<Triplet<T> > IJV;
   IJV.reserve(I.size());
   for(int x = 0;x<I.size();x++)
