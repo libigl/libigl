@@ -12,6 +12,7 @@
 template <typename DerivedC, typename DerivedD>
 IGL_INLINE void igl::copyleft::cgal::assign(
   const Eigen::MatrixBase<DerivedC> & C,
+  const bool slow_and_more_precise,
   Eigen::PlainObjectBase<DerivedD> & D)
 {
   D.resizeLike(C);
@@ -19,7 +20,7 @@ IGL_INLINE void igl::copyleft::cgal::assign(
   {
     const Eigen::Index i = k%C.rows();
     const Eigen::Index j = k/C.rows();
-    assign_scalar(C(i,j),D(i,j));
+    assign_scalar(C(i,j),slow_and_more_precise,D(i,j));
   },1000);
 }
 
@@ -42,7 +43,8 @@ igl::copyleft::cgal::assign(
     1,
     DerivedC::MaxRowsAtCompileTime,
     DerivedC::MaxColsAtCompileTime> D;
-  assign(C,D);
+  const bool slow_and_more_precise = false;
+  assign(C,slow_and_more_precise,D);
   return D;
 }
 
