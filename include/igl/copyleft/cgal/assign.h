@@ -17,6 +17,11 @@ namespace igl
   {
     namespace cgal
     {
+      // Inputs:
+      //   C  matrix of scalars
+      //   slow_and_more_precise  see assign_scalar
+      // Outputs:
+      //   D  matrix same size as C
       template <typename DerivedC, typename DerivedD>
       IGL_INLINE void assign(
         const Eigen::MatrixBase<DerivedC> & C,

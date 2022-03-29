@@ -23,6 +23,14 @@ IGL_INLINE void igl::copyleft::cgal::assign(
     assign_scalar(C(i,j),slow_and_more_precise,D(i,j));
   },1000);
 }
+template <typename DerivedC, typename DerivedD>
+IGL_INLINE void igl::copyleft::cgal::assign(
+  const Eigen::MatrixBase<DerivedC> & C,
+  Eigen::PlainObjectBase<DerivedD> & D)
+{
+  const bool slow_and_more_precise = false;
+  return assign(C,slow_and_more_precise,D);
+}
 
 template <typename ReturnScalar, typename DerivedC>
 IGL_INLINE
@@ -43,8 +51,7 @@ igl::copyleft::cgal::assign(
     1,
     DerivedC::MaxRowsAtCompileTime,
     DerivedC::MaxColsAtCompileTime> D;
-  const bool slow_and_more_precise = false;
-  assign(C,slow_and_more_precise,D);
+  assign(C,D);
   return D;
 }
 
