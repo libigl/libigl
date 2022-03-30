@@ -30,7 +30,8 @@ IGL_INLINE void igl::copyleft::cgal::remesh_self_intersections(
   Eigen::PlainObjectBase<DerivedIM> & IM)
 {
   using namespace std;
-  if(params.detect_only)
+  typedef typename DerivedV::Scalar VScalar;
+  if(params.detect_only && ! std::is_same<VScalar,CGAL::Epeck::FT>::value)
   {
     //// This is probably a terrible idea, but CGAL is throwing floating point
     //// exceptions.

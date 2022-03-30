@@ -257,7 +257,12 @@ IGL_INLINE bool igl::copyleft::cgal::intersect_other(
     Eigen::PlainObjectBase<DerivedJAB>  & JAB,
     Eigen::PlainObjectBase<DerivedIMAB> & IMAB)
 {
-  if(params.detect_only)
+  typedef typename DerivedVA::Scalar VAScalar;
+  typedef typename DerivedVB::Scalar VBScalar;
+  if(params.detect_only && ! (
+    std::is_same<VAScalar,CGAL::Epeck::FT>::value ||
+    std::is_same<VBScalar,CGAL::Epeck::FT>::value
+    ))
   {
     return intersect_other_helper<CGAL::Epick>
       (VA,FA,VB,FB,params,IF,VVAB,FFAB,JAB,IMAB);
