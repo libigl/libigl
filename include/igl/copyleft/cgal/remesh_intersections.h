@@ -58,27 +58,7 @@ namespace igl
             std::vector<
             std::pair<typename DerivedF::Index, CGAL::Object> > > & offending,
         bool stitch_all,
-        Eigen::PlainObjectBase<DerivedVV> & VV,
-        Eigen::PlainObjectBase<DerivedFF> & FF,
-        Eigen::PlainObjectBase<DerivedJ> & J,
-        Eigen::PlainObjectBase<DerivedIM> & IM);
-      // Same as above except stitch_all is assumed "false"
-      template <
-        typename DerivedV,
-        typename DerivedF,
-        typename Kernel,
-        typename DerivedVV,
-        typename DerivedFF,
-        typename DerivedJ,
-        typename DerivedIM>
-      IGL_INLINE void remesh_intersections(
-        const Eigen::MatrixBase<DerivedV> & V,
-        const Eigen::MatrixBase<DerivedF> & F,
-        const std::vector<CGAL::Triangle_3<Kernel> > & T,
-        const std::map<
-          typename DerivedF::Index,
-            std::vector<
-            std::pair<typename DerivedF::Index, CGAL::Object> > > & offending,
+        bool slow_and_more_precise_rounding,
         Eigen::PlainObjectBase<DerivedVV> & VV,
         Eigen::PlainObjectBase<DerivedFF> & FF,
         Eigen::PlainObjectBase<DerivedJ> & J,

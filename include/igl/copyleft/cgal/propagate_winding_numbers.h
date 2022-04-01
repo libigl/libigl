@@ -56,12 +56,12 @@ namespace igl
         const Eigen::PlainObjectBase<DerivedF>& F,
         const Eigen::PlainObjectBase<DerivedL>& labels,
         Eigen::PlainObjectBase<DerivedW>& W);
-
       // Inputs:
       //   V  #V by 3 list of vertex positions.
       //   F  #F by 3 list of triangle indices into V.
       //   uE    #uE by 2 list of vertex_indices, represents undirected edges.
-      //   uE2E  #uE list of lists that maps uE to E. (a one-to-many map)
+      //   uEC  #uE+1 list of cumsums of directed edges sharing each unique edge
+      //   uEE  #E list of indices into E (see `igl::unique_edge_map`)
       //   num_patches  number of patches
       //   P  #F list of patch ids.
       //   num_cells    number of cells
@@ -77,7 +77,8 @@ namespace igl
         typename DerivedV,
         typename DerivedF,
         typename DeriveduE,
-        typename uE2EType,
+        typename DeriveduEC,
+        typename DeriveduEE,
         typename DerivedP,
         typename DerivedC,
         typename DerivedL,
@@ -86,7 +87,8 @@ namespace igl
         const Eigen::PlainObjectBase<DerivedV>& V,
         const Eigen::PlainObjectBase<DerivedF>& F,
         const Eigen::PlainObjectBase<DeriveduE>& uE,
-        const std::vector<std::vector<uE2EType> >& uE2E,
+        const Eigen::PlainObjectBase<DeriveduEC>& uEC,
+        const Eigen::PlainObjectBase<DeriveduEE>& uEE,
         const size_t num_patches,
         const Eigen::PlainObjectBase<DerivedP>& P,
         const size_t num_cells,

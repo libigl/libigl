@@ -19,8 +19,9 @@
 #include <vector>
 #include <thread>
 #include <mutex>
+#include <cstdio>
 
-//#define IGL_SELFINTERSECTMESH_DEBUG
+//#define IGL_SELFINTERSECTMESH_TIMING
 #ifndef IGL_FIRST_HIT_EXCEPTION
 #define IGL_FIRST_HIT_EXCEPTION 10
 #endif
@@ -309,7 +310,7 @@ inline igl::copyleft::cgal::SelfIntersectMesh<
   using namespace std;
   using namespace Eigen;
 
-#ifdef IGL_SELFINTERSECTMESH_DEBUG
+#ifdef IGL_SELFINTERSECTMESH_TIMING
   const auto & tictoc = []() -> double
   {
     static double t_start = igl::get_seconds();
@@ -318,15 +319,15 @@ inline igl::copyleft::cgal::SelfIntersectMesh<
     return diff;
   };
   const auto log_time = [&](const std::string& label) -> void{
-    std::cout << "SelfIntersectMesh." << label << ": "
-      << tictoc() << std::endl;
+    printf("%50s: %0.5lf\n",
+      C_STR("SelfIntersectMesh." << label),tictoc());
   };
   tictoc();
 #endif
 
   // Compute and process self intersections
   mesh_to_cgal_triangle_list(V,F,T);
-#ifdef IGL_SELFINTERSECTMESH_DEBUG
+#ifdef IGL_SELFINTERSECTMESH_TIMING
   log_time("convert_to_triangle_list");
 #endif
   // http://www.cgal.org/Manual/latest/doc_html/cgal_manual/Box_intersection_d/Chapter_main.html#Section_63.5
@@ -350,12 +351,12 @@ inline igl::copyleft::cgal::SelfIntersectMesh<
       // _1 etc. in global namespace)
       std::placeholders::_1,
       std::placeholders::_2);
-#ifdef IGL_SELFINTERSECTMESH_DEBUG
+#ifdef IGL_SELFINTERSECTMESH_TIMING
   log_time("box_and_bind");
 #endif
   // Run the self intersection algorithm with all defaults
   CGAL::box_self_intersection_d(boxes.begin(), boxes.end(),cb);
-#ifdef IGL_SELFINTERSECTMESH_DEBUG
+#ifdef IGL_SELFINTERSECTMESH_TIMING
   log_time("box_intersection_d");
 #endif
   try{
@@ -369,7 +370,7 @@ inline igl::copyleft::cgal::SelfIntersectMesh<
     }
     // Otherwise just fall through
   }
-#ifdef IGL_SELFINTERSECTMESH_DEBUG
+#ifdef IGL_SELFINTERSECTMESH_TIMING
   log_time("resolve_intersection");
 #endif
 
@@ -390,7 +391,7 @@ inline igl::copyleft::cgal::SelfIntersectMesh<
       i++;
     }
   }
-#ifdef IGL_SELFINTERSECTMESH_DEBUG
+#ifdef IGL_SELFINTERSECTMESH_TIMING
   log_time("store_intersecting_face_pairs");
 #endif
 
@@ -400,9 +401,10 @@ inline igl::copyleft::cgal::SelfIntersectMesh<
   }
 
   remesh_intersections(
-    V,F,T,offending,params.stitch_all,VV,FF,J,IM);
+    V,F,T,offending,
+    params.stitch_all,params.slow_and_more_precise_rounding,VV,FF,J,IM);
 
-#ifdef IGL_SELFINTERSECTMESH_DEBUG
+#ifdef IGL_SELFINTERSECTMESH_TIMING
   log_time("remesh_intersection");
 #endif
 }
@@ -502,6 +504,8 @@ inline bool igl::copyleft::cgal::SelfIntersectMesh<
   {
     // Construct intersection
     CGAL::Object result = CGAL::intersection(A,B);
+    // Could avoid this mutex if `offending` was per-thread and passed as input
+    // reference.
     std::lock_guard<std::mutex> guard(m_offending_lock);
     offending[fa].push_back({fb, result});
     offending[fb].push_back({fa, result});
@@ -788,16 +792,15 @@ inline void igl::copyleft::cgal::SelfIntersectMesh<
   DerivedJ,
   DerivedIM>::process_intersecting_boxes()
 {
-  std::vector<std::mutex> triangle_locks(T.size());
-  std::vector<std::mutex> vertex_locks(V.rows());
-  std::mutex index_lock;
   std::mutex exception_mutex;
   bool exception_fired = false;
   int exception = -1;
-  auto process_chunk =
-    [&](
-      const size_t first,
-      const size_t last) -> void
+  // Eventually switching to igl::parallel_for would be good, but currently
+  // igl::parallel_for does not provide a way to catch exceptions fired on a
+  // spawned thread _outside_ of its loop-chunk which is the mechanism used here
+  // to bail out early when `first_only=true` to avoid
+  // O(#candidate_triangle_pairs) behavior.
+  auto process_chunk = [&]( const size_t first, const size_t last) -> void
   {
     try
     {
@@ -808,10 +811,6 @@ inline void igl::copyleft::cgal::SelfIntersectMesh<
         if(exception_fired) return;
         Index fa=T.size(), fb=T.size();
         {
-          // Before knowing which triangles are involved, we need to lock
-          // everything to prevent race condition in updating reference
-          // counters.
-          std::lock_guard<std::mutex> guard(index_lock);
           const auto& tri_pair = candidate_triangle_pairs[i];
           fa = tri_pair.first - T.begin();
           fb = tri_pair.second - T.begin();
@@ -819,22 +818,6 @@ inline void igl::copyleft::cgal::SelfIntersectMesh<
         assert(fa < T.size());
         assert(fb < T.size());
 
-        // Lock triangles
-        std::lock_guard<std::mutex> guard_A(triangle_locks[fa]);
-        std::lock_guard<std::mutex> guard_B(triangle_locks[fb]);
-
-        // Lock vertices
-        std::list<std::lock_guard<std::mutex> > guard_vertices;
-        {
-          std::vector<typename DerivedF::Scalar> unique_vertices;
-          std::vector<size_t> tmp1, tmp2;
-          igl::unique({F(fa,0), F(fa,1), F(fa,2), F(fb,0), F(fb,1), F(fb,2)},
-              unique_vertices, tmp1, tmp2);
-          std::for_each(unique_vertices.begin(), unique_vertices.end(),
-              [&](const typename DerivedF::Scalar& vi) {
-              guard_vertices.emplace_back(vertex_locks[vi]);
-              });
-        }
         if(exception_fired) return;
 
         const Triangle_3& A = T[fa];

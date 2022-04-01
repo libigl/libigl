@@ -27,18 +27,21 @@ namespace igl
   //   F  #F by 3 list of triangle indices into some (abstract) list of
   //     vertices V
   //   uE  #uE by 2 list of unique edges indices into V
-  //   uE2E  #uE list of lists of indices into directed edges (#F * 3)
+  //  uEC  #uE+1 list of cumsums of directed edges sharing each unique edge
+  //  uEE  #E list of indices into E (see `igl::unique_edge_map`)
   // Returns true if the mesh _combinatorially_ induces a piecewise constant
   // winding number field.
   //
   template <
     typename DerivedF,
     typename DeriveduE,
-    typename uE2EType>
+    typename DeriveduEC,
+    typename DeriveduEE>
   IGL_INLINE bool piecewise_constant_winding_number(
     const Eigen::MatrixBase<DerivedF>& F,
     const Eigen::MatrixBase<DeriveduE>& uE,
-    const std::vector<std::vector<uE2EType> >& uE2E);
+    const Eigen::MatrixBase<DeriveduEC>& uEC,
+    const Eigen::MatrixBase<DeriveduEE>& uEE);
   template <typename DerivedF>
   IGL_INLINE bool piecewise_constant_winding_number(
     const Eigen::MatrixBase<DerivedF>& F);
