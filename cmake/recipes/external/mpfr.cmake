@@ -23,13 +23,22 @@ else()
   set(mpfr_LIBRARY ${mpfr_INSTALL}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}mpfr${CMAKE_STATIC_LIBRARY_SUFFIX})
   set(mpfr_INCLUDE_DIR ${mpfr_INSTALL}/include)
 
+  # Try to use CONFIGURE_HANDLED_BY_BUILD ON to avoid constantly reconfiguring
+  if(${CMAKE_VERSION} VERSION_LESS 3.20)
+    # CMake < 3.20, do not use any extra option
+    set(mpfr_ExternalProject_Add_extra_options)
+  else()
+    # CMake >= 3.20
+    set(mpfr_ExternalProject_Add_extra_options "CONFIGURE_HANDLED_BY_BUILD;ON")
+  endif()
+
   ExternalProject_Add(mpfr
     PREFIX ${prefix}
     DEPENDS gmp
     URL  https://ftp.gnu.org/gnu/mpfr/mpfr-4.1.0.tar.xz
     URL_MD5 bdd3d5efba9c17da8d83a35ec552baef
     UPDATE_DISCONNECTED true  # need this to avoid constant rebuild
-    CONFIGURE_HANDLED_BY_BUILD ON  # avoid constant reconfigure
+    ${mpfr_ExternalProject_Add_extra_options} # avoid constant reconfigure
     CONFIGURE_COMMAND 
       ${prefix}/src/mpfr/configure 
       --disable-debug --disable-dependency-tracking  --disable-silent-rules --enable-cxx --with-pic

@@ -48,6 +48,8 @@ function(cgal_import_target)
     # Prefer Config mode before Module mode to prevent CGAL from loading its own FindXXX.cmake
     set(CMAKE_FIND_PACKAGE_PREFER_CONFIG TRUE)
 
+    # https://stackoverflow.com/a/71714947/148668
+    set(CGAL_DATA_DIR "unspecified")
     find_package(CGAL CONFIG COMPONENTS Core PATHS ${cgal_SOURCE_DIR} NO_DEFAULT_PATH)
 endfunction()
 
