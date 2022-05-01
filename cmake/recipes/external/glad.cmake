@@ -8,7 +8,7 @@ include(FetchContent)
 FetchContent_Declare(
     glad
     GIT_REPOSITORY https://github.com/libigl/libigl-glad.git
-    GIT_TAG        09b4969c56779f7ddf8e6176ec1873184aec890f
+    GIT_TAG        ceef55fcd08bdd16e985370a99cfb60e69623221
 )
 
 FetchContent_MakeAvailable(glad)
