@@ -36,7 +36,6 @@ function(cgal_import_target)
     ignore_package(GMP 5.0.1)
     set(GMP_INCLUDE_DIR ${gmp_INCLUDE_DIR})
     set(GMP_LIBRARIES gmp::gmp)
-    ignore_package(GMPXX 5.0.1)
     set(GMPXX_INCLUDE_DIR ${GMP_INCLUDE_DIR})
     set(GMPXX_LIBRARIES ${GMP_LIBRARIES})
 
