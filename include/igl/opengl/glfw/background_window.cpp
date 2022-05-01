@@ -17,7 +17,7 @@ IGL_INLINE bool igl::opengl::glfw::background_window(GLFWwindow* & window)
   window = glfwCreateWindow(1, 1,"", NULL, NULL);
   if(!window) return false;
   glfwMakeContextCurrent(window);
-  if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress))
+  if (!gladLoadGL((GLADloadfunc) glfwGetProcAddress))
   {
     printf("Failed to load OpenGL and its extensions");
   }
