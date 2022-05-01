@@ -17,7 +17,10 @@ else()
   set(prefix ${FETCHCONTENT_BASE_DIR}/gmp)
   set(gmp_INSTALL ${prefix}/install)
   set(gmp_LIB_DIR ${gmp_INSTALL}/lib)
-  set(gmp_LIBRARY ${gmp_LIB_DIR}/${CMAKE_STATIC_LIBRARY_PREFIX}gmp${CMAKE_STATIC_LIBRARY_SUFFIX})
+  set(gmp_LIBRARY 
+    ${gmp_LIB_DIR}/${CMAKE_STATIC_LIBRARY_PREFIX}gmp${CMAKE_STATIC_LIBRARY_SUFFIX}
+    ${gmp_LIB_DIR}/${CMAKE_STATIC_LIBRARY_PREFIX}gmpxx${CMAKE_STATIC_LIBRARY_SUFFIX}
+    )
   set(gmp_INCLUDE_DIR ${gmp_INSTALL}/include)
 
   # Try to use CONFIGURE_HANDLED_BY_BUILD ON to avoid constantly reconfiguring
