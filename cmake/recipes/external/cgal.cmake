@@ -34,8 +34,10 @@ function(cgal_import_target)
     include(boost)
 
     ignore_package(GMP 5.0.1)
-    set(GMP_INCLUDE_DIR "")
+    set(GMP_INCLUDE_DIR ${gmp_INCLUDE_DIR})
     set(GMP_LIBRARIES gmp::gmp)
+    set(GMPXX_INCLUDE_DIR ${GMP_INCLUDE_DIR})
+    set(GMPXX_LIBRARIES ${GMP_LIBRARIES})
 
     ignore_package(MPFR 3.0.0)
     set(MPFR_INCLUDE_DIR "")
