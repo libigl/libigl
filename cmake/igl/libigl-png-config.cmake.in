@@ -1,0 +1,8 @@
+if(NOT TARGET igl::png AND NOT @PROJECT_NAME@_BINARY_DIR)
+  include(CMakeFindDependencyMacro)
+  find_dependency(stb CONFIG REQUIRED)
+
+  include(@PROJECT_NAME@-core-config.cmake)
+  include(@PROJECT_NAME@-opengl-config.cmake)
+  include(@PROJECT_NAME@-png-targets.cmake)
+endif()

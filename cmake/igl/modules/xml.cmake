@@ -13,7 +13,10 @@ file(GLOB INC_FILES "${libigl_SOURCE_DIR}/include/igl/xml/*.h")
 file(GLOB SRC_FILES "${libigl_SOURCE_DIR}/include/igl/xml/*.cpp")
 igl_target_sources(igl_xml ${INC_FILES} ${SRC_FILES})
 
-# 4. Dependencies
+# 4. Install target & headers
+igl_install(igl_xml ${INC_FILES} ${SRC_FILES})
+
+# 5. Dependencies
 include(tinyxml2)
 target_link_libraries(igl_xml ${IGL_SCOPE}
     igl::core

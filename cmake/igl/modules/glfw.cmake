@@ -13,7 +13,10 @@ file(GLOB INC_FILES "${libigl_SOURCE_DIR}/include/igl/opengl/glfw/*.h")
 file(GLOB SRC_FILES "${libigl_SOURCE_DIR}/include/igl/opengl/glfw/*.cpp")
 igl_target_sources(igl_glfw ${INC_FILES} ${SRC_FILES})
 
-# 4. Dependencies
+# 4. Install target & headers
+igl_install(igl_glfw ${INC_FILES} ${SRC_FILES})
+
+# 5. Dependencies
 include(glfw)
 igl_include(opengl)
 target_link_libraries(igl_glfw ${IGL_SCOPE}

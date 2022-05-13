@@ -1,0 +1,8 @@
+if(NOT TARGET igl_copyleft::tetgen AND NOT @PROJECT_NAME@_BINARY_DIR)
+  include(CMakeFindDependencyMacro)
+  find_dependency(tetgen CONFIG REQUIRED)
+
+  include(@PROJECT_NAME@-core-config.cmake)
+  include(@PROJECT_NAME@-copyleft-core-config.cmake)
+  include(@PROJECT_NAME@-copyleft-tetgen-targets.cmake)
+endif()

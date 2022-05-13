@@ -1,0 +1,9 @@
+if(NOT TARGET igl::imgui AND NOT @PROJECT_NAME@_BINARY_DIR)
+  include(CMakeFindDependencyMacro)
+  find_dependency(imgui CONFIG REQUIRED)
+  find_dependency(imguizmo CONFIG REQUIRED)
+
+  include(@PROJECT_NAME@-core-config.cmake)
+  include(@PROJECT_NAME@-glfw-config.cmake)
+  include(@PROJECT_NAME@-imgui-targets.cmake)
+endif()

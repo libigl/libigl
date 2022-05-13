@@ -1,3 +1,14 @@
 @PACKAGE_INIT@
 
-check_required_components(Libigl)
+# component names include the strange suffix they add to their namespaces: '_copyleft' in 'igl_copyleft::cgal'
+# ex. find_package(libigl CONFIG REQUIRED core copyleft_core copyleft_cgal)
+#     provides their standard targets: igl::core, igl_copyleft::core, igl_copyleft::cgal
+foreach (find_component ${${ARGS_PROJECT}_FIND_COMPONENTS})
+  string(REGEX REPLACE "_.*$" "" suffix ${find_component})
+  string(REGEX REPLACE "^.*_" "" component ${find_component})
+  set(suffix -${suffix})
+  set(component -${component})
+  include(@PROJECT_NAME@${suffix}${component}-config.cmake)
+endforeach ()
+
+check_required_components(@PROJECT_NAME@)

@@ -32,10 +32,12 @@
 *.app
 
 # Build folders
+/cmake-build*
 /build*
 /tests/data
 /tutorial/data
 /install
+/vcpkg_installed
 
 # Libigl specific
 LibiglOptions.cmake
@@ -47,3 +49,11 @@ LibiglOptions.cmake
 
 # macos debris
 .DS_Store
+
+# CMake specific
+CMakeUserPresets.json
+
+# IDE
+.idea/
+.vs/
+.vscode/

@@ -1,0 +1,7 @@
+if(NOT TARGET igl::glfw AND NOT @PROJECT_NAME@_BINARY_DIR)
+  include(CMakeFindDependencyMacro)
+  find_dependency(glfw CONFIG REQUIRED)
+
+  include(@PROJECT_NAME@-core-config.cmake)
+  include(@PROJECT_NAME@-glfw-targets.cmake)
+endif()

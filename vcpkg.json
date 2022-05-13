@@ -1,0 +1,11 @@
+{
+  "name": "libigl",
+  "version": "2.4.0",
+  "description": "Fork of libigl with proper CMake support",
+  "homepage": "",
+  "dependencies": [
+    "eigen3",
+    "glad",
+    "cgal"
+  ]
+}

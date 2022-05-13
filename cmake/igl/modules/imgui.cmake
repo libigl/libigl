@@ -13,7 +13,10 @@ file(GLOB INC_FILES "${libigl_SOURCE_DIR}/include/igl/opengl/glfw/imgui/*.h")
 file(GLOB SRC_FILES "${libigl_SOURCE_DIR}/include/igl/opengl/glfw/imgui/*.cpp")
 igl_target_sources(igl_imgui ${INC_FILES} ${SRC_FILES})
 
-# 4. Dependencies
+# 4. Install target & headers
+igl_install(igl_imgui ${INC_FILES} ${SRC_FILES})
+
+# 5. Dependencies
 include(imgui)
 include(imguizmo)
 include(libigl_imgui_fonts)
