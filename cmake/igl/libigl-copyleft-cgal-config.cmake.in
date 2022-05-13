@@ -2,7 +2,9 @@ if(NOT TARGET igl_copyleft::cgal AND NOT @PROJECT_NAME@_BINARY_DIR)
   include(CMakeFindDependencyMacro)
   find_dependency(CGAL CONFIG REQUIRED COMPONENTS Core)
 
-  include(@PROJECT_NAME@-core-config.cmake)
-  include(@PROJECT_NAME@-copyleft-core-config.cmake)
-  include(@PROJECT_NAME@-copyleft-cgal-targets.cmake)
+  include("${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@-core-config.cmake")
+  include("${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@-copyleft-core-config.cmake")
+  include("${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@-copyleft-cgal-targets.cmake")
+
+  set(@PROJECT_NAME@_copyleft_cgal_FOUND TRUE)
 endif()

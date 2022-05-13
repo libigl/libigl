@@ -3,6 +3,8 @@ if(NOT TARGET igl::core AND NOT @PROJECT_NAME@_BINARY_DIR)
   find_dependency(Eigen3 CONFIG REQUIRED)
   find_dependency(Threads REQUIRED)
 
-  include(@PROJECT_NAME@-core-targets.cmake)
+  include("${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@-core-targets.cmake")
+
+  set(@PROJECT_NAME@_core_FOUND TRUE)
 endif()
 
