@@ -1,0 +1,9 @@
+if(NOT TARGET igl::embree AND NOT @PROJECT_NAME@_BINARY_DIR)
+  include(CMakeFindDependencyMacro)
+  find_dependency(embree CONFIG REQUIRED)
+
+  include("${CMAKE_CURRENT_LIST_DIR/@PROJECT_NAME@-core-config.cmake")
+  include("${CMAKE_CURRENT_LIST_DIR/@PROJECT_NAME@-embree-targets.cmake")
+
+  set(@PROJECT_NAME@_embree_FOUND TRUE)
+endif()
