@@ -25,7 +25,7 @@ follow's CMake's standard *find_package* flow and makes it very difficult for co
 *find_package*. The latter of which is primarily driven through libigl's improper installation, despite offering the 
 option *LIBIGL_INSTALL*.
 
-Issues with installation include:
+Issues with existing installation include:
 
 - installing only the igl::core target
 - installing package config files in an improperly named directory. These files need to be installed into a 
@@ -35,6 +35,7 @@ required dependency of every target. This is built, and when installing, is inst
 directory, likely to avoid conflicting with an existing Eigen3 installation.
 - CMake package configuration files (libigl-config.cmake) don't actually include any of the targets that may be have been 
 installed & exported. So, even when a consuming project finds libigl-config.cmake, it doesn't do anything.
+- header files with *.hpp* extention are disregarded
 
 All of this makes it difficult to package libigl for package managers, like vcpkg or conan. Vcpkg applies patches to 
 libigl to ignore FetchConent and replace with *find_package*.
@@ -48,6 +49,7 @@ through CMake's standard patterns. This effectively means
 2. find dependencies via CMake's *find_package* command
 3. provide correct package config files
 4. install all targets provided by libigl (but not its dependencies)
+5. Consider headers with *.hpp* extension, such that they are installed
  
 All of the existing libigl target names are maintained for compatibility.
 
@@ -57,6 +59,8 @@ All of the existing libigl target names are maintained for compatibility.
 3. The function *igl_install* has been updated to install the appropriate *-config.cmake and *-targets.cmake for the 
 given "module".
 4. *igl_install* is used across all igl targets, not just igl::core
+5. A new CMake module, *igl_glob_sources*, has been added to perform the globbing that was previously being done 
+explicitly for each "module", and it includes *.hpp* files.
 
 ## State
 

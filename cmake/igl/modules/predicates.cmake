@@ -9,9 +9,8 @@ target_include_directories(igl_predicates ${IGL_SCOPE}
 )
 
 # 3. Target sources
-file(GLOB INC_FILES "${libigl_SOURCE_DIR}/include/igl/predicates/*.h")
-file(GLOB SRC_FILES "${libigl_SOURCE_DIR}/include/igl/predicates/*.cpp")
-igl_target_sources(igl_predicates ${INC_FILES} ${SRC_FILES})
+igl_glob_sources("${libigl_SOURCE_DIR}/include/igl/predicates/" SRC_FILES)
+igl_target_sources(igl_predicates ${SRC_FILES})
 
 # 4. Dependencies
 include(predicates)

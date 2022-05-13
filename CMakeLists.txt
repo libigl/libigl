@@ -137,6 +137,7 @@ include(igl_copy_dll)
 include(igl_include)
 include(igl_install)
 include(igl_target_sources)
+include(igl_glob_sources)
 
 # Enable unit testing at the root level
 if (LIBIGL_BUILD_TESTS)
