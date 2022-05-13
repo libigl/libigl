@@ -11,9 +11,11 @@ Documentation, tutorial, and instructions at <https://libigl.github.io>.
 
 The upstream libigl repository acquires all of its dependencies as sub-projects through CMake's FetchContent module.
 This means that as part of configuring the CMake project, all of the source code for all of the dependencies are
-downloaded, built from source, and added as subdirectories of libigl to be built along with its build process.
-Furthermore, there's no option to
-turn this feature off. To avoid downloading, consuming projects must first call *find_package* for all of libigl's
+downloaded, built from source, and added as subdirectories of libigl to be built along with its build process. This 
+not only means that for each build directory or each project, all dependencies must be rebuilt, but it also means 
+that all dependency build messages are now your project's build messages, flooding the console.
+Furthermore, there's no option to turn this feature off. To avoid downloading, consuming projects must first call *
+find_package* for all of libigl's
 dependencies before finding/adding libigl. Although this pattern is simple across a single link, if the consuming
 project is also a library, and one of its consuming projects happen to also use libigl, violations of ODR are very
 likely.
