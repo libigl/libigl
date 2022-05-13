@@ -1,3 +1,7 @@
+if(LIBIGL_FIND_PACKAGES)
+  find_package(mpfr REQUIRED)
+endif()
+
 # Expects
 #   gmp_INCLUDE_DIR
 #   gmp_LIB_DIR

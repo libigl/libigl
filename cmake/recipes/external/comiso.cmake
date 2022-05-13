@@ -1,3 +1,7 @@
+if(LIBIGL_FIND_PACKAGES)
+  find_package(CoMISo CONFIG REQUIRED)
+endif()
+
 if(TARGET CoMISo::CoMISo)
     return()
 endif()

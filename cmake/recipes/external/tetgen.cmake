@@ -1,3 +1,7 @@
+if(LIBIGL_FIND_PACKAGES)
+  find_package(tetgen CONFIG REQUIRED)
+endif()
+
 if(TARGET tetgen::tetgen)
     return()
 endif()

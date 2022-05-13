@@ -1,3 +1,7 @@
+if(LIBIGL_FIND_PACKAGES)
+  find_package(glad CONFIG REQUIRED)
+endif()
+
 if(TARGET glad::glad)
     return()
 endif()

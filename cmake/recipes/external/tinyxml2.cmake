@@ -1,3 +1,7 @@
+if(LIBIGL_FIND_PACKAGES)
+  find_package(tinyxml2 CONFIG REQUIRED)
+endif()
+
 if(TARGET tinyxml2::tinyxml2)
     return()
 endif()

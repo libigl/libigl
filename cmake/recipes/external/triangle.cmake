@@ -1,3 +1,7 @@
+if(LIBIGL_FIND_PACKAGES)
+  find_package(triangle CONFIG REQUIRED)
+endif()
+
 if(TARGET triangle::triangle)
     return()
 endif()

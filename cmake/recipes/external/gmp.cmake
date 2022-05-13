@@ -1,3 +1,7 @@
+if(LIBIGL_FIND_PACKAGES)
+  find_package(GMP REQUIRED)
+endif()
+
 if(TARGET gmp::gmp)
     return()
 endif()
