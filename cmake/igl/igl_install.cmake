@@ -3,6 +3,11 @@ function(igl_install module_name)
     return()
   endif ()
 
+  # Check module name
+  if (NOT ${module_name} MATCHES "^igl_")
+    message(FATAL_ERROR "Libigl module name should start with 'igl_'")
+  endif ()
+
   # extract suffix & component from module name
   if (${module_name} MATCHES "^igl_copyleft")
     set(suffix "-copyleft")
@@ -18,11 +23,11 @@ function(igl_install module_name)
   # Install CMake target #
   ########################
 
-  set_property(TARGET ${module_name} PROPERTY EXPORT_NAME ${module_export})
+  set(exports_name ${PROJECT_NAME}${suffix}${component}-targets)
 
   include(GNUInstallDirs)
   install(TARGETS ${module_name}
-    EXPORT ${PROJECT_NAME}${suffix}${component}-targets
+    EXPORT ${exports_name}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
     COMPONENT LibiglRuntime
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
@@ -40,22 +45,23 @@ function(igl_install module_name)
   ################################
 
   include(GNUInstallDirs)
-  set(project_config_in "${PROJECT_SOURCE_DIR}/cmake/igl/libigl${suffix}${component}-config.cmake.in")
-  set(project_config_out "${CMAKE_CURRENT_BINARY_DIR}/libigl${suffix}${component}-config.cmake")
+  set(module_config_in "${PROJECT_SOURCE_DIR}/cmake/igl/libigl${suffix}${component}-config.cmake.in")
+  set(module_config_out "${CMAKE_CURRENT_BINARY_DIR}/libigl${suffix}${component}-config.cmake")
   set(export_dest_dir "${CMAKE_INSTALL_LIBDIR}/cmake/libigl")
-  set(export_name ${PROJECT_NAME}${suffix}${component}-targets)
 
   include(CMakePackageConfigHelpers)
   configure_package_config_file(
-    "${project_config_in}"
-    "${project_config_out}"
+    "${module_config_in}"
+    "${module_config_out}"
     INSTALL_DESTINATION
     ${CMAKE_INSTALL_DATAROOTDIR}/libigl/cmake
   )
+  install(FILES "${module_config_out}" DESTINATION "${export_dest_dir}")
 
-  install(EXPORT ${export_name}
+  string(REPLACE "-" "_" namespace_suffix "${suffix}")
+  install(EXPORT ${exports_name}
     DESTINATION ${export_dest_dir}
-    NAMESPACE igl${suffix}::
+    NAMESPACE igl${namespace_suffix}::
     COMPONENT LibiglDevelopment)
 
   ###################
