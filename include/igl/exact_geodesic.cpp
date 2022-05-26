@@ -3171,13 +3171,13 @@ IGL_INLINE void igl::exact_geodesic(
   const Eigen::MatrixBase<DerivedFT> &FT,
   Eigen::PlainObjectBase<DerivedD> &D)
 {
-  assert(V.cols() == 3 && F.cols() == 3 && "Only support 3D triangle mesh");
-  assert(VS.cols() <=1 && FS.cols() <= 1 && VT.cols() <= 1 && FT.cols() <=1 && "Only support one dimensional inputs");
-  std::vector<typename DerivedV::Scalar> points(V.rows() * V.cols());
+  assert((V.cols() == 3 || V.cols() == 2) && F.cols() == 3 && "Only support 2D/3D triangle mesh");
+  std::vector<typename DerivedV::Scalar> points(V.rows() * 3);
   std::vector<typename DerivedF::Scalar> faces(F.rows() * F.cols());
   for (int i = 0; i < points.size(); i++)
   {
-    points[i] = V(i / 3, i % 3);
+    // Append 0s for 2D input
+    points[i] = ((i%3)<2 || V.cols()==3) ? V(i / 3, i % 3) : 0.0;
   }
   for (int i = 0; i < faces.size(); i++)
   {
@@ -3188,29 +3188,47 @@ IGL_INLINE void igl::exact_geodesic(
   mesh.initialize_mesh_data(points, faces);
   igl::geodesic::GeodesicAlgorithmExact exact_algorithm(&mesh);
 
-  std::vector<igl::geodesic::SurfacePoint> source(VS.rows() + FS.rows());
-  std::vector<igl::geodesic::SurfacePoint> target(VT.rows() + FT.rows());
-  for (int i = 0; i < VS.rows(); i++)
-  {
-    source[i] = (igl::geodesic::SurfacePoint(&mesh.vertices()[VS(i, 0)]));
-  }
-  for (int i = 0; i < FS.rows(); i++)
-  {
-    source[i] = (igl::geodesic::SurfacePoint(&mesh.faces()[FS(i, 0)]));
-  }
+  std::vector<igl::geodesic::SurfacePoint> source;
+  source.reserve(VS.rows() + FS.rows());
 
-  for (int i = 0; i < VT.rows(); i++)
+  // Vertex sources
+  for(int i = 0;i < VS.rows(); i++)
   {
-    target[i] = (igl::geodesic::SurfacePoint(&mesh.vertices()[VT(i, 0)]));
+    for(int j = 0;j < VS.cols(); j++)
+    {
+      source.emplace_back(&mesh.vertices()[VS(i, j)]);
+    }
   }
-  for (int i = 0; i < FT.rows(); i++)
+  // Face Sources
+  for(int i = 0;i < FS.rows(); i++)
   {
-    target[i] = (igl::geodesic::SurfacePoint(&mesh.faces()[FT(i, 0)]));
+    for(int j = 0;j < FS.cols(); j++)
+    {
+      source.emplace_back(&mesh.faces()[FS(i, j)]);
+    }
+  }
+  std::vector<igl::geodesic::SurfacePoint> target;
+  target.reserve(VT.rows() + FT.rows());
+  //Vertex targets
+  for(int i = 0;i < VT.rows(); i++)
+  {
+    for(int j = 0;j < VT.cols(); j++)
+    {
+      target.emplace_back(&mesh.vertices()[VT(i, j)]);
+    }
+  }
+  // Face targets
+  for(int i = 0;i < FT.rows(); i++)
+  {
+    for(int j = 0;j < FT.cols(); j++)
+    {
+      target.emplace_back(&mesh.faces()[FT(i, j)]);
+    }
   }
 
   exact_algorithm.propagate(source);
   std::vector<igl::geodesic::SurfacePoint> path;
-  D.resize(target.size(), 1);
+  D.resize(target.size());
   for (int i = 0; i < target.size(); i++)
   {
     exact_algorithm.trace_back(target[i], path);
@@ -3220,5 +3238,4 @@ IGL_INLINE void igl::exact_geodesic(
 
 #ifdef IGL_STATIC_LIBRARY
 template void igl::exact_geodesic<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>>(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>> const &, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1>> const &, Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1>> const &, Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1>> const &, Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1>> const &, Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1>> const &, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1>> &);
-template void igl::exact_geodesic<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
 #endif
