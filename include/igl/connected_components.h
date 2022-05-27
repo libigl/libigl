@@ -13,10 +13,11 @@
 namespace igl
 {
   // Determine the connected components of a graph described by the input
-  // adjacency matrix (similar to MATLAB's graphconncomp).
+  // adjacency matrix (similar to MATLAB's graphconncomp or gptoolbox's
+  // conncomp, but A is transposed for unsymmetric graphs).
   //
   // Inputs:
-  //    A  #A by #A adjacency matrix (treated as describing an undirected graph)
+  //    A  #A by #A adjacency matrix (treated as describing an directed graph)
   // Outputs:
   //    C  #A list of component indices into [0,#K-1]
   //    K  #K list of sizes of each component
