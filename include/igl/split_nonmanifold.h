@@ -12,8 +12,9 @@
 #include <Eigen/Core>
 namespace igl
 {
-  // SPLIT_NONMANIFOLD Split a non-manifold mesh into a manifold mesh possibly
-  // with more connected components.
+  // SPLIT_NONMANIFOLD Split a non-manifold (or non-orientable) mesh into a
+  // orientable manifold mesh possibly with more connected components and
+  // geometrically duplicate vertices.
   //
   // Inputs:
   //   F  #F by 3 list of mesh triangle indices into rows of some V

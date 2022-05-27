@@ -73,21 +73,26 @@ IGL_INLINE void igl::split_nonmanifold(
   igl::slice(E,JI,1,EJI);
   Eigen::MatrixXi EJI_flip = EJI.rowwise().reverse();
   // Build adjacency matrix
-  std::vector<Eigen::Triplet<int> > Aijv; 
+  std::vector<Eigen::Triplet<bool> > Aijv; 
   Aijv.reserve(EI.size());
   for(int i = 0;i<EI.rows();i++)
   {
     for(int j = 0;j<2;j++)
     {
-      // build transpose w.r.t. conncomp in gptoolbox
       Aijv.emplace_back( 
-        EJI_flip(i,j), 
         EI(i,j), 
-        1);
+        EJI_flip(i,j), 
+        true);
     }
   }
-  Eigen::SparseMatrix<int> A(m*3,m*3);
-  A.setFromTriplets(Aijv.begin(),Aijv.end());
+  // Build A to contain off-diagonals only if both directions are present
+  Eigen::SparseMatrix<bool> A1(m*3,m*3);
+  A1.setFromTriplets(Aijv.begin(),Aijv.end());
+  // For some reason I can't write `A = A1 && A1.transpose();`
+  Eigen::SparseMatrix<bool> A1T = A1.transpose();
+  Eigen::SparseMatrix<bool> A = A1 && A1T;
+
+
   Eigen::VectorXi K;
   {
     Eigen::VectorXi _;
