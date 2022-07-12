@@ -254,7 +254,8 @@ IGL_INLINE void igl::blue_noise(
     Eigen::PlainObjectBase<DerivedFI> & FI,
     Eigen::PlainObjectBase<DerivedP> & P)
 {
-  return igl::blue_noise(V,F,r,std::minstd_rand(std::rand()),B,FI,P);    
+  auto rng = std::minstd_rand(0);
+  return igl::blue_noise(V,F,r,rng,B,FI,P);    
 }
 
 template <

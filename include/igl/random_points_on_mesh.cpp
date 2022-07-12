@@ -21,7 +21,7 @@ IGL_INLINE void igl::random_points_on_mesh(
   Eigen::PlainObjectBase<DerivedB > & B,
   Eigen::PlainObjectBase<DerivedFI > & FI)
 {
-  return igl::random_points_on_mesh(n,V,F,std::minstd_rand(std::rand()),B,FI);
+  return igl::random_points_on_mesh(std::minstd_rand(),n,V,F,B,FI);
 }
 
 template <typename URBG, typename DerivedV, typename DerivedF, typename DerivedB, typename DerivedFI>
@@ -79,7 +79,7 @@ IGL_INLINE void igl::random_points_on_mesh(
   Eigen::PlainObjectBase<DerivedFI > & FI,
   Eigen::PlainObjectBase<DerivedX> & X)
 {
-  return igl::random_points_on_mesh(std::minstd_rand(std::rand()),n,V,F,B,FI,X);
+  return igl::random_points_on_mesh(std::minstd_rand(),n,V,F,B,FI,X);
 }
 
 template <
@@ -120,7 +120,7 @@ IGL_INLINE void igl::random_points_on_mesh(
   Eigen::SparseMatrix<ScalarB > & B,
   Eigen::PlainObjectBase<DerivedFI > & FI)
 {
-  return igl::random_points_on_mesh(std::minstd_rand(std::rand()),n,V,F,B,FI);
+  return igl::random_points_on_mesh(std::minstd_rand(),n,V,F,B,FI);
 }
 
 template <typename URBG, typename DerivedV, typename DerivedF, typename ScalarB, typename DerivedFI>
