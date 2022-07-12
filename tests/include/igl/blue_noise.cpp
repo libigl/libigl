@@ -38,3 +38,90 @@ TEST_CASE("blue_noise: decimated-knight", "[igl]")
   Eigen::VectorXd D = (P-P2).rowwise().norm();
   REQUIRE(D.minCoeff() > r);
 }
+
+namespace blue_noise
+{
+  template <typename DerivedA, typename DerivedB>
+  void assert_neq_different_sizes(
+    const Eigen::MatrixBase<DerivedA> & A,
+    const Eigen::MatrixBase<DerivedB> & B)
+  {
+    // test_common::assert_neq requires same sizes
+    if (A.rows() == B.rows() &&
+        A.cols() == B.cols())
+    {
+      test_common::assert_neq(A, B);
+    }
+  }
+
+  template<typename URBG>
+  void test_reproduce()
+  {
+    Eigen::MatrixXd V;
+    Eigen::MatrixXi F;
+    igl::readOBJ(test_common::data_path("decimated-knight.obj"),V,F);
+
+    static constexpr double r = 0.1;
+    static constexpr int seed = 0;
+    Eigen::MatrixXd P1, Px1;
+    {
+      Eigen::MatrixXd B;
+      Eigen::VectorXi I;
+      URBG rng1(seed);
+      igl::blue_noise(V,F,r,rng1,B,I,P1);
+      igl::blue_noise(V,F,r,rng1,B,I,Px1);
+    }
+    Eigen::MatrixXd P2, Px2;
+    {
+      Eigen::MatrixXd B;
+      Eigen::VectorXi I;
+      URBG rng2(seed);
+      igl::blue_noise(V,F,r,rng2,B,I,P2);
+      igl::blue_noise(V,F,r,rng2,B,I,Px2);
+    }
+
+    test_common::assert_eq(P1, P2);
+    test_common::assert_eq(Px1, Px2);
+
+    assert_neq_different_sizes(P1, Px1);
+    assert_neq_different_sizes(P2, Px2);
+  }
+}
+
+
+TEST_CASE("blue_noise: minstd_rand0_reproduce", "[igl]")
+{
+  blue_noise::test_reproduce<std::minstd_rand0>();
+}
+TEST_CASE("blue_noise: minstd_rand_reproduce", "[igl]")
+{
+  blue_noise::test_reproduce<std::minstd_rand>();
+}
+TEST_CASE("blue_noise: mt19937_reproduce", "[igl]")
+{
+  blue_noise::test_reproduce<std::mt19937>();
+}
+TEST_CASE("blue_noise: mt19937_64_reproduce", "[igl]")
+{
+  blue_noise::test_reproduce<std::mt19937_64>();
+}
+TEST_CASE("blue_noise: ranlux24_base_reproduce", "[igl]")
+{
+  blue_noise::test_reproduce<std::ranlux24_base>();
+}
+TEST_CASE("blue_noise: ranlux48_base_reproduce", "[igl]")
+{
+  blue_noise::test_reproduce<std::ranlux48_base>();
+}
+TEST_CASE("blue_noise: ranlux24_reproduce", "[igl]")
+{
+  blue_noise::test_reproduce<std::ranlux24>();
+}
+TEST_CASE("blue_noise: ranlux48_reproduce", "[igl]")
+{
+  blue_noise::test_reproduce<std::ranlux48>();
+}
+TEST_CASE("blue_noise: knuth_b_reproduce", "[igl]")
+{
+  blue_noise::test_reproduce<std::knuth_b>();
+}
