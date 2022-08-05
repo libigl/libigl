@@ -205,7 +205,7 @@ IGL_INLINE void igl::slice(
   {
     for(int j = 0;j<yn;j++)
     {
-      Y(i,j) = X(R(i),C(j));
+      Y(i,j) = X(int(R(i)),int(C(j)));
     }
   }
 }
