@@ -68,15 +68,12 @@ IGL_INLINE bool igl::copyleft::tetgen::tetgenio_to_tetmesh(
   // loop over tetrahedra
   for(int i = 0; i < out.numberoftrifaces; i++)
   {
-    if (out.trifacemarkerlist && out.trifacemarkerlist[i] >= 0)
+    vector<int> face(3);
+    for(int j = 0; j<3; j++)
     {
-      vector<int> face(3);
-      for(int j = 0; j<3; j++)
-      {
-        face[j] = out.trifacelist[i * 3 + j];
-      }
-      F.push_back(face);
+      face[j] = out.trifacelist[i * 3 + j];
     }
+    F.push_back(face);
   }
 
   return true;
@@ -198,15 +195,12 @@ IGL_INLINE bool igl::copyleft::tetgen::tetgenio_to_tetmesh(
   // loop over tetrahedra
   for(int i = 0; i < out.numberoftrifaces; i++)
   {
-    if(out.trifacemarkerlist[i]>=0)
+    vector<int> face(3);
+    for(int j = 0; j<3; j++)
     {
-      vector<int> face(3);
-      for(int j = 0; j<3; j++)
-      {
-        face[j] = out.trifacelist[i * 3 + j];
-      }
-      F.push_back(face);
+      face[j] = out.trifacelist[i * 3 + j];
     }
+    F.push_back(face);
   }
 
   if(out.tetrahedronattributelist)
