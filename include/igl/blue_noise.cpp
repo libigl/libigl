@@ -247,7 +247,25 @@ template <
 IGL_INLINE void igl::blue_noise(
     const Eigen::MatrixBase<DerivedV> & V,
     const Eigen::MatrixBase<DerivedF> & F,
+    const typename DerivedV::Scalar r,    
+    Eigen::PlainObjectBase<DerivedB> & B,
+    Eigen::PlainObjectBase<DerivedFI> & FI,
+    Eigen::PlainObjectBase<DerivedP> & P)
+{
+  blue_noise(V,F,r,30.0,B,FI,P);
+}
+
+template <
+  typename DerivedV,
+  typename DerivedF,
+  typename DerivedB,
+  typename DerivedFI,
+  typename DerivedP>
+IGL_INLINE void igl::blue_noise(
+    const Eigen::MatrixBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedF> & F,
     const typename DerivedV::Scalar r,
+    const typename DerivedV::Scalar m,
     Eigen::PlainObjectBase<DerivedB> & B,
     Eigen::PlainObjectBase<DerivedFI> & FI,
     Eigen::PlainObjectBase<DerivedP> & P)
@@ -275,8 +293,8 @@ IGL_INLINE void igl::blue_noise(
   const double expected_number_of_points =
     area * (igl::PI * sqrt(3.0) / 6.0) / (igl::PI * min_r * min_r / 4.0);
 
-  // Make a uniform random sampling with 30*expected_number_of_points.
-  const int nx = 30.0*expected_number_of_points;
+  // Make a uniform random sampling with m*expected_number_of_points.
+  const int nx = m*expected_number_of_points;
   MatrixX3S X,XB;
   Eigen::VectorXi XFI;
   igl::random_points_on_mesh(nx,V,F,XB,XFI,X);
