@@ -55,6 +55,8 @@ IGL_INLINE void igl::internal_angles(
             V.row(F(i,j)),
             V.row(F(i,(j+1+F.cols())%F.cols()))
             );
+        if (isnan(K(i, j)))
+            K(i, j) = 0;
       }
     }
   }
@@ -79,6 +81,8 @@ IGL_INLINE void igl::internal_angles_using_squared_edge_lengths(
         const auto & s2 = L_sq(f,(d+1)%3);
         const auto & s3 = L_sq(f,(d+2)%3);
         K(f,d) = acos((s3 + s2 - s1)/(2.*sqrt(s3*s2)));
+        if (isnan(K(f, d)))
+            K(f, d) = 0;
       }
     },
     1000l);
