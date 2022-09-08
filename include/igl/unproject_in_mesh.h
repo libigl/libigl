@@ -39,8 +39,8 @@ namespace igl
         const Eigen::Matrix4f& model,
         const Eigen::Matrix4f& proj,
         const Eigen::Vector4f& viewport,
-        const Eigen::PlainObjectBase<DerivedV> & V,
-        const Eigen::PlainObjectBase<DerivedF> & F,
+        const Eigen::MatrixBase<DerivedV> & V,
+        const Eigen::MatrixBase<DerivedF> & F,
         Eigen::PlainObjectBase<Derivedobj> & obj,
         std::vector<igl::Hit > & hits);
   //
@@ -77,8 +77,8 @@ namespace igl
         const Eigen::Matrix4f& model,
         const Eigen::Matrix4f& proj,
         const Eigen::Vector4f& viewport,
-        const Eigen::PlainObjectBase<DerivedV> & V,
-        const Eigen::PlainObjectBase<DerivedF> & F,
+        const Eigen::MatrixBase<DerivedV> & V,
+        const Eigen::MatrixBase<DerivedF> & F,
         Eigen::PlainObjectBase<Derivedobj> & obj);
 }
 #ifndef IGL_STATIC_LIBRARY

@@ -1,7 +1,5 @@
 #include <igl/readOFF.h>
 #include <igl/opengl/glfw/Viewer.h>
-#include <igl/jet.h>
-#include "tutorial_shared_path.h"
 
 Eigen::MatrixXd V;
 Eigen::MatrixXi F;
@@ -16,11 +14,10 @@ int main(int argc, char *argv[])
   igl::opengl::glfw::Viewer viewer;
   viewer.data().set_mesh(V, F);
 
-  // Use the z coordinate as a scalar field over the surface
-  Eigen::VectorXd Z = V.col(2);
-
-  // Compute per-vertex colors
-  igl::jet(Z,true,C);
+  // Use the (normalized) vertex positions as colors
+  C =
+    (V.rowwise()            - V.colwise().minCoeff()).array().rowwise()/
+    (V.colwise().maxCoeff() - V.colwise().minCoeff()).array();
 
   // Add per-vertex colors
   viewer.data().set_colors(C);

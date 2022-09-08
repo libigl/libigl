@@ -1,8 +1,34 @@
 #include <test_common.h>
 #include <igl/PI.h>
 #include <igl/cotmatrix.h>
+#include <igl/matrix_to_list.h>
+#include <igl/polygon_corners.h>
 
-TEST_CASE("cotmatrix: constant_in_null_space", "[igl]")
+TEST_CASE("cotmatrix: poly", "[igl]" )
+{
+  const auto test_case = [](const std::string &param)
+  {
+    Eigen::MatrixXd V;
+    Eigen::MatrixXi F;
+    // Load example mesh: GetParam() will be name of mesh file
+    igl::read_triangle_mesh(test_common::data_path(param), V, F);
+    Eigen::SparseMatrix<double> tL,pL,pM,pP;
+    igl::cotmatrix(V,F,tL);
+    std::vector<std::vector<int> > vF;
+    igl::matrix_to_list(F,vF);
+    // trivial polygon mesh
+    Eigen::VectorXi I,C;
+    igl::polygon_corners(vF,I,C);
+    igl::cotmatrix(V,I,C,pL,pM,pP);
+    REQUIRE (tL.cols() == pL.cols());
+    REQUIRE (tL.rows() == pL.rows());
+    REQUIRE ( tL.isApprox(pL,1e-7) );
+  };
+
+  test_common::run_test_cases(test_common::all_meshes(), test_case);
+}
+
+TEST_CASE("cotmatrix: constant_in_null_space", "[igl]" "[slow]")
 {
   const auto test_case = [](const std::string &param)
   {
@@ -10,7 +36,7 @@ TEST_CASE("cotmatrix: constant_in_null_space", "[igl]")
     Eigen::MatrixXi F;
     Eigen::SparseMatrix<double> L;
     // Load example mesh: GetParam() will be name of mesh file
-    test_common::load_mesh(param, V, F);
+    igl::read_triangle_mesh(test_common::data_path(param), V, F);
     igl::cotmatrix(V,F,L);
     REQUIRE (L.rows() == V.rows());
     REQUIRE (L.cols() == L.rows());
@@ -33,7 +59,7 @@ TEST_CASE("cotmatrix: cube", "[igl]")
   Eigen::MatrixXd V;
   Eigen::MatrixXi F;
   //This is a cube of dimensions 1.0x1.0x1.0
-  test_common::load_mesh("cube.obj", V, F);
+  igl::read_triangle_mesh(test_common::data_path("cube.obj"), V, F);
 
   //Scale the cube to have huge sides
   Eigen::MatrixXd V_huge = V * 1.0e8;
@@ -109,7 +135,7 @@ TEST_CASE("cotmatrix: tetrahedron", "[igl]")
   Eigen::MatrixXd V;
   Eigen::MatrixXi F;
   //This is a cube of dimensions 1.0x1.0x1.0
-  test_common::load_mesh("cube.obj", V, F);
+  igl::read_triangle_mesh(test_common::data_path("cube.obj"), V, F);
 
   //Prepare another mesh with triangles along side diagonals of the cube
   //These triangles are form a regular tetrahedron of side sqrt(2)

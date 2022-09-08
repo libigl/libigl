@@ -19,3 +19,7 @@ IGL_INLINE void igl::null(
   svd.setThreshold(A.cols() * svd.singularValues().maxCoeff() * EPS<Scalar>());
   N = svd.matrixV().rightCols(A.cols()-svd.rank());
 }
+
+#ifdef IGL_STATIC_LIBRARY
+template void igl::null<Eigen::Matrix<double, 1, 3, 1, 1, 3>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
+#endif

@@ -8,6 +8,7 @@
 #ifndef IGL_WRITE_TRIANGLE_MESH_H
 #define IGL_WRITE_TRIANGLE_MESH_H
 #include "igl_inline.h"
+#include <igl/FileEncoding.h>
 
 #include <Eigen/Core>
 #include <string>
@@ -15,8 +16,8 @@
 namespace igl
 {
   // write mesh to a file with automatic detection of file format.  supported:
-  // obj, off, stl, wrl, ply, mesh). 
-  // 
+  // obj, off, stl, wrl, ply, mesh).
+  //
   // Templates:
   //   Scalar  type for positions and vectors (will be read as double and cast
   //     to Scalar)
@@ -25,14 +26,14 @@ namespace igl
   //   str  path to file
   //   V  eigen double matrix #V by 3
   //   F  eigen int matrix #F by 3
-  //   force_ascii  force ascii format even if binary is available 
+  //   encoding  set file encoding (ascii or binary) when both are available
   // Returns true iff success
   template <typename DerivedV, typename DerivedF>
   IGL_INLINE bool write_triangle_mesh(
     const std::string str,
-    const Eigen::PlainObjectBase<DerivedV>& V,
-    const Eigen::PlainObjectBase<DerivedF>& F,
-    const bool force_ascii = true);
+    const Eigen::MatrixBase<DerivedV>& V,
+    const Eigen::MatrixBase<DerivedF>& F,
+    FileEncoding encoding = FileEncoding::Ascii);
 }
 
 #ifndef IGL_STATIC_LIBRARY

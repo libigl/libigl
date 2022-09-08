@@ -9,6 +9,7 @@
 #define IGL_EDGE_COLLAPSE_IS_VALID_H
 #include "igl_inline.h"
 #include <Eigen/Core>
+#include <vector>
 namespace igl
 {
   // Assumes (V,F) is a closed manifold mesh (except for previouslly collapsed
@@ -37,6 +38,20 @@ namespace igl
     const Eigen::VectorXi & EMAP,
     const Eigen::MatrixXi & EF,
     const Eigen::MatrixXi & EI);
+  // Inputs:
+  //   Nsv  #Nsv list of "next" vertices circulating around starting vertex of
+  //     edge
+  //   Ndv  #Ndv list of "next" vertices circulating around destination vertex of
+  //     edge
+  // Outputs:
+  //   Nsv  (side-effect: sorted by value)
+  //   Ndv  (side-effect: sorted by value)
+  // Returns true iff edge collapse is valid
+  //
+  // See also: circulation
+  IGL_INLINE bool edge_collapse_is_valid(
+    /*const*/ std::vector<int> & Nsv,
+    /*const*/ std::vector<int> & Ndv);
 }
 #ifndef IGL_STATIC_LIBRARY
 #  include "edge_collapse_is_valid.cpp"

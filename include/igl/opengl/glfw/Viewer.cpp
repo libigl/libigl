@@ -29,7 +29,7 @@
 #include <igl/project.h>
 #include <igl/get_seconds.h>
 #include <igl/readOBJ.h>
-#include <igl/readOFF.h>
+#include <igl/read_triangle_mesh.h>
 #include <igl/adjacency_list.h>
 #include <igl/writeOBJ.h>
 #include <igl/writeOFF.h>
@@ -159,12 +159,12 @@ namespace glfw
     else
     {
       // Set default windows width
-      if (windowWidth <= 0 & core_list.size() == 1 && core().viewport[2] > 0)
+      if (windowWidth <= 0 && core_list.size() == 1 && core().viewport[2] > 0)
         windowWidth = core().viewport[2];
       else if (windowWidth <= 0)
         windowWidth = 1280;
       // Set default windows height
-      if (windowHeight <= 0 & core_list.size() == 1 && core().viewport[3] > 0)
+      if (windowHeight <= 0 && core_list.size() == 1 && core().viewport[3] > 0)
         windowHeight = core().viewport[3];
       else if (windowHeight <= 0)
         windowHeight = 800;
@@ -210,10 +210,18 @@ namespace glfw
     glfwGetWindowSize(window, &width_window, &height_window);
     highdpi = windowWidth/width_window;
     glfw_window_size(window,width_window,height_window);
-    //opengl.init();
-    core().align_camera_center(data().V,data().F);
     // Initialize IGL viewer
     init();
+    for(auto &core : this->core_list)
+    {
+      for(auto &data : this->data_list)
+      {
+        if(data.is_visible & core.id)
+        {
+          this->core(core.id).align_camera_center(data.V, data.F);
+        }
+      }
+    }
     return EXIT_SUCCESS;
   }
 
@@ -346,6 +354,7 @@ namespace glfw
     const std::string usage(R"(igl::opengl::glfw::Viewer usage:
   [drag]  Rotate scene
   A,a     Toggle animation (tight draw loop)
+  D,d     Toggle double sided lighting
   F,f     Toggle face based
   I,i     Toggle invert normals
   L,l     Toggle wireframe
@@ -396,15 +405,7 @@ namespace glfw
 
     std::string extension = mesh_file_name_string.substr(last_dot+1);
 
-    if (extension == "off" || extension =="OFF")
-    {
-      Eigen::MatrixXd V;
-      Eigen::MatrixXi F;
-      if (!igl::readOFF(mesh_file_name_string, V, F))
-        return false;
-      data().set_mesh(V,F);
-    }
-    else if (extension == "obj" || extension =="OBJ")
+    if (extension == "obj" || extension =="OBJ")
     {
       Eigen::MatrixXd corner_normals;
       Eigen::MatrixXi fNormIndices;
@@ -423,14 +424,21 @@ namespace glfw
       }
 
       data().set_mesh(V,F);
-      data().set_uv(UV_V,UV_F);
-
-    }
-    else
+      if(UV_V.rows() != 0 && UV_F.rows() != 0)
+      {
+        data().set_uv(UV_V,UV_F);
+      }
+    }else
     {
-      // unrecognized file type
-      printf("Error: %s is not a recognized file type.\n",extension.c_str());
-      return false;
+      Eigen::MatrixXd V;
+      Eigen::MatrixXi F;
+      if (!igl::read_triangle_mesh(mesh_file_name_string, V, F))
+      {
+        // unrecognized file type
+        printf("Error: %s is not a recognized file type.\n",extension.c_str());
+        return false;
+      }
+      data().set_mesh(V,F);
     }
 
     data().compute_normals();
@@ -438,11 +446,6 @@ namespace glfw
                    Eigen::Vector3d(255.0/255.0,228.0/255.0,58.0/255.0),
                    Eigen::Vector3d(255.0/255.0,235.0/255.0,80.0/255.0));
 
-    // Alec: why?
-    if (data().V_uv.rows() == 0)
-    {
-      data().grid_texture();
-    }
     for(int i=0;i<core_list.size(); i++)
         core_list[i].align_camera_center(data().V,data().F);
 
@@ -519,6 +522,12 @@ namespace glfw
         core().is_animating = !core().is_animating;
         return true;
       }
+      case 'D':
+      case 'd':
+      {
+        data().double_sided = !data().double_sided;
+        return true;
+      }
       case 'F':
       case 'f':
       {
@@ -580,10 +589,10 @@ namespace glfw
         return true;
       }
       case ';':
-        data().show_vertid = !data().show_vertid;
+        data().show_vertex_labels = !data().show_vertex_labels;
         return true;
       case ':':
-        data().show_faceid = !data().show_faceid;
+        data().show_face_labels = !data().show_face_labels;
         return true;
       default: break;//do nothing
     }
@@ -658,13 +667,11 @@ namespace glfw
 
 
     // Initialization code for the trackball
-    Eigen::RowVector3d center;
-    if (data().V.rows() == 0)
+    Eigen::RowVector3d center = Eigen::RowVector3d(0,0,0);
+    if(data().V.rows() > 0)
     {
-      center << 0,0,0;
-    }else
-    {
-      center = data().V.colwise().sum()/data().V.rows();
+      // be careful that V may be 2D
+      center.head(data().V.cols()) = data().V.colwise().sum()/data().V.rows();
     }
 
     Eigen::Vector3f coord =

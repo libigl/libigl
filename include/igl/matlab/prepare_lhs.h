@@ -40,6 +40,11 @@ namespace igl
     IGL_INLINE void prepare_lhs_double(
       const Eigen::SparseMatrix<Vtype> & V,
       mxArray *plhs[]);
+    // Vector of matrices -> cell array of matrices
+    template <typename Vtype>
+    IGL_INLINE void prepare_lhs_double(
+      const std::vector<Vtype> & V,
+      mxArray *plhs[]);
   };
 }
 #ifndef IGL_STATIC_LIBRARY

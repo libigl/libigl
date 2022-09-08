@@ -1,9 +1,11 @@
 #pragma once
 
-
+// These are not directly used but would otherwise be included in most files.
+// Leaving them included here.
 #include <igl/read_triangle_mesh.h>
-#include <igl/find.h>
 #include <igl/readDMAT.h>
+
+#include <igl/find.h>
 
 #include <Eigen/Core>
 #include <catch2/catch.hpp>
@@ -14,13 +16,56 @@
 #include <algorithm>
 #include <tuple>
 
+
+// Disable lengthy tests in debug mode
+#ifdef NDEBUG
+#define IGL_DEBUG_OFF ""
+#else
+#define IGL_DEBUG_OFF "[!hide]"
+#endif
+
+
+#include <igl/STR.h>
+template<>
+struct Catch::StringMaker<std::tuple<int,int,int> > 
+{
+  static std::string convert(std::tuple<int,int,int> const& t)
+  {
+    return 
+      STR("("<<std::get<0>(t)<<","<<std::get<1>(t)<<","<<std::get<2>(t)<<")");
+  }
+};
+template<>
+struct Catch::StringMaker<std::tuple<int,int,double> > 
+{
+  static std::string convert(std::tuple<int,int,double> const& t)
+  {
+    return 
+      STR("("<<std::get<0>(t)<<","<<std::get<1>(t)<<","<<std::get<2>(t)<<")");
+  }
+};
+
+
 namespace test_common
 {
   template<typename Param, typename Fun>
   void run_test_cases(const std::vector<Param> &params,  Fun test_case)
   {
     for(const auto &p : params)
+    {
+      // Can't use INFO( p ) because we're not sure how to print p
       test_case(p);
+    }
+  }
+
+  template<typename Fun>
+  void run_test_cases(const std::vector<std::string> &params,  Fun test_case)
+  {
+    for(const auto &p : params)
+    {
+      INFO( p );
+      test_case(p);
+    }
   }
 
   inline std::vector<std::string> closed_genus_0_meshes()
@@ -73,29 +118,6 @@ namespace test_common
   {
     return std::string(LIBIGL_DATA_DIR) + "/" + s;
   };
-
-  // TODO: this seems like a pointless indirection. Should just find and
-  // replace test_common::load_mesh(X,...) with
-  // igl::read_triangle_mesh(test_common::data_path(X),...)
-  template<typename DerivedV, typename DerivedF>
-  void load_mesh(
-    const std::string& filename,
-    Eigen::PlainObjectBase<DerivedV>& V,
-    Eigen::PlainObjectBase<DerivedF>& F)
-  {
-    igl::read_triangle_mesh(data_path(filename), V, F);
-  }
-
-  // TODO: this seems like a pointless indirection. Should just find and
-  // replace test_common::load_matrix(X,...) with
-  // igl::readDMAT(test_common::data_path(X),...)
-  template<typename Derived>
-  void load_matrix(
-    const std::string& filename,
-    Eigen::PlainObjectBase<Derived>& M)
-  {
-    igl::readDMAT(data_path(filename), M);
-  }
 
   template <typename DerivedA, typename DerivedB>
   void assert_eq(

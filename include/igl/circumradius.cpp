@@ -13,8 +13,8 @@ template <
   typename DerivedF,
   typename DerivedR>
 IGL_INLINE void igl::circumradius(
-  const Eigen::PlainObjectBase<DerivedV> & V, 
-  const Eigen::PlainObjectBase<DerivedF> & F,
+  const Eigen::MatrixBase<DerivedV> & V, 
+  const Eigen::MatrixBase<DerivedF> & F,
   Eigen::PlainObjectBase<DerivedR> & R)
 {
   Eigen::Matrix<typename DerivedV::Scalar,Eigen::Dynamic,3> l;
@@ -24,3 +24,7 @@ IGL_INLINE void igl::circumradius(
   // use formula: R=abc/(4*area) to compute the circum radius
   R = l.col(0).array() * l.col(1).array() * l.col(2).array() / (2.0*A.array());
 }
+
+#ifdef IGL_STATIC_LIBRARY
+template void igl::circumradius<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
+#endif

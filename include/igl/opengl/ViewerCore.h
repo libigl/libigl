@@ -80,6 +80,10 @@ public:
     Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& G,
     Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& B,
     Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& A);
+  IGL_INLINE void draw_labels(
+    ViewerData& data,
+    const igl::opengl::MeshGL::TextGL& labels
+  );
 
   // Trackball angle (quaternion)
   enum RotationType

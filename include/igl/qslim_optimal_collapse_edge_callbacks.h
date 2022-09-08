@@ -8,6 +8,7 @@
 #ifndef IGL_QSLIM_OPTIMAL_COLLAPSE_EDGE_CALLBACKS_H
 #define IGL_QSLIM_OPTIMAL_COLLAPSE_EDGE_CALLBACKS_H
 #include "igl_inline.h"
+#include "decimate_callback_types.h"
 #include <Eigen/Core>
 #include <functional>
 #include <vector>
@@ -15,7 +16,6 @@
 #include <set>
 namespace igl
 {
-
   // Prepare callbacks for decimating edges using the qslim optimal placement
   // metric.
   //
@@ -35,45 +35,9 @@ namespace igl
       quadrics,
     int & v1,
     int & v2,
-    std::function<void(
-      const int e,
-      const Eigen::MatrixXd &,
-      const Eigen::MatrixXi &,
-      const Eigen::MatrixXi &,
-      const Eigen::VectorXi &,
-      const Eigen::MatrixXi &,
-      const Eigen::MatrixXi &,
-      double &,
-      Eigen::RowVectorXd &)> & cost_and_placement,
-    std::function<bool(
-      const Eigen::MatrixXd &                                         ,/*V*/
-      const Eigen::MatrixXi &                                         ,/*F*/
-      const Eigen::MatrixXi &                                         ,/*E*/
-      const Eigen::VectorXi &                                         ,/*EMAP*/
-      const Eigen::MatrixXi &                                         ,/*EF*/
-      const Eigen::MatrixXi &                                         ,/*EI*/
-      const std::set<std::pair<double,int> > &                        ,/*Q*/
-      const std::vector<std::set<std::pair<double,int> >::iterator > &,/*Qit*/
-      const Eigen::MatrixXd &                                         ,/*C*/
-      const int                                                        /*e*/
-      )> & pre_collapse,
-    std::function<void(
-      const Eigen::MatrixXd &                                         ,   /*V*/
-      const Eigen::MatrixXi &                                         ,   /*F*/
-      const Eigen::MatrixXi &                                         ,   /*E*/
-      const Eigen::VectorXi &                                         ,/*EMAP*/
-      const Eigen::MatrixXi &                                         ,  /*EF*/
-      const Eigen::MatrixXi &                                         ,  /*EI*/
-      const std::set<std::pair<double,int> > &                        ,   /*Q*/
-      const std::vector<std::set<std::pair<double,int> >::iterator > &, /*Qit*/
-      const Eigen::MatrixXd &                                         ,   /*C*/
-      const int                                                       ,   /*e*/
-      const int                                                       ,  /*e1*/
-      const int                                                       ,  /*e2*/
-      const int                                                       ,  /*f1*/
-      const int                                                       ,  /*f2*/
-      const bool                                                  /*collapsed*/
-      )> & post_collapse);
+    decimate_cost_and_placement_callback & cost_and_placement,
+    decimate_pre_collapse_callback & pre_collapse,
+    decimate_post_collapse_callback & post_collapse);
 }
 #ifndef IGL_STATIC_LIBRARY
 #  include "qslim_optimal_collapse_edge_callbacks.cpp"

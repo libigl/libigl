@@ -34,10 +34,10 @@ namespace igl
   //		cur_v  						#V by dim list of variables at the new location
   // Returns the energy at the new point
   IGL_INLINE double flip_avoiding_line_search(
-    const Eigen::MatrixXi F,
+    const Eigen::MatrixXi & F,
     Eigen::MatrixXd& cur_v,
-    Eigen::MatrixXd& dst_v,
-    std::function<double(Eigen::MatrixXd&)> energy,
+    const Eigen::MatrixXd& dst_v,
+    std::function<double(Eigen::MatrixXd&)> & energy,
     double cur_energy = -1);
 
 }

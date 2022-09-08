@@ -29,14 +29,20 @@ namespace igl
   //    fid  id of the first face hit
   //    bc  barycentric coordinates of hit
   // Returns true if there's a hit
+  //
+  // Example:
+  //   igl::opengl::glfw::Viewer vr;
+  //   ...
+  //   igl::unproject_onto_mesh(
+  //     pos,vr.core().view,vr.core().proj,vr.core().viewport,V,F,fid,bc);
   template < typename DerivedV, typename DerivedF, typename Derivedbc>
   IGL_INLINE bool unproject_onto_mesh(
     const Eigen::Vector2f& pos,
     const Eigen::Matrix4f& model,
     const Eigen::Matrix4f& proj,
     const Eigen::Vector4f& viewport,
-    const Eigen::PlainObjectBase<DerivedV> & V,
-    const Eigen::PlainObjectBase<DerivedF> & F,
+    const Eigen::MatrixBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedF> & F,
     int & fid,
     Eigen::PlainObjectBase<Derivedbc> & bc);
   //
@@ -44,7 +50,7 @@ namespace igl
   //    pos        screen space coordinates
   //    model      model matrix
   //    proj       projection matrix
-  //    viewport   vieweport vector
+  //    viewport   viewport vector
   //    shoot_ray  function handle that outputs hits of a given ray against a
   //      mesh (embedded in function handles as captured variable/data)
   // Outputs:

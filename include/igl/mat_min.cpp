@@ -19,8 +19,8 @@ IGL_INLINE void igl::mat_min(
   // output size
   int n = (dim==1?X.cols():X.rows());
   // resize output
-  Y.resize(n);
-  I.resize(n);
+  Y.resize(n,1);
+  I.resize(n,1);
 
   // loop over dimension opposite of dim
   for(int j = 0;j<n;j++)

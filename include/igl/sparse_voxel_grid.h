@@ -9,11 +9,10 @@
 #define IGL_SPARSE_VOXEL_GRID_H
 
 #include "igl_inline.h"
-
 #include <Eigen/Core>
 
-namespace igl {
-
+namespace igl 
+{
   // sparse_voxel_grid( p0, scalarFunc, eps, CV, CS, CI )
   //
   // Given a point, p0, on an isosurface, construct a shell of epsilon sized cubes surrounding the surface.
@@ -27,22 +26,30 @@ namespace igl {
   //  eps  The edge length of the cubes surrounding the surface
   //  expected_number_of_cubes  This pre-allocates internal data structures to speed things up
   // Output:
-  //   CS  #cube-vertices by 1 list of scalar values at the cube vertices
-  //   CV  #cube-vertices by 3 list of cube vertex positions
-  //   CI  #number of cubes by 8 list of indexes into CS and CV. Each row represents a cube
+  //   CS  #CV by 1 list of scalar values at the cube vertices
+  //   CV  #CV by 3 list of cube vertex positions
+  //   CI  #CI by 8 list of cube indices into rows of CS and CV. Each row
+  //     represents 8 corners of cube in y-x-z binary counting order.
   //
-  template <typename DerivedP0, typename Func, typename DerivedS, typename DerivedV, typename DerivedI>
-  IGL_INLINE void sparse_voxel_grid(const Eigen::MatrixBase<DerivedP0>& p0,
-                                    const Func& scalarFunc,
-                                    const double eps,
-                                    const int expected_number_of_cubes,
-                                    Eigen::PlainObjectBase<DerivedS>& CS,
-                                    Eigen::PlainObjectBase<DerivedV>& CV,
-                                    Eigen::PlainObjectBase<DerivedI>& CI);
+  template <
+    typename DerivedP0, 
+    typename Func, 
+    typename DerivedS, 
+    typename DerivedV, 
+    typename DerivedI>
+  IGL_INLINE void sparse_voxel_grid(
+    const Eigen::MatrixBase<DerivedP0>& p0,
+    const Func& scalarFunc,
+    const double eps,
+    const int expected_number_of_cubes,
+    Eigen::PlainObjectBase<DerivedS>& CS,
+    Eigen::PlainObjectBase<DerivedV>& CV,
+    Eigen::PlainObjectBase<DerivedI>& CI);
 
 }
+
 #ifndef IGL_STATIC_LIBRARY
 #    include "sparse_voxel_grid.cpp"
 #endif
 
-#endif // IGL_SPARSE_VOXEL_GRID_H
+#endif

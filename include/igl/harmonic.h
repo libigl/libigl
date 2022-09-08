@@ -75,8 +75,8 @@ namespace igl
     typename Derivedbc,
     typename DerivedW>
   IGL_INLINE bool harmonic(
-    const Eigen::SparseMatrix<DerivedL> & L,
-    const Eigen::SparseMatrix<DerivedM> & M,
+    const Eigen::SparseCompressedBase<DerivedL> & L,
+    const Eigen::SparseCompressedBase<DerivedM> & M,
     const Eigen::MatrixBase<Derivedb> & b,
     const Eigen::MatrixBase<Derivedbc> & bc,
     const int k,
@@ -95,10 +95,10 @@ namespace igl
     typename DerivedM,
     typename DerivedQ>
   IGL_INLINE void harmonic(
-    const Eigen::SparseMatrix<DerivedL> & L,
-    const Eigen::SparseMatrix<DerivedM> & M,
+    const Eigen::SparseCompressedBase<DerivedL> & L,
+    const Eigen::SparseCompressedBase<DerivedM> & M,
     const int k,
-    Eigen::SparseMatrix<DerivedQ> & Q);
+    DerivedQ & Q);
   // Inputs:
   //   V  #V by dim vertex positions
   //   F  #F by simplex-size list of element indices
@@ -113,7 +113,7 @@ namespace igl
     const Eigen::MatrixBase<DerivedV> & V,
     const Eigen::MatrixBase<DerivedF> & F,
     const int k,
-    Eigen::SparseMatrix<DerivedQ> & Q);
+    DerivedQ & Q);
 };
 
 #ifndef IGL_STATIC_LIBRARY

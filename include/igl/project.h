@@ -32,6 +32,15 @@ namespace igl
   //   viewport  viewport vector
   // Outputs:
   //   P  #V by 3 list of screen space points
+  //
+  // Known issue:
+  //   The compiler will not complain if V and P are Vector3d, but the result
+  //   will be incorrect.
+  //
+  // Example:
+  //   igl::opengl::glfw::Viewer vr;
+  //   ...
+  //   igl::project(V,vr.core().view,vr.core().proj,vr.core().viewport,P);
   template <typename DerivedV, typename DerivedM, typename DerivedN, typename DerivedO, typename DerivedP>
   IGL_INLINE void project(
     const    Eigen::MatrixBase<DerivedV>&  V,

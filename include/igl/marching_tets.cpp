@@ -22,9 +22,9 @@ template <typename DerivedTV,
           typename DerivedJ,
           typename BCType>
 void igl::marching_tets(
-    const Eigen::PlainObjectBase<DerivedTV>& TV,
-    const Eigen::PlainObjectBase<DerivedTT>& TT,
-    const Eigen::PlainObjectBase<DerivedS>& isovals,
+    const Eigen::MatrixBase<DerivedTV>& TV,
+    const Eigen::MatrixBase<DerivedTT>& TT,
+    const Eigen::MatrixBase<DerivedS>& isovals,
     double isovalue,
     Eigen::PlainObjectBase<DerivedSV>& outV,
     Eigen::PlainObjectBase<DerivedSF>& outF,
@@ -94,7 +94,7 @@ void igl::marching_tets(
     for (int v = 0; v < 4; v++)
     {
       const int vid = TT(i, v);
-      const uint8_t flag = isovals[vid] > isovalue;
+      const uint8_t flag = isovals(vid, 0) > isovalue;
       key |= flag << v;
     }
 
@@ -147,10 +147,13 @@ void igl::marching_tets(
 
   for (int f = 0; f < faces.size(); f++)
   {
+    const int ti = faces[f].second;
+    assert(ti>=0);
+    assert(ti<TT.rows());
+    J(f) = ti;
     for (int v = 0; v < 3; v++)
     {
       const int vi = faces[f].first[v];
-      const int ti = faces[f].second;
       const pair<int32_t, int32_t> edge = edge_table[vi];
       const int64_t key = make_edge_key(edge);
       auto it = emap.find(key);
@@ -160,8 +163,8 @@ void igl::marching_tets(
         typedef Eigen::Matrix<typename DerivedTV::Scalar, 1, 3, Eigen::RowMajor, 1, 3> RowVector;
         const RowVector v1 = TV.row(edge.first);
         const RowVector v2 = TV.row(edge.second);
-        const double a = fabs(isovals[edge.first] - isovalue);
-        const double b = fabs(isovals[edge.second] - isovalue);
+        const double a = fabs(isovals(edge.first, 0) - isovalue);
+        const double b = fabs(isovals(edge.second, 0) - isovalue);
         const double w = a / (a+b);
 
         // Create a casted copy in case BCType is a float and we need to downcast
@@ -173,7 +176,6 @@ void igl::marching_tets(
         const typename DerivedTV::Scalar v_w = static_cast<typename DerivedTV::Scalar>(w);
         outV.row(num_unique) = (1-v_w)*v1 + v_w*v2;
         outF(f, v) = num_unique;
-        J[f] = ti;
 
         emap.emplace(key, num_unique);
         num_unique += 1;
@@ -183,12 +185,11 @@ void igl::marching_tets(
     }
   }
   outV.conservativeResize(num_unique, 3);
-  J.conservativeResize(num_unique, 1);
   BC.resize(num_unique, TV.rows());
   BC.setFromTriplets(bc_triplets.begin(), bc_triplets.end());
 }
 
 
 #ifdef IGL_STATIC_LIBRARY
-template void igl::marching_tets<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, double>(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, double, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&, Eigen::SparseMatrix<double, 0, int>&);
+template void igl::marching_tets<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, double>(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, double, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&, Eigen::SparseMatrix<double, 0, int>&);
 #endif // IGL_STATIC_LIBRARY

@@ -12,7 +12,7 @@ TEST_CASE(
   {
     Eigen::MatrixXd V;
     Eigen::MatrixXi F;
-    test_common::load_mesh(param, V, F);
+    igl::read_triangle_mesh(test_common::data_path(param), V, F);
     CGAL::Polyhedron_3<
       CGAL::Simple_cartesian<double>, 
       CGAL::Polyhedron_items_with_id_3, 
@@ -31,7 +31,7 @@ TEST_CASE(
 {
   Eigen::MatrixXd V;
   Eigen::MatrixXi F;
-  test_common::load_mesh("truck.obj", V, F);
+  igl::read_triangle_mesh(test_common::data_path("truck.obj"), V, F);
   CGAL::Polyhedron_3<
     CGAL::Simple_cartesian<double>, 
     CGAL::Polyhedron_items_with_id_3, 

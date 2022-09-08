@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2013 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_UPSAMPLE_H
 #define IGL_UPSAMPLE_H
@@ -32,12 +32,12 @@ namespace igl
     typename DerivedNF>
   IGL_INLINE void upsample(
     const int n_verts,
-    const Eigen::PlainObjectBase<DerivedF>& F,
+    const Eigen::MatrixBase<DerivedF>& F,
     Eigen::SparseMatrix<SType>& S,
     Eigen::PlainObjectBase<DerivedNF>& NF);
   // Subdivide a mesh without moving vertices: loop subdivision but odd
   // vertices stay put and even vertices are just edge midpoints
-  // 
+  //
   // Templates:
   //   MatV  matrix for vertex positions, e.g. MatrixXd
   //   MatF  matrix for vertex positions, e.g. MatrixXi
@@ -54,20 +54,20 @@ namespace igl
   // Known issues:
   //   - assumes (V,F) is edge-manifold.
   template <
-    typename DerivedV, 
+    typename DerivedV,
     typename DerivedF,
     typename DerivedNV,
     typename DerivedNF>
   IGL_INLINE void upsample(
-    const Eigen::PlainObjectBase<DerivedV>& V,
-    const Eigen::PlainObjectBase<DerivedF>& F,
+    const Eigen::MatrixBase<DerivedV>& V,
+    const Eigen::MatrixBase<DerivedF>& F,
     Eigen::PlainObjectBase<DerivedNV>& NV,
     Eigen::PlainObjectBase<DerivedNF>& NF,
     const int number_of_subdivs = 1);
 
   // Virtually in place wrapper
   template <
-    typename MatV, 
+    typename MatV,
     typename MatF>
   IGL_INLINE void upsample(
     MatV& V,

@@ -30,6 +30,7 @@
 #include <map>
 #include <set>
 #include <vector>
+#include <cassert>
 
 #include <Eigen/IterativeLinearSolvers>
 #include <Eigen/SparseCholesky>
@@ -50,11 +51,11 @@ namespace igl
     // Definitions of internal functions
     IGL_INLINE void buildRhs(igl::SLIMData& s, const Eigen::SparseMatrix<double> &A);
     IGL_INLINE void add_soft_constraints(igl::SLIMData& s, Eigen::SparseMatrix<double> &L);
-    IGL_INLINE double compute_energy(igl::SLIMData& s, Eigen::MatrixXd &V_new);
+    IGL_INLINE double compute_energy(igl::SLIMData& s, const Eigen::MatrixXd &V_new);
     IGL_INLINE double compute_soft_const_energy(igl::SLIMData& s,
                                                 const Eigen::MatrixXd &V,
                                                 const Eigen::MatrixXi &F,
-                                                Eigen::MatrixXd &V_o);
+                                                const Eigen::MatrixXd &V_o);
 
     IGL_INLINE void solve_weighted_arap(igl::SLIMData& s,
                                         const Eigen::MatrixXd &V,
@@ -286,7 +287,7 @@ namespace igl
       }
     }
 
-    IGL_INLINE double compute_energy(igl::SLIMData& s, Eigen::MatrixXd &V_new)
+    IGL_INLINE double compute_energy(igl::SLIMData& s, const Eigen::MatrixXd &V_new)
     {
       compute_jacobians(s,V_new);
       return mapping_energy_with_jacobians(s.Ji, s.M, s.slim_energy, s.exp_factor) +
@@ -296,7 +297,7 @@ namespace igl
     IGL_INLINE double compute_soft_const_energy(igl::SLIMData& s,
                                                 const Eigen::MatrixXd &V,
                                                 const Eigen::MatrixXi &F,
-                                                Eigen::MatrixXd &V_o)
+                                                const Eigen::MatrixXd &V_o)
     {
       double e = 0;
       for (int i = 0; i < s.b.rows(); i++)
@@ -465,6 +466,7 @@ IGL_INLINE void igl::slim_update_weights_and_closest_rotations_with_jacobians(co
           m_sing_new << sqrt(s1_g / (2 * (s1 - 1))), sqrt(s2_g / (2 * (s2 - 1)));
           break;
         }
+        default: assert(false);
       }
 
       if (std::abs(s1 - 1) < eps) m_sing_new(0) = 1;
@@ -591,7 +593,9 @@ IGL_INLINE void igl::slim_update_weights_and_closest_rotations_with_jacobians(co
           // change local step
           closest_sing_vec << s1_min, s2_min, s3_min;
           ri = ui * closest_sing_vec.asDiagonal() * vi.transpose();
+          break;
         }
+        default: assert(false);
       }
       if (std::abs(s1 - 1) < eps) m_sing_new(0) = 1;
       if (std::abs(s2 - 1) < eps) m_sing_new(1) = 1;
@@ -747,8 +751,8 @@ IGL_INLINE void igl::slim_precompute(
   const Eigen::MatrixXd &V_init, 
   igl::SLIMData &data,
   igl::MappingEnergyType slim_energy, 
-  Eigen::VectorXi &b, 
-  Eigen::MatrixXd &bc,
+  const Eigen::VectorXi &b,
+  const Eigen::MatrixXd &bc,
   double soft_p)
 {
 
