@@ -67,8 +67,8 @@ IGL_INLINE typename DerivedV::Scalar igl::winding_number(
   const Eigen::MatrixBase<Derivedp> & p)
 {
   typedef typename DerivedV::Scalar wType;
-  const int ss = F.cols();
-  const int m = F.rows();
+  const int ss = int(F.cols());
+  const int m = int(F.rows());
   wType w = 0;
   for(int f = 0;f<m;f++)
   {

@@ -18,7 +18,7 @@ IGL_INLINE void igl::per_face_normals(
 {
   N.resize(F.rows(),3);
   // loop over faces
-  int Frows = F.rows();
+  int Frows = int(F.rows());
 #pragma omp parallel for if (Frows>10000)
   for(int i = 0; i < Frows;i++)
   {

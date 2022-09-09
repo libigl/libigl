@@ -18,7 +18,7 @@ IGL_INLINE void igl::colon(
   Eigen::Matrix<T,Eigen::Dynamic,1> & I)
 {
   const H size = ((hi-low)/step)+1;
-  I = igl::LinSpaced<Eigen::Matrix<T,Eigen::Dynamic,1> >(size,low,low+step*(size-1));
+  I = igl::LinSpaced<Eigen::Matrix<T,Eigen::Dynamic,1> >(int(size),low,low+step*(int(size)-1));
 }
 
 template <typename L,typename H,typename T>

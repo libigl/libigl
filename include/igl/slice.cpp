@@ -122,11 +122,11 @@ IGL_INLINE void igl::slice(
     Eigen::PlainObjectBase<DerivedY> &Y)
 {
 #ifndef NDEBUG
-  int xm = X.rows();
-  int xn = X.cols();
+  int xm = int(X.rows());
+  int xn = int(X.cols());
 #endif
-  int ym = R.size();
-  int yn = C.size();
+  int ym = int(R.size());
+  int yn = int(C.size());
 
   // special case when R or C is empty
   if (ym == 0 || yn == 0)
