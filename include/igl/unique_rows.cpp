@@ -27,8 +27,8 @@ IGL_INLINE void igl::unique_rows(
   sortrows(A,true,sortA,IM);
 
 
-  const int num_rows = sortA.rows();
-  const int num_cols = sortA.cols();
+  const int num_rows = int(sortA.rows());
+  const int num_cols = int(sortA.cols());
   vector<int> vIA(num_rows);
   for(int i=0;i<num_rows;i++)
   {
@@ -61,7 +61,7 @@ IGL_INLINE void igl::unique_rows(
       IC(IM(i,0),0) = j;
     }
   }
-  const int unique_rows = vIA.size();
+  const int unique_rows = int(vIA.size());
   C.resize(unique_rows,A.cols());
   IA.resize(unique_rows,1);
   // Reindex IA according to IM

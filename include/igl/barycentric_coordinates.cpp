@@ -62,7 +62,7 @@ IGL_INLINE void igl::barycentric_coordinates(
 {
   using namespace Eigen;
 #ifndef NDEBUG
-  const int DIM = P.cols();
+  const int DIM = int(P.cols());
   assert(A.cols() == DIM && "corners must be in same dimension as query");
   assert(B.cols() == DIM && "corners must be in same dimension as query");
   assert(C.cols() == DIM && "corners must be in same dimension as query");

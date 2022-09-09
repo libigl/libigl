@@ -19,7 +19,7 @@ template <typename T, typename Derived>
 IGL_INLINE bool igl::list_to_matrix(const std::vector<std::vector<T > > & V,Eigen::PlainObjectBase<Derived>& M)
 {
   // number of rows
-  int m = V.size();
+  int m = int(V.size());
   if(m == 0)
   {
     M.resize(0,0);

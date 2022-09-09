@@ -27,7 +27,7 @@ IGL_INLINE void igl::sort(
 {
   typedef typename DerivedX::Scalar Scalar;
   // get number of rows (or columns)
-  int num_inner = (dim == 1 ? X.rows() : X.cols() );
+  int num_inner = (dim == 1 ? int(X.rows()) : int(X.cols()) );
   // Special case for swapping
   switch(num_inner)
   {
@@ -40,7 +40,7 @@ IGL_INLINE void igl::sort(
   }
   using namespace Eigen;
   // get number of columns (or rows)
-  int num_outer = (dim == 1 ? X.cols() : X.rows() );
+  int num_outer = (dim == 1 ? int(X.cols()) : int(X.rows()) );
   // dim must be 2 or 1
   assert(dim == 1 || dim == 2);
   // Resize output
@@ -71,11 +71,11 @@ IGL_INLINE void igl::sort(
       if(dim == 1)
       {
         Y(j,i) = data[j];
-        IX(j,i) = index_map[j];
+        IX(j,i) = int(index_map[j]);
       }else
       {
         Y(i,j) = data[j];
-        IX(i,j) = index_map[j];
+        IX(i,j) = int(index_map[j]);
       }
     }
   }
@@ -175,9 +175,9 @@ IGL_INLINE void igl::sort2(
 
 
   // get number of columns (or rows)
-  int num_outer = (dim == 1 ? X.cols() : X.rows() );
+  int num_outer = (dim == 1 ? int(X.cols()) : int(X.rows()) );
   // get number of rows (or columns)
-  int num_inner = (dim == 1 ? X.rows() : X.cols() );
+  int num_inner = (dim == 1 ? int(X.rows()) : int(X.cols()) );
   assert(num_inner == 2);(void)num_inner;
   typedef typename DerivedIX::Scalar Index;
   IX.resizeLike(X);
@@ -221,9 +221,9 @@ IGL_INLINE void igl::sort3(
   for(int j=0;j<X.cols();j++)for(int i=0;i<X.rows();i++)Y(i,j)=(YScalar)X(i,j);
 
   // get number of columns (or rows)
-  int num_outer = (dim == 1 ? X.cols() : X.rows() );
+  int num_outer = (dim == 1 ? int(X.cols()) : int(X.rows()) );
   // get number of rows (or columns)
-  int num_inner = (dim == 1 ? X.rows() : X.cols() );
+  int num_inner = (dim == 1 ? int(X.rows()) : int(X.cols()) );
   assert(num_inner == 3);(void)num_inner;
   typedef typename DerivedIX::Scalar Index;
   IX.resizeLike(X);
