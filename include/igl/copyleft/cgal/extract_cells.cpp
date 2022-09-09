@@ -1,7 +1,7 @@
 // This file is part of libigl, a simple c++ geometry processing library.
 //
 // Copyright (C) 2015 Qingnan Zhou <qnzhou@gmail.com>
-//
+// 
 // This Source Code Form is subject to the terms of the Mozilla Public License
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
@@ -200,7 +200,7 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells(
     DerivedV bbox_max(num_components, 3);
     // Assuming our mesh (in exact numbers) fits in the range of double.
     bbox_min.setConstant(std::numeric_limits<double>::max());
-    bbox_max.setConstant(std::numeric_limits<double>::min());
+    bbox_max.setConstant(std::numeric_limits<double>::lowest());
     // Loop over faces
     for (size_t i=0; i<num_faces; i++)
     {

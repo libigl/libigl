@@ -79,22 +79,30 @@ namespace igl
     typename DerivedF,
     typename Derivedb>
   IGL_INLINE bool arap_precomputation(
-    const Eigen::PlainObjectBase<DerivedV> & V,
-    const Eigen::PlainObjectBase<DerivedF> & F,
+    const Eigen::MatrixBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedF> & F,
     const int dim,
-    const Eigen::PlainObjectBase<Derivedb> & b,
+    const Eigen::MatrixBase<Derivedb> & b,
     ARAPData & data);
   // Inputs:
   //   bc  #b by dim list of boundary conditions
   //   data  struct containing necessary precomputation and parameters
   //   U  #V by dim initial guess
+  //
+  //   NOTE: While the libigl guidelines require outputs to be of type 
+  //   PlainObjectBase so that the user does not need to worry about allocating
+  //   memory for the output, in this case, the user is required to give an initial
+  //   guess and hence fix the size of the problem domain.
+  //   Taking a reference to MatrixBase in this case thus allows the user to provide e.g.
+  //   a map to the position data, allowing seamless interoperability with user-defined
+  //   datastructures without requiring a copy.
   template <
     typename Derivedbc,
     typename DerivedU>
   IGL_INLINE bool arap_solve(
-    const Eigen::PlainObjectBase<Derivedbc> & bc,
+    const Eigen::MatrixBase<Derivedbc> & bc,
     ARAPData & data,
-    Eigen::PlainObjectBase<DerivedU> & U);
+    Eigen::MatrixBase<DerivedU> & U);
 };
 
 #ifndef IGL_STATIC_LIBRARY

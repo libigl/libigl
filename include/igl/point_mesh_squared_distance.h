@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2014 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_POINT_MESH_SQUARED_DISTANCE_H
 #define IGL_POINT_MESH_SQUARED_DISTANCE_H
@@ -30,19 +30,20 @@ namespace igl
   // triangle [1 1 1] is treated as a point. So one _could_ add extra
   // combinatorially degenerate rows to Ele for all unreferenced vertices to
   // also get distances to points.
-  template <
+template <
     typename DerivedP,
     typename DerivedV,
+    typename DerivedEle,
     typename DerivedsqrD,
     typename DerivedI,
     typename DerivedC>
-  IGL_INLINE void point_mesh_squared_distance(
-    const Eigen::PlainObjectBase<DerivedP> & P,
-    const Eigen::PlainObjectBase<DerivedV> & V,
-    const Eigen::MatrixXi & Ele, 
-    Eigen::PlainObjectBase<DerivedsqrD> & sqrD,
-    Eigen::PlainObjectBase<DerivedI> & I,
-    Eigen::PlainObjectBase<DerivedC> & C);
+IGL_INLINE void point_mesh_squared_distance(
+    const Eigen::MatrixBase<DerivedP> &P,
+    const Eigen::MatrixBase<DerivedV> &V,
+    const Eigen::MatrixBase<DerivedEle> &Ele,
+    Eigen::PlainObjectBase<DerivedsqrD> &sqrD,
+    Eigen::PlainObjectBase<DerivedI> &I,
+    Eigen::PlainObjectBase<DerivedC> &C);
 }
 
 #ifndef IGL_STATIC_LIBRARY

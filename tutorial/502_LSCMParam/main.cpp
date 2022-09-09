@@ -4,7 +4,6 @@
 
 #include <igl/lscm.h>
 
-#include "tutorial_shared_path.h"
 
 Eigen::MatrixXd V;
 Eigen::MatrixXi F;
@@ -43,7 +42,7 @@ int main(int argc, char *argv[])
   VectorXi bnd,b(2,1);
   igl::boundary_loop(F,bnd);
   b(0) = bnd(0);
-  b(1) = bnd(round(bnd.size()/2));
+  b(1) = bnd(bnd.size()/2);
   MatrixXd bc(2,2);
   bc<<0,0,1,0;
 

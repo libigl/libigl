@@ -6,7 +6,6 @@
 #include <Eigen/Core>
 #include <iostream>
 
-#include "tutorial_shared_path.h"
 
 Eigen::MatrixXd VA,VB,VC;
 Eigen::VectorXi J,I;

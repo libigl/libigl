@@ -1,10 +1,3 @@
-// Because of Mosek complications, we don't use static library if Mosek is used.
-#ifdef LIBIGL_WITH_MOSEK
-#ifdef IGL_STATIC_LIBRARY
-#undef IGL_STATIC_LIBRARY
-#endif
-#endif
-
 #include <igl/boundary_conditions.h>
 #include <igl/colon.h>
 #include <igl/column_to_quats.h>
@@ -19,7 +12,6 @@
 #include <igl/readTGF.h>
 #include <igl/opengl/glfw/Viewer.h>
 #include <igl/bbw.h>
-//#include <igl/embree/bone_heat.h>
 
 #include <Eigen/Geometry>
 #include <Eigen/StdVector>
@@ -27,7 +19,6 @@
 #include <algorithm>
 #include <iostream>
 
-#include "tutorial_shared_path.h"
 
 typedef
   std::vector<Eigen::Quaterniond,Eigen::aligned_allocator<Eigen::Quaterniond> >
@@ -85,13 +76,6 @@ bool pre_draw(igl::opengl::glfw::Viewer & viewer)
   return false;
 }
 
-void set_color(igl::opengl::glfw::Viewer &viewer)
-{
-  Eigen::MatrixXd C;
-  igl::jet(W.col(selected).eval(),true,C);
-  viewer.data().set_colors(C);
-}
-
 bool key_down(igl::opengl::glfw::Viewer &viewer, unsigned char key, int mods)
 {
   switch(key)
@@ -102,12 +86,12 @@ bool key_down(igl::opengl::glfw::Viewer &viewer, unsigned char key, int mods)
     case '.':
       selected++;
       selected = std::min(std::max(selected,0),(int)W.cols()-1);
-      set_color(viewer);
+      viewer.data().set_data(W.col(selected));
       break;
     case ',':
       selected--;
       selected = std::min(std::max(selected,0),(int)W.cols()-1);
-      set_color(viewer);
+      viewer.data().set_data(W.col(selected));
       break;
   }
   return true;
@@ -162,7 +146,7 @@ int main(int argc, char *argv[])
   // Plot the mesh with pseudocolors
   igl::opengl::glfw::Viewer viewer;
   viewer.data().set_mesh(U, F);
-  set_color(viewer);
+  viewer.data().set_data(W.col(selected));
   viewer.data().set_edges(C,BE,sea_green);
   viewer.data().show_lines = false;
   viewer.data().show_overlay_depth = false;

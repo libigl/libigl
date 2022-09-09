@@ -1,14 +1,13 @@
 #include <test_common.h>
 #include <igl/doublearea.h>
 
-
-TEST_CASE("doublearea: VF_vs_ABC", "[igl]")
+TEST_CASE("doublearea: VF_vs_ABC", "[igl]" "[slow]")
 {
     auto test_case = [](const std::string &param)
     {
       Eigen::MatrixXd V;
       Eigen::MatrixXi F;
-      test_common::load_mesh(param, V, F);
+      igl::read_triangle_mesh(test_common::data_path(param), V, F);
 
       // Check that computing double area with (V,F) is the same as computing
       // double area with (V1,V2,V2)

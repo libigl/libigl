@@ -2,8 +2,8 @@
 //
 // Copyright (C) 2019 Qingnan Zhou <qnzhou@gmail.com>
 //
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #pragma once
 #ifndef IGL_PREDICATES_PREDICATES_H
@@ -20,8 +20,9 @@ namespace igl {
       COLLINEAR=0, COPLANAR=0, COCIRCULAR=0, COSPHERICAL=0, DEGENERATE=0
     };
 
-    // Initialize internal variable used by predciates.  Must be called before
-    // using exact predicates.
+    // Initialize internal variable used by predciates. Must be called before
+    // using exact predicates. It is safe to call this function from multiple
+    // threads.
     IGL_INLINE void exactinit();
 
     // Compute the orientation of the triangle formed by pa, pb, pc.

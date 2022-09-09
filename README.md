@@ -1,8 +1,13 @@
 # libigl - A simple C++ geometry processing library
-[![Build Status](https://travis-ci.org/libigl/libigl.svg?branch=master)](https://travis-ci.org/libigl/libigl)
-[![Build status](https://ci.appveyor.com/api/projects/status/mf3t9rnhco0vhly8/branch/master?svg=true)](https://ci.appveyor.com/project/danielepanozzo/libigl-6hjk1/branch/master)
-![](https://github.com/libigl/libigl-legacy/raw/5ff6387765fa85ca46f1a6222728e35e2b8b8961/libigl-teaser.png)
+
+[![](https://github.com/libigl/libigl/workflows/Build/badge.svg?event=push)](https://github.com/libigl/libigl/actions?query=workflow%3ABuild+branch%3Amain+event%3Apush)
+[![](https://anaconda.org/conda-forge/igl/badges/installer/conda.svg)](https://anaconda.org/conda-forge/igl)
+
+![](https://libigl.github.io/libigl-teaser.png)
 
 Documentation, tutorial, and instructions at <https://libigl.github.io>.
 
-:exclamation: **On October 15, 2018, a new, cleaned-up history was pushed onto the main libigl repository. To learn more about the consequences of this, and troubleshooting, please read [this page](https://libigl.github.io/rewritten-history/).**
+
+| 🚨 Important |
+|:---|
+| The latest version of libigl (v2.4.0) introduces some **breaking changes** to its CMake build system. Please read our [changelog](https://libigl.github.io/changelog/) page for instructions on how to update your project accordingly. |

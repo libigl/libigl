@@ -1,10 +1,9 @@
-#include <igl/readOFF.h>
+#include <igl/read_triangle_mesh.h>
 #include <igl/opengl/glfw/Viewer.h>
 #include <igl/per_vertex_normals.h>
 #include <igl/per_face_normals.h>
 #include <igl/per_corner_normals.h>
 #include <iostream>
-#include "tutorial_shared_path.h"
 
 Eigen::MatrixXd V;
 Eigen::MatrixXi F;
@@ -36,7 +35,8 @@ bool key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier
 int main(int argc, char *argv[])
 {
   // Load a mesh in OFF format
-  igl::readOFF(TUTORIAL_SHARED_PATH "/fandisk.off", V, F);
+  igl::read_triangle_mesh(
+    argc>1?argv[1]: TUTORIAL_SHARED_PATH "/fandisk.off",V,F);
 
   // Compute per-face normals
   igl::per_face_normals(V,F,N_faces);

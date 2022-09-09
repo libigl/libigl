@@ -1,0 +1,3 @@
+@PACKAGE_INIT@
+
+check_required_components(Libigl)

@@ -1,8 +1,8 @@
 #include <igl/readOFF.h>
 #include <igl/opengl/glfw/Viewer.h>
+#include <igl/opengl/glfw/imgui/ImGuiPlugin.h>
 #include <igl/opengl/glfw/imgui/ImGuiMenu.h>
 #include <sstream>
-#include "tutorial_shared_path.h"
 
 Eigen::MatrixXd V;
 Eigen::MatrixXi F;
@@ -63,16 +63,20 @@ int main(int argc, char *argv[])
   // Plot labels with the coordinates of bounding box vertices
   std::stringstream l1;
   l1 << m(0) << ", " << m(1) << ", " << m(2);
-  viewer.data().add_label(m,l1.str());
+  viewer.data().add_label(m+Eigen::Vector3d(-0.007, 0, 0),l1.str());
   std::stringstream l2;
   l2 << M(0) << ", " << M(1) << ", " << M(2);
-  viewer.data().add_label(M,l2.str());
+  viewer.data().add_label(M+Eigen::Vector3d(0.007, 0, 0),l2.str());
+  // activate label rendering
+  viewer.data().show_custom_labels = true;
 
   // Rendering of text labels is handled by ImGui, so we need to enable the ImGui
   // plugin to show text labels.
+  igl::opengl::glfw::imgui::ImGuiPlugin plugin;
+  viewer.plugins.push_back(&plugin);
   igl::opengl::glfw::imgui::ImGuiMenu menu;
+  plugin.widgets.push_back(&menu);
   menu.callback_draw_viewer_window = [](){};
-  viewer.plugins.push_back(&menu);
 
   // Launch the viewer
   viewer.launch();

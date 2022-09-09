@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2014 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_COPYLEFT_CGAL_SELFINTERSECTMESH_H
 #define IGL_COPYLEFT_CGAL_SELFINTERSECTMESH_H
@@ -11,6 +11,7 @@
 #include "CGAL_includes.hpp"
 #include "RemeshSelfIntersectionsParam.h"
 #include "../../unique.h"
+#include "../../default_num_threads.h"
 
 #include <Eigen/Dense>
 #include <list>
@@ -34,9 +35,9 @@ namespace igl
     {
       // Kernel is a CGAL kernel like:
       //     CGAL::Exact_predicates_inexact_constructions_kernel
-      // or 
+      // or
       //     CGAL::Exact_predicates_exact_constructions_kernel
-    
+
       template <
         typename Kernel,
         typename DerivedV,
@@ -48,7 +49,7 @@ namespace igl
         typename DerivedIM>
       class SelfIntersectMesh
       {
-        typedef 
+        typedef
           SelfIntersectMesh<
           Kernel,
           DerivedV,
@@ -61,24 +62,24 @@ namespace igl
         public:
           // 3D Primitives
           typedef CGAL::Point_3<Kernel>    Point_3;
-          typedef CGAL::Segment_3<Kernel>  Segment_3; 
-          typedef CGAL::Triangle_3<Kernel> Triangle_3; 
+          typedef CGAL::Segment_3<Kernel>  Segment_3;
+          typedef CGAL::Triangle_3<Kernel> Triangle_3;
           typedef CGAL::Plane_3<Kernel>    Plane_3;
-          typedef CGAL::Tetrahedron_3<Kernel> Tetrahedron_3; 
+          typedef CGAL::Tetrahedron_3<Kernel> Tetrahedron_3;
           // 2D Primitives
           typedef CGAL::Point_2<Kernel>    Point_2;
-          typedef CGAL::Segment_2<Kernel>  Segment_2; 
-          typedef CGAL::Triangle_2<Kernel> Triangle_2; 
+          typedef CGAL::Segment_2<Kernel>  Segment_2;
+          typedef CGAL::Triangle_2<Kernel> Triangle_2;
           // 2D Constrained Delaunay Triangulation types
           typedef CGAL::Exact_intersections_tag Itag;
           // Axis-align boxes for all-pairs self-intersection detection
           typedef std::vector<Triangle_3> Triangles;
           typedef typename Triangles::iterator TrianglesIterator;
           typedef typename Triangles::const_iterator TrianglesConstIterator;
-          typedef 
-            CGAL::Box_intersection_d::Box_with_handle_d<double,3,TrianglesIterator> 
+          typedef
+            CGAL::Box_intersection_d::Box_with_handle_d<double,3,TrianglesIterator>
             Box;
-    
+
           // Input mesh
           const Eigen::MatrixBase<DerivedV> & V;
           const Eigen::MatrixBase<DerivedF> & F;
@@ -144,8 +145,8 @@ namespace igl
           // Returns true only if A intersects B
           //
           inline bool intersect(
-              const Triangle_3 & A, 
-              const Triangle_3 & B, 
+              const Triangle_3 & A,
+              const Triangle_3 & B,
               const Index fa,
               const Index fb);
           // Helper function for box_intersect. In the case where A and B have
@@ -186,7 +187,7 @@ namespace igl
               const Index fa,
               const Index fb,
               const std::vector<std::pair<Index,Index> > shared);
-    
+
         public:
           // Callback function called during box self intersections test. Means
           // boxes a and b intersect. This method then checks if the triangles
@@ -201,8 +202,8 @@ namespace igl
           // Getters:
           //const IndexList& get_lIF() const{ return lIF;}
           static inline void box_intersect_static(
-            SelfIntersectMesh * SIM, 
-            const Box &a, 
+            SelfIntersectMesh * SIM,
+            const Box &a,
             const Box &b);
         private:
           std::mutex m_offending_lock;
@@ -245,7 +246,7 @@ namespace igl
 // using boost:
 //  boost::function<void(const Box &a,const Box &b)> cb
 //    = boost::bind(&::box_intersect, this, _1,_2);
-//   
+//
 template <
   typename Kernel,
   typename DerivedV,
@@ -264,8 +265,8 @@ inline void igl::copyleft::cgal::SelfIntersectMesh<
   DerivedIF,
   DerivedJ,
   DerivedIM>::box_intersect_static(
-  Self * SIM, 
-  const typename Self::Box &a, 
+  Self * SIM,
+  const typename Self::Box &a,
   const typename Self::Box &b)
 {
   SIM->box_intersect(a,b);
@@ -328,13 +329,13 @@ inline igl::copyleft::cgal::SelfIntersectMesh<
 #ifdef IGL_SELFINTERSECTMESH_DEBUG
   log_time("convert_to_triangle_list");
 #endif
-  // http://www.cgal.org/Manual/latest/doc_html/cgal_manual/Box_intersection_d/Chapter_main.html#Section_63.5 
+  // http://www.cgal.org/Manual/latest/doc_html/cgal_manual/Box_intersection_d/Chapter_main.html#Section_63.5
   // Create the corresponding vector of bounding boxes
   std::vector<Box> boxes;
   boxes.reserve(T.size());
-  for ( 
-    TrianglesIterator tit = T.begin(); 
-    tit != T.end(); 
+  for (
+    TrianglesIterator tit = T.begin();
+    tit != T.end();
     ++tit)
   {
     if (!tit->is_degenerate())
@@ -343,8 +344,8 @@ inline igl::copyleft::cgal::SelfIntersectMesh<
     }
   }
   // Leapfrog callback
-  std::function<void(const Box &a,const Box &b)> cb = 
-    std::bind(&box_intersect_static, this, 
+  std::function<void(const Box &a,const Box &b)> cb =
+    std::bind(&box_intersect_static, this,
       // Explicitly use std namespace to avoid confusion with boost (who puts
       // _1 etc. in global namespace)
       std::placeholders::_1,
@@ -383,7 +384,7 @@ inline igl::copyleft::cgal::SelfIntersectMesh<
       )
     {
       IF(i,0) = (*ifit);
-      ifit++; 
+      ifit++;
       IF(i,1) = (*ifit);
       ifit++;
       i++;
@@ -486,8 +487,8 @@ inline bool igl::copyleft::cgal::SelfIntersectMesh<
   DerivedIF,
   DerivedJ,
   DerivedIM>::intersect(
-  const Triangle_3 & A, 
-  const Triangle_3 & B, 
+  const Triangle_3 & A,
+  const Triangle_3 & B,
   const Index fa,
   const Index fb)
 {
@@ -650,7 +651,7 @@ inline bool igl::copyleft::cgal::SelfIntersectMesh<
   // Determine if the vertex opposite edge (a0,a1) in triangle A lies in
   // (intersects) triangle B
   const auto & opposite_point_inside = [](
-    const Triangle_3 & A, const Index a0, const Index a1, const Triangle_3 & B) 
+    const Triangle_3 & A, const Index a0, const Index a1, const Triangle_3 & B)
     -> bool
   {
     // get opposite index
@@ -680,10 +681,10 @@ inline bool igl::copyleft::cgal::SelfIntersectMesh<
     return ret;
   };
 
-  if( 
+  if(
     !opposite_point_inside(A,shared[0].first,shared[1].first,B) &&
     !opposite_point_inside(B,shared[0].second,shared[1].second,A) &&
-    !opposite_edges_intersect(A,shared[0].first,B,shared[1].second) && 
+    !opposite_edges_intersect(A,shared[0].first,B,shared[1].second) &&
     !opposite_edges_intersect(A,shared[1].first,B,shared[0].second))
   {
     return false;
@@ -705,13 +706,13 @@ inline bool igl::copyleft::cgal::SelfIntersectMesh<
       if(CGAL::object_cast<Segment_3 >(&result))
       {
         // not coplanar
-        assert(false && 
+        assert(false &&
           "Co-planar non-degenerate triangles should intersect over triangle");
         return false;
       } else if(CGAL::object_cast<Point_3 >(&result))
       {
         // this "shouldn't" happen but does for inexact
-        assert(false && 
+        assert(false &&
           "Co-planar non-degenerate triangles should intersect over triangle");
         return false;
       } else
@@ -735,7 +736,7 @@ inline bool igl::copyleft::cgal::SelfIntersectMesh<
     //     Expression : is_finite(d)
     //     File       : /opt/local/include/CGAL/GMP/Gmpq_type.h
     //     Line       : 132
-    //     Explanation: 
+    //     Explanation:
     // But only if NDEBUG is not defined, otherwise there's an uncaught
     // "Floating point exception: 8" SIGFPE
     return false;
@@ -762,7 +763,7 @@ inline void igl::copyleft::cgal::SelfIntersectMesh<
   DerivedIF,
   DerivedJ,
   DerivedIM>::box_intersect(
-  const Box& a, 
+  const Box& a,
   const Box& b)
 {
   candidate_triangle_pairs.push_back({a.handle(), b.handle()});
@@ -793,16 +794,16 @@ inline void igl::copyleft::cgal::SelfIntersectMesh<
   std::mutex exception_mutex;
   bool exception_fired = false;
   int exception = -1;
-  auto process_chunk = 
+  auto process_chunk =
     [&](
-      const size_t first, 
+      const size_t first,
       const size_t last) -> void
   {
     try
     {
       assert(last >= first);
 
-      for (size_t i=first; i<last; i++) 
+      for (size_t i=first; i<last; i++)
       {
         if(exception_fired) return;
         Index fa=T.size(), fb=T.size();
@@ -862,7 +863,7 @@ inline void igl::copyleft::cgal::SelfIntersectMesh<
             }
           }
         }
-        const Index total_shared_vertices = 
+        const Index total_shared_vertices =
           comb_shared_vertices + geo_shared_vertices;
         if(exception_fired) return;
 
@@ -910,25 +911,18 @@ inline void igl::copyleft::cgal::SelfIntersectMesh<
       exception = e;
     }
   };
-  size_t num_threads=0;
-  const size_t hardware_limit = std::thread::hardware_concurrency();
-  if (const char* igl_num_threads = std::getenv("LIBIGL_NUM_THREADS")) {
-    num_threads = atoi(igl_num_threads);
-  }
-  if (num_threads == 0 || num_threads > hardware_limit) {
-    num_threads = hardware_limit;
-  }
+  const size_t num_threads = default_num_threads();
   assert(num_threads > 0);
   const size_t num_pairs = candidate_triangle_pairs.size();
   const size_t chunk_size = num_pairs / num_threads;
   std::vector<std::thread> threads;
-  for (size_t i=0; i<num_threads-1; i++) 
+  for (size_t i=0; i<num_threads-1; i++)
   {
     threads.emplace_back(process_chunk, i*chunk_size, (i+1)*chunk_size);
   }
   // Do some work in the master thread.
   process_chunk((num_threads-1)*chunk_size, num_pairs);
-  for (auto& t : threads) 
+  for (auto& t : threads)
   {
     if (t.joinable()) t.join();
   }

@@ -117,6 +117,52 @@ namespace igl
     const Eigen::MatrixBase<DerivedBeq> & Beq,
     const bool pd,
     Eigen::PlainObjectBase<DerivedZ> & Z);
+
+  // Dense version optimized for very small, known at compile time sizes. Still
+  // works for Eigen::Dynamic (and then everything needs to be Dynamic).
+  //
+  // min_x ½ xᵀ H x + xᵀ f
+  // subject to
+  //   A x = b
+  //   x(i) = bc(i) iff k(i)==true
+  //
+  // Templates:
+  //   Scalar  (e.g., double)
+  //   n  #H or Eigen::Dynamic if not known at compile time
+  //   m  #A or Eigen::Dynamic if not known at compile time
+  //   Hpd  whether H is positive definite (LLT used) or not (QR used)
+  // Inputs:
+  //   H  #H by #H quadratic coefficients (only lower triangle used)
+  //   f  #H linear coefficients
+  //   k  #H list of flags whether to fix value
+  //   bc  #H value to fix to (if !k(i) then bc(i) is ignored)
+  //   A  #A by #H list of linear equality constraint coefficients, must be
+  //     linearly independent (with self and fixed value constraints)
+  //   b  #A list of linear equality right-hand sides
+  // Returns #H-long solution x
+  template <typename Scalar, int n, int m, bool Hpd=true>
+  IGL_INLINE Eigen::Matrix<Scalar,n,1> min_quad_with_fixed(
+    const Eigen::Matrix<Scalar,n,n> & H,
+    const Eigen::Matrix<Scalar,n,1> & f,
+    const Eigen::Array<bool,n,1> & k,
+    const Eigen::Matrix<Scalar,n,1> & bc,
+    const Eigen::Matrix<Scalar,m,n> & A,
+    const Eigen::Matrix<Scalar,m,1> & b);
+  template <typename Scalar, int n, bool Hpd=true>
+  IGL_INLINE Eigen::Matrix<Scalar,n,1> min_quad_with_fixed(
+    const Eigen::Matrix<Scalar,n,n> & H,
+    const Eigen::Matrix<Scalar,n,1> & f,
+    const Eigen::Array<bool,n,1> & k,
+    const Eigen::Matrix<Scalar,n,1> & bc);
+  // Special wrapper where the number of constrained values (i.e., true values
+  // in k) is exposed as a template parameter. Not intended to be called
+  // directly. The overhead of calling the overloads above is already minimal.
+  template <typename Scalar, int n, int kcount, bool Hpd/*no default*/>
+  IGL_INLINE Eigen::Matrix<Scalar,n,1> min_quad_with_fixed(
+    const Eigen::Matrix<Scalar,n,n> & H,
+    const Eigen::Matrix<Scalar,n,1> & f,
+    const Eigen::Array<bool,n,1> & k,
+    const Eigen::Matrix<Scalar,n,1> & bc);
 }
 
 template <typename T>
@@ -173,7 +219,7 @@ struct igl::min_quad_with_fixed_data
 };
 
 #ifndef IGL_STATIC_LIBRARY
-#  include "min_quad_with_fixed.cpp"
+#  include "min_quad_with_fixed.impl.h"
 #endif
 
 #endif

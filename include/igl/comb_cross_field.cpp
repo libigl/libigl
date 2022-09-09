@@ -23,10 +23,10 @@ namespace igl {
   {
   public:
 
-    const Eigen::PlainObjectBase<DerivedV> &V;
-    const Eigen::PlainObjectBase<DerivedF> &F;
-    const Eigen::PlainObjectBase<DerivedV> &PD1;
-    const Eigen::PlainObjectBase<DerivedV> &PD2;
+    const Eigen::MatrixBase<DerivedV> &V;
+    const Eigen::MatrixBase<DerivedF> &F;
+    const Eigen::MatrixBase<DerivedV> &PD1;
+    const Eigen::MatrixBase<DerivedV> &PD2;
     DerivedV N;
 
   private:
@@ -61,10 +61,10 @@ namespace igl {
 
 
   public:
-    inline Comb(const Eigen::PlainObjectBase<DerivedV> &_V,
-         const Eigen::PlainObjectBase<DerivedF> &_F,
-         const Eigen::PlainObjectBase<DerivedV> &_PD1,
-         const Eigen::PlainObjectBase<DerivedV> &_PD2
+    inline Comb(const Eigen::MatrixBase<DerivedV> &_V,
+         const Eigen::MatrixBase<DerivedF> &_F,
+         const Eigen::MatrixBase<DerivedV> &_PD1,
+         const Eigen::MatrixBase<DerivedV> &_PD2
          ):
     V(_V),
     F(_F),
@@ -137,10 +137,10 @@ namespace igl {
   };
 }
 template <typename DerivedV, typename DerivedF>
-IGL_INLINE void igl::comb_cross_field(const Eigen::PlainObjectBase<DerivedV> &V,
-                                      const Eigen::PlainObjectBase<DerivedF> &F,
-                                      const Eigen::PlainObjectBase<DerivedV> &PD1,
-                                      const Eigen::PlainObjectBase<DerivedV> &PD2,
+IGL_INLINE void igl::comb_cross_field(const Eigen::MatrixBase<DerivedV> &V,
+                                      const Eigen::MatrixBase<DerivedF> &F,
+                                      const Eigen::MatrixBase<DerivedV> &PD1,
+                                      const Eigen::MatrixBase<DerivedV> &PD2,
                                       Eigen::PlainObjectBase<DerivedV> &PD1out,
                                       Eigen::PlainObjectBase<DerivedV> &PD2out)
 {
@@ -150,6 +150,6 @@ IGL_INLINE void igl::comb_cross_field(const Eigen::PlainObjectBase<DerivedV> &V,
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instantiation
-template void igl::comb_cross_field<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> >&);
-template void igl::comb_cross_field<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
+template void igl::comb_cross_field<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> >&);
+template void igl::comb_cross_field<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
 #endif

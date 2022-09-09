@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2017 Joe Graus <jgraus@gmu.edu>, Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 
 #ifndef IGL_COLORMAP_H
@@ -22,7 +22,8 @@ namespace igl {
     COLOR_MAP_TYPE_PARULA = 3,
     COLOR_MAP_TYPE_PLASMA = 4,
     COLOR_MAP_TYPE_VIRIDIS = 5,
-    NUM_COLOR_MAP_TYPES = 6
+    COLOR_MAP_TYPE_TURBO = 6,
+    NUM_COLOR_MAP_TYPES = 7
   };
   // Comput [r,g,b] values of the selected colormap for
   // a given factor f between 0 and 1

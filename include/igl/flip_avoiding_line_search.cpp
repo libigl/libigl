@@ -301,10 +301,10 @@ namespace igl
 }
 
 IGL_INLINE double igl::flip_avoiding_line_search(
-  const Eigen::MatrixXi F,
+  const Eigen::MatrixXi & F,
   Eigen::MatrixXd& cur_v,
-  Eigen::MatrixXd& dst_v,
-  std::function<double(Eigen::MatrixXd&)> energy,
+  const Eigen::MatrixXd& dst_v,
+  std::function<double(Eigen::MatrixXd&)> & energy,
   double cur_energy)
 {
   using namespace std;

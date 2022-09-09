@@ -35,6 +35,7 @@ namespace igl
         std::vector<std::vector<REAL > > & V, 
         std::vector<std::vector<int> > & T,
         std::vector<std::vector<int> > & F);
+
       IGL_INLINE bool tetgenio_to_tetmesh(
         const tetgenio & out,
         std::vector<std::vector<REAL > > & V, 
@@ -50,6 +51,7 @@ namespace igl
         Eigen::PlainObjectBase<DerivedV>& V,
         Eigen::PlainObjectBase<DerivedT>& T,
         Eigen::PlainObjectBase<DerivedF>& F);
+
       template <typename DerivedV, typename DerivedT>
       IGL_INLINE bool tetgenio_to_tetmesh(
         const tetgenio & out,

@@ -39,6 +39,37 @@ namespace igl
     Eigen::PlainObjectBase<DeriveduE> & uE,
     Eigen::PlainObjectBase<DerivedEMAP> & EMAP,
     std::vector<std::vector<uE2EType> > & uE2E);
+  template <
+    typename DerivedF,
+    typename DerivedE,
+    typename DeriveduE,
+    typename DerivedEMAP>
+  IGL_INLINE void unique_edge_map(
+    const Eigen::MatrixBase<DerivedF> & F,
+    Eigen::PlainObjectBase<DerivedE> & E,
+    Eigen::PlainObjectBase<DeriveduE> & uE,
+    Eigen::PlainObjectBase<DerivedEMAP> & EMAP);
+  // Outputs:
+  //   uEC  #uEC+1 list of cumulative counts of directed edges sharing each
+  //     unique edge so the uEC(i+1)-uEC(i) is the number of directed edges
+  //     sharing the ith unique edge.
+  //   uEE  #E list of indices into E, so that the consecutive segment of
+  //     indices uEE.segment(uEC(i),uEC(i+1)-uEC(i)) lists all directed edges
+  //     sharing the ith unique edge.
+  template <
+    typename DerivedF,
+    typename DerivedE,
+    typename DeriveduE,
+    typename DerivedEMAP,
+    typename DeriveduEC,
+    typename DeriveduEE>
+  IGL_INLINE void unique_edge_map(
+    const Eigen::MatrixBase<DerivedF> & F,
+    Eigen::PlainObjectBase<DerivedE> & E,
+    Eigen::PlainObjectBase<DeriveduE> & uE,
+    Eigen::PlainObjectBase<DerivedEMAP> & EMAP,
+    Eigen::PlainObjectBase<DeriveduEC> & uEC,
+    Eigen::PlainObjectBase<DeriveduEE> & uEE);
 
 }
 #ifndef IGL_STATIC_LIBRARY
