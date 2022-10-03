@@ -42,7 +42,7 @@ IGL_INLINE void igl::random_points_on_mesh(
   assert(R.minCoeff() >= 0);
   assert(R.maxCoeff() <= 1);
   histc(R,C,FI);
-  FI = FI.array().min(F.rows() - 1); // fix the bin when R(i) == 1 exactly
+  FI = FI.array().min(int(F.rows()) - 1); // fix the bin when R(i) == 1 exactly
   const VectorXs S = (VectorXs::Random(n,1).array() + 1.)/2.;
   const VectorXs T = (VectorXs::Random(n,1).array() + 1.)/2.;
   B.resize(n,3);

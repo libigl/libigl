@@ -6,7 +6,7 @@
 
 namespace igl
 {
-  template <typename Scalar> tinyply::Type tynyply_type();
+  template <typename Scalar> static tinyply::Type tynyply_type();
   template <> tinyply::Type IGL_INLINE tynyply_type<char>(){ return tinyply::Type::INT8; }
   template <> tinyply::Type IGL_INLINE tynyply_type<short>(){ return tinyply::Type::INT16; }
   template <> tinyply::Type IGL_INLINE tynyply_type<int>(){ return tinyply::Type::INT32; }
