@@ -1,4 +1,4 @@
-#include <igl/copyleft/marching_cubes.h>
+#include <igl/marching_cubes.h>
 #include <igl/unique_simplices.h>
 #include <igl/dual_contouring.h>
 #include <igl/get_seconds.h>
@@ -137,10 +137,8 @@ int main(int argc, char * argv[])
       igl::dual_contouring(
         f,f_grad,step,Gf,GV,GI2,constrained,triangles,root_finding,V,Q);
       printf("  %5f secs dual contouring\n",t_Gf+tictoc());
-      // Could use igl::marching_cubes once
-      // https://github.com/libigl/libigl/pull/1687 is merged
       tictoc();
-      igl::copyleft::marching_cubes(Gf,GV,GI,mcV, mcF);
+      igl::marching_cubes(Gf,GV,GI,0.0,mcV,mcF);
       printf("  %5f secs marching cubes\n",t_Gf+tictoc());
     }else
     {
