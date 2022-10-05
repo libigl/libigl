@@ -1,4 +1,3 @@
-#include <igl/marching_cubes.h>
 #include <igl/unique_simplices.h>
 #include <igl/dual_contouring.h>
 #include <igl/get_seconds.h>
