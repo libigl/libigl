@@ -86,7 +86,7 @@ IGL_INLINE void igl::iterative_closest_point(
     MatrixXS X;
     {
       Eigen::VectorXi XI;
-      Eigen::MatrixXd B;
+      Matrix3S B;
       MatrixXS VXRT = (VX*R).rowwise()+t;
 
       random_points_on_mesh(num_samples,VXRT,FX,B,XI,X);
