@@ -26,7 +26,7 @@ void update_visualization(igl::opengl::glfw::Viewer & viewer)
   V2_<< V2.col(0), V2.col(1), V2.col(2).array()+slice_z;
 
   igl::fast_find_mesh_intersect(tree, V1,F1, V2_,F2, I,edges);
-  Eigen::MatrixXi edges_link=Eigen::MatrixXi::NullaryExpr(edges.rows()/2,2, [](auto i,auto j) { return i*2+j;});
+  Eigen::MatrixXi edges_link=Eigen::MatrixXi::NullaryExpr(edges.rows()/2,2, [](int i,int j) { return i*2+j;});
  
   // Plot the edges of the intersects
   viewer.data().set_edges ( edges, edges_link, Eigen::RowVector3d(1,0,0));
