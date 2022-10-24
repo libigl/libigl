@@ -9,6 +9,25 @@
 #include "AABB.h"
 #include "Guigue2003_tri_tri_intersect.h"
 
+namespace igl{
+namespace internal {
+
+    // helper function, to check if two faces have shared vertices
+    template <typename Derived>
+    bool adjacent_faces(const Eigen::MatrixBase<Derived>& A,
+                        const Eigen::MatrixBase<Derived>& B)
+    {
+        for(int i=0;i<3;++i)
+          for(int j=0;j<3;j++)
+          {
+            if(A(i)==B(j))
+              return true;
+          }
+        return false;
+    }
+
+}
+}
 
 template <
   typename DerivedV,
@@ -38,16 +57,6 @@ IGL_INLINE bool igl::fast_find_mesh_selfintersect(
 
       for(int j=0;j<3;++j)
         tri_box.extend( V.row( F(i,j) ).transpose() );
-
-      auto adjacent_faces = [](auto A,auto B)->bool {
-        for(int i=0;i<3;++i)
-          for(int j=0;j<3;j++)
-          {
-            if(A(i)==B(j))
-              return true;
-          }
-        return false;
-      };
       
       // find leaf nodes containing intersecting tri_box
       // need to declare full type to enable recursion
@@ -58,7 +67,7 @@ IGL_INLINE bool igl::fast_find_mesh_selfintersect(
         {
           if(t.m_primitive==i) //itself
               return false;
-          if(adjacent_faces(F.row(i), F.row(t.m_primitive)) )
+          if(igl::internal::adjacent_faces(F.row(i), F.row(t.m_primitive)) )
               return false;
 
           bool coplanar=false;
@@ -129,16 +138,6 @@ IGL_INLINE bool igl::fast_find_mesh_selfintersect(
 
       for(int j=0;j<3;++j)
         tri_box.extend( V.row( F(i,j) ).transpose() );
-
-      auto adjacent_faces = [](auto A,auto B)->bool {
-        for(int i=0;i<3;++i)
-          for(int j=0;j<3;++j)
-          {
-            if(A(i) == B(j))
-              return true;
-          }
-        return false;
-      };
       
       // find leaf nodes containing intersecting tri_box
       std::function<bool(const AABBTree &,int)> check_intersect = 
@@ -148,7 +147,7 @@ IGL_INLINE bool igl::fast_find_mesh_selfintersect(
         {
           if(t.m_primitive==i) //itself
               return false;
-          if(adjacent_faces(F.row(i), F.row(t.m_primitive)) )
+          if(igl::internal::adjacent_faces(F.row(i), F.row(t.m_primitive)) )
               return false;
 
           bool coplanar=false;
