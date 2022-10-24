@@ -187,7 +187,7 @@ IGL_INLINE bool igl::fast_find_mesh_selfintersect(
     edges.resize(_edges.size(),3);
     int i=0;
 
-    for(auto e=std::cbegin(_edges);e!=std::cend(_edges);++e,++i)
+    for(auto e=std::begin(_edges);e!=std::end(_edges);++e,++i)
     {
       edges.row(i) = *e;
     }
