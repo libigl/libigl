@@ -194,6 +194,7 @@ namespace comiso {
     // Matrices
     Eigen::SparseMatrix<double> Lhs;
     Eigen::SparseMatrix<double> Constraints;
+    Eigen::MatrixXd T;
     Eigen::VectorXd rhs;
     Eigen::VectorXd constraints_rhs;
     ///vector of unknowns
@@ -1033,16 +1034,19 @@ IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::buildU
 
   assert(num_userdefined_constraint == userdefined_constraints.size());
 
+  T.resize(Constraints.rows(), Constraints.cols());
+  T = Eigen::MatrixXd(Constraints);
   for (unsigned int i = 0; i < num_userdefined_constraint; i++)
   {
     for (unsigned int j = 0; j < userdefined_constraints[i].size()-1; ++j)
     {
-      Constraints.coeffRef(constr_row, j) = userdefined_constraints[i][j];
+      T(constr_row, j) = userdefined_constraints[i][j];
     }
 
     constraints_rhs[constr_row] = userdefined_constraints[i][userdefined_constraints[i].size()-1];
     constr_row +=1;
   }
+  Constraints = T.sparseView();
 }
 
 ///call of the mixed integer solver
