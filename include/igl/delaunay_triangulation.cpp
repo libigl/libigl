@@ -60,7 +60,4 @@ IGL_INLINE void igl::delaunay_triangulation(
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instantiation
 template void igl::delaunay_triangulation<Eigen::Matrix<double, -1, -1, 0, -1, -1>, short (*)(double const*, double const*, double const*), short (*)(double const*, double const*, double const*, double const*), Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, short (*)(double const*, double const*, double const*), short (*)(double const*, double const*, double const*, double const*), Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
-#ifdef WIN32
-template void igl::delaunay_triangulation<class Eigen::Matrix<double, -1, -1, 0, -1, -1>, short(*)(double const *, double const *, double const *), short(*)(double const *, double const *, double const *, double const *), class Eigen::Matrix<int, -1, -1, 0, -1, -1>>(class Eigen::MatrixBase<class Eigen::Matrix<double, -1, -1, 0, -1, -1>> const &, short(*const)(double const *, double const *, double const *), short(*const)(double const *, double const *, double const *, double const *), class Eigen::PlainObjectBase<class Eigen::Matrix<int, -1, -1, 0, -1, -1>> &);
-#endif
 #endif

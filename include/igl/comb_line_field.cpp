@@ -22,9 +22,9 @@ class CombLine
 {
 public:
 
-    const Eigen::PlainObjectBase<DerivedV> &V;
-    const Eigen::PlainObjectBase<DerivedF> &F;
-    const Eigen::PlainObjectBase<DerivedV> &PD1;
+    const Eigen::MatrixBase<DerivedV> &V;
+    const Eigen::MatrixBase<DerivedF> &F;
+    const Eigen::MatrixBase<DerivedV> &PD1;
     DerivedV N;
 
 private:
@@ -57,9 +57,9 @@ private:
 
 public:
 
-    inline CombLine(const Eigen::PlainObjectBase<DerivedV> &_V,
-                    const Eigen::PlainObjectBase<DerivedF> &_F,
-                    const Eigen::PlainObjectBase<DerivedV> &_PD1):
+    inline CombLine(const Eigen::MatrixBase<DerivedV> &_V,
+                    const Eigen::MatrixBase<DerivedF> &_F,
+                    const Eigen::MatrixBase<DerivedV> &_PD1):
         V(_V),
         F(_F),
         PD1(_PD1)
@@ -118,9 +118,9 @@ public:
 }
 
 template <typename DerivedV, typename DerivedF>
-IGL_INLINE void igl::comb_line_field(const Eigen::PlainObjectBase<DerivedV> &V,
-                                     const Eigen::PlainObjectBase<DerivedF> &F,
-                                     const Eigen::PlainObjectBase<DerivedV> &PD1,
+IGL_INLINE void igl::comb_line_field(const Eigen::MatrixBase<DerivedV> &V,
+                                     const Eigen::MatrixBase<DerivedF> &F,
+                                     const Eigen::MatrixBase<DerivedV> &PD1,
                                      Eigen::PlainObjectBase<DerivedV> &PD1out)
 {
     igl::CombLine<DerivedV, DerivedF> cmb(V, F, PD1);

@@ -1,48 +1,239 @@
-// This file is part of libigl, a simple c++ geometry processing library.
-// 
-// Copyright (C) 2014 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
-// obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_WRITEPLY_H
 #define IGL_WRITEPLY_H
-#include "igl_inline.h"
-#include <Eigen/Core>
+#include <igl/igl_inline.h>
+#include <igl/FileEncoding.h>
+
 #include <string>
+#include <iostream>
+#include <vector>
+#include <Eigen/Core>
+
 
 namespace igl
 {
-  // Write a mesh to a .ply file. 
+  // write triangular mesh to ply file
   //
+  // Templates:
+  //   Derived from Eigen matrix parameters
   // Inputs:
-  //   filename  path to .ply file
-  //   V  #V by 3 list of vertex positions
-  //   F  #F by 3 list of triangle indices
-  //   N  #V by 3 list of vertex normals
-  //   UV  #V by 2 list of vertex texture coordinates
-  // Returns true iff success
+  //  ply_stream  ply file output stream
+  //   V  (#V,3) matrix of vertex positions
+  //   F  (#F,3) list of face indices into vertex positions
+  //   E  (#E,2) list of edge indices into vertex positions
+  //   N  (#V,3) list of normals
+  //   UV (#V,2) list of texture coordinates
+  //   VD (#V,*) additional vertex data
+  //   Vheader (#V) list of vertex data headers
+  //   FD (#F,*) additional face data
+  //   Fheader (#F) list of face data headers
+  //   ED (#E,*) additional edge data
+  //   Eheader (#E) list of edge data headers
+  //   comments (*) file comments
+  //   encoding - enum, to set binary or ascii file format
+  // Returns true on success, false on errors
   template <
-    typename DerivedV,
-    typename DerivedF,
-    typename DerivedN,
-    typename DerivedUV>
-  IGL_INLINE bool writePLY(
-    const std::string & filename,
-    const Eigen::MatrixBase<DerivedV> & V,
-    const Eigen::MatrixBase<DerivedF> & F,
-    const Eigen::MatrixBase<DerivedN> & N,
-    const Eigen::MatrixBase<DerivedUV> & UV,
-    const bool ascii = true);
-  template <
-    typename DerivedV,
-    typename DerivedF>
-  IGL_INLINE bool writePLY(
-    const std::string & filename,
-    const Eigen::MatrixBase<DerivedV> & V,
-    const Eigen::MatrixBase<DerivedF> & F,
-    const bool ascii = true);
+  typename DerivedV,
+  typename DerivedF,
+  typename DerivedE,
+  typename DerivedN,
+  typename DerivedUV,
+  typename DerivedVD,
+  typename DerivedFD,
+  typename DerivedED
+>
+bool writePLY(
+  std::ostream & ply_stream,
+  const Eigen::MatrixBase<DerivedV> & V,
+  const Eigen::MatrixBase<DerivedF> & F,
+  const Eigen::MatrixBase<DerivedE> & E,
+  const Eigen::MatrixBase<DerivedN> & N,
+  const Eigen::MatrixBase<DerivedUV> & UV,
+
+  const Eigen::MatrixBase<DerivedVD> & VD,
+  const std::vector<std::string> & VDheader,
+
+  const Eigen::MatrixBase<DerivedFD> & FD,
+  const std::vector<std::string> & FDheader,
+
+  const Eigen::MatrixBase<DerivedED> & ED,
+  const std::vector<std::string> & EDheader,
+
+  const std::vector<std::string> & comments,
+  FileEncoding encoding
+   );
+
+  // write triangular mesh to ply file
+  //
+  // Templates:
+  //   Derived from Eigen matrix parameters
+  // Inputs:
+  //  filename  ply file name
+  //   V  (#V,3) matrix of vertex positions
+  //   F  (#F,3) list of face indices into vertex positions
+  //   E  (#E,2) list of edge indices into vertex positions
+  //   N  (#V,3) list of normals
+  //   UV (#V,2) list of texture coordinates
+  //   VD (#V,*) additional vertex data
+  //   Vheader (#V) list of vertex data headers
+  //   FD (#F,*) additional face data
+  //   Fheader (#F) list of face data headers
+  //   ED (#E,*) additional edge data
+  //   Eheader (#E) list of edge data headers
+  //   comments (*) file comments
+  //   encoding - enum, to set binary or ascii file format
+  // Returns true on success, false on errors
+template <
+  typename DerivedV,
+  typename DerivedF,
+  typename DerivedE,
+  typename DerivedN,
+  typename DerivedUV,
+  typename DerivedVD,
+  typename DerivedFD,
+  typename DerivedED
+>
+bool writePLY(
+  const std::string & filename,
+  const Eigen::MatrixBase<DerivedV> & V,
+  const Eigen::MatrixBase<DerivedF> & F,
+  const Eigen::MatrixBase<DerivedE> & E,
+  const Eigen::MatrixBase<DerivedN> & N,
+  const Eigen::MatrixBase<DerivedUV> & UV,
+
+  const Eigen::MatrixBase<DerivedVD> & VD,
+  const std::vector<std::string> & VDheader,
+
+  const Eigen::MatrixBase<DerivedFD> & FD,
+  const std::vector<std::string> & FDheader,
+
+  const Eigen::MatrixBase<DerivedED> & ED,
+  const std::vector<std::string> & EDheader,
+
+  const std::vector<std::string> & comments,
+  FileEncoding encoding
+   );
+
+template <
+  typename DerivedV,
+  typename DerivedF
+>
+bool writePLY(
+  const std::string & filename,
+  const Eigen::MatrixBase<DerivedV> & V,
+  const Eigen::MatrixBase<DerivedF> & F
+   );
+
+template <
+  typename DerivedV,
+  typename DerivedF,
+  typename DerivedE
+>
+bool writePLY(
+  const std::string & filename,
+  const Eigen::MatrixBase<DerivedV> & V,
+  const Eigen::MatrixBase<DerivedF> & F,
+  const Eigen::MatrixBase<DerivedF> & E
+   );
+
+
+template <
+  typename DerivedV,
+  typename DerivedF,
+  typename DerivedN,
+  typename DerivedUV
+>
+bool writePLY(
+  const std::string & filename,
+  const Eigen::MatrixBase<DerivedV> & V,
+  const Eigen::MatrixBase<DerivedF> & F,
+  const Eigen::MatrixBase<DerivedN> & N,
+  const Eigen::MatrixBase<DerivedUV> & UV
+   );
+
+
+template <
+  typename DerivedV,
+  typename DerivedF,
+  typename DerivedE,
+  typename DerivedN,
+  typename DerivedUV
+>
+bool writePLY(
+  const std::string & filename,
+  const Eigen::MatrixBase<DerivedV> & V,
+  const Eigen::MatrixBase<DerivedF> & F,
+  const Eigen::MatrixBase<DerivedE> & E,
+  const Eigen::MatrixBase<DerivedN> & N,
+  const Eigen::MatrixBase<DerivedUV> & UV
+   );
+
+
+template <
+  typename DerivedV,
+  typename DerivedF
+>
+bool writePLY(
+  const std::string & filename,
+  const Eigen::MatrixBase<DerivedV> & V,
+  const Eigen::MatrixBase<DerivedF> & F,
+  FileEncoding encoding
+   );
+
+template <
+  typename DerivedV,
+  typename DerivedF,
+  typename DerivedE
+>
+bool writePLY(
+  const std::string & filename,
+  const Eigen::MatrixBase<DerivedV> & V,
+  const Eigen::MatrixBase<DerivedF> & F,
+  const Eigen::MatrixBase<DerivedE> & E,
+  FileEncoding encoding
+   );
+
+template <
+  typename DerivedV,
+  typename DerivedF,
+  typename DerivedN,
+  typename DerivedUV,
+  typename DerivedVD
+>
+bool writePLY(
+  const std::string & filename,
+  const Eigen::MatrixBase<DerivedV> & V,
+  const Eigen::MatrixBase<DerivedF> & F,
+  const Eigen::MatrixBase<DerivedN> & N,
+  const Eigen::MatrixBase<DerivedUV> & UV,
+  const Eigen::MatrixBase<DerivedVD> & VD=Eigen::MatrixXd(0,0),
+  const std::vector<std::string> & VDheader={},
+  const std::vector<std::string> & comments={}
+   );
+
+template <
+  typename DerivedV,
+  typename DerivedF,
+  typename DerivedE,
+  typename DerivedN,
+  typename DerivedUV,
+  typename DerivedVD
+>
+bool writePLY(
+  const std::string & filename,
+  const Eigen::MatrixBase<DerivedV> & V,
+  const Eigen::MatrixBase<DerivedF> & F,
+  const Eigen::MatrixBase<DerivedE> & E,
+  const Eigen::MatrixBase<DerivedN> & N,
+  const Eigen::MatrixBase<DerivedUV> & UV,
+  const Eigen::MatrixBase<DerivedVD> & VD=Eigen::MatrixXd(0,0),
+  const std::vector<std::string> & VDheader={},
+  const std::vector<std::string> & comments={}
+   );
+
 }
+
+
+
 #ifndef IGL_STATIC_LIBRARY
 #  include "writePLY.cpp"
 #endif

@@ -37,13 +37,13 @@ TEST_CASE("intrinsic_delaunay_cotmatrix: skewed_grid", "[igl]")
   }
 }
 
-TEST_CASE("intrinsic_delaunay_cotmatrix: manifold_meshes", "[igl]")
+TEST_CASE("intrinsic_delaunay_cotmatrix: manifold_meshes", "[igl]" "[slow]")
 {
   auto test_case = [](const std::string &param)
   {
     Eigen::MatrixXd V;
     Eigen::MatrixXi F;
-    test_common::load_mesh(param, V, F);
+    igl::read_triangle_mesh(test_common::data_path(param), V, F);
     Eigen::SparseMatrix<double> L;
     Eigen::MatrixXi F_intrinsic;
     Eigen::MatrixXd l_intrinsic;
@@ -56,7 +56,7 @@ TEST_CASE("intrinsic_delaunay_cotmatrix: manifold_meshes", "[igl]")
     // Off diagonals should be all non-positive
     for(int k = 0;k<LI.size();k++)
     {
-      if(LI(k) != LJ(k) && 
+      if(LI(k) != LJ(k) &&
         !(is_boundary_vertex[LI(k)] && is_boundary_vertex[LJ(k)]))
       {
         REQUIRE (-igl::EPS<double>() < LV(k));

@@ -38,6 +38,8 @@ namespace igl
     //   N  #P by 3 list of point normals
     // Outputs:
     //   A  #P list of estimated areas
+    //
+    // See also: igl::knn
     template <typename DerivedP, typename DerivedI, typename DerivedN,
       typename DerivedA>
     IGL_INLINE void point_areas(

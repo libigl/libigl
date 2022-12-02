@@ -27,7 +27,7 @@
 
 #include "get_seconds_hires.h"
 //#include "MKLEigenInterface.h"
-#include "min_quad_dense.h"
+#include "kkt_inverse.h"
 #include "get_seconds.h"
 #include "columnize.h"
 
@@ -543,7 +543,7 @@ IGL_INLINE bool igl::arap_dof_recomputation(
 #endif
 
   // Compute dense solve matrix (alternative of matrix factorization)
-  //printf("min_quad_dense_precompute()\n");
+  //printf("kkt_inverse()\n");
   MatrixXd Qfull(*Q);
   MatrixXd A_eqfull(A_eq);
   MatrixXd M_Solve;
@@ -552,7 +552,7 @@ IGL_INLINE bool igl::arap_dof_recomputation(
   bool use_lu = data.effective_dim != 2;
   //use_lu = false;
   //printf("use_lu: %s\n",(use_lu?"TRUE":"FALSE"));
-  min_quad_dense_precompute(Qfull, A_eqfull, use_lu,M_Solve);
+  kkt_inverse(Qfull, A_eqfull, use_lu,M_Solve);
   double timer0_end = get_seconds_hires();
   verbose("Bob timing: %.20f\n", (timer0_end - timer0_start)*1000.0);
 

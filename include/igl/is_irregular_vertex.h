@@ -23,7 +23,7 @@ namespace igl
   // Returns #V vector of bools revealing whether vertices are singular
   //
   template <typename DerivedV, typename DerivedF>
-  IGL_INLINE std::vector<bool> is_irregular_vertex(const Eigen::PlainObjectBase<DerivedV> &V, const Eigen::PlainObjectBase<DerivedF> &F);
+  IGL_INLINE std::vector<bool> is_irregular_vertex(const Eigen::MatrixBase<DerivedV> &V, const Eigen::MatrixBase<DerivedF> &F);
 }
 
 #ifndef IGL_STATIC_LIBRARY

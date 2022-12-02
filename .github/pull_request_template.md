@@ -1,8 +1,12 @@
-[Describe your changes and what you've already done to test it.]
+Fixes # .
 
-#### Check all that apply (change to `[x]`)
+<!-- Describe your changes and what you've already done to test it. -->
+
+
+#### Checklist
+<!-- Check all that apply (change to `[x]`) -->
+
 - [ ] All changes meet [libigl style-guidelines](https://libigl.github.io/style-guidelines/).
 - [ ] Adds new .cpp file.
 - [ ] Adds corresponding unit test.
-- [ ] Adds corresponding python binding.
 - [ ] This is a minor change.

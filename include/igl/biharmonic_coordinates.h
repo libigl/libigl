@@ -66,8 +66,8 @@ namespace igl
     typename SType,
     typename DerivedW>
   IGL_INLINE bool biharmonic_coordinates(
-    const Eigen::PlainObjectBase<DerivedV> & V,
-    const Eigen::PlainObjectBase<DerivedT> & T,
+    const Eigen::MatrixBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedT> & T,
     const std::vector<std::vector<SType> > & S,
     Eigen::PlainObjectBase<DerivedW> & W);
   // k  2-->biharmonic, 3-->triharmonic
@@ -77,8 +77,8 @@ namespace igl
     typename SType,
     typename DerivedW>
   IGL_INLINE bool biharmonic_coordinates(
-    const Eigen::PlainObjectBase<DerivedV> & V,
-    const Eigen::PlainObjectBase<DerivedT> & T,
+    const Eigen::MatrixBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedT> & T,
     const std::vector<std::vector<SType> > & S,
     const int k,
     Eigen::PlainObjectBase<DerivedW> & W);

@@ -9,7 +9,7 @@ TEST_CASE("boundary_loop: cube", "[igl]")
   Eigen::MatrixXd V;
   Eigen::MatrixXi F;
   //This is a cube of dimensions 1.0x1.0x1.0
-  test_common::load_mesh("cube.off", V, F);
+  igl::read_triangle_mesh(test_common::data_path("cube.off"), V, F);
 
   //Compute Boundary Loop
   Eigen::VectorXi boundary;
@@ -19,12 +19,12 @@ TEST_CASE("boundary_loop: cube", "[igl]")
   REQUIRE (boundary.size() == 0);
 }
 
-TEST_CASE("boundary_loop: bunny", "[igl]")
+TEST_CASE("boundary_loop: bunny", "[igl]" "[slow]")
 {
   Eigen::MatrixXd V;
   Eigen::MatrixXi F;
   //Load the Stanford bunny
-  test_common::load_mesh("bunny.off", V, F);
+  igl::read_triangle_mesh(test_common::data_path("bunny.off"), V, F);
 
   //Compute list of ordered boundary loops for a manifold mesh
   std::vector<std::vector<int> >boundaries;

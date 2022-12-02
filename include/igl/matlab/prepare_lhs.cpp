@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2015 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "prepare_lhs.h"
 #include <algorithm>
@@ -14,10 +14,10 @@ IGL_INLINE void igl::matlab::prepare_lhs_double(
 {
   using namespace std;
   using namespace Eigen;
-  const int m = V.rows();
-  const int n = V.cols();
+  const auto m = V.rows();
+  const auto n = V.cols();
   plhs[0] = mxCreateDoubleMatrix(m,n, mxREAL);
-  Eigen::Map< Eigen::Matrix<double,Eigen::Dynamic,Eigen::Dynamic> > 
+  Eigen::Map< Eigen::Matrix<double,Eigen::Dynamic,Eigen::Dynamic> >
     map(mxGetPr(plhs[0]),m,n);
   map = V.template cast<double>();
 }
@@ -29,11 +29,11 @@ IGL_INLINE void igl::matlab::prepare_lhs_logical(
 {
   using namespace std;
   using namespace Eigen;
-  const int m = V.rows();
-  const int n = V.cols();
+  const auto m = V.rows();
+  const auto n = V.cols();
   plhs[0] = mxCreateLogicalMatrix(m,n);
   mxLogical * Vp = static_cast<mxLogical*>(mxGetData(plhs[0]));
-  Eigen::Map< Eigen::Matrix<mxLogical,Eigen::Dynamic,Eigen::Dynamic> > 
+  Eigen::Map< Eigen::Matrix<mxLogical,Eigen::Dynamic,Eigen::Dynamic> >
     map(static_cast<mxLogical*>(mxGetData(plhs[0])),m,n);
   map = V.template cast<mxLogical>();
 }
@@ -54,8 +54,8 @@ IGL_INLINE void igl::matlab::prepare_lhs_double(
   mxArray *plhs[])
 {
   using namespace std;
-  const int m = M.rows();
-  const int n = M.cols();
+  const auto m = M.rows();
+  const auto n = M.cols();
   // THIS WILL NOT WORK FOR ROW-MAJOR
   assert(n==M.outerSize());
   const int nzmax = M.nonZeros();
@@ -84,7 +84,30 @@ IGL_INLINE void igl::matlab::prepare_lhs_double(
 
 }
 
+
+template <typename Vtype>
+IGL_INLINE void igl::matlab::prepare_lhs_double(
+  const std::vector<Vtype> & V,
+  mxArray *plhs[])
+{
+  plhs[0] = mxCreateCellMatrix(V.size(), 1);
+  for(int  i=0; i<V.size(); i++)
+  {
+    const auto m = V[i].rows();
+    const auto n = V[i].cols();
+    mxArray * ai = mxCreateDoubleMatrix(m,n, mxREAL);
+    Eigen::Map< Eigen::Matrix<double,Eigen::Dynamic,Eigen::Dynamic> >
+      map(mxGetPr(ai),m,n);
+    map = V[i].template cast<double>();
+    mxSetCell(plhs[0],i,ai);
+  }
+}
+
+
+
 #ifdef IGL_STATIC_LIBRARY
+template void igl::matlab::prepare_lhs_double<Eigen::Matrix<double, 3, 3, 0, 3, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 3, 0, 3, 3> > const&, mxArray_tag**);
+template void igl::matlab::prepare_lhs_double<Eigen::Matrix<double, 1, 3, 1, 1, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > const&, mxArray_tag**);
 template void igl::matlab::prepare_lhs_index<Eigen::Matrix<double, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, mxArray_tag**);
 template void igl::matlab::prepare_lhs_index<Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, mxArray_tag**);
 template void igl::matlab::prepare_lhs_double<Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, mxArray_tag**);
@@ -96,4 +119,8 @@ template void igl::matlab::prepare_lhs_index<Eigen::Matrix<int, -1, 3, 1, -1, 3>
 template void igl::matlab::prepare_lhs_double<Eigen::Matrix<double, -1, 3, 1, -1, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 1, -1, 3> > const&, mxArray_tag**);
 template void igl::matlab::prepare_lhs_double<Eigen::Matrix<int, 1, -1, 1, 1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<int, 1, -1, 1, 1, -1> > const&, mxArray_tag**);
 template void igl::matlab::prepare_lhs_double<Eigen::Matrix<int, 1, 3, 1, 1, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<int, 1, 3, 1, 1, 3> > const&, mxArray_tag**);
+template void igl::matlab::prepare_lhs_double<Eigen::Matrix<float, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<float, -1, 1, 0, -1, 1> > const&, mxArray_tag**);
+template void igl::matlab::prepare_lhs_double<Eigen::Matrix<float, -1, 3, 0, -1, 3> >(Eigen::PlainObjectBase<Eigen::Matrix<float, -1, 3, 0, -1, 3> > const&, mxArray_tag**);
+template void igl::matlab::prepare_lhs_double<double>(Eigen::SparseMatrix<double, 0, int> const&, mxArray_tag**);
+template void igl::matlab::prepare_lhs_double<Eigen::Matrix<double, -1, -1, 0, -1, -1> >(std::vector<Eigen::Matrix<double, -1, -1, 0, -1, -1>, std::allocator<Eigen::Matrix<double, -1, -1, 0, -1, -1> > > const&, mxArray_tag**);
 #endif

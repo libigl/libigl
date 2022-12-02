@@ -8,7 +8,7 @@
 #ifndef IGL_IS_BORDER_VERTEX_H
 #define IGL_IS_BORDER_VERTEX_H
 #include "igl_inline.h"
-
+#include "deprecated.h"
 #include <Eigen/Core>
 #include <vector>
 
@@ -26,11 +26,6 @@ namespace igl
   // 
   template <typename DerivedF>
   IGL_INLINE std::vector<bool> is_border_vertex(
-   const Eigen::MatrixBase<DerivedF> &F);
-  // Deprecated:
-  template <typename DerivedV, typename DerivedF>
-  IGL_INLINE std::vector<bool> is_border_vertex(
-   const Eigen::MatrixBase<DerivedV> &V,
    const Eigen::MatrixBase<DerivedF> &F);
 }
 

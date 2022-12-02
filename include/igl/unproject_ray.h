@@ -31,10 +31,10 @@ namespace igl
     typename Deriveds,
     typename Deriveddir>
   IGL_INLINE void unproject_ray(
-    const Eigen::PlainObjectBase<Derivedpos> & pos,
-    const Eigen::PlainObjectBase<Derivedmodel> & model,
-    const Eigen::PlainObjectBase<Derivedproj> & proj,
-    const Eigen::PlainObjectBase<Derivedviewport> & viewport,
+    const Eigen::MatrixBase<Derivedpos> & pos,
+    const Eigen::MatrixBase<Derivedmodel> & model,
+    const Eigen::MatrixBase<Derivedproj> & proj,
+    const Eigen::MatrixBase<Derivedviewport> & viewport,
     Eigen::PlainObjectBase<Deriveds> & s,
     Eigen::PlainObjectBase<Deriveddir> & dir);
 }

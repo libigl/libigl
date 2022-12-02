@@ -9,7 +9,6 @@
 #include <igl/principal_curvature.h>
 #include <igl/read_triangle_mesh.h>
 #include <igl/opengl/glfw/Viewer.h>
-#include "tutorial_shared_path.h"
 
 Eigen::MatrixXd V;
 Eigen::MatrixXi F;
@@ -46,21 +45,17 @@ int main(int argc, char *argv[])
   igl::opengl::glfw::Viewer viewer;
   viewer.data().set_mesh(V, F);
 
-
-  // Compute pseudocolor
-  MatrixXd C;
-  igl::parula(H,true,C);
-  viewer.data().set_colors(C);
+  viewer.data().set_data(H);
 
   // Average edge length for sizing
   const double avg = igl::avg_edge_length(V,F);
 
-  // Draw a blue segment parallel to the minimal curvature direction
-  const RowVector3d red(0.8,0.2,0.2),blue(0.2,0.2,0.8);
-  viewer.data().add_edges(V + PD1*avg, V - PD1*avg, blue);
-
   // Draw a red segment parallel to the maximal curvature direction
-  viewer.data().add_edges(V + PD2*avg, V - PD2*avg, red);
+  const RowVector3d red(0.8,0.2,0.2),blue(0.2,0.2,0.8);
+  viewer.data().add_edges(V + PD1*avg, V - PD1*avg, red);
+
+  // Draw a blue segment parallel to the minimal curvature direction
+  viewer.data().add_edges(V + PD2*avg, V - PD2*avg, blue);
 
   // Hide wireframe
   viewer.data().show_lines = false;

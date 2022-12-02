@@ -11,8 +11,6 @@
 #include <vector>
 #include <cstdlib>
 
-#include "tutorial_shared_path.h"
-
 // Quad mesh loaded
 Eigen::MatrixXd VQC;
 Eigen::MatrixXi FQC;
@@ -39,7 +37,7 @@ void quadAngleRegularity(const Eigen::MatrixXd& V, const Eigen::MatrixXi& Q, Eig
     for (int j=0;j<4;j++){
       Eigen::RowVectorXd v21=(V.row(Q(i,j))-V.row(Q(i,(j+1)%4))).normalized();
       Eigen::RowVectorXd v23=(V.row(Q(i,(j+2)%4))-V.row(Q(i,(j+1)%4))).normalized();
-  
+
       angleRegularity(i)+=(abs(acos(v21.dot(v23))-igl::PI/2.0)/(igl::PI/2.0))/4.0;
     }
   }
@@ -52,7 +50,7 @@ bool key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier
   using namespace Eigen;
 
   // Plot the original quad mesh
-  
+
   if (key == '1')
   {
     viewer.data().clear();
@@ -120,24 +118,24 @@ int main(int argc, char *argv[])
 
   // Create a planar version with ShapeUp
   //igl::planarize_quad_mesh(VQC, FQC, 100, 0.005, VQCregular);
-  
+
   E.resize(FQC.size(),2);
   E.col(0)<<FQC.col(0),FQC.col(1),FQC.col(2),FQC.col(3);
   E.col(1)<<FQC.col(1),FQC.col(2),FQC.col(3),FQC.col(0);
-  
+
   VectorXi b(1); b(0)=0;  //setting the first vertex to be the same.
-  
+
   VectorXd wShape=VectorXd::Constant(FQC.rows(),1.0);
   VectorXd wSmooth=VectorXd::Constant(E.rows(),1.0);
   MatrixXd bc(1,3); bc<<VQC.row(0);
-  
+
   VectorXi array_of_fours=VectorXi::Constant(FQC.rows(),4);
   igl::shapeup_projection_function localFunction(igl::shapeup_regular_face_projection);
-  
+
   su_data.maxIterations=200;
   shapeup_precomputation(VQC, array_of_fours,FQC,E,b,wShape, wSmooth,su_data);
   shapeup_solve(bc,localFunction, VQC,su_data, false,VQCregular);
-  
+
 
   // Convert the planarized mesh to triangles
   igl::slice( VQCregular, FQC.col(0).eval(), 1, PQC0regular);

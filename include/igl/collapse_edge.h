@@ -8,6 +8,8 @@
 #ifndef IGL_COLLAPSE_EDGE_H
 #define IGL_COLLAPSE_EDGE_H
 #include "igl_inline.h"
+#include "min_heap.h"
+#include "decimate_callback_types.h"
 #include <Eigen/Core>
 #include <vector>
 #include <set>
@@ -55,6 +57,24 @@ namespace igl
     int & e2,
     int & f1,
     int & f2);
+  // Inputs:
+  IGL_INLINE bool collapse_edge(
+    const int e,
+    const Eigen::RowVectorXd & p,
+    /*const*/ std::vector<int> & Nsv,
+    const std::vector<int> & Nsf,
+    /*const*/ std::vector<int> & Ndv,
+    const std::vector<int> & Ndf,
+    Eigen::MatrixXd & V,
+    Eigen::MatrixXi & F,
+    Eigen::MatrixXi & E,
+    Eigen::VectorXi & EMAP,
+    Eigen::MatrixXi & EF,
+    Eigen::MatrixXi & EI,
+    int & e1,
+    int & e2,
+    int & f1,
+    int & f2);
   IGL_INLINE bool collapse_edge(
     const int e,
     const Eigen::RowVectorXd & p,
@@ -73,28 +93,19 @@ namespace igl
   //     **If the edges is collapsed** then this function will be called on all
   //     edges of all faces previously incident on the endpoints of the
   //     collapsed edge.
-  //   Q  queue containing pairs of costs and edge indices
-  //   Qit  list of iterators so that Qit[e] --> iterator of edge e in Q
+  //   Q  queue containing pairs of costs and edge indices and insertion "time"
+  //   EQ  #E list of "time" of last time pushed into Q
   //   C  #E by dim list of stored placements
   IGL_INLINE bool collapse_edge(
-    const std::function<void(
-      const int,
-      const Eigen::MatrixXd &,
-      const Eigen::MatrixXi &,
-      const Eigen::MatrixXi &,
-      const Eigen::VectorXi &,
-      const Eigen::MatrixXi &,
-      const Eigen::MatrixXi &,
-      double &,
-      Eigen::RowVectorXd &)> & cost_and_placement,
+    const decimate_cost_and_placement_callback & cost_and_placement,
     Eigen::MatrixXd & V,
     Eigen::MatrixXi & F,
     Eigen::MatrixXi & E,
     Eigen::VectorXi & EMAP,
     Eigen::MatrixXi & EF,
     Eigen::MatrixXi & EI,
-    std::set<std::pair<double,int> > & Q,
-    std::vector<std::set<std::pair<double,int> >::iterator > & Qit,
+    igl::min_heap< std::tuple<double,int,int> > & Q,
+    Eigen::VectorXi & EQ,
     Eigen::MatrixXd & C);
   // Inputs:
   //   pre_collapse  callback called with index of edge whose collapse is about
@@ -105,103 +116,37 @@ namespace igl
   //   post_collapse  callback called with index of edge whose collapse was
   //     just attempted and a flag revealing whether this was successful.
   IGL_INLINE bool collapse_edge(
-    const std::function<void(
-      const int,
-      const Eigen::MatrixXd &,
-      const Eigen::MatrixXi &,
-      const Eigen::MatrixXi &,
-      const Eigen::VectorXi &,
-      const Eigen::MatrixXi &,
-      const Eigen::MatrixXi &,
-      double &,
-      Eigen::RowVectorXd &)> & cost_and_placement,
-    const std::function<bool(
-      const Eigen::MatrixXd &                                         ,/*V*/
-      const Eigen::MatrixXi &                                         ,/*F*/
-      const Eigen::MatrixXi &                                         ,/*E*/
-      const Eigen::VectorXi &                                         ,/*EMAP*/
-      const Eigen::MatrixXi &                                         ,/*EF*/
-      const Eigen::MatrixXi &                                         ,/*EI*/
-      const std::set<std::pair<double,int> > &                        ,/*Q*/
-      const std::vector<std::set<std::pair<double,int> >::iterator > &,/*Qit*/
-      const Eigen::MatrixXd &                                         ,/*C*/
-      const int                                                        /*e*/
-      )> & pre_collapse,
-    const std::function<void(
-      const Eigen::MatrixXd &                                         ,   /*V*/
-      const Eigen::MatrixXi &                                         ,   /*F*/
-      const Eigen::MatrixXi &                                         ,   /*E*/
-      const Eigen::VectorXi &                                         ,/*EMAP*/
-      const Eigen::MatrixXi &                                         ,  /*EF*/
-      const Eigen::MatrixXi &                                         ,  /*EI*/
-      const std::set<std::pair<double,int> > &                        ,   /*Q*/
-      const std::vector<std::set<std::pair<double,int> >::iterator > &, /*Qit*/
-      const Eigen::MatrixXd &                                         ,   /*C*/
-      const int                                                       ,   /*e*/
-      const int                                                       ,  /*e1*/
-      const int                                                       ,  /*e2*/
-      const int                                                       ,  /*f1*/
-      const int                                                       ,  /*f2*/
-      const bool                                                  /*collapsed*/
-      )> & post_collapse,
+    const decimate_cost_and_placement_callback & cost_and_placement,
+    const decimate_pre_collapse_callback       & pre_collapse,
+    const decimate_post_collapse_callback      & post_collapse,
     Eigen::MatrixXd & V,
     Eigen::MatrixXi & F,
     Eigen::MatrixXi & E,
     Eigen::VectorXi & EMAP,
     Eigen::MatrixXi & EF,
     Eigen::MatrixXi & EI,
-    std::set<std::pair<double,int> > & Q,
-    std::vector<std::set<std::pair<double,int> >::iterator > & Qit,
+    igl::min_heap< std::tuple<double,int,int> > & Q,
+    Eigen::VectorXi & EQ,
     Eigen::MatrixXd & C);
-
+  // Outputs:
+  //   e  index into E of attempted collapsed edge. Set to -1 if Q is empty or
+  //     contains only infinite cost edges.
+  //   e1  index into E of edge collpased on left.
+  //   e2  index into E of edge collpased on right.
+  //   f1  index into F of face collpased on left.
+  //   f2  index into F of face collpased on right.
   IGL_INLINE bool collapse_edge(
-    const std::function<void(
-      const int,
-      const Eigen::MatrixXd &,
-      const Eigen::MatrixXi &,
-      const Eigen::MatrixXi &,
-      const Eigen::VectorXi &,
-      const Eigen::MatrixXi &,
-      const Eigen::MatrixXi &,
-      double &,
-      Eigen::RowVectorXd &)> & cost_and_placement,
-    const std::function<bool(
-      const Eigen::MatrixXd &                                         ,/*V*/
-      const Eigen::MatrixXi &                                         ,/*F*/
-      const Eigen::MatrixXi &                                         ,/*E*/
-      const Eigen::VectorXi &                                         ,/*EMAP*/
-      const Eigen::MatrixXi &                                         ,/*EF*/
-      const Eigen::MatrixXi &                                         ,/*EI*/
-      const std::set<std::pair<double,int> > &                        ,/*Q*/
-      const std::vector<std::set<std::pair<double,int> >::iterator > &,/*Qit*/
-      const Eigen::MatrixXd &                                         ,/*C*/
-      const int                                                        /*e*/
-      )> & pre_collapse,
-    const std::function<void(
-      const Eigen::MatrixXd &                                         ,   /*V*/
-      const Eigen::MatrixXi &                                         ,   /*F*/
-      const Eigen::MatrixXi &                                         ,   /*E*/
-      const Eigen::VectorXi &                                         ,/*EMAP*/
-      const Eigen::MatrixXi &                                         ,  /*EF*/
-      const Eigen::MatrixXi &                                         ,  /*EI*/
-      const std::set<std::pair<double,int> > &                        ,   /*Q*/
-      const std::vector<std::set<std::pair<double,int> >::iterator > &, /*Qit*/
-      const Eigen::MatrixXd &                                         ,   /*C*/
-      const int                                                       ,   /*e*/
-      const int                                                       ,  /*e1*/
-      const int                                                       ,  /*e2*/
-      const int                                                       ,  /*f1*/
-      const int                                                       ,  /*f2*/
-      const bool                                                  /*collapsed*/
-      )> & post_collapse,
+    const decimate_cost_and_placement_callback & cost_and_placement,
+    const decimate_pre_collapse_callback       & pre_collapse,
+    const decimate_post_collapse_callback      & post_collapse,
     Eigen::MatrixXd & V,
     Eigen::MatrixXi & F,
     Eigen::MatrixXi & E,
     Eigen::VectorXi & EMAP,
     Eigen::MatrixXi & EF,
     Eigen::MatrixXi & EI,
-    std::set<std::pair<double,int> > & Q,
-    std::vector<std::set<std::pair<double,int> >::iterator > & Qit,
+    igl::min_heap< std::tuple<double,int,int> > & Q,
+    Eigen::VectorXi & EQ,
     Eigen::MatrixXd & C,
     int & e,
     int & e1,

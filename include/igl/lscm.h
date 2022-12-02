@@ -32,8 +32,17 @@ namespace igl
   //   bc #b by 3 list of boundary values
   // Outputs:
   //   UV #V by 2 list of 2D mesh vertex positions in UV space
+  //   Q  #Vx2 by #Vx2 symmetric positive semi-definite matrix for computing LSCM energy
   // Returns true only on solver success.
   //
+  IGL_INLINE bool lscm( 
+      const Eigen::MatrixXd& V, 
+      const Eigen::MatrixXi& F,
+      const Eigen::VectorXi& b, 
+      const Eigen::MatrixXd& bc, 
+      Eigen::MatrixXd& V_uv,
+      Eigen::SparseMatrix<double>& Q);
+  // Wrapper where the output Q is discarded
   IGL_INLINE bool lscm( 
       const Eigen::MatrixXd& V, 
       const Eigen::MatrixXi& F,

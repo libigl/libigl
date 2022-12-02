@@ -1,27 +1,27 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2016 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "flood_fill.h"
 #include <limits>
 
 template <typename Derivedres, typename DerivedS>
 IGL_INLINE void igl::flood_fill(
-  const Eigen::MatrixBase<Derivedres>& res, 
+  const Eigen::MatrixBase<Derivedres>& res,
   Eigen::PlainObjectBase<DerivedS> & S)
 {
   using namespace Eigen;
   using namespace std;
   typedef typename DerivedS::Scalar Scalar;
   const auto flood = [&res,&S] (
-     const int xi, 
-     const int yi, 
+     const int xi,
+     const int yi,
      const int zi,
-     const int signed_xi, 
-     const int signed_yi, 
+     const int signed_xi,
+     const int signed_yi,
      const int signed_zi,
      const Scalar s)
     {

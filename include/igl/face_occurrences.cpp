@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2013 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "face_occurrences.h"
 #include "list_to_matrix.h"
@@ -48,7 +48,7 @@ IGL_INLINE void igl::face_occurrences(
   {
     // sorted face should definitely be in counts map
     assert(counts.find(sortedF[i]) != counts.end());
-    C[i] = counts[sortedF[i]];
+    C[i] = static_cast<IntegerC>(counts[sortedF[i]]);
   }
 }
 
@@ -60,7 +60,7 @@ IGL_INLINE void igl::face_occurrences(
   // Should really just rewrite using Eigen+libigl ...
   std::vector<std::vector<typename DerivedF::Scalar> > vF;
   matrix_to_list(F,vF);
-  std::vector<std::vector<typename DerivedC::Scalar> > vC;
+  std::vector<typename DerivedC::Scalar> vC;
   igl::face_occurrences(vF,vC);
   list_to_matrix(vC,C);
 }

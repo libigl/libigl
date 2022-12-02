@@ -1027,7 +1027,6 @@ inline void Mesh::build_adjacencies()
 
 inline bool Mesh::verify()		//verifies connectivity of the mesh and prints some debug info
 {
-	std::cout << std::endl;
 	// make sure that all vertices are mentioned at least once.
 	// though the loose vertex is not a bug, it most likely indicates that something is wrong with the mesh
 	std::vector<bool> map(m_vertices.size(), false);
@@ -3193,20 +3192,20 @@ IGL_INLINE void igl::exact_geodesic(
   std::vector<igl::geodesic::SurfacePoint> target(VT.rows() + FT.rows());
   for (int i = 0; i < VS.rows(); i++)
   {
-    source[i] = (igl::geodesic::SurfacePoint(&mesh.vertices()[VS(i)]));
+    source[i] = (igl::geodesic::SurfacePoint(&mesh.vertices()[VS(i, 0)]));
   }
   for (int i = 0; i < FS.rows(); i++)
   {
-    source[i] = (igl::geodesic::SurfacePoint(&mesh.faces()[FS(i)]));
+    source[i] = (igl::geodesic::SurfacePoint(&mesh.faces()[FS(i, 0)]));
   }
 
   for (int i = 0; i < VT.rows(); i++)
   {
-    target[i] = (igl::geodesic::SurfacePoint(&mesh.vertices()[VT(i)]));
+    target[i] = (igl::geodesic::SurfacePoint(&mesh.vertices()[VT(i, 0)]));
   }
   for (int i = 0; i < FT.rows(); i++)
   {
-    target[i] = (igl::geodesic::SurfacePoint(&mesh.faces()[FT(i)]));
+    target[i] = (igl::geodesic::SurfacePoint(&mesh.faces()[FT(i, 0)]));
   }
 
   exact_algorithm.propagate(source);

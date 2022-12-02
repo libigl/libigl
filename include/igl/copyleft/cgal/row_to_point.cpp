@@ -16,3 +16,10 @@ IGL_INLINE CGAL::Point_2<Kernel> igl::copyleft::cgal::row_to_point(
 {
   return CGAL::Point_2<Kernel>(V(i,0),V(i,1));
 }
+
+#ifdef IGL_STATIC_LIBRARY
+// Explicit template instantiation
+#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
+#include <CGAL/Exact_predicates_exact_constructions_kernel.h>
+template CGAL::Point_2<CGAL::Epeck> igl::copyleft::cgal::row_to_point<CGAL::Epeck, Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, -1, 0, -1, -1> > const&, Eigen::Matrix<CGAL::Lazy_exact_nt<CGAL::Gmpq>, -1, -1, 0, -1, -1>::Index const&);
+#endif

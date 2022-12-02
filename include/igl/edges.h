@@ -10,6 +10,7 @@
 #include "igl_inline.h"
 
 #include <Eigen/Dense>
+#include <Eigen/Sparse>
 
 namespace igl
 {
@@ -26,6 +27,28 @@ namespace igl
   template <typename DerivedF, typename DerivedE>
   IGL_INLINE void edges(
     const Eigen::MatrixBase<DerivedF> & F, 
+    Eigen::PlainObjectBase<DerivedE> & E);
+  // Constructs a list of unique edges represented in a given polygon mesh.
+  //
+  // Inputs:
+  //   I  #I vectorized list of polygon corner indices into rows of some matrix V
+  //   C  #polygons+1 list of cumulative polygon sizes so that C(i+1)-C(i) =
+  //     size of the ith polygon, and so I(C(i)) through I(C(i+1)-1) are the
+  //     indices of the ith polygon
+  // Outputs:
+  //   E #E by 2 list of edges in no particular order
+  template <typename DerivedI, typename DerivedC, typename DerivedE>
+  IGL_INLINE void edges(
+    const Eigen::MatrixBase<DerivedI> & I,
+    const Eigen::MatrixBase<DerivedC> & C,
+    Eigen::PlainObjectBase<DerivedE> & E);
+  // Inputs:
+  //   A  #V by #V symmetric adjacency matrix
+  // Outputs:
+  //   E  #E by 2 list of edges in no particular order
+  template <typename T, typename DerivedE>
+  IGL_INLINE void edges(
+    const Eigen::SparseMatrix<T> & A,
     Eigen::PlainObjectBase<DerivedE> & E);
 }
 
