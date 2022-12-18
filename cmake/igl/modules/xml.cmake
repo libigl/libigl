@@ -10,10 +10,10 @@ target_include_directories(igl_xml ${IGL_SCOPE}
 
 # 3. Target sources
 igl_glob_sources("${libigl_SOURCE_DIR}/include/igl/xml/" SRC_FILES)
-igl_target_sources(igl_xml ${SRC_FILES})
+igl_target_sources(igl_xml "${SRC_FILES}")
 
 # 4. Install target & headers
-igl_install(igl_xml ${SRC_FILES})
+igl_install(igl_xml "${SRC_FILES}")
 
 # 5. Dependencies
 include(tinyxml2)

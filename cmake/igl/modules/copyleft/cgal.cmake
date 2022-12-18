@@ -10,10 +10,10 @@ target_include_directories(igl_copyleft_cgal ${IGL_SCOPE}
 
 # 3. Target sources
 igl_glob_sources("${libigl_SOURCE_DIR}/include/igl/copyleft/cgal/" SRC_FILES)
-igl_target_sources(igl_copyleft_cgal ${SRC_FILES})
+igl_target_sources(igl_copyleft_cgal "${SRC_FILES}")
 
 # 4. Install target & headers
-igl_install(igl_copyleft_cgal ${SRC_FILES})
+igl_install(igl_copyleft_cgal "${SRC_FILES}")
 
 # 5. Dependencies
 include(cgal)
@@ -30,7 +30,7 @@ file(GLOB SRC_FILES
   "${libigl_SOURCE_DIR}/tests/include/igl/copyleft/boolean/*.cpp"
   "${libigl_SOURCE_DIR}/tests/include/igl/copyleft/cgal/*.cpp"
   )
-igl_add_test(igl_copyleft_cgal ${SRC_FILES})
+igl_add_test(igl_copyleft_cgal "${SRC_FILES}")
 if (TARGET test_igl_copyleft_cgal)
   igl_copy_dll(test_igl_copyleft_cgal)
 endif ()

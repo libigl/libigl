@@ -1,5 +1,4 @@
 if(NOT TARGET igl::xml AND NOT @PROJECT_NAME@_BINARY_DIR)
-  include(CMakeFindDependencyMacro)
   find_dependency(tinyxml2 CONFIG REQUIRED)
 
   include("${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@-core-config.cmake")

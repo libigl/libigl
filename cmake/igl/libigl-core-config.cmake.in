@@ -1,5 +1,4 @@
 if(NOT TARGET igl::core AND NOT @PROJECT_NAME@_BINARY_DIR)
-  include(CMakeFindDependencyMacro)
   find_dependency(Eigen3 CONFIG REQUIRED)
   find_dependency(Threads REQUIRED)
 
@@ -7,4 +6,3 @@ if(NOT TARGET igl::core AND NOT @PROJECT_NAME@_BINARY_DIR)
 
   set(@PROJECT_NAME@_core_FOUND TRUE)
 endif()
-

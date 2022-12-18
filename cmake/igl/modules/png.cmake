@@ -10,10 +10,10 @@ target_include_directories(igl_png ${IGL_SCOPE}
 
 # 3. Target sources
 igl_glob_sources("${libigl_SOURCE_DIR}/include/igl/png/" SRC_FILES)
-igl_target_sources(igl_png ${INC_FILES} ${SRC_FILES})
+igl_target_sources(igl_png "${INC_FILES}" "${SRC_FILES}")
 
 # 4. Install target & headers
-igl_install(igl_png ${INC_FILES} ${SRC_FILES})
+igl_install(igl_png "${INC_FILES}" "${SRC_FILES}")
 
 # 5. Dependencies
 include(stb)

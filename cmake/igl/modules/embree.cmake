@@ -10,7 +10,7 @@ target_include_directories(igl_embree ${IGL_SCOPE}
 
 # 3. Target sources
 igl_glob_sources("${libigl_SOURCE_DIR}/include/igl/embree/" SRC_FILES)
-igl_target_sources(igl_embree ${SRC_FILES})
+igl_target_sources(igl_embree "${SRC_FILES}")
 
 # 4. Install target & headers
 igl_install(igl_embree ${SRC_FILES})
@@ -24,4 +24,4 @@ target_link_libraries(igl_embree ${IGL_SCOPE}
 
 # 6. Unit tests
 file(GLOB SRC_FILES "${libigl_SOURCE_DIR}/tests/include/igl/embree/*.cpp")
-igl_add_test(igl_embree ${SRC_FILES})
+igl_add_test(igl_embree "${SRC_FILES}")

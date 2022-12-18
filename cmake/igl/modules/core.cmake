@@ -13,7 +13,7 @@ target_include_directories(igl_core ${IGL_SCOPE}
 
 # 3. Target sources
 igl_glob_sources("${libigl_SOURCE_DIR}/include/igl/" SRC_FILES)
-igl_target_sources(igl_core ${SRC_FILES})
+igl_target_sources(igl_core "${SRC_FILES}")
 
 # 4. Install target & headers
 igl_install(igl_core ${SRC_FILES})
@@ -28,4 +28,4 @@ target_link_libraries(igl_core ${IGL_SCOPE}
 
 # 6. Unit tests
 file(GLOB SRC_FILES "${libigl_SOURCE_DIR}/tests/include/igl/*.cpp")
-igl_add_test(igl_core ${SRC_FILES})
+igl_add_test(igl_core "${SRC_FILES}")

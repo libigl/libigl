@@ -10,10 +10,10 @@ target_include_directories(igl_copyleft_comiso ${IGL_SCOPE}
 
 # 3. Target sources
 igl_glob_sources("${libigl_SOURCE_DIR}/include/igl/copyleft/comiso/" SRC_FILES)
-igl_target_sources(igl_copyleft_comiso ${SRC_FILES})
+igl_target_sources(igl_copyleft_comiso "${SRC_FILES}")
 
 # 4. Install target & headers
-igl_install(igl_copyleft_comiso ${SRC_FILES})
+igl_install(igl_copyleft_comiso "${SRC_FILES}")
 
 # 5. Dependencies
 include(comiso)
@@ -26,4 +26,4 @@ target_link_libraries(igl_copyleft_comiso ${IGL_SCOPE}
 
 # 6. Unit tests
 file(GLOB SRC_FILES "${libigl_SOURCE_DIR}/tests/include/igl/copyleft/comiso/*.cpp")
-igl_add_test(igl_copyleft_comiso ${SRC_FILES})
+igl_add_test(igl_copyleft_comiso "${SRC_FILES}")

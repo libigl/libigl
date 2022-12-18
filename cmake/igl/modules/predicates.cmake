@@ -10,7 +10,7 @@ target_include_directories(igl_predicates ${IGL_SCOPE}
 
 # 3. Target sources
 igl_glob_sources("${libigl_SOURCE_DIR}/include/igl/predicates/" SRC_FILES)
-igl_target_sources(igl_predicates ${SRC_FILES})
+igl_target_sources(igl_predicates "${SRC_FILES}")
 
 # 4. Dependencies
 include(predicates)
@@ -21,4 +21,4 @@ target_link_libraries(igl_predicates ${IGL_SCOPE}
 
 # 5. Unit tests
 file(GLOB SRC_FILES "${libigl_SOURCE_DIR}/tests/include/igl/predicates/*.cpp")
-igl_add_test(igl_predicates ${SRC_FILES})
+igl_add_test(igl_predicates "${SRC_FILES}")

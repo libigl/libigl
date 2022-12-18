@@ -10,7 +10,7 @@ target_include_directories(igl_opengl ${IGL_SCOPE}
 
 # 3. Target sources
 igl_glob_sources("${libigl_SOURCE_DIR}/include/igl/opengl/" SRC_FILES)
-igl_target_sources(igl_opengl ${SRC_FILES})
+igl_target_sources(igl_opengl "${SRC_FILES}")
 
 # 4. Install target & headers
 igl_install(igl_opengl ${SRC_FILES})
@@ -23,4 +23,4 @@ target_link_libraries(igl_opengl ${IGL_SCOPE}
   glad::glad
   # Link against OpenGL::OpenGL if available, or fallback to OpenGL::GL
   $<IF:$<TARGET_EXISTS:OpenGL::OpenGL>,OpenGL::OpenGL,OpenGL::GL>
-  )
+)

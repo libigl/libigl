@@ -1,5 +1,4 @@
 if(NOT TARGET igl::opengl AND NOT @PROJECT_NAME@_BINARY_DIR)
-  include(CMakeFindDependencyMacro)
   find_dependency(OpenGL REQUIRED)
   find_dependency(glad CONFIG REQUIRED)
 

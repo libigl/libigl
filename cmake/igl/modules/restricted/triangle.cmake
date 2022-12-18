@@ -11,7 +11,7 @@ target_include_directories(igl_restricted_triangle ${IGL_SCOPE}
 # 3. Target sources
 file(GLOB INC_FILES "${libigl_SOURCE_DIR}/include/igl/triangle/*.h")
 file(GLOB SRC_FILES "${libigl_SOURCE_DIR}/include/igl/triangle/*.cpp")
-igl_target_sources(igl_restricted_triangle ${INC_FILES} ${SRC_FILES})
+igl_target_sources(igl_restricted_triangle "${INC_FILES}" "${SRC_FILES}")
 
 # 4. Dependencies
 include(triangle)
@@ -22,7 +22,7 @@ target_link_libraries(igl_restricted_triangle ${IGL_SCOPE}
 
 # 5. Unit tests
 file(GLOB SRC_FILES "${libigl_SOURCE_DIR}/tests/include/igl/triangle/*.cpp")
-igl_add_test(igl_restricted_triangle ${SRC_FILES})
+igl_add_test(igl_restricted_triangle "${SRC_FILES}")
 if(TARGET test_igl_restricted_triangle)
     igl_include(predicates)
     target_link_libraries(test_igl_restricted_triangle PUBLIC igl::predicates)
