@@ -30,9 +30,7 @@ function(igl_add_test module_name)
     target_compile_definitions(test_${module_name} PUBLIC CATCH_CONFIG_ENABLE_BENCHMARKING)
 
     # Dependencies
-    include(catch2)
-    include(libigl_tests_data)
-    target_link_libraries(test_${module_name} PUBLIC
+    target_link_libraries(test_${module_name} PRIVATE
         ${module_name}
         igl::tests_data
         Catch2::Catch2
@@ -45,7 +43,5 @@ function(igl_add_test module_name)
     set_target_properties(test_${module_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/tests")
 
     # Register tests
-    FetchContent_GetProperties(catch2)
-    include("${catch2_SOURCE_DIR}/contrib/Catch.cmake")
     catch_discover_tests(test_${module_name})
 endfunction()

@@ -93,7 +93,7 @@ endif ()
 option(LIBIGL_BUILD_TESTS "Build libigl unit test" ${LIBIGL_TOPLEVEL_PROJECT})
 option(LIBIGL_BUILD_TUTORIALS "Build libigl tutorial" ${LIBIGL_TOPLEVEL_PROJECT})
 option(LIBIGL_INSTALL "Enable installation of libigl targets" ${LIBIGL_TOPLEVEL_PROJECT})
-option(LIBIGL_FIND_PACKAGES "Instead of downloading dependencies, find them" ON)
+option(LIBIGL_FIND_PACKAGES "Instead of downloading dependencies, find them" OFF)
 
 # USE_STATIC_LIBRARY speeds up the generation of multiple binaries,
 # at the cost of a longer initial compilation time
@@ -142,6 +142,8 @@ include(igl_glob_sources)
 # Enable unit testing at the root level
 if (LIBIGL_BUILD_TESTS)
   include(CTest)
+  include(catch2)
+  include(libigl_tests_data)
 endif ()
 
 # Defines CMake targets for selected libigl modules

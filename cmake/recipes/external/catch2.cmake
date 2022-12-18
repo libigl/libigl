@@ -1,5 +1,6 @@
 if (LIBIGL_FIND_PACKAGES)
   find_package(Catch2 REQUIRED)
+  include(Catch)
 endif ()
 
 if (TARGET Catch2::Catch2)
@@ -16,3 +17,5 @@ FetchContent_Declare(
   GIT_SHALLOW TRUE
 )
 FetchContent_MakeAvailable(catch2)
+
+include("${catch2_SOURCE_DIR}/contrib/Catch.cmake")

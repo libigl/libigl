@@ -6,6 +6,7 @@
   "dependencies": [
     "eigen3",
     "glad",
-    "cgal"
+    "cgal",
+    "catch2"
   ]
 }
