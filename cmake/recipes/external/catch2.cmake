@@ -1,8 +1,3 @@
-if (LIBIGL_FIND_PACKAGES)
-  find_package(Catch2 REQUIRED)
-  include(Catch)
-endif ()
-
 if (TARGET Catch2::Catch2)
   return()
 endif ()
@@ -11,11 +6,11 @@ message(STATUS "Third-party: creating target 'Catch2::Catch2'")
 
 include(FetchContent)
 FetchContent_Declare(
-  catch2
+  Catch2
   GIT_REPOSITORY https://github.com/catchorg/Catch2.git
   GIT_TAG v2.13.8
   GIT_SHALLOW TRUE
 )
-FetchContent_MakeAvailable(catch2)
+FetchContent_MakeAvailable(Catch2)
 
-include("${catch2_SOURCE_DIR}/contrib/Catch.cmake")
+include("${Catch2_SOURCE_DIR}/contrib/Catch.cmake")

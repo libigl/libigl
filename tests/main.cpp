@@ -5,13 +5,8 @@
 #define CATCH_CONFIG_MAIN
 #include <catch2/catch.hpp>
 
-
-// TODO: Fix floating point exceptions raised in debug mode before re-enabling this.
-// #ifndef NDEBUG
-// #ifdef __linux__
-// #include <fenv.h>
-// #endif
-// #endif
+// TODO: Fix floating point exceptions raised in debug mode before re-enabling
+// this. #ifndef NDEBUG #ifdef __linux__ #include <fenv.h> #endif #endif
 
 // #ifndef NDEBUG
 // #ifdef __linux__

@@ -153,6 +153,10 @@ if (LIBIGL_BUILD_TUTORIALS)
   add_subdirectory(tutorial)
 endif ()
 
+if (LIBIGL_BUILD_TESTS)
+  add_subdirectory(tests/install-find-use)
+endif()
+
 ################################################################################
 # Install Project's CMake config & version file
 ################################################################################

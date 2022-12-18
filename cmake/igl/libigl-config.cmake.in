@@ -2,15 +2,27 @@
 
 include(CMakeFindDependencyMacro)
 
-foreach (find_component ${@PROJECT_NAME@_FIND_COMPONENTS})
-  string(REGEX REPLACE "^.*_" "" component ${find_component})
-  string(REGEX REPLACE "_?${component}$" "" suffix ${find_component})
-  string(PREPEND component "-")
-  if(suffix)
-    string(PREPEND suffix "-")
-  endif()
+if(libigl_FIND_COMPONENTS)
+  # directly include only the components necessary
+  foreach (find_component ${@PROJECT_NAME@_FIND_COMPONENTS})
+    string(REGEX REPLACE "^.*_" "" component ${find_component})
+    string(REGEX REPLACE "_?${component}$" "" suffix ${find_component})
+    string(PREPEND component "-")
+    if(suffix)
+      string(PREPEND suffix "-")
+    endif()
 
-  include("${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@${suffix}${component}-config.cmake")
-endforeach ()
+    include("${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@${suffix}${component}-config.cmake")
+  endforeach ()
+else()
+  # directly include all installed components
+  file(GLOB installed_component_configs
+    LIST_DIRECTORIES false
+    "${CMAKE_CURRENT_LIST_DIR}/libigl-*-config.cmake")
+
+  foreach(installed_component_config IN LISTS installed_component_configs)
+    include("${installed_component_config}")
+  endforeach()
+endif()
 
 check_required_components(@PROJECT_NAME@)
