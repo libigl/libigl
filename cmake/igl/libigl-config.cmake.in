@@ -2,9 +2,6 @@
 
 include(CMakeFindDependencyMacro)
 
-# component names include the strange suffix they add to their namespaces: '_copyleft' in 'igl_copyleft::cgal'
-# ex. find_package(libigl CONFIG REQUIRED core copyleft_core copyleft_cgal)
-#     provides their standard targets: igl::core, igl_copyleft::core, igl_copyleft::cgal
 foreach (find_component ${@PROJECT_NAME@_FIND_COMPONENTS})
   string(REGEX REPLACE "^.*_" "" component ${find_component})
   string(REGEX REPLACE "_?${component}$" "" suffix ${find_component})

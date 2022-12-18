@@ -9,9 +9,8 @@ target_include_directories(igl_restricted_matlab ${IGL_SCOPE}
 )
 
 # 3. Target sources
-file(GLOB INC_FILES "${libigl_SOURCE_DIR}/include/igl/matlab/*.h")
-file(GLOB SRC_FILES "${libigl_SOURCE_DIR}/include/igl/matlab/*.cpp")
-igl_target_sources(igl_restricted_matlab "${INC_FILES}" "${SRC_FILES}")
+file(GLOB SRC_FILES "${libigl_SOURCE_DIR}/include/igl/matlab/")
+igl_target_sources(igl_restricted_matlab "${SRC_FILES}")
 
 # 4. Dependencies
 # MATLAB_ADDITIONAL_VERSIONS should have already been set in libigl/CMakeLists.txt

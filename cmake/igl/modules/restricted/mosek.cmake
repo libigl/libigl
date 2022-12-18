@@ -9,9 +9,8 @@ target_include_directories(igl_restricted_mosek ${IGL_SCOPE}
 )
 
 # 3. Target sources
-file(GLOB INC_FILES "${libigl_SOURCE_DIR}/include/igl/mosek/*.h")
-file(GLOB SRC_FILES "${libigl_SOURCE_DIR}/include/igl/mosek/*.cpp")
-igl_target_sources(igl_restricted_mosek "${INC_FILES}" "${SRC_FILES}")
+file(GLOB SRC_FILES "${libigl_SOURCE_DIR}/include/igl/mosek/")
+igl_target_sources(igl_restricted_mosek "${SRC_FILES}")
 
 # 4. Dependencies
 find_package(MOSEK REQUIRED)
