@@ -38,10 +38,3 @@ endif ()
 if (WIN32 AND eigen_SOURCE_DIR)
   target_sources(Eigen3_Eigen INTERFACE $<BUILD_INTERFACE:${eigen_SOURCE_DIR}/debug/msvc/eigen.natvis>)
 endif ()
-
-# Install rules
-set(CMAKE_INSTALL_DEFAULT_COMPONENT_NAME eigen)
-set_target_properties(Eigen3_Eigen PROPERTIES EXPORT_NAME Eigen)
-install(DIRECTORY ${eigen_SOURCE_DIR}/Eigen DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
-install(TARGETS Eigen3_Eigen EXPORT EigenTargets)
-install(EXPORT EigenTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/eigen NAMESPACE Eigen3::)
