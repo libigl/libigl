@@ -48,5 +48,5 @@ endfunction()
 
 
 create_find_use_test(igl::core)
-create_find_use_test(igl::xml)
+create_find_use_test(igl::embree)
 create_find_use_test(igl_copyleft::cgal)

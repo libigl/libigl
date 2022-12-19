@@ -7,9 +7,9 @@ include("./UseLibigl.cmake")
 
 find_package(Eigen3 CONFIG REQUIRED)
 find_package(libigl CONFIG REQUIRED
-  COMPONENTS core copyleft_cgal
   NO_DEFAULT_PATH
-  PATHS "${libigl_ROOT}")
+  PATHS "${libigl_ROOT}"
+  COMPONENTS core embree copyleft_cgal)
 
 check_subproject_dirs(libigl_tests_data)
 check_subproject_dirs(Catch2)
@@ -25,6 +25,10 @@ FetchContent_MakeAvailable(Catch2)
 create_use_libigl_test(
   IGL_TARGET igl::core
   IGL_TEST_SOURCES cat.cpp)
+
+create_use_libigl_test(
+  IGL_TARGET igl::embree
+  IGL_TEST_SOURCES embree/EmbreeIntersector.cpp)
 
 create_use_libigl_test(
   IGL_TARGET igl_copyleft::cgal

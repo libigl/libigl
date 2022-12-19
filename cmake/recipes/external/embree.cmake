@@ -1,5 +1,6 @@
 if (LIBIGL_FIND_PACKAGES)
   find_package(embree CONFIG REQUIRED)
+  add_library(embree::embree ALIAS embree)
 endif ()
 
 if (TARGET embree::embree)
