@@ -1,3 +1,6 @@
+include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
+
 function(igl_install module_name)
   if (NOT LIBIGL_INSTALL)
     return()
@@ -25,7 +28,6 @@ function(igl_install module_name)
 
   set(exports_name ${PROJECT_NAME}${suffix}${component}-targets)
 
-  include(GNUInstallDirs)
   install(TARGETS ${module_name}
     EXPORT ${exports_name}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
@@ -44,19 +46,19 @@ function(igl_install module_name)
   # Install Config Package Files #
   ################################
 
-  include(GNUInstallDirs)
   set(module_config_in "${PROJECT_SOURCE_DIR}/cmake/igl/libigl${suffix}${component}-config.cmake.in")
   set(module_config_out "${CMAKE_CURRENT_BINARY_DIR}/libigl${suffix}${component}-config.cmake")
   set(export_dest_dir "${CMAKE_INSTALL_LIBDIR}/cmake/libigl")
 
-  include(CMakePackageConfigHelpers)
   configure_package_config_file(
     "${module_config_in}"
     "${module_config_out}"
-    INSTALL_DESTINATION
-    ${CMAKE_INSTALL_DATAROOTDIR}/libigl/cmake
-  )
-  install(FILES "${module_config_out}" DESTINATION "${export_dest_dir}")
+    INSTALL_DESTINATION "${export_dest_dir}")
+
+  install(
+    FILES "${module_config_out}"
+    DESTINATION "${export_dest_dir}"
+    COMPONENT LibiglDevelopment)
 
   string(REPLACE "-" "_" namespace_suffix "${suffix}")
   install(EXPORT ${exports_name}
