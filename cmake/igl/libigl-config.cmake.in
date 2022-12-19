@@ -20,6 +20,8 @@ else()
     LIST_DIRECTORIES false
     "${CMAKE_CURRENT_LIST_DIR}/libigl-*-config.cmake")
 
+  list(REMOVE installed_component_configs "${CMAKE_CURRENT_LIST_FILE}")
+
   foreach(installed_component_config IN LISTS installed_component_configs)
     include("${installed_component_config}")
   endforeach()

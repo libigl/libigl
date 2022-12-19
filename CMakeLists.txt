@@ -26,7 +26,6 @@ endif ()
 
 # If this option is enabled, this will setup the Hunter package manager.
 option(HUNTER_ENABLED "Enable Hunter package manager support" OFF)
-<<<<<<< HEAD
 if(HUNTER_ENABLED)
     include("cmake/misc/HunterGate.cmake")
     HunterGate(
@@ -34,15 +33,6 @@ if(HUNTER_ENABLED)
         SHA1 "ca7838dded9a1811b04ffd56175f629e0af82d3d"
     )
 endif()
-=======
-if (HUNTER_ENABLED)
-  include("cmake/misc/HunterGate.cmake")
-  HunterGate(
-    URL "https://github.com/cpp-pm/hunter/archive/v0.23.300.tar.gz"
-    SHA1 "1151d539465d9cdbc880ee30f794864aec11c448"
-  )
-endif ()
->>>>>>> 2e3e63be (optionally find instead of download packages)
 
 ################################################################################
 project(libigl VERSION 2.4.0)
@@ -137,13 +127,10 @@ include(igl_copy_dll)
 include(igl_include)
 include(igl_install)
 include(igl_target_sources)
-include(igl_glob_sources)
 
 # Enable unit testing at the root level
 if (LIBIGL_BUILD_TESTS)
   include(CTest)
-  include(catch2)
-  include(libigl_tests_data)
 endif ()
 
 # Defines CMake targets for selected libigl modules
@@ -152,10 +139,6 @@ include(libigl)
 if (LIBIGL_BUILD_TUTORIALS)
   add_subdirectory(tutorial)
 endif ()
-
-if (LIBIGL_BUILD_TESTS)
-  add_subdirectory(tests/install-find-use)
-endif()
 
 ################################################################################
 # Install Project's CMake config & version file
