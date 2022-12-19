@@ -7,7 +7,7 @@ include("./UseLibigl.cmake")
 
 find_package(Eigen3 CONFIG REQUIRED)
 find_package(libigl CONFIG REQUIRED
-  COMPONENTS core
+  COMPONENTS core copyleft_cgal
   NO_DEFAULT_PATH
   PATHS "${libigl_ROOT}")
 
@@ -25,3 +25,7 @@ FetchContent_MakeAvailable(Catch2)
 create_use_libigl_test(
   IGL_TARGET igl::core
   IGL_TEST_SOURCES cat.cpp)
+
+create_use_libigl_test(
+  IGL_TARGET igl_copyleft::cgal
+  IGL_TEST_SOURCES copyleft/cgal/triangulate.cpp)

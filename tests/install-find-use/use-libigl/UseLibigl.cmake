@@ -32,10 +32,8 @@ function(create_use_libigl_test)
   set(test_sources "${ARGS_TEST_SOURCES}")
   list(TRANSFORM test_sources PREPEND "${PROJECT_SOURCE_DIR}")
 
-  add_executable(${test_exec}
-    "${igl_sources}"
-    "${test_sources}"
-    "${igl_tests_root}/main.cpp")
+  set(all_sources "${igl_sources}" "${test_sources}" "${igl_tests_root}/main.cpp")
+  add_executable(${test_exec} "${all_sources}")
 
   target_compile_definitions(${test_exec} PRIVATE LIBIGL_DATA_DIR="${libigl_tests_data_SOURCE_DIR}")
   target_include_directories(${test_exec} PRIVATE "${igl_tests_root}")

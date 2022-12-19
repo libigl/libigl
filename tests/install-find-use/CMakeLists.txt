@@ -42,9 +42,11 @@ function(create_find_use_test igl_target)
     --test-command "${CMAKE_CTEST_COMMAND}" --verbose --output-on-failure)
 
   set_tests_properties(${test_name} PROPERTIES
-    RESOURCE_LOCK "use-libigl" # opposed to separate build directories
+    RESOURCE_LOCK "use-libigl" # opposed to separate build directories or projects
     FIXTURES_REQUIRED install-fixture)
 endfunction()
 
 
 create_find_use_test(igl::core)
+create_find_use_test(igl::xml)
+create_find_use_test(igl_copyleft::cgal)
