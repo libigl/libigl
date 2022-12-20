@@ -1,5 +1,5 @@
 if(LIBIGL_FIND_PACKAGES)
-  find_package(GMP REQUIRED)
+    find_package(GMP REQUIRED)
 endif()
 
 if(TARGET gmp::gmp)
@@ -21,7 +21,7 @@ else()
   set(prefix ${FETCHCONTENT_BASE_DIR}/gmp)
   set(gmp_INSTALL ${prefix}/install)
   set(gmp_LIB_DIR ${gmp_INSTALL}/lib)
-  set(gmp_LIBRARY 
+  set(gmp_LIBRARY
     ${gmp_LIB_DIR}/${CMAKE_STATIC_LIBRARY_PREFIX}gmp${CMAKE_STATIC_LIBRARY_SUFFIX}
     ${gmp_LIB_DIR}/${CMAKE_STATIC_LIBRARY_PREFIX}gmpxx${CMAKE_STATIC_LIBRARY_SUFFIX}
     )
@@ -41,11 +41,11 @@ else()
     URL  https://gmplib.org/download/gmp/gmp-6.2.1.tar.xz
     URL_MD5 0b82665c4a92fd2ade7440c13fcaa42b
     UPDATE_DISCONNECTED true  # need this to avoid constant rebuild
-    PATCH_COMMAND 
+    PATCH_COMMAND
       curl "https://gmplib.org/repo/gmp/raw-rev/5f32dbc41afc" "|" git apply -v
     ${gmp_ExternalProject_Add_extra_options}
-    CONFIGURE_COMMAND 
-      ${prefix}/src/gmp/configure 
+    CONFIGURE_COMMAND
+      ${prefix}/src/gmp/configure
       --disable-debug --disable-dependency-tracking --enable-cxx --with-pic
       --prefix=${gmp_INSTALL}
       --disable-shared

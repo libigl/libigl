@@ -1,5 +1,5 @@
 if(LIBIGL_FIND_PACKAGES)
-  find_package(imguizmo CONFIG REQUIRED)
+    find_package(imguizmo CONFIG REQUIRED)
 endif()
 
 if(TARGET imguizmo::imguizmo)

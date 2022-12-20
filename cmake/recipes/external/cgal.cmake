@@ -1,7 +1,5 @@
 if(LIBIGL_FIND_PACKAGES)
-  #include(boost)
-  #include(mpfr)
-  find_package(CGAL CONFIG REQUIRED COMPONENTS Core)
+    find_package(CGAL CONFIG REQUIRED COMPONENTS Core)
 endif()
 
 if(TARGET CGAL::CGAL)

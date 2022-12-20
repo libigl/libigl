@@ -1,5 +1,5 @@
 if(LIBIGL_FIND_PACKAGES)
-  find_package(stb CONFIG REQUIRED)
+    find_package(stb CONFIG REQUIRED)
 endif()
 
 if(TARGET stb::stb)

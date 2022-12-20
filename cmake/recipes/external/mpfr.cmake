@@ -1,5 +1,5 @@
 if(LIBIGL_FIND_PACKAGES)
-  find_package(mpfr REQUIRED)
+    find_package(mpfr REQUIRED)
 endif()
 
 # Expects
@@ -43,8 +43,8 @@ else()
     URL_MD5 bdd3d5efba9c17da8d83a35ec552baef
     UPDATE_DISCONNECTED true  # need this to avoid constant rebuild
     ${mpfr_ExternalProject_Add_extra_options} # avoid constant reconfigure
-    CONFIGURE_COMMAND 
-      ${prefix}/src/mpfr/configure 
+    CONFIGURE_COMMAND
+      ${prefix}/src/mpfr/configure
       --disable-debug --disable-dependency-tracking  --disable-silent-rules --enable-cxx --with-pic
       --with-gmp-include=${gmp_INCLUDE_DIR} --with-gmp-lib=${gmp_LIB_DIR}
       --disable-shared
@@ -65,7 +65,7 @@ else()
   target_link_libraries(mpfr::mpfr INTERFACE "${mpfr_LIBRARIES}")  # need the quotes to expand list
   # This is necessary to ensure that mpfr appears before gmp in link order.
   # Otherwise undefined reference errors occur at link time on Linux with gcc
-  target_link_libraries(mpfr::mpfr INTERFACE "${gmp_LIBRARIES}") 
+  target_link_libraries(mpfr::mpfr INTERFACE "${gmp_LIBRARIES}")
   add_dependencies(mpfr::mpfr mpfr)
 endif()
 

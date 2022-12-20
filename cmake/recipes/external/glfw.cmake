@@ -1,5 +1,5 @@
 if(LIBIGL_FIND_PACKAGES)
-  find_package(glfw CONFIG REQUIRED)
+    find_package(glfw CONFIG REQUIRED)
 endif()
 
 if(TARGET glfw::glfw)

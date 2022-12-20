@@ -1,8 +1,8 @@
 if(NOT TARGET igl::xml AND NOT @PROJECT_NAME@_BINARY_DIR)
-  find_dependency(tinyxml2 CONFIG REQUIRED)
+    find_dependency(tinyxml2 CONFIG REQUIRED)
 
-  include("${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@-core-config.cmake")
-  include("${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@-xml-targets.cmake")
+    include("${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@-core-config.cmake")
+    include("${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@-xml-targets.cmake")
 
-  set(@PROJECT_NAME@_xml_FOUND TRUE)
+    set(@PROJECT_NAME@_xml_FOUND TRUE)
 endif()
