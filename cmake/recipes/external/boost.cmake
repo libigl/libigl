@@ -27,13 +27,13 @@ set(boost_modules
   type_erasure
 )
 
-if (LIBIGL_FIND_PACKAGES)
+if(LIBIGL_FIND_PACKAGES)
   find_package(Boost CONFIG REQUIRED COMPONENTS ${boost_modules})
-endif ()
+endif()
 
-if (TARGET Boost::boost)
+if(TARGET Boost::boost)
   return()
-endif ()
+endif()
 
 message(STATUS "Third-party: creating targets 'Boost::boost'...")
 
@@ -51,18 +51,17 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 # This guy will download boost using FetchContent
 FetchContent_GetProperties(boost-cmake)
-if (NOT boost-cmake_POPULATED)
+if(NOT boost-cmake_POPULATED)
   FetchContent_Populate(boost-cmake)
   # File lcid.cpp from Boost_locale.cpp doesn't compile on MSVC, so we exclude them from the default
   # targets being built by the project (only targets explicitly used by other targets will be built).
   add_subdirectory(${boost-cmake_SOURCE_DIR} ${boost-cmake_BINARY_DIR} EXCLUDE_FROM_ALL)
-endif ()
+endif()
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ${OLD_CMAKE_POSITION_INDEPENDENT_CODE})
 set(CMAKE_CXX_FLAGS "${PREVIOUS_CMAKE_CXX_FLAGS}")
-foreach (module IN ITEMS ${boost_modules})
-  if (TARGET Boost_${module})
+foreach(module IN ITEMS ${boost_modules})
+  if(TARGET Boost_${module})
     set_target_properties(Boost_${module} PROPERTIES FOLDER ThirdParty/Boost)
-  endif ()
-endforeach ()
-
+  endif()
+endforeach()

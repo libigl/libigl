@@ -1,10 +1,10 @@
-if (LIBIGL_FIND_PACKAGES)
+if(LIBIGL_FIND_PACKAGES)
   find_package(Eigen3 CONFIG REQUIRED)
-endif ()
+endif()
 
-if (TARGET Eigen3::Eigen)
+if(TARGET Eigen3::Eigen)
   return()
-endif ()
+endif()
 
 message(STATUS "Third-party: creating target 'Eigen3::Eigen'")
 
@@ -16,9 +16,9 @@ FetchContent_Declare(
   GIT_SHALLOW TRUE
 )
 FetchContent_GetProperties(eigen)
-if (NOT eigen_POPULATED)
+if(NOT eigen_POPULATED)
   FetchContent_Populate(eigen)
-endif ()
+endif()
 
 add_library(Eigen3_Eigen INTERFACE)
 add_library(Eigen3::Eigen ALIAS Eigen3_Eigen)
@@ -30,11 +30,11 @@ target_include_directories(Eigen3_Eigen SYSTEM INTERFACE
   )
 
 option(EIGEN_MPL2_ONLY "Compile Eigen with MPL2 code only" OFF)
-if (EIGEN_MPL2_ONLY)
+if(EIGEN_MPL2_ONLY)
   target_compile_definitions(Eigen3_Eigen INTERFACE EIGEN_MPL2_ONLY)
-endif ()
+endif()
 
 # On Windows, enable natvis files to improve debugging experience
-if (WIN32 AND eigen_SOURCE_DIR)
+if(WIN32 AND eigen_SOURCE_DIR)
   target_sources(Eigen3_Eigen INTERFACE $<BUILD_INTERFACE:${eigen_SOURCE_DIR}/debug/msvc/eigen.natvis>)
-endif ()
+endif()

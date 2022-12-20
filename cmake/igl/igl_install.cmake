@@ -2,23 +2,23 @@ include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 
 function(igl_install module_name)
-  if (NOT LIBIGL_INSTALL)
+  if(NOT LIBIGL_INSTALL)
     return()
-  endif ()
+  endif()
 
   # Check module name
-  if (NOT ${module_name} MATCHES "^igl_")
+  if(NOT ${module_name} MATCHES "^igl_")
     message(FATAL_ERROR "Libigl module name should start with 'igl_'")
-  endif ()
+  endif()
 
   # extract suffix & component from module name
-  if (${module_name} MATCHES "^igl_copyleft")
+  if(${module_name} MATCHES "^igl_copyleft")
     set(suffix "-copyleft")
-  elseif (${module_name} MATCHES "^igl_restricted")
+  elseif(${module_name} MATCHES "^igl_restricted")
     set(suffix "-restricted")
-  else ()
+  else()
     set(suffix "")
-  endif ()
+  endif()
 
   string(REGEX REPLACE "^.*_?.+_" "-" component ${module_name})
 
@@ -31,16 +31,16 @@ function(igl_install module_name)
   install(TARGETS ${module_name}
     EXPORT ${exports_name}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-    COMPONENT LibiglRuntime
+            COMPONENT LibiglRuntime
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    COMPONENT LibiglRuntime
-    NAMELINK_COMPONENT LibiglDevelopment
+            COMPONENT          LibiglRuntime
+            NAMELINK_COMPONENT LibiglDevelopment
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    COMPONENT LibiglRuntime
+            COMPONENT LibiglRuntime
     PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-    COMPONENT LibiglDevelopment
+            COMPONENT LibiglDevelopment
     INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-    )
+  )
 
   ################################
   # Install Config Package Files #
@@ -74,14 +74,14 @@ function(igl_install module_name)
   # refactor this to use the folder where the target was defined (via the
   # target property SOURCE_DIR).
   set(target_include_dir ${libigl_SOURCE_DIR}/include)
-  foreach (source_path IN ITEMS ${ARGN})
+  foreach(source_path IN ITEMS ${ARGN})
     # Filter out .cpp files in "static lib" mode
-    if (LIBIGL_USE_STATIC_LIBRARY)
+    if(LIBIGL_USE_STATIC_LIBRARY)
       get_filename_component(extension ${source_path} LAST_EXT)
-      if (extension MATCHES ".cpp")
+      if(extension MATCHES ".cpp")
         continue()
-      endif ()
-    endif ()
+      endif()
+    endif()
 
     # Compute relative path to copy
     get_filename_component(source_directory ${source_path} DIRECTORY)
@@ -92,5 +92,5 @@ function(igl_install module_name)
       FILES ${source_path}
       DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${source_subdir}
     )
-  endforeach ()
+  endforeach()
 endfunction()

@@ -1,10 +1,10 @@
-if (LIBIGL_FIND_PACKAGES)
+if(LIBIGL_FIND_PACKAGES)
   find_package(imgui CONFIG REQUIRED)
-endif ()
+endif()
 
-if (TARGET imgui::imgui)
+if(TARGET imgui::imgui)
   return()
-endif ()
+endif()
 
 message(STATUS "Third-party: creating target 'imgui::imgui'")
 

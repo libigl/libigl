@@ -1,6 +1,6 @@
-if (TARGET Catch2::Catch2)
+if(TARGET Catch2::Catch2)
   return()
-endif ()
+endif()
 
 message(STATUS "Third-party: creating target 'Catch2::Catch2'")
 
