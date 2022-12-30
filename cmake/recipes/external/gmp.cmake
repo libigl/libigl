@@ -38,7 +38,7 @@ else()
     URL_MD5 0b82665c4a92fd2ade7440c13fcaa42b
     UPDATE_DISCONNECTED true  # need this to avoid constant rebuild
     PATCH_COMMAND 
-      curl "https://gmplib.org/repo/gmp/raw-rev/5f32dbc41afc" "|" git apply -v
+      curl -k "https://gmplib.org/repo/gmp/raw-rev/5f32dbc41afc" "|" git apply -v
     ${gmp_ExternalProject_Add_extra_options}
     CONFIGURE_COMMAND 
       ${prefix}/src/gmp/configure 
