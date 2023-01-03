@@ -141,7 +141,7 @@ bool writePLY(
 
     if(ED.cols()>0)
     {
-        assert(ED.rows()==F.rows());
+        assert(ED.rows()==E.rows());
         assert(ED.cols() == EDheader.size());
 
         _ed.resize(ED.size());
