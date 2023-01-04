@@ -55,7 +55,7 @@ jobs:
       - name: Dependencies (macOS)
         if: runner.os == 'macOS'
         run: |
-          brew update
+          brew update || true
           brew install ccache
 
       - name: Cache Build
