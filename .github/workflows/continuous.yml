@@ -56,6 +56,7 @@ jobs:
         if: runner.os == 'macOS'
         run: |
           curl -o /usr/local/bin/ccache "https://github.com/libigl/ccache-binaries/blob/main/macos_universal/bin/ccache?raw=true"
+          chmod a+x /usr/local/bin/ccache
 
       - name: Cache Build
         id: cache-build
