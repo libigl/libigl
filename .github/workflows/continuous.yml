@@ -55,9 +55,13 @@ jobs:
       - name: Dependencies (macOS)
         if: runner.os == 'macOS'
         run: |
-          rm '/usr/local/bin/2to3'
-          brew update || true
-          brew install ccache || true
+          rm /usr/local/bin/2to3
+          rm /usr/local/bin/2to3-3.11
+          rm /usr/local/bin/idle3
+          rm /usr/local/bin/pydoc3
+          rm /usr/local/bin/python3
+          rm /usr/local/bin/python3-config
+          brew install ccache
 
       - name: Cache Build
         id: cache-build
