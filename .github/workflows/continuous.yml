@@ -55,8 +55,7 @@ jobs:
       - name: Dependencies (macOS)
         if: runner.os == 'macOS'
         run: |
-          brew update
-          brew install ccache
+          curl -o /usr/local/bin/ccache "https://github.com/libigl/ccache-binaries/blob/main/macos_universal/bin/ccache?raw=true"
 
       - name: Cache Build
         id: cache-build
