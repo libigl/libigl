@@ -56,7 +56,7 @@ jobs:
         if: runner.os == 'macOS'
         run: |
           brew update || true
-          brew install ccache
+          HOMEBREW_NO_AUTO_UPDATE=1 brew install ccache
 
       - name: Cache Build
         id: cache-build
