@@ -7,12 +7,12 @@
 #include <cassert>
 
 template <
-  typename DerivedP, 
-  typename DerivedA, 
+  typename DerivedP,
+  typename DerivedA,
   typename DerivedN,
-  typename Index, 
-  typename DerivedCH, 
-  typename DerivedCM, 
+  typename Index,
+  typename DerivedCH,
+  typename DerivedCM,
   typename DerivedR,
   typename DerivedEC>
 IGL_INLINE void igl::fast_winding_number(
@@ -63,19 +63,19 @@ IGL_INLINE void igl::fast_winding_number(
       real_p areatotal = 0.0;
       for(int j = 0; j < point_indices[index].size(); j++){
           int curr_point_index = point_indices[index][j];
-        
-          areatotal += A(curr_point_index);
-          masscenter += A(curr_point_index)*P.row(curr_point_index);
-          zeroth_expansion += A(curr_point_index)*N.row(curr_point_index);
+
+          areatotal += A(curr_point_index, 0);
+          masscenter += A(curr_point_index, 0)*P.row(curr_point_index);
+          zeroth_expansion += A(curr_point_index, 0)*N.row(curr_point_index);
       }
-    
+
       masscenter = masscenter/areatotal;
       CM.row(index) = masscenter;
       EC.block(index,0,1,3) = zeroth_expansion;
-    
+
       real_r max_norm = 0;
       real_r curr_norm;
-    
+
       for(int i = 0; i < point_indices[index].size(); i++){
           //Get max distance from center of mass:
           int curr_point_index = point_indices[index][i];
@@ -85,20 +85,20 @@ IGL_INLINE void igl::fast_winding_number(
           if(curr_norm > max_norm){
               max_norm = curr_norm;
           }
-        
+
           //Calculate higher order terms if necessary
           Eigen::Matrix<real_ec,3,3> TempCoeffs;
           if(EC.cols() >= (3+9)){
-              TempCoeffs = A(curr_point_index)*point.transpose()*
+              TempCoeffs = A(curr_point_index, 0)*point.transpose()*
                               N.row(curr_point_index);
               EC.block(index,3,1,9) +=
               Eigen::Map<Eigen::Matrix<real_ec,1,9> >(TempCoeffs.data(),
                                                       TempCoeffs.size());
           }
-        
+
           if(EC.cols() == (3+9+27)){
               for(int k = 0; k < 3; k++){
-                  TempCoeffs = 0.5 * point(k) * (A(curr_point_index)*
+                  TempCoeffs = 0.5 * point(k) * (A(curr_point_index, 0)*
                                 point.transpose()*N.row(curr_point_index));
                   EC.block(index,12+9*k,1,9) += Eigen::Map<
                     Eigen::Matrix<real_ec,1,9> >(TempCoeffs.data(),
@@ -106,7 +106,7 @@ IGL_INLINE void igl::fast_winding_number(
               }
           }
       }
-    
+
       R(index) = max_norm;
       if(CH(index,0) != -1)
       {
@@ -120,15 +120,15 @@ IGL_INLINE void igl::fast_winding_number(
 }
 
 template <
-  typename DerivedP, 
-  typename DerivedA, 
+  typename DerivedP,
+  typename DerivedA,
   typename DerivedN,
-  typename Index, 
-  typename DerivedCH, 
-  typename DerivedCM, 
+  typename Index,
+  typename DerivedCH,
+  typename DerivedCM,
   typename DerivedR,
-  typename DerivedEC, 
-  typename DerivedQ, 
+  typename DerivedEC,
+  typename DerivedQ,
   typename BetaType,
   typename DerivedWN>
 IGL_INLINE void igl::fast_winding_number(
@@ -178,7 +178,7 @@ IGL_INLINE void igl::fast_winding_number(
     }
   };
 
-  auto expansion_eval = 
+  auto expansion_eval =
     [&direct_eval,&EC,&PI_4](
       const RowVec & loc,
       const int & child_index)->real_wn
@@ -194,12 +194,12 @@ IGL_INLINE void igl::fast_winding_number(
       PI_4_r3 = PI_4*r*r*r;
       PI_4_r5 = PI_4_r3*r*r;
       const real_ec d = 1.0/(PI_4_r3);
-      Eigen::Matrix<real_ec,3,3> SecondDerivative = 
+      Eigen::Matrix<real_ec,3,3> SecondDerivative =
         loc.transpose()*loc*(-3.0/(PI_4_r5));
       SecondDerivative(0,0) += d;
       SecondDerivative(1,1) += d;
       SecondDerivative(2,2) += d;
-      wn += 
+      wn +=
         Eigen::Map<Eigen::Matrix<real_ec,1,9> >(
           SecondDerivative.data(),
           SecondDerivative.size()).dot(
@@ -211,7 +211,7 @@ IGL_INLINE void igl::fast_winding_number(
       const Eigen::Matrix<real_ec,3,3> locTloc = loc.transpose()*(loc/(PI_4_r7));
       for(int i = 0; i < 3; i++)
       {
-        Eigen::Matrix<real_ec,3,3> RowCol_Diagonal = 
+        Eigen::Matrix<real_ec,3,3> RowCol_Diagonal =
           Eigen::Matrix<real_ec,3,3>::Zero(3,3);
         for(int u = 0;u<3;u++)
         {
@@ -222,7 +222,7 @@ IGL_INLINE void igl::fast_winding_number(
             if(v==i) RowCol_Diagonal(u,v) += loc(u);
           }
         }
-        Eigen::Matrix<real_ec,3,3> ThirdDerivative = 
+        Eigen::Matrix<real_ec,3,3> ThirdDerivative =
           15.0*loc(i)*locTloc + (-3.0/(PI_4_r5))*(RowCol_Diagonal);
 
         wn += Eigen::Map<Eigen::Matrix<real_ec,1,9> >(
@@ -258,11 +258,11 @@ IGL_INLINE void igl::fast_winding_number(
         {
           int curr_row = point_indices[index][j];
           wn += direct_eval(P.row(curr_row)-query,
-                            N.row(curr_row)*A(curr_row));
+                            N.row(curr_row)*A(curr_row, 0));
         }
       }
       //Non-Leaf Case
-      else 
+      else
       {
         for(int child = 0; child < 8; child++)
         {
@@ -278,12 +278,12 @@ IGL_INLINE void igl::fast_winding_number(
                 {
                   int curr_row = point_indices[child_index][j];
                   wn += direct_eval(P.row(curr_row)-query,
-                                    N.row(curr_row)*A(curr_row));
+                                    N.row(curr_row)*A(curr_row, 0));
                 }
               }else{
                 wn += expansion_eval(CMciq,child_index);
               }
-            }else 
+            }else
             {
               new_near_indices.emplace_back(child_index);
             }
@@ -304,13 +304,13 @@ IGL_INLINE void igl::fast_winding_number(
     igl::parallel_for(m,[&](int iter){
       WN(iter) = helper(Q.row(iter).eval(),near_indices_start);
     },1000);
-  } else 
+  } else
   {
     igl::parallel_for(m,[&](int iter){
       double wn = 0;
       for(int j = 0; j <P.rows(); j++)
       {
-        wn += direct_eval(P.row(j)-Q.row(iter),N.row(j)*A(j));
+        wn += direct_eval(P.row(j)-Q.row(iter),N.row(j)*A(j, 0));
       }
       WN(iter) = wn;
     },1000);
@@ -318,11 +318,11 @@ IGL_INLINE void igl::fast_winding_number(
 }
 
 template <
-  typename DerivedP, 
-  typename DerivedA, 
+  typename DerivedP,
+  typename DerivedA,
   typename DerivedN,
-  typename DerivedQ, 
-  typename BetaType, 
+  typename DerivedQ,
+  typename BetaType,
   typename DerivedWN>
 IGL_INLINE void igl::fast_winding_number(
   const Eigen::MatrixBase<DerivedP>& P,
@@ -334,7 +334,7 @@ IGL_INLINE void igl::fast_winding_number(
   Eigen::PlainObjectBase<DerivedWN>& WN)
 {
   typedef typename DerivedWN::Scalar real;
-  
+
   std::vector<std::vector<int> > point_indices;
   Eigen::Matrix<int,Eigen::Dynamic,8> CH;
   Eigen::Matrix<real,Eigen::Dynamic,3> CN;
@@ -351,10 +351,10 @@ IGL_INLINE void igl::fast_winding_number(
 }
 
 template <
-  typename DerivedP, 
-  typename DerivedA, 
+  typename DerivedP,
+  typename DerivedA,
   typename DerivedN,
-  typename DerivedQ, 
+  typename DerivedQ,
   typename DerivedWN>
 IGL_INLINE void igl::fast_winding_number(
   const Eigen::MatrixBase<DerivedP>& P,
@@ -415,10 +415,10 @@ IGL_INLINE void igl::fast_winding_number(
   }
   fwn_bvh.ut_solid_angle.clear();
   fwn_bvh.ut_solid_angle.init(
-     fwn_bvh.F.size()/3, 
-    &fwn_bvh.F[0], 
-     fwn_bvh.U.size(), 
-    &fwn_bvh.U[0], 
+     fwn_bvh.F.size()/3,
+    &fwn_bvh.F[0],
+     fwn_bvh.U.size(),
+    &fwn_bvh.U[0],
     order);
 }
 
