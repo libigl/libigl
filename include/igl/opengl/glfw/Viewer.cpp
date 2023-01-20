@@ -240,18 +240,17 @@ namespace glfw
       if(core().is_animating || frame_counter++ < num_extra_frames)
       {
         glfwPollEvents();
-        // In microseconds
-        double duration = 1000000.*(get_seconds()-tic);
-        const double min_duration = 1000000./core().animation_max_fps;
-        if(duration<min_duration)
-        {
-          std::this_thread::sleep_for(std::chrono::microseconds((int)(min_duration-duration)));
-        }
-      }
-      else
+      }else
       {
         glfwWaitEvents();
         frame_counter = 0;
+      }
+      // In microseconds
+      double duration = 1000000.*(get_seconds()-tic);
+      const double min_duration = 1000000./core().animation_max_fps;
+      if(duration<min_duration)
+      {
+        std::this_thread::sleep_for(std::chrono::microseconds((int)(min_duration-duration)));
       }
       if (!loop)
         return !glfwWindowShouldClose(window);
