@@ -273,7 +273,10 @@ namespace glfw
     {
       data.meshgl.free();
     }
-    core().shut(); // Doesn't do anything
+    for(auto &core : this->core_list)
+    {
+      core.shut(); 
+    }
     shutdown_plugins();
     glfwDestroyWindow(window);
     glfwTerminate();
@@ -282,7 +285,10 @@ namespace glfw
 
   IGL_INLINE void Viewer::init()
   {
-    core().init(); // Doesn't do anything
+    for(auto &core : this->core_list)
+    {
+      core.init();
+    }
 
     if (callback_init)
       if (callback_init(*this))
@@ -359,6 +365,7 @@ namespace glfw
   I,i     Toggle invert normals
   L,l     Toggle wireframe
   O,o     Toggle orthographic/perspective projection
+  S,s     Toggle shadows
   T,t     Toggle filled faces
   Z       Snap to canonical view
   [,]     Toggle between rotation control types (trackball, two-axis
@@ -551,6 +558,39 @@ namespace glfw
       case 'o':
       {
         core().orthographic = !core().orthographic;
+        return true;
+      }
+      case 'S':
+      case 's':
+      {
+        if(core().is_directional_light)
+        {
+          core().is_shadow_mapping = !core().is_shadow_mapping;
+        }else
+        {
+          if(core().is_shadow_mapping)
+          {
+            core().is_shadow_mapping = false;
+          }else
+          {
+            // The light_position when !is_directional_light is interpretted as
+            // a position relative to the _eye_ (not look-at) position of the
+            // camera.
+            //
+            // Meanwhile shadows only current work in is_directional_light mode.
+            //
+            // If the user wants to flip back and forth between [positional lights
+            // without shadows] and [directional lights with shadows] then they
+            // can high-jack this key_pressed with a callback.
+            // 
+            // Until shadows support positional lights, let's switch to
+            // directional lights here and match the direction best as possible to
+            // the current light position.
+            core().is_directional_light = true;
+            core().light_position = core().light_position + core().camera_eye;
+            core().is_shadow_mapping = true;
+          }
+        }
         return true;
       }
       case 'T':
@@ -909,6 +949,23 @@ namespace glfw
       if (callback_pre_draw(*this))
       {
         return;
+      }
+    }
+    
+    // Shadow pass
+    for (auto& core : core_list)
+    {
+      if(core.is_shadow_mapping)
+      {
+        core.initialize_shadow_pass();
+        for (auto& mesh : data_list)
+        {
+          if (mesh.is_visible & core.id)
+          {
+            core.draw_shadow_pass(mesh);
+          }
+        }
+        core.deinitialize_shadow_pass();
       }
     }
 
