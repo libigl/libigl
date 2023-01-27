@@ -1,6 +1,7 @@
 #include <igl/opengl/glfw/Viewer.h>
 #include <igl/read_triangle_mesh.h>
 #include <igl/triangulated_grid.h>
+#include <igl/png/readPNG.h>
 #include <algorithm>
 
 void floor(const Eigen::MatrixXd & V, 
@@ -87,6 +88,36 @@ int main(int argc, char *argv[])
   vr.append_mesh();
   vr.data().set_mesh(V,F);
   vr.data().show_lines = false;
+
+  // If a second argument is present read it as a matcap
+  if(argc>2)
+  {
+    Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> R,G,B,A;
+    igl::png::readPNG(argv[2],R,G,B,A);
+    // If more args, read them as light direction
+    if(argc>2+3)
+    {
+      Eigen::Vector3f D;
+      D << std::atof(argv[3]), std::atof(argv[4]), std::atof(argv[5]);
+      D.normalize();
+      vr.core().light_position = D;
+      // Assume that color opposite D along umbra boundary is ambient color
+      const double s = -D(2)*1.0/sqrt((D(0)*D(0)+D(1)*D(1))*(D(0)*D(0)+D(1)*D(1)+D(2)*D(2))); 
+      const int i = ((D(0)*s)*0.5+0.5)*R.cols();
+      const int j = ((D(1)*s)*0.5+0.5)*R.rows();
+      Eigen::Vector3d Ka( double(R(i,j))/255.0, double(G(i,j))/255.0, double(B(i,j))/255.0);
+      // viewer only exposes ambient color through per-face and per-vertex
+      // materials
+      vr.data().V_material_ambient.col(0).setConstant( Ka(0) );
+      vr.data().V_material_ambient.col(1).setConstant( Ka(1) );
+      vr.data().V_material_ambient.col(2).setConstant( Ka(2) );
+      vr.data().F_material_ambient.col(0).setConstant( Ka(0) );
+      vr.data().F_material_ambient.col(1).setConstant( Ka(1) );
+      vr.data().F_material_ambient.col(2).setConstant( Ka(2) );
+    }
+    vr.data().set_texture(R,G,B,A);
+    vr.data().use_matcap = true;
+  }
 
   vr.launch();
 }

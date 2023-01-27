@@ -28,7 +28,7 @@ if(LIBIGL_TUTORIALS_CHAPTER1)
     igl_add_tutorial(110_MshView igl::glfw)
     igl_add_tutorial(111_MatCap igl::glfw igl::png)
     igl_add_tutorial(112_Selection igl::imgui)
-    igl_add_tutorial(113_Shadows igl::imgui)
+    igl_add_tutorial(113_Shadows igl::imgui igl::png)
 endif()
 
 # Chapter 2
