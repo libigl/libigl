@@ -2,6 +2,10 @@
 #include <igl/read_triangle_mesh.h>
 #include <igl/triangulated_grid.h>
 #include <igl/png/readPNG.h>
+#include <igl/get_seconds.h>
+#include <igl/PI.h>
+#include <Eigen/Core>
+
 #include <algorithm>
 
 void floor(const Eigen::MatrixXd & V, 
@@ -88,6 +92,7 @@ int main(int argc, char *argv[])
   vr.append_mesh();
   vr.data().set_mesh(V,F);
   vr.data().show_lines = false;
+  vr.data().set_face_based(true);
 
   // If a second argument is present read it as a matcap
   if(argc>2)
@@ -101,11 +106,16 @@ int main(int argc, char *argv[])
       D << std::atof(argv[3]), std::atof(argv[4]), std::atof(argv[5]);
       D.normalize();
       vr.core().light_position = D;
-      // Assume that color opposite D along umbra boundary is ambient color
-      const double s = -D(2)*1.0/sqrt((D(0)*D(0)+D(1)*D(1))*(D(0)*D(0)+D(1)*D(1)+D(2)*D(2))); 
-      const int i = ((D(0)*s)*0.5+0.5)*R.cols();
-      const int j = ((D(1)*s)*0.5+0.5)*R.rows();
-      Eigen::Vector3d Ka( double(R(i,j))/255.0, double(G(i,j))/255.0, double(B(i,j))/255.0);
+      Eigen::Vector3d Ka(0.14,0.14,0.14);
+      if(argc>2+3+1 && std::atoi(argv[6]))
+      {
+        // Assume that color opposite D along umbra boundary is ambient color
+        const double s = -D(2)*1.0/sqrt((D(0)*D(0)+D(1)*D(1))*(D(0)*D(0)+D(1)*D(1)+D(2)*D(2))); 
+        const int i = ((D(0)*s)*0.5+0.5)*R.cols();
+        const int j = ((D(1)*s)*0.5+0.5)*R.rows();
+        Ka << double(R(i,j))/255.0, double(G(i,j))/255.0, double(B(i,j))/255.0;
+      }
+      std::cout<<"Ka : "<<Ka<<std::endl;
       // viewer only exposes ambient color through per-face and per-vertex
       // materials
       vr.data().V_material_ambient.col(0).setConstant( Ka(0) );
@@ -118,6 +128,17 @@ int main(int argc, char *argv[])
     vr.data().set_texture(R,G,B,A);
     vr.data().use_matcap = true;
   }
-
+  vr.core().is_animating = true;
+  vr.core().camera_zoom *= 1.5;
+  vr.callback_pre_draw = [&](decltype(vr)&)
+  {
+    if(vr.core().is_animating)
+    {
+      vr.core().trackball_angle = Eigen::AngleAxisf( 
+          sin(igl::get_seconds())*igl::PI*0.5,
+          Eigen::Vector3f(0,1,0));
+    }
+    return false;
+  };
   vr.launch();
 }
