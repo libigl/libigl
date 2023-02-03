@@ -303,7 +303,7 @@ IGL_INLINE void igl::opengl::ViewerCore::initialize_shadow_pass()
   float camera_dnear =                      this->camera_dnear;
   float camera_dfar =                       this->camera_dfar;
   Eigen::Quaternionf trackball_angle =      this->trackball_angle;
-  float camera_zoom =                       1;//this->camera_zoom;
+  float camera_zoom =                       this->camera_zoom;
   float camera_base_zoom =                  this->camera_base_zoom;
   Eigen::Vector3f camera_translation =      this->camera_translation;
   Eigen::Vector3f camera_base_translation = this->camera_base_translation;
