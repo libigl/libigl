@@ -79,7 +79,6 @@ IGL_INLINE void igl::cotmatrix(
 }
 
 #include "massmatrix.h"
-#include "pinv.h"
 #include "cotmatrix_entries.h"
 #include "diag.h"
 #include "massmatrix.h"

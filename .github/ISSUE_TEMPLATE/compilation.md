@@ -21,5 +21,6 @@ assignees: ''
 <!-- Check all that apply (change to `[x]`) -->
 
 - [ ] Windows
-- [ ] macOS
+- [ ] macOS Intel
+- [ ] macOS Arm (e.g., M1, M2)
 - [ ] Linux

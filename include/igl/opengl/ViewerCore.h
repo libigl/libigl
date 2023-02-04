@@ -27,6 +27,7 @@ class ViewerData;
 class ViewerCore
 {
 public:
+  using GLuint = MeshGL::GLuint;
   IGL_INLINE ViewerCore();
 
   // Initialization
@@ -78,6 +79,9 @@ public:
   //   update_matrices  whether to update view, proj, and norm matrices in
   //     shaders
   IGL_INLINE void draw(ViewerData& data, bool update_matrices = true);
+  IGL_INLINE void initialize_shadow_pass();
+  IGL_INLINE void deinitialize_shadow_pass();
+  IGL_INLINE void draw_shadow_pass(ViewerData& data, bool update_matrices = true);
   // Render given ViewerData to a buffer. The width and height are determined by
   // non-zeros dimensions of R (and G,B,A should match) or – if both are zero —
   // are set to this core's viewport sizes.
@@ -128,6 +132,10 @@ public:
   // Check whether a ViewerData visualization option is set for this viewport
   IGL_INLINE bool is_set(unsigned int property_mask) const;
 
+  // ------------------- Function
+  IGL_INLINE void delete_shadow_buffers();
+  IGL_INLINE void generate_shadow_buffers();
+
   // ------------------- Properties
 
   // Unique identifier
@@ -138,6 +146,12 @@ public:
 
   // Lighting
   Eigen::Vector3f light_position;
+  bool is_directional_light;
+  bool is_shadow_mapping;
+  GLuint shadow_width, shadow_height;
+  GLuint shadow_depth_tex;
+  GLuint shadow_depth_fbo;
+  GLuint shadow_color_rbo;
   float lighting_factor;
 
   RotationType rotation_type;
@@ -172,6 +186,8 @@ public:
   Eigen::Matrix4f view;
   Eigen::Matrix4f proj;
   Eigen::Matrix4f norm;
+  Eigen::Matrix4f shadow_view;
+  Eigen::Matrix4f shadow_proj;
   public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
