@@ -390,7 +390,8 @@ void igl::copyleft::comiso::NRosyField::solveRoundings()
   gmm::row_matrix< gmm::wsvector< double > > gmm_C(0, n);
 
   COMISO::ConstrainedSolver cs;
-  cs.solve(gmm_C, gmm_A, x, gmm_b, ids_to_round, 0.0, false, true);
+  cs.solve(gmm_C, gmm_A, x, gmm_b, ids_to_round, 0.0, false);
+
 
   // Copy the result back
   for(unsigned i=0; i<F.rows(); ++i)
