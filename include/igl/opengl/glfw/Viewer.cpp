@@ -47,7 +47,8 @@
 
 // Internal global variables used for glfw event handling
 static igl::opengl::glfw::Viewer * __viewer;
-static double highdpi = 1;
+static double highdpiw = 1; // High DPI width
+static double highdpih = 1; // High DPI height
 static double scroll_x = 0;
 static double scroll_y = 0;
 
@@ -92,8 +93,8 @@ static void glfw_key_callback(GLFWwindow* window, int key, int scancode, int act
 
 static void glfw_window_size(GLFWwindow* window, int width, int height)
 {
-  int w = width*highdpi;
-  int h = height*highdpi;
+  int w = width*highdpiw;
+  int h = height*highdpih;
 
   __viewer->post_resize(w, h);
 
@@ -101,7 +102,7 @@ static void glfw_window_size(GLFWwindow* window, int width, int height)
 
 static void glfw_mouse_move(GLFWwindow* window, double x, double y)
 {
-  __viewer->mouse_move(x*highdpi, y*highdpi);
+  __viewer->mouse_move(x*highdpiw, y*highdpih);
 }
 
 static void glfw_mouse_scroll(GLFWwindow* window, double x, double y)
@@ -209,7 +210,8 @@ namespace glfw
     glfwGetFramebufferSize(window, &width, &height);
     int width_window, height_window;
     glfwGetWindowSize(window, &width_window, &height_window);
-    highdpi = windowWidth/width_window;
+    highdpiw = windowWidth/width_window;
+    highdpih = windowHeight/height_window;
     glfw_window_size(window,width_window,height_window);
     // Initialize IGL viewer
     init();
@@ -924,12 +926,14 @@ namespace glfw
     int width_window, height_window;
     glfwGetWindowSize(window, &width_window, &height_window);
 
-    auto highdpi_tmp = (width_window == 0 ||  width == 0) ? highdpi : (width/width_window);
+    auto highdpiw_tmp = (width_window == 0 ||  width == 0) ? highdpiw : (width/width_window);
+    auto highdpih_tmp = (height_window == 0 ||  height == 0) ? highdpih : (height/height_window);
 
-    if(fabs(highdpi_tmp-highdpi)>1e-8)
+    if(fabs(highdpiw_tmp-highdpiw)>1e-8 || fabs(highdpih_tmp-highdpih)>1e-8)
     {
       post_resize(width, height);
-      highdpi=highdpi_tmp;
+      highdpiw=highdpiw_tmp;
+      highdpih=highdpih_tmp;
     }
 
     for (auto& core : core_list)
@@ -1151,7 +1155,7 @@ namespace glfw
   IGL_INLINE void Viewer::resize(int w,int h)
   {
     if (window) {
-      glfwSetWindowSize(window, w/highdpi, h/highdpi);
+      glfwSetWindowSize(window, w/highdpiw, h/highdpih);
     }
     post_resize(w, h);
   }
