@@ -42,7 +42,7 @@ IGL_INLINE void igl::random_points_on_mesh(
   assert(R.minCoeff() >= 0);
   assert(R.maxCoeff() <= 1);
   histc(R,C,FI);
-  using FIValueType = Eigen::PlainObjectBase<DerivedFI>::value_type;
+  using FIValueType = typename Eigen::PlainObjectBase<DerivedFI>::value_type;
   FI = FI.array().min(static_cast<FIValueType>(F.rows() - 1)); // fix the bin when R(i) == 1 exactly
   const VectorXs S = (VectorXs::Random(n,1).array() + 1.)/2.;
   const VectorXs T = (VectorXs::Random(n,1).array() + 1.)/2.;
