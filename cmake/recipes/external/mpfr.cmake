@@ -14,6 +14,22 @@ if(WIN32)
 else()
   message(STATUS "Third-party: creating target 'mpfr::mpfr'")
 
+  # Praying this will work the same as gmp
+  if(APPLE)
+    # https://gmplib.org/list-archives/gmp-discuss/2020-November/006607.html
+    if(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "x86_64" AND ${CMAKE_OSX_ARCHITECTURES} STREQUAL "arm64")
+      set(mpfr_BUILD "x86_64-apple-darwin")
+      set(mpfr_HOST "arm64-apple-darwin")
+      set(mpfr_CFLAGS "--target=arm64-apple-darwin")
+      set(mpfr_LDFLAGS "-arch arm64")
+    elseif(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "arm64" AND ${CMAKE_OSX_ARCHITECTURES} STREQUAL "x86_64")
+      set(mpfr_HOST "x86_64-apple-darwin")
+      set(mpfr_BUILD "arm64-apple-darwin")
+      set(mpfr_CFLAGS "--target=x86_64-apple-darwin13.0.0")
+      set(mpfr_LDFLAGS "")
+    endif()
+  endif()
+
   include(FetchContent)
   include(ProcessorCount)
   ProcessorCount(Ncpu)
@@ -35,16 +51,21 @@ else()
   ExternalProject_Add(mpfr
     PREFIX ${prefix}
     DEPENDS gmp
-    URL  https://ftp.gnu.org/gnu/mpfr/mpfr-4.1.0.tar.xz
-    URL_MD5 bdd3d5efba9c17da8d83a35ec552baef
+    URL  https://ftp.gnu.org/gnu/mpfr/mpfr-4.2.0.tar.xz
+    URL_MD5 a25091f337f25830c16d2054d74b5af7
     UPDATE_DISCONNECTED true  # need this to avoid constant rebuild
     ${mpfr_ExternalProject_Add_extra_options} # avoid constant reconfigure
     CONFIGURE_COMMAND 
+     ${CMAKE_COMMAND} -E env
+      CFLAGS=${gmp_CFLAGS}
+     LDFLAGS=${gmp_LDFLAGS}
       ${prefix}/src/mpfr/configure 
       --disable-debug --disable-dependency-tracking  --disable-silent-rules --enable-cxx --with-pic
       --with-gmp-include=${gmp_INCLUDE_DIR} --with-gmp-lib=${gmp_LIB_DIR}
       --disable-shared
       --prefix=${mpfr_INSTALL}
+      --build=${gmp_BUILD}
+      --host=${gmp_HOST}
       --disable-shared
     BUILD_COMMAND make -j${Ncpu}
     INSTALL_COMMAND make -j${Ncpu} install

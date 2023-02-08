@@ -10,6 +10,29 @@ if(WIN32)
 else()
   message(STATUS "Third-party: creating target 'gmp::gmp'")
 
+  # SERIOUSLY !?! CMAKE and configure use transposed definitions of "build" and
+  # "host"?
+  #
+  # https://cmake.org/cmake/help/latest/variable/CMAKE_SYSTEM_NAME.html#variable:CMAKE_SYSTEM_NAME
+  # https://gcc.gnu.org/onlinedocs/gccint/Configure-Terms.html
+  #
+  # Seems these aren't to be trusted much
+  # https://gitlab.kitware.com/cmake/cmake/-/issues/20989
+  if(APPLE)
+    # https://gmplib.org/list-archives/gmp-discuss/2020-November/006607.html
+    if(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "x86_64" AND ${CMAKE_OSX_ARCHITECTURES} STREQUAL "arm64")
+      set(gmp_BUILD "x86_64-apple-darwin")
+      set(gmp_HOST "arm64-apple-darwin")
+      set(gmp_CFLAGS "--target=arm64-apple-darwin")
+      set(gmp_LDFLAGS "-arch arm64")
+    elseif(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "arm64" AND ${CMAKE_OSX_ARCHITECTURES} STREQUAL "x86_64")
+      set(gmp_HOST "x86_64-apple-darwin")
+      set(gmp_BUILD "arm64-apple-darwin")
+      set(gmp_CFLAGS "--target=x86_64-apple-darwin13.0.0")
+      set(gmp_LDFLAGS "")
+    endif()
+  endif()
+
   include(FetchContent)
   include(ProcessorCount)
   ProcessorCount(Ncpu)
@@ -41,9 +64,14 @@ else()
       curl "https://gmplib.org/repo/gmp/raw-rev/5f32dbc41afc" "|" git apply -v
     ${gmp_ExternalProject_Add_extra_options}
     CONFIGURE_COMMAND 
+     ${CMAKE_COMMAND} -E env
+      CFLAGS=${gmp_CFLAGS}
+     LDFLAGS=${gmp_LDFLAGS}
       ${prefix}/src/gmp/configure 
       --disable-debug --disable-dependency-tracking --enable-cxx --with-pic
       --prefix=${gmp_INSTALL}
+      --build=${gmp_BUILD}
+      --host=${gmp_HOST}
       --disable-shared
     BUILD_COMMAND make -j${Ncpu}
     INSTALL_COMMAND make -j${Ncpu} install
