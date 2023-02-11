@@ -23,7 +23,7 @@ IGL_INLINE void igl::unique_rows(
   using namespace std;
   using namespace Eigen;
   VectorXi IM;
-  DerivedA sortA;
+  Eigen::Matrix<typename DerivedA::Scalar, DerivedA::RowsAtCompileTime, DerivedA::ColsAtCompileTime> sortA;
   sortrows(A,true,sortA,IM);
 
 
