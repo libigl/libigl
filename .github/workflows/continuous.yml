@@ -20,7 +20,7 @@ jobs:
   ####################
 
   Unix:
-    name: ${{ matrix.os }} ${{ matrix.config }} ${{ fromJSON('["HeaderOnly", "Static"]')[matrix.static == 'ON'] }} ${{ matrix.tutorial == 'ON' && 'tutorial' }} ${{ matrix.tests == 'OFF' && 'tests'}}
+    name: ${{ matrix.os }} ${{ matrix.config }} ${{ fromJSON('["HeaderOnly", "Static"]')[matrix.static == 'ON'] }} ${{ matrix.tutorial == 'ON' && 'tutorial' || ''}} ${{ matrix.tests == 'OFF' && 'tests' || ''}}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -36,7 +36,7 @@ jobs:
             tests: ON
           - static: OFF
             tutorial: ON
-            tests: OOFF
+            tests: OFF
     env:
       IGL_NUM_THREADS: 1  # See https://github.com/libigl/libigl/pull/996
     steps:
@@ -96,7 +96,7 @@ jobs:
   ####################
 
   Windows:
-    name: Windows ${{ matrix.config }} ${{ fromJSON('["HeaderOnly", "Static"]')[matrix.static == 'ON'] }} ${{ matrix.tutorial == 'ON' && 'tutorial' }} ${{ matrix.tests == 'OFF' && 'tests'}}
+    name: Windows ${{ matrix.config }} ${{ fromJSON('["HeaderOnly", "Static"]')[matrix.static == 'ON'] }} ${{ matrix.tutorial == 'ON' && 'tutorial' || ''}} ${{ matrix.tests == 'OFF' && 'tests' || ''}}
     runs-on: windows-2022
     strategy:
       fail-fast: false
@@ -111,7 +111,7 @@ jobs:
             tests: ON
           - static: OFF
             tutorial: ON
-            tests: OOFF
+            tests: OFF
     steps:
       - name: Checkout repository
         uses: actions/checkout@v1
