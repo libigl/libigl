@@ -26,17 +26,17 @@ namespace igl
   //     reference as X)
   //   I  m list of indices so that
   //     Y = X(I,:);
-  template <typename DerivedX, typename DerivedI>
+  template <typename DerivedX, typename DerivedY,typename DerivedI>
   IGL_INLINE void sortrows(
     const Eigen::DenseBase<DerivedX>& X,
     const bool ascending,
-    Eigen::PlainObjectBase<DerivedX>& Y,
+    Eigen::PlainObjectBase<DerivedY>& Y,
     Eigen::PlainObjectBase<DerivedI>& I);
-  template <typename DerivedX >
+  template <typename DerivedX, typename DerivedY>
   IGL_INLINE void sortrows(
     const Eigen::DenseBase<DerivedX>& X,
     const bool ascending,
-    Eigen::PlainObjectBase<DerivedX>& Y);
+    Eigen::PlainObjectBase<DerivedY>& Y);
 }
 
 #ifndef IGL_STATIC_LIBRARY
