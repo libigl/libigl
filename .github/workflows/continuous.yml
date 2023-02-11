@@ -20,7 +20,7 @@ jobs:
   ####################
 
   Unix:
-    name: ${{ matrix.os }} ${{ fromJSON('["Header-Only", "Static"]')[matrix.build-params.static == 'ON'] }} ${{ matrix.build-params.tutorial == 'ON' && 'tutorial' || ''}} ${{ matrix.build-params.tests == 'ON' && 'tests' || ''}} ${{ matrix.config }}
+    name: ${{ matrix.os }} ${{ fromJSON('["Header-Only", "Static"]')[matrix.build-params.static == 'ON'] }} ${{ matrix.build-params.tutorials == 'ON' && 'tutorial' || ''}} ${{ matrix.build-params.tests == 'ON' && 'tests' || ''}} ${{ matrix.config }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -72,7 +72,7 @@ jobs:
             -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
             -DCMAKE_BUILD_TYPE=${{ matrix.config }} \
             -DLIBIGL_USE_STATIC_LIBRARY=${{ matrix.build-params.static }} \
-            -DLIBIGL_BUILD_TUTORIAL=${{ matrix.build-params.tutorial }} \
+            -DLIBIGL_BUILD_TUTORIALS=${{ matrix.build-params.tutorials }} \
             -DLIBIGL_BUILD_TESTS=${{ matrix.build-params.tests }} \
             -DLIBIGL_COPYLEFT_CGAL=ON
 
@@ -87,7 +87,7 @@ jobs:
   ####################
 
   Windows:
-    name: Windows ${{ fromJSON('["Header-Only", "Static"]')[matrix.build-params.static == 'ON'] }} ${{ matrix.build-params.tutorial == 'ON' && 'tutorial' || ''}} ${{ matrix.build-params.tests == 'ON' && 'tests' || ''}} ${{ matrix.config }}
+    name: Windows ${{ fromJSON('["Header-Only", "Static"]')[matrix.build-params.static == 'ON'] }} ${{ matrix.build-params.tutorials == 'ON' && 'tutorial' || ''}} ${{ matrix.build-params.tests == 'ON' && 'tests' || ''}} ${{ matrix.config }}
     runs-on: windows-2022
     strategy:
       fail-fast: false
@@ -131,7 +131,7 @@ jobs:
             -DCMAKE_BUILD_TYPE=${{ matrix.config }} ^
             -DLIBIGL_USE_STATIC_LIBRARY=${{ matrix.build-params.static }} ^
             -DLIBIGL_COPYLEFT_CGAL=ON ^
-            -DLIBIGL_BUILD_TUTORIAL=${{ matrix.build-params.tutorial }} ^
+            -DLIBIGL_BUILD_TUTORIALS=${{ matrix.build-params.tutorials }} ^
             -DLIBIGL_BUILD_TESTS=${{ matrix.build-params.tests }} ^
             -B build ^
             -S .
