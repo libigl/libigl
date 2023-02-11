@@ -27,7 +27,7 @@ jobs:
       matrix:
         os: [ubuntu-20.04, macos-latest]
         config: [Release]
-        build-params: [ {static:  ON, tutorial:  ON, tests:  ON }, {static: OFF, tutorial: OFF, tests:  ON }, {static: OFF, tutorial:  ON, tests: OFF }]
+        build-params: [ {static:  ON, tutorials:  ON, tests:  ON }, {static: OFF, tutorials: OFF, tests:  ON }, {static: OFF, tutorials:  ON, tests: OFF }]
     env:
       IGL_NUM_THREADS: 1  # See https://github.com/libigl/libigl/pull/996
     steps:
@@ -93,7 +93,7 @@ jobs:
       fail-fast: false
       matrix:
         config: [Release]
-        build-params: [ {static:  ON, tutorial:  ON, tests:  ON }, {static: OFF, tutorial: OFF, tests:  ON }, {static: OFF, tutorial:  ON, tests: OFF }]
+        build-params: [ {static:  ON, tutorials:  ON, tests:  ON }, {static: OFF, tutorials: OFF, tests:  ON }, {static: OFF, tutorials:  ON, tests: OFF }]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v1
