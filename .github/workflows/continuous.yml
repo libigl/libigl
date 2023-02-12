@@ -135,7 +135,7 @@ jobs:
             -DLIBIGL_BUILD_TESTS=${{ matrix.build-params.tests }} ^
             -B build ^
             -S .
-          cmake --build build -j1
+          cmake --build build -j2
 
       - name: Tests
         run: cd build; ctest --verbose -j2
