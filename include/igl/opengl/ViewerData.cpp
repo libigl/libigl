@@ -365,6 +365,7 @@ IGL_INLINE void igl::opengl::ViewerData::set_edges(
   using namespace Eigen;
   lines.resize(E.rows(),9);
   assert(C.cols() == 3);
+  assert(P.cols() == 3 || P.cols() == 2);
   for(int e = 0;e<E.rows();e++)
   {
     RowVector3d color;
@@ -375,7 +376,13 @@ IGL_INLINE void igl::opengl::ViewerData::set_edges(
     {
       color<<C.row(e);
     }
-    lines.row(e)<< P.row(E(e,0)), P.row(E(e,1)), color;
+    if(P.cols() == 2)
+    {
+      lines.row(e)<< P.row(E(e,0)),0, P.row(E(e,1)),0, color;
+    }else
+    {
+      lines.row(e)<< P.row(E(e,0)), P.row(E(e,1)), color;
+    }
   }
   dirty |= MeshGL::DIRTY_OVERLAY_LINES;
 }
