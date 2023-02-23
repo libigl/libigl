@@ -2,6 +2,16 @@ if(TARGET Eigen3::Eigen)
     return()
 endif()
 
+if(Eigen3_DIR)
+    message(STATUS "Looking for Eigen in: ${Eigen3_DIR}")
+    find_package(Eigen3 CONFIG HINTS ${Eigen3_DIR})
+    message(STATUS "Found Eigen in given directory: ${Eigen3_FOUND}")
+
+    if(TARGET Eigen3::Eigen)
+        return()
+    endif()
+endif()
+
 message(STATUS "Third-party: creating target 'Eigen3::Eigen'")
 
 include(FetchContent)
