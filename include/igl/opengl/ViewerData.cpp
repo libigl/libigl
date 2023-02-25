@@ -375,7 +375,13 @@ IGL_INLINE void igl::opengl::ViewerData::set_edges(
     {
       color<<C.row(e);
     }
-    lines.row(e)<< P.row(E(e,0)), P.row(E(e,1)), color;
+    if(P.cols() == 2)
+    {
+      lines.row(e)<< P.row(E(e,0)),0, P.row(E(e,1)),0, color;
+    }else
+    {
+      lines.row(e)<< P.row(E(e,0)), P.row(E(e,1)), color;
+    }
   }
   dirty |= MeshGL::DIRTY_OVERLAY_LINES;
 }
