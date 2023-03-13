@@ -1,7 +1,7 @@
 #include <test_common.h>
-#include <igl/fast_find_mesh_selfintersect.h>
-#include <igl/fast_find_mesh_intersect.h>
-#include <igl/Guigue2003_tri_tri_intersect.h>
+#include <igl/tri_tri_intersect.h>
+#include <igl/fast_find_intersections.h>
+#include <igl/fast_find_self_intersections.h>
 #include <igl/combine.h>
 
 TEST_CASE("tri_tri_intersection_test_3d intersect", "[igl]")
@@ -60,19 +60,19 @@ TEST_CASE("tri_tri_intersection_test_3d coplanar", "[igl]")
 }
 
 
-TEST_CASE("fast_find_mesh_selfintersect: negative", "[igl]")
+TEST_CASE("fast_find_self_intersections: negative", "[igl]")
 {
   Eigen::MatrixXd V;
   Eigen::MatrixXi F;
   Eigen::VectorXi I;
 
   igl::read_triangle_mesh(test_common::data_path("cube.obj"), V, F);
-  REQUIRE (! igl::fast_find_mesh_selfintersect(V,F,I) );
+  REQUIRE (! igl::fast_find_self_intersections(V,F,I) );
 
   REQUIRE ( I.sum()==0);
 }
 
-TEST_CASE("fast_find_mesh_selfintersect: positive", "[igl]")
+TEST_CASE("fast_find_self_intersections: positive", "[igl]")
 {
   Eigen::MatrixXd V;
   Eigen::MatrixXi F;
@@ -97,7 +97,7 @@ TEST_CASE("fast_find_mesh_selfintersect: positive", "[igl]")
   Eigen::VectorXi I;
   Eigen::MatrixXd edges;
 
-  REQUIRE ( igl::fast_find_mesh_selfintersect(V_,F_,I,edges) );
+  REQUIRE ( igl::fast_find_self_intersections(V_,F_,I,edges) );
   // should have 9 triangles that are intersecting each other
   REQUIRE ( I.sum()==9);
   // and 16 line edges
@@ -107,7 +107,7 @@ TEST_CASE("fast_find_mesh_selfintersect: positive", "[igl]")
   // TODO: check if the edges are at the right place (?) 
 }
 
-TEST_CASE("fast_find_mesh_intersect:", "[igl]")
+TEST_CASE("fast_find_intersections:", "[igl]")
 {
   Eigen::MatrixXd V;
   Eigen::MatrixXi F;
@@ -128,7 +128,7 @@ TEST_CASE("fast_find_mesh_intersect:", "[igl]")
   Eigen::MatrixXi I;
   Eigen::MatrixXd edges;
 
-  igl::fast_find_mesh_intersect(V,F,Vp,Fp,I,edges);
+  igl::fast_find_intersections(V,F,Vp,Fp,I,edges);
 
   // should have 8 triangles that are intersecting plane
   REQUIRE ( I.rows()==8);
@@ -139,5 +139,4 @@ TEST_CASE("fast_find_mesh_intersect:", "[igl]")
   // and 16 line edges
   REQUIRE ( edges.rows()==16);
   // TODO: check if the edges are at the right place
-
 }

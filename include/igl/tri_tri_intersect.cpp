@@ -14,12 +14,18 @@
 *  
 *  Works with Eigen data structures instead of plain C arrays
 *  returns bool values
+* 
+*  Code is rewritten to get rid of the macros and use C++ lambda and 
+*  inline functions instead
 *  
 *  Original notice: 
 *
 *  Triangle-Triangle Overlap Test Routines        
 *  July, 2002                                                          
-*  Updated December 2003                                                
+*  Updated December 2003
+*
+*  Updated by Vladimir S. FONOV 
+*  March, 2023                                             
 *                                                                       
 *  This file contains C implementation of algorithms for                
 *  performing two and three-dimensional triangle-triangle intersection test 
@@ -56,7 +62,7 @@
 #ifndef IGL_TRI_TRI_INTERSECT_CPP
 #define IGL_TRI_TRI_INTERSECT_CPP
 
-#include "Guigue2003_tri_tri_intersect.h"
+#include "tri_tri_intersect.h"
 #include <Eigen/Geometry>
 
 // helper functions

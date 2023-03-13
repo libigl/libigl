@@ -6,8 +6,8 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/
 #pragma once
-#ifndef FAST_FIND_MESH_SELFINTERSECT_H
-#define FAST_FIND_MESH_SELFINTERSECT_H
+#ifndef FAST_FIND_SELF_INTERSECTIONS_H
+#define FAST_FIND_SELF_INTERSECTIONS_H
 
 #include "igl_inline.h"
 #include <Eigen/Core>
@@ -27,7 +27,7 @@ namespace igl {
       typename DerivedV,
       typename DerivedF,
       typename DerivedI>
-    IGL_INLINE bool fast_find_mesh_selfintersect(
+    IGL_INLINE bool fast_find_self_intersections(
       const Eigen::MatrixBase<DerivedV>& V,
       const Eigen::MatrixBase<DerivedF>& F,
       Eigen::PlainObjectBase<DerivedI>& intersect);
@@ -47,7 +47,7 @@ namespace igl {
       typename DerivedF,
       typename DerivedI,
       typename DerivedE>
-    IGL_INLINE bool fast_find_mesh_selfintersect(
+    IGL_INLINE bool fast_find_self_intersections(
       const Eigen::MatrixBase<DerivedV>& V,
       const Eigen::MatrixBase<DerivedF>& F,
       Eigen::PlainObjectBase<DerivedI>& intersect,
@@ -56,7 +56,7 @@ namespace igl {
 };
 
 #ifndef IGL_STATIC_LIBRARY
-#  include "fast_find_mesh_selfintersect.cpp"
+#  include "fast_find_self_intersections.cpp"
 #endif
 
 #endif

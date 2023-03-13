@@ -2,10 +2,9 @@
 #include <igl/combine.h>
 
 #include <igl/opengl/glfw/Viewer.h>
-//#include <igl/opengl/glfw/imgui/ImGuiPlugin.h>
 #include <igl/opengl/glfw/imgui/ImGuiMenu.h>
 
-#include <igl/fast_find_mesh_intersect.h>
+#include <igl/fast_find_intersections.h>
 
 Eigen::MatrixXd V1,V2;
 Eigen::MatrixXi F1,F2;
@@ -25,7 +24,7 @@ void update_visualization(igl::opengl::glfw::Viewer & viewer)
   Eigen::MatrixXd V2_(V2.rows(),V2.cols());
   V2_<< V2.col(0), V2.col(1), V2.col(2).array()+slice_z;
 
-  igl::fast_find_mesh_intersect(tree, V1,F1, V2_,F2, I,edges);
+  igl::fast_find_intersections(tree, V1,F1, V2_,F2, I,edges);
   Eigen::MatrixXi edges_link=Eigen::MatrixXi::NullaryExpr(edges.rows()/2,2, [](int i,int j) { return i*2+j;});
  
   // Plot the edges of the intersects

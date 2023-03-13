@@ -5,7 +5,7 @@
 //#include <igl/opengl/glfw/imgui/ImGuiPlugin.h>
 #include <igl/opengl/glfw/imgui/ImGuiMenu.h>
 
-#include <igl/fast_find_mesh_selfintersect.h>
+#include <igl/fast_find_self_intersections.h>
 
 Eigen::MatrixXd V1,V2,V;
 Eigen::MatrixXi F1,F2,F;
@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
   Eigen::VectorXi I;
   Eigen::MatrixXd edges;
 
-  if(igl::fast_find_mesh_selfintersect(V,F,I,edges))
+  if(igl::fast_find_self_intersections(V,F,I,edges))
   {
     std::cout<<"Found "<<I.sum()<<" self intersections"<<std::endl;
 

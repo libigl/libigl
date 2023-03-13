@@ -34,7 +34,7 @@ namespace igl {
     typename DerivedF2,
     typename DerivedI,
     typename DerivedE>
-  IGL_INLINE void fast_find_mesh_intersect(
+  IGL_INLINE void fast_find_intersections(
     const Eigen::MatrixBase<DerivedV1>& V1,
     const Eigen::MatrixBase<DerivedF1>& F1,
     const Eigen::MatrixBase<DerivedV2>& V2,
@@ -61,7 +61,7 @@ namespace igl {
     typename DerivedF2,
     typename DerivedI,
     typename DerivedE>
-  IGL_INLINE void fast_find_mesh_intersect(
+  IGL_INLINE void fast_find_intersections(
     const AABB<DerivedV1,3>           & tree,
     const Eigen::MatrixBase<DerivedV1>& V1,
     const Eigen::MatrixBase<DerivedF1>& F1,
@@ -72,7 +72,7 @@ namespace igl {
 };
 
 #ifndef IGL_STATIC_LIBRARY
-#  include "fast_find_mesh_intersect.cpp"
+#  include "fast_find_intersections.cpp"
 #endif
 
 #endif
