@@ -44,7 +44,7 @@ IGL_INLINE void igl::random_points_on_mesh(
   histc(R,C,FI);
   // fix the bin when R(i) == 1 exactly
   // Gross cast to deal with Windows 
-  FI = FI.array().min(static_cast<decltype(FI)::Scalar>(F.rows() - 1));
+  FI = FI.array().min(static_cast<typename DerivedFI::Scalar>(F.rows() - 1));
   const VectorXs S = (VectorXs::Random(n,1).array() + 1.)/2.;
   const VectorXs T = (VectorXs::Random(n,1).array() + 1.)/2.;
   B.resize(n,3);
