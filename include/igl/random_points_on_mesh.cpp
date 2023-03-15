@@ -42,7 +42,9 @@ IGL_INLINE void igl::random_points_on_mesh(
   assert(R.minCoeff() >= 0);
   assert(R.maxCoeff() <= 1);
   histc(R,C,FI);
-  FI = FI.array().min(F.rows() - 1); // fix the bin when R(i) == 1 exactly
+  // fix the bin when R(i) == 1 exactly
+  // Gross cast to deal with Windows 
+  FI = FI.array().min(static_cast<typename DerivedFI::Scalar>(F.rows() - 1));
   const VectorXs S = (VectorXs::Random(n,1).array() + 1.)/2.;
   const VectorXs T = (VectorXs::Random(n,1).array() + 1.)/2.;
   B.resize(n,3);
@@ -118,4 +120,12 @@ template void igl::random_points_on_mesh<Eigen::Matrix<float, -1, -1, 0, -1, -1>
 template void igl::random_points_on_mesh<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(int, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
 template void igl::random_points_on_mesh<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, double, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(int, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::SparseMatrix<double, 0, int>&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
 template void igl::random_points_on_mesh<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, double, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(int, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::SparseMatrix<double, 0, int>&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
+
+template 
+void igl::random_points_on_mesh<Eigen::MatrixXd,Eigen::MatrixXi,Eigen::MatrixXd,Eigen::VectorXi>(
+  const int n,
+  const Eigen::MatrixBase<Eigen::MatrixXd> & V,
+  const Eigen::MatrixBase<Eigen::MatrixXi> & F,
+  Eigen::PlainObjectBase< Eigen::MatrixXd> & B,
+  Eigen::PlainObjectBase< Eigen::VectorXi > & FI);
 #endif
