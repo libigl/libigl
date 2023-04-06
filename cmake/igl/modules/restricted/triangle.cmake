@@ -13,14 +13,18 @@ file(GLOB INC_FILES "${libigl_SOURCE_DIR}/include/igl/triangle/*.h")
 file(GLOB SRC_FILES "${libigl_SOURCE_DIR}/include/igl/triangle/*.cpp")
 igl_target_sources(igl_restricted_triangle ${INC_FILES} ${SRC_FILES})
 
-# 4. Dependencies
+# 4. Install target & headers
+igl_install(igl_restricted_triangle ${INC_FILES} ${SRC_FILES})
+
+# 5. Dependencies
 include(triangle)
+igl_install(triangle)
 target_link_libraries(igl_restricted_triangle ${IGL_SCOPE}
     igl::core
     triangle::triangle
 )
 
-# 5. Unit tests
+# 6. Unit tests
 file(GLOB SRC_FILES "${libigl_SOURCE_DIR}/tests/include/igl/triangle/*.cpp")
 igl_add_test(igl_restricted_triangle ${SRC_FILES})
 if(TARGET test_igl_restricted_triangle)

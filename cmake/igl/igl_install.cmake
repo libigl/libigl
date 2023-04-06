@@ -6,8 +6,10 @@ function(igl_install module_name)
     # Check if category is `copyleft` or `restricted`
     if(${module_name} MATCHES "^igl_copyleft")
         set(suffix "_copyleft")
+        set(LIBIGL_INSTALLED_COPYLEFT TRUE CACHE INTERNAL "")
     elseif(${module_name} MATCHES "^igl_restricted")
         set(suffix "_restricted")
+        set(LIBIGL_INSTALLED_RESTRICTED TRUE CACHE INTERNAL "")
     else()
         set(suffix "")
     endif()
@@ -61,3 +63,10 @@ function(igl_install module_name)
         )
     endforeach()
 endfunction()
+
+# These two variables keep track whether a restricted or copyleft target
+# was installed, so that the corresponding install/export call can be made
+# at the time of project installation.
+# See top level CMakeLists.txt in root folder of the libigl repo.
+set(LIBIGL_INSTALLED_RESTRICTED  FALSE CACHE INTERNAL "Tracks whether a restricted target was installed")
+set(LIBIGL_INSTALLED_COPYLEFT    FALSE CACHE INTERNAL "Tracks whether a copyleft target was installed")

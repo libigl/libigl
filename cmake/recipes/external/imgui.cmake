@@ -37,7 +37,9 @@ add_library(imgui ${IMGUI_SRC})
 add_library(imgui::imgui ALIAS imgui)
 
 # Include headers
-target_include_directories(imgui PUBLIC "${imgui_SOURCE_DIR}")
+target_include_directories(imgui PUBLIC
+    $<BUILD_INTERFACE:${imgui_SOURCE_DIR}>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
 # Compile definitions
 target_compile_definitions(imgui PUBLIC

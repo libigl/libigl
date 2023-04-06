@@ -13,8 +13,12 @@ file(GLOB INC_FILES "${libigl_SOURCE_DIR}/include/igl/copyleft/comiso/*.h")
 file(GLOB SRC_FILES "${libigl_SOURCE_DIR}/include/igl/copyleft/comiso/*.cpp")
 igl_target_sources(igl_copyleft_comiso ${INC_FILES} ${SRC_FILES})
 
-# 4. Dependencies
+# 5. Install target & headers
+igl_install(igl_copyleft_comiso ${INC_FILES} ${SRC_FILES})
+
+# 6. Dependencies
 include(comiso)
+igl_install(CoMISo)
 igl_include(copyleft core)
 target_link_libraries(igl_copyleft_comiso ${IGL_SCOPE}
     igl::core
@@ -22,6 +26,6 @@ target_link_libraries(igl_copyleft_comiso ${IGL_SCOPE}
     CoMISo::CoMISo
 )
 
-# 5. Unit tests
+# 7. Unit tests
 file(GLOB SRC_FILES "${libigl_SOURCE_DIR}/tests/include/igl/copyleft/comiso/*.cpp")
 igl_add_test(igl_copyleft_comiso ${SRC_FILES})

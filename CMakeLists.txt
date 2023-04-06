@@ -138,7 +138,6 @@ endif()
 ################################################################################
 # Install CMake config files
 ################################################################################
-
 if(LIBIGL_INSTALL)
     include(GNUInstallDirs)
     set(project_config_in "${PROJECT_SOURCE_DIR}/cmake/igl/libigl-config.cmake.in")
@@ -147,12 +146,33 @@ if(LIBIGL_INSTALL)
     set(version_config_file "${CMAKE_CURRENT_BINARY_DIR}/LibiglConfigVersion.cmake")
     set(export_dest_dir "${CMAKE_INSTALL_LIBDIR}/cmake/igl")
 
-    foreach(suffix IN ITEMS "") #"_restricted" "_copyleft")
+    # If install/export is called for all suffixes, it will cause an error when
+    # there are not restricted and/or copyleft targets. LIBIGL_INSTALLED_* are
+    # set in the igl_install file, allowing only the applicable suffixes to be
+    # considered for install/export.
+    set(suffixes "EMPTY")
+    if(LIBIGL_INSTALLED_COPYLEFT)
+        list(APPEND suffixes "_copyleft")
+    endif()
+    if(LIBIGL_INSTALLED_RESTRICTED)
+        list(APPEND suffixes "_restricted")
+    endif()
+    foreach(suffix IN ITEMS ${suffixes})
+        if(suffix STREQUAL "EMPTY")
+            set(suffix "")
+        endif()
+
         install(EXPORT LibiglTargets${suffix}
             DESTINATION ${export_dest_dir}
             NAMESPACE igl${suffix}::
             FILE ${config_targets_base}${suffix}.cmake
             COMPONENT LibiglDevelopment
+        )
+
+        export(
+            EXPORT LibiglTargets${suffix}
+            FILE ${CMAKE_CURRENT_BINARY_DIR}/LibiglTargets${suffix}-targets.cmake
+            NAMESPACE igl${suffix}::
         )
     endforeach()
 
