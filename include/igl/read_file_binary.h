@@ -11,6 +11,7 @@
 
 #include "igl_inline.h"
 
+#include <cstdint>
 #include <streambuf>
 #include <istream>
 #include <string>
