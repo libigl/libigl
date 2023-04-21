@@ -101,7 +101,7 @@ IGL_INLINE void igl::signed_distance(
       break;
     case SIGNED_DISTANCE_TYPE_FAST_WINDING_NUMBER:
       // assert above ensures dim == 3
-      igl::fast_winding_number(V.template cast<float>().eval(), F, 2, fwn_bvh);
+      igl::fast_winding_number_soup_precompute(V.template cast<float>().eval(), F, 2, fwn_bvh);
 
     case SIGNED_DISTANCE_TYPE_PSEUDONORMAL:
       switch(dim)

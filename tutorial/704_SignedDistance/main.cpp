@@ -171,7 +171,7 @@ int main(int argc, char *argv[])
     V,F,igl::PER_EDGE_NORMALS_WEIGHTING_TYPE_UNIFORM,FN,EN,E,EMAP);
 
   // fast winding number setup (just init fwn bvh)
-  igl::fast_winding_number(V, F, 2, fwn_bvh);
+  igl::fast_winding_number_soup_precompute(V, F, 2, fwn_bvh);
 
   // Plot the generated mesh
   igl::opengl::glfw::Viewer viewer;

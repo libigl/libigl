@@ -43,7 +43,7 @@ namespace igl
     typename DerivedCM, 
     typename DerivedR,
     typename DerivedEC>
-  IGL_INLINE void fast_winding_number(
+  IGL_INLINE void fast_winding_number_cloud_precompute(
     const Eigen::MatrixBase<DerivedP>& P,
     const Eigen::MatrixBase<DerivedN>& N,
     const Eigen::MatrixBase<DerivedA>& A,
@@ -184,7 +184,7 @@ namespace igl
   template <
     typename DerivedV,
     typename DerivedF>
-  IGL_INLINE void fast_winding_number(
+  IGL_INLINE void fast_winding_number_soup_precompute(
     const Eigen::MatrixBase<DerivedV> & V,
     const Eigen::MatrixBase<DerivedF> & F,
     const int order,
