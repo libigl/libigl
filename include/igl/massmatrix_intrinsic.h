@@ -24,7 +24,7 @@ namespace igl
   //   type  one of the following ints:
   //     MASSMATRIX_TYPE_BARYCENTRIC  barycentric
   //     MASSMATRIX_TYPE_VORONOI voronoi-hybrid {default}
-  //     MASSMATRIX_TYPE_FULL full {not implemented}
+  //     MASSMATRIX_TYPE_FULL full
   // Outputs: 
   //   M  #V by #V mass matrix
   //

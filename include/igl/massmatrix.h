@@ -21,7 +21,7 @@ namespace igl
     MASSMATRIX_TYPE_VORONOI = 1,
     MASSMATRIX_TYPE_FULL = 2,
     MASSMATRIX_TYPE_DEFAULT = 3,
-    NUM_MASSMATRIX_TYPE = 4
+    NUM_MASSMATRIX_TYPES = 4
   };
 
   // Constructs the mass (area) matrix for a given mesh (V,F).
@@ -36,9 +36,9 @@ namespace igl
   //   V  #V by dim list of mesh vertex positions
   //   F  #F by simplex_size list of mesh elements (triangles or tetrahedra)
   //   type  one of the following ints:
-  //     MASSMATRIX_TYPE_BARYCENTRIC  barycentric
-  //     MASSMATRIX_TYPE_VORONOI voronoi-hybrid {default}
-  //     MASSMATRIX_TYPE_FULL full {not implemented}
+  //     MASSMATRIX_TYPE_BARYCENTRIC  barycentric {default for tetrahedra}
+  //     MASSMATRIX_TYPE_VORONOI voronoi-hybrid {default for triangles, not implemented for tetrahedra}
+  //     MASSMATRIX_TYPE_FULL full
   // Outputs: 
   //   M  #V by #V mass matrix
   //
