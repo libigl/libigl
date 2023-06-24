@@ -48,7 +48,7 @@ namespace igl
     const Eigen::MatrixBase<Derivedb> & b,
     const Eigen::MatrixBase<Derivedbc> & bc,
     Eigen::PlainObjectBase<DerivedV_uv> & V_uv,
-    Eigen::SparseMatrix<QScalar> & Q);
+    Eigen::SparseMatrix<double> & Q)
   // Wrapper where the output Q is discarded
   template <
     typename DerivedV, 
