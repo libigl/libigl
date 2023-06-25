@@ -63,7 +63,7 @@ else()
     URL_MD5 f060ad4e762ae550d16f1bb477aadba5
     UPDATE_DISCONNECTED true  # need this to avoid constant rebuild
     PATCH_COMMAND 
-      curl "https://gmplib.org/repo/gmp/raw-rev/5f32dbc41afc" "|" git apply -v
+      curl "https://gist.githubusercontent.com/alecjacobson/d34d9307c17d1b853571699b9786e9d1/raw/8d14fc21cb7654f51c2e8df4deb0f82f9d0e8355/gmp-patch" "|" git apply -v
     ${gmp_ExternalProject_Add_extra_options}
     CONFIGURE_COMMAND 
      ${CMAKE_COMMAND} -E env
