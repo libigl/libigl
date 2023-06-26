@@ -47,7 +47,7 @@ namespace igl
     IGL_INLINE bool eigs(
       const Eigen::SparseMatrix<EigsScalar> & A,
       const Eigen::SparseMatrix<EigsScalar> & B,
-      const size_t k,
+      const int k,
       const igl::EigsType type,
       Eigen::PlainObjectBase<DerivedU> & U,
       Eigen::PlainObjectBase<DerivedS> & S);
@@ -59,7 +59,7 @@ namespace igl
     IGL_INLINE bool eigs(
       const Eigen::SparseMatrix<EigsScalar> & A,
       const Eigen::SparseMatrix<EigsScalar> & B,
-      const size_t k,
+      const int k,
       const EigsScalar sigma,
       Eigen::PlainObjectBase<DerivedU> & U,
       Eigen::PlainObjectBase<DerivedS> & S);
