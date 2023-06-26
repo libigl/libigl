@@ -1,10 +1,3 @@
-if(TARGET Eigen3::Eigen)
-  # Try to trick Spectra to avoid its find_package(Eigen3) getting confused.
-  set(Eigen3_FOUND TRUE CACHE BOOL "" FORCE)
-endif()
-add_custom_target(eigen)
-
-
 if(TARGET spectra::spectra)
   return()
 endif()
@@ -12,10 +5,11 @@ include(FetchContent)
 
 message(STATUS "Third-party: creating target 'spectra::spectra'")
 
+# Use fork because yixuan/spectra struggles to find Eigen3
 FetchContent_Declare(
   Spectra
-  GIT_REPOSITORY https://github.com/yixuan/spectra/
-  GIT_TAG v1.0.1
+  GIT_REPOSITORY https://github.com/alecjacobson/spectra/
+  GIT_TAG bbdc521b70a733c52ebfc0ac1484c82e13c3d140
 )
 FetchContent_MakeAvailable(Spectra)
 
