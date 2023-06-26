@@ -1,3 +1,10 @@
+if(TARGET Eigen3::Eigen)
+  # Try to trick Spectra to avoid its find_package(Eigen3) getting confused.
+  set(Eigen3_FOUND TRUE CACHE BOOL "" FORCE)
+endif()
+add_custom_target(eigen)
+
+
 if(TARGET spectra::spectra)
   return()
 endif()
