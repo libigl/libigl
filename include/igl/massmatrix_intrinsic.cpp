@@ -111,7 +111,14 @@ IGL_INLINE void igl::massmatrix_intrinsic(
         break;
       }
     case MASSMATRIX_TYPE_FULL:
-      assert(false && "Implementation incomplete");
+      MI.resize(m*9,1); MJ.resize(m*9,1); MV.resize(m*9,1);
+      // indicies and values of the element mass matrix entries in the order
+      // (0,1),(1,0),(1,2),(2,1),(2,0),(0,2),(0,0),(1,1),(2,2);
+      MI<<F.col(0),F.col(1),F.col(1),F.col(2),F.col(2),F.col(0),F.col(0),F.col(1),F.col(2);
+      MJ<<F.col(1),F.col(0),F.col(2),F.col(1),F.col(0),F.col(2),F.col(0),F.col(1),F.col(2);
+      repmat(dblA,9,1,MV);
+      MV.block(0*m,0,6*m,1) /= 24.0;
+      MV.block(6*m,0,3*m,1) /= 12.0;
       break;
     default:
       assert(false && "Unknown Mass matrix eff_type");

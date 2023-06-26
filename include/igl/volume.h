@@ -18,7 +18,7 @@ namespace igl
   //
   // Inputs:
   //   V  #V by dim list of vertex positions
-  //   T  #V by 4 list of tet indices
+  //   T  #T by 4 list of tet indices
   // Outputs:
   //   vol  #T list of tetrahedron volumes
   //
