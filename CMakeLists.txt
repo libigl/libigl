@@ -93,6 +93,7 @@ option(LIBIGL_IMGUI            "Build target igl::imgui"            ${LIBIGL_TOP
 option(LIBIGL_OPENGL           "Build target igl::opengl"           ${LIBIGL_TOPLEVEL_PROJECT})
 option(LIBIGL_PNG              "Build target igl::png"              ${LIBIGL_TOPLEVEL_PROJECT})
 option(LIBIGL_PREDICATES       "Build target igl::predicates"       ${LIBIGL_TOPLEVEL_PROJECT})
+option(LIBIGL_SPECTRA          "Build target igl::spectra"          ${LIBIGL_TOPLEVEL_PROJECT})
 option(LIBIGL_XML              "Build target igl::xml"              ${LIBIGL_TOPLEVEL_PROJECT})
 
 # Copyleft modules. These modules are available under GPL license, and their dependencies are
