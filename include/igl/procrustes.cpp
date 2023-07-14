@@ -36,17 +36,6 @@ IGL_INLINE void igl::procrustes(
   Matrix<typename DerivedY::Scalar, Dynamic, Dynamic> YC
       = Y.rowwise() - Ymean.transpose();
 
-  // Scale
-  scale = 1.;
-  if (includeScaling)
-  {
-     double scaleX = XC.norm() / XC.rows();
-     double scaleY = YC.norm() / YC.rows();
-     scale = scaleY/scaleX;
-     XC *= scale;
-     assert (std::abs(XC.norm() / XC.rows() - scaleY) < 1e-8);
-  }
-
   // Rotation
   Matrix<typename DerivedX::Scalar, Dynamic, Dynamic> S = XC.transpose() * YC;
   Matrix<typename DerivedT::Scalar, Dynamic, Dynamic> T;
@@ -58,6 +47,13 @@ IGL_INLINE void igl::procrustes(
     polar_svd(S,R,T);
   }
 //  R.transposeInPlace();
+
+  // Scale
+  scale = 1.;
+  if (includeScaling)
+  {
+      scale = (R.transpose() * S).trace() / (XC.array() * XC.array()).sum();
+  }
 
   // Translation
   t = Ymean - scale*R.transpose()*Xmean;
