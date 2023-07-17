@@ -39,14 +39,7 @@ IGL_INLINE void igl::procrustes(
   // Rotation
   Matrix<typename DerivedX::Scalar, Dynamic, Dynamic> S = XC.transpose() * YC;
   Matrix<typename DerivedT::Scalar, Dynamic, Dynamic> T;
-  if (includeReflections)
-  {
-    polar_dec(S,R,T);
-  }else
-  {
-    polar_svd(S,R,T);
-  }
-//  R.transposeInPlace();
+  polar_dec(S, R, T, includeReflections);
 
   // Scale
   scale = 1.;
@@ -134,5 +127,6 @@ IGL_INLINE void igl::procrustes(
 }
 
 #ifdef IGL_STATIC_LIBRARY
+template void igl::procrustes<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<double, -1, 3, 0, -1, 3>, double, Eigen::Matrix<double, 3, 3, 0, 3, 3>, Eigen::Matrix<double, 3, 1, 0, 3, 1> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, bool, bool, double&, Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 3, 0, 3, 3> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 1, 0, 3, 1> >&);
 template void igl::procrustes<Eigen::Matrix<double, 3, 2, 0, 3, 2>, Eigen::Matrix<double, 3, 2, 0, 3, 2>, double, Eigen::Matrix<double, 2, 2, 0, 2, 2>, Eigen::Matrix<double, 2, 1, 0, 2, 1> >(Eigen::MatrixBase<Eigen::Matrix<double, 3, 2, 0, 3, 2> > const&, Eigen::MatrixBase<Eigen::Matrix<double, 3, 2, 0, 3, 2> > const&, bool, bool, double&, Eigen::PlainObjectBase<Eigen::Matrix<double, 2, 2, 0, 2, 2> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, 2, 1, 0, 2, 1> >&);
 #endif
