@@ -15,6 +15,7 @@ namespace igl
   // Computes the polar decomposition (R,T) of a matrix A
   // Inputs:
   //   A  3 by 3 matrix to be decomposed
+  //   includeReflections  Whether to force R to be a rotation, or allow it to be a rotation
   // Outputs:
   //   R  3 by 3 orthonormal matrix part of decomposition
   //   T  3 by 3 stretch matrix part of decomposition
@@ -36,7 +37,8 @@ namespace igl
     Eigen::PlainObjectBase<DerivedT> & T,
     Eigen::PlainObjectBase<DerivedU> & U,
     Eigen::PlainObjectBase<DerivedS> & S,
-    Eigen::PlainObjectBase<DerivedV> & V);
+    Eigen::PlainObjectBase<DerivedV> & V,
+    bool includeReflections = true);
   template <
     typename DerivedA,
     typename DerivedR,
@@ -44,7 +46,8 @@ namespace igl
   IGL_INLINE void polar_dec(
     const Eigen::PlainObjectBase<DerivedA> & A,
     Eigen::PlainObjectBase<DerivedR> & R,
-    Eigen::PlainObjectBase<DerivedT> & T);
+    Eigen::PlainObjectBase<DerivedT> & T,
+    bool includeReflections = true);
 }
 #ifndef IGL_STATIC_LIBRARY
 #  include "polar_dec.cpp"
