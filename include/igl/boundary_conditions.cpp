@@ -183,7 +183,7 @@ IGL_INLINE bool igl::boundary_conditions(
   b.resize(vb.size());
   bc = MatrixXd::Zero(vb.size(),P.size()+BE.rows());
   // Map from boundary index to index in boundary
-  std::map<int,int> bim;
+  map<int,int> bim;
   int i = 0;
   // Also fill in b
   for(vector<int>::iterator bit = vb.begin();bit != vb.end();bit++)
