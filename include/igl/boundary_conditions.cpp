@@ -157,7 +157,7 @@ IGL_INLINE bool igl::boundary_conditions(
         double w = (d00 * d21 - d01 * d20) / denom;
         double u = 1.0 - v - w;
 
-        if (u>=-FLOAT_EPS && u<=(1.0f+FLOAT_EPS) && v>=-FLOAT_EPS && v<=(1.0f+FLOAT_EPS) && w >=-FLOAT_EPS && w <= (1.0f+FLOAT_EPS))
+        if (u>=0. && u<=1.0 && v>=0. && v<=1.0 && w >=0. && w<=1.0)
         {
           vertices_marked[i] = 1;
           bci.push_back(i);
