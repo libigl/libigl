@@ -10,7 +10,6 @@
 #include "verbose.h"
 #include "EPS.h"
 #include "project_to_line.h"
-#include "barycentric_coordinates.h"
 
 #include <vector>
 #include <map>
