@@ -10,6 +10,7 @@
 #include "verbose.h"
 #include "EPS.h"
 #include "project_to_line.h"
+#include "barycentric_coordinates.h"
 
 #include <vector>
 #include <map>
@@ -22,6 +23,7 @@ IGL_INLINE bool igl::boundary_conditions(
   const Eigen::VectorXi & P  ,
   const Eigen::MatrixXi & BE ,
   const Eigen::MatrixXi & CE ,
+  const Eigen::MatrixXi & CF ,
   Eigen::VectorXi &       b  ,
   Eigen::MatrixXd &       bc )
 {
@@ -121,6 +123,58 @@ IGL_INLINE bool igl::boundary_conditions(
     }
   }
 
+  std::vector<uint8_t> vertices_marked(V.rows(), 0);
+  // loop over cage faces
+  for(int f = 0;f<CF.rows();f++)
+  {
+    Vector3d v_0 = C.row(P(CF(f, 0)));
+    Vector3d v_1 = C.row(P(CF(f, 1)));
+    Vector3d v_2 = C.row(P(CF(f, 2)));
+    Vector3d n = (v_1 - v_0).cross(v_2 - v_1);
+    n.normalize();
+    // loop over domain vertices
+    for (int i = 0;i<V.rows();i++)
+    {
+      // ensure each vertex is associated with only one face
+      if (vertices_marked[i])
+      {
+          continue;
+      }
+      Vector3d point = V.row(i);
+      Vector3d v = point - v_0;
+      double dist = abs(v.dot(n));
+      Vector3d projected_point = point - dist * n;
+      if (dist <= 1.e-1f)
+      {
+        //barycentric coordinates
+        Vector3d vec_0 = v_1 - v_0, vec_1 = v_2 - v_0, vec_2 = point - v_0;
+        double d00 = vec_0.dot(vec_0);
+        double d01 = vec_0.dot(vec_1);
+        double d11 = vec_1.dot(vec_1);
+        double d20 = vec_2.dot(vec_0);
+        double d21 = vec_2.dot(vec_1);
+        double denom = d00 * d11 - d01 * d01;
+        double v = (d11 * d20 - d01 * d21) / denom;
+        double w = (d00 * d21 - d01 * d20) / denom;
+        double u = 1.0 - v - w;
+
+        if (u>=-FLOAT_EPS && u<=(1.0f+FLOAT_EPS) && v>=-FLOAT_EPS && v<=(1.0f+FLOAT_EPS) && w >=-FLOAT_EPS && w <= (1.0f+FLOAT_EPS))
+        {
+          vertices_marked[i] = 1;
+          bci.push_back(i);
+          bcj.push_back(CF(f, 0));
+          bcv.push_back(u);
+          bci.push_back(i);
+          bcj.push_back(CF(f, 1));
+          bcv.push_back(v);
+          bci.push_back(i);
+          bcj.push_back(CF(f, 2));
+          bcv.push_back(w);
+        }
+      }
+    }
+  }
+
   // find unique boundary indices
   vector<int> vb = bci;
   sort(vb.begin(),vb.end());
@@ -129,7 +183,7 @@ IGL_INLINE bool igl::boundary_conditions(
   b.resize(vb.size());
   bc = MatrixXd::Zero(vb.size(),P.size()+BE.rows());
   // Map from boundary index to index in boundary
-  map<int,int> bim;
+  std::map<int,int> bim;
   int i = 0;
   // Also fill in b
   for(vector<int>::iterator bit = vb.begin();bit != vb.end();bit++)

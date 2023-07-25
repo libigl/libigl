@@ -25,6 +25,7 @@ namespace igl
   //   P  #P by 1 list of point handle indices into C
   //   BE  #BE by 2 list of bone edge indices into C
   //   CE  #CE by 2 list of cage edge indices into *P*
+  //   CF  #CF by 3 list of (triangular) cage face indices into *P*
   // Outputs:
   //   b  #b list of boundary indices (indices into V of vertices which have
   //     known, fixed values)
@@ -44,6 +45,7 @@ namespace igl
     const Eigen::VectorXi & P,
     const Eigen::MatrixXi & BE,
     const Eigen::MatrixXi & CE,
+    const Eigen::MatrixXi & CF,
     Eigen::VectorXi & b,
     Eigen::MatrixXd & bc);
 }
