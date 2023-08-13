@@ -11,12 +11,11 @@
 #include <Eigen/Dense>
 namespace igl
 {
-  // Compute the length of the diagonal of a given meshes axis-aligned bounding
-  // box
-  //
-  // Inputs:
-  //   V  #V by 3 list of vertex/point positions
-  // Returns length of bounding box diagonal
+  /// Compute the length of the diagonal of a given meshes axis-aligned bounding
+  /// box.
+  ///
+  /// @param[in] V  #V by 3 list of vertex/point positions
+  /// @return length of bounding box diagonal
   IGL_INLINE double bounding_box_diagonal( const Eigen::MatrixXd & V);
 }
 

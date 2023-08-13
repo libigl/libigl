@@ -16,38 +16,30 @@
 
 namespace igl
 {
-  // Computes the curved Hessian energy using the Crouzeix-Raviart
-  //  discretization.
-  // See Oded Stein, Alec Jacobson, Max Wardetzky, Eitan Grinspun, 2020.
-  //  "A Smoothness Energy without Boundary Distortion for Curved Surfaces"
-  //
-  // Inputs:
-  //  V, F: input mesh
-  //
-  // Outputs:
-  //  Q: computed Hessian energy matrix
-
+  /// Computes the curved Hessian energy using the Crouzeix-Raviart
+  ///  discretization.
+  /// See Oded Stein, Alec Jacobson, Max Wardetzky, Eitan Grinspun, 2020.
+  ///  "A Smoothness Energy without Boundary Distortion for Curved Surfaces"
+  ///
+  /// @param[in] V  #V by 3 list of mesh vertex positions
+  /// @param[in] F  #F by 3 list of mesh faces (must be triangles)
+  /// @param[out] Q  #V by #V Hessian energy matrix
   template <typename DerivedV, typename DerivedF, typename ScalarQ>
   IGL_INLINE void
   curved_hessian_energy(
     const Eigen::MatrixBase<DerivedV>& V,
     const Eigen::MatrixBase<DerivedF>& F,
     Eigen::SparseMatrix<ScalarQ>& Q);
-
-  // Version that exposes the edge orientation used.
-  //
-  // Inputs:
-  //  V, F: input mesh
-  //  E: a mapping from each halfedge to each edge, as computed with
-  //     orient_halfedges.
-  //     will be computed if not provided.
-  //  oE: the orientation of each halfedge compared to the orientation of the
-  //      actual edge, as computed with orient_halfedges.
-  //      will be computed if not provided.
-  //
-  // Outputs:
-  //  Q: computed Hessian energy matrix
-  //  E, oE: these are computed if they are not present, as described above
+  /// Computes the curved Hessian energy using the Crouzeix-Raviart
+  ///  discretization.
+  /// See Oded Stein, Alec Jacobson, Max Wardetzky, Eitan Grinspun, 2020.
+  ///  "A Smoothness Energy without Boundary Distortion for Curved Surfaces"
+  ///
+  /// @param[in] V  #V by 3 list of mesh vertex positions
+  /// @param[in] F  #F by 3 list of mesh faces (must be triangles)
+  /// @param[in] E #F by 3 a mapping from each halfedge to each edge
+  /// @param[in] oE #F by 3 the orientation (e.g., -1 or 1) of each halfedge
+  /// @param[out] Q  #V by #V Hessian energy matrix
   template <typename DerivedV, typename DerivedF, typename DerivedE,
   typename DerivedOE, typename ScalarQ>
   IGL_INLINE void
@@ -58,6 +50,16 @@ namespace igl
     const Eigen::MatrixBase<DerivedOE>& oE,
     Eigen::SparseMatrix<ScalarQ>& Q);
 
+  /// Computes the curved Hessian energy using the Crouzeix-Raviart
+  ///  discretization.
+  /// See Oded Stein, Alec Jacobson, Max Wardetzky, Eitan Grinspun, 2020.
+  ///  "A Smoothness Energy without Boundary Distortion for Curved Surfaces"
+  ///
+  /// @param[in] V  #V by 3 list of mesh vertex positions
+  /// @param[in] F  #F by 3 list of mesh faces (must be triangles)
+  /// @param[out] E #F by 3 a mapping from each halfedge to each edge
+  /// @param[out] oE #F by 3 the orientation (e.g., -1 or 1) of each halfedge
+  /// @param[out] Q  #V by #V Hessian energy matrix
   template <typename DerivedV, typename DerivedF, typename DerivedE,
   typename DerivedOE, typename ScalarQ>
   IGL_INLINE void
@@ -69,19 +71,19 @@ namespace igl
     Eigen::SparseMatrix<ScalarQ>& Q);
 
 
-  // Version that uses intrinsic quantities as input
-  //
-  // Inputs:
-  //  F: input mesh connectivity
-  //  l_sq: squared edge lengths of each halfedge
-  //  dA: double area of each face
-  //  E: a mapping from each halfedge to each edge.
-  //  oE: the orientation of each halfedge compared to the orientation of the
-  //      actual edge.
-  //
-  // Outputs:
-  //  Q: computed Hessian energy matrix
 
+  /// Computes the curved Hessian energy using the Crouzeix-Raviart
+  ///  discretization.
+  /// See Oded Stein, Alec Jacobson, Max Wardetzky, Eitan Grinspun, 2020.
+  ///  "A Smoothness Energy without Boundary Distortion for Curved Surfaces"
+  ///
+  ///  @param[in] F #F by 3 list of mesh face indices into rows of V
+  ///  @param[in] l_sq #F by 3 list of squared edge lengths of each halfedge
+  ///  @param[in] E #F by 3 a mapping from each halfedge to each edge
+  ///  @param[in] oE #F by 3 the orientation (e.g., -1 or 1) of each halfedge
+  ///    compared to the orientation of the actual edge, as computed with
+  ///    orient_halfedges. will be computed if not provided.
+  /// @param[out] Q  #V by #V Hessian energy matrix
   template <typename DerivedF, typename DerivedL_sq, typename DerivedE,
   typename DerivedOE, typename ScalarQ>
   IGL_INLINE void
@@ -92,6 +94,19 @@ namespace igl
     const Eigen::MatrixBase<DerivedOE>& oE,
     Eigen::SparseMatrix<ScalarQ>& Q);
 
+  /// Computes the curved Hessian energy using the Crouzeix-Raviart
+  ///  discretization.
+  /// See Oded Stein, Alec Jacobson, Max Wardetzky, Eitan Grinspun, 2020.
+  ///  "A Smoothness Energy without Boundary Distortion for Curved Surfaces"
+  ///
+  ///  @param[in] F #F by 3 list of mesh face indices into rows of V
+  ///  @param[in] l_sq #F by 3 list of squared edge lengths of each halfedge
+  ///  @param[in] dA #F list of double areas
+  ///  @param[in] E #F by 3 a mapping from each halfedge to each edge
+  ///  @param[in] oE #F by 3 the orientation (e.g., -1 or 1) of each halfedge
+  ///    compared to the orientation of the actual edge, as computed with
+  ///    orient_halfedges. will be computed if not provided.
+  /// @param[out] Q  #V by #V Hessian energy matrix
   template <typename DerivedF, typename DerivedL_sq, typename DeriveddA,
   typename DerivedE, typename DerivedOE, typename ScalarQ>
   IGL_INLINE void
