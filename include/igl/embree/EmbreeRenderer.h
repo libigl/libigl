@@ -31,7 +31,8 @@ namespace igl
 {
   namespace embree
   {
-    // embree-based mesh renderer
+    /// @private
+    /// embree-based mesh renderer
     class EmbreeRenderer
     {
     public:
