@@ -29,13 +29,9 @@ namespace igl
     const Eigen::SparseMatrix<XType>& X, 
     const int dim,
     Eigen::SparseVector<SType>& S);
-  /// Count the number of non-zeros in the columns or rows of a sparse matrix
+  /// \overload
   ///
-  /// @param[in] X  m by n sparse matrix
-  /// @param[in] dim  dimension along which to sum (1 or 2)
-  /// @param[out] S  n-long _dense_ vector (if dim == 1) or m-long sparse vector
-  ///   (if dim == 2)
-  ///
+  /// \brief Outputs a dense vector.
   template <typename XType, typename DerivedS>
   IGL_INLINE void count(
     const Eigen::SparseMatrix<XType>& X, 

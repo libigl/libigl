@@ -12,15 +12,13 @@
 #include <vector>
 namespace igl
 {
-  // IS_DELAUNAY Determine if each edge in the mesh (V,F) is Delaunay.
-  //
-  // Inputs:
-  //   V  #V by dim list of vertex positions
-  //   F  #F by 3 list of triangles indices
-  // Outputs:
-  //   D  #F by 3 list of bools revealing whether edges corresponding 23 31 12
-  //     are locally Delaunay. Boundary edges are by definition Delaunay.
-  //     Non-Manifold edges are by definition not Delaunay.
+  /// IDetermine if each edge in the mesh (V,F) is Delaunay.
+  ///
+  /// @param[in] V  #V by dim list of vertex positions
+  /// @param[in] F  #F by 3 list of triangles indices
+  /// @param[out] D  #F by 3 list of bools revealing whether edges corresponding 23 31 12
+  ///     are locally Delaunay. Boundary edges are by definition Delaunay.
+  ///     Non-Manifold edges are by definition not Delaunay.
   template <
     typename DerivedV,
     typename DerivedF,
@@ -29,21 +27,20 @@ namespace igl
     const Eigen::MatrixBase<DerivedV> & V,
     const Eigen::MatrixBase<DerivedF> & F,
     Eigen::PlainObjectBase<DerivedD> & D);
-  // Determine whether a single edge is Delaunay using a provided (extrinsic) incirle
-  // test.
-  //
-  // Inputs:
-  //   V  #V by dim list of vertex positions
-  //   F  #F by 3 list of triangles indices
-  //   uE2E  #uE list of lists of indices into E of coexisting edges (see
-  //     unique_edge_map)
-  //   incircle  A functor such that incircle(pa, pb, pc, pd) returns
-  //               1 if pd is on the positive size of circumcirle of (pa,pb,pc)
-  //              -1 if pd is on the positive size of circumcirle of (pa,pb,pc)
-  //               0 if pd is cocircular with pa, pb, pc.
-  //               (see delaunay_triangulation)
-  //   uei  index into uE2E of edge to check
-  // Returns true iff edge is Delaunay
+  /// Determine whether a single edge is Delaunay using a provided (extrinsic) incirle
+  /// test.
+  ///
+  /// @param[in] V  #V by dim list of vertex positions
+  /// @param[in] F  #F by 3 list of triangles indices
+  /// @param[in] uE2E  #uE list of lists of indices into E of coexisting edges (see
+  ///     unique_edge_map)
+  /// @param[in] incircle  A functor such that incircle(pa, pb, pc, pd) returns
+  ///               1 if pd is on the positive size of circumcirle of (pa,pb,pc)
+  ///              -1 if pd is on the positive size of circumcirle of (pa,pb,pc)
+  ///               0 if pd is cocircular with pa, pb, pc.
+  ///               (see delaunay_triangulation)
+  /// @param[in] uei  index into uE2E of edge to check
+  /// @return true iff edge is Delaunay
   template <
     typename DerivedV,
     typename DerivedF,

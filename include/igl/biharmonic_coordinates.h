@@ -69,25 +69,8 @@ namespace igl
     const Eigen::MatrixBase<DerivedT> & T,
     const std::vector<std::vector<SType> > & S,
     Eigen::PlainObjectBase<DerivedW> & W);
-  /// Compute "discrete biharmonic generalized barycentric coordinates" as
-  /// described in "Linear Subspace Design for Real-Time Shape Deformation"
-  /// [Wang et al. 2015]. Expose k parameter for power of Laplacian
-  /// (experimental).
-  ///
-  /// @tparam SType  should be a simple index type e.g. `int`,`size_t`
-  /// @param[in] V  #V by dim list of mesh vertex positions
-  /// @param[in] T  #T by dim+1 list of / triangle indices into V      if dim=2
-  ///                          \ tetrahedron indices into V   if dim=3
-  /// @param[in] S  #point-handles+#region-handles list of lists of selected vertices for
-  ///     each handle. Point handles should have singleton lists and region
-  ///     handles should have lists of size at least dim+1 (and these points
-  ///     should be in general position).
+  /// \overload
   /// @param[in] k  power of Laplacian (experimental)
-  /// @param[out] W  #V by #points-handles+(#region-handles * dim+1) matrix of weights so
-  ///     that columns correspond to each handles generalized barycentric
-  ///     coordinates (for point-handles) or animation space weights (for region
-  ///     handles).
-  /// @return true only on success
   template <
     typename DerivedV,
     typename DerivedT,

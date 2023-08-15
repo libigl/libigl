@@ -33,15 +33,7 @@ namespace igl
     const Eigen::MatrixBase<DerivedV>& PD2,
     Eigen::PlainObjectBase<DerivedV>& BIS1,
     Eigen::PlainObjectBase<DerivedV>& BIS2);
-  /// Compute bisectors of a frame field defined on mesh faces.
-  ///
-  /// @param[in] V     #V by 3 eigen Matrix of mesh vertex 3D positions
-  /// @param[in] F     #F by 3 eigen Matrix of face (triangle) indices
-  /// @param[in] PD1   #F by 3 eigen Matrix of the first per face frame field vector
-  /// @param[in] PD2   #F by 3 eigen Matrix of the second per face frame field vector
-  /// @param[out] BIS1  #F by 3 eigen Matrix of the first per face frame field bisector
-  /// @param[out] BIS2  #F by 3 eigen Matrix of the second per face frame field bisector
-  ///
+  /// \overload
   template <typename DerivedV, typename DerivedF>
   IGL_INLINE void compute_frame_field_bisectors(
     const Eigen::MatrixBase<DerivedV>& V,

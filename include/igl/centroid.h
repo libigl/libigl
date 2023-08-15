@@ -28,11 +28,7 @@ namespace igl
     const Eigen::MatrixBase<DerivedF>& F,
     Eigen::PlainObjectBase<Derivedc>& c,
     Derivedvol & vol);
-  /// Computes the centroid of a closed mesh using a surface integral.
-  /// 
-  /// @param[in] V  #V by dim list of rest domain positions
-  /// @param[in] F  #F by 3 list of triangle indices into V
-  /// @param[out]   c  dim vector of centroid coordinates
+  /// \overload
   template <
     typename DerivedV, 
     typename DerivedF, 

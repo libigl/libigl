@@ -47,16 +47,7 @@ namespace igl
     Eigen::PlainObjectBase<DerivedF> & F,
     Eigen::PlainObjectBase<DerivedVsizes> & Vsizes,
     Eigen::PlainObjectBase<DerivedFsizes> & Fsizes);
-  /// Concatenate k meshes into a single >=k connected component mesh with a
-  /// single vertex list and face list. Similar to Maya's Combine operation. 
-  ///
-  /// @param[in] VV  k-long list of lists of mesh vertex positions
-  /// @param[in] FF  k-long list of lists of mesh face indices so that FF[i] indexes
-  ///     VV[i]
-  /// @param[out] V   VV[0].rows()+...+VV[k-1].rows() by VV[0].cols() list of mesh
-  ///     vertex positions
-  /// @param[out] F   FF[0].rows()+...+FF[k-1].rows() by FF[0].cols() list of mesh faces
-  ///     indices into V
+  /// \overload
   template <
     typename DerivedVV, 
     typename DerivedFF, 

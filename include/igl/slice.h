@@ -12,18 +12,19 @@
 #include <Eigen/Sparse>
 namespace igl
 {
-  // Act like the matlab X(row_indices,col_indices) operator, where
-  // row_indices, col_indices are non-negative integer indices.
-  //
-  // Inputs:
-  //   X  m by n matrix
-  //   R  list of row indices
-  //   C  list of column indices
-  // Output:
-  //   Y  #R by #C matrix
-  //
-  // See also: slice_mask, and Eigen's unaryExpr
-  //   https://stackoverflow.com/a/49411587/148668
+  /// Act like the matlab X(row_indices,col_indices) operator, where
+  /// row_indices, col_indices are non-negative integer indices.
+  ///
+  /// Inputs:
+  ///   X  m by n matrix
+  ///   R  list of row indices
+  ///   C  list of column indices
+  /// Output:
+  ///   Y  #R by #C matrix
+  ///
+  /// \see slice_mask, slice_into
+  ///
+  /// \note See also Eigen's unaryExpr https://stackoverflow.com/a/49411587/148668
   template <
     typename TX,
     typename TY,
@@ -34,23 +35,7 @@ namespace igl
     const Eigen::DenseBase<DerivedR> & R,
     const Eigen::DenseBase<DerivedC> & C,
     Eigen::SparseMatrix<TY>& Y);
-
-  // Wrapper to only slice in one direction
-  //
-  // Inputs:
-  //   dim  dimension to slice in 1 or 2, dim=1 --> X(R,:), dim=2 --> X(:,R)
-  //
-  // Note: For now this is just a cheap wrapper.
-  template <
-    typename MatX,
-    typename DerivedR,
-    typename MatY>
-  IGL_INLINE void slice(
-    const MatX& X,
-    const Eigen::DenseBase<DerivedR> & R,
-    const int dim,
-    MatY& Y);
-
+  /// \overload
   template <
     typename DerivedX,
     typename DerivedR,
@@ -61,23 +46,39 @@ namespace igl
     const Eigen::DenseBase<DerivedR> & R,
     const Eigen::DenseBase<DerivedC> & C,
     Eigen::PlainObjectBase<DerivedY> & Y);
-
+  /// \overload
+  /// \brief Wrapper to only slice in one direction
+  ///
+  /// @param[in] dim  dimension to slice in 1 or 2, dim=1 --> X(R,:), dim=2 --> X(:,R)
+  ///
+  /// \note For now this is just a cheap wrapper.
+  template <
+    typename MatX,
+    typename DerivedR,
+    typename MatY>
+  IGL_INLINE void slice(
+    const MatX& X,
+    const Eigen::DenseBase<DerivedR> & R,
+    const int dim,
+    MatY& Y);
+  /// \overload
+  /// \brief Vector version
   template <typename DerivedX, typename DerivedY, typename DerivedR>
   IGL_INLINE void slice(
     const Eigen::DenseBase<DerivedX> & X,
     const Eigen::DenseBase<DerivedR> & R,
     Eigen::PlainObjectBase<DerivedY> & Y);
-
-  // VectorXi Y = slice(X,R);
-  //
-  // This templating is bad because the return type might not have the same
-  // size as `DerivedX`. This will probably only work if DerivedX has Dynamic
-  // as it's non-trivial sizes or if the number of rows in R happens to equal
-  // the number of rows in `DerivedX`.
+  /// \overload
+  /// \brief VectorXi Y = slice(X,R);
+  /// This templating is bad because the return type might not have the same
+  /// size as `DerivedX`. This will probably only work if DerivedX has Dynamic
+  /// as it's non-trivial sizes or if the number of rows in R happens to equal
+  /// the number of rows in `DerivedX`.
   template <typename DerivedX, typename DerivedR>
   IGL_INLINE DerivedX slice(
     const Eigen::DenseBase<DerivedX> & X,
     const Eigen::DenseBase<DerivedR> & R);
+  /// \overload
   template <typename DerivedX, typename DerivedR>
   IGL_INLINE DerivedX slice(
     const Eigen::DenseBase<DerivedX>& X,

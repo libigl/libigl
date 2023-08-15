@@ -23,10 +23,8 @@ namespace igl
   ///    exactly once.
   ///
   /// \see unique_simplices
-
   template <typename DerivedF, typename DerivedE, typename DerivedOE>
-  IGL_INLINE void
-  orient_halfedges(
+  IGL_INLINE void orient_halfedges(
     const Eigen::MatrixBase<DerivedF>& F,
     Eigen::PlainObjectBase<DerivedE>& E,
     Eigen::PlainObjectBase<DerivedOE>& oE);

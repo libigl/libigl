@@ -45,16 +45,7 @@ namespace igl
     const size_t s,
     std::vector<DType> & D,
     std::vector<PType> & P);
-  /// Traverse a **directed** graph represented by an adjacency list using.
-  /// breadth first search; inputs adjacency matrix, outputs lists.
-  ///
-  /// @param[in] A  #V by #V adjacency matrix
-  /// @param[in] s  starting node (index into A)
-  /// @param[out] D  #V list of indices into rows of A in the order in which graph nodes
-  ///     are discovered.
-  /// @param[out] P  #V list of indices into rows of A of predecessor in resulting
-  ///     spanning tree {-1 indicates root/not discovered), order corresponds to
-  ///     V **not** D.
+  /// \overload
   template <
     typename AType,
     typename DType,

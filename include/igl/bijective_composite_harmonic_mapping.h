@@ -42,25 +42,15 @@ namespace igl
     const Eigen::MatrixBase<Derivedb> & b,
     const Eigen::MatrixBase<Derivedbc> & bc,
     Eigen::PlainObjectBase<DerivedU> & U);
-  /// Compute a injective planar mapping of a triangulated polygon (V,F) subjected to
-  /// boundary conditions (b,bc), with additional controls.
-  //
-  /// @param[in] V  #V by 2 list of triangle mesh vertex positions
-  /// @param[in] F  #F by 3 list of triangle indices into V
-  /// @param[in] b  #b list of boundary indices into V
-  /// @param[in] bc  #b by 2 list of boundary conditions corresponding to b
-  //  @param[in] min_steps  minimum number of steps to take from V(b,:) to bc
-  //  @param[in] max_steps  minimum number of steps to take from V(b,:) to bc (if
-  //     max_steps == min_steps then no further number of steps will be tried)
-  //  @param[in] num_inner_iters  number of iterations of harmonic solves to run after
-  //     for each morph step (to try to push flips back in)
-  //  @param[in] test_for_flips  whether to check if flips occurred (and trigger more
-  //     steps). if test_for_flips = false then this function always returns
-  //     true
-  /// @param[out] U  #V by 2 list of output mesh vertex locations
-  /// @return true if and only if U contains a successful bijectie mapping
-  ///
-  // 
+  ///  \overload
+  ///  @param[in] min_steps  minimum number of steps to take from V(b,:) to bc
+  ///  @param[in] max_steps  minimum number of steps to take from V(b,:) to bc (if
+  ///     max_steps == min_steps then no further number of steps will be tried)
+  ///  @param[in] num_inner_iters  number of iterations of harmonic solves to run after
+  ///     for each morph step (to try to push flips back in)
+  ///  @param[in] test_for_flips  whether to check if flips occurred (and trigger more
+  ///     steps). if test_for_flips = false then this function always returns
+  ///     true
   template <
     typename DerivedV,
     typename DerivedF,

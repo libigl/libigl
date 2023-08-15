@@ -12,22 +12,20 @@
 
 namespace igl
 {
-  // Find the rigid transformation that best aligns the 3D points X to their
-  // corresponding points P with associated normals N.
-  //
-  //  min       ‖(X*R+t-P)'N‖²
-  //  R∈SO(3)
-  //  t∈R³
-  //
-  // Inputs:
-  //   X  #X by 3 list of query points
-  //   P  #X by 3 list of corresponding (e.g., closest) points
-  //   N  #X by 3 list of unit normals for each row in P
-  // Outputs:
-  //   R  3 by 3 rotation matrix
-  //   t  1 by 3 translation vector
-  //
-  //   See also: icp
+  /// Find the rigid transformation that best aligns the 3D points X to their
+  /// corresponding points P with associated normals N.
+  ///
+  ///      min       ‖(X*R+t-P)'N‖²
+  ///      R∈SO(3)
+  ///      t∈R³
+  ///
+  /// @param[in] X  #X by 3 list of query points
+  /// @param[in] P  #X by 3 list of corresponding (e.g., closest) points
+  /// @param[in] N  #X by 3 list of unit normals for each row in P
+  /// @param[out] R  3 by 3 rotation matrix
+  /// @param[out] t  1 by 3 translation vector
+  ///
+  /// \see icp
   template <
     typename DerivedX,
     typename DerivedP,

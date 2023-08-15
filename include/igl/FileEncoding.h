@@ -10,7 +10,7 @@
 
 namespace igl
 {
-
+  /// File encoding types for writing files.
 enum class FileEncoding {
   Binary,
   Ascii

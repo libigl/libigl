@@ -208,7 +208,7 @@ public:
       /// @param[out]  c  closest point
       /// @return squared distance
       ///
-      /// \bug Currently assumes Elements are triangles regardless of
+      /// \pre Currently assumes Elements are triangles regardless of
       /// dimension.
       template <typename DerivedEle>
       IGL_INLINE Scalar squared_distance(
@@ -232,7 +232,7 @@ public:
       /// @param[out]  c  closest point
       /// @return squared distance
       ///
-      /// \bug currently assumes Elements are triangles regardless of
+      /// \pre currently assumes Elements are triangles regardless of
       /// dimension.
       template <typename DerivedEle>
       IGL_INLINE Scalar squared_distance(

@@ -5,15 +5,14 @@
 #include <Eigen/Sparse>
 namespace igl
 {
-  // Inputs:
-  //   X  m by n matrix
-  //   dim  dimension along which to take max
-  // Outputs:
-  //   Y  n-long vector (if dim == 1) 
-  //   or
-  //   Y  m-long vector (if dim == 2)
-  //   I  vector the same size as Y containing the indices along dim of maximum
-  //     entries
+  /// \param[in] X  m by n matrix
+  /// \param[in] dim  dimension along which to take max
+  /// \param[out] Y  n-long vector (if dim == 1) 
+  ///   or
+  ///   Y  m-long vector (if dim == 2)
+  ///   I  vector the same size as Y containing the indices along dim of maximum
+  ///     entries
+  /// \deprecated seems like a duplicate of mat_max
   template <typename AType, typename DerivedB, typename DerivedI>
   IGL_INLINE void max(
     const Eigen::SparseMatrix<AType> & A,

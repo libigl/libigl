@@ -16,6 +16,8 @@
 
 namespace igl
 {
+  /// Class for building an AABB tree to implement the divide and conquer
+  /// algorithm described in [Jacobson et al. 2013]. 
   template <
     typename Point,
     typename DerivedV, 
@@ -38,13 +40,20 @@ namespace igl
         total_positive_area(std::numeric_limits<typename DerivedV::Scalar>::infinity()),
         split_method(MEDIAN_ON_LONGEST_AXIS)
       {}
+      /// Constructor
+      ///
+      /// @param[in] V  #V by 3 list of vertex positions
+      /// @param[in] F  #F by 3 list of triangle indices into V
       inline WindingNumberAABB(
         const Eigen::MatrixBase<DerivedV> & V,
         const Eigen::MatrixBase<DerivedF> & F);
       inline WindingNumberAABB(
         const WindingNumberTree<Point,DerivedV,DerivedF> & parent,
         const Eigen::MatrixBase<DerivedF> & F);
-      // Initialize some things
+      /// Initialize the hierarchy to a given mesh
+      ///
+      /// @param[in] V  #V by 3 list of vertex positions
+      /// @param[in] F  #F by 3 list of triangle indices into V
       inline void set_mesh(
         const Eigen::MatrixBase<DerivedV> & V,
         const Eigen::MatrixBase<DerivedF> & F);

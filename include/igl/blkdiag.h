@@ -27,6 +27,7 @@ namespace igl
   IGL_INLINE void blkdiag(
     const std::vector<Eigen::SparseMatrix<Scalar>> & L, 
     Eigen::SparseMatrix<Scalar> & Y);
+  /// \overload
   template <typename DerivedY>
   IGL_INLINE void blkdiag(
     const std::vector<DerivedY> & L, 

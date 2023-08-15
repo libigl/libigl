@@ -18,8 +18,8 @@
 
 namespace igl {
 
-// Class for loading information from .msh file
-// depends only on c++stl library
+/// Class for loading information from .msh file
+/// depends only on c++stl library
 class MshLoader {
     public:
 
@@ -60,6 +60,8 @@ class MshLoader {
               // other elements
               ELEMENT_POINT=15 };
     public:
+        /// Load a .msh file from a given path
+        /// @param[in] filename  path to .msh
         MshLoader(const std::string &filename);
 
     public:

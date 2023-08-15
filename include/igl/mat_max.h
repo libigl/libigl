@@ -12,23 +12,23 @@
 
 namespace igl
 {
-  // Ideally this becomes a super overloaded function supporting everything
-  // that matlab's max supports
-
-  // Max function for matrices to act like matlab's max function. Specifically
-  // like [Y,I] = max(X,[],dim);
-  //
-  // Templates:
-  //   T  should be a eigen matrix primitive type like int or double
-  // Inputs:
-  //   X  m by n matrix
-  //   dim  dimension along which to take max
-  // Outputs:
-  //   Y  n-long vector (if dim == 1) 
-  //   or
-  //   Y  m-long vector (if dim == 2)
-  //   I  vector the same size as Y containing the indices along dim of maximum
-  //     entries
+  /// Max function for matrices to act like matlab's max function. Specifically
+  /// like [Y,I] = max(X,[],dim);
+  ///
+  /// @tparam T  should be a eigen matrix primitive type like int or double
+  /// @param[in] X  m by n matrix
+  /// @param[in] dim  dimension along which to take max
+  /// @param[out] Y  n-long vector (if dim == 1), or
+  ///                m-long vector (if dim == 2)
+  /// @param[out] I  vector the same size as Y containing the indices along dim
+  ///   of maximum entries
+  ///
+  /// Compare to:
+  ///
+  ///     X.colwise().maxCoeff() 
+  ///     X.rowwise().maxCoeff() 
+  ///
+  /// \see mat_min
   template <typename DerivedX, typename DerivedY, typename DerivedI>
   IGL_INLINE void mat_max(
     const Eigen::DenseBase<DerivedX> & X,

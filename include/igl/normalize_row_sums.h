@@ -12,17 +12,16 @@
 
 namespace igl
 {
-  // Normalize the rows in A so that their sums are each 1 and place the new
-  // entries in B
-  // Inputs:
-  //   A  #rows by k input matrix
-  // Outputs:
-  //   B  #rows by k input matrix, can be the same as A
-  //
-  // Note: This is just calling an Eigen one-liner: 
-  //
-  //     B  = A.array().colwise() / A.array().rowwise().sum();
-  //
+  /// Normalize the rows in A so that their sums are each 1 and place the new
+  /// entries in B
+  ///
+  /// @param[in] A  #rows by k input matrix
+  /// @param[out] B  #rows by k input matrix, can be the same as A
+  ///
+  /// \deprecated This is just calling an Eigen one-liner: 
+  ///
+  ///      B  = A.array().colwise() / A.array().rowwise().sum();
+  ///
   template <typename DerivedA, typename DerivedB>
   IGL_INLINE void normalize_row_sums(
     const Eigen::MatrixBase<DerivedA>& A,

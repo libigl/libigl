@@ -48,7 +48,7 @@ namespace igl
   /// \note Benchmark: For a harmonic solve on a mesh with 325K facets, matlab 2.2
   /// secs, igl/min_quad_with_fixed.h 7.1 secs
   ///
-  /// \bug rows of [Aeq;Aieq] **must** be linearly independent. Should be
+  /// \pre rows of [Aeq;Aieq] **must** be linearly independent. Should be
   /// using QR decomposition otherwise:
   /// https://v8doc.sas.com/sashtml/ormp/chap5/sect32.htm
   template <

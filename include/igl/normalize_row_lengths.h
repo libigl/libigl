@@ -16,14 +16,13 @@
 
 namespace igl
 {
-  // Obsolete: just use A.rowwise().normalize() or B=A.rowwise().normalized();
-  //
-  // Normalize the rows in A so that their lengths are each 1 and place the new
-  // entries in B
-  // Inputs:
-  //   A  #rows by k input matrix
-  // Outputs:
-  //   B  #rows by k input matrix, can be the same as A
+  /// \deprecated just use A.rowwise().normalize() or B=A.rowwise().normalized();
+  ///
+  /// Normalize the rows in A so that their lengths are each 1 and place the new
+  /// entries in B
+  ///
+  /// @param[in] A  #rows by k input matrix
+  /// @param[out] B  #rows by k input matrix, can be the same as A
   template <typename DerivedV>
   IGL_INLINE void normalize_row_lengths(
    const Eigen::PlainObjectBase<DerivedV>& A,

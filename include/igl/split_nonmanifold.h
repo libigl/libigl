@@ -12,16 +12,14 @@
 #include <Eigen/Core>
 namespace igl
 {
-  // SPLIT_NONMANIFOLD Split a non-manifold (or non-orientable) mesh into a
-  // orientable manifold mesh possibly with more connected components and
-  // geometrically duplicate vertices.
-  //
-  // Inputs:
-  //   F  #F by 3 list of mesh triangle indices into rows of some V
-  // Outputs:
-  //   SF  #F by 3 list of mesh triangle indices into rows of a new vertex list
-  //     SV = V(SVI,:)
-  //   SVI  #SV list of indices into V identifying vertex positions
+  /// Split a non-manifold (or non-orientable) mesh into a orientable manifold
+  /// mesh possibly with more connected components and geometrically duplicate
+  /// vertices.
+  ///
+  /// @param[in] F  #F by 3 list of mesh triangle indices into rows of some V
+  /// @param[out] SF  #F by 3 list of mesh triangle indices into rows of a new vertex list
+  ///               SV = V(SVI,:)
+  /// @param[out] SVI  #SV list of indices into V identifying vertex positions
   template <
     typename DerivedF,
     typename DerivedSF,
@@ -31,10 +29,9 @@ namespace igl
       const Eigen::MatrixBase<DerivedF> & F,
       Eigen::PlainObjectBase <DerivedSF> & SF,
       Eigen::PlainObjectBase <DerivedSVI> & SVI);
-  // Inputs:
-  //   V  #V by dim explicit list of vertex positions
-  // Outputs:
-  //   SV  #SV by dim explicit list of vertex positions
+  /// \overload
+  /// @param[in] V  #V by dim explicit list of vertex positions
+  /// @param[out] SV  #SV by dim explicit list of vertex positions
   template <
     typename DerivedV,
     typename DerivedF,

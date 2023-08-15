@@ -12,24 +12,21 @@
 #include <Eigen/Sparse>
 namespace igl
 {
-  //  Compute connected components of facets connected by manifold edges.
-  // 
-  //  Known bugs: This will detect a moebius strip as a single patch (manifold,
-  //  non-orientable) and also non-manfiold, yet orientable patches. 
-  // 
-  //  Q: Does this find exactly (manifold || orientable) patches?
-  // 
-  //  Inputs:
-  //    F  #F by simplex-size list of facets
-  //  Outputs:
-  //    C  #F list of component ids
-  //    A  #F by #F adjacency matrix
-  // 
+  /// Compute connected components of facets connected by manifold edges.
+  ///
+  /// @param[in] F  #F by simplex-size list of facets
+  /// @param[out] C  #F list of component ids
+  /// @param[out] A  #F by #F adjacency matrix
+  ///
+  /// \bug This will detect a moebius strip as a single patch (manifold,
+  /// non-orientable) and also non-manfiold, yet orientable patches. So the
+  /// _name_ of this function is inappropriate.
   template <typename DerivedF, typename DerivedC, typename AScalar>
   IGL_INLINE void orientable_patches(
     const Eigen::MatrixBase<DerivedF> & F,
     Eigen::PlainObjectBase<DerivedC> & C,
     Eigen::SparseMatrix<AScalar> & A);
+  /// \overload
   template <typename DerivedF, typename DerivedC>
   IGL_INLINE void orientable_patches(
     const Eigen::MatrixBase<DerivedF> & F,
