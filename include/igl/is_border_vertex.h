@@ -8,7 +8,6 @@
 #ifndef IGL_IS_BORDER_VERTEX_H
 #define IGL_IS_BORDER_VERTEX_H
 #include "igl_inline.h"
-#include "deprecated.h"
 #include <Eigen/Core>
 #include <vector>
 
