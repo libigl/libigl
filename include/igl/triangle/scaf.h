@@ -30,32 +30,32 @@ namespace igl
       // Output
       int dim = 2;
       /// scaffold + isometric 
-      double total_energy
+      double total_energy;
       /// objective value
-      double energy
+      double energy;
 
       long mv_num = 0, mf_num = 0;
       long sv_num = 0, sf_num = 0;
       long v_num{}, f_num = 0;
       /// input initial mesh V
-      Eigen::MatrixXd m_V
+      Eigen::MatrixXd m_V;
       /// input initial mesh F/T
-      Eigen::MatrixXi m_T
+      Eigen::MatrixXi m_T;
       // INTERNAL
       /// whole domain uv: mesh + free vertices
-      Eigen::MatrixXd w_uv
+      Eigen::MatrixXd w_uv;
       /// scaffold domain tets: scaffold tets
-      Eigen::MatrixXi s_T
+      Eigen::MatrixXi s_T;
       Eigen::MatrixXi w_T;
 
       /// mesh area or volume
-      Eigen::VectorXd m_M
+      Eigen::VectorXd m_M;
       /// scaffold area or volume
-      Eigen::VectorXd s_M
+      Eigen::VectorXd s_M;
       /// area/volume weights for whole
-      Eigen::VectorXd w_M
+      Eigen::VectorXd w_M;
       /// area or volume
-      double mesh_measure = 0
+      double mesh_measure = 0;
       double proximal_p = 0;
 
       Eigen::VectorXi frame_ids;

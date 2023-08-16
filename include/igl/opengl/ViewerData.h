@@ -219,37 +219,37 @@ public:
   IGL_INLINE void copy_options(const ViewerCore &from, const ViewerCore &to);
 
   /// Vertices of the current mesh (#V x 3)
-  Eigen::MatrixXd V
+  Eigen::MatrixXd V;
   /// Faces of the mesh (#F x 3)
-  Eigen::MatrixXi F
+  Eigen::MatrixXi F;
 
   // Per face attributes
   /// One normal per face
-  Eigen::MatrixXd F_normals
+  Eigen::MatrixXd F_normals;
 
   /// Per face ambient color
-  Eigen::MatrixXd F_material_ambient
+  Eigen::MatrixXd F_material_ambient;
   /// Per face diffuse color
-  Eigen::MatrixXd F_material_diffuse
+  Eigen::MatrixXd F_material_diffuse;
   /// Per face specular color
-  Eigen::MatrixXd F_material_specular
+  Eigen::MatrixXd F_material_specular;
 
   // Per vertex attributes
   /// One normal per vertex
-  Eigen::MatrixXd V_normals
+  Eigen::MatrixXd V_normals;
 
   /// Per vertex ambient color
-  Eigen::MatrixXd V_material_ambient
+  Eigen::MatrixXd V_material_ambient;
   /// Per vertex diffuse color
-  Eigen::MatrixXd V_material_diffuse
+  Eigen::MatrixXd V_material_diffuse;
   /// Per vertex specular color
-  Eigen::MatrixXd V_material_specular
+  Eigen::MatrixXd V_material_specular;
 
   // UV parametrization
   /// UV vertices
-  Eigen::MatrixXd V_uv
+  Eigen::MatrixXd V_uv;
   /// optional faces for UVs
-  Eigen::MatrixXi F_uv
+  Eigen::MatrixXi F_uv;
 
   // Texture
   /// Texture red colors

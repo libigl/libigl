@@ -57,35 +57,35 @@ public:
   GLuint shader_text;
 
   /// Vertices of the current mesh (#V x 3)
-  GLuint vbo_V
+  GLuint vbo_V;
   /// UV coordinates for the current mesh (#V x 2)
-  GLuint vbo_V_uv
+  GLuint vbo_V_uv;
   /// Vertices of the current mesh (#V x 3)
-  GLuint vbo_V_normals
+  GLuint vbo_V_normals;
   /// Ambient material  (#V x 3)
-  GLuint vbo_V_ambient
+  GLuint vbo_V_ambient;
   /// Diffuse material  (#V x 3)
-  GLuint vbo_V_diffuse
+  GLuint vbo_V_diffuse;
   /// Specular material  (#V x 3)
-  GLuint vbo_V_specular
+  GLuint vbo_V_specular;
 
   /// Faces of the mesh (#F x 3)
-  GLuint vbo_F
+  GLuint vbo_F;
   /// Texture
-  GLuint vbo_tex
+  GLuint vbo_tex;
 
   /// Indices of the line overlay
-  GLuint vbo_lines_F
+  GLuint vbo_lines_F;
   /// Vertices of the line overlay
-  GLuint vbo_lines_V
+  GLuint vbo_lines_V;
   /// Color values of the line overlay
-  GLuint vbo_lines_V_colors
+  GLuint vbo_lines_V_colors;
   /// Indices of the point overlay
-  GLuint vbo_points_F
+  GLuint vbo_points_F;
   /// Vertices of the point overlay
-  GLuint vbo_points_V
+  GLuint vbo_points_V;
   /// Color values of the point overlay
-  GLuint vbo_points_V_colors
+  GLuint vbo_points_V_colors;
 
   // Temporary copy of the content of each VBO
   typedef Eigen::Matrix<float,Eigen::Dynamic,Eigen::Dynamic,Eigen::RowMajor> RowMatrixXf;
