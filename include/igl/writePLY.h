@@ -1,7 +1,7 @@
 #ifndef IGL_WRITEPLY_H
 #define IGL_WRITEPLY_H
-#include <igl/igl_inline.h>
-#include <igl/FileEncoding.h>
+#include "igl_inline.h"
+#include "FileEncoding.h"
 
 #include <string>
 #include <iostream>

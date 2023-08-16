@@ -1,6 +1,6 @@
 #ifndef IGL_PSO_H
 #define IGL_PSO_H
-#include <igl/igl_inline.h>
+#include "igl_inline.h"
 #include <Eigen/Core>
 #include <functional>
 

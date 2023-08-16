@@ -142,8 +142,8 @@ namespace igl
 #include "triangle_fan.h"
 #include "exterior_edges.h"
 
-#include <igl/PI.h>
-#include <igl/remove_duplicate_vertices.h>
+#include "PI.h"
+#include "remove_duplicate_vertices.h"
 
 #include <iostream>
 #include <limits>

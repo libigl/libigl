@@ -1,6 +1,6 @@
 #ifndef IGL_READPLY_H
 #define IGL_READPLY_H
-#include <igl/igl_inline.h>
+#include "igl_inline.h"
 #include <Eigen/Core>
 #include <string>
 #include <vector>

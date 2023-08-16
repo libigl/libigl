@@ -20,7 +20,9 @@ namespace igl
   /// @param[in] B  eigen matrix r by c
   /// @param[out] d a column vector with r entries that contains the dot product of each corresponding row of A and B
   ///
-  /// \deprecated Use Eigen's `.rowwise().dot()` instead
+  /// \note Unfortunately, Eigen does not support `A.rowwise().dot(B.rowwise())`
+  /// so this function is a wrapper around the less obvious and less convenient
+  /// `(A.array() * B.array()).rowwise().sum()`.
   template <typename DerivedV>
   IGL_INLINE DerivedV dot_row(
     const Eigen::PlainObjectBase<DerivedV>& A,

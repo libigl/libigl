@@ -4440,7 +4440,7 @@ using UT_BVH = UT::BVH<N>;
 
 
 
-#include <igl/parallel_for.h>
+#include "parallel_for.h"
 
 #include <iostream>
 #include <algorithm>
@@ -6423,7 +6423,7 @@ inline void ut_ArrayImplFree(void *p)
 
 
 
-#include <igl/parallel_for.h>
+#include "parallel_for.h"
 #include <type_traits>
 #include <utility>
 

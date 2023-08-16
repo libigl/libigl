@@ -10,7 +10,7 @@
 #include "igl_inline.h"
 
 #include <Eigen/Sparse>
-#include <igl/ARAPEnergyType.h>
+#include "ARAPEnergyType.h"
 
 namespace igl
 {

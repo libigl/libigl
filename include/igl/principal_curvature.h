@@ -15,8 +15,6 @@
 #include <vector>
 
 #include "igl_inline.h"
-//#include <igl/cotmatrix.h>
-//#include <igl/writeOFF.h>
 
 
 

@@ -1,7 +1,7 @@
 #ifndef IGL_OPENGL_VERASANSMONO_COMPRESSED_H
 #define IGL_OPENGL_VERASANSMONO_COMPRESSED_H
 
-#include <igl/opengl/../igl_inline.h>
+#include "../igl_inline.h"
 
 namespace igl
 {

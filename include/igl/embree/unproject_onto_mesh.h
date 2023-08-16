@@ -7,7 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_EMBREE_UNPROJECT_ONTO_MESH_H
 #define IGL_EMBREE_UNPROJECT_ONTO_MESH_H
-#include <igl/igl_inline.h>
+#include "../igl_inline.h"
 #include <Eigen/Core>
 
 #include <vector>

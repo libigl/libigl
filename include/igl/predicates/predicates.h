@@ -9,7 +9,7 @@
 #ifndef IGL_PREDICATES_PREDICATES_H
 #define IGL_PREDICATES_PREDICATES_H
 
-#include <igl/igl_inline.h>
+#include "../igl_inline.h"
 #include <Eigen/Core>
 
 namespace igl {

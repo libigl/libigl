@@ -13,7 +13,7 @@
 #ifndef IGL_EMBREE_EMBREE_RENDERER_H
 #define IGL_EMBREE_EMBREE_RENDERER_H
 
-#include <igl/colormap.h>
+#include "../colormap.h"
 
 #include <Eigen/Geometry>
 #include <Eigen/Core>

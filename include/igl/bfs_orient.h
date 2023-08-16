@@ -8,7 +8,7 @@
 #ifndef IGL_BFS_ORIENT_H
 #define IGL_BFS_ORIENT_H
 #include <Eigen/Core>
-#include <igl/igl_inline.h>
+#include "igl_inline.h"
 
 namespace igl
 {

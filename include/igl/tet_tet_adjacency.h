@@ -11,7 +11,7 @@
 
 #include <Eigen/Core>
 
-#include <igl/igl_inline.h>
+#include "igl_inline.h"
 
 namespace igl
 {

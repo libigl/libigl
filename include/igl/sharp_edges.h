@@ -1,7 +1,7 @@
 #ifndef IGL_SHARP_EDGES_H
 #define IGL_SHARP_EDGES_H
 
-#include <igl/igl_inline.h>
+#include "igl_inline.h"
 #include <Eigen/Core>
 #include <vector>
 

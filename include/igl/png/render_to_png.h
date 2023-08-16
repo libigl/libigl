@@ -7,7 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_PNG_RENDER_TO_PNG_H
 #define IGL_PNG_RENDER_TO_PNG_H
-#include <igl/igl_inline.h>
+#include "../igl_inline.h"
 
 #include <string>
 namespace igl

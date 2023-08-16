@@ -3,7 +3,7 @@
 
 #include <Eigen/Core>
 #include <array>
-#include <igl/igl_inline.h>
+#include "igl_inline.h"
 
 namespace igl {
 

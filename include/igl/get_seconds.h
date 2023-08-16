@@ -9,6 +9,15 @@
 #define IGL_GET_SECONDS_H
 #include "igl_inline.h"
 
+#define IGL_TICTOC_LAMBDA \
+      const auto & tictoc = []() \
+      { \
+        static double t_start = igl::get_seconds(); \
+        double diff = igl::get_seconds()-t_start; \
+        t_start += diff; \
+        return diff; \
+      };
+
 namespace igl
 {
   /// Current time in seconds 

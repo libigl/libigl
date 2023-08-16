@@ -12,7 +12,7 @@
 #include "slice_mask.h"
 #include "connected_components.h"
 #include "remove_unreferenced.h"
-#include <igl/matlab_format.h>
+#include "matlab_format.h"
 #include <iostream>
 
 template <

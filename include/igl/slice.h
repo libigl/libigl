@@ -10,6 +10,7 @@
 #include "igl_inline.h"
 
 #include <Eigen/Sparse>
+#include <vector>
 namespace igl
 {
   /// Act like the matlab X(row_indices,col_indices) operator, where
@@ -84,6 +85,12 @@ namespace igl
     const Eigen::DenseBase<DerivedX>& X,
     const Eigen::DenseBase<DerivedR> & R,
     const int dim);
+  /// \overload
+  template< class T >
+  IGL_INLINE void slice(
+    const std::vector<T> & X,
+    std::vector<size_t> const & R,
+    std::vector<T> & Y);
 
 }
 

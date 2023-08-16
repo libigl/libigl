@@ -20,7 +20,7 @@
 #define SLIM_CACHED 
 
 #ifdef SLIM_CACHED
-#include <igl/AtA_cached.h>
+#include "AtA_cached.h"
 #endif
 
 namespace igl

@@ -8,13 +8,13 @@
 #ifndef IGL_SHAPEUP_H
 #define IGL_SHAPEUP_H
 
-#include <igl/min_quad_with_fixed.h>
-#include <igl/igl_inline.h>
-#include <igl/setdiff.h>
-#include <igl/cat.h>
+#include "min_quad_with_fixed.h"
+#include "igl_inline.h"
+#include "setdiff.h"
+#include "cat.h"
 #include <Eigen/Core>
 #include <vector>
-#include <igl/PI.h>
+#include "PI.h"
 
 
 //This file implements the following algorithm:

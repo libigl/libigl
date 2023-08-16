@@ -8,7 +8,7 @@
 #ifndef IGL_WRITESTL_H
 #define IGL_WRITESTL_H
 #include "igl_inline.h"
-#include <igl/FileEncoding.h>
+#include "FileEncoding.h"
 
 #ifndef IGL_NO_EIGEN
 #  include <Eigen/Core>

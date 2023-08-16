@@ -9,8 +9,8 @@
 #define IGL_VIEWERDATA_H
 
 #include "MeshGL.h"
-#include <igl/igl_inline.h>
-#include <igl/colormap.h>
+#include "../igl_inline.h"
+#include "../colormap.h"
 #include <cassert>
 #include <cstdint>
 #include <Eigen/Core>
@@ -363,7 +363,7 @@ public:
 
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <igl/serialize.h>
+#include "../serialize.h"
 namespace igl
 {
   namespace serialization

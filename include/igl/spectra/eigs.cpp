@@ -1,6 +1,6 @@
 #include "eigs.h"
-#include <igl/sort.h>
-#include <igl/slice.h>
+#include "../sort.h"
+#include "../slice.h"
 #include <Spectra/SymGEigsShiftSolver.h>
 #include <cassert>
 

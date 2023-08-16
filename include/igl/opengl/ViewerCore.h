@@ -8,9 +8,9 @@
 #ifndef IGL_OPENGL_VIEWERCORE_H
 #define IGL_OPENGL_VIEWERCORE_H
 
-#include <igl/opengl/MeshGL.h>
+#include "MeshGL.h"
 
-#include <igl/igl_inline.h>
+#include "../igl_inline.h"
 #include <Eigen/Geometry>
 #include <Eigen/Core>
 
@@ -237,7 +237,7 @@ public:
 }
 }
 
-#include <igl/serialize.h>
+#include "../serialize.h"
 namespace igl {
   namespace serialization {
 
