@@ -14,10 +14,9 @@
 
 namespace igl
 {
-  // Space partitioning tree for computing winding number hierarchically.
-  //
-  // Templates:
-  //   Point  type for points in space, e.g. Eigen::Vector3d
+  /// Space partitioning tree for computing winding number hierarchically.
+  ///
+  /// @tparam Point  type for points in space, e.g. Eigen::Vector3d
   template <
     typename Point,
     typename DerivedV, 

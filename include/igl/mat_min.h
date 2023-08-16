@@ -12,37 +12,29 @@
 
 namespace igl
 {
-  // Ideally this becomes a super overloaded function supporting everything
-  // that matlab's min supports
-
-  // Min function for matrices to act like matlab's min function. Specifically
-  // like [Y,I] = min(X,[],dim);
-  //
-  // Templates:
-  //   T  should be a eigen matrix primitive type like int or double
-  // Inputs:
-  //   X  m by n matrix
-  //   dim  dimension along which to take min 
-  // Outputs:
-  //   Y  n-long sparse vector (if dim == 1) 
-  //   or
-  //   Y  m-long sparse vector (if dim == 2)
-  //   I  vector the same size as Y containing the indices along dim of minimum
-  //     entries
-  //
-  // See also: mat_max
+  /// Min function for matrices to act like matlab's min function. Specifically
+  /// like [Y,I] = min(X,[],dim);
+  ///
+  /// @tparam T  should be a eigen matrix primitive type like int or double
+  /// @param[in] X  m by n matrix
+  /// @param[in] dim  dimension along which to take min
+  /// @param[out] Y  n-long vector (if dim == 1), or
+  ///                m-long vector (if dim == 2)
+  /// @param[out] I  vector the same size as Y containing the indices along dim
+  ///   of minimum entries
+  ///
+  /// Compare to:
+  ///
+  ///     X.colwise().minCoeff() 
+  ///     X.rowwise().minCoeff() 
+  ///
+  /// \see mat_max
   template <typename DerivedX, typename DerivedY, typename DerivedI>
   IGL_INLINE void mat_min(
     const Eigen::DenseBase<DerivedX> & X,
     const int dim,
     Eigen::PlainObjectBase<DerivedY> & Y,
     Eigen::PlainObjectBase<DerivedI> & I);
-  // Use Y = X.colwise().minCoeff() instead
-  //// In-line wrapper
-  //template <typename T>
-  //IGL_INLINE Eigen::Matrix<T,Eigen::Dynamic,1> mat_min(
-  //  const Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> & X,
-  //  const int dim);
 }
 
 #ifndef IGL_STATIC_LIBRARY

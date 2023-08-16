@@ -16,17 +16,15 @@ namespace igl
   {
     namespace cgal
     {
-      // POINT_SOLID_SIGNED_SQUARED_DISTANCE Given a set of points (Q) and the
-      // boundary mesh (VB,FB) of a solid (as defined in [Zhou et al. 2016],
-      // determine the signed squared distance for each point q in Q so that d(q,B) is
-      // negative if inside and positive if outside.
-      //
-      // Inputs:
-      //   Q  #Q by 3 list of query point positions
-      //   VB  #VB by 3 list of mesh vertex positions of B
-      //   FB  #FB by 3 list of mesh triangle indices into VB
-      // Outputs:
-      //   D
+      /// Given a set of points (Q) and the boundary mesh (VB,FB) of a solid (as
+      /// defined in [Zhou et al. 2016], determine the signed squared distance
+      /// for each point q in Q so that d(q,B) is negative if inside and positive
+      /// if outside.
+      ///
+      /// @param[in] Q  #Q by 3 list of query point positions
+      /// @param[in] VB  #VB by 3 list of mesh vertex positions of B
+      /// @param[in] FB  #FB by 3 list of mesh triangle indices into VB
+      /// @param[out] D  #Q list of signed squared distances
       template <
         typename DerivedQ,
         typename DerivedVB,

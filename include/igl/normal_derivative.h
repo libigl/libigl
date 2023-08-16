@@ -13,19 +13,16 @@
 #include <Eigen/Sparse>
 namespace igl
 {
-  // NORMAL_DERIVATIVE Computes the directional derivative **normal** to
-  // **all** (half-)edges of a triangle mesh (not just boundary edges). These
-  // are integrated along the edge: they're the per-face constant gradient dot
-  // the rotated edge vector (unit rotated edge vector for direction then
-  // magnitude for integration).
-  //
-  // Inputs:
-  //   V  #V by dim list of mesh vertex positions
-  //   F  #F by 3|4 list of triangle|tetrahedron indices into V
-  // Outputs:
-  //   DD  #F*3|4 by #V sparse matrix representing operator to compute
-  //     directional derivative with respect to each facet of each element.
-  //
+  /// Computes the directional derivative **normal** to
+  /// **all** (half-)edges of a triangle mesh (not just boundary edges). These
+  /// are integrated along the edge: they're the per-face constant gradient dot
+  /// the rotated edge vector (unit rotated edge vector for direction then
+  /// magnitude for integration).
+  ///
+  /// @param[in] V  #V by dim list of mesh vertex positions
+  /// @param[in] F  #F by 3|4 list of triangle|tetrahedron indices into V
+  /// @param[out] DD  #F*3|4 by #V sparse matrix representing operator to compute
+  ///     directional derivative with respect to each facet of each element.
   template <
     typename DerivedV,
     typename DerivedEle,

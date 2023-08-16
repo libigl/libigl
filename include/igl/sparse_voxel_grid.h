@@ -13,24 +13,20 @@
 
 namespace igl 
 {
-  // sparse_voxel_grid( p0, scalarFunc, eps, CV, CS, CI )
-  //
-  // Given a point, p0, on an isosurface, construct a shell of epsilon sized cubes surrounding the surface.
-  // These cubes can be used as the input to marching cubes.
-  //
-  // Input:
-  //  p0  A 3D point on the isosurface surface defined by scalarFunc(x) = 0
-  //  scalarFunc  A scalar function from R^3 to R -- points which map to 0 lie
-  //              on the surface, points which are negative lie inside the surface,
-  //              and points which are positive lie outside the surface
-  //  eps  The edge length of the cubes surrounding the surface
-  //  expected_number_of_cubes  This pre-allocates internal data structures to speed things up
-  // Output:
-  //   CS  #CV by 1 list of scalar values at the cube vertices
-  //   CV  #CV by 3 list of cube vertex positions
-  //   CI  #CI by 8 list of cube indices into rows of CS and CV. Each row
-  //     represents 8 corners of cube in y-x-z binary counting order.
-  //
+  /// Given a point, p0, on an isosurface, construct a shell of epsilon sized cubes surrounding the surface.
+  /// These cubes can be used as the input to marching cubes.
+  ///
+  /// @param[in] p0  A 3D point on the isosurface surface defined by scalarFunc(x) = 0
+  /// @param[in] scalarFunc  A scalar function from R^3 to R -- points which map to 0 lie
+  ///   on the surface, points which are negative lie inside the surface,
+  ///   and points which are positive lie outside the surface
+  /// @param[in] eps  The edge length of the cubes surrounding the surface
+  /// @param[in] expected_number_of_cubes  This pre-allocates internal data structures to speed things up
+  /// @param[out] CS  #CV by 1 list of scalar values at the cube vertices
+  /// @param[out] CV  #CV by 3 list of cube vertex positions
+  /// @param[out] CI  #CI by 8 list of cube indices into rows of CS and CV. Each row
+  ///   represents 8 corners of cube in y-x-z binary counting order.
+  ///
   template <
     typename DerivedP0, 
     typename Func, 
@@ -45,7 +41,6 @@ namespace igl
     Eigen::PlainObjectBase<DerivedS>& CS,
     Eigen::PlainObjectBase<DerivedV>& CV,
     Eigen::PlainObjectBase<DerivedI>& CI);
-
 }
 
 #ifndef IGL_STATIC_LIBRARY

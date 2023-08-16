@@ -12,15 +12,13 @@
 #include <Eigen/Core>
 namespace igl
 {
-  // Dual quaternion skinning
-  //
-  // Inputs:
-  //   V  #V by 3 list of rest positions
-  //   W  #W by #C list of weights
-  //   vQ  #C list of rotation quaternions
-  //   vT  #C list of translation vectors
-  // Outputs:
-  //   U  #V by 3 list of new positions
+  /// Dual quaternion skinning
+  ///
+  /// @param[in] V  #V by 3 list of rest positions
+  /// @param[in] W  #W by #C list of weights
+  /// @param[in] vQ  #C list of rotation quaternions
+  /// @param[in] vT  #C list of translation vectors
+  /// @param[out] U  #V by 3 list of new positions
   template <
     typename DerivedV,
     typename DerivedW,

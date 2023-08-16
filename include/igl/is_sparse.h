@@ -13,16 +13,17 @@
 #include <Eigen/Sparse>
 namespace igl
 {
-  // Determine if a matrix A is sparse
-  //
-  // Template:
-  //   T,DerivedA defines scalar type
-  // Inputs:
-  //   A  matrix in question
-  // Returns true if A is represented with a sparse matrix
+  /// Determine if a matrix A is sparse
+  ///
+  /// @tparam T,DerivedA defines scalar type
+  /// @param[in] A  matrix in question
+  /// @return true if A is represented with a sparse matrix
+  ///
+  /// \deprecated should probably use `std::type_info`
   template <typename T>
   IGL_INLINE bool is_sparse(
     const Eigen::SparseMatrix<T> & A);
+  /// \overload
   template <typename DerivedA>
   IGL_INLINE bool is_sparse(
     const Eigen::PlainObjectBase<DerivedA>& A);

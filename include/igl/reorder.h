@@ -15,16 +15,23 @@
 
 namespace igl
 {
-  // Act like matlab's Y = X(I) for std vectors
-  // where I contains a vector of indices so that after,
-  // Y[j] = X[I[j]] for index j
-  // this implies that Y.size() == I.size()
-  // X and Y are allowed to be the same reference
+  /// Act like matlab's Y = X(I) for std vectors
+  /// where I contains a vector of indices so that after,
+  /// Y[j] = X[I[j]] for index j
+  /// this implies that Y.size() == I.size()
+  /// X and Y are allowed to be the same reference
+  ///
+  /// @param[in] X  list of elements
+  /// @param[in] I  list of indices
+  /// @param[out] Y  list of elements in X reordered by I
+  ///
+  /// \deprecated This is the same as slice but for std::vectors. Used only by
+  /// igl::sort internally.
   template< class T >
   IGL_INLINE void reorder(
-    const std::vector<T> & unordered,
-    std::vector<size_t> const & index_map,
-    std::vector<T> & ordered);
+    const std::vector<T> & X,
+    std::vector<size_t> const & I,
+    std::vector<T> & Y);
 }
 
 #ifndef IGL_STATIC_LIBRARY

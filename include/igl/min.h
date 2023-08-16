@@ -5,15 +5,15 @@
 #include <Eigen/Sparse>
 namespace igl
 {
-  // Inputs:
-  //   X  m by n matrix
-  //   dim  dimension along which to take min
-  // Outputs:
-  //   Y  n-long vector (if dim == 1) 
-  //   or
-  //   Y  m-long vector (if dim == 2)
-  //   I  vector the same size as Y containing the indices along dim of minimum
-  //     entries
+  /// @param[in] X  m by n matrix
+  /// @param[in] dim  dimension along which to take min
+  /// @param[out] Y
+  ///   Y  n-long vector (if dim == 1) 
+  ///   or
+  ///   Y  m-long vector (if dim == 2)
+  ///   I  vector the same size as Y containing the indices along dim of minimum
+  ///     entries
+  ///  \deprecated seems like a duplicate of mat_min
   template <typename AType, typename DerivedB, typename DerivedI>
   IGL_INLINE void min(
     const Eigen::SparseMatrix<AType> & A,

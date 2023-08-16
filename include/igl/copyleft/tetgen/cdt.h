@@ -22,29 +22,29 @@ namespace igl
   {
     namespace tetgen
     {
+      /// Parameters for controling the CDT
       struct CDTParam
       {
-        // Tetgen can compute mesh of convex hull of input (i.e. "c") but often
-        // chokes. One workaround is to force it to mesh the entire bounding box.
-        // {false}
+        /// Tetgen can compute mesh of convex hull of input (i.e. "c") but often
+        /// chokes. One workaround is to force it to mesh the entire bounding box.
+        /// {false}
         bool use_bounding_box = false;
-        // Scale the bounding box a bit so that vertices near it do not give tetgen
-        // problems. {1.01}
+        /// Scale the bounding box a bit so that vertices near it do not give tetgen
+        /// problems. {1.01}
         double bounding_box_scale = 1.01;
-        // Flags to tetgen. Do not include the "c" flag here! {"Y"}
+        /// Flags to tetgen. Do not include the "c" flag here! {"Y"}
         std::string flags = "Y";
       };
-      // Create a constrained delaunay tessellation containing convex hull of the
-      // given **non-selfintersecting** mesh.
-      //
-      // Inputs:
-      //    V  #V by 3 list of input mesh vertices
-      //    F  #F by 3 list of input mesh facets
-      //    param  see above
-      //    TV  #TV by 3 list of output mesh vertices (V come first)
-      //    TT  #TT by 3 list of tetrahedra indices into TV.
-      //    TF  #TF by 3 list of facets from F potentially subdivided.
-      // 
+      /// Create a constrained delaunay tessellation containing convex hull of the
+      /// given **non-selfintersecting** mesh.
+      ///
+      /// @param[in] V  #V by 3 list of input mesh vertices
+      /// @param[in] F  #F by 3 list of input mesh facets
+      /// @param[in] param  see above
+      /// @param[out] TV  #TV by 3 list of output mesh vertices (V come first)
+      /// @param[out] TT  #TT by 3 list of tetrahedra indices into TV.
+      /// @param[out] TF  #TF by 3 list of facets from F potentially subdivided.
+      /// 
       template <
         typename DerivedV, 
         typename DerivedF, 

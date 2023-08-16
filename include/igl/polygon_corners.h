@@ -13,17 +13,15 @@
 
 namespace igl
 {
-  // Convert a list-of-lists polygon mesh faces representation to list of
-  // polygon corners and sizes
-  //
-  // Inputs:
-  //   P  #P list of lists of vertex indices into rows of some matrix V
-  // Outputs:
-  //   I  #I vectorized list of polygon corner indices into rows of some matrix V
-  //   C  #P+1 list of cumulative polygon sizes so that C(i+1)-C(i) = size of
-  //     the ith polygon, and so I(C(i)) through I(C(i+1)-1) are the indices of
-  //     the ith polygon
-  //
+  /// Convert a list-of-lists polygon mesh faces representation to list of
+  /// polygon corners and sizes
+  ///
+  /// @param[in] P  #P list of lists of vertex indices into rows of some matrix V
+  /// @param[out] I  #I vectorized list of polygon corner indices into rows of some matrix V
+  /// @param[out] C  #P+1 list of cumulative polygon sizes so that C(i+1)-C(i) = size of
+  ///     the ith polygon, and so I(C(i)) through I(C(i+1)-1) are the indices of
+  ///     the ith polygon
+  ///
   template <
     typename PType, 
     typename DerivedI,
@@ -32,12 +30,12 @@ namespace igl
     const std::vector<std::vector<PType> > & P,
     Eigen::PlainObjectBase<DerivedI> & I,
     Eigen::PlainObjectBase<DerivedC> & C);
-  // Convert a pure k-gon list of polygon mesh indices to list of polygon corners
-  // and sizes
-  //
-  // Inputs:
-  //   Q  #Q by k list of polygon indices (ith row is a k-gon, unless Q(i,j) =
-  //     -1 then it's a j-gon)
+  /// \overload
+  /// \brief Convert a pure k-gon list of polygon mesh indices to list of
+  /// polygon corners and sizes
+  ///
+  /// @param[in] Q  #Q by k list of polygon indices (ith row is a k-gon, unless Q(i,j) =
+  ///     -1 then it's a j-gon)
   template <
     typename DerivedQ, 
     typename DerivedI,

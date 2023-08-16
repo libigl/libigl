@@ -11,7 +11,11 @@
 
 namespace igl
 {
-  // Return the current time in seconds using performance counters
+  /// Current time in seconds 
+  ///
+  /// @return the current time in seconds using performance counters
+  ///
+  /// \deprecated just use get_seconds instead
   IGL_INLINE double get_seconds_hires();
 }
 

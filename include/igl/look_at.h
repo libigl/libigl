@@ -13,15 +13,13 @@
 
 namespace igl 
 {
-  // Implementation of the deprecated gluLookAt function.
-  //
-  // Inputs:
-  //   eye  3-vector of eye position
-  //   center  3-vector of center reference point
-  //   up  3-vector of up vector
-  // Outputs:
-  //   R  4x4 rotation matrix
-  //
+  /// Implementation of the deprecated gluLookAt function.
+  ///
+  /// @param[in] eye  3-vector of eye position
+  /// @param[in] center  3-vector of center reference point
+  /// @param[in] up  3-vector of up vector
+  /// @param[out] R  4x4 rotation matrix
+  ///
   template <
     typename Derivedeye,
     typename Derivedcenter,

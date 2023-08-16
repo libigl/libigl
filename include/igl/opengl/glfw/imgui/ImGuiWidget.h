@@ -24,9 +24,9 @@ namespace igl
       {
         // Forward declaration of the parent plugin
         class ImGuiPlugin;
-        // Abstract class for imgui "widgets". A widget is something that uses
-        // imgui, but doesn't own the entire imgui IO stack: the single
-        // ImGuiPlugin owns that and widgets are registered with it.
+        /// Abstract class for imgui "widgets". A widget is something that uses
+        /// imgui, but doesn't own the entire imgui IO stack: the single
+        /// ImGuiPlugin owns that and widgets are registered with it.
         class ImGuiWidget 
         {
           public:

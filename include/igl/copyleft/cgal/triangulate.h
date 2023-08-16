@@ -18,20 +18,18 @@ namespace igl
   {
     namespace cgal
     {
-      // Triangulate the interior of a polygon using CGAL 
-      //
-      // Inputs:
-      //   V #V by 2 list of 2D vertex positions
-      //   E #E by 2 list of vertex ids forming unoriented edges of the boundary of the polygon
-      //   H #H by 2 coordinates of points contained inside holes of the polygon
-      //   retain_convex_hull  whether to retain convex hull {true} or trim away
-      //     all faces reachable from infinite by traversing across
-      //     non-constrained edges {false}.  {true → "c" flag in `triangle`}
-      // Outputs:
-      //   V2  #V2 by 2  coordinates of the vertives of the generated triangulation
-      //   F2  #F2 by 3  list of indices forming the faces of the generated triangulation
-      //
-      // See also: igl::triangle::triangulate
+      /// Triangulate the interior of a polygon using CGAL 
+      ///
+      /// @param[in] V #V by 2 list of 2D vertex positions
+      /// @param[in] E #E by 2 list of vertex ids forming unoriented edges of the boundary of the polygon
+      /// @param[in] H #H by 2 coordinates of points contained inside holes of the polygon
+      /// @param[in] retain_convex_hull  whether to retain convex hull {true} or trim away
+      ///     all faces reachable from infinite by traversing across
+      ///     non-constrained edges {false}.  {true → "c" flag in `triangle`}
+      /// @param[out] V2  #V2 by 2  coordinates of the vertives of the generated triangulation
+      /// @param[out] F2  #F2 by 3  list of indices forming the faces of the generated triangulation
+      ///
+      /// \see igl::triangle::triangulate
       template <
         typename Kernel,
         typename DerivedV,

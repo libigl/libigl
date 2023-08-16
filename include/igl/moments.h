@@ -11,15 +11,15 @@
 #include <Eigen/Core>
 namespace igl
 {
-  // Computes the moments of mass for a solid object bound by a triangle mesh.
-  // 
-  // Inputs:
-  //   V  #V by dim list of rest domain positions
-  //   F  #F by 3 list of triangle indices into V
-  // Outputs:
-  //   m0  zeroth moment of mass, total signed volume of solid.
-  //   m1  first moment of mass, center of mass times total mass
-  //   m2  second moment of mass, moment of inertia with center of mass as reference point
+  /// Computes the moments of mass for a solid object bound by a triangle mesh.
+  /// 
+  /// @param[in] V  #V by dim list of rest domain positions
+  /// @param[in] F  #F by 3 list of triangle indices into V
+  /// @param[out] m0  zeroth moment of mass, total signed volume of solid.
+  /// @param[out] m1  first moment of mass, center of mass (centroid) times total mass
+  /// @param[out] m2  second moment of mass, moment of inertia with center of mass as reference point
+  ///
+  /// \see centroid
   template <
     typename DerivedV, 
     typename DerivedF, 

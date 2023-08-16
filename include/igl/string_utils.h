@@ -14,10 +14,18 @@
 
 namespace igl {
 
-IGL_INLINE bool starts_with(const std::string &str, const std::string &prefix);
-
-IGL_INLINE bool starts_with(const char *str, const char* prefix);
-
+  /// Check if a string starts with a given prefix.
+  ///
+  /// @param[in] str  string to check
+  /// @param[in] prefix  prefix to check
+  /// @return true if str starts with prefix, false otherwise
+  ///
+  /// \fileinfo
+  IGL_INLINE bool starts_with(const std::string &str, const std::string &prefix);
+  /// \overload
+  ///
+  /// \fileinfo
+  IGL_INLINE bool starts_with(const char *str, const char* prefix);
 }
 
 #ifndef IGL_STATIC_LIBRARY

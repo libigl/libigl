@@ -18,7 +18,7 @@ namespace igl
 {
   namespace embree
   {
-     // keep track of embree device
+     /// keep track of embree device instance
      struct EmbreeDevice
      {
         RTCDevice embree_device;

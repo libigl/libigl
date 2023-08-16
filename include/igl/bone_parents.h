@@ -11,13 +11,10 @@
 #include <Eigen/Core>
 namespace igl
 {
-  // BONE_PARENTS Recover "parent" bones from directed graph representation.
-  // 
-  // Inputs:
-  //   BE  #BE by 2 list of directed bone edges
-  // Outputs:
-  //   P  #BE by 1 list of parent indices into BE, -1 means root.
-  //
+  /// Recover "parent" bones from directed graph representation.
+  /// 
+  /// @param[in] BE  #BE by 2 list of directed bone edges
+  /// @param[out] P  #BE by 1 list of parent indices into BE, -1 means root.
   template <typename DerivedBE, typename DerivedP>
   IGL_INLINE void bone_parents(
     const Eigen::MatrixBase<DerivedBE>& BE,

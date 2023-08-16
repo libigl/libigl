@@ -10,13 +10,14 @@
 #include "igl_inline.h"
 namespace igl
 {
-  // Wrapper for STL `any_of` for matrix types
-  //
-  // Inputs:
-  //   S  matrix
-  // Returns whether any entries are true
-  //
-  // Seems that Eigen (now) implements this for `Eigen::Array` 
+  /// Wrapper for STL `any_of` for matrix types
+  ///
+  /// @param[in]  S  matrix
+  /// @return whether any entries are true
+  ///
+  /// \deprecated Seems that Eigen (now) implements this for `Eigen::Array` 
+  ///
+  /// \see any
   template <typename Mat>
   IGL_INLINE bool any_of(const Mat & S);
 }

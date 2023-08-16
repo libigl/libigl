@@ -22,10 +22,13 @@
 namespace igl
 {
 
-  // A simple camera class. The camera stores projection parameters (field of
-  // view angle, aspect ratio, near and far clips) as well as a rigid
-  // transformation *of the camera as if it were also a scene object*. Thus, the
-  // **inverse** of this rigid transformation is the modelview transformation.
+  /// A simple camera class. The camera stores projection parameters (field of
+  /// view angle, aspect ratio, near and far clips) as well as a rigid
+  /// transformation *of the camera as if it were also a scene object*. Thus, the
+  /// **inverse** of this rigid transformation is the modelview transformation.
+  ///
+  /// \deprecated This is not maintained.
+  /// @private
   class Camera
   {
     public:

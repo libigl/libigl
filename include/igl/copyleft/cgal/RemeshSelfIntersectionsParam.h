@@ -14,21 +14,20 @@ namespace igl
   {
     namespace cgal
     {
-      // Optional Parameters
-      //   DetectOnly  Only compute IF, leave VV and FF alone
-      //
-      // detect_only  avoid constructing intersections results when possible
-      // first_only  return after detecting the first intersection (if
-      //   first_only==true, then detect_only should also be true)
-      // stitch_all  whether to stitch all resulting constructed elements into a
-      //   (non-manifold) mesh 
-      // slow_and_more_precise_rounding  whether to use slow and more precise
-      //   rounding (see assign_scalar)
+      /// Parameters for SelfIntersectMesh, remesh_self_intersections and
+      /// remesh_intersections, and intersect_other
+      ///
       struct RemeshSelfIntersectionsParam
       {
+        /// avoid constructing intersections results when possible
         bool detect_only;
+        /// return after detecting the first intersection (if first_only==true,
+        /// then detect_only should also be true)
         bool first_only;
+        /// whether to stitch all resulting constructed elements into a
+        /// (non-manifold) mesh 
         bool stitch_all;
+        /// whether to use slow and more precise rounding (see assign_scalar)
         bool slow_and_more_precise_rounding;
         inline RemeshSelfIntersectionsParam(
           bool _detect_only=false, 
