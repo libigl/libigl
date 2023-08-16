@@ -269,7 +269,7 @@ void check_mesh_for_issues(Eigen::MatrixXd& V, Eigen::MatrixXi& F) {
   if (connected_components!=1) {
     cout << "Error! Input has multiple connected components" << endl; exit(1);
   }
-  int euler_char = igl::euler_characteristic(V, F);
+  int euler_char = igl::euler_characteristic(F);
   if (euler_char!=1) 
   {
     cout << 
