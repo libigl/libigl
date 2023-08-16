@@ -2423,7 +2423,9 @@ private:
 #include <stdlib.h>
 #include <string.h>
 
-namespace igl { namespace FastWindingNumber {
+namespace igl { 
+  /// @private
+  namespace FastWindingNumber {
 
 // Implemented in UT_Array.C
 extern void ut_ArrayImplFree(void *p);
