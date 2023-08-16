@@ -26,6 +26,7 @@ namespace igl
   /// @param[out] PD1_combed  #F by 3 eigen Matrix of the first combed cross field vector
   /// @param[out] PD2_combed  #F by 3 eigen Matrix of the second combed cross field vector
   ///
+  template <typename DerivedV, typename DerivedF, typename DerivedP>
   IGL_INLINE void comb_frame_field(const Eigen::MatrixBase<DerivedV> &V,
                                         const Eigen::MatrixBase<DerivedF> &F,
                                         const Eigen::MatrixBase<DerivedP> &PD1,
