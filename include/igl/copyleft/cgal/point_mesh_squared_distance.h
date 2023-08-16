@@ -47,8 +47,8 @@ namespace igl
               Eigen::PlainObjectBase<DerivedC> & C);
       /// precomputation for point_mesh_squared_distance
       ///
-      /// @parm[in] V  #V by 3 list of vertex positions
-      /// @parm[in] F  #F by 3 list of triangle indices
+      /// @param[in] V  #V by 3 list of vertex positions
+      /// @param[in] F  #F by 3 list of triangle indices
       /// @param[out] tree  CGAL's AABB tree
       /// @param[out] T  list of CGAL triangles in order of F (for determining which was found
       ///     in computation)
