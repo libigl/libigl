@@ -14,21 +14,21 @@
 #include <igl/igl_inline.h>
 
 
-/// Fake halfedge for fast and easy navigation
-/// on triangle meshes with vertex_triangle_adjacency and
-/// triangle_triangle adjacency
-///
-/// Note: this is different to classical Half Edge data structure.
-///    Instead, it follows cell-tuple in [Brisson, 1989]
-///    "Representing geometric structures in d dimensions: topology and order."
-///    This class can achieve local navigation similar to half edge in OpenMesh
-///    But the logic behind each atom operation is different.
-///    So this should be more properly called TriangleTupleIterator.
-///
-/// Each tuple contains information on (face, edge, vertex)
-///    and encoded by (face, edge \in {0,1,2}, bool reverse)
 namespace igl
 {
+  /// Fake halfedge for fast and easy navigation
+  /// on triangle meshes with vertex_triangle_adjacency and
+  /// triangle_triangle adjacency
+  ///
+  /// Note: this is different to classical Half Edge data structure.
+  ///    Instead, it follows cell-tuple in [Brisson, 1989]
+  ///    "Representing geometric structures in d dimensions: topology and order."
+  ///    This class can achieve local navigation similar to half edge in OpenMesh
+  ///    But the logic behind each atom operation is different.
+  ///    So this should be more properly called TriangleTupleIterator.
+  ///
+  /// Each tuple contains information on (face, edge, vertex)
+  ///    and encoded by (face, edge \in {0,1,2}, bool reverse)
   template <
     typename DerivedF,
     typename DerivedFF,
