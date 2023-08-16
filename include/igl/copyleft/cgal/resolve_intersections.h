@@ -14,6 +14,8 @@ namespace igl
 {
   namespace copyleft
   {
+    namespace cgal
+    {
     /// Given a list of possible intersecting segments with endpoints, split
     /// segments to overlap only at endpoints
     ///
@@ -24,8 +26,6 @@ namespace igl
     /// @param[out] EI  #EI by 2 list of segment indices into V, #EI ≥ #E
     /// @param[out] J  #EI list of indices into E revealing "parent segments"
     /// @param[out] IM  #VI list of indices into VV of unique vertices.
-    namespace cgal
-    {
       template <
         typename DerivedV, 
         typename DerivedE, 
