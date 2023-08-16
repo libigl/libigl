@@ -548,12 +548,12 @@ IGL_INLINE bool igl::arap_dof_recomputation(
   MatrixXd A_eqfull(A_eq);
   MatrixXd M_Solve;
 
-  double timer0_start = get_seconds_hires();
+  double timer0_start = get_seconds();
   bool use_lu = data.effective_dim != 2;
   //use_lu = false;
   //printf("use_lu: %s\n",(use_lu?"TRUE":"FALSE"));
   kkt_inverse(Qfull, A_eqfull, use_lu,M_Solve);
-  double timer0_end = get_seconds_hires();
+  double timer0_end = get_seconds();
   verbose("Bob timing: %.20f\n", (timer0_end - timer0_start)*1000.0);
 
   // Precompute full solve matrix:
