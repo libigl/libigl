@@ -34,11 +34,12 @@ namespace igl
   {
     namespace cgal
     {
-      // Kernel is a CGAL kernel like:
-      //     CGAL::Exact_predicates_inexact_constructions_kernel
-      // or
-      //     CGAL::Exact_predicates_exact_constructions_kernel
-
+      /// Class for computing the self-intersections of a mesh
+      ///
+      /// @tparam Kernel is a CGAL kernel like:
+      ///     CGAL::Exact_predicates_inexact_constructions_kernel
+      /// or
+      ///     CGAL::Exact_predicates_exact_constructions_kernel
       template <
         typename Kernel,
         typename DerivedV,
@@ -109,10 +110,20 @@ namespace igl
         public:
           RemeshSelfIntersectionsParam params;
         public:
-          // Constructs (VV,FF) a new mesh with self-intersections of (V,F)
-          // subdivided
-          //
-          // See also: remesh_self_intersections.h
+          /// Constructs (VV,FF) a new mesh with self-intersections of (V,F)
+          /// subdivided
+          ///
+          /// @param[in] V  #V by 3 list of vertex positions
+          /// @param[in] F  #F by 3 list of triangle indices into V
+          /// @param[in] params  parameters
+          /// @param[out] VV  #VV by 3 list of vertex positions
+          /// @param[out] FF  #FF by 3 list of triangle indices into VV
+          /// @param[out] IF  #IF by 2 list of edge indices into VV
+          /// @param[out] J  #F list of indices into FF of birth parents
+          /// @param[out] IM  #VV list of indices into V of birth parents
+          ///
+          ///
+          /// \see remesh_self_intersections.h
           inline SelfIntersectMesh(
               const Eigen::MatrixBase<DerivedV> & V,
               const Eigen::MatrixBase<DerivedF> & F,
@@ -123,47 +134,43 @@ namespace igl
               Eigen::PlainObjectBase<DerivedJ> & J,
               Eigen::PlainObjectBase<DerivedIM> & IM);
         private:
-          // Helper function to mark a face as offensive
-          //
-          // Inputs:
-          //   f  index of face in F
+          /// Helper function to mark a face as offensive
+          ///
+          /// @param[in] f  index of face in F
           inline void mark_offensive(const Index f);
-          // Helper function to count intersections between faces
-          //
-          // Input:
-          //   fa  index of face A in F
-          //   fb  index of face B in F
+          /// Helper function to count intersections between faces
+          ///
+          /// @param[in] fa  index of face A in F
+          /// @param[in] fb  index of face B in F
           inline void count_intersection( const Index fa, const Index fb);
-          // Helper function for box_intersect. Intersect two triangles A and B,
-          // append the intersection object (point,segment,triangle) to a running
-          // list for A and B
-          //
-          // Inputs:
-          //   A  triangle in 3D
-          //   B  triangle in 3D
-          //   fa  index of A in F (and key into offending)
-          //   fb  index of B in F (and key into offending)
-          // Returns true only if A intersects B
-          //
+          /// Helper function for box_intersect. Intersect two triangles A and B,
+          /// append the intersection object (point,segment,triangle) to a running
+          /// list for A and B
+          ///
+          /// @param[in] A  triangle in 3D
+          /// @param[in] B  triangle in 3D
+          /// @param[in] fa  index of A in F (and key into offending)
+          /// @param[in] fb  index of B in F (and key into offending)
+          /// @return true only if A intersects B
+          ///
           inline bool intersect(
               const Triangle_3 & A,
               const Triangle_3 & B,
               const Index fa,
               const Index fb);
-          // Helper function for box_intersect. In the case where A and B have
-          // already been identified to share a vertex, then we only want to
-          // add possible segment intersections. Assumes truly duplicate
-          // triangles are not given as input
-          //
-          // Inputs:
-          //   A  triangle in 3D
-          //   B  triangle in 3D
-          //   fa  index of A in F (and key into offending)
-          //   fb  index of B in F (and key into offending)
-          //   va  index of shared vertex in A (and key into offending)
-          //   vb  index of shared vertex in B (and key into offending)
-          //   Returns true if intersection (besides shared point)
-          //
+          /// Helper function for box_intersect. In the case where A and B have
+          /// already been identified to share a vertex, then we only want to
+          /// add possible segment intersections. Assumes truly duplicate
+          /// triangles are not given as input
+          ///
+          /// @param[in] A  triangle in 3D
+          /// @param[in] B  triangle in 3D
+          /// @param[in] fa  index of A in F (and key into offending)
+          /// @param[in] fb  index of B in F (and key into offending)
+          /// @param[in] va  index of shared vertex in A (and key into offending)
+          /// @param[in] vb  index of shared vertex in B (and key into offending)
+          /// @return true if intersection (besides shared point)
+          ///
           inline bool single_shared_vertex(
               const Triangle_3 & A,
               const Triangle_3 & B,
@@ -171,17 +178,31 @@ namespace igl
               const Index fb,
               const Index va,
               const Index vb);
-          // Helper handling one direction
+          //// Helper handling one direction
+          ///
+          /// @param[in] A  triangle in 3D
+          /// @param[in] B  triangle in 3D
+          /// @param[in] fa  index of A in F (and key into offending)
+          /// @param[in] fb  index of B in F (and key into offending)
+          /// @param[in] va  index of shared vertex in A (and key into offending)
+          /// @return true if intersection (besides shared point)
           inline bool single_shared_vertex(
               const Triangle_3 & A,
               const Triangle_3 & B,
               const Index fa,
               const Index fb,
               const Index va);
-          // Helper function for box_intersect. In the case where A and B have
-          // already been identified to share two vertices, then we only want
-          // to add a possible coplanar (Triangle) intersection. Assumes truly
-          // degenerate facets are not givin as input.
+          /// Helper function for box_intersect. In the case where A and B have
+          /// already been identified to share two vertices, then we only want
+          /// to add a possible coplanar (Triangle) intersection. Assumes truly
+          /// degenerate facets are not givin as input.
+          ///
+          /// @param[in] A  triangle in 3D
+          /// @param[in] B  triangle in 3D
+          /// @param[in] fa  index of A in F (and key into offending)
+          /// @param[in] fb  index of B in F (and key into offending)
+          /// @param[in] shared  list of pairs of indices of shared vertices
+          /// @return true if intersection (besides shared point)
           inline bool double_shared_vertex(
               const Triangle_3 & A,
               const Triangle_3 & B,
@@ -190,18 +211,23 @@ namespace igl
               const std::vector<std::pair<Index,Index> > shared);
 
         public:
-          // Callback function called during box self intersections test. Means
-          // boxes a and b intersect. This method then checks if the triangles
-          // in each box intersect and if so, then processes the intersections
-          //
-          // Inputs:
-          //   a  box containing a triangle
-          //   b  box containing a triangle
+          /// Callback function called during box self intersections test. Means
+          /// boxes a and b intersect. This method then checks if the triangles
+          /// in each box intersect and if so, then processes the intersections
+          ///
+          /// @param[in] a  box containing a triangle
+          /// @param[in] b  box containing a triangle
           inline void box_intersect(const Box& a, const Box& b);
+          /// Process all of the intersecting boxes
           inline void process_intersecting_boxes();
         public:
           // Getters:
           //const IndexList& get_lIF() const{ return lIF;}
+          /// Static function that captures a SelfIntersectMesh instance to pass
+          /// to cgal.
+          /// @param[in] SIM  pointer to SelfIntersectMesh instance
+          /// @param[in] a  box containing a triangle
+          /// @param[in] b  box containing a triangle
           static inline void box_intersect_static(
             SelfIntersectMesh * SIM,
             const Box &a,

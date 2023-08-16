@@ -8,9 +8,6 @@
 #ifndef IGL_OPENGL_MESHGL_H
 #define IGL_OPENGL_MESHGL_H
 
-// Coverts mesh data inside a igl::ViewerData class in an OpenGL
-// compatible format The class includes a shader and the opengl calls to plot
-// the data
 
 #include <igl/igl_inline.h>
 #include <Eigen/Core>
@@ -20,12 +17,16 @@ namespace igl
 namespace opengl
 {
 
+/// Coverts mesh data inside a igl::ViewerData class in an OpenGL compatible
+/// format The class includes a shader and the opengl calls to plot the data
 class MeshGL
 {
 public:
   typedef unsigned int GLuint;
   typedef unsigned int GLint;
 
+  /// Bitmask flags for keeping track of what needs to be (re)-uploaded to the
+  /// GPU
   enum DirtyFlags
   {
     DIRTY_NONE           = 0x0000,
@@ -55,22 +56,36 @@ public:
   GLuint shader_overlay_points;
   GLuint shader_text;
 
-  GLuint vbo_V; // Vertices of the current mesh (#V x 3)
-  GLuint vbo_V_uv; // UV coordinates for the current mesh (#V x 2)
-  GLuint vbo_V_normals; // Vertices of the current mesh (#V x 3)
-  GLuint vbo_V_ambient; // Ambient material  (#V x 3)
-  GLuint vbo_V_diffuse; // Diffuse material  (#V x 3)
-  GLuint vbo_V_specular; // Specular material  (#V x 3)
+  /// Vertices of the current mesh (#V x 3)
+  GLuint vbo_V
+  /// UV coordinates for the current mesh (#V x 2)
+  GLuint vbo_V_uv
+  /// Vertices of the current mesh (#V x 3)
+  GLuint vbo_V_normals
+  /// Ambient material  (#V x 3)
+  GLuint vbo_V_ambient
+  /// Diffuse material  (#V x 3)
+  GLuint vbo_V_diffuse
+  /// Specular material  (#V x 3)
+  GLuint vbo_V_specular
 
-  GLuint vbo_F; // Faces of the mesh (#F x 3)
-  GLuint vbo_tex; // Texture
+  /// Faces of the mesh (#F x 3)
+  GLuint vbo_F
+  /// Texture
+  GLuint vbo_tex
 
-  GLuint vbo_lines_F;         // Indices of the line overlay
-  GLuint vbo_lines_V;         // Vertices of the line overlay
-  GLuint vbo_lines_V_colors;  // Color values of the line overlay
-  GLuint vbo_points_F;        // Indices of the point overlay
-  GLuint vbo_points_V;        // Vertices of the point overlay
-  GLuint vbo_points_V_colors; // Color values of the point overlay
+  /// Indices of the line overlay
+  GLuint vbo_lines_F
+  /// Vertices of the line overlay
+  GLuint vbo_lines_V
+  /// Color values of the line overlay
+  GLuint vbo_lines_V_colors
+  /// Indices of the point overlay
+  GLuint vbo_points_F
+  /// Vertices of the point overlay
+  GLuint vbo_points_V
+  /// Color values of the point overlay
+  GLuint vbo_points_V_colors
 
   // Temporary copy of the content of each VBO
   typedef Eigen::Matrix<float,Eigen::Dynamic,Eigen::Dynamic,Eigen::RowMajor> RowMatrixXf;
@@ -116,44 +131,48 @@ public:
   Eigen::Matrix<unsigned, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> lines_F_vbo;
   Eigen::Matrix<unsigned, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> points_F_vbo;
 
-  // Marks dirty buffers that need to be uploaded to OpenGL
+  /// Marks dirty buffers that need to be uploaded to OpenGL
   uint32_t dirty;
 
   IGL_INLINE MeshGL();
 
-  // Initialize shaders and buffers
+  /// Initialize shaders and buffers
   IGL_INLINE void init();
 
-  // Release all resources
+  /// Release all resources
   IGL_INLINE void free();
 
-  // Create a new set of OpenGL buffer objects
+  /// Create a new set of OpenGL buffer objects
   IGL_INLINE void init_buffers();
 
-  // Bind the underlying OpenGL buffer objects for subsequent mesh draw calls
+  /// Bind the underlying OpenGL buffer objects for subsequent mesh draw calls
   IGL_INLINE void bind_mesh();
 
   /// Draw the currently buffered mesh (either solid or wireframe)
+  ///
+  /// @param[in] solid Whether to draw the mesh as a solid or wireframe
   IGL_INLINE void draw_mesh(bool solid);
 
-  // Bind the underlying OpenGL buffer objects for subsequent line overlay draw calls
+  /// Bind the underlying OpenGL buffer objects for subsequent line overlay draw calls
   IGL_INLINE void bind_overlay_lines();
 
   /// Draw the currently buffered line overlay
   IGL_INLINE void draw_overlay_lines();
 
-  // Bind the underlying OpenGL buffer objects for subsequent point overlay draw calls
+  /// Bind the underlying OpenGL buffer objects for subsequent point overlay draw calls
   IGL_INLINE void bind_overlay_points();
 
   /// Draw the currently buffered point overlay
   IGL_INLINE void draw_overlay_points();
 
-  // Text Binding and Draw functions
+  /// Text Binding and Draw functions
   IGL_INLINE void init_text_rendering();
+  /// Bind the underlying OpenGL buffer objects for subsequent text draw calls
   IGL_INLINE void bind_labels(const TextGL& labels);
+  /// Draw the currently buffered text
   IGL_INLINE void draw_labels(const TextGL& labels);
 
-  // Release the OpenGL buffer objects
+  /// Release the OpenGL buffer objects
   IGL_INLINE void free_buffers();
 
 };

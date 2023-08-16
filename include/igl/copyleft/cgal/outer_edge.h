@@ -16,22 +16,20 @@ namespace igl
   {
     namespace cgal
     {
-      // Find an edge that is reachable from infinity without crossing any faces.
-      // Such edge is called "outer edge."
-      //
-      // Precondition: The input mesh must have all self-intersection resolved
-      // and no duplicated vertices.  The correctness of the output depends on
-      // the fact that there is no edge overlap.  See
-      // cgal::remesh_self_intersections.h for how to obtain such input.
-      //
-      // Inputs:
-      //   V  #V by 3 list of vertex positions
-      //   F  #F by 3 list of triangle indices into V
-      //   I  #I list of facets to consider
-      // Outputs:
-      //   v1 index of the first end point of outer edge
-      //   v2 index of the second end point of outer edge
-      //   A  #A list of facets incident to the outer edge
+      /// Find an edge that is reachable from infinity without crossing any faces.
+      /// Such edge is called "outer edge."
+      ///
+      /// \pre The input mesh must have all self-intersection resolved
+      /// and no duplicated vertices.  The correctness of the output depends on
+      /// the fact that there is no edge overlap.  See
+      /// cgal::remesh_self_intersections.h for how to obtain such input.
+      ///
+      /// @param[in] V  #V by 3 list of vertex positions
+      /// @param[in] F  #F by 3 list of triangle indices into V
+      /// @param[in] I  #I list of facets to consider
+      /// @param[out] v1 index of the first end point of outer edge
+      /// @param[out] v2 index of the second end point of outer edge
+      /// @param[out] A  #A list of facets incident to the outer edge
       template<
           typename DerivedV,
           typename DerivedF,

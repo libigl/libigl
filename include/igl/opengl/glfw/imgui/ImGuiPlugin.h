@@ -27,6 +27,7 @@ namespace igl
       {
         // Forward declaration of child widget abstract type
         class ImGuiWidget;
+        /// Plugin for the viewer to enable imgui widgets
         class ImGuiPlugin : public igl::opengl::glfw::ViewerPlugin
         {
           protected:
