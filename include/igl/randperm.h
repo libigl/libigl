@@ -8,6 +8,7 @@
 #ifndef IGL_RANDPERM_H
 #define IGL_RANDPERM_H
 #include "igl_inline.h"
+#include "generate_default_urbg.h"
 #include <Eigen/Core>
 #include <random>
 namespace igl
@@ -19,17 +20,12 @@ namespace igl
   ///
   /// @param[in] n  number of elements
   /// @param[out] I  n list of rand permutation of 0:n-1
-  /// @param[in] urbg An instance of UnformRandomBitGenerator.
-  template <typename DerivedI, typename URBG>
+  /// @param[in,out] urbg An instance of UnformRandomBitGenerator.
+  template <typename DerivedI, typename URBG = DEFAULT_URBG>
   IGL_INLINE void randperm(
     const int n,
     Eigen::PlainObjectBase<DerivedI> & I,
-    URBG && urbg);
-  /// \overload
-  template <typename DerivedI>
-  IGL_INLINE void randperm(
-    const int n,
-    Eigen::PlainObjectBase<DerivedI> & I);
+    URBG && urbg = igl::generate_default_urbg());
 }
 #ifndef IGL_STATIC_LIBRARY
 #  include "randperm.cpp"

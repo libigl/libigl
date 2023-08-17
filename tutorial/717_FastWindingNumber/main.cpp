@@ -31,9 +31,8 @@ int main(int argc, char *argv[])
   Eigen::MatrixXd P,N;
   {
     Eigen::VectorXi I;
-    Eigen::SparseMatrix<double> B;
-    igl::random_points_on_mesh(10000,V,F,B,I);
-    P = B*V;
+    Eigen::MatrixXd B;
+    igl::random_points_on_mesh(10000,V,F,B,I,P);
     Eigen::MatrixXd FN;
     igl::per_face_normals(V,F,FN);
     N.resize(P.rows(),3);

@@ -166,12 +166,14 @@ namespace igl
 
   template <
     typename DerivedX,
-    typename DerivedXs>
+    typename DerivedXs,
+    typename URBG>
   inline bool step(
     const Eigen::MatrixBase<DerivedX> & X,
     const Eigen::MatrixBase<DerivedXs> & Xs,
     const double & rr,
     const int & w,
+    URBG && urbg,
     std::unordered_map<BlueNoiseKeyType,std::vector<int> > & M,
     std::unordered_map<BlueNoiseKeyType,int> & S,
     std::vector<int> & active,
@@ -181,7 +183,8 @@ namespace igl
     //considered.clear();
     if(active.size() == 0) return false;
     // random entry
-    const int e = rand() % active.size();
+    std::uniform_int_distribution<> dis(0, active.size()-1);
+    const int e = dis(urbg);
     const int i = active[e];
     //printf("%d\n",i);
     const int xi = Xs(i,0);
@@ -210,8 +213,7 @@ namespace igl
     }
         //printf("  --------\n");
     // randomize order: this might be a little paranoid...
-    std::mt19937 twister;
-    std::shuffle(std::begin(N), std::end(N), twister);
+    std::shuffle(std::begin(N), std::end(N), urbg);
     bool found = false;
     for(const BlueNoiseKeyType & nk : N)
     {
@@ -243,14 +245,16 @@ template <
   typename DerivedF,
   typename DerivedB,
   typename DerivedFI,
-  typename DerivedP>
+  typename DerivedP,
+  typename URBG>
 IGL_INLINE void igl::blue_noise(
     const Eigen::MatrixBase<DerivedV> & V,
     const Eigen::MatrixBase<DerivedF> & F,
     const typename DerivedV::Scalar r,
     Eigen::PlainObjectBase<DerivedB> & B,
     Eigen::PlainObjectBase<DerivedFI> & FI,
-    Eigen::PlainObjectBase<DerivedP> & P)
+    Eigen::PlainObjectBase<DerivedP> & P,
+    URBG && urbg)
 {
   typedef typename DerivedV::Scalar Scalar;
   typedef Eigen::Matrix<Scalar,Eigen::Dynamic,1> VectorXS;
@@ -279,7 +283,7 @@ IGL_INLINE void igl::blue_noise(
   const int nx = 30.0*expected_number_of_points;
   MatrixX3S X,XB;
   Eigen::VectorXi XFI;
-  igl::random_points_on_mesh(nx,V,F,XB,XFI,X);
+  igl::random_points_on_mesh(nx,V,F,XB,XFI,X,urbg);
 
   // Rescale so that s = 1
   Eigen::Matrix<int,Eigen::Dynamic,3,Eigen::RowMajor> Xs =
@@ -350,7 +354,7 @@ IGL_INLINE void igl::blue_noise(
   {
     while(active.size()>0)
     {
-      step(X,Xs,rr,w,M,S,active,collected);
+      step(X,Xs,rr,w,urbg,M,S,active,collected);
     }
   }
   {
@@ -369,6 +373,6 @@ IGL_INLINE void igl::blue_noise(
 }
 
 #ifdef IGL_STATIC_LIBRARY
-template void igl::blue_noise<Eigen::Matrix<float, -1, 3, 1, -1, 3>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::Matrix<float, -1, 3, 1, -1, 3> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::Matrix<float, -1, 3, 1, -1, 3>::Scalar, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
-template void igl::blue_noise<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::Matrix<double, -1, -1, 0, -1, -1>::Scalar, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
+// Explicit template instantiation
+template void igl::blue_noise<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, std::mersenne_twister_engine<unsigned int, 32ul, 624ul, 397ul, 31ul, 2567483615u, 11ul, 4294967295u, 7ul, 2636928640u, 15ul, 4022730752u, 18ul, 1812433253u> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::Matrix<double, -1, -1, 0, -1, -1>::Scalar, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, std::mersenne_twister_engine<unsigned int, 32ul, 624ul, 397ul, 31ul, 2567483615u, 11ul, 4294967295u, 7ul, 2636928640u, 15ul, 4022730752u, 18ul, 1812433253u>&&);
 #endif
