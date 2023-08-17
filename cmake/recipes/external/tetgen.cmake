@@ -14,6 +14,8 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(tetgen)
 add_library(tetgen::tetgen ALIAS tetgen)
 
-target_include_directories(tetgen INTERFACE "${tetgen_SOURCE_DIR}")
+target_include_directories(tetgen PUBLIC
+    $<BUILD_INTERFACE:${tetgen_SOURCE_DIR}>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
 set_target_properties(tetgen PROPERTIES FOLDER ThirdParty)

@@ -7,8 +7,8 @@ message(STATUS "Third-party: creating target 'CoMISo::CoMISo'")
 include(FetchContent)
 FetchContent_Declare(
     comiso
-    GIT_REPOSITORY https://github.com/libigl/CoMISo.git
-    GIT_TAG 536440e714f412e7ef6c0b96b90ba37b1531bb39
+    GIT_REPOSITORY https://github.com/KeithBallard/CoMISo.git
+    GIT_TAG ea18352
 )
 
 include(eigen)
@@ -26,6 +26,8 @@ foreach(filepath IN ITEMS ${INC_FILES})
     configure_file(${filepath} "${output_folder}/${filename}" COPYONLY)
 endforeach()
 
-target_include_directories(CoMISo PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/CoMISo/include)
+target_include_directories(CoMISo PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/CoMISo/include>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/CoMISo/include>)
 
 set_target_properties(CoMISo PROPERTIES FOLDER ThirdParty)

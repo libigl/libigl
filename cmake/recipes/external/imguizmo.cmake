@@ -22,7 +22,9 @@ add_library(imguizmo::imguizmo ALIAS imguizmo)
 
 target_compile_features(imguizmo PUBLIC cxx_std_11)
 
-target_include_directories(imguizmo PUBLIC "${imguizmo_SOURCE_DIR}")
+target_include_directories(imguizmo PUBLIC
+    $<BUILD_INTERFACE:${imguizmo_SOURCE_DIR}>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
 include(imgui)
 target_link_libraries(imguizmo PUBLIC imgui::imgui)

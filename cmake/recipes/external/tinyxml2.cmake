@@ -18,7 +18,9 @@ endif()
 
 add_library(tinyxml2 STATIC ${tinyxml2_SOURCE_DIR}/tinyxml2.cpp ${tinyxml2_SOURCE_DIR}/tinyxml2.h)
 add_library(tinyxml2::tinyxml2 ALIAS tinyxml2)
-target_include_directories(tinyxml2 PUBLIC ${tinyxml2_SOURCE_DIR})
+target_include_directories(tinyxml2 PUBLIC
+    $<BUILD_INTERFACE:${tinyxml2_SOURCE_DIR}>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 set_target_properties(tinyxml2 PROPERTIES DEFINE_SYMBOL "TINYXML2_EXPORT")
 
 set_target_properties(tinyxml2 PROPERTIES FOLDER ThirdParty)

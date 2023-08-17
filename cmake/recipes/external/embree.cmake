@@ -51,3 +51,11 @@ set_target_properties(simd PROPERTIES FOLDER "ThirdParty//Embree")
 set_target_properties(sys PROPERTIES FOLDER "ThirdParty//Embree")
 set_target_properties(tasking PROPERTIES FOLDER "ThirdParty//Embree")
 set_target_properties(uninstall PROPERTIES FOLDER "ThirdParty//Embree")
+
+# Export in case some projects include libigl via add_subdirectory
+foreach(lib IN ITEMS "embree" "lexers" "math" "simd" "sys" "tasking")
+    export(
+        EXPORT ${lib}-targets
+        FILE ${CMAKE_CURRENT_BINARY_DIR}/${lib}-targets.cmake
+    )
+endforeach()

@@ -14,6 +14,8 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(triangle)
 add_library(triangle::triangle ALIAS triangle)
 
-target_include_directories(triangle INTERFACE "${triangle_SOURCE_DIR}")
+target_include_directories(triangle PUBLIC
+    $<BUILD_INTERFACE:${triangle_SOURCE_DIR}>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
 set_target_properties(triangle PROPERTIES FOLDER ThirdParty)
