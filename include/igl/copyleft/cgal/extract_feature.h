@@ -18,28 +18,24 @@ namespace igl
   {
     namespace cgal
     {
-      // Extract feature edges based on dihedral angle.
-      // Here, dihedral angle is defined as the angle between surface
-      // __normals__ as described in
-      // http://mathworld.wolfram.com/DihedralAngle.html
-      //
-      // Non-manifold and boundary edges are automatically considered as
-      // features.
-      //
-      // Inputs:
-      //   V   #V by 3 array of vertices.
-      //   F   #F by 3 array of faces.
-      //   tol Edges with dihedral angle larger than this are considered
-      //       as features.  Angle is measured in radian.
-      //
-      // Output:
-      //   feature_edges: #E by 2 array of edges.  Each edge satisfies at
-      //      least one of the following criteria:
-      //
-      //      * Edge has dihedral angle larger than tol.
-      //      * Edge is boundary.
-      //      * Edge is non-manifold (i.e. it has more than 2 adjacent
-      //        faces).
+      /// Extract feature edges based on dihedral angle.
+      /// Here, dihedral angle is defined as the angle between surface
+      /// __normals__ as described in
+      /// http://mathworld.wolfram.com/DihedralAngle.html
+      ///
+      /// Non-manifold and boundary edges are automatically considered as
+      /// features.
+      ///
+      /// @param[in] V   #V by 3 array of vertices.
+      /// @param[in] F   #F by 3 array of faces.
+      /// @param[in] tol Edges with dihedral angle larger than this are considered
+      ///       as features.  Angle is measured in radian.
+      /// @param[out] feature_edges: #E by 2 array of edges.  Each edge satisfies at
+      ///      least one of the following criteria:
+      ///      * Edge has dihedral angle larger than tol.
+      ///      * Edge is boundary.
+      ///      * Edge is non-manifold (i.e. it has more than 2 adjacent
+      ///        faces).
       template <
         typename DerivedV,
         typename DerivedF,
@@ -49,25 +45,11 @@ namespace igl
             const Eigen::PlainObjectBase<DerivedF>& F,
             const double tol,
             Eigen::PlainObjectBase<DerivedE>& feature_edges);
-
-      // Inputs:
-      //   V    #V by 3 array of vertices.
-      //   F    #F by 3 array of faces.
-      //   tol  Edges with dihedral angle larger than this are considered
-      //        as features.  Angle is measured in radian.
-      //   E    #E by 2 array of directed edges.
-      //   uE   #uE by 2 array of undirected edges.
-      //   uE2E #uE list of lists mapping undirected edges to all corresponding
-      //        directed edges.
-      //
-      // Output:
-      //   feature_edges: #E by 2 array of edges.  Each edge satisfies at
-      //      least one of the following criteria:
-      //
-      //      * Edge has dihedral angle larger than tol.
-      //      * Edge is boundary.
-      //      * Edge is non-manifold (i.e. it has more than 2 adjacent
-      //        faces).
+      // \overload
+      // @param[in] E    #E by 2 array of directed edges.
+      // @param[in] uE   #uE by 2 array of undirected edges.
+      // @param[in] uE2E #uE list of lists mapping undirected edges to all
+      //   corresponding directed edges.
       template <
         typename DerivedV,
         typename DerivedF,

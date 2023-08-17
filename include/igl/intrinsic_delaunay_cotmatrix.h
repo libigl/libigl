@@ -12,19 +12,17 @@
 #include <Eigen/Sparse>
 namespace igl
 {
-  // INTRINSIC_DELAUNAY_COTMATRIX Computes the discrete cotangent Laplacian of a
-  // mesh after converting it into its intrinsic Delaunay triangulation (see,
-  // e.g., [Fisher et al. 2007].
-  //
-  // Inputs:
-  //   V  #V by dim list of mesh vertex positions
-  //   F  #F by 3 list of mesh elements (triangles or tetrahedra)
-  // Outputs: 
-  //   L  #V by #V cotangent matrix, each row i corresponding to V(i,:)
-  //   l_intrinsic  #F by 3 list of intrinsic edge-lengths used to compute L
-  //   F_intrinsic  #F by 3 list of intrinsic face indices used to compute L
-  //
-  // See also: intrinsic_delaunay_triangulation, cotmatrix, cotmatrix_intrinsic
+  /// Computes the discrete cotangent Laplacian of a mesh after converting it
+  /// into its intrinsic Delaunay triangulation (see, e.g., [Fisher et al.
+  /// 2007].
+  ///
+  /// @param[in] V  #V by dim list of mesh vertex positions
+  /// @param[in] F  #F by 3 list of mesh elements (triangles or tetrahedra)
+  /// @param[out] L  #V by #V cotangent matrix, each row i corresponding to V(i,:)
+  /// @param[out] l_intrinsic  #F by 3 list of intrinsic edge-lengths used to compute L
+  /// @param[out] F_intrinsic  #F by 3 list of intrinsic face indices used to compute L
+  ///
+  /// \see intrinsic_delaunay_triangulation, cotmatrix, cotmatrix_intrinsic
   template <
     typename DerivedV, 
     typename DerivedF, 
@@ -37,6 +35,7 @@ namespace igl
     Eigen::SparseMatrix<Scalar>& L,
     Eigen::PlainObjectBase<Derivedl_intrinsic> & l_intrinsic,
     Eigen::PlainObjectBase<DerivedF_intrinsic> & F_intrinsic);
+  /// \overload
   template <typename DerivedV, typename DerivedF, typename Scalar>
   IGL_INLINE void intrinsic_delaunay_cotmatrix(
     const Eigen::MatrixBase<DerivedV> & V, 

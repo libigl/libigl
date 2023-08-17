@@ -16,49 +16,39 @@
 
 namespace igl 
 {
-    // read triangle surface mesh and tetrahedral volume mesh from .msh file
-    // Inputs:
-    //   msh - file name
-    // Outputs: 
-    //   X  eigen double matrix of vertex positions  #X by 3
-    //   Tri  #Tri eigen integer matrix of triangular faces indices into vertex positions
-    //   Tet  #Tet eigen integer matrix of tetrahedral indices into vertex positions
-    //   TriTag #Tri eigen integer vector of tags associated with surface faces
-    //   TetTag #Tet eigen integer vector of tags associated with volume elements
-    //   XFields #XFields list of strings with field names associated with nodes
-    //   XF      #XFields list of eigen double matrices, fields associated with nodes 
-    //   EFields #EFields list of strings with field names associated with elements
-    //   TriF    #EFields list of eigen double matrices, fields associated with surface elements
-    //   TetF    #EFields list of eigen double matrices, fields associated with volume elements
-    // Known bugs: 
-    //     only version 2.2 of .msh file is supported (gmsh 3.X)
-    //     only triangle surface elements and tetrahedral volumetric elements are supported
-    //     only 3D information is supported
-    //     only the 1st tag per element is returned (physical) 
-    //     same element fields are expected to be associated with surface elements and volumetric elements
-    IGL_INLINE bool readMSH(const std::string &msh,
-                Eigen::MatrixXd &X,
-                Eigen::MatrixXi &Tri,
-                Eigen::MatrixXi &Tet,
-                Eigen::VectorXi &TriTag,
-                Eigen::VectorXi &TetTag,
-                std::vector<std::string> &XFields,
-                std::vector<Eigen::MatrixXd> &XF,
-                std::vector<std::string> &EFields,
-                std::vector<Eigen::MatrixXd> &TriF,
-                std::vector<Eigen::MatrixXd> &TetF
-                );
-
-    // read triangle surface mesh and tetrahedral volume mesh from .msh file
-    // ignoring any fields
-    // Inputs:
-    //   msh - file name
-    // Outputs: 
-    //   X  eigen double matrix of vertex positions  #X by 3
-    //   Tri  #Tri eigen integer matrix of triangular faces indices into vertex positions
-    //   Tet  #Tet eigen integer matrix of tetrahedral indices into vertex positions
-    //   TriTag #Tri eigen integer vector of tags associated with surface faces
-    //   TetTag #Tet eigen integer vector of tags associated with volume elements
+    /// read triangle surface mesh and tetrahedral volume mesh from .msh file
+    ///
+    /// @param[in] msh - file name
+    /// @param[out] X  eigen double matrix of vertex positions  #X by 3
+    /// @param[out] Tri  #Tri eigen integer matrix of triangular faces indices into vertex positions
+    /// @param[out] Tet  #Tet eigen integer matrix of tetrahedral indices into vertex positions
+    /// @param[out] TriTag #Tri eigen integer vector of tags associated with surface faces
+    /// @param[out] TetTag #Tet eigen integer vector of tags associated with volume elements
+    /// @param[out] XFields #XFields list of strings with field names associated with nodes
+    /// @param[out] XF      #XFields list of eigen double matrices, fields associated with nodes 
+    /// @param[out] EFields #EFields list of strings with field names associated with elements
+    /// @param[out] TriF    #EFields list of eigen double matrices, fields associated with surface elements
+    /// @param[out] TetF    #EFields list of eigen double matrices, fields associated with volume elements
+    /// @return true on success
+    /// \bug only version 2.2 of .msh file is supported (gmsh 3.X)
+    /// \bug only triangle surface elements and tetrahedral volumetric elements are supported
+    /// \bug only 3D information is supported
+    /// \bug only the 1st tag per element is returned (physical) 
+    /// \bug same element fields are expected to be associated with surface elements and volumetric elements
+    IGL_INLINE bool readMSH(
+      const std::string &msh,
+      Eigen::MatrixXd &X,
+      Eigen::MatrixXi &Tri,
+      Eigen::MatrixXi &Tet,
+      Eigen::VectorXi &TriTag,
+      Eigen::VectorXi &TetTag,
+      std::vector<std::string> &XFields,
+      std::vector<Eigen::MatrixXd> &XF,
+      std::vector<std::string> &EFields,
+      std::vector<Eigen::MatrixXd> &TriF,
+      std::vector<Eigen::MatrixXd> &TetF
+      );
+    /// \overload
     IGL_INLINE bool readMSH(const std::string &msh,
                 Eigen::MatrixXd &X,
                 Eigen::MatrixXi &Tri,
@@ -66,28 +56,13 @@ namespace igl
                 Eigen::VectorXi &TriTag,
                 Eigen::VectorXi &TetTag
                 );
-    
-    // read triangle surface mesh and tetrahedral volume mesh from .msh file
-    // ignoring any fields, and any volumetric elements
-    // Inputs:
-    //   msh - file name
-    // Outputs: 
-    //   X  eigen double matrix of vertex positions  #X by 3
-    //   Tri  #Tri eigen integer matrix of triangular faces indices into vertex positions
-    //   TriTag #Tri eigen integer vector of tags associated with surface faces
+    /// \overload
     IGL_INLINE bool readMSH(const std::string &msh,
                 Eigen::MatrixXd &X,
                 Eigen::MatrixXi &Tri,
                 Eigen::VectorXi &TriTag
                 );
-    
-    // read triangle surface mesh and tetrahedral volume mesh from .msh file
-    // ignoring any fields, and any volumetric elements and tags
-    // Inputs:
-    //   msh - file name
-    // Outputs: 
-    //   X  eigen double matrix of vertex positions  #X by 3
-    //   Tri  #Tri eigen integer matrix of triangular faces indices into vertex positions
+    /// \overload
     IGL_INLINE bool readMSH(const std::string &msh,
                 Eigen::MatrixXd &X,
                 Eigen::MatrixXi &Tri

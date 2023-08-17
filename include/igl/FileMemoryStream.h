@@ -50,6 +50,7 @@ namespace igl {
     }
   };
   
+  /// Class to convert a FILE * to an std::istream
   struct FileMemoryStream : virtual FileMemoryBuffer, public std::istream 
   {
     FileMemoryStream( char const *first_elem, size_t size)

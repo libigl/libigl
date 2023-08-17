@@ -16,9 +16,9 @@
 
 namespace igl {
 
-// Class for dumping information to .msh file
-// depends only on c++stl library
-// current implementation works only with 3D information
+/// Class for dumping information to .msh file
+/// depends only on c++stl library
+/// current implementation works only with 3D information
 class MshSaver {
     public:
         typedef double Float;
@@ -30,6 +30,9 @@ class MshSaver {
         typedef std::vector<IntVector>   IntField;
         typedef std::vector<std::string> FieldNames;
 
+        /// Write a .msh to a given path
+        /// @param[in] filename  path to output file
+        /// @param[in] binary    whether to write in binary format
         MshSaver(const std::string& filename, bool binary=true);
         ~MshSaver();
 

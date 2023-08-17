@@ -5,7 +5,7 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
-#include <igl/parallel_transport_angles.h>
+#include "parallel_transport_angles.h"
 #include <Eigen/Geometry>
 
 template <typename DerivedV, typename DerivedF, typename DerivedK>

@@ -8,7 +8,6 @@
 #include "massmatrix.h"
 #include "massmatrix_intrinsic.h"
 #include "edge_lengths.h"
-#include "normalize_row_sums.h"
 #include "sparse.h"
 #include "doublearea.h"
 #include "volume.h"

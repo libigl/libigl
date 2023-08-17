@@ -2,7 +2,6 @@
 #include <igl/decimate.h>
 #include <igl/sort.h>
 #include <igl/sortrows.h>
-#include <igl/normalize_row_lengths.h>
 #include <igl/slice.h>
 #include <igl/matlab_format.h>
 #include <iostream>

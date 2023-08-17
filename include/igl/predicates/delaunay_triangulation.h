@@ -17,13 +17,11 @@ namespace igl
 {
   namespace predicates
   {
-    // Given a set of points in 2D, return a Delaunay triangulation of these
-    // points using predicates.
-    //
-    // Inputs:
-    //   V  #V by 2 list of vertex positions
-    // Outputs:
-    //   F  #F by 3 of faces in Delaunay triangulation.
+    /// Given a set of points in 2D, return a Delaunay triangulation of these
+    /// points using predicates.
+    ///
+    /// @param[in] V  #V by 2 list of vertex positions
+    /// @param[out] F  #F by 3 of faces in Delaunay triangulation.
     template<
       typename DerivedV,
       typename DerivedF

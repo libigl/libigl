@@ -16,20 +16,18 @@ namespace igl
 {
   namespace predicates
   {
-    // Given a polygon mesh, trivially triangulate each polygon with a fan. This
-    // purely combinatorial triangulation will work well for convex/flat polygons
-    // and degrade otherwise.
-    //
-    // Inputs:
-    //   V  #V by dim list of vertex positions
-    //   I  #I vectorized list of polygon corner indices into rows of some matrix V
-    //   C  #polygons+1 list of cumulative polygon sizes so that C(i+1)-C(i) =
-    //     size of the ith polygon, and so I(C(i)) through I(C(i+1)-1) are the
-    //     indices of the ith polygon
-    // Outputs:
-    //   F  #F by 3 list of triangle indices into rows of V
-    //   J  #F list of indices into 0:#P-1 of corresponding polygon
-    //
+    /// Given a polygon mesh, trivially triangulate each polygon with a fan. This
+    /// purely combinatorial triangulation will work well for convex/flat polygons
+    /// and degrade otherwise.
+    ///
+    /// @param[in] V  #V by dim list of vertex positions
+    /// @param[in] I  #I vectorized list of polygon corner indices into rows of some matrix V
+    /// @param[in] C  #polygons+1 list of cumulative polygon sizes so that C(i+1)-C(i) =
+    ///     size of the ith polygon, and so I(C(i)) through I(C(i+1)-1) are the
+    ///     indices of the ith polygon
+    /// @param[out] F  #F by 3 list of triangle indices into rows of V
+    /// @param[out] J  #F list of indices into 0:#P-1 of corresponding polygon
+    ///
     template <
       typename DerivedV,
       typename DerivedI,

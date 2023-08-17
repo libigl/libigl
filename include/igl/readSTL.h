@@ -20,38 +20,37 @@
 
 namespace igl
 {
-  // Read a mesh from an ascii/binary stl file.
-  //
-  // Templates:
-  //   Scalar  type for positions and vectors (will be read as double and cast
-  //     to Scalar)
-  // Inputs:
-  //   filename path to .stl file
-  // Outputs:
-  //   V  double matrix of vertex positions  #V*3 by 3
-  //   F  index matrix of triangle indices #F by 3
-  //   N  double matrix of surface normals #F by 3
-  // Returns true on success, false on errors
-  //
-  // Example:
-  //   bool success = readSTL(filename,temp_V,F,N);
-  //   remove_duplicate_vertices(temp_V,0,V,SVI,SVJ);
-  //   for_each(F.data(),F.data()+F.size(),[&SVJ](int & f){f=SVJ(f);});
-  //   writeOBJ("Downloads/cat.obj",V,F);
+  /// Read a mesh from an ascii/binary stl file.
+  ///
+  /// @tparam Scalar  type for positions and vectors (will be read as double and cast
+  ///     to Scalar)
+  /// @param[in] filename path to .stl file
+  /// @param[out] V  double matrix of vertex positions  #V*3 by 3
+  /// @param[out] F  index matrix of triangle indices #F by 3
+  /// @param[out] N  double matrix of surface normals #F by 3
+  /// @return true on success, false on errors
+  ///
+  /// #### Example
+  ///
+  ///     bool success = readSTL(filename,temp_V,F,N);
+  ///     remove_duplicate_vertices(temp_V,0,V,SVI,SVJ);
+  ///     for_each(F.data(),F.data()+F.size(),[&SVJ](int & f){f=SVJ(f);});
+  ///     writeOBJ("Downloads/cat.obj",V,F);
   template <typename DerivedV, typename DerivedF, typename DerivedN>
   IGL_INLINE bool readSTL(
     std::istream &input,
     Eigen::PlainObjectBase<DerivedV> & V,
     Eigen::PlainObjectBase<DerivedF> & F,
     Eigen::PlainObjectBase<DerivedN> & N);
-
+  /// \overload
   template <typename TypeV, typename TypeF, typename TypeN>
   IGL_INLINE bool readSTL(
     std::istream &input,
     std::vector<std::array<TypeV, 3> > & V,
     std::vector<std::array<TypeF, 3> > & F,
     std::vector<std::array<TypeN, 3> > & N);
-
+  /// \overload
+  /// @param[in,out] fp  pointer to ply file (will be closed)
   template <typename DerivedV, typename DerivedF, typename DerivedN>
   IGL_INLINE bool readSTL(
     FILE * fp,

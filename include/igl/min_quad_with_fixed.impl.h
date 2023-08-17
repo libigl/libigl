@@ -23,7 +23,7 @@
 #include <unsupported/Eigen/SparseExtra>
 #include <cassert>
 #include <cstdio>
-#include <igl/matlab_format.h>
+#include "matlab_format.h"
 #include <type_traits>
 
 template <typename T, typename Derivedknown>

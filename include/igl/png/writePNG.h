@@ -15,14 +15,15 @@ namespace igl
 {
   namespace png
   {
-    // Writes an image to a png file
-    //
-    // Input:
-    //  R,G,B,A texture channels
-    // Output:
-    //  png_file  path to .png file
-    // Returns true on success, false on failure
-    //
+    /// Writes an image to a png file
+    ///
+    /// @param[in] R  red channel
+    /// @param[in] G  green channel
+    /// @param[in] B  blue channel
+    /// @param[in] A  alpha channel
+    /// @param[in] png_file  path to .png file
+    /// Returns true on success, false on failure
+    ///
     IGL_INLINE bool writePNG
     (
       const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& R,

@@ -9,10 +9,10 @@
 #include "find_cross_field_singularities.h"
 
 #include <vector>
-#include <igl/cross_field_mismatch.h>
-#include <igl/is_border_vertex.h>
-#include <igl/vertex_triangle_adjacency.h>
-#include <igl/is_border_vertex.h>
+#include "cross_field_mismatch.h"
+#include "is_border_vertex.h"
+#include "vertex_triangle_adjacency.h"
+#include "is_border_vertex.h"
 
 
 template <typename DerivedV, typename DerivedF, typename DerivedM, typename DerivedO>

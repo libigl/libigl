@@ -46,38 +46,3 @@ IGL_INLINE bool igl::png::texture_from_png(const std::string png_file, GLuint & 
 }
 
 
-IGL_INLINE bool igl::png::texture_from_png(
-  const std::string png_file,
-  Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& R,
-  Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& G,
-  Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& B,
-  Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& A
-)
-{
-  int width,height,n;
-  unsigned char *data = stbi_load(png_file.c_str(), &width, &height, &n, 4);
-  if(data == NULL) {
-    return false;
-  }
-
-  R.resize(height,width);
-  G.resize(height,width);
-  B.resize(height,width);
-  A.resize(height,width);
-
-  for (unsigned j=0; j<height; ++j) {
-    for (unsigned i=0; i<width; ++i) {
-      // used to flip with libPNG, but I'm not sure if
-      // simply j*width + i wouldn't be better
-      // stb_image uses horizontal scanline an starts top-left corner
-      R(i,j) = data[4*( (width-1-i) + width * (height-1-j) )];
-      G(i,j) = data[4*( (width-1-i) + width * (height-1-j) ) + 1];
-      B(i,j) = data[4*( (width-1-i) + width * (height-1-j) ) + 2];
-      //A(i,j) = data[4*( (width-1-i) + width * (height-1-j) ) + 3];
-    }
-  }
-
-  stbi_image_free(data);
-
-  return true;
-}

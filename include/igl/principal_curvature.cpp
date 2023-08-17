@@ -18,11 +18,11 @@
 #include <Eigen/SparseCholesky>
 
 // Lib IGL includes
-#include <igl/adjacency_list.h>
-#include <igl/per_face_normals.h>
-#include <igl/per_vertex_normals.h>
-#include <igl/avg_edge_length.h>
-#include <igl/vertex_triangle_adjacency.h>
+#include "adjacency_list.h"
+#include "per_face_normals.h"
+#include "per_vertex_normals.h"
+#include "avg_edge_length.h"
+#include "vertex_triangle_adjacency.h"
 
 typedef enum
 {

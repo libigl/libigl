@@ -9,6 +9,7 @@
 
 namespace igl{ namespace opengl{ namespace glfw{ namespace imgui{
 
+/// Widget for a guizmo  (3D transform manipulator)
 class ImGuizmoWidget : public ImGuiWidget
 {
 public:

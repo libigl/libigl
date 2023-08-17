@@ -13,37 +13,50 @@
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 
-// This option makes the iterations faster (all except the first) by caching the 
-// sparsity pattern of the matrix involved in the assembly. It should be on if you plan to do many iterations, off if you have to change the matrix structure at every iteration.
+// This option makes the iterations faster (all except the first) by caching the
+// sparsity pattern of the matrix involved in the assembly. It should be on if
+// you plan to do many iterations, off if you have to change the matrix
+// structure at every iteration.
 #define SLIM_CACHED 
 
 #ifdef SLIM_CACHED
-#include <igl/AtA_cached.h>
+#include "AtA_cached.h"
 #endif
 
 namespace igl
 {
 
-// Compute a SLIM map as derived in "Scalable Locally Injective Maps" [Rabinovich et al. 2016].
+/// Parameters and precomputed data for computing a SLIM map as derived in
+/// "Scalable Locally Injective Maps" [Rabinovich et al. 2016].
+///
+/// \fileinfo
 struct SLIMData
 {
-  // Input
-  Eigen::MatrixXd V; // #V by 3 list of mesh vertex positions
-  Eigen::MatrixXi F; // #F by 3/3 list of mesh faces (triangles/tets)
+  /// #V by 3 list of mesh vertex positions
+  Eigen::MatrixXd V; 
+  /// #F by 3/4 list of mesh faces (triangles/tets)
+  Eigen::MatrixXi F; 
+  /// Mapping energy type
   MappingEnergyType slim_energy;
 
   // Optional Input
-  // soft constraints
+  /// Fixed indices
   Eigen::VectorXi b;
+  /// Fixed values
   Eigen::MatrixXd bc;
+  /// Weight for enforcing fixed values as soft constraint
   double soft_const_p;
 
-  double exp_factor; // used for exponential energies, ignored otherwise
-  bool mesh_improvement_3d; // only supported for 3d
+  /// used for exponential energies, ignored otherwise
+  double exp_factor; 
+  /// only supported for 3d
+  bool mesh_improvement_3d; 
 
   // Output
-  Eigen::MatrixXd V_o; // #V by dim list of mesh vertex positions (dim = 2 for parametrization, 3 otherwise)
-  double energy; // objective value
+  /// #V by dim list of mesh vertex positions (dim = 2 for parametrization, 3 otherwise)
+  Eigen::MatrixXd V_o; 
+  /// objective value
+  double energy; 
 
   // INTERNAL
   Eigen::VectorXd M;
@@ -71,14 +84,18 @@ struct SLIMData
   #endif
 };
 
-// Compute necessary information to start using SLIM
-// Inputs:
-//		V           #V by 3 list of mesh vertex positions
-//		F           #F by 3/3 list of mesh faces (triangles/tets)
-//    b           list of boundary indices into V
-//    bc          #b by dim list of boundary conditions
-//    soft_p      Soft penalty factor (can be zero)
-//    slim_energy Energy to minimize
+/// Compute necessary information to start using SLIM
+/// 
+/// @param[in] V           #V by 3 list of mesh vertex positions
+/// @param[in] F           #F by 3/3 list of mesh faces (triangles/tets)
+/// @param[in] V_init      #V by 3 list of initial mesh vertex positions
+/// @param[in,out] data        Precomputation data structure
+/// @param[in] slim_energy Energy to minimize
+/// @param[in] b           list of boundary indices into V
+/// @param[in] bc          #b by dim list of boundary conditions
+/// @param[in] soft_p      Soft penalty factor (can be zero)
+///
+/// \fileinfo
 IGL_INLINE void slim_precompute(
   const Eigen::MatrixXd& V,
   const Eigen::MatrixXi& F,
@@ -89,27 +106,50 @@ IGL_INLINE void slim_precompute(
   const Eigen::MatrixXd& bc,
   double soft_p);
 
-// Run iter_num iterations of SLIM
-// Outputs:
-//    V_o (in SLIMData): #V by dim list of mesh vertex positions
-IGL_INLINE Eigen::MatrixXd slim_solve(SLIMData& data, int iter_num);
+/// Run iter_num iterations of SLIM
+///
+/// @param[in,out] data   Precomputation data structure
+/// @param[in] iter_num   Number of iterations to run
+/// @return #V by dim list of mesh vertex positions
+///
+/// \fileinfo
+IGL_INLINE Eigen::MatrixXd slim_solve(
+  SLIMData& data, 
+  int iter_num);
 
-// Internal Routine. Exposed for Integration with SCAF
-IGL_INLINE void slim_update_weights_and_closest_rotations_with_jacobians(const Eigen::MatrixXd &Ji,
-                                                                    igl::MappingEnergyType slim_energy,
-                                                                    double exp_factor,
-                                                                    Eigen::MatrixXd &W,
-                                                                    Eigen::MatrixXd &Ri);
+/// Internal Routine. Exposed for Integration with SCAF
+///
+/// @param[in] Ji  ?? by ?? list of Jacobians??
+/// @param[in] slim_energy Energy to minimize
+/// @param[in] exp_factor   ??? used for exponential energies, ignored otherwise
+/// @param[out] W  ?? by ?? list of weights??
+/// @param[out] Ri ?? by ?? list of rotations??
+///
+/// \fileinfo
+IGL_INLINE void slim_update_weights_and_closest_rotations_with_jacobians(
+  const Eigen::MatrixXd &Ji,
+  igl::MappingEnergyType slim_energy,
+  double exp_factor,
+  Eigen::MatrixXd &W,
+  Eigen::MatrixXd &Ri);
 
-IGL_INLINE void slim_buildA(const Eigen::SparseMatrix<double> &Dx,
-                        const Eigen::SparseMatrix<double> &Dy,
-                        const Eigen::SparseMatrix<double> &Dz,
-                        const Eigen::MatrixXd &W,
-                        std::vector<Eigen::Triplet<double> > & IJV);
-} // END NAMESPACE
+/// Undocumented function related to SLIM optimization
+///
+/// @param[in] Dx  ?? by ?? matrix to compute of x derivatives?
+/// @param[in] Dy  ?? by ?? matrix to compute of y derivatives?
+/// @param[in] Dz  ?? bz ?? matrix to compute of z derivatives?
+/// @param[in] W  ?? by ?? list of weights??
+/// @param[out] IJV  ?? by ?? list of triplets to some A matrix??
+IGL_INLINE void slim_buildA(
+  const Eigen::SparseMatrix<double> &Dx,
+  const Eigen::SparseMatrix<double> &Dy,
+  const Eigen::SparseMatrix<double> &Dz,
+  const Eigen::MatrixXd &W,
+  std::vector<Eigen::Triplet<double> > & IJV);
+}
 
 #ifndef IGL_STATIC_LIBRARY
 #  include "slim.cpp"
 #endif
 
-#endif // SLIM_H
+#endif

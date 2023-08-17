@@ -13,17 +13,14 @@
 
 namespace igl
 {
-  // Computes a cumulative product of the columns of X, like matlab's `cumprod`.
-  //
-  // Templates:
-  //   DerivedX  Type of matrix X
-  //   DerivedY  Type of matrix Y
-  // Inputs:
-  //   X  m by n Matrix to be cumulatively multiplied.
-  //   dim  dimension to take cumulative product (1 or 2)
-  // Output:
-  //   Y  m by n Matrix containing cumulative product.
-  //
+  /// Computes a cumulative product of the columns of X, like matlab's `cumprod`.
+  ///
+  /// @tparam DerivedX  Type of matrix X
+  /// @tparam DerivedY  Type of matrix Y
+  /// @param[in] X  m by n Matrix to be cumulatively multiplied.
+  /// @param[in] dim  dimension to take cumulative product (1 or 2)
+  /// @param[out] Y  m by n Matrix containing cumulative product.
+  ///
   template <typename DerivedX, typename DerivedY>
   IGL_INLINE void cumprod(
     const Eigen::MatrixBase<DerivedX > & X,

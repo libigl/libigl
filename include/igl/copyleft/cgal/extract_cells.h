@@ -18,44 +18,21 @@ namespace igl {
   {
     namespace cgal
     {
-      // Extract connected 3D space partitioned by mesh (V, F).
-      //
-      // Inputs:
-      //   V  #V by 3 array of vertices.
-      //   F  #F by 3 array of faces.
-      //
-      // Output:
-      //   cells  #F by 2 array of cell indices.  cells(i,0) represents the
-      //          cell index on the positive side of face i, and cells(i,1)
-      //          represents cell index of the negqtive side.
-      //          By convension cell with index 0 is the infinite cell.
-      // Returns the number of cells
-      template<
-        typename DerivedV,
-        typename DerivedF,
-        typename DerivedC >
-      IGL_INLINE size_t extract_cells(
-        const Eigen::PlainObjectBase<DerivedV>& V,
-        const Eigen::PlainObjectBase<DerivedF>& F,
-        Eigen::PlainObjectBase<DerivedC>& cells);
-
-      // Extract connected 3D space partitioned by mesh (V, F).
-      //
-      // Inputs:
-      //   V  #V by 3 array of vertices.
-      //   F  #F by 3 array of faces.
-      //   P  #F list of patch indices.
-      //   E  #E by 2 array of vertex indices, one edge per row.
-      //  uE    #uE by 2 list of vertex_indices, represents undirected edges.
-      //  EMAP  #F*3 list of indices into uE.
-      //  uEC  #uE+1 list of cumsums of directed edges sharing each unique edge
-      //  uEE  #E list of indices into E (see `igl::unique_edge_map`)
-      //
-      // Output:
-      //   cells  #P by 2 array of cell indices.  cells(i,0) represents the
-      //          cell index on the positive side of patch i, and cells(i,1)
-      //          represents cell index of the negqtive side.
-      //          By convension cell with index 0 is the infinite cell.
+      /// Extract connected 3D space partitioned by mesh (V, F).
+      ///
+      /// @param[in] V  #V by 3 array of vertices.
+      /// @param[in] F  #F by 3 array of faces.
+      /// @param[in] P  #F list of patch indices.
+      /// @param[in] E  #E by 2 array of vertex indices, one edge per row.
+      /// @param[in] uE    #uE by 2 list of vertex_indices, represents undirected edges.
+      /// @param[in] EMAP  #F*3 list of indices into uE.
+      /// @param[in] uEC  #uE+1 list of cumsums of directed edges sharing each unique edge
+      /// @param[in] uEE  #E list of indices into E (see `igl::unique_edge_map`)
+      /// @param[out] cells  #F by 2 array of cell indices.  cells(i,0) represents the
+      ///          cell index on the positive side of face i, and cells(i,1)
+      ///          represents cell index of the negqtive side.
+      ///          By convension cell with index 0 is the infinite cell.
+      /// @return the number of cells
       template<
         typename DerivedV,
         typename DerivedF,
@@ -75,6 +52,15 @@ namespace igl {
         const Eigen::PlainObjectBase<DerivedEMAP>& EMAP,
         const Eigen::PlainObjectBase<DeriveduEC>& uEC,
         const Eigen::PlainObjectBase<DeriveduEE>& uEE,
+        Eigen::PlainObjectBase<DerivedC>& cells);
+      /// \overload
+      template<
+        typename DerivedV,
+        typename DerivedF,
+        typename DerivedC >
+      IGL_INLINE size_t extract_cells(
+        const Eigen::PlainObjectBase<DerivedV>& V,
+        const Eigen::PlainObjectBase<DerivedF>& F,
         Eigen::PlainObjectBase<DerivedC>& cells);
     }
   }

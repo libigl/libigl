@@ -15,18 +15,16 @@ namespace igl
   {
     namespace cgal
     {
-      // Compute the "outer hull" of a piecewise constant winding number induce
-      // triangle mesh (V,F).
-      //
-      // Inputs:
-      //   V  #V by 3 list of vertex positions
-      //   F  #F by 3 list of triangle indices into V
-      // Outputs:
-      //   HV  #HV by 3 list of output vertex positions
-      //   HF  #HF by 3 list of output triangle indices into HV
-      //   J  #HF list of indices into F
-      //   flip  #HF list of whether facet was flipped when added to HF
-      //
+      /// Compute the "outer hull" of a piecewise constant winding number induce
+      /// triangle mesh (V,F).
+      ///
+      /// @param[in] V  #V by 3 list of vertex positions
+      /// @param[in] F  #F by 3 list of triangle indices into V
+      /// @param[out] HV  #HV by 3 list of output vertex positions
+      /// @param[out] HF  #HF by 3 list of output triangle indices into HV
+      /// @param[out] J  #HF list of indices into F
+      /// @param[out] flip  #HF list of whether facet was flipped when added to HF
+      ///
       template <
         typename DerivedV,
         typename DerivedF,

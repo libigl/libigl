@@ -19,11 +19,10 @@ namespace igl
 {
   namespace predicates
   {
-    // check whether 2d point lies inside 2d convex polygon
-    // Inputs:
-    //   P: n*2 polygon, n >= 3
-    //   q: 2d query point
-    // Returns true if point is inside polygon
+    /// check whether 2d point lies inside 2d convex polygon
+    /// @param[in] P: n*2 polygon, n >= 3
+    /// @param[in] q: 2d query point
+    /// @return true if point is inside polygon
     template <typename DerivedP, typename DerivedQ>
     IGL_INLINE bool point_inside_convex_polygon(
         const Eigen::MatrixBase<DerivedP>& P,

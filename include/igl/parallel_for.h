@@ -15,64 +15,86 @@
 
 namespace igl
 {
-  // PARALLEL_FOR Functional implementation of a basic, open-mp style, parallel
-  // for loop. If the inner block of a for-loop can be rewritten/encapsulated in
-  // a single (anonymous/lambda) function call `func` so that the serial code
-  // looks like:
-  //
-  //     for(int i = 0;i<loop_size;i++)
-  //     {
-  //       func(i);
-  //     }
-  //
-  // then `parallel_for(loop_size,func,min_parallel)` will use as many threads as
-  // available on the current hardware to parallelize this for loop so long as
-  // loop_size<min_parallel, otherwise it will just use a serial for loop.
-  //
-  // Inputs:
-  //   loop_size  number of iterations. I.e. for(int i = 0;i<loop_size;i++) ...
-  //   func  function handle taking iteration index as only argument to compute
-  //     inner block of for loop I.e. for(int i ...){ func(i); }
-  //   min_parallel  min size of loop_size such that parallel (non-serial)
-  //     thread pooling should be attempted {0}
-  // Returns true iff thread pool was invoked
+  /// Functional implementation of a basic, open-mp style, parallel
+  /// for loop. If the inner block of a for-loop can be rewritten/encapsulated in
+  /// a single (anonymous/lambda) function call `func` so that the serial code
+  /// looks like:
+  ///
+  /// \code{cpp}
+  ///     for(int i = 0;i<loop_size;i++)
+  ///     {
+  ///       func(i);
+  ///     }
+  /// \endcode
+  ///
+  /// then `parallel_for(loop_size,func,min_parallel)` will use as many threads as
+  /// available on the current hardware to parallelize this for loop so long as
+  /// loop_size<min_parallel, otherwise it will just use a serial for loop.
+  ///
+  /// Often if your code looks like:
+  ///
+  /// \code{cpp}
+  ///     for(int i = 0;i<loop_size;i++)
+  ///     {
+  ///       …
+  ///     }
+  /// \endcode
+  ///
+  /// Then you can make a minimal two-line change to parallelize it:
+  ///
+  /// \code{cpp}
+  ///     //for(int i = 0;i<loop_size;i++)
+  ///     parallel_for(loop_size,[&](int i)
+  ///     {
+  ///       …
+  ///     }
+  ///     ,1000);
+  /// \endcode
+  ///
+  /// @param[in] loop_size  number of iterations. I.e. for(int i = 0;i<loop_size;i++) ...
+  /// @param[in] func  function handle taking iteration index as only argument to compute
+  ///     inner block of for loop I.e. for(int i ...){ func(i); }
+  /// @param[in] min_parallel  min size of loop_size such that parallel (non-serial)
+  ///     thread pooling should be attempted {0}
+  /// @return true iff thread pool was invoked
   template<typename Index, typename FunctionType >
   inline bool parallel_for(
     const Index loop_size,
     const FunctionType & func,
     const size_t min_parallel=0);
-  // PARALLEL_FOR Functional implementation of an open-mp style, parallel for
-  // loop with accumulation. For example, serial code separated into n chunks
-  // (each to be parallelized with a thread) might look like:
-  //
-  //     Eigen::VectorXd S;
-  //     const auto & prep_func = [&S](int n){ S = Eigen:VectorXd::Zero(n); };
-  //     const auto & func = [&X,&S](int i, int t){ S(t) += X(i); };
-  //     const auto & accum_func = [&S,&sum](int t){ sum += S(t); };
-  //     prep_func(n);
-  //     for(int i = 0;i<loop_size;i++)
-  //     {
-  //       func(i,i%n);
-  //     }
-  //     double sum = 0;
-  //     for(int t = 0;t<n;t++)
-  //     {
-  //       accum_func(t);
-  //     }
-  //
-  // Inputs:
-  //   loop_size  number of iterations. I.e. for(int i = 0;i<loop_size;i++) ...
-  //   prep_func function handle taking n >= number of threads as only
-  //     argument
-  //   func  function handle taking iteration index i and thread id t as only
-  //     arguments to compute inner block of for loop I.e.
-  //     for(int i ...){ func(i,t); }
-  //   accum_func  function handle taking thread index as only argument, to be
-  //     called after all calls of func, e.g., for serial accumulation across
-  //     all n (potential) threads, see n in description of prep_func.
-  //   min_parallel  min size of loop_size such that parallel (non-serial)
-  //     thread pooling should be attempted {0}
-  // Returns true iff thread pool was invoked
+  /// Functional implementation of an open-mp style, parallel for loop with
+  /// accumulation. For example, serial code separated into n chunks (each to be
+  /// parallelized with a thread) might look like:
+  ///
+  /// \code{cpp}
+  ///     Eigen::VectorXd S;
+  ///     const auto & prep_func = [&S](int n){ S = Eigen:VectorXd::Zero(n); };
+  ///     const auto & func = [&X,&S](int i, int t){ S(t) += X(i); };
+  ///     const auto & accum_func = [&S,&sum](int t){ sum += S(t); };
+  ///     prep_func(n);
+  ///     for(int i = 0;i<loop_size;i++)
+  ///     {
+  ///       func(i,i%n);
+  ///     }
+  ///     double sum = 0;
+  ///     for(int t = 0;t<n;t++)
+  ///     {
+  ///       accum_func(t);
+  ///     }
+  /// \endcode
+  ///
+  /// @param[in] loop_size  number of iterations. I.e. for(int i = 0;i<loop_size;i++) ...
+  /// @param[in] prep_func function handle taking n >= number of threads as only
+  ///     argument
+  /// @param[in] func  function handle taking iteration index i and thread id t as only
+  ///     arguments to compute inner block of for loop I.e.
+  ///     for(int i ...){ func(i,t); }
+  /// @param[in] accum_func  function handle taking thread index as only argument, to be
+  ///     called after all calls of func, e.g., for serial accumulation across
+  ///     all n (potential) threads, see n in description of prep_func.
+  /// @param[in] min_parallel  min size of loop_size such that parallel (non-serial)
+  ///     thread pooling should be attempted {0}
+  /// @return true iff thread pool was invoked
   template<
     typename Index,
     typename PrepFunctionType,

@@ -12,21 +12,20 @@
 #include <vector>
 namespace igl
 {
-  // Does edge (a,b) exist in the edges of all faces incident on
-  // existing unique edge uei.
-  //
-  // Inputs:
-  //   uE  #uE by 2 list of unique undirected edges
-  //   EMAP #F*3 list of indices into uE, mapping each directed edge to unique
-  //     undirected edge
-  //   uE2E  #uE list of lists of indices into E of coexisting edges
-  //   E  #F*3 by 2 list of half-edges
-  //   a  1st end-point of query edge
-  //   b  2nd end-point of query edge
-  //   uei  index into uE/uE2E of unique edge
-  // Returns true if edge exists near uei.
-  //
-  // See also: unique_edge_map
+  /// Does edge (a,b) exist in the edges of all faces incident on
+  /// existing unique edge uei.
+  ///
+  /// @param[in] uE  #uE by 2 list of unique undirected edges
+  /// @param[in] EMAP #F*3 list of indices into uE, mapping each directed edge to unique
+  ///              undirected edge
+  /// @param[in] uE2E  #uE list of lists of indices into E of coexisting edges
+  /// @param[in] E  #F*3 by 2 list of half-edges
+  /// @param[in] a  1st end-point of query edge
+  /// @param[in] b  2nd end-point of query edge
+  /// @param[in] uei  index into uE/uE2E of unique edge
+  /// @return true if edge exists near uei.
+  ///
+  /// \see unique_edge_map
   template <
     typename DeriveduE,
     typename DerivedEMAP,

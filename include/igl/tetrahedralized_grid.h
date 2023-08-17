@@ -11,26 +11,28 @@
 #include <Eigen/Core>
 namespace igl
 {
+  /// Types of tetrahedralizations of a cubical cell
   enum TetrahedralizedGripType
   {
+    /// 1 cube → 5 tets
     TETRAHEDRALIZED_GRID_TYPE_5 = 0,
+    /// 1 cube → 6 tets with rotatonal symmetry
     TETRAHEDRALIZED_GRID_TYPE_6_ROTATIONAL = 1,
+    /// Total number of tetrahedralization types
     NUM_TETRAHEDRALIZED_GRID_TYPE = 2
   };
-  // Construct vertices of a regular grid, suitable for input to
-  // `igl::marching_tets`
-  //
-  // Inputs:
-  //   nx  number of grid vertices in x direction
-  //   ny  number of grid vertices in y direction
-  //   nz  number of grid vertices in z direction
-  //   type  type of tetrahedralization of cube to use
-  // Outputs:
-  //   GV  nx*ny*nz by 3 list of grid vertex positions
-  //   GT  (nx-1)*(ny-1)*(nz-1)*k by 4 list of tetrahedron indices into rows of
-  //     V, where k is the number of tets per cube (dependent on type)
-  //
-  //   See also: triangulated_grid, quad_grid
+  /// Construct vertices of a regular grid, suitable for input to
+  /// `igl::marching_tets`
+  ///
+  /// @param[in] nx  number of grid vertices in x direction
+  /// @param[in] ny  number of grid vertices in y direction
+  /// @param[in] nz  number of grid vertices in z direction
+  /// @param[in] type  type of tetrahedralization of cube to use
+  /// @param[out] GV  nx*ny*nz by 3 list of grid vertex positions
+  /// @param[out] GT  (nx-1)*(ny-1)*(nz-1)*k by 4 list of tetrahedron indices into rows of
+  ///     V, where k is the number of tets per cube (dependent on type)
+  ///
+  /// \see triangulated_grid, quad_grid
   template <
     typename DerivedGV,
     typename DerivedGT>
@@ -41,15 +43,9 @@ namespace igl
     const TetrahedralizedGripType type,
     Eigen::PlainObjectBase<DerivedGV> & GV,
     Eigen::PlainObjectBase<DerivedGT> & GT);
-  //
-  // Inputs:
-  //   GV  nx*ny*nz by 3 list of grid vertex positions
-  //   side  3-long list {nx,ny,nz} see above
-  //   type  type of tetrahedralization of cube to use
-  // Outputs:
-  //   GT  (nx-1)*(ny-1)*(nz-1)*k by 4 list of tetrahedron indices into rows of
-  //     V, where k is the number of tets per cube (dependent on type)
-  //
+  /// \overload
+  /// @param[in] GV  nx*ny*nz by 3 list of grid vertex positions
+  /// @param[in] side  3-long list {nx,ny,nz} see above
   template <
     typename DerivedGV,
     typename Derivedside,

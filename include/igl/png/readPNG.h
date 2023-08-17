@@ -15,14 +15,15 @@ namespace igl
 {
   namespace png
   {
-    // Read an image from a .png file into 4 memory buffers
-    //
-    // Input:
-    //  png_file  path to .png file
-    // Output:
-    //  R,G,B,A texture channels
-    // Returns true on success, false on failure
-    //
+    /// Read an image from a .png file into 4 memory buffers
+    ///
+    /// @param[in] png_file  path to .png file
+    /// @param[out] R  red channel
+    /// @param[out] G  green channel
+    /// @param[out] B  blue channel
+    /// @param[out] A  alpha channel
+    /// @return true on success, false on failure
+    ///
     IGL_INLINE bool readPNG(const std::string png_file,
     Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& R,
     Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& G,

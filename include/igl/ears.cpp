@@ -2,7 +2,7 @@
 #include "on_boundary.h"
 #include "find.h"
 #include "slice.h"
-#include "mat_min.h"
+#include "min.h"
 #include <cassert>
 
 template <
@@ -24,7 +24,7 @@ IGL_INLINE void igl::ears(
   Eigen::Array<bool, Eigen::Dynamic, 3> Bear;
   slice(B, ear, 1, Bear);
   Eigen::Array<bool, Eigen::Dynamic, 1> M;
-  mat_min(Bear,2,M,ear_opp);
+  igl::min(Bear,2,M,ear_opp);
 }
 
 #ifdef IGL_STATIC_LIBRARY

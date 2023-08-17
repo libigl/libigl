@@ -8,7 +8,7 @@
 #ifndef IGL_WRITESTL_H
 #define IGL_WRITESTL_H
 #include "igl_inline.h"
-#include <igl/FileEncoding.h>
+#include "FileEncoding.h"
 
 #ifndef IGL_NO_EIGEN
 #  include <Eigen/Core>
@@ -18,19 +18,17 @@
 
 namespace igl
 {
-  // Write a mesh to an stl file.
-  //
-  // Templates:
-  //   Scalar  type for positions and vectors (will be read as double and cast
-  //     to Scalar)
-  // Inputs:
-  //   filename path to .obj file
-  //   V  double matrix of vertex positions  #F*3 by 3
-  //   F  index matrix of triangle indices #F by 3
-  //   N  double matrix of vertex positions  #F by 3
-  //   encoding enum to set file encoding (ascii by default)
-  // Returns true on success, false on errors
-  //
+  /// Write a mesh to an stl file.
+  ///
+  /// @tparam Scalar  type for positions and vectors (will be read as double and cast
+  ///     to Scalar)
+  /// @param[in] filename path to .obj file
+  /// @param[in] V  double matrix of vertex positions  #F*3 by 3
+  /// @param[in] F  index matrix of triangle indices #F by 3
+  /// @param[in] N  double matrix of vertex positions  #F by 3
+  /// @param[in] encoding enum to set file encoding (ascii by default)
+  /// @return true on success, false on errors
+  ///
   template <typename DerivedV, typename DerivedF, typename DerivedN>
   IGL_INLINE bool writeSTL(
     const std::string & filename,
@@ -38,6 +36,7 @@ namespace igl
     const Eigen::MatrixBase<DerivedF> & F,
     const Eigen::MatrixBase<DerivedN> & N,
     FileEncoding encoding=FileEncoding::Ascii);
+  /// \overload
   template <typename DerivedV, typename DerivedF>
   IGL_INLINE bool writeSTL(
     const std::string & filename,

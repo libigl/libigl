@@ -9,14 +9,19 @@
 
 namespace igl{ namespace opengl{ namespace glfw{ namespace imgui{
 
+/// Widget for selecting a region of the screen
 class SelectionWidget: public ImGuiWidget
 {
 public:
   // customizable hotkeys
+  /// Hot key to start marquee
   std::string MARQUEE_KEY = "Mm";
   // leave 'L' for show_lines in viewer
+  /// Hot key to start lasso
   std::string LASSO_KEY = "l";
+  /// Hot key to stop selection
   std::string OFF_KEY = "Vv";
+  /// Selection modes
   enum Mode
   {
     OFF                 = 0,
