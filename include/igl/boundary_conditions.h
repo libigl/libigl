@@ -15,7 +15,7 @@ namespace igl
   /// Compute boundary conditions for automatic weights computation. This
   /// function expects that the given mesh (V,Ele) has sufficient samples
   /// (vertices) exactly at point handle locations and exactly along bone and
-  /// cage edges.
+  /// cage edges/faces.
   ///
   /// @param[in] V  #V by dim list of domain vertices
   /// @param[in] Ele  #Ele by simplex-size list of simplex indices
@@ -23,6 +23,7 @@ namespace igl
   /// @param[in] P  #P by 1 list of point handle indices into C
   /// @param[in] BE  #BE by 2 list of bone edge indices into C
   /// @param[in] CE  #CE by 2 list of cage edge indices into *P*
+  ///  @param[in] CF  #CF by 3 list of (triangular) cage face indices into *P*
   /// @param[out] b  #b list of boundary indices (indices into V of vertices which have
   ///     known, fixed values)
   /// @param[out] bc #b by #weights list of known/fixed values for boundary vertices
@@ -35,7 +36,6 @@ namespace igl
   ///   some column of bc doesn't have a 0 (assuming bc has >1 columns)
   ///   some column of bc doesn't have a 1 (assuming bc has >1 columns)
   ///
-  /// \note 3D cages are not yet supported.
   IGL_INLINE bool boundary_conditions(
     const Eigen::MatrixXd & V,
     const Eigen::MatrixXi & Ele,
@@ -43,6 +43,7 @@ namespace igl
     const Eigen::VectorXi & P,
     const Eigen::MatrixXi & BE,
     const Eigen::MatrixXi & CE,
+    const Eigen::MatrixXi & CF,
     Eigen::VectorXi & b,
     Eigen::MatrixXd & bc);
 }

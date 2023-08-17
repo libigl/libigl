@@ -116,7 +116,7 @@ int main(int argc, char *argv[])
   VectorXi b;
   // List of boundary conditions of each weight function
   MatrixXd bc;
-  igl::boundary_conditions(V,T,C,VectorXi(),BE,MatrixXi(),b,bc);
+  igl::boundary_conditions(V,T,C,VectorXi(),BE,MatrixXi(),MatrixXi(),b,bc);
 
   // compute BBW weights matrix
   igl::BBWData bbw_data;
