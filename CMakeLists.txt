@@ -110,6 +110,10 @@ option(LIBIGL_RESTRICTED_MOSEK    "Build target igl_restricted::mosek"    ${LIBI
 option(LIBIGL_RESTRICTED_TRIANGLE "Build target igl_restricted::triangle" ${LIBIGL_TOPLEVEL_PROJECT})
 
 
+# Option to immediately delete tutorials as their built (an attempt to make the
+# Windows build on github actions run out of memory less often/quickly).
+option(LIBIGL_DELETE_TUTORIALS_IMMEDIATELY "Delete tutorials as they are built" OFF)
+
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")

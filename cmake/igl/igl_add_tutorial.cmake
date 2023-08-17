@@ -15,4 +15,11 @@ function(igl_add_tutorial name)
     )
 
     set_target_properties(${name} PROPERTIES FOLDER Libigl_Tutorials)
+    if(LIBIGL_DELETE_TUTORIALS_IMMEDIATELY)
+      add_custom_command(
+       TARGET ${name}
+       POST_BUILD
+       COMMAND ${CMAKE_COMMAND} -E remove $<TARGET_FILE:${name}>
+       COMMENT "Removing ${name}.")
+    endif()
 endfunction()
