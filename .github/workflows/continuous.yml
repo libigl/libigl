@@ -132,6 +132,7 @@ jobs:
             -DLIBIGL_USE_STATIC_LIBRARY=${{ matrix.build-params.static }} ^
             -DLIBIGL_COPYLEFT_CGAL=ON ^
             -DLIBIGL_BUILD_TUTORIALS=${{ matrix.build-params.tutorials }} ^
+            -DLIBIGL_DELETE_TUTORIALS_IMMEDIATELY=ON ^
             -DLIBIGL_BUILD_TESTS=${{ matrix.build-params.tests }} ^
             -B build ^
             -S .
