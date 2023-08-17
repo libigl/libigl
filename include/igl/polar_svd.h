@@ -33,12 +33,38 @@ namespace igl
     typename DerivedV>
   IGL_INLINE void polar_svd(
     const Eigen::MatrixBase<DerivedA> & A,
+    bool includeReflections,
     Eigen::PlainObjectBase<DerivedR> & R,
     Eigen::PlainObjectBase<DerivedT> & T,
     Eigen::PlainObjectBase<DerivedU> & U,
     Eigen::PlainObjectBase<DerivedS> & S,
-    Eigen::PlainObjectBase<DerivedV> & V,
-    bool includeReflections = true);
+    Eigen::PlainObjectBase<DerivedV> & V);
+  /// \overload
+  template <
+    typename DerivedA,
+    typename DerivedR,
+    typename DerivedT>
+  IGL_INLINE void polar_svd(
+    const Eigen::MatrixBase<DerivedA> & A,
+    const bool includeReflections,
+    Eigen::PlainObjectBase<DerivedR> & R,
+    Eigen::PlainObjectBase<DerivedT> & T);
+  /// \overload
+  /// \brief For backward compatibility, these set includeReflections = false.
+  template <
+    typename DerivedA,
+    typename DerivedR,
+    typename DerivedT,
+    typename DerivedU,
+    typename DerivedS,
+    typename DerivedV>
+  IGL_INLINE void polar_svd(
+    const Eigen::MatrixBase<DerivedA> & A,
+    Eigen::PlainObjectBase<DerivedR> & R,
+    Eigen::PlainObjectBase<DerivedT> & T,
+    Eigen::PlainObjectBase<DerivedU> & U,
+    Eigen::PlainObjectBase<DerivedS> & S,
+    Eigen::PlainObjectBase<DerivedV> & V);
   /// \overload
   template <
     typename DerivedA,
@@ -47,8 +73,7 @@ namespace igl
   IGL_INLINE void polar_svd(
     const Eigen::MatrixBase<DerivedA> & A,
     Eigen::PlainObjectBase<DerivedR> & R,
-    Eigen::PlainObjectBase<DerivedT> & T,
-    bool includeReflections = true);
+    Eigen::PlainObjectBase<DerivedT> & T);
 }
 #ifndef IGL_STATIC_LIBRARY
 #  include "polar_svd.cpp"
