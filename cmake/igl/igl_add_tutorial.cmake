@@ -16,6 +16,7 @@ function(igl_add_tutorial name)
 
     set_target_properties(${name} PROPERTIES FOLDER Libigl_Tutorials)
     if(LIBIGL_DELETE_TUTORIALS_IMMEDIATELY)
+      message(STATUS "Adding command to remove ${name} immediately after build")
       add_custom_command(
        TARGET ${name}
        POST_BUILD
