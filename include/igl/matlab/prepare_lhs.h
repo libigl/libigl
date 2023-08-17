@@ -7,7 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_MATLAB_PREPARE_LHS_H
 #define IGL_MATLAB_PREPARE_LHS_H
-#include <igl/igl_inline.h>
+#include "../igl_inline.h"
 #include <mex.h>
 #include <Eigen/Dense>
 #include <Eigen/Sparse>

@@ -7,10 +7,10 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "frame_field.h"
 
-#include <igl/triangle_triangle_adjacency.h>
-#include <igl/edge_topology.h>
-#include <igl/per_face_normals.h>
-#include <igl/copyleft/comiso/nrosy.h>
+#include "../../triangle_triangle_adjacency.h"
+#include "../../edge_topology.h"
+#include "../../per_face_normals.h"
+#include "nrosy.h"
 #include <iostream>
 
 namespace igl

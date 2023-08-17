@@ -22,21 +22,6 @@ namespace igl
   template <typename DerivedF>
   IGL_INLINE int euler_characteristic(
     const Eigen::MatrixBase<DerivedF> & F);
-  /// Computes the Euler characteristic of a given mesh (V,F)
-  /// 
-  /// @tparam Scalar  should be a floating point number type
-  /// @tparam Index   should be an integer type
-  /// @param[in] V       #V by dim list of mesh vertex positions
-  /// @param[in] F       #F by dim list of mesh faces (must be triangles)
-  /// @return int containing the Euler characteristic
-  ///
-  /// \deprecated This version is inferior to the one above because it
-  /// unecessarily requires V and expensively calls edge_topology
-  template <typename Scalar, typename Index>
-  IGL_INLINE int euler_characteristic(
-    const Eigen::MatrixBase<Scalar> & V,
-    const Eigen::MatrixBase<Index> & F);
-
 }
 
 #ifndef IGL_STATIC_LIBRARY

@@ -8,7 +8,7 @@
 #ifndef IGL_WRITE_TRIANGLE_MESH_H
 #define IGL_WRITE_TRIANGLE_MESH_H
 #include "igl_inline.h"
-#include <igl/FileEncoding.h>
+#include "FileEncoding.h"
 
 #include <Eigen/Core>
 #include <string>

@@ -12,7 +12,7 @@
 //Code from https://code.google.com/archive/p/geodesic/
 // Compiled into a single file by Zhongshi Jiang
 
-#include <igl/PI.h>
+#include "PI.h"
 #include <algorithm>
 #include <cassert>
 #include <cmath>

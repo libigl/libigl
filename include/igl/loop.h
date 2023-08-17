@@ -9,7 +9,7 @@
 #ifndef IGL_LOOP_H
 #define IGL_LOOP_H
 
-#include <igl/igl_inline.h>
+#include "igl_inline.h"
 #include <Eigen/Core>
 #include <Eigen/Sparse>
 

@@ -8,9 +8,9 @@
 
 #include "loop.h"
 
-#include <igl/adjacency_list.h>
-#include <igl/triangle_triangle_adjacency.h>
-#include <igl/unique.h>
+#include "adjacency_list.h"
+#include "triangle_triangle_adjacency.h"
+#include "unique.h"
 
 #include <vector>
 

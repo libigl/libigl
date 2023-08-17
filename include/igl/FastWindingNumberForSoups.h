@@ -85,7 +85,9 @@
 #include <sys/types.h>
 #include <stdint.h>
 
-namespace igl { namespace FastWindingNumber {
+namespace igl {
+  /// @private
+  namespace FastWindingNumber {
 
 /*
  * Integer types
@@ -242,7 +244,9 @@ typedef union SYS_FPRealUnionT<fpreal64>    SYS_FPRealUnionD;
 #include <limits>
 #include <math.h>
 
-namespace igl { namespace FastWindingNumber {
+namespace igl {
+  /// @private
+  namespace FastWindingNumber {
 
 // NOTE:
 // These have been carefully written so that in the case of equality
@@ -383,7 +387,9 @@ static inline fpreal64 SYSabs(fpreal64 a) { return ::fabs(a); }
     #pragma warning(pop)
 #endif
 
-namespace igl { namespace FastWindingNumber {
+namespace igl {
+  /// @private
+  namespace FastWindingNumber {
 
 typedef __m128	v4sf;
 typedef __m128i	v4si;
@@ -745,7 +751,9 @@ vm_allbits(const v4si &a)
 
 #include <cmath>
 
-namespace igl { namespace FastWindingNumber {
+namespace igl {
+  /// @private
+  namespace FastWindingNumber {
 
 struct v4si {
 	int32 v[4];
@@ -1174,7 +1182,9 @@ int SYS_FORCE_INLINE _mm_movemask_ps(const v4sf& v) {
 
 
 
-namespace igl { namespace FastWindingNumber {
+namespace igl {
+  /// @private
+  namespace FastWindingNumber {
 
 class v4uf;
 
@@ -1628,7 +1638,9 @@ typedef v4uu v4ui;
 #include <type_traits>
 #include <string.h>
 
-namespace igl { namespace FastWindingNumber {
+namespace igl {
+  /// @private
+  namespace FastWindingNumber {
 
  /// This routine describes how to change the size of an array.
  /// It must increase the current_size by at least one!
@@ -2423,7 +2435,9 @@ private:
 #include <stdlib.h>
 #include <string.h>
 
-namespace igl { namespace FastWindingNumber {
+namespace igl { 
+  /// @private
+  namespace FastWindingNumber {
 
 // Implemented in UT_Array.C
 extern void ut_ArrayImplFree(void *p);
@@ -3086,7 +3100,9 @@ UT_Array<T>::operator!=(const UT_Array<T> &a) const
 
 #include <utility>
 #include <stddef.h>
-namespace igl { namespace FastWindingNumber {
+namespace igl {
+  /// @private
+  namespace FastWindingNumber {
 
 /// An array class with the small buffer optimization, making it ideal for
 /// cases when you know it will only contain a few elements at the expense of
@@ -3242,7 +3258,9 @@ private:
 
 
 
-namespace igl { namespace FastWindingNumber {
+namespace igl {
+  /// @private
+  namespace FastWindingNumber {
 
 template<typename T,exint SIZE,bool INSTANTIATED=false>
 class UT_FixedVector
@@ -3646,7 +3664,9 @@ struct UT_FixedVectorTraits<UT_FixedVector<T,SIZE,INSTANTIATED> >
 
 
 #include <thread> // This is just included for std::thread::hardware_concurrency()
-namespace igl { namespace FastWindingNumber {
+namespace igl {
+  /// @private
+  namespace FastWindingNumber {
 namespace UT_Thread { inline int getNumProcessors() {
     return std::thread::hardware_concurrency();
 }}
@@ -3879,7 +3899,9 @@ namespace UT_Thread { inline int getNumProcessors() {
 
 #include <limits>
 #include <memory>
-namespace igl { namespace FastWindingNumber {
+namespace igl { 
+  /// @private
+  namespace FastWindingNumber {
 
 template<typename T> class UT_Array;
 class v4uf;
@@ -4440,12 +4462,14 @@ using UT_BVH = UT::BVH<N>;
 
 
 
-#include <igl/parallel_for.h>
+#include "parallel_for.h"
 
 #include <iostream>
 #include <algorithm>
 
-namespace igl { namespace FastWindingNumber {
+namespace igl { 
+  /// @private
+  namespace FastWindingNumber {
 namespace HDK_Sample {
 
 namespace UT {
@@ -6008,7 +6032,9 @@ void BVH<N>::debugDump() const {
 
 #include <memory>
 
-namespace igl { namespace FastWindingNumber {
+namespace igl { 
+  /// @private
+  namespace FastWindingNumber {
 namespace HDK_Sample {
 
 template<typename T>
@@ -6373,7 +6399,9 @@ private:
 
 #include <stdlib.h>
 
-namespace igl { namespace FastWindingNumber {
+namespace igl { 
+  /// @private
+  namespace FastWindingNumber {
 
 // This needs to be here or else the warning suppression doesn't work because
 // the templated calling code won't otherwise be compiled until after we've
@@ -6423,7 +6451,7 @@ inline void ut_ArrayImplFree(void *p)
 
 
 
-#include <igl/parallel_for.h>
+#include "parallel_for.h"
 #include <type_traits>
 #include <utility>
 
@@ -6440,7 +6468,9 @@ inline void ut_ArrayImplFree(void *p)
 
 #define TAYLOR_SERIES_ORDER 2
 
-namespace igl { namespace FastWindingNumber {
+namespace igl { 
+  /// @private
+  namespace FastWindingNumber {
 
 namespace HDK_Sample {
 

@@ -10,7 +10,7 @@
 #include "igl_inline.h"
 
 #include <Eigen/Dense>
-#include <igl/active_set.h>
+#include "active_set.h"
 
 namespace igl
 {

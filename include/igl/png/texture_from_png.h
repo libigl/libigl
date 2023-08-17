@@ -26,23 +26,6 @@ namespace igl
     IGL_INLINE bool texture_from_png(const std::string png_file, const bool flip, GLuint & id);
     /// \overload 
     IGL_INLINE bool texture_from_png(const std::string png_file, GLuint & id);
-    /// \deprecated use readPNG instead
-    // Read an image from a .png file and use it as a texture
-    //
-    // Input:
-    //  png_file  path to .png file
-    // Output:
-    //  R,G,B,A texture channels
-    // Returns true on success, false on failure
-    //
-    // Todo: this is an inappropriate function name. This is really just
-    // reading a png.... Not necessarily as a texture.
-    IGL_INLINE bool texture_from_png(const std::string png_file,
-    Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& R,
-    Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& G,
-    Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& B,
-    Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& A
-    );
   }
 }
 

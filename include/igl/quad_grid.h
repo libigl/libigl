@@ -8,7 +8,7 @@
 #ifndef IGL_QUAD_GRID_H
 #define IGL_QUAD_GRID_H
 
-#include <igl/igl_inline.h>
+#include "igl_inline.h"
 #include <Eigen/Core>
 
 namespace igl

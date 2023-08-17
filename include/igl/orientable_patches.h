@@ -7,7 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_ORIENTABLE_PATCHES_H
 #define IGL_ORIENTABLE_PATCHES_H
-#include <igl/igl_inline.h>
+#include "igl_inline.h"
 #include <Eigen/Core>
 #include <Eigen/Sparse>
 namespace igl

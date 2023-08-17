@@ -6,12 +6,12 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 
-#include <igl/shapeup.h>
-#include <igl/min_quad_with_fixed.h>
-#include <igl/igl_inline.h>
-#include <igl/setdiff.h>
-#include <igl/cat.h>
-#include <igl/PI.h>
+#include "shapeup.h"
+#include "min_quad_with_fixed.h"
+#include "igl_inline.h"
+#include "setdiff.h"
+#include "cat.h"
+#include "PI.h"
 #include <Eigen/Core>
 #include <vector>
 

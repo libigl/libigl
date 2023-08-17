@@ -8,10 +8,10 @@
 #ifndef IGL_ARAP_RHS_H
 #define IGL_ARAP_RHS_H
 #include "igl_inline.h"
+#include "ARAPEnergyType.h"
 
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
-#include <igl/ARAPEnergyType.h>
 
 namespace igl
 {

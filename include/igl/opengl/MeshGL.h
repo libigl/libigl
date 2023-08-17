@@ -9,7 +9,7 @@
 #define IGL_OPENGL_MESHGL_H
 
 
-#include <igl/igl_inline.h>
+#include "../igl_inline.h"
 #include <Eigen/Core>
 
 namespace igl

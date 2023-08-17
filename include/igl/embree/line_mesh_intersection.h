@@ -7,7 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_EMBREE_LINE_MESH_INTERSECTION_H
 #define IGL_EMBREE_LINE_MESH_INTERSECTION_H
-#include <igl/igl_inline.h>
+#include "../igl_inline.h"
 
 #include <Eigen/Dense>
 #include <Eigen/Sparse>

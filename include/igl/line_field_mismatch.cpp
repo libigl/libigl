@@ -10,17 +10,17 @@
 
 #include <vector>
 #include <deque>
-#include <igl/comb_line_field.h>
-#include <igl/rotate_vectors.h>
-#include <igl/comb_cross_field.h>
-#include <igl/comb_line_field.h>
-#include <igl/per_face_normals.h>
-#include <igl/is_border_vertex.h>
-#include <igl/vertex_triangle_adjacency.h>
-#include <igl/triangle_triangle_adjacency.h>
-#include <igl/rotation_matrix_from_directions.h>
-#include <igl/local_basis.h>
-#include <igl/PI.h>
+#include "comb_line_field.h"
+#include "rotate_vectors.h"
+#include "comb_cross_field.h"
+#include "comb_line_field.h"
+#include "per_face_normals.h"
+#include "is_border_vertex.h"
+#include "vertex_triangle_adjacency.h"
+#include "triangle_triangle_adjacency.h"
+#include "rotation_matrix_from_directions.h"
+#include "local_basis.h"
+#include "PI.h"
 
 namespace igl {
 template <typename DerivedV, typename DerivedF, typename DerivedO>

@@ -130,13 +130,18 @@ namespace igl
     const Eigen::MatrixBase<DerivedQ>& Q,
     Eigen::PlainObjectBase<DerivedWN>& WN);
   /// @private
-  namespace FastWindingNumber { namespace HDK_Sample{ template <typename T1, typename T2> class UT_SolidAngle;} }
+  namespace FastWindingNumber { 
+    /// @private
+    namespace HDK_Sample{ 
+      /// @private
+      template <typename T1, typename T2> class UT_SolidAngle;} }
   /// Structure for caching precomputation for fast winding number for triangle
   /// soups
   struct FastWindingNumberBVH {
     /// @private
     FastWindingNumber::HDK_Sample::UT_SolidAngle<float,float> ut_solid_angle;
     // Need copies of these so they stay alive between calls.
+    /// @private
     std::vector<FastWindingNumber::HDK_Sample::UT_Vector3T<float> > U;
     std::vector<int> F;
   };

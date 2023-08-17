@@ -8,8 +8,8 @@
 
 #include "cut_mesh_from_singularities.h"
 
-#include <igl/triangle_triangle_adjacency.h>
-#include <igl/edge_topology.h>
+#include "triangle_triangle_adjacency.h"
+#include "edge_topology.h"
 
 #include <vector>
 #include <deque>

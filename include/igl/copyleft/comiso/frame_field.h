@@ -8,8 +8,8 @@
 #ifndef IGL_COMISO_FRAMEFIELD_H
 #define IGL_COMISO_FRAMEFIELD_H
 
-#include <igl/igl_inline.h>
-#include <igl/PI.h>
+#include "../../igl_inline.h"
+#include "../../PI.h"
 #include <Eigen/Dense>
 #include <vector>
 

@@ -8,7 +8,6 @@
 #ifndef IGL_INTERNAL_ANGLES_H
 #define IGL_INTERNAL_ANGLES_H
 #include "igl_inline.h"
-#include "deprecated.h"
 #include <Eigen/Core>
 namespace igl
 {

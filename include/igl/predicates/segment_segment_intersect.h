@@ -9,9 +9,9 @@
 #ifndef IGL_PREDICATES_SEGMENT_SEGMENT_INTERSECT_H
 #define IGL_PREDICATES_SEGMENT_SEGMENT_INTERSECT_H
 
-#include <igl/igl_inline.h>
-#include <Eigen/Core>
+#include "../igl_inline.h"
 #include "predicates.h"
+#include <Eigen/Core>
 namespace igl
 {
   namespace predicates

@@ -8,7 +8,7 @@
 #include "sort.h"
 
 #include "SortableRow.h"
-#include "reorder.h"
+#include "slice.h"
 #include "IndexComparison.h"
 #include "colon.h"
 #include "parallel_for.h"
@@ -322,7 +322,7 @@ if(!ascending)
   // make space for output without clobbering
   sorted.resize(unsorted.size());
   // reorder unsorted into sorted using index map
-  igl::reorder(unsorted,index_map,sorted);
+  igl::slice(unsorted,index_map,sorted);
 }
 
 #ifdef IGL_STATIC_LIBRARY

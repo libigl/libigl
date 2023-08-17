@@ -7,7 +7,6 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "massmatrix_intrinsic.h"
 #include "edge_lengths.h"
-#include "normalize_row_sums.h"
 #include "sparse.h"
 #include "doublearea.h"
 #include "repmat.h"
@@ -82,7 +81,9 @@ IGL_INLINE void igl::massmatrix_intrinsic(
         cosines.col(2) = 
           (l.col(1).array().pow(2)+l.col(0).array().pow(2)-l.col(2).array().pow(2))/(l.col(0).array()*l.col(1).array()*2.0);
         Matrix<Scalar,Dynamic,3> barycentric = cosines.array() * l.array();
-        normalize_row_sums(barycentric,barycentric);
+        // Replace this: normalize_row_sums(barycentric,barycentric);
+        barycentric  = (barycentric.array().colwise() / barycentric.array().rowwise().sum()).eval();
+
         Matrix<Scalar,Dynamic,3> partial = barycentric;
         partial.col(0).array() *= dblA.array() * 0.5;
         partial.col(1).array() *= dblA.array() * 0.5;
