@@ -16,23 +16,17 @@
 
 namespace igl
 {
-  // Computes the CR vector Laplacian matrix.
-  // See Oded Stein, Max Wardetzky, Alec Jacobson, Eitan Grinspun, 2020.
-  //  "A Simple Discretization of the Vector Dirichlet Energy"
-  //
-  // Inputs:
-  //  V, F: input mesh
-  //  E: a mapping from each halfedge to each edge, as computed with
-  //     orient_halfedges.
-  //     will be computed if not provided.
-  //  oE: the orientation of each halfedge compared to the orientation of the
-  //      actual edge, as computed with orient_halfedges.
-  //      will be computed if not provided.
-  //
-  // Outputs:
-  //  L: computed Laplacian matrix
-  //  E, oE: these are computed if they are not present, as described above
-
+  /// Computes the CR vector Laplacian matrix.
+  /// See Oded Stein, Max Wardetzky, Alec Jacobson, Eitan Grinspun, 2020.
+  ///  "A Simple Discretization of the Vector Dirichlet Energy"
+  ///
+  ///  @param[in] V #V by 3 list of mesh vertex positions
+  ///  @param[in] F #F by 3 list of mesh face indices into rows of V
+  ///  @param[in] E #F by 3 a mapping from each halfedge to each edge
+  ///  @param[in] oE #F by 3 the orientation (e.g., -1 or 1) of each halfedge
+  ///    compared to the orientation of the actual edge, as computed with
+  ///    orient_halfedges. will be computed if not provided.
+  ///  @param[out] L 2*|HE| by 2*|HE| computed Laplacian matrix
   template <typename DerivedV, typename DerivedF, typename DerivedE,
   typename DerivedOE, typename ScalarL>
   IGL_INLINE void
@@ -42,7 +36,9 @@ namespace igl
     const Eigen::MatrixBase<DerivedE>& E,
     const Eigen::MatrixBase<DerivedOE>& oE,
     Eigen::SparseMatrix<ScalarL>& L);
-
+  /// \overload
+  ///
+  /// \brief `E` and `oE` are computed and output.
   template <typename DerivedV, typename DerivedF, typename DerivedE,
   typename DerivedOE, typename ScalarL>
   IGL_INLINE void
@@ -52,31 +48,13 @@ namespace igl
     Eigen::PlainObjectBase<DerivedE>& E,
     Eigen::PlainObjectBase<DerivedOE>& oE,
     Eigen::SparseMatrix<ScalarL>& L);
-
-
-  // Version that uses intrinsic quantities as input
-  //
-  // Inputs:
-  //  F: input mesh connectivity
-  //  l_sq: squared edge lengths of each halfedge
-  //  dA: double area of each face
-  //  E: a mapping from each halfedge to each edge.
-  //  oE: the orientation of each halfedge compared to the orientation of the
-  //      actual edge.
-  //
-  // Outputs:
-  //  L: computed Laplacian matrix
-
-  template <typename DerivedF, typename DerivedL_sq, typename DerivedE,
-  typename DerivedOE, typename ScalarL>
-  IGL_INLINE void
-  cr_vector_laplacian_intrinsic(
-    const Eigen::MatrixBase<DerivedF>& F,
-    const Eigen::MatrixBase<DerivedL_sq>& l_sq,
-    const Eigen::MatrixBase<DerivedE>& E,
-    const Eigen::MatrixBase<DerivedOE>& oE,
-    Eigen::SparseMatrix<ScalarL>& L);
-
+  /// \overload
+  /// \brief intrinsic version.
+  ///
+  ///  @param[in] l_sq #F by 3 list of squared edge lengths of each halfedge
+  ///  @param[in] dA #F list of double areas
+  ///
+  ///  \fileinfo
   template <typename DerivedF, typename DerivedL_sq, typename DeriveddA,
   typename DerivedE, typename DerivedOE, typename ScalarL>
   IGL_INLINE void
@@ -87,8 +65,17 @@ namespace igl
     const Eigen::MatrixBase<DerivedE>& E,
     const Eigen::MatrixBase<DerivedOE>& oE,
     Eigen::SparseMatrix<ScalarL>& L);
-
-
+  /// \overload
+  /// \fileinfo
+  template <typename DerivedF, typename DerivedL_sq, typename DerivedE,
+  typename DerivedOE, typename ScalarL>
+  IGL_INLINE void
+  cr_vector_laplacian_intrinsic(
+    const Eigen::MatrixBase<DerivedF>& F,
+    const Eigen::MatrixBase<DerivedL_sq>& l_sq,
+    const Eigen::MatrixBase<DerivedE>& E,
+    const Eigen::MatrixBase<DerivedOE>& oE,
+    Eigen::SparseMatrix<ScalarL>& L);
 }
 
 

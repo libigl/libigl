@@ -3,10 +3,11 @@
 
 #include <Eigen/Core>
 #include <array>
-#include <igl/igl_inline.h>
+#include "igl_inline.h"
 
 namespace igl {
 
+/// Kelvinlets brush type
 enum class BrushType : int
 {
   GRAB,
@@ -15,6 +16,7 @@ enum class BrushType : int
   PINCH,
 };
 
+/// Parameters for controling kelvinlets
 template<typename Scalar>
 struct KelvinletParams
 {
@@ -42,18 +44,16 @@ struct KelvinletParams
   }
 };
 
-// Implements Pixar's Regularized Kelvinlets (Pixar Technical Memo #17-03):
-// Sculpting Brushes based on Fundamental Solutions of Elasticity, a technique
-// for real-time physically based volume sculpting of virtual elastic materials
-//
-// Inputs:
-//   V  #V by dim list of input points in space
-//   x0  dim-vector of brush tip
-//   f  dim-vector of brush force (translation)
-//   F  dim by dim matrix of brush force matrix  (linear)
-//   params  parameters for the kelvinlet brush like brush radius, scale etc
-// Outputs:
-//   X  #V by dim list of output points in space
+/// Implements Pixar's Regularized Kelvinlets (Pixar Technical Memo #17-03):
+/// Sculpting Brushes based on Fundamental Solutions of Elasticity, a technique
+/// for real-time physically based volume sculpting of virtual elastic materials
+///
+/// @param[in] V  #V by dim list of input points in space
+/// @param[in] x0  dim-vector of brush tip
+/// @param[in] f  dim-vector of brush force (translation)
+/// @param[in] F  dim by dim matrix of brush force matrix  (linear)
+/// @param[in] params  parameters for the kelvinlet brush like brush radius, scale etc
+/// @param[out] X  #V by dim list of output points in space
 template<typename DerivedV,
          typename Derivedx0,
          typename Derivedf,
@@ -70,7 +70,6 @@ IGL_INLINE void kelvinlets(
 }
 
 #ifndef IGL_STATIC_LIBRARY
-
 #include "kelvinlets.cpp"
 #endif
 #endif

@@ -9,7 +9,7 @@
 
 #include "verbose.h"
 #include <algorithm>
-#include <igl/barycenter.h>
+#include "barycenter.h"
 
 template <typename Scalar, typename Index>
 IGL_INLINE void igl::false_barycentric_subdivision(

@@ -16,28 +16,25 @@
 
 namespace igl
 {
-  // Given a path as an ordered list of N>=2 vertex indices I[0], I[1], ..., I[N-1]
-  // construct a list of edges [[I[0],I[1]], [I[1],I[2]], ..., [I[N-2], I[N-1]]]
-  // connecting each sequential pair of vertices.
-  //
-  // Inputs:
-  //   I  #I list of vertex indices
-  //   make_loop bool If true, include an edge connecting I[N-1] to I[0]
-  // Outputs:
-  //   E  #I-1 by 2 list of edges
-  // 
+  /// Given a path as an ordered list of N>=2 vertex indices I[0], I[1], ..., I[N-1]
+  /// construct a list of edges [[I[0],I[1]], [I[1],I[2]], ..., [I[N-2], I[N-1]]]
+  /// connecting each sequential pair of vertices.
+  ///
+  /// @param[in] I  #I list of vertex indices
+  /// @param[in] make_loop bool If true, include an edge connecting I[N-1] to I[0]
+  /// @param[out] E  #I-1 by 2 list of edges
+  /// 
   template <typename DerivedI, typename DerivedE>
   IGL_INLINE void path_to_edges(
     const Eigen::MatrixBase<DerivedI> & I,
     Eigen::PlainObjectBase<DerivedE> & E,
     bool make_loop=false);
-  
+  /// \overload
   template <typename Index, typename DerivedE>
   IGL_INLINE void path_to_edges(
     const std::vector<Index> & I,
     Eigen::PlainObjectBase<DerivedE> & E,
     bool make_loop=false);
-
 }
 #ifndef IGL_STATIC_LIBRARY
 #  include "path_to_edges.cpp"

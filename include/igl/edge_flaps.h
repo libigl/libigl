@@ -12,36 +12,36 @@
 #include <Eigen/Core>
 namespace igl
 {
-  // Determine "edge flaps": two faces on either side of a unique edge (assumes
-  // edge-manifold mesh)
-  //
-  // Inputs:
-  //   F  #F by 3 list of face indices
-  //   uE  #uE by 2 list of edge indices into V.
-  //   EMAP #F*3 list of indices into uE, mapping each directed edge to unique
-  //     unique edge in uE
-  // Outputs:
-  //   EF  #E by 2 list of edge flaps, EF(e,0)=f means e=(i-->j) is the edge of
-  //     F(f,:) opposite the vth corner, where EI(e,0)=v. Similarly EF(e,1) "
-  //     e=(j->i)
-  //   EI  #E by 2 list of edge flap corners (see above).
-  //
-  // See also: unique_edge_map
-  //
-  // TODO: This seems to be a duplicate of edge_topology.h
-  // igl::edge_topology(V,F,etEV,etFE,etEF);
-  // igl::edge_flaps(F,efE,efEMAP,efEF,efEI);
-  // [~,I] = sort(efE,2)
-  // all( efE(sub2ind(size(efE),repmat(1:size(efE,1),2,1)',I)) == etEV )
-  // all( efEF(sub2ind(size(efE),repmat(1:size(efE,1),2,1)',I)) == etEF )
-  // all(efEMAP(sub2ind(size(F),repmat(1:size(F,1),3,1)',repmat([1 2 3],size(F,1),1))) == etFE(:,[2 3 1]))
+  /// Determine "edge flaps": two faces on either side of a unique edge (assumes
+  /// edge-manifold mesh)
+  ///
+  /// @param[in] F  #F by 3 list of face indices
+  /// @param[in] uE  #uE by 2 list of edge indices into V.
+  /// @param[in] EMAP #F*3 list of indices into uE, mapping each directed edge to unique
+  ///     unique edge in uE
+  /// @param[out] EF  #E by 2 list of edge flaps, EF(e,0)=f means e=(i-->j) is the edge of
+  ///     F(f,:) opposite the vth corner, where EI(e,0)=v. Similarly EF(e,1) "
+  ///     e=(j->i)
+  /// @param[out] EI  #E by 2 list of edge flap corners (see above).
+  ///
+  /// \see unique_edge_map
+  ///
+  /// \note This seems to be a duplicate of edge_topology.h
+  /// \code{cpp}
+  /// igl::edge_topology(V,F,etEV,etFE,etEF);
+  /// igl::edge_flaps(F,efE,efEMAP,efEF,efEI);
+  /// [~,I] = sort(efE,2)
+  /// all( efE(sub2ind(size(efE),repmat(1:size(efE,1),2,1)',I)) == etEV )
+  /// all( efEF(sub2ind(size(efE),repmat(1:size(efE,1),2,1)',I)) == etEF )
+  /// all(efEMAP(sub2ind(size(F),repmat(1:size(F,1),3,1)',repmat([1 2 3],size(F,1),1))) == etFE(:,[2 3 1]))
+  /// \endcode
   IGL_INLINE void edge_flaps(
     const Eigen::MatrixXi & F,
     const Eigen::MatrixXi & uE,
     const Eigen::VectorXi & EMAP,
     Eigen::MatrixXi & EF,
     Eigen::MatrixXi & EI);
-  // Only faces as input
+  /// \overload
   IGL_INLINE void edge_flaps(
     const Eigen::MatrixXi & F,
     Eigen::MatrixXi & uE,

@@ -26,6 +26,7 @@ namespace igl
   {
     namespace cgal
     {
+      /// Binary winding number operations
       template <igl::MeshBooleanType Op>
       class BinaryWindingNumberOperations {
         public:
@@ -36,7 +37,7 @@ namespace igl
             }
       };
 
-      // A ∪ B ∪ ... ∪ Z
+      /// A ∪ B ∪ ... ∪ Z
       template <>
       class BinaryWindingNumberOperations<MESH_BOOLEAN_TYPE_UNION> {
         public:
@@ -52,7 +53,7 @@ namespace igl
           }
       };
 
-      // A ∩ B ∩ ... ∩ Z
+      /// A ∩ B ∩ ... ∩ Z
       template <>
       class BinaryWindingNumberOperations<MESH_BOOLEAN_TYPE_INTERSECT> {
         public:
@@ -68,7 +69,7 @@ namespace igl
           }
       };
 
-      // A \ B \ ... \ Z = A \ (B ∪ ... ∪ Z)
+      /// A \ B \ ... \ Z = A \ (B ∪ ... ∪ Z)
       template <>
       class BinaryWindingNumberOperations<MESH_BOOLEAN_TYPE_MINUS> {
         public:
@@ -89,7 +90,7 @@ namespace igl
           }
       };
 
-      // A ∆ B ∆ ... ∆ Z  (equivalent to set inside odd number of objects)
+      /// A ∆ B ∆ ... ∆ Z  (equivalent to set inside odd number of objects)
       template <>
       class BinaryWindingNumberOperations<MESH_BOOLEAN_TYPE_XOR> {
         public:
@@ -107,6 +108,7 @@ namespace igl
           }
       };
 
+      /// Resolve all intersections without removing non-coplanar faces
       template <>
       class BinaryWindingNumberOperations<MESH_BOOLEAN_TYPE_RESOLVE> {
         public:
@@ -123,11 +125,15 @@ namespace igl
       typedef BinaryWindingNumberOperations<MESH_BOOLEAN_TYPE_XOR> BinaryXor;
       typedef BinaryWindingNumberOperations<MESH_BOOLEAN_TYPE_RESOLVE> BinaryResolve;
 
+      /// Types of Keep policies
       enum KeeperType {
+        /// Keep only inside
         KEEP_INSIDE,
+        /// Keep everything
         KEEP_ALL
       };
 
+      /// Filter winding numbers according to keep policy
       template<KeeperType T>
       class WindingNumberFilter {
         public:
@@ -138,6 +144,7 @@ namespace igl
             }
       };
 
+      /// Keep inside policy
       template<>
       class WindingNumberFilter<KEEP_INSIDE> {
         public:
@@ -149,6 +156,7 @@ namespace igl
           }
       };
 
+      /// Keep all policy
       template<>
       class WindingNumberFilter<KEEP_ALL> {
         public:
@@ -158,8 +166,8 @@ namespace igl
             }
       };
 
-      typedef WindingNumberFilter<KEEP_INSIDE> KeepInside;
-      typedef WindingNumberFilter<KEEP_ALL> KeepAll;
+      using KeepInside = WindingNumberFilter<KEEP_INSIDE>;
+      using KeepAll = WindingNumberFilter<KEEP_ALL>;
     }
   }
 }

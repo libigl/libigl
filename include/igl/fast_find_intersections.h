@@ -10,23 +10,22 @@
 #define FAST_FIND_MESH_INTERSECT_H
 
 #include "igl_inline.h"
-#include <Eigen/Core>
 #include "AABB.h"
+#include <Eigen/Core>
 
 namespace igl {
-
-
-  // identify triangles where two meshes interesect 
-  // using AABBTree and tri_tri_intersection_test_3d
-  // Inputs:
-  //   V1  #V by 3 list representing vertices on the first mesh
-  //   F1  #F by 3 list representing triangles on the first mesh
-  //   V2  #V by 3 list representing vertices on the second mesh
-  //   F2  #F by 3 list representing triangles on the second mesh
-  // Output:
-  //   intersect_pairs  correspondance list of intersecting triangles
-  //                    column 0 - mesh 1, column 1 - mesh2  
-  //   edges      list of pairs of intersection edges
+  /// Identify triangles where two meshes interesect 
+  /// using AABBTree and tri_tri_intersection_test_3d.
+  ///
+  /// @param[in] V1  #V by 3 list representing vertices on the first mesh
+  /// @param[in] F1  #F by 3 list representing triangles on the first mesh
+  /// @param[in] V2  #V by 3 list representing vertices on the second mesh
+  /// @param[in] F2  #F by 3 list representing triangles on the second mesh
+  /// @param[out] intersect_pairs  correspondance list of intersecting triangles
+  ///                    column 0 - mesh 1, column 1 - mesh2  
+  /// @param[out] edges      list of pairs of intersection edges
+  ///
+  /// \see copyleft::cgal::intersect_other
   template <
     typename DerivedV1,
     typename DerivedF1,
@@ -41,19 +40,8 @@ namespace igl {
     const Eigen::MatrixBase<DerivedF2>& F2,
           Eigen::PlainObjectBase<DerivedI>& intersect_pairs,
           Eigen::PlainObjectBase<DerivedE>& edges );
-
-  // identify triangles where two meshes interesect 
-  // using AABBTree and tri_tri_intersection_test_3d
-  // Inputs:
-  //   tree - AABB tree bult from the first mesh
-  //   V1  #V by 3 list representing vertices on the first mesh
-  //   F1  #F by 3 list representing triangles on the first mesh
-  //   V2  #V by 3 list representing vertices on the second mesh
-  //   F2  #F by 3 list representing triangles on the second mesh
-  // Output:
-  //   intersect_pairs  correspondance list of intersecting triangles
-  //                    column 0 - mesh 1, column 1 - mesh2  
-  //   edges      list of pairs of intersection edges
+  /// \overload
+  /// @param[in] tree - AABB tree bult from the first mesh
   template <
     typename DerivedV1,
     typename DerivedF1,

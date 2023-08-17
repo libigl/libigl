@@ -11,20 +11,18 @@
 #include <Eigen/Core>
 namespace igl
 {
-  // Given a tet-mesh, create a trivial surface mesh (4 triangles per tet) with
-  // each tet scaled individually and translated outward from the mesh's
-  // centroid, creating an exploded-view visualization.
-  //
-  // Inputs:
-  //   V  #V by 3 list of tet mesh vertex positions
-  //   T  #T by 4 list of tet mesh indices into rows of V
-  //   s  amount to scale each tet indvidually, typically (0,1]
-  //   t  amount to scale away from mesh's centroid, typically >=1
-  // Outputs:
-  //   EV  #T*4 by 3 list of output mesh vertex positions
-  //   EF  #T*4 by 3 list of output triangle indices into rows of EV
-  //   I  #EV list of indices into V revealing birth parent
-  //   J  #EF list of indices into F revealing birth parent
+  /// Given a tet-mesh, create a trivial surface mesh (4 triangles per tet) with
+  /// each tet scaled individually and translated outward from the mesh's
+  /// centroid, creating an exploded-view visualization.
+  ///
+  /// @param[in] V  #V by 3 list of tet mesh vertex positions
+  /// @param[in] T  #T by 4 list of tet mesh indices into rows of V
+  /// @param[in] s  amount to scale each tet indvidually, typically (0,1]
+  /// @param[in] t  amount to scale away from mesh's centroid, typically >=1
+  /// @param[out] EV  #T*4 by 3 list of output mesh vertex positions
+  /// @param[out] EF  #T*4 by 3 list of output triangle indices into rows of EV
+  /// @param[out] I  #EV list of indices into V revealing birth parent
+  /// @param[out] J  #EF list of indices into F revealing birth parent
   template <
     typename DerivedV,
     typename DerivedT,

@@ -4,7 +4,7 @@
 #include <igl/forward_kinematics.h>
 #include <igl/PI.h>
 #include <igl/partition.h>
-#include <igl/mat_max.h>
+#include <igl/max.h>
 #include <igl/lbs_matrix.h>
 #include <igl/slice.h>
 #include <igl/deform_skeleton.h>
@@ -162,7 +162,7 @@ int main(int argc, char *argv[])
   // vertices corresponding to handles (those with maximum weight)
   {
     VectorXd maxW;
-    igl::mat_max(W,1,maxW,b);
+    igl::max(W,1,maxW,b);
   }
 
   // Precomputation for FAST

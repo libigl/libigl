@@ -16,15 +16,13 @@
 #include <vector>
 
 namespace igl {
-  // Computes Direct Delta Mesh Skinning (Variant 0) from "Direct Delta Mush
-  // Skinning and Variants"
-  //
-  // Inputs:
-  //   V  #V by 3 list of rest pose vertex positions
-  //   T  #T list of bone pose transformations
-  //   Omega #V by #T*10 list of precomputated matrix values
-  // Outputs:
-  //   U  #V by 3 list of output vertex positions
+  /// Computes Direct Delta Mush Skinning (Variant 0) from "Direct Delta Mush
+  /// Skinning and Variants"
+  ///
+  /// @param[in] V  #V by 3 list of rest pose vertex positions
+  /// @param[in] T  #T list of bone pose transformations
+  /// @param[in] Omega #V by #T*10 list of precomputated matrix values
+  /// @param[out] U  #V by 3 list of output vertex positions
   template <
     typename DerivedV,
     typename DerivedOmega,
@@ -36,19 +34,18 @@ namespace igl {
     > & T, /* should eventually be templated more generally than double */
     const Eigen::MatrixBase<DerivedOmega> & Omega,
     Eigen::PlainObjectBase<DerivedU> & U);
-
-  // Precomputation
-  //
-  // Inputs:
-  //   V  #V by 3 list of rest pose vertex positions
-  //   F  #F by 3 list of triangle indices into rows of V
-  //   W  #V by #Edges list of weights
-  //   p  number of smoothing iterations
-  //   lambda  rotation smoothing step size
-  //   kappa   translation smoothness step size
-  //   alpha   translation smoothness blending weight
-  // Outputs:
-  //   Omega  #V by #T*10 list of precomputated matrix values
+  /// Precomputation for Direct Delta Mush Skinning.
+  ///
+  /// @param[in] V  #V by 3 list of rest pose vertex positions
+  /// @param[in] F  #F by 3 list of triangle indices into rows of V
+  /// @param[in] W  #V by #Edges list of weights
+  /// @param[in] p  number of smoothing iterations
+  /// @param[in] lambda  rotation smoothing step size
+  /// @param[in] kappa   translation smoothness step size
+  /// @param[in] alpha   translation smoothness blending weight
+  /// @param[out] Omega  #V by #T*10 list of precomputated matrix values
+  ///
+  /// \fileinfo
   template <
     typename DerivedV,
     typename DerivedF,
@@ -63,7 +60,7 @@ namespace igl {
     const typename DerivedV::Scalar kappa,
     const typename DerivedV::Scalar alpha,
     Eigen::PlainObjectBase<DerivedOmega> & Omega);
-} // namespace igl
+}
 
 #ifndef IGL_STATIC_LIBRARY
 #  include "direct_delta_mush.cpp"

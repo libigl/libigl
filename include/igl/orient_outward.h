@@ -11,17 +11,15 @@
 #include <Eigen/Core>
 namespace igl
 {
-  // Orient each component (identified by C) of a mesh (V,F) so the normals on
-  // average point away from the patch's centroid.
-  //
-  // Inputs:
-  //   V  #V by 3 list of vertex positions
-  //   F  #F by 3 list of triangle indices
-  //   C  #F list of components (output of orientable_patches)
-  // Outputs:
-  //   FF  #F by 3 list of new triangle indices such that FF(~I,:) = F(~I,:) and
-  //     FF(I,:) = fliplr(F(I,:)) (OK if &FF = &F)
-  //   I  max(C)+1 list of whether face has been flipped
+  /// Orient each component (identified by C) of a mesh (V,F) so the normals on
+  /// average point away from the patch's centroid.
+  ///
+  /// @param[in] V  #V by 3 list of vertex positions
+  /// @param[in] F  #F by 3 list of triangle indices
+  /// @param[in] C  #F list of components (output of orientable_patches)
+  /// @param[out] FF  #F by 3 list of new triangle indices such that FF(~I,:) = F(~I,:) and
+  ///     FF(I,:) = fliplr(F(I,:)) (OK if &FF = &F)
+  /// @param[out] I  max(C)+1 list of whether face has been flipped
   template <
     typename DerivedV,
     typename DerivedF,

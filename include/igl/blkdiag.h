@@ -14,19 +14,20 @@
 
 namespace igl
 {
-  // Given a list of matrices place them along the diagonal as blocks of the
-  // output matrix. Like matlab's blkdiag.
-  //
-  // Inputs:
-  //   L  list of matrices {A,B, ...}
-  // Outputs:
-  //   Y  A.rows()+B.rows()+... by A.cols()+B.cols()+... block diagonal
-  //
-  // See also: cat, repdiag
+  /// Given a list of matrices place them along the diagonal as blocks of the
+  /// output matrix. Like matlab's blkdiag.
+  ///
+  /// @param[in] L  list of matrices {A,B, ...}
+  /// @param[out] Y  A.rows()+B.rows()+... by A.cols()+B.cols()+... block diagonal
+  ///
+  /// \see 
+  ///   cat, 
+  ///   repdiag
   template <typename Scalar>
   IGL_INLINE void blkdiag(
     const std::vector<Eigen::SparseMatrix<Scalar>> & L, 
     Eigen::SparseMatrix<Scalar> & Y);
+  /// \overload
   template <typename DerivedY>
   IGL_INLINE void blkdiag(
     const std::vector<DerivedY> & L, 

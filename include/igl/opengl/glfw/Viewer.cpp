@@ -27,23 +27,23 @@
 #include <limits>
 #include <cassert>
 
-#include <igl/project.h>
-#include <igl/get_seconds.h>
-#include <igl/readOBJ.h>
-#include <igl/read_triangle_mesh.h>
-#include <igl/adjacency_list.h>
-#include <igl/writeOBJ.h>
-#include <igl/writeOFF.h>
-#include <igl/massmatrix.h>
-#include <igl/file_dialog_open.h>
-#include <igl/file_dialog_save.h>
-#include <igl/quat_mult.h>
-#include <igl/axis_angle_to_quat.h>
-#include <igl/trackball.h>
-#include <igl/two_axis_valuator_fixed_up.h>
-#include <igl/snap_to_canonical_view_quat.h>
-#include <igl/unproject.h>
-#include <igl/serialize.h>
+#include "../../project.h"
+#include "../../get_seconds.h"
+#include "../../readOBJ.h"
+#include "../../read_triangle_mesh.h"
+#include "../../adjacency_list.h"
+#include "../../writeOBJ.h"
+#include "../../writeOFF.h"
+#include "../../massmatrix.h"
+#include "../../file_dialog_open.h"
+#include "../../file_dialog_save.h"
+#include "../../quat_mult.h"
+#include "../../axis_angle_to_quat.h"
+#include "../../trackball.h"
+#include "../../two_axis_valuator_fixed_up.h"
+#include "../../snap_to_canonical_view_quat.h"
+#include "../../unproject.h"
+#include "../../serialize.h"
 
 // Internal global variables used for glfw event handling
 static igl::opengl::glfw::Viewer * __viewer;

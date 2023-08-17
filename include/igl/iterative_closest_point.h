@@ -13,27 +13,25 @@
 
 namespace igl
 {
-  // Solve for the rigid transformation that places mesh X onto mesh Y using the
-  // iterative closest point method. In particular, optimize:
-  //
-  // min      ∫_X inf ‖x*R+t - y‖² dx
-  // R∈SO(3)      y∈Y
-  // t∈R³
-  //
-  // Typically optimization strategies include using Gauss Newton
-  // ("point-to-plane" linearization) and stochastic descent (sparse random
-  // sampling each iteration).
-  //
-  // Inputs:
-  //   VX  #VX by 3 list of mesh X vertices
-  //   FX  #FX by 3 list of mesh X triangle indices into rows of VX
-  //   VY  #VY by 3 list of mesh Y vertices
-  //   FY  #FY by 3 list of mesh Y triangle indices into rows of VY
-  //   num_samples  number of random samples to use (larger --> more accurate,
-  //     but also more suceptible to sticking to local minimum)
-  // Outputs:
-  //   R  3x3 rotation matrix so that (VX*R+t,FX) ~~ (VY,FY)
-  //   t  1x3 translation row vector
+  /// Solve for the rigid transformation that places mesh X onto mesh Y using the
+  /// iterative closest point method. In particular, optimize:
+  ///
+  /// min      ∫_X inf ‖x*R+t - y‖² dx
+  /// R∈SO(3)      y∈Y
+  /// t∈R³
+  ///
+  /// Typically optimization strategies include using Gauss Newton
+  /// ("point-to-plane" linearization) and stochastic descent (sparse random
+  /// sampling each iteration).
+  ///
+  /// @param[in] VX  #VX by 3 list of mesh X vertices
+  /// @param[in] FX  #FX by 3 list of mesh X triangle indices into rows of VX
+  /// @param[in] VY  #VY by 3 list of mesh Y vertices
+  /// @param[in] FY  #FY by 3 list of mesh Y triangle indices into rows of VY
+  /// @param[in] num_samples  number of random samples to use (larger --> more accurate,
+  ///     but also more suceptible to sticking to local minimum)
+  /// @param[out] R  3x3 rotation matrix so that (VX*R+t,FX) ~~ (VY,FY)
+  /// @param[out] t  1x3 translation row vector
   template <
     typename DerivedVX,
     typename DerivedFX,
@@ -51,9 +49,9 @@ namespace igl
     const int max_iters,
     Eigen::PlainObjectBase<DerivedR> & R,
     Eigen::PlainObjectBase<Derivedt> & t);
-  // Inputs:
-  //   Ytree  precomputed AABB tree for accelerating closest point queries
-  //   NY  #FY by 3 list of precomputed unit face normals
+  /// \overload
+  /// @param[in] Ytree  precomputed AABB tree for accelerating closest point queries
+  /// @param[in] NY  #FY by 3 list of precomputed unit face normals
   template <
     typename DerivedVX,
     typename DerivedFX,

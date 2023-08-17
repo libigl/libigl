@@ -17,32 +17,27 @@
 
 namespace igl
 {
-    // Constructs isolines for a function z given on a mesh (V,F)
-    //
-    //
-    // Inputs:
-    //   V  #V by dim list of mesh vertex positions
-    //   F  #F by 3 list of mesh faces (must be triangles)
-    //   z  #V by 1 list of function values evaluated at vertices
-    //   n  the number of desired isolines
-    // Outputs:
-    //   isoV  #isoV by dim list of isoline vertex positions
-    //   isoE  #isoE by 2 list of isoline edge positions
-    //
-    //
-    
-    template <typename DerivedV,
-    typename DerivedF,
-    typename DerivedZ,
-    typename DerivedIsoV,
-    typename DerivedIsoE>
-    IGL_INLINE void isolines(
-                             const Eigen::MatrixBase<DerivedV>& V,
-                             const Eigen::MatrixBase<DerivedF>& F,
-                             const Eigen::MatrixBase<DerivedZ>& z,
-                             const int n,
-                             Eigen::PlainObjectBase<DerivedIsoV>& isoV,
-                             Eigen::PlainObjectBase<DerivedIsoE>& isoE);
+  /// Constructs isolines for a function z given on a mesh (V,F)
+  ///
+  /// @param[in] V  #V by dim list of mesh vertex positions
+  /// @param[in] F  #F by 3 list of mesh faces (must be triangles)
+  /// @param[in] z  #V by 1 list of function values evaluated at vertices
+  /// @param[in] n  the number of desired isolines
+  /// @param[out] isoV  #isoV by dim list of isoline vertex positions
+  /// @param[out] isoE  #isoE by 2 list of isoline edge positions
+  ///
+  template <typename DerivedV,
+  typename DerivedF,
+  typename DerivedZ,
+  typename DerivedIsoV,
+  typename DerivedIsoE>
+  IGL_INLINE void isolines(
+    const Eigen::MatrixBase<DerivedV>& V,
+    const Eigen::MatrixBase<DerivedF>& F,
+    const Eigen::MatrixBase<DerivedZ>& z,
+    const int n,
+    Eigen::PlainObjectBase<DerivedIsoV>& isoV,
+    Eigen::PlainObjectBase<DerivedIsoE>& isoE);
 }
 
 #ifndef IGL_STATIC_LIBRARY

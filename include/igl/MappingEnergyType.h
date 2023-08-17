@@ -9,10 +9,9 @@
 #define IGL_MAPPINGENERGYTYPE_H
 namespace igl
 {
-  // Energy Types used for Parameterization/Mapping. 
-  // Refer to SLIM [Rabinovich et al. 2017] for more details
+  /// Energy Types used for Parameterization/Mapping. 
+  /// Refer to SLIM [Rabinovich et al. 2017] for more details
   // Todo: Integrate with ARAPEnergyType
-  
   enum MappingEnergyType
   {
     ARAP = 0,

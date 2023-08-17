@@ -25,10 +25,11 @@
 
 namespace igl
 {
+  /// Simple timer class
   class Timer
   {
   public:
-    // default constructor
+    /// default constructor
     Timer():
       stopped(0),
 #ifdef WIN32
@@ -64,7 +65,10 @@ namespace igl
     }
 
 #ifdef __APPLE__
-    //Raw mach_absolute_times going in, difference in seconds out
+    /// Raw mach_absolute_times going in, difference in seconds out
+    /// @param[in] endTime   end time
+    /// @param[in] startTime start time
+    /// @return time
     double subtractTimes( uint64_t endTime, uint64_t startTime )
     {
       uint64_t difference = endTime - startTime;
@@ -84,7 +88,7 @@ namespace igl
     }
 #endif
 
-    // start timer
+    /// start timer
     void   start()               
     {
       stopped = 0; // reset stop flag
@@ -98,7 +102,7 @@ namespace igl
 
     }
 
-    // stop the timer
+    /// stop the timer
     void   stop()                
     {
       stopped = 1; // set timer stopped flag
@@ -112,23 +116,27 @@ namespace igl
 #endif
 
     }
-    // get elapsed time in second
+    /// get elapsed time in second
+    /// @return time in seconds
     double getElapsedTime()      
     {
       return this->getElapsedTimeInSec();
     }
-    // get elapsed time in second (same as getElapsedTime)
+    /// get elapsed time in second (same as getElapsedTime)
+    /// @return time
     double getElapsedTimeInSec() 
     {
       return this->getElapsedTimeInMicroSec() * 0.000001;
     }
 
-    // get elapsed time in milli-second
+    /// get elapsed time in milli-second
+    /// @return time
     double getElapsedTimeInMilliSec()
     {
       return this->getElapsedTimeInMicroSec() * 0.001;
     }
-    // get elapsed time in micro-second
+    /// get elapsed time in micro-second
+    /// @return time
     double getElapsedTimeInMicroSec()          
     {
       double startTimeInMicroSec = 0;

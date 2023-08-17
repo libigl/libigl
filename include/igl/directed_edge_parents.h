@@ -13,13 +13,11 @@
 
 namespace igl
 {
-  // Recover "parents" (preceding edges) in a tree given just directed edges.
-  //
-  // Inputs:
-  //   E  #E by 2 list of directed edges
-  // Outputs:
-  //   P  #E list of parent indices into E (-1) means root
-  //
+  /// Recover "parents" (preceding edges) in a tree given just directed edges.
+  ///
+  /// @param[in] E  #E by 2 list of directed edges
+  /// @param[out] P  #E list of parent indices into E (-1) means root
+  ///
   template <typename DerivedE, typename DerivedP>
   IGL_INLINE void directed_edge_parents(
     const Eigen::MatrixBase<DerivedE> & E,

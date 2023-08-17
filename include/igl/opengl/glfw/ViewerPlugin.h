@@ -14,7 +14,7 @@
 // * remove Preview3D from comments
 // * clean comments
 #include <string>
-#include <igl/igl_inline.h>
+#include "../../igl_inline.h"
 #include <vector>
 
 namespace igl
@@ -24,43 +24,43 @@ namespace igl
     namespace glfw
     {
 
-      // Abstract class for plugins
-      // All plugins MUST have this class as their parent and may implement any/all
-      // the callbacks marked `virtual` here.
-      //
-      // Return value of callbacks: returning true to any of the callbacks tells
-      // Viewer that the event has been handled and that it should not be passed to
-      // other plugins or to other internal functions of Viewer
 
       // Forward declaration of the viewer
       class Viewer;
 
+      /// Abstract class for plugins
+      /// All plugins MUST have this class as their parent and may implement any/all
+      /// the callbacks marked `virtual` here.
+      ///
+      /// Return value of callbacks: returning true to any of the callbacks tells
+      /// Viewer that the event has been handled and that it should not be passed to
+      /// other plugins or to other internal functions of Viewer
       class ViewerPlugin
       {
         public:
           IGL_INLINE ViewerPlugin() {plugin_name = "dummy";}
           virtual ~ViewerPlugin(){}
-          // This function is called when the viewer is initialized (no mesh will be loaded at this stage)
+          /// This function is called when the viewer is initialized (no mesh will be loaded at this stage)
           IGL_INLINE virtual void init(Viewer *_viewer) { viewer = _viewer; }
-          // This function is called before shutdown
+          /// This function is called before shutdown
           IGL_INLINE virtual void shutdown() { }
-          // This function is called before a mesh is loaded
+          /// This function is called before a mesh is loaded
           IGL_INLINE virtual bool load(std::string filename) { return false; }
-          // This function is called before a mesh is saved
+          /// This function is called before a mesh is saved
           IGL_INLINE virtual bool save(std::string filename) { return false; }
-          // This function is called when the scene is serialized
+          /// This function is called when the scene is serialized
           IGL_INLINE virtual bool serialize(std::vector<char>& buffer) const 
             { return false; }
-          // This function is called when the scene is deserialized
+          /// This function is called when the scene is deserialized
           IGL_INLINE virtual bool deserialize(const std::vector<char>& buffer)
             { return false; }
-          // Runs immediately after a new mesh has been loaded.
+          /// Runs immediately after a new mesh has been loaded.
           IGL_INLINE virtual bool post_load() { return false; }
-          // This function is called before the draw procedure of Viewer
+          /// This function is called before the draw procedure of Viewer
           IGL_INLINE virtual bool pre_draw() { return false; }
-          // This function is called after the draw procedure of Viewer
+          /// This function is called after the draw procedure of Viewer
           IGL_INLINE virtual bool post_draw() { return false; }
-          // This function is called after the window has been resized
+          /// This function is called after the window has been resized
           IGL_INLINE virtual void post_resize(int w, int h) { }
           IGL_INLINE virtual bool mouse_down(int button, int modifier)
             { return false; }

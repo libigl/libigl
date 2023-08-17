@@ -13,27 +13,17 @@
 
 namespace igl
 {
-  // Given a mesh and a list of edges that are to be cut, the function
-  // generates a new disk-topology mesh that has the cuts at its boundary.
-  //
-  //
-  // Known issues: Assumes mesh is edge-manifold.
-  //
-  // Inputs:
-  //   V  #V by 3 list of the vertex positions
-  //   F  #F by 3 list of the faces
-  //   cuts  #F by 3 list of boolean flags, indicating the edges that need to
-  //     be cut (has 1 at the face edges that are to be cut, 0 otherwise)
-  // Outputs:
-  //   Vn  #V by 3 list of the vertex positions of the cut mesh. This matrix
-  //     will be similar to the original vertices except some rows will be
-  //     duplicated.
-  //   Fn  #F by 3 list of the faces of the cut mesh(must be triangles). This
-  //     matrix will be similar to the original face matrix except some indices
-  //     will be redirected to point to the newly duplicated vertices.
-  //   I   #V by 1 list of the map between Vn to original V index.
-
-  // In place mesh cut
+  /// Given a mesh and a list of edges that are to be cut, the function
+  /// generates a new disk-topology mesh that has the cuts at its boundary.
+  ///
+  ///
+  /// \note Assumes mesh is edge-manifold.
+  ///
+  /// @param[in,out] V  #V by 3 list of the vertex positions
+  /// @param[in,out] F  #F by 3 list of the faces
+  /// @param[in] cuts  #F by 3 list of boolean flags, indicating the edges that need to
+  ///     be cut (has 1 at the face edges that are to be cut, 0 otherwise)
+  /// @param[out]  I   #V by 1 list of the map between Vn to original V index.
   template <typename DerivedV, typename DerivedF, typename DerivedC, typename DerivedI>
   IGL_INLINE void cut_mesh(
     Eigen::PlainObjectBase<DerivedV>& V,
@@ -41,7 +31,23 @@ namespace igl
     const Eigen::MatrixBase<DerivedC>& cuts,
     Eigen::PlainObjectBase<DerivedI>& I
   );
-  
+  /// Given a mesh and a list of edges that are to be cut, the function
+  /// generates a new disk-topology mesh that has the cuts at its boundary.
+  ///
+  ///
+  /// \note Assumes mesh is edge-manifold.
+  ///
+  /// @param[in,out] V  #V by 3 list of the vertex positions
+  /// @param[in,out] F  #F by 3 list of the faces
+  /// @param[in,out] FF   #F by #3 adjacent matrix, the element i,j is the id of the triangle
+  ///        adjacent to the j edge of triangle i
+  /// @param[in,out] FFi  #F by #3 adjacent matrix, the element i,j is the id of edge of the
+  ///        triangle TT(i,j) that is adjacent with triangle i
+  /// @param[in] C #F by 3 list of boolean flags, indicating the edges that need to
+  ///     be cut (has 1 at the face edges that are to be cut, 0 otherwise)
+  /// @param[out]  I   #V by 1 list of the map between Vn to original V index.
+  ///
+  /// \see triangle_triangle_adjacency
   template <typename DerivedV, typename DerivedF, typename DerivedFF, typename DerivedFFi, typename DerivedC, typename DerivedI>
   IGL_INLINE void cut_mesh(
     Eigen::PlainObjectBase<DerivedV>& V,
@@ -52,6 +58,21 @@ namespace igl
     Eigen::PlainObjectBase<DerivedI>& I
   );
 
+  /// Given a mesh and a list of edges that are to be cut, the function
+  /// generates a new disk-topology mesh that has the cuts at its boundary.
+  ///
+  ///
+  /// \note Assumes mesh is edge-manifold.
+  /// @param[in,out] V  #V by 3 list of the vertex positions
+  /// @param[in,out] F  #F by 3 list of the faces
+  /// @param[in] cuts  #F by 3 list of boolean flags, indicating the edges that need to
+  ///     be cut (has 1 at the face edges that are to be cut, 0 otherwise)
+  /// @param[out]  Vn  #V by 3 list of the vertex positions of the cut mesh. This matrix
+  ///     will be similar to the original vertices except some rows will be
+  ///     duplicated.
+  /// @param[out]  Fn  #F by 3 list of the faces of the cut mesh(must be triangles). This
+  ///     matrix will be similar to the original face matrix except some indices
+  ///     will be redirected to point to the newly duplicated vertices.
   template <typename DerivedV, typename DerivedF, typename DerivedC>
   IGL_INLINE void cut_mesh(
     const Eigen::MatrixBase<DerivedV>& V,
@@ -61,6 +82,22 @@ namespace igl
     Eigen::PlainObjectBase<DerivedF>& Fn
   );
 
+  /// Given a mesh and a list of edges that are to be cut, the function
+  /// generates a new disk-topology mesh that has the cuts at its boundary.
+  ///
+  ///
+  /// \note Assumes mesh is edge-manifold.
+  /// @param[in,out] V  #V by 3 list of the vertex positions
+  /// @param[in,out] F  #F by 3 list of the faces
+  /// @param[in] cuts  #F by 3 list of boolean flags, indicating the edges that need to
+  ///     be cut (has 1 at the face edges that are to be cut, 0 otherwise)
+  /// @param[out]  Vn  #V by 3 list of the vertex positions of the cut mesh. This matrix
+  ///     will be similar to the original vertices except some rows will be
+  ///     duplicated.
+  /// @param[out]  Fn  #F by 3 list of the faces of the cut mesh(must be triangles). This
+  ///     matrix will be similar to the original face matrix except some indices
+  ///     will be redirected to point to the newly duplicated vertices.
+  /// @param[out]  I   #V by 1 list of the map between Vn to original V index.
   template <typename DerivedV, typename DerivedF, typename DerivedC, typename DerivedI>
   IGL_INLINE void cut_mesh(
     const Eigen::MatrixBase<DerivedV>& V,

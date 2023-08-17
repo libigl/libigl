@@ -12,33 +12,31 @@
 #include <vector>
 namespace igl
 {
-  // Fit a cubic bezier spline (G1 continuous) to an ordered list of input
-  // points in any dimension, according to "An algorithm for automatically
-  // fitting digitized curves" [Schneider 1990].
-  //
-  // Inputs:
-  //   d  #d by dim list of points along a curve to be fit with a cubic bezier
-  //     spline (should probably be roughly uniformly spaced). If d(0)==d(end),
-  //     then will treat as a closed curve.
-  //   error  maximum squared distance allowed
-  // Output:
-  //   cubics #cubics list of 4 by dim lists of cubic control points
+  /// Fit a cubic bezier spline (G1 continuous) to an ordered list of input
+  /// points in any dimension, according to "An algorithm for automatically
+  /// fitting digitized curves" [Schneider 1990].
+  ///
+  /// @param[in] d  #d by dim list of points along a curve to be fit with a cubic bezier
+  ///     spline (should probably be roughly uniformly spaced). If d(0)==d(end),
+  ///     then will treat as a closed curve.
+  /// @param[in] error  maximum squared distance allowed
+  /// @param[out] cubics #cubics list of 4 by dim lists of cubic control points
   IGL_INLINE void fit_cubic_bezier(
     const Eigen::MatrixXd & d,
     const double error,
     std::vector<Eigen::MatrixXd> & cubics);
-  // Recursive helper function. 
-  //
-  // Inputs:
-  //    first  index of first point in d of substring
-  //    last  index of last point in d of substring
-  //    tHat1  tangent to use at beginning of spline
-  //    tHat2  tangent to use at end of spline
-  //    error  see above
-  //    force_split  whether to force a split (i.e., force a recursive call)
-  //    cubics  running list of cubics so far
-  // Outputs
-  //    cubics  running list of cubics so far (new cubics appended)
+  /// Recursive helper function for fit_cubic_bezier
+  ///
+  /// \fileinfo 
+  ///
+  /// @param[in] first  index of first point in d of substring
+  /// @param[in] last  index of last point in d of substring
+  /// @param[in] tHat1  tangent to use at beginning of spline
+  /// @param[in] tHat2  tangent to use at end of spline
+  /// @param[in] error  see above
+  /// @param[in] force_split  whether to force a split (i.e., force a recursive call)
+  /// @param[in] cubics  running list of cubics so far
+  /// @param[out] cubics  running list of cubics so far (new cubics appended)
   IGL_INLINE void fit_cubic_bezier_substring(
     const Eigen::MatrixXd & d,
     const int first,

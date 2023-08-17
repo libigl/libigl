@@ -1,7 +1,7 @@
 #include "sharp_edges.h"
-#include <igl/unique_edge_map.h>
-#include <igl/per_face_normals.h>
-#include <igl/PI.h>
+#include "unique_edge_map.h"
+#include "per_face_normals.h"
+#include "PI.h"
 #include <Eigen/Geometry>
 
 template <

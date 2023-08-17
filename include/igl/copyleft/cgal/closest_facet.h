@@ -25,26 +25,26 @@ namespace igl
   {
     namespace cgal
     {
-      // Determine the closest facet for each of the input points.
-      //
-      // Inputs:
-      //   V  #V by 3 array of vertices.
-      //   F  #F by 3 array of faces.
-      //   I  #I list of triangle indices to consider.
-      //   P  #P by 3 array of query points.
-      //  EMAP  #F*3 list of indices into uE.
-      //  uEC  #uE+1 list of cumsums of directed edges sharing each unique edge
-      //  uEE  #E list of indices into E (see `igl::unique_edge_map`)
-      //   VF  #V list of lists of incident faces (adjacency list)
-      //   VFi  #V list of lists of index of incidence within incident faces
-      //     listed in VF
-      //   tree  AABB containing triangles of (V,F(I,:))
-      //   triangles  #I list of cgal triangles
-      //   in_I  #F list of whether in submesh
-      // Outputs:
-      //   R  #P list of closest facet indices.
-      //   S  #P list of bools indicating on which side of the closest facet
-      //      each query point lies.
+      /// Determine the closest facet for each of the input points.
+      ///
+      /// @param[in] V  #V by 3 array of vertices.
+      /// @param[in] F  #F by 3 array of faces.
+      /// @param[in] I  #I list of triangle indices to consider.
+      /// @param[in] P  #P by 3 array of query points.
+      /// @param[in] EMAP  #F*3 list of indices into uE.
+      /// @param[in] uEC  #uE+1 list of cumsums of directed edges sharing each unique edge
+      /// @param[in] uEE  #E list of indices into E (see `igl::unique_edge_map`)
+      /// @param[in] VF  #V list of lists of incident faces (adjacency list)
+      /// @param[in] VFi  #V list of lists of index of incidence within incident faces listed in VF
+      /// @param[in] tree  AABB containing triangles of (V,F(I,:))
+      /// @param[in] triangles  #I list of cgal triangles
+      /// @param[in] in_I  #F list of whether in submesh
+      /// @param[out] R  #P list of closest facet indices.
+      /// @param[out] S  #P list of bools indicating on which side of the closest facet
+      ///      each query point lies.
+      ///
+      /// \note The use of `size_t` here is a bad idea. These should just be int
+      /// to avoid nonsense with windows.
       template<
         typename DerivedV,
         typename DerivedF,
@@ -76,6 +76,7 @@ namespace igl
           const std::vector<bool> & in_I,
           Eigen::PlainObjectBase<DerivedR>& R,
           Eigen::PlainObjectBase<DerivedS>& S);
+      /// \overload
       template<
         typename DerivedV,
         typename DerivedF,
@@ -96,6 +97,7 @@ namespace igl
         const Eigen::PlainObjectBase<DeriveduEE>& uEE,
               Eigen::PlainObjectBase<DerivedR>& R,
               Eigen::PlainObjectBase<DerivedS>& S);
+      /// \overload
       template<
         typename DerivedV,
         typename DerivedF,
@@ -114,6 +116,7 @@ namespace igl
         const Eigen::PlainObjectBase<DeriveduEE>& uEE,
         Eigen::PlainObjectBase<DerivedR>& R,
         Eigen::PlainObjectBase<DerivedS>& S);
+      /// \overload
       template<
         typename DerivedV,
         typename DerivedF,

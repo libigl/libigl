@@ -11,15 +11,13 @@
 #include <Eigen/Core>
 namespace igl
 {
-  // Interpolate data on a triangle mesh using barycentric coordinates 
-  //
-  // Inputs:
-  //   D  #D by dim list of per-vertex data
-  //   F  #F by 3 list of triangle indices
-  //   B  #X by 3 list of barycentric corodinates
-  //   I  #X list of triangle indices
-  // Outputs:
-  //   X  #X by dim list of interpolated data
+  /// Interpolate data on a triangle mesh using barycentric coordinates 
+  ///
+  /// @param[in] D  #D by dim list of per-vertex data
+  /// @param[in] F  #F by 3 list of triangle indices
+  /// @param[in] B  #X by 3 list of barycentric corodinates
+  /// @param[in] I  #X list of triangle indices
+  /// @param[out] X  #X by dim list of interpolated data
   template <
     typename DerivedD,
     typename DerivedF,

@@ -11,12 +11,11 @@
 #include <Eigen/Sparse>
 namespace igl
 {
-  // Determine if a given matrix is diagonal: all non-zeros lie on the
-  // main diagonal.
-  //
-  // Inputs:
-  //   A  m by n sparse matrix
-  // Returns true iff and only if the matrix is diagonal.
+  /// Determine if a given matrix is diagonal: all non-zeros lie on the
+  /// main diagonal.
+  ///
+  /// @param[in] A  m by n sparse matrix
+  /// @return true iff and only if the matrix is diagonal.
   template <typename Derived>
   IGL_INLINE bool isdiag(const Eigen::SparseCompressedBase<Derived> & A);
 };

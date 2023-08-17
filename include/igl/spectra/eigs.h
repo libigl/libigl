@@ -17,28 +17,25 @@ namespace igl
 {
   namespace spectra
   {
-    // Act like MATLAB's eigs function. Compute the first/last k eigen pairs of
-    // the generalized eigen value problem:
-    //
-    //     A u = s B u
-    //
-    // Solutions are approximate and sorted. 
-    //
-    // Ideally one should use ARPACK and the Eigen unsupported ARPACK module.
-    // This implementation does simple, naive power iterations.
-    //
-    // Inputs:
-    //   A  #A by #A symmetric matrix
-    //   B  #A by #A symmetric positive-definite matrix
-    //   k  number of eigen pairs to compute
-    //   type  whether to extract from the high or low end
-    // Outputs:
-    //   sU  #A by k list of sorted eigen vectors (descending)
-    //   sS  k list of sorted eigen values (descending)
-    //
-    // Known issues:
-    //   - only the 'sm' small magnitude eigen values are well supported
-    //   
+    /// Act like MATLAB's eigs function. Compute the first/last k eigen pairs of
+    /// the generalized eigen value problem:
+    ///
+    ///      A u = s B u
+    ///
+    /// Solutions are approximate and sorted. 
+    ///
+    /// Ideally one should use ARPACK and the Eigen unsupported ARPACK module.
+    /// This implementation does simple, naive power iterations.
+    ///
+    /// @param[in] A  #A by #A symmetric matrix
+    /// @param[in] B  #A by #A symmetric positive-definite matrix
+    /// @param[in] k  number of eigen pairs to compute
+    /// @param[in] type  whether to extract from the high or low end
+    /// @param[out] sU  #A by k list of sorted eigen vectors (descending)
+    /// @param[out] sS  k list of sorted eigen values (descending)
+    ///
+    /// \bug only the 'sm' small magnitude eigen values are well supported
+    ///   
     template <
       typename EigsScalar,
       typename DerivedU,
@@ -51,6 +48,8 @@ namespace igl
       const igl::EigsType type,
       Eigen::PlainObjectBase<DerivedU> & U,
       Eigen::PlainObjectBase<DerivedS> & S);
+    /// \overload
+    /// @param[in] sigma  shift to apply to A, as in A ← A + sigma B
     template <
       typename EigsScalar,
       typename DerivedU,

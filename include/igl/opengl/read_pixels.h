@@ -9,17 +9,16 @@ namespace igl
 {
 namespace opengl
 {
-  // Read full viewport into color, alpha and depth arrays suitable for
-  // igl::png::writePNG
-  // Inputs:
-  //   width  width of viewport
-  //   height height of viewport
-  // Outputs:
-  //   R  width by height list of red values
-  //   G  width by height list of green values
-  //   B  width by height list of blue values
-  //   A  width by height list of alpha values
-  //   D  width by height list of depth values
+  /// Read full viewport into color, alpha and depth arrays suitable for
+  /// igl::png::writePNG
+  ///
+  /// @param[in] width  width of viewport
+  /// @param[in] height height of viewport
+  /// @param[out] R  width by height list of red values
+  /// @param[out] G  width by height list of green values
+  /// @param[out] B  width by height list of blue values
+  /// @param[out] A  width by height list of alpha values
+  /// @param[out] D  width by height list of depth values
   template <typename T>
   IGL_INLINE void read_pixels(
     const GLuint width,

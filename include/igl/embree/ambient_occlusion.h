@@ -13,17 +13,14 @@ namespace igl
 {
   namespace embree
   {
-    // Compute ambient occlusion per given point
-    //
-    // Inputs:
-    //    V  #V by 3 list of mesh vertex positiosn
-    //    F  #F by 3 list of mesh triangle indices into rows of V
-    //    P  #P by 3 list of origin points
-    //    N  #P by 3 list of origin normals
-    // Outputs:
-    //    S  #P list of ambient occlusion values between 1 (fully occluded) and
-    //      0 (not occluded)
-    //
+    /// Compute ambient occlusion per given point
+    ///
+    /// @param[in] V  #V by 3 list of mesh vertex positiosn
+    /// @param[in] F  #F by 3 list of mesh triangle indices into rows of V
+    /// @param[in] P  #P by 3 list of origin points
+    /// @param[in] N  #P by 3 list of origin normals
+    /// @param[out] S  #P list of ambient occlusion values between 1 (fully occluded) and
+    ///      0 (not occluded)
     template <
       typename DerivedV,
       typename DerivedF,
@@ -37,17 +34,12 @@ namespace igl
       const Eigen::MatrixBase<DerivedN> & N,
       const int num_samples,
       Eigen::PlainObjectBase<DerivedS> & S);
-    // Wrapper which builds new EmbreeIntersector for (V,F). That's expensive so
-    // avoid this if repeatedly calling.
-    //
-    // Inputs:
-    //    ei  EmbreeIntersector containing (V,F)
-    //    P  #P by 3 list of origin points
-    //    N  #P by 3 list of origin normals
-    // Outputs:
-    //    S  #P list of ambient occlusion values between 1 (fully occluded) and
-    //      0 (not occluded)
-    //
+    /// \overload 
+    /// \brief Wrapper which builds new EmbreeIntersector for (V,F). That's expensive so
+    /// avoid this if repeatedly calling.
+    ///
+    /// @param[in] ei  EmbreeIntersector containing (V,F)
+    ///
     // Forward define
     class EmbreeIntersector;
     template <

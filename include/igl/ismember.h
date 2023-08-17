@@ -11,17 +11,15 @@
 #include <Eigen/Core>
 namespace igl
 {
-  // Determine if elements of A exist in elements of B
-  //
-  // Inputs:
-  //   A  ma by na matrix
-  //   B  mb by nb matrix
-  // Outputs:
-  //   IA  ma by na matrix of flags whether corresponding element of A exists in
-  //     B
-  //   LOCB  ma by na matrix of indices in B locating matching element (-1 if
-  //     not found), indices assume column major ordering
-  //
+  /// Determine if elements of A exist in elements of B
+  ///
+  /// @param[in] A  ma by na matrix
+  /// @param[in] B  mb by nb matrix
+  /// @param[out] IA  ma by na matrix of flags whether corresponding element of
+  ///   A exists in B
+  /// @param[out] LOCB  ma by na matrix of indices in B locating matching
+  ///   element (-1 if not found), indices assume column major ordering
+  ///
   template <
     typename DerivedA,
     typename DerivedB,

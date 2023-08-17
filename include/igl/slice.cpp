@@ -186,6 +186,23 @@ IGL_INLINE DerivedX igl::slice(
   return Y;
 }
 
+template< class T >
+IGL_INLINE void igl::slice(
+  const std::vector<T> & unordered,
+  std::vector<size_t> const & index_map,
+  std::vector<T> & ordered)
+{
+  // copy for the slice according to index_map, because unordered may also be
+  // ordered
+  std::vector<T> copy = unordered;
+  ordered.resize(index_map.size());
+  for(int i = 0; i<(int)index_map.size();i++)
+  {
+    ordered[i] = copy[index_map[i]];
+  }
+}
+
+
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instantiation
 template Eigen::Matrix<double, -1, 1, 0, -1, 1> igl::slice<Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::DenseBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, Eigen::DenseBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&);
@@ -263,6 +280,18 @@ template void igl::slice<class Eigen::DenseBase<class Eigen::Matrix<int,-1,-1,0,
 template void igl::slice<class Eigen::MatrixBase<class Eigen::Matrix<int,-1,-1,0,-1,-1> >,class Eigen::Matrix<__int64,-1,1,0,-1,1>,class Eigen::PlainObjectBase<class Eigen::Matrix<int,-1,-1,0,-1,-1> > >(class Eigen::MatrixBase<class Eigen::Matrix<int,-1,-1,0,-1,-1> > const &,class Eigen::DenseBase<class Eigen::Matrix<__int64,-1,1,0,-1,1> > const &,int,class Eigen::PlainObjectBase<class Eigen::Matrix<int,-1,-1,0,-1,-1> > &);
 template void igl::slice<Eigen::Matrix<__int64, -1, 1, 0, -1, 1>, Eigen::Matrix<__int64, -1, 1, 0, -1, 1>, Eigen::PlainObjectBase<Eigen::Matrix<__int64, -1, 1, 0, -1, 1>>>(Eigen::Matrix<__int64, -1, 1, 0, -1, 1> const &, Eigen::DenseBase<Eigen::Matrix<__int64, -1, 1, 0, -1, 1>> const &, int, Eigen::PlainObjectBase<Eigen::Matrix<__int64, -1, 1, 0, -1, 1>> &);
 template void igl::slice<Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1>>, Eigen::Matrix<__int64, -1, 1, 0, -1, 1>, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1>>>(Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1>> const &, Eigen::DenseBase<Eigen::Matrix<__int64, -1, 1, 0, -1, 1>> const &, int, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1>> &);
+template void igl::slice<unsigned int>(class std::vector<unsigned int,class std::allocator<unsigned int> > const &,class std::vector<unsigned __int64,class std::allocator<unsigned __int64> > const &,class std::vector<unsigned int,class std::allocator<unsigned int> > &);
+template void igl::slice<float>(class std::vector<float,class std::allocator<float> > const &,class std::vector<unsigned __int64,class std::allocator<unsigned __int64> > const &,class std::vector<float,class std::allocator<float> > &);
+template void igl::slice<__int64>(class std::vector<__int64,class std::allocator<__int64> > const &,class std::vector<unsigned __int64,class std::allocator<unsigned __int64> > const &,class std::vector<__int64,class std::allocator<__int64> > &);
 #endif
+
+template void igl::slice<unsigned int>(std::vector<unsigned int, std::allocator<unsigned int> > const&, std::vector<unsigned long, std::allocator<unsigned long> > const&, std::vector<unsigned int, std::allocator<unsigned int> >&);
+template void igl::slice<float>(std::vector<float, std::allocator<float> > const&, std::vector<size_t, std::allocator<size_t> > const&, std::vector<float, std::allocator<float> >&);
+template void igl::slice<double>(std::vector<double, std::allocator<double> > const&, std::vector<size_t, std::allocator<size_t> > const&, std::vector<double, std::allocator<double> >&);
+template void igl::slice<int>(std::vector<int, std::allocator<int> > const&, std::vector<size_t, std::allocator<size_t> > const&, std::vector<int, std::allocator<int> >&);
+template void igl::slice<long>(std::vector<long, std::allocator<long> > const&, std::vector<size_t, std::allocator<size_t> > const&, std::vector<long, std::allocator<long> >&);
+#include "SortableRow.h"
+template void igl::slice<igl::SortableRow<Eigen::Matrix<int, -1, 1, 0, -1, 1> > >(std::vector<igl::SortableRow<Eigen::Matrix<int, -1, 1, 0, -1, 1> >, std::allocator<igl::SortableRow<Eigen::Matrix<int, -1, 1, 0, -1, 1> > > > const&, std::vector<size_t, std::allocator<size_t> > const&, std::vector<igl::SortableRow<Eigen::Matrix<int, -1, 1, 0, -1, 1> >, std::allocator<igl::SortableRow<Eigen::Matrix<int, -1, 1, 0, -1, 1> > > >&);
+template void igl::slice<igl::SortableRow<Eigen::Matrix<double, -1, 1, 0, -1, 1> > >(std::vector<igl::SortableRow<Eigen::Matrix<double, -1, 1, 0, -1, 1> >, std::allocator<igl::SortableRow<Eigen::Matrix<double, -1, 1, 0, -1, 1> > > > const&, std::vector<size_t, std::allocator<size_t> > const&, std::vector<igl::SortableRow<Eigen::Matrix<double, -1, 1, 0, -1, 1> >, std::allocator<igl::SortableRow<Eigen::Matrix<double, -1, 1, 0, -1, 1> > > >&);
 
 #endif

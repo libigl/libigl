@@ -12,18 +12,17 @@
 
 namespace igl
 {
-  // Computes the polar decomposition (R,T) of a matrix A
-  // Inputs:
-  //   A  3 by 3 matrix to be decomposed
-  //   includeReflections  Whether to force R to be a rotation, or allow it to be a rotation
-  // Outputs:
-  //   R  3 by 3 orthonormal matrix part of decomposition
-  //   T  3 by 3 stretch matrix part of decomposition
-  //   U  3 by 3 left-singular vectors
-  //   S  3 by 1 singular values
-  //   V  3 by 3 right-singular vectors
-  //
-  //
+  /// Computes the polar decomposition (R,T) of a matrix A
+  ///
+  /// @param[in] A  3 by 3 matrix to be decomposed
+  /// @param[in] includeReflections  Whether to force R to be a rotation, or allow it to be a reflection
+  /// @param[out] R  3 by 3 orthonormal matrix part of decomposition
+  /// @param[out] T  3 by 3 stretch matrix part of decomposition
+  /// @param[out] U  3 by 3 left-singular vectors
+  /// @param[out] S  3 by 1 singular values
+  /// @param[out] V  3 by 3 right-singular vectors
+  ///
+  ///
   template <
     typename DerivedA,
     typename DerivedR,
@@ -39,6 +38,7 @@ namespace igl
     Eigen::PlainObjectBase<DerivedS> & S,
     Eigen::PlainObjectBase<DerivedV> & V,
     bool includeReflections = true);
+  /// \overload
   template <
     typename DerivedA,
     typename DerivedR,

@@ -11,14 +11,12 @@
 #include <Eigen/Core>
 namespace igl
 {
-  // Compute the circumradius of each triangle in a mesh (V,F)
-  //
-  // Inputs:
-  //   V  #V by dim list of mesh vertex positions
-  //   F  #F by 3 list of triangle indices into V
-  // Outputs:
-  //   R  #F list of circumradius
-  //
+  /// Compute the circumradius of each triangle in a mesh (V,F)
+  ///
+  /// @param[in] V  #V by dim list of mesh vertex positions
+  /// @param[in] F  #F by 3 list of triangle indices into V
+  /// @param[out] R  #F list of circumradius
+  ///
   template <
     typename DerivedV, 
     typename DerivedF,
