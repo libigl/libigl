@@ -51,8 +51,8 @@ namespace igl
   IGL_INLINE void procrustes(
     const Eigen::MatrixBase<DerivedX>& X,
     const Eigen::MatrixBase<DerivedY>& Y,
-    bool includeScaling,
-    bool includeReflections,
+    const bool includeScaling,
+    const bool includeReflections,
     Scalar& scale,
     Eigen::PlainObjectBase<DerivedR>& R,
     Eigen::PlainObjectBase<DerivedT>& t);
@@ -77,8 +77,8 @@ namespace igl
   IGL_INLINE void procrustes(
     const Eigen::MatrixBase<DerivedX>& X,
     const Eigen::MatrixBase<DerivedY>& Y,
-    bool includeScaling,
-    bool includeReflections,
+    const bool includeScaling,
+    const bool includeReflections,
     Eigen::Transform<Scalar,DIM,TType>& T);
   /// \overload
   /// @param[out] S  S=scale*R, instead of scale and R separately
@@ -90,8 +90,8 @@ namespace igl
   IGL_INLINE void procrustes(
     const Eigen::MatrixBase<DerivedX>& X,
     const Eigen::MatrixBase<DerivedY>& Y,
-    bool includeScaling,
-    bool includeReflections,
+    const bool includeScaling,
+    const bool includeReflections,
     Eigen::PlainObjectBase<DerivedR>& S,
     Eigen::PlainObjectBase<DerivedT>& t);
   /// \overload
