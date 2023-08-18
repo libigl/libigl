@@ -6,7 +6,6 @@
 #include <igl/opengl/glfw/Viewer.h>
 #include <iostream>
 
-
 int main(int argc, char *argv[])
 {
   Eigen::MatrixXi F;
