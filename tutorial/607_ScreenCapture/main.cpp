@@ -1,7 +1,6 @@
 #include <igl/readOFF.h>
 #include <igl/opengl/glfw/Viewer.h>
 #include <iostream>
-#include "tutorial_shared_path.h"
 #include <igl/stb/write_image.h>
 #include <igl/stb/read_image.h>
 

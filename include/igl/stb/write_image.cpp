@@ -6,7 +6,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "write_image.h"
-#include <igl_stb_image.h>
+#include <stb_image_write.h>
 #include <vector>
 #include "../pathinfo.h"
 
@@ -41,16 +41,16 @@ IGL_INLINE bool igl::stb::write_image(
   pathinfo(image_file,d,b,e,f);
   if(e == "png")
   {
-    return igl::stbi_write_png(image_file.c_str(), R.rows(), R.cols(), comp, data.data(), stride_in_bytes)!=0;
+    return stbi_write_png(image_file.c_str(), R.rows(), R.cols(), comp, data.data(), stride_in_bytes)!=0;
   } else if( e == "tga") 
   {
-    return igl::stbi_write_tga(image_file.c_str(), R.rows(), R.cols(), comp, data.data())!=0;
+    return stbi_write_tga(image_file.c_str(), R.rows(), R.cols(), comp, data.data())!=0;
   } else if( e == "bmp") 
   {
-    return igl::stbi_write_bmp(image_file.c_str(), R.rows(), R.cols(), comp, data.data())!=0;
+    return stbi_write_bmp(image_file.c_str(), R.rows(), R.cols(), comp, data.data())!=0;
   } else if( e == "jpg") 
   {
-    return igl::stbi_write_jpg(image_file.c_str(), R.rows(), R.cols(), comp, data.data(),quality)!=0;
+    return stbi_write_jpg(image_file.c_str(), R.rows(), R.cols(), comp, data.data(),quality)!=0;
   } else 
   {
     // unsupported file format
@@ -59,7 +59,7 @@ IGL_INLINE bool igl::stb::write_image(
   // not yet.
   //} else if( e == "hdr") 
   // {
-  //  return igl::stbi_write_hdr(image_file.c_str(), R.rows(), R.cols(), comp, data.data())!=0;
+  //  return stbi_write_hdr(image_file.c_str(), R.rows(), R.cols(), comp, data.data())!=0;
   // }
 }
 

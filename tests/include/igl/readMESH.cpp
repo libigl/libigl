@@ -7,7 +7,8 @@
 
 TEST_CASE("readMESH: single-tet","[igl]")
 {
-  std::ofstream("test.mesh")<< R"(MeshVersionFormatted 1
+  const std::string filename = "readMESH_single-tet.mesh";
+  std::ofstream(filename)<< R"(MeshVersionFormatted 1
 Dimension 3
 Vertices
 4
@@ -25,7 +26,7 @@ End
 
   Eigen::MatrixXd V;
   Eigen::MatrixXi T,F;
-  igl::readMESH("test.mesh",V,T,F);
+  igl::readMESH(filename,V,T,F);
   REQUIRE(V.rows() == 4);
   REQUIRE(T.rows() == 1);
   REQUIRE(T(0,0) == 0);
@@ -36,7 +37,8 @@ End
 
 TEST_CASE("readMESH: no-triangles-line","[igl]")
 {
-  std::ofstream("test.mesh")<< R"(MeshVersionFormatted 1
+  const std::string filename = "readMESH_no-triangles-line.mesh";
+  std::ofstream(filename)<< R"(MeshVersionFormatted 1
 Dimension 3
 Vertices
 4
@@ -51,7 +53,7 @@ Tetrahedra
 
   Eigen::MatrixXd V;
   Eigen::MatrixXi T,F;
-  igl::readMESH("test.mesh",V,T,F);
+  igl::readMESH(filename,V,T,F);
   REQUIRE(V.rows() == 4);
   REQUIRE(T.rows() == 1);
   REQUIRE(T(0,0) == 0);
@@ -62,7 +64,8 @@ Tetrahedra
 
 TEST_CASE("readMESH: mesh-version-formatted-2","[igl]")
 {
-  std::ofstream("test.mesh")<< R"(MeshVersionFormatted 2
+  const std::string filename = "readMESH_mesh-version-formatted-2.mesh";
+  std::ofstream(filename)<< R"(MeshVersionFormatted 2
 Dimension 3
 Vertices
 4
@@ -80,7 +83,7 @@ End
 
   Eigen::MatrixXd V;
   Eigen::MatrixXi T,F;
-  igl::readMESH("test.mesh",V,T,F);
+  igl::readMESH(filename,V,T,F);
   REQUIRE(V.rows() == 4);
   REQUIRE(T.rows() == 1);
   REQUIRE(T(0,0) == 0);

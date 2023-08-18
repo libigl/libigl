@@ -24,7 +24,6 @@ TEST_CASE("igl_path_to_edges: loop_test", "[igl]")
   Eigen::MatrixXi Eactual;
   const bool make_loop = true;
   igl::path_to_edges(I, Eactual, make_loop);
-  std::cout << Eactual << std::endl;
   test_common::assert_eq(Eactual, Eexpected);
 }
 

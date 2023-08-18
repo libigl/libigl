@@ -1,6 +1,5 @@
 #include "octree.h"
 #include <vector>
-#include <queue>
 
 namespace igl {
   template <typename DerivedP, typename IndexType, typename DerivedCH,

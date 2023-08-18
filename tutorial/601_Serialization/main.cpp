@@ -3,7 +3,6 @@
 #include <igl/xml/serialize_xml.h>
 #include <iostream>
 
-#include "tutorial_shared_path.h"
 
 Eigen::MatrixXd V;
 Eigen::MatrixXi F;

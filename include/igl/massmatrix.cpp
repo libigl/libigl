@@ -8,9 +8,9 @@
 #include "massmatrix.h"
 #include "massmatrix_intrinsic.h"
 #include "edge_lengths.h"
-#include "normalize_row_sums.h"
 #include "sparse.h"
 #include "doublearea.h"
+#include "volume.h"
 #include "repmat.h"
 #include <Eigen/Geometry>
 #include <iostream>
@@ -36,9 +36,6 @@ IGL_INLINE void igl::massmatrix(
     eff_type = (simplex_size == 3?MASSMATRIX_TYPE_VORONOI:MASSMATRIX_TYPE_BARYCENTRIC);
   }
 
-  // Not yet supported
-  assert(type!=MASSMATRIX_TYPE_FULL);
-
   if(simplex_size == 3)
   {
     // Triangles
@@ -48,30 +45,48 @@ IGL_INLINE void igl::massmatrix(
     return massmatrix_intrinsic(l,F,type,M);
   }else if(simplex_size == 4)
   {
+    // tetrahedra
+    assert(V.cols() == 3 && "vertices must be defined in 3D for tetrahedra");
+
+    Matrix<Scalar,Dynamic,1> vol;
+    volume(V,F,vol);
+    vol = vol.array().abs();
+
     Matrix<typename DerivedF::Scalar,Dynamic,1> MI;
     Matrix<typename DerivedF::Scalar,Dynamic,1> MJ;
     Matrix<Scalar,Dynamic,1> MV;
-    assert(V.cols() == 3);
-    assert(eff_type == MASSMATRIX_TYPE_BARYCENTRIC);
-    MI.resize(m*4,1); MJ.resize(m*4,1); MV.resize(m*4,1);
-    MI.block(0*m,0,m,1) = F.col(0);
-    MI.block(1*m,0,m,1) = F.col(1);
-    MI.block(2*m,0,m,1) = F.col(2);
-    MI.block(3*m,0,m,1) = F.col(3);
-    MJ = MI;
-    // loop over tets
-    for(int i = 0;i<m;i++)
+
+    switch (eff_type)
     {
-      // http://en.wikipedia.org/wiki/Tetrahedron#Volume
-      Matrix<Scalar,3,1> v0m3,v1m3,v2m3;
-      v0m3.head(V.cols()) = V.row(F(i,0)) - V.row(F(i,3));
-      v1m3.head(V.cols()) = V.row(F(i,1)) - V.row(F(i,3));
-      v2m3.head(V.cols()) = V.row(F(i,2)) - V.row(F(i,3));
-      Scalar v = fabs(v0m3.dot(v1m3.cross(v2m3)))/6.0;
-      MV(i+0*m) = v/4.0;
-      MV(i+1*m) = v/4.0;
-      MV(i+2*m) = v/4.0;
-      MV(i+3*m) = v/4.0;
+      case MASSMATRIX_TYPE_BARYCENTRIC:
+        MI.resize(m*4,1); MJ.resize(m*4,1); MV.resize(m*4,1);
+        MI.block(0*m,0,m,1) = F.col(0);
+        MI.block(1*m,0,m,1) = F.col(1);
+        MI.block(2*m,0,m,1) = F.col(2);
+        MI.block(3*m,0,m,1) = F.col(3);
+        MJ = MI;
+        repmat(vol,4,1,MV);
+        assert(MV.rows()==m*4&&MV.cols()==1);
+        MV.array() /= 4.;
+        break;
+      case MASSMATRIX_TYPE_VORONOI:
+        {
+          assert(false && "Implementation incomplete");
+          break;
+        }
+      case MASSMATRIX_TYPE_FULL:
+        MI.resize(m*16,1); MJ.resize(m*16,1); MV.resize(m*16,1);
+        // indicies and values of the element mass matrix entries in the order
+        // (1,0),(2,0),(3,0),(2,1),(3,1),(0,1),(3,2),(0,2),(1,2),(0,3),(1,3),(2,3),(0,0),(1,1),(2,2),(3,3);
+        MI<<F.col(1),F.col(2),F.col(3),F.col(2),F.col(3),F.col(0),F.col(3),F.col(0),F.col(1),F.col(0),F.col(1),F.col(2),F.col(0),F.col(1),F.col(2),F.col(3);
+        MJ<<F.col(0),F.col(0),F.col(0),F.col(1),F.col(1),F.col(1),F.col(2),F.col(2),F.col(2),F.col(3),F.col(3),F.col(3),F.col(0),F.col(1),F.col(2),F.col(3);
+        repmat(vol,16,1,MV);
+        assert(MV.rows()==m*16&&MV.cols()==1);
+        MV.block(0*m,0,12*m,1) /= 20.;
+        MV.block(12*m,0,4*m,1) /= 10.;
+        break;
+      default:
+        assert(false && "Unknown Mass matrix eff_type");
     }
     sparse(MI,MJ,MV,n,n,M);
   }else

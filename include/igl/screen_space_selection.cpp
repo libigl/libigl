@@ -1,11 +1,11 @@
 #include "screen_space_selection.h"
 
-#include <igl/AABB.h>
-#include <igl/winding_number.h>
-#include <igl/project.h>
-#include <igl/unproject.h>
-#include <igl/Hit.h>
-#include <igl/parallel_for.h>
+#include "AABB.h"
+#include "winding_number.h"
+#include "project.h"
+#include "unproject.h"
+#include "Hit.h"
+#include "parallel_for.h"
 
 template <
   typename DerivedV,

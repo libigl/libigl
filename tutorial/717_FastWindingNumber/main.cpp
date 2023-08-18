@@ -1,4 +1,3 @@
-#include "tutorial_shared_path.h"
 #include <igl/fast_winding_number.h>
 #include <igl/read_triangle_mesh.h>
 #include <igl/slice_mask.h>

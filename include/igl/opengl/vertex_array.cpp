@@ -1,5 +1,5 @@
 #include "vertex_array.h"
-#include <igl/opengl/report_gl_error.h>
+#include "report_gl_error.h"
 
 template <
   typename DerivedV,

@@ -12,16 +12,14 @@
 #include <Eigen/Core>
 namespace igl
 {
-  // Construct vertices of a regular grid, suitable for input to
-  // `igl::marching_cubes`
-  //
-  // Inputs:
-  //   res  #res list of number of vertices along each dimension filling a unit
-  //     #res-cube
-  // Outputs:
-  //   GV  res.array().prod() by #res list of mesh vertex positions.
-  //   
-  //   See also: triangulated_grid, quad_grid
+  /// Construct vertices of a regular grid, suitable for input to
+  /// `igl::marching_cubes`
+  ///
+  /// @param[in] res  #res list of number of vertices along each dimension filling a unit
+  ///     #res-cube
+  /// @param[out] GV  res.array().prod() by #res list of mesh vertex positions.
+  ///   
+  /// \see triangulated_grid, quad_grid
   template <
     typename Derivedres,
     typename DerivedGV>

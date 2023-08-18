@@ -6,7 +6,8 @@
 #include <Eigen/Core>
 
 #include "tinyply.h"
-#include "file_utils.h"
+#include "read_file_binary.h"
+#include "FileMemoryStream.h"
 
 
 namespace igl
@@ -170,14 +171,16 @@ IGL_INLINE bool readPLY(
   try
   {
     std::vector<uint8_t> fileBufferBytes;
+    // read_file_binary will call fclose
     read_file_binary(fp,fileBufferBytes);
-    file_memory_stream stream((char*)fileBufferBytes.data(), fileBufferBytes.size());
+    FileMemoryStream stream((char*)fileBufferBytes.data(), fileBufferBytes.size());
     return readPLY(stream,V,F,E,N,UV,VD,Vheader,FD,Fheader,ED,Eheader,comments);
   }
   catch(const std::exception& e)
   {
     std::cerr << "ReadPLY error: " << e.what() << std::endl;
   }
+  fclose(fp);
   return false;
 }
 
@@ -405,7 +408,7 @@ IGL_INLINE bool readPLY(
   }
 
   //HACK: Unfortunately, tinyply doesn't store list size as a separate variable
-  if (!faces || !tinyply_buffer_to_matrix(*faces, F, faces->count, faces->buffer.size_bytes()/(tinyply::PropertyTable[faces->t].stride*faces->count) )) {
+  if (!faces || !tinyply_buffer_to_matrix(*faces, F, faces->count, faces->count==0?0:faces->buffer.size_bytes()/(tinyply::PropertyTable[faces->t].stride*faces->count) )) {
 
     if(tristrips) { // need to convert to faces
       // code based on blender importer for ply
@@ -447,7 +450,7 @@ IGL_INLINE bool readPLY(
   else
   {
     FD.resize(faces->count, _face_header.size());
-    tinyply_buffer_to_matrix(*_face_data, FD, faces->count, 1);
+    tinyply_buffer_to_matrix(*_face_data, FD, faces->count, _face_header.size());
   }
 
   /// convert edge data:

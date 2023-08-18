@@ -15,17 +15,16 @@
 #include <functional>
 namespace igl
 {
-  // Stopping condition function compatible with igl::decimate. The output
-  // function handle will return true if cost of next edge is infinite.
-  //
-  // Inputs:
-  //   cost_and_placement  handle being used by igl::collapse_edge
-  // Outputs:
-  //   stopping_condition
-  //
+  /// Stopping condition function compatible with igl::decimate. The output
+  /// function handle will return true if cost of next edge is infinite.
+  ///
+  /// @param[in] cost_and_placement  handle being used by igl::collapse_edge
+  /// @param[out] stopping_condition
+  ///
   IGL_INLINE void infinite_cost_stopping_condition(
     const decimate_cost_and_placement_callback & cost_and_placement,
     decimate_stopping_condition_callback & stopping_condition);
+  /// \overload
   IGL_INLINE decimate_stopping_condition_callback
     infinite_cost_stopping_condition(
     const decimate_cost_and_placement_callback & cost_and_placement);

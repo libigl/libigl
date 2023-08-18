@@ -2,7 +2,7 @@
 #include "dfs.h"
 #include "sort.h"
 #include "slice.h"
-#include "ismember.h"
+#include "ismember_rows.h"
 #include "unique.h"
 #include "adjacency_list.h"
 

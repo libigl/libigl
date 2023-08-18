@@ -12,16 +12,14 @@
 #include <Eigen/Geometry>
 namespace igl
 {
-  // Construct the cell center positions of a regular voxel grid (lattice) made
-  // of perfectly square voxels.
-  // 
-  // Inputs:
-  //   box  bounding box to enclose by grid
-  //   s  number of cell centers on largest side (including 2*pad_count)
-  //   pad_count  number of cells beyond box
-  // Outputs:
-  //   GV  side(0)*side(1)*side(2) by 3 list of cell center positions
-  //   side  1 by 3 list of dimension of voxel grid
+  /// Construct the cell center positions of a regular voxel grid (lattice) made
+  /// of perfectly square voxels.
+  /// 
+  /// @param[in] box  bounding box to enclose by grid
+  /// @param[in] s  number of cell centers on largest side (including 2*pad_count)
+  /// @param[in] pad_count  number of cells beyond box
+  /// @param[out] GV  side(0)*side(1)*side(2) by 3 list of cell center positions
+  /// @param[out] side  1 by 3 list of dimension of voxel grid
   template <
     typename Scalar,
     typename DerivedGV,
@@ -32,6 +30,8 @@ namespace igl
     const int pad_count,
     Eigen::PlainObjectBase<DerivedGV> & GV,
     Eigen::PlainObjectBase<Derivedside> & side);
+  /// \overload
+  /// @param[in]  offset  offset to add to each cell center
   template <
     typename DerivedV,
     typename DerivedGV,

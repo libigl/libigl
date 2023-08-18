@@ -2,22 +2,6 @@
 
 #include <igl/copyleft/cgal/outer_facet.h>
 
-namespace {
-
-/**
- * Check if the outer facet is indeed valid.
- * Assumption: mesh is closed.
- */
-template<typename DerivedV, typename DerivedF>
-void assert_outer_facet_is_correct(
-        const Eigen::PlainObjectBase<DerivedV>& V,
-        const Eigen::PlainObjectBase<DerivedF>& F,
-        size_t fid, bool flipped) {
-    // Todo.
-}
-
-} // anonymous namespace
-
 TEST_CASE("OuterFacet: Simple", "[igl/copyleft/cgal]")
 {
     Eigen::MatrixXd V;
@@ -29,7 +13,7 @@ TEST_CASE("OuterFacet: Simple", "[igl/copyleft/cgal]")
     Eigen::VectorXi I(num_faces);
     I.setLinSpaced(num_faces, 0, num_faces-1);
 
-    size_t fid = num_faces + 1;
+    Eigen::Index fid = num_faces + 1;
     bool flipped;
     igl::copyleft::cgal::outer_facet(V, F, I, fid, flipped);
 
@@ -52,7 +36,7 @@ TEST_CASE("OuterFacet: DuplicatedOppositeFaces", "[igl/copyleft/cgal]")
     Eigen::VectorXi I(F.rows());
     I.setLinSpaced(F.rows(), 0, F.rows()-1);
 
-    size_t fid = F.rows() + 1;
+    Eigen::Index fid = F.rows() + 1;
     bool flipped;
     igl::copyleft::cgal::outer_facet(V, F, I, fid, flipped);
 
@@ -69,7 +53,7 @@ TEST_CASE("OuterFacet: FullyDegnerated", "[igl/copyleft/cgal]")
     Eigen::VectorXi I(F.rows());
     I.setLinSpaced(F.rows(), 0, F.rows()-1);
 
-    size_t fid = F.rows() + 1;
+    Eigen::Index fid = F.rows() + 1;
     bool flipped;
     igl::copyleft::cgal::outer_facet(V, F, I, fid, flipped);
 
@@ -87,7 +71,7 @@ TEST_CASE("OuterFacet: InvertedNormal", "[igl/copyleft/cgal]")
     Eigen::VectorXi I(F.rows());
     I.setLinSpaced(F.rows(), 0, F.rows()-1);
 
-    size_t fid = F.rows() + 1;
+    Eigen::Index fid = F.rows() + 1;
     bool flipped;
     igl::copyleft::cgal::outer_facet(V, F, I, fid, flipped);
 
@@ -104,7 +88,7 @@ TEST_CASE("OuterFacet: SliverTet", "[igl/copyleft/cgal]")
     Eigen::VectorXi I(F.rows());
     I.setLinSpaced(F.rows(), 0, F.rows()-1);
 
-    size_t fid = F.rows() + 1;
+    Eigen::Index fid = F.rows() + 1;
     bool flipped;
     igl::copyleft::cgal::outer_facet(V, F, I, fid, flipped);
 

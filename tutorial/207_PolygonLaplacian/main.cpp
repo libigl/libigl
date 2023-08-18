@@ -7,14 +7,13 @@
 #include <igl/polygons_to_triangles.h>
 #include <igl/opengl/glfw/Viewer.h>
 #include <iostream>
-#include "tutorial_shared_path.h"
 
 int main(int argc, char *argv[])
 {
   using namespace Eigen;
   using namespace std;
 
-  // Load a mesh in OBJ format 
+  // Load a mesh in OBJ format
   Eigen::MatrixXd OV,V;
   Eigen::VectorXi I,C;
   igl::readOBJ(
@@ -93,7 +92,7 @@ int main(int argc, char *argv[])
   };
   const auto cmcf_step = [&]()
   {
-    const Eigen::SparseMatrix<double> S = 
+    const Eigen::SparseMatrix<double> S =
       use_poly? ((pM) - 0.05*(pL)): ((tM) - 0.05*(tL));
     const Eigen::MatrixXd rhs = use_poly? pM*V : tM*V;
     Eigen::SimplicialLLT<Eigen::SparseMatrix<double > > solver(S);

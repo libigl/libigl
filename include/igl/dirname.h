@@ -14,16 +14,16 @@
 
 namespace igl
 {
-  // Function like PHP's dirname: /etc/passwd --> /etc, 
-  // Input:
-  //  path  string containing input path
-  // Returns string containing dirname (see php's dirname)
-  //
-  // See also: basename, pathinfo
-  //
-  // **Note:** This function will have undefined behavior if **file names** in
-  // the path contain \ and / characters. This function interprets \ and / as
-  // file path separators.
+  /// Function like PHP's dirname: /etc/passwd --> /etc, 
+  ///
+  /// @param[in] path  string containing input path
+  /// @return string containing dirname (see php's dirname)
+  ///
+  /// \see basename, pathinfo
+  ///
+  /// \note This function will have undefined behavior if **file names** in
+  /// the path contain \ and / characters. This function interprets \ and / as
+  /// file path separators.
   IGL_INLINE std::string dirname(const std::string & path);
 }
 

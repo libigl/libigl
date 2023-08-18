@@ -15,18 +15,14 @@
 
 namespace igl
 {
-  // Project each triangle to the plane
-  //
-  // [U,UF,I] = project_isometrically_to_plane(V,F)
-  //
-  // Inputs:
-  //   V  #V by 3 list of vertex positions
-  //   F  #F by 3 list of mesh indices
-  // Outputs:
-  //   U  #F*3 by 2 list of triangle positions
-  //   UF  #F by 3 list of mesh indices into U
-  //   I  #V by #F*3 such that I(i,j) = 1 implies U(j,:) corresponds to V(i,:)
-  //
+  /// Project each triangle to the plane
+  ///
+  /// @param[in] V  #V by 3 list of vertex positions
+  /// @param[in] F  #F by 3 list of mesh indices
+  /// @param[out] U  #F*3 by 2 list of triangle positions
+  /// @param[out] UF  #F by 3 list of mesh indices into U
+  /// @param[out] I  #V by #F*3 such that I(i,j) = 1 implies U(j,:) corresponds to V(i,:)
+  ///
   template <
     typename DerivedV,
     typename DerivedF,

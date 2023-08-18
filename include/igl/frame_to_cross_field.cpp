@@ -6,8 +6,8 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "frame_to_cross_field.h"
-#include <igl/local_basis.h>
-#include <igl/dot_row.h>
+#include "local_basis.h"
+#include "dot_row.h"
 
 IGL_INLINE void igl::frame_to_cross_field(
   const Eigen::MatrixXd& V,

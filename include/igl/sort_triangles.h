@@ -13,14 +13,14 @@
 
 namespace igl
 {
-  // Inputs:
-  //   V  #V by **4** list of homogeneous vertex positions
-  //   F  #F by 3 list of triangle indices
-  //   MV  4 by 4 model view matrix
-  //   P  4 by 4 projection matrix
-  // Outputs:
-  //   FF  #F by 3 list of sorted triangles indices
-  //   I  #F list of sorted indices
+  /// Sort triangles by depth (from back to front) using a painter's algorithm.
+  ///
+  /// @param[in] V  #V by **4** list of homogeneous vertex positions
+  /// @param[in] F  #F by 3 list of triangle indices
+  /// @param[in] MV  4 by 4 model view matrix
+  /// @param[in] P  4 by 4 projection matrix
+  /// @param[out] FF  #F by 3 list of sorted triangles indices
+  /// @param[out] I  #F list of sorted indices
   template <
     typename DerivedV,
     typename DerivedF,

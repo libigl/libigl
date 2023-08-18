@@ -11,7 +11,7 @@
 #include "../project_to_line_segment.h"
 #include "../cotmatrix.h"
 #include "../massmatrix.h"
-#include "../mat_min.h"
+#include "../min.h"
 #include <Eigen/Sparse>
 
 bool igl::embree::bone_heat(
@@ -81,7 +81,7 @@ bool igl::embree::bone_heat(
   VectorXd min_D;
   VectorXd Hdiag = VectorXd::Zero(n);
   VectorXi J;
-  mat_min(D,2,min_D,J);
+  igl::min(D,2,min_D,J);
   for(int i = 0;i<n;i++)
   {
     PP(i,J(i)) = 1;

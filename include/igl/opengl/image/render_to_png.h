@@ -5,26 +5,25 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
-#ifndef IGL_PNG_RENDER_TO_PNG_H
-#define IGL_PNG_RENDER_TO_PNG_H
-#include <igl/igl_inline.h>
+#ifndef IGL_OPENGL_IMAGE_RENDER_TO_PNG_H
+#define IGL_OPENGL_IMAGE_RENDER_TO_PNG_H
+#include "../../igl_inline.h"
 
 #include <string>
 namespace igl
 {
   namespace png
   {
-    //
-    // Render current open GL image to .png file
-    // Inputs:
-    //   png_file  path to output .png file
-    //   width  width of scene and resulting image
-    //   height height of scene and resulting image
-    //   alpha  whether to include alpha channel
-    //   fast  sacrifice compression ratio for speed
-    // Returns true only if no errors occurred
-    //
-    // See also: igl/render_to_tga which is faster but writes .tga files
+    /// Render current open GL image to .png file
+    ///
+    /// @param[in] png_file  path to output .png file
+    /// @param[in] width  width of scene and resulting image
+    /// @param[in] height height of scene and resulting image
+    /// @param[in] alpha  whether to include alpha channel
+    /// @param[in] fast  sacrifice compression ratio for speed
+    /// @return true only if no errors occurred
+    ///
+    /// \see render_to_tga which is faster but writes .tga files
     IGL_INLINE bool render_to_png(
       const std::string png_file,
       const int width,

@@ -35,6 +35,7 @@ IGL_INLINE igl::opengl::ViewerData::ViewerData()
   use_matcap        (false),
   point_size(30),
   line_width(0.5f),
+  label_size(1),
   line_color(0,0,0,1),
   label_color(0,0,0.04,1),
   shininess(35.0f),
@@ -284,7 +285,17 @@ IGL_INLINE void igl::opengl::ViewerData::set_data(
     igl::colormap(cmap,Eigen::VectorXd::LinSpaced(num_steps,0,1).eval(),0,1,CM);
     set_colormap(CM);
   }
-  set_uv(((D.array()-caxis_min)/(caxis_max-caxis_min)).replicate(1,2));
+  Eigen::MatrixXd UV = ((D.array()-caxis_min)/(caxis_max-caxis_min)).replicate(1,2);
+  if(D.size() == V.rows())
+  {
+    set_uv(UV);
+  }else
+  {
+    assert(D.size() == F.rows());
+    Eigen::MatrixXi UV_F = 
+      Eigen::VectorXi::LinSpaced(F.rows(),0,F.rows()-1).replicate(1,3);
+    set_uv(UV,UV_F);
+  }
 }
 
 IGL_INLINE void igl::opengl::ViewerData::set_data(const Eigen::VectorXd & D, igl::ColorMapType cmap, int num_steps)
@@ -364,7 +375,13 @@ IGL_INLINE void igl::opengl::ViewerData::set_edges(
     {
       color<<C.row(e);
     }
-    lines.row(e)<< P.row(E(e,0)), P.row(E(e,1)), color;
+    if(P.cols() == 2)
+    {
+      lines.row(e)<< P.row(E(e,0)),0, P.row(E(e,1)),0, color;
+    }else
+    {
+      lines.row(e)<< P.row(E(e,0)), P.row(E(e,1)), color;
+    }
   }
   dirty |= MeshGL::DIRTY_OVERLAY_LINES;
 }
@@ -445,6 +462,8 @@ IGL_INLINE void igl::opengl::ViewerData::set_labels(const Eigen::MatrixXd& P, co
   assert(P.cols() == 3 && "dimension of label positions incorrect!");
   labels_positions = P;
   labels_strings = str;
+
+  dirty |= MeshGL::DIRTY_CUSTOM_LABELS;
 }
 
 IGL_INLINE void igl::opengl::ViewerData::clear_labels()
@@ -491,8 +510,16 @@ IGL_INLINE void igl::opengl::ViewerData::clear()
 
 IGL_INLINE void igl::opengl::ViewerData::compute_normals()
 {
-  igl::per_face_normals(V, F, F_normals);
-  igl::per_vertex_normals(V, F, F_normals, V_normals);
+  if(V.cols() == 2)
+  {
+    F_normals = Eigen::RowVector3d(0,0,1).replicate(F.rows(),1);
+    V_normals = Eigen::RowVector3d(0,0,1).replicate(V.rows(),1);
+  }else
+  {
+    assert(V.cols() == 3);
+    igl::per_face_normals(V, F, F_normals);
+    igl::per_vertex_normals(V, F, F_normals, V_normals);
+  }
   dirty |= MeshGL::DIRTY_NORMAL;
 }
 
@@ -713,35 +740,23 @@ IGL_INLINE void igl::opengl::ViewerData::updateGL(
       if (meshgl.dirty & MeshGL::DIRTY_AMBIENT)
       {
         meshgl.V_ambient_vbo.resize(data.F.rows()*3,4);
-        for (unsigned i=0; i<data.F.rows();++i)
-          for (unsigned j=0;j<3;++j)
-            meshgl.V_ambient_vbo.row(i*3+j) = data.V_material_ambient.row(data.F(i,j)).cast<float>();
+        per_corner(data.V_material_ambient,meshgl.V_ambient_vbo);
       }
       if (meshgl.dirty & MeshGL::DIRTY_DIFFUSE)
       {
         meshgl.V_diffuse_vbo.resize(data.F.rows()*3,4);
-        for (unsigned i=0; i<data.F.rows();++i)
-          for (unsigned j=0;j<3;++j)
-            meshgl.V_diffuse_vbo.row(i*3+j) = data.V_material_diffuse.row(data.F(i,j)).cast<float>();
+        per_corner(data.V_material_diffuse,meshgl.V_diffuse_vbo);
       }
       if (meshgl.dirty & MeshGL::DIRTY_SPECULAR)
       {
         meshgl.V_specular_vbo.resize(data.F.rows()*3,4);
-        for (unsigned i=0; i<data.F.rows();++i)
-          for (unsigned j=0;j<3;++j)
-            meshgl.V_specular_vbo.row(i*3+j) = data.V_material_specular.row(data.F(i,j)).cast<float>();
+        per_corner(data.V_material_specular,meshgl.V_specular_vbo);
       }
 
       if (meshgl.dirty & MeshGL::DIRTY_NORMAL)
       {
         meshgl.V_normals_vbo.resize(data.F.rows()*3,3);
-        for (unsigned i=0; i<data.F.rows();++i)
-          for (unsigned j=0;j<3;++j)
-            meshgl.V_normals_vbo.row(i*3+j) =
-                         per_corner_normals ?
-               data.F_normals.row(i*3+j).cast<float>() :
-               data.V_normals.row(data.F(i,j)).cast<float>();
-
+        per_corner(data.V_normals,meshgl.V_normals_vbo);
 
         if (invert_normals)
           meshgl.V_normals_vbo = -meshgl.V_normals_vbo;

@@ -16,80 +16,63 @@
 
 namespace igl
 {
-  // Computes the gradient matrix with hat functions on the right, and
-  //  vector CR functions on the left.
-  // See Oded Stein, Max Wardetzky, Alec Jacobson, Eitan Grinspun, 2020.
-  //  "A Simple Discretization of the Vector Dirichlet Energy"
-  //
-  // Inputs:
-  //  V, F: input mesh
-  //  E: a mapping from each halfedge to each edge, as computed with
-  //     orient_halfedges.
-  //     will be computed if not provided.
-  //  oE: the orientation of each halfedge compared to the orientation of the
-  //      actual edge, as computed with orient_halfedges.
-  //      will be computed if not provided.
-  //
-  // Outputs:
-  //  G: computed gradient matrix
-  //  E, oE: these are computed if they are not present, as described above
-
+  /// Computes the gradient matrix with hat functions on the right, and vector
+  /// CR functions on the left. See Oded Stein, Max Wardetzky, Alec Jacobson,
+  /// Eitan Grinspun, 2020. "A Simple Discretization of the Vector Dirichlet
+  /// Energy"
+  ///
+  /// @param[in] V  #V by dim list of vertex positions
+  /// @param[in] F  #F by 3/4 list of triangle/tetrahedron indices
+  /// @param[in] E #F by 3 a mapping from each halfedge to each edge
+  /// @param[in] oE #F by 3 the orientation (e.g., -1 or 1) of each halfedge
+  /// @param[out] G 2*|HE| by #V gradient matrix
   template <typename DerivedV, typename DerivedF, typename DerivedE,
-  typename DerivedOE, typename ScalarG>
+    typename DerivedOE, typename ScalarG>
   IGL_INLINE void
   scalar_to_cr_vector_gradient(
-                               const Eigen::MatrixBase<DerivedV>& V,
-                               const Eigen::MatrixBase<DerivedF>& F,
-                               const Eigen::MatrixBase<DerivedE>& E,
-                               const Eigen::MatrixBase<DerivedOE>& oE,
-                               Eigen::SparseMatrix<ScalarG>& G);
-
+    const Eigen::MatrixBase<DerivedV>& V,
+    const Eigen::MatrixBase<DerivedF>& F,
+    const Eigen::MatrixBase<DerivedE>& E,
+    const Eigen::MatrixBase<DerivedOE>& oE,
+    Eigen::SparseMatrix<ScalarG>& G);
+  /// \overload
+  /// @param[out] E #F by 3 a mapping from each halfedge to each edge
+  /// @param[out] oE #F by 3 the orientation (e.g., -1 or 1) of each halfedge
   template <typename DerivedV, typename DerivedF, typename DerivedE,
-  typename DerivedOE, typename ScalarG>
+    typename DerivedOE, typename ScalarG>
   IGL_INLINE void
   scalar_to_cr_vector_gradient(
-                               const Eigen::MatrixBase<DerivedV>& V,
-                               const Eigen::MatrixBase<DerivedF>& F,
-                               Eigen::PlainObjectBase<DerivedE>& E,
-                               Eigen::PlainObjectBase<DerivedOE>& oE,
-                               Eigen::SparseMatrix<ScalarG>& G);
-
-
-  // Version that uses intrinsic quantities as input
-  //
-  // Inputs:
-  //  F: input mesh connectivity
-  //  l_sq: squared edge lengths of each halfedge
-  //  dA: double area of each face
-  //  E: a mapping from each halfedge to each edge.
-  //  oE: the orientation of each halfedge compared to the orientation of the
-  //      actual edge.
-  //
-  // Outputs:
-  //  G: computed gradient matrix
-
-  template <typename DerivedF, typename DerivedL_sq, typename DerivedE,
-  typename DerivedOE, typename ScalarG>
-  IGL_INLINE void
-  scalar_to_cr_vector_gradient_intrinsic(
-                                         const Eigen::MatrixBase<DerivedF>& F,
-                                         const Eigen::MatrixBase<DerivedL_sq>& l_sq,
-                                         const Eigen::MatrixBase<DerivedE>& E,
-                                         const Eigen::MatrixBase<DerivedOE>& oE,
-                                         Eigen::SparseMatrix<ScalarG>& G);
-
+    const Eigen::MatrixBase<DerivedV>& V,
+    const Eigen::MatrixBase<DerivedF>& F,
+    Eigen::PlainObjectBase<DerivedE>& E,
+    Eigen::PlainObjectBase<DerivedOE>& oE,
+    Eigen::SparseMatrix<ScalarG>& G);
+  ///  \overload
+  ///  \brief intrinsic version.
+  ///
+  ///  @param[in] l_sq #F by 3 list of squared edge lengths of each halfedge
+  ///  @param[in] dA #F list of double areas
+  ///
+  /// \fileinfo
   template <typename DerivedF, typename DerivedL_sq, typename DeriveddA,
-  typename DerivedE, typename DerivedOE, typename ScalarG>
-  IGL_INLINE void
-  scalar_to_cr_vector_gradient_intrinsic(
-                                         const Eigen::MatrixBase<DerivedF>& F,
-                                         const Eigen::MatrixBase<DerivedL_sq>& l_sq,
-                                         const Eigen::MatrixBase<DeriveddA>& dA,
-                                         const Eigen::MatrixBase<DerivedE>& E,
-                                         const Eigen::MatrixBase<DerivedOE>& oE,
-                                         Eigen::SparseMatrix<ScalarG>& G);
-
-
+    typename DerivedE, typename DerivedOE, typename ScalarG>
+  IGL_INLINE void scalar_to_cr_vector_gradient_intrinsic(
+    const Eigen::MatrixBase<DerivedF>& F,
+    const Eigen::MatrixBase<DerivedL_sq>& l_sq,
+    const Eigen::MatrixBase<DeriveddA>& dA,
+    const Eigen::MatrixBase<DerivedE>& E,
+    const Eigen::MatrixBase<DerivedOE>& oE,
+    Eigen::SparseMatrix<ScalarG>& G);
+  /// \overload
+  /// \fileinfo
+  template <typename DerivedF, typename DerivedL_sq, typename DerivedE,
+    typename DerivedOE, typename ScalarG>
+  IGL_INLINE void scalar_to_cr_vector_gradient_intrinsic(
+    const Eigen::MatrixBase<DerivedF>& F,
+    const Eigen::MatrixBase<DerivedL_sq>& l_sq,
+    const Eigen::MatrixBase<DerivedE>& E,
+    const Eigen::MatrixBase<DerivedOE>& oE,
+    Eigen::SparseMatrix<ScalarG>& G);
 }
 
 

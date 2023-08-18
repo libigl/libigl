@@ -39,14 +39,14 @@ IGL_INLINE void igl::boundary_facets(
     K.resize(0,1);
     return;
   }
-  // Get a list of all facets
+  // Get a list of all facets/edges
   DerivedF allF(T.rows()*simplex_size,simplex_size-1);
-  // Gather faces (e.g., loop over tets)
-  for(int i = 0; i< (int)T.rows();i++)
+  switch(simplex_size)
   {
-    switch(simplex_size)
-    {
-      case 4:
+    case 4:
+      // Gather faces (e.g., loop over tets)
+      for(int i = 0; i< (int)T.rows();i++)
+      {
         // get face in correct order
         allF(i*simplex_size+0,0) = T(i,1);
         allF(i*simplex_size+0,1) = T(i,3);
@@ -63,16 +63,19 @@ IGL_INLINE void igl::boundary_facets(
         allF(i*simplex_size+3,0) = T(i,0);
         allF(i*simplex_size+3,1) = T(i,1);
         allF(i*simplex_size+3,2) = T(i,2);
-        break;
-      case 3:
+      }
+      break;
+    case 3:
+      // Gather edges (loop over triangles)
+      for(int i = 0; i< (int)T.rows();i++)
+      {
         allF(i*simplex_size+0,0) = T(i,1);
         allF(i*simplex_size+0,1) = T(i,2);
         allF(i*simplex_size+1,0) = T(i,2);
         allF(i*simplex_size+1,1) = T(i,0);
         allF(i*simplex_size+2,0) = T(i,0);
         allF(i*simplex_size+2,1) = T(i,1);
-        break;
-    }
+      }
   }
   DerivedF sortedF;
   igl::sort(allF,2,true,sortedF);

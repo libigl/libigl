@@ -14,17 +14,15 @@
 
 namespace igl
 {
-  // RANDOM_POINTS_ON_MESH Randomly sample a mesh (V,F) n times.
-  //
-  // Inputs:
-  //   n  number of samples
-  //   V  #V by dim list of mesh vertex positions
-  //   F  #F by 3 list of mesh triangle indices
-  // Outputs:
-  //   B  n by 3 list of barycentric coordinates, ith row are coordinates of
-  //     ith sampled point in face FI(i)
-  //   FI  n list of indices into F 
-  //
+  /// Randomly sample a mesh (V,F) n times.
+  ///
+  /// @param[in] n  number of samples
+  /// @param[in] V  #V by dim list of mesh vertex positions
+  /// @param[in] F  #F by 3 list of mesh triangle indices
+  /// @param[out] B  n by 3 list of barycentric coordinates, ith row are coordinates of
+  ///     ith sampled point in face FI(i)
+  /// @param[out] FI  n list of indices into F 
+  ///
   template <typename DerivedV, typename DerivedF, typename DerivedB, typename DerivedFI>
   IGL_INLINE void random_points_on_mesh(
     const int n,
@@ -32,8 +30,8 @@ namespace igl
     const Eigen::MatrixBase<DerivedF > & F,
     Eigen::PlainObjectBase<DerivedB > & B,
     Eigen::PlainObjectBase<DerivedFI > & FI);
-  // Outputs:
-  //   X  n by dim list of sample positions.
+  /// \overload
+  /// @param[out] X  n by dim list of sample positions.
   template <
     typename DerivedV, 
     typename DerivedF, 
@@ -47,8 +45,9 @@ namespace igl
     Eigen::PlainObjectBase<DerivedB > & B,
     Eigen::PlainObjectBase<DerivedFI > & FI,
     Eigen::PlainObjectBase<DerivedX> & X);
-  // Outputs:
-  //   B n by #V sparse matrix so that  B*V produces a list of sample points
+  /// \overload
+  /// @param[out] B n by #V sparse matrix so that  B*V produces a list of sample
+  ///   points
   template <typename DerivedV, typename DerivedF, typename ScalarB, typename DerivedFI>
   IGL_INLINE void random_points_on_mesh(
     const int n,

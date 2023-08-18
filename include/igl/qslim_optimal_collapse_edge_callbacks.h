@@ -16,19 +16,23 @@
 #include <set>
 namespace igl
 {
-  // Prepare callbacks for decimating edges using the qslim optimal placement
-  // metric.
-  //
-  // Inputs:
-  //   E  #E by 2 list of working edges
-  //   quadrics  reference to list of working per vertex quadrics 
-  //   v1  working variable to maintain end point of collapsed edge
-  //   v2  working variable to maintain end point of collapsed edge
-  // Outputs
-  //   cost_and_placement  callback for evaluating cost of edge collapse and
-  //     determining placement of vertex (see collapse_edge)
-  //   pre_collapse  callback before edge collapse (see collapse_edge)
-  //   post_collapse  callback after edge collapse (see collapse_edge)
+  /// @private 
+  ///
+  /// Prepare callbacks for decimating edges using the qslim optimal placement
+  /// metric.
+  ///
+  /// @param[in] E  #E by 2 list of working edges
+  /// @param[in] quadrics  reference to list of working per vertex quadrics 
+  /// @param[in] v1  working variable to maintain end point of collapsed edge
+  /// @param[in] v2  working variable to maintain end point of collapsed edge
+  /// @param[out] cost_and_placement  callback for evaluating cost of edge collapse and
+  ///     determining placement of vertex (see collapse_edge)
+  /// @param[out] pre_collapse  callback before edge collapse (see collapse_edge)
+  /// @param[out] post_collapse  callback after edge collapse (see collapse_edge)
+  ///
+  /// See decimate.h for more details.
+  ///
+  /// \see collapse_edge
   IGL_INLINE void qslim_optimal_collapse_edge_callbacks(
     Eigen::MatrixXi & E,
     std::vector<std::tuple<Eigen::MatrixXd,Eigen::RowVectorXd,double> > & 

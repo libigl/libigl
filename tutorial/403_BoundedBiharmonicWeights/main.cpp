@@ -1,4 +1,3 @@
-// Because of Mosek complications, we don't use static library if Mosek is used.
 #include <igl/boundary_conditions.h>
 #include <igl/colon.h>
 #include <igl/column_to_quats.h>
@@ -7,7 +6,6 @@
 #include <igl/jet.h>
 #include <igl/lbs_matrix.h>
 #include <igl/deform_skeleton.h>
-#include <igl/normalize_row_sums.h>
 #include <igl/readDMAT.h>
 #include <igl/readMESH.h>
 #include <igl/readTGF.h>
@@ -20,7 +18,6 @@
 #include <algorithm>
 #include <iostream>
 
-#include "tutorial_shared_path.h"
 
 typedef
   std::vector<Eigen::Quaterniond,Eigen::aligned_allocator<Eigen::Quaterniond> >
@@ -141,7 +138,7 @@ int main(int argc, char *argv[])
   //W.topLeftCorner(Wsurf.rows(),Wsurf.cols()) = Wsurf = Wsurf = Wsurf = Wsurf;
 
   // Normalize weights to sum to one
-  igl::normalize_row_sums(W,W);
+  W  = (W.array().colwise() / W.array().rowwise().sum()).eval();
   // precompute linear blend skinning matrix
   igl::lbs_matrix(V,W,M);
 

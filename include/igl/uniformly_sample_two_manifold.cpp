@@ -10,7 +10,6 @@
 #include "slice.h"
 #include "colon.h"
 #include "all_pairs_distances.h"
-#include "mat_max.h"
 #include "vertex_triangle_adjacency.h"
 #include "get_seconds.h"
 #include "cat.h"

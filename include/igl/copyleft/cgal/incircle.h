@@ -17,12 +17,15 @@ namespace igl
   {
     namespace cgal
     {
-      // Inputs:
-      //   pa,pb,pc,pd  2D points.
-      // Output:
-      //   1 if pd is inside of the oriented circle formed by pa,pb,pc.
-      //   0 if pd is co-circular with pa,pb,pc.
-      //  -1 if pd is outside of the oriented circle formed by pa,pb,pc.
+      /// Test whether point is in a given circle
+      ///
+      /// @param[in] pa 2D point on sphere
+      /// @param[in] pb 2D point on sphere
+      /// @param[in] pc 2D point on sphere
+      /// @param[in] pd 2D point to test
+      /// @return 1 if pd is inside of the oriented circle formed by pa,pb,pc.
+      ///   0 if pd is co-circular with pa,pb,pc.
+      ///  -1 if pd is outside of the oriented circle formed by pa,pb,pc.
       template <typename Scalar>
       IGL_INLINE short incircle(
           const Scalar *pa,

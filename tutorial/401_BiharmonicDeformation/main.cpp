@@ -5,7 +5,6 @@
 #include <igl/opengl/glfw/Viewer.h>
 #include <algorithm>
 #include <iostream>
-#include "tutorial_shared_path.h"
 
 double bc_frac = 1.0;
 double bc_dir = -0.03;

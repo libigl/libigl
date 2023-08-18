@@ -14,18 +14,16 @@
 
 namespace igl 
 {
-  // Constructs the cotangent stiffness matrix (discrete laplacian) for a given
-  // mesh with faces F and edge lengths l.
-  //
-  // Inputs:
-  //   l  #F by 3 list of (half-)edge lengths
-  //   F  #F by 3 list of face indices into some (not necessarily
-  //     determined/embedable) list of vertex positions V. It is assumed #V ==
-  //     F.maxCoeff()+1
-  // Outputs:
-  //   L  #V by #V sparse Laplacian matrix
-  //
-  // See also: cotmatrix, intrinsic_delaunay_cotmatrix
+  /// Constructs the cotangent stiffness matrix (discrete laplacian) for a given
+  /// mesh with faces F and edge lengths l.
+  ///
+  /// @param[in] l  #F by 3 list of (half-)edge lengths
+  /// @param[in] F  #F by 3 list of face indices into some (not necessarily
+  ///     determined/embedable) list of vertex positions V. It is assumed #V ==
+  ///     F.maxCoeff()+1
+  /// @param[out] L  #V by #V sparse Laplacian matrix
+  ///
+  /// \see cotmatrix, intrinsic_delaunay_cotmatrix
   template <typename Derivedl, typename DerivedF, typename Scalar>
   IGL_INLINE void cotmatrix_intrinsic(
     const Eigen::MatrixBase<Derivedl> & l, 

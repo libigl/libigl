@@ -58,7 +58,6 @@ IGL_INLINE bool igl::read_triangle_mesh(
 }
 
 
-#ifndef IGL_NO_EIGN
 template <typename DerivedV, typename DerivedF>
 IGL_INLINE bool igl::read_triangle_mesh(
   const std::string str,
@@ -203,7 +202,6 @@ IGL_INLINE bool igl::read_triangle_mesh(
   return true;
 }
 
-#endif
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instantiation

@@ -185,7 +185,9 @@ IGL_INLINE bool igl::decimate(
       cost_and_placement(e,V,F,E,EMAP,EF,EI,cost,p);
       C.row(e) = p;
       costs(e) = cost;
-    },10000);
+    },
+    10000
+    );
     for(int e = 0;e<E.rows();e++)
     {
       Q.emplace(costs(e),e,0);

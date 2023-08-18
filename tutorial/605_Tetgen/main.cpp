@@ -3,7 +3,6 @@
 #include <igl/readOFF.h>
 #include <igl/barycenter.h>
 
-#include "tutorial_shared_path.h"
 
 // Input polygon
 Eigen::MatrixXd V;

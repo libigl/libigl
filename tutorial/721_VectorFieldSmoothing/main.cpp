@@ -20,18 +20,15 @@
 #include <limits>
 #include <stdlib.h>
 
-#include "tutorial_shared_path.h"
-
-
 
 int main(int argc, char * argv[])
 {
   typedef Eigen::SparseMatrix<double> SparseMat;
-  
+
   //Constants used for smoothing
   const double howMuchToSmoothBy = 1e-1;
   const int howManySmoothingInterations = 50;
-  
+
   //Read our mesh
   Eigen::MatrixXd V;
   Eigen::MatrixXi F;
@@ -39,35 +36,35 @@ int main(int argc, char * argv[])
      (argc>1?argv[1]: TUTORIAL_SHARED_PATH "/elephant.obj",V,F)) {
     std::cout << "Failed to load mesh." << std::endl;
   }
-  
+
   //Orient edges for plotting
   Eigen::MatrixXi E, oE;
   igl::orient_halfedges(F, E, oE);
-  
+
   //Compute edge midpoints & edge vectors
   Eigen::MatrixXd edgeMps, parVec, perpVec;
   igl::edge_midpoints(V, F, E, oE, edgeMps);
   igl::edge_vectors(V, F, E, oE, parVec, perpVec);
-  
+
   //Constructing a function to add noise to
   const auto zraw_function = [] (const Eigen::Vector3d& x) {
     return Eigen::Vector3d(0.2*x(1) + cos(2*x(1)+0.2),
                            0.5*x(0) + 0.15,
                            0.3*cos(0.2+igl::PI*x(2)));
   };
-  
+
   Eigen::VectorXd zraw(2*edgeMps.rows());
   for(int i=0; i<edgeMps.rows(); ++i) {
     const Eigen::Vector3d f = zraw_function(edgeMps.row(i));
     zraw(i) = f.dot(parVec.row(i));
     zraw(i+edgeMps.rows()) = f.dot(perpVec.row(i));
   }
-  
+
   //Add noise
   srand(71);
   const double l = 15;
   Eigen::VectorXd znoisy = zraw + l*Eigen::VectorXd::Random(zraw.size());
-  
+
   //Denoise function using the vector Dirichlet energy
   Eigen::VectorXd zsmoothed = znoisy;
   for(int i=0; i<howManySmoothingInterations; ++i) {
@@ -75,12 +72,12 @@ int main(int argc, char * argv[])
     SparseMat L, M;
     igl::cr_vector_mass(V, F, E, oE, M);
     igl::cr_vector_laplacian(V, F, E, oE, L);
-    
+
     //Implicit step
     Eigen::SimplicialLDLT<SparseMat> rhsSolver(M + howMuchToSmoothBy*L);
     zsmoothed = rhsSolver.solve(M*zsmoothed);
   }
-  
+
   //Convert vector fields for plotting
   const auto cr_result_to_vecs_and_colors = [&]
   (const Eigen::VectorXd& z, Eigen::MatrixXd& vecs, Eigen::MatrixXd& colors) {
@@ -90,15 +87,15 @@ int main(int argc, char * argv[])
       + z(i+edgeMps.rows())*perpVec.row(i);
     }
     igl::average_from_edges_onto_vertices
-    (F, E, oE, vecs.rowwise().norm(), colors);
+    (F, E, oE, vecs.rowwise().norm().eval(), colors);
   };
   Eigen::MatrixXd noisyvecs, noisycolors, smoothedvecs, smoothedcolors,
   rawvecs, rawcolors;
   cr_result_to_vecs_and_colors(znoisy, noisyvecs, noisycolors);
   cr_result_to_vecs_and_colors(zsmoothed, smoothedvecs, smoothedcolors);
   cr_result_to_vecs_and_colors(zraw, rawvecs, rawcolors);
-  
-  
+
+
   //Viewer that shows noisy and denoised functions
   igl::opengl::glfw::Viewer viewer;
   viewer.data().set_mesh(V,F);
@@ -142,6 +139,6 @@ int main(int argc, char * argv[])
   viewer.data().set_colormap(CM);
   viewer.callback_key_down(viewer, '1', 0);
   viewer.launch();
-  
+
   return 0;
 }

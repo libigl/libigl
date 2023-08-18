@@ -1,8 +1,8 @@
 #include <igl/readOFF.h>
 #include <igl/opengl/glfw/Viewer.h>
+#include <igl/opengl/glfw/imgui/ImGuiPlugin.h>
 #include <igl/opengl/glfw/imgui/ImGuiMenu.h>
 #include <sstream>
-#include "tutorial_shared_path.h"
 
 Eigen::MatrixXd V;
 Eigen::MatrixXi F;
@@ -72,9 +72,11 @@ int main(int argc, char *argv[])
 
   // Rendering of text labels is handled by ImGui, so we need to enable the ImGui
   // plugin to show text labels.
+  igl::opengl::glfw::imgui::ImGuiPlugin plugin;
+  viewer.plugins.push_back(&plugin);
   igl::opengl::glfw::imgui::ImGuiMenu menu;
+  plugin.widgets.push_back(&menu);
   menu.callback_draw_viewer_window = [](){};
-  viewer.plugins.push_back(&menu);
 
   // Launch the viewer
   viewer.launch();

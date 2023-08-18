@@ -8,10 +8,10 @@
 
 #include "nrosy.h"
 
-#include <igl/copyleft/comiso/nrosy.h>
-#include <igl/triangle_triangle_adjacency.h>
-#include <igl/edge_topology.h>
-#include <igl/per_face_normals.h>
+#include "nrosy.h"
+#include "../../triangle_triangle_adjacency.h"
+#include "../../edge_topology.h"
+#include "../../per_face_normals.h"
 
 #include <stdexcept>
 #include "../../PI.h"
@@ -390,7 +390,8 @@ void igl::copyleft::comiso::NRosyField::solveRoundings()
   gmm::row_matrix< gmm::wsvector< double > > gmm_C(0, n);
 
   COMISO::ConstrainedSolver cs;
-  cs.solve(gmm_C, gmm_A, x, gmm_b, ids_to_round, 0.0, false, true);
+  cs.solve(gmm_C, gmm_A, x, gmm_b, ids_to_round, 0.0, false);
+
 
   // Copy the result back
   for(unsigned i=0; i<F.rows(); ++i)

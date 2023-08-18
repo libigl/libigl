@@ -17,37 +17,31 @@ namespace igl
   {
   namespace comiso
   {
-    // Global seamless parametrization aligned with a given per-face Jacobian (PD1, PD2).
-    // The algorithm is based on
-    // "Mixed-Integer Quadrangulation" by D. Bommes, H. Zimmer, L. Kobbelt
-    // ACM SIGGRAPH 2009, Article No. 77 (http://dl.acm.org/citation.cfm?id=1531383)
-    // We thank Nico Pietroni for providing a reference implementation of MIQ
-    // on which our code is based.
-
-    //  Limitations:
-    //  -  Due to the way of handling of hardFeatures the algorithm  may fail in difficult cases.
-    //  -  Meshes with boundaries are not hendled properly i.e., jagged edges along the boundary are possible
-
-    // Input:
-    // V                 #V by 3 list of mesh vertex 3D positions
-    // F                 #F by 3 list of faces indices in V
-    // PD1               #V by 3 first line of the Jacobian per triangle
-    // PD2               #V by 3 second line of the Jacobian per triangle
-    //                   (optional, if empty it will be a vector in the tangent plane orthogonal to PD1)
-    // gradientSize      global scaling for the gradient (controls the quads resolution)
-    // stiffness         weight for the stiffness iterations (Reserved but not used!)
-    // directRound       greedily round all integer variables at once (greatly improves optimization speed but lowers quality)
-    // iter              stiffness iterations (0 = no stiffness)
-    // localIter         number of local iterations for the integer rounding
-    // doRound           enables the integer rounding (disabling it could be useful for debugging)
-    // singularityRound  set true/false to decide if the singularities' coordinates should be rounded to the nearest integers
-    // roundVertices     id of additional vertices that should be snapped to integer coordinates
-    // hardFeatures      #H by 2 list of pairs of vertices that belongs to edges that should be snapped to integer coordinates
-    //
-    // Output:
-    // UV                 #UV by 2 list of vertices in 2D
-    // FUV                #FUV by 3 list of face indices in UV
-    //
+    /// Global seamless parametrization aligned with a given per-face Jacobian (PD1, PD2).
+    /// The algorithm is based on
+    /// "Mixed-Integer Quadrangulation" by D. Bommes, H. Zimmer, L. Kobbelt
+    /// ACM SIGGRAPH 2009, Article No. 77 (http://dl.acm.org/citation.cfm?id=1531383)
+    /// We thank Nico Pietroni for providing a reference implementation of MIQ
+    /// on which our code is based.
+    ///
+    ///  \bug Due to the way of handling of hardFeatures the algorithm  may fail in difficult cases.
+    ///  \bug Meshes with boundaries are not hendled properly i.e., jagged edges along the boundary are possible
+    /// @param[in] V                 #V by 3 list of mesh vertex 3D positions
+    /// @param[in] F                 #F by 3 list of faces indices in V
+    /// @param[in] PD1               #V by 3 first line of the Jacobian per triangle
+    /// @param[in] PD2               #V by 3 second line of the Jacobian per triangle (optional, if empty it will be a vector in the tangent plane orthogonal to PD1)
+    /// @param[in] gradientSize      global scaling for the gradient (controls the quads resolution)
+    /// @param[in] stiffness         weight for the stiffness iterations (Reserved but not used!)
+    /// @param[in] directRound       greedily round all integer variables at once (greatly improves optimization speed but lowers quality)
+    /// @param[in] iter              stiffness iterations (0 = no stiffness)
+    /// @param[in] localIter         number of local iterations for the integer rounding
+    /// @param[in] doRound           enables the integer rounding (disabling it could be useful for debugging)
+    /// @param[in] singularityRound  set true/false to decide if the singularities' coordinates should be rounded to the nearest integers
+    /// @param[in] roundVertices     id of additional vertices that should be snapped to integer coordinates
+    /// @param[in] hardFeatures      #H by 2 list of pairs of vertices that belongs to edges that should be snapped to integer coordinates
+    /// @param[out] UV                 #UV by 2 list of vertices in 2D
+    /// @param[out] FUV                #FUV by 3 list of face indices in UV
+    ///
     template <typename DerivedV, typename DerivedF, typename DerivedU>
     IGL_INLINE void miq(
       const Eigen::PlainObjectBase<DerivedV> &V,
@@ -66,34 +60,28 @@ namespace igl
       const std::vector<int> &roundVertices = std::vector<int>(),
       const std::vector<std::vector<int>> &hardFeatures = std::vector<std::vector<int> >());
 
-    // Helper function that allows to directly provided pre-combed bisectors for an already cut mesh
-
-    // Input:
-    // V                  #V by 3 list of mesh vertex 3D positions
-    // F                  #F by 3 list of faces indices in V
-
-    // Additional Input:
-    // PD1_combed         #F by 3 first combed Jacobian
-    // PD2_combed         #F by 3 second combed Jacobian
-    // mismatch             #F by 3 list of per-corner integer PI/2 rotations
-    // singular           #V list of flag that denotes if a vertex is singular or not
-    // seams              #F by 3 list of per-corner flag that denotes seams
-
-    // Input:
-    // gradientSize       global scaling for the gradient (controls the quads resolution)
-    // stiffness          weight for the stiffness iterations (Reserved but not used!)
-    // directRound        greedily round all integer variables at once (greatly improves optimization speed but lowers quality)
-    // iter               stiffness iterations (0 = no stiffness)
-    // localIter          number of local iterations for the integer rounding
-    // doRound            enables the integer rounding (disabling it could be useful for debugging)
-    // singularityRound   set true/false to decide if the singularities' coordinates should be rounded to the nearest integers
-    // roundVertices      id of additional vertices that should be snapped to integer coordinates
-    // hardFeatures       #H by 2 list of pairs of vertices that belongs to edges that should be snapped to integer coordinates
-
-    // Output:
-    // UV                 #UV by 2 list of vertices in 2D
-    // FUV                #FUV by 3 list of face indices in UV
-    //
+    /// miq Helper function that allows to directly provided pre-combed bisectors for an already cut mesh
+    ///
+    /// @param[in] V                  #V by 3 list of mesh vertex 3D positions
+    /// @param[in] F                  #F by 3 list of faces indices in V
+    /// @param[in] Additional Input:
+    /// @param[in] PD1_combed         #F by 3 first combed Jacobian
+    /// @param[in] PD2_combed         #F by 3 second combed Jacobian
+    /// @param[in] mismatch             #F by 3 list of per-corner integer PI/2 rotations
+    /// @param[in] singular           #V list of flag that denotes if a vertex is singular or not
+    /// @param[in] seams              #F by 3 list of per-corner flag that denotes seams
+    /// @param[out] UV                 #UV by 2 list of vertices in 2D
+    /// @param[out] FUV                #FUV by 3 list of face indices in UV
+    /// @param[in] gradientSize       global scaling for the gradient (controls the quads resolution)
+    /// @param[in] stiffness          weight for the stiffness iterations (Reserved but not used!)
+    /// @param[in] directRound        greedily round all integer variables at once (greatly improves optimization speed but lowers quality)
+    /// @param[in] iter               stiffness iterations (0 = no stiffness)
+    /// @param[in] localIter          number of local iterations for the integer rounding
+    /// @param[in] doRound            enables the integer rounding (disabling it could be useful for debugging)
+    /// @param[in] singularityRound   set true/false to decide if the singularities' coordinates should be rounded to the nearest integers
+    /// @param[in] roundVertices      id of additional vertices that should be snapped to integer coordinates
+    /// @param[in] hardFeatures       #H by 2 list of pairs of vertices that belongs to edges that should be snapped to integer coordinates
+    ///
     template <typename DerivedV, typename DerivedF, typename DerivedU>
     IGL_INLINE void miq(
       const Eigen::PlainObjectBase<DerivedV> &V,
