@@ -91,7 +91,7 @@ option(LIBIGL_EMBREE           "Build target igl::embree"           ${LIBIGL_TOP
 option(LIBIGL_GLFW             "Build target igl::glfw"             ${LIBIGL_TOPLEVEL_PROJECT})
 option(LIBIGL_IMGUI            "Build target igl::imgui"            ${LIBIGL_TOPLEVEL_PROJECT})
 option(LIBIGL_OPENGL           "Build target igl::opengl"           ${LIBIGL_TOPLEVEL_PROJECT})
-option(LIBIGL_PNG              "Build target igl::png"              ${LIBIGL_TOPLEVEL_PROJECT})
+option(LIBIGL_STB              "Build target igl::stb"              ${LIBIGL_TOPLEVEL_PROJECT})
 option(LIBIGL_PREDICATES       "Build target igl::predicates"       ${LIBIGL_TOPLEVEL_PROJECT})
 option(LIBIGL_SPECTRA          "Build target igl::spectra"          ${LIBIGL_TOPLEVEL_PROJECT})
 option(LIBIGL_XML              "Build target igl::xml"              ${LIBIGL_TOPLEVEL_PROJECT})
@@ -168,3 +168,4 @@ if(LIBIGL_INSTALL)
     write_basic_package_version_file("${version_config_file}" COMPATIBILITY SameMajorVersion)
     install(FILES "${project_config_out}" "${version_config_file}" DESTINATION "${export_dest_dir}")
 endif()
+
