@@ -1,7 +1,7 @@
 #include <igl/opengl/glfw/Viewer.h>
 #include <igl/read_triangle_mesh.h>
 #include <igl/triangulated_grid.h>
-#include <igl/png/readPNG.h>
+#include <igl/stb/read_image.h>
 #include <igl/get_seconds.h>
 #include <igl/PI.h>
 #include <Eigen/Core>
@@ -98,7 +98,7 @@ int main(int argc, char *argv[])
   if(argc>2)
   {
     Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> R,G,B,A;
-    igl::png::readPNG(argv[2],R,G,B,A);
+    igl::stb::read_image(argv[2],R,G,B,A);
     // If more args, read them as light direction
     if(argc>2+3)
     {

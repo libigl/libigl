@@ -56,7 +56,7 @@
 # option(LIBIGL_GLFW                "Build target igl::glfw"                ON)
 # option(LIBIGL_IMGUI               "Build target igl::imgui"               ON)
 # option(LIBIGL_OPENGL              "Build target igl::opengl"              ON)
-# option(LIBIGL_PNG                 "Build target igl::png"                 ON)
+# option(LIBIGL_STB                 "Build target igl::stb"                 ON)
 # option(LIBIGL_PREDICATES          "Build target igl::predicates"          ON)
 # option(LIBIGL_XML                 "Build target igl::xml"                 ON)
 # option(LIBIGL_COPYLEFT_CGAL       "Build target igl_copyleft::cgal"       ON)

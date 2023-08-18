@@ -5,13 +5,14 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
-#include "render_to_png.h"
+#include "render_to_file.h"
+#include "../../stb/write_image.h"
 #include <stb_image_write.h>
 
-#include "../opengl/gl.h"
+#include "../gl.h"
 
-IGL_INLINE bool igl::png::render_to_png(
-  const std::string png_file,
+IGL_INLINE bool igl::opengl::stb::render_to_file(
+  const std::string filename,
   const int width,
   const int height,
   const bool alpha,
@@ -35,7 +36,7 @@ IGL_INLINE bool igl::png::render_to_png(
       data[4*(i+j*width)+3] = 255;
     }
   }
-  bool ret = stbi_write_png(png_file.c_str(), width, height, 4, data, 4*width*sizeof(unsigned char));
+  const bool ret = igl::stb::write_image(filename,width,height,data);
   delete [] data;
   return ret;
 }
