@@ -15,31 +15,48 @@ namespace igl
 {
   namespace stb
   {
-    // Writes an image to a file
-    // 
-    // Supported file formats (based on STB):
-    //  
-    //    JPEG 
-    //    PNG 
-    //    TGA 
-    //    BMP 
-    // 
-    // Input:
-    //  R,G,B,A texture channels
-    //  quality (only for jpg file) jpeg quality
-    // Output:
-    //  png_file  path to .png file
-    // Returns true on success, false on failure
-    //
+    /// Writes an image to a file
+    /// 
+    /// Supported file formats (based on STB):
+    ///  
+    ///    JPEG 
+    ///    PNG 
+    ///    TGA 
+    ///    BMP 
+    /// 
+    /// @param[in] R  red channel
+    /// @param[in] G  green channel
+    /// @param[in] B  blue channel
+    /// @param[in] A  alpha channel
+    /// @param[in] image_file  path to image file
+    /// @param[in] quality  (only for jpg file) jpeg quality
+    /// @returns true on success, false on errors
+    ///
     IGL_INLINE bool write_image
     (
+      const std::string image_file,
       const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& R,
       const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& G,
       const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& B,
       const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& A,
-      const std::string image_file,
-      int quality=95
+      const int quality=90
     );
+    /// Raw image writer.
+    ///
+    /// @param[in] image_file  path to image file
+    /// @param[in] width  image width
+    /// @param[in] height  image height
+    /// @param[in] rgba_data  raw image data
+    /// @param[in] quality  (only for jpg file) jpeg quality
+    /// @returns true on success, false on errors
+    ///
+    IGL_INLINE bool write_image(
+      const std::string image_file,
+      const int width,
+      const int height,
+      const unsigned char * rgba_data,
+      const int quality = 90);
+
   }
 }
 

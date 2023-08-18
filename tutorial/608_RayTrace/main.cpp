@@ -63,6 +63,6 @@ int main(int argc, char *argv[])
   std::cout<<"Rendered scene saved to "<<png_file<<std::endl;
 
   // save to PNG file
-  igl::stb::write_image(R,G,B,A,png_file);
+  igl::stb::write_image(png_file,R,G,B,A);
   return 0;
 }

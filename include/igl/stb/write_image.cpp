@@ -11,19 +11,18 @@
 #include "../pathinfo.h"
 
 IGL_INLINE bool igl::stb::write_image(
+  const std::string image_file,
   const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& R,
   const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& G,
   const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& B,
   const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& A,
-  const std::string image_file,
-  int quality
+  const int quality
 )
 {
   assert((R.rows() == G.rows()) && (G.rows() == B.rows()) && (B.rows() == A.rows()));
   assert((R.cols() == G.cols()) && (G.cols() == B.cols()) && (B.cols() == A.cols()));
 
   const int comp = 4;                                  // 4 Channels Red, Green, Blue, Alpha
-  const int stride_in_bytes = R.rows()*comp;           // Length of one row in bytes
   std::vector<unsigned char> data(R.size()*comp,0);     // The image itself;
 
   for (unsigned i = 0; i<R.rows();++i)
@@ -36,21 +35,33 @@ IGL_INLINE bool igl::stb::write_image(
         data[(j * R.rows() * comp) + (i * comp) + 3] = A(i,R.cols()-1-j);
     }
   }
+  return write_image(image_file,R.rows(),R.cols(),data.data(),quality);
+}
+
+IGL_INLINE bool igl::stb::write_image(
+  const std::string image_file,
+  const int width,
+  const int height,
+  const unsigned char * rgba_data,
+  const int quality)
+{
+  const int comp = 4;                                  // 4 Channels Red, Green, Blue, Alpha
+  const int stride_in_bytes = width*comp;           // Length of one row in bytes
   using namespace std;
   string d,b,e,f;
   pathinfo(image_file,d,b,e,f);
   if(e == "png")
   {
-    return stbi_write_png(image_file.c_str(), R.rows(), R.cols(), comp, data.data(), stride_in_bytes)!=0;
+    return stbi_write_png(image_file.c_str(), width, height, comp, rgba_data, stride_in_bytes)!=0;
   } else if( e == "tga") 
   {
-    return stbi_write_tga(image_file.c_str(), R.rows(), R.cols(), comp, data.data())!=0;
+    return stbi_write_tga(image_file.c_str(), width, height, comp, rgba_data)!=0;
   } else if( e == "bmp") 
   {
-    return stbi_write_bmp(image_file.c_str(), R.rows(), R.cols(), comp, data.data())!=0;
+    return stbi_write_bmp(image_file.c_str(), width, height, comp, rgba_data)!=0;
   } else if( e == "jpg") 
   {
-    return stbi_write_jpg(image_file.c_str(), R.rows(), R.cols(), comp, data.data(),quality)!=0;
+    return stbi_write_jpg(image_file.c_str(), width, height, comp, rgba_data,quality)!=0;
   } else 
   {
     // unsupported file format
@@ -59,7 +70,7 @@ IGL_INLINE bool igl::stb::write_image(
   // not yet.
   //} else if( e == "hdr") 
   // {
-  //  return stbi_write_hdr(image_file.c_str(), R.rows(), R.cols(), comp, data.data())!=0;
+  //  return stbi_write_hdr(image_file.c_str(), width, height, comp, rgba_data.rgba_data())!=0;
   // }
 }
 

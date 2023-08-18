@@ -20,7 +20,7 @@ bool key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier
       viewer.data(),false,R,G,B,A);
 
     // Save it to a PNG
-    igl::stb::write_image(R,G,B,A,"out.png");
+    igl::stb::write_image("out.png",R,G,B,A);
   }
 
   if (key == '2')

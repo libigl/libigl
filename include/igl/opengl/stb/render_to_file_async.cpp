@@ -5,13 +5,14 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
-#include "render_to_png_async.h"
+#include "render_to_file_async.h"
+#include "../../stb/write_image.h"
 #include "../gl.h"
 #include <stb_image_write.h>
 
-static IGL_INLINE bool render_to_png_async_helper(
+static IGL_INLINE bool render_to_file_async_helper(
   unsigned char * img, int width, int height,
-  const std::string png_file,
+  const std::string filename,
   const bool alpha,
   const bool fast)
 {
@@ -25,13 +26,13 @@ static IGL_INLINE bool render_to_png_async_helper(
     }
   }
 
-  bool ret = stbi_write_png(png_file.c_str(), width, height, 4, img, width*sizeof(unsigned char));
+  const bool ret = igl::stb::write_image(filename,width,height,img);
   delete [] img;
   return ret;
 }
 
-IGL_INLINE std::thread igl::png::render_to_png_async(
-  const std::string png_file,
+IGL_INLINE std::thread igl::opengl::stb::render_to_file_async(
+  const std::string filename,
   const int width,
   const int height,
   const bool alpha,
@@ -48,7 +49,7 @@ IGL_INLINE std::thread igl::png::render_to_png_async(
     GL_UNSIGNED_BYTE,
     data);
   // Part that should be asynchronous
-  std::thread t(render_to_png_async_helper,data,width,height,png_file,alpha,fast);
+  std::thread t(render_to_file_async_helper,data,width,height,filename,alpha,fast);
   t.detach();
   return t;
 }
