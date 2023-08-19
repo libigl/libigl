@@ -235,17 +235,17 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
     }else
     {
 #ifdef MIN_QUAD_WITH_FIXED_CPP_DEBUG
-    cout<<"    ldlt"<<endl;
+        cout<<"    ldlt/lu"<<endl;
 #endif
       // Either not PD or there are equality constraints
       SparseMatrix<T> NA;
       slice(new_A,data.unknown_lagrange,data.unknown_lagrange,NA);
       data.NA = NA;
-      // Ideally we'd use LDLT but Eigen doesn't support positive semi-definite
-      // matrices:
-      // http://forum.kde.org/viewtopic.php?f=74&t=106962&p=291990#p291990
-      if(data.Auu_sym && false)
+      if(data.Auu_pd)
       {
+#ifdef MIN_QUAD_WITH_FIXED_CPP_DEBUG
+        cout<<"    ldlt"<<endl;
+#endif
         data.ldlt.compute(NA);
         switch(data.ldlt.info())
         {

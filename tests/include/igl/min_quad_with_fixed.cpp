@@ -16,3 +16,33 @@ TEST_CASE("min_quad_with_fixed: dense", "[igl]" )
   REQUIRE(abs(x(1)- 1.5)<igl::EPS<double>());
   REQUIRE(abs(x(2)- -.5)<igl::EPS<double>());
 }
+
+TEST_CASE("min_quad_with_fixed: Aeq", "[igl]" )
+{
+  Eigen::MatrixXd Q(4,4);
+  Q<<
+    1,-1,0,0,
+    -1,2,-1,0,
+    0,-1,2,-1,
+    0,0,-1,1;
+  Eigen::VectorXd B = Eigen::VectorXd::Zero(4);
+  Eigen::MatrixXd Aeq(1,4);
+  Aeq<<-1,0,0,1;
+  Eigen::VectorXd beq(1);
+  beq<<3;
+  Eigen::VectorXi b(1);
+  b<<0;
+  Eigen::VectorXd bc(1);
+  bc<<0;
+
+  Eigen::VectorXd Z;
+  igl::min_quad_with_fixed(
+    Eigen::SparseMatrix<double>(Q.sparseView()),B,b,bc,
+    Eigen::SparseMatrix<double>(Aeq.sparseView()),beq,true,Z);
+
+  Eigen::VectorXd Zgt(4);
+  Zgt << 0,1,2,3;
+  const double epsilon = 1e-15;
+  test_common::assert_near(Z,Zgt,epsilon);
+
+}
