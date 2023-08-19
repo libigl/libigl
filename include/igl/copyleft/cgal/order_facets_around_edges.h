@@ -18,28 +18,25 @@ namespace igl
   {
     namespace cgal
     {
-      // For each undirected edge, sort its adjacent faces.  Assuming the
-      // undirected edge is (s, d).  Sort the adjacent faces clockwise around the
-      // axis (d - s), i.e. left-hand rule.  An adjacent face is consistently
-      // oriented if it contains (d, s) as a directed edge.
-      //
-      // For overlapping faces, break the tie using signed face index, smaller
-      // signed index comes before the larger signed index.  Signed index is
-      // computed as (consistent? 1:-1) * index.
-      //
-      // Inputs:
-      //   V    #V by 3 list of vertices.
-      //   F    #F by 3 list of faces
-      //   N    #F by 3 list of face normals.
-      //  uE    #uE by 2 list of vertex_indices, represents undirected edges.
-      //  uE2E  #uE list of lists that maps uE to E. (a one-to-many map)
-      //
-      // Outputs:
-      //   uE2oE #uE list of lists that maps uE to an ordered list of E. (a
-      //         one-to-many map)
-      //   uE2C  #uE list of lists of bools indicates whether each face in
-      //         uE2oE[i] is consistently orientated as the ordering.
-      //
+      /// For each undirected edge, sort its adjacent faces.  Assuming the
+      /// undirected edge is (s, d).  Sort the adjacent faces clockwise around the
+      /// axis (d - s), i.e. left-hand rule.  An adjacent face is consistently
+      /// oriented if it contains (d, s) as a directed edge.
+      ///
+      /// For overlapping faces, break the tie using signed face index, smaller
+      /// signed index comes before the larger signed index.  Signed index is
+      /// computed as (consistent? 1:-1) * index.
+      ///
+      /// @param[in] V    #V by 3 list of vertices.
+      /// @param[in] F    #F by 3 list of faces
+      /// @param[in] N    #F by 3 list of face normals.
+      /// @param[in] uE    #uE by 2 list of vertex_indices, represents undirected edges.
+      /// @param[in] uE2E  #uE list of lists that maps uE to E. (a one-to-many map)
+      /// @param[out] uE2oE #uE list of lists that maps uE to an ordered list of E. (a
+      ///        one-to-many map)
+      /// @param[out] uE2C  #uE list of lists of bools indicates whether each face in
+      ///         uE2oE[i] is consistently orientated as the ordering.
+      ///
       template<
           typename DerivedV,
           typename DerivedF,
@@ -59,7 +56,7 @@ namespace igl
         const std::vector<std::vector<uE2EType> >& uE2E,
         std::vector<std::vector<uE2oEType> >& uE2oE,
         std::vector<std::vector<uE2CType > >& uE2C );
-
+      /// \overload
       template<
           typename DerivedV,
           typename DerivedF,
@@ -79,9 +76,9 @@ namespace igl
         const std::vector<std::vector<uE2EType> >& uE2E,
         std::vector<std::vector<uE2oEType> >& uE2oE,
         std::vector<std::vector<uE2CType > >& uE2C );
-
-      // Order faces around each edge. Only exact predicate is used in the algorithm.
-      // Normal is not needed.
+      /// \overload
+      /// \brief Order faces around each edge. Only exact predicate is used in
+      /// the algorithm.  Normal is not needed.
       template<
           typename DerivedV,
           typename DerivedF,

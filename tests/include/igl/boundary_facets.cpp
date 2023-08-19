@@ -90,7 +90,6 @@ TEST_CASE("boundary_facets: non-manifold", "[igl]")
   igl::sortrows(Eigen::MatrixXi(Egt),true,Egt);
   Eigen::MatrixXi E;
   igl::boundary_facets(F,E);
-  std::cerr<<igl::matlab_format(E,"E")<<std::endl;
   igl::sortrows(Eigen::MatrixXi(E),true,E);
   test_common::assert_eq(Egt,E);
 }

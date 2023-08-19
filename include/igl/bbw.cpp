@@ -118,12 +118,8 @@ IGL_INLINE bool igl::bbw(
     }
     W.col(i) = Wi;
   };
-#ifdef WIN32
-  for (int i = 0; i < m; ++i)
-    optimize_weight(i);
-#else
+
   parallel_for(m,optimize_weight,2);
-#endif
   if(error)
   {
     return false;

@@ -5,7 +5,8 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
-#include <igl/predicates/predicates.h>
+#include "./predicates.h"
+// This is a different file also called predicates.h
 #include <predicates.h>
 #include <type_traits>
 
@@ -28,11 +29,17 @@ using REAL = IGL_PREDICATES_REAL;
 #endif
 
 IGL_INLINE void exactinit() {
-  static bool initialized = false;
-  if (! initialized) {
-    ::exactinit();
-    initialized = true;
-  }
+  // Thread-safe initialization using Meyers' singleton
+  class MySingleton {
+  public:
+    static MySingleton& instance() {
+      static MySingleton instance;
+      return instance;
+    }
+  private:
+    MySingleton() { ::exactinit(); }
+  };
+  MySingleton::instance();
 }
 
 template<typename Vector2D>

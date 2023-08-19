@@ -8,7 +8,6 @@
 #include "covariance_scatter_matrix.h"
 #include "arap_linear_block.h"
 #include "cotmatrix.h"
-#include "diag.h"
 #include "sum.h"
 #include "edges.h"
 #include "verbose.h"

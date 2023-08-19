@@ -1,0 +1,163 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - main
+      - stable
+  pull_request:
+    branches:
+      - main
+      - stable
+
+env:
+  CTEST_OUTPUT_ON_FAILURE: ON
+  CTEST_PARALLEL_LEVEL: 2
+
+jobs:
+  ####################
+  # Linux / macOS
+  ####################
+
+  Unix:
+    name: ${{ matrix.os }} ${{ fromJSON('["Header-Only", "Static"]')[matrix.build-params.static == 'ON'] }} ${{ matrix.build-params.tutorials == 'ON' && 'tutorial' || ''}} ${{ matrix.build-params.tests == 'ON' && 'tests' || ''}} ${{ matrix.config }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-20.04, macos-latest]
+        config: [Release]
+        build-params: [ {static:  ON, tutorials:  ON, tests:  ON }, {static: OFF, tutorials: OFF, tests:  ON }, {static: OFF, tutorials:  ON, tests: OFF }]
+    env:
+      IGL_NUM_THREADS: 1  # See https://github.com/libigl/libigl/pull/996
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v1
+        with:
+          fetch-depth: 10
+
+      - name: Dependencies (Linux)
+        if: runner.os == 'Linux'
+        run: |
+            sudo apt-get update
+            sudo apt-get install \
+              libblas-dev \
+              libglu1-mesa-dev \
+              liblapack-dev \
+              xorg-dev \
+              ccache
+
+      - name: Dependencies (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          HOMEBREW_NO_AUTO_UPDATE=1 brew install ccache
+
+      - name: Cache Build
+        id: cache-build
+        uses: actions/cache@v2
+        with:
+          path: ~/.ccache
+          key: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.build-params.static }}-cache
+
+      - name: Prepare ccache
+        run: |
+          ccache --max-size=1.0G
+          ccache -V && ccache --show-stats && ccache --zero-stats
+
+      - name: Configure
+        run: |
+          mkdir -p build
+          cd build
+          cmake .. \
+            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+            -DCMAKE_BUILD_TYPE=${{ matrix.config }} \
+            -DLIBIGL_USE_STATIC_LIBRARY=${{ matrix.build-params.static }} \
+            -DLIBIGL_BUILD_TUTORIALS=${{ matrix.build-params.tutorials }} \
+            -DLIBIGL_BUILD_TESTS=${{ matrix.build-params.tests }} \
+            -DLIBIGL_COPYLEFT_CGAL=ON
+
+      - name: Build
+        run: cd build; make -j2; ccache --show-stats
+
+      - name: Tests
+        run: cd build; ctest --verbose
+
+  ####################
+  # Windows
+  ####################
+
+  Windows:
+    name: Windows ${{ fromJSON('["Header-Only", "Static"]')[matrix.build-params.static == 'ON'] }} ${{ matrix.build-params.tutorials == 'ON' && 'tutorial' || ''}} ${{ matrix.build-params.selected_tutorial != 'NONE' && matrix.build-params.selected_tutorial || '' }} ${{ matrix.build-params.tests == 'ON' && 'tests' || ''}} ${{ matrix.config }}
+    runs-on: windows-2022
+    strategy:
+      fail-fast: false
+      matrix:
+        config: [Release]
+        build-params: [ 
+        {static:  ON, tutorials:  ON, tests:  ON, selected_tutorial: NONE}, 
+        {static: OFF, tutorials: OFF, tests:  ON, selected_tutorial: NONE}, 
+        {static: OFF, tutorials:  ON, tests: OFF, selected_tutorial: 1},
+        {static: OFF, tutorials:  ON, tests: OFF, selected_tutorial: 2},
+        {static: OFF, tutorials:  ON, tests: OFF, selected_tutorial: 3},
+        {static: OFF, tutorials:  ON, tests: OFF, selected_tutorial: 4},
+        {static: OFF, tutorials:  ON, tests: OFF, selected_tutorial: 5},
+        {static: OFF, tutorials:  ON, tests: OFF, selected_tutorial: 6},
+        {static: OFF, tutorials:  ON, tests: OFF, selected_tutorial: 7},
+        {static: OFF, tutorials:  ON, tests: OFF, selected_tutorial: 8},
+        {static: OFF, tutorials:  ON, tests: OFF, selected_tutorial: 9},
+      ]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v1
+        with:
+          fetch-depth: 10
+
+      - name: Install Ninja
+        uses: seanmiddleditch/gha-setup-ninja@master
+
+      - name: Set env variable for sccache
+        run: |
+          echo "appdata=$env:LOCALAPPDATA" >> ${env:GITHUB_ENV}
+
+      - name: Cache build
+        id: cache-build
+        uses: actions/cache@v2
+        with:
+          path: ${{ env.appdata }}\Mozilla\sccache
+          key: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.build-params.static }}-cache
+
+      - name: Prepare sccache
+        run: |
+          iwr -useb 'https://raw.githubusercontent.com/scoopinstaller/install/master/install.ps1' -outfile 'install.ps1'
+          .\install.ps1 -RunAsAdmin
+          scoop install sccache --global
+          # Scoop modifies the PATH so we make it available for the next steps of the job
+          echo "${env:PATH}" >> ${env:GITHUB_PATH}
+
+      - name: Configure and build
+        shell: cmd
+        run: |
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=x64
+          cmake -G Ninja ^
+            -DCMAKE_CXX_COMPILER_LAUNCHER=sccache ^
+            -DCMAKE_BUILD_TYPE=${{ matrix.config }} ^
+            -DLIBIGL_USE_STATIC_LIBRARY=${{ matrix.build-params.static }} ^
+            -DLIBIGL_COPYLEFT_CGAL=ON ^
+            -DLIBIGL_BUILD_TUTORIALS=${{ matrix.build-params.tutorials }} ^
+            -DLIBIGL_BUILD_TESTS=${{ matrix.build-params.tests }} ^
+            -DLIBIGL_TUTORIALS_CHAPTER1=${{ (matrix.build-params.selected_tutorial == 'NONE' || matrix.build-params.selected_tutorial == '1') && 'ON' || 'OFF' }} ^
+            -DLIBIGL_TUTORIALS_CHAPTER2=${{ (matrix.build-params.selected_tutorial == 'NONE' || matrix.build-params.selected_tutorial == '2') && 'ON' || 'OFF' }} ^
+            -DLIBIGL_TUTORIALS_CHAPTER3=${{ (matrix.build-params.selected_tutorial == 'NONE' || matrix.build-params.selected_tutorial == '3') && 'ON' || 'OFF' }} ^
+            -DLIBIGL_TUTORIALS_CHAPTER4=${{ (matrix.build-params.selected_tutorial == 'NONE' || matrix.build-params.selected_tutorial == '4') && 'ON' || 'OFF' }} ^
+            -DLIBIGL_TUTORIALS_CHAPTER5=${{ (matrix.build-params.selected_tutorial == 'NONE' || matrix.build-params.selected_tutorial == '5') && 'ON' || 'OFF' }} ^
+            -DLIBIGL_TUTORIALS_CHAPTER6=${{ (matrix.build-params.selected_tutorial == 'NONE' || matrix.build-params.selected_tutorial == '6') && 'ON' || 'OFF' }} ^
+            -DLIBIGL_TUTORIALS_CHAPTER7=${{ (matrix.build-params.selected_tutorial == 'NONE' || matrix.build-params.selected_tutorial == '7') && 'ON' || 'OFF' }} ^
+            -DLIBIGL_TUTORIALS_CHAPTER8=${{ (matrix.build-params.selected_tutorial == 'NONE' || matrix.build-params.selected_tutorial == '8') && 'ON' || 'OFF' }} ^
+            -DLIBIGL_TUTORIALS_CHAPTER9=${{ (matrix.build-params.selected_tutorial == 'NONE' || matrix.build-params.selected_tutorial == '9') && 'ON' || 'OFF' }} ^
+            -B build ^
+            -S .
+          cmake --build build -j2
+
+      - name: Tests
+        run: cd build; ctest --verbose -j2
+

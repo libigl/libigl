@@ -1,4 +1,3 @@
-#include "tutorial_shared_path.h"
 #include <igl/opengl/glfw/Viewer.h>
 #include <GLFW/glfw3.h>
 #include <string>

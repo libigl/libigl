@@ -7,7 +7,6 @@
 #include <Eigen/Sparse>
 #include <iostream>
 #include <queue>
-#include "tutorial_shared_path.h"
 
 Eigen::MatrixXd V,U;
 Eigen::MatrixXi F;
@@ -52,20 +51,19 @@ int main(int argc, char * argv[])
         // Rescale eigen vectors for visualization
         VectorXd Z =
           bbd*0.5*U.col(c);
-        Eigen::MatrixXd C;
-        igl::parula(U.col(c).eval(),false,C);
-        c = (c+1)%U.cols();
         if(twod)
         {
           V.col(2) = Z;
+          viewer.data().set_mesh(V,F);
+          viewer.data().compute_normals();
         }
-        viewer.data().set_mesh(V,F);
-        viewer.data().compute_normals();
-        viewer.data().set_colors(C);
+        viewer.data().set_data(U.col(c).eval());
+        c = (c+1)%U.cols();
         return true;
       }
     }
   };
+  viewer.data().set_mesh(V,F);
   viewer.callback_key_down(viewer,' ',0);
   viewer.data().show_lines = false;
   std::cout<<

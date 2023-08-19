@@ -12,8 +12,8 @@
 #include <cstdio>
 #include <vector>
 
-#include <igl/per_vertex_normals.h>
-#include <igl/embree/EmbreeIntersector.h>
+#include "../per_vertex_normals.h"
+#include "EmbreeIntersector.h"
 
 template <typename ScalarMatrix, typename IndexMatrix>
 IGL_INLINE ScalarMatrix igl::embree::line_mesh_intersection

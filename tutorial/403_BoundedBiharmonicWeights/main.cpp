@@ -1,10 +1,3 @@
-// Because of Mosek complications, we don't use static library if Mosek is used.
-#ifdef LIBIGL_WITH_MOSEK
-#ifdef IGL_STATIC_LIBRARY
-#undef IGL_STATIC_LIBRARY
-#endif
-#endif
-
 #include <igl/boundary_conditions.h>
 #include <igl/colon.h>
 #include <igl/column_to_quats.h>
@@ -13,13 +6,11 @@
 #include <igl/jet.h>
 #include <igl/lbs_matrix.h>
 #include <igl/deform_skeleton.h>
-#include <igl/normalize_row_sums.h>
 #include <igl/readDMAT.h>
 #include <igl/readMESH.h>
 #include <igl/readTGF.h>
 #include <igl/opengl/glfw/Viewer.h>
 #include <igl/bbw.h>
-//#include <igl/embree/bone_heat.h>
 
 #include <Eigen/Geometry>
 #include <Eigen/StdVector>
@@ -27,7 +18,6 @@
 #include <algorithm>
 #include <iostream>
 
-#include "tutorial_shared_path.h"
 
 typedef
   std::vector<Eigen::Quaterniond,Eigen::aligned_allocator<Eigen::Quaterniond> >
@@ -85,13 +75,6 @@ bool pre_draw(igl::opengl::glfw::Viewer & viewer)
   return false;
 }
 
-void set_color(igl::opengl::glfw::Viewer &viewer)
-{
-  Eigen::MatrixXd C;
-  igl::jet(W.col(selected).eval(),true,C);
-  viewer.data().set_colors(C);
-}
-
 bool key_down(igl::opengl::glfw::Viewer &viewer, unsigned char key, int mods)
 {
   switch(key)
@@ -102,12 +85,12 @@ bool key_down(igl::opengl::glfw::Viewer &viewer, unsigned char key, int mods)
     case '.':
       selected++;
       selected = std::min(std::max(selected,0),(int)W.cols()-1);
-      set_color(viewer);
+      viewer.data().set_data(W.col(selected));
       break;
     case ',':
       selected--;
       selected = std::min(std::max(selected,0),(int)W.cols()-1);
-      set_color(viewer);
+      viewer.data().set_data(W.col(selected));
       break;
   }
   return true;
@@ -133,7 +116,7 @@ int main(int argc, char *argv[])
   VectorXi b;
   // List of boundary conditions of each weight function
   MatrixXd bc;
-  igl::boundary_conditions(V,T,C,VectorXi(),BE,MatrixXi(),b,bc);
+  igl::boundary_conditions(V,T,C,VectorXi(),BE,MatrixXi(),MatrixXi(),b,bc);
 
   // compute BBW weights matrix
   igl::BBWData bbw_data;
@@ -155,14 +138,14 @@ int main(int argc, char *argv[])
   //W.topLeftCorner(Wsurf.rows(),Wsurf.cols()) = Wsurf = Wsurf = Wsurf = Wsurf;
 
   // Normalize weights to sum to one
-  igl::normalize_row_sums(W,W);
+  W  = (W.array().colwise() / W.array().rowwise().sum()).eval();
   // precompute linear blend skinning matrix
   igl::lbs_matrix(V,W,M);
 
   // Plot the mesh with pseudocolors
   igl::opengl::glfw::Viewer viewer;
   viewer.data().set_mesh(U, F);
-  set_color(viewer);
+  viewer.data().set_data(W.col(selected));
   viewer.data().set_edges(C,BE,sea_green);
   viewer.data().show_lines = false;
   viewer.data().show_overlay_depth = false;

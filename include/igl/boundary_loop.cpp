@@ -24,12 +24,12 @@ IGL_INLINE void igl::boundary_loop(
     return;
 
   VectorXd Vdummy(F.maxCoeff()+1,1);
-  DerivedF TT,TTi;
+  Eigen::Matrix<typename DerivedF::Scalar, Eigen::Dynamic, Eigen::Dynamic> TT,TTi;
   vector<std::vector<int> > VF, VFi;
   triangle_triangle_adjacency(F,TT,TTi);
   vertex_triangle_adjacency(Vdummy,F,VF,VFi);
 
-  vector<bool> unvisited = is_border_vertex(Vdummy,F);
+  vector<bool> unvisited = is_border_vertex(F);
   set<int> unseen;
   for (size_t i = 0; i < unvisited.size(); ++i)
   {
@@ -142,7 +142,7 @@ IGL_INLINE void igl::boundary_loop(
   vector<int> Lvec;
   boundary_loop(F,Lvec);
 
-  L.resize(Lvec.size());
+  L.resize(Lvec.size(), 1);
   for (size_t i = 0; i < Lvec.size(); ++i)
     L(i) = Lvec[i];
 }

@@ -13,17 +13,17 @@
 #include <vector>
 namespace igl
 {
-  // Shoot a ray against a mesh (V,F) and collect all hits.
-  //
-  // Inputs:
-  //   source  3-vector origin of ray
-  //   dir  3-vector direction of ray
-  //   V  #V by 3 list of mesh vertex positions
-  //   F  #F by 3 list of mesh face indices into V
-  // Outputs:
-  //    hits  **sorted** list of hits
-  // Returns true if there were any hits (hits.size() > 0)
-  //
+  /// Shoot a ray against a mesh (V,F) and collect all hits. If you have many
+  /// rays, consider using AABB.h
+  ///
+  /// @param[in] source  3-vector origin of ray
+  /// @param[in] dir  3-vector direction of ray
+  /// @param[in] V  #V by 3 list of mesh vertex positions
+  /// @param[in] F  #F by 3 list of mesh face indices into V
+  /// @param[out] hits  **sorted** list of hits
+  /// @return true if there were any hits (hits.size() > 0)
+  ///
+  /// \see AABB
   template <
     typename Derivedsource,
     typename Deriveddir,
@@ -35,9 +35,8 @@ namespace igl
     const Eigen::MatrixBase<DerivedV> & V,
     const Eigen::MatrixBase<DerivedF> & F,
     std::vector<igl::Hit> & hits);
-  // Outputs:
-  //   hit  first hit, set only if it exists
-  // Returns true if there was a hit
+  /// \overload
+  /// @param[in] hit  first hit, set only if it exists
   template <
     typename Derivedsource,
     typename Deriveddir,

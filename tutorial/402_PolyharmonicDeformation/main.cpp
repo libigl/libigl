@@ -4,7 +4,6 @@
 #include <igl/opengl/glfw/Viewer.h>
 #include <algorithm>
 #include <iostream>
-#include "tutorial_shared_path.h"
 
 double z_max = 1.0;
 double z_dir = -0.03;

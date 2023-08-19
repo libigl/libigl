@@ -1,11 +1,11 @@
 #include <igl/readOBJ.h>
 #include <igl/opengl/glfw/Viewer.h>
 #include <igl/exact_geodesic.h>
-#include <igl/colormap.h>
 #include <igl/unproject_onto_mesh.h>
+#include <igl/parula.h>
+#include <igl/isolines_map.h>
 #include <igl/PI.h>
 #include <iostream>
-#include "tutorial_shared_path.h"
 
 
 int main(int argc, char *argv[])
@@ -29,15 +29,12 @@ int main(int argc, char *argv[])
     Eigen::VectorXd d;
     std::cout<<"Computing geodesic distance to vertex "<<vid<<"..."<<std::endl;
     igl::exact_geodesic(V,F,VS,FS,VT,FT,d);
-    const double strip_size = 0.05;
-    // The function should be 1 on each integer coordinate
-    d = (d/strip_size*igl::PI).array().sin().abs().eval();
-    // Compute per-vertex colors
-    Eigen::MatrixXd C;
-    igl::colormap(igl::COLOR_MAP_TYPE_INFERNO,d,false,C);
     // Plot the mesh
-    viewer.data().set_mesh(V, F);
-    viewer.data().set_colors(C);
+    Eigen::MatrixXd CM;
+    igl::parula(Eigen::VectorXd::LinSpaced(21,0,1).eval(),false,CM);
+    igl::isolines_map(Eigen::MatrixXd(CM),CM);
+    viewer.data().set_colormap(CM);
+    viewer.data().set_data(d);
   };
 
   // Plot a distance when a vertex is picked
@@ -68,6 +65,7 @@ int main(int argc, char *argv[])
     return false;
   };
   viewer.data().set_mesh(V,F);
+  viewer.data().show_lines = false;
 
   cout << "Click on mesh to define new source.\n" << std::endl;
   update_distance(0);

@@ -5,7 +5,7 @@
 #include <igl/readTGF.h>
 #include <igl/bbw.h>
 
-TEST_CASE("bbw: decimated_knight", "[igl]")
+TEST_CASE("bbw: decimated_knight", "[igl]" "[slow]")
 {
   Eigen::MatrixXd V,C;
   Eigen::MatrixXi T,F,E;
@@ -16,7 +16,7 @@ TEST_CASE("bbw: decimated_knight", "[igl]")
     test_common::data_path("decimated-knight-matlab-active-set.dmat"),W_groundtruth);
   Eigen::VectorXi b;
   Eigen::MatrixXd bc;
-  igl::boundary_conditions(V,T,C,Eigen::VectorXi(),E,Eigen::MatrixXi(),b,bc);
+  igl::boundary_conditions(V,T,C,Eigen::VectorXi(),E,Eigen::MatrixXi(),Eigen::MatrixXi(),b,bc);
   igl::BBWData params;
   params.active_set_params.max_iter = 100;
   igl::bbw(V,T,b,bc,params,Was);

@@ -1,10 +1,7 @@
-#include <igl/boundary_loop.h>
 #include <igl/readOFF.h>
 #include <igl/opengl/glfw/Viewer.h>
-
 #include <igl/lscm.h>
 
-#include "tutorial_shared_path.h"
 
 Eigen::MatrixXd V;
 Eigen::MatrixXi F;
@@ -39,19 +36,8 @@ int main(int argc, char *argv[])
   // Load a mesh in OFF format
   igl::readOFF(TUTORIAL_SHARED_PATH "/camelhead.off", V, F);
 
-  // Fix two points on the boundary
-  VectorXi bnd,b(2,1);
-  igl::boundary_loop(F,bnd);
-  b(0) = bnd(0);
-  b(1) = bnd(round(bnd.size()/2));
-  MatrixXd bc(2,2);
-  bc<<0,0,1,0;
-
   // LSCM parametrization
-  igl::lscm(V,F,b,bc,V_uv);
-
-  // Scale the uv
-  V_uv *= 5;
+  igl::lscm(V,F,V_uv);
 
   // Plot the mesh
   igl::opengl::glfw::Viewer viewer;

@@ -11,18 +11,16 @@
 #include <Eigen/Dense>
 namespace igl
 {
-  // Given a list of faces tessellate all of the "exterior" edges forming another
-  // list of 
-  //
-  // Inputs:
-  //   E  #E by simplex_size-1  list of exterior edges (see exterior_edges.h)
-  // Outputs:
-  //   cap  #cap by simplex_size  list of "faces" tessellating the boundary edges
+  /// Given a list of faces tessellate all of the "exterior" edges forming another
+  /// list of 
+  ///
+  /// @param[in] E  #E by simplex_size-1  list of exterior edges (see exterior_edges.h)
+  /// @param[out] cap  #cap by simplex_size  list of "faces" tessellating the boundary edges
   template <typename DerivedE, typename Derivedcap>
   IGL_INLINE void triangle_fan(
     const Eigen::MatrixBase<DerivedE> & E,
     Eigen::PlainObjectBase<Derivedcap> & cap);
-  // In-line version
+  /// \overload
   IGL_INLINE Eigen::MatrixXi triangle_fan( const Eigen::MatrixXi & E);
 }
 #ifndef IGL_STATIC_LIBRARY

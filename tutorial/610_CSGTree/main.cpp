@@ -4,7 +4,6 @@
 #include <igl/jet.h>
 #include <Eigen/Core>
 
-#include "tutorial_shared_path.h"
 
 int main(int argc, char * argv[])
 {
@@ -59,7 +58,7 @@ int main(int argc, char * argv[])
       default:
       {
         CSGTree M;
-        Matrix<MatrixXi::Index,Dynamic,1> J;
+        VectorXi J;
         switch(view_id)
         {
           case 5:

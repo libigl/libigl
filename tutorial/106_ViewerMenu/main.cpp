@@ -1,10 +1,9 @@
 #include <igl/readOFF.h>
 #include <igl/opengl/glfw/Viewer.h>
+#include <igl/opengl/glfw/imgui/ImGuiPlugin.h>
 #include <igl/opengl/glfw/imgui/ImGuiMenu.h>
 #include <igl/opengl/glfw/imgui/ImGuiHelpers.h>
-#include <imgui/imgui.h>
 #include <iostream>
-#include "tutorial_shared_path.h"
 
 int main(int argc, char *argv[])
 {
@@ -18,8 +17,10 @@ int main(int argc, char *argv[])
   igl::opengl::glfw::Viewer viewer;
 
   // Attach a menu plugin
+  igl::opengl::glfw::imgui::ImGuiPlugin plugin;
+  viewer.plugins.push_back(&plugin);
   igl::opengl::glfw::imgui::ImGuiMenu menu;
-  viewer.plugins.push_back(&menu);
+  plugin.widgets.push_back(&menu);
 
   // Customize the menu
   double doubleVariable = 0.1f; // Shared between two menus
@@ -79,8 +80,8 @@ int main(int argc, char *argv[])
   menu.callback_draw_custom_window = [&]()
   {
     // Define next window position + size
-    ImGui::SetNextWindowPos(ImVec2(180.f * menu.menu_scaling(), 10), ImGuiSetCond_FirstUseEver);
-    ImGui::SetNextWindowSize(ImVec2(200, 160), ImGuiSetCond_FirstUseEver);
+    ImGui::SetNextWindowPos(ImVec2(180.f * menu.menu_scaling(), 10), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowSize(ImVec2(200, 160), ImGuiCond_FirstUseEver);
     ImGui::Begin(
         "New Window", nullptr,
         ImGuiWindowFlags_NoSavedSettings
@@ -99,5 +100,6 @@ int main(int argc, char *argv[])
 
   // Plot the mesh
   viewer.data().set_mesh(V, F);
+  viewer.data().add_label(viewer.data().V.row(0) + viewer.data().V_normals.row(0).normalized()*0.005, "Hello World!");
   viewer.launch();
 }

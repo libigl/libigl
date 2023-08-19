@@ -10,7 +10,6 @@
 #include "slice_into.h"
 #include "find.h"
 #include "colon.h"
-#include <iostream>
 
 //#define IGL_LINPROG_VERBOSE
 IGL_INLINE bool igl::linprog(
@@ -242,7 +241,7 @@ IGL_INLINE bool igl::linprog(
     s*=1e6*c.array().abs().maxCoeff();
     s.head(n) = c;
   }
-  x.resize(std::max(B.maxCoeff()+1,n));
+  x.setZero(std::max(B.maxCoeff()+1,n));
   igl::slice_into(xb,B,x);
   x = x.head(n).eval();
   return success;
@@ -281,9 +280,12 @@ IGL_INLINE bool igl::linprog(
   MatrixXd BSP(0,2*n+m);
   if(p>0)
   {
-    MatrixXd BS(p,2*n);
-    BS<<B,MatrixXd::Zero(p,n);
+    // B ∈ ℝ^(p × n)
+    MatrixXd BS(p,n+m);
+    BS<<B,MatrixXd::Zero(p,m);
+    // BS ∈ ℝ^(p × n+m)
     BSP = BS*P;
+    // BSP ∈ ℝ^(p × 2n+m)
   }
 
   VectorXd fSP = VectorXd::Ones(2*n+m);
@@ -296,7 +298,24 @@ IGL_INLINE bool igl::linprog(
   bb<<bS,c;
 
   VectorXd xxs;
+  // min   ccᵀxxs
+  // s.t.  AA xxs ≤ bb
+  //          xxs ≥ 0
+  //        
+  // x = x⁺ - x⁻
+  //
+  //    P
+  // .--^---.
+  // [I -I 0  [x⁺   = [x
+  //  0  0 I]  x⁻      s]
+  //           s]
+  // Pᵀ [xᵀ sᵀ] = xxsᵀ
+  //
+  // min  [fᵀ -fᵀ 𝟙ᵀ] [x⁺;x⁻;s]
+  // s.t.  AA [x⁺;x⁻;s] ≤ b
+  // s.t.  [x⁺;x⁻;s] ≥ 0
   bool ret = linprog(cc,AA,bb,0,xxs);
+  // x = P(1:n,:) xxs
   x = P.block(0,0,n,2*n+m)*xxs;
   return ret;
 }

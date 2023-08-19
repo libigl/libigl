@@ -11,20 +11,18 @@
 #include <Eigen/Dense>
 namespace igl
 {
-  // EXTERIOR_EDGES Determines boundary "edges" and also edges with an
-  // odd number of occurrences where seeing edge (i,j) counts as +1 and seeing
-  // the opposite edge (j,i) counts as -1
-  //
-  // Inputs:
-  //   F  #F by simplex_size list of "faces"
-  // Outputs:
-  //   E  #E by simplex_size-1  list of exterior edges
-  //
+  /// Determines boundary "edges" and also edges with an odd number of
+  /// occurrences where seeing edge (i,j) counts as +1 and seeing the opposite
+  /// edge (j,i) counts as -1
+  ///
+  /// @param[in] F  #F by simplex_size list of "faces"
+  /// @param[out] E  #E by simplex_size-1  list of exterior edges
+  ///
   IGL_INLINE void exterior_edges(
     const Eigen::MatrixXi & F,
     Eigen::MatrixXi & E);
-  // Inline version
-  IGL_INLINE Eigen::MatrixXi exterior_edges( const Eigen::MatrixXi & F);
+  /// \overload
+  IGL_INLINE Eigen::MatrixXi exterior_edges(const Eigen::MatrixXi & F);
 }
 #ifndef IGL_STATIC_LIBRARY
 #  include "exterior_edges.cpp"
