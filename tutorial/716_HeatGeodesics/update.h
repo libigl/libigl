@@ -2,7 +2,7 @@
 namespace igl
 {
   template <typename Scalar>
-  class HeatGeodesicsData;
+  struct HeatGeodesicsData;
 }
 
 bool update(
