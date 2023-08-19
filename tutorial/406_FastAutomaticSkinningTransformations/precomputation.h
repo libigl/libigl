@@ -4,8 +4,9 @@
 namespace igl
 {
   class ARAPData;
-  template <typename DerivedV, typename Scalar>
-  class ArapDOFData;
+  template <typename LbsMatrixType, typename SSCALAR>
+  // Seriously, windows? Why are struct and class different?
+  struct ArapDOFData;
 }
 
 void precomputation(
