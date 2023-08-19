@@ -103,6 +103,8 @@ jobs:
         {static: OFF, tutorials:  ON, tests: OFF, selected_tutorial: 5},
         {static: OFF, tutorials:  ON, tests: OFF, selected_tutorial: 6},
         {static: OFF, tutorials:  ON, tests: OFF, selected_tutorial: 7},
+        {static: OFF, tutorials:  ON, tests: OFF, selected_tutorial: 8},
+        {static: OFF, tutorials:  ON, tests: OFF, selected_tutorial: 9},
       ]
     steps:
       - name: Checkout repository
@@ -150,6 +152,8 @@ jobs:
             -DLIBIGL_TUTORIALS_CHAPTER5=${{ (matrix.build-params.selected_tutorial == 'NONE' || matrix.build-params.selected_tutorial == '5') && 'ON' || 'OFF' }} ^
             -DLIBIGL_TUTORIALS_CHAPTER6=${{ (matrix.build-params.selected_tutorial == 'NONE' || matrix.build-params.selected_tutorial == '6') && 'ON' || 'OFF' }} ^
             -DLIBIGL_TUTORIALS_CHAPTER7=${{ (matrix.build-params.selected_tutorial == 'NONE' || matrix.build-params.selected_tutorial == '7') && 'ON' || 'OFF' }} ^
+            -DLIBIGL_TUTORIALS_CHAPTER8=${{ (matrix.build-params.selected_tutorial == 'NONE' || matrix.build-params.selected_tutorial == '8') && 'ON' || 'OFF' }} ^
+            -DLIBIGL_TUTORIALS_CHAPTER9=${{ (matrix.build-params.selected_tutorial == 'NONE' || matrix.build-params.selected_tutorial == '9') && 'ON' || 'OFF' }} ^
             -B build ^
             -S .
           cmake --build build -j2
