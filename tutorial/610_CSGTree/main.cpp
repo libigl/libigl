@@ -1,5 +1,5 @@
+#include "get_mesh.h"
 #include <igl/read_triangle_mesh.h>
-#include <igl/copyleft/cgal/CSGTree.h>
 #include <igl/opengl/glfw/Viewer.h>
 #include <igl/jet.h>
 #include <Eigen/Core>
@@ -8,7 +8,6 @@
 int main(int argc, char * argv[])
 {
   using namespace Eigen;
-  using namespace igl::copyleft::cgal;
   using namespace std;
   using namespace igl;
   cout<<R"(
@@ -30,76 +29,11 @@ int main(int argc, char * argv[])
   const auto & update = [&]()
   {
     viewer.data().clear();
-    // CSGTree templated on type of F
-    VectorXd I;
-    const auto & set_mesh = 
-      [&](const MatrixXd & V, const MatrixXi & F, const int i)
-    {
-      viewer.data().set_mesh(V,F);
-      I = VectorXd::Constant(F.rows(),1,i);
-    };
-    switch(view_id)
-    {
-      case 0:
-        set_mesh(VA,FA,5);
-        break;
-      case 1:
-        set_mesh(VB,FB,4);
-        break;
-      case 2:
-        set_mesh(VC,FC,3);
-        break;
-      case 3:
-        set_mesh(VD,FD,2);
-        break;
-      case 4:
-        set_mesh(VE,FE,1);
-        break;
-      default:
-      {
-        CSGTree M;
-        VectorXi J;
-        switch(view_id)
-        {
-          case 5:
-            // Compute result of (A ∩ B)
-            M = {{VA,FA},{VB,FB},"i"};
-            J = M.J().array()+0;
-            break;
-          case 6:
-            // Compute result of (C ∪ D)
-            M = {{VC,FC},{VD,FD},"u"};
-            J = M.J().array()+FA.rows()+FB.rows();
-            break;
-          case 7:
-            // Compute result of (C ∪ D) ∪ E
-            M = {{{VC,FC},{VD,FD},"u"},{VE,FE},"u"};
-            J = M.J().array()+FA.rows()+FB.rows();
-            break;
-          case 8:
-            // Compute result of (A ∩ B) \ ((C ∪ D) ∪ E)
-            M = {{{VA,FA},{VB,FB},"i"},{{{VC,FC},{VD,FD},"u"},{VE,FE},"u"},"m"};
-            J = M.J().array()+0;
-            break;
-          default:
-            assert(false && "unknown view id");
-        }
-        viewer.data().set_mesh(M.cast_V<MatrixXd>(),M.F());
-        I.resize(M.F().rows(),1);
-        // Compute colors based on original facets
-        for(int f = 0;f<M.F().rows();f++)
-        {
-          const int j = J(f);
-          I(f) = 
-            (int)(j<FA.rows())+
-            (int)(j<FA.rows()+FB.rows())+
-            (int)(j<FA.rows()+FB.rows()+FC.rows())+
-            (int)(j<FA.rows()+FB.rows()+FC.rows()+FD.rows())+
-            (int)(j<FA.rows()+FB.rows()+FC.rows()+FD.rows()+FE.rows());
-        }
-      }
-    }
-
+    Eigen::MatrixXd V;
+    Eigen::MatrixXi F;
+    Eigen::VectorXd I;
+    get_mesh(VA,FA,VB,FB,VC,FC,VD,FD,VE,FE,view_id,V,F,I);
+    viewer.data().set_mesh(V,F);
     MatrixXd C;
     jet(I,1,5,C);
     viewer.data().set_colors(C);
