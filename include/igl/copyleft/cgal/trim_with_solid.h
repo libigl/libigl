@@ -17,24 +17,22 @@ namespace igl
   {
     namespace cgal
     {
-      // TRIM_WITH_SOLID Given an arbitrary mesh (VA,FA) and the boundary mesh
-      // (VB,FB) of a solid (as defined in [Zhou et al. 2016]), Resolve intersections
-      // between A and B subdividing faces of A so that intersections with B exists
-      // only along edges and vertices (and coplanar faces). Then determine whether
-      // each of these faces is inside or outside of B. This can be used to extract
-      // the part of A inside or outside of B.
-      //
-      // Inputs:
-      //   VA  #VA by 3 list of mesh vertex positions of A
-      //   FA  #FA by 3 list of mesh triangle indices into VA
-      //   VB  #VB by 3 list of mesh vertex positions of B
-      //   FB  #FB by 3 list of mesh triangle indices into VB
-      // Outputs:
-      //   V  #V by 3 list of mesh vertex positions of output
-      //   F  #F by 3 list of mesh triangle indices into V
-      //   D  #F list of bools whether face is inside B
-      //   J  #F list of indices into FA revealing birth parent
-      //
+      /// Given an arbitrary mesh (VA,FA) and the boundary mesh
+      /// (VB,FB) of a solid (as defined in [Zhou et al. 2016]), Resolve intersections
+      /// between A and B subdividing faces of A so that intersections with B exists
+      /// only along edges and vertices (and coplanar faces). Then determine whether
+      /// each of these faces is inside or outside of B. This can be used to extract
+      /// the part of A inside or outside of B.
+      ///
+      /// @param[in] VA  #VA by 3 list of mesh vertex positions of A
+      /// @param[in] FA  #FA by 3 list of mesh triangle indices into VA
+      /// @param[in] VB  #VB by 3 list of mesh vertex positions of B
+      /// @param[in] FB  #FB by 3 list of mesh triangle indices into VB
+      /// @param[out] V  #V by 3 list of mesh vertex positions of output
+      /// @param[out] F  #F by 3 list of mesh triangle indices into V
+      /// @param[out] D  #F list of bools whether face is inside B
+      /// @param[out] J  #F list of indices into FA revealing birth parent
+      ///
       template <
         typename DerivedVA,
         typename DerivedFA,

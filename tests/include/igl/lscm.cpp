@@ -16,6 +16,7 @@ double compute_lscm_energy(
 
   assert(V.cols() == 3);
   assert(F.cols() == 3);
+  assert(W_flat.size() == V.rows() * 2);
 
   // Compute gradient
   Eigen::SparseMatrix<double> G;
@@ -81,5 +82,5 @@ TEST_CASE("lscm: lscm_energy_check", "[igl]")
   double e1 = compute_lscm_energy(V, F, W_flat);
   double e2 = 0.5 * W_flat.transpose() * Q * W_flat;
 
-  REQUIRE(std::abs(e1 - e2) < igl::EPS<double>());
+  REQUIRE(std::abs(e1 - e2) < 1e-13);
 }

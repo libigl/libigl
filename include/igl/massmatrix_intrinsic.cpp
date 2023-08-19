@@ -7,7 +7,6 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "massmatrix_intrinsic.h"
 #include "edge_lengths.h"
-#include "normalize_row_sums.h"
 #include "sparse.h"
 #include "doublearea.h"
 #include "repmat.h"
@@ -82,7 +81,9 @@ IGL_INLINE void igl::massmatrix_intrinsic(
         cosines.col(2) = 
           (l.col(1).array().pow(2)+l.col(0).array().pow(2)-l.col(2).array().pow(2))/(l.col(0).array()*l.col(1).array()*2.0);
         Matrix<Scalar,Dynamic,3> barycentric = cosines.array() * l.array();
-        normalize_row_sums(barycentric,barycentric);
+        // Replace this: normalize_row_sums(barycentric,barycentric);
+        barycentric  = (barycentric.array().colwise() / barycentric.array().rowwise().sum()).eval();
+
         Matrix<Scalar,Dynamic,3> partial = barycentric;
         partial.col(0).array() *= dblA.array() * 0.5;
         partial.col(1).array() *= dblA.array() * 0.5;
@@ -111,7 +112,14 @@ IGL_INLINE void igl::massmatrix_intrinsic(
         break;
       }
     case MASSMATRIX_TYPE_FULL:
-      assert(false && "Implementation incomplete");
+      MI.resize(m*9,1); MJ.resize(m*9,1); MV.resize(m*9,1);
+      // indicies and values of the element mass matrix entries in the order
+      // (0,1),(1,0),(1,2),(2,1),(2,0),(0,2),(0,0),(1,1),(2,2);
+      MI<<F.col(0),F.col(1),F.col(1),F.col(2),F.col(2),F.col(0),F.col(0),F.col(1),F.col(2);
+      MJ<<F.col(1),F.col(0),F.col(2),F.col(1),F.col(0),F.col(2),F.col(0),F.col(1),F.col(2);
+      repmat(dblA,9,1,MV);
+      MV.block(0*m,0,6*m,1) /= 24.0;
+      MV.block(6*m,0,3*m,1) /= 12.0;
       break;
     default:
       assert(false && "Unknown Mass matrix eff_type");

@@ -25,17 +25,15 @@ namespace igl
   {
     namespace cgal
     {
-      // Build an AABB tree for a submesh indicated by a face selection list I
-      // of a full mesh (V,F)
-      //
-      // Inputs:
-      //   V  #V by 3 array of vertices.
-      //   F  #F by 3 array of faces.
-      //   I  #I list of triangle indices to consider.
-      // Outputs:
-      //   tree  aabb containing triangles of (V,F(I,:))
-      //   triangles  #I list of cgal triangles
-      //   in_I  #F list of whether in submesh
+      /// Build an AABB tree for a submesh indicated by a face selection list I
+      /// of a full mesh (V,F)
+      ///
+      /// @param[in] V  #V by 3 array of vertices.
+      /// @param[in] F  #F by 3 array of faces.
+      /// @param[in] I  #I list of triangle indices to consider.
+      /// @param[out] tree  aabb containing triangles of (V,F(I,:))
+      /// @param[out] triangles  #I list of cgal triangles
+      /// @param[out] in_I  #F list of whether in submesh
       template<
         typename DerivedV,
         typename DerivedF,

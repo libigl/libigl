@@ -16,16 +16,14 @@
 //  changed templates from generic matrices to PlainObjectBase Alec May 7, 2011
 namespace igl
 {
-  // Subdivide without moving vertices: Given the triangle mesh [V, F],
-  // where n_verts = V.rows(), computes newV and a sparse matrix S s.t.
-  // [newV, newF] is the subdivided mesh where newV = S*V.
-  //
-  // Inputs:
-  //   n_verts  an integer (number of mesh vertices)
-  //   F  an m by 3 matrix of integers of triangle faces
-  // Outputs:
-  //   S  a sparse matrix (will become the subdivision matrix)
-  //   newF  a matrix containing the new faces
+  /// Subdivide without moving vertices: Given the triangle mesh [V, F],
+  /// where n_verts = V.rows(), computes newV and a sparse matrix S s.t.
+  /// [newV, newF] is the subdivided mesh where newV = S*V.
+  ///
+  /// @param[in] n_verts  an integer (number of mesh vertices)
+  /// @param[in] F  an m by 3 matrix of integers of triangle faces
+  /// @param[out] S  a sparse matrix (will become the subdivision matrix)
+  /// @param[out] newF  a matrix containing the new faces
   template <
     typename DerivedF,
     typename SType,
@@ -35,24 +33,20 @@ namespace igl
     const Eigen::MatrixBase<DerivedF>& F,
     Eigen::SparseMatrix<SType>& S,
     Eigen::PlainObjectBase<DerivedNF>& NF);
-  // Subdivide a mesh without moving vertices: loop subdivision but odd
-  // vertices stay put and even vertices are just edge midpoints
-  //
-  // Templates:
-  //   MatV  matrix for vertex positions, e.g. MatrixXd
-  //   MatF  matrix for vertex positions, e.g. MatrixXi
-  // Inputs:
-  //   V  #V by dim  mesh vertices
-  //   F  #F by 3  mesh triangles
-  // Outputs:
-  //   NV new vertex positions, V is guaranteed to be at top
-  //   NF new list of face indices
-  //
-  // NOTE: V should not be the same as NV,
-  // NOTE: F should not be the same as NF, use other proto
-  //
-  // Known issues:
-  //   - assumes (V,F) is edge-manifold.
+  /// Subdivide a mesh without moving vertices: loop subdivision but odd
+  /// vertices stay put and even vertices are just edge midpoints
+  ///
+  /// @tparam MatV  matrix for vertex positions, e.g. MatrixXd
+  /// @tparam MatF  matrix for vertex positions, e.g. MatrixXi
+  /// @param[in] V  #V by dim  mesh vertices
+  /// @param[in] F  #F by 3  mesh triangles
+  /// @param[out] NV new vertex positions, V is guaranteed to be at top
+  /// @param[out] NF new list of face indices
+  ///
+  /// \note V should not be the same as NV,
+  /// \note F should not be the same as NF, use other proto
+  ///
+  /// \pre assumes (V,F) is edge-manifold.
   template <
     typename DerivedV,
     typename DerivedF,

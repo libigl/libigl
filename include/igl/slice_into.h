@@ -14,41 +14,40 @@
 #include <Eigen/Sparse>
 namespace igl
 {
-  // Act like the matlab Y(row_indices,col_indices) = X
-  // 
-  // Inputs:
-  //   X  xm by xn rhs matrix
-  //   R  list of row indices
-  //   C  list of column indices
-  //   Y  ym by yn lhs matrix
-  // Output:
-  //   Y  ym by yn lhs matrix, same as input but Y(R,C) = X
+  /// Act like the matlab Y(row_indices,col_indices) = X
+  /// 
+  /// @param[in] X  xm by xn rhs matrix
+  /// @param[in] R  list of row indices
+  /// @param[in] C  list of column indices
+  /// @param[in] Y  ym by yn lhs matrix
+  /// @param[out] Y  ym by yn lhs matrix, same as input but Y(R,C) = X
   template <typename T, typename DerivedR, typename DerivedC>
   IGL_INLINE void slice_into(
     const Eigen::SparseMatrix<T>& X,
     const Eigen::MatrixBase<DerivedR> & R,
     const Eigen::MatrixBase<DerivedC> & C,
     Eigen::SparseMatrix<T>& Y);
-
+  /// \overload
   template <typename DerivedX, typename DerivedY, typename DerivedR, typename DerivedC>
   IGL_INLINE void slice_into(
     const Eigen::MatrixBase<DerivedX> & X,
     const Eigen::MatrixBase<DerivedR> & R,
     const Eigen::MatrixBase<DerivedC> & C,
     Eigen::PlainObjectBase<DerivedY> & Y);
-  // Wrapper to only slice in one direction
-  //
-  // Inputs:
-  //   dim  dimension to slice in 1 or 2, dim=1 --> X(R,:), dim=2 --> X(:,R)
-  //
-  // Note: For now this is just a cheap wrapper.
+  /// \overload
+  /// \brief Wrapper to only slice in one direction
+  ///
+  /// @param[int] dim  dimension to slice in 1 or 2, dim=1 --> X(R,:), dim=2 --> X(:,R)
+  ///
+  /// \note For now this is just a cheap wrapper.
   template <typename MatX, typename MatY, typename DerivedR>
   IGL_INLINE void slice_into(
     const MatX & X,
     const Eigen::MatrixBase<DerivedR> & R,
     const int dim,
     MatY& Y);
-
+  /// \overload
+  /// \brief Vector version
   template <typename DerivedX, typename DerivedR, typename DerivedY>
   IGL_INLINE void slice_into(
     const Eigen::MatrixBase<DerivedX>& X,

@@ -20,19 +20,14 @@ jobs:
   ####################
 
   Unix:
-    name: ${{ matrix.name }} (${{ matrix.config }}, ${{ fromJSON('["HeaderOnly", "Static"]')[matrix.static == 'ON'] }})
+    name: ${{ matrix.os }} ${{ fromJSON('["Header-Only", "Static"]')[matrix.build-params.static == 'ON'] }} ${{ matrix.build-params.tutorials == 'ON' && 'tutorial' || ''}} ${{ matrix.build-params.tests == 'ON' && 'tests' || ''}} ${{ matrix.config }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-20.04, macos-latest]
         config: [Release]
-        static: [ON, OFF]
-        include:
-          - os: macos-latest
-            name: macOS
-          - os: ubuntu-20.04
-            name: Linux
+        build-params: [ {static:  ON, tutorials:  ON, tests:  ON }, {static: OFF, tutorials: OFF, tests:  ON }, {static: OFF, tutorials:  ON, tests: OFF }]
     env:
       IGL_NUM_THREADS: 1  # See https://github.com/libigl/libigl/pull/996
     steps:
@@ -49,22 +44,20 @@ jobs:
               libblas-dev \
               libglu1-mesa-dev \
               liblapack-dev \
-              libmpfr-dev \
               xorg-dev \
               ccache
 
       - name: Dependencies (macOS)
         if: runner.os == 'macOS'
         run: |
-          brew update
-          brew install gmp mpfr ccache
+          HOMEBREW_NO_AUTO_UPDATE=1 brew install ccache
 
       - name: Cache Build
         id: cache-build
         uses: actions/cache@v2
         with:
           path: ~/.ccache
-          key: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.static }}-cache
+          key: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.build-params.static }}-cache
 
       - name: Prepare ccache
         run: |
@@ -78,8 +71,10 @@ jobs:
           cmake .. \
             -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
             -DCMAKE_BUILD_TYPE=${{ matrix.config }} \
-            -DLIBIGL_USE_STATIC_LIBRARY=${{ matrix.static }} \
-            -DLIBIGL_COPYLEFT_CGAL=ON 
+            -DLIBIGL_USE_STATIC_LIBRARY=${{ matrix.build-params.static }} \
+            -DLIBIGL_BUILD_TUTORIALS=${{ matrix.build-params.tutorials }} \
+            -DLIBIGL_BUILD_TESTS=${{ matrix.build-params.tests }} \
+            -DLIBIGL_COPYLEFT_CGAL=ON
 
       - name: Build
         run: cd build; make -j2; ccache --show-stats
@@ -92,24 +87,23 @@ jobs:
   ####################
 
   Windows:
-    name: Windows (${{ matrix.config }}, ${{ fromJSON('["HeaderOnly", "Static"]')[matrix.static == 'ON'] }})
+    name: Windows ${{ fromJSON('["Header-Only", "Static"]')[matrix.build-params.static == 'ON'] }} ${{ matrix.build-params.tutorials == 'ON' && 'tutorial' || ''}} ${{ matrix.build-params.tests == 'ON' && 'tests' || ''}} ${{ matrix.config }}
     runs-on: windows-2022
-    env:
-      CC: cl.exe
-      CXX: cl.exe
     strategy:
       fail-fast: false
       matrix:
         config: [Release]
-        static: [ON, OFF]
+        build-params: [ {static:  ON, tutorials:  ON, tests:  ON }, {static: OFF, tutorials: OFF, tests:  ON }, {static: OFF, tutorials:  ON, tests: OFF }]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v1
         with:
           fetch-depth: 10
-      - uses: seanmiddleditch/gha-setup-ninja@master
 
-      - name: Set env
+      - name: Install Ninja
+        uses: seanmiddleditch/gha-setup-ninja@master
+
+      - name: Set env variable for sccache
         run: |
           echo "appdata=$env:LOCALAPPDATA" >> ${env:GITHUB_ENV}
 
@@ -118,18 +112,16 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ${{ env.appdata }}\Mozilla\sccache
-          key: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.static }}-cache
-
+          key: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.build-params.static }}-cache
 
       - name: Prepare sccache
         run: |
-          Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://get.scoop.sh')
+          iwr -useb 'https://raw.githubusercontent.com/scoopinstaller/install/master/install.ps1' -outfile 'install.ps1'
+          .\install.ps1 -RunAsAdmin
           scoop install sccache --global
           # Scoop modifies the PATH so we make it available for the next steps of the job
           echo "${env:PATH}" >> ${env:GITHUB_PATH}
 
-        # We run configure + build in the same step, since they both need to call VsDevCmd
-        # Also, cmd uses ^ to break commands into multiple lines (in powershell this is `)
       - name: Configure and build
         shell: cmd
         run: |
@@ -137,14 +129,14 @@ jobs:
           cmake -G Ninja ^
             -DCMAKE_CXX_COMPILER_LAUNCHER=sccache ^
             -DCMAKE_BUILD_TYPE=${{ matrix.config }} ^
-            -DLIBIGL_USE_STATIC_LIBRARY=${{ matrix.static }} ^
+            -DLIBIGL_USE_STATIC_LIBRARY=${{ matrix.build-params.static }} ^
             -DLIBIGL_COPYLEFT_CGAL=ON ^
-            -DCMAKE_JOB_POOLS=pool-linking=1;pool-compilation=1 ^
-            -DCMAKE_JOB_POOL_COMPILE:STRING=pool-compilation ^
-            -DCMAKE_JOB_POOL_LINK:STRING=pool-linking ^
+            -DLIBIGL_BUILD_TUTORIALS=${{ matrix.build-params.tutorials }} ^
+            -DLIBIGL_BUILD_TESTS=${{ matrix.build-params.tests }} ^
             -B build ^
             -S .
-          cmake --build build
+          cmake --build build -j2
 
       - name: Tests
-        run: cd build; ctest --verbose
+        run: cd build; ctest --verbose -j2
+

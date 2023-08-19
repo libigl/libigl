@@ -214,14 +214,18 @@ namespace igl
           t = (isovalue - f0)/delta;
           p = e0+t*(e1-e0);
         }
-        // insert vertex at this point to triangulate quad face
-        const typename decltype(V)::Index ev = triangles ? new_vertex() : -1;
-        if(triangles)
+        typename decltype(V)::Index ev;
+
         {
-          const std::lock_guard<std::mutex> lock(Vmut);
-          vV[ev] = p;
-          vcount[ev] = 1;
-          vI[ev] = Eigen::RowVector3i(-1,-1,-1);
+            const std::lock_guard<std::mutex> lock(Vmut);
+            // insert vertex at this point to triangulate quad face
+            ev = triangles ? new_vertex() : -1;
+            if (triangles)
+            {
+                vV[ev] = p;
+                vcount[ev] = 1;
+                vI[ev] = Eigen::RowVector3i(-1, -1, -1);
+            }
         }
         // edge normal from function handle (could use grid finite
         // differences/interpolation gradients)

@@ -30,5 +30,5 @@ if(WIN32)
     set(ENV{GMP_DIR} "${gmp_SOURCE_DIR}")
     set(ENV{MPFR_DIR} "${mpfr_SOURCE_DIR}")
 else()
-    # On Linux/macOS, gmp+mpfr should be installed system-wide
+    # On Linux/macOS, gmp+mpfr will be fetched and compiled
 endif()

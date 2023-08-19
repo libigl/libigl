@@ -11,18 +11,16 @@
 #include <Eigen/Core>
 namespace igl
 {
-  // Construct a ray (source point + direction vector) given a screen space
-  // positions (e.g. mouse) and a model-view projection constellation.
-  //
-  // Inputs:
-  //   pos  2d screen-space position (x,y) 
-  //   model  4x4 model-view matrix
-  //   proj  4x4 projection matrix
-  //   viewport  4-long viewport vector
-  // Outputs:
-  //   s  source of ray (pos unprojected with z=0)
-  ///  dir  direction of ray (d - s) where d is pos unprojected with z=1
-  // 
+  /// Construct a ray (source point + direction vector) given a screen space
+  /// positions (e.g. mouse) and a model-view projection constellation.
+  ///
+  /// @param[in] pos  2d screen-space position (x,y) 
+  /// @param[in] model  4x4 model-view matrix
+  /// @param[in] proj  4x4 projection matrix
+  /// @param[in] viewport  4-long viewport vector
+  /// @param[out] s  source of ray (pos unprojected with z=0)
+  /// @param[out] dir  direction of ray (d - s) where d is pos unprojected with z=1
+  /// 
   template <
     typename Derivedpos,
     typename Derivedmodel,

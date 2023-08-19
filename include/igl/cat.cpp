@@ -39,81 +39,7 @@ IGL_INLINE void igl::cat(
     return;
   }
 
-#if false
-  // This **must** be DynamicSparseMatrix, otherwise this implementation is
-  // insanely slow
-  DynamicSparseMatrix<Scalar, RowMajor> dyn_C;
-  if(dim == 1)
-  {
-    assert(A.cols() == B.cols());
-    dyn_C.resize(A.rows()+B.rows(),A.cols());
-  }else if(dim == 2)
-  {
-    assert(A.rows() == B.rows());
-    dyn_C.resize(A.rows(),A.cols()+B.cols());
-  }else
-  {
-    fprintf(stderr,"cat.h: Error: Unsupported dimension %d\n",dim);
-  }
-
-  dyn_C.reserve(A.nonZeros()+B.nonZeros());
-
-  // Iterate over outside of A
-  for(int k=0; k<A.outerSize(); ++k)
-  {
-    // Iterate over inside
-    for(typename SparseMatrix<Scalar>::InnerIterator it (A,k); it; ++it)
-    {
-      dyn_C.coeffRef(it.row(),it.col()) += it.value();
-    }
-  }
-
-  // Iterate over outside of B
-  for(int k=0; k<B.outerSize(); ++k)
-  {
-    // Iterate over inside
-    for(typename SparseMatrix<Scalar>::InnerIterator it (B,k); it; ++it)
-    {
-      int r = (dim == 1 ? A.rows()+it.row() : it.row());
-      int c = (dim == 2 ? A.cols()+it.col() : it.col());
-      dyn_C.coeffRef(r,c) += it.value();
-    }
-  }
-
-  C = SparseMatrix<Scalar>(dyn_C);
-#elif false
-  std::vector<Triplet<Scalar> > CIJV;
-  CIJV.reserve(A.nonZeros() + B.nonZeros());
-  {
-    // Iterate over outside of A
-    for(int k=0; k<A.outerSize(); ++k)
-    {
-      // Iterate over inside
-      for(typename SparseMatrix<Scalar>::InnerIterator it (A,k); it; ++it)
-      {
-        CIJV.emplace_back(it.row(),it.col(),it.value());
-      }
-    }
-    // Iterate over outside of B
-    for(int k=0; k<B.outerSize(); ++k)
-    {
-      // Iterate over inside
-      for(typename SparseMatrix<Scalar>::InnerIterator it (B,k); it; ++it)
-      {
-        int r = (dim == 1 ? A.rows()+it.row() : it.row());
-        int c = (dim == 2 ? A.cols()+it.col() : it.col());
-        CIJV.emplace_back(r,c,it.value());
-      }
-    }
-
-  }
-
-  C = SparseMatrix<Scalar>(
-      dim == 1 ? A.rows()+B.rows() : A.rows(),
-      dim == 1 ? A.cols()          : A.cols()+B.cols());
-  C.reserve(A.nonZeros() + B.nonZeros());
-  C.setFromTriplets(CIJV.begin(),CIJV.end());
-#else
+  // This is faster than using DynamicSparseMatrix or setFromTriplets
   C = SparseMatrix<Scalar>(
       dim == 1 ? A.rows()+B.rows() : A.rows(),
       dim == 1 ? A.cols()          : A.cols()+B.cols());
@@ -181,9 +107,6 @@ IGL_INLINE void igl::cat(
     }
   }
   C.makeCompressed();
-
-#endif
-
 }
 
 template <typename Derived, class MatC>

@@ -15,19 +15,16 @@
 
 namespace igl 
 {
-  // Compute a local orthogonal reference system for each triangle in the given mesh
-  // Templates:
-  //   DerivedV derived from vertex positions matrix type: i.e. MatrixXd
-  //   DerivedF derived from face indices matrix type: i.e. MatrixXi
-  // Inputs:
-  //   V  eigen matrix #V by 3
-  //   F  #F by 3 list of mesh faces (must be triangles)
-  // Outputs:
-  //   B1 eigen matrix #F by 3, each vector is tangent to the triangle
-  //   B2 eigen matrix #F by 3, each vector is tangent to the triangle and perpendicular to B1
-  //   B3 eigen matrix #F by 3, normal of the triangle
-  //
-  // See also: adjacency_matrix
+  /// Compute a local orthogonal reference system for each triangle in the given mesh
+  ///
+  /// @tparam DerivedV derived from vertex positions matrix type: i.e. MatrixXd
+  /// @tparam DerivedF derived from face indices matrix type: i.e. MatrixXi
+  /// @param[in] V  eigen matrix #V by 3
+  /// @param[in] F  #F by 3 list of mesh faces (must be triangles)
+  /// @param[out] B1 eigen matrix #F by 3, each vector is tangent to the triangle
+  /// @param[out] B2 eigen matrix #F by 3, each vector is tangent to the triangle and perpendicular to B1
+  /// @param[out] B3 eigen matrix #F by 3, normal of the triangle
+  ///
   template <typename DerivedV, typename DerivedF>
   IGL_INLINE void local_basis(
     const Eigen::MatrixBase<DerivedV>& V,

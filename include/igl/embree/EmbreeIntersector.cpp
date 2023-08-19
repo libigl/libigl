@@ -2,7 +2,7 @@
 #include "EmbreeIntersector.h"
 
 // Implementation
-#include <igl/EPS.h>
+#include "../EPS.h"
 
 IGL_INLINE igl::embree::EmbreeIntersector::EmbreeIntersector()
   :

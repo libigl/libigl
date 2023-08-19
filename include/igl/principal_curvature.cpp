@@ -18,11 +18,11 @@
 #include <Eigen/SparseCholesky>
 
 // Lib IGL includes
-#include <igl/adjacency_list.h>
-#include <igl/per_face_normals.h>
-#include <igl/per_vertex_normals.h>
-#include <igl/avg_edge_length.h>
-#include <igl/vertex_triangle_adjacency.h>
+#include "adjacency_list.h"
+#include "per_face_normals.h"
+#include "per_vertex_normals.h"
+#include "avg_edge_length.h"
+#include "vertex_triangle_adjacency.h"
 
 typedef enum
 {
@@ -457,15 +457,18 @@ IGL_INLINE void CurvatureCalculator::getKRing(const int start, const double r, s
     int distance=queue.front().second;
     queue.pop_front();
     vv.push_back(toVisit);
-    if (distance<(int)r)
+    if(toVisit<vertex_to_vertices.size())
     {
-      for (unsigned int i=0; i<vertex_to_vertices[toVisit].size(); ++i)
+      if (distance<(int)r)
       {
-        int neighbor=vertex_to_vertices[toVisit][i];
-        if (!visited[neighbor])
+        for (unsigned int i=0; i<vertex_to_vertices[toVisit].size(); ++i)
         {
-          queue.push_back(std::pair<int,int> (neighbor,distance+1));
-          visited[neighbor]=true;
+          int neighbor=vertex_to_vertices[toVisit][i];
+          if (!visited[neighbor])
+          {
+            queue.push_back(std::pair<int,int> (neighbor,distance+1));
+            visited[neighbor]=true;
+          }
         }
       }
     }

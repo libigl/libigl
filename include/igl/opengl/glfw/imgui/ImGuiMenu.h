@@ -22,7 +22,7 @@ namespace igl
     {
       namespace imgui
       {
-
+        /// Widget for a menu bar and a viewer window.
         class ImGuiMenu : public ImGuiWidget
         {
           public:

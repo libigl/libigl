@@ -79,9 +79,7 @@ IGL_INLINE void igl::cotmatrix(
 }
 
 #include "massmatrix.h"
-#include "pinv.h"
 #include "cotmatrix_entries.h"
-#include "diag.h"
 #include "massmatrix.h"
 #include <Eigen/Geometry>
 #include <Eigen/QR>
@@ -199,7 +197,7 @@ IGL_INLINE void igl::cotmatrix(
   const Eigen::SparseMatrix<Scalar> PTMP = P.transpose() * Mf * P;
   // Lump M
   const VectorXS Mdiag = PTMP * VectorXS::Ones(n,1);
-  igl::diag(Mdiag,M);
+  M = Eigen::SparseMatrix<Scalar>(Mdiag.asDiagonal());
 
   MatrixXS Vf = P*V;
   Eigen::MatrixXi Ff(I.size(),3);

@@ -20,6 +20,6 @@
 //     #include <GL/gl.h>
 //
 
-#include <glad/glad.h>
+#include <glad/gl.h>
 
 #endif

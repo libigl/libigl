@@ -21,32 +21,30 @@ namespace igl
   {
     namespace tetgen
     {
-      // Read a mesh or point set into tetgenio (input object for calling
-      // tetgen).  Many file formats are already supported by tetgen:
-      //   .off
-      //   .ply
-      //   .node
-      //   .ply
-      //   .medit
-      //   .vtk
-      //   etc.
-      // Notably it does not support .obj which is loaded by hand here (also
-      // demonstrating how to load points/faces programmatically)
-      //
-      // If the file extension is not recognized the filename is assumed to be
-      // the basename of a collection describe a tetmesh, (of which at least
-      // the .node file must exist):
-      //   [filename].node
-      //   [filename].ele
-      //   [filename].face
-      //   [filename].edge
-      //   [filename].vol
-      //
-      // Inputs:
-      //   path  path to file or basename to files
-      // Outputs:
-      //   in  tetgenio input object
-      // Returns true on success, false on error
+      /// Read a mesh or point set into tetgenio (input object for calling
+      /// tetgen).  Many file formats are already supported by tetgen:
+      ///   .off
+      ///   .ply
+      ///   .node
+      ///   .ply
+      ///   .medit
+      ///   .vtk
+      ///   etc.
+      /// Notably it does not support .obj which is loaded by hand here (also
+      /// demonstrating how to load points/faces programmatically)
+      ///
+      /// If the file extension is not recognized the filename is assumed to be
+      /// the basename of a collection describe a tetmesh, (of which at least
+      /// the .node file must exist):
+      ///   [filename].node
+      ///   [filename].ele
+      ///   [filename].face
+      ///   [filename].edge
+      ///   [filename].vol
+      ///
+      /// @param[in] path  path to file or basename to files
+      /// @param[out] in  tetgenio input object
+      /// @return true on success, false on error
       IGL_INLINE bool read_into_tetgenio(
         const std::string & path, 
         tetgenio & in);

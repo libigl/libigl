@@ -18,7 +18,8 @@ igl_include_optional(opengl)
 igl_include_optional(glfw)
 igl_include_optional(imgui)
 igl_include_optional(predicates)
-igl_include_optional(png)
+igl_include_optional(stb)
+igl_include_optional(spectra)
 igl_include_optional(xml)
 
 # Libigl copyleft modules

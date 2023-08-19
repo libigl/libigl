@@ -14,24 +14,19 @@
 #include <Eigen/Sparse>
 
 namespace igl {
-  // marching_tets( TV, TT, S, isovalue, SV, SF, J, BC)
-  //
-  // performs the marching tetrahedra algorithm on a tet mesh defined by TV and
-  // TT with scalar values defined at each vertex in TV. The output is a
-  // triangle mesh approximating the isosurface coresponding to the value
-  // isovalue.
-  //
-  // Input:
-  //  TV  #tet_vertices x 3 array -- The vertices of the tetrahedral mesh
-  //  TT  #tets x 4 array --  The indexes of each tet in the tetrahedral mesh
-  //  S  #tet_vertices x 1 array -- The values defined on each tet vertex
-  //  isovalue  scalar -- The isovalue of the level set we want to compute
-  //
-  // Output:
-  //  SV  #SV x 3 array -- The vertices of the output level surface mesh
-  //  SF  #SF x 3 array -- The face indexes of the output level surface mesh
-  //  J   #SF list of indices into TT revealing which tet each face comes from
-  //  BC  #SV x #TV list of barycentric coordinates so that SV = BC*TV
+  /// Performs the marching tetrahedra algorithm on a tet mesh defined by TV and
+  /// TT with scalar values defined at each vertex in TV. The output is a
+  /// triangle mesh approximating the isosurface coresponding to the value
+  /// isovalue.
+  ///
+  /// @param[in] TV  #tet_vertices x 3 array -- The vertices of the tetrahedral mesh
+  /// @param[in] TT  #tets x 4 array --  The indexes of each tet in the tetrahedral mesh
+  /// @param[in] S  #tet_vertices x 1 array -- The values defined on each tet vertex
+  /// @param[in] isovalue  scalar -- The isovalue of the level set we want to compute
+  /// @param[out] SV  #SV x 3 array -- The vertices of the output level surface mesh
+  /// @param[out] SF  #SF x 3 array -- The face indexes of the output level surface mesh
+  /// @param[out] J   #SF list of indices into TT revealing which tet each face comes from
+  /// @param[out] BC  #SV x #TV list of barycentric coordinates so that SV = BC*TV
   template <typename DerivedTV,
             typename DerivedTT,
             typename DerivedS,
@@ -48,24 +43,8 @@ namespace igl {
       Eigen::PlainObjectBase<DerivedSF>& SF,
       Eigen::PlainObjectBase<DerivedJ>& J,
       Eigen::SparseMatrix<BCType>& BC);
-
-  // marching_tets( TV, TT, S, SV, SF, J, BC)
-  //
-  // Performs the marching tetrahedra algorithm on a tet mesh defined by TV and
-  // TT with scalar values defined at each vertex in TV. The output is a
-  // triangle mesh approximating the isosurface coresponding to an isovalue of 0.
-  //
-  // Input:
-  //  TV  #tet_vertices x 3 array -- The vertices of the tetrahedral mesh
-  //  TT  #tets x 4 array --  The indexes of each tet in the tetrahedral mesh
-  //  S  #tet_vertices x 1 array -- The values defined on each tet vertex
-  //  isovalue  scalar -- The isovalue of the level set we want to compute
-  //
-  // Output:
-  //  SV  #SV x 3 array -- The vertices of the output level surface mesh
-  //  SF  #SF x 3 array -- The face indexes of the output level surface mesh
-  //  J   #SF list of indices into TT revealing which tet each face comes from
-  //  BC  #SV x #TV list of barycentric coordinates so that SV = BC*TV
+  /// \overload
+  /// \brief assumes isovalue = 0
   template <typename DerivedTV,
             typename DerivedTT,
             typename DerivedS,
@@ -83,24 +62,7 @@ namespace igl {
       Eigen::SparseMatrix<BCType>& BC) {
     return igl::marching_tets(TV, TT, S, 0.0, SV, SF, J, BC);
   }
-
-  // marching_tets( TV, TT, S, isovalue, SV, SF, J)
-  //
-  // performs the marching tetrahedra algorithm on a tet mesh defined by TV and
-  // TT with scalar values defined at each vertex in TV. The output is a
-  // triangle mesh approximating the isosurface coresponding to the value
-  // isovalue.
-  //
-  // Input:
-  //  TV  #tet_vertices x 3 array -- The vertices of the tetrahedral mesh
-  //  TT  #tets x 4 array --  The indexes of each tet in the tetrahedral mesh
-  //  S  #tet_vertices x 1 array -- The values defined on each tet vertex
-  //  isovalue  scalar -- The isovalue of the level set we want to compute
-  //
-  // Output:
-  //  SV  #SV x 3 array -- The vertices of the output level surface mesh
-  //  SF  #SF x 3 array -- The face indexes of the output level surface mesh
-  //  J   #SF list of indices into TT revealing which tet each face comes from
+  /// \overload
   template <typename DerivedTV,
             typename DerivedTT,
             typename DerivedS,
@@ -118,24 +80,7 @@ namespace igl {
     Eigen::SparseMatrix<double> _BC;
     return igl::marching_tets(TV, TT, S, isovalue, SV, SF, J, _BC);
   }
-
-  // marching_tets( TV, TT, S, isovalue, SV, SF, BC)
-  //
-  // performs the marching tetrahedra algorithm on a tet mesh defined by TV and
-  // TT with scalar values defined at each vertex in TV. The output is a
-  // triangle mesh approximating the isosurface coresponding to the value
-  // isovalue.
-  //
-  // Input:
-  //  TV  #tet_vertices x 3 array -- The vertices of the tetrahedral mesh
-  //  TT  #tets x 4 array --  The indexes of each tet in the tetrahedral mesh
-  //  S  #tet_vertices x 1 array -- The values defined on each tet vertex
-  //  isovalue  scalar -- The isovalue of the level set we want to compute
-  //
-  // Output:
-  //  SV  #SV x 3 array -- The vertices of the output level surface mesh
-  //  SF  #SF x 3 array -- The face indexes of the output level surface mesh
-  //  BC  #SV x #TV list of barycentric coordinates so that SV = BC*TV
+  /// \overload
   template <typename DerivedTV,
             typename DerivedTT,
             typename DerivedS,
@@ -153,23 +98,7 @@ namespace igl {
     Eigen::VectorXi _J;
     return igl::marching_tets(TV, TT, S, isovalue, SV, SF, _J, BC);
   }
-
-  // marching_tets( TV, TT, S, isovalue, SV, SF)
-  //
-  // performs the marching tetrahedra algorithm on a tet mesh defined by TV and
-  // TT with scalar values defined at each vertex in TV. The output is a
-  // triangle mesh approximating the isosurface coresponding to the value
-  // isovalue.
-  //
-  // Input:
-  //  TV  #tet_vertices x 3 array -- The vertices of the tetrahedral mesh
-  //  TT  #tets x 4 array --  The indexes of each tet in the tetrahedral mesh
-  //  S  #tet_vertices x 1 array -- The values defined on each tet vertex
-  //  isovalue  scalar -- The isovalue of the level set we want to compute
-  //
-  // Output:
-  //  SV  #SV x 3 array -- The vertices of the output level surface mesh
-  //  SF  #SF x 3 array -- The face indexes of the output level surface mesh
+  /// \overload
   template <typename DerivedTV,
             typename DerivedTT,
             typename DerivedS,

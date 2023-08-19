@@ -13,15 +13,12 @@
 
 namespace igl
 {
-  // Invert the diagonal entries of a matrix (if the matrix is a diagonal
-  // matrix then this amounts to inverting the matrix)
-
-  // Templates:
-  //   T  should be a eigen sparse matrix primitive type like int or double
-  // Inputs:
-  //   X  an m by n sparse matrix
-  // Outputs:
-  //   Y  an m by n sparse matrix
+  /// Invert the diagonal entries of a matrix (if the matrix is a diagonal
+  /// matrix then this amounts to inverting the matrix)
+  ///
+  /// @tparam  T  should be a eigen sparse matrix primitive type like int or double
+  /// @param[in] X  an m by n sparse matrix
+  /// @param[out] Y  an m by n sparse matrix
   template <typename DerivedX, typename MatY>
   IGL_INLINE void invert_diag(
     const Eigen::SparseCompressedBase<DerivedX>& X,

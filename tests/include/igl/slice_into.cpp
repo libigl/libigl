@@ -70,3 +70,36 @@ TEST_CASE("slice_into: sparse_identity", "[igl]")
     test_common::assert_eq(A,B);
   }
 }
+
+#include <iostream>
+#include <igl/matlab_format.h>
+TEST_CASE("slice_into: every-other", "[igl]")
+{
+  Eigen::MatrixXd Af(2,2);
+  Af<<
+    1,0,
+    5,6;
+  Eigen::SparseMatrix<double> As = Af.sparseView();
+  Eigen::MatrixXd Bf(4,4);
+  Bf<<
+    0,5,0,3,
+    0,6,0,4,
+    3,0,1,5,
+    4,8,0,0;
+  Eigen::SparseMatrix<double> Bs = Bf.sparseView();
+
+  Eigen::VectorXi R(2);
+  R<<1,3;
+  Eigen::VectorXi C(2);
+  C<<1,3;
+  igl::slice_into(Af,R,C,Bf);
+  igl::slice_into(As,R,C,Bs);
+  Eigen::MatrixXd res(4,4);
+  res<<
+    0,5,0,3,
+    0,1,0,0,
+    3,0,1,5,
+    4,5,0,6;
+  test_common::assert_eq(Bf,res);
+  test_common::assert_eq(Eigen::MatrixXd(Bs),res);
+}

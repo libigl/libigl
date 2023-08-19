@@ -14,6 +14,7 @@
 #include <Eigen/LU>
 
 #include "../gl.h"
+#include "../report_gl_error.h"
 #include <GLFW/glfw3.h>
 
 #include <cmath>
@@ -26,27 +27,28 @@
 #include <limits>
 #include <cassert>
 
-#include <igl/project.h>
-#include <igl/get_seconds.h>
-#include <igl/readOBJ.h>
-#include <igl/read_triangle_mesh.h>
-#include <igl/adjacency_list.h>
-#include <igl/writeOBJ.h>
-#include <igl/writeOFF.h>
-#include <igl/massmatrix.h>
-#include <igl/file_dialog_open.h>
-#include <igl/file_dialog_save.h>
-#include <igl/quat_mult.h>
-#include <igl/axis_angle_to_quat.h>
-#include <igl/trackball.h>
-#include <igl/two_axis_valuator_fixed_up.h>
-#include <igl/snap_to_canonical_view_quat.h>
-#include <igl/unproject.h>
-#include <igl/serialize.h>
+#include "../../project.h"
+#include "../../get_seconds.h"
+#include "../../readOBJ.h"
+#include "../../read_triangle_mesh.h"
+#include "../../adjacency_list.h"
+#include "../../writeOBJ.h"
+#include "../../writeOFF.h"
+#include "../../massmatrix.h"
+#include "../../file_dialog_open.h"
+#include "../../file_dialog_save.h"
+#include "../../quat_mult.h"
+#include "../../axis_angle_to_quat.h"
+#include "../../trackball.h"
+#include "../../two_axis_valuator_fixed_up.h"
+#include "../../snap_to_canonical_view_quat.h"
+#include "../../unproject.h"
+#include "../../serialize.h"
 
 // Internal global variables used for glfw event handling
 static igl::opengl::glfw::Viewer * __viewer;
-static double highdpi = 1;
+static double highdpiw = 1; // High DPI width
+static double highdpih = 1; // High DPI height
 static double scroll_x = 0;
 static double scroll_y = 0;
 
@@ -91,8 +93,8 @@ static void glfw_key_callback(GLFWwindow* window, int key, int scancode, int act
 
 static void glfw_window_size(GLFWwindow* window, int width, int height)
 {
-  int w = width*highdpi;
-  int h = height*highdpi;
+  int w = width*highdpiw;
+  int h = height*highdpih;
 
   __viewer->post_resize(w, h);
 
@@ -100,7 +102,7 @@ static void glfw_window_size(GLFWwindow* window, int width, int height)
 
 static void glfw_mouse_move(GLFWwindow* window, double x, double y)
 {
-  __viewer->mouse_move(x*highdpi, y*highdpi);
+  __viewer->mouse_move(x*highdpiw, y*highdpih);
 }
 
 static void glfw_mouse_scroll(GLFWwindow* window, double x, double y)
@@ -177,7 +179,7 @@ namespace glfw
     }
     glfwMakeContextCurrent(window);
     // Load OpenGL and its extensions
-    if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress))
+    if (!gladLoadGL((GLADloadfunc) glfwGetProcAddress))
     {
       printf("Failed to load OpenGL and its extensions\n");
       return(-1);
@@ -208,7 +210,8 @@ namespace glfw
     glfwGetFramebufferSize(window, &width, &height);
     int width_window, height_window;
     glfwGetWindowSize(window, &width_window, &height_window);
-    highdpi = windowWidth/width_window;
+    highdpiw = windowWidth/width_window;
+    highdpih = windowHeight/height_window;
     glfw_window_size(window,width_window,height_window);
     // Initialize IGL viewer
     init();
@@ -239,18 +242,17 @@ namespace glfw
       if(core().is_animating || frame_counter++ < num_extra_frames)
       {
         glfwPollEvents();
-        // In microseconds
-        double duration = 1000000.*(get_seconds()-tic);
-        const double min_duration = 1000000./core().animation_max_fps;
-        if(duration<min_duration)
-        {
-          std::this_thread::sleep_for(std::chrono::microseconds((int)(min_duration-duration)));
-        }
-      }
-      else
+      }else
       {
         glfwWaitEvents();
         frame_counter = 0;
+      }
+      // In microseconds
+      double duration = 1000000.*(get_seconds()-tic);
+      const double min_duration = 1000000./core().animation_max_fps;
+      if(duration<min_duration)
+      {
+        std::this_thread::sleep_for(std::chrono::microseconds((int)(min_duration-duration)));
       }
       if (!loop)
         return !glfwWindowShouldClose(window);
@@ -273,7 +275,10 @@ namespace glfw
     {
       data.meshgl.free();
     }
-    core().shut(); // Doesn't do anything
+    for(auto &core : this->core_list)
+    {
+      core.shut(); 
+    }
     shutdown_plugins();
     glfwDestroyWindow(window);
     glfwTerminate();
@@ -282,7 +287,10 @@ namespace glfw
 
   IGL_INLINE void Viewer::init()
   {
-    core().init(); // Doesn't do anything
+    for(auto &core : this->core_list)
+    {
+      core.init();
+    }
 
     if (callback_init)
       if (callback_init(*this))
@@ -359,6 +367,7 @@ namespace glfw
   I,i     Toggle invert normals
   L,l     Toggle wireframe
   O,o     Toggle orthographic/perspective projection
+  S,s     Toggle shadows
   T,t     Toggle filled faces
   Z       Snap to canonical view
   [,]     Toggle between rotation control types (trackball, two-axis
@@ -551,6 +560,39 @@ namespace glfw
       case 'o':
       {
         core().orthographic = !core().orthographic;
+        return true;
+      }
+      case 'S':
+      case 's':
+      {
+        if(core().is_directional_light)
+        {
+          core().is_shadow_mapping = !core().is_shadow_mapping;
+        }else
+        {
+          if(core().is_shadow_mapping)
+          {
+            core().is_shadow_mapping = false;
+          }else
+          {
+            // The light_position when !is_directional_light is interpretted as
+            // a position relative to the _eye_ (not look-at) position of the
+            // camera.
+            //
+            // Meanwhile shadows only current work in is_directional_light mode.
+            //
+            // If the user wants to flip back and forth between [positional lights
+            // without shadows] and [directional lights with shadows] then they
+            // can high-jack this key_pressed with a callback.
+            // 
+            // Until shadows support positional lights, let's switch to
+            // directional lights here and match the direction best as possible to
+            // the current light position.
+            core().is_directional_light = true;
+            core().light_position = core().light_position + core().camera_eye;
+            core().is_shadow_mapping = true;
+          }
+        }
         return true;
       }
       case 'T':
@@ -884,12 +926,14 @@ namespace glfw
     int width_window, height_window;
     glfwGetWindowSize(window, &width_window, &height_window);
 
-    auto highdpi_tmp = (width_window == 0 ||  width == 0) ? highdpi : (width/width_window);
+    auto highdpiw_tmp = (width_window == 0 ||  width == 0) ? highdpiw : (width/width_window);
+    auto highdpih_tmp = (height_window == 0 ||  height == 0) ? highdpih : (height/height_window);
 
-    if(fabs(highdpi_tmp-highdpi)>1e-8)
+    if(fabs(highdpiw_tmp-highdpiw)>1e-8 || fabs(highdpih_tmp-highdpih)>1e-8)
     {
       post_resize(width, height);
-      highdpi=highdpi_tmp;
+      highdpiw=highdpiw_tmp;
+      highdpih=highdpih_tmp;
     }
 
     for (auto& core : core_list)
@@ -909,6 +953,23 @@ namespace glfw
       if (callback_pre_draw(*this))
       {
         return;
+      }
+    }
+    
+    // Shadow pass
+    for (auto& core : core_list)
+    {
+      if(core.is_shadow_mapping)
+      {
+        core.initialize_shadow_pass();
+        for (auto& mesh : data_list)
+        {
+          if (mesh.is_visible & core.id)
+          {
+            core.draw_shadow_pass(mesh);
+          }
+        }
+        core.deinitialize_shadow_pass();
       }
     }
 
@@ -938,10 +999,163 @@ namespace glfw
     }
   }
 
+  template <typename T>
+  IGL_INLINE void Viewer::draw_buffer(
+    igl::opengl::ViewerCore & core,
+    Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> & R,
+    Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> & G,
+    Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> & B,
+    Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> & A,
+    Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> & D)
+  {
+    // follows igl::opengl::ViewerCore::draw_buffer, image is transposed from
+    // typical matrix view
+    const int width = R.rows() ? R.rows() :  core.viewport(2);
+    const int height = R.cols() ? R.cols() : core.viewport(3);
+    R.resize(width,height);
+    G.resize(width,height);
+    B.resize(width,height);
+    A.resize(width,height);
+    D.resize(width,height);
+
+    ////////////////////////////////////////////////////////////////////////
+    // Create an initial multisampled framebuffer
+    ////////////////////////////////////////////////////////////////////////
+    unsigned int framebuffer;
+    unsigned int color_buffer;
+    unsigned int depth_buffer;
+    {
+      glGenFramebuffers(1, &framebuffer);
+      glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+      // create a multisampled color attachment texture (is a texture really
+      // needed? Could this be a renderbuffer instead?)
+      glGenTextures(1, &color_buffer);
+      glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, color_buffer);
+      glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGBA, width, height, GL_TRUE);
+      glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
+      glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, color_buffer, 0);
+      // create a (also multisampled) renderbuffer object for depth and stencil attachments
+      glGenRenderbuffers(1, &depth_buffer);
+      glBindRenderbuffer(GL_RENDERBUFFER, depth_buffer);
+      glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_DEPTH24_STENCIL8, width, height);
+      glBindRenderbuffer(GL_RENDERBUFFER, 0);
+      glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, depth_buffer);
+
+
+      assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
+      report_gl_error("glCheckFramebufferStatus: ");
+      glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
+
+    ////////////////////////////////////////////////////////////////////////
+    // configure second post-processing framebuffer
+    ////////////////////////////////////////////////////////////////////////
+    unsigned int intermediateFBO;
+    unsigned int screenTexture, depthTexture;
+    {
+      glGenFramebuffers(1, &intermediateFBO);
+      glBindFramebuffer(GL_FRAMEBUFFER, intermediateFBO);
+      // create a color attachment texture
+      glGenTextures(1, &screenTexture);
+      glBindTexture(GL_TEXTURE_2D, screenTexture);
+      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, screenTexture, 0);
+      
+      // create depth attachment texture
+      glGenTextures(1, &depthTexture);
+      glBindTexture(GL_TEXTURE_2D, depthTexture);
+      glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, width, height, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, depthTexture, 0);
+
+      assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
+      glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
+
+    ////////////////////////////////////////////////////////////////////////
+    // attach initial framebuffer and draw all `data`
+    ////////////////////////////////////////////////////////////////////////
+    glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+    // Clear the buffer
+    glClearColor(
+      core.background_color(0), 
+      core.background_color(1), 
+      core.background_color(2),
+      core.background_color(3));
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    // Save old viewport
+    Eigen::Vector4f viewport_ori = core.viewport;
+    core.viewport << 0,0,width,height;
+    // Draw all `data`
+    for (auto& data : data_list)
+    {
+      if (data.is_visible & core.id)
+      {
+        core.draw(data);
+      }
+    }
+    // Restore viewport
+    core.viewport = viewport_ori;
+
+    ////////////////////////////////////////////////////////////////////////
+    // attach second framebuffer and redraw (for anti-aliasing?)
+    ////////////////////////////////////////////////////////////////////////
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, framebuffer);
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, intermediateFBO);
+    report_gl_error("before: ");
+    glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+    report_gl_error("glBlitFramebuffer: ");
+
+
+    ////////////////////////////////////////////////////////////////////////
+    // Read pixel data from framebuffer, write into buffers
+    ////////////////////////////////////////////////////////////////////////
+    glBindFramebuffer(GL_FRAMEBUFFER, intermediateFBO);
+    // Copy back in the given Eigen matrices
+    {
+      typedef typename std::conditional< std::is_floating_point<T>::value,GLfloat,GLubyte>::type GLType;
+      GLenum type = std::is_floating_point<T>::value ?  GL_FLOAT : GL_UNSIGNED_BYTE;
+      GLType* pixels = (GLType*)calloc(width*height*4,sizeof(GLType));
+      GLType * depth = (GLType*)calloc(width*height*1,sizeof(GLType));
+      glReadPixels(0, 0,width, height,GL_RGBA,            type, pixels);
+      glReadPixels(0, 0,width, height,GL_DEPTH_COMPONENT, type, depth);
+      int count = 0;
+      for (unsigned j=0; j<height; ++j)
+      {
+        for (unsigned i=0; i<width; ++i)
+        {
+          R(i,j) = pixels[count*4+0];
+          G(i,j) = pixels[count*4+1];
+          B(i,j) = pixels[count*4+2];
+          A(i,j) = pixels[count*4+3];
+          D(i,j) = depth[count*1+0];
+          ++count;
+        }
+      }
+      // Clean up
+      free(pixels);
+      free(depth);
+    }
+
+    // Clean up
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glDeleteTextures(1, &screenTexture);
+    glDeleteTextures(1, &depthTexture);
+    glDeleteTextures(1, &color_buffer);
+    glDeleteRenderbuffers(1, &depth_buffer);
+    glDeleteFramebuffers(1, &framebuffer);
+    glDeleteFramebuffers(1, &intermediateFBO);
+  }
+
   IGL_INLINE void Viewer::resize(int w,int h)
   {
     if (window) {
-      glfwSetWindowSize(window, w/highdpi, h/highdpi);
+      glfwSetWindowSize(window, w/highdpiw, h/highdpih);
     }
     post_resize(w, h);
   }
@@ -1136,3 +1350,9 @@ namespace glfw
 } // end namespace
 } // end namespace
 }
+
+#ifdef IGL_STATIC_LIBRARY
+template void igl::opengl::glfw::Viewer::draw_buffer<unsigned char>(igl::opengl::ViewerCore&, Eigen::Matrix<unsigned char, -1, -1, 0, -1, -1>&, Eigen::Matrix<unsigned char, -1, -1, 0, -1, -1>&, Eigen::Matrix<unsigned char, -1, -1, 0, -1, -1>&, Eigen::Matrix<unsigned char, -1, -1, 0, -1, -1>&, Eigen::Matrix<unsigned char, -1, -1, 0, -1, -1>&);
+template void igl::opengl::glfw::Viewer::draw_buffer<double>(igl::opengl::ViewerCore&, Eigen::Matrix<double, -1, -1, 0, -1, -1>&, Eigen::Matrix<double, -1, -1, 0, -1, -1>&, Eigen::Matrix<double, -1, -1, 0, -1, -1>&, Eigen::Matrix<double, -1, -1, 0, -1, -1>&, Eigen::Matrix<double, -1, -1, 0, -1, -1>&);
+template void igl::opengl::glfw::Viewer::draw_buffer<float>(igl::opengl::ViewerCore&, Eigen::Matrix<float, -1, -1, 0, -1, -1>&, Eigen::Matrix<float, -1, -1, 0, -1, -1>&, Eigen::Matrix<float, -1, -1, 0, -1, -1>&, Eigen::Matrix<float, -1, -1, 0, -1, -1>&, Eigen::Matrix<float, -1, -1, 0, -1, -1>&);
+#endif

@@ -7,12 +7,8 @@ message(STATUS "Third-party: creating target 'CGAL::CGAL'")
 include(FetchContent)
 FetchContent_Declare(
     cgal
-    GIT_REPOSITORY https://github.com/CGAL/cgal.git
-    GIT_TAG        f7c3c8212b56c0d6dae63787efc99093f4383415
-    # URL https://github.com/CGAL/cgal/releases/download/releases%2FCGAL-4.12.2/CGAL-4.12.2.tar.xz
-    # URL_MD5 c94a0081c3836fd01ccb4d1e8bdd5d4f
-    # URL https://github.com/CGAL/cgal/releases/download/v5.2.1/CGAL-5.2.1-library.tar.xz
-    # URL_MD5 c1c3a9abe9106b5f3ff8dccaf2ddc0b7
+    URL https://github.com/CGAL/cgal/releases/download/v5.4/CGAL-5.4-library.tar.xz
+    URL_MD5 996f7ee9ba1553edac60debb115699cd
 )
 FetchContent_GetProperties(cgal)
 if(cgal_POPULATED)
@@ -38,8 +34,10 @@ function(cgal_import_target)
     include(boost)
 
     ignore_package(GMP 5.0.1)
-    set(GMP_INCLUDE_DIR "")
+    set(GMP_INCLUDE_DIR ${gmp_INCLUDE_DIR})
     set(GMP_LIBRARIES gmp::gmp)
+    set(GMPXX_INCLUDE_DIR ${GMP_INCLUDE_DIR})
+    set(GMPXX_LIBRARIES ${GMP_LIBRARIES})
 
     ignore_package(MPFR 3.0.0)
     set(MPFR_INCLUDE_DIR "")
@@ -52,6 +50,8 @@ function(cgal_import_target)
     # Prefer Config mode before Module mode to prevent CGAL from loading its own FindXXX.cmake
     set(CMAKE_FIND_PACKAGE_PREFER_CONFIG TRUE)
 
+    # https://stackoverflow.com/a/71714947/148668
+    set(CGAL_DATA_DIR "unspecified")
     find_package(CGAL CONFIG COMPONENTS Core PATHS ${cgal_SOURCE_DIR} NO_DEFAULT_PATH)
 endfunction()
 
