@@ -7,7 +7,9 @@ function(igl_add_tutorial name)
     endforeach()
 
     message(STATUS "Creating libigl tutorial: ${name}")
-    add_executable(${name} ${CMAKE_CURRENT_SOURCE_DIR}/${name}/main.cpp)
+    # get all cpp files in ${CMAKE_CURRENT_SOURCE_DIR}/${name}/
+    file(GLOB SRCFILES ${CMAKE_CURRENT_SOURCE_DIR}/${name}/*.cpp)
+    add_executable(${name} ${SRCFILES})
     target_link_libraries(${name} PRIVATE
         igl::core
         igl::tutorial_data

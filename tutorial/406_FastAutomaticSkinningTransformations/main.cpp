@@ -1,16 +1,6 @@
-#include <igl/colon.h>
-#include <igl/directed_edge_orientations.h>
-#include <igl/directed_edge_parents.h>
-#include <igl/forward_kinematics.h>
-#include <igl/PI.h>
-#include <igl/partition.h>
-#include <igl/max.h>
-#include <igl/lbs_matrix.h>
+#include "precomputation.h"
+
 #include <igl/slice.h>
-#include <igl/deform_skeleton.h>
-#include <igl/dqs.h>
-#include <igl/lbs_matrix.h>
-#include <igl/columnize.h>
 #include <igl/readDMAT.h>
 #include <igl/readOBJ.h>
 #include <igl/arap.h>
@@ -40,7 +30,6 @@ double bbd = 1.0;
 bool resolve = true;
 igl::ARAPData arap_data,arap_grouped_data;
 igl::ArapDOFData<Eigen::MatrixXd,double> arap_dof_data;
-Eigen::SparseMatrix<double> Aeq;
 
 enum ModeType
 {
@@ -149,57 +138,8 @@ int main(int argc, char *argv[])
   U=V;
   MatrixXd W;
   igl::readDMAT(TUTORIAL_SHARED_PATH "/armadillo-weights.dmat",W);
-  igl::lbs_matrix_column(V,W,M);
 
-  // Cluster according to weights
-  VectorXi G;
-  {
-    VectorXi S;
-    VectorXd D;
-    igl::partition(W,50,G,S,D);
-  }
-
-  // vertices corresponding to handles (those with maximum weight)
-  {
-    VectorXd maxW;
-    igl::max(W,1,maxW,b);
-  }
-
-  // Precomputation for FAST
-  cout<<"Initializing Fast Automatic Skinning Transformations..."<<endl;
-  // number of weights
-  const int m = W.cols();
-  Aeq.resize(m*3,m*3*(3+1));
-  vector<Triplet<double> > ijv;
-  for(int i = 0;i<m;i++)
-  {
-    RowVector4d homo;
-    homo << V.row(b(i)),1.;
-    for(int d = 0;d<3;d++)
-    {
-      for(int c = 0;c<(3+1);c++)
-      {
-        ijv.push_back(Triplet<double>(3*i + d,i + c*m*3 + d*m, homo(c)));
-      }
-    }
-  }
-  Aeq.setFromTriplets(ijv.begin(),ijv.end());
-  igl::arap_dof_precomputation(V,F,M,G,arap_dof_data);
-  igl::arap_dof_recomputation(VectorXi(),Aeq,arap_dof_data);
-  // Initialize
-  MatrixXd Istack = MatrixXd::Identity(3,3+1).replicate(1,m);
-  igl::columnize(Istack,m,2,L);
-
-  // Precomputation for ARAP
-  cout<<"Initializing ARAP..."<<endl;
-  arap_data.max_iter = 1;
-  igl::arap_precomputation(V,F,V.cols(),b,arap_data);
-  // Grouped arap
-  cout<<"Initializing ARAP with grouped edge-sets..."<<endl;
-  arap_grouped_data.max_iter = 2;
-  arap_grouped_data.G = G;
-  igl::arap_precomputation(V,F,V.cols(),b,arap_grouped_data);
-
+  precomputation(V,F,W,M,b,L,arap_data,arap_grouped_data,arap_dof_data);
 
   // bounding box diagonal
   bbd = (V.colwise().maxCoeff()- V.colwise().minCoeff()).norm();
