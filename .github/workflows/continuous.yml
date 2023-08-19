@@ -87,13 +87,25 @@ jobs:
   ####################
 
   Windows:
-    name: Windows ${{ fromJSON('["Header-Only", "Static"]')[matrix.build-params.static == 'ON'] }} ${{ matrix.build-params.tutorials == 'ON' && 'tutorial' || ''}} ${{ matrix.build-params.tests == 'ON' && 'tests' || ''}} ${{ matrix.config }}
+    name: Windows ${{ fromJSON('["Header-Only", "Static"]')[matrix.build-params.static == 'ON'] }} ${{ matrix.build-params.tutorials == 'ON' && 'tutorial' || ''}} ${{ matrix.build-params.selected_tutorial != 'NONE' && matrix.build-params.selected_tutorial || '' }} ${{ matrix.build-params.tests == 'ON' && 'tests' || ''}} ${{ matrix.config }}
     runs-on: windows-2022
     strategy:
       fail-fast: false
       matrix:
         config: [Release]
-        build-params: [ {static:  ON, tutorials:  ON, tests:  ON }, {static: OFF, tutorials: OFF, tests:  ON }, {static: OFF, tutorials:  ON, tests: OFF }]
+        build-params: [ 
+        {static:  ON, tutorials:  ON, tests:  ON, selected_tutorial: NONE}, 
+        {static: OFF, tutorials: OFF, tests:  ON, selected_tutorial: NONE}, 
+        {static: OFF, tutorials:  ON, tests: OFF, selected_tutorial: 1},
+        {static: OFF, tutorials:  ON, tests: OFF, selected_tutorial: 2},
+        {static: OFF, tutorials:  ON, tests: OFF, selected_tutorial: 3},
+        {static: OFF, tutorials:  ON, tests: OFF, selected_tutorial: 4},
+        {static: OFF, tutorials:  ON, tests: OFF, selected_tutorial: 5},
+        {static: OFF, tutorials:  ON, tests: OFF, selected_tutorial: 6},
+        {static: OFF, tutorials:  ON, tests: OFF, selected_tutorial: 7},
+        {static: OFF, tutorials:  ON, tests: OFF, selected_tutorial: 8},
+        {static: OFF, tutorials:  ON, tests: OFF, selected_tutorial: 9},
+      ]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v1
@@ -133,6 +145,15 @@ jobs:
             -DLIBIGL_COPYLEFT_CGAL=ON ^
             -DLIBIGL_BUILD_TUTORIALS=${{ matrix.build-params.tutorials }} ^
             -DLIBIGL_BUILD_TESTS=${{ matrix.build-params.tests }} ^
+            -DLIBIGL_TUTORIALS_CHAPTER1=${{ (matrix.build-params.selected_tutorial == 'NONE' || matrix.build-params.selected_tutorial == '1') && 'ON' || 'OFF' }} ^
+            -DLIBIGL_TUTORIALS_CHAPTER2=${{ (matrix.build-params.selected_tutorial == 'NONE' || matrix.build-params.selected_tutorial == '2') && 'ON' || 'OFF' }} ^
+            -DLIBIGL_TUTORIALS_CHAPTER3=${{ (matrix.build-params.selected_tutorial == 'NONE' || matrix.build-params.selected_tutorial == '3') && 'ON' || 'OFF' }} ^
+            -DLIBIGL_TUTORIALS_CHAPTER4=${{ (matrix.build-params.selected_tutorial == 'NONE' || matrix.build-params.selected_tutorial == '4') && 'ON' || 'OFF' }} ^
+            -DLIBIGL_TUTORIALS_CHAPTER5=${{ (matrix.build-params.selected_tutorial == 'NONE' || matrix.build-params.selected_tutorial == '5') && 'ON' || 'OFF' }} ^
+            -DLIBIGL_TUTORIALS_CHAPTER6=${{ (matrix.build-params.selected_tutorial == 'NONE' || matrix.build-params.selected_tutorial == '6') && 'ON' || 'OFF' }} ^
+            -DLIBIGL_TUTORIALS_CHAPTER7=${{ (matrix.build-params.selected_tutorial == 'NONE' || matrix.build-params.selected_tutorial == '7') && 'ON' || 'OFF' }} ^
+            -DLIBIGL_TUTORIALS_CHAPTER8=${{ (matrix.build-params.selected_tutorial == 'NONE' || matrix.build-params.selected_tutorial == '8') && 'ON' || 'OFF' }} ^
+            -DLIBIGL_TUTORIALS_CHAPTER9=${{ (matrix.build-params.selected_tutorial == 'NONE' || matrix.build-params.selected_tutorial == '9') && 'ON' || 'OFF' }} ^
             -B build ^
             -S .
           cmake --build build -j2
