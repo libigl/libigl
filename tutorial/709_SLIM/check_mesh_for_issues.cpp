@@ -5,6 +5,7 @@
 #include <igl/vertex_components.h>
 #include <igl/euler_characteristic.h>
 #include <igl/is_edge_manifold.h>
+#include <igl/adjacency_matrix.h>
 #include <Eigen/Sparse>
 
 void check_mesh_for_issues(Eigen::MatrixXd& V, Eigen::MatrixXi& F) {
