@@ -8,6 +8,7 @@
 #ifndef IGL_BLUE_NOISE_H
 #define IGL_BLUE_NOISE_H
 #include "igl_inline.h"
+#include "generate_default_urbg.h"
 #include <Eigen/Core>
 namespace igl
 {
@@ -24,20 +25,25 @@ namespace igl
   ///               ith sampled point in face FI(i)
   /// @param[out] FI  #P list of indices into F 
   /// @param[out] P  #P by dim list of sample positions.
+  /// @param[in,out] urbg An instance of UnformRandomBitGenerator (e.g.,
+  ///  `std::minstd_rand(0)`)
   /// \see random_points_on_mesh
   template <
     typename DerivedV,
     typename DerivedF,
     typename DerivedB,
     typename DerivedFI,
-    typename DerivedP>
+    typename DerivedP,
+    typename URBG = DEFAULT_URBG
+      >
   IGL_INLINE void blue_noise(
       const Eigen::MatrixBase<DerivedV> & V,
       const Eigen::MatrixBase<DerivedF> & F,
       const typename DerivedV::Scalar r,
       Eigen::PlainObjectBase<DerivedB> & B,
       Eigen::PlainObjectBase<DerivedFI> & FI,
-      Eigen::PlainObjectBase<DerivedP> & P);
+      Eigen::PlainObjectBase<DerivedP> & P,
+      URBG && urbg = igl::generate_default_urbg());
 }
 
 #ifndef IGL_STATIC_LIBRARY

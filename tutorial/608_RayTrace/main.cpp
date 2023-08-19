@@ -2,7 +2,7 @@
 #include <igl/massmatrix.h>
 #include <igl/invert_diag.h>
 #include <igl/read_triangle_mesh.h>
-#include <igl/png/writePNG.h>
+#include <igl/stb/write_image.h>
 #include <igl/PI.h>
 #include <Eigen/Geometry>
 // embree
@@ -63,6 +63,6 @@ int main(int argc, char *argv[])
   std::cout<<"Rendered scene saved to "<<png_file<<std::endl;
 
   // save to PNG file
-  igl::png::writePNG(R,G,B,A,png_file);
+  igl::stb::write_image(png_file,R,G,B,A);
   return 0;
 }

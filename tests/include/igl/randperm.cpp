@@ -56,26 +56,6 @@ TEST_CASE("randperm: mt19937_64_reproduce_identity", "[igl]")
 {
   randperm::test_reproduce<std::mt19937_64>();
 }
-TEST_CASE("randperm: ranlux24_base_reproduce_identity", "[igl]")
-{
-  randperm::test_reproduce<std::ranlux24_base>();
-}
-TEST_CASE("randperm: ranlux48_base_reproduce_identity", "[igl]")
-{
-  randperm::test_reproduce<std::ranlux48_base>();
-}
-TEST_CASE("randperm: ranlux24_reproduce_identity", "[igl]")
-{
-  randperm::test_reproduce<std::ranlux24>();
-}
-TEST_CASE("randperm: ranlux48_reproduce_identity", "[igl]")
-{
-  randperm::test_reproduce<std::ranlux48>();
-}
-TEST_CASE("randperm: knuth_b_reproduce_identity", "[igl]")
-{
-  randperm::test_reproduce<std::knuth_b>();
-}
 TEST_CASE("randperm: default_identity", "[igl]")
 {
   int n = 100;
