@@ -104,7 +104,7 @@ if(LIBIGL_TUTORIALS_CHAPTER7)
     igl_add_tutorial(707_SweptVolume igl::glfw)
     igl_add_tutorial(708_Picking igl::glfw)
     igl_add_tutorial(709_SLIM igl::glfw)
-    igl_add_tutorial(710_SCAF igl::glfw igl_restricted:triangle)
+    igl_add_tutorial(710_SCAF igl::glfw igl_restricted::triangle)
 endif()
 
 if(LIBIGL_TUTORIALS_CHAPTER8)
