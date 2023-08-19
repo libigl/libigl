@@ -10,7 +10,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 #include "ImGuiTraits.h"
-#include <imgui/imgui.h>
+#include <imgui.h>
 #include <vector>
 #include <string>
 #include <algorithm>
@@ -58,7 +58,7 @@ inline bool ListBox(const char* label, int* idx, std::vector<std::string>& value
     static_cast<void*>(&values), values.size());
 }
 
-inline bool InputText(const char* label, std::string &str, ImGuiInputTextFlags flags = 0, ImGuiTextEditCallback callback = NULL, void* user_data = NULL)
+inline bool InputText(const char* label, std::string &str, ImGuiInputTextFlags flags = 0, ImGuiInputTextCallback callback = NULL, void* user_data = NULL)
 {
   char buf[1024];
   std::fill_n(buf, 1024, 0);

@@ -11,15 +11,13 @@
 #include <Eigen/Core>
 namespace igl
 {
-  // Compute discrete local integral gaussian curvature (angle deficit, without
-  // averaging by local area).
-  //
-  // Inputs:
-  //   V  #V by 3 eigen Matrix of mesh vertex 3D positions
-  //   F  #F by 3 eigen Matrix of face (triangle) indices
-  // Output:
-  //   K  #V by 1 eigen Matrix of discrete gaussian curvature values
-  //
+  /// Compute discrete local integral gaussian curvature (angle deficit, without
+  /// averaging by local area).
+  ///
+  /// @param[in] V  #V by 3 eigen Matrix of mesh vertex 3D positions
+  /// @param[in] F  #F by 3 eigen Matrix of face (triangle) indices
+  /// @param[out] K  #V by 1 eigen Matrix of discrete gaussian curvature values
+  ///
   template <typename DerivedV, typename DerivedF, typename DerivedK>
   IGL_INLINE void gaussian_curvature(
     const Eigen::MatrixBase<DerivedV>& V,

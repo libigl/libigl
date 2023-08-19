@@ -1,5 +1,8 @@
 #include "quadprog.h"
+#include "../matlab_format.h"
 #include <vector>
+#include <iostream>
+#include <cstdio>
 /*
  FILE eiquadprog.hh
  
@@ -92,6 +95,22 @@ IGL_INLINE bool igl::copyleft::quadprog(
 {
   using namespace Eigen;
   typedef double Scalar;
+
+
+  const auto print_ivector= [](const char* name, const Eigen::MatrixXi & A, int n)
+  {
+    std::cout<<igl::matlab_format(A,name)<<std::endl;
+  };
+  const auto print_matrix = [](const char* name, const Eigen::MatrixXd & A, int n)
+  {
+    std::cout<<igl::matlab_format(A,name)<<std::endl;
+  };
+
+  const auto print_vector = [](const char* name, const Eigen::VectorXd & v, int n)
+  {
+    std::cout<<igl::matlab_format(v,name)<<std::endl;
+  };
+
   const auto distance = [](Scalar a, Scalar b)->Scalar
   {
   	Scalar a1, b1, t;

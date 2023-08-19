@@ -1,14 +1,12 @@
 #include <igl/read_triangle_mesh.h>
 #include <igl/get_seconds.h>
 #include <igl/material_colors.h>
-#include <igl/copyleft/marching_cubes.h>
-#include <igl/copyleft/swept_volume.h>
+#include <igl/swept_volume.h>
 #include <igl/opengl/glfw/Viewer.h>
 #include <igl/PI.h>
 #include <Eigen/Core>
 #include <iostream>
 
-#include "tutorial_shared_path.h"
 
 int main(int argc, char * argv[])
 {
@@ -39,7 +37,7 @@ int main(int argc, char * argv[])
   const int time_steps = 200;
   const double isolevel = 0.1;
   std::cerr<<"Computing swept volume...";
-  igl::copyleft::swept_volume(
+  igl::swept_volume(
     V,F,transform,time_steps,grid_size,isolevel,SV,SF);
   std::cerr<<" finished."<<std::endl;
 

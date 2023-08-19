@@ -12,18 +12,16 @@
 #include <Eigen/Core>
 namespace igl
 {
-  // Given a mesh (V,F) and the integer mismatch of a cross field per edge
-  // (mismatch), finds the cut_graph connecting the singularities (seams) and the
-  // degree of the singularities singularity_index
-  //
-  // Input:
-  //   V  #V by 3 list of mesh vertex positions
-  //   F  #F by 3 list of faces
-  //   mismatch  #F by 3 list of per corner integer mismatch
-  // Outputs:
-  //   seams  #F by 3 list of per corner booleans that denotes if an edge is a
-  //     seam or not
-  //
+  /// Given a mesh (V,F) and the integer mismatch of a cross field per edge
+  /// (mismatch), finds the cut_graph connecting the singularities (seams) and the
+  /// degree of the singularities singularity_index
+  ///
+  /// @param[in] V  #V by 3 list of mesh vertex positions
+  /// @param[in] F  #F by 3 list of faces
+  /// @param[in] mismatch  #F by 3 list of per corner integer mismatch
+  /// @param[out] seams  #F by 3 list of per corner booleans that denotes if an edge is a
+  ///     seam or not
+  ///
   template <
     typename DerivedV, 
     typename DerivedF, 

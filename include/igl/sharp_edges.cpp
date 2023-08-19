@@ -1,7 +1,7 @@
 #include "sharp_edges.h"
-#include <igl/unique_edge_map.h>
-#include <igl/per_face_normals.h>
-#include <igl/PI.h>
+#include "unique_edge_map.h"
+#include "per_face_normals.h"
+#include "PI.h"
 #include <Eigen/Geometry>
 
 template <
@@ -44,6 +44,10 @@ IGL_INLINE void igl::sharp_edges(
   {
     bool u_is_sharp = false;
     // Consider every pair of incident faces
+    //
+    // if there are 3 faces (non-manifold) it appears to follow that the edge
+    // must be sharp if angle<60. Could skip those (they're likely small number
+    // anyway).
     for(int i = 0;i<uE2E[u].size();i++)
     for(int j = i+1;j<uE2E[u].size();j++)
     {

@@ -1,4 +1,4 @@
-#include <igl/scaf.h>
+#include <igl/triangle/scaf.h>
 #include <igl/arap.h>
 #include <igl/boundary_loop.h>
 #include <igl/harmonic.h>
@@ -12,13 +12,12 @@
 #include <igl/flipped_triangles.h>
 #include <igl/topological_hole_fill.h>
 
-#include "tutorial_shared_path.h"
 
 Eigen::MatrixXd V;
 Eigen::MatrixXi F;
 Eigen::MatrixXd V_uv;
 igl::Timer timer;
-igl::SCAFData scaf_data;
+igl::triangle::SCAFData scaf_data;
 
 bool show_uv = false;
 float uv_scale = 0.2f;
@@ -33,7 +32,7 @@ bool key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier
   if (key == ' ')
   {
     timer.start();
-    igl::scaf_solve(scaf_data, 1);
+    igl::triangle::scaf_solve(scaf_data, 1);
     std::cout << "time = " << timer.getElapsedTime() << std::endl;
   }
 
@@ -103,7 +102,7 @@ int main(int argc, char *argv[])
   }
 
   Eigen::VectorXi b; Eigen::MatrixXd bc;
-  igl::scaf_precompute(V, F, uv_init, scaf_data, igl::MappingEnergyType::SYMMETRIC_DIRICHLET, b, bc, 0);
+  igl::triangle::scaf_precompute(V, F, uv_init, scaf_data, igl::MappingEnergyType::SYMMETRIC_DIRICHLET, b, bc, 0);
 
   // Plot the mesh
   igl::opengl::glfw::Viewer viewer;

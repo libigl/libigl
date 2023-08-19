@@ -13,17 +13,13 @@
 
 namespace igl
 {
-  // SNAP_POINTS snap list of points C to closest of another list of points V
-  //
-  // [I,minD,VI] = snap_points(C,V)
-  //
-  // Inputs:
-  //   C  #C by dim list of query point positions
-  //   V  #V by dim list of data point positions
-  // Outputs:
-  //   I  #C list of indices into V of closest points to C
-  //   minD  #C list of squared (^p) distances to closest points
-  //   VI  #C by dim list of new point positions, VI = V(I,:)
+  /// Snap list of points C to closest of another list of points V
+  ///
+  /// @param[in] C  #C by dim list of query point positions
+  /// @param[in] V  #V by dim list of data point positions
+  /// @param[out] I  #C list of indices into V of closest points to C
+  /// @param[out] minD  #C list of squared (^p) distances to closest points
+  /// @param[out] VI  #C by dim list of new point positions, VI = V(I,:)
   template <
     typename DerivedC,
     typename DerivedV,
@@ -36,6 +32,7 @@ namespace igl
     Eigen::PlainObjectBase<DerivedI > & I,
     Eigen::PlainObjectBase<DerivedminD > & minD,
     Eigen::PlainObjectBase<DerivedVI > & VI);
+  /// \overload
   template <
     typename DerivedC,
     typename DerivedV,
@@ -46,6 +43,7 @@ namespace igl
     const Eigen::MatrixBase<DerivedV > & V,
     Eigen::PlainObjectBase<DerivedI > & I,
     Eigen::PlainObjectBase<DerivedminD > & minD);
+  /// \overload
   template <
     typename DerivedC,
     typename DerivedV,

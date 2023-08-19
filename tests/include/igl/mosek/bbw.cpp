@@ -16,7 +16,7 @@ TEST_CASE("mosek_bbw: decimated_knight", "[igl/copyleft/mosek]")
     test_common::data_path("decimated-knight-matlab-active-set.dmat"),W_groundtruth);
   Eigen::VectorXi b;
   Eigen::MatrixXd bc;
-  igl::boundary_conditions(V,T,C,Eigen::VectorXi(),E,Eigen::MatrixXi(),b,bc);
+  igl::boundary_conditions(V,T,C,Eigen::VectorXi(),E,Eigen::MatrixXi(),Eigen::MatrixXi(),b,bc);
   igl::BBWData params;
   igl::mosek::MosekData mosek_params;
   igl::mosek::bbw(V,T,b,bc,params,mosek_params,Wmo);

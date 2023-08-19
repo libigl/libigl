@@ -28,14 +28,5 @@ TEST_CASE("readOBJ: Obj with material", "[igl]")
 
     REQUIRE (V.size() == 8);
     REQUIRE (F.size() == 6);
-    for ( const auto& i : FM ) {
-        std::cout << "material ";
-        std::cout << std::get<0>(i) << ' ';
-        std::cout << "fstart ";
-        std::cout << std::get<1>(i) << ' ';
-        std::cout << "fend ";
-        std::cout << std::get<2>(i) << ' ';
-        std::cout << std::endl;
-    }
     REQUIRE (FM.size() == 2);
 }

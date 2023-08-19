@@ -12,15 +12,14 @@
 #include <Eigen/Sparse>
 namespace igl
 {
-  // Determine the connected components of a graph described by the input
-  // adjacency matrix (similar to MATLAB's graphconncomp).
-  //
-  // Inputs:
-  //    A  #A by #A adjacency matrix (treated as describing an undirected graph)
-  // Outputs:
-  //    C  #A list of component indices into [0,#K-1]
-  //    K  #K list of sizes of each component
-  // Returns number of connected components
+  /// Determine the connected components of a graph described by the input
+  /// adjacency matrix (similar to MATLAB's graphconncomp or gptoolbox's
+  /// conncomp, but A is transposed for unsymmetric graphs).
+  ///
+  /// @param[in]  A  #A by #A adjacency matrix (treated as describing an directed graph)
+  /// @param[out] C  #A list of component indices into [0,#K-1]
+  /// @param[out] K  #K list of sizes of each component
+  /// @return number of connected components
   template < typename Atype, typename DerivedC, typename DerivedK>
   IGL_INLINE int connected_components(
     const Eigen::SparseMatrix<Atype> & A,

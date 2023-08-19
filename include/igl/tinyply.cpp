@@ -11,6 +11,8 @@
 #include <cstring>
 #include <cassert>
 
+namespace igl
+{
 namespace tinyply
 {
 template<typename T, typename T2> T2 endian_swap(const T & v) noexcept {assert(false);} //{ return v; }
@@ -174,9 +176,9 @@ IGL_INLINE int64_t find_property(const std::string & key, const std::vector<PlyP
 }
 
 // The `userData` table is an easy data structure for capturing what data the
-// user would like out of the ply file, but an inner-loop hash lookup is non-ideal. 
+// user would like out of the ply file, but an inner-loop hash lookup is non-ideal.
 // The property lookup table flattens the table down into a 2D array optimized
-// for parsing. The first index is the element, and the second index is the property. 
+// for parsing. The first index is the element, and the second index is the property.
 IGL_INLINE std::vector<std::vector<PlyFile::PlyFileImpl::PropertyLookup>> PlyFile::PlyFileImpl::make_property_lookup_table()
 {
     std::vector<std::vector<PropertyLookup>> element_property_lookup;
@@ -270,7 +272,7 @@ IGL_INLINE size_t PlyFile::PlyFileImpl::read_property_ascii(const Type & t, cons
     case Type::UINT32:     ply_cast_ascii<uint32_t>(dest, is);                break;
     case Type::FLOAT32:    ply_cast_ascii<float>(dest, is);                   break;
     case Type::FLOAT64:    ply_cast_ascii<double>(dest, is);                  break;
-    case Type::INVALID:    throw std::invalid_argument("invalid ply property"); 
+    case Type::INVALID:    throw std::invalid_argument("invalid ply property");
     }
     return stride;
 }
@@ -304,23 +306,23 @@ IGL_INLINE void PlyFile::PlyFileImpl::read(std::istream & is)
     std::vector<std::shared_ptr<PlyData>> buffers;
     for (auto & entry : userData) buffers.push_back(entry.second.data);
 
-    // Discover if we can allocate up front without parsing the file twice 
+    // Discover if we can allocate up front without parsing the file twice
     uint32_t list_hints = 0;
     for (auto & b : buffers) for (auto & entry : userData) {list_hints += entry.second.list_size_hint;(void)b;}
 
     // No list hints? Then we need to calculate how much memory to allocate
-    if (list_hints == 0) 
+    if (list_hints == 0)
     {
         parse_data(is, true);
     }
 
     // Count the number of properties (required for allocation)
     // e.g. if we have properties x y and z requested, we ensure
-    // that their buffer points to the same PlyData 
+    // that their buffer points to the same PlyData
     std::unordered_map<PlyData*, int32_t> unique_data_count;
     for (auto & ptr : buffers) unique_data_count[ptr.get()] += 1;
 
-    // Since group-requested properties share the same cursor, 
+    // Since group-requested properties share the same cursor,
     // we need to find unique cursors so we only allocate once
     std::sort(buffers.begin(), buffers.end());
     buffers.erase(std::unique(buffers.begin(), buffers.end()), buffers.end());
@@ -362,7 +364,7 @@ IGL_INLINE void PlyFile::PlyFileImpl::read(std::istream & is)
             uint8_t * data_ptr = b->buffer.get();
             const size_t stride = PropertyTable[b->t].stride;
             const size_t buffer_size_bytes = b->buffer.size_bytes();
-    
+
             switch (b->t)
             {
             case Type::INT16:   endian_swap_buffer<int16_t, int16_t>(data_ptr, buffer_size_bytes, stride);   break;
@@ -380,13 +382,13 @@ IGL_INLINE void PlyFile::PlyFileImpl::read(std::istream & is)
 IGL_INLINE void PlyFile::PlyFileImpl::write(std::ostream & os, bool _isBinary)
 {
     for (auto & d : userData) { d.second.cursor->byteOffset = 0; }
-    if (_isBinary) 
+    if (_isBinary)
     {
         isBinary = true;
         isBigEndian = false;
         write_binary_internal(os);
     }
-    else 
+    else
     {
         isBinary = false;
         isBigEndian = false;
@@ -412,7 +414,7 @@ IGL_INLINE void PlyFile::PlyFileImpl::write_binary_internal(std::ostream & os) n
         {
             size_t property_index = 0;
             for (auto & p : e.properties)
-            {   
+            {
                 auto & f = element_property_lookup[element_idx][property_index];
                 auto * helper = f.helper;
                 if (f.skip || helper == nullptr) continue;
@@ -535,14 +537,14 @@ IGL_INLINE std::shared_ptr<PlyData> PlyFile::PlyFileImpl::request_properties_fro
 
         // Each key in `propertyKey` gets an entry into the userData map (keyed by a hash of
         // element name and property name), but groups of properties (requested from the
-        // public api through this function) all share the same `ParsingHelper`. When it comes 
+        // public api through this function) all share the same `ParsingHelper`. When it comes
         // time to .read(), we check the number of unique PlyData shared pointers
-        // and allocate a single buffer that will be used by each property key group. 
+        // and allocate a single buffer that will be used by each property key group.
         // That way, properties like, {"x", "y", "z"} will all be put into the same buffer.
 
         ParsingHelper helper;
         helper.data = out_data;
-        helper.data->count = element.size; // how many items are in the element? 
+        helper.data->count = element.size; // how many items are in the element?
         helper.data->isList = false;
         helper.data->t = Type::INVALID;
         helper.cursor = std::make_shared<PlyDataCursor>();
@@ -594,8 +596,8 @@ IGL_INLINE std::shared_ptr<PlyData> PlyFile::PlyFileImpl::request_properties_fro
     return out_data;
 }
 
-IGL_INLINE void PlyFile::PlyFileImpl::add_properties_to_element(const std::string & elementKey, 
-    const std::vector<std::string> propertyKeys, 
+IGL_INLINE void PlyFile::PlyFileImpl::add_properties_to_element(const std::string & elementKey,
+    const std::vector<std::string> propertyKeys,
     const Type type, const size_t count, uint8_t * data, const Type listType, const size_t listCount)
 {
     ParsingHelper helper;
@@ -644,7 +646,7 @@ IGL_INLINE void PlyFile::PlyFileImpl::parse_data(std::istream & is, bool firstPa
     // has an additional big endian check to flip the data in place immediately
     // after reading. We do this as a performance optimization; endian flipping is
     // done on regular properties as a post-process after reading (also for optimization)
-    // but we need the correct little-endian list count as we read the file. 
+    // but we need the correct little-endian list count as we read the file.
     auto read_list_binary = [this](const Type & t, void * dst, size_t & destOffset, const size_t & stride, std::istream & _is) noexcept
     {
         destOffset += stride;
@@ -692,22 +694,22 @@ IGL_INLINE void PlyFile::PlyFileImpl::parse_data(std::istream & is, bool firstPa
     else
     {
         read = [this, &listSize, &dummyCount](PropertyLookup & f, const PlyProperty & p, uint8_t * dest, size_t & destOffset, std::istream & _is) noexcept
-        { 
+        {
             if (!p.isList)
             {
-                read_property_ascii(p.propertyType, f.prop_stride, dest + destOffset, destOffset, _is); 
+                read_property_ascii(p.propertyType, f.prop_stride, dest + destOffset, destOffset, _is);
             }
             else
             {
                 read_property_ascii(p.listType, f.list_stride, &listSize, dummyCount, _is); // the list size
-                for (size_t i = 0; i < listSize; ++i) 
+                for (size_t i = 0; i < listSize; ++i)
                 {
                     read_property_ascii(p.propertyType, f.prop_stride, dest + destOffset, destOffset, _is);
                 }
             }
         };
         skip = [this, &listSize, &dummyCount, &skip_ascii_buffer](PropertyLookup & f, const PlyProperty & p, std::istream & _is) noexcept
-        { 
+        {
             skip_ascii_buffer.clear();
             if (p.isList)
             {
@@ -738,22 +740,22 @@ IGL_INLINE void PlyFile::PlyFileImpl::parse_data(std::istream & is, bool firstPa
                 if (!lookup.skip)
                 {
                     helper = lookup.helper;
-                    if (firstPass) 
+                    if (firstPass)
                     {
                         helper->cursor->totalSizeBytes += skip(lookup, property, is);
 
-                        // These lines will be changed when tinyply supports 
+                        // These lines will be changed when tinyply supports
                         // variable length lists. We add it here so our header data structure
-                        // contains enough info to write it back out again (e.g. transcoding). 
-                        if (property.listCount == 0) property.listCount = listSize; 
+                        // contains enough info to write it back out again (e.g. transcoding).
+                        if (property.listCount == 0) property.listCount = listSize;
                         if (property.listCount != listSize) throw std::runtime_error("variable length lists are not supported yet.");
                     }
-                    else 
+                    else
                     {
                         read(lookup, property, helper->data->buffer.get(), helper->cursor->byteOffset, is);
                     }
                 }
-                else 
+                else
                 {
                     skip(lookup, property, is);
                 }
@@ -792,3 +794,4 @@ IGL_INLINE void PlyFile::add_properties_to_element(const std::string & elementKe
 }
 
 } // tinyply
+} // igl

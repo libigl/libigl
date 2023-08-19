@@ -6,7 +6,6 @@
 #include <igl/isolines_map.h>
 #include <igl/PI.h>
 #include <iostream>
-#include "tutorial_shared_path.h"
 
 
 int main(int argc, char *argv[])

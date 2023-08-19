@@ -13,14 +13,12 @@
 #include <Eigen/Sparse>
 
 namespace igl {
-  // GRAD_INTRINSIC Construct an intrinsic gradient operator.
-  //
-  // Inputs:
-  //  l  #F by 3 list of edge lengths
-  //  F  #F by 3 list of triangle indices into some vertex list V
-  // Outputs:
-  //  G  #F*2 by #V gradient matrix: G=[Gx;Gy] where x runs along the 23 edge and
-  //    y runs in the counter-clockwise 90° rotation.
+  /// Construct an intrinsic gradient operator.
+  ///
+  /// @param[in] l  #F by 3 list of edge lengths
+  /// @param[in] F  #F by 3 list of triangle indices into some vertex list V
+  /// @param[out] G  #F*2 by #V gradient matrix: G=[Gx;Gy] where x runs along the 23 edge and
+  ///    y runs in the counter-clockwise 90° rotation.
   template <typename Derivedl, typename DerivedF, typename Gtype>
   IGL_INLINE void grad_intrinsic(
     const Eigen::MatrixBase<Derivedl>&l,
