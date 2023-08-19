@@ -1,6 +1,7 @@
 #include <test_common.h>
 #include <igl/turning_number.h>
 #include <igl/matlab_format.h>
+#include <igl/PI.h>
 #include <iostream>
 
 TEST_CASE("turning_number: pentagon", "[igl]")
@@ -25,7 +26,7 @@ TEST_CASE("turning_number: heptagram", "[igl]")
   for (int i = 0; i < 7; i++)
   {
       // Multiply by 3 to get the {7/3} skipping pattern
-      double theta = 2.0 * M_PI * (3 * i) / 7;
+      double theta = 2.0 * igl::PI * (3 * i) / 7;
       V(i, 0) = std::cos(theta);
       V(i, 1) = std::sin(theta);
   }
