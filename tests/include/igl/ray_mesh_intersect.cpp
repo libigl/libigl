@@ -6,7 +6,7 @@ TEST_CASE("ray_mesh_intersect: one_triangle", "[igl]")
   Eigen::MatrixXd V(3,3);
   V.row(0) << 0.0, 0.0, 0.0;
   V.row(1) << 1.0, 0.0, 0.0;
-  V.row(0) << 0.5, 1.0, 0.0;
+  V.row(2) << 0.5, 1.0, 0.0;
   
   Eigen::MatrixXi F(1,3);
   F.row(0) << 0,1,2;
