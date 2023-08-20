@@ -6,20 +6,23 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 
-#include "../slice.h"
 #include "ear_clipping.h"
 #include "predicates.h"
 #include "segment_segment_intersect.h"
+#include "../slice.h"
+#include "../turning_number.h"
 
-template <typename DerivedP, typename DerivedRT,
-          typename DerivedF, typename DerivedI>
+template <
+  typename DerivedP, 
+  typename DerivedRT,
+  typename DerivedF, 
+  typename DerivedI>
 IGL_INLINE void igl::predicates::ear_clipping(
   const Eigen::MatrixBase<DerivedP>& P,
   const Eigen::MatrixBase<DerivedRT>& RT,
-  Eigen::PlainObjectBase<DerivedI>& I,
-  Eigen::PlainObjectBase<DerivedF>& eF,
-  Eigen::PlainObjectBase<DerivedP>& nP
-){
+  Eigen::PlainObjectBase<DerivedF>& eF, 
+  Eigen::PlainObjectBase<DerivedI>& I)
+{
   typedef typename DerivedF::Scalar Index;
   typedef typename DerivedP::Scalar Scalar;
   static_assert(std::is_same<typename DerivedI::Scalar,
@@ -141,16 +144,43 @@ IGL_INLINE void igl::predicates::ear_clipping(
   
   // collect remaining vertices if theres any
   for(int i = 0;i < X.rows(); i++)
+  {
     X(i) = 1 - X(i);
+  }
   I.resize(X.sum());
   Index j=0;
   for(Index i = 0;i < X.rows(); i++)
-    if(X(i) == 1){
+  {
+    if(X(i) == 1)
+    {
       I(j++) = i;
     }
-  igl::slice(P, I, 1, nP);
+  }
+}
+
+template <typename DerivedP,
+          typename DerivedF>
+IGL_INLINE bool igl::predicates::ear_clipping(
+  const Eigen::MatrixBase<DerivedP>& P,
+  Eigen::PlainObjectBase<DerivedF>& eF)
+{
+  if(turning_number(P) < 0)
+  {
+    // reverse input
+    const auto rP = P.colwise().reverse().eval();
+    const bool ret = igl::predicates::ear_clipping(rP, eF);
+    // flip output
+    eF = eF.rowwise().reverse();
+    return ret;
+  }
+  const Eigen::Matrix<typename DerivedP::Scalar, Eigen::Dynamic, 1> RT = 
+    Eigen::Matrix<typename DerivedP::Scalar, Eigen::Dynamic, 1>::Zero(P.rows());
+  Eigen::Matrix<typename DerivedF::Scalar, Eigen::Dynamic, 1> I;
+  igl::predicates::ear_clipping(P, RT, eF, I);
+  return I.size() == 0;
 }
 
 #ifdef IGL_STATIC_LIBRARY
-template void igl::predicates::ear_clipping<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
+template bool igl::predicates::ear_clipping<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>>(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>> const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1>>&);
+template void igl::predicates::ear_clipping<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>>(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1>> const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1>>&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1>>&);
 #endif
