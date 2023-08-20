@@ -84,10 +84,9 @@ IGL_INLINE void igl::predicates::polygons_to_triangles(
         // This is a really low quality triangulator and will contain nearly
         // degenerate elements which become degenerate or worse when unprojected
         // back to 3D.
-        igl::predicates::ear_clipping(S,RT,_I,pF,_nS);
         // igl::predicates::ear_clipping does not gracefully fail when the input
         // is not simple. Instead it (tends?) to output too few triangles.
-        if(pF.rows() < np-2)
+        if(! igl::predicates::ear_clipping(S,pF) )
         {
           // Fallback, use a fan
           //std::cout<<igl::matlab_format(S,"S")<<std::endl;
