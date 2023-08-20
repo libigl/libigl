@@ -55,6 +55,8 @@ set_property(GLOBAL PROPERTY __igl_module_path ${CMAKE_MODULE_PATH})
 
 set(LIBIGL_DEFAULT_CGAL ${LIBIGL_TOPLEVEL_PROJECT})
 set(MATLAB_ADDITIONAL_VERSIONS
+    "R2023b=10.4"
+    "R2023a=10.4"
     "R2022b=10.3"
     "R2022a=10.2"
     "R2021b=10.1"
@@ -72,6 +74,14 @@ if(LIBIGL_TOPLEVEL_PROJECT)
     if(NOT MOSEK_FOUND)
         set(LIBIGL_DEFAULT_MOSEK OFF)
         message(WARNING "Mosek not found, disabling igl_restricted::mosek module.")
+    endif()
+endif()
+set(LIBIGL_DEFAULT_COMISO ${LIBIGL_TOPLEVEL_PROJECT})
+if(LIBIGL_TOPLEVEL_PROJECT AND (NOT APPLE) AND UNIX)
+  find_package(BLAS QUIET)
+    if(NOT BLAS_FOUND)
+        set(LIBIGL_DEFAULT_COMISO OFF)
+        message(WARNING "BLAS not found, disabling igl_copyleft::comiso module.")
     endif()
 endif()
 
