@@ -12,12 +12,50 @@ extern "C"
 #include "raytri.c"
 }
 
+namespace igl {
 template <
   typename Derivedsource,
   typename Deriveddir,
   typename DerivedV,
   typename DerivedF>
-IGL_INLINE bool igl::ray_mesh_intersect(
+IGL_INLINE bool ray_triangle_intersect(
+  const Eigen::MatrixBase<Derivedsource> & s,
+  const Eigen::MatrixBase<Deriveddir> & dir,
+  const Eigen::MatrixBase<DerivedV> & V,
+  const Eigen::MatrixBase<DerivedF> & F,
+  const int f,
+  igl::Hit& hit)
+{
+  using namespace Eigen;
+
+  // intersect_triangle1 needs non-const inputs.
+  Vector3d s_d = s.template cast<double>();
+  Vector3d dir_d = dir.template cast<double>();
+  RowVector3d v0 = V.row(F(f,0)).template cast<double>();
+  RowVector3d v1 = V.row(F(f,1)).template cast<double>();
+  RowVector3d v2 = V.row(F(f,2)).template cast<double>();
+
+  // shoot ray, record hit
+  double t,u,v;
+  if(intersect_triangle1(
+    s_d.data(), dir_d.data(), v0.data(), v1.data(), v2.data(), &t, &u, &v) &&
+    t>0)
+  {
+    hit = {static_cast<int>(f),static_cast<int>(-1),
+           static_cast<float>(u),static_cast<float>(v),
+           static_cast<float>(t)};
+    return true;
+  }
+
+  return false;
+}
+
+template <
+  typename Derivedsource,
+  typename Deriveddir,
+  typename DerivedV,
+  typename DerivedF>
+IGL_INLINE bool ray_mesh_intersect(
   const Eigen::MatrixBase<Derivedsource> & s,
   const Eigen::MatrixBase<Deriveddir> & dir,
   const Eigen::MatrixBase<DerivedV> & V,
@@ -25,27 +63,17 @@ IGL_INLINE bool igl::ray_mesh_intersect(
   std::vector<igl::Hit> & hits)
 {
   using namespace Eigen;
-  using namespace std;
-  // Should be but can't be const
-  Vector3d s_d = s.template cast<double>();
-  Vector3d dir_d = dir.template cast<double>();
+
   hits.clear();
   hits.reserve(F.rows());
 
   // loop over all triangles
   for(int f = 0;f<F.rows();f++)
   {
-    // Should be but can't be const
-    RowVector3d v0 = V.row(F(f,0)).template cast<double>();
-    RowVector3d v1 = V.row(F(f,1)).template cast<double>();
-    RowVector3d v2 = V.row(F(f,2)).template cast<double>();
-    // shoot ray, record hit
-    double t,u,v;
-    if(intersect_triangle1(
-      s_d.data(), dir_d.data(), v0.data(), v1.data(), v2.data(), &t, &u, &v) &&
-      t>0)
+    igl::Hit hit;
+    if(ray_triangle_intersect(s, dir, V, F, f, hit))
     {
-      hits.push_back({(int)f,(int)-1,(float)u,(float)v,(float)t});
+      hits.push_back(hit);
     }
   }
   // Sort hits based on distance
@@ -61,23 +89,31 @@ template <
   typename Deriveddir,
   typename DerivedV,
   typename DerivedF>
-IGL_INLINE bool igl::ray_mesh_intersect(
-  const Eigen::MatrixBase<Derivedsource> & source,
+IGL_INLINE bool ray_mesh_intersect(
+  const Eigen::MatrixBase<Derivedsource> & s,
   const Eigen::MatrixBase<Deriveddir> & dir,
   const Eigen::MatrixBase<DerivedV> & V,
   const Eigen::MatrixBase<DerivedF> & F,
   igl::Hit & hit)
 {
-  std::vector<igl::Hit> hits;
-  ray_mesh_intersect(source,dir,V,F,hits);
-  if(hits.size() > 0)
+  if (F.rows() == 1)
   {
-    hit = hits.front();
-    return true;
+    // Shortcut for AABB based queries.
+    return ray_triangle_intersect(s, dir, V, F, 0, hit);
   }else
   {
-    return false;
+    std::vector<igl::Hit> hits;
+    ray_mesh_intersect(s,dir,V,F,hits);
+    if(hits.size() > 0)
+    {
+      hit = hits.front();
+      return true;
+    }else
+    {
+      return false;
+    }
   }
+}
 }
 
 #ifdef IGL_STATIC_LIBRARY

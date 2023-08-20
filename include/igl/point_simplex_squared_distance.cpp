@@ -149,8 +149,8 @@ IGL_INLINE void igl::point_simplex_squared_distance(
   Derivedsqr_d & sqr_d,
   Eigen::MatrixBase<Derivedc> & c)
 {
-  // Use Dynamic because we don't know Ele.cols() at compile time.
-  Eigen::Matrix<typename Derivedc::Scalar,1,Eigen::Dynamic> b;
+  // DerivedEle::ColsAtCompileTime will fallback to Eigen::Dynamic if unknown.
+  Eigen::Matrix<typename Derivedc::Scalar,1,DerivedEle::ColsAtCompileTime> b;
   point_simplex_squared_distance<DIM>( p, V, Ele, primitive, sqr_d, c, b );
 }
 
