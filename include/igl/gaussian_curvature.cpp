@@ -32,18 +32,11 @@ IGL_INLINE void igl::gaussian_curvature(
   assert(K.cols() == 1);
   const int Frows = F.rows();
   //K_G(x_i) = (2π - ∑θj)
-//#ifndef IGL_GAUSSIAN_CURVATURE_OMP_MIN_VALUE
-//#  define IGL_GAUSSIAN_CURVATURE_OMP_MIN_VALUE 1000
-//#endif
-//#pragma omp parallel for if (Frows>IGL_GAUSSIAN_CURVATURE_OMP_MIN_VALUE)
   for(int f = 0;f<Frows;f++)
   {
     // throw normal at each corner
     for(int j = 0; j < 3;j++)
     {
-      // Q: Does this need to be critical?
-      // H: I think so, sadly. Maybe there's a way to use reduction
-//#pragma omp critical
       K(F(f,j),0) -=  A(f,j);
     }
   }

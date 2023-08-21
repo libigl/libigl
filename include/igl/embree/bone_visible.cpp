@@ -9,6 +9,7 @@
 #include "../project_to_line.h"
 #include "../EPS.h"
 #include "../Hit.h"
+#include "../parallel_for.h"
 #include "../Timer.h"
 #include <iostream>
 
@@ -52,9 +53,8 @@ IGL_INLINE void igl::embree::bone_visible(
   flag.resize(V.rows());
   const double sd_norm = (s-d).norm();
   // Embree seems to be parallel when constructing but not when tracing rays
-#pragma omp parallel for
   // loop over mesh vertices
-  for(int v = 0;v<V.rows();v++)
+  parallel_for(V.rows(),[&](const int v)
   {
     const Vector3d Vv = V.row(v);
     // Project vertex v onto line segment sd
@@ -135,7 +135,7 @@ IGL_INLINE void igl::embree::bone_visible(
       // no hit so vectex v is visible
       flag(v) = true;
     }
-  }
+  },10000);
 }
 
 #ifdef IGL_STATIC_LIBRARY

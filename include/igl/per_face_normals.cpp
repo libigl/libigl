@@ -6,6 +6,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "per_face_normals.h"
+#include "parallel_for.h"
 #include <Eigen/Geometry>
 
 #define SQRT_ONE_OVER_THREE 0.57735026918962573
@@ -19,8 +20,7 @@ IGL_INLINE void igl::per_face_normals(
   N.resize(F.rows(),3);
   // loop over faces
   int Frows = F.rows();
-#pragma omp parallel for if (Frows>10000)
-  for(int i = 0; i < Frows;i++)
+  parallel_for(Frows,[&](const int i)
   {
     const Eigen::Matrix<typename DerivedV::Scalar, 1, 3> v1 = V.row(F(i,1)) - V.row(F(i,0));
     const Eigen::Matrix<typename DerivedV::Scalar, 1, 3> v2 = V.row(F(i,2)) - V.row(F(i,0));
@@ -33,7 +33,7 @@ IGL_INLINE void igl::per_face_normals(
     {
       N.row(i) /= r;
     }
-  }
+  },10000);
 }
 
 template <typename DerivedV, typename DerivedF, typename DerivedN>
@@ -59,7 +59,7 @@ IGL_INLINE void igl::per_face_normals_stable(
 
   N.resize(F.rows(),3);
   // Grad all points
-  for(size_t f = 0;f<m;f++)
+  parallel_for(m,[&](const int f)
   {
     const RowVectorV3 p0 = V.row(F(f,0));
     const RowVectorV3 p1 = V.row(F(f,1));
@@ -97,7 +97,7 @@ IGL_INLINE void igl::per_face_normals_stable(
     }
     // sum better not be sure, or else NaN
     N.row(f) /= N.row(f).norm();
-  }
+  },10000);
 
 }
 
