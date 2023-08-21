@@ -120,16 +120,16 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
     // PD implies symmetric
     data.Auu_sym = true;
     // This is an annoying assertion unless EPS can be chosen in a nicer way.
-    //assert(is_symmetric(Auu,EPS<double>()));
+    //assert(is_symmetric(Auu,EPS<T>()));
     assert(is_symmetric(Auu,1.0) &&
       "Auu should be symmetric if positive definite");
   }else
   {
     // determine if A(unknown,unknown) is symmetric and/or positive definite
     VectorXi AuuI,AuuJ;
-    MatrixXd AuuV;
+    Matrix<T,Eigen::Dynamic,Eigen::Dynamic> AuuV;
     find(Auu,AuuI,AuuJ,AuuV);
-    data.Auu_sym = is_symmetric(Auu,EPS<double>()*AuuV.maxCoeff());
+    data.Auu_sym = is_symmetric(Auu,EPS<T>()*AuuV.maxCoeff());
   }
 
   // Determine number of linearly independent constraints
@@ -646,7 +646,7 @@ IGL_INLINE Eigen::Matrix<Scalar,n,1> igl::min_quad_with_fixed(
     bcbc.head(dyn_n) =  bc;
     return bcbc;
   };
-  const Eigen::Matrix<double,nn,1> bcbc = make_bcbc();
+  const Eigen::Matrix<Scalar,nn,1> bcbc = make_bcbc();
   const Eigen::Matrix<Scalar,nn,1> xx =
     min_quad_with_fixed<Scalar,nn,false>(HH,ff,kk,bcbc);
   return xx.head(dyn_n);
