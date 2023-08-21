@@ -6,6 +6,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "cumprod.h"
+#include "parallel_for.h"
 #include <numeric>
 #include <iostream>
 
@@ -26,8 +27,7 @@ IGL_INLINE void igl::cumprod(
   // (Optimizations assume ColMajor order)
   if(dim == 1)
   {
-#pragma omp parallel for
-    for(int o = 0;o<num_outer;o++)
+    parallel_for(num_outer,[&](const int o)
     {
       typename DerivedX::Scalar prod = 1;
       for(int i = 0;i<num_inner;i++)
@@ -35,15 +35,14 @@ IGL_INLINE void igl::cumprod(
         prod *= X(i,o);
         Y(i,o) = prod;
       }
-    }
+    },1000);
   }else
   {
     for(int i = 0;i<num_inner;i++)
     {
-      // Notice that it is *not* OK to put this above the inner loop
+      // Notice that it is *not* OK to put parallel_for this above the inner loop
       // Though here it doesn't seem to pay off...
-//#pragma omp parallel for
-      for(int o = 0;o<num_outer;o++)
+      parallel_for(num_outer,[&](const int o)
       {
         if(i == 0)
         {
@@ -52,7 +51,7 @@ IGL_INLINE void igl::cumprod(
         {
           Y(o,i) = Y(o,i-1) * X(o,i);
         }
-      }
+      },1000);
     }
   }
 }

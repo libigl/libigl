@@ -154,7 +154,7 @@ IGL_INLINE void igl::embree::reorient_facets_raycast(
   vector<pair<int  , int  >> C_vote_parity(num_cc, make_pair(0, 0));        // sum of parity count for each ray
 
   if (is_verbose) cout << "shooting rays... ";
-#pragma omp parallel for
+// #pragma omp parallel for
   for (int i = 0; i < (int)ray_face.size(); ++i)
   {
     int      f = ray_face[i];
@@ -173,27 +173,27 @@ IGL_INLINE void igl::embree::reorient_facets_raycast(
     if (!hits_back .empty() && hits_back [0].id == f) hits_back .erase(hits_back .begin());
 
     if (use_parity) {
-#pragma omp atomic
+// #pragma omp atomic
       C_vote_parity[c].first  += hits_front.size() % 2;
-#pragma omp atomic
+// #pragma omp atomic
       C_vote_parity[c].second += hits_back .size() % 2;
 
     } else {
       if (hits_front.empty())
       {
-#pragma omp atomic
+// #pragma omp atomic
         C_vote_infinity[c].first++;
       } else {
-#pragma omp atomic
+// #pragma omp atomic
         C_vote_distance[c].first += hits_front[0].t;
       }
 
       if (hits_back.empty())
       {
-#pragma omp atomic
+// #pragma omp atomic
         C_vote_infinity[c].second++;
       } else {
-#pragma omp atomic
+// #pragma omp atomic
         C_vote_distance[c].second += hits_back[0].t;
       }
     }

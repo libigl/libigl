@@ -14,15 +14,6 @@ IGL_INLINE void igl::ceil(
   Eigen::PlainObjectBase<DerivedY>& Y)
 {
   using namespace std;
-  //Y = DerivedY::Zero(m,n);
-//#pragma omp parallel for
-  //for(int i = 0;i<m;i++)
-  //{
-  //  for(int j = 0;j<n;j++)
-  //  {
-  //    Y(i,j) = std::ceil(X(i,j));
-  //  }
-  //}
   typedef typename DerivedX::Scalar Scalar;
   Y = X.unaryExpr([](const Scalar &x)->Scalar{return std::ceil(x);}).template cast<typename DerivedY::Scalar >();
 }

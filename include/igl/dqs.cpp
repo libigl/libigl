@@ -6,6 +6,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "dqs.h"
+#include "parallel_for.h"
 #include <Eigen/Geometry>
 template <
   typename DerivedV,
@@ -41,8 +42,7 @@ IGL_INLINE void igl::dqs(
 
   // Loop over vertices
   const int nv = V.rows();
-#pragma omp parallel for if (nv>10000)
-  for(int i = 0;i<nv;i++)
+  parallel_for(nv,[&](const int i)
   {
     Q b0(0,0,0,0);
     Q be(0,0,0,0);
@@ -64,7 +64,7 @@ IGL_INLINE void igl::dqs(
     typename Q::Scalar a0 = c0.w();
     typename Q::Scalar ae = ce.w();
     U.row(i) =  v + 2*d0.cross(d0.cross(v) + a0*v) + 2*(a0*de - ae*d0 + d0.cross(de));
-  }
+  },1000);
 
 }
 

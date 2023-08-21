@@ -15,15 +15,6 @@ IGL_INLINE void igl::floor(
   Eigen::PlainObjectBase<DerivedY>& Y)
 {
   using namespace std;
-  //Y = DerivedY::Zero(m,n);
-//#pragma omp parallel for
-  //for(int i = 0;i<m;i++)
-  //{
-  //  for(int j = 0;j<n;j++)
-  //  {
-  //    Y(i,j) = std::floor(X(i,j));
-  //  }
-  //}
   typedef typename DerivedX::Scalar Scalar;
   Y = X.unaryExpr([](const Scalar &x)->Scalar{return std::floor(x);}).template cast<typename DerivedY::Scalar >();
 }

@@ -7,6 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "bfs_orient.h"
 #include "orientable_patches.h"
+#include "parallel_for.h"
 #include <Eigen/Sparse>
 #include <queue>
 
@@ -35,8 +36,7 @@ IGL_INLINE void igl::bfs_orient(
     FF = F;
   }
   // loop over patches
-#pragma omp parallel for
-  for(int c = 0;c<num_cc;c++)
+  parallel_for(num_cc,[&](const int c)
   {
     queue<typename DerivedF::Scalar> Q;
     // find first member of patch c
@@ -89,7 +89,7 @@ IGL_INLINE void igl::bfs_orient(
         }
       }
     }
-  }
+  },1000);
 
   // make sure flip is OK if &FF = &F
 }
