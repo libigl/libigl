@@ -25,6 +25,12 @@ namespace igl
   /// @param[in] b  #A list of linear constraint right-hand sides
   /// @param[in] k  number of inequality constraints as first rows of A,b
   /// @param[out] x  #x solution vector
+  /// @return false on failure or detected infeasibility, returns true on termination
+  ///
+  /// \note It appears that this implementation does not detect all infeasibile
+  /// problems (e.g., https://github.com/libigl/libigl/issues/2051). Therefor,
+  /// it's worth double-checking that the output actually satisfies the
+  /// constraints even if the return value is `true`.
   IGL_INLINE bool linprog(
     const Eigen::VectorXd & c,
     const Eigen::MatrixXd & A,
@@ -44,6 +50,7 @@ namespace igl
   /// @param[in] B  #B by #x matrix of linear equality constraint coefficients
   /// @param[in] c  #B list of linear constraint right-hand sides
   /// @param[out] x  #x solution vector
+  /// @return false on failure or detected infeasibility, returns true on termination
   ///
   IGL_INLINE bool linprog(
     const Eigen::VectorXd & f,
