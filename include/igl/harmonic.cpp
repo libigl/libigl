@@ -58,7 +58,7 @@ IGL_INLINE bool igl::harmonic(
   SparseMatrix<Scalar> A;
   adjacency_matrix(F,A);
   // sum each row
-  Eigen::VectorXd Asum;
+  Eigen::Matrix<Scalar,Eigen::Dynamic,1> Asum;
   igl::sum(A,1,Asum);
   // Eigen 3.4 still struggles to do arithmetic with sparse and diagonal matrices
   Eigen::SparseMatrix<Scalar> L = A - Eigen::SparseMatrix<Scalar>(Asum.asDiagonal());

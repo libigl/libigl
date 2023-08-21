@@ -21,8 +21,6 @@ namespace igl
   /// @param[in] dblA  #F list of double areas of triangles
   /// @param[out] B  n by 3 list of barycentric coordinates, ith row are coordinates of
   ///     ith sampled point in face FI(i)
-  /// @param[in] urbg An instance of UnformRandomBitGenerator (e.g.,
-  ///  `std::minstd_rand(0)`)
   /// @param[out] FI  n list of indices into F 
   /// @param[in,out] urbg An instance of UnformRandomBitGenerator.
   template <
