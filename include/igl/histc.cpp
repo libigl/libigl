@@ -52,7 +52,7 @@ IGL_INLINE void igl::histc(
     if(x < E(0) || x > E(E.size()-1))
     {
       B(j) = -1;
-      continue;
+      return;
     }
     // Find x in E
     int l = 0;
