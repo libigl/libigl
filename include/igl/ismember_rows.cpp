@@ -80,7 +80,7 @@ IGL_INLINE void igl::ismember_rows(
     bool past = false;
     for(int a = 0;a<sA.rows();a++)
     {
-      assert(bi < sB.rows());
+      assert(past || (bi < sB.rows()));
       while(!past && row_greater_than(a,bi))
       {
         bi++;
