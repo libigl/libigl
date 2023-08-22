@@ -20,8 +20,6 @@ IGL_INLINE void igl::random_points_on_mesh_intrinsic(
   using namespace std;
   typedef typename DeriveddblA::Scalar Scalar;
   typedef Matrix<Scalar,Dynamic,1> VectorXs;
-  // Should be traingle mesh. Although Turk's method 1 generalizes...
-  assert(F.cols() == 3);
   VectorXs C;
   VectorXs A0(dblA.size()+1);
   A0(0) = 0;
@@ -66,6 +64,8 @@ IGL_INLINE void igl::random_points_on_mesh_intrinsic(
   using namespace Eigen;
   using namespace std;
   Matrix<ScalarB,Dynamic,3> BC;
+  // Should be traingle mesh. Although Turk's method 1 generalizes...
+  assert(F.cols() == 3);
   random_points_on_mesh_intrinsic(n,dblA,BC,FI,urbg);
   vector<Triplet<ScalarB> > BIJV;
   BIJV.reserve(n*3);
