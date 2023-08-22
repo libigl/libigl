@@ -14,6 +14,7 @@ template <typename DerivedF>
 IGL_INLINE std::vector<bool> igl::is_border_vertex(
   const Eigen::MatrixBase<DerivedF> &F)
 {
+  assert(F.cols() == 3 && "Only triangle meshes are supported");
   Eigen::Matrix<typename DerivedF::Scalar, Eigen::Dynamic, Eigen::Dynamic> FF;
   igl::triangle_triangle_adjacency(F,FF);
   std::vector<bool> ret(F.maxCoeff()+1);

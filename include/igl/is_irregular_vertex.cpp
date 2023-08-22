@@ -27,7 +27,19 @@ IGL_INLINE std::vector<bool> igl::is_irregular_vertex(const Eigen::MatrixBase<De
     }
   }
 
-  std::vector<bool> border = is_border_vertex(F);
+  std::vector<bool> border;
+  if(F.cols() == 3)
+  { 
+    border = is_border_vertex(F);
+  }else
+  {
+    assert(F.cols() == 4 && "Only triangle and quad meshes are supported");
+    // Silly way to find border vertices for now
+    Eigen::Matrix<typename DerivedF::Scalar, Eigen::Dynamic, Eigen::Dynamic> T(2*F.rows(),3);
+    T << F.col(0), F.col(1), F.col(2),
+      F.col(0), F.col(2), F.col(3);
+    border = is_border_vertex(T);
+  }
 
   std::vector<bool> res(count.size());
 
