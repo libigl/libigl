@@ -18,6 +18,8 @@ namespace igl
 {
     /// read triangle surface mesh and tetrahedral volume mesh from .msh file
     ///
+    /// @tparam EigenMatrixOptions  matrix options of output matrices (e.g.,
+    /// Eigen::ColMajor, Eigen::RowMajor)
     /// @param[in] msh - file name
     /// @param[out] X  eigen double matrix of vertex positions  #X by 3
     /// @param[out] Tri  #Tri eigen integer matrix of triangular faces indices into vertex positions
@@ -35,38 +37,41 @@ namespace igl
     /// \bug only 3D information is supported
     /// \bug only the 1st tag per element is returned (physical) 
     /// \bug same element fields are expected to be associated with surface elements and volumetric elements
+    template <int EigenMatrixOptions>
     IGL_INLINE bool readMSH(
       const std::string &msh,
-      Eigen::MatrixXd &X,
-      Eigen::MatrixXi &Tri,
-      Eigen::MatrixXi &Tet,
+      Eigen::Matrix<double,Eigen::Dynamic,Eigen::Dynamic,EigenMatrixOptions> &X,
+      Eigen::Matrix<int,Eigen::Dynamic,Eigen::Dynamic,EigenMatrixOptions> &Tri,
+      Eigen::Matrix<int,Eigen::Dynamic,Eigen::Dynamic,EigenMatrixOptions> &Tet,
       Eigen::VectorXi &TriTag,
       Eigen::VectorXi &TetTag,
-      std::vector<std::string> &XFields,
-      std::vector<Eigen::MatrixXd> &XF,
-      std::vector<std::string> &EFields,
-      std::vector<Eigen::MatrixXd> &TriF,
-      std::vector<Eigen::MatrixXd> &TetF
-      );
+      std::vector<std::string>     &XFields,
+      std::vector<Eigen::Matrix<double,Eigen::Dynamic,Eigen::Dynamic,EigenMatrixOptions>> &XF,
+      std::vector<std::string>     &EFields,
+      std::vector<Eigen::Matrix<double,Eigen::Dynamic,Eigen::Dynamic,EigenMatrixOptions>> &TriF,
+      std::vector<Eigen::Matrix<double,Eigen::Dynamic,Eigen::Dynamic,EigenMatrixOptions>> &TetF);
     /// \overload
-    IGL_INLINE bool readMSH(const std::string &msh,
-                Eigen::MatrixXd &X,
-                Eigen::MatrixXi &Tri,
-                Eigen::MatrixXi &Tet,
-                Eigen::VectorXi &TriTag,
-                Eigen::VectorXi &TetTag
-                );
+    template <int EigenMatrixOptions>
+    IGL_INLINE bool readMSH(
+      const std::string &msh,
+      Eigen::Matrix<double,Eigen::Dynamic,Eigen::Dynamic,EigenMatrixOptions> &X,
+      Eigen::Matrix<int,Eigen::Dynamic,Eigen::Dynamic,EigenMatrixOptions> &Tri,
+      Eigen::Matrix<int,Eigen::Dynamic,Eigen::Dynamic,EigenMatrixOptions> &Tet,
+      Eigen::VectorXi &TriTag,
+      Eigen::VectorXi &TetTag);
     /// \overload
-    IGL_INLINE bool readMSH(const std::string &msh,
-                Eigen::MatrixXd &X,
-                Eigen::MatrixXi &Tri,
-                Eigen::VectorXi &TriTag
-                );
+    template <int EigenMatrixOptions>
+    IGL_INLINE bool readMSH(
+      const std::string &msh,
+      Eigen::Matrix<double,Eigen::Dynamic,Eigen::Dynamic,EigenMatrixOptions> &X,
+      Eigen::Matrix<int,Eigen::Dynamic,Eigen::Dynamic,EigenMatrixOptions> &Tri,
+      Eigen::VectorXi &TriTag);
     /// \overload
-    IGL_INLINE bool readMSH(const std::string &msh,
-                Eigen::MatrixXd &X,
-                Eigen::MatrixXi &Tri
-                );
+    template <int EigenMatrixOptions>
+    IGL_INLINE bool readMSH(
+      const std::string &msh,
+      Eigen::Matrix<double,Eigen::Dynamic,Eigen::Dynamic,EigenMatrixOptions> &X,
+      Eigen::Matrix<int,Eigen::Dynamic,Eigen::Dynamic,EigenMatrixOptions> &Tri);
 
 }
 
@@ -75,4 +80,4 @@ namespace igl
 #  include "readMSH.cpp"
 #endif
 
-#endif //IGL_READ_MSH_H
+#endif
