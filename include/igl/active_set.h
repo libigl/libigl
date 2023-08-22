@@ -51,6 +51,10 @@ namespace igl
   /// \pre rows of [Aeq;Aieq] **must** be linearly independent. Should be
   /// using QR decomposition otherwise:
   /// https://v8doc.sas.com/sashtml/ormp/chap5/sect32.htm
+  ///
+  /// \warning This solver is fairly experimental. It works reasonably well for
+  /// bbw problems but doesn't generalize well to other problems.  NASOQ and
+  /// OSQP are better general purpose solvers.
   template <
     typename AT, 
     typename DerivedB,
