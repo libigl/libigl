@@ -15,7 +15,18 @@
 #include <vector>
 namespace igl
 {
-  /// Computes the Euler characteristic of a given mesh (V,F)
+  /// Computes the Euler characteristic of a given _manifold_ mesh (V,F) with
+  /// boundary.
+  ///
+  /// V - E + F + B = (2-2g) = χ
+  ///
+  /// With:
+  ///   - V number of vertices (assumed to be F.maxCoeff()+1)
+  ///   - E number of edges
+  ///   - F number of faces
+  ///   - B number of boundary components
+  ///   - g genus
+  ///   - χ Euler characteristic
   ///
   /// @param[in] F #F by dim list of mesh faces (must be triangles)
   /// @return An int containing the Euler characteristic
