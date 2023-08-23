@@ -45,10 +45,33 @@ IGL_INLINE bool igl::readMESH(
   {
     bool still_comments= true;
     bool has_line = false;
+
+    const auto is_comment_line = [&](char * line)->bool
+    {
+      if(line[0] == '#' || line[0] == '\n' || line[0] == '\r')
+      {
+        return true;
+      }
+      // or if line is all whitespace
+      for(int i = 0;i<LINE_MAX;i++)
+      {
+        if(line[i] == '\0')
+        {
+          return true;
+        }
+        if(!isspace(line[i]))
+        {
+          return false;
+        }
+      }
+      return false;
+    };
+
     while(still_comments)
     {
       has_line = fgets(line,LINE_MAX,mesh_file) != NULL;
-      still_comments = has_line && (line[0] == '#' || line[0] == '\n' || line[0] == '\r');
+
+      still_comments = has_line && is_comment_line(line);
     }
     return has_line;
   };
