@@ -15,8 +15,14 @@ int main(int argc, char *argv[])
   Eigen::MatrixXd iV;
   Eigen::MatrixXi iE;
   {
+    // How many isolines in the range (min,max)?
     const int n = argc>2?atoi(argv[2]):128;
-    Eigen::VectorXd vals = Eigen::VectorXd::LinSpaced(n+2,f.minCoeff(),f.maxCoeff()).segment(1,n);
+    // This is actually unnecessary since isolines will not output degenerate
+    // segments.
+    //Eigen::VectorXd vals = Eigen::VectorXd::LinSpaced(n+2,f.minCoeff(),f.maxCoeff()).segment(1,n);
+    // Instead just use all n+2 and if the min-,max-value isolines are
+    // non-degneerate then we'll compute them, too.
+    Eigen::VectorXd vals = Eigen::VectorXd::LinSpaced(n+2,f.minCoeff(),f.maxCoeff());
     {
       Eigen::VectorXi I;
       igl::isolines(V,F,f,vals,iV,iE,I);

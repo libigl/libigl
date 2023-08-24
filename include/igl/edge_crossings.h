@@ -15,6 +15,8 @@ namespace igl
   /// @param[in] val  value to check for crossings
   /// @param[out] uE2I #T map from edge index to index in T
   /// @param[out] T  #T by 1 list of parametric coordinates of crossings
+  ///
+  /// \see isolines, isolines_intrinsic
   template <
     typename DeriveduE,
     typename DerivedS,
