@@ -90,7 +90,7 @@ namespace igl {
     std::function< void(const ChildrenType, const int) > helper;
     helper = [&helper,&translate_center,&get_octant,&m,
               &zero_to_seven,&neg_ones,&P,
-              &point_indices,&children,&centers,&widths,&MAX_DEPTH]
+              &point_indices,&children,&centers,&widths]
     (const ChildrenType index, const int depth)-> void
     {
       if(point_indices.at(index).size() > 1 && depth < MAX_DEPTH){

@@ -30,7 +30,8 @@ igl::opengl::glfw::imgui::SelectionWidget usage:
 IGL_INLINE void SelectionWidget::draw()
 {
   if(mode == OFF){ return; }
-  ImGuiIO& io = ImGui::GetIO();
+  // Is this call necessary?
+  ImGui::GetIO();
 
   float width, height;
   float highdpi = 1.0;
@@ -81,7 +82,7 @@ IGL_INLINE void SelectionWidget::draw()
 
 }
 
-IGL_INLINE bool SelectionWidget::mouse_down(int button, int modifier)
+IGL_INLINE bool SelectionWidget::mouse_down(int /*button*/, int modifier)
 {
   if(mode == OFF || (modifier & IGL_MOD_ALT) ){ return false;}
   is_down = true;
@@ -97,7 +98,7 @@ IGL_INLINE bool SelectionWidget::mouse_down(int button, int modifier)
   return true;
 }
 
-IGL_INLINE bool SelectionWidget::mouse_up(int button, int modifier)
+IGL_INLINE bool SelectionWidget::mouse_up(int /*button*/, int /*modifier*/)
 {
   is_down = false;
   // are we done? Check first and last lasso point (need at least 3 (2 real
@@ -111,7 +112,7 @@ IGL_INLINE bool SelectionWidget::mouse_up(int button, int modifier)
   return false;
 }
 
-IGL_INLINE bool SelectionWidget::mouse_move(int mouse_x, int mouse_y)
+IGL_INLINE bool SelectionWidget::mouse_move(int /*mouse_x*/, int /*mouse_y*/)
 {
   if(!is_drawing){ return false; }
   if(!has_moved_since_down)
@@ -140,7 +141,7 @@ IGL_INLINE bool SelectionWidget::mouse_move(int mouse_x, int mouse_y)
   return true;
 }
 
-IGL_INLINE bool SelectionWidget::key_pressed(unsigned int key, int modifiers)
+IGL_INLINE bool SelectionWidget::key_pressed(unsigned int key, int /*modifiers*/)
 {
   Mode old = mode;
   if(OFF_KEY.find(char(key)) != std::string::npos)

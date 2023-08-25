@@ -118,7 +118,6 @@ IGL_INLINE bool igl::spectra::eigs(
   Spectra::SymGEigsShiftSolver<ShiftInvert, SparseMatProd, Spectra::GEigsMode::ShiftInvert> geigs(op, Bop, k, 2*k, sigma);
 
   geigs.init();
-  int nconv = geigs.compute(Spectra::SortRule::LargestMagn);
   if (geigs.info() != Spectra::CompInfo::Successful)
   {
     return false;

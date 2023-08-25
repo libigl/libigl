@@ -53,7 +53,7 @@ IGL_INLINE void igl::copyleft::cgal::assign_scalar(
 template <typename RHS, typename LHS>
 IGL_INLINE void igl::copyleft::cgal::assign_scalar(
   const RHS & rhs,
-  const bool & slow_and_more_precise,
+  const bool & /*slow_and_more_precise*/,
   LHS & lhs)
 {
   return assign_scalar(rhs,lhs);

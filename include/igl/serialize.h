@@ -644,7 +644,7 @@ namespace igl
     initialized = false;
   }
 
-  inline Serializable::Serializable(const Serializable& obj)
+  inline Serializable::Serializable(const Serializable& /*obj*/)
   {
     initialized = false;
     objects.clear();
@@ -683,7 +683,7 @@ namespace igl
   namespace serialization
   {
     template <typename T>
-    inline typename std::enable_if<!is_serializable<T>::value,size_t>::type getByteSize(const T& obj)
+    inline typename std::enable_if<!is_serializable<T>::value,size_t>::type getByteSize(const T& /*obj*/)
     {
       return sizeof(std::vector<char>::size_type);
     }
@@ -722,13 +722,13 @@ namespace igl
     // fundamental types
 
     template <typename T>
-    inline typename std::enable_if<std::is_fundamental<T>::value,size_t>::type getByteSize(const T& obj)
+    inline typename std::enable_if<std::is_fundamental<T>::value,size_t>::type getByteSize(const T& /*obj*/)
     {
       return sizeof(T);
     }
 
     template <typename T>
-    inline typename std::enable_if<std::is_fundamental<T>::value>::type serialize(const T& obj,std::vector<char>& buffer,std::vector<char>::iterator& iter)
+    inline typename std::enable_if<std::is_fundamental<T>::value>::type serialize(const T& obj,std::vector<char>& /*buffer*/,std::vector<char>::iterator& iter)
     {
       //serialization::updateMemoryMap(obj,sizeof(T));
       const uint8_t* ptr = reinterpret_cast<const uint8_t*>(&obj);
@@ -776,13 +776,13 @@ namespace igl
     // enum types
 
     template <typename T>
-    inline typename std::enable_if<std::is_enum<T>::value,size_t>::type getByteSize(const T& obj)
+    inline typename std::enable_if<std::is_enum<T>::value,size_t>::type getByteSize(const T& /*obj*/)
     {
       return sizeof(T);
     }
 
     template <typename T>
-    inline typename std::enable_if<std::is_enum<T>::value>::type serialize(const T& obj,std::vector<char>& buffer,std::vector<char>::iterator& iter)
+    inline typename std::enable_if<std::is_enum<T>::value>::type serialize(const T& obj,std::vector<char>& /*buffer*/,std::vector<char>::iterator& iter)
     {
       const uint8_t* ptr = reinterpret_cast<const uint8_t*>(&obj);
       iter = std::copy(ptr,ptr+sizeof(T),iter);
@@ -799,7 +799,7 @@ namespace igl
     // SerializableBase
 
     template <typename T>
-    inline typename std::enable_if<std::is_base_of<SerializableBase,T>::value,size_t>::type getByteSize(const T& obj)
+    inline typename std::enable_if<std::is_base_of<SerializableBase,T>::value,size_t>::type getByteSize(const T& /*obj*/)
     {
       return sizeof(std::vector<char>::size_type);
     }
@@ -1118,7 +1118,7 @@ namespace igl
     }
 
     template<typename T,int P>
-    inline size_t getByteSize(const Eigen::Quaternion<T,P>& obj)
+    inline size_t getByteSize(const Eigen::Quaternion<T,P>& /*obj*/)
     {
       return sizeof(T)*4;
     }
@@ -1225,32 +1225,32 @@ namespace igl
     // std::weak_ptr
 
     template <typename T>
-    inline size_t getByteSize(const std::weak_ptr<T>& obj)
+    inline size_t getByteSize(const std::weak_ptr<T>& /*obj*/)
     {
       return sizeof(size_t);
     }
 
     template <typename T>
-    inline void serialize(const std::weak_ptr<T>& obj,std::vector<char>& buffer,std::vector<char>::iterator& iter)
+    inline void serialize(const std::weak_ptr<T>& /*obj*/,std::vector<char>& /*buffer*/,std::vector<char>::iterator& /*iter*/)
     {
 
     }
 
     template <typename T>
-    inline void deserialize(std::weak_ptr<T>& obj,std::vector<char>::const_iterator& iter)
+    inline void deserialize(std::weak_ptr<T>& /*obj*/,std::vector<char>::const_iterator& /*iter*/)
     {
 
     }
 
     // functions to overload for non-intrusive serialization
     template <typename T>
-    inline void serialize(const T& obj,std::vector<char>& buffer)
+    inline void serialize(const T& obj,std::vector<char>& /*buffer*/)
     {
       std::cerr << typeid(obj).name() << " is not serializable: derive from igl::Serializable or specialize the template function igl::serialization::serialize(const T& obj,std::vector<char>& buffer)" << std::endl;
     }
 
     template <typename T>
-    inline void deserialize(T& obj,const std::vector<char>& buffer)
+    inline void deserialize(T& obj,const std::vector<char>& /*buffer*/)
     {
       std::cerr << typeid(obj).name() << " is not deserializable: derive from igl::Serializable or specialize the template function igl::serialization::deserialize(T& obj, const std::vector<char>& buffer)" << std::endl;
     }

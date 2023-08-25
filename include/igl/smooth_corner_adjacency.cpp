@@ -87,7 +87,6 @@ void igl::smooth_corner_adjacency(
   Eigen::VectorXi & CI,
   Eigen::VectorXi & CC)
 {
-  typedef double Scalar;
   typedef Eigen::Index Index;
   assert(FV.rows() == FN.rows());
   assert(FV.cols() == 3);

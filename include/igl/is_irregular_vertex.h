@@ -17,12 +17,11 @@ namespace igl
   /// Determine if a vertex is irregular, i.e. it has more than 6 (triangles)
   /// or 4 (quads) incident edges. Vertices on the boundary are ignored.
   ///
-  /// @param[in] V  #V by dim list of vertex positions
   /// @param[in] F  #F by 3[4] list of triangle[quads] indices
   /// @return #V vector of bools revealing whether vertices are singular
   ///
-  template <typename DerivedV, typename DerivedF>
-  IGL_INLINE std::vector<bool> is_irregular_vertex(const Eigen::MatrixBase<DerivedV> &V, const Eigen::MatrixBase<DerivedF> &F);
+  template <typename DerivedF>
+  IGL_INLINE std::vector<bool> is_irregular_vertex(const Eigen::MatrixBase<DerivedF> &F);
 }
 
 #ifndef IGL_STATIC_LIBRARY

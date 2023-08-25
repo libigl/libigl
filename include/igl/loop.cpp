@@ -24,7 +24,6 @@ IGL_INLINE void igl::loop(
   Eigen::SparseMatrix<SType>& S,
   Eigen::PlainObjectBase<DerivedNF> & NF)
 {
-  typedef Eigen::SparseMatrix<SType> SparseMat;
   typedef Eigen::Triplet<SType> Triplet_t;
 
   //Ref. https://graphics.stanford.edu/~mdfisher/subdivision.html

@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
   igl::readOBJ(TUTORIAL_SHARED_PATH "/horse_quad.obj",V,F);
 
   // Count the number of irregular vertices, the border is ignored
-  vector<bool> irregular = igl::is_irregular_vertex(V,F);
+  vector<bool> irregular = igl::is_irregular_vertex(F);
 
   int vertex_count = V.rows();
   int irregular_vertex_count = 

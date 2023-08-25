@@ -21,8 +21,6 @@ IGL_INLINE void igl::copyleft::cgal::fast_winding_number(
   Eigen::PlainObjectBase<DerivedWN>& WN)
 {
   typedef typename DerivedWN::Scalar real;
-  typedef typename Eigen::Matrix<real,Eigen::Dynamic,Eigen::Dynamic>
-    RealMatrix;
         
   std::vector<std::vector<int> > point_indices;
   Eigen::Matrix<int,Eigen::Dynamic,8> CH;

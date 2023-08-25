@@ -23,33 +23,23 @@ namespace igl
   {
     namespace cgal
     {
-      template <typename DerivedF>
+      template <typename Index>
       static IGL_INLINE void push_result(
-        const Eigen::PlainObjectBase<DerivedF> & F,
         const int f,
         const int f_other,
         const CGAL::Object & result,
         std::map<
-          typename DerivedF::Index,
-          std::vector<std::pair<typename DerivedF::Index, CGAL::Object> > > &
+          Index,
+          std::vector<std::pair<Index, CGAL::Object> > > &
           offending)
         //std::map<
         //  std::pair<typename DerivedF::Index,typename DerivedF::Index>,
         //  std::vector<typename DerivedF::Index> > & edge2faces)
       {
-        typedef typename DerivedF::Index Index;
-        typedef std::pair<Index,Index> EMK;
         if(offending.count(f) == 0)
         {
           // first time marking, initialize with new id and empty list
           offending[f] = {};
-          for(Index e = 0; e<3;e++)
-          {
-            // append face to edge's list
-            Index i = F(f,(e+1)%3) < F(f,(e+2)%3) ? F(f,(e+1)%3) : F(f,(e+2)%3);
-            Index j = F(f,(e+1)%3) < F(f,(e+2)%3) ? F(f,(e+2)%3) : F(f,(e+1)%3);
-            //edge2faces[EMK(i,j)].push_back(f);
-          }
         }
         offending[f].push_back({f_other,result});
       }
@@ -81,33 +71,16 @@ namespace igl
         using namespace Eigen;
 
         typedef typename DerivedFA::Index Index;
-        // 3D Primitives
-        typedef CGAL::Point_3<Kernel>    Point_3;
-        typedef CGAL::Segment_3<Kernel>  Segment_3; 
         typedef CGAL::Triangle_3<Kernel> Triangle_3; 
-        typedef CGAL::Plane_3<Kernel>    Plane_3;
-        typedef CGAL::Tetrahedron_3<Kernel> Tetrahedron_3; 
-        // 2D Primitives
-        typedef CGAL::Point_2<Kernel>    Point_2;
-        typedef CGAL::Segment_2<Kernel>  Segment_2; 
-        typedef CGAL::Triangle_2<Kernel> Triangle_2; 
-        // 2D Constrained Delaunay Triangulation types
-        typedef CGAL::Triangulation_vertex_base_2<Kernel>  TVB_2;
-        typedef CGAL::Constrained_triangulation_face_base_2<Kernel> CTAB_2;
-        typedef CGAL::Triangulation_data_structure_2<TVB_2,CTAB_2> TDS_2;
-        typedef CGAL::Exact_intersections_tag Itag;
-        // Axis-align boxes for all-pairs self-intersection detection
+        //// Axis-align boxes for all-pairs self-intersection detection
         typedef std::vector<Triangle_3> Triangles;
         typedef typename Triangles::iterator TrianglesIterator;
-        typedef typename Triangles::const_iterator TrianglesConstIterator;
         typedef 
           CGAL::Box_intersection_d::Box_with_handle_d<double,3,TrianglesIterator> 
           Box;
         typedef 
           std::map<Index,std::vector<std::pair<Index,CGAL::Object> > > 
           OffendingMap;
-        typedef std::map<std::pair<Index,Index>,std::vector<Index> >  EdgeMap;
-        typedef std::pair<Index,Index> EMK;
 
         Triangles TA,TB;
         // Compute and process self intersections
@@ -154,8 +127,8 @@ namespace igl
             {
               CGAL::Object result = CGAL::intersection(A,B);
 
-              push_result(FA,fa,fb,result,offendingA);
-              push_result(FB,fb,fa,result,offendingB);
+              push_result(fa,fb,result,offendingA);
+              push_result(fb,fa,result,offendingB);
             }
           }
         };

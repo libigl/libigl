@@ -45,14 +45,14 @@ namespace igl
           /// This function is called before shutdown
           IGL_INLINE virtual void shutdown() { }
           /// This function is called before a mesh is loaded
-          IGL_INLINE virtual bool load(std::string filename) { return false; }
+          IGL_INLINE virtual bool load(std::string /*filename*/) { return false; }
           /// This function is called before a mesh is saved
-          IGL_INLINE virtual bool save(std::string filename) { return false; }
+          IGL_INLINE virtual bool save(std::string /*filename*/) { return false; }
           /// This function is called when the scene is serialized
-          IGL_INLINE virtual bool serialize(std::vector<char>& buffer) const 
+          IGL_INLINE virtual bool serialize(std::vector<char>& /*buffer*/) const 
             { return false; }
           /// This function is called when the scene is deserialized
-          IGL_INLINE virtual bool deserialize(const std::vector<char>& buffer)
+          IGL_INLINE virtual bool deserialize(const std::vector<char>& /*buffer*/)
             { return false; }
           /// Runs immediately after a new mesh has been loaded.
           IGL_INLINE virtual bool post_load() { return false; }
@@ -61,20 +61,20 @@ namespace igl
           /// This function is called after the draw procedure of Viewer
           IGL_INLINE virtual bool post_draw() { return false; }
           /// This function is called after the window has been resized
-          IGL_INLINE virtual void post_resize(int w, int h) { }
-          IGL_INLINE virtual bool mouse_down(int button, int modifier)
+          IGL_INLINE virtual void post_resize(int /*w*/, int /*h*/) { }
+          IGL_INLINE virtual bool mouse_down(int /*button*/, int /*modifier*/)
             { return false; }
-          IGL_INLINE virtual bool mouse_up(int button, int modifier)
+          IGL_INLINE virtual bool mouse_up(int /*button*/, int /*modifier*/)
             { return false; }
-          IGL_INLINE virtual bool mouse_move(int mouse_x, int mouse_y)
+          IGL_INLINE virtual bool mouse_move(int /*mouse_x*/, int /*mouse_y*/)
             { return false; }
-          IGL_INLINE virtual bool mouse_scroll(float delta_y)
+          IGL_INLINE virtual bool mouse_scroll(float /*delta_y*/)
             { return false; }
-          IGL_INLINE virtual bool key_pressed(unsigned int key, int modifiers)
+          IGL_INLINE virtual bool key_pressed(unsigned int /*key*/, int /*modifiers*/)
             { return false; }
-          IGL_INLINE virtual bool key_down(int key, int modifiers)
+          IGL_INLINE virtual bool key_down(int /*key*/, int /*modifiers*/)
             { return false; }
-          IGL_INLINE virtual bool key_up(int key, int modifiers)
+          IGL_INLINE virtual bool key_up(int /*key*/, int /*modifiers*/)
             { return false; }
           std::string plugin_name;
         protected:

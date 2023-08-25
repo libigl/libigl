@@ -40,7 +40,6 @@ IGL_INLINE bool igl::heat_geodesics_precompute(
   HeatGeodesicsData<Scalar> & data)
 {
   typedef Eigen::Matrix<Scalar,Eigen::Dynamic,1> VectorXS;
-  typedef Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic> MatrixXS;
   Eigen::SparseMatrix<Scalar> L,M;
   Eigen::Matrix<Scalar,Eigen::Dynamic,3> l_intrinsic;
   DerivedF F_intrinsic;

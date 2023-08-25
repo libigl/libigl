@@ -33,8 +33,6 @@ void igl::isolines_intrinsic(
   Eigen::PlainObjectBase<DerivediE> & iE,
   Eigen::PlainObjectBase<DerivedI> & I)
 {
-  using Scalar = typename DerivedS::Scalar;
-
   Eigen::MatrixXi uE;
   Eigen::VectorXi EMAP,uEC,uEE;
 
@@ -86,7 +84,6 @@ void igl::isolines_intrinsic(
   Eigen::PlainObjectBase<DerivediE> & iE)
 {
   using Scalar = typename DerivedS::Scalar;
-  using VectorXS = Eigen::Matrix<Scalar,Eigen::Dynamic,1>;
 
   std::unordered_map<int,int> uE2I;
   Eigen::Matrix<Scalar,Eigen::Dynamic,1> T;
@@ -95,32 +92,24 @@ void igl::isolines_intrinsic(
   iB.resize(uE2I.size(),F.cols());
   iFI.resize(uE2I.size());
   Eigen::VectorXi U(uE2I.size());
-  const auto flipped = 
-    [&uE,&F,&EMAP,&uEE,&uEC](const int u, const int f, const int k)->bool
+  for(auto & pair : uE2I)
   {
-    return uE(u,0) != F(f,(k+1)%3);
-  };
-  // for each value in uE2I
-  {
-    for(auto & pair : uE2I)
-    {
-      const int u = pair.first;
-      const int w = pair.second;
-      // first face incident on uE(u,:)
-      const int e = uEE(uEC(u));
-      const int f = e % F.rows();
-      const int k = e / F.rows();
-      const bool flip = uE(u,0) != F(f,(k+1)%3);
-      const double t = T(w);
-      iB(w,k) = 0;
-      iB(w,(k+1)%3) = flip?  t:1-t;
-      iB(w,(k+2)%3) = flip?1-t:t;
-      iFI(w) = f;
-      U(w) = u;
-    }
+    const int u = pair.first;
+    const int w = pair.second;
+    // first face incident on uE(u,:)
+    const int e = uEE(uEC(u));
+    const int f = e % F.rows();
+    const int k = e / F.rows();
+    const bool flip = uE(u,0) != F(f,(k+1)%3);
+    const double t = T(w);
+    iB(w,k) = 0;
+    iB(w,(k+1)%3) = flip?  t:1-t;
+    iB(w,(k+2)%3) = flip?1-t:t;
+    iFI(w) = f;
+    U(w) = u;
   }
   
-  const int num_edge_crossings = iB.rows();
+  
   // Vertex crossings
   std::unordered_map<int,int> V2I;
   {
@@ -154,7 +143,6 @@ void igl::isolines_intrinsic(
     iB.conservativeResize(k,Eigen::NoChange);
     iFI.conservativeResize(k,Eigen::NoChange);
   }
-  const int num_vertex_crossings = iB.rows()-num_edge_crossings;
 
   iE.resize(uE2I.size(),2);
   const auto set_row = [&iE](const int k, const int i, const int j)

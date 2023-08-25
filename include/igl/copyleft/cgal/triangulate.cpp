@@ -2,8 +2,6 @@
 #include "assign_scalar.h"
 #include "../../list_to_matrix.h"
 #include <CGAL/Point_2.h>
-#include <CGAL/Segment_2.h>
-#include <CGAL/Triangle_2.h>
 #include <CGAL/Constrained_Delaunay_triangulation_2.h>
 #include <CGAL/Constrained_triangulation_plus_2.h>
 #include <CGAL/Triangulation_face_base_with_info_2.h>
@@ -35,8 +33,6 @@ IGL_INLINE void igl::copyleft::cgal::triangulate(
   typedef Eigen::Index Index;
   //typedef CGAL::Epeck Kernel;
   typedef CGAL::Point_2<Kernel>    Point_2;
-  typedef CGAL::Segment_2<Kernel>  Segment_2;
-  typedef CGAL::Triangle_2<Kernel> Triangle_2;
   typedef CGAL::Triangulation_vertex_base_2<Kernel>  TVB_2;
   typedef CGAL::Triangulation_face_base_with_info_2<FaceInfo2,Kernel>    TFB_2;
   typedef CGAL::Constrained_triangulation_face_base_2<Kernel,TFB_2> CTFB_2;

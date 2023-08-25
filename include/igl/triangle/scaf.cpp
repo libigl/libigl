@@ -247,7 +247,7 @@ IGL_INLINE void mesh_improve(igl::triangle::SCAFData &s)
 
 IGL_INLINE void add_new_patch(igl::triangle::SCAFData &s, const Eigen::MatrixXd &V_ref,
                    const Eigen::MatrixXi &F_ref,
-                   const Eigen::RowVectorXd &center,
+                   const Eigen::RowVectorXd &/*center*/,
                    const Eigen::MatrixXd &uv_init)
 {
   using namespace std;
@@ -263,7 +263,6 @@ IGL_INLINE void add_new_patch(igl::triangle::SCAFData &s, const Eigen::MatrixXd 
 
   std::vector<std::vector<int>> all_bnds;
   igl::boundary_loop(F_ref, all_bnds);
-  int num_holes = all_bnds.size() - 1;
 
   s.component_sizes.push_back(F_ref.rows());
 
@@ -642,8 +641,6 @@ IGL_INLINE void igl::triangle::scaf_precompute(
 
   if (!data.has_pre_calc)
   {
-    int v_n = s.mv_num + s.sv_num;
-    int f_n = s.mf_num + s.sf_num;
     int dim = s.dim;
     Eigen::MatrixXd F1, F2, F3;
     igl::local_basis(s.m_V, s.m_T, F1, F2, F3);

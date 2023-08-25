@@ -55,17 +55,17 @@ IGL_INLINE void igl::copyleft::cgal::wire_mesh(
   {
     return WV.rows() + e*2*PV.rows() + PV.rows()*c + p;
   };
-  const auto unindex = 
-    [&PV,&WV](int v, int & e, int & c, int & p)
-  {
-    assert(v>=WV.rows());
-    v = v-WV.rows();
-    e = v/(2*PV.rows());
-    v = v-e*(2*PV.rows());
-    c = v/(PV.rows());
-    v = v-c*(PV.rows());
-    p = v;
-  };
+  //const auto unindex = 
+  //  [&PV,&WV](int v, int & e, int & c, int & p)
+  //{
+  //  assert(v>=WV.rows());
+  //  v = v-WV.rows();
+  //  e = v/(2*PV.rows());
+  //  v = v-e*(2*PV.rows());
+  //  c = v/(PV.rows());
+  //  v = v-c*(PV.rows());
+  //  p = v;
+  //};
 
   // Count each vertex's indicident edges.
   std::vector<int> nedges(WV.rows(), 0);
@@ -114,7 +114,7 @@ IGL_INLINE void igl::copyleft::cgal::wire_mesh(
   std::vector<std::vector<typename DerivedF::Index> > vF;
   std::vector<int> vJ;
   const auto append_hull = 
-    [&V,&vF,&vJ,&unindex,&WV](const Eigen::VectorXi & I, const int j)
+    [&V,&vF,&vJ](const Eigen::VectorXi & I, const int j)
   {
     MatrixX3S Vv;
     igl::slice(V,I,1,Vv);

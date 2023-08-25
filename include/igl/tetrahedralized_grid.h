@@ -44,14 +44,11 @@ namespace igl
     Eigen::PlainObjectBase<DerivedGV> & GV,
     Eigen::PlainObjectBase<DerivedGT> & GT);
   /// \overload
-  /// @param[in] GV  nx*ny*nz by 3 list of grid vertex positions
   /// @param[in] side  3-long list {nx,ny,nz} see above
   template <
-    typename DerivedGV,
     typename Derivedside,
     typename DerivedGT>
   IGL_INLINE void tetrahedralized_grid(
-    const Eigen::MatrixBase<DerivedGV> & GV,
     const Eigen::MatrixBase<Derivedside> & side,
     const TetrahedralizedGripType type,
     Eigen::PlainObjectBase<DerivedGT> & GT);

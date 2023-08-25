@@ -28,7 +28,7 @@
 // Helper function to invoke .exact() on CGAL::Epeck::FT and no-op on others
 template <typename T> inline void exact(T & v);
 template <> inline void exact(CGAL::Epeck::FT & v) { v = v.exact(); }
-template <typename T> inline void exact(T & v){}
+template <typename T> inline void exact(T & /* v */ ){}
 
 template <
   typename DerivedV,
@@ -72,13 +72,6 @@ IGL_INLINE void igl::copyleft::cgal::remesh_intersections(
     typedef CGAL::Point_3<Kernel>    Point_3;
     typedef CGAL::Segment_3<Kernel>  Segment_3; 
     typedef CGAL::Plane_3<Kernel>    Plane_3;
-    typedef CGAL::Triangulation_vertex_base_2<Kernel>  TVB_2;
-    typedef CGAL::Constrained_triangulation_face_base_2<Kernel> CTFB_2;
-    typedef CGAL::Triangulation_data_structure_2<TVB_2,CTFB_2> TDS_2;
-    typedef CGAL::Exact_intersections_tag Itag;
-    typedef CGAL::Constrained_Delaunay_triangulation_2<Kernel,TDS_2,Itag> 
-        CDT_2;
-    typedef CGAL::Constrained_triangulation_plus_2<CDT_2> CDT_plus_2;
 
     typedef typename DerivedF::Index Index;
     typedef std::pair<Index, Index> Edge;

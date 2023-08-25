@@ -31,7 +31,6 @@ IGL_INLINE void igl::copyleft::cgal::relabel_small_immersed_cells(
     const FT vol_threashold,
     Eigen::PlainObjectBase<DerivedW>& W)
 {
-  const size_t num_vertices = V.rows();
   const size_t num_faces = F.rows();
   typedef std::tuple<typename DerivedC::Scalar, bool, size_t> CellConnection;
   std::vector<std::set<CellConnection> > cell_adj;

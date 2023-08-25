@@ -139,8 +139,6 @@ IGL_INLINE void igl::intrinsic_delaunay_triangulation(
         assert(f1 != f2);
         const Index v1 = F(f1, (c1+1)%3);
         const Index v2 = F(f1, (c1+2)%3);
-        const Index v4 = F(f1, c1);
-        const Index v3 = F(f2, c2);
         assert(F(f2, (c2+2)%3) == v1);
         assert(F(f2, (c2+1)%3) == v2);
         assert( std::abs(l(f1,c1)-l(f2,c2)) < igl::EPS<Scalar>() );

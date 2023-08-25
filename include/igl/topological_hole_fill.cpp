@@ -9,12 +9,10 @@
 #include "topological_hole_fill.h"
   template <
   typename DerivedF,
-  typename Derivedb,
   typename VectorIndex,
   typename DerivedF_filled>
 IGL_INLINE void igl::topological_hole_fill(
   const Eigen::MatrixBase<DerivedF> & F,
-  const Eigen::MatrixBase<Derivedb> & b,
   const std::vector<VectorIndex> & holes,
   Eigen::PlainObjectBase<DerivedF_filled> &F_filled)
 {
@@ -33,7 +31,6 @@ IGL_INLINE void igl::topological_hole_fill(
 
   for (int i = 0; i < num_holes; i++, new_vert_id++)
   {
-    int cur_bnd_size = holes[i].size();
     int it = 0;
     int back = holes[i].size() - 1;
     F_filled.row(new_face_id++) << holes[i][it], holes[i][back], new_vert_id;
@@ -51,5 +48,5 @@ IGL_INLINE void igl::topological_hole_fill(
 }
 
 #ifdef IGL_STATIC_LIBRARY
-template void igl::topological_hole_fill<Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, std::vector<int, std::allocator<int> > >(Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 1,0, -1, 1> > const&, std::vector<std::vector<int, std::allocator<int> >, std::allocator<std::vector<int, std::allocator<int> > > > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
+template void igl::topological_hole_fill<Eigen::Matrix<int, -1, -1, 0, -1, -1>, std::vector<int, std::allocator<int> > >(Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, std::vector<std::vector<int, std::allocator<int> >, std::allocator<std::vector<int, std::allocator<int> > > > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
 #endif

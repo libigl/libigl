@@ -89,17 +89,18 @@ public:
       return 2.0*c()*v + b()*u + e();
     }
 
-    IGL_INLINE double duv(double u, double v)
+    // Why do these take u,v arguments if they're not used?
+    IGL_INLINE double duv(double , double )
     {
       return b();
     }
 
-    IGL_INLINE double duu(double u, double v)
+    IGL_INLINE double duu(double , double )
     {
       return 2.0*a();
     }
 
-    IGL_INLINE double dvv(double u, double v)
+    IGL_INLINE double dvv(double , double )
     {
       return 2.0*c();
     }

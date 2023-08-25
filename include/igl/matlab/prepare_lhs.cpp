@@ -32,7 +32,6 @@ IGL_INLINE void igl::matlab::prepare_lhs_logical(
   const auto m = V.rows();
   const auto n = V.cols();
   plhs[0] = mxCreateLogicalMatrix(m,n);
-  mxLogical * Vp = static_cast<mxLogical*>(mxGetData(plhs[0]));
   Eigen::Map< Eigen::Matrix<mxLogical,Eigen::Dynamic,Eigen::Dynamic> >
     map(static_cast<mxLogical*>(mxGetData(plhs[0])),m,n);
   map = V.template cast<mxLogical>();

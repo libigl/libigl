@@ -17,19 +17,16 @@ namespace igl
   /// Index of new abstract vertices will be F.maxCoeff() + (index of hole)
   ///
   /// @param[in] F  #F by simplex-size list of element indices
-  /// @param[in] b  #b boundary indices to preserve
   /// @param[in] holes vector of hole loops to fill
   /// @param[out] F_filled  input F stacked with filled triangles.
   ///
   /// \bug Why does this add a new vertex for each hole? Why not use a fan?
   template <
   typename DerivedF,
-  typename Derivedb,
   typename VectorIndex,
   typename DerivedF_filled>
 IGL_INLINE void topological_hole_fill(
   const Eigen::MatrixBase<DerivedF> & F,
-  const Eigen::MatrixBase<Derivedb> & b,
   const std::vector<VectorIndex> & holes,
   Eigen::PlainObjectBase<DerivedF_filled> &F_filled);
 

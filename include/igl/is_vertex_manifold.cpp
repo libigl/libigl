@@ -25,7 +25,6 @@ IGL_INLINE bool igl::is_vertex_manifold(
   assert(F.cols() == 3 && "F must contain triangles");
   typedef typename DerivedF::Scalar Index;
   typedef typename DerivedF::Index FIndex;
-  const FIndex m = F.rows();
   const Index n = F.maxCoeff()+1;
   vector<vector<vector<FIndex > > > TT;
   vector<vector<vector<FIndex > > > TTi;

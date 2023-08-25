@@ -244,7 +244,6 @@ namespace igl
 #include "mesh_to_cgal_triangle_list.h"
 #include "remesh_intersections.h"
 
-#include "../../REDRUM.h"
 #include "../../get_seconds.h"
 #include "../../C_STR.h"
 
@@ -631,7 +630,7 @@ inline bool igl::copyleft::cgal::SelfIntersectMesh<
       return true;
     }else
     {
-      cerr<<REDRUM("Segment ∩ triangle neither point nor segment?")<<endl;
+      cerr<<"Segment ∩ triangle neither point nor segment?"<<endl;
       assert(false);
     }
   }

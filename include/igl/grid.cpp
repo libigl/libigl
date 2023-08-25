@@ -20,7 +20,6 @@ IGL_INLINE void igl::grid(
   GV.resize(res.array().prod(),res.size());
   const auto lerp = 
     [&res](const Scalar di, const int d)->Scalar{return di/(Scalar)(res(d)-1);};
-  int gi = 0;
   Derivedres sub;
   sub.resizeLike(res);
   sub.setConstant(0);

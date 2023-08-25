@@ -83,7 +83,7 @@ IGL_INLINE void igl::voxel_grid(
   RowVector3S max_ext = V.colwise().maxCoeff().array() + offset;
   box.extend(min_ext.transpose());
   box.extend(max_ext.transpose());
-  return igl::voxel_grid(box,s,1,GV,side);
+  return igl::voxel_grid(box,s,pad_count,GV,side);
 }
 
 #ifdef IGL_STATIC_LIBRARY

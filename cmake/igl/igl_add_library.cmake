@@ -36,11 +36,14 @@ function(igl_add_library module_name)
     # C++11 features
     target_compile_features(${module_name} ${IGL_SCOPE} cxx_std_11)
 
+    target_compile_options(${module_name} PRIVATE -Wall -Wextra -Wpedantic -Wno-sign-compare -Werror -Wno-gnu -Wno-unknown-pragmas)
+
     # Other compilation flags
     if(MSVC)
         # Enable parallel compilation for Visual Studio
         target_compile_options(${module_name} ${IGL_SCOPE} $<$<COMPILE_LANGUAGE:CXX>:/MP> $<$<COMPILE_LANGUAGE:CXX>:/bigobj>)
         target_compile_definitions(${module_name} ${IGL_SCOPE} -DNOMINMAX)
+
 
         # Silencing some compilation warnings
         if(LIBIGL_USE_STATIC_LIBRARY)
