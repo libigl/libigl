@@ -1,8 +1,8 @@
 #include "eigs.h"
 #include "../sort.h"
 #include "../slice.h"
+#include "../ASSERT.h"
 #include <Spectra/SymGEigsShiftSolver.h>
-#include <cassert>
 
 template <
   typename EigsScalar,
@@ -17,9 +17,9 @@ IGL_INLINE bool igl::spectra::eigs(
   Eigen::PlainObjectBase<DerivedU> & U,
   Eigen::PlainObjectBase<DerivedS> & S)
 {
-  assert(k > 0 && "k should be positive");
-  assert(k < A.rows() && "k should be less than size of A");
-  assert(type == igl::EIGS_TYPE_SM && "Only SM supported");
+  ASSERT(k > 0 && "k should be positive");
+  ASSERT(k < A.rows() && "k should be less than size of A");
+  ASSERT(type == igl::EIGS_TYPE_SM && "Only SM supported");
   // This seems like a hack. For the "eigs: grid" test this is necessary to get
   // at least 1e-4 error for the first 5 eigen values. It's annoying that this
   // means that the zero modes become O(sigma) and this is now rather large.

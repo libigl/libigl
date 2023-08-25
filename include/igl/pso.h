@@ -36,6 +36,8 @@ namespace igl
     DerivedX & X);
   /// \overload
   /// @param[out] P  whether each DOF is periodic
+  ///
+  /// \bug `P` appears to be unused
   template <
     typename Scalar, 
     typename DerivedX,

@@ -92,7 +92,9 @@ void igl::collapse_small_triangles(
   }
 
   FF.resizeLike(rF);
+#ifndef NDEBUG
   int num_face_collapses=0;
+#endif
   // Only keep uncollapsed faces
   {
     int ff = 0;
@@ -108,7 +110,9 @@ void igl::collapse_small_triangles(
           if(rF(f,i)==rF(f,j))
           {
             collapsed = true;
+#ifndef NDEBUG
             num_face_collapses++;
+#endif
             break;
           }
         }

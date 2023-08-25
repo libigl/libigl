@@ -121,6 +121,7 @@ option(LIBIGL_RESTRICTED_MATLAB   "Build target igl_restricted::matlab"   ${LIBI
 option(LIBIGL_RESTRICTED_MOSEK    "Build target igl_restricted::mosek"    ${LIBIGL_DEFAULT_MOSEK})
 option(LIBIGL_RESTRICTED_TRIANGLE "Build target igl_restricted::triangle" ${LIBIGL_TOPLEVEL_PROJECT})
 
+option(LIBIGL_WARNINGS_AS_ERRORS "Turn on many warnings and treat as errors" OFF)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")

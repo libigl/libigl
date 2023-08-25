@@ -13,6 +13,7 @@
 #include "submesh_aabb_tree.h"
 #include "../../extract_manifold_patches.h"
 #include "../../facet_components.h"
+#include "../../ASSERT.h"
 #include "../../parallel_for.h"
 #include "../../get_seconds.h"
 #include "../../triangle_triangle_adjacency.h"
@@ -323,8 +324,8 @@ IGL_INLINE size_t igl::copyleft::cgal::extract_cells(
                     break;
                 }
             }
-            assert(embedded_comp != INVALID);
-            assert(embedded_cell != INVALID);
+            ASSERT(embedded_comp != INVALID);
+            ASSERT(embedded_cell != INVALID);
             embedded_cells[outer_cell] = embedded_cell;
         } else {
             embedded_cells[outer_cell] = INFINITE_CELL;

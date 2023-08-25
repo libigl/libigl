@@ -45,7 +45,7 @@ int main(int argc, char * argv[])
   //Compute vector Laplacian and mass matrix
   Eigen::MatrixXi E, oE;//Compute Laplacian and mass matrix
   SparseMat vecL, vecM;
-  igl::cr_vector_mass(V, F, E, oE, vecM);
+  igl::cr_vector_mass(V, F, E, vecM);
   igl::cr_vector_laplacian(V, F, E, oE, vecL);
   const int m = vecL.rows()/2; //The number of edges in the mesh
 
