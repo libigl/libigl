@@ -17,8 +17,8 @@
 
 template <typename DerivedV, typename DerivedF>
 IGL_INLINE void igl::compute_frame_field_bisectors(
-  const Eigen::MatrixBase<DerivedV>& V,
-  const Eigen::MatrixBase<DerivedF>& F,
+  const Eigen::MatrixBase<DerivedV>& /*V*/,
+  const Eigen::MatrixBase<DerivedF>& /*F*/,
   const Eigen::MatrixBase<DerivedV>& B1,
   const Eigen::MatrixBase<DerivedV>& B2,
   const Eigen::MatrixBase<DerivedV>& PD1,

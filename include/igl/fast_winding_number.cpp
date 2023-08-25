@@ -35,7 +35,7 @@ IGL_INLINE void igl::fast_winding_number(
   typedef Eigen::Matrix<real_p,1,3> RowVec3p;
 
   int m = CH.size();
-  int num_terms;
+  int num_terms = -1;
 
   assert(expansion_order < 3 && expansion_order >= 0 && "m must be less than n");
   if(expansion_order == 0){
@@ -45,6 +45,7 @@ IGL_INLINE void igl::fast_winding_number(
   } else if(expansion_order == 2){
       num_terms = 3 + 9 + 27;
   }
+  assert(num_terms > 0);
 
   R.resize(m);
   CM.resize(m,3);
@@ -52,7 +53,7 @@ IGL_INLINE void igl::fast_winding_number(
   EC.setZero(m,num_terms);
   std::function< void(const int) > helper;
   helper = [&helper,
-            &P,&N,&A,&expansion_order,&point_indices,&CH,&EC,&R,&CM]
+            &P,&N,&A,&point_indices,&CH,&EC,&R,&CM]
   (const int index)-> void
   {
       Eigen::Matrix<real_cm,1,3> masscenter;
@@ -240,7 +241,7 @@ IGL_INLINE void igl::fast_winding_number(
   helper = [&helper,
             &P,&N,&A,
             &point_indices,&CH,
-            &CM,&R,&EC,&beta,
+            &CM,&R,&beta,
             &direct_eval,&expansion_eval]
   (const RowVec & query, const std::vector<int> & near_indices)-> real_wn
   {

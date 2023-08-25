@@ -47,7 +47,6 @@ IGL_INLINE void igl::cut_mesh(
   const Eigen::MatrixBase<DerivedC>& C,
   Eigen::PlainObjectBase<DerivedI>& I
 ){
-  typedef typename DerivedF::Scalar Index;
   DerivedF FF, FFi;
   igl::triangle_triangle_adjacency(F,FF,FFi);
   igl::cut_mesh(V,F,FF,FFi,C,I);

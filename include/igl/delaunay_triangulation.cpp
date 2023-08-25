@@ -28,7 +28,6 @@ IGL_INLINE void igl::delaunay_triangulation(
 {
   assert(V.cols() == 2);
   typedef typename DerivedF::Scalar Index;
-  typedef typename DerivedV::Scalar Scalar;
   igl::lexicographic_triangulation(V, orient2D, F);
   const size_t num_faces = F.rows();
   if (num_faces == 0) {

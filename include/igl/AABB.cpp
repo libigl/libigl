@@ -804,11 +804,7 @@ IGL_INLINE void igl::AABB<DerivedV,DIM>::leaf_squared_distance(
 
 template <typename DerivedV, int DIM>
 IGL_INLINE void igl::AABB<DerivedV,DIM>::set_min(
-  const RowVectorDIMS &
-#ifndef NDEBUG
-  p
-#endif
-  ,
+  const RowVectorDIMS & /* p */,
   const Scalar sqr_d_candidate,
   const int i_candidate,
   const RowVectorDIMS & c_candidate,
@@ -816,13 +812,6 @@ IGL_INLINE void igl::AABB<DerivedV,DIM>::set_min(
   int & i,
   Eigen::PlainObjectBase<RowVectorDIMS> & c) const
 {
-#ifndef NDEBUG
-  //std::cout<<matlab_format(c_candidate,"c_candidate")<<std::endl;
-  //// This doesn't quite make sense to check with bounds
-  // const Scalar pc_norm = (p-c_candidate).squaredNorm();
-  // const Scalar diff = fabs(sqr_d_candidate - pc_norm);
-  // assert(diff<=1e-10 && "distance should match norm of difference");
-#endif
   if(sqr_d_candidate < sqr_d)
   {
     i = i_candidate;

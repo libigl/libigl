@@ -4535,8 +4535,8 @@ struct ut_BoxCentre<UT_FixedVector<T,NAXES,INSTANTIATED>> {
 template<typename BOX_TYPE,typename SRC_INT_TYPE,typename INT_TYPE>
 inline INT_TYPE utExcludeNaNInfBoxIndices(const BOX_TYPE* boxes, SRC_INT_TYPE* indices, INT_TYPE& nboxes) noexcept 
 {
-    constexpr INT_TYPE PARALLEL_THRESHOLD = 65536;
-    INT_TYPE ntasks = 1;
+    //constexpr INT_TYPE PARALLEL_THRESHOLD = 65536;
+    //INT_TYPE ntasks = 1;
     //if (nboxes >= PARALLEL_THRESHOLD) 
     //{
     //    INT_TYPE nprocessors = UT_Thread::getNumProcessors();
@@ -4851,7 +4851,7 @@ inline void BVH<N>::traverseVectorHelper(
 template<uint N>
 template<typename SRC_INT_TYPE>
 inline void BVH<N>::createTrivialIndices(SRC_INT_TYPE* indices, const INT_TYPE n) noexcept {
-    igl::parallel_for(n, [indices,n](INT_TYPE i) { indices[i] = i; }, 65536);
+    igl::parallel_for(n, [indices](INT_TYPE i) { indices[i] = i; }, 65536);
 }
 
 template<uint N>
@@ -6661,11 +6661,11 @@ inline void UT_SolidAngle<T,S>::init(
             , myPositions(positions)
             , myOrder(order)
         {}
-        constexpr SYS_FORCE_INLINE bool pre(const int nodei, LocalData *data_for_parent) const
+        constexpr SYS_FORCE_INLINE bool pre(const int /*nodei*/, LocalData * /*data_for_parent*/) const
         {
             return true;
         }
-        void item(const int itemi, const int parent_nodei, LocalData &data_for_parent) const
+        void item(const int itemi, const int /*parent_nodei*/, LocalData &data_for_parent) const
         {
             const UT_Vector3T<S> *const positions = myPositions;
             const int *const cur_triangle_points = myTrianglePoints + 3*itemi;
@@ -6889,7 +6889,7 @@ inline void UT_SolidAngle<T,S>::init(
 #endif
         }
 
-        void post(const int nodei, const int parent_nodei, LocalData *data_for_parent, const int nchildren, const LocalData *child_data_array) const
+        void post(const int nodei, const int /*parent_nodei*/, LocalData *data_for_parent, const int nchildren, const LocalData *child_data_array) const
         {
             // NOTE: Although in the general case, data_for_parent may be null for the root call,
             //       this functor assumes that it's non-null, so the call below must pass a non-null pointer.
@@ -7169,9 +7169,9 @@ inline T UT_SolidAngle<T, S>::computeSolidAngle(const UT_Vector3T<T> &query_poin
             : myBoxData(box_data)
             , myQueryPoint(query_point)
             , myAccuracyScale2(accuracy_scale2)
-            , myOrder(order)
             , myPositions(positions)
             , myTrianglePoints(triangle_points)
+            , myOrder(order)
         {}
         uint pre(const int nodei, T *data_for_parent) const
         {
@@ -7257,7 +7257,7 @@ inline T UT_SolidAngle<T, S>::computeSolidAngle(const UT_Vector3T<T> &query_poin
 
             return descend_bitmask;
         }
-        void item(const int itemi, const int parent_nodei, T &data_for_parent) const
+        void item(const int itemi, const int /*parent_nodei*/, T &data_for_parent) const
         {
             const UT_Vector3T<S> *const positions = myPositions;
             const int *const cur_triangle_points = myTrianglePoints + 3*itemi;
@@ -7267,7 +7267,7 @@ inline T UT_SolidAngle<T, S>::computeSolidAngle(const UT_Vector3T<T> &query_poin
 
             data_for_parent = UTsignedSolidAngleTri(a, b, c, myQueryPoint);
         }
-        SYS_FORCE_INLINE void post(const int nodei, const int parent_nodei, T *data_for_parent, const int nchildren, const T *child_data_array, const uint descend_bits) const
+        SYS_FORCE_INLINE void post(const int /*nodei*/, const int /*parent_nodei*/, T *data_for_parent, const int nchildren, const T *child_data_array, const uint descend_bits) const
         {
             T sum = (descend_bits&1) ? child_data_array[0] : 0;
             for (int i = 1; i < nchildren; ++i)
@@ -7446,11 +7446,11 @@ inline void UT_SubtendedAngle<T,S>::init(
             , myPositions(positions)
             , myOrder(order)
         {}
-        constexpr SYS_FORCE_INLINE bool pre(const int nodei, LocalData *data_for_parent) const
+        constexpr SYS_FORCE_INLINE bool pre(const int /*nodei*/, LocalData * /*data_for_parent*/) const
         {
             return true;
         }
-        void item(const int itemi, const int parent_nodei, LocalData &data_for_parent) const
+        void item(const int itemi, const int /*parent_nodei*/, LocalData &data_for_parent) const
         {
             const UT_Vector2T<S> *const positions = myPositions;
             const int *const cur_segment_points = mySegmentPoints + 2*itemi;
@@ -7516,7 +7516,7 @@ inline void UT_SubtendedAngle<T,S>::init(
 #endif
         }
 
-        void post(const int nodei, const int parent_nodei, LocalData *data_for_parent, const int nchildren, const LocalData *child_data_array) const
+        void post(const int nodei, const int /*parent_nodei*/, LocalData *data_for_parent, const int nchildren, const LocalData *child_data_array) const
         {
             // NOTE: Although in the general case, data_for_parent may be null for the root call,
             //       this functor assumes that it's non-null, so the call below must pass a non-null pointer.
@@ -7798,7 +7798,7 @@ inline T UT_SubtendedAngle<T, S>::computeAngle(const UT_Vector2T<T> &query_point
 
             return descend_bitmask;
         }
-        void item(const int itemi, const int parent_nodei, T &data_for_parent) const
+        void item(const int itemi, const int /*parent_nodei*/, T &data_for_parent) const
         {
             const UT_Vector2T<S> *const positions = myPositions;
             const int *const cur_segment_points = mySegmentPoints + 2*itemi;
@@ -7807,7 +7807,7 @@ inline T UT_SubtendedAngle<T, S>::computeAngle(const UT_Vector2T<T> &query_point
 
             data_for_parent = UTsignedAngleSegment(a, b, myQueryPoint);
         }
-        SYS_FORCE_INLINE void post(const int nodei, const int parent_nodei, T *data_for_parent, const int nchildren, const T *child_data_array, const uint descend_bits) const
+        SYS_FORCE_INLINE void post(const int /*nodei*/, const int /*parent_nodei*/, T *data_for_parent, const int nchildren, const T *child_data_array, const uint descend_bits) const
         {
             T sum = (descend_bits&1) ? child_data_array[0] : 0;
             for (int i = 1; i < nchildren; ++i)

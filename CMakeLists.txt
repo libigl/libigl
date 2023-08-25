@@ -6,6 +6,9 @@ else()
     set(LIBIGL_TOPLEVEL_PROJECT OFF)
 endif()
 
+
+add_compile_options(-Wall -Wextra -Wpedantic -Wno-sign-compare -Werror -Wno-gnu)
+
 # Check required CMake version
 set(REQUIRED_CMAKE_VERSION "3.16.0")
 if(LIBIGL_TOPLEVEL_PROJECT)

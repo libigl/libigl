@@ -141,6 +141,9 @@ namespace igl
   /// @return true if m was reached (otherwise #G > m)
   ///
   /// \see connect_boundary_to_infinity
+  ///
+  /// \bug E,EMAP,EF,EI seem to be immediately (re)computed from F. These inputs
+  /// are unused and it's not clear why.
   IGL_INLINE bool decimate(
     const Eigen::MatrixXd & V,
     const Eigen::MatrixXi & F,

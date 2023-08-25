@@ -52,28 +52,15 @@ namespace igl
   /// \overload
   /// \brief intrinsic version.
   ///
-  ///  @param[in] l_sq #F by 3 list of squared edge lengths of each halfedge
   ///  @param[in] dA #F list of double areas
   ///
   ///  \fileinfo
-  template <typename DerivedF, typename DerivedL_sq, typename DeriveddA,
+  template <typename DerivedF, typename DeriveddA,
   typename DerivedE, typename DerivedOE, typename ScalarM>
   IGL_INLINE void
   cr_vector_mass_intrinsic(
     const Eigen::MatrixBase<DerivedF>& F,
-    const Eigen::MatrixBase<DerivedL_sq>& l_sq,
     const Eigen::MatrixBase<DeriveddA>& dA,
-    const Eigen::MatrixBase<DerivedE>& E,
-    const Eigen::MatrixBase<DerivedOE>& oE,
-    Eigen::SparseMatrix<ScalarM>& M);
-  /// \overload
-  /// \fileinfo
-  template <typename DerivedF, typename DerivedL_sq, typename DerivedE,
-  typename DerivedOE, typename ScalarM>
-  IGL_INLINE void
-  cr_vector_mass_intrinsic(
-    const Eigen::MatrixBase<DerivedF>& F,
-    const Eigen::MatrixBase<DerivedL_sq>& l_sq,
     const Eigen::MatrixBase<DerivedE>& E,
     const Eigen::MatrixBase<DerivedOE>& oE,
     Eigen::SparseMatrix<ScalarM>& M);

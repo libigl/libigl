@@ -47,7 +47,6 @@ namespace igl {
     inline int mismatchByCross(const int f0,
                                const int f1)
     {
-      Eigen::Matrix<typename DerivedV::Scalar, 3, 1> dir0 = PD1.row(f0);
       Eigen::Matrix<typename DerivedV::Scalar, 3, 1> dir1 = PD1.row(f1);
       Eigen::Matrix<typename DerivedV::Scalar, 3, 1> n0 = N.row(f0);
       Eigen::Matrix<typename DerivedV::Scalar, 3, 1> n1 = N.row(f1);
