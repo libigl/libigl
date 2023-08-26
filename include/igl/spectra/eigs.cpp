@@ -44,8 +44,8 @@ IGL_INLINE bool igl::spectra::eigs(
   Eigen::PlainObjectBase<DerivedS> & S)
 {
 
-  assert(k > 0 && "k should be positive");
-  assert(k < A.rows() && "k should be less than size of A");
+  ASSERT(k > 0 && "k should be positive");
+  ASSERT(k < A.rows() && "k should be less than size of A");
 
   class SparseMatProd
   {
@@ -82,9 +82,9 @@ IGL_INLINE bool igl::spectra::eigs(
         const Scalar sigma):
         m_A(A), m_B(B)
     {
-      assert(m_A.rows() == m_A.cols() && "A must be square");
-      assert(m_B.rows() == m_B.cols() && "B must be square");
-      assert(m_A.rows() == m_B.cols() && "A and B must have the same size");
+      ASSERT(m_A.rows() == m_A.cols() && "A must be square");
+      ASSERT(m_B.rows() == m_B.cols() && "B must be square");
+      ASSERT(m_A.rows() == m_B.cols() && "A and B must have the same size");
       set_shift(sigma, true);
     }
     void set_shift(const Scalar & sigma, const bool force = false)
@@ -118,6 +118,7 @@ IGL_INLINE bool igl::spectra::eigs(
   Spectra::SymGEigsShiftSolver<ShiftInvert, SparseMatProd, Spectra::GEigsMode::ShiftInvert> geigs(op, Bop, k, 2*k, sigma);
 
   geigs.init();
+  geigs.compute(Spectra::SortRule::LargestMagn);
   if (geigs.info() != Spectra::CompInfo::Successful)
   {
     return false;
