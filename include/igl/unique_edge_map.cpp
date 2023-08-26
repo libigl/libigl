@@ -10,7 +10,7 @@
 #include "unique_simplices.h"
 #include "cumsum.h"
 #include "accumarray.h"
-#include "ASSERT.h"
+#include "IGL_ASSERT.h"
 #include <algorithm>
 
 template <
@@ -33,7 +33,7 @@ IGL_INLINE void igl::unique_edge_map(
   // This does help a little
   for_each(uE2E.begin(),uE2E.end(),[](vector<uE2EType > & v){v.reserve(2);});
   const size_t ne = E.rows();
-  ASSERT((size_t)EMAP.size() == ne);
+  IGL_ASSERT((size_t)EMAP.size() == ne);
   for(uE2EType e = 0;e<(uE2EType)ne;e++)
   {
     uE2E[EMAP(e)].push_back(e);
@@ -61,7 +61,7 @@ IGL_INLINE void igl::unique_edge_map(
   // vs. O(log m)
   Matrix<typename DerivedEMAP::Scalar,Dynamic,1> IA;
   unique_simplices(E,uE,IA,EMAP);
-  ASSERT((size_t)EMAP.size() == ne);
+  IGL_ASSERT((size_t)EMAP.size() == ne);
 }
 
 template <
@@ -81,15 +81,15 @@ IGL_INLINE void igl::unique_edge_map(
 {
   // Avoid using uE2E
   igl::unique_edge_map(F,E,uE,EMAP);
-  ASSERT(EMAP.maxCoeff() < uE.rows());
+  IGL_ASSERT(EMAP.maxCoeff() < uE.rows());
   // counts of each unique edge
   typedef Eigen::Matrix<typename DeriveduEC::Scalar,Eigen::Dynamic,1> VectorXI;
   VectorXI uEK;
   igl::accumarray(EMAP,1,uEK);
-  ASSERT(uEK.rows() == uE.rows());
+  IGL_ASSERT(uEK.rows() == uE.rows());
   // base offset in uEE
   igl::cumsum(uEK,1,true,uEC);
-  ASSERT(uEK.rows()+1 == uEC.rows());
+  IGL_ASSERT(uEK.rows()+1 == uEC.rows());
   // running inner offset in uEE
   VectorXI uEO = VectorXI::Zero(uE.rows(),1);
   // flat array of faces incide on each uE
@@ -101,7 +101,7 @@ IGL_INLINE void igl::unique_edge_map(
     uEE(i) = e;
     uEO(ue)++;
   }
-  ASSERT( (uEK.array()==uEO.array()).all() );
+  IGL_ASSERT( (uEK.array()==uEO.array()).all() );
 }
 
 #ifdef IGL_STATIC_LIBRARY

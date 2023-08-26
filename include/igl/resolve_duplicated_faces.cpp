@@ -8,7 +8,7 @@
 //
 
 #include "resolve_duplicated_faces.h"
-#include "ASSERT.h"
+#include "IGL_ASSERT.h"
 
 #include "slice.h"
 #include "unique_simplices.h"
@@ -29,7 +29,7 @@ IGL_INLINE void igl::resolve_duplicated_faces(
 
   const size_t num_faces = F1.rows();
   const size_t num_unique_faces = uF.rows();
-  ASSERT((size_t) IA.rows() == num_unique_faces);
+  IGL_ASSERT((size_t) IA.rows() == num_unique_faces);
   // faces on top of each unique face
   std::vector<std::vector<int> > uF2F(num_unique_faces);
   // signed counts
@@ -62,7 +62,7 @@ IGL_INLINE void igl::resolve_duplicated_faces(
           break;
         }
       }
-      ASSERT(found);
+      IGL_ASSERT(found);
     } else if (counts[i] == -1) {
       bool found = false;
       for (auto fid : uF2F[i]) {
@@ -72,9 +72,9 @@ IGL_INLINE void igl::resolve_duplicated_faces(
           break;
         }
       }
-      ASSERT(found);
+      IGL_ASSERT(found);
     } else {
-      ASSERT(counts[i] == 0);
+      IGL_ASSERT(counts[i] == 0);
     }
   }
 

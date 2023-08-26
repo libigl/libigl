@@ -14,7 +14,7 @@
 
 #include "PI.h"
 #include <algorithm>
-#include "ASSERT.h"
+#include "IGL_ASSERT.h"
 #include <cmath>
 #include <cstddef>
 #include <ctime>
@@ -991,7 +991,7 @@ inline void Mesh::build_adjacencies()
 			f.corner_angles()[j] = angle;
 			sum += angle;
 		}
-		ASSERT(std::abs(sum - igl::PI) < 1e-5);		//algorithm works well with non-degenerate meshes only
+		IGL_ASSERT(std::abs(sum - igl::PI) < 1e-5);		//algorithm works well with non-degenerate meshes only
 	}
 
 		//define m_turn_around_flag for vertices

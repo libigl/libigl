@@ -18,7 +18,7 @@
 #include "../Timer.h"
 #include "../boundary_loop.h"
 #include "../cat.h"
-#include "../ASSERT.h"
+#include "../IGL_ASSERT.h"
 #include "../doublearea.h"
 #include "../flip_avoiding_line_search.h"
 #include "../flipped_triangles.h"
@@ -493,7 +493,7 @@ IGL_INLINE void build_scaffold_linear_system(const SCAFData &s, Eigen::SparseMat
   igl::cat(1, s.fixed_ids, s.frame_ids, bnd_ids);
 
   auto bnd_n = bnd_ids.size();
-  ASSERT(bnd_n > 0);
+  IGL_ASSERT(bnd_n > 0);
   MatrixXd bnd_pos;
   igl::slice(s.w_uv, bnd_ids, 1, bnd_pos);
 

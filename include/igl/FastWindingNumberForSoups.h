@@ -200,10 +200,10 @@ typedef union SYS_FPRealUnionT<fpreal64>    SYS_FPRealUnionD;
 
 /// Asserts are disabled
 /// @{
-#define UT_ASSERT_P(ZZ)         ((void)0)
-#define UT_ASSERT(ZZ)           ((void)0)
-#define UT_ASSERT_MSG_P(ZZ, MM) ((void)0)
-#define UT_ASSERT_MSG(ZZ, MM)   ((void)0)
+#define UT_IGL_ASSERT_P(ZZ)         ((void)0)
+#define UT_IGL_ASSERT(ZZ)           ((void)0)
+#define UT_IGL_ASSERT_MSG_P(ZZ, MM) ((void)0)
+#define UT_IGL_ASSERT_MSG(ZZ, MM)   ((void)0)
 /// @}
 }}
 
@@ -1961,7 +1961,7 @@ public:
     ///       asserts are enabled.
     T &		    operator()(exint i)
     {
-        UT_ASSERT_P(i >= 0 && i < mySize);
+        UT_IGL_ASSERT_P(i >= 0 && i < mySize);
         return myData[i];
     }
     /// Const subscript operator
@@ -1969,7 +1969,7 @@ public:
     ///       asserts are enabled.
     const T &	    operator()(exint i) const
     {
-	UT_ASSERT_P(i >= 0 && i < mySize);
+	UT_IGL_ASSERT_P(i >= 0 && i < mySize);
 	return myData[i];
     }
 
@@ -1978,7 +1978,7 @@ public:
     ///       asserts are enabled.
     T &		    operator[](exint i)
     {
-        UT_ASSERT_P(i >= 0 && i < mySize);
+        UT_IGL_ASSERT_P(i >= 0 && i < mySize);
         return myData[i];
     }
     /// Const subscript operator
@@ -1986,7 +1986,7 @@ public:
     ///       asserts are enabled.
     const T &	    operator[](exint i) const
     {
-	UT_ASSERT_P(i >= 0 && i < mySize);
+	UT_IGL_ASSERT_P(i >= 0 && i < mySize);
 	return myData[i];
     }
     
@@ -1995,7 +1995,7 @@ public:
     /// class types.
     T &             forcedRef(exint i)
     {
-        UT_ASSERT_P(i >= 0);
+        UT_IGL_ASSERT_P(i >= 0);
         if (i >= mySize)
             bumpSize(i+1);
         return myData[i];
@@ -2010,12 +2010,12 @@ public:
 
     T &		    last()
     {
-        UT_ASSERT_P(mySize);
+        UT_IGL_ASSERT_P(mySize);
         return myData[mySize-1];
     }
     const T &	    last() const
     {
-        UT_ASSERT_P(mySize);
+        UT_IGL_ASSERT_P(mySize);
         return myData[mySize-1];
     }
 
@@ -2541,7 +2541,7 @@ UT_Array<T>::insert(exint index)
     }
     bumpCapacity(mySize + 1);
 
-    UT_ASSERT_P(index >= 0);
+    UT_IGL_ASSERT_P(index >= 0);
     ::memmove((void *)&myData[index+1], (void *)&myData[index],
               ((mySize-index)*sizeof(T)));
 
@@ -2599,7 +2599,7 @@ template <typename T>
 inline void
 UT_Array<T>::appendMultiple(const T &t, exint count)
 {
-    UT_ASSERT_P(count >= 0);
+    UT_IGL_ASSERT_P(count >= 0);
     if (count <= 0)
 	return;
     if (mySize + count >= myCapacity)
@@ -2723,8 +2723,8 @@ template <typename T>
 inline void
 UT_Array<T>::removeRange(exint begin_i, exint end_i)
 {
-    UT_ASSERT(begin_i <= end_i);
-    UT_ASSERT(end_i <= size());
+    UT_IGL_ASSERT(begin_i <= end_i);
+    UT_IGL_ASSERT(end_i <= size());
     if (end_i < size())
     {
 	trivialDestructRange(myData + begin_i, end_i - begin_i);
@@ -2738,10 +2738,10 @@ template <typename T>
 inline void
 UT_Array<T>::extractRange(exint begin_i, exint end_i, UT_Array<T>& dest)
 {
-    UT_ASSERT_P(begin_i >= 0);
-    UT_ASSERT_P(begin_i <= end_i);
-    UT_ASSERT_P(end_i <= size());
-    UT_ASSERT(this != &dest);
+    UT_IGL_ASSERT_P(begin_i >= 0);
+    UT_IGL_ASSERT_P(begin_i <= end_i);
+    UT_IGL_ASSERT_P(end_i <= size());
+    UT_IGL_ASSERT(this != &dest);
 
     exint nelements = end_i - begin_i;
 
@@ -2832,7 +2832,7 @@ UT_Array<T>::removeIf(IsEqual is_equal)
     {
 	if (!is_equal(myData[idx]))
 	{
-	    UT_ASSERT(idx != dst);
+	    UT_IGL_ASSERT(idx != dst);
 	    myData[dst] = myData[idx];
 	    dst++;
 	}
@@ -2907,7 +2907,7 @@ UT_Array<T>::setCapacity(exint capacity)
 	    T *prev = myData;
 	    myData = (T *)malloc(sizeof(T) * capacity);
 	    // myData is safe because we're already a stack buffer
-	    UT_ASSERT_P(isHeapBuffer());
+	    UT_IGL_ASSERT_P(isHeapBuffer());
 	    if (mySize > 0)
 		memcpy((void *)myData, (void *)prev, sizeof(T) * mySize);
 	    myCapacity = capacity;
@@ -2915,7 +2915,7 @@ UT_Array<T>::setCapacity(exint capacity)
 	else 
 	{
 	    // Keep myCapacity unchanged in this case
-	    UT_ASSERT_P(capacity >= mySize && capacity <= myCapacity);
+	    UT_IGL_ASSERT_P(capacity >= mySize && capacity <= myCapacity);
 	}
 	return;
     }
@@ -2955,7 +2955,7 @@ UT_Array<T>::setCapacity(exint capacity)
     }
 
     myCapacity = capacity;
-    UT_ASSERT(myData);
+    UT_IGL_ASSERT(myData);
 }
 
 template <typename T>
@@ -3119,14 +3119,14 @@ public:
 // easily suppress this because it has to be done in the caller at
 // instantiation time. Instead, punt to a runtime check instead.
 #if defined(__clang__) || defined(_MSC_VER)
-    #define UT_SMALL_ARRAY_SIZE_ASSERT()    \
+    #define UT_SMALL_ARRAY_SIZE_IGL_ASSERT()    \
         using ThisT = UT_SmallArray<T,MAX_BYTES>; \
 	static_assert(offsetof(ThisT, myBuffer) == sizeof(UT_Array<T>), \
             "In order for UT_Array's checks for whether it needs to free the buffer to work, " \
             "the buffer must be exactly following the base class memory.")
 #else
-    #define UT_SMALL_ARRAY_SIZE_ASSERT()    \
-	UT_ASSERT_P(!UT_Array<T>::isHeapBuffer());
+    #define UT_SMALL_ARRAY_SIZE_IGL_ASSERT()    \
+	UT_IGL_ASSERT_P(!UT_Array<T>::isHeapBuffer());
 #endif
 
     /// Default construction
@@ -3134,7 +3134,7 @@ public:
 	: UT_Array<T>(/*capacity*/0)
     {
 	UT_Array<T>::unsafeShareData((T*)myBuffer, 0, MAX_ELEMS);
-	UT_SMALL_ARRAY_SIZE_ASSERT();
+	UT_SMALL_ARRAY_SIZE_IGL_ASSERT();
     }
     
     /// Copy constructor
@@ -3143,14 +3143,14 @@ public:
 	: UT_Array<T>(/*capacity*/0)
     {
 	UT_Array<T>::unsafeShareData((T*)myBuffer, 0, MAX_ELEMS);
-	UT_SMALL_ARRAY_SIZE_ASSERT();
+	UT_SMALL_ARRAY_SIZE_IGL_ASSERT();
 	UT_Array<T>::operator=(copy);
     }
     explicit UT_SmallArray(const UT_SmallArray<T,MAX_BYTES> &copy)
 	: UT_Array<T>(/*capacity*/0)
     {
 	UT_Array<T>::unsafeShareData((T*)myBuffer, 0, MAX_ELEMS);
-	UT_SMALL_ARRAY_SIZE_ASSERT();
+	UT_SMALL_ARRAY_SIZE_IGL_ASSERT();
 	UT_Array<T>::operator=(copy);
     }
     /// @}
@@ -3160,13 +3160,13 @@ public:
     UT_SmallArray(UT_Array<T> &&movable) noexcept
     {
 	UT_Array<T>::unsafeShareData((T*)myBuffer, 0, MAX_ELEMS);
-	UT_SMALL_ARRAY_SIZE_ASSERT();
+	UT_SMALL_ARRAY_SIZE_IGL_ASSERT();
 	UT_Array<T>::operator=(std::move(movable));
     }
     UT_SmallArray(UT_SmallArray<T,MAX_BYTES> &&movable) noexcept
     {
 	UT_Array<T>::unsafeShareData((T*)myBuffer, 0, MAX_ELEMS);
-	UT_SMALL_ARRAY_SIZE_ASSERT();
+	UT_SMALL_ARRAY_SIZE_IGL_ASSERT();
 	UT_Array<T>::operator=(std::move(movable));
     }
     /// @}
@@ -3175,11 +3175,11 @@ public:
     explicit UT_SmallArray(std::initializer_list<T> init)
     {
         UT_Array<T>::unsafeShareData((T*)myBuffer, 0, MAX_ELEMS);
-        UT_SMALL_ARRAY_SIZE_ASSERT();
+        UT_SMALL_ARRAY_SIZE_IGL_ASSERT();
         UT_Array<T>::operator=(init);
     }
 
-#undef UT_SMALL_ARRAY_SIZE_ASSERT
+#undef UT_SMALL_ARRAY_SIZE_IGL_ASSERT
 
     /// Assignment operator
     /// @{
@@ -3303,12 +3303,12 @@ public:
 
     SYS_FORCE_INLINE const T &operator[](exint i) const noexcept
     {
-        UT_ASSERT_P(i >= 0 && i < SIZE);
+        UT_IGL_ASSERT_P(i >= 0 && i < SIZE);
         return vec[i];
     }
     SYS_FORCE_INLINE T &operator[](exint i) noexcept
     {
-        UT_ASSERT_P(i >= 0 && i < SIZE);
+        UT_IGL_ASSERT_P(i >= 0 && i < SIZE);
         return vec[i];
     }
 
@@ -3816,9 +3816,9 @@ namespace UT_Thread { inline int getNumProcessors() {
 //{
 //    const size_t num_processors( UT_Thread::getNumProcessors() );
 //
-//    UT_ASSERT( num_processors >= 1 );
-//    UT_ASSERT( min_grain_size >= 1 );
-//    UT_ASSERT( subscribe_ratio >= 0 );
+//    UT_IGL_ASSERT( num_processors >= 1 );
+//    UT_IGL_ASSERT( min_grain_size >= 1 );
+//    UT_IGL_ASSERT( subscribe_ratio >= 0 );
 //
 //    const size_t est_range_size( UTestimatedNumItems(range) );
 //
@@ -3948,11 +3948,11 @@ struct Box {
     }
 
     SYS_FORCE_INLINE const T* operator[](const size_t axis) const noexcept {
-        UT_ASSERT_P(axis < NAXES);
+        UT_IGL_ASSERT_P(axis < NAXES);
         return vals[axis];
     }
     SYS_FORCE_INLINE T* operator[](const size_t axis) noexcept {
-        UT_ASSERT_P(axis < NAXES);
+        UT_IGL_ASSERT_P(axis < NAXES);
         return vals[axis];
     }
 
@@ -4402,7 +4402,7 @@ private:
             T diameter2 = box.diameter2();
             return diameter2*SYSsqrt(diameter2);
         }
-        UT_ASSERT_MSG(0, "BVH_Heuristic::MEDIAN_MAX_AXIS should be handled separately by caller!");
+        UT_IGL_ASSERT_MSG(0, "BVH_Heuristic::MEDIAN_MAX_AXIS should be handled separately by caller!");
         return T(1);
     }
 
@@ -4774,7 +4774,7 @@ inline void BVH<N>::traverseParallelHelper(
             }
             const INT_TYPE node_int = node.child[s];
             if (Node::isInternal(node_int)) {
-                UT_ASSERT_MSG_P(node_int != Node::EMPTY, "Empty entries should have been excluded above.");
+                UT_IGL_ASSERT_MSG_P(node_int != Node::EMPTY, "Empty entries should have been excluded above.");
                 traverseParallelHelper(Node::getInternalNum(node_int), nodei, parallel_threshold, next_nodes[s], functors, &local_data[s]);
             }
             else {
@@ -4980,7 +4980,7 @@ inline void BVH<N>::initNode(UT_Array<Node>& nodes, Node &node, const Box<T,NAXE
                     ++counted_parallel;
                 }
             }
-            UT_ASSERT_P(counted_parallel == taski);
+            UT_IGL_ASSERT_P(counted_parallel == taski);
 
             UT_Array<Node>& local_nodes = parallel_nodes[taski];
             // Preallocate an overestimate of the number of nodes needed.
@@ -5174,7 +5174,7 @@ inline void BVH<N>::initNodeReorder(UT_Array<Node>& nodes, Node &node, const Box
       //                  ++counted_parallel;
       //              }
       //          }
-      //          UT_ASSERT_P(counted_parallel == taski);
+      //          UT_IGL_ASSERT_P(counted_parallel == taski);
 
       //          UT_Array<Node>& local_nodes = parallel_nodes[taski];
       //          // Preallocate an overestimate of the number of nodes needed.
@@ -5297,7 +5297,7 @@ inline void BVH<N>::multiSplit(const Box<T,NAXES>& axes_minmax, const BOX_TYPE* 
                         box = sub_boxes_unsorted[j];
                     }
                 }
-                UT_ASSERT_P(min_pointer);
+                UT_IGL_ASSERT_P(min_pointer);
                 sub_indices[i] = min_pointer;
                 sub_boxes[i] = box;
             }
@@ -5321,7 +5321,7 @@ inline void BVH<N>::multiSplit(const Box<T,NAXES>& axes_minmax, const BOX_TYPE* 
                     }
                 }
             }
-            UT_ASSERT_MSG_P(split_choice != INT_TYPE(-1), "There should always be at least one that can be split!");
+            UT_IGL_ASSERT_MSG_P(split_choice != INT_TYPE(-1), "There should always be at least one that can be split!");
 
             SRC_INT_TYPE* selected_start = sub_indices[split_choice];
             SRC_INT_TYPE* selected_end = sub_indices[split_choice+1];
@@ -5354,10 +5354,10 @@ inline void BVH<N>::split(const Box<T,NAXES>& axes_minmax, const BOX_TYPE* boxes
         split_indices = indices+1;
         return;
     }
-    UT_ASSERT_MSG_P(nboxes > 2, "Cases with less than 3 boxes should have already been handled!");
+    UT_IGL_ASSERT_MSG_P(nboxes > 2, "Cases with less than 3 boxes should have already been handled!");
 
     if (H == BVH_Heuristic::MEDIAN_MAX_AXIS) {
-        UT_ASSERT_MSG(0, "FIXME: Implement this!!!");
+        UT_IGL_ASSERT_MSG(0, "FIXME: Implement this!!!");
     }
 
     constexpr INT_TYPE SMALL_LIMIT = 6;
@@ -5683,9 +5683,9 @@ inline void BVH<N>::split(const Box<T,NAXES>& axes_minmax, const BOX_TYPE* boxes
 
     // Check which split is optimal, making sure that at least 1/MIN_FRACTION of all boxes are on each side.
     const INT_TYPE min_count = nboxes/MIN_FRACTION;
-    UT_ASSERT_MSG_P(min_count > 0, "MID_LIMIT above should have been large enough that nboxes would be > MIN_FRACTION");
+    UT_IGL_ASSERT_MSG_P(min_count > 0, "MID_LIMIT above should have been large enough that nboxes would be > MIN_FRACTION");
     const INT_TYPE max_count = ((MIN_FRACTION-1)*uint64(nboxes))/MIN_FRACTION;
-    UT_ASSERT_MSG_P(max_count < nboxes, "I'm not sure how this could happen mathematically, but it needs to be checked.");
+    UT_IGL_ASSERT_MSG_P(max_count < nboxes, "I'm not sure how this could happen mathematically, but it needs to be checked.");
     T smallest_heuristic = std::numeric_limits<T>::infinity();
     INT_TYPE split_index = -1;
     for (INT_TYPE spliti = 0; spliti < NSPLITS; ++spliti) {
@@ -5820,7 +5820,7 @@ inline void BVH<N>::adjustParallelChildNodes(INT_TYPE nparallel, UT_Array<Node>&
                     ++counted_parallel;
                 }
             }
-            UT_ASSERT_P(counted_parallel == taski);
+            UT_IGL_ASSERT_P(counted_parallel == taski);
 
             const UT_Array<Node>& local_nodes = parallel_nodes[counted_parallel];
             INT_TYPE n = local_nodes.size();
@@ -6776,9 +6776,9 @@ inline void UT_SolidAngle<T,S>::init(
                 const UT_Vector3T<T> oab = b - a;
                 const UT_Vector3T<T> oac = c - a;
                 const UT_Vector3T<T> ocb = b - c;
-                UT_ASSERT_MSG_P(oac[i] > 0, "This should have been checked by the caller.");
+                UT_IGL_ASSERT_MSG_P(oac[i] > 0, "This should have been checked by the caller.");
                 const T t = oab[i]/oac[i];
-                UT_ASSERT_MSG_P(t >= 0 && t <= 1, "Either sorting must have gone wrong, or there are input NaNs.");
+                UT_IGL_ASSERT_MSG_P(t >= 0 && t <= 1, "Either sorting must have gone wrong, or there are input NaNs.");
 
                 const int j = (i==2) ? 0 : (i+1);
                 const int k = (j==2) ? 0 : (j+1);

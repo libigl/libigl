@@ -111,7 +111,7 @@ public:
       assert(VV.size() >= 5);
       if (VV.size() < 5)
       {
-        std::cerr << "ASSERT FAILED! fit function requires at least 5 points: Only " << VV.size() << " were given." << std::endl;
+        std::cerr << "IGL_ASSERT FAILED! fit function requires at least 5 points: Only " << VV.size() << " were given." << std::endl;
         exit(0);
       }
 
@@ -351,7 +351,7 @@ IGL_INLINE void CurvatureCalculator::fitQuadric(const Eigen::Vector3d& v, const 
   }
   if (points.size() < 5)
   {
-    std::cerr << "ASSERT FAILED! fit function requires at least 5 points: Only " << points.size() << " were given." << std::endl;
+    std::cerr << "IGL_ASSERT FAILED! fit function requires at least 5 points: Only " << points.size() << " were given." << std::endl;
     *q = Quadric(0,0,0,0,0);
   }
   else

@@ -1,7 +1,7 @@
 #include "eigs.h"
 #include "../sort.h"
 #include "../slice.h"
-#include "../ASSERT.h"
+#include "../IGL_ASSERT.h"
 #include <Spectra/SymGEigsShiftSolver.h>
 
 template <
@@ -17,9 +17,9 @@ IGL_INLINE bool igl::spectra::eigs(
   Eigen::PlainObjectBase<DerivedU> & U,
   Eigen::PlainObjectBase<DerivedS> & S)
 {
-  ASSERT(k > 0 && "k should be positive");
-  ASSERT(k < A.rows() && "k should be less than size of A");
-  ASSERT(type == igl::EIGS_TYPE_SM && "Only SM supported");
+  IGL_ASSERT(k > 0 && "k should be positive");
+  IGL_ASSERT(k < A.rows() && "k should be less than size of A");
+  IGL_ASSERT(type == igl::EIGS_TYPE_SM && "Only SM supported");
   // This seems like a hack. For the "eigs: grid" test this is necessary to get
   // at least 1e-4 error for the first 5 eigen values. It's annoying that this
   // means that the zero modes become O(sigma) and this is now rather large.
@@ -44,8 +44,8 @@ IGL_INLINE bool igl::spectra::eigs(
   Eigen::PlainObjectBase<DerivedS> & S)
 {
 
-  ASSERT(k > 0 && "k should be positive");
-  ASSERT(k < A.rows() && "k should be less than size of A");
+  IGL_ASSERT(k > 0 && "k should be positive");
+  IGL_ASSERT(k < A.rows() && "k should be less than size of A");
 
   class SparseMatProd
   {
@@ -82,9 +82,9 @@ IGL_INLINE bool igl::spectra::eigs(
         const Scalar sigma):
         m_A(A), m_B(B)
     {
-      ASSERT(m_A.rows() == m_A.cols() && "A must be square");
-      ASSERT(m_B.rows() == m_B.cols() && "B must be square");
-      ASSERT(m_A.rows() == m_B.cols() && "A and B must have the same size");
+      IGL_ASSERT(m_A.rows() == m_A.cols() && "A must be square");
+      IGL_ASSERT(m_B.rows() == m_B.cols() && "B must be square");
+      IGL_ASSERT(m_A.rows() == m_B.cols() && "A and B must have the same size");
       set_shift(sigma, true);
     }
     void set_shift(const Scalar & sigma, const bool force = false)
