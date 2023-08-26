@@ -34,9 +34,9 @@ int main(int argc, char * argv[])
   printf("igl::voxel_grid               %g secs\n",tictoc());
   Eigen::MatrixXi TT5,TT6;
   tictoc();
-  igl::tetrahedralized_grid(TV,side,igl::TETRAHEDRALIZED_GRID_TYPE_5,TT5);
+  igl::tetrahedralized_grid(side,igl::TETRAHEDRALIZED_GRID_TYPE_5,TT5);
   printf("igl::tetrahedralized_grid     %g secs\n",tictoc());
-  igl::tetrahedralized_grid(TV,side,igl::TETRAHEDRALIZED_GRID_TYPE_6_ROTATIONAL,TT6);
+  igl::tetrahedralized_grid(side,igl::TETRAHEDRALIZED_GRID_TYPE_6_ROTATIONAL,TT6);
   printf("igl::tetrahedralized_grid     %g secs\n",tictoc());
 
   tictoc();
