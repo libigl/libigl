@@ -38,9 +38,6 @@ IGL_INLINE void igl::iterative_closest_point(
 
   typedef typename DerivedVX::Scalar Scalar;
   typedef Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic> MatrixXS;
-  typedef Eigen::Matrix<Scalar,Eigen::Dynamic,1> VectorXS;
-  typedef Eigen::Matrix<Scalar,3,3> Matrix3S;
-  typedef Eigen::Matrix<Scalar,1,3> RowVector3S;
 
   // Precompute BVH on Y
   AABB<DerivedVY,3> Ytree;

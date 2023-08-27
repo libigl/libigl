@@ -14,7 +14,7 @@
 #ifndef TETLIBRARY
 #  define TETLIBRARY 
 #endif
-#include "tetgen.h" // Defined REAL
+#include <tetgen.h> // Defined REAL
 
 namespace igl
 {

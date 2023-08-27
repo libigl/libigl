@@ -52,7 +52,7 @@ static double highdpih = 1; // High DPI height
 static double scroll_x = 0;
 static double scroll_y = 0;
 
-static void glfw_mouse_press(GLFWwindow* window, int button, int action, int modifier)
+static void glfw_mouse_press(GLFWwindow* /*window*/, int button, int action, int modifier)
 {
 
   igl::opengl::glfw::Viewer::MouseButton mb;
@@ -70,17 +70,17 @@ static void glfw_mouse_press(GLFWwindow* window, int button, int action, int mod
     __viewer->mouse_up(mb,modifier);
 }
 
-static void glfw_error_callback(int error, const char* description)
+static void glfw_error_callback(int /*error*/, const char* description)
 {
   fputs(description, stderr);
 }
 
-static void glfw_char_mods_callback(GLFWwindow* window, unsigned int codepoint, int modifier)
+static void glfw_char_mods_callback(GLFWwindow* /*window*/ , unsigned int codepoint, int modifier)
 {
   __viewer->key_pressed(codepoint, modifier);
 }
 
-static void glfw_key_callback(GLFWwindow* window, int key, int scancode, int action, int modifier)
+static void glfw_key_callback(GLFWwindow* window , int key, int /*scancode*/, int action, int modifier)
 {
   if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
     glfwSetWindowShouldClose(window, GL_TRUE);
@@ -91,7 +91,7 @@ static void glfw_key_callback(GLFWwindow* window, int key, int scancode, int act
     __viewer->key_up(key, modifier);
 }
 
-static void glfw_window_size(GLFWwindow* window, int width, int height)
+static void glfw_window_size(GLFWwindow* /*window*/ , int width, int height)
 {
   int w = width*highdpiw;
   int h = height*highdpih;
@@ -100,12 +100,12 @@ static void glfw_window_size(GLFWwindow* window, int width, int height)
 
 }
 
-static void glfw_mouse_move(GLFWwindow* window, double x, double y)
+static void glfw_mouse_move(GLFWwindow* /*window*/ , double x, double y)
 {
   __viewer->mouse_move(x*highdpiw, y*highdpih);
 }
 
-static void glfw_mouse_scroll(GLFWwindow* window, double x, double y)
+static void glfw_mouse_scroll(GLFWwindow* /*window*/ , double x, double y)
 {
   using namespace std;
   scroll_x += x;
@@ -114,7 +114,7 @@ static void glfw_mouse_scroll(GLFWwindow* window, double x, double y)
   __viewer->mouse_scroll(y);
 }
 
-static void glfw_drop_callback(GLFWwindow *window,int count,const char **filenames)
+static void glfw_drop_callback(GLFWwindow * /*window*/,int /*count*/,const char ** /*filenames*/)
 {
 }
 
@@ -125,18 +125,21 @@ namespace opengl
 namespace glfw
 {
 
-  IGL_INLINE int Viewer::launch(bool resizable /*= true*/, bool fullscreen /*= false*/,
+  IGL_INLINE int Viewer::launch(bool fullscreen /*= false*/,
     const std::string &name, int windowWidth /*= 0*/, int windowHeight /*= 0*/)
   {
     // TODO return values are being ignored...
-    launch_init(resizable,fullscreen,name,windowWidth,windowHeight);
+    launch_init(fullscreen,name,windowWidth,windowHeight);
     launch_rendering(true);
     launch_shut();
     return EXIT_SUCCESS;
   }
 
-  IGL_INLINE int  Viewer::launch_init(bool resizable, bool fullscreen,
-    const std::string &name, int windowWidth, int windowHeight)
+  IGL_INLINE int  Viewer::launch_init(
+    bool fullscreen,
+    const std::string &name, 
+    int windowWidth, 
+    int windowHeight)
   {
     glfwSetErrorCallback(glfw_error_callback);
     if (!glfwInit())

@@ -104,12 +104,13 @@ namespace igl
 
 
 
-    IGL_INLINE void solve_weighted_arap(igl::SLIMData& s,
-                                        const Eigen::MatrixXd &V,
-                                        const Eigen::MatrixXi &F,
-                                        Eigen::MatrixXd &uv,
-                                        Eigen::VectorXi &soft_b_p,
-                                        Eigen::MatrixXd &soft_bc_p)
+    IGL_INLINE void solve_weighted_arap(
+      igl::SLIMData& s,
+      const Eigen::MatrixXd & /*V*/,
+      const Eigen::MatrixXi & /*F*/,
+      Eigen::MatrixXd &uv,
+      Eigen::VectorXi & /*soft_b_p*/,
+      Eigen::MatrixXd & /*soft_bc_p*/)
     {
       using namespace Eigen;
 
@@ -294,10 +295,11 @@ namespace igl
              compute_soft_const_energy(s, s.V, s.F, V_new);
     }
 
-    IGL_INLINE double compute_soft_const_energy(igl::SLIMData& s,
-                                                const Eigen::MatrixXd &V,
-                                                const Eigen::MatrixXi &F,
-                                                const Eigen::MatrixXd &V_o)
+    IGL_INLINE double compute_soft_const_energy(
+      igl::SLIMData& s,
+      const Eigen::MatrixXd & /*V*/,
+      const Eigen::MatrixXi & /*F*/,
+      const Eigen::MatrixXd &V_o)
     {
       double e = 0;
       for (int i = 0; i < s.b.rows(); i++)
@@ -438,10 +440,6 @@ IGL_INLINE void igl::slim_update_weights_and_closest_rotations_with_jacobians(co
         {
           double s1_g = 2 * (s1 - pow(s1, -3));
           double s2_g = 2 * (s2 - pow(s2, -3));
-
-          double geo_avg = sqrt(s1 * s2);
-          double s1_min = geo_avg;
-          double s2_min = geo_avg;
 
           double in_exp = exp_f * ((pow(s1, 2) + pow(s2, 2)) / (2 * s1 * s2));
           double exp_thing = exp(in_exp);
@@ -793,8 +791,6 @@ IGL_INLINE Eigen::MatrixXd igl::slim_solve(igl::SLIMData &data, int iter_num)
     // Solve Weighted Proxy
     igl::slim::update_weights_and_closest_rotations(data, dest_res);
     igl::slim::solve_weighted_arap(data,data.V, data.F, dest_res, data.b, data.bc);
-
-    double old_energy = data.energy;
 
     std::function<double(Eigen::MatrixXd &)> compute_energy = [&](
         Eigen::MatrixXd &aaa) { return igl::slim::compute_energy(data,aaa); };

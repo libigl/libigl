@@ -70,7 +70,7 @@ int main(int argc, char * argv[])
   for(int i=0; i<howManySmoothingInterations; ++i) {
     //Compute Laplacian and mass matrix
     SparseMat L, M;
-    igl::cr_vector_mass(V, F, E, oE, M);
+    igl::cr_vector_mass(V, F, E, M);
     igl::cr_vector_laplacian(V, F, E, oE, L);
 
     //Implicit step

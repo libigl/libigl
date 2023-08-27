@@ -127,7 +127,7 @@ IGL_INLINE void igl::circulation(
   int ei = e;
   while(true)
   {
-    int re,rv;
+    int rv;
     step(ei,fi,ei/*,re*/,rv,fi);
     Nf.push_back(fi);
     //Ne.push_back(re);

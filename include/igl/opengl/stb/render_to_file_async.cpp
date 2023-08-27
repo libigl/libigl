@@ -13,8 +13,7 @@
 static IGL_INLINE bool render_to_file_async_helper(
   unsigned char * img, int width, int height,
   const std::string filename,
-  const bool alpha,
-  const bool fast)
+  const bool alpha)
 {
   //img->flip();
   if(!alpha)
@@ -35,8 +34,7 @@ IGL_INLINE std::thread igl::opengl::stb::render_to_file_async(
   const std::string filename,
   const int width,
   const int height,
-  const bool alpha,
-  const bool fast)
+  const bool alpha)
 {
   // Part that should serial
   unsigned char * data = new unsigned char[width*height];
@@ -49,7 +47,7 @@ IGL_INLINE std::thread igl::opengl::stb::render_to_file_async(
     GL_UNSIGNED_BYTE,
     data);
   // Part that should be asynchronous
-  std::thread t(render_to_file_async_helper,data,width,height,filename,alpha,fast);
+  std::thread t(render_to_file_async_helper,data,width,height,filename,alpha);
   t.detach();
   return t;
 }

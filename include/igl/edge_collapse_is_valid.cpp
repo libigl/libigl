@@ -43,7 +43,6 @@ IGL_INLINE bool igl::edge_collapse_is_valid(
       const int e,
       const bool ccw,
       const Eigen::MatrixXi & F,
-      const Eigen::MatrixXi & E,
       const Eigen::VectorXi & EMAP,
       const Eigen::MatrixXi & EF,
       const Eigen::MatrixXi & EI) 
@@ -62,8 +61,8 @@ IGL_INLINE bool igl::edge_collapse_is_valid(
       list_to_matrix(uN,uNm);
       return uNm;
     };
-    VectorXi Ns = neighbors(e, eflip,F,E,EMAP,EF,EI);
-    VectorXi Nd = neighbors(e,!eflip,F,E,EMAP,EF,EI);
+    VectorXi Ns = neighbors(e, eflip,F,EMAP,EF,EI);
+    VectorXi Nd = neighbors(e,!eflip,F,EMAP,EF,EI);
     VectorXi Nint = igl::intersect(Ns,Nd);
     if(Nint.size() != 4)
     {

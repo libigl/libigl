@@ -45,8 +45,8 @@ namespace glfw
     // UI Enumerations
     enum class MouseButton {Left, Middle, Right};
     enum class MouseMode { None, Rotation, Zoom, Pan, Translation} mouse_mode;
-    IGL_INLINE int launch(bool resizable = true, bool fullscreen = false, const std::string &name = "libigl viewer", int width = 0, int height = 0);
-    IGL_INLINE int launch_init(bool resizable = true, bool fullscreen = false, const std::string &name = "libigl viewer", int width = 0, int height = 0);
+    IGL_INLINE int launch     (bool fullscreen = false, const std::string &name = "libigl viewer", int width = 0, int height = 0);
+    IGL_INLINE int launch_init(bool fullscreen = false, const std::string &name = "libigl viewer", int width = 0, int height = 0);
     IGL_INLINE bool launch_rendering(bool loop = true);
     IGL_INLINE void launch_shut();
     IGL_INLINE void init();

@@ -23,7 +23,6 @@ namespace igl {
       /// @param[in] V  #V by 3 array of vertices.
       /// @param[in] F  #F by 3 array of faces.
       /// @param[in] P  #F list of patch indices.
-      /// @param[in] E  #E by 2 array of vertex indices, one edge per row.
       /// @param[in] uE    #uE by 2 list of vertex_indices, represents undirected edges.
       /// @param[in] EMAP  #F*3 list of indices into uE.
       /// @param[in] uEC  #uE+1 list of cumsums of directed edges sharing each unique edge
@@ -37,7 +36,6 @@ namespace igl {
         typename DerivedV,
         typename DerivedF,
         typename DerivedP,
-        typename DerivedE,
         typename DeriveduE,
         typename DerivedEMAP,
         typename DeriveduEC,
@@ -47,7 +45,6 @@ namespace igl {
         const Eigen::PlainObjectBase<DerivedV>& V,
         const Eigen::PlainObjectBase<DerivedF>& F,
         const Eigen::PlainObjectBase<DerivedP>& P,
-        const Eigen::PlainObjectBase<DerivedE>& E,
         const Eigen::PlainObjectBase<DeriveduE>& uE,
         const Eigen::PlainObjectBase<DerivedEMAP>& EMAP,
         const Eigen::PlainObjectBase<DeriveduEC>& uEC,

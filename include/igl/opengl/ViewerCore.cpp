@@ -326,7 +326,7 @@ IGL_INLINE void igl::opengl::ViewerCore::deinitialize_shadow_pass()
 
 IGL_INLINE void igl::opengl::ViewerCore::draw_shadow_pass(
   ViewerData& data,
-  bool update_matrices)
+  bool /*update_matrices*/)
 {
   if (data.dirty)
   {

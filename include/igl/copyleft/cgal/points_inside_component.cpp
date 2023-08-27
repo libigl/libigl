@@ -173,7 +173,6 @@ namespace igl {
                 auto is_on_exterior = [&](const Plane_3& separator) -> bool{
                     size_t positive=0;
                     size_t negative=0;
-                    size_t coplanar=0;
                     for (const auto& point : adj_points) {
                         switch(separator.oriented_side(point)) {
                             case CGAL::ON_POSITIVE_SIDE:
@@ -183,7 +182,6 @@ namespace igl {
                                 negative++;
                                 break;
                             case CGAL::ON_ORIENTED_BOUNDARY:
-                                coplanar++;
                                 break;
                             default:
                                 throw "Unknown plane-point orientation";

@@ -7,6 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "cotmatrix_intrinsic.h"
 #include "cotmatrix_entries.h"
+#include "IGL_ASSERT.h"
 #include <iostream>
 
 template <typename Derivedl, typename DerivedF, typename Scalar>
@@ -24,7 +25,7 @@ IGL_INLINE void igl::cotmatrix_intrinsic(
   Matrix<int,Dynamic,2> edges;
   int simplex_size = F.cols();
   // 3 for triangles, 4 for tets
-  assert(simplex_size == 3);
+  IGL_ASSERT(simplex_size == 3);
   // This is important! it could decrease the comptuation time by a factor of 2
   // Laplacian for a closed 2d manifold mesh will have on average 7 entries per
   // row

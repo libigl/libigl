@@ -389,7 +389,7 @@ inline typename DerivedV::Scalar
 // _Define_ as a no-op rather than monkeying around with the proper code above
 namespace igl
 {
-  template <> inline igl::WindingNumberAABB<Eigen::Matrix<double, 1, 3, 1, 1, 3>,Eigen::Matrix<double, -1, 2, 0, -1, 2>,Eigen::Matrix<int, -1, 2, 0, -1, 2>>::WindingNumberAABB(const Eigen::MatrixBase<Eigen::Matrix<double, -1, 2, 0, -1, 2>> & V, const Eigen::MatrixBase<Eigen::Matrix<int, -1, 2, 0, -1, 2>> & F){};
+  template <> inline igl::WindingNumberAABB<Eigen::Matrix<double, 1, 3, 1, 1, 3>,Eigen::Matrix<double, -1, 2, 0, -1, 2>,Eigen::Matrix<int, -1, 2, 0, -1, 2>>::WindingNumberAABB(const Eigen::MatrixBase<Eigen::Matrix<double, -1, 2, 0, -1, 2>> & , const Eigen::MatrixBase<Eigen::Matrix<int, -1, 2, 0, -1, 2>> & ){};
   template <> inline void igl::WindingNumberAABB<Eigen::Matrix<double, 1, 3, 1, 1, 3>,Eigen::Matrix<double, -1, 2, 0, -1, 2>,Eigen::Matrix<int, -1, 2, 0, -1, 2>>::grow(){};
   template <> inline void igl::WindingNumberAABB<Eigen::Matrix<double, 1, 3, 1, 1, 3>,Eigen::Matrix<double, -1, 2, 0, -1, 2>,Eigen::Matrix<int, -1, 2, 0, -1, 2>>::init(){};
 

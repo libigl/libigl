@@ -137,10 +137,10 @@ IGL_INLINE bool igl::decimate(
   const decimate_stopping_condition_callback & stopping_condition,
   const decimate_pre_collapse_callback       & pre_collapse,
   const decimate_post_collapse_callback      & post_collapse,
-  const Eigen::MatrixXi & OE,
-  const Eigen::VectorXi & OEMAP,
-  const Eigen::MatrixXi & OEF,
-  const Eigen::MatrixXi & OEI,
+  const Eigen::MatrixXi & /*OE*/,
+  const Eigen::VectorXi & /*OEMAP*/,
+  const Eigen::MatrixXi & /*OEF*/,
+  const Eigen::MatrixXi & /*OEI*/,
   Eigen::MatrixXd & U,
   Eigen::MatrixXi & G,
   Eigen::VectorXi & J,
@@ -153,6 +153,7 @@ IGL_INLINE bool igl::decimate(
   // Working copies
   Eigen::MatrixXd V = OV;
   Eigen::MatrixXi F = OF;
+  // Why recompute this rather than copy input?
   VectorXi EMAP;
   MatrixXi E,EF,EI;
   edge_flaps(F,E,EMAP,EF,EI);

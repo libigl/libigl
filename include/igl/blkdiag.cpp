@@ -14,7 +14,6 @@ IGL_INLINE void igl::blkdiag(
 {
   int nr = 0;
   int nc = 0;
-  int nnz = 0;
   for(const auto & A : L)
   {
     nr += A.rows();

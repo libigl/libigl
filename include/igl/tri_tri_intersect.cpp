@@ -635,7 +635,6 @@ IGL_INLINE bool igl::tri_tri_intersection_test_3d(
   Scalar dp1, dq1, dr1, dp2, dq2, dr2;
   RowVector3D v1, v2, v;
   RowVector3D N1, N2, N;
-  Scalar alpha;
   // Compute distance signs  of p1, q1 and r1 
   // to the plane of triangle(p2,q2,r2)
 
@@ -800,7 +799,7 @@ template <typename DerivedP1,typename DerivedQ1,typename DerivedR1,
           typename DerivedP2,typename DerivedQ2,typename DerivedR2>
 bool _IGL_INTERSECTION_TEST_EDGE(
   const Eigen::MatrixBase<DerivedP1> & P1, const Eigen::MatrixBase<DerivedQ1> & Q1, const Eigen::MatrixBase<DerivedR1> & R1,  
-  const Eigen::MatrixBase<DerivedP2> & P2, const Eigen::MatrixBase<DerivedQ2> & Q2, const Eigen::MatrixBase<DerivedR2> & R2
+  const Eigen::MatrixBase<DerivedP2> & P2, const Eigen::MatrixBase<DerivedQ2> & /*Q2*/, const Eigen::MatrixBase<DerivedR2> & R2
 )
 {
   if (_IGL_ORIENT_2D(R2,P2,Q1) >= 0.0) {

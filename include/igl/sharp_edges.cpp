@@ -26,10 +26,8 @@ IGL_INLINE void igl::sharp_edges(
 {
   typedef typename DerivedSE::Scalar Index;
   typedef typename DerivedV::Scalar Scalar;
-  typedef Eigen::Matrix<Index,Eigen::Dynamic,2> MatrixX2I;
   typedef Eigen::Matrix<Scalar,Eigen::Dynamic,3> MatrixX3S;
   typedef Eigen::Matrix<Scalar,1,3> RowVector3S;
-  typedef Eigen::Matrix<Index,Eigen::Dynamic,1> VectorXI;
 
   unique_edge_map(F,E,uE,EMAP,uE2E);
   MatrixX3S N;
@@ -93,10 +91,7 @@ IGL_INLINE void igl::sharp_edges(
   )
 {
   typedef typename DerivedSE::Scalar Index;
-  typedef typename DerivedV::Scalar Scalar;
   typedef Eigen::Matrix<Index,Eigen::Dynamic,2> MatrixX2I;
-  typedef Eigen::Matrix<Scalar,Eigen::Dynamic,3> MatrixX3S;
-  typedef Eigen::Matrix<Scalar,1,3> RowVector3S;
   typedef Eigen::Matrix<Index,Eigen::Dynamic,1> VectorXI;
   MatrixX2I E,uE;
   VectorXI EMAP;

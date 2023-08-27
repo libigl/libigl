@@ -35,7 +35,13 @@ IGL_INLINE void igl::unique_rows(
     vIA[i] = i;
   }
 
-  auto index_equal = [&sortA, &num_cols](const size_t i, const size_t j) {
+  auto index_equal = 
+    //[&sortA, &num_cols]
+    // using & so the warnings will shut up about &num_cols (which for some
+    // templates is const at compile time and thus not required but for other
+    // templates is not known until runtime and thus needed to be captured.
+    [&] 
+    (const size_t i, const size_t j) {
     for (size_t c=0; c<num_cols; c++) {
       if (sortA(i,c) != sortA(j,c))
         return false;

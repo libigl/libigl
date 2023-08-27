@@ -6,6 +6,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "slice_into.h"
+#include "IGL_ASSERT.h"
 #include "colon.h"
 #include "sort.h"
 
@@ -23,14 +24,14 @@ IGL_INLINE void igl::slice_into(
 
   const int xm = X.rows();
   const int xn = X.cols();
-  assert(R.size() == xm);
-  assert(C.size() == xn);
+  IGL_ASSERT(R.size() == xm);
+  IGL_ASSERT(C.size() == xn);
   const int ym = Y.rows();
   const int yn = Y.cols();
-  assert(R.minCoeff() >= 0);
-  assert(R.maxCoeff() < ym);
-  assert(C.minCoeff() >= 0);
-  assert(C.maxCoeff() < yn);
+  IGL_ASSERT(R.minCoeff() >= 0);
+  IGL_ASSERT(R.maxCoeff() < ym);
+  IGL_ASSERT(C.minCoeff() >= 0);
+  IGL_ASSERT(C.maxCoeff() < yn);
 
   std::vector<bool> in_R(Y.rows());
   for(int r = 0;r<R.size();r++) { in_R[R(r)] = true; }
@@ -69,14 +70,14 @@ IGL_INLINE void igl::slice_into(
 
   int xm = X.rows();
   int xn = X.cols();
-  assert(R.size() == xm);
-  assert(C.size() == xn);
+  IGL_ASSERT(R.size() == xm);
+  IGL_ASSERT(C.size() == xn);
   const int ym = Y.rows();
   const int yn = Y.cols();
-  assert(R.minCoeff() >= 0);
-  assert(R.maxCoeff() < ym);
-  assert(C.minCoeff() >= 0);
-  assert(C.maxCoeff() < yn);
+  IGL_ASSERT(R.minCoeff() >= 0);
+  IGL_ASSERT(R.maxCoeff() < ym);
+  IGL_ASSERT(C.minCoeff() >= 0);
+  IGL_ASSERT(C.maxCoeff() < yn);
 
   // Build reindexing maps for columns and rows, -1 means not in map
   Eigen::Matrix<typename DerivedR::Scalar,Eigen::Dynamic,1> RI;
@@ -101,7 +102,7 @@ IGL_INLINE void igl::slice_into(
   switch(dim)
   {
     case 1:
-      assert(R.size() == X.rows());
+      IGL_ASSERT(R.size() == X.rows());
       // boring base case
       if(X.cols() == 0)
       {
@@ -110,7 +111,7 @@ IGL_INLINE void igl::slice_into(
       igl::colon(0,X.cols()-1,C);
       return slice_into(X,R,C,Y);
     case 2:
-      assert(R.size() == X.cols());
+      IGL_ASSERT(R.size() == X.cols());
       // boring base case
       if(X.rows() == 0)
       {
@@ -119,7 +120,7 @@ IGL_INLINE void igl::slice_into(
       igl::colon(0,X.rows()-1,C);
       return slice_into(X,C,R,Y);
     default:
-      assert(false && "Unsupported dimension");
+      IGL_ASSERT(false && "Unsupported dimension");
       return;
   }
 }

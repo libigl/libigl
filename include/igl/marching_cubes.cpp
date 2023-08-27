@@ -37,7 +37,7 @@ IGL_INLINE void igl::marching_cubes(
   Index n = 0;
   Index m = 0;
 
-  const auto xyz2i = [&nx,&ny,&nz]
+  const auto xyz2i = [&nx,&ny]
     (const int & x, const int & y, const int & z)->unsigned
   {
     return x+nx*(y+ny*(z));

@@ -11,6 +11,7 @@
 #include "unique_edge_map.h"
 #include "flip_edge.h"
 #include "EPS.h"
+#include "IGL_ASSERT.h"
 #include <iostream>
 #include <queue>
 #include <map>
@@ -129,21 +130,19 @@ IGL_INLINE void igl::intrinsic_delaunay_triangulation(
         //          v2                 v2
         //
         // Compute intrinsic length of oppposite edge
-        assert(uE2E[uei].size() == 2 && "edge should have 2 incident faces");
+        IGL_ASSERT(uE2E[uei].size() == 2 && "edge should have 2 incident faces");
         const Index f1 = uE2E[uei][0]%num_faces;
         const Index f2 = uE2E[uei][1]%num_faces;
         const Index c1 = uE2E[uei][0]/num_faces;
         const Index c2 = uE2E[uei][1]/num_faces;
-        assert(c1 < 3);
-        assert(c2 < 3);
-        assert(f1 != f2);
+        IGL_ASSERT(c1 < 3);
+        IGL_ASSERT(c2 < 3);
+        IGL_ASSERT(f1 != f2);
         const Index v1 = F(f1, (c1+1)%3);
         const Index v2 = F(f1, (c1+2)%3);
-        const Index v4 = F(f1, c1);
-        const Index v3 = F(f2, c2);
-        assert(F(f2, (c2+2)%3) == v1);
-        assert(F(f2, (c2+1)%3) == v2);
-        assert( std::abs(l(f1,c1)-l(f2,c2)) < igl::EPS<Scalar>() );
+        IGL_ASSERT(F(f2, (c2+2)%3) == v1);
+        IGL_ASSERT(F(f2, (c2+1)%3) == v2);
+        IGL_ASSERT( std::abs(l(f1,c1)-l(f2,c2)) < igl::EPS<Scalar>() );
         const Scalar e = l(f1,c1);
         const Scalar a = l(f1,(c1+1)%3);
         const Scalar b = l(f1,(c1+2)%3);

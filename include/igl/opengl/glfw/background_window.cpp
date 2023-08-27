@@ -5,7 +5,7 @@
 IGL_INLINE bool igl::opengl::glfw::background_window(GLFWwindow* & window)
 {
   if(!glfwInit()) return false;
-  glfwSetErrorCallback([](int id,const char* m){std::cerr<<m<<std::endl;});
+  glfwSetErrorCallback([](int /*id*/,const char* m){std::cerr<<m<<std::endl;});
   glfwWindowHint(GLFW_SAMPLES, 4);
   // Use 3.2 core profile
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);

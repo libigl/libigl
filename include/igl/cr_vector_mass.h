@@ -24,58 +24,39 @@ namespace igl
   ///  @param[in] V #V by 3 list of mesh vertex positions
   ///  @param[in] F #F by 3 list of mesh face indices into rows of V
   ///  @param[in] E #F by 3 a mapping from each halfedge to each edge
-  ///  @param[in] oE #F by 3 the orientation (e.g., -1 or 1) of each halfedge
-  ///    compared to the orientation of the actual edge, as computed with
-  ///    orient_halfedges. will be computed if not provided.
   ///  @param[out] L 2*|HE| by 2*|HE| computed Mass matrix
   template <typename DerivedV, typename DerivedF, typename DerivedE,
-  typename DerivedOE, typename ScalarM>
+  typename ScalarM>
   IGL_INLINE void
   cr_vector_mass(
     const Eigen::MatrixBase<DerivedV>& V,
     const Eigen::MatrixBase<DerivedF>& F,
     const Eigen::MatrixBase<DerivedE>& E,
-    const Eigen::MatrixBase<DerivedOE>& oE,
     Eigen::SparseMatrix<ScalarM>& M);
   /// \overload
   ///
-  /// \brief `E` and `oE` are computed and output.
+  /// \brief `E` are (possibly?) computed and output.
   template <typename DerivedV, typename DerivedF, typename DerivedE,
-  typename DerivedOE, typename ScalarM>
+  typename ScalarM>
   IGL_INLINE void
   cr_vector_mass(
     const Eigen::MatrixBase<DerivedV>& V,
     const Eigen::MatrixBase<DerivedF>& F,
     Eigen::PlainObjectBase<DerivedE>& E,
-    Eigen::PlainObjectBase<DerivedOE>& oE,
     Eigen::SparseMatrix<ScalarM>& M);
   /// \overload
   /// \brief intrinsic version.
   ///
-  ///  @param[in] l_sq #F by 3 list of squared edge lengths of each halfedge
   ///  @param[in] dA #F list of double areas
   ///
   ///  \fileinfo
-  template <typename DerivedF, typename DerivedL_sq, typename DeriveddA,
-  typename DerivedE, typename DerivedOE, typename ScalarM>
+  template <typename DerivedF, typename DeriveddA,
+  typename DerivedE, typename ScalarM>
   IGL_INLINE void
   cr_vector_mass_intrinsic(
     const Eigen::MatrixBase<DerivedF>& F,
-    const Eigen::MatrixBase<DerivedL_sq>& l_sq,
     const Eigen::MatrixBase<DeriveddA>& dA,
     const Eigen::MatrixBase<DerivedE>& E,
-    const Eigen::MatrixBase<DerivedOE>& oE,
-    Eigen::SparseMatrix<ScalarM>& M);
-  /// \overload
-  /// \fileinfo
-  template <typename DerivedF, typename DerivedL_sq, typename DerivedE,
-  typename DerivedOE, typename ScalarM>
-  IGL_INLINE void
-  cr_vector_mass_intrinsic(
-    const Eigen::MatrixBase<DerivedF>& F,
-    const Eigen::MatrixBase<DerivedL_sq>& l_sq,
-    const Eigen::MatrixBase<DerivedE>& E,
-    const Eigen::MatrixBase<DerivedOE>& oE,
     Eigen::SparseMatrix<ScalarM>& M);
 
 }

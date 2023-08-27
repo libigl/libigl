@@ -401,7 +401,6 @@ IGL_INLINE bool igl::min_quad_with_fixed_solve(
 {
   using namespace std;
   using namespace Eigen;
-  typedef Matrix<T,Dynamic,1> VectorXT;
   typedef Matrix<T,Dynamic,Dynamic> MatrixXT;
   // number of known rows
   int kr = data.known.size();

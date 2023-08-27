@@ -121,22 +121,28 @@ IGL_INLINE igl::SolverStatus igl::active_set(
     cout<<"  pre"<<endl;
 #endif
     // FIND BREACHES OF CONSTRAINTS
+#ifdef ACTIVE_SET_CPP_DEBUG
     int new_as_lx = 0;
     int new_as_ux = 0;
     int new_as_ieq = 0;
+#endif
     if(Z.size() > 0)
     {
       for(int z = 0;z < n;z++)
       {
         if(Z(z) < lx(z))
         {
+#ifdef ACTIVE_SET_CPP_DEBUG
           new_as_lx += (as_lx(z)?0:1);
+#endif
           //new_as_lx++;
           as_lx(z) = TRUE;
         }
         if(Z(z) > ux(z))
         {
+#ifdef ACTIVE_SET_CPP_DEBUG
           new_as_ux += (as_ux(z)?0:1);
+#endif
           //new_as_ux++;
           as_ux(z) = TRUE;
         }
@@ -149,7 +155,9 @@ IGL_INLINE igl::SolverStatus igl::active_set(
         {
           if(AieqZ(a) > Bieq(a))
           {
+#ifdef ACTIVE_SET_CPP_DEBUG
             new_as_ieq += (as_ieq(a)?0:1);
+#endif
             as_ieq(a) = TRUE;
           }
         }

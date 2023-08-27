@@ -89,17 +89,18 @@ public:
       return 2.0*c()*v + b()*u + e();
     }
 
-    IGL_INLINE double duv(double u, double v)
+    // Why do these take u,v arguments if they're not used?
+    IGL_INLINE double duv(double , double )
     {
       return b();
     }
 
-    IGL_INLINE double duu(double u, double v)
+    IGL_INLINE double duu(double , double )
     {
       return 2.0*a();
     }
 
-    IGL_INLINE double dvv(double u, double v)
+    IGL_INLINE double dvv(double , double )
     {
       return 2.0*c();
     }
@@ -110,7 +111,7 @@ public:
       assert(VV.size() >= 5);
       if (VV.size() < 5)
       {
-        std::cerr << "ASSERT FAILED! fit function requires at least 5 points: Only " << VV.size() << " were given." << std::endl;
+        std::cerr << "IGL_ASSERT FAILED! fit function requires at least 5 points: Only " << VV.size() << " were given." << std::endl;
         exit(0);
       }
 
@@ -350,7 +351,7 @@ IGL_INLINE void CurvatureCalculator::fitQuadric(const Eigen::Vector3d& v, const 
   }
   if (points.size() < 5)
   {
-    std::cerr << "ASSERT FAILED! fit function requires at least 5 points: Only " << points.size() << " were given." << std::endl;
+    std::cerr << "IGL_ASSERT FAILED! fit function requires at least 5 points: Only " << points.size() << " were given." << std::endl;
     *q = Quadric(0,0,0,0,0);
   }
   else

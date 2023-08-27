@@ -15,8 +15,7 @@ IGL_INLINE bool igl::opengl::stb::render_to_file(
   const std::string filename,
   const int width,
   const int height,
-  const bool alpha,
-  const bool fast)
+  const bool alpha)
 {
   unsigned char * data = new unsigned char[4*width*height];
   glReadPixels(

@@ -374,7 +374,7 @@ namespace igl
         // Should do some reasonable reserves for C2V,vV,vI,vH,vcount
         Q.resize(std::pow(nx*ny*nz,2./3.),triangles?3:4);
 
-        const auto xyz2i = [&nx,&ny,&nz]
+        const auto xyz2i = [&nx,&ny]
           (const int & x, const int & y, const int & z)->Eigen::Index
         {
           return x+nx*(y+ny*(z));

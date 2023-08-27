@@ -26,16 +26,13 @@ IGL_INLINE void igl::fast_winding_number(
   Eigen::PlainObjectBase<DerivedEC>& EC)
 {
   typedef typename DerivedP::Scalar real_p;
-  typedef typename DerivedN::Scalar real_n;
-  typedef typename DerivedA::Scalar real_a;
   typedef typename DerivedCM::Scalar real_cm;
   typedef typename DerivedR::Scalar real_r;
   typedef typename DerivedEC::Scalar real_ec;
 
-  typedef Eigen::Matrix<real_p,1,3> RowVec3p;
 
   int m = CH.size();
-  int num_terms;
+  int num_terms = -1;
 
   assert(expansion_order < 3 && expansion_order >= 0 && "m must be less than n");
   if(expansion_order == 0){
@@ -45,6 +42,7 @@ IGL_INLINE void igl::fast_winding_number(
   } else if(expansion_order == 2){
       num_terms = 3 + 9 + 27;
   }
+  assert(num_terms > 0);
 
   R.resize(m);
   CM.resize(m,3);
@@ -52,7 +50,7 @@ IGL_INLINE void igl::fast_winding_number(
   EC.setZero(m,num_terms);
   std::function< void(const int) > helper;
   helper = [&helper,
-            &P,&N,&A,&expansion_order,&point_indices,&CH,&EC,&R,&CM]
+            &P,&N,&A,&point_indices,&CH,&EC,&R,&CM]
   (const int index)-> void
   {
       Eigen::Matrix<real_cm,1,3> masscenter;
@@ -144,23 +142,12 @@ IGL_INLINE void igl::fast_winding_number(
   Eigen::PlainObjectBase<DerivedWN>& WN)
 {
 
-  typedef typename DerivedP::Scalar real_p;
-  typedef typename DerivedN::Scalar real_n;
-  typedef typename DerivedA::Scalar real_a;
-  typedef typename DerivedCM::Scalar real_cm;
-  typedef typename DerivedR::Scalar real_r;
   typedef typename DerivedEC::Scalar real_ec;
   typedef typename DerivedQ::Scalar real_q;
   typedef typename DerivedWN::Scalar real_wn;
   const real_wn PI_4 = 4.0*igl::PI;
 
-  typedef Eigen::Matrix<
-    typename DerivedEC::Scalar,
-    1,
-    DerivedEC::ColsAtCompileTime> ECRow;
-
   typedef Eigen::Matrix<real_q,1,3> RowVec;
-  typedef Eigen::Matrix<real_ec,3,3> EC_3by3;
 
   auto direct_eval = [&PI_4](
     const RowVec & loc,
@@ -240,7 +227,7 @@ IGL_INLINE void igl::fast_winding_number(
   helper = [&helper,
             &P,&N,&A,
             &point_indices,&CH,
-            &CM,&R,&EC,&beta,
+            &CM,&R,&beta,
             &direct_eval,&expansion_eval]
   (const RowVec & query, const std::vector<int> & near_indices)-> real_wn
   {

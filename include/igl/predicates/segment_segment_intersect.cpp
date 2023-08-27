@@ -17,8 +17,6 @@ IGL_INLINE bool igl::predicates::segment_segment_intersect(
   const Eigen::MatrixBase<DerivedP>& d
 )
 {
-  typename DerivedP::Scalar Scalar;
-  
   auto t1 = igl::predicates::orient2d(a,b,c);
   auto t2 = igl::predicates::orient2d(b,c,d);
   auto t3 = igl::predicates::orient2d(a,b,d);

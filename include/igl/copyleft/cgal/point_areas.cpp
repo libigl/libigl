@@ -49,12 +49,9 @@ namespace igl {
         typedef typename DerivedN::Scalar scalarN;
         typedef typename DerivedA::Scalar scalarA;
         typedef Eigen::Matrix<real,1,3> RowVec3;
-        typedef Eigen::Matrix<real,1,2> RowVec2;
         
         typedef Eigen::Matrix<real, Eigen::Dynamic, Eigen::Dynamic> MatrixP;
         typedef Eigen::Matrix<scalarN, Eigen::Dynamic, Eigen::Dynamic> MatrixN;
-        typedef Eigen::Matrix<typename DerivedN::Scalar,
-                  Eigen::Dynamic, Eigen::Dynamic> VecotorO;
         typedef Eigen::Matrix<typename DerivedI::Scalar,
                   Eigen::Dynamic, Eigen::Dynamic> MatrixI;
         

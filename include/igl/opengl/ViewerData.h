@@ -305,15 +305,15 @@ public:
   /// Each option is a binary mask specifying on which viewport each option is set.
   /// When using a single viewport, standard boolean can still be used for simplicity.
   unsigned int is_visible;
+  unsigned int show_custom_labels;
+  unsigned int show_face_labels;
+  unsigned int show_faces;
+  unsigned int show_lines;
   unsigned int show_overlay;
   unsigned int show_overlay_depth;
   unsigned int show_texture;
-  unsigned int use_matcap;
-  unsigned int show_faces;
-  unsigned int show_lines;
   unsigned int show_vertex_labels;
-  unsigned int show_face_labels;
-  unsigned int show_custom_labels;
+  unsigned int use_matcap;
 
   /// Point size / line width
   float point_size;
@@ -338,12 +338,10 @@ public:
 
   /// Update contents from a 'Data' instance
   ///
-  /// @param[in,out] meshgl  mesh to be updated
   /// @param[in,out] GL_labels  labels to be updated
   /// @param[in] positions  positions of the labels
   /// @param[in] strings  strings of the labels
   IGL_INLINE void update_labels(
-    igl::opengl::MeshGL& meshgl,
     igl::opengl::MeshGL::TextGL& GL_labels,
     const Eigen::MatrixXd& positions,
     const std::vector<std::string>& strings

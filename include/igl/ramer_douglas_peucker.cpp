@@ -26,8 +26,6 @@ IGL_INLINE void igl::ramer_douglas_peucker(
     S = P;
     return;
   }
-  // number of dimensions
-  const int m = P.cols();
   Eigen::Array<bool,Eigen::Dynamic,1> I =
     Eigen::Array<bool,Eigen::Dynamic,1>::Constant(n,1,true);
   const auto stol = tol*tol;

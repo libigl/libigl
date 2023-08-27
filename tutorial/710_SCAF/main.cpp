@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
     // if there is a hole, fill it and erase additional vertices.
     all_bnds.erase(primary_bnd);
     Eigen::MatrixXi F_filled;
-    igl::topological_hole_fill(F, bnd, all_bnds, F_filled);
+    igl::topological_hole_fill(F, all_bnds, F_filled);
     igl::harmonic(F_filled, bnd, bnd_uv ,1, uv_init);
     uv_init.conservativeResize(V.rows(), 2);
   }

@@ -10,7 +10,6 @@ IGL_INLINE void igl::copyleft::cgal::half_space_box(
   Eigen::Matrix<CGAL::Epeck::FT,8,3> & BV,
   Eigen::Matrix<int,12,3> & BF)
 {
-  typedef CGAL::Plane_3<CGAL::Epeck> Plane;
   typedef CGAL::Point_3<CGAL::Epeck> Point;
   typedef CGAL::Vector_3<CGAL::Epeck> Vector;
   typedef CGAL::Epeck::FT EScalar;

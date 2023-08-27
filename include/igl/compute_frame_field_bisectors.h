@@ -23,6 +23,8 @@ namespace igl
   /// @param[out] BIS1  #F by 3 eigen Matrix of the first per face frame field bisector
   /// @param[out] BIS2  #F by 3 eigen Matrix of the second per face frame field bisector
   ///
+  /// \bug `V` and `F` are not used. If this function is actually being used we
+  /// should remove `V` and `F` here.
   template <typename DerivedV, typename DerivedF>
   IGL_INLINE void compute_frame_field_bisectors(
     const Eigen::MatrixBase<DerivedV>& V,

@@ -16,12 +16,12 @@ namespace predicates {
 using REAL = IGL_PREDICATES_REAL;
 
 #ifdef LIBIGL_PREDICATES_USE_FLOAT
-#define IGL_ASSERT_SCALAR(Vector)                        \
+#define IGL_PREDICATES_ASSERT_SCALAR(Vector)                        \
   static_assert(                                         \
     std::is_same<typename Vector::Scalar, float>::value, \
     "Shewchuk's exact predicates only support float")
 #else
-#define IGL_ASSERT_SCALAR(Vector)                           \
+#define IGL_PREDICATES_ASSERT_SCALAR(Vector)                           \
   static_assert(                                            \
     std::is_same<typename Vector::Scalar, double>::value || \
     std::is_same<typename Vector::Scalar, float>::value,    \
@@ -49,7 +49,7 @@ IGL_INLINE Orientation orient2d(
     const Eigen::MatrixBase<Vector2D>& pc)
 {
   EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Vector2D, 2);
-  IGL_ASSERT_SCALAR(Vector2D);
+  IGL_PREDICATES_ASSERT_SCALAR(Vector2D);
 
   using Point = Eigen::Matrix<REAL, 2, 1>;
   Point a{pa[0], pa[1]};
@@ -71,7 +71,7 @@ IGL_INLINE Orientation orient3d(
     const Eigen::MatrixBase<Vector3D>& pd)
 {
   EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Vector3D, 3);
-  IGL_ASSERT_SCALAR(Vector3D);
+  IGL_PREDICATES_ASSERT_SCALAR(Vector3D);
 
   using Point = Eigen::Matrix<REAL, 3, 1>;
   Point a{pa[0], pa[1], pa[2]};
@@ -94,7 +94,7 @@ IGL_INLINE Orientation incircle(
     const Eigen::MatrixBase<Vector2D>& pd)
 {
   EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Vector2D, 2);
-  IGL_ASSERT_SCALAR(Vector2D);
+  IGL_PREDICATES_ASSERT_SCALAR(Vector2D);
 
   using Point = Eigen::Matrix<REAL, 2, 1>;
   Point a{pa[0], pa[1]};
@@ -118,7 +118,7 @@ IGL_INLINE Orientation insphere(
     const Eigen::MatrixBase<Vector3D>& pe)
 {
   EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Vector3D, 3);
-  IGL_ASSERT_SCALAR(Vector3D);
+  IGL_PREDICATES_ASSERT_SCALAR(Vector3D);
 
   using Point = Eigen::Matrix<REAL, 3, 1>;
   Point a{pa[0], pa[1], pa[2]};
@@ -137,7 +137,7 @@ IGL_INLINE Orientation insphere(
 }
 }
 
-#undef IGL_ASSERT_SCALAR
+#undef IGL_PREDICATES_ASSERT_SCALAR
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instantiation

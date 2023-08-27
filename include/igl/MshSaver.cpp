@@ -105,7 +105,6 @@ IGL_INLINE void igl::MshSaver::save_elements(const IndexVector& elements,
 
     if (m_num_elements > 0) {
         //int elem_type = el_type;
-        int num_elems = m_num_elements;
         //int tags = 0;
         if (!m_binary) {
             size_t el_ptr=0;
@@ -213,7 +212,6 @@ IGL_INLINE void igl::MshSaver::save_vector_field(const std::string& fieldname, c
     fout << "3" << std::endl; // 3-component vector field.
     fout << m_num_nodes << std::endl; // number of nodes
 
-    const Float zero = 0.0;
     if (m_binary) {
         for (size_t i=0; i<m_num_nodes; i++) {
             int node_idx = i+1;
@@ -275,7 +273,6 @@ IGL_INLINE void igl::MshSaver::save_elem_vector_field(const std::string& fieldna
     fout << "3" << std::endl; // 3-component vector field.
     fout << m_num_elements << std::endl; // number of elements
 
-    const Float zero = 0.0;
     if (m_binary) {
         for (size_t i=0; i<m_num_elements; ++i) {
             int elem_idx = i+1;
@@ -310,7 +307,6 @@ IGL_INLINE void igl::MshSaver::save_elem_tensor_field(const std::string& fieldna
     fout << "9" << std::endl; // 9-component tensor field.
     fout << m_num_elements << std::endl; // number of elements
 
-    const Float zero = 0.0;
     
     if (m_binary) {
         for (size_t i=0; i<m_num_elements; i++) {

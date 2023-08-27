@@ -27,7 +27,6 @@ namespace igl
       /// @param[in] width  width of scene and resulting image
       /// @param[in] height height of scene and resulting image
       /// @param[in] alpha  whether to include alpha channel
-      /// @param[in] fast  sacrifice compression ratio for speed
       /// @return true only if no errors occurred
       ///
       /// \see render_to_file
@@ -35,8 +34,7 @@ namespace igl
         const std::string filename,
         const int width,
         const int height,
-        const bool alpha = true,
-        const bool fast = false);
+        const bool alpha = true);
     }
   }
 }

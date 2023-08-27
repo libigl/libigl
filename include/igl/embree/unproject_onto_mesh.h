@@ -22,7 +22,6 @@ namespace igl
     /// the first hit on a mesh.
     ///
     /// @param[in] pos        screen space coordinates
-    /// @param[in] F          #F by 3 face matrix
     /// @param[in] model      model matrix
     /// @param[in] proj       projection matrix
     /// @param[in] viewport   vieweport vector
@@ -32,7 +31,6 @@ namespace igl
     /// @return true if there is a hit
     IGL_INLINE bool unproject_onto_mesh(
       const Eigen::Vector2f& pos,
-      const Eigen::MatrixXi& F,
       const Eigen::Matrix4f& model,
       const Eigen::Matrix4f& proj,
       const Eigen::Vector4f& viewport,

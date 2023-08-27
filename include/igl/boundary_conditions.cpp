@@ -142,7 +142,6 @@ IGL_INLINE bool igl::boundary_conditions(
       Vector3d point = V.row(i);
       Vector3d v = point - v_0;
       double dist = abs(v.dot(n));
-      Vector3d projected_point = point - dist * n;
       if (dist <= 1.e-1f)
       {
         //barycentric coordinates

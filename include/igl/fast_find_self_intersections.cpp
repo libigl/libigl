@@ -131,7 +131,6 @@ IGL_INLINE bool igl::fast_find_self_intersections(
 
     for(int i=0; i<F.rows(); ++i)
     {
-      int _inter=-1;
       if( intersect(i) ) continue;
 
       BBOX tri_box;

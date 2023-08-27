@@ -49,7 +49,6 @@ IGL_INLINE bool igl::bijective_composite_harmonic_mapping(
   typedef typename Derivedbc::Scalar Scalar;
   assert(V.cols() == 2 && bc.cols() == 2 && "Input should be 2D");
   assert(F.cols() == 3 && "F should contain triangles");
-  int tries = 0;
   int nsteps = min_steps;
   Eigen::Matrix<typename Derivedbc::Scalar, Eigen::Dynamic, Eigen::Dynamic> bc0;
   slice(V,b.col(0),1,bc0);

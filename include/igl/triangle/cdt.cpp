@@ -23,8 +23,6 @@ IGL_INLINE void igl::triangle::cdt(
 {
   assert(V.cols() == 2);
   assert(E.cols() == 2);
-  typedef typename DerivedV::Scalar Scalar;
-  typedef Eigen::Matrix<Scalar,Eigen::Dynamic,2> MatrixX2S;
   //MatrixX2S BV;
   //Eigen::MatrixXi BE;
   //igl::bounding_box(V,BV,BE);

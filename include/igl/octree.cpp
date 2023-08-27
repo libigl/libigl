@@ -88,6 +88,8 @@ namespace igl {
     const Vector8i neg_ones = Vector8i::Constant(-1);
   
     std::function< void(const ChildrenType, const int) > helper;
+    // VSC and clang don't agree on whether MAX_DEPTH needs to be in the capture
+    // list.
     helper = [&helper,&translate_center,&get_octant,&m,
               &zero_to_seven,&neg_ones,&P,
               &point_indices,&children,&centers,&widths,&MAX_DEPTH]

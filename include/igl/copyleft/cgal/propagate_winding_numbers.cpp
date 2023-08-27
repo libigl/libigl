@@ -64,7 +64,7 @@ IGL_INLINE bool igl::copyleft::cgal::propagate_winding_numbers(
 
   DerivedW per_patch_cells;
   const size_t num_cells =
-    extract_cells(V,F,P,E,uE,EMAP,uEC,uEE,per_patch_cells);
+    extract_cells(V,F,P,uE,EMAP,uEC,uEE,per_patch_cells);
 #ifdef PROPAGATE_WINDING_NUMBER_TIMING
   log_time("cell_extraction");
 #endif
@@ -132,6 +132,7 @@ IGL_INLINE bool igl::copyleft::cgal::propagate_winding_numbers(
   log_time("cell_connectivity");
 #endif
 
+#ifndef NDEBUG
   auto save_cell = [&](const std::string& filename, size_t cell_id) -> void{
     std::vector<size_t> faces;
     for (size_t i=0; i<num_patches; i++) {
@@ -151,6 +152,7 @@ IGL_INLINE bool igl::copyleft::cgal::propagate_winding_numbers(
     assign(V,vertices);
     writePLY(filename, vertices, cell_faces);
   };
+#endif
 
 #ifndef NDEBUG
   {
@@ -272,16 +274,18 @@ IGL_INLINE bool igl::copyleft::cgal::propagate_winding_numbers(
         // is local and embedded within the volume.  This, unfortunately, is the
         // best we can do because the problem of computing integer winding
         // number is ill-defined for open and non-orientable surfaces.
-        for (size_t i=0; i<num_labels; i++) {
-          if ((int)i == patch_labels[patch_idx]) {
-            int inc = direction ? -1:1;
-            //assert(per_cell_W(neighbor_cell, i) ==
-            //    per_cell_W(curr_cell, i) + inc);
-          } else {
-            //assert(per_cell_W(neighbor_cell, i) ==
-            //    per_cell_W(curr_cell, i));
-          }
-        }
+        //
+        // Commented this out because it wasn't actually calling the asserts...
+        //for (size_t i=0; i<num_labels; i++) {
+        //  if ((int)i == patch_labels[patch_idx]) {
+        //    int inc = direction ? -1:1;
+        //    //assert(per_cell_W(neighbor_cell, i) ==
+        //    //    per_cell_W(curr_cell, i) + inc);
+        //  } else {
+        //    //assert(per_cell_W(neighbor_cell, i) ==
+        //    //    per_cell_W(curr_cell, i));
+        //  }
+        //}
 #endif
       }
     }

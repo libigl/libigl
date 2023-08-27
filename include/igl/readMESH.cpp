@@ -38,7 +38,6 @@ IGL_INLINE bool igl::readMESH(
 #  define LINE_MAX 2048
 #endif
   char line[LINE_MAX];
-  bool still_comments;
 
   // eat comments at beginning of file
   const auto eat_comments = [&]()->bool

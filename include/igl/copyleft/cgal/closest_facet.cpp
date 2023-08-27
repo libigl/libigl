@@ -59,7 +59,6 @@ IGL_INLINE void igl::copyleft::cgal::closest_facet(
   typedef typename CGAL::AABB_traits<Kernel, Primitive> AABB_triangle_traits;
   typedef typename CGAL::AABB_tree<AABB_triangle_traits> Tree;
 
-  const size_t num_faces = I.rows();
   if (F.rows() <= 0 || I.rows() <= 0) {
     throw std::runtime_error(
         "Closest facet cannot be computed on empty mesh.");
@@ -219,9 +218,11 @@ IGL_INLINE void igl::copyleft::cgal::closest_facet(
     }
   };
 
-  auto process_face_case = [&](
-      const size_t query_idx, const Point_3& closest_point,
-      const size_t fid, bool& orientation) -> size_t {
+  auto process_face_case = [&F,&I,&process_edge_case](
+    const size_t query_idx, 
+    const size_t fid, 
+    bool& orientation) -> size_t 
+  {
     const auto& f = F.row(I(fid, 0));
     return process_edge_case(query_idx, f[0], f[1], I(fid, 0), orientation);
   };
@@ -243,7 +244,6 @@ IGL_INLINE void igl::copyleft::cgal::closest_facet(
   auto process_vertex_case = [&](
     const size_t query_idx, 
     size_t s,
-    size_t preferred_facet, 
     bool& orientation) -> size_t
   {
     const Point_3 query_point(
@@ -299,7 +299,6 @@ IGL_INLINE void igl::copyleft::cgal::closest_facet(
     auto is_on_exterior = [&](const Plane_3& separator) -> bool{
       size_t positive=0;
       size_t negative=0;
-      size_t coplanar=0;
       for (const auto& point : adj_points) {
         switch(separator.oriented_side(point)) {
           case CGAL::ON_POSITIVE_SIDE:
@@ -309,7 +308,6 @@ IGL_INLINE void igl::copyleft::cgal::closest_facet(
             negative++;
             break;
           case CGAL::ON_ORIENTED_BOUNDARY:
-            coplanar++;
             break;
           default:
             throw "Unknown plane-point orientation";
@@ -400,7 +398,7 @@ IGL_INLINE void igl::copyleft::cgal::closest_facet(
         {
           const auto& f = F.row(I(fid, 0));
           const size_t s = f[element_index];
-          fid = process_vertex_case(i, s, I(fid, 0), fid_ori);
+          fid = process_vertex_case(i, s, fid_ori);
         }
         break;
       case EDGE:
@@ -413,7 +411,7 @@ IGL_INLINE void igl::copyleft::cgal::closest_facet(
         break;
       case FACE:
         {
-          fid = process_face_case(i, closest_point, fid, fid_ori);
+          fid = process_face_case(i, fid, fid_ori);
         }
         break;
       default:
@@ -449,9 +447,6 @@ IGL_INLINE void igl::copyleft::cgal::closest_facet(
 {
 
   typedef CGAL::Exact_predicates_exact_constructions_kernel Kernel;
-  typedef Kernel::Point_3 Point_3;
-  typedef Kernel::Plane_3 Plane_3;
-  typedef Kernel::Segment_3 Segment_3;
   typedef Kernel::Triangle_3 Triangle;
   typedef std::vector<Triangle>::iterator Iterator;
   typedef CGAL::AABB_triangle_primitive<Kernel, Iterator> Primitive;

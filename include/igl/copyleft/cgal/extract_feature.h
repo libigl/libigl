@@ -39,29 +39,29 @@ namespace igl
       template <
         typename DerivedV,
         typename DerivedF,
-        typename DerivedE>
+        typename Derivedfeature_edges>
       IGL_INLINE void extract_feature(
             const Eigen::PlainObjectBase<DerivedV>& V,
             const Eigen::PlainObjectBase<DerivedF>& F,
             const double tol,
-            Eigen::PlainObjectBase<DerivedE>& feature_edges);
+            Eigen::PlainObjectBase<Derivedfeature_edges>& feature_edges);
       // \overload
-      // @param[in] E    #E by 2 array of directed edges.
       // @param[in] uE   #uE by 2 array of undirected edges.
       // @param[in] uE2E #uE list of lists mapping undirected edges to all
       //   corresponding directed edges.
       template <
         typename DerivedV,
         typename DerivedF,
-        typename DerivedE>
+        typename DeriveduE,
+        typename Derivedfeature_edges
+        >
       IGL_INLINE void extract_feature(
             const Eigen::PlainObjectBase<DerivedV>& V,
             const Eigen::PlainObjectBase<DerivedF>& F,
             const double tol,
-            const Eigen::PlainObjectBase<DerivedE>& E,
-            const Eigen::PlainObjectBase<DerivedE>& uE,
-            const std::vector<std::vector<typename DerivedE::Scalar> >& uE2E,
-            Eigen::PlainObjectBase<DerivedE>& feature_edges);
+            const Eigen::PlainObjectBase<DeriveduE>& uE,
+            const std::vector<std::vector<typename DeriveduE::Scalar> >& uE2E,
+            Eigen::PlainObjectBase<Derivedfeature_edges>& feature_edges);
     }
   }
 }

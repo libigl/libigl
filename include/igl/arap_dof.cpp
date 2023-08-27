@@ -6,6 +6,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "arap_dof.h"
+#include "IGL_ASSERT.h"
 
 #include "cotmatrix.h"
 #include "massmatrix.h"
@@ -619,10 +620,10 @@ IGL_INLINE bool igl::arap_dof_update(
 #endif
 
   // number of dimensions
-  assert((int)data.CSM_M.size() == data.dim);
-  assert((int)L0.size() == (data.m)*data.dim*(data.dim+1));
-  assert(max_iters >= 0);
-  assert(tol >= 0);
+  IGL_ASSERT((int)data.CSM_M.size() == data.dim);
+  IGL_ASSERT((int)L0.size() == (data.m)*data.dim*(data.dim+1));
+  IGL_ASSERT(max_iters >= 0);
+  IGL_ASSERT(tol >= 0);
 
   // timing variables
   double 

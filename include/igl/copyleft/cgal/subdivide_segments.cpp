@@ -40,7 +40,6 @@ IGL_INLINE void igl::copyleft::cgal::subdivide_segments(
   // Exact scalar type
   typedef Kernel K;
   typedef typename Kernel::FT EScalar;
-  typedef CGAL::Segment_2<Kernel> Segment_2;
   typedef CGAL::Point_2<Kernel> Point_2;
   typedef Matrix<EScalar,Dynamic,Dynamic>  MatrixXE;
 
@@ -63,8 +62,6 @@ IGL_INLINE void igl::copyleft::cgal::subdivide_segments(
   const int m = E.rows();
   // now steiner contains lists of points (unsorted) for each edge. Sort them
   // and count total number of vertices and edges
-  int ni = 0;
-  int mi = 0;
   // new steiner points
   std::vector<Point_2> S;
   std::vector<std::vector<typename DerivedE::Scalar> > vEI;

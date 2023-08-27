@@ -52,12 +52,7 @@ IGL_INLINE void igl::copyleft::cgal::point_mesh_squared_distance_precompute(
 {
   using namespace std;
 
-  typedef CGAL::Triangle_3<Kernel> Triangle_3; 
   typedef CGAL::Point_3<Kernel> Point_3; 
-  typedef typename std::vector<Triangle_3>::iterator Iterator;
-  typedef CGAL::AABB_triangle_primitive<Kernel, Iterator> Primitive;
-  typedef CGAL::AABB_traits<Kernel, Primitive> AABB_triangle_traits;
-  typedef CGAL::AABB_tree<AABB_triangle_traits> Tree;
 
   // Must be 3D
   assert(V.cols() == 3);

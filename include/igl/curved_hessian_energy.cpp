@@ -98,7 +98,7 @@ igl::curved_hessian_energy_intrinsic(
 {
   //Matrices that need to be combined
   Eigen::SparseMatrix<ScalarQ> M, D, L, K;
-  cr_vector_mass_intrinsic(F, l_sq, dA,  E, oE, M);
+  cr_vector_mass_intrinsic(F, dA,  E, M);
   scalar_to_cr_vector_gradient_intrinsic(F, l_sq, dA, E, oE, D);
   cr_vector_laplacian_intrinsic(F, l_sq, dA, E, oE, L);
   cr_vector_curvature_correction_intrinsic(F, l_sq, E, oE, K);

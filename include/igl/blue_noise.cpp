@@ -71,7 +71,6 @@ namespace igl
     const int xi = Xs(i,0);
     const int yi = Xs(i,1);
     const int zi = Xs(i,2);
-    BlueNoiseKeyType k = blue_noise_key(w,xi,yi,zi);
     int g = 2; // ceil(r/s)
     for(int x = std::max(xi-g,0);x<=std::min(xi+g,w-1);x++)
     for(int y = std::max(yi-g,0);y<=std::min(yi+g,w-1);y++)
@@ -257,7 +256,6 @@ IGL_INLINE void igl::blue_noise(
     URBG && urbg)
 {
   typedef typename DerivedV::Scalar Scalar;
-  typedef Eigen::Matrix<Scalar,Eigen::Dynamic,1> VectorXS;
   // float+RowMajor is faster...
   typedef Eigen::Matrix<Scalar,Eigen::Dynamic,3,Eigen::RowMajor> MatrixX3S;
   assert(V.cols() == 3 && "Only 3D embeddings allowed");
