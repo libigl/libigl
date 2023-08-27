@@ -49,10 +49,10 @@ void igl::isolines_intrinsic(
     int num_vertices = 0;
     for(int j = 0;j<vals.size();j++)
     {
-      isolines_intrinsic(F,S,uE,EMAP,uEC,uEE,vals[j],viB[j],viFI[j],viE[j]);
+      isolines_intrinsic(F,S,uE,EMAP,uEC,uEE,vals(j),viB[j],viFI[j],viE[j]);
       viE[j].array() += num_vertices;
       num_vertices += viB[j].rows();
-      vI[j] = Eigen::VectorXi::Constant(viE[j].rows(),j);
+      vI[j] = DerivedI::Constant(viE[j].rows(),j);
     }
     igl::cat(1,viB,iB);
     igl::cat(1,viFI,iFI);
