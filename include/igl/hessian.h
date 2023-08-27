@@ -25,7 +25,7 @@ namespace igl
   ///
   /// @param[in] V  #V by dim list of mesh vertex positions
   /// @param[in] F  #F by 3 list of mesh faces (must be triangles)
-  /// @param[out] H  dim²#V by #V Hessian Hessian matrix, each column i
+  /// @param[out] H  dim²⋅#V by dim²⋅#V Hessian Hessian matrix, each column i
   ///     corresponding to V(i,:)
   ///
   ///
