@@ -379,8 +379,8 @@ inline igl::copyleft::cgal::SelfIntersectMesh<
 #ifdef IGL_SELFINTERSECTMESH_TIMING
   log_time("box_and_bind");
 #endif
-  // Run the self intersection algorithm with all defaults
-  CGAL::box_self_intersection_d(boxes.begin(), boxes.end(),cb);
+  // Run the self intersection algorithm with given cutoff size
+  CGAL::box_self_intersection_d(boxes.begin(), boxes.end(),cb,std::ptrdiff_t(params.cutoff));
 #ifdef IGL_SELFINTERSECTMESH_TIMING
   log_time("box_intersection_d");
 #endif
