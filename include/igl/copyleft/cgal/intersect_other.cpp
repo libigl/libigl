@@ -137,7 +137,7 @@ namespace igl
             A_boxes.begin(), A_boxes.end(),
             B_boxes.begin(), B_boxes.end(),
             cb,
-            params.cutoff);
+            std::ptrdiff_t(params.cutoff));
         }catch(int e)
         {
           // Rethrow if not FIRST_HIT_EXCEPTION
