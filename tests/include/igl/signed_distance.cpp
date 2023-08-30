@@ -74,3 +74,41 @@ TEST_CASE("signed_distance: single_triangle", "[igl]")
   }
 }
 
+TEST_CASE("signed_distance: dimension-templates", "[igl]")
+{
+  Eigen::MatrixXd VX3(3,3);
+  VX3<<
+    0,0,0,
+    1,0,0,
+    0,1,0;
+  Eigen::MatrixXi F(1,3);
+  F<<0,1,2;
+  Eigen::MatrixXi E(3,2);
+  E<<
+    0,1,
+    1,2,
+    2,0;
+  Eigen::MatrixXd VX2 = VX3.leftCols(2);
+  Eigen::MatrixX2d V2 = VX3.leftCols(2);
+  Eigen::MatrixX3d V3 = VX3.leftCols(3);
+
+  Eigen::MatrixXd PX3 = VX3;
+  Eigen::MatrixXd PX2 = VX2;
+  Eigen::MatrixX2d P2 = VX3.leftCols(2);
+  Eigen::MatrixX3d P3 = VX3.leftCols(3);
+  Eigen::VectorXd S;
+  Eigen::VectorXi I;
+  Eigen::MatrixXd C,N;
+  Eigen::MatrixX2d C2,N2;
+  Eigen::MatrixX3d C3,N3;
+  igl::SignedDistanceType type = igl::SIGNED_DISTANCE_TYPE_DEFAULT;
+  double lower_bound = std::numeric_limits<double>::min();
+  double upper_bound = std::numeric_limits<double>::max();
+
+#warning "Turn these on once things are working"
+  //igl::signed_distance(P2,V2,E,type,lower_bound,upper_bound,S,I,C2,N2);
+  //igl::signed_distance(P3,V3,F,type,lower_bound,upper_bound,S,I,C3,N3);
+
+  igl::signed_distance(PX2,VX2,E,type,lower_bound,upper_bound,S,I,C,N);
+  igl::signed_distance(PX3,VX3,F,type,lower_bound,upper_bound,S,I,C,N);
+}
