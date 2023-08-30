@@ -105,9 +105,11 @@ TEST_CASE("signed_distance: dimension-templates", "[igl]")
   double lower_bound = std::numeric_limits<double>::min();
   double upper_bound = std::numeric_limits<double>::max();
 
-#warning "Turn these on once things are working"
-  //igl::signed_distance(P2,V2,E,type,lower_bound,upper_bound,S,I,C2,N2);
-  //igl::signed_distance(P3,V3,F,type,lower_bound,upper_bound,S,I,C3,N3);
+
+  Eigen::MatrixX2i E2 = E;
+  Eigen::MatrixX3i F3 = F;
+  igl::signed_distance(P2,V2,E2,type,lower_bound,upper_bound,S,I,C2,N2);
+  igl::signed_distance(P3,V3,F3,type,lower_bound,upper_bound,S,I,C3,N3);
 
   igl::signed_distance(PX2,VX2,E,type,lower_bound,upper_bound,S,I,C,N);
   igl::signed_distance(PX3,VX3,F,type,lower_bound,upper_bound,S,I,C,N);
