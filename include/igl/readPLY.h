@@ -28,6 +28,9 @@ namespace igl
   /// @param[out] Eheader (#E) list of edge data headers
   /// @param[out] comments (*) file comments
   /// @return true on success, false on errors
+  ///
+  /// \note Unlike previous versions, all matrices are left untouched if they
+  /// are not read from the file. 
   template <
     typename DerivedV,
     typename DerivedF,
