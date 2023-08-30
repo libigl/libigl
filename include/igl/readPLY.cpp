@@ -396,15 +396,15 @@ IGL_INLINE bool readPLY(
   file.read(ply_stream);
 
   if (!vertices || !tinyply_buffer_to_matrix(*vertices,V,vertices->count,3) ) {
-    V.resize(0,0);
+    // Don't do this because V might have non-trivial compile-time size V.resize(0,0);
   }
 
   if (!normals || !tinyply_buffer_to_matrix(*normals,N,normals->count,3) ) {
-    N.resize(0,0);
+    // Don't do this (see above) N.resize(0,0);
   }
 
   if (!texcoords || !tinyply_buffer_to_matrix(*texcoords,UV,texcoords->count,2) ) {
-    UV.resize(0,0);
+    // Don't do this (see above) UV.resize(0,0);
   }
 
   //HACK: Unfortunately, tinyply doesn't store list size as a separate variable
@@ -418,22 +418,24 @@ IGL_INLINE bool readPLY(
 
       // all strips should have tristrips->count elements
       if(!tinyply_tristrips_to_faces(*tristrips, F , tristrips->count, el_count))
-        F.resize(0,0);
+      {
+        // Don't do this (see above) F.resize(0,0);
+      }
 
     } else {
-      F.resize(0,0);
+      // Don't do this (see above) F.resize(0,0);
     }
   }
 
   if(!edges || !tinyply_buffer_to_matrix(*edges,E, edges->count,2)) {
-    E.resize(0,0);
+    // Don't do this (see above) E.resize(0,0);
   }
 
   /// convert vertex data:
   Vheader=_vertex_header;
   if(_vertex_header.empty())
   {
-    VD.resize(0,0);
+    // Don't do this (see above) VD.resize(0,0);
   }
   else
   {
@@ -445,7 +447,7 @@ IGL_INLINE bool readPLY(
   Fheader=_face_header;
   if(_face_header.empty())
   {
-    FD.resize(0,0);
+    // Don't do this (see above) FD.resize(0,0);
   }
   else
   {
@@ -457,7 +459,7 @@ IGL_INLINE bool readPLY(
   Eheader=_edge_header;
   if(_edge_header.empty())
   {
-    ED.resize(0,0);
+    // Don't do this (see above) ED.resize(0,0);
   }
   else
   {
