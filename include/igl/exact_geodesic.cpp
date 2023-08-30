@@ -23,6 +23,7 @@
 #include <set>
 #include <vector>
 #include <memory>
+#include <cmath>
 namespace igl{
 namespace geodesic{
 
@@ -242,7 +243,7 @@ public:
 		double wanted = n*sizeof(T);
 		if(wanted > m_num_bytes)
 		{
-			unsigned new_size = (unsigned) ceil(wanted / (double)sizeof(double));
+			unsigned new_size = (unsigned) std::ceil(wanted / (double)sizeof(double));
 			m_buffer = std::shared_ptr<double>(new double[new_size]);
 			m_num_bytes = new_size*sizeof(double);
 		}
@@ -259,7 +260,7 @@ public:
 	template<class T>
 	unsigned capacity()
 	{
-		return (unsigned)floor((double)m_num_bytes/(double)sizeof(T));
+		return (unsigned)std::floor((double)m_num_bytes/(double)sizeof(T));
 	};
 
 private:

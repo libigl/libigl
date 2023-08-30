@@ -13,6 +13,8 @@
 #include <utility>
 #include <cstdint>
 #include <iostream>
+#include <algorithm>
+#include <utility>
 
 template <typename DerivedTV,
           typename DerivedTT,
@@ -107,7 +109,7 @@ void igl::marching_tets(
       const int tv1_idx = TT(i, mt_edge_lookup[mt_cell_lookup[key][e]][0]);
       const int tv2_idx = TT(i, mt_edge_lookup[mt_cell_lookup[key][e]][1]);
       const int vertex_id = edge_table.size();
-      edge_table.push_back(make_pair(min(tv1_idx, tv2_idx), max(tv1_idx, tv2_idx)));
+      edge_table.push_back(make_pair(std::min(tv1_idx, tv2_idx), std::max(tv1_idx, tv2_idx)));
       v_ids[e] = vertex_id;
     }
 
