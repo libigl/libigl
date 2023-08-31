@@ -12,8 +12,8 @@
 
 #include "../../extract_manifold_patches.h"
 #include "../../list_to_matrix.h"
+#include "../../find.h"
 #include "../../remove_unreferenced.h"
-#include "../../slice_mask.h"
 
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 
@@ -51,10 +51,11 @@ IGL_INLINE void igl::copyleft::cgal::trim_with_solid(
   Eigen::VectorXi P;
   const size_t num_patches = igl::extract_manifold_patches(F,P);
   // only keep faces from A
-  Eigen::Matrix<bool,Eigen::Dynamic,1> A = J.array()< FA.rows();
-  igl::slice_mask(Eigen::MatrixXi(F),A,1,F);
-  igl::slice_mask(Eigen::VectorXi(P),A,1,P);
-  igl::slice_mask(Eigen::VectorXi(J),A,1,J);
+  Eigen::Array<bool,Eigen::Dynamic,1> A = J.array()< FA.rows();
+  const auto AI = igl::find(A);
+  F = F(AI,Eigen::all).eval();
+  P = P(AI).eval();
+  J = J(AI).eval();
   // Aggregate representative query points for each patch
   std::vector<bool> flag(num_patches);
   std::vector<std::vector<CGAL::Epeck::FT> > vQ;

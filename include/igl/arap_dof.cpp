@@ -30,9 +30,31 @@
 #include "kkt_inverse.h"
 #include "get_seconds.h"
 #include "columnize.h"
+#include <type_traits>
 
 // defined if no early exit is supported, i.e., always take a fixed number of iterations
 #define IGL_ARAP_DOF_FIXED_ITERATIONS_COUNT
+
+// To avoid putting _any_ dense slices in the static library use a work around
+// so that we can slice LbsMatrixType as sparse or dense below.
+#if __cplusplus < 201703L
+template <typename Mat, bool IsSparse> struct arap_dof_slice_helper;
+template <typename Mat> struct arap_dof_slice_helper<Mat,true>
+{
+  static void slice(const Mat & A, const Eigen::VectorXi & I, const Eigen::VectorXi & J, Mat & B)
+  {
+    static_assert(std::is_base_of<Eigen::SparseMatrixBase<Mat>, Mat>::value, "Mat must be sparse");
+    igl::slice(A,I,J,B);
+  }
+};
+template <typename Mat> struct arap_dof_slice_helper<Mat,false>
+{
+  static void slice(const Mat & A, const Eigen::VectorXi & I, const Eigen::VectorXi & J, Mat & B)
+  {
+    B = A(I,J);
+  }
+};
+#endif
 
 // A careful derivation of this implementation is given in the corresponding
 // matlab function arap_dof.m
@@ -99,9 +121,7 @@ IGL_INLINE bool igl::arap_dof_precomputation(
       MatrixXi GF(F.rows(),F.cols());
       for(int j = 0;j<F.cols();j++)
       {
-        Matrix<int,Eigen::Dynamic,1> GFj;
-        slice(G,F.col(j),GFj);
-        GF.col(j) = GFj;
+        GF.col(j) = G(F.col(j));
       }
       mode<int>(GF,2,GG);
     }else
@@ -183,7 +203,20 @@ IGL_INLINE bool igl::arap_dof_precomputation(
     //printf("CSM_M(): Mi\n");
     LbsMatrixType M_i;
     //printf("CSM_M(): slice\n");
-    slice(M,(span_n.array()+i*n).matrix().eval(),span_mlbs_cols,M_i);
+#if __cplusplus >= 201703L
+    // Check if LbsMatrixType is a sparse matrix
+    if constexpr (std::is_base_of<SparseMatrixBase<LbsMatrixType>, LbsMatrixType>::value)
+    {
+      slice(M,(span_n.array()+i*n).matrix().eval(),span_mlbs_cols,M_i);
+    }
+    else
+    {
+      M_i = M((span_n.array()+i*n).eval(),span_mlbs_cols);
+    }
+#else
+    constexpr bool LbsMatrixTypeIsSparse = std::is_base_of<SparseMatrixBase<LbsMatrixType>, LbsMatrixType>::value;
+    arap_dof_slice_helper<LbsMatrixType,LbsMatrixTypeIsSparse>::slice(M,(span_n.array()+i*n).matrix().eval(),span_mlbs_cols,M_i);
+#endif
     LbsMatrixType M_i_dim;
     data.CSM_M[i].resize(k*data.dim,data.m*data.dim*(data.dim+1));
     assert(data.CSM_M[i].cols() == M.cols());

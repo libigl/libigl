@@ -6,7 +6,6 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "boundary_loop.h"
-#include "slice.h"
 #include "triangle_triangle_adjacency.h"
 #include "vertex_triangle_adjacency.h"
 #include "is_border_vertex.h"

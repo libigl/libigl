@@ -44,6 +44,7 @@ IGL_INLINE igl::SolverStatus igl::active_set(
   Eigen::PlainObjectBase<DerivedZ> & Z
   )
 {
+
 //#define ACTIVE_SET_CPP_DEBUG
 #if defined(ACTIVE_SET_CPP_DEBUG) && !defined(_MSC_VER)
 #  warning "ACTIVE_SET_CPP_DEBUG"
@@ -198,7 +199,7 @@ IGL_INLINE igl::SolverStatus igl::active_set(
 #endif
 
     // PREPARE FIXED VALUES
-    Derivedknown known_i;
+    Eigen::Matrix<typename Derivedknown::Scalar,Eigen::Dynamic,1> known_i;
     known_i.resize(nk + as_lx_count + as_ux_count,1);
     DerivedY Y_i;
     Y_i.resize(nk + as_lx_count + as_ux_count,1);
@@ -278,7 +279,7 @@ IGL_INLINE igl::SolverStatus igl::active_set(
       cout<<"  everything's fixed."<<endl;
 #endif
       Z.resize(A.rows(),Y_i.cols());
-      slice_into(Y_i,known_i,1,Z);
+      Z(known_i,Eigen::all) = Y_i;
       sol.resize(0,Y_i.cols());
       assert(Aeq_i.rows() == 0 && "All fixed but linearly constrained");
     }else
@@ -319,8 +320,8 @@ IGL_INLINE igl::SolverStatus igl::active_set(
     SparseMatrix<AT> Ak;
     // Slow
     slice(A,known_i,1,Ak);
-    DerivedB Bk;
-    slice(B,known_i,Bk);
+    //slice(B,known_i,Bk);
+    DerivedB Bk = B(known_i,Eigen::all);
     MatrixXd Lambda_known_i = -(0.5*Ak*Z + 0.5*Bk);
     // reverse the lambda values for lx
     Lambda_known_i.block(nk,0,as_lx_count,1) =

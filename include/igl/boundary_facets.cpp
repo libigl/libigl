@@ -12,7 +12,6 @@
 #include "sort.h"
 #include "unique_rows.h"
 #include "accumarray.h"
-#include "slice_mask.h"
 
 #include <Eigen/Core>
 

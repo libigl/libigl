@@ -14,7 +14,6 @@
 #include "speye.h"
 #include "mode.h"
 #include "project_isometrically_to_plane.h"
-#include "slice.h"
 #include "arap_rhs.h"
 #include "repdiag.h"
 #include "columnize.h"
@@ -126,9 +125,7 @@ IGL_INLINE bool igl::arap_precomputation(
       MatrixXi GF(F.rows(),F.cols());
       for(int j = 0;j<F.cols();j++)
       {
-        Matrix<int,Eigen::Dynamic,1> GFj;
-        slice(data.G,F.col(j),GFj);
-        GF.col(j) = GFj;
+        GF.col(j) = data.G(F.col(j));
       }
       mode<int>(GF,2,GG);
       data.G=GG;

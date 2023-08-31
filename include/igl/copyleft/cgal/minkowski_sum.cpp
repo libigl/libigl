@@ -8,10 +8,9 @@
 #include "minkowski_sum.h"
 #include "mesh_boolean.h"
 
-#include "../../slice.h"
-#include "../../slice_mask.h"
 #include "../../LinSpaced.h"
 #include "../../unique_rows.h"
+#include "../../find.h"
 #include "../../get_seconds.h"
 #include "../../edges.h"
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
@@ -142,7 +141,7 @@ IGL_INLINE void igl::copyleft::cgal::minkowski_sum(
       W,
       G,
       SJ);
-    slice(DerivedJ(J),SJ,1,J);
+    J = J(SJ).eval();
   }
 }
 
@@ -198,7 +197,7 @@ IGL_INLINE void igl::copyleft::cgal::minkowski_sum(
   //// Mask whether positive dot product, or negative: because of exactly zero,
   //// these are not necessarily complementary
   // Nevermind, actually P = !N
-  Matrix<bool,Dynamic,1> P(m,1),N(m,1);
+  Array<bool,Dynamic,1> P(m,1),N(m,1);
   // loop over faces
   int mp = 0,mn = 0;
   for(int f = 0;f<m;f++)
@@ -230,16 +229,23 @@ IGL_INLINE void igl::copyleft::cgal::minkowski_sum(
   typedef Matrix<typename DerivedG::Scalar,Dynamic,Dynamic> MatrixXI;
   typedef Matrix<typename DerivedG::Scalar,Dynamic,1> VectorXI;
   MatrixXI GT(mp+mn,3);
-  GT<< slice_mask(FA,N,1), slice_mask((FA.array()+n).eval(),P,1);
+  GT<< 
+    FA(igl::find(N),Eigen::all), 
+    (FA.array()+n).eval()(igl::find(P),Eigen::all);
+
   // J indexes FA for parts at s and m+FA for parts at d
   J.derived() = igl::LinSpaced<DerivedJ >(m,0,m-1);
   DerivedJ JT(mp+mn);
-  JT << slice_mask(J,P,1), slice_mask(J,N,1);
+  JT << 
+    J(igl::find(P),Eigen::all), 
+    J(igl::find(N),Eigen::all);
   JT.block(mp,0,mn,1).array()+=m;
 
   // Original non-co-planar faces with positively oriented reversed
   MatrixXI BA(mp+mn,3);
-  BA << slice_mask(FA,P,1).rowwise().reverse(), slice_mask(FA,N,1);
+  BA << 
+    FA(igl::find(P),Eigen::all).rowwise().reverse(), 
+    FA(igl::find(N),Eigen::all);
   // Quads along **all** sides
   MatrixXI GQ((mp+mn)*3,4);
   GQ<< 
@@ -289,7 +295,7 @@ IGL_INLINE void igl::copyleft::cgal::minkowski_sum(
         sF.block(f,1,1,d-1) = sF.block(f,1,1,d-1).reverse().eval();
       }
     }
-    Matrix<bool,Dynamic,1> M = Matrix<bool,Dynamic,1>::Zero(m,1);
+    Array<bool,Dynamic,1> M = Array<bool,Dynamic,1>::Zero(m,1);
     {
       VectorXI P = igl::LinSpaced<VectorXI >(d,0,d-1);
       for(int p = 0;p<d;p++)
@@ -355,7 +361,7 @@ IGL_INLINE void igl::copyleft::cgal::minkowski_sum(
       Matrix<typename DerivedVA::Scalar,Dynamic,Dynamic>(),MatrixXI(),
       MESH_BOOLEAN_TYPE_UNION,
       W,G,SJ);
-    J.derived() = slice(DerivedJ(J),SJ,1);
+    J = J(SJ).eval();
   }
 }
 

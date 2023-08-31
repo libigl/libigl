@@ -1,7 +1,6 @@
 #include "wire_mesh.h"
 
 #include "../../list_to_matrix.h"
-#include "../../slice.h"
 #include "../../PI.h"
 #include "convex_hull.h"
 #include "coplanar.h"
@@ -116,8 +115,8 @@ IGL_INLINE void igl::copyleft::cgal::wire_mesh(
   const auto append_hull = 
     [&V,&vF,&vJ](const Eigen::VectorXi & I, const int j)
   {
-    MatrixX3S Vv;
-    igl::slice(V,I,1,Vv);
+    MatrixX3S Vv = V(I,Eigen::all);
+
     if(coplanar(Vv))
     {
       return;

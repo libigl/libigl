@@ -9,7 +9,6 @@
 #include "CGAL_includes.hpp"
 #include "mesh_to_cgal_triangle_list.h"
 #include "remesh_intersections.h"
-#include "../../slice_mask.h"
 #include "../../remove_unreferenced.h"
 
 #ifndef IGL_FIRST_HIT_EXCEPTION

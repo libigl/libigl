@@ -8,7 +8,6 @@
 #include "blue_noise.h"
 #include "doublearea.h"
 #include "random_points_on_mesh.h"
-#include "slice.h"
 #include "sortrows.h"
 #include "PI.h"
 #include "get_seconds.h"
@@ -290,10 +289,10 @@ IGL_INLINE void igl::blue_noise(
   {
     Eigen::VectorXi I;
     igl::sortrows(decltype(Xs)(Xs),true,Xs,I);
-    igl::slice(decltype(X)(X),I,1,X);
+    X = X(I,Eigen::all).eval();
     // These two could be spun off in their own thread.
-    igl::slice(decltype(XB)(XB),I,1,XB);
-    igl::slice(decltype(XFI)(XFI),I,1,XFI);
+    XB = XB(I,Eigen::all).eval();
+    XFI = XFI(I,Eigen::all).eval();
   }
   // Initialization
   std::unordered_map<BlueNoiseKeyType,std::vector<int> > M;

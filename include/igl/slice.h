@@ -79,6 +79,7 @@ namespace igl
     std::vector<T> & Y);
   /// \overload
   /// \brief Vector version
+  /// \bug these templates are out of order
   template <typename DerivedX, typename DerivedY, typename DerivedR>
   IGL_INLINE void slice(
     const Eigen::DenseBase<DerivedX> & X,
