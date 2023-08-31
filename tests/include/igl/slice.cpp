@@ -1,6 +1,54 @@
 #include <test_common.h>
 #include <igl/slice.h>
 #include <igl/LinSpaced.h>
+#include <igl/randperm.h>
+
+TEST_CASE("slice: eigen-simple", "[igl]")
+{
+  Eigen::MatrixXd X = Eigen::MatrixXd::Random(10,3);
+  Eigen::VectorXi I(2); I<<1,0;
+  {
+    Eigen::MatrixXd Yigl;
+    igl::slice(X,I,1,Yigl);
+    Eigen::MatrixXd Yeigen  = X(I,Eigen::all);
+    test_common::assert_eq(Yigl,Yeigen);
+  }
+  {
+    Eigen::MatrixXd Yigl;
+    igl::slice(X,I,2,Yigl);
+    Eigen::MatrixXd Yeigen  = X(Eigen::all,I);
+    test_common::assert_eq(Yigl,Yeigen);
+  }
+}
+
+TEST_CASE("slice: eigen-random", "[igl]")
+{
+  const int m = 100;
+  const int n = 100;
+  Eigen::MatrixXd X = Eigen::MatrixXd::Random(m,n);
+  Eigen::VectorXi I;
+  igl::randperm(m,I);
+  Eigen::VectorXi J;
+  igl::randperm(n,J);
+  {
+    Eigen::MatrixXd Yigl;
+    igl::slice(X,I,J,Yigl);
+    Eigen::MatrixXd Yeigen = X(I,J);
+    test_common::assert_eq(Yigl,Yeigen);
+  }
+  {
+    Eigen::MatrixXd Yigl;
+    igl::slice(X,I,1,Yigl);
+    Eigen::MatrixXd Yeigen = X(I,Eigen::all);
+    test_common::assert_eq(Yigl,Yeigen);
+  }
+  {
+    Eigen::MatrixXd Yigl;
+    igl::slice(X,J,2,Yigl);
+    Eigen::MatrixXd Yeigen = X(Eigen::all,J);
+    test_common::assert_eq(Yigl,Yeigen);
+  }
+}
 
 TEST_CASE("slice: dense_identity", "[igl]")
 {
