@@ -43,7 +43,8 @@ void assert_order(
         const Eigen::PlainObjectBase<DerivedF>& F,
         size_t v0, size_t v1,
         std::vector<int> expected_order, const std::string& normal="") {
-    Eigen::MatrixXi E, uE, EMAP;
+    Eigen::MatrixXi E, uE;
+    Eigen::VectorXi EMAP;
     std::vector<std::vector<int> > uE2E;
     igl::unique_edge_map(F, E, uE, EMAP, uE2E);
 

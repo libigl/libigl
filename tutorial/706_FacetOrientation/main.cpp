@@ -1,7 +1,6 @@
 #include <igl/read_triangle_mesh.h>
 #include <igl/randperm.h>
 #include <igl/orientable_patches.h>
-#include <igl/slice.h>
 #include <igl/hsv_to_rgb.h>
 #include <igl/embree/reorient_facets_raycast.h>
 #include <igl/opengl/glfw/Viewer.h>
@@ -35,9 +34,9 @@ S,s      Scramble colors
   {
     for(int pass = 0;pass<2;pass++)
     {
-      Eigen::MatrixXi R;
+      Eigen::VectorXi R;
       igl::randperm(C[pass].maxCoeff()+1,R);
-      C[pass] = igl::slice(R,Eigen::MatrixXi(C[pass]));
+      C[pass] = R(C[pass]).eval();
       Eigen::MatrixXd HSV(C[pass].rows(),3);
       HSV.col(0) = 
         360.*C[pass].array().cast<double>()/(double)C[pass].maxCoeff();

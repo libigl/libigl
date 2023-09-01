@@ -701,9 +701,8 @@ IGL_INLINE bool igl::arap_dof_update(
   MatrixXS R(data.dim,data.dim*k);
   Eigen::Matrix<SSCALAR,Eigen::Dynamic,1> Rcol(data.dim * data.dim * k);
   Matrix<SSCALAR,Dynamic,1> B_eq_SSCALAR = B_eq.cast<SSCALAR>();
-  Matrix<SSCALAR,Dynamic,1> B_eq_fix_SSCALAR;
   Matrix<SSCALAR,Dynamic,1> L0SSCALAR = L0.cast<SSCALAR>();
-  slice(L0SSCALAR, data.fixed_dim, B_eq_fix_SSCALAR);    
+  Matrix<SSCALAR,Dynamic,1> B_eq_fix_SSCALAR = L0SSCALAR(data.fixed_dim);
   //MatrixXS rhsFull(Rcol.rows() + B_eq.rows() + B_eq_fix_SSCALAR.rows(), 1); 
 
   MatrixXS Lsep(data.m*(data.dim + 1), 3);  

@@ -9,7 +9,6 @@
 #include <igl/per_corner_normals.h>
 #include <igl/per_face_normals.h>
 #include <igl/polygon_corners.h>
-#include <igl/slice.h>
 #include <igl/sparse_voxel_grid.h>
 
 void contours(
@@ -195,7 +194,7 @@ void contours(
       Q.col(2), Q.col(3), 
       Q.col(3), Q.col(0);
     igl::per_face_normals(V,I,C,N,VV,FF,J);
-    igl::slice(N,J,1,NN);
+    NN = N(J,Eigen::all);
     igl::per_corner_normals(V,I,C,20,N,VV,FF,J,NN);
   }
 
