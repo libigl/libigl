@@ -73,9 +73,9 @@ namespace igl
   /// ```
   ///
   /// \see slice_mask
-  template <int RowsAtCompileTime>
+  template <int RowsAtCompileTime, int MaxRowsAtCompileTime>
   IGL_INLINE std::vector<int> find(
-    const Eigen::Array<bool,RowsAtCompileTime,1> & M);
+    const Eigen::Array<bool,RowsAtCompileTime,1,0,MaxRowsAtCompileTime,1> & M);
 }
 
 #ifndef IGL_STATIC_LIBRARY
