@@ -6,11 +6,10 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "split_nonmanifold.h"
-#include "ismember_rows.h"
 #include "connected_components.h"
 #include "remove_unreferenced.h"
-#include "matlab_format.h"
-#include <iostream>
+#include "find.h"
+#include "ismember_rows.h"
 
 template <
   typename DerivedF,
@@ -58,14 +57,17 @@ IGL_INLINE void igl::split_nonmanifold(
   // Flip orientation
   Eigen::MatrixXi FE_flip = FE.rowwise().reverse();
   // Find which exist in both directions
+
+
   Eigen::Array<bool,Eigen::Dynamic,1> I;
   Eigen::VectorXi J;
   igl::ismember_rows(FE,FE_flip,I,J);
   // Just keep those find
-  Eigen::MatrixXi EI = E(I,Eigen::all);
-
-  Eigen::VectorXi JI = J(I,Eigen::all);
+  const auto II = igl::find(I);
+  Eigen::MatrixXi EI = E(II,Eigen::all);
+  Eigen::VectorXi JI = J(II);
   Eigen::MatrixXi EJI = E(JI,Eigen::all);
+
   Eigen::MatrixXi EJI_flip = EJI.rowwise().reverse();
   // Build adjacency matrix
   std::vector<Eigen::Triplet<bool> > Aijv; 
