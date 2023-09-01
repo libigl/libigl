@@ -19,7 +19,7 @@ IGL_INLINE void igl::ears(
     Eigen::Array<bool, Eigen::Dynamic, 1> I;
     on_boundary(F,I,B);
   }
-  find(B.rowwise().count() == 2, ear);
+  find((B.rowwise().count() == 2).eval(), ear);
   // Why do I need this .derived()?
   Eigen::Array<bool, Eigen::Dynamic, 3> Bear = B(ear.derived(),Eigen::all);
   Eigen::Array<bool, Eigen::Dynamic, 1> M;

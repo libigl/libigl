@@ -12,7 +12,7 @@ namespace igl
   /// @param[out] I  #E+1 list of nodes in order tracing the chain (loop), if the output
   ///     is a loop then I(1) == I(end)
   /// @param[out] J  #I-1 list of indices into E of edges tracing I
-  /// @param[out] K  #I-1 list of indices into columns of E {1,2} so that K(i) means that
+  /// @param[out] K  #I-1 list of indices into columns of E {0,1} so that K(i) means that
   ///     E(i,K(i)) comes before the other (i.e., E(i,3-K(i)) ). This means that 
   ///     I(i) == E(J(i),K(i)) for i<#I, or
   ///     I == E(sub2ind(size(E),J([1:end end]),[K;3-K(end)]))))

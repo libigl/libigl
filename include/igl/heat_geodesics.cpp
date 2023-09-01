@@ -16,7 +16,6 @@
 #include "grad_intrinsic.h"
 #include "boundary_facets.h"
 #include "unique.h"
-#include "slice.h"
 #include "avg_edge_length.h"
 
 
@@ -152,8 +151,7 @@ IGL_INLINE void igl::heat_geodesics_solve(
   const DerivedD div_X = -data.Div*grad_u;
   const DerivedD Beq = (DerivedD(1,1)<<0).finished();
   igl::min_quad_with_fixed_solve(data.Poisson,(-div_X).eval(),DerivedD(),Beq,D);
-  DerivedD Dgamma;
-  igl::slice(D,gamma,Dgamma);
+  DerivedD Dgamma = D(gamma.derived());
   D.array() -= Dgamma.mean();
   if(D.mean() < 0)
   {

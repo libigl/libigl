@@ -1,7 +1,16 @@
 #include <test_common.h>
-#include <igl/slice.h>
 #include <igl/LinSpaced.h>
 #include <igl/randperm.h>
+// We don't want to include dense slices in the static library so include them
+// via header only mode for these tests (which themselves will eventually be
+// deprecated, too).
+#ifdef IGL_STATIC_LIBRARY
+#  undef IGL_STATIC_LIBRARY
+#  include <igl/slice.h>
+#  define IGL_STATIC_LIBRARY
+#else
+#  include <igl/slice.h>
+#endif
 
 TEST_CASE("slice: eigen-simple", "[igl]")
 {

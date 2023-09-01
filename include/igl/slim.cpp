@@ -20,7 +20,6 @@
 #include "grad.h"
 #include "local_basis.h"
 #include "per_face_normals.h"
-#include "slice_into.h"
 #include "volume.h"
 #include "polar_svd.h"
 #include "flip_avoiding_line_search.h"

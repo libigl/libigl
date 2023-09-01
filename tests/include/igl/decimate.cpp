@@ -2,7 +2,6 @@
 #include <igl/decimate.h>
 #include <igl/sort.h>
 #include <igl/sortrows.h>
-#include <igl/slice.h>
 #include <igl/matlab_format.h>
 #include <iostream>
 
@@ -28,8 +27,7 @@ TEST_CASE("decimate: hemisphere", "[igl]")
   igl::decimate(V,F,F.rows()/2,U,G,J,I);
   // Expect that all normals still point in same direction as original
   Eigen::MatrixXd NU = U.rowwise().normalized();
-  Eigen::MatrixXd NVI;
-  igl::slice(NV,I,1,NVI);
+  Eigen::MatrixXd NVI = NV(I,Eigen::all);
   REQUIRE (NU.rows() == NVI.rows());
   REQUIRE (NU.cols() == NVI.cols());
   // Dot product

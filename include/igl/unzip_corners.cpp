@@ -6,9 +6,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "unzip_corners.h"
-
 #include "unique_rows.h"
-#include "slice.h"
 
 template < typename DerivedA, typename DerivedU, typename DerivedG, typename DerivedJ >
 IGL_INLINE void igl::unzip_corners(

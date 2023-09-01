@@ -1,7 +1,6 @@
 #include "edges_to_path.h"
 #include "dfs.h"
 #include "sort.h"
-#include "slice.h"
 #include "ismember_rows.h"
 #include "unique.h"
 #include "adjacency_list.h"
@@ -93,7 +92,7 @@ IGL_INLINE void igl::edges_to_path(
   }
 
   // Map vertex indices onto original graph
-  slice(U,DerivedI(I),1,I);
+  I = U(I.derived()).eval();
 }
 
 #ifdef IGL_STATIC_LIBRARY

@@ -7,9 +7,6 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "split_nonmanifold.h"
 #include "ismember_rows.h"
-#include "slice.h"
-#include "slice_into.h"
-#include "slice_mask.h"
 #include "connected_components.h"
 #include "remove_unreferenced.h"
 #include "matlab_format.h"
@@ -61,16 +58,14 @@ IGL_INLINE void igl::split_nonmanifold(
   // Flip orientation
   Eigen::MatrixXi FE_flip = FE.rowwise().reverse();
   // Find which exist in both directions
-  Eigen::VectorXi I,J;
+  Eigen::Array<bool,Eigen::Dynamic,1> I;
+  Eigen::VectorXi J;
   igl::ismember_rows(FE,FE_flip,I,J);
   // Just keep those find
-  Eigen::MatrixXi EI;
-  igl::slice_mask(E,I.array().cast<bool>(),1,EI);
+  Eigen::MatrixXi EI = E(I,Eigen::all);
 
-  Eigen::VectorXi JI;
-  igl::slice_mask(J,I.array().cast<bool>(),1,JI);
-  Eigen::MatrixXi EJI;
-  igl::slice(E,JI,1,EJI);
+  Eigen::VectorXi JI = J(I,Eigen::all);
+  Eigen::MatrixXi EJI = E(JI,Eigen::all);
   Eigen::MatrixXi EJI_flip = EJI.rowwise().reverse();
   // Build adjacency matrix
   std::vector<Eigen::Triplet<bool> > Aijv; 
@@ -125,7 +120,7 @@ IGL_INLINE void igl::split_nonmanifold(
   // Scatter via K
   // SVI1(K) = SVI(K);
   Eigen::VectorXi SVI1(m*3);
-  igl::slice_into(SVI0,K,1,SVI1);
+  SVI1(K) = SVI0;
 
   {
     Eigen::VectorXi _,J;
@@ -138,7 +133,7 @@ IGL_INLINE void igl::split_nonmanifold(
         SF(i,j) = J(SF(i,j));
       }
     }
-    igl::slice(SVI1,J,1,SVI);
+    SVI = SVI1(J);
   }
 
 }
@@ -158,7 +153,7 @@ IGL_INLINE void igl::split_nonmanifold(
   Eigen::PlainObjectBase <DerivedSVI> & SVI)
 {
   igl::split_nonmanifold(F,SF,SVI);
-  igl::slice(V,SVI,1,SV);
+  SV = V(SVI.derived(),Eigen::all);
 }
 
 #ifdef IGL_STATIC_LIBRARY

@@ -17,9 +17,8 @@ TEST_CASE("orient_halfedges: sanity checks", "[igl]")
     Eigen::MatrixXd V;
     Eigen::MatrixXi F;
     igl::read_triangle_mesh(test_common::data_path(mesh), V, F);
-    Eigen::MatrixXi I;
-    igl::remove_unreferenced(Eigen::MatrixXd(V), Eigen::MatrixXi(F), V, F,
-     I);
+    Eigen::VectorXi I;
+    igl::remove_unreferenced(Eigen::MatrixXd(V), Eigen::MatrixXi(F), V, F, I);
 
     Eigen::MatrixXi TT, TTi;
     igl::triangle_triangle_adjacency(F, TT, TTi);
