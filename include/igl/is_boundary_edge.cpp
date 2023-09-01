@@ -42,12 +42,17 @@ void igl::is_boundary_edge(
   }
   // sort directed edges into undirected edges
   MatrixXi sorted_EallE;
-  VectorXi _;
-  sort(EallE,2,true,sorted_EallE,_);
+  {
+    MatrixXi _;
+    sort(EallE,2,true,sorted_EallE,_);
+  }
   // Determine unique undirected edges E and map to directed edges EMAP
   MatrixXi uE;
   VectorXi EMAP;
-  unique_rows(sorted_EallE,uE,_,EMAP);
+  {
+    VectorXi _;
+    unique_rows(sorted_EallE,uE,_,EMAP);
+  }
   // Counts of occurrences
   VectorXi N = VectorXi::Zero(uE.rows());
   for(int e = 0;e<EMAP.rows();e++)
@@ -100,10 +105,15 @@ void igl::is_boundary_edge(
   }
   // sort directed edges into undirected edges
   MatrixXi sorted_allE;
-  Eigen::VectorXi _;
-  sort(allE,2,true,sorted_allE,_);
+  {
+    Eigen::MatrixXi _;
+    sort(allE,2,true,sorted_allE,_);
+  }
   // Determine unique undirected edges E and map to directed edges EMAP
-  unique_rows(sorted_allE,E,_,EMAP);
+  {
+    Eigen::VectorXi _;
+    unique_rows(sorted_allE,E,_,EMAP);
+  }
   // Counts of occurrences
   VectorXi N = VectorXi::Zero(E.rows());
   for(int e = 0;e<EMAP.rows();e++)
