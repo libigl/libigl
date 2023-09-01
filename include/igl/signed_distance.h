@@ -34,17 +34,18 @@ namespace igl
   };
   /// Computes signed distance to a mesh
   ///
-  /// @param[in] P  #P by 3 list of query point positions
-  /// @param[in] V  #V by 3 list of vertex positions
+  /// @param[in] P  #P by (2|3) list of query point positions
+  /// @param[in] V  #V by (2|3) list of vertex positions
   /// @param[in] F  #F by ss list of triangle indices, ss should be 3 unless
-  ///   sign_type == SIGNED_DISTANCE_TYPE_UNSIGNED
+  ///   sign_type == SIGNED_DISTANCE_TYPE_UNSIGNED |
+  ///   SIGNED_DISTANCE_TYPE_WINDING_NUMBER
   /// @param[in] sign_type  method for computing distance _sign_ S
   /// @param[in] lower_bound  lower bound of distances needed {std::numeric_limits::min}
   /// @param[in] upper_bound  lower bound of distances needed {std::numeric_limits::max}
   /// @param[out] S  #P list of smallest signed distances
   /// @param[out] I  #P list of facet indices corresponding to smallest distances
-  /// @param[out] C  #P by 3 list of closest points
-  /// @param[out] N  #P by 3 list of closest normals (only set if
+  /// @param[out] C  #P by (2|3) list of closest points
+  /// @param[out] N  #P by (2|3) list of closest normals (only set if
   ///   sign_type=SIGNED_DISTANCE_TYPE_PSEUDONORMAL)
   ///
   /// \bug This only computes distances to triangles. So unreferenced
@@ -90,7 +91,7 @@ namespace igl
   /// tree and edge/vertice normals
   ///
   /// @param[in] tree  AABB acceleration tree (see AABB.h)
-  /// @param[in] F  #F by 3 list of triangle indices
+  /// @param[in] F   #F by 3 list of triangle indices
   /// @param[in] FN  #F by 3 list of triangle normals 
   /// @param[in] VN  #V by 3 list of vertex normals (ANGLE WEIGHTING)
   /// @param[in] EN  #E by 3 list of edge normals (UNIFORM WEIGHTING)

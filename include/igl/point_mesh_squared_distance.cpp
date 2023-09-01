@@ -56,7 +56,7 @@ template <
   typename DerivedI,
   typename DerivedC,
   bool DynamicCols> 
-struct DIM_Handler;
+struct point_mesh_squared_distance_DIM_Handler;
 
 // Handle the case where V has dynamic columns
 template <
@@ -66,7 +66,7 @@ template <
   typename DerivedsqrD,
   typename DerivedI,
   typename DerivedC>
-struct DIM_Handler<
+struct point_mesh_squared_distance_DIM_Handler<
   DerivedP, DerivedV, DerivedEle, DerivedsqrD, DerivedI, DerivedC,
   true>
 {
@@ -99,7 +99,7 @@ template <
   typename DerivedsqrD,
   typename DerivedI,
   typename DerivedC>
-struct DIM_Handler<
+struct point_mesh_squared_distance_DIM_Handler<
   DerivedP, DerivedV, DerivedEle, DerivedsqrD, DerivedI, DerivedC, 
   false>
 {
@@ -111,8 +111,13 @@ struct DIM_Handler<
     Eigen::PlainObjectBase<DerivedI> & I,
     Eigen::PlainObjectBase<DerivedC> & C)
   {
-    static_assert(DerivedV::ColsAtCompileTime == 2 || DerivedV::ColsAtCompileTime == 3, "V must be 2D or 3D");
-    point_mesh_squared_distance<DerivedV::ColsAtCompileTime>(P,V,Ele,sqrD,I,C);
+    constexpr int DIM = 
+      DerivedP::ColsAtCompileTime != Eigen::Dynamic ? DerivedP::ColsAtCompileTime :
+      DerivedV::ColsAtCompileTime != Eigen::Dynamic ? DerivedV::ColsAtCompileTime :
+      DerivedC::ColsAtCompileTime != Eigen::Dynamic ? DerivedC::ColsAtCompileTime :
+      Eigen::Dynamic;
+    static_assert(DIM == 2 || DIM == 3, "DIM must be 2 or 3");
+    point_mesh_squared_distance<DIM>(P,V,Ele,sqrD,I,C);
   }
 };
 }
@@ -132,14 +137,20 @@ IGL_INLINE void igl::point_mesh_squared_distance(
   Eigen::PlainObjectBase<DerivedI> & I,
   Eigen::PlainObjectBase<DerivedC> & C)
 {
-  DIM_Handler<
+  constexpr int DIM = 
+    DerivedP::ColsAtCompileTime != Eigen::Dynamic ? DerivedP::ColsAtCompileTime :
+    DerivedV::ColsAtCompileTime != Eigen::Dynamic ? DerivedV::ColsAtCompileTime :
+    DerivedC::ColsAtCompileTime != Eigen::Dynamic ? DerivedC::ColsAtCompileTime :
+    Eigen::Dynamic;
+
+  point_mesh_squared_distance_DIM_Handler<
     DerivedP, 
     DerivedV, 
     DerivedEle, 
     DerivedsqrD, 
     DerivedI, 
     DerivedC,
-    DerivedV::ColsAtCompileTime == Eigen::Dynamic>::compute(P,V,Ele,sqrD,I,C);
+    DIM == Eigen::Dynamic>::compute(P,V,Ele,sqrD,I,C);
 }
 
 #ifdef IGL_STATIC_LIBRARY

@@ -54,7 +54,9 @@ public:
         m_box(), m_primitive(-1)
         //m_low_sqr_d(std::numeric_limits<double>::infinity()),
         //m_depth(0)
-    {}
+    {
+      static_assert(DerivedV::ColsAtCompileTime == DIM || DerivedV::ColsAtCompileTime == Eigen::Dynamic,"DerivedV::ColsAtCompileTime == DIM || DerivedV::ColsAtCompileTime == Eigen::Dynamic");
+    }
       /// @private
       // http://stackoverflow.com/a/3279550/148668
       AABB(const AABB& other):
