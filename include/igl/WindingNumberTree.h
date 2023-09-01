@@ -194,7 +194,7 @@ inline void igl::WindingNumberTree<Point,DerivedV,DerivedF>::set_mesh(
   // Remove any exactly duplicate vertices
   // Q: Can this ever increase the complexity of the boundary?
   // Q: Would we gain even more by remove almost exactly duplicate vertices?
-  MatrixXF SF,SVI,SVJ;
+  Eigen::Matrix<typename MatrixXF::Scalar,Eigen::Dynamic,1> SVI,SVJ;
   igl::remove_duplicate_vertices(_V,_F,0.0,SV,SVI,SVJ,F);
   triangle_fan(igl::exterior_edges(F),cap);
   V = SV;

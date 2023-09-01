@@ -21,19 +21,15 @@ namespace igl
   /// @param[in] C  list of column indices
   /// @param[in] Y  ym by yn lhs matrix
   /// @param[out] Y  ym by yn lhs matrix, same as input but Y(R,C) = X
+  ///
+  ///
+  /// \see slice
   template <typename T, typename DerivedR, typename DerivedC>
   IGL_INLINE void slice_into(
     const Eigen::SparseMatrix<T>& X,
     const Eigen::MatrixBase<DerivedR> & R,
     const Eigen::MatrixBase<DerivedC> & C,
     Eigen::SparseMatrix<T>& Y);
-  /// \overload
-  template <typename DerivedX, typename DerivedY, typename DerivedR, typename DerivedC>
-  IGL_INLINE void slice_into(
-    const Eigen::MatrixBase<DerivedX> & X,
-    const Eigen::MatrixBase<DerivedR> & R,
-    const Eigen::MatrixBase<DerivedC> & C,
-    Eigen::PlainObjectBase<DerivedY> & Y);
   /// \overload
   /// \brief Wrapper to only slice in one direction
   ///
@@ -46,6 +42,17 @@ namespace igl
     const Eigen::MatrixBase<DerivedR> & R,
     const int dim,
     MatY& Y);
+  /// \overload
+  ///
+  /// \deprecated
+  /// 
+  /// See slice.h for more details
+  template <typename DerivedX, typename DerivedY, typename DerivedR, typename DerivedC>
+  IGL_INLINE void slice_into(
+    const Eigen::MatrixBase<DerivedX> & X,
+    const Eigen::MatrixBase<DerivedR> & R,
+    const Eigen::MatrixBase<DerivedC> & C,
+    Eigen::PlainObjectBase<DerivedY> & Y);
   /// \overload
   /// \brief Vector version
   template <typename DerivedX, typename DerivedR, typename DerivedY>

@@ -1,7 +1,6 @@
 #include "ears.h"
 #include "on_boundary.h"
 #include "find.h"
-#include "slice.h"
 #include "min.h"
 #include <cassert>
 
@@ -20,9 +19,9 @@ IGL_INLINE void igl::ears(
     Eigen::Array<bool, Eigen::Dynamic, 1> I;
     on_boundary(F,I,B);
   }
-  find(B.rowwise().count() == 2, ear);
-  Eigen::Array<bool, Eigen::Dynamic, 3> Bear;
-  slice(B, ear, 1, Bear);
+  find((B.rowwise().count() == 2).eval(), ear);
+  // Why do I need this .derived()?
+  Eigen::Array<bool, Eigen::Dynamic, 3> Bear = B(ear.derived(),Eigen::all);
   Eigen::Array<bool, Eigen::Dynamic, 1> M;
   igl::min(Bear,2,M,ear_opp);
 }

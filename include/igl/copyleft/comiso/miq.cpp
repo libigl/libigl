@@ -877,8 +877,8 @@ IGL_INLINE void igl::copyleft::comiso::PoissonSolver<DerivedV, DerivedF>::buildL
   // multiply with weights
   Eigen::VectorXd rhs1 =  G2 * u * 0.5 * vfscale;
   Eigen::VectorXd rhs2 = -G2 * v * 0.5 * vfscale;
-  igl::slice_into(rhs1, idx,  1, rhs);
-  igl::slice_into(rhs2, idx2, 1, rhs);
+  rhs( idx) = rhs1;
+  rhs(idx2) = rhs2;
 }
 
 ///find different sized of the system

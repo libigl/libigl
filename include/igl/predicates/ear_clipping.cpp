@@ -9,7 +9,6 @@
 #include "ear_clipping.h"
 #include "predicates.h"
 #include "segment_segment_intersect.h"
-#include "../slice.h"
 #include "../turning_number.h"
 
 template <

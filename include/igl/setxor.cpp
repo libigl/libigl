@@ -1,7 +1,6 @@
 #include "setxor.h"
 #include "setdiff.h"
 #include "setunion.h"
-#include "slice.h"
 
 template <
   typename DerivedA,
@@ -21,8 +20,8 @@ IGL_INLINE void igl::setxor(
   setdiff(A,B,AB,IAB);
   setdiff(B,A,BA,IBA);
   setunion(AB,BA,C,IA,IB);
-  slice(IAB,DerivedIA(IA),IA);
-  slice(IBA,DerivedIB(IB),IB);
+  IA = IAB(IA.derived()).eval();
+  IB = IBA(IB.derived()).eval();
 }
 
 #ifdef IGL_STATIC_LIBRARY

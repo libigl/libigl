@@ -9,7 +9,6 @@
 
 #include "cotmatrix.h"
 #include "sort.h"
-#include "slice.h"
 #include "massmatrix.h"
 #include <iostream>
 
@@ -160,7 +159,7 @@ IGL_INLINE bool igl::eigs(
   // finally sort
   VectorXi I;
   igl::sort(S,1,false,sS,I);
-  igl::slice(U,I,2,sU);
+  sU = U(Eigen::all,I);
   sS /= rescale;
   sU /= sqrt(rescale);
   return true;

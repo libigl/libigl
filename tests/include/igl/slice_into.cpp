@@ -1,6 +1,45 @@
 #include <test_common.h>
 #include <igl/slice_into.h>
 #include <igl/LinSpaced.h>
+#include <igl/randperm.h>
+
+TEST_CASE("slice_into: eigen-random", "[igl]")
+{
+  const int m = 100;
+  const int n = 100;
+  Eigen::MatrixXd X = Eigen::MatrixXd::Random(m,n);
+  Eigen::VectorXi I;
+  igl::randperm(m,I);
+  I = I.head(m/2).eval();
+  Eigen::VectorXi J;
+  igl::randperm(n,J);
+  J = J.head(n/2).eval();
+  {
+    Eigen::MatrixXd Z = Eigen::MatrixXd::Random(I.size(),J.size());
+    Eigen::MatrixXd Yigl = X;
+    igl::slice_into(Z,I,J,Yigl);
+    Eigen::MatrixXd Yeigen = X;
+    Yeigen(I,J) = Z;
+    test_common::assert_eq(Yigl,Yeigen);
+  }
+  {
+    Eigen::MatrixXd Z = Eigen::MatrixXd::Random(I.size(),X.cols());
+    Eigen::MatrixXd Yigl = X;
+    igl::slice_into(Z,I,1,Yigl);
+    Eigen::MatrixXd Yeigen = X;
+    Yeigen(I,Eigen::all) = Z;
+    test_common::assert_eq(Yigl,Yeigen);
+  }
+  {
+    Eigen::MatrixXd Z = Eigen::MatrixXd::Random(X.rows(),J.size());
+    Eigen::MatrixXd Yigl = X;
+    igl::slice_into(Z,J,2,Yigl);
+    Eigen::MatrixXd Yeigen = X;
+    Yeigen(Eigen::all,J) = Z;
+    test_common::assert_eq(Yigl,Yeigen);
+  }
+  
+}
 
 TEST_CASE("slice_into: dense_identity", "[igl]")
 {

@@ -7,7 +7,6 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "bijective_composite_harmonic_mapping.h"
 
-#include "slice.h"
 #include "doublearea.h"
 #include "harmonic.h"
 //#include "matlab/MatlabWorkspace.h"
@@ -50,8 +49,8 @@ IGL_INLINE bool igl::bijective_composite_harmonic_mapping(
   assert(V.cols() == 2 && bc.cols() == 2 && "Input should be 2D");
   assert(F.cols() == 3 && "F should contain triangles");
   int nsteps = min_steps;
-  Eigen::Matrix<typename Derivedbc::Scalar, Eigen::Dynamic, Eigen::Dynamic> bc0;
-  slice(V,b.col(0),1,bc0);
+  Eigen::Matrix<typename Derivedbc::Scalar, Eigen::Dynamic, Eigen::Dynamic> bc0 =
+    V(b.col(0),Eigen::all);
 
   // It's difficult to check for flips "robustly" in the sense that the input
   // mesh might not have positive/consistent sign to begin with.
@@ -82,7 +81,7 @@ IGL_INLINE bool igl::bijective_composite_harmonic_mapping(
         //mw.save(bct,"bct");
         //mw.write("numerical.mat");
         harmonic(Eigen::Matrix<typename DerivedU::Scalar, Eigen::Dynamic, Eigen::Dynamic>(U), F, b, bct, 1, U);
-        igl::slice(U,b.col(0),1,bct);
+        bct = U(b.col(0),Eigen::all);
         nans = (U.array() != U.array()).count();
         if(test_for_flips)
         {

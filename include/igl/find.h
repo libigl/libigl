@@ -11,6 +11,7 @@
 #define EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
+#include <vector>
 namespace igl
 {
   /// Find the non-zero entries and there respective indices in a sparse matrix.
@@ -58,6 +59,23 @@ namespace igl
     const Eigen::SparseVector<T>& X,
     Eigen::Matrix<int,Eigen::Dynamic,1> & I,
     Eigen::Matrix<T,Eigen::Dynamic,1> & V);
+  /// \overload
+  /// \brief This overload facilitates the use of bool masks for Eigen slicing
+  /// @tparam RowsAtCompileTime number of rows in M at compile time
+  /// @return indices of true entries in M
+  ///
+  /// ##### Example
+  ///
+  /// ```cpp
+  /// igl::slice_mask(A,igl::find(M),igl::find(N),B);
+  /// // Is the same as
+  /// B = A(igl::find(M),igl::find(N));
+  /// ```
+  ///
+  /// \see slice_mask
+  template <int RowsAtCompileTime, int MaxRowsAtCompileTime>
+  IGL_INLINE std::vector<int> find(
+    const Eigen::Array<bool,RowsAtCompileTime,1,0,MaxRowsAtCompileTime,1> & M);
 }
 
 #ifndef IGL_STATIC_LIBRARY

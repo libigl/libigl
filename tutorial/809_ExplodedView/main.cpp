@@ -11,7 +11,6 @@
 #include <igl/barycenter.h>
 #include <igl/volume.h>
 #include <igl/exploded_view.h>
-#include <igl/slice.h>
 #include <igl/colormap.h>
 
 
@@ -43,8 +42,8 @@ int main(int argc, char *argv[])
     Eigen::MatrixXi EF;
     Eigen::VectorXi I,J;
     igl::exploded_view(V,T,s,t,EV,EF,I,J);
-    Eigen::VectorXd DJ;
-    igl::slice(D,J,1,DJ);
+    Eigen::VectorXd DJ = D(J);
+
     static bool first = true;
     if(first)
     {

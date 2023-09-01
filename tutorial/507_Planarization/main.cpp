@@ -5,7 +5,6 @@
 #include <igl/quad_planarity.h>
 #include <igl/readDMAT.h>
 #include <igl/readOFF.h>
-#include <igl/slice.h>
 #include <igl/opengl/glfw/Viewer.h>
 #include <vector>
 #include <cstdlib>
@@ -91,19 +90,19 @@ int main(int argc, char *argv[])
   FQCtri.resize(2*FQC.rows(), 3);
   FQCtri <<  FQC.col(0),FQC.col(1),FQC.col(2),
              FQC.col(2),FQC.col(3),FQC.col(0);
-  igl::slice( VQC, FQC.col(0).eval(), 1, PQC0);
-  igl::slice( VQC, FQC.col(1).eval(), 1, PQC1);
-  igl::slice( VQC, FQC.col(2).eval(), 1, PQC2);
-  igl::slice( VQC, FQC.col(3).eval(), 1, PQC3);
+  PQC0 = VQC(FQC.col(0).eval(), Eigen::all);
+  PQC1 = VQC(FQC.col(1).eval(), Eigen::all);
+  PQC2 = VQC(FQC.col(2).eval(), Eigen::all);
+  PQC3 = VQC(FQC.col(3).eval(), Eigen::all);
 
   // Planarize it
   igl::planarize_quad_mesh(VQC, FQC, 100, 0.005, VQCplan);
 
   // Convert the planarized mesh to triangles
-  igl::slice( VQCplan, FQC.col(0).eval(), 1, PQC0plan);
-  igl::slice( VQCplan, FQC.col(1).eval(), 1, PQC1plan);
-  igl::slice( VQCplan, FQC.col(2).eval(), 1, PQC2plan);
-  igl::slice( VQCplan, FQC.col(3).eval(), 1, PQC3plan);
+  PQC0plan = VQCplan(FQC.col(0).eval(), Eigen::all);
+  PQC1plan = VQCplan(FQC.col(1).eval(), Eigen::all);
+  PQC2plan = VQCplan(FQC.col(2).eval(), Eigen::all);
+  PQC3plan = VQCplan(FQC.col(3).eval(), Eigen::all);
 
   // Launch the viewer
   igl::opengl::glfw::Viewer viewer;

@@ -433,8 +433,8 @@ IGL_INLINE void build_surface_linear_system(const SCAFData &s, Eigen::SparseMatr
   }
   else
   {
-    MatrixXd bnd_pos;
-    igl::slice(s.w_uv, bnd_ids, 1, bnd_pos);
+    MatrixXd bnd_pos = s.w_uv(bnd_ids, Eigen::all);
+
     ArrayXi known_ids(bnd_ids.size() * dim);
     ArrayXi unknown_ids((v_n - bnd_ids.rows()) * dim);
     get_complement(bnd_ids, v_n, unknown_ids);
@@ -494,8 +494,7 @@ IGL_INLINE void build_scaffold_linear_system(const SCAFData &s, Eigen::SparseMat
 
   auto bnd_n = bnd_ids.size();
   IGL_ASSERT(bnd_n > 0);
-  MatrixXd bnd_pos;
-  igl::slice(s.w_uv, bnd_ids, 1, bnd_pos);
+  MatrixXd bnd_pos = s.w_uv(bnd_ids, Eigen::all);
 
   ArrayXi known_ids(bnd_ids.size() * dim);
   ArrayXi unknown_ids((v_n - bnd_ids.rows()) * dim);
@@ -566,8 +565,7 @@ IGL_INLINE void solve_weighted_arap(SCAFData &s, Eigen::MatrixXd &uv)
   const auto v_n = s.v_num;
   const auto bnd_n = bnd_ids.size();
   assert(bnd_n > 0);
-  MatrixXd bnd_pos;
-  igl::slice(s.w_uv, bnd_ids, 1, bnd_pos);
+  MatrixXd bnd_pos = s.w_uv(bnd_ids, Eigen::all);
 
   ArrayXi known_ids(bnd_n * dim);
   ArrayXi unknown_ids((v_n - bnd_n) * dim);
@@ -592,8 +590,8 @@ IGL_INLINE void solve_weighted_arap(SCAFData &s, Eigen::MatrixXd &uv)
 
   SimplicialLDLT<Eigen::SparseMatrix<double>> solver;
   unknown_Uc = solver.compute(L).solve(rhs);
-  igl::slice_into(unknown_Uc, unknown_ids.matrix(), 1, Uc);
-  igl::slice_into(known_pos, known_ids.matrix(), 1, Uc);
+  Uc(unknown_ids) = unknown_Uc;
+  Uc(known_ids) = known_pos;
 
   uv = Map<Matrix<double, -1, -1, Eigen::ColMajor>>(Uc.data(), v_n, dim);
 }

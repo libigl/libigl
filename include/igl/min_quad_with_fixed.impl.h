@@ -440,8 +440,7 @@ IGL_INLINE bool igl::min_quad_with_fixed_solve(
     }
 
     // Build right hand side
-    MatrixXT BBequlcols;
-    igl::slice(BBeq,data.unknown_lagrange,1,BBequlcols);
+    MatrixXT BBequlcols = BBeq(data.unknown_lagrange,Eigen::all);
     MatrixXT NB;
     if(kr == 0)
     {
@@ -490,8 +489,7 @@ IGL_INLINE bool igl::min_quad_with_fixed_solve(
       //data.AeqTQR.colsPermutation().transpose() * (-data.Aeqk * Y + Beq);
       data.AeqTET * (-data.Aeqk * Y + Beq.replicate(1,Beq.cols()==cols?1:cols));
     // Where did this -0.5 come from? Probably the same place as above.
-    MatrixXT Bu;
-    slice(B,data.unknown,1,Bu);
+    MatrixXT Bu = B(data.unknown,Eigen::all);
     MatrixXT NB;
     NB = -0.5*(Bu.replicate(1,B.cols()==cols?1:cols) + data.preY * Y);
     // Trim eff_Beq

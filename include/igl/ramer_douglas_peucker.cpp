@@ -2,12 +2,11 @@
 
 #include "LinSpaced.h"
 #include "find.h"
+#include "list_to_matrix.h"
 #include "cumsum.h"
 #include "histc.h"
-#include "slice.h"
 #include "project_to_line.h"
 #include "EPS.h"
-#include "slice_mask.h"
 
 template <typename DerivedP, typename DerivedS, typename DerivedJ>
 IGL_INLINE void igl::ramer_douglas_peucker(
@@ -65,8 +64,8 @@ IGL_INLINE void igl::ramer_douglas_peucker(
     }
   };
   simplify(0,n-1);
-  slice_mask(P,I,1,S);
-  find(I,J);
+  igl::find(I,J);
+  S = P(J.derived(),Eigen::all);
 }
 
 template <
@@ -106,13 +105,12 @@ IGL_INLINE void igl::ramer_douglas_peucker(
   J(J.size()-1) = J(J.size()-2);
   Eigen::VectorXi s,d;
   // Find index in original list of "start" vertices
-  slice(J,B,s);
+  s = J(B);
   // Find index in original list of "destination" vertices
-  slice(J,(B.array()+1).matrix().eval(),d);
+  d = J(B.array()+1);
   // Parameter between start and destination is linear in arc-length
-  VectorXS Ts,Td;
-  slice(T,s,Ts);
-  slice(T,d,Td);
+  VectorXS Ts = T(s);
+  VectorXS Td = T(d);
   T = ((T.head(T.size()-1)-Ts).array()/(Td-Ts).array()).eval();
   for(int t =0;t<T.size();t++)
   {
@@ -121,8 +119,7 @@ IGL_INLINE void igl::ramer_douglas_peucker(
       T(t) = 0;
     }
   }
-  DerivedS SB;
-  slice(S,B,1,SB);
+  DerivedS SB = S(B,Eigen::all);
   Eigen::VectorXi MB = B.array()+1;
   for(int b = 0;b<MB.size();b++)
   {
@@ -131,8 +128,7 @@ IGL_INLINE void igl::ramer_douglas_peucker(
       MB(b) = S.rows()-1;
     }
   }
-  DerivedS SMB;
-  slice(S,MB,1,SMB);
+  DerivedS SMB = S(MB,Eigen::all);
   Q = SB.array() + ((SMB.array()-SB.array()).colwise()*T.array());
 
   // Remove extra point at end

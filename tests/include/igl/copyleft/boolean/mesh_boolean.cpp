@@ -41,7 +41,12 @@ namespace {
             typename DerivedF::Scalar,
             Eigen::Dynamic,
             Eigen::Dynamic>
-            E, uE, EMAP;
+            E, uE;
+        Eigen::Matrix<
+            typename DerivedF::Scalar,
+            Eigen::Dynamic,
+            1>
+        EMAP;
         std::vector<std::vector<size_t> > uE2E;
         igl::unique_edge_map(F, E, uE, EMAP, uE2E);
 

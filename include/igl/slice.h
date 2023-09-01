@@ -9,6 +9,28 @@
 #define IGL_SLICE_H
 #include "igl_inline.h"
 
+/// @file slice.h
+///
+/// \deprecated The following dense versions are deprecated in favor of using
+/// [Eigen v3.4's native
+/// slicing](https://eigen.tuxfamily.org/dox-devel/group__TutorialSlicingIndexing.html)
+/// which is more efficient, more flexible, and has better syntax.
+///
+/// | igl                        | Eigen v3.4                         |
+/// |-------------------0--------|------------------------------------| |
+/// `igl::slice(X,I,J,Y)`      | `Y = X(I,J)`                       | |
+/// `igl::slice(X,I,1,Y)`      | `Y = X(I,Eigen::all)`              | |
+/// `igl::slice(X,J,2,Y)`      | `Y = X(Eigen::all,J)`              | |
+/// `igl::slice_into(Z,I,J,X)` | `X(I,J) = Z`                       | |
+/// `igl::slice_into(Z,I,1,X)` | `X(I,Eigen::all) = Z`              | |
+/// `igl::slice_into(Z,J,2,X)` | `X(Eigen::all,J) = Z`              | |
+/// `igl::slice_mask(X,M,N,Y)` | `Y = X(igl::find(M),igl::find(N))` | | _not
+/// available_            | `X(igl::find(M),igl::find(N)) = Z` |
+///
+/// Eigen's slicing supports much more than arrays of indices as input, as well.
+///
+/// Unfortunately, Eigen v3.4 does not support slicing on sparse matrices.
+
 #include <Eigen/Sparse>
 #include <vector>
 namespace igl
@@ -16,12 +38,10 @@ namespace igl
   /// Act like the matlab X(row_indices,col_indices) operator, where
   /// row_indices, col_indices are non-negative integer indices.
   ///
-  /// Inputs:
-  ///   X  m by n matrix
-  ///   R  list of row indices
-  ///   C  list of column indices
-  /// Output:
-  ///   Y  #R by #C matrix
+  /// @param[in] X  m by n matrix
+  /// @param[in] R  list of row indices
+  /// @param[in] C  list of column indices
+  /// @param[out] Y  #R by #C matrix
   ///
   /// \see slice_mask, slice_into
   ///
@@ -36,17 +56,6 @@ namespace igl
     const Eigen::DenseBase<DerivedR> & R,
     const Eigen::DenseBase<DerivedC> & C,
     Eigen::SparseMatrix<TY>& Y);
-  /// \overload
-  template <
-    typename DerivedX,
-    typename DerivedR,
-    typename DerivedC,
-    typename DerivedY>
-  IGL_INLINE void slice(
-    const Eigen::DenseBase<DerivedX> & X,
-    const Eigen::DenseBase<DerivedR> & R,
-    const Eigen::DenseBase<DerivedC> & C,
-    Eigen::PlainObjectBase<DerivedY> & Y);
   /// \overload
   /// \brief Wrapper to only slice in one direction
   ///
@@ -63,11 +72,33 @@ namespace igl
     const int dim,
     MatY& Y);
   /// \overload
+  template< class T >
+  IGL_INLINE void slice(
+    const std::vector<T> & X,
+    std::vector<size_t> const & R,
+    std::vector<T> & Y);
+  /// \overload
   /// \brief Vector version
+  /// \bug these templates are out of order
   template <typename DerivedX, typename DerivedY, typename DerivedR>
   IGL_INLINE void slice(
     const Eigen::DenseBase<DerivedX> & X,
     const Eigen::DenseBase<DerivedR> & R,
+    Eigen::PlainObjectBase<DerivedY> & Y);
+  /// \overload
+  ///
+  /// \deprecated
+  /// 
+  /// See slice.h for more details
+  template <
+    typename DerivedX,
+    typename DerivedR,
+    typename DerivedC,
+    typename DerivedY>
+  IGL_INLINE void slice(
+    const Eigen::DenseBase<DerivedX> & X,
+    const Eigen::DenseBase<DerivedR> & R,
+    const Eigen::DenseBase<DerivedC> & C,
     Eigen::PlainObjectBase<DerivedY> & Y);
   /// \overload
   /// \brief VectorXi Y = slice(X,R);
@@ -85,13 +116,6 @@ namespace igl
     const Eigen::DenseBase<DerivedX>& X,
     const Eigen::DenseBase<DerivedR> & R,
     const int dim);
-  /// \overload
-  template< class T >
-  IGL_INLINE void slice(
-    const std::vector<T> & X,
-    std::vector<size_t> const & R,
-    std::vector<T> & Y);
-
 }
 
 #ifndef IGL_STATIC_LIBRARY

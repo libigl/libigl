@@ -1,6 +1,5 @@
 #include "eigs.h"
 #include "../sort.h"
-#include "../slice.h"
 #include "../IGL_ASSERT.h"
 #include <Spectra/SymGEigsShiftSolver.h>
 
@@ -128,7 +127,7 @@ IGL_INLINE bool igl::spectra::eigs(
 
   Eigen::VectorXi I;
   igl::sort( Eigen::VectorXd(S), 1, false, S, I);
-  igl::slice(Eigen::MatrixXd(U),I,2,U);
+  U = U(Eigen::all,I).eval();
   return true;
 }
 

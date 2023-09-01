@@ -22,7 +22,6 @@
 #include "../../parallel_for.h"
 #include "../../remove_unreferenced.h"
 #include "../../resolve_duplicated_faces.h"
-#include "../../slice.h"
 #include "../../unique_edge_map.h"
 #include "../../unique_simplices.h"
 #include "../../C_STR.h"
@@ -370,7 +369,7 @@ IGL_INLINE bool igl::copyleft::cgal::mesh_boolean(
     DerivedFC G;
     DerivedJ JJ;
     igl::resolve_duplicated_faces(kept_faces, G, JJ);
-    igl::slice(kept_face_indices, JJ, 1, J);
+    J = kept_face_indices(JJ);
 
 #ifdef DOUBLE_CHECK_EXACT_OUTPUT
     {
