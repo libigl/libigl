@@ -3,7 +3,7 @@
 This detailed documentation browser is automatically generated from the comments
 in libigl header (.h) files.
 
-In general, each function (e.g., `igl::func`) will be defined in a
+In general, each [libigl function](./namespaceigl.html#func-members) (e.g., `igl::func`) will be defined in a
 correspondingly named header file (e.g., `#include <igl/func.h>`).
 
 The _core_ library only depends on the standard template library (`std::`) and 
