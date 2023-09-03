@@ -13,7 +13,7 @@ namespace igl
 {
   /// Computes the moments of mass for a solid object bound by a triangle mesh.
   /// 
-  /// @param[in] V  #V by dim list of rest domain positions
+  /// @param[in] V  #V by 3 list of rest domain positions
   /// @param[in] F  #F by 3 list of triangle indices into V
   /// @param[out] m0  zeroth moment of mass, total signed volume of solid.
   /// @param[out] m1  first moment of mass, center of mass (centroid) times total mass

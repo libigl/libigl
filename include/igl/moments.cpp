@@ -8,6 +8,38 @@
 
 #include "moments.h"
 
+// C++17 would avoid this with an if constexpr below
+//
+// This makes it so that m1 can be:
+//   - RowVector3d
+//   - Vector3d
+//   - RowVectorXd
+//   - VectorXd
+namespace igl
+{
+  template <bool SingleRow, bool SingleCol> struct moments_resize_3;
+  template <> struct moments_resize_3<true,false>
+  {
+    template <typename Derivedm1>
+    static void run(Eigen::PlainObjectBase<Derivedm1>& m1)
+    {
+      static_assert(Derivedm1::ColsAtCompileTime == Eigen::Dynamic || 
+          Derivedm1::ColsAtCompileTime == 3,"#cols must be 3 or dynamic");
+      m1.resize(1,3);
+    }
+  };
+  template <> struct moments_resize_3<false,true>
+  {
+    template <typename Derivedm1>
+    static void run(Eigen::PlainObjectBase<Derivedm1>& m1)
+    {
+      static_assert(Derivedm1::RowsAtCompileTime == Eigen::Dynamic || 
+          Derivedm1::RowsAtCompileTime == 3,"#rows must be 3 or dynamic");
+      m1.resize(3,1);
+    }
+  };
+}
+
 template <
   typename DerivedV, 
   typename DerivedF, 
@@ -21,9 +53,12 @@ IGL_INLINE void igl::moments(
   Eigen::PlainObjectBase<Derivedm1>& m1,
   Eigen::PlainObjectBase<Derivedm2>& m2)
 {
+  assert(V.cols() == 3 && "V should be #V by 3");
   typedef typename Derivedm2::Scalar Scalar;
 
   m0 = 0;
+  moments_resize_3<Derivedm1::RowsAtCompileTime == 1,Derivedm1::ColsAtCompileTime == 1>::run(m1);
+
   m1 << 0,0,0;
   Scalar _xx=0;
   Scalar _yy=0;
