@@ -2,8 +2,19 @@
 #include <igl/ray_mesh_intersect.h>
 #include <igl/AABB.h>
 
+#if !defined(NDEBUG) && defined(__linux__)
+#include <fenv.h>
+#define IGL_PUSH_FPE \
+  fexcept_t current_exceptions; \
+  fegetexceptflag(&current_exceptions, FE_ALL_EXCEPT); \
+  fedisableexcept(FE_ALL_EXCEPT); 
+#define IGL_POP_FPE \
+  feenableexcept(current_exceptions);
+#endif
+
 TEST_CASE("ray_mesh_intersect: one_triangle", "[igl]")
 {
+  IGL_PUSH_FPE;
   Eigen::MatrixXd V(3,3);
   V.row(0) << 0.0, 0.0, 0.0;
   V.row(1) << 1.0, 0.0, 0.0;
@@ -23,11 +34,14 @@ TEST_CASE("ray_mesh_intersect: one_triangle", "[igl]")
   REQUIRE(igl::ray_mesh_intersect(source, direction, V, F, hits) == true);
   REQUIRE(hits.size() == 1);
   REQUIRE(hits.front().t == Approx(1.0));
+
+  IGL_POP_FPE;
 }
 
 
 TEST_CASE("ray_mesh_intersect: corner-case", "[igl]")
 {
+  IGL_PUSH_FPE;
   //       .      //
   //      /|\     //
   //     / | \    //
@@ -72,4 +86,5 @@ TEST_CASE("ray_mesh_intersect: corner-case", "[igl]")
     REQUIRE (is_hit == is_hit_bvh);
     REQUIRE (hits.size() == hits_bvh.size());
   }
+  IGL_POP_FPE;
 }

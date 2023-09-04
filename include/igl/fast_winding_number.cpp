@@ -58,15 +58,22 @@ IGL_INLINE void igl::fast_winding_number(
       Eigen::Matrix<real_ec,1,3> zeroth_expansion;
       zeroth_expansion << 0,0,0;
       real_p areatotal = 0.0;
-      for(int j = 0; j < point_indices[index].size(); j++){
+      const int num_points = point_indices[index].size();
+      for(int j = 0; j < num_points; j++){
           int curr_point_index = point_indices[index][j];
         
           areatotal += A(curr_point_index);
           masscenter += A(curr_point_index)*P.row(curr_point_index);
           zeroth_expansion += A(curr_point_index)*N.row(curr_point_index);
       }
-    
-      masscenter = masscenter/areatotal;
+      // Avoid divide by zero
+      if(num_points > 0)
+      {
+        masscenter = masscenter/areatotal;
+      }else
+      {
+        masscenter.setConstant(std::numeric_limits<real_cm>::quiet_NaN());
+      }
       CM.row(index) = masscenter;
       EC.block(index,0,1,3) = zeroth_expansion;
     

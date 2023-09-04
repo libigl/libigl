@@ -111,8 +111,6 @@ IGL_INLINE igl::SolverStatus igl::active_set(
 
   // Keep track of previous Z for comparison
   DerivedZ old_Z;
-  old_Z = DerivedZ::Constant(
-      n,1,numeric_limits<typename DerivedZ::Scalar>::max());
 
   int iter = 0;
   while(true)
@@ -167,14 +165,17 @@ IGL_INLINE igl::SolverStatus igl::active_set(
       cout<<"  new_as_lx: "<<new_as_lx<<endl;
       cout<<"  new_as_ux: "<<new_as_ux<<endl;
 #endif
-      const double diff = (Z-old_Z).squaredNorm();
-#ifdef ACTIVE_SET_CPP_DEBUG
-      cout<<"diff: "<<diff<<endl;
-#endif
-      if(diff < params.solution_diff_threshold)
+      if(iter > 0)
       {
-        ret = SOLVER_STATUS_CONVERGED;
-        break;
+        const double diff = (Z-old_Z).squaredNorm();
+#ifdef ACTIVE_SET_CPP_DEBUG
+        cout<<"diff: "<<diff<<endl;
+#endif
+        if(diff < params.solution_diff_threshold)
+        {
+          ret = SOLVER_STATUS_CONVERGED;
+          break;
+        }
       }
       old_Z = Z;
     }

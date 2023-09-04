@@ -139,7 +139,9 @@ IGL_INLINE void igl::signed_distance(
   // convert to bounds on (unsiged) squared distances
   typedef typename DerivedV::Scalar Scalar; 
   const Scalar max_abs = std::max(std::abs(lower_bound),std::abs(upper_bound));
-  const Scalar up_sqr_d = std::pow(max_abs,2.0);
+  const Scalar up_sqr_d = 
+    max_abs == std::numeric_limits<Scalar>::max() ? max_abs :
+    std::pow(max_abs,2.0);
   const Scalar low_sqr_d = 
     std::pow(std::max(max_abs-(upper_bound-lower_bound),(Scalar)0.0),2.0);
 
