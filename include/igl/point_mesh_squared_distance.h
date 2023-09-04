@@ -28,6 +28,23 @@ namespace igl
   /// triangle [1 1 1] is treated as a point. So one _could_ add extra
   /// combinatorially degenerate rows to Ele for all unreferenced vertices to
   /// also get distances to points.
+  ///
+  /// ##### Example:
+  ///
+  /// ```cpp
+  /// Eigen::MatrixXd V;
+  /// Eigen::MatrixXi F;
+  /// igl::read_triangle_mesh("bunny.obj",V,F);
+  /// // 100 points in [-1,1]³ cube
+  /// Eigen::MatrixXd P = Eigen::MatrixXd::Random(100,3);
+  /// Eigen::VectorXd sqrD;
+  /// Eigen::VectorXi I;
+  /// Eigen::MatrixXd C;
+  /// igl::point_mesh_squared_distance(P,V,F,sqrD,I,C);
+  /// // Now sqrD(i) = squared distance from P.row(i) to mesh
+  /// // I(i) = closest primitive index
+  /// // C.row(i) = closest point on mesh to P.row(i)
+  /// ```
   template <
     typename DerivedP,
     typename DerivedV,
