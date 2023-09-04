@@ -409,7 +409,11 @@ IGL_INLINE void igl::slim_update_weights_and_closest_rotations_with_jacobians(co
         {
           double s1_g = 2 * (s1 - pow(s1, -3));
           double s2_g = 2 * (s2 - pow(s2, -3));
-          m_sing_new << sqrt(s1_g / (2 * (s1 - 1))), sqrt(s2_g / (2 * (s2 - 1)));
+          // Limit is 4 if s==1 according to Equation (32) in Rabinovich et al.
+          // [2017]
+          m_sing_new << 
+            (s1==1?4:sqrt(s1_g / (2 * (s1 - 1)))), 
+            (s2==1?4:sqrt(s2_g / (2 * (s2 - 1))));
           break;
         }
         case igl::MappingEnergyType::LOG_ARAP:
