@@ -2,15 +2,6 @@
 #include <igl/ray_mesh_intersect.h>
 #include <igl/AABB.h>
 
-#if !defined(NDEBUG) && defined(__linux__)
-#include <fenv.h>
-#define IGL_PUSH_FPE \
-  fexcept_t current_exceptions; \
-  fegetexceptflag(&current_exceptions, FE_ALL_EXCEPT); \
-  fedisableexcept(FE_ALL_EXCEPT); 
-#define IGL_POP_FPE \
-  feenableexcept(current_exceptions);
-#endif
 
 TEST_CASE("ray_mesh_intersect: one_triangle", "[igl]")
 {
