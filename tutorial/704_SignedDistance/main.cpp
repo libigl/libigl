@@ -1,6 +1,5 @@
 #include <igl/cat.h>
 #include <igl/edge_lengths.h>
-#include <igl/parula.h>
 #include <igl/per_edge_normals.h>
 #include <igl/per_face_normals.h>
 #include <igl/per_vertex_normals.h>
@@ -31,6 +30,60 @@ double slice_z = 0.5;
 bool overlay = false;
 
 bool useFastWindingNumber = false;
+
+
+const Eigen::MatrixXd CM = 
+  (Eigen::MatrixXd(50,3)<<
+  242,242,242,
+  247,251,253,
+  228,234,238,
+  233,243,249,
+  214,227,234,
+  217,234,244,
+  199,218,230,
+  203,226,240,
+  186,211,226,
+  187,217,236,
+  171,203,222,
+  173,209,232,
+  157,195,218,
+  158,201,228,
+  142,187,214,
+  143,193,223,
+  129,179,210,
+  128,185,219,
+  114,171,206,
+  112,176,215,
+  100,163,202,
+  98,168,211,
+  86,156,198,
+  82,159,207,
+  71,148,194,
+  255,247,223,
+  242,230,204,
+  255,235,206,
+  242,219,189,
+  255,225,191,
+  242,209,175,
+  255,214,176,
+  242,198,159,
+  255,203,160,
+  242,188,145,
+  255,192,145,
+  242,177,129,
+  255,181,128,
+  242,167,115,
+  255,170,113,
+  242,157,101,
+  255,159,97,
+  242,146,85,
+  255,148,82,
+  242,136,71,
+  255,137,65,
+  242,125,55,
+  255,126,50,
+  242,115,41,
+  255,116,36).finished()/255.0;
 
 void update_visualization(igl::opengl::glfw::Viewer & viewer)
 {
@@ -103,6 +156,7 @@ void update_visualization(igl::opengl::glfw::Viewer & viewer)
   }
   viewer.data().clear();
   viewer.data().set_mesh(V_vis,F_vis);
+  viewer.data().set_colormap(CM);
   viewer.data().set_data(S_vis);
   viewer.core().lighting_factor = overlay;
 }

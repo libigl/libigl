@@ -17,6 +17,7 @@
 #include "arap.h"
 #include "cat.h"
 #include "doublearea.h"
+#include "volume.h"
 #include "grad.h"
 #include "local_basis.h"
 #include "per_face_normals.h"
@@ -772,9 +773,18 @@ IGL_INLINE void igl::slim_precompute(
 
   data.proximal_p = 0.0001;
 
-  igl::doublearea(V, F, data.M);
-  data.M /= 2.;
-  data.mesh_area = data.M.sum();
+  if(F.cols() == 3)
+  {
+    igl::doublearea(V, F, data.M);
+    data.mesh_area = data.M.sum()/2;
+  }else 
+  {
+    assert(F.cols() == 4);
+    igl::volume(V, F, data.M);
+    // actually volume.
+    data.mesh_area = data.M.sum();
+  }
+
   data.mesh_improvement_3d = false; // whether to use a jacobian derived from a real mesh or an abstract regular mesh (used for mesh improvement)
   data.exp_factor = 1.0; // param used only for exponential energies (e.g exponential symmetric dirichlet)
 
