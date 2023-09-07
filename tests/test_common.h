@@ -24,6 +24,20 @@
 #define IGL_DEBUG_OFF "[!hide]"
 #endif
 
+#if !defined(NDEBUG) && defined(__linux__)
+#include <fenv.h>
+#define IGL_PUSH_FPE \
+  fexcept_t current_exceptions; \
+  fegetexceptflag(&current_exceptions, FE_ALL_EXCEPT); \
+  fedisableexcept(FE_ALL_EXCEPT);
+#define IGL_POP_FPE \
+  /* Surprise! Use fesetexceptflag here not feenableexcept */ \
+  fesetexceptflag(&current_exceptions,FE_ALL_EXCEPT);
+#else
+// No-op
+#define IGL_PUSH_FPE 
+#define IGL_POP_FPE 
+#endif
 
 #include <igl/STR.h>
 template<>

@@ -39,8 +39,17 @@ IGL_INLINE void igl::qslim_optimal_collapse_edge_callbacks(
     const auto & A = std::get<0>(quadric_p);
     const auto & b = std::get<1>(quadric_p);
     const auto & c = std::get<2>(quadric_p);
-    p = -b*A.inverse();
-    cost = p.dot(p*A) + 2*p.dot(b) + c;
+    if(b.array().isInf().any())
+    {
+      cost = std::numeric_limits<double>::infinity();
+      p.resizeLike(b);
+      p.setConstant(std::numeric_limits<double>::quiet_NaN());
+    }else
+    {
+      p = -b*A.inverse();
+      cost = p.dot(p*A) + 2*p.dot(b) + c;
+    }
+
     // Force infs and nans to infinity
     if(std::isinf(cost) || cost!=cost)
     {

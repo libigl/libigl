@@ -3,6 +3,7 @@
 
 TEST_CASE("EmbreeIntersector: cube", "[igl/embree]")
 {
+  IGL_PUSH_FPE;
   //The allowed error for this test
   const double epsilon = 1e-6;
 
@@ -95,5 +96,6 @@ TEST_CASE("EmbreeIntersector: cube", "[igl/embree]")
     REQUIRE(hit.u == Approx(0.5).margin(epsilon));
     REQUIRE(hit.v == Approx(0.25).margin(epsilon));
   }
+  IGL_POP_FPE;
 }
 
