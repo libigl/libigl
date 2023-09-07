@@ -11,6 +11,7 @@
 
 #include "../igl_inline.h"
 #include <Eigen/Core>
+#include <cstdint>
 
 namespace igl
 {
