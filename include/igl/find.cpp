@@ -41,6 +41,25 @@ IGL_INLINE void igl::find(
   }
 }
 
+template < typename T>
+IGL_INLINE std::vector<Eigen::Triplet<T> > igl::find(
+  const Eigen::SparseMatrix<T>& X)
+{
+  std::vector<Eigen::Triplet<T>> ijv;
+  for(int i = 0; i < X.outerSize(); i++)
+  {
+    for(typename Eigen::SparseMatrix<T>::InnerIterator it(X,i); it; it++)
+    {
+      // Match find above
+      //if(it.value())
+      {
+        ijv.emplace_back(it.row(),it.col(),it.value());
+      }
+    }
+  }
+  return ijv;
+}
+
 template <
   typename DerivedX,
   typename DerivedI, 

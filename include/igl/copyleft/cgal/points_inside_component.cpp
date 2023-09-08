@@ -7,6 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "points_inside_component.h"
 #include "../../LinSpaced.h"
+#include "../../parallel_for.h"
 #include "order_facets_around_edge.h"
 #include "assign_scalar.h"
 
@@ -292,7 +293,8 @@ IGL_INLINE void igl::copyleft::cgal::points_inside_component(
 
     const size_t num_queries = P.rows();
     inside.resize(num_queries, 1);
-    for (size_t i=0; i<num_queries; i++) {
+    //for (size_t i=0; i<num_queries; i++) {
+    igl::parallel_for(num_queries, [&](const int i) {
         const Point_3 query(P(i,0), P(i,1), P(i,2));
         auto projection = tree.closest_point_and_primitive(query);
         auto closest_point = projection.first;
@@ -321,7 +323,7 @@ IGL_INLINE void igl::copyleft::cgal::points_inside_component(
             default:
                 throw "Unknown closest element type!";
         }
-    }
+    }, 1000);
 }
 
 template<typename DerivedV, typename DerivedF, typename DerivedP,

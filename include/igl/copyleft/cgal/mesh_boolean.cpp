@@ -213,22 +213,12 @@ IGL_INLINE bool igl::copyleft::cgal::mesh_boolean(
   DerivedFC F;
   VectorXJ  CJ;
   {
-    Eigen::VectorXi I;
     igl::copyleft::cgal::RemeshSelfIntersectionsParam params;
     params.stitch_all = true;
-    MatrixXES Vr;
-    DerivedFC Fr;
     Eigen::MatrixXi IF;
-    igl::copyleft::cgal::remesh_self_intersections(
-        VV, FF, params, Vr, Fr, IF, CJ, I);
-    assert(I.size() == Vr.rows());
-    // Merge coinciding vertices into non-manifold vertices.
-    std::for_each(Fr.data(), Fr.data()+Fr.size(),
-          [&I](typename DerivedFC::Scalar& a) { a=I[a]; });
-      // Remove unreferenced vertices.
-      Eigen::VectorXi UIM;
-      igl::remove_unreferenced(Vr, Fr, V, F, UIM);
-   }
+    remesh_self_intersections(VV,FF,params,V,F,IF,CJ);
+  }
+  
 #ifdef MESH_BOOLEAN_TIMING
   log_time("resolve_self_intersection");
 #endif

@@ -20,6 +20,8 @@ namespace igl
   /// @param[out] FF  #F by 3 list of new triangle indices such that FF(~I,:) = F(~I,:) and
   ///     FF(I,:) = fliplr(F(I,:)) (OK if &FF = &F)
   /// @param[out] I  max(C)+1 list of whether face has been flipped
+  ///
+  /// \see orientable_patches, reorient_facets_raycast
   template <
     typename DerivedV,
     typename DerivedF,
