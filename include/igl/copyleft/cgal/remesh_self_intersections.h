@@ -68,6 +68,24 @@ namespace igl
         Eigen::PlainObjectBase<DerivedIF> & IF,
         Eigen::PlainObjectBase<DerivedJ> & J,
         Eigen::PlainObjectBase<DerivedIM> & IM);
+      /// \overload
+      ///
+      /// IM above is _applied_ to merge duplicated vertices in VV.
+      template <
+        typename DerivedV,
+        typename DerivedF,
+        typename DerivedVV,
+        typename DerivedFF,
+        typename DerivedIF,
+        typename DerivedJ>
+      IGL_INLINE void remesh_self_intersections(
+        const Eigen::MatrixBase<DerivedV> & V,
+        const Eigen::MatrixBase<DerivedF> & F,
+        const RemeshSelfIntersectionsParam & params,
+        Eigen::PlainObjectBase<DerivedVV> & VV,
+        Eigen::PlainObjectBase<DerivedFF> & FF,
+        Eigen::PlainObjectBase<DerivedIF> & IF,
+        Eigen::PlainObjectBase<DerivedJ> & J);
     }
   }
 }

@@ -8,8 +8,10 @@
 #include "point_solid_signed_squared_distance.h"
 #include "points_inside_component.h"
 #include "point_mesh_squared_distance.h"
+#include "../../get_seconds.h"
 #include "../../list_to_matrix.h"
 #include "../../find.h"
+#include "../../parallel_for.h"
 #include <vector>
 #include <Eigen/Core>
 

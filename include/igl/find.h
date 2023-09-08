@@ -34,6 +34,10 @@ namespace igl
     Eigen::DenseBase<DerivedJ> & J,
     Eigen::DenseBase<DerivedV> & V);
   /// \overload
+  template < typename T>
+  IGL_INLINE std::vector<Eigen::Triplet<T> > find(
+    const Eigen::SparseMatrix<T>& X);
+  /// \overload
   template <
     typename DerivedX,
     typename DerivedI, 

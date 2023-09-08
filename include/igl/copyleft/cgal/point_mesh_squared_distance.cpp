@@ -8,6 +8,7 @@
 #include "point_mesh_squared_distance.h"
 #include "mesh_to_cgal_triangle_list.h"
 #include "assign_scalar.h"
+#include "../../parallel_for.h"
 
 template <
   typename Kernel,
@@ -112,7 +113,8 @@ IGL_INLINE void igl::copyleft::cgal::point_mesh_squared_distance(
   sqrD.resize(n,1);
   I.resize(n,1);
   C.resize(n,P.cols());
-  for(int p = 0;p < n;p++)
+  //for(int p = 0;p < n;p++)
+  igl::parallel_for(n,[&](const int p)
   {
     Point_3 query(P(p,0),P(p,1),P(p,2));
     // Find closest point and primitive id
@@ -123,7 +125,7 @@ IGL_INLINE void igl::copyleft::cgal::point_mesh_squared_distance(
     assign_scalar(closest_point[2],C(p,2));
     assign_scalar((closest_point-query).squared_length(),sqrD(p));
     I(p) = pp.second - T.begin();
-  }
+  },1000);
 }
 
 #ifdef IGL_STATIC_LIBRARY
