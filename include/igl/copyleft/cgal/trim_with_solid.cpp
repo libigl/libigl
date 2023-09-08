@@ -211,8 +211,9 @@ IGL_INLINE void igl::copyleft::cgal::trim_with_solid(
     case RESOLVE_BOTH_AND_RESTORE_THEN_CHECK_EACH_PATCH:
     {
       RemeshSelfIntersectionsParam params;
+      // This is somewhat dubious but appears to work. The stitch_all flag is
+      // poorly documented.
       params.stitch_all = false;
-#warning "is it really ok to have stitch_all = false"
       {
         Eigen::MatrixXi IF;
         Eigen::Matrix<typename DerivedVA::Scalar,Eigen::Dynamic,3> VAB(VA.rows() + VB.rows(),3);
