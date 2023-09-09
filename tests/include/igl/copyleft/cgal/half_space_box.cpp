@@ -1,4 +1,4 @@
-#include <igl/half_space_box.h>
+#include <igl/copyleft/cgal/half_space_box.h>
 #include <test_common.h>
 
 TEST_CASE("half_space_box: simple", "[igl]")
@@ -12,11 +12,9 @@ TEST_CASE("half_space_box: simple", "[igl]")
 
   equ << 1,-1,0,0;
   igl::copyleft::cgal::half_space_box(equ,V,BV,BF);
-  REQUIRE(!BV.array().isNaN().any());
-  REQUIRE(!BV.array().isInf().any());
+  REQUIRE((BV.colwise().maxCoeff() - BV.colwise().minCoeff()).squaredNorm() > 0);
 
   equ << 1,1,1,0;
   igl::copyleft::cgal::half_space_box(equ,V,BV,BF);
-  REQUIRE(!BV.array().isNaN().any());
-  REQUIRE(!BV.array().isInf().any());
+  REQUIRE((BV.colwise().maxCoeff() - BV.colwise().minCoeff()).squaredNorm() > 0);
 }
