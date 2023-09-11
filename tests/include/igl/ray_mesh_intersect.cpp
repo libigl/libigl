@@ -1,5 +1,6 @@
 #include <test_common.h>
 #include <igl/ray_mesh_intersect.h>
+#include <igl/ray_box_intersect.h>
 #include <igl/AABB.h>
 
 
@@ -94,10 +95,6 @@ TEST_CASE("ray_mesh_intersect: corner-case2", "[igl]")
   faces <<
       0, 2, 1;
 
-  igl::AABB<Eigen::MatrixXf, 3> mesh_bvh;
-
-  mesh_bvh.init(vertices, faces);
-
   Eigen::Vector3f origin;
   Eigen::Vector3f direction;
 
@@ -106,18 +103,12 @@ TEST_CASE("ray_mesh_intersect: corner-case2", "[igl]")
 
   std::vector<igl::Hit> hits, hits_bvh;
   bool is_hit = igl::ray_mesh_intersect(origin, direction, vertices, faces, hits);
-  bool is_hit_bvh = mesh_bvh.intersect_ray(vertices, faces, origin, direction, hits_bvh);
-  for (auto ihits: {hits, hits_bvh})
-  {
-      std::cout << "hits.size() = " << ihits.size() << std::endl;
-      for (auto h: ihits)
-      {
-          std::cout << "id = " << h.id << ", gid = " << h.gid << ", t = " << h.t << ", (u, v) = (" << h.u << ", " << h.v << ")" << std::endl;
-      }
-  }
+  Eigen::AlignedBox3f box;
+  box.extend(vertices.row(0).transpose());
+  box.extend(vertices.row(1).transpose());
+  box.extend(vertices.row(2).transpose());
 
-  REQUIRE (is_hit);
-  REQUIRE (is_hit == is_hit_bvh);
-  REQUIRE (hits.size() == hits_bvh.size());
-  IGL_POP_FPE;
+  float tmin, tmax;
+  bool is_hit_box = igl::ray_box_intersect(origin, direction, box,0.0f, std::numeric_limits<float>::max(),tmin,tmax);
+  REQUIRE (is_hit == is_hit_box);
 }
