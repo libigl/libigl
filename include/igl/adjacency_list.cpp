@@ -70,6 +70,7 @@ IGL_INLINE void igl::adjacency_list(
     for(int v=0; v<(int)SR.size();++v)
     {
       std::vector<IndexVector>& vv = A.at(v);
+      if(vv.size() == 0){ continue; }
       std::vector<std::vector<int> >& sr = SR[v];
       
       std::vector<std::vector<int> > pn = sr;

@@ -31,7 +31,6 @@
 #include "../../get_seconds.h"
 #include "../../readOBJ.h"
 #include "../../read_triangle_mesh.h"
-#include "../../adjacency_list.h"
 #include "../../writeOBJ.h"
 #include "../../writeOFF.h"
 #include "../../massmatrix.h"

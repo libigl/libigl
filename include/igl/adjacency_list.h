@@ -19,7 +19,7 @@ namespace igl
   /// @tparam T  should be a eigen sparse matrix primitive type like int or double
   /// @param[in] F       #F by dim list of mesh faces (must be triangles)
   /// @param[out] A  vector<vector<T> > containing at row i the adjacent vertices of vertex i
-  /// @param[in] sorted  flag that indicates if the list should be sorted counter-clockwise
+  /// @param[in] sorted  flag that indicates if the list should be sorted counter-clockwise. Input assumed to be manifold.
   ///
   /// Example:
   /// \code{.cpp}
