@@ -14,9 +14,10 @@ template <
   typename Derivedsource,
   typename Deriveddir,
   typename Scalar>
-IGL_INLINE bool igl::ray_box_intersect(
+IGL_INLINE bool igl::ray_box_intersect_opt(
   const Eigen::MatrixBase<Derivedsource> & origin,
-  const Eigen::MatrixBase<Deriveddir> & dir,
+  const Eigen::MatrixBase<Deriveddir> & inv_dir,
+  const Eigen::MatrixBase<Deriveddir> & inv_dir_pad,
   const Eigen::AlignedBox<Scalar,3> & box,
   const Scalar & t0,
   const Scalar & t1,
@@ -25,25 +26,16 @@ IGL_INLINE bool igl::ray_box_intersect(
 {
   using namespace Eigen;
   typedef Matrix<Scalar,1,3>  RowVector3S;
-  // This should be precomputed and provided as input
-  const RowVector3S inv_dir( 1./dir(0),1./dir(1),1./dir(2));
   const std::array<bool, 3> sign = { inv_dir(0)<0, inv_dir(1)<0, inv_dir(2)<0};
   // http://people.csail.mit.edu/amy/papers/box-jgt.pdf
   // "An Efficient and Robust Ray–Box Intersection Algorithm"
   // corrected in "Robust BVH Ray Traversal" by Thiago Ize, section 3:
-  // > multiplying will always be fast and is an extremely simple modification
-  // > to existing BVH traversal code, as seen in Listing 4. We call this the MaxMult
-  // > traversal. Furthermore, we do not need to compute the padded inverse ray direction
-  // > like in InvUlps, so if few traversals occur, this might even be faster. The only significant
-  // > downsides are that it is often 2 ulps too large, which is usually a minor issue, and it
-  // > does add a small amount of extra work during each traversal step.
-  Scalar safe_factor = (Scalar)1 + 4*std::numeric_limits<Scalar>::epsilon();
   Scalar tymin, tymax, tzmin, tzmax;
   std::array<RowVector3S, 2> bounds = {box.min().array(),box.max().array()};
   tmin = ( bounds[sign[0]](0)   - origin(0)) * inv_dir(0);
-  tmax = (( bounds[1-sign[0]](0) - origin(0)) * inv_dir(0)) * safe_factor;
+  tmax = ( bounds[1-sign[0]](0) - origin(0)) * inv_dir_pad(0);
   tymin = (bounds[sign[1]](1)   - origin(1)) * inv_dir(1);
-  tymax = ((bounds[1-sign[1]](1) - origin(1)) * inv_dir(1)) * safe_factor;
+  tymax = (bounds[1-sign[1]](1) - origin(1)) * inv_dir_pad(1);
   // NaN-safe min and max
   const auto berger_perrin_min = [&](
       const Scalar a,
@@ -61,21 +53,42 @@ IGL_INLINE bool igl::ray_box_intersect(
   {
     return false;
   }
-  tmin = berger_perrin_max(tmin,tymin);
-  tmax = berger_perrin_min(tmax,tymax);
+  tmin = berger_perrin_max(tmin, tymin);
+  tmax = berger_perrin_min(tmax, tymax);
   tzmin = (bounds[sign[2]](2) - origin(2))   * inv_dir(2);
-  tzmax = ((bounds[1-sign[2]](2) - origin(2)) * inv_dir(2)) * safe_factor;
-  if ( (tmin > tzmax) || (tzmin > tmax) )
+  tzmax = (bounds[1-sign[2]](2) - origin(2)) * inv_dir_pad(2);
+  if ((tmin > tzmax) || (tzmin > tmax))
   {
     return false;
   }
-  tmin = berger_perrin_max(tmin,tzmin);
-  tmax = berger_perrin_min(tmax,tzmax);
-  if(!( (tmin < t1) && (tmax > t0) ))
-  {
-    return false;
-  }
-  return true;
+  tmin = berger_perrin_max(tmin, tzmin);
+  tmax = berger_perrin_min(tmax, tzmax);
+  return ((tmin < t1) && (tmax > t0));
+}
+
+template <
+  typename Derivedsource,
+  typename Deriveddir,
+  typename Scalar>
+IGL_INLINE bool igl::ray_box_intersect(
+  const Eigen::MatrixBase<Derivedsource> & origin,
+  const Eigen::MatrixBase<Deriveddir> & dir,
+  const Eigen::AlignedBox<Scalar,3> & box,
+  const Scalar & t0,
+  const Scalar & t1,
+  Scalar & tmin,
+  Scalar & tmax)
+{
+    // precompute the inv_dir
+    Eigen::Matrix<Scalar, 1, 3> inv_dir = dir.cwiseInverse();
+    // see "Robust BVH Ray Traversal" by Thiago Ize, section 3:
+    // for why we need this
+    Eigen::Matrix<Scalar, 1, 3> inv_dir_pad;
+    for (int i = 0; i < 3; ++i) {
+        inv_dir_pad(i) = std::nextafter(inv_dir(i), std::numeric_limits<Scalar>::infinity());
+        inv_dir_pad(i) = std::nextafter(inv_dir_pad(i), std::numeric_limits<Scalar>::infinity());
+    }
+    return igl::ray_box_intersect_opt(origin, inv_dir, inv_dir_pad, box, t0, t1, tmin, tmax);
 }
 
 #ifdef IGL_STATIC_LIBRARY

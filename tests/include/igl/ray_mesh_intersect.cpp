@@ -109,6 +109,6 @@ TEST_CASE("ray_mesh_intersect: corner-case2", "[igl]")
   box.extend(vertices.row(2).transpose());
 
   float tmin, tmax;
-  bool is_hit_box = igl::ray_box_intersect(origin, direction, box,0.0f, std::numeric_limits<float>::max(),tmin,tmax);
+  bool is_hit_box = igl::ray_box_intersect(origin, direction, box, 0.0f, std::numeric_limits<float>::max(), tmin, tmax);
   REQUIRE (is_hit == is_hit_box);
 }
