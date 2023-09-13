@@ -182,7 +182,7 @@ namespace glfw
     }
     glfwMakeContextCurrent(window);
     // Load OpenGL and its extensions
-    if (!gladLoadGL((GLADloadfunc) glfwGetProcAddress))
+    if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress))
     {
       printf("Failed to load OpenGL and its extensions\n");
       return(-1);
