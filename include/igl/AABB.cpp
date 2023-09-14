@@ -10,6 +10,7 @@
 #include "barycenter.h"
 #include "colon.h"
 #include "doublearea.h"
+#include "nextafter.h"
 #include "point_simplex_squared_distance.h"
 #include "project_to_line_segment.h"
 #include "sort.h"
@@ -17,7 +18,6 @@
 #include "ray_box_intersect.h"
 #include "parallel_for.h"
 #include "ray_mesh_intersect.h"
-#include <cmath>
 #include <iostream>
 #include <iomanip>
 #include <limits>
@@ -25,27 +25,6 @@
 #include <queue>
 #include <stack>
 
-
-namespace
-{
-// see "Robust BVH Ray Traversal" by Thiago Ize, section 3:
-// for why we need this
-template <typename Derived>
-IGL_INLINE void nextafter(
-    const Eigen::MatrixBase<Derived> &in,
-    int it,
-    Eigen::PlainObjectBase<Derived>& out)
-{
-    typedef typename Derived::Scalar Scalar;
-    out = in;
-    out.unaryExpr([&it](Scalar x) {
-        for (; it > 0; --it) {
-            x = std::nextafter(x, std::numeric_limits<Scalar>::infinity());
-        }
-        return x;
-    });
-}
-}
 
 template <typename DerivedV, int DIM>
 template <typename DerivedEle, typename Derivedbb_mins, typename Derivedbb_maxs, typename Derivedelements>
@@ -855,8 +834,8 @@ igl::AABB<DerivedV,DIM>::intersect_ray(
   std::vector<igl::Hit> & hits) const
 {
   RowVectorDIMS inv_dir = dir.cwiseInverse();
-  RowVectorDIMS inv_dir_pad;
-  nextafter(inv_dir, 2, inv_dir_pad);
+  RowVectorDIMS inv_dir_pad = inv_dir;
+  igl::nextafter(inv_dir_pad, 2);
   return intersect_ray_opt(V, Ele, origin, dir, inv_dir, inv_dir_pad, hits);
 }
 
@@ -930,8 +909,8 @@ igl::AABB<DerivedV,DIM>::intersect_ray(
   igl::Hit & hit) const
 {
   RowVectorDIMS inv_dir = dir.cwiseInverse();
-  RowVectorDIMS inv_dir_pad;
-  nextafter(inv_dir, 2, inv_dir_pad);
+  RowVectorDIMS inv_dir_pad = inv_dir;
+  igl::nextafter(inv_dir_pad, 2);
   return intersect_ray_opt(V, Ele, origin, dir, inv_dir, inv_dir_pad, _min_t, hit);
 }
 
