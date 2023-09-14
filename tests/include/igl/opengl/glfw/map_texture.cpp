@@ -1,8 +1,25 @@
 #include <test_common.h>
 #include <igl/opengl/glfw/map_texture.h>
+#include <igl/opengl/gl.h>
+#include <GLFW/glfw3.h>
+#include <iostream>
+
+bool test_window()
+{
+  std::cerr<< "Testing window."<<std::endl;
+  if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress))
+  {
+    std::cerr<< "Unable to create background window. Skipping test."<<std::endl;
+    return false;
+  }
+  return true;
+}
 
 TEST_CASE("map_texture: identity","[igl/glfw]") 
 {
+  if(!test_window()) { return; }
+  
+
   // 2 triangle quad
   Eigen::MatrixXd V(4,3);
   V<<0,0,0,
@@ -38,6 +55,7 @@ TEST_CASE("map_texture: identity","[igl/glfw]")
 
 TEST_CASE("map_texture: transpose","[igl/glfw]") 
 {
+  if(!test_window()) { return; }
   // 2 triangle quad
   Eigen::MatrixXd V(4,3);
   V<<0,0,0,
