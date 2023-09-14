@@ -17,12 +17,13 @@ namespace igl
     /// @param[in] M  #V by dim matrix of per-vertex data
     /// @param[in] refresh  whether to actually call glBufferData or just bind the buffer
     /// @return id of named attribute in shader
+    template <typename Scalar, int RowsAtCompileTime, int ColsAtCompileTime>
     IGL_INLINE GLint bind_vertex_attrib_array(
       const GLuint program_shader,
       const std::string &name, 
       GLuint bufferID, 
-      const Eigen::Matrix<float,Eigen::Dynamic,Eigen::Dynamic,Eigen::RowMajor> &M, 
-      bool refresh);
+      const Eigen::Matrix<Scalar,RowsAtCompileTime,ColsAtCompileTime,Eigen::RowMajor> &M,
+      const bool refresh);
   }
 }
 #ifndef IGL_STATIC_LIBRARY
