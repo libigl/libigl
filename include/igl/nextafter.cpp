@@ -20,11 +20,10 @@ IGL_INLINE void igl::nextafter(
 {
     typedef typename Derived::Scalar Scalar;
 
-    for (int i = 0; i < inout.rows(); ++i) {
-        for (int j = 0; j < inout.cols(); ++j) {
-            for (int k = 0; k < it; ++k) {
-                inout(i, j) = std::nextafter(inout(i, j), std::numeric_limits<Scalar>::infinity());
-            }
-        }
-    }
+    inout = inout.unaryExpr([&it](Scalar v){
+              for (int k = 0; k < it; ++k) {
+                v = std::nextafter(v, std::numeric_limits<Scalar>::infinity());
+              }
+              return v;
+            });
 }
