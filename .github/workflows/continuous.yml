@@ -73,6 +73,7 @@ jobs:
             -DCMAKE_BUILD_TYPE=${{ matrix.config }} \
             -DLIBIGL_USE_STATIC_LIBRARY=${{ matrix.build-params.static }} \
             -DLIBIGL_BUILD_TUTORIALS=${{ matrix.build-params.tutorials }} \
+            -DLIBIGL_GLFW_TESTS=OFF \
             -DLIBIGL_BUILD_TESTS=${{ matrix.build-params.tests }} \
             -DLIBIGL_COPYLEFT_CGAL=ON
 
@@ -145,6 +146,7 @@ jobs:
             -DLIBIGL_COPYLEFT_CGAL=ON ^
             -DLIBIGL_BUILD_TUTORIALS=${{ matrix.build-params.tutorials }} ^
             -DLIBIGL_BUILD_TESTS=${{ matrix.build-params.tests }} ^
+            -DLIBIGL_GLFW_TESTS=OFF ^
             -DLIBIGL_TUTORIALS_CHAPTER1=${{ (matrix.build-params.selected_tutorial == 'NONE' || matrix.build-params.selected_tutorial == '1') && 'ON' || 'OFF' }} ^
             -DLIBIGL_TUTORIALS_CHAPTER2=${{ (matrix.build-params.selected_tutorial == 'NONE' || matrix.build-params.selected_tutorial == '2') && 'ON' || 'OFF' }} ^
             -DLIBIGL_TUTORIALS_CHAPTER3=${{ (matrix.build-params.selected_tutorial == 'NONE' || matrix.build-params.selected_tutorial == '3') && 'ON' || 'OFF' }} ^
