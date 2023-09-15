@@ -8,9 +8,7 @@
 #include "ray_box_intersect.h"
 #include <array>
 #include <igl/matlab_format.h>
-#include <igl/nextafter.h>
-#include <limits>
-#include <iomanip>
+#include <igl/increment_ulp.h>
 
 template <
   typename Derivedsource,
@@ -86,7 +84,7 @@ IGL_INLINE bool igl::ray_box_intersect(
     // see "Robust BVH Ray Traversal" by Thiago Ize, section 3:
     // for why we need this
     Eigen::Matrix<Scalar, 1, 3> inv_dir_pad = inv_dir;
-    igl::nextafter(inv_dir_pad, 2);
+    igl::increment_ulp(inv_dir_pad, 2);
     return igl::ray_box_intersect_opt(origin, inv_dir, inv_dir_pad, box, t0, t1, tmin, tmax);
 }
 

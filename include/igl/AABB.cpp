@@ -10,7 +10,7 @@
 #include "barycenter.h"
 #include "colon.h"
 #include "doublearea.h"
-#include "nextafter.h"
+#include "increment_ulp.h"
 #include "point_simplex_squared_distance.h"
 #include "project_to_line_segment.h"
 #include "sort.h"
@@ -835,7 +835,7 @@ igl::AABB<DerivedV,DIM>::intersect_ray(
 {
   RowVectorDIMS inv_dir = dir.cwiseInverse();
   RowVectorDIMS inv_dir_pad = inv_dir;
-  igl::nextafter(inv_dir_pad, 2);
+  igl::increment_ulp(inv_dir_pad, 2);
   return intersect_ray_opt(V, Ele, origin, dir, inv_dir, inv_dir_pad, hits);
 }
 
@@ -910,7 +910,7 @@ igl::AABB<DerivedV,DIM>::intersect_ray(
 {
   RowVectorDIMS inv_dir = dir.cwiseInverse();
   RowVectorDIMS inv_dir_pad = inv_dir;
-  igl::nextafter(inv_dir_pad, 2);
+  igl::increment_ulp(inv_dir_pad, 2);
   return intersect_ray_opt(V, Ele, origin, dir, inv_dir, inv_dir_pad, _min_t, hit);
 }
 

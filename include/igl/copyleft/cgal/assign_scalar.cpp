@@ -7,6 +7,8 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "assign_scalar.h"
 
+#include <cmath>
+
 template <>
 IGL_INLINE void igl::copyleft::cgal::assign_scalar(
   const CGAL::Epeck::FT & rhs,
