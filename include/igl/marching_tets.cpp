@@ -27,7 +27,7 @@ void igl::marching_tets(
     const Eigen::MatrixBase<DerivedTV>& TV,
     const Eigen::MatrixBase<DerivedTT>& TT,
     const Eigen::MatrixBase<DerivedS>& isovals,
-    double isovalue,
+    const typename DerivedS::Scalar isovalue,
     Eigen::PlainObjectBase<DerivedSV>& outV,
     Eigen::PlainObjectBase<DerivedSF>& outF,
     Eigen::PlainObjectBase<DerivedJ>& J,
@@ -165,9 +165,10 @@ void igl::marching_tets(
         typedef Eigen::Matrix<typename DerivedTV::Scalar, 1, 3, Eigen::RowMajor, 1, 3> RowVector;
         const RowVector v1 = TV.row(edge.first);
         const RowVector v2 = TV.row(edge.second);
-        const double a = fabs(isovals(edge.first, 0) - isovalue);
-        const double b = fabs(isovals(edge.second, 0) - isovalue);
-        const double w = a / (a+b);
+        using Scalar = typename DerivedS::Scalar;
+        const Scalar a = fabs(isovals(edge.first, 0) - isovalue);
+        const Scalar b = fabs(isovals(edge.second, 0) - isovalue);
+        const Scalar w = a / (a+b);
 
         // Create a casted copy in case BCType is a float and we need to downcast
         const BCType bc_w = static_cast<BCType>(w);
@@ -193,5 +194,5 @@ void igl::marching_tets(
 
 
 #ifdef IGL_STATIC_LIBRARY
-template void igl::marching_tets<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, double>(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, double, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&, Eigen::SparseMatrix<double, 0, int>&);
+template void igl::marching_tets<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, double>(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> > const&, const double, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&, Eigen::SparseMatrix<double, 0, int>&);
 #endif // IGL_STATIC_LIBRARY
