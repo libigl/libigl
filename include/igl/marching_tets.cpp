@@ -15,6 +15,7 @@
 #include <iostream>
 #include <algorithm>
 #include <utility>
+#include <cmath>
 
 template <typename DerivedTV,
           typename DerivedTT,
@@ -166,8 +167,8 @@ void igl::marching_tets(
         const RowVector v1 = TV.row(edge.first);
         const RowVector v2 = TV.row(edge.second);
         using Scalar = typename DerivedS::Scalar;
-        const Scalar a = fabs(isovals(edge.first, 0) - isovalue);
-        const Scalar b = fabs(isovals(edge.second, 0) - isovalue);
+        const Scalar a = abs(isovals(edge.first, 0) - isovalue);
+        const Scalar b = abs(isovals(edge.second, 0) - isovalue);
         const Scalar w = a / (a+b);
 
         // Create a casted copy in case BCType is a float and we need to downcast
