@@ -932,7 +932,7 @@ igl::AABB<DerivedV,DIM>::intersect_ray_opt(
   {
     Scalar _1,_2;
 
-    if(!ray_box_intersect_opt(origin,inv_dir,inv_dir_pad,m_box,t0,t1,_1,_2))
+    if(!ray_box_intersect(origin,inv_dir,inv_dir_pad,m_box,t0,t1,_1,_2))
     {
       return false;
     }
@@ -977,7 +977,7 @@ igl::AABB<DerivedV,DIM>::intersect_ray_opt(
   const Scalar t0 = 0;
   {
     Scalar _1,_2;
-    if(!ray_box_intersect_opt(origin,inv_dir,inv_dir_pad,m_box,t0,min_t,_1,_2))
+    if(!ray_box_intersect(origin,inv_dir,inv_dir_pad,m_box,t0,min_t,_1,_2))
     {
       return false;
     }

@@ -35,12 +35,13 @@ namespace igl
     const Scalar & t1,
     Scalar & tmin,
     Scalar & tmax);
-  // same with direction inverse precomputed
+  /// \overload
+  /// \brief same with direction inverse precomputed
   template <
     typename Derivedsource,
     typename Deriveddir,
     typename Scalar>
-  IGL_INLINE bool ray_box_intersect_opt(
+  IGL_INLINE bool ray_box_intersect(
     const Eigen::MatrixBase<Derivedsource> & source,
     const Eigen::MatrixBase<Deriveddir> & inv_dir,
     const Eigen::MatrixBase<Deriveddir> & inv_dir_pad,
