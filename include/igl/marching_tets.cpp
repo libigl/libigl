@@ -164,9 +164,9 @@ void igl::marching_tets(
       {
         // Typedef to make sure we handle floats properly
         typedef Eigen::Matrix<typename DerivedTV::Scalar, 1, 3, Eigen::RowMajor, 1, 3> RowVector;
-        const RowVector v1 = TV.row(edge.first);
-        const RowVector v2 = TV.row(edge.second);
         using Scalar = typename DerivedS::Scalar;
+        const RowVector v1 =  TV.row(edge.first).template cast<Scalar>();
+        const RowVector v2 = TV.row(edge.second).template cast<Scalar>();
         const Scalar a = abs(isovals(edge.first, 0) - isovalue);
         const Scalar b = abs(isovals(edge.second, 0) - isovalue);
         const Scalar w = a / (a+b);
