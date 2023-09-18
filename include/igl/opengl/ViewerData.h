@@ -71,9 +71,10 @@ public:
   /// @param[in] core_id  Index of the core to set (default is 0)
   IGL_INLINE void set_visible(bool value, unsigned int core_id = 1);
 
-  /// Set the color of the mesh
+  /// Set the diffuse color of the mesh. The ambient color will be set to 0.1*C
+  /// and the specular color will be set to 0.3+0.1*(C-0.3).
   ///
-  /// @param[in] C  #V|#F|1 by 3 list of colors
+  /// @param[in] C  #V|#F|1 by 3 list of diffuse colors
   IGL_INLINE void set_colors(const Eigen::MatrixXd &C);
 
   /// Set per-vertex UV coordinates
