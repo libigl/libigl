@@ -38,7 +38,7 @@ namespace igl {
       const Eigen::MatrixBase<DerivedTV>& TV,
       const Eigen::MatrixBase<DerivedTT>& TT,
       const Eigen::MatrixBase<DerivedS>& S,
-      double isovalue,
+      const typename DerivedS::Scalar isovalue,
       Eigen::PlainObjectBase<DerivedSV>& SV,
       Eigen::PlainObjectBase<DerivedSF>& SF,
       Eigen::PlainObjectBase<DerivedJ>& J,
@@ -73,11 +73,11 @@ namespace igl {
       const Eigen::MatrixBase<DerivedTV>& TV,
       const Eigen::MatrixBase<DerivedTT>& TT,
       const Eigen::MatrixBase<DerivedS>& S,
-      double isovalue,
+      const typename DerivedS::Scalar isovalue,
       Eigen::PlainObjectBase<DerivedSV>& SV,
       Eigen::PlainObjectBase<DerivedSF>& SF,
       Eigen::PlainObjectBase<DerivedJ>& J) {
-    Eigen::SparseMatrix<double> _BC;
+    Eigen::SparseMatrix<typename DerivedSV::Scalar> _BC;
     return igl::marching_tets(TV, TT, S, isovalue, SV, SF, J, _BC);
   }
   /// \overload
@@ -91,7 +91,7 @@ namespace igl {
       const Eigen::MatrixBase<DerivedTV>& TV,
       const Eigen::MatrixBase<DerivedTT>& TT,
       const Eigen::MatrixBase<DerivedS>& S,
-      double isovalue,
+      const typename DerivedS::Scalar isovalue,
       Eigen::PlainObjectBase<DerivedSV>& SV,
       Eigen::PlainObjectBase<DerivedSF>& SF,
       Eigen::SparseMatrix<BCType>& BC) {
@@ -108,11 +108,11 @@ namespace igl {
       const Eigen::MatrixBase<DerivedTV>& TV,
       const Eigen::MatrixBase<DerivedTT>& TT,
       const Eigen::MatrixBase<DerivedS>& S,
-      double isovalue,
+      const typename DerivedS::Scalar isovalue,
       Eigen::PlainObjectBase<DerivedSV>& SV,
       Eigen::PlainObjectBase<DerivedSF>& SF) {
     Eigen::VectorXi _J;
-    Eigen::SparseMatrix<double> _BC;
+    Eigen::SparseMatrix<typename DerivedSV::Scalar> _BC;
     return igl::marching_tets(TV, TT, S, isovalue, SV, SF, _J, _BC);
   }
 
