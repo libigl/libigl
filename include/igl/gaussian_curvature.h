@@ -11,8 +11,12 @@
 #include <Eigen/Core>
 namespace igl
 {
-  /// Compute discrete local integral gaussian curvature (angle deficit, without
-  /// averaging by local area).
+  /// Compute the 2π minus the sum of interior angles at each vertex. For
+  /// interior vertices of a manifold mesh this corresponds to the local
+  /// integral gaussian curvature ("angle deficit", without averaging by local
+  /// area). For boundary vertices, this quantity is not so meaninful. FWIW,
+  /// adding π to the output for boundary vertices would produce local integral
+  /// geodesic curvature along the boundary curve.
   ///
   /// @param[in] V  #V by 3 eigen Matrix of mesh vertex 3D positions
   /// @param[in] F  #F by 3 eigen Matrix of face (triangle) indices
