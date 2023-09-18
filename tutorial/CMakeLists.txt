@@ -31,6 +31,7 @@ if(LIBIGL_TUTORIALS_CHAPTER1)
     igl_add_tutorial(111_MatCap igl::glfw igl::stb)
     igl_add_tutorial(112_Selection igl::imgui)
     igl_add_tutorial(113_Shadows igl::imgui igl::stb)
+    igl_add_tutorial(114_CustomShader igl::glfw)
 endif()
 
 # Chapter 2
