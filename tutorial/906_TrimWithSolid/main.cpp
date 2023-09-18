@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
   // set first mesh as selected
   vr.selected_data_index = 0;
 
-  vr.launch_init(false);
+  vr.launch_init();
   vr.core().draw(vr.data(),true);
   vr.callback_mouse_up(vr,0,0);
   vr.launch_rendering(true);
