@@ -29,7 +29,7 @@ IGL_INLINE bool igl::writeOFF(
   s<<
     "OFF\n"<<V.rows()<<" "<<F.rows()<<" 0\n"<<
     V.format(IOFormat(FullPrecision,DontAlignCols," ","\n","","","","\n"))<<
-    (F.array()).format(IOFormat(FullPrecision,DontAlignCols," ","\n","3 ","","","\n"));
+    (F.array()).format(IOFormat(FullPrecision,DontAlignCols," ","\n",std::to_string(F.cols()) + " ","","","\n"));
   return true;
 }
 
@@ -72,7 +72,7 @@ IGL_INLINE bool igl::writeOFF(
     s << unsigned(RGB_Array(i,0)) << " " << unsigned(RGB_Array(i,1)) << " " << unsigned(RGB_Array(i,2)) << " 255\n";
   }
 
-  s<<(F.array()).format(IOFormat(FullPrecision,DontAlignCols," ","\n","3 ","","","\n"));
+  s<<(F.array()).format(IOFormat(FullPrecision,DontAlignCols," ","\n",std::to_string(F.cols()) + " ","","","\n"));
   return true;
 }
 
