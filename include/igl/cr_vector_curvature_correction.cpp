@@ -14,7 +14,7 @@
 #include "squared_edge_lengths.h"
 #include "doublearea.h"
 #include "boundary_loop.h"
-#include "internal_angles.h"
+#include "internal_angles_intrinsic.h"
 
 #include "PI.h"
 
@@ -69,7 +69,7 @@ igl::cr_vector_curvature_correction_intrinsic(
 {
   Eigen::Matrix<typename DerivedL_sq::Scalar,Eigen::Dynamic,Eigen::Dynamic>
   theta;
-  internal_angles_using_squared_edge_lengths(l_sq, theta);
+  internal_angles_intrinsic(l_sq, theta);
   
   cr_vector_curvature_correction_intrinsic(F, l_sq, theta, E, oE, K);
 }
