@@ -443,6 +443,43 @@ private:
         Scalar & sqr_d,
         int & i,
         Eigen::PlainObjectBase<RowVectorDIMS> & c) const;
+
+      /// Intersect a ray with the mesh return all hits
+      ///
+      /// @param[in]  V  #V by dim list of vertex positions
+      /// @param[in]  Ele  #Ele by dim list of simplex indices
+      /// @param[in]  origin  dim-long ray origin
+      /// @param[in]  dir  dim-long ray direction
+      /// @param[out]  hits  list of hits
+      /// @return  true if any hits
+      template <typename DerivedEle>
+      IGL_INLINE bool intersect_ray_opt(
+        const Eigen::MatrixBase<DerivedV> & V,
+        const Eigen::MatrixBase<DerivedEle> & Ele,
+        const RowVectorDIMS & origin,
+        const RowVectorDIMS & dir,
+        const RowVectorDIMS & inv_dir,
+        const RowVectorDIMS & inv_dir_pad,
+        std::vector<igl::Hit> & hits) const;
+      /// Intersect a ray with the mesh return first hit farther than `min_t`
+      ///
+      /// @param[in]  V  #V by dim list of vertex positions
+      /// @param[in]  Ele  #Ele by dim list of simplex indices
+      /// @param[in]  origin  dim-long ray origin
+      /// @param[in]  dir  dim-long ray direction
+      /// @param[in]  min_t  minimum t value to consider
+      /// @param[out]  hit  first hit
+      /// @return  true if any hit
+      template <typename DerivedEle>
+      IGL_INLINE bool intersect_ray_opt(
+        const Eigen::MatrixBase<DerivedV> & V,
+        const Eigen::MatrixBase<DerivedEle> & Ele,
+        const RowVectorDIMS & origin,
+        const RowVectorDIMS & dir,
+        const RowVectorDIMS & inv_dir,
+        const RowVectorDIMS & inv_dir_pad,
+        const Scalar min_t,
+        igl::Hit & hit) const;
 public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     };
