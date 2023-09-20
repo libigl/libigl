@@ -3,7 +3,6 @@
 #include <igl/internal_angles_intrinsic.h>
 #include <igl/matlab_format.h>
 #include <igl/squared_edge_lengths.h>
-#include <iostream>
 
 TEST_CASE("internal_angles: 1e-7", "[igl]")
 {

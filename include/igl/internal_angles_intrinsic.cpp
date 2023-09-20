@@ -19,7 +19,8 @@ IGL_INLINE void igl::internal_angles_intrinsic(
         const auto & s1 = L_sq(f,d);
         const auto & s2 = L_sq(f,(d+1)%3);
         const auto & s3 = L_sq(f,(d+2)%3);
-        K(f,d) = acos((s3 + s2 - s1)/(2.*sqrt(s3*s2)));
+        using Scalar = typename DerivedK::Scalar;
+        K(f,d) = std::acos((s3 + s2 - s1)/(Scalar(2)*std::sqrt(s3*s2)));
 
         //// See https://github.com/libigl/libigl/issues/1463
         //// Kahan's method
