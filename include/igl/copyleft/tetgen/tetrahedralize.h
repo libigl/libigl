@@ -50,6 +50,25 @@ namespace igl
       ///   2 tetgen did not crash but could not create any tets (probably there are
       ///     holes, duplicate faces etc.)
       ///   -1 other error
+      ///
+      /// \note Tetgen mixes integer region ids in with other region data `attr
+      /// = (int) in->regionlist[i + 3];`. So it's declared safe to use integer
+      /// types for `TR` since this also assumes that there's a single tet
+      /// attribute and that it's the region id.
+      ///
+      /// #### Example
+      ///
+      /// ```cpp
+      /// Eigen::MatrixXd V;
+      /// Eigen::MatrixXi F;
+      /// …
+      /// Eigen::VectorXi VM,FM;
+      /// Eigen::MatrixXd H,R;
+      /// Eigen::VectorXi TM,TR,PT;
+      /// Eigen::MatrixXi FT,TN;
+      /// int numRegions;
+      /// tetrahedralize(V,F,H,VM,FM,R,switches,TV,TT,TF,TM,TR,TN,PT,FT,numRegions);
+      /// ```
       template <
         typename DerivedV,
         typename DerivedF,
