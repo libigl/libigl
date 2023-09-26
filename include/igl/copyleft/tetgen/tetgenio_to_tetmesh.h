@@ -22,6 +22,20 @@ namespace igl
   {
     namespace tetgen
     {
+      /// Convert a tetgenio to a tetmesh
+      ///
+      /// @param[in] out output of tetrahedralization
+      /// @param[out] V  #V by 3 list of mesh vertex positions
+      /// @param[out] T  #T by 4 list of mesh tet indices into V
+      /// @param[out] F  #F by 3 list of mesh triangle indices into V
+      /// @param[out] TM  #T by 1 list of material indices into R
+      /// @param[out] R  #TT list of region ID for each tetrahedron      
+      /// @param[out] N  #TT by 4 list of indices neighbors for each tetrahedron ('n')
+      /// @param[out] PT  #TV list of incident tetrahedron for a vertex ('m')
+      /// @param[out] FT  #TF by 2 list of tetrahedrons sharing a triface ('nn')
+      /// @param[out] num_regions Number of regions in output mesh
+      ///
+      /// \bug Assumes that out.numberoftetrahedronattributes == 1 or 0
       template <
         typename DerivedV, 
         typename DerivedT,
