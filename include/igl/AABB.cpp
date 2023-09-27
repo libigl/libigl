@@ -24,6 +24,113 @@
 #include <queue>
 #include <stack>
 
+// This would be so much better with C++17 if constexpr
+namespace
+{
+  template <
+    typename DerivedV,
+    typename DerivedEle,
+    typename Derivedq,
+    int DIM>
+  struct AABB_all_positive_barycentric_coordinates_helper;
+
+  template <
+    typename DerivedV,
+    typename DerivedEle,
+    typename Derivedq>
+  struct AABB_all_positive_barycentric_coordinates_helper<
+  DerivedV,
+  DerivedEle,
+  Derivedq,
+  2>
+  {
+    static inline bool compute(
+      const Eigen::MatrixBase<DerivedV> & V,
+      const Eigen::MatrixBase<DerivedEle> & Ele,
+      const int primitive,
+      const Eigen::MatrixBase<Derivedq> & q)
+    {
+      using namespace igl;
+      using Scalar = typename DerivedV::Scalar;
+      const Scalar epsilon = igl::EPS<Scalar>();
+      static_assert(
+        DerivedV::ColsAtCompileTime == 2 || 
+        DerivedV::ColsAtCompileTime == Eigen::Dynamic,
+        "V should be 2D");
+      static_assert(
+        Derivedq::ColsAtCompileTime == 2 || 
+        Derivedq::ColsAtCompileTime == Eigen::Dynamic,
+        "q should be 2D");
+      // Barycentric coordinates
+      typedef Eigen::Matrix<Scalar,2,1> Vector2S;
+      const Vector2S V1 = V.row(Ele(primitive,0));
+      const Vector2S V2 = V.row(Ele(primitive,1));
+      const Vector2S V3 = V.row(Ele(primitive,2));
+      // Hack for now to keep templates simple. If becomes bottleneck
+      // consider using std::enable_if_t
+      const Vector2S q2 = q.head(2);
+      Scalar a1 = doublearea_single(V1,V2,q2);
+      Scalar a2 = doublearea_single(V2,V3,q2);
+      Scalar a3 = doublearea_single(V3,V1,q2);
+      // Normalization is important for correcting magnitude near epsilon
+      Scalar sum = a1+a2+a3;
+      a1 /= sum;
+      a2 /= sum;
+      a3 /= sum;
+      return a1>=-epsilon && a2>=-epsilon && a3>=-epsilon;
+    }
+  };
+
+
+  template <
+    typename DerivedV,
+    typename DerivedEle,
+    typename Derivedq>
+  struct AABB_all_positive_barycentric_coordinates_helper<
+  DerivedV,
+  DerivedEle,
+  Derivedq,
+  3>
+  {
+    static inline bool compute(
+      const Eigen::MatrixBase<DerivedV> & V,
+      const Eigen::MatrixBase<DerivedEle> & Ele,
+      const int primitive,
+      const Eigen::MatrixBase<Derivedq> & q)
+    {
+      using namespace igl;
+      using Scalar = typename DerivedV::Scalar;
+      const Scalar epsilon = igl::EPS<Scalar>();
+      static_assert(
+        DerivedV::ColsAtCompileTime == 3 || 
+        DerivedV::ColsAtCompileTime == Eigen::Dynamic,
+        "V should be 2D");
+      static_assert(
+        Derivedq::ColsAtCompileTime == 3 || 
+        Derivedq::ColsAtCompileTime == Eigen::Dynamic,
+        "q should be 2D");
+      // Barycentric coordinates
+      typedef Eigen::Matrix<Scalar,1,3> RowVector3S;
+      const RowVector3S V1 = V.row(Ele(primitive,0));
+      const RowVector3S V2 = V.row(Ele(primitive,1));
+      const RowVector3S V3 = V.row(Ele(primitive,2));
+      const RowVector3S V4 = V.row(Ele(primitive,3));
+      Scalar a1 = volume_single(V2,V4,V3,(RowVector3S)q);
+      Scalar a2 = volume_single(V1,V3,V4,(RowVector3S)q);
+      Scalar a3 = volume_single(V1,V4,V2,(RowVector3S)q);
+      Scalar a4 = volume_single(V1,V2,V3,(RowVector3S)q);
+      Scalar sum = a1+a2+a3+a4;
+      a1 /= sum;
+      a2 /= sum;
+      a3 /= sum;
+      a4 /= sum;
+      return a1>=-epsilon && a2>=-epsilon && a3>=-epsilon && a4>=-epsilon;
+    }
+  };
+
+}
+
+
 template <typename DerivedV, int DIM>
 template <typename DerivedEle, typename Derivedbb_mins, typename Derivedbb_maxs, typename Derivedelements>
 IGL_INLINE void igl::AABB<DerivedV,DIM>::init(
@@ -215,7 +322,6 @@ IGL_INLINE std::vector<int> igl::AABB<DerivedV,DIM>::find(
       "Query dimension should match aabb dimension");
   assert(Ele.cols() == V.cols()+1 &&
       "AABB::find only makes sense for (d+1)-simplices");
-  const Scalar epsilon = igl::EPS<Scalar>();
   // Check if outside bounding box
   bool inside = m_box.contains(q.transpose());
   if(!inside)
@@ -225,52 +331,8 @@ IGL_INLINE std::vector<int> igl::AABB<DerivedV,DIM>::find(
   assert(m_primitive==-1 || (m_left == NULL && m_right == NULL));
   if(is_leaf())
   {
-    // Initialize to some value > -epsilon
-    Scalar a1=0,a2=0,a3=0,a4=0;
-    switch(DIM)
-    {
-      case 3:
-        {
-          // Barycentric coordinates
-          typedef Eigen::Matrix<Scalar,1,3> RowVector3S;
-          const RowVector3S V1 = V.row(Ele(m_primitive,0));
-          const RowVector3S V2 = V.row(Ele(m_primitive,1));
-          const RowVector3S V3 = V.row(Ele(m_primitive,2));
-          const RowVector3S V4 = V.row(Ele(m_primitive,3));
-          a1 = volume_single(V2,V4,V3,(RowVector3S)q);
-          a2 = volume_single(V1,V3,V4,(RowVector3S)q);
-          a3 = volume_single(V1,V4,V2,(RowVector3S)q);
-          a4 = volume_single(V1,V2,V3,(RowVector3S)q);
-          break;
-        }
-      case 2:
-        {
-          // Barycentric coordinates
-          typedef Eigen::Matrix<Scalar,2,1> Vector2S;
-          const Vector2S V1 = V.row(Ele(m_primitive,0));
-          const Vector2S V2 = V.row(Ele(m_primitive,1));
-          const Vector2S V3 = V.row(Ele(m_primitive,2));
-          // Hack for now to keep templates simple. If becomes bottleneck
-          // consider using std::enable_if_t
-          const Vector2S q2 = q.head(2);
-          a1 = doublearea_single(V1,V2,q2);
-          a2 = doublearea_single(V2,V3,q2);
-          a3 = doublearea_single(V3,V1,q2);
-          break;
-        }
-      default:assert(false);
-    }
-    // Normalization is important for correcting sign
-    Scalar sum = a1+a2+a3+a4;
-    a1 /= sum;
-    a2 /= sum;
-    a3 /= sum;
-    a4 /= sum;
-    if(
-        a1>=-epsilon &&
-        a2>=-epsilon &&
-        a3>=-epsilon &&
-        a4>=-epsilon)
+    if(AABB_all_positive_barycentric_coordinates_helper<
+        DerivedV,DerivedEle,Derivedq, DIM>::compute(V,Ele,m_primitive,q))
     {
       return std::vector<int>(1,m_primitive);
     }else
