@@ -22,54 +22,41 @@ namespace igl
   {
     namespace tetgen
     {
-      /// Extract a tetrahedral mesh from a tetgenio object
+      /// Convert a tetgenio to a tetmesh
       ///
-      /// @param[in] out tetgenio output object
-      /// @param[out] V  #V by 3 vertex position list
-      /// @param[out] T  #T by 4 list of tetrahedra indices into V
-      /// @param[out] F  #F by 3 list of marked facets
-      /// @param[out] R  #T list of region IDs for tetrahedra
-      /// @param[out] N  #T by 2 list of neighbors for each tetrahedron
-      /// @param[out] PT #V list of incident tetrahedron for each vertex
-      /// @param[out] FT #F by 2 list of tetrahedra sharing each face 
-      /// @param[out] nR number of regions in output mesh
-      /// @return true on success, false on error
-      IGL_INLINE bool tetgenio_to_tetmesh(
-        const tetgenio & out,
-	std::vector<std::vector<REAL > > & V,
-	std::vector<std::vector<int> > & T,
-        std::vector<std::vector<int> > & F, 
-	std::vector<std::vector<REAL> > & R,// region marks for tetrahedrons
-	std::vector<std::vector<int > > &N, // neighborlist per tet
-	std::vector<std::vector<int > >	&PT, // Point to tet list per point
-	std::vector<std::vector<int > > &FT, // face to tet list
-	size_t & nR); // number of regions    
-      /// \overload
-      IGL_INLINE bool tetgenio_to_tetmesh(
-        const tetgenio & out,
-        std::vector<std::vector<REAL > > & V, 
-        std::vector<std::vector<int> > & T,
-        std::vector<std::vector<int> > & F);
-      /// \overload
-      IGL_INLINE bool tetgenio_to_tetmesh(
-        const tetgenio & out,
-        std::vector<std::vector<REAL > > & V, 
-        std::vector<std::vector<int> > & T);
-      /// \overload
-      template <typename DerivedV, typename DerivedT, typename DerivedF>
+      /// @param[in] out output of tetrahedralization
+      /// @param[out] V  #V by 3 list of mesh vertex positions
+      /// @param[out] T  #T by 4 list of mesh tet indices into V
+      /// @param[out] F  #F by 3 list of mesh triangle indices into V
+      /// @param[out] TM  #T by 1 list of material indices into R
+      /// @param[out] R  #TT list of region ID for each tetrahedron      
+      /// @param[out] N  #TT by 4 list of indices neighbors for each tetrahedron ('n')
+      /// @param[out] PT  #TV list of incident tetrahedron for a vertex ('m')
+      /// @param[out] FT  #TF by 2 list of tetrahedrons sharing a triface ('nn')
+      /// @param[out] num_regions Number of regions in output mesh
+      ///
+      /// \bug Assumes that out.numberoftetrahedronattributes == 1 or 0
+      template <
+        typename DerivedV, 
+        typename DerivedT,
+        typename DerivedF,
+        typename DerivedTM,
+        typename DerivedR,
+        typename DerivedN,
+        typename DerivedPT,
+        typename DerivedFT>
       IGL_INLINE bool tetgenio_to_tetmesh(
         const tetgenio & out,
         Eigen::PlainObjectBase<DerivedV>& V,
         Eigen::PlainObjectBase<DerivedT>& T,
-        Eigen::PlainObjectBase<DerivedF>& F);
-      /// \overload
-      template <typename DerivedV, typename DerivedT>
-      IGL_INLINE bool tetgenio_to_tetmesh(
-        const tetgenio & out,
-        Eigen::PlainObjectBase<DerivedV>& V,
-        Eigen::PlainObjectBase<DerivedT>& T);
-
-  }
+        Eigen::PlainObjectBase<DerivedF>& F,
+        Eigen::PlainObjectBase<DerivedTM>& TM,
+        Eigen::PlainObjectBase<DerivedR>& R,
+        Eigen::PlainObjectBase<DerivedN>& N,
+        Eigen::PlainObjectBase<DerivedPT>& PT,
+        Eigen::PlainObjectBase<DerivedFT>& FT,
+        int & num_regions);
+    }
   }
 }
 

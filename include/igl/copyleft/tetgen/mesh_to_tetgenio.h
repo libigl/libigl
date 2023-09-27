@@ -28,32 +28,22 @@ namespace igl
       /// @param[in] F  #F list of polygon face indices into V (0-indexed)
       /// @param[out] in  tetgenio input object
       ///  @param[out] H  #H list of seed point inside each hole
-      ///  @param[out] R  #R list of seed point inside each region	
-      /// @return true on success, false on error
-      IGL_INLINE bool mesh_to_tetgenio(
-        const std::vector<std::vector<REAL> > & V,
-	const std::vector<std::vector<int> > & F,
-	const std::vector<std::vector<REAL > > & H, 
-	const std::vector<std::vector<REAL > > & R, 
-	tetgenio & in);	
-      IGL_INLINE bool mesh_to_tetgenio(
-        const std::vector<std::vector<REAL > > & V, 
-        const std::vector<std::vector<int> > & F, 
+      ///  @param[out] R  #R list of seed point inside each region  
+      template <
+        typename DerivedV, 
+        typename DerivedF, 
+        typename DerivedH, 
+        typename DerivedVM, 
+        typename DerivedFM, 
+        typename DerivedR>
+      IGL_INLINE void mesh_to_tetgenio(
+        const Eigen::MatrixBase<DerivedV>& V,
+        const Eigen::MatrixBase<DerivedF>& F,
+        const Eigen::MatrixBase<DerivedH>& H,
+        const Eigen::MatrixBase<DerivedVM>& VM,
+        const Eigen::MatrixBase<DerivedFM>& FM,
+        const Eigen::MatrixBase<DerivedR>& R,
         tetgenio & in);
-      /// \overload
-      template <typename DerivedV, typename DerivedF>
-      IGL_INLINE bool mesh_to_tetgenio(
-        const Eigen::PlainObjectBase<DerivedV>& V,
-        const Eigen::PlainObjectBase<DerivedF>& F,
-        tetgenio & in);
-      /// \overload
-      template <typename DerivedV, typename DerivedF, typename DerivedH, typename DerivedR>
-      IGL_INLINE bool mesh_to_tetgenio(
-	const Eigen::PlainObjectBase<DerivedV>& V,
-	const Eigen::PlainObjectBase<DerivedF>& F,
-	const Eigen::PlainObjectBase<DerivedH>& H, 
-	const Eigen::PlainObjectBase<DerivedR>& R, 
-	tetgenio& in);	
     }
   }
 }

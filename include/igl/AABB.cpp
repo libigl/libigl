@@ -10,6 +10,7 @@
 #include "barycenter.h"
 #include "colon.h"
 #include "doublearea.h"
+#include "increment_ulp.h"
 #include "point_simplex_squared_distance.h"
 #include "project_to_line_segment.h"
 #include "sort.h"
@@ -893,37 +894,10 @@ igl::AABB<DerivedV,DIM>::intersect_ray(
   const RowVectorDIMS & dir,
   std::vector<igl::Hit> & hits) const
 {
-  hits.clear();
-  const Scalar t0 = 0;
-  const Scalar t1 = std::numeric_limits<Scalar>::infinity();
-  {
-    Scalar _1,_2;
-    if(!ray_box_intersect(origin,dir,m_box,t0,t1,_1,_2))
-    {
-      return false;
-    }
-  }
-  if(this->is_leaf())
-  {
-    // Actually process elements
-    assert((Ele.size() == 0 || Ele.cols() == 3) && "Elements should be triangles");
-    // Cheesecake way of hitting element
-    bool ret = ray_mesh_intersect(origin,dir,V,Ele.row(m_primitive),hits);
-    // Since we only gave ray_mesh_intersect a single face, it will have set
-    // any hits to id=0. Set these to this primitive's id
-    for(auto & hit : hits)
-    {
-      hit.id = m_primitive;
-    }
-    return ret;
-  }
-  std::vector<igl::Hit> left_hits;
-  std::vector<igl::Hit> right_hits;
-  const bool left_ret = m_left->intersect_ray(V,Ele,origin,dir,left_hits);
-  const bool right_ret = m_right->intersect_ray(V,Ele,origin,dir,right_hits);
-  hits.insert(hits.end(),left_hits.begin(),left_hits.end());
-  hits.insert(hits.end(),right_hits.begin(),right_hits.end());
-  return left_ret || right_ret;
+  RowVectorDIMS inv_dir = dir.cwiseInverse();
+  RowVectorDIMS inv_dir_pad = inv_dir;
+  igl::increment_ulp(inv_dir_pad, 2);
+  return intersect_ray_opt(V, Ele, origin, dir, inv_dir, inv_dir_pad, hits);
 }
 
 template <typename DerivedV, int DIM>
@@ -995,22 +969,76 @@ igl::AABB<DerivedV,DIM>::intersect_ray(
   const Scalar _min_t,
   igl::Hit & hit) const
 {
-  //// Naive, slow
-  //std::vector<igl::Hit> hits;
-  //intersect_ray(V,Ele,origin,dir,hits);
-  //if(hits.size() > 0)
-  //{
-  //  hit = hits.front();
-  //  return true;
-  //}else
-  //{
-  //  return false;
-  //}
+  RowVectorDIMS inv_dir = dir.cwiseInverse();
+  RowVectorDIMS inv_dir_pad = inv_dir;
+  igl::increment_ulp(inv_dir_pad, 2);
+  return intersect_ray_opt(V, Ele, origin, dir, inv_dir, inv_dir_pad, _min_t, hit);
+}
+
+template <typename DerivedV, int DIM>
+template <typename DerivedEle>
+IGL_INLINE bool
+igl::AABB<DerivedV,DIM>::intersect_ray_opt(
+  const Eigen::MatrixBase<DerivedV> & V,
+  const Eigen::MatrixBase<DerivedEle> & Ele,
+  const RowVectorDIMS & origin,
+  const RowVectorDIMS & dir,
+  const RowVectorDIMS & inv_dir,
+  const RowVectorDIMS & inv_dir_pad,
+  std::vector<igl::Hit> & hits) const
+{
+  hits.clear();
+  const Scalar t0 = 0;
+  const Scalar t1 = std::numeric_limits<Scalar>::infinity();
+  {
+    Scalar _1,_2;
+
+    if(!ray_box_intersect(origin,inv_dir,inv_dir_pad,m_box,t0,t1,_1,_2))
+    {
+      return false;
+    }
+  }
+  if(this->is_leaf())
+  {
+    // Actually process elements
+    assert((Ele.size() == 0 || Ele.cols() == 3) && "Elements should be triangles");
+    // Cheesecake way of hitting element
+    bool ret = ray_mesh_intersect(origin,dir,V,Ele.row(m_primitive),hits);
+    // Since we only gave ray_mesh_intersect a single face, it will have set
+    // any hits to id=0. Set these to this primitive's id
+    for(auto & hit: hits)
+    {
+      hit.id = m_primitive;
+    }
+    return ret;
+  }
+  std::vector<igl::Hit> left_hits;
+  std::vector<igl::Hit> right_hits;
+  const bool left_ret = m_left->intersect_ray_opt(V,Ele,origin,dir,inv_dir,inv_dir_pad,left_hits);
+  const bool right_ret = m_right->intersect_ray_opt(V,Ele,origin,dir,inv_dir,inv_dir_pad,right_hits);
+  hits.insert(hits.end(),left_hits.begin(),left_hits.end());
+  hits.insert(hits.end(),right_hits.begin(),right_hits.end());
+  return left_ret || right_ret;
+}
+
+template <typename DerivedV, int DIM>
+template <typename DerivedEle>
+IGL_INLINE bool
+igl::AABB<DerivedV,DIM>::intersect_ray_opt(
+  const Eigen::MatrixBase<DerivedV> & V,
+  const Eigen::MatrixBase<DerivedEle> & Ele,
+  const RowVectorDIMS & origin,
+  const RowVectorDIMS & dir,
+  const RowVectorDIMS & inv_dir,
+  const RowVectorDIMS & inv_dir_pad,
+  const Scalar _min_t,
+  igl::Hit & hit) const
+{
   Scalar min_t = _min_t;
   const Scalar t0 = 0;
   {
     Scalar _1,_2;
-    if(!ray_box_intersect(origin,dir,m_box,t0,min_t,_1,_2))
+    if(!ray_box_intersect(origin,inv_dir,inv_dir_pad,m_box,t0,min_t,_1,_2))
     {
       return false;
     }
@@ -1029,7 +1057,7 @@ igl::AABB<DerivedV,DIM>::intersect_ray(
   // differnce
   igl::Hit left_hit;
   igl::Hit right_hit;
-  bool left_ret = m_left->intersect_ray(V,Ele,origin,dir,min_t,left_hit);
+  bool left_ret = m_left->intersect_ray_opt(V,Ele,origin,dir,inv_dir,inv_dir_pad,min_t,left_hit);
   if(left_ret && left_hit.t<min_t)
   {
     // It's scary that this line doesn't seem to matter....
@@ -1040,7 +1068,7 @@ igl::AABB<DerivedV,DIM>::intersect_ray(
   {
     left_ret = false;
   }
-  bool right_ret = m_right->intersect_ray(V,Ele,origin,dir,min_t,right_hit);
+  bool right_ret = m_right->intersect_ray_opt(V,Ele,origin,dir,inv_dir,inv_dir_pad,min_t,right_hit);
   if(right_ret && right_hit.t<min_t)
   {
     min_t = right_hit.t;
