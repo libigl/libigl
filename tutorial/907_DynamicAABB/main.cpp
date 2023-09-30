@@ -8,6 +8,7 @@
 
 using AABB = igl::AABB<Eigen::MatrixXd,3>;
 
+
 template <typename DerivedV, int DIM>
 void validate(const igl::AABB<DerivedV,DIM> * tree, int depth = 0)
 {
@@ -27,6 +28,21 @@ void validate(const igl::AABB<DerivedV,DIM> * tree, int depth = 0)
     assert(tree->m_right->m_parent == tree);
     validate(tree->m_right,depth+1);
   }
+}
+
+template <typename DerivedV, int DIM>
+void validate(
+    const igl::AABB<DerivedV,DIM> * root,
+    const std::vector<igl::AABB<DerivedV,DIM> > & leafs)
+{
+  // Check that all leafs are in the tree
+  for(int i = 0;i<leafs.size();i++)
+  {
+    const auto * leaf = &leafs[i];
+    assert(leaf->m_primitive == i);
+    assert(leaf->root() == root);
+  }
+  return validate(root);
 }
 
 template <typename DerivedV, int DIM>
@@ -206,73 +222,65 @@ int main(int argc, char *argv[])
 
 
 
+  igl::AABB<Eigen::MatrixXd, 3> * dynamic = nullptr;
+  std::vector<igl::AABB<Eigen::MatrixXd, 3> > leafs;
   for(auto rotation_amount : {0, 1, 2})
   {
-    printf("\n--------------------------------\n\n");
-    printf("rotation_amount: %d\n",rotation_amount);
-    tictoc();
-    igl::AABB<Eigen::MatrixXd, 3> dynamic;
-    igl::AABB<Eigen::MatrixXd, 3> * prev = nullptr;
-    for(int i = 0;i<F.rows();i++)
+    // if vector is storing objects, must clear first.
+    leafs.clear();
+    // tree is now invalid, but deleting is safe.
+    delete dynamic;
     {
-      // Use new here because after insertion parent will be in charge of deleting
-      igl::AABB<Eigen::MatrixXd, 3> * leaf = new igl::AABB<Eigen::MatrixXd, 3>();
-      // Use the idiotic .init()
-      leaf->init(V,F,Eigen::MatrixXi(),(Eigen::VectorXi(1)<<i).finished());
-      dynamic.insert(leaf);
-      printf("\ni=%d\n",i);
-      print(&dynamic);
-      printf("leaf: %p %d\n",leaf,leaf->m_primitive);
-      if(prev)
+      printf("\n--------------------------------\n\n");
+      printf("rotation_amount: %d\n",rotation_amount);
+      tictoc();
+      // The root starts as the first one which will be self-inserted
+      leafs.resize(F.rows());
+      dynamic = leafs.data();
+      for(int i = 0;i<F.rows();i++)
       {
-        printf("prev: %p %d\n",prev,prev->m_primitive);
-      }
-      prev = leaf;
-        
-      if(i==3)
-      {
-      exit(1);
-      }
-      //printf("i=%d  size: %d\n",i,size(&dynamic));
-      if(rotation_amount==1)
-      {
-        const double before_sa = dynamic.internal_surface_area();
-        const bool ret = leaf->rotate();
-        const double after_sa = dynamic.internal_surface_area();
-        //printf("rotate: %d, %g → %g\n",ret,before_sa,after_sa);
-      }
+        auto * leaf = &leafs[i];
+        // Use the idiotic .init()
+        leaf->init(V,F,Eigen::MatrixXi(),(Eigen::VectorXi(1)<<i).finished());
+        dynamic = dynamic->insert(leaf)->root();
 
-      if(rotation_amount==2)
-      {
-        std::vector<igl::AABB<Eigen::MatrixXd, 3> *> lineage;
+        if(rotation_amount==1)
         {
-          auto * node = leaf;
-          while(node)
+          const bool ret = leaf->rotate();
+        }
+
+        if(rotation_amount==2)
+        {
+          std::vector<igl::AABB<Eigen::MatrixXd, 3> *> lineage;
           {
-            lineage.push_back(node);
-            node = node->m_parent;
+            auto * node = leaf;
+            while(node)
+            {
+              lineage.push_back(node);
+              node = node->m_parent;
+            }
+          }
+          // O(h)
+          while(!lineage.empty())
+          {
+            auto * node = lineage.back();
+            lineage.pop_back();
+            assert(node);
+            const bool ret = node->rotate();
           }
         }
-        while(!lineage.empty())
-        {
-          auto * node = lineage.back();
-          lineage.pop_back();
-          assert(node);
-          const double before_sa = dynamic.internal_surface_area();
-          const bool ret = node->rotate();
-          const double after_sa = dynamic.internal_surface_area();
-          //printf("rotate: %d, %g → %g\n",ret,before_sa,after_sa);
-        }
       }
+      printf("dynamic %g\n",tictoc());
+      printf("  surface_area: %g\n",dynamic->internal_surface_area());
+      printf("  is_root(): %d\n",dynamic->is_root());
+      printf("  size: %d\n",size(dynamic));
+      printf("  height: %d/%d\n",height(dynamic),F.rows());
+      //print(dynamic);
+      validate(dynamic, leafs);
     }
-    printf("dynamic %g\n",tictoc());
-    printf("  surface_area: %g\n",dynamic.internal_surface_area());
-    printf("  is_root(): %d\n",dynamic.is_root());
-    printf("  size: %d\n",size(&dynamic));
-    printf("  height: %d/%d\n",height(&dynamic),F.rows());
-    validate(&dynamic);
+    printf("********\n");
   }
 
-  //vis(V,F,dynamic);
+  vis(V,F,*dynamic);
 
 }

@@ -110,11 +110,26 @@ public:
       {
         m_primitive = -1;
         m_box = Eigen::AlignedBox<Scalar,DIM>();
-        m_parent = nullptr;
         delete m_left;
         m_left = nullptr;
         delete m_right;
         m_right = nullptr;
+        // Tell my parent I'm dead
+        if(m_parent)
+        {
+          if(m_parent->m_left == this)
+          {
+            m_parent->m_left = nullptr;
+          }else if(m_parent->m_right == this)
+          {
+            m_parent->m_right = nullptr;
+          }else
+          {
+            assert(false && "I'm not my parent's child");
+          }
+        }
+        // Now my parent is dead to me.
+        m_parent = nullptr;
       }
       /// @private
       ~AABB()
@@ -172,17 +187,18 @@ public:
       IGL_INLINE bool is_leaf() const;
       /// Return whether at root node
       IGL_INLINE bool is_root() const;
-      IGL_INLINE void insert(AABB * other);
-      IGL_INLINE void insert_as_sibling(AABB * other);
+      IGL_INLINE AABB<DerivedV,DIM>* root() const;
+      IGL_INLINE AABB<DerivedV,DIM>* insert(AABB * other);
+      IGL_INLINE AABB<DerivedV,DIM>* insert_as_sibling(AABB * other);
       IGL_INLINE bool rotate();
       IGL_INLINE bool rotate_up();
       IGL_INLINE bool rotate_down();
       static IGL_INLINE bool rotate(
-        AABB<DerivedV,DIM> * reining,
-        AABB<DerivedV,DIM> * grandparent,
-        AABB<DerivedV,DIM> * parent,
-        AABB<DerivedV,DIM> * challenger,
-        AABB<DerivedV,DIM> * sibling);
+        AABB<DerivedV,DIM>* reining,
+        AABB<DerivedV,DIM>* grandparent,
+        AABB<DerivedV,DIM>* parent,
+        AABB<DerivedV,DIM>* challenger,
+        AABB<DerivedV,DIM>* sibling);
       /// Find the indices of elements containing given point: this makes sense
       /// when Ele is a co-dimension 0 simplex (tets in 3D, triangles in 2D).
       ///
