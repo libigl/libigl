@@ -42,6 +42,8 @@ public:
       AABB * m_left; 
       /// Pointer to "right" child node (`nullptr` if leaf)
       AABB * m_right;
+      /// Pointer to "parent" node (`nullptr` if root)
+      AABB * m_parent;
       /// Axis-Aligned Bounding Box containing this node
       Eigen::AlignedBox<Scalar,DIM> m_box;
       /// Index of single primitive in this node if full leaf, otherwise -1 for non-leaf
@@ -50,7 +52,7 @@ public:
       //int m_depth;
       /// @private
       AABB():
-        m_left(NULL), m_right(NULL),
+        m_left(nullptr), m_right(nullptr),m_parent(nullptr),
         m_box(), m_primitive(-1)
         //m_low_sqr_d(std::numeric_limits<double>::infinity()),
         //m_depth(0)
@@ -60,8 +62,9 @@ public:
       /// @private
       // http://stackoverflow.com/a/3279550/148668
       AABB(const AABB& other):
-        m_left(other.m_left ? new AABB(*other.m_left) : NULL),
-        m_right(other.m_right ? new AABB(*other.m_right) : NULL),
+        m_left (other.m_left  ? new AABB(*other.m_left)  : nullptr),
+        m_right(other.m_right ? new AABB(*other.m_right) : nullptr),
+        m_parent(other.m_parent),
         m_box(other.m_box),
         m_primitive(other.m_primitive)
         //m_low_sqr_d(other.m_low_sqr_d),
@@ -69,6 +72,8 @@ public:
         //   m_left ? m_left->m_depth + 1 : 0,
         //   m_right ? m_right->m_depth + 1 : 0))
         {
+          if(m_left) { m_left->m_parent = this; }
+          if(m_right) { m_right->m_parent = this; }
         }
       /// @private
       // copy-swap idiom
@@ -78,6 +83,7 @@ public:
         using std::swap;
         swap(first.m_left,second.m_left);
         swap(first.m_right,second.m_right);
+        swap(first.m_parent,second.m_parent);
         swap(first.m_box,second.m_box);
         swap(first.m_primitive,second.m_primitive);
         //swap(first.m_low_sqr_d,second.m_low_sqr_d);
@@ -104,10 +110,11 @@ public:
       {
         m_primitive = -1;
         m_box = Eigen::AlignedBox<Scalar,DIM>();
+        m_parent = nullptr;
         delete m_left;
-        m_left = NULL;
+        m_left = nullptr;
         delete m_right;
-        m_right = NULL;
+        m_right = nullptr;
       }
       /// @private
       ~AABB()
@@ -163,6 +170,19 @@ public:
           const Eigen::MatrixBase<DerivedI>& I);
       /// Return whether at leaf node
       IGL_INLINE bool is_leaf() const;
+      /// Return whether at root node
+      IGL_INLINE bool is_root() const;
+      IGL_INLINE void insert(AABB * other);
+      IGL_INLINE void insert_as_sibling(AABB * other);
+      IGL_INLINE bool rotate();
+      IGL_INLINE bool rotate_up();
+      IGL_INLINE bool rotate_down();
+      static IGL_INLINE bool rotate(
+        AABB<DerivedV,DIM> * reining,
+        AABB<DerivedV,DIM> * grandparent,
+        AABB<DerivedV,DIM> * parent,
+        AABB<DerivedV,DIM> * challenger,
+        AABB<DerivedV,DIM> * sibling);
       /// Find the indices of elements containing given point: this makes sense
       /// when Ele is a co-dimension 0 simplex (tets in 3D, triangles in 2D).
       ///
@@ -367,6 +387,8 @@ public:
         Eigen::PlainObjectBase<DerivedsqrD> & sqrD,
         Eigen::PlainObjectBase<DerivedI> & I,
         Eigen::PlainObjectBase<DerivedC> & C) const;
+      /// Compute sum of surface area of all internal (non-root, non-leaf) boxes
+      IGL_INLINE typename DerivedV::Scalar internal_surface_area() const;
 private:
       template < 
         typename DerivedEle,
