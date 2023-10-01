@@ -410,18 +410,143 @@ IGL_INLINE igl::AABB<DerivedV,DIM>* igl::AABB<DerivedV,DIM>::insert_as_sibling(A
 }
 
 template <typename DerivedV, int DIM>
-IGL_INLINE bool igl::AABB<DerivedV,DIM>::rotate()
+IGL_INLINE typename DerivedV::Scalar igl::AABB<DerivedV,DIM>::rotate(const bool dry_run)
 {
   if(is_root()) { return false; }
   // Biased order.
   //
   // Would be good to check for a ton of insertions whether only one of these
   // ever returns true.
-  return rotate_up() || rotate_down();
+  //
+  //        grandparent
+  //        /         \
+  //     parent       pibling°
+  //     /    \         /    \
+  // sibling  this    cuz1  cuz2
+  //  /    \
+  // nib1° nib2°
+
+  // There is a _ton_ of repeated computation of surface areas and new-boxes in
+  // these.
+
+  // Rotate across first is much better. Then up seems slightly better than
+  // down, but this is moot if we're chooseing the best one.
+  const Scalar across_delta_sa = rotate_across(true);
+  const Scalar up_delta_sa     = rotate_up(    true);
+  const Scalar down_delta_sa   = rotate_down(  true);
+  if(dry_run){ std::min({across_delta_sa,up_delta_sa,down_delta_sa}); }
+
+  // conduct the rotate with smallest delta
+  if(across_delta_sa <= up_delta_sa && across_delta_sa <= down_delta_sa)
+  {
+    return rotate_across(false);
+  }else if(up_delta_sa <= down_delta_sa)
+  {
+    return rotate_up(false);
+  }else
+  {
+    return rotate_down(false);
+  }
 }
 
 template <typename DerivedV, int DIM>
-IGL_INLINE bool igl::AABB<DerivedV,DIM>::rotate_up()
+IGL_INLINE typename DerivedV::Scalar igl::AABB<DerivedV,DIM>::rotate_across(const bool dry_run)
+{
+  // Before
+  //        grandparent
+  //        /         \
+  //     parent       pibling
+  //     /    \         /    \
+  // sibling  this    cuz1  cuz2
+  //
+  //
+  // Candidates
+  //        grandparent
+  //        /         \
+  //     parent       pibling
+  //     /    \         /    \
+  // sibling  cuz1   this   cuz2
+  //
+  // Or
+  //        grandparent
+  //        /         \
+  //     parent       pibling
+  //     /    \         /    \
+  // sibling  cuz2    cuz1  this
+
+  auto * parent = this->m_parent;
+  if(!parent) { return false; }
+  const auto * grandparent = parent->m_parent;
+  if(!grandparent) { return false; }
+  auto * pibling = grandparent->m_left == parent ? grandparent->m_right : grandparent->m_left;
+  if(!pibling) { return false; }
+  const auto * sibling = parent->m_left == this ? parent->m_right : parent->m_left;
+
+  const Scalar current_sa = box_surface_area(parent->m_box) + box_surface_area(pibling->m_box);
+
+  const auto rotate_across_with = [&](
+      bool inner_dry_run,
+      igl::AABB<DerivedV,DIM> * cuz,
+      igl::AABB<DerivedV,DIM> * other_cuz
+      )->Scalar
+  {
+    // Before
+    //        grandparent
+    //        /         \
+    //     parent       pibling
+    //     /    \         /    \
+    // sibling  this    cuz  other_cuz
+    //
+    //
+    // Candidates
+    //        grandparent
+    //        /         \
+    //     parent       pibling
+    //     /    \         /    \
+    // sibling  cuz   this   other_cuz
+    if(!cuz){ return 0.0; }
+
+    Eigen::AlignedBox<Scalar,DIM> new_parent_box;
+    if(sibling) { new_parent_box.extend(sibling->m_box); }
+    new_parent_box.extend(cuz->m_box);
+    Eigen::AlignedBox<Scalar,DIM> new_pibling_box = this->m_box;
+    if(other_cuz) { new_pibling_box.extend(other_cuz->m_box); }
+    const Scalar new_sa = 
+      box_surface_area(new_parent_box) + box_surface_area(new_pibling_box);
+    if(current_sa <= new_sa)
+    {
+      return 0.0;
+    }
+
+    if(!inner_dry_run)
+    {
+      assert(!dry_run);
+      parent->m_box = new_parent_box;
+      (parent->m_left == this ? parent->m_left : parent->m_right) = cuz;
+      cuz->m_parent = parent;
+
+      pibling->m_box = new_pibling_box;
+      (pibling->m_left == cuz ? pibling->m_left : pibling->m_right) = this;
+      this->m_parent = pibling;
+    }
+    return new_sa - current_sa;
+  };
+
+  auto * cuz1 = pibling->m_left;
+  auto * cuz2 = pibling->m_right;
+  const Scalar delta_1 = rotate_across_with(true,cuz1,cuz2);
+  const Scalar delta_2 = rotate_across_with(true,cuz2,cuz1);
+  if(delta_1 < delta_2)
+  {
+    return dry_run ? delta_1 : rotate_across_with(false,cuz1,cuz2);
+  }else
+  {
+    return dry_run ? delta_2 : rotate_across_with(false,cuz2,cuz1);
+  }
+}
+
+template <typename DerivedV, int DIM>
+IGL_INLINE typename DerivedV::Scalar igl::AABB<DerivedV,DIM>::rotate_up(const bool dry_run)
 {
   // Before
   //    grandparent
@@ -446,11 +571,11 @@ IGL_INLINE bool igl::AABB<DerivedV,DIM>::rotate_up()
   auto * reining = grandparent->m_left == parent ? grandparent->m_right : grandparent->m_left;
   if(!reining) { return false; }
   auto * sibling = parent->m_left == challenger ? parent->m_right : parent->m_left;
-  return rotate(reining,grandparent,parent,challenger,sibling);
+  return rotate_up(dry_run,reining,grandparent,parent,challenger,sibling);
 }
 
 template <typename DerivedV, int DIM>
-IGL_INLINE bool igl::AABB<DerivedV,DIM>::rotate_down()
+IGL_INLINE typename DerivedV::Scalar igl::AABB<DerivedV,DIM>::rotate_down(const bool dry_run)
 {
   // Before
   //       parent
@@ -478,18 +603,25 @@ IGL_INLINE bool igl::AABB<DerivedV,DIM>::rotate_down()
   if(!parent) { return false; }
   auto * sibling = parent->m_left == this ? parent->m_right : parent->m_left;
   if(!sibling) { return false; }
-  return 
-    rotate(this,parent,sibling,sibling->m_left,sibling->m_right) ||
-    rotate(this,parent,sibling,sibling->m_right,sibling->m_left);
+  const Scalar left_sa  = rotate_up(true,this,parent,sibling,sibling->m_left,sibling->m_right);
+  const Scalar right_sa = rotate_up(true,this,parent,sibling,sibling->m_right,sibling->m_left);
+  if(left_sa < right_sa)
+  {
+    return dry_run ?  left_sa : rotate_up(false,this,parent,sibling,sibling->m_left,sibling->m_right);
+  }else
+  {
+    return dry_run ? right_sa : rotate_up(false,this,parent,sibling,sibling->m_right,sibling->m_left);
+  }
 }
 
 template <typename DerivedV, int DIM>
-IGL_INLINE bool igl::AABB<DerivedV,DIM>::rotate(
-    igl::AABB<DerivedV,DIM>* reining,
-    igl::AABB<DerivedV,DIM>* grandparent,
-    igl::AABB<DerivedV,DIM>* parent,
-    igl::AABB<DerivedV,DIM>* challenger,
-    igl::AABB<DerivedV,DIM>* sibling)
+IGL_INLINE typename DerivedV::Scalar igl::AABB<DerivedV,DIM>::rotate_up(
+  const bool dry_run,
+  igl::AABB<DerivedV,DIM>* reining,
+  igl::AABB<DerivedV,DIM>* grandparent,
+  igl::AABB<DerivedV,DIM>* parent,
+  igl::AABB<DerivedV,DIM>* challenger,
+  igl::AABB<DerivedV,DIM>* sibling)
 {
   // if any are null return false
   if(!reining) { return false; }
@@ -533,19 +665,22 @@ IGL_INLINE bool igl::AABB<DerivedV,DIM>::rotate(
   if(before_sa <= after_sa)
   {
     // No improvment.
-    return false;
+    return 0.0;
   }
-  // May reorder left and right but challenger doesn't matter.
-  grandparent->m_left = challenger;
-  grandparent->m_right = parent;
-  challenger->m_parent = grandparent;
-  parent->m_parent = grandparent;
-  parent->m_left = reining;
-  parent->m_right = sibling;
-  reining->m_parent = parent;
-  if(sibling){ sibling->m_parent = parent; }
-  parent->m_box = new_parent_box;
-  return true;
+  if(!dry_run)
+  {
+    // May reorder left and right but challenger doesn't matter.
+    grandparent->m_left = challenger;
+    grandparent->m_right = parent;
+    challenger->m_parent = grandparent;
+    parent->m_parent = grandparent;
+    parent->m_left = reining;
+    parent->m_right = sibling;
+    reining->m_parent = parent;
+    if(sibling){ sibling->m_parent = parent; }
+    parent->m_box = new_parent_box;
+  }
+  return after_sa - before_sa;
 }
 
 
@@ -1221,7 +1356,7 @@ igl::AABB<DerivedV,DIM>::intersect_ray_opt(
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instantiation
 template bool igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>::is_leaf() const;
-template bool igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>::rotate();
+template double igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>::rotate(const bool);
 template igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>* igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>::root() const;
 template igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>* igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>::insert(igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>*);
 template bool igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>::is_root() const;

@@ -190,10 +190,12 @@ public:
       IGL_INLINE AABB<DerivedV,DIM>* root() const;
       IGL_INLINE AABB<DerivedV,DIM>* insert(AABB * other);
       IGL_INLINE AABB<DerivedV,DIM>* insert_as_sibling(AABB * other);
-      IGL_INLINE bool rotate();
-      IGL_INLINE bool rotate_up();
-      IGL_INLINE bool rotate_down();
-      static IGL_INLINE bool rotate(
+      IGL_INLINE Scalar rotate(const bool dry_run = false);
+      IGL_INLINE Scalar rotate_across(const bool dry_run = false);
+      IGL_INLINE Scalar rotate_up(const bool dry_run = false);
+      IGL_INLINE Scalar rotate_down(const bool dry_run = false);
+      static IGL_INLINE Scalar rotate_up(
+        const bool dry_run,
         AABB<DerivedV,DIM>* reining,
         AABB<DerivedV,DIM>* grandparent,
         AABB<DerivedV,DIM>* parent,

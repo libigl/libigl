@@ -3,8 +3,11 @@
 #include <igl/unique_simplices.h>
 #include <igl/get_seconds.h>
 #include <igl/AABB.h>
+#include <igl/barycenter.h>
+#include <igl/colon.h>
 #include <igl/matlab_format.h>
 #include <igl/find.h>
+#include <deque>
 
 using AABB = igl::AABB<Eigen::MatrixXd,3>;
 
@@ -206,25 +209,37 @@ int main(int argc, char *argv[])
   Eigen::MatrixXi F;
   igl::read_triangle_mesh(argc>1?argv[1]:TUTORIAL_SHARED_PATH "/armadillo.obj",V,F);
   //F = F.topRows(6).eval();
+  //
+  Eigen::MatrixXd BC;
+  igl::barycenter(V,F,BC);
+  Eigen::VectorXd sqrD;
+  Eigen::VectorXi I;
+  Eigen::VectorXi J = igl::colon<int>(0,F.rows()-1);
+  Eigen::MatrixXd C;
 
   IGL_TICTOC_LAMBDA;
   tictoc();
   igl::AABB<Eigen::MatrixXd, 3> tree;
   tree.init(V,F);
   printf("tree.init(): %g secs\n",tictoc());
+  tictoc();
+  tree.squared_distance(V,F,BC,sqrD,I,C);
+  assert(I.isApprox(J,0));
+  printf("tree.squared_distance(): %g secs\n",tictoc());
   printf("  surface_area: %g\n",tree.internal_surface_area());
   printf("  is_root(): %d\n",tree.is_root());
   printf("  size: %d\n",size(&tree));
   printf("  height: %d/%d\n",height(&tree),F.rows());
   //print(&tree);
   validate(&tree);
+  vis(V,F,tree);
 
 
 
 
   igl::AABB<Eigen::MatrixXd, 3> * dynamic = nullptr;
   std::vector<igl::AABB<Eigen::MatrixXd, 3> > leafs;
-  for(auto rotation_amount : {0, 1, 2})
+  for(auto rotation_amount : {1, 2, 3})
   {
     // if vector is storing objects, must clear first.
     leafs.clear();
@@ -249,7 +264,7 @@ int main(int argc, char *argv[])
           const bool ret = leaf->rotate();
         }
 
-        if(rotation_amount==2)
+        if(rotation_amount>=2)
         {
           std::vector<igl::AABB<Eigen::MatrixXd, 3> *> lineage;
           {
@@ -270,7 +285,38 @@ int main(int argc, char *argv[])
           }
         }
       }
+      if(rotation_amount==3)
+      {
+        std::deque<igl::AABB<Eigen::MatrixXd, 3> *> bfs;
+        bfs.push_back(dynamic);
+        std::vector<igl::AABB<Eigen::MatrixXd, 3> *> all_nodes;
+        while(!bfs.empty())
+        {
+          auto * node = bfs.back();
+          bfs.pop_back();
+          if(node->m_left)
+          {
+            bfs.push_back(node->m_left);
+          }
+          if(node->m_right)
+          {
+            bfs.push_back(node->m_right);
+          }
+          all_nodes.push_back(node);
+        }
+        while(!all_nodes.empty())
+        {
+          auto * node = all_nodes.back();
+          all_nodes.pop_back();
+          assert(node);
+          const bool ret = node->rotate();
+        }
+      }
       printf("dynamic %g\n",tictoc());
+      tictoc();
+      dynamic->squared_distance(V,F,BC,sqrD,I,C);
+      assert(I.isApprox(J,0));
+      printf("tree.squared_distance(): %g secs\n",tictoc());
       printf("  surface_area: %g\n",dynamic->internal_surface_area());
       printf("  is_root(): %d\n",dynamic->is_root());
       printf("  size: %d\n",size(dynamic));
