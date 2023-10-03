@@ -56,9 +56,9 @@ public:
         m_box(), m_primitive(-1)
         //m_low_sqr_d(std::numeric_limits<double>::infinity()),
         //m_depth(0)
-    {
-      static_assert(DerivedV::ColsAtCompileTime == DIM || DerivedV::ColsAtCompileTime == Eigen::Dynamic,"DerivedV::ColsAtCompileTime == DIM || DerivedV::ColsAtCompileTime == Eigen::Dynamic");
-    }
+      {
+        static_assert(DerivedV::ColsAtCompileTime == DIM || DerivedV::ColsAtCompileTime == Eigen::Dynamic,"DerivedV::ColsAtCompileTime == DIM || DerivedV::ColsAtCompileTime == Eigen::Dynamic");
+      }
       /// @private
       // http://stackoverflow.com/a/3279550/148668
       AABB(const AABB& other):
@@ -106,7 +106,7 @@ public:
       /// @private
       // Seems like there should have been an elegant solution to this using
       // the copy-swap idiom above:
-      IGL_INLINE void deinit()
+      IGL_INLINE void clear()
       {
         m_primitive = -1;
         m_box = Eigen::AlignedBox<Scalar,DIM>();
@@ -127,6 +127,32 @@ public:
           {
             assert(false && "I'm not my parent's child");
           }
+          auto * grandparent = m_parent->m_parent;
+          if(grandparent)
+          {
+            // Before
+            //     grandparent
+            //        /    \
+            //    parent   pibling
+            //      /   \
+            // sibling  this
+            //
+            // After 
+            //     grandparent
+            //        /    \
+            //    sibling®  pibling
+          }else
+          {
+            // Before
+            //    parent=root
+            //      /   \
+            // sibling  this
+            //
+            // After 
+            //     grandparent
+            //        /    \
+            //    sibling®  pibling
+          }
         }
         // Now my parent is dead to me.
         m_parent = nullptr;
@@ -134,7 +160,7 @@ public:
       /// @private
       ~AABB()
       {
-        deinit();
+        clear();
       }
       /// Build an Axis-Aligned Bounding Box tree for a given mesh and given
       /// serialization of a previous AABB tree.
@@ -187,13 +213,206 @@ public:
       IGL_INLINE bool is_leaf() const;
       /// Return whether at root node
       IGL_INLINE bool is_root() const;
+      /// Return the root node of this node's tree by following its parent
       IGL_INLINE AABB<DerivedV,DIM>* root() const;
+      IGL_INLINE AABB<DerivedV,DIM>* detach();
+      IGL_INLINE void refit_lineage();
+      /// Get a vector of leaves indexed by their m_primitive id (these better
+      /// be non-negative and tightly packed.
+      /// @param[in] m  number of leaves/elements (Ele.rows())
+      /// @returns leaves  m list of pointers to leaves
+      IGL_INLINE std::vector<AABB<DerivedV,DIM>*> gather_leaves(const int m);
+      /// Pad leaves by `pad` in each dimension
+      /// @param[in] pad padding amount
+      /// @param[in] polish_rotate_passes number of passes to polish rotations
+      /// @returns pointer to (potentially new) root
+      IGL_INLINE AABB<DerivedV,DIM>* pad(
+        const std::vector<AABB<DerivedV,DIM>*> & leaves,
+        const Scalar pad, 
+        const int polish_rotate_passes=0);
+      /// @returns `this` if no update was needed, otherwise returns pointer to
+      /// (potentially new) root
+      ///
+      /// Example:
+      /// ```cpp
+      /// auto * up = leaf->update(new_box);
+      /// if(up != leaf)
+      /// {
+      ///   tree = up->root();
+      /// }else
+      /// {
+      ///   printf("no update occurred\n");
+      /// }
+      ///
+      /// // or simply
+      /// tree = leaf->update(new_box)->root();
+      /// ```
+      IGL_INLINE AABB<DerivedV,DIM>* update(
+          const Eigen::AlignedBox<Scalar,DIM> & new_box,
+          const Scalar pad=0);
+      /// @returns `this` if no update was needed, otherwise returns pointer to
+      /// (potentially new) root
+      template <typename DerivedEle>
+      IGL_INLINE AABB<DerivedV,DIM>* update_primitive(
+          const Eigen::MatrixBase<DerivedV> & V,
+          const Eigen::MatrixBase<DerivedEle> & Ele,
+          const Scalar pad=0);
+
+      /// Insert a (probably a leaf) AABB `other` into this AABB tree. If
+      /// `other`'s box is contained in this AABB's box then insert it as a child recursively.
+      ///
+      /// If `other`'s box is not contained in this AABB's box then insert it as a
+      /// sibling. 
+      ///
+      /// @param[in] other pointer to another AABB node 
+      /// @returns pointer to the parent of `other`. This could be == to a
+      /// `new`ly created internal node or to `other` if `this==other`
       IGL_INLINE AABB<DerivedV,DIM>* insert(AABB * other);
+      /// Insert `other` as a sibling to `this` by creating a new internal node
+      /// to be their shared parent.
+      ///
+      ///     Before
+      ///              parent
+      ///              /    \
+      ///          this(C)  sibling
+      ///            /  \
+      ///          left right
+      ///    
+      ///     After
+      ///              parent
+      ///              /    \
+      ///           newbie   sibling
+      ///            /   \
+      ///         this    other
+      ///         /    \
+      ///       left  right
+      ///    
+      ///
+      /// @param[in] other pointer to another AABB node 
+      /// @returns pointer to the new shared parent.
       IGL_INLINE AABB<DerivedV,DIM>* insert_as_sibling(AABB * other);
+      /// Try to swap this node with its close relatives if it will decrease
+      /// total internal surface area.
+      ///    
+      ///
+      ///            grandparent
+      ///            /         \
+      ///         parent       pibling°
+      ///         /    \         /    \
+      ///     sibling  this   cuz1°  cuz2°
+      ///      /    \
+      ///     nib1° nib2°
+      ///
+      ///     °Swap Candidates
+      ///
+      /// @param[in] dry_run  if true then don't actually swap
+      /// @return[in] the change in total internal surface area, 0 if no
+      /// improvement and rotate won't be carried out.
       IGL_INLINE Scalar rotate(const bool dry_run = false);
+      /// Try to swap this node with its cousins if it will decrease
+      /// total internal surface area.
+      ///    
+      /// @param[in] dry_run  if true then don't actually swap
+      /// @return[in] the change in total internal surface area, 0 if no
+      /// improvement and rotate won't be carried out.
+      ///    
+      ///     Before
+      ///            grandparent
+      ///            /         \
+      ///         parent       pibling
+      ///         /    \         /    \
+      ///     sibling  this    cuz1  cuz2
+      ///    
+      ///    
+      ///     Candidates
+      ///            grandparent
+      ///            /         \
+      ///         parent       pibling
+      ///         /    \         /    \
+      ///     sibling  cuz1   this   cuz2
+      ///    
+      ///     Or
+      ///            grandparent
+      ///            /         \
+      ///         parent       pibling
+      ///         /    \         /    \
+      ///     sibling  cuz2    cuz1  this
       IGL_INLINE Scalar rotate_across(const bool dry_run = false);
+      /// Try to swap this node with its pibling if it will decrease
+      /// total internal surface area.
+      ///    
+      /// @param[in] dry_run  if true then don't actually swap
+      /// @return[in] the change in total internal surface area, 0 if no
+      /// improvement and rotate won't be carried out.
+      ///
+      ///     Before
+      ///        grandparent
+      ///           /    \
+      ///         other  parent
+      ///                /  \
+      ///             this  sibling
+      ///             
+      ///    
+      ///     Candidate
+      ///        grandparent
+      ///           /    \
+      ///        this    parent
+      ///                /  \
+      ///            other  sibling
       IGL_INLINE Scalar rotate_up(const bool dry_run = false);
+      /// Try to swap this node with one of its niblings if it will decrease
+      /// total internal surface area.
+      ///
+      /// @param[in] dry_run  if true then don't actually swap
+      /// @return[in] the change in total internal surface area, 0 if no
+      /// improvement and rotate won't be carried out.
+      /// 
+      ///     Before
+      ///           parent
+      ///           /    \
+      ///         this   sibling
+      ///                /  \
+      ///             left  right
+      ///             
+      ///
+      ///     Candidates
+      ///           parent
+      ///           /    \
+      ///       left     sibling
+      ///                /  \
+      ///            this   right
+      ///
+      ///     Or
+      ///
+      ///           parent
+      ///           /    \
+      ///       right    sibling
+      ///                /  \
+      ///            left   this 
       IGL_INLINE Scalar rotate_down(const bool dry_run = false);
+      /// "Rotate" (swap) `reining` with `challenger`.
+      ///
+      ///     Before
+      ///        grandparent
+      ///           /      \
+      ///      reining      parent
+      ///                   /    \
+      ///            challenger  sibling
+      ///             
+      ///    
+      ///     Candidate
+      ///        grandparent
+      ///           /      \
+      ///     challenger    parent
+      ///                   /    \
+      ///              reining   sibling
+      /// @param[in] reining  pointer to AABB node to be rotated
+      /// @param[in] grandparent  pointer to challenger's grandparent
+      /// @param[in] parent  pointer to challenger's parent
+      /// @param[in] challenger  pointer to AABB node to be rotated
+      /// @param[in] sibling  pointer to challenger's sibling
+      /// @returns true only if rotation was possible and successfully carried
+      /// out.
       static IGL_INLINE Scalar rotate_up(
         const bool dry_run,
         AABB<DerivedV,DIM>* reining,
@@ -201,6 +420,8 @@ public:
         AABB<DerivedV,DIM>* parent,
         AABB<DerivedV,DIM>* challenger,
         AABB<DerivedV,DIM>* sibling);
+      // Should this be a static function with an argument?
+      IGL_INLINE void rotate_lineage();
       /// Find the indices of elements containing given point: this makes sense
       /// when Ele is a co-dimension 0 simplex (tets in 3D, triangles in 2D).
       ///

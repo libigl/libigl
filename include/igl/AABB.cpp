@@ -19,6 +19,7 @@
 #include "parallel_for.h"
 #include "ray_mesh_intersect.h"
 #include "box_surface_area.h"
+#include "pad_box.h"
 #include <iostream>
 #include <iomanip>
 #include <limits>
@@ -145,7 +146,7 @@ IGL_INLINE void igl::AABB<DerivedV,DIM>::init(
 {
   using namespace std;
   using namespace Eigen;
-  deinit();
+  clear();
   if(bb_mins.size() > 0)
   {
     assert(bb_mins.rows() == bb_maxs.rows() && "Serial tree arrays must match");
@@ -207,7 +208,7 @@ void igl::AABB<DerivedV,DIM>::init(
     const Eigen::MatrixBase<DerivedEle> & Ele)
 {
   using namespace Eigen;
-  // deinit will be immediately called...
+  // clear will be immediately called...
   return init(V,Ele,MatrixXDIMS(),MatrixXDIMS(),VectorXi(),0);
 }
 
@@ -224,7 +225,7 @@ IGL_INLINE void igl::AABB<DerivedV,DIM>::init(
 {
   using namespace Eigen;
   using namespace std;
-  deinit();
+  clear();
   if(V.size() == 0 || Ele.size() == 0 || I.size() == 0)
   {
     return;
@@ -311,7 +312,7 @@ IGL_INLINE void igl::AABB<DerivedV,DIM>::init(
 template <typename DerivedV, int DIM>
 IGL_INLINE bool igl::AABB<DerivedV,DIM>::is_leaf() const
 {
-  // This way (rather than `m_primitive != -1` we can have empty leafs
+  // This way (rather than `m_primitive != -1` we can have empty leaves
   return m_left == nullptr && m_right == nullptr;
 }
 
@@ -325,6 +326,171 @@ template <typename DerivedV, int DIM>
 IGL_INLINE igl::AABB<DerivedV,DIM>* igl::AABB<DerivedV,DIM>::root() const
 {
   return (is_root() ?  const_cast<igl::AABB<DerivedV,DIM>*>(this) : m_parent->root());
+}
+
+template <typename DerivedV, int DIM>
+IGL_INLINE igl::AABB<DerivedV,DIM>* igl::AABB<DerivedV,DIM>::detach()
+{
+  if(!this->m_parent)
+  {
+    // Before
+    //   ⊘-this
+    //
+    // After
+    //   ⊘-this
+    //
+    // `this` is the root. It's already detached.
+    return this;
+  }
+
+  auto * parent = this->m_parent;
+  assert(parent);
+  // Detach from parent
+  this->m_parent = nullptr;
+  auto * grandparent = parent->m_parent;
+  auto * sibling = parent->m_left == this ? parent->m_right : parent->m_left;
+  assert(sibling);
+  // Before
+  //     grandparent
+  //        /
+  //     parent
+  //     /    \
+  // sibling  this
+  //
+  // After
+  //     grandparent
+  //        /
+  //     sibling®   ⊘     ☠️ parent☠️
+  //                |
+  //               this
+  //
+  // Grandparent is sibling's parent now: works even if parent is root
+  // (grandparent is null)
+  sibling->m_parent = grandparent;
+  // Parent is now parentless and childless (to make clear() happy)
+  parent->m_parent = nullptr;
+  parent->m_left = nullptr;
+  parent->m_right = nullptr;
+  // Tell grandparent sibling is new child.
+  if(grandparent)
+  {
+    (grandparent->m_left == parent ? 
+      grandparent->m_left : grandparent->m_right) = sibling;
+  }
+  // Did your code just crash here? Perhaps it's because you statically
+  // allocated your tree instead of using `new`. That's not allowed if you're
+  // going to call dynamic methods like `detach` and `insert`.
+  //
+  // This is a design flaw that requires a refactor of igl::AABB to fix.
+  delete parent;
+
+  return sibling;
+}
+
+template <typename DerivedV, int DIM>
+IGL_INLINE void igl::AABB<DerivedV,DIM>::refit_lineage()
+{
+  const decltype(m_box) old_box = m_box;
+  if(!is_leaf())
+  {
+    m_box.setEmpty();
+    if(m_left) { m_box.extend(m_left->m_box); }
+    if(m_right) { m_box.extend(m_right->m_box); }
+  }
+  // Q: is box.contains(old_box) ever true?
+  // H: It's really supposed to be testing whether anything changed. But the
+  // call patterns for refit_lineage might be only hitting cases where box is always
+  // smaler than old_box.
+  if(m_parent && !m_box.contains(old_box)) { m_parent->refit_lineage(); }
+}
+
+template <typename DerivedV, int DIM>
+IGL_INLINE std::vector<igl::AABB<DerivedV,DIM>*> 
+  igl::AABB<DerivedV,DIM>::gather_leaves(const int m)
+{
+  auto * tree = this;
+  std::vector<igl::AABB<Eigen::MatrixXd,3>*> leaves(m,nullptr);
+  {
+    std::vector<igl::AABB<Eigen::MatrixXd,3>* > stack;
+    stack.push_back(tree);
+    while(!stack.empty())
+    {
+      auto * node = stack.back();
+      stack.pop_back();
+      if(!node) { continue; }
+      stack.push_back(node->m_left);
+      stack.push_back(node->m_right);
+      if(node->is_leaf())
+      {
+        assert(node->m_primitive < m && node->m_primitive >= 0);
+        leaves[node->m_primitive] = node;
+      }
+    }
+  }
+  return leaves;
+}
+
+template <typename DerivedV, int DIM>
+IGL_INLINE igl::AABB<DerivedV,DIM>* igl::AABB<DerivedV,DIM>::pad(
+  const std::vector<igl::AABB<DerivedV,DIM>*> & leaves,
+  const igl::AABB<DerivedV,DIM>::Scalar pad,
+  const int polish_rotate_passes)
+{
+  // Will get reset to root below anyway. This does _not_ operate on subtrees.
+  auto * tree = this->root();
+  for(auto * leaf : leaves)
+  {
+    assert(leaf);
+    tree = leaf->detach()->root();
+    pad_box(pad,leaf->m_box);
+    tree = tree->insert(leaf)->root();
+    // Will potentially reach "above" `this`
+    leaf->refit_lineage();
+    leaf->rotate_lineage();
+  }
+  for(int pass = 0;pass<polish_rotate_passes;pass++)
+  {
+    for(auto * leaf : leaves)
+    {
+      assert(leaf);
+      leaf->rotate_lineage();
+    }
+  }
+  return tree;
+}
+
+template <typename DerivedV, int DIM>
+IGL_INLINE igl::AABB<DerivedV,DIM>* igl::AABB<DerivedV,DIM>::update(
+    const Eigen::AlignedBox<Scalar,DIM> & new_box,
+    const Scalar pad)
+{
+  auto * leaf = this;
+  if(leaf->m_box.contains(new_box)) { return leaf; }
+  leaf->m_box = new_box;
+  pad_box(pad,leaf->m_box);
+  assert(leaf);
+  auto * tree = leaf->detach()->root();
+  tree = tree->insert(leaf)->root();
+  leaf->refit_lineage();
+  leaf->rotate_lineage();
+  return tree;
+}
+
+template <typename DerivedV, int DIM>
+template <typename DerivedEle>
+IGL_INLINE igl::AABB<DerivedV,DIM>* igl::AABB<DerivedV,DIM>::update_primitive(
+    const Eigen::MatrixBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedEle> & Ele,
+    const Scalar pad)
+{
+  assert(this->is_leaf());
+  assert(this->m_primitive >= 0 && this->m_primitive < Ele.rows());
+  Eigen::AlignedBox<double, 3> new_box;
+  for(int c = 0;c<Ele.cols();c++)
+  {
+    new_box.extend(V.row(Ele(this->m_primitive,c)).transpose());
+  }
+  return this->update(new_box,pad);
 }
 
 template <typename DerivedV, int DIM>
@@ -422,7 +588,7 @@ IGL_INLINE typename DerivedV::Scalar igl::AABB<DerivedV,DIM>::rotate(const bool 
   //        /         \
   //     parent       pibling°
   //     /    \         /    \
-  // sibling  this    cuz1  cuz2
+  // sibling  this   cuz1°  cuz2°
   //  /    \
   // nib1° nib2°
 
@@ -572,6 +738,28 @@ IGL_INLINE typename DerivedV::Scalar igl::AABB<DerivedV,DIM>::rotate_up(const bo
   if(!reining) { return false; }
   auto * sibling = parent->m_left == challenger ? parent->m_right : parent->m_left;
   return rotate_up(dry_run,reining,grandparent,parent,challenger,sibling);
+}
+
+template <typename DerivedV, int DIM>
+IGL_INLINE void igl::AABB<DerivedV,DIM>::rotate_lineage()
+{
+  std::vector<igl::AABB<DerivedV, DIM> *> lineage;
+  {
+    auto * node = this;
+    while(node)
+    {
+      lineage.push_back(node);
+      node = node->m_parent;
+    }
+  }
+  // O(h)
+  while(!lineage.empty())
+  {
+    auto * node = lineage.back();
+    lineage.pop_back();
+    assert(node);
+    const bool ret = node->rotate();
+  }
 }
 
 template <typename DerivedV, int DIM>
@@ -1355,6 +1543,12 @@ igl::AABB<DerivedV,DIM>::intersect_ray_opt(
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instantiation
+template igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>* igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>::update_primitive<Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, double);
+template igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>*  igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>::pad(std::vector<igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>*, std::allocator<igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>*> > const&, double, int);
+template std::vector<igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>*> igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>::gather_leaves(const int);
+template void igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>::rotate_lineage();
+template void igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>::refit_lineage();
+template igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>* igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>::detach();
 template bool igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>::is_leaf() const;
 template double igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>::rotate(const bool);
 template igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>* igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>::root() const;
