@@ -4,25 +4,80 @@
 #include <igl/get_seconds.h>
 #include <igl/AABB.h>
 #include <igl/barycenter.h>
+#include <igl/writePLY.h>
+#include <igl/STR.h>
 #include <igl/point_mesh_squared_distance.h>
 #include <igl/colon.h>
+#include <igl/decimate.h>
+#include <igl/max_faces_stopping_condition.h>
 #include <igl/point_simplex_squared_distance.h>
+#include <igl/edge_flaps.h>
+#include <igl/doublearea.h>
+#include <igl/decimate_callback_types.h>
+#include <igl/decimate_trivial_callbacks.h>
+#include <igl/tri_tri_intersect.h>
+#include <igl/shortest_edge_and_midpoint.h>
+#include <igl/PI.h>
+#include <igl/circulation.h>
+#include <igl/collapse_edge.h>
 #include <igl/matlab_format.h>
 #include <limits>
 #include <igl/randperm.h>
 #include <igl/avg_edge_length.h>
 #include <igl/find.h>
 #include <deque>
+extern "C"
+{
+#include <igl/raytri.c>
+}
+
+bool is_self_intersecting(
+  const Eigen::MatrixXd & V,
+  const Eigen::MatrixXi & F)
+{
+  const auto valid = 
+    igl::find((F.array() != IGL_COLLAPSE_EDGE_NULL).rowwise().any().eval());
+  // Extract only the valid faces
+  Eigen::MatrixXi FF = F(valid, Eigen::all);
+  // Remove unreferneced vertices
+  Eigen::MatrixXd VV;
+  {
+    Eigen::VectorXi I;
+    igl::remove_unreferenced(V,Eigen::MatrixXi(FF),VV,FF,I);
+  }
+  Eigen::VectorXd A;
+  igl::doublearea(VV,FF,A);
+  if(A.minCoeff() <= 0)
+  {
+    return true;
+  }
+  if(
+       (FF.array().col(0) == FF.array().col(1)).any() ||
+       (FF.array().col(1) == FF.array().col(2)).any() ||
+       (FF.array().col(2) == FF.array().col(0)).any())
+
+  {
+    return true;
+  }
+
+  // check for self-intersections VV,FF
+  igl::copyleft::cgal::RemeshSelfIntersectionsParam params;
+  params.detect_only = true;
+  params.first_only = true;
+  Eigen::MatrixXi IF;
+  Eigen::VectorXi J,IM;
+  {
+    Eigen::MatrixXd tempV;
+    Eigen::MatrixXi tempF;
+    igl::copyleft::cgal::remesh_self_intersections(
+      V,F,params,tempV,tempF,IF,J,IM);
+  }
+  return IF.rows() > 0;
+}
+
 
 const int MAX_RUNS = 10;
 using AABB = igl::AABB<Eigen::MatrixXd,3>;
-
-template <typename Scalar, int Dim>
-void pad_box(const Scalar pad, Eigen::AlignedBox<Scalar,Dim> & box)
-{
-  box.min().array() -= pad;
-  box.max().array() += pad;
-}
 
 template <typename DerivedV, int DIM>
 void validate(const igl::AABB<DerivedV,DIM> * tree, int depth = 0)
@@ -96,6 +151,36 @@ int height(const igl::AABB<DerivedV,DIM> * tree)
   return 1 + std::max((tree->m_left?height(tree->m_left):0),(tree->m_right?height(tree->m_right):0));
 }
 
+void box_faces(
+  const Eigen::AlignedBox<double,3> & box,
+  const double shrink,
+  Eigen::MatrixXd & P,
+  Eigen::MatrixXi & Q)
+{
+  auto min_corner = box.min();
+  auto max_corner = box.max();
+  // shrink by 3%
+  min_corner = min_corner + shrink*(max_corner-min_corner);
+  max_corner = max_corner - shrink*(max_corner-min_corner);
+  P.resize(8,3);
+  Q.resize(6,4);
+  int p = 0;
+  int q = 0;
+  Q.row(q++) << p+0,p+1,p+2,p+3;
+  Q.row(q++) << p+0,p+1,p+5,p+4;
+  Q.row(q++) << p+1,p+2,p+6,p+5;
+  Q.row(q++) << p+2,p+3,p+7,p+6;
+  Q.row(q++) << p+3,p+0,p+4,p+7;
+  Q.row(q++) << p+4,p+5,p+6,p+7;
+  P.row(p++) = min_corner;
+  P.row(p++) = Eigen::RowVector3d(max_corner[0],min_corner[1],min_corner[2]);
+  P.row(p++) = Eigen::RowVector3d(max_corner[0],max_corner[1],min_corner[2]);
+  P.row(p++) = Eigen::RowVector3d(min_corner[0],max_corner[1],min_corner[2]);
+  P.row(p++) = Eigen::RowVector3d(min_corner[0],min_corner[1],max_corner[2]);
+  P.row(p++) = Eigen::RowVector3d(max_corner[0],min_corner[1],max_corner[2]);
+  P.row(p++) = max_corner;
+  P.row(p++) = Eigen::RowVector3d(min_corner[0],max_corner[1],max_corner[2]);
+}
 
 template <typename DerivedV, int DIM>
 void box_faces(
@@ -127,26 +212,14 @@ void box_faces(
     D(d++) = depth;
     stack.pop_back();
     const auto & box = node->m_box;
-    auto min_corner = box.min();
-    auto max_corner = box.max();
-    // shrink by 3%
-    min_corner = min_corner + 0.03*(max_corner-min_corner);
-    max_corner = max_corner - 0.03*(max_corner-min_corner);
 
-    Q.row(q++) << p+0,p+1,p+2,p+3;
-    Q.row(q++) << p+0,p+1,p+5,p+4;
-    Q.row(q++) << p+1,p+2,p+6,p+5;
-    Q.row(q++) << p+2,p+3,p+7,p+6;
-    Q.row(q++) << p+3,p+0,p+4,p+7;
-    Q.row(q++) << p+4,p+5,p+6,p+7;
-    P.row(p++) = min_corner;
-    P.row(p++) = Eigen::RowVector3d(max_corner[0],min_corner[1],min_corner[2]);
-    P.row(p++) = Eigen::RowVector3d(max_corner[0],max_corner[1],min_corner[2]);
-    P.row(p++) = Eigen::RowVector3d(min_corner[0],max_corner[1],min_corner[2]);
-    P.row(p++) = Eigen::RowVector3d(min_corner[0],min_corner[1],max_corner[2]);
-    P.row(p++) = Eigen::RowVector3d(max_corner[0],min_corner[1],max_corner[2]);
-    P.row(p++) = max_corner;
-    P.row(p++) = Eigen::RowVector3d(min_corner[0],max_corner[1],max_corner[2]);
+    Eigen::MatrixXd Pi;
+    Eigen::MatrixXi Qi;
+    box_faces(box,0.03,Pi,Qi);
+    P.block(p,0,8,DIM) = Pi;
+    Q.block(q,0,6,4) = Qi.array()+p;
+    p += 8;
+    q += 6;
     if(node->m_left)
     {
       stack.push_back({node->m_left,depth+1});
@@ -158,6 +231,16 @@ void box_faces(
   }
 }
 
+void quad_edges(const Eigen::MatrixXi & Q, Eigen::MatrixXi & E)
+{
+  E.resize(4*Q.rows(),2);
+  E <<
+    Q.col(0), Q.col(1),
+    Q.col(1), Q.col(2),
+    Q.col(2), Q.col(3),
+    Q.col(3), Q.col(0);
+  igl::unique_simplices(Eigen::MatrixXi(E),E);
+}
 
 void vis(
     const Eigen::MatrixXd & V,
@@ -174,20 +257,9 @@ void vis(
   box_faces(tree,TV,TQ,TD);
   const auto update_edges = [&]()
   {
-    //std::cout<<igl::matlab_format(TV,"TV")<<std::endl;
-    //std::cout<<igl::matlab_format_index(TQ,"TQ")<<std::endl;
-    //std::cout<<igl::matlab_format_index(TD,"TD")<<std::endl;
-
     Eigen::MatrixXi TQd = TQ(igl::find((TD.array()==depth).eval()),Eigen::all);
-
-    Eigen::MatrixXi TE(4*TQd.rows(),2);
-    TE <<
-      TQd.col(0), TQd.col(1),
-      TQd.col(1), TQd.col(2),
-      TQd.col(2), TQd.col(3),
-      TQd.col(3), TQd.col(0);
-    igl::unique_simplices(Eigen::MatrixXi(TE),TE);
-
+    Eigen::MatrixXi TE;
+    quad_edges(TQd,TE);
     //Eigen::MatrixXi TF(TQd.rows()*2,3);
     //TF<< 
     //  TQd.col(0),TQd.col(1),TQd.col(2),
@@ -215,15 +287,515 @@ void vis(
 }
 
 
+bool collapse_edge_would_create_intersections(
+  const int e,
+  const Eigen::RowVectorXd & p,
+  const Eigen::MatrixXd & V,
+  const Eigen::MatrixXi & F,
+  const Eigen::MatrixXi & E,
+  const Eigen::VectorXi & EMAP,
+  const Eigen::MatrixXi & EF,
+  const Eigen::MatrixXi & EI,
+  const igl::AABB<Eigen::MatrixXd,3> & tree)
+{
+  // Merge two lists of integers
+  const auto merge = [&](
+    const std::vector<int> & A, const std::vector<int> & B)->
+    std::vector<int>
+  {
+    std::vector<int> C;
+    C.reserve( A.size() + B.size() ); // preallocate memory
+    C.insert( C.end(), A.begin(), A.end() );
+    C.insert( C.end(), B.begin(), B.end() );
+    // https://stackoverflow.com/a/1041939/148668
+    std::sort( C.begin(), C.end() );
+    C.erase( std::unique( C.begin(), C.end() ), C.end() );
+    return C;
+  };
+
+  std::vector<int> old_one_ring;
+  {
+    std::vector<int> Nsv,Nsf,Ndv,Ndf;
+    igl::circulation(e, true,F,EMAP,EF,EI,Nsv,Nsf);
+    igl::circulation(e,false,F,EMAP,EF,EI,Ndv,Ndf);
+    old_one_ring = merge(Nsf,Ndf);
+  }
+  int f1 = EF(e,0);
+  int f2 = EF(e,1);
+  std::vector<int> new_one_ring = old_one_ring;
+  // erase if ==f1 or ==f2
+  new_one_ring.erase(
+    std::remove(new_one_ring.begin(), new_one_ring.end(), f1), 
+    new_one_ring.end());
+  new_one_ring.erase(
+    std::remove(new_one_ring.begin(), new_one_ring.end(), f2), 
+    new_one_ring.end());
+
+
+  // big box containing new_one_ring
+  Eigen::AlignedBox<double,3> big_box;
+  // Extend box by placement point
+  big_box.extend(p.transpose());
+  // Extend box by all other corners (skipping old edge vertices)
+  for(const auto f : new_one_ring)
+  {
+    Eigen::RowVector3d corners[3];
+    for(int c = 0;c<3;c++)
+    {
+      if(F(f,c) == E(e,0) || F(f,c) == E(e,1))
+      {
+        corners[c] = p;
+      }else
+      {
+        corners[c] = V.row(F(f,c));
+        big_box.extend(V.row(F(f,c)).transpose());
+      }
+    }
+    // Degenerate triangles are considered intersections
+    if((corners[0]-corners[1]).cross(corners[0]-corners[2]).squaredNorm() < 1e-16)
+    {
+      return true;
+    }
+  }
+
+  std::vector<const igl::AABB<Eigen::MatrixXd,3>*> candidates;
+  tree.append_intersecting_leaves(big_box,candidates);
+
+  // Exclude any candidates that are in old_one_ring.
+# warning "consider using unordered_set above so that this is O(n+m) rather than O(nm)"
+  candidates.erase(
+    std::remove_if(candidates.begin(), candidates.end(),
+        [&](const igl::AABB<Eigen::MatrixXd,3>* candidate) {
+            return std::find(old_one_ring.begin(), old_one_ring.end(), candidate->m_primitive) != old_one_ring.end();
+        }),
+    candidates.end());
+  // print candidates
+  // For each pair of candidate and new_one_ring, check if they intersect
+  bool found_intersection = false;
+  for(const int & f : new_one_ring)
+  {
+    Eigen::AlignedBox<double,3> small_box;
+    small_box.extend(p.transpose());
+    for(int c = 0;c<3;c++)
+    {
+      if(F(f,c) != E(e,0) && F(f,c) != E(e,1))
+      {
+        small_box.extend(V.row(F(f,c)).transpose());
+      }
+    }
+    for(const auto * candidate : candidates)
+    {
+      const int g = candidate->m_primitive;
+      if(!small_box.intersects(candidate->m_box))
+      {
+        continue;
+      }
+      // Corner replaced by p
+      int c;
+      for(c = 0;c<3;c++)
+      {
+        if(F(f,c) == E(e,0) || F(f,c) == E(e,1))
+        {
+          break;
+        }
+      }
+      assert(c<3);
+      // So edge opposite F(f,c) is the outer edge.
+      const int o = EMAP(f + c*F.rows());
+      // Do they share an edge?
+      if((EF(o,0) == f && EF(o,1) == g) || (EF(o,1) == f && EF(o,0) == g))
+      {
+        // Only intersects if the dihedral angle is zero (precondition: no zero
+        // area triangles before or after collapse)
+#       warning "Consider maintaining a list of (area-vectors)normals?"
+        const auto ng = (V.row(F(g,1))-V.row(F(g,0))).head<3>().cross((V.row(F(g,2))-V.row(F(g,0))).head<3>());
+        const int fo = EF(o,0) == f ? EI(o,0) : EI(o,1);
+        const auto nf = (V.row(F(f,(fo+1)%3))-p).head<3>().cross((V.row(F(f,(fo+2)%3))-p).head<3>());
+        const auto o_vec = (V.row(E(o,1))-V.row(E(o,0))).head<3>().stableNormalized();
+
+        const auto dihedral_angle = igl::PI - std::atan2(o_vec.dot(ng.cross(nf)),ng.dot(nf));
+        if(dihedral_angle > 1e-8)
+        {
+          continue;
+        }
+        // Triangles really really might intersect.
+        found_intersection = true;
+      }else
+      {
+        // Do they share a vertex?
+        int sf,sg;
+        bool found_shared_vertex = false;
+        for(sf = 0;sf<3;sf++)
+        {
+          if(sf == c){ continue;}
+          for(sg = 0;sg<3;sg++)
+          {
+            if(F(f,sf) == F(g,sg))
+            {
+              found_shared_vertex = true;
+              break;
+            }
+          }
+          if(found_shared_vertex) { break;} 
+        }
+        if(found_shared_vertex)
+        {
+
+          // If they share a vertex and intersect, then an opposite edge must
+          // stab through the other triangle.
+
+          // intersect_triangle1 needs non-const inputs.
+          Eigen::RowVector3d g0 = V.row(F(g,0));
+          Eigen::RowVector3d g1 = V.row(F(g,1));
+          Eigen::RowVector3d g2 = V.row(F(g,2));
+          Eigen::RowVector3d fs = ((sf+1)%3)==c ? p : V.row(F(f,(sf+1)%3));
+          Eigen::RowVector3d fd = 
+            (((sf+2)%3)==c ? p : V.row(F(f,(sf+2)%3))) - fs;
+          double t,u,v;
+          if(intersect_triangle1(
+              fs.data(),fd.data(),
+              g0.data(),g1.data(),g2.data(),
+              &t,&u,&v))
+          {
+            found_intersection = t > 0 && t<1+1e-8;
+          }
+          if(!found_intersection)
+          {
+            Eigen::RowVector3d f0 = 0==c?p:V.row(F(g,0));
+            Eigen::RowVector3d f1 = 1==c?p:V.row(F(g,1));
+            Eigen::RowVector3d f2 = 2==c?p:V.row(F(g,2));
+            Eigen::RowVector3d gs = V.row(F(g,(sg+1)%3));
+            Eigen::RowVector3d gd = V.row(F(g,(sg+1)%3)) - gs;
+            if(intersect_triangle1(
+              gs.data(),gd.data(),
+              f0.data(),f1.data(),f2.data(),
+              &t,&u,&v))
+            {
+              found_intersection = t > 0 && t<1+1e-8;
+            }
+          }
+        }else
+        {
+          bool coplanar;
+          Eigen::RowVector3d i1,i2;
+          found_intersection = igl::tri_tri_intersection_test_3d(
+            V.row(F(g,0)), V.row(F(g,1)), V.row(F(g,2)),
+            p,V.row(F(f,(c+1)%3)),V.row(F(f,(c+2)%3)),
+            coplanar,
+            i1,i2);
+        }
+      }
+      if(found_intersection) { break; }
+    }
+    if(found_intersection) { break; }
+  }
+  return found_intersection;
+}
+
+///
+/// @param[in] orig_pre_collapse  Original pre-collapse callback
+/// @param[in] orig_post_collapse Original post-collapse callback
+///
+#warning "should this take a pad amount?"
+void intersection_blocking_collapse_edge_callbacks(
+  const igl::decimate_pre_collapse_callback  & orig_pre_collapse,
+  const igl::decimate_post_collapse_callback & orig_post_collapse,
+        igl::AABB<Eigen::MatrixXd,3> * & tree,
+        std::vector<igl::AABB<Eigen::MatrixXd,3> *> & leaves,
+        igl::decimate_pre_collapse_callback  & pre_collapse,
+        igl::decimate_post_collapse_callback & post_collapse
+        )
+{
+  const double pad = 0;
+#warning "is there any reason to capture orig* by _reference_? IIUC capturing by value means we can destroy orig* after this function returns"
+  pre_collapse = 
+    [orig_pre_collapse,&tree,&leaves](
+      const Eigen::MatrixXd & V,
+      const Eigen::MatrixXi & F,
+      const Eigen::MatrixXi & E,
+      const Eigen::VectorXi & EMAP,
+      const Eigen::MatrixXi & EF,
+      const Eigen::MatrixXi & EI,
+      const igl::min_heap< std::tuple<double,int,int> > & Q,
+      const Eigen::VectorXi & EQ,
+      const Eigen::MatrixXd & C,
+      const int e)->bool
+    {
+      if(!orig_pre_collapse(V,F,E,EMAP,EF,EI,Q,EQ,C,e))
+      {
+        return false;
+      }
+      // Check if there would be (new) intersections
+      return 
+        !collapse_edge_would_create_intersections(
+          e,C.row(e).eval(),V,F,E,EMAP,EF,EI,*tree);
+    };
+  post_collapse =
+    [orig_post_collapse,&tree,&leaves,pad](
+      const Eigen::MatrixXd & V,
+      const Eigen::MatrixXi & F,
+      const Eigen::MatrixXi & E,
+      const Eigen::VectorXi & EMAP,
+      const Eigen::MatrixXi & EF,
+      const Eigen::MatrixXi & EI,
+      const igl::min_heap< std::tuple<double,int,int> > & Q,
+      const Eigen::VectorXi & EQ,
+      const Eigen::MatrixXd & C,
+      const int e,
+      const int e1,
+      const int e2,
+      const int f1,
+      const int f2,
+      const bool collapsed)
+    {
+      if(collapsed)
+      {
+        // detach leaves of deleted faces
+        for(int f : {f1,f2})
+        {
+          auto * sibling = leaves[f]->detach();
+          sibling->refit_lineage();
+          tree = sibling->root();
+          delete leaves[f];
+        }
+        // If finding `Nf` becomes a bottleneck we could remember it via
+        // `pre_collapse` the same way that
+        // `qslim_optimal_collapse_edge_callbacks` remembers `v1` and `v2`
+        const int m = F.rows();
+        const auto survivors = 
+          [&m,&e,&EF,&EI,&EMAP](const int f1, const int e1, int & d1)
+        {
+          int c;
+          for(c=0;c<3;c++)
+          {
+            d1 = EMAP(f1+c*m);
+            if((d1 != e) && (d1 != e1)) { break; }
+          }
+          assert(c<3);
+        };
+        int d1,d2;
+        survivors(f1,e1,d1);
+        survivors(f2,e2,d2);
+        // Will circulating by continuing in the CCW direction of E(d1,:)
+        // encircle the common edge? That is, is E(d1,1) the common vertex?
+        const bool ccw = E(d1,1) == E(d2,0) || E(d1,1) == E(d2,1);
+#ifndef NDEBUG
+        // Common vertex.
+        const int s = E(d1,ccw?1:0);
+        assert(s == E(d2,0) || s == E(d2,1));
+#endif
+        std::vector<int> Nf;
+        {
+          std::vector<int> Nv;
+          igl::circulation(d1,ccw,F,EMAP,EF,EI,Nv,Nf);
+        }
+        for(const int & f : Nf)
+        {
+          Eigen::AlignedBox<double,3> box;
+          box
+            .extend(V.row(F(f,0)).transpose())
+            .extend(V.row(F(f,1)).transpose())
+            .extend(V.row(F(f,2)).transpose());
+          tree = leaves[f]->update(box,pad);
+        }
+      }
+#warning "Slow intersection checking..."
+      if(is_self_intersecting(V,F))
+      {
+        printf("💩💩💩💩💩 Just shit the bed 🛌🛌🛌🛌 \n");
+      }
+      // Finally. Run callback.
+      return orig_post_collapse(
+        V,F,E,EMAP,EF,EI,Q,EQ,C,e,e1,e2,f1,f2,collapsed);
+    };
+}
+void intersection_blocking_collapse_edge_callbacks(
+  igl::AABB<Eigen::MatrixXd,3> * & tree,
+  std::vector<igl::AABB<Eigen::MatrixXd,3> *> & leaves,
+  igl::decimate_pre_collapse_callback  & pre_collapse,
+  igl::decimate_post_collapse_callback & post_collapse)
+{
+  igl::decimate_pre_collapse_callback  always_try;
+  igl::decimate_post_collapse_callback never_care;
+  igl::decimate_trivial_callbacks(always_try,never_care);
+  intersection_blocking_collapse_edge_callbacks(
+    always_try,
+    never_care,
+    tree,
+    leaves,
+    pre_collapse,
+    post_collapse);
+}
+
 int main(int argc, char *argv[])
 {
+  IGL_TICTOC_LAMBDA;
+#if true
+  Eigen::MatrixXd V,V0;
+  Eigen::MatrixXi F,F0;
+  const bool use_test = argc<=1;
+  igl::read_triangle_mesh(use_test?"/Users/alecjacobson/Downloads/simple-intersection-collapse-2.ply":argv[1],V,F);
+  V0 = V;F0 = F;
+  ///////////////////////////////////////////////////////////
+  /// Before collapsing starts
+  ///////////////////////////////////////////////////////////
+  tictoc();
+  igl::AABB<Eigen::MatrixXd, 3> * tree = new igl::AABB<Eigen::MatrixXd, 3>();
+  tree->init(V,F);
+  printf("tree->init: %g\n",tictoc());
+  validate(tree);
+#warning "should pad leaves?"
+  // Gather list of pointers to leaves
+  std::vector<igl::AABB<Eigen::MatrixXd,3>*> leaves = tree->gather_leaves(F.rows());
+
+  // Dummy
+  if(use_test)
+  {
+    Eigen::VectorXi EMAP;
+    Eigen::MatrixXi E,EF,EI;
+    igl::edge_flaps(F,E,EMAP,EF,EI);
+    igl::decimate_pre_collapse_callback  pre_collapse;
+    igl::decimate_post_collapse_callback post_collapse;
+    intersection_blocking_collapse_edge_callbacks(
+      tree,
+      leaves,
+      pre_collapse,
+      post_collapse);
+    
+    igl::min_heap< std::tuple<double,int,int> > Q;
+    Eigen::VectorXi EQ;
+    Eigen::MatrixXd C = Eigen::MatrixXd::Zero(E.rows(),3);
+
+    // Try to do the collapses.
+    std::vector<int> edges_to_collapse;
+    for(const auto edge : {Eigen::RowVector2i(3,6),Eigen::RowVector2i(6,18)})
+    {
+      int e = -1;
+      const bool found = 
+        ( (E.array().col(0)==edge[0] && E.array().col(1)==edge[1])||
+          (E.array().col(0)==edge[1] && E.array().col(1)==edge[0])).maxCoeff(&e);
+      assert(found);
+      edges_to_collapse.push_back(e);
+    }
+    for(auto & e : edges_to_collapse)
+    {
+      printf("E(e=%d,:) = %d,%d\n",e,E(e,0),E(e,1));
+      bool collapsed = true;
+      int e1,e2,f1,f2;
+      // pre_collapse only has access to C not p
+      C.row(e) = 0.5*(V.row(E(e,0))+V.row(E(e,1)));
+      if(pre_collapse(V,F,E,EMAP,EF,EI,Q,EQ,C,e))
+      {
+        collapsed = igl::collapse_edge(
+          e,C.row(e).eval(),
+          /*Nsv,Nsf,Ndv,Ndf,*/
+          V,F,E,EMAP,EF,EI,e1,e2,f1,f2);
+      }else
+      {
+        // Aborted by pre collapse callback
+        collapsed = false;
+      }
+      printf("!!!!!!!!!!!!!!!!!collapsed? %s\n",collapsed?"✅":"❌");
+      post_collapse(V,F,E,EMAP,EF,EI,Q,EQ,C,e,e1,e2,f1,f2,collapsed);
+    }
+    printf("tree: %p\n",tree);
+  }else
+  {
+    const int target_m = F.rows() * 0.1 + 1;
+    for(auto pass : {0,1})
+    {
+      igl::decimate_pre_collapse_callback  pre_collapse;
+      igl::decimate_post_collapse_callback post_collapse;
+      igl::decimate_trivial_callbacks(pre_collapse,post_collapse);
+      if(pass == 1)
+      {
+        intersection_blocking_collapse_edge_callbacks(
+          pre_collapse, post_collapse, // These will get copied as needed
+          tree, leaves,
+          pre_collapse, post_collapse);
+      }
+      Eigen::MatrixXd VO = V;
+      Eigen::MatrixXi FO = F;
+#     warning "Should connect_boundary_to_infinity"
+      Eigen::VectorXi EMAP;
+      Eigen::MatrixXi E,EF,EI;
+      igl::edge_flaps(FO,E,EMAP,EF,EI);
+      int m = F.rows();
+      const int orig_m = m;
+      Eigen::MatrixXd U;
+      Eigen::MatrixXi G;
+      Eigen::VectorXi J,I;
+      tictoc();
+      const bool ret = igl::decimate(
+        VO, FO,
+        igl::shortest_edge_and_midpoint,
+        igl::max_faces_stopping_condition(m,orig_m,target_m),
+        pre_collapse,
+        post_collapse,
+        E, EMAP, EF, EI,
+        U, G, J, I);
+      printf("pass %d in %g sec\n",pass,tictoc());
+      igl::writePLY(STR("out-"<<pass<<".ply"),U,G);
+      if(pass == 1)
+      {
+        V = U;
+        F = G;
+      }
+    }
+  }
+
+  vis(V,F,*tree);
+
+  validate(tree);
+  tree = tree->root();
+  delete tree;
+  leaves.clear();
+  exit(1);
+
+  //Eigen::MatrixXd K = Eigen::MatrixXd::Constant(F.rows(),3,0.9);
+  //for(const auto f : new_one_ring)
+  //{
+  //  K.row(f) = Eigen::RowVector3d(0.3,0.9,0.3);
+  //}
+  //Eigen::MatrixXd K0 = Eigen::MatrixXd::Constant(F.rows(),3,0.9);
+  //for(const auto f : old_one_ring)
+  //{
+  //  K0.row(f) = Eigen::RowVector3d(0.9,0.3,0.3);
+  //}
+
+
+  igl::opengl::glfw::Viewer vr;
+  //vr.data().set_mesh(V0,F0);
+  //vr.data().set_face_based(true);
+  //vr.data().set_colors(K0);
+  //vr.data().show_faces = false;
+  //vr.data().line_color = Eigen::RowVector4f(1,1,1,1);
+  //vr.data().double_sided = true;
+  //vr.append_mesh();
+  vr.data().set_mesh(V,F);
+  //vr.data().set_colors(K);
+  vr.data().set_face_based(true);
+  vr.data().show_lines = false;
+  vr.data().double_sided = true;
+
+  //Eigen::MatrixXd TV;
+  //Eigen::MatrixXi TQ,TE;
+  //box_faces(big_box,0,TV,TQ);
+  //quad_edges(TQ,TE);
+  //vr.append_mesh();
+  //vr.data().set_edges(TV,TE,Eigen::RowVector3d(1,1,1));
+  //vr.data().line_width = 2;
+
+  
+  vr.launch();
+
+#else
   Eigen::MatrixXd V;
   Eigen::MatrixXi F;
   igl::read_triangle_mesh(argc>1?argv[1]:TUTORIAL_SHARED_PATH "/armadillo.obj",V,F);
   // make into soup
   V = V(Eigen::Map<Eigen::VectorXi>(F.data(),F.size()), Eigen::all).eval();
   F = Eigen::Map<Eigen::MatrixXi>(igl::colon<int>(0,V.rows()-1).data(),V.rows()/3,3).eval();
-
 
   //F = F.topRows(4).eval();
   //
@@ -427,4 +999,5 @@ int main(int argc, char *argv[])
 
   //vis(V,F,*dynamic);
 
+#endif
 }

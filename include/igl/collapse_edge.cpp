@@ -82,10 +82,10 @@ IGL_INLINE bool igl::collapse_edge(
   {
     E(e,0) = IGL_COLLAPSE_EDGE_NULL;
     E(e,1) = IGL_COLLAPSE_EDGE_NULL;
-    EF(e,0) = IGL_COLLAPSE_EDGE_NULL;
-    EF(e,1) = IGL_COLLAPSE_EDGE_NULL;
-    EI(e,0) = IGL_COLLAPSE_EDGE_NULL;
-    EI(e,1) = IGL_COLLAPSE_EDGE_NULL;
+    // Don't clear EF, EI in case post_collapse would like to access previous
+    // connectivity. It's questionable whether E should be cleared at all, but
+    // if the user is drawing things with E then it's convenient that it's
+    // mapped to "null" edges (similar to F).
   };
 
   // update edge info
