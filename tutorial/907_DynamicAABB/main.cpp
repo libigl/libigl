@@ -8,8 +8,11 @@
 #include <igl/STR.h>
 #include <igl/point_mesh_squared_distance.h>
 #include <igl/colon.h>
+#include <igl/writeDMAT.h>
 #include <igl/decimate.h>
 #include <igl/max_faces_stopping_condition.h>
+#include <igl/remove_unreferenced.h>
+#include <igl/copyleft/cgal/remesh_self_intersections.h>
 #include <igl/point_simplex_squared_distance.h>
 #include <igl/edge_flaps.h>
 #include <igl/doublearea.h>
@@ -30,6 +33,7 @@ extern "C"
 {
 #include <igl/raytri.c>
 }
+
 
 bool is_self_intersecting(
   const Eigen::MatrixXd & V,
@@ -287,6 +291,174 @@ void vis(
 }
 
 
+/// Determine whether two triangles intersect. We consider the `f`th and `g`th
+/// triangles in `F` indexing rows of `V` for 3D positions, but the `c`th corner
+/// of the `f`th triangle is replaced by `p`. In matlab, this would be
+///
+/// ```matlab
+/// Tf = V(F(f,:),:);
+/// Tf(c,:) = p;
+/// ```
+///
+/// and 
+///
+/// ```matlab
+/// Tg = V(F(g,:),:);
+/// ```
+///
+/// Triangles can share an edge, but only if it's the one opposite the replaced
+/// corner. 
+///
+/// @param[in] V  #V by 3 list of vertex positions
+/// @param[in] F  #F by 3 list of triangle indices into rows of V
+/// @param[in] E #E by 2 list of unique undirected edge indices into rows of V
+/// @param[in] EMAP  #F*3 list of indices into F, mapping each directed edge to
+///   unique edge in {1,...,E}
+/// @param[in] EF  #E by 2 list of edge indices into F
+/// @param[in] EI  #E by 2 list of edge indices into V
+/// @param[in] f  index into F of first triangle
+/// @param[in] c  index into F of corner of first triangle to replace with `p`
+/// @param[in] p  3D position to replace corner of first triangle
+/// @param[in] g  index into F of second triangle
+/// @returns  true if triangles intersect
+///
+/// \seealso edge_flaps
+template <
+  typename DerivedV,
+  typename DerivedF,
+  typename DerivedE,
+  typename DerivedEMAP,
+  typename DerivedEF,
+  typename DerivedEI,
+  typename Derivedp>
+bool triangle_triangle_intersect(
+  const Eigen::MatrixBase<DerivedV> & V,
+  const Eigen::MatrixBase<DerivedF> & F,
+  const Eigen::MatrixBase<DerivedE> & E,
+  const Eigen::MatrixBase<DerivedEMAP> & EMAP,
+  const Eigen::MatrixBase<DerivedEI> & EF,
+  const Eigen::MatrixBase<DerivedEF> & EI,
+  const int f,
+  const int c,
+  const Eigen::MatrixBase<Derivedp> & p,
+  const int g)
+{
+  constexpr bool stinker = false;
+  if(stinker) { printf("👀\n"); }
+  bool found_intersection = false;
+  // So edge opposite F(f,c) is the outer edge.
+  const int o = EMAP(f + c*F.rows());
+  // Do they share the edge opposite c?
+  if((EF(o,0) == f && EF(o,1) == g) || (EF(o,1) == f && EF(o,0) == g))
+  {
+    if(stinker) { printf("⚠️ shares an edge\n"); }
+    // Only intersects if the dihedral angle is zero (precondition: no zero
+    // area triangles before or after collapse)
+#       warning "Consider maintaining a list of (area-vectors)normals?"
+    const auto vg10 = (V.row(F(g,1))-V.row(F(g,0))).template head<3>();
+    const auto vg20 = (V.row(F(g,2))-V.row(F(g,0))).template head<3>();
+    const auto ng = vg10.cross(vg20);
+    const int fo = EF(o,0) == f ? EI(o,0) : EI(o,1);
+    const auto vf1p = (V.row(F(f,(fo+1)%3))-p).template head<3>();
+    const auto vf2p = (V.row(F(f,(fo+2)%3))-p).template head<3>();
+    const auto nf = vf1p.cross(vf2p);
+    const auto o_vec_un = (V.row(E(o,1))-V.row(E(o,0))).template head<3>();
+    const auto o_vec = o_vec_un.stableNormalized();
+
+    const auto dihedral_angle = igl::PI - std::atan2(o_vec.dot(ng.cross(nf)),ng.dot(nf));
+    if(dihedral_angle > 1e-8)
+    {
+      return false;
+    }
+    // Triangles really really might intersect.
+    found_intersection = true;
+  }else
+  {
+    if(stinker) { printf("does not share an edge\n"); }
+    // Do they share a vertex?
+    int sf,sg;
+    bool found_shared_vertex = false;
+    for(sf = 0;sf<3;sf++)
+    {
+      if(sf == c){ continue;}
+      for(sg = 0;sg<3;sg++)
+      {
+        if(F(f,sf) == F(g,sg))
+        {
+          found_shared_vertex = true;
+          break;
+        }
+      }
+      if(found_shared_vertex) { break;} 
+    }
+    if(found_shared_vertex)
+    {
+      if(stinker) { printf("⚠️ shares an vertex\n"); }
+      // If they share a vertex and intersect, then an opposite edge must
+      // stab through the other triangle.
+
+      // intersect_triangle1 needs non-const inputs.
+      Eigen::RowVector3d g0 = V.row(F(g,0));
+      Eigen::RowVector3d g1 = V.row(F(g,1));
+      Eigen::RowVector3d g2 = V.row(F(g,2));
+      Eigen::RowVector3d fs;
+      if(((sf+1)%3)==c)
+      {
+        fs = p;
+      }else
+      {
+        fs = V.row(F(f,(sf+1)%3));
+      }
+      Eigen::RowVector3d fd;
+      if( ((sf+2)%3)==c )
+      {
+        fd = p - fs;
+      }else
+      {
+        fd = V.row(F(f,(sf+2)%3)) - fs;
+      }
+      double t,u,v;
+
+      if(intersect_triangle1(
+            fs.data(),fd.data(),
+            g0.data(),g1.data(),g2.data(),
+            &t,&u,&v))
+      {
+        found_intersection = t > 0 && t<1+1e-8;
+      }
+      if(!found_intersection)
+      {
+        Eigen::RowVector3d fv[3];
+        fv[0] = V.row(F(f,0));
+        fv[1] = V.row(F(f,1));
+        fv[2] = V.row(F(f,2));
+        fv[c] = p;
+        Eigen::RowVector3d gs = V.row(F(g,(sg+1)%3));
+        Eigen::RowVector3d gd = V.row(F(g,(sg+2)%3)) - gs;
+        if(intersect_triangle1(
+              gs.data(),gd.data(),
+              fv[0].data(),fv[1].data(),fv[2].data(),
+              &t,&u,&v))
+        {
+          found_intersection = t > 0 && t<1+1e-8;
+        }
+      }
+    }else
+    {
+      bool coplanar;
+      Eigen::RowVector3d i1,i2;
+      found_intersection = igl::tri_tri_intersection_test_3d(
+          V.row(F(g,0)), V.row(F(g,1)), V.row(F(g,2)),
+          p,V.row(F(f,(c+1)%3)),V.row(F(f,(c+2)%3)),
+          coplanar,
+          i1,i2);
+      if(stinker) { printf("tri_tri_intersection_test_3d says %s\n",found_intersection?"☠️":"✅"); }
+    }
+  }
+    if(stinker) { printf("%s\n",found_intersection?"☠️":"✅"); }
+  return found_intersection;
+}
+
 bool collapse_edge_would_create_intersections(
   const int e,
   const Eigen::RowVectorXd & p,
@@ -357,9 +529,11 @@ bool collapse_edge_would_create_intersections(
       return true;
     }
   }
+  
 
   std::vector<const igl::AABB<Eigen::MatrixXd,3>*> candidates;
   tree.append_intersecting_leaves(big_box,candidates);
+  
 
   // Exclude any candidates that are in old_one_ring.
 # warning "consider using unordered_set above so that this is O(n+m) rather than O(nm)"
@@ -370,6 +544,28 @@ bool collapse_edge_would_create_intersections(
         }),
     candidates.end());
   // print candidates
+  constexpr bool stinker = false;
+  if(stinker)
+  {
+    igl::writePLY("before.ply",V,F);
+    std::cout<<"Ee = ["<<E(e,0)<<" "<<E(e,1)<<"]+1;"<<std::endl;
+    std::cout<<"p = ["<<p<<"];"<<std::endl;
+    // print new_one_ring as matlab vector of indices
+    std::cout<<"new_one_ring = [";
+    for(const auto f : new_one_ring)
+    {
+      std::cout<<f<<" ";
+    }
+    std::cout<<"]+1;"<<std::endl;
+    // print candidates as matlab vector of indices
+    std::cout<<"candidates = [";
+    for(const auto * candidate : candidates)
+    {
+      std::cout<<candidate->m_primitive<<" ";
+    }
+    std::cout<<"]+1;"<<std::endl;
+  }
+  
   // For each pair of candidate and new_one_ring, check if they intersect
   bool found_intersection = false;
   for(const int & f : new_one_ring)
@@ -400,91 +596,7 @@ bool collapse_edge_would_create_intersections(
         }
       }
       assert(c<3);
-      // So edge opposite F(f,c) is the outer edge.
-      const int o = EMAP(f + c*F.rows());
-      // Do they share an edge?
-      if((EF(o,0) == f && EF(o,1) == g) || (EF(o,1) == f && EF(o,0) == g))
-      {
-        // Only intersects if the dihedral angle is zero (precondition: no zero
-        // area triangles before or after collapse)
-#       warning "Consider maintaining a list of (area-vectors)normals?"
-        const auto ng = (V.row(F(g,1))-V.row(F(g,0))).head<3>().cross((V.row(F(g,2))-V.row(F(g,0))).head<3>());
-        const int fo = EF(o,0) == f ? EI(o,0) : EI(o,1);
-        const auto nf = (V.row(F(f,(fo+1)%3))-p).head<3>().cross((V.row(F(f,(fo+2)%3))-p).head<3>());
-        const auto o_vec = (V.row(E(o,1))-V.row(E(o,0))).head<3>().stableNormalized();
-
-        const auto dihedral_angle = igl::PI - std::atan2(o_vec.dot(ng.cross(nf)),ng.dot(nf));
-        if(dihedral_angle > 1e-8)
-        {
-          continue;
-        }
-        // Triangles really really might intersect.
-        found_intersection = true;
-      }else
-      {
-        // Do they share a vertex?
-        int sf,sg;
-        bool found_shared_vertex = false;
-        for(sf = 0;sf<3;sf++)
-        {
-          if(sf == c){ continue;}
-          for(sg = 0;sg<3;sg++)
-          {
-            if(F(f,sf) == F(g,sg))
-            {
-              found_shared_vertex = true;
-              break;
-            }
-          }
-          if(found_shared_vertex) { break;} 
-        }
-        if(found_shared_vertex)
-        {
-
-          // If they share a vertex and intersect, then an opposite edge must
-          // stab through the other triangle.
-
-          // intersect_triangle1 needs non-const inputs.
-          Eigen::RowVector3d g0 = V.row(F(g,0));
-          Eigen::RowVector3d g1 = V.row(F(g,1));
-          Eigen::RowVector3d g2 = V.row(F(g,2));
-          Eigen::RowVector3d fs = ((sf+1)%3)==c ? p : V.row(F(f,(sf+1)%3));
-          Eigen::RowVector3d fd = 
-            (((sf+2)%3)==c ? p : V.row(F(f,(sf+2)%3))) - fs;
-          double t,u,v;
-          if(intersect_triangle1(
-              fs.data(),fd.data(),
-              g0.data(),g1.data(),g2.data(),
-              &t,&u,&v))
-          {
-            found_intersection = t > 0 && t<1+1e-8;
-          }
-          if(!found_intersection)
-          {
-            Eigen::RowVector3d f0 = 0==c?p:V.row(F(g,0));
-            Eigen::RowVector3d f1 = 1==c?p:V.row(F(g,1));
-            Eigen::RowVector3d f2 = 2==c?p:V.row(F(g,2));
-            Eigen::RowVector3d gs = V.row(F(g,(sg+1)%3));
-            Eigen::RowVector3d gd = V.row(F(g,(sg+1)%3)) - gs;
-            if(intersect_triangle1(
-              gs.data(),gd.data(),
-              f0.data(),f1.data(),f2.data(),
-              &t,&u,&v))
-            {
-              found_intersection = t > 0 && t<1+1e-8;
-            }
-          }
-        }else
-        {
-          bool coplanar;
-          Eigen::RowVector3d i1,i2;
-          found_intersection = igl::tri_tri_intersection_test_3d(
-            V.row(F(g,0)), V.row(F(g,1)), V.row(F(g,2)),
-            p,V.row(F(f,(c+1)%3)),V.row(F(f,(c+2)%3)),
-            coplanar,
-            i1,i2);
-        }
-      }
+      found_intersection = triangle_triangle_intersect(V,F,E,EMAP,EF,EI,f,c,p,g);
       if(found_intersection) { break; }
     }
     if(found_intersection) { break; }
@@ -525,6 +637,7 @@ void intersection_blocking_collapse_edge_callbacks(
       {
         return false;
       }
+      
       // Check if there would be (new) intersections
       return 
         !collapse_edge_would_create_intersections(
@@ -596,14 +709,35 @@ void intersection_blocking_collapse_edge_callbacks(
             .extend(V.row(F(f,0)).transpose())
             .extend(V.row(F(f,1)).transpose())
             .extend(V.row(F(f,2)).transpose());
-          tree = leaves[f]->update(box,pad);
+          // Always grab root (returns self if no update)
+          tree = leaves[f]->update(box,pad)->root();
+          assert(tree == tree->root());
         }
+          assert(tree == tree->root());
       }
-#warning "Slow intersection checking..."
-      if(is_self_intersecting(V,F))
+//#ifndef NDEBUG
+#if false
+#warning "🐌🐌🐌🐌🐌🐌🐌🐌🐌🐌🐌 Slow intersection checking..."
+      constexpr bool stinker = true;
+      if(stinker && is_self_intersecting(V,F))
       {
-        printf("💩💩💩💩💩 Just shit the bed 🛌🛌🛌🛌 \n");
+        igl::writePLY("after.ply",V,F);
+        printf("💩💩💩💩💩 Just shit the bed on e=%d 🛌🛌🛌🛌 \n",e);
+        printf("🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥\n");
+        printf("🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥\n");
+        printf("🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥\n");
+        printf("🧨🧨🧨🧨🧨🧨🧨🧨🧨🧨🧨🧨🧨🧨🧨🧨🧨🧨🧨🧨🧨🧨\n");
+        printf("🧨🧨🧨🧨🧨🧨🧨🧨🧨🧨🧨🧨🧨🧨🧨🧨🧨🧨🧨🧨🧨🧨\n");
+        printf("🧨🧨🧨🧨🧨🧨🧨🧨🧨🧨🧨🧨🧨🧨🧨🧨🧨🧨🧨🧨🧨🧨\n");
+        printf("💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥\n");
+        printf("💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥\n");
+        printf("💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥💥\n");
+        printf("☠️ ☠️ ☠️ ☠️ ☠️ ☠️ ☠️ ☠️ ☠️ ☠️ ☠️ ☠️ ☠️ ☠️ ☠️ ☠️ ☠️ ☠️ ☠️ ☠️ ☠️ ☠️ \n");
+        printf("☠️ ☠️ ☠️ ☠️ ☠️ ☠️ ☠️ ☠️ ☠️ ☠️ ☠️ ☠️ ☠️ ☠️ ☠️ ☠️ ☠️ ☠️ ☠️ ☠️ ☠️ ☠️ \n");
+        printf("☠️ ☠️ ☠️ ☠️ ☠️ ☠️ ☠️ ☠️ ☠️ ☠️ ☠️ ☠️ ☠️ ☠️ ☠️ ☠️ ☠️ ☠️ ☠️ ☠️ ☠️ ☠️ \n");
+        exit(1);
       }
+#endif
       // Finally. Run callback.
       return orig_post_collapse(
         V,F,E,EMAP,EF,EI,Q,EQ,C,e,e1,e2,f1,f2,collapsed);

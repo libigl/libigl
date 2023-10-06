@@ -459,7 +459,7 @@ IGL_INLINE igl::AABB<DerivedV,DIM>* igl::AABB<DerivedV,DIM>::pad(
       leaf->rotate_lineage();
     }
   }
-  return tree;
+  return this->root();
 }
 
 template <typename DerivedV, int DIM>
@@ -477,7 +477,7 @@ IGL_INLINE igl::AABB<DerivedV,DIM>* igl::AABB<DerivedV,DIM>::update(
   tree = tree->insert(leaf)->root();
   leaf->refit_lineage();
   leaf->rotate_lineage();
-  return tree;
+  return this->root();
 }
 
 template <typename DerivedV, int DIM>
