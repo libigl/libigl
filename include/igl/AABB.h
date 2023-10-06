@@ -571,6 +571,11 @@ public:
         const RowVectorDIMS & dir,
         const Scalar min_t,
         igl::Hit & hit) const;
+      /// @param[in]  box  query box
+      /// @param[in,out] leaves  list of leaves to append to
+      IGL_INLINE bool append_intersecting_leaves(
+        const Eigen::AlignedBox<Scalar,DIM> & box,
+        std::vector<const AABB<DerivedV,DIM>*> & leaves) const;
 
 public:
       /// Compute the squared distance from all query points in P to the
