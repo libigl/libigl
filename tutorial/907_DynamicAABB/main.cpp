@@ -13,6 +13,7 @@
 #include <igl/max_faces_stopping_condition.h>
 #include <igl/remove_unreferenced.h>
 #include <igl/copyleft/cgal/remesh_self_intersections.h>
+#include <igl/copyleft/cgal/is_self_intersecting.h>
 #include <igl/point_simplex_squared_distance.h>
 #include <igl/edge_flaps.h>
 #include <igl/doublearea.h>
@@ -35,49 +36,7 @@ extern "C"
 }
 
 
-bool is_self_intersecting(
-  const Eigen::MatrixXd & V,
-  const Eigen::MatrixXi & F)
-{
-  const auto valid = 
-    igl::find((F.array() != IGL_COLLAPSE_EDGE_NULL).rowwise().any().eval());
-  // Extract only the valid faces
-  Eigen::MatrixXi FF = F(valid, Eigen::all);
-  // Remove unreferneced vertices
-  Eigen::MatrixXd VV;
-  {
-    Eigen::VectorXi I;
-    igl::remove_unreferenced(V,Eigen::MatrixXi(FF),VV,FF,I);
-  }
-  Eigen::VectorXd A;
-  igl::doublearea(VV,FF,A);
-  if(A.minCoeff() <= 0)
-  {
-    return true;
-  }
-  if(
-       (FF.array().col(0) == FF.array().col(1)).any() ||
-       (FF.array().col(1) == FF.array().col(2)).any() ||
-       (FF.array().col(2) == FF.array().col(0)).any())
 
-  {
-    return true;
-  }
-
-  // check for self-intersections VV,FF
-  igl::copyleft::cgal::RemeshSelfIntersectionsParam params;
-  params.detect_only = true;
-  params.first_only = true;
-  Eigen::MatrixXi IF;
-  Eigen::VectorXi J,IM;
-  {
-    Eigen::MatrixXd tempV;
-    Eigen::MatrixXi tempF;
-    igl::copyleft::cgal::remesh_self_intersections(
-      V,F,params,tempV,tempF,IF,J,IM);
-  }
-  return IF.rows() > 0;
-}
 
 
 const int MAX_RUNS = 10;
@@ -719,7 +678,7 @@ void intersection_blocking_collapse_edge_callbacks(
 #if false
 #warning "🐌🐌🐌🐌🐌🐌🐌🐌🐌🐌🐌 Slow intersection checking..."
       constexpr bool stinker = true;
-      if(stinker && is_self_intersecting(V,F))
+      if(stinker && igl::copyleft::cgal::is_self_intersecting(V,F))
       {
         igl::writePLY("after.ply",V,F);
         printf("💩💩💩💩💩 Just shit the bed on e=%d 🛌🛌🛌🛌 \n",e);
