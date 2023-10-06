@@ -267,7 +267,7 @@ IGL_INLINE void igl::copyleft::cgal::trim_with_solid(
           }
 
           // Don't do this until the very end:
-          assert(I.size() == Vr.rows());
+          assert(I.size() == V.rows());
           // Merge coinciding vertices into non-manifold vertices.
           std::for_each(F.data(),F.data()+F.size(),[&I](typename DerivedF::Scalar & a){a=I[a];});
         }

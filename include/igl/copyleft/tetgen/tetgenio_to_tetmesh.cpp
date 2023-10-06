@@ -83,7 +83,6 @@ IGL_INLINE bool igl::copyleft::tetgen::tetgenio_to_tetmesh(
 
   if(out.pointmarkerlist)
   {
-    assert(out.numberofpoints == out.numberofpointmarkers);
     TM.resize(out.numberofpoints);
     for (int i = 0; i < out.numberofpoints; ++i) 
     {
