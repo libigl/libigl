@@ -441,7 +441,10 @@ IGL_INLINE igl::AABB<DerivedV,DIM>* igl::AABB<DerivedV,DIM>::pad(
   for(auto * leaf : leaves)
   {
     assert(leaf);
-    tree = leaf->detach()->root();
+    auto * sibling = leaf->detach();
+    tree = sibling->root();
+    // Refit near where leaf used to be since it might move far away.
+    sibling->refit_lineage();
     pad_box(pad,leaf->m_box);
     tree = tree->insert(leaf)->root();
     // Will potentially reach "above" `this`
@@ -469,7 +472,8 @@ IGL_INLINE igl::AABB<DerivedV,DIM>* igl::AABB<DerivedV,DIM>::update(
   leaf->m_box = new_box;
   pad_box(pad,leaf->m_box);
   assert(leaf);
-  auto * tree = leaf->detach()->root();
+  auto * sibling = leaf->detach();
+  auto * tree = sibling->root();
   tree = tree->insert(leaf)->root();
   leaf->refit_lineage();
   leaf->rotate_lineage();
@@ -1540,9 +1544,27 @@ igl::AABB<DerivedV,DIM>::intersect_ray_opt(
   return left_ret || right_ret;
 }
 
+template <typename DerivedV, int DIM>
+IGL_INLINE bool igl::AABB<DerivedV,DIM>::append_intersecting_leaves(
+    const Eigen::AlignedBox<igl::AABB<DerivedV,DIM>::Scalar,DIM> & box,
+    std::vector<const igl::AABB<DerivedV,DIM>*> & leaves) const
+{
+  if(!box.intersects(m_box)){ return false;}
+
+  if(is_leaf())
+  {
+    leaves.push_back(this);
+    return true;
+  }
+  bool any_left = (m_left ? m_left->append_intersecting_leaves(box,leaves) : false);
+  bool any_right = (m_right ? m_right->append_intersecting_leaves(box,leaves) : false);
+  return any_left || any_right;
+}
+
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instantiation
+template bool igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>::append_intersecting_leaves(Eigen::AlignedBox<double, 3> const&, std::vector<igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3> const*, std::allocator<igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3> const*> >&) const;
 template igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>* igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>::update_primitive<Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, double);
 template igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>*  igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>::pad(std::vector<igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>*, std::allocator<igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>*> > const&, double, int);
 template std::vector<igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>*> igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>::gather_leaves(const int);
