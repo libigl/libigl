@@ -37,7 +37,7 @@ if(HUNTER_ENABLED)
 endif()
 
 ################################################################################
-project(libigl VERSION 2.4.0)
+project(libigl VERSION 2.5.0)
 
 # CMake module path
 list(PREPEND CMAKE_MODULE_PATH
