@@ -67,6 +67,11 @@ IGL_INLINE bool igl::fast_find_self_intersections(
         {
           if(t.m_primitive==i) //itself
               return false;
+          // Alec: This seems to (incorrectly) assume that adjacent faces can't
+          // intersect. If the goal is to find if there are _any_
+          // self-intersections, then I claim this is OK for closed meshes, but
+          // not OK for meshes with boundary (consider a one-ring twisted on
+          // itself 🌹).
           if(igl::internal::adjacent_faces(F.row(i), F.row(t.m_primitive)) )
               return false;
 
