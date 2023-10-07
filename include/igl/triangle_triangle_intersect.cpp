@@ -1,0 +1,157 @@
+#include "triangle_triangle_intersect.h"
+#include "PI.h"
+#include "tri_tri_intersect.h"
+#include <Eigen/Geometry>
+extern "C"
+{
+#include <igl/raytri.c>
+}
+
+
+template <
+  typename DerivedV,
+  typename DerivedF,
+  typename DerivedE,
+  typename DerivedEMAP,
+  typename DerivedEF,
+  typename DerivedEI,
+  typename Derivedp>
+IGL_INLINE bool igl::triangle_triangle_intersect(
+  const Eigen::MatrixBase<DerivedV> & V,
+  const Eigen::MatrixBase<DerivedF> & F,
+  const Eigen::MatrixBase<DerivedE> & E,
+  const Eigen::MatrixBase<DerivedEMAP> & EMAP,
+  const Eigen::MatrixBase<DerivedEI> & EF,
+  const Eigen::MatrixBase<DerivedEF> & EI,
+  const int f,
+  const int c,
+  const Eigen::MatrixBase<Derivedp> & p,
+  const int g)
+{
+  // I'm leaving this debug printing stuff in for a bit until I trust this
+  // better. 
+  constexpr bool stinker = false;
+  if(stinker) { printf("👀\n"); }
+  bool found_intersection = false;
+  // So edge opposite F(f,c) is the outer edge.
+  const int o = EMAP(f + c*F.rows());
+  // Do they share the edge opposite c?
+  if((EF(o,0) == f && EF(o,1) == g) || (EF(o,1) == f && EF(o,0) == g))
+  {
+    if(stinker) { printf("⚠️ shares an edge\n"); }
+    // Only intersects if the dihedral angle is zero (precondition: no zero
+    // area triangles before or after collapse)
+    const auto vg10 = (V.row(F(g,1))-V.row(F(g,0))).template head<3>();
+    const auto vg20 = (V.row(F(g,2))-V.row(F(g,0))).template head<3>();
+    const auto ng = vg10.cross(vg20);
+    const int fo = EF(o,0) == f ? EI(o,0) : EI(o,1);
+    const auto vf1p = (V.row(F(f,(fo+1)%3))-p).template head<3>();
+    const auto vf2p = (V.row(F(f,(fo+2)%3))-p).template head<3>();
+    const auto nf = vf1p.cross(vf2p);
+    const auto o_vec_un = (V.row(E(o,1))-V.row(E(o,0))).template head<3>();
+    const auto o_vec = o_vec_un.stableNormalized();
+
+    const auto dihedral_angle = igl::PI - std::atan2(o_vec.dot(ng.cross(nf)),ng.dot(nf));
+    if(dihedral_angle > 1e-8)
+    {
+      return false;
+    }
+    // Triangles really really might intersect.
+    found_intersection = true;
+  }else
+  {
+    if(stinker) { printf("does not share an edge\n"); }
+    // Do they share a vertex?
+    int sf,sg;
+    bool found_shared_vertex = false;
+    for(sf = 0;sf<3;sf++)
+    {
+      if(sf == c){ continue;}
+      for(sg = 0;sg<3;sg++)
+      {
+        if(F(f,sf) == F(g,sg))
+        {
+          found_shared_vertex = true;
+          break;
+        }
+      }
+      if(found_shared_vertex) { break;} 
+    }
+    if(found_shared_vertex)
+    {
+      if(stinker) { printf("⚠️ shares an vertex\n"); }
+      // If they share a vertex and intersect, then an opposite edge must
+      // stab through the other triangle.
+
+      // intersect_triangle1 needs non-const inputs.
+      Eigen::RowVector3d g0 = V.row(F(g,0)).template cast<double>();
+      Eigen::RowVector3d g1 = V.row(F(g,1)).template cast<double>();
+      Eigen::RowVector3d g2 = V.row(F(g,2)).template cast<double>();
+      Eigen::RowVector3d fs;
+      if(((sf+1)%3)==c)
+      {
+        fs = p;
+      }else
+      {
+        fs = V.row(F(f,(sf+1)%3));
+      }
+      Eigen::RowVector3d fd;
+      if( ((sf+2)%3)==c )
+      {
+        fd = p.template cast<double>() - fs;
+      }else
+      {
+        fd = V.row(F(f,(sf+2)%3)).template cast<double>() - fs;
+      }
+      double t,u,v;
+
+      if(intersect_triangle1(
+            fs.data(),fd.data(),
+            g0.data(),g1.data(),g2.data(),
+            &t,&u,&v))
+      {
+        found_intersection = t > 0 && t<1+1e-8;
+      }
+      if(!found_intersection)
+      {
+        Eigen::RowVector3d fv[3];
+        fv[0] = V.row(F(f,0)).template cast<double>();
+        fv[1] = V.row(F(f,1)).template cast<double>();
+        fv[2] = V.row(F(f,2)).template cast<double>();
+        fv[c] = p.template cast<double>();
+        Eigen::RowVector3d gs = V.row(F(g,(sg+1)%3)).template cast<double>();
+        Eigen::RowVector3d gd = 
+          V.row(F(g,(sg+2)%3)).template cast<double>() - gs;
+        if(intersect_triangle1(
+              gs.data(),gd.data(),
+              fv[0].data(),fv[1].data(),fv[2].data(),
+              &t,&u,&v))
+        {
+          found_intersection = t > 0 && t<1+1e-8;
+        }
+      }
+    }else
+    {
+      bool coplanar;
+      Eigen::RowVector3d i1,i2;
+      found_intersection = igl::tri_tri_intersection_test_3d(
+                V.row(F(g,0)).template cast<double>(), 
+                V.row(F(g,1)).template cast<double>(), 
+                V.row(F(g,2)).template cast<double>(),
+                            p.template cast<double>(),
+          V.row(F(f,(c+1)%3)).template cast<double>(),
+          V.row(F(f,(c+2)%3)).template cast<double>(),
+          coplanar,
+          i1,i2);
+      if(stinker) { printf("tri_tri_intersection_test_3d says %s\n",found_intersection?"☠️":"✅"); }
+    }
+  }
+  if(stinker) { printf("%s\n",found_intersection?"☠️":"✅"); }
+  return found_intersection;
+}
+
+#ifdef IGL_STATIC_LIBRARY
+// Explicit template instantiation
+// generated by autoexplicit.sh
+template bool igl::triangle_triangle_intersect<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, 1, -1, 1, 1, -1> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, int, int, Eigen::MatrixBase<Eigen::Matrix<double, 1, -1, 1, 1, -1> > const&, int);
+#endif

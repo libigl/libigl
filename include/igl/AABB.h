@@ -29,6 +29,9 @@ namespace igl
     class AABB 
     {
 public:
+///////////////////////////////////////////////////////////////////////////////
+// Member variables
+///////////////////////////////////////////////////////////////////////////////
       /// Scalar type of vertex positions (e.g., `double`)
       typedef typename DerivedV::Scalar Scalar;
       /// Fixed-size (`DIM`) RowVector type using `Scalar`
@@ -48,6 +51,9 @@ public:
       Eigen::AlignedBox<Scalar,DIM> m_box;
       /// Index of single primitive in this node if full leaf, otherwise -1 for non-leaf
       int m_primitive;
+///////////////////////////////////////////////////////////////////////////////
+// Non-templated member functions
+///////////////////////////////////////////////////////////////////////////////
       //Scalar m_low_sqr_d;
       //int m_depth;
       /// @private
@@ -162,53 +168,6 @@ public:
       {
         clear();
       }
-      /// Build an Axis-Aligned Bounding Box tree for a given mesh and given
-      /// serialization of a previous AABB tree.
-      ///
-      /// @param[in] V  #V by dim list of mesh vertex positions. 
-      /// @param[in] Ele  #Ele by dim+1 list of mesh indices into #V. 
-      /// @param[in] bb_mins  max_tree by dim list of bounding box min corner positions
-      /// @param[in] bb_maxs  max_tree by dim list of bounding box max corner positions
-      /// @param[in] elements  max_tree list of element or (not leaf id) indices into Ele
-      /// @param[in] i  recursive call index {0}
-      template <
-        typename DerivedEle, 
-        typename Derivedbb_mins, 
-        typename Derivedbb_maxs,
-        typename Derivedelements>
-        IGL_INLINE void init(
-            const Eigen::MatrixBase<DerivedV> & V,
-            const Eigen::MatrixBase<DerivedEle> & Ele, 
-            const Eigen::MatrixBase<Derivedbb_mins> & bb_mins,
-            const Eigen::MatrixBase<Derivedbb_maxs> & bb_maxs,
-            const Eigen::MatrixBase<Derivedelements> & elements,
-            const int i = 0);
-      /// Build an Axis-Aligned Bounding Box tree for a given mesh and given
-      /// serialization of a previous AABB tree.
-      ///
-      /// @param[in] V  #V by dim list of mesh vertex positions. 
-      /// @param[in] Ele  #Ele by dim+1 list of mesh indices into #V. 
-      template <typename DerivedEle>
-      IGL_INLINE void init(
-          const Eigen::MatrixBase<DerivedV> & V,
-          const Eigen::MatrixBase<DerivedEle> & Ele);
-      /// Build an Axis-Aligned Bounding Box tree for a given mesh.
-      ///
-      /// @param[in] V  #V by dim list of mesh vertex positions. 
-      /// @param[in] Ele  #Ele by dim+1 list of mesh indices into #V. 
-      /// @param[in] SI  #Ele by dim list revealing for each coordinate where Ele's
-      ///              barycenters would be sorted: SI(e,d) = i --> the dth coordinate of
-      ///              the barycenter of the eth element would be placed at position i in a
-      ///              sorted list.
-      /// @param[in] I  #I list of indices into Ele of elements to include (for recursive
-      ///     calls)
-      /// 
-      template <typename DerivedEle, typename DerivedSI, typename DerivedI>
-      IGL_INLINE void init(
-          const Eigen::MatrixBase<DerivedV> & V,
-          const Eigen::MatrixBase<DerivedEle> & Ele, 
-          const Eigen::MatrixBase<DerivedSI> & SI,
-          const Eigen::MatrixBase<DerivedI>& I);
       /// Return whether at leaf node
       IGL_INLINE bool is_leaf() const;
       /// Return whether at root node
@@ -222,6 +181,8 @@ public:
       /// @param[in] m  number of leaves/elements (Ele.rows())
       /// @returns leaves  m list of pointers to leaves
       IGL_INLINE std::vector<AABB<DerivedV,DIM>*> gather_leaves(const int m);
+      /// \overload where m is the max m_primitive id in the tree.
+      IGL_INLINE std::vector<AABB<DerivedV,DIM>*> gather_leaves();
       /// Pad leaves by `pad` in each dimension
       /// @param[in] pad padding amount
       /// @param[in] polish_rotate_passes number of passes to polish rotations
@@ -250,14 +211,6 @@ public:
       IGL_INLINE AABB<DerivedV,DIM>* update(
           const Eigen::AlignedBox<Scalar,DIM> & new_box,
           const Scalar pad=0);
-      /// @returns `this` if no update was needed, otherwise returns pointer to
-      /// (potentially new) root
-      template <typename DerivedEle>
-      IGL_INLINE AABB<DerivedV,DIM>* update_primitive(
-          const Eigen::MatrixBase<DerivedV> & V,
-          const Eigen::MatrixBase<DerivedEle> & Ele,
-          const Scalar pad=0);
-
       /// Insert a (probably a leaf) AABB `other` into this AABB tree. If
       /// `other`'s box is contained in this AABB's box then insert it as a child recursively.
       ///
@@ -422,6 +375,111 @@ public:
         AABB<DerivedV,DIM>* sibling);
       // Should this be a static function with an argument?
       IGL_INLINE void rotate_lineage();
+      /// Number of nodes contained in subtree
+      ///
+      /// \seealso size()
+      ///
+      /// @return Number of elements m then total tree size should be 2*h where h is
+      /// the deepest depth 2^ceil(log(#Ele*2-1))
+      IGL_INLINE int subtree_size() const;
+      /// @param[in]  box  query box
+      /// @param[in,out] leaves  list of leaves to append to
+      IGL_INLINE bool append_intersecting_leaves(
+        const Eigen::AlignedBox<Scalar,DIM> & box,
+        std::vector<const AABB<DerivedV,DIM>*> & leaves) const;
+      /// Compute sum of surface area of all internal (non-root, non-leaf) boxes
+      IGL_INLINE typename DerivedV::Scalar internal_surface_area() const;
+      /// Validate the subtree under this node by running a bunch of assertions.
+      /// Does nothing when not in debug mode
+      IGL_INLINE void validate() const;
+      IGL_INLINE void print(const int depth = 0) const;
+      IGL_INLINE int size() const;
+      IGL_INLINE int height() const;
+private:
+      // If new distance (sqr_d_candidate) is less than current distance
+      // (sqr_d), then update this distance and its associated values
+      // _in-place_:
+      //
+      // Inputs:
+      //   p  dim-long query point (only used in DEBUG mode)
+      //   sqr_d  candidate minimum distance for this query, see output
+      //   i  candidate index into Ele of closest point, see output
+      //   c  dim-long candidate closest point, see output
+      //   sqr_d  current minimum distance for this query, see output
+      //   i  current index into Ele of closest point, see output
+      //   c  dim-long current closest point, see output
+      // Outputs:
+      //   sqr_d   minimum of initial value and squared distance to this
+      //     primitive
+      //   i  possibly updated index into Ele of closest point
+      //   c  dim-long possibly updated closest point
+      IGL_INLINE void set_min(
+        const RowVectorDIMS & p,
+        const Scalar sqr_d_candidate,
+        const int i_candidate,
+        const RowVectorDIMS & c_candidate,
+        Scalar & sqr_d,
+        int & i,
+        Eigen::PlainObjectBase<RowVectorDIMS> & c) const;
+public:
+///////////////////////////////////////////////////////////////////////////////
+// Templated member functions
+///////////////////////////////////////////////////////////////////////////////
+      /// Build an Axis-Aligned Bounding Box tree for a given mesh and given
+      /// serialization of a previous AABB tree.
+      ///
+      /// @param[in] V  #V by dim list of mesh vertex positions. 
+      /// @param[in] Ele  #Ele by dim+1 list of mesh indices into #V. 
+      /// @param[in] bb_mins  max_tree by dim list of bounding box min corner positions
+      /// @param[in] bb_maxs  max_tree by dim list of bounding box max corner positions
+      /// @param[in] elements  max_tree list of element or (not leaf id) indices into Ele
+      /// @param[in] i  recursive call index {0}
+      template <
+        typename DerivedEle, 
+        typename Derivedbb_mins, 
+        typename Derivedbb_maxs,
+        typename Derivedelements>
+        IGL_INLINE void init(
+            const Eigen::MatrixBase<DerivedV> & V,
+            const Eigen::MatrixBase<DerivedEle> & Ele, 
+            const Eigen::MatrixBase<Derivedbb_mins> & bb_mins,
+            const Eigen::MatrixBase<Derivedbb_maxs> & bb_maxs,
+            const Eigen::MatrixBase<Derivedelements> & elements,
+            const int i = 0);
+      /// Build an Axis-Aligned Bounding Box tree for a given mesh and given
+      /// serialization of a previous AABB tree.
+      ///
+      /// @param[in] V  #V by dim list of mesh vertex positions. 
+      /// @param[in] Ele  #Ele by dim+1 list of mesh indices into #V. 
+      template <typename DerivedEle>
+      IGL_INLINE void init(
+          const Eigen::MatrixBase<DerivedV> & V,
+          const Eigen::MatrixBase<DerivedEle> & Ele);
+      /// Build an Axis-Aligned Bounding Box tree for a given mesh.
+      ///
+      /// @param[in] V  #V by dim list of mesh vertex positions. 
+      /// @param[in] Ele  #Ele by dim+1 list of mesh indices into #V. 
+      /// @param[in] SI  #Ele by dim list revealing for each coordinate where Ele's
+      ///              barycenters would be sorted: SI(e,d) = i --> the dth coordinate of
+      ///              the barycenter of the eth element would be placed at position i in a
+      ///              sorted list.
+      /// @param[in] I  #I list of indices into Ele of elements to include (for recursive
+      ///     calls)
+      /// 
+      template <typename DerivedEle, typename DerivedSI, typename DerivedI>
+      IGL_INLINE void init(
+          const Eigen::MatrixBase<DerivedV> & V,
+          const Eigen::MatrixBase<DerivedEle> & Ele, 
+          const Eigen::MatrixBase<DerivedSI> & SI,
+          const Eigen::MatrixBase<DerivedI>& I);
+      /// @returns `this` if no update was needed, otherwise returns pointer to
+      /// (potentially new) root
+      template <typename DerivedEle>
+      IGL_INLINE AABB<DerivedV,DIM>* update_primitive(
+          const Eigen::MatrixBase<DerivedV> & V,
+          const Eigen::MatrixBase<DerivedEle> & Ele,
+          const Scalar pad=0);
+
       /// Find the indices of elements containing given point: this makes sense
       /// when Ele is a co-dimension 0 simplex (tets in 3D, triangles in 2D).
       ///
@@ -438,12 +496,6 @@ public:
           const Eigen::MatrixBase<DerivedEle> & Ele, 
           const Eigen::MatrixBase<Derivedq> & q,
           const bool first=false) const;
-
-      /// Number of nodes contained in subtree
-      ///
-      /// @return Number of elements m then total tree size should be 2*h where h is
-      /// the deepest depth 2^ceil(log(#Ele*2-1))
-      IGL_INLINE int subtree_size() const;
 
       /// Serialize this class into 3 arrays (so we can pass it pack to matlab)
       ///
@@ -571,13 +623,6 @@ public:
         const RowVectorDIMS & dir,
         const Scalar min_t,
         igl::Hit & hit) const;
-      /// @param[in]  box  query box
-      /// @param[in,out] leaves  list of leaves to append to
-      IGL_INLINE bool append_intersecting_leaves(
-        const Eigen::AlignedBox<Scalar,DIM> & box,
-        std::vector<const AABB<DerivedV,DIM>*> & leaves) const;
-
-public:
       /// Compute the squared distance from all query points in P to the
       /// _closest_ points on the primitives stored in the AABB hierarchy for
       /// the mesh (V,Ele).
@@ -601,7 +646,6 @@ public:
         Eigen::PlainObjectBase<DerivedsqrD> & sqrD,
         Eigen::PlainObjectBase<DerivedI> & I,
         Eigen::PlainObjectBase<DerivedC> & C) const;
-
       /// Compute the squared distance from all query points in P already stored
       /// in its own AABB hierarchy to the _closest_ points on the primitives
       /// stored in the AABB hierarchy for the mesh (V,Ele).
@@ -631,8 +675,6 @@ public:
         Eigen::PlainObjectBase<DerivedsqrD> & sqrD,
         Eigen::PlainObjectBase<DerivedI> & I,
         Eigen::PlainObjectBase<DerivedC> & C) const;
-      /// Compute sum of surface area of all internal (non-root, non-leaf) boxes
-      IGL_INLINE typename DerivedV::Scalar internal_surface_area() const;
 private:
       template < 
         typename DerivedEle,
@@ -684,32 +726,6 @@ private:
         Scalar & sqr_d,
         int & i,
         Eigen::PlainObjectBase<RowVectorDIMS> & c) const;
-      // If new distance (sqr_d_candidate) is less than current distance
-      // (sqr_d), then update this distance and its associated values
-      // _in-place_:
-      //
-      // Inputs:
-      //   p  dim-long query point (only used in DEBUG mode)
-      //   sqr_d  candidate minimum distance for this query, see output
-      //   i  candidate index into Ele of closest point, see output
-      //   c  dim-long candidate closest point, see output
-      //   sqr_d  current minimum distance for this query, see output
-      //   i  current index into Ele of closest point, see output
-      //   c  dim-long current closest point, see output
-      // Outputs:
-      //   sqr_d   minimum of initial value and squared distance to this
-      //     primitive
-      //   i  possibly updated index into Ele of closest point
-      //   c  dim-long possibly updated closest point
-      IGL_INLINE void set_min(
-        const RowVectorDIMS & p,
-        const Scalar sqr_d_candidate,
-        const int i_candidate,
-        const RowVectorDIMS & c_candidate,
-        Scalar & sqr_d,
-        int & i,
-        Eigen::PlainObjectBase<RowVectorDIMS> & c) const;
-
       /// Intersect a ray with the mesh return all hits
       ///
       /// @param[in]  V  #V by dim list of vertex positions

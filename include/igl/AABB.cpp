@@ -26,6 +26,8 @@
 #include <list>
 #include <queue>
 #include <stack>
+#include <string>
+#include <stdio.h>
 
 // This would be so much better with C++17 if constexpr
 namespace
@@ -133,181 +135,9 @@ namespace
 
 }
 
-
-template <typename DerivedV, int DIM>
-template <typename DerivedEle, typename Derivedbb_mins, typename Derivedbb_maxs, typename Derivedelements>
-IGL_INLINE void igl::AABB<DerivedV,DIM>::init(
-    const Eigen::MatrixBase<DerivedV> & V,
-    const Eigen::MatrixBase<DerivedEle> & Ele,
-    const Eigen::MatrixBase<Derivedbb_mins> & bb_mins,
-    const Eigen::MatrixBase<Derivedbb_maxs> & bb_maxs,
-    const Eigen::MatrixBase<Derivedelements> & elements,
-    const int i)
-{
-  using namespace std;
-  using namespace Eigen;
-  clear();
-  if(bb_mins.size() > 0)
-  {
-    assert(bb_mins.rows() == bb_maxs.rows() && "Serial tree arrays must match");
-    assert(bb_mins.cols() == V.cols() && "Serial tree array dim must match V");
-    assert(bb_mins.cols() == bb_maxs.cols() && "Serial tree arrays must match");
-    assert(bb_mins.rows() == elements.rows() &&
-        "Serial tree arrays must match");
-    // construct from serialization
-    m_box.extend(bb_mins.row(i).transpose());
-    m_box.extend(bb_maxs.row(i).transpose());
-    m_primitive = elements(i);
-    // Not leaf then recurse
-    if(m_primitive == -1)
-    {
-      m_left = new AABB();
-      m_left->init( V,Ele,bb_mins,bb_maxs,elements,2*i+1);
-      m_left->m_parent = this;
-      m_right = new AABB();
-      m_right->init( V,Ele,bb_mins,bb_maxs,elements,2*i+2);
-      m_right->m_parent = this;
-      //m_depth = std::max( m_left->m_depth, m_right->m_depth)+1;
-    }
-  }else
-  {
-    VectorXi allI = colon<int>(0,Ele.rows()-1);
-    MatrixXDIMS BC;
-    if(Ele.cols() == 1)
-    {
-      // points
-      BC = V;
-    }else
-    {
-      // Simplices
-      barycenter(V,Ele,BC);
-    }
-    MatrixXi SI(BC.rows(),BC.cols());
-    {
-      MatrixXDIMS _;
-      MatrixXi IS;
-      igl::sort(BC,1,true,_,IS);
-      // Need SI(i) to tell which place i would be sorted into
-      const int dim = IS.cols();
-      for(int i = 0;i<IS.rows();i++)
-      {
-        for(int d = 0;d<dim;d++)
-        {
-          SI(IS(i,d),d) = i;
-        }
-      }
-    }
-    init(V,Ele,SI,allI);
-  }
-}
-
-template <typename DerivedV, int DIM>
-template <typename DerivedEle>
-void igl::AABB<DerivedV,DIM>::init(
-    const Eigen::MatrixBase<DerivedV> & V,
-    const Eigen::MatrixBase<DerivedEle> & Ele)
-{
-  using namespace Eigen;
-  // clear will be immediately called...
-  return init(V,Ele,MatrixXDIMS(),MatrixXDIMS(),VectorXi(),0);
-}
-
-  template <typename DerivedV, int DIM>
-template <
-  typename DerivedEle,
-  typename DerivedSI,
-  typename DerivedI>
-IGL_INLINE void igl::AABB<DerivedV,DIM>::init(
-    const Eigen::MatrixBase<DerivedV> & V,
-    const Eigen::MatrixBase<DerivedEle> & Ele,
-    const Eigen::MatrixBase<DerivedSI> & SI,
-    const Eigen::MatrixBase<DerivedI> & I)
-{
-  using namespace Eigen;
-  using namespace std;
-  clear();
-  if(V.size() == 0 || Ele.size() == 0 || I.size() == 0)
-  {
-    return;
-  }
-  assert(DIM == V.cols() && "V.cols() should matched declared dimension");
-  //const Scalar inf = numeric_limits<Scalar>::infinity();
-  m_box = AlignedBox<Scalar,DIM>();
-  // Compute bounding box
-  for(int i = 0;i<I.rows();i++)
-  {
-    for(int c = 0;c<Ele.cols();c++)
-    {
-      m_box.extend(V.row(Ele(I(i),c)).transpose());
-      m_box.extend(V.row(Ele(I(i),c)).transpose());
-    }
-  }
-  switch(I.size())
-  {
-    case 0:
-      {
-        assert(false);
-      }
-    case 1:
-      {
-        m_primitive = I(0);
-        break;
-      }
-    default:
-      {
-        // Compute longest direction
-        int max_d = -1;
-        m_box.diagonal().maxCoeff(&max_d);
-        // Can't use median on BC directly because many may have same value,
-        // but can use median on sorted BC indices
-        VectorXi SIdI(I.rows());
-        for(int i = 0;i<I.rows();i++)
-        {
-          SIdI(i) = SI(I(i),max_d);
-        }
-        // Pass by copy to avoid changing input
-        const auto median = [](VectorXi A)->int
-        {
-          size_t n = (A.size()-1)/2;
-          nth_element(A.data(),A.data()+n,A.data()+A.size());
-          return A(n);
-        };
-        const int med = median(SIdI);
-        VectorXi LI((I.rows()+1)/2),RI(I.rows()/2);
-        assert(LI.rows()+RI.rows() == I.rows());
-        // Distribute left and right
-        {
-          int li = 0;
-          int ri = 0;
-          for(int i = 0;i<I.rows();i++)
-          {
-            if(SIdI(i)<=med)
-            {
-              LI(li++) = I(i);
-            }else
-            {
-              RI(ri++) = I(i);
-            }
-          }
-        }
-        //m_depth = 0;
-        if(LI.rows()>0)
-        {
-          m_left = new AABB();
-          m_left->init(V,Ele,SI,LI);
-          m_left->m_parent = this;
-          //m_depth = std::max(m_depth, m_left->m_depth+1);
-        }
-        if(RI.rows()>0)
-        {
-          m_right = new AABB();
-          m_right->init(V,Ele,SI,RI);
-          m_right->m_parent = this;
-          //m_depth = std::max(m_depth, m_right->m_depth+1);
-        }
-      }
-  }
-}
+///////////////////////////////////////////////////////////////////////////////
+// Non-templated member functions
+///////////////////////////////////////////////////////////////////////////////
 
 template <typename DerivedV, int DIM>
 IGL_INLINE bool igl::AABB<DerivedV,DIM>::is_leaf() const
@@ -409,9 +239,9 @@ IGL_INLINE std::vector<igl::AABB<DerivedV,DIM>*>
   igl::AABB<DerivedV,DIM>::gather_leaves(const int m)
 {
   auto * tree = this;
-  std::vector<igl::AABB<Eigen::MatrixXd,3>*> leaves(m,nullptr);
+  std::vector<igl::AABB<DerivedV,DIM>*> leaves(m,nullptr);
   {
-    std::vector<igl::AABB<Eigen::MatrixXd,3>* > stack;
+    std::vector<igl::AABB<DerivedV,DIM>* > stack;
     stack.push_back(tree);
     while(!stack.empty())
     {
@@ -428,6 +258,27 @@ IGL_INLINE std::vector<igl::AABB<DerivedV,DIM>*>
     }
   }
   return leaves;
+}
+
+template <typename DerivedV, int DIM>
+IGL_INLINE std::vector<igl::AABB<DerivedV,DIM>*> 
+  igl::AABB<DerivedV,DIM>::gather_leaves()
+{
+  int max_primitive = -1;
+  {
+    std::vector<igl::AABB<DerivedV,DIM>* > stack;
+    stack.push_back(this);
+    while(!stack.empty())
+    {
+      auto * node = stack.back();
+      stack.pop_back();
+      if(!node) { continue; }
+      stack.push_back(node->m_left);
+      stack.push_back(node->m_right);
+      max_primitive = std::max(max_primitive,node->m_primitive);
+    }
+  }
+  return gather_leaves(max_primitive+1);
 }
 
 template <typename DerivedV, int DIM>
@@ -478,65 +329,6 @@ IGL_INLINE igl::AABB<DerivedV,DIM>* igl::AABB<DerivedV,DIM>::update(
   leaf->refit_lineage();
   leaf->rotate_lineage();
   return this->root();
-}
-
-template <typename DerivedV, int DIM>
-template <typename DerivedEle>
-IGL_INLINE igl::AABB<DerivedV,DIM>* igl::AABB<DerivedV,DIM>::update_primitive(
-    const Eigen::MatrixBase<DerivedV> & V,
-    const Eigen::MatrixBase<DerivedEle> & Ele,
-    const Scalar pad)
-{
-  assert(this->is_leaf());
-  assert(this->m_primitive >= 0 && this->m_primitive < Ele.rows());
-  Eigen::AlignedBox<double, 3> new_box;
-  for(int c = 0;c<Ele.cols();c++)
-  {
-    new_box.extend(V.row(Ele(this->m_primitive,c)).transpose());
-  }
-  return this->update(new_box,pad);
-}
-
-template <typename DerivedV, int DIM>
-IGL_INLINE igl::AABB<DerivedV,DIM>* igl::AABB<DerivedV,DIM>::insert(AABB * other)
-{
-  // test if this is the same pointer as other
-  if(this == other)
-  { 
-    // Only expecting this to happen when this/other are a singleton tree
-    assert(this->is_root() && this->is_leaf());
-    // Nothing changed.
-    return this; 
-  }
-
-
-  if(this->is_leaf())
-  {
-    return this->insert_as_sibling(other);
-  }
-
-  // internal node case
-  if(!this->m_box.contains(other->m_box))
-  {
-    // it's annoying to have these special root handling cases. I wonder if the
-    // root should have been an ∞ node...
-    return insert_as_sibling(other);
-  }
-
-  Eigen::AlignedBox<Scalar,DIM> left_grow = this->m_left->m_box;
-  left_grow.extend(other->m_box);
-  Eigen::AlignedBox<Scalar,DIM> right_grow = this->m_right->m_box;
-  right_grow.extend(other->m_box);
-  const auto left_surface_area_increase =  
-    box_surface_area(left_grow) - box_surface_area(this->m_left->m_box);
-  const auto right_surface_area_increase = 
-    box_surface_area(right_grow) - box_surface_area(this->m_right->m_box);
-  assert(left_surface_area_increase >= 0);
-  assert(right_surface_area_increase >= 0);
-  // Handle both (left_surface_area_increase <= 0 && right_surface_area_increase <= 0)
-  return left_surface_area_increase < right_surface_area_increase ?
-    this->m_left->insert(other) :
-    this->m_right->insert(other);
 }
 
 template <typename DerivedV, int DIM>
@@ -744,27 +536,6 @@ IGL_INLINE typename DerivedV::Scalar igl::AABB<DerivedV,DIM>::rotate_up(const bo
   return rotate_up(dry_run,reining,grandparent,parent,challenger,sibling);
 }
 
-template <typename DerivedV, int DIM>
-IGL_INLINE void igl::AABB<DerivedV,DIM>::rotate_lineage()
-{
-  std::vector<igl::AABB<DerivedV, DIM> *> lineage;
-  {
-    auto * node = this;
-    while(node)
-    {
-      lineage.push_back(node);
-      node = node->m_parent;
-    }
-  }
-  // O(h)
-  while(!lineage.empty())
-  {
-    auto * node = lineage.back();
-    lineage.pop_back();
-    assert(node);
-    const bool ret = node->rotate();
-  }
-}
 
 template <typename DerivedV, int DIM>
 IGL_INLINE typename DerivedV::Scalar igl::AABB<DerivedV,DIM>::rotate_down(const bool dry_run)
@@ -875,6 +646,400 @@ IGL_INLINE typename DerivedV::Scalar igl::AABB<DerivedV,DIM>::rotate_up(
   return after_sa - before_sa;
 }
 
+template <typename DerivedV, int DIM>
+IGL_INLINE int igl::AABB<DerivedV,DIM>::subtree_size() const
+{
+  // 1 for self
+  int n = 1;
+  int n_left = 0,n_right = 0;
+  if(m_left != nullptr)
+  {
+    n_left = m_left->subtree_size();
+  }
+  if(m_right != nullptr)
+  {
+    n_right = m_right->subtree_size();
+  }
+  n += 2*std::max(n_left,n_right);
+  return n;
+}
+
+template <typename DerivedV, int DIM>
+IGL_INLINE void igl::AABB<DerivedV,DIM>::rotate_lineage()
+{
+  std::vector<igl::AABB<DerivedV, DIM> *> lineage;
+  {
+    auto * node = this;
+    while(node)
+    {
+      lineage.push_back(node);
+      node = node->m_parent;
+    }
+  }
+  // O(h)
+  while(!lineage.empty())
+  {
+    auto * node = lineage.back();
+    lineage.pop_back();
+    assert(node);
+    const bool ret = node->rotate();
+  }
+}
+
+template <typename DerivedV, int DIM>
+IGL_INLINE bool igl::AABB<DerivedV,DIM>::append_intersecting_leaves(
+    const Eigen::AlignedBox<igl::AABB<DerivedV,DIM>::Scalar,DIM> & box,
+    std::vector<const igl::AABB<DerivedV,DIM>*> & leaves) const
+{
+  if(!box.intersects(m_box)){ return false;}
+
+  if(is_leaf())
+  {
+    leaves.push_back(this);
+    return true;
+  }
+  bool any_left = (m_left ? m_left->append_intersecting_leaves(box,leaves) : false);
+  bool any_right = (m_right ? m_right->append_intersecting_leaves(box,leaves) : false);
+  return any_left || any_right;
+}
+
+template <typename DerivedV, int DIM>
+IGL_INLINE typename DerivedV::Scalar igl::AABB<DerivedV,DIM>::internal_surface_area() const
+{
+  // Don't include self (parent's call will add me if I'm not a root or leaf)
+  Scalar surface_area = 0;
+  if(m_left && !m_left->is_leaf())
+  {
+    surface_area += box_surface_area(m_left->m_box);
+    surface_area += m_left->internal_surface_area();
+  }
+  if(m_right && !m_right->is_leaf())
+  {
+    surface_area += box_surface_area(m_right->m_box);
+    surface_area += m_right->internal_surface_area();
+  }
+  return surface_area;
+}
+
+template <typename DerivedV, int DIM>
+IGL_INLINE void igl::AABB<DerivedV,DIM>::validate() const 
+{
+  if(this->is_leaf())
+  {
+    assert(this->m_primitive >= 0 || this->is_root());
+  }
+  if(this->m_left)
+  {
+    assert(this->m_box.contains(this->m_left->m_box));
+    assert(this->m_left->m_parent == this);
+    this->m_left->validate();
+  }
+  if(this->m_right)
+  {
+    assert(this->m_box.contains(this->m_right->m_box));
+    assert(this->m_right->m_parent == this);
+    this->m_right->validate();
+  }
+}
+
+template <typename DerivedV, int DIM>
+IGL_INLINE void igl::AABB<DerivedV,DIM>::print(const int depth) const
+{
+  const auto indent = std::string(depth*2,' ');
+  printf("%s%p",indent.c_str(),this);
+  if(this->is_leaf())
+  {
+    printf(" [%d]",this->m_primitive);
+  }
+  printf("\n");
+  if(this->m_left)
+  {
+    assert(this->m_box.contains(this->m_left->m_box));
+    assert(this->m_left->m_parent == this);
+    this->m_left->print(depth+1);
+  }
+  if(this->m_right)
+  {
+    assert(this->m_box.contains(this->m_right->m_box));
+    assert(this->m_right->m_parent == this);
+    this->m_right->print(depth+1);
+  }
+}
+
+template <typename DerivedV, int DIM>
+IGL_INLINE int igl::AABB<DerivedV,DIM>::size() const
+{
+  return 1 + 
+    (this->m_left ? this->m_left ->size():0) + 
+    (this->m_right? this->m_right->size():0);
+}
+template <typename DerivedV, int DIM>
+IGL_INLINE int igl::AABB<DerivedV,DIM>::height() const
+{
+  return 1 + std::max(
+    (this->m_left ?this->m_left ->height():0),
+    (this->m_right?this->m_right->height():0));
+}
+
+template <typename DerivedV, int DIM>
+IGL_INLINE void igl::AABB<DerivedV,DIM>::set_min(
+  const RowVectorDIMS & /* p */,
+  const Scalar sqr_d_candidate,
+  const int i_candidate,
+  const RowVectorDIMS & c_candidate,
+  Scalar & sqr_d,
+  int & i,
+  Eigen::PlainObjectBase<RowVectorDIMS> & c) const
+{
+  if(sqr_d_candidate < sqr_d)
+  {
+    i = i_candidate;
+    c = c_candidate;
+    sqr_d = sqr_d_candidate;
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+// Templated member functions
+///////////////////////////////////////////////////////////////////////////////
+
+
+template <typename DerivedV, int DIM>
+template <typename DerivedEle, typename Derivedbb_mins, typename Derivedbb_maxs, typename Derivedelements>
+IGL_INLINE void igl::AABB<DerivedV,DIM>::init(
+    const Eigen::MatrixBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedEle> & Ele,
+    const Eigen::MatrixBase<Derivedbb_mins> & bb_mins,
+    const Eigen::MatrixBase<Derivedbb_maxs> & bb_maxs,
+    const Eigen::MatrixBase<Derivedelements> & elements,
+    const int i)
+{
+  using namespace std;
+  using namespace Eigen;
+  clear();
+  if(bb_mins.size() > 0)
+  {
+    assert(bb_mins.rows() == bb_maxs.rows() && "Serial tree arrays must match");
+    assert(bb_mins.cols() == V.cols() && "Serial tree array dim must match V");
+    assert(bb_mins.cols() == bb_maxs.cols() && "Serial tree arrays must match");
+    assert(bb_mins.rows() == elements.rows() &&
+        "Serial tree arrays must match");
+    // construct from serialization
+    m_box.extend(bb_mins.row(i).transpose());
+    m_box.extend(bb_maxs.row(i).transpose());
+    m_primitive = elements(i);
+    // Not leaf then recurse
+    if(m_primitive == -1)
+    {
+      m_left = new AABB();
+      m_left->init( V,Ele,bb_mins,bb_maxs,elements,2*i+1);
+      m_left->m_parent = this;
+      m_right = new AABB();
+      m_right->init( V,Ele,bb_mins,bb_maxs,elements,2*i+2);
+      m_right->m_parent = this;
+      //m_depth = std::max( m_left->m_depth, m_right->m_depth)+1;
+    }
+  }else
+  {
+    VectorXi allI = colon<int>(0,Ele.rows()-1);
+    MatrixXDIMS BC;
+    if(Ele.cols() == 1)
+    {
+      // points
+      BC = V;
+    }else
+    {
+      // Simplices
+      barycenter(V,Ele,BC);
+    }
+    MatrixXi SI(BC.rows(),BC.cols());
+    {
+      MatrixXDIMS _;
+      MatrixXi IS;
+      igl::sort(BC,1,true,_,IS);
+      // Need SI(i) to tell which place i would be sorted into
+      const int dim = IS.cols();
+      for(int i = 0;i<IS.rows();i++)
+      {
+        for(int d = 0;d<dim;d++)
+        {
+          SI(IS(i,d),d) = i;
+        }
+      }
+    }
+    init(V,Ele,SI,allI);
+  }
+}
+
+template <typename DerivedV, int DIM>
+template <typename DerivedEle>
+void igl::AABB<DerivedV,DIM>::init(
+    const Eigen::MatrixBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedEle> & Ele)
+{
+  using namespace Eigen;
+  // clear will be immediately called...
+  return init(V,Ele,MatrixXDIMS(),MatrixXDIMS(),VectorXi(),0);
+}
+
+  template <typename DerivedV, int DIM>
+template <
+  typename DerivedEle,
+  typename DerivedSI,
+  typename DerivedI>
+IGL_INLINE void igl::AABB<DerivedV,DIM>::init(
+    const Eigen::MatrixBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedEle> & Ele,
+    const Eigen::MatrixBase<DerivedSI> & SI,
+    const Eigen::MatrixBase<DerivedI> & I)
+{
+  using namespace Eigen;
+  using namespace std;
+  clear();
+  if(V.size() == 0 || Ele.size() == 0 || I.size() == 0)
+  {
+    return;
+  }
+  assert(DIM == V.cols() && "V.cols() should matched declared dimension");
+  //const Scalar inf = numeric_limits<Scalar>::infinity();
+  m_box = AlignedBox<Scalar,DIM>();
+  // Compute bounding box
+  for(int i = 0;i<I.rows();i++)
+  {
+    for(int c = 0;c<Ele.cols();c++)
+    {
+      m_box.extend(V.row(Ele(I(i),c)).transpose());
+      m_box.extend(V.row(Ele(I(i),c)).transpose());
+    }
+  }
+  switch(I.size())
+  {
+    case 0:
+      {
+        assert(false);
+      }
+    case 1:
+      {
+        m_primitive = I(0);
+        break;
+      }
+    default:
+      {
+        // Compute longest direction
+        int max_d = -1;
+        m_box.diagonal().maxCoeff(&max_d);
+        // Can't use median on BC directly because many may have same value,
+        // but can use median on sorted BC indices
+        VectorXi SIdI(I.rows());
+        for(int i = 0;i<I.rows();i++)
+        {
+          SIdI(i) = SI(I(i),max_d);
+        }
+        // Pass by copy to avoid changing input
+        const auto median = [](VectorXi A)->int
+        {
+          size_t n = (A.size()-1)/2;
+          nth_element(A.data(),A.data()+n,A.data()+A.size());
+          return A(n);
+        };
+        const int med = median(SIdI);
+        VectorXi LI((I.rows()+1)/2),RI(I.rows()/2);
+        assert(LI.rows()+RI.rows() == I.rows());
+        // Distribute left and right
+        {
+          int li = 0;
+          int ri = 0;
+          for(int i = 0;i<I.rows();i++)
+          {
+            if(SIdI(i)<=med)
+            {
+              LI(li++) = I(i);
+            }else
+            {
+              RI(ri++) = I(i);
+            }
+          }
+        }
+        //m_depth = 0;
+        if(LI.rows()>0)
+        {
+          m_left = new AABB();
+          m_left->init(V,Ele,SI,LI);
+          m_left->m_parent = this;
+          //m_depth = std::max(m_depth, m_left->m_depth+1);
+        }
+        if(RI.rows()>0)
+        {
+          m_right = new AABB();
+          m_right->init(V,Ele,SI,RI);
+          m_right->m_parent = this;
+          //m_depth = std::max(m_depth, m_right->m_depth+1);
+        }
+      }
+  }
+}
+
+
+template <typename DerivedV, int DIM>
+template <typename DerivedEle>
+IGL_INLINE igl::AABB<DerivedV,DIM>* igl::AABB<DerivedV,DIM>::update_primitive(
+    const Eigen::MatrixBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedEle> & Ele,
+    const Scalar pad)
+{
+  assert(this->is_leaf());
+  assert(this->m_primitive >= 0 && this->m_primitive < Ele.rows());
+  Eigen::AlignedBox<double, 3> new_box;
+  for(int c = 0;c<Ele.cols();c++)
+  {
+    new_box.extend(V.row(Ele(this->m_primitive,c)).transpose());
+  }
+  return this->update(new_box,pad);
+}
+
+template <typename DerivedV, int DIM>
+IGL_INLINE igl::AABB<DerivedV,DIM>* igl::AABB<DerivedV,DIM>::insert(AABB * other)
+{
+  // test if this is the same pointer as other
+  if(this == other)
+  { 
+    // Only expecting this to happen when this/other are a singleton tree
+    assert(this->is_root() && this->is_leaf());
+    // Nothing changed.
+    return this; 
+  }
+
+
+  if(this->is_leaf())
+  {
+    return this->insert_as_sibling(other);
+  }
+
+  // internal node case
+  if(!this->m_box.contains(other->m_box))
+  {
+    // it's annoying to have these special root handling cases. I wonder if the
+    // root should have been an ∞ node...
+    return insert_as_sibling(other);
+  }
+
+  Eigen::AlignedBox<Scalar,DIM> left_grow = this->m_left->m_box;
+  left_grow.extend(other->m_box);
+  Eigen::AlignedBox<Scalar,DIM> right_grow = this->m_right->m_box;
+  right_grow.extend(other->m_box);
+  const auto left_surface_area_increase =  
+    box_surface_area(left_grow) - box_surface_area(this->m_left->m_box);
+  const auto right_surface_area_increase = 
+    box_surface_area(right_grow) - box_surface_area(this->m_right->m_box);
+  assert(left_surface_area_increase >= 0);
+  assert(right_surface_area_increase >= 0);
+  // Handle both (left_surface_area_increase <= 0 && right_surface_area_increase <= 0)
+  return left_surface_area_increase < right_surface_area_increase ?
+    this->m_left->insert(other) :
+    this->m_right->insert(other);
+}
+
 
 template <typename DerivedV, int DIM>
 template <typename DerivedEle, typename Derivedq>
@@ -922,23 +1087,6 @@ IGL_INLINE std::vector<int> igl::AABB<DerivedV,DIM>::find(
   return left;
 }
 
-template <typename DerivedV, int DIM>
-IGL_INLINE int igl::AABB<DerivedV,DIM>::subtree_size() const
-{
-  // 1 for self
-  int n = 1;
-  int n_left = 0,n_right = 0;
-  if(m_left != nullptr)
-  {
-    n_left = m_left->subtree_size();
-  }
-  if(m_right != nullptr)
-  {
-    n_right = m_right->subtree_size();
-  }
-  n += 2*std::max(n_left,n_right);
-  return n;
-}
 
 
 template <typename DerivedV, int DIM>
@@ -1160,23 +1308,6 @@ IGL_INLINE void igl::AABB<DerivedV,DIM>::squared_distance(
     V,Ele,&other,other_V,other_Ele,0,up_sqr_d,sqrD,I,C);
 }
 
-template <typename DerivedV, int DIM>
-IGL_INLINE typename DerivedV::Scalar igl::AABB<DerivedV,DIM>::internal_surface_area() const
-{
-  // Don't include self (parent's call will add me if I'm not a root or leaf)
-  Scalar surface_area = 0;
-  if(m_left && !m_left->is_leaf())
-  {
-    surface_area += box_surface_area(m_left->m_box);
-    surface_area += m_left->internal_surface_area();
-  }
-  if(m_right && !m_right->is_leaf())
-  {
-    surface_area += box_surface_area(m_right->m_box);
-    surface_area += m_right->internal_surface_area();
-  }
-  return surface_area;
-}
 
 template <typename DerivedV, int DIM>
 template <
@@ -1327,24 +1458,6 @@ IGL_INLINE void igl::AABB<DerivedV,DIM>::leaf_squared_distance(
   return leaf_squared_distance(V,Ele,p,0,sqr_d,i,c);
 }
 
-
-template <typename DerivedV, int DIM>
-IGL_INLINE void igl::AABB<DerivedV,DIM>::set_min(
-  const RowVectorDIMS & /* p */,
-  const Scalar sqr_d_candidate,
-  const int i_candidate,
-  const RowVectorDIMS & c_candidate,
-  Scalar & sqr_d,
-  int & i,
-  Eigen::PlainObjectBase<RowVectorDIMS> & c) const
-{
-  if(sqr_d_candidate < sqr_d)
-  {
-    i = i_candidate;
-    c = c_candidate;
-    sqr_d = sqr_d_candidate;
-  }
-}
 
 
 template <typename DerivedV, int DIM>
@@ -1544,39 +1657,16 @@ igl::AABB<DerivedV,DIM>::intersect_ray_opt(
   return left_ret || right_ret;
 }
 
-template <typename DerivedV, int DIM>
-IGL_INLINE bool igl::AABB<DerivedV,DIM>::append_intersecting_leaves(
-    const Eigen::AlignedBox<igl::AABB<DerivedV,DIM>::Scalar,DIM> & box,
-    std::vector<const igl::AABB<DerivedV,DIM>*> & leaves) const
-{
-  if(!box.intersects(m_box)){ return false;}
-
-  if(is_leaf())
-  {
-    leaves.push_back(this);
-    return true;
-  }
-  bool any_left = (m_left ? m_left->append_intersecting_leaves(box,leaves) : false);
-  bool any_right = (m_right ? m_right->append_intersecting_leaves(box,leaves) : false);
-  return any_left || any_right;
-}
-
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instantiation
-template bool igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>::append_intersecting_leaves(Eigen::AlignedBox<double, 3> const&, std::vector<igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3> const*, std::allocator<igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3> const*> >&) const;
-template igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>* igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>::update_primitive<Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, double);
-template igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>*  igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>::pad(std::vector<igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>*, std::allocator<igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>*> > const&, double, int);
-template std::vector<igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>*> igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>::gather_leaves(const int);
-template void igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>::rotate_lineage();
-template void igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>::refit_lineage();
-template igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>* igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>::detach();
-template bool igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>::is_leaf() const;
-template double igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>::rotate(const bool);
-template igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>* igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>::root() const;
-template igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>* igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>::insert(igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>*);
-template bool igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>::is_root() const;
-template double igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>::internal_surface_area() const;
+
+template class igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>;
+template class igl::AABB<Eigen::Matrix<double, -1, 3, 0, -1, 3>, 3>;
+template class igl::AABB<Eigen::Matrix<double, -1, 3, 1, -1, 3>, 3>;
+template class igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 2>;
+template class igl::AABB<Eigen::Matrix<double, -1, 2, 0, -1, 2>, 2>;
+
 // generated by autoexplicit.sh
 template double igl::AABB<Eigen::Matrix<double, -1, 3, 0, -1, 3>, 3>::squared_distance<Eigen::Matrix<int, -1, 3, 0, -1, 3> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::Matrix<double, 1, 3, 1, 1, 3> const&, double, double, int&, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> >&) const;
 // generated by autoexplicit.sh
