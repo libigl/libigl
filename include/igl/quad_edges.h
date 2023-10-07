@@ -5,6 +5,10 @@
 
 namespace igl
 {
+  /// Compute the edges of a quad mesh.
+  ///
+  /// @param[in] Q  #Q by 4 list of quad indices into rows of some vertex list V
+  /// @param[out] E  #E by 2 list of edge indices into rows of V
   template <
     typename DerivedQ,
     typename DerivedE >

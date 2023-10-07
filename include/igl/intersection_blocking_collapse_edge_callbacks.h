@@ -22,6 +22,7 @@ namespace igl
   /// @param[out] pre_collapse  new pre_collapse callback
   /// @param[out] post_collapse  new post_collapse callback
   ///
+  /// \see decimate.h
   IGL_INLINE void intersection_blocking_collapse_edge_callbacks(
     const decimate_pre_collapse_callback  & orig_pre_collapse,
     const decimate_post_collapse_callback & orig_post_collapse,

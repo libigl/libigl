@@ -37,13 +37,12 @@ namespace igl
   /// @param[in] g  index into F of second triangle
   /// @returns  true if triangles intersect
   ///
-  /// \seealso edge_flaps
   /// \note This very specialized function should be complemented with the more
   /// general functions in igl::tri_tri_intersect (which should be renamed and
   /// split into appropriate files). There's a reasonably amount of shared code
   /// with igl::copyleft::cgal::remesh_self_intersections too.
   ///
-  /// \seealso tri_tri_intersect
+  /// \see edge_flaps, tri_tri_intersect
   template <
     typename DerivedV,
     typename DerivedF,
