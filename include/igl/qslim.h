@@ -32,7 +32,7 @@ namespace igl
   IGL_INLINE bool qslim(
     const Eigen::MatrixXd & V,
     const Eigen::MatrixXi & F,
-    const size_t max_m,
+    const int max_m,
     const bool block_intersections,
     Eigen::MatrixXd & U,
     Eigen::MatrixXi & G,
@@ -42,7 +42,7 @@ namespace igl
   IGL_INLINE bool qslim(
     const Eigen::MatrixXd & V,
     const Eigen::MatrixXi & F,
-    const size_t max_m,
+    const int max_m,
     Eigen::MatrixXd & U,
     Eigen::MatrixXi & G,
     Eigen::VectorXi & J,

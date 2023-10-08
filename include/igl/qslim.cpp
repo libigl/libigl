@@ -21,10 +21,10 @@
 #include "intersection_blocking_collapse_edge_callbacks.h"
 #include "AABB.h"
 
-IGL_INLINE bool qslim(
+IGL_INLINE bool igl::qslim(
   const Eigen::MatrixXd & V,
   const Eigen::MatrixXi & F,
-  const size_t max_m,
+  const int max_m,
   const bool block_intersections,
   Eigen::MatrixXd & U,
   Eigen::MatrixXi & G,
@@ -104,7 +104,7 @@ IGL_INLINE bool qslim(
 IGL_INLINE bool igl::qslim(
   const Eigen::MatrixXd & V,
   const Eigen::MatrixXi & F,
-  const size_t max_m,
+  const int max_m,
   Eigen::MatrixXd & U,
   Eigen::MatrixXi & G,
   Eigen::VectorXi & J,
