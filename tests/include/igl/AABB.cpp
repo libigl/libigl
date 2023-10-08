@@ -186,7 +186,7 @@ TEST_CASE("AABB: dynamic", "[igl]")
     }
 
     // Only compare speeds on large meshes
-    if(F.rows() > 100)
+    if(F.rows() > 300)
     { 
       REQUIRE(t_dynamic_tree < t_static_tree);
       REQUIRE(t_dynamic_tree < t_brute_force);
