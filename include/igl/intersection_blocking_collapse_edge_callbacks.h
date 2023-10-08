@@ -22,6 +22,50 @@ namespace igl
   /// @param[out] pre_collapse  new pre_collapse callback
   /// @param[out] post_collapse  new post_collapse callback
   ///
+  /// #### Example
+  ///
+  /// ```cpp
+  ///  // Build tree around mesh (must be edge-manifold, may have boundaries)
+  ///  igl::AABB<Eigen::MatrixXd, 3> * tree = new igl::AABB<Eigen::MatrixXd, 3>();
+  ///  tree->init(V,F);
+  ///  // Connect boundaries to dummy infinite vertex (after tree building)
+  ///  Eigen::MatrixXd VO;
+  ///  Eigen::MatrixXi FO;
+  ///  igl::connect_boundary_to_infinity(V,F,VO,FO);
+  ///  // prepare edge structures
+  ///  Eigen::VectorXi EMAP;
+  ///  Eigen::MatrixXi E,EF,EI;
+  ///  igl::edge_flaps(FO,E,EMAP,EF,EI);
+  ///  // prepare callbacks
+  ///  igl::decimate_cost_and_placement_callback cost_and_placement;
+  ///  igl::decimate_pre_collapse_callback  pre_collapse;
+  ///  igl::decimate_post_collapse_callback post_collapse;
+  ///  cost_and_placement = igl::shortest_edge_and_midpoint;
+  ///  igl::decimate_trivial_callbacks(pre_collapse,post_collapse);
+  ///  igl::intersection_blocking_collapse_edge_callbacks(
+  ///      pre_collapse, post_collapse, // These will get copied as needed
+  ///      tree,
+  ///      pre_collapse, post_collapse);
+  ///  int m = F.rows();
+  ///  const int orig_m = m;
+  ///  Eigen::MatrixXd U;
+  ///  Eigen::MatrixXi G;
+  ///  Eigen::VectorXi J,I;
+  ///  const bool ret = igl::decimate(
+  ///    VO, FO,
+  ///    cost_and_placement,
+  ///    igl::max_faces_stopping_condition(m,orig_m,target_m),
+  ///    pre_collapse,
+  ///    post_collapse,
+  ///    E, EMAP, EF, EI,
+  ///    U, G, J, I);
+  ///  G = G(igl::find((J.array()<orig_m).eval()), Eigen::all).eval();
+  ///  {
+  ///    Eigen::VectorXi _;
+  ///    igl::remove_unreferenced(Eigen::MatrixXd(U),Eigen::MatrixXi(G),U,G,_);
+  ///  }
+  /// ```
+  ///
   /// \see decimate.h
   IGL_INLINE void intersection_blocking_collapse_edge_callbacks(
     const decimate_pre_collapse_callback  & orig_pre_collapse,

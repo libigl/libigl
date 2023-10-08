@@ -217,9 +217,36 @@ public:
       /// If `other`'s box is not contained in this AABB's box then insert it as a
       /// sibling. 
       ///
+      /// It's a very good idea to call either `rotate` (faster, less good) or `rotate_lineage` (slower, better)
+      /// after insertion. Rotating continues to improve the tree's quality so
+      /// after doing a bunch of insertions you might even consider calling
+      /// `rotate` on all nodes.
+      ///
+      /// `insert` attempts to minimize total internal surface area. Where as
+      /// `init` is top-down and splits boxes based on the median along the
+      /// longest dimension. When initializing a tree, `init` seems to result in
+      /// great trees (small height and small total internal surface area).
+      ///
       /// @param[in] other pointer to another AABB node 
-      /// @returns pointer to the parent of `other`. This could be == to a
-      /// `new`ly created internal node or to `other` if `this==other`
+      /// @returns pointer to the parent of `other` or `other` itself. This
+      /// could be == to a `new`ly created internal node or to `other` if
+      /// `this==other`. Calling ->root() on this returned node will give you
+      /// the root of the tree.
+      ///
+      /// ##### Example
+      /// 
+      /// ```cpp
+      /// // Create a tree (use pointer to track changes to root)
+      /// auto * tree = new igl::AABB<DerivedV,3>::AABB();
+      /// // Fill the tree (e.g., using ->init())
+      /// …
+      /// // Create a new leafe node
+      /// auto * leaf = new igl::AABB<DerivedV,3>::AABB();
+      /// // Fill the leaf node with a primitive and box
+      /// …
+      /// // Insert into the tree and find the possibly new root
+      /// tree = tree->insert(leaf)->root();
+      /// ```
       IGL_INLINE AABB<DerivedV,DIM>* insert(AABB * other);
       /// Insert `other` as a sibling to `this` by creating a new internal node
       /// to be their shared parent.
