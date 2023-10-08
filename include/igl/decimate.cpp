@@ -9,6 +9,8 @@
 #include "collapse_edge.h"
 #include "edge_flaps.h"
 #include "decimate_trivial_callbacks.h"
+#include "AABB.h"
+#include "intersection_blocking_collapse_edge_callbacks.h"
 #include "is_edge_manifold.h"
 #include "remove_unreferenced.h"
 #include "find.h"
@@ -20,12 +22,19 @@
 IGL_INLINE bool igl::decimate(
   const Eigen::MatrixXd & V,
   const Eigen::MatrixXi & F,
-  const size_t max_m,
+  const int max_m,
+  const bool block_intersections,
   Eigen::MatrixXd & U,
   Eigen::MatrixXi & G,
   Eigen::VectorXi & J,
   Eigen::VectorXi & I)
 {
+  igl::AABB<Eigen::MatrixXd, 3> * tree = nullptr;
+  if(block_intersections)
+  {
+    tree = new igl::AABB<Eigen::MatrixXd, 3>();
+    tree->init(V,F);
+  }
   // Original number of faces
   const int orig_m = F.rows();
   // Tracking number of faces
@@ -49,16 +58,23 @@ IGL_INLINE bool igl::decimate(
       return false;
     }
   }
-  decimate_pre_collapse_callback always_try;
-  decimate_post_collapse_callback never_care;
-  decimate_trivial_callbacks(always_try,never_care);
+  decimate_pre_collapse_callback pre_collapse;
+  decimate_post_collapse_callback post_collapse;
+  decimate_trivial_callbacks(pre_collapse,post_collapse);
+  if(block_intersections)
+  {
+    igl::intersection_blocking_collapse_edge_callbacks(
+      pre_collapse, post_collapse, // These will get copied as needed
+      tree,
+      pre_collapse, post_collapse);
+  }
   bool ret = decimate(
     VO,
     FO,
     shortest_edge_and_midpoint,
     max_faces_stopping_condition(m,orig_m,max_m),
-    always_try,
-    never_care,
+    pre_collapse,
+    post_collapse,
     E,
     EMAP,
     EF,
@@ -73,19 +89,9 @@ IGL_INLINE bool igl::decimate(
   Eigen::VectorXi _1,I2;
   igl::remove_unreferenced(Eigen::MatrixXd(U),Eigen::MatrixXi(G),U,G,_1,I2);
   I = I(I2).eval();
+  assert(tree == nullptr || tree == tree->root());
+  delete tree;
   return ret;
-}
-
-IGL_INLINE bool igl::decimate(
-  const Eigen::MatrixXd & V,
-  const Eigen::MatrixXi & F,
-  const size_t max_m,
-  Eigen::MatrixXd & U,
-  Eigen::MatrixXi & G,
-  Eigen::VectorXi & J)
-{
-  Eigen::VectorXi I;
-  return igl::decimate(V,F,max_m,U,G,J,I);
 }
 
 IGL_INLINE bool igl::decimate(

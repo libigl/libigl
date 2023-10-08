@@ -100,15 +100,3 @@ IGL_INLINE bool igl::qslim(
   delete tree;
   return ret;
 }
-
-IGL_INLINE bool igl::qslim(
-  const Eigen::MatrixXd & V,
-  const Eigen::MatrixXi & F,
-  const int max_m,
-  Eigen::MatrixXd & U,
-  Eigen::MatrixXi & G,
-  Eigen::VectorXi & J,
-  Eigen::VectorXi & I)
-{
-  return qslim(V,F,max_m,false,U,G,J,I);
-}

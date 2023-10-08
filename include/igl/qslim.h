@@ -38,15 +38,6 @@ namespace igl
     Eigen::MatrixXi & G,
     Eigen::VectorXi & J,
     Eigen::VectorXi & I);
-  /// \overload with `block_intersections = false`
-  IGL_INLINE bool qslim(
-    const Eigen::MatrixXd & V,
-    const Eigen::MatrixXi & F,
-    const int max_m,
-    Eigen::MatrixXd & U,
-    Eigen::MatrixXi & G,
-    Eigen::VectorXi & J,
-    Eigen::VectorXi & I);
 }
 #ifndef IGL_STATIC_LIBRARY
 #  include "qslim.cpp"
