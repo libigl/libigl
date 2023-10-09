@@ -95,6 +95,7 @@ IGL_INLINE bool igl::collapse_edge_would_create_intersections(
         }),
     candidates.end());
   // print candidates
+  //const bool stinker = e==2581;
   constexpr bool stinker = false;
   if(stinker)
   {
@@ -135,8 +136,12 @@ IGL_INLINE bool igl::collapse_edge_would_create_intersections(
     for(const auto * candidate : candidates)
     {
       const int g = candidate->m_primitive;
+      //constexpr bool inner_stinker = false;
+      const bool inner_stinker = stinker && (f==1492 && g==1554);
+      if(inner_stinker){ printf("  f: %d g: %d\n",f,g); }
       if(!small_box.intersects(candidate->m_box))
       {
+        if(inner_stinker){ printf("  ✅ boxes don't overlap\n"); }
         continue;
       }
       // Corner replaced by p

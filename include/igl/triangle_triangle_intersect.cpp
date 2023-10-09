@@ -1,12 +1,15 @@
 #include "triangle_triangle_intersect.h"
 #include "PI.h"
 #include "tri_tri_intersect.h"
+#include "ray_triangle_intersect.h"
+#include "barycentric_coordinates.h"
+#include "matlab_format.h"
 #include <Eigen/Geometry>
-extern "C"
-{
-#include <igl/raytri.c>
-}
-
+#include <iostream>
+#include <iomanip>
+#include <stdio.h>
+// std::signbit
+#include <cmath>
 
 template <
   typename DerivedV,
@@ -31,6 +34,7 @@ IGL_INLINE bool igl::triangle_triangle_intersect(
   // I'm leaving this debug printing stuff in for a bit until I trust this
   // better. 
   constexpr bool stinker = false;
+  //const bool stinker = (f==1492 && g==1554);
   if(stinker) { printf("👀\n"); }
   bool found_intersection = false;
   // So edge opposite F(f,c) is the outer edge.
@@ -98,20 +102,128 @@ IGL_INLINE bool igl::triangle_triangle_intersect(
       Eigen::RowVector3d fd;
       if( ((sf+2)%3)==c )
       {
-        fd = p.template cast<double>() - fs;
+        fd = p.template cast<double>();
       }else
       {
-        fd = V.row(F(f,(sf+2)%3)).template cast<double>() - fs;
+        fd = V.row(F(f,(sf+2)%3)).template cast<double>();
       }
+      Eigen::RowVector3d fdir = fd - fs;
       double t,u,v;
 
-      if(intersect_triangle1(
-            fs.data(),fd.data(),
-            g0.data(),g1.data(),g2.data(),
-            &t,&u,&v))
+      if(stinker)
       {
-        found_intersection = t > 0 && t<1+1e-8;
+        std::cout<<"T = ["<<g0<<";" <<g1<<";"<<g2<<"];"<<std::endl;
+        std::cout<<"src = [" <<fs<<"];"<<std::endl;
+        std::cout<<"dir = [" <<fdir<<"];"<<std::endl;
       }
+      // p = (1-u-v)*a + u*b + v*c
+      const auto bary = [](
+        const Eigen::RowVector3d & p,
+        const Eigen::RowVector3d & a,
+        const Eigen::RowVector3d & b,
+        const Eigen::RowVector3d & c,
+        double & u,
+        double & v)
+      {
+        const auto v0 = (b-a).eval();
+        const auto v1 = (c-a).eval();
+        const auto v2 = (p-a).eval();
+        const double d00 = v0.dot(v0);
+        const double d01 = v0.dot(v1);
+        const double d11 = v1.dot(v1);
+        const double d20 = v2.dot(v0);
+        const double d21 = v2.dot(v1);
+        const double denom = d00 * d11 - d01 * d01;
+        u = (d11 * d20 - d01 * d21) / denom;
+        v = (d00 * d21 - d01 * d20) / denom;
+        // Equivalent:
+        //Eigen::RowVector3d l;
+        //igl::barycentric_coordinates(p,a,b,c,l);
+        //u = l(1); v = l(2);
+      };
+
+      // Does the segment (A,B) intersect the triangle (0,0),(1,0),(0,1)?
+      const auto intersect_unit = [](
+        const Eigen::RowVector2d & A,
+        const Eigen::RowVector2d & B) -> bool
+      {
+        // Check if P is inside (0,0),(1,0),(0,1) triangle
+        const auto inside_unit = []( const Eigen::RowVector2d & P) -> bool
+        {
+          return P(0) >= 0 && P(1) >= 0 && P(0) + P(1) <= 1;
+        };
+        if(inside_unit(A) || inside_unit(B)) { return true; }
+
+        const auto open_interval_contains_zero = [](
+          const double a, const double b) -> bool
+        {
+          // handle case where either is 0.0 or -0.0
+          if(a==0 || b==0) { return false; }
+          return std::signbit(a) != std::signbit(b);
+        };
+
+        // Now check if the segment intersects any of the edges.
+        // Does A-B intesect X-axis?
+        if(open_interval_contains_zero(A(1),B(1)))
+        {
+          assert((A(1) - B(1)) != 0);
+          // A and B are on opposite sides of the X-axis
+          const double t = A(1) / (A(1) - B(1));
+          const double x = A(0) + t * (B(0) - A(0));
+          if(x >= 0 && x <= 1)
+          {
+            return true;
+          }
+        }
+        // Does A-B intesect Y-axis?
+        if(open_interval_contains_zero(A(0),B(0)))
+        {
+          assert((A(0) - B(0)) != 0);
+          // A and B are on opposite sides of the Y-axis
+          const double t = A(0) / (A(0) - B(0));
+          const double y = A(1) + t * (B(1) - A(1));
+          if(y >= 0 && y <= 1)
+          {
+            return true;
+          }
+        }
+        // Does A-B intersect the line x+y=1?
+        if(open_interval_contains_zero(A(0) + A(1),B(0) + B(1)))
+        {
+          assert((A(0) + A(1) - (B(0) + B(1))) != 0);
+          const double t = (A(0) + A(1)) / ((A(0) + A(1)) - (B(0) + B(1)));
+          const double x = A(0) + t * (B(0) - A(0));
+          if(x >= 0 && x <= 1)
+          {
+            return true;
+          }
+        }
+        return false;
+      };
+
+
+      //if(intersect_triangle1(
+      //      fs.data(),fdir.data(),
+      //      g0.data(),g1.data(),g2.data(),
+      //      &t,&u,&v))
+      bool coplanar = false;
+      double epsilon = 1e-14;
+      if(ray_triangle_intersect(
+        fs,fdir,
+        g0,g1,g2,
+        epsilon,
+        t,u,v,coplanar))
+      {
+        found_intersection = t > 0 && t<1+epsilon;
+      }else if(coplanar)
+      {
+        // deal with coplanar
+        Eigen::RowVector2d s2,d2;
+        bary(fs,g0,g1,g2,s2(0),s2(1));
+        bary(fd,g0,g1,g2,d2(0),d2(1));
+        found_intersection = intersect_unit(s2,d2);
+      }
+
       if(!found_intersection)
       {
         Eigen::RowVector3d fv[3];
@@ -120,14 +232,23 @@ IGL_INLINE bool igl::triangle_triangle_intersect(
         fv[2] = V.row(F(f,2)).template cast<double>();
         fv[c] = p.template cast<double>();
         Eigen::RowVector3d gs = V.row(F(g,(sg+1)%3)).template cast<double>();
-        Eigen::RowVector3d gd = 
-          V.row(F(g,(sg+2)%3)).template cast<double>() - gs;
-        if(intersect_triangle1(
-              gs.data(),gd.data(),
-              fv[0].data(),fv[1].data(),fv[2].data(),
-              &t,&u,&v))
+        Eigen::RowVector3d gd = V.row(F(g,(sg+2)%3)).template cast<double>();
+        Eigen::RowVector3d gdir = gd - gs;
+        if(ray_triangle_intersect(
+              gs,gdir,
+              fv[0],fv[1],fv[2],
+              epsilon,
+              t,u,v,coplanar))
         {
-          found_intersection = t > 0 && t<1+1e-8;
+          found_intersection = t > 0 && t<1+epsilon;
+        }else if(coplanar)
+        {
+          // deal with coplanar
+          //assert(false);
+          Eigen::RowVector2d s2,d2;
+          bary(gs,fv[0],fv[1],fv[2],s2(0),s2(1));
+          bary(gd,fv[0],fv[1],fv[2],d2(0),d2(1));
+          found_intersection = intersect_unit(s2,d2);
         }
       }
     }else

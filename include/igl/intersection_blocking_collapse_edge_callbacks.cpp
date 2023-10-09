@@ -4,6 +4,8 @@
 #include "decimate_trivial_callbacks.h"
 #include "collapse_edge_would_create_intersections.h"
 
+// If debugging, it's a good idea to run this once in release mode to collect
+// the edge id then adjust below.
 //#define IGL_INTERSECTION_BLOCKING_COLLAPSE_EDGE_CALLBACKS_DEBUG
 #ifdef IGL_INTERSECTION_BLOCKING_COLLAPSE_EDGE_CALLBACKS_DEBUG
 #include "copyleft/cgal/is_self_intersecting.h"
@@ -124,9 +126,10 @@ void igl::intersection_blocking_collapse_edge_callbacks(
         }
           assert(tree == tree->root());
       }
-#if IGL_INTERSECTION_BLOCKING_COLLAPSE_EDGE_CALLBACKS_DEBUG
+#ifdef IGL_INTERSECTION_BLOCKING_COLLAPSE_EDGE_CALLBACKS_DEBUG
 #warning "🐌🐌🐌🐌🐌🐌🐌🐌🐌🐌🐌 Slow intersection checking..."
       constexpr bool stinker = true;
+      //const bool stinker = e==2581;
       if(stinker && igl::copyleft::cgal::is_self_intersecting(V,F))
       {
         igl::writePLY("after.ply",V,F);
