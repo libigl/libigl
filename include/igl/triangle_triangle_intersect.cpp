@@ -11,6 +11,13 @@
 // std::signbit
 #include <cmath>
 
+//#define IGL_TRIANGLE_TRIANGLE_INTERSECT_DEBUG
+#ifdef IGL_TRIANGLE_TRIANGLE_INTERSECT_DEBUG
+// CGAL::Epeck
+#include <CGAL/Exact_predicates_exact_constructions_kernel.h>
+#warning "🐌🐌🐌🐌🐌🐌🐌🐌 Slow debug mode for igl::triangle_triangle_intersect"
+#endif
+
 template <
   typename DerivedV,
   typename DerivedF,
@@ -31,6 +38,29 @@ IGL_INLINE bool igl::triangle_triangle_intersect(
   const Eigen::MatrixBase<Derivedp> & p,
   const int g)
 {
+#ifdef IGL_TRIANGLE_TRIANGLE_INTERSECT_DEBUG
+  using Kernel = CGAL::Epeck;
+  typedef CGAL::Point_3<Kernel>    Point_3;
+  typedef CGAL::Segment_3<Kernel>  Segment_3;
+  typedef CGAL::Triangle_3<Kernel> Triangle_3;
+    bool cgal_found_intersection = false;
+    Point_3 Vg[3];
+    Point_3 Vf[3];
+    for(int i = 0;i<3;i++)
+    {
+      Vg[i] = Point_3(V(F(g,i),0),V(F(g,i),1),V(F(g,i),2));
+      if(i == c)
+      {
+        Vf[i] = Point_3(p(0),p(1),p(2));
+      }else
+      {
+        Vf[i] = Point_3(V(F(f,i),0),V(F(f,i),1),V(F(f,i),2));
+      }
+    }
+    Triangle_3 Tg(Vg[0],Vg[1],Vg[2]);
+    Triangle_3 Tf(Vf[0],Vf[1],Vf[2]);
+#endif
+
   // I'm leaving this debug printing stuff in for a bit until I trust this
   // better. 
   constexpr bool stinker = false;
@@ -62,6 +92,31 @@ IGL_INLINE bool igl::triangle_triangle_intersect(
     }
     // Triangles really really might intersect.
     found_intersection = true;
+    // Find intersection
+#ifdef IGL_TRIANGLE_TRIANGLE_INTERSECT_DEBUG
+    if(CGAL::do_intersect(Tg,Tf))
+    {
+      CGAL::Object obj = CGAL::intersection(Tg,Tf);
+      if(const Segment_3 *iseg = CGAL::object_cast<Segment_3 >(&obj))
+      {
+        printf("  ❌ segment is just the edge.\n");
+      }else if(const Point_3 *ipoint = CGAL::object_cast<Point_3 >(&obj))
+      {
+        printf("  🤔 how just a single point?\n");
+      } else if(const Triangle_3 *itri = CGAL::object_cast<Triangle_3 >(&obj))
+      {
+        cgal_found_intersection = true;
+        printf("  ✅ sure it's a triangle\n");
+      } else if(const std::vector<Point_3 > *polyp =
+          CGAL::object_cast< std::vector<Point_3 > >(&obj))
+      {
+        printf("  ✅ polygon\n");
+      }else {
+        printf("  🤔 da fuke?\n");
+      }
+    }
+    assert(found_intersection == cgal_found_intersection);
+#endif
   }else
   {
     if(stinker) { printf("does not share an edge\n"); }
@@ -83,7 +138,7 @@ IGL_INLINE bool igl::triangle_triangle_intersect(
     }
     if(found_shared_vertex)
     {
-      if(stinker) { printf("⚠️ shares an vertex\n"); }
+      if(stinker) { printf("⚠️ shares a vertex\n"); }
       // If they share a vertex and intersect, then an opposite edge must
       // stab through the other triangle.
 
@@ -143,7 +198,7 @@ IGL_INLINE bool igl::triangle_triangle_intersect(
       };
 
       // Does the segment (A,B) intersect the triangle (0,0),(1,0),(0,1)?
-      const auto intersect_unit = [](
+      const auto intersect_unit_helper = [](
         const Eigen::RowVector2d & A,
         const Eigen::RowVector2d & B) -> bool
       {
@@ -152,7 +207,10 @@ IGL_INLINE bool igl::triangle_triangle_intersect(
         {
           return P(0) >= 0 && P(1) >= 0 && P(0) + P(1) <= 1;
         };
-        if(inside_unit(A) || inside_unit(B)) { return true; }
+        if(inside_unit(A) || inside_unit(B))
+        { 
+          return true; 
+        }
 
         const auto open_interval_contains_zero = [](
           const double a, const double b) -> bool
@@ -188,17 +246,32 @@ IGL_INLINE bool igl::triangle_triangle_intersect(
           }
         }
         // Does A-B intersect the line x+y=1?
-        if(open_interval_contains_zero(A(0) + A(1),B(0) + B(1)))
+        if(open_interval_contains_zero(A(0) + A(1) - 1.0,B(0) + B(1) - 1.0))
         {
-          assert((A(0) + A(1) - (B(0) + B(1))) != 0);
-          const double t = (A(0) + A(1)) / ((A(0) + A(1)) - (B(0) + B(1)));
-          const double x = A(0) + t * (B(0) - A(0));
-          if(x >= 0 && x <= 1)
-          {
-            return true;
-          }
+          assert((A(0) + A(1) - 1.0) - (B(0) + B(1) - 1.0) != 0);
+          // A and B are on opposite sides of the line x+y=1
+          // x+y=1
+          // A(0) + t * (B(0) - A(0)) + A(1) + t * (B(1) - A(1)) = 1
+          // t * (B(0) - A(0) + B(1) - A(1)) = 1 - A(0) - A(1)
+         const double  t = (1 - A(0) - A(1)) / (B(0) - A(0) + B(1) - A(1));
+         const double y = A(1) + t * (B(1) - A(1));
+         if(y >= 0 && y <= 1)
+         {
+           return true;
+         }
         }
         return false;
+      };
+      const auto intersect_unit = [&intersect_unit_helper](
+        const Eigen::RowVector2d & A,
+        const Eigen::RowVector2d & B) -> bool
+      {
+#ifdef IGL_TRIANGLE_TRIANGLE_INTERSECT_DEBUG
+        printf("A=[%g,%g];B=[%g,%g];\n",
+          A(0),A(1),B(0),B(1));
+#endif
+        const bool ret = intersect_unit_helper(A,B);
+        return ret;
       };
 
 
@@ -251,6 +324,56 @@ IGL_INLINE bool igl::triangle_triangle_intersect(
           found_intersection = intersect_unit(s2,d2);
         }
       }
+#ifdef IGL_TRIANGLE_TRIANGLE_INTERSECT_DEBUG
+      if(CGAL::do_intersect(Tg,Tf))
+      {
+        CGAL::Object obj = CGAL::intersection(Tg,Tf);
+        if(const Segment_3 *iseg = CGAL::object_cast<Segment_3 >(&obj))
+        {
+          printf("  ✅ sure it's a segment\n");
+          cgal_found_intersection = true;
+        }else if(const Point_3 *ipoint = CGAL::object_cast<Point_3 >(&obj))
+        {
+          printf("  ❌ it's just the point.\n");
+        } else if(const Triangle_3 *itri = CGAL::object_cast<Triangle_3 >(&obj))
+        {
+          cgal_found_intersection = true;
+          printf("  ✅ sure it's a triangle\n");
+        } else if(const std::vector<Point_3 > *polyp =
+            CGAL::object_cast< std::vector<Point_3 > >(&obj))
+        {
+          cgal_found_intersection = true;
+          printf("  ✅ polygon\n");
+        }else {
+          printf("  🤔 da fuke?\n");
+        }
+      }
+      printf("%d,%d  %s vs %s\n",f,c,found_intersection?"☠️":"✅",cgal_found_intersection?"☠️":"✅");
+      if(found_intersection != cgal_found_intersection)
+      {
+        printf("Tg = [[%g,%g,%g];[%g,%g,%g];[%g,%g,%g]];\n",
+          CGAL::to_double(Tg.vertex(0).x()),
+          CGAL::to_double(Tg.vertex(0).y()),
+          CGAL::to_double(Tg.vertex(0).z()),
+          CGAL::to_double(Tg.vertex(1).x()),
+          CGAL::to_double(Tg.vertex(1).y()),
+          CGAL::to_double(Tg.vertex(1).z()),
+          CGAL::to_double(Tg.vertex(2).x()),
+          CGAL::to_double(Tg.vertex(2).y()),
+          CGAL::to_double(Tg.vertex(2).z()));
+        printf("Tf = [[%g,%g,%g];[%g,%g,%g];[%g,%g,%g]];\n",
+          CGAL::to_double(Tf.vertex(0).x()),
+          CGAL::to_double(Tf.vertex(0).y()),
+          CGAL::to_double(Tf.vertex(0).z()),
+          CGAL::to_double(Tf.vertex(1).x()),
+          CGAL::to_double(Tf.vertex(1).y()),
+          CGAL::to_double(Tf.vertex(1).z()),
+          CGAL::to_double(Tf.vertex(2).x()),
+          CGAL::to_double(Tf.vertex(2).y()),
+          CGAL::to_double(Tf.vertex(2).z()));
+      }
+      assert(found_intersection == cgal_found_intersection);
+#endif
     }else
     {
       bool coplanar;
@@ -265,6 +388,14 @@ IGL_INLINE bool igl::triangle_triangle_intersect(
           coplanar,
           i1,i2);
       if(stinker) { printf("tri_tri_intersection_test_3d says %s\n",found_intersection?"☠️":"✅"); }
+#ifdef IGL_TRIANGLE_TRIANGLE_INTERSECT_DEBUG
+      if(CGAL::do_intersect(Tg,Tf))
+      {
+        cgal_found_intersection = true;
+        printf("  ✅ sure it's anything\n");
+      }
+      assert(found_intersection == cgal_found_intersection);
+#endif
     }
   }
   if(stinker) { printf("%s\n",found_intersection?"☠️":"✅"); }

@@ -128,7 +128,7 @@ void igl::intersection_blocking_collapse_edge_callbacks(
       }
 #ifdef IGL_INTERSECTION_BLOCKING_COLLAPSE_EDGE_CALLBACKS_DEBUG
 #warning "🐌🐌🐌🐌🐌🐌🐌🐌🐌🐌🐌 Slow intersection checking..."
-      constexpr bool stinker = true;
+      constexpr bool stinker = false;
       //const bool stinker = e==2581;
       if(stinker && igl::copyleft::cgal::is_self_intersecting(V,F))
       {
