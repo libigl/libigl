@@ -19,7 +19,7 @@ namespace igl
   /// @param[out] t  distance along ray to intersection (if any)
   /// @param[out] u  barycentric coordinate of V1 triangle vertex
   /// @param[out] v  barycentric coordinate of V2 triangle vertex
-  /// @param[out] coplanar  whether ray was considered parallel to triangle (and
+  /// @param[out] parallel whether ray was considered parallel to triangle (and
   ///   if so then will return false)
   /// @returns true if ray intersects triangle
   ///
@@ -40,7 +40,7 @@ namespace igl
      typename DerivedO::Scalar & t,
      typename DerivedO::Scalar & u,
      typename DerivedO::Scalar & v,
-     bool & coplanar);
+     bool & parallel);
 }
 
 #ifndef IGL_STATIC_LIBRARY

@@ -154,7 +154,7 @@ IGL_INLINE bool igl::collapse_edge_would_create_intersections(
         }
       }
       assert(c<3);
-      found_intersection = triangle_triangle_intersect(V,F,E,EMAP,EF,EI,f,c,p,g);
+      found_intersection = triangle_triangle_intersect(V,F,E,EMAP,EF,f,c,p,g);
       if(found_intersection) { break; }
     }
     if(found_intersection) { break; }

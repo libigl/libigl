@@ -30,7 +30,6 @@ namespace igl
   /// @param[in] EMAP  #F*3 list of indices into F, mapping each directed edge to
   ///   unique edge in {1,...,E}
   /// @param[in] EF  #E by 2 list of edge indices into F
-  /// @param[in] EI  #E by 2 list of edge indices into V
   /// @param[in] f  index into F of first triangle
   /// @param[in] c  index into F of corner of first triangle to replace with `p`
   /// @param[in] p  3D position to replace corner of first triangle
@@ -49,15 +48,13 @@ namespace igl
     typename DerivedE,
     typename DerivedEMAP,
     typename DerivedEF,
-    typename DerivedEI,
     typename Derivedp>
   IGL_INLINE bool triangle_triangle_intersect(
     const Eigen::MatrixBase<DerivedV> & V,
     const Eigen::MatrixBase<DerivedF> & F,
     const Eigen::MatrixBase<DerivedE> & E,
     const Eigen::MatrixBase<DerivedEMAP> & EMAP,
-    const Eigen::MatrixBase<DerivedEI> & EF,
-    const Eigen::MatrixBase<DerivedEF> & EI,
+    const Eigen::MatrixBase<DerivedEF> & EF,
     const int f,
     const int c,
     const Eigen::MatrixBase<Derivedp> & p,

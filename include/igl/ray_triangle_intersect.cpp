@@ -36,7 +36,7 @@ IGL_INLINE bool igl::ray_triangle_intersect(
    typename DerivedO::Scalar & t,
    typename DerivedO::Scalar & u,
    typename DerivedO::Scalar & v,
-   bool & coplanar)
+   bool & parallel)
 {
   // Eigen grossness to ensure we have compile-time 3 vectors below.
   assert_3_vector(_O);
@@ -69,10 +69,10 @@ IGL_INLINE bool igl::ray_triangle_intersect(
   const Scalar det = edge1.dot(pvec);
   if( det > -epsilon && det < epsilon )
   {
-    coplanar = true;
+    parallel = true;
     return false;
   }
-  coplanar = false;
+  parallel = false;
   const Scalar inv_det = 1.0 / det;
   const auto tvec = (O - V0).eval();
   u = tvec.dot(pvec) * inv_det;
