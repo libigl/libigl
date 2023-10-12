@@ -75,7 +75,9 @@ TEST_CASE("fast_find_self_intersections: rose", "[igl]")
   Eigen::MatrixXi F(9,3);
   for(int i=0;i<9;i++)
   {
-    V.row(i) << std::cos(4.0*igl::PI*i/9), std::sin(4.0*igl::PI*i/9), 1;
+    const double theta_i = 4.0*igl::PI*double(i)/9.0
+    printf("%0.17f\n",theta_i);
+    V.row(i) << std::cos(theta_i), std::sin(theta_i), 1;
     F.row(i)<<9,i,(i+1)%9;
   }
   V.row(9) << 0,0,0;
@@ -86,7 +88,7 @@ TEST_CASE("fast_find_self_intersections: rose", "[igl]")
   std::cout<<std::setprecision(20);
   double v = -0.49999999999999916733;
   std::cout<<"V = [\n"<<V<<"\n];"<<std::endl;
-  printf("%g %s %g\n",v,v==V(6,0)?"=":"≠",V(6,0));
+  printf("%0.17f %s %0.17f\n",v,v==V(6,0)?"=":"≠",V(6,0));
   REQUIRE( igl::fast_find_self_intersections(V,F,false,false,IF,EV,EE,EI) );
   std::cout<<igl::matlab_format_index(IF,"IF")<<std::endl;
   Eigen::MatrixXi IF_gt(9,2);
