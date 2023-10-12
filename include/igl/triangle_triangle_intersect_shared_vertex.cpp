@@ -2,6 +2,7 @@
 #include "ray_triangle_intersect.h"
 #include "barycentric_coordinates.h"
 #include "matlab_format.h"
+#include <Eigen/Geometry>
 #include <iostream>
 #include <iomanip>
 #include <stdio.h>

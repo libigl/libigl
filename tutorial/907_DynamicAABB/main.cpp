@@ -1,83 +1,137 @@
-#include <igl/opengl/glfw/Viewer.h>
-#include <igl/read_triangle_mesh.h>
-#include <igl/remove_unreferenced.h>
-#include <igl/get_seconds.h>
 #include <igl/AABB.h>
-#include <igl/barycenter.h>
-#include <igl/writePLY.h>
-#include <igl/intersection_blocking_collapse_edge_callbacks.h>
-#include <igl/qslim_optimal_collapse_edge_callbacks.h>
-#include <igl/per_vertex_point_to_plane_quadrics.h>
-#include <igl/STR.h>
-#include <igl/connect_boundary_to_infinity.h>
 #include <igl/box_faces.h>
-#include <igl/quad_edges.h>
-#include <igl/point_mesh_squared_distance.h>
 #include <igl/colon.h>
-#include <igl/writeDMAT.h>
-#include <igl/decimate.h>
-#include <igl/max_faces_stopping_condition.h>
-#include <igl/copyleft/cgal/remesh_self_intersections.h>
-#include <igl/copyleft/cgal/is_self_intersecting.h>
-#include <igl/point_simplex_squared_distance.h>
-#include <igl/edge_flaps.h>
-#include <igl/decimate_callback_types.h>
-#include <igl/decimate_trivial_callbacks.h>
-#include <igl/shortest_edge_and_midpoint.h>
-#include <igl/collapse_edge.h>
-#include <igl/matlab_format.h>
-#include <igl/randperm.h>
-#include <igl/avg_edge_length.h>
 #include <igl/find.h>
+#include <igl/get_seconds.h>
+#include <igl/per_face_normals.h>
+#include <igl/quad_edges.h>
+#include <igl/read_triangle_mesh.h>
+#include <igl/unproject_ray.h>
+#include <igl/opengl/glfw/Viewer.h>
 #include <limits>
 #include <deque>
+#include <stdio.h>
 
-const int MAX_RUNS = 10;
-using AABB = igl::AABB<Eigen::MatrixXd,3>;
 
-template <typename DerivedV, int DIM>
-void validate(
-    const igl::AABB<DerivedV,DIM> * root,
-    const std::vector<igl::AABB<DerivedV,DIM> > & leaves)
+
+int main(int argc, char *argv[])
 {
-  // Check that all leaves are in the tree
-  for(int i = 0;i<leaves.size();i++)
-  {
-    const auto * leaf = &leaves[i];
-    assert(leaf->m_primitive == i);
-    assert(leaf->root() == root);
-  }
-  return root->validate();
-}
+  Eigen::MatrixXd V,N;
+  Eigen::MatrixXi F;
+  igl::read_triangle_mesh(
+    argc>1?argv[1]:TUTORIAL_SHARED_PATH "/decimated-knight.off",V,F);
+  // Make mesh into disconnected soup
+  V = V(Eigen::Map<Eigen::VectorXi>(F.data(),F.size()), Eigen::all).eval();
+  F = Eigen::Map<Eigen::MatrixXi>(igl::colon<int>(0,V.rows()-1).data(),V.rows()/3,3).eval();
+  // Cache normals
+  igl::per_face_normals(V,F,N);
 
-void vis(
-    const Eigen::MatrixXd & V,
-    const Eigen::MatrixXi & F,
-    const AABB & tree)
-{
+  // Build an initial tree. Store as pointer so we can update root.
+  auto * tree = new igl::AABB<Eigen::MatrixXd, 3>();
+  tree->init(V,F);
+  // Gather leaf pointers (these are stable)
+  const auto leaves = tree->gather_leaves(F.rows());
+
+  // Set up visualization and interaction
   igl::opengl::glfw::Viewer vr;
+  Eigen::MatrixXd C = Eigen::RowVector3d(0.9,0.9,0.9).replicate(F.rows(),1);
   vr.data().set_mesh(V,F);
   vr.data().set_face_based(true);
+  vr.data().set_colors(C);
+
+  // draw the boxes of the tree at a given depth
   int depth = 0;
   Eigen::MatrixXd TV;
   Eigen::MatrixXi TQ;
   Eigen::VectorXi TD;
-  igl::box_faces(tree,TV,TQ,TD);
   const auto update_edges = [&]()
   {
     Eigen::MatrixXi TQd = TQ(igl::find((TD.array()==depth).eval()),Eigen::all);
     Eigen::MatrixXi TE;
     igl::quad_edges(TQd,TE);
-    //Eigen::MatrixXi TF(TQd.rows()*2,3);
-    //TF<< 
-    //  TQd.col(0),TQd.col(1),TQd.col(2),
-    //  TQd.col(0),TQd.col(2),TQd.col(3);
-    //vr.append_mesh();
-    //vr.data().set_mesh(TV,TF);
     vr.data().set_edges(TV,TE,Eigen::RowVector3d(1,1,1));
     vr.data().line_width = 2;
   };
-  update_edges();
+  const auto update_tree_vis = [&]()
+  {
+    igl::box_faces(*tree,TV,TQ,TD);
+    update_edges();
+  };
+
+  // Update the tree for each triangle in hits which might have moved.
+  const auto update_tree = [&](const std::vector<igl::Hit> & hits)
+  {
+    for(const auto hit : hits)
+    {
+      const int fid = hit.id;
+      Eigen::AlignedBox<double,3> box;
+      box.extend(V.row(F(fid,0)).transpose());
+      box.extend(V.row(F(fid,1)).transpose());
+      box.extend(V.row(F(fid,2)).transpose());
+      // This is O(height) which is typically O(log n)
+      tree = leaves[fid]->update(box,0)->root();
+    }
+    // update the visualization. This is O(n) 🙃
+    update_tree_vis();
+  };
+
+  update_tree_vis();
+
+  std::vector<igl::Hit> hits;
+  Eigen::RowVector3d dir;
+  Eigen::RowVector3d red(1,0.2,0.2);
+  vr.callback_pre_draw = [&](decltype(vr) &)->bool
+  {
+    // While mouse is down, pull front (back) faces towards (away from) cursor.
+    if(hits.size())
+    {
+      for(const auto hit : hits)
+      {
+        for(int c : {0,1,2})
+        {
+          const int fid = hit.id;
+          V.row(F(fid,c)) += 
+            ((N.row(fid).dot(dir))>0?1:-1) *
+            0.001*dir.cast<double>().transpose();
+          C.row(fid) = red;
+        }
+      }
+      // Things have moved, so update tree ~O(#hits log n)
+      update_tree(hits);
+      // update viewer. This is O(n) 🙃
+      vr.data().set_vertices(V);
+      vr.data().set_colors(C);
+    }
+    return false;
+  };
+  vr.callback_mouse_down = [&](decltype(vr) &, int button, int modifier)->bool
+  {
+    // Shoot a ray through cursor into mesh accelerated by current AABB tree
+    const Eigen::Vector2f pos(
+      vr.current_mouse_x,vr.core().viewport(3)-vr.current_mouse_y);
+    const auto model = vr.core().view;
+    const auto proj = vr.core().proj;
+    const auto viewport = vr.core().viewport;
+    Eigen::RowVector3d src;
+    {
+      Eigen::Vector3f src_f,dir_f;
+      igl::unproject_ray(pos,model,proj,viewport,src_f,dir_f);
+      src = src_f.cast<double>().transpose();
+      dir = dir_f.cast<double>().transpose();
+    }
+    if(tree->intersect_ray(V,F,src,dir,hits))
+    {
+      vr.core().is_animating = true;
+      return true;
+    }
+    return false;
+  };
+  vr.callback_mouse_up = [&](decltype(vr) &, int button, int modifier)->bool
+  {
+    hits.clear();
+    vr.core().is_animating = false;
+    return false;
+  };
   vr.callback_key_pressed = [&](decltype(vr) &,unsigned int key, int mod)
   {
     switch(key)
@@ -91,247 +145,9 @@ void vis(
         return false;
     }
   };
+  printf("  ,/. to change tree-vis depth\n");
+  printf("  Click and hold to push triangles\n");
   vr.launch();
-}
-
-
-
-///
-/// @param[in] orig_pre_collapse  Original pre-collapse callback
-/// @param[in] orig_post_collapse Original post-collapse callback
-///
-
-int main(int argc, char *argv[])
-{
-  IGL_TICTOC_LAMBDA;
-#if true
-  Eigen::MatrixXd V,V0;
-  Eigen::MatrixXi F,F0;
-  const bool use_test = argc<=1;
-  igl::read_triangle_mesh(use_test?"/Users/alecjacobson/Downloads/simple-intersection-collapse-2.ply":argv[1],V,F);
-  V0 = V;F0 = F;
-  ///////////////////////////////////////////////////////////
-  /// Before collapsing starts
-  ///////////////////////////////////////////////////////////
-  tictoc();
-  igl::AABB<Eigen::MatrixXd, 3> * tree = new igl::AABB<Eigen::MatrixXd, 3>();
-  tree->init(V,F);
-  printf("tree->init: %g\n",tictoc());
-  tree->validate();
-
-  // Dummy
-  const int target_m = F.rows() * 0.1 + 1;
-  for(auto pass : {0,1})
-  {
-    Eigen::MatrixXd VO;
-    Eigen::MatrixXi FO;
-    igl::connect_boundary_to_infinity(V,F,VO,FO);
-    Eigen::VectorXi EMAP;
-    Eigen::MatrixXi E,EF,EI;
-    igl::edge_flaps(FO,E,EMAP,EF,EI);
-
-    igl::decimate_cost_and_placement_callback cost_and_placement;
-    igl::decimate_pre_collapse_callback  pre_collapse;
-    igl::decimate_post_collapse_callback post_collapse;
-    //cost_and_placement = igl::shortest_edge_and_midpoint;
-    //igl::decimate_trivial_callbacks(pre_collapse,post_collapse);
-
-    // Quadrics per vertex
-    typedef std::tuple<Eigen::MatrixXd,Eigen::RowVectorXd,double> Quadric;
-    std::vector<Quadric> quadrics;
-    igl::per_vertex_point_to_plane_quadrics(VO,FO,EMAP,EF,EI,quadrics);
-    // State variables keeping track of edge we just collapsed
-    int v1 = -1;
-    int v2 = -1;
-    // Callbacks for computing and updating metric
-    igl::qslim_optimal_collapse_edge_callbacks(
-      E,quadrics,v1,v2, cost_and_placement, pre_collapse,post_collapse);
-
-    if(pass == 1)
-    {
-      igl::intersection_blocking_collapse_edge_callbacks(
-        pre_collapse, post_collapse, // These will get copied as needed
-        tree,
-        pre_collapse, post_collapse);
-    }
-
-    int m = F.rows();
-    const int orig_m = m;
-    Eigen::MatrixXd U;
-    Eigen::MatrixXi G;
-    Eigen::VectorXi J,I;
-    tictoc();
-    const bool ret = igl::decimate(
-      VO, FO,
-      cost_and_placement,
-      igl::max_faces_stopping_condition(m,orig_m,target_m),
-      pre_collapse,
-      post_collapse,
-      E, EMAP, EF, EI,
-      U, G, J, I);
-    G = G(igl::find((J.array()<orig_m).eval()), Eigen::all).eval();
-    {
-      Eigen::VectorXi _;
-      igl::remove_unreferenced(Eigen::MatrixXd(U),Eigen::MatrixXi(G),U,G,_);
-    }
-
-    printf("pass %d in %g sec\n",pass,tictoc());
-    igl::writePLY(STR("out-"<<pass<<".ply"),U,G);
-    if(pass == 1)
-    {
-      V = U;
-      F = G;
-    }
-  }
-  
-
-  vis(V,F,*tree);
-
-  tree->validate();
-  assert(tree == tree->root());
-  tree = tree->root();
+  // delete the tree (and all subtrees/leaves)
   delete tree;
-  exit(1);
-
-  //Eigen::MatrixXd K = Eigen::MatrixXd::Constant(F.rows(),3,0.9);
-  //for(const auto f : new_one_ring)
-  //{
-  //  K.row(f) = Eigen::RowVector3d(0.3,0.9,0.3);
-  //}
-  //Eigen::MatrixXd K0 = Eigen::MatrixXd::Constant(F.rows(),3,0.9);
-  //for(const auto f : old_one_ring)
-  //{
-  //  K0.row(f) = Eigen::RowVector3d(0.9,0.3,0.3);
-  //}
-
-
-  igl::opengl::glfw::Viewer vr;
-  //vr.data().set_mesh(V0,F0);
-  //vr.data().set_face_based(true);
-  //vr.data().set_colors(K0);
-  //vr.data().show_faces = false;
-  //vr.data().line_color = Eigen::RowVector4f(1,1,1,1);
-  //vr.data().double_sided = true;
-  //vr.append_mesh();
-  vr.data().set_mesh(V,F);
-  //vr.data().set_colors(K);
-  vr.data().set_face_based(true);
-  vr.data().show_lines = false;
-  vr.data().double_sided = true;
-
-  //Eigen::MatrixXd TV;
-  //Eigen::MatrixXi TQ,TE;
-  //box_faces(big_box,0,TV,TQ);
-  //quad_edges(TQ,TE);
-  //vr.append_mesh();
-  //vr.data().set_edges(TV,TE,Eigen::RowVector3d(1,1,1));
-  //vr.data().line_width = 2;
-
-  
-  vr.launch();
-
-#else
-  Eigen::MatrixXd V;
-  Eigen::MatrixXi F;
-  igl::read_triangle_mesh(argv[1],V,F);
-
-  tictoc();
-  igl::AABB<Eigen::MatrixXd, 3> tree;
-  tree.init(V,F);
-  printf("static: %g\n",tictoc());
-
-  Eigen::MatrixXd BC;
-  igl::barycenter(V,F,BC);
-  Eigen::VectorXi I;
-  Eigen::VectorXd sqrD;
-  Eigen::MatrixXd C;
-  tictoc();
-  printf("static: %g\n",tictoc());
-  tree.squared_distance(V,F,BC,sqrD,I,C);
-  Eigen::VectorXi J = igl::colon<int>(0,F.rows()-1);
-  assert(I.isApprox(J,0));
-  printf("tree.squared_distance(): %g secs\n",tictoc());
-  printf("  surface_area: %g\n",tree.internal_surface_area());
-  printf("  is_root(): %d\n",tree.is_root());
-  printf("  size: %d\n",tree.size());
-  printf("  height: %d/%d\n",tree.height(),(int)F.rows());
-
-
-  igl::AABB<Eigen::MatrixXd, 3> * dynamic = nullptr;
-  std::vector<igl::AABB<Eigen::MatrixXd, 3> > leaves;
-  for(auto rotation_amount : {1, 2, 3})
-  {
-    // if vector is storing objects, must clear first.
-    leaves.clear();
-    // tree is now invalid, but deleting is safe.
-    delete dynamic;
-    {
-      printf("\n--------------------------------\n\n");
-      printf("rotation_amount: %d\n",rotation_amount);
-      tictoc();
-      // The root starts as the first one which will be self-inserted
-      leaves.resize(F.rows());
-      dynamic = leaves.data();
-      for(int i = 0;i<F.rows();i++)
-      {
-        auto * leaf = &leaves[i];
-        // Use the idiotic .init()
-        leaf->init(V,F,Eigen::MatrixXi(),(Eigen::VectorXi(1)<<i).finished());
-        dynamic = dynamic->insert(leaf)->root();
-
-        if(rotation_amount==1)
-        {
-          const bool ret = leaf->rotate();
-        }
-
-        if(rotation_amount>=2)
-        {
-          leaf->rotate_lineage();
-        }
-      }
-      if(rotation_amount==3)
-      {
-        std::deque<igl::AABB<Eigen::MatrixXd, 3> *> bfs;
-        bfs.push_back(dynamic);
-        std::vector<igl::AABB<Eigen::MatrixXd, 3> *> all_nodes;
-        while(!bfs.empty())
-        {
-          auto * node = bfs.back();
-          bfs.pop_back();
-          if(node->m_left)
-          {
-            bfs.push_back(node->m_left);
-          }
-          if(node->m_right)
-          {
-            bfs.push_back(node->m_right);
-          }
-          all_nodes.push_back(node);
-        }
-        while(!all_nodes.empty())
-        {
-          auto * node = all_nodes.back();
-          all_nodes.pop_back();
-          assert(node);
-          const bool ret = node->rotate();
-        }
-      }
-      printf("dynamic %g\n",tictoc());
-      tictoc();
-      dynamic->squared_distance(V,F,BC,sqrD,I,C);
-      assert(I.isApprox(J,0));
-      printf("tree.squared_distance(): %g secs\n",tictoc());
-      printf("  surface_area: %g\n",dynamic->internal_surface_area());
-      printf("  is_root(): %d\n",dynamic->is_root());
-      printf("  size: %d\n",dynamic->size());
-      printf("  height: %d/%d\n",dynamic->height(),(int)F.rows());
-      //print(dynamic);
-      validate(dynamic, leaves);
-    }
-    printf("********\n");
-  }
-
-  vis(V,F,*dynamic);
-
-#endif
 }

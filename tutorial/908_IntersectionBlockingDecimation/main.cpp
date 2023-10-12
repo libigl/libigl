@@ -1,6 +1,7 @@
 #include <igl/opengl/glfw/Viewer.h>
 #include <igl/read_triangle_mesh.h>
 #include <igl/fast_find_self_intersections.h>
+#include <igl/unique.h>
 #include <igl/remove_unreferenced.h>
 #include <igl/get_seconds.h>
 #include <igl/AABB.h>
@@ -111,9 +112,14 @@ int main(int argc, char *argv[])
     dV[pass] = U;
     dF[pass] = G;
     {
-      Eigen::Array<bool,Eigen::Dynamic,1> B;
-      igl::fast_find_self_intersections(dV[pass],dF[pass],I);
-      const auto BI = igl::find(B);
+      Eigen::VectorXi BI;
+      {
+        Eigen::MatrixXd EV;
+        Eigen::MatrixXi IF,EE;
+        Eigen::VectorXi EI;
+        igl::fast_find_self_intersections(dV[pass],dF[pass],true,false,IF,EV,EE,EI);
+        igl::unique(IF,BI);
+      }
       printf("  # self-intersections: %d\n",(int)BI.size());
       dC[pass] = gray.replicate(dF[pass].rows(),1);
       dC[pass](BI,Eigen::all) = 
