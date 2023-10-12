@@ -58,7 +58,8 @@ IGL_INLINE bool igl::triangle_triangle_intersect_shared_vertex(
     Triangle_3 Tg(Vg[0],Vg[1],Vg[2]);
     Triangle_3 Tf(Vf[0],Vf[1],Vf[2]);
 #endif
-  constexpr bool stinker = false;
+  //constexpr bool stinker = false;
+  const bool stinker = f==1 && g==6;
   bool found_intersection = false;
   // If they share a vertex and intersect, then an opposite edge must
   // stab through the other triangle.
