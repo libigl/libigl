@@ -1,4 +1,5 @@
 #include <igl/read_triangle_mesh.h>
+#include <igl/AABB.h>
 #include <igl/unique.h>
 
 #include <igl/opengl/glfw/Viewer.h>
@@ -16,9 +17,6 @@ double slice_z;
 
 void update_visualization(igl::opengl::glfw::Viewer & viewer)
 {
-  Eigen::MatrixXi I;
-  Eigen::MatrixXd edges;
-
   //shifted intersection object
   Eigen::MatrixXd V2_(V2.rows(),V2.cols());
   V2_<< V2.col(0), V2.col(1), V2.col(2).array()+slice_z;
@@ -34,9 +32,9 @@ void update_visualization(igl::opengl::glfw::Viewer & viewer)
   // show faces which are intersected
   Eigen::VectorXi I;
   igl::unique(IF,I);
-  Eigen::VectorXd D = Eigen::MatrixXd::Zero(F.rows(),1);
+  Eigen::VectorXd D = Eigen::MatrixXd::Zero(F1.rows(),1);
   D(I).setConstant(1.0);
-  viewer.data().set_data(D);
+  viewer.data().set_data(D,0,1,igl::COLOR_MAP_TYPE_PARULA);
 }
 
 
@@ -83,6 +81,7 @@ int main(int argc, char *argv[])
   // Plot the mesh
   igl::opengl::glfw::Viewer viewer;
   viewer.data().set_mesh(V1, F1);
+  viewer.data().set_face_based(true);
   
 
   update_visualization(viewer);

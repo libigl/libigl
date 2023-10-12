@@ -9,6 +9,7 @@
 #include <igl/point_simplex_squared_distance.h>
 #include <igl/randperm.h>
 #include <igl/read_triangle_mesh.h>
+#include <iostream>
 
 TEST_CASE("AABB: find_2d", "[igl]")
 {
@@ -112,6 +113,14 @@ TEST_CASE("AABB: dynamic", "[igl]")
       test_common::assert_near(sqrD,sqrD_gt,1e-15);
       REQUIRE(tree->size() == 2*F.rows()-1);
     }
+#ifndef NDEBUG
+    if(F.rows()>10000)
+    {
+      std::cerr<<"#ifndef NDEBUG: Skipping timing test."<<std::endl;
+      return;
+    }
+#endif
+
 
     Eigen::VectorXi RV;
     Eigen::VectorXi RF;
