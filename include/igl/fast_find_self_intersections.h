@@ -36,8 +36,8 @@ namespace igl
     typename DerivedEE,
     typename DerivedEI>
   IGL_INLINE bool fast_find_self_intersections(
-    const Eigen::MatrixBase<DerivedV1> & V,
-    const Eigen::MatrixBase<DerivedF1> & F,
+    const Eigen::MatrixBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedF> & F,
     const bool detect_only,
     const bool first_only,
     Eigen::PlainObjectBase<DerivedIF> & IF,
