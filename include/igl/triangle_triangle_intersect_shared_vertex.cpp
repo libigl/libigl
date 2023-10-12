@@ -248,6 +248,7 @@ IGL_INLINE bool igl::triangle_triangle_intersect_shared_vertex(
     if(stinker)
     {
       std::cout<<std::setprecision(20);
+      printf("%g %s -0.5\n",gs(0),gs(0)==-0.5?"==":"!=");
       std::cout<<"T = ["<<fv[0]<<";" <<fv[1]<<";"<<fv[2]<<"];"<<std::endl;
       std::cout<<"src = [" <<gs<<"];"<<std::endl;
       std::cout<<"dir = [" <<gdir<<"];"<<std::endl;
