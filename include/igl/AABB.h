@@ -402,7 +402,10 @@ public:
         AABB<DerivedV,DIM>* sibling);
       // Should this be a static function with an argument?
       IGL_INLINE void rotate_lineage();
-      /// Number of nodes contained in subtree
+      /// Number of nodes contained in subtree (is it?)
+      ///
+      /// \note At best, this function has a dubious name. This is really an
+      /// internal helper function for the serialization.
       ///
       /// \seealso size()
       ///
@@ -419,27 +422,32 @@ public:
       /// Validate the subtree under this node by running a bunch of assertions.
       /// Does nothing when not in debug mode
       IGL_INLINE void validate() const;
+      /// print the memory addresses of the tree in a somewhat legible way
       IGL_INLINE void print(const int depth = 0) const;
+      /// @returns Actual size of tree. Total number of nodes in tree. A singleton root
+      /// has size 1.
+      /// 
+      /// \seealso subtree_size
       IGL_INLINE int size() const;
+      /// @returns Height of the tree. A singleton root has height 1.
       IGL_INLINE int height() const;
 private:
-      // If new distance (sqr_d_candidate) is less than current distance
-      // (sqr_d), then update this distance and its associated values
-      // _in-place_:
-      //
-      // Inputs:
-      //   p  dim-long query point (only used in DEBUG mode)
-      //   sqr_d  candidate minimum distance for this query, see output
-      //   i  candidate index into Ele of closest point, see output
-      //   c  dim-long candidate closest point, see output
-      //   sqr_d  current minimum distance for this query, see output
-      //   i  current index into Ele of closest point, see output
-      //   c  dim-long current closest point, see output
-      // Outputs:
-      //   sqr_d   minimum of initial value and squared distance to this
-      //     primitive
-      //   i  possibly updated index into Ele of closest point
-      //   c  dim-long possibly updated closest point
+      /// If new distance (sqr_d_candidate) is less than current distance
+      /// (sqr_d), then update this distance and its associated values
+      /// _in-place_:
+      ///
+      /// @param[in] p  dim-long query point (only used in DEBUG mode)
+      /// @param[in] sqr_d  candidate minimum distance for this query, see
+      ///   output
+      /// @param[in] i  candidate index into Ele of closest point, see output
+      /// @param[in] c  dim-long candidate closest point, see output
+      /// @param[in] sqr_d  current minimum distance for this query, see output
+      /// @param[in] i  current index into Ele of closest point, see output
+      /// @param[in] c  dim-long current closest point, see output
+      /// @param[out] sqr_d   minimum of initial value and squared distance to
+      ///   this primitive
+      /// @param[out] i  possibly updated index into Ele of closest point
+      /// @param[out] c  dim-long possibly updated closest point
       IGL_INLINE void set_min(
         const RowVectorDIMS & p,
         const Scalar sqr_d_candidate,
@@ -457,9 +465,12 @@ public:
       ///
       /// @param[in] V  #V by dim list of mesh vertex positions. 
       /// @param[in] Ele  #Ele by dim+1 list of mesh indices into #V. 
-      /// @param[in] bb_mins  max_tree by dim list of bounding box min corner positions
-      /// @param[in] bb_maxs  max_tree by dim list of bounding box max corner positions
-      /// @param[in] elements  max_tree list of element or (not leaf id) indices into Ele
+      /// @param[in] bb_mins  max_tree by dim list of bounding box min corner
+      ///   positions
+      /// @param[in] bb_maxs  max_tree by dim list of bounding box max corner
+      ///   positions
+      /// @param[in] elements  max_tree list of element or (not leaf id) indices
+      ///   into Ele
       /// @param[in] i  recursive call index {0}
       template <
         typename DerivedEle, 
@@ -486,12 +497,12 @@ public:
       ///
       /// @param[in] V  #V by dim list of mesh vertex positions. 
       /// @param[in] Ele  #Ele by dim+1 list of mesh indices into #V. 
-      /// @param[in] SI  #Ele by dim list revealing for each coordinate where Ele's
-      ///              barycenters would be sorted: SI(e,d) = i --> the dth coordinate of
-      ///              the barycenter of the eth element would be placed at position i in a
-      ///              sorted list.
-      /// @param[in] I  #I list of indices into Ele of elements to include (for recursive
-      ///     calls)
+      /// @param[in] SI  #Ele by dim list revealing for each coordinate where
+      ///   Ele's barycenters would be sorted: SI(e,d) = i --> the dth
+      ///   coordinate of the barycenter of the eth element would be placed at
+      ///   position i in a sorted list.
+      /// @param[in] I  #I list of indices into Ele of elements to include (for
+      ///   recursive calls)
       /// 
       template <typename DerivedEle, typename DerivedSI, typename DerivedI>
       IGL_INLINE void init(
@@ -510,10 +521,10 @@ public:
       /// Find the indices of elements containing given point: this makes sense
       /// when Ele is a co-dimension 0 simplex (tets in 3D, triangles in 2D).
       ///
-      /// @param[in]  V  #V by dim list of mesh vertex positions. **Should be same as used to
-      ///     construct mesh.**
-      /// @param[in]  Ele  #Ele by dim+1 list of mesh indices into #V. **Should be same as used to
-      ///     construct mesh.**
+      /// @param[in]  V  #V by dim list of mesh vertex positions. **Should be
+      ///   same as used to construct mesh.**
+      /// @param[in]  Ele  #Ele by dim+1 list of mesh indices into #V. **Should
+      ///   be same as used to construct mesh.**
       /// @param[in]  q  dim row-vector query position
       /// @param[in]  first  whether to only return first element containing q
       /// @return  list of indices of elements containing q
@@ -526,9 +537,12 @@ public:
 
       /// Serialize this class into 3 arrays (so we can pass it pack to matlab)
       ///
-      /// @param[out]  bb_mins  max_tree by dim list of bounding box min corner positions
-      /// @param[out]  bb_maxs  max_tree by dim list of bounding box max corner positions
-      /// @param[out]  elements  max_tree list of element or (not leaf id) indices into Ele
+      /// @param[out]  bb_mins  max_tree by dim list of bounding box min corner
+      ///   positions
+      /// @param[out]  bb_maxs  max_tree by dim list of bounding box max corner
+      ///   positions
+      /// @param[out]  elements  max_tree list of element or (not leaf id)
+      ///   indices into Ele
       /// @param[in]  i  recursive call index into these arrays {0}
       template <
         typename Derivedbb_mins, 
@@ -563,11 +577,11 @@ public:
       /// @param[in] V  #V by dim list of vertex positions
       /// @param[in] Ele  #Ele by dim list of simplex indices
       /// @param[in] p  dim-long query point 
-      /// @param[in] low_sqr_d  lower bound on squared distance, specified maximum squared
-      ///              distance 
-      /// @param[in] up_sqr_d  current upper bounded on squared distance, current minimum
-      ///              squared distance (only consider distances less than this), see
-      ///              output.
+      /// @param[in] low_sqr_d  lower bound on squared distance, specified
+      ///   maximum squared distance 
+      /// @param[in] up_sqr_d  current upper bounded on squared distance,
+      ///   current minimum squared distance (only consider distances less than
+      ///   this), see output.
       /// @param[out]  i  facet index corresponding to smallest distances
       /// @param[out]  c  closest point
       /// @return squared distance
@@ -588,9 +602,9 @@ public:
       /// @param[in] V  #V by dim list of vertex positions
       /// @param[in] Ele  #Ele by dim list of simplex indices
       /// @param[in] p  dim-long query point 
-      /// @param[in] up_sqr_d  current upper bounded on squared distance, current minimum
-      ///              squared distance (only consider distances less than this), see
-      ///              output.
+      /// @param[in] up_sqr_d  current upper bounded on squared distance,
+      ///   current minimum squared distance (only consider distances less than
+      ///   this), see output.
       /// @param[out]  i  facet index corresponding to smallest distances
       /// @param[out]  c  closest point
       /// @return squared distance
