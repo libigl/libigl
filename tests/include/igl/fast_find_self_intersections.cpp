@@ -6,6 +6,7 @@
 #include <igl/matlab_format.h>
 #include <igl/PI.h>
 #include <iostream>
+#include <iomanip>
 
 
 TEST_CASE("fast_find_self_intersections: cube", "[igl]")
@@ -74,7 +75,7 @@ TEST_CASE("fast_find_self_intersections: rose", "[igl]")
   Eigen::MatrixXi F(9,3);
   for(int i=0;i<9;i++)
   {
-    V.row(i) << cos(4*igl::PI*i/9), sin(4*igl::PI*i/9), 1;
+    V.row(i) << std::cos(4.0*igl::PI*i/9), std::sin(4.0*igl::PI*i/9), 1;
     F.row(i)<<9,i,(i+1)%9;
   }
   V.row(9) << 0,0,0;
@@ -83,6 +84,7 @@ TEST_CASE("fast_find_self_intersections: rose", "[igl]")
   Eigen::MatrixXd EV;
   Eigen::VectorXi EI;
   REQUIRE( igl::fast_find_self_intersections(V,F,false,false,IF,EV,EE,EI) );
+  std::cout<<std::setprecision(20);
   std::cout<<igl::matlab_format(V,"V")<<std::endl;
   std::cout<<igl::matlab_format_index(F,"F")<<std::endl;
   std::cout<<igl::matlab_format_index(IF,"IF")<<std::endl;
