@@ -89,6 +89,7 @@ IGL_INLINE bool igl::triangle_triangle_intersect_shared_vertex(
 
   if(stinker)
   {
+    std::cout<<std::setprecision(20);
     std::cout<<"T = ["<<g0<<";" <<g1<<";"<<g2<<"];"<<std::endl;
     std::cout<<"src = [" <<fs<<"];"<<std::endl;
     std::cout<<"dir = [" <<fdir<<"];"<<std::endl;
@@ -244,6 +245,13 @@ IGL_INLINE bool igl::triangle_triangle_intersect_shared_vertex(
     Eigen::RowVector3d gs = V.row(F(g,(sg+1)%3)).template cast<double>();
     Eigen::RowVector3d gd = V.row(F(g,(sg+2)%3)).template cast<double>();
     Eigen::RowVector3d gdir = gd - gs;
+    if(stinker)
+    {
+      std::cout<<std::setprecision(20);
+      std::cout<<"T = ["<<fv[0]<<";" <<fv[1]<<";"<<fv[2]<<"];"<<std::endl;
+      std::cout<<"src = [" <<gs<<"];"<<std::endl;
+      std::cout<<"dir = [" <<gdir<<"];"<<std::endl;
+    }
     if(ray_triangle_intersect(
           gs,gdir,
           fv[0],fv[1],fv[2],
