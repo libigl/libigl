@@ -75,7 +75,7 @@ TEST_CASE("fast_find_self_intersections: rose", "[igl]")
   Eigen::MatrixXi F(9,3);
   for(int i=0;i<9;i++)
   {
-    const double theta_i = 4.0*igl::PI*double(i)/9.0
+    const double theta_i = 4.0*igl::PI*double(i)/9.0;
     printf("%0.17f\n",theta_i);
     V.row(i) << std::cos(theta_i), std::sin(theta_i), 1;
     F.row(i)<<9,i,(i+1)%9;
