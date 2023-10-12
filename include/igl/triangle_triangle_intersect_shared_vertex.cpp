@@ -276,6 +276,7 @@ IGL_INLINE bool igl::triangle_triangle_intersect_shared_vertex(
     }
   }
   if(stinker){ printf("    found_intersection2: %d\n",found_intersection); }
+  if(stinker){ exit(1); }
 #ifdef IGL_TRIANGLE_TRIANGLE_INTERSECT_SHARED_VERTEX_DEBUG
   if(CGAL::do_intersect(Tg,Tf))
   {
