@@ -83,6 +83,9 @@ TEST_CASE("fast_find_self_intersections: rose", "[igl]")
   Eigen::MatrixXd EV;
   Eigen::VectorXi EI;
   REQUIRE( igl::fast_find_self_intersections(V,F,false,false,IF,EV,EE,EI) );
+  std::cout<<igl::matlab_format(V,"V")<<std::endl;
+  std::cout<<igl::matlab_format_index(F,"F")<<std::endl;
+  std::cout<<igl::matlab_format_index(IF,"IF")<<std::endl;
   Eigen::MatrixXi IF_gt(9,2);
   IF_gt<<
     0,4,
