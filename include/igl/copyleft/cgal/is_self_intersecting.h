@@ -18,7 +18,7 @@ namespace igl
       /// @param[in] F  #F by 3 list of triangle indices into V
       /// @return true if any faces intersect
       ///
-      /// \seealso remesh_self_intersections, SelfIntersectMesh
+      /// \see remesh_self_intersections, SelfIntersectMesh
       template <
         typename DerivedV,
         typename DerivedF>

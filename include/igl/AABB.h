@@ -407,7 +407,7 @@ public:
       /// \note At best, this function has a dubious name. This is really an
       /// internal helper function for the serialization.
       ///
-      /// \seealso size()
+      /// \see size()
       ///
       /// @return Number of elements m then total tree size should be 2*h where h is
       /// the deepest depth 2^ceil(log(#Ele*2-1))
@@ -427,7 +427,7 @@ public:
       /// @returns Actual size of tree. Total number of nodes in tree. A singleton root
       /// has size 1.
       /// 
-      /// \seealso subtree_size
+      /// \see subtree_size
       IGL_INLINE int size() const;
       /// @returns Height of the tree. A singleton root has height 1.
       IGL_INLINE int height() const;

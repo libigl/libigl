@@ -16,6 +16,7 @@ namespace igl
     const Eigen::MatrixBase<DerivedCorner> & min_corner,
     const Eigen::MatrixBase<DerivedCorner> & max_corner);
   /// \overload
+  /// @param[in] box  axis-aligned bounding box
   template <typename Scalar, int AmbientDim>
   IGL_INLINE Scalar box_surface_area(
     const Eigen::AlignedBox<Scalar,AmbientDim> & box);
