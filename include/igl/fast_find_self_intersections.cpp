@@ -1,6 +1,7 @@
 // This file is part of libigl, a simple c++ geometry processing library.
 // 
 // Copyright (C) 2022 Vladimir S. FONOV <vladimir.fonov@gmail.com>
+// Copyright (C) 2023 Alec Jacobson <alecjacobson@gmail.com>
 // 
 // This Source Code Form is subject to the terms of the Mozilla Public License 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
@@ -9,15 +10,15 @@
 #include "fast_find_intersections.h"
 
 template <
-  typename DerivedV1,
-  typename DerivedF1,
+  typename DerivedV,
+  typename DerivedF,
   typename DerivedIF,
   typename DerivedEV,
   typename DerivedEE,
   typename DerivedEI>
 IGL_INLINE bool igl::fast_find_self_intersections(
-  const Eigen::MatrixBase<DerivedV1> & V1,
-  const Eigen::MatrixBase<DerivedF1> & F1,
+  const Eigen::MatrixBase<DerivedV> & V,
+  const Eigen::MatrixBase<DerivedF> & F,
   const bool detect_only,
   const bool first_only,
   Eigen::PlainObjectBase<DerivedIF> & IF,
@@ -26,9 +27,9 @@ IGL_INLINE bool igl::fast_find_self_intersections(
   Eigen::PlainObjectBase<DerivedEI> & EI)
 {
   // This is really just a wrapper around fast_find_intersections which will
-  // internally detect that V1,F1 are the same references as V2,F2.
+  // internally detect that V,F are the second set
   return igl::fast_find_intersections(
-    V1,F1,V1,F1,detect_only,first_only,IF,EV,EE,EI);
+    V,F,V,F,detect_only,first_only,IF,EV,EE,EI);
 }
 
 #ifdef IGL_STATIC_LIBRARY

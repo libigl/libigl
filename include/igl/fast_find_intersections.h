@@ -1,6 +1,7 @@
 // This file is part of libigl, a simple c++ geometry processing library.
 // 
 // Copyright (C) 2022 Vladimir S. FONOV <vladimir.fonov@gmail.com>
+// Copyright (C) 2023 Alec Jacobson <alecjacobson@gmail.com>
 // 
 // This Source Code Form is subject to the terms of the Mozilla Public License 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
@@ -18,10 +19,10 @@ namespace igl
   /// Identify triangles where two meshes interesect 
   /// using AABBTree and tri_tri_intersection_test_3d.
   ///
-  /// @param[in] V1  #V by 3 list representing vertices on the first mesh
-  /// @param[in] F1  #F by 3 list representing triangles on the first mesh
-  /// @param[in] V2  #V by 3 list representing vertices on the second mesh
-  /// @param[in] F2  #F by 3 list representing triangles on the second mesh
+  /// @param[in] V1  #V1 by 3 list representing vertices on the first mesh
+  /// @param[in] F1  #F1 by 3 list representing triangles on the first mesh
+  /// @param[in] V2  #V2 by 3 list representing vertices on the second mesh
+  /// @param[in] F2  #F2 by 3 list representing triangles on the second mesh
   /// @param[out] IF #IF by 2 list of intersecting triangle pairs, so that 
   ///   F1(IF(i,0),:) intersects F2(IF(i,1),:)
   /// @param[out] EV #EV by 3 list of vertices definining intersection segments
@@ -52,6 +53,8 @@ namespace igl
     Eigen::PlainObjectBase<DerivedEV> & EV,
     Eigen::PlainObjectBase<DerivedEE> & EE,
     Eigen::PlainObjectBase<DerivedEI> & EI);
+  /// \overload
+  /// \brief Tree built internally.
   template <
     typename DerivedV1,
     typename DerivedF1,
