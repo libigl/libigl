@@ -3,6 +3,7 @@
 #include <unordered_map>
 #include <array>
 #include <vector>
+#include <cstdint>
 
 
 template <typename DerivedP0, typename Func, typename DerivedS, typename DerivedV, typename DerivedI>
@@ -113,8 +114,8 @@ IGL_INLINE void igl::sparse_voxel_grid(const Eigen::MatrixBase<DerivedP0>& p0,
 
     // Add the cube vertices and indices to the output arrays if they are not there already
     IndexRowVector cube;
-    uint8_t vertexAlreadyAdded = 0; // This is a bimask. If a bit is 1, it has been visited already by the BFS
-    constexpr std::array<uint8_t, 26> zv = {
+    std::uint8_t vertexAlreadyAdded = 0; // This is a bimask. If a bit is 1, it has been visited already by the BFS
+    constexpr std::array<std::uint8_t, 26> zv = {
       (1 << 0) | (1 << 1) | (1 << 4) | (1 << 5),
       (1 << 2) | (1 << 3) | (1 << 6) | (1 << 7),
       (1 << 0) | (1 << 1) | (1 << 2) | (1 << 3),

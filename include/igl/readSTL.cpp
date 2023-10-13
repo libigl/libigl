@@ -15,6 +15,7 @@
 #include "FileMemoryStream.h"
 
 #include <iostream>
+#include <cstdint>
 
 namespace igl {
 
@@ -62,7 +63,7 @@ IGL_INLINE bool is_stl_binary(std::istream &input) {
   // Check if filesize matches the number of faces claimed.
   char buf[4];
   input.read(buf, 4);
-  size_t num_faces = *reinterpret_cast<uint32_t *>(buf);
+  size_t num_faces = *reinterpret_cast<std::uint32_t *>(buf);
   input.seekg(0, input.end);
   size_t file_size = input.tellg();
 
@@ -211,7 +212,7 @@ IGL_INLINE bool read_stl_binary(std::istream &input,
   }
 
   input.read(buf, 4);
-  const size_t num_faces = *reinterpret_cast<uint32_t *>(buf);
+  const size_t num_faces = *reinterpret_cast<std::uint32_t *>(buf);
   if (!input.good()) {
     throw std::runtime_error("Unable to parse STL number of faces.");
   }
@@ -304,7 +305,7 @@ IGL_INLINE bool readSTL(
   Eigen::PlainObjectBase<DerivedF> & F,
   Eigen::PlainObjectBase<DerivedN> & N)
 {
-  std::vector<uint8_t> fileBufferBytes;
+  std::vector<std::uint8_t> fileBufferBytes;
   read_file_binary(fp,fileBufferBytes);
   FileMemoryStream stream((char*)fileBufferBytes.data(), fileBufferBytes.size());
   return readSTL(stream, V, F, N);

@@ -15,12 +15,13 @@
 #include <algorithm>
 #include <vector>
 #include <random>
+#include <cstdint>
 
 namespace igl
 {
   // It is very important that we use 64bit keys to avoid out of bounds (easy to
   // get to happen with dense samplings (e.g., r = 0.0005*bbd)
-  typedef int64_t BlueNoiseKeyType;
+  typedef std::int64_t BlueNoiseKeyType;
 }
 
 // Helper functions

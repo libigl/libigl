@@ -6,6 +6,7 @@
 #include <vector>
 #include <unordered_map>
 #include <iostream>
+#include <cstdint>
 
 namespace igl
 {
@@ -14,17 +15,17 @@ namespace igl
   {
     public:
       // https://stackoverflow.com/a/26348708/148668
-      uint64_t operator()(const std::tuple<int, int, int> & key) const
+      std::uint64_t operator()(const std::tuple<int, int, int> & key) const
       {
         // Check that conversion is safe. Could use int16_t directly everywhere
         // below but it's an uncommon type to expose and grid indices should
         // never be more than 2¹⁵-1 in the first place.
-        assert( std::get<0>(key) == (int)(int16_t)std::get<0>(key));
-        assert( std::get<1>(key) == (int)(int16_t)std::get<1>(key));
-        assert( std::get<2>(key) == (int)(int16_t)std::get<2>(key));
-        uint64_t result = uint16_t(std::get<0>(key));
-        result = (result << 16) + uint16_t(std::get<1>(key));
-        result = (result << 16) + uint16_t(std::get<2>(key));
+        assert( std::get<0>(key) == (int)(std::int16_t)std::get<0>(key));
+        assert( std::get<1>(key) == (int)(std::int16_t)std::get<1>(key));
+        assert( std::get<2>(key) == (int)(std::int16_t)std::get<2>(key));
+        std::uint64_t result = std::uint16_t(std::get<0>(key));
+        result = (result << 16) + std::uint16_t(std::get<1>(key));
+        result = (result << 16) + std::uint16_t(std::get<2>(key));
         return result;
       };
   };

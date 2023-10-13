@@ -731,14 +731,14 @@ namespace igl
     inline typename std::enable_if<std::is_fundamental<T>::value>::type serialize(const T& obj,std::vector<char>& /*buffer*/,std::vector<char>::iterator& iter)
     {
       //serialization::updateMemoryMap(obj,sizeof(T));
-      const uint8_t* ptr = reinterpret_cast<const uint8_t*>(&obj);
+      const std::uint8_t* ptr = reinterpret_cast<const std::uint8_t*>(&obj);
       iter = std::copy(ptr,ptr+sizeof(T),iter);
     }
 
     template <typename T>
     inline typename std::enable_if<std::is_fundamental<T>::value>::type deserialize(T& obj,std::vector<char>::const_iterator& iter)
     {
-      uint8_t* ptr = reinterpret_cast<uint8_t*>(&obj);
+      std::uint8_t* ptr = reinterpret_cast<std::uint8_t*>(&obj);
       std::copy(iter,iter+sizeof(T),ptr);
       iter += sizeof(T);
     }
@@ -747,7 +747,7 @@ namespace igl
 
     inline size_t getByteSize(const std::string& obj)
     {
-      return getByteSize(obj.length())+obj.length()*sizeof(uint8_t);
+      return getByteSize(obj.length())+obj.length()*sizeof(std::uint8_t);
     }
 
     inline void serialize(const std::string& obj,std::vector<char>& buffer,std::vector<char>::iterator& iter)
@@ -784,14 +784,14 @@ namespace igl
     template <typename T>
     inline typename std::enable_if<std::is_enum<T>::value>::type serialize(const T& obj,std::vector<char>& /*buffer*/,std::vector<char>::iterator& iter)
     {
-      const uint8_t* ptr = reinterpret_cast<const uint8_t*>(&obj);
+      const std::uint8_t* ptr = reinterpret_cast<const std::uint8_t*>(&obj);
       iter = std::copy(ptr,ptr+sizeof(T),iter);
     }
 
     template <typename T>
     inline typename std::enable_if<std::is_enum<T>::value>::type deserialize(T& obj,std::vector<char>::const_iterator& iter)
     {
-      uint8_t* ptr = reinterpret_cast<uint8_t*>(&obj);
+      std::uint8_t* ptr = reinterpret_cast<std::uint8_t*>(&obj);
       std::copy(iter,iter+sizeof(T),ptr);
       iter += sizeof(T);
     }
@@ -1020,7 +1020,7 @@ namespace igl
       serialization::serialize(obj.rows(),buffer,iter);
       serialization::serialize(obj.cols(),buffer,iter);
       size_t size = sizeof(T)*obj.rows()*obj.cols();
-      auto ptr = reinterpret_cast<const uint8_t*>(obj.data());
+      auto ptr = reinterpret_cast<const std::uint8_t*>(obj.data());
       iter = std::copy(ptr,ptr+size,iter);
     }
 
@@ -1032,7 +1032,7 @@ namespace igl
       serialization::deserialize(cols,iter);
       size_t size = sizeof(T)*rows*cols;
       obj.resize(rows,cols);
-      auto ptr = reinterpret_cast<uint8_t*>(obj.data());
+      auto ptr = reinterpret_cast<std::uint8_t*>(obj.data());
       std::copy(iter,iter+size,ptr);
       iter+=size;
     }
@@ -1050,7 +1050,7 @@ namespace igl
       serialization::serialize(obj.rows(),buffer,iter);
       serialization::serialize(obj.cols(),buffer,iter);
       size_t size = sizeof(T)*obj.rows()*obj.cols();
-      auto ptr = reinterpret_cast<const uint8_t*>(obj.data());
+      auto ptr = reinterpret_cast<const std::uint8_t*>(obj.data());
       iter = std::copy(ptr,ptr+size,iter);
     }
 
@@ -1062,7 +1062,7 @@ namespace igl
       serialization::deserialize(cols,iter);
       size_t size = sizeof(T)*rows*cols;
       obj.resize(rows,cols);
-      auto ptr = reinterpret_cast<uint8_t*>(obj.data());
+      auto ptr = reinterpret_cast<std::uint8_t*>(obj.data());
       std::copy(iter,iter+size,ptr);
       iter+=size;
     }
