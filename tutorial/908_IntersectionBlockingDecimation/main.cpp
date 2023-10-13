@@ -5,31 +5,18 @@
 #include <igl/remove_unreferenced.h>
 #include <igl/get_seconds.h>
 #include <igl/AABB.h>
-#include <igl/barycenter.h>
 #include <igl/writePLY.h>
 #include <igl/intersection_blocking_collapse_edge_callbacks.h>
 #include <igl/qslim_optimal_collapse_edge_callbacks.h>
 #include <igl/per_vertex_point_to_plane_quadrics.h>
 #include <igl/STR.h>
 #include <igl/connect_boundary_to_infinity.h>
-#include <igl/box_faces.h>
-#include <igl/quad_edges.h>
-#include <igl/colon.h>
-#include <igl/writeDMAT.h>
 #include <igl/decimate.h>
 #include <igl/max_faces_stopping_condition.h>
 #include <igl/point_simplex_squared_distance.h>
 #include <igl/edge_flaps.h>
 #include <igl/decimate_callback_types.h>
-#include <igl/decimate_trivial_callbacks.h>
-#include <igl/shortest_edge_and_midpoint.h>
-#include <igl/collapse_edge.h>
-#include <igl/matlab_format.h>
-#include <igl/randperm.h>
-#include <igl/avg_edge_length.h>
 #include <igl/find.h>
-#include <limits>
-#include <deque>
 
 int main(int argc, char *argv[])
 {
