@@ -58,8 +58,7 @@ IGL_INLINE bool igl::triangle_triangle_intersect_shared_vertex(
     Triangle_3 Tg(Vg[0],Vg[1],Vg[2]);
     Triangle_3 Tf(Vf[0],Vf[1],Vf[2]);
 #endif
-  //constexpr bool stinker = false;
-  const bool stinker = f==1 && g==6;
+  constexpr bool stinker = false;
   bool found_intersection = false;
   // If they share a vertex and intersect, then an opposite edge must
   // stab through the other triangle.
@@ -89,7 +88,6 @@ IGL_INLINE bool igl::triangle_triangle_intersect_shared_vertex(
 
   if(stinker)
   {
-    std::cout<<std::setprecision(20);
     std::cout<<"T = ["<<g0<<";" <<g1<<";"<<g2<<"];"<<std::endl;
     std::cout<<"src = [" <<fs<<"];"<<std::endl;
     std::cout<<"dir = [" <<fdir<<"];"<<std::endl;
@@ -245,11 +243,10 @@ IGL_INLINE bool igl::triangle_triangle_intersect_shared_vertex(
     Eigen::RowVector3d gs = V.row(F(g,(sg+1)%3)).template cast<double>();
     Eigen::RowVector3d gd = V.row(F(g,(sg+2)%3)).template cast<double>();
     Eigen::RowVector3d gdir = gd - gs;
+
     if(stinker)
     {
-      std::cout<<std::setprecision(20);
-      printf("%g %s -0.5\n",gs(0),gs(0)==-0.5?"==":"!=");
-      std::cout<<"T = ["<<fv[0]<<";" <<fv[1]<<";"<<fv[2]<<"];"<<std::endl;
+      std::cout<<"T = ["<<fv[0]<<";"<<fv[1]<<";"<<fv[2]<<"];"<<std::endl;
       std::cout<<"src = [" <<gs<<"];"<<std::endl;
       std::cout<<"dir = [" <<gdir<<"];"<<std::endl;
     }
@@ -276,7 +273,6 @@ IGL_INLINE bool igl::triangle_triangle_intersect_shared_vertex(
     }
   }
   if(stinker){ printf("    found_intersection2: %d\n",found_intersection); }
-  if(stinker){ exit(1); }
 #ifdef IGL_TRIANGLE_TRIANGLE_INTERSECT_SHARED_VERTEX_DEBUG
   if(CGAL::do_intersect(Tg,Tf))
   {

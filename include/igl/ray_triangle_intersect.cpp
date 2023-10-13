@@ -76,13 +76,13 @@ IGL_INLINE bool igl::ray_triangle_intersect(
   const Scalar inv_det = 1.0 / det;
   const auto tvec = (O - V0).eval();
   u = tvec.dot(pvec) * inv_det;
-  if( u < 0.0 || u > 1.0 )
+  if( u < 0.0-epsilon || u > 1.0+epsilon )
   {
     return false;
   }
   const auto qvec = tvec.cross(edge1).eval();
   v = D.dot(qvec) * inv_det;
-  if( v < 0.0 || u + v > 1.0 )
+  if( v < 0.0-epsilon || u + v > 1.0+epsilon )
   {
     return false;
   }

@@ -76,7 +76,6 @@ TEST_CASE("fast_find_self_intersections: rose", "[igl]")
   for(int i=0;i<9;i++)
   {
     const double theta_i = 4.0*igl::PI*double(i)/9.0;
-    printf("%0.17f\n",theta_i);
     V.row(i) << std::cos(theta_i), std::sin(theta_i), 1;
     F.row(i)<<9,i,(i+1)%9;
   }
@@ -85,12 +84,7 @@ TEST_CASE("fast_find_self_intersections: rose", "[igl]")
   Eigen::MatrixXi IF,EE;
   Eigen::MatrixXd EV;
   Eigen::VectorXi EI;
-  std::cout<<std::setprecision(20);
-  double v = -0.49999999999999916733;
-  std::cout<<"V = [\n"<<V<<"\n];"<<std::endl;
-  printf("%0.17f %s %0.17f\n",v,v==V(6,0)?"=":"≠",V(6,0));
   REQUIRE( igl::fast_find_self_intersections(V,F,false,false,IF,EV,EE,EI) );
-  std::cout<<igl::matlab_format_index(IF,"IF")<<std::endl;
   Eigen::MatrixXi IF_gt(9,2);
   IF_gt<<
     0,4,
@@ -109,6 +103,7 @@ TEST_CASE("fast_find_self_intersections: rose", "[igl]")
     test_common::assert_eq(IF_gt,sIF);
   }
 }
+
 TEST_CASE("fast_find_self_intersections: shared-edge", "[igl]")
 {
   Eigen::MatrixXd V(4,3);
