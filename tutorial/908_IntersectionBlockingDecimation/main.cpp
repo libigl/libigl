@@ -18,8 +18,6 @@
 #include <igl/writeDMAT.h>
 #include <igl/decimate.h>
 #include <igl/max_faces_stopping_condition.h>
-#include <igl/copyleft/cgal/remesh_self_intersections.h>
-#include <igl/copyleft/cgal/is_self_intersecting.h>
 #include <igl/point_simplex_squared_distance.h>
 #include <igl/edge_flaps.h>
 #include <igl/decimate_callback_types.h>
