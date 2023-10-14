@@ -28,7 +28,7 @@ namespace igl {
   /// \throws runtime_error on error
   IGL_INLINE void read_file_binary(
     FILE *fp,
-    std::vector<uint8_t> &fileBufferBytes);
+    std::vector<std::uint8_t> &fileBufferBytes);
 }
 
 #ifndef IGL_STATIC_LIBRARY

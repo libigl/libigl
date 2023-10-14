@@ -29,7 +29,7 @@ namespace igl {
     typename DeriveduEC,
     typename DeriveduEE,
     typename DerivedP>
-  IGL_INLINE size_t extract_manifold_patches(
+  IGL_INLINE int extract_manifold_patches(
     const Eigen::MatrixBase<DerivedF>& F,
     const Eigen::MatrixBase<DerivedEMAP>& EMAP,
     const Eigen::MatrixBase<DeriveduEC>& uEC,
@@ -42,7 +42,7 @@ namespace igl {
     typename DerivedEMAP,
     typename uE2EType,
     typename DerivedP>
-  IGL_INLINE size_t extract_manifold_patches(
+  IGL_INLINE int extract_manifold_patches(
     const Eigen::MatrixBase<DerivedF>& F,
     const Eigen::MatrixBase<DerivedEMAP>& EMAP,
     const std::vector<std::vector<uE2EType> >& uE2E,
@@ -51,7 +51,7 @@ namespace igl {
   template <
       typename DerivedF,
       typename DerivedP>
-  IGL_INLINE size_t extract_manifold_patches(
+  IGL_INLINE int extract_manifold_patches(
       const Eigen::MatrixBase<DerivedF> &F,
       Eigen::PlainObjectBase<DerivedP> &P);
 }

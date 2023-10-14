@@ -40,7 +40,7 @@ void igl::marching_tets(
   // 32 bits of a key are the indices of vertices in the mesh. The implication is
   // that you can only have 2^32 vertices which I have deemed sufficient for
   // anything reasonable.
-  const auto make_edge_key = [](const pair<int32_t, int32_t>& p) -> int64_t
+  const auto make_edge_key = [](const pair<int32_t, int32_t>& p) -> std::int64_t
   {
     std::int64_t ret = 0;
     ret |= p.first;
@@ -144,7 +144,7 @@ void igl::marching_tets(
   bc_triplets.reserve(edge_table.size());
 
   // Deduplicate vertices
-  unordered_map<int64_t, int> emap;
+  unordered_map<std::int64_t, int> emap;
   emap.max_load_factor(0.5);
   emap.reserve(edge_table.size());
 
@@ -158,7 +158,7 @@ void igl::marching_tets(
     {
       const int vi = faces[f].first[v];
       const pair<int32_t, int32_t> edge = edge_table[vi];
-      const int64_t key = make_edge_key(edge);
+      const std::int64_t key = make_edge_key(edge);
       auto it = emap.find(key);
       if (it == emap.end()) // New unique vertex, insert it
       {

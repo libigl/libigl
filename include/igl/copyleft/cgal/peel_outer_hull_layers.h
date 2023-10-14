@@ -30,7 +30,7 @@ namespace igl
         typename DerivedF,
         typename DerivedI,
         typename Derivedflip>
-      IGL_INLINE size_t peel_outer_hull_layers(
+      IGL_INLINE int peel_outer_hull_layers(
         const Eigen::PlainObjectBase<DerivedV > & V,
         const Eigen::PlainObjectBase<DerivedF > & F,
         Eigen::PlainObjectBase<DerivedI > & I,

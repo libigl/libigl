@@ -122,7 +122,7 @@ IGL_INLINE bool igl::boundary_conditions(
     }
   }
 
-  std::vector<uint8_t> vertices_marked(V.rows(), 0);
+  std::vector<bool> vertices_marked(V.rows(), false);
   // loop over cage faces
   for(int f = 0;f<CF.rows();f++)
   {
@@ -158,7 +158,7 @@ IGL_INLINE bool igl::boundary_conditions(
 
         if (u>=0. && u<=1.0 && v>=0. && v<=1.0 && w >=0. && w<=1.0)
         {
-          vertices_marked[i] = 1;
+          vertices_marked[i] = true;
           bci.push_back(i);
           bcj.push_back(CF(f, 0));
           bcv.push_back(u);

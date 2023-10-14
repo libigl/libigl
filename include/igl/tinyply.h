@@ -34,6 +34,7 @@
 #include <map>
 #include <algorithm>
 #include <functional>
+#include <stdint.h>
 
 namespace igl
 {

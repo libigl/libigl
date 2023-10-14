@@ -10,6 +10,7 @@
 #include "igl_inline.h"
 #include <Eigen/Core>
 #include <unordered_map>
+#include <cstdint>
 namespace igl
 {
   /// Process a single cube of a marching cubes grid.
@@ -42,7 +43,7 @@ namespace igl
     Index & n,
     Eigen::PlainObjectBase<DerivedF> &F,
     Index & m,
-    std::unordered_map<int64_t,int> & E2V);
+    std::unordered_map<std::int64_t,int> & E2V);
 }
 
 #ifndef IGL_STATIC_LIBRARY
