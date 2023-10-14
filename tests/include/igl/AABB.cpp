@@ -117,6 +117,7 @@ TEST_CASE("AABB: dynamic", "[igl]")
     if(F.rows()>10000)
     {
       std::cerr<<"#ifndef NDEBUG: Skipping timing test."<<std::endl;
+      delete tree;
       return;
     }
 #endif
@@ -200,6 +201,7 @@ TEST_CASE("AABB: dynamic", "[igl]")
       REQUIRE(t_dynamic_tree < t_static_tree);
       REQUIRE(t_dynamic_tree < t_brute_force);
     }
+    delete tree;
   };
 
   test_common::run_test_cases(test_common::all_meshes(), test_case);
