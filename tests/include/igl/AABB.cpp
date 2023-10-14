@@ -63,6 +63,23 @@ TEST_CASE("AABB: find_3d", "[igl]")
   REQUIRE(r[1] == 1);
 }
 
+TEST_CASE("AABB: insert", "[igl]")
+{
+  igl::AABB<Eigen::MatrixXd, 3> * tree = new igl::AABB<Eigen::MatrixXd, 3>();
+  for(int i = 0;i<3;i++)
+  {
+    igl::AABB<Eigen::MatrixXd, 3> * leaf = new igl::AABB<Eigen::MatrixXd, 3>();
+    leaf->m_box = Eigen::AlignedBox<double, 3>(
+      Eigen::RowVector3d(-i,-i,-i),
+      Eigen::RowVector3d(i,i,i));
+    auto * ret = tree->insert(leaf);
+    tree = ret->root();
+    REQUIRE(leaf->is_leaf());
+  }
+  REQUIRE(tree->is_root());
+  delete tree;
+}
+
 TEST_CASE("AABB: dynamic", "[igl]")
 {
   const int MAX_RUNS = 10;
