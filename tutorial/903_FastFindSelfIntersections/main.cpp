@@ -1,57 +1,37 @@
-#include <igl/readOFF.h>
-#include <igl/combine.h>
-
+#include <igl/read_triangle_mesh.h>
+#include <igl/unique.h>
 #include <igl/opengl/glfw/Viewer.h>
-//#include <igl/opengl/glfw/imgui/ImGuiPlugin.h>
-#include <igl/opengl/glfw/imgui/ImGuiMenu.h>
-
 #include <igl/fast_find_self_intersections.h>
-
-Eigen::MatrixXd V1,V2,V;
-Eigen::MatrixXi F1,F2,F;
 
 int main(int argc, char *argv[])
 {
 
-  // Load two meshes 
-  igl::readOFF(TUTORIAL_SHARED_PATH "/planexy.off", V1, F1);
-  igl::readOFF(TUTORIAL_SHARED_PATH "/cow.off",     V2, F2);
+  Eigen::MatrixXd V;
+  Eigen::MatrixXi F;
+  igl::read_triangle_mesh(argc<=1?TUTORIAL_SHARED_PATH "/cow.off":argv[1], V, F);
 
-  // Combine into one mesh (will produce self-intersections)
-  igl::combine<Eigen::MatrixXd,Eigen::MatrixXi>({V1,V2},{F1,F2}, V,F);
 
   // Plot the mesh
   igl::opengl::glfw::Viewer viewer;
   viewer.data().set_mesh(V, F);
 
-  Eigen::VectorXi I;
-  Eigen::MatrixXd edges;
+  Eigen::VectorXi EI;
+  Eigen::MatrixXd EV;
+  Eigen::MatrixXi IF,EE;
 
-  if(igl::fast_find_self_intersections(V,F,I,edges))
+  if(igl::fast_find_self_intersections(V,F,false,false,IF,EV,EE,EI))
   {
-    std::cout<<"Found "<<I.sum()<<" self intersections"<<std::endl;
-
+    std::cout<<"Found "<<IF.rows()<<" self intersecting pairs"<<std::endl;
     // plot edge vertices
-    //viewer.data().add_points(edges, Eigen::RowVector3d(1,0,0));
-
-    // Plot the edges of the self intersects
-    for (unsigned i=0;i<edges.rows(); i+=2)
-    {
-      viewer.data().add_edges
-      (
-        edges.row(i),
-        edges.row(i+1),
-        Eigen::RowVector3d(1,0,0)
-      );
-    }
-    std::cout<<std::endl;
+    viewer.data().set_edges(EV,EE, Eigen::RowVector3d(1,0,0));
   }
-  viewer.data().set_data(I.cast<double>());
+  Eigen::VectorXi I;
+  igl::unique(IF,I);
+  Eigen::VectorXd D = Eigen::MatrixXd::Zero(F.rows(),1);
+  D(I).setConstant(1.0);
+  viewer.data().set_data(D,0,1,igl::COLOR_MAP_TYPE_PARULA);
+  viewer.data().set_face_based(true);
   viewer.data().double_sided=true;
-
-  igl::opengl::glfw::imgui::ImGuiMenu menu;
-  //plugin.widgets.push_back(&menu);
-  menu.callback_draw_viewer_window = [](){};
 
   // Launch the viewer
   viewer.launch();

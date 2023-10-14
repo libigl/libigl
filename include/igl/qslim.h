@@ -23,6 +23,8 @@ namespace igl
   ///     infinity" in a single triangle.
   /// @param[in] F  #F by 3 list of triangle indices into V
   /// @param[in] max_m  desired number of output faces
+  /// @param[in] block_intersections  whether to block intersections (see
+  ///   intersection_blocking_collapse_edge_callbacks)
   /// @param[out] U  #U by dim list of output vertex posistions (can be same ref as V)
   /// @param[out] G  #G by 3 list of output face indices into U (can be same ref as F)
   /// @param[out] J  #G list of indices into F of birth face
@@ -30,7 +32,8 @@ namespace igl
   IGL_INLINE bool qslim(
     const Eigen::MatrixXd & V,
     const Eigen::MatrixXi & F,
-    const size_t max_m,
+    const int max_m,
+    const bool block_intersections,
     Eigen::MatrixXd & U,
     Eigen::MatrixXi & G,
     Eigen::VectorXi & J,

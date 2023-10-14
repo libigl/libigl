@@ -12,38 +12,38 @@
 #include "igl_inline.h"
 #include <Eigen/Core>
 
-namespace igl {
-
-  /// Identify triangles where mesh intersects itself
-  /// using AABBTree and tri_tri_intersection_test_3d
+namespace igl
+{
+  /// Identify triangles where two meshes interesect 
+  /// using AABBTree and tri_tri_intersection_test_3d.
   ///
-  /// @param[in] V  #V by 3 list representing vertices
-  /// @param[in] F  #F by 3 list representing triangles.
-  /// @param[out] intersect  #F by 1 indicator that triangle intersects anothe triangle
-  /// @param[out] edges      list of pairs of intersection edges
-  /// @return whether any self-interections were found
+  /// @param[in] V  #V by 3 list representing vertices on the first mesh
+  /// @param[in] F  #F by 3 list representing triangles on the first mesh
+  /// @param[out] IF #IF by 2 list of intersecting triangle pairs, so that 
+  ///   F1(IF(i,0),:) intersects F2(IF(i,1),:)
+  /// @param[out] EV #EV by 3 list of vertices definining intersection segments
+  /// for non-coplanar intersections
+  /// @param[out] EE #EE by 2 list of edges indices into rows of EV
+  /// @param[out] EI #EI by 1 list of indices into rows IF indicating source of
+  ///   intersection.
   ///
-  /// \see copyleft::cgal::remesh_self_intersections
+  /// \see copyleft::cgal::SelfIntersectMesh
   template <
     typename DerivedV,
     typename DerivedF,
-    typename DerivedI,
-    typename DerivedE>
+    typename DerivedIF,
+    typename DerivedEV,
+    typename DerivedEE,
+    typename DerivedEI>
   IGL_INLINE bool fast_find_self_intersections(
-    const Eigen::MatrixBase<DerivedV>& V,
-    const Eigen::MatrixBase<DerivedF>& F,
-    Eigen::PlainObjectBase<DerivedI>& intersect,
-    Eigen::PlainObjectBase<DerivedE>& edges );
-  /// \overload
-  template <
-    typename DerivedV,
-    typename DerivedF,
-    typename DerivedI>
-  IGL_INLINE bool fast_find_self_intersections(
-    const Eigen::MatrixBase<DerivedV>& V,
-    const Eigen::MatrixBase<DerivedF>& F,
-    Eigen::PlainObjectBase<DerivedI>& intersect);
-
+    const Eigen::MatrixBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedF> & F,
+    const bool detect_only,
+    const bool first_only,
+    Eigen::PlainObjectBase<DerivedIF> & IF,
+    Eigen::PlainObjectBase<DerivedEV> & EV,
+    Eigen::PlainObjectBase<DerivedEE> & EE,
+    Eigen::PlainObjectBase<DerivedEI> & EI);
 };
 
 #ifndef IGL_STATIC_LIBRARY

@@ -35,7 +35,11 @@ namespace igl
   /// \see collapse_edge
   IGL_INLINE void qslim_optimal_collapse_edge_callbacks(
     Eigen::MatrixXi & E,
-    std::vector<std::tuple<Eigen::MatrixXd,Eigen::RowVectorXd,double> > & 
+    std::vector<
+      std::tuple<
+        Eigen::MatrixXd,
+        Eigen::RowVectorXd,
+        double> > & 
       quadrics,
     int & v1,
     int & v2,

@@ -24,7 +24,7 @@ TEST_CASE("decimate: hemisphere", "[igl]")
   // Perfect normals from positions
   Eigen::MatrixXd NV = V.rowwise().normalized();
   // Remove half of the faces
-  igl::decimate(V,F,F.rows()/2,U,G,J,I);
+  igl::decimate(V,F,F.rows()/2,false,U,G,J,I);
   // Expect that all normals still point in same direction as original
   Eigen::MatrixXd NU = U.rowwise().normalized();
   Eigen::MatrixXd NVI = NV(I,Eigen::all);
@@ -43,19 +43,19 @@ TEST_CASE("decimate: closed", "[igl]")
   {
     Eigen::MatrixXd V,U;
     Eigen::MatrixXi F,G;
-    Eigen::VectorXi J;
+    Eigen::VectorXi I,J;
     // Load example mesh: GetParam() will be name of mesh file
     igl::read_triangle_mesh(test_common::data_path(param), V, F);
-    igl::decimate(V,F,0,U,G,J);
+    igl::decimate(V,F,0,false,U,G,I,J);
     REQUIRE (4 == U.rows());
     REQUIRE (4 == G.rows());
     {
-      Eigen::MatrixXi I;
-      igl::sort(Eigen::MatrixXi(G),2,true,G,I);
+      Eigen::MatrixXi _;
+      igl::sort(Eigen::MatrixXi(G),2,true,G,_);
     }
     {
-      Eigen::VectorXi I;
-      igl::sortrows(Eigen::MatrixXi(G),true,G,I);
+      Eigen::VectorXi _;
+      igl::sortrows(Eigen::MatrixXi(G),true,G,_);
     }
     // Tet with sorted faces
     Eigen::MatrixXi T(4,3);

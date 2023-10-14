@@ -50,6 +50,10 @@ function(igl_copy_dll target)
     if(NOT WIN32)
         return()
     endif()
+    if(NOT TARGET target)
+      message(STATUS "igl_copy_dll() was called with a non-target: ${target}")
+      return()
+    endif()
 
     # Sanity checks
     get_target_property(TYPE ${target} TYPE)

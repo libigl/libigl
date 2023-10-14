@@ -48,6 +48,66 @@ namespace igl
   /// @param[out] f1  index into F of face collpased on left
   /// @param[out] f2  index into F of face collpased on right
   /// @return true if edge was collapsed
+  ///
+  ///
+  /// Define [s,d] = sort(E(e,:)) so that s<d, then d is "detached" from
+  /// connectivity meaning all faces/edges incident on d will now be incident on
+  /// s. (This reduces fragmentation by preferring to collapse toward the start
+  /// of V)¹. If E(e,1)==s then we say the edge is "flipped" (`eflip` true in
+  /// the implementation).
+  ///
+  /// f1 is set to EF(e,0) and f2 is set to EF(e,1). Let v1 be EI(e,0) the
+  /// corner of F(f1,:) opposite e. _If_ (s<d) then e1 will be the edge after e
+  /// within f1:
+  ///
+  ///         s<d
+  ///     ✅s----e-----d☠️
+  ///        \   ←    /
+  ///         \ ↘f₁↗ /
+  ///         e₁    /
+  ///           \  /
+  ///            \/
+  ///
+  /// _If_ (s>d) then e1 will be the edge after e within f1:
+  ///    
+  ///         s>d
+  ///     ✅s----e-----d☠️
+  ///        \   ←    /
+  ///         \ ↘f₁↗ /
+  ///          \    e₁
+  ///           \  /
+  ///            \/
+  ///
+  ///
+  /// ¹Or at least it would if we templated these functions to allow using
+  /// RowMajor V.
+  ///
+  /// It really seems that this callback should provide a meaningful edge on the
+  /// _new_ mesh. Meanwhile – Oof – You can use this gross mechanism to find the faces incident on the
+  /// collapsed vertex:
+  ///
+  /// ```cpp
+  /// const auto survivors = 
+  ///   [&F,&e,&EMAP](const int f1, const int e1, int & d1)
+  /// {
+  ///   for(int c=0;c<3;c++)
+  ///   {
+  ///     d1 = EMAP(f1+c*F.rows());
+  ///     if((d1 != e) && (d1 != e1)) { break; }
+  ///   }
+  /// };
+  /// int d1,d2;
+  /// survivors(f1,e1,d1);
+  /// survivors(f2,e2,d2);
+  /// // Will circulating by continuing in the CCW direction of E(d1,:)
+  /// // encircle the common edge? That is, is E(d1,1) the common vertex?
+  /// const bool ccw = E(d1,1) == E(d2,0) || E(d1,1) == E(d2,1);
+  /// std::vector<int> Nf;
+  /// {
+  ///   std::vector<int> Nv;
+  ///   igl::circulation(d1,ccw,F,EMAP,EF,EI,Nv,Nf);
+  /// }
+  /// ```
   IGL_INLINE bool collapse_edge(
     const int e,
     const Eigen::RowVectorXd & p,

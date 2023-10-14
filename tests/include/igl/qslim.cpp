@@ -17,7 +17,7 @@ TEST_CASE("qslim: cylinder", "[igl]" "[slow]")
   Eigen::MatrixXd U;
   Eigen::MatrixXi G;
   Eigen::VectorXi I,J;
-  qslim(V,F,2*axis_devisions,U,G,I,J);
+  qslim(V,F,2*axis_devisions,false,U,G,I,J);
   REQUIRE (U.rows() == axis_devisions*2);
   //double l,u;
   igl::writePLY("qslim-cylinder-vf.ply",V,F);

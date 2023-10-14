@@ -18,17 +18,26 @@
 #include "qslim_optimal_collapse_edge_callbacks.h"
 #include "quadric_binary_plus_operator.h"
 #include "remove_unreferenced.h"
+#include "intersection_blocking_collapse_edge_callbacks.h"
+#include "AABB.h"
 
 IGL_INLINE bool igl::qslim(
   const Eigen::MatrixXd & V,
   const Eigen::MatrixXi & F,
-  const size_t max_m,
+  const int max_m,
+  const bool block_intersections,
   Eigen::MatrixXd & U,
   Eigen::MatrixXi & G,
   Eigen::VectorXi & J,
   Eigen::VectorXi & I)
 {
   using namespace igl;
+  igl::AABB<Eigen::MatrixXd, 3> * tree = nullptr;
+  if(block_intersections)
+  {
+    tree = new igl::AABB<Eigen::MatrixXd, 3>();
+    tree->init(V,F);
+  }
 
   // Original number of faces
   const int orig_m = F.rows();
@@ -62,6 +71,13 @@ IGL_INLINE bool igl::qslim(
   decimate_post_collapse_callback      post_collapse;
   qslim_optimal_collapse_edge_callbacks(
     E,quadrics,v1,v2, cost_and_placement, pre_collapse,post_collapse);
+  if(block_intersections)
+  {
+    igl::intersection_blocking_collapse_edge_callbacks(
+      pre_collapse, post_collapse, // These will get copied as needed
+      tree,
+      pre_collapse, post_collapse);
+  }
   // Call to greedy decimator
   bool ret = decimate(
     VO, FO,
@@ -80,5 +96,7 @@ IGL_INLINE bool igl::qslim(
   igl::remove_unreferenced(Eigen::MatrixXd(U),Eigen::MatrixXi(G),U,G,_1,I2);
   I = I(I2).eval();
 
+  assert(tree == nullptr || tree == tree->root());
+  delete tree;
   return ret;
 }
