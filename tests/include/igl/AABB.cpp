@@ -112,16 +112,23 @@ TEST_CASE("AABB: dynamic", "[igl]")
     const double pad = igl::EPS<double>();
     const double h = igl::avg_edge_length(V,F);
     const auto leaves = tree->gather_leaves(F.rows());
+    for(auto * leaf : leaves)
+    {
+      REQUIRE(leaf);
+      REQUIRE(leaf->is_leaf());
+    }
     // This is slow. Only test on small meshes
     if(F.rows() < 4000)
     {
       // Gather list of pointers to leaves and pad by ε to force rebuild
+      tree = tree->pad(leaves,pad,2);
+      REQUIRE(tree->is_root());
+      REQUIRE(tree == tree->root());
       for(auto * leaf : leaves)
       {
         REQUIRE(leaf);
-        tree = tree->pad(leaves,pad,2);
+        REQUIRE(leaf->is_leaf());
       }
-      REQUIRE(tree == tree->root());
       tictoc();
       tree->squared_distance(V,F,BC,sqrD,I,C);
       const double t1 = tictoc();
