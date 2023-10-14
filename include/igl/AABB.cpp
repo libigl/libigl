@@ -310,7 +310,9 @@ IGL_INLINE igl::AABB<DerivedV,DIM>* igl::AABB<DerivedV,DIM>::pad(
       leaf->rotate_lineage();
     }
   }
-  return this->root();
+  // `this` may have been deleted (during `detach` above). Return (possibly new)
+  // root.
+  return tree->root();
 }
 
 template <typename DerivedV, int DIM>
