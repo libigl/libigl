@@ -14,7 +14,7 @@
 #else
   #include <unistd.h>
 #endif
-#include <stdint.h>
+#include <cstdint>
 
 IGL_INLINE std::string igl::path_to_executable()
 {
