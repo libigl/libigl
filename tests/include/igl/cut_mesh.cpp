@@ -3,7 +3,7 @@
 #include <igl/vertex_components.h>
 #include <igl/edges.h>
 
-TEST_CASE("seperate mesh", "[igl]") {
+TEST_CASE("cut_mesh: seperate mesh", "[igl]") {
   
   Eigen::MatrixXd V(9,3);
   V << 0,0,0,
@@ -42,7 +42,7 @@ TEST_CASE("seperate mesh", "[igl]") {
 
 }
 
-TEST_CASE("single edge", "[igl]") {
+TEST_CASE("cut_mesh: single edge", "[igl]") {
   
   Eigen::MatrixXd V(9,3);
   V << 0,0,0,
@@ -83,4 +83,25 @@ TEST_CASE("single edge", "[igl]") {
   const auto euler = V.rows() - E.rows() + F.rows();
   REQUIRE ( 1 == euler );
 
+}
+
+TEST_CASE("cut_mesh: two triangles", "[igl]") {
+
+  Eigen::MatrixXd V(4,3);
+  V << 0,0,0,
+       0,1,0,
+       1,0,0,
+       1,1,0;
+  Eigen::MatrixXi F(2,3);
+  F << 0,1,2,
+       2,1,3;
+  // Only mark one side of the internal edge to cut. This should still work.
+  Eigen::MatrixXi C(2,3);
+  C << 0,0,0,
+       1,0,0;
+
+  Eigen::MatrixXd VCut;
+  Eigen::MatrixXi FCut;
+  igl::cut_mesh(V,F,C,VCut,FCut);
+  REQUIRE( VCut.rows() == 6 );
 }
