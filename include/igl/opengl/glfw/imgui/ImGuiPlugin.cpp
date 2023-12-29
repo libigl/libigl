@@ -125,11 +125,11 @@ IGL_INLINE bool ImGuiPlugin::mouse_down(int button, int modifier)
 
 IGL_INLINE bool ImGuiPlugin::mouse_up(int button, int modifier)
 {
-  //return ImGui::GetIO().WantCaptureMouse;
-  // !! Should not steal mouse up
+  ImGui_ImplGlfw_MouseButtonCallback(viewer->window, button, GLFW_RELEASE, modifier);
+  if (ImGui::GetIO().WantCaptureMouse){ return true; }
   for( auto & widget : widgets)
   { 
-    widget->mouse_up(button, modifier);
+    if(widget->mouse_up(button, modifier)) { return true; }
   }
   return false;
 }
