@@ -153,7 +153,7 @@ IGL_INLINE bool igl::eigs(
       //std::cout<<"  "<<(S.head(i).array()-sigma).abs().maxCoeff()<<std::endl;
       //std::cout<<"  "<<(U.leftCols(i).transpose()*B*x).array().abs().transpose()<<std::endl;
       // restart with new random guess.
-      //cout<<"igl::eigs RESTART"<<endl;
+      cout<<"igl::eigs RESTART"<<endl;
     }
   }
   // finally sort
