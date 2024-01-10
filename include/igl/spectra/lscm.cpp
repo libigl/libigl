@@ -22,8 +22,11 @@ IGL_INLINE bool igl::spectra::lscm(
 
   Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic>  U;
   Eigen::Matrix<Scalar, Eigen::Dynamic, 1>  S;
-  igl::spectra::eigs(Q,M2,3,igl::EIGS_TYPE_SM,U,S);
+  if(!igl::spectra::eigs(Q,M2,3,igl::EIGS_TYPE_SM,U,S)) {
+    return false;
+  }
 
   V_uv.resize(V.rows(),2);
   V_uv<< U.col(0).head(V.rows()),U.col(0).tail(V.rows());
+  return true;
 }
