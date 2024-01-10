@@ -75,9 +75,14 @@ IGL_INLINE void igl::cut_mesh(
     for(Index k=0;k<3;k++){
       Index u = F(i,k);
       Index v = F(i,(k+1)%3);
-      if(FF(i,k) == -1){ // add one extra occurance for boundary vertices
+      if(FF(i,k) == -1){ 
+        // add one extra occurance for boundary vertices
         eventual(u) += 1;
-      }else if(C(i,k) == 1 && u < v){ // only compute every (undirected) edge ones
+      }else if( 
+          (u < v) && 
+          (C(i,k) || C(FF(i,k),FFi(i,k))) )
+      { 
+        // only compute every (undirected) edge ones
         eventual(u) += 1;
         eventual(v) += 1;
       }
