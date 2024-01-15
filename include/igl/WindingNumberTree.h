@@ -214,7 +214,7 @@ inline igl::WindingNumberTree<Point,DerivedV,DerivedF>::WindingNumberTree(
 }
 
 template <typename Point, typename DerivedV, typename DerivedF>
-inline igl::WindingNumberTree<Point,DerivedV,DerivedF>::~WindingNumberTree<Point,DerivedV,DerivedF>()
+inline igl::WindingNumberTree<Point,DerivedV,DerivedF>::~WindingNumberTree()
 {
   delete_children();
 }
