@@ -101,3 +101,44 @@ TEST_CASE("tetrahedralize: schoenhardt", "[igl/copyleft/tetgen]")
   igl::copyleft::tetgen::tetrahedralize(V,F,"pQ",TV,TT,TF);
   REQUIRE (V.rows() <= TV.rows());
 }
+
+TEST_CASE("tetrahedralize: quad_face", "[igl/copyleft/tetgen]")
+{
+  const Eigen::MatrixXd V = (Eigen::MatrixXd(5,3)<<
+    -1.0,0.0,0.0,
+    0.0,-1.0,0.0,
+    1.0,0.0,0.0,
+    0.0,1.0,0.0,
+    0.0,0.0,1.0).finished();
+  const Eigen::MatrixXi F = (Eigen::MatrixXi(5,4)<<
+    0,1,2,3,
+    0,1,4,-1,
+    1,2,4,-1,
+    2,3,4,-1,
+    3,0,4,-1).finished();
+  Eigen::MatrixXd TV;
+  Eigen::MatrixXi TT,TF;
+  igl::copyleft::tetgen::tetrahedralize(V,F,"pQ",TV,TT,TF);
+  REQUIRE (TT.rows() == 2);
+}
+
+TEST_CASE("tetrahedralize: embedded_segment", "[igl/copyleft/tetgen]")
+{
+  const Eigen::MatrixXd V = (Eigen::MatrixXd(6,3)<<
+    -0.5,0.5,0.0,
+    0.0,-1.0,0.0,
+    0.5,0.5,0.0,
+    0.0,0.0,1.0,
+    0.0,0.0,0.2,
+    0.0,0.0,0.9).finished();
+  const Eigen::MatrixXi F = (Eigen::MatrixXi(5,3)<<
+    0,1,2,
+    1,3,2,
+    0,2,3,
+    1,0,3,
+    4,5,-1).finished();
+  Eigen::MatrixXd TV;
+  Eigen::MatrixXi TT,TF;
+  igl::copyleft::tetgen::tetrahedralize(V,F,"pQ",TV,TT,TF);
+  REQUIRE (TT.rows() == 7);
+}
