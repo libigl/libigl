@@ -51,6 +51,11 @@ namespace igl
       ///     holes, duplicate faces etc.)
       ///   -1 other error
       ///
+      /// \note The polygons F can contain polygons with different number of vertices.
+      /// Trailing unused columns are filled with -1. For example, triangles and
+      /// segments can be specified using a #F x 3 matrix: for segments the third 
+      /// column contains -1.
+      ///
       /// \note Tetgen mixes integer region ids in with other region data `attr
       /// = (int) in->regionlist[i + 3];`. So it's declared safe to use integer
       /// types for `TR` since this also assumes that there's a single tet

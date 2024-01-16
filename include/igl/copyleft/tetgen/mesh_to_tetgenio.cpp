@@ -65,10 +65,10 @@ IGL_INLINE void igl::copyleft::tetgen::mesh_to_tetgenio(
     f->numberofholes = 0;
     f->holelist = NULL;
     tetgenio::polygon * p = &f->polygonlist[0];
-    p->numberofvertices = F.cols();
+    p->numberofvertices = (F.row(i).array() >= 0).count();
     p->vertexlist = new int[p->numberofvertices];
     // loop around face
-    for(int j = 0;j < F.cols(); j++)
+    for(int j = 0;j < p->numberofvertices; j++)
     {
       p->vertexlist[j] = F(i,j);
     }
