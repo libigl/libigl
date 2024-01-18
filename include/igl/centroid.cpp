@@ -23,6 +23,15 @@ IGL_INLINE void igl::centroid(
   assert(F.cols() == 3 && "F should contain triangles.");
   assert(V.cols() == 3 && "V should contain 3d points.");
   const int m = F.rows();
+  // static assert that cen is either a 3d rowvector a 3d vector or a variable
+  // size vector
+  static_assert(Derivedc::IsVectorAtCompileTime,"cen should be a vector");
+  static_assert(
+      Derivedc::RowsAtCompileTime == 3 || 
+      Derivedc::RowsAtCompileTime == -1 || 
+      Derivedc::ColsAtCompileTime == 3 || 
+      Derivedc::ColsAtCompileTime == -1,
+      "cen should be sizeable to 3 vector");
   cen.setZero(3);
   vol = 0;
   // loop over faces
