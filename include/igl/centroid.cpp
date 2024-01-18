@@ -23,7 +23,7 @@ IGL_INLINE void igl::centroid(
   assert(F.cols() == 3 && "F should contain triangles.");
   assert(V.cols() == 3 && "V should contain 3d points.");
   const int m = F.rows();
-  cen.setZero();
+  cen.setZero(3);
   vol = 0;
   // loop over faces
   for(int f = 0;f<m;f++)
