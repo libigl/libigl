@@ -1,5 +1,6 @@
 #include <test_common.h>
 #include <igl/split_nonmanifold.h>
+#include <igl/facet_components.h>
 #include <igl/matlab_format.h>
 #include <iostream>
 
@@ -274,4 +275,48 @@ TEST_CASE("split_nonmanifold: non-orientable", "[igl]")
   test_common::assert_eq(SV,SVgt);
   test_common::assert_eq(SF,SFgt);
   test_common::assert_eq(SVI,SVIgt);
+}
+
+TEST_CASE("split_nonmanifold: flap", "[igl]")
+{
+  Eigen::MatrixXi F(12,3);
+  const auto check = [&F]()
+  {
+    Eigen::MatrixXi SF;
+    Eigen::VectorXi SVI;
+    igl::split_nonmanifold(F,SF,SVI);
+    {
+      Eigen::VectorXi C;
+      const int nc = igl::facet_components(SF,C);
+      REQUIRE(nc == 2);
+    }
+  };
+  F<< 
+    0,3,1,
+    3,4,1,
+    2,5,0,
+    5,3,0,
+    3,6,4,
+    5,7,3,
+    7,6,3,
+    8,0,9,
+    0,1,9,
+    2,0,8,
+    0,3,11,
+    0,11,10;
+  check();
+  F<< 
+    0,3,11,
+    0,1,9,
+    2,5,0,
+    7,6,3,
+    0,3,1,
+    3,6,4,
+    5,3,0,
+    5,7,3,
+    8,0,9,
+    3,4,1,
+    2,0,8,
+    0,11,10;
+  check();
 }
