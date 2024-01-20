@@ -6,10 +6,13 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "split_nonmanifold.h"
+#include "unique_edge_map.h"
+#include <cassert>
 #include "connected_components.h"
-#include "remove_unreferenced.h"
-#include "find.h"
-#include "ismember_rows.h"
+
+#include "is_vertex_manifold.h"
+#include "matlab_format.h"
+#include <iostream>
 
 template <
   typename DerivedF,
@@ -21,121 +24,172 @@ IGL_INLINE void igl::split_nonmanifold(
   Eigen::PlainObjectBase <DerivedSF> & SF,
   Eigen::PlainObjectBase <DerivedSVI> & SVI)
 {
-  // Number of faces
+  const bool enforce_manifold = true;
+#warning "Another parameter whether to try to weld together orientable cut-boundarieS"
+  using Scalar = typename DerivedSF::Scalar;
+  using MatrixX2I = Eigen::Matrix<Scalar,Eigen::Dynamic,2>;
+  using MatrixX3I = Eigen::Matrix<Scalar,Eigen::Dynamic,3>;
+  using VectorXI = Eigen::Matrix< Scalar,Eigen::Dynamic,1>;
+  MatrixX2I E,uE;
+  VectorXI EMAP,uEC,uEE;
+  igl::unique_edge_map(F,E,uE,EMAP,uEC,uEE);
+
+  // Mesh as if all edges got cut. 
+  MatrixX3I CF = VectorXI::LinSpaced(F.size(),0,F.size()-1).reshaped(F.rows(),F.cols());
+  //std::cout<<igl::matlab_format_index(CF,"CF")<<std::endl;
+
+  // By cutting _all_ edges we also handle non-manifold vertices. We could avoid
+  // cutting edges that are both manifold-edges and not incident on a
+  // non-manifold vertex. It's hard to imagine really avoiding O(E) work in
+  // total though.
+
+  std::vector<bool> seen(E.rows());
+
+  std::vector<std::pair<int,int> > R;
+
   const int m = F.rows();
-  // For moment aact like everything will be split
-  SF.resize(m,3);
+  const auto zip = [&E,&m,&seen,&F,&CF,&R](const int e1, const int e2)
   {
-    int k =0;
-    for(int j = 0;j<3;j++)
+    assert(!seen[e1]);
+    assert(!seen[e2]);
+    assert(E(e1,0) == E(e2,1));
+    assert(E(e1,1) == E(e2,0));
+    const int vs1 = E(e1,0);
+    const int vs2 = E(e2,1);
+    const int vd1 = E(e1,1);
+    const int vd2 = E(e2,0);
+
+    const int f1 = e1%m;
+    const int f2 = e2%m;
+    const int i1 = e1/m;
+    const int i2 = e2/m;
+
+    const int cs1 = CF(f1,(i1+1)%3);
+    const int cs2 = CF(f2,(i2+2)%3);
+    const int cd1 = CF(f1,(i1+2)%3);
+    const int cd2 = CF(f2,(i2+1)%3);
+    //printf("%d,%d → %d,%d\n",vs1+1,vd1+1,vs2+1,vd2+1);
+    //printf("  %d,%d → %d,%d\n",cs1+1,cd1+1,cs2+1,cd2+1);
+    //printf("  %d → %d\n",f1+1,f2+1);
+
+    const int cs = std::min(cs1,cs2);
+    const int cd = std::min(cd1,cd2);
+    //printf("  %d,%d → %d,%d\n",cs+1,cd+1,cs+1,cd+1);
+
+    // Record equivalences
+    R.emplace_back(cs1,cs);
+    R.emplace_back(cd1,cd);
+    R.emplace_back(cs2,cs);
+    R.emplace_back(cd2,cd);
+
+
+    //std::cout<<igl::matlab_format_index(CF,"CF")<<std::endl;
+    //printf("\n");
+    
+  };
+
+
+  // consider all unique edges
+  for(int u = 0;u<uE.rows();u++)
+  {
+    const int num_incident = uEC(u+1)-uEC(u);
+    assert(num_incident > 0);
+    // First edge
+    int e1 = uEE(uEC(u));
+    // mark boundary edges as seen
+    if(num_incident == 1)
     {
-      for(int i = 0;i<m;i++)
+      seen[e1] = true;
+      continue;
+    }
+    if(num_incident == 2)
+    {
+      int e2 = uEE(uEC(u)+1);
+      // Check that e2 has opposite orientation of e1
+      if(enforce_orientability && E(e1,0) == E(e2,1))
       {
-        SF(i,j) = k++;
+        assert(E(e1,1) == E(e2,0));
+        zip(e1,e2);
+        seen[e1] = true;
+        seen[e2] = true;
+#warning "is `seen` every used?"
+        continue;
       }
-    }
+    }// else. non-manifold. Skip for now
   }
-  // Edges in SF
-  Eigen::MatrixXi E(m*3,2);
-  for(int i = 0;i<m;i++)
+
+  // Now if we resolve all the equivalence records we'd have a mesh CF which is
+  // "cut" along all original non-manifold edges (and non-manifold vertices
+  // separated). This is likely still too aggressive. Every non-manifold edge
+  // with 3 incident faces is cut into 3 non-neighboring faces. There's always
+  // two of those (with consistent orientation) that can be welded together.
+
+  // We could continue to collect records which conduct these welds along
+  // non-manifold edges. We should prioritze welds at "crack" tips: edges whose
+  // incident corners have records.
+  //
+
+  // We should prioritize welds along chains of non-manifold edges
+
+//#error "Huh? Should we just have cut at non-manifold edges and then considered the incident of connecteced-compontents and non-manifold-edge chains?"
+//  // Processing the chains one by one, if a chain has 
+//  // if a chain has incident components A,B,C
+//  // and A,C are consistently oriented to the chain then we can weld them. 
+//
+//  A single component could have a shared non-manifold edge with 3 or 4
+//  "strips" of faces (like two twisted loop strips out of a shared central
+//  mesh colliding through the same non-manifold edge). This has a "manifold"
+//  explaination as a single component, but won't be easily merged
+
+
+  // I couldn't think of a way to do this on the fly. We've collected all the
+  // corners that should be mapped to the same vertex as equivalence records
+  // (i,j) and we resolve them now using component analysis.
   {
-    E.row(i+0*m) << SF(i,1),SF(i,2);
-    E.row(i+1*m) << SF(i,2),SF(i,0);
-    E.row(i+2*m) << SF(i,0),SF(i,1);
-  }
-  // Reindex E by F
-  Eigen::MatrixXi FE(E.rows(),E.cols());
-  for(int i = 0;i<E.rows();i++)
-  {
-    for(int j = 0;j<2;j++)
+    Eigen::SparseMatrix<bool> A(F.size(),F.size());
+    std::vector<Eigen::Triplet<bool> > IJV;
+    // Diagonal
+    for(int i = 0;i<SF.size();i++) { IJV.emplace_back(i,i,true); }
+    // Off-diagonal for each record
+    for(const auto & r : R)
     {
-      const int fi = E(i,j) % m;
-      const int fj = E(i,j) / m;
-      FE(i,j) = F(fi,fj);
+      IJV.emplace_back(r.first,r.second,true);
+      IJV.emplace_back(r.second,r.first,true);
     }
-  }
-  // Flip orientation
-  Eigen::MatrixXi FE_flip = FE.rowwise().reverse();
-  // Find which exist in both directions
-
-
-  Eigen::Array<bool,Eigen::Dynamic,1> I;
-  Eigen::VectorXi J;
-  igl::ismember_rows(FE,FE_flip,I,J);
-  // Just keep those find
-  const auto II = igl::find(I);
-  Eigen::MatrixXi EI = E(II,Eigen::all);
-  Eigen::VectorXi JI = J(II);
-  Eigen::MatrixXi EJI = E(JI,Eigen::all);
-
-  Eigen::MatrixXi EJI_flip = EJI.rowwise().reverse();
-  // Build adjacency matrix
-  std::vector<Eigen::Triplet<bool> > Aijv; 
-  Aijv.reserve(EI.size());
-  for(int i = 0;i<EI.rows();i++)
-  {
-    for(int j = 0;j<2;j++)
+    // connected compontents
+    A.setFromTriplets(IJV.begin(),IJV.end());
+    Eigen::VectorXi C,K;
+    igl::connected_components(A,C,K);
+    for(int i = 0;i<CF.size();i++)
     {
-      Aijv.emplace_back( 
-        EI(i,j), 
-        EJI_flip(i,j), 
-        true);
-    }
-  }
-  // Build A to contain off-diagonals only if both directions are present
-  Eigen::SparseMatrix<bool> A1(m*3,m*3);
-  A1.setFromTriplets(Aijv.begin(),Aijv.end());
-  // For some reason I can't write `A = A1 && A1.transpose();`
-  Eigen::SparseMatrix<bool> A1T = A1.transpose();
-  Eigen::SparseMatrix<bool> A = A1 && A1T;
-
-
-  Eigen::VectorXi K;
-  {
-    Eigen::VectorXi _;
-    igl::connected_components(A,K,_);
-  }
-
-
-  // Remap by components
-  for(int j = 0;j<3;j++)
-  {
-    for(int i = 0;i<m;i++)
-    {
-      SF(i,j) = K(SF(i,j));
+      CF(i) = C(CF(i));
     }
   }
   
-  // Initial mapping
-  Eigen::VectorXi SVI0(m*3);
-  {
-    int k =0;
-    for(int j = 0;j<3;j++)
-    {
-      for(int i = 0;i<m;i++)
-      {
-        SVI0(k++) = F(i,j);
-      }
-    }
-  }
-  assert(K.size() == m*3);
-  // Scatter via K
-  // SVI1(K) = SVI(K);
-  Eigen::VectorXi SVI1(m*3);
-  SVI1(K) = SVI0;
+  //std::cout<<igl::matlab_format_index(CF,"CF")<<std::endl;
 
+
+  SVI.resize(F.size());
+  std::vector<bool> marked(F.size());
+  VectorXI J = VectorXI::Constant(F.size(),-1);
+  SF.resize(F.rows(),F.cols());
   {
-    Eigen::VectorXi _,J;
-    igl::remove_unreferenced(SF.maxCoeff()+1,SF,_,J);
-    // Remap by J
-    for(int j = 0;j<3;j++)
+    int nv = 0;
+    for(int f = 0;f<m;f++)
     {
-      for(int i = 0;i<m;i++)
+      for(int i = 0;i<3;i++)
       {
-        SF(i,j) = J(SF(i,j));
+        const int c = CF(f,i);
+        if(J(c) == -1)
+        {
+          J(c) = nv;
+          SVI(nv) = F(f,i);
+          nv++;
+        }
+        SF(f,i) = J(c);
       }
     }
-    SVI = SVI1(J);
+    SVI.conservativeResize(nv);
   }
 
 }

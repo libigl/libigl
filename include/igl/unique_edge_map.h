@@ -75,7 +75,7 @@ namespace igl
   /// 
   /// \code{cpp}
   /// // Using uEC,uEE
-  /// for(int u = 0;u<uE.size();u++)
+  /// for(int u = 0;u<uE.rows();u++)
   /// {
   ///   for(int j = uEC(u);j<uEC(u+1);j++)
   ///   {
