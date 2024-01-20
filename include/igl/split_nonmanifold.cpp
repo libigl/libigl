@@ -7,8 +7,9 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "split_nonmanifold.h"
 #include "unique_edge_map.h"
-#include <cassert>
 #include "connected_components.h"
+#include <cassert>
+#include <type_traits>
 
 #include "is_vertex_manifold.h"
 #include "matlab_format.h"
@@ -24,9 +25,11 @@ IGL_INLINE void igl::split_nonmanifold(
   Eigen::PlainObjectBase <DerivedSF> & SF,
   Eigen::PlainObjectBase <DerivedSVI> & SVI)
 {
-  const bool enforce_manifold = true;
+  const bool enforce_orientability = true;
 #warning "Another parameter whether to try to weld together orientable cut-boundarieS"
   using Scalar = typename DerivedSF::Scalar;
+  // Scalar must allow negative values
+  static_assert(std::is_signed<Scalar>::value,"Scalar must be signed");
   using MatrixX2I = Eigen::Matrix<Scalar,Eigen::Dynamic,2>;
   using MatrixX3I = Eigen::Matrix<Scalar,Eigen::Dynamic,3>;
   using VectorXI = Eigen::Matrix< Scalar,Eigen::Dynamic,1>;
@@ -36,6 +39,11 @@ IGL_INLINE void igl::split_nonmanifold(
 
   // Mesh as if all edges got cut. 
   MatrixX3I CF = VectorXI::LinSpaced(F.size(),0,F.size()-1).reshaped(F.rows(),F.cols());
+
+  //// Empty edge-flap data
+  //MatrixX2I CEF= MatrixX2I::Constant(E.rows(),2,-1);
+  //MatrixX2I CEI= MatrixX2I::Constant(E.rows(),2,-1);
+
   //std::cout<<igl::matlab_format_index(CF,"CF")<<std::endl;
 
   // By cutting _all_ edges we also handle non-manifold vertices. We could avoid
