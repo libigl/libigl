@@ -8,13 +8,19 @@
 #include "split_nonmanifold.h"
 #include "unique_edge_map.h"
 #include "connected_components.h"
+#include "unique.h"
+#include "sort.h"
 #include "triangle_triangle_adjacency.h"
+#include "is_edge_manifold.h"
+#include <unordered_map>
 #include <cassert>
 #include <type_traits>
 
 #include "is_vertex_manifold.h"
 #include "matlab_format.h"
 #include <iostream>
+#include <unordered_set>
+#include <utility>
 
 template <
   typename DerivedF,
@@ -26,8 +32,6 @@ IGL_INLINE void igl::split_nonmanifold(
   Eigen::PlainObjectBase <DerivedSF> & SF,
   Eigen::PlainObjectBase <DerivedSVI> & SVI)
 {
-  const bool enforce_orientability = true;
-#warning "Another parameter whether to try to weld together orientable cut-boundarieS"
   using Scalar = typename DerivedSF::Scalar;
   // Scalar must allow negative values
   static_assert(std::is_signed<Scalar>::value,"Scalar must be signed");
@@ -38,242 +42,396 @@ IGL_INLINE void igl::split_nonmanifold(
   VectorXI EMAP,uEC,uEE;
   igl::unique_edge_map(F,E,uE,EMAP,uEC,uEE);
 
-  // Mesh as if all edges got cut. 
-  MatrixX3I CF = VectorXI::LinSpaced(F.size(),0,F.size()-1).reshaped(F.rows(),F.cols());
+  // Let's assume the most convenient connectivity data structure and worry
+  // about performance later
 
-  // Every edge starts as a boundary edge
+  // V[c] = v means that corner c is mapped to vertex v
+  // Start with all corners mapped to singleton vertices[:w
+  Eigen::VectorXi V = Eigen::VectorXi::LinSpaced(F.size(),0,F.size()-1);
+  // Convenience map so that CF(f,i) = V[c] = v where c is the ith corner of
+  // face f.
+  Eigen::Map<Eigen::MatrixXi> CF = Eigen::Map<Eigen::MatrixXi>(V.data(),F.rows(),F.cols());
+ 
+  // C[v][j] = c means that c is the jth corner in the group of corners at i
+  std::vector<std::vector<int> > C(F.size());
+  for(int i = 0;i<F.size();i++) { C[i] = {i}; }
+
   const int m = F.rows();
-  // augh, this is following gptoolbox ordering not triangle_triangle_adjacency
-  // ordering.
-  MatrixX3I CTF = MatrixX3I::Constant(m,3,-1);
-  MatrixX3I CTI = MatrixX3I::Constant(m,3,-1);
 
-  // Is maintaining triangle adjacency enough? Or do we need edge-flaps?
-  // After we zip an edge-pair we need to know if there are other unzipped edges
-  // adjacent to the zipped edge.
-  // Triangle adjacency seems like enough to circulate around the zipped edge
-  // vertices and find incident boundary edges, which are candidates for
-  // zipping. From a candidate boundary edge we can get to EMAP, which should be
-  // enough to find candidate zip-pairs using uE*.
-
-  //// Empty edge-flap data
-  //MatrixX2I CEF= MatrixX2I::Constant(E.rows(),2,-1);
-  //MatrixX2I CEI= MatrixX2I::Constant(E.rows(),2,-1);
-
-  //std::cout<<igl::matlab_format_index(CF,"CF")<<std::endl;
-
-  // By cutting _all_ edges we also handle non-manifold vertices. We could avoid
-  // cutting edges that are both manifold-edges and not incident on a
-  // non-manifold vertex. It's hard to imagine really avoiding O(E) work in
-  // total though.
-
-  std::vector<bool> seen(E.rows());
-
-  std::vector<std::pair<int,int> > R;
-
-  const auto zip = 
-    [&E,&m,&seen,&F,&CF,&R,&CTF,&CTI](const int e1, const int e2, const bool verbose = true)
+  // O(S) where S = |star(v)|
+  const auto star = [&](const int v)->std::vector<int>
   {
-    assert(!seen[e1]);
-    assert(!seen[e2]);
-    assert(E(e1,0) == E(e2,1));
-    assert(E(e1,1) == E(e2,0));
-    const int vs1 = E(e1,0);
-    const int vs2 = E(e2,1);
-    const int vd1 = E(e1,1);
-    const int vd2 = E(e2,0);
-
-    const int f1 = e1%m;
-    const int f2 = e2%m;
-    const int i1 = e1/m;
-    const int i2 = e2/m;
-
-    const int cs1 = CF(f1,(i1+1)%3);
-    const int cs2 = CF(f2,(i2+2)%3);
-    const int cd1 = CF(f1,(i1+2)%3);
-    const int cd2 = CF(f2,(i2+1)%3);
-    if(verbose)
+    std::vector<int> faces(C[v].size());
+    for(int i = 0;i<C[v].size();i++)
     {
-    //printf("%d,%d → %d,%d\n",vs1+1,vd1+1,vs2+1,vd2+1);
-    //printf("  %d,%d → %d,%d\n",cs1+1,cd1+1,cs2+1,cd2+1);
-    printf("  %d → %d\n",f1+1,f2+1);
+      faces[i] = C[v][i]%m;
     }
+    return faces;
+  };
 
-    const int cs = std::min(cs1,cs2);
-    const int cd = std::min(cd1,cd2);
-    //printf("  %d,%d → %d,%d\n",cs+1,cd+1,cs+1,cd+1);
-
-    // Record equivalences
-    R.emplace_back(cs1,cs);
-    R.emplace_back(cd1,cd);
-    R.emplace_back(cs2,cs);
-    R.emplace_back(cd2,cd);
-
-    CTF(f1,i1) = f2;
-    CTI(f1,i1) = i2;
-    CTF(f2,i2) = f1;
-    CTI(f2,i2) = i1;
-
-    seen[e1] = true;
-    seen[e2] = true;
-
-    //std::cout<<igl::matlab_format_index(CF,"CF")<<std::endl;
-    //printf("\n");
-    
+  // O(S) where S = |star(v)|
+  const auto nonmanifold_edge_star = [&](const int v)->std::vector<int>
+  {
+    std::vector<int> edges;
+    for(int e : C[v])
+    {
+      const int f = e%m;
+      for(int j = 1;j<3;j++)
+      {
+        // next edge
+        const int e1 = (e+j*m)%(3*m);
+        const int u1 = EMAP(e1);
+        if(uEC(u1+1)-uEC(u1) > 2)
+        {
+          edges.push_back(e1);
+        }
+      }
+    }
+    return edges;
   };
 
 
-  // consider all unique edges
-  for(int u = 0;u<uE.rows();u++)
+  // O(S) where S = |star(v)|
+  const std::function<void(
+    Eigen::VectorXi &,
+    std::vector<std::vector<int> > &,
+      const int, const int)> merge_vertex = 
+    [&merge_vertex](Eigen::VectorXi & V,
+      std::vector<std::vector<int> > & C,
+        const int u, const int v)
   {
-    const int num_incident = uEC(u+1)-uEC(u);
-    assert(num_incident > 0);
-    // First edge
-    int e1 = uEE(uEC(u));
-    // mark boundary edges as seen
-    if(num_incident == 1)
+    if(u == v) { return; }
+    if(u > v) { merge_vertex(V,C,v,u); return; }
+    assert(u < v);
+    // Consider each corner in v
+    for(const int c : C[v])
     {
-      seen[e1] = true;
-      continue;
+      V[c] = u;
     }
-    if(num_incident == 2)
+    // Merge C[v] into C[u]
+    C[u].insert(C[u].end(),C[v].begin(),C[v].end());
+    C[v].clear();
+  };
+
+  // O(S) where S is the size of the star of e's first vertex.
+  // This could probably be O(1) with careful bookkeeping
+  const auto is_boundary = [&](const int e)->bool
+  {
+    // e----d
+    //  \   |
+    //   \f₁↑
+    //    \ |
+    //      s
+    const int s = (e+1*m)%(3*m);
+    const int d = (e+2*m)%(3*m);
+    const int f = e%m;
+    const int vs = V[s];
+    const int vd = V[d];
+    // Consider every face in the star of s
+    for(const int g : star(vs))
     {
-      int e2 = uEE(uEC(u)+1);
-      // Check that e2 has opposite orientation of e1
-      if(enforce_orientability && E(e1,0) == E(e2,1))
+      if(g == f) { continue; }
+      // Consider each edge in g
+      for(int i = 0;i<3;i++)
       {
-        assert(E(e1,1) == E(e2,0));
-        zip(e1,e2,false);
-#warning "is `seen` every used?"
-        continue;
+        const int a = (g+(i+1)*m)%(3*m);
+        const int b = (g+(i+2)*m)%(3*m);
+        // Is that edge the same as e?
+        if(V[a] == vd && V[b] == vs) { return false; }
+        if(V[a] == vs && V[b] == vd) { return false; }
       }
-    }// else. non-manifold. Skip for now
+    }
+    return true;
+  };
+ 
+  // Ω(m) and probably  O(m log m) or worse.
+  // This should take in the candidate merge edge pair, extract the submesh and
+  // just check if that's manifold. Then it would be O(S) where S is the size of
+  // biggest star of the edges' vertices.
+  //
+  // My guess is that is_edge_manifold is O(m) but is_vertex_manifold is
+  // O(max(F))
+  const auto is_manifold = [](Eigen::MatrixXi F)->bool
+  {
+    Eigen::Array<bool,Eigen::Dynamic,1> referenced = 
+      Eigen::Array<bool,Eigen::Dynamic,1>::Zero(F.maxCoeff()+1,1);
+    for(int i = 0;i<F.size();i++)
+    {
+      referenced(F(i)) = true;
+    }
+    Eigen::Array<bool,Eigen::Dynamic,1> VM;
+    igl::is_vertex_manifold(F,VM);
+    for(int i = 0;i<VM.size();i++)
+    {
+      if(referenced(i) && !VM(i))
+      {
+        return false;
+      }
+    }
+    return igl::is_edge_manifold(F);
+  };
+
+
+  // Ω(S) where S is the largest star of (vs1,vd2) or (vd1,vs2)
+  // I think that is_vertex/edge_manifold(L) is O(|L| log |L|) so I think that
+  // should make this O(|S| log |S|) with some gross constants because of all
+  // the copying and sorting things into different data structures.
+  //
+  // merging edges (vs1,vd2) and (vd1,vs2) requires merging vertices (vs1→vd1) and
+  // (vd2→vd2).
+  //
+  // Merging vertices (a→b) will change and only change the stars of a and b.
+  // That is, some vertex c ≠ a,b will have the sam star before and after.
+  //
+  // Whether a vertex is singular depends entirely on its star.
+  //
+  // Therefore, the only vertices we need to check for non-manifoldness are
+  // vs=(vs1,vd2) and vd=(vd1,vs2).
+  const auto simulated_merge_is_manifold = 
+    [&](
+        const int vs1, const int vd2,
+        const int vd1, const int vs2)->bool
+  {
+    // all_faces[i] = f means that f is the ith face in the list of stars.
+    std::vector<int> all_faces;
+    for(int v : {vs1,vd2,vd1,vs2})
+    {
+      std::vector<int> star_v = star(v);
+      all_faces.insert(all_faces.end(),star_v.begin(),star_v.end());
+    }
+    // unique_faces[l] = f means that f is the lth unique face in the list of
+    // stars.
+    std::vector<int> unique_faces;
+    std::vector<size_t> _, local;
+    igl::unique(all_faces,unique_faces,_,local);
+    Eigen::MatrixXi L(unique_faces.size(),3);
+    // collect local faces
+    for(int l = 0;l<unique_faces.size();l++)
+    {
+      L.row(l) = CF.row(unique_faces[l]);
+    }
+    {
+      int f = 0;
+      const auto merge_local = [&](const int v1, const int v2)
+      {
+        const int u = std::min(v1,v2);
+        for(const int v : {v1,v2})
+        {
+          for(const int c : C[v])
+          {
+            const int i = c/m;
+            L(local[f++],i) = u;
+          }
+        }
+      };
+      // must match order {vs1,vd2,vd1,vs2} above
+      merge_local(vs1,vd2);
+      merge_local(vd1,vs2);
+    }
+    
+    // remove unreferenced vertices by mapping each index in L to a unique
+    // index between 0 and size(unique(L))
+    std::unordered_map<int,int> M;
+    for(int & i : L.reshaped())
+    {
+      if(M.find(i) == M.end())
+      {
+        M[i] = M.size();
+      }
+      i = M[i];
+    }
+    // Only need to check if the two vertices being merged are manifold
+    Eigen::Array<bool,Eigen::Dynamic,1> VM;
+    const int vs = std::min(vs1,vd2);
+    const int vd = std::min(vd1,vs2);
+    igl::is_vertex_manifold(L,VM);
+    if(!VM(M[vs])) { 
+      return false; 
+    }
+    if(!VM(M[vd])) { 
+      return false; 
+    }
+    // Probably only need to check incident edges in star, but this also
+    // checks link 
+    return igl::is_edge_manifold(L);
+  };
+
+  const auto merge_edge = [&](const int e1, const int e2)
+  {
+    // Ideally we would track whether an edge is a boundary so we can just
+    // assert these. But because of "implied stitches" it's not necessarily just
+    // e1 and e2 which become non-boundary when e1 and e2 are merged.
+    //assert(is_boundary(e1));
+    //assert(is_boundary(e2));
+    if(!is_boundary(e1) || !is_boundary(e2)) { return false; }
+    assert(e1 != e2);
+
+    const bool consistent = E(e1,0) == E(e2,1);
+    // skip if inconsistently oriented
+    if(!consistent) { return false; }
+    // The code below is assuming merging consistently oriented edges
+    assert(E(e1,1) == E(e2,0));
+
+    //
+    // e1--d1  s2--e2
+    //  \   |  |   /
+    //   \f₁↑  ↓f₂/
+    //    \ |  | /
+    //     s1  d2
+    //
+    //
+
+
+    // "Cutting and Stitching: Converting Sets of Polygons to Manifold
+    // Surfaces" [Guéziec et al. 2001]
+    const int s1 = (e1+1*m)%(3*m);
+    const int d1 = (e1+2*m)%(3*m);
+#ifndef NDEBUG
+    {
+      const int f1 = e1 % m;
+      const int i1 = e1 / m;
+      const int s1_test = f1 + ((i1+1)%3)*m;
+      const int d1_test = f1 + ((i1+2)%3)*m;
+      assert(s1 == s1_test);
+      assert(d1 == d1_test);
+    }
+#endif
+    int s2 = (e2+1*m)%(3*m);
+    int d2 = (e2+2*m)%(3*m);
+    const int vs1 = V[s1];
+    const int vd2 = V[d2];
+    const int vd1 = V[d1];
+    const int vs2 = V[s2];
+
+#ifndef IGL_SPLIT_NONMANIFOLD_DEBUG
+    const auto simulated_merge_is_manifold_old = [&]()->bool
+    {
+      Eigen::VectorXi V_copy = V;
+      std::vector<std::vector<int> > C_copy = C;
+      merge_vertex(V_copy,C_copy,vs1,vd2);
+      merge_vertex(V_copy,C_copy,vd1,vs2);
+      Eigen::Map<Eigen::MatrixXi> CF_copy = 
+        Eigen::Map<Eigen::MatrixXi>(V_copy.data(),CF.rows(),CF.cols());
+      if(!is_manifold(CF_copy)) { return false; }
+      return true;
+    };
+    const bool ret_old = simulated_merge_is_manifold_old();
+    const bool ret = simulated_merge_is_manifold(vs1,vd2,vd1,vs2);
+    if(ret != ret_old)
+    {
+      assert(false);
+    }
+#endif
+    // I claim this is completely unnecessary if the unique edge was originally
+    // manifold.
+    //
+    // I also hypothesize that this is unnecessary when conducting depth-first
+    // traversals starting at a successful merge.
+    //
+    // That is, we never need to call this in the current algorithm.
+    const int u = EMAP(e1);
+    assert(EMAP(e1) == EMAP(e2));
+    const int edge_valence = uEC(u+1)-uEC(u);
+    assert(edge_valence >= 2);
+    if(edge_valence>2 && !simulated_merge_is_manifold(vs1,vd2,vd1,vs2))
+    {
+      return false;
+    }
+
+    // Now we can merge
+    merge_vertex(V,C,vs1,vd2);
+    merge_vertex(V,C,vd1,vs2);
+    return true;
+  };
+
+  // Consider each unique edge in the original mesh
+
+  // number of faces incident on each unique edge
+  Eigen::VectorXi D = uEC.tail(uEC.rows()-1)-uEC.head(uEC.rows()-1);
+  Eigen::VectorXi uI;
+  {
+    Eigen::VectorXi sD;
+    igl::sort(D,1,true,sD,uI);
   }
 
-  // Cutting and Stitching: Converting Sets of Polygons to Manifold Surfaces
 
-  // Outer loop over all unique edges.
-  for(int u = 0;u<uE.rows();u++)
+  const std::function<void(const int)> dfs = [&](const int e)
   {
-    const int num_incident = uEC(u+1)-uEC(u);
-    assert(num_incident > 0);
-    // boundary or internal edge handled already.
-    if(num_incident <= 2) { continue; }
+    // we just successfully merged e, find all other non-manifold edges sharing
+    // a current vertex with e and try to merge it too.
+    const int s = (e+1*m)%(3*m);
+    const int d = (e+2*m)%(3*m);
+    for(const int c : {s,d})
+    {
+      const int v = V[c];
+      std::vector<int> nme = nonmanifold_edge_star(v);
+      // My thinking is that this must be size 0 or 2.
+      for(int i = 0;i<nme.size();i++)
+      {
+        const int e1 = nme[i];
+        for(int j = i+1;j<nme.size();j++)
+        {
+          const int e2 = nme[j];
+          if(merge_edge(e1,e2))
+          {
+            dfs(e2);
+          }
+        }
+      }
+    }
+  };
+
+  // Every edge starts as a boundary
+  for(auto u : uI)
+  {
+    // if boundary skip
+    if(uEC(u+1)-uEC(u) == 1) { continue; }
     for(int j = uEC(u);j<uEC(u+1);j++)
     {
-      const int e1 = uEE(j); // i = j-uEC(u);
-      if(seen[e1]) { continue; }
-      // We haven't seen this half-edge yet.
-      // Try to zip it with an opposite half-edge (and start off a cascade of
-      // zipping).
+      const int e1 = uEE(j);
       for(int k = j+1;k<uEC(u+1);k++)
       {
         const int e2 = uEE(k);
-        // Can't zip if alread seen
-        if(seen[e2]) { continue; }
-        if(enforce_orientability && E(e1,0) == E(e2,1))
-        {
-          assert(E(e1,1) == E(e2,0));
-          zip(e1,e2);
-          // Don't try any more zips with e1
-          break;
+        if(merge_edge(e1,e2))
+        { 
+          // for non-manifold edges, launch search from e1 and e2
+          if(uEC(u+1)-uEC(u) > 2)
+          {
+            dfs(e1);
+          }
+          break; 
         }
       }
     }
   }
+
+
   
-
-  // Now if we resolve all the equivalence records we'd have a mesh CF which is
-  // "cut" along all original non-manifold edges (and non-manifold vertices
-  // separated). This is likely still too aggressive. Every non-manifold edge
-  // with 3 incident faces is cut into 3 non-neighboring faces. There's always
-  // two of those (with consistent orientation) that can be welded together.
-
-  // We could continue to collect records which conduct these welds along
-  // non-manifold edges. We should prioritze welds at "crack" tips: edges whose
-  // incident corners have records.
-  //
-
-  // We should prioritize welds along chains of non-manifold edges
-
-//#error "Huh? Should we just have cut at non-manifold edges and then considered the incident of connecteced-compontents and non-manifold-edge chains?"
-//  // Processing the chains one by one, if a chain has 
-//  // if a chain has incident components A,B,C
-//  // and A,C are consistently oriented to the chain then we can weld them. 
-//
-//  A single component could have a shared non-manifold edge with 3 or 4
-//  "strips" of faces (like two twisted loop strips out of a shared central
-//  mesh colliding through the same non-manifold edge). This has a "manifold"
-//  explaination as a single component, but won't be easily merged
-
-
-  // I couldn't think of a way to do this on the fly. We've collected all the
-  // corners that should be mapped to the same vertex as equivalence records
-  // (i,j) and we resolve them now using component analysis.
+  // Ideally we'd do this so that all duplicated vertices end up at the end
+  // rather than scrambling the whole mesh.
   {
-    Eigen::SparseMatrix<bool> A(F.size(),F.size());
-    std::vector<Eigen::Triplet<bool> > IJV;
-    // Diagonal
-    for(int i = 0;i<SF.size();i++) { IJV.emplace_back(i,i,true); }
-    // Off-diagonal for each record
-    for(const auto & r : R)
+    SVI.resize(F.size());
+    std::vector<bool> marked(F.size());
+    VectorXI J = VectorXI::Constant(F.size(),-1);
+    SF.resize(F.rows(),F.cols());
     {
-      IJV.emplace_back(r.first,r.second,true);
-      IJV.emplace_back(r.second,r.first,true);
-    }
-    // connected compontents
-    A.setFromTriplets(IJV.begin(),IJV.end());
-    Eigen::VectorXi C,K;
-    igl::connected_components(A,C,K);
-    for(int i = 0;i<CF.size();i++)
-    {
-      CF(i) = C(CF(i));
-    }
-  }
-
-  //{
-  //  // Did we correctly maintain CTF and CTI?
-  //  MatrixX3I CTF2,CTI2;
-  //  std::cout<<igl::matlab_format_index(CF,"CF")<<std::endl;
-  //  igl::triangle_triangle_adjacency(CF,CTF2,CTI2);
-
-  //  {
-  //    Eigen::PermutationMatrix<3,3> perm(3);
-  //    perm.indices() = Eigen::Vector3i(1,2,0);
-  //    CTF2 = (CTF2*perm).eval();
-  //    CTI2 = (CTI2*perm).eval();
-  //    for(int i=0;i<CTI2.rows();i++)
-  //      for(int j=0;j<CTI2.cols();j++)
-  //        CTI2(i,j)=CTI2(i,j)==-1?-1:(CTI2(i,j)+3-1)%3;
-  //  }
-
-  //  assert((CTF.array() == CTF2.array()).all());
-  //  assert((CTI.array() == CTI2.array()).all());
-  //}
-  //std::cout<<igl::matlab_format_index(CF,"CF")<<std::endl;
-
-
-  SVI.resize(F.size());
-  std::vector<bool> marked(F.size());
-  VectorXI J = VectorXI::Constant(F.size(),-1);
-  SF.resize(F.rows(),F.cols());
-  {
-    int nv = 0;
-    for(int f = 0;f<m;f++)
-    {
-      for(int i = 0;i<3;i++)
+      int nv = 0;
+      for(int f = 0;f<m;f++)
       {
-        const int c = CF(f,i);
-        if(J(c) == -1)
+        for(int i = 0;i<3;i++)
         {
-          J(c) = nv;
-          SVI(nv) = F(f,i);
-          nv++;
+          const int c = CF(f,i);
+          if(J(c) == -1)
+          {
+            J(c) = nv;
+            SVI(nv) = F(f,i);
+            nv++;
+          }
+          SF(f,i) = J(c);
         }
-        SF(f,i) = J(c);
       }
+      SVI.conservativeResize(nv);
     }
-    SVI.conservativeResize(nv);
   }
 
 }

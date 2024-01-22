@@ -3,6 +3,8 @@
 #include <igl/facet_components.h>
 #include <igl/is_edge_manifold.h>
 #include <igl/is_vertex_manifold.h>
+#include <igl/triangulated_grid.h>
+#include <igl/remove_duplicate_vertices.h>
 
 #include <igl/matlab_format.h>
 #include <igl/writePLY.h>
@@ -183,19 +185,19 @@ TEST_CASE("split_nonmanifold: non-orientable", "[igl]")
 TEST_CASE("split_nonmanifold: flap", "[igl]")
 {
   Eigen::MatrixXd V(12,3);
-V<< 
-  1.5,0,0,
-  0.75,0,0.433,
-  0.75,0,-0.433,
-  0,1.5,0,
-  0,0.75,0.433,
-  0,0.75,-0.433,
-  -1.5,0,0,
-  -0.75,0,-0.433,
-  -0,-1.5,0,
-  -0,-0.75,0.433,
-  1.5,0,1,
-  0,1.5,1;
+  V<< 
+    1.5,0,0,
+    0.75,0,0.433,
+    0.75,0,-0.433,
+    0,1.5,0,
+    0,0.75,0.433,
+    0,0.75,-0.433,
+    -1.5,0,0,
+    -0.75,0,-0.433,
+    -0,-1.5,0,
+    -0,-0.75,0.433,
+    1.5,0,1,
+    0,1.5,1;
   Eigen::MatrixXi F(12,3);
   const auto check = [&F,&V]()
   {
@@ -224,18 +226,47 @@ V<<
     0,3,11,
     0,11,10;
   check();
-  //F<< 
-  //  0,3,11,
-  //  0,1,9,
-  //  2,5,0,
-  //  7,6,3,
-  //  0,3,1,
-  //  3,6,4,
-  //  5,3,0,
-  //  5,7,3,
-  //  8,0,9,
-  //  3,4,1,
-  //  2,0,8,
-  //  0,11,10;
-  //check();
+  F<< 
+    0,3,11,
+    0,1,9,
+    2,5,0,
+    7,6,3,
+    0,3,1,
+    3,6,4,
+    5,3,0,
+    5,7,3,
+    8,0,9,
+    3,4,1,
+    2,0,8,
+    0,11,10;
+  check();
+}
+
+TEST_CASE("split_nonmanifold: crosses", "[igl]")
+{
+  for(int p = 1;p<7;p++)
+  {
+    Eigen::MatrixXd V;
+    Eigen::MatrixXi F;
+    // n = 2^p
+    const int n = 1<<p;
+    igl::triangulated_grid(n,3,V,F);
+    V.array() -= 0.5;
+    V.conservativeResize(V.rows(),3);
+    V.col(2).setZero();
+    Eigen::MatrixXd U(V.rows(),3);
+    U << V.col(0),V.col(2),V.col(1);
+    Eigen::MatrixXd VV(V.rows()*2,3);
+    VV << V,U;
+    Eigen::MatrixXi FF(F.rows()*2,3);
+    FF << F,F.array()+V.rows();
+    {
+      Eigen::VectorXi I,J;
+      igl::remove_duplicate_vertices(VV,FF,1e-10,V,I,J,F);
+    }
+    Eigen::MatrixXi SF;
+    Eigen::VectorXi SVI;
+    igl::split_nonmanifold(F,SF,SVI);
+    check_same_but_manifold(F,SF,SVI);
+  }
 }
