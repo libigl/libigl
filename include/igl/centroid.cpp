@@ -23,7 +23,16 @@ IGL_INLINE void igl::centroid(
   assert(F.cols() == 3 && "F should contain triangles.");
   assert(V.cols() == 3 && "V should contain 3d points.");
   const int m = F.rows();
-  cen.setZero();
+  // static assert that cen is either a 3d rowvector a 3d vector or a variable
+  // size vector
+  static_assert(Derivedc::IsVectorAtCompileTime,"cen should be a vector");
+  static_assert(
+      Derivedc::RowsAtCompileTime == 3 || 
+      Derivedc::RowsAtCompileTime == -1 || 
+      Derivedc::ColsAtCompileTime == 3 || 
+      Derivedc::ColsAtCompileTime == -1,
+      "cen should be sizeable to 3 vector");
+  cen.setZero(3);
   vol = 0;
   // loop over faces
   for(int f = 0;f<m;f++)
@@ -70,4 +79,5 @@ template void igl::centroid<Eigen::Matrix<float, -1, 3, 1, -1, 3>, Eigen::Matrix
 template void igl::centroid<Eigen::Matrix<float, -1, 3, 1, -1, 3>, Eigen::Matrix<int, -1, 3, 1, -1, 3>, Eigen::Matrix<float, 1, 3, 1, 1, 3> >(Eigen::MatrixBase<Eigen::Matrix<float, -1, 3, 1, -1, 3> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 3, 1, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<float, 1, 3, 1, 1, 3> >&);
 template void igl::centroid<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, 3, 1, 0, 3, 1> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 3, 1, 0, 3, 1> >&);
 template void igl::centroid<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, 1, 3, 1, 1, 3> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> >&);
+template void igl::centroid<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, 1, -1, 1, 1, -1>>(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1>> const&, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, -1, 1, 1, -1>>&);
 #endif
