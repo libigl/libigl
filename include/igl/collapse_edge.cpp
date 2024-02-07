@@ -82,10 +82,10 @@ IGL_INLINE bool igl::collapse_edge(
   {
     E(e,0) = IGL_COLLAPSE_EDGE_NULL;
     E(e,1) = IGL_COLLAPSE_EDGE_NULL;
-    // Don't clear EF, EI in case post_collapse would like to access previous
-    // connectivity. It's questionable whether E should be cleared at all, but
-    // if the user is drawing things with E then it's convenient that it's
-    // mapped to "null" edges (similar to F).
+    EF(e,0) = IGL_COLLAPSE_EDGE_NULL;
+    EF(e,1) = IGL_COLLAPSE_EDGE_NULL;
+    EI(e,0) = IGL_COLLAPSE_EDGE_NULL;
+    EI(e,1) = IGL_COLLAPSE_EDGE_NULL;
   };
 
   // update edge info
@@ -311,6 +311,8 @@ IGL_INLINE bool igl::collapse_edge(
   post_collapse(V,F,E,EMAP,EF,EI,Q,EQ,C,e,e1,e2,f1,f2,collapsed);
   if(collapsed)
   {
+    // Erase the center edge, marking its timestamp as -1
+    EQ(e) = -1;
     // Erase the two, other collapsed edges by marking their timestamps as -1
     EQ(e1) = -1;
     EQ(e2) = -1;

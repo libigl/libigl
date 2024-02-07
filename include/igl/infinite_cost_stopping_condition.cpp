@@ -21,7 +21,7 @@ IGL_INLINE void igl::infinite_cost_stopping_condition(
     const Eigen::MatrixXi & EF,
     const Eigen::MatrixXi & EI,
     const igl::min_heap< std::tuple<double,int,int> > & ,/*Q*/
-    const Eigen::VectorXi &                             ,/*EQ*/
+    const Eigen::VectorXi &                             EQ,
     const Eigen::MatrixXd & /*C*/,
     const int e,
     const int /*e1*/,
@@ -29,6 +29,8 @@ IGL_INLINE void igl::infinite_cost_stopping_condition(
     const int /*f1*/,
     const int /*f2*/)->bool
     {
+      // e was (just) collapsed.
+      if(EQ(e) == -1) { return false; }
       Eigen::RowVectorXd p;
       double cost;
       cost_and_placement(e,V,F,E,EMAP,EF,EI,cost,p);
