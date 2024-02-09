@@ -120,7 +120,6 @@ IGL_INLINE bool igl::copyleft::cgal::propagate_winding_numbers(
   if (!igl::piecewise_constant_winding_number(F, uE, uEC, uEE)) 
   {
     assert(false && "Input mesh is not PWN");
-    std::cerr << "Input mesh is not PWN!" << std::endl;
     valid = false;
   }
 

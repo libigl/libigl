@@ -144,9 +144,6 @@ namespace igl
       for (int i = 0; i < s.dim; i++)
         uv.col(i) = Uc.block(i * s.v_n, 0, s.v_n, 1);
 
-      // t.stop();
-      // std::cerr << "solve: " << t.getElapsedTime() << std::endl;
-
     }
 
 

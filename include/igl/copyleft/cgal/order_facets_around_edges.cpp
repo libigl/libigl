@@ -95,21 +95,21 @@ igl::copyleft::cgal::order_facets_around_edges(
                     edge *= -1;
                 }
 
-                if (edge.norm() < EPS) {
-                    std::cerr << "=====================================" << std::endl;
-                    std::cerr << "  ui: " << ui << std::endl;
-                    std::cerr << "edge: " << ref_edge << std::endl;
-                    std::cerr << "face: " << ref_face << std::endl;
-                    std::cerr << "  vs: " << V.row(s) << std::endl;
-                    std::cerr << "  vd: " << V.row(d) << std::endl;
-                    std::cerr << "adj face normals: " << std::endl;
-                    std::cerr << normals << std::endl;
-                    std::cerr << "Very degenerated case detected:" << std::endl;
-                    std::cerr << "Near zero edge surrounded by "
-                        << edge_valance << " neearly colinear faces" <<
-                        std::endl;
-                    std::cerr << "=====================================" << std::endl;
-                }
+                //if (edge.norm() < EPS) {
+                //    std::cerr << "=====================================" << std::endl;
+                //    std::cerr << "  ui: " << ui << std::endl;
+                //    std::cerr << "edge: " << ref_edge << std::endl;
+                //    std::cerr << "face: " << ref_face << std::endl;
+                //    std::cerr << "  vs: " << V.row(s) << std::endl;
+                //    std::cerr << "  vd: " << V.row(d) << std::endl;
+                //    std::cerr << "adj face normals: " << std::endl;
+                //    std::cerr << normals << std::endl;
+                //    std::cerr << "Very degenerated case detected:" << std::endl;
+                //    std::cerr << "Near zero edge surrounded by "
+                //        << edge_valance << " neearly colinear faces" <<
+                //        std::endl;
+                //    std::cerr << "=====================================" << std::endl;
+                //}
             }
         } else {
             edge.normalize();

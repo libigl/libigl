@@ -252,7 +252,6 @@ namespace igl
 #include <algorithm>
 #include <exception>
 #include <cassert>
-#include <iostream>
 
 // References:
 // http://minregret.googlecode.com/svn/trunk/skyline/src/extern/CGAL-3.3.1/examples/Polyhedron/polyhedron_self_intersection.cpp
@@ -344,7 +343,7 @@ inline igl::copyleft::cgal::SelfIntersectMesh<
     return diff;
   };
   const auto log_time = [&](const std::string& label) -> void{
-    printf("%50s: %0.5lf\n",
+    std::printf("%50s: %0.5lf\n",
       C_STR("SelfIntersectMesh." << label),tictoc());
   };
   tictoc();
@@ -630,8 +629,8 @@ inline bool igl::copyleft::cgal::SelfIntersectMesh<
       return true;
     }else
     {
-      cerr<<"Segment ∩ triangle neither point nor segment?"<<endl;
-      assert(false);
+      // Should never happen.
+      assert(false && "Segment ∩ triangle neither point nor segment?");
     }
   }
 

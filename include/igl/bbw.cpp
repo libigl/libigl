@@ -109,11 +109,15 @@ IGL_INLINE bool igl::bbw(
       case SOLVER_STATUS_CONVERGED:
         break;
       case SOLVER_STATUS_MAX_ITER:
+#ifdef IGL_BBW_DEBUG
         cerr<<"active_set: max iter without convergence."<<endl;
+#endif
         break;
       case SOLVER_STATUS_ERROR:
       default:
+#ifdef IGL_BBW_DEBUG
         cerr<<"active_set error."<<endl;
+#endif
         error = true;
     }
     W.col(i) = Wi;
