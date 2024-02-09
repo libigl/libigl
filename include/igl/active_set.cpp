@@ -290,11 +290,15 @@ IGL_INLINE igl::SolverStatus igl::active_set(
 #endif
       if(!min_quad_with_fixed_precompute(A,known_i,Aeq_i,params.Auu_pd,data))
       {
+#ifdef ACTIVE_SET_CPP_DEBUG
         cerr<<"Error: min_quad_with_fixed precomputation failed."<<endl;
+#endif
         if(iter > 0 && Aeq_i.rows() > Aeq.rows())
         {
+#ifdef ACTIVE_SET_CPP_DEBUG
           cerr<<"  *Are you sure rows of [Aeq;Aieq] are linearly independent?*"<<
             endl;
+#endif
         }
         ret = SOLVER_STATUS_ERROR;
         break;
@@ -304,7 +308,9 @@ IGL_INLINE igl::SolverStatus igl::active_set(
 #endif
       if(!min_quad_with_fixed_solve(data,B,Y_i,Beq_i,Z,sol))
       {
+#ifdef ACTIVE_SET_CPP_DEBUG
         cerr<<"Error: min_quad_with_fixed solve failed."<<endl;
+#endif
         ret = SOLVER_STATUS_ERROR;
         break;
       }

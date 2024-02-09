@@ -109,11 +109,6 @@ public:
     IGL_INLINE static Quadric fit(const std::vector<Eigen::Vector3d> &VV)
     {
       assert(VV.size() >= 5);
-      if (VV.size() < 5)
-      {
-        std::cerr << "IGL_ASSERT FAILED! fit function requires at least 5 points: Only " << VV.size() << " were given." << std::endl;
-        exit(0);
-      }
 
       Eigen::MatrixXd A(VV.size(),5);
       Eigen::MatrixXd b(VV.size(),1);
@@ -351,7 +346,7 @@ IGL_INLINE void CurvatureCalculator::fitQuadric(const Eigen::Vector3d& v, const 
   }
   if (points.size() < 5)
   {
-    std::cerr << "IGL_ASSERT FAILED! fit function requires at least 5 points: Only " << points.size() << " were given." << std::endl;
+    assert(false && "fit function requires at least 5 points");
     *q = Quadric(0,0,0,0,0);
   }
   else
@@ -922,7 +917,7 @@ IGL_INLINE void igl::principal_curvature(
 
     if (PD1.row(i) * PD2.row(i).transpose() > 10e-6)
     {
-      std::cerr << "PRINCIPAL_CURVATURE: Something is wrong with vertex: " << i << std::endl;
+      assert(false && "PRINCIPAL_CURVATURE: Something is wrong with vertex");
       PD1.row(i) *= 0;
       PD2.row(i) *= 0;
     }

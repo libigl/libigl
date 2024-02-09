@@ -116,8 +116,7 @@ inline void igl::PlanarizerShapeUp<DerivedV, DerivedF>::assembleQ()
   solver.compute(Q.transpose()*Q);
   if(solver.info()!=Eigen::Success)
   {
-    std::cerr << "Cholesky failed - PlanarizerShapeUp.cpp" << std::endl;
-    assert(0);
+    assert(false && "Cholesky failed");
   }
 }
 
@@ -205,15 +204,13 @@ inline void igl::PlanarizerShapeUp<DerivedV, DerivedF>::planarize(Eigen::PlainOb
   {
     igl::quad_planarity(Vout, Fin, planarity);
     typename DerivedV::Scalar nonPlanarity = planarity.cwiseAbs().maxCoeff();
-    //std::cerr<<"iter #"<<iter<<": max non-planarity: "<<nonPlanarity<<std::endl;
     if (nonPlanarity<threshold)
       break;
     assembleP();
     Vv = solver.solve(Q.transpose()*P);
     if(solver.info()!=Eigen::Success)
     {
-      std::cerr << "Linear solve failed - PlanarizerShapeUp.cpp" << std::endl;
-      assert(0);
+      assert(false && "Linear solve failed");
     }
     for (int i =0;i<numV;++i)
       Vout.row(i) << Vv.segment(3*i,3).transpose();

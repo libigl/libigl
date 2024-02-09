@@ -72,10 +72,7 @@ bool igl::embree::bone_heat(
     vis_mask.col(np+j) = vj;
   }
 
-  if(CE.rows() > 0)
-  {
-    cerr<<"Error: Cage edges are not supported. Ignored."<<endl;
-  }
+  assert(CE.rows() == 0 && "Cage edges not supported.");
 
   MatrixXd PP = MatrixXd::Zero(n,m);
   VectorXd min_D;
@@ -103,10 +100,14 @@ bool igl::embree::bone_heat(
     case Eigen::Success:
       break;
     case Eigen::NumericalIssue:
+#ifdef IGL_BONE_HEAT_DEBUG
       cerr<<"Error: Numerical issue."<<endl;
+#endif
       return false;
     default:
+#ifdef IGL_BONE_HEAT_DEBUG
       cerr<<"Error: Other."<<endl;
+#endif
       return false;
   }
 

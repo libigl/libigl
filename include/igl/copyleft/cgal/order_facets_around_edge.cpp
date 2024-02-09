@@ -85,9 +85,8 @@ void igl::copyleft::cgal::order_facets_around_edge(
               order(1, 0) = 1;
               break;
             case CGAL::COLLINEAR:
-              std::cerr << "Degenerated triangle detected." <<
-                std::endl;
-              assert(false);
+              // Should never happen (assumes input is non-degenerate).
+              assert(false && "Degenerated triangle detected.");
               break;
             default:
               assert(false);
