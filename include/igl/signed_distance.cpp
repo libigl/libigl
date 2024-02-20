@@ -62,6 +62,7 @@ namespace
         break;
       case SIGNED_DISTANCE_TYPE_FAST_WINDING_NUMBER:
         igl::fast_winding_number(V.template cast<float>().eval(), F, 2, fwn_bvh);
+        break;
       case SIGNED_DISTANCE_TYPE_PSEUDONORMAL:
          // "Signed Distance Computation Using the Angle Weighted Pseudonormal"
          // [Bærentzen & Aanæs 2005]
