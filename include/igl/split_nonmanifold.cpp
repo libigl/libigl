@@ -303,7 +303,7 @@ IGL_INLINE void igl::split_nonmanifold(
     const int vd1 = V[d1];
     const int vs2 = V[s2];
 
-#ifndef IGL_SPLIT_NONMANIFOLD_DEBUG
+#ifdef IGL_SPLIT_NONMANIFOLD_DEBUG
     const auto simulated_merge_is_manifold_old = [&]()->bool
     {
       Eigen::VectorXi V_copy = V;
