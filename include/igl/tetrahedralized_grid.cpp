@@ -14,7 +14,7 @@ IGL_INLINE void igl::tetrahedralized_grid(
 {
   Eigen::RowVector3i res(nx,ny,nz);
   igl::grid(res,GV);
-  return igl::tetrahedralized_grid(GV,res,type,GT);
+  return igl::tetrahedralized_grid(res,type,GT);
 }
 
 template <
