@@ -20,9 +20,6 @@ TEST_CASE("boundary_facets: single_tet_volume", "[igl]")
   T<<0,1,2,3;
   Eigen::MatrixXi F;
   igl::boundary_facets(T,F);
-  std::cout<<igl::matlab_format(V,"V")<<std::endl;
-  std::cout<<igl::matlab_format_index(T,"T")<<std::endl;
-  std::cout<<igl::matlab_format_index(F,"F")<<std::endl;
   REQUIRE( F.rows () == 4 );
   double total_volume;
   Eigen::RowVector3d centroid;
