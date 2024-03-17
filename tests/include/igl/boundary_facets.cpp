@@ -2,11 +2,55 @@
 #include <igl/boundary_facets.h>
 #include <igl/sort.h>
 #include <igl/sortrows.h>
-#include <igl/setxor.h>
+#include <igl/centroid.h>
+#include <igl/volume.h>
 
 #include <igl/matlab_format.h>
 #include <iostream>
 
+TEST_CASE("boundary_facets: single_tet_volume", "[igl]")
+{
+  Eigen::MatrixXd V(4,3);
+  V<<
+    0,0,0,
+    1,0,0,
+    0,1,0,
+    0,0,1;
+  Eigen::MatrixXi T(1,4);
+  T<<0,1,2,3;
+  Eigen::MatrixXi F;
+  igl::boundary_facets(T,F);
+  REQUIRE( F.rows () == 4 );
+  double total_volume;
+  Eigen::RowVector3d centroid;
+  igl::centroid(V,F,centroid,total_volume);
+  Eigen::VectorXd volumes;
+  igl::volume(V,T,volumes);
+  REQUIRE( total_volume == Approx(volumes(0)) );
+}
+
+TEST_CASE("boundary_facets: single_tri", "[igl]")
+{
+  Eigen::MatrixXd V(4,3);
+  V<<
+    0,0,
+    1,0,
+    0,1;
+  Eigen::MatrixXi F(1,3);
+  F<<0,1,2;
+  Eigen::MatrixXi E;
+  igl::boundary_facets(F,E);
+  REQUIRE( E.rows () == 3 );
+  // orientation should match triangle edges
+  Eigen::MatrixXi FE(3,2);
+  FE<<
+    F(0,1),F(0,2),
+    F(0,2),F(0,0),
+    F(0,0),F(0,1);
+  igl::sortrows(Eigen::MatrixXi(E),true,E);
+  igl::sortrows(Eigen::MatrixXi(FE),true,FE);
+  test_common::assert_eq(FE,E);
+}
 
 TEST_CASE("boundary_facets: single_tet", "[igl]")
 {

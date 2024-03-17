@@ -99,8 +99,6 @@ IGL_INLINE bool igl::read_triangle_mesh(
     if(mF.rows() == 0 && T.rows() > 0)
     {
       boundary_facets(T,F);
-      // outward facing
-      F = F.rowwise().reverse().eval();
     }else
     {
       F = mF.template cast<typename DerivedF::Scalar>();
@@ -144,8 +142,6 @@ IGL_INLINE bool igl::read_triangle_mesh(
     //if(F.size() > T.size() || F.size() == 0)
     {
       boundary_facets(T,F);
-      // outward facing
-      F = F.rowwise().reverse().eval();
     }
   }else if(ext == "obj")
   {
