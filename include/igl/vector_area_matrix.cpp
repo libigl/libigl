@@ -24,6 +24,7 @@ IGL_INLINE void igl::vector_area_matrix(
   // number of vertices
   const int n = F.maxCoeff()+1;
 
+  assert(F.cols() == 3);
   MatrixXi E;
   boundary_facets(F,E);
 
