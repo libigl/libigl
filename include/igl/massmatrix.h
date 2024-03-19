@@ -42,7 +42,7 @@ namespace igl
   /// @param[in] F  #F by simplex_size list of mesh elements (triangles or tetrahedra)
   /// @param[in] type  one of the following ints:
   ///     MASSMATRIX_TYPE_BARYCENTRIC  barycentric {default for tetrahedra}
-  ///     MASSMATRIX_TYPE_VORONOI voronoi-hybrid {default for triangles, not implemented for tetrahedra}
+  ///     MASSMATRIX_TYPE_VORONOI voronoi-hybrid {default for triangles}
   ///     MASSMATRIX_TYPE_FULL full
   /// @param[out] M  #V by #V mass matrix
   ///
