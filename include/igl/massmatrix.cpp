@@ -11,6 +11,7 @@
 #include "sparse.h"
 #include "doublearea.h"
 #include "volume.h"
+#include "voronoi_mass.h"
 #include "repmat.h"
 #include <Eigen/Geometry>
 #include <iostream>
@@ -71,7 +72,9 @@ IGL_INLINE void igl::massmatrix(
         break;
       case MASSMATRIX_TYPE_VORONOI:
         {
-          assert(false && "Implementation incomplete");
+          MI = decltype(MI)::LinSpaced(n,0,n-1);
+          MJ = MI;
+          voronoi_mass(V,F,MV);
           break;
         }
       case MASSMATRIX_TYPE_FULL:

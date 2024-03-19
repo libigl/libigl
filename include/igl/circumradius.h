@@ -25,6 +25,26 @@ namespace igl
     const Eigen::MatrixBase<DerivedV> & V, 
     const Eigen::MatrixBase<DerivedF> & F,
     Eigen::PlainObjectBase<DerivedR> & R);
+  /// Generic version 
+  ///
+  /// @param[in] V  #V by dim list of mesh vertex positions
+  /// @param[in] T  #T by simplex-size list of simplex indices into V
+  /// @param[out] R  #T list of circumradius
+  /// @param[out] C  #T by dim list of circumcenter
+  /// @param[out] B  #T by simplex-size list of barycentric coordinates of circumcenter
+  template <
+    typename DerivedV, 
+    typename DerivedT,
+    typename DerivedR,
+    typename DerivedC,
+    typename DerivedB>
+  IGL_INLINE void circumradius(
+    const Eigen::MatrixBase<DerivedV> & V, 
+    const Eigen::MatrixBase<DerivedT> & T,
+    Eigen::PlainObjectBase<DerivedR> & R,
+    Eigen::PlainObjectBase<DerivedC> & C,
+    Eigen::PlainObjectBase<DerivedB> & B);
+
 }
 #ifndef IGL_STATIC_LIBRARY
 #  include "circumradius.cpp"
