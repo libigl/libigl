@@ -177,7 +177,7 @@ IGL_INLINE bool igl::readOBJ(
         {
           return i<0 ? i+N.size() : i-1;
         };
-        std::vector<Index > f;
+        std::vector<Index > face;
         std::vector<Index > ftc;
         std::vector<Index > fn;
         // Read each "word" after type
@@ -191,20 +191,20 @@ IGL_INLINE bool igl::readOBJ(
           long int i,it,in;
           if(sscanf(word,"%ld/%ld/%ld",&i,&it,&in) == 3)
           {
-            f.push_back(shift(i));
+            face.push_back(shift(i));
             ftc.push_back(shift_t(it));
             fn.push_back(shift_n(in));
           }else if(sscanf(word,"%ld/%ld",&i,&it) == 2)
           {
-            f.push_back(shift(i));
+            face.push_back(shift(i));
             ftc.push_back(shift_t(it));
           }else if(sscanf(word,"%ld//%ld",&i,&in) == 2)
           {
-            f.push_back(shift(i));
+            face.push_back(shift(i));
             fn.push_back(shift_n(in));
           }else if(sscanf(word,"%ld",&i) == 1)
           {
-            f.push_back(shift(i));
+            face.push_back(shift(i));
           }else
           {
             fprintf(stderr,
@@ -215,14 +215,14 @@ IGL_INLINE bool igl::readOBJ(
           }
         }
         if(
-           (f.size()>0 && fn.size() == 0 && ftc.size() == 0) ||
-           (f.size()>0 && fn.size() == f.size() && ftc.size() == 0) ||
-           (f.size()>0 && fn.size() == 0 && ftc.size() == f.size()) ||
-           (f.size()>0 && fn.size() == f.size() && ftc.size() == f.size()))
+           (face.size()>0 && fn.size() == 0 && ftc.size() == 0) ||
+           (face.size()>0 && fn.size() == face.size() && ftc.size() == 0) ||
+           (face.size()>0 && fn.size() == 0 && ftc.size() == face.size()) ||
+           (face.size()>0 && fn.size() == face.size() && ftc.size() == face.size()))
         {
           // No matter what add each type to lists so that lists are the
           // correct lengths
-          F.push_back(f);
+          F.push_back(face);
           FTC.push_back(ftc);
           FN.push_back(fn);
           current_face_no++;
