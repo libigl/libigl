@@ -45,20 +45,25 @@ IGL_INLINE void igl::split_nonmanifold(
   // Let's assume the most convenient connectivity data structure and worry
   // about performance later
 
-  // V[c] = v means that corner c is mapped to vertex v
-  // Start with all corners mapped to singleton vertices[:w
+  // There are always 3#F "corners".
+  //
+  // V[c] = v means that corner c is mapped to new-vertex v
+  // Start with all corners mapped to singleton new-vertices
   Eigen::VectorXi V = Eigen::VectorXi::LinSpaced(F.size(),0,F.size()-1);
   // Convenience map so that CF(f,i) = V[c] = v where c is the ith corner of
   // face f.
   Eigen::Map<Eigen::MatrixXi> CF = Eigen::Map<Eigen::MatrixXi>(V.data(),F.rows(),F.cols());
  
-  // C[v][j] = c means that c is the jth corner in the group of corners at i
+  // C[v][j] = c means that c is the jth corner in the group of corners at
+  // new-vertex v. As we merge these, we will clear "dead" new-vertices.
   std::vector<std::vector<int> > C(F.size());
   for(int i = 0;i<F.size();i++) { C[i] = {i}; }
 
   const int m = F.rows();
 
   // O(S) where S = |star(v)|
+  // @param[in] v  new-vertex index
+  // @return list of face indices incident on new-vertex v
   const auto star = [&](const int v)->std::vector<int>
   {
     std::vector<int> faces(C[v].size());
@@ -70,9 +75,12 @@ IGL_INLINE void igl::split_nonmanifold(
   };
 
   // O(S) where S = |star(v)|
+  // @param[in] v  new-vertex index
+  // @return list of half-edge indices incident on new-vertex v
   const auto nonmanifold_edge_star = [&](const int v)->std::vector<int>
   {
     std::vector<int> edges;
+    // loop over edges opposite corners of v
     for(int e : C[v])
     {
       const int f = e%m;
@@ -81,6 +89,7 @@ IGL_INLINE void igl::split_nonmanifold(
         // next edge
         const int e1 = (e+j*m)%(3*m);
         const int u1 = EMAP(e1);
+
         if(uEC(u1+1)-uEC(u1) > 2)
         {
           edges.push_back(e1);
@@ -266,10 +275,18 @@ IGL_INLINE void igl::split_nonmanifold(
     if(!is_boundary(e1) || !is_boundary(e2)) { return false; }
     assert(e1 != e2);
 
+    if(EMAP(e1) != EMAP(e2)) { return false; }
+
+    assert(EMAP(e1) == EMAP(e2));
+    const int u = EMAP(e1);
+
     const bool consistent = E(e1,0) == E(e2,1);
     // skip if inconsistently oriented
     if(!consistent) { return false; }
     // The code below is assuming merging consistently oriented edges
+    if(E(e1,1) != E(e2,0))
+    {
+    }
     assert(E(e1,1) == E(e2,0));
 
     //
@@ -329,8 +346,6 @@ IGL_INLINE void igl::split_nonmanifold(
     // traversals starting at a successful merge.
     //
     // That is, we never need to call this in the current algorithm.
-    const int u = EMAP(e1);
-    assert(EMAP(e1) == EMAP(e2));
     const int edge_valence = uEC(u+1)-uEC(u);
     assert(edge_valence >= 2);
     if(edge_valence>2 && !simulated_merge_is_manifold(vs1,vd2,vd1,vs2))
@@ -366,6 +381,8 @@ IGL_INLINE void igl::split_nonmanifold(
       const int v = V[c];
       std::vector<int> nme = nonmanifold_edge_star(v);
       // My thinking is that this must be size 0 or 2.
+      //
+      // But this seems very not true...
       for(int i = 0;i<nme.size();i++)
       {
         const int e1 = nme[i];
