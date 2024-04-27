@@ -1,5 +1,6 @@
 #include "test_common.h"
 #include <igl/fast_find_self_intersections.h>
+#include <igl/upsample.h>
 #include <igl/combine.h>
 #include <igl/sortrows.h>
 #include <igl/unique.h>
@@ -179,3 +180,37 @@ TEST_CASE("fast_find_self_intersections: non-intersecting", "[igl]")
   REQUIRE( EI.rows()==0 );
 }
 
+TEST_CASE("fast_find_self_intersections: upsampled-knight", "[igl]")
+{
+  Eigen::MatrixXd V;
+  Eigen::MatrixXi F;
+  igl::read_triangle_mesh(test_common::data_path("decimated-knight.obj"),V,F);
+
+  Eigen::MatrixXi IF,EE;
+  Eigen::MatrixXd EV;
+  Eigen::VectorXi EI;
+
+  REQUIRE( !igl::fast_find_self_intersections(V,F,false,false,IF,EV,EE,EI));
+  REQUIRE( IF.rows()==0 );
+  REQUIRE( EE.rows()==0 );
+  REQUIRE( EV.rows()==0 );
+  REQUIRE( EI.rows()==0 );
+
+  igl::upsample(Eigen::MatrixXd(V),Eigen::MatrixXi(F),V,F);
+
+
+  REQUIRE( !igl::fast_find_self_intersections(V,F,false,false,IF,EV,EE,EI));
+  REQUIRE( IF.rows()==0 );
+  REQUIRE( EE.rows()==0 );
+  REQUIRE( EV.rows()==0 );
+  REQUIRE( EI.rows()==0 );
+
+  igl::upsample(Eigen::MatrixXd(V),Eigen::MatrixXi(F),V,F);
+
+  REQUIRE( !igl::fast_find_self_intersections(V,F,false,false,IF,EV,EE,EI));
+  REQUIRE( IF.rows()==0 );
+  REQUIRE( EE.rows()==0 );
+  REQUIRE( EV.rows()==0 );
+  REQUIRE( EI.rows()==0 );
+
+}
