@@ -128,7 +128,7 @@ TEST_CASE("fast_find_self_intersections: shared-edge", "[igl]")
   REQUIRE( EI.rows()==0 );
 }
 
-TEST_CASE("fast_find_self_intersections: subdivided-triangle", "[igl]")
+TEST_CASE("fast_find_self_intersections: coplanar", "[igl]")
 {
   Eigen::MatrixXd V(6,3);
   V<< 
@@ -146,10 +146,36 @@ TEST_CASE("fast_find_self_intersections: subdivided-triangle", "[igl]")
   Eigen::MatrixXi IF,EE;
   Eigen::MatrixXd EV;
   Eigen::VectorXi EI;
-  //REQUIRE( !igl::fast_find_self_intersections(V,F,false,false,IF,EV,EE,EI));
-  igl::fast_find_self_intersections(V,F,false,false,IF,EV,EE,EI);
+  REQUIRE( !igl::fast_find_self_intersections(V,F,false,false,IF,EV,EE,EI));
   REQUIRE( IF.rows()==0 );
   REQUIRE( EE.rows()==0 );
   REQUIRE( EV.rows()==0 );
   REQUIRE( EI.rows()==0 );
 }
+
+
+TEST_CASE("fast_find_self_intersections: non-intersecting", "[igl]")
+{
+  Eigen::MatrixXd V(6,3);
+  V<< 
+    0.39234799146652199,0.38443601131439198,0.44744500517845198,
+    0.38924700021743752,0.385637506842613,0.45762349665164948,
+    0.38700349628925301,0.38789276033639897,0.45634675025939975,
+    0.39079749584197976,0.38503675907850249,0.45253425091505073,
+    0.38769650459289529,0.38623825460672351,0.46271274238824822,
+    0.39279749989509577,0.37299175560474374,0.45553924888372399;
+  Eigen::MatrixXi F(2,3);
+  F<< 
+    0,3,2,
+    1,5,4;
+
+  Eigen::MatrixXi IF,EE;
+  Eigen::MatrixXd EV;
+  Eigen::VectorXi EI;
+  REQUIRE( !igl::fast_find_self_intersections(V,F,false,false,IF,EV,EE,EI));
+  REQUIRE( IF.rows()==0 );
+  REQUIRE( EE.rows()==0 );
+  REQUIRE( EV.rows()==0 );
+  REQUIRE( EI.rows()==0 );
+}
+
