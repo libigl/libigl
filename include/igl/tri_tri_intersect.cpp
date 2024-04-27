@@ -682,14 +682,6 @@ IGL_INLINE bool igl::tri_tri_intersection_test_3d(
   };
 
 
-  printf("dp1: %g\n",dp1);
-  printf("dq1: %g\n",dq1);
-  printf("dr1: %g\n",dr1);
-  printf("dp2: %g\n",dp2);
-  printf("dq2: %g\n",dq2);
-  printf("dr2: %g\n",dr2);
-
-
   // Permutation in a canonical form of T1's vertices
   if (dp1 > 0.0) {
     if (dq1 > 0.0)      return internal::_IGL_TRI_TRI_INTER_3D(r1,p1,q1,p2,r2,q2,dp2,dr2,dq2,coplanar,source,target,N1,N2);
