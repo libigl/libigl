@@ -63,6 +63,7 @@
 #define IGL_TRI_TRI_INTERSECT_CPP
 
 #include "tri_tri_intersect.h"
+#include "EPS.h"
 #include <Eigen/Geometry>
 
 // helper functions
@@ -264,7 +265,6 @@ IGL_INLINE bool igl::tri_tri_overlap_test_3d(
   if (((dp2 * dq2) > 0.0) && ((dp2 * dr2) > 0.0)) return false;
 
   /* Permutation in a canonical form of T1's vertices */
-
 
   if (dp1 > 0.0) {
     if (dq1 > 0.0) return _IGL_TRI_TRI_3D(r1,p1,q1,p2,r2,q2,dp2,dr2,dq2,N1);
@@ -667,8 +667,24 @@ IGL_INLINE bool igl::tri_tri_intersection_test_3d(
   dq2 = v1.dot(N1);
   v1=r2-r1;
   dr2 = v1.dot(N1);
+
   
   if (((dp2 * dq2) > 0.0) && ((dp2 * dr2) > 0.0)) return false;
+  // Alec: it's hard to believe this will ever be perfectly robust, but checking
+  // 1e-22 against zero seems like a recipe for bad logic.
+  // Switching all these 0.0s to epsilons makes other tests fail. My claim is
+  // that the series of logic below is a bad way of determining coplanarity, so
+  // instead just check for it right away.
+  const Scalar eps = igl::EPS<Scalar>();
+  using std::abs;
+  if(
+      abs(dp1) < eps && abs(dq1) < eps && abs(dr1) < eps &&
+      abs(dp2) < eps && abs(dq2) < eps && abs(dr2) < eps)
+  { 
+    coplanar = true;
+    return internal::coplanar_tri_tri3d(p1,q1,r1,p2,q2,r2,N1);
+  };
+
 
   // Permutation in a canonical form of T1's vertices
   if (dp1 > 0.0) {
@@ -693,7 +709,7 @@ IGL_INLINE bool igl::tri_tri_intersection_test_3d(
       if (dr1 > 0.0) return internal::_IGL_TRI_TRI_INTER_3D(r1,p1,q1,p2,q2,r2,dp2,dq2,dr2,coplanar,source,target,N1,N2);
       else if (dr1 < 0.0) return internal::_IGL_TRI_TRI_INTER_3D(r1,p1,q1,p2,r2,q2,dp2,dr2,dq2,coplanar,source,target,N1,N2);
       else {
-        // triangles are co-planar
+        // triangles are co-planar (should have been caught above).
 
         coplanar = true;
         return internal::coplanar_tri_tri3d(p1,q1,r1,p2,q2,r2,N1);
