@@ -637,17 +637,21 @@ IGL_INLINE bool igl::tri_tri_intersection_test_3d(
   RowVector3D N1, N2, N;
   // Compute distance signs  of p1, q1 and r1 
   // to the plane of triangle(p2,q2,r2)
+  const auto orient3D = [&](
+      const RowVector3D & a,
+      const RowVector3D & b,
+      const RowVector3D & c,
+      const RowVector3D & d)
+  {
+    Eigen::Matrix<Scalar,4,4> M;
+    M<<a,1,b,1,c,1,d,1;
+    // - to match previous code
+    return -M.determinant();
+  };
 
-  v1=p2-r2;
-  v2=q2-r2;
-  N2=v1.cross(v2);
-
-  v1=p1-r2;
-  dp1 = v1.dot(N2);
-  v1=q1-r2;
-  dq1 = v1.dot(N2);
-  v1=r1-r2;
-  dr1 = v1.dot(N2);
+  dp1 = orient3D(p2,q2,r2,p1);
+  dq1 = orient3D(p2,q2,r2,q1);
+  dr1 = orient3D(p2,q2,r2,r1);
   
   coplanar = false;
 
@@ -656,17 +660,9 @@ IGL_INLINE bool igl::tri_tri_intersection_test_3d(
   // Compute distance signs  of p2, q2 and r2 
   // to the plane of triangle(p1,q1,r1)
 
-  
-  v1=q1-p1;
-  v2=r1-p1;
-  N1=v1.cross(v2);
-
-  v1=p2-r1;
-  dp2 = v1.dot(N1);
-  v1=q2-r1;
-  dq2 = v1.dot(N1);
-  v1=r2-r1;
-  dr2 = v1.dot(N1);
+  dp2 = orient3D(p1,q1,r1,p2);
+  dq2 = orient3D(p1,q1,r1,q2);
+  dr2 = orient3D(p1,q1,r1,r2);
 
   
   if (((dp2 * dq2) > 0.0) && ((dp2 * dr2) > 0.0)) return false;
@@ -686,9 +682,17 @@ IGL_INLINE bool igl::tri_tri_intersection_test_3d(
   };
 
 
+  printf("dp1: %g\n",dp1);
+  printf("dq1: %g\n",dq1);
+  printf("dr1: %g\n",dr1);
+  printf("dp2: %g\n",dp2);
+  printf("dq2: %g\n",dq2);
+  printf("dr2: %g\n",dr2);
+
+
   // Permutation in a canonical form of T1's vertices
   if (dp1 > 0.0) {
-    if (dq1 > 0.0) return internal::_IGL_TRI_TRI_INTER_3D(r1,p1,q1,p2,r2,q2,dp2,dr2,dq2,coplanar,source,target,N1,N2);
+    if (dq1 > 0.0)      return internal::_IGL_TRI_TRI_INTER_3D(r1,p1,q1,p2,r2,q2,dp2,dr2,dq2,coplanar,source,target,N1,N2);
     else if (dr1 > 0.0) return internal::_IGL_TRI_TRI_INTER_3D(q1,r1,p1,p2,r2,q2,dp2,dr2,dq2,coplanar,source,target,N1,N2);
   
     else return internal::_IGL_TRI_TRI_INTER_3D(p1,q1,r1,p2,q2,r2,dp2,dq2,dr2,coplanar,source,target,N1,N2);
