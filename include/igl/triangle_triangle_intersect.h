@@ -41,7 +41,8 @@ namespace igl
   /// split into appropriate files). There's a reasonably amount of shared code
   /// with igl::copyleft::cgal::remesh_self_intersections too.
   ///
-  /// \see edge_flaps, tri_tri_intersect
+  /// \see edge_flaps, tri_tri_intersect,
+  /// predicates::triangle_triangle_intersect
   template <
     typename DerivedV,
     typename DerivedF,
