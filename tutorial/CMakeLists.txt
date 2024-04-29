@@ -73,10 +73,7 @@ if(LIBIGL_TUTORIALS_CHAPTER5)
     igl_add_tutorial(501_HarmonicParam igl::glfw)
     igl_add_tutorial(502_LSCMParam igl::glfw)
     igl_add_tutorial(503_ARAPParam igl::glfw)
-    igl_add_tutorial(504_NRosyDesign igl::glfw igl_copyleft::comiso)
-    igl_add_tutorial(505_MIQ igl::glfw igl_copyleft::comiso)
-    igl_add_tutorial(506_FrameField igl::glfw igl_copyleft::comiso)
-    igl_add_tutorial(507_Planarization igl::glfw)
+    igl_add_tutorial(504_Planarization igl::glfw)
 endif()
 
 # Chapter 6
