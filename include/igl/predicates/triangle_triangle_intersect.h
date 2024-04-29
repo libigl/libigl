@@ -1,12 +1,13 @@
 #ifndef IGL_PREDICATES_TRIANGLE_TRIANGLE_INTERSECT_H
 #define IGL_PREDICATES_TRIANGLE_TRIANGLE_INTERSECT_H
+#include "../igl_inline.h"
 
 namespace igl
 {
   namespace predicates
   {
     template <typename Vector3D>
-    bool triangle_triangle_intersect(
+    IGL_INLINE  bool triangle_triangle_intersect(
       const Vector3D & a1,
       const Vector3D & a2,
       const Vector3D & a3,
