@@ -13,6 +13,9 @@
 #include "../triangle_triangle_intersect_shared_vertex.h"
 #include "triangle_triangle_intersect.h"
 #include <stdio.h>
+// atomic
+#include <igl/parallel_for.h>
+#include <atomic>
 
 template <
   typename DerivedV1,
@@ -43,8 +46,12 @@ IGL_INLINE bool igl::predicates::find_intersections(
   if(stinker){ printf("%s\n",self_test?"🍎&(V1,F1) == 🍎&(V2,F2)":"🍎≠🍊"); }
 
   int num_if = 0;
-  const auto append_intersection = [&IF,&num_if]( const int f1, const int f2)
+  // mutex
+  std::mutex append_mutex;
+  const auto append_intersection = 
+    [&IF,&num_if,&append_mutex]( const int f1, const int f2)
   {
+    std::lock_guard<std::mutex> lock(append_mutex);
     if(num_if >= IF.rows())
     {
       IF.conservativeResize(2*IF.rows()+1,2);
@@ -87,7 +94,8 @@ IGL_INLINE bool igl::predicates::find_intersections(
   };
 
   RowVector3S dummy;
-  for(int f2 = 0; f2<F2.rows(); ++f2)
+
+  igl::parallel_for(F2.rows(),[&](const int f2)
   {
     if(stinker){ printf("f2: %d\n",f2); }
     Eigen::AlignedBox<Scalar,3> box;
@@ -176,10 +184,10 @@ IGL_INLINE bool igl::predicates::find_intersections(
         }
       }
       if(stinker) { printf("    %s\n",found_intersection? "☠️":"❌"); }
-      if(num_if && first_only) { break; }
+      if(num_if && first_only) { return; }
     }
-    if(num_if && first_only) { break; }
-  }
+    if(num_if && first_only) { return; }
+  },1000);
   IF.conservativeResize(num_if,2);
   return IF.rows();
 }
