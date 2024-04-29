@@ -85,7 +85,6 @@ TEST_CASE("ray_mesh_intersect: corner-case", "[igl]" IGL_MAYFAIL_WIN)
   }
   IGL_POP_FPE;
 }
-#endif
 
 TEST_CASE("ray_mesh_intersect: corner-case2", "[igl]")
 {
