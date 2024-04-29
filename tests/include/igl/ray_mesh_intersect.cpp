@@ -30,6 +30,8 @@ TEST_CASE("ray_mesh_intersect: one_triangle", "[igl]")
   IGL_POP_FPE;
 }
 
+// https://github.com/libigl/libigl/issues/2363
+#ifndef _WIN32
 TEST_CASE("ray_mesh_intersect: corner-case", "[igl]")
 {
   IGL_PUSH_FPE;
@@ -79,6 +81,7 @@ TEST_CASE("ray_mesh_intersect: corner-case", "[igl]")
   }
   IGL_POP_FPE;
 }
+#endif
 
 TEST_CASE("ray_mesh_intersect: corner-case2", "[igl]")
 {
