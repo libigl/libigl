@@ -1,15 +1,17 @@
 // This file is part of libigl, a simple c++ geometry processing library.
 // 
 // Copyright (C) 2022 Vladimir S. FONOV <vladimir.fonov@gmail.com>
+// Copyright (C) 2024 Alec Jacobson <alecjacobson@gmail.com>
 // 
 // This Source Code Form is subject to the terms of the Mozilla Public License 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/
-#include "fast_find_intersections.h"
-#include "AABB.h"
-#include "tri_tri_intersect.h"
-#include "triangle_triangle_intersect_shared_edge.h"
-#include "triangle_triangle_intersect_shared_vertex.h"
+#include "find_intersections.h"
+
+#include "../AABB.h"
+#include "../triangle_triangle_intersect_shared_edge.h"
+#include "../triangle_triangle_intersect_shared_vertex.h"
+#include "triangle_triangle_intersect.h"
 #include <stdio.h>
 
 template <
@@ -17,64 +19,32 @@ template <
   typename DerivedF1,
   typename DerivedV2,
   typename DerivedF2,
-  typename DerivedIF,
-  typename DerivedEV,
-  typename DerivedEE,
-  typename DerivedEI>
-IGL_INLINE bool igl::fast_find_intersections(
+  typename DerivedIF>
+IGL_INLINE bool igl::predicates::find_intersections(
   const igl::AABB<DerivedV1,3> & tree,
   const Eigen::MatrixBase<DerivedV1> & V1,
   const Eigen::MatrixBase<DerivedF1> & F1,
   const Eigen::MatrixBase<DerivedV2> & V2,
   const Eigen::MatrixBase<DerivedF2> & F2,
-  const bool detect_only,
   const bool first_only,
-  Eigen::PlainObjectBase<DerivedIF> & IF,
-  Eigen::PlainObjectBase<DerivedEV> & EV,
-  Eigen::PlainObjectBase<DerivedEE> & EE,
-  Eigen::PlainObjectBase<DerivedEI> & EI)
+  Eigen::PlainObjectBase<DerivedIF> & IF)
 {
+  const bool detect_only = true;
   constexpr bool stinker = false;
   using AABBTree=igl::AABB<DerivedV1,3>;
   using Scalar=typename DerivedV1::Scalar;
   static_assert(
     std::is_same<Scalar,typename DerivedV2::Scalar>::value,
     "V1 and V2 must have the same scalar type");
-  static_assert(
-    std::is_same<Scalar,typename DerivedEV::Scalar>::value,
-    "V1 and EV must have the same scalar type");
   using RowVector3S=Eigen::Matrix<Scalar,1,3>;
-  if(first_only){ assert(detect_only && "first_only must imply detect_only"); }
 
   // Determine if V1,F1 and V2,F2 point to the same data
   const bool self_test = (&V1 == &V2) && (&F1 == &F2);
   if(stinker){ printf("%s\n",self_test?"🍎&(V1,F1) == 🍎&(V2,F2)":"🍎≠🍊"); }
 
   int num_if = 0;
-  int num_ee = 0;
-  const auto append_intersection = 
-    [&IF,&EV,&EE,&EI,&detect_only,&num_if,&num_ee](
-      const int f1, 
-      const int f2,
-      const bool coplanar,
-      const RowVector3S & v1,
-      const RowVector3S & v2)
+  const auto append_intersection = [&IF,&num_if]( const int f1, const int f2)
   {
-    if(!coplanar && !detect_only)
-    {
-      if(num_ee >= EE.rows())
-      {
-        EE.conservativeResize(2*EE.rows()+1,2);
-        EI.conservativeResize(EE.rows());
-        EV.conservativeResize(2*EE.rows(),3);
-      }
-      EI(num_ee) = num_if;
-      EV.row(2*num_ee+0) = v1;
-      EV.row(2*num_ee+1) = v2;
-      EE.row(num_ee) << 2*num_ee+0, 2*num_ee+1;
-      num_ee++;
-    }
-
     if(num_if >= IF.rows())
     {
       IF.conservativeResize(2*IF.rows()+1,2);
@@ -157,7 +127,7 @@ IGL_INLINE bool igl::fast_find_intersections(
             V1,F1,f1,c,V1.row(F1(f1,c)),f2,1e-8);
           if(found_intersection)
           {
-            append_intersection(f1,f2,true,dummy,dummy);
+            append_intersection(f1,f2);
           }
         }else
         {
@@ -173,7 +143,7 @@ IGL_INLINE bool igl::fast_find_intersections(
               V1,F1,f1,sf,c,V1.row(F1(f1,c)),f2,sg,1e-14);
             if(found_intersection && detect_only)
             {
-              append_intersection(f1,f2,true,dummy,dummy);
+              append_intersection(f1,f2);
             }
           }
           
@@ -187,36 +157,28 @@ IGL_INLINE bool igl::fast_find_intersections(
         bool coplanar = false;
         RowVector3S v1,v2;
         const bool tt_found_intersection = 
-          igl::tri_tri_overlap_test_3d(
-            V2.row(F2(f2,0)),V2.row(F2(f2,1)),V2.row(F2(f2,2)),
-            V1.row(F1(f1,0)),V1.row(F1(f1,1)),V1.row(F1(f1,2))) 
-          &&
-          igl::tri_tri_intersection_test_3d(
-            V2.row(F2(f2,0)),V2.row(F2(f2,1)),V2.row(F2(f2,2)),
-            V1.row(F1(f1,0)),V1.row(F1(f1,1)),V1.row(F1(f1,2)),
-            coplanar,
-            v1,v2);
+          triangle_triangle_intersect(
+            V2.row(F2(f2,0)).template head<3>().eval(),
+            V2.row(F2(f2,1)).template head<3>().eval(),
+            V2.row(F2(f2,2)).template head<3>().eval(),
+            V1.row(F1(f1,0)).template head<3>().eval(),
+            V1.row(F1(f1,1)).template head<3>().eval(),
+            V1.row(F1(f1,2)).template head<3>().eval());
         if(found_intersection && !tt_found_intersection)
         {
           // We failed to find the edge. Mark it as an intersection but don't
           // include edge.
-          append_intersection(f1,f2,true,dummy,dummy);
+          append_intersection(f1,f2);
         }else if(tt_found_intersection)
         {
           found_intersection = true;
-          append_intersection(f1,f2,false,v1,v2);
+          append_intersection(f1,f2);
         }
       }
       if(stinker) { printf("    %s\n",found_intersection? "☠️":"❌"); }
       if(num_if && first_only) { break; }
     }
     if(num_if && first_only) { break; }
-  }
-  if(!detect_only)
-  {
-    EV.conservativeResize(2*num_ee,3);
-    EE.conservativeResize(num_ee,2);
-    EI.conservativeResize(num_ee,1);
   }
   IF.conservativeResize(num_if,2);
   return IF.rows();
@@ -227,31 +189,21 @@ template <
   typename DerivedF1,
   typename DerivedV2,
   typename DerivedF2,
-  typename DerivedIF,
-  typename DerivedEV,
-  typename DerivedEE,
-  typename DerivedEI>
-IGL_INLINE bool igl::fast_find_intersections(
+  typename DerivedIF>
+IGL_INLINE bool igl::predicates::find_intersections(
   const Eigen::MatrixBase<DerivedV1> & V1,
   const Eigen::MatrixBase<DerivedF1> & F1,
   const Eigen::MatrixBase<DerivedV2> & V2,
   const Eigen::MatrixBase<DerivedF2> & F2,
-  const bool detect_only,
   const bool first_only,
-  Eigen::PlainObjectBase<DerivedIF> & IF,
-  Eigen::PlainObjectBase<DerivedEV> & EV,
-  Eigen::PlainObjectBase<DerivedEE> & EE,
-  Eigen::PlainObjectBase<DerivedEI> & EI)
+  Eigen::PlainObjectBase<DerivedIF> & IF)
 {
   igl::AABB<DerivedV1,3> tree1;
   tree1.init(V1,F1);
-  return fast_find_intersections(
-    tree1,V1,F1,V2,F2,detect_only,first_only,IF,EV,EE,EI);
+  return find_intersections(tree1,V1,F1,V2,F2,first_only,IF);
 }
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instantiation
-// generated by autoexplicit.sh
-template bool igl::fast_find_intersections<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, bool, bool, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
-
+template bool igl::predicates::find_intersections<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, bool, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
 #endif

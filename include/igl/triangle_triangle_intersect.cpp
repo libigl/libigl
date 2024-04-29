@@ -104,7 +104,15 @@ IGL_INLINE bool igl::triangle_triangle_intersect(
     {
       bool coplanar;
       Eigen::RowVector3d i1,i2;
-      found_intersection = igl::tri_tri_intersection_test_3d(
+      found_intersection = 
+        igl::tri_tri_overlap_test_3d(
+                V.row(F(g,0)).template cast<double>(), 
+                V.row(F(g,1)).template cast<double>(), 
+                V.row(F(g,2)).template cast<double>(),
+                            p.template cast<double>(),
+          V.row(F(f,(c+1)%3)).template cast<double>(),
+          V.row(F(f,(c+2)%3)).template cast<double>()) && 
+        igl::tri_tri_intersection_test_3d(
                 V.row(F(g,0)).template cast<double>(), 
                 V.row(F(g,1)).template cast<double>(), 
                 V.row(F(g,2)).template cast<double>(),

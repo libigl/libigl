@@ -6,8 +6,8 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/
 #pragma once
-#ifndef FAST_FIND_SELF_INTERSECTIONS_H
-#define FAST_FIND_SELF_INTERSECTIONS_H
+#ifndef IGL_FAST_FIND_SELF_INTERSECTIONS_H
+#define IGL_FAST_FIND_SELF_INTERSECTIONS_H
 
 #include "igl_inline.h"
 #include <Eigen/Core>
