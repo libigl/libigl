@@ -9,7 +9,8 @@ TEST_CASE("triangle_triangle_intersect intersect", "[igl/predicates]")
     Eigen::RowVector3d p1(0,0,0),    q1(1,0,0),r1(0,1,0);
     Eigen::RowVector3d p2(shift,0,1),q2(1,1,0),r2(-shift,0,-1);
 
-    REQUIRE( igl::predicates::triangle_triangle_intersect(p1,q1,r1, p2,q2,r2));
+    bool coplanar;
+    REQUIRE( igl::predicates::triangle_triangle_intersect(p1,q1,r1, p2,q2,r2,coplanar));
   }
 }
 
@@ -19,7 +20,8 @@ TEST_CASE("triangle_triangle_intersect not intersect", "[igl/predicates]")
   Eigen::RowVector3d p1(0,0,0),q1(1,0,0),r1(0,1,0);
   Eigen::RowVector3d p2(0,0,1),q2(1,0,1),r2(0,1,1);
 
-  REQUIRE( !igl::predicates::triangle_triangle_intersect(p1,q1,r1,p2,q2,r2) );
+  bool coplanar;
+  REQUIRE( !igl::predicates::triangle_triangle_intersect(p1,q1,r1,p2,q2,r2,coplanar) );
 }
 
 
@@ -30,7 +32,9 @@ TEST_CASE("triangle_triangle_intersect coplanar", "[igl/predicates]")
   Eigen::RowVector3d p2(0,0,0),q2(0.5,0,0),r2(0,0.5,0);
 
   // should intersect along the vector (0,0,0) -> (sqrt(2),sqrt(2),0)
-  REQUIRE( igl::predicates::triangle_triangle_intersect(p1,q1,r1,p2,q2,r2) );
+  bool coplanar;
+  REQUIRE( igl::predicates::triangle_triangle_intersect(p1,q1,r1,p2,q2,r2,coplanar) );
+  REQUIRE( coplanar );
 }
 
 TEST_CASE("triangle_triangle_intersect: non-intersecting", "[igl]")
@@ -48,13 +52,15 @@ TEST_CASE("triangle_triangle_intersect: non-intersecting", "[igl]")
     0,3,2,
     1,5,4;
 
+  bool coplanar;
   REQUIRE(!igl::predicates::triangle_triangle_intersect(
         V.row(F(0,0)).eval(),
         V.row(F(0,1)).eval(),
         V.row(F(0,2)).eval(),
         V.row(F(1,0)).eval(),
         V.row(F(1,1)).eval(),
-        V.row(F(1,2)).eval()));
+        V.row(F(1,2)).eval(),
+        coplanar));
 }
 
 
@@ -73,11 +79,12 @@ TEST_CASE("triangle_triangle_intersect: coplanar", "[igl]")
     0,4,2,
     1,5,3;
 
+  bool coplanar;
   REQUIRE(!igl::predicates::triangle_triangle_intersect(
         V.row(F(0,0)).eval(),
         V.row(F(0,1)).eval(),
         V.row(F(0,2)).eval(),
         V.row(F(1,0)).eval(),
         V.row(F(1,1)).eval(),
-        V.row(F(1,2)).eval()));
+        V.row(F(1,2)).eval(),coplanar));
 }

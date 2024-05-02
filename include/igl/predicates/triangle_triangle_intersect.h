@@ -13,7 +13,8 @@ namespace igl
       const Vector3D & a3,
       const Vector3D & b1,
       const Vector3D & b2,
-      const Vector3D & b3);
+      const Vector3D & b3,
+      bool & coplanar);
   }
 }
 

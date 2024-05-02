@@ -22,17 +22,40 @@ namespace igl
     /// @param[in] F  #F by 3 list representing triangles on the first mesh
     /// @param[out] IF #IF by 2 list of intersecting triangle pairs, so that 
     ///   F1(IF(i,0),:) intersects F2(IF(i,1),:)
+    /// @param[out] CP #IF list of whether the intersection is coplanar
     ///
     /// \see copyleft::cgal::SelfIntersectMesh
     template <
       typename DerivedV,
       typename DerivedF,
-      typename DerivedIF>
+      typename DerivedIF,
+      typename DerivedCP>
     IGL_INLINE bool find_self_intersections(
       const Eigen::MatrixBase<DerivedV> & V,
       const Eigen::MatrixBase<DerivedF> & F,
       const bool first_only,
-      Eigen::PlainObjectBase<DerivedIF> & IF);
+      Eigen::PlainObjectBase<DerivedIF> & IF,
+      Eigen::PlainObjectBase<DerivedCP> & CP);
+    /// @param[out] EV #EV by 3 list of vertex positions of intersection segments
+    /// @param[out] EE #EE by 2 list of edge indices into EV
+    /// @param[out] EI #EI by 1 list of indices into rows IF indicating source of
+    ///   intersection.
+    template <
+      typename DerivedV,
+      typename DerivedF,
+      typename DerivedIF,
+      typename DerivedCP,
+      typename DerivedEV,
+      typename DerivedEE,
+      typename DerivedEI>
+    IGL_INLINE bool find_self_intersections(
+      const Eigen::MatrixBase<DerivedV> & V,
+      const Eigen::MatrixBase<DerivedF> & F,
+      Eigen::PlainObjectBase<DerivedIF> & IF,
+      Eigen::PlainObjectBase<DerivedCP> & CP,
+      Eigen::PlainObjectBase<DerivedEV> & EV,
+      Eigen::PlainObjectBase<DerivedEE> & EE,
+      Eigen::PlainObjectBase<DerivedEI> & EI);
   }
 }
 

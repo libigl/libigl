@@ -11,7 +11,10 @@
 #include "../AABB.h"
 #include "../triangle_triangle_intersect_shared_edge.h"
 #include "../triangle_triangle_intersect_shared_vertex.h"
+#include "../find.h"
+#include "../list_to_matrix.h"
 #include "triangle_triangle_intersect.h"
+#include "../triangle_triangle_intersect.h"
 #include <stdio.h>
 // atomic
 #include <igl/parallel_for.h>
@@ -22,15 +25,17 @@ template <
   typename DerivedF1,
   typename DerivedV2,
   typename DerivedF2,
-  typename DerivedIF>
+  typename DerivedIF,
+  typename DerivedCP >
 IGL_INLINE bool igl::predicates::find_intersections(
-  const igl::AABB<DerivedV1,3> & tree,
+  const igl::AABB<DerivedV1,3> & tree1,
   const Eigen::MatrixBase<DerivedV1> & V1,
   const Eigen::MatrixBase<DerivedF1> & F1,
   const Eigen::MatrixBase<DerivedV2> & V2,
   const Eigen::MatrixBase<DerivedF2> & F2,
   const bool first_only,
-  Eigen::PlainObjectBase<DerivedIF> & IF)
+  Eigen::PlainObjectBase<DerivedIF> & IF,
+  Eigen::PlainObjectBase<DerivedCP> & CP)
 {
   const bool detect_only = true;
   constexpr bool stinker = false;
@@ -49,14 +54,17 @@ IGL_INLINE bool igl::predicates::find_intersections(
   // mutex
   std::mutex append_mutex;
   const auto append_intersection = 
-    [&IF,&num_if,&append_mutex]( const int f1, const int f2)
+    [&IF,&CP,&num_if,&append_mutex]( const int f1, const int f2, const bool coplanar = false)
   {
     std::lock_guard<std::mutex> lock(append_mutex);
     if(num_if >= IF.rows())
     {
       IF.conservativeResize(2*IF.rows()+1,2);
+      CP.conservativeResize(IF.rows());
     }
-    IF.row(num_if++) << f1,f2;
+    CP(num_if) = coplanar;
+    IF.row(num_if) << f1,f2;
+    num_if++;
   };
 
   // Returns corner in ith face opposite of shared edge; -1 otherwise
@@ -103,7 +111,7 @@ IGL_INLINE bool igl::predicates::find_intersections(
     box.extend( V2.row( F2(f2,1) ).transpose() );
     box.extend( V2.row( F2(f2,2) ).transpose() );
     std::vector<const AABBTree*> candidates;
-    tree.append_intersecting_leaves(box, candidates);
+    tree1.append_intersecting_leaves(box, candidates);
     for(const auto * candidate : candidates)
     {
       const int f1 = candidate->m_primitive;
@@ -135,7 +143,7 @@ IGL_INLINE bool igl::predicates::find_intersections(
             V1,F1,f1,c,V1.row(F1(f1,c)),f2,1e-8);
           if(found_intersection)
           {
-            append_intersection(f1,f2);
+            append_intersection(f1,f2,true);
           }
         }else
         {
@@ -151,12 +159,14 @@ IGL_INLINE bool igl::predicates::find_intersections(
               V1,F1,f1,sf,c,V1.row(F1(f1,c)),f2,sg,1e-14);
             if(found_intersection && detect_only)
             {
-              append_intersection(f1,f2);
+              // But wait? Couldn't these be coplanar?
+              append_intersection(f1,f2,false);
             }
           }
           
         }
       }
+      // This logic is confusing. 
       if(
         !self_test || 
         (!yes_shared_verted && !yes_shared_edge) || 
@@ -171,16 +181,17 @@ IGL_INLINE bool igl::predicates::find_intersections(
             V2.row(F2(f2,2)).template head<3>().eval(),
             V1.row(F1(f1,0)).template head<3>().eval(),
             V1.row(F1(f1,1)).template head<3>().eval(),
-            V1.row(F1(f1,2)).template head<3>().eval());
+            V1.row(F1(f1,2)).template head<3>().eval(),
+            coplanar);
         if(found_intersection && !tt_found_intersection)
         {
           // We failed to find the edge. Mark it as an intersection but don't
           // include edge.
-          append_intersection(f1,f2);
+          append_intersection(f1,f2,coplanar);
         }else if(tt_found_intersection)
         {
           found_intersection = true;
-          append_intersection(f1,f2);
+          append_intersection(f1,f2,coplanar);
         }
       }
       if(stinker) { printf("    %s\n",found_intersection? "☠️":"❌"); }
@@ -189,6 +200,7 @@ IGL_INLINE bool igl::predicates::find_intersections(
     if(num_if && first_only) { return; }
   },1000);
   IF.conservativeResize(num_if,2);
+  CP.conservativeResize(IF.rows());
   return IF.rows();
 }
 
@@ -197,21 +209,84 @@ template <
   typename DerivedF1,
   typename DerivedV2,
   typename DerivedF2,
-  typename DerivedIF>
+  typename DerivedIF,
+  typename DerivedCP>
 IGL_INLINE bool igl::predicates::find_intersections(
   const Eigen::MatrixBase<DerivedV1> & V1,
   const Eigen::MatrixBase<DerivedF1> & F1,
   const Eigen::MatrixBase<DerivedV2> & V2,
   const Eigen::MatrixBase<DerivedF2> & F2,
   const bool first_only,
-  Eigen::PlainObjectBase<DerivedIF> & IF)
+  Eigen::PlainObjectBase<DerivedIF> & IF,
+  Eigen::PlainObjectBase<DerivedCP> & CP)
 {
   igl::AABB<DerivedV1,3> tree1;
   tree1.init(V1,F1);
-  return find_intersections(tree1,V1,F1,V2,F2,first_only,IF);
+  return find_intersections(tree1,V1,F1,V2,F2,first_only,IF,CP);
+}
+
+template <
+  typename DerivedV1,
+  typename DerivedF1,
+  typename DerivedV2,
+  typename DerivedF2,
+  typename DerivedIF,
+  typename DerivedCP,
+  typename DerivedEV,
+  typename DerivedEE,
+  typename DerivedEI>
+IGL_INLINE bool igl::predicates::find_intersections(
+  const Eigen::MatrixBase<DerivedV1> & V1,
+  const Eigen::MatrixBase<DerivedF1> & F1,
+  const Eigen::MatrixBase<DerivedV2> & V2,
+  const Eigen::MatrixBase<DerivedF2> & F2,
+  Eigen::PlainObjectBase<DerivedIF> & IF,
+  Eigen::PlainObjectBase<DerivedCP> & CP,
+  Eigen::PlainObjectBase<DerivedEV> & EV,
+  Eigen::PlainObjectBase<DerivedEE> & EE,
+  Eigen::PlainObjectBase<DerivedEI> & EI)
+{
+  igl::AABB<DerivedV1,3> tree1;
+  tree1.init(V1,F1);
+  return find_intersections(tree1,V1,F1,V2,F2,IF,CP,EV,EE,EI);
+}
+
+template <
+  typename DerivedV1,
+  typename DerivedF1,
+  typename DerivedV2,
+  typename DerivedF2,
+  typename DerivedIF,
+  typename DerivedCP,
+  typename DerivedEV,
+  typename DerivedEE,
+  typename DerivedEI>
+IGL_INLINE bool igl::predicates::find_intersections(
+  const igl::AABB<DerivedV1,3> & tree1,
+  const Eigen::MatrixBase<DerivedV1> & V1,
+  const Eigen::MatrixBase<DerivedF1> & F1,
+  const Eigen::MatrixBase<DerivedV2> & V2,
+  const Eigen::MatrixBase<DerivedF2> & F2,
+  Eigen::PlainObjectBase<DerivedIF> & IF,
+  Eigen::PlainObjectBase<DerivedCP> & CP,
+  Eigen::PlainObjectBase<DerivedEV> & EV,
+  Eigen::PlainObjectBase<DerivedEE> & EE,
+  Eigen::PlainObjectBase<DerivedEI> & EI)
+{
+  if(!find_intersections(tree1,V1,F1,V2,F2,false,IF,CP)) { return false; }
+  std::vector<int> EI_vec = igl::find((CP.array()==false).eval());
+  igl::list_to_matrix(EI_vec,EI);
+  const auto IF_EI = IF(EI_vec,Eigen::all).eval();
+  igl::triangle_triangle_intersect(V1,F1,V2,F2,IF_EI,EV,EE);
+  return true;
 }
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instantiation
-template bool igl::predicates::find_intersections<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, bool, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
+// generated by autoexplicit.sh
+template bool igl::predicates::find_intersections<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Array<bool, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Array<bool, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
+// generated by autoexplicit.sh
+template bool igl::predicates::find_intersections<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Array<bool, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3> const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Array<bool, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
+// generated by autoexplicit.sh
+template bool igl::predicates::find_intersections<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Array<bool, -1, 1, 0, -1, 1> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, bool, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Array<bool, -1, 1, 0, -1, 1> >&);
 #endif

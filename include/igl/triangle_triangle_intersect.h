@@ -60,6 +60,46 @@ namespace igl
     const int c,
     const Eigen::MatrixBase<Derivedp> & p,
     const int g);
+  /// Assuming that we've computed a list of non-coplanar intersecting triangle
+  /// pairs between (V1,F1) and (V2,F2), compute the 
+  ///
+  /// @param[in] V1 #V1 by 3 list of vertex positions
+  /// @param[in] F1 #F1 by 3 list of triangle indices into rows of V1
+  /// @param[in] V2 #V2 by 3 list of vertex positions
+  /// @param[in] F2 #F2 by 3 list of triangle indices into rows of V2
+  /// @param[in] IF #IF by 2 list of intersecting triangle pairs so that IF(i,:)
+  ///   [f1 f2] means that the f1th triangle in F1 intersects the f2th triangle in
+  ///   F2 and that they're non-coplanar
+  /// @param[out] EV #EV by 3 list of vertex positions of intersection segments
+  /// @param[out] EE #EE by 2 list of edge indices into EV
+  template <
+    typename DerivedV, 
+    typename DerivedF, 
+    typename DerivedIF,
+    typename DerivedEV,
+    typename DerivedEE>
+  IGL_INLINE void triangle_triangle_intersect(
+      const Eigen::MatrixBase<DerivedV> & V1,
+      const Eigen::MatrixBase<DerivedF> & F1,
+      const Eigen::MatrixBase<DerivedV> & V2,
+      const Eigen::MatrixBase<DerivedF> & F2,
+      const Eigen::MatrixBase<DerivedIF> & IF,
+      Eigen::PlainObjectBase<DerivedEV> & EV,
+      Eigen::PlainObjectBase<DerivedEE> & EE);
+  /// \overload
+  /// \brief Wrapper for triangle_triangle_intersect with self-intersections
+  template <
+    typename DerivedV, 
+    typename DerivedF, 
+    typename DerivedIF,
+    typename DerivedEV,
+    typename DerivedEE>
+  IGL_INLINE void triangle_triangle_intersect(
+      const Eigen::MatrixBase<DerivedV> & V,
+      const Eigen::MatrixBase<DerivedF> & F,
+      const Eigen::MatrixBase<DerivedIF> & IF,
+      Eigen::PlainObjectBase<DerivedEV> & EV,
+      Eigen::PlainObjectBase<DerivedEE> & EE);
 }
 
 #ifndef IGL_STATIC_LIBRARY

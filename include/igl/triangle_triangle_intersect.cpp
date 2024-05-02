@@ -4,6 +4,9 @@
 #include "tri_tri_intersect.h"
 #include <Eigen/Geometry>
 #include <stdio.h>
+#include <igl/unique_edge_map.h>
+#include <igl/barycentric_coordinates.h>
+#include <unordered_map>
 
 //#define IGL_TRIANGLE_TRIANGLE_INTERSECT_DEBUG
 #ifdef IGL_TRIANGLE_TRIANGLE_INTERSECT_DEBUG
@@ -136,8 +139,177 @@ IGL_INLINE bool igl::triangle_triangle_intersect(
   return found_intersection;
 }
 
+
+template <
+  typename DerivedV, 
+  typename DerivedF, 
+  typename DerivedIF,
+  typename DerivedEV,
+  typename DerivedEE>
+void igl::triangle_triangle_intersect(
+    const Eigen::MatrixBase<DerivedV> & V1,
+    const Eigen::MatrixBase<DerivedF> & F1,
+    const Eigen::MatrixBase<DerivedV> & V2,
+    const Eigen::MatrixBase<DerivedF> & F2,
+    const Eigen::MatrixBase<DerivedIF> & IF,
+    Eigen::PlainObjectBase<DerivedEV> & EV,
+    Eigen::PlainObjectBase<DerivedEE> & EE)
+{
+  using Scalar = typename DerivedEV::Scalar;
+  using RowVector3S = Eigen::Matrix<Scalar,1,3>;
+  // We were promised that IF is a list of non-coplanar non-degenerately
+  // intersecting triangle pairs. This implies that the set of intersection is a
+  // line-segment whose endpoints are defined by edge-triangle intersections.
+  // 
+  // Each edge-triangle intersection will be stored in a map (e,f)
+  //
+  std::unordered_map<std::int64_t,int> uf_to_ev;
+  Eigen::VectorXi EMAP1;
+  Eigen::MatrixXi uE1;
+  {
+    Eigen::VectorXi uEE,uEC;
+    Eigen::MatrixXi E;
+    igl::unique_edge_map(F1,E,uE1,EMAP1,uEE,uEC);
+  }
+  Eigen::VectorXi EMAP2_cpy;
+  Eigen::MatrixXi uE2_cpy;
+  const bool self = &F1 == &F2;
+  if(!self)
+  {
+    Eigen::VectorXi uEE,uEC;
+    Eigen::MatrixXi E;
+    igl::unique_edge_map(F2,E,uE2_cpy,EMAP2_cpy,uEE,uEC);
+  }
+  const Eigen::VectorXi & EMAP2 = self?EMAP1:EMAP2_cpy;
+  const Eigen::MatrixXi & uE2 = self?uE1:uE2_cpy;
+
+  int num_ev = 0;
+  EE.resize(IF.rows(),2);
+  for(int i = 0; i<IF.rows(); i++)
+  {
+    // Just try all 6 edges
+    Eigen::Matrix<double,6,3> B;
+    Eigen::Matrix<double,6,3> X;
+    Eigen::Matrix<int,6,2> uf;
+    for(int p = 0;p<2;p++)
+    {
+      const auto consider_edges = [&B,&X,&uf]
+        (const int p,
+         const int f1, 
+         const int f2,
+         const Eigen::MatrixBase<DerivedV> & V1,
+         const Eigen::VectorXi & EMAP1,
+         const Eigen::MatrixXi & uE1,
+         const Eigen::MatrixBase<DerivedV> & V2,
+         const Eigen::MatrixBase<DerivedF> & F2)
+      {
+        for(int e1 = 0;e1<3;e1++)
+        {
+          // intersect edge (ij) opposite vertex F(f1,e1) with triangle ABC of F(f2,:)
+          const int u1 = EMAP1(f1 +(EMAP1.size()/3)*e1);
+          uf.row(p*3+e1) << u1,f2;
+          const int i = uE1(u1,0);
+          const int j = uE1(u1,1);
+          // Just copy.
+          const RowVector3S Vi = V1.row(i);
+          const RowVector3S Vj = V1.row(j);
+          const RowVector3S VA = V2.row(F2(f2,0));
+          const RowVector3S VB = V2.row(F2(f2,1));
+          const RowVector3S VC = V2.row(F2(f2,2));
+          // Find intersection of line (Vi,Vj) with plane of triangle (A,B,C)
+          const RowVector3S n = (VB-VA).template head<3>().cross((VC-VA).template head<3>());
+          const Scalar d = n.dot(VA);
+          const Scalar t = (d - n.dot(Vi))/(n.dot(Vj-Vi));
+          const RowVector3S x = Vi + t*(Vj-Vi);
+          // Get barycenteric coordinates (possibly negative of X)
+          RowVector3S b;
+          igl::barycentric_coordinates(x,VA,VB,VC,b);
+          B.row(p*3+e1) = b;
+          X.row(p*3+e1) = x;
+        }
+      };
+
+
+      const int f1 = IF(i,p);
+      const int f2 = IF(i,(p+1)%2);
+      consider_edges(p,f1,f2,
+        p==0?   V1:V2,
+        p==0?EMAP1:EMAP2,
+        p==0?  uE1:uE2,
+        p==0?   V2:V1,
+        p==0?   F2:F1);
+    }
+
+    // Find the two rows in B with the largest-smallest element
+    int j1,j2;
+    {
+      double b_min1 = -std::numeric_limits<double>::infinity();
+      double b_min2 = -std::numeric_limits<double>::infinity();
+      for(int j = 0;j<6;j++)
+      {
+        const double bminj = B.row(j).minCoeff();
+        if(bminj > b_min1)
+        {
+          b_min2 = b_min1;
+          j2 = j1;
+          b_min1 = bminj;
+          j1 = j;
+        }else if(bminj > b_min2)
+        {
+          b_min2 = bminj;
+          j2 = j;
+        }
+      }
+    }
+
+    const auto append_or_find = [&](
+      int p, int u, int f, const RowVector3S & x,
+      std::unordered_map<std::int64_t,int> & uf_to_ev)->int
+    {
+      const std::int64_t key = (std::int64_t)u + ((std::int64_t)f << 32) + ((std::int64_t)p << 63);
+      if(uf_to_ev.find(key) == uf_to_ev.end())
+      {
+        if(num_ev == EV.rows())
+        {
+          EV.conservativeResize(2*EV.rows()+1,3);
+        }
+        EV.row(num_ev) = x;
+        uf_to_ev[key] = num_ev;
+        num_ev++;
+      }
+      return uf_to_ev[key];
+    };
+
+    EE.row(i) <<
+      append_or_find(j1>=3,uf(j1,0),uf(j1,1),X.row(j1),uf_to_ev),
+      append_or_find(j2>=3,uf(j2,0),uf(j2,1),X.row(j2),uf_to_ev);
+  }
+  EV.conservativeResize(num_ev,3);
+}
+
+template <
+  typename DerivedV, 
+  typename DerivedF, 
+  typename DerivedIF,
+  typename DerivedEV,
+  typename DerivedEE>
+void igl::triangle_triangle_intersect(
+    const Eigen::MatrixBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedF> & F,
+    const Eigen::MatrixBase<DerivedIF> & IF,
+    Eigen::PlainObjectBase<DerivedEV> & EV,
+    Eigen::PlainObjectBase<DerivedEE> & EE)
+{
+  // overload will take care of detecting reference equality
+  return triangle_triangle_intersect(V,F,V,F,IF,EV,EE);
+}
+
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instantiation
+// generated by autoexplicit.sh
+template void igl::triangle_triangle_intersect<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
+// generated by autoexplicit.sh
+template void igl::triangle_triangle_intersect<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
 template bool igl::triangle_triangle_intersect<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, int, int, Eigen::MatrixBase<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> > const&, int);
 template bool igl::triangle_triangle_intersect<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, 1, -1, 1, 1, -1> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, int, int, Eigen::MatrixBase<Eigen::Matrix<double, 1, -1, 1, 1, -1> > const&, int);
 #endif

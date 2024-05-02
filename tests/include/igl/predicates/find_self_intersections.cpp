@@ -1,6 +1,7 @@
 #include "test_common.h"
 #include <igl/predicates/find_self_intersections.h>
 #include <igl/upsample.h>
+#include <igl/triangle_triangle_intersect.h>
 #include <igl/combine.h>
 #include <igl/sortrows.h>
 #include <igl/unique.h>
@@ -18,7 +19,8 @@ TEST_CASE("find_self_intersections: cube", "[igl/predicates]")
   igl::read_triangle_mesh(test_common::data_path("cube.obj"), V, F);
 
   Eigen::MatrixXi IF;
-  REQUIRE( !igl::predicates::find_self_intersections(V,F,true,IF) );
+  Eigen::Array<bool,Eigen::Dynamic,1> CP;
+  REQUIRE( !igl::predicates::find_self_intersections(V,F,true,IF,CP) );
 }
 
 TEST_CASE("find_self_intersections: cube-triangle", "[igl/predicates]")
@@ -44,7 +46,8 @@ TEST_CASE("find_self_intersections: cube-triangle", "[igl/predicates]")
   igl::combine<Eigen::MatrixXd,Eigen::MatrixXi>({V,Vp},{F,Fp}, V_,F_);
 
   Eigen::MatrixXi IF;
-  REQUIRE( igl::predicates::find_self_intersections(V_,F_,false,IF) );
+  Eigen::Array<bool,Eigen::Dynamic,1> CP;
+  REQUIRE( igl::predicates::find_self_intersections(V_,F_,false,IF,CP) );
   {
     Eigen::VectorXi I;
     igl::unique(IF,I);
@@ -69,7 +72,8 @@ TEST_CASE("find_self_intersections: rose", "[igl/predicates]")
   V.row(9) << 0,0,0;
 
   Eigen::MatrixXi IF;
-  REQUIRE( igl::predicates::find_self_intersections(V,F,false,IF));
+  Eigen::Array<bool,Eigen::Dynamic,1> CP;
+  REQUIRE( igl::predicates::find_self_intersections(V,F,false,IF,CP));
   Eigen::MatrixXi IF_gt(9,2);
   IF_gt<<
     0,4,
@@ -102,11 +106,15 @@ TEST_CASE("find_self_intersections: shared-edge", "[igl/predicates]")
     0,1,2,
     0,2,3;
   Eigen::MatrixXi IF;
-  REQUIRE(!igl::predicates::find_self_intersections(V,F,false,IF));
+  Eigen::Array<bool,Eigen::Dynamic,1> CP;
+  REQUIRE(!igl::predicates::find_self_intersections(V,F,false,IF,CP));
   REQUIRE( IF.rows()==0 );
+  REQUIRE( CP.rows()==0 );
   V.row(3) << 2.0,0,0;
-  REQUIRE( igl::predicates::find_self_intersections(V,F,false,IF));
+  REQUIRE( igl::predicates::find_self_intersections(V,F,false,IF,CP));
   REQUIRE( IF.rows()==1 );
+  REQUIRE( CP.rows()==1 );
+  REQUIRE( CP(0) );
 }
 
 TEST_CASE("find_self_intersections: coplanar", "[igl/predicates]")
@@ -125,8 +133,10 @@ TEST_CASE("find_self_intersections: coplanar", "[igl/predicates]")
     1,5,3;
 
   Eigen::MatrixXi IF;
-  REQUIRE( !igl::predicates::find_self_intersections(V,F,false,IF));
+  Eigen::Array<bool,Eigen::Dynamic,1> CP;
+  REQUIRE( !igl::predicates::find_self_intersections(V,F,false,IF,CP));
   REQUIRE( IF.rows()==0 );
+  REQUIRE( CP.rows()==0 );
 }
 
 TEST_CASE("find_self_intersections: non-intersecting", "[igl/predicates]")
@@ -145,8 +155,10 @@ TEST_CASE("find_self_intersections: non-intersecting", "[igl/predicates]")
     1,5,4;
 
   Eigen::MatrixXi IF;
-  REQUIRE( !igl::predicates::find_self_intersections(V,F,false,IF));
+  Eigen::Array<bool,Eigen::Dynamic,1> CP;
+  REQUIRE( !igl::predicates::find_self_intersections(V,F,false,IF,CP));
   REQUIRE( IF.rows()==0 );
+  REQUIRE( CP.rows()==0 );
 }
 
 TEST_CASE("find_self_intersections: upsampled-knight", "[igl/predicates]")
@@ -156,20 +168,61 @@ TEST_CASE("find_self_intersections: upsampled-knight", "[igl/predicates]")
   igl::read_triangle_mesh(test_common::data_path("decimated-knight.obj"),V,F);
 
   Eigen::MatrixXi IF;
+  Eigen::Array<bool,Eigen::Dynamic,1> CP;
 
-  REQUIRE( !igl::predicates::find_self_intersections(V,F,false,IF));
+  REQUIRE( !igl::predicates::find_self_intersections(V,F,false,IF,CP));
   REQUIRE( IF.rows()==0 );
+  REQUIRE( CP.rows()==0 );
 
   igl::upsample(Eigen::MatrixXd(V),Eigen::MatrixXi(F),V,F);
 
 
-  REQUIRE( !igl::predicates::find_self_intersections(V,F,false,IF));
+  REQUIRE( !igl::predicates::find_self_intersections(V,F,false,IF,CP));
   REQUIRE( IF.rows()==0 );
+  REQUIRE( CP.rows()==0 );
 
   igl::upsample(Eigen::MatrixXd(V),Eigen::MatrixXi(F),V,F);
 
-  REQUIRE( !igl::predicates::find_self_intersections(V,F,false,IF));
+  REQUIRE( !igl::predicates::find_self_intersections(V,F,false,IF,CP));
   REQUIRE( IF.rows()==0 );
+  REQUIRE( CP.rows()==0 );
 
 }
 
+TEST_CASE("find_self_intersections: extract", "[igl/predicates]")
+{
+  Eigen::MatrixXd V(4+3,3);
+  V << 0,0,0,
+       1,0,0,
+       1,1,0,
+       0,1,0,
+       1,0,1,
+       0,1,1,
+       0.5,0.5,-1;
+  Eigen::MatrixXi F(3,3);
+  F << 0,1,2,
+       0,2,3,
+    4,5,6;
+  Eigen::MatrixXi IF,EE; Eigen::MatrixXd EV;
+  Eigen::Array<bool,Eigen::Dynamic,1> CP;
+  bool found = igl::predicates::find_self_intersections(V,F,false,IF,CP);
+
+  igl::triangle_triangle_intersect(V,F,IF,EV,EE);
+  REQUIRE( (CP==false).all() );
+  REQUIRE( found );
+  REQUIRE( IF.rows() == 2);
+  Eigen::MatrixXi IF_gt(2,2);
+  IF_gt << 
+    0,2,
+    1,2;
+  test_common::assert_near_rows(IF,IF_gt,0);
+
+  Eigen::MatrixXd EV_gt(3,3);
+  EV_gt<<
+    0.5 ,0.5,0,
+    0.25,0.75,0,
+    0.75,0.25,0;
+  test_common::assert_near_rows(EV,EV_gt,0);
+  REQUIRE( EE.rows() == 2);
+  
+}

@@ -6,6 +6,7 @@
 #include <igl/readDMAT.h>
 
 #include <igl/find.h>
+#include <igl/sortrows.h>
 
 #include <Eigen/Core>
 #include <catch2/catch.hpp>
@@ -204,6 +205,7 @@ namespace test_common
     const Eigen::MatrixBase<DerivedB> & B,
     const EpsType & eps)
   {
+    if(eps == 0){ return assert_eq(A,B); }
     // Sizes should match
     REQUIRE(A.rows() == B.rows());
     REQUIRE(A.cols() == B.cols());
@@ -230,6 +232,21 @@ namespace test_common
         }
       }
     }
+  }
+
+  // assert_near after sortrows on each input
+  template <typename DerivedA, typename DerivedB, typename EpsType>
+  void assert_near_rows(
+    const Eigen::MatrixBase<DerivedA> & A,
+    const Eigen::MatrixBase<DerivedB> & B,
+    const EpsType & eps)
+  {
+    Eigen::VectorXi _;
+    DerivedA sA;
+    DerivedB sB;
+    igl::sortrows(A,false,sA,_);
+    igl::sortrows(B,false,sB,_);
+    return assert_near(sA,sB,eps);
   }
 
 }

@@ -4,7 +4,7 @@
 
 #include <igl/opengl/glfw/Viewer.h>
 
-#include <igl/fast_find_intersections.h>
+#include <igl/predicates/find_intersections.h>
 
 Eigen::MatrixXd V1,V2;
 Eigen::MatrixXi F1,F2;
@@ -24,10 +24,11 @@ void update_visualization(igl::opengl::glfw::Viewer & viewer)
   Eigen::MatrixXi IF,EE;
   Eigen::MatrixXd EV;
   Eigen::VectorXi EI;
-  igl::fast_find_intersections(tree, V1,F1, V2_,F2,false,false,IF,EV,EE,EI);
+  Eigen::Array<bool,Eigen::Dynamic,1> CP;
+  igl::predicates::find_intersections(tree, V1,F1, V2_,F2,IF,CP,EV,EE,EI);
  
   // Plot the edges of the intersects
-  viewer.data().set_edges( EV,EE, Eigen::RowVector3d(1,0,0));
+  viewer.data().set_edges( EV,EE, Eigen::RowVector3d(1,1,1));
   
   // show faces which are intersected
   Eigen::VectorXi I;

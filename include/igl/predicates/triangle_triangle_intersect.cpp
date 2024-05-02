@@ -10,8 +10,10 @@ IGL_INLINE  bool igl::predicates::triangle_triangle_intersect(
   const Vector3D & r1,
   const Vector3D & p2,
   const Vector3D & q2,
-  const Vector3D & r2)
+  const Vector3D & r2,
+  bool & coplanar)
 {
+  coplanar = false;
   // yet another translation of tri_tri_intersect.c  [Guigue & Devillers]
   exactinit();
   using Vector2D = Eigen::Matrix<typename Vector3D::Scalar,2,1>;
@@ -208,7 +210,7 @@ IGL_INLINE  bool igl::predicates::triangle_triangle_intersect(
     return false;
   };
 
-  const auto TRI_TRI_3D = [&coplanar_tri_tri3d](
+  const auto TRI_TRI_3D = [&coplanar_tri_tri3d,&coplanar](
     const Vector3D & p1,
     const Vector3D & q1,
     const Vector3D & r1,
@@ -254,7 +256,11 @@ IGL_INLINE  bool igl::predicates::triangle_triangle_intersect(
       else  { 
         if (dr2 == POSITIVE) return CHECK_MIN_MAX(p1,q1,r1,r2,p2,q2);
         else if (dr2 == NEGATIVE) return CHECK_MIN_MAX(p1,r1,q1,r2,p2,q2);
-        else return coplanar_tri_tri3d(p1,q1,r1,p2,q2,r2);
+        else
+        {
+          coplanar = coplanar_tri_tri3d(p1,q1,r1,p2,q2,r2);
+          return coplanar;
+        }
       }
     }
   };
@@ -280,7 +286,11 @@ IGL_INLINE  bool igl::predicates::triangle_triangle_intersect(
     else  {
       if (dr1 == POSITIVE) return TRI_TRI_3D(r1,p1,q1,p2,q2,r2,dp2,dq2,dr2);
       else if (dr1 == NEGATIVE) return TRI_TRI_3D(r1,p1,q1,p2,r2,q2,dp2,dr2,dq2);
-      else return coplanar_tri_tri3d(p1,q1,r1,p2,q2,r2);
+      else
+      {
+        coplanar = coplanar_tri_tri3d(p1,q1,r1,p2,q2,r2);
+        return coplanar;
+      }
     }
   }
 
@@ -295,12 +305,14 @@ template bool igl::predicates::triangle_triangle_intersect<Eigen::Vector3d>(
     const Eigen::Vector3d & r1,
     const Eigen::Vector3d & p2,
     const Eigen::Vector3d & q2,
-    const Eigen::Vector3d & r2);
+    const Eigen::Vector3d & r2,
+    bool & coplanar);
 template bool igl::predicates::triangle_triangle_intersect<Eigen::RowVector3d>(
     const Eigen::RowVector3d & p1,
     const Eigen::RowVector3d & q1,
     const Eigen::RowVector3d & r1,
     const Eigen::RowVector3d & p2,
     const Eigen::RowVector3d & q2,
-    const Eigen::RowVector3d & r2);
+    const Eigen::RowVector3d & r2,
+    bool & coplanar);
 #endif
