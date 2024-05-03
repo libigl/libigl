@@ -188,7 +188,7 @@ void igl::triangle_triangle_intersect(
   for(int i = 0; i<IF.rows(); i++)
   {
     // Just try all 6 edges
-    Eigen::Matrix<double,6,3> B;
+    Eigen::Matrix<double,6,6> B;
     Eigen::Matrix<double,6,3> X;
     Eigen::Matrix<int,6,2> uf;
     for(int p = 0;p<2;p++)
@@ -198,6 +198,7 @@ void igl::triangle_triangle_intersect(
          const int f1, 
          const int f2,
          const Eigen::MatrixBase<DerivedV> & V1,
+         const Eigen::MatrixBase<DerivedF> & F1,
          const Eigen::VectorXi & EMAP1,
          const Eigen::MatrixXi & uE1,
          const Eigen::MatrixBase<DerivedV> & V2,
@@ -221,10 +222,19 @@ void igl::triangle_triangle_intersect(
           const Scalar d = n.dot(VA);
           const Scalar t = (d - n.dot(Vi))/(n.dot(Vj-Vi));
           const RowVector3S x = Vi + t*(Vj-Vi);
+          
           // Get barycenteric coordinates (possibly negative of X)
-          RowVector3S b;
-          igl::barycentric_coordinates(x,VA,VB,VC,b);
-          B.row(p*3+e1) = b;
+          RowVector3S b1;
+          igl::barycentric_coordinates(x,VA,VB,VC,b1);
+          B.row(p*3+e1).head<3>() = b1;
+          RowVector3S b2;
+          igl::barycentric_coordinates(x,
+              V1.row(F1(f1,0)).template head<3>().eval(),
+              V1.row(F1(f1,1)).template head<3>().eval(),
+              V1.row(F1(f1,2)).template head<3>().eval(),
+              b2);
+          B.row(p*3+e1).tail<3>() = b2;
+
           X.row(p*3+e1) = x;
         }
       };
@@ -234,6 +244,7 @@ void igl::triangle_triangle_intersect(
       const int f2 = IF(i,(p+1)%2);
       consider_edges(p,f1,f2,
         p==0?   V1:V2,
+        p==0?   F1:F2,
         p==0?EMAP1:EMAP2,
         p==0?  uE1:uE2,
         p==0?   V2:V1,
@@ -247,6 +258,8 @@ void igl::triangle_triangle_intersect(
       double b_min2 = -std::numeric_limits<double>::infinity();
       for(int j = 0;j<6;j++)
       {
+        // It's not clear that using barycentric coordinates is better than
+        // point_simplex distance (though that requires inequalities).
         const double bminj = B.row(j).minCoeff();
         if(bminj > b_min1)
         {

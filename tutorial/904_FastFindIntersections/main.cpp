@@ -8,6 +8,7 @@
 
 Eigen::MatrixXd V1,V2;
 Eigen::MatrixXi F1,F2;
+int mid_1, mid_2;
 
 igl::AABB<Eigen::MatrixXd,3> tree;
 
@@ -20,6 +21,7 @@ void update_visualization(igl::opengl::glfw::Viewer & viewer)
   //shifted intersection object
   Eigen::MatrixXd V2_(V2.rows(),V2.cols());
   V2_<< V2.col(0), V2.col(1), V2.col(2).array()+slice_z;
+  viewer.data_list[mid_2].set_vertices(V2_);
 
   Eigen::MatrixXi IF,EE;
   Eigen::MatrixXd EV;
@@ -28,14 +30,20 @@ void update_visualization(igl::opengl::glfw::Viewer & viewer)
   igl::predicates::find_intersections(tree, V1,F1, V2_,F2,IF,CP,EV,EE,EI);
  
   // Plot the edges of the intersects
-  viewer.data().set_edges( EV,EE, Eigen::RowVector3d(1,1,1));
+  viewer.data_list[mid_1].set_edges( EV,EE, Eigen::RowVector3d(1,1,1));
   
   // show faces which are intersected
   Eigen::VectorXi I;
-  igl::unique(IF,I);
+  igl::unique(IF.col(0).eval(),I);
   Eigen::VectorXd D = Eigen::MatrixXd::Zero(F1.rows(),1);
   D(I).setConstant(1.0);
-  viewer.data().set_data(D,0,1,igl::COLOR_MAP_TYPE_PARULA);
+  viewer.data_list[mid_1].set_data(D,0,1,igl::COLOR_MAP_TYPE_PARULA);
+
+  igl::unique(IF.col(1).eval(),I);
+  D = Eigen::MatrixXd::Zero(F2.rows(),1);
+  D(I).setConstant(1.0);
+  viewer.data_list[mid_2].set_data(D,0,1,igl::COLOR_MAP_TYPE_JET);
+
 }
 
 
@@ -72,17 +80,28 @@ int main(int argc, char *argv[])
   std::cout<<"'.'/','  push back/pull forward slicing plane."<<std::endl;
   std::cout<<std::endl;
 
-  min_z=V1.col(2).minCoeff();
-  max_z=V1.col(2).maxCoeff();
-  slice_z=(max_z+min_z)/2;
+  if(argc<=2)
+  {
+    min_z=V1.col(2).minCoeff();
+    max_z=V1.col(2).maxCoeff();
+    slice_z=(max_z+min_z)/2;
+  }else
+  {
+    slice_z = 0;
+  }
 
   //center slicing object
   V2.col(2).array() -= V2.col(2).array().mean();
 
   // Plot the mesh
   igl::opengl::glfw::Viewer viewer;
+  viewer.data().set_mesh(V2, F2);
+  viewer.data().set_face_based(true);
+  mid_2 = viewer.selected_data_index;
+  viewer.append_mesh();
   viewer.data().set_mesh(V1, F1);
   viewer.data().set_face_based(true);
+  mid_1 = viewer.selected_data_index;
   
 
   update_visualization(viewer);
