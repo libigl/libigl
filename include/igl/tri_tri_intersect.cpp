@@ -63,6 +63,7 @@
 #define IGL_TRI_TRI_INTERSECT_CPP
 
 #include "tri_tri_intersect.h"
+#include "EPS.h"
 #include <Eigen/Geometry>
 
 // helper functions
@@ -84,49 +85,18 @@ IGL_INLINE bool ccw_tri_tri_intersection_2d(
   const Eigen::MatrixBase<DerivedP1> &p1, const Eigen::MatrixBase<DerivedQ1> &q1, const Eigen::MatrixBase<DerivedR1> &r1,
   const Eigen::MatrixBase<DerivedP2> &p2, const Eigen::MatrixBase<DerivedQ2> &q2, const Eigen::MatrixBase<DerivedR2> &r2);  
 
-
-/* some 3D macros */
-
-// #define _IGL_CROSS(dest,v1,v2)  \
-//                dest[0]=v1[1]*v2[2]-v1[2]*v2[1]; \
-//                dest[1]=v1[2]*v2[0]-v1[0]*v2[2]; \
-//                dest[2]=v1[0]*v2[1]-v1[1]*v2[0];
-
-// #define _IGL_DOT(v1,v2) (v1[0]*v2[0]+v1[1]*v2[1]+v1[2]*v2[2])
-
- 
-// #define _IGL_SUB(dest,v1,v2) dest[0]=v1[0]-v2[0]; \
-//                         dest[1]=v1[1]-v2[1]; \
-//                         dest[2]=v1[2]-v2[2]; 
-
-
-// #define _IGL_SCALAR(dest,alpha,v) dest[0] = alpha * v[0]; \
-//                              dest[1] = alpha * v[1]; \
-//                              dest[2] = alpha * v[2];
-
-
-// #define _IGL_CHECK_MIN_MAX(p1,q1,r1,p2,q2,r2) {\
-//   _IGL_SUB(v1,p2,q1)\
-//   _IGL_SUB(v2,p1,q1)\
-//   _IGL_CROSS(N1,v1,v2)\
-//   _IGL_SUB(v1,q2,q1)\
-//   if (_IGL_DOT(v1,N1) > 0.0) return false;\
-//   _IGL_SUB(v1,p2,p1)\
-//   _IGL_SUB(v2,r1,p1)\
-//   _IGL_CROSS(N1,v1,v2)\
-//   _IGL_SUB(v1,r2,p1) \
-//   if (_IGL_DOT(v1,N1) > 0.0) return false;\
-//   else return true; }
-
   template <typename DerivedP1,typename DerivedQ1,typename DerivedR1,
             typename DerivedP2,typename DerivedQ2,typename DerivedR2>
   inline bool _IGL_CHECK_MIN_MAX(
     const Eigen::MatrixBase<DerivedP1> &p1, const Eigen::MatrixBase<DerivedQ1> &q1, const Eigen::MatrixBase<DerivedR1> &r1,
     const Eigen::MatrixBase<DerivedP2> &p2, const Eigen::MatrixBase<DerivedQ2> &q2, const Eigen::MatrixBase<DerivedR2> &r2)
   {
-    auto v1=p2-q1;
-    auto v2=p1-q1;
-    auto N1=v1.cross(v2);
+    using Scalar    = typename DerivedP1::Scalar;
+    using RowVector = typename Eigen::Matrix<Scalar, 1, 3>;
+
+    RowVector v1=p2-q1;
+    RowVector v2=p1-q1;
+    RowVector N1=v1.cross(v2);
     v1=q2-q1;
 
     if (v1.dot(N1) > 0.0) return false;
@@ -152,7 +122,7 @@ IGL_INLINE bool ccw_tri_tri_intersection_2d(
     const Eigen::MatrixBase<DerivedP1> &p1, const Eigen::MatrixBase<DerivedQ1> &q1, const Eigen::MatrixBase<DerivedR1> &r1,
     const Eigen::MatrixBase<DerivedP2> &p2, const Eigen::MatrixBase<DerivedQ2> &q2, const Eigen::MatrixBase<DerivedR2> &r2,
     DP2 dp2, DQ2 dq2,DR2 dr2,
-    const Eigen::MatrixBase<DerivedP2> &N1)
+    const Eigen::MatrixBase<DerivedN1> &N1)
   {
     if (dp2 > 0.0) { 
       if (dq2 > 0.0) return _IGL_CHECK_MIN_MAX(p1,r1,q1,r2,p2,q2);
@@ -179,31 +149,7 @@ IGL_INLINE bool ccw_tri_tri_intersection_2d(
   }
 
 
-// #define _IGL_TRI_TRI_3D(p1,q1,r1,p2,q2,r2,dp2,dq2,dr2) { \
-//   if (dp2 > 0.0) { \
-//      if (dq2 > 0.0) _IGL_CHECK_MIN_MAX(p1,r1,q1,r2,p2,q2) \
-//      else if (dr2 > 0.0) _IGL_CHECK_MIN_MAX(p1,r1,q1,q2,r2,p2)\
-//      else _IGL_CHECK_MIN_MAX(p1,q1,r1,p2,q2,r2) }\
-//   else if (dp2 < 0.0) { \
-//     if (dq2 < 0.0) _IGL_CHECK_MIN_MAX(p1,q1,r1,r2,p2,q2)\
-//     else if (dr2 < 0.0) _IGL_CHECK_MIN_MAX(p1,q1,r1,q2,r2,p2)\
-//     else _IGL_CHECK_MIN_MAX(p1,r1,q1,p2,q2,r2)\
-//   } else { \
-//     if (dq2 < 0.0) { \
-//       if (dr2 >= 0.0)  _IGL_CHECK_MIN_MAX(p1,r1,q1,q2,r2,p2)\
-//       else _IGL_CHECK_MIN_MAX(p1,q1,r1,p2,q2,r2)\
-//     } \
-//     else if (dq2 > 0.0) { \
-//       if (dr2 > 0.0) _IGL_CHECK_MIN_MAX(p1,r1,q1,p2,q2,r2)\
-//       else  _IGL_CHECK_MIN_MAX(p1,q1,r1,q2,r2,p2)\
-//     } \
-//     else  { \
-//       if (dr2 > 0.0) _IGL_CHECK_MIN_MAX(p1,q1,r1,r2,p2,q2)\
-//       else if (dr2 < 0.0) _IGL_CHECK_MIN_MAX(p1,r1,q1,r2,p2,q2)\
-//       else return coplanar_tri_tri3d(p1,q1,r1,p2,q2,r2,N1);\
-//      }}}
   
-//}
 } //igl
 
 } // internal
@@ -224,19 +170,19 @@ IGL_INLINE bool igl::tri_tri_overlap_test_3d(
   const Eigen::MatrixBase<DerivedR2> &  r2)
 {
   using Scalar    = typename DerivedP1::Scalar;
-  //using RowVector = typename Eigen::Matrix<Scalar, 1, 3>;
+  using RowVector = typename Eigen::Matrix<Scalar, 1, 3>;
  
   Scalar dp1, dq1, dr1, dp2, dq2, dr2;
-  //RowVector v1, v2;
-  //RowVector N1, N2; 
+  RowVector v1, v2;
+  RowVector N1, N2; 
   
   /* Compute distance signs  of p1, q1 and r1 to the plane of
      triangle(p2,q2,r2) */
 
 
-  auto v1=p2-r2;
-  auto v2=q2-r2;
-  auto N2=v1.cross(v2);
+  v1=p2-r2;
+  v2=q2-r2;
+  N2=v1.cross(v2);
 
   v1=p1-r2;
   dp1 = v1.dot(N2);
@@ -252,7 +198,7 @@ IGL_INLINE bool igl::tri_tri_overlap_test_3d(
 
   v1=q1-p1;
   v2=r1-p1;
-  auto N1=v1.cross(v2);
+  N1=v1.cross(v2);
 
   v1=p2-r1;
   dp2 = v1.dot(N1);
@@ -265,28 +211,27 @@ IGL_INLINE bool igl::tri_tri_overlap_test_3d(
 
   /* Permutation in a canonical form of T1's vertices */
 
-
   if (dp1 > 0.0) {
-    if (dq1 > 0.0) return _IGL_TRI_TRI_3D(r1,p1,q1,p2,r2,q2,dp2,dr2,dq2,N1);
-    else if (dr1 > 0.0) return _IGL_TRI_TRI_3D(q1,r1,p1,p2,r2,q2,dp2,dr2,dq2,N1);
-    else return _IGL_TRI_TRI_3D(p1,q1,r1,p2,q2,r2,dp2,dq2,dr2,N1);
+    if (dq1 > 0.0) return internal::_IGL_TRI_TRI_3D(r1,p1,q1,p2,r2,q2,dp2,dr2,dq2,N1);
+    else if (dr1 > 0.0) return internal::_IGL_TRI_TRI_3D(q1,r1,p1,p2,r2,q2,dp2,dr2,dq2,N1);
+    else return internal::_IGL_TRI_TRI_3D(p1,q1,r1,p2,q2,r2,dp2,dq2,dr2,N1);
   } else if (dp1 < 0.0) {
-    if (dq1 < 0.0) return _IGL_TRI_TRI_3D(r1,p1,q1,p2,q2,r2,dp2,dq2,dr2,N1);
-    else if (dr1 < 0.0) return _IGL_TRI_TRI_3D(q1,r1,p1,p2,q2,r2,dp2,dq2,dr2,N1);
-    else return _IGL_TRI_TRI_3D(p1,q1,r1,p2,r2,q2,dp2,dr2,dq2,N1);
+    if (dq1 < 0.0) return internal::_IGL_TRI_TRI_3D(r1,p1,q1,p2,q2,r2,dp2,dq2,dr2,N1);
+    else if (dr1 < 0.0) return internal::_IGL_TRI_TRI_3D(q1,r1,p1,p2,q2,r2,dp2,dq2,dr2,N1);
+    else return internal::_IGL_TRI_TRI_3D(p1,q1,r1,p2,r2,q2,dp2,dr2,dq2,N1);
   } else {
     if (dq1 < 0.0) {
-      if (dr1 >= 0.0) return _IGL_TRI_TRI_3D(q1,r1,p1,p2,r2,q2,dp2,dr2,dq2,N1);
-      else return _IGL_TRI_TRI_3D(p1,q1,r1,p2,q2,r2,dp2,dq2,dr2,N1);
+      if (dr1 >= 0.0) return internal::_IGL_TRI_TRI_3D(q1,r1,p1,p2,r2,q2,dp2,dr2,dq2,N1);
+      else return internal::_IGL_TRI_TRI_3D(p1,q1,r1,p2,q2,r2,dp2,dq2,dr2,N1);
     }
     else if (dq1 > 0.0) {
-      if (dr1 > 0.0) return _IGL_TRI_TRI_3D(p1,q1,r1,p2,r2,q2,dp2,dr2,dq2,N1);
-      else return _IGL_TRI_TRI_3D(q1,r1,p1,p2,q2,r2,dp2,dq2,dr2,N1);
+      if (dr1 > 0.0) return internal::_IGL_TRI_TRI_3D(p1,q1,r1,p2,r2,q2,dp2,dr2,dq2,N1);
+      else return internal::_IGL_TRI_TRI_3D(q1,r1,p1,p2,q2,r2,dp2,dq2,dr2,N1);
     }
     else  {
-      if (dr1 > 0.0) return _IGL_TRI_TRI_3D(r1,p1,q1,p2,q2,r2,dp2,dq2,dr2,N1);
-      else if (dr1 < 0.0) return _IGL_TRI_TRI_3D(r1,p1,q1,p2,r2,q2,dp2,dr2,dq2,N1);
-      else return coplanar_tri_tri3d(p1,q1,r1,p2,q2,r2,N1);
+      if (dr1 > 0.0) return internal::_IGL_TRI_TRI_3D(r1,p1,q1,p2,q2,r2,dp2,dq2,dr2,N1);
+      else if (dr1 < 0.0) return internal::_IGL_TRI_TRI_3D(r1,p1,q1,p2,r2,q2,dp2,dr2,dq2,N1);
+      else return internal::coplanar_tri_tri3d(p1,q1,r1,p2,q2,r2,N1);
     }
   }
 };
@@ -667,8 +612,24 @@ IGL_INLINE bool igl::tri_tri_intersection_test_3d(
   dq2 = v1.dot(N1);
   v1=r2-r1;
   dr2 = v1.dot(N1);
+
   
   if (((dp2 * dq2) > 0.0) && ((dp2 * dr2) > 0.0)) return false;
+  // Alec: it's hard to believe this will ever be perfectly robust, but checking
+  // 1e-22 against zero seems like a recipe for bad logic.
+  // Switching all these 0.0s to epsilons makes other tests fail. My claim is
+  // that the series of logic below is a bad way of determining coplanarity, so
+  // instead just check for it right away.
+  const Scalar eps = igl::EPS<Scalar>();
+  using std::abs;
+  if(
+      abs(dp1) < eps && abs(dq1) < eps && abs(dr1) < eps &&
+      abs(dp2) < eps && abs(dq2) < eps && abs(dr2) < eps)
+  { 
+    coplanar = true;
+    return internal::coplanar_tri_tri3d(p1,q1,r1,p2,q2,r2,N1);
+  };
+
 
   // Permutation in a canonical form of T1's vertices
   if (dp1 > 0.0) {
@@ -693,7 +654,7 @@ IGL_INLINE bool igl::tri_tri_intersection_test_3d(
       if (dr1 > 0.0) return internal::_IGL_TRI_TRI_INTER_3D(r1,p1,q1,p2,q2,r2,dp2,dq2,dr2,coplanar,source,target,N1,N2);
       else if (dr1 < 0.0) return internal::_IGL_TRI_TRI_INTER_3D(r1,p1,q1,p2,r2,q2,dp2,dr2,dq2,coplanar,source,target,N1,N2);
       else {
-        // triangles are co-planar
+        // triangles are co-planar (should have been caught above).
 
         coplanar = true;
         return internal::coplanar_tri_tri3d(p1,q1,r1,p2,q2,r2,N1);
@@ -894,4 +855,8 @@ template bool igl::tri_tri_intersection_test_3d<Eigen::Block<Eigen::Matrix<doubl
 template bool igl::tri_tri_intersection_test_3d<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false>, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false>, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false>, Eigen::Matrix<double, 1, 3, 1, 1, 3>, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false>, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false>, Eigen::Matrix<double, 1, 3, 1, 1, 3>, Eigen::Matrix<double, 1, 3, 1, 1, 3> >(Eigen::MatrixBase<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> > const&, Eigen::MatrixBase<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> > const&, Eigen::MatrixBase<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> > const&, Eigen::MatrixBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > const&, Eigen::MatrixBase<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> > const&, Eigen::MatrixBase<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> > const&, bool&, Eigen::MatrixBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> >&, Eigen::MatrixBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> >&);
 template bool igl::tri_tri_intersection_test_3d<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::Matrix<double, 1, 3, 1, 1, 3>, Eigen::Matrix<double, 1, 3, 1, 1, 3> >(Eigen::MatrixBase<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> > const&, Eigen::MatrixBase<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> > const&, Eigen::MatrixBase<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> > const&, Eigen::MatrixBase<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> > const&, Eigen::MatrixBase<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> > const&, Eigen::MatrixBase<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> > const&, bool&, Eigen::MatrixBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> >&, Eigen::MatrixBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> >&);
 template bool igl::tri_tri_intersection_test_3d<Eigen::Matrix<double, 1, 3, 1, 1, 3>, Eigen::Matrix<double, 1, 3, 1, 1, 3>, Eigen::Matrix<double, 1, 3, 1, 1, 3>, Eigen::Matrix<double, 1, 3, 1, 1, 3>, Eigen::Matrix<double, 1, 3, 1, 1, 3>, Eigen::Matrix<double, 1, 3, 1, 1, 3>, Eigen::Matrix<double, 1, 3, 1, 1, 3>, Eigen::Matrix<double, 1, 3, 1, 1, 3> >(Eigen::MatrixBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > const&, Eigen::MatrixBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > const&, Eigen::MatrixBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > const&, Eigen::MatrixBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > const&, Eigen::MatrixBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > const&, Eigen::MatrixBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > const&, bool&, Eigen::MatrixBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> >&, Eigen::MatrixBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> >&);
+
+template bool igl::tri_tri_overlap_test_3d<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false>, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> >(Eigen::MatrixBase<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> > const&, Eigen::MatrixBase<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> > const&, Eigen::MatrixBase<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> > const&, Eigen::MatrixBase<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false> > const&, Eigen::MatrixBase<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> > const&, Eigen::MatrixBase<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> > const&);
+template bool igl::tri_tri_overlap_test_3d<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::Matrix<double, 1, -1, 1, 1, -1>, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> >(Eigen::MatrixBase<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> > const&, Eigen::MatrixBase<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> > const&, Eigen::MatrixBase<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> > const&, Eigen::MatrixBase<Eigen::Matrix<double, 1, -1, 1, 1, -1> > const&, Eigen::MatrixBase<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> > const&, Eigen::MatrixBase<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> > const&);
+template bool igl::tri_tri_overlap_test_3d<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false>, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> >(Eigen::MatrixBase<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> > const&, Eigen::MatrixBase<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> > const&, Eigen::MatrixBase<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> > const&, Eigen::MatrixBase<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> > const&, Eigen::MatrixBase<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> > const&, Eigen::MatrixBase<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1> const, 1, -1, false> > const&);
 #endif

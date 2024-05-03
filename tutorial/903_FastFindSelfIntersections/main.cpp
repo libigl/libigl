@@ -1,7 +1,7 @@
 #include <igl/read_triangle_mesh.h>
 #include <igl/unique.h>
 #include <igl/opengl/glfw/Viewer.h>
-#include <igl/fast_find_self_intersections.h>
+#include <igl/predicates/find_self_intersections.h>
 
 int main(int argc, char *argv[])
 {
@@ -18,12 +18,13 @@ int main(int argc, char *argv[])
   Eigen::VectorXi EI;
   Eigen::MatrixXd EV;
   Eigen::MatrixXi IF,EE;
+  Eigen::Array<bool,Eigen::Dynamic,1> CP;
 
-  if(igl::fast_find_self_intersections(V,F,false,false,IF,EV,EE,EI))
+  if(igl::predicates::find_self_intersections(V,F,IF,CP,EV,EE,EI))
   {
     std::cout<<"Found "<<IF.rows()<<" self intersecting pairs"<<std::endl;
     // plot edge vertices
-    viewer.data().set_edges(EV,EE, Eigen::RowVector3d(1,0,0));
+    viewer.data().set_edges(EV,EE, Eigen::RowVector3d(1,1,1));
   }
   Eigen::VectorXi I;
   igl::unique(IF,I);
