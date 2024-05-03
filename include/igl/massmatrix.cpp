@@ -16,6 +16,113 @@
 #include <Eigen/Geometry>
 #include <iostream>
 
+// For std::enable_if
+#include <type_traits>
+
+namespace igl
+{
+  template <typename DerivedV, typename DerivedF, typename Scalar, int simplex_size = DerivedF::ColsAtCompileTime>
+  struct MassMatrixHelper;
+  
+  // This would be easier with C++17 if constexpr
+  // Specialization for triangles
+  template <typename DerivedV, typename DerivedF, typename Scalar>
+  struct MassMatrixHelper<DerivedV, DerivedF, Scalar, 3> {
+    static void compute(
+      const Eigen::MatrixBase<DerivedV>& V, 
+      const Eigen::MatrixBase<DerivedF>& F, 
+      const MassMatrixType type,
+      Eigen::SparseMatrix<Scalar>& M)
+    {
+      MassMatrixType eff_type = 
+        type == MASSMATRIX_TYPE_DEFAULT? MASSMATRIX_TYPE_VORONOI : type;
+      Eigen::Matrix<Scalar, Eigen::Dynamic, 3> l;
+      igl::edge_lengths(V, F, l);
+      return massmatrix_intrinsic(l, F, eff_type, M);
+    }
+  };
+  
+  // Specialization for tetrahedra
+  template <typename DerivedV, typename DerivedF, typename Scalar>
+  struct MassMatrixHelper<DerivedV, DerivedF, Scalar, 4> {
+    static void compute(
+      const Eigen::MatrixBase<DerivedV>& V, 
+      const Eigen::MatrixBase<DerivedF>& F, 
+      const MassMatrixType type,
+      Eigen::SparseMatrix<Scalar>& M)
+    {
+      const int n = V.rows();
+      const int m = F.rows();
+      using Eigen::Matrix;
+      using Eigen::Dynamic;
+      MassMatrixType eff_type = 
+        type == MASSMATRIX_TYPE_DEFAULT? MASSMATRIX_TYPE_BARYCENTRIC: type;
+      Eigen::Matrix<Scalar, Dynamic, 1> vol;
+      volume(V, F, vol);
+      vol = vol.array().abs();
+      Matrix<typename DerivedF::Scalar,Dynamic,1> MI;
+      Matrix<typename DerivedF::Scalar,Dynamic,1> MJ;
+      Matrix<Scalar,Dynamic,1> MV;
+  
+      switch (eff_type)
+      {
+        case MASSMATRIX_TYPE_BARYCENTRIC:
+          MI.resize(m*4,1); MJ.resize(m*4,1); MV.resize(m*4,1);
+          MI.block(0*m,0,m,1) = F.col(0);
+          MI.block(1*m,0,m,1) = F.col(1);
+          MI.block(2*m,0,m,1) = F.col(2);
+          MI.block(3*m,0,m,1) = F.col(3);
+          MJ = MI;
+          repmat(vol,4,1,MV);
+          assert(MV.rows()==m*4&&MV.cols()==1);
+          MV.array() /= 4.;
+          break;
+        case MASSMATRIX_TYPE_VORONOI:
+          {
+            MI = decltype(MI)::LinSpaced(n,0,n-1);
+            MJ = MI;
+            voronoi_mass(V,F,MV);
+            break;
+          }
+        case MASSMATRIX_TYPE_FULL:
+          MI.resize(m*16,1); MJ.resize(m*16,1); MV.resize(m*16,1);
+          // indicies and values of the element mass matrix entries in the order
+          // (1,0),(2,0),(3,0),(2,1),(3,1),(0,1),(3,2),(0,2),(1,2),(0,3),(1,3),(2,3),(0,0),(1,1),(2,2),(3,3);
+          MI<<F.col(1),F.col(2),F.col(3),F.col(2),F.col(3),F.col(0),F.col(3),F.col(0),F.col(1),F.col(0),F.col(1),F.col(2),F.col(0),F.col(1),F.col(2),F.col(3);
+          MJ<<F.col(0),F.col(0),F.col(0),F.col(1),F.col(1),F.col(1),F.col(2),F.col(2),F.col(2),F.col(3),F.col(3),F.col(3),F.col(0),F.col(1),F.col(2),F.col(3);
+          repmat(vol,16,1,MV);
+          assert(MV.rows()==m*16&&MV.cols()==1);
+          MV.block(0*m,0,12*m,1) /= 20.;
+          MV.block(12*m,0,4*m,1) /= 10.;
+          break;
+        default:
+          assert(false && "Unknown Mass matrix eff_type");
+      }
+      sparse(MI,MJ,MV,n,n,M);
+    }
+  };
+  
+  // General template for handling Eigen::Dynamic at runtime
+  template <typename DerivedV, typename DerivedF, typename Scalar>
+  struct MassMatrixHelper<DerivedV, DerivedF, Scalar, Eigen::Dynamic> {
+    static void compute(
+      const Eigen::MatrixBase<DerivedV>& V,
+      const Eigen::MatrixBase<DerivedF>& F,
+      const MassMatrixType type,
+      Eigen::SparseMatrix<Scalar>& M)
+    {
+      if (F.cols() == 3) {
+        MassMatrixHelper<DerivedV, DerivedF, Scalar, 3>::compute(V, F, type, M);
+      } else if (F.cols() == 4) {
+        MassMatrixHelper<DerivedV, DerivedF, Scalar, 4>::compute(V, F, type, M);
+      } else {
+        // Handle unsupported simplex size at runtime
+        assert(false && "Unsupported simplex size");
+      }
+    }
+  };
+}
+
 template <typename DerivedV, typename DerivedF, typename Scalar>
 IGL_INLINE void igl::massmatrix(
   const Eigen::MatrixBase<DerivedV> & V, 
@@ -23,80 +130,7 @@ IGL_INLINE void igl::massmatrix(
   const MassMatrixType type,
   Eigen::SparseMatrix<Scalar>& M)
 {
-  using namespace Eigen;
-  using namespace std;
-
-  const int n = V.rows();
-  const int m = F.rows();
-  const int simplex_size = F.cols();
-
-  MassMatrixType eff_type = type;
-  // Use voronoi of for triangles by default, otherwise barycentric
-  if(type == MASSMATRIX_TYPE_DEFAULT)
-  {
-    eff_type = (simplex_size == 3?MASSMATRIX_TYPE_VORONOI:MASSMATRIX_TYPE_BARYCENTRIC);
-  }
-
-  if(simplex_size == 3)
-  {
-    // Triangles
-    // edge lengths numbered same as opposite vertices
-    Matrix<Scalar,Dynamic,3> l;
-    igl::edge_lengths(V,F,l);
-    return massmatrix_intrinsic(l,F,type,M);
-  }else if(simplex_size == 4)
-  {
-    // tetrahedra
-    assert(V.cols() == 3 && "vertices must be defined in 3D for tetrahedra");
-
-    Matrix<Scalar,Dynamic,1> vol;
-    volume(V,F,vol);
-    vol = vol.array().abs();
-
-    Matrix<typename DerivedF::Scalar,Dynamic,1> MI;
-    Matrix<typename DerivedF::Scalar,Dynamic,1> MJ;
-    Matrix<Scalar,Dynamic,1> MV;
-
-    switch (eff_type)
-    {
-      case MASSMATRIX_TYPE_BARYCENTRIC:
-        MI.resize(m*4,1); MJ.resize(m*4,1); MV.resize(m*4,1);
-        MI.block(0*m,0,m,1) = F.col(0);
-        MI.block(1*m,0,m,1) = F.col(1);
-        MI.block(2*m,0,m,1) = F.col(2);
-        MI.block(3*m,0,m,1) = F.col(3);
-        MJ = MI;
-        repmat(vol,4,1,MV);
-        assert(MV.rows()==m*4&&MV.cols()==1);
-        MV.array() /= 4.;
-        break;
-      case MASSMATRIX_TYPE_VORONOI:
-        {
-          MI = decltype(MI)::LinSpaced(n,0,n-1);
-          MJ = MI;
-          voronoi_mass(V,F,MV);
-          break;
-        }
-      case MASSMATRIX_TYPE_FULL:
-        MI.resize(m*16,1); MJ.resize(m*16,1); MV.resize(m*16,1);
-        // indicies and values of the element mass matrix entries in the order
-        // (1,0),(2,0),(3,0),(2,1),(3,1),(0,1),(3,2),(0,2),(1,2),(0,3),(1,3),(2,3),(0,0),(1,1),(2,2),(3,3);
-        MI<<F.col(1),F.col(2),F.col(3),F.col(2),F.col(3),F.col(0),F.col(3),F.col(0),F.col(1),F.col(0),F.col(1),F.col(2),F.col(0),F.col(1),F.col(2),F.col(3);
-        MJ<<F.col(0),F.col(0),F.col(0),F.col(1),F.col(1),F.col(1),F.col(2),F.col(2),F.col(2),F.col(3),F.col(3),F.col(3),F.col(0),F.col(1),F.col(2),F.col(3);
-        repmat(vol,16,1,MV);
-        assert(MV.rows()==m*16&&MV.cols()==1);
-        MV.block(0*m,0,12*m,1) /= 20.;
-        MV.block(12*m,0,4*m,1) /= 10.;
-        break;
-      default:
-        assert(false && "Unknown Mass matrix eff_type");
-    }
-    sparse(MI,MJ,MV,n,n,M);
-  }else
-  {
-    // Unsupported simplex size
-    assert(false && "Unsupported simplex size");
-  }
+  MassMatrixHelper<DerivedV, DerivedF, Scalar, DerivedF::ColsAtCompileTime>::compute(V, F, type, M);
 }
 
 #ifdef IGL_STATIC_LIBRARY
