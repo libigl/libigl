@@ -19,6 +19,7 @@
 // atomic
 #include <igl/parallel_for.h>
 #include <atomic>
+#include <mutex>
 
 template <
   typename DerivedV1,
