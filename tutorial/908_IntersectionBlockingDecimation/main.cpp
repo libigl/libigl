@@ -1,6 +1,6 @@
 #include <igl/opengl/glfw/Viewer.h>
 #include <igl/read_triangle_mesh.h>
-#include <igl/fast_find_self_intersections.h>
+#include <igl/predicates/find_self_intersections.h>
 #include <igl/unique.h>
 #include <igl/remove_unreferenced.h>
 #include <igl/get_seconds.h>
@@ -99,10 +99,9 @@ int main(int argc, char *argv[])
     {
       Eigen::VectorXi BI;
       {
-        Eigen::MatrixXd EV;
-        Eigen::MatrixXi IF,EE;
-        Eigen::VectorXi EI;
-        igl::fast_find_self_intersections(dV[pass],dF[pass],true,false,IF,EV,EE,EI);
+        Eigen::MatrixXi IF;
+        Eigen::Array<bool,Eigen::Dynamic,1> CP;
+        igl::predicates::find_self_intersections(dV[pass],dF[pass],false,IF,CP);
         igl::unique(IF,BI);
       }
       printf("  # self-intersections: %d\n",(int)BI.size());
