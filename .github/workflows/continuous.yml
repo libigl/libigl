@@ -52,6 +52,12 @@ jobs:
         run: |
           HOMEBREW_NO_AUTO_UPDATE=1 brew install ccache
 
+      - name: Setup Xcode version
+        if: runner.os == 'macOS'
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '15.2'
+
       - name: Cache Build
         id: cache-build
         uses: actions/cache@v2
