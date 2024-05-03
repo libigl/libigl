@@ -35,7 +35,7 @@ IGL_INLINE  bool igl::predicates::triangle_triangle_intersect(
   const Orientation dq1 = orient3d(p2,q2,r2,q1);
   const Orientation dr1 = orient3d(p2,q2,r2,r1);
 
-  const auto same_non_coplanar = [](
+  const auto same_non_coplanar = [&NEGATIVE,&COPLANAR,&POSITIVE](
     const Orientation a, 
     const Orientation b, 
     const Orientation c)
@@ -53,7 +53,7 @@ IGL_INLINE  bool igl::predicates::triangle_triangle_intersect(
   // Theoreticaly, this should have already been fired above
   if(same_non_coplanar(dp2,dq2,dr2)) { return false; }
 
-  const auto tri_tri_overlap_test_2d = [](
+  const auto tri_tri_overlap_test_2d = [&NEGATIVE,&COPLANAR,&POSITIVE](
       const Vector2D & p1,
       const Vector2D & q1,
       const Vector2D & r1,
@@ -61,7 +61,7 @@ IGL_INLINE  bool igl::predicates::triangle_triangle_intersect(
       const Vector2D & q2,
       const Vector2D & r2)->bool
   {
-    const auto ccw_tri_tri_intersection_2d = [](
+    const auto ccw_tri_tri_intersection_2d = [&NEGATIVE,&COPLANAR,&POSITIVE](
       const Vector2D & p1,
       const Vector2D & q1,
       const Vector2D & r1,
@@ -69,7 +69,7 @@ IGL_INLINE  bool igl::predicates::triangle_triangle_intersect(
       const Vector2D & q2,
       const Vector2D & r2)->bool
     {
-      const auto INTERSECTION_TEST_VERTEX = [](
+      const auto INTERSECTION_TEST_VERTEX = [&NEGATIVE,&COPLANAR,&POSITIVE](
         const Vector2D & P1,
         const Vector2D & Q1,
         const Vector2D & R1,
@@ -105,7 +105,7 @@ IGL_INLINE  bool igl::predicates::triangle_triangle_intersect(
                 else return 0; 
             else  return 0; 
       };
-      const auto INTERSECTION_TEST_EDGE = [](
+      const auto INTERSECTION_TEST_EDGE = [&NEGATIVE,&COPLANAR,&POSITIVE](
         const Vector2D & P1,
         const Vector2D & Q1,
         const Vector2D & R1,
@@ -158,7 +158,7 @@ IGL_INLINE  bool igl::predicates::triangle_triangle_intersect(
 
   };
 
-  const auto coplanar_tri_tri3d = [&tri_tri_overlap_test_2d](
+  const auto coplanar_tri_tri3d = [&tri_tri_overlap_test_2d,&NEGATIVE,&COPLANAR,&POSITIVE](
     const Vector3D & p1,
     const Vector3D & q1,
     const Vector3D & r1,
@@ -210,7 +210,7 @@ IGL_INLINE  bool igl::predicates::triangle_triangle_intersect(
     return false;
   };
 
-  const auto TRI_TRI_3D = [&coplanar_tri_tri3d,&coplanar](
+  const auto TRI_TRI_3D = [&coplanar_tri_tri3d,&coplanar,&NEGATIVE,&COPLANAR,&POSITIVE](
     const Vector3D & p1,
     const Vector3D & q1,
     const Vector3D & r1,
@@ -221,7 +221,7 @@ IGL_INLINE  bool igl::predicates::triangle_triangle_intersect(
     const Orientation dq2,
     const Orientation dr2)->bool
   {
-    const auto CHECK_MIN_MAX = [](
+    const auto CHECK_MIN_MAX = [&NEGATIVE,&COPLANAR,&POSITIVE](
       const Vector3D & p1,
       const Vector3D & q1,
       const Vector3D & r1,
