@@ -77,8 +77,12 @@ IGL_INLINE bool igl::predicates::find_intersections(
       int d = F1(f,(c+2)%3);
       for(int e = 0;e<3;e++)
       {
-        // Find in opposite direction on jth face
-        if(F1(g,e) == d && F1(g,(e+1)%3) == s)
+        //// Find in opposite direction on gth face
+        //if(F1(g,e) == d && F1(g,(e+1)%3) == s)
+        // Find in either direction on gth face
+        if(
+            (F1(g,e) == d && F1(g,(e+1)%3) == s) ||
+            (F1(g,e) == s && F1(g,(e+1)%3) == d))
         {
           return c;
         }
