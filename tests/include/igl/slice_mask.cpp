@@ -25,13 +25,13 @@ TEST_CASE("slice_mask/find: random", "[igl]")
   {
     Eigen::MatrixXd Yigl;
     igl::slice_mask(X,M,1,Yigl);
-    Eigen::MatrixXd Yfind = X(igl::find(M),Eigen::all);
+    Eigen::MatrixXd Yfind = X(igl::find(M),Eigen::placeholders::all);
     test_common::assert_eq(Yigl,Yfind);
   }
   {
     Eigen::MatrixXd Yigl;
     igl::slice_mask(X,N,2,Yigl);
-    Eigen::MatrixXd Yfind = X(Eigen::all,igl::find(N));
+    Eigen::MatrixXd Yfind = X(Eigen::placeholders::all,igl::find(N));
     test_common::assert_eq(Yigl,Yfind);
   }
 }

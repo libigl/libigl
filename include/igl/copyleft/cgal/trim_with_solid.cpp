@@ -165,7 +165,7 @@ IGL_INLINE void igl::copyleft::cgal::trim_with_solid(
       igl::copyleft::cgal::intersect_other(
         VA,FA,VB,FB,{false,false,true},_1,V,F,J,_2);
       const auto keep = igl::find( (J.array()<FA.rows()).eval() );
-      F = F(keep,Eigen::all).eval();
+      F = F(keep,Eigen::placeholders::all).eval();
       J = J(keep).eval();
       {
         Eigen::VectorXi _;
@@ -262,7 +262,7 @@ IGL_INLINE void igl::copyleft::cgal::trim_with_solid(
                 keep.push_back(f);
               }
             }
-            F = F(keep,Eigen::all).eval();
+            F = F(keep,Eigen::placeholders::all).eval();
             J = J(keep).eval();
           }
 
@@ -278,7 +278,7 @@ IGL_INLINE void igl::copyleft::cgal::trim_with_solid(
       // only keep faces from A
       Eigen::Array<bool,Eigen::Dynamic,1> A = J.array()< FA.rows();
       const auto AI = igl::find(A);
-      F = F(AI,Eigen::all).eval();
+      F = F(AI,Eigen::placeholders::all).eval();
       J = J(AI).eval();
       P = P(AI).eval();
       set_D_via_patches(num_patches,P);

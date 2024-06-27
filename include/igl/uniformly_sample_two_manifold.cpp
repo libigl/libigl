@@ -88,7 +88,7 @@ IGL_INLINE void igl::uniformly_sample_two_manifold(
   // First get sampling as best as possible on mesh
   uniformly_sample_two_manifold_at_vertices(W,k,push,S);
   verbose("Lap: %g\n",get_seconds()-start);
-  WS = W(S,Eigen::all);
+  WS = W(S,Eigen::placeholders::all);
   //cout<<"WSmesh=["<<endl<<WS<<endl<<"];"<<endl;
 
 //#ifdef EXTREME_VERBOSE
@@ -361,7 +361,7 @@ IGL_INLINE void igl::uniformly_sample_two_manifold_at_vertices(
   // Remove corners, which better be at top
   S = S.segment(W.cols(),k).eval();
 
-  MatrixXd WS = W(S,Eigen::all);
+  MatrixXd WS = W(S,Eigen::placeholders::all);
   //cout<<"WSpartition=["<<endl<<WS<<endl<<"];"<<endl;
 
   // number of vertices

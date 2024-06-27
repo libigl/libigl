@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
   igl::read_triangle_mesh(
     argc>1?argv[1]:TUTORIAL_SHARED_PATH "/decimated-knight.off",V,F);
   // Make mesh into disconnected soup
-  V = V(Eigen::Map<Eigen::VectorXi>(F.data(),F.size()), Eigen::all).eval();
+  V = V(Eigen::Map<Eigen::VectorXi>(F.data(),F.size()), Eigen::placeholders::all).eval();
   F = Eigen::Map<Eigen::MatrixXi>(igl::colon<int>(0,V.rows()-1).data(),V.rows()/3,3).eval();
   // Cache normals
   igl::per_face_normals(V,F,N);
@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
   Eigen::VectorXi TD;
   const auto update_edges = [&]()
   {
-    Eigen::MatrixXi TQd = TQ(igl::find((TD.array()==depth).eval()),Eigen::all);
+    Eigen::MatrixXi TQd = TQ(igl::find((TD.array()==depth).eval()),Eigen::placeholders::all);
     Eigen::MatrixXi TE;
     igl::quad_edges(TQd,TE);
     vr.data().set_edges(TV,TE,Eigen::RowVector3d(1,1,1));

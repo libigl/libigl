@@ -194,7 +194,7 @@ void contours(
       Q.col(2), Q.col(3), 
       Q.col(3), Q.col(0);
     igl::per_face_normals(V,I,C,N,VV,FF,J);
-    NN = N(J,Eigen::all);
+    NN = N(J,Eigen::placeholders::all);
     igl::per_corner_normals(V,I,C,20,N,VV,FF,J,NN);
   }
 

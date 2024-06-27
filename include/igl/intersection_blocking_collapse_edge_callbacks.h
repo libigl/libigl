@@ -59,7 +59,7 @@ namespace igl
   ///    post_collapse,
   ///    E, EMAP, EF, EI,
   ///    U, G, J, I);
-  ///  G = G(igl::find((J.array()<orig_m).eval()), Eigen::all).eval();
+  ///  G = G(igl::find((J.array()<orig_m).eval()), Eigen::placeholders::all).eval();
   ///  {
   ///    Eigen::VectorXi _;
   ///    igl::remove_unreferenced(Eigen::MatrixXd(U),Eigen::MatrixXi(G),U,G,_);

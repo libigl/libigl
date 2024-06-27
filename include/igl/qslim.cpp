@@ -90,7 +90,7 @@ IGL_INLINE bool igl::qslim(
   // Remove phony boundary faces and clean up
   const Eigen::Array<bool,Eigen::Dynamic,1> keep = (J.array()<orig_m);
   const auto keep_i = igl::find(keep);
-  G = G(keep_i,Eigen::all).eval();
+  G = G(keep_i,Eigen::placeholders::all).eval();
   J = J(keep_i).eval();
   Eigen::VectorXi _1,I2;
   igl::remove_unreferenced(Eigen::MatrixXd(U),Eigen::MatrixXi(G),U,G,_1,I2);

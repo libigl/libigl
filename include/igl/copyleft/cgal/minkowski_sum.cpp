@@ -230,22 +230,22 @@ IGL_INLINE void igl::copyleft::cgal::minkowski_sum(
   typedef Matrix<typename DerivedG::Scalar,Dynamic,1> VectorXI;
   MatrixXI GT(mp+mn,3);
   GT<< 
-    FA(igl::find(N),Eigen::all), 
-    (FA.array()+n).eval()(igl::find(P),Eigen::all);
+    FA(igl::find(N),Eigen::placeholders::all), 
+    (FA.array()+n).eval()(igl::find(P),Eigen::placeholders::all);
 
   // J indexes FA for parts at s and m+FA for parts at d
   J.derived() = igl::LinSpaced<DerivedJ >(m,0,m-1);
   DerivedJ JT(mp+mn);
   JT << 
-    J(igl::find(P),Eigen::all), 
-    J(igl::find(N),Eigen::all);
+    J(igl::find(P),Eigen::placeholders::all), 
+    J(igl::find(N),Eigen::placeholders::all);
   JT.block(mp,0,mn,1).array()+=m;
 
   // Original non-co-planar faces with positively oriented reversed
   MatrixXI BA(mp+mn,3);
   BA << 
-    FA(igl::find(P),Eigen::all).rowwise().reverse(), 
-    FA(igl::find(N),Eigen::all);
+    FA(igl::find(P),Eigen::placeholders::all).rowwise().reverse(), 
+    FA(igl::find(N),Eigen::placeholders::all);
   // Quads along **all** sides
   MatrixXI GQ((mp+mn)*3,4);
   GQ<< 
