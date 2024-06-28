@@ -127,7 +127,7 @@ IGL_INLINE bool igl::spectra::eigs(
 
   Eigen::VectorXi I;
   igl::sort( Eigen::VectorXd(S), 1, false, S, I);
-  U = U(Eigen::all,I).eval();
+  U = U(Eigen::placeholders::all,I).eval();
   return true;
 }
 
