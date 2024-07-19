@@ -32,7 +32,7 @@ IGL_INLINE void igl::remove_duplicate_vertices(
     DerivedV rV,rSV;
     round((V/(epsilon)).eval(),rV);
     unique_rows(rV,rSV,SVI,SVJ);
-    SV = V(SVI.derived(),Eigen::all);
+    SV = V(SVI.derived(),Eigen::placeholders::all);
   }else
   {
     unique_rows(V,SV,SVI,SVJ);

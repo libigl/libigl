@@ -46,7 +46,7 @@ IGL_INLINE void igl::remove_unreferenced(
   NF = F;
   std::for_each(NF.data(),NF.data()+NF.size(),
     [&I](typename DerivedNF::Scalar & a){a=I(a);});
-  NV = V(J.derived(),Eigen::all);
+  NV = V(J.derived(),Eigen::placeholders::all);
 }
 
 template <

@@ -163,7 +163,7 @@ IGL_INLINE bool igl::eigs(
   // finally sort
   VectorXi I;
   igl::sort(S,1,false,sS,I);
-  sU = U(Eigen::all,I);
+  sU = U(Eigen::placeholders::all,I);
   sS /= rescale;
   sU /= sqrt(rescale);
   return true;

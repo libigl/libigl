@@ -84,7 +84,7 @@ IGL_INLINE bool igl::decimate(
     J,
     I);
   const Eigen::Array<bool,Eigen::Dynamic,1> keep = (J.array()<orig_m);
-  G = G(igl::find(keep),Eigen::all).eval();
+  G = G(igl::find(keep),Eigen::placeholders::all).eval();
   J = J(igl::find(keep)).eval();
   Eigen::VectorXi _1,I2;
   igl::remove_unreferenced(Eigen::MatrixXd(U),Eigen::MatrixXi(G),U,G,_1,I2);
