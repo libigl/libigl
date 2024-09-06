@@ -81,16 +81,14 @@ IGL_INLINE void igl::forward_kinematics(
   const std::vector<Eigen::Vector3d> & dT,
   Eigen::MatrixXd & T)
 {
-  using namespace Eigen;
-  using namespace std;
-  vector< Quaterniond,aligned_allocator<Quaterniond> > vQ;
-  vector< Vector3d> vT;
+  vector< Eigen::Quaterniond, Eigen::aligned_allocator<Eigen::Quaterniond> > vQ;
+  vector< Eigen::Vector3d> vT;
   forward_kinematics(C,BE,P,dQ,dT,vQ,vT);
   const int dim = C.cols();
   T.resize(BE.rows()*(dim+1),dim);
   for(int e = 0;e<BE.rows();e++)
   {
-    Affine3d a = Affine3d::Identity();
+    Eigen::Affine3d a = Eigen::Affine3d::Identity();
     a.translate(vT[e]);
     a.rotate(vQ[e]);
     T.block(e*(dim+1),0,dim+1,dim) =
