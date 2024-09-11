@@ -27,28 +27,86 @@ int main(int argc, char * argv[])
  
   // compute values
   cout<<"Computing distances..."<<endl;
-  VectorXd S,B;
+
+  // Batch based function for evaluating implicit
+  const auto batch_implicit = [&V,&F](const MatrixXd & Q)->VectorXd
   {
-    VectorXi I;
-    MatrixXd C,N;
-    signed_distance(GV,V,F,SIGNED_DISTANCE_TYPE_PSEUDONORMAL,S,I,C,N);
-    // Convert distances to binary inside-outside data --> aliasing artifacts
-    B = S;
-    for_each(B.data(),B.data()+B.size(),[](double& b){b=(b>0?1:(b<0?-1:0));});
-  }
+    VectorXd S;
+    {
+      VectorXi I;
+      MatrixXd C,N;
+      signed_distance(Q,V,F,SIGNED_DISTANCE_TYPE_FAST_WINDING_NUMBER,S,I,C,N);
+      // Extremely flatten out near zero
+      S = S.array().sign() * S.array().abs().exp();
+    }
+    return S;
+  };
+
+  VectorXd S = batch_implicit(GV);
   cout<<"Marching cubes..."<<endl;
-  MatrixXd SV,BV;
-  MatrixXi SF,BF;
+  MatrixXd SV;
+  MatrixXi SF;
   igl::marching_cubes(S,GV,res(0),res(1),res(2),0,SV,SF);
-  igl::marching_cubes(B,GV,res(0),res(1),res(2),0,BV,BF);
+
+  std::unordered_map<std::int64_t,int> E2V;
+  igl::marching_cubes(S,GV,res(0),res(1),res(2),0,SV,SF,E2V);
+
+  // Initialize min and max for root finding bisection
+  assert(E2V.size() == SV.rows());
+  Eigen::MatrixXd T(SV.rows(),2);
+  Eigen::VectorXi I(SV.rows());
+
+  // Precompute slices for end points
+  Eigen::MatrixXd GVi(SV.rows(),3);
+  Eigen::MatrixXd GVj(SV.rows(),3);
+
+  // This is only used for the assertion below
+  const auto ij2key = [](std::int32_t i,std::int32_t j)
+  {
+    if(i>j){ std::swap(i,j); }
+    std::int64_t ret = 0;
+    ret |= i;
+    ret |= static_cast<std::int64_t>(j) << 32;
+    return ret;
+  };
+  const auto key2ij = [](const std::int64_t & key, std::int32_t & i, std::int32_t & j)
+  {
+    i = key & 0xFFFFFFFF;
+    j = key >> 32;
+  };
+  for (const auto& e2v: E2V)
+  {
+    const std::int64_t key = e2v.first;
+    const std::int32_t v = e2v.second;
+    std::int32_t i,j;
+    key2ij(key,i,j);
+    const std::int64_t key0 = ij2key(i,j);
+    assert(key0 != key);
+    T.row(v) << 0,1;
+    // (i,j) is ordered so that i<j, but let's order so that S(i)<S(j)
+    if(S(i)>S(j)) { std::swap(i,j); }
+    GVi.row(v) = GV.row(i);
+    GVj.row(v) = GV.row(j);
+  }
+
+  const auto root_find_iteration = [&SV,&I,&T,&GVi,&GVj,&batch_implicit]()
+  {
+    Eigen::VectorXd T_mid = (T.col(0)+T.col(1))/2;
+    // Use this midpoint guess for the current visualization
+    SV = GVi.array().colwise() * (1.0 - T_mid.array()) + GVj.array().colwise() * T_mid.array();
+    // Compute values at midpoints
+    VectorXd S_mid = batch_implicit(SV);
+    // Update bounds
+    T.col(1) = (S_mid.array() >  0).select(T_mid, T.col(1));
+    T.col(0) = (S_mid.array() <= 0).select(T_mid, T.col(0));
+  };
 
   cout<<R"(Usage:
-'1'  Show original mesh.
-'2'  Show marching cubes contour of signed distance.
-'3'  Show marching cubes contour of indicator function.
+' '  Conduct a bisection iteration
 )";
   igl::opengl::glfw::Viewer viewer;
   viewer.data().set_mesh(SV,SF);
+  viewer.data().show_lines = false;
   viewer.callback_key_down =
     [&](igl::opengl::glfw::Viewer & viewer, unsigned char key, int mod)->bool
     {
@@ -56,20 +114,12 @@ int main(int argc, char * argv[])
       {
         default:
           return false;
-        case '1':
-          viewer.data().clear();
-          viewer.data().set_mesh(V,F);
-          break;
-        case '2':
-          viewer.data().clear();
-          viewer.data().set_mesh(SV,SF);
-          break;
-        case '3':
-          viewer.data().clear();
-          viewer.data().set_mesh(BV,BF);
+        case ' ':
+          root_find_iteration();
+          viewer.data().set_vertices(SV);
+          viewer.data().compute_normals();
           break;
       }
-      viewer.data().set_face_based(true);
       return true;
     };
   viewer.launch();
