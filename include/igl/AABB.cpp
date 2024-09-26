@@ -787,7 +787,7 @@ template <typename DerivedV, int DIM>
 IGL_INLINE void igl::AABB<DerivedV,DIM>::set_min(
   const RowVectorDIMS & /* p */,
   const Scalar sqr_d_candidate,
-  const int i_candidate,
+  const int & i_candidate,
   const RowVectorDIMS & c_candidate,
   Scalar & sqr_d,
   int & i,

@@ -451,7 +451,7 @@ private:
       IGL_INLINE void set_min(
         const RowVectorDIMS & p,
         const Scalar sqr_d_candidate,
-        const int i_candidate,
+        const int & i_candidate,
         const RowVectorDIMS & c_candidate,
         Scalar & sqr_d,
         int & i,
