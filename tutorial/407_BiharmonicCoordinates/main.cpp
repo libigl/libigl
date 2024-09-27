@@ -67,7 +67,7 @@ int main(int argc, char * argv[])
     // with the vertices in high resolution. b is the list of vertices
     // corresponding to the indices in high resolution which has closest
     // distance to the points in low resolution
-    low.V = high.V(b,Eigen::all);
+    low.V = high.V(b,Eigen::placeholders::all);
 
     // list of points --> list of singleton lists
     std::vector<std::vector<int> > S;
@@ -90,8 +90,8 @@ int main(int argc, char * argv[])
     igl::remove_unreferenced(high.V.rows(),high.F,I,J);
     for_each(high.F.data(),high.F.data()+high.F.size(),[&I](int & a){a=I(a);});
     for_each(b.data(),b.data()+b.size(),[&I](int & a){a=I(a);});
-    high.V = high.V(J,Eigen::all).eval();
-    W = W(J,Eigen::all).eval();
+    high.V = high.V(J,Eigen::placeholders::all).eval();
+    W = W(J,Eigen::placeholders::all).eval();
   }
 
   // Resize low res (high res will also be resized by affine precision of W)

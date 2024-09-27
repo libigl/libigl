@@ -87,7 +87,7 @@ int main(int argc, char *argv[])
       post_collapse,
       E, EMAP, EF, EI,
       U, G, J, I);
-    G = G(igl::find((J.array()<orig_m).eval()), Eigen::all).eval();
+    G = G(igl::find((J.array()<orig_m).eval()), Eigen::placeholders::all).eval();
     {
       Eigen::VectorXi _;
       igl::remove_unreferenced(Eigen::MatrixXd(U),Eigen::MatrixXi(G),U,G,_);
@@ -106,7 +106,7 @@ int main(int argc, char *argv[])
       }
       printf("  # self-intersections: %d\n",(int)BI.size());
       dC[pass] = gray.replicate(dF[pass].rows(),1);
-      dC[pass](BI,Eigen::all) = 
+      dC[pass](BI,Eigen::placeholders::all) = 
         Eigen::RowVector3d(0.95,0.15,0.15).replicate(BI.size(),1);
     }
   }

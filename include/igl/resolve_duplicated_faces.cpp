@@ -81,7 +81,7 @@ IGL_INLINE void igl::resolve_duplicated_faces(
   const size_t num_kept = kept_faces.size();
   J.resize(num_kept, 1);
   std::copy(kept_faces.begin(), kept_faces.end(), J.data());
-  F2 = F1(J.derived(),Eigen::all);
+  F2 = F1(J.derived(),Eigen::placeholders::all);
 }
 
 #ifdef IGL_STATIC_LIBRARY
