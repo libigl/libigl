@@ -212,8 +212,8 @@ namespace glfw
     glfwGetFramebufferSize(window, &width, &height);
     int width_window, height_window;
     glfwGetWindowSize(window, &width_window, &height_window);
-    highdpiw = windowWidth/width_window;
-    highdpih = windowHeight/height_window;
+    highdpiw = (windowWidth <= 0 || width_window <= 0) ? 1 : ((double)windowWidth/width_window);
+    highdpih = (windowHeight <= 0 || height_window <= 0) ? 1 : ((double)windowHeight/height_window);
     glfw_window_size(window,width_window,height_window);
     // Initialize IGL viewer
     init();
