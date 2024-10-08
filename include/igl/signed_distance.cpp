@@ -112,12 +112,12 @@ namespace
             break;
           case SIGNED_DISTANCE_TYPE_DEFAULT:
           case SIGNED_DISTANCE_TYPE_WINDING_NUMBER:
-            s = 1.-2.*hier3.winding_number(q.transpose());
+            s = hier3.winding_number(q.transpose()) > 0.5 ? -1. : 1.;
             break;
           case SIGNED_DISTANCE_TYPE_FAST_WINDING_NUMBER:
           {
             Scalar w = fast_winding_number(fwn_bvh, 2, q.template cast<float>().eval());         
-            s = 1.-2.*std::abs(w);  
+            s = std::abs(w) > 0.5 ? -1. : 1.;
             break;
           }
           case SIGNED_DISTANCE_TYPE_PSEUDONORMAL:
@@ -233,7 +233,7 @@ namespace
           case SIGNED_DISTANCE_TYPE_WINDING_NUMBER:
             assert(!V.derived().IsRowMajor);
             assert(!F.derived().IsRowMajor);
-            s = 1.-2.*winding_number(V,F,q);
+            s = winding_number(V,F,q) > 0.5 ? -1. : 1.;
             break;
           case SIGNED_DISTANCE_TYPE_PSEUDONORMAL:
           {
@@ -630,7 +630,7 @@ IGL_INLINE void igl::signed_distance_winding_number(
   typedef Eigen::Matrix<typename DerivedV::Scalar,1,3> RowVector3S;
   sqrd = tree.squared_distance(V,F,RowVector3S(q),i,(RowVector3S&)c);
   const Scalar w = hier.winding_number(q.transpose());
-  s = 1.-2.*w;
+  s = w > 0.5 ? -1. : 1.;
 }
 
 template <
@@ -660,7 +660,7 @@ IGL_INLINE void igl::signed_distance_winding_number(
   // colmajor order
   assert(!V.derived().IsRowMajor);
   assert(!F.derived().IsRowMajor);
-  s = 1.-2.*winding_number(V,F,q);
+  s = winding_number(V,F,q) > 0.5 ? -1. : 1.;
 }
 
 //Multi point by parrallel for on single point
@@ -715,7 +715,7 @@ IGL_INLINE typename DerivedV::Scalar igl::signed_distance_fast_winding_number(
     sqrd = tree.squared_distance(V,F,q,i,c);
     Scalar w = fast_winding_number(fwn_bvh,2,q.template cast<float>());
     //0.5 is on surface
-    return sqrt(sqrd)*(1.-2.*std::abs(w));
+    return sqrt(sqrd)*(std::abs(w) > 0.5 ? -1. : 1.);
   }
 
 #ifdef IGL_STATIC_LIBRARY
