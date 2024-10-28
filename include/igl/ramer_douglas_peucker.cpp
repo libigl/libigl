@@ -65,7 +65,7 @@ IGL_INLINE void igl::ramer_douglas_peucker(
   };
   simplify(0,n-1);
   igl::find(I,J);
-  S = P(J.derived(),Eigen::all);
+  S = P(J.derived(),Eigen::placeholders::all);
 }
 
 template <
@@ -119,7 +119,7 @@ IGL_INLINE void igl::ramer_douglas_peucker(
       T(t) = 0;
     }
   }
-  DerivedS SB = S(B,Eigen::all);
+  DerivedS SB = S(B,Eigen::placeholders::all);
   Eigen::VectorXi MB = B.array()+1;
   for(int b = 0;b<MB.size();b++)
   {
@@ -128,7 +128,7 @@ IGL_INLINE void igl::ramer_douglas_peucker(
       MB(b) = S.rows()-1;
     }
   }
-  DerivedS SMB = S(MB,Eigen::all);
+  DerivedS SMB = S(MB,Eigen::placeholders::all);
   Q = SB.array() + ((SMB.array()-SB.array()).colwise()*T.array());
 
   // Remove extra point at end

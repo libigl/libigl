@@ -115,7 +115,7 @@ IGL_INLINE void igl::copyleft::cgal::wire_mesh(
   const auto append_hull = 
     [&V,&vF,&vJ](const Eigen::VectorXi & I, const int j)
   {
-    MatrixX3S Vv = V(I,Eigen::all);
+    MatrixX3S Vv = V(I,Eigen::placeholders::all);
 
     if(coplanar(Vv))
     {

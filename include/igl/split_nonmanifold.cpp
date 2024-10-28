@@ -468,7 +468,7 @@ IGL_INLINE void igl::split_nonmanifold(
   Eigen::PlainObjectBase <DerivedSVI> & SVI)
 {
   igl::split_nonmanifold(F,SF,SVI);
-  SV = V(SVI.derived(),Eigen::all);
+  SV = V(SVI.derived(),Eigen::placeholders::all);
 }
 
 #ifdef IGL_STATIC_LIBRARY

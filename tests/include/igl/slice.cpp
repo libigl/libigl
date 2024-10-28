@@ -19,13 +19,13 @@ TEST_CASE("slice: eigen-simple", "[igl]")
   {
     Eigen::MatrixXd Yigl;
     igl::slice(X,I,1,Yigl);
-    Eigen::MatrixXd Yeigen  = X(I,Eigen::all);
+    Eigen::MatrixXd Yeigen  = X(I,Eigen::placeholders::all);
     test_common::assert_eq(Yigl,Yeigen);
   }
   {
     Eigen::MatrixXd Yigl;
     igl::slice(X,I,2,Yigl);
-    Eigen::MatrixXd Yeigen  = X(Eigen::all,I);
+    Eigen::MatrixXd Yeigen  = X(Eigen::placeholders::all,I);
     test_common::assert_eq(Yigl,Yeigen);
   }
 }
@@ -48,13 +48,13 @@ TEST_CASE("slice: eigen-random", "[igl]")
   {
     Eigen::MatrixXd Yigl;
     igl::slice(X,I,1,Yigl);
-    Eigen::MatrixXd Yeigen = X(I,Eigen::all);
+    Eigen::MatrixXd Yeigen = X(I,Eigen::placeholders::all);
     test_common::assert_eq(Yigl,Yeigen);
   }
   {
     Eigen::MatrixXd Yigl;
     igl::slice(X,J,2,Yigl);
-    Eigen::MatrixXd Yeigen = X(Eigen::all,J);
+    Eigen::MatrixXd Yeigen = X(Eigen::placeholders::all,J);
     test_common::assert_eq(Yigl,Yeigen);
   }
 }

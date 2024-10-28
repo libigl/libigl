@@ -281,7 +281,7 @@ IGL_INLINE bool igl::predicates::find_intersections(
   if(!find_intersections(tree1,V1,F1,V2,F2,false,IF,CP)) { return false; }
   std::vector<int> EI_vec = igl::find((CP.array()==false).eval());
   igl::list_to_matrix(EI_vec,EI);
-  const auto IF_EI = IF(EI_vec,Eigen::all).eval();
+  const auto IF_EI = IF(EI_vec,Eigen::placeholders::all).eval();
   igl::triangle_triangle_intersect(V1,F1,V2,F2,IF_EI,EV,EE);
   return true;
 }
