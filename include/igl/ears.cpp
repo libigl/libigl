@@ -2,6 +2,7 @@
 #include "on_boundary.h"
 #include "find.h"
 #include "min.h"
+#include "placeholders.h"
 #include <cassert>
 
 template <
@@ -21,7 +22,7 @@ IGL_INLINE void igl::ears(
   }
   find((B.rowwise().count() == 2).eval(), ear);
   // Why do I need this .derived()?
-  Eigen::Array<bool, Eigen::Dynamic, 3> Bear = B(ear.derived(),Eigen::placeholders::all);
+  Eigen::Array<bool, Eigen::Dynamic, 3> Bear = B(ear.derived(),igl::placeholders::all);
   Eigen::Array<bool, Eigen::Dynamic, 1> M;
   igl::min(Bear,2,M,ear_opp);
 }

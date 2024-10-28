@@ -13,6 +13,7 @@
 #include "intersection_blocking_collapse_edge_callbacks.h"
 #include "is_edge_manifold.h"
 #include "remove_unreferenced.h"
+#include "placeholders.h"
 #include "find.h"
 #include "connect_boundary_to_infinity.h"
 #include "parallel_for.h"
@@ -84,7 +85,7 @@ IGL_INLINE bool igl::decimate(
     J,
     I);
   const Eigen::Array<bool,Eigen::Dynamic,1> keep = (J.array()<orig_m);
-  G = G(igl::find(keep),Eigen::placeholders::all).eval();
+  G = G(igl::find(keep),igl::placeholders::all).eval();
   J = J(igl::find(keep)).eval();
   Eigen::VectorXi _1,I2;
   igl::remove_unreferenced(Eigen::MatrixXd(U),Eigen::MatrixXi(G),U,G,_1,I2);

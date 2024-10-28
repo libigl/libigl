@@ -11,6 +11,7 @@
 #include "slice_into.h"
 #include "cat.h"
 //#include "matlab_format.h"
+#include "placeholders.h"
 
 #include <iostream>
 #include <limits>
@@ -280,7 +281,7 @@ IGL_INLINE igl::SolverStatus igl::active_set(
       cout<<"  everything's fixed."<<endl;
 #endif
       Z.resize(A.rows(),Y_i.cols());
-      Z(known_i,Eigen::placeholders::all) = Y_i;
+      Z(known_i,igl::placeholders::all) = Y_i;
       sol.resize(0,Y_i.cols());
       assert(Aeq_i.rows() == 0 && "All fixed but linearly constrained");
     }else
@@ -328,7 +329,7 @@ IGL_INLINE igl::SolverStatus igl::active_set(
     // Slow
     slice(A,known_i,1,Ak);
     //slice(B,known_i,Bk);
-    DerivedB Bk = B(known_i,Eigen::placeholders::all);
+    DerivedB Bk = B(known_i,igl::placeholders::all);
     MatrixXd Lambda_known_i = -(0.5*Ak*Z + 0.5*Bk);
     // reverse the lambda values for lx
     Lambda_known_i.block(nk,0,as_lx_count,1) =
