@@ -1,5 +1,6 @@
 #include "contours.h"
 #include <igl/unique_simplices.h>
+#include <igl/placeholders.h>
 #include <igl/dual_contouring.h>
 #include <igl/get_seconds.h>
 #include <igl/grid.h>
@@ -194,7 +195,7 @@ void contours(
       Q.col(2), Q.col(3), 
       Q.col(3), Q.col(0);
     igl::per_face_normals(V,I,C,N,VV,FF,J);
-    NN = N(J,Eigen::placeholders::all);
+    NN = N(J,igl::placeholders::all);
     igl::per_corner_normals(V,I,C,20,N,VV,FF,J,NN);
   }
 

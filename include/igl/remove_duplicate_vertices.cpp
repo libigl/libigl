@@ -9,6 +9,7 @@
 #include "round.h"
 #include "unique_rows.h"
 #include "colon.h"
+#include "placeholders.h"
 #include <functional>
 
 template <
@@ -32,7 +33,7 @@ IGL_INLINE void igl::remove_duplicate_vertices(
     DerivedV rV,rSV;
     round((V/(epsilon)).eval(),rV);
     unique_rows(rV,rSV,SVI,SVJ);
-    SV = V(SVI.derived(),Eigen::placeholders::all);
+    SV = V(SVI.derived(),igl::placeholders::all);
   }else
   {
     unique_rows(V,SV,SVI,SVJ);

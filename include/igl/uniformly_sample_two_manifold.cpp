@@ -12,6 +12,7 @@
 #include "vertex_triangle_adjacency.h"
 #include "get_seconds.h"
 #include "cat.h"
+#include "placeholders.h"
 //#include "MT19937.h"
 #include "partition.h"
 
@@ -88,7 +89,7 @@ IGL_INLINE void igl::uniformly_sample_two_manifold(
   // First get sampling as best as possible on mesh
   uniformly_sample_two_manifold_at_vertices(W,k,push,S);
   verbose("Lap: %g\n",get_seconds()-start);
-  WS = W(S,Eigen::placeholders::all);
+  WS = W(S,igl::placeholders::all);
   //cout<<"WSmesh=["<<endl<<WS<<endl<<"];"<<endl;
 
 //#ifdef EXTREME_VERBOSE
@@ -361,7 +362,7 @@ IGL_INLINE void igl::uniformly_sample_two_manifold_at_vertices(
   // Remove corners, which better be at top
   S = S.segment(W.cols(),k).eval();
 
-  MatrixXd WS = W(S,Eigen::placeholders::all);
+  MatrixXd WS = W(S,igl::placeholders::all);
   //cout<<"WSpartition=["<<endl<<WS<<endl<<"];"<<endl;
 
   // number of vertices

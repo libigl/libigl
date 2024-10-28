@@ -1,5 +1,6 @@
 #include <test_common.h>
 #include <igl/LinSpaced.h>
+#include <igl/placeholders.h>
 #include <igl/randperm.h>
 // We don't want to include dense slices in the static library so include them
 // via header only mode for these tests (which themselves will eventually be
@@ -19,13 +20,13 @@ TEST_CASE("slice: eigen-simple", "[igl]")
   {
     Eigen::MatrixXd Yigl;
     igl::slice(X,I,1,Yigl);
-    Eigen::MatrixXd Yeigen  = X(I,Eigen::placeholders::all);
+    Eigen::MatrixXd Yeigen  = X(I,igl::placeholders::all);
     test_common::assert_eq(Yigl,Yeigen);
   }
   {
     Eigen::MatrixXd Yigl;
     igl::slice(X,I,2,Yigl);
-    Eigen::MatrixXd Yeigen  = X(Eigen::placeholders::all,I);
+    Eigen::MatrixXd Yeigen  = X(igl::placeholders::all,I);
     test_common::assert_eq(Yigl,Yeigen);
   }
 }
@@ -48,13 +49,13 @@ TEST_CASE("slice: eigen-random", "[igl]")
   {
     Eigen::MatrixXd Yigl;
     igl::slice(X,I,1,Yigl);
-    Eigen::MatrixXd Yeigen = X(I,Eigen::placeholders::all);
+    Eigen::MatrixXd Yeigen = X(I,igl::placeholders::all);
     test_common::assert_eq(Yigl,Yeigen);
   }
   {
     Eigen::MatrixXd Yigl;
     igl::slice(X,J,2,Yigl);
-    Eigen::MatrixXd Yeigen = X(Eigen::placeholders::all,J);
+    Eigen::MatrixXd Yeigen = X(igl::placeholders::all,J);
     test_common::assert_eq(Yigl,Yeigen);
   }
 }

@@ -6,6 +6,7 @@
 #include "cumsum.h"
 #include "histc.h"
 #include "project_to_line.h"
+#include "placeholders.h"
 #include "EPS.h"
 
 template <typename DerivedP, typename DerivedS, typename DerivedJ>
@@ -65,7 +66,7 @@ IGL_INLINE void igl::ramer_douglas_peucker(
   };
   simplify(0,n-1);
   igl::find(I,J);
-  S = P(J.derived(),Eigen::placeholders::all);
+  S = P(J.derived(),igl::placeholders::all);
 }
 
 template <
@@ -119,7 +120,7 @@ IGL_INLINE void igl::ramer_douglas_peucker(
       T(t) = 0;
     }
   }
-  DerivedS SB = S(B,Eigen::placeholders::all);
+  DerivedS SB = S(B,igl::placeholders::all);
   Eigen::VectorXi MB = B.array()+1;
   for(int b = 0;b<MB.size();b++)
   {
@@ -128,7 +129,7 @@ IGL_INLINE void igl::ramer_douglas_peucker(
       MB(b) = S.rows()-1;
     }
   }
-  DerivedS SMB = S(MB,Eigen::placeholders::all);
+  DerivedS SMB = S(MB,igl::placeholders::all);
   Q = SB.array() + ((SMB.array()-SB.array()).colwise()*T.array());
 
   // Remove extra point at end

@@ -4,6 +4,7 @@
 #include <igl/avg_edge_length.h>
 #include <igl/barycenter.h>
 #include <igl/colon.h>
+#include <igl/placeholders.h>
 #include <igl/get_seconds.h>
 #include <igl/point_mesh_squared_distance.h>
 #include <igl/point_simplex_squared_distance.h>
@@ -91,7 +92,7 @@ TEST_CASE("AABB: dynamic", "[igl]")
     // Load example mesh: GetParam() will be name of mesh file
     igl::read_triangle_mesh(test_common::data_path(param), V, F);
     // Make into soup
-    V = V(Eigen::Map<Eigen::VectorXi>(F.data(),F.size()), Eigen::placeholders::all).eval();
+    V = V(Eigen::Map<Eigen::VectorXi>(F.data(),F.size()), igl::placeholders::all).eval();
     F = Eigen::Map<Eigen::MatrixXi>(igl::colon<int>(0,V.rows()-1).data(),V.rows()/3,3).eval();
     Eigen::MatrixXd BC;
     igl::barycenter(V,F,BC);
@@ -160,7 +161,7 @@ TEST_CASE("AABB: dynamic", "[igl]")
       Eigen::MatrixXd TF = 0.1*h*Eigen::MatrixXd::Random(RF.size(),3);
       Eigen::MatrixXd TV(RV.rows(),3);
       TV<<TF,TF,TF;
-      V(RV,Eigen::placeholders::all) += TV;
+      V(RV,igl::placeholders::all) += TV;
       igl::barycenter(V,F,BC);
     }
     const int qi = RF(0);

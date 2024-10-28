@@ -8,6 +8,7 @@
 #include "LinSpaced.h"
 #include "normal_derivative.h"
 #include "cotmatrix_entries.h"
+#include "placeholders.h"
 #include <cassert>
 
 template <
@@ -40,7 +41,7 @@ IGL_INLINE void igl::normal_derivative(
     case 4:
     {
       const MatrixXi DDJ = 
-        Ele(Eigen::placeholders::all,{1,0,2,0,3,0,2,1,3,1,0,1,3,2,0,2,1,2,0,3,1,3,2,3});
+        Ele(igl::placeholders::all,{1,0,2,0,3,0,2,1,3,1,0,1,3,2,0,2,1,2,0,3,1,3,2,3});
       MatrixXi DDI(m,24);
       for(size_t f = 0;f<4;f++)
       {
@@ -53,7 +54,7 @@ IGL_INLINE void igl::normal_derivative(
       const DiagonalMatrix<Scalar,24,24> S =
         (Matrix<Scalar,2,1>(1,-1).template replicate<12,1>()).asDiagonal();
       Matrix<Scalar,Dynamic,Dynamic> DDV =
-        C(Eigen::placeholders::all,{2,2,1,1,3,3,0,0,4,4,2,2,5,5,1,1,0,0,3,3,4,4,5,5});
+        C(igl::placeholders::all,{2,2,1,1,3,3,0,0,4,4,2,2,5,5,1,1,0,0,3,3,4,4,5,5});
       DDV *= S;
 
       IJV.reserve(DDV.size());
@@ -70,7 +71,7 @@ IGL_INLINE void igl::normal_derivative(
     }
     case 3:
     {
-      const MatrixXi DDJ = Ele(Eigen::placeholders::all,{2,0,1,0,0,1,2,1,1,2,0,2});
+      const MatrixXi DDJ = Ele(igl::placeholders::all,{2,0,1,0,0,1,2,1,1,2,0,2});
       MatrixXi DDI(m,12);
       for(size_t f = 0;f<3;f++)
       {
@@ -82,7 +83,7 @@ IGL_INLINE void igl::normal_derivative(
       }
       const DiagonalMatrix<Scalar,12,12> S =
         (Matrix<Scalar,2,1>(1,-1).template replicate<6,1>()).asDiagonal();
-      Matrix<Scalar,Dynamic,Dynamic> DDV = C(Eigen::placeholders::all,{1,1,2,2,2,2,0,0,0,0,1,1});
+      Matrix<Scalar,Dynamic,Dynamic> DDV = C(igl::placeholders::all,{1,1,2,2,2,2,0,0,0,0,1,1});
       DDV *= S;
 
       IJV.reserve(DDV.size());

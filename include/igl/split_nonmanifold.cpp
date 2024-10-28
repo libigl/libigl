@@ -11,6 +11,7 @@
 #include "unique.h"
 #include "sort.h"
 #include "triangle_triangle_adjacency.h"
+#include "placeholders.h"
 #include "is_edge_manifold.h"
 #include <unordered_map>
 #include <cassert>
@@ -468,7 +469,7 @@ IGL_INLINE void igl::split_nonmanifold(
   Eigen::PlainObjectBase <DerivedSVI> & SVI)
 {
   igl::split_nonmanifold(F,SF,SVI);
-  SV = V(SVI.derived(),Eigen::placeholders::all);
+  SV = V(SVI.derived(),igl::placeholders::all);
 }
 
 #ifdef IGL_STATIC_LIBRARY

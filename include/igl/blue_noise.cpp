@@ -9,6 +9,7 @@
 #include "doublearea.h"
 #include "random_points_on_mesh.h"
 #include "sortrows.h"
+#include "placeholders.h"
 #include "PI.h"
 #include "get_seconds.h"
 #include <unordered_map>
@@ -290,10 +291,10 @@ IGL_INLINE void igl::blue_noise(
   {
     Eigen::VectorXi I;
     igl::sortrows(decltype(Xs)(Xs),true,Xs,I);
-    X = X(I,Eigen::placeholders::all).eval();
+    X = X(I,igl::placeholders::all).eval();
     // These two could be spun off in their own thread.
-    XB = XB(I,Eigen::placeholders::all).eval();
-    XFI = XFI(I,Eigen::placeholders::all).eval();
+    XB = XB(I,igl::placeholders::all).eval();
+    XFI = XFI(I,igl::placeholders::all).eval();
   }
   // Initialization
   std::unordered_map<BlueNoiseKeyType,std::vector<int> > M;

@@ -11,6 +11,7 @@
 #include "../../get_seconds.h"
 #include "../../list_to_matrix.h"
 #include "../../find.h"
+#include "../../placeholders.h"
 #include "../../parallel_for.h"
 #include <vector>
 #include <Eigen/Core>
@@ -33,7 +34,7 @@ IGL_INLINE void igl::copyleft::cgal::point_solid_signed_squared_distance(
   // Collect queries that have non-zero distance
   Eigen::Array<bool,Eigen::Dynamic,1> NZ = D.array()!=0;
   // Compute sign for non-zero distance queries
-  DerivedQ QNZ = Q(igl::find(NZ),Eigen::placeholders::all);
+  DerivedQ QNZ = Q(igl::find(NZ),igl::placeholders::all);
   Eigen::Array<bool,Eigen::Dynamic,1> DNZ;
   igl::copyleft::cgal::points_inside_component(VB,FB,QNZ,DNZ);
   // Apply sign to distances

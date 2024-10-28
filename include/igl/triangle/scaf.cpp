@@ -30,6 +30,7 @@
 #include "../slice.h"
 #include "../slice_into.h"
 #include "../slim.h"
+#include "../placeholders.h"
 #include "../mapping_energy_with_jacobians.h"
 
 #include <map>
@@ -433,7 +434,7 @@ IGL_INLINE void build_surface_linear_system(const SCAFData &s, Eigen::SparseMatr
   }
   else
   {
-    MatrixXd bnd_pos = s.w_uv(bnd_ids, Eigen::placeholders::all);
+    MatrixXd bnd_pos = s.w_uv(bnd_ids, igl::placeholders::all);
 
     ArrayXi known_ids(bnd_ids.size() * dim);
     ArrayXi unknown_ids((v_n - bnd_ids.rows()) * dim);
@@ -494,7 +495,7 @@ IGL_INLINE void build_scaffold_linear_system(const SCAFData &s, Eigen::SparseMat
 
   auto bnd_n = bnd_ids.size();
   IGL_ASSERT(bnd_n > 0);
-  MatrixXd bnd_pos = s.w_uv(bnd_ids, Eigen::placeholders::all);
+  MatrixXd bnd_pos = s.w_uv(bnd_ids, igl::placeholders::all);
 
   ArrayXi known_ids(bnd_ids.size() * dim);
   ArrayXi unknown_ids((v_n - bnd_ids.rows()) * dim);
@@ -565,7 +566,7 @@ IGL_INLINE void solve_weighted_arap(SCAFData &s, Eigen::MatrixXd &uv)
   const auto v_n = s.v_num;
   const auto bnd_n = bnd_ids.size();
   assert(bnd_n > 0);
-  MatrixXd bnd_pos = s.w_uv(bnd_ids, Eigen::placeholders::all);
+  MatrixXd bnd_pos = s.w_uv(bnd_ids, igl::placeholders::all);
 
   ArrayXi known_ids(bnd_n * dim);
   ArrayXi unknown_ids((v_n - bnd_n) * dim);

@@ -21,6 +21,7 @@
 #include "ramer_douglas_peucker.h"
 #include "vertex_components.h"
 #include "list_to_matrix.h"
+#include "placeholders.h"
 #include "ears.h"
 #include "sum.h"
 #include "find.h"
@@ -74,8 +75,8 @@ IGL_INLINE void igl::straighten_seams(
   Array<bool,Dynamic,1>vBT = Map<Array<bool,Dynamic,1> >(BT.data(),BT.size(),1);
   Array<bool,Dynamic,1>vBF = Map<Array<bool,Dynamic,1> >(BF.data(),BF.size(),1);
   const auto vBT_i = igl::find(vBT);
-  MatrixX2I OF = EF(vBT_i,Eigen::placeholders::all);
-  OT = EF(vBT_i,Eigen::placeholders::all);
+  MatrixX2I OF = EF(vBT_i,igl::placeholders::all);
+  OT = EF(vBT_i,igl::placeholders::all);
   VectorXi OFMAP = EFMAP(vBT_i);
   // Two boundary edges on the texture-mapping are "equivalent" to each other on
   // the 3D-mesh if their 3D-mesh vertex indices match
@@ -115,7 +116,7 @@ IGL_INLINE void igl::straighten_seams(
   assert( (M.array() == 1).all() );
   VectorXi DT;
   // Map counts onto texture-vertices
-  DT = DV(I,Eigen::placeholders::all);
+  DT = DV(I,igl::placeholders::all);
   // Boundary in 3D && UV
   Array<bool,Dynamic,1> BTF = vBF(igl::find(vBT));
 
@@ -235,14 +236,14 @@ IGL_INLINE void igl::straighten_seams(
     {
       case 1:
         {
-          MatrixX2I OTIc = OT(Ic,Eigen::placeholders::all);
+          MatrixX2I OTIc = OT(Ic,igl::placeholders::all);
           edges_to_path(OTIc,vpath,epath,eend);
           Array<bool,Dynamic,1> SVvpath = SV(vpath);
           assert(
             (vpath(0) != vpath(vpath.size()-1) || !SVvpath.any()) && 
             "Not dealing with 1-loops touching 'sharp' corners");
           // simple open boundary
-          MatrixX2S PI = VT(vpath,Eigen::placeholders::all);
+          MatrixX2S PI = VT(vpath,igl::placeholders::all);
           const Scalar bbd = 
             (PI.colwise().maxCoeff() - PI.colwise().minCoeff()).norm();
           // Do not collapse boundaries to fewer than 3 vertices
@@ -256,7 +257,7 @@ IGL_INLINE void igl::straighten_seams(
           {
             MatrixX2S UPI,UTvpath;
             ramer_douglas_peucker(PI,eff_tol*bbd,UPI,UIc,UTvpath);
-            UT(vpath,Eigen::placeholders::all) = UTvpath;
+            UT(vpath,igl::placeholders::all) = UTvpath;
             if(!is_closed || allow_boundary_collapse)
             {
               break;
@@ -294,8 +295,8 @@ IGL_INLINE void igl::straighten_seams(
           }
           Array<bool,Dynamic,1> flipped;
           {
-            MatrixX2I OFIc = OF(Ic,Eigen::placeholders::all);
-            MatrixX2I OFIcc = OF(Icc,Eigen::placeholders::all);
+            MatrixX2I OFIc = OF(Ic,igl::placeholders::all);
+            MatrixX2I OFIcc = OF(Icc,igl::placeholders::all);
             Eigen::VectorXi XOR,IA,IB;
             setxor(OFIc,OFIcc,XOR,IA,IB);
             assert(XOR.size() == 0);
@@ -309,7 +310,7 @@ IGL_INLINE void igl::straighten_seams(
             vUE.push_back({OT(Icc(0),flipped(0)?1:0),OT(Icc(0),flipped(0)?0:1)});
           }else
           {
-            MatrixX2I OTIc = OT(Ic,Eigen::placeholders::all);
+            MatrixX2I OTIc = OT(Ic,igl::placeholders::all);
             edges_to_path(OTIc,vpath,epath,eend);
             // Flip endpoints if needed
             for(int e = 0;e<eend.size();e++)if(flipped(e))eend(e)=1-eend(e);
@@ -335,8 +336,8 @@ IGL_INLINE void igl::straighten_seams(
             Matrix<Scalar,Dynamic,Dynamic> UPI,SI;
             VectorXi UIc;
             ramer_douglas_peucker(PI,tol*bbd,UPI,UIc,SI);
-            UT(vpath,Eigen::placeholders::all) = SI.leftCols (VT.cols());
-            UT(vpathc,Eigen::placeholders::all) = SI.rightCols(VT.cols());
+            UT(vpath,igl::placeholders::all) = SI.leftCols (VT.cols());
+            UT(vpathc,igl::placeholders::all) = SI.rightCols(VT.cols());
             for(int i = 0;i<UIc.size()-1;i++)
             {
               vUE.push_back({vpath(UIc(i)),vpath(UIc(i+1))});

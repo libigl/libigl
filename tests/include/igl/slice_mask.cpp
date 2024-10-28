@@ -1,6 +1,7 @@
 #include <test_common.h>
 #include <igl/slice_mask.h>
 #include <igl/randperm.h>
+#include <igl/placeholders.h>
 #include <igl/find.h>
 
 TEST_CASE("slice_mask/find: random", "[igl]")
@@ -25,13 +26,13 @@ TEST_CASE("slice_mask/find: random", "[igl]")
   {
     Eigen::MatrixXd Yigl;
     igl::slice_mask(X,M,1,Yigl);
-    Eigen::MatrixXd Yfind = X(igl::find(M),Eigen::placeholders::all);
+    Eigen::MatrixXd Yfind = X(igl::find(M),igl::placeholders::all);
     test_common::assert_eq(Yigl,Yfind);
   }
   {
     Eigen::MatrixXd Yigl;
     igl::slice_mask(X,N,2,Yigl);
-    Eigen::MatrixXd Yfind = X(Eigen::placeholders::all,igl::find(N));
+    Eigen::MatrixXd Yfind = X(igl::placeholders::all,igl::find(N));
     test_common::assert_eq(Yigl,Yfind);
   }
 }

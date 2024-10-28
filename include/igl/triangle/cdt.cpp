@@ -3,6 +3,7 @@
 #include "../triangle/triangulate.h"
 #include "../remove_duplicate_vertices.h"
 #include "../remove_unreferenced.h"
+#include "../placeholders.h"
 
 template <
   typename DerivedV, 
@@ -35,7 +36,7 @@ IGL_INLINE void igl::triangle::cdt(
   igl::remove_duplicate_vertices(DerivedWV(WV),DerivedWE(WE),1e-10,WV,_,J,WE);
   // Remove degenerate edges
   const Eigen::Array<bool,Eigen::Dynamic,1> keep = (WE.array().col(0) != WE.array().col(1));
-  WE = WE(keep,Eigen::placeholders::all).eval();
+  WE = WE(keep,igl::placeholders::all).eval();
   // c flag must be present
   igl::triangle::triangulate(DerivedWV(WV),WE,DerivedWV(),flags,WV,WF);
   Eigen::VectorXi UJ;
