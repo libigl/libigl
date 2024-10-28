@@ -20,7 +20,7 @@ bool igl::copyleft::cgal::is_self_intersecting(
   const auto valid = 
     igl::find((F.array() != IGL_COLLAPSE_EDGE_NULL).rowwise().any().eval());
   // Extract only the valid faces
-  MatrixF FF = F(valid, Eigen::all);
+  MatrixF FF = F(valid, Eigen::placeholders::all);
   // Remove unreferneced vertices
   MatrixV VV;
   {

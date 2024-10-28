@@ -90,19 +90,19 @@ int main(int argc, char *argv[])
   FQCtri.resize(2*FQC.rows(), 3);
   FQCtri <<  FQC.col(0),FQC.col(1),FQC.col(2),
              FQC.col(2),FQC.col(3),FQC.col(0);
-  PQC0 = VQC(FQC.col(0).eval(), Eigen::all);
-  PQC1 = VQC(FQC.col(1).eval(), Eigen::all);
-  PQC2 = VQC(FQC.col(2).eval(), Eigen::all);
-  PQC3 = VQC(FQC.col(3).eval(), Eigen::all);
+  PQC0 = VQC(FQC.col(0).eval(), Eigen::placeholders::all);
+  PQC1 = VQC(FQC.col(1).eval(), Eigen::placeholders::all);
+  PQC2 = VQC(FQC.col(2).eval(), Eigen::placeholders::all);
+  PQC3 = VQC(FQC.col(3).eval(), Eigen::placeholders::all);
 
   // Planarize it
   igl::planarize_quad_mesh(VQC, FQC, 100, 0.005, VQCplan);
 
   // Convert the planarized mesh to triangles
-  PQC0plan = VQCplan(FQC.col(0).eval(), Eigen::all);
-  PQC1plan = VQCplan(FQC.col(1).eval(), Eigen::all);
-  PQC2plan = VQCplan(FQC.col(2).eval(), Eigen::all);
-  PQC3plan = VQCplan(FQC.col(3).eval(), Eigen::all);
+  PQC0plan = VQCplan(FQC.col(0).eval(), Eigen::placeholders::all);
+  PQC1plan = VQCplan(FQC.col(1).eval(), Eigen::placeholders::all);
+  PQC2plan = VQCplan(FQC.col(2).eval(), Eigen::placeholders::all);
+  PQC3plan = VQCplan(FQC.col(3).eval(), Eigen::placeholders::all);
 
   // Launch the viewer
   igl::opengl::glfw::Viewer viewer;

@@ -46,7 +46,7 @@ IGL_INLINE void igl::sort_triangles(
       MV.template cast<Scalar>().transpose()*
        P.template cast<Scalar>().transpose().eval().col(2));
   sort(D,1,false,sD,I);
-  FF = F(I.derived(),Eigen::all);
+  FF = F(I.derived(),Eigen::placeholders::all);
 }
 
 

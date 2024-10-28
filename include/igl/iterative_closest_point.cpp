@@ -96,7 +96,7 @@ IGL_INLINE void igl::iterative_closest_point(
       Ytree.squared_distance(VY,FY,X,sqrD,I,P);
     }
     // Use better normals?
-    MatrixXS N = NY(I,Eigen::all);
+    MatrixXS N = NY(I,Eigen::placeholders::all);
     //MatrixXS N = (X - P).rowwise().normalized();
     // fit rotation,translation
     Matrix3S Rup;

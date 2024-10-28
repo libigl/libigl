@@ -68,17 +68,17 @@ namespace igl {
         igl::parallel_for(P.rows(),[&](int i)
         {
           MatrixP neighbors;
-          neighbors = P(I.row(i),Eigen::all);
+          neighbors = P(I.row(i),Eigen::placeholders::all);
           if(N.rows() && neighbors.rows() > 1){
             MatrixN neighbor_normals;
-            neighbor_normals = N(I.row(i),Eigen::all);
+            neighbor_normals = N(I.row(i),Eigen::placeholders::all);
             Eigen::Matrix<scalarN,1,3> poi_normal = neighbor_normals.row(0);
             Eigen::Matrix<scalarN,Eigen::Dynamic,1> dotprod =
                             poi_normal(0)*neighbor_normals.col(0)
             + poi_normal(1)*neighbor_normals.col(1)
             + poi_normal(2)*neighbor_normals.col(2);
             Eigen::Array<bool,Eigen::Dynamic,1> keep = dotprod.array() > 0;
-            neighbors = neighbors(igl::find(keep),Eigen::all).eval();
+            neighbors = neighbors(igl::find(keep),Eigen::placeholders::all).eval();
           }
           if(neighbors.rows() <= 2){
             A(i) = 0;
@@ -96,7 +96,7 @@ namespace igl {
               T.row(i) *= -1;
             }
             
-            MatrixP plane = scores(Eigen::all,{0,1});
+            MatrixP plane = scores(Eigen::placeholders::all,{0,1});
             
             std::vector< std::pair<Point,unsigned> > points;
             //This is where we obtain a delaunay triangulation of the points

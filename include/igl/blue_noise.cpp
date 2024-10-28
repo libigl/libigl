@@ -290,10 +290,10 @@ IGL_INLINE void igl::blue_noise(
   {
     Eigen::VectorXi I;
     igl::sortrows(decltype(Xs)(Xs),true,Xs,I);
-    X = X(I,Eigen::all).eval();
+    X = X(I,Eigen::placeholders::all).eval();
     // These two could be spun off in their own thread.
-    XB = XB(I,Eigen::all).eval();
-    XFI = XFI(I,Eigen::all).eval();
+    XB = XB(I,Eigen::placeholders::all).eval();
+    XFI = XFI(I,Eigen::placeholders::all).eval();
   }
   // Initialization
   std::unordered_map<BlueNoiseKeyType,std::vector<int> > M;

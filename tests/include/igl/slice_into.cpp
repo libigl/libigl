@@ -27,7 +27,7 @@ TEST_CASE("slice_into: eigen-random", "[igl]")
     Eigen::MatrixXd Yigl = X;
     igl::slice_into(Z,I,1,Yigl);
     Eigen::MatrixXd Yeigen = X;
-    Yeigen(I,Eigen::all) = Z;
+    Yeigen(I,Eigen::placeholders::all) = Z;
     test_common::assert_eq(Yigl,Yeigen);
   }
   {
@@ -35,7 +35,7 @@ TEST_CASE("slice_into: eigen-random", "[igl]")
     Eigen::MatrixXd Yigl = X;
     igl::slice_into(Z,J,2,Yigl);
     Eigen::MatrixXd Yeigen = X;
-    Yeigen(Eigen::all,J) = Z;
+    Yeigen(Eigen::placeholders::all,J) = Z;
     test_common::assert_eq(Yigl,Yeigen);
   }
   
