@@ -26,13 +26,32 @@ IGL_INLINE void igl::marching_cubes(
     Eigen::PlainObjectBase<DerivedV> &V,
     Eigen::PlainObjectBase<DerivedF> &F)
 {
+  std::unordered_map<std::int64_t,int> E2V;
+  return marching_cubes(S,GV,nx,ny,nz,isovalue,V,F,E2V);
+}
+
+template <
+  typename DerivedS, 
+  typename DerivedGV, 
+  typename DerivedV, 
+  typename DerivedF>
+IGL_INLINE void igl::marching_cubes(
+  const Eigen::MatrixBase<DerivedS> & S,
+  const Eigen::MatrixBase<DerivedGV> & GV,
+  const unsigned nx,
+  const unsigned ny,
+  const unsigned nz,
+  const typename DerivedS::Scalar isovalue,
+  Eigen::PlainObjectBase<DerivedV> &V,
+  Eigen::PlainObjectBase<DerivedF> &F,
+  std::unordered_map<std::int64_t,int> &E2V)
+{
   typedef typename DerivedS::Scalar Scalar;
   typedef unsigned Index;
   // use same order as a2fVertexOffset
   const unsigned ioffset[8] = {0,1,1+nx,nx,nx*ny,1+nx*ny,1+nx+nx*ny,nx+nx*ny};
 
 
-  std::unordered_map<std::int64_t,int> E2V;
   V.resize(std::pow(nx*ny*nz,2./3.),3);
   F.resize(std::pow(nx*ny*nz,2./3.),3);
   Index n = 0;
