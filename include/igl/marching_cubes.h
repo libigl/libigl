@@ -40,9 +40,12 @@ namespace igl
     const typename DerivedS::Scalar isovalue,
     Eigen::PlainObjectBase<DerivedV> &V,
     Eigen::PlainObjectBase<DerivedF> &F);
-  // \overload 
-  //
-  // @param[out] E2V  map from edge key to index into rows of V
+  /// \overload 
+  /// 
+  /// \brief Return edge-to-vertex map which can be used to implement
+  /// batched root finding by caller (see 909_BatchMarchingCubes)
+  ///
+  /// @param[out] E2V  map from edge key to index into rows of V
   template <
     typename DerivedS, 
     typename DerivedGV, 
