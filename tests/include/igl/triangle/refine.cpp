@@ -108,8 +108,8 @@ TEST_CASE("refine-inner-pinch", "[igl][triangle]") {
   Eigen::MatrixXd Vr;
   Eigen::MatrixXi Fr;
 
-  Eigen::MatrixXi E;
-  igl::triangle::refine(Vc,E,Fc,"q33a0.0625Q",Vr,Fr);
+  Eigen::MatrixXi _;
+  igl::triangle::refine(Vc,_,Fc,"q33a0.0625Q",Vr,Fr);
   //std::cout<<igl::matlab_format(Vr,"Vr")<<std::endl;
   //std::cout<<igl::matlab_format_index(Fr,"Fr")<<std::endl;
   
