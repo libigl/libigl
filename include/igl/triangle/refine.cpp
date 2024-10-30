@@ -10,11 +10,13 @@
 
 template <
   typename DerivedV,
+  typename DerivedE,
   typename DerivedF,
   typename DerivedV2,
   typename DerivedF2>
 IGL_INLINE void igl::triangle::refine(
   const Eigen::MatrixBase<DerivedV> & V,
+  const Eigen::MatrixBase<DerivedE> & E,
   const Eigen::MatrixBase<DerivedF> & F,
   const std::string flags,
   Eigen::PlainObjectBase<DerivedV2> & V2,
@@ -25,7 +27,7 @@ IGL_INLINE void igl::triangle::refine(
   assert(V.cols() == 2);
   assert(F.cols() == 3);
   // Prepare the flags
-  std::string full_flags = flags + "rzB";
+  std::string full_flags = flags + "rzB" + (E.size()?"p":"");
 
   typedef Map< Matrix<double,Dynamic,Dynamic,RowMajor> > MapXdr;
   typedef Map< Matrix<int,Dynamic,Dynamic,RowMajor> > MapXir;
@@ -56,9 +58,21 @@ IGL_INLINE void igl::triangle::refine(
   // Why?
   in.numberofcorners = 3;
 
-  in.numberofsegments = 0;
-  in.segmentlist = NULL;
-  in.segmentmarkerlist = NULL;
+  //in.numberofsegments = 0;
+  //in.segmentlist = NULL;
+  //in.segmentmarkerlist = NULL;
+
+  in.numberofsegments = E.size()?E.rows():0;
+  in.segmentlist = (int*)calloc(E.size(),sizeof(int));
+  {
+    MapXir insl(in.segmentlist,E.rows(),E.cols());
+    insl = E.template cast<int>();
+  }
+  // Empty edge markers (to-do)
+  Eigen::VectorXi EM;
+  in.segmentmarkerlist = (int*)calloc(E.rows(),sizeof(int));
+  for (unsigned i=0;i<E.rows();++i) in.segmentmarkerlist[i] = EM.size()?EM(i):1;
+
   in.numberofholes = 0;
   in.holelist = NULL;
   in.numberofregions = 0;
@@ -92,5 +106,4 @@ IGL_INLINE void igl::triangle::refine(
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instantiation
-template void igl::triangle::refine<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>>(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1>> const&, std::basic_string<char, std::char_traits<char>, std::allocator<char>>, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>>&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1>>&);
 #endif
