@@ -86,7 +86,9 @@ IGL_INLINE void igl::embree::bone_visible(
         projv = d;
       }
     }
-    igl::Hit hit;
+    // This could use double, but I'm not sure this function is popular enough
+    // to spend time fixing.
+    igl::Hit<float> hit;
     // perhaps 1.0 should be 1.0-epsilon, or actually since we checking the
     // incident face, perhaps 1.0 should be 1.0+eps
     const Vector3d dir = (Vv-projv)*1.0;

@@ -35,7 +35,7 @@ IGL_INLINE void igl::screen_space_selection(
   {
     // Skip unselected points
     if(W(i)<0.5){ return; }
-    igl::Hit hit;
+    igl::Hit<typename DerivedV::Scalar> hit;
     tree.intersect_ray(V,F,origin,V.row(i)-origin,hit);
     and_visible(i) = !(hit.t>1e-5 && hit.t<(1-1e-5));
   });

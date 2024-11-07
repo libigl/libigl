@@ -175,7 +175,7 @@ IGL_INLINE void igl::embree::EmbreeRenderer::deinit()
 IGL_INLINE bool igl::embree::EmbreeRenderer::intersect_ray(
   const Eigen::RowVector3f& origin,
   const Eigen::RowVector3f& direction,
-  Hit&  hit,
+  Hit &  hit,
   float tnear,
   float tfar,
   int mask) const

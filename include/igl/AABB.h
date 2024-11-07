@@ -631,7 +631,7 @@ public:
         const Eigen::MatrixBase<DerivedEle> & Ele, 
         const RowVectorDIMS & origin,
         const RowVectorDIMS & dir,
-        std::vector<igl::Hit> & hits) const;
+        std::vector<igl::Hit<typename DerivedV::Scalar>> & hits) const;
       /// Intersect a ray with the mesh return first hit
       ///
       /// @param[in]  V  #V by dim list of vertex positions
@@ -646,7 +646,8 @@ public:
         const Eigen::MatrixBase<DerivedEle> & Ele, 
         const RowVectorDIMS & origin,
         const RowVectorDIMS & dir,
-        igl::Hit & hit) const;
+        igl::Hit<typename DerivedV::Scalar> & hit) const;
+
       /// Intersect a ray with the mesh return first hit farther than `min_t`
       ///
       /// @param[in]  V  #V by dim list of vertex positions
@@ -663,7 +664,34 @@ public:
         const RowVectorDIMS & origin,
         const RowVectorDIMS & dir,
         const Scalar min_t,
-        igl::Hit & hit) const;
+        igl::Hit<typename DerivedV::Scalar> & hit) const;
+      /// Intersect a rays with the mesh return first hit for each
+      ///
+      /// @param[in]  V  #V by dim list of vertex positions
+      /// @param[in]  Ele  #Ele by dim list of simplex indices
+      /// @param[in]  origin #ray by dim+1 list of ray origins 
+      /// @param[in]  dir #ray by dim list of ray directions
+      /// @param[in]  min_t  minimum t value to consider
+      /// @param[out]  I #ray list of indices into Ele of closest primitives
+      ///   (-1 indicates no hit)
+      /// @param[out]  T #ray list of t values (nan indicates no hit)
+      /// @param[out]  UV #ray by dim list of barycentric coordinates
+      template <
+        typename DerivedEle,
+        typename DerivedOrigin,
+        typename DerivedDir,
+        typename DerivedI,
+        typename DerivedT,
+        typename DerivedUV>
+      IGL_INLINE void intersect_ray(
+        const Eigen::MatrixBase<DerivedV> & V,
+        const Eigen::MatrixBase<DerivedEle> & Ele, 
+        const Eigen::MatrixBase<DerivedOrigin> & origin,
+        const Eigen::MatrixBase<DerivedDir> & dir,
+        const Scalar min_t,
+        Eigen::PlainObjectBase<DerivedI> & I,
+        Eigen::PlainObjectBase<DerivedT> & T,
+        Eigen::PlainObjectBase<DerivedUV> & UV);
       /// Compute the squared distance from all query points in P to the
       /// _closest_ points on the primitives stored in the AABB hierarchy for
       /// the mesh (V,Ele).
@@ -783,7 +811,7 @@ private:
         const RowVectorDIMS & dir,
         const RowVectorDIMS & inv_dir,
         const RowVectorDIMS & inv_dir_pad,
-        std::vector<igl::Hit> & hits) const;
+        std::vector<igl::Hit<typename DerivedV::Scalar>> & hits) const;
       /// Intersect a ray with the mesh return first hit farther than `min_t`
       ///
       /// @param[in]  V  #V by dim list of vertex positions
@@ -802,7 +830,7 @@ private:
         const RowVectorDIMS & inv_dir,
         const RowVectorDIMS & inv_dir_pad,
         const Scalar min_t,
-        igl::Hit & hit) const;
+        igl::Hit<typename DerivedV::Scalar> & hit) const;
 public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     };

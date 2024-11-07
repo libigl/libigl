@@ -8,6 +8,8 @@
 #include <igl/get_seconds.h>
 #include <igl/point_mesh_squared_distance.h>
 #include <igl/point_simplex_squared_distance.h>
+#include <igl/per_face_normals.h>
+#include <igl/barycenter.h>
 #include <igl/randperm.h>
 #include <igl/read_triangle_mesh.h>
 #include <iostream>
@@ -230,4 +232,34 @@ TEST_CASE("AABB: dynamic", "[igl]")
   };
 
   test_common::run_test_cases(test_common::all_meshes(), test_case);
+}
+
+TEST_CASE("AABB: intersect", "[igl]")
+{
+  Eigen::MatrixXd V(4,3);
+  V << 0,0,1,
+    1,0,1,
+    0,1,1,
+    0,0,0;
+
+  Eigen::MatrixXi F(4,3);
+  F << 
+    0,1,2,
+    0,2,3,
+    0,3,1,
+    2,1,3;
+  Eigen::MatrixXd BC;
+  igl::barycenter(V,F,BC);
+  Eigen::MatrixXd N;
+  igl::per_face_normals(V,F,N);
+  Eigen::MatrixXd origin = BC+N;
+  Eigen::MatrixXd dir = -N;
+
+  igl::AABB<Eigen::MatrixXd,3> tree;
+  tree.init(V,F);
+  Eigen::VectorXi I;
+  Eigen::VectorXd T;
+  Eigen::MatrixXd UV;
+  double min_t = 0;
+  tree.intersect_ray(V,F,origin,dir,min_t,I,T,UV);
 }

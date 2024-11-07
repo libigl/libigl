@@ -163,8 +163,8 @@ IGL_INLINE void igl::embree::reorient_facets_raycast(
     int c = C(f);
 
     // shoot ray toward front & back
-    vector<Hit> hits_front;
-    vector<Hit> hits_back;
+    vector<Hit<float>> hits_front;
+    vector<Hit<float>> hits_back;
     int num_rays_front;
     int num_rays_back;
     ei.intersectRay(o,  d, hits_front, num_rays_front);

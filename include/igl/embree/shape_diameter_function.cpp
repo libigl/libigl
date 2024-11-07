@@ -23,9 +23,9 @@ IGL_INLINE void igl::embree::shape_diameter_function(
 {
   const auto & shoot_ray = [&ei](
     const Eigen::Vector3f& s,
-    const Eigen::Vector3f& dir)->double
+    const Eigen::Vector3f& dir)->float
   {
-    igl::Hit hit;
+    igl::Hit<float> hit;
     const float tnear = 1e-4f;
     if(ei.intersectRay(s,dir,hit,tnear))
     {
@@ -35,7 +35,11 @@ IGL_INLINE void igl::embree::shape_diameter_function(
       return std::numeric_limits<double>::infinity();
     }
   };
-  return igl::shape_diameter_function(shoot_ray,P,N,num_samples,S);
+  const auto Pf = P.template cast<float>().eval();
+  const auto Nf = N.template cast<float>().eval();
+  Eigen::Matrix<float,Eigen::Dynamic,1> Sf;
+  igl::shape_diameter_function(shoot_ray,Pf,Nf,num_samples,Sf);
+  S = Sf.template cast<typename DerivedS::Scalar>();
 }
 
 template <

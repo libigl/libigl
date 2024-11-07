@@ -40,7 +40,7 @@ namespace igl
         const Eigen::MatrixBase<DerivedV> & V,
         const Eigen::MatrixBase<DerivedF> & F,
         Eigen::PlainObjectBase<Derivedobj> & obj,
-        std::vector<igl::Hit > & hits);
+        std::vector<igl::Hit<float> > & hits);
   /// \overload
   template < typename DerivedV, typename DerivedF, typename Derivedobj>
     IGL_INLINE int unproject_in_mesh(
@@ -66,10 +66,10 @@ namespace igl
           void(
             const Eigen::Vector3f&,
             const Eigen::Vector3f&,
-            std::vector<igl::Hit> &)
+            std::vector<igl::Hit<float>> &)
             > & shoot_ray,
         Eigen::PlainObjectBase<Derivedobj> & obj,
-        std::vector<igl::Hit > & hits);
+        std::vector<igl::Hit<float> > & hits);
 }
 #ifndef IGL_STATIC_LIBRARY
 #  include "unproject_in_mesh.cpp"
