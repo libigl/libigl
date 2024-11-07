@@ -1582,10 +1582,12 @@ IGL_INLINE void igl::AABB<DerivedV,DIM>::intersect_ray(
     RowVectorDIMS origin_i = origin.row(i);
     RowVectorDIMS dir_i = dir.row(i);
     igl::Hit<typename DerivedV::Scalar> hit_i;
-    this->intersect_ray(V,Ele,origin_i,dir_i,min_t,hit_i);
-    I(i) = hit_i.id;
-    UV.row(i) << hit_i.u, hit_i.v;
-    T(i) = hit_i.t;
+    if(intersect_ray(V,Ele,origin_i,dir_i,min_t,hit_i))
+    {
+      I(i) = hit_i.id;
+      UV.row(i) << hit_i.u, hit_i.v;
+      T(i) = hit_i.t;
+    }
   },
   10000);
 }
@@ -1630,6 +1632,7 @@ igl::AABB<DerivedV,DIM>::intersect_ray_opt(
   const Scalar t1 = std::numeric_limits<Scalar>::infinity();
   {
     Scalar _1,_2;
+
 
     if(!ray_box_intersect(origin,inv_dir,inv_dir_pad,m_box,t0,t1,_1,_2))
     {

@@ -266,3 +266,52 @@ TEST_CASE("AABB: intersect", "[igl]")
   tree.intersect_ray(V,F,origin,dir,hits);
 
 }
+
+TEST_CASE("AABB: intersect_tet", "[igl]")
+{
+//  V = [
+//  0 0 0
+//  1 0 0
+//  0 1 0
+//  0 0 1
+//];
+//Ele = [
+//  3 2 1
+//  2 4 1
+//  4 3 1
+//  3 4 2
+//];
+//origin_i = [
+//  0.2 0.2  -1
+//];
+//dir_i = [
+//  0.05 0.05 1.25
+//];
+  Eigen::MatrixXd V(4,3);
+  V << 0,0,0,
+    1,0,0,
+    0,1,0,
+    0,0,1;
+  Eigen::MatrixXi Ele(4,3);
+  Ele << 
+    2,1,0,
+    1,3,0,
+    3,2,0,
+    2,3,1;
+  Eigen::MatrixXd origin(1,3);
+  origin << 0.2,0.2,-1;
+  Eigen::MatrixXd dir(1,3);
+  dir << 0.05,0.05,1.25;
+  igl::AABB<Eigen::MatrixXd,3> tree;
+  tree.init(V,Ele);
+  Eigen::VectorXi I;
+  Eigen::VectorXd T;
+  Eigen::MatrixXd UV;
+  double min_t = std::numeric_limits<double>::infinity();
+  tree.intersect_ray(V,Ele,origin,dir,min_t,I,T,UV);
+  REQUIRE(I(0) == 0);
+  REQUIRE(T(0) == Approx(0.8));
+  REQUIRE(UV(0) == Approx(0.24));
+  REQUIRE(UV(1) == Approx(0.52));
+
+}
