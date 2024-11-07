@@ -1573,8 +1573,8 @@ IGL_INLINE void igl::AABB<DerivedV,DIM>::intersect_ray(
   Eigen::PlainObjectBase<DerivedUV> & UV)
 {
   assert(origin.rows() == dir.rows());
-  I.resize(origin.rows());
-  T.resize(origin.rows());
+  I.setConstant(origin.rows(),-1);
+  T.resize(origin.rows(),std::numeric_limits<Scalar>::quiet_NaN());
   UV.resize(origin.rows(),2);
 
   igl::parallel_for(origin.rows(),[&](int i)
