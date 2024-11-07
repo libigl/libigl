@@ -18,17 +18,20 @@ namespace igl
     /// Refine an existing triangulation.
     ///
     /// @param[in] V #V by 2 list of 2D vertex positions
+    /// @param[in] E #E by 2 list of vertex ids forming segments
     /// @param[in] F #F by 3 list of vertex ids forming triangles
     /// @param[in] flags  string of options pass to triangle (see triangle documentation)
     /// @param[out] V2  #V2 by 2  coordinates of the vertives of the generated triangulation
     /// @param[out] F2  #F2 by 3  list of indices forming the faces of the generated triangulation
     template <
       typename DerivedV,
+      typename DerivedE,
       typename DerivedF,
       typename DerivedV2,
       typename DerivedF2>
     IGL_INLINE void refine(
       const Eigen::MatrixBase<DerivedV> & V,
+      const Eigen::MatrixBase<DerivedE> & E,
       const Eigen::MatrixBase<DerivedF> & F,
       const std::string flags,
       Eigen::PlainObjectBase<DerivedV2> & V2,
