@@ -262,4 +262,7 @@ TEST_CASE("AABB: intersect", "[igl]")
   Eigen::MatrixXd UV;
   double min_t = 0;
   tree.intersect_ray(V,F,origin,dir,min_t,I,T,UV);
+  std::vector<std::vector<igl::Hit<double>>> hits;
+  tree.intersect_ray(V,F,origin,dir,hits);
+
 }

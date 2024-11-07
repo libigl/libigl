@@ -692,6 +692,16 @@ public:
         Eigen::PlainObjectBase<DerivedI> & I,
         Eigen::PlainObjectBase<DerivedT> & T,
         Eigen::PlainObjectBase<DerivedUV> & UV);
+      template <
+        typename DerivedEle,
+        typename DerivedOrigin,
+        typename DerivedDir>
+      IGL_INLINE void intersect_ray(
+        const Eigen::MatrixBase<DerivedV> & V,
+        const Eigen::MatrixBase<DerivedEle> & Ele, 
+        const Eigen::MatrixBase<DerivedOrigin> & origin,
+        const Eigen::MatrixBase<DerivedDir> & dir,
+        std::vector<std::vector<igl::Hit<typename DerivedV::Scalar>>> & hits);
       /// Compute the squared distance from all query points in P to the
       /// _closest_ points on the primitives stored in the AABB hierarchy for
       /// the mesh (V,Ele).

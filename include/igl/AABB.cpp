@@ -1591,6 +1591,29 @@ IGL_INLINE void igl::AABB<DerivedV,DIM>::intersect_ray(
 }
 
 template <typename DerivedV, int DIM>
+template <
+  typename DerivedEle,
+  typename DerivedOrigin,
+  typename DerivedDir>
+IGL_INLINE void igl::AABB<DerivedV,DIM>::intersect_ray(
+  const Eigen::MatrixBase<DerivedV> & V,
+  const Eigen::MatrixBase<DerivedEle> & Ele, 
+  const Eigen::MatrixBase<DerivedOrigin> & origin,
+  const Eigen::MatrixBase<DerivedDir> & dir,
+  std::vector<std::vector<igl::Hit<typename DerivedV::Scalar>>> & hits)
+{
+  assert(origin.rows() == dir.rows());
+  hits.resize(origin.rows());
+  igl::parallel_for(origin.rows(),[&](int i)
+  {
+    RowVectorDIMS origin_i = origin.row(i);
+    RowVectorDIMS dir_i = dir.row(i);
+    this->intersect_ray(V,Ele,origin_i,dir_i,hits[i]);
+  },
+  10000);
+}
+
+template <typename DerivedV, int DIM>
 template <typename DerivedEle>
 IGL_INLINE bool
 igl::AABB<DerivedV,DIM>::intersect_ray_opt(
@@ -1762,6 +1785,7 @@ template void igl::AABB<Eigen::Matrix<float, -1, 3, 1, -1, 3>, 3>::init<Eigen::M
 template double igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>::squared_distance<Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, Eigen::Matrix<double, 1, 3, 1, 1, 3> const&, int&, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> >&) const;
 template double igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 2>::squared_distance<Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, Eigen::Matrix<double, 1, 2, 1, 1, 2> const&, int&, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 2, 1, 1, 2> >&) const;
 template void igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>::intersect_ray<Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>>(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>> const&, double, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1>>&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1>>&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>>&);
+template void igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>::intersect_ray<Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>>(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>> const&, std::vector<std::vector<igl::Hit<double>, std::allocator<igl::Hit<double>>>, std::allocator<std::vector<igl::Hit<double>, std::allocator<igl::Hit<double>>>>>&);
 #ifdef WIN32
 template void igl::AABB<class Eigen::Matrix<double,-1,-1,0,-1,-1>,3>::squared_distance<class Eigen::Matrix<int,-1,-1,0,-1,-1>,class Eigen::Matrix<double,-1,-1,0,-1,-1>,class Eigen::Matrix<double,-1,1,0,-1,1>,class Eigen::Matrix<__int64,-1,1,0,-1,1>,class Eigen::Matrix<double,-1,3,0,-1,3> >(class Eigen::MatrixBase<class Eigen::Matrix<double,-1,-1,0,-1,-1> > const &,class Eigen::MatrixBase<class Eigen::Matrix<int,-1,-1,0,-1,-1> > const &,class Eigen::MatrixBase<class Eigen::Matrix<double,-1,-1,0,-1,-1> > const &,class Eigen::PlainObjectBase<class Eigen::Matrix<double,-1,1,0,-1,1> > &,class Eigen::PlainObjectBase<class Eigen::Matrix<__int64,-1,1,0,-1,1> > &,class Eigen::PlainObjectBase<class Eigen::Matrix<double,-1,3,0,-1,3> > &)const;
 #endif
