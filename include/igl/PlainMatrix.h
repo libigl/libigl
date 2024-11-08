@@ -10,13 +10,37 @@
 #define IGL_PLAINMATRIX_H
 #include <Eigen/Core>
 
+#include <type_traits>
+#include <Eigen/Dense>
+
+// Define void_t for compatibility if it's not in the standard library (C++11 and later)
+#if __cplusplus < 201703L
+namespace std {
+  template <typename... Ts>
+  using void_t = void;
+}
+#endif
+
+
+#ifndef IGL_DEFAULT_MAJORING
+#define IGL_DEFAULT_MAJORING Eigen::ColMajor
+#endif
+
 namespace igl
 {
   template <typename Derived, int Rows, int Cols, int Options>
   struct PlainMatrixHelper {
     using Type = Eigen::Matrix<typename Derived::Scalar,Rows,Cols,((Rows == 1 && Cols != 1) ? Eigen::RowMajor : ((Cols == 1 && Rows != 1) ? Eigen::ColMajor : Options))>;
   };
-
+  template <typename Derived, typename = void>
+  struct get_options {
+    static constexpr int value = IGL_DEFAULT_MAJORING;
+  };
+  
+  template <typename Derived>
+  struct get_options<Derived, std::void_t<decltype(Derived::Options)>> {
+    static constexpr int value = Derived::Options;
+  };
   /// Some libigl implementations would (still do?) use a pattern like:
   ///
   /// template <typename DerivedA>
@@ -57,7 +81,13 @@ namespace igl
   ///
   /// Then it's probably fine. If C can be resized to different sizes, then
   /// `DerivedC` should be `Eigen::Matrix`-like .
-  template <typename Derived, int Rows = Derived::RowsAtCompileTime, int Cols = Derived::ColsAtCompileTime, int Options=Derived::Options>
+  // Helper to check if `Options` exists in Derived
+
+  // Modify PlainMatrix to use get_options
+  template <typename Derived, 
+            int Rows = Derived::RowsAtCompileTime, 
+            int Cols = Derived::ColsAtCompileTime, 
+            int Options = get_options<Derived>::value>
   using PlainMatrix = typename PlainMatrixHelper<Derived, Rows, Cols, Options>::Type;
 
 }
