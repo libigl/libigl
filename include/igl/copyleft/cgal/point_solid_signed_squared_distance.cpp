@@ -13,6 +13,7 @@
 #include "../../find.h"
 #include "../../placeholders.h"
 #include "../../parallel_for.h"
+#include "../../PlainMatrix.h"
 #include <vector>
 #include <Eigen/Core>
 
@@ -22,19 +23,19 @@ template <
   typename DerivedFB,
   typename DerivedD>
 IGL_INLINE void igl::copyleft::cgal::point_solid_signed_squared_distance(
-  const Eigen::PlainObjectBase<DerivedQ> & Q,
-  const Eigen::PlainObjectBase<DerivedVB> & VB,
-  const Eigen::PlainObjectBase<DerivedFB> & FB,
+  const Eigen::MatrixBase<DerivedQ> & Q,
+  const Eigen::MatrixBase<DerivedVB> & VB,
+  const Eigen::MatrixBase<DerivedFB> & FB,
   Eigen::PlainObjectBase<DerivedD> & D)
 {
   // compute unsigned distances
   Eigen::VectorXi I;
-  DerivedVB C;
+  PlainMatrix<DerivedVB,Eigen::Dynamic,1> C;
   point_mesh_squared_distance<CGAL::Epeck>(Q,VB,FB,D,I,C);
   // Collect queries that have non-zero distance
   Eigen::Array<bool,Eigen::Dynamic,1> NZ = D.array()!=0;
   // Compute sign for non-zero distance queries
-  DerivedQ QNZ = Q(igl::find(NZ),igl::placeholders::all);
+  PlainMatrix<DerivedQ,Eigen::Dynamic> QNZ = Q(igl::find(NZ),igl::placeholders::all);
   Eigen::Array<bool,Eigen::Dynamic,1> DNZ;
   igl::copyleft::cgal::points_inside_component(VB,FB,QNZ,DNZ);
   // Apply sign to distances
@@ -53,5 +54,5 @@ IGL_INLINE void igl::copyleft::cgal::point_solid_signed_squared_distance(
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instantiation
-template void igl::copyleft::cgal::point_solid_signed_squared_distance<Eigen::Matrix<CGAL::Epeck::FT, -1, 3, 0, -1, 3>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<CGAL::Epeck::FT, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Epeck::FT, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Epeck::FT, -1, 1, 0, -1, 1> >&);
+template void igl::copyleft::cgal::point_solid_signed_squared_distance<Eigen::Matrix<CGAL::Epeck::FT, -1, 3, 0, -1, 3>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<CGAL::Epeck::FT, -1, 1, 0, -1, 1> >(Eigen::MatrixBase<Eigen::Matrix<CGAL::Epeck::FT, -1, 3, 0, -1, 3> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Epeck::FT, -1, 1, 0, -1, 1> >&);
 #endif

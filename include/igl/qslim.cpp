@@ -21,6 +21,7 @@
 #include "remove_unreferenced.h"
 #include "intersection_blocking_collapse_edge_callbacks.h"
 #include "AABB.h"
+#include "PlainMatrix.h"
 
 IGL_INLINE bool igl::qslim(
   const Eigen::MatrixXd & V,
@@ -46,8 +47,8 @@ IGL_INLINE bool igl::qslim(
   int m = F.rows();
   typedef Eigen::MatrixXd DerivedV;
   typedef Eigen::MatrixXi DerivedF;
-  DerivedV VO;
-  DerivedF FO;
+  PlainMatrix<DerivedV,Eigen::Dynamic> VO;
+  PlainMatrix<DerivedF,Eigen::Dynamic> FO;
   igl::connect_boundary_to_infinity(V,F,VO,FO);
   // decimate will not work correctly on non-edge-manifold meshes. By extension
   // this includes meshes with non-manifold vertices on the boundary since these

@@ -8,6 +8,7 @@
 #include "points_inside_component.h"
 #include "../../LinSpaced.h"
 #include "../../parallel_for.h"
+#include "../../PlainMatrix.h"
 #include "order_facets_around_edge.h"
 #include "assign_scalar.h"
 
@@ -40,8 +41,8 @@ namespace igl {
 
             template<typename DerivedF, typename DerivedI>
             void extract_adj_faces(
-                    const Eigen::PlainObjectBase<DerivedF>& F,
-                    const Eigen::PlainObjectBase<DerivedI>& I,
+                    const Eigen::MatrixBase<DerivedF>& F,
+                    const Eigen::MatrixBase<DerivedI>& I,
                     const size_t s, const size_t d,
                     std::vector<int>& adj_faces) {
                 const size_t num_faces = I.rows();
@@ -64,8 +65,8 @@ namespace igl {
 
             template<typename DerivedF, typename DerivedI>
             void extract_adj_vertices(
-                    const Eigen::PlainObjectBase<DerivedF>& F,
-                    const Eigen::PlainObjectBase<DerivedI>& I,
+                    const Eigen::MatrixBase<DerivedF>& F,
+                    const Eigen::MatrixBase<DerivedI>& I,
                     const size_t v, std::vector<int>& adj_vertices) {
                 std::set<size_t> unique_adj_vertices;
                 const size_t num_faces = I.rows();
@@ -90,9 +91,9 @@ namespace igl {
 
             template<typename DerivedV, typename DerivedF, typename DerivedI>
             bool determine_point_edge_orientation(
-                    const Eigen::PlainObjectBase<DerivedV>& V,
-                    const Eigen::PlainObjectBase<DerivedF>& F,
-                    const Eigen::PlainObjectBase<DerivedI>& I,
+                    const Eigen::MatrixBase<DerivedV>& V,
+                    const Eigen::MatrixBase<DerivedF>& F,
+                    const Eigen::MatrixBase<DerivedI>& I,
                     const Point_3& query, size_t s, size_t d) {
                 // Algorithm:
                 //
@@ -132,7 +133,7 @@ namespace igl {
                 const size_t num_adj_faces = adj_faces.size();
                 assert(num_adj_faces > 0);
 
-                DerivedV pivot_point(1, 3);
+                PlainMatrix<DerivedV,1> pivot_point(1, 3);
                 igl::copyleft::cgal::assign_scalar(query.x(), pivot_point(0, 0));
                 igl::copyleft::cgal::assign_scalar(query.y(), pivot_point(0, 1));
                 igl::copyleft::cgal::assign_scalar(query.z(), pivot_point(0, 2));
@@ -155,9 +156,9 @@ namespace igl {
 
             template<typename DerivedV, typename DerivedF, typename DerivedI>
             bool determine_point_vertex_orientation(
-                    const Eigen::PlainObjectBase<DerivedV>& V,
-                    const Eigen::PlainObjectBase<DerivedF>& F,
-                    const Eigen::PlainObjectBase<DerivedI>& I,
+                    const Eigen::MatrixBase<DerivedV>& V,
+                    const Eigen::MatrixBase<DerivedF>& F,
+                    const Eigen::MatrixBase<DerivedI>& I,
                     const Point_3& query, size_t s) {
                 std::vector<int> adj_vertices;
                 extract_adj_vertices(F, I, s, adj_vertices);
@@ -222,9 +223,9 @@ namespace igl {
 
             template<typename DerivedV, typename DerivedF, typename DerivedI>
             bool determine_point_face_orientation(
-                    const Eigen::PlainObjectBase<DerivedV>& V,
-                    const Eigen::PlainObjectBase<DerivedF>& F,
-                    const Eigen::PlainObjectBase<DerivedI>& I,
+                    const Eigen::MatrixBase<DerivedV>& V,
+                    const Eigen::MatrixBase<DerivedF>& F,
+                    const Eigen::MatrixBase<DerivedI>& I,
                     const Point_3& query, size_t fid) {
                 // Algorithm: A point is on the inside of a face if the
                 // tetrahedron formed by them is negatively oriented.
@@ -247,10 +248,10 @@ namespace igl {
 template<typename DerivedV, typename DerivedF, typename DerivedI,
     typename DerivedP, typename DerivedB>
 IGL_INLINE void igl::copyleft::cgal::points_inside_component(
-        const Eigen::PlainObjectBase<DerivedV>& V,
-        const Eigen::PlainObjectBase<DerivedF>& F,
-        const Eigen::PlainObjectBase<DerivedI>& I,
-        const Eigen::PlainObjectBase<DerivedP>& P,
+        const Eigen::MatrixBase<DerivedV>& V,
+        const Eigen::MatrixBase<DerivedF>& F,
+        const Eigen::MatrixBase<DerivedI>& I,
+        const Eigen::MatrixBase<DerivedP>& P,
         Eigen::PlainObjectBase<DerivedB>& inside) {
     using namespace igl::copyleft::cgal::points_inside_component_helper;
     if (F.rows() <= 0 || I.rows() <= 0) {
@@ -329,9 +330,9 @@ IGL_INLINE void igl::copyleft::cgal::points_inside_component(
 template<typename DerivedV, typename DerivedF, typename DerivedP,
     typename DerivedB>
 IGL_INLINE void igl::copyleft::cgal::points_inside_component(
-        const Eigen::PlainObjectBase<DerivedV>& V,
-        const Eigen::PlainObjectBase<DerivedF>& F,
-        const Eigen::PlainObjectBase<DerivedP>& P,
+        const Eigen::MatrixBase<DerivedV>& V,
+        const Eigen::MatrixBase<DerivedF>& F,
+        const Eigen::MatrixBase<DerivedP>& P,
         Eigen::PlainObjectBase<DerivedB>& inside) {
     Eigen::VectorXi I = igl::LinSpaced<Eigen::VectorXi>(F.rows(), 0, F.rows()-1);
     igl::copyleft::cgal::points_inside_component(V, F, I, P, inside);
@@ -339,11 +340,15 @@ IGL_INLINE void igl::copyleft::cgal::points_inside_component(
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instantiation
-template void igl::copyleft::cgal::points_inside_component< Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<   int, -1, -1, 0, -1, -1>, Eigen::Matrix<   int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<   int, -1, -1, 0, -1, -1> > ( Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<   int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<   int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<   int, -1, -1, 0, -1, -1> >&);
-template void igl::copyleft::cgal::points_inside_component< Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<   int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<   int, -1, -1, 0, -1, -1> > ( Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix< int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<   int, -1, -1, 0, -1, -1> >&);
-template void igl::copyleft::cgal::points_inside_component<Eigen::Matrix<CGAL::Epeck::FT, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<CGAL::Epeck::FT, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Epeck::FT, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Epeck::FT, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
-template void igl::copyleft::cgal::points_inside_component<Eigen::Matrix<CGAL::Epeck::FT, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<CGAL::Epeck::FT, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Epeck::FT, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Epeck::FT, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
-template void igl::copyleft::cgal::points_inside_component<Eigen::Matrix<double, -1,   -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>,   Eigen::Matrix<CGAL::Epeck::FT, -1, 3, 0, -1, 3>,   Eigen::Array<bool, -1, 1, 0, -1, 1>   >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&,   Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&,   Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Epeck::FT, -1, 3,   0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Array<bool, -1, 1, 0, -1, 1>   >&);
-template void igl::copyleft::cgal::points_inside_component<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
-template void igl::copyleft::cgal::points_inside_component<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
+// generated by autoexplicit.sh
+template void igl::copyleft::cgal::points_inside_component<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 1, 0, -1, 1>>(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, 3, 0, -1, 3>> const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1>>&);
+// generated by autoexplicit.sh
+template void igl::copyleft::cgal::points_inside_component<Eigen::Matrix<CGAL::Epeck::FT, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<CGAL::Epeck::FT, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 1, 0, -1, 1>>(Eigen::MatrixBase<Eigen::Matrix<CGAL::Epeck::FT, -1, -1, 0, -1, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<CGAL::Epeck::FT, -1, 3, 0, -1, 3>> const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1>>&);
+template void igl::copyleft::cgal::points_inside_component< Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<   int, -1, -1, 0, -1, -1>, Eigen::Matrix<   int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<   int, -1, -1, 0, -1, -1> > ( Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<   int, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<   int, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<   int, -1, -1, 0, -1, -1> >&);
+template void igl::copyleft::cgal::points_inside_component< Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<   int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<   int, -1, -1, 0, -1, -1> > ( Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix< int, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<   int, -1, -1, 0, -1, -1> >&);
+template void igl::copyleft::cgal::points_inside_component<Eigen::Matrix<CGAL::Epeck::FT, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<CGAL::Epeck::FT, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::MatrixBase<Eigen::Matrix<CGAL::Epeck::FT, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<CGAL::Epeck::FT, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
+template void igl::copyleft::cgal::points_inside_component<Eigen::Matrix<CGAL::Epeck::FT, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<CGAL::Epeck::FT, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::MatrixBase<Eigen::Matrix<CGAL::Epeck::FT, -1, 3, 0, -1, 3> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::MatrixBase<Eigen::Matrix<CGAL::Epeck::FT, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
+template void igl::copyleft::cgal::points_inside_component<Eigen::Matrix<double, -1,   -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>,   Eigen::Matrix<CGAL::Epeck::FT, -1, 3, 0, -1, 3>,   Eigen::Array<bool, -1, 1, 0, -1, 1>   >(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&,   Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&,   Eigen::MatrixBase<Eigen::Matrix<CGAL::Epeck::FT, -1, 3,   0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Array<bool, -1, 1, 0, -1, 1>   >&);
+template void igl::copyleft::cgal::points_inside_component<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
+template void igl::copyleft::cgal::points_inside_component<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 3, 0, -1, 3> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
 #endif

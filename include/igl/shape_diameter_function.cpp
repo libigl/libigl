@@ -10,6 +10,7 @@
 #include "barycenter.h"
 #include "ray_mesh_intersect.h"
 #include "per_vertex_normals.h"
+#include "PlainMatrix.h"
 #include "per_face_normals.h"
 #include "EPS.h"
 #include "Hit.h"
@@ -163,15 +164,15 @@ IGL_INLINE void igl::shape_diameter_function(
 {
   if (per_face)
   {
-    DerivedV N;
+    PlainMatrix<DerivedV> N;
     igl::per_face_normals(V, F, N);
-    DerivedV P;
+    PlainMatrix<DerivedV> P;
     igl::barycenter(V, F, P);
     return igl::shape_diameter_function(V, F, P, N, num_samples, S);
   }
   else
   {
-    DerivedV N;
+    PlainMatrix<DerivedV> N;
     igl::per_vertex_normals(V, F, N);
     return igl::shape_diameter_function(V, F, V, N, num_samples, S);
   }

@@ -1,6 +1,7 @@
 #include "screen_space_selection.h"
 
 #include "AABB.h"
+#include "PlainMatrix.h"
 #include "winding_number.h"
 #include "project.h"
 #include "unproject.h"
@@ -86,7 +87,7 @@ IGL_INLINE void igl::screen_space_selection(
   Eigen::PlainObjectBase<DerivedW> & W)
 {
   // project all mesh vertices to 2D
-  DerivedV V2;
+  PlainMatrix<DerivedV,Eigen::Dynamic,Eigen::Dynamic> V2;
   igl::project(V,model,proj,viewport,V2);
   // In 2D this uses O(N*M) naive algorithm.
   igl::winding_number(P,E,V2,W);

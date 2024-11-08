@@ -31,8 +31,8 @@ namespace igl
         typename DerivedI,
         typename Derivedflip>
       IGL_INLINE int peel_outer_hull_layers(
-        const Eigen::PlainObjectBase<DerivedV > & V,
-        const Eigen::PlainObjectBase<DerivedF > & F,
+        const Eigen::MatrixBase<DerivedV > & V,
+        const Eigen::MatrixBase<DerivedF > & F,
         Eigen::PlainObjectBase<DerivedI > & I,
         Eigen::PlainObjectBase<Derivedflip > & flip);
     }

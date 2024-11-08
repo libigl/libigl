@@ -19,6 +19,7 @@
 #include "parallel_for.h"
 #include "max_faces_stopping_condition.h"
 #include "shortest_edge_and_midpoint.h"
+#include "PlainMatrix.h"
 
 IGL_INLINE bool igl::decimate(
   const Eigen::MatrixXd & V,
@@ -42,8 +43,8 @@ IGL_INLINE bool igl::decimate(
   int m = F.rows();
   typedef Eigen::MatrixXd DerivedV;
   typedef Eigen::MatrixXi DerivedF;
-  DerivedV VO;
-  DerivedF FO;
+  PlainMatrix<DerivedV> VO;
+  PlainMatrix<DerivedF> FO;
   igl::connect_boundary_to_infinity(V,F,VO,FO);
   Eigen::VectorXi EMAP;
   Eigen::MatrixXi E,EF,EI;

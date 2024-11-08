@@ -4,6 +4,7 @@
 #include "ismember_rows.h"
 #include "unique.h"
 #include "adjacency_list.h"
+#include "PlainMatrix.h"
 
 template <
   typename DerivedE,
@@ -58,7 +59,7 @@ IGL_INLINE void igl::edges_to_path(
   assert(c == 2 || c == 1);
 
   // reshape E to be #E by 2
-  DerivedE E = Eigen::Map<DerivedE>(vE.data(),OE.rows(),OE.cols()).eval();
+  PlainMatrix<DerivedE> E = Eigen::Map<DerivedE>(vE.data(),OE.rows(),OE.cols()).eval();
   {
     std::vector<std::vector<int> > A;
     igl::adjacency_list(E,A);
@@ -71,7 +72,7 @@ IGL_INLINE void igl::edges_to_path(
     I(I.size()-1) = I(0);
   }
 
-  DerivedE sE;
+  PlainMatrix<DerivedE> sE;
   Eigen::Matrix<typename DerivedI::Scalar,Eigen::Dynamic,2> sEI;
   {
     Eigen::MatrixXi _;

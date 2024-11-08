@@ -12,6 +12,7 @@
 #include "cat.h"
 //#include "matlab_format.h"
 #include "placeholders.h"
+#include "PlainMatrix.h"
 
 #include <iostream>
 #include <limits>
@@ -111,7 +112,7 @@ IGL_INLINE igl::SolverStatus igl::active_set(
   Matrix<BOOL,Dynamic,1> as_ieq = Matrix<BOOL,Dynamic,1>::Constant(Aieq.rows(),1,FALSE);
 
   // Keep track of previous Z for comparison
-  DerivedZ old_Z;
+  PlainMatrix<DerivedZ> old_Z;
 
   int iter = 0;
   while(true)
@@ -149,7 +150,7 @@ IGL_INLINE igl::SolverStatus igl::active_set(
       }
       if(Aieq.rows() > 0)
       {
-        DerivedZ AieqZ;
+        PlainMatrix<DerivedZ,Eigen::Dynamic> AieqZ;
         AieqZ = Aieq*Z;
         for(int a = 0;a<Aieq.rows();a++)
         {
@@ -203,7 +204,7 @@ IGL_INLINE igl::SolverStatus igl::active_set(
     // PREPARE FIXED VALUES
     Eigen::Matrix<typename Derivedknown::Scalar,Eigen::Dynamic,1> known_i;
     known_i.resize(nk + as_lx_count + as_ux_count,1);
-    DerivedY Y_i;
+    PlainMatrix<DerivedY,Eigen::Dynamic,1> Y_i;
     Y_i.resize(nk + as_lx_count + as_ux_count,1);
     {
       known_i.block(0,0,known.rows(),known.cols()) = known;
@@ -236,7 +237,7 @@ IGL_INLINE igl::SolverStatus igl::active_set(
     // PREPARE EQUALITY CONSTRAINTS
     Eigen::Matrix<typename DerivedY::Scalar, Eigen::Dynamic, 1> as_ieq_list(as_ieq_count,1);
     // Gather active constraints and resp. rhss
-    DerivedBeq Beq_i;
+    PlainMatrix<DerivedBeq,Eigen::Dynamic,1> Beq_i;
     Beq_i.resize(Beq.rows()+as_ieq_count,1);
     Beq_i.head(Beq.rows()) = Beq;
     {
@@ -273,7 +274,7 @@ IGL_INLINE igl::SolverStatus igl::active_set(
     }
 #endif
 
-    DerivedZ sol;
+    PlainMatrix<DerivedZ,Eigen::Dynamic,Eigen::Dynamic> sol;
     if(known_i.size() == A.rows())
     {
       // Everything's fixed?
@@ -329,7 +330,7 @@ IGL_INLINE igl::SolverStatus igl::active_set(
     // Slow
     slice(A,known_i,1,Ak);
     //slice(B,known_i,Bk);
-    DerivedB Bk = B(known_i,igl::placeholders::all);
+    PlainMatrix<DerivedB,Eigen::Dynamic> Bk = B(known_i,igl::placeholders::all);
     MatrixXd Lambda_known_i = -(0.5*Ak*Z + 0.5*Bk);
     // reverse the lambda values for lx
     Lambda_known_i.block(nk,0,as_lx_count,1) =

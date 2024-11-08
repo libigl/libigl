@@ -23,8 +23,8 @@ namespace igl
   /// @param[out] FD      #F*3 by 3 faces of the dual mesh
   template <typename Scalar, typename Index>
   IGL_INLINE void false_barycentric_subdivision(
-    const Eigen::PlainObjectBase<Scalar> & V,
-    const Eigen::PlainObjectBase<Index> & F,
+    const Eigen::MatrixBase<Scalar> & V,
+    const Eigen::MatrixBase<Index> & F,
     Eigen::PlainObjectBase<Scalar> & VD,
     Eigen::PlainObjectBase<Index> & FD);
 
