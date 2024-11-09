@@ -13,6 +13,7 @@
 #ifndef IGL_WINDINGNUMBERAABB_H
 #define IGL_WINDINGNUMBERAABB_H
 #include "WindingNumberTree.h"
+#include "PlainMatrix.h"
 
 namespace igl
 {
@@ -211,8 +212,8 @@ inline void igl::WindingNumberAABB<Point,DerivedV,DerivedF>::grow()
     return;
   }
   assert(lefts+rights == this->getF().rows());
-  DerivedF leftF(lefts,  this->getF().cols());
-  DerivedF rightF(rights,this->getF().cols());
+  PlainMatrix<DerivedF,Eigen::Dynamic> leftF(lefts,  this->getF().cols());
+  PlainMatrix<DerivedF,Eigen::Dynamic> rightF(rights,this->getF().cols());
   int left_i = 0;
   int right_i = 0;
   for(int i = 0;i<this->getF().rows();i++)
