@@ -190,7 +190,11 @@ inline void igl::WindingNumberTree<Scalar,Index>::set_mesh(
   // Q: Would we gain even more by remove almost exactly duplicate vertices?
   Eigen::Matrix<typename MatrixXF::Scalar,Eigen::Dynamic,1> SVI,SVJ;
   igl::remove_duplicate_vertices(_V,_F,0.0,SV,SVI,SVJ,F);
-  triangle_fan(igl::exterior_edges(F),cap);
+  {
+    Eigen::Matrix<typename MatrixXF::Scalar,Eigen::Dynamic,2> EE;
+    igl::exterior_edges(F,EE);
+    triangle_fan(EE,cap);
+  }
   // point Vptr to SV
   Vptr = std::make_shared<MatrixXS>(SV);
 }
@@ -204,8 +208,11 @@ inline igl::WindingNumberTree<Scalar,Index>::WindingNumberTree(
   Vptr(parent.Vptr),
   SV(),
   F(_F),
-  cap(triangle_fan(igl::exterior_edges(_F)))
+  cap()
 {
+  Eigen::Matrix<typename MatrixXF::Scalar,Eigen::Dynamic,2> EE;
+  igl::exterior_edges(F,EE);
+  triangle_fan(EE,cap);
 }
 
 template <typename Scalar, typename Index>
