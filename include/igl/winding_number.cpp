@@ -41,9 +41,8 @@ IGL_INLINE void igl::winding_number(
     case 3:
     {
       WindingNumberAABB<
-        Eigen::Matrix<typename DerivedV::Scalar,1,3>,
-        DerivedV,
-        DerivedF>
+        typename DerivedV::Scalar,
+        typename DerivedF::Scalar>
         hier(V,F);
       hier.grow();
       // loop over origins
