@@ -5,17 +5,19 @@
 #include <stdint.h>
 
 
+#include <cstdint>
 namespace igl
 {
   template <typename Scalar> tinyply::Type tynyply_type();
-  template <> tinyply::Type IGL_INLINE tynyply_type<char>(){ return tinyply::Type::INT8; }
-  template <> tinyply::Type IGL_INLINE tynyply_type<short>(){ return tinyply::Type::INT16; }
-  template <> tinyply::Type IGL_INLINE tynyply_type<int>(){ return tinyply::Type::INT32; }
-  template <> tinyply::Type IGL_INLINE tynyply_type<unsigned char>(){ return tinyply::Type::UINT8; }
-  template <> tinyply::Type IGL_INLINE tynyply_type<unsigned short>(){ return tinyply::Type::UINT16; }
-  template <> tinyply::Type IGL_INLINE tynyply_type<unsigned int>(){ return tinyply::Type::UINT32; }
-  template <> tinyply::Type IGL_INLINE tynyply_type<float>(){ return tinyply::Type::FLOAT32; }
-  template <> tinyply::Type IGL_INLINE tynyply_type<double>(){ return tinyply::Type::FLOAT64; }
+
+  template <> tinyply::Type IGL_INLINE tynyply_type<std::int8_t   >() { return tinyply::Type::INT8; }
+  template <> tinyply::Type IGL_INLINE tynyply_type<std::int16_t  >() { return tinyply::Type::INT16; }
+  template <> tinyply::Type IGL_INLINE tynyply_type<std::int32_t  >() { return tinyply::Type::INT32; }
+  template <> tinyply::Type IGL_INLINE tynyply_type<std::uint8_t  >() { return tinyply::Type::UINT8; }
+  template <> tinyply::Type IGL_INLINE tynyply_type<std::uint16_t >() { return tinyply::Type::UINT16; }
+  template <> tinyply::Type IGL_INLINE tynyply_type<std::uint32_t >() { return tinyply::Type::UINT32; }
+  template <> tinyply::Type IGL_INLINE tynyply_type<float         >() { return tinyply::Type::FLOAT32; }
+  template <> tinyply::Type IGL_INLINE tynyply_type<double        >() { return tinyply::Type::FLOAT64; }
 }
 
 
