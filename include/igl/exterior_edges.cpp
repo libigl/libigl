@@ -62,7 +62,7 @@ IGL_INLINE void igl::exterior_edges(
   PlainMatrix<DerivedF,Eigen::Dynamic> uE;
   VectorXI IA,EMAP;
   unique_rows(sall_E,uE,IA,EMAP);
-  VectorXI counts = VectorXi::Zero(uE.rows());
+  VectorXI counts = VectorXI::Zero(uE.rows());
   for(Index a = 0;a<3*m;a++)
   {
     counts(EMAP(a)) += (sort_order(a)==0?1:-1);
