@@ -30,7 +30,7 @@ IGL_INLINE void igl::copyleft::cgal::submesh_aabb_tree(
   const size_t num_faces = I.rows();
   for (size_t i=0; i<num_faces; i++) 
   {
-    const Eigen::Vector3i f = F.row(I(i, 0));
+    const Eigen::Matrix<typename DerivedF::Scalar,3,1> f = F.row(I(i, 0));
     in_I[I(i,0)] = true;
     triangles.emplace_back(
       typename Kernel::Point_3(V(f[0], 0), V(f[0], 1), V(f[0], 2)),
