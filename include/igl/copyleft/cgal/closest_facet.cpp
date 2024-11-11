@@ -351,16 +351,16 @@ IGL_INLINE void igl::copyleft::cgal::closest_facet(
       }
     }
     if (d == std::numeric_limits<size_t>::max()) {
-      Eigen::MatrixXd tmp_vertices(V.rows(), V.cols());
-      for (size_t i=0; i<V.rows(); i++) {
-        for (size_t j=0; j<V.cols(); j++) {
-          tmp_vertices(i,j) = CGAL::to_double(V(i,j));
-        }
-      }
-      Eigen::MatrixXi tmp_faces(adj_faces.size(), 3);
-      for (size_t i=0; i<adj_faces.size(); i++) {
-        tmp_faces.row(i) = F.row(adj_faces[i]);
-      }
+      //PlainMatrix<DerivedV,Eigen::Dynamic> tmp_vertices(V.rows(), V.cols());
+      //for (size_t i=0; i<V.rows(); i++) {
+      //  for (size_t j=0; j<V.cols(); j++) {
+      //    tmp_vertices(i,j) = CGAL::to_double(V(i,j));
+      //  }
+      //}
+      //PlainMatrix<DerivedF,Eigen::Dynamic,3> tmp_faces(adj_faces.size(), 3);
+      //for (size_t i=0; i<adj_faces.size(); i++) {
+      //  tmp_faces.row(i) = F.row(adj_faces[i]);
+      //}
       //igl::writePLY("debug.ply", tmp_vertices, tmp_faces, false);
       throw std::runtime_error("Invalid vertex neighborhood");
     }
@@ -521,4 +521,5 @@ Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&,
 Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, std::vector<std::vector<size_t, std::allocator<size_t> >, std::allocator<std::vector<size_t, std::allocator<size_t> > > > const&, std::vector<std::vector<size_t, std::allocator<size_t> >, std::allocator<std::vector<size_t, std::allocator<size_t> > > > const&, CGAL::AABB_tree<CGAL::AABB_traits<CGAL::Epeck, CGAL::AABB_triangle_primitive<CGAL::Epeck, std::vector<CGAL::Epeck::Triangle_3, std::allocator<CGAL::Epeck::Triangle_3> >::iterator, CGAL::Boolean_tag<false> >, CGAL::Default> > const&, std::vector<CGAL::Epeck::Triangle_3, std::allocator<CGAL::Epeck::Triangle_3> > const&, std::vector<bool, std::allocator<bool> > const&, 
 Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&, 
 Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
+
 #endif
