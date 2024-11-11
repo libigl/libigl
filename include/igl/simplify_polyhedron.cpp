@@ -10,6 +10,7 @@
 #include "circulation.h"
 #include "per_face_normals.h"
 #include "infinite_cost_stopping_condition.h"
+#include "decimate_trivial_callbacks.h"
 #include <functional>
 
 IGL_INLINE void igl::simplify_polyhedron(
@@ -98,10 +99,15 @@ IGL_INLINE void igl::simplify_polyhedron(
   };
   igl::per_face_normals(OV,OF,N);
   Eigen::VectorXi I;
+  decimate_pre_collapse_callback always_try;
+  decimate_post_collapse_callback never_care;
+  decimate_trivial_callbacks(always_try,never_care);
   igl::decimate(
     OV,OF,
     perfect,
     igl::infinite_cost_stopping_condition(perfect),
+    always_try,
+    never_care,
     V,F,J,I);
 }
 

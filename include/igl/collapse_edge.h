@@ -108,15 +108,23 @@ namespace igl
   ///   igl::circulation(d1,ccw,F,EMAP,EF,EI,Nv,Nf);
   /// }
   /// ```
+  template <
+    typename Derivedp,
+    typename DerivedV,
+    typename DerivedF,
+    typename DerivedE,
+    typename DerivedEMAP,
+    typename DerivedEF,
+    typename DerivedEI>
   IGL_INLINE bool collapse_edge(
     const int e,
-    const Eigen::RowVectorXd & p,
-    Eigen::MatrixXd & V,
-    Eigen::MatrixXi & F,
-    Eigen::MatrixXi & E,
-    Eigen::VectorXi & EMAP,
-    Eigen::MatrixXi & EF,
-    Eigen::MatrixXi & EI,
+    const Eigen::MatrixBase<Derivedp> & p,
+    Eigen::MatrixBase<DerivedV> & V,
+    Eigen::MatrixBase<DerivedF> & F,
+    Eigen::MatrixBase<DerivedE> & E,
+    Eigen::MatrixBase<DerivedEMAP> & EMAP,
+    Eigen::MatrixBase<DerivedEF> & EF,
+    Eigen::MatrixBase<DerivedEI> & EI,
     int & e1,
     int & e2,
     int & f1,
@@ -127,33 +135,32 @@ namespace igl
   /// @param[in] Nsf #Nsf face circulation around s
   /// @param[in] Ndv #Ndv vertex circulation around d
   /// @param[in] Ndf #Ndf face circulation around d
+  template
+  <
+    typename Derivedp,
+    typename DerivedV,
+    typename DerivedF,
+    typename DerivedE,
+    typename DerivedEMAP,
+    typename DerivedEF,
+    typename DerivedEI>
   IGL_INLINE bool collapse_edge(
     const int e,
-    const Eigen::RowVectorXd & p,
+    const Eigen::MatrixBase<Derivedp> & p,
     /*const*/ std::vector<int> & Nsv,
     const std::vector<int> & Nsf,
     /*const*/ std::vector<int> & Ndv,
     const std::vector<int> & Ndf,
-    Eigen::MatrixXd & V,
-    Eigen::MatrixXi & F,
-    Eigen::MatrixXi & E,
-    Eigen::VectorXi & EMAP,
-    Eigen::MatrixXi & EF,
-    Eigen::MatrixXi & EI,
-    int & e1,
-    int & e2,
-    int & f1,
-    int & f2);
-  /// \overload
-  IGL_INLINE bool collapse_edge(
-    const int e,
-    const Eigen::RowVectorXd & p,
-    Eigen::MatrixXd & V,
-    Eigen::MatrixXi & F,
-    Eigen::MatrixXi & E,
-    Eigen::VectorXi & EMAP,
-    Eigen::MatrixXi & EF,
-    Eigen::MatrixXi & EI);
+    Eigen::MatrixBase<DerivedV> & V,
+    Eigen::MatrixBase<DerivedF> & F,
+    Eigen::MatrixBase<DerivedE> & E,
+    Eigen::MatrixBase<DerivedEMAP> & EMAP,
+    Eigen::MatrixBase<DerivedEF> & EF,
+    Eigen::MatrixBase<DerivedEI> & EI,
+    int & a_e1,
+    int & a_e2,
+    int & a_f1,
+    int & a_f2);
   /// Collapse least-cost edge from a priority queue and update queue 
   ///
   /// See decimate.h for more details.
@@ -190,50 +197,36 @@ namespace igl
   /// @param[out] e2  index into E of edge collpased on right.
   /// @param[out] f1  index into F of face collpased on left.
   /// @param[out] f2  index into F of face collpased on right.
+  template <
+    typename CPFunc,
+    typename PreFunc,
+    typename PostFunc,
+    typename DerivedV,
+    typename DerivedF,
+    typename DerivedE,
+    typename DerivedEMAP,
+    typename DerivedEF,
+    typename DerivedEI,
+    typename DerivedEQ,
+    typename DerivedC>
   IGL_INLINE bool collapse_edge(
-    const decimate_cost_and_placement_callback & cost_and_placement,
-    const decimate_pre_collapse_callback       & pre_collapse,
-    const decimate_post_collapse_callback      & post_collapse,
-    Eigen::MatrixXd & V,
-    Eigen::MatrixXi & F,
-    Eigen::MatrixXi & E,
-    Eigen::VectorXi & EMAP,
-    Eigen::MatrixXi & EF,
-    Eigen::MatrixXi & EI,
+    const CPFunc & cost_and_placement,
+    const PreFunc & pre_collapse,
+    const PostFunc & post_collapse,
+    Eigen::MatrixBase<DerivedV> & V,
+    Eigen::MatrixBase<DerivedF> & F,
+    Eigen::MatrixBase<DerivedE> & E,
+    Eigen::MatrixBase<DerivedEMAP> & EMAP,
+    Eigen::MatrixBase<DerivedEF> & EF,
+    Eigen::MatrixBase<DerivedEI> & EI,
     igl::min_heap< std::tuple<double,int,int> > & Q,
-    Eigen::VectorXi & EQ,
-    Eigen::MatrixXd & C,
+    Eigen::MatrixBase<DerivedEQ> & EQ,
+    Eigen::MatrixBase<DerivedC> & C,
     int & e,
     int & e1,
     int & e2,
     int & f1,
     int & f2);
-  /// \overload
-  IGL_INLINE bool collapse_edge(
-    const decimate_cost_and_placement_callback & cost_and_placement,
-    Eigen::MatrixXd & V,
-    Eigen::MatrixXi & F,
-    Eigen::MatrixXi & E,
-    Eigen::VectorXi & EMAP,
-    Eigen::MatrixXi & EF,
-    Eigen::MatrixXi & EI,
-    igl::min_heap< std::tuple<double,int,int> > & Q,
-    Eigen::VectorXi & EQ,
-    Eigen::MatrixXd & C);
-  /// \overload
-  IGL_INLINE bool collapse_edge(
-    const decimate_cost_and_placement_callback & cost_and_placement,
-    const decimate_pre_collapse_callback       & pre_collapse,
-    const decimate_post_collapse_callback      & post_collapse,
-    Eigen::MatrixXd & V,
-    Eigen::MatrixXi & F,
-    Eigen::MatrixXi & E,
-    Eigen::VectorXi & EMAP,
-    Eigen::MatrixXi & EF,
-    Eigen::MatrixXi & EI,
-    igl::min_heap< std::tuple<double,int,int> > & Q,
-    Eigen::VectorXi & EQ,
-    Eigen::MatrixXd & C);
 }
 
 #ifndef IGL_STATIC_LIBRARY

@@ -46,6 +46,7 @@ IGL_INLINE bool igl::decimate(
   PlainMatrix<DerivedV> VO;
   PlainMatrix<DerivedF> FO;
   igl::connect_boundary_to_infinity(V,F,VO,FO);
+  // These will unfortunately be immediately recomputed in decimate.
   Eigen::VectorXi EMAP;
   Eigen::MatrixXi E,EF,EI;
   edge_flaps(FO,E,EMAP,EF,EI);
@@ -77,10 +78,6 @@ IGL_INLINE bool igl::decimate(
     max_faces_stopping_condition(m,orig_m,max_m),
     pre_collapse,
     post_collapse,
-    E,
-    EMAP,
-    EF,
-    EI,
     U,
     G,
     J,
@@ -101,53 +98,8 @@ IGL_INLINE bool igl::decimate(
   const Eigen::MatrixXi & OF,
   const decimate_cost_and_placement_callback & cost_and_placement,
   const decimate_stopping_condition_callback & stopping_condition,
-  Eigen::MatrixXd & U,
-  Eigen::MatrixXi & G,
-  Eigen::VectorXi & J,
-  Eigen::VectorXi & I
-  )
-{
-  decimate_pre_collapse_callback always_try;
-  decimate_post_collapse_callback never_care;
-  decimate_trivial_callbacks(always_try,never_care);
-  return igl::decimate(
-    OV,OF,cost_and_placement,stopping_condition,always_try,never_care,U,G,J,I);
-}
-
-IGL_INLINE bool igl::decimate(
-  const Eigen::MatrixXd & OV,
-  const Eigen::MatrixXi & OF,
-  const decimate_cost_and_placement_callback & cost_and_placement,
-  const decimate_stopping_condition_callback & stopping_condition,
   const decimate_pre_collapse_callback       & pre_collapse,
   const decimate_post_collapse_callback      & post_collapse,
-  Eigen::MatrixXd & U,
-  Eigen::MatrixXi & G,
-  Eigen::VectorXi & J,
-  Eigen::VectorXi & I
-  )
-{
-  Eigen::VectorXi EMAP;
-  Eigen::MatrixXi E,EF,EI;
-  edge_flaps(OF,E,EMAP,EF,EI);
-  return igl::decimate(
-    OV,OF,
-    cost_and_placement,stopping_condition,pre_collapse,post_collapse,
-    E,EMAP,EF,EI,
-    U,G,J,I);
-}
-
-IGL_INLINE bool igl::decimate(
-  const Eigen::MatrixXd & OV,
-  const Eigen::MatrixXi & OF,
-  const decimate_cost_and_placement_callback & cost_and_placement,
-  const decimate_stopping_condition_callback & stopping_condition,
-  const decimate_pre_collapse_callback       & pre_collapse,
-  const decimate_post_collapse_callback      & post_collapse,
-  const Eigen::MatrixXi & /*OE*/,
-  const Eigen::VectorXi & /*OEMAP*/,
-  const Eigen::MatrixXi & /*OEF*/,
-  const Eigen::MatrixXi & /*OEI*/,
   Eigen::MatrixXd & U,
   Eigen::MatrixXi & G,
   Eigen::VectorXi & J,
@@ -189,6 +141,12 @@ IGL_INLINE bool igl::decimate(
     igl::parallel_for(E.rows(),[&](const int e)
     {
       double cost = e;
+      // RowVectorXd here means that cost_and_placement needs to expect that
+      // output parameter type, which makes it hard to use a generic template
+      // for cost_and_placement.
+      // If we were using more modern C++ then cost_and_placement could return a
+      // tuple and could be unpacked into auto [cost,p] =
+      // cost_and_placement(...) without much issue.
       RowVectorXd p(1,3);
       cost_and_placement(e,V,F,E,EMAP,EF,EI,cost,p);
       C.row(e) = p;
@@ -257,3 +215,4 @@ IGL_INLINE bool igl::decimate(
   igl::remove_unreferenced(V,F2,U,G,_1,I);
   return clean_finish;
 }
+

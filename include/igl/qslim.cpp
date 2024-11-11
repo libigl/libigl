@@ -57,6 +57,7 @@ IGL_INLINE bool igl::qslim(
   {
     return false;
   }
+  // These will unfortunately be immediately recomputed in decimate.
   Eigen::VectorXi EMAP;
   Eigen::MatrixXi E,EF,EI;
   edge_flaps(FO,E,EMAP,EF,EI);
@@ -87,7 +88,6 @@ IGL_INLINE bool igl::qslim(
     max_faces_stopping_condition(m,orig_m,max_m),
     pre_collapse,
     post_collapse,
-    E, EMAP, EF, EI,
     U, G, J, I);
   // Remove phony boundary faces and clean up
   const Eigen::Array<bool,Eigen::Dynamic,1> keep = (J.array()<orig_m);
