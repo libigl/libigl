@@ -30,7 +30,7 @@ IGL_INLINE void igl::copyleft::cgal::point_solid_signed_squared_distance(
 {
   // compute unsigned distances
   Eigen::VectorXi I;
-  PlainMatrix<DerivedVB,Eigen::Dynamic,1> C;
+  PlainMatrix<DerivedVB,Eigen::Dynamic> C;
   point_mesh_squared_distance<CGAL::Epeck>(Q,VB,FB,D,I,C);
   // Collect queries that have non-zero distance
   Eigen::Array<bool,Eigen::Dynamic,1> NZ = D.array()!=0;
