@@ -19,30 +19,30 @@ namespace igl
       /// @param[in] V  #V by 3 list of vertex positions
       /// @param[out] BV  #BV by 3 list of box vertex positions
       /// @param[out] BF  #BF b3 list of box triangle indices into BV
-      template <typename DerivedV>
+      template <typename DerivedV, typename Index>
       IGL_INLINE void half_space_box(
         const CGAL::Plane_3<CGAL::Epeck> & P,
         const Eigen::MatrixBase<DerivedV> & V,
         Eigen::Matrix<CGAL::Epeck::FT,8,3> & BV,
-        Eigen::Matrix<int,12,3> & BF);
+        Eigen::Matrix<Index,12,3> & BF);
       /// \overload
       /// @param[in] p  3d point on plane
       /// @param[in] n  3d vector of normal of plane pointing away from inside
-      template <typename Derivedp, typename Derivedn, typename DerivedV>
+      template <typename Derivedp, typename Derivedn, typename DerivedV, typename Index>
       IGL_INLINE void half_space_box(
         const Eigen::MatrixBase<Derivedp> & p,
         const Eigen::MatrixBase<Derivedn> & n,
         const Eigen::MatrixBase<DerivedV> & V,
         Eigen::Matrix<CGAL::Epeck::FT,8,3> & BV,
-        Eigen::Matrix<int,12,3> & BF);
+        Eigen::Matrix<Index,12,3> & BF);
       /// \overload
       /// @param[in] equ  plane equation: a*x+b*y+c*z + d = 0
-      template <typename Derivedequ, typename DerivedV>
+      template <typename Derivedequ, typename DerivedV, typename Index>
       IGL_INLINE void half_space_box(
         const Eigen::MatrixBase<Derivedequ> & equ,
         const Eigen::MatrixBase<DerivedV> & V,
         Eigen::Matrix<CGAL::Epeck::FT,8,3> & BV,
-        Eigen::Matrix<int,12,3> & BF);
+        Eigen::Matrix<Index,12,3> & BF);
     }
   }
 }
