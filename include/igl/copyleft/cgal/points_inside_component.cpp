@@ -307,7 +307,7 @@ IGL_INLINE void igl::copyleft::cgal::points_inside_component(
             case VERTEX:
                 {
                     const size_t s = F(I(fid, 0), element_index);
-                    inside(i,0) = determine_point_vertex_orientation(
+                    inside(i) = determine_point_vertex_orientation(
                             V, F, I, query, s);
                 }
                 break;
@@ -315,12 +315,12 @@ IGL_INLINE void igl::copyleft::cgal::points_inside_component(
                 {
                     const size_t s = F(I(fid, 0), (element_index+1)%3);
                     const size_t d = F(I(fid, 0), (element_index+2)%3);
-                    inside(i,0) = determine_point_edge_orientation(
+                    inside(i) = determine_point_edge_orientation(
                             V, F, I, query, s, d);
                 }
                 break;
             case FACE:
-                inside(i,0) = determine_point_face_orientation(V, F, I, query, fid);
+                inside(i) = determine_point_face_orientation(V, F, I, query, fid);
                 break;
             default:
                 throw "Unknown closest element type!";
