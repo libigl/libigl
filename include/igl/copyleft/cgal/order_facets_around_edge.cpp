@@ -1,4 +1,5 @@
 #include "order_facets_around_edge.h"
+#include "../../PlainMatrix.h"
 #include <Eigen/Geometry>
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 
@@ -332,7 +333,7 @@ void igl::copyleft::cgal::order_facets_around_edge(
   for (size_t i=0; i<N; i++) adj_order[i] = i;
   std::sort(adj_order.begin(), adj_order.end(), comp);
 
-  DerivedV vertices(num_faces + 2, 3);
+  PlainMatrix<DerivedV,Eigen::Dynamic> vertices(num_faces + 2, 3);
   for (size_t i=0; i<N; i++) 
   {
     const size_t fid = signed_index_to_index(adj_faces[adj_order[i]]);
