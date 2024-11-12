@@ -343,7 +343,7 @@ void igl::copyleft::cgal::order_facets_around_edge(
   vertices.row(N+1) = V.row(s);
   vertices.row(N+2) = V.row(d);
 
-  DerivedF faces(num_faces, 3);
+  PlainMatrix<DerivedF,Eigen::Dynamic> faces(num_faces, 3);
   for (size_t i=0; i<N; i++)
   {
     if (adj_faces[adj_order[i]] < 0) 
