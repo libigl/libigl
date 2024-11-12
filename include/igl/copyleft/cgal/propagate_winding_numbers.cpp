@@ -138,7 +138,7 @@ IGL_INLINE bool igl::copyleft::cgal::propagate_winding_numbers(
   log_time("cell_connectivity");
 #endif
 
-#ifndef NDEBUG
+#ifdef IGL_COPYLEFT_CGAL_PROPAGATE_WINDING_NUMBERS_DEBUG
   auto save_cell = [&](const std::string& filename, size_t cell_id) -> void{
     std::vector<size_t> faces;
     for (size_t i=0; i<num_patches; i++) {
@@ -160,7 +160,7 @@ IGL_INLINE bool igl::copyleft::cgal::propagate_winding_numbers(
   };
 #endif
 
-#ifndef NDEBUG
+#ifdef IGL_COPYLEFT_CGAL_PROPAGATE_WINDING_NUMBERS_DEBUG
   {
     // Check for odd cycle.
     VectorXI cell_labels(num_cells);
@@ -272,7 +272,7 @@ IGL_INLINE bool igl::copyleft::cgal::propagate_winding_numbers(
         }
         Q.push(neighbor_cell);
       } else {
-#ifndef NDEBUG
+#ifdef IGL_COPYLEFT_CGAL_PROPAGATE_WINDING_NUMBERS_DEBUG
         // Checking for winding number consistency.
         // This check would inevitably fail for meshes that contain open
         // boundary or non-orientable.  However, the inconsistent winding number
