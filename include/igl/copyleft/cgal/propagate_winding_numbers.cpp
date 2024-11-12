@@ -40,6 +40,10 @@ IGL_INLINE bool igl::copyleft::cgal::propagate_winding_numbers(
     const Eigen::MatrixBase<DerivedL>& labels,
     Eigen::PlainObjectBase<DerivedW>& W) 
 {
+  using Index = typename DerivedF::Scalar;
+  using MatrixXI = Eigen::Matrix<Index, Eigen::Dynamic, Eigen::Dynamic>;
+  using VectorXI = Eigen::Matrix<Index, Eigen::Dynamic, 1>;
+
 #ifdef PROPAGATE_WINDING_NUMBER_TIMING
   const auto & tictoc = []() -> double
   {
@@ -55,11 +59,11 @@ IGL_INLINE bool igl::copyleft::cgal::propagate_winding_numbers(
   tictoc();
 #endif
 
-  Eigen::MatrixXi E, uE;
-  Eigen::VectorXi EMAP, uEC, uEE;
+  MatrixXI E, uE;
+  VectorXI EMAP, uEC, uEE;
   igl::unique_edge_map(F, E, uE, EMAP, uEC, uEE);
 
-  Eigen::VectorXi P;
+  VectorXI P;
   const size_t num_patches = igl::extract_manifold_patches(F,EMAP,uEC,uEE,P);
 
   DerivedW per_patch_cells;
@@ -100,6 +104,9 @@ IGL_INLINE bool igl::copyleft::cgal::propagate_winding_numbers(
     const Eigen::MatrixBase<DerivedL>& labels,
     Eigen::PlainObjectBase<DerivedW>& W)
 {
+  using Index = typename DerivedF::Scalar;
+  using MatrixXI = Eigen::Matrix<Index, Eigen::Dynamic, Eigen::Dynamic>;
+  using VectorXI = Eigen::Matrix<Index, Eigen::Dynamic, 1>;
 #ifdef PROPAGATE_WINDING_NUMBER_TIMING
   const auto & tictoc = []() -> double
   {
@@ -143,7 +150,7 @@ IGL_INLINE bool igl::copyleft::cgal::propagate_winding_numbers(
         }
       }
     }
-    Eigen::MatrixXi cell_faces(faces.size(), 3);
+    MatrixXI cell_faces(faces.size(), 3);
     for (size_t i=0; i<faces.size(); i++) {
       cell_faces.row(i) = F.row(faces[i]);
     }
@@ -156,9 +163,9 @@ IGL_INLINE bool igl::copyleft::cgal::propagate_winding_numbers(
 #ifndef NDEBUG
   {
     // Check for odd cycle.
-    Eigen::VectorXi cell_labels(num_cells);
+    VectorXI cell_labels(num_cells);
     cell_labels.setZero();
-    Eigen::VectorXi parents(num_cells);
+    VectorXI parents(num_cells);
     parents.setConstant(-1);
     auto trace_parents = [&](size_t idx) -> std::list<size_t> {
       std::list<size_t> path;
@@ -221,7 +228,7 @@ IGL_INLINE bool igl::copyleft::cgal::propagate_winding_numbers(
 
   Eigen::Index outer_facet;
   bool flipped;
-  Eigen::VectorXi I = igl::LinSpaced<Eigen::VectorXi>(num_faces, 0, num_faces-1);
+  VectorXI I = igl::LinSpaced<VectorXI>(num_faces, 0, num_faces-1);
   igl::copyleft::cgal::outer_facet(V, F, I, outer_facet, flipped);
 #ifdef PROPAGATE_WINDING_NUMBER_TIMING
   log_time("outer_facet");
@@ -230,7 +237,7 @@ IGL_INLINE bool igl::copyleft::cgal::propagate_winding_numbers(
   const size_t outer_patch = P[outer_facet];
   const size_t infinity_cell = C(outer_patch, flipped?1:0);
 
-  Eigen::VectorXi patch_labels(num_patches);
+  VectorXI patch_labels(num_patches);
   const int INVALID = std::numeric_limits<int>::max();
   patch_labels.setConstant(INVALID);
   for (size_t i=0; i<num_faces; i++) {
@@ -243,7 +250,7 @@ IGL_INLINE bool igl::copyleft::cgal::propagate_winding_numbers(
   assert((patch_labels.array() != INVALID).all());
   const size_t num_labels = patch_labels.maxCoeff()+1;
 
-  Eigen::MatrixXi per_cell_W(num_cells, num_labels);
+  MatrixXI per_cell_W(num_cells, num_labels);
   per_cell_W.setConstant(INVALID);
   per_cell_W.row(infinity_cell).setZero();
   std::queue<size_t> Q;
