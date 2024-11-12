@@ -47,7 +47,7 @@ namespace igl {
                     std::vector<int>& adj_faces) {
                 const size_t num_faces = I.rows();
                 for (size_t i=0; i<num_faces; i++) {
-                    Eigen::Vector3i f = F.row(I(i, 0));
+                    Eigen::Matrix<typename DerivedF::Scalar,3,1> f = F.row(I(i, 0));
                     if (((size_t)f[0] == s && (size_t)f[1] == d) ||
                         ((size_t)f[1] == s && (size_t)f[2] == d) ||
                         ((size_t)f[2] == s && (size_t)f[0] == d)) {
@@ -71,7 +71,7 @@ namespace igl {
                 std::set<size_t> unique_adj_vertices;
                 const size_t num_faces = I.rows();
                 for (size_t i=0; i<num_faces; i++) {
-                    Eigen::Vector3i f = F.row(I(i, 0));
+                    Eigen::Matrix<typename DerivedF::Scalar,3,1> f = F.row(I(i, 0));
                     if ((size_t)f[0] == v) {
                         unique_adj_vertices.insert(f[1]);
                         unique_adj_vertices.insert(f[2]);
@@ -231,7 +231,7 @@ namespace igl {
                 // Algorithm: A point is on the inside of a face if the
                 // tetrahedron formed by them is negatively oriented.
 
-                Eigen::Vector3i f = F.row(I(fid, 0));
+                Eigen::Matrix<typename DerivedF::Scalar,3,1> f = F.row(I(fid, 0));
                 const Point_3 v0(V(f[0], 0), V(f[0], 1), V(f[0], 2));
                 const Point_3 v1(V(f[1], 0), V(f[1], 1), V(f[1], 2));
                 const Point_3 v2(V(f[2], 0), V(f[2], 1), V(f[2], 2));
@@ -262,7 +262,7 @@ IGL_INLINE void igl::copyleft::cgal::points_inside_component(
     const size_t num_faces = I.rows();
     std::vector<Triangle> triangles;
     for (size_t i=0; i<num_faces; i++) {
-        const Eigen::Vector3i f = F.row(I(i, 0));
+        const Eigen::Matrix<typename DerivedF::Scalar,3,1> f = F.row(I(i, 0));
         triangles.emplace_back(
                 Point_3(V(f[0], 0), V(f[0], 1), V(f[0], 2)),
                 Point_3(V(f[1], 0), V(f[1], 1), V(f[1], 2)),
@@ -277,7 +277,7 @@ IGL_INLINE void igl::copyleft::cgal::points_inside_component(
     enum ElementType { VERTEX, EDGE, FACE };
     auto determine_element_type = [&](
             size_t fid, const Point_3& p, size_t& element_index) -> ElementType{
-        const Eigen::Vector3i f = F.row(I(fid, 0));
+        const Eigen::Matrix<typename DerivedF::Scalar,3,1> f = F.row(I(fid, 0));
         const Point_3 p0(V(f[0], 0), V(f[0], 1), V(f[0], 2));
         const Point_3 p1(V(f[1], 0), V(f[1], 1), V(f[1], 2));
         const Point_3 p2(V(f[2], 0), V(f[2], 1), V(f[2], 2));
