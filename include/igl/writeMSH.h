@@ -21,8 +21,8 @@ namespace igl
   /// @param[in] X  eigen double matrix of vertex positions  #X by 3
   /// @param[in] Tri  #Tri eigen integer matrix of triangular faces indices into vertex positions
   /// @param[in] Tet  #Tet eigen integer matrix of tetrahedral indices into vertex positions
-  /// @param[in] TriTag #Tri eigen integer vector of tags associated with surface faces
-  /// @param[in] TetTag #Tet eigen integer vector of tags associated with volume elements
+  /// @param[in] TriTag #Tri eigen integer vector of tags associated with surface faces {0s}
+  /// @param[in] TetTag #Tet eigen integer vector of tags associated with volume elements {0s}
   /// @param[in] XFields #XFields list of strings with field names associated with nodes
   /// @param[in] XF      #XFields list of eigen double matrices, fields associated with nodes 
   /// @param[in] EFields #EFields list of strings with field names associated with elements

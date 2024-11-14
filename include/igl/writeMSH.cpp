@@ -58,6 +58,7 @@ IGL_INLINE bool igl::writeMSH(
   const std::vector<MatrixTriF> &TriF,
   const std::vector<MatrixTetF> &TetF)
 {
+  
     using namespace internal;
 
     try
@@ -103,8 +104,22 @@ IGL_INLINE bool igl::writeMSH(
         _Tri_Tet_type.insert(_Tri_Tet_type.end(), Tet.rows(), MshLoader::ELEMENT_TET);
 
         std::vector<int> _Tri_Tet_tag;
-        append_mat_to_vec(_Tri_Tet_tag, TriTag);
-        append_mat_to_vec(_Tri_Tet_tag, TetTag);
+        // apparently TriTag and TetTag need to be present. Use zero arrays if their
+        // empty
+        if(TriTag.size() == 0)
+        {
+          append_mat_to_vec(_Tri_Tet_tag, TriTag);
+        }else
+        {
+          append_mat_to_vec(_Tri_Tet_tag, Eigen::Matrix<int, Eigen::Dynamic, 1>::Zero(Tri.rows()));
+        }
+        if(TetTag.size() == 0)
+        {
+          append_mat_to_vec(_Tri_Tet_tag, TetTag);
+        }else
+        {
+          append_mat_to_vec(_Tri_Tet_tag, Eigen::Matrix<int, Eigen::Dynamic, 1>::Zero(Tet.rows()));
+        }
 
 
         igl::MshSaver msh_saver(msh, true);
