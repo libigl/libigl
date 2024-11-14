@@ -19,12 +19,17 @@ namespace internal {
     template <typename T, typename Derived>
     void append_mat_to_vec(std::vector<T> &vec, const Eigen::MatrixBase<Derived> & mat)
     {
-        size_t st = vec.size();
-        vec.resize(st + mat.size());
+      size_t st = vec.size();
+      vec.resize(st + mat.size());
 
-        Eigen::Map< Eigen::Matrix<typename Derived::Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> >
-            _map_vec( reinterpret_cast<T *>( vec.data() + st ), mat.rows(), mat.cols() );
-        _map_vec = mat;
+      // Iterate over the rows and columns in row-major order
+      for (int i = 0; i < mat.rows(); ++i) 
+      {
+        for (int j = 0; j < mat.cols(); ++j) 
+        {
+          vec[st++] = mat(i, j);
+        }
+      }
     }
 
 }
