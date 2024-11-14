@@ -108,17 +108,17 @@ IGL_INLINE bool igl::writeMSH(
         // empty
         if(TriTag.size() == 0)
         {
-          append_mat_to_vec(_Tri_Tet_tag, TriTag);
+          append_mat_to_vec(_Tri_Tet_tag, Eigen::Matrix<int, Eigen::Dynamic, 1>::Zero(Tri.rows()));
         }else
         {
-          append_mat_to_vec(_Tri_Tet_tag, Eigen::Matrix<int, Eigen::Dynamic, 1>::Zero(Tri.rows()));
+          append_mat_to_vec(_Tri_Tet_tag, TriTag);
         }
         if(TetTag.size() == 0)
         {
-          append_mat_to_vec(_Tri_Tet_tag, TetTag);
+          append_mat_to_vec(_Tri_Tet_tag, Eigen::Matrix<int, Eigen::Dynamic, 1>::Zero(Tet.rows()));
         }else
         {
-          append_mat_to_vec(_Tri_Tet_tag, Eigen::Matrix<int, Eigen::Dynamic, 1>::Zero(Tet.rows()));
+          append_mat_to_vec(_Tri_Tet_tag, TetTag);
         }
 
 
