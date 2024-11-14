@@ -17,7 +17,7 @@ namespace internal {
 
     // helper function, appends contents of Eigen matrix to an std::vector, in RowMajor fashion
     template <typename T, typename Derived>
-    void append_mat_to_vec(std::vector<T> &vec, const Eigen::PlainObjectBase<Derived> & mat)
+    void append_mat_to_vec(std::vector<T> &vec, const Eigen::MatrixBase<Derived> & mat)
     {
         size_t st = vec.size();
         vec.resize(st + mat.size());
@@ -30,19 +30,28 @@ namespace internal {
 }
 }
 
+template <
+  typename DerivedX,
+  typename DerivedTri,
+  typename DerivedTet,
+  typename DerivedTriTag,
+  typename DerivedTetTag,
+  typename MatrixXF,
+  typename MatrixTriF,
+  typename MatrixTetF
+  >
 IGL_INLINE bool igl::writeMSH(
-             const std::string    &msh,
-             const Eigen::MatrixXd &X,
-             const Eigen::MatrixXi &Tri,
-             const Eigen::MatrixXi &Tet,
-             const Eigen::MatrixXi &TriTag,
-             const Eigen::MatrixXi &TetTag,
-             const std::vector<std::string>     &XFields,
-             const std::vector<Eigen::MatrixXd> &XF,
-             const std::vector<std::string>     &EFields,
-             const std::vector<Eigen::MatrixXd> &TriF,
-             const std::vector<Eigen::MatrixXd> &TetF
-             )
+  const std::string &msh,
+  const Eigen::MatrixBase<DerivedX> &X,
+  const Eigen::MatrixBase<DerivedTri> &Tri,
+  const Eigen::MatrixBase<DerivedTet> &Tet,
+  const Eigen::MatrixBase<DerivedTriTag> &TriTag,
+  const Eigen::MatrixBase<DerivedTetTag> &TetTag,
+  const std::vector<std::string> &XFields,
+  const std::vector<MatrixXF> &XF,
+  const std::vector<std::string>  &EFields,
+  const std::vector<MatrixTriF> &TriF,
+  const std::vector<MatrixTetF> &TetF)
 {
     using namespace internal;
 
@@ -147,3 +156,7 @@ IGL_INLINE bool igl::writeMSH(
     return true;
 }
 
+#ifdef IGL_STATIC_LIBRARY
+// Explicit template instantiation
+template bool igl::writeMSH<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>>(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1>> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1>> const&, std::__1::vector<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>> const&, std::__1::vector<Eigen::Matrix<double, -1, -1, 0, -1, -1>, std::__1::allocator<Eigen::Matrix<double, -1, -1, 0, -1, -1>>> const&, std::__1::vector<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>, std::__1::allocator<std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>>> const&, std::__1::vector<Eigen::Matrix<double, -1, -1, 0, -1, -1>, std::__1::allocator<Eigen::Matrix<double, -1, -1, 0, -1, -1>>> const&, std::__1::vector<Eigen::Matrix<double, -1, -1, 0, -1, -1>, std::__1::allocator<Eigen::Matrix<double, -1, -1, 0, -1, -1>>> const&);
+#endif

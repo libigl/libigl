@@ -35,19 +35,28 @@ namespace igl
   /// \bug only 3D information is supported
   /// \bug the tag id is duplicated for physical (0) and elementary (1)
   /// \bug same element fields are expected to be associated with surface elements and volumetric elements
+  template <
+    typename DerivedX,
+    typename DerivedTri,
+    typename DerivedTet,
+    typename DerivedTriTag,
+    typename DerivedTetTag,
+    typename MatrixXF,
+    typename MatrixTriF,
+    typename MatrixTetF
+    >
   IGL_INLINE bool writeMSH(
     const std::string   &msh,
-    const Eigen::MatrixXd &X,
-    const Eigen::MatrixXi &Tri,
-    const Eigen::MatrixXi &Tet,
-    const Eigen::MatrixXi &TriTag,
-    const Eigen::MatrixXi &TetTag,
-    const std::vector<std::string>     &XFields,
-    const std::vector<Eigen::MatrixXd> &XF,
-    const std::vector<std::string>     &EFields,
-    const std::vector<Eigen::MatrixXd> &TriF,
-    const std::vector<Eigen::MatrixXd> &TetF);
-  
+    const Eigen::MatrixBase<DerivedX> &X,
+    const Eigen::MatrixBase<DerivedTri> &Tri,
+    const Eigen::MatrixBase<DerivedTet> &Tet,
+    const Eigen::MatrixBase<DerivedTriTag> &TriTag,
+    const Eigen::MatrixBase<DerivedTetTag> &TetTag,
+    const std::vector<std::string> &XFields,
+    const std::vector<MatrixXF> &XF,
+    const std::vector<std::string>  &EFields,
+    const std::vector<MatrixTriF> &TriF,
+    const std::vector<MatrixTetF> &TetF);
 }
 
 #ifndef IGL_STATIC_LIBRARY
