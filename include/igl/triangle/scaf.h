@@ -90,24 +90,22 @@ namespace igl
     /// @param[in] bc          #b by dim list of boundary conditions (soft constraint)
     /// @param[in] soft_p      Soft penalty factor (can be zero)
     ///
-    /// \note Why aren't slim_energy, b, bc, soft_p const?
-    ///
     /// \fileinfo
     IGL_INLINE void scaf_precompute(
         const Eigen::MatrixXd &V,
         const Eigen::MatrixXi &F,
         const Eigen::MatrixXd &V_init,
-        triangle::SCAFData &data,
-        MappingEnergyType slim_energy,
-        Eigen::VectorXi& b,
-        Eigen::MatrixXd& bc,
-        double soft_p);
+        const MappingEnergyType slim_energy,
+        const Eigen::VectorXi& b,
+        const Eigen::MatrixXd& bc,
+        const double soft_p,
+        triangle::SCAFData &data);
 
     /// Run iter_num iterations of SCAF, with precomputed data
     /// @param[in] data  precomputed data
     /// @param[in] iter_num  number of iterations to run
     /// @returns resulting V_o (in SLIMData): #V by dim list of mesh vertex positions
-    IGL_INLINE Eigen::MatrixXd scaf_solve(triangle::SCAFData &data, int iter_num);
+    IGL_INLINE Eigen::MatrixXd scaf_solve(const int iter_num, triangle::SCAFData &data);
 
     /// Set up the SCAF system L * uv = rhs, without solving it.
     /// @param[in] s:   igl::SCAFData. Will be modified by energy and Jacobian computation.
