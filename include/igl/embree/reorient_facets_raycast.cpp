@@ -10,6 +10,7 @@
 #include "../doublearea.h"
 #include "../random_dir.h"
 #include "../bfs_orient.h"
+#include "../PlainMatrix.h"
 #include "EmbreeIntersector.h"
 #include <iostream>
 #include <random>
@@ -40,7 +41,7 @@ IGL_INLINE void igl::embree::reorient_facets_raycast(
   // number of faces
   const int m = F.rows();
 
-  MatrixXi FF = F;
+  PlainMatrix<DerivedF,Eigen::Dynamic> FF = F;
   if (facet_wise) {
     C.resize(m);
     for (int i = 0; i < m; ++i) C(i) = i;
@@ -234,7 +235,7 @@ IGL_INLINE void igl::embree::reorient_facets_raycast(
   const bool facet_wise = false;
   const bool use_parity = false;
   const bool is_verbose = false;
-  Eigen::VectorXi C;
+  Eigen::Vector<typename DerivedI::Scalar,Eigen::Dynamic> C;
   reorient_facets_raycast(
     V,F,rays_total,rays_minimum,facet_wise,use_parity,is_verbose,I,C);
   // Conservative in case FF = F
