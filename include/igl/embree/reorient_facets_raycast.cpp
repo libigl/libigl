@@ -41,14 +41,16 @@ IGL_INLINE void igl::embree::reorient_facets_raycast(
   // number of faces
   const int m = F.rows();
 
-  PlainMatrix<DerivedF,Eigen::Dynamic> FF = F;
+  Eigen::MatrixXi Fi = F.template cast<int>();
+  Eigen::MatrixXi FF;
   if (facet_wise) {
+    FF = Fi;
     C.resize(m);
     for (int i = 0; i < m; ++i) C(i) = i;
 
   } else {
     if (is_verbose) cout << "extracting patches... ";
-    bfs_orient(F,FF,C);
+    bfs_orient(Fi,FF,C);
   }
   if (is_verbose) cout << (C.maxCoeff() + 1)  << " components. ";
 
@@ -213,7 +215,7 @@ IGL_INLINE void igl::embree::reorient_facets_raycast(
               ? 1 : 0;
     }
     // To account for the effect of bfs_orient
-    if (F.row(f) != FF.row(f))
+    if (Fi.row(f) != FF.row(f))
       I(f) = 1 - I(f);
   }
   if (is_verbose) cout << "done!" << endl;
