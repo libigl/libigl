@@ -82,8 +82,8 @@ namespace igl
     /// Compute necessary information to start using SCAF
     ///
     /// @param[in] V           #V by 3 list of mesh vertex positions
-    /// @param[in] F           #F by 3/3 list of mesh faces (triangles/tets)
-    /// @param[in] V_init      #V by 3 list of initial mesh vertex positions
+    /// @param[in] F           #F by 3 list of mesh triangles
+    /// @param[in] V_init      #V by 2 list of initial mesh vertex positions
     /// @param[in,out] data  resulting precomputed data
     /// @param[in] slim_energy Energy type to minimize
     /// @param[in] b           list of boundary indices into V (soft constraint)
