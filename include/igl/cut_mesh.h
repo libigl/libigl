@@ -29,6 +29,10 @@ namespace igl
   /// \note `cuts` assumes the ordering convention from the array-based
   /// triangle_triangle_adjacency which is DIFFERENT from
   /// cotmatrix_entries,edge_lengths/etc.
+  ///
+  /// \bug `V.conservativeResize(…)` is called. So, although this appears to
+  /// edit in place it's likely O(N) even if the number of cuts is O(1); the way
+  /// the cuts are specified, just reading them is already O(N)
   template <typename DerivedV, typename DerivedF, typename DerivedC, typename DerivedI>
   IGL_INLINE void cut_mesh(
     Eigen::PlainObjectBase<DerivedV>& V,
