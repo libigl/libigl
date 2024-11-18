@@ -98,15 +98,20 @@ namespace igl
   ///     matrix will be similar to the original face matrix except some indices
   ///     will be redirected to point to the newly duplicated vertices.
   /// @param[out]  I   #V by 1 list of the map between Vn to original V index.
-  template <typename DerivedV, typename DerivedF, typename DerivedC, typename DerivedI>
+  template <
+    typename DerivedV, 
+    typename DerivedF, 
+    typename DerivedC, 
+    typename DerivedVn,
+    typename DerivedFn,
+    typename DerivedI>
   IGL_INLINE void cut_mesh(
     const Eigen::MatrixBase<DerivedV>& V,
     const Eigen::MatrixBase<DerivedF>& F,
     const Eigen::MatrixBase<DerivedC>& cuts,
-    Eigen::PlainObjectBase<DerivedV>& Vn,
-    Eigen::PlainObjectBase<DerivedF>& Fn,
-    Eigen::PlainObjectBase<DerivedI>& I
-  );
+    Eigen::PlainObjectBase<DerivedVn>& Vn,
+    Eigen::PlainObjectBase<DerivedFn>& Fn,
+    Eigen::PlainObjectBase<DerivedI>& I);
 
 
   

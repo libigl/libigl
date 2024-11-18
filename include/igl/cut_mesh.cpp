@@ -26,15 +26,23 @@ IGL_INLINE void igl::cut_mesh(
   cut_mesh(Vn,Fn,C,_I);
 }
 
-template <typename DerivedV, typename DerivedF, typename DerivedC, typename DerivedI>
+template <
+  typename DerivedV, 
+  typename DerivedF, 
+  typename DerivedC, 
+  typename DerivedVn,
+  typename DerivedFn,
+  typename DerivedI>
 IGL_INLINE void igl::cut_mesh(
   const Eigen::MatrixBase<DerivedV>& V,
   const Eigen::MatrixBase<DerivedF>& F,
   const Eigen::MatrixBase<DerivedC>& C,
-  Eigen::PlainObjectBase<DerivedV>& Vn,
-  Eigen::PlainObjectBase<DerivedF>& Fn,
+  Eigen::PlainObjectBase<DerivedVn>& Vn,
+  Eigen::PlainObjectBase<DerivedFn>& Fn,
   Eigen::PlainObjectBase<DerivedI>& I
 ){
+  static_assert(std::is_same<typename DerivedV::Scalar, typename DerivedVn::Scalar>::value, "Scalar types of V and Vn must match");
+  static_assert(std::is_same<typename DerivedF::Scalar, typename DerivedFn::Scalar>::value, "Scalar types of F and Fn must match");
   Vn = V;
   Fn = F;
   cut_mesh(Vn,Fn,C,I);
