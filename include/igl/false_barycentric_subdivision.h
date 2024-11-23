@@ -21,12 +21,12 @@ namespace igl
   ///           The added vertices are added at the end of VD (should not be
   ///           same references as (V,F)
   /// @param[out] FD      #F*3 by 3 faces of the dual mesh
-  template <typename Scalar, typename Index>
+  template <typename DerivedV, typename DerivedF, typename DerivedVD, typename DerivedFD>
   IGL_INLINE void false_barycentric_subdivision(
-    const Eigen::MatrixBase<Scalar> & V,
-    const Eigen::MatrixBase<Index> & F,
-    Eigen::PlainObjectBase<Scalar> & VD,
-    Eigen::PlainObjectBase<Index> & FD);
+    const Eigen::MatrixBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedF> & F,
+    Eigen::PlainObjectBase<DerivedVD> & VD,
+    Eigen::PlainObjectBase<DerivedFD> & FD);
 
 }
 
