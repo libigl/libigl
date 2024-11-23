@@ -38,7 +38,7 @@ IGL_INLINE void igl::false_barycentric_subdivision(
     int i2 = F(i,2);
     int i3 = V.rows() + i;
 
-    Vector3i F0,F1,F2;
+    Eigen::Matrix<typename DerivedFD::Scalar,1,3> F0,F1,F2;
     F0 << i0,i1,i3;
     F1 << i1,i2,i3;
     F2 << i2,i0,i3;
