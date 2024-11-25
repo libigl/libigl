@@ -1,4 +1,5 @@
 #include "solid_angle.h"
+#include "EPS.h"
 #include "PI.h"
 #include <cmath>
 
@@ -47,11 +48,19 @@ IGL_INLINE typename DerivedA::Scalar igl::solid_angle(
   dp(2) += v(0,2)*v(1,2);
   // Compute winding number
   // Only divide by TWO_PI instead of 4*pi because there was a 2 out front
-  return atan2(detf,
-    vl(0)*vl(1)*vl(2) + 
+
+  SType denom = vl(0)*vl(1)*vl(2) + 
     dp(0)*vl(0) +
     dp(1)*vl(1) +
-    dp(2)*vl(2)) / (2.*igl::PI);
+    dp(2)*vl(2);
+
+  SType epsilon = igl::EPS<SType>();
+  // Deal with the near 0/0 case
+  if(std::abs(detf) < epsilon && denom < epsilon)
+  {
+    return 0;
+  }
+  return atan2(detf, denom) / (2.*igl::PI);
 }
 
 #ifdef IGL_STATIC_LIBRARY
