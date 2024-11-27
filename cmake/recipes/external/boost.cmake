@@ -4,32 +4,27 @@ endif()
 
 message(STATUS "Third-party: creating targets 'Boost::boost'...")
 
+cmake_minimum_required(VERSION 3.24) # Ensure modern FetchContent features
+project(BoostFetchExample)
+
 include(FetchContent)
+
+# Define the Boost library to fetch
 FetchContent_Declare(
-    boost-cmake
-    GIT_REPOSITORY https://github.com/libigl/boost-cmake.git
-    GIT_TAG 6bcae68ffbaaefad4583a2642ce9ea53e5e01707
+    Boost
+    URL https://boostorg.jfrog.io/artifactory/main/release/1.86.0/source/boost_1_86_0.tar.gz
+    URL_HASH MD5=ac857d73bb754b718a039830b07b9624
 )
+# Fetch Boost
+FetchContent_MakeAvailable(Boost)
 
-set(PREVIOUS_CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
-set(OLD_CMAKE_POSITION_INDEPENDENT_CODE ${CMAKE_POSITION_INDEPENDENT_CODE})
-set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-# This guy will download boost using FetchContent
-FetchContent_GetProperties(boost-cmake)
-if(NOT boost-cmake_POPULATED)
-    FetchContent_Populate(boost-cmake)
-    # File lcid.cpp from Boost_locale.cpp doesn't compile on MSVC, so we exclude them from the default
-    # targets being built by the project (only targets explicitly used by other targets will be built).
-    add_subdirectory(${boost-cmake_SOURCE_DIR} ${boost-cmake_BINARY_DIR} EXCLUDE_FROM_ALL)
-endif()
+# Ensure Boost paths are set before CGAL
+set(Boost_INCLUDE_DIR ${boost_SOURCE_DIR})
+set(Boost_LIBRARY_DIR ${boost_BINARY_DIR})
 
-set(CMAKE_POSITION_INDEPENDENT_CODE ${OLD_CMAKE_POSITION_INDEPENDENT_CODE})
-set(CMAKE_CXX_FLAGS "${PREVIOUS_CMAKE_CXX_FLAGS}")
-
-# Set VS target folders
-set(boost_modules
+# Add Boost libraries needed for your project
+set(BOOST_LIBRARIES
     container
     regex
     atomic
@@ -48,6 +43,7 @@ set(boost_modules
     log_setup
     unit_test_framework
     math
+    multiprecision
     program_options
     timer
     random
@@ -55,10 +51,10 @@ set(boost_modules
     system
     thread
     type_erasure
-)
-foreach(module IN ITEMS ${boost_modules})
-    if(TARGET Boost_${module})
-        set_target_properties(Boost_${module} PROPERTIES FOLDER ThirdParty/Boost)
-    endif()
-endforeach()
+  )
 
+foreach(lib IN LISTS BOOST_LIBRARIES)
+    add_library(boost_${lib} INTERFACE)
+    target_include_directories(boost_${lib} INTERFACE ${Boost_SOURCE_DIR})
+    target_link_libraries(boost_${lib} INTERFACE Boost::${lib})
+endforeach()
