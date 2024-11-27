@@ -7,8 +7,8 @@ message(STATUS "Third-party: creating target 'CGAL::CGAL'")
 include(FetchContent)
 FetchContent_Declare(
     cgal
-    URL https://github.com/CGAL/cgal/releases/download/v5.6/CGAL-5.6-library.tar.xz
-    URL_MD5 793da2d1597f3a5c0e3524f73a0b4039
+    URL https://github.com/CGAL/cgal/releases/download/v6.0.1/CGAL-6.0.1-library.tar.xz
+    URL_MD5 ea827f6778063e00554ae41f4c845492
 )
 FetchContent_GetProperties(cgal)
 if(cgal_POPULATED)

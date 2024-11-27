@@ -51,8 +51,8 @@ else()
   ExternalProject_Add(mpfr
     PREFIX ${prefix}
     DEPENDS gmp
-    URL  https://ftp.gnu.org/gnu/mpfr/mpfr-4.2.0.tar.xz
-    URL_MD5 a25091f337f25830c16d2054d74b5af7
+    URL  https://ftp.gnu.org/gnu/mpfr/mpfr-4.2.1.tar.xz
+    URL_MD5 523c50c6318dde6f9dc523bc0244690a
     UPDATE_DISCONNECTED true  # need this to avoid constant rebuild
     ${mpfr_ExternalProject_Add_extra_options} # avoid constant reconfigure
     CONFIGURE_COMMAND 
