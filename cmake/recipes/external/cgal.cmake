@@ -45,7 +45,7 @@ function(cgal_import_target)
 
     ignore_package(Boost 1.71.0)
     set(Boost_INCLUDE_DIRS "")
-    set(Boost_LIBRARIES Boost::thread Boost::system)
+    set(Boost_LIBRARIES Boost::thread Boost::system Boost::multiprecision)
 
     # Prefer Config mode before Module mode to prevent CGAL from loading its own FindXXX.cmake
     set(CMAKE_FIND_PACKAGE_PREFER_CONFIG TRUE)

@@ -18,6 +18,11 @@ FetchContent_Declare(
 # Fetch Boost
 FetchContent_MakeAvailable(Boost)
 
+
+# Ensure Boost paths are set before CGAL
+set(Boost_INCLUDE_DIR ${boost_SOURCE_DIR})
+set(Boost_LIBRARY_DIR ${boost_BINARY_DIR})
+
 # Add Boost libraries needed for your project
 set(BOOST_LIBRARIES
     container
@@ -38,6 +43,7 @@ set(BOOST_LIBRARIES
     log_setup
     unit_test_framework
     math
+    multiprecision
     program_options
     timer
     random
