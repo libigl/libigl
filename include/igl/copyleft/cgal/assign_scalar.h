@@ -11,9 +11,6 @@
 #include "../../igl_inline.h"
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 #include <CGAL/Exact_predicates_exact_constructions_kernel_with_sqrt.h>
-#ifndef WIN32
-#include <CGAL/gmpxx.h>
-#endif
 
 namespace igl
 {
