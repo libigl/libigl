@@ -82,20 +82,6 @@ namespace igl
       IGL_INLINE void assign_scalar(
         const CGAL::Exact_predicates_exact_constructions_kernel_with_sqrt::FT & cgal,
         float& d);
-#ifndef WIN32
-      /// \overload
-      IGL_INLINE void assign_scalar(
-        const CGAL::Simple_cartesian<mpq_class>::FT & cgal,
-        CGAL::Simple_cartesian<mpq_class>::FT & d);
-      /// \overload
-      IGL_INLINE void assign_scalar(
-        const CGAL::Simple_cartesian<mpq_class>::FT & cgal,
-        double & d);
-      /// \overload
-      IGL_INLINE void assign_scalar(
-        const CGAL::Simple_cartesian<mpq_class>::FT & cgal,
-        float& d);
-#endif
     }
   }
 }
