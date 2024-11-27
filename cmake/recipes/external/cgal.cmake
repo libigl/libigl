@@ -29,19 +29,8 @@ function(cgal_import_target)
         set(${NAME}_ROOT ${CMAKE_CURRENT_BINARY_DIR}/${NAME} CACHE PATH "")
     endmacro()
 
-    include(gmp)
-    include(mpfr)
     include(boost)
 
-    ignore_package(GMP 5.0.1)
-    set(GMP_INCLUDE_DIR ${gmp_INCLUDE_DIR})
-    set(GMP_LIBRARIES gmp::gmp)
-    set(GMPXX_INCLUDE_DIR ${GMP_INCLUDE_DIR})
-    set(GMPXX_LIBRARIES ${GMP_LIBRARIES})
-
-    ignore_package(MPFR 3.0.0)
-    set(MPFR_INCLUDE_DIR "")
-    set(MPFR_LIBRARIES mpfr::mpfr)
 
     ignore_package(Boost 1.71.0)
     set(Boost_INCLUDE_DIRS "")
