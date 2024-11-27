@@ -41,7 +41,9 @@ function(cgal_import_target)
 
     # https://stackoverflow.com/a/71714947/148668
     set(CGAL_DATA_DIR "unspecified")
+
     set(CGAL_CMAKE_EXACT_NT_BACKEND "BOOST_BACKEND" CACHE STRING "CGAL exact NT backend")
+    set(CGAL_DISABLE_GMP ON CACHE BOOL "Disable GMP")
     find_package(CGAL CONFIG COMPONENTS Core PATHS ${cgal_SOURCE_DIR} NO_DEFAULT_PATH)
 endfunction()
 
