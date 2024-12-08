@@ -17,6 +17,7 @@
 #include "boundary_facets.h"
 #include "unique.h"
 #include "avg_edge_length.h"
+#include "PlainMatrix.h"
 
 
 template < typename DerivedV, typename DerivedF, typename Scalar >
@@ -41,7 +42,7 @@ IGL_INLINE bool igl::heat_geodesics_precompute(
   typedef Eigen::Matrix<Scalar,Eigen::Dynamic,1> VectorXS;
   Eigen::SparseMatrix<Scalar> L,M;
   Eigen::Matrix<Scalar,Eigen::Dynamic,3> l_intrinsic;
-  DerivedF F_intrinsic;
+  PlainMatrix<DerivedF> F_intrinsic;
   VectorXS dblA;
   if(data.use_intrinsic_delaunay)
   {

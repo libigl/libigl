@@ -6,6 +6,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "rigid_alignment.h"
+#include "PlainMatrix.h"
 #include <Eigen/Sparse>
 #include <Eigen/QR>
 // Not currently used. See below.
@@ -35,7 +36,7 @@ IGL_INLINE void igl::rigid_alignment(
   VectorXS Z = VectorXS::Zero(k,1);
   VectorXS I = VectorXS::Ones(k,1);
 
-  DerivedX X = _X;
+  PlainMatrix<DerivedX> X = _X;
   R = DerivedR::Identity(3,3);
   t = Derivedt::Zero(1,3);
   // See gptoolbox, each iter could be O(1) instead of O(k)

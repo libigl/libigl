@@ -2,6 +2,7 @@
 #include "ear_clipping.h"
 #include "../sort.h"
 #include "../placeholders.h"
+#include "../PlainMatrix.h"
 #include <Eigen/Eigenvalues>
 
 template <
@@ -33,7 +34,7 @@ IGL_INLINE void igl::predicates::polygons_to_triangles(
       }else
       {
         // Make little copy of this polygon with an initial fan
-        DerivedV pV(np,V.cols());
+        PlainMatrix<DerivedV,Eigen::Dynamic> pV(np,V.cols());
         for(Index c = 0;c<np;c++)
         {
           pV.row(c) = V.row(I(C(p)+c));

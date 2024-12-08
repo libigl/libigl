@@ -35,10 +35,10 @@ namespace igl
       typename DerivedSD,
       typename Derivedflag>
     IGL_INLINE void bone_visible(
-      const Eigen::PlainObjectBase<DerivedV> & V,
-      const Eigen::PlainObjectBase<DerivedF> & F,
-      const Eigen::PlainObjectBase<DerivedSD> & s,
-      const Eigen::PlainObjectBase<DerivedSD> & d,
+      const Eigen::MatrixBase<DerivedV> & V,
+      const Eigen::MatrixBase<DerivedF> & F,
+      const Eigen::MatrixBase<DerivedSD> & s,
+      const Eigen::MatrixBase<DerivedSD> & d,
       Eigen::PlainObjectBase<Derivedflag>  & flag);
     /// \overload
     /// @param[in] ei  EmbreeIntersector for mesh (V,F) should be double sided
@@ -48,11 +48,11 @@ namespace igl
       typename DerivedSD,
       typename Derivedflag>
     IGL_INLINE void bone_visible(
-      const Eigen::PlainObjectBase<DerivedV> & V,
-      const Eigen::PlainObjectBase<DerivedF> & F,
+      const Eigen::MatrixBase<DerivedV> & V,
+      const Eigen::MatrixBase<DerivedF> & F,
       const EmbreeIntersector & ei,
-      const Eigen::PlainObjectBase<DerivedSD> & s,
-      const Eigen::PlainObjectBase<DerivedSD> & d,
+      const Eigen::MatrixBase<DerivedSD> & s,
+      const Eigen::MatrixBase<DerivedSD> & d,
       Eigen::PlainObjectBase<Derivedflag>  & flag);
   }
 }

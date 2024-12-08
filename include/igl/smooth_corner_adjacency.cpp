@@ -5,12 +5,17 @@
 #include "unzip_corners.h"
 #include <iostream>
 
+template <
+  typename DerivedV,
+  typename DerivedF,
+  typename DerivedCI,
+  typename DerivedCC>
 void igl::smooth_corner_adjacency(
-  const Eigen::MatrixXd & V,
-  const Eigen::MatrixXi & F,
+  const Eigen::MatrixBase<DerivedV> & V,
+  const Eigen::MatrixBase<DerivedF> & F,
   const double corner_threshold_radians,
-  Eigen::VectorXi & CI,
-  Eigen::VectorXi & CC)
+  Eigen::PlainObjectBase<DerivedCI> & CI,
+  Eigen::PlainObjectBase<DerivedCC> & CC)
 {
   typedef double Scalar;
   typedef Eigen::Index Index;
@@ -81,11 +86,16 @@ void igl::smooth_corner_adjacency(
 }
 
 
+template <
+  typename DerivedFV,
+  typename DerivedFN,
+  typename DerivedCI,
+  typename DerivedCC>
 void igl::smooth_corner_adjacency(
-  const Eigen::MatrixXi & FV,
-  const Eigen::MatrixXi & FN,
-  Eigen::VectorXi & CI,
-  Eigen::VectorXi & CC)
+  const Eigen::MatrixBase<DerivedFV> & FV,
+  const Eigen::MatrixBase<DerivedFN> & FN,
+  Eigen::PlainObjectBase<DerivedCI> & CI,
+  Eigen::PlainObjectBase<DerivedCC> & CC)
 {
   typedef Eigen::Index Index;
   assert(FV.rows() == FN.rows());

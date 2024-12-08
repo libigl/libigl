@@ -26,8 +26,8 @@ namespace igl
     template <typename DerivedV, typename DerivedF>
     IGL_INLINE bool writeDAE(
       const std::string & filename,
-      const Eigen::PlainObjectBase<DerivedV> & V,
-      const Eigen::PlainObjectBase<DerivedF> & F);
+      const Eigen::MatrixBase<DerivedV> & V,
+      const Eigen::MatrixBase<DerivedF> & F);
   }
 }
 

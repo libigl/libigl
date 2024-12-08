@@ -35,19 +35,31 @@ namespace igl
   /// all( efEF(sub2ind(size(efE),repmat(1:size(efE,1),2,1)',I)) == etEF )
   /// all(efEMAP(sub2ind(size(F),repmat(1:size(F,1),3,1)',repmat([1 2 3],size(F,1),1))) == etFE(:,[2 3 1]))
   /// \endcode
+  template <
+    typename DerivedF,
+    typename DeriveduE,
+    typename DerivedEMAP,
+    typename DerivedEF,
+    typename DerivedEI>
   IGL_INLINE void edge_flaps(
-    const Eigen::MatrixXi & F,
-    const Eigen::MatrixXi & uE,
-    const Eigen::VectorXi & EMAP,
-    Eigen::MatrixXi & EF,
-    Eigen::MatrixXi & EI);
+    const Eigen::MatrixBase<DerivedF> & F,
+    const Eigen::MatrixBase<DeriveduE> & uE,
+    const Eigen::MatrixBase<DerivedEMAP> & EMAP,
+    Eigen::PlainObjectBase<DerivedEF> & EF,
+    Eigen::PlainObjectBase<DerivedEI> & EI);
   /// \overload
+  template <
+    typename DerivedF,
+    typename DeriveduE,
+    typename DerivedEMAP,
+    typename DerivedEF,
+    typename DerivedEI>
   IGL_INLINE void edge_flaps(
-    const Eigen::MatrixXi & F,
-    Eigen::MatrixXi & uE,
-    Eigen::VectorXi & EMAP,
-    Eigen::MatrixXi & EF,
-    Eigen::MatrixXi & EI);
+    const Eigen::MatrixBase<DerivedF> & F,
+    Eigen::PlainObjectBase<DeriveduE> & uE,
+    Eigen::PlainObjectBase<DerivedEMAP> & EMAP,
+    Eigen::PlainObjectBase<DerivedEF> & EF,
+    Eigen::PlainObjectBase<DerivedEI> & EI);
 }
 #ifndef IGL_STATIC_LIBRARY
 #  include "edge_flaps.cpp"

@@ -44,6 +44,7 @@ int main(int argc, char *argv[])
   Eigen::RowVector3d gray(0.9,0.9,0.9);
   for(auto pass : {0,1})
   {
+    // Overly complicated so that we can visualize each collapse. 
     Eigen::MatrixXd VO;
     Eigen::MatrixXi FO;
     igl::connect_boundary_to_infinity(V,F,VO,FO);
@@ -86,7 +87,6 @@ int main(int argc, char *argv[])
       igl::max_faces_stopping_condition(m,orig_m,target_m),
       pre_collapse,
       post_collapse,
-      E, EMAP, EF, EI,
       U, G, J, I);
     G = G(igl::find((J.array()<orig_m).eval()), igl::placeholders::all).eval();
     {

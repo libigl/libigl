@@ -17,33 +17,48 @@ namespace internal {
 
     // helper function, appends contents of Eigen matrix to an std::vector, in RowMajor fashion
     template <typename T, typename Derived>
-    void append_mat_to_vec(std::vector<T> &vec, const Eigen::PlainObjectBase<Derived> & mat)
+    void append_mat_to_vec(std::vector<T> &vec, const Eigen::MatrixBase<Derived> & mat)
     {
-        size_t st = vec.size();
-        vec.resize(st + mat.size());
+      size_t st = vec.size();
+      vec.resize(st + mat.size());
 
-        Eigen::Map< Eigen::Matrix<typename Derived::Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> >
-            _map_vec( reinterpret_cast<T *>( vec.data() + st ), mat.rows(), mat.cols() );
-        _map_vec = mat;
+      // Iterate over the rows and columns in row-major order
+      for (int i = 0; i < mat.rows(); ++i) 
+      {
+        for (int j = 0; j < mat.cols(); ++j) 
+        {
+          vec[st++] = mat(i, j);
+        }
+      }
     }
 
 }
 }
 
+template <
+  typename DerivedX,
+  typename DerivedTri,
+  typename DerivedTet,
+  typename DerivedTriTag,
+  typename DerivedTetTag,
+  typename MatrixXF,
+  typename MatrixTriF,
+  typename MatrixTetF
+  >
 IGL_INLINE bool igl::writeMSH(
-             const std::string    &msh,
-             const Eigen::MatrixXd &X,
-             const Eigen::MatrixXi &Tri,
-             const Eigen::MatrixXi &Tet,
-             const Eigen::MatrixXi &TriTag,
-             const Eigen::MatrixXi &TetTag,
-             const std::vector<std::string>     &XFields,
-             const std::vector<Eigen::MatrixXd> &XF,
-             const std::vector<std::string>     &EFields,
-             const std::vector<Eigen::MatrixXd> &TriF,
-             const std::vector<Eigen::MatrixXd> &TetF
-             )
+  const std::string &msh,
+  const Eigen::MatrixBase<DerivedX> &X,
+  const Eigen::MatrixBase<DerivedTri> &Tri,
+  const Eigen::MatrixBase<DerivedTet> &Tet,
+  const Eigen::MatrixBase<DerivedTriTag> &TriTag,
+  const Eigen::MatrixBase<DerivedTetTag> &TetTag,
+  const std::vector<std::string> &XFields,
+  const std::vector<MatrixXF> &XF,
+  const std::vector<std::string>  &EFields,
+  const std::vector<MatrixTriF> &TriF,
+  const std::vector<MatrixTetF> &TetF)
 {
+  
     using namespace internal;
 
     try
@@ -89,8 +104,22 @@ IGL_INLINE bool igl::writeMSH(
         _Tri_Tet_type.insert(_Tri_Tet_type.end(), Tet.rows(), MshLoader::ELEMENT_TET);
 
         std::vector<int> _Tri_Tet_tag;
-        append_mat_to_vec(_Tri_Tet_tag, TriTag);
-        append_mat_to_vec(_Tri_Tet_tag, TetTag);
+        // apparently TriTag and TetTag need to be present. Use zero arrays if their
+        // empty
+        if(TriTag.size() == 0)
+        {
+          append_mat_to_vec(_Tri_Tet_tag, Eigen::Matrix<int, Eigen::Dynamic, 1>::Zero(Tri.rows()));
+        }else
+        {
+          append_mat_to_vec(_Tri_Tet_tag, TriTag);
+        }
+        if(TetTag.size() == 0)
+        {
+          append_mat_to_vec(_Tri_Tet_tag, Eigen::Matrix<int, Eigen::Dynamic, 1>::Zero(Tet.rows()));
+        }else
+        {
+          append_mat_to_vec(_Tri_Tet_tag, TetTag);
+        }
 
 
         igl::MshSaver msh_saver(msh, true);
@@ -147,3 +176,7 @@ IGL_INLINE bool igl::writeMSH(
     return true;
 }
 
+#ifdef IGL_STATIC_LIBRARY
+// Explicit template instantiation
+template bool igl::writeMSH<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>>(std::basic_string<char, std::char_traits<char>, std::allocator<char>> const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1>> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1>> const&, std::vector<std::basic_string<char, std::char_traits<char>, std::allocator<char>>, std::allocator<std::basic_string<char, std::char_traits<char>, std::allocator<char>>>> const&, std::vector<Eigen::Matrix<double, -1, -1, 0, -1, -1>, std::allocator<Eigen::Matrix<double, -1, -1, 0, -1, -1>>> const&, std::vector<std::basic_string<char, std::char_traits<char>, std::allocator<char>>, std::allocator<std::basic_string<char, std::char_traits<char>, std::allocator<char>>>> const&, std::vector<Eigen::Matrix<double, -1, -1, 0, -1, -1>, std::allocator<Eigen::Matrix<double, -1, -1, 0, -1, -1>>> const&, std::vector<Eigen::Matrix<double, -1, -1, 0, -1, -1>, std::allocator<Eigen::Matrix<double, -1, -1, 0, -1, -1>>> const&);
+#endif

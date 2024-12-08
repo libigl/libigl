@@ -10,6 +10,7 @@
 
 #include "triangle_triangle_adjacency.h"
 #include "edge_topology.h"
+#include "PlainMatrix.h"
 
 #include <vector>
 #include <deque>
@@ -30,8 +31,8 @@ namespace igl {
     const Eigen::MatrixBase<DerivedM> &Handle_MMatch;
 
     Eigen::VectorXi F_visited;
-    DerivedF TT;
-    DerivedF TTi;
+    PlainMatrix<DerivedF> TT;
+    PlainMatrix<DerivedF> TTi;
 
     Eigen::MatrixXi E, F2E, E2F;
   protected:

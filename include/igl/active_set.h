@@ -70,15 +70,15 @@ namespace igl
     >
   IGL_INLINE igl::SolverStatus active_set(
     const Eigen::SparseMatrix<AT>& A,
-    const Eigen::PlainObjectBase<DerivedB> & B,
-    const Eigen::PlainObjectBase<Derivedknown> & known,
-    const Eigen::PlainObjectBase<DerivedY> & Y,
+    const Eigen::MatrixBase<DerivedB> & B,
+    const Eigen::MatrixBase<Derivedknown> & known,
+    const Eigen::MatrixBase<DerivedY> & Y,
     const Eigen::SparseMatrix<AeqT>& Aeq,
-    const Eigen::PlainObjectBase<DerivedBeq> & Beq,
+    const Eigen::MatrixBase<DerivedBeq> & Beq,
     const Eigen::SparseMatrix<AieqT>& Aieq,
-    const Eigen::PlainObjectBase<DerivedBieq> & Bieq,
-    const Eigen::PlainObjectBase<Derivedlx> & lx,
-    const Eigen::PlainObjectBase<Derivedux> & ux,
+    const Eigen::MatrixBase<DerivedBieq> & Bieq,
+    const Eigen::MatrixBase<Derivedlx> & lx,
+    const Eigen::MatrixBase<Derivedux> & ux,
     const igl::active_set_params & params,
     Eigen::PlainObjectBase<DerivedZ> & Z
     );

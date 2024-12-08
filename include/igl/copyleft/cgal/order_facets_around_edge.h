@@ -40,8 +40,8 @@ namespace igl
         typename DerivedI >
       IGL_INLINE
       void order_facets_around_edge(
-          const Eigen::PlainObjectBase<DerivedV>& V,
-          const Eigen::PlainObjectBase<DerivedF>& F,
+          const Eigen::MatrixBase<DerivedV>& V,
+          const Eigen::MatrixBase<DerivedF>& F,
           size_t s, 
           size_t d, 
           const std::vector<int>& adj_faces,
@@ -57,15 +57,16 @@ namespace igl
       template<
         typename DerivedV,
         typename DerivedF,
+        typename Derivedpivot_point,
         typename DerivedI>
       IGL_INLINE
       void order_facets_around_edge(
-        const Eigen::PlainObjectBase<DerivedV>& V,
-        const Eigen::PlainObjectBase<DerivedF>& F,
+        const Eigen::MatrixBase<DerivedV>& V,
+        const Eigen::MatrixBase<DerivedF>& F,
         size_t s, 
         size_t d, 
         const std::vector<int>& adj_faces,
-        const Eigen::PlainObjectBase<DerivedV>& pivot_point,
+        const Eigen::MatrixBase<Derivedpivot_point>& pivot_point,
         Eigen::PlainObjectBase<DerivedI>& order);
     }
   }

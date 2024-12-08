@@ -13,7 +13,7 @@ namespace igl
 {
   /// Reimplementation of the embree::Hit struct from embree1.0
   /// 
-  // TODO: template on floating point type
+  template <typename Scalar>
   struct Hit
   {
     /// primitive id
@@ -22,10 +22,10 @@ namespace igl
     int gid; 
     /// barycentric coordinates so that 
     ///   pos = V.row(F(id,0))*(1-u-v)+V.row(F(id,1))*u+V.row(F(id,2))*v;
-    float u,v; 
+    Scalar u,v; 
     /// parametric distance so that
     ///   pos = origin + t * dir
-    float t; 
+    Scalar t; 
   };
 }
 #endif 

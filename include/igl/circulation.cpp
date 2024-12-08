@@ -9,12 +9,13 @@
 #include "list_to_matrix.h"
 #include <cassert>
 
+template <typename DerivedEMAP, typename DerivedEF, typename DerivedEI>
 IGL_INLINE std::vector<int> igl::circulation(
   const int e,
   const bool ccw,
-  const Eigen::VectorXi & EMAP,
-  const Eigen::MatrixXi & EF,
-  const Eigen::MatrixXi & EI)
+  const Eigen::MatrixBase<DerivedEMAP> & EMAP,
+  const Eigen::MatrixBase<DerivedEF> & EF,
+  const Eigen::MatrixBase<DerivedEI> & EI)
 {
   // prepare output
   std::vector<int> N;
@@ -56,28 +57,30 @@ IGL_INLINE std::vector<int> igl::circulation(
   return N;
 }
 
+template <typename DerivedEMAP, typename DerivedEF, typename DerivedEI, typename DerivedvN>
 IGL_INLINE void igl::circulation(
   const int e,
   const bool ccw,
-  const Eigen::VectorXi & EMAP,
-  const Eigen::MatrixXi & EF,
-  const Eigen::MatrixXi & EI,
-  Eigen::VectorXi & vN)
+  const Eigen::MatrixBase<DerivedEMAP> & EMAP,
+  const Eigen::MatrixBase<DerivedEF> & EF,
+  const Eigen::MatrixBase<DerivedEI> & EI,
+  Eigen::PlainObjectBase<DerivedvN> & vN)
 {
   std::vector<int> N = circulation(e,ccw,EMAP,EF,EI);
   igl::list_to_matrix(N,vN);
 }
 
+template <typename DerivedF, typename DerivedEMAP, typename DerivedEF, typename DerivedEI, typename Nv_type>
 IGL_INLINE void igl::circulation(
   const int e,
   const bool ccw,
-  const Eigen::MatrixXi & F,
-  const Eigen::VectorXi & EMAP,
-  const Eigen::MatrixXi & EF,
-  const Eigen::MatrixXi & EI,
+  const Eigen::MatrixBase<DerivedF> & F,
+  const Eigen::MatrixBase<DerivedEMAP> & EMAP,
+  const Eigen::MatrixBase<DerivedEF> & EF,
+  const Eigen::MatrixBase<DerivedEI> & EI,
   /*std::vector<int> & Ne,*/
-  std::vector<int> & Nv,
-  std::vector<int> & Nf)
+  std::vector<Nv_type> & Nv,
+  std::vector<Nv_type> & Nf)
 {
   //
   // for e --> (bf) and ccw=true
@@ -141,3 +144,10 @@ IGL_INLINE void igl::circulation(
     }
   }
 }
+
+#ifdef IGL_STATIC_LIBRARY
+// Explicit template specialization
+template std::vector<int, std::allocator<int>> igl::circulation<Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>>(int, bool, Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1>> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1>> const&);
+template void igl::circulation<Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>>(int, bool, Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1>> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1>> const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1>>&);
+template void igl::circulation<Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, int>(int, bool, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1>> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1>> const&, std::vector<int, std::allocator<int>>&, std::vector<int, std::allocator<int>>&);
+#endif

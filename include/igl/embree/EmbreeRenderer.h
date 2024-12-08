@@ -161,7 +161,7 @@ namespace igl
       bool intersect_ray(
         const Eigen::RowVector3f& origin,
         const Eigen::RowVector3f& direction,
-        Hit& hit,
+        Hit & hit,
         float tnear = 0,
         float tfar = std::numeric_limits<float>::infinity(),
         int mask = 0xFFFFFFFF) const;

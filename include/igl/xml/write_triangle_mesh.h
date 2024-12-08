@@ -30,8 +30,8 @@ namespace igl
     template <typename DerivedV, typename DerivedF>
     IGL_INLINE bool write_triangle_mesh(
       const std::string str,
-      const Eigen::PlainObjectBase<DerivedV>& V,
-      const Eigen::PlainObjectBase<DerivedF>& F,
+      const Eigen::MatrixBase<DerivedV>& V,
+      const Eigen::MatrixBase<DerivedF>& F,
       const FileEncoding fe = FileEncoding::Ascii);
   }
 }

@@ -32,7 +32,7 @@ bool key_down(igl::opengl::glfw::Viewer& viewer, unsigned char key, int modifier
   if (key == ' ')
   {
     timer.start();
-    igl::triangle::scaf_solve(scaf_data, 1);
+    igl::triangle::scaf_solve(1,scaf_data);
     std::cout << "time = " << timer.getElapsedTime() << std::endl;
   }
 
@@ -102,7 +102,7 @@ int main(int argc, char *argv[])
   }
 
   Eigen::VectorXi b; Eigen::MatrixXd bc;
-  igl::triangle::scaf_precompute(V, F, uv_init, scaf_data, igl::MappingEnergyType::SYMMETRIC_DIRICHLET, b, bc, 0);
+  igl::triangle::scaf_precompute(V, F, uv_init, igl::MappingEnergyType::SYMMETRIC_DIRICHLET, b, bc, 0, scaf_data);
 
   // Plot the mesh
   igl::opengl::glfw::Viewer viewer;

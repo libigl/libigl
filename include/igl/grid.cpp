@@ -6,6 +6,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "grid.h"
+#include "PlainVector.h"
 #include <cassert>
 
 template <
@@ -20,7 +21,7 @@ IGL_INLINE void igl::grid(
   GV.resize(res.array().prod(),res.size());
   const auto lerp = 
     [&res](const Scalar di, const int d)->Scalar{return di/(Scalar)(res(d)-1);};
-  Derivedres sub;
+  PlainVector<Derivedres> sub;
   sub.resizeLike(res);
   sub.setConstant(0);
   for(int gi = 0;gi<GV.rows();gi++)

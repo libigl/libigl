@@ -1,3 +1,10 @@
+// This file is part of libigl, a simple c++ geometry processing library.
+//
+// Copyright (C) 2024 Alec Jacobson <alecjacobson@gmail.com>
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
+// obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_SMOOTH_CORNER_ADJACENCY_H
 #define IGL_SMOOTH_CORNER_ADJACENCY_H
 
@@ -16,12 +23,17 @@ namespace igl
   /// @param[out] CI  #CI list of face neighbors as indices into rows of F
   /// @param[out] CC  3*#F+1 list of cumulative sizes so that CC(i*3+j+1) - CC(i*3+j) is
   ///     the number of faces considered smoothly incident on corner at F(i,j)
+  template <
+    typename DerivedV,
+    typename DerivedF,
+    typename DerivedCI,
+    typename DerivedCC>
   void smooth_corner_adjacency(
-    const Eigen::MatrixXd & V,
-    const Eigen::MatrixXi & F,
+    const Eigen::MatrixBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedF> & F,
     const double corner_threshold_radians,
-    Eigen::VectorXi & CI,
-    Eigen::VectorXi & CC);
+    Eigen::PlainObjectBase<DerivedCI> & CI,
+    Eigen::PlainObjectBase<DerivedCC> & CC);
   /// Determine the effective corner-to-face adjacency relationship implied by a
   /// set of indexed vertex positions (FV) and normals (FV) (e.g., those read in
   /// from a .obj file).
@@ -31,11 +43,16 @@ namespace igl
   /// @param[out] CI  #CI list of face neighbors as indices into rows of F
   /// @param[out] CC  3*#F+1 list of cumulative sizes so that CC(i*3+j+1) - CC(i*3+j) is
   ///     the number of faces considered smoothly incident on corner at F(i,j)
+  template <
+    typename DerivedFV,
+    typename DerivedFN,
+    typename DerivedCI,
+    typename DerivedCC>
   void smooth_corner_adjacency(
-    const Eigen::MatrixXi & FV,
-    const Eigen::MatrixXi & FN,
-    Eigen::VectorXi & CI,
-    Eigen::VectorXi & CC);
+    const Eigen::MatrixBase<DerivedFV> & FV,
+    const Eigen::MatrixBase<DerivedFN> & FN,
+    Eigen::PlainObjectBase<DerivedCI> & CI,
+    Eigen::PlainObjectBase<DerivedCC> & CC);
 }
 
 #ifndef IGL_STATIC_LIBRARY

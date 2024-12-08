@@ -60,7 +60,7 @@ namespace igl
       bool(
         const Eigen::Vector3f&,
         const Eigen::Vector3f&,
-        igl::Hit  &)
+        igl::Hit<float>  &)
         > & shoot_ray,
     int & fid,
     Eigen::PlainObjectBase<Derivedbc> & bc);

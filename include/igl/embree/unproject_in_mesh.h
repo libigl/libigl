@@ -52,7 +52,7 @@ namespace igl
       const Eigen::Vector4f& viewport,
       const EmbreeIntersector & ei,
       Eigen::PlainObjectBase<Derivedobj> & obj,
-      std::vector<igl::Hit > & hits);
+      std::vector<igl::Hit<float>  > & hits);
     /// \overload
     template < typename Derivedobj>
     IGL_INLINE int unproject_in_mesh(

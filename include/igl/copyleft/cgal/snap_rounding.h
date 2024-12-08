@@ -33,8 +33,8 @@ namespace igl
         typename DerivedEI,
         typename DerivedJ>
       IGL_INLINE void snap_rounding(
-        const Eigen::PlainObjectBase<DerivedV> & V,
-        const Eigen::PlainObjectBase<DerivedE> & E,
+        const Eigen::MatrixBase<DerivedV> & V,
+        const Eigen::MatrixBase<DerivedE> & E,
         Eigen::PlainObjectBase<DerivedVI> & VI,
         Eigen::PlainObjectBase<DerivedEI> & EI,
         Eigen::PlainObjectBase<DerivedJ> & J);

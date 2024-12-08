@@ -12,7 +12,7 @@ IGL_INLINE bool igl::is_sparse(const Eigen::SparseMatrix<T> &)
   return true;
 }
 template <typename DerivedA>
-IGL_INLINE bool igl::is_sparse(const Eigen::PlainObjectBase<DerivedA>& )
+IGL_INLINE bool igl::is_sparse(const Eigen::MatrixBase<DerivedA>& )
 {
   return false;
 }
@@ -20,5 +20,5 @@ IGL_INLINE bool igl::is_sparse(const Eigen::PlainObjectBase<DerivedA>& )
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instantiation
 template bool igl::is_sparse<double>(Eigen::SparseMatrix<double, 0, int> const&);
-template bool igl::is_sparse<Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&);
+template bool igl::is_sparse<Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&);
 #endif

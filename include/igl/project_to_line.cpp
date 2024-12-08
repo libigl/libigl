@@ -7,6 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "project_to_line.h"
 #include "parallel_for.h"
+#include "PlainMatrix.h"
 #include <cassert>
 #include <Eigen/Core>
 
@@ -34,7 +35,7 @@ IGL_INLINE void igl::project_to_line(
   // number of points
   int np  = P.rows();
   // vector from source to destination
-  DerivedD DmS = D-S;
+  PlainMatrix<DerivedD> DmS = D-S;
   double v_sqrlen = (double)(DmS.squaredNorm());
   assert(v_sqrlen != 0);
   // resize output

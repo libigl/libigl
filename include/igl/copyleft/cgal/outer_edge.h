@@ -38,9 +38,9 @@ namespace igl
           typename DerivedA
           >
       IGL_INLINE void outer_edge(
-              const Eigen::PlainObjectBase<DerivedV> & V,
-              const Eigen::PlainObjectBase<DerivedF> & F,
-              const Eigen::PlainObjectBase<DerivedI> & I,
+              const Eigen::MatrixBase<DerivedV> & V,
+              const Eigen::MatrixBase<DerivedF> & F,
+              const Eigen::MatrixBase<DerivedI> & I,
               IndexType & v1,
               IndexType & v2,
               Eigen::PlainObjectBase<DerivedA> & A);

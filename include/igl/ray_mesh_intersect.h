@@ -34,7 +34,7 @@ namespace igl
     const Eigen::MatrixBase<Deriveddir> & dir,
     const Eigen::MatrixBase<DerivedV> & V,
     const Eigen::MatrixBase<DerivedF> & F,
-    std::vector<igl::Hit> & hits);
+    std::vector<igl::Hit<typename DerivedV::Scalar>> & hits);
   /// \overload
   /// @param[in] hit  first hit, set only if it exists
   template <
@@ -47,7 +47,7 @@ namespace igl
     const Eigen::MatrixBase<Deriveddir> & dir,
     const Eigen::MatrixBase<DerivedV> & V,
     const Eigen::MatrixBase<DerivedF> & F,
-    igl::Hit & hit);
+    igl::Hit<typename DerivedV::Scalar> & hit);
 
   // Explicit function to check one triangle (given by index f) of the mesh.
   // This function is used by ray_mesh_intersect to check each triangle.
@@ -65,7 +65,7 @@ namespace igl
     const Eigen::MatrixBase<DerivedV> & V,
     const Eigen::MatrixBase<DerivedF> & F,
     const int f,
-    igl::Hit& hit);
+    igl::Hit<typename DerivedV::Scalar>& hit);
 }
 #ifndef IGL_STATIC_LIBRARY
 #  include "ray_mesh_intersect.cpp"

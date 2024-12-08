@@ -25,21 +25,31 @@ namespace igl
   /// @param[in] aabb  axis-aligned bounding box tree object (see AABB.h)
   /// @param[out] I  #Q list of indices into Ele of first containing element (-1 means no
   ///     containing element)
-  template <typename DerivedV, typename DerivedQ, int DIM>
+  template <
+    typename DerivedV, 
+    typename DerivedEle,
+    typename DerivedQ, 
+    int DIM,
+    typename DerivedI>
   IGL_INLINE void in_element(
     const Eigen::MatrixBase<DerivedV> & V,
-    const Eigen::MatrixXi & Ele,
+    const Eigen::MatrixBase<DerivedEle> & Ele,
     const Eigen::MatrixBase<DerivedQ> & Q,
     const AABB<DerivedV,DIM> & aabb,
-    Eigen::VectorXi & I);
+    Eigen::PlainObjectBase<DerivedI> & I);
   /// \overload
   ///
   /// @param[out] I  #Q by #Ele sparse matrix revealing whether each element contains each
   ///     point: I(q,e) means point q is in element e
-  template <typename DerivedV, typename DerivedQ, int DIM, typename Scalar>
+  template <
+    typename DerivedV, 
+    typename DerivedEle, 
+    typename DerivedQ, 
+    int DIM, 
+    typename Scalar>
   IGL_INLINE void in_element(
     const Eigen::MatrixBase<DerivedV> & V,
-    const Eigen::MatrixXi & Ele,
+    const Eigen::MatrixBase<DerivedEle> & Ele,
     const Eigen::MatrixBase<DerivedQ> & Q,
     const AABB<DerivedV,DIM> & aabb,
     Eigen::SparseMatrix<Scalar> & I);

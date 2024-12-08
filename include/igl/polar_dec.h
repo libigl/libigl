@@ -31,7 +31,7 @@ namespace igl
     typename DerivedS,
     typename DerivedV>
   IGL_INLINE void polar_dec(
-    const Eigen::PlainObjectBase<DerivedA> & A,
+    const Eigen::MatrixBase<DerivedA> & A,
     bool includeReflections,
     Eigen::PlainObjectBase<DerivedR> & R,
     Eigen::PlainObjectBase<DerivedT> & T,
@@ -44,7 +44,7 @@ namespace igl
     typename DerivedR,
     typename DerivedT>
   IGL_INLINE void polar_dec(
-    const Eigen::PlainObjectBase<DerivedA> & A,
+    const Eigen::MatrixBase<DerivedA> & A,
     const bool includeReflections,
     Eigen::PlainObjectBase<DerivedR> & R,
     Eigen::PlainObjectBase<DerivedT> & T);
@@ -58,7 +58,7 @@ namespace igl
     typename DerivedS,
     typename DerivedV>
   IGL_INLINE void polar_dec(
-    const Eigen::PlainObjectBase<DerivedA> & A,
+    const Eigen::MatrixBase<DerivedA> & A,
     Eigen::PlainObjectBase<DerivedR> & R,
     Eigen::PlainObjectBase<DerivedT> & T,
     Eigen::PlainObjectBase<DerivedU> & U,
@@ -70,7 +70,7 @@ namespace igl
     typename DerivedR,
     typename DerivedT>
   IGL_INLINE void polar_dec(
-    const Eigen::PlainObjectBase<DerivedA> & A,
+    const Eigen::MatrixBase<DerivedA> & A,
     Eigen::PlainObjectBase<DerivedR> & R,
     Eigen::PlainObjectBase<DerivedT> & T);
 }

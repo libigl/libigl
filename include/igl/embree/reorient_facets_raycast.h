@@ -34,8 +34,8 @@ namespace igl
       typename DerivedI,
       typename DerivedC>
     IGL_INLINE void reorient_facets_raycast(
-      const Eigen::PlainObjectBase<DerivedV> & V,
-      const Eigen::PlainObjectBase<DerivedF> & F,
+      const Eigen::MatrixBase<DerivedV> & V,
+      const Eigen::MatrixBase<DerivedF> & F,
       int rays_total,
       int rays_minimum,
       bool facet_wise,
@@ -57,8 +57,8 @@ namespace igl
       typename DerivedFF,
       typename DerivedI>
     IGL_INLINE void reorient_facets_raycast(
-      const Eigen::PlainObjectBase<DerivedV> & V,
-      const Eigen::PlainObjectBase<DerivedF> & F,
+      const Eigen::MatrixBase<DerivedV> & V,
+      const Eigen::MatrixBase<DerivedF> & F,
       Eigen::PlainObjectBase<DerivedFF> & FF,
       Eigen::PlainObjectBase<DerivedI> & I);
   }

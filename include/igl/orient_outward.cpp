@@ -9,6 +9,7 @@
 #include "per_face_normals.h"
 #include "barycenter.h"
 #include "doublearea.h"
+#include "PlainMatrix.h"
 #include <iostream>
 
 template <
@@ -39,7 +40,7 @@ IGL_INLINE void igl::orient_outward(
   {
     FF = F;
   }
-  DerivedV N,BC,BCmean;
+  PlainMatrix<DerivedV,Eigen::Dynamic,Eigen::Dynamic> N,BC,BCmean;
   Matrix<typename DerivedV::Scalar,Dynamic,1> A;
   VectorXd totA(num_cc), dot(num_cc);
   Matrix<typename DerivedV::Scalar,3,1> Z(1,1,1);

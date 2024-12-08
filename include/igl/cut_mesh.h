@@ -29,6 +29,10 @@ namespace igl
   /// \note `cuts` assumes the ordering convention from the array-based
   /// triangle_triangle_adjacency which is DIFFERENT from
   /// cotmatrix_entries,edge_lengths/etc.
+  ///
+  /// \bug `V.conservativeResize(…)` is called. So, although this appears to
+  /// edit in place it's likely O(N) even if the number of cuts is O(1); the way
+  /// the cuts are specified, just reading them is already O(N)
   template <typename DerivedV, typename DerivedF, typename DerivedC, typename DerivedI>
   IGL_INLINE void cut_mesh(
     Eigen::PlainObjectBase<DerivedV>& V,
@@ -94,15 +98,20 @@ namespace igl
   ///     matrix will be similar to the original face matrix except some indices
   ///     will be redirected to point to the newly duplicated vertices.
   /// @param[out]  I   #V by 1 list of the map between Vn to original V index.
-  template <typename DerivedV, typename DerivedF, typename DerivedC, typename DerivedI>
+  template <
+    typename DerivedV, 
+    typename DerivedF, 
+    typename DerivedC, 
+    typename DerivedVn,
+    typename DerivedFn,
+    typename DerivedI>
   IGL_INLINE void cut_mesh(
     const Eigen::MatrixBase<DerivedV>& V,
     const Eigen::MatrixBase<DerivedF>& F,
     const Eigen::MatrixBase<DerivedC>& cuts,
-    Eigen::PlainObjectBase<DerivedV>& Vn,
-    Eigen::PlainObjectBase<DerivedF>& Fn,
-    Eigen::PlainObjectBase<DerivedI>& I
-  );
+    Eigen::PlainObjectBase<DerivedVn>& Vn,
+    Eigen::PlainObjectBase<DerivedFn>& Fn,
+    Eigen::PlainObjectBase<DerivedI>& I);
 
 
   

@@ -10,7 +10,7 @@
 
 template < typename DerivedX, typename DerivedY>
 IGL_INLINE void igl::ceil(
-  const Eigen::PlainObjectBase<DerivedX>& X,
+  const Eigen::MatrixBase<DerivedX>& X,
   Eigen::PlainObjectBase<DerivedY>& Y)
 {
   using namespace std;
@@ -20,5 +20,5 @@ IGL_INLINE void igl::ceil(
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instantiation
-template void igl::ceil<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
+template void igl::ceil<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&);
 #endif

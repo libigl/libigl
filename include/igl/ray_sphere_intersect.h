@@ -29,9 +29,9 @@ namespace igl
     typename r_type, 
     typename t_type>
   IGL_INLINE int ray_sphere_intersect(
-    const Eigen::PlainObjectBase<Derivedo> & o,
-    const Eigen::PlainObjectBase<Derivedd> & d,
-    const Eigen::PlainObjectBase<Derivedc> & c,
+    const Eigen::MatrixBase<Derivedo> & o,
+    const Eigen::MatrixBase<Derivedd> & d,
+    const Eigen::MatrixBase<Derivedc> & c,
     r_type r, 
     t_type & t0,
     t_type & t1);

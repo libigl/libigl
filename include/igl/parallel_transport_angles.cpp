@@ -10,9 +10,9 @@
 
 template <typename DerivedV, typename DerivedF, typename DerivedK>
 IGL_INLINE void igl::parallel_transport_angles(
-const Eigen::PlainObjectBase<DerivedV>& V,
-const Eigen::PlainObjectBase<DerivedF>& F,
-const Eigen::PlainObjectBase<DerivedV>& FN,
+const Eigen::MatrixBase<DerivedV>& V,
+const Eigen::MatrixBase<DerivedF>& F,
+const Eigen::MatrixBase<DerivedV>& FN,
 const Eigen::MatrixXi &E2F,
 const Eigen::MatrixXi &F2E,
 Eigen::PlainObjectBase<DerivedK> &K)
@@ -124,5 +124,5 @@ Eigen::PlainObjectBase<DerivedK> &K)
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instantiation
-template void igl::parallel_transport_angles<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&);
+template void igl::parallel_transport_angles<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, 1, 0, -1, 1> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1> >&);
 #endif

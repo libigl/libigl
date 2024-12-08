@@ -291,7 +291,7 @@ namespace igl {
                         if (it != cycleidx.end())
                         {
                             // we've hit outselves
-                            std::vector<int> cut;
+                            std::vector<Index> cut;
                             for (Index i = it->second; i < cycleverts.size(); i++)
                             {
                                 cut.push_back(cycleverts[i]);

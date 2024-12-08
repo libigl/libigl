@@ -23,8 +23,8 @@ namespace igl
     typename DerivedE,
     typename DerivedB>
   void is_boundary_edge(
-    const Eigen::PlainObjectBase<DerivedE> & E,
-    const Eigen::PlainObjectBase<DerivedF> & F,
+    const Eigen::MatrixBase<DerivedE> & E,
+    const Eigen::MatrixBase<DerivedF> & F,
     Eigen::PlainObjectBase<DerivedB> & B);
   /// \overload
   ///
@@ -36,7 +36,7 @@ namespace igl
     typename DerivedB,
     typename DerivedEMAP>
   void is_boundary_edge(
-    const Eigen::PlainObjectBase<DerivedF> & F,
+    const Eigen::MatrixBase<DerivedF> & F,
     Eigen::PlainObjectBase<DerivedB> & B,
     Eigen::PlainObjectBase<DerivedE> & E,
     Eigen::PlainObjectBase<DerivedEMAP> & EMAP);

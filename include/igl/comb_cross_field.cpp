@@ -14,6 +14,7 @@
 #include "per_face_normals.h"
 #include "is_border_vertex.h"
 #include "rotation_matrix_from_directions.h"
+#include "PlainMatrix.h"
 
 #include "triangle_triangle_adjacency.h"
 
@@ -27,12 +28,12 @@ namespace igl {
     const Eigen::MatrixBase<DerivedF> &F;
     const Eigen::MatrixBase<DerivedV> &PD1;
     const Eigen::MatrixBase<DerivedV> &PD2;
-    DerivedV N;
+    PlainMatrix<DerivedV> N;
 
   private:
     // internal
-    DerivedF TT;
-    DerivedF TTi;
+    PlainMatrix<DerivedF> TT;
+    PlainMatrix<DerivedF> TTi;
 
 
   private:

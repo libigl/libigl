@@ -33,8 +33,8 @@ namespace igl
         typename DerivedJ,
         typename Derivedflip>
       IGL_INLINE void outer_hull(
-        const Eigen::PlainObjectBase<DerivedV> & V,
-        const Eigen::PlainObjectBase<DerivedF> & F,
+        const Eigen::MatrixBase<DerivedV> & V,
+        const Eigen::MatrixBase<DerivedF> & F,
         Eigen::PlainObjectBase<DerivedHV> & HV,
         Eigen::PlainObjectBase<DerivedHF> & HF,
         Eigen::PlainObjectBase<DerivedJ> & J,

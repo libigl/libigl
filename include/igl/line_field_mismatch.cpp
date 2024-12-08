@@ -21,6 +21,7 @@
 #include "rotation_matrix_from_directions.h"
 #include "local_basis.h"
 #include "PI.h"
+#include "PlainMatrix.h"
 
 namespace igl {
 template <typename DerivedV, typename DerivedF, typename DerivedO>
@@ -28,19 +29,19 @@ class MismatchCalculatorLine
 {
 public:
 
-    const Eigen::PlainObjectBase<DerivedV> &V;
-    const Eigen::PlainObjectBase<DerivedF> &F;
-    const Eigen::PlainObjectBase<DerivedV> &PD1;
-    const Eigen::PlainObjectBase<DerivedV> &PD2;
-    DerivedV N;
+    const Eigen::MatrixBase<DerivedV> &V;
+    const Eigen::MatrixBase<DerivedF> &F;
+    const Eigen::MatrixBase<DerivedV> &PD1;
+    const Eigen::MatrixBase<DerivedV> &PD2;
+    PlainMatrix<DerivedV> N;
 
 private:
     // internal
     std::vector<bool> V_border; // bool
     std::vector<std::vector<int> > VF;
     std::vector<std::vector<int> > VFi;
-    DerivedF TT;
-    DerivedF TTi;
+    PlainMatrix<DerivedF> TT;
+    PlainMatrix<DerivedF> TTi;
 
 
 private:
@@ -81,10 +82,10 @@ private:
 
 public:
 
-    inline MismatchCalculatorLine(const Eigen::PlainObjectBase<DerivedV> &_V,
-                               const Eigen::PlainObjectBase<DerivedF> &_F,
-                               const Eigen::PlainObjectBase<DerivedV> &_PD1,
-                               const Eigen::PlainObjectBase<DerivedV> &_PD2
+    inline MismatchCalculatorLine(const Eigen::MatrixBase<DerivedV> &_V,
+                               const Eigen::MatrixBase<DerivedF> &_F,
+                               const Eigen::MatrixBase<DerivedV> &_PD1,
+                               const Eigen::MatrixBase<DerivedV> &_PD2
                                ):
         V(_V),
         F(_F),
@@ -117,9 +118,9 @@ public:
 
 
 template <typename DerivedV, typename DerivedF, typename DerivedO>
-IGL_INLINE void igl::line_field_mismatch(const Eigen::PlainObjectBase<DerivedV> &V,
-                                         const Eigen::PlainObjectBase<DerivedF> &F,
-                                         const Eigen::PlainObjectBase<DerivedV> &PD1,
+IGL_INLINE void igl::line_field_mismatch(const Eigen::MatrixBase<DerivedV> &V,
+                                         const Eigen::MatrixBase<DerivedF> &F,
+                                         const Eigen::MatrixBase<DerivedV> &PD1,
                                          const bool isCombed,
                                          Eigen::PlainObjectBase<DerivedO> &mismatch)
 {

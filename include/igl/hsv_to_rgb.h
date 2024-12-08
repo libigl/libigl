@@ -34,7 +34,7 @@ namespace igl
   /// @param[out] R #H by 3 list of rgb values
   template <typename DerivedH, typename DerivedR>
   void hsv_to_rgb(
-    const Eigen::PlainObjectBase<DerivedH> & H,
+    const Eigen::MatrixBase<DerivedH> & H,
     Eigen::PlainObjectBase<DerivedR> & R);
 };
 

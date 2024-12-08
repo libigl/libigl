@@ -149,7 +149,7 @@ IGL_INLINE bool igl::biharmonic_coordinates(
   }
   // Vertices in point handles
   const size_t mp =
-    count_if(S.begin(),S.end(),[](const vector<int> & h){return h.size()==1;});
+    count_if(S.begin(),S.end(),[](const vector<SType> & h){return h.size()==1;});
   // number of region handles
   const size_t r = S.size()-mp;
   // Vertices in region handles

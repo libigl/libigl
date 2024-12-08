@@ -7,6 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "direct_delta_mush.h"
 #include "cotmatrix.h"
+#include "PlainMatrix.h"
 
 template <
   typename DerivedV,
@@ -172,7 +173,7 @@ IGL_INLINE void igl::direct_delta_mush_precomputation(
   SimplicialLDLT<SparseMatrix<Scalar>> ldlt_W_prime;
   SparseMatrix<Scalar> c(I + kappa * L_bar);
   // working copy
-  DerivedW W_prime(W);
+  PlainMatrix<DerivedW,Dynamic,Dynamic> W_prime(W);
   ldlt_W_prime.compute(c.transpose());
   for (int iter = 0; iter < p; ++iter)
   {

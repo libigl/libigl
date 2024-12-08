@@ -8,6 +8,8 @@
 #include <igl/get_seconds.h>
 #include <igl/point_mesh_squared_distance.h>
 #include <igl/point_simplex_squared_distance.h>
+#include <igl/per_face_normals.h>
+#include <igl/barycenter.h>
 #include <igl/randperm.h>
 #include <igl/read_triangle_mesh.h>
 #include <iostream>
@@ -230,4 +232,86 @@ TEST_CASE("AABB: dynamic", "[igl]")
   };
 
   test_common::run_test_cases(test_common::all_meshes(), test_case);
+}
+
+TEST_CASE("AABB: intersect", "[igl]")
+{
+  Eigen::MatrixXd V(4,3);
+  V << 0,0,1,
+    1,0,1,
+    0,1,1,
+    0,0,0;
+
+  Eigen::MatrixXi F(4,3);
+  F << 
+    0,1,2,
+    0,2,3,
+    0,3,1,
+    2,1,3;
+  Eigen::MatrixXd BC;
+  igl::barycenter(V,F,BC);
+  Eigen::MatrixXd N;
+  igl::per_face_normals(V,F,N);
+  Eigen::MatrixXd origin = BC+N;
+  Eigen::MatrixXd dir = -N;
+
+  igl::AABB<Eigen::MatrixXd,3> tree;
+  tree.init(V,F);
+  Eigen::VectorXi I;
+  Eigen::VectorXd T;
+  Eigen::MatrixXd UV;
+  double min_t = 0;
+  tree.intersect_ray(V,F,origin,dir,min_t,I,T,UV);
+  std::vector<std::vector<igl::Hit<double>>> hits;
+  tree.intersect_ray(V,F,origin,dir,hits);
+
+}
+
+TEST_CASE("AABB: intersect_tet", "[igl]")
+{
+//  V = [
+//  0 0 0
+//  1 0 0
+//  0 1 0
+//  0 0 1
+//];
+//Ele = [
+//  3 2 1
+//  2 4 1
+//  4 3 1
+//  3 4 2
+//];
+//origin_i = [
+//  0.2 0.2  -1
+//];
+//dir_i = [
+//  0.05 0.05 1.25
+//];
+  Eigen::MatrixXd V(4,3);
+  V << 0,0,0,
+    1,0,0,
+    0,1,0,
+    0,0,1;
+  Eigen::MatrixXi Ele(4,3);
+  Ele << 
+    2,1,0,
+    1,3,0,
+    3,2,0,
+    2,3,1;
+  Eigen::MatrixXd origin(1,3);
+  origin << 0.2,0.2,-1;
+  Eigen::MatrixXd dir(1,3);
+  dir << 0.05,0.05,1.25;
+  igl::AABB<Eigen::MatrixXd,3> tree;
+  tree.init(V,Ele);
+  Eigen::VectorXi I;
+  Eigen::VectorXd T;
+  Eigen::MatrixXd UV;
+  double min_t = std::numeric_limits<double>::infinity();
+  tree.intersect_ray(V,Ele,origin,dir,min_t,I,T,UV);
+  REQUIRE(I(0) == 0);
+  REQUIRE(T(0) == Approx(0.8));
+  REQUIRE(UV(0) == Approx(0.24));
+  REQUIRE(UV(1) == Approx(0.52));
+
 }

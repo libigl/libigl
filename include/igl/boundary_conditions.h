@@ -36,16 +36,26 @@ namespace igl
   ///   some column of bc doesn't have a 0 (assuming bc has >1 columns)
   ///   some column of bc doesn't have a 1 (assuming bc has >1 columns)
   ///
+  template <
+    typename DerivedV,
+    typename DerivedEle,
+    typename DerivedC,
+    typename DerivedP,
+    typename DerivedBE,
+    typename DerivedCE,
+    typename DerivedCF,
+    typename Derivedb,
+    typename Derivedbc>
   IGL_INLINE bool boundary_conditions(
-    const Eigen::MatrixXd & V,
-    const Eigen::MatrixXi & Ele,
-    const Eigen::MatrixXd & C,
-    const Eigen::VectorXi & P,
-    const Eigen::MatrixXi & BE,
-    const Eigen::MatrixXi & CE,
-    const Eigen::MatrixXi & CF,
-    Eigen::VectorXi & b,
-    Eigen::MatrixXd & bc);
+    const Eigen::MatrixBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedEle> & Ele,
+    const Eigen::MatrixBase<DerivedC> & C,
+    const Eigen::MatrixBase<DerivedP> & P,
+    const Eigen::MatrixBase<DerivedBE> & BE,
+    const Eigen::MatrixBase<DerivedCE> & CE,
+    const Eigen::MatrixBase<DerivedCF> & CF,
+    Eigen::PlainObjectBase<Derivedb> & b,
+    Eigen::PlainObjectBase<Derivedbc> & bc);
 }
 
 #ifndef IGL_STATIC_LIBRARY

@@ -21,7 +21,7 @@ namespace igl
     /// @param[out] plhs  points to lhs argument
     template <typename DerivedV>
     IGL_INLINE void prepare_lhs_double(
-      const Eigen::PlainObjectBase<DerivedV> & V,
+      const Eigen::DenseBase<DerivedV> & V,
       mxArray *plhs[]);
     /// \overload
     template <typename Vtype>
@@ -32,7 +32,7 @@ namespace igl
     /// \brief Casts to logical
     template <typename DerivedV>
     IGL_INLINE void prepare_lhs_logical(
-      const Eigen::PlainObjectBase<DerivedV> & V,
+      const Eigen::DenseBase<DerivedV> & V,
       mxArray *plhs[]);
     /// Writes out a matrix and adds 1
     ///
@@ -40,7 +40,7 @@ namespace igl
     /// @param[out] plhs  points to lhs argument
     template <typename DerivedV>
     IGL_INLINE void prepare_lhs_index(
-      const Eigen::PlainObjectBase<DerivedV> & V,
+      const Eigen::DenseBase<DerivedV> & V,
       mxArray *plhs[]);
     /// \overload
     /// \brief Vector of matrices -> cell array of matrices

@@ -23,8 +23,8 @@ namespace igl
         typename DerivedV,
         typename DerivedF>
       bool is_self_intersecting(
-        const Eigen::PlainObjectBase<DerivedV> & V,
-        const Eigen::PlainObjectBase<DerivedF> & F);
+        const Eigen::MatrixBase<DerivedV> & V,
+        const Eigen::MatrixBase<DerivedF> & F);
     }
   }
 }

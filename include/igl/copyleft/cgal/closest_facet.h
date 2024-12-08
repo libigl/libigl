@@ -57,13 +57,13 @@ namespace igl
         typename DerivedR,
         typename DerivedS >
       IGL_INLINE void closest_facet(
-          const Eigen::PlainObjectBase<DerivedV>& V,
-          const Eigen::PlainObjectBase<DerivedF>& F,
-          const Eigen::PlainObjectBase<DerivedI>& I,
-          const Eigen::PlainObjectBase<DerivedP>& P,
-          const Eigen::PlainObjectBase<DerivedEMAP>& EMAP,
-          const Eigen::PlainObjectBase<DeriveduEC>& uEC,
-          const Eigen::PlainObjectBase<DeriveduEE>& uEE,
+          const Eigen::MatrixBase<DerivedV>& V,
+          const Eigen::MatrixBase<DerivedF>& F,
+          const Eigen::MatrixBase<DerivedI>& I,
+          const Eigen::MatrixBase<DerivedP>& P,
+          const Eigen::MatrixBase<DerivedEMAP>& EMAP,
+          const Eigen::MatrixBase<DeriveduEC>& uEC,
+          const Eigen::MatrixBase<DeriveduEE>& uEE,
           const std::vector<std::vector<size_t> > & VF,
           const std::vector<std::vector<size_t> > & VFi,
           const CGAL::AABB_tree<
@@ -88,13 +88,13 @@ namespace igl
         typename DerivedR,
         typename DerivedS >
       IGL_INLINE void closest_facet(
-        const Eigen::PlainObjectBase<DerivedV>& V,
-        const Eigen::PlainObjectBase<DerivedF>& F,
-        const Eigen::PlainObjectBase<DerivedI>& I,
-        const Eigen::PlainObjectBase<DerivedP>& P,
-        const Eigen::PlainObjectBase<DerivedEMAP>& EMAP,
-        const Eigen::PlainObjectBase<DeriveduEC>& uEC,
-        const Eigen::PlainObjectBase<DeriveduEE>& uEE,
+        const Eigen::MatrixBase<DerivedV>& V,
+        const Eigen::MatrixBase<DerivedF>& F,
+        const Eigen::MatrixBase<DerivedI>& I,
+        const Eigen::MatrixBase<DerivedP>& P,
+        const Eigen::MatrixBase<DerivedEMAP>& EMAP,
+        const Eigen::MatrixBase<DeriveduEC>& uEC,
+        const Eigen::MatrixBase<DeriveduEE>& uEE,
               Eigen::PlainObjectBase<DerivedR>& R,
               Eigen::PlainObjectBase<DerivedS>& S);
       /// \overload
@@ -108,12 +108,12 @@ namespace igl
         typename DerivedR,
         typename DerivedS >
       IGL_INLINE void closest_facet(
-        const Eigen::PlainObjectBase<DerivedV>& V,
-        const Eigen::PlainObjectBase<DerivedF>& F,
-        const Eigen::PlainObjectBase<DerivedP>& P,
-        const Eigen::PlainObjectBase<DerivedEMAP>& EMAP,
-        const Eigen::PlainObjectBase<DeriveduEC>& uEC,
-        const Eigen::PlainObjectBase<DeriveduEE>& uEE,
+        const Eigen::MatrixBase<DerivedV>& V,
+        const Eigen::MatrixBase<DerivedF>& F,
+        const Eigen::MatrixBase<DerivedP>& P,
+        const Eigen::MatrixBase<DerivedEMAP>& EMAP,
+        const Eigen::MatrixBase<DeriveduEC>& uEC,
+        const Eigen::MatrixBase<DeriveduEE>& uEE,
         Eigen::PlainObjectBase<DerivedR>& R,
         Eigen::PlainObjectBase<DerivedS>& S);
       /// \overload
@@ -129,13 +129,13 @@ namespace igl
         typename DerivedR,
         typename DerivedS >
       IGL_INLINE void closest_facet(
-          const Eigen::PlainObjectBase<DerivedV>& V,
-          const Eigen::PlainObjectBase<DerivedF>& F,
-          const Eigen::PlainObjectBase<DerivedI>& I,
-          const Eigen::PlainObjectBase<DerivedP>& P,
-          const Eigen::PlainObjectBase<DerivedEMAP>& EMAP,
-          const Eigen::PlainObjectBase<DeriveduEC>& uEC,
-          const Eigen::PlainObjectBase<DeriveduEE>& uEE,
+          const Eigen::MatrixBase<DerivedV>& V,
+          const Eigen::MatrixBase<DerivedF>& F,
+          const Eigen::MatrixBase<DerivedI>& I,
+          const Eigen::MatrixBase<DerivedP>& P,
+          const Eigen::MatrixBase<DerivedEMAP>& EMAP,
+          const Eigen::MatrixBase<DeriveduEC>& uEC,
+          const Eigen::MatrixBase<DeriveduEE>& uEE,
           const std::vector<std::vector<size_t> > & VF,
           const std::vector<std::vector<size_t> > & VFi,
           const CGAL::AABB_tree<

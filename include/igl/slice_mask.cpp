@@ -110,6 +110,7 @@ IGL_INLINE DerivedX igl::slice_mask(
   const Eigen::Array<bool,Eigen::Dynamic,1> & R,
   const Eigen::Array<bool,Eigen::Dynamic,1> & C)
 {
+  // This is not safe. See PlainMatrix
   DerivedX Y;
   igl::slice_mask(X,R,C,Y);
   return Y;
@@ -121,6 +122,7 @@ IGL_INLINE DerivedX igl::slice_mask(
   const Eigen::Array<bool,Eigen::Dynamic,1> & R,
   const int dim)
 {
+  // This is not safe. See PlainMatrix
   DerivedX Y;
   igl::slice_mask(X,R,dim,Y);
   return Y;

@@ -28,30 +28,30 @@ namespace igl {
   ///
   template <typename DerivedS, typename DerivedI>
   IGL_INLINE void sort_vectors_ccw(
-    const Eigen::PlainObjectBase<DerivedS>& P,
-    const Eigen::PlainObjectBase<DerivedS>& N,
+    const Eigen::MatrixBase<DerivedS>& P,
+    const Eigen::MatrixBase<DerivedS>& N,
     Eigen::PlainObjectBase<DerivedI> &order,
     Eigen::PlainObjectBase<DerivedS> &sorted,
     Eigen::PlainObjectBase<DerivedI> &inv_order);
   /// \overload
   template <typename DerivedS, typename DerivedI>
   IGL_INLINE void sort_vectors_ccw(
-    const Eigen::PlainObjectBase<DerivedS>& P,
-    const Eigen::PlainObjectBase<DerivedS>& N,
+    const Eigen::MatrixBase<DerivedS>& P,
+    const Eigen::MatrixBase<DerivedS>& N,
     Eigen::PlainObjectBase<DerivedI> &order,
     Eigen::PlainObjectBase<DerivedS> &sorted);
   /// \overload
   template <typename DerivedS, typename DerivedI>
   IGL_INLINE void sort_vectors_ccw(
-    const Eigen::PlainObjectBase<DerivedS>& P,
-    const Eigen::PlainObjectBase<DerivedS>& N,
+    const Eigen::MatrixBase<DerivedS>& P,
+    const Eigen::MatrixBase<DerivedS>& N,
     Eigen::PlainObjectBase<DerivedI> &order,
     Eigen::PlainObjectBase<DerivedI> &inv_order);
   /// \overload
   template <typename DerivedS, typename DerivedI>
   IGL_INLINE void sort_vectors_ccw(
-    const Eigen::PlainObjectBase<DerivedS>& P,
-    const Eigen::PlainObjectBase<DerivedS>& N,
+    const Eigen::MatrixBase<DerivedS>& P,
+    const Eigen::MatrixBase<DerivedS>& N,
     Eigen::PlainObjectBase<DerivedI> &order);
 
 };

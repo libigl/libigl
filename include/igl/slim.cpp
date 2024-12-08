@@ -802,11 +802,15 @@ IGL_INLINE Eigen::MatrixXd igl::slim_solve(igl::SLIMData &data, int iter_num)
     igl::slim::update_weights_and_closest_rotations(data, dest_res);
     igl::slim::solve_weighted_arap(data,data.V, data.F, dest_res, data.b, data.bc);
 
-    std::function<double(Eigen::MatrixXd &)> compute_energy = [&](
-        Eigen::MatrixXd &aaa) { return igl::slim::compute_energy(data,aaa); };
+    std::function<double(Eigen::MatrixXd &)> compute_energy = 
+      [&](Eigen::MatrixXd &aaa){ return igl::slim::compute_energy(data,aaa); };
 
-    data.energy = igl::flip_avoiding_line_search(data.F, data.V_o, dest_res, compute_energy,
-                                                 data.energy * data.mesh_area) / data.mesh_area;
+    data.energy = igl::flip_avoiding_line_search(
+      data.F, 
+      data.V_o, 
+      dest_res, 
+      compute_energy,
+      data.energy * data.mesh_area) / data.mesh_area;
   }
   return data.V_o;
 }

@@ -16,6 +16,8 @@
 #include "remesh_self_intersections.h"
 #include "string_to_mesh_boolean_type.h"
 #include "../../combine.h"
+#include "../../PlainVector.h"
+#include "../../PlainMatrix.h"
 #include "../../cumsum.h"
 #include "../../extract_manifold_patches.h"
 #include "../../get_seconds.h"
@@ -139,8 +141,8 @@ IGL_INLINE bool igl::copyleft::cgal::mesh_boolean(
     Eigen::PlainObjectBase<DerivedFC > & FC,
     Eigen::PlainObjectBase<DerivedJ > & J)
 {
-  DerivedV VV;
-  DerivedF FF;
+  PlainMatrix<DerivedV,Eigen::Dynamic> VV;
+  PlainMatrix<DerivedF,Eigen::Dynamic> FF;
   Eigen::Matrix<size_t,Eigen::Dynamic,1> Vsizes,Fsizes;
   igl::combine(Vlist,Flist,VV,FF,Vsizes,Fsizes);
   return mesh_boolean(VV,FF,Fsizes,wind_num_op,keep,VC,FC,J);
@@ -160,8 +162,8 @@ IGL_INLINE bool igl::copyleft::cgal::mesh_boolean(
     Eigen::PlainObjectBase<DerivedFC > & FC,
     Eigen::PlainObjectBase<DerivedJ > & J)
 {
-  DerivedV VV;
-  DerivedF FF;
+  PlainMatrix<DerivedV,Eigen::Dynamic> VV;
+  PlainMatrix<DerivedF,Eigen::Dynamic> FF;
   Eigen::Matrix<size_t,Eigen::Dynamic,1> Vsizes,Fsizes;
   igl::combine(Vlist,Flist,VV,FF,Vsizes,Fsizes);
   std::function<int(const int, const int)> keep;
@@ -252,7 +254,7 @@ IGL_INLINE bool igl::copyleft::cgal::mesh_boolean(
   // labels(f) = i means that face f comes from mesh i
   Eigen::VectorXi labels(num_faces);
   // cumulative sizes
-  Derivedsizes cumsizes;
+  PlainVector<Derivedsizes,Eigen::Dynamic> cumsizes;
   igl::cumsum(sizes,1,cumsizes);
   const size_t num_inputs = sizes.size();
   std::transform(

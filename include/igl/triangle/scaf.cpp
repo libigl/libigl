@@ -623,11 +623,11 @@ IGL_INLINE void igl::triangle::scaf_precompute(
     const Eigen::MatrixXd &V,
     const Eigen::MatrixXi &F,
     const Eigen::MatrixXd &V_init,
-    igl::triangle::SCAFData &data,
-    igl::MappingEnergyType slim_energy,
-    Eigen::VectorXi &b,
-    Eigen::MatrixXd &bc,
-    double soft_p)
+    const igl::MappingEnergyType slim_energy,
+    const Eigen::VectorXi &b,
+    const Eigen::MatrixXd &bc,
+    const double soft_p,
+    igl::triangle::SCAFData &data)
 {
   Eigen::MatrixXd CN;
   Eigen::MatrixXi FN;
@@ -679,7 +679,7 @@ IGL_INLINE void igl::triangle::scaf_precompute(
   }
 }
 
-IGL_INLINE Eigen::MatrixXd igl::triangle::scaf_solve(igl::triangle::SCAFData &s, int iter_num)
+IGL_INLINE Eigen::MatrixXd igl::triangle::scaf_solve(const int iter_num, igl::triangle::SCAFData &s)
 {
   using namespace std;
   using namespace Eigen;

@@ -17,7 +17,7 @@ namespace igl
   /// @param[out] Y  m by n matrix of ceiled integers
   template < typename DerivedX, typename DerivedY>
   IGL_INLINE void ceil(
-    const Eigen::PlainObjectBase<DerivedX>& X,
+    const Eigen::MatrixBase<DerivedX>& X,
     Eigen::PlainObjectBase<DerivedY>& Y);
 }
 
