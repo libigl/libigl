@@ -31,8 +31,8 @@ namespace igl
   IGL_INLINE void ambient_occlusion(
     const std::function<
       bool(
-        const Eigen::Vector3f&,
-        const Eigen::Vector3f&)
+        const Eigen::Matrix<typename DerivedP::Scalar,3,1>&,
+        const Eigen::Matrix<typename DerivedP::Scalar,3,1>&)
         > & shoot_ray,
     const Eigen::MatrixBase<DerivedP> & P,
     const Eigen::MatrixBase<DerivedN> & N,

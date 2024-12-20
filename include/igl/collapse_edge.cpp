@@ -11,15 +11,23 @@
 #include "decimate_trivial_callbacks.h"
 #include <vector>
 
+template <
+  typename Derivedp,
+  typename DerivedV,
+  typename DerivedF,
+  typename DerivedE,
+  typename DerivedEMAP,
+  typename DerivedEF,
+  typename DerivedEI>
 IGL_INLINE bool igl::collapse_edge(
   const int e,
-  const Eigen::RowVectorXd & p,
-  Eigen::MatrixXd & V,
-  Eigen::MatrixXi & F,
-  Eigen::MatrixXi & E,
-  Eigen::VectorXi & EMAP,
-  Eigen::MatrixXi & EF,
-  Eigen::MatrixXi & EI,
+  const Eigen::MatrixBase<Derivedp> & p,
+  Eigen::MatrixBase<DerivedV> & V,
+  Eigen::MatrixBase<DerivedF> & F,
+  Eigen::MatrixBase<DerivedE> & E,
+  Eigen::MatrixBase<DerivedEMAP> & EMAP,
+  Eigen::MatrixBase<DerivedEF> & EF,
+  Eigen::MatrixBase<DerivedEI> & EI,
   int & e1,
   int & e2,
   int & f1,
@@ -33,19 +41,28 @@ IGL_INLINE bool igl::collapse_edge(
     e,p,Nsv,Nsf,Ndv,Ndf,V,F,E,EMAP,EF,EI,e1,e2,f1,f2);
 }
 
+template
+<
+  typename Derivedp,
+  typename DerivedV,
+  typename DerivedF,
+  typename DerivedE,
+  typename DerivedEMAP,
+  typename DerivedEF,
+  typename DerivedEI>
 IGL_INLINE bool igl::collapse_edge(
   const int e,
-  const Eigen::RowVectorXd & p,
+  const Eigen::MatrixBase<Derivedp> & p,
   /*const*/ std::vector<int> & Nsv,
   const std::vector<int> & Nsf,
   /*const*/ std::vector<int> & Ndv,
   const std::vector<int> & Ndf,
-  Eigen::MatrixXd & V,
-  Eigen::MatrixXi & F,
-  Eigen::MatrixXi & E,
-  Eigen::VectorXi & EMAP,
-  Eigen::MatrixXi & EF,
-  Eigen::MatrixXi & EI,
+  Eigen::MatrixBase<DerivedV> & V,
+  Eigen::MatrixBase<DerivedF> & F,
+  Eigen::MatrixBase<DerivedE> & E,
+  Eigen::MatrixBase<DerivedEMAP> & EMAP,
+  Eigen::MatrixBase<DerivedEF> & EF,
+  Eigen::MatrixBase<DerivedEI> & EI,
   int & a_e1,
   int & a_e2,
   int & a_f1,
@@ -178,77 +195,31 @@ IGL_INLINE bool igl::collapse_edge(
   return true;
 }
 
+template <
+  typename CPFunc,
+  typename PreFunc,
+  typename PostFunc,
+  typename DerivedV,
+  typename DerivedF,
+  typename DerivedE,
+  typename DerivedEMAP,
+  typename DerivedEF,
+  typename DerivedEI,
+  typename DerivedEQ,
+  typename DerivedC>
 IGL_INLINE bool igl::collapse_edge(
-  const int e,
-  const Eigen::RowVectorXd & p,
-  Eigen::MatrixXd & V,
-  Eigen::MatrixXi & F,
-  Eigen::MatrixXi & E,
-  Eigen::VectorXi & EMAP,
-  Eigen::MatrixXi & EF,
-  Eigen::MatrixXi & EI)
-{
-  int e1,e2,f1,f2;
-  return collapse_edge(e,p,V,F,E,EMAP,EF,EI,e1,e2,f1,f2);
-}
-
-IGL_INLINE bool igl::collapse_edge(
-  const decimate_cost_and_placement_callback & cost_and_placement,
-  Eigen::MatrixXd & V,
-  Eigen::MatrixXi & F,
-  Eigen::MatrixXi & E,
-  Eigen::VectorXi & EMAP,
-  Eigen::MatrixXi & EF,
-  Eigen::MatrixXi & EI,
+  const CPFunc & cost_and_placement,
+  const PreFunc & pre_collapse,
+  const PostFunc & post_collapse,
+  Eigen::MatrixBase<DerivedV> & V,
+  Eigen::MatrixBase<DerivedF> & F,
+  Eigen::MatrixBase<DerivedE> & E,
+  Eigen::MatrixBase<DerivedEMAP> & EMAP,
+  Eigen::MatrixBase<DerivedEF> & EF,
+  Eigen::MatrixBase<DerivedEI> & EI,
   igl::min_heap< std::tuple<double,int,int> > & Q,
-  Eigen::VectorXi & EQ,
-  Eigen::MatrixXd & C)
-{
-  int e,e1,e2,f1,f2;
-  decimate_pre_collapse_callback always_try;
-  decimate_post_collapse_callback never_care;
-  decimate_trivial_callbacks(always_try,never_care);
-  return 
-    collapse_edge(
-      cost_and_placement,always_try,never_care,
-      V,F,E,EMAP,EF,EI,Q,EQ,C,e,e1,e2,f1,f2);
-}
-
-IGL_INLINE bool igl::collapse_edge(
-  const decimate_cost_and_placement_callback & cost_and_placement,
-  const decimate_pre_collapse_callback       & pre_collapse,
-  const decimate_post_collapse_callback      & post_collapse,
-  Eigen::MatrixXd & V,
-  Eigen::MatrixXi & F,
-  Eigen::MatrixXi & E,
-  Eigen::VectorXi & EMAP,
-  Eigen::MatrixXi & EF,
-  Eigen::MatrixXi & EI,
-  igl::min_heap< std::tuple<double,int,int> > & Q,
-  Eigen::VectorXi & EQ,
-  Eigen::MatrixXd & C)
-{
-  int e,e1,e2,f1,f2;
-  return 
-    collapse_edge(
-      cost_and_placement,pre_collapse,post_collapse,
-      V,F,E,EMAP,EF,EI,Q,EQ,C,e,e1,e2,f1,f2);
-}
-
-
-IGL_INLINE bool igl::collapse_edge(
-  const decimate_cost_and_placement_callback & cost_and_placement,
-  const decimate_pre_collapse_callback       & pre_collapse,
-  const decimate_post_collapse_callback      & post_collapse,
-  Eigen::MatrixXd & V,
-  Eigen::MatrixXi & F,
-  Eigen::MatrixXi & E,
-  Eigen::VectorXi & EMAP,
-  Eigen::MatrixXi & EF,
-  Eigen::MatrixXi & EI,
-  igl::min_heap< std::tuple<double,int,int> > & Q,
-  Eigen::VectorXi & EQ,
-  Eigen::MatrixXd & C,
+  Eigen::MatrixBase<DerivedEQ> & EQ,
+  Eigen::MatrixBase<DerivedC> & C,
   int & e,
   int & e1,
   int & e2,
@@ -373,3 +344,13 @@ IGL_INLINE bool igl::collapse_edge(
   }
   return collapsed;
 }
+
+#ifdef IGL_STATIC_LIBRARY
+// Explicit template instantiation
+template bool igl::collapse_edge<
+  std::function<void (int, Eigen::Matrix<double, -1, -1, 0, -1, -1> const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, double&, Eigen::Matrix<double, 1, -1, 1, 1, -1>&)>, 
+  std::function<bool (Eigen::Matrix<double, -1, -1, 0, -1, -1> const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, std::priority_queue<std::tuple<double, int, int>, std::vector<std::tuple<double, int, int>, std::allocator<std::tuple<double, int, int>>>, std::greater<std::tuple<double, int, int>>> const&, Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, Eigen::Matrix<double, -1, -1, 0, -1, -1> const&, int)>, 
+  std::function<void (Eigen::Matrix<double, -1, -1, 0, -1, -1> const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, std::priority_queue<std::tuple<double, int, int>, std::vector<std::tuple<double, int, int>, std::allocator<std::tuple<double, int, int>>>, std::greater<std::tuple<double, int, int>>> const&, Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, Eigen::Matrix<double, -1, -1, 0, -1, -1> const&, int, int, int, int, int, bool)>, 
+  Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>>(std::function<void (int, Eigen::Matrix<double, -1, -1, 0, -1, -1> const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, double&, Eigen::Matrix<double, 1, -1, 1, 1, -1>&)> const&, std::function<bool (Eigen::Matrix<double, -1, -1, 0, -1, -1> const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, std::priority_queue<std::tuple<double, int, int>, std::vector<std::tuple<double, int, int>, std::allocator<std::tuple<double, int, int>>>, std::greater<std::tuple<double, int, int>>> const&, Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, Eigen::Matrix<double, -1, -1, 0, -1, -1> const&, int)> const&, std::function<void (Eigen::Matrix<double, -1, -1, 0, -1, -1> const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, std::priority_queue<std::tuple<double, int, int>, std::vector<std::tuple<double, int, int>, std::allocator<std::tuple<double, int, int>>>, std::greater<std::tuple<double, int, int>>> const&, Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, Eigen::Matrix<double, -1, -1, 0, -1, -1> const&, int, int, int, int, int, bool)> const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>>&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1>>&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1>>&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1>>&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1>>&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1>>&, std::priority_queue<std::tuple<double, int, int>, std::vector<std::tuple<double, int, int>, std::allocator<std::tuple<double, int, int>>>, std::greater<std::tuple<double, int, int>>>&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1>>&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>>&, int&, int&, int&, int&, int&);
+template bool igl::collapse_edge<Eigen::Matrix<double, 1, -1, 1, 1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>>(int, Eigen::MatrixBase<Eigen::Matrix<double, 1, -1, 1, 1, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>>&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1>>&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1>>&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1>>&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1>>&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1>>&, int&, int&, int&, int&);
+#endif

@@ -47,7 +47,7 @@ namespace igl {
         for(size_t i = 0; i < Psize; ++i) {
             Eigen::Matrix<Scalar,Eigen::Dynamic,1> D = (V.rowwise() - P.row(i)).rowwise().norm();
             Eigen::Matrix<Scalar,Eigen::Dynamic,1> S;
-            Eigen::VectorXi R;
+            Eigen::Vector<typename DerivedI::Scalar,Eigen::Dynamic> R;
             igl::sort(D,1,true,S,R);
             I.row(i) = R.transpose();
         }

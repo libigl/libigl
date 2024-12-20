@@ -24,6 +24,8 @@ namespace igl
   /// \note the first edge of a triangle is [0,1] the second [1,2] and the third
   ///   [2,3].  This convention is DIFFERENT from
   ///   cotmatrix_entries.h/edge_lengths.h/etc. To fix this you could use:
+  ///   Which means it's also different from the convention when using lists
+  ///   below.
   ///
   /// \code{cpp}
   ///           // Fix mis-match convention

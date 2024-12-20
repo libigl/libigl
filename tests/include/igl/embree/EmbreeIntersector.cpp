@@ -28,7 +28,7 @@ TEST_CASE("EmbreeIntersector: cube", "[igl/embree]")
       V.row(F(expected_id[dim],1))*expected_u[dim] + 
       V.row(F(expected_id[dim],2))*expected_v[dim];
   }
-  const auto test_hit = [&](const bool hitP, const igl::Hit& hit, const int dim)
+  const auto test_hit = [&](const bool hitP, const igl::Hit<float>& hit, const int dim)
   {
     CHECK(hitP);
     if(hitP)
@@ -50,7 +50,7 @@ TEST_CASE("EmbreeIntersector: cube", "[igl/embree]")
     Eigen::Vector3f dir(0,0,0);
     // test each dimension, pos and neg
     dir[dim/2] = dim%2 ? -1 : 1;
-    igl::Hit hit;
+    igl::Hit<float> hit;
     bool hitP = embree.intersectRay(pos, dir, hit);
     test_hit(hitP,hit,dim);
   }
@@ -64,7 +64,7 @@ TEST_CASE("EmbreeIntersector: cube", "[igl/embree]")
 
     Eigen::Vector3f pos = -dir;
 
-    igl::Hit hit;
+    igl::Hit<float> hit;
     bool hitP = embree.intersectRay(pos, dir, hit);
     test_hit(hitP,hit,dim);
   }
@@ -78,7 +78,7 @@ TEST_CASE("EmbreeIntersector: cube", "[igl/embree]")
     dir[dim/2] = dim%2 ? -1 : 1;
     pos[(dim/2+1)%3] = dir[dim/2];
 
-    igl::Hit hit;
+    igl::Hit<float> hit;
     bool hitP = embree.intersectRay(pos, dir, hit);
     CHECK_FALSE(hitP);
   }
@@ -88,7 +88,7 @@ TEST_CASE("EmbreeIntersector: cube", "[igl/embree]")
     Eigen::Vector3f pos(1.75,0.25,0);
     Eigen::Vector3f dir(-1,0,0);
 
-    igl::Hit hit;
+    igl::Hit<float> hit;
     bool hitP = embree.intersectBeam(pos, dir, hit);
     CHECK(hitP);
     REQUIRE(hit.t == Approx(1.25).margin(epsilon));

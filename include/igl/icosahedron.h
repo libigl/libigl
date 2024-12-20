@@ -5,11 +5,10 @@
 
 namespace igl
 {
-  // Construct a icosahedron with radius 1 centered at the origin
-  //
-  // Outputs:
-  //   V  #V by 3 list of vertex positions
-  //   F  #F by 3 list of triangle indices into rows of V
+  /// Construct a icosahedron with radius 1 centered at the origin
+  ///
+  /// @param[out] V  #V by 3 list of vertex positions
+  /// @param[out] F  #F by 3 list of triangle indices into rows of V
   template <typename DerivedV, typename DerivedF>
   IGL_INLINE void icosahedron(
     Eigen::PlainObjectBase<DerivedV> & V,

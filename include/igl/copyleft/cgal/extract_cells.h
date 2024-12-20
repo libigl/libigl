@@ -42,13 +42,13 @@ namespace igl {
         typename DeriveduEE,
         typename DerivedC >
       IGL_INLINE size_t extract_cells(
-        const Eigen::PlainObjectBase<DerivedV>& V,
-        const Eigen::PlainObjectBase<DerivedF>& F,
-        const Eigen::PlainObjectBase<DerivedP>& P,
-        const Eigen::PlainObjectBase<DeriveduE>& uE,
-        const Eigen::PlainObjectBase<DerivedEMAP>& EMAP,
-        const Eigen::PlainObjectBase<DeriveduEC>& uEC,
-        const Eigen::PlainObjectBase<DeriveduEE>& uEE,
+        const Eigen::MatrixBase<DerivedV>& V,
+        const Eigen::MatrixBase<DerivedF>& F,
+        const Eigen::MatrixBase<DerivedP>& P,
+        const Eigen::MatrixBase<DeriveduE>& uE,
+        const Eigen::MatrixBase<DerivedEMAP>& EMAP,
+        const Eigen::MatrixBase<DeriveduEC>& uEC,
+        const Eigen::MatrixBase<DeriveduEE>& uEE,
         Eigen::PlainObjectBase<DerivedC>& cells);
       /// \overload
       template<
@@ -56,8 +56,8 @@ namespace igl {
         typename DerivedF,
         typename DerivedC >
       IGL_INLINE size_t extract_cells(
-        const Eigen::PlainObjectBase<DerivedV>& V,
-        const Eigen::PlainObjectBase<DerivedF>& F,
+        const Eigen::MatrixBase<DerivedV>& V,
+        const Eigen::MatrixBase<DerivedF>& F,
         Eigen::PlainObjectBase<DerivedC>& cells);
     }
   }

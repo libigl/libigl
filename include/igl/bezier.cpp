@@ -6,6 +6,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "bezier.h"
+#include "PlainMatrix.h"
 #include <cassert>
 
 // Adapted from main.c accompanying
@@ -19,7 +20,7 @@ IGL_INLINE void igl::bezier(
   Eigen::PlainObjectBase<DerivedP> & P)
 {
   // working local copy
-  DerivedV Vtemp = V;
+  PlainMatrix<DerivedV> Vtemp = V;
   int degree = Vtemp.rows()-1;
   /* Triangle computation	*/
   for (int i = 1; i <= degree; i++)

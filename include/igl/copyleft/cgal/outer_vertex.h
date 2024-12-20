@@ -36,9 +36,9 @@ namespace igl
           typename DerivedA
           >
       IGL_INLINE void outer_vertex(
-              const Eigen::PlainObjectBase<DerivedV> & V,
-              const Eigen::PlainObjectBase<DerivedF> & F,
-              const Eigen::PlainObjectBase<DerivedI> & I,
+              const Eigen::MatrixBase<DerivedV> & V,
+              const Eigen::MatrixBase<DerivedF> & F,
+              const Eigen::MatrixBase<DerivedI> & I,
               IndexType & v_index,
               Eigen::PlainObjectBase<DerivedA> & A);
     }

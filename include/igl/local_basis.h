@@ -25,13 +25,18 @@ namespace igl
   /// @param[out] B2 eigen matrix #F by 3, each vector is tangent to the triangle and perpendicular to B1
   /// @param[out] B3 eigen matrix #F by 3, normal of the triangle
   ///
-  template <typename DerivedV, typename DerivedF>
+  template <
+    typename DerivedV, 
+    typename DerivedF,
+    typename DerivedB1,
+    typename DerivedB2,
+    typename DerivedB3>
   IGL_INLINE void local_basis(
     const Eigen::MatrixBase<DerivedV>& V,
     const Eigen::MatrixBase<DerivedF>& F,
-    Eigen::PlainObjectBase<DerivedV>& B1,
-    Eigen::PlainObjectBase<DerivedV>& B2,
-    Eigen::PlainObjectBase<DerivedV>& B3
+    Eigen::PlainObjectBase<DerivedB1>& B1,
+    Eigen::PlainObjectBase<DerivedB2>& B2,
+    Eigen::PlainObjectBase<DerivedB3>& B3
     );
 
 }
