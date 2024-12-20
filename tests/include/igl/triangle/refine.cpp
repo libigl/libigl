@@ -19,7 +19,8 @@ TEST_CASE("refine", "[igl][triangle]") {
   std::string flags = "a0.0625Q";
   Eigen::MatrixXd V2;
   Eigen::MatrixXi F2;
-  igl::triangle::refine(V,F,flags,V2,F2);
+  Eigen::MatrixXi E;
+  igl::triangle::refine(V,E,F,flags,V2,F2);
   REQUIRE(F2.rows()>1);
   Eigen::VectorXd A2;
   igl::doublearea(V2,F2,A2);
@@ -107,7 +108,8 @@ TEST_CASE("refine-inner-pinch", "[igl][triangle]") {
   Eigen::MatrixXd Vr;
   Eigen::MatrixXi Fr;
 
-  igl::triangle::refine(Vc,Fc,"q33a0.0625Q",Vr,Fr);
+  Eigen::MatrixXi _;
+  igl::triangle::refine(Vc,_,Fc,"q33a0.0625Q",Vr,Fr);
   //std::cout<<igl::matlab_format(Vr,"Vr")<<std::endl;
   //std::cout<<igl::matlab_format_index(Fr,"Fr")<<std::endl;
   
