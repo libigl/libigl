@@ -12,6 +12,7 @@
 #include "cotmatrix.h"
 #include "intrinsic_delaunay_cotmatrix.h"
 #include "massmatrix.h"
+#include "PlainVector.h"
 #include "massmatrix_intrinsic.h"
 #include "grad_intrinsic.h"
 #include "boundary_facets.h"
@@ -83,7 +84,7 @@ IGL_INLINE bool igl::heat_geodesics_precompute(
         return false;
       }
     }
-    const DerivedV M_diag_tr = M.diagonal().transpose();
+    const Eigen::Matrix<Scalar,1,Eigen::Dynamic> M_diag_tr = M.diagonal().transpose();
     const Eigen::SparseMatrix<Scalar> Aeq = M_diag_tr.sparseView();
     L *= -0.5;
     if(!igl::min_quad_with_fixed_precompute(
