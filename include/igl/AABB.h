@@ -10,6 +10,7 @@
 
 #include "Hit.h"
 #include "igl_inline.h"
+#include <cassert>
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 #include <vector>
