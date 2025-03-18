@@ -87,7 +87,7 @@ struct SLIMData
 /// Compute necessary information to start using SLIM
 /// 
 /// @param[in] V           #V by 3 list of mesh vertex positions
-/// @param[in] F           #F by 3/3 list of mesh faces (triangles/tets)
+/// @param[in] F           #F by (3|4) list of mesh faces (triangles/tets)
 /// @param[in] V_init      #V by 3 list of initial mesh vertex positions
 /// @param[in,out] data        Precomputation data structure
 /// @param[in] slim_energy Energy to minimize
