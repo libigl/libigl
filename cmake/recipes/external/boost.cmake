@@ -12,7 +12,7 @@ include(FetchContent)
 # Define the Boost library to fetch
 FetchContent_Declare(
     Boost
-    URL https://boostorg.jfrog.io/artifactory/main/release/1.86.0/source/boost_1_86_0.tar.gz
+    URL https://archives.boost.io/release/1.86.0/source/boost_1_86_0.tar.gz
     URL_HASH MD5=ac857d73bb754b718a039830b07b9624
 )
 # Fetch Boost
