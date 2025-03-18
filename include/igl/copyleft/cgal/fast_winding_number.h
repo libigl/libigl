@@ -20,10 +20,10 @@ namespace igl
       /// @param[in] P  #P by 3 list of point locations
       /// @param[in] N  #P by 3 list of point normals
       /// @param[in] Q  #Q by 3 list of query points for the winding number
+      /// @param[in] expansion_order    the order of the taylor expansion. We support 0,1,2.
       /// @param[in] beta  This is a Barnes-Hut style accuracy term that separates near feild
       ///         from far field. The higher the beta, the more accurate and slower
       ///         the evaluation. We reccommend using a beta value of 2.
-      /// @param[in] expansion_order    the order of the taylor expansion. We support 0,1,2.
       /// @param[out] WN  #Q by 1 list of windinng number values at each query point
       ///
       template <
