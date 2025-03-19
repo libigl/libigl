@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
   // Solve PDE
   SimplicialLLT<SparseMatrix<double > > solver(-L_in_in);
   // slice into solution
-  Z(in) = solver.solve(L_in_b*bc);
+  Z(in) = solver.solve(L_in_b*bc).eval();
 
   // Alternative, short hand
   igl::min_quad_with_fixed_data<double> mqwf;
