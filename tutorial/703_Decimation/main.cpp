@@ -1,5 +1,5 @@
 #include <igl/circulation.h>
-#include <igl/collapse_edge.h>
+#include <igl/collapse_least_cost_edge.h>
 #include <igl/edge_flaps.h>
 #include <igl/decimate.h>
 #include <igl/shortest_edge_and_midpoint.h>
@@ -92,7 +92,7 @@ int main(int argc, char * argv[])
         // Only relevant if IGL_STATIC_LIBRARY is defined
         const std::function<void (int, Eigen::Matrix<double, -1, -1, 0, -1, -1> const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, double&, Eigen::Matrix<double, 1, -1, 1, 1, -1>&)> cp = shortest_edge_and_midpoint;
         int e,e1,e2,f1,f2;
-        if(!collapse_edge(
+        if(!collapse_least_cost_edge(
               cp,always_try,never_care,
               V,F,E,
               EMAP,EF,EI,
