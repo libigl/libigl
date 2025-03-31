@@ -74,7 +74,9 @@ jobs:
         run: |
           mkdir -p build
           cd build
+          # https://github.com/eclipse-ecal/ecal/issues/2041
           cmake .. \
+            -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
             -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
             -DCMAKE_BUILD_TYPE=${{ matrix.config }} \
             -DLIBIGL_USE_STATIC_LIBRARY=${{ matrix.build-params.static }} \
@@ -145,7 +147,9 @@ jobs:
         shell: cmd
         run: |
           call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=x64
+          # https://github.com/eclipse-ecal/ecal/issues/2041
           cmake -G Ninja ^
+            -DCMAKE_POLICY_VERSION_MINIMUM=3.5 ^
             -DCMAKE_CXX_COMPILER_LAUNCHER=sccache ^
             -DCMAKE_BUILD_TYPE=${{ matrix.config }} ^
             -DLIBIGL_USE_STATIC_LIBRARY=${{ matrix.build-params.static }} ^
