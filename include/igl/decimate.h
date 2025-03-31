@@ -9,6 +9,7 @@
 #define IGL_DECIMATE_H
 #include "igl_inline.h"
 #include "decimate_callback_types.h"
+#include "COLLAPSE_EDGE_NULL.h"
 #include <Eigen/Core>
 
 /// @file decimate.h 
@@ -68,6 +69,7 @@
 /// user’s threshold).
 ///
 /// \see
+///   collapse_least_cost_edge
 ///   collapse_edge
 ///   qslim
 
@@ -119,10 +121,10 @@ namespace igl
   ///     bool should_stop =
   ///       stopping_condition(V,F,E,EMAP,EF,EI,Q,Qit,C,e,e1,e2,f1,f2);
   /// @param[in] pre_collapse  callback called with index of edge whose collapse is about
-  ///              to be attempted (see collapse_edge)
+  ///              to be attempted (see collapse_least_cost_edge)
   /// @param[in] post_collapse  callback called with index of edge whose collapse was
   ///              just attempted and a flag revealing whether this was successful (see
-  ///              collapse_edge)
+  ///              collapse_least_cost_edge)
   /// @param[out] U  #U by dim list of output vertex posistions (can be same ref as V)
   /// @param[out] G  #G by 3 list of output face indices into U (can be same ref as G)
   /// @param[out] J  #G list of indices into F of birth face
