@@ -128,7 +128,7 @@ jobs:
 
       - name: Cache build
         id: cache-build
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ${{ env.appdata }}\Mozilla\sccache
           key: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.build-params.static }}-cache
