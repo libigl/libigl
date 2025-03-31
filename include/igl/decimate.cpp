@@ -6,7 +6,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "decimate.h"
-#include "collapse_edge.h"
+#include "collapse_least_cost_edge.h"
 #include "edge_flaps.h"
 #include "decimate_trivial_callbacks.h"
 #include "AABB.h"
@@ -167,7 +167,7 @@ IGL_INLINE bool igl::decimate(
   while(true)
   {
     int e,e1,e2,f1,f2;
-    if(collapse_edge(
+    if(collapse_least_cost_edge(
       cost_and_placement, pre_collapse, post_collapse,
       V,F,E,EMAP,EF,EI,Q,EQ,C,e,e1,e2,f1,f2))
     {

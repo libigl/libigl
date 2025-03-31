@@ -7,7 +7,6 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "qslim.h"
 
-#include "collapse_edge.h"
 #include "connect_boundary_to_infinity.h"
 #include "decimate.h"
 #include "edge_flaps.h"
