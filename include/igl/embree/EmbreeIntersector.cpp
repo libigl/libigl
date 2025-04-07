@@ -160,9 +160,7 @@ IGL_INLINE bool igl::embree::EmbreeIntersector::intersectRay(
 
   // shot ray
   {
-    RTCIntersectContext context;
-    rtcInitIntersectContext(&context);
-    rtcIntersect1(scene,&context,&ray);
+    rtcIntersect1(scene,&ray);
     ray.hit.Ng_x = -ray.hit.Ng_x; // EMBREE_FIXME: only correct for triangles,quads, and subdivision surfaces
     ray.hit.Ng_y = -ray.hit.Ng_y;
     ray.hit.Ng_z = -ray.hit.Ng_z;
@@ -271,9 +269,7 @@ igl::embree::EmbreeIntersector
     ray.hit.instID[0] = RTC_INVALID_GEOMETRY_ID;
     num_rays++;
     {
-      RTCIntersectContext context;
-      rtcInitIntersectContext(&context);
-      rtcIntersect1(scene,&context,&ray);
+      rtcIntersect1(scene,&ray);
       ray.hit.Ng_x = -ray.hit.Ng_x; // EMBREE_FIXME: only correct for triangles,quads, and subdivision surfaces
       ray.hit.Ng_y = -ray.hit.Ng_y;
       ray.hit.Ng_z = -ray.hit.Ng_z;
@@ -353,9 +349,7 @@ igl::embree::EmbreeIntersector
   createRay(ray,a,ab,0,1.0,mask);
 
   {
-    RTCIntersectContext context;
-    rtcInitIntersectContext(&context);
-    rtcIntersect1(scene,&context,&ray);
+    rtcIntersect1(scene,&ray);
     ray.hit.Ng_x = -ray.hit.Ng_x; // EMBREE_FIXME: only correct for triangles,quads, and subdivision surfaces
     ray.hit.Ng_y = -ray.hit.Ng_y;
     ray.hit.Ng_z = -ray.hit.Ng_z;
