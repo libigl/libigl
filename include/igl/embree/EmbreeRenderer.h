@@ -19,8 +19,8 @@
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 
-#include <embree3/rtcore.h>
-#include <embree3/rtcore_ray.h>
+#include <embree4/rtcore.h>
+#include <embree4/rtcore_ray.h>
 #include <iostream>
 #include <vector>
 
