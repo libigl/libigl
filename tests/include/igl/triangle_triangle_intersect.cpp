@@ -15,9 +15,9 @@ TEST_CASE("triangle_triangle_intersect: shared-edge", "[igl]" )
     0,1,2,
     0,2,3;
   //      2
-  //     /|\
-  //    / | \
-  //   /  |  \
+  //     ╱|╲
+  //    ╱ | ╲
+  //   ╱  |  ╲
   //  3---0---1
   const int f = 0;
   const int c = 1;
@@ -35,9 +35,9 @@ TEST_CASE("triangle_triangle_intersect: shared-edge", "[igl]" )
   for(const double epsilon : {0.,1e-15,-1e-15})
   {
     //  2
-    //  |\⟍
-    //  | \ ⟍
-    //  |  \  ⟍
+    //  |╲⟍
+    //  | ╲ ⟍
+    //  |  ╲  ⟍
     //  0---1---3
     V.row(3) << 2.0+epsilon,0,0;
     ret = igl::triangle_triangle_intersect(V,F,E,EMAP,EF,f,c,V.row(F(f,c)),g);

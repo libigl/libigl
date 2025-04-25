@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2016 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "trim_with_solid.h"
 #include "assign.h"
@@ -78,13 +78,13 @@ IGL_INLINE void igl::copyleft::cgal::trim_with_solid(
   // new triangulations on faces of A don't match those on faces of B.
   // Specifically it seems you can get T junctions:
   //
-  //             /|\
-  //            / | \
-  //           / B|  \
+  //             ╱|╲
+  //            ╱ | ╲
+  //           ╱ B|  ╲
   //           ---| A ⋅
-  //           \ B|  /
-  //            \ | /
-  //             \|/
+  //           ╲ B|  ╱
+  //            ╲ | ╱
+  //             ╲|╱
   // Probably intersect_other should not be attempting to output a single mesh
   // (i.e., when detect_only=false).
   //
@@ -120,7 +120,7 @@ IGL_INLINE void igl::copyleft::cgal::trim_with_solid(
   //
 
   MatrixX3E V;
-  const auto set_D_via_patches = 
+  const auto set_D_via_patches =
     [&V,&F,&D,&VB,&FB](const int num_patches, const Eigen::VectorXi & P)
   {
     // Aggregate representative query points for each patch
@@ -221,7 +221,7 @@ IGL_INLINE void igl::copyleft::cgal::trim_with_solid(
         VAB << VA,VB;
         Eigen::Matrix<typename DerivedFA::Scalar,Eigen::Dynamic,3> FAB(FA.rows() + FB.rows(),3);
         FAB << FA,FB.array()+VA.rows();
-        /// Sigh. Can't use this because of how it calls remove_unreferenced 
+        /// Sigh. Can't use this because of how it calls remove_unreferenced
         // remesh_self_intersections(VAB,FAB,params,V,F,IF,J);
         {
           Eigen::VectorXi I;
@@ -229,7 +229,7 @@ IGL_INLINE void igl::copyleft::cgal::trim_with_solid(
             VAB, FAB, params, V, F, IF, J, I);
           // Undo self-intersection remeshing in FA
           {
-            Eigen::Array<bool,Eigen::Dynamic,1> avoids_B = 
+            Eigen::Array<bool,Eigen::Dynamic,1> avoids_B =
               Eigen::Array<bool,Eigen::Dynamic,1>::Constant(FA.rows(),1,true);
             for(int p = 0;p<IF.rows();p++)
             {

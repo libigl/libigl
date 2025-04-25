@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2015 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_AABB_H
 #define IGL_AABB_H
@@ -27,7 +27,7 @@ namespace igl
   /// @tparam DerivedV  Matrix type of vertex positions (e.g., `Eigen::MatrixXd`)
   /// @tparam DIM Dimension of mesh vertex positions (2 or 3)
   template <typename DerivedV, int DIM>
-    class AABB 
+    class AABB
     {
 public:
 ///////////////////////////////////////////////////////////////////////////////
@@ -43,7 +43,7 @@ public:
       typedef Eigen::Matrix<Scalar,Eigen::Dynamic,DIM> MatrixXDIMS;
       /// Pointer to "left" child node (`nullptr` if leaf)
       // Shared pointers are slower...
-      AABB * m_left; 
+      AABB * m_left;
       /// Pointer to "right" child node (`nullptr` if leaf)
       AABB * m_right;
       /// Pointer to "parent" node (`nullptr` if root)
@@ -106,7 +106,7 @@ public:
       /// @private
       AABB(AABB&& other):
         // initialize via default constructor
-        AABB() 
+        AABB()
       {
         swap(*this,other);
       }
@@ -139,25 +139,25 @@ public:
           {
             // Before
             //     grandparent
-            //        /    \
+            //        ╱     ╲
             //    parent   pibling
-            //      /   \
+            //      ╱    ╲
             // sibling  this
             //
-            // After 
+            // After
             //     grandparent
-            //        /    \
+            //        ╱     ╲
             //    sibling®  pibling
           }else
           {
             // Before
             //    parent=root
-            //      /   \
+            //      ╱    ╲
             // sibling  this
             //
-            // After 
+            // After
             //     grandparent
-            //        /    \
+            //        ╱     ╲
             //    sibling®  pibling
           }
         }
@@ -190,7 +190,7 @@ public:
       /// @returns pointer to (potentially new) root
       IGL_INLINE AABB<DerivedV,DIM>* pad(
         const std::vector<AABB<DerivedV,DIM>*> & leaves,
-        const Scalar pad, 
+        const Scalar pad,
         const int polish_rotate_passes=0);
       /// @returns `this` if no update was needed, otherwise returns pointer to
       /// (potentially new) root
@@ -216,7 +216,7 @@ public:
       /// `other`'s box is contained in this AABB's box then insert it as a child recursively.
       ///
       /// If `other`'s box is not contained in this AABB's box then insert it as a
-      /// sibling. 
+      /// sibling.
       ///
       /// It's a very good idea to call either `rotate` (faster, less good) or `rotate_lineage` (slower, better)
       /// after insertion. Rotating continues to improve the tree's quality so
@@ -228,14 +228,14 @@ public:
       /// longest dimension. When initializing a tree, `init` seems to result in
       /// great trees (small height and small total internal surface area).
       ///
-      /// @param[in] other pointer to another AABB node 
+      /// @param[in] other pointer to another AABB node
       /// @returns pointer to the parent of `other` or `other` itself. This
       /// could be == to a `new`ly created internal node or to `other` if
       /// `this==other`. Calling ->root() on this returned node will give you
       /// the root of the tree.
       ///
       /// ##### Example
-      /// 
+      ///
       /// ```cpp
       /// // Create a tree (use pointer to track changes to root)
       /// auto * tree = new igl::AABB<DerivedV,3>::AABB();
@@ -254,34 +254,34 @@ public:
       ///
       ///     Before
       ///              parent
-      ///              /    \
+      ///              ╱     ╲
       ///          this(C)  sibling
-      ///            /  \
+      ///            ╱   ╲
       ///          left right
-      ///    
+      ///
       ///     After
       ///              parent
-      ///              /    \
+      ///              ╱     ╲
       ///           newbie   sibling
-      ///            /   \
+      ///            ╱    ╲
       ///         this    other
-      ///         /    \
+      ///         ╱     ╲
       ///       left  right
-      ///    
       ///
-      /// @param[in] other pointer to another AABB node 
+      ///
+      /// @param[in] other pointer to another AABB node
       /// @returns pointer to the new shared parent.
       IGL_INLINE AABB<DerivedV,DIM>* insert_as_sibling(AABB * other);
       /// Try to swap this node with its close relatives if it will decrease
       /// total internal surface area.
-      ///    
+      ///
       ///
       ///            grandparent
-      ///            /         \
+      ///            ╱          ╲
       ///         parent       pibling°
-      ///         /    \         /    \
+      ///         ╱     ╲          ╱     ╲
       ///     sibling  this   cuz1°  cuz2°
-      ///      /    \
+      ///      ╱     ╲
       ///     nib1° nib2°
       ///
       ///     °Swap Candidates
@@ -292,53 +292,53 @@ public:
       IGL_INLINE Scalar rotate(const bool dry_run = false);
       /// Try to swap this node with its cousins if it will decrease
       /// total internal surface area.
-      ///    
+      ///
       /// @param[in] dry_run  if true then don't actually swap
       /// @return[in] the change in total internal surface area, 0 if no
       /// improvement and rotate won't be carried out.
-      ///    
+      ///
       ///     Before
       ///            grandparent
-      ///            /         \
+      ///            ╱          ╲
       ///         parent       pibling
-      ///         /    \         /    \
+      ///         ╱     ╲          ╱     ╲
       ///     sibling  this    cuz1  cuz2
-      ///    
-      ///    
+      ///
+      ///
       ///     Candidates
       ///            grandparent
-      ///            /         \
+      ///            ╱          ╲
       ///         parent       pibling
-      ///         /    \         /    \
+      ///         ╱     ╲          ╱     ╲
       ///     sibling  cuz1   this   cuz2
-      ///    
+      ///
       ///     Or
       ///            grandparent
-      ///            /         \
+      ///            ╱          ╲
       ///         parent       pibling
-      ///         /    \         /    \
+      ///         ╱     ╲          ╱     ╲
       ///     sibling  cuz2    cuz1  this
       IGL_INLINE Scalar rotate_across(const bool dry_run = false);
       /// Try to swap this node with its pibling if it will decrease
       /// total internal surface area.
-      ///    
+      ///
       /// @param[in] dry_run  if true then don't actually swap
       /// @return[in] the change in total internal surface area, 0 if no
       /// improvement and rotate won't be carried out.
       ///
       ///     Before
       ///        grandparent
-      ///           /    \
+      ///           ╱     ╲
       ///         other  parent
-      ///                /  \
+      ///                ╱   ╲
       ///             this  sibling
-      ///             
-      ///    
+      ///
+      ///
       ///     Candidate
       ///        grandparent
-      ///           /    \
+      ///           ╱     ╲
       ///        this    parent
-      ///                /  \
+      ///                ╱   ╲
       ///            other  sibling
       IGL_INLINE Scalar rotate_up(const bool dry_run = false);
       /// Try to swap this node with one of its niblings if it will decrease
@@ -347,45 +347,45 @@ public:
       /// @param[in] dry_run  if true then don't actually swap
       /// @return[in] the change in total internal surface area, 0 if no
       /// improvement and rotate won't be carried out.
-      /// 
+      ///
       ///     Before
       ///           parent
-      ///           /    \
+      ///           ╱     ╲
       ///         this   sibling
-      ///                /  \
+      ///                ╱   ╲
       ///             left  right
-      ///             
+      ///
       ///
       ///     Candidates
       ///           parent
-      ///           /    \
+      ///           ╱     ╲
       ///       left     sibling
-      ///                /  \
+      ///                ╱   ╲
       ///            this   right
       ///
       ///     Or
       ///
       ///           parent
-      ///           /    \
+      ///           ╱     ╲
       ///       right    sibling
-      ///                /  \
-      ///            left   this 
+      ///                ╱   ╲
+      ///            left   this
       IGL_INLINE Scalar rotate_down(const bool dry_run = false);
       /// "Rotate" (swap) `reining` with `challenger`.
       ///
       ///     Before
       ///        grandparent
-      ///           /      \
+      ///           ╱       ╲
       ///      reining      parent
-      ///                   /    \
+      ///                   ╱     ╲
       ///            challenger  sibling
-      ///             
-      ///    
+      ///
+      ///
       ///     Candidate
       ///        grandparent
-      ///           /      \
+      ///           ╱       ╲
       ///     challenger    parent
-      ///                   /    \
+      ///                   ╱     ╲
       ///              reining   sibling
       /// @param[in] reining  pointer to AABB node to be rotated
       /// @param[in] grandparent  pointer to challenger's grandparent
@@ -427,7 +427,7 @@ public:
       IGL_INLINE void print(const int depth = 0) const;
       /// @returns Actual size of tree. Total number of nodes in tree. A singleton root
       /// has size 1.
-      /// 
+      ///
       /// \see subtree_size
       IGL_INLINE int size() const;
       /// @returns Height of the tree. A singleton root has height 1.
@@ -464,8 +464,8 @@ public:
       /// Build an Axis-Aligned Bounding Box tree for a given mesh and given
       /// serialization of a previous AABB tree.
       ///
-      /// @param[in] V  #V by dim list of mesh vertex positions. 
-      /// @param[in] Ele  #Ele by dim+1 list of mesh indices into #V. 
+      /// @param[in] V  #V by dim list of mesh vertex positions.
+      /// @param[in] Ele  #Ele by dim+1 list of mesh indices into #V.
       /// @param[in] bb_mins  max_tree by dim list of bounding box min corner
       ///   positions
       /// @param[in] bb_maxs  max_tree by dim list of bounding box max corner
@@ -474,13 +474,13 @@ public:
       ///   into Ele
       /// @param[in] i  recursive call index {0}
       template <
-        typename DerivedEle, 
-        typename Derivedbb_mins, 
+        typename DerivedEle,
+        typename Derivedbb_mins,
         typename Derivedbb_maxs,
         typename Derivedelements>
         IGL_INLINE void init(
             const Eigen::MatrixBase<DerivedV> & V,
-            const Eigen::MatrixBase<DerivedEle> & Ele, 
+            const Eigen::MatrixBase<DerivedEle> & Ele,
             const Eigen::MatrixBase<Derivedbb_mins> & bb_mins,
             const Eigen::MatrixBase<Derivedbb_maxs> & bb_maxs,
             const Eigen::MatrixBase<Derivedelements> & elements,
@@ -488,27 +488,27 @@ public:
       /// Build an Axis-Aligned Bounding Box tree for a given mesh and given
       /// serialization of a previous AABB tree.
       ///
-      /// @param[in] V  #V by dim list of mesh vertex positions. 
-      /// @param[in] Ele  #Ele by dim+1 list of mesh indices into #V. 
+      /// @param[in] V  #V by dim list of mesh vertex positions.
+      /// @param[in] Ele  #Ele by dim+1 list of mesh indices into #V.
       template <typename DerivedEle>
       IGL_INLINE void init(
           const Eigen::MatrixBase<DerivedV> & V,
           const Eigen::MatrixBase<DerivedEle> & Ele);
       /// Build an Axis-Aligned Bounding Box tree for a given mesh.
       ///
-      /// @param[in] V  #V by dim list of mesh vertex positions. 
-      /// @param[in] Ele  #Ele by dim+1 list of mesh indices into #V. 
+      /// @param[in] V  #V by dim list of mesh vertex positions.
+      /// @param[in] Ele  #Ele by dim+1 list of mesh indices into #V.
       /// @param[in] SI  #Ele by dim list revealing for each coordinate where
       ///   Ele's barycenters would be sorted: SI(e,d) = i --> the dth
       ///   coordinate of the barycenter of the eth element would be placed at
       ///   position i in a sorted list.
       /// @param[in] I  #I list of indices into Ele of elements to include (for
       ///   recursive calls)
-      /// 
+      ///
       template <typename DerivedEle, typename DerivedSI, typename DerivedI>
       IGL_INLINE void init(
           const Eigen::MatrixBase<DerivedV> & V,
-          const Eigen::MatrixBase<DerivedEle> & Ele, 
+          const Eigen::MatrixBase<DerivedEle> & Ele,
           const Eigen::MatrixBase<DerivedSI> & SI,
           const Eigen::MatrixBase<DerivedI>& I);
       /// @returns `this` if no update was needed, otherwise returns pointer to
@@ -532,7 +532,7 @@ public:
       template <typename DerivedEle, typename Derivedq>
       IGL_INLINE std::vector<int> find(
           const Eigen::MatrixBase<DerivedV> & V,
-          const Eigen::MatrixBase<DerivedEle> & Ele, 
+          const Eigen::MatrixBase<DerivedEle> & Ele,
           const Eigen::MatrixBase<Derivedq> & q,
           const bool first=false) const;
 
@@ -546,7 +546,7 @@ public:
       ///   indices into Ele
       /// @param[in]  i  recursive call index into these arrays {0}
       template <
-        typename Derivedbb_mins, 
+        typename Derivedbb_mins,
         typename Derivedbb_maxs,
         typename Derivedelements>
         IGL_INLINE void serialize(
@@ -558,7 +558,7 @@ public:
       ///
       /// @param[in]  V  #V by dim list of vertex positions
       /// @param[in]  Ele  #Ele by dim list of simplex indices
-      /// @param[in]  p  dim-long query point 
+      /// @param[in]  p  dim-long query point
       /// @param[out]  i  facet index corresponding to smallest distances
       /// @param[out]  c  closest point
       /// @return squared distance
@@ -568,7 +568,7 @@ public:
       template <typename DerivedEle>
       IGL_INLINE Scalar squared_distance(
         const Eigen::MatrixBase<DerivedV> & V,
-        const Eigen::MatrixBase<DerivedEle> & Ele, 
+        const Eigen::MatrixBase<DerivedEle> & Ele,
         const RowVectorDIMS & p,
         int & i,
         Eigen::PlainObjectBase<RowVectorDIMS> & c) const;
@@ -577,9 +577,9 @@ public:
       ///
       /// @param[in] V  #V by dim list of vertex positions
       /// @param[in] Ele  #Ele by dim list of simplex indices
-      /// @param[in] p  dim-long query point 
+      /// @param[in] p  dim-long query point
       /// @param[in] low_sqr_d  lower bound on squared distance, specified
-      ///   maximum squared distance 
+      ///   maximum squared distance
       /// @param[in] up_sqr_d  current upper bounded on squared distance,
       ///   current minimum squared distance (only consider distances less than
       ///   this), see output.
@@ -592,7 +592,7 @@ public:
       template <typename DerivedEle>
       IGL_INLINE Scalar squared_distance(
         const Eigen::MatrixBase<DerivedV> & V,
-        const Eigen::MatrixBase<DerivedEle> & Ele, 
+        const Eigen::MatrixBase<DerivedEle> & Ele,
         const RowVectorDIMS & p,
         const Scalar low_sqr_d,
         const Scalar up_sqr_d,
@@ -602,7 +602,7 @@ public:
       ///
       /// @param[in] V  #V by dim list of vertex positions
       /// @param[in] Ele  #Ele by dim list of simplex indices
-      /// @param[in] p  dim-long query point 
+      /// @param[in] p  dim-long query point
       /// @param[in] up_sqr_d  current upper bounded on squared distance,
       ///   current minimum squared distance (only consider distances less than
       ///   this), see output.
@@ -613,7 +613,7 @@ public:
       template <typename DerivedEle>
       IGL_INLINE Scalar squared_distance(
         const Eigen::MatrixBase<DerivedV> & V,
-        const Eigen::MatrixBase<DerivedEle> & Ele, 
+        const Eigen::MatrixBase<DerivedEle> & Ele,
         const RowVectorDIMS & p,
         const Scalar up_sqr_d,
         int & i,
@@ -629,7 +629,7 @@ public:
       template <typename DerivedEle>
       IGL_INLINE bool intersect_ray(
         const Eigen::MatrixBase<DerivedV> & V,
-        const Eigen::MatrixBase<DerivedEle> & Ele, 
+        const Eigen::MatrixBase<DerivedEle> & Ele,
         const RowVectorDIMS & origin,
         const RowVectorDIMS & dir,
         std::vector<igl::Hit<typename DerivedV::Scalar>> & hits) const;
@@ -644,7 +644,7 @@ public:
       template <typename DerivedEle>
       IGL_INLINE bool intersect_ray(
         const Eigen::MatrixBase<DerivedV> & V,
-        const Eigen::MatrixBase<DerivedEle> & Ele, 
+        const Eigen::MatrixBase<DerivedEle> & Ele,
         const RowVectorDIMS & origin,
         const RowVectorDIMS & dir,
         igl::Hit<typename DerivedV::Scalar> & hit) const;
@@ -661,7 +661,7 @@ public:
       template <typename DerivedEle>
       IGL_INLINE bool intersect_ray(
         const Eigen::MatrixBase<DerivedV> & V,
-        const Eigen::MatrixBase<DerivedEle> & Ele, 
+        const Eigen::MatrixBase<DerivedEle> & Ele,
         const RowVectorDIMS & origin,
         const RowVectorDIMS & dir,
         const Scalar min_t,
@@ -670,7 +670,7 @@ public:
       ///
       /// @param[in]  V  #V by dim list of vertex positions
       /// @param[in]  Ele  #Ele by dim list of simplex indices
-      /// @param[in]  origin #ray by dim+1 list of ray origins 
+      /// @param[in]  origin #ray by dim+1 list of ray origins
       /// @param[in]  dir #ray by dim list of ray directions
       /// @param[in]  min_t  minimum t value to consider
       /// @param[out]  I #ray list of indices into Ele of closest primitives
@@ -686,7 +686,7 @@ public:
         typename DerivedUV>
       IGL_INLINE void intersect_ray(
         const Eigen::MatrixBase<DerivedV> & V,
-        const Eigen::MatrixBase<DerivedEle> & Ele, 
+        const Eigen::MatrixBase<DerivedEle> & Ele,
         const Eigen::MatrixBase<DerivedOrigin> & origin,
         const Eigen::MatrixBase<DerivedDir> & dir,
         const Scalar min_t,
@@ -699,7 +699,7 @@ public:
         typename DerivedDir>
       IGL_INLINE void intersect_ray(
         const Eigen::MatrixBase<DerivedV> & V,
-        const Eigen::MatrixBase<DerivedEle> & Ele, 
+        const Eigen::MatrixBase<DerivedEle> & Ele,
         const Eigen::MatrixBase<DerivedOrigin> & origin,
         const Eigen::MatrixBase<DerivedDir> & dir,
         std::vector<std::vector<igl::Hit<typename DerivedV::Scalar>>> & hits);
@@ -715,13 +715,13 @@ public:
       /// @param[out] C  #P by dim list of closest points
       template <
         typename DerivedEle,
-        typename DerivedP, 
-        typename DerivedsqrD, 
-        typename DerivedI, 
+        typename DerivedP,
+        typename DerivedsqrD,
+        typename DerivedI,
         typename DerivedC>
       IGL_INLINE void squared_distance(
         const Eigen::MatrixBase<DerivedV> & V,
-        const Eigen::MatrixBase<DerivedEle> & Ele, 
+        const Eigen::MatrixBase<DerivedEle> & Ele,
         const Eigen::MatrixBase<DerivedP> & P,
         Eigen::PlainObjectBase<DerivedsqrD> & sqrD,
         Eigen::PlainObjectBase<DerivedI> & I,
@@ -739,36 +739,36 @@ public:
       /// @param[out] sqrD  #P list of squared distances
       /// @param[out] I  #P list of indices into Ele of closest primitives
       /// @param[out] C  #P by dim list of closest points
-      template < 
+      template <
         typename DerivedEle,
         typename Derivedother_V,
         typename Derivedother_Ele,
-        typename DerivedsqrD, 
-        typename DerivedI, 
+        typename DerivedsqrD,
+        typename DerivedI,
         typename DerivedC>
       IGL_INLINE void squared_distance(
         const Eigen::MatrixBase<DerivedV> & V,
-        const Eigen::MatrixBase<DerivedEle> & Ele, 
+        const Eigen::MatrixBase<DerivedEle> & Ele,
         const AABB<Derivedother_V,DIM> & other,
         const Eigen::MatrixBase<Derivedother_V> & other_V,
-        const Eigen::MatrixBase<Derivedother_Ele> & other_Ele, 
+        const Eigen::MatrixBase<Derivedother_Ele> & other_Ele,
         Eigen::PlainObjectBase<DerivedsqrD> & sqrD,
         Eigen::PlainObjectBase<DerivedI> & I,
         Eigen::PlainObjectBase<DerivedC> & C) const;
 private:
-      template < 
+      template <
         typename DerivedEle,
         typename Derivedother_V,
         typename Derivedother_Ele,
-        typename DerivedsqrD, 
-        typename DerivedI, 
+        typename DerivedsqrD,
+        typename DerivedI,
         typename DerivedC>
       IGL_INLINE Scalar squared_distance_helper(
         const Eigen::MatrixBase<DerivedV> & V,
-        const Eigen::MatrixBase<DerivedEle> & Ele, 
+        const Eigen::MatrixBase<DerivedEle> & Ele,
         const AABB<Derivedother_V,DIM> * other,
         const Eigen::MatrixBase<Derivedother_V> & other_V,
-        const Eigen::MatrixBase<Derivedother_Ele>& other_Ele, 
+        const Eigen::MatrixBase<Derivedother_Ele>& other_Ele,
         const Scalar up_sqr_d,
         Eigen::PlainObjectBase<DerivedsqrD> & sqrD,
         Eigen::PlainObjectBase<DerivedI> & I,
@@ -791,7 +791,7 @@ private:
       template <typename DerivedEle>
       IGL_INLINE void leaf_squared_distance(
         const Eigen::MatrixBase<DerivedV> & V,
-        const Eigen::MatrixBase<DerivedEle> & Ele, 
+        const Eigen::MatrixBase<DerivedEle> & Ele,
         const RowVectorDIMS & p,
         const Scalar low_sqr_d,
         Scalar & sqr_d,
@@ -801,7 +801,7 @@ private:
       template <typename DerivedEle>
       IGL_INLINE void leaf_squared_distance(
         const Eigen::MatrixBase<DerivedV> & V,
-        const Eigen::MatrixBase<DerivedEle> & Ele, 
+        const Eigen::MatrixBase<DerivedEle> & Ele,
         const RowVectorDIMS & p,
         Scalar & sqr_d,
         int & i,
