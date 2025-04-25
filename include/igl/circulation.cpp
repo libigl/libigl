@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2015 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "circulation.h"
 #include "list_to_matrix.h"
@@ -23,9 +23,9 @@ IGL_INLINE std::vector<int> igl::circulation(
   const int m = EMAP.size()/3;
   assert(m*3 == EMAP.size());
   const auto & step = [&](
-    const int e, 
+    const int e,
     const int ff,
-    int & ne, 
+    int & ne,
     int & nf)
   {
     assert((EF(e,1) == ff || EF(e,0) == ff) && "e should touch ff");
@@ -34,7 +34,7 @@ IGL_INLINE std::vector<int> igl::circulation(
     const int nv = EI(e,nside);
     // get next face
     nf = EF(e,nside);
-    // get next edge 
+    // get next edge
     const int dir = ccw?-1:1;
     ne = EMAP(nf+m*((nv+dir+3)%3));
   };
@@ -86,9 +86,9 @@ IGL_INLINE void igl::circulation(
   // for e --> (bf) and ccw=true
   //
   //     c---d
-  //    / \ / \
+  //    ╱ ╲ ╱ ╲
   //   a---b-e-f
-  //    \ / \ /
+  //    ╲ ╱ ╲ ╱
   //     g---h
   //
   //  // (might start with {bhf} depending on edge)
@@ -104,9 +104,9 @@ IGL_INLINE void igl::circulation(
   const int m = EMAP.size()/3;
   assert(m*3 == EMAP.size());
   const auto & step = [&](
-    const int e, 
+    const int e,
     const int ff,
-    int & ne, 
+    int & ne,
     //int & re,
     int & rv,
     int & nf)
@@ -117,7 +117,7 @@ IGL_INLINE void igl::circulation(
     const int nv = EI(e,nside);
     // get next face
     nf = EF(e,nside);
-    // get next edge 
+    // get next edge
     const int dir = ccw?-1:1;
     rv = F(nf,nv);
     ne = EMAP(nf+m*((nv+dir+3)%3));

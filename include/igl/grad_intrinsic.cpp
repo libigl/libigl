@@ -32,10 +32,10 @@ IGL_INLINE void igl::grad_intrinsic(
   typedef Eigen::Matrix<Gtype,Eigen::Dynamic,Eigen::Dynamic> MatrixX2S;
   MatrixX2S V2 = MatrixX2S::Zero(3*m,2);
   //     1=[x,y]
-  //     /\
-  // l3 /   \ l2
-  //   /      \
-  //  /         \
+  //     ╱ ╲
+  // l3 ╱   ╲l2
+  //   ╱      ╲
+  //  ╱        ╲
   // 2-----------3
   //       l1
   //

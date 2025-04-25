@@ -59,11 +59,11 @@ namespace
       using Scalar = typename DerivedV::Scalar;
       const Scalar epsilon = igl::EPS<Scalar>();
       static_assert(
-        DerivedV::ColsAtCompileTime == 2 || 
+        DerivedV::ColsAtCompileTime == 2 ||
         DerivedV::ColsAtCompileTime == Eigen::Dynamic,
         "V should be 2D");
       static_assert(
-        Derivedq::ColsAtCompileTime == 2 || 
+        Derivedq::ColsAtCompileTime == 2 ||
         Derivedq::ColsAtCompileTime == Eigen::Dynamic,
         "q should be 2D");
       // Barycentric coordinates
@@ -107,11 +107,11 @@ namespace
       using Scalar = typename DerivedV::Scalar;
       const Scalar epsilon = igl::EPS<Scalar>();
       static_assert(
-        DerivedV::ColsAtCompileTime == 3 || 
+        DerivedV::ColsAtCompileTime == 3 ||
         DerivedV::ColsAtCompileTime == Eigen::Dynamic,
         "V should be 2D");
       static_assert(
-        Derivedq::ColsAtCompileTime == 3 || 
+        Derivedq::ColsAtCompileTime == 3 ||
         Derivedq::ColsAtCompileTime == Eigen::Dynamic,
         "q should be 2D");
       // Barycentric coordinates
@@ -182,9 +182,9 @@ IGL_INLINE igl::AABB<DerivedV,DIM>* igl::AABB<DerivedV,DIM>::detach()
   assert(sibling);
   // Before
   //     grandparent
-  //        /
+  //        ╱
   //     parent
-  //     /    \
+  //     ╱    ╲
   // sibling  this
   //
   // After
@@ -204,7 +204,7 @@ IGL_INLINE igl::AABB<DerivedV,DIM>* igl::AABB<DerivedV,DIM>::detach()
   // Tell grandparent sibling is new child.
   if(grandparent)
   {
-    (grandparent->m_left == parent ? 
+    (grandparent->m_left == parent ?
       grandparent->m_left : grandparent->m_right) = sibling;
   }
   // Did your code just crash here? Perhaps it's because you statically
@@ -235,7 +235,7 @@ IGL_INLINE void igl::AABB<DerivedV,DIM>::refit_lineage()
 }
 
 template <typename DerivedV, int DIM>
-IGL_INLINE std::vector<igl::AABB<DerivedV,DIM>*> 
+IGL_INLINE std::vector<igl::AABB<DerivedV,DIM>*>
   igl::AABB<DerivedV,DIM>::gather_leaves(const int m)
 {
   auto * tree = this;
@@ -261,7 +261,7 @@ IGL_INLINE std::vector<igl::AABB<DerivedV,DIM>*>
 }
 
 template <typename DerivedV, int DIM>
-IGL_INLINE std::vector<igl::AABB<DerivedV,DIM>*> 
+IGL_INLINE std::vector<igl::AABB<DerivedV,DIM>*>
   igl::AABB<DerivedV,DIM>::gather_leaves()
 {
   int max_primitive = -1;
@@ -340,16 +340,16 @@ IGL_INLINE igl::AABB<DerivedV,DIM>* igl::AABB<DerivedV,DIM>::insert_as_sibling(A
   //        parent
   //          |
   //        this(C)
-  //        /  \
+  //        ╱  ╲
   //      left right
   //
   // After
   //        parent
   //          |
   //         newbie
-  //        /   \
+  //        ╱   ╲
   //     this    other
-  //     /    \
+  //     ╱    ╲
   //   left  right
   //
 
@@ -383,11 +383,11 @@ IGL_INLINE typename DerivedV::Scalar igl::AABB<DerivedV,DIM>::rotate(const bool 
   // ever returns true.
   //
   //        grandparent
-  //        /         \
+  //        ╱         ╲
   //     parent       pibling°
-  //     /    \         /    \
+  //     ╱    ╲         ╱    ╲
   // sibling  this   cuz1°  cuz2°
-  //  /    \
+  //  ╱    ╲
   // nib1° nib2°
 
   // There is a _ton_ of repeated computation of surface areas and new-boxes in
@@ -418,24 +418,24 @@ IGL_INLINE typename DerivedV::Scalar igl::AABB<DerivedV,DIM>::rotate_across(cons
 {
   // Before
   //        grandparent
-  //        /         \
+  //        ╱         ╲
   //     parent       pibling
-  //     /    \         /    \
+  //     ╱    ╲         ╱    ╲
   // sibling  this    cuz1  cuz2
   //
   //
   // Candidates
   //        grandparent
-  //        /         \
+  //        ╱         ╲
   //     parent       pibling
-  //     /    \         /    \
+  //     ╱    ╲         ╱    ╲
   // sibling  cuz1   this   cuz2
   //
   // Or
   //        grandparent
-  //        /         \
+  //        ╱         ╲
   //     parent       pibling
-  //     /    \         /    \
+  //     ╱    ╲         ╱    ╲
   // sibling  cuz2    cuz1  this
 
   auto * parent = this->m_parent;
@@ -456,17 +456,17 @@ IGL_INLINE typename DerivedV::Scalar igl::AABB<DerivedV,DIM>::rotate_across(cons
   {
     // Before
     //        grandparent
-    //        /         \
+    //        ╱         ╲
     //     parent       pibling
-    //     /    \         /    \
+    //     ╱    ╲         ╱    ╲
     // sibling  this    cuz  other_cuz
     //
     //
     // Candidates
     //        grandparent
-    //        /         \
+    //        ╱         ╲
     //     parent       pibling
-    //     /    \         /    \
+    //     ╱    ╲         ╱    ╲
     // sibling  cuz   this   other_cuz
     if(!cuz){ return 0.0; }
 
@@ -475,7 +475,7 @@ IGL_INLINE typename DerivedV::Scalar igl::AABB<DerivedV,DIM>::rotate_across(cons
     new_parent_box.extend(cuz->m_box);
     Eigen::AlignedBox<Scalar,DIM> new_pibling_box = this->m_box;
     if(other_cuz) { new_pibling_box.extend(other_cuz->m_box); }
-    const Scalar new_sa = 
+    const Scalar new_sa =
       box_surface_area(new_parent_box) + box_surface_area(new_pibling_box);
     if(current_sa <= new_sa)
     {
@@ -514,17 +514,17 @@ IGL_INLINE typename DerivedV::Scalar igl::AABB<DerivedV,DIM>::rotate_up(const bo
 {
   // Before
   //    grandparent
-  //       /    \
+  //       ╱    ╲
   //     other  parent
-  //            /  \
+  //            ╱  ╲
   //         this  sibling
-  //         
+  //
   //
   // Candidate
   //    grandparent
-  //       /    \
+  //       ╱    ╲
   //    this    parent
-  //            /  \
+  //            ╱  ╲
   //        other  sibling
   //
   auto * challenger = this;
@@ -544,26 +544,26 @@ IGL_INLINE typename DerivedV::Scalar igl::AABB<DerivedV,DIM>::rotate_down(const 
 {
   // Before
   //       parent
-  //       /    \
+  //       ╱    ╲
   //     this   sibling
-  //            /  \
+  //            ╱  ╲
   //         left  right
-  //         
+  //
   //
   // Candidates
   //       parent
-  //       /    \
+  //       ╱    ╲
   //   left     sibling
-  //            /  \
+  //            ╱  ╲
   //        this   right
   //
   // Or
   //
   //       parent
-  //       /    \
+  //       ╱    ╲
   //   right    sibling
-  //            /  \
-  //        left   this 
+  //            ╱  ╲
+  //        left   this
   auto * parent = this->m_parent;
   if(!parent) { return false; }
   auto * sibling = parent->m_left == this ? parent->m_right : parent->m_left;
@@ -596,17 +596,17 @@ IGL_INLINE typename DerivedV::Scalar igl::AABB<DerivedV,DIM>::rotate_up(
   if(!sibling) { return false; }
   // Before
   //    grandparent
-  //       /      \
+  //       ╱      ╲
   //  reining      parent
-  //               /    \
+  //               ╱    ╲
   //        challenger  sibling
-  //         
+  //
   //
   // Candidate
   //    grandparent
-  //       /      \
+  //       ╱      ╲
   // challenger    parent
-  //               /    \
+  //               ╱    ╲
   //          reining   sibling
   //
 
@@ -614,7 +614,7 @@ IGL_INLINE typename DerivedV::Scalar igl::AABB<DerivedV,DIM>::rotate_up(
   // Sibling doesn't actually need to exist but probably should if parent is a
   // true internal node.
   if(sibling)
-  { 
+  {
     sibling_sa = box_surface_area(sibling->m_box);
   }
 
@@ -724,7 +724,7 @@ IGL_INLINE typename DerivedV::Scalar igl::AABB<DerivedV,DIM>::internal_surface_a
 }
 
 template <typename DerivedV, int DIM>
-IGL_INLINE void igl::AABB<DerivedV,DIM>::validate() const 
+IGL_INLINE void igl::AABB<DerivedV,DIM>::validate() const
 {
   if(this->is_leaf())
   {
@@ -771,8 +771,8 @@ IGL_INLINE void igl::AABB<DerivedV,DIM>::print(const int depth) const
 template <typename DerivedV, int DIM>
 IGL_INLINE int igl::AABB<DerivedV,DIM>::size() const
 {
-  return 1 + 
-    (this->m_left ? this->m_left ->size():0) + 
+  return 1 +
+    (this->m_left ? this->m_left ->size():0) +
     (this->m_right? this->m_right->size():0);
 }
 template <typename DerivedV, int DIM>
@@ -1005,11 +1005,11 @@ IGL_INLINE igl::AABB<DerivedV,DIM>* igl::AABB<DerivedV,DIM>::insert(AABB * other
 {
   // test if this is the same pointer as other
   if(this == other)
-  { 
+  {
     // Only expecting this to happen when this/other are a singleton tree
     assert(this->is_root() && this->is_leaf());
     // Nothing changed.
-    return this; 
+    return this;
   }
 
 
@@ -1030,9 +1030,9 @@ IGL_INLINE igl::AABB<DerivedV,DIM>* igl::AABB<DerivedV,DIM>::insert(AABB * other
   left_grow.extend(other->m_box);
   Eigen::AlignedBox<Scalar,DIM> right_grow = this->m_right->m_box;
   right_grow.extend(other->m_box);
-  const auto left_surface_area_increase =  
+  const auto left_surface_area_increase =
     box_surface_area(left_grow) - box_surface_area(this->m_left->m_box);
-  const auto right_surface_area_increase = 
+  const auto right_surface_area_increase =
     box_surface_area(right_grow) - box_surface_area(this->m_right->m_box);
   assert(left_surface_area_increase >= 0);
   assert(right_surface_area_increase >= 0);
@@ -1564,7 +1564,7 @@ template <
   typename DerivedUV>
 IGL_INLINE void igl::AABB<DerivedV,DIM>::intersect_ray(
   const Eigen::MatrixBase<DerivedV> & V,
-  const Eigen::MatrixBase<DerivedEle> & Ele, 
+  const Eigen::MatrixBase<DerivedEle> & Ele,
   const Eigen::MatrixBase<DerivedOrigin> & origin,
   const Eigen::MatrixBase<DerivedDir> & dir,
   const Scalar min_t,
@@ -1599,7 +1599,7 @@ template <
   typename DerivedDir>
 IGL_INLINE void igl::AABB<DerivedV,DIM>::intersect_ray(
   const Eigen::MatrixBase<DerivedV> & V,
-  const Eigen::MatrixBase<DerivedEle> & Ele, 
+  const Eigen::MatrixBase<DerivedEle> & Ele,
   const Eigen::MatrixBase<DerivedOrigin> & origin,
   const Eigen::MatrixBase<DerivedDir> & dir,
   std::vector<std::vector<igl::Hit<typename DerivedV::Scalar>>> & hits)

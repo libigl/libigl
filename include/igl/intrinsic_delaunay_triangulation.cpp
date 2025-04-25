@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2018 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "intrinsic_delaunay_triangulation.h"
 #include "is_intrinsic_delaunay.h"
@@ -65,7 +65,7 @@ IGL_INLINE void igl::intrinsic_delaunay_triangulation(
   // Vector is faster than queue...
   std::vector<Index> Q;
   Q.reserve(uE2E.size());
-  for (size_t uei=0; uei<uE2E.size(); uei++) 
+  for (size_t uei=0; uei<uE2E.size(); uei++)
   {
     Q.push_back(uei);
   }
@@ -83,7 +83,7 @@ IGL_INLINE void igl::intrinsic_delaunay_triangulation(
       {
         inQ(uei) = true;
       }
-      for (Index uei=0; uei<uE2E.size(); uei++) 
+      for (Index uei=0; uei<uE2E.size(); uei++)
       {
         if(!inQ(uei) && !is_intrinsic_delaunay(l,uE2E,num_faces,uei))
         {
@@ -95,38 +95,38 @@ IGL_INLINE void igl::intrinsic_delaunay_triangulation(
 
     const Index uei = Q.back();
     Q.pop_back();
-    if (uE2E[uei].size() == 2) 
+    if (uE2E[uei].size() == 2)
     {
-      if(!is_intrinsic_delaunay(l,uE2E,num_faces,uei)) 
+      if(!is_intrinsic_delaunay(l,uE2E,num_faces,uei))
       {
         // update l just before flipping edge
         //      .        //
-        //     /|\       //
-        //   a/ | \d     //
-        //   /  e  \     //
-        //  /   |   \    //
+        //     ╱|╲       //
+        //   a╱ | ╲d     //
+        //   ╱  e  ╲     //
+        //  ╱   |   ╲    //
         // .----|-f--.   //
-        //  \   |   /    //
-        //   \  |  /     //
-        //   b\α|δ/c     //
-        //     \|/       //
+        //  ╲   |   ╱    //
+        //   ╲  |  ╱     //
+        //   b╲α|δ╱c     //
+        //     ╲|╱       //
         //      .        //
         // Annotated from flip_edge:
         // Edge to flip [v1,v2] --> [v3,v4]
         // Before:
         // F(f1,:) = [v1,v2,v4] // in some cyclic order
         // F(f2,:) = [v1,v3,v2] // in some cyclic order
-        // After: 
-        // F(f1,:) = [v1,v3,v4] // in *this* order 
+        // After:
+        // F(f1,:) = [v1,v3,v4] // in *this* order
         // F(f2,:) = [v2,v4,v3] // in *this* order
         //
         //          v1                 v1
-        //          /|\                / \
-        //        c/ | \b            c/f1 \b
-        //     v3 /f2|f1\ v4  =>  v3 /__f__\ v4
-        //        \  e  /            \ f2  /
-        //        d\ | /a            d\   /a
-        //          \|/                \ /
+        //          ╱|╲                ╱ ╲
+        //        c╱ | ╲b            c╱f1 ╲b
+        //     v3 ╱f2|f1╲ v4  =>  v3 ╱__f__╲ v4
+        //        ╲  e  /            ╲ f2  /
+        //        d╲ | /a            d╲   /a
+        //          ╲|/                ╲ /
         //          v2                 v2
         //
         // Compute intrinsic length of oppposite edge
@@ -155,7 +155,7 @@ IGL_INLINE void igl::intrinsic_delaunay_triangulation(
         // tan((α+δ)/2)
         const Scalar tan_a_d_2 = (tan_a_2 + tan_d_2)/(1.0-tan_a_2*tan_d_2);
         // cos(α+δ)
-        const Scalar cos_a_d = 
+        const Scalar cos_a_d =
           (1.0 - tan_a_d_2*tan_a_d_2)/(1.0+tan_a_d_2*tan_a_d_2);
         const Scalar f = sqrt(b*b + c*c - 2.0*b*c*cos_a_d);
         l(f1,0) = f;
