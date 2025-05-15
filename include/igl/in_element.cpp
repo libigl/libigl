@@ -7,13 +7,19 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "in_element.h"
 #include "parallel_for.h"
-template <typename DerivedV, typename DerivedQ, int DIM>
+template <
+  typename DerivedV, 
+  typename DerivedEle,
+  typename DerivedQ, 
+  int DIM,
+  typename DerivedI
+  >
 IGL_INLINE void igl::in_element(
   const Eigen::MatrixBase<DerivedV> & V,
-  const Eigen::MatrixXi & Ele,
+  const Eigen::MatrixBase<DerivedEle> & Ele,
   const Eigen::MatrixBase<DerivedQ> & Q,
   const AABB<DerivedV,DIM> & aabb,
-  Eigen::VectorXi & I)
+  Eigen::PlainObjectBase<DerivedI> & I)
 {
   using namespace std;
   using namespace Eigen;
@@ -30,10 +36,10 @@ IGL_INLINE void igl::in_element(
   },10000);
 }
 
-template <typename DerivedV, typename DerivedQ, int DIM, typename Scalar>
+template <typename DerivedV, typename  DerivedEle, typename DerivedQ, int DIM, typename Scalar>
 IGL_INLINE void igl::in_element(
   const Eigen::MatrixBase<DerivedV> & V,
-  const Eigen::MatrixXi & Ele,
+  const Eigen::MatrixBase<DerivedEle> & Ele,
   const Eigen::MatrixBase<DerivedQ> & Q,
   const AABB<DerivedV,DIM> & aabb,
   Eigen::SparseMatrix<Scalar> & I)
@@ -59,6 +65,19 @@ IGL_INLINE void igl::in_element(
 }
 
 #ifdef IGL_STATIC_LIBRARY
-template void igl::in_element<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, 2>(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 2> const&, Eigen::Matrix<int, -1, 1, 0, -1, 1>&);
-template void igl::in_element<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3>(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, igl::AABB<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 3> const&, Eigen::Matrix<int, -1, 1, 0, -1, 1>&);
+// Explicit template instantiation
+  template 
+  void igl::in_element
+  <
+    Eigen::MatrixXd, 
+    Eigen::MatrixXi,
+    Eigen::MatrixXd, 
+    3,
+    Eigen::VectorXi>
+    (
+    const Eigen::MatrixBase<Eigen::MatrixXd> & V,
+    const Eigen::MatrixBase<Eigen::MatrixXi> & Ele,
+    const Eigen::MatrixBase<Eigen::MatrixXd> & Q,
+    const AABB<Eigen::MatrixXd,3> & aabb,
+    Eigen::PlainObjectBase<Eigen::VectorXi> & I);
 #endif

@@ -19,8 +19,8 @@
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 
-#include <embree3/rtcore.h>
-#include <embree3/rtcore_ray.h>
+#include <embree4/rtcore.h>
+#include <embree4/rtcore_ray.h>
 #include <iostream>
 #include <vector>
 
@@ -161,7 +161,7 @@ namespace igl
       bool intersect_ray(
         const Eigen::RowVector3f& origin,
         const Eigen::RowVector3f& direction,
-        Hit& hit,
+        Hit & hit,
         float tnear = 0,
         float tfar = std::numeric_limits<float>::infinity(),
         int mask = 0xFFFFFFFF) const;

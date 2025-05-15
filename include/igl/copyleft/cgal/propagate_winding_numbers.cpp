@@ -35,11 +35,15 @@ template<
   typename DerivedL,
   typename DerivedW>
 IGL_INLINE bool igl::copyleft::cgal::propagate_winding_numbers(
-    const Eigen::PlainObjectBase<DerivedV>& V,
-    const Eigen::PlainObjectBase<DerivedF>& F,
-    const Eigen::PlainObjectBase<DerivedL>& labels,
+    const Eigen::MatrixBase<DerivedV>& V,
+    const Eigen::MatrixBase<DerivedF>& F,
+    const Eigen::MatrixBase<DerivedL>& labels,
     Eigen::PlainObjectBase<DerivedW>& W) 
 {
+  using Index = typename DerivedF::Scalar;
+  using MatrixXI = Eigen::Matrix<Index, Eigen::Dynamic, Eigen::Dynamic>;
+  using VectorXI = Eigen::Matrix<Index, Eigen::Dynamic, 1>;
+
 #ifdef PROPAGATE_WINDING_NUMBER_TIMING
   const auto & tictoc = []() -> double
   {
@@ -55,11 +59,11 @@ IGL_INLINE bool igl::copyleft::cgal::propagate_winding_numbers(
   tictoc();
 #endif
 
-  Eigen::MatrixXi E, uE;
-  Eigen::VectorXi EMAP, uEC, uEE;
+  MatrixXI E, uE;
+  VectorXI EMAP, uEC, uEE;
   igl::unique_edge_map(F, E, uE, EMAP, uEC, uEE);
 
-  Eigen::VectorXi P;
+  VectorXI P;
   const size_t num_patches = igl::extract_manifold_patches(F,EMAP,uEC,uEE,P);
 
   DerivedW per_patch_cells;
@@ -88,18 +92,21 @@ template<
   typename DerivedL,
   typename DerivedW>
 IGL_INLINE bool igl::copyleft::cgal::propagate_winding_numbers(
-    const Eigen::PlainObjectBase<DerivedV>& V,
-    const Eigen::PlainObjectBase<DerivedF>& F,
-    const Eigen::PlainObjectBase<DeriveduE>& uE,
-    const Eigen::PlainObjectBase<DeriveduEC>& uEC,
-    const Eigen::PlainObjectBase<DeriveduEE>& uEE,
+    const Eigen::MatrixBase<DerivedV>& V,
+    const Eigen::MatrixBase<DerivedF>& F,
+    const Eigen::MatrixBase<DeriveduE>& uE,
+    const Eigen::MatrixBase<DeriveduEC>& uEC,
+    const Eigen::MatrixBase<DeriveduEE>& uEE,
     const size_t num_patches,
-    const Eigen::PlainObjectBase<DerivedP>& P,
+    const Eigen::MatrixBase<DerivedP>& P,
     const size_t num_cells,
-    const Eigen::PlainObjectBase<DerivedC>& C,
-    const Eigen::PlainObjectBase<DerivedL>& labels,
+    const Eigen::MatrixBase<DerivedC>& C,
+    const Eigen::MatrixBase<DerivedL>& labels,
     Eigen::PlainObjectBase<DerivedW>& W)
 {
+  using Index = typename DerivedF::Scalar;
+  using MatrixXI = Eigen::Matrix<Index, Eigen::Dynamic, Eigen::Dynamic>;
+  using VectorXI = Eigen::Matrix<Index, Eigen::Dynamic, 1>;
 #ifdef PROPAGATE_WINDING_NUMBER_TIMING
   const auto & tictoc = []() -> double
   {
@@ -131,7 +138,7 @@ IGL_INLINE bool igl::copyleft::cgal::propagate_winding_numbers(
   log_time("cell_connectivity");
 #endif
 
-#ifndef NDEBUG
+#ifdef IGL_COPYLEFT_CGAL_PROPAGATE_WINDING_NUMBERS_DEBUG
   auto save_cell = [&](const std::string& filename, size_t cell_id) -> void{
     std::vector<size_t> faces;
     for (size_t i=0; i<num_patches; i++) {
@@ -143,7 +150,7 @@ IGL_INLINE bool igl::copyleft::cgal::propagate_winding_numbers(
         }
       }
     }
-    Eigen::MatrixXi cell_faces(faces.size(), 3);
+    MatrixXI cell_faces(faces.size(), 3);
     for (size_t i=0; i<faces.size(); i++) {
       cell_faces.row(i) = F.row(faces[i]);
     }
@@ -153,12 +160,12 @@ IGL_INLINE bool igl::copyleft::cgal::propagate_winding_numbers(
   };
 #endif
 
-#ifndef NDEBUG
+#ifdef IGL_COPYLEFT_CGAL_PROPAGATE_WINDING_NUMBERS_DEBUG
   {
     // Check for odd cycle.
-    Eigen::VectorXi cell_labels(num_cells);
+    VectorXI cell_labels(num_cells);
     cell_labels.setZero();
-    Eigen::VectorXi parents(num_cells);
+    VectorXI parents(num_cells);
     parents.setConstant(-1);
     auto trace_parents = [&](size_t idx) -> std::list<size_t> {
       std::list<size_t> path;
@@ -221,7 +228,7 @@ IGL_INLINE bool igl::copyleft::cgal::propagate_winding_numbers(
 
   Eigen::Index outer_facet;
   bool flipped;
-  Eigen::VectorXi I = igl::LinSpaced<Eigen::VectorXi>(num_faces, 0, num_faces-1);
+  VectorXI I = igl::LinSpaced<VectorXI>(num_faces, 0, num_faces-1);
   igl::copyleft::cgal::outer_facet(V, F, I, outer_facet, flipped);
 #ifdef PROPAGATE_WINDING_NUMBER_TIMING
   log_time("outer_facet");
@@ -230,7 +237,7 @@ IGL_INLINE bool igl::copyleft::cgal::propagate_winding_numbers(
   const size_t outer_patch = P[outer_facet];
   const size_t infinity_cell = C(outer_patch, flipped?1:0);
 
-  Eigen::VectorXi patch_labels(num_patches);
+  VectorXI patch_labels(num_patches);
   const int INVALID = std::numeric_limits<int>::max();
   patch_labels.setConstant(INVALID);
   for (size_t i=0; i<num_faces; i++) {
@@ -243,7 +250,7 @@ IGL_INLINE bool igl::copyleft::cgal::propagate_winding_numbers(
   assert((patch_labels.array() != INVALID).all());
   const size_t num_labels = patch_labels.maxCoeff()+1;
 
-  Eigen::MatrixXi per_cell_W(num_cells, num_labels);
+  MatrixXI per_cell_W(num_cells, num_labels);
   per_cell_W.setConstant(INVALID);
   per_cell_W.row(infinity_cell).setZero();
   std::queue<size_t> Q;
@@ -265,7 +272,7 @@ IGL_INLINE bool igl::copyleft::cgal::propagate_winding_numbers(
         }
         Q.push(neighbor_cell);
       } else {
-#ifndef NDEBUG
+#ifdef IGL_COPYLEFT_CGAL_PROPAGATE_WINDING_NUMBERS_DEBUG
         // Checking for winding number consistency.
         // This check would inevitably fail for meshes that contain open
         // boundary or non-orientable.  However, the inconsistent winding number
@@ -313,9 +320,9 @@ IGL_INLINE bool igl::copyleft::cgal::propagate_winding_numbers(
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instantiation
-template bool igl::copyleft::cgal::propagate_winding_numbers<Eigen::Matrix<CGAL::Epeck::FT, -1, -1, 1, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Epeck::FT, -1, -1, 1, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, size_t, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, size_t, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
-template bool igl::copyleft::cgal::propagate_winding_numbers<Eigen::Matrix<CGAL::Epeck::FT, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Epeck::FT, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, size_t, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, size_t, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
-template bool igl::copyleft::cgal::propagate_winding_numbers<Eigen::Matrix<CGAL::Epeck::FT, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Epeck::FT, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
+template bool igl::copyleft::cgal::propagate_winding_numbers<Eigen::Matrix<CGAL::Epeck::FT, -1, -1, 1, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::Matrix<CGAL::Epeck::FT, -1, -1, 1, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, size_t, Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, size_t, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
+template bool igl::copyleft::cgal::propagate_winding_numbers<Eigen::Matrix<CGAL::Epeck::FT, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::Matrix<CGAL::Epeck::FT, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, size_t, Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, size_t, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
+template bool igl::copyleft::cgal::propagate_winding_numbers<Eigen::Matrix<CGAL::Epeck::FT, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::Matrix<CGAL::Epeck::FT, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&);
 #ifdef WIN32
 #endif
 #endif

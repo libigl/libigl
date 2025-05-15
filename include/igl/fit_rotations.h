@@ -22,7 +22,7 @@ namespace igl
   /// \note This seems to be implemented in Eigen/Geometry: Eigen::umeyama
   template <typename DerivedS, typename DerivedD>
   IGL_INLINE void fit_rotations(
-    const Eigen::PlainObjectBase<DerivedS> & S,
+    const Eigen::MatrixBase<DerivedS> & S,
     const bool single_precision,
           Eigen::PlainObjectBase<DerivedD> & R);
 #ifdef __SSE__
@@ -53,7 +53,7 @@ namespace igl
   ///
   template <typename DerivedS, typename DerivedD>
   IGL_INLINE void fit_rotations_planar(
-    const Eigen::PlainObjectBase<DerivedS> & S,
+    const Eigen::MatrixBase<DerivedS> & S,
           Eigen::PlainObjectBase<DerivedD> & R);
 }
 

@@ -9,7 +9,9 @@
 #include "round.h"
 #include "unique_rows.h"
 #include "colon.h"
+#include "placeholders.h"
 #include <functional>
+#include "PlainMatrix.h"
 
 template <
   typename DerivedV, 
@@ -23,16 +25,18 @@ IGL_INLINE void igl::remove_duplicate_vertices(
   Eigen::PlainObjectBase<DerivedSVI>& SVI,
   Eigen::PlainObjectBase<DerivedSVJ>& SVJ)
 {
+
   static_assert(
     (DerivedSVI::RowsAtCompileTime == 1 || DerivedSVI::ColsAtCompileTime == 1) &&
     (DerivedSVJ::RowsAtCompileTime == 1 || DerivedSVJ::ColsAtCompileTime == 1),
     "SVI and SVJ need to have RowsAtCompileTime == 1 or ColsAtCompileTime == 1");
   if(epsilon > 0)
   {
-    DerivedV rV,rSV;
+    PlainMatrix<DerivedV> rV;
     round((V/(epsilon)).eval(),rV);
+    PlainMatrix<DerivedV,Eigen::Dynamic> rSV;
     unique_rows(rV,rSV,SVI,SVJ);
-    SV = V(SVI.derived(),Eigen::all);
+    SV = V(SVI.derived(),igl::placeholders::all);
   }else
   {
     unique_rows(V,SV,SVI,SVJ);

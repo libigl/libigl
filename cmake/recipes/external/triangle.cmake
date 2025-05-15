@@ -8,7 +8,7 @@ include(FetchContent)
 FetchContent_Declare(
     triangle
     GIT_REPOSITORY https://github.com/libigl/triangle.git
-    GIT_TAG        3ee6cac2230f0fe1413879574f741c7b6da11221
+    GIT_TAG        62f02db9ab4ff4b62d5ff82a77c8ea458c84c23a
 )
 
 FetchContent_MakeAvailable(triangle)

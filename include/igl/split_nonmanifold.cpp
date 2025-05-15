@@ -11,6 +11,7 @@
 #include "unique.h"
 #include "sort.h"
 #include "triangle_triangle_adjacency.h"
+#include "placeholders.h"
 #include "is_edge_manifold.h"
 #include <unordered_map>
 #include <cassert>
@@ -362,10 +363,10 @@ IGL_INLINE void igl::split_nonmanifold(
   // Consider each unique edge in the original mesh
 
   // number of faces incident on each unique edge
-  Eigen::VectorXi D = uEC.tail(uEC.rows()-1)-uEC.head(uEC.rows()-1);
-  Eigen::VectorXi uI;
+  VectorXI D = uEC.tail(uEC.rows()-1)-uEC.head(uEC.rows()-1);
+  VectorXI uI;
   {
-    Eigen::VectorXi sD;
+    VectorXI sD;
     igl::sort(D,1,true,sD,uI);
   }
 
@@ -468,7 +469,7 @@ IGL_INLINE void igl::split_nonmanifold(
   Eigen::PlainObjectBase <DerivedSVI> & SVI)
 {
   igl::split_nonmanifold(F,SF,SVI);
-  SV = V(SVI.derived(),Eigen::all);
+  SV = V(SVI.derived(),igl::placeholders::all);
 }
 
 #ifdef IGL_STATIC_LIBRARY

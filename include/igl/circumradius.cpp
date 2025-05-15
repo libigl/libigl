@@ -8,6 +8,7 @@
 #include "circumradius.h"
 #include "edge_lengths.h"
 #include "doublearea.h"
+#include "placeholders.h"
 #include <Eigen/QR>
 template <
   typename DerivedV, 
@@ -54,7 +55,7 @@ IGL_INLINE void igl::circumradius(
   {
     Eigen::Matrix<Scalar,ACOLS,ACOLS> A(T.cols()+1,T.cols()+1);
     // Not sure if this .eval() is a good idea
-    const auto Vi = V(T.row(i),Eigen::all).eval();
+    const auto Vi = V(T.row(i),igl::placeholders::all).eval();
     A.topLeftCorner(T.cols(),T.cols()) = 2*(Vi*Vi.transpose());
     A.block(0,T.cols(),T.cols(),1).setConstant(1);
     A.block(T.cols(),0,1,T.cols()).setConstant(1);

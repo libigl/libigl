@@ -14,18 +14,20 @@
 #include "comb_frame_field.h"
 #include "local_basis.h"
 #include "PI.h"
+#include "PlainMatrix.h"
 
 template <typename DerivedV, typename DerivedF, typename DerivedP>
-IGL_INLINE void igl::comb_frame_field(const Eigen::MatrixBase<DerivedV> &V,
-                                      const Eigen::MatrixBase<DerivedF> &F,
-                                      const Eigen::MatrixBase<DerivedP> &PD1,
-                                      const Eigen::MatrixBase<DerivedP> &PD2,
-                                      const Eigen::MatrixBase<DerivedP> &BIS1_combed,
-                                      const Eigen::MatrixBase<DerivedP> &BIS2_combed,
-                                      Eigen::PlainObjectBase<DerivedP> &PD1_combed,
-                                      Eigen::PlainObjectBase<DerivedP> &PD2_combed)
+IGL_INLINE void igl::comb_frame_field(
+  const Eigen::MatrixBase<DerivedV> &V,
+  const Eigen::MatrixBase<DerivedF> &F,
+  const Eigen::MatrixBase<DerivedP> &PD1,
+  const Eigen::MatrixBase<DerivedP> &PD2,
+  const Eigen::MatrixBase<DerivedP> &BIS1_combed,
+  const Eigen::MatrixBase<DerivedP> &BIS2_combed,
+  Eigen::PlainObjectBase<DerivedP> &PD1_combed,
+  Eigen::PlainObjectBase<DerivedP> &PD2_combed)
 {
-  DerivedV B1, B2, B3;
+  PlainMatrix<DerivedV,Eigen::Dynamic> B1, B2, B3;
   igl::local_basis(V,F,B1,B2,B3);
 
   PD1_combed.resize(BIS1_combed.rows(),3);

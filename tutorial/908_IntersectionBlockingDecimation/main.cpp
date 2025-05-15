@@ -1,5 +1,6 @@
 #include <igl/opengl/glfw/Viewer.h>
 #include <igl/read_triangle_mesh.h>
+#include <igl/placeholders.h>
 #include <igl/predicates/find_self_intersections.h>
 #include <igl/unique.h>
 #include <igl/remove_unreferenced.h>
@@ -43,6 +44,7 @@ int main(int argc, char *argv[])
   Eigen::RowVector3d gray(0.9,0.9,0.9);
   for(auto pass : {0,1})
   {
+    // Overly complicated so that we can visualize each collapse. 
     Eigen::MatrixXd VO;
     Eigen::MatrixXi FO;
     igl::connect_boundary_to_infinity(V,F,VO,FO);
@@ -85,9 +87,8 @@ int main(int argc, char *argv[])
       igl::max_faces_stopping_condition(m,orig_m,target_m),
       pre_collapse,
       post_collapse,
-      E, EMAP, EF, EI,
       U, G, J, I);
-    G = G(igl::find((J.array()<orig_m).eval()), Eigen::all).eval();
+    G = G(igl::find((J.array()<orig_m).eval()), igl::placeholders::all).eval();
     {
       Eigen::VectorXi _;
       igl::remove_unreferenced(Eigen::MatrixXd(U),Eigen::MatrixXi(G),U,G,_);
@@ -106,7 +107,7 @@ int main(int argc, char *argv[])
       }
       printf("  # self-intersections: %d\n",(int)BI.size());
       dC[pass] = gray.replicate(dF[pass].rows(),1);
-      dC[pass](BI,Eigen::all) = 
+      dC[pass](BI,igl::placeholders::all) = 
         Eigen::RowVector3d(0.95,0.15,0.15).replicate(BI.size(),1);
     }
   }

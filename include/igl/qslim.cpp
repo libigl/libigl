@@ -7,7 +7,6 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "qslim.h"
 
-#include "collapse_edge.h"
 #include "connect_boundary_to_infinity.h"
 #include "decimate.h"
 #include "edge_flaps.h"
@@ -16,10 +15,12 @@
 #include "max_faces_stopping_condition.h"
 #include "per_vertex_point_to_plane_quadrics.h"
 #include "qslim_optimal_collapse_edge_callbacks.h"
+#include "placeholders.h"
 #include "quadric_binary_plus_operator.h"
 #include "remove_unreferenced.h"
 #include "intersection_blocking_collapse_edge_callbacks.h"
 #include "AABB.h"
+#include "PlainMatrix.h"
 
 IGL_INLINE bool igl::qslim(
   const Eigen::MatrixXd & V,
@@ -45,8 +46,8 @@ IGL_INLINE bool igl::qslim(
   int m = F.rows();
   typedef Eigen::MatrixXd DerivedV;
   typedef Eigen::MatrixXi DerivedF;
-  DerivedV VO;
-  DerivedF FO;
+  PlainMatrix<DerivedV,Eigen::Dynamic> VO;
+  PlainMatrix<DerivedF,Eigen::Dynamic> FO;
   igl::connect_boundary_to_infinity(V,F,VO,FO);
   // decimate will not work correctly on non-edge-manifold meshes. By extension
   // this includes meshes with non-manifold vertices on the boundary since these
@@ -55,6 +56,7 @@ IGL_INLINE bool igl::qslim(
   {
     return false;
   }
+  // These will unfortunately be immediately recomputed in decimate.
   Eigen::VectorXi EMAP;
   Eigen::MatrixXi E,EF,EI;
   edge_flaps(FO,E,EMAP,EF,EI);
@@ -85,12 +87,11 @@ IGL_INLINE bool igl::qslim(
     max_faces_stopping_condition(m,orig_m,max_m),
     pre_collapse,
     post_collapse,
-    E, EMAP, EF, EI,
     U, G, J, I);
   // Remove phony boundary faces and clean up
   const Eigen::Array<bool,Eigen::Dynamic,1> keep = (J.array()<orig_m);
   const auto keep_i = igl::find(keep);
-  G = G(keep_i,Eigen::all).eval();
+  G = G(keep_i,igl::placeholders::all).eval();
   J = J(keep_i).eval();
   Eigen::VectorXi _1,I2;
   igl::remove_unreferenced(Eigen::MatrixXd(U),Eigen::MatrixXi(G),U,G,_1,I2);

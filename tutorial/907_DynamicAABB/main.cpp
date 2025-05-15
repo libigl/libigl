@@ -1,5 +1,6 @@
 #include <igl/AABB.h>
 #include <igl/box_faces.h>
+#include <igl/placeholders.h>
 #include <igl/colon.h>
 #include <igl/find.h>
 #include <igl/get_seconds.h>
@@ -21,7 +22,7 @@ int main(int argc, char *argv[])
   igl::read_triangle_mesh(
     argc>1?argv[1]:TUTORIAL_SHARED_PATH "/decimated-knight.off",V,F);
   // Make mesh into disconnected soup
-  V = V(Eigen::Map<Eigen::VectorXi>(F.data(),F.size()), Eigen::all).eval();
+  V = V(Eigen::Map<Eigen::VectorXi>(F.data(),F.size()), igl::placeholders::all).eval();
   F = Eigen::Map<Eigen::MatrixXi>(igl::colon<int>(0,V.rows()-1).data(),V.rows()/3,3).eval();
   // Cache normals
   igl::per_face_normals(V,F,N);
@@ -46,7 +47,7 @@ int main(int argc, char *argv[])
   Eigen::VectorXi TD;
   const auto update_edges = [&]()
   {
-    Eigen::MatrixXi TQd = TQ(igl::find((TD.array()==depth).eval()),Eigen::all);
+    Eigen::MatrixXi TQd = TQ(igl::find((TD.array()==depth).eval()),igl::placeholders::all);
     Eigen::MatrixXi TE;
     igl::quad_edges(TQd,TE);
     vr.data().set_edges(TV,TE,Eigen::RowVector3d(1,1,1));
@@ -59,7 +60,7 @@ int main(int argc, char *argv[])
   };
 
   // Update the tree for each triangle in hits which might have moved.
-  const auto update_tree = [&](const std::vector<igl::Hit> & hits)
+  const auto update_tree = [&](const std::vector<igl::Hit<double>> & hits)
   {
     for(const auto hit : hits)
     {
@@ -77,7 +78,7 @@ int main(int argc, char *argv[])
 
   update_tree_vis();
 
-  std::vector<igl::Hit> hits;
+  std::vector<igl::Hit<double>> hits;
   Eigen::RowVector3d dir;
   Eigen::RowVector3d red(1,0.2,0.2);
   vr.callback_pre_draw = [&](decltype(vr) &)->bool

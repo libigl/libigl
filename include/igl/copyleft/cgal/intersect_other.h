@@ -46,10 +46,10 @@ namespace igl
         typename DerivedJAB,
         typename DerivedIMAB>
       IGL_INLINE bool intersect_other(
-        const Eigen::PlainObjectBase<DerivedVA> & VA,
-        const Eigen::PlainObjectBase<DerivedFA> & FA,
-        const Eigen::PlainObjectBase<DerivedVB> & VB,
-        const Eigen::PlainObjectBase<DerivedFB> & FB,
+        const Eigen::MatrixBase<DerivedVA> & VA,
+        const Eigen::MatrixBase<DerivedFA> & FA,
+        const Eigen::MatrixBase<DerivedVB> & VB,
+        const Eigen::MatrixBase<DerivedFB> & FB,
         const RemeshSelfIntersectionsParam & params,
         Eigen::PlainObjectBase<DerivedIF> & IF,
         Eigen::PlainObjectBase<DerivedVVAB> & VVAB,
@@ -58,13 +58,19 @@ namespace igl
         Eigen::PlainObjectBase<DerivedIMAB> & IMAB);
       /// \overload
       /// @param[in] first_only  whether to only find first intersection
+      template <
+        typename DerivedVA,
+        typename DerivedFA,
+        typename DerivedVB,
+        typename DerivedFB,
+        typename DerivedIF>
       IGL_INLINE bool intersect_other(
-        const Eigen::MatrixXd & VA,
-        const Eigen::MatrixXi & FA,
-        const Eigen::MatrixXd & VB,
-        const Eigen::MatrixXi & FB,
+        const Eigen::MatrixBase<DerivedVA> & VA,
+        const Eigen::MatrixBase<DerivedFA> & FA,
+        const Eigen::MatrixBase<DerivedVB> & VB,
+        const Eigen::MatrixBase<DerivedFB> & FB,
         const bool first_only,
-        Eigen::MatrixXi & IF);
+        Eigen::PlainObjectBase<DerivedIF> & IF);
     }
   }
 }

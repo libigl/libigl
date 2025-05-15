@@ -8,6 +8,7 @@
 #ifndef IGL_SLICE_H
 #define IGL_SLICE_H
 #include "igl_inline.h"
+#include "placeholders.h"
 
 /// @file slice.h
 ///
@@ -19,11 +20,11 @@
 /// | igl                        | Eigen v3.4                         |
 /// |-------------------0--------|------------------------------------| |
 /// `igl::slice(X,I,J,Y)`      | `Y = X(I,J)`                       | |
-/// `igl::slice(X,I,1,Y)`      | `Y = X(I,Eigen::all)`              | |
-/// `igl::slice(X,J,2,Y)`      | `Y = X(Eigen::all,J)`              | |
+/// `igl::slice(X,I,1,Y)`      | `Y = X(I,igl::placeholders::all)`              | |
+/// `igl::slice(X,J,2,Y)`      | `Y = X(igl::placeholders::all,J)`              | |
 /// `igl::slice_into(Z,I,J,X)` | `X(I,J) = Z`                       | |
-/// `igl::slice_into(Z,I,1,X)` | `X(I,Eigen::all) = Z`              | |
-/// `igl::slice_into(Z,J,2,X)` | `X(Eigen::all,J) = Z`              | |
+/// `igl::slice_into(Z,I,1,X)` | `X(I,igl::placeholders::all) = Z`              | |
+/// `igl::slice_into(Z,J,2,X)` | `X(igl::placeholders::all,J) = Z`              | |
 /// `igl::slice_mask(X,M,N,Y)` | `Y = X(igl::find(M),igl::find(N))` | | _not
 /// available_            | `X(igl::find(M),igl::find(N)) = Z` |
 ///

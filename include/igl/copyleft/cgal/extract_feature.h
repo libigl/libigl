@@ -41,8 +41,8 @@ namespace igl
         typename DerivedF,
         typename Derivedfeature_edges>
       IGL_INLINE void extract_feature(
-            const Eigen::PlainObjectBase<DerivedV>& V,
-            const Eigen::PlainObjectBase<DerivedF>& F,
+            const Eigen::MatrixBase<DerivedV>& V,
+            const Eigen::MatrixBase<DerivedF>& F,
             const double tol,
             Eigen::PlainObjectBase<Derivedfeature_edges>& feature_edges);
       // \overload
@@ -56,10 +56,10 @@ namespace igl
         typename Derivedfeature_edges
         >
       IGL_INLINE void extract_feature(
-            const Eigen::PlainObjectBase<DerivedV>& V,
-            const Eigen::PlainObjectBase<DerivedF>& F,
+            const Eigen::MatrixBase<DerivedV>& V,
+            const Eigen::MatrixBase<DerivedF>& F,
             const double tol,
-            const Eigen::PlainObjectBase<DeriveduE>& uE,
+            const Eigen::MatrixBase<DeriveduE>& uE,
             const std::vector<std::vector<typename DeriveduE::Scalar> >& uE2E,
             Eigen::PlainObjectBase<Derivedfeature_edges>& feature_edges);
     }

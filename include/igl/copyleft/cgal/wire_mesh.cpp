@@ -2,6 +2,7 @@
 
 #include "../../list_to_matrix.h"
 #include "../../PI.h"
+#include "../../placeholders.h"
 #include "convex_hull.h"
 #include "coplanar.h"
 #include "mesh_boolean.h"
@@ -115,7 +116,7 @@ IGL_INLINE void igl::copyleft::cgal::wire_mesh(
   const auto append_hull = 
     [&V,&vF,&vJ](const Eigen::VectorXi & I, const int j)
   {
-    MatrixX3S Vv = V(I,Eigen::all);
+    MatrixX3S Vv = V(I,igl::placeholders::all);
 
     if(coplanar(Vv))
     {

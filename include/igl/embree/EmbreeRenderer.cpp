@@ -175,7 +175,7 @@ IGL_INLINE void igl::embree::EmbreeRenderer::deinit()
 IGL_INLINE bool igl::embree::EmbreeRenderer::intersect_ray(
   const Eigen::RowVector3f& origin,
   const Eigen::RowVector3f& direction,
-  Hit&  hit,
+  Hit &  hit,
   float tnear,
   float tfar,
   int mask) const
@@ -186,9 +186,7 @@ IGL_INLINE bool igl::embree::EmbreeRenderer::intersect_ray(
 
   // shot ray
   {
-    RTCIntersectContext context;
-    rtcInitIntersectContext(&context);
-    rtcIntersect1(scene, &context, &ray);
+    rtcIntersect1(scene,&ray);
     ray.hit.Ng_x = -ray.hit.Ng_x; // EMBREE_FIXME: only correct for triangles,quads, and subdivision surfaces
     ray.hit.Ng_y = -ray.hit.Ng_y;
     ray.hit.Ng_z = -ray.hit.Ng_z;
