@@ -33,8 +33,8 @@ IGL_INLINE int igl::dijkstra(
       return u;
 
     // Visit each edge exiting u
-    const std::vector<int> &neighbors = VV[u];
-    for (std::vector<int>::const_iterator neighbor_iter = neighbors.begin();
+    const std::vector<IndexType> &neighbors = VV[u];
+    for (typename std::vector<IndexType>::const_iterator neighbor_iter = neighbors.begin();
          neighbor_iter != neighbors.end();
          neighbor_iter++)
     {
@@ -108,8 +108,8 @@ IGL_INLINE int igl::dijkstra(
       return u;
 
     // Visit each edge exiting u
-    const std::vector<int> &neighbors = VV[u];
-    for (std::vector<int>::const_iterator neighbor_iter = neighbors.begin();
+    const std::vector<IndexType> &neighbors = VV[u];
+    for (typename std::vector<IndexType>::const_iterator neighbor_iter = neighbors.begin();
          neighbor_iter != neighbors.end();
          neighbor_iter++)
     {
