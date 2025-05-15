@@ -38,15 +38,15 @@ TEST_CASE("scaf_system: Test scaf_system() vs scaf_solve()", "[igl]")
   // Run one scaf iteration as reference
   igl::triangle::SCAFData s_ref;
   {
-      igl::triangle::scaf_precompute(V, F, uv_init, s_ref, igl::MappingEnergyType::SYMMETRIC_DIRICHLET, b, bc, 0);
-      igl::triangle::scaf_solve(s_ref, 1);
+      igl::triangle::scaf_precompute(V, F, uv_init, igl::MappingEnergyType::SYMMETRIC_DIRICHLET, b, bc, 0, s_ref);
+      igl::triangle::scaf_solve(1, s_ref);
   }
 
   // Obtain SCAF linear system perform iteration manually
   igl::triangle::SCAFData s_test;
   {
       // Set up system
-      igl::triangle::scaf_precompute(V, F, uv_init, s_test, igl::MappingEnergyType::SYMMETRIC_DIRICHLET, b, bc, 0);
+      igl::triangle::scaf_precompute(V, F, uv_init, igl::MappingEnergyType::SYMMETRIC_DIRICHLET, b, bc, 0, s_test);
       Eigen::SparseMatrix<double> L;
       Eigen::VectorXd rhs;
       igl::triangle::scaf_system(s_test, L, rhs);

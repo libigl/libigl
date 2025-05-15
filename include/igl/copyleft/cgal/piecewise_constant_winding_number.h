@@ -27,8 +27,8 @@ namespace igl
         typename DerivedV,
         typename DerivedF>
       IGL_INLINE bool piecewise_constant_winding_number(
-        const Eigen::PlainObjectBase<DerivedV> & V,
-        const Eigen::PlainObjectBase<DerivedF>& F);
+        const Eigen::MatrixBase<DerivedV> & V,
+        const Eigen::MatrixBase<DerivedF>& F);
     }
   }
 }

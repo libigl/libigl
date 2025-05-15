@@ -61,7 +61,7 @@ IGL_INLINE bool igl::copyleft::cgal::intersect_with_half_space(
   Eigen::PlainObjectBase<DerivedJ > & J)
 {
   Eigen::Matrix<CGAL::Epeck::FT,8,3> BV;
-  Eigen::Matrix<int,12,3> BF;
+  Eigen::Matrix<typename DerivedF::Scalar,12,3> BF;
   half_space_box(P,V,BV,BF);
   // Disturbingly, (BV,BF) must be first argument
   const bool ret = mesh_boolean(BV,BF,V,F,MESH_BOOLEAN_TYPE_INTERSECT,VC,FC,J);

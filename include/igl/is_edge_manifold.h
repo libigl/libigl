@@ -26,11 +26,11 @@ namespace igl
   /// Checks if mesh is edge-manifold and outputs per-edge info.
   ///
   /// @param[in] F  #F by 3 list of triangle indices
-  /// @param[out] BF  #F by 3 list of flags revealing if edge opposite corresponding vertex
-  /// @param[out] is non-manifold.
+  /// @param[out] BF  #F by 3 list of flags revealing if edge opposite
+  /// corresponding vertex is non-manifold.
   /// @param[out] E  #E by 2 list of unique edges
   /// @param[out] EMAP  3*#F list of indices of opposite edges in "E"
-  /// @param[out] BE  #E list of flages whether edge is non-manifold
+  /// @param[out] BE  #E list of flags whether edge is non-manifold
   template <
     typename DerivedF, 
     typename DerivedBF,

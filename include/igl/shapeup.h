@@ -66,9 +66,9 @@ namespace igl
   /// \fileinfo
   //typedef std::function<
   //  bool(
-  //      const Eigen::PlainObjectBase<Eigen::MatrixXd>&, 
-  //      const Eigen::PlainObjectBase<Eigen::VectorXi>&, 
-  //      const Eigen::PlainObjectBase<Eigen::MatrixXi>&, 
+  //      const Eigen::MatrixBase<Eigen::MatrixXd>&, 
+  //      const Eigen::MatrixBase<Eigen::VectorXi>&, 
+  //      const Eigen::MatrixBase<Eigen::MatrixXi>&, 
   //      Eigen::PlainObjectBase<Eigen::MatrixXd>&)> 
   //  shapeup_projection_function;
   using 
@@ -76,9 +76,9 @@ namespace igl
     =
     std::function<
     bool(
-        const Eigen::PlainObjectBase<Eigen::MatrixXd>&, 
-        const Eigen::PlainObjectBase<Eigen::VectorXi>&, 
-        const Eigen::PlainObjectBase<Eigen::MatrixXi>&, 
+        const Eigen::MatrixBase<Eigen::MatrixXd>&, 
+        const Eigen::MatrixBase<Eigen::VectorXi>&, 
+        const Eigen::MatrixBase<Eigen::MatrixXi>&, 
         Eigen::PlainObjectBase<Eigen::MatrixXd>&)> ;
   /// This projection does nothing but render points into projP. Mostly used for
   /// "echoing" the global step
@@ -94,9 +94,9 @@ namespace igl
   ///
   /// \fileinfo
   IGL_INLINE bool shapeup_identity_projection(
-    const Eigen::PlainObjectBase<Eigen::MatrixXd>& P, 
-    const Eigen::PlainObjectBase<Eigen::VectorXi>& SC, 
-    const Eigen::PlainObjectBase<Eigen::MatrixXi>& S,  
+    const Eigen::MatrixBase<Eigen::MatrixXd>& P, 
+    const Eigen::MatrixBase<Eigen::VectorXi>& SC, 
+    const Eigen::MatrixBase<Eigen::MatrixXi>& S,  
     Eigen::PlainObjectBase<Eigen::MatrixXd>& projP);
   
   /// the projection assumes that the sets are vertices of polygons in cyclic
@@ -113,9 +113,9 @@ namespace igl
   ///
   /// \fileinfo
   IGL_INLINE bool shapeup_regular_face_projection(
-    const Eigen::PlainObjectBase<Eigen::MatrixXd>& P, 
-    const Eigen::PlainObjectBase<Eigen::VectorXi>& SC, 
-    const Eigen::PlainObjectBase<Eigen::MatrixXi>& S,  
+    const Eigen::MatrixBase<Eigen::MatrixXd>& P, 
+    const Eigen::MatrixBase<Eigen::VectorXi>& SC, 
+    const Eigen::MatrixBase<Eigen::MatrixXi>& S,  
     Eigen::PlainObjectBase<Eigen::MatrixXd>& projP);
   /// This function precomputation the necessary matrices for the ShapeUp
   /// process, and prefactorizes them.
@@ -141,13 +141,13 @@ namespace igl
     typename DerivedS,
     typename Derivedw>
   IGL_INLINE bool shapeup_precomputation(
-    const Eigen::PlainObjectBase<DerivedP>& P,
-    const Eigen::PlainObjectBase<DerivedSC>& SC,
-    const Eigen::PlainObjectBase<DerivedS>& S,
-    const Eigen::PlainObjectBase<DerivedS>& E,
-    const Eigen::PlainObjectBase<DerivedSC>& b,
-    const Eigen::PlainObjectBase<Derivedw>& wShape,
-    const Eigen::PlainObjectBase<Derivedw>& wSmooth,
+    const Eigen::MatrixBase<DerivedP>& P,
+    const Eigen::MatrixBase<DerivedSC>& SC,
+    const Eigen::MatrixBase<DerivedS>& S,
+    const Eigen::MatrixBase<DerivedS>& E,
+    const Eigen::MatrixBase<DerivedSC>& b,
+    const Eigen::MatrixBase<Derivedw>& wShape,
+    const Eigen::MatrixBase<Derivedw>& wSmooth,
     ShapeupData & sudata);
   /// This function solve the shapeup project optimization. shapeup_precompute
   /// must be called before with the same sudata, or results are unpredictable
@@ -168,9 +168,9 @@ namespace igl
     typename DerivedSC,
     typename DerivedS>
   IGL_INLINE bool shapeup_solve(
-    const Eigen::PlainObjectBase<DerivedP>& bc,
-    const std::function<bool(const Eigen::PlainObjectBase<DerivedP>&, const Eigen::PlainObjectBase<DerivedSC>&, const Eigen::PlainObjectBase<DerivedS>&,  Eigen::PlainObjectBase<DerivedP>&)>& local_projection,
-    const Eigen::PlainObjectBase<DerivedP>& P0,
+    const Eigen::MatrixBase<DerivedP>& bc,
+    const std::function<bool(const Eigen::MatrixBase<DerivedP>&, const Eigen::MatrixBase<DerivedSC>&, const Eigen::MatrixBase<DerivedS>&,  Eigen::PlainObjectBase<DerivedP>&)>& local_projection,
+    const Eigen::MatrixBase<DerivedP>& P0,
     const ShapeupData & sudata,
     const bool quietIterations,
     Eigen::PlainObjectBase<DerivedP>& P);

@@ -15,16 +15,26 @@
 #include <map>
 #include <iostream>
 
+template <
+  typename DerivedV,
+  typename DerivedEle,
+  typename DerivedC,
+  typename DerivedP,
+  typename DerivedBE,
+  typename DerivedCE,
+  typename DerivedCF,
+  typename Derivedb,
+  typename Derivedbc>
 IGL_INLINE bool igl::boundary_conditions(
-  const Eigen::MatrixXd & V  ,
-  const Eigen::MatrixXi & /*Ele*/,
-  const Eigen::MatrixXd & C  ,
-  const Eigen::VectorXi & P  ,
-  const Eigen::MatrixXi & BE ,
-  const Eigen::MatrixXi & CE ,
-  const Eigen::MatrixXi & CF ,
-  Eigen::VectorXi &       b  ,
-  Eigen::MatrixXd &       bc )
+  const Eigen::MatrixBase<DerivedV> & V,
+  const Eigen::MatrixBase<DerivedEle> & Ele,
+  const Eigen::MatrixBase<DerivedC> & C,
+  const Eigen::MatrixBase<DerivedP> & P,
+  const Eigen::MatrixBase<DerivedBE> & BE,
+  const Eigen::MatrixBase<DerivedCE> & CE,
+  const Eigen::MatrixBase<DerivedCF> & CF,
+  Eigen::PlainObjectBase<Derivedb> & b,
+  Eigen::PlainObjectBase<Derivedbc> & bc)
 {
   using namespace Eigen;
   using namespace std;
@@ -242,3 +252,8 @@ IGL_INLINE bool igl::boundary_conditions(
 
   return true;
 }
+
+#ifdef IGL_STATIC_LIBRARY
+// Explicit template instantiation
+template bool igl::boundary_conditions<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>>(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1>> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1>> const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1>>&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>>&);
+#endif

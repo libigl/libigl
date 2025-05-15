@@ -11,9 +11,6 @@
 #include "../../igl_inline.h"
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 #include <CGAL/Exact_predicates_exact_constructions_kernel_with_sqrt.h>
-#ifndef WIN32
-#include <CGAL/gmpxx.h>
-#endif
 
 namespace igl
 {
@@ -85,20 +82,6 @@ namespace igl
       IGL_INLINE void assign_scalar(
         const CGAL::Exact_predicates_exact_constructions_kernel_with_sqrt::FT & cgal,
         float& d);
-#ifndef WIN32
-      /// \overload
-      IGL_INLINE void assign_scalar(
-        const CGAL::Simple_cartesian<mpq_class>::FT & cgal,
-        CGAL::Simple_cartesian<mpq_class>::FT & d);
-      /// \overload
-      IGL_INLINE void assign_scalar(
-        const CGAL::Simple_cartesian<mpq_class>::FT & cgal,
-        double & d);
-      /// \overload
-      IGL_INLINE void assign_scalar(
-        const CGAL::Simple_cartesian<mpq_class>::FT & cgal,
-        float& d);
-#endif
     }
   }
 }

@@ -1,8 +1,9 @@
 #include <igl/circulation.h>
-#include <igl/collapse_edge.h>
+#include <igl/collapse_least_cost_edge.h>
 #include <igl/edge_flaps.h>
 #include <igl/decimate.h>
 #include <igl/shortest_edge_and_midpoint.h>
+#include <igl/decimate_trivial_callbacks.h>
 #include <igl/parallel_for.h>
 #include <igl/read_triangle_mesh.h>
 #include <igl/opengl/glfw/Viewer.h>
@@ -84,7 +85,19 @@ int main(int argc, char * argv[])
       const int max_iter = std::ceil(0.01*Q.size());
       for(int j = 0;j<max_iter;j++)
       {
-        if(!collapse_edge(shortest_edge_and_midpoint,V,F,E,EMAP,EF,EI,Q,EQ,C))
+        igl::decimate_pre_collapse_callback always_try;
+        igl::decimate_post_collapse_callback never_care;
+        igl::decimate_trivial_callbacks(always_try,never_care);
+        // Explicit template instanciations expect std::function not raw pointer
+        // Only relevant if IGL_STATIC_LIBRARY is defined
+        const std::function<void (int, Eigen::Matrix<double, -1, -1, 0, -1, -1> const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, Eigen::Matrix<int, -1, 1, 0, -1, 1> const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, Eigen::Matrix<int, -1, -1, 0, -1, -1> const&, double&, Eigen::Matrix<double, 1, -1, 1, 1, -1>&)> cp = shortest_edge_and_midpoint;
+        int e,e1,e2,f1,f2;
+        if(!collapse_least_cost_edge(
+              cp,always_try,never_care,
+              V,F,E,
+              EMAP,EF,EI,
+              Q,EQ,C,
+              e,e1,e2,f1,f2))
         {
           break;
         }

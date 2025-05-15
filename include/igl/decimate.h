@@ -9,6 +9,7 @@
 #define IGL_DECIMATE_H
 #include "igl_inline.h"
 #include "decimate_callback_types.h"
+#include "COLLAPSE_EDGE_NULL.h"
 #include <Eigen/Core>
 
 /// @file decimate.h 
@@ -68,6 +69,7 @@
 /// user’s threshold).
 ///
 /// \see
+///   collapse_least_cost_edge
 ///   collapse_edge
 ///   qslim
 
@@ -119,16 +121,10 @@ namespace igl
   ///     bool should_stop =
   ///       stopping_condition(V,F,E,EMAP,EF,EI,Q,Qit,C,e,e1,e2,f1,f2);
   /// @param[in] pre_collapse  callback called with index of edge whose collapse is about
-  ///              to be attempted (see collapse_edge)
+  ///              to be attempted (see collapse_least_cost_edge)
   /// @param[in] post_collapse  callback called with index of edge whose collapse was
   ///              just attempted and a flag revealing whether this was successful (see
-  ///              collapse_edge)
-  /// @param[in] EMAP #F*3 list of indices into E, mapping each directed edge to unique
-  ///              unique edge in E
-  /// @param[in] EF  #E by 2 list of edge flaps, EF(e,0)=f means e=(i-->j) is the edge of
-  ///              F(f,:) opposite the vth corner, where EI(e,0)=v. Similarly EF(e,1) "
-  ///              e=(j->i)
-  /// @param[in] EI  #E by 2 list of edge flap corners (see above).
+  ///              collapse_least_cost_edge)
   /// @param[out] U  #U by dim list of output vertex posistions (can be same ref as V)
   /// @param[out] G  #G by 3 list of output face indices into U (can be same ref as G)
   /// @param[out] J  #G list of indices into F of birth face
@@ -146,32 +142,6 @@ namespace igl
     const decimate_stopping_condition_callback & stopping_condition,
     const decimate_pre_collapse_callback       & pre_collapse,
     const decimate_post_collapse_callback      & post_collapse,
-    const Eigen::MatrixXi & E,
-    const Eigen::VectorXi & EMAP,
-    const Eigen::MatrixXi & EF,
-    const Eigen::MatrixXi & EI,
-    Eigen::MatrixXd & U,
-    Eigen::MatrixXi & G,
-    Eigen::VectorXi & J,
-    Eigen::VectorXi & I);
-  /// \overload
-  IGL_INLINE bool decimate(
-    const Eigen::MatrixXd & V,
-    const Eigen::MatrixXi & F,
-    const decimate_cost_and_placement_callback & cost_and_placement,
-    const decimate_stopping_condition_callback & stopping_condition,
-    const decimate_pre_collapse_callback       & pre_collapse,
-    const decimate_post_collapse_callback      & post_collapse,
-    Eigen::MatrixXd & U,
-    Eigen::MatrixXi & G,
-    Eigen::VectorXi & J,
-    Eigen::VectorXi & I);
-  /// \overload
-  IGL_INLINE bool decimate(
-    const Eigen::MatrixXd & V,
-    const Eigen::MatrixXi & F,
-    const decimate_cost_and_placement_callback & cost_and_placement,
-    const decimate_stopping_condition_callback & stopping_condition,
     Eigen::MatrixXd & U,
     Eigen::MatrixXi & G,
     Eigen::VectorXi & J,

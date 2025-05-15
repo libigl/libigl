@@ -12,11 +12,13 @@
 #include "cotmatrix.h"
 #include "intrinsic_delaunay_cotmatrix.h"
 #include "massmatrix.h"
+#include "PlainVector.h"
 #include "massmatrix_intrinsic.h"
 #include "grad_intrinsic.h"
 #include "boundary_facets.h"
 #include "unique.h"
 #include "avg_edge_length.h"
+#include "PlainMatrix.h"
 
 
 template < typename DerivedV, typename DerivedF, typename Scalar >
@@ -41,7 +43,7 @@ IGL_INLINE bool igl::heat_geodesics_precompute(
   typedef Eigen::Matrix<Scalar,Eigen::Dynamic,1> VectorXS;
   Eigen::SparseMatrix<Scalar> L,M;
   Eigen::Matrix<Scalar,Eigen::Dynamic,3> l_intrinsic;
-  DerivedF F_intrinsic;
+  PlainMatrix<DerivedF> F_intrinsic;
   VectorXS dblA;
   if(data.use_intrinsic_delaunay)
   {
@@ -82,7 +84,7 @@ IGL_INLINE bool igl::heat_geodesics_precompute(
         return false;
       }
     }
-    const DerivedV M_diag_tr = M.diagonal().transpose();
+    const Eigen::Matrix<Scalar,1,Eigen::Dynamic> M_diag_tr = M.diagonal().transpose();
     const Eigen::SparseMatrix<Scalar> Aeq = M_diag_tr.sparseView();
     L *= -0.5;
     if(!igl::min_quad_with_fixed_precompute(

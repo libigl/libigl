@@ -20,8 +20,8 @@
 #include <Eigen/Geometry>
 #include <Eigen/Core>
 
-#include <embree3/rtcore.h>
-#include <embree3/rtcore_ray.h>
+#include <embree4/rtcore.h>
+#include <embree4/rtcore_ray.h>
 #include <iostream>
 #include <vector>
 
@@ -90,7 +90,7 @@ namespace igl
       bool intersectRay(
         const Eigen::RowVector3f& origin,
         const Eigen::RowVector3f& direction,
-        Hit& hit,
+        Hit<float>& hit,
         float tnear = 0,
         float tfar = std::numeric_limits<float>::infinity(),
         int mask = 0xFFFFFFFF) const;
@@ -111,7 +111,7 @@ namespace igl
       bool intersectBeam(
         const Eigen::RowVector3f& origin,
         const Eigen::RowVector3f& direction,
-        Hit& hit,
+        Hit<float>& hit,
         float tnear = 0,
         float tfar = std::numeric_limits<float>::infinity(),
         int mask = 0xFFFFFFFF,
@@ -132,7 +132,7 @@ namespace igl
       bool intersectRay(
         const Eigen::RowVector3f& origin,
         const Eigen::RowVector3f& direction,
-        std::vector<Hit > &hits,
+        std::vector<Hit<float>> &hits,
         int& num_rays,
         float tnear = 0,
         float tfar = std::numeric_limits<float>::infinity(),
@@ -147,7 +147,7 @@ namespace igl
       bool intersectSegment(
         const Eigen::RowVector3f& a,
         const Eigen::RowVector3f& ab,
-        Hit &hit,
+        Hit<float> &hit,
         int mask = 0xFFFFFFFF) const;
 
     private:

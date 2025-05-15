@@ -7,6 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "grad_intrinsic.h"
 #include "grad.h"
+#include "PlainMatrix.h"
 
 template <typename Derivedl, typename DerivedF, typename Gtype>
 IGL_INLINE void igl::grad_intrinsic(
@@ -31,10 +32,10 @@ IGL_INLINE void igl::grad_intrinsic(
   typedef Eigen::Matrix<Gtype,Eigen::Dynamic,Eigen::Dynamic> MatrixX2S;
   MatrixX2S V2 = MatrixX2S::Zero(3*m,2);
   //     1=[x,y]
-  //     /\
-  // l3 /   \ l2
-  //   /      \
-  //  /         \
+  //     ╱ ╲
+  // l3 ╱   ╲l2
+  //   ╱      ╲
+  //  ╱        ╲
   // 2-----------3
   //       l1
   //
@@ -51,7 +52,7 @@ IGL_INLINE void igl::grad_intrinsic(
     (-2.*l.col(0)).array();
   V2.block(0,1,m,1) =
     (l.col(2).cwiseAbs2() - V2.block(0,0,m,1).cwiseAbs2()).array().sqrt();
-  DerivedF F2(F.rows(),F.cols());
+  PlainMatrix<DerivedF> F2(F.rows(),F.cols());
   std::vector<Eigen::Triplet<Gtype> > Pijv;
   Pijv.reserve(F.size());
   for(int f = 0;f<m;f++)

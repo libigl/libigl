@@ -10,6 +10,7 @@
 #include "mesh_to_cgal_triangle_list.h"
 #include "remesh_intersections.h"
 #include "../../remove_unreferenced.h"
+#include "../../PlainMatrix.h"
 
 #ifndef IGL_FIRST_HIT_EXCEPTION
 #define IGL_FIRST_HIT_EXCEPTION 10
@@ -54,10 +55,10 @@ namespace igl
         typename DerivedJAB,
         typename DerivedIMAB>
       static IGL_INLINE bool intersect_other_helper(
-        const Eigen::PlainObjectBase<DerivedVA> & VA,
-        const Eigen::PlainObjectBase<DerivedFA> & FA,
-        const Eigen::PlainObjectBase<DerivedVB> & VB,
-        const Eigen::PlainObjectBase<DerivedFB> & FB,
+        const Eigen::MatrixBase<DerivedVA> & VA,
+        const Eigen::MatrixBase<DerivedFA> & FA,
+        const Eigen::MatrixBase<DerivedVB> & VB,
+        const Eigen::MatrixBase<DerivedFB> & FB,
         const RemeshSelfIntersectionsParam & params,
         Eigen::PlainObjectBase<DerivedIF> & IF,
         Eigen::PlainObjectBase<DerivedVVAB> & VVAB,
@@ -170,9 +171,9 @@ namespace igl
           // remesh_intersections(VA,FA,TA,offendingA,VVA,FFA,JA,IMA);
           // remesh_intersections(VB,FB,TB,offendingB,VVB,FFB,JB,IMB);
           // Combine mesh and offending maps
-          DerivedVA VAB(VA.rows()+VB.rows(),3);
+          PlainMatrix<DerivedVA,Eigen::Dynamic> VAB(VA.rows()+VB.rows(),3);
           VAB<<VA,VB;
-          DerivedFA FAB(FA.rows()+FB.rows(),3);
+          PlainMatrix<DerivedFA,Eigen::Dynamic> FAB(FA.rows()+FB.rows(),3);
           FAB<<FA,(FB.array()+VA.rows());
           Triangles TAB;
           TAB.reserve(TA.size()+TB.size());
@@ -219,10 +220,10 @@ template <
   typename DerivedJAB,
   typename DerivedIMAB>
 IGL_INLINE bool igl::copyleft::cgal::intersect_other(
-    const Eigen::PlainObjectBase<DerivedVA> & VA,
-    const Eigen::PlainObjectBase<DerivedFA> & FA,
-    const Eigen::PlainObjectBase<DerivedVB> & VB,
-    const Eigen::PlainObjectBase<DerivedFB> & FB,
+    const Eigen::MatrixBase<DerivedVA> & VA,
+    const Eigen::MatrixBase<DerivedFA> & FA,
+    const Eigen::MatrixBase<DerivedVB> & VB,
+    const Eigen::MatrixBase<DerivedFB> & FB,
     const RemeshSelfIntersectionsParam & params,
     Eigen::PlainObjectBase<DerivedIF> & IF,
     Eigen::PlainObjectBase<DerivedVVAB> & VVAB,
@@ -246,23 +247,47 @@ IGL_INLINE bool igl::copyleft::cgal::intersect_other(
   }
 }
 
+template <
+  typename DerivedVA,
+  typename DerivedFA,
+  typename DerivedVB,
+  typename DerivedFB,
+  typename DerivedIF>
 IGL_INLINE bool igl::copyleft::cgal::intersect_other(
-  const Eigen::MatrixXd & VA,
-  const Eigen::MatrixXi & FA,
-  const Eigen::MatrixXd & VB,
-  const Eigen::MatrixXi & FB,
+  const Eigen::MatrixBase<DerivedVA> & VA,
+  const Eigen::MatrixBase<DerivedFA> & FA,
+  const Eigen::MatrixBase<DerivedVB> & VB,
+  const Eigen::MatrixBase<DerivedFB> & FB,
   const bool first_only,
-  Eigen::MatrixXi & IF)
+  Eigen::PlainObjectBase<DerivedIF> & IF)
 {
-  Eigen::MatrixXd VVAB;
-  Eigen::MatrixXi FFAB;
-  Eigen::VectorXi JAB,IMAB;
+  PlainMatrix<DerivedVA,Eigen::Dynamic> VVAB;
+  PlainMatrix<DerivedFA,Eigen::Dynamic> FFAB;
+  Eigen::VectorXi JAB, IMAB;
   return intersect_other(
     VA,FA,VB,FB,{true,first_only},IF,VVAB,FFAB,JAB,IMAB);
 }
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instantiation
-template bool igl::copyleft::cgal::intersect_other<Eigen::Matrix<double, -1, -1, 0, -1, -1>,   Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>,   Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>,   Eigen::Matrix<CGAL::Epeck::FT, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, -1, 0, -1,   -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&,   Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&,   Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&,   Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&,   igl::copyleft::cgal::RemeshSelfIntersectionsParam const&,   Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&,   Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Epeck::FT, -1, 3, 0, -1, 3> >&,   Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&,   Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&,   Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
-template bool igl::copyleft::cgal::intersect_other<Eigen::Matrix<CGAL::Epeck::FT, -1, -1, 1, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<CGAL::Epeck::FT, -1, -1, 1, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<CGAL::Epeck::FT, -1, -1, 1, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Epeck::FT, -1, -1, 1, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Epeck::FT, -1, -1, 1, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, igl::copyleft::cgal::RemeshSelfIntersectionsParam const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Epeck::FT, -1, -1, 1, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
+template bool igl::copyleft::cgal::intersect_other<Eigen::Matrix<double, -1, -1, 0, -1, -1>,   Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>,   Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>,   Eigen::Matrix<CGAL::Epeck::FT, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, -1, 0, -1,   -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(
+Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&,   
+Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&,   
+Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&,   
+Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&,   igl::copyleft::cgal::RemeshSelfIntersectionsParam const&,   
+Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&,   
+Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Epeck::FT, -1, 3, 0, -1, 3> >&,   
+Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&,   
+Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&,   
+Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
+template bool igl::copyleft::cgal::intersect_other<Eigen::Matrix<CGAL::Epeck::FT, -1, -1, 1, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<CGAL::Epeck::FT, -1, -1, 1, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<CGAL::Epeck::FT, -1, -1, 1, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(
+Eigen::MatrixBase<Eigen::Matrix<CGAL::Epeck::FT, -1, -1, 1, -1, -1> > const&, 
+Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, 
+Eigen::MatrixBase<Eigen::Matrix<CGAL::Epeck::FT, -1, -1, 1, -1, -1> > const&, 
+Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, igl::copyleft::cgal::RemeshSelfIntersectionsParam const&, 
+Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, 
+Eigen::PlainObjectBase<Eigen::Matrix<CGAL::Epeck::FT, -1, -1, 1, -1, -1> >&, 
+Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, 
+Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&, 
+Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
 #endif

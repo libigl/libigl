@@ -8,6 +8,7 @@
 #ifndef IGL_MOD_H
 #define IGL_MOD_H
 #include "igl_inline.h"
+#include "PlainMatrix.h"
 #include <Eigen/Core>
 namespace igl
 {
@@ -18,13 +19,13 @@ namespace igl
   /// @param[out] B  m by n matrix
   template <typename DerivedA, typename DerivedB>
   IGL_INLINE void mod(
-    const Eigen::PlainObjectBase<DerivedA> & A,
+    const Eigen::MatrixBase<DerivedA> & A,
     const int base,
     Eigen::PlainObjectBase<DerivedB> & B);
   /// \overload
   template <typename DerivedA>
-  IGL_INLINE DerivedA mod(
-    const Eigen::PlainObjectBase<DerivedA> & A, const int base);
+  IGL_INLINE igl::PlainMatrix<DerivedA> mod(
+    const Eigen::MatrixBase<DerivedA> & A, const int base);
 }
 #ifndef IGL_STATIC_LIBRARY
 #include "mod.cpp"

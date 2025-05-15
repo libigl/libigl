@@ -27,9 +27,9 @@ namespace igl
   ///
   template <typename DerivedV, typename DerivedF, typename DerivedO>
   IGL_INLINE void line_field_mismatch(
-    const Eigen::PlainObjectBase<DerivedV> &V,
-    const Eigen::PlainObjectBase<DerivedF> &F,
-    const Eigen::PlainObjectBase<DerivedV> &PD1,
+    const Eigen::MatrixBase<DerivedV> &V,
+    const Eigen::MatrixBase<DerivedF> &F,
+    const Eigen::MatrixBase<DerivedV> &PD1,
     const bool isCombed,
     Eigen::PlainObjectBase<DerivedO> &mismatch);
 }

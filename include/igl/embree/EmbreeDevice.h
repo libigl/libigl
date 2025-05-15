@@ -11,7 +11,7 @@
 
 #ifndef IGL_EMBREE_EMBREE_DEVICE_H
 #define IGL_EMBREE_EMBREE_DEVICE_H
-#include <embree3/rtcore.h>
+#include <embree4/rtcore.h>
 #include <iostream>
 
 namespace igl

@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2016 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "trim_with_solid.h"
 #include "assign.h"
@@ -35,10 +35,10 @@ template <
   typename DerivedD,
   typename DerivedJ>
 IGL_INLINE void igl::copyleft::cgal::trim_with_solid(
-  const Eigen::PlainObjectBase<DerivedVA> & VA,
-  const Eigen::PlainObjectBase<DerivedFA> & FA,
-  const Eigen::PlainObjectBase<DerivedVB> & VB,
-  const Eigen::PlainObjectBase<DerivedFB> & FB,
+  const Eigen::MatrixBase<DerivedVA> & VA,
+  const Eigen::MatrixBase<DerivedFA> & FA,
+  const Eigen::MatrixBase<DerivedVB> & VB,
+  const Eigen::MatrixBase<DerivedFB> & FB,
   Eigen::PlainObjectBase<DerivedV> & Vd,
   Eigen::PlainObjectBase<DerivedF> & F,
   Eigen::PlainObjectBase<DerivedD> & D,
@@ -58,10 +58,10 @@ template <
   typename DerivedD,
   typename DerivedJ>
 IGL_INLINE void igl::copyleft::cgal::trim_with_solid(
-  const Eigen::PlainObjectBase<DerivedVA> & VA,
-  const Eigen::PlainObjectBase<DerivedFA> & FA,
-  const Eigen::PlainObjectBase<DerivedVB> & VB,
-  const Eigen::PlainObjectBase<DerivedFB> & FB,
+  const Eigen::MatrixBase<DerivedVA> & VA,
+  const Eigen::MatrixBase<DerivedFA> & FA,
+  const Eigen::MatrixBase<DerivedVB> & VB,
+  const Eigen::MatrixBase<DerivedFB> & FB,
   const TrimWithSolidMethod method,
   Eigen::PlainObjectBase<DerivedV> & Vd,
   Eigen::PlainObjectBase<DerivedF> & F,
@@ -78,13 +78,13 @@ IGL_INLINE void igl::copyleft::cgal::trim_with_solid(
   // new triangulations on faces of A don't match those on faces of B.
   // Specifically it seems you can get T junctions:
   //
-  //             /|\
-  //            / | \
-  //           / B|  \
+  //             ╱|╲
+  //            ╱ | ╲
+  //           ╱ B|  ╲
   //           ---| A ⋅
-  //           \ B|  /
-  //            \ | /
-  //             \|/
+  //           ╲ B|  ╱
+  //            ╲ | ╱
+  //             ╲|╱
   // Probably intersect_other should not be attempting to output a single mesh
   // (i.e., when detect_only=false).
   //
@@ -120,7 +120,7 @@ IGL_INLINE void igl::copyleft::cgal::trim_with_solid(
   //
 
   MatrixX3E V;
-  const auto set_D_via_patches = 
+  const auto set_D_via_patches =
     [&V,&F,&D,&VB,&FB](const int num_patches, const Eigen::VectorXi & P)
   {
     // Aggregate representative query points for each patch
@@ -221,7 +221,7 @@ IGL_INLINE void igl::copyleft::cgal::trim_with_solid(
         VAB << VA,VB;
         Eigen::Matrix<typename DerivedFA::Scalar,Eigen::Dynamic,3> FAB(FA.rows() + FB.rows(),3);
         FAB << FA,FB.array()+VA.rows();
-        /// Sigh. Can't use this because of how it calls remove_unreferenced 
+        /// Sigh. Can't use this because of how it calls remove_unreferenced
         // remesh_self_intersections(VAB,FAB,params,V,F,IF,J);
         {
           Eigen::VectorXi I;
@@ -229,7 +229,7 @@ IGL_INLINE void igl::copyleft::cgal::trim_with_solid(
             VAB, FAB, params, V, F, IF, J, I);
           // Undo self-intersection remeshing in FA
           {
-            Eigen::Array<bool,Eigen::Dynamic,1> avoids_B = 
+            Eigen::Array<bool,Eigen::Dynamic,1> avoids_B =
               Eigen::Array<bool,Eigen::Dynamic,1>::Constant(FA.rows(),1,true);
             for(int p = 0;p<IF.rows();p++)
             {
@@ -298,7 +298,7 @@ IGL_INLINE void igl::copyleft::cgal::trim_with_solid(
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instantiation
-template void igl::copyleft::cgal::trim_with_solid<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int,  -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&,  Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1,  -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&,  Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1,  1> >&);
-template void igl::copyleft::cgal::trim_with_solid<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Array<bool, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Array<bool, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
-template void igl::copyleft::cgal::trim_with_solid<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Array<bool, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, igl::copyleft::cgal::TrimWithSolidMethod, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Array<bool, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
+template void igl::copyleft::cgal::trim_with_solid<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int,  -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&,  Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1,  -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&,  Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1,  1> >&);
+template void igl::copyleft::cgal::trim_with_solid<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Array<bool, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Array<bool, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
+template void igl::copyleft::cgal::trim_with_solid<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Array<bool, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, igl::copyleft::cgal::TrimWithSolidMethod, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> >&, Eigen::PlainObjectBase<Eigen::Array<bool, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
 #endif

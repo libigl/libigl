@@ -22,7 +22,7 @@ namespace igl
   /// @param[out] H #R by 3 list of hsv triplets in [(0,360),(0,1),(0,1)]ⁿ
   template <typename DerivedR,typename DerivedH>
   IGL_INLINE void rgb_to_hsv(
-    const Eigen::PlainObjectBase<DerivedR> & R,
+    const Eigen::MatrixBase<DerivedR> & R,
     Eigen::PlainObjectBase<DerivedH> & H);
 };
 
