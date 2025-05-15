@@ -31,7 +31,10 @@ namespace igl
     Eigen::PlainObjectBase<DerivedGV> & GV,
     Eigen::PlainObjectBase<Derivedside> & side);
   /// \overload
-  /// @param[in]  offset  offset to add to each cell center
+  /// Constructs the voxel grid to fit around a given set of points.
+  ///
+  /// @param[in] V  points that must lie within the grid
+  /// @param[in] offset  distance to pad each side of V's bounding box when determining the extents of the voxel grid.
   template <
     typename DerivedV,
     typename DerivedGV,

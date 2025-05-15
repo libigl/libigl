@@ -27,7 +27,7 @@ namespace igl
   /// \see transpose_blocks
   template <typename DerivedA, typename DerivedB>
   IGL_INLINE void columnize(
-    const Eigen::PlainObjectBase<DerivedA> & A,
+    const Eigen::MatrixBase<DerivedA> & A,
     const int k,
     const int dim,
     Eigen::PlainObjectBase<DerivedB> & B);

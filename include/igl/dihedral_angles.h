@@ -28,22 +28,6 @@ namespace igl
     const Eigen::MatrixBase<DerivedT>& T,
     Eigen::PlainObjectBase<Derivedtheta>& theta,
     Eigen::PlainObjectBase<Derivedcos_theta>& cos_theta);
-  /// \overload
-  /// 
-  /// \brief Intrinsic version.
-  ///
-  /// @param[in] L  #L by 6 list of edge lengths
-  /// @param[in] A  #A by 4 list of face areas
-  template <
-    typename DerivedL, 
-    typename DerivedA, 
-    typename Derivedtheta,
-    typename Derivedcos_theta>
-  IGL_INLINE void dihedral_angles_intrinsic(
-    const Eigen::MatrixBase<DerivedL>& L,
-    const Eigen::MatrixBase<DerivedA>& A,
-    Eigen::PlainObjectBase<Derivedtheta>& theta,
-    Eigen::PlainObjectBase<Derivedcos_theta>& cos_theta);
 }
 
 #ifndef IGL_STATIC_LIBRARY

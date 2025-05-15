@@ -1,9 +1,9 @@
 // This file is part of libigl, a simple c++ geometry processing library.
-// 
+//
 // Copyright (C) 2013 Alec Jacobson <alecjacobson@gmail.com>
-// 
-// This Source Code Form is subject to the terms of the Mozilla Public License 
-// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #ifndef IGL_KKT_INVERSE_H
 #define IGL_KKT_INVERSE_H
@@ -22,10 +22,10 @@ namespace igl
   /// constrained quadratic minimization problem.
   ///
   /// Systems of the form:
-  ///  
-  ///      / A   Aeqᵀ \  / x \ = / b   \
-  ///      \ Aeq    0 /  \ λ /   \ beq /
-  ///     \_____.______/\__.__/ \___.___/
+  ///
+  ///      ╱ A   Aeqᵀ ╲  ╱ x ╲ = ╱ b   ╲
+  ///      ╲ Aeq    0 ╱  ╲ λ ╱   ╲ beq ╱
+  ///     ╲_____.______╱╲__.__╱ ╲___.___╱
   ///           M          z        c
   ///
   /// Arise, for example, when solve convex, linear equality constrained
@@ -38,7 +38,7 @@ namespace igl
   ///
   ///     S = [In 0] M⁻¹
   ///
-  ///     so that 
+  ///     so that
   ///
   ///     x = S c
   ///
@@ -53,7 +53,7 @@ namespace igl
   template <typename T>
   IGL_INLINE void kkt_inverse(
     const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>& A,
-    const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>& Aeq,    
+    const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>& Aeq,
     const bool use_lu_decomposition,
     Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>& S);
 }

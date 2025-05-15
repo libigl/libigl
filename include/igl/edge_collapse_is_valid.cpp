@@ -13,13 +13,19 @@
 #include "list_to_matrix.h"
 #include <vector>
 
+template <
+  typename DerivedF,
+  typename DerivedE,
+  typename DerivedEMAP,
+  typename DerivedEF,
+  typename DerivedEI>
 IGL_INLINE bool igl::edge_collapse_is_valid(
   const int e,
-  const Eigen::MatrixXi & F,
-  const Eigen::MatrixXi & E,
-  const Eigen::VectorXi & EMAP,
-  const Eigen::MatrixXi & EF,
-  const Eigen::MatrixXi & EI)
+  const Eigen::MatrixBase<DerivedF> & F,
+  const Eigen::MatrixBase<DerivedE> & E,
+  const Eigen::MatrixBase<DerivedEMAP> & EMAP,
+  const Eigen::MatrixBase<DerivedEF> & EF,
+  const Eigen::MatrixBase<DerivedEI> & EI)
 {
   using namespace Eigen;
   using namespace std;
@@ -39,13 +45,9 @@ IGL_INLINE bool igl::edge_collapse_is_valid(
   // http://stackoverflow.com/a/27049418/148668
   {
     // all vertex neighbors around edge, including the two vertices of the edge
-    const auto neighbors = [](
+    const auto neighbors = [&F,&E,&EMAP,&EF,&EI](
       const int e,
-      const bool ccw,
-      const Eigen::MatrixXi & F,
-      const Eigen::VectorXi & EMAP,
-      const Eigen::MatrixXi & EF,
-      const Eigen::MatrixXi & EI) 
+      const bool ccw)
     {
       vector<int> N,uN;
       vector<int> V2Fe = circulation(e, ccw,EMAP,EF,EI);
@@ -61,8 +63,8 @@ IGL_INLINE bool igl::edge_collapse_is_valid(
       list_to_matrix(uN,uNm);
       return uNm;
     };
-    VectorXi Ns = neighbors(e, eflip,F,EMAP,EF,EI);
-    VectorXi Nd = neighbors(e,!eflip,F,EMAP,EF,EI);
+    VectorXi Ns = neighbors(e, eflip);
+    VectorXi Nd = neighbors(e,!eflip);
     VectorXi Nint = igl::intersect(Ns,Nd);
     if(Nint.size() != 4)
     {
@@ -121,3 +123,7 @@ IGL_INLINE bool igl::edge_collapse_is_valid(
   
   return true;
 }
+
+#ifdef IGL_STATIC_LIBRARY
+// Explicit template instantiation
+#endif

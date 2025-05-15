@@ -2,6 +2,7 @@
 #define IGL_INTERSECTION_BLOCKING_COLLAPSE_EDGE_CALLBACKS_H
 #include "igl_inline.h"
 #include "decimate_callback_types.h"
+#include "placeholders.h"
 #include <Eigen/Core>
 #include <vector>
 namespace igl
@@ -59,7 +60,7 @@ namespace igl
   ///    post_collapse,
   ///    E, EMAP, EF, EI,
   ///    U, G, J, I);
-  ///  G = G(igl::find((J.array()<orig_m).eval()), Eigen::all).eval();
+  ///  G = G(igl::find((J.array()<orig_m).eval()), igl::placeholders::all).eval();
   ///  {
   ///    Eigen::VectorXi _;
   ///    igl::remove_unreferenced(Eigen::MatrixXd(U),Eigen::MatrixXi(G),U,G,_);

@@ -49,7 +49,6 @@ namespace igl
   /// @param[in] C  #polygons+1 list of cumulative polygon sizes so that C(i+1)-C(i) = size of
   ///     the ith polygon, and so I(C(i)) through I(C(i+1)-1) are the indices of
   ///     the ith polygon
-  /// @param[in] corner_threshold  threshold in degrees on sharp angles
   /// @param[out] N  #polygons by 3 list of per face normals
   /// @param[out] VV  #I+#polygons by 3 list of auxiliary triangle mesh vertex positions
   /// @param[out] FF  #I by 3 list of triangle indices into rows of VV

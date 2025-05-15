@@ -1,4 +1,5 @@
 #include "is_self_intersecting.h"
+#include "../../placeholders.h"
 #include "../../find.h"
 #include "../../doublearea.h"
 #include "../../remove_unreferenced.h"
@@ -10,8 +11,8 @@ template <
   typename DerivedV,
   typename DerivedF>
 bool igl::copyleft::cgal::is_self_intersecting(
-  const Eigen::PlainObjectBase<DerivedV> & V,
-  const Eigen::PlainObjectBase<DerivedF> & F)
+  const Eigen::MatrixBase<DerivedV> & V,
+  const Eigen::MatrixBase<DerivedF> & F)
 {
   assert(V.cols() == 3);
   assert(F.cols() == 3);
@@ -20,7 +21,7 @@ bool igl::copyleft::cgal::is_self_intersecting(
   const auto valid = 
     igl::find((F.array() != IGL_COLLAPSE_EDGE_NULL).rowwise().any().eval());
   // Extract only the valid faces
-  MatrixF FF = F(valid, Eigen::all);
+  MatrixF FF = F(valid, igl::placeholders::all);
   // Remove unreferneced vertices
   MatrixV VV;
   {
@@ -59,5 +60,5 @@ bool igl::copyleft::cgal::is_self_intersecting(
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template specialization
-template bool igl::copyleft::cgal::is_self_intersecting<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&);
+template bool igl::copyleft::cgal::is_self_intersecting<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&);
 #endif

@@ -50,9 +50,9 @@ namespace igl
         typename DerivedL,
         typename DerivedW>
       IGL_INLINE bool propagate_winding_numbers(
-        const Eigen::PlainObjectBase<DerivedV>& V,
-        const Eigen::PlainObjectBase<DerivedF>& F,
-        const Eigen::PlainObjectBase<DerivedL>& labels,
+        const Eigen::MatrixBase<DerivedV>& V,
+        const Eigen::MatrixBase<DerivedF>& F,
+        const Eigen::MatrixBase<DerivedL>& labels,
         Eigen::PlainObjectBase<DerivedW>& W);
       // \overload
       //
@@ -74,16 +74,16 @@ namespace igl
         typename DerivedL,
         typename DerivedW>
       IGL_INLINE bool propagate_winding_numbers(
-        const Eigen::PlainObjectBase<DerivedV>& V,
-        const Eigen::PlainObjectBase<DerivedF>& F,
-        const Eigen::PlainObjectBase<DeriveduE>& uE,
-        const Eigen::PlainObjectBase<DeriveduEC>& uEC,
-        const Eigen::PlainObjectBase<DeriveduEE>& uEE,
+        const Eigen::MatrixBase<DerivedV>& V,
+        const Eigen::MatrixBase<DerivedF>& F,
+        const Eigen::MatrixBase<DeriveduE>& uE,
+        const Eigen::MatrixBase<DeriveduEC>& uEC,
+        const Eigen::MatrixBase<DeriveduEE>& uEE,
         const size_t num_patches,
-        const Eigen::PlainObjectBase<DerivedP>& P,
+        const Eigen::MatrixBase<DerivedP>& P,
         const size_t num_cells,
-        const Eigen::PlainObjectBase<DerivedC>& C,
-        const Eigen::PlainObjectBase<DerivedL>& labels,
+        const Eigen::MatrixBase<DerivedC>& C,
+        const Eigen::MatrixBase<DerivedL>& labels,
         Eigen::PlainObjectBase<DerivedW>& W);
     }
   }

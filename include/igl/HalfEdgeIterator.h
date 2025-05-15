@@ -69,10 +69,10 @@ namespace igl
 
     /// Change to next edge skipping the border
     ///      _________
-    ///     /\ c | b /\
-    ///    /  \  |  /  \
-    ///   / d  \ | / a  \
-    ///  /______\|/______\
+    ///     ╱╲ c | b ╱╲
+    ///    ╱  ╲  |  ╱  ╲
+    ///   ╱ d  ╲ | ╱ a  ╲
+    ///  ╱______╲|╱______╲
     ///          v
     /// In this example, if a and d are of-border and the pos is iterating
     /// counterclockwise, this method iterate through the faces incident on vertex

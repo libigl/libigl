@@ -32,7 +32,7 @@ namespace igl
       ///   adjacency_list[j] will contain the entry {i, true, x}
       template < typename DerivedC >
       IGL_INLINE void cell_adjacency(
-          const Eigen::PlainObjectBase<DerivedC>& per_patch_cells,
+          const Eigen::MatrixBase<DerivedC>& per_patch_cells,
           const size_t num_cells,
           std::vector<std::set<std::tuple<typename DerivedC::Scalar, bool, size_t> > >&
           adjacency_list);

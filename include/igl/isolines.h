@@ -28,7 +28,7 @@ namespace igl
   ///
   /// @param[in] V  #V by dim list of mesh vertex positions
   /// @param[in] F  #F by 3 list of mesh triangle indices into V
-  /// @param[in] S  #S by 1 list of per-vertex scalar values
+  /// @param[in] S  #V by 1 list of per-vertex scalar values
   /// @param[in] vals  #vals by 1 list of values to compute isolines for
   /// @param[out] iV  #iV by dim list of isoline vertex positions
   /// @param[out] iE  #iE by 2 list of edge indices into iV

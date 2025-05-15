@@ -20,8 +20,6 @@ namespace igl
   IGL_INLINE void triangle_fan(
     const Eigen::MatrixBase<DerivedE> & E,
     Eigen::PlainObjectBase<Derivedcap> & cap);
-  /// \overload
-  IGL_INLINE Eigen::MatrixXi triangle_fan( const Eigen::MatrixXi & E);
 }
 #ifndef IGL_STATIC_LIBRARY
 #  include "triangle_fan.cpp"

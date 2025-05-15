@@ -32,10 +32,10 @@ int main(int argc, char *argv[])
   tictoc();
   // More patches, less intersection handling
   igl::copyleft::cgal::trim_with_solid(VA, FA, VB, FB, CHECK_EACH_PATCH, VC, FC, D, J);
-  printf("CHECK_EACH_PATCH: %g secs, |FC| = %d, |D| = %d\n", tictoc(),FC.rows(),D.count());
+  printf("CHECK_EACH_PATCH: %g secs, |FC| = %td, |D| = %td\n", tictoc(),FC.rows(),D.count());
   // More intersection handling, fewer patches
   igl::copyleft::cgal::trim_with_solid(VA, FA, VB, FB, RESOLVE_BOTH_AND_RESTORE_THEN_CHECK_EACH_PATCH, VC, FC, D, J);
-  printf("RESOLVE_BOTH_...: %g secs, |FC| = %d, |D| = %d\n", tictoc(),FC.rows(),D.count());
+  printf("RESOLVE_BOTH_...: %g secs, |FC| = %td, |D| = %td\n", tictoc(),FC.rows(),D.count());
 
   igl::opengl::glfw::Viewer vr;
   vr.data().set_mesh(VC, FC);

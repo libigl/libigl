@@ -10,6 +10,7 @@
 #include "cotmatrix.h"
 #include "sort.h"
 #include "massmatrix.h"
+#include "placeholders.h"
 #include <iostream>
 
 template <
@@ -163,7 +164,7 @@ IGL_INLINE bool igl::eigs(
   // finally sort
   VectorXi I;
   igl::sort(S,1,false,sS,I);
-  sU = U(Eigen::all,I);
+  sU = U(igl::placeholders::all,I);
   sS /= rescale;
   sU /= sqrt(rescale);
   return true;

@@ -21,8 +21,8 @@ namespace igl
   /// @param[in] X  eigen double matrix of vertex positions  #X by 3
   /// @param[in] Tri  #Tri eigen integer matrix of triangular faces indices into vertex positions
   /// @param[in] Tet  #Tet eigen integer matrix of tetrahedral indices into vertex positions
-  /// @param[in] TriTag #Tri eigen integer vector of tags associated with surface faces
-  /// @param[in] TetTag #Tet eigen integer vector of tags associated with volume elements
+  /// @param[in] TriTag #Tri eigen integer vector of tags associated with surface faces {0s}
+  /// @param[in] TetTag #Tet eigen integer vector of tags associated with volume elements {0s}
   /// @param[in] XFields #XFields list of strings with field names associated with nodes
   /// @param[in] XF      #XFields list of eigen double matrices, fields associated with nodes 
   /// @param[in] EFields #EFields list of strings with field names associated with elements
@@ -35,19 +35,28 @@ namespace igl
   /// \bug only 3D information is supported
   /// \bug the tag id is duplicated for physical (0) and elementary (1)
   /// \bug same element fields are expected to be associated with surface elements and volumetric elements
+  template <
+    typename DerivedX,
+    typename DerivedTri,
+    typename DerivedTet,
+    typename DerivedTriTag,
+    typename DerivedTetTag,
+    typename MatrixXF,
+    typename MatrixTriF,
+    typename MatrixTetF
+    >
   IGL_INLINE bool writeMSH(
     const std::string   &msh,
-    const Eigen::MatrixXd &X,
-    const Eigen::MatrixXi &Tri,
-    const Eigen::MatrixXi &Tet,
-    const Eigen::MatrixXi &TriTag,
-    const Eigen::MatrixXi &TetTag,
-    const std::vector<std::string>     &XFields,
-    const std::vector<Eigen::MatrixXd> &XF,
-    const std::vector<std::string>     &EFields,
-    const std::vector<Eigen::MatrixXd> &TriF,
-    const std::vector<Eigen::MatrixXd> &TetF);
-  
+    const Eigen::MatrixBase<DerivedX> &X,
+    const Eigen::MatrixBase<DerivedTri> &Tri,
+    const Eigen::MatrixBase<DerivedTet> &Tet,
+    const Eigen::MatrixBase<DerivedTriTag> &TriTag,
+    const Eigen::MatrixBase<DerivedTetTag> &TetTag,
+    const std::vector<std::string> &XFields,
+    const std::vector<MatrixXF> &XF,
+    const std::vector<std::string>  &EFields,
+    const std::vector<MatrixTriF> &TriF,
+    const std::vector<MatrixTetF> &TetF);
 }
 
 #ifndef IGL_STATIC_LIBRARY

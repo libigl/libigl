@@ -40,9 +40,9 @@ namespace igl
         typename DerivedI,
         typename Kernel>
       IGL_INLINE void submesh_aabb_tree(
-        const Eigen::PlainObjectBase<DerivedV>& V,
-        const Eigen::PlainObjectBase<DerivedF>& F,
-        const Eigen::PlainObjectBase<DerivedI>& I,
+        const Eigen::MatrixBase<DerivedV>& V,
+        const Eigen::MatrixBase<DerivedF>& F,
+        const Eigen::MatrixBase<DerivedI>& I,
         CGAL::AABB_tree<
           CGAL::AABB_traits<
             Kernel, 

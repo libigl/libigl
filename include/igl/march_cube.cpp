@@ -37,91 +37,97 @@ IGL_INLINE void igl::march_cube(
   std::unordered_map<std::int64_t,int> & E2V)
 {
 
-// These consts get stored reasonably
+  // These consts get stored reasonably
 #include "marching_cubes_tables.h"
 
   // Seems this is also successfully inlined
+  //
+  // Returns whether the vertex is new
   const auto ij2vertex =
-    [&E2V,&V,&n,&GV]
-      (const Index & i, const Index & j, const Scalar & t)->Index
-  {
-    // Seems this is successfully inlined.
-    const auto ij2key = [](std::int32_t i,std::int32_t j)
+    [&E2V,&V,&n]
+    (const Index & i, const Index & j, Index & v)->bool
     {
-      if(i>j){ std::swap(i,j); }
-      std::int64_t ret = 0;
-      ret |= i;
-      ret |= static_cast<std::int64_t>(j) << 32;
-      return ret;
-    };
-    const auto key = ij2key(i,j);
-    const auto it = E2V.find(key);
-    int v = -1;
-    if(it == E2V.end())
-    {
-      // new vertex
-      if(n==V.rows()){ V.conservativeResize(V.rows()*2+1,V.cols()); }
-      V.row(n) = GV.row(i) + t*(GV.row(j) - GV.row(i));
-      v = n;
-      E2V[key] = v;
-      n++;
-    }else
-    {
-      v = it->second;
-    }
-    return v;
-  };
+      // Seems this is successfully inlined.
+      const auto ij2key = [](std::int32_t i,std::int32_t j)
+      {
+        if(i>j){ std::swap(i,j); }
+        std::int64_t ret = 0;
+        ret |= i;
+        ret |= static_cast<std::int64_t>(j) << 32;
+        return ret;
+      };
+      const auto key = ij2key(i,j);
+      const auto it = E2V.find(key);
+      if(it == E2V.end())
+      {
+        // new vertex
+        if(n==V.rows()){ V.conservativeResize(V.rows()*2+1,V.cols()); }
+        v = n;
+        E2V[key] = v;
+        n++;
+        return true;
+      }else
+      {
+        v = it->second;
+        return false;
+      }
 
-    int c_flags = 0;
-    for(int c = 0; c < 8; c++)
-    {
-      if(cS(c) > isovalue){ c_flags |= 1<<c; }
-    }
-    //Find which edges are intersected by the surface
-    int e_flags = aiCubeEdgeFlags[c_flags];
-    //If the cube is entirely inside or outside of the surface, then there will be no intersections
-    if(e_flags == 0) { return; }
-    //Find the point of intersection of the surface with each edge
-    //Then find the normal to the surface at those points
-    Eigen::Matrix<Index,12,1> edge_vertices;
-    for(int e = 0; e < 12; e++)
-    {
+    };
+
+  int c_flags = 0;
+  for(int c = 0; c < 8; c++)
+  {
+    if(cS(c) > isovalue){ c_flags |= 1<<c; }
+  }
+  //Find which edges are intersected by the surface
+  int e_flags = aiCubeEdgeFlags[c_flags];
+  //If the cube is entirely inside or outside of the surface, then there will be no intersections
+  if(e_flags == 0) { return; }
+  //Find the point of intersection of the surface with each edge
+  //Then find the normal to the surface at those points
+  Eigen::Matrix<Index,12,1> edge_vertices;
+  for(int e = 0; e < 12; e++)
+  {
 #ifndef NDEBUG
-      edge_vertices[e] = -1;
+    edge_vertices[e] = -1;
 #endif
-      //if there is an intersection on this edge
-      if(e_flags & (1<<e))
+    //if there is an intersection on this edge
+    if(e_flags & (1<<e))
+    {
+      // record global index into local table
+      const Index & i = cI(a2eConnection[e][0]);
+      const Index & j = cI(a2eConnection[e][1]);
+      Index & v = edge_vertices[e];
+      if(ij2vertex(i,j,v))
       {
         // find crossing point assuming linear interpolation along edges
         const Scalar & a = cS(a2eConnection[e][0]);
         const Scalar & b = cS(a2eConnection[e][1]);
+        // This t is being recomputed each time an edge is seen.
         Scalar t;
-        {
-          const Scalar delta = b-a;
-          if(delta == 0) { t = 0.5; }
-          t = (isovalue - a)/delta;
-        };
-        // record global index into local table
-        edge_vertices[e] = 
-          ij2vertex(cI(a2eConnection[e][0]),cI(a2eConnection[e][1]),t);
-        assert(edge_vertices[e] >= 0);
-        assert(edge_vertices[e] < n);
+        const Scalar delta = b-a;
+        if(delta == 0) { t = 0.5; }
+        t = (isovalue - a)/delta;
+        V.row(v) = GV.row(i) + t*(GV.row(j) - GV.row(i));
       }
+      assert(v >= 0);
+      assert(v < n);
     }
-    // Insert the triangles that were found.  There can be up to five per cube
-    for(int f = 0; f < 5; f++)
-    {
-      if(a2fConnectionTable[c_flags][3*f] < 0) break;
-      if(m==F.rows()){ F.conservativeResize(F.rows()*2+1,F.cols()); }
-      assert(edge_vertices[a2fConnectionTable[c_flags][3*f+0]]>=0);
-      assert(edge_vertices[a2fConnectionTable[c_flags][3*f+1]]>=0);
-      assert(edge_vertices[a2fConnectionTable[c_flags][3*f+2]]>=0);
-      F.row(m) <<
-        edge_vertices[a2fConnectionTable[c_flags][3*f+0]],
-        edge_vertices[a2fConnectionTable[c_flags][3*f+1]],
-        edge_vertices[a2fConnectionTable[c_flags][3*f+2]];
+  }
+  // Insert the triangles that were found.  There can be up to five per cube
+  for(int f = 0; f < 5; f++)
+  {
+    if(a2fConnectionTable[c_flags][3*f] < 0) break;
+    if(m==F.rows()){ F.conservativeResize(F.rows()*2+1,F.cols()); }
+    assert(edge_vertices[a2fConnectionTable[c_flags][3*f+0]]>=0);
+    assert(edge_vertices[a2fConnectionTable[c_flags][3*f+1]]>=0);
+    assert(edge_vertices[a2fConnectionTable[c_flags][3*f+2]]>=0);
+    F.row(m) <<
+      edge_vertices[a2fConnectionTable[c_flags][3*f+0]],
+      edge_vertices[a2fConnectionTable[c_flags][3*f+1]],
+      edge_vertices[a2fConnectionTable[c_flags][3*f+2]];
       m++;
-    }
+  }
 }
 
 

@@ -1,4 +1,5 @@
 #include <igl/floor.h>
+#include <igl/placeholders.h>
 #include <igl/readOFF.h>
 #include <igl/find.h>
 #include <igl/opengl/glfw/Viewer.h>
@@ -28,13 +29,13 @@ int main(int argc, char *argv[])
   // Red for each in K
   MatrixXd R = RowVector3d(1.0,0.3,0.3).replicate(K.rows(),1);
   // C(K,:) = R
-  C(K,Eigen::all) = R;
+  C(K,igl::placeholders::all) = R;
   // igl::slice_into(R,K,1,C); no longer needed
 
   Eigen::Array<bool,Eigen::Dynamic,1> W = Eigen::VectorXd::Random(F.rows()).array()>0.5;
   // Set 1/4 of the colors  to blue
   MatrixXd B = RowVector3d(0.3,0.3,1.0).replicate(W.count(),1);
-  C(igl::find(W),Eigen::all) = B;
+  C(igl::find(W),igl::placeholders::all) = B;
 
   // Plot the mesh with pseudocolors
   igl::opengl::glfw::Viewer viewer;

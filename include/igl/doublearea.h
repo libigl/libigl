@@ -20,7 +20,7 @@ namespace igl
   /// @tparam  DeriveddblA  derived type of eigen matrix for dblA (e.g. derived from
   ///     MatrixXd)
   /// @param[in] V  #V by dim list of mesh vertex positions
-  /// @param[in] F  #F by simplex_size list of mesh faces (must be triangles or quads)
+  /// @param[in] F  #F by (3|4) list of mesh faces (must be triangles or quads)
   /// @param[out] dblA  #F list of triangle[quad] double areas (SIGNED only for 2D input)
   ///
   /// \bug For dim==3 complexity is O(#V + #F). Not just O(#F). This is a big deal
@@ -91,7 +91,7 @@ namespace igl
   /// Computes twice the area for each input quadrilateral.
   ///
   /// @param[in] V  #V by dim list of mesh vertex positions
-  /// @param[in] F  #F by simplex_size list of mesh faces (must be quadrilaterals)
+  /// @param[in] F  #F by 4 list of mesh faces 
   /// @param[out] dblA  #F list of quadrilateral double areas
   ///
   /// \fileinfo

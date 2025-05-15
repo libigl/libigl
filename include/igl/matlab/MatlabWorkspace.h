@@ -64,7 +64,7 @@ namespace igl
         /// \bug Assumes DerivedM is using column major ordering
         template <typename DerivedM>
         inline MatlabWorkspace& save(
-          const Eigen::PlainObjectBase<DerivedM>& M,
+          const Eigen::MatrixBase<DerivedM>& M,
           const std::string & name);
         /// \overload
         /// @tparam MT  sparse matrix type (e.g. double)
@@ -290,7 +290,7 @@ inline bool igl::matlab::MatlabWorkspace::read(const std::string & path)
 // Treat everything as a double
 template <typename DerivedM>
 inline igl::matlab::MatlabWorkspace& igl::matlab::MatlabWorkspace::save(
-  const Eigen::PlainObjectBase<DerivedM>& M,
+  const Eigen::MatrixBase<DerivedM>& M,
   const std::string & name)
 {
   using namespace std;

@@ -15,14 +15,14 @@ TEST_CASE("ray_mesh_intersect: one_triangle", "[igl]")
   Eigen::MatrixXi F(1,3);
   F.row(0) << 0,1,2;
   
-  Eigen::Vector3f source{0.5, 0.5, -1.0};
-  Eigen::Vector3f direction{0.0, 0.0, 1.0};
+  Eigen::Vector3d source{0.5, 0.5, -1.0};
+  Eigen::Vector3d direction{0.0, 0.0, 1.0};
   
-  igl::Hit hit;
+  igl::Hit<double> hit;
   REQUIRE(igl::ray_mesh_intersect(source, direction, V, F, hit) == true);
   REQUIRE(hit.t == Approx(1.0));
   
-  std::vector<igl::Hit> hits;
+  std::vector<igl::Hit<double>> hits;
   REQUIRE(igl::ray_mesh_intersect(source, direction, V, F, hits) == true);
   REQUIRE(hits.size() == 1);
   REQUIRE(hits.front().t == Approx(1.0));
@@ -75,7 +75,7 @@ TEST_CASE("ray_mesh_intersect: corner-case", "[igl]" IGL_MAYFAIL_WIN)
     Eigen::Vector3f origin(eps, eps, 1.f + eps);
     Eigen::Vector3f direction(0.f, 0.f, -1.f);
 
-    std::vector<igl::Hit> hits, hits_bvh;
+    std::vector<igl::Hit<float>> hits, hits_bvh;
     bool is_hit = igl::ray_mesh_intersect(origin, direction, vertices, faces, hits);
     bool is_hit_bvh = mesh_bvh.intersect_ray(vertices, faces, origin, direction, hits_bvh);
 
@@ -107,7 +107,7 @@ TEST_CASE("ray_mesh_intersect: corner-case2", "[igl]")
   origin << -5.411622047424316, -0.02165498770773411, 0.7916983366012573;
   direction << 0.9475222229957581, 0.2885690927505493, 0.1375846415758133;
 
-  std::vector<igl::Hit> hits, hits_bvh;
+  std::vector<igl::Hit<float>> hits, hits_bvh;
   bool is_hit = igl::ray_mesh_intersect(origin, direction, vertices, faces, hits);
   Eigen::AlignedBox3f box;
   box.extend(vertices.row(0).transpose());

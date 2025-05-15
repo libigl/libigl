@@ -26,16 +26,25 @@ namespace igl
   ///
   /// \see collapse_edge
   template <typename DerivedV, int DIM> class AABB;
+
+  template <
+    typename Derivedp,
+    typename DerivedV,
+    typename DerivedF,
+    typename DerivedE,
+    typename DerivedEMAP,
+    typename DerivedEF,
+    typename DerivedEI>
   IGL_INLINE bool collapse_edge_would_create_intersections(
     const int e,
-    const Eigen::RowVectorXd & p,
-    const Eigen::MatrixXd & V,
-    const Eigen::MatrixXi & F,
-    const Eigen::MatrixXi & E,
-    const Eigen::VectorXi & EMAP,
-    const Eigen::MatrixXi & EF,
-    const Eigen::MatrixXi & EI,
-    const igl::AABB<Eigen::MatrixXd,3> & tree,
+    const Eigen::MatrixBase<Derivedp> & p,
+    const Eigen::MatrixBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedF> & F,
+    const Eigen::MatrixBase<DerivedE> & E,
+    const Eigen::MatrixBase<DerivedEMAP> & EMAP,
+    const Eigen::MatrixBase<DerivedEF> & EF,
+    const Eigen::MatrixBase<DerivedEI> & EI,
+    const igl::AABB<DerivedV,3> & tree,
     const int inf_face_id = -1);
 }
 #ifndef IGL_STATIC_LIBRARY

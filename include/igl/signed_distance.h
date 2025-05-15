@@ -217,7 +217,7 @@ namespace igl
     const AABB<DerivedV,3> & tree,
     const Eigen::MatrixBase<DerivedV> & V,
     const Eigen::MatrixBase<DerivedF> & F,
-    const igl::WindingNumberAABB<Derivedq,DerivedV,DerivedF> & hier,
+    const igl::WindingNumberAABB<typename DerivedV::Scalar,typename DerivedF::Scalar> & hier,
     const Eigen::MatrixBase<Derivedq> & q);
   /// \overload
   /// @param[out] s  sign
@@ -234,7 +234,7 @@ namespace igl
     const AABB<DerivedV,3> & tree,
     const Eigen::MatrixBase<DerivedV> & V,
     const Eigen::MatrixBase<DerivedF> & F,
-    const igl::WindingNumberAABB<Derivedq,DerivedV,DerivedF> & hier,
+    const igl::WindingNumberAABB<typename DerivedV::Scalar,typename DerivedF::Scalar> & hier,
     const Eigen::MatrixBase<Derivedq> & q,
     Scalar & s,
     Scalar & sqrd,

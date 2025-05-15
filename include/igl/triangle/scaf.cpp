@@ -30,6 +30,7 @@
 #include "../slice.h"
 #include "../slice_into.h"
 #include "../slim.h"
+#include "../placeholders.h"
 #include "../mapping_energy_with_jacobians.h"
 
 #include <map>
@@ -433,7 +434,7 @@ IGL_INLINE void build_surface_linear_system(const SCAFData &s, Eigen::SparseMatr
   }
   else
   {
-    MatrixXd bnd_pos = s.w_uv(bnd_ids, Eigen::all);
+    MatrixXd bnd_pos = s.w_uv(bnd_ids, igl::placeholders::all);
 
     ArrayXi known_ids(bnd_ids.size() * dim);
     ArrayXi unknown_ids((v_n - bnd_ids.rows()) * dim);
@@ -494,7 +495,7 @@ IGL_INLINE void build_scaffold_linear_system(const SCAFData &s, Eigen::SparseMat
 
   auto bnd_n = bnd_ids.size();
   IGL_ASSERT(bnd_n > 0);
-  MatrixXd bnd_pos = s.w_uv(bnd_ids, Eigen::all);
+  MatrixXd bnd_pos = s.w_uv(bnd_ids, igl::placeholders::all);
 
   ArrayXi known_ids(bnd_ids.size() * dim);
   ArrayXi unknown_ids((v_n - bnd_ids.rows()) * dim);
@@ -565,7 +566,7 @@ IGL_INLINE void solve_weighted_arap(SCAFData &s, Eigen::MatrixXd &uv)
   const auto v_n = s.v_num;
   const auto bnd_n = bnd_ids.size();
   assert(bnd_n > 0);
-  MatrixXd bnd_pos = s.w_uv(bnd_ids, Eigen::all);
+  MatrixXd bnd_pos = s.w_uv(bnd_ids, igl::placeholders::all);
 
   ArrayXi known_ids(bnd_n * dim);
   ArrayXi unknown_ids((v_n - bnd_n) * dim);
@@ -622,11 +623,11 @@ IGL_INLINE void igl::triangle::scaf_precompute(
     const Eigen::MatrixXd &V,
     const Eigen::MatrixXi &F,
     const Eigen::MatrixXd &V_init,
-    igl::triangle::SCAFData &data,
-    igl::MappingEnergyType slim_energy,
-    Eigen::VectorXi &b,
-    Eigen::MatrixXd &bc,
-    double soft_p)
+    const igl::MappingEnergyType slim_energy,
+    const Eigen::VectorXi &b,
+    const Eigen::MatrixXd &bc,
+    const double soft_p,
+    igl::triangle::SCAFData &data)
 {
   Eigen::MatrixXd CN;
   Eigen::MatrixXi FN;
@@ -678,7 +679,7 @@ IGL_INLINE void igl::triangle::scaf_precompute(
   }
 }
 
-IGL_INLINE Eigen::MatrixXd igl::triangle::scaf_solve(igl::triangle::SCAFData &s, int iter_num)
+IGL_INLINE Eigen::MatrixXd igl::triangle::scaf_solve(const int iter_num, igl::triangle::SCAFData &s)
 {
   using namespace std;
   using namespace Eigen;
