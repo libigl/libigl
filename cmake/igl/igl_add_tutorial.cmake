@@ -17,4 +17,13 @@ function(igl_add_tutorial name)
     )
 
     set_target_properties(${name} PROPERTIES FOLDER Libigl_Tutorials)
+
+    # Do this codesign only on macOS
+    # add_custom_command(TARGET your_target POST_BUILD COMMAND codesign -s - $<TARGET_FILE:your_target>
+    if(APPLE)
+      add_custom_command(TARGET ${name} POST_BUILD
+        COMMAND codesign -s - $<TARGET_FILE:${name}>
+        COMMENT "Codesigning ${name}"
+      )
+    endif()
 endfunction()
