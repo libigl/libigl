@@ -1,4 +1,5 @@
 #include "super_fibonacci.h"
+#include "PI.h"
 #include <cmath>
 
 template <typename DerivedQ>
@@ -16,7 +17,7 @@ IGL_INLINE void igl::super_fibonacci(
   for (int i = 0; i < n; i++)
   {
     Scalar s = (Scalar)i+0.5;
-    Scalar ab = 2.0 * M_PI * s;
+    Scalar ab = 2.0 * igl::PI * s;
     Scalar alpha = ab * mc0;
     Scalar beta = ab * mc1;
     s *= dn;
