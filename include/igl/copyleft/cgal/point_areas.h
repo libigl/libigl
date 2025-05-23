@@ -6,8 +6,8 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/
 
-#ifndef IGL_POINT_AREAS_H
-#define IGL_POINT_AREAS_H
+#ifndef IGL_COPYLEFT_CGAL_POINT_AREAS_H
+#define IGL_COPYLEFT_CGAL_POINT_AREAS_H
 #include "../../igl_inline.h"
 #include <Eigen/Core>
 namespace igl
