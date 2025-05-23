@@ -1,6 +1,7 @@
 #include "oriented_bounding_box.h"
 #include <CGAL/Aff_transformation_3.h>
-#include <CGAL/Simple_cartesian.h>
+//#include <CGAL/Simple_cartesian.h>
+#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 #include <CGAL/Optimal_bounding_box/oriented_bounding_box.h>
 
 #include <array>
@@ -12,7 +13,8 @@ template <typename DerivedP, typename DerivedR>
     Eigen::PlainObjectBase<DerivedR> & R)
 {
   typedef typename DerivedP::Scalar Scalar;
-  typedef CGAL::Simple_cartesian<Scalar> K;
+  //typedef CGAL::Simple_cartesian<Scalar> K;
+  typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
   typedef typename K::Point_3 Point;
   std::vector<Point> points(P.rows());
   for (int i = 0; i < P.rows(); ++i)
