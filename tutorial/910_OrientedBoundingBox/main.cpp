@@ -53,7 +53,7 @@ int main(int argc, char * argv[])
   Eigen::MatrixXi G;
   igl::copyleft::cgal::convex_hull(V,W,G);
   Eigen::Matrix3d BR;
-  igl::oriented_bounding_box(W, 50000, BR);
+  igl::oriented_bounding_box(W, 50000, igl::ORIENTED_BOUNDING_BOX_MINIMIZE_VOLUME, BR);
   double t_best = tictoc();
 
   // Cube mesh

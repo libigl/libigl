@@ -14,6 +14,13 @@
 #include <vector>
 namespace igl
 {
+  enum OrientedBoundingBoxMinimizeType
+  {
+    ORIENTED_BOUNDING_BOX_MINIMIZE_VOLUME = 0,
+    ORIENTED_BOUNDING_BOX_MINIMIZE_SURFACE_AREA = 1,
+    ORIENTED_BOUNDING_BOX_MINIMIZE_DIAGONAL_LENGTH = 2,
+    NUM_ORIENTED_BOUNDING_BOX_MINIMIZE_TYPES = 3,
+  };
   /// Given a set of points compute the rotation transformation of them such
   /// that their axis-aligned bounding box is as small as possible.
   ///
@@ -21,11 +28,13 @@ namespace igl
   ///
   /// @param[in] P  #P by 3 list of point locations
   /// @param[in] n  number of rotations to try
+  /// @param[in] minimize_type  which quantity to minimize
   /// @param[out] R  rotation matrix
   template <typename DerivedP, typename DerivedR>
   IGL_INLINE void oriented_bounding_box(
     const Eigen::MatrixBase<DerivedP>& P,
     const int n,
+    const OrientedBoundingBoxMinimizeType minimize_type,
     Eigen::PlainObjectBase<DerivedR> & R);
 }
 
@@ -33,4 +42,3 @@ namespace igl
 #include "oriented_bounding_box.cpp"
 #endif
 #endif
-
