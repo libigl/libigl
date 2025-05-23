@@ -21,6 +21,8 @@ namespace igl
       /// Given a set of points compute the rotation transformation of them such
       /// that their axis-aligned bounding box is as small as possible.
       ///
+      /// igl::oriented_bounding_box is often faster and better
+      ///
       /// @param[in] P  #P by 3 list of point locations
       /// @param[out] R  rotation matrix
       template <typename DerivedP, typename DerivedR>
