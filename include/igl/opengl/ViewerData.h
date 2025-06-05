@@ -302,6 +302,9 @@ public:
   /// Invert mesh normals
   bool invert_normals;
 
+  /// Skip lighting and color with RGB = 0.5*N-0.5
+  bool pseudocolor_with_normals;
+
   /// Visualization options
   /// Each option is a binary mask specifying on which viewport each option is set.
   /// When using a single viewport, standard boolean can still be used for simplicity.
@@ -401,6 +404,7 @@ namespace igl
       SERIALIZE_MEMBER(show_custom_labels);
       SERIALIZE_MEMBER(show_texture);
       SERIALIZE_MEMBER(double_sided);
+      SERIALIZE_MEMBER(pseudocolor_with_normals);
       SERIALIZE_MEMBER(point_size);
       SERIALIZE_MEMBER(line_width);
       SERIALIZE_MEMBER(line_color);
