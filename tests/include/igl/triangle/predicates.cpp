@@ -1,5 +1,5 @@
 #include <test_common.h>
-#include <igl/predicates/predicates.h>
+#include <igl/predicates/exactinit.h>
 #include <igl/triangle/triangulate.h>
 #include <limits>
 

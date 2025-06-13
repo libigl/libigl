@@ -8,6 +8,8 @@
 
 #include "delaunay_triangulation.h"
 #include "predicates.h"
+#include "orient2d.h"
+#include "incircle.h"
 #include "../delaunay_triangulation.h"
 
 template<
