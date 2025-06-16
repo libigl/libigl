@@ -7,6 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 
 #include "point_inside_convex_polygon.h"
+#include "orient2d.h"
 
 template <typename DerivedP, typename DerivedQ>
 IGL_INLINE bool igl::predicates::point_inside_convex_polygon(
