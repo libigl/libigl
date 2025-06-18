@@ -558,6 +558,12 @@ namespace glfw
         core().toggle(data().show_lines);
         return true;
       }
+      case 'N':
+      case 'n':
+      {
+        data().pseudocolor_with_normals = !data().pseudocolor_with_normals;
+        return true;
+      }
       case 'O':
       case 'o':
       {

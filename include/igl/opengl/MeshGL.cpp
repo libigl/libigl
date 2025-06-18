@@ -314,6 +314,7 @@ R"(#version 150
   uniform float texture_factor;
   uniform float matcap_factor;
   uniform float double_sided;
+  uniform bool pseudocolor_with_normals;
 
   uniform sampler2D shadow_tex;
   in vec4 position_shadow;
@@ -325,6 +326,11 @@ R"(#version 150
     {
       // Would it be better to have a separate no-op frag shader?
       outColor = vec4(0.56,0.85,0.77,1.);
+      return;
+    }
+    if(pseudocolor_with_normals)
+    {
+      outColor = vec4(normalize(normal_eye) * 0.5 + 0.5, 1.0);
       return;
     }
     // If is_directional_light then assume normalized
