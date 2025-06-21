@@ -108,8 +108,8 @@ IGL_INLINE void igl::copyleft::cgal::minkowski_sum(
   }
   // Combine meshes
   int n=0,m=0;
-  for_each(vW.begin(),vW.end(),[&n](const DerivedW & w){n+=w.rows();});
-  for_each(vG.begin(),vG.end(),[&m](const DerivedG & g){m+=g.rows();});
+  std::for_each(vW.begin(),vW.end(),[&n](const DerivedW & w){n+=w.rows();});
+  std::for_each(vG.begin(),vG.end(),[&m](const DerivedG & g){m+=g.rows();});
   assert(n == offsets.back());
 
   W.resize(n,3);
@@ -194,7 +194,7 @@ IGL_INLINE void igl::copyleft::cgal::minkowski_sum(
   //// Mask whether positive dot product, or negative: because of exactly zero,
   //// these are not necessarily complementary
   // Nevermind, actually P = !N
-  Array<bool ,Eigen::Dynamic,1> P(m,1),N(m,1);
+  Eigen::Array<bool ,Eigen::Dynamic,1> P(m,1),N(m,1);
   // loop over faces
   int mp = 0,mn = 0;
   for(int f = 0;f<m;f++)
@@ -223,9 +223,9 @@ IGL_INLINE void igl::copyleft::cgal::minkowski_sum(
     }
   }
 
-  typedef Eigen::Matrix<typename DerivedG::Scalar ,Eigen::Dynamic ,Eigen::Dynamic> Eigen::MatrixXi;
-  typedef Eigen::Matrix<typename DerivedG::Scalar ,Eigen::Dynamic,1> Eigen::VectorXi;
-  Eigen::MatrixXi GT(mp+mn,3);
+  typedef Eigen::Matrix<typename DerivedG::Scalar ,Eigen::Dynamic ,Eigen::Dynamic> MatrixXI;
+  typedef Eigen::Matrix<typename DerivedG::Scalar ,Eigen::Dynamic,1> VectorXI;
+  MatrixXI GT(mp+mn,3);
   GT<< 
     FA(igl::find(N),igl::placeholders::all), 
     (FA.array()+n).eval()(igl::find(P),igl::placeholders::all);
@@ -239,19 +239,19 @@ IGL_INLINE void igl::copyleft::cgal::minkowski_sum(
   JT.block(mp,0,mn,1).array()+=m;
 
   // Original non-co-planar faces with positively oriented reversed
-  Eigen::MatrixXi BA(mp+mn,3);
+  MatrixXI BA(mp+mn,3);
   BA << 
     FA(igl::find(P),igl::placeholders::all).rowwise().reverse(), 
     FA(igl::find(N),igl::placeholders::all);
   // Quads along **all** sides
-  Eigen::MatrixXi GQ((mp+mn)*3,4);
+  MatrixXI GQ((mp+mn)*3,4);
   GQ<< 
     BA.col(1), BA.col(0), BA.col(0).array()+n, BA.col(1).array()+n,
     BA.col(2), BA.col(1), BA.col(1).array()+n, BA.col(2).array()+n,
     BA.col(0), BA.col(2), BA.col(2).array()+n, BA.col(0).array()+n;
 
-  Eigen::MatrixXi uGQ;
-  Eigen::VectorXi S,sI,sJ;
+  MatrixXI uGQ;
+  VectorXI S,sI,sJ;
   // Inputs:
   //   F  #F by d list of polygons
   // Outputs:
@@ -260,15 +260,15 @@ IGL_INLINE void igl::copyleft::cgal::minkowski_sum(
   //   I  #uF index vector so that uF = sort(F,2)(I,:)
   //   J  #F index vector so that sort(F,2) = uF(J,:)
   [](
-      const Eigen::MatrixXi & F,
-      Eigen::VectorXi & S,
-      Eigen::MatrixXi & uF,
-      Eigen::VectorXi & I,
-      Eigen::VectorXi & J)
+      const MatrixXI & F,
+      VectorXI & S,
+      MatrixXI & uF,
+      VectorXI & I,
+      VectorXI & J)
   {
     const int m = F.rows();
     const int d = F.cols();
-    Eigen::MatrixXi sF = F;
+    MatrixXI sF = F;
     const auto MN = sF.rowwise().minCoeff().eval();
     // rotate until smallest index is first
     for(int p = 0;p<d;p++)
@@ -292,9 +292,9 @@ IGL_INLINE void igl::copyleft::cgal::minkowski_sum(
         sF.block(f,1,1,d-1) = sF.block(f,1,1,d-1).reverse().eval();
       }
     }
-    Array<bool ,Eigen::Dynamic,1> M = Array<bool ,Eigen::Dynamic,1>::Zero(m,1);
+    Eigen::Array<bool ,Eigen::Dynamic,1> M = Eigen::Array<bool ,Eigen::Dynamic,1>::Zero(m,1);
     {
-      Eigen::VectorXi P = igl::LinSpaced<VectorXI >(d,0,d-1);
+      VectorXI P = igl::LinSpaced<VectorXI >(d,0,d-1);
       for(int p = 0;p<d;p++)
       {
         for(int f = 0;f<m;f++)
@@ -313,7 +313,7 @@ IGL_INLINE void igl::copyleft::cgal::minkowski_sum(
       }
     }
     unique_rows(sF,uF,I,J);
-    S = Eigen::VectorXi::Zero(uF.rows(),1);
+    S = VectorXI::Zero(uF.rows(),1);
     assert(m == J.rows());
     for(int f = 0;f<m;f++)
     {

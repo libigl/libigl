@@ -47,17 +47,17 @@ IGL_INLINE void igl::copyleft::progressive_hulls_cost_and_placement(
   {
     const int f = N[i];
     //cout<<(f+1)<<" ";
-    const RowVector3d & v01 = V.row(F(f,1))-V.row(F(f,0));
-    const RowVector3d & v20 = V.row(F(f,2))-V.row(F(f,0));
+    const Eigen::RowVector3d & v01 = V.row(F(f,1))-V.row(F(f,0));
+    const Eigen::RowVector3d & v20 = V.row(F(f,2))-V.row(F(f,0));
     A.row(i) = v01.cross(v20);
     B(i) = V.row(F(f,0)).dot(A.row(i));
     D(i) = 
-      (Matrix3d()<< V.row(F(f,0)), V.row(F(f,1)), V.row(F(f,2)))
+      (Eigen::Matrix3d()<< V.row(F(f,0)), V.row(F(f,1)), V.row(F(f,2)))
       .finished().determinant();
   }
   //cout<<"];"<<endl;
   // linear objective
-  Vector3d f = A.colwise().sum().transpose();
+  Eigen::Vector3d f = A.colwise().sum().transpose();
   Eigen::VectorXd x;
   //bool success = linprog(f,-A,-B,MatrixXd(0,A.cols()),VectorXd(0,1),x);
   //VectorXd _;
@@ -68,13 +68,13 @@ IGL_INLINE void igl::copyleft::progressive_hulls_cost_and_placement(
   //}
   bool success = false;
   {
-    RowVectorXd mid = 0.5*(V.row(E(e,0))+V.row(E(e,1)));
-    Eigen::MatrixXd G =  w*Matrix3d::Identity(3,3);
+    Eigen::RowVectorXd mid = 0.5*(V.row(E(e,0))+V.row(E(e,1)));
+    Eigen::MatrixXd G =  w*Eigen::Matrix3d::Identity(3,3);
     Eigen::VectorXd g0 = (1.-w)*f - w*mid.transpose();
     const int n = A.cols();
     success = quadprog(
         G,g0,
-        Eigen::MatrixXd(n,0),VectorXd(0,1),
+        Eigen::MatrixXd(n,0),Eigen::VectorXd(0,1),
         A.transpose(),-B,x);
     cost  = (1.-w)*(1./6.)*(x.dot(f) - D.sum()) + 
       w*(x.transpose()-mid).squaredNorm() +
@@ -100,6 +100,6 @@ IGL_INLINE void igl::copyleft::progressive_hulls_cost_and_placement(
     //cout<<matlab_format(A,"A")<<endl;
     //cout<<matlab_format(B,"B")<<endl;
     //exit(-1);
-    p = RowVectorXd::Constant(1,3,std::nan("inf-cost"));
+    p = Eigen::RowVectorXd::Constant(1,3,std::nan("inf-cost"));
   }
 }

@@ -112,7 +112,7 @@ IGL_INLINE void igl::embree::EmbreeIntersector::init(
       std::cerr << "Embree: An error occurred while initializing the provided geometry!" << std::endl;
 #ifdef IGL_VERBOSE
   else
-    std::cerr << "Embree: geometry added." << endl;
+    std::cerr << "Embree: geometry added." << std::endl;
 #endif
 
   initialized = true;
@@ -281,7 +281,7 @@ igl::embree::EmbreeIntersector
         //double t_push = pow(2.0,self_hits-4)*(hit.t<eps?eps:hit.t);
         double t_push = pow(2.0,self_hits)*eps;
         #ifdef IGL_VERBOSE
-        std::cerr<<"  t_push: "<<t_push<<endl;
+        std::cerr<<"  t_push: "<<t_push<<std::endl;
         #endif
         //o = o+t_push*d;
         min_t += t_push;
@@ -297,7 +297,7 @@ igl::embree::EmbreeIntersector
         hit.t = ray.ray.tfar;
         hits.push_back(hit);
 #ifdef IGL_VERBOSE
-        std::cerr<<"  t: "<<hit.t<<endl;
+        std::cerr<<"  t: "<<hit.t<<std::endl;
 #endif
         // Instead of moving origin, just change min_t. That way calculations
         // all use exactly same origin values

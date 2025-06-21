@@ -44,7 +44,7 @@ IGL_INLINE void igl::copyleft::cgal::snap_rounding(
   {
     Eigen::VectorXi IM;
     resolve_intersections(V,E,VE,EI,J,IM);
-    for_each(
+    std::for_each(
       EI.data(),
       EI.data()+EI.size(),
       [&IM](typename DerivedEI::Scalar& i){i=IM(i);});
@@ -182,9 +182,9 @@ IGL_INLINE void igl::copyleft::cgal::snap_rounding(
   {
     DerivedJ prevJ = J;
     Eigen::VectorXi IM;
-    subdivide_segments(MatrixXE(VE),MatrixXi(EI),steiner,VE,EI,J,IM);
-    for_each(J.data(),J.data()+J.size(),[&prevJ](typename DerivedJ::Scalar & j){j=prevJ(j);});
-    for_each(
+    subdivide_segments(MatrixXE(VE),Eigen::MatrixXi(EI),steiner,VE,EI,J,IM);
+    std::for_each(J.data(),J.data()+J.size(),[&prevJ](typename DerivedJ::Scalar & j){j=prevJ(j);});
+    std::for_each(
       EI.data(),
       EI.data()+EI.size(),
       [&IM](typename DerivedEI::Scalar& i){i=IM(i);});

@@ -150,7 +150,7 @@ IGL_INLINE void mesh_improve(igl::triangle::SCAFData &s)
 
   if (s.rect_frame_V.size() == 0)
   {
-    Matrix2d ob; // = rect_corners;
+    Eigen::Matrix2d ob; // = rect_corners;
     {
       Eigen::VectorXd uv_max = m_uv.colwise().maxCoeff();
       Eigen::VectorXd uv_min = m_uv.colwise().minCoeff();
@@ -160,7 +160,7 @@ IGL_INLINE void mesh_improve(igl::triangle::SCAFData &s)
       ob.row(0) = uv_mid.array() + scaf_range * ((uv_min - uv_mid).array());
       ob.row(1) = uv_mid.array() + scaf_range * ((uv_max - uv_mid).array());
     }
-    Vector2d rect_len;
+    Eigen::Vector2d rect_len;
     rect_len << ob(1, 0) - ob(0, 0), ob(1, 1) - ob(0, 1);
     int frame_points = 5;
 
@@ -272,7 +272,7 @@ IGL_INLINE void add_new_patch(igl::triangle::SCAFData &s, const Eigen::MatrixXd 
   for (auto cur_bnd : all_bnds)
   {
     s.internal_bnd.conservativeResize(s.internal_bnd.size() + cur_bnd.size());
-    s.internal_bnd.bottomRows(cur_bnd.size()) = Map<ArrayXi>(cur_bnd.data(), cur_bnd.size()) + s.mv_num;
+    s.internal_bnd.bottomRows(cur_bnd.size()) = Eigen::Map<Eigen::ArrayXi>(cur_bnd.data(), cur_bnd.size()) + s.mv_num;
     s.bnd_sizes.push_back(cur_bnd.size());
   }
 
@@ -428,8 +428,8 @@ IGL_INLINE void build_surface_linear_system(const SCAFData &s, Eigen::SparseMatr
   {
     Eigen::MatrixXd bnd_pos = s.w_uv(bnd_ids, igl::placeholders::all);
 
-    ArrayXi known_ids(bnd_ids.size() * dim);
-    ArrayXi unknown_ids((v_n - bnd_ids.rows()) * dim);
+    Eigen::ArrayXi known_ids(bnd_ids.size() * dim);
+    Eigen::ArrayXi unknown_ids((v_n - bnd_ids.rows()) * dim);
     get_complement(bnd_ids, v_n, unknown_ids);
     Eigen::VectorXd known_pos(bnd_ids.size() * dim);
     for (int d = 0; d < dim; d++)
@@ -487,8 +487,8 @@ IGL_INLINE void build_scaffold_linear_system(const SCAFData &s, Eigen::SparseMat
   IGL_ASSERT(bnd_n > 0);
   Eigen::MatrixXd bnd_pos = s.w_uv(bnd_ids, igl::placeholders::all);
 
-  ArrayXi known_ids(bnd_ids.size() * dim);
-  ArrayXi unknown_ids((v_n - bnd_ids.rows()) * dim);
+  Eigen::ArrayXi known_ids(bnd_ids.size() * dim);
+  Eigen::ArrayXi unknown_ids((v_n - bnd_ids.rows()) * dim);
 
   get_complement(bnd_ids, v_n, unknown_ids);
 
@@ -556,8 +556,8 @@ IGL_INLINE void solve_weighted_arap(SCAFData &s, Eigen::MatrixXd &uv)
   assert(bnd_n > 0);
   Eigen::MatrixXd bnd_pos = s.w_uv(bnd_ids, igl::placeholders::all);
 
-  ArrayXi known_ids(bnd_n * dim);
-  ArrayXi unknown_ids((v_n - bnd_n) * dim);
+  Eigen::ArrayXi known_ids(bnd_n * dim);
+  Eigen::ArrayXi unknown_ids((v_n - bnd_n) * dim);
 
   get_complement(bnd_ids, v_n, unknown_ids);
 
@@ -577,12 +577,12 @@ IGL_INLINE void solve_weighted_arap(SCAFData &s, Eigen::MatrixXd &uv)
 
   Eigen::VectorXd unknown_Uc((v_n - s.frame_ids.size() - s.fixed_ids.size()) * dim), Uc(dim * v_n);
 
-  SimplicialLDLT<Eigen::SparseMatrix<double>> solver;
+  Eigen::SimplicialLDLT<Eigen::SparseMatrix<double>> solver;
   unknown_Uc = solver.compute(L).solve(rhs);
   Uc(unknown_ids) = unknown_Uc;
   Uc(known_ids) = known_pos;
 
-  uv = Map<Matrix<double, -1, -1, Eigen::ColMajor>>(Uc.data(), v_n, dim);
+  uv = Eigen::Map<Eigen::Matrix<double, -1, -1, Eigen::ColMajor>>(Uc.data(), v_n, dim);
 }
 
 IGL_INLINE double perform_iteration(SCAFData &s)

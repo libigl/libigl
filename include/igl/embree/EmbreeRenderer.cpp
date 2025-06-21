@@ -135,10 +135,10 @@ IGL_INLINE void igl::embree::EmbreeRenderer::init(
   rtcCommitScene(scene);
 
   if(rtcGetDeviceError (device) != RTC_ERROR_NONE)
-      std::cerr << "Embree: An error occurred while initializing the provided geometry!" << endl;
+      std::cerr << "Embree: An error occurred while initializing the provided geometry!" << std::endl;
 #ifdef IGL_VERBOSE
   else
-    std::cerr << "Embree: geometry added." << endl;
+    std::cerr << "Embree: geometry added." << std::endl;
 #endif
 
   initialized = true;

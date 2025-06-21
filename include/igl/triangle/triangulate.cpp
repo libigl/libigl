@@ -63,8 +63,8 @@ IGL_INLINE void igl::triangle::triangulate(
   // Prepare the flags
   std::string full_flags = flags + "pz" + (EM.size() || VM.size() ? "" : "B");
 
-  typedef Map< Eigen::Matrix<double ,Eigen::Dynamic ,Eigen::Dynamic,RowMajor> > MapXdr;
-  typedef Map< Eigen::Matrix<int ,Eigen::Dynamic ,Eigen::Dynamic,RowMajor> > MapXir;
+  typedef Eigen::Map< Eigen::Matrix<double ,Eigen::Dynamic ,Eigen::Dynamic,Eigen::RowMajor> > MapXdr;
+  typedef Eigen::Map< Eigen::Matrix<int ,Eigen::Dynamic ,Eigen::Dynamic,Eigen::RowMajor> > MapXir;
 
   // Prepare the input struct
   triangulateio in;

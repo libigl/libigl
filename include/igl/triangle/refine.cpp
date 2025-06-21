@@ -27,8 +27,8 @@ IGL_INLINE void igl::triangle::refine(
   // Prepare the flags
   std::string full_flags = flags + "rzB" + (E.size()?"p":"");
 
-  typedef Map< Eigen::Matrix<double ,Eigen::Dynamic ,Eigen::Dynamic,RowMajor> > MapXdr;
-  typedef Map< Eigen::Matrix<int ,Eigen::Dynamic ,Eigen::Dynamic,RowMajor> > MapXir;
+  typedef Eigen::Map< Eigen::Matrix<double ,Eigen::Dynamic ,Eigen::Dynamic,Eigen::RowMajor> > MapXdr;
+  typedef Eigen::Map< Eigen::Matrix<int ,Eigen::Dynamic ,Eigen::Dynamic,Eigen::RowMajor> > MapXir;
  
   // To-do: reduce duplicate code with triangulate.cpp
   // Prepare the input struct

@@ -213,7 +213,7 @@ IGL_INLINE bool igl::arap_dof_precomputation(
       M_i = M((span_n.array()+i*n).eval(),span_mlbs_cols);
     }
 #else
-    constexpr bool LbsMatrixTypeIsSparse = std::is_base_of<SparseMatrixBase<LbsMatrixType>, LbsMatrixType>::value;
+    constexpr bool LbsMatrixTypeIsSparse = std::is_base_of<Eigen::SparseMatrixBase<LbsMatrixType>, LbsMatrixType>::value;
     arap_dof_slice_helper<LbsMatrixType,LbsMatrixTypeIsSparse>::slice(M,(span_n.array()+i*n).matrix().eval(),span_mlbs_cols,M_i);
 #endif
     LbsMatrixType M_i_dim;

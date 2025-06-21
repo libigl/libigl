@@ -82,11 +82,11 @@ IGL_INLINE void igl::copyleft::cgal::outer_hull_legacy(
   cout<<"edge map..."<<endl;
 #endif
   typedef Eigen::Matrix<typename DerivedF::Scalar ,Eigen::Dynamic,2> MatrixX2I;
-  typedef Eigen::Matrix<typename DerivedF::Index ,Eigen::Dynamic,1> Eigen::VectorXi;
+  typedef Eigen::Matrix<typename DerivedF::Index ,Eigen::Dynamic,1> VectorXI;
   //typedef Eigen::Matrix<typename DerivedV::Scalar, 3, 1> Vector3F;
   MatrixX2I E,uE;
-  Eigen::VectorXi EMAP;
-  vector<vector<typename DerivedF::Index> > uE2E;
+  VectorXI EMAP;
+  std::vector<std::vector<typename DerivedF::Index> > uE2E;
   unique_edge_map(F,E,uE,EMAP,uE2E);
 #ifdef IGL_OUTER_HULL_DEBUG
   for (size_t ui=0; ui<uE.rows(); ui++) {
@@ -102,7 +102,7 @@ IGL_INLINE void igl::copyleft::cgal::outer_hull_legacy(
   std::vector<std::vector<bool> > uE2C;
   order_facets_around_edges(V, F, uE, uE2E, uE2oE, uE2C);
   uE2E = uE2oE;
-  Eigen::VectorXi diIM(3*m);
+  VectorXI diIM(3*m);
   for (auto ue : uE2E) {
       for (size_t i=0; i<ue.size(); i++) {
           auto fe = ue[i];
@@ -110,9 +110,9 @@ IGL_INLINE void igl::copyleft::cgal::outer_hull_legacy(
       }
   }
 
-  vector<vector<vector<Index > > > TT,_1;
+  std::vector<std::vector<std::vector<Index > > > TT,_1;
   triangle_triangle_adjacency(E,EMAP,uE2E,false,TT,_1);
-  Eigen::VectorXi counts;
+  VectorXI counts;
 #ifdef IGL_OUTER_HULL_DEBUG
   cout<<"facet components..."<<endl;
 #endif
@@ -127,18 +127,18 @@ IGL_INLINE void igl::copyleft::cgal::outer_hull_legacy(
   cout<<"reindex..."<<endl;
 #endif
   // H contains list of faces on outer hull;
-  vector<bool> FH(m,false);
-  vector<bool> EH(3*m,false);
-  vector<MatrixXG> vG(ncc);
-  vector<MatrixXJ> vJ(ncc);
-  vector<MatrixXJ> vIM(ncc);
+  std::vector<bool> FH(m,false);
+  std::vector<bool> EH(3*m,false);
+  std::vector<MatrixXG> vG(ncc);
+  std::vector<MatrixXJ> vJ(ncc);
+  std::vector<MatrixXJ> vIM(ncc);
   //size_t face_count = 0;
   for(size_t id = 0;id<ncc;id++)
   {
     vIM[id].resize(counts[id],1);
   }
   // current index into each IM
-  vector<size_t> g(ncc,0);
+  std::vector<size_t> g(ncc,0);
   // place order of each face in its respective component
   for(Index f = 0;f<m;f++)
   {
@@ -176,7 +176,7 @@ IGL_INLINE void igl::copyleft::cgal::outer_hull_legacy(
     int FHcount = 1;
     FH[f] = true;
     // Q contains list of face edges to continue traversing upong
-    queue<int> Q;
+    std::queue<int> Q;
     Q.push(f+0*m);
     Q.push(f+1*m);
     Q.push(f+2*m);
@@ -379,7 +379,7 @@ IGL_INLINE void igl::copyleft::cgal::outer_hull_legacy(
   };
 
   // Reject components which are completely inside other components
-  vector<bool> keep(ncc,true);
+  std::vector<bool> keep(ncc,true);
   size_t nG = 0;
   // This is O( ncc * ncc * m)
   for(size_t id = 0;id<ncc;id++)

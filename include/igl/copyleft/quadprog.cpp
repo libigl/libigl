@@ -130,13 +130,13 @@ IGL_INLINE bool igl::copyleft::quadprog(
   		}
   	return a1 * std::sqrt(2.0);
   };
-  const auto compute_d = [](VectorXd &d, const Eigen::MatrixXd& J, const Eigen::VectorXd& np)
+  const auto compute_d = [](Eigen::VectorXd &d, const Eigen::MatrixXd& J, const Eigen::VectorXd& np)
   {
     d = J.adjoint() * np;
   };
 
   const auto update_z = 
-    [](VectorXd& z, const Eigen::MatrixXd& J, const Eigen::VectorXd& d,  int iq)
+    [](Eigen::VectorXd& z, const Eigen::MatrixXd& J, const Eigen::VectorXd& d,  int iq)
   {
     z = J.rightCols(z.size()-iq) * d.tail(d.size()-iq);
   };
@@ -309,7 +309,7 @@ IGL_INLINE bool igl::copyleft::quadprog(
   int n=g0.size();  int p=ce0.size();  int m=ci0.size();  
   Eigen::MatrixXd R(G.rows(),G.cols()), J(G.rows(),G.cols());
   
-  LLT<MatrixXd,Lower> chol(G.cols());
+  Eigen::LLT<Eigen::MatrixXd,Eigen::Lower> chol(G.cols());
  
   Eigen::VectorXd s(m+p), z(n), r(m + p), d(n),  np(n), u(m + p);
   Eigen::VectorXd x_old(n), u_old(m + p);

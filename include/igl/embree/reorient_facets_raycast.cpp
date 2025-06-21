@@ -88,8 +88,8 @@ IGL_INLINE void igl::embree::reorient_facets_raycast(
   std::mt19937 prng;
   prng.seed(time(nullptr));
   std::vector<int     > ray_face;
-  std::vector<Vector3f> ray_ori;
-  std::vector<Vector3f> ray_dir;
+  std::vector<Eigen::Vector3f> ray_ori;
+  std::vector<Eigen::Vector3f> ray_dir;
   ray_face.reserve(rays_total);
   ray_ori .reserve(rays_total);
   ray_dir .reserve(rays_total);
@@ -120,13 +120,13 @@ IGL_INLINE void igl::embree::reorient_facets_raycast(
       float a = 1 - sqrt_t;
       float b = (1 - s) * sqrt_t;
       float c = s * sqrt_t;
-      Vector3f p = a * V.row(FF(f,0)).template cast<float>().eval()       // be careful with the index!!!
+      Eigen::Vector3f p = a * V.row(FF(f,0)).template cast<float>().eval()       // be careful with the index!!!
                  + b * V.row(FF(f,1)).template cast<float>().eval()
                  + c * V.row(FF(f,2)).template cast<float>().eval();
-      Vector3f n = N.row(f).cast<float>();
+      Eigen::Vector3f n = N.row(f).cast<float>();
       if (n.isZero()) continue;
       // random direction in hemisphere around n (avoid too grazing angle)
-      Vector3f d;
+      Eigen::Vector3f d;
       while (true) {
         d = random_dir().cast<float>();
         float ndotd = n.dot(d);
@@ -159,8 +159,8 @@ IGL_INLINE void igl::embree::reorient_facets_raycast(
   for (int i = 0; i < (int)ray_face.size(); ++i)
   {
     int      f = ray_face[i];
-    Vector3f o = ray_ori [i];
-    Vector3f d = ray_dir [i];
+    Eigen::Vector3f o = ray_ori [i];
+    Eigen::Vector3f d = ray_dir [i];
     int c = C(f);
 
     // shoot ray toward front & back

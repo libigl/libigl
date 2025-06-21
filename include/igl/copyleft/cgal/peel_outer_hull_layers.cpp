@@ -29,7 +29,7 @@ IGL_INLINE int igl::copyleft::cgal::peel_outer_hull_layers(
   Eigen::PlainObjectBase<Derivedflip > & flip)
 {
   typedef Eigen::Matrix<typename DerivedF::Scalar ,Eigen::Dynamic,DerivedF::ColsAtCompileTime> MatrixXF;
-  typedef Eigen::Matrix<int ,Eigen::Dynamic,1> Eigen::MatrixXi;
+  typedef Eigen::Matrix<int ,Eigen::Dynamic,1> MatrixXI;
   typedef Eigen::Matrix<typename Derivedflip::Scalar ,Eigen::Dynamic,Derivedflip::ColsAtCompileTime> MatrixXflip;
   const int m = F.rows();
 #ifdef IGL_PEEL_OUTER_HULL_LAYERS_DEBUG
@@ -48,16 +48,16 @@ IGL_INLINE int igl::copyleft::cgal::peel_outer_hull_layers(
   I.resize(m,1);
   flip.resize(m,1);
   // Keep track of index map
-  Eigen::MatrixXi IM = igl::LinSpaced<MatrixXI >(m,0,m-1);
+  MatrixXI IM = igl::LinSpaced<MatrixXI >(m,0,m-1);
   // This is O(n * layers)
-  Eigen::MatrixXi P(m,1);
+  MatrixXI P(m,1);
   int iter = 0;
   while(Fr.size() > 0)
   {
     assert(Fr.rows() == IM.rows());
     // Compute outer hull of current Fr
     MatrixXF Fo;
-    Eigen::MatrixXi Jo;
+    MatrixXI Jo;
     MatrixXflip flipr;
 #ifdef IGL_PEEL_OUTER_HULL_LAYERS_DEBUG
   {
@@ -91,7 +91,7 @@ IGL_INLINE int igl::copyleft::cgal::peel_outer_hull_layers(
     // Fr = Fr - Fo
     // update IM
     MatrixXF prev_Fr = Fr;
-    Eigen::MatrixXi prev_IM = IM;
+    MatrixXI prev_IM = IM;
     Fr.resize(prev_Fr.rows() - Fo.rows(),F.cols());
     IM.resize(Fr.rows());
     {
