@@ -19,7 +19,6 @@ IGL_INLINE void igl::centroid(
   Eigen::PlainObjectBase<Derivedc>& cen,
   Derivedvol & vol)
 {
-  using namespace Eigen;
   assert(F.cols() == 3 && "F should contain triangles.");
   assert(V.cols() == 3 && "V should contain 3d points.");
   const int m = F.rows();

@@ -22,8 +22,6 @@ IGL_INLINE void igl::setdiff(
   Eigen::PlainObjectBase<DerivedC> & C,
   Eigen::PlainObjectBase<DerivedIA> & IA)
 {
-  using namespace Eigen;
-  using namespace std;
   // boring base cases
   if(A.size() == 0)
   {
@@ -33,8 +31,8 @@ IGL_INLINE void igl::setdiff(
   }
 
   // Get rid of any duplicates
-  typedef Matrix<typename DerivedA::Scalar,Dynamic,1> VectorA;
-  typedef Matrix<typename DerivedB::Scalar,Dynamic,1> VectorB;
+  typedef Eigen::Matrix<typename DerivedA::Scalar ,Eigen::Dynamic,1> VectorA;
+  typedef Eigen::Matrix<typename DerivedB::Scalar ,Eigen::Dynamic,1> VectorB;
   VectorA uA;
   VectorB uB;
   typedef DerivedIA IAType;
@@ -49,8 +47,8 @@ IGL_INLINE void igl::setdiff(
   sort(uA,1,true,sA,sIA);
   sort(uB,1,true,sB,sIB);
 
-  vector<typename DerivedB::Scalar> vC;
-  vector<typename DerivedIA::Scalar> vIA;
+  std::vector<typename DerivedB::Scalar> vC;
+  std::vector<typename DerivedIA::Scalar> vIA;
   int bi = 0;
   // loop over sA
   bool past = false;

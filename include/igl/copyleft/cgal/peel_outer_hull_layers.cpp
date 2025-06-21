@@ -28,11 +28,9 @@ IGL_INLINE int igl::copyleft::cgal::peel_outer_hull_layers(
   Eigen::PlainObjectBase<DerivedI> & I,
   Eigen::PlainObjectBase<Derivedflip > & flip)
 {
-  using namespace Eigen;
-  using namespace std;
-  typedef Matrix<typename DerivedF::Scalar,Dynamic,DerivedF::ColsAtCompileTime> MatrixXF;
-  typedef Matrix<int,Dynamic,1> MatrixXI;
-  typedef Matrix<typename Derivedflip::Scalar,Dynamic,Derivedflip::ColsAtCompileTime> MatrixXflip;
+  typedef Eigen::Matrix<typename DerivedF::Scalar ,Eigen::Dynamic,DerivedF::ColsAtCompileTime> MatrixXF;
+  typedef Eigen::Matrix<int ,Eigen::Dynamic,1> Eigen::MatrixXi;
+  typedef Eigen::Matrix<typename Derivedflip::Scalar ,Eigen::Dynamic,Derivedflip::ColsAtCompileTime> MatrixXflip;
   const int m = F.rows();
 #ifdef IGL_PEEL_OUTER_HULL_LAYERS_DEBUG
   cout<<"peel outer hull layers..."<<endl;
@@ -50,16 +48,16 @@ IGL_INLINE int igl::copyleft::cgal::peel_outer_hull_layers(
   I.resize(m,1);
   flip.resize(m,1);
   // Keep track of index map
-  MatrixXI IM = igl::LinSpaced<MatrixXI >(m,0,m-1);
+  Eigen::MatrixXi IM = igl::LinSpaced<MatrixXI >(m,0,m-1);
   // This is O(n * layers)
-  MatrixXI P(m,1);
+  Eigen::MatrixXi P(m,1);
   int iter = 0;
   while(Fr.size() > 0)
   {
     assert(Fr.rows() == IM.rows());
     // Compute outer hull of current Fr
     MatrixXF Fo;
-    MatrixXI Jo;
+    Eigen::MatrixXi Jo;
     MatrixXflip flipr;
 #ifdef IGL_PEEL_OUTER_HULL_LAYERS_DEBUG
   {
@@ -82,7 +80,7 @@ IGL_INLINE int igl::copyleft::cgal::peel_outer_hull_layers(
     assert(Fo.rows() != 0);
     assert(Fo.rows() == Jo.rows());
     // all faces in Fo of Fr
-    vector<bool> in_outer(Fr.rows(),false);
+    std::vector<bool> in_outer(Fr.rows(),false);
     for(int g = 0;g<Jo.rows();g++)
     {
       I(IM(Jo(g))) = iter;
@@ -93,7 +91,7 @@ IGL_INLINE int igl::copyleft::cgal::peel_outer_hull_layers(
     // Fr = Fr - Fo
     // update IM
     MatrixXF prev_Fr = Fr;
-    MatrixXI prev_IM = IM;
+    Eigen::MatrixXi prev_IM = IM;
     Fr.resize(prev_Fr.rows() - Fo.rows(),F.cols());
     IM.resize(Fr.rows());
     {

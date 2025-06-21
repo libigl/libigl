@@ -15,8 +15,8 @@ namespace igl
 {
   /// Act like matlab's [Y,I] = sortrows(X)
   ///
-  /// @tparam DerivedX derived scalar type, e.g. MatrixXi or MatrixXd
-  /// @tparam DerivedI derived integer type, e.g. MatrixXi
+  /// @tparam DerivedX derived scalar type, e.g. Eigen::MatrixXi or Eigen::MatrixXd
+  /// @tparam DerivedI derived integer type, e.g. Eigen::MatrixXi
   /// @param[in] X  m by n matrix whose entries are to be sorted
   /// @param[in] ascending  sort ascending (true, matlab default) or descending (false)
   /// @param[out] Y  m by n matrix whose entries are sorted (**should not** be same

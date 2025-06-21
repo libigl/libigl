@@ -26,14 +26,13 @@ IGL_INLINE void igl::copyleft::cgal::point_mesh_squared_distance(
         Eigen::PlainObjectBase<DerivedI> & I,
         Eigen::PlainObjectBase<DerivedC> & C)
 {
-  using namespace std;
-  typedef CGAL::Triangle_3<Kernel> Triangle_3; 
+  typedef CGAL::Triangle_3<Kernel> Triangle_3;
   typedef typename std::vector<Triangle_3>::iterator Iterator;
   typedef CGAL::AABB_triangle_primitive<Kernel, Iterator> Primitive;
   typedef CGAL::AABB_traits<Kernel, Primitive> AABB_triangle_traits;
   typedef CGAL::AABB_tree<AABB_triangle_traits> Tree;
   Tree tree;
-  vector<Triangle_3> T;
+  std::vector<Triangle_3> T;
   point_mesh_squared_distance_precompute(V,F,tree,T);
   return point_mesh_squared_distance(P,tree,T,sqrD,I,C);
 }
@@ -51,9 +50,7 @@ IGL_INLINE void igl::copyleft::cgal::point_mesh_squared_distance_precompute(
   > & tree,
   std::vector<CGAL::Triangle_3<Kernel> > & T)
 {
-  using namespace std;
-
-  typedef CGAL::Point_3<Kernel> Point_3; 
+  typedef CGAL::Point_3<Kernel> Point_3;
 
   // Must be 3D
   assert(V.cols() == 3);

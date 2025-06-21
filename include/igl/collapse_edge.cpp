@@ -70,8 +70,6 @@ IGL_INLINE bool igl::collapse_edge(
   // Assign this to 0 rather than, say, -1 so that deleted elements will get
   // draw as degenerate elements at vertex 0 (which should always exist and
   // never get collapsed to anything else since it is the smallest index)
-  using namespace Eigen;
-  using namespace std;
   const int eflip = E(e,0)>E(e,1);
   // source and destination
   const int s = eflip?E(e,1):E(e,0);

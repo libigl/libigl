@@ -18,7 +18,6 @@ IGL_INLINE void igl::false_barycentric_subdivision(
     Eigen::PlainObjectBase<DerivedVD> & VD,
     Eigen::PlainObjectBase<DerivedFD> & FD)
 {
-  using namespace Eigen;
   // Compute face barycenter
   PlainMatrix<DerivedV> BC;
   igl::barycenter(V,F,BC);

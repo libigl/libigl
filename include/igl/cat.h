@@ -21,8 +21,8 @@ namespace igl
   /// This is an attempt to act like matlab's cat function.
   /// 
   /// @tparam  Scalar  scalar data type for sparse matrices like double or int
-  /// @tparam  Mat  matrix type for all matrices (e.g. MatrixXd, SparseMatrix)
-  /// @tparam  MatC  matrix type for output matrix (e.g. MatrixXd) needs to support
+  /// @tparam  Mat  matrix type for all matrices (e.g. Eigen::MatrixXd, SparseMatrix)
+  /// @tparam  MatC  matrix type for output matrix (e.g. Eigen::MatrixXd) needs to support
   ///     resize
   /// @param[in]  dim  dimension along which to concatenate, 1 or 2
   /// @param[in]  A  first input matrix

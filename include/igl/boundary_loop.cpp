@@ -16,20 +16,17 @@ IGL_INLINE void igl::boundary_loop(
     const Eigen::MatrixBase<DerivedF> & F,
     std::vector<std::vector<Index> >& L)
 {
-  using namespace std;
-  using namespace Eigen;
-
   if(F.rows() == 0)
     return;
 
-  VectorXd Vdummy(F.maxCoeff()+1,1);
+  Eigen::VectorXd Vdummy(F.maxCoeff()+1,1);
   Eigen::Matrix<typename DerivedF::Scalar, Eigen::Dynamic, Eigen::Dynamic> TT,TTi;
-  vector<std::vector<int> > VF, VFi;
+  std::vector<std::vector<int> > VF, VFi;
   triangle_triangle_adjacency(F,TT,TTi);
   vertex_triangle_adjacency(Vdummy,F,VF,VFi);
 
-  vector<bool> unvisited = is_border_vertex(F);
-  set<int> unseen;
+  std::vector<bool> unvisited = is_border_vertex(F);
+  std::set<int> unseen;
   for (size_t i = 0; i < unvisited.size(); ++i)
   {
     if (unvisited[i])
@@ -38,7 +35,7 @@ IGL_INLINE void igl::boundary_loop(
 
   while (!unseen.empty())
   {
-    vector<Index> l;
+    std::vector<Index> l;
 
     // Get first vertex of loop
     int start = *unseen.begin();
@@ -93,13 +90,10 @@ IGL_INLINE void igl::boundary_loop(
   const Eigen::MatrixBase<DerivedF>& F,
   std::vector<Index>& L)
 {
-  using namespace Eigen;
-  using namespace std;
-
   if(F.rows() == 0)
     return;
 
-  vector<vector<int> > Lall;
+  std::vector<std::vector<int> > Lall;
   boundary_loop(F,Lall);
 
   int idxMax = -1;
@@ -132,13 +126,10 @@ IGL_INLINE void igl::boundary_loop(
   const Eigen::MatrixBase<DerivedF>& F,
   Eigen::PlainObjectBase<DerivedL>& L)
 {
-  using namespace Eigen;
-  using namespace std;
-
   if(F.rows() == 0)
     return;
 
-  vector<int> Lvec;
+  std::vector<int> Lvec;
   boundary_loop(F,Lvec);
 
   L.resize(Lvec.size(), 1);

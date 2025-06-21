@@ -39,10 +39,10 @@ namespace igl
   /// #### Example:
   ///
   /// \code{cpp}
-  ///     MatrixXd W;
+  ///     Eigen::MatrixXd W;
   ///     igl::biharmonic_coordinates(V,F,S,W);
   ///     const size_t dim = T.cols()-1;
-  ///     MatrixXd H(W.cols(),dim);
+  ///     Eigen::MatrixXd H(W.cols(),dim);
   ///     {
   ///       int c = 0;
   ///       for(int h = 0;h<S.size();h++)

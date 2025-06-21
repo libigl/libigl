@@ -63,9 +63,8 @@ IGL_INLINE bool igl::writeTGF(
   const Eigen::MatrixXd & C,
   const Eigen::MatrixXi & E)
 {
-  using namespace std;
-  vector<vector<double> > vC;
-  vector<vector<int> > vE;
+  std::vector<std::vector<double> > vC;
+  std::vector<std::vector<int> > vE;
   matrix_to_list(C,vC);
   matrix_to_list(E,vE);
   return writeTGF(tgf_filename,vC,vE);

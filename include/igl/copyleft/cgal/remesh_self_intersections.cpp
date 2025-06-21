@@ -31,7 +31,6 @@ IGL_INLINE void igl::copyleft::cgal::remesh_self_intersections(
   Eigen::PlainObjectBase<DerivedJ> & J,
   Eigen::PlainObjectBase<DerivedIM> & IM)
 {
-  using namespace std;
   typedef typename DerivedV::Scalar VScalar;
   if(params.detect_only && ! std::is_same<VScalar,CGAL::Epeck::FT>::value)
   {

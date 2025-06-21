@@ -32,16 +32,14 @@ IGL_INLINE void igl::per_edge_normals(
   static_assert(
     (DerivedEMAP::RowsAtCompileTime == 1 || DerivedEMAP::ColsAtCompileTime == 1) ,
     "EMAP need to have RowsAtCompileTime == 1 or ColsAtCompileTime == 1");
-  using namespace Eigen;
-  using namespace std;
   assert(F.cols() == 3 && "Faces must be triangles");
   // number of faces
   const int m = F.rows();
   // All occurrences of directed edges
-  Matrix<typename DerivedF::Scalar, Dynamic, Dynamic> allE;
+  Eigen::Matrix<typename DerivedF::Scalar, Eigen::Dynamic, Eigen::Dynamic> allE;
   oriented_facets(F,allE);
   // Find unique undirected edges and mapping
-  Matrix<typename DerivedF::Scalar, Dynamic, 1> _;
+  Eigen::Matrix<typename DerivedF::Scalar, Eigen::Dynamic, 1> _;
   unique_simplices(allE,E,_,EMAP);
   // now sort(allE,2) == E(EMAP,:), that is, if EMAP(i) = j, then E.row(j) is
   // the undirected edge corresponding to the directed edge allE.row(i).

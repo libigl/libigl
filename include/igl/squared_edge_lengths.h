@@ -16,9 +16,9 @@ namespace igl
   /// Constructs a list of squared lengths of edges opposite each index in a face
   /// (triangle/tet) list
   ///
-  /// @tparam DerivedV derived from vertex positions matrix type: i.e. MatrixXd
-  /// @tparam DerivedF derived from face indices matrix type: i.e. MatrixXi
-  /// @tparam DerivedL derived from edge lengths matrix type: i.e. MatrixXd
+  /// @tparam DerivedV derived from vertex positions matrix type: i.e. Eigen::MatrixXd
+  /// @tparam DerivedF derived from face indices matrix type: i.e. Eigen::MatrixXi
+  /// @tparam DerivedL derived from edge lengths matrix type: i.e. Eigen::MatrixXd
   /// @param[in] V  eigen matrix #V by 3
   /// @param[in] F  #F by (2|3|4) list of mesh edges, triangles or tets
   /// @param[out] L  #F by {1|3|6} list of edge lengths squared

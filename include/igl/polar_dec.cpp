@@ -34,8 +34,6 @@ IGL_INLINE void igl::polar_dec(
   Eigen::PlainObjectBase<DerivedS> & S,
   Eigen::PlainObjectBase<DerivedV> & V)
 {
-  using namespace std;
-  using namespace Eigen;
   typedef typename DerivedA::Scalar Scalar;
 
   const Scalar th = std::sqrt(Eigen::NumTraits<Scalar>::dummy_precision());
@@ -45,7 +43,7 @@ IGL_INLINE void igl::polar_dec(
   eig.computeDirect(A.transpose()*A);
   if(fetestexcept(FE_UNDERFLOW) || eig.eigenvalues()(0)/eig.eigenvalues()(2)<th)
   {
-    cout<<"resorting to svd 1..."<<endl;
+    std::cout<<"resorting to svd 1..."<<std::endl;
     return polar_svd(A,includeReflections,R,T,U,S,V);
   }
 
@@ -72,7 +70,7 @@ IGL_INLINE void igl::polar_dec(
 
   if(std::fabs(R.squaredNorm()-3.) > th)
   {
-    cout<<"resorting to svd 2..."<<endl;
+    std::cout<<"resorting to svd 2..."<<std::endl;
     return polar_svd(A,includeReflections,R,T,U,S,V);
   }
 }

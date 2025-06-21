@@ -125,7 +125,6 @@ inline bool igl::parallel_for(
   const FunctionType & func,
   const size_t min_parallel)
 {
-  using namespace std;
   // no op preparation/accumulation
   const auto & no_op = [](const size_t /*n/t*/){};
   // two-parameter wrapper ignoring thread id

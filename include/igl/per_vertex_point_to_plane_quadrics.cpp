@@ -21,7 +21,6 @@ IGL_INLINE void igl::per_vertex_point_to_plane_quadrics(
   std::vector<
     std::tuple<Eigen::MatrixXd,Eigen::RowVectorXd,double> > & quadrics)
 {
-  using namespace std;
   typedef std::tuple<Eigen::MatrixXd,Eigen::RowVectorXd,double> Quadric;
   const int dim = V.cols();
   //// Quadrics per face

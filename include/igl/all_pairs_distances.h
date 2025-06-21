@@ -15,7 +15,7 @@ namespace igl
   /// 
   ///     D = all_pairs_distances(V,U)
   /// 
-  /// @tparam matrix class like MatrixXd
+  /// @tparam matrix class like Eigen::MatrixXd
   /// @param[in] V  #V by dim list of points
   /// @param[in] U  #U by dim list of points
   /// @param[in] squared  whether to return squared distances

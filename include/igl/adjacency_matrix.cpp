@@ -16,12 +16,10 @@ IGL_INLINE void igl::adjacency_matrix(
   const Eigen::MatrixBase<DerivedF> & F,
   Eigen::SparseMatrix<T>& A)
 {
-  using namespace std;
-  using namespace Eigen;
   typedef typename DerivedF::Scalar Index;
 
-  typedef Triplet<T> IJV;
-  vector<IJV > ijv;
+  typedef Eigen::Triplet<T> IJV;
+  std::vector<IJV > ijv;
   ijv.reserve(F.size()*2);
   // Loop over **simplex** (i.e., **not quad**)
   for(int i = 0;i<F.rows();i++)
@@ -71,11 +69,8 @@ IGL_INLINE void igl::adjacency_matrix(
   const Eigen::MatrixBase<DerivedC> & C,
   Eigen::SparseMatrix<T>& A)
 {
-  using namespace std;
-  using namespace Eigen;
-
-  typedef Triplet<T> IJV;
-  vector<IJV > ijv;
+  typedef Eigen::Triplet<T> IJV;
+  std::vector<IJV > ijv;
   ijv.reserve(C(C.size()-1)*2);
   typedef typename DerivedI::Scalar Index;
   const Index n = I.maxCoeff()+1;

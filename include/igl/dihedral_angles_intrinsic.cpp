@@ -22,12 +22,11 @@ IGL_INLINE void igl::dihedral_angles_intrinsic(
   Eigen::PlainObjectBase<Derivedtheta>& theta,
   Eigen::PlainObjectBase<Derivedcos_theta>& cos_theta)
 {
-  using namespace Eigen;
   const int m = L.rows();
   assert(m == A.rows());
   // Law of cosines
   // http://math.stackexchange.com/a/49340/35376
-  Matrix<typename Derivedtheta::Scalar,Dynamic,6> H_sqr(m,6);
+  Eigen::Matrix<typename Derivedtheta::Scalar ,Eigen::Dynamic,6> H_sqr(m,6);
   H_sqr.col(0) = (1./16.) * (4. * L.col(3).array().square() * L.col(0).array().square() - 
                                 ((L.col(1).array().square() + L.col(4).array().square()) -
                                  (L.col(2).array().square() + L.col(5).array().square())).square());

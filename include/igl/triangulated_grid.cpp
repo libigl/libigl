@@ -20,7 +20,6 @@ IGL_INLINE void igl::triangulated_grid(
   Eigen::PlainObjectBase<DerivedGV> & GV,
   Eigen::PlainObjectBase<DerivedGF> & GF)
 {
-  using namespace Eigen;
   Eigen::Matrix<XType,2,1> res(nx,ny);
   igl::grid(res,GV);
   return igl::triangulated_grid(nx,ny,GF);

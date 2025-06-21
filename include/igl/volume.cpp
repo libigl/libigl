@@ -17,7 +17,6 @@ IGL_INLINE void igl::volume(
   const Eigen::MatrixBase<DerivedT>& T,
   Eigen::PlainObjectBase<Derivedvol>& vol)
 {
-  using namespace Eigen;
   const int m = T.rows();
   vol.resize(m,1);
   for(int t = 0;t<m;t++)
@@ -75,7 +74,6 @@ IGL_INLINE void igl::volume(
   const Eigen::MatrixBase<DerivedL>& L,
   Eigen::PlainObjectBase<Derivedvol>& vol)
 {
-  using namespace Eigen;
   const int m = L.rows();
   typedef typename Derivedvol::Scalar ScalarS;
   vol.resize(m,1);

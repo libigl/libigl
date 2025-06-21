@@ -24,8 +24,6 @@ IGL_INLINE void igl::cotmatrix_entries(
   const Eigen::MatrixBase<DerivedF>& F,
   Eigen::PlainObjectBase<DerivedC>& C)
 {
-  using namespace std;
-  using namespace Eigen;
   // simplex size (3: triangles, 4: tetrahedra)
   int simplex_size = F.cols();
   // Number of elements
@@ -38,14 +36,14 @@ IGL_INLINE void igl::cotmatrix_entries(
     {
       // Triangles
       //Compute Squared Edge lengths 
-      Matrix<typename DerivedC::Scalar,Dynamic,3> l2;
+      Eigen::Matrix<typename DerivedC::Scalar ,Eigen::Dynamic,3> l2;
       igl::squared_edge_lengths(V,F,l2);
       //Compute Edge lengths 
-      Matrix<typename DerivedC::Scalar,Dynamic,3> l;
+      Eigen::Matrix<typename DerivedC::Scalar ,Eigen::Dynamic,3> l;
       l = l2.array().sqrt();
       
       // double area
-      Matrix<typename DerivedC::Scalar,Dynamic,1> dblA;
+      Eigen::Matrix<typename DerivedC::Scalar ,Eigen::Dynamic,1> dblA;
       doublearea(l,0.,dblA);
       // cotangents and diagonal entries for element matrices
       // correctly divided by 4 (alec 2010)
@@ -63,21 +61,21 @@ IGL_INLINE void igl::cotmatrix_entries(
     {
 
       // edge lengths numbered same as opposite vertices
-      Matrix<typename DerivedC::Scalar,Dynamic,6> l;
+      Eigen::Matrix<typename DerivedC::Scalar ,Eigen::Dynamic,6> l;
       edge_lengths(V,F,l);
-      Matrix<typename DerivedC::Scalar,Dynamic,4> s;
+      Eigen::Matrix<typename DerivedC::Scalar ,Eigen::Dynamic,4> s;
       face_areas(l,s);
-      Matrix<typename DerivedC::Scalar,Dynamic,6> cos_theta,theta;
+      Eigen::Matrix<typename DerivedC::Scalar ,Eigen::Dynamic,6> cos_theta,theta;
       dihedral_angles_intrinsic(l,s,theta,cos_theta);
 
       // volume
-      Matrix<typename DerivedC::Scalar,Dynamic,1> vol;
+      Eigen::Matrix<typename DerivedC::Scalar ,Eigen::Dynamic,1> vol;
       volume(l,vol);
 
 
       // Law of sines
       // http://mathworld.wolfram.com/Tetrahedron.html
-      Matrix<typename DerivedC::Scalar,Dynamic,6> sin_theta(m,6);
+      Eigen::Matrix<typename DerivedC::Scalar ,Eigen::Dynamic,6> sin_theta(m,6);
       sin_theta.col(0) = vol.array() / ((2./(3.*l.col(0).array())).array() * s.col(1).array() * s.col(2).array());
       sin_theta.col(1) = vol.array() / ((2./(3.*l.col(1).array())).array() * s.col(2).array() * s.col(0).array());
       sin_theta.col(2) = vol.array() / ((2./(3.*l.col(2).array())).array() * s.col(0).array() * s.col(1).array());
@@ -105,11 +103,10 @@ IGL_INLINE void igl::cotmatrix_entries(
   const Eigen::MatrixBase<Derivedl>& l,
   Eigen::PlainObjectBase<DerivedC>& C)
 {
-  using namespace Eigen;
   const int m = l.rows();
   assert(l.cols() == 3 && "Only triangles accepted");
   //Compute squared Edge lengths 
-  Matrix<typename DerivedC::Scalar,Dynamic,3> l2;
+  Eigen::Matrix<typename DerivedC::Scalar ,Eigen::Dynamic,3> l2;
   l2 = l.array().square();
   // Alec: It's a little annoying that there's duplicate code here. The
   // "extrinic" version above is first computing squared edge lengths, taking
@@ -120,7 +117,7 @@ IGL_INLINE void igl::cotmatrix_entries(
   // edge_lengths and this cotmatrix_entries(l,C);
   //
   // double area
-  Matrix<typename DerivedC::Scalar,Dynamic,1> dblA;
+  Eigen::Matrix<typename DerivedC::Scalar ,Eigen::Dynamic,1> dblA;
   doublearea(l,0.,dblA);
   // cotangents and diagonal entries for element matrices
   // correctly divided by 4 (alec 2010)

@@ -14,11 +14,11 @@ namespace igl
   /// Computes twice the area for each input triangle or quad.
   ///
   /// @tparam  DerivedV  derived type of eigen matrix for V (e.g. derived from
-  ///     MatrixXd)
+  ///     Eigen::MatrixXd)
   /// @tparam  DerivedF  derived type of eigen matrix for F (e.g. derived from
-  ///     MatrixXi)
+  ///     Eigen::MatrixXi)
   /// @tparam  DeriveddblA  derived type of eigen matrix for dblA (e.g. derived from
-  ///     MatrixXd)
+  ///     Eigen::MatrixXd)
   /// @param[in] V  #V by dim list of mesh vertex positions
   /// @param[in] F  #F by (3|4) list of mesh faces (must be triangles or quads)
   /// @param[out] dblA  #F list of triangle[quad] double areas (SIGNED only for 2D input)

@@ -19,7 +19,7 @@ namespace igl
   /// This is a routine to print a matrix using format suitable for pasting into
   /// the matlab IDE
   ///
-  /// @tparam DerivedM  e.g. derived from MatrixXd
+  /// @tparam DerivedM  e.g. derived from Eigen::MatrixXd
   /// @param[in] input  some matrix to be formatted
   /// @param[in] name  name of matrix (optional)
   /// @return Formatted matrix

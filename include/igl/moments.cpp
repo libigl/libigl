@@ -14,7 +14,7 @@
 //   - RowVector3d
 //   - Vector3d
 //   - RowVectorXd
-//   - VectorXd
+//   - Eigen::VectorXd
 namespace igl
 {
   template <bool SingleRow, bool SingleCol> struct moments_resize_3;

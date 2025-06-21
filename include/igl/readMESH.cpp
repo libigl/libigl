@@ -16,7 +16,6 @@ IGL_INLINE bool igl::readMESH(
   Eigen::PlainObjectBase<DerivedT>& T,
   Eigen::PlainObjectBase<DerivedF>& F)
 {
-  using namespace std;
   FILE * mesh_file = fopen(mesh_file_name.c_str(),"r");
   if(NULL==mesh_file)
   {
@@ -33,7 +32,6 @@ IGL_INLINE bool igl::readMESH(
   Eigen::PlainObjectBase<DerivedT>& T,
   Eigen::PlainObjectBase<DerivedF>& F)
 {
-  using namespace std;
 #ifndef LINE_MAX
 #  define LINE_MAX 2048
 #endif

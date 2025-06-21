@@ -112,8 +112,6 @@ namespace igl
       Eigen::VectorXi & /*soft_b_p*/,
       Eigen::MatrixXd & /*soft_bc_p*/)
     {
-      using namespace Eigen;
-
       Eigen::SparseMatrix<double> L;
       build_linear_system(s,L);
 
@@ -125,14 +123,14 @@ namespace igl
 #ifndef CHOLMOD
       if (s.dim == 2)
       {
-        SimplicialLDLT<Eigen::SparseMatrix<double> > solver;
+        Eigen::SimplicialLDLT<Eigen::SparseMatrix<double> > solver;
         Uc = solver.compute(L).solve(s.rhs);
       }
       else
       { // seems like CG performs much worse for 2D and way better for 3D
         Eigen::VectorXd guess(uv.rows() * s.dim);
         for (int i = 0; i < s.v_num; i++) for (int j = 0; j < s.dim; j++) guess(uv.rows() * j + i) = uv(i, j); // flatten vector
-        ConjugateGradient<Eigen::SparseMatrix<double>, Lower | Upper> cg;
+        Eigen::ConjugateGradient<Eigen::SparseMatrix<double>, Eigen::Lower | Eigen::Upper> cg;
         cg.setTolerance(1e-8);
         cg.compute(L);
         Uc = cg.solveWithGuess(s.rhs, guess);

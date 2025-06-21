@@ -35,7 +35,6 @@ IGL_INLINE bool igl::readNODE(
   Eigen::PlainObjectBase<DerivedV>& V,
   Eigen::PlainObjectBase<DerivedI>& I)
 {
-  using namespace std;
   FILE * node_file = fopen(node_file_name.c_str(),"r");
   if(NULL==node_file)
   {

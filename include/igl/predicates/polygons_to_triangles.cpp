@@ -119,9 +119,9 @@ IGL_INLINE void igl::predicates::polygons_to_triangles(
         //  igl::edge_lengths(pV,pF,pl);
 
         //  typedef Eigen::Matrix<Index,Eigen::Dynamic,2> MatrixX2I;
-        //  typedef Eigen::Matrix<Index,Eigen::Dynamic,1> VectorXI;
+        //  typedef Eigen::Matrix<Index,Eigen::Dynamic,1> Eigen::VectorXi;
         //  MatrixX2I E,uE;
-        //  VectorXI EMAP;
+        //  Eigen::VectorXi EMAP;
         //  std::vector<std::vector<Index> > uE2E;
         //  igl::unique_edge_map(pF, E, uE, EMAP, uE2E);
         //  typedef Index Index;

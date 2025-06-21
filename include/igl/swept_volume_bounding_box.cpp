@@ -14,9 +14,8 @@ IGL_INLINE void igl::swept_volume_bounding_box(
   const size_t & steps,
   Eigen::AlignedBox3d & box)
 {
-  using namespace Eigen;
   box.setEmpty();
-  const VectorXd t = igl::LinSpaced<VectorXd >(steps,0,1);
+  const Eigen::VectorXd t = igl::LinSpaced<Eigen::VectorXd >(steps,0,1);
   // Find extent over all time steps
   for(int ti = 0;ti<t.size();ti++)
   {

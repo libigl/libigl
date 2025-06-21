@@ -26,7 +26,6 @@ IGL_INLINE void igl::cat(
 {
 
   assert(dim == 1 || dim == 2);
-  using namespace Eigen;
   // Special case if B or A is empty
   if(A.size() == 0)
   {
@@ -40,7 +39,7 @@ IGL_INLINE void igl::cat(
   }
 
   // This is faster than using DynamicSparseMatrix or setFromTriplets
-  C = SparseMatrix<Scalar>(
+  C = Eigen::SparseMatrix<Scalar>(
       dim == 1 ? A.rows()+B.rows() : A.rows(),
       dim == 1 ? A.cols()          : A.cols()+B.cols());
   Eigen::VectorXi per_col = Eigen::VectorXi::Zero(C.cols());
@@ -49,11 +48,11 @@ IGL_INLINE void igl::cat(
     assert(A.outerSize() == B.outerSize());
     for(int k = 0;k<A.outerSize();++k)
     {
-      for(typename SparseMatrix<Scalar>::InnerIterator it (A,k); it; ++it)
+      for(typename Eigen::SparseMatrix<Scalar>::InnerIterator it (A,k); it; ++it)
       {
         per_col(k)++;
       }
-      for(typename SparseMatrix<Scalar>::InnerIterator it (B,k); it; ++it)
+      for(typename Eigen::SparseMatrix<Scalar>::InnerIterator it (B,k); it; ++it)
       {
         per_col(k)++;
       }
@@ -62,14 +61,14 @@ IGL_INLINE void igl::cat(
   {
     for(int k = 0;k<A.outerSize();++k)
     {
-      for(typename SparseMatrix<Scalar>::InnerIterator it (A,k); it; ++it)
+      for(typename Eigen::SparseMatrix<Scalar>::InnerIterator it (A,k); it; ++it)
       {
         per_col(k)++;
       }
     }
     for(int k = 0;k<B.outerSize();++k)
     {
-      for(typename SparseMatrix<Scalar>::InnerIterator it (B,k); it; ++it)
+      for(typename Eigen::SparseMatrix<Scalar>::InnerIterator it (B,k); it; ++it)
       {
         per_col(A.cols() + k)++;
       }
@@ -80,11 +79,11 @@ IGL_INLINE void igl::cat(
   {
     for(int k = 0;k<A.outerSize();++k)
     {
-      for(typename SparseMatrix<Scalar>::InnerIterator it (A,k); it; ++it)
+      for(typename Eigen::SparseMatrix<Scalar>::InnerIterator it (A,k); it; ++it)
       {
         C.insert(it.row(),k) = it.value();
       }
-      for(typename SparseMatrix<Scalar>::InnerIterator it (B,k); it; ++it)
+      for(typename Eigen::SparseMatrix<Scalar>::InnerIterator it (B,k); it; ++it)
       {
         C.insert(A.rows()+it.row(),k) = it.value();
       }
@@ -93,14 +92,14 @@ IGL_INLINE void igl::cat(
   {
     for(int k = 0;k<A.outerSize();++k)
     {
-      for(typename SparseMatrix<Scalar>::InnerIterator it (A,k); it; ++it)
+      for(typename Eigen::SparseMatrix<Scalar>::InnerIterator it (A,k); it; ++it)
       {
         C.insert(it.row(),k) = it.value();
       }
     }
     for(int k = 0;k<B.outerSize();++k)
     {
-      for(typename SparseMatrix<Scalar>::InnerIterator it (B,k); it; ++it)
+      for(typename Eigen::SparseMatrix<Scalar>::InnerIterator it (B,k); it; ++it)
       {
         C.insert(it.row(),A.cols()+k) = it.value();
       }
@@ -157,7 +156,6 @@ IGL_INLINE Mat igl::cat(const int dim, const Mat & A, const Mat & B)
 template <class Mat>
 IGL_INLINE void igl::cat(const std::vector<std::vector< Mat > > & A, Mat & C)
 {
-  using namespace std;
   // Start with empty matrix
   C.resize(0,0);
   for(const auto & row_vec : A)
@@ -178,8 +176,6 @@ template <typename T, typename DerivedC>
 IGL_INLINE void igl::cat(const int dim, const std::vector<T> & A, Eigen::PlainObjectBase<DerivedC> & C)
 {
   assert(dim == 1 || dim == 2);
-  using namespace Eigen;
-
   const int num_mat = A.size();
   if(num_mat == 0)
   {

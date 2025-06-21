@@ -22,15 +22,13 @@ IGL_INLINE void igl::triangle::refine(
   Eigen::PlainObjectBase<DerivedV2> & V2,
   Eigen::PlainObjectBase<DerivedF2> & F2)
 {
-  using namespace Eigen;
-  using namespace Eigen;
   assert(V.cols() == 2);
   assert(F.cols() == 3);
   // Prepare the flags
   std::string full_flags = flags + "rzB" + (E.size()?"p":"");
 
-  typedef Map< Matrix<double,Dynamic,Dynamic,RowMajor> > MapXdr;
-  typedef Map< Matrix<int,Dynamic,Dynamic,RowMajor> > MapXir;
+  typedef Map< Eigen::Matrix<double ,Eigen::Dynamic ,Eigen::Dynamic,RowMajor> > MapXdr;
+  typedef Map< Eigen::Matrix<int ,Eigen::Dynamic ,Eigen::Dynamic,RowMajor> > MapXir;
  
   // To-do: reduce duplicate code with triangulate.cpp
   // Prepare the input struct

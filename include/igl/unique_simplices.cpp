@@ -26,8 +26,6 @@ IGL_INLINE void igl::unique_simplices(
     (DerivedIA::RowsAtCompileTime == 1 || DerivedIA::ColsAtCompileTime == 1) &&
     (DerivedIC::RowsAtCompileTime == 1 || DerivedIC::ColsAtCompileTime == 1),
     "IA and IC need to have RowsAtCompileTime == 1 or ColsAtCompileTime == 1");
-  using namespace Eigen;
-  using namespace std;
   typedef Eigen::Matrix<typename DerivedF::Scalar,Eigen::Dynamic,Eigen::Dynamic>
     MatrixXI;
   // Sort each face

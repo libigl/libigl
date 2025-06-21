@@ -176,16 +176,14 @@ template <
     std::vector<std::vector<std::vector<TTIndex> > > & TT,
     std::vector<std::vector<std::vector<TTiIndex> > > & TTi)
 {
-  using namespace Eigen;
-  using namespace std;
   assert(F.cols() == 3 && "Faces must be triangles");
   // number of faces
   typedef typename DerivedF::Index Index;
-  typedef Matrix<typename DerivedF::Scalar,Dynamic,2> MatrixX2I;
-  typedef Matrix<typename DerivedF::Index,Dynamic,1> VectorXI;
+  typedef Eigen::Matrix<typename DerivedF::Scalar ,Eigen::Dynamic,2> MatrixX2I;
+  typedef Eigen::Matrix<typename DerivedF::Index ,Eigen::Dynamic,1> VectorXI;
   MatrixX2I E,uE;
   VectorXI EMAP;
-  vector<vector<Index> > uE2E;
+  std::vector<std::vector<Index> > uE2E;
   unique_edge_map(F,E,uE,EMAP,uE2E);
   return triangle_triangle_adjacency(E,EMAP,uE2E,construct_TTi,TT,TTi);
 }
@@ -204,17 +202,15 @@ template <
     std::vector<std::vector<std::vector<TTIndex> > > & TT,
     std::vector<std::vector<std::vector<TTiIndex> > > & TTi)
 {
-  using namespace std;
-  using namespace Eigen;
   typedef typename DerivedE::Index Index;
   const size_t m = E.rows()/3;
   assert((size_t)E.rows() == m*3 && "E should come from list of triangles.");
   // E2E[i] --> {j,k,...} means face edge i corresponds to other faces edges j
   // and k
-  TT.resize (m,vector<vector<TTIndex> >(3));
+  TT.resize (m,std::vector<std::vector<TTIndex> >(3));
   if(construct_TTi)
   {
-    TTi.resize(m,vector<vector<TTiIndex> >(3));
+    TTi.resize(m,std::vector<std::vector<TTiIndex> >(3));
   }
 
   // No race conditions because TT*[f][c]'s are in bijection with e's
@@ -229,7 +225,7 @@ template <
       {
         const Index e = f + m*c;
         //const Index c = e/m;
-        const vector<uE2EType> & N = uE2E[EMAP(e)];
+        const std::vector<uE2EType> & N = uE2E[EMAP(e)];
         for(const auto & ne : N)
         {
           const Index nf = ne%m;
@@ -263,17 +259,15 @@ template <
     std::vector<std::vector<std::vector<TTIndex> > > & TT,
     std::vector<std::vector<std::vector<TTiIndex> > > & TTi)
 {
-  using namespace std;
-  using namespace Eigen;
   typedef Eigen::Index Index;
   const size_t m = EMAP.rows()/3;
   assert((size_t)EMAP.rows() == m*3 && "EMAP should come from list of triangles.");
   // E2E[i] --> {j,k,...} means face edge i corresponds to other faces edges j
   // and k
-  TT.resize (m,vector<vector<TTIndex> >(3));
+  TT.resize (m,std::vector<std::vector<TTIndex> >(3));
   if(construct_TTi)
   {
-    TTi.resize(m,vector<vector<TTiIndex> >(3));
+    TTi.resize(m,std::vector<std::vector<TTiIndex> >(3));
   }
 
   // No race conditions because TT*[f][c]'s are in bijection with e's

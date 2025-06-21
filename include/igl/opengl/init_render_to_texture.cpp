@@ -17,7 +17,6 @@ IGL_INLINE void igl::opengl::init_render_to_texture(
   GLuint & fbo_id,
   GLuint & d_id)
 {
-  using namespace std;
   // http://www.opengl.org/wiki/Framebuffer_Object_Examples#Quick_example.2C_render_to_texture_.282D.29
   const auto & gen_tex = [](GLuint & tex_id)
   {

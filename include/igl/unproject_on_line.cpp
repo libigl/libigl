@@ -15,20 +15,19 @@ void igl::unproject_on_line(
   const Eigen::MatrixBase<Deriveddir> & dir,
   typename DerivedUV::Scalar & t)
 {
-  using namespace Eigen;
   typedef typename DerivedUV::Scalar Scalar;
-  Matrix<Scalar,2,3> A;
-  Matrix<Scalar,2,1> B;
+  Eigen::Matrix<Scalar,2,3> A;
+  Eigen::Matrix<Scalar,2,1> B;
   projection_constraint(UV,M,VP,A,B);
   // min_z,t ‖Az - B‖²  subject to z = origin + t*dir
   // min_t  ‖A(origin + t*dir) - B‖²
   // min_t  ‖A*t*dir + A*origin - B‖²
   // min_t  ‖D*t + C‖²
   // t = -(D'D)\(D'*C)
-  Matrix<Scalar,2,1> C = A*origin.template cast<Scalar>() - B;
-  Matrix<Scalar,2,1> D =    A*dir.template cast<Scalar>();
+  Eigen::Matrix<Scalar,2,1> C = A*origin.template cast<Scalar>() - B;
+  Eigen::Matrix<Scalar,2,1> D =    A*dir.template cast<Scalar>();
   // Solve least squares system directly
-  const Matrix<Scalar,1,1> t_mat = D.jacobiSvd(ComputeFullU | ComputeFullV).solve(-C);
+  const Eigen::Matrix<Scalar,1,1> t_mat = D.jacobiSvd(Eigen::ComputeFullU | Eigen::ComputeFullV).solve(-C);
   t = t_mat(0,0);
 }
 

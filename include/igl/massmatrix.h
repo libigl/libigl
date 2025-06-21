@@ -34,9 +34,9 @@ namespace igl
   /// Constructs the mass (area) matrix for a given mesh (V,F).
   ///
   /// @tparam DerivedV  derived type of eigen matrix for V (e.g. derived from
-  ///     MatrixXd)
+  ///     Eigen::MatrixXd)
   /// @tparam DerivedF  derived type of eigen matrix for F (e.g. derived from
-  ///     MatrixXi)
+  ///     Eigen::MatrixXi)
   /// @tparam Scalar  scalar type for eigen sparse matrix (e.g. double)
   /// @param[in] V  #V by dim list of mesh vertex positions
   /// @param[in] F  #F by simplex_size list of mesh elements (triangles or tetrahedra)

@@ -491,7 +491,6 @@ IGL_INLINE void igl::signed_distance_pseudonormal(
   Eigen::PlainObjectBase<DerivedC> & C,
   Eigen::PlainObjectBase<DerivedN> & N)
 {
-  using namespace Eigen;
   const size_t np = P.rows();
   S.resize(np,1);
   I.resize(np,1);
@@ -541,8 +540,6 @@ IGL_INLINE void igl::signed_distance_pseudonormal(
   static_assert(
     DerivedV::ColsAtCompileTime == 3 || DerivedV::ColsAtCompileTime == Eigen::Dynamic,
     "V should have 3 or Dynamic columns");
-  using namespace Eigen;
-  using namespace std;
   //typedef Eigen::Matrix<typename DerivedV::Scalar,1,3> RowVector3S;
   // Alec: Why was this constructor around q necessary?
   //sqrd = tree.squared_distance(V,F,RowVector3S(q),i,(RowVector3S&)c);
@@ -577,8 +574,6 @@ IGL_INLINE void igl::signed_distance_pseudonormal(
   static_assert(
     DerivedV::ColsAtCompileTime == 2 || DerivedV::ColsAtCompileTime == Eigen::Dynamic,
     "V should have 2 or Dynamic columns");
-  using namespace Eigen;
-  using namespace std;
   typedef Eigen::Matrix<typename DerivedV::Scalar,1,2> RowVector2S;
   sqrd = tree.squared_distance(V,E,RowVector2S(q),i,(RowVector2S&)c);
   pseudonormal_test(V,E,EN,VN,q,i,c,s,n);
@@ -627,8 +622,6 @@ IGL_INLINE void igl::signed_distance_winding_number(
   static_assert(
     DerivedV::ColsAtCompileTime == 3 || DerivedV::ColsAtCompileTime == Eigen::Dynamic,
     "V should have 3 or Dynamic columns");
-  using namespace Eigen;
-  using namespace std;
   typedef Eigen::Matrix<typename DerivedV::Scalar,1,3> RowVector3S;
   sqrd = tree.squared_distance(V,F,RowVector3S(q),i,(RowVector3S&)c);
   const Scalar w = hier.winding_number(q.transpose());
@@ -654,8 +647,6 @@ IGL_INLINE void igl::signed_distance_winding_number(
   static_assert(
     DerivedV::ColsAtCompileTime == 2 || DerivedV::ColsAtCompileTime == Eigen::Dynamic,
     "V should have 2 or Dynamic columns");
-  using namespace Eigen;
-  using namespace std;
   typedef Eigen::Matrix<typename DerivedV::Scalar,1,2> RowVector2S;
   sqrd = tree.squared_distance(V,F,RowVector2S(q),i,(RowVector2S&)c);
   // TODO: using .data() like this is very dangerous... This is assuming

@@ -10,7 +10,6 @@
 
 IGL_INLINE MSKrescodee igl::mosek::mosek_guarded(const MSKrescodee r)
 {
-  using namespace std;
   if(r != MSK_RES_OK)
   {
     /* In case of an error print error code and description. */      

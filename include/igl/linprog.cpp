@@ -20,8 +20,6 @@ IGL_INLINE bool igl::linprog(
 {
   // This is a very literal translation of
   // http://www.mathworks.com/matlabcentral/fileexchange/2166-introduction-to-linear-algebra/content/strang/linprog.m
-  using namespace Eigen;
-  using namespace std;
   bool success = true;
   // number of constraints
   const int m = _A.rows();
@@ -44,29 +42,29 @@ IGL_INLINE bool igl::linprog(
     return Bsign;
   };
   // initial (inverse) basis matrix
-  VectorXd Dv = sign(sign(b).array()+0.5);
+  Eigen::VectorXd Dv = sign(sign(b).array()+0.5);
   Dv.head(k).setConstant(1.);
-  MatrixXd D = Dv.asDiagonal();
+  Eigen::MatrixXd D = Dv.asDiagonal();
   // Incorporate slack variables
-  MatrixXd A(_A.rows(),_A.cols()+D.cols());
+  Eigen::MatrixXd A(_A.rows(),_A.cols()+D.cols());
   A<<_A,D;
   // Initial basis
-  VectorXi B = igl::colon<int>(n,n+m-1);
+  Eigen::VectorXi B = igl::colon<int>(n,n+m-1);
   // non-basis, may turn out that vector<> would be better here
-  VectorXi N = igl::colon<int>(0,n-1);
+  Eigen::VectorXi N = igl::colon<int>(0,n-1);
   int j;
   double bmin = b.minCoeff(&j);
   int phase;
-  VectorXd xb;
-  VectorXd s;
-  VectorXi J;
+  Eigen::VectorXd xb;
+  Eigen::VectorXd s;
+  Eigen::VectorXi J;
   if(k>0 && bmin<0)
   {
     phase = 1;
-    xb = VectorXd::Ones(m);
+    xb = Eigen::VectorXd::Ones(m);
     // super cost
     s.resize(n+m+1);
-    s<<VectorXd::Zero(n+k),VectorXd::Ones(m-k+1);
+    s<<Eigen::VectorXd::Zero(n+k),Eigen::VectorXd::Ones(m-k+1);
     N.resize(n+1);
     N<<igl::colon<int>(0,n-1),B(j);
     J.resize(B.size()-1);
@@ -77,10 +75,10 @@ IGL_INLINE bool igl::linprog(
     J.head(j) = B.head(j);
     J.tail(B.size()-j-1) = B.tail(B.size()-j-1);
     B(j) = n+m;
-    MatrixXd AJ = A(igl::placeholders::all,J);
-    const VectorXd a = b - AJ.rowwise().sum();
+    Eigen::MatrixXd AJ = A(igl::placeholders::all,J);
+    const Eigen::VectorXd a = b - AJ.rowwise().sum();
     {
-      MatrixXd old_A = A;
+      Eigen::MatrixXd old_A = A;
       A.resize(A.rows(),A.cols()+a.cols());
       A<<old_A,a;
     }
@@ -92,21 +90,21 @@ IGL_INLINE bool igl::linprog(
     xb = b;
     s.resize(c.size()+m);
     // cost function
-    s<<c,VectorXd::Zero(m);
+    s<<c,Eigen::VectorXd::Zero(m);
   }else //k = 0 or bmin >=0
   {
     phase = 1;
     xb = b.array().abs();
     s.resize(n+m);
     // super cost
-    s<<VectorXd::Zero(n+k),VectorXd::Ones(m-k);
+    s<<Eigen::VectorXd::Zero(n+k),Eigen::VectorXd::Ones(m-k);
   }
   while(phase<3)
   {
     double df = -1;
     int t = std::numeric_limits<int>::max();
     // Lagrange mutipliers fro Ax=b
-    VectorXd yb = D.transpose() * s(B);
+    Eigen::VectorXd yb = D.transpose() * s(B);
     while(true)
     {
       if(MAXIT>0 && it>=MAXIT)
@@ -123,9 +121,9 @@ IGL_INLINE bool igl::linprog(
         break;
       }
       // reduced costs
-      VectorXd sN = s(N);
-      MatrixXd AN = A(igl::placeholders::all,N);
-      VectorXd r = sN - AN.transpose() * yb;
+      Eigen::VectorXd sN = s(N);
+      Eigen::MatrixXd AN = A(igl::placeholders::all,N);
+      Eigen::VectorXd r = sN - AN.transpose() * yb;
       int q;
       // determine new basic variable
       double rmin = r.minCoeff(&q);
@@ -152,8 +150,8 @@ IGL_INLINE bool igl::linprog(
         // could produce a vector for multiple matches
         (N.array()==Nq).cast<int>().maxCoeff(&q);
       }
-      VectorXd d = D*A.col(N(q));
-      VectorXi I;
+      Eigen::VectorXd d = D*A.col(N(q));
+      Eigen::VectorXi I;
       igl::find((d.array()>tol).eval(),I);
       if(I.size() == 0)
       {
@@ -165,7 +163,7 @@ IGL_INLINE bool igl::linprog(
         success = false;
         break;
       }
-      VectorXd xbd = xb(I).array()/d(I).array();
+      Eigen::VectorXd xbd = xb(I).array()/d(I).array();
       // new use of r
       int p;
       {
@@ -189,7 +187,7 @@ IGL_INLINE bool igl::linprog(
         df = r*rmin;
       }
       // row vector
-      RowVectorXd v = D.row(p)/d(p);
+      Eigen::RowVectorXd v = D.row(p)/d(p);
       yb += v.transpose() * (s(N(q)) - d.transpose()*s(B));
       d(p)-=1;
       // update inverse basis matrix
@@ -199,7 +197,7 @@ IGL_INLINE bool igl::linprog(
       if(t>(n+k-1))
       {
         // remove qth entry from N
-        VectorXi old_N = N;
+        Eigen::VectorXi old_N = N;
         N.resize(N.size()-1);
         N.head(q) = old_N.head(q);
         N.head(q) = old_N.head(q);
@@ -212,12 +210,12 @@ IGL_INLINE bool igl::linprog(
     // iterative refinement
     xb = (xb+D*(b-A(igl::placeholders::all,B)*xb)).eval();
     // must be due to rounding
-    VectorXi I;
+    Eigen::VectorXi I;
     igl::find((xb.array()<0).eval(),I);
     if(I.size()>0)
     {
       // so correct
-      xb(I) = VectorXd::Zero(I.size(),1);
+      xb(I) = Eigen::VectorXd::Zero(I.size(),1);
     }
     // B, xb,n,m,res=A(:,B)*xb-b
     if(phase == 2 || it<0)
@@ -252,15 +250,13 @@ IGL_INLINE bool igl::linprog(
   const Eigen::VectorXd & c,
   Eigen::VectorXd & x)
 {
-  using namespace Eigen;
-  using namespace std;
   const int m = A.rows();
   const int n = A.cols();
   const int p = B.rows();
-  MatrixXd Im = MatrixXd::Identity(m,m);
-  MatrixXd AS(m,n+m);
+  Eigen::MatrixXd Im = Eigen::MatrixXd::Identity(m,m);
+  Eigen::MatrixXd AS(m,n+m);
   AS<<A,Im;
-  MatrixXd bS = b.array().abs();
+  Eigen::MatrixXd bS = b.array().abs();
   for(int i = 0;i<m;i++)
   {
     const auto & sign = [](double x)->double
@@ -269,32 +265,32 @@ IGL_INLINE bool igl::linprog(
     };
     AS.row(i) *= sign(b(i));
   }
-  MatrixXd In = MatrixXd::Identity(n,n);
-  MatrixXd P(n+m,2*n+m);
-  P<<              In, -In, MatrixXd::Zero(n,m),
-     MatrixXd::Zero(m,2*n), Im;
-  MatrixXd ASP = AS*P;
-  MatrixXd BSP(0,2*n+m);
+  Eigen::MatrixXd In = Eigen::MatrixXd::Identity(n,n);
+  Eigen::MatrixXd P(n+m,2*n+m);
+  P<<              In, -In, Eigen::MatrixXd::Zero(n,m),
+     Eigen::MatrixXd::Zero(m,2*n), Im;
+  Eigen::MatrixXd ASP = AS*P;
+  Eigen::MatrixXd BSP(0,2*n+m);
   if(p>0)
   {
     // B ∈ ℝ^(p × n)
-    MatrixXd BS(p,n+m);
-    BS<<B,MatrixXd::Zero(p,m);
+    Eigen::MatrixXd BS(p,n+m);
+    BS<<B,Eigen::MatrixXd::Zero(p,m);
     // BS ∈ ℝ^(p × n+m)
     BSP = BS*P;
     // BSP ∈ ℝ^(p × 2n+m)
   }
 
-  VectorXd fSP = VectorXd::Ones(2*n+m);
+  Eigen::VectorXd fSP = Eigen::VectorXd::Ones(2*n+m);
   fSP.head(2*n) = P.block(0,0,n,2*n).transpose()*f;
-  const VectorXd & cc = fSP;
+  const Eigen::VectorXd & cc = fSP;
 
-  MatrixXd AA(m+p,2*n+m);
+  Eigen::MatrixXd AA(m+p,2*n+m);
   AA<<ASP,BSP;
-  VectorXd bb(m+p);
+  Eigen::VectorXd bb(m+p);
   bb<<bS,c;
 
-  VectorXd xxs;
+  Eigen::VectorXd xxs;
   // min   ccᵀxxs
   // s.t.  AA xxs ≤ bb
   //          xxs ≥ 0

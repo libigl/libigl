@@ -45,7 +45,6 @@ IGL_INLINE bool igl::mosek::mosek_linprog(
   Eigen::VectorXd & x)
 {
   // following http://docs.mosek.com/7.1/capi/Linear_optimization.html
-  using namespace std;
   // number of constraints
   const int m = A.rows();
   // number of variables

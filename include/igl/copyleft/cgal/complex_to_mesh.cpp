@@ -21,7 +21,6 @@ IGL_INLINE bool igl::copyleft::cgal::complex_to_mesh(
   Eigen::PlainObjectBase<DerivedV> & V, 
   Eigen::PlainObjectBase<DerivedF> & F)
 {
-  using namespace Eigen;
   // CGAL/IO/Complex_2_in_triangulation_3_file_writer.h
   using CGAL::Surface_mesher::number_of_facets_on_surface;
 
@@ -140,8 +139,8 @@ IGL_INLINE bool igl::copyleft::cgal::complex_to_mesh(
 
   // CGAL code somehow can end up with unreferenced vertices
   {
-    VectorXi _1;
-    remove_unreferenced( MatrixXd(V), MatrixXi(F), V,F,_1);
+    Eigen::VectorXi _1;
+    remove_unreferenced( Eigen::MatrixXd(V), Eigen::MatrixXi(F), V,F,_1);
   }
 
   return success;

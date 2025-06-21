@@ -29,12 +29,10 @@ IGL_INLINE void igl::unique_edge_map(
   static_assert(
     (DerivedEMAP::RowsAtCompileTime == 1 || DerivedEMAP::ColsAtCompileTime == 1) ,
     "EMAP need to have RowsAtCompileTime == 1 or ColsAtCompileTime == 1");
-  using namespace Eigen;
-  using namespace std;
   unique_edge_map(F,E,uE,EMAP);
   uE2E.resize(uE.rows());
   // This does help a little
-  for_each(uE2E.begin(),uE2E.end(),[](vector<uE2EType > & v){v.reserve(2);});
+  for_each(uE2E.begin(),uE2E.end(),[](std::vector<uE2EType > & v){v.reserve(2);});
   const size_t ne = E.rows();
   IGL_ASSERT((size_t)EMAP.size() == ne);
   for(uE2EType e = 0;e<(uE2EType)ne;e++)
@@ -54,15 +52,13 @@ IGL_INLINE void igl::unique_edge_map(
   Eigen::PlainObjectBase<DeriveduE> & uE,
   Eigen::PlainObjectBase<DerivedEMAP> & EMAP)
 {
-  using namespace Eigen;
-  using namespace std;
   // All occurrences of directed edges
   oriented_facets(F,E);
   const size_t ne = E.rows();
   // This is 2x faster to create than a map from pairs to lists of edges and 5x
   // faster to access (actually access is probably assympotically faster O(1)
   // vs. O(log m)
-  Matrix<typename DerivedEMAP::Scalar,Dynamic,1> IA;
+  Eigen::Matrix<typename DerivedEMAP::Scalar ,Eigen::Dynamic,1> IA;
   unique_simplices(E,uE,IA,EMAP);
   IGL_ASSERT((size_t)EMAP.size() == ne);
 }
@@ -94,7 +90,7 @@ IGL_INLINE void igl::unique_edge_map(
   igl::cumsum(uEK,1,true,uEC);
   IGL_ASSERT(uEK.rows()+1 == uEC.rows());
   // running inner offset in uEE
-  VectorXI uEO = VectorXI::Zero(uE.rows(),1);
+  Eigen::VectorXi uEO = Eigen::VectorXi::Zero(uE.rows(),1);
   // flat array of faces incide on each uE
   uEE.resize(EMAP.rows(),1);
   for(Eigen::Index e = 0;e<EMAP.rows();e++)

@@ -47,8 +47,7 @@ IGL_INLINE bool igl::stb::write_image(
 {
   const int comp = 4;                                  // 4 Channels Red, Green, Blue, Alpha
   const int stride_in_bytes = width*comp;           // Length of one row in bytes
-  using namespace std;
-  string d,b,e,f;
+  std::string d,b,e,f;
   pathinfo(image_file,d,b,e,f);
   if(e == "png")
   {

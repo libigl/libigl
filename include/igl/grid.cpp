@@ -16,7 +16,6 @@ IGL_INLINE void igl::grid(
   const Eigen::MatrixBase<Derivedres> & res, 
   Eigen::PlainObjectBase<DerivedGV> & GV)
 {
-  using namespace Eigen;
   typedef typename DerivedGV::Scalar Scalar;
   GV.resize(res.array().prod(),res.size());
   const auto lerp = 

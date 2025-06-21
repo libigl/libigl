@@ -34,14 +34,13 @@ IGL_INLINE void igl::shape_diameter_function(
   const int num_samples,
   Eigen::PlainObjectBase<DerivedS> & S)
 {
-  using namespace Eigen;
   using Scalar = typename DerivedP::Scalar;
   using Vector3S = Eigen::Matrix<typename DerivedP::Scalar,3,1>;
   const int n = P.rows();
   // Resize output
   S.resize(n,1);
   // Embree seems to be parallel when constructing but not when tracing rays
-  const Matrix<Scalar,Eigen::Dynamic,3> D = random_dir_stratified(num_samples).cast<Scalar>();
+  const Eigen::Matrix<Scalar,Eigen::Dynamic,3> D = random_dir_stratified(num_samples).cast<Scalar>();
 
   const auto & inner = [&P,&N,&num_samples,&D,&S,&shoot_ray](const int p)
   {

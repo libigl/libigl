@@ -18,9 +18,9 @@ namespace igl
   /// [V.col(0); V.col(1)] is the **vector area** of the mesh (V,F).
   ///
   /// @tparam DerivedV  derived type of eigen matrix for V (e.g. derived from
-  ///     MatrixXd)
+  ///     Eigen::MatrixXd)
   /// @tparam DerivedF  derived type of eigen matrix for F (e.g. derived from
-  ///     MatrixXi)
+  ///     Eigen::MatrixXi)
   /// @tparam Scalar  scalar type for eigen sparse matrix (e.g. double)
   /// @param[in] F  #F by 3 list of mesh faces (must be triangles)
   /// @param[out] A  #Vx2 by #Vx2 area matrix

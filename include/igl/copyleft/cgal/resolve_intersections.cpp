@@ -31,15 +31,13 @@ IGL_INLINE void igl::copyleft::cgal::resolve_intersections(
   Eigen::PlainObjectBase<DerivedJ> & J,
   Eigen::PlainObjectBase<DerivedIM> & IM)
 {
-  using namespace Eigen;
   using namespace igl;
-  using namespace std;
   // Exact scalar type
   typedef CGAL::Epeck K;
   typedef K::FT EScalar;
   typedef CGAL::Segment_2<K> Segment_2;
   typedef CGAL::Point_2<K> Point_2;
-  typedef Matrix<EScalar,Dynamic,Dynamic>  MatrixXE;
+  typedef Eigen::Matrix<EScalar ,Eigen::Dynamic ,Eigen::Dynamic>  MatrixXE;
 
   // Convert vertex positions to exact kernel
   MatrixXE VE(V.rows(),V.cols());

@@ -30,9 +30,8 @@ IGL_INLINE bool igl::harmonic(
   const int k,
   Eigen::PlainObjectBase<DerivedW> & W)
 {
-  using namespace Eigen;
-  typedef typename DerivedV::Scalar Scalar;
-  SparseMatrix<Scalar> L,M;
+    typedef typename DerivedV::Scalar Scalar;
+  Eigen::SparseMatrix<Scalar> L,M;
   cotmatrix(V,F,L);
   if(k>1)
   {
@@ -53,9 +52,8 @@ IGL_INLINE bool igl::harmonic(
   const int k,
   Eigen::PlainObjectBase<DerivedW> & W)
 {
-  using namespace Eigen;
   typedef typename Derivedbc::Scalar Scalar;
-  SparseMatrix<Scalar> A;
+  Eigen::SparseMatrix<Scalar> A;
   adjacency_matrix(F,A);
   // sum each row
   Eigen::Matrix<Scalar,Eigen::Dynamic,1> Asum;
@@ -63,7 +61,7 @@ IGL_INLINE bool igl::harmonic(
   // Eigen 3.4 still struggles to do arithmetic with sparse and diagonal matrices
   Eigen::SparseMatrix<Scalar> L = A - Eigen::SparseMatrix<Scalar>(Asum.asDiagonal());
 
-  SparseMatrix<Scalar> M;
+  Eigen::SparseMatrix<Scalar> M;
   speye(L.rows(),M);
   return harmonic(L,M,b,bc,k,W);
 }

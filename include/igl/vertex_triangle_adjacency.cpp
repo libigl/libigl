@@ -56,7 +56,7 @@ IGL_INLINE void igl::vertex_triangle_adjacency(
   typedef Eigen::Matrix<typename DerivedVF::Scalar,Eigen::Dynamic,1> VectorXI;
   // vfd  #V list so that vfd(i) contains the vertex-face degree (number of
   // faces incident on vertex i)
-  VectorXI vfd = VectorXI::Zero(n);
+   VectorXI vfd = VectorXI::Zero(n);
   for (int i = 0; i < F.rows(); i++)
   {
     for (int j = 0; j < 3; j++)

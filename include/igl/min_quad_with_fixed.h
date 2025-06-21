@@ -57,8 +57,8 @@ namespace igl
   /// Solves a system previously factored using min_quad_with_fixed_precompute
   ///
   /// @tparam T  type of sparse matrix (e.g. double)
-  /// @tparam DerivedY  type of Y (e.g. derived from VectorXd or MatrixXd)
-  /// @tparam DerivedZ  type of Z (e.g. derived from VectorXd or MatrixXd)
+  /// @tparam DerivedY  type of Y (e.g. derived from Eigen::VectorXd or Eigen::MatrixXd)
+  /// @tparam DerivedZ  type of Z (e.g. derived from Eigen::VectorXd or Eigen::MatrixXd)
   /// @param[in] data  factorization struct with all necessary precomputation to solve
   /// @param[in] B  n by k column of linear coefficients
   /// @param[in] Y  b by k list of constant fixed values

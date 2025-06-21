@@ -28,8 +28,6 @@ IGL_INLINE void igl::local_basis(
   Eigen::PlainObjectBase<DerivedB2>& B2,
   Eigen::PlainObjectBase<DerivedB3>& B3)
 {
-  using namespace Eigen;
-  using namespace std;
   assert(V.cols() == 3);
   B1.resize(F.rows(),3);
   B2.resize(F.rows(),3);

@@ -56,7 +56,6 @@ IGL_INLINE void igl::embree::shape_diameter_function(
   const int num_samples,
   Eigen::PlainObjectBase<DerivedS> & S)
 {
-  using namespace Eigen;
   EmbreeIntersector ei;
   ei.init(V.template cast<float>(),F.template cast<int>());
   shape_diameter_function(ei,P,N,num_samples,S);

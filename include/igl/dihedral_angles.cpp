@@ -23,11 +23,10 @@ IGL_INLINE void igl::dihedral_angles(
   Eigen::PlainObjectBase<Derivedtheta>& theta,
   Eigen::PlainObjectBase<Derivedcos_theta>& cos_theta)
 {
-  using namespace Eigen;
   assert(T.cols() == 4);
-  Matrix<typename Derivedtheta::Scalar,Dynamic,6> l;
+  Eigen::Matrix<typename Derivedtheta::Scalar ,Eigen::Dynamic,6> l;
   edge_lengths(V,T,l);
-  Matrix<typename Derivedtheta::Scalar,Dynamic,4> s;
+  Eigen::Matrix<typename Derivedtheta::Scalar ,Eigen::Dynamic,4> s;
   face_areas(l,s);
   return dihedral_angles_intrinsic(l,s,theta,cos_theta);
 }

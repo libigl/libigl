@@ -817,8 +817,6 @@ IGL_INLINE void igl::AABB<DerivedV,DIM>::init(
     const Eigen::MatrixBase<Derivedelements> & elements,
     const int i)
 {
-  using namespace std;
-  using namespace Eigen;
   clear();
   if(bb_mins.size() > 0)
   {
@@ -844,7 +842,7 @@ IGL_INLINE void igl::AABB<DerivedV,DIM>::init(
     }
   }else
   {
-    VectorXi allI = colon<int>(0,Ele.rows()-1);
+    Eigen::VectorXi allI = colon<int>(0,Ele.rows()-1);
     MatrixXDIMS BC;
     if(Ele.cols() == 1)
     {
@@ -855,10 +853,10 @@ IGL_INLINE void igl::AABB<DerivedV,DIM>::init(
       // Simplices
       barycenter(V,Ele,BC);
     }
-    MatrixXi SI(BC.rows(),BC.cols());
+    Eigen::MatrixXi SI(BC.rows(),BC.cols());
     {
       MatrixXDIMS _;
-      MatrixXi IS;
+      Eigen::MatrixXi IS;
       igl::sort(BC,1,true,_,IS);
       // Need SI(i) to tell which place i would be sorted into
       const int dim = IS.cols();
@@ -880,9 +878,8 @@ void igl::AABB<DerivedV,DIM>::init(
     const Eigen::MatrixBase<DerivedV> & V,
     const Eigen::MatrixBase<DerivedEle> & Ele)
 {
-  using namespace Eigen;
   // clear will be immediately called...
-  return init(V,Ele,MatrixXDIMS(),MatrixXDIMS(),VectorXi(),0);
+  return init(V,Ele,MatrixXDIMS(),MatrixXDIMS(),Eigen::VectorXi(),0);
 }
 
   template <typename DerivedV, int DIM>
@@ -896,8 +893,6 @@ IGL_INLINE void igl::AABB<DerivedV,DIM>::init(
     const Eigen::MatrixBase<DerivedSI> & SI,
     const Eigen::MatrixBase<DerivedI> & I)
 {
-  using namespace Eigen;
-  using namespace std;
   clear();
   if(V.size() == 0 || Ele.size() == 0 || I.size() == 0)
   {
@@ -905,7 +900,7 @@ IGL_INLINE void igl::AABB<DerivedV,DIM>::init(
   }
   assert(DIM == V.cols() && "V.cols() should matched declared dimension");
   //const Scalar inf = numeric_limits<Scalar>::infinity();
-  m_box = AlignedBox<Scalar,DIM>();
+  m_box = Eigen::AlignedBox<Scalar,DIM>();
   // Compute bounding box
   for(int i = 0;i<I.rows();i++)
   {
@@ -933,20 +928,20 @@ IGL_INLINE void igl::AABB<DerivedV,DIM>::init(
         m_box.diagonal().maxCoeff(&max_d);
         // Can't use median on BC directly because many may have same value,
         // but can use median on sorted BC indices
-        VectorXi SIdI(I.rows());
+        Eigen::VectorXi SIdI(I.rows());
         for(int i = 0;i<I.rows();i++)
         {
           SIdI(i) = SI(I(i),max_d);
         }
         // Pass by copy to avoid changing input
-        const auto median = [](VectorXi A)->int
+        const auto median = [](Eigen::VectorXi A)->int
         {
           size_t n = (A.size()-1)/2;
-          nth_element(A.data(),A.data()+n,A.data()+A.size());
+          std::nth_element(A.data(),A.data()+n,A.data()+A.size());
           return A(n);
         };
         const int med = median(SIdI);
-        VectorXi LI((I.rows()+1)/2),RI(I.rows()/2);
+        Eigen::VectorXi LI((I.rows()+1)/2),RI(I.rows()/2);
         assert(LI.rows()+RI.rows() == I.rows());
         // Distribute left and right
         {
@@ -1051,8 +1046,6 @@ IGL_INLINE std::vector<int> igl::AABB<DerivedV,DIM>::find(
     const Eigen::MatrixBase<Derivedq> & q,
     const bool first) const
 {
-  using namespace std;
-  using namespace Eigen;
   assert(q.size() == DIM &&
       "Query dimension should match aabb dimension");
   assert(Ele.cols() == V.cols()+1 &&
@@ -1099,8 +1092,6 @@ IGL_INLINE void igl::AABB<DerivedV,DIM>::serialize(
     Eigen::PlainObjectBase<Derivedelements> & elements,
     const int i) const
 {
-  using namespace std;
-  using namespace Eigen;
   // Calling for root then resize output
   if(i==0)
   {
@@ -1150,8 +1141,6 @@ igl::AABB<DerivedV,DIM>::squared_distance(
   int & i,
   Eigen::PlainObjectBase<RowVectorDIMS> & c) const
 {
-  using namespace Eigen;
-  using namespace std;
   //assert(low_sqr_d <= up_sqr_d);
   if(low_sqr_d > up_sqr_d)
   {
@@ -1331,9 +1320,6 @@ IGL_INLINE typename igl::AABB<DerivedV,DIM>::Scalar
   Eigen::PlainObjectBase<DerivedI> & I,
   Eigen::PlainObjectBase<DerivedC> & C) const
 {
-  using namespace std;
-  using namespace Eigen;
-
   // This implementation is a bit disappointing. There's no major speed up. Any
   // performance gains seem to come from accidental cache coherency and
   // diminish for larger "other" (the opposite of what was intended).
@@ -1433,8 +1419,6 @@ IGL_INLINE void igl::AABB<DerivedV,DIM>::leaf_squared_distance(
   int & i,
   Eigen::PlainObjectBase<RowVectorDIMS> & c) const
 {
-  using namespace Eigen;
-  using namespace std;
   if(low_sqr_d > sqr_d)
   {
     sqr_d = low_sqr_d;

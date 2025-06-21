@@ -25,8 +25,8 @@ namespace igl
     /// @param[out] V_vbo_id  buffer id for vertex positions
     /// @param[out] F_vbo_id  buffer id for face indices
     ///
-    /// \note when using glDrawElements VBOs for V and F using MatrixXd and
-    /// MatrixXi will have types GL_DOUBLE and GL_UNSIGNED_INT respectively
+    /// \note when using glDrawElements VBOs for V and F using Eigen::MatrixXd and
+    /// Eigen::MatrixXi will have types GL_DOUBLE and GL_UNSIGNED_INT respectively
     ///
     IGL_INLINE void create_mesh_vbo(
       const Eigen::MatrixXd & V,

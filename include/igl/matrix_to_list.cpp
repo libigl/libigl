@@ -14,8 +14,7 @@ IGL_INLINE void igl::matrix_to_list(
   const Eigen::MatrixBase<DerivedM> & M,
   std::vector<std::vector<typename DerivedM::Scalar > > & V)
 {
-  using namespace std;
-  V.resize(M.rows(),vector<typename DerivedM::Scalar >(M.cols()));
+  V.resize(M.rows(),std::vector<typename DerivedM::Scalar >(M.cols()));
   // loop over rows
   for(int i = 0;i<M.rows();i++)
   {
@@ -32,7 +31,6 @@ IGL_INLINE void igl::matrix_to_list(
   const Eigen::MatrixBase<DerivedM> & M,
   std::vector<typename DerivedM::Scalar > & V)
 {
-  using namespace std;
   V.resize(M.size());
   // loop over cols then rows
   for(int j = 0;j<M.cols();j++)

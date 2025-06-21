@@ -17,9 +17,8 @@ IGL_INLINE bool igl::xml::write_triangle_mesh(
   const Eigen::MatrixBase<DerivedF>& F,
   const FileEncoding fe)
 {
-  using namespace std;
   // dirname, basename, extension and filename
-  string d,b,e,f;
+  std::string d,b,e,f;
   pathinfo(str,d,b,e,f);
   // Convert extension to lower case
   std::transform(e.begin(), e.end(), e.begin(), ::tolower);

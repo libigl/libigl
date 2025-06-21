@@ -17,8 +17,8 @@ namespace igl
 {
   /// Compute a local orthogonal reference system for each triangle in the given mesh
   ///
-  /// @tparam DerivedV derived from vertex positions matrix type: i.e. MatrixXd
-  /// @tparam DerivedF derived from face indices matrix type: i.e. MatrixXi
+  /// @tparam DerivedV derived from vertex positions matrix type: i.e. Eigen::MatrixXd
+  /// @tparam DerivedF derived from face indices matrix type: i.e. Eigen::MatrixXi
   /// @param[in] V  eigen matrix #V by 3
   /// @param[in] F  #F by 3 list of mesh faces (must be triangles)
   /// @param[out] B1 eigen matrix #F by 3, each vector is tangent to the triangle

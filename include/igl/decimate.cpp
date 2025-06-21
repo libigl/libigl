@@ -107,14 +107,12 @@ IGL_INLINE bool igl::decimate(
   )
 {
   // Decimate 1
-  using namespace Eigen;
-  using namespace std;
   // Working copies
   Eigen::MatrixXd V = OV;
   Eigen::MatrixXi F = OF;
   // Why recompute this rather than copy input?
-  VectorXi EMAP;
-  MatrixXi E,EF,EI;
+  Eigen::VectorXi EMAP;
+  Eigen::MatrixXi E,EF,EI;
   edge_flaps(F,E,EMAP,EF,EI);
   {
     Eigen::Array<bool,Eigen::Dynamic,Eigen::Dynamic> BF;
@@ -129,7 +127,7 @@ IGL_INLINE bool igl::decimate(
   // Could reserve with https://stackoverflow.com/a/29236236/148668
   Eigen::VectorXi EQ = Eigen::VectorXi::Zero(E.rows());
   // If an edge were collapsed, we'd collapse it to these points:
-  MatrixXd C(E.rows(),V.cols());
+  Eigen::MatrixXd C(E.rows(),V.cols());
   // Pushing into a vector then using constructor was slower. Maybe using
   // std::move + make_heap would squeeze out something?
   
@@ -147,7 +145,7 @@ IGL_INLINE bool igl::decimate(
       // If we were using more modern C++ then cost_and_placement could return a
       // tuple and could be unpacked into auto [cost,p] =
       // cost_and_placement(...) without much issue.
-      RowVectorXd p(1,3);
+      Eigen::RowVectorXd p(1,3);
       cost_and_placement(e,V,F,E,EMAP,EF,EI,cost,p);
       C.row(e) = p;
       costs(e) = cost;
@@ -194,7 +192,7 @@ IGL_INLINE bool igl::decimate(
     prev_e = e;
   }
   // remove all IGL_COLLAPSE_EDGE_NULL faces
-  MatrixXi F2(F.rows(),3);
+  Eigen::MatrixXi F2(F.rows(),3);
   J.resize(F.rows());
   int m = 0;
   for(int f = 0;f<F.rows();f++)
@@ -211,7 +209,7 @@ IGL_INLINE bool igl::decimate(
   }
   F2.conservativeResize(m,F2.cols());
   J.conservativeResize(m);
-  VectorXi _1;
+  Eigen::VectorXi _1;
   igl::remove_unreferenced(V,F2,U,G,_1,I);
   return clean_finish;
 }
