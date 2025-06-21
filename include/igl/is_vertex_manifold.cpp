@@ -20,7 +20,6 @@ IGL_INLINE bool igl::is_vertex_manifold(
   const Eigen::MatrixBase<DerivedF>& F,
   Eigen::PlainObjectBase<DerivedB>& B)
 {
-  using namespace Eigen;
   assert(F.cols() == 3 && "F must contain triangles");
   typedef typename DerivedF::Scalar Index;
   typedef typename DerivedF::Index FIndex;

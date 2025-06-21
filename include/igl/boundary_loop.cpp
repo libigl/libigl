@@ -16,12 +16,10 @@ IGL_INLINE void igl::boundary_loop(
     const Eigen::MatrixBase<DerivedF> & F,
     std::vector<std::vector<Index> >& L)
 {
-  using namespace Eigen;
-
   if(F.rows() == 0)
     return;
 
-  VectorXd Vdummy(F.maxCoeff()+1,1);
+  Eigen::VectorXd Vdummy(F.maxCoeff()+1,1);
   Eigen::Matrix<typename DerivedF::Scalar, Eigen::Dynamic, Eigen::Dynamic> TT,TTi;
   std::vector<std::vector<int> > VF, VFi;
   triangle_triangle_adjacency(F,TT,TTi);
@@ -92,8 +90,6 @@ IGL_INLINE void igl::boundary_loop(
   const Eigen::MatrixBase<DerivedF>& F,
   std::vector<Index>& L)
 {
-  using namespace Eigen;
-
   if(F.rows() == 0)
     return;
 
@@ -130,8 +126,6 @@ IGL_INLINE void igl::boundary_loop(
   const Eigen::MatrixBase<DerivedF>& F,
   Eigen::PlainObjectBase<DerivedL>& L)
 {
-  using namespace Eigen;
-
   if(F.rows() == 0)
     return;
 

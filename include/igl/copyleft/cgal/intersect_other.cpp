@@ -67,8 +67,6 @@ namespace igl
         Eigen::PlainObjectBase<DerivedIMAB> & IMAB)
       {
 
-        using namespace Eigen;
-
         typedef typename DerivedFA::Index Index;
         typedef CGAL::Triangle_3<Kernel> Triangle_3; 
         //// Axis-align boxes for all-pairs self-intersection detection

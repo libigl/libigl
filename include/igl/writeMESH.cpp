@@ -51,8 +51,6 @@ IGL_INLINE bool igl::writeMESH(
   const Eigen::MatrixBase<DerivedT> & T,
   const Eigen::MatrixBase<DerivedF> & F)
 {
-  using namespace Eigen;
-
   //// This is (surprisingly) slower than the C-ish code below
   //ofstream mesh_file;
   //mesh_file.open(str.c_str());

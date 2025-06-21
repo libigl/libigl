@@ -16,7 +16,6 @@ IGL_INLINE void igl::cumprod(
   const int dim,
   Eigen::PlainObjectBase<DerivedY > & Y)
 {
-  using namespace Eigen;
   Y.resizeLike(X);
   // get number of columns (or rows)
   int num_outer = (dim == 1 ? X.cols() : X.rows() );

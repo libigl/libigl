@@ -47,7 +47,6 @@ IGL_INLINE void igl::pseudonormal_test(
   static_assert(
       Derivedn::ColsAtCompileTime*Derivedn::RowsAtCompileTime == 3 || 
       Derivedn::ColsAtCompileTime*Derivedn::RowsAtCompileTime == Eigen::Dynamic,"q must be size 3 or Dynamic");
-  using namespace Eigen;
   const auto & qc = q-c;
   typedef Eigen::Matrix<Scalar,1,3> RowVector3S;
   RowVector3S b;
@@ -62,7 +61,7 @@ IGL_INLINE void igl::pseudonormal_test(
 
   const double area = [&A,&B,&C]()
   {
-    Matrix<double,1,1> area;
+    Eigen::Matrix<double,1,1> area;
     doublearea(A,B,C,area);
     return area(0);
   }();
@@ -124,8 +123,8 @@ IGL_INLINE void igl::pseudonormal_test(
     {
       const RowVector3S s = V.row(F(f,(e+1)%3));
       const RowVector3S d = V.row(F(f,(e+2)%3));
-      Matrix<double,1,1> sqr_d_j_x(1,1);
-      Matrix<double,1,1> t(1,1);
+      Eigen::Matrix<double,1,1> sqr_d_j_x(1,1);
+      Eigen::Matrix<double,1,1> t(1,1);
       project_to_line_segment(c,s,d,t,sqr_d_j_x);
       if(sqrt(sqr_d_j_x(0)) < epsilon)
       {
@@ -162,7 +161,6 @@ IGL_INLINE void igl::pseudonormal_test(
   Scalar & s,
   Eigen::PlainObjectBase<Derivedn> & n)
 {
-  using namespace Eigen;
   static_assert(DerivedV::ColsAtCompileTime == 2 || DerivedV::ColsAtCompileTime == Eigen::Dynamic,"V must either have 2 or Dynamic columns");
   static_assert(DerivedEN::ColsAtCompileTime == 2 || DerivedEN::ColsAtCompileTime == Eigen::Dynamic,"EN must either have 2 or Dynamic columns");
   static_assert(DerivedVN::ColsAtCompileTime == 2 || DerivedVN::ColsAtCompileTime == Eigen::Dynamic,"VN must either have 2 or Dynamic columns");

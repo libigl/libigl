@@ -17,7 +17,6 @@ IGL_INLINE void igl::limit_faces(
   const bool exclusive,
   MatF & LF)
 {
-  using namespace Eigen;
   std::vector<bool> in(F.rows(),false);
   int num_in = 0;
   // loop over faces

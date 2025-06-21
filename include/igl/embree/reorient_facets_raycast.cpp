@@ -33,7 +33,6 @@ IGL_INLINE void igl::embree::reorient_facets_raycast(
   Eigen::PlainObjectBase<DerivedI> & I,
   Eigen::PlainObjectBase<DerivedC> & C)
 {
-  using namespace Eigen;
   assert(F.cols() == 3);
   assert(V.cols() == 3);
 
@@ -61,22 +60,22 @@ IGL_INLINE void igl::embree::reorient_facets_raycast(
   ei.init(V.template cast<float>(),FF);
 
   // face normal
-  MatrixXd N;
+  Eigen::MatrixXd N;
   per_face_normals(V,FF,N);
 
   // face area
-  Matrix<typename DerivedV::Scalar,Dynamic,1> A;
+  Eigen::Matrix<typename DerivedV::Scalar ,Eigen::Dynamic,1> A;
   doublearea(V,FF,A);
   double area_total = A.sum();
 
   // determine number of rays per component according to its area
-  VectorXd area_per_component;
+  Eigen::VectorXd area_per_component;
   area_per_component.setZero(num_cc);
   for (int f = 0; f < m; ++f)
   {
     area_per_component(C(f)) += A(f);
   }
-  VectorXi num_rays_per_component(num_cc);
+  Eigen::VectorXi num_rays_per_component(num_cc);
   for (int c = 0; c < num_cc; ++c)
   {
     num_rays_per_component(c) = std::max<int>(static_cast<int>(rays_total * area_per_component(c) / area_total), rays_minimum);

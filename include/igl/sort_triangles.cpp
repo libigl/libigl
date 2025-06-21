@@ -31,9 +31,6 @@ IGL_INLINE void igl::sort_triangles(
   Eigen::PlainObjectBase<DerivedFF> & FF,
   Eigen::PlainObjectBase<DerivedI> & I)
 {
-  using namespace Eigen;
-
-
   typedef typename DerivedV::Scalar Scalar;
   // Barycenter, centroid
   Eigen::Matrix<Scalar, DerivedF::RowsAtCompileTime,1> D,sD;

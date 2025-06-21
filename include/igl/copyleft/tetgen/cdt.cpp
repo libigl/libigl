@@ -24,7 +24,6 @@ IGL_INLINE bool igl::copyleft::tetgen::cdt(
   Eigen::PlainObjectBase<DerivedTT>& TT,
   Eigen::PlainObjectBase<DerivedTF>& TF)
 {
-  using namespace Eigen;
   // Effective input mesh
   PlainMatrix<DerivedV,Eigen::Dynamic> U;
   PlainMatrix<DerivedF,Eigen::Dynamic> G;
@@ -35,7 +34,7 @@ IGL_INLINE bool igl::copyleft::tetgen::cdt(
     PlainMatrix<DerivedF,Eigen::Dynamic> BF;
     bounding_box(V,BV,BF);
     // scale bounding box
-    const RowVector3d mid = 
+    const Eigen::RowVector3d mid =
      (BV.colwise().minCoeff() + BV.colwise().maxCoeff()).eval()*0.5;
     BV.rowwise() -= mid;
     assert(param.bounding_box_scale >= 1.);

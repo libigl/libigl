@@ -29,17 +29,16 @@ IGL_INLINE bool igl::copyleft::tetgen::mesh_with_skeleton(
   Eigen::MatrixXi & TT,
   Eigen::MatrixXi & FF)
 {
-  using namespace Eigen;
   const std::string eff_tetgen_flags =
     (tetgen_flags.length() == 0?DEFAULT_TETGEN_FLAGS:tetgen_flags);
   // Collect all edges that need samples:
-  MatrixXi BECE = cat(1,BE,CE);
-  MatrixXd S;
+  Eigen::MatrixXi BECE = cat(1,BE,CE);
+  Eigen::MatrixXd S;
   // Sample each edge with 10 samples. (Choice of 10 doesn't seem to matter so
   // much, but could under some circumstances)
   sample_edges(C,BECE,samples_per_bone,S);
   // Vertices we'll constrain tet mesh to meet
-  MatrixXd VS = cat(1,V,S);
+  Eigen::MatrixXd VS = cat(1,V,S);
   // Use tetgen to mesh the interior of surface, this assumes surface:
   //   * has no holes
   //   * has no non-manifold edges or vertices

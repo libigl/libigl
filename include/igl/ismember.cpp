@@ -25,7 +25,6 @@ IGL_INLINE void igl::ismember(
   Eigen::PlainObjectBase<DerivedIA> & IA,
   Eigen::PlainObjectBase<DerivedLOCB> & LOCB)
 {
-  using namespace Eigen;
   IA.resizeLike(A);
   IA.setConstant(false);
   LOCB.resizeLike(A);
@@ -41,19 +40,19 @@ IGL_INLINE void igl::ismember(
   }
 
   // Get rid of any duplicates
-  typedef Matrix<typename DerivedA::Scalar,Dynamic,1> VectorA;
-  typedef Matrix<typename DerivedB::Scalar,Dynamic,1> VectorB;
+  typedef Eigen::Matrix<typename DerivedA::Scalar ,Eigen::Dynamic,1> VectorA;
+  typedef Eigen::Matrix<typename DerivedB::Scalar ,Eigen::Dynamic,1> VectorB;
   const VectorA vA(Eigen::Map<const VectorA>(DerivedA(A).data(), A.cols()*A.rows(),1));
   const VectorB vB(Eigen::Map<const VectorB>(DerivedB(B).data(), B.cols()*B.rows(),1));
   VectorA uA;
   VectorB uB;
-  Eigen::Matrix<typename DerivedA::Index,Dynamic,1> uIA,uIuA,uIB,uIuB;
+  Eigen::Matrix<typename DerivedA::Index ,Eigen::Dynamic,1> uIA,uIuA,uIB,uIuB;
   unique(vA,uA,uIA,uIuA);
   unique(vB,uB,uIB,uIuB);
   // Sort both
   VectorA sA;
   VectorB sB;
-  Eigen::Matrix<typename DerivedA::Index,Dynamic,1> sIA,sIB;
+  Eigen::Matrix<typename DerivedA::Index ,Eigen::Dynamic,1> sIA,sIB;
   sort(uA,1,true,sA,sIA);
   sort(uB,1,true,sB,sIB);
 
@@ -81,9 +80,9 @@ IGL_INLINE void igl::ismember(
     }
   }
 
-  Map< Matrix<typename DerivedIA::Scalar,Dynamic,1> > 
+  Eigen::Map< Eigen::Matrix<typename DerivedIA::Scalar ,Eigen::Dynamic,1> >
     vIA(IA.data(),IA.cols()*IA.rows(),1);
-  Map< Matrix<typename DerivedLOCB::Scalar,Dynamic,1> > 
+  Eigen::Map< Eigen::Matrix<typename DerivedLOCB::Scalar ,Eigen::Dynamic,1> >
     vLOCB(LOCB.data(),LOCB.cols()*LOCB.rows(),1);
   for(int a = 0;a<A.size();a++)
   {

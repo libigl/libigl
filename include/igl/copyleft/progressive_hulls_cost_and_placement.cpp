@@ -24,7 +24,6 @@ IGL_INLINE void igl::copyleft::progressive_hulls_cost_and_placement(
   double & cost,
   Eigen::RowVectorXd & p)
 {
-  using namespace Eigen;
   // Controls the amount of quadratic energy to add (too small will introduce
   // instabilities and flaps)
   const double w = 0.1;
@@ -40,9 +39,9 @@ IGL_INLINE void igl::copyleft::progressive_hulls_cost_and_placement(
   //   A  #N by 3 normals scaled by area,
   //   D  #N determinants of matrix formed by points as columns
   //   B  #N point on plane dot normal
-  MatrixXd A(N.size(),3);
-  VectorXd D(N.size());
-  VectorXd B(N.size());
+  Eigen::MatrixXd A(N.size(),3);
+  Eigen::VectorXd D(N.size());
+  Eigen::VectorXd B(N.size());
   //cout<<"N=[";
   for(int i = 0;i<N.size();i++)
   {
@@ -59,7 +58,7 @@ IGL_INLINE void igl::copyleft::progressive_hulls_cost_and_placement(
   //cout<<"];"<<endl;
   // linear objective
   Vector3d f = A.colwise().sum().transpose();
-  VectorXd x;
+  Eigen::VectorXd x;
   //bool success = linprog(f,-A,-B,MatrixXd(0,A.cols()),VectorXd(0,1),x);
   //VectorXd _;
   //bool success = mosek_linprog(f,A.sparseView(),B,_,_,_,env,x);
@@ -70,12 +69,12 @@ IGL_INLINE void igl::copyleft::progressive_hulls_cost_and_placement(
   bool success = false;
   {
     RowVectorXd mid = 0.5*(V.row(E(e,0))+V.row(E(e,1)));
-    MatrixXd G =  w*Matrix3d::Identity(3,3);
-    VectorXd g0 = (1.-w)*f - w*mid.transpose();
+    Eigen::MatrixXd G =  w*Matrix3d::Identity(3,3);
+    Eigen::VectorXd g0 = (1.-w)*f - w*mid.transpose();
     const int n = A.cols();
     success = quadprog(
         G,g0,
-        MatrixXd(n,0),VectorXd(0,1),
+        Eigen::MatrixXd(n,0),VectorXd(0,1),
         A.transpose(),-B,x);
     cost  = (1.-w)*(1./6.)*(x.dot(f) - D.sum()) + 
       w*(x.transpose()-mid).squaredNorm() +

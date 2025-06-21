@@ -52,8 +52,6 @@ IGL_INLINE void igl::triangle::triangulate(
   Eigen::PlainObjectBase<DerivedE2> & E2,
   Eigen::PlainObjectBase<DerivedEM2> & EM2)
 {
-  using namespace Eigen;
-
   assert( (VM.size() == 0 || V.rows() == VM.size()) &&
     "Vertex markers must be empty or same size as V");
   assert( (EM.size() == 0 || E.rows() == EM.size()) &&
@@ -65,8 +63,8 @@ IGL_INLINE void igl::triangle::triangulate(
   // Prepare the flags
   std::string full_flags = flags + "pz" + (EM.size() || VM.size() ? "" : "B");
 
-  typedef Map< Matrix<double,Dynamic,Dynamic,RowMajor> > MapXdr;
-  typedef Map< Matrix<int,Dynamic,Dynamic,RowMajor> > MapXir;
+  typedef Map< Eigen::Matrix<double ,Eigen::Dynamic ,Eigen::Dynamic,RowMajor> > MapXdr;
+  typedef Map< Eigen::Matrix<int ,Eigen::Dynamic ,Eigen::Dynamic,RowMajor> > MapXir;
 
   // Prepare the input struct
   triangulateio in;

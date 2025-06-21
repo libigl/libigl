@@ -38,7 +38,6 @@ IGL_INLINE void igl::sort(
     case 3:
       return igl::sort3(X,dim,ascending,Y,IX);
   }
-  using namespace Eigen;
   // get number of columns (or rows)
   int num_outer = (dim == 1 ? X.cols() : X.rows() );
   // dim must be 2 or 1
@@ -112,7 +111,6 @@ IGL_INLINE void igl::sort_new(
     case 3:
       return igl::sort3(X,dim,ascending,Y,IX);
   }
-  using namespace Eigen;
   // get number of columns (or rows)
   int num_outer = (dim == 1 ? X.cols() : X.rows() );
   // dim must be 2 or 1
@@ -168,7 +166,6 @@ IGL_INLINE void igl::sort2(
   Eigen::PlainObjectBase<DerivedY>& Y,
   Eigen::PlainObjectBase<DerivedIX>& IX)
 {
-  using namespace Eigen;
   typedef typename DerivedY::Scalar YScalar;
   Y = X.derived().template cast<YScalar>();
 
@@ -212,7 +209,6 @@ IGL_INLINE void igl::sort3(
   Eigen::PlainObjectBase<DerivedY>& Y,
   Eigen::PlainObjectBase<DerivedIX>& IX)
 {
-  using namespace Eigen;
   typedef typename DerivedY::Scalar YScalar;
   Y = X.derived().template cast<YScalar>();
   Y.resizeLike(X);

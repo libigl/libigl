@@ -137,8 +137,8 @@ namespace igl {
                 igl::copyleft::cgal::assign_scalar(query.x(), pivot_point(0, 0));
                 igl::copyleft::cgal::assign_scalar(query.y(), pivot_point(0, 1));
                 igl::copyleft::cgal::assign_scalar(query.z(), pivot_point(0, 2));
-                using VectorXI = Eigen::Matrix<typename DerivedF::Scalar, Eigen::Dynamic, 1>;
-                VectorXI order;
+                using Eigen::VectorXi = Eigen::Matrix<typename DerivedF::Scalar, Eigen::Dynamic, 1>;
+                Eigen::VectorXi order;
                 order_facets_around_edge(V, F, s, d,
                         adj_faces, pivot_point, order);
                 assert((size_t)order.size() == num_adj_faces);
@@ -335,8 +335,8 @@ IGL_INLINE void igl::copyleft::cgal::points_inside_component(
         const Eigen::MatrixBase<DerivedF>& F,
         const Eigen::MatrixBase<DerivedP>& P,
         Eigen::PlainObjectBase<DerivedB>& inside) {
-    using VectorXI = Eigen::Matrix<typename DerivedF::Scalar, Eigen::Dynamic, 1>;
-    VectorXI I = igl::LinSpaced<VectorXI>(F.rows(), 0, F.rows()-1);
+    using Eigen::VectorXi = Eigen::Matrix<typename DerivedF::Scalar, Eigen::Dynamic, 1>;
+    Eigen::VectorXi I = igl::LinSpaced<VectorXI>(F.rows(), 0, F.rows()-1);
     igl::copyleft::cgal::points_inside_component(V, F, I, P, inside);
 }
 

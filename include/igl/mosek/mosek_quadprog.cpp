@@ -285,8 +285,6 @@ IGL_INLINE bool igl::mosek::mosek_quadprog(
   MosekData & mosek_data,
   Eigen::VectorXd & x)
 {
-  using namespace Eigen;
-
   typedef int Index;
   typedef double Scalar;
   // Q should be square
@@ -296,11 +294,11 @@ IGL_INLINE bool igl::mosek::mosek_quadprog(
   assert( (Q-Q.transpose()).sum() < FLOAT_EPS);
 #endif
   // Only keep lower triangular part of Q
-  SparseMatrix<Scalar> QL;
-  //QL = Q.template triangularView<Lower>();
-  QL = Q.triangularView<Lower>();
-  VectorXi Qi,Qj;
-  VectorXd Qv;
+  Eigen::SparseMatrix<Scalar> QL;
+  //QL = Q.template triangularView<Eigen::Lower>();
+  QL = Q.triangularView<Eigen::Lower>();
+  Eigen::VectorXi Qi,Qj;
+  Eigen::VectorXd Qv;
   find(QL,Qi,Qj,Qv);
   vector<Index> vQi = matrix_to_list(Qi);
   vector<Index> vQj = matrix_to_list(Qj);

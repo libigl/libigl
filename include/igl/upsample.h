@@ -36,8 +36,8 @@ namespace igl
   /// Subdivide a mesh without moving vertices: loop subdivision but odd
   /// vertices stay put and even vertices are just edge midpoints
   ///
-  /// @tparam MatV  matrix for vertex positions, e.g. MatrixXd
-  /// @tparam MatF  matrix for vertex positions, e.g. MatrixXi
+  /// @tparam MatV  matrix for vertex positions, e.g. Eigen::MatrixXd
+  /// @tparam MatF  matrix for vertex positions, e.g. Eigen::MatrixXi
   /// @param[in] V  #V by dim  mesh vertices
   /// @param[in] F  #F by 3  mesh triangles
   /// @param[out] NV new vertex positions, V is guaranteed to be at top

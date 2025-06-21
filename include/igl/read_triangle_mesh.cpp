@@ -77,8 +77,6 @@ IGL_INLINE bool igl::read_triangle_mesh(
   std::string & ext,
   std::string & name)
 {
-  using namespace Eigen;
-
   // dirname, basename, extension and filename
   pathinfo(filename,dir,base,ext,name);
   // Convert extension to lower case
@@ -122,7 +120,6 @@ IGL_INLINE bool igl::read_triangle_mesh(
   Eigen::PlainObjectBase<DerivedV>& V,
   Eigen::PlainObjectBase<DerivedF>& F)
 {
-  using namespace Eigen;
   Eigen::MatrixXd N;
   std::vector<std::vector<double > > vV,vN,vTC,vC;
   std::vector<std::vector<int > > vF,vFTC,vFN;
@@ -131,7 +128,7 @@ IGL_INLINE bool igl::read_triangle_mesh(
   if(ext == "mesh")
   {
     // Convert extension to lower case
-    MatrixXi T;
+    Eigen::MatrixXi T;
     if(!readMESH(fp,V,T,F))
     {
       return 1;

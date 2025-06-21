@@ -12,7 +12,6 @@ IGL_INLINE void igl::matlab::prepare_lhs_double(
   const Eigen::DenseBase<DerivedV> & V,
   mxArray *plhs[])
 {
-  using namespace Eigen;
   const auto m = V.rows();
   const auto n = V.cols();
   plhs[0] = mxCreateDoubleMatrix(m,n, mxREAL);
@@ -26,7 +25,6 @@ IGL_INLINE void igl::matlab::prepare_lhs_logical(
   const Eigen::DenseBase<DerivedV> & V,
   mxArray *plhs[])
 {
-  using namespace Eigen;
   const auto m = V.rows();
   const auto n = V.cols();
   plhs[0] = mxCreateLogicalMatrix(m,n);

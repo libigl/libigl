@@ -16,10 +16,9 @@ IGL_INLINE void igl::vertex_components(
   Eigen::PlainObjectBase<DerivedC> & C,
   Eigen::PlainObjectBase<Derivedcounts> & counts)
 {
-  using namespace Eigen;
   assert(A.rows() == A.cols() && "A should be square.");
   const size_t n = A.rows();
-  Array<bool,Dynamic,1> seen = Array<bool,Dynamic,1>::Zero(n,1);
+  Eigen::Array<bool ,Eigen::Dynamic,1> seen = Eigen::Array<bool ,Eigen::Dynamic,1>::Zero(n,1);
   C.resize(n,1);
   typename DerivedC::Scalar id = 0;
   std::vector<typename Derivedcounts::Scalar> vcounts;

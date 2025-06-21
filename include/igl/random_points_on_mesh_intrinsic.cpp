@@ -16,9 +16,8 @@ IGL_INLINE void igl::random_points_on_mesh_intrinsic(
   Eigen::PlainObjectBase<DerivedFI > & FI,
   URBG && urbg)
 {
-  using namespace Eigen;
   typedef typename DeriveddblA::Scalar Scalar;
-  typedef Matrix<Scalar,Dynamic,1> VectorXs;
+  typedef Eigen::Matrix<Scalar ,Eigen::Dynamic,1> VectorXs;
   VectorXs C;
   VectorXs A0(dblA.size()+1);
   A0(0) = 0;
@@ -60,12 +59,11 @@ IGL_INLINE void igl::random_points_on_mesh_intrinsic(
   Eigen::PlainObjectBase<DerivedFI > & FI,
   URBG && urbg)
 {
-  using namespace Eigen;
-  Matrix<ScalarB,Dynamic,3> BC;
+  Eigen::Matrix<ScalarB ,Eigen::Dynamic,3> BC;
   // Should be traingle mesh. Although Turk's method 1 generalizes...
   assert(F.cols() == 3);
   random_points_on_mesh_intrinsic(n,dblA,BC,FI,urbg);
-  std::vector<Triplet<ScalarB> > BIJV;
+  std::vector<Eigen::Triplet<ScalarB> > BIJV;
   BIJV.reserve(n*3);
   for(int s = 0;s<n;s++)
   {
@@ -74,7 +72,7 @@ IGL_INLINE void igl::random_points_on_mesh_intrinsic(
       assert(FI(s) < dblA.rows());
       assert(FI(s) >= 0);
       const int v = F(FI(s),c);
-      BIJV.push_back(Triplet<ScalarB>(s,v,BC(s,c)));
+      BIJV.push_back(Eigen::Triplet<ScalarB>(s,v,BC(s,c)));
     }
   }
   B.resize(n,num_vertices);

@@ -29,7 +29,6 @@ IGL_INLINE bool igl::lscm(
   Eigen::PlainObjectBase<DerivedV_uv> & V_uv,
   Eigen::SparseMatrix<QScalar> & Q)
 {
-  using namespace Eigen;
   igl::lscm_hessian(V,F,Q);
 
   Eigen::Matrix<typename Derivedb::Scalar,Eigen::Dynamic,1> b_flat(b.size()*bc.cols(),1);
@@ -40,15 +39,15 @@ IGL_INLINE bool igl::lscm(
     bc_flat.block(c*bc.rows(),0,bc.rows(),1) = bc.col(c);
   }
 
-  const VectorXd B_flat = VectorXd::Zero(V.rows()*2);
+  const Eigen::VectorXd B_flat = Eigen::VectorXd::Zero(V.rows()*2);
   igl::min_quad_with_fixed_data<QScalar> data;
-  if(!igl::min_quad_with_fixed_precompute(Q,b_flat,SparseMatrix<QScalar>(),true,data))
+  if(!igl::min_quad_with_fixed_precompute(Q,b_flat,Eigen::SparseMatrix<QScalar>(),true,data))
   {
     return false;
   }
 
-  MatrixXd W_flat;
-  if(!min_quad_with_fixed_solve(data,B_flat,bc_flat,VectorXd(),W_flat))
+  Eigen::MatrixXd W_flat;
+  if(!min_quad_with_fixed_solve(data,B_flat,bc_flat,Eigen::VectorXd(),W_flat))
   {
     return false;
   }

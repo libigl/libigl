@@ -56,7 +56,7 @@ namespace igl
         inline bool read(const std::string & path);
         /// Assign data to a variable name in the workspace
         ///
-        /// @tparam DerivedM  eigen matrix (e.g. MatrixXd)
+        /// @tparam DerivedM  eigen matrix (e.g. Eigen::MatrixXd)
         /// @param[in] M  data (usually a matrix)
         /// @param[in] name  variable name to save into work space
         /// @return true on success, false on failure
@@ -99,7 +99,7 @@ namespace igl
           const std::string & name);
         /// Same as save() but adds 1 to each element, useful for saving "index"
         /// matrices like lists of faces or elements
-        /// @tparam DerivedM  eigen matrix (e.g. MatrixXd)
+        /// @tparam DerivedM  eigen matrix (e.g. Eigen::MatrixXd)
         template <typename DerivedM>
         inline MatlabWorkspace& save_index(
           const Eigen::DenseBase<DerivedM>& M,
@@ -120,7 +120,7 @@ namespace igl
         ///
         /// \bug Outputs the first found (not necessarily unique lists).
         ///
-        /// @tparam DerivedM  eigen matrix (e.g. MatrixXd)
+        /// @tparam DerivedM  eigen matrix (e.g. Eigen::MatrixXd)
         /// @param[in] name  exact name of matrix as string
         /// @param[out] M  matrix
         /// @return true only if found.
@@ -143,7 +143,7 @@ namespace igl
           const std::string & name,
           int & v);
         /// Subtracts 1 from all entries
-        /// @tparam DerivedM  eigen matrix (e.g. MatrixXd)
+        /// @tparam DerivedM  eigen matrix (e.g. Eigen::MatrixXd)
         /// @param[in] name  exact name of matrix as string
         /// @param[out] M  matrix
         template <typename DerivedM>
@@ -453,7 +453,6 @@ inline bool igl::matlab::MatlabWorkspace::find(
   const std::string & name,
   Eigen::SparseMatrix<MT>& M)
 {
-  using namespace Eigen;
   const int i = std::find(names.begin(), names.end(), name)-names.begin();
   if(i>=(int)names.size())
   {
@@ -478,7 +477,7 @@ inline bool igl::matlab::MatlabWorkspace::find(
   double * pr = mxGetPr(mx_data);
   mwIndex * ir = mxGetIr(mx_data);
   mwIndex * jc = mxGetJc(mx_data);
-  vector<Triplet<MT> > MIJV;
+  vector<Eigen::Triplet<MT> > MIJV;
   const int nnz = mxGetNzmax(mx_data);
   MIJV.reserve(nnz);
   // Iterate over outside
@@ -491,7 +490,7 @@ inline bool igl::matlab::MatlabWorkspace::find(
       //cout<<ir[k]<<" "<<j<<" "<<pr[k]<<endl;
       assert((int)ir[k]<m);
       assert((int)j<n);
-      MIJV.push_back(Triplet<MT >(ir[k],j,pr[k]));
+      MIJV.push_back(Eigen::Triplet<MT >(ir[k],j,pr[k]));
       k++;
     }
   }

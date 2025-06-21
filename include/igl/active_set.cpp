@@ -51,7 +51,6 @@ IGL_INLINE igl::SolverStatus igl::active_set(
 #if defined(ACTIVE_SET_CPP_DEBUG) && !defined(_MSC_VER)
 #  warning "ACTIVE_SET_CPP_DEBUG"
 #endif
-  using namespace Eigen;
   SolverStatus ret = SOLVER_STATUS_ERROR;
   const int n = A.rows();
   assert(n == A.cols() && "A must be square");
@@ -106,9 +105,9 @@ IGL_INLINE igl::SolverStatus igl::active_set(
   typedef int BOOL;
 #define TRUE 1
 #define FALSE 0
-  Matrix<BOOL,Dynamic,1> as_lx = Matrix<BOOL,Dynamic,1>::Constant(n,1,FALSE);
-  Matrix<BOOL,Dynamic,1> as_ux = Matrix<BOOL,Dynamic,1>::Constant(n,1,FALSE);
-  Matrix<BOOL,Dynamic,1> as_ieq = Matrix<BOOL,Dynamic,1>::Constant(Aieq.rows(),1,FALSE);
+  Eigen::Matrix<BOOL,Eigen::Dynamic,1> as_lx = Eigen::Matrix<BOOL,Eigen::Dynamic,1>::Constant(n,1,FALSE);
+  Eigen::Matrix<BOOL,Eigen::Dynamic,1> as_ux = Eigen::Matrix<BOOL,Eigen::Dynamic,1>::Constant(n,1,FALSE);
+  Eigen::Matrix<BOOL,Eigen::Dynamic,1> as_ieq = Eigen::Matrix<BOOL,Eigen::Dynamic,1>::Constant(Aieq.rows(),1,FALSE);
 
   // Keep track of previous Z for comparison
   PlainMatrix<DerivedZ> old_Z;
@@ -254,7 +253,7 @@ IGL_INLINE igl::SolverStatus igl::active_set(
       assert(k == as_ieq_count);
     }
     // extract active constraint rows
-    SparseMatrix<AeqT> Aeq_i,Aieq_i;
+    Eigen::SparseMatrix<AeqT> Aeq_i,Aieq_i;
     slice(Aieq,as_ieq_list,1,Aieq_i);
     // Append to equality constraints
     cat(1,Aeq,Aieq_i,Aeq_i);
@@ -264,7 +263,7 @@ IGL_INLINE igl::SolverStatus igl::active_set(
 #ifndef NDEBUG
     {
       // NO DUPES!
-      Matrix<BOOL,Dynamic,1> fixed = Matrix<BOOL,Dynamic,1>::Constant(n,1,FALSE);
+      Eigen::Matrix<BOOL ,Eigen::Dynamic,1> fixed = Eigen::Matrix<BOOL ,Eigen::Dynamic,1>::Constant(n,1,FALSE);
       for(int k = 0;k<known_i.size();k++)
       {
         assert(!fixed[known_i(k)]);
@@ -325,18 +324,18 @@ IGL_INLINE igl::SolverStatus igl::active_set(
     }
 
     // Compute Lagrange multiplier values for known_i
-    SparseMatrix<AT> Ak;
+    Eigen::SparseMatrix<AT> Ak;
     // Slow
     slice(A,known_i,1,Ak);
     //slice(B,known_i,Bk);
     PlainMatrix<DerivedB,Eigen::Dynamic> Bk = B(known_i,igl::placeholders::all);
-    MatrixXd Lambda_known_i = -(0.5*Ak*Z + 0.5*Bk);
+    Eigen::MatrixXd Lambda_known_i = -(0.5*Ak*Z + 0.5*Bk);
     // reverse the lambda values for lx
     Lambda_known_i.block(nk,0,as_lx_count,1) =
       (-1*Lambda_known_i.block(nk,0,as_lx_count,1)).eval();
 
     // Extract Lagrange multipliers for Aieq_i (always at back of sol)
-    VectorXd Lambda_Aieq_i(Aieq_i.rows(),1);
+    Eigen::VectorXd Lambda_Aieq_i(Aieq_i.rows(),1);
     for(int l = 0;l<Aieq_i.rows();l++)
     {
       Lambda_Aieq_i(Aieq_i.rows()-1-l) = sol(sol.rows()-1-l);

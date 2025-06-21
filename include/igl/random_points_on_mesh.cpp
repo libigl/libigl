@@ -26,9 +26,8 @@ IGL_INLINE void igl::random_points_on_mesh(
   Eigen::PlainObjectBase<DerivedX> & X,
   URBG && urbg)
 {
-  using namespace Eigen;
   typedef typename DerivedV::Scalar Scalar;
-  typedef Matrix<Scalar,Dynamic,1> VectorXs;
+  typedef Eigen::Matrix<Scalar ,Eigen::Dynamic,1> VectorXs;
   VectorXs dblA;
   doublearea(V,F,dblA);
   random_points_on_mesh_intrinsic(n,dblA,B,FI,urbg);

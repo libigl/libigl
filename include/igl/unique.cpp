@@ -81,7 +81,6 @@ IGL_INLINE void igl::unique(
     Eigen::PlainObjectBase<DerivedIA> & IA,
     Eigen::PlainObjectBase<DerivedIC> & IC)
 {
-  using namespace Eigen;
   std::vector<typename DerivedA::Scalar > vA;
   std::vector<typename DerivedC::Scalar > vC;
   std::vector<size_t> vIA,vIC;
@@ -100,7 +99,6 @@ IGL_INLINE void igl::unique(
     const Eigen::MatrixBase<DerivedA> & A,
     Eigen::PlainObjectBase<DerivedC> & C)
 {
-  using namespace Eigen;
   std::vector<typename DerivedA::Scalar > vA;
   std::vector<typename DerivedC::Scalar > vC;
   std::vector<size_t> vIA,vIC;

@@ -34,7 +34,6 @@ IGL_INLINE void igl::polar_dec(
   Eigen::PlainObjectBase<DerivedS> & S,
   Eigen::PlainObjectBase<DerivedV> & V)
 {
-  using namespace Eigen;
   typedef typename DerivedA::Scalar Scalar;
 
   const Scalar th = std::sqrt(Eigen::NumTraits<Scalar>::dummy_precision());

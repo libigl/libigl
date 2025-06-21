@@ -108,7 +108,6 @@ inline void igl::WindingNumberAABB<Scalar,Index>::set_mesh(
 template <typename Scalar, typename Index>
 inline void igl::WindingNumberAABB<Scalar,Index>::init()
 {
-  using namespace Eigen;
   assert(max_corner.size() == 3);
   assert(min_corner.size() == 3);
   compute_min_max_corners();
@@ -149,7 +148,6 @@ inline igl::WindingNumberAABB<Scalar,Index>::WindingNumberAABB(
 template <typename Scalar, typename Index>
 inline void igl::WindingNumberAABB<Scalar,Index>::grow()
 {
-  using namespace Eigen;
   // Clear anything that already exists
   this->delete_children();
 
@@ -330,7 +328,6 @@ inline Scalar
   igl::WindingNumberAABB<Scalar,Index>::max_simple_abs_winding_number(
   const Point & p) const
 {
-  using namespace Eigen;
   // Only valid if not inside
   if(inside(p))
   {

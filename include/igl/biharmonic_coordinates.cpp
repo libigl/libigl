@@ -42,29 +42,27 @@ IGL_INLINE bool igl::biharmonic_coordinates(
   const int k,
   Eigen::PlainObjectBase<DerivedW> & W)
 {
-  using namespace Eigen;
-
   typedef typename DerivedV::Scalar Scalar;
   typedef typename DerivedT::Scalar Integer;
 
   // This is not the most efficient way to build A, but follows "Linear
   // Subspace Design for Real-Time Shape Deformation" [Wang et al. 2015].
-  SparseMatrix<Scalar> A;
+  Eigen::SparseMatrix<Scalar> A;
   {
-    DiagonalMatrix<Scalar, Dynamic> Minv;
-    SparseMatrix<Scalar> L, K;
-    Array<bool,Dynamic,Dynamic> C;
+    Eigen::DiagonalMatrix<Scalar, Eigen::Dynamic> Minv;
+    Eigen::SparseMatrix<Scalar> L, K;
+    Eigen::Array<bool ,Eigen::Dynamic ,Eigen::Dynamic> C;
     {
-      Array<bool,Dynamic,1> I;
+      Eigen::Array<bool ,Eigen::Dynamic,1> I;
       on_boundary(T,I,C);
     }
 #ifdef false
     // Version described in paper is "wrong"
     // http://www.cs.toronto.edu/~jacobson/images/error-in-linear-subspace-design-for-real-time-shape-deformation-2017-wang-et-al.pdf
-    SparseMatrix<Scalar> N, Z, M;
+    Eigen::SparseMatrix<Scalar> N, Z, M;
     normal_derivative(V,T,N);
     {
-      std::vector<Triplet<Scalar>> ZIJV;
+      std::vector<Eigen::Triplet<Scalar>> ZIJV;
       for(int t =0;t<T.rows();t++)
       {
         for(int f =0;f<T.cols();f++)
@@ -87,13 +85,13 @@ IGL_INLINE bool igl::biharmonic_coordinates(
     K = N+L;
     massmatrix(V,T,MASSMATRIX_TYPE_DEFAULT,M);
     // normalize
-    M /= ((Matrix<Scalar, Dynamic, 1>)M.diagonal()).array().abs().maxCoeff();
+    M /= ((Matrix<Scalar, Eigen::Dynamic, 1>)M.diagonal()).array().abs().maxCoeff();
     Minv =
-      ((Matrix<Scalar, Dynamic, 1>)M.diagonal().array().inverse()).asDiagonal();
+      ((Matrix<Scalar, Eigen::Dynamic, 1>)M.diagonal().array().inverse()).asDiagonal();
 #else
     Eigen::SparseMatrix<Scalar> M;
-    Eigen::Matrix<Integer, Dynamic, Dynamic> E;
-    Eigen::Matrix<Integer, Dynamic, 1> EMAP;
+    Eigen::Matrix<Integer, Eigen::Dynamic, Eigen::Dynamic> E;
+    Eigen::Matrix<Integer, Eigen::Dynamic, 1> EMAP;
     crouzeix_raviart_massmatrix(V,T,M,E,EMAP);
     crouzeix_raviart_cotmatrix(V,T,E,EMAP,L);
     // Ad  #E by #V facet-vertex incidence matrix
@@ -110,14 +108,14 @@ IGL_INLINE bool igl::biharmonic_coordinates(
       Ad.setFromTriplets(AIJV.begin(),AIJV.end());
     }
     // Degrees
-    Eigen::Matrix<Scalar, Dynamic, 1> De;
+    Eigen::Matrix<Scalar, Eigen::Dynamic, 1> De;
     sum(Ad,2,De);
     Eigen::DiagonalMatrix<Scalar,Eigen::Dynamic> De_diag =
       De.array().inverse().matrix().asDiagonal();
     K = L*(De_diag*Ad);
     // normalize
-    M /= ((Matrix<Scalar, Dynamic, 1>)M.diagonal()).array().abs().maxCoeff();
-    Minv = ((Matrix<Scalar, Dynamic, 1>)M.diagonal().array().inverse()).asDiagonal();
+    M /= ((Eigen::Matrix<Scalar, Eigen::Dynamic, 1>)M.diagonal()).array().abs().maxCoeff();
+    Minv = ((Eigen::Matrix<Scalar, Eigen::Dynamic, 1>)M.diagonal().array().inverse()).asDiagonal();
     // kill boundary edges
     for(int f = 0;f<T.rows();f++)
     {
@@ -162,9 +160,9 @@ IGL_INLINE bool igl::biharmonic_coordinates(
   }
   const size_t dim = T.cols()-1;
   // Might as well be dense... I think...
-  Matrix<Scalar, Dynamic, Dynamic> J = Matrix<Scalar, Dynamic, Dynamic>::Zero(mp+mr,mp+r*(dim+1));
-  Matrix<Integer, Dynamic, 1> b(mp+mr);
-  Matrix<Scalar, Dynamic, Dynamic> H(mp+r*(dim+1),dim);
+  Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> J = Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic>::Zero(mp+mr,mp+r*(dim+1));
+  Eigen::Matrix<Integer, Eigen::Dynamic, 1> b(mp+mr);
+  Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> H(mp+r*(dim+1),dim);
   {
     int v = 0;
     int c = 0;
@@ -197,7 +195,7 @@ IGL_INLINE bool igl::biharmonic_coordinates(
   // minimize    ½ W' A W'
   // subject to  W(b,:) = J
   return min_quad_with_fixed(
-    A,Matrix<Scalar, Dynamic, 1>::Zero(A.rows()).eval(),b,J,SparseMatrix<Scalar>(),Matrix<Scalar, Dynamic, 1>(),true,W);
+    A,Eigen::Matrix<Scalar, Eigen::Dynamic, 1>::Zero(A.rows()).eval(),b,J,Eigen::SparseMatrix<Scalar>(),Eigen::Matrix<Scalar, Eigen::Dynamic, 1>(),true,W);
 }
 
 #ifdef IGL_STATIC_LIBRARY

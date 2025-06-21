@@ -54,13 +54,12 @@ IGL_INLINE void igl::copyleft::cgal::outer_hull_legacy(
 #ifdef IGL_OUTER_HULL_DEBUG
   std::cerr << "Extracting outer hull" << std::endl;
 #endif
-  using namespace Eigen;
   typedef typename DerivedF::Index Index;
-  Matrix<Index,DerivedF::RowsAtCompileTime,1> C;
-  typedef Matrix<typename DerivedV::Scalar,Dynamic,DerivedV::ColsAtCompileTime> MatrixXV;
-  //typedef Matrix<typename DerivedF::Scalar,Dynamic,DerivedF::ColsAtCompileTime> MatrixXF;
-  typedef Matrix<typename DerivedG::Scalar,Dynamic,DerivedG::ColsAtCompileTime> MatrixXG;
-  typedef Matrix<typename DerivedJ::Scalar,Dynamic,DerivedJ::ColsAtCompileTime> MatrixXJ;
+  Eigen::Matrix<Index,DerivedF::RowsAtCompileTime,1> C;
+  typedef Eigen::Matrix<typename DerivedV::Scalar ,Eigen::Dynamic,DerivedV::ColsAtCompileTime> MatrixXV;
+  //typedef Eigen::Matrix<typename DerivedF::Scalar ,Eigen::Dynamic,DerivedF::ColsAtCompileTime> MatrixXF;
+  typedef Eigen::Matrix<typename DerivedG::Scalar ,Eigen::Dynamic,DerivedG::ColsAtCompileTime> MatrixXG;
+  typedef Eigen::Matrix<typename DerivedJ::Scalar ,Eigen::Dynamic,DerivedJ::ColsAtCompileTime> MatrixXJ;
   const Index m = F.rows();
 
   // UNUSED:
@@ -82,11 +81,11 @@ IGL_INLINE void igl::copyleft::cgal::outer_hull_legacy(
 #ifdef IGL_OUTER_HULL_DEBUG
   cout<<"edge map..."<<endl;
 #endif
-  typedef Matrix<typename DerivedF::Scalar,Dynamic,2> MatrixX2I;
-  typedef Matrix<typename DerivedF::Index,Dynamic,1> VectorXI;
-  //typedef Matrix<typename DerivedV::Scalar, 3, 1> Vector3F;
+  typedef Eigen::Matrix<typename DerivedF::Scalar ,Eigen::Dynamic,2> MatrixX2I;
+  typedef Eigen::Matrix<typename DerivedF::Index ,Eigen::Dynamic,1> Eigen::VectorXi;
+  //typedef Eigen::Matrix<typename DerivedV::Scalar, 3, 1> Vector3F;
   MatrixX2I E,uE;
-  VectorXI EMAP;
+  Eigen::VectorXi EMAP;
   vector<vector<typename DerivedF::Index> > uE2E;
   unique_edge_map(F,E,uE,EMAP,uE2E);
 #ifdef IGL_OUTER_HULL_DEBUG
@@ -103,7 +102,7 @@ IGL_INLINE void igl::copyleft::cgal::outer_hull_legacy(
   std::vector<std::vector<bool> > uE2C;
   order_facets_around_edges(V, F, uE, uE2E, uE2oE, uE2C);
   uE2E = uE2oE;
-  VectorXI diIM(3*m);
+  Eigen::VectorXi diIM(3*m);
   for (auto ue : uE2E) {
       for (size_t i=0; i<ue.size(); i++) {
           auto fe = ue[i];
@@ -113,7 +112,7 @@ IGL_INLINE void igl::copyleft::cgal::outer_hull_legacy(
 
   vector<vector<vector<Index > > > TT,_1;
   triangle_triangle_adjacency(E,EMAP,uE2E,false,TT,_1);
-  VectorXI counts;
+  Eigen::VectorXi counts;
 #ifdef IGL_OUTER_HULL_DEBUG
   cout<<"facet components..."<<endl;
 #endif

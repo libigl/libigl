@@ -14,8 +14,6 @@ IGL_INLINE void igl::triangle_fan(
   const Eigen::MatrixBase<DerivedE> & E,
   Eigen::PlainObjectBase<Derivedcap> & cap)
 {
-  using namespace Eigen;
-
   // Handle lame base case
   if(E.size() == 0)
   {

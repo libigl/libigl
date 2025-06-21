@@ -176,12 +176,11 @@ template <
     std::vector<std::vector<std::vector<TTIndex> > > & TT,
     std::vector<std::vector<std::vector<TTiIndex> > > & TTi)
 {
-  using namespace Eigen;
   assert(F.cols() == 3 && "Faces must be triangles");
   // number of faces
   typedef typename DerivedF::Index Index;
-  typedef Matrix<typename DerivedF::Scalar,Dynamic,2> MatrixX2I;
-  typedef Matrix<typename DerivedF::Index,Dynamic,1> VectorXI;
+  typedef Eigen::Matrix<typename DerivedF::Scalar ,Eigen::Dynamic,2> MatrixX2I;
+  typedef Eigen::Matrix<typename DerivedF::Index ,Eigen::Dynamic,1> VectorXI;
   MatrixX2I E,uE;
   VectorXI EMAP;
   std::vector<std::vector<Index> > uE2E;
@@ -203,7 +202,6 @@ template <
     std::vector<std::vector<std::vector<TTIndex> > > & TT,
     std::vector<std::vector<std::vector<TTiIndex> > > & TTi)
 {
-  using namespace Eigen;
   typedef typename DerivedE::Index Index;
   const size_t m = E.rows()/3;
   assert((size_t)E.rows() == m*3 && "E should come from list of triangles.");
@@ -261,7 +259,6 @@ template <
     std::vector<std::vector<std::vector<TTIndex> > > & TT,
     std::vector<std::vector<std::vector<TTiIndex> > > & TTi)
 {
-  using namespace Eigen;
   typedef Eigen::Index Index;
   const size_t m = EMAP.rows()/3;
   assert((size_t)EMAP.rows() == m*3 && "EMAP should come from list of triangles.");

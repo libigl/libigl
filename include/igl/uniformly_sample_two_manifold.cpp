@@ -27,8 +27,6 @@ IGL_INLINE void igl::uniformly_sample_two_manifold(
   const double push,
   Eigen::MatrixXd & WS)
 {
-  using namespace Eigen;
-
   // Euclidean distance between two points on a mesh given as barycentric
   // coordinates
   // Inputs:
@@ -62,12 +60,12 @@ IGL_INLINE void igl::uniformly_sample_two_manifold(
   if(F.cols() == 4)
   {
     verbose("uniform_sample.h: sampling tet mesh\n");
-    MatrixXi T0 = F.col(0);
-    MatrixXi T1 = F.col(1);
-    MatrixXi T2 = F.col(2);
-    MatrixXi T3 = F.col(3);
+    Eigen::MatrixXi T0 = F.col(0);
+    Eigen::MatrixXi T1 = F.col(1);
+    Eigen::MatrixXi T2 = F.col(2);
+    Eigen::MatrixXi T3 = F.col(3);
     // Faces from tets
-    MatrixXi TF =
+    Eigen::MatrixXi TF =
       cat(1,
         cat(1,
           cat(2,T0, cat(2,T1,T2)),
@@ -84,7 +82,7 @@ IGL_INLINE void igl::uniformly_sample_two_manifold(
 
   double start = get_seconds();
 
-  VectorXi S;
+  Eigen::VectorXi S;
   // First get sampling as best as possible on mesh
   uniformly_sample_two_manifold_at_vertices(W,k,push,S);
   verbose("Lap: %g\n",get_seconds()-start);
@@ -108,10 +106,10 @@ IGL_INLINE void igl::uniformly_sample_two_manifold(
   std::vector<int> cur_maxmin; cur_maxmin.resize(k);
   // List of distance matrices, D(i)(s,j) reveals distance from i's sth sample
   // to jth seed if j<k or (j-k)th "pushed" corner
-  std::vector<MatrixXd> D; D.resize(k);
+  std::vector<Eigen::MatrixXd> D; D.resize(k);
 
   // Precompute an W.cols() by W.cols() identity matrix
-  MatrixXd I(MatrixXd::Identity(W.cols(),W.cols()));
+  Eigen::MatrixXd I(Eigen::MatrixXd::Identity(W.cols(),W.cols()));
 
   // Describe each seed as a face index and barycentric coordinates
   for(int i = 0;i < k;i++)
@@ -163,7 +161,7 @@ IGL_INLINE void igl::uniformly_sample_two_manifold(
       sample_barys[i].push_back(bary);
       sample_faces[i].push_back(face_i);
       // Current seed location in weight space
-      VectorXd seed =
+      Eigen::VectorXd seed =
         bary(0)*W.row(F(face_i,0)) +
         bary(1)*W.row(F(face_i,1)) +
         bary(2)*W.row(F(face_i,2));
@@ -288,7 +286,7 @@ IGL_INLINE void igl::uniformly_sample_two_manifold(
       for(int i = 0;i < k;i++)
       {
         // for each sample look at distance to closest seed/corner
-        VectorXd minD = D[i].rowwise().minCoeff();
+        Eigen::VectorXd minD = D[i].rowwise().minCoeff();
         assert(minD.size() == (int)sample_faces[i].size());
         // find random sample with maximum minimum distance to other seeds
         int old_cur_maxmin = cur_maxmin[i];
@@ -347,19 +345,18 @@ IGL_INLINE void igl::uniformly_sample_two_manifold_at_vertices(
   const double push,
   Eigen::VectorXi & S)
 {
-  using namespace Eigen;
   // Copy weights and faces
-  const MatrixXd & W = OW;
-  /*const MatrixXi & F = OF;*/
+  const Eigen::MatrixXd & W = OW;
+  /*const Eigen::MatrixXi & F = OF;*/
 
   // Initialize seeds
-  VectorXi G;
-  Matrix<double,Dynamic,1>  ignore;
+  Eigen::VectorXi G;
+  Eigen::Matrix<double ,Eigen::Dynamic,1>  ignore;
   partition(W,k+W.cols(),G,S,ignore);
   // Remove corners, which better be at top
   S = S.segment(W.cols(),k).eval();
 
-  MatrixXd WS = W(S,igl::placeholders::all);
+  Eigen::MatrixXd WS = W(S,igl::placeholders::all);
   //cout<<"WSpartition=["<<endl<<WS<<endl<<"];"<<endl;
 
   // number of vertices
@@ -367,12 +364,12 @@ IGL_INLINE void igl::uniformly_sample_two_manifold_at_vertices(
   // number of dimensions in weight space
   int m = W.cols();
   // Corners of weight space
-  MatrixXd I = MatrixXd::Identity(m,m);
+  Eigen::MatrixXd I = Eigen::MatrixXd::Identity(m,m);
   // append corners to bottom of weights
-  MatrixXd WI(n+m,m);
+  Eigen::MatrixXd WI(n+m,m);
   WI << W,I;
   // Weights at seeds and corners
-  MatrixXd WSC(k+m,m);
+  Eigen::MatrixXd WSC(k+m,m);
   for(int i = 0;i<k;i++)
   {
     WSC.row(i) = W.row(S(i));
@@ -382,7 +379,7 @@ IGL_INLINE void igl::uniformly_sample_two_manifold_at_vertices(
     WSC.row(i+k) = WI.row(n+i);
   }
   // initialize all pairs sqaured distances
-  MatrixXd sqrD;
+  Eigen::MatrixXd sqrD;
   all_pairs_distances(WI,WSC,true,sqrD);
   // bring in corners by push factor (squared because distances are squared)
   sqrD.block(0,k,sqrD.rows(),m) /= push*push;
@@ -400,11 +397,11 @@ IGL_INLINE void igl::uniformly_sample_two_manifold_at_vertices(
       sqrD.col(i).setZero();
       sqrD.col(i).array() += 10;
       // find vertex farthers from all other seeds
-      MatrixXd minsqrD = sqrD.rowwise().minCoeff();
-      MatrixXd::Index si,PHONY;
+      Eigen::MatrixXd minsqrD = sqrD.rowwise().minCoeff();
+      Eigen::MatrixXd::Index si,PHONY;
       minsqrD.maxCoeff(&si,&PHONY);
-      MatrixXd Wsi = W.row(si);
-      MatrixXd sqrDi;
+      Eigen::MatrixXd Wsi = W.row(si);
+      Eigen::MatrixXd sqrDi;
       all_pairs_distances(WI,Wsi,true,sqrDi);
       sqrD.col(i) = sqrDi;
       S(i) = si;

@@ -33,13 +33,13 @@ namespace igl
   /// #### Example
   ///
   /// \code{cpp}
-  ///     MatrixXd X, Y; (containing 3d points as rows)
+  ///     Eigen::MatrixXd X, Y; (containing 3d points as rows)
   ///     double scale;
-  ///     MatrixXd R;
-  ///     VectorXd t;
+  ///     Eigen::MatrixXd R;
+  ///     Eigen::VectorXd t;
   ///     igl::procrustes(X,Y,true,false,scale,R,t);
   ///     R *= scale;
-  ///     MatrixXd Xprime = (X * R).rowwise() + t.transpose();
+  ///     Eigen::MatrixXd Xprime = (X * R).rowwise() + t.transpose();
   /// \endcode
   ///
   template <
@@ -63,10 +63,10 @@ namespace igl
   ///
   /// #### Example
   /// \code{cpp}
-  ///      MatrixXd X, Y; (containing 3d points as rows)
+  ///      Eigen::MatrixXd X, Y; (containing 3d points as rows)
   ///      AffineCompact3d T;
   ///      igl::procrustes(X,Y,true,false,T);
-  ///      MatrixXd Xprime = (X * T.linear()).rowwise() + T.translation().transpose();
+  ///      Eigen::MatrixXd Xprime = (X * T.linear()).rowwise() + T.translation().transpose();
   /// \endcode
   template <
     typename DerivedX, 

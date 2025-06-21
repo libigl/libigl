@@ -118,7 +118,6 @@ IGL_INLINE void igl::on_boundary(
   Eigen::PlainObjectBase<DerivedC>& C)
 {
   assert(T.cols() == 0 || T.cols() == 4 || T.cols() == 3);
-  using namespace Eigen;
   // Cop out: use vector of vectors version
   std::vector<std::vector<typename DerivedT::Scalar> > vT;
   matrix_to_list(T,vT);

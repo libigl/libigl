@@ -141,7 +141,6 @@ IGL_INLINE void igl::opengl::ViewerData::copy_options(const ViewerCore &from, co
 
 IGL_INLINE void igl::opengl::ViewerData::set_colors(const Eigen::MatrixXd &C)
 {
-  using namespace Eigen;
   // This Gouraud coloring should be deprecated in favor of Phong coloring in
   // set-data
   if(C.rows()>0 && C.cols() == 1)
@@ -150,18 +149,18 @@ IGL_INLINE void igl::opengl::ViewerData::set_colors(const Eigen::MatrixXd &C)
     return set_data(C);
   }
   // Ambient color should be darker color
-  const auto ambient = [](const MatrixXd & C)->MatrixXd
+  const auto ambient = [](const Eigen::MatrixXd & C)->Eigen::MatrixXd
   {
-    MatrixXd T = 0.1*C;
+    Eigen::MatrixXd T = 0.1*C;
     T.col(3) = C.col(3);
     return T;
   };
   // Specular color should be a less saturated and darker color: dampened
   // highlights
-  const auto specular = [](const MatrixXd & C)->MatrixXd
+  const auto specular = [](const Eigen::MatrixXd & C)->Eigen::MatrixXd
   {
     const double grey = 0.3;
-    MatrixXd T = grey+0.1*(C.array()-grey);
+    Eigen::MatrixXd T = grey+0.1*(C.array()-grey);
     T.col(3) = C.col(3);
     return T;
   };
@@ -356,12 +355,11 @@ IGL_INLINE void igl::opengl::ViewerData::set_edges(
   const Eigen::MatrixXi& E,
   const Eigen::MatrixXd& C)
 {
-  using namespace Eigen;
   lines.resize(E.rows(),9);
   assert(C.cols() == 3);
   for(int e = 0;e<E.rows();e++)
   {
-    RowVector3d color;
+    Eigen::RowVector3d color;
     if(C.size() == 3)
     {
       color<<C;

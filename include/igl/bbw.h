@@ -40,11 +40,11 @@ namespace igl
   /// Compute Bounded Biharmonic Weights on a given domain (V,Ele) with a given
   /// set of boundary conditions
   ///
-  /// @tparam DerivedV  derived type of eigen matrix for V (e.g. MatrixXd)
-  /// @tparam DerivedF  derived type of eigen matrix for F (e.g. MatrixXi)
-  /// @tparam Derivedb  derived type of eigen matrix for b (e.g. VectorXi)
-  /// @tparam Derivedbc  derived type of eigen matrix for bc (e.g. MatrixXd)
-  /// @tparam DerivedW  derived type of eigen matrix for W (e.g. MatrixXd)
+  /// @tparam DerivedV  derived type of eigen matrix for V (e.g. Eigen::MatrixXd)
+  /// @tparam DerivedF  derived type of eigen matrix for F (e.g. Eigen::MatrixXi)
+  /// @tparam Derivedb  derived type of eigen matrix for b (e.g. Eigen::VectorXi)
+  /// @tparam Derivedbc  derived type of eigen matrix for bc (e.g. Eigen::MatrixXd)
+  /// @tparam DerivedW  derived type of eigen matrix for W (e.g. Eigen::MatrixXd)
   /// @param[in] V  #V by dim vertex positions
   /// @param[in] Ele  #Elements by simplex-size list of element indices
   /// @param[in] b  #b boundary indices into V

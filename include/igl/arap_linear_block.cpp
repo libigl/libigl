@@ -45,15 +45,14 @@ IGL_INLINE void igl::arap_linear_block_spokes(
 {
   typedef typename MatK::Scalar Scalar;
 
-  using namespace Eigen;
   // simplex size (3: triangles, 4: tetrahedra)
   int simplex_size = F.cols();
   // Number of elements
   int m = F.rows();
   // Temporary output
-  Matrix<int,Dynamic,2> edges;
+  Eigen::Matrix<int ,Eigen::Dynamic,2> edges;
   Kd.resize(V.rows(), V.rows());
-  std::vector<Triplet<Scalar> > Kd_IJV;
+  std::vector<Eigen::Triplet<Scalar> > Kd_IJV;
   if(simplex_size == 3)
   {
     // triangles
@@ -79,7 +78,7 @@ IGL_INLINE void igl::arap_linear_block_spokes(
       3,2;
   }
   // gather cotangent weights
-  Matrix<Scalar,Dynamic,Dynamic> C;
+  Eigen::Matrix<Scalar ,Eigen::Dynamic ,Eigen::Dynamic> C;
   cotmatrix_entries(V,F,C);
   // should have weights for each edge
   assert(C.cols() == edges.rows());
@@ -92,10 +91,10 @@ IGL_INLINE void igl::arap_linear_block_spokes(
       int source = F(i,edges(e,0));
       int dest = F(i,edges(e,1));
       double v = 0.5*C(i,e)*(V(source,d)-V(dest,d));
-      Kd_IJV.push_back(Triplet<Scalar>(source,dest,v));
-      Kd_IJV.push_back(Triplet<Scalar>(dest,source,-v));
-      Kd_IJV.push_back(Triplet<Scalar>(source,source,v));
-      Kd_IJV.push_back(Triplet<Scalar>(dest,dest,-v));
+      Kd_IJV.push_back(Eigen::Triplet<Scalar>(source,dest,v));
+      Kd_IJV.push_back(Eigen::Triplet<Scalar>(dest,source,-v));
+      Kd_IJV.push_back(Eigen::Triplet<Scalar>(source,source,v));
+      Kd_IJV.push_back(Eigen::Triplet<Scalar>(dest,dest,-v));
     }
   }
   Kd.setFromTriplets(Kd_IJV.begin(),Kd_IJV.end());
@@ -111,15 +110,14 @@ IGL_INLINE void igl::arap_linear_block_spokes_and_rims(
 {
   typedef typename MatK::Scalar Scalar;
 
-  using namespace Eigen;
   // simplex size (3: triangles, 4: tetrahedra)
   int simplex_size = F.cols();
   // Number of elements
   int m = F.rows();
   // Temporary output
   Kd.resize(V.rows(), V.rows());
-  std::vector<Triplet<Scalar> > Kd_IJV;
-  Matrix<int,Dynamic,2> edges;
+  std::vector<Eigen::Triplet<Scalar> > Kd_IJV;
+  Eigen::Matrix<int ,Eigen::Dynamic,2> edges;
   if(simplex_size == 3)
   {
     // triangles
@@ -147,7 +145,7 @@ IGL_INLINE void igl::arap_linear_block_spokes_and_rims(
     assert(false);
   }
   // gather cotangent weights
-  Matrix<Scalar,Dynamic,Dynamic> C;
+  Eigen::Matrix<Scalar ,Eigen::Dynamic ,Eigen::Dynamic> C;
   cotmatrix_entries(V,F,C);
   // should have weights for each edge
   assert(C.cols() == edges.rows());
@@ -167,18 +165,18 @@ IGL_INLINE void igl::arap_linear_block_spokes_and_rims(
         int Rd = F(i,edges(f,1));
         if(Rs == source && Rd == dest)
         {
-          Kd_IJV.push_back(Triplet<Scalar>(Rs,Rd,v));
-          Kd_IJV.push_back(Triplet<Scalar>(Rd,Rs,-v));
+          Kd_IJV.push_back(Eigen::Triplet<Scalar>(Rs,Rd,v));
+          Kd_IJV.push_back(Eigen::Triplet<Scalar>(Rd,Rs,-v));
         }else if(Rd == source)
         {
-          Kd_IJV.push_back(Triplet<Scalar>(Rd,Rs,v));
+          Kd_IJV.push_back(Eigen::Triplet<Scalar>(Rd,Rs,v));
         }else if(Rs == dest)
         {
-          Kd_IJV.push_back(Triplet<Scalar>(Rs,Rd,-v));
+          Kd_IJV.push_back(Eigen::Triplet<Scalar>(Rs,Rd,-v));
         }
       }
-      Kd_IJV.push_back(Triplet<Scalar>(source,source,v));
-      Kd_IJV.push_back(Triplet<Scalar>(dest,dest,-v));
+      Kd_IJV.push_back(Eigen::Triplet<Scalar>(source,source,v));
+      Kd_IJV.push_back(Eigen::Triplet<Scalar>(dest,dest,-v));
     }
   }
   Kd.setFromTriplets(Kd_IJV.begin(),Kd_IJV.end());
@@ -193,15 +191,14 @@ IGL_INLINE void igl::arap_linear_block_elements(
   MatK & Kd)
 {
   typedef typename MatK::Scalar Scalar;
-  using namespace Eigen;
   // simplex size (3: triangles, 4: tetrahedra)
   int simplex_size = F.cols();
   // Number of elements
   int m = F.rows();
   // Temporary output
   Kd.resize(V.rows(), F.rows());
-  std::vector<Triplet<Scalar> > Kd_IJV;
-  Matrix<int,Dynamic,2> edges;
+  std::vector<Eigen::Triplet<Scalar> > Kd_IJV;
+  Eigen::Matrix<int ,Eigen::Dynamic,2> edges;
   if(simplex_size == 3)
   {
     // triangles
@@ -227,7 +224,7 @@ IGL_INLINE void igl::arap_linear_block_elements(
       3,2;
   }
   // gather cotangent weights
-  Matrix<Scalar,Dynamic,Dynamic> C;
+  Eigen::Matrix<Scalar ,Eigen::Dynamic ,Eigen::Dynamic> C;
   cotmatrix_entries(V,F,C);
   // should have weights for each edge
   assert(C.cols() == edges.rows());
@@ -240,8 +237,8 @@ IGL_INLINE void igl::arap_linear_block_elements(
       int source = F(i,edges(e,0));
       int dest = F(i,edges(e,1));
       double v = C(i,e)*(V(source,d)-V(dest,d));
-      Kd_IJV.push_back(Triplet<Scalar>(source,i,v));
-      Kd_IJV.push_back(Triplet<Scalar>(dest,i,-v));
+      Kd_IJV.push_back(Eigen::Triplet<Scalar>(source,i,v));
+      Kd_IJV.push_back(Eigen::Triplet<Scalar>(dest,i,-v));
     }
   }
   Kd.setFromTriplets(Kd_IJV.begin(),Kd_IJV.end());

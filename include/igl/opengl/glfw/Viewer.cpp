@@ -918,8 +918,6 @@ namespace glfw
 
   IGL_INLINE void Viewer::draw()
   {
-    using namespace Eigen;
-
     int width, height;
     glfwGetFramebufferSize(window, &width, &height);
 

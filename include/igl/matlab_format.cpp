@@ -48,9 +48,8 @@ igl::matlab_format(
   const Eigen::SparseMatrix<DerivedS> & S,
   const std::string name)
 {
-  using namespace Eigen;
-  Matrix<typename Eigen::SparseMatrix<DerivedS>::Scalar,Dynamic,1> I,J,V;
-  Matrix<DerivedS,Dynamic,Dynamic> SIJV;
+  Eigen::Matrix<typename Eigen::SparseMatrix<DerivedS>::Scalar ,Eigen::Dynamic,1> I,J,V;
+  Eigen::Matrix<DerivedS ,Eigen::Dynamic ,Eigen::Dynamic> SIJV;
   find(S,I,J,V);
   I.array() += 1;
   J.array() += 1;

@@ -331,8 +331,6 @@ inline igl::copyleft::cgal::SelfIntersectMesh<
   offending(),
   params(params)
 {
-  using namespace Eigen;
-
 #ifdef IGL_SELFINTERSECTMESH_TIMING
   const auto & tictoc = []() -> double
   {

@@ -16,12 +16,11 @@ IGL_INLINE void igl::cotmatrix_intrinsic(
   const Eigen::MatrixBase<DerivedF> & F, 
   Eigen::SparseMatrix<Scalar>& L)
 {
-  using namespace Eigen;
   // Cribbed from cotmatrix
 
   const int nverts = F.maxCoeff()+1;
   L.resize(nverts,nverts);
-  Matrix<int,Dynamic,2> edges;
+  Eigen::Matrix<int ,Eigen::Dynamic,2> edges;
   int simplex_size = F.cols();
   // 3 for triangles, 4 for tets
   IGL_ASSERT(simplex_size == 3);
@@ -35,10 +34,10 @@ IGL_INLINE void igl::cotmatrix_intrinsic(
     2,0,
     0,1;
   // Gather cotangents
-  Matrix<Scalar,Dynamic,Dynamic> C;
+  Eigen::Matrix<Scalar ,Eigen::Dynamic ,Eigen::Dynamic> C;
   cotmatrix_entries(l,C);
   
-  std::vector<Triplet<Scalar> > IJV;
+  std::vector<Eigen::Triplet<Scalar> > IJV;
   IJV.reserve(F.rows()*edges.rows()*4);
   // Loop over triangles
   for(int i = 0; i < F.rows(); i++)
@@ -48,10 +47,10 @@ IGL_INLINE void igl::cotmatrix_intrinsic(
     {
       int source = F(i,edges(e,0));
       int dest = F(i,edges(e,1));
-      IJV.push_back(Triplet<Scalar>(source,dest,C(i,e)));
-      IJV.push_back(Triplet<Scalar>(dest,source,C(i,e)));
-      IJV.push_back(Triplet<Scalar>(source,source,-C(i,e)));
-      IJV.push_back(Triplet<Scalar>(dest,dest,-C(i,e)));
+      IJV.push_back(Eigen::Triplet<Scalar>(source,dest,C(i,e)));
+      IJV.push_back(Eigen::Triplet<Scalar>(dest,source,C(i,e)));
+      IJV.push_back(Eigen::Triplet<Scalar>(source,source,-C(i,e)));
+      IJV.push_back(Eigen::Triplet<Scalar>(dest,dest,-C(i,e)));
     }
   }
   L.setFromTriplets(IJV.begin(),IJV.end());

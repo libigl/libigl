@@ -38,7 +38,6 @@ IGL_INLINE void igl::copyleft::cgal::minkowski_sum(
   Eigen::PlainObjectBase<DerivedG> & G,
   Eigen::PlainObjectBase<DerivedJ> & J)
 {
-  using namespace Eigen;
   assert(FA.cols() == 3 && "FA must contain a closed triangle mesh");
   assert(FB.cols() <= FA.cols() && 
     "FB must contain lower diemnsional simplices than FA");
@@ -51,9 +50,9 @@ IGL_INLINE void igl::copyleft::cgal::minkowski_sum(
     return interval;
   };
   tictoc();
-  Matrix<typename DerivedFB::Scalar,Dynamic,2> EB;
+  Eigen::Matrix<typename DerivedFB::Scalar ,Eigen::Dynamic,2> EB;
   edges(FB,EB);
-  Matrix<typename DerivedFA::Scalar,Dynamic,2> EA(0,2);
+  Eigen::Matrix<typename DerivedFA::Scalar ,Eigen::Dynamic,2> EA(0,2);
   if(FB.cols() == 3)
   {
     edges(FA,EA);
@@ -71,7 +70,7 @@ IGL_INLINE void igl::copyleft::cgal::minkowski_sum(
   // sweep A along edges of B
   for(int e = 0;e<n_ab;e++)
   {
-    Matrix<typename DerivedJ::Scalar,Dynamic,1> eJ;
+    Eigen::Matrix<typename DerivedJ::Scalar ,Eigen::Dynamic,1> eJ;
     minkowski_sum(
       VA,
       FA,
@@ -91,7 +90,7 @@ IGL_INLINE void igl::copyleft::cgal::minkowski_sum(
   // sweep B along edges of A
   for(int e = 0;e<n_ba;e++)
   {
-    Matrix<typename DerivedJ::Scalar,Dynamic,1> eJ;
+    Eigen::Matrix<typename DerivedJ::Scalar ,Eigen::Dynamic,1> eJ;
     const int ee = n_ab+e;
     minkowski_sum(
       VB,
@@ -135,8 +134,8 @@ IGL_INLINE void igl::copyleft::cgal::minkowski_sum(
     mesh_boolean(
       DerivedW(W),
       DerivedG(G),
-      Matrix<typename DerivedW::Scalar,Dynamic,Dynamic>(),
-      Matrix<typename DerivedG::Scalar,Dynamic,Dynamic>(),
+      Eigen::Matrix<typename DerivedW::Scalar ,Eigen::Dynamic ,Eigen::Dynamic>(),
+      Eigen::Matrix<typename DerivedG::Scalar ,Eigen::Dynamic ,Eigen::Dynamic>(),
       MESH_BOOLEAN_TYPE_UNION,
       W,
       G,
@@ -163,7 +162,6 @@ IGL_INLINE void igl::copyleft::cgal::minkowski_sum(
   Eigen::PlainObjectBase<DerivedG> & G,
   Eigen::PlainObjectBase<DerivedJ> & J)
 {
-  using namespace Eigen;
   assert(s.cols() == 3 && "s should be a 3d point");
   assert(d.cols() == 3 && "d should be a 3d point");
   // silly base case
@@ -196,7 +194,7 @@ IGL_INLINE void igl::copyleft::cgal::minkowski_sum(
   //// Mask whether positive dot product, or negative: because of exactly zero,
   //// these are not necessarily complementary
   // Nevermind, actually P = !N
-  Array<bool,Dynamic,1> P(m,1),N(m,1);
+  Array<bool ,Eigen::Dynamic,1> P(m,1),N(m,1);
   // loop over faces
   int mp = 0,mn = 0;
   for(int f = 0;f<m;f++)
@@ -225,9 +223,9 @@ IGL_INLINE void igl::copyleft::cgal::minkowski_sum(
     }
   }
 
-  typedef Matrix<typename DerivedG::Scalar,Dynamic,Dynamic> MatrixXI;
-  typedef Matrix<typename DerivedG::Scalar,Dynamic,1> VectorXI;
-  MatrixXI GT(mp+mn,3);
+  typedef Eigen::Matrix<typename DerivedG::Scalar ,Eigen::Dynamic ,Eigen::Dynamic> Eigen::MatrixXi;
+  typedef Eigen::Matrix<typename DerivedG::Scalar ,Eigen::Dynamic,1> Eigen::VectorXi;
+  Eigen::MatrixXi GT(mp+mn,3);
   GT<< 
     FA(igl::find(N),igl::placeholders::all), 
     (FA.array()+n).eval()(igl::find(P),igl::placeholders::all);
@@ -241,19 +239,19 @@ IGL_INLINE void igl::copyleft::cgal::minkowski_sum(
   JT.block(mp,0,mn,1).array()+=m;
 
   // Original non-co-planar faces with positively oriented reversed
-  MatrixXI BA(mp+mn,3);
+  Eigen::MatrixXi BA(mp+mn,3);
   BA << 
     FA(igl::find(P),igl::placeholders::all).rowwise().reverse(), 
     FA(igl::find(N),igl::placeholders::all);
   // Quads along **all** sides
-  MatrixXI GQ((mp+mn)*3,4);
+  Eigen::MatrixXi GQ((mp+mn)*3,4);
   GQ<< 
     BA.col(1), BA.col(0), BA.col(0).array()+n, BA.col(1).array()+n,
     BA.col(2), BA.col(1), BA.col(1).array()+n, BA.col(2).array()+n,
     BA.col(0), BA.col(2), BA.col(2).array()+n, BA.col(0).array()+n;
 
-  MatrixXI uGQ;
-  VectorXI S,sI,sJ;
+  Eigen::MatrixXi uGQ;
+  Eigen::VectorXi S,sI,sJ;
   // Inputs:
   //   F  #F by d list of polygons
   // Outputs:
@@ -262,15 +260,15 @@ IGL_INLINE void igl::copyleft::cgal::minkowski_sum(
   //   I  #uF index vector so that uF = sort(F,2)(I,:)
   //   J  #F index vector so that sort(F,2) = uF(J,:)
   [](
-      const MatrixXI & F,
-      VectorXI & S,
-      MatrixXI & uF,
-      VectorXI & I,
-      VectorXI & J)
+      const Eigen::MatrixXi & F,
+      Eigen::VectorXi & S,
+      Eigen::MatrixXi & uF,
+      Eigen::VectorXi & I,
+      Eigen::VectorXi & J)
   {
     const int m = F.rows();
     const int d = F.cols();
-    MatrixXI sF = F;
+    Eigen::MatrixXi sF = F;
     const auto MN = sF.rowwise().minCoeff().eval();
     // rotate until smallest index is first
     for(int p = 0;p<d;p++)
@@ -294,9 +292,9 @@ IGL_INLINE void igl::copyleft::cgal::minkowski_sum(
         sF.block(f,1,1,d-1) = sF.block(f,1,1,d-1).reverse().eval();
       }
     }
-    Array<bool,Dynamic,1> M = Array<bool,Dynamic,1>::Zero(m,1);
+    Array<bool ,Eigen::Dynamic,1> M = Array<bool ,Eigen::Dynamic,1>::Zero(m,1);
     {
-      VectorXI P = igl::LinSpaced<VectorXI >(d,0,d-1);
+      Eigen::VectorXi P = igl::LinSpaced<VectorXI >(d,0,d-1);
       for(int p = 0;p<d;p++)
       {
         for(int f = 0;f<m;f++)
@@ -315,7 +313,7 @@ IGL_INLINE void igl::copyleft::cgal::minkowski_sum(
       }
     }
     unique_rows(sF,uF,I,J);
-    S = VectorXI::Zero(uF.rows(),1);
+    S = Eigen::VectorXi::Zero(uF.rows(),1);
     assert(m == J.rows());
     for(int f = 0;f<m;f++)
     {
@@ -357,7 +355,7 @@ IGL_INLINE void igl::copyleft::cgal::minkowski_sum(
     Eigen::Matrix<typename DerivedJ::Scalar, Eigen::Dynamic,1> SJ;
     mesh_boolean(
       DerivedW(W),DerivedG(G),
-      Matrix<typename DerivedVA::Scalar,Dynamic,Dynamic>(),MatrixXI(),
+      Eigen::Matrix<typename DerivedVA::Scalar ,Eigen::Dynamic ,Eigen::Dynamic>(),MatrixXI(),
       MESH_BOOLEAN_TYPE_UNION,
       W,G,SJ);
     J = J(SJ).eval();

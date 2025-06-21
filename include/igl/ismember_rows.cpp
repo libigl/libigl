@@ -22,7 +22,6 @@ IGL_INLINE void igl::ismember_rows(
   Eigen::PlainObjectBase<DerivedIA> & IA,
   Eigen::PlainObjectBase<DerivedLOCB> & LOCB)
 {
-  using namespace Eigen;
   assert(A.cols() == B.cols() && "number of columns must match");
   IA.resize(A.rows(),1);
   IA.setConstant(false);
@@ -49,13 +48,13 @@ IGL_INLINE void igl::ismember_rows(
   // etc. we should assume the inputs don't exceed 2147483647, which is
   // reasonable.
   typedef int Index;
-  Eigen::Matrix<Index,Dynamic,1> uIA,uIuA,uIB,uIuB;
+  Eigen::Matrix<Index ,Eigen::Dynamic,1> uIA,uIuA,uIB,uIuB;
   unique_rows(A,uA,uIA,uIuA);
   unique_rows(B,uB,uIB,uIuB);
   // Sort both
   MatrixA sA;
   MatrixB sB;
-  Eigen::Matrix<Index,Dynamic,1> sIA,sIB;
+  Eigen::Matrix<Index ,Eigen::Dynamic,1> sIA,sIB;
   sortrows(uA,true,sA,sIA);
   sortrows(uB,true,sB,sIB);
 

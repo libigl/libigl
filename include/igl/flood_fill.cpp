@@ -13,7 +13,6 @@ IGL_INLINE void igl::flood_fill(
   const Eigen::MatrixBase<Derivedres>& res,
   Eigen::PlainObjectBase<DerivedS> & S)
 {
-  using namespace Eigen;
   typedef typename DerivedS::Scalar Scalar;
   const auto flood = [&res,&S] (
      const int xi,

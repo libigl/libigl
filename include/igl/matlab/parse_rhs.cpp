@@ -13,9 +13,8 @@ IGL_INLINE void igl::matlab::parse_rhs_double(
     const mxArray *prhs[], 
     Eigen::PlainObjectBase<DerivedV> & V)
 {
-  using namespace Eigen;
   // Use Eigen's map and cast to copy
-  V = Map< Matrix<double,Dynamic,Dynamic> >
+  V = Map< Eigen::Matrix<double ,Eigen::Dynamic ,Eigen::Dynamic> >
     (mxGetPr(prhs[0]),mxGetM(prhs[0]),mxGetN(prhs[0]))
     .cast<typename DerivedV::Scalar>();
 }
@@ -34,7 +33,6 @@ IGL_INLINE void igl::matlab::parse_rhs(
   const mxArray *prhs[], 
   Eigen::SparseMatrix<MT> & M)
 {
-  using namespace Eigen;
   const mxArray * mx_data = prhs[0];
   // Handle boring case where matrix is actually an empty dense matrix
   if(mxGetNumberOfElements(mx_data) == 0)
@@ -53,7 +51,7 @@ IGL_INLINE void igl::matlab::parse_rhs(
   double * pr = mxGetPr(mx_data);
   mwIndex * ir = mxGetIr(mx_data);
   mwIndex * jc = mxGetJc(mx_data);
-  vector<Triplet<MT> > MIJV;
+  vector<Eigen::Triplet<MT> > MIJV;
   MIJV.reserve(mxGetNumberOfElements(mx_data));
   // Iterate over outside
   int k = 0;
@@ -65,7 +63,7 @@ IGL_INLINE void igl::matlab::parse_rhs(
       //cout<<ir[k]<<" "<<j<<" "<<pr[k]<<endl;
       assert((int)ir[k]<m);
       assert((int)j<n);
-      MIJV.push_back(Triplet<MT >(ir[k],j,pr[k]));
+      MIJV.push_back(Eigen::Triplet<MT >(ir[k],j,pr[k]));
       k++;
     }
   }

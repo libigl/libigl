@@ -27,7 +27,6 @@ IGL_INLINE bool igl::edge_collapse_is_valid(
   const Eigen::MatrixBase<DerivedEF> & EF,
   const Eigen::MatrixBase<DerivedEI> & EI)
 {
-  using namespace Eigen;
   // For consistency with collapse_edge.cpp, let's determine edge flipness
   // (though not needed to check validity)
   const int eflip = E(e,0)>E(e,1);
@@ -58,22 +57,22 @@ IGL_INLINE bool igl::edge_collapse_is_valid(
       }
       std::vector<size_t> _1,_2;
       igl::unique(N,uN,_1,_2);
-      VectorXi uNm;
+      Eigen::VectorXi uNm;
       list_to_matrix(uN,uNm);
       return uNm;
     };
-    VectorXi Ns = neighbors(e, eflip);
-    VectorXi Nd = neighbors(e,!eflip);
-    VectorXi Nint = igl::intersect(Ns,Nd);
+    Eigen::VectorXi Ns = neighbors(e, eflip);
+    Eigen::VectorXi Nd = neighbors(e,!eflip);
+    Eigen::VectorXi Nint = igl::intersect(Ns,Nd);
     if(Nint.size() != 4)
     {
       return false;
     }
     if(Ns.size() == 4 && Nd.size() == 4)
     {
-      VectorXi NsNd(8);
+      Eigen::VectorXi NsNd(8);
       NsNd<<Ns,Nd;
-      VectorXi Nun,_1,_2;
+      Eigen::VectorXi Nun,_1,_2;
       igl::unique(NsNd,Nun,_1,_2);
       // single tet, don't collapse
       if(Nun.size() == 4)

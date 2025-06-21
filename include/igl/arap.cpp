@@ -35,7 +35,6 @@ IGL_INLINE bool igl::arap_precomputation(
   const Eigen::MatrixBase<Derivedb> & b,
   ARAPData & data)
 {
-  using namespace Eigen;
   typedef typename DerivedV::Scalar Scalar;
   typedef typename DerivedF::Scalar Integer;
   // number of vertices
@@ -52,14 +51,14 @@ IGL_INLINE bool igl::arap_precomputation(
   data.dim = dim;
   //assert(dim == 3 && "Only 3d supported");
   // Defaults
-  data.f_ext = MatrixXd::Zero(n,data.dim);
+  data.f_ext = Eigen::MatrixXd::Zero(n,data.dim);
 
   assert(data.dim <= V.cols() && "solve dim should be <= embedding");
   bool flat = (V.cols() - data.dim)==1;
 
   MatrixXX<Scalar> plane_V;
   MatrixXX<Integer> plane_F;
-  typedef SparseMatrix<Scalar> SparseMatrixS;
+  typedef Eigen::SparseMatrix<Scalar> SparseMatrixS;
   SparseMatrixS ref_map,ref_map_dim;
   if(flat)
   {
@@ -105,7 +104,7 @@ IGL_INLINE bool igl::arap_precomputation(
 
   // Get group sum scatter matrix, when applied sums all entries of the same
   // group according to G
-  SparseMatrix<double> G_sum;
+  Eigen::SparseMatrix<double> G_sum;
   if(data.G.size() == 0)
   {
     if(eff_energy == ARAP_ENERGY_TYPE_ELEMENTS)
@@ -121,7 +120,7 @@ IGL_INLINE bool igl::arap_precomputation(
     if(eff_energy == ARAP_ENERGY_TYPE_ELEMENTS)
     {
       Eigen::Matrix<int,Eigen::Dynamic,1> GG;
-      MatrixXi GF(F.rows(),F.cols());
+      Eigen::MatrixXi GF(F.rows(),F.cols());
       for(int j = 0;j<F.cols();j++)
       {
         GF.col(j) = data.G(F.col(j));
@@ -132,7 +131,7 @@ IGL_INLINE bool igl::arap_precomputation(
     //printf("group_sum_matrix()\n");
     group_sum_matrix(data.G,G_sum);
   }
-  SparseMatrix<double> G_sum_dim;
+  Eigen::SparseMatrix<double> G_sum_dim;
   repdiag(G_sum,data.dim,G_sum_dim);
   assert(G_sum_dim.cols() == data.CSM.rows());
   data.CSM = (G_sum_dim * data.CSM).eval();
@@ -145,24 +144,24 @@ IGL_INLINE bool igl::arap_precomputation(
   }
   assert(data.K.rows() == data.n*data.dim);
 
-  SparseMatrix<double> Q = (-L).eval();
+  Eigen::SparseMatrix<double> Q = (-L).eval();
 
   if(data.with_dynamics)
   {
     const double h = data.h;
     assert(h != 0);
-    SparseMatrix<double> M;
+    Eigen::SparseMatrix<double> M;
     massmatrix(V,F,MASSMATRIX_TYPE_DEFAULT,data.M);
     const double dw = (1./data.ym)*(h*h);
-    SparseMatrix<double> DQ = dw * 1./(h*h)*data.M;
+    Eigen::SparseMatrix<double> DQ = dw * 1./(h*h)*data.M;
     Q += DQ;
     // Dummy external forces
-    data.f_ext = MatrixXd::Zero(n,data.dim);
-    data.vel = MatrixXd::Zero(n,data.dim);
+    data.f_ext = Eigen::MatrixXd::Zero(n,data.dim);
+    data.vel = Eigen::MatrixXd::Zero(n,data.dim);
   }
 
   return min_quad_with_fixed_precompute(
-    Q,b,SparseMatrix<double>(),true,data.solver_data);
+    Q,b,Eigen::SparseMatrix<double>(),true,data.solver_data);
 }
 
 template <
@@ -173,7 +172,6 @@ IGL_INLINE bool igl::arap_solve(
   ARAPData & data,
   Eigen::MatrixBase<DerivedU> & U)
 {
-  using namespace Eigen;
   assert(data.b.size() == bc.rows());
   assert(U.size() != 0 && "U cannot be empty");
   assert(U.cols() == data.dim && "U.cols() match data.dim");
@@ -183,9 +181,9 @@ IGL_INLINE bool igl::arap_solve(
   const int n = data.n;
   int iter = 0;
   // changes each arap iteration
-  MatrixXd U_prev = U;
+  Eigen::MatrixXd U_prev = U;
   // doesn't change for fixed with_dynamics timestep
-  MatrixXd U0;
+  Eigen::MatrixXd U0;
   if(data.with_dynamics)
   {
     U0 = U_prev;
@@ -202,13 +200,13 @@ IGL_INLINE bool igl::arap_solve(
     const auto & Udim = U.replicate(data.dim,1);
     assert(U.cols() == data.dim);
     // As if U.col(2) was 0
-    MatrixXd S = data.CSM * Udim;
+    Eigen::MatrixXd S = data.CSM * Udim;
     // THIS NORMALIZATION IS IMPORTANT TO GET SINGLE PRECISION SVD CODE TO WORK
     // CORRECTLY.
     S /= S.array().abs().maxCoeff();
 
     const int Rdim = data.dim;
-    MatrixXd R(Rdim,data.CSM.rows());
+    Eigen::MatrixXd R(Rdim,data.CSM.rows());
     if(R.rows() == 2)
     {
       fit_rotations_planar(S,R);
@@ -223,14 +221,14 @@ IGL_INLINE bool igl::arap_solve(
     }
     //for(int k = 0;k<(data.CSM.rows()/dim);k++)
     //{
-    //  R.block(0,dim*k,dim,dim) = MatrixXd::Identity(dim,dim);
+    //  R.block(0,dim*k,dim,dim) = Eigen::MatrixXd::Identity(dim,dim);
     //}
 
 
     // Number of rotations: #vertices or #elements
     int num_rots = data.K.cols()/Rdim/Rdim;
     // distribute group rotations to vertices in each group
-    MatrixXd eff_R;
+    Eigen::MatrixXd eff_R;
     if(data.G.size() == 0)
     {
       // copy...
@@ -245,7 +243,7 @@ IGL_INLINE bool igl::arap_solve(
       }
     }
 
-    MatrixXd Dl;
+    Eigen::MatrixXd Dl;
     if(data.with_dynamics)
     {
       assert(data.M.rows() == n &&
@@ -261,13 +259,13 @@ IGL_INLINE bool igl::arap_solve(
       Dl = dw * (1./(h*h)*data.M*(-U0 - h*data.vel) - data.f_ext);
     }
 
-    VectorXd Rcol;
+    Eigen::VectorXd Rcol;
     columnize(eff_R,num_rots,2,Rcol);
-    VectorXd Bcol = -data.K * Rcol;
+    Eigen::VectorXd Bcol = -data.K * Rcol;
     assert(Bcol.size() == data.n*data.dim);
     for(int c = 0;c<data.dim;c++)
     {
-      VectorXd Uc,Bc,bcc,Beq;
+      Eigen::VectorXd Uc,Bc,bcc,Beq;
       Bc = Bcol.block(c*n,0,n,1);
       if(data.with_dynamics)
       {

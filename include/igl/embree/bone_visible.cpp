@@ -48,18 +48,17 @@ IGL_INLINE void igl::embree::bone_visible(
   const Eigen::MatrixBase<DerivedSD> & d,
   Eigen::PlainObjectBase<Derivedflag>  & flag)
 {
-  using namespace Eigen;
   flag.resize(V.rows());
   const double sd_norm = (s-d).norm();
   // Embree seems to be parallel when constructing but not when tracing rays
   // loop over mesh vertices
   parallel_for(V.rows(),[&](const int v)
   {
-    const Vector3d Vv = V.row(v);
+    const Eigen::Vector3d Vv = V.row(v);
     // Project vertex v onto line segment sd
     //embree.intersectSegment
     double t,sqrd;
-    Vector3d projv;
+    Eigen::Vector3d projv;
     // degenerate bone, just snap to s
     if(sd_norm < DOUBLE_EPS)
     {
@@ -90,7 +89,7 @@ IGL_INLINE void igl::embree::bone_visible(
     igl::Hit<float> hit;
     // perhaps 1.0 should be 1.0-epsilon, or actually since we checking the
     // incident face, perhaps 1.0 should be 1.0+eps
-    const Vector3d dir = (Vv-projv)*1.0;
+    const Eigen::Vector3d dir = (Vv-projv)*1.0;
     if(ei.intersectSegment(
        projv.template cast<float>(),
        dir.template cast<float>(), 

@@ -16,9 +16,9 @@ namespace igl
   /// Writes the tetmesh in (V,T,F) to a temporary file, opens it with medit
   /// (forking with a system call) and returns
   ///
-  /// @tparam DerivedV  real-value: i.e. from MatrixXd
-  /// @tparam DerivedT  integer-value: i.e. from MatrixXi
-  /// @tparam DerivedF  integer-value: i.e. from MatrixXi
+  /// @tparam DerivedV  real-value: i.e. from Eigen::MatrixXd
+  /// @tparam DerivedT  integer-value: i.e. from Eigen::MatrixXi
+  /// @tparam DerivedF  integer-value: i.e. from Eigen::MatrixXi
   /// @param[in] V  double matrix of vertex positions  #V by 3
   /// @param[in] T  #T list of tet indices into vertex positions
   /// @param[in] F  #F list of face indices into vertex positions

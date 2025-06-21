@@ -65,7 +65,6 @@ IGL_INLINE bool igl::readBF(
   Eigen::PlainObjectBase<DerivedBE> & BE,
   Eigen::PlainObjectBase<DerivedP> & P)
 {
-  using namespace Eigen;
   if(!readBF(filename,WI,bfP,offsets))
   {
     return false;

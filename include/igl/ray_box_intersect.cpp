@@ -24,8 +24,7 @@ IGL_INLINE bool igl::ray_box_intersect(
   Scalar & tmin,
   Scalar & tmax)
 {
-  using namespace Eigen;
-  typedef Matrix<Scalar,1,3>  RowVector3S;
+  typedef Eigen::Matrix<Scalar,1,3>  RowVector3S;
   const std::array<bool, 3> sign = { inv_dir(0)<0, inv_dir(1)<0, inv_dir(2)<0};
   // http://people.csail.mit.edu/amy/papers/box-jgt.pdf
   // "An Efficient and Robust Ray–Box Intersection Algorithm"

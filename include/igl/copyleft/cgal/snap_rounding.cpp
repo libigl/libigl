@@ -29,7 +29,6 @@ IGL_INLINE void igl::copyleft::cgal::snap_rounding(
   Eigen::PlainObjectBase<DerivedEI> & EI,
   Eigen::PlainObjectBase<DerivedJ> & J)
 {
-  using namespace Eigen;
   using namespace igl;
   using namespace igl::copyleft::cgal;
   // Exact scalar type
@@ -38,18 +37,18 @@ IGL_INLINE void igl::copyleft::cgal::snap_rounding(
   typedef CGAL::Segment_2<Kernel> Segment_2;
   typedef CGAL::Point_2<Kernel> Point_2;
   typedef CGAL::Vector_2<Kernel> Vector_2;
-  typedef Matrix<EScalar,Dynamic,Dynamic>  MatrixXE;
+  typedef Eigen::Matrix<EScalar ,Eigen::Dynamic ,Eigen::Dynamic>  MatrixXE;
   // Convert vertex positions to exact kernel
 
   MatrixXE VE;
   {
-    VectorXi IM;
+    Eigen::VectorXi IM;
     resolve_intersections(V,E,VE,EI,J,IM);
     for_each(
       EI.data(),
       EI.data()+EI.size(),
       [&IM](typename DerivedEI::Scalar& i){i=IM(i);});
-    VectorXi _;
+    Eigen::VectorXi _;
     remove_unreferenced( MatrixXE(VE), DerivedEI(EI), VE,EI,_);
   }
 
@@ -182,14 +181,14 @@ IGL_INLINE void igl::copyleft::cgal::snap_rounding(
   }
   {
     DerivedJ prevJ = J;
-    VectorXi IM;
+    Eigen::VectorXi IM;
     subdivide_segments(MatrixXE(VE),MatrixXi(EI),steiner,VE,EI,J,IM);
     for_each(J.data(),J.data()+J.size(),[&prevJ](typename DerivedJ::Scalar & j){j=prevJ(j);});
     for_each(
       EI.data(),
       EI.data()+EI.size(),
       [&IM](typename DerivedEI::Scalar& i){i=IM(i);});
-    VectorXi _;
+    Eigen::VectorXi _;
     remove_unreferenced( MatrixXE(VE), DerivedEI(EI), VE,EI,_);
   }
 

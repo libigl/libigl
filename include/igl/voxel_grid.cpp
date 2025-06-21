@@ -19,7 +19,6 @@ IGL_INLINE void igl::voxel_grid(
   Eigen::PlainObjectBase<DerivedGV> & GV,
   Eigen::PlainObjectBase<Derivedside> & side)
 {
-  using namespace Eigen;
   typename DerivedGV::Index si = -1;
   side.resize(3);
   box.diagonal().maxCoeff(&si);
@@ -45,17 +44,17 @@ IGL_INLINE void igl::voxel_grid(
   // A * (1-p/s) - A * p/s = max-min
   // A * (1-2p/s) = max-min
   // A  = (max-min)/(1-2p/s)
-  const Array<Scalar,3,1> ps=
+  const Eigen::Array<Scalar,3,1> ps=
     (Scalar)(pad_count)/(side.transpose().template cast<Scalar>().array()-1.);
-  const Array<Scalar,3,1> A = box.diagonal().array()/(1.0-2.*ps);
+  const Eigen::Array<Scalar,3,1> A = box.diagonal().array()/(1.0-2.*ps);
   //// This would result in an "anamorphic", but perfectly fit grid:
   //const Array<Scalar,3,1> B = box.min().array() - A.array()*ps;
   //GV.array().rowwise() *= A.transpose();
   //GV.array().rowwise() += B.transpose();
   // Instead scale by largest factor and move to match center
-  typename Array<Scalar,3,1>::Index ai = -1;
+  typename Eigen::Array<Scalar,3,1>::Index ai = -1;
   Scalar a = A.maxCoeff(&ai);
-  const Array<Scalar,1,3> ratio =
+  const Eigen::Array<Scalar,1,3> ratio =
     a*(side.template cast<Scalar>().array()-1.0)/(Scalar)(side(ai)-1.0);
   GV.array().rowwise() *= ratio;
   const Eigen::Matrix<Scalar,1,3> offset = (box.center().transpose()-GV.colwise().mean()).eval();

@@ -25,7 +25,6 @@ IGL_INLINE void igl::winding_number(
   const Eigen::MatrixBase<DerivedO> & O,
   Eigen::PlainObjectBase<DerivedW> & W)
 {
-  using namespace Eigen;
   // make room for output
   W.resize(O.rows(),1);
   switch(F.cols())

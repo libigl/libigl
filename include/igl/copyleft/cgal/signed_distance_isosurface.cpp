@@ -38,8 +38,6 @@ IGL_INLINE bool igl::copyleft::cgal::signed_distance_isosurface(
   Eigen::MatrixXd & V,
   Eigen::MatrixXi & F)
 {
-  using namespace Eigen;
-
   // default triangulation for Surface_mesher
   typedef CGAL::Surface_mesh_default_triangulation_3 Tr;
   // c2t3

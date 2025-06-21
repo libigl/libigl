@@ -26,7 +26,6 @@ IGL_INLINE bool igl::eigs(
   Eigen::PlainObjectBase<DerivedU> & sU,
   Eigen::PlainObjectBase<DerivedS> & sS)
 {
-  using namespace Eigen;
   const size_t n = A.rows();
   assert(A.cols() == n && "A should be square.");
   assert(iB.rows() == n && "B should be match A's dims.");
@@ -98,8 +97,8 @@ IGL_INLINE bool igl::eigs(
           break;
         case EIGS_TYPE_SM:
         {
-          SimplicialLDLT<SparseMatrix<Scalar> > solver;
-          const SparseMatrix<Scalar> C = A-eff_sigma*B+tikhonov*B;
+          Eigen::SimplicialLDLT<Eigen::SparseMatrix<Scalar> > solver;
+          const Eigen::SparseMatrix<Scalar> C = A-eff_sigma*B+tikhonov*B;
           //mw.save(C,"C");
           //mw.save(eff_sigma,"eff_sigma");
           //mw.save(tikhonov,"tikhonov");
@@ -161,7 +160,7 @@ IGL_INLINE bool igl::eigs(
     }
   }
   // finally sort
-  VectorXi I;
+  Eigen::VectorXi I;
   igl::sort(S,1,false,sS,I);
   sU = U(igl::placeholders::all,I);
   sS /= rescale;

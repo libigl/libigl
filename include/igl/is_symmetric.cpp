@@ -47,7 +47,6 @@ IGL_INLINE bool igl::is_symmetric(
   const Eigen::SparseMatrix<AType>& A, 
   const epsilonT epsilon)
 {
-  using namespace Eigen;
   if(A.rows() != A.cols())
   {
     return false;
@@ -58,10 +57,10 @@ IGL_INLINE bool igl::is_symmetric(
     return true;
   }
   assert(A.size() != 0);
-  SparseMatrix<AType> AT = A.transpose();
-  SparseMatrix<AType> AmAT = A-AT;
-  VectorXi AmATI,AmATJ;
-  Matrix<AType,Dynamic,1> AmATV;
+  Eigen::SparseMatrix<AType> AT = A.transpose();
+  Eigen::SparseMatrix<AType> AmAT = A-AT;
+  Eigen::VectorXi AmATI,AmATJ;
+  Eigen::Matrix<AType ,Eigen::Dynamic,1> AmATV;
   find(AmAT,AmATI,AmATJ,AmATV);
   if(AmATI.size() == 0)
   {
