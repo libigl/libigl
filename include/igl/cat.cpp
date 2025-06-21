@@ -157,7 +157,6 @@ IGL_INLINE Mat igl::cat(const int dim, const Mat & A, const Mat & B)
 template <class Mat>
 IGL_INLINE void igl::cat(const std::vector<std::vector< Mat > > & A, Mat & C)
 {
-  using namespace std;
   // Start with empty matrix
   C.resize(0,0);
   for(const auto & row_vec : A)

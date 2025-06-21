@@ -22,7 +22,6 @@ IGL_INLINE void igl::cotmatrix(
   Eigen::SparseMatrix<Scalar>& L)
 {
   using namespace Eigen;
-  using namespace std;
 
   L.resize(V.rows(),V.rows());
   Matrix<int,Dynamic,2> edges;
@@ -59,7 +58,7 @@ IGL_INLINE void igl::cotmatrix(
   Matrix<Scalar,Dynamic,Dynamic> C;
   cotmatrix_entries(V,F,C);
   
-  vector<Triplet<Scalar> > IJV;
+  std::vector<Triplet<Scalar> > IJV;
   IJV.reserve(F.rows()*edges.rows()*4);
   // Loop over triangles
   for(int i = 0; i < F.rows(); i++)

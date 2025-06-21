@@ -18,7 +18,6 @@ IGL_INLINE void igl::copyleft::cgal::polyhedron_to_mesh(
   Eigen::PlainObjectBase<DerivedV> & V,
   Eigen::PlainObjectBase<DerivedF> & F)
 {
-  using namespace std;
   V.resize(poly.size_of_vertices(),3);
   F.resize(poly.size_of_facets(),3);
   typedef typename Polyhedron::Vertex_const_iterator Vertex_iterator;

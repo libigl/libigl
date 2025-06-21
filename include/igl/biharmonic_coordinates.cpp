@@ -43,7 +43,6 @@ IGL_INLINE bool igl::biharmonic_coordinates(
   Eigen::PlainObjectBase<DerivedW> & W)
 {
   using namespace Eigen;
-  using namespace std;
 
   typedef typename DerivedV::Scalar Scalar;
   typedef typename DerivedT::Scalar Integer;
@@ -149,7 +148,7 @@ IGL_INLINE bool igl::biharmonic_coordinates(
   }
   // Vertices in point handles
   const size_t mp =
-    count_if(S.begin(),S.end(),[](const vector<SType> & h){return h.size()==1;});
+    count_if(S.begin(),S.end(),[](const std::vector<SType> & h){return h.size()==1;});
   // number of region handles
   const size_t r = S.size()-mp;
   // Vertices in region handles

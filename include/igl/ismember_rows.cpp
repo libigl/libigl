@@ -23,7 +23,6 @@ IGL_INLINE void igl::ismember_rows(
   Eigen::PlainObjectBase<DerivedLOCB> & LOCB)
 {
   using namespace Eigen;
-  using namespace std;
   assert(A.cols() == B.cols() && "number of columns must match");
   IA.resize(A.rows(),1);
   IA.setConstant(false);

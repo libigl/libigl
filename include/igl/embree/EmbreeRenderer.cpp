@@ -91,7 +91,6 @@ IGL_INLINE void igl::embree::EmbreeRenderer::init(
   if(initialized)
     deinit();
 
-  using namespace std;
 
   if(V.size() == 0 || F.size() == 0)
   {

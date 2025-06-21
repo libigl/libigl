@@ -331,7 +331,6 @@ inline igl::copyleft::cgal::SelfIntersectMesh<
   offending(),
   params(params)
 {
-  using namespace std;
   using namespace Eigen;
 
 #ifdef IGL_SELFINTERSECTMESH_TIMING
@@ -453,7 +452,6 @@ inline void igl::copyleft::cgal::SelfIntersectMesh<
   DerivedJ,
   DerivedIM>::mark_offensive(const Index f)
 {
-  using namespace std;
   lIF.push_back(f);
   if(offending.count(f) == 0)
   {
@@ -594,7 +592,6 @@ inline bool igl::copyleft::cgal::SelfIntersectMesh<
   const Index va)
 {
   // This was not a good idea. It will not handle coplanar triangles well.
-  using namespace std;
   Segment_3 sa(
     A.vertex((va+1)%3),
     A.vertex((va+2)%3));
@@ -662,8 +659,6 @@ inline bool igl::copyleft::cgal::SelfIntersectMesh<
   const Index fb,
   const std::vector<std::pair<Index,Index> > shared)
 {
-  using namespace std;
-
   auto opposite_vertex = [](const Index a0, const Index a1) {
     // get opposite index of A
     int a2=-1;

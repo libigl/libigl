@@ -21,7 +21,6 @@ IGL_INLINE void igl::project_isometrically_to_plane(
   Eigen::PlainObjectBase<DerivedUF> & UF,
   Eigen::SparseMatrix<Scalar>& I)
 {
-  using namespace std;
   using namespace Eigen;
   assert(F.cols() == 3 && "F should contain triangles");
   typedef Eigen::Matrix<typename DerivedV::Scalar, Eigen::Dynamic, Eigen::Dynamic> MatrixX;
@@ -43,7 +42,7 @@ IGL_INLINE void igl::project_isometrically_to_plane(
     (l.col(1).array().square()-U.block(m*2,0,m,1).array().square()).sqrt();
 
   typedef Triplet<Scalar> IJV;
-  vector<IJV > ijv;
+  std::vector<IJV > ijv;
   ijv.reserve(3*m);
   UF.resize(m,3);
   for(int f = 0;f<m;f++)

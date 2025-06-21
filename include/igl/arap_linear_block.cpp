@@ -45,7 +45,6 @@ IGL_INLINE void igl::arap_linear_block_spokes(
 {
   typedef typename MatK::Scalar Scalar;
 
-  using namespace std;
   using namespace Eigen;
   // simplex size (3: triangles, 4: tetrahedra)
   int simplex_size = F.cols();
@@ -54,7 +53,7 @@ IGL_INLINE void igl::arap_linear_block_spokes(
   // Temporary output
   Matrix<int,Dynamic,2> edges;
   Kd.resize(V.rows(), V.rows());
-  vector<Triplet<Scalar> > Kd_IJV;
+  std::vector<Triplet<Scalar> > Kd_IJV;
   if(simplex_size == 3)
   {
     // triangles
@@ -112,7 +111,6 @@ IGL_INLINE void igl::arap_linear_block_spokes_and_rims(
 {
   typedef typename MatK::Scalar Scalar;
 
-  using namespace std;
   using namespace Eigen;
   // simplex size (3: triangles, 4: tetrahedra)
   int simplex_size = F.cols();
@@ -120,7 +118,7 @@ IGL_INLINE void igl::arap_linear_block_spokes_and_rims(
   int m = F.rows();
   // Temporary output
   Kd.resize(V.rows(), V.rows());
-  vector<Triplet<Scalar> > Kd_IJV;
+  std::vector<Triplet<Scalar> > Kd_IJV;
   Matrix<int,Dynamic,2> edges;
   if(simplex_size == 3)
   {
@@ -195,7 +193,6 @@ IGL_INLINE void igl::arap_linear_block_elements(
   MatK & Kd)
 {
   typedef typename MatK::Scalar Scalar;
-  using namespace std;
   using namespace Eigen;
   // simplex size (3: triangles, 4: tetrahedra)
   int simplex_size = F.cols();
@@ -203,7 +200,7 @@ IGL_INLINE void igl::arap_linear_block_elements(
   int m = F.rows();
   // Temporary output
   Kd.resize(V.rows(), F.rows());
-  vector<Triplet<Scalar> > Kd_IJV;
+  std::vector<Triplet<Scalar> > Kd_IJV;
   Matrix<int,Dynamic,2> edges;
   if(simplex_size == 3)
   {

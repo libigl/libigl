@@ -35,7 +35,6 @@ IGL_INLINE bool igl::arap_precomputation(
   const Eigen::MatrixBase<Derivedb> & b,
   ARAPData & data)
 {
-  using namespace std;
   using namespace Eigen;
   typedef typename DerivedV::Scalar Scalar;
   typedef typename DerivedF::Scalar Integer;
@@ -175,7 +174,6 @@ IGL_INLINE bool igl::arap_solve(
   Eigen::MatrixBase<DerivedU> & U)
 {
   using namespace Eigen;
-  using namespace std;
   assert(data.b.size() == bc.rows());
   assert(U.size() != 0 && "U cannot be empty");
   assert(U.cols() == data.dim && "U.cols() match data.dim");

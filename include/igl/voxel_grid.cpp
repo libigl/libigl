@@ -20,7 +20,6 @@ IGL_INLINE void igl::voxel_grid(
   Eigen::PlainObjectBase<Derivedside> & side)
 {
   using namespace Eigen;
-  using namespace std;
   typename DerivedGV::Index si = -1;
   side.resize(3);
   box.diagonal().maxCoeff(&si);

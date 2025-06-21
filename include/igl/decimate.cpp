@@ -108,7 +108,6 @@ IGL_INLINE bool igl::decimate(
 {
   // Decimate 1
   using namespace Eigen;
-  using namespace std;
   // Working copies
   Eigen::MatrixXd V = OV;
   Eigen::MatrixXi F = OF;

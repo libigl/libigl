@@ -169,7 +169,6 @@ IGL_INLINE void igl::sort2(
   Eigen::PlainObjectBase<DerivedIX>& IX)
 {
   using namespace Eigen;
-  using namespace std;
   typedef typename DerivedY::Scalar YScalar;
   Y = X.derived().template cast<YScalar>();
 
@@ -214,7 +213,6 @@ IGL_INLINE void igl::sort3(
   Eigen::PlainObjectBase<DerivedIX>& IX)
 {
   using namespace Eigen;
-  using namespace std;
   typedef typename DerivedY::Scalar YScalar;
   Y = X.derived().template cast<YScalar>();
   Y.resizeLike(X);

@@ -20,17 +20,16 @@ IGL_INLINE void igl::forward_kinematics(
     Eigen::Quaterniond,Eigen::aligned_allocator<Eigen::Quaterniond> > & vQ,
   std::vector<Eigen::Vector3d> & vT)
 {
-  using namespace std;
   using namespace Eigen;
   const int m = BE.rows(); 
   assert(m == P.rows());
   assert(m == (int)dQ.size());
   assert(m == (int)dT.size());
-  vector<bool> computed(m,false);
+  std::vector<bool> computed(m,false);
   vQ.resize(m);
   vT.resize(m);
   // Dynamic programming
-  function<void (int) > fk_helper = [&] (int b)
+  std::function<void (int) > fk_helper = [&] (int b)
   {
     if(!computed[b])
     {
@@ -82,9 +81,8 @@ IGL_INLINE void igl::forward_kinematics(
   Eigen::MatrixXd & T)
 {
   using namespace Eigen;
-  using namespace std;
-  vector< Quaterniond,aligned_allocator<Quaterniond> > vQ;
-  vector< Vector3d> vT;
+  std::vector< Quaterniond,aligned_allocator<Quaterniond> > vQ;
+  std::vector< Vector3d> vT;
   forward_kinematics(C,BE,P,dQ,dT,vQ,vT);
   const int dim = C.cols();
   T.resize(BE.rows()*(dim+1),dim);

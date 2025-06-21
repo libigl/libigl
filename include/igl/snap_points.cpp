@@ -42,7 +42,6 @@ IGL_INLINE void igl::snap_points(
   Eigen::PlainObjectBase<DerivedI > & I,
   Eigen::PlainObjectBase<DerivedminD > & minD)
 {
-  using namespace std;
   const int n = V.rows();
   const int m = C.rows();
   assert(V.cols() == C.cols() && "Dimensions should match");
@@ -52,7 +51,7 @@ IGL_INLINE void igl::snap_points(
   // reasonably distubed points.
   I.resize(m,1);
   typedef typename DerivedV::Scalar Scalar;
-  minD.setConstant(m,1,numeric_limits<Scalar>::max());
+  minD.setConstant(m,1,std::numeric_limits<Scalar>::max());
   for(int v = 0;v<n;v++)
   {
     for(int c = 0;c<m;c++)

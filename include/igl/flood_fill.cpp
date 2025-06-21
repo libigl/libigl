@@ -14,7 +14,6 @@ IGL_INLINE void igl::flood_fill(
   Eigen::PlainObjectBase<DerivedS> & S)
 {
   using namespace Eigen;
-  using namespace std;
   typedef typename DerivedS::Scalar Scalar;
   const auto flood = [&res,&S] (
      const int xi,
@@ -51,7 +50,7 @@ IGL_INLINE void igl::flood_fill(
       }
     };
   int signed_zi = -1;
-  Scalar s = numeric_limits<Scalar>::quiet_NaN();
+  Scalar s = std::numeric_limits<Scalar>::quiet_NaN();
   for(int zi = 0;zi<res(2);zi++)
   {
     int signed_yi = -1;

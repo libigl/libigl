@@ -29,7 +29,6 @@ IGL_INLINE bool igl::mosek::bbw(
   Eigen::PlainObjectBase<DerivedW> & W
   )
 {
-  using namespace std;
   using namespace Eigen;
   assert(!data.partition_unity && "partition_unity not implemented yet");
   // number of domain vertices

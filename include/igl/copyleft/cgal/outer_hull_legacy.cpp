@@ -55,7 +55,6 @@ IGL_INLINE void igl::copyleft::cgal::outer_hull_legacy(
   std::cerr << "Extracting outer hull" << std::endl;
 #endif
   using namespace Eigen;
-  using namespace std;
   typedef typename DerivedF::Index Index;
   Matrix<Index,DerivedF::RowsAtCompileTime,1> C;
   typedef Matrix<typename DerivedV::Scalar,Dynamic,DerivedV::ColsAtCompileTime> MatrixXV;

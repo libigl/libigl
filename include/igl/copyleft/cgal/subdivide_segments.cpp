@@ -35,8 +35,6 @@ IGL_INLINE void igl::copyleft::cgal::subdivide_segments(
 {
   using namespace Eigen;
   using namespace igl;
-  using namespace std;
-
   // Exact scalar type
   typedef Kernel K;
   typedef typename Kernel::FT EScalar;

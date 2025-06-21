@@ -59,8 +59,6 @@ IGL_INLINE void igl::opengl::ViewerData::set_face_based(bool newvalue)
 IGL_INLINE void igl::opengl::ViewerData::set_mesh(
     const Eigen::MatrixXd& _V, const Eigen::MatrixXi& _F)
 {
-  using namespace std;
-
   Eigen::MatrixXd V_temp;
 
   // If V only has two columns, pad with a column of zeros
@@ -94,7 +92,7 @@ IGL_INLINE void igl::opengl::ViewerData::set_mesh(
       F = _F;
     }
     else
-      cerr << "ERROR (set_mesh): The new mesh has a different number of vertices/faces. Please clear the mesh before plotting."<<endl;
+      std::cerr << "ERROR (set_mesh): The new mesh has a different number of vertices/faces. Please clear the mesh before plotting."<<std::endl;
   }
   dirty |= MeshGL::DIRTY_FACE | MeshGL::DIRTY_POSITION;
 }
@@ -108,7 +106,6 @@ IGL_INLINE void igl::opengl::ViewerData::set_vertices(const Eigen::MatrixXd& _V)
 
 IGL_INLINE void igl::opengl::ViewerData::set_normals(const Eigen::MatrixXd& N)
 {
-  using namespace std;
   if (N.rows() == V.rows())
   {
     set_face_based(false);
@@ -120,7 +117,7 @@ IGL_INLINE void igl::opengl::ViewerData::set_normals(const Eigen::MatrixXd& N)
     F_normals = N;
   }
   else
-    cerr << "ERROR (set_normals): Please provide a normal per face, per corner or per vertex."<<endl;
+    std::cerr << "ERROR (set_normals): Please provide a normal per face, per corner or per vertex."<<std::endl;
   dirty |= MeshGL::DIRTY_NORMAL;
 }
 
@@ -144,7 +141,6 @@ IGL_INLINE void igl::opengl::ViewerData::copy_options(const ViewerCore &from, co
 
 IGL_INLINE void igl::opengl::ViewerData::set_colors(const Eigen::MatrixXd &C)
 {
-  using namespace std;
   using namespace Eigen;
   // This Gouraud coloring should be deprecated in favor of Phong coloring in
   // set-data
@@ -222,20 +218,19 @@ IGL_INLINE void igl::opengl::ViewerData::set_colors(const Eigen::MatrixXd &C)
     }
   }
   else
-    cerr << "ERROR (set_colors): Please provide a single color, or a color per face or per vertex."<<endl;
+    std::cerr << "ERROR (set_colors): Please provide a single color, or a color per face or per vertex."<<std::endl;
   dirty |= MeshGL::DIRTY_DIFFUSE | MeshGL::DIRTY_SPECULAR | MeshGL::DIRTY_AMBIENT;
 
 }
 
 IGL_INLINE void igl::opengl::ViewerData::set_uv(const Eigen::MatrixXd& UV)
 {
-  using namespace std;
   if (UV.rows() == V.rows())
   {
     V_uv = UV;
   }
   else
-    cerr << "ERROR (set_UV): Please provide uv per vertex."<<endl;;
+    std::cerr << "ERROR (set_UV): Please provide uv per vertex."<<std::endl;;
   dirty |= MeshGL::DIRTY_UV;
 }
 

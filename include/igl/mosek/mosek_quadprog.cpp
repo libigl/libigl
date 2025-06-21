@@ -286,7 +286,6 @@ IGL_INLINE bool igl::mosek::mosek_quadprog(
   Eigen::VectorXd & x)
 {
   using namespace Eigen;
-  using namespace std;
 
   typedef int Index;
   typedef double Scalar;

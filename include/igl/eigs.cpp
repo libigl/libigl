@@ -27,7 +27,6 @@ IGL_INLINE bool igl::eigs(
   Eigen::PlainObjectBase<DerivedS> & sS)
 {
   using namespace Eigen;
-  using namespace std;
   const size_t n = A.rows();
   assert(A.cols() == n && "A should be square.");
   assert(iB.rows() == n && "B should be match A's dims.");
@@ -134,7 +133,7 @@ IGL_INLINE bool igl::eigs(
     }
     if(iter == max_iter)
     {
-      cerr<<"Failed to converge."<<endl;
+      std::cerr<<"Failed to converge."<<std::endl;
       return false;
     }
     if(
@@ -158,7 +157,7 @@ IGL_INLINE bool igl::eigs(
       //std::cout<<"  "<<(S.head(i).array()-sigma).abs().maxCoeff()<<std::endl;
       //std::cout<<"  "<<(U.leftCols(i).transpose()*B*x).array().abs().transpose()<<std::endl;
       // restart with new random guess.
-      cout<<"igl::eigs RESTART"<<endl;
+      std::cout<<"igl::eigs RESTART"<<std::endl;
     }
   }
   // finally sort

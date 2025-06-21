@@ -24,7 +24,6 @@ IGL_INLINE Eigen::Vector3d igl::random_dir()
 IGL_INLINE Eigen::MatrixXd igl::random_dir_stratified(const int n)
 {
   using namespace Eigen;
-  using namespace std;
   const double m = std::floor(sqrt(double(n)));
   MatrixXd N(n,3);
   int row = 0;

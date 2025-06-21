@@ -30,8 +30,7 @@ IGL_INLINE bool igl::copyleft::tetgen::mesh_with_skeleton(
   Eigen::MatrixXi & FF)
 {
   using namespace Eigen;
-  using namespace std;
-  const string eff_tetgen_flags = 
+  const std::string eff_tetgen_flags =
     (tetgen_flags.length() == 0?DEFAULT_TETGEN_FLAGS:tetgen_flags);
   // Collect all edges that need samples:
   MatrixXi BECE = cat(1,BE,CE);
@@ -51,27 +50,27 @@ IGL_INLINE bool igl::copyleft::tetgen::mesh_with_skeleton(
   if(FF.rows() != F.rows())
   {
     // Issue a warning if the surface has changed
-    cerr<<"mesh_with_skeleton: Warning: boundary faces != input faces"<<endl;
+    std::cerr<<"mesh_with_skeleton: Warning: boundary faces != input faces"<<std::endl;
   }
   if(status != 0)
   {
-    cerr<<
-      "***************************************************************"<<endl<<
-      "***************************************************************"<<endl<<
-      "***************************************************************"<<endl<<
-      "***************************************************************"<<endl<<
-      "* mesh_with_skeleton: tetgen failed. Just meshing convex hull *"<<endl<<
-      "***************************************************************"<<endl<<
-      "***************************************************************"<<endl<<
-      "***************************************************************"<<endl<<
-      "***************************************************************"<<endl;
+    std::cerr<<
+      "***************************************************************"<<std::endl<<
+      "***************************************************************"<<std::endl<<
+      "***************************************************************"<<std::endl<<
+      "***************************************************************"<<std::endl<<
+      "* mesh_with_skeleton: tetgen failed. Just meshing convex hull *"<<std::endl<<
+      "***************************************************************"<<std::endl<<
+      "***************************************************************"<<std::endl<<
+      "***************************************************************"<<std::endl<<
+      "***************************************************************"<<std::endl;
     // If meshing convex hull then use more regular mesh
     status = tetrahedralize(VS,F,"q1.414",VV,TT,FF);
     // I suppose this will fail if the skeleton is outside the mesh
     assert(FF.maxCoeff() < VV.rows());
     if(status != 0)
     {
-      cerr<<"mesh_with_skeleton: tetgen failed again."<<endl;
+      std::cerr<<"mesh_with_skeleton: tetgen failed again."<<std::endl;
       return false;
     }
   }

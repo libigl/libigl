@@ -52,7 +52,6 @@ IGL_INLINE void igl::triangle::triangulate(
   Eigen::PlainObjectBase<DerivedE2> & E2,
   Eigen::PlainObjectBase<DerivedEM2> & EM2)
 {
-  using namespace std;
   using namespace Eigen;
 
   assert( (VM.size() == 0 || V.rows() == VM.size()) &&
@@ -64,7 +63,7 @@ IGL_INLINE void igl::triangle::triangulate(
   assert(H.size() == 0 || H.cols() == 2);
 
   // Prepare the flags
-  string full_flags = flags + "pz" + (EM.size() || VM.size() ? "" : "B");
+  std::string full_flags = flags + "pz" + (EM.size() || VM.size() ? "" : "B");
 
   typedef Map< Matrix<double,Dynamic,Dynamic,RowMajor> > MapXdr;
   typedef Map< Matrix<int,Dynamic,Dynamic,RowMajor> > MapXir;

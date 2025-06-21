@@ -19,7 +19,6 @@ IGL_INLINE bool igl::writeBF(
   const Eigen::MatrixBase<DerivedO> & O)
 {
   using namespace Eigen;
-  using namespace std;
   const int n = WI.rows();
   assert(n == WI.rows() && "WI must have n rows");
   assert(n == P.rows()  && "P must have n rows");
@@ -33,7 +32,7 @@ IGL_INLINE bool igl::writeBF(
     WIPO(i,2+1) = O(i,1);
     WIPO(i,2+2) = O(i,2);
   }
-  ofstream s(filename);
+  std::ofstream s(filename);
   if(!s.is_open())
   {
     fprintf(stderr,"IOError: writeBF() could not open %s\n",filename.c_str());

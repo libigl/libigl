@@ -28,7 +28,6 @@ IGL_INLINE void igl::uniformly_sample_two_manifold(
   Eigen::MatrixXd & WS)
 {
   using namespace Eigen;
-  using namespace std;
 
   // Euclidean distance between two points on a mesh given as barycentric
   // coordinates
@@ -97,19 +96,19 @@ IGL_INLINE void igl::uniformly_sample_two_manifold(
 //#endif
 
   // Build map from vertices to list of incident faces
-  vector<vector<int> > VF,VFi;
+  std::vector<std::vector<int> > VF,VFi;
   vertex_triangle_adjacency(W,F,VF,VFi);
 
   // List of list of face indices, for each sample gives index to face it is on
-  vector<vector<int> > sample_faces; sample_faces.resize(k);
+  std::vector<std::vector<int> > sample_faces; sample_faces.resize(k);
   // List of list of barycentric coordinates, for each sample gives b-coords in
   // face its on
-  vector<vector<Eigen::Vector3d> > sample_barys; sample_barys.resize(k);
+  std::vector<std::vector<Eigen::Vector3d> > sample_barys; sample_barys.resize(k);
   // List of current maxmins amongst samples
-  vector<int> cur_maxmin; cur_maxmin.resize(k);
+  std::vector<int> cur_maxmin; cur_maxmin.resize(k);
   // List of distance matrices, D(i)(s,j) reveals distance from i's sth sample
   // to jth seed if j<k or (j-k)th "pushed" corner
-  vector<MatrixXd> D; D.resize(k);
+  std::vector<MatrixXd> D; D.resize(k);
 
   // Precompute an W.cols() by W.cols() identity matrix
   MatrixXd I(MatrixXd::Identity(W.cols(),W.cols()));
@@ -155,7 +154,7 @@ IGL_INLINE void igl::uniformly_sample_two_manifold(
       // find closest mesh vertex
       int vertex_i = F(face_i,index_in_face);
       // incident triangles
-      vector<int> incident_F = VF[vertex_i];
+      std::vector<int> incident_F = VF[vertex_i];
       // We're going to try to place num_rand_samples_per_triangle samples on
       // each sample *after* this location
       sample_barys[i].clear();
@@ -349,8 +348,6 @@ IGL_INLINE void igl::uniformly_sample_two_manifold_at_vertices(
   Eigen::VectorXi & S)
 {
   using namespace Eigen;
-  using namespace std;
-
   // Copy weights and faces
   const MatrixXd & W = OW;
   /*const MatrixXi & F = OF;*/

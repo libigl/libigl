@@ -87,7 +87,6 @@ namespace igl
                                          const Eigen::MatrixBase<Derivedw>& wSmooth,
                                          ShapeupData & sudata)
   {
-      using namespace std;
       using namespace Eigen;
       sudata.P=P;
       sudata.SC=SC;
@@ -144,7 +143,7 @@ namespace igl
       igl::cat(1, tempMat, sudata.DSmooth, sudata.A);
         
       //weight matrix
-      vector<Triplet<Scalar> > WTriplets;
+      std::vector<Triplet<Scalar> > WTriplets;
         
       //one weight per set in S.
       currRow=0;
@@ -182,7 +181,6 @@ namespace igl
                                 Eigen::PlainObjectBase<DerivedP>& P)
   {
     using namespace Eigen;
-    using namespace std;
     MatrixXd currP=P0;
     MatrixXd prevP=P0;
     MatrixXd projP;
@@ -193,8 +191,8 @@ namespace igl
     rhs.block(sudata.DShape.rows(), 0, sudata.b.rows(),3)=bc;  //this stays constant throughout the iterations
         
     if (!quietIterations){
-        cout<<"Shapeup Iterations, "<<sudata.DShape.rows()<<" constraints, solution size "<<P0.size()<<endl;
-        cout<<"**********************************************************************************************"<<endl;
+        std::cout<<"Shapeup Iterations, "<<sudata.DShape.rows()<<" constraints, solution size "<<P0.size()<<std::endl;
+        std::cout<<"**********************************************************************************************"<<std::endl;
     }
     projP.conservativeResize(sudata.SC.rows(), 3*sudata.SC.maxCoeff());
     for (int iter=0;iter<sudata.maxIterations;iter++){
@@ -213,7 +211,7 @@ namespace igl
       
       double currChange=(currP-prevP).lpNorm<Infinity>();
       if (!quietIterations)
-        cout << "Iteration "<<iter<<", integration Linf error: "<<currChange<< endl;
+        std::cout << "Iteration "<<iter<<", integration Linf error: "<<currChange<< std::endl;
       prevP=currP;
       if (currChange<sudata.pTolerance){
         P=currP;

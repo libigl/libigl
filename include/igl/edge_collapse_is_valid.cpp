@@ -28,7 +28,6 @@ IGL_INLINE bool igl::edge_collapse_is_valid(
   const Eigen::MatrixBase<DerivedEI> & EI)
 {
   using namespace Eigen;
-  using namespace std;
   // For consistency with collapse_edge.cpp, let's determine edge flipness
   // (though not needed to check validity)
   const int eflip = E(e,0)>E(e,1);
@@ -49,15 +48,15 @@ IGL_INLINE bool igl::edge_collapse_is_valid(
       const int e,
       const bool ccw)
     {
-      vector<int> N,uN;
-      vector<int> V2Fe = circulation(e, ccw,EMAP,EF,EI);
+      std::vector<int> N,uN;
+      std::vector<int> V2Fe = circulation(e, ccw,EMAP,EF,EI);
       for(auto f : V2Fe)
       {
         N.push_back(F(f,0));
         N.push_back(F(f,1));
         N.push_back(F(f,2));
       }
-      vector<size_t> _1,_2;
+      std::vector<size_t> _1,_2;
       igl::unique(N,uN,_1,_2);
       VectorXi uNm;
       list_to_matrix(uN,uNm);

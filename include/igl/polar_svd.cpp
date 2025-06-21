@@ -48,8 +48,7 @@ IGL_INLINE void igl::polar_svd(
   Eigen::PlainObjectBase<DerivedS> & S,
   Eigen::PlainObjectBase<DerivedV> & V)
 {
-  using namespace std;
-  typedef 
+  typedef
     Eigen::Matrix<typename DerivedA::Scalar,
     DerivedA::RowsAtCompileTime,
     DerivedA::ColsAtCompileTime>

@@ -34,7 +34,6 @@ IGL_INLINE void igl::massmatrix_intrinsic(
   Eigen::SparseMatrix<Scalar>& M)
 {
   using namespace Eigen;
-  using namespace std;
   MassMatrixType eff_type = type;
   const int m = F.rows();
   const int simplex_size = F.cols();

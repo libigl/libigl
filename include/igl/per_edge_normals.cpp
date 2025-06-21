@@ -33,7 +33,6 @@ IGL_INLINE void igl::per_edge_normals(
     (DerivedEMAP::RowsAtCompileTime == 1 || DerivedEMAP::ColsAtCompileTime == 1) ,
     "EMAP need to have RowsAtCompileTime == 1 or ColsAtCompileTime == 1");
   using namespace Eigen;
-  using namespace std;
   assert(F.cols() == 3 && "Faces must be triangles");
   // number of faces
   const int m = F.rows();

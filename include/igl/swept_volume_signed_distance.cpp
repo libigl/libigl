@@ -30,7 +30,6 @@ IGL_INLINE void igl::swept_volume_signed_distance(
   const Eigen::VectorXd & S0,
   Eigen::VectorXd & S)
 {
-  using namespace std;
   using namespace igl;
   using namespace Eigen;
   S = S0;
@@ -74,7 +73,7 @@ IGL_INLINE void igl::swept_volume_signed_distance(
       const double min_sqrd = 
         finite_iso ? 
         pow(sqrt(3.)*h+isolevel,2) : 
-        numeric_limits<double>::infinity();
+        std::numeric_limits<double>::infinity();
       sqrd = tree.squared_distance(V,F,gv,min_sqrd,i,c);
       if(sqrd<min_sqrd)
       {
@@ -113,10 +112,9 @@ IGL_INLINE void igl::swept_volume_signed_distance(
   const double isolevel,
   Eigen::VectorXd & S)
 {
-  using namespace std;
   using namespace igl;
   using namespace Eigen;
-  S = VectorXd::Constant(GV.rows(),1,numeric_limits<double>::quiet_NaN());
+  S = VectorXd::Constant(GV.rows(),1,std::numeric_limits<double>::quiet_NaN());
   return 
     swept_volume_signed_distance(V,F,transform,steps,GV,res,h,isolevel,S,S);
 }

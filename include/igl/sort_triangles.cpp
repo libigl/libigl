@@ -32,7 +32,6 @@ IGL_INLINE void igl::sort_triangles(
   Eigen::PlainObjectBase<DerivedI> & I)
 {
   using namespace Eigen;
-  using namespace std;
 
 
   typedef typename DerivedV::Scalar Scalar;

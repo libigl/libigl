@@ -252,7 +252,6 @@ IGL_INLINE void add_new_patch(igl::triangle::SCAFData &s, const Eigen::MatrixXd 
                    const Eigen::RowVectorXd &/*center*/,
                    const Eigen::MatrixXd &uv_init)
 {
-  using namespace std;
   using namespace Eigen;
 
   assert(uv_init.rows() != 0);
@@ -400,8 +399,6 @@ IGL_INLINE void get_complement(const Eigen::VectorXi &bnd_ids, int v_n, Eigen::A
 IGL_INLINE void build_surface_linear_system(const SCAFData &s, Eigen::SparseMatrix<double> &L, Eigen::VectorXd &rhs)
 {
   using namespace Eigen;
-  using namespace std;
-
   const int v_n = s.v_num - (s.frame_ids.size());
   const int dim = s.dim;
   const int f_n = s.mf_num;
@@ -556,7 +553,6 @@ IGL_INLINE void build_weighted_arap_system(SCAFData &s, Eigen::SparseMatrix<doub
 IGL_INLINE void solve_weighted_arap(SCAFData &s, Eigen::MatrixXd &uv)
 {
   using namespace Eigen;
-  using namespace std;
   int dim = s.dim;
   igl::Timer timer;
   timer.start();
@@ -681,7 +677,6 @@ IGL_INLINE void igl::triangle::scaf_precompute(
 
 IGL_INLINE Eigen::MatrixXd igl::triangle::scaf_solve(const int iter_num, igl::triangle::SCAFData &s)
 {
-  using namespace std;
   using namespace Eigen;
   s.energy = igl::triangle::scaf::compute_energy(s, s.w_uv, false) / s.mesh_measure;
 

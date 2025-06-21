@@ -14,7 +14,6 @@ IGL_INLINE void igl::floor(
   const Eigen::DenseBase<DerivedX>& X,
   Eigen::PlainObjectBase<DerivedY>& Y)
 {
-  using namespace std;
   typedef typename DerivedX::Scalar Scalar;
   Y = X.unaryExpr([](const Scalar &x)->Scalar{return std::floor(x);}).template cast<typename DerivedY::Scalar >();
 }

@@ -36,7 +36,6 @@ IGL_INLINE void igl::sparse(
   const size_t n,
   Eigen::SparseMatrix<T>& X)
 {
-  using namespace std;
   using namespace Eigen;
   assert((int)I.maxCoeff() < (int)m);
   assert((int)I.minCoeff() >= 0);
@@ -49,7 +48,7 @@ IGL_INLINE void igl::sparse(
   assert(J.rows() == V.rows());
   assert(I.cols() == J.cols());
   assert(J.cols() == V.cols());
-  vector<Triplet<T> > IJV;
+  std::vector<Triplet<T> > IJV;
   IJV.reserve(I.size());
   for(int x = 0;x<I.size();x++)
   {
@@ -65,9 +64,8 @@ IGL_INLINE void igl::sparse(
   Eigen::SparseMatrix<T>& X)
 {
   assert(false && "Obsolete. Just call D.sparseView() directly");
-  using namespace std;
   using namespace Eigen;
-  vector<Triplet<T> > DIJV;
+  std::vector<Triplet<T> > DIJV;
   const int m = D.rows();
   const int n = D.cols();
   for(int i = 0;i<m;i++)

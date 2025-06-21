@@ -23,7 +23,6 @@ IGL_INLINE void igl::setdiff(
   Eigen::PlainObjectBase<DerivedIA> & IA)
 {
   using namespace Eigen;
-  using namespace std;
   // boring base cases
   if(A.size() == 0)
   {
@@ -49,8 +48,8 @@ IGL_INLINE void igl::setdiff(
   sort(uA,1,true,sA,sIA);
   sort(uB,1,true,sB,sIB);
 
-  vector<typename DerivedB::Scalar> vC;
-  vector<typename DerivedIA::Scalar> vIA;
+  std::vector<typename DerivedB::Scalar> vC;
+  std::vector<typename DerivedIA::Scalar> vIA;
   int bi = 0;
   // loop over sA
   bool past = false;

@@ -35,7 +35,6 @@ IGL_INLINE void igl::matlab::parse_rhs(
   Eigen::SparseMatrix<MT> & M)
 {
   using namespace Eigen;
-  using namespace std;
   const mxArray * mx_data = prhs[0];
   // Handle boring case where matrix is actually an empty dense matrix
   if(mxGetNumberOfElements(mx_data) == 0)

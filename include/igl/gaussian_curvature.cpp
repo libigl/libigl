@@ -16,7 +16,6 @@ IGL_INLINE void igl::gaussian_curvature(
   Eigen::PlainObjectBase<DerivedK> & K)
 {
   using namespace Eigen;
-  using namespace std;
   // internal corner angles
   Matrix<
     typename DerivedV::Scalar,

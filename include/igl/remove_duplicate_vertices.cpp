@@ -65,7 +65,6 @@ IGL_INLINE void igl::remove_duplicate_vertices(
     (DerivedSVJ::RowsAtCompileTime == 1 || DerivedSVJ::ColsAtCompileTime == 1),
     "SVI and SVJ need to have RowsAtCompileTime == 1 or ColsAtCompileTime == 1");
   using namespace Eigen;
-  using namespace std;
   remove_duplicate_vertices(V,epsilon,SV,SVI,SVJ);
   SF.resizeLike(F);
   for(int f = 0;f<F.rows();f++)

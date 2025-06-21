@@ -14,8 +14,7 @@ IGL_INLINE const Eigen::WithFormat< DerivedM > igl::matlab_format(
   const Eigen::DenseBase<DerivedM> & M,
   const std::string name)
 {
-  using namespace std;
-  string prefix = "";
+  std::string prefix = "";
   if(!name.empty())
   {
     prefix = name + " = ";
@@ -50,7 +49,6 @@ igl::matlab_format(
   const std::string name)
 {
   using namespace Eigen;
-  using namespace std;
   Matrix<typename Eigen::SparseMatrix<DerivedS>::Scalar,Dynamic,1> I,J,V;
   Matrix<DerivedS,Dynamic,Dynamic> SIJV;
   find(S,I,J,V);
@@ -58,8 +56,8 @@ igl::matlab_format(
   J.array() += 1;
   SIJV.resize(V.rows(),3);
   SIJV << I,J,V;
-  string prefix = "";
-  string suffix = "";
+  std::string prefix = "";
+  std::string suffix = "";
   if(!name.empty())
   {
     prefix = name + "IJV = ";
@@ -104,8 +102,7 @@ IGL_INLINE const std::string igl::matlab_format(
  const double v,
  const std::string name)
 {
-  using namespace std;
-  string prefix = "";
+  std::string prefix = "";
   if(!name.empty())
   {
     prefix = name + " = ";

@@ -24,7 +24,6 @@ IGL_INLINE void igl::unique(
   std::vector<size_t> & IA,
   std::vector<size_t> & IC)
 {
-  using namespace std;
   std::vector<size_t> IM;
   std::vector<T> sortA;
   igl::sort(A,true,sortA,IM);
@@ -82,11 +81,10 @@ IGL_INLINE void igl::unique(
     Eigen::PlainObjectBase<DerivedIA> & IA,
     Eigen::PlainObjectBase<DerivedIC> & IC)
 {
-  using namespace std;
   using namespace Eigen;
-  vector<typename DerivedA::Scalar > vA;
-  vector<typename DerivedC::Scalar > vC;
-  vector<size_t> vIA,vIC;
+  std::vector<typename DerivedA::Scalar > vA;
+  std::vector<typename DerivedC::Scalar > vC;
+  std::vector<size_t> vIA,vIC;
   matrix_to_list(A,vA);
   unique(vA,vC,vIA,vIC);
   list_to_matrix(vC,C);
@@ -102,11 +100,10 @@ IGL_INLINE void igl::unique(
     const Eigen::MatrixBase<DerivedA> & A,
     Eigen::PlainObjectBase<DerivedC> & C)
 {
-  using namespace std;
   using namespace Eigen;
-  vector<typename DerivedA::Scalar > vA;
-  vector<typename DerivedC::Scalar > vC;
-  vector<size_t> vIA,vIC;
+  std::vector<typename DerivedA::Scalar > vA;
+  std::vector<typename DerivedC::Scalar > vC;
+  std::vector<size_t> vIA,vIC;
   matrix_to_list(A,vA);
   unique(vA,vC,vIA,vIC);
   list_to_matrix(vC,C);

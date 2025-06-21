@@ -25,7 +25,6 @@ IGL_INLINE bool igl::copyleft::tetgen::cdt(
   Eigen::PlainObjectBase<DerivedTF>& TF)
 {
   using namespace Eigen;
-  using namespace std;
   // Effective input mesh
   PlainMatrix<DerivedV,Eigen::Dynamic> U;
   PlainMatrix<DerivedF,Eigen::Dynamic> G;

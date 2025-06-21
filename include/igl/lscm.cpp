@@ -30,7 +30,6 @@ IGL_INLINE bool igl::lscm(
   Eigen::SparseMatrix<QScalar> & Q)
 {
   using namespace Eigen;
-  using namespace std;
   igl::lscm_hessian(V,F,Q);
 
   Eigen::Matrix<typename Derivedb::Scalar,Eigen::Dynamic,1> b_flat(b.size()*bc.cols(),1);

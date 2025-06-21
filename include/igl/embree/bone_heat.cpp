@@ -23,7 +23,6 @@ bool igl::embree::bone_heat(
   const Eigen::MatrixXi & CE,
   Eigen::MatrixXd & W)
 {
-  using namespace std;
   using namespace Eigen;
   assert(CE.rows() == 0 && "Cage edges not supported.");
   assert(C.cols() == V.cols() && "V and C should have same #cols");

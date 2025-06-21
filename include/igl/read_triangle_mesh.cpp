@@ -30,14 +30,13 @@ IGL_INLINE bool igl::read_triangle_mesh(
   std::vector<std::vector<Scalar> > & V,
   std::vector<std::vector<Index> > & F)
 {
-  using namespace std;
   // dirname, basename, extension and filename
-  string d,b,e,f;
+  std::string d,b,e,f;
   pathinfo(str,d,b,e,f);
   // Convert extension to lower case
   std::transform(e.begin(), e.end(), e.begin(), ::tolower);
-  vector<vector<Scalar> > TC, N, C;
-  vector<vector<Index> > FTC, FN;
+  std::vector<std::vector<Scalar> > TC, N, C;
+  std::vector<std::vector<Index> > FTC, FN;
   if(e == "obj")
   {
     // Annoyingly obj can store 4 coordinates, truncate to xyz for this generic
@@ -52,8 +51,8 @@ IGL_INLINE bool igl::read_triangle_mesh(
   {
     return readOFF(str,V,F,N,C);
   }
-  cerr<<"Error: "<<__FUNCTION__<<": "<<
-    str<<" is not a recognized mesh file format."<<endl;
+  std::cerr<<"Error: "<<__FUNCTION__<<": "<<
+    str<<" is not a recognized mesh file format."<<std::endl;
   return false;
 }
 
@@ -78,7 +77,6 @@ IGL_INLINE bool igl::read_triangle_mesh(
   std::string & ext,
   std::string & name)
 {
-  using namespace std;
   using namespace Eigen;
 
   // dirname, basename, extension and filename
@@ -124,12 +122,11 @@ IGL_INLINE bool igl::read_triangle_mesh(
   Eigen::PlainObjectBase<DerivedV>& V,
   Eigen::PlainObjectBase<DerivedF>& F)
 {
-  using namespace std;
   using namespace Eigen;
   Eigen::MatrixXd N;
-  vector<vector<double > > vV,vN,vTC,vC;
-  vector<vector<int > > vF,vFTC,vFN;
-  vector<tuple<string, int, int>> FM;
+  std::vector<std::vector<double > > vV,vN,vTC,vC;
+  std::vector<std::vector<int > > vF,vFTC,vFN;
+  std::vector<std::tuple<std::string, int, int>> FM;
 
   if(ext == "mesh")
   {
@@ -179,7 +176,7 @@ IGL_INLINE bool igl::read_triangle_mesh(
     }
   }else
   {
-    cerr<<"Error: unknown extension: "<<ext<<endl;
+    std::cerr<<"Error: unknown extension: "<<ext<<std::endl;
     return false;
   }
   if(vV.size() > 0)

@@ -48,7 +48,6 @@ IGL_INLINE bool igl::is_symmetric(
   const epsilonT epsilon)
 {
   using namespace Eigen;
-  using namespace std;
   if(A.rows() != A.cols())
   {
     return false;

@@ -191,7 +191,6 @@ inline void igl::matlab::MatlabWorkspace::clear()
 
 inline bool igl::matlab::MatlabWorkspace::write(const std::string & path) const
 {
-  using namespace std;
   MATFile * mat_file = matOpen(path.c_str(), "w");
   if(mat_file == NULL)
   {
@@ -221,7 +220,6 @@ inline bool igl::matlab::MatlabWorkspace::write(const std::string & path) const
 
 inline bool igl::matlab::MatlabWorkspace::read(const std::string & path)
 {
-  using namespace std;
 
   MATFile * mat_file;
 
@@ -293,7 +291,6 @@ inline igl::matlab::MatlabWorkspace& igl::matlab::MatlabWorkspace::save(
   const Eigen::MatrixBase<DerivedM>& M,
   const std::string & name)
 {
-  using namespace std;
   const int m = M.rows();
   const int n = M.cols();
   mxArray * mx_data = mxCreateDoubleMatrix(m,n,mxREAL);
@@ -313,7 +310,6 @@ inline igl::matlab::MatlabWorkspace& igl::matlab::MatlabWorkspace::save(
   const Eigen::SparseMatrix<MT>& M,
   const std::string & name)
 {
-  using namespace std;
   const int m = M.rows();
   const int n = M.cols();
   // THIS WILL NOT WORK FOR ROW-MAJOR
@@ -423,7 +419,6 @@ inline bool igl::matlab::MatlabWorkspace::find(
   const std::string & name,
   Eigen::PlainObjectBase<DerivedM>& M)
 {
-  using namespace std;
   const int i = std::find(names.begin(), names.end(), name)-names.begin();
   if(i>=(int)names.size())
   {
@@ -458,7 +453,6 @@ inline bool igl::matlab::MatlabWorkspace::find(
   const std::string & name,
   Eigen::SparseMatrix<MT>& M)
 {
-  using namespace std;
   using namespace Eigen;
   const int i = std::find(names.begin(), names.end(), name)-names.begin();
   if(i>=(int)names.size())
@@ -511,7 +505,6 @@ inline bool igl::matlab::MatlabWorkspace::find(
   const std::string & name,
   int & v)
 {
-  using namespace std;
   const int i = std::find(names.begin(), names.end(), name)-names.begin();
   if(i>=(int)names.size())
   {
@@ -534,7 +527,6 @@ inline bool igl::matlab::MatlabWorkspace::find(
   const std::string & name,
   double & d)
 {
-  using namespace std;
   const int i = std::find(names.begin(), names.end(), name)-names.begin();
   if(i>=(int)names.size())
   {

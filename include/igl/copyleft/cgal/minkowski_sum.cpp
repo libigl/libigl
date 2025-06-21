@@ -38,7 +38,6 @@ IGL_INLINE void igl::copyleft::cgal::minkowski_sum(
   Eigen::PlainObjectBase<DerivedG> & G,
   Eigen::PlainObjectBase<DerivedJ> & J)
 {
-  using namespace std;
   using namespace Eigen;
   assert(FA.cols() == 3 && "FA must contain a closed triangle mesh");
   assert(FB.cols() <= FA.cols() && 
@@ -64,10 +63,10 @@ IGL_INLINE void igl::copyleft::cgal::minkowski_sum(
   // number of copies of B along edges of A
   const int n_ba = EA.rows();
 
-  vector<DerivedW> vW(n_ab + n_ba);
-  vector<DerivedG> vG(n_ab + n_ba);
-  vector<DerivedJ> vJ(n_ab + n_ba);
-  vector<int> offsets(n_ab + n_ba + 1);
+  std::vector<DerivedW> vW(n_ab + n_ba);
+  std::vector<DerivedG> vG(n_ab + n_ba);
+  std::vector<DerivedJ> vJ(n_ab + n_ba);
+  std::vector<int> offsets(n_ab + n_ba + 1);
   offsets[0] = 0;
   // sweep A along edges of B
   for(int e = 0;e<n_ab;e++)
@@ -165,7 +164,6 @@ IGL_INLINE void igl::copyleft::cgal::minkowski_sum(
   Eigen::PlainObjectBase<DerivedJ> & J)
 {
   using namespace Eigen;
-  using namespace std;
   assert(s.cols() == 3 && "s should be a 3d point");
   assert(d.cols() == 3 && "d should be a 3d point");
   // silly base case

@@ -29,7 +29,6 @@ IGL_INLINE int igl::copyleft::cgal::peel_outer_hull_layers(
   Eigen::PlainObjectBase<Derivedflip > & flip)
 {
   using namespace Eigen;
-  using namespace std;
   typedef Matrix<typename DerivedF::Scalar,Dynamic,DerivedF::ColsAtCompileTime> MatrixXF;
   typedef Matrix<int,Dynamic,1> MatrixXI;
   typedef Matrix<typename Derivedflip::Scalar,Dynamic,Derivedflip::ColsAtCompileTime> MatrixXflip;
@@ -82,7 +81,7 @@ IGL_INLINE int igl::copyleft::cgal::peel_outer_hull_layers(
     assert(Fo.rows() != 0);
     assert(Fo.rows() == Jo.rows());
     // all faces in Fo of Fr
-    vector<bool> in_outer(Fr.rows(),false);
+    std::vector<bool> in_outer(Fr.rows(),false);
     for(int g = 0;g<Jo.rows();g++)
     {
       I(IM(Jo(g))) = iter;

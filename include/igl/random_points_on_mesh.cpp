@@ -27,7 +27,6 @@ IGL_INLINE void igl::random_points_on_mesh(
   URBG && urbg)
 {
   using namespace Eigen;
-  using namespace std;
   typedef typename DerivedV::Scalar Scalar;
   typedef Matrix<Scalar,Dynamic,1> VectorXs;
   VectorXs dblA;

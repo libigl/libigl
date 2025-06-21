@@ -25,7 +25,6 @@ IGL_INLINE void igl::unique_rows(
     (DerivedIA::RowsAtCompileTime == 1 || DerivedIA::ColsAtCompileTime == 1) &&
     (DerivedIC::RowsAtCompileTime == 1 || DerivedIC::ColsAtCompileTime == 1),
     "IA and IC need to have RowsAtCompileTime == 1 or ColsAtCompileTime == 1");
-  using namespace std;
   using namespace Eigen;
   VectorXi IM;
   Eigen::Matrix<typename DerivedA::Scalar, DerivedA::RowsAtCompileTime, DerivedA::ColsAtCompileTime> sortA;
@@ -34,7 +33,7 @@ IGL_INLINE void igl::unique_rows(
 
   const int num_rows = sortA.rows();
   const int num_cols = sortA.cols();
-  vector<int> vIA(num_rows);
+  std::vector<int> vIA(num_rows);
   for(int i=0;i<num_rows;i++)
   {
     vIA[i] = i;

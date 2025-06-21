@@ -16,7 +16,6 @@ IGL_INLINE void igl::directed_edge_parents(
   Eigen::PlainObjectBase<DerivedP> & P)
 {
   using namespace Eigen;
-  using namespace std;
   typedef Eigen::Matrix<typename DerivedE::Scalar, Eigen::Dynamic, 1> VectorT;
 
   VectorT I = VectorT::Constant(E.maxCoeff()+1,1,-1);

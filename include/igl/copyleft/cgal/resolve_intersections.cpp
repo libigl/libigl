@@ -33,7 +33,6 @@ IGL_INLINE void igl::copyleft::cgal::resolve_intersections(
 {
   using namespace Eigen;
   using namespace igl;
-  using namespace std;
   // Exact scalar type
   typedef CGAL::Epeck K;
   typedef K::FT EScalar;

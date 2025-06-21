@@ -26,9 +26,8 @@ igl::BBWData::BBWData():
 
 void igl::BBWData::print()
 {
-  using namespace std;
-  cout<<"partition_unity: "<<partition_unity<<endl;
-  cout<<"W0=["<<endl<<W0<<endl<<"];"<<endl;
+  std::cout<<"partition_unity: "<<partition_unity<<std::endl;
+  std::cout<<"W0=["<<std::endl<<W0<<std::endl<<"];"<<std::endl;
 }
 
 
@@ -47,7 +46,6 @@ IGL_INLINE bool igl::bbw(
   Eigen::PlainObjectBase<DerivedW> & W
   )
 {
-  using namespace std;
   using namespace Eigen;
   assert(!data.partition_unity && "partition_unity not implemented yet");
   // number of domain vertices
@@ -69,13 +67,13 @@ IGL_INLINE bool igl::bbw(
   active_set_params eff_params = data.active_set_params;
   if(data.verbosity >= 1)
   {
-    cout<<"BBW: max_iter: "<<data.active_set_params.max_iter<<endl;
-    cout<<"BBW: eff_max_iter: "<<eff_params.max_iter<<endl;
+    std::cout<<"BBW: max_iter: "<<data.active_set_params.max_iter<<std::endl;
+    std::cout<<"BBW: eff_max_iter: "<<eff_params.max_iter<<std::endl;
   }
   if(data.verbosity >= 1)
   {
-    cout<<"BBW: Computing initial weights for "<<m<<" handle"<<
-      (m!=1?"s":"")<<"."<<endl;
+    std::cout<<"BBW: Computing initial weights for "<<m<<" handle"<<
+      (m!=1?"s":"")<<"."<<std::endl;
   }
   min_quad_with_fixed_data<typename DerivedW::Scalar > mqwf;
   min_quad_with_fixed_precompute(Q,b,Aeq,true,mqwf);
@@ -95,8 +93,8 @@ IGL_INLINE bool igl::bbw(
     if(data.verbosity >= 1)
     {
       std::lock_guard<std::mutex> lock(critical);
-      cout<<"BBW: Computing weight for handle "<<i+1<<" out of "<<m<<
-        "."<<endl;
+      std::cout<<"BBW: Computing weight for handle "<<i+1<<" out of "<<m<<
+        "."<<std::endl;
     }
     VectorXd bci = bc.col(i);
     VectorXd Wi;
@@ -133,8 +131,8 @@ IGL_INLINE bool igl::bbw(
   const double min_rowsum = W.rowwise().sum().array().abs().minCoeff();
   if(min_rowsum < 0.1)
   {
-    cerr<<"bbw.cpp: Warning, minimum row sum is very low. Consider more "
-      "active set iterations or enforcing partition of unity."<<endl;
+    std::cerr<<"bbw.cpp: Warning, minimum row sum is very low. Consider more "
+      "active set iterations or enforcing partition of unity."<<std::endl;
   }
 #endif
 

@@ -14,7 +14,6 @@ IGL_INLINE void igl::triangle_fan(
   const Eigen::MatrixBase<DerivedE> & E,
   Eigen::PlainObjectBase<Derivedcap> & cap)
 {
-  using namespace std;
   using namespace Eigen;
 
   // Handle lame base case
@@ -30,7 +29,7 @@ IGL_INLINE void igl::triangle_fan(
   // Arbitrary starting vertex
   //int s = E(int(((double)rand() / RAND_MAX)*E.rows()),0);
   int s = E(rand()%E.rows(),0);
-  vector<vector<int> >  lcap;
+  std::vector<std::vector<int> >  lcap;
   for(int i = 0;i<E.rows();i++)
   {
     // Skip edges incident on s (they would be zero-area)
@@ -38,7 +37,7 @@ IGL_INLINE void igl::triangle_fan(
     {
       continue;
     }
-    vector<int> e(3);
+    std::vector<int> e(3);
     e[0] = s;
     e[1] = E(i,0);
     e[2] = E(i,1);

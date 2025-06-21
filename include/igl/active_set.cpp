@@ -52,7 +52,6 @@ IGL_INLINE igl::SolverStatus igl::active_set(
 #  warning "ACTIVE_SET_CPP_DEBUG"
 #endif
   using namespace Eigen;
-  using namespace std;
   SolverStatus ret = SOLVER_STATUS_ERROR;
   const int n = A.rows();
   assert(n == A.cols() && "A must be square");
@@ -75,7 +74,7 @@ IGL_INLINE igl::SolverStatus igl::active_set(
   if(p_lx.size() == 0)
   {
     lx = Derivedlx::Constant(
-      n,1,-numeric_limits<typename Derivedlx::Scalar>::max());
+      n,1,-std::numeric_limits<typename Derivedlx::Scalar>::max());
   }else
   {
     lx = p_lx;
@@ -83,7 +82,7 @@ IGL_INLINE igl::SolverStatus igl::active_set(
   if(p_ux.size() == 0)
   {
     ux = Derivedux::Constant(
-      n,1,numeric_limits<typename Derivedux::Scalar>::max());
+      n,1,std::numeric_limits<typename Derivedux::Scalar>::max());
   }else
   {
     ux = p_ux;

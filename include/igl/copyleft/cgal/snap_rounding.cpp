@@ -32,7 +32,6 @@ IGL_INLINE void igl::copyleft::cgal::snap_rounding(
   using namespace Eigen;
   using namespace igl;
   using namespace igl::copyleft::cgal;
-  using namespace std;
   // Exact scalar type
   typedef CGAL::Epeck Kernel;
   typedef Kernel::FT EScalar;
@@ -98,19 +97,19 @@ IGL_INLINE void igl::copyleft::cgal::snap_rounding(
     search(-1);
     return i;
   };
-  vector<Point_2> hot;
+  std::vector<Point_2> hot;
   for(int i = 0;i<VE.rows();i++)
   {
     hot.emplace_back(round(VE(i,0)),round(VE(i,1)));
   }
   {
     std::vector<size_t> _1,_2;
-    igl::unique(vector<Point_2>(hot),hot,_1,_2);
+    igl::unique(std::vector<Point_2>(hot),hot,_1,_2);
   }
 
   // find all segments intersecting hot pixels
   //   split edge at closest point to hot pixel center
-  vector<vector<Point_2>>  steiner(EI.rows());
+  std::vector<std::vector<Point_2>>  steiner(EI.rows());
   // initialize each segment with endpoints
   for(int i = 0;i<EI.rows();i++)
   {
@@ -143,7 +142,7 @@ IGL_INLINE void igl::copyleft::cgal::snap_rounding(
       }
       // otherwise check for intersections with walls consider all walls
       const Segment_2 si(s,d);
-      vector<Point_2> hits;
+      std::vector<Point_2> hits;
       for(int j = 0;j<4;j++)
       {
         const Segment_2 & sj = wall[j];

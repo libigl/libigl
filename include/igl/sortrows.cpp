@@ -59,7 +59,6 @@ IGL_INLINE void igl::sortrows(
   // This is already 2x faster than matlab's builtin `sortrows`. I have tried
   // implementing a "multiple-pass" sort on each column, but see no performance
   // improvement.
-  using namespace std;
   using namespace Eigen;
   // Resize output
   const size_t num_rows = X.rows();

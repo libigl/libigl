@@ -148,7 +148,6 @@ IGL_INLINE void igl::doublearea(
   Eigen::PlainObjectBase<DeriveddblA> & dblA)
 {
   using namespace Eigen;
-  using namespace std;
   typedef typename Derivedl::Index Index;
   // Only support triangles
   assert(ul.cols() == 3);

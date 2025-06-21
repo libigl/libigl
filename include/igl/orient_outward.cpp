@@ -26,7 +26,6 @@ IGL_INLINE void igl::orient_outward(
   Eigen::PlainObjectBase<DerivedI> & I)
 {
   using namespace Eigen;
-  using namespace std;
   assert(C.rows() == F.rows());
   assert(F.cols() == 3);
   assert(V.cols() == 3);

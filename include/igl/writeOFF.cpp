@@ -16,10 +16,9 @@ IGL_INLINE bool igl::writeOFF(
   const Eigen::MatrixBase<DerivedV>& V,
   const Eigen::MatrixBase<DerivedF>& F)
 {
-  using namespace std;
   using namespace Eigen;
   assert(V.cols() == 3 && "V should have 3 columns");
-  ofstream s(fname);
+  std::ofstream s(fname);
   if(!s.is_open())
   {
     fprintf(stderr,"IOError: writeOFF() could not open %s\n",fname.c_str());
@@ -41,7 +40,6 @@ IGL_INLINE bool igl::writeOFF(
   const Eigen::MatrixBase<DerivedF>& F,
   const Eigen::MatrixBase<DerivedC>& C)
 {
-  using namespace std;
   using namespace Eigen;
   assert(V.cols() == 3 && "V should have 3 columns");
   assert(C.cols() == 3 && "C should have 3 columns");
@@ -52,7 +50,7 @@ IGL_INLINE bool igl::writeOFF(
     return false;
   }
 
-  ofstream s(fname);
+  std::ofstream s(fname);
   if(!s.is_open())
   {
     fprintf(stderr,"IOError: writeOFF() could not open %s\n",fname.c_str());

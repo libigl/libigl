@@ -26,7 +26,6 @@ IGL_INLINE void igl::ismember(
   Eigen::PlainObjectBase<DerivedLOCB> & LOCB)
 {
   using namespace Eigen;
-  using namespace std;
   IA.resizeLike(A);
   IA.setConstant(false);
   LOCB.resizeLike(A);

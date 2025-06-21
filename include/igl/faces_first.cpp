@@ -20,9 +20,8 @@ IGL_INLINE void igl::faces_first(
 {
   assert(&V != &RV);
   assert(&F != &RF);
-  using namespace std;
   using namespace Eigen;
-  vector<bool> in_face(V.rows());
+  std::vector<bool> in_face(V.rows());
   for(int i = 0; i<F.rows(); i++)
   {
     for(int j = 0; j<F.cols(); j++)

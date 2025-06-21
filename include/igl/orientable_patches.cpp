@@ -19,7 +19,6 @@ IGL_INLINE void igl::orientable_patches(
   Eigen::SparseMatrix<AScalar> & A)
 {
   using namespace Eigen;
-  using namespace std;
 
   // simplex size
   assert(F.cols() == 3);
@@ -41,7 +40,7 @@ IGL_INLINE void igl::orientable_patches(
   // so that sortallE(i,:) = uE(IC(i),:)
   unique_rows(sortallE,uE,IA,IC);
   // uE2FT(e,f) = 1 means face f is adjacent to unique edge e
-  vector<Triplet<AScalar> > uE2FTijv(IC.rows());
+  std::vector<Triplet<AScalar> > uE2FTijv(IC.rows());
   for(int e = 0;e<IC.rows();e++)
   {
     uE2FTijv[e] = Triplet<AScalar>(e%F.rows(),IC(e),1);

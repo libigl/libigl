@@ -20,7 +20,6 @@ IGL_INLINE void igl::upsample(
   Eigen::SparseMatrix<SType>& S,
   Eigen::PlainObjectBase<DerivedNF>& NF)
 {
-  using namespace std;
   using namespace Eigen;
 
   typedef Eigen::Triplet<SType> Triplet_t;

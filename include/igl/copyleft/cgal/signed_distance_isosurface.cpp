@@ -38,7 +38,6 @@ IGL_INLINE bool igl::copyleft::cgal::signed_distance_isosurface(
   Eigen::MatrixXd & V,
   Eigen::MatrixXi & F)
 {
-  using namespace std;
   using namespace Eigen;
 
   // default triangulation for Surface_mesher

@@ -17,7 +17,6 @@ IGL_INLINE void igl::cotmatrix_intrinsic(
   Eigen::SparseMatrix<Scalar>& L)
 {
   using namespace Eigen;
-  using namespace std;
   // Cribbed from cotmatrix
 
   const int nverts = F.maxCoeff()+1;
@@ -39,7 +38,7 @@ IGL_INLINE void igl::cotmatrix_intrinsic(
   Matrix<Scalar,Dynamic,Dynamic> C;
   cotmatrix_entries(l,C);
   
-  vector<Triplet<Scalar> > IJV;
+  std::vector<Triplet<Scalar> > IJV;
   IJV.reserve(F.rows()*edges.rows()*4);
   // Loop over triangles
   for(int i = 0; i < F.rows(); i++)

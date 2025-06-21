@@ -19,7 +19,6 @@ IGL_INLINE void igl::vector_area_matrix(
   Eigen::SparseMatrix<Scalar>& A)
 {
   using namespace Eigen;
-  using namespace std;
 
   // number of vertices
   const int n = F.maxCoeff()+1;
@@ -29,7 +28,7 @@ IGL_INLINE void igl::vector_area_matrix(
   boundary_facets(F,E);
 
   //Prepare a vector of triplets to set the matrix
-  vector<Triplet<Scalar> > tripletList;
+  std::vector<Triplet<Scalar> > tripletList;
   tripletList.reserve(4*E.rows());
 
   for(int k = 0; k < E.rows(); k++)

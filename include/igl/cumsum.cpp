@@ -27,7 +27,6 @@ IGL_INLINE void igl::cumsum(
   Eigen::PlainObjectBase<DerivedY > & Y)
 {
   using namespace Eigen;
-  using namespace std;
   Y.resize(
     X.rows()+(zero_prefix&&dim==1?1:0),
     X.cols()+(zero_prefix&&dim==2?1:0));

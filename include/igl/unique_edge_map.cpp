@@ -30,11 +30,10 @@ IGL_INLINE void igl::unique_edge_map(
     (DerivedEMAP::RowsAtCompileTime == 1 || DerivedEMAP::ColsAtCompileTime == 1) ,
     "EMAP need to have RowsAtCompileTime == 1 or ColsAtCompileTime == 1");
   using namespace Eigen;
-  using namespace std;
   unique_edge_map(F,E,uE,EMAP);
   uE2E.resize(uE.rows());
   // This does help a little
-  for_each(uE2E.begin(),uE2E.end(),[](vector<uE2EType > & v){v.reserve(2);});
+  for_each(uE2E.begin(),uE2E.end(),[](std::vector<uE2EType > & v){v.reserve(2);});
   const size_t ne = E.rows();
   IGL_ASSERT((size_t)EMAP.size() == ne);
   for(uE2EType e = 0;e<(uE2EType)ne;e++)
@@ -55,7 +54,6 @@ IGL_INLINE void igl::unique_edge_map(
   Eigen::PlainObjectBase<DerivedEMAP> & EMAP)
 {
   using namespace Eigen;
-  using namespace std;
   // All occurrences of directed edges
   oriented_facets(F,E);
   const size_t ne = E.rows();

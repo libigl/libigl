@@ -15,7 +15,6 @@ IGL_INLINE void igl::swept_volume(
   Eigen::MatrixXd & SV,
   Eigen::MatrixXi & SF)
 {
-  using namespace std;
   using namespace Eigen;
   using namespace igl;
 

@@ -14,7 +14,6 @@ IGL_INLINE void igl::repdiag(
   const int d,
   Eigen::SparseMatrix<T>& B)
 {
-  using namespace std;
   using namespace Eigen;
   int m = A.rows();
   int n = A.cols();

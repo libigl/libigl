@@ -17,7 +17,6 @@ IGL_INLINE bool igl::xml::writeDAE(
   const Eigen::MatrixBase<DerivedV> & V,
   const Eigen::MatrixBase<DerivedF> & F)
 {
-  using namespace std;
   using namespace Eigen;
 
   tinyxml2::XMLDocument* doc = new tinyxml2::XMLDocument();

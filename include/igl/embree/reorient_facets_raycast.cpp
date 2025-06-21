@@ -34,7 +34,6 @@ IGL_INLINE void igl::embree::reorient_facets_raycast(
   Eigen::PlainObjectBase<DerivedC> & C)
 {
   using namespace Eigen;
-  using namespace std;
   assert(F.cols() == 3);
   assert(V.cols() == 3);
 
@@ -49,10 +48,10 @@ IGL_INLINE void igl::embree::reorient_facets_raycast(
     for (int i = 0; i < m; ++i) C(i) = i;
 
   } else {
-    if (is_verbose) cout << "extracting patches... ";
+    if (is_verbose) std::cout << "extracting patches... ";
     bfs_orient(Fi,FF,C);
   }
-  if (is_verbose) cout << (C.maxCoeff() + 1)  << " components. ";
+  if (is_verbose) std::cout << (C.maxCoeff() + 1)  << " components. ";
 
   // number of patches
   const int num_cc = C.maxCoeff()+1;
@@ -80,18 +79,18 @@ IGL_INLINE void igl::embree::reorient_facets_raycast(
   VectorXi num_rays_per_component(num_cc);
   for (int c = 0; c < num_cc; ++c)
   {
-    num_rays_per_component(c) = max<int>(static_cast<int>(rays_total * area_per_component(c) / area_total), rays_minimum);
+    num_rays_per_component(c) = std::max<int>(static_cast<int>(rays_total * area_per_component(c) / area_total), rays_minimum);
   }
   rays_total = num_rays_per_component.sum();
 
   // generate all the rays
-  if (is_verbose) cout << "generating rays... ";
-  uniform_real_distribution<float> rdist;
-  mt19937 prng;
+  if (is_verbose) std::cout << "generating rays... ";
+  std::uniform_real_distribution<float> rdist;
+  std::mt19937 prng;
   prng.seed(time(nullptr));
-  vector<int     > ray_face;
-  vector<Vector3f> ray_ori;
-  vector<Vector3f> ray_dir;
+  std::vector<int     > ray_face;
+  std::vector<Vector3f> ray_ori;
+  std::vector<Vector3f> ray_dir;
   ray_face.reserve(rays_total);
   ray_ori .reserve(rays_total);
   ray_dir .reserve(rays_total);
@@ -101,8 +100,8 @@ IGL_INLINE void igl::embree::reorient_facets_raycast(
     {
       continue;
     }
-    vector<int> CF;     // set of faces per component
-    vector<double> CF_area;
+    std::vector<int> CF;     // set of faces per component
+    std::vector<double> CF_area;
     for (int f = 0; f < m; ++f)
     {
       if (C(f)==c)
@@ -112,7 +111,7 @@ IGL_INLINE void igl::embree::reorient_facets_raycast(
       }
     }
     // discrete distribution for random selection of faces with probability proportional to their areas
-    discrete_distribution<int> ddist(CF.size(), 0, CF.size(), [&](double i){ return CF_area[static_cast<int>(i)]; });       // simple ctor of (Iter, Iter) not provided by the stupid VC11/12
+    std::discrete_distribution<int> ddist(CF.size(), 0, CF.size(), [&](double i){ return CF_area[static_cast<int>(i)]; });       // simple ctor of (Iter, Iter) not provided by the stupid VC11/12
     for (int i = 0; i < num_rays_per_component[c]; ++i)
     {
       int f = CF[ddist(prng)];          // select face with probability proportional to face area
@@ -146,17 +145,17 @@ IGL_INLINE void igl::embree::reorient_facets_raycast(
       ray_ori .push_back(p);
       ray_dir .push_back(d);
 
-      if (is_verbose && ray_face.size() % (rays_total / 10) == 0) cout << ".";
+      if (is_verbose && ray_face.size() % (rays_total / 10) == 0) std::cout << ".";
     }
   }
-  if (is_verbose) cout << ray_face.size()  << " rays. ";
+  if (is_verbose) std::cout << ray_face.size()  << " rays. ";
 
   // per component voting: first=front, second=back
-  vector<pair<float, float>> C_vote_distance(num_cc, make_pair(0, 0));      // sum of distance between ray origin and intersection
-  vector<pair<int  , int  >> C_vote_infinity(num_cc, make_pair(0, 0));      // number of rays reaching infinity
-  vector<pair<int  , int  >> C_vote_parity(num_cc, make_pair(0, 0));        // sum of parity count for each ray
+  std::vector<std::pair<float, float>> C_vote_distance(num_cc, std::make_pair(0, 0));      // sum of distance between ray origin and intersection
+  std::vector<std::pair<int  , int  >> C_vote_infinity(num_cc, std::make_pair(0, 0));      // number of rays reaching infinity
+  std::vector<std::pair<int  , int  >> C_vote_parity(num_cc, std::make_pair(0, 0));        // sum of parity count for each ray
 
-  if (is_verbose) cout << "shooting rays... ";
+  if (is_verbose) std::cout << "shooting rays... ";
 // #pragma omp parallel for
   for (int i = 0; i < (int)ray_face.size(); ++i)
   {
@@ -166,8 +165,8 @@ IGL_INLINE void igl::embree::reorient_facets_raycast(
     int c = C(f);
 
     // shoot ray toward front & back
-    vector<Hit<float>> hits_front;
-    vector<Hit<float>> hits_back;
+    std::vector<Hit<float>> hits_front;
+    std::vector<Hit<float>> hits_back;
     int num_rays_front;
     int num_rays_back;
     ei.intersectRay(o,  d, hits_front, num_rays_front);
@@ -218,7 +217,7 @@ IGL_INLINE void igl::embree::reorient_facets_raycast(
     if (Fi.row(f) != FF.row(f))
       I(f) = 1 - I(f);
   }
-  if (is_verbose) cout << "done!" << endl;
+  if (is_verbose) std::cout << "done!" << std::endl;
 }
 
 template <

@@ -19,7 +19,6 @@ void igl::is_boundary_edge(
   Eigen::PlainObjectBase<DerivedB> & B)
 {
   using namespace Eigen;
-  using namespace std;
   // Should be triangles
   assert(F.cols() == 3);
   // Should be edges
@@ -85,7 +84,6 @@ void igl::is_boundary_edge(
     (DerivedEMAP::RowsAtCompileTime == 1 || DerivedEMAP::ColsAtCompileTime == 1),
     "B and EMAP need to have RowsAtCompileTime == 1 or ColsAtCompileTime == 1");
   using namespace Eigen;
-  using namespace std;
   // Should be triangles
   assert(F.cols() == 3);
   // number of faces

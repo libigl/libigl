@@ -37,7 +37,6 @@ IGL_INLINE bool igl::boundary_conditions(
   Eigen::PlainObjectBase<Derivedbc> & bc)
 {
   using namespace Eigen;
-  using namespace std;
 
   if(P.size()+BE.rows() == 0)
   {
@@ -45,9 +44,9 @@ IGL_INLINE bool igl::boundary_conditions(
     return false;
   }
 
-  vector<int> bci;
-  vector<int> bcj;
-  vector<double> bcv;
+  std::vector<int> bci;
+  std::vector<int> bcj;
+  std::vector<double> bcv;
 
   // loop over points
   for(int p = 0;p<P.size();p++)
@@ -184,17 +183,17 @@ IGL_INLINE bool igl::boundary_conditions(
   }
 
   // find unique boundary indices
-  vector<int> vb = bci;
-  sort(vb.begin(),vb.end());
+  std::vector<int> vb = bci;
+  std::sort(vb.begin(),vb.end());
   vb.erase(unique(vb.begin(), vb.end()), vb.end());
 
   b.resize(vb.size());
   bc = MatrixXd::Zero(vb.size(),P.size()+BE.rows());
   // Map from boundary index to index in boundary
-  map<int,int> bim;
+  std::map<int,int> bim;
   int i = 0;
   // Also fill in b
-  for(vector<int>::iterator bit = vb.begin();bit != vb.end();bit++)
+  for(std::vector<int>::iterator bit = vb.begin();bit != vb.end();bit++)
   {
     b(i) = *bit;
     bim[*bit] = i;

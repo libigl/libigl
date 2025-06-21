@@ -24,7 +24,6 @@ template < typename Derivedobj>
       Eigen::PlainObjectBase<Derivedobj> & obj,
       std::vector<igl::Hit<float> > & hits)
 {
-  using namespace std;
   using namespace Eigen;
   Vector3f s,dir;
   unproject_ray(pos,model,proj,viewport,s,dir);
@@ -64,7 +63,6 @@ template < typename DerivedV, typename DerivedF, typename Derivedobj>
       Eigen::PlainObjectBase<Derivedobj> & obj,
       std::vector<igl::Hit<float> > & hits)
 {
-  using namespace std;
   using namespace Eigen;
   const auto Vf = V.template cast<float>().eval();
   const auto & shoot_ray = [&Vf,&F](

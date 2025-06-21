@@ -48,7 +48,6 @@ IGL_INLINE void igl::exterior_edges(
   Eigen::PlainObjectBase<DerivedE> & E)
 {
   using namespace Eigen;
-  using namespace std;
   using Index = typename DerivedF::Scalar;
   using VectorXI = Eigen::Matrix<typename DerivedF::Scalar,Eigen::Dynamic,1>;
   using MatrixXI = Eigen::Matrix<typename DerivedF::Scalar,Eigen::Dynamic,Eigen::Dynamic>;

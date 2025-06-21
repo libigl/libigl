@@ -41,7 +41,6 @@ void igl::crouzeix_raviart_massmatrix(
     Eigen::SparseMatrix<MT> & M)
 {
   using namespace Eigen;
-  using namespace std;
   // Mesh should be edge-manifold (TODO: replace `is_edge_manifold` with
   // `is_facet_manifold`)
   assert(F.cols() != 3 || is_edge_manifold(F));
@@ -63,7 +62,7 @@ void igl::crouzeix_raviart_massmatrix(
       volume(V,F,TA);
       break;
   }
-  vector<Triplet<MT> > MIJV(ss*m);
+  std::vector<Triplet<MT> > MIJV(ss*m);
   assert(EMAP.size() == m*ss);
   for(int f = 0;f<m;f++)
   {

@@ -12,7 +12,6 @@ IGL_INLINE void igl::matlab::prepare_lhs_double(
   const Eigen::DenseBase<DerivedV> & V,
   mxArray *plhs[])
 {
-  using namespace std;
   using namespace Eigen;
   const auto m = V.rows();
   const auto n = V.cols();
@@ -27,7 +26,6 @@ IGL_INLINE void igl::matlab::prepare_lhs_logical(
   const Eigen::DenseBase<DerivedV> & V,
   mxArray *plhs[])
 {
-  using namespace std;
   using namespace Eigen;
   const auto m = V.rows();
   const auto n = V.cols();
@@ -52,7 +50,6 @@ IGL_INLINE void igl::matlab::prepare_lhs_double(
   const Eigen::SparseMatrix<Vtype> & M,
   mxArray *plhs[])
 {
-  using namespace std;
   const auto m = M.rows();
   const auto n = M.cols();
   // THIS WILL NOT WORK FOR ROW-MAJOR

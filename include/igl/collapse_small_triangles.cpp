@@ -28,7 +28,6 @@ void igl::collapse_small_triangles(
   Eigen::PlainObjectBase<DerivedFF> & FF)
 {
   using namespace Eigen;
-  using namespace std;
 
   // Compute bounding box diagonal length
   double bbd = bounding_box_diagonal(V);
