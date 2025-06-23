@@ -75,11 +75,11 @@ IGL_INLINE void igl::copyleft::cgal::outer_hull_legacy(
   //};
 
 #ifdef IGL_OUTER_HULL_DEBUG
-  cout<<"outer hull..."<<endl;
+  std::cout<<"outer hull..."<<std::endl;
 #endif
 
 #ifdef IGL_OUTER_HULL_DEBUG
-  cout<<"edge map..."<<endl;
+  std::cout<<"edge map..."<<std::endl;
 #endif
   typedef Eigen::Matrix<typename DerivedF::Scalar ,Eigen::Dynamic,2> MatrixX2I;
   typedef Eigen::Matrix<typename DerivedF::Index ,Eigen::Dynamic,1> VectorXI;
@@ -114,7 +114,7 @@ IGL_INLINE void igl::copyleft::cgal::outer_hull_legacy(
   triangle_triangle_adjacency(E,EMAP,uE2E,false,TT,_1);
   VectorXI counts;
 #ifdef IGL_OUTER_HULL_DEBUG
-  cout<<"facet components..."<<endl;
+  std::cout<<"facet components..."<<std::endl;
 #endif
   facet_components(TT,C,counts);
   assert(C.maxCoeff()+1 == counts.rows());
@@ -124,7 +124,7 @@ IGL_INLINE void igl::copyleft::cgal::outer_hull_legacy(
   flip.setConstant(m,1,false);
 
 #ifdef IGL_OUTER_HULL_DEBUG
-  cout<<"reindex..."<<endl;
+  std::cout<<"reindex..."<<std::endl;
 #endif
   // H contains list of faces on outer hull;
   std::vector<bool> FH(m,false);
@@ -146,7 +146,7 @@ IGL_INLINE void igl::copyleft::cgal::outer_hull_legacy(
   }
 
 #ifdef IGL_OUTER_HULL_DEBUG
-  cout<<"barycenters..."<<endl;
+  std::cout<<"barycenters..."<<std::endl;
 #endif
   // assumes that "resolve" has handled any coplanar cases correctly and nearly
   // coplanar cases can be sorted based on barycenter.
@@ -154,7 +154,7 @@ IGL_INLINE void igl::copyleft::cgal::outer_hull_legacy(
   barycenter(V,F,BC);
 
 #ifdef IGL_OUTER_HULL_DEBUG
-  cout<<"loop over CCs (="<<ncc<<")..."<<endl;
+  std::cout<<"loop over CCs (="<<ncc<<")..."<<std::endl;
 #endif
   for(Index id = 0;id<(Index)ncc;id++)
   {
@@ -164,11 +164,11 @@ IGL_INLINE void igl::copyleft::cgal::outer_hull_legacy(
     int f;
     bool f_flip;
 #ifdef IGL_OUTER_HULL_DEBUG
-  cout<<"outer facet..."<<endl;
+  std::cout<<"outer facet..."<<std::endl;
 #endif
   igl::copyleft::cgal::outer_facet(V,F,IM,f,f_flip);
 #ifdef IGL_OUTER_HULL_DEBUG
-  cout<<"outer facet: "<<f<<endl;
+  std::cout<<"outer facet: "<<f<<std::endl;
   //cout << V.row(F(f, 0)) << std::endl;
   //cout << V.row(F(f, 1)) << std::endl;
   //cout << V.row(F(f, 2)) << std::endl;
@@ -183,9 +183,9 @@ IGL_INLINE void igl::copyleft::cgal::outer_hull_legacy(
     flip(f) = f_flip;
     //std::cout << "face " << face_count++ << ": " << f << std::endl;
     //std::cout << "f " << F.row(f).array()+1 << std::endl;
-    //cout<<"flip("<<f<<") = "<<(flip(f)?"true":"false")<<endl;
+    //cout<<"flip("<<f<<") = "<<(flip(f)?"true":"false")<<std::endl;
 #ifdef IGL_OUTER_HULL_DEBUG
-  cout<<"BFS..."<<endl;
+  std::cout<<"BFS..."<<std::endl;
 #endif
     while(!Q.empty())
     {
@@ -243,7 +243,7 @@ IGL_INLINE void igl::copyleft::cgal::outer_hull_legacy(
         //cout<<"Next facet: "<<(f+1)<<" --> "<<(nf+1)<<", |"<<
         //  di[EMAP(e)][diIM(e)]<<" - "<<di[EMAP(e)][nfei_new]<<"| = "<<
         //    abs(di[EMAP(e)][diIM(e)] - di[EMAP(e)][nfei_new])
-        //    <<endl;
+        //    <<std::endl;
 #endif
 
 
@@ -264,7 +264,7 @@ IGL_INLINE void igl::copyleft::cgal::outer_hull_legacy(
         //        << std::endl;
         }
 //#ifdef IGL_OUTER_HULL_DEBUG
-//        cout<<"Skipping co-planar facet: "<<(f+1)<<" --> "<<(nf+1)<<endl;
+//        std::cout<<"Skipping co-planar facet: "<<(f+1)<<" --> "<<(nf+1)<<std::endl;
 //#endif
       }
 
@@ -282,7 +282,7 @@ IGL_INLINE void igl::copyleft::cgal::outer_hull_legacy(
         if(!FH[nf])
         {
           // first time seeing face
-          cout<<(f+1)<<" --> "<<(nf+1)<<endl;
+          std::cout<<(f+1)<<" --> "<<(nf+1)<<std::endl;
         }
 #endif
         FH[nf] = true;
@@ -294,7 +294,7 @@ IGL_INLINE void igl::copyleft::cgal::outer_hull_legacy(
         const int nd = F(nf,(nc+2)%3);
         const bool cons = (flip(f)?fd:fs) == nd;
         flip(nf) = (cons ? flip(f) : !flip(f));
-        //cout<<"flip("<<nf<<") = "<<(flip(nf)?"true":"false")<<endl;
+        //cout<<"flip("<<nf<<") = "<<(flip(nf)?"true":"false")<<std::endl;
         const int ne1 = nf+((nc+1)%3)*m;
         const int ne2 = nf+((nc+2)%3)*m;
         if(!EH[ne1])

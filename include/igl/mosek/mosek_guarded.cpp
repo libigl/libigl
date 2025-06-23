@@ -16,7 +16,7 @@ IGL_INLINE MSKrescodee igl::mosek::mosek_guarded(const MSKrescodee r)
     char symname[MSK_MAX_STR_LEN];
     char desc[MSK_MAX_STR_LEN];
     MSK_getcodedesc(r,symname,desc);
-    cerr<<"MOSEK ERROR ("<<r<<"): "<<symname<<" - '"<<desc<<"'"<<endl;
+    std::cerr<<"MOSEK ERROR ("<<r<<"): "<<symname<<" - '"<<desc<<"'"<<std::endl;
   }
   return r;
 }

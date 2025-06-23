@@ -51,8 +51,8 @@ IGL_INLINE bool igl::mosek::bbw(
   {
     if(data.verbosity >= 1)
     {
-      cout<<"BBW: Computing weight for handle "<<i+1<<" out of "<<m<<
-        "."<<endl;
+      std::cout<<"BBW: Computing weight for handle "<<i+1<<" out of "<<m<<
+        "."<<std::endl;
     }
     Eigen::VectorXd bci = bc.col(i);
     Eigen::VectorXd Wi;

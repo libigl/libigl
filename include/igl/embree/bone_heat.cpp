@@ -99,12 +99,12 @@ bool igl::embree::bone_heat(
       break;
     case Eigen::NumericalIssue:
 #ifdef IGL_BONE_HEAT_DEBUG
-      cerr<<"Error: Numerical issue."<<endl;
+      std::cerr<<"Error: Numerical issue."<<std::endl;
 #endif
       return false;
     default:
 #ifdef IGL_BONE_HEAT_DEBUG
-      cerr<<"Error: Other."<<endl;
+      std::cerr<<"Error: Other."<<std::endl;
 #endif
       return false;
   }

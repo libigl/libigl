@@ -205,8 +205,8 @@ inline bool igl::matlab::MatlabWorkspace::write(const std::string & path) const
     int status = matPutVariable(mat_file,names[i].c_str(), data[i]);
     if(status != 0) 
     {
-      cerr<<"^MatlabWorkspace::save Error: matPutVariable ("<<names[i]<<
-        ") failed"<<endl;
+      std::cerr<<"^MatlabWorkspace::save Error: matPutVariable ("<<names[i]<<
+        ") failed"<<std::endl;
       return false;
     } 
   }
@@ -226,14 +226,14 @@ inline bool igl::matlab::MatlabWorkspace::read(const std::string & path)
   mat_file = matOpen(path.c_str(), "r");
   if (mat_file == NULL) 
   {
-    cerr<<"Error: failed to open "<<path<<endl;
+    std::cerr<<"Error: failed to open "<<path<<std::endl;
     return false;
   }
 
   int ndir;
   const char ** dir = (const char **)matGetDir(mat_file, &ndir);
   if (dir == NULL) {
-    cerr<<"Error reading directory of file "<< path<<endl;
+    std::cerr<<"Error reading directory of file "<< path<<std::endl;
     return false;
   }
   mxFree(dir);
@@ -241,13 +241,13 @@ inline bool igl::matlab::MatlabWorkspace::read(const std::string & path)
   // Must close and reopen
   if(matClose(mat_file) != 0)
   {
-    cerr<<"Error: failed to close file "<<path<<endl;
+    std::cerr<<"Error: failed to close file "<<path<<std::endl;
     return false;
   }
   mat_file = matOpen(path.c_str(), "r");
   if (mat_file == NULL) 
   {
-    cerr<<"Error: failed to open "<<path<<endl;
+    std::cerr<<"Error: failed to open "<<path<<std::endl;
     return false;
   }
   
@@ -259,7 +259,7 @@ inline bool igl::matlab::MatlabWorkspace::read(const std::string & path)
     mxArray * mx_data = matGetNextVariable(mat_file, &name);
     if (mx_data == NULL) 
     {
-      cerr<<"Error: matGetNextVariable failed in "<<path<<endl;
+      std::cerr<<"Error: matGetNextVariable failed in "<<path<<std::endl;
       return false;
     } 
     const int dims = mxGetNumberOfDimensions(mx_data);
@@ -278,7 +278,7 @@ inline bool igl::matlab::MatlabWorkspace::read(const std::string & path)
 
   if(matClose(mat_file) != 0)
   {
-    cerr<<"Error: failed to close file "<<path<<endl;
+    std::cerr<<"Error: failed to close file "<<path<<std::endl;
     return false;
   }
 
@@ -563,8 +563,8 @@ inline bool igl::matlab::MatlabWorkspace::find_index(
 //{
 //  using namespace std;
 //  // If I don't know the type then I can't save it
-//  cerr<<"^MatlabWorkspace::save Error: Unknown data type. "<<
-//    name<<" not saved."<<endl;
+//  std::cerr<<"^MatlabWorkspace::save Error: Unknown data type. "<<
+//    name<<" not saved."<<std::endl;
 //  return false;
 //}
 

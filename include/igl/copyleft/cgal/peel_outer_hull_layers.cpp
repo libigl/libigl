@@ -33,15 +33,15 @@ IGL_INLINE int igl::copyleft::cgal::peel_outer_hull_layers(
   typedef Eigen::Matrix<typename Derivedflip::Scalar ,Eigen::Dynamic,Derivedflip::ColsAtCompileTime> MatrixXflip;
   const int m = F.rows();
 #ifdef IGL_PEEL_OUTER_HULL_LAYERS_DEBUG
-  cout<<"peel outer hull layers..."<<endl;
+  std::cout<<"peel outer hull layers..."<<std::endl;
 #endif
 #ifdef IGL_PEEL_OUTER_HULL_LAYERS_DEBUG
-  cout<<"calling outer hull..."<<endl;
+  std::cout<<"calling outer hull..."<<std::endl;
   writePLY(STR("peel-outer-hull-input.ply"),V,F);
 #endif
 
 #ifdef IGL_PEEL_OUTER_HULL_LAYERS_DEBUG
-  cout<<"resize output ..."<<endl;
+  std::cout<<"resize output ..."<<std::endl;
 #endif
   // keep track of iteration parity and whether flipped in hull
   MatrixXF Fr = F;
@@ -61,7 +61,7 @@ IGL_INLINE int igl::copyleft::cgal::peel_outer_hull_layers(
     MatrixXflip flipr;
 #ifdef IGL_PEEL_OUTER_HULL_LAYERS_DEBUG
   {
-      cout<<"calling outer hull..." << iter <<endl;
+      std::cout<<"calling outer hull..." << iter <<std::endl;
       std::stringstream ss;
       ss << "outer_hull_" << iter << ".ply";
       Eigen::MatrixXd vertices(V.rows(), V.cols());
@@ -75,7 +75,7 @@ IGL_INLINE int igl::copyleft::cgal::peel_outer_hull_layers(
     outer_hull_legacy(V,Fr,Fo,Jo,flipr);
 #ifdef IGL_PEEL_OUTER_HULL_LAYERS_DEBUG
   writePLY(STR("outer-hull-output-"<<iter<<".ply"),V,Fo);
-  cout<<"reindex, flip..."<<endl;
+  std::cout<<"reindex, flip..."<<std::endl;
 #endif
     assert(Fo.rows() != 0);
     assert(Fo.rows() == Jo.rows());

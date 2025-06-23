@@ -105,12 +105,12 @@ IGL_INLINE void igl::embree::bone_visible(
       //  P = V.row(F(fi,0))*bc(0) + 
       //      V.row(F(fi,1))*bc(1) + 
       //      V.row(F(fi,2))*bc(2);
-      //  cout<<(fi+1)<<endl;
-      //  cout<<bc.transpose()<<endl;
-      //  cout<<P.transpose()<<endl;
-      //  cout<<hit.t<<endl;
-      //  cout<<(projv + dir*hit.t).transpose()<<endl;
-      //  cout<<Vv.transpose()<<endl;
+      //  std::cout<<(fi+1)<<std::endl;
+      //  std::cout<<bc.transpose()<<std::endl;
+      //  std::cout<<P.transpose()<<std::endl;
+      //  std::cout<<hit.t<<std::endl;
+      //  std::cout<<(projv + dir*hit.t).transpose()<<std::endl;
+      //  std::cout<<Vv.transpose()<<std::endl;
       //}
 
       // Assume hit is valid, so not visible

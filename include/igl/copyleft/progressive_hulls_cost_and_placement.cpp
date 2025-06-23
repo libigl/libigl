@@ -55,7 +55,7 @@ IGL_INLINE void igl::copyleft::progressive_hulls_cost_and_placement(
       (Eigen::Matrix3d()<< V.row(F(f,0)), V.row(F(f,1)), V.row(F(f,2)))
       .finished().determinant();
   }
-  //cout<<"];"<<endl;
+  //cout<<"];"<<std::endl;
   // linear objective
   Eigen::Vector3d f = A.colwise().sum().transpose();
   Eigen::VectorXd x;
@@ -95,10 +95,10 @@ IGL_INLINE void igl::copyleft::progressive_hulls_cost_and_placement(
     cost = std::numeric_limits<double>::infinity();
     //VectorXi NM;
     //igl::list_to_matrix(N,NM);
-    //cout<<matlab_format((NM.array()+1).eval(),"N")<<endl;
-    //cout<<matlab_format(f,"f")<<endl;
-    //cout<<matlab_format(A,"A")<<endl;
-    //cout<<matlab_format(B,"B")<<endl;
+    //std::cout<<matlab_format((NM.array()+1).eval(),"N")<<std::endl;
+    //std::cout<<matlab_format(f,"f")<<std::endl;
+    //std::cout<<matlab_format(A,"A")<<std::endl;
+    //std::cout<<matlab_format(B,"B")<<std::endl;
     //exit(-1);
     p = Eigen::RowVectorXd::Constant(1,3,std::nan("inf-cost"));
   }
