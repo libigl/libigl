@@ -14,7 +14,7 @@ IGL_INLINE void igl::matlab::parse_rhs_double(
     Eigen::PlainObjectBase<DerivedV> & V)
 {
   // Use Eigen's map and cast to copy
-  V = Map< Eigen::Matrix<double ,Eigen::Dynamic ,Eigen::Dynamic> >
+  V = Eigen::Map< Eigen::Matrix<double ,Eigen::Dynamic ,Eigen::Dynamic> >
     (mxGetPr(prhs[0]),mxGetM(prhs[0]),mxGetN(prhs[0]))
     .cast<typename DerivedV::Scalar>();
 }
@@ -51,7 +51,7 @@ IGL_INLINE void igl::matlab::parse_rhs(
   double * pr = mxGetPr(mx_data);
   mwIndex * ir = mxGetIr(mx_data);
   mwIndex * jc = mxGetJc(mx_data);
-  vector<Eigen::Triplet<MT> > MIJV;
+  std::vector<Eigen::Triplet<MT> > MIJV;
   MIJV.reserve(mxGetNumberOfElements(mx_data));
   // Iterate over outside
   int k = 0;
