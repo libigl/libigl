@@ -1,7 +1,13 @@
 #include <test_common.h>
-#include <igl/predicates/predicates.h>
+#include <igl/predicates/orient2d.h>
+#include <igl/predicates/orient3d.h>
+#include <igl/predicates/incircle.h>
+#include <igl/predicates/insphere.h>
+#include <igl/predicates/exactinit.h>
 #include <limits>
 
+// Didn't have the stamina to break the tests into separate files but they
+// should be
 TEST_CASE("predicates", "[igl][predicates]") {
     using namespace igl::predicates;
     using Scalar = double;

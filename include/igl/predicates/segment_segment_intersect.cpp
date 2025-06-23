@@ -7,6 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 
 #include "segment_segment_intersect.h"
+#include "orient2d.h"
 
 // https://www.geeksforgeeks.org/check-if-two-given-line-segments-intersect/
 template <typename DerivedP>
