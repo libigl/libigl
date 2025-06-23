@@ -300,29 +300,29 @@ IGL_INLINE bool igl::mosek::mosek_quadprog(
   Eigen::VectorXi Qi,Qj;
   Eigen::VectorXd Qv;
   find(QL,Qi,Qj,Qv);
-  vector<Index> vQi = matrix_to_list(Qi);
-  vector<Index> vQj = matrix_to_list(Qj);
-  vector<Scalar> vQv = matrix_to_list(Qv);
+  std::vector<Index> vQi = matrix_to_list(Qi);
+  std::vector<Index> vQj = matrix_to_list(Qj);
+  std::vector<Scalar> vQv = matrix_to_list(Qv);
 
   // Convert linear term
-  vector<Scalar> vc = matrix_to_list(c);
+  std::vector<Scalar> vc = matrix_to_list(c);
 
   assert(lc.size() == A.rows());
   assert(uc.size() == A.rows());
   // Convert A to harwell boeing format
-  vector<Scalar> vAv;
-  vector<Index> vAr,vAc;
+  std::vector<Scalar> vAv;
+  std::vector<Index> vAr,vAc;
   Index nr;
   harwell_boeing(A,nr,vAv,vAr,vAc);
 
   assert(lx.size() == Q.rows());
   assert(ux.size() == Q.rows());
-  vector<Scalar> vlc = matrix_to_list(lc);
-  vector<Scalar> vuc = matrix_to_list(uc);
-  vector<Scalar> vlx = matrix_to_list(lx);
-  vector<Scalar> vux = matrix_to_list(ux);
+  std::vector<Scalar> vlc = matrix_to_list(lc);
+  std::vector<Scalar> vuc = matrix_to_list(uc);
+  std::vector<Scalar> vlx = matrix_to_list(lx);
+  std::vector<Scalar> vux = matrix_to_list(ux);
 
-  vector<Scalar> vx;
+  std::vector<Scalar> vx;
   bool ret = mosek_quadprog<Index,Scalar>(
     Q.rows(),vQi,vQj,vQv,
     vc,

@@ -70,8 +70,8 @@ IGL_INLINE bool igl::mosek::bbw(
     const double min_rowsum = W.rowwise().sum().array().abs().minCoeff();
     if(min_rowsum < 0.1)
     {
-      cerr<<"bbw.cpp: Warning, minimum row sum is very low. Consider more "
-        "active set iterations or enforcing partition of unity."<<endl;
+      std::cerr<<"bbw.cpp: Warning, minimum row sum is very low. Consider more "
+        "active set iterations or enforcing partition of unity."<<std::endl;
     }
 #endif
 
