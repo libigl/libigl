@@ -25,6 +25,7 @@ IGL_INLINE igl::opengl::ViewerData::ViewerData()
   face_based        (false),
   double_sided      (false),
   invert_normals    (false),
+  pseudocolor_with_normals(false),
   is_visible        (~unsigned(0)),
   show_custom_labels(0),
   show_face_labels  (0),
@@ -496,6 +497,7 @@ IGL_INLINE void igl::opengl::ViewerData::clear()
   face_based = false;
   double_sided = false;
   invert_normals = false;
+  pseudocolor_with_normals = false;
   show_texture = false;
   use_matcap = false;
 }
