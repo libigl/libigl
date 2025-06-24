@@ -18,16 +18,14 @@ IGL_INLINE void igl::face_occurrences(
   const std::vector<std::vector<IntegerF> > & F,
   std::vector<IntegerC> & C)
 {
-  using namespace std;
-
   // Get a list of sorted faces
-  vector<vector<IntegerF> > sortedF = F;
+  std::vector<std::vector<IntegerF> > sortedF = F;
   for(int i = 0; i < (int)F.size();i++)
   {
     sort(sortedF[i].begin(),sortedF[i].end());
   }
   // Count how many times each sorted face occurs
-  map<vector<IntegerF>,int> counts;
+  std::map<std::vector<IntegerF>,int> counts;
   for(int i = 0; i < (int)sortedF.size();i++)
   {
     if(counts.find(sortedF[i]) == counts.end())

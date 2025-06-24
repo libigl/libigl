@@ -25,7 +25,6 @@ IGL_INLINE void grad_tet(
   Eigen::SparseMatrix<typename DerivedV::Scalar> &G,
   bool uniform)
 {
-  using namespace Eigen;
   assert(T.cols() == 4);
   const int n = V.rows(); int m = T.rows();
 
@@ -35,7 +34,7 @@ IGL_INLINE void grad_tet(
       T(:,1) T(:,3) T(:,4); ...
       T(:,1) T(:,4) T(:,2); ...
       T(:,2) T(:,4) T(:,3)]; */
-  MatrixXi F(4*m,3);
+  Eigen::MatrixXi F(4*m,3);
   for (int i = 0; i < m; i++) {
     F.row(0*m + i) << T(i,0), T(i,1), T(i,2);
     F.row(1*m + i) << T(i,0), T(i,2), T(i,3);
@@ -92,7 +91,7 @@ IGL_INLINE void grad_tet(
       repmat([T(:,4);T(:,2);T(:,3);T(:,1)],3,1), ...
       repmat(A./(3*repmat(vol,4,1)),3,1).*N(:), ...
       3*m,n);*/
-  std::vector<Triplet<double> > G_t;
+  std::vector<Eigen::Triplet<double> > G_t;
   for (int i = 0; i < 4*m; i++) {
     int T_j; // j indexes : repmat([T(:,4);T(:,2);T(:,3);T(:,1)],3,1)
     switch (i/m) {
@@ -113,9 +112,9 @@ IGL_INLINE void grad_tet(
     int j_idx = T(i_idx,T_j);
 
     double val_before_n = A(i)/(3*vol(i_idx));
-    G_t.push_back(Triplet<double>(0*m+i_idx, j_idx, val_before_n * N(i,0)));
-    G_t.push_back(Triplet<double>(1*m+i_idx, j_idx, val_before_n * N(i,1)));
-    G_t.push_back(Triplet<double>(2*m+i_idx, j_idx, val_before_n * N(i,2)));
+    G_t.push_back(Eigen::Triplet<double>(0*m+i_idx, j_idx, val_before_n * N(i,0)));
+    G_t.push_back(Eigen::Triplet<double>(1*m+i_idx, j_idx, val_before_n * N(i,1)));
+    G_t.push_back(Eigen::Triplet<double>(2*m+i_idx, j_idx, val_before_n * N(i,2)));
   }
   G.resize(3*m,n);
   G.setFromTriplets(G_t.begin(), G_t.end());

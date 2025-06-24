@@ -34,9 +34,9 @@ namespace igl
     const std::vector<std::vector<Index > > & F);
   /// save a tetrahedral volume mesh to a .mesh file
   ///
-  /// @tparam DerivedV  real-value: i.e. from MatrixXd
-  /// @tparam DerivedT  integer-value: i.e. from MatrixXi
-  /// @tparam DerivedF  integer-value: i.e. from MatrixXi
+  /// @tparam DerivedV  real-value: i.e. from Eigen::MatrixXd
+  /// @tparam DerivedT  integer-value: i.e. from Eigen::MatrixXi
+  /// @tparam DerivedF  integer-value: i.e. from Eigen::MatrixXi
   /// @param[in] mesh_file_name  path of .mesh file
   /// @param[in] V  eigen double matrix #V by 3
   /// @param[in] T  eigen int matrix #T by 4

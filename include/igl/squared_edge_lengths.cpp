@@ -15,7 +15,6 @@ IGL_INLINE void igl::squared_edge_lengths(
   const Eigen::MatrixBase<DerivedF>& F,
   Eigen::PlainObjectBase<DerivedL>& L)
 {
-  using namespace std;
   const int m = F.rows();
   switch(F.cols())
   {

@@ -742,7 +742,6 @@ IGL_INLINE void CurvatureCalculator::computeCurvature()
 
 IGL_INLINE void CurvatureCalculator::printCurvature(const std::string& outpath)
 {
-  using namespace std;
   if (!curvatureComputed)
     return;
 
@@ -756,11 +755,11 @@ IGL_INLINE void CurvatureCalculator::printCurvature(const std::string& outpath)
   }
 
   int vertices_count=vertices.rows();
-  of << vertices_count << endl;
+  of << vertices_count << std::endl;
   for (int i=0; i<vertices_count; ++i)
   {
     of << curv[i][0] << " " << curv[i][1] << " " << curvDir[i][0][0] << " " << curvDir[i][0][1] << " " << curvDir[i][0][2] << " " <<
-    curvDir[i][1][0] << " " << curvDir[i][1][1] << " " << curvDir[i][1][2] << endl;
+    curvDir[i][1][0] << " " << curvDir[i][1][1] << " " << curvDir[i][1][2] << std::endl;
   }
 
   of.close();

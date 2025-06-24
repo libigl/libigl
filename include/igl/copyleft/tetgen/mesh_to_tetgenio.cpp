@@ -29,7 +29,6 @@ IGL_INLINE void igl::copyleft::tetgen::mesh_to_tetgenio(
   const Eigen::MatrixBase<DerivedR>& R,
   tetgenio & in)
 {
-  using namespace std;
   assert(V.cols() == 3 && "V should have 3 columns");
   assert((VM.size() == 0 || VM.size() == V.rows()) && "VM should be empty or #V by 1");
   assert((FM.size() == 0 || FM.size() == F.rows()) && "FM should be empty or #F by 1");

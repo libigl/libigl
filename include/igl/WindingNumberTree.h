@@ -184,7 +184,6 @@ inline void igl::WindingNumberTree<Scalar,Index>::set_mesh(
     const Eigen::MatrixBase<DerivedV> & _V,
     const Eigen::MatrixBase<DerivedF> & _F)
 {
-  using namespace std;
   // Remove any exactly duplicate vertices
   // Q: Can this ever increase the complexity of the boundary?
   // Q: Would we gain even more by remove almost exactly duplicate vertices?
@@ -224,9 +223,8 @@ inline igl::WindingNumberTree<Scalar,Index>::~WindingNumberTree()
 template <typename Scalar, typename Index>
 inline void igl::WindingNumberTree<Scalar,Index>::delete_children()
 {
-  using namespace std;
   // Delete children
-  typename list<WindingNumberTree<Scalar,Index>* >::iterator cit = children.begin();
+  typename std::list<WindingNumberTree<Scalar,Index>* >::iterator cit = children.begin();
   while(cit != children.end())
   {
     // clear the memory of this item
@@ -263,7 +261,6 @@ template <typename Scalar, typename Index>
 inline Scalar 
 igl::WindingNumberTree<Scalar,Index>::winding_number(const Point & p) const
 {
-  using namespace std;
   //cout<<"+"<<boundary.rows();
   // If inside then we need to be careful
   if(inside(p))
@@ -274,7 +271,7 @@ igl::WindingNumberTree<Scalar,Index>::winding_number(const Point & p) const
       // Recurse on each child and accumulate
       Scalar sum = 0;
       for(
-        typename list<WindingNumberTree<Scalar,Index>* >::const_iterator cit = children.begin();
+        typename std::list<WindingNumberTree<Scalar,Index>* >::const_iterator cit = children.begin();
         cit != children.end();
         cit++)
       {
@@ -370,17 +367,16 @@ igl::WindingNumberTree<Scalar,Index>::winding_number_boundary(const Point & p) c
 template <typename Scalar, typename Index>
 inline void igl::WindingNumberTree<Scalar,Index>::print(const char * tab)
 {
-  using namespace std;
   // Print all facets
-  cout<<tab<<"["<<endl<<F<<endl<<"]";
+  std::cout<<tab<<"["<<std::endl<<F<<std::endl<<"]";
   // Print children
   for(
-      typename list<WindingNumberTree<Scalar,Index>* >::iterator cit = children.begin();
+      typename std::list<WindingNumberTree<Scalar,Index>* >::iterator cit = children.begin();
       cit != children.end();
       cit++)
   {
-    cout<<","<<endl;
-    (*cit)->print((string(tab)+"").c_str());
+    std::cout<<","<<std::endl;
+    (*cit)->print((std::string(tab)+"").c_str());
   }
 }
 
@@ -396,8 +392,7 @@ inline Scalar
 igl::WindingNumberTree<Scalar,Index>::max_simple_abs_winding_number(
   const Point & /*p*/) const
 {
-  using namespace std;
-  return numeric_limits<Scalar>::infinity();
+  return std::numeric_limits<Scalar>::infinity();
 }
 
 template <typename Scalar, typename Index>
@@ -406,7 +401,6 @@ igl::WindingNumberTree<Scalar,Index>::cached_winding_number(
   const igl::WindingNumberTree<Scalar,Index> & that,
   const Point & p) const
 {
-  using namespace std;
   // Simple metric for `is_far`
   //
   //   this             that
@@ -437,7 +431,7 @@ igl::WindingNumberTree<Scalar,Index>::cached_winding_number(
   if(is_far)
   {
     // Not implemented yet
-    pair<const WindingNumberTree*,const WindingNumberTree*> this_that(this,&that);
+    std::pair<const WindingNumberTree*,const WindingNumberTree*> this_that(this,&that);
     // Need to compute it for first time?
     if(cached.count(this_that)==0)
     {
@@ -452,7 +446,7 @@ igl::WindingNumberTree<Scalar,Index>::cached_winding_number(
   }else
   {
     for(
-      typename list<WindingNumberTree<Scalar,Index>* >::const_iterator cit = children.begin();
+      typename std::list<WindingNumberTree<Scalar,Index>* >::const_iterator cit = children.begin();
       cit != children.end();
       cit++)
     {

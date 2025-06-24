@@ -18,28 +18,25 @@ IGL_INLINE void igl::vector_area_matrix(
   const Eigen::MatrixBase<DerivedF> & F,
   Eigen::SparseMatrix<Scalar>& A)
 {
-  using namespace Eigen;
-  using namespace std;
-
   // number of vertices
   const int n = F.maxCoeff()+1;
 
   assert(F.cols() == 3);
-  MatrixXi E;
+  Eigen::MatrixXi E;
   boundary_facets(F,E);
 
   //Prepare a vector of triplets to set the matrix
-  vector<Triplet<Scalar> > tripletList;
+  std::vector<Eigen::Triplet<Scalar> > tripletList;
   tripletList.reserve(4*E.rows());
 
   for(int k = 0; k < E.rows(); k++)
   {
 		int i = E(k,0);
 		int j = E(k,1);
-        tripletList.push_back(Triplet<Scalar>(i+n, j, -0.25));
-        tripletList.push_back(Triplet<Scalar>(j, i+n, -0.25));
-        tripletList.push_back(Triplet<Scalar>(i, j+n, 0.25));
-        tripletList.push_back(Triplet<Scalar>(j+n, i, 0.25));
+        tripletList.push_back(Eigen::Triplet<Scalar>(i+n, j, -0.25));
+        tripletList.push_back(Eigen::Triplet<Scalar>(j, i+n, -0.25));
+        tripletList.push_back(Eigen::Triplet<Scalar>(i, j+n, 0.25));
+        tripletList.push_back(Eigen::Triplet<Scalar>(j+n, i, 0.25));
   }
 
   //Set A from triplets (Eigen will sum triplets with same coordinates)

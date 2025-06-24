@@ -33,15 +33,12 @@ IGL_INLINE void igl::copyleft::cgal::subdivide_segments(
   Eigen::PlainObjectBase<DerivedJ> & J,
   Eigen::PlainObjectBase<DerivedIM> & IM)
 {
-  using namespace Eigen;
   using namespace igl;
-  using namespace std;
-
   // Exact scalar type
   typedef Kernel K;
   typedef typename Kernel::FT EScalar;
   typedef CGAL::Point_2<Kernel> Point_2;
-  typedef Matrix<EScalar,Dynamic,Dynamic>  MatrixXE;
+  typedef Eigen::Matrix<EScalar ,Eigen::Dynamic ,Eigen::Dynamic>  MatrixXE;
 
   // non-const copy
   std::vector<std::vector<CGAL::Point_2<Kernel> > > steiner = _steiner;
@@ -125,7 +122,7 @@ IGL_INLINE void igl::copyleft::cgal::subdivide_segments(
     std::vector<size_t> vA,vIM;
     igl::unique(vVES,_1,vA,vIM);
     // Push indices back into vVES
-    for_each(vIM.data(),vIM.data()+vIM.size(),[&vA](size_t & i){i=vA[i];});
+    std::for_each(vIM.data(),vIM.data()+vIM.size(),[&vA](size_t & i){i=vA[i];});
     list_to_matrix(vIM,IM);
   }
 }

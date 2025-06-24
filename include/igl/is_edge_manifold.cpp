@@ -57,8 +57,7 @@ IGL_INLINE bool igl::is_edge_manifold(
   Eigen::PlainObjectBase<DerivedEMAP>& EMAP,
   Eigen::PlainObjectBase<DerivedBE>& BE)
 {
-  using namespace Eigen;
-  typedef Matrix<typename DerivedF::Scalar,Dynamic,2> MatrixXF2;
+  typedef Eigen::Matrix<typename DerivedF::Scalar ,Eigen::Dynamic,2> MatrixXF2;
   MatrixXF2 allE;
   unique_edge_map(F,allE,E,EMAP);
   return is_edge_manifold(F,E.rows(),EMAP,BF,BE);

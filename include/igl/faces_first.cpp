@@ -20,9 +20,7 @@ IGL_INLINE void igl::faces_first(
 {
   assert(&V != &RV);
   assert(&F != &RF);
-  using namespace std;
-  using namespace Eigen;
-  vector<bool> in_face(V.rows());
+  std::vector<bool> in_face(V.rows());
   for(int i = 0; i<F.rows(); i++)
   {
     for(int j = 0; j<F.cols(); j++)
@@ -37,9 +35,9 @@ IGL_INLINE void igl::faces_first(
     num_in_F += (in_face[i]?1:0);
   }
   // list of unique vertices that occur in F
-  VectorXi U(num_in_F);
+  Eigen::VectorXi U(num_in_F);
   // list of unique vertices that do not occur in F
-  VectorXi NU(V.rows()-num_in_F);
+  Eigen::VectorXi NU(V.rows()-num_in_F);
   int Ui = 0;
   int NUi = 0;
   // loop over vertices

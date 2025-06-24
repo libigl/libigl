@@ -17,16 +17,14 @@ IGL_INLINE void igl::bfs_orient(
   Eigen::PlainObjectBase<DerivedFF> & FF,
   Eigen::PlainObjectBase<DerivedC> & C)
 {
-  using namespace Eigen;
-  using namespace std;
-  SparseMatrix<typename DerivedF::Scalar> A;
+  Eigen::SparseMatrix<typename DerivedF::Scalar> A;
   orientable_patches(F,C,A);
 
   // number of faces
   const int m = F.rows();
   // number of patches
   const int num_cc = C.maxCoeff()+1;
-  VectorXi seen = VectorXi::Zero(m);
+  Eigen::VectorXi seen = Eigen::VectorXi::Zero(m);
 
   // Edge sets
   const int ES[3][2] = {{1,2},{2,0},{0,1}};
@@ -38,7 +36,7 @@ IGL_INLINE void igl::bfs_orient(
   // loop over patches
   parallel_for(num_cc,[&](const int c)
   {
-    queue<typename DerivedF::Scalar> Q;
+    std::queue<typename DerivedF::Scalar> Q;
     // find first member of patch c
     for(int f = 0;f<FF.rows();f++)
     {
@@ -59,7 +57,7 @@ IGL_INLINE void igl::bfs_orient(
       }
       seen(f)++;
       // loop over neighbors of f
-      for(typename SparseMatrix<typename DerivedF::Scalar>::InnerIterator it (A,f); it; ++it)
+      for(typename Eigen::SparseMatrix<typename DerivedF::Scalar>::InnerIterator it (A,f); it; ++it)
       {
         // might be some lingering zeros, and skip self-adjacency
         if(it.value() != 0 && it.row() != f)
@@ -70,12 +68,12 @@ IGL_INLINE void igl::bfs_orient(
           for(int efi = 0;efi<3;efi++)
           {
             // efi'th edge of face f
-            Vector2i ef(FF(f,ES[efi][0]),FF(f,ES[efi][1]));
+            Eigen::Vector2i ef(FF(f,ES[efi][0]),FF(f,ES[efi][1]));
             // loop over edges of n
             for(int eni = 0;eni<3;eni++)
             {
               // eni'th edge of face n
-              Vector2i en(FF(n,ES[eni][0]),FF(n,ES[eni][1]));
+              Eigen::Vector2i en(FF(n,ES[eni][0]),FF(n,ES[eni][1]));
               // Match (half-edges go same direction)
               if(ef(0) == en(0) && ef(1) == en(1))
               {

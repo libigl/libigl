@@ -17,9 +17,9 @@ namespace igl
 {
   /// Compute the average edge length for the given triangle mesh
   ///
-  /// @tparam DerivedV derived from vertex positions matrix type: i.e. MatrixXd
-  /// @tparam DerivedF derived from face indices matrix type: i.e. MatrixXi
-  /// @tparam DerivedL derived from edge lengths matrix type: i.e. MatrixXd
+  /// @tparam DerivedV derived from vertex positions matrix type: i.e. Eigen::MatrixXd
+  /// @tparam DerivedF derived from face indices matrix type: i.e. Eigen::MatrixXi
+  /// @tparam DerivedL derived from edge lengths matrix type: i.e. Eigen::MatrixXd
   /// @param[in] V  #V by dim list of mesh vertex positions
   /// @param[in] F  #F by simplex-size list of mesh faces (must be simplex)
   /// @return average edge length

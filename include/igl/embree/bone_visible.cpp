@@ -48,19 +48,17 @@ IGL_INLINE void igl::embree::bone_visible(
   const Eigen::MatrixBase<DerivedSD> & d,
   Eigen::PlainObjectBase<Derivedflag>  & flag)
 {
-  using namespace std;
-  using namespace Eigen;
   flag.resize(V.rows());
   const double sd_norm = (s-d).norm();
   // Embree seems to be parallel when constructing but not when tracing rays
   // loop over mesh vertices
   parallel_for(V.rows(),[&](const int v)
   {
-    const Vector3d Vv = V.row(v);
+    const Eigen::Vector3d Vv = V.row(v);
     // Project vertex v onto line segment sd
     //embree.intersectSegment
     double t,sqrd;
-    Vector3d projv;
+    Eigen::Vector3d projv;
     // degenerate bone, just snap to s
     if(sd_norm < DOUBLE_EPS)
     {
@@ -91,7 +89,7 @@ IGL_INLINE void igl::embree::bone_visible(
     igl::Hit<float> hit;
     // perhaps 1.0 should be 1.0-epsilon, or actually since we checking the
     // incident face, perhaps 1.0 should be 1.0+eps
-    const Vector3d dir = (Vv-projv)*1.0;
+    const Eigen::Vector3d dir = (Vv-projv)*1.0;
     if(ei.intersectSegment(
        projv.template cast<float>(),
        dir.template cast<float>(), 
@@ -107,12 +105,12 @@ IGL_INLINE void igl::embree::bone_visible(
       //  P = V.row(F(fi,0))*bc(0) + 
       //      V.row(F(fi,1))*bc(1) + 
       //      V.row(F(fi,2))*bc(2);
-      //  cout<<(fi+1)<<endl;
-      //  cout<<bc.transpose()<<endl;
-      //  cout<<P.transpose()<<endl;
-      //  cout<<hit.t<<endl;
-      //  cout<<(projv + dir*hit.t).transpose()<<endl;
-      //  cout<<Vv.transpose()<<endl;
+      //  std::cout<<(fi+1)<<std::endl;
+      //  std::cout<<bc.transpose()<<std::endl;
+      //  std::cout<<P.transpose()<<std::endl;
+      //  std::cout<<hit.t<<std::endl;
+      //  std::cout<<(projv + dir*hit.t).transpose()<<std::endl;
+      //  std::cout<<Vv.transpose()<<std::endl;
       //}
 
       // Assume hit is valid, so not visible

@@ -35,13 +35,12 @@ IGL_INLINE void igl::facet_components(
   Eigen::PlainObjectBase<DerivedC> & C,
   Eigen::PlainObjectBase<Derivedcounts> & counts)
 {
-  using namespace std;
   typedef TTIndex Index;
   const Index m = TT.size();
   C.resize(m,1);
-  vector<bool> seen(m,false);
+  std::vector<bool> seen(m,false);
   Index id = 0;
-  vector<Index> vcounts;
+  std::vector<Index> vcounts;
   for(Index g = 0;g<m;g++)
   {
     if(seen[g])
@@ -49,7 +48,7 @@ IGL_INLINE void igl::facet_components(
       continue;
     }
     vcounts.push_back(0);
-    queue<Index> Q;
+    std::queue<Index> Q;
     Q.push(g);
     while(!Q.empty())
     {

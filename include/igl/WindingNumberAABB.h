@@ -108,7 +108,6 @@ inline void igl::WindingNumberAABB<Scalar,Index>::set_mesh(
 template <typename Scalar, typename Index>
 inline void igl::WindingNumberAABB<Scalar,Index>::init()
 {
-  using namespace Eigen;
   assert(max_corner.size() == 3);
   assert(min_corner.size() == 3);
   compute_min_max_corners();
@@ -149,8 +148,6 @@ inline igl::WindingNumberAABB<Scalar,Index>::WindingNumberAABB(
 template <typename Scalar, typename Index>
 inline void igl::WindingNumberAABB<Scalar,Index>::grow()
 {
-  using namespace std;
-  using namespace Eigen;
   // Clear anything that already exists
   this->delete_children();
 
@@ -169,7 +166,7 @@ inline void igl::WindingNumberAABB<Scalar,Index>::grow()
   // Compute longest direction
   int max_d = -1;
   Scalar max_len = 
-    -numeric_limits<Scalar>::infinity();
+    -std::numeric_limits<Scalar>::infinity();
   for(int d = 0;d<min_corner.size();d++)
   {
     if( (max_corner[d] - min_corner[d]) > max_len )
@@ -202,7 +199,7 @@ inline void igl::WindingNumberAABB<Scalar,Index>::grow()
   //cout<<"c: "<<0.5*(max_corner[max_d] + min_corner[max_d])<<" "<<
   //  "m: "<<split_value<<endl;;
 
-  vector<int> id( (this->F).rows());
+  std::vector<int> id( (this->F).rows());
   for(int i = 0;i<(this->F).rows();i++)
   {
     if(BC(i,max_d) <= split_value)
@@ -273,12 +270,11 @@ inline bool igl::WindingNumberAABB<Scalar,Index>::inside(const Point & p) const
 template <typename Scalar, typename Index>
 inline void igl::WindingNumberAABB<Scalar,Index>::compute_min_max_corners()
 {
-  using namespace std;
   // initialize corners
   for(int d = 0;d<min_corner.size();d++)
   {
-    min_corner[d] =  numeric_limits<typename Point::Scalar>::infinity();
-    max_corner[d] = -numeric_limits<typename Point::Scalar>::infinity();
+    min_corner[d] =  std::numeric_limits<typename Point::Scalar>::infinity();
+    max_corner[d] = -std::numeric_limits<typename Point::Scalar>::infinity();
   }
 
   this->center = Point(0,0,0);
@@ -317,15 +313,14 @@ template <typename Scalar, typename Index>
 inline Scalar
 igl::WindingNumberAABB<Scalar,Index>::max_abs_winding_number(const Point & p) const
 {
-  using namespace std;
   // Only valid if not inside
   if(inside(p))
   {
-    return numeric_limits<Scalar>::infinity();
+    return std::numeric_limits<Scalar>::infinity();
   }
   // Q: we know the total positive area so what's the most this could project
   // to? Remember it could be layered in the same direction.
-  return numeric_limits<Scalar>::infinity();
+  return std::numeric_limits<Scalar>::infinity();
 }
 
 template <typename Scalar, typename Index>
@@ -333,12 +328,10 @@ inline Scalar
   igl::WindingNumberAABB<Scalar,Index>::max_simple_abs_winding_number(
   const Point & p) const
 {
-  using namespace std;
-  using namespace Eigen;
   // Only valid if not inside
   if(inside(p))
   {
-    return numeric_limits<Scalar>::infinity();
+    return std::numeric_limits<Scalar>::infinity();
   }
   // Max simple is the same as sum of positive winding number contributions of
   // bounding box

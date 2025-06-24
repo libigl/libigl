@@ -16,9 +16,9 @@ namespace igl
   /// listed before internal vertices
   ///
   ///
-  /// @tparam MatV  matrix for vertex positions, e.g. MatrixXd
-  /// @tparam MatF  matrix for face indices, e.g. MatrixXi
-  /// @tparam VecI  vector for index map, e.g. VectorXi
+  /// @tparam MatV  matrix for vertex positions, e.g. Eigen::MatrixXd
+  /// @tparam MatF  matrix for face indices, e.g. Eigen::MatrixXi
+  /// @tparam VecI  vector for index map, e.g. Eigen::VectorXi
   /// @param[in] V  # vertices by 3 vertex positions
   /// @param[in] F  # faces by 3 list of face indices
   /// @param[out] RV  # vertices by 3 vertex positions, order such that if the jth vertex is

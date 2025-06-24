@@ -19,7 +19,6 @@
 IGL_INLINE std::string igl::path_to_executable()
 {
   // http://pastebin.com/ffzzxPzi
-  using namespace std;
   std::string path;
   char buffer[1024];
   std::uint32_t size = sizeof(buffer);

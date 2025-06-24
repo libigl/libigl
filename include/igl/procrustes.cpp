@@ -23,21 +23,20 @@ IGL_INLINE void igl::procrustes(
     Eigen::PlainObjectBase<DerivedR>& R,
     Eigen::PlainObjectBase<DerivedT>& t)
 {
-  using namespace Eigen;
   assert (X.rows() == Y.rows() && "Same number of points");
   assert(X.cols() == Y.cols() && "Points have same dimensions");
 
   // Center data
-  const Matrix<typename DerivedX::Scalar, Dynamic, 1> Xmean = X.colwise().mean();
-  const Matrix<typename DerivedY::Scalar, Dynamic, 1> Ymean = Y.colwise().mean();
-  Matrix<typename DerivedX::Scalar, Dynamic, Dynamic> XC
+  const Eigen::Matrix<typename DerivedX::Scalar, Eigen::Dynamic, 1> Xmean = X.colwise().mean();
+  const Eigen::Matrix<typename DerivedY::Scalar, Eigen::Dynamic, 1> Ymean = Y.colwise().mean();
+  Eigen::Matrix<typename DerivedX::Scalar, Eigen::Dynamic, Eigen::Dynamic> XC
       = X.rowwise() - Xmean.transpose();
-  Matrix<typename DerivedY::Scalar, Dynamic, Dynamic> YC
+  Eigen::Matrix<typename DerivedY::Scalar, Eigen::Dynamic, Eigen::Dynamic> YC
       = Y.rowwise() - Ymean.transpose();
 
   // Rotation
-  Matrix<typename DerivedX::Scalar, Dynamic, Dynamic> S = XC.transpose() * YC;
-  Matrix<typename DerivedT::Scalar, Dynamic, Dynamic> T;
+  Eigen::Matrix<typename DerivedX::Scalar, Eigen::Dynamic, Eigen::Dynamic> S = XC.transpose() * YC;
+  Eigen::Matrix<typename DerivedT::Scalar, Eigen::Dynamic, Eigen::Dynamic> T;
   polar_dec(S, includeReflections, R, T);
 
   // Scale
@@ -65,14 +64,13 @@ IGL_INLINE void igl::procrustes(
     const bool includeReflections,
     Eigen::Transform<Scalar,DIM,TType>& T)
 {
-  using namespace Eigen;
   double scale;
-  MatrixXd R;
-  VectorXd t;
+  Eigen::MatrixXd R;
+  Eigen::VectorXd t;
   procrustes(X,Y,includeScaling,includeReflections,scale,R,t);
 
   // Combine
-  T = Translation<Scalar,DIM>(t) * R * Scaling(scale);
+  T = Eigen::Translation<Scalar,DIM>(t) * R * Eigen::Scaling(scale);
 }
 
 template <
@@ -118,9 +116,8 @@ IGL_INLINE void igl::procrustes(
     Eigen::Rotation2D<Scalar>& R,
     Eigen::PlainObjectBase<DerivedT>& t)
 {
-  using namespace Eigen;
   assert (X.cols() == 2 && Y.cols() == 2 && "Points must have dimension 2");
-  Matrix2d Rmat;
+  Eigen::Matrix2d Rmat;
   procrustes(X,Y,false,false,Rmat,t);
   R.fromRotationMatrix(Rmat);
 }

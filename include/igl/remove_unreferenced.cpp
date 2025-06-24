@@ -41,7 +41,6 @@ IGL_INLINE void igl::remove_unreferenced(
   Eigen::PlainObjectBase<DerivedI> &I,
   Eigen::PlainObjectBase<DerivedJ> &J)
 {
-  using namespace std;
   const size_t n = V.rows();
   remove_unreferenced(n,F,I,J);
   NF = F;

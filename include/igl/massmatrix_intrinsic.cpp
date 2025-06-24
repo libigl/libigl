@@ -33,8 +33,6 @@ IGL_INLINE void igl::massmatrix_intrinsic(
   const int n,
   Eigen::SparseMatrix<Scalar>& M)
 {
-  using namespace Eigen;
-  using namespace std;
   MassMatrixType eff_type = type;
   const int m = F.rows();
   const int simplex_size = F.cols();
@@ -44,11 +42,11 @@ IGL_INLINE void igl::massmatrix_intrinsic(
     eff_type = (simplex_size == 3?MASSMATRIX_TYPE_VORONOI:MASSMATRIX_TYPE_BARYCENTRIC);
   }
   assert(F.cols() == 3 && "only triangles supported");
-  Matrix<Scalar,Dynamic,1> dblA;
+  Eigen::Matrix<Scalar ,Eigen::Dynamic,1> dblA;
   doublearea(l,0.,dblA);
-  Matrix<typename DerivedF::Scalar,Dynamic,1> MI;
-  Matrix<typename DerivedF::Scalar,Dynamic,1> MJ;
-  Matrix<Scalar,Dynamic,1> MV;
+  Eigen::Matrix<typename DerivedF::Scalar ,Eigen::Dynamic,1> MI;
+  Eigen::Matrix<typename DerivedF::Scalar ,Eigen::Dynamic,1> MJ;
+  Eigen::Matrix<Scalar ,Eigen::Dynamic,1> MV;
 
   switch(eff_type)
   {
@@ -73,22 +71,22 @@ IGL_INLINE void igl::massmatrix_intrinsic(
         MJ = MI;
 
         // Holy shit this needs to be cleaned up and optimized
-        Matrix<Scalar,Dynamic,3> cosines(m,3);
+        Eigen::Matrix<Scalar ,Eigen::Dynamic,3> cosines(m,3);
         cosines.col(0) = 
           (l.col(2).array().pow(2)+l.col(1).array().pow(2)-l.col(0).array().pow(2))/(l.col(1).array()*l.col(2).array()*2.0);
         cosines.col(1) = 
           (l.col(0).array().pow(2)+l.col(2).array().pow(2)-l.col(1).array().pow(2))/(l.col(2).array()*l.col(0).array()*2.0);
         cosines.col(2) = 
           (l.col(1).array().pow(2)+l.col(0).array().pow(2)-l.col(2).array().pow(2))/(l.col(0).array()*l.col(1).array()*2.0);
-        Matrix<Scalar,Dynamic,3> barycentric = cosines.array() * l.array();
+        Eigen::Matrix<Scalar ,Eigen::Dynamic,3> barycentric = cosines.array() * l.array();
         // Replace this: normalize_row_sums(barycentric,barycentric);
         barycentric  = (barycentric.array().colwise() / barycentric.array().rowwise().sum()).eval();
 
-        Matrix<Scalar,Dynamic,3> partial = barycentric;
+        Eigen::Matrix<Scalar ,Eigen::Dynamic,3> partial = barycentric;
         partial.col(0).array() *= dblA.array() * 0.5;
         partial.col(1).array() *= dblA.array() * 0.5;
         partial.col(2).array() *= dblA.array() * 0.5;
-        Matrix<Scalar,Dynamic,3> quads(partial.rows(),partial.cols());
+        Eigen::Matrix<Scalar ,Eigen::Dynamic,3> quads(partial.rows(),partial.cols());
         quads.col(0) = (partial.col(1)+partial.col(2))*0.5;
         quads.col(1) = (partial.col(2)+partial.col(0))*0.5;
         quads.col(2) = (partial.col(0)+partial.col(1))*0.5;

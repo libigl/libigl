@@ -13,7 +13,6 @@ IGL_INLINE void igl::ceil(
   const Eigen::MatrixBase<DerivedX>& X,
   Eigen::PlainObjectBase<DerivedY>& Y)
 {
-  using namespace std;
   typedef typename DerivedX::Scalar Scalar;
   Y = X.unaryExpr([](const Scalar &x)->Scalar{return std::ceil(x);}).template cast<typename DerivedY::Scalar >();
 }

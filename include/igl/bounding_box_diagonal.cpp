@@ -13,9 +13,8 @@
 IGL_INLINE double igl::bounding_box_diagonal(
   const Eigen::MatrixXd & V)
 {
-  using namespace Eigen;
-  VectorXd maxV,minV;
-  VectorXi maxVI,minVI;
+  Eigen::VectorXd maxV,minV;
+  Eigen::VectorXi maxVI,minVI;
   igl::max(V,1,maxV,maxVI);
   igl::min(V,1,minV,minVI);
   return sqrt((maxV-minV).array().square().sum());

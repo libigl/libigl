@@ -24,7 +24,6 @@ IGL_INLINE void igl::bounding_box(
   Eigen::PlainObjectBase<DerivedBV>& BV,
   Eigen::PlainObjectBase<DerivedBF>& BF)
 {
-  using namespace std;
 
   const int dim = V.cols();
   const auto & minV = V.colwise().minCoeff().array()-pad;

@@ -59,7 +59,6 @@ IGL_INLINE void igl::embree::EmbreeIntersector::init(
   if(initialized)
     deinit();
 
-  using namespace std;
 
   if(V.size() == 0 || F.size() == 0)
   {
@@ -110,10 +109,10 @@ IGL_INLINE void igl::embree::EmbreeIntersector::init(
   rtcCommitScene(scene);
 
   if(rtcGetDeviceError (device) != RTC_ERROR_NONE)
-      std::cerr << "Embree: An error occurred while initializing the provided geometry!" << endl;
+      std::cerr << "Embree: An error occurred while initializing the provided geometry!" << std::endl;
 #ifdef IGL_VERBOSE
   else
-    std::cerr << "Embree: geometry added." << endl;
+    std::cerr << "Embree: geometry added." << std::endl;
 #endif
 
   initialized = true;
@@ -245,7 +244,6 @@ igl::embree::EmbreeIntersector
   float tfar,
   int mask) const
 {
-  using namespace std;
   num_rays = 0;
   hits.clear();
   int last_id0 = -1;
@@ -283,7 +281,7 @@ igl::embree::EmbreeIntersector
         //double t_push = pow(2.0,self_hits-4)*(hit.t<eps?eps:hit.t);
         double t_push = pow(2.0,self_hits)*eps;
         #ifdef IGL_VERBOSE
-        std::cerr<<"  t_push: "<<t_push<<endl;
+        std::cerr<<"  t_push: "<<t_push<<std::endl;
         #endif
         //o = o+t_push*d;
         min_t += t_push;
@@ -299,7 +297,7 @@ igl::embree::EmbreeIntersector
         hit.t = ray.ray.tfar;
         hits.push_back(hit);
 #ifdef IGL_VERBOSE
-        std::cerr<<"  t: "<<hit.t<<endl;
+        std::cerr<<"  t: "<<hit.t<<std::endl;
 #endif
         // Instead of moving origin, just change min_t. That way calculations
         // all use exactly same origin values
@@ -315,9 +313,9 @@ igl::embree::EmbreeIntersector
 
     if(hits.size()>1000 && !large_hits_warned)
     {
-      std::cout<<"Warning: Large number of hits..."<<endl;
+      std::cout<<"Warning: Large number of hits..."<<std::endl;
       std::cout<<"[ ";
-      for(vector<Hit<float>>::iterator hit = hits.begin(); hit != hits.end();hit++)
+      for(std::vector<Hit<float>>::iterator hit = hits.begin(); hit != hits.end();hit++)
       {
         std::cout<<(hit->id+1)<<" ";
       }
@@ -325,12 +323,12 @@ igl::embree::EmbreeIntersector
       std::cout.precision(std::numeric_limits< double >::digits10);
       std::cout<<"[ ";
 
-      for(vector<Hit<float>>::iterator hit = hits.begin(); hit != hits.end(); hit++)
+      for(std::vector<Hit<float>>::iterator hit = hits.begin(); hit != hits.end(); hit++)
       {
-        std::cout<<(hit->t)<<endl;;
+        std::cout<<(hit->t)<<std::endl;
       }
 
-      std::cout<<"]"<<endl;
+      std::cout<<"]"<<std::endl;
       large_hits_warned = true;
 
       return hits.empty();
