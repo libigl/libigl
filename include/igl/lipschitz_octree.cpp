@@ -6,7 +6,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "lipschitz_octree.h"
-#include "lipschitz_octree_cull.h"
+#include "lipschitz_octree_prune.h"
 #include "find.h"
 #include "matlab_format.h"
 #include <cassert>
@@ -56,7 +56,7 @@ IGL_INLINE void igl::lipschitz_octree(
     const Scalar h = h0 / (1 << depth);
     MatrixiX3R ijk_next;
     MatrixiX3R ijk_maybe;
-    igl::lipschitz_octree_cull(origin,h0,depth,udf,ijk,ijk_maybe);
+    igl::lipschitz_octree_prune(origin,h0,depth,udf,ijk,ijk_maybe);
     if(depth == max_depth)
     {
       // sad copy
@@ -71,8 +71,6 @@ IGL_INLINE void igl::lipschitz_octree(
       {
         for(int i = 0;i<8;i++)
         {
-          //const int k = marching_cubes_reoder[i];
-#warning "temporary"
           const int k = i;
           ijk_next.row(c*8+k) =
             ijk_maybe_2.row(c) +
@@ -88,7 +86,7 @@ IGL_INLINE void igl::lipschitz_octree(
     }
     ijk = ijk_next;
   }
-  assert(false);
+  assert(false && "Should never reach here");
 }
 
 #ifdef IGL_STATIC_LIBRARY

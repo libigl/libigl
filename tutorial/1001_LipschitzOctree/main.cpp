@@ -137,11 +137,10 @@ int main(int argc, char * argv[])
     printf("           lipschitz_octree: %0.7f seconds\n",tictoc());
     // Gather the corners of those leaf cells
     const double h = h0 / (1 << max_depth);
-    Eigen::VectorXi I;
     Eigen::Matrix<int,Eigen::Dynamic,8,Eigen::RowMajor> J;
     Eigen::Matrix<int,Eigen::Dynamic,3,Eigen::RowMajor> unique_ijk;
     Eigen::Matrix<double,Eigen::Dynamic,3,Eigen::RowMajor> unique_corner_positions;
-    igl::unique_sparse_voxel_corners(origin,h0,max_depth,ijk,unique_ijk,I,J,unique_corner_positions);
+    igl::unique_sparse_voxel_corners(origin,h0,max_depth,ijk,unique_ijk,J,unique_corner_positions);
     printf("unique_sparse_voxel_corners: %0.7f seconds\n",tictoc());
     /// Evaluate the signed distance function at the corners
     Eigen::VectorXd S(unique_corner_positions.rows());

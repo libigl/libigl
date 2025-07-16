@@ -13,29 +13,38 @@
 
 namespace igl 
 {
-  ///   @param[in] origin  3-vector of root cell minimum
-  ///   @param[in] h0   side length of current depth level
-  ///   @param[in] depth  current depth (single root cell is depth = 0)
-  ///   @param[in] ijk #ijk by 3 list of octree leaf cell indices
+  ///  Give a list of octree cells subscripts (ijk) (minimum corners) at a given depth,
+  ///  determine a unique list of subscripts to all incident corners of those
+  ///  cells (de-replicating shared corners).
   ///
+  ///   @param[in] depth  current depth (single root cell is depth = 0)
+  ///   @param[in] ijk #ijk by 3 list of octree leaf cell minimum corner
+  ///   subscripts
+  ///   @param[out] unique_ijk #unique_ijk by 3 list of unique corner subscripts
+  ///   @param[out] J  #ijk by 8 list of indices into unique_ijk in yxz binary
+  ///     counting order
   template<
     typename Derivedijk,
     typename Derivedunique_ijk,
-    typename DerivedI,
     typename DerivedJ
       >
   IGL_INLINE void unique_sparse_voxel_corners(
     const int depth,
     const Eigen::MatrixBase<Derivedijk> & ijk,
     Eigen::PlainObjectBase<Derivedunique_ijk> & unique_ijk,
-    Eigen::PlainObjectBase<DerivedI> & I,
     Eigen::PlainObjectBase<DerivedJ> & J);
 
+  /// \brief overload
+  ///
+  ///   @param[in] origin  3-vector of root cell minimum
+  ///   @param[in] h0   side length of current depth level
+  ///   @param[in] depth  current depth (single root cell is depth = 0)
+  ///   @param[out] unique_corners #unique_ijk by 3 list of unique corner
+  ///     positions
   template<
     typename Derivedorigin,
     typename Derivedijk,
     typename Derivedunique_ijk,
-    typename DerivedI,
     typename DerivedJ,
     typename Derivedunique_corners
       >
@@ -45,7 +54,6 @@ namespace igl
     const int depth,
     const Eigen::MatrixBase<Derivedijk> & ijk,
     Eigen::PlainObjectBase<Derivedunique_ijk> & unique_ijk,
-    Eigen::PlainObjectBase<DerivedI> & I,
     Eigen::PlainObjectBase<DerivedJ> & J,
     Eigen::PlainObjectBase<Derivedunique_corners> & unique_corners);
 }

@@ -5,8 +5,8 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
-#ifndef IGL_LIPSCHITZ_OCTREE_CULL_H
-#define IGL_LIPSCHITZ_OCTREE_CULL_H
+#ifndef IGL_LIPSCHITZ_OCTREE_PRUNE_H
+#define IGL_LIPSCHITZ_OCTREE_PRUNE_H
 
 #include "igl_inline.h"
 #include <Eigen/Core>
@@ -32,7 +32,7 @@ namespace igl
     typename Derivedijk,
     typename Derivedijk_maybe
       >
-  IGL_INLINE void lipschitz_octree_cull(
+  IGL_INLINE void lipschitz_octree_prune(
     const Eigen::MatrixBase<Derivedorigin> & origin,
     const typename Derivedorigin::Scalar h0,
     const int depth,
@@ -42,7 +42,7 @@ namespace igl
 }
 
 #ifndef IGL_STATIC_LIBRARY
-#    include "lipschitz_octree_cull.cpp"
+#    include "lipschitz_octree_prune.cpp"
 #endif
 
 #endif

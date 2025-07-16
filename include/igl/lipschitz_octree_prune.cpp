@@ -5,7 +5,7 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
-#include "lipschitz_octree_cull.h"
+#include "lipschitz_octree_prune.h"
 #include "unique_sparse_voxel_corners.h"
 #include "find.h"
 #include "matlab_format.h"
@@ -20,7 +20,7 @@ template <
   typename Derivedijk,
   typename Derivedijk_maybe
     >
-IGL_INLINE void igl::lipschitz_octree_cull(
+IGL_INLINE void igl::lipschitz_octree_prune(
   const Eigen::MatrixBase<Derivedorigin> & origin,
   const typename Derivedorigin::Scalar h0,
   const int depth,
@@ -50,11 +50,10 @@ IGL_INLINE void igl::lipschitz_octree_cull(
   // h0 is already the h at this depth.
   const Scalar h = h0 / (1 << depth);
 
-  Eigen::VectorXi I;
   Eigen::Matrix<int,Eigen::Dynamic,8,Eigen::RowMajor> J;
   MatrixiX3R unique_ijk;
   MatrixSX3R unique_corner_positions;
-  igl::unique_sparse_voxel_corners(origin,h0,depth,ijk,unique_ijk,I,J,unique_corner_positions);
+  igl::unique_sparse_voxel_corners(origin,h0,depth,ijk,unique_ijk,J,unique_corner_positions);
 
   // Effectively a batched call to udf
   Eigen::Array<bool,Eigen::Dynamic,1> big(unique_corner_positions.rows()); 
@@ -66,7 +65,7 @@ IGL_INLINE void igl::lipschitz_octree_cull(
       // evaluate the function at the corner
       const RowVectorS3 corner = unique_corner_positions.row(i);
       const Scalar u = udf(corner);
-      assert(u >= 0 && "udf must be non-negative for lipschitz_octree_cull");
+      assert(u >= 0 && "udf must be non-negative for lipschitz_octree_prune");
       big(i) = (u > h * std::sqrt(3));
     },
     1000);
@@ -91,6 +90,6 @@ IGL_INLINE void igl::lipschitz_octree_cull(
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instantiation
-template void igl::lipschitz_octree_cull<Eigen::Matrix<double, 1, 3, 1, 1, 3>, std::function<double (Eigen::Matrix<double, 1, 3, 1, 1, 3> const&)>, Eigen::Matrix<int, -1, 3, 1, -1, 3>, Eigen::Matrix<int, -1, 3, 1, -1, 3>>(Eigen::MatrixBase<Eigen::Matrix<double, 1, 3, 1, 1, 3>> const&, Eigen::Matrix<double, 1, 3, 1, 1, 3>::Scalar, int, std::function<double (Eigen::Matrix<double, 1, 3, 1, 1, 3> const&)> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 3, 1, -1, 3>> const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 1, -1, 3>>&);
+template void igl::lipschitz_octree_prune<Eigen::Matrix<double, 1, 3, 1, 1, 3>, std::function<double (Eigen::Matrix<double, 1, 3, 1, 1, 3> const&)>, Eigen::Matrix<int, -1, 3, 1, -1, 3>, Eigen::Matrix<int, -1, 3, 1, -1, 3>>(Eigen::MatrixBase<Eigen::Matrix<double, 1, 3, 1, 1, 3>> const&, Eigen::Matrix<double, 1, 3, 1, 1, 3>::Scalar, int, std::function<double (Eigen::Matrix<double, 1, 3, 1, 1, 3> const&)> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 3, 1, -1, 3>> const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 1, -1, 3>>&);
 #endif
 

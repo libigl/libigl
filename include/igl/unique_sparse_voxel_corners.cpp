@@ -13,21 +13,19 @@
 
 namespace
 {
-  //const int marching_cubes_reoder[] = {7,6,4,5,3,2,0,1};
+  // Match the yxz binary counting order in marching_cubes/sparse_voxel_grid
   const int marching_cubes_reoder[] = {1,0,2,3,5,4,6,7};
 }
 
 template <
   typename Derivedijk,
   typename Derivedunique_ijk,
-  typename DerivedI,
   typename DerivedJ
     >
 IGL_INLINE void igl::unique_sparse_voxel_corners(
   const int depth,
   const Eigen::MatrixBase<Derivedijk> & ijk,
   Eigen::PlainObjectBase<Derivedunique_ijk> & unique_ijk,
-  Eigen::PlainObjectBase<DerivedI> & I,
   Eigen::PlainObjectBase<DerivedJ> & J)
 {
   using MatrixiX3R = Eigen::Matrix<int,Eigen::Dynamic,3,Eigen::RowMajor>;
@@ -69,8 +67,6 @@ IGL_INLINE void igl::unique_sparse_voxel_corners(
         ijk(c,2) + ((i&1) ? 1 : 0));
       const int64_t code = ijk2code(ijk_c(0), ijk_c(1), ijk_c(2));
       const int k = marching_cubes_reoder[i];
-//#warning "temporary"
-      //const int k = i;
       codes(c,k) = code;
 #ifndef NDEBUG
       Eigen::RowVector3i ijk_c_check;
@@ -89,6 +85,7 @@ IGL_INLINE void igl::unique_sparse_voxel_corners(
   // igl::unique is the bottleneck by far.
   // unique_rows might actually be faster because it doesn't do roundtrips to
   // std::vector
+  Eigen::VectorXi I;
   {
     Eigen::Matrix<int64_t,Eigen::Dynamic,1> _;
     Eigen::Matrix<typename DerivedJ::Scalar,Eigen::Dynamic,1> Jvec;
@@ -112,7 +109,6 @@ template<
   typename Derivedorigin,
   typename Derivedijk,
   typename Derivedunique_ijk,
-  typename DerivedI,
   typename DerivedJ,
   typename Derivedunique_corners
     >
@@ -122,11 +118,10 @@ IGL_INLINE void igl::unique_sparse_voxel_corners(
   const int depth,
   const Eigen::MatrixBase<Derivedijk> & ijk,
   Eigen::PlainObjectBase<Derivedunique_ijk> & unique_ijk,
-  Eigen::PlainObjectBase<DerivedI> & I,
   Eigen::PlainObjectBase<DerivedJ> & J,
   Eigen::PlainObjectBase<Derivedunique_corners> & unique_corners)
 {
-  unique_sparse_voxel_corners(depth,ijk,unique_ijk,I,J);
+  unique_sparse_voxel_corners(depth,ijk,unique_ijk,J);
 
   using Scalar = typename Derivedunique_corners::Scalar;
   const Scalar h = h0 / (1 << depth);
@@ -141,7 +136,7 @@ IGL_INLINE void igl::unique_sparse_voxel_corners(
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instantiation
-template void igl::unique_sparse_voxel_corners<Eigen::Matrix<int, -1, 3, 1, -1, 3>, Eigen::Matrix<int, -1, 3, 1, -1, 3>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 8, 1, -1, 8>>(int, Eigen::MatrixBase<Eigen::Matrix<int, -1, 3, 1, -1, 3>> const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 1, -1, 3>>&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1>>&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 8, 1, -1, 8>>&);
-template void igl::unique_sparse_voxel_corners<Eigen::Matrix<double, 1, 3, 1, 1, 3>, Eigen::Matrix<int, -1, 3, 1, -1, 3>, Eigen::Matrix<int, -1, 3, 1, -1, 3>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 8, 1, -1, 8>, Eigen::Matrix<double, -1, 3, 1, -1, 3>>(Eigen::MatrixBase<Eigen::Matrix<double, 1, 3, 1, 1, 3>> const&, Eigen::Matrix<double, 1, 3, 1, 1, 3>::Scalar, int, Eigen::MatrixBase<Eigen::Matrix<int, -1, 3, 1, -1, 3>> const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 1, -1, 3>>&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1>>&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 8, 1, -1, 8>>&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 1, -1, 3>>&);
+template void igl::unique_sparse_voxel_corners<Eigen::Matrix<int, -1, 3, 1, -1, 3>, Eigen::Matrix<int, -1, 3, 1, -1, 3>, Eigen::Matrix<int, -1, 8, 1, -1, 8>>(int, Eigen::MatrixBase<Eigen::Matrix<int, -1, 3, 1, -1, 3>> const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 1, -1, 3>>&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 8, 1, -1, 8>>&);
+template void igl::unique_sparse_voxel_corners<Eigen::Matrix<double, 1, 3, 1, 1, 3>, Eigen::Matrix<int, -1, 3, 1, -1, 3>, Eigen::Matrix<int, -1, 3, 1, -1, 3>, Eigen::Matrix<int, -1, 8, 1, -1, 8>, Eigen::Matrix<double, -1, 3, 1, -1, 3>>(Eigen::MatrixBase<Eigen::Matrix<double, 1, 3, 1, 1, 3>> const&, Eigen::Matrix<double, 1, 3, 1, 1, 3>::Scalar, int, Eigen::MatrixBase<Eigen::Matrix<int, -1, 3, 1, -1, 3>> const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 1, -1, 3>>&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 8, 1, -1, 8>>&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 3, 1, -1, 3>>&);
 #endif
 
