@@ -84,7 +84,7 @@ int main(int argc, char * argv[])
 
   // Centered bounding cube (root of octree) with padding.
   double h0 = (V.colwise().maxCoeff() - V.colwise().minCoeff()).maxCoeff();
-  int max_depth = 9;
+  int max_depth = 5;
   // Pad bounding box by max_depth
   //{
   //  double leaf_h = h0 / (1 << max_depth);
