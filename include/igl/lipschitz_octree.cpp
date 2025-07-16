@@ -13,6 +13,7 @@
 #include <iostream>
 
 template <
+  bool batched,
   typename Derivedorigin,
   typename Func,
   typename Derivedijk
@@ -56,7 +57,7 @@ IGL_INLINE void igl::lipschitz_octree(
     const Scalar h = h0 / (1 << depth);
     MatrixiX3R ijk_next;
     MatrixiX3R ijk_maybe;
-    igl::lipschitz_octree_prune(origin,h0,depth,udf,ijk,ijk_maybe);
+    igl::lipschitz_octree_prune<batched>(origin,h0,depth,udf,ijk,ijk_maybe);
     if(depth == max_depth)
     {
       // sad copy
@@ -91,5 +92,6 @@ IGL_INLINE void igl::lipschitz_octree(
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instantiation
-template void igl::lipschitz_octree<Eigen::Matrix<double, 1, 3, 1, 1, 3>, std::function<double (Eigen::Matrix<double, 1, 3, 1, 1, 3> const&)>, Eigen::Matrix<int, -1, 3, 1, -1, 3>>(Eigen::MatrixBase<Eigen::Matrix<double, 1, 3, 1, 1, 3>> const&, Eigen::Matrix<double, 1, 3, 1, 1, 3>::Scalar, int, std::function<double (Eigen::Matrix<double, 1, 3, 1, 1, 3> const&)> const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 1, -1, 3>>&);
+template void igl::lipschitz_octree<false,Eigen::Matrix<double, 1, 3, 1, 1, 3>, std::function<double (Eigen::Matrix<double, 1, 3, 1, 1, 3> const&)>, Eigen::Matrix<int, -1, 3, 1, -1, 3>>(Eigen::MatrixBase<Eigen::Matrix<double, 1, 3, 1, 1, 3>> const&, Eigen::Matrix<double, 1, 3, 1, 1, 3>::Scalar, int, std::function<double (Eigen::Matrix<double, 1, 3, 1, 1, 3> const&)> const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 1, -1, 3>>&);
+template void igl::lipschitz_octree<true, Eigen::Matrix<double, 1, 3, 1, 1, 3>, std::function<Eigen::Matrix<double, -1, 1, 0, -1, 1> (Eigen::Matrix<double, -1, 3, 1, -1, 3> const&)>, Eigen::Matrix<int, -1, 3, 1, -1, 3>>(Eigen::MatrixBase<Eigen::Matrix<double, 1, 3, 1, 1, 3>> const&, Eigen::Matrix<double, 1, 3, 1, 1, 3>::Scalar, int, std::function<Eigen::Matrix<double, -1, 1, 0, -1, 1> (Eigen::Matrix<double, -1, 3, 1, -1, 3> const&)> const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 1, -1, 3>>&);
 #endif

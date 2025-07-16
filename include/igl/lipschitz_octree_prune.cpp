@@ -15,6 +15,7 @@
 
 
 template <
+  bool batched,
   typename Derivedorigin,
   typename Func,
   typename Derivedijk,
@@ -57,18 +58,30 @@ IGL_INLINE void igl::lipschitz_octree_prune(
 
   // Effectively a batched call to udf
   Eigen::Array<bool,Eigen::Dynamic,1> big(unique_corner_positions.rows()); 
-  //for(int u = 0;u<unique_corner_positions.rows();u++)
-  igl::parallel_for(
-    unique_corner_positions.rows(),
-    [&](const int i)
+  // Requires C++17
+  if constexpr (batched)
+  {
+    Eigen::Matrix<Scalar,Eigen::Dynamic,1> u = udf(unique_corner_positions);
+    for(int i = 0;i<unique_corner_positions.rows();i++)
     {
-      // evaluate the function at the corner
-      const RowVectorS3 corner = unique_corner_positions.row(i);
-      const Scalar u = udf(corner);
-      assert(u >= 0 && "udf must be non-negative for lipschitz_octree_prune");
-      big(i) = (u > h * std::sqrt(3));
-    },
-    1000);
+      assert(u(i) >= 0 && "udf must be non-negative for lipschitz_octree_prune");
+      big(i) = (u(i) > h * std::sqrt(3));
+    }
+  }else
+  {
+    //for(int u = 0;u<unique_corner_positions.rows();u++)
+    igl::parallel_for(
+      unique_corner_positions.rows(),
+      [&](const int i)
+      {
+        // evaluate the function at the corner
+        const RowVectorS3 corner = unique_corner_positions.row(i);
+        const Scalar u = udf(corner);
+        assert(u >= 0 && "udf must be non-negative for lipschitz_octree_prune");
+        big(i) = (u > h * std::sqrt(3));
+      },
+      1000);
+  }
 
   ijk_maybe.resize(ijk.rows(),3);
   int k = 0;
@@ -90,6 +103,7 @@ IGL_INLINE void igl::lipschitz_octree_prune(
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instantiation
-template void igl::lipschitz_octree_prune<Eigen::Matrix<double, 1, 3, 1, 1, 3>, std::function<double (Eigen::Matrix<double, 1, 3, 1, 1, 3> const&)>, Eigen::Matrix<int, -1, 3, 1, -1, 3>, Eigen::Matrix<int, -1, 3, 1, -1, 3>>(Eigen::MatrixBase<Eigen::Matrix<double, 1, 3, 1, 1, 3>> const&, Eigen::Matrix<double, 1, 3, 1, 1, 3>::Scalar, int, std::function<double (Eigen::Matrix<double, 1, 3, 1, 1, 3> const&)> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 3, 1, -1, 3>> const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 1, -1, 3>>&);
+template void igl::lipschitz_octree_prune<false,Eigen::Matrix<double, 1, 3, 1, 1, 3>, std::function<double (Eigen::Matrix<double, 1, 3, 1, 1, 3> const&)>, Eigen::Matrix<int, -1, 3, 1, -1, 3>, Eigen::Matrix<int, -1, 3, 1, -1, 3>>(Eigen::MatrixBase<Eigen::Matrix<double, 1, 3, 1, 1, 3>> const&, Eigen::Matrix<double, 1, 3, 1, 1, 3>::Scalar, int, std::function<double (Eigen::Matrix<double, 1, 3, 1, 1, 3> const&)> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 3, 1, -1, 3>> const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 1, -1, 3>>&);
+template void igl::lipschitz_octree_prune<true, Eigen::Matrix<double, 1, 3, 1, 1, 3>, std::function<Eigen::Matrix<double, -1, 1, 0, -1, 1> (Eigen::Matrix<double, -1, 3, 1, -1, 3> const&)>, Eigen::Matrix<int, -1, 3, 1, -1, 3>, Eigen::Matrix<int, -1, 3, 1, -1, 3>>(Eigen::MatrixBase<Eigen::Matrix<double, 1, 3, 1, 1, 3>> const&, Eigen::Matrix<double, 1, 3, 1, 1, 3>::Scalar, int, std::function<Eigen::Matrix<double, -1, 1, 0, -1, 1> (Eigen::Matrix<double, -1, 3, 1, -1, 3> const&)> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 3, 1, -1, 3>> const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 3, 1, -1, 3>>&);
 #endif
 

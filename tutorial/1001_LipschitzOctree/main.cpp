@@ -135,6 +135,7 @@ int main(int argc, char * argv[])
     Eigen::Matrix<int,Eigen::Dynamic,3,Eigen::RowMajor> ijk;
     igl::lipschitz_octree(origin,h0,max_depth,udf,ijk);
     printf("           lipschitz_octree: %0.7f seconds\n",tictoc());
+
     // Gather the corners of those leaf cells
     const double h = h0 / (1 << max_depth);
     Eigen::Matrix<int,Eigen::Dynamic,8,Eigen::RowMajor> J;
@@ -180,6 +181,7 @@ int main(int argc, char * argv[])
       viewer.data(aux_index).add_points(unique_corner_positions,point_colors);
       viewer.data(aux_index).point_size = 8;
     }
+    printf("                     |ijk| : %ld\n",ijk.rows());
   };
 
   viewer.callback_key_pressed =
@@ -207,6 +209,25 @@ int main(int argc, char * argv[])
     return true;
   };
   update();
+  // Trivial batched function
+  const std::function<Eigen::VectorXd(const Eigen::Matrix<double,Eigen::Dynamic,3,Eigen::RowMajor> &)>
+    udf_batch = [&](const Eigen::Matrix<double,Eigen::Dynamic,3,Eigen::RowMajor> & P) -> Eigen::VectorXd
+  {
+    Eigen::VectorXd U(P.rows());
+    for(int i = 0;i<P.rows();i++)
+    {
+      U(i) = udf(P.row(i));
+    }
+    return U;
+  };
+  {
+    // The batched version should produce the same size output
+    Eigen::Matrix<int,Eigen::Dynamic,3,Eigen::RowMajor> ijk_batch;
+    igl::lipschitz_octree<true>(origin,h0,max_depth,udf_batch,ijk_batch);
+    printf("               |ijk_batch| : %ld\n",ijk_batch.rows());
+  }
+
+
   std::cout << R"(Usage:
   -,+  Decrease,Increase the depth of the octree and recompute
   {,}  Decrease,Increase the offset factor for the signed distance function

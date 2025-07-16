@@ -25,6 +25,7 @@ namespace igl
   ///   @param[out] ijk #ijk by 3 list of octree leaf cell minimum corner
   ///     subscripts
   template <
+    bool batched=false,
     typename Derivedorigin,
     typename Func,
     typename Derivedijk

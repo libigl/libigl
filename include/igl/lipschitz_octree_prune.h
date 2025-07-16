@@ -27,6 +27,7 @@ namespace igl
   ///   subscripts
   ///   @param[out] ijk_maybe #ijk_maybe by 3 list of octree leaf cell indices
   template <
+    bool batched=false,
     typename Derivedorigin,
     typename Func,
     typename Derivedijk,
