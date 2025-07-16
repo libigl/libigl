@@ -31,24 +31,24 @@ IGL_INLINE void igl::unique_sparse_voxel_corners(
   using MatrixiX3R = Eigen::Matrix<int,Eigen::Dynamic,3,Eigen::RowMajor>;
   // slow, precise hashing. Not sure why I didn't just use unique_rows on #ijk*8
   // by 3...
-  const Eigen::Matrix<int64_t,1,3> coeffs(
+  const Eigen::Matrix<std::int64_t,1,3> coeffs(
     1,
-    //static_cast<int64_t>(std::pow(2,depth) + 1), 
+    //static_cast<std::int64_t>(std::pow(2,depth) + 1), 
     (1 << depth) + 1,
-    //static_cast<int64_t>(std::pow(2,depth) + 1) * (std::pow(2,depth) + 1));
+    //static_cast<std::int64_t>(std::pow(2,depth) + 1) * (std::pow(2,depth) + 1));
     ((1 << depth) +1)*((1 << depth) +1));
-  const auto ijk2code = [&coeffs](const int i, const int j, const int k)->int64_t
+  const auto ijk2code = [&coeffs](const int i, const int j, const int k)->std::int64_t
   {
     // code = i*(2.^depth + 1)^0 + j*(2.^depth + 1)^1 + k*(2.^depth + 1)^2;
     // Probably can just use 2.^(depth+1) instead of (2.^depth + 1) and use bit
     // shifting?
-    const int64_t code =
-      static_cast<int64_t>(i) * coeffs[0] +
-      static_cast<int64_t>(j) * coeffs[1] +
-      static_cast<int64_t>(k) * coeffs[2];
+    const std::int64_t code =
+      static_cast<std::int64_t>(i) * coeffs[0] +
+      static_cast<std::int64_t>(j) * coeffs[1] +
+      static_cast<std::int64_t>(k) * coeffs[2];
     return code;
   };
-  const auto code2ijk = [&coeffs](const int64_t code, int & i, int & j, int & k)
+  const auto code2ijk = [&coeffs](const std::int64_t code, int & i, int & j, int & k)
   {
     k = static_cast<int>(code / coeffs[2]);
     j = static_cast<int>((code - k * coeffs[2]) / coeffs[1]);
@@ -56,7 +56,7 @@ IGL_INLINE void igl::unique_sparse_voxel_corners(
   };
 
   // Should use parallel_for
-  Eigen::Matrix<int64_t,Eigen::Dynamic,8,Eigen::RowMajor> codes(ijk.rows(),8);
+  Eigen::Matrix<std::int64_t,Eigen::Dynamic,8,Eigen::RowMajor> codes(ijk.rows(),8);
   for(int c = 0;c<ijk.rows();c++)
   {
     for(int i = 0;i<8;i++)
@@ -65,7 +65,7 @@ IGL_INLINE void igl::unique_sparse_voxel_corners(
         ijk(c,0) + ((i&2) ? 1 : 0), 
         ijk(c,1) + ((i&4) ? 1 : 0), 
         ijk(c,2) + ((i&1) ? 1 : 0));
-      const int64_t code = ijk2code(ijk_c(0), ijk_c(1), ijk_c(2));
+      const std::int64_t code = ijk2code(ijk_c(0), ijk_c(1), ijk_c(2));
       const int k = marching_cubes_reoder[i];
       codes(c,k) = code;
 #ifndef NDEBUG
@@ -87,7 +87,7 @@ IGL_INLINE void igl::unique_sparse_voxel_corners(
   // std::vector
   Eigen::VectorXi I;
   {
-    Eigen::Matrix<int64_t,Eigen::Dynamic,1> _;
+    Eigen::Matrix<std::int64_t,Eigen::Dynamic,1> _;
     Eigen::Matrix<typename DerivedJ::Scalar,Eigen::Dynamic,1> Jvec;
     // igl::unique has a lot of internal copies :-(
     igl::unique(codes,_,I,Jvec);
