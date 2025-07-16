@@ -56,61 +56,37 @@ IGL_INLINE void igl::lipschitz_octree_cull(
   MatrixSX3R unique_corner_positions;
   igl::unique_sparse_voxel_corners(origin,h0,depth,ijk,unique_ijk,I,J,unique_corner_positions);
 
-  Eigen::Matrix<Scalar,Eigen::Dynamic,1> uU(unique_corner_positions.rows());
+  // Effectively a batched call to udf
+  Eigen::Array<bool,Eigen::Dynamic,1> big(unique_corner_positions.rows()); 
   //for(int u = 0;u<unique_corner_positions.rows();u++)
   igl::parallel_for(
     unique_corner_positions.rows(),
-    [&](const int u)
+    [&](const int i)
     {
       // evaluate the function at the corner
-      const RowVectorS3 corner = unique_corner_positions.row(u);
-      uU(u) = udf(corner);
-      assert(uU(u) >= 0 && "udf must be non-negative for lipschitz_octree_cull");
+      const RowVectorS3 corner = unique_corner_positions.row(i);
+      const Scalar u = udf(corner);
+      assert(u >= 0 && "udf must be non-negative for lipschitz_octree_cull");
+      big(i) = (u > h * std::sqrt(3));
     },
     1000);
 
-  MatrixSX8R U(ijk.rows(),8);
-  // Pull this out as a function that identifies unique corners and then batches
-  // the udf calls.
-  // Should use parallel_for
+  ijk_maybe.resize(ijk.rows(),3);
+  int k = 0;
   for(int c = 0;c<ijk.rows();c++)
   {
+    bool empty = false;
     for(int i = 0;i<8;i++)
     {
-      U(c,i) = uU(J(c,i));
+      empty = empty || big(J(c,i));
+    }
+    bool maybe = !empty;
+    if(maybe)
+    {
+      ijk_maybe.row(k++) = ijk.row(c);
     }
   }
-  // It's a bit silly to expose an overload for the _replicated_ U values. The
-  // subsequent test is done elementwize so that could have been done before
-  // mapping back to replicates.
-  return lipschitz_octree_cull(h, U, ijk, ijk_maybe);
-}
-
-template <
-  typename DerivedU,
-  typename Derivedijk,
-  typename Derivedijk_maybe
-    >
-IGL_INLINE void igl::lipschitz_octree_cull(
-  const typename DerivedU::Scalar h,
-  const Eigen::MatrixBase<DerivedU> & U,
-  const Eigen::MatrixBase<Derivedijk> & ijk,
-  Eigen::PlainObjectBase<Derivedijk_maybe> & ijk_maybe)
-{
-  assert(U.rows() == ijk.rows() &&
-    "U and ijk must have the same number of rows");
-  assert(U.cols() == 8 &&
-    "U must have 8 columns for the 8 corners of each octree cell");
-  assert(ijk.cols() == 3 &&
-    "ijk must have 3 columns for x, y, z indices");
-  using MatrixiX3R = Eigen::Matrix<int,Eigen::Dynamic,3,Eigen::RowMajor>;
-  // sufficient_1 = any(U > h*sqrt(3),2);
-  using ArraybX = Eigen::Array<bool,Eigen::Dynamic,1>;
-  const ArraybX empty = (U.array() > h * std::sqrt(3)).rowwise().any().eval();
-  // maybe = !empty
-  const ArraybX maybe = (!empty).eval();
-  //const auto maybe = (U.array() < h * std::sqrt(3)).rowwise().all().eval();
-  ijk_maybe = ijk(igl::find(maybe), Eigen::all);
+  ijk_maybe.conservativeResize(k,3);
 }
 
 #ifdef IGL_STATIC_LIBRARY

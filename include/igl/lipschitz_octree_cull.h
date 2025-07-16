@@ -39,24 +39,6 @@ namespace igl
     const Func & udf,
     const Eigen::MatrixBase<Derivedijk> & ijk,
     Eigen::PlainObjectBase<Derivedijk_maybe> & ijk_maybe);
-  /// \brief overload
-  ///
-  ///   @param[in] h  side length at this depth
-  ///   @param[in] U  #ijk by 8 list of function values at the corners of the
-  ///     octree cells
-  ///   @param[in] ijk #ijk by 3 list of octree leaf cell minimum corner
-  ///   subscripts
-  ///   @param[out] ijk_maybe #ijk_maybe by 3 list of octree leaf cell indices
-  template <
-    typename DerivedU,
-    typename Derivedijk,
-    typename Derivedijk_maybe
-      >
-  IGL_INLINE void lipschitz_octree_cull(
-    const typename DerivedU::Scalar h,
-    const Eigen::MatrixBase<DerivedU> & U,
-    const Eigen::MatrixBase<Derivedijk> & ijk,
-    Eigen::PlainObjectBase<Derivedijk_maybe> & ijk_maybe);
 }
 
 #ifndef IGL_STATIC_LIBRARY

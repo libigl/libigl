@@ -12,6 +12,7 @@
 #include <igl/get_seconds.h>
 
 
+// Edges of a cube box with minimum corner at origin and side length h.
 void box_edges(
   const Eigen::RowVector3d & origin,
   const double h,
@@ -26,6 +27,7 @@ void box_edges(
   E<< 0,1,  0,2,  0,4,  1,3,  1,5,  2,3,  2,6,  3,7,  4,5,  4,6,  5,7,  6,7;
 }
 
+// Edges of cubes placed at all corners of octree with origin and cell side length h.
 void all_box_edges(
   const Eigen::RowVector3d & origin,
   const double h,
@@ -57,8 +59,7 @@ int main(int argc, char * argv[])
     std::cout << "Failed to load mesh." << std::endl;
   }
 
-  // Prepare an unsigned distance function handle and a signed distance function
-  // handle.
+  // Prepare unsigned and signed distance function handles
   igl::AABB<Eigen::MatrixXd,3> aabb;
   aabb.init(V,F);
   const double bbd = (V.colwise().maxCoeff() - V.colwise().minCoeff()).norm();
@@ -81,9 +82,9 @@ int main(int argc, char * argv[])
     return std::abs(sdf(p));
   };
 
-  // Centered bounding cube with padding.
+  // Centered bounding cube (root of octree) with padding.
   double h0 = (V.colwise().maxCoeff() - V.colwise().minCoeff()).maxCoeff();
-  int max_depth = 5;
+  int max_depth = 9;
   // Pad bounding box by max_depth
   //{
   //  double leaf_h = h0 / (1 << max_depth);
@@ -110,6 +111,7 @@ int main(int argc, char * argv[])
   {
     if(max_depth<=8)
     {
+      // For comparison, how long would it take to compute on the dense grid
       tictoc();
       Eigen::Matrix<double,Eigen::Dynamic,3,Eigen::RowMajor> GV;
       Eigen::RowVector3i res(1<<max_depth,1<<max_depth,1<<max_depth);
@@ -129,9 +131,11 @@ int main(int argc, char * argv[])
     }
 
     tictoc();
+    // Identify the octree cells that could contain the surface
     Eigen::Matrix<int,Eigen::Dynamic,3,Eigen::RowMajor> ijk;
     igl::lipschitz_octree(origin,h0,max_depth,udf,ijk);
     printf("           lipschitz_octree: %0.7f seconds\n",tictoc());
+    // Gather the corners of those leaf cells
     const double h = h0 / (1 << max_depth);
     Eigen::VectorXi I;
     Eigen::Matrix<int,Eigen::Dynamic,8,Eigen::RowMajor> J;
@@ -139,6 +143,7 @@ int main(int argc, char * argv[])
     Eigen::Matrix<double,Eigen::Dynamic,3,Eigen::RowMajor> unique_corner_positions;
     igl::unique_sparse_voxel_corners(origin,h0,max_depth,ijk,unique_ijk,I,J,unique_corner_positions);
     printf("unique_sparse_voxel_corners: %0.7f seconds\n",tictoc());
+    /// Evaluate the signed distance function at the corners
     Eigen::VectorXd S(unique_corner_positions.rows());
     //for(int u = 0;u<unique_corner_positions.rows();u++)
     igl::parallel_for(
@@ -149,14 +154,13 @@ int main(int argc, char * argv[])
         S(u) = sdf(unique_corner_positions.row(u));
       },1000);
       printf("                        sdf: %0.7f seconds\n",tictoc());
-
+    // Run marching cubes on the sparse set of leaf cells
     Eigen::Matrix<double,Eigen::Dynamic,3> mV;
     Eigen::Matrix<int,Eigen::Dynamic,3> mF;
-    igl::marching_cubes(
-      S,unique_corner_positions,J,
-      0,
-      mV,mF);
+    igl::marching_cubes( S,unique_corner_positions,J, 0, mV,mF);
     printf("             marching_cubes: %0.7f seconds\n",tictoc());
+
+    // Visualize
     viewer.data(aux_index).clear();
     viewer.data(aux_index).set_mesh(mV,mF);
     viewer.data(aux_index).set_face_based(true);
@@ -164,6 +168,7 @@ int main(int argc, char * argv[])
     viewer.data(aux_index).set_colors(Eigen::RowVector3d(0.941176,0.305882,0.282353));
     if(max_depth <= 7)
     {
+      // If tree is shallow enough, visualize the edges of the octree cells
       Eigen::MatrixXd gV;
       Eigen::MatrixXi gE;
       all_box_edges(origin,h,ijk,gV,gE);
