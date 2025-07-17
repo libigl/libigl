@@ -101,7 +101,9 @@ IGL_INLINE void igl::unique_sparse_voxel_corners(
   unique_ijk.resize(I.size(),3);
   for(int c = 0;c<I.size();c++)
   {
-    code2ijk(codes_vec(I(c)),unique_ijk(c,0),unique_ijk(c,1),unique_ijk(c,2));
+    Eigen::RowVector3i ijk_c;
+    code2ijk(codes_vec(I(c)),ijk_c(0),ijk_c(1),ijk_c(2));
+    unique_ijk.row(c) = ijk_c.cast<typename Derivedunique_ijk::Scalar>();
   }
 }
 
