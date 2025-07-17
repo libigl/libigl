@@ -363,10 +363,10 @@ IGL_INLINE void igl::split_nonmanifold(
   // Consider each unique edge in the original mesh
 
   // number of faces incident on each unique edge
-  Eigen::VectorXi D = uEC.tail(uEC.rows()-1)-uEC.head(uEC.rows()-1);
+  VectorXI D = uEC.tail(uEC.rows()-1)-uEC.head(uEC.rows()-1);
   Eigen::VectorXi uI;
   {
-    Eigen::VectorXi sD;
+    VectorXI sD;
     igl::sort(D,1,true,sD,uI);
   }
 

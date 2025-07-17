@@ -48,16 +48,15 @@ IGL_INLINE void igl::exterior_edges(
   Eigen::PlainObjectBase<DerivedE> & E)
 {
   using Index = typename DerivedF::Scalar;
-  using VectorXI = Eigen::Matrix<typename DerivedF::Scalar,Eigen::Dynamic,1>;
-  using MatrixXI = Eigen::Matrix<typename DerivedF::Scalar,Eigen::Dynamic,Eigen::Dynamic>;
   assert(F.cols() == 3);
   const Index m = F.rows();
-  Eigen::MatrixXi all_E,sall_E,sort_order;
+  PlainMatrix<DerivedF,Eigen::Dynamic,2> all_E,sall_E;
+  Eigen::MatrixXi sort_order;
   // Sort each edge by index
   oriented_facets(F,all_E);
   sort(all_E,2,true,sall_E,sort_order);
   // Find unique edges
-  PlainMatrix<DerivedF,Eigen::Dynamic> uE;
+  PlainMatrix<DerivedF,Eigen::Dynamic,2> uE;
   Eigen::VectorXi IA,EMAP;
   unique_rows(sall_E,uE,IA,EMAP);
   Eigen::VectorXi counts = Eigen::VectorXi::Zero(uE.rows());
