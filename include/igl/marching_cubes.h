@@ -67,7 +67,8 @@ namespace igl
   ///
   /// @param[in] S #S list of scalar field values
   /// @param[in] GV  #S by 3 list of referenced grid vertex positions
-  /// @param[in] GI  #GI by 8 list of grid corner indices into rows of GV
+  /// @param[in] GI  #GI by 8 list of grid corner indices into rows of GV (e.g.,
+  /// as output by igl::sparse_voxel_grid) in y-x-z binary counting order.
   template <
     typename DerivedS, 
     typename DerivedGV, 
