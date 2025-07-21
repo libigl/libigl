@@ -83,9 +83,8 @@ typename Tp::Scalar udLineSegment(const Tp & p, const Ta & a, const Tb & b)
 int main(int argc, char * argv[])
 {
   IGL_TICTOC_LAMBDA;
-  // Dense mesh resolution (+1 so octree matches)
-  const int ns = 512+1;
-  Eigen::RowVector3i res(ns,ns,ns);
+  // Octree depth
+  int max_depth = 7;
 
   // Read mesh
   Eigen::Matrix<double,Eigen::Dynamic,3,Eigen::RowMajor> V;
@@ -108,7 +107,6 @@ int main(int argc, char * argv[])
     R *= scale;
   }else
   {
-    //Eigen::VectorXd R = (0.1+0.9*(0.5+(Eigen::VectorXd::Random(V.rows())*0.5).array()))*((2.0/(res(0)-1))*2);
     R = V.col(1);
     R.array() -= R.minCoeff();
     R /= R.maxCoeff();
@@ -125,7 +123,7 @@ int main(int argc, char * argv[])
   Eigen::Matrix<int,Eigen::Dynamic,2,Eigen::RowMajor> E;
   igl::edges(F,E);
 
-  double isovalue = 0.02;// (2.0/(res(0)-1))*2;
+  double isovalue = 0.02;
   std::function<double(const Eigen::RowVector3d &,const int i)> primitive;
   std::vector<igl::SphereMeshWedge<double>> data;
   switch(offset)
@@ -171,108 +169,144 @@ int main(int argc, char * argv[])
   //  printf("%d → %d\n",PB1.rows(),U.size()-2);
   //}
 
-  ////////////////////////////////////////////////////////////////////////
-  /// If the grid isn't that big then compute a dense M.C. mesh
-  /// Call batched eytzinger_aabb_sdf directly on grid nodes.
-  ////////////////////////////////////////////////////////////////////////
-  tictoc();
-  Eigen::Matrix<double,Eigen::Dynamic,3> mV;
-  Eigen::Matrix<int,Eigen::Dynamic,3> mF;
-  if(ns <= 128+1)
-  {
-    Eigen::Matrix<double,Eigen::Dynamic,3,Eigen::RowMajor> GV;
-    igl::grid(res,GV);
-    GV *= 2;
-    GV.array() -= 1;
-    Eigen::VectorXd S;
-    igl::eytzinger_aabb_sdf(GV,primitive,B1,B2,leaf,S);
-    printf("%-20s: %g secs\n","eytzinger_aabb_sdf",tictoc());
-
-    tictoc();
-    igl::marching_cubes(S,GV,res(0),res(1),res(2),isovalue,mV,mF);
-    printf("%-20s: %g secs\n","marching_cubes",tictoc());
-  }
-
-  ////////////////////////////////////////////////////////////////////////
-  /// Prepare an unsigned distance and signed distance function handle.
-  ////////////////////////////////////////////////////////////////////////
-  tictoc();
-  const std::function<double(const Eigen::RowVector3d &)>
-    sdf = [&](const Eigen::RowVector3d & p) -> double
-  {
-    const std::function<double(const int)> primitive_p = [&](const int j)
-    {
-      return primitive(p,j);
-    };
-    double f;
-    igl::eytzinger_aabb_sdf(p,primitive_p,B1,B2,leaf,f);
-    return f - isovalue;
-  };
-  const std::function<double(const Eigen::RowVector3d &)>
-    udf = [&](const Eigen::RowVector3d & p) -> double
-  {
-    return std::abs(sdf(p));
-  };
-  ////////////////////////////////////////////////////////////////////////
-  /// Use udf to build sparse voxel octree around the zero level set
-  ////////////////////////////////////////////////////////////////////////
-  Eigen::RowVector3d origin(-1,-1,-1);
-  const double h0 = 2;
-  const int max_depth = floor(log2(res(0)));
-  Eigen::Matrix<int,Eigen::Dynamic,3,Eigen::RowMajor> ijk;
-  igl::lipschitz_octree( origin,h0,max_depth,udf,ijk);
-  printf("%-20s: %g secs\n","lipschitz_octree",tictoc());
-
-  ////////////////////////////////////////////////////////////////////////
-  /// Gather the corners of those leaf cells, compute sdf there and run 
-  /// (sparse) marching cubes
-  ////////////////////////////////////////////////////////////////////////
-  Eigen::Matrix<double,Eigen::Dynamic,3> oV;
-  Eigen::Matrix<int,Eigen::Dynamic,3> oF;
-  {
-    tictoc();
-    // Gather the corners of those leaf cells
-    const double h = h0 / (1 << max_depth);
-    Eigen::Matrix<int,Eigen::Dynamic,8,Eigen::RowMajor> J;
-    Eigen::Matrix<int,Eigen::Dynamic,3,Eigen::RowMajor> unique_ijk;
-    Eigen::Matrix<double,Eigen::Dynamic,3,Eigen::RowMajor> unique_corner_positions;
-    igl::unique_sparse_voxel_corners(origin,h0,max_depth,ijk,unique_ijk,J,unique_corner_positions);
-    //printf("unique_sparse_voxel_corners: %0.7f seconds\n",tictoc());
-    printf("%-20s: %g secs\n","unique_sparse_vo...",tictoc());
-    /// Evaluate the signed distance function at the corners
-    Eigen::VectorXd S(unique_corner_positions.rows());
-    //for(int u = 0;u<unique_corner_positions.rows();u++)
-    igl::parallel_for(
-      unique_corner_positions.rows(),
-      [&](const int u)
-      {
-        // evaluate the function at the corner
-        S(u) = sdf(unique_corner_positions.row(u));
-      },1000);
-      //printf("                        sdf: %0.7f seconds\n",tictoc());
-      printf("%-20s: %g secs\n","sdf",tictoc());
-    // Run marching cubes on the sparse set of leaf cells
-    igl::marching_cubes( S,unique_corner_positions,J, 0, oV,oF);
-    //printf("             marching_cubes: %0.7f seconds\n",tictoc());
-    printf("%-20s: %g secs\n","marching_cubes",tictoc());
-  }
-
   igl::opengl::glfw::Viewer viewer;
+  Eigen::Matrix<double,Eigen::Dynamic,3> mV,oV;
+  Eigen::Matrix<int,Eigen::Dynamic,3> mF,oF;
   viewer.data().set_mesh(V,F);
   viewer.data().set_face_based(true);
   viewer.data().show_lines = false;
 
+  if(offset == OffsetType::VARIABLE_RADIUS_OFFSET)
+  {
+    viewer.data().set_colors(R);
+  }
   viewer.append_mesh();
-  viewer.data().set_mesh(mV,mF);
-  viewer.data().set_face_based(true);
-  viewer.data().show_lines = true;
-  viewer.data().set_colors(Eigen::RowVector3d(0.8,0.2,0.2));
+  const int m_index = viewer.selected_data_index;
+  viewer.append_mesh();
+  const int o_index = viewer.selected_data_index;
 
-  viewer.append_mesh();
-  viewer.data().set_mesh(oV,oF);
-  viewer.data().set_face_based(true);
-  viewer.data().show_lines = false;
-  viewer.data().set_colors(Eigen::RowVector3d(0.2,0.8,0.2));
+  viewer.data(m_index).set_face_based(true);
+  viewer.data(m_index).show_lines = true;
+  viewer.data(o_index).set_face_based(true);
+  viewer.data(o_index).show_lines = false;
+
+
+  const auto update = [&]()
+  {
+    ////////////////////////////////////////////////////////////////////////
+    /// If the grid isn't that big then compute a dense M.C. mesh
+    /// Call batched eytzinger_aabb_sdf directly on grid nodes.
+    ////////////////////////////////////////////////////////////////////////
+    tictoc();
+    const int ns = (1 << max_depth) + 1;
+    if(ns <= 128+1)
+    {
+      Eigen::RowVector3i res(ns,ns,ns);
+      Eigen::Matrix<double,Eigen::Dynamic,3,Eigen::RowMajor> GV;
+      igl::grid(res,GV);
+      GV *= 2;
+      GV.array() -= 1;
+      Eigen::VectorXd S;
+      igl::eytzinger_aabb_sdf(GV,primitive,B1,B2,leaf,S);
+      printf("%-20s: %g secs\n","eytzinger_aabb_sdf",tictoc());
+
+      tictoc();
+      igl::marching_cubes(S,GV,res(0),res(1),res(2),isovalue,mV,mF);
+      printf("%-20s: %g secs\n","marching_cubes",tictoc());
+    }else
+    {
+      mV.resize(0,3); 
+      mF.resize(0,3);
+    }
+
+    ////////////////////////////////////////////////////////////////////////
+    /// Prepare an unsigned distance and signed distance function handle.
+    ////////////////////////////////////////////////////////////////////////
+    tictoc();
+    const std::function<double(const Eigen::RowVector3d &)>
+      sdf = [&](const Eigen::RowVector3d & p) -> double
+    {
+      const std::function<double(const int)> primitive_p = [&](const int j)
+      {
+        return primitive(p,j);
+      };
+      double f;
+      igl::eytzinger_aabb_sdf(p,primitive_p,B1,B2,leaf,f);
+      return f - isovalue;
+    };
+    const std::function<double(const Eigen::RowVector3d &)>
+      udf = [&](const Eigen::RowVector3d & p) -> double
+    {
+      return std::abs(sdf(p));
+    };
+    ////////////////////////////////////////////////////////////////////////
+    /// Use udf to build sparse voxel octree around the zero level set
+    ////////////////////////////////////////////////////////////////////////
+    Eigen::RowVector3d origin(-1,-1,-1);
+    const double h0 = 2;
+    Eigen::Matrix<int,Eigen::Dynamic,3,Eigen::RowMajor> ijk;
+    igl::lipschitz_octree( origin,h0,max_depth,udf,ijk);
+    printf("%-20s: %g secs\n","lipschitz_octree",tictoc());
+
+    ////////////////////////////////////////////////////////////////////////
+    /// Gather the corners of those leaf cells, compute sdf there and run 
+    /// (sparse) marching cubes
+    ////////////////////////////////////////////////////////////////////////
+    {
+      tictoc();
+      // Gather the corners of those leaf cells
+      const double h = h0 / (1 << max_depth);
+      Eigen::Matrix<int,Eigen::Dynamic,8,Eigen::RowMajor> J;
+      Eigen::Matrix<int,Eigen::Dynamic,3,Eigen::RowMajor> unique_ijk;
+      Eigen::Matrix<double,Eigen::Dynamic,3,Eigen::RowMajor> unique_corner_positions;
+      igl::unique_sparse_voxel_corners(origin,h0,max_depth,ijk,unique_ijk,J,unique_corner_positions);
+      //printf("unique_sparse_voxel_corners: %0.7f seconds\n",tictoc());
+      printf("%-20s: %g secs\n","unique_sparse_vo...",tictoc());
+      /// Evaluate the signed distance function at the corners
+      Eigen::VectorXd S(unique_corner_positions.rows());
+      //for(int u = 0;u<unique_corner_positions.rows();u++)
+      igl::parallel_for(
+        unique_corner_positions.rows(),
+        [&](const int u)
+        {
+          // evaluate the function at the corner
+          S(u) = sdf(unique_corner_positions.row(u));
+        },1000);
+        //printf("                        sdf: %0.7f seconds\n",tictoc());
+        printf("%-20s: %g secs\n","sdf",tictoc());
+      // Run marching cubes on the sparse set of leaf cells
+      igl::marching_cubes( S,unique_corner_positions,J, 0, oV,oF);
+      //printf("             marching_cubes: %0.7f seconds\n",tictoc());
+      printf("%-20s: %g secs\n","marching_cubes",tictoc());
+    }
+
+    viewer.data(m_index).clear();
+    viewer.data(m_index).set_mesh(mV,mF);
+    viewer.data(m_index).set_colors(Eigen::RowVector3d(0.8,0.2,0.2));
+
+    viewer.data(o_index).clear();
+    viewer.data(o_index).set_mesh(oV,oF);
+    viewer.data(o_index).set_colors(Eigen::RowVector3d(0.2,0.8,0.2));
+  };
+
+  viewer.callback_key_pressed =
+  [&](igl::opengl::glfw::Viewer & viewer, unsigned int key, int mod)->bool
+  {
+    switch(key) {
+      default:
+        return false;
+      case '=':
+      case '+':
+      case '-':
+      case '_':
+        max_depth = std::max(0,max_depth + ((key == '-'||key=='_') ? -1 : 1));
+        printf("max_depth = %d\n",max_depth);
+        update();
+        break;
+    }
+    return true;
+  };
+  update();
 
   viewer.launch();
   return 0;
