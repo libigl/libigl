@@ -99,7 +99,8 @@ int main(int argc, char * argv[])
   const double scale = 0.8/V.array().abs().maxCoeff();
   V *= scale;
 
-  // if second arg exists read it from .dmat
+  // Per-vertex radius for VARIABLE_RADIUS_OFFSET
+  // if second arg exists read R from .dmat
   Eigen::VectorXd R;
   if(argc>2)
   {
@@ -116,6 +117,9 @@ int main(int argc, char * argv[])
     R *= 0.01;
   }
 
+  ////////////////////////////////////////////////////////////////////////
+  /// Box up simplices (and, for VARIABLE_RADIUS_OFFSET, precompute data)
+  ////////////////////////////////////////////////////////////////////////
   tictoc();
   Eigen::Matrix<double,Eigen::Dynamic,3,Eigen::RowMajor> PB1,PB2;
   Eigen::Matrix<int,Eigen::Dynamic,2,Eigen::RowMajor> E;
@@ -153,6 +157,9 @@ int main(int argc, char * argv[])
   }
   printf("%-20s: %g secs\n","PB",tictoc());
 
+  ////////////////////////////////////////////////////////////////////////
+  /// Put boxes into eytzinger AABB tree
+  ////////////////////////////////////////////////////////////////////////
   tictoc();
   Eigen::Matrix<double,Eigen::Dynamic,3,Eigen::RowMajor> B1,B2;
   Eigen::VectorXi leaf;
@@ -164,6 +171,10 @@ int main(int argc, char * argv[])
   //  printf("%d → %d\n",PB1.rows(),U.size()-2);
   //}
 
+  ////////////////////////////////////////////////////////////////////////
+  /// If the grid isn't that big then compute a dense M.C. mesh
+  /// Call batched eytzinger_aabb_sdf directly on grid nodes.
+  ////////////////////////////////////////////////////////////////////////
   tictoc();
   Eigen::Matrix<double,Eigen::Dynamic,3> mV;
   Eigen::Matrix<int,Eigen::Dynamic,3> mF;
@@ -182,6 +193,9 @@ int main(int argc, char * argv[])
     printf("%-20s: %g secs\n","marching_cubes",tictoc());
   }
 
+  ////////////////////////////////////////////////////////////////////////
+  /// Prepare an unsigned distance and signed distance function handle.
+  ////////////////////////////////////////////////////////////////////////
   tictoc();
   const std::function<double(const Eigen::RowVector3d &)>
     sdf = [&](const Eigen::RowVector3d & p) -> double
@@ -199,6 +213,9 @@ int main(int argc, char * argv[])
   {
     return std::abs(sdf(p));
   };
+  ////////////////////////////////////////////////////////////////////////
+  /// Use udf to build sparse voxel octree around the zero level set
+  ////////////////////////////////////////////////////////////////////////
   Eigen::RowVector3d origin(-1,-1,-1);
   const double h0 = 2;
   const int max_depth = floor(log2(res(0)));
@@ -206,6 +223,10 @@ int main(int argc, char * argv[])
   igl::lipschitz_octree( origin,h0,max_depth,udf,ijk);
   printf("%-20s: %g secs\n","lipschitz_octree",tictoc());
 
+  ////////////////////////////////////////////////////////////////////////
+  /// Gather the corners of those leaf cells, compute sdf there and run 
+  /// (sparse) marching cubes
+  ////////////////////////////////////////////////////////////////////////
   Eigen::Matrix<double,Eigen::Dynamic,3> oV;
   Eigen::Matrix<int,Eigen::Dynamic,3> oF;
   {
