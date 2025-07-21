@@ -135,5 +135,5 @@ endif()
 
 if(LIBIGL_TUTORIALS_CHAPTER10)
   igl_add_tutorial(1001_LipschitzOctree igl::glfw)
-  igl_add_tutorial(1002_AABB igl::glfw)
+  igl_add_tutorial(1002_EytzingerAABB igl::glfw)
 endif()

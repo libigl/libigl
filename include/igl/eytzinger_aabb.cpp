@@ -3,7 +3,6 @@
 #include "median.h"
 #include <vector>
 #include <algorithm>
-#include <algorithm>
 
 template <
   typename DerivedPB,
@@ -54,7 +53,6 @@ IGL_INLINE void igl::eytzinger_aabb(
     Scalar split_value;
     VectorXS Z = PBC(I, dir);
     igl::median(Z,split_value); 
-    bool possession_arrow = false;
     std::vector<int> left; left.reserve(I.size()/2+1);
     std::vector<int> right; right.reserve(I.size()/2+1);
     for(int j = 0; j < (int)I.size(); j++)
@@ -65,18 +63,21 @@ IGL_INLINE void igl::eytzinger_aabb(
       }else if(Z(j) > split_value)
       {
         right.push_back(I[j]);
-      }else
-      {
-        (possession_arrow ? left : right).push_back(I[j]);
-        possession_arrow = !possession_arrow;
       }
     }
+    for(int j = 0; j < (int)I.size(); j++)
+    {
+      if(Z(j) == split_value)
+      {
+        (left.size()<right.size() ? left : right).push_back(I[j]);
+      }
+    }
+    assert(std::abs(int(left.size()-right.size())) <= 1);
 
     const int left_i = 2*i + 1;
     const int right_i = 2*i + 2;
     recursive_helper(left_i, left);
     recursive_helper(right_i, right);
-
   };
   recursive_helper(0,I);
 }

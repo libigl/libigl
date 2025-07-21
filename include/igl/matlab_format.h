@@ -13,6 +13,7 @@
 #include <Eigen/Core>
 #include <Eigen/Sparse>
 #include <string>
+#include <vector>
 
 namespace igl
 {
@@ -50,6 +51,10 @@ namespace igl
   template <typename DerivedM>
   IGL_INLINE std::string matlab_format_index(
     const Eigen::MatrixBase<DerivedM> & M,
+    const std::string name = "");
+  template <typename T>
+  IGL_INLINE std::string matlab_format_index(
+    const std::vector<T> & Mvec,
     const std::string name = "");
   /// Same but for sparse matrices. Print IJV format into an auxiliary variable
   /// and then print a call to sparse which will construct the sparse matrix
