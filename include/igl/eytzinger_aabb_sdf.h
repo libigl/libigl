@@ -26,6 +26,16 @@ namespace igl
     const Eigen::MatrixBase<DerivedB> & B2,
     const Eigen::MatrixBase<Derivedleaf> & leaf,
     typename Derivedp::Scalar & f);
+
+  /// @param[in] P  #P by dim list of query points
+  /// @param[in] B1  #B by dim list of minimum corners of the Eytzinger AABBs
+  /// @param[in] B2  #B by dim list of maximum corners of the Eytzinger AABBs
+  /// @param[in] leaf #B list of leaf indices, -1 indicates internal node, -2
+  /// indicates empty node
+  /// @param[in] primitive  function handle that takes as input the query point
+  ///   (row of P) and a primitive id and returns the SDF to that primitive
+  ///   `primitive(p,i)`
+  /// @param[out] S  #P list of SDF values at query points P
   template <
     typename DerivedP,
     typename Func,
