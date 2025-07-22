@@ -6,11 +6,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "round_cone_signed_distance.h"
-
-namespace 
-{
-  template <typename T> inline T sign(const T & x){ return (x>T(0)) - (x<T(0)); }
-}
+#include "sign.h"
 
 template <
   typename Derivedp,

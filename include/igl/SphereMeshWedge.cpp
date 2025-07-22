@@ -1,9 +1,15 @@
+// This file is part of libigl, a simple c++ geometry processing library.
+// 
+// Copyright (C) 2025 Alec Jacobson <alecjacobson@gmail.com>
+// 
+// This Source Code Form is subject to the terms of the Mozilla Public License 
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can 
+// obtain one at http://mozilla.org/MPL/2.0/.
 #include "SphereMeshWedge.h"
-
 #include "round_cone_signed_distance.h"
+#include "sign.h"
 #include <Eigen/QR>
 #include <Eigen/Geometry>
-#include <iostream>
 
 template <typename Scalar>
 IGL_INLINE igl::SphereMeshWedge<Scalar>::SphereMeshWedge(
@@ -127,7 +133,6 @@ IGL_INLINE Scalar igl::SphereMeshWedge<Scalar>::operator()(const RowVector3S & p
       const RowVector3S q1 = q - T.row(1);
       const RowVector3S q2 = q - T.row(2);
 
-      const auto sign = [](const Scalar & x){ return (x>Scalar(0)) - (x<Scalar(0)); };
       if(!(sign(C.row(0).dot(q0)) + 
            sign(C.row(1).dot(q1)) + 
            sign(C.row(2).dot(q2))<2.0))
