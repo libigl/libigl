@@ -169,17 +169,16 @@ IGL_INLINE bool igl::SphereMeshWedge<Scalar>::compute_planes()
   //const Eigen::CompleteOrthogonalDecomposition<decltype(A)> cod(A);
   const RowVector3S n0 = A.completeOrthogonalDecomposition().solve(d);
   const Scalar qA = N.squaredNorm();
-#warning "qB is 0 by construction"
+  // qB is zeros by construction. We could delete all terms involving qB
+  // It's not even clear if keeping them would lead to more accurate results.
   const Scalar qB = 2 * N.dot(n0);
   const Scalar qC = n0.squaredNorm() - 1;
   const Scalar qD = qB*qB - 4*qA*qC;
-  Scalar t_sol_1;
-  RowVector3S n1;
 
   if(qD<0) { return false; }
 
-  t_sol_1 = (-qB + std::sqrt(qD)) / (2*qA);
-  n1 = -(t_sol_1 * N + n0);
+  Scalar t_sol_1 = (-qB + std::sqrt(qD)) / (2*qA);
+  RowVector3S n1 = -(t_sol_1 * N + n0);
   T  = V + r * n1;
 
   const auto plane_equation = [](

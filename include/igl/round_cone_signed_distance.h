@@ -5,7 +5,8 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License 
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
-#ifndef IGL_
+#ifndef IGL_ROUND_CONE_SIGNED_DISTANCE_H
+#define IGL_ROUND_CONE_SIGNED_DISTANCE_H
 #include "igl_inline.h"
 #include <Eigen/Core>
 
@@ -60,8 +61,6 @@ namespace igl
 }
 
 #ifndef IGL_STATIC_LIBRARY
-#  include "variable_radius_offset.cpp"
+#  include "round_cone_signed_distance.cpp"
 #endif
 #endif 
-
-
