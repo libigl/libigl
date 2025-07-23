@@ -35,6 +35,37 @@ IGL_INLINE Orientation orient2d(
   else return Orientation::COLLINEAR;
 }
 
+template 
+  <typename DerivedA,
+   typename DerivedB,
+   typename DerivedC,
+   typename DerivedR>
+IGL_INLINE void orient2d(
+    const Eigen::MatrixBase<DerivedA>& A,
+    const Eigen::MatrixBase<DerivedB>& B,
+    const Eigen::MatrixBase<DerivedC>& C,
+    Eigen::PlainObjectBase<DerivedR>& R)
+{
+  igl::predicates::exactinit();
+  typedef typename DerivedR::Scalar RScalar;
+  typedef typename DerivedA::Scalar Scalar;
+  typedef Eigen::Matrix<Scalar, 1, 2> RowVector2S;
+
+  // max(A.rows(),B.rows(),C.rows()) is the number of points
+  const int np = std::max(
+    std::max(A.rows(), B.rows()),C.rows());
+  R.resize(np, 1);
+  igl::parallel_for(np, [&](const int p)
+    {
+      // Not sure if these copies are needed
+      const RowVector2S a = A.row(p % A.rows());
+      const RowVector2S b = B.row(p % B.rows());
+      const RowVector2S c = C.row(p % C.rows());
+      // Compute the orientation
+      R(p) = static_cast<RScalar>(igl::predicates::orient2d(a, b, c));
+    },1000);
+}
+
 }
 }
 
