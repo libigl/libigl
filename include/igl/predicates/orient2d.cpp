@@ -7,6 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "orient2d.h"
 #include "exactinit.h"
+#include "parallel_for.h"
 #include <predicates.h>
 
 namespace igl {
