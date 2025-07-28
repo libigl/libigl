@@ -30,6 +30,24 @@ namespace igl {
         const Eigen::MatrixBase<Vector2D>& pa,
         const Eigen::MatrixBase<Vector2D>& pb,
         const Eigen::MatrixBase<Vector2D>& pc);
+    /// Compute the orientation of the tetrahedron formed by each 4-tuple of
+    /// points
+    ///
+    /// @param[in] A  #P|1 by 3 matrix of 3D points
+    /// @param[in] B  #P|1 by 3 matrix of 3D points
+    /// @param[in] C  #P|1 by 3 matrix of 3D points
+    /// @param[out] R  #P vector of orientations
+    ///
+    template 
+      <typename DerivedA,
+       typename DerivedB,
+       typename DerivedC,
+       typename DerivedR>
+    IGL_INLINE void orient2d(
+        const Eigen::MatrixBase<DerivedA>& A,
+        const Eigen::MatrixBase<DerivedB>& B,
+        const Eigen::MatrixBase<DerivedC>& C,
+        Eigen::PlainObjectBase<DerivedR>& R);
   }
 }
 
