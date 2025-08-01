@@ -22,7 +22,7 @@ function(igl_add_tutorial name)
     # add_custom_command(TARGET your_target POST_BUILD COMMAND codesign -s - $<TARGET_FILE:your_target>
     if(APPLE)
       add_custom_command(TARGET ${name} POST_BUILD
-        COMMAND codesign -s - $<TARGET_FILE:${name}>
+        COMMAND codesign -f -s - $<TARGET_FILE:${name}>
         COMMENT "Codesigning ${name}"
       )
     endif()
