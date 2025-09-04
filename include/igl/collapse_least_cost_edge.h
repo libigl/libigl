@@ -73,6 +73,33 @@ namespace igl
     int & e2,
     int & f1,
     int & f2);
+
+
+    IGL_INLINE bool collapse_least_cost_edge3(
+    const decimate_cost_and_placement_callback3& cost_and_placement,
+    const decimate_pre_collapse_callback& pre_collapse,
+    const decimate_post_collapse_callback& post_collapse,
+    Eigen::MatrixXd& V,
+    Eigen::MatrixXi& F,
+    Eigen::MatrixXi& E,
+    Eigen::VectorXi& EMAP,
+    Eigen::MatrixXi& EF,
+    Eigen::MatrixXi& EI,
+    Eigen::MatrixXd& PD2,
+    Eigen::VectorXd& PV2,
+    std::vector<Eigen::Matrix4d>& q_matrices,
+    double& avg_edges_lenth,
+    igl::min_heap< std::tuple<double, int, int> >& Q,
+    Eigen::VectorXi& EQ,
+    Eigen::MatrixXd& C,
+    int& e,
+    int& e1,
+    int& e2,
+    int& f1,
+    int& f2);
+
+
+
 }
 
 #ifndef IGL_STATIC_LIBRARY

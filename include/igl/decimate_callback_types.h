@@ -44,6 +44,29 @@ namespace igl
       double &                                            ,/*cost*/
       Eigen::RowVectorXd &                                 /*p*/
       )>;
+
+
+
+
+      using decimate_cost_and_placement_callback3 =
+      std::function<void(
+        const int,/*e*/
+        const Eigen::MatrixXd&,/*V*/
+        const Eigen::MatrixXi&,/*F*/
+        const Eigen::MatrixXi&,/*E*/
+        const Eigen::VectorXi&,/*EMAP*/
+        const Eigen::MatrixXi&,/*EF*/
+        const Eigen::MatrixXi&,/*EI*/
+        Eigen::MatrixXd&,/*PD2*/
+        Eigen::VectorXd& PV2,
+        std::vector<Eigen::Matrix4d>& q_matrices,
+        double& avg_edges_lenth,
+        double&,/*cost*/
+        Eigen::RowVectorXd&                                 /*p*/
+        )>;
+
+
+
   /// Function handle used to control whether the queue processing in 
   /// igl::decimate should stop.
   ///

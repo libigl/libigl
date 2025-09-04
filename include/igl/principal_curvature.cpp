@@ -183,6 +183,10 @@ public:
   IGL_INLINE void getProjPlane(int, const std::vector<int>&, Eigen::Vector3d&);
   IGL_INLINE void applyMontecarlo(const std::vector<int>&,std::vector<int>*);
   IGL_INLINE void computeCurvature();
+
+  /*new 2025/9/4*/
+  IGL_INLINE void computeCurvature(std::vector<int> & update_vertices);
+
   IGL_INLINE void printCurvature(const std::string& outpath);
   IGL_INLINE double getAverageEdge();
 
@@ -740,6 +744,262 @@ IGL_INLINE void CurvatureCalculator::computeCurvature()
   curvatureComputed=true;
 }
 
+/*new 2025/9/4*/
+IGL_INLINE void CurvatureCalculator::computeCurvature(std::vector<int> & update_vertices)
+{
+    //CHECK che esista la mesh
+    const size_t vertices_count = vertices.rows();
+
+    if (vertices_count == 0)
+        return;
+
+    curvDir = std::vector< std::vector<Eigen::Vector3d> >(vertices_count);
+    curv = std::vector<std::vector<double> >(vertices_count);
+
+
+
+    scaledRadius = getAverageEdge() * sphereRadius;
+
+    for (int i : update_vertices)
+    {
+        // ѭ�����ڵ����б�����Ӧ���Ǿֲ��������Ա�֤�̰߳�ȫ
+        std::vector<int> vv;
+        std::vector<int> vvtmp;
+        Eigen::Vector3d normal;
+
+        Eigen::Vector3d me = vertices.row(i);
+
+        // --- ѭ���������֮ǰ��ȫ��ͬ ---
+        switch (st)
+        {
+        case SPHERE_SEARCH:
+            getSphere(i, scaledRadius, vv, 6);
+            break;
+        case K_RING_SEARCH:
+            getKRing(i, kRing, vv);
+            break;
+        default:
+            // �ڲ��д����У�����ʹ�ò���ȫ��IO��ֱ�ӷ���
+            return;
+        }
+
+        if (vv.size() < 6)
+        {
+            return;
+        }
+
+        // ... (ʡ�Բ��ּ����룬���Ǳ��ֲ���)
+        if (projectionPlaneCheck)
+        {
+            vvtmp.reserve(vv.size());
+            applyProjOnPlane(vertex_normals.row(i), vv, vvtmp);
+            if (vvtmp.size() >= 6 && vvtmp.size() < vv.size())
+                vv = vvtmp;
+        }
+
+        switch (nt)
+        {
+        case AVERAGE:
+            getAverageNormal(i, vv, normal);
+            break;
+        case PROJ_PLANE:
+            getProjPlane(i, vv, normal);
+            break;
+        default:
+            return;
+        }
+
+        if (vv.size() < 6)
+        {
+            return;
+        }
+
+        if (montecarlo)
+        {
+            if (montecarloN < 6)
+                return;
+            vvtmp.reserve(vv.size());
+            applyMontecarlo(vv, &vvtmp);
+            vv = vvtmp;
+        }
+
+        if (vv.size() < 6)
+        {
+            return;
+        }
+
+        std::vector<Eigen::Vector3d> ref(3);
+        computeReferenceFrame(i, normal, ref);
+
+        Quadric q;
+        fitQuadric(me, ref, vv, &q);
+
+        // ÿ���߳�д�벻ͬ�ġ�Ԥ����õ��ڴ�λ�ã����̰߳�ȫ�ġ�
+        finalEigenStuff(i, ref, q);
+    }
+
+
+    //std::vector<int> vv;
+    //std::vector<int> vvtmp;
+    //Eigen::Vector3d normal;
+
+    ////double time_spent;
+    ////double searchtime=0, ref_time=0, fit_time=0, final_time=0;
+
+    //for (size_t i = 0; i < vertices_count; ++i)
+    //{
+    //    vv.clear();
+    //    vvtmp.clear();
+    //    Eigen::Vector3d me = vertices.row(i);
+    //    switch (st)
+    //    {
+    //    case SPHERE_SEARCH:
+    //        getSphere(i, scaledRadius, vv, 6);
+    //        break;
+    //    case K_RING_SEARCH:
+    //        getKRing(i, kRing, vv);
+    //        break;
+    //    default:
+    //        fprintf(stderr, "Error: search type not recognized");
+    //        return;
+    //    }
+
+    //    if (vv.size() < 6)
+    //    {
+    //        //std::cerr << "Could not compute curvature of radius " << scaledRadius << std::endl;
+    //        continue;
+    //    }
+
+
+    //    if (projectionPlaneCheck)
+    //    {
+    //        vvtmp.reserve(vv.size());
+    //        applyProjOnPlane(vertex_normals.row(i), vv, vvtmp);
+    //        if (vvtmp.size() >= 6 && vvtmp.size() < vv.size())
+    //            vv = vvtmp;
+    //    }
+
+
+    //    switch (nt)
+    //    {
+    //    case AVERAGE:
+    //        getAverageNormal(i, vv, normal);
+    //        break;
+    //    case PROJ_PLANE:
+    //        getProjPlane(i, vv, normal);
+    //        break;
+    //    default:
+    //        fprintf(stderr, "Error: normal type not recognized");
+    //        return;
+    //    }
+    //    if (vv.size() < 6)
+    //    {
+    //        //std::cerr << "Could not compute curvature of radius " << scaledRadius << std::endl;
+    //        continue;
+    //    }
+    //    if (montecarlo)
+    //    {
+    //        if (montecarloN < 6)
+    //            break;
+    //        vvtmp.reserve(vv.size());
+    //        applyMontecarlo(vv, &vvtmp);
+    //        vv = vvtmp;
+    //    }
+
+    //    if (vv.size() < 6)
+    //        return;
+    //    std::vector<Eigen::Vector3d> ref(3);
+    //    computeReferenceFrame(i, normal, ref);
+
+    //    Quadric q;
+    //    fitQuadric(me, ref, vv, &q);
+    //    finalEigenStuff(i, ref, q);
+    //}
+
+    //auto compute_for_vertex = [&](const int i)
+    //    {
+    //        // ѭ�����ڵ����б�����Ӧ���Ǿֲ��������Ա�֤�̰߳�ȫ
+    //        std::vector<int> vv;
+    //        std::vector<int> vvtmp;
+    //        Eigen::Vector3d normal;
+
+    //        Eigen::Vector3d me = vertices.row(i);
+
+    //        // --- ѭ���������֮ǰ��ȫ��ͬ ---
+    //        switch (st)
+    //        {
+    //        case SPHERE_SEARCH:
+    //            getSphere(i, scaledRadius, vv, 6);
+    //            break;
+    //        case K_RING_SEARCH:
+    //            getKRing(i, kRing, vv);
+    //            break;
+    //        default:
+    //            // �ڲ��д����У�����ʹ�ò���ȫ��IO��ֱ�ӷ���
+    //            return;
+    //        }
+
+    //        if (vv.size() < 6)
+    //        {
+    //            return;
+    //        }
+
+    //        // ... (ʡ�Բ��ּ����룬���Ǳ��ֲ���)
+    //        if (projectionPlaneCheck)
+    //        {
+    //            vvtmp.reserve(vv.size());
+    //            applyProjOnPlane(vertex_normals.row(i), vv, vvtmp);
+    //            if (vvtmp.size() >= 6 && vvtmp.size() < vv.size())
+    //                vv = vvtmp;
+    //        }
+
+    //        switch (nt)
+    //        {
+    //        case AVERAGE:
+    //            getAverageNormal(i, vv, normal);
+    //            break;
+    //        case PROJ_PLANE:
+    //            getProjPlane(i, vv, normal);
+    //            break;
+    //        default:
+    //            return;
+    //        }
+
+    //        if (vv.size() < 6)
+    //        {
+    //            return;
+    //        }
+
+    //        if (montecarlo)
+    //        {
+    //            if (montecarloN < 6)
+    //                return;
+    //            vvtmp.reserve(vv.size());
+    //            applyMontecarlo(vv, &vvtmp);
+    //            vv = vvtmp;
+    //        }
+
+    //        if (vv.size() < 6)
+    //        {
+    //            return;
+    //        }
+
+    //        std::vector<Eigen::Vector3d> ref(3);
+    //        computeReferenceFrame(i, normal, ref);
+
+    //        Quadric q;
+    //        fitQuadric(me, ref, vv, &q);
+
+    //        // ÿ���߳�д�벻ͬ�ġ�Ԥ����õ��ڴ�λ�ã����̰߳�ȫ�ġ�
+    //        finalEigenStuff(i, ref, q);
+    //    };
+
+    //igl::parallel_for(vertices_count, compute_for_vertex, 10000);
+    lastRadius = sphereRadius;
+    curvatureComputed = true;
+}
+
+
 IGL_INLINE void CurvatureCalculator::printCurvature(const std::string& outpath)
 {
   if (!curvatureComputed)
@@ -781,53 +1041,50 @@ IGL_INLINE void igl::principal_curvature(
   Eigen::PlainObjectBase<DerivedPD2>& PD2,
   Eigen::PlainObjectBase<DerivedPV1>& PV1,
   Eigen::PlainObjectBase<DerivedPV2>& PV2,
-  std::vector<Index>& bad_vertices,
+  std::vector<Index>& update_vertices,
   unsigned radius,
   bool useKring)
 {
-
-  if (radius < 2)
-  {
-    radius = 2;
-    std::cout << "WARNING: igl::principal_curvature needs a radius >= 2, fixing it to 2." << std::endl;
-  }
-
-  // Preallocate memory
-  PD1.resize(V.rows(),3);
-  PD2.resize(V.rows(),3);
+    if (radius < 2)
+    {
+        radius = 2;
+        std::cout << "WARNING: igl::principal_curvature needs a radius >= 2, fixing it to 2." << std::endl;
+    }
 
   // Preallocate memory
-  PV1.resize(V.rows(),1);
-  PV2.resize(V.rows(),1);
+  PD1.resize(V.rows(), 3);
+  PD2.resize(V.rows(), 3);
+
+  // Preallocate memory
+  PV1.resize(V.rows(), 1);
+  PV2.resize(V.rows(), 1);
 
   // Precomputation
   CurvatureCalculator cc;
-  cc.init(V.template cast<double>(),F.template cast<int>());
+  cc.init(V.template cast<double>(), F.template cast<int>());
   cc.sphereRadius = radius;
 
   if (useKring)
   {
-    cc.kRing = radius;
-    cc.st = K_RING_SEARCH;
+      cc.kRing = radius;
+      cc.st = K_RING_SEARCH;
   }
 
   // Compute
-  cc.computeCurvature();
+  cc.computeCurvature(update_vertices);
 
   // Copy it back
-  for (unsigned i=0; i<V.rows(); ++i)
+  for (int i: update_vertices)
   {
-    if (!cc.curv[i].empty())
-    {
       PD1.row(i) << cc.curvDir[i][0][0], cc.curvDir[i][0][1], cc.curvDir[i][0][2];
       PD2.row(i) << cc.curvDir[i][1][0], cc.curvDir[i][1][1], cc.curvDir[i][1][2];
       PD1.row(i).normalize();
       PD2.row(i).normalize();
 
-      if (std::isnan(PD1(i,0)) || std::isnan(PD1(i,1)) || std::isnan(PD1(i,2)) || std::isnan(PD2(i,0)) || std::isnan(PD2(i,1)) || std::isnan(PD2(i,2)))
+      if (std::isnan(PD1(i, 0)) || std::isnan(PD1(i, 1)) || std::isnan(PD1(i, 2)) || std::isnan(PD2(i, 0)) || std::isnan(PD2(i, 1)) || std::isnan(PD2(i, 2)))
       {
-        PD1.row(i) << 0,0,0;
-        PD2.row(i) << 0,0,0;
+          PD1.row(i) << 0, 0, 0;
+          PD2.row(i) << 0, 0, 0;
       }
 
       PV1(i) = cc.curv[i][0];
@@ -835,20 +1092,74 @@ IGL_INLINE void igl::principal_curvature(
 
       if (PD1.row(i) * PD2.row(i).transpose() > 10e-6)
       {
-        bad_vertices.push_back((Index)i);
-
-        PD1.row(i) *= 0;
-        PD2.row(i) *= 0;
+          assert(false && "PRINCIPAL_CURVATURE: Something is wrong with vertex");
+          PD1.row(i) *= 0;
+          PD2.row(i) *= 0;
       }
-    } else {
-      bad_vertices.push_back((Index)i);
-
-      PV1(i) = 0;
-      PV2(i) = 0;
-      PD1.row(i) << 0,0,0;
-      PD2.row(i) << 0,0,0;
-    }
   }
+  // if (radius < 2)
+  // {
+  //   radius = 2;
+  //   std::cout << "WARNING: igl::principal_curvature needs a radius >= 2, fixing it to 2." << std::endl;
+  // }
+
+  // // Preallocate memory
+  // PD1.resize(V.rows(),3);
+  // PD2.resize(V.rows(),3);
+
+  // // Preallocate memory
+  // PV1.resize(V.rows(),1);
+  // PV2.resize(V.rows(),1);
+
+  // // Precomputation
+  // CurvatureCalculator cc;
+  // cc.init(V.template cast<double>(),F.template cast<int>());
+  // cc.sphereRadius = radius;
+
+  // if (useKring)
+  // {
+  //   cc.kRing = radius;
+  //   cc.st = K_RING_SEARCH;
+  // }
+
+  // // Compute
+  // cc.computeCurvature();
+
+  // // Copy it back
+  // for (unsigned i=0; i<V.rows(); ++i)
+  // {
+  //   if (!cc.curv[i].empty())
+  //   {
+  //     PD1.row(i) << cc.curvDir[i][0][0], cc.curvDir[i][0][1], cc.curvDir[i][0][2];
+  //     PD2.row(i) << cc.curvDir[i][1][0], cc.curvDir[i][1][1], cc.curvDir[i][1][2];
+  //     PD1.row(i).normalize();
+  //     PD2.row(i).normalize();
+
+  //     if (std::isnan(PD1(i,0)) || std::isnan(PD1(i,1)) || std::isnan(PD1(i,2)) || std::isnan(PD2(i,0)) || std::isnan(PD2(i,1)) || std::isnan(PD2(i,2)))
+  //     {
+  //       PD1.row(i) << 0,0,0;
+  //       PD2.row(i) << 0,0,0;
+  //     }
+
+  //     PV1(i) = cc.curv[i][0];
+  //     PV2(i) = cc.curv[i][1];
+
+  //     if (PD1.row(i) * PD2.row(i).transpose() > 10e-6)
+  //     {
+  //       bad_vertices.push_back((Index)i);
+
+  //       PD1.row(i) *= 0;
+  //       PD2.row(i) *= 0;
+  //     }
+  //   } else {
+  //     bad_vertices.push_back((Index)i);
+
+  //     PV1(i) = 0;
+  //     PV2(i) = 0;
+  //     PD1.row(i) << 0,0,0;
+  //     PD2.row(i) << 0,0,0;
+  //   }
+  // }
 
 }
 

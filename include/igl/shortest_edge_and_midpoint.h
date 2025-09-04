@@ -36,6 +36,23 @@ namespace igl
     const Eigen::MatrixXi & /*EI*/,
     double & cost,
     Eigen::RowVectorXd & p);
+
+
+
+    IGL_INLINE void shortest_edge_and_midpoint3(
+    const int e,
+    const Eigen::MatrixXd& V,
+    const Eigen::MatrixXi& F/*F*/,
+    const Eigen::MatrixXi& E,
+    const Eigen::VectorXi& EMAP/*EMAP*/,
+    const Eigen::MatrixXi& EF/*EF*/,
+    const Eigen::MatrixXi& EI/*EI*/,
+    const Eigen::MatrixXd& PD2,
+    const Eigen::VectorXd& PV2,
+    const std::vector<Eigen::Matrix4d>& q_matrices,
+    const double& avg_edges_lenth,
+    double& cost,
+    Eigen::RowVectorXd& p);
 }
 
 #ifndef IGL_STATIC_LIBRARY
