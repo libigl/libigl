@@ -14,6 +14,7 @@
 #include <list>
 #include <cmath>
 #include <limits>
+#include <optional>
 
 #include <Eigen/SparseCholesky>
 
@@ -45,8 +46,8 @@ public:
    curvDir[i][0] : PD1
    curvDir[i][1] : PD2
    */
-  std::vector< std::vector<double> > curv;
-  std::vector< std::vector<Eigen::Vector3d> > curvDir;
+  std::vector< std::optional<std::array<double, 2>> > curv;
+  std::vector< std::optional<std::array<Eigen::Vector3d, 2>> > curvDir;
   bool curvatureComputed;
   class Quadric
   {
@@ -172,13 +173,13 @@ public:
   IGL_INLINE CurvatureCalculator();
   IGL_INLINE void init(const Eigen::MatrixXd& V, const Eigen::MatrixXi& F);
 
-  IGL_INLINE void finalEigenStuff(int, const std::vector<Eigen::Vector3d>&, Quadric&);
-  IGL_INLINE void fitQuadric(const Eigen::Vector3d&, const std::vector<Eigen::Vector3d>& ref, const std::vector<int>& , Quadric *);
+  IGL_INLINE void finalEigenStuff(int, const std::array<Eigen::Vector3d, 3>&, Quadric&);
+  IGL_INLINE void fitQuadric(const Eigen::Vector3d&, const std::array<Eigen::Vector3d, 3>& ref, const std::vector<int>& , Quadric *);
   IGL_INLINE void applyProjOnPlane(const Eigen::Vector3d&, const std::vector<int>&, std::vector<int>&);
   IGL_INLINE void getSphere(const int, const double, std::vector<int>&, int min);
   IGL_INLINE void getKRing(const int, const double,std::vector<int>&);
   IGL_INLINE Eigen::Vector3d project(const Eigen::Vector3d&, const Eigen::Vector3d&, const Eigen::Vector3d&);
-  IGL_INLINE void computeReferenceFrame(int, const Eigen::Vector3d&, std::vector<Eigen::Vector3d>&);
+  IGL_INLINE void computeReferenceFrame(int, const Eigen::Vector3d&, std::array<Eigen::Vector3d, 3>&);
   IGL_INLINE void getAverageNormal(int, const std::vector<int>&, Eigen::Vector3d&);
   IGL_INLINE void getProjPlane(int, const std::vector<int>&, Eigen::Vector3d&);
   IGL_INLINE void applyMontecarlo(const std::vector<int>&,std::vector<int>*);
@@ -327,7 +328,7 @@ IGL_INLINE void CurvatureCalculator::init(const Eigen::MatrixXd& V, const Eigen:
   igl::per_vertex_normals(V, F, face_normals, vertex_normals);
 }
 
-IGL_INLINE void CurvatureCalculator::fitQuadric(const Eigen::Vector3d& v, const std::vector<Eigen::Vector3d>& ref, const std::vector<int>& vv, Quadric *q)
+IGL_INLINE void CurvatureCalculator::fitQuadric(const Eigen::Vector3d& v, const std::array<Eigen::Vector3d, 3>& ref, const std::vector<int>& vv, Quadric *q)
 {
   std::vector<Eigen::Vector3d> points;
   points.reserve (vv.size());
@@ -355,7 +356,7 @@ IGL_INLINE void CurvatureCalculator::fitQuadric(const Eigen::Vector3d& v, const 
   }
 }
 
-IGL_INLINE void CurvatureCalculator::finalEigenStuff(int i, const std::vector<Eigen::Vector3d>& ref, Quadric& q)
+IGL_INLINE void CurvatureCalculator::finalEigenStuff(int i, const std::array<Eigen::Vector3d, 3>& ref, Quadric& q)
 {
 
   const double a = q.a();
@@ -420,21 +421,13 @@ IGL_INLINE void CurvatureCalculator::finalEigenStuff(int i, const std::vector<Ei
 
   if (c_val[0] > c_val[1])
   {
-    curv[i]=std::vector<double>(2);
-    curv[i][0]=c_val(0);
-    curv[i][1]=c_val(1);
-    curvDir[i]=std::vector<Eigen::Vector3d>(2);
-    curvDir[i][0]=v1global;
-    curvDir[i][1]=v2global;
+    curv[i]=std::array<double, 2>{c_val(0), c_val(1)};
+    curvDir[i]=std::array<Eigen::Vector3d, 2>{v1global, v2global};
   }
   else
   {
-    curv[i]=std::vector<double>(2);
-    curv[i][0]=c_val(1);
-    curv[i][1]=c_val(0);
-    curvDir[i]=std::vector<Eigen::Vector3d>(2);
-    curvDir[i][0]=v2global;
-    curvDir[i][1]=v1global;
+    curv[i]=std::array<double, 2>{c_val(1), c_val(0)};
+    curvDir[i]=std::array<Eigen::Vector3d, 2>{v2global, v1global};
   }
   // ---- end Eigen stuff
 }
@@ -526,7 +519,7 @@ IGL_INLINE Eigen::Vector3d CurvatureCalculator::project(const Eigen::Vector3d& v
   return (vp - (ppn * ((vp - v).dot(ppn))));
 }
 
-IGL_INLINE void CurvatureCalculator::computeReferenceFrame(int i, const Eigen::Vector3d& normal, std::vector<Eigen::Vector3d>& ref )
+IGL_INLINE void CurvatureCalculator::computeReferenceFrame(int i, const Eigen::Vector3d& normal, std::array<Eigen::Vector3d, 3>& ref )
 {
 
   Eigen::Vector3d longest_v=Eigen::Vector3d(vertices.row(vertex_to_vertices[i][0]));
@@ -652,8 +645,8 @@ IGL_INLINE void CurvatureCalculator::computeCurvature()
   if (vertices_count ==0)
     return;
 
-  curvDir=std::vector< std::vector<Eigen::Vector3d> >(vertices_count);
-  curv=std::vector<std::vector<double> >(vertices_count);
+  curvDir=std::vector< std::optional<std::array<Eigen::Vector3d, 2>> >(vertices_count);
+  curv=std::vector<std::optional<std::array<double, 2>> >(vertices_count);
 
 
 
@@ -728,7 +721,7 @@ IGL_INLINE void CurvatureCalculator::computeCurvature()
 
     if (vv.size()<6)
       return;
-    std::vector<Eigen::Vector3d> ref(3);
+    std::array<Eigen::Vector3d, 3> ref;
     computeReferenceFrame(i,normal,ref);
 
     Quadric q;
@@ -758,8 +751,8 @@ IGL_INLINE void CurvatureCalculator::printCurvature(const std::string& outpath)
   of << vertices_count << std::endl;
   for (int i=0; i<vertices_count; ++i)
   {
-    of << curv[i][0] << " " << curv[i][1] << " " << curvDir[i][0][0] << " " << curvDir[i][0][1] << " " << curvDir[i][0][2] << " " <<
-    curvDir[i][1][0] << " " << curvDir[i][1][1] << " " << curvDir[i][1][2] << std::endl;
+    of << curv[i].value()[0] << " " << curv[i].value()[1] << " " << curvDir[i].value()[0][0] << " " << curvDir[i].value()[0][1] << " " << curvDir[i].value()[0][2] << " " <<
+    curvDir[i].value()[1][0] << " " << curvDir[i].value()[1][1] << " " << curvDir[i].value()[1][2] << std::endl;
   }
 
   of.close();
@@ -817,10 +810,10 @@ IGL_INLINE void igl::principal_curvature(
   // Copy it back
   for (unsigned i=0; i<V.rows(); ++i)
   {
-    if (!cc.curv[i].empty())
+    if (cc.curv[i].has_value())
     {
-      PD1.row(i) << cc.curvDir[i][0][0], cc.curvDir[i][0][1], cc.curvDir[i][0][2];
-      PD2.row(i) << cc.curvDir[i][1][0], cc.curvDir[i][1][1], cc.curvDir[i][1][2];
+      PD1.row(i) << (*cc.curvDir[i])[0][0], (*cc.curvDir[i])[0][1], (*cc.curvDir[i])[0][2];
+      PD2.row(i) << (*cc.curvDir[i])[1][0], (*cc.curvDir[i])[1][1], (*cc.curvDir[i])[1][2];
       PD1.row(i).normalize();
       PD2.row(i).normalize();
 
@@ -830,8 +823,8 @@ IGL_INLINE void igl::principal_curvature(
         PD2.row(i) << 0,0,0;
       }
 
-      PV1(i) = cc.curv[i][0];
-      PV2(i) = cc.curv[i][1];
+      PV1(i) = (*cc.curv[i])[0];
+      PV2(i) = (*cc.curv[i])[1];
 
       if (PD1.row(i) * PD2.row(i).transpose() > 10e-6)
       {
@@ -900,25 +893,27 @@ IGL_INLINE void igl::principal_curvature(
   // Copy it back
   for (unsigned i=0; i<V.rows(); ++i)
   {
-    PD1.row(i) << cc.curvDir[i][0][0], cc.curvDir[i][0][1], cc.curvDir[i][0][2];
-    PD2.row(i) << cc.curvDir[i][1][0], cc.curvDir[i][1][1], cc.curvDir[i][1][2];
-    PD1.row(i).normalize();
-    PD2.row(i).normalize();
+    if (cc.curv[i].has_value()) {
+      PD1.row(i) << (*cc.curvDir[i])[0][0], (*cc.curvDir[i])[0][1], (*cc.curvDir[i])[0][2];
+      PD2.row(i) << (*cc.curvDir[i])[1][0], (*cc.curvDir[i])[1][1], (*cc.curvDir[i])[1][2];
+      PD1.row(i).normalize();
+      PD2.row(i).normalize();
 
-    if (std::isnan(PD1(i,0)) || std::isnan(PD1(i,1)) || std::isnan(PD1(i,2)) || std::isnan(PD2(i,0)) || std::isnan(PD2(i,1)) || std::isnan(PD2(i,2)))
-    {
-      PD1.row(i) << 0,0,0;
-      PD2.row(i) << 0,0,0;
-    }
+      if (std::isnan(PD1(i,0)) || std::isnan(PD1(i,1)) || std::isnan(PD1(i,2)) || std::isnan(PD2(i,0)) || std::isnan(PD2(i,1)) || std::isnan(PD2(i,2)))
+      {
+        PD1.row(i) << 0,0,0;
+        PD2.row(i) << 0,0,0;
+      }
 
-    PV1(i) = cc.curv[i][0];
-    PV2(i) = cc.curv[i][1];
+      PV1(i) = (*cc.curv[i])[0];
+      PV2(i) = (*cc.curv[i])[1];
 
-    if (PD1.row(i) * PD2.row(i).transpose() > 10e-6)
-    {
-      assert(false && "PRINCIPAL_CURVATURE: Something is wrong with vertex");
-      PD1.row(i) *= 0;
-      PD2.row(i) *= 0;
+      if (PD1.row(i) * PD2.row(i).transpose() > 10e-6)
+      {
+        assert(false && "PRINCIPAL_CURVATURE: Something is wrong with vertex");
+        PD1.row(i) *= 0;
+        PD2.row(i) *= 0;
+      }
     }
   }
 
