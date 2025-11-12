@@ -26,14 +26,12 @@ IGL_INLINE bool ray_triangle_intersect(
   const int f,
   igl::Hit<typename DerivedV::Scalar> & hit)
 {
-  using namespace Eigen;
-
   // intersect_triangle1 needs non-const inputs.
-  Vector3d s_d = s.template cast<double>();
-  Vector3d dir_d = dir.template cast<double>();
-  RowVector3d v0 = V.row(F(f,0)).template cast<double>();
-  RowVector3d v1 = V.row(F(f,1)).template cast<double>();
-  RowVector3d v2 = V.row(F(f,2)).template cast<double>();
+  Eigen::Vector3d s_d = s.template cast<double>();
+  Eigen::Vector3d dir_d = dir.template cast<double>();
+  Eigen::RowVector3d v0 = V.row(F(f,0)).template cast<double>();
+  Eigen::RowVector3d v1 = V.row(F(f,1)).template cast<double>();
+  Eigen::RowVector3d v2 = V.row(F(f,2)).template cast<double>();
 
   // shoot ray, record hit
   double t,u,v;
@@ -62,8 +60,6 @@ IGL_INLINE bool ray_mesh_intersect(
   const Eigen::MatrixBase<DerivedF> & F,
   std::vector<igl::Hit<typename DerivedV::Scalar> > & hits)
 {
-  using namespace Eigen;
-
   hits.clear();
   hits.reserve(F.rows());
 

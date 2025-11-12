@@ -100,11 +100,10 @@ IGL_INLINE void compute_scaffold_gradient_matrix(SCAFData &s,
                                       Eigen::SparseMatrix<double> &D1,
                                       Eigen::SparseMatrix<double> &D2)
 {
-  using namespace Eigen;
   Eigen::SparseMatrix<double> G;
-  MatrixXi F_s = s.s_T;
+  Eigen::MatrixXi F_s = s.s_T;
   int vn = s.v_num;
-  MatrixXd V = MatrixXd::Zero(vn, 3);
+  Eigen::MatrixXd V = Eigen::MatrixXd::Zero(vn, 3);
   V.leftCols(2) = s.w_uv;
 
   double min_bnd_edge_len = INFINITY;
@@ -131,7 +130,7 @@ IGL_INLINE void compute_scaffold_gradient_matrix(SCAFData &s,
   Eigen::SparseMatrix<double> Dx, Dy, Dz;
   adjusted_grad(V, F_s, area_threshold, Dx, Dy, Dz);
 
-  MatrixXd F1, F2, F3;
+  Eigen::MatrixXd F1, F2, F3;
   igl::local_basis(V, F_s, F1, F2, F3);
   D1 = F1.col(0).asDiagonal() * Dx + F1.col(1).asDiagonal() * Dy +
        F1.col(2).asDiagonal() * Dz;
@@ -141,9 +140,8 @@ IGL_INLINE void compute_scaffold_gradient_matrix(SCAFData &s,
 
 IGL_INLINE void mesh_improve(igl::triangle::SCAFData &s)
 {
-  using namespace Eigen;
-  MatrixXd m_uv = s.w_uv.topRows(s.mv_num);
-  MatrixXd V_bnd;
+  Eigen::MatrixXd m_uv = s.w_uv.topRows(s.mv_num);
+  Eigen::MatrixXd V_bnd;
   V_bnd.resize(s.internal_bnd.size(), 2);
   for (int i = 0; i < s.internal_bnd.size(); i++) // redoing step 1.
   {
@@ -152,17 +150,17 @@ IGL_INLINE void mesh_improve(igl::triangle::SCAFData &s)
 
   if (s.rect_frame_V.size() == 0)
   {
-    Matrix2d ob; // = rect_corners;
+    Eigen::Matrix2d ob; // = rect_corners;
     {
-      VectorXd uv_max = m_uv.colwise().maxCoeff();
-      VectorXd uv_min = m_uv.colwise().minCoeff();
-      VectorXd uv_mid = (uv_max + uv_min) / 2.;
+      Eigen::VectorXd uv_max = m_uv.colwise().maxCoeff();
+      Eigen::VectorXd uv_min = m_uv.colwise().minCoeff();
+      Eigen::VectorXd uv_mid = (uv_max + uv_min) / 2.;
 
       Eigen::Array2d scaf_range(3, 3);
       ob.row(0) = uv_mid.array() + scaf_range * ((uv_min - uv_mid).array());
       ob.row(1) = uv_mid.array() + scaf_range * ((uv_max - uv_mid).array());
     }
-    Vector2d rect_len;
+    Eigen::Vector2d rect_len;
     rect_len << ob(1, 0) - ob(0, 0), ob(1, 1) - ob(0, 1);
     int frame_points = 5;
 
@@ -187,8 +185,8 @@ IGL_INLINE void mesh_improve(igl::triangle::SCAFData &s)
   }
 
   // Concatenate Vert and Edge
-  MatrixXd V;
-  MatrixXi E;
+  Eigen::MatrixXd V;
+  Eigen::MatrixXi E;
   igl::cat(1, V_bnd, s.rect_frame_V, V);
   E.resize(V.rows(), 2);
   for (int i = 0; i < E.rows(); i++)
@@ -202,7 +200,7 @@ IGL_INLINE void mesh_improve(igl::triangle::SCAFData &s)
   E(V.rows() - 1, 1) = acc_bs;
   assert(acc_bs == s.internal_bnd.size());
 
-  MatrixXd H = MatrixXd::Zero(s.component_sizes.size(), 2);
+  Eigen::MatrixXd H = Eigen::MatrixXd::Zero(s.component_sizes.size(), 2);
   {
     int hole_f = 0;
     int hole_i = 0;
@@ -216,7 +214,7 @@ IGL_INLINE void mesh_improve(igl::triangle::SCAFData &s)
   }
   H /= 3.;
 
-  MatrixXd uv2;
+  Eigen::MatrixXd uv2;
   igl::triangle::triangulate(V, E, H, std::basic_string<char>("qYYQ"), uv2, s.s_T);
   auto bnd_n = s.internal_bnd.size();
 
@@ -242,7 +240,7 @@ IGL_INLINE void mesh_improve(igl::triangle::SCAFData &s)
   s.Dx_s.makeCompressed();
   s.Dy_s.makeCompressed();
   s.Dz_s.makeCompressed();
-  s.Ri_s = MatrixXd::Zero(s.Dx_s.rows(), s.dim * s.dim);
+  s.Ri_s = Eigen::MatrixXd::Zero(s.Dx_s.rows(), s.dim * s.dim);
   s.Ji_s.resize(s.Dx_s.rows(), s.dim * s.dim);
   s.W_s.resize(s.Dx_s.rows(), s.dim * s.dim);
 }
@@ -252,9 +250,6 @@ IGL_INLINE void add_new_patch(igl::triangle::SCAFData &s, const Eigen::MatrixXd 
                    const Eigen::RowVectorXd &/*center*/,
                    const Eigen::MatrixXd &uv_init)
 {
-  using namespace std;
-  using namespace Eigen;
-
   assert(uv_init.rows() != 0);
   Eigen::VectorXd M;
   igl::doublearea(V_ref, F_ref, M);
@@ -268,7 +263,7 @@ IGL_INLINE void add_new_patch(igl::triangle::SCAFData &s, const Eigen::MatrixXd 
 
   s.component_sizes.push_back(F_ref.rows());
 
-  MatrixXd m_uv = s.w_uv.topRows(s.mv_num);
+  Eigen::MatrixXd m_uv = s.w_uv.topRows(s.mv_num);
   igl::cat(1, m_uv, uv_init, s.w_uv);
 
   s.m_M.conservativeResize(s.mf_num + M.size());
@@ -277,7 +272,7 @@ IGL_INLINE void add_new_patch(igl::triangle::SCAFData &s, const Eigen::MatrixXd 
   for (auto cur_bnd : all_bnds)
   {
     s.internal_bnd.conservativeResize(s.internal_bnd.size() + cur_bnd.size());
-    s.internal_bnd.bottomRows(cur_bnd.size()) = Map<ArrayXi>(cur_bnd.data(), cur_bnd.size()) + s.mv_num;
+    s.internal_bnd.bottomRows(cur_bnd.size()) = Eigen::Map<Eigen::ArrayXi>(cur_bnd.data(), cur_bnd.size()) + s.mv_num;
     s.bnd_sizes.push_back(cur_bnd.size());
   }
 
@@ -289,7 +284,7 @@ IGL_INLINE void add_new_patch(igl::triangle::SCAFData &s, const Eigen::MatrixXd 
   s.m_V.bottomRows(V_ref.rows()) = V_ref;
   s.mv_num += V_ref.rows();
 
-  s.rect_frame_V = MatrixXd();
+  s.rect_frame_V = Eigen::MatrixXd();
 
   mesh_improve(s);
 }
@@ -399,9 +394,6 @@ IGL_INLINE void get_complement(const Eigen::VectorXi &bnd_ids, int v_n, Eigen::A
 
 IGL_INLINE void build_surface_linear_system(const SCAFData &s, Eigen::SparseMatrix<double> &L, Eigen::VectorXd &rhs)
 {
-  using namespace Eigen;
-  using namespace std;
-
   const int v_n = s.v_num - (s.frame_ids.size());
   const int dim = s.dim;
   const int f_n = s.mf_num;
@@ -415,7 +407,7 @@ IGL_INLINE void build_surface_linear_system(const SCAFData &s, Eigen::SparseMatr
   decoy_Dy_m.conservativeResize(s.W_m.rows(), v_n);
   buildAm(sqrtM, decoy_Dx_m, decoy_Dy_m, s.W_m, A);
 
-  const VectorXi &bnd_ids = s.fixed_ids;
+  const Eigen::VectorXi &bnd_ids = s.fixed_ids;
   auto bnd_n = bnd_ids.size();
   if (bnd_n == 0)
   {
@@ -434,12 +426,12 @@ IGL_INLINE void build_surface_linear_system(const SCAFData &s, Eigen::SparseMatr
   }
   else
   {
-    MatrixXd bnd_pos = s.w_uv(bnd_ids, igl::placeholders::all);
+    Eigen::MatrixXd bnd_pos = s.w_uv(bnd_ids, igl::placeholders::all);
 
-    ArrayXi known_ids(bnd_ids.size() * dim);
-    ArrayXi unknown_ids((v_n - bnd_ids.rows()) * dim);
+    Eigen::ArrayXi known_ids(bnd_ids.size() * dim);
+    Eigen::ArrayXi unknown_ids((v_n - bnd_ids.rows()) * dim);
     get_complement(bnd_ids, v_n, unknown_ids);
-    VectorXd known_pos(bnd_ids.size() * dim);
+    Eigen::VectorXd known_pos(bnd_ids.size() * dim);
     for (int d = 0; d < dim; d++)
     {
       auto n_b = bnd_ids.rows();
@@ -480,8 +472,6 @@ IGL_INLINE void build_surface_linear_system(const SCAFData &s, Eigen::SparseMatr
 
 IGL_INLINE void build_scaffold_linear_system(const SCAFData &s, Eigen::SparseMatrix<double> &L, Eigen::VectorXd &rhs)
 {
-  using namespace Eigen;
-
   const int f_n = s.W_s.rows();
   const int v_n = s.Dx_s.cols();
   const int dim = s.dim;
@@ -490,19 +480,19 @@ IGL_INLINE void build_scaffold_linear_system(const SCAFData &s, Eigen::SparseMat
   Eigen::SparseMatrix<double> A(dim * dim * f_n, dim * v_n);
   buildAm(sqrtM, s.Dx_s, s.Dy_s, s.W_s, A);
 
-  VectorXi bnd_ids;
+  Eigen::VectorXi bnd_ids;
   igl::cat(1, s.fixed_ids, s.frame_ids, bnd_ids);
 
   auto bnd_n = bnd_ids.size();
   IGL_ASSERT(bnd_n > 0);
-  MatrixXd bnd_pos = s.w_uv(bnd_ids, igl::placeholders::all);
+  Eigen::MatrixXd bnd_pos = s.w_uv(bnd_ids, igl::placeholders::all);
 
-  ArrayXi known_ids(bnd_ids.size() * dim);
-  ArrayXi unknown_ids((v_n - bnd_ids.rows()) * dim);
+  Eigen::ArrayXi known_ids(bnd_ids.size() * dim);
+  Eigen::ArrayXi unknown_ids((v_n - bnd_ids.rows()) * dim);
 
   get_complement(bnd_ids, v_n, unknown_ids);
 
-  VectorXd known_pos(bnd_ids.size() * dim);
+  Eigen::VectorXd known_pos(bnd_ids.size() * dim);
   for (int d = 0; d < dim; d++)
   {
     auto n_b = bnd_ids.rows();
@@ -555,25 +545,23 @@ IGL_INLINE void build_weighted_arap_system(SCAFData &s, Eigen::SparseMatrix<doub
 
 IGL_INLINE void solve_weighted_arap(SCAFData &s, Eigen::MatrixXd &uv)
 {
-  using namespace Eigen;
-  using namespace std;
   int dim = s.dim;
   igl::Timer timer;
   timer.start();
 
-  VectorXi bnd_ids;
+  Eigen::VectorXi bnd_ids;
   igl::cat(1, s.fixed_ids, s.frame_ids, bnd_ids);
   const auto v_n = s.v_num;
   const auto bnd_n = bnd_ids.size();
   assert(bnd_n > 0);
-  MatrixXd bnd_pos = s.w_uv(bnd_ids, igl::placeholders::all);
+  Eigen::MatrixXd bnd_pos = s.w_uv(bnd_ids, igl::placeholders::all);
 
-  ArrayXi known_ids(bnd_n * dim);
-  ArrayXi unknown_ids((v_n - bnd_n) * dim);
+  Eigen::ArrayXi known_ids(bnd_n * dim);
+  Eigen::ArrayXi unknown_ids((v_n - bnd_n) * dim);
 
   get_complement(bnd_ids, v_n, unknown_ids);
 
-  VectorXd known_pos(bnd_ids.size() * dim);
+  Eigen::VectorXd known_pos(bnd_ids.size() * dim);
   for (int d = 0; d < dim; d++)
   {
     auto n_b = bnd_ids.rows();
@@ -589,12 +577,12 @@ IGL_INLINE void solve_weighted_arap(SCAFData &s, Eigen::MatrixXd &uv)
 
   Eigen::VectorXd unknown_Uc((v_n - s.frame_ids.size() - s.fixed_ids.size()) * dim), Uc(dim * v_n);
 
-  SimplicialLDLT<Eigen::SparseMatrix<double>> solver;
+  Eigen::SimplicialLDLT<Eigen::SparseMatrix<double>> solver;
   unknown_Uc = solver.compute(L).solve(rhs);
   Uc(unknown_ids) = unknown_Uc;
   Uc(known_ids) = known_pos;
 
-  uv = Map<Matrix<double, -1, -1, Eigen::ColMajor>>(Uc.data(), v_n, dim);
+  uv = Eigen::Map<Eigen::Matrix<double, -1, -1, Eigen::ColMajor>>(Uc.data(), v_n, dim);
 }
 
 IGL_INLINE double perform_iteration(SCAFData &s)
@@ -681,8 +669,6 @@ IGL_INLINE void igl::triangle::scaf_precompute(
 
 IGL_INLINE Eigen::MatrixXd igl::triangle::scaf_solve(const int iter_num, igl::triangle::SCAFData &s)
 {
-  using namespace std;
-  using namespace Eigen;
   s.energy = igl::triangle::scaf::compute_energy(s, s.w_uv, false) / s.mesh_measure;
 
   for (int it = 0; it < iter_num; it++)

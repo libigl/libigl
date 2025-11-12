@@ -21,14 +21,13 @@ IGL_INLINE void igl::hausdorff(
   const Eigen::MatrixBase<DerivedFB> & FB,
   Scalar & d)
 {
-  using namespace Eigen;
   assert(VA.cols() == 3 && "VA should contain 3d points");
   assert(FA.cols() == 3 && "FA should contain triangles");
   assert(VB.cols() == 3 && "VB should contain 3d points");
   assert(FB.cols() == 3 && "FB should contain triangles");
-  Matrix<typename DerivedVA::Scalar, Dynamic, 1> sqr_DBA, sqr_DAB;
-  Matrix<typename DerivedVA::Index,Dynamic,1> I;
-  Matrix<typename DerivedVA::Scalar,Dynamic,3> C;
+  Eigen::Matrix<typename DerivedVA::Scalar, Eigen::Dynamic, 1> sqr_DBA, sqr_DAB;
+  Eigen::Matrix<typename DerivedVA::Index ,Eigen::Dynamic,1> I;
+  Eigen::Matrix<typename DerivedVA::Scalar ,Eigen::Dynamic,3> C;
   point_mesh_squared_distance(VB,VA,FA,sqr_DBA,I,C);
   point_mesh_squared_distance(VA,VB,FB,sqr_DAB,I,C);
   const Scalar dba = sqr_DBA.maxCoeff();

@@ -33,8 +33,8 @@ function(igl_add_library module_name)
         target_compile_definitions(${module_name} ${IGL_SCOPE} -DIGL_STATIC_LIBRARY)
     endif()
 
-    # C++11 features
-    target_compile_features(${module_name} ${IGL_SCOPE} cxx_std_11)
+    # C++17 features
+    target_compile_features(${module_name} ${IGL_SCOPE} cxx_std_17)
 
     if(LIBIGL_WARNINGS_AS_ERRORS)
       target_compile_options(${module_name} PRIVATE -Wall -Wextra -Wpedantic -Wno-sign-compare -Werror -Wno-gnu -Wno-unknown-pragmas)

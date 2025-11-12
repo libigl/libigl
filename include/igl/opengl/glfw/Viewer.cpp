@@ -106,7 +106,6 @@ static void glfw_mouse_move(GLFWwindow* /*window*/ , double x, double y)
 
 static void glfw_mouse_scroll(GLFWwindow* /*window*/ , double x, double y)
 {
-  using namespace std;
   scroll_x += x;
   scroll_y += y;
 
@@ -558,6 +557,12 @@ namespace glfw
         core().toggle(data().show_lines);
         return true;
       }
+      case 'N':
+      case 'n':
+      {
+        data().pseudocolor_with_normals = !data().pseudocolor_with_normals;
+        return true;
+      }
       case 'O':
       case 'o':
       {
@@ -919,9 +924,6 @@ namespace glfw
 
   IGL_INLINE void Viewer::draw()
   {
-    using namespace std;
-    using namespace Eigen;
-
     int width, height;
     glfwGetFramebufferSize(window, &width, &height);
 

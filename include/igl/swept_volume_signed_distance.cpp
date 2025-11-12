@@ -30,11 +30,9 @@ IGL_INLINE void igl::swept_volume_signed_distance(
   const Eigen::VectorXd & S0,
   Eigen::VectorXd & S)
 {
-  using namespace std;
   using namespace igl;
-  using namespace Eigen;
   S = S0;
-  const VectorXd t = igl::LinSpaced<VectorXd >(steps,0,1);
+  const Eigen::VectorXd t = igl::LinSpaced<Eigen::VectorXd >(steps,0,1);
   const bool finite_iso = isfinite(isolevel);
   const double extension = (finite_iso ? isolevel : 0) + sqrt(3.0)*h;
   Eigen::AlignedBox3d box(
@@ -48,11 +46,11 @@ IGL_INLINE void igl::swept_volume_signed_distance(
   per_vertex_normals(V,F,PER_VERTEX_NORMALS_WEIGHTING_TYPE_ANGLE,FN,VN);
   per_edge_normals(
     V,F,PER_EDGE_NORMALS_WEIGHTING_TYPE_UNIFORM,FN,EN,E,EMAP);
-  AABB<MatrixXd,3> tree;
+  AABB<Eigen::MatrixXd,3> tree;
   tree.init(V,F);
   for(int ti = 0;ti<t.size();ti++)
   {
-    const Affine3d At = transform(t(ti));
+    const Eigen::Affine3d At = transform(t(ti));
     for(int g = 0;g<GV.rows();g++)
     {
       // Don't bother finding out how deep inside points are.
@@ -60,21 +58,21 @@ IGL_INLINE void igl::swept_volume_signed_distance(
       {
         continue;
       }
-      const RowVector3d gv = 
+      const Eigen::RowVector3d gv =
         (GV.row(g) - At.translation().transpose())*At.linear();
       // If outside of extended box, then consider it "far away enough"
       if(finite_iso && !box.contains(gv.transpose()))
       {
         continue;
       }
-      RowVector3d c,n;
+      Eigen::RowVector3d c,n;
       int i;
       double sqrd,s;
       //signed_distance_pseudonormal(tree,V,F,FN,VN,EN,EMAP,gv,s,sqrd,i,c,n);
       const double min_sqrd = 
         finite_iso ? 
         pow(sqrt(3.)*h+isolevel,2) : 
-        numeric_limits<double>::infinity();
+        std::numeric_limits<double>::infinity();
       sqrd = tree.squared_distance(V,F,gv,min_sqrd,i,c);
       if(sqrd<min_sqrd)
       {
@@ -113,10 +111,8 @@ IGL_INLINE void igl::swept_volume_signed_distance(
   const double isolevel,
   Eigen::VectorXd & S)
 {
-  using namespace std;
   using namespace igl;
-  using namespace Eigen;
-  S = VectorXd::Constant(GV.rows(),1,numeric_limits<double>::quiet_NaN());
+  S = Eigen::VectorXd::Constant(GV.rows(),1,std::numeric_limits<double>::quiet_NaN());
   return 
     swept_volume_signed_distance(V,F,transform,steps,GV,res,h,isolevel,S,S);
 }

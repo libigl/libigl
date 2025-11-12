@@ -45,7 +45,6 @@ IGL_INLINE void igl::per_vertex_normals(
   const Eigen::MatrixBase<DerivedFN>& FN,
   Eigen::PlainObjectBase<DerivedN> & N)
 {
-  using namespace std;
   // Resize for output
   N.setZero(V.rows(),3);
 

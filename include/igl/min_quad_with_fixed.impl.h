@@ -37,8 +37,6 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
   )
 {
 //#define MIN_QUAD_WITH_FIXED_CPP_DEBUG
-  using namespace Eigen;
-  using namespace std;
   const Eigen::SparseMatrix<T> A = 0.5*A2;
 #ifdef MIN_QUAD_WITH_FIXED_CPP_DEBUG
   cout<<"    pre"<<endl;
@@ -109,7 +107,7 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
     data.unknown_lagrange.tail(data.lagrange.size()) = data.lagrange;
   }
 
-  SparseMatrix<T> Auu;
+  Eigen::SparseMatrix<T> Auu;
   slice(A,data.unknown,data.unknown,Auu);
   assert(Auu.size() != 0 && Auu.rows() > 0 && "There should be at least one unknown.");
 
@@ -127,8 +125,8 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
   }else
   {
     // determine if A(unknown,unknown) is symmetric and/or positive definite
-    VectorXi AuuI,AuuJ;
-    Matrix<T,Eigen::Dynamic,Eigen::Dynamic> AuuV;
+    Eigen::VectorXi AuuI,AuuJ;
+    Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> AuuV;
     find(Auu,AuuI,AuuJ,AuuV);
     data.Auu_sym = is_symmetric(Auu,EPS<T>()*AuuV.maxCoeff());
   }
@@ -186,9 +184,9 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
     cout<<"    Aeq_li=true"<<endl;
 #endif
     // Append lagrange multiplier quadratic terms
-    SparseMatrix<T> new_A;
-    SparseMatrix<T> AeqT = Aeq.transpose();
-    SparseMatrix<T> Z(neq,neq);
+    Eigen::SparseMatrix<T> new_A;
+    Eigen::SparseMatrix<T> AeqT = Aeq.transpose();
+    Eigen::SparseMatrix<T> Z(neq,neq);
     // This is a bit slower. But why isn't cat fast?
     new_A = cat(1, cat(2,   A, AeqT ),
                    cat(2, Aeq,    Z ));
@@ -196,7 +194,7 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
     // precompute RHS builders
     if(kr > 0)
     {
-      SparseMatrix<T> Aulk,Akul;
+      Eigen::SparseMatrix<T> Aulk,Akul;
       // Slow
       slice(new_A,data.unknown_lagrange,data.known,Aulk);
       //// This doesn't work!!!
@@ -208,7 +206,7 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
       }else
       {
         slice(new_A,data.known,data.unknown_lagrange,Akul);
-        SparseMatrix<T> AkulT = Akul.transpose();
+        Eigen::SparseMatrix<T> AkulT = Akul.transpose();
         data.preY = Aulk + AkulT;
       }
     }else
@@ -249,7 +247,7 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
         cout<<"    ldlt/lu"<<endl;
 #endif
       // Either not PD or there are equality constraints
-      SparseMatrix<T> NA;
+      Eigen::SparseMatrix<T> NA;
       slice(new_A,data.unknown_lagrange,data.unknown_lagrange,NA);
       data.NA = NA;
       if(data.Auu_pd)
@@ -317,7 +315,7 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
     //cout<<"neq: "<<neq<<endl;
     //cout<<"nc: "<<nc<<endl;
     //cout<<"    matrixR"<<endl;
-    SparseMatrix<T> AeqTR,AeqTQ;
+    Eigen::SparseMatrix<T> AeqTR,AeqTQ;
     AeqTR = data.AeqTQR.matrixR();
     // This shouldn't be necessary
     AeqTR.prune(static_cast<T>(0.0));
@@ -340,7 +338,7 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
     cout<<"      nnz: "<<AeqTQ.nonZeros()<<endl;
     cout<<"    perm"<<endl;
 #endif
-    SparseMatrix<T> I(neq,neq);
+    Eigen::SparseMatrix<T> I(neq,neq);
     I.setIdentity();
     data.AeqTE = data.AeqTQR.colsPermutation() * I;
     data.AeqTET = data.AeqTQR.colsPermutation().transpose() * I;
@@ -365,7 +363,7 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
     cout<<"    proj"<<endl;
 #endif
     // Projected hessian
-    SparseMatrix<T> QRAuu = data.AeqTQ2T * Auu * data.AeqTQ2;
+    Eigen::SparseMatrix<T> QRAuu = data.AeqTQ2T * Auu * data.AeqTQ2;
     {
 #ifdef MIN_QUAD_WITH_FIXED_CPP_DEBUG
       cout<<"    factorize"<<endl;
@@ -393,11 +391,11 @@ IGL_INLINE bool igl::min_quad_with_fixed_precompute(
     cout<<"    smash"<<endl;
 #endif
     // Known value multiplier
-    SparseMatrix<T> Auk;
+    Eigen::SparseMatrix<T> Auk;
     slice(A,data.unknown,data.known,Auk);
-    SparseMatrix<T> Aku;
+    Eigen::SparseMatrix<T> Aku;
     slice(A,data.known,data.unknown,Aku);
-    SparseMatrix<T> AkuT = Aku.transpose();
+    Eigen::SparseMatrix<T> AkuT = Aku.transpose();
     data.preY = Auk + AkuT;
     // Needed during solve
     data.Auu = Auu;
@@ -424,9 +422,7 @@ IGL_INLINE bool igl::min_quad_with_fixed_solve(
   Eigen::PlainObjectBase<DerivedZ> & Z,
   Eigen::PlainObjectBase<Derivedsol> & sol)
 {
-  using namespace std;
-  using namespace Eigen;
-  typedef Matrix<T,Dynamic,Dynamic> MatrixXT;
+  typedef Eigen::Matrix<T ,Eigen::Dynamic ,Eigen::Dynamic> MatrixXT;
   // number of known rows
   int kr = data.known.size();
   if(kr!=0)
@@ -523,7 +519,7 @@ IGL_INLINE bool igl::min_quad_with_fixed_solve(
     const int nc = data.AeqTQR.rank();
     const int neq = Beq.rows();
     eff_Beq = eff_Beq.topLeftCorner(nc,cols).eval();
-    data.AeqTR1T.template triangularView<Lower>().solveInPlace(eff_Beq);
+    data.AeqTR1T.template triangularView<Eigen::Lower>().solveInPlace(eff_Beq);
     // Now eff_Beq = (data.AeqTR1T \ (data.AeqTET * (-data.Aeqk * Y + Beq)))
     MatrixXT lambda_0;
     lambda_0 = data.AeqTQ1 * eff_Beq;
@@ -540,7 +536,7 @@ IGL_INLINE bool igl::min_quad_with_fixed_solve(
     {
       Derivedsol temp1,temp2;
       temp1 = (data.AeqTQ1T * NB - data.AeqTQ1T * data.Auu * solu);
-      data.AeqTR1.template triangularView<Upper>().solveInPlace(temp1);
+      data.AeqTR1.template triangularView<Eigen::Upper>().solveInPlace(temp1);
       //cout<<matlab_format(temp1,"temp1")<<endl;
       temp2 = Derivedsol::Zero(neq,cols);
       temp2.topLeftCorner(nc,cols) = temp1;

@@ -21,8 +21,8 @@
 namespace igl
 {
   /// Compute the principal curvature directions and magnitude of the given triangle mesh
-  ///   DerivedV derived from vertex positions matrix type: i.e. MatrixXd
-  ///   DerivedF derived from face indices matrix type: i.e. MatrixXi
+  ///   DerivedV derived from vertex positions matrix type: i.e. Eigen::MatrixXd
+  ///   DerivedF derived from face indices matrix type: i.e. Eigen::MatrixXi
   /// @param[in] V       eigen matrix #V by 3
   /// @param[in] F       #F by 3 list of mesh faces (must be triangles)
   /// @param[out] PD1 #V by 3 maximal curvature direction for each vertex.

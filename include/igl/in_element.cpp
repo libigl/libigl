@@ -21,8 +21,6 @@ IGL_INLINE void igl::in_element(
   const AABB<DerivedV,DIM> & aabb,
   Eigen::PlainObjectBase<DerivedI> & I)
 {
-  using namespace std;
-  using namespace Eigen;
   const int Qr = Q.rows();
   I.setConstant(Qr,1,-1);
   parallel_for(Qr,[&](const int e)
@@ -44,10 +42,8 @@ IGL_INLINE void igl::in_element(
   const AABB<DerivedV,DIM> & aabb,
   Eigen::SparseMatrix<Scalar> & I)
 {
-  using namespace std;
-  using namespace Eigen;
   const int Qr = Q.rows();
-  std::vector<Triplet<Scalar> > IJV;
+  std::vector<Eigen::Triplet<Scalar> > IJV;
   IJV.reserve(Qr);
 // #pragma omp parallel for if (Qr>10000)
   for(int e = 0;e<Qr;e++)
@@ -57,7 +53,7 @@ IGL_INLINE void igl::in_element(
     for(const auto r : R)
     {
 // #pragma omp critical
-      IJV.push_back(Triplet<Scalar>(e,r,1));
+      IJV.push_back(Eigen::Triplet<Scalar>(e,r,1));
     }
   }
   I.resize(Qr,Ele.rows());

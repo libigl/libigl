@@ -17,8 +17,8 @@ namespace igl
   /// Sort the elements of a matrix X along a given dimension like matlabs sort
   /// function
   ///
-  /// @tparam DerivedX derived scalar type, e.g. MatrixXi or MatrixXd
-  /// @tparam DerivedIX derived integer type, e.g. MatrixXi
+  /// @tparam DerivedX derived scalar type, e.g. Eigen::MatrixXi or Eigen::MatrixXd
+  /// @tparam DerivedIX derived integer type, e.g. Eigen::MatrixXi
   /// @param[in] X  m by n matrix whose entries are to be sorted
   /// @param[in] dim  dimensional along which to sort:
   ///     1  sort each column (matlab default)

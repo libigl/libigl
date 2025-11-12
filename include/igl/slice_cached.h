@@ -29,13 +29,13 @@ namespace igl
   /// #### Example
   ///
   ///     // Construct and slice up Laplacian
-  ///     SparseMatrix<double> L,L_sliced;
+  ///     Eigen::SparseMatrix<double> L,L_sliced;
   ///     igl::cotmatrix(V,F,L);
   ///     // Normal igl::slice call
   ///     igl::slice(L,in,in,L_in_in);
   ///     …
   ///     // Fast version
-  ///     static VectorXi data; // static or saved in a global state
+  ///     static Eigen::VectorXi data; // static or saved in a global state
   ///     if (data.size() == 0)
   ///       igl::slice_cached_precompute(L,in,in,data,L_sliced);
   ///     else

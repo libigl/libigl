@@ -40,15 +40,13 @@ void igl::crouzeix_raviart_massmatrix(
     const Eigen::MatrixBase<DerivedEMAP> & EMAP,
     Eigen::SparseMatrix<MT> & M)
 {
-  using namespace Eigen;
-  using namespace std;
   // Mesh should be edge-manifold (TODO: replace `is_edge_manifold` with
   // `is_facet_manifold`)
   assert(F.cols() != 3 || is_edge_manifold(F));
   // number of elements (triangles)
   const int m = F.rows();
   // Get triangle areas/volumes
-  VectorXd TA;
+  Eigen::VectorXd TA;
   // Element simplex size
   const int ss = F.cols();
   switch(ss)
@@ -63,13 +61,13 @@ void igl::crouzeix_raviart_massmatrix(
       volume(V,F,TA);
       break;
   }
-  vector<Triplet<MT> > MIJV(ss*m);
+  std::vector<Eigen::Triplet<MT> > MIJV(ss*m);
   assert(EMAP.size() == m*ss);
   for(int f = 0;f<m;f++)
   {
     for(int c = 0;c<ss;c++)
     {
-      MIJV[f+m*c] = Triplet<MT>(EMAP(f+m*c, 0),EMAP(f+m*c, 0),TA(f)/(double)(ss));
+      MIJV[f+m*c] = Eigen::Triplet<MT>(EMAP(f+m*c, 0),EMAP(f+m*c, 0),TA(f)/(double)(ss));
     }
   }
   M.resize(E.rows(),E.rows());

@@ -13,13 +13,14 @@
 #include <Eigen/Core>
 #include <Eigen/Sparse>
 #include <string>
+#include <vector>
 
 namespace igl
 {
   /// This is a routine to print a matrix using format suitable for pasting into
   /// the matlab IDE
   ///
-  /// @tparam DerivedM  e.g. derived from MatrixXd
+  /// @tparam DerivedM  e.g. derived from Eigen::MatrixXd
   /// @param[in] input  some matrix to be formatted
   /// @param[in] name  name of matrix (optional)
   /// @return Formatted matrix
@@ -50,6 +51,10 @@ namespace igl
   template <typename DerivedM>
   IGL_INLINE std::string matlab_format_index(
     const Eigen::MatrixBase<DerivedM> & M,
+    const std::string name = "");
+  template <typename T>
+  IGL_INLINE std::string matlab_format_index(
+    const std::vector<T> & Mvec,
     const std::string name = "");
   /// Same but for sparse matrices. Print IJV format into an auxiliary variable
   /// and then print a call to sparse which will construct the sparse matrix

@@ -56,7 +56,7 @@ namespace igl
         inline bool read(const std::string & path);
         /// Assign data to a variable name in the workspace
         ///
-        /// @tparam DerivedM  eigen matrix (e.g. MatrixXd)
+        /// @tparam DerivedM  eigen matrix (e.g. Eigen::MatrixXd)
         /// @param[in] M  data (usually a matrix)
         /// @param[in] name  variable name to save into work space
         /// @return true on success, false on failure
@@ -99,7 +99,7 @@ namespace igl
           const std::string & name);
         /// Same as save() but adds 1 to each element, useful for saving "index"
         /// matrices like lists of faces or elements
-        /// @tparam DerivedM  eigen matrix (e.g. MatrixXd)
+        /// @tparam DerivedM  eigen matrix (e.g. Eigen::MatrixXd)
         template <typename DerivedM>
         inline MatlabWorkspace& save_index(
           const Eigen::DenseBase<DerivedM>& M,
@@ -120,7 +120,7 @@ namespace igl
         ///
         /// \bug Outputs the first found (not necessarily unique lists).
         ///
-        /// @tparam DerivedM  eigen matrix (e.g. MatrixXd)
+        /// @tparam DerivedM  eigen matrix (e.g. Eigen::MatrixXd)
         /// @param[in] name  exact name of matrix as string
         /// @param[out] M  matrix
         /// @return true only if found.
@@ -143,7 +143,7 @@ namespace igl
           const std::string & name,
           int & v);
         /// Subtracts 1 from all entries
-        /// @tparam DerivedM  eigen matrix (e.g. MatrixXd)
+        /// @tparam DerivedM  eigen matrix (e.g. Eigen::MatrixXd)
         /// @param[in] name  exact name of matrix as string
         /// @param[out] M  matrix
         template <typename DerivedM>
@@ -191,7 +191,6 @@ inline void igl::matlab::MatlabWorkspace::clear()
 
 inline bool igl::matlab::MatlabWorkspace::write(const std::string & path) const
 {
-  using namespace std;
   MATFile * mat_file = matOpen(path.c_str(), "w");
   if(mat_file == NULL)
   {
@@ -206,8 +205,8 @@ inline bool igl::matlab::MatlabWorkspace::write(const std::string & path) const
     int status = matPutVariable(mat_file,names[i].c_str(), data[i]);
     if(status != 0) 
     {
-      cerr<<"^MatlabWorkspace::save Error: matPutVariable ("<<names[i]<<
-        ") failed"<<endl;
+      std::cerr<<"^MatlabWorkspace::save Error: matPutVariable ("<<names[i]<<
+        ") failed"<<std::endl;
       return false;
     } 
   }
@@ -221,21 +220,20 @@ inline bool igl::matlab::MatlabWorkspace::write(const std::string & path) const
 
 inline bool igl::matlab::MatlabWorkspace::read(const std::string & path)
 {
-  using namespace std;
 
   MATFile * mat_file;
 
   mat_file = matOpen(path.c_str(), "r");
   if (mat_file == NULL) 
   {
-    cerr<<"Error: failed to open "<<path<<endl;
+    std::cerr<<"Error: failed to open "<<path<<std::endl;
     return false;
   }
 
   int ndir;
   const char ** dir = (const char **)matGetDir(mat_file, &ndir);
   if (dir == NULL) {
-    cerr<<"Error reading directory of file "<< path<<endl;
+    std::cerr<<"Error reading directory of file "<< path<<std::endl;
     return false;
   }
   mxFree(dir);
@@ -243,13 +241,13 @@ inline bool igl::matlab::MatlabWorkspace::read(const std::string & path)
   // Must close and reopen
   if(matClose(mat_file) != 0)
   {
-    cerr<<"Error: failed to close file "<<path<<endl;
+    std::cerr<<"Error: failed to close file "<<path<<std::endl;
     return false;
   }
   mat_file = matOpen(path.c_str(), "r");
   if (mat_file == NULL) 
   {
-    cerr<<"Error: failed to open "<<path<<endl;
+    std::cerr<<"Error: failed to open "<<path<<std::endl;
     return false;
   }
   
@@ -261,7 +259,7 @@ inline bool igl::matlab::MatlabWorkspace::read(const std::string & path)
     mxArray * mx_data = matGetNextVariable(mat_file, &name);
     if (mx_data == NULL) 
     {
-      cerr<<"Error: matGetNextVariable failed in "<<path<<endl;
+      std::cerr<<"Error: matGetNextVariable failed in "<<path<<std::endl;
       return false;
     } 
     const int dims = mxGetNumberOfDimensions(mx_data);
@@ -280,7 +278,7 @@ inline bool igl::matlab::MatlabWorkspace::read(const std::string & path)
 
   if(matClose(mat_file) != 0)
   {
-    cerr<<"Error: failed to close file "<<path<<endl;
+    std::cerr<<"Error: failed to close file "<<path<<std::endl;
     return false;
   }
 
@@ -293,7 +291,6 @@ inline igl::matlab::MatlabWorkspace& igl::matlab::MatlabWorkspace::save(
   const Eigen::MatrixBase<DerivedM>& M,
   const std::string & name)
 {
-  using namespace std;
   const int m = M.rows();
   const int n = M.cols();
   mxArray * mx_data = mxCreateDoubleMatrix(m,n,mxREAL);
@@ -313,7 +310,6 @@ inline igl::matlab::MatlabWorkspace& igl::matlab::MatlabWorkspace::save(
   const Eigen::SparseMatrix<MT>& M,
   const std::string & name)
 {
-  using namespace std;
   const int m = M.rows();
   const int n = M.cols();
   // THIS WILL NOT WORK FOR ROW-MAJOR
@@ -423,7 +419,6 @@ inline bool igl::matlab::MatlabWorkspace::find(
   const std::string & name,
   Eigen::PlainObjectBase<DerivedM>& M)
 {
-  using namespace std;
   const int i = std::find(names.begin(), names.end(), name)-names.begin();
   if(i>=(int)names.size())
   {
@@ -458,8 +453,6 @@ inline bool igl::matlab::MatlabWorkspace::find(
   const std::string & name,
   Eigen::SparseMatrix<MT>& M)
 {
-  using namespace std;
-  using namespace Eigen;
   const int i = std::find(names.begin(), names.end(), name)-names.begin();
   if(i>=(int)names.size())
   {
@@ -484,7 +477,7 @@ inline bool igl::matlab::MatlabWorkspace::find(
   double * pr = mxGetPr(mx_data);
   mwIndex * ir = mxGetIr(mx_data);
   mwIndex * jc = mxGetJc(mx_data);
-  vector<Triplet<MT> > MIJV;
+  vector<Eigen::Triplet<MT> > MIJV;
   const int nnz = mxGetNzmax(mx_data);
   MIJV.reserve(nnz);
   // Iterate over outside
@@ -497,7 +490,7 @@ inline bool igl::matlab::MatlabWorkspace::find(
       //cout<<ir[k]<<" "<<j<<" "<<pr[k]<<endl;
       assert((int)ir[k]<m);
       assert((int)j<n);
-      MIJV.push_back(Triplet<MT >(ir[k],j,pr[k]));
+      MIJV.push_back(Eigen::Triplet<MT >(ir[k],j,pr[k]));
       k++;
     }
   }
@@ -511,7 +504,6 @@ inline bool igl::matlab::MatlabWorkspace::find(
   const std::string & name,
   int & v)
 {
-  using namespace std;
   const int i = std::find(names.begin(), names.end(), name)-names.begin();
   if(i>=(int)names.size())
   {
@@ -534,7 +526,6 @@ inline bool igl::matlab::MatlabWorkspace::find(
   const std::string & name,
   double & d)
 {
-  using namespace std;
   const int i = std::find(names.begin(), names.end(), name)-names.begin();
   if(i>=(int)names.size())
   {
@@ -572,8 +563,8 @@ inline bool igl::matlab::MatlabWorkspace::find_index(
 //{
 //  using namespace std;
 //  // If I don't know the type then I can't save it
-//  cerr<<"^MatlabWorkspace::save Error: Unknown data type. "<<
-//    name<<" not saved."<<endl;
+//  std::cerr<<"^MatlabWorkspace::save Error: Unknown data type. "<<
+//    name<<" not saved."<<std::endl;
 //  return false;
 //}
 

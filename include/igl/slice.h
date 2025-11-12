@@ -102,7 +102,7 @@ namespace igl
     const Eigen::DenseBase<DerivedC> & C,
     Eigen::PlainObjectBase<DerivedY> & Y);
   /// \overload
-  /// \brief VectorXi Y = slice(X,R);
+  /// \brief Eigen::VectorXi Y = slice(X,R);
   /// This templating is bad because the return type might not have the same
   /// size as `DerivedX`. This will probably only work if DerivedX has Dynamic
   /// as it's non-trivial sizes or if the number of rows in R happens to equal

@@ -30,10 +30,10 @@ namespace igl
   ///   SparseVector<double> Asum;
   ///   sum(A,1,Asum);
   ///   // Convert row sums into diagonal of sparse matrix
-  ///   SparseMatrix<double> Adiag;
+  ///   Eigen::SparseMatrix<double> Adiag;
   ///   diag(Asum,Adiag);
   ///   // Build uniform laplacian
-  ///   SparseMatrix<double> U;
+  ///   Eigen::SparseMatrix<double> U;
   ///   U = A-Adiag;
   /// \endcode
   ///

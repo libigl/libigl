@@ -25,7 +25,6 @@ IGL_INLINE void igl::copyleft::cgal::projected_delaunay(
         CGAL::Constrained_triangulation_face_base_2<Kernel> >,
       CGAL::Exact_intersections_tag> > & cdt)
 {
-  using namespace std;
   // 3D Primitives
   typedef CGAL::Point_3<Kernel>    Point_3;
   typedef CGAL::Segment_3<Kernel>  Segment_3; 

@@ -8,6 +8,7 @@ option(LIBIGL_TUTORIALS_CHAPTER6 "Compile libigl tutorials chapter 6" ON)
 option(LIBIGL_TUTORIALS_CHAPTER7 "Compile libigl tutorials chapter 7" ON)
 option(LIBIGL_TUTORIALS_CHAPTER8 "Compile libigl tutorials chapter 8" ON)
 option(LIBIGL_TUTORIALS_CHAPTER9 "Compile libigl tutorials chapter 9" ON)
+option(LIBIGL_TUTORIALS_CHAPTER10 "Compile libigl tutorials chapter 10" ON)
 
 # Download tutorial data
 include(libigl_tutorial_data)
@@ -130,4 +131,9 @@ if(LIBIGL_TUTORIALS_CHAPTER9)
     igl_add_tutorial(908_IntersectionBlockingDecimation igl::glfw igl::predicates)
     igl_add_tutorial(909_BatchMarchingCubes igl::glfw)
     igl_add_tutorial(910_OrientedBoundingBox igl::glfw igl_copyleft::cgal)
+endif()
+
+if(LIBIGL_TUTORIALS_CHAPTER10)
+  igl_add_tutorial(1001_LipschitzOctree igl::glfw)
+  igl_add_tutorial(1002_EytzingerAABB igl::glfw)
 endif()

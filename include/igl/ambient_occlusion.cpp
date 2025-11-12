@@ -30,7 +30,6 @@ IGL_INLINE void igl::ambient_occlusion(
   const int num_samples,
   Eigen::PlainObjectBase<DerivedS> & S)
 {
-  using namespace Eigen;
   const int n = P.rows();
   // Resize output
   S.resize(n,1);
@@ -38,7 +37,7 @@ IGL_INLINE void igl::ambient_occlusion(
   typedef typename DerivedP::Scalar Scalar;
   typedef Eigen::Matrix<Scalar,3,1> Vector3N;
 
-  const Matrix<Scalar,Eigen::Dynamic,3> D = random_dir_stratified(num_samples).cast<Scalar>();
+  const Eigen::Matrix<Scalar,Eigen::Dynamic,3> D = random_dir_stratified(num_samples).cast<Scalar>();
 
   const auto & inner = [&P,&N,&num_samples,&D,&S,&shoot_ray](const int p)
   {

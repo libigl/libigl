@@ -15,9 +15,9 @@ namespace igl
 {
   /// Act like matlab's [C,IA,IC] = unique(X,'rows')
   ///
-  /// @tparam  DerivedA derived scalar type, e.g. MatrixXi or MatrixXd
-  /// @tparam  DerivedIA derived integer type, e.g. MatrixXi
-  /// @tparam  DerivedIC derived integer type, e.g. MatrixXi
+  /// @tparam  DerivedA derived scalar type, e.g. Eigen::MatrixXi or Eigen::MatrixXd
+  /// @tparam  DerivedIA derived integer type, e.g. Eigen::MatrixXi
+  /// @tparam  DerivedIC derived integer type, e.g. Eigen::MatrixXi
   /// @param[in] A  m by n matrix whose entries are to unique'd according to rows
   /// @param[out] C  #C vector of unique rows in A
   /// @param[out] IA  #C index vector so that C = A(IA,:);

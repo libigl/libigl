@@ -15,15 +15,14 @@ void igl::unproject_on_plane(
   const Eigen::MatrixBase<DerivedP> & P,
   Eigen::PlainObjectBase<DerivedZ> & Z)
 {
-  using namespace Eigen;
   typedef typename DerivedZ::Scalar Scalar;
-  Matrix<Scalar,2,3> A;
-  Matrix<Scalar,2,1> B;
+  Eigen::Matrix<Scalar,2,3> A;
+  Eigen::Matrix<Scalar,2,1> B;
   projection_constraint(UV,M,VP,A,B);
-  Matrix<Scalar,3,3> AA;
+  Eigen::Matrix<Scalar,3,3> AA;
   AA.topRows(2) = A.template cast<Scalar>();
   AA.row(2) = P.head(3).template cast<Scalar>();
-  Matrix<Scalar,3,1> BB;
+  Eigen::Matrix<Scalar,3,1> BB;
   BB.head(2) = B.template cast<Scalar>();
   BB(2) = -P(3);
   Z = AA.fullPivHouseholderQr().solve(BB);

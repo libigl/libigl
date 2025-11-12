@@ -34,13 +34,12 @@ void igl::marching_tets(
     Eigen::PlainObjectBase<DerivedJ>& J,
     Eigen::SparseMatrix<BCType>& BC)
 {
-  using namespace std;
 
   // We're hashing edges to deduplicate using 64 bit ints. The upper and lower
   // 32 bits of a key are the indices of vertices in the mesh. The implication is
   // that you can only have 2^32 vertices which I have deemed sufficient for
   // anything reasonable.
-  const auto make_edge_key = [](const pair<int32_t, int32_t>& p) -> std::int64_t
+  const auto make_edge_key = [](const std::pair<int32_t, int32_t>& p) -> std::int64_t
   {
     std::int64_t ret = 0;
     ret |= p.first;
@@ -79,11 +78,11 @@ void igl::marching_tets(
   };
 
   // Store the faces and the tet they are in
-  vector<pair<Eigen::RowVector3i, int>> faces;
+  std::vector<std::pair<Eigen::RowVector3i, int>> faces;
 
   // Store the edges in the tet mesh which we add vertices on
   // so we can deduplicate
-  vector<pair<int, int>> edge_table;
+  std::vector<std::pair<int, int>> edge_table;
 
 
   assert(TT.cols() == 4 && TT.rows() >= 1);
@@ -110,7 +109,7 @@ void igl::marching_tets(
       const int tv1_idx = TT(i, mt_edge_lookup[mt_cell_lookup[key][e]][0]);
       const int tv2_idx = TT(i, mt_edge_lookup[mt_cell_lookup[key][e]][1]);
       const int vertex_id = edge_table.size();
-      edge_table.push_back(make_pair(std::min(tv1_idx, tv2_idx), std::max(tv1_idx, tv2_idx)));
+      edge_table.push_back(std::make_pair(std::min(tv1_idx, tv2_idx), std::max(tv1_idx, tv2_idx)));
       v_ids[e] = vertex_id;
     }
 
@@ -122,13 +121,13 @@ void igl::marching_tets(
       {
         const Eigen::RowVector3i f1(v_ids[0], v_ids[1], v_ids[3]);
         const Eigen::RowVector3i f2(v_ids[1], v_ids[2], v_ids[3]);
-        faces.push_back(make_pair(f1, i));
-        faces.push_back(make_pair(f2, i));
+        faces.push_back(std::make_pair(f1, i));
+        faces.push_back(std::make_pair(f2, i));
       }
       else
       {
         const Eigen::RowVector3i f(v_ids[0], v_ids[1], v_ids[2]);
-        faces.push_back(make_pair(f, i));
+        faces.push_back(std::make_pair(f, i));
       }
 
     }
@@ -140,11 +139,11 @@ void igl::marching_tets(
   J.resize(faces.size());
 
   // Sparse matrix triplets for BC
-  vector<Eigen::Triplet<BCType>> bc_triplets;
+  std::vector<Eigen::Triplet<BCType>> bc_triplets;
   bc_triplets.reserve(edge_table.size());
 
   // Deduplicate vertices
-  unordered_map<std::int64_t, int> emap;
+  std::unordered_map<std::int64_t, int> emap;
   emap.max_load_factor(0.5);
   emap.reserve(edge_table.size());
 
@@ -157,7 +156,7 @@ void igl::marching_tets(
     for (int v = 0; v < 3; v++)
     {
       const int vi = faces[f].first[v];
-      const pair<int32_t, int32_t> edge = edge_table[vi];
+      const std::pair<int32_t, int32_t> edge = edge_table[vi];
       const std::int64_t key = make_edge_key(edge);
       auto it = emap.find(key);
       if (it == emap.end()) // New unique vertex, insert it

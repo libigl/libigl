@@ -12,7 +12,6 @@ IGL_INLINE void igl::lbs_matrix(
   const Eigen::MatrixXd & W,
   Eigen::MatrixXd & M)
 {
-  using namespace Eigen;
   // Number of dimensions
   const int dim = V.cols();
   // Number of model points
@@ -26,7 +25,7 @@ IGL_INLINE void igl::lbs_matrix(
   M.resize(n,(dim+1)*m);
   for(int j = 0;j<m;j++)
   {
-    VectorXd Wj = W.block(0,j,V.rows(),1);
+    Eigen::VectorXd Wj = W.block(0,j,V.rows(),1);
     for(int i = 0;i<(dim+1);i++)
     {
       if(i<dim)
@@ -177,8 +176,7 @@ IGL_INLINE void igl::lbs_matrix_column(
   Eigen::MatrixXd & M)
 {
   // Cheapskate wrapper
-  using namespace Eigen;
-  SparseMatrix<double> sM;
+  Eigen::SparseMatrix<double> sM;
   lbs_matrix_column(V,W,WI,sM);
-  M = MatrixXd(sM);
+  M = Eigen::MatrixXd(sM);
 }

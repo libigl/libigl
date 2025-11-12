@@ -24,7 +24,6 @@
 //  Eigen::PlainObjectBase<DerivedIX>& IX)
 //{
 //  using namespace std;
-//  using namespace Eigen;
 //  typedef Eigen::Matrix<typename DerivedX::Scalar, Eigen::Dynamic, 1> RowVector;
 //  vector<SortableRow<RowVector> > rows;
 //  rows.resize(X.rows());
@@ -59,8 +58,6 @@ IGL_INLINE void igl::sortrows(
   // This is already 2x faster than matlab's builtin `sortrows`. I have tried
   // implementing a "multiple-pass" sort on each column, but see no performance
   // improvement.
-  using namespace std;
-  using namespace Eigen;
   // Resize output
   const size_t num_rows = X.rows();
   const size_t num_cols = X.cols();

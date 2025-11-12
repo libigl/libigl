@@ -1,5 +1,8 @@
 #include "triangle_triangle_intersect.h"
 #include "predicates.h"
+#include "exactinit.h"
+#include "orient2d.h"
+#include "orient3d.h"
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 

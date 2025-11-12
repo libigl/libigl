@@ -13,9 +13,8 @@ IGL_INLINE void igl::null(
   const Eigen::MatrixBase<DerivedA> & A,
   Eigen::PlainObjectBase<DerivedN> & N)
 {
-  using namespace Eigen;
   typedef typename DerivedA::Scalar Scalar;
-  JacobiSVD<Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic> > svd(A, ComputeFullV);
+  Eigen::JacobiSVD<Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic> > svd(A, Eigen::ComputeFullV);
   svd.setThreshold(A.cols() * svd.singularValues().maxCoeff() * EPS<Scalar>());
   N = svd.matrixV().rightCols(A.cols()-svd.rank());
 }

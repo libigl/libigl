@@ -13,8 +13,8 @@ namespace igl
   /// Limit given faces F to those which contain (only) indices found
   /// in L.
   ///
-  /// @tparam MatF matrix type of faces, matrixXi
-  /// @tparam VecL  matrix type of vertex indices, VectorXi
+  /// @tparam MatF matrix type of faces, Eigen::MatrixXi
+  /// @tparam VecL  matrix type of vertex indices, Eigen::VectorXi
   /// @param[in] F  #F by 3 list of face indices
   /// @param[in] L  #L by 1 list of allowed indices
   /// @param[in] exclusive  flag specifying whether a face is included only if all its

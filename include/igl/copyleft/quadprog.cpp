@@ -93,7 +93,6 @@ IGL_INLINE bool igl::copyleft::quadprog(
   const Eigen::VectorXd & ci0, 
   Eigen::VectorXd& x)
 {
-  using namespace Eigen;
   typedef double Scalar;
 
 
@@ -131,28 +130,28 @@ IGL_INLINE bool igl::copyleft::quadprog(
   		}
   	return a1 * std::sqrt(2.0);
   };
-  const auto compute_d = [](VectorXd &d, const MatrixXd& J, const VectorXd& np)
+  const auto compute_d = [](Eigen::VectorXd &d, const Eigen::MatrixXd& J, const Eigen::VectorXd& np)
   {
     d = J.adjoint() * np;
   };
 
   const auto update_z = 
-    [](VectorXd& z, const MatrixXd& J, const VectorXd& d,  int iq)
+    [](Eigen::VectorXd& z, const Eigen::MatrixXd& J, const Eigen::VectorXd& d,  int iq)
   {
     z = J.rightCols(z.size()-iq) * d.tail(d.size()-iq);
   };
 
   const auto update_r = 
-    [](const MatrixXd& R, VectorXd& r, const VectorXd& d, int iq) 
+    [](const Eigen::MatrixXd& R, Eigen::VectorXd& r, const Eigen::VectorXd& d, int iq)
   {
     r.head(iq) = 
-      R.topLeftCorner(iq,iq).triangularView<Upper>().solve(d.head(iq));
+      R.topLeftCorner(iq,iq).triangularView<Eigen::Upper>().solve(d.head(iq));
   };
 
   const auto add_constraint = [&distance](
-    MatrixXd& R, 
-    MatrixXd& J, 
-    VectorXd& d, 
+    Eigen::MatrixXd& R,
+    Eigen::MatrixXd& J,
+    Eigen::VectorXd& d,
     int& iq, 
     double& R_norm)->bool
   {
@@ -222,10 +221,10 @@ IGL_INLINE bool igl::copyleft::quadprog(
   };
 
   const auto delete_constraint = [&distance](
-      MatrixXd& R, 
-      MatrixXd& J, 
-      VectorXi& A, 
-      VectorXd& u, 
+      Eigen::MatrixXd& R,
+      Eigen::MatrixXd& J,
+      Eigen::VectorXi& A,
+      Eigen::VectorXd& u,
       int p, 
       int& iq, 
       int l)
@@ -308,12 +307,12 @@ IGL_INLINE bool igl::copyleft::quadprog(
   int i, k, l; /* indices */
   int ip, me, mi;
   int n=g0.size();  int p=ce0.size();  int m=ci0.size();  
-  MatrixXd R(G.rows(),G.cols()), J(G.rows(),G.cols());
+  Eigen::MatrixXd R(G.rows(),G.cols()), J(G.rows(),G.cols());
   
-  LLT<MatrixXd,Lower> chol(G.cols());
+  Eigen::LLT<Eigen::MatrixXd,Eigen::Lower> chol(G.cols());
  
-  VectorXd s(m+p), z(n), r(m + p), d(n),  np(n), u(m + p);
-  VectorXd x_old(n), u_old(m + p);
+  Eigen::VectorXd s(m+p), z(n), r(m + p), d(n),  np(n), u(m + p);
+  Eigen::VectorXd x_old(n), u_old(m + p);
 #ifdef TRACE_SOLVER
   double f_value;
 #endif
@@ -321,7 +320,7 @@ IGL_INLINE bool igl::copyleft::quadprog(
   const double inf = std::numeric_limits<double>::infinity();
   double t, t1, t2; /* t is the step length, which is the minimum of the partial step length t1 
     * and the full step length t2 */
-  VectorXi A(m + p), A_old(m + p), iai(m + p);
+  Eigen::VectorXi A(m + p), A_old(m + p), iai(m + p);
   int iq; 
   std::vector<bool> iaexcl(m + p);
  	

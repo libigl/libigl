@@ -260,11 +260,11 @@ namespace igl
   /// for sign.
   ///
   /// #### Usage:
-  ///     VectorXd S;  
-  ///     VectorXd V, P; //where V is mesh vertices, P are query points
-  ///     VectorXi F;  
+  ///     Eigen::VectorXd S;
+  ///     Eigen::VectorXd V, P; //where V is mesh vertices, P are query points
+  ///     Eigen::VectorXi F;
   ///     igl::FastWindingNumberBVH fwn_bvh;
-  ///     igl::fast_winding_number(V.cast<float>(), F, 2, fwn_bvh);
+  ///     igl::fast_winding_number(V.cast<float>().eval(), F, 2, fwn_bvh);
   ///     igl::signed_distance_fast_winding_number(P,V,F,tree,fwn_bvh,S);
   ///
   /// @param[in] P  #P by 3 list of query point positions

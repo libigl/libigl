@@ -19,8 +19,6 @@ IGL_INLINE bool igl::embree::unproject_onto_mesh(
   int& fid,
   Eigen::Vector3f& bc)
 {
-  using namespace std;
-  using namespace Eigen;
   const auto & shoot_ray = [&ei](
     const Eigen::Vector3f& s,
     const Eigen::Vector3f& dir,

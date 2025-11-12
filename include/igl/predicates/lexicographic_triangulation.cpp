@@ -9,6 +9,7 @@
 #include "lexicographic_triangulation.h"
 #include "../lexicographic_triangulation.h"
 #include "predicates.h"
+#include "orient2d.h"
 
 template<
   typename DerivedV,
