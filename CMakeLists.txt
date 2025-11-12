@@ -166,7 +166,12 @@ if(LIBIGL_INSTALL)
     set(version_config_file "${CMAKE_CURRENT_BINARY_DIR}/LibiglConfigVersion.cmake")
     set(export_dest_dir "${CMAKE_INSTALL_LIBDIR}/cmake/igl")
 
-    foreach(suffix IN ITEMS "") #"_restricted" "_copyleft")
+    get_directory_property(targets BUILDSYSTEM_TARGETS)
+    foreach(suffix IN ITEMS "" "_copyleft" "_restricted")
+        if(NOT targets MATCHES "igl${suffix}")
+            continue()
+        endif()
+
         install(EXPORT LibiglTargets${suffix}
             DESTINATION ${export_dest_dir}
             NAMESPACE igl${suffix}::
