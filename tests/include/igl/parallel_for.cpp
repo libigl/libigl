@@ -137,7 +137,10 @@ TEST_CASE("parallel_for: nested_calls", "[igl][parallel_for]")
     /*min_parallel=*/1
   );
 
-  REQUIRE(used_parallel == true);
+  if(igl::default_num_threads() > 1) 
+  {
+    REQUIRE(used_parallel == true);
+  }
   for (int v : out)
     REQUIRE(v == 1);
 }
