@@ -113,6 +113,17 @@ namespace igl
 
 #include "default_num_threads.h"
 
+namespace igl {
+  namespace internal {
+    inline std::size_t & parallel_for_nesting_level()
+    {
+      // One counter *per thread*
+      static thread_local std::size_t level = 0;
+      return level;
+    }
+  }
+}
+
 #include <cmath>
 #include <cassert>
 #include <thread>
@@ -146,17 +157,22 @@ inline bool igl::parallel_for(
 {
   assert(loop_size>=0);
   if(loop_size==0) return false;
-  // Estimate number of threads in the pool
-  // http://ideone.com/Z7zldb
+
 #ifdef IGL_PARALLEL_FOR_FORCE_SERIAL
   const size_t nthreads = 1;
 #else
   const size_t nthreads = igl::default_num_threads();
 #endif
-  if(loop_size<min_parallel || nthreads<=1)
+
+  // NEW: are we already inside a parallel_for worker?
+  const bool nested = igl::internal::parallel_for_nesting_level() > 0;
+
+  if(loop_size<min_parallel || nthreads<=1 || nested)
   {
     // serial
     prep_func(1);
+    // (We do *not* change nesting_level here, so non-nested, purely serial
+    // uses of parallel_for can still parallelize their own inner loops.)
     for(Index i = 0;i<loop_size;i++) func(i,0);
     accum_func(0);
     return false;
@@ -170,13 +186,17 @@ inline bool igl::parallel_for(
     // [Helper] Inner loop
     const auto & range = [&func](const Index k1, const Index k2, const size_t t)
     {
+      // NEW: mark this thread as being in a parallel_for while running func
+      auto & level = igl::internal::parallel_for_nesting_level();
+      level++;
       for(Index k = k1; k < k2; k++) func(k,t);
+      level--;
     };
+
     prep_func(nthreads);
-    // Create pool and launch jobs
     std::vector<std::thread> pool;
     pool.reserve(nthreads);
-    // Inner range extents
+
     Index i1 = 0;
     Index i2 = std::min(0 + slice, loop_size);
     {
@@ -192,9 +212,8 @@ inline bool igl::parallel_for(
         pool.emplace_back(range, i1, loop_size, t);
       }
     }
-    // Wait for jobs to finish
     for (std::thread &t : pool) if (t.joinable()) t.join();
-    // Accumulate across threads
+
     for(size_t t = 0;t<nthreads;t++)
     {
       accum_func(t);
@@ -202,6 +221,7 @@ inline bool igl::parallel_for(
     return true;
   }
 }
+
 
 //#ifndef IGL_STATIC_LIBRARY
 //#include "parallel_for.cpp"
