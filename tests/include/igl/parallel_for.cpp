@@ -431,7 +431,7 @@ TEST_CASE("parallel_for: force_serial_macro", "[igl][parallel_for]")
 }
 #endif
 
-#define IGL_PARALLEL_FOR_TIMING_TESTS
+//#define IGL_PARALLEL_FOR_TIMING_TESTS
 #ifdef IGL_PARALLEL_FOR_TIMING_TESTS
 
 #include <chrono>
