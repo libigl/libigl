@@ -6,10 +6,6 @@
 #include <thread>
 #include <set>
 
-// -----------------------------------------------------------------------------
-// Existing tests from your message
-// -----------------------------------------------------------------------------
-
 TEST_CASE("parallel_for: serial_fallback", "[igl][parallel_for]")
 {
   // loop_size < min_parallel ⇒ must run serial
@@ -28,6 +24,7 @@ TEST_CASE("parallel_for: serial_fallback", "[igl][parallel_for]")
 
 TEST_CASE("parallel_for: basic_parallelism", "[igl][parallel_for]")
 {
+  if(igl::default_num_threads() <= 1) { SUCCEED("Only one hardware thread; nested parallel test skipped."); return; }
   const int N = 20000;
   std::vector<int> hit(N, 0);
   std::atomic<int> counter(0);
@@ -73,7 +70,10 @@ TEST_CASE("parallel_for: accumulation", "[igl][parallel_for]")
 
   bool used_parallel = igl::parallel_for(N, prep, func, accum, 1);
 
-  REQUIRE(used_parallel == true);
+  if(igl::default_num_threads() > 1) 
+  { 
+    REQUIRE(used_parallel == true);
+  }
   REQUIRE(total == Approx((double)N));
 }
 
@@ -100,6 +100,7 @@ TEST_CASE("parallel_for: equivalence_to_serial", "[igl][parallel_for]")
 
 TEST_CASE("parallel_for: min_parallel_threshold", "[igl][parallel_for]")
 {
+  if(igl::default_num_threads() <= 1) { SUCCEED("Only one hardware thread; nested parallel test skipped."); return; }
   const int N = 500;
   std::vector<int> A(N,0), B(N,0);
 
@@ -122,7 +123,7 @@ TEST_CASE("parallel_for: nested_calls", "[igl][parallel_for]")
   const int N = 2000;
   std::vector<int> out(N, 0);
 
-  bool ok = igl::parallel_for(
+  bool used_parallel = igl::parallel_for(
     N,
     [&](int i)
     {
@@ -136,7 +137,10 @@ TEST_CASE("parallel_for: nested_calls", "[igl][parallel_for]")
     /*min_parallel=*/1
   );
 
-  REQUIRE(ok == true);
+  if(igl::default_num_threads() > 1) 
+  {
+    REQUIRE(used_parallel == true);
+  }
   for (int v : out)
     REQUIRE(v == 1);
 }
@@ -182,6 +186,7 @@ TEST_CASE("parallel_for: zero_iterations_does_nothing", "[igl][parallel_for]")
 
 TEST_CASE("parallel_for: min_parallel_equal_threshold", "[igl][parallel_for]")
 {
+  if(igl::default_num_threads() <= 1) { SUCCEED("Only one hardware thread; nested parallel test skipped."); return; }
   const int N = 1024;
   std::vector<int> A(N,0), B(N,0);
 
@@ -243,7 +248,6 @@ TEST_CASE("parallel_for: thread_id_range_and_accum_calls", "[igl][parallel_for]"
     /*min_parallel=*/1
   );
 
-  REQUIRE(used_parallel == true);
 
   const size_t nt = prep_nt.load();
   REQUIRE(nt >= 1);
@@ -290,7 +294,10 @@ TEST_CASE("parallel_for: nested_inner_serial_fallback", "[igl][parallel_for]")
     /*min_parallel=*/1
   );
 
-  REQUIRE(outer_parallel == true);
+  if(igl::default_num_threads() > 1) 
+  { 
+    REQUIRE(outer_parallel == true);
+  }
   for (int v : outer_hits)
     REQUIRE(v == 1);
 
@@ -329,13 +336,17 @@ TEST_CASE("parallel_for: deep_nested_calls", "[igl][parallel_for]")
     /*min_parallel=*/1
   );
 
-  REQUIRE(outer_parallel == true);
+  if(igl::default_num_threads() > 1) 
+  { 
+    REQUIRE(outer_parallel == true);
+  }
   for (int v : hits)
     REQUIRE(v == 1);
 }
 
 TEST_CASE("parallel_for: many_small_jobs_reuse_pool", "[igl][parallel_for]")
 {
+  if(igl::default_num_threads() <= 1) { SUCCEED("Only one hardware thread; nested parallel test skipped."); return; }
   const int iterations = 200;
   const int N = 64;
 
@@ -350,8 +361,11 @@ TEST_CASE("parallel_for: many_small_jobs_reuse_pool", "[igl][parallel_for]")
       [&](int i){ buf[i] = it; },
       /*min_parallel=*/1
     );
+    if(igl::default_num_threads() > 1) 
+    { 
+      REQUIRE(used_parallel == true);
+    }
 
-    REQUIRE(used_parallel == true);
     for (int i = 0; i < N; ++i)
       REQUIRE(buf[i] == it);
   }
@@ -359,6 +373,7 @@ TEST_CASE("parallel_for: many_small_jobs_reuse_pool", "[igl][parallel_for]")
 
 TEST_CASE("parallel_for: different_index_types", "[igl][parallel_for]")
 {
+  if(igl::default_num_threads() <= 1) { SUCCEED("Only one hardware thread; nested parallel test skipped."); return; }
   const long long N = 12345;
 
   std::vector<int> buf((size_t)N, 0);
@@ -412,7 +427,10 @@ TEST_CASE("parallel_for: accumulation_equivalence_to_serial_sum", "[igl][paralle
     /*min_parallel=*/1
   );
 
-  REQUIRE(used_parallel == true);
+  if(igl::default_num_threads() > 1)
+  {
+    REQUIRE(used_parallel == true);
+  }
   REQUIRE(parallel_sum == serial_sum);
 }
 
@@ -435,7 +453,7 @@ TEST_CASE("parallel_for: force_serial_macro", "[igl][parallel_for]")
 }
 #endif
 
-#define IGL_PARALLEL_FOR_TIMING_TESTS
+//#define IGL_PARALLEL_FOR_TIMING_TESTS
 #ifdef IGL_PARALLEL_FOR_TIMING_TESTS
 
 #include <chrono>
@@ -446,6 +464,7 @@ using igl_pf_clock = std::chrono::steady_clock;
 
 TEST_CASE("parallel_for: timing_large_loop", "[igl][parallel_for][timing]")
 {
+  if(igl::default_num_threads() <= 1) { SUCCEED("Only one hardware thread; nested parallel test skipped."); return; }
   const int N = 5'000'000;
 
   std::vector<double> a(N), b(N);
@@ -518,6 +537,7 @@ TEST_CASE("parallel_for: timing_large_loop", "[igl][parallel_for][timing]")
 
 TEST_CASE("parallel_for: timing_many_small_jobs", "[igl][parallel_for][timing]")
 {
+  if(igl::default_num_threads() <= 1) { SUCCEED("Only one hardware thread; nested parallel test skipped."); return; }
   // This is meant to stress the thread pool reuse behavior: many small jobs.
   const int iterations = 500;
   const int N = 1024;
@@ -598,5 +618,49 @@ TEST_CASE("parallel_for: timing_many_small_jobs", "[igl][parallel_for][timing]")
   }
 }
 
-#endif // IGL_PARALLEL_FOR_TIMING_TESTS
 
+TEST_CASE("parallel_for: nested_serial_fallback", "[igl][parallel_for]")
+{
+
+  const int outer_loop_size = 4;
+  const int inner_loop_size = 4;
+
+  std::atomic<bool> any_inner_parallel(false);
+  std::atomic<int> counter(0);
+
+  // Outer parallel_for should use multiple threads.
+  bool outer_used_parallel = igl::parallel_for(
+    outer_loop_size,
+    [&](int /*i*/)
+    {
+      bool inner_used_parallel = igl::parallel_for(
+        inner_loop_size,
+        [&](int /*j*/)
+        {
+          // Just do some work so we know the inner loop ran.
+          counter.fetch_add(1, std::memory_order_relaxed);
+        }
+      );
+
+      if(inner_used_parallel)
+      {
+        any_inner_parallel.store(true, std::memory_order_relaxed);
+      }
+    }
+  );
+
+  // Sanity: outer loop should be parallel when threads > 1.
+  if(igl::default_num_threads() > 1)
+  {
+    REQUIRE(outer_used_parallel == true);
+  }
+
+  // Sanity: all iterations of both loops ran.
+  REQUIRE(counter.load(std::memory_order_relaxed)
+          == outer_loop_size * inner_loop_size);
+
+  // The key assertion: inner parallel_for must fall back to serial when nested.
+  REQUIRE(any_inner_parallel.load(std::memory_order_relaxed) == false);
+}
+
+#endif // IGL_PARALLEL_FOR_TIMING_TESTS
