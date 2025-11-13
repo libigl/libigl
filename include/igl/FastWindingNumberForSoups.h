@@ -84,6 +84,7 @@
 #include <type_traits>
 #include <sys/types.h>
 #include <stdint.h>
+#include <cassert>
 
 namespace igl {
   /// @private
