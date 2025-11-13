@@ -6,10 +6,6 @@
 #include <thread>
 #include <set>
 
-// -----------------------------------------------------------------------------
-// Existing tests from your message
-// -----------------------------------------------------------------------------
-
 TEST_CASE("parallel_for: serial_fallback", "[igl][parallel_for]")
 {
   // loop_size < min_parallel ⇒ must run serial
@@ -596,6 +592,55 @@ TEST_CASE("parallel_for: timing_many_small_jobs", "[igl][parallel_for][timing]")
     // Again: super loose bound just to catch pathological regressions.
     CHECK(ratio < 20.0);
   }
+}
+
+
+TEST_CASE("parallel_for: nested_serial_fallback", "[igl][parallel_for]")
+{
+  // If there is only a single hardware thread available, this test
+  // can't meaningfully distinguish nested/parallel behavior.
+  if(igl::default_num_threads() <= 1)
+  {
+    SUCCEED("Only one hardware thread; nested parallel test skipped.");
+    return;
+  }
+
+  const int outer_loop_size = 4;
+  const int inner_loop_size = 4;
+
+  std::atomic<bool> any_inner_parallel(false);
+  std::atomic<int> counter(0);
+
+  // Outer parallel_for should use multiple threads.
+  bool outer_used_parallel = igl::parallel_for(
+    outer_loop_size,
+    [&](int /*i*/)
+    {
+      bool inner_used_parallel = igl::parallel_for(
+        inner_loop_size,
+        [&](int /*j*/)
+        {
+          // Just do some work so we know the inner loop ran.
+          counter.fetch_add(1, std::memory_order_relaxed);
+        }
+      );
+
+      if(inner_used_parallel)
+      {
+        any_inner_parallel.store(true, std::memory_order_relaxed);
+      }
+    }
+  );
+
+  // Sanity: outer loop should be parallel when threads > 1.
+  REQUIRE(outer_used_parallel == true);
+
+  // Sanity: all iterations of both loops ran.
+  REQUIRE(counter.load(std::memory_order_relaxed)
+          == outer_loop_size * inner_loop_size);
+
+  // The key assertion: inner parallel_for must fall back to serial when nested.
+  REQUIRE(any_inner_parallel.load(std::memory_order_relaxed) == false);
 }
 
 #endif // IGL_PARALLEL_FOR_TIMING_TESTS
