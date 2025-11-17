@@ -167,7 +167,7 @@ if(LIBIGL_INSTALL)
     set(export_dest_dir "${CMAKE_INSTALL_LIBDIR}/cmake/igl")
 
     get_directory_property(targets BUILDSYSTEM_TARGETS)
-    foreach(suffix IN ITEMS "" "_copyleft" "_restricted")
+    foreach(suffix IN ITEMS "" "_copyleft") #  "_restricted"
         if(NOT targets MATCHES "igl${suffix}")
             continue()
         endif()
