@@ -25,7 +25,7 @@ namespace igl
       /// @param[in] per_patch_cells  #P by 2 list of cell labels on each side
       ///   of each patch.  Cell labels are assumed to be continuous from 0 to #C.
       /// @param[in] num_cells        number of cells.
-      /// @param[out] adjacency_list  #C array of list of adjcent cell
+      /// @param[out] adjacency_list  #C array of list of adjacent cell
       ///   information.  If cell i and cell j are adjacent via patch x, where i
       ///   is on the positive side of x, and j is on the negative side.  Then,
       ///   adjacency_list[i] will contain the entry {j, false, x} and
