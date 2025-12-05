@@ -110,7 +110,7 @@ IGL_INLINE bool igl::linprog(
       if(MAXIT>0 && it>=MAXIT)
       {
 #ifdef IGL_LINPROG_VERBOSE
-        std::std::cerr<<"linprog: warning! maximum iterations without convergence."<<std::endl;
+        std::cerr<<"linprog: warning! maximum iterations without convergence."<<std::endl;
 #endif
         success = false;
         break;
