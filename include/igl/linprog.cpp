@@ -110,7 +110,7 @@ IGL_INLINE bool igl::linprog(
       if(MAXIT>0 && it>=MAXIT)
       {
 #ifdef IGL_LINPROG_VERBOSE
-        cerr<<"linprog: warning! maximum iterations without convergence."<<endl;
+        std::std::cerr<<"linprog: warning! maximum iterations without convergence."<<std::endl;
 #endif
         success = false;
         break;
@@ -140,7 +140,7 @@ IGL_INLINE bool igl::linprog(
         if(MAXIT == -1)
         {
 #ifdef IGL_LINPROG_VERBOSE
-          cerr<<"linprog: warning! degenerate vertex"<<endl;
+          std::cerr<<"linprog: warning! degenerate vertex"<<std::endl;
 #endif
           success = false;
         }
@@ -156,7 +156,7 @@ IGL_INLINE bool igl::linprog(
       if(I.size() == 0)
       {
 #ifdef IGL_LINPROG_VERBOSE
-        cerr<<"linprog: warning! solution is unbounded"<<endl;
+        std::cerr<<"linprog: warning! solution is unbounded"<<std::endl;
 #endif
         // This seems dubious:
         it=-it;
@@ -226,7 +226,7 @@ IGL_INLINE bool igl::linprog(
     {
       it = -it;
 #ifdef IGL_LINPROG_VERBOSE
-      cerr<<"linprog: warning, no feasible solution"<<endl;
+      std::cerr<<"linprog: warning, no feasible solution"<<std::endl;
 #endif
       success = false;
       break;
