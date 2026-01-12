@@ -148,6 +148,7 @@ int main(int argc, char * argv[])
 
   update();
   viewer.data().show_lines = false;
+  viewer.data().line_width = 2;
   viewer.core().lighting_factor = 0;
   viewer.data().set_edges(V,E,Eigen::RowVector3d(0,0,0));
   // key
