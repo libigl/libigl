@@ -8,7 +8,7 @@ include(FetchContent)
 FetchContent_Declare(
     libigl_tutorial_data
     GIT_REPOSITORY https://github.com/libigl/libigl-tutorial-data
-    GIT_TAG        c1f9ede366d02e3531ecbaec5e3769312f31cccd
+    GIT_TAG        6700bf49000cd64199835fb40323e5ca9c7796ab
 )
 FetchContent_MakeAvailable(libigl_tutorial_data)
 
