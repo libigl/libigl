@@ -6,6 +6,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "box_simplices.h"
+#include "parallel_for.h"
 
 template <
   typename DerivedV,
@@ -20,7 +21,8 @@ IGL_INLINE void igl::box_simplices(
 {
   B1.setConstant(F.rows(),V.cols(),std::numeric_limits<double>::infinity());
   B2.setConstant(F.rows(),V.cols(),-std::numeric_limits<double>::infinity());
-  for(int f = 0; f < F.rows(); f++) 
+  //for(int f = 0; f < F.rows(); f++) 
+  igl::parallel_for(F.rows(),[&](const int f)
   {
     for(int c = 0; c < F.cols(); c++) 
     {
@@ -30,7 +32,7 @@ IGL_INLINE void igl::box_simplices(
         B2(f,d) = std::max(B2(f,d),V(F(f,c),d));
       }
     }
-  }
+  },1000);
 }
 
 #ifdef IGL_STATIC_LIBRARY
