@@ -19,13 +19,18 @@ namespace igl
     /// @param[in] b  2D point
     /// @param[in] c  2D point
     /// @param[in] d  2D point
-    template<typename Derivedq>
+    template <
+      typename Derivedq,
+      typename Deriveda,
+      typename Derivedb,
+      typename Derivedc,
+      typename Derivedd>
     IGL_INLINE Orientation point_in_convex_hull(
       const Eigen::MatrixBase<Derivedq> & q,
-      const Eigen::MatrixBase<Derivedq> & a,
-      const Eigen::MatrixBase<Derivedq> & b,
-      const Eigen::MatrixBase<Derivedq> & c,
-      const Eigen::MatrixBase<Derivedq> & d);
+      const Eigen::MatrixBase<Deriveda> & a,
+      const Eigen::MatrixBase<Derivedb> & b,
+      const Eigen::MatrixBase<Derivedc> & c,
+      const Eigen::MatrixBase<Derivedd> & d);
   }
 }
 

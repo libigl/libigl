@@ -22,6 +22,27 @@ namespace igl {
       Eigen::PlainObjectBase<DerivedI>& I,
       Eigen::PlainObjectBase<DerivedS>& S,
       Eigen::PlainObjectBase<DerivedK>& K);
+    template <
+      typename DerivedQ,
+      typename DerivedP,
+      typename DerivedC,
+      typename DerivedB,
+      typename Derivedleaf,
+      typename DerivedsqrD,
+      typename DerivedI,
+      typename DerivedS,
+      typename DerivedK>
+    void point_spline_squared_distance(
+      const Eigen::MatrixBase<DerivedQ>& Q,
+      const Eigen::MatrixBase<DerivedP>& P,
+      const Eigen::MatrixBase<DerivedC>& C,
+      const Eigen::MatrixBase<DerivedB>& B1,
+      const Eigen::MatrixBase<DerivedB>& B2,
+      const Eigen::MatrixBase<Derivedleaf>& leaf,
+      Eigen::PlainObjectBase<DerivedsqrD>& sqrD,
+      Eigen::PlainObjectBase<DerivedI>& I,
+      Eigen::PlainObjectBase<DerivedS>& S,
+      Eigen::PlainObjectBase<DerivedK>& K);
   }
 }
 

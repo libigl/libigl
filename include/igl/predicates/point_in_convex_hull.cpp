@@ -78,13 +78,18 @@ struct SH
 };
 }
 
-template<typename Derivedq>
+template <
+  typename Derivedq,
+  typename Deriveda,
+  typename Derivedb,
+  typename Derivedc,
+  typename Derivedd>
 IGL_INLINE igl::Orientation igl::predicates::point_in_convex_hull(
   const Eigen::MatrixBase<Derivedq> & q,
-  const Eigen::MatrixBase<Derivedq> & a,
-  const Eigen::MatrixBase<Derivedq> & b,
-  const Eigen::MatrixBase<Derivedq> & c,
-  const Eigen::MatrixBase<Derivedq> & d)
+  const Eigen::MatrixBase<Deriveda> & a,
+  const Eigen::MatrixBase<Derivedb> & b,
+  const Eigen::MatrixBase<Derivedc> & c,
+  const Eigen::MatrixBase<Derivedd> & d)
 {
   assert(q.size()==2 && a.size()==2 && b.size()==2 && c.size()==2 && d.size()==2);
   using Scalar = typename Derivedq::Scalar;
@@ -193,6 +198,7 @@ IGL_INLINE igl::Orientation igl::predicates::point_in_convex_hull(
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instantiation
-// with Eigen::RowVector2d
-template igl::Orientation igl::predicates::point_in_convex_hull<Eigen::Matrix<double, 1, 2, 1, 1, 2>>(const Eigen::MatrixBase<Eigen::Matrix<double, 1, 2, 1, 1, 2>> &, const Eigen::MatrixBase<Eigen::Matrix<double, 1, 2, 1, 1, 2>> &, const Eigen::MatrixBase<Eigen::Matrix<double, 1, 2, 1, 1, 2>> &, const Eigen::MatrixBase<Eigen::Matrix<double, 1, 2, 1, 1, 2>> &, const Eigen::MatrixBase<Eigen::Matrix<double, 1, 2, 1, 1, 2>> &);
+template igl::Orientation igl::predicates::point_in_convex_hull<Eigen::Matrix<double, 1, 2, 1, 1, 2>, Eigen::Matrix<double, 1, 2, 1, 1, 2>, Eigen::Matrix<double, 1, 2, 1, 1, 2>, Eigen::Matrix<double, 1, 2, 1, 1, 2>, Eigen::Matrix<double, 1, 2, 1, 1, 2>>(Eigen::MatrixBase<Eigen::Matrix<double, 1, 2, 1, 1, 2>> const&, Eigen::MatrixBase<Eigen::Matrix<double, 1, 2, 1, 1, 2>> const&, Eigen::MatrixBase<Eigen::Matrix<double, 1, 2, 1, 1, 2>> const&, Eigen::MatrixBase<Eigen::Matrix<double, 1, 2, 1, 1, 2>> const&, Eigen::MatrixBase<Eigen::Matrix<double, 1, 2, 1, 1, 2>> const&);
+template igl::Orientation igl::predicates::point_in_convex_hull<Eigen::Matrix<double, 1, -1, 1, 1, -1>, Eigen::Matrix<double, 1, 2, 1, 1, 2>, Eigen::Matrix<double, 1, 2, 1, 1, 2>, Eigen::Matrix<double, 1, 2, 1, 1, 2>, Eigen::Matrix<double, 1, 2, 1, 1, 2>>(Eigen::MatrixBase<Eigen::Matrix<double, 1, -1, 1, 1, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<double, 1, 2, 1, 1, 2>> const&, Eigen::MatrixBase<Eigen::Matrix<double, 1, 2, 1, 1, 2>> const&, Eigen::MatrixBase<Eigen::Matrix<double, 1, 2, 1, 1, 2>> const&, Eigen::MatrixBase<Eigen::Matrix<double, 1, 2, 1, 1, 2>> const&);
+template igl::Orientation igl::predicates::point_in_convex_hull<Eigen::Matrix<double, 1, -1, 1, 1, -1>, Eigen::Matrix<double, 1, -1, 1, 1, -1>, Eigen::Matrix<double, 1, -1, 1, 1, -1>, Eigen::Matrix<double, 1, -1, 1, 1, -1>, Eigen::Matrix<double, 1, -1, 1, 1, -1>>(Eigen::MatrixBase<Eigen::Matrix<double, 1, -1, 1, 1, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<double, 1, -1, 1, 1, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<double, 1, -1, 1, 1, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<double, 1, -1, 1, 1, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<double, 1, -1, 1, 1, -1>> const&);
 #endif

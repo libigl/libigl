@@ -1,11 +1,14 @@
 #include <igl/opengl/glfw/Viewer.h>
 #include <igl/get_seconds.h>
+#include <igl/find.h>
 #include <igl/readDMAT.h>
 #include <igl/writeDMAT.h>
 #include <igl/triangulated_grid.h>
 #include <igl/cubic.h>
 #include <igl/cycodebase/box_cubic.h>
 #include <igl/cycodebase/point_spline_squared_distance.h>
+#include <igl/cycodebase/spline_eytzinger_aabb.h>
+#include <igl/predicates/spline_winding_number.h>
 
 int main(int argc, char * argv[])
 {
@@ -35,22 +38,6 @@ int main(int argc, char * argv[])
     }
   }
 
-  Eigen::MatrixXd B1,B2;
-  igl::cycodebase::box_cubic(P,C,B1,B2);
-  Eigen::MatrixXd BV(C.rows()*4,2);
-  BV<<
-    B1.col(0), B1.col(1),
-    B1.col(0), B2.col(1),
-    B2.col(0), B2.col(1),
-    B2.col(0), B1.col(1);
-  Eigen::MatrixXi BE(C.rows()*4,2);
-  for(int c = 0;c<C.rows();c++)
-  {
-    BE.row(c*4 + 0)<< 0*C.rows() + c, 1*C.rows() + c;
-    BE.row(c*4 + 1)<< 1*C.rows() + c, 2*C.rows() + c;
-    BE.row(c*4 + 2)<< 2*C.rows() + c, 3*C.rows() + c;
-    BE.row(c*4 + 3)<< 3*C.rows() + c, 0*C.rows() + c;
-  }
 
   Eigen::MatrixXd GV;
   Eigen::MatrixXi GF;
@@ -76,19 +63,55 @@ int main(int argc, char * argv[])
   Eigen::VectorXd sqrD,S;
   Eigen::VectorXi I;
   Eigen::MatrixXd K;
-  for(int r = 0;r<10;r++)
+  Eigen::VectorXd W;
+
+  Eigen::Matrix<double,Eigen::Dynamic,2,Eigen::RowMajor> B1,B2;
+  Eigen::VectorXi leaf;
+  tictoc();
+  igl::cycodebase::spline_eytzinger_aabb(P, C, B1, B2,leaf);
+  printf("AABB build time: %g secs\n",tictoc());
+  igl::writeDMAT("P.dmat", Eigen::MatrixXd(P));
+  igl::writeDMAT("C.dmat", Eigen::MatrixXi(C));
+  igl::writeDMAT("B1.dmat",Eigen::MatrixXd(B1));
+  igl::writeDMAT("B2.dmat",Eigen::MatrixXd(B2));
+
   {
     tictoc();
     igl::cycodebase::point_spline_squared_distance(
-        GV, P, C, sqrD, I, S, K);
-    printf("%d points in %g secs\n",GV.rows(),tictoc());
+        GV, P, C, B1,B2,leaf, sqrD, I, S, K);
+    printf("sqrD: %d points in %g secs\n",GV.rows(),tictoc());
+    tictoc();
+    igl::predicates::spline_winding_number(P,C,B1,B2,leaf,GV,W);
+    printf("Wind: %d points in %g secs\n",GV.rows(),tictoc());
   }
-  Eigen::VectorXd D = sqrD.array().sqrt();
+  Eigen::VectorXd unsigned_D = sqrD.array().sqrt();
+  Eigen::VectorXd signed_D = unsigned_D.array() * (0.5 - W.array().abs()) * 2.0;
+
+  // Just leaves
+  //Eigen::MatrixXd B1,B2;
+  //igl::cycodebase::box_cubic(P,C,B1,B2);
+
+  const auto nonempty = igl::find((leaf.array() != -2).eval());
+  const int nb = nonempty.size();
+  Eigen::MatrixXd BV(nb*4,2);
+  BV<<
+    B1(nonempty,0), B1(nonempty,1),
+    B1(nonempty,0), B2(nonempty,1),
+    B2(nonempty,0), B2(nonempty,1),
+    B2(nonempty,0), B1(nonempty,1);
+  Eigen::MatrixXi BE(nb*4,2);
+  for(int c = 0;c<nb;c++)
+  {
+    BE.row(c*4 + 0)<< 0*nb + c, 1*nb + c;
+    BE.row(c*4 + 1)<< 1*nb + c, 2*nb + c;
+    BE.row(c*4 + 2)<< 2*nb + c, 3*nb + c;
+    BE.row(c*4 + 3)<< 3*nb + c, 0*nb + c;
+  }
 
   igl::opengl::glfw::Viewer vr;
   vr.data().set_mesh(GV,GF);
-  vr.data().set_data(D);
   vr.data().show_lines = false;
+  const int g_index = vr.selected_data_index;
   vr.append_mesh();
   vr.data().set_mesh(V,E(Eigen::all,{0,1,1}).eval());
   vr.data().set_points(P,Eigen::RowVector3d(1,0.7,0.2));
@@ -97,12 +120,64 @@ int main(int argc, char * argv[])
     C(Eigen::all,{2,3});
   vr.data().set_edges(P,CE,Eigen::RowVector3d(1,0.7,0.2));
   vr.data().point_size = 10;
-  //vr.data().set_points(BV,Eigen::RowVector3d(0,1,0));
-  //vr.data().set_edges(BV,BE,Eigen::RowVector3d(0,1,1));
   vr.append_mesh();
-  vr.data().set_mesh(BV,BE(Eigen::all,{0,1,1}).eval());
-  vr.data().line_color = Eigen::RowVector4f(1,1,1,1);
+  vr.data().set_edges(BV,BE,Eigen::RowVector3d(0,0,0));
 
+  enum Quantity
+  {
+    SIGNED_DISTANCE,
+    UNSIGNED_DISTANCE,
+    WINDING_NUMBER
+  } quantity = SIGNED_DISTANCE;
+
+  const auto update = [&]()
+  {
+    vr.core().lighting_factor = 0;
+    const double dmax = unsigned_D.maxCoeff();
+    const double dmin = -dmax;
+    switch(quantity)
+    {
+      case SIGNED_DISTANCE:
+        vr.data_list[g_index].set_data(signed_D,dmin,dmax,igl::COLOR_MAP_TYPE_ZOE,28);
+        break;
+      case UNSIGNED_DISTANCE:
+        vr.data_list[g_index].set_data(unsigned_D,dmin,dmax,igl::COLOR_MAP_TYPE_ZOE,28);
+        break;
+      case WINDING_NUMBER:
+        vr.data_list[g_index].set_data(W);
+        break;
+    }
+  };
+  update();
+
+  vr.callback_key_pressed = [&](igl::opengl::glfw::Viewer &, unsigned int key, int mod)->bool
+  {
+    switch(key)
+    {
+      default:
+        return false;
+      case 'W':
+      case 'w':
+        quantity = WINDING_NUMBER;
+        break;
+      case 'U':
+      case 'u':
+        quantity = UNSIGNED_DISTANCE;
+        break;
+      case 'S':
+      case 's':
+        quantity = SIGNED_DISTANCE;
+        break;
+    }
+    update();
+    return true;
+  };
+  std::cout<<R"(
+  S,s     Signed distance
+  W,w     Winding number
+  U,u     Unsigned distance
+  N,n     Toggle naive / accelerated
+  )"<<std::endl;
   vr.launch();
   return 0;
 }
