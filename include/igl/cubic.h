@@ -6,6 +6,12 @@
 
 namespace igl
 {
+  /// Evaluate a cubic Bézier curve defined by control points C at parameter t.
+  ///
+  /// @param[in] C  4 by dimensions matrix of control points for a cubic
+  /// Bézier curve
+  /// @param[in] t  Parameter at which to evaluate curve
+  /// @param[out] P  1 by dimensions point on curve C(t)
   template
     <
     typename  DerivedC,

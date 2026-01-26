@@ -15,10 +15,12 @@ namespace igl
     /// quadrilateral.
     ///
     /// @param[in] q  2D query point
-    /// @param[in] a  2D point
-    /// @param[in] b  2D point
-    /// @param[in] c  2D point
-    /// @param[in] d  2D point
+    /// @param[in] a  2D point possibly on the convex hull
+    /// @param[in] b  2D point possibly on the convex hull
+    /// @param[in] c  2D point possibly on the convex hull
+    /// @param[in] d  2D point possibly on the convex hull
+    /// @return Returns +1 if q is inside the convex hull, -1 if outside, and 0
+    /// if on the boundary.
     template <
       typename Derivedq,
       typename Deriveda,

@@ -15,6 +15,7 @@ namespace igl
   /// @param[in] C  4 by dimensions matrix of control points for a cubic
   /// Bézier curve
   /// @param[in] squared_distance_bound  Squared distance tolerance
+  /// @return  True if the curve is flat within the given tolerance
   template <typename DerivedC>
   IGL_INLINE bool cubic_is_flat(
     const Eigen::MatrixBase<DerivedC>& C,

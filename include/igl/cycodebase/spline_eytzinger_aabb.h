@@ -6,6 +6,18 @@
 
 namespace igl {
   namespace cycodebase {
+    /// Compute an AABB acceleration structure for a spline of cubic Bezier
+    /// curves in Eytzinger layout.
+    ///
+    /// @param[in] P  #P by dim matrix of spline control points
+    /// @param[in] C  #C by 4 matrix of indices into P defining the cubic Bézier
+    /// curves making up the spline
+    /// @param[out] B1  #B by dim matrix of AABB min box corners
+    /// @param[out] B2  #B by dim matrix of AABB max box corners
+    /// @param[out] leaf  #B by 1 matrix of AABB leaf node indices/flags
+    ///
+    /// \see igl::cycodebase::box_cubic, igl::eytzinger_aabb
+    ///
     template <
       typename DerivedP,
       typename DerivedC,

@@ -5,7 +5,7 @@ template <
   typename DerivedM,
   typename DerivedD,
   typename DerivedB>
-void igl::cubic_monomial_bases(
+IGL_INLINE void igl::cubic_monomial_bases(
   const Eigen::MatrixBase<DerivedC>& C,
   Eigen::PlainObjectBase<DerivedM>& M,
   Eigen::PlainObjectBase<DerivedD>& D,

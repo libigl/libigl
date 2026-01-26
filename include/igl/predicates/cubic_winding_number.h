@@ -7,6 +7,11 @@ namespace igl
 {
   namespace predicates
   {
+    /// Computes the (generalized) winding number of a cubic Bézier curve around a query.
+    /// This implementation is similar to "Robust Containment Queries Over
+    /// Collections of Rational Parametric Curves via Generalized Winding
+    /// Numbers" [Spainhour et al. 2024].
+    ///
     /// @param[in] C  4 by dimensions matrix of control points for a cubic
     /// Bézier curve
     /// @param[in] q  1 by dimensions query point
