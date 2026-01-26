@@ -1,6 +1,7 @@
 #include "point_cubic_squared_distance.h"
 #include "../parallel_for.h"
 #include "../cubic.h"
+#include "../cubic_monomial_bases.h"
 #include <cyPolynomial.h>
 #include <limits>
 
@@ -19,7 +20,6 @@ void igl::cycodebase::point_cubic_squared_distance(
 {
   using Scalar = typename DerivedQ::Scalar;
   constexpr int ColsAtCompileTime = DerivedQ::ColsAtCompileTime;
-  using cy::PolynomialRoots;
   const int dim = C.cols();
   assert(C.rows() == 4 && "C should be 4 x dim.");
   assert(Q.cols() == dim && "Q and C should have the same number of columns.");
@@ -32,35 +32,14 @@ void igl::cycodebase::point_cubic_squared_distance(
   // => -2 (dC/dt) · (Q - C(t)) = 0
   // => (dC/dt) · (C(t) - Q) = f(t) = 0
   //
-  const auto C0 = C.row(0);
-  const auto C1 = C.row(1);
-  const auto C2 = C.row(2);
-  const auto C3 = C.row(3);
   using RowVectorSD = Eigen::RowVector<Scalar,ColsAtCompileTime>;
   using MatrixS4D = Eigen::Matrix<Scalar,4,ColsAtCompileTime>;
   using MatrixS3D = Eigen::Matrix<Scalar,3,ColsAtCompileTime>;
-  // monomial coefficients for C(t)
-  MatrixS4D M(4,C.cols());
-  M <<
-    C.row(0).eval(),
-    3 * (C1 - C0),
-    3 * (C0 - 2 * C1 + C2),
-    C3 - C0 + 3 * (C1 - C2);
-  // Monomial coefficients for dC/dt
-  MatrixS3D D(3,C.cols());
-  D << M.row(1),
-     2 * M.row(2),
-     3 * M.row(3);
-  Eigen::RowVector<Scalar,6> B(0,0,0,0,0,0);
-  for (int i = 0; i < 3; ++i)
-  {
-    for (int j = 0; j < 4; ++j)
-    {
-      B(i + j) += D.row(i).dot(M.row(j));
-    }
-  }
-  return point_cubic_squared_distance(
-    Q, C, D, B, sqrD, S, K);
+  MatrixS4D M;
+  MatrixS3D D;
+  Eigen::RowVector<Scalar,6> B;
+  cubic_monomial_bases(C, M, D, B);
+  return point_cubic_squared_distance( Q, C, D, B, sqrD, S, K);
 }
 
 template <
@@ -80,9 +59,15 @@ void igl::cycodebase::point_cubic_squared_distance(
   Eigen::PlainObjectBase<DerivedS>& S,
   Eigen::PlainObjectBase<DerivedK>& K)
 {
+  // static assert that C has 4 rows or Dynamic
+  static_assert(
+    DerivedC::RowsAtCompileTime == 4 ||
+    DerivedC::RowsAtCompileTime == Eigen::Dynamic,
+    "C must have 4 rows.");
+  // runtime assert that C has 4 rows
+  assert(C.rows() == 4 && "C must have 4 rows.");
   using Scalar = typename DerivedQ::Scalar;
   constexpr int ColsAtCompileTime = DerivedQ::ColsAtCompileTime;
-  using cy::PolynomialRoots;
   const int dim = C.cols();
   using RowVectorSD = Eigen::RowVector<Scalar,ColsAtCompileTime>;
   sqrD.setConstant(Q.rows(),1,std::numeric_limits<Scalar>::infinity());
@@ -92,51 +77,120 @@ void igl::cycodebase::point_cubic_squared_distance(
   for(int i = 0;i<n;i++)
   igl::parallel_for(n,[&](const int i)
   {
-    // Fill in coefficients using precomputed data and Q
-    // => (dC/dt) · (C(t) - Q) = f(t) = 0
-    //
-    // C(t) = (1-t)^3 C0 + 3(1-t)^2 t C1 + 3(1-t) t^2 C2 + t^3 C3
-    // C(t) = C0 + t⋅3(C1 - C0) + t^2⋅3(C0 - 2C1 + C2) + t^3⋅(C3 - C0 + 3(C1 - C2))
-    // dC/dt =       3(C1 - C0) +   t⋅6(C0 - 2C1 + C2) + t^2⋅3(C3 - C0 + 3(C1 - C2))
-    Eigen::RowVector<Scalar,6> coef = B;
-    for (int j = 0; j < 3; ++j)
-    {
-      coef(j) -= D.row(j).dot(Q.row(i));
-    }
-
-    // f is a quintic polynomial:
-    constexpr int N = 5;
-    Scalar r[N];
-    int nr = PolynomialRoots<N>(r, coef.data(),Scalar(0),Scalar(1));
-    for(int j = 0;j<nr+2;j++)
-    {
-      Scalar t;
-      if(j==nr)
-      {
-        t = Scalar(0);
-      }
-      else if(j==nr+1)
-      {
-        t = Scalar(1);
-      }else
-      {
-        t = r[j];
-      }
-      RowVectorSD Ct;
-      igl::cubic(C,t,Ct);
-      const Scalar sqrD_j = (Ct - Q.row(i)).squaredNorm();
-      if(sqrD_j < sqrD(i))
-      {
-        sqrD(i) = sqrD_j;
-        S(i) = t;
-        K.row(i) = Ct;
-      }
-    }
+    RowVectorSD k_i;
+    const RowVectorSD q_i = Q.row(i);
+    point_cubic_squared_distance( q_i, C, D, B, sqrD(i), S(i), k_i);
+    K.row(i) = k_i;
   }
   ,1000);
 }
 
+template <
+  typename Derivedq,
+  typename DerivedC,
+  typename DerivedD,
+  typename DerivedB,
+  typename Derivedk
+  >
+void igl::cycodebase::point_cubic_squared_distance(
+  const Eigen::MatrixBase<Derivedq>& q,
+  const Eigen::MatrixBase<DerivedC>& C,
+  const Eigen::MatrixBase<DerivedD>& D,
+  const Eigen::MatrixBase<DerivedB>& B,
+  typename Derivedq::Scalar& sqrD,
+  typename Derivedq::Scalar& s,
+  Eigen::PlainObjectBase<Derivedk>& k)
+{
+  using cy::PolynomialRoots;
+  using Scalar = typename Derivedq::Scalar;
+  const int dim = C.cols();
+  // static assert that C has 4 rows or Dynamic
+  static_assert(
+    DerivedC::RowsAtCompileTime == 4 ||
+    DerivedC::RowsAtCompileTime == Eigen::Dynamic,
+    "C must have 4 rows.");
+  assert(C.rows() == 4 && "C should be 4 x dim.");
+  assert(q.cols() == dim && "q and C should have the same number of columns.");
+  typedef Eigen::Matrix<Scalar,1,Derivedq::ColsAtCompileTime> RowVectorSD;
+  // Fill in coefficients using precomputed data and Q
+  // => (dC/dt) · (C(t) - Q) = f(t) = 0
+  //
+  // C(t) = (1-t)^3 C0 + 3(1-t)^2 t C1 + 3(1-t) t^2 C2 + t^3 C3
+  // C(t) = C0 + t⋅3(C1 - C0) + t^2⋅3(C0 - 2C1 + C2) + t^3⋅(C3 - C0 + 3(C1 - C2))
+  // dC/dt =       3(C1 - C0) +   t⋅6(C0 - 2C1 + C2) + t^2⋅3(C3 - C0 + 3(C1 - C2))
+  Eigen::RowVector<Scalar,6> coef = B;
+  for (int j = 0; j < 3; ++j)
+  {
+    coef(j) -= D.row(j).dot(q);
+  }
+
+  sqrD = std::numeric_limits<Scalar>::infinity();
+  // f is a quintic polynomial:
+  constexpr int N = 5;
+  Scalar r[N];
+  int nr = PolynomialRoots<N>(r, coef.data(),Scalar(0),Scalar(1));
+  for(int j = 0;j<nr+2;j++)
+  {
+    Scalar t;
+    if(j==nr)
+    {
+      t = Scalar(0);
+    }
+    else if(j==nr+1)
+    {
+      t = Scalar(1);
+    }else
+    {
+      t = r[j];
+    }
+    RowVectorSD Ct;
+    igl::cubic(C,t,Ct);
+    const Scalar sqrD_j = (Ct - q).squaredNorm();
+    if(sqrD_j < sqrD)
+    {
+      sqrD = sqrD_j;
+      s = t;
+      k = Ct;
+    }
+  }
+}
+
+template <
+  typename Derivedq,
+  typename DerivedC,
+  typename Derivedk
+  >
+void igl::cycodebase::point_cubic_squared_distance(
+  const Eigen::MatrixBase<Derivedq>& q,
+  const Eigen::MatrixBase<DerivedC>& C,
+  typename Derivedq::Scalar& sqrD,
+  typename Derivedq::Scalar& s,
+  Eigen::PlainObjectBase<Derivedk>& k)
+{
+  using Scalar = typename Derivedq::Scalar;
+  constexpr int ColsAtCompileTime = Derivedq::ColsAtCompileTime;
+  static_assert(
+    DerivedC::RowsAtCompileTime == 4 ||
+    DerivedC::RowsAtCompileTime == Eigen::Dynamic,
+    "C must have 4 rows.");
+  static_assert(
+    int(Derivedq::ColsAtCompileTime) == int(DerivedC::ColsAtCompileTime),
+    "q and C must have the same number of columns.");
+  const int dim = C.cols();
+  assert(C.rows() == 4 && "C should be 4 x dim.");
+  assert(q.cols() == dim && "q and C should have the same number of columns.");
+  using RowVectorSD = Eigen::RowVector<Scalar,ColsAtCompileTime>;
+  using MatrixS4D = Eigen::Matrix<Scalar,4,ColsAtCompileTime>;
+  using MatrixS3D = Eigen::Matrix<Scalar,3,ColsAtCompileTime>;
+  MatrixS4D M;
+  MatrixS3D D;
+  Eigen::RowVector<Scalar,6> B;
+  cubic_monomial_bases(C, M, D, B);
+  return point_cubic_squared_distance( q, C, D, B, sqrD, s, k);
+}
+
 #ifdef IGL_STATIC_LIBRARY
-// Explicit template specialization
-template void igl::cycodebase::point_cubic_squared_distance<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>>(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>> const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1>>&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1>>&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>>&);
+// Explicit template instantiation
+template void igl::cycodebase::point_cubic_squared_distance<Eigen::Matrix<double, 1, -1, 1, 1, -1>, Eigen::Matrix<double, 4, -1, 0, 4, -1>, Eigen::Matrix<double, 3, -1, 0, 3, -1>, Eigen::Matrix<double, 6, 1, 0, 6, 1>, Eigen::Matrix<double, 1, -1, 1, 1, -1>>(Eigen::MatrixBase<Eigen::Matrix<double, 1, -1, 1, 1, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<double, 4, -1, 0, 4, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<double, 3, -1, 0, 3, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<double, 6, 1, 0, 6, 1>> const&, Eigen::Matrix<double, 1, -1, 1, 1, -1>::Scalar&, Eigen::Matrix<double, 1, -1, 1, 1, -1>::Scalar&, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, -1, 1, 1, -1>>&);
+template void igl::cycodebase::point_cubic_squared_distance<Eigen::Matrix<double, 1, -1, 1, 1, -1>, Eigen::Matrix<double, 4, -1, 0, 4, -1>, Eigen::Matrix<double, 1, -1, 1, 1, -1>>(Eigen::MatrixBase<Eigen::Matrix<double, 1, -1, 1, 1, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<double, 4, -1, 0, 4, -1>> const&, Eigen::Matrix<double, 1, -1, 1, 1, -1>::Scalar&, Eigen::Matrix<double, 1, -1, 1, 1, -1>::Scalar&, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, -1, 1, 1, -1>>&);
 #endif

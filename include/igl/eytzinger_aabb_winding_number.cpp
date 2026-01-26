@@ -1,4 +1,25 @@
 #include "eytzinger_aabb_winding_number.h"
+
+// signed_angle helper. Not sure why igl::signed_angle is doing all that
+// normalization (divisions and square roots) when atan2 doesn't need it.
+namespace 
+{
+  template <typename MatV, typename VecP>
+  inline typename MatV::Scalar signed_angle(
+    const MatV & V,
+    const VecP & p,
+    const int e0,
+    const int e1)
+  {
+    const Eigen::Matrix<typename MatV::Scalar,1,2> v0 = V.row(e0) - p;
+    const Eigen::Matrix<typename MatV::Scalar,1,2> v1 = V.row(e1) - p;
+    const typename MatV::Scalar angle = std::atan2(
+      v0(0)*v1(1) - v0(1)*v1(0),
+      v0(0)*v1(0) + v0(1)*v1(1));
+    return angle;
+  }
+}
+
 template <
   typename Derivedp,
   typename DerivedV,
@@ -18,16 +39,32 @@ IGL_INLINE void igl::eytzinger_aabb_winding_number(
   const Eigen::MatrixBase<DerivedC> & C,
   typename DerivedV::Scalar & wn)
 {
-  const auto signed_angle = [&V,&p]( const int e0, const int e1)->typename DerivedV::Scalar
+  const auto primitive = [&p,&V,&E](const int e)->typename DerivedV::Scalar
   {
-    const Eigen::Matrix<typename DerivedV::Scalar,1,2> v0 = V.row(e0) - p;
-    const Eigen::Matrix<typename DerivedV::Scalar,1,2> v1 = V.row(e1) - p;
-    const typename DerivedV::Scalar angle = std::atan2(
-      v0(0)*v1(1) - v0(1)*v1(0),
-      v0(0)*v1(0) + v0(1)*v1(1));
-    return angle;
+    return ::signed_angle(V,p,E(e,0),E(e,1));
   };
+  return igl::eytzinger_aabb_winding_number(
+    p,V,primitive,B1,B2,leaf,I,C,wn);
+}
 
+template <
+  typename Derivedp,
+  typename DerivedV,
+  typename DerivedB,
+  typename Derivedleaf,
+  typename DerivedI,
+  typename DerivedC>
+IGL_INLINE void igl::eytzinger_aabb_winding_number(
+  const Eigen::MatrixBase<Derivedp> & p,
+  const Eigen::MatrixBase<DerivedV> & V,
+  const std::function<typename DerivedV::Scalar(const int)> & primitive,
+  const Eigen::MatrixBase<DerivedB> & B1,
+  const Eigen::MatrixBase<DerivedB> & B2,
+  const Eigen::MatrixBase<Derivedleaf> & leaf,
+  const Eigen::MatrixBase<DerivedI> & I,
+  const Eigen::MatrixBase<DerivedC> & C,
+  typename DerivedV::Scalar & wn)
+{
   wn = 0;
   if(leaf.size() == 0) { wn = 0; return; }
   // I don't think stack or queue matters
@@ -39,7 +76,8 @@ IGL_INLINE void igl::eytzinger_aabb_winding_number(
     stack.pop_back();
     if(leaf(r) >= 0)
     {
-      wn += signed_angle(E(leaf(r),0),E(leaf(r),1));
+      // Default behavior
+      wn += primitive(leaf(r));
       continue;
     }
     // otherwise is p outside the box B1.row(r), B2.row(r)?
@@ -50,7 +88,7 @@ IGL_INLINE void igl::eytzinger_aabb_winding_number(
       assert(C(r+1) - C(r) % 2 == 0);
       for(int i = C(r); i < C(r+1); i+=2)
       {
-        wn += signed_angle(I(i),I(i+1));
+        wn += ::signed_angle(V,p,I(i),I(i+1));
       }
       continue;
     }

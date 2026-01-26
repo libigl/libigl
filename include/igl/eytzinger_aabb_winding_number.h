@@ -41,6 +41,23 @@ namespace igl
     const Eigen::MatrixBase<DerivedI> & I,
     const Eigen::MatrixBase<DerivedC> & C,
     typename DerivedV::Scalar & wn);
+  template <
+    typename Derivedp,
+    typename DerivedV,
+    typename DerivedB,
+    typename Derivedleaf,
+    typename DerivedI,
+    typename DerivedC>
+  IGL_INLINE void eytzinger_aabb_winding_number(
+    const Eigen::MatrixBase<Derivedp> & p,
+    const Eigen::MatrixBase<DerivedV> & V,
+    const std::function<typename DerivedV::Scalar(const int)> & primitive,
+    const Eigen::MatrixBase<DerivedB> & B1,
+    const Eigen::MatrixBase<DerivedB> & B2,
+    const Eigen::MatrixBase<Derivedleaf> & leaf,
+    const Eigen::MatrixBase<DerivedI> & I,
+    const Eigen::MatrixBase<DerivedC> & C,
+    typename DerivedV::Scalar & wn);
 }
 
 #ifndef IGL_STATIC_LIBRARY

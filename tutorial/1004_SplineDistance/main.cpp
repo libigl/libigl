@@ -1,8 +1,11 @@
 #include <igl/opengl/glfw/Viewer.h>
 #include <igl/get_seconds.h>
 #include <igl/readDMAT.h>
+#include <igl/writeDMAT.h>
+#include <igl/triangulated_grid.h>
 #include <igl/cubic.h>
 #include <igl/cycodebase/box_cubic.h>
+#include <igl/cycodebase/point_spline_squared_distance.h>
 
 int main(int argc, char * argv[])
 {
@@ -12,7 +15,6 @@ int main(int argc, char * argv[])
   igl::readDMAT(argc>1?argv[1]: TUTORIAL_SHARED_PATH "/libigl-cursive-P.dmat",P);
   igl::readDMAT(argc>1?argv[2]: TUTORIAL_SHARED_PATH "/libigl-cursive-C.dmat",C);
 
-  igl::opengl::glfw::Viewer vr;
   // Cheezy conversion of (P,C) to polyline using 50 samples per curve
   const int ns = 50;
   Eigen::MatrixXd V(ns*C.rows(),P.cols());
@@ -50,8 +52,44 @@ int main(int argc, char * argv[])
     BE.row(c*4 + 3)<< 3*C.rows() + c, 0*C.rows() + c;
   }
 
+  Eigen::MatrixXd GV;
+  Eigen::MatrixXi GF;
+  {
+    Eigen::RowVector2d min_corner = P.colwise().minCoeff();
+    Eigen::RowVector2d max_corner = P.colwise().maxCoeff();
+    // samples on x-axis
+    const int sx = 512;
+    const int sy = sx * (max_corner(1)-min_corner(1)) / (max_corner(0)-min_corner(0));
+    Eigen::RowVector2d diag = (max_corner - min_corner).eval();
+    const double bbd = diag.norm();
+    diag /= diag.norm();
+    min_corner -= 0.1*bbd*diag;
+    max_corner += 0.1*bbd*diag;
+
+    igl::triangulated_grid(sx,sy,GV,GF);
+    // Scale and translate grid to fit bounding box
+    GV.col(0) = (GV.col(0).array() * (max_corner(0)-min_corner(0))) + min_corner(0);
+    GV.col(1) = (GV.col(1).array() * (max_corner(1)-min_corner(1))) + min_corner(1);
+  }
 
 
+  Eigen::VectorXd sqrD,S;
+  Eigen::VectorXi I;
+  Eigen::MatrixXd K;
+  for(int r = 0;r<10;r++)
+  {
+    tictoc();
+    igl::cycodebase::point_spline_squared_distance(
+        GV, P, C, sqrD, I, S, K);
+    printf("%d points in %g secs\n",GV.rows(),tictoc());
+  }
+  Eigen::VectorXd D = sqrD.array().sqrt();
+
+  igl::opengl::glfw::Viewer vr;
+  vr.data().set_mesh(GV,GF);
+  vr.data().set_data(D);
+  vr.data().show_lines = false;
+  vr.append_mesh();
   vr.data().set_mesh(V,E(Eigen::all,{0,1,1}).eval());
   vr.data().set_points(P,Eigen::RowVector3d(1,0.7,0.2));
   Eigen::MatrixXi CE(C.rows()*2,2);
@@ -64,7 +102,6 @@ int main(int argc, char * argv[])
   vr.append_mesh();
   vr.data().set_mesh(BV,BE(Eigen::all,{0,1,1}).eval());
   vr.data().line_color = Eigen::RowVector4f(1,1,1,1);
-
 
   vr.launch();
   return 0;

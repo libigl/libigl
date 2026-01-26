@@ -34,6 +34,32 @@ namespace igl {
       Eigen::PlainObjectBase<DerivedsqrD>& sqrD,
       Eigen::PlainObjectBase<DerivedS>& S,
       Eigen::PlainObjectBase<DerivedK>& K);
+    template <
+      typename Derivedq,
+      typename DerivedC,
+      typename DerivedD,
+      typename DerivedB,
+      typename Derivedk
+      >
+    void point_cubic_squared_distance(
+      const Eigen::MatrixBase<Derivedq>& q,
+      const Eigen::MatrixBase<DerivedC>& C,
+      const Eigen::MatrixBase<DerivedD>& D,
+      const Eigen::MatrixBase<DerivedB>& B,
+      typename Derivedq::Scalar& sqrD,
+      typename Derivedq::Scalar& s,
+      Eigen::PlainObjectBase<Derivedk>& k);
+    template <
+      typename Derivedq,
+      typename DerivedC,
+      typename Derivedk
+      >
+    void point_cubic_squared_distance(
+      const Eigen::MatrixBase<Derivedq>& q,
+      const Eigen::MatrixBase<DerivedC>& C,
+      typename Derivedq::Scalar& sqrD,
+      typename Derivedq::Scalar& s,
+      Eigen::PlainObjectBase<Derivedk>& k);
   }
 }
 

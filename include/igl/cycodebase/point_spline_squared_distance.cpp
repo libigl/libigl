@@ -1,5 +1,10 @@
 #include "point_spline_squared_distance.h"
+#include "point_cubic_squared_distance.h"
 #include "box_cubic.h"
+#include "../eytzinger_aabb.h"
+#include "../eytzinger_aabb_sdf.h"
+#include "../parallel_for.h"
+#include "../cubic_monomial_bases.h"
 
 template <
   typename DerivedQ,
@@ -18,8 +23,69 @@ void igl::cycodebase::point_spline_squared_distance(
   Eigen::PlainObjectBase<DerivedS>& S,
   Eigen::PlainObjectBase<DerivedK>& K)
 {
+  static_assert(
+    DerivedQ::ColsAtCompileTime == DerivedP::ColsAtCompileTime,
+    "Q and P must have the same number of columns.");
+
   using Scalar = typename DerivedQ::Scalar;
-  Eigen::Matrix<Scalar,DerivedC::RowsAtCompileTime,DerivedP::ColsAtCompileTime> B1,B2;
-  box_cubic(P,C,B1,B2);
+  Eigen::Matrix<Scalar,DerivedC::RowsAtCompileTime,DerivedP::ColsAtCompileTime,Eigen::RowMajor> 
+    PB1,PB2,B1,B2;
+  box_cubic(P,C,PB1,PB2);
   //point_cubic_squared_distance(
+  Eigen::VectorXi leaf;
+  eytzinger_aabb( PB1, PB2, B1, B2,leaf);
+  using Scalar = typename DerivedQ::Scalar;
+  using RowVectorS = Eigen::Matrix<Scalar, 1, DerivedQ::ColsAtCompileTime>;
+  using MatrixS4D = Eigen::Matrix<Scalar,4,DerivedQ::ColsAtCompileTime>;
+  using MatrixS3D = Eigen::Matrix<Scalar,3,DerivedQ::ColsAtCompileTime>;
+
+  // Cache these.
+  std::vector<MatrixS4D> C_vec(C.rows());
+  std::vector<MatrixS3D> D_vec(C.rows());
+  std::vector<Eigen::Matrix<Scalar,6,1>> B_vec(C.rows());
+  {
+    MatrixS4D M_unused;
+    for(int j = 0; j < C.rows(); j++)
+    {
+      C_vec[j] = P(C.row(j), Eigen::all);
+      cubic_monomial_bases( C_vec[j], M_unused, D_vec[j], B_vec[j]);
+    }
+  }
+
+  sqrD.setConstant(Q.rows(),std::numeric_limits<Scalar>::infinity());
+  S.resize(Q.rows());
+  I.resize(Q.rows());
+  K.resize(Q.rows(),Q.cols());
+
+  //for(int i = 0; i < Q.rows(); i++)
+  igl::parallel_for(Q.rows(), [&](const int i)
+  {
+    const Eigen::Matrix<Scalar,1,DerivedP::ColsAtCompileTime> q = Q.row(i);
+    const std::function<Scalar(const int)> primitive_i = [&](const int j)
+    {
+      Scalar sqrD_ij,s_ij;
+      RowVectorS k_ij;
+      point_cubic_squared_distance( q, 
+        C_vec[j], D_vec[j], B_vec[j],
+        sqrD_ij, s_ij, k_ij);
+      if(sqrD_ij < sqrD(i))
+      {
+        sqrD(i) = sqrD_ij;
+        S(i) = s_ij;
+        K.row(i) = k_ij;
+        I(i) = j;
+      }
+      return sqrD_ij;
+    };
+    // This is expected (un)signed **unsquared** _distance. So let it compute
+    // that in there. We will square it and acculumate our results in the lambda
+    // anyway. So dist_i is ignored.
+    Scalar dist_i;
+    igl::eytzinger_aabb_sdf<true>(q,primitive_i,B1,B2,leaf,dist_i);
+  },1000);
 }
+
+#ifdef IGL_STATIC_LIBRARY
+// Explicit template instantiation
+template void igl::cycodebase::point_spline_squared_distance<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>>(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1>> const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1>>&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1>>&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1, 0, -1, 1>>&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>>&);
+#endif
