@@ -135,17 +135,20 @@ int main(int argc, char * argv[])
     vr.core().lighting_factor = 0;
     const double dmax = unsigned_D.maxCoeff();
     const double dmin = -dmax;
+    vr.data_list[g_index].show_texture = false;
     switch(quantity)
     {
       case SIGNED_DISTANCE:
-        vr.data_list[g_index].set_data(signed_D,dmin,dmax,igl::COLOR_MAP_TYPE_ZOE,28);
+        vr.data_list[g_index].set_data(signed_D,dmin,dmax,igl::COLOR_MAP_TYPE_ZOE,32);
         break;
       case UNSIGNED_DISTANCE:
-        vr.data_list[g_index].set_data(unsigned_D,dmin,dmax,igl::COLOR_MAP_TYPE_ZOE,28);
+        vr.data_list[g_index].set_data(unsigned_D,dmin,dmax,igl::COLOR_MAP_TYPE_ZOE,32);
         break;
       case WINDING_NUMBER:
-        vr.data_list[g_index].set_data(W);
+      {
+        vr.data_list[g_index].set_data(W,W.minCoeff(),W.maxCoeff(),igl::COLOR_MAP_TYPE_TURBO,std::round(W.maxCoeff()-W.minCoeff())+1);
         break;
+      }
     }
   };
   update();
