@@ -44,7 +44,7 @@ IGL_INLINE Orientation insphere(
 }
 
 #ifdef IGL_STATIC_LIBRARY
-#define IGL_INSPHERE(Vector) template igl::predicates::Orientation igl::predicates::insphere<Vector>(const Eigen::MatrixBase<Vector>&, const Eigen::MatrixBase<Vector>&, const Eigen::MatrixBase<Vector>&, const Eigen::MatrixBase<Vector>&, const Eigen::MatrixBase<Vector>&)
+#define IGL_INSPHERE(Vector) template igl::Orientation igl::predicates::insphere<Vector>(const Eigen::MatrixBase<Vector>&, const Eigen::MatrixBase<Vector>&, const Eigen::MatrixBase<Vector>&, const Eigen::MatrixBase<Vector>&, const Eigen::MatrixBase<Vector>&)
 #define IGL_MATRIX(T, R, C) Eigen::Matrix<T, R, C>
 IGL_INSPHERE(IGL_MATRIX(float, 1, 3));
 IGL_INSPHERE(IGL_MATRIX(float, 3, 1));

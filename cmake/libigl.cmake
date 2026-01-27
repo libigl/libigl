@@ -13,6 +13,7 @@ include(igl_windows)
 
 # Libigl permissive modules
 igl_include(core)
+igl_include_optional(cycodebase)
 igl_include_optional(embree)
 igl_include_optional(opengl)
 igl_include_optional(glfw)

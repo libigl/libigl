@@ -118,7 +118,7 @@ int main(int argc, char * argv[])
         };
         if(quantity == UNSIGNED_DISTANCE || quantity == SIGNED_DISTANCE)
         {
-          igl::eytzinger_aabb_sdf(p,primitive_p,B1,B2,leaf,di);
+          igl::eytzinger_aabb_sdf<false>(p,primitive_p,B1,B2,leaf,di);
         }
         if(quantity == WINDING_NUMBER || quantity == SIGNED_DISTANCE)
         {

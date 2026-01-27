@@ -41,7 +41,7 @@ IGL_INLINE Orientation incircle(
 }
 
 #ifdef IGL_STATIC_LIBRARY
-#define IGL_INCIRCLE(Vector) template igl::predicates::Orientation igl::predicates::incircle<Vector>(const Eigen::MatrixBase<Vector>&, const Eigen::MatrixBase<Vector>&, const Eigen::MatrixBase<Vector>&, const Eigen::MatrixBase<Vector>&)
+#define IGL_INCIRCLE(Vector) template igl::Orientation igl::predicates::incircle<Vector>(const Eigen::MatrixBase<Vector>&, const Eigen::MatrixBase<Vector>&, const Eigen::MatrixBase<Vector>&, const Eigen::MatrixBase<Vector>&)
 #define IGL_MATRIX(T, R, C) Eigen::Matrix<T, R, C>
 IGL_INCIRCLE(IGL_MATRIX(float, 1, 2));
 IGL_INCIRCLE(IGL_MATRIX(float, 2, 1));
