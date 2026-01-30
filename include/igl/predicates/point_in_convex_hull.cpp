@@ -66,10 +66,18 @@ struct SH
       const Scalar sy = ymax - ymin;
 
       if(sx == 0.0 && sy == 0.0)
+      {
         return (qx == ax) && (qy == ay);
+      }
 
-      if(sx >= sy) return between_1d(qx, xmin, xmax);
-      else         return between_1d(qy, ymin, ymax);
+      if(sx >= sy)
+      {
+        return between_1d(qx, xmin, xmax);
+      }
+      else
+      {
+        return between_1d(qy, ymin, ymax);
+      }
     }
 
     return true;
@@ -95,6 +103,21 @@ IGL_INLINE igl::Orientation igl::predicates::point_in_convex_hull(
   using Scalar = typename Derivedq::Scalar;
   using SH = ::SH<Scalar>;
   using igl::Orientation;
+
+  // Check bounding box
+  //
+  // This was needed for some example where q and (a,b,c,d) were all effectively
+  // collinear but not being detected as such due to numerical issues.
+  {
+    const Scalar min_x = std::min({a(0),b(0),c(0),d(0)});
+    const Scalar max_x = std::max({a(0),b(0),c(0),d(0)});
+    const Scalar min_y = std::min({a(1),b(1),c(1),d(1)});
+    const Scalar max_y = std::max({a(1),b(1),c(1),d(1)});
+    if(q(0) < min_x || q(0) > max_x || q(1) < min_y || q(1) > max_y)
+    {
+      return Orientation::NEGATIVE;
+    }
+  }
 
   // For cheap coordinate comparisons (between tests)
   const Scalar qx = (Scalar)q(0), qy = (Scalar)q(1);
@@ -124,9 +147,64 @@ IGL_INLINE igl::Orientation igl::predicates::point_in_convex_hull(
     /*i==2 && j==3*/ return s23;
   };
 
+  auto Pi = [&](int idx)->auto const& {
+    switch(idx){
+      case 0: return a;
+      case 1: return b;
+      case 2: return c;
+      default:return d;
+    }
+  };
+
+
   // Carathéodory: q ∈ hull(4 pts) iff q ∈ some hull(3 pts)
   auto tri = [&](int ia,int ib,int ic)->bool
   {
+    const auto &A = Pi(ia);
+    const auto &B = Pi(ib);
+    const auto &C = Pi(ic);
+
+    // *** NEW: triangle degeneracy check independent of q ***
+    if(orient2d(A,B,C) == Orientation::COLLINEAR)
+    {
+      // Segment hull of {ia,ib,ic}: pick extremes along dominant axis.
+      int ids[3] = {ia,ib,ic};
+
+      // dominant axis based on spread of the three vertices
+      Scalar xmin = px[ids[0]], xmax = px[ids[0]];
+      Scalar ymin = py[ids[0]], ymax = py[ids[0]];
+      for(int t=1;t<3;t++){
+        xmin = std::min(xmin, px[ids[t]]); xmax = std::max(xmax, px[ids[t]]);
+        ymin = std::min(ymin, py[ids[t]]); ymax = std::max(ymax, py[ids[t]]);
+      }
+      const bool use_x = (xmax-xmin) >= (ymax-ymin);
+
+      // endpoints are the min/max along that axis
+      int u = ids[0], v = ids[0];
+      for(int t=1;t<3;t++){
+        const int k = ids[t];
+        if(use_x){
+          if(px[k] < px[u]) u = k;
+          if(px[k] > px[v]) v = k;
+        }else{
+          if(py[k] < py[u]) u = k;
+          if(py[k] > py[v]) v = k;
+        }
+      }
+
+      // all three points coincide
+      if(u == v)
+        return (qx == px[u]) && (qy == py[u]);
+
+      // q must be collinear with the segment line (use cached orient with q)
+      if(Oq(u,v) != 0)
+        return false;
+
+      // and between the endpoints
+      return SH::on_segment_collinear(qx,qy, px[u],py[u], px[v],py[v]);
+    }
+
+    // Non-degenerate triangle: your cached half-plane test is fine.
     const int o_ab = Oq(ia,ib);
     const int o_bc = Oq(ib,ic);
     const int o_ca = Oq(ic,ia);
@@ -136,7 +214,7 @@ IGL_INLINE igl::Orientation igl::predicates::point_in_convex_hull(
       px[ia], py[ia],
       px[ib], py[ib],
       px[ic], py[ic]);
-  };
+  }; 
 
   const bool inside =
     tri(0,1,2) || tri(0,1,3) || tri(0,2,3) || tri(1,2,3);
