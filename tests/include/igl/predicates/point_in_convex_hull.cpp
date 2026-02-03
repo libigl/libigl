@@ -81,3 +81,22 @@ TEST_CASE("point_in_convex_hull: degenerate", "[igl/predicates]")
   }
 
 }
+
+TEST_CASE("point_in_convex_hull: double-degenerate", "[igl/predicates]")
+{
+  Eigen::RowVector2d q(-0.86700610997963345,-0.50040733197556009);
+  Eigen::Matrix<double,4,2> C(4,2);
+  C<< 
+    -0.44999999999999996,0,
+    -0.29999999999999999,0.17999999999999999,
+    -0.14999999999999999,0.35999999999999999,
+    -0,0.54000000000000004;
+  const auto res = igl::predicates::point_in_convex_hull(
+      q,
+      C.row(0).eval(),
+      C.row(1).eval(),
+      C.row(2).eval(),
+      C.row(3).eval());
+  REQUIRE( res == igl::Orientation::NEGATIVE );
+}
+
