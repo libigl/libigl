@@ -79,7 +79,7 @@ endif()
 
 # Chapter 6
 if(LIBIGL_TUTORIALS_CHAPTER6)
-    igl_add_tutorial(601_Serialization igl::glfw igl::xml)
+    igl_add_tutorial(601_Serialization igl::xml)
     igl_add_tutorial(602_Matlab igl::glfw igl_restricted::matlab)
     igl_add_tutorial(604_Triangle igl::glfw igl_restricted::triangle)
     igl_add_tutorial(605_Tetgen igl::glfw igl_copyleft::tetgen)
