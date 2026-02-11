@@ -74,7 +74,6 @@ void igl::cycodebase::point_cubic_squared_distance(
   S.resize(Q.rows());
   K.resize(Q.rows(),dim);
   const int n = Q.rows();
-  for(int i = 0;i<n;i++)
   igl::parallel_for(n,[&](const int i)
   {
     RowVectorSD k_i;
