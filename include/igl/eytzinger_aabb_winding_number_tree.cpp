@@ -99,6 +99,7 @@ IGL_INLINE void igl::eytzinger_aabb_winding_number_tree(
   C(0) = 0;
   for(int r = 0;r<leaf.size();r++)
   {
+    assert(vI[r].size() % 2 == 0);
     C(r+1) = C(r) + vI[r].size();
   }
   I.resize(C(leaf.size()));

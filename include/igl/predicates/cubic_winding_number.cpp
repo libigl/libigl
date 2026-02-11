@@ -15,17 +15,21 @@ namespace
   template <typename DerivedC, typename Derivedq>
   inline typename DerivedC::Scalar cubic_winding_number_helper(
     const Eigen::MatrixBase<DerivedC>& C,
-    const Eigen::MatrixBase<Derivedq>& q)
+    const Eigen::MatrixBase<Derivedq>& q,
+    const int depth)
   {
     using Scalar = typename DerivedC::Scalar;
+    constexpr int max_depth = 50;
+    assert(depth <= max_depth && "Exceeded max recursion depth in cubic_winding_number_helper");
 
-    if(igl::predicates::point_in_convex_hull(
-        q,
-        C.row(0).eval(),
-        C.row(1).eval(),
-        C.row(2).eval(),
-        C.row(3).eval()) == igl::Orientation::NEGATIVE 
-      )
+    const auto res = 
+      igl::predicates::point_in_convex_hull(
+          q,
+          C.row(0).eval(),
+          C.row(1).eval(),
+          C.row(2).eval(),
+          C.row(3).eval());
+    if( res == igl::Orientation::NEGATIVE || depth == max_depth)
     {
       const auto v0 = (C.row(0) - q).eval();
       const auto v3 = (C.row(3) - q).eval();
@@ -39,8 +43,8 @@ namespace
     {
       Eigen::Matrix<Scalar,4,2,Eigen::RowMajor> C1,C2;
       igl::cubic_split(C,Scalar(0.5),C1,C2);
-      const auto w1 = cubic_winding_number_helper(C1,q);
-      const auto w2 = cubic_winding_number_helper(C2,q);
+      const auto w1 = cubic_winding_number_helper(C1,q,depth+1);
+      const auto w2 = cubic_winding_number_helper(C2,q,depth+1);
       return w1 + w2;
     }
   }
@@ -73,7 +77,7 @@ IGL_INLINE typename DerivedC::Scalar igl::predicates::cubic_winding_number(
       Scalar(2.0 * igl::PI);
     return w;
   }
-  return cubic_winding_number_helper(C,q);
+  return cubic_winding_number_helper(C,q,0);
 }
 
 #ifdef IGL_STATIC_LIBRARY
