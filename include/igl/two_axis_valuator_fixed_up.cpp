@@ -21,7 +21,6 @@ IGL_INLINE void igl::two_axis_valuator_fixed_up(
   const Eigen::Matrix<Scalarquat,3,1> & axis,
   Eigen::Quaternion<Scalarquat> & quat)
 {
-  //Eigen::Matrix<Scalarquat,3,1> axis(0,1,0);
   quat = down_quat *
     Eigen::Quaternion<Scalarquat>(
       Eigen::AngleAxis<Scalarquat>(
