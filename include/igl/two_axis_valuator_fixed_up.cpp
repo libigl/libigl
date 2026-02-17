@@ -18,9 +18,10 @@ IGL_INLINE void igl::two_axis_valuator_fixed_up(
   const int down_y,
   const int mouse_x,
   const int mouse_y,
+  const Eigen::Matrix<Scalarquat,3,1> & axis,
   Eigen::Quaternion<Scalarquat> & quat)
 {
-  Eigen::Matrix<Scalarquat,3,1> axis(0,1,0);
+  //Eigen::Matrix<Scalarquat,3,1> axis(0,1,0);
   quat = down_quat *
     Eigen::Quaternion<Scalarquat>(
       Eigen::AngleAxis<Scalarquat>(
@@ -42,6 +43,6 @@ IGL_INLINE void igl::two_axis_valuator_fixed_up(
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instantiation
-template void igl::two_axis_valuator_fixed_up<float, float>(int, int, double, Eigen::Quaternion<float, 0> const&, int, int, int, int, Eigen::Quaternion<float, 0>&);
-template void igl::two_axis_valuator_fixed_up<double, double>(int, int, double, Eigen::Quaternion<double, 0> const&, int, int, int, int, Eigen::Quaternion<double, 0>&);
+template void igl::two_axis_valuator_fixed_up<float, float>(int, int, double, Eigen::Quaternion<float, 0> const&, int, int, int, int, const Eigen::Matrix<float, 3, 1>&, Eigen::Quaternion<float, 0>&);
+template void igl::two_axis_valuator_fixed_up<double, double>(int, int, double, Eigen::Quaternion<double, 0> const&, int, int, int, int, const Eigen::Matrix<double, 3, 1>&, Eigen::Quaternion<double, 0>&);
 #endif
