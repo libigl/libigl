@@ -128,6 +128,11 @@ public:
   /// @param[in] value  the new rotation type
   IGL_INLINE void set_rotation_type(const RotationType & value);
 
+  /// Set the rotation up axis when rotation_type is
+  /// ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP
+  /// @param[in] axis  the new rotation up axis vector
+  IGL_INLINE void set_rotation_axis_up(const Eigen::Vector3f & axis);
+
   /// Set a ViewerData visualization option for this viewport
   /// @param[in] property_mask  a bit mask of visualization option
   /// @param[in] value  whether to set or unset the property
@@ -180,6 +185,9 @@ public:
 
   /// Type of rotation interaction
   RotationType rotation_type;
+  /// View rotation up axis, used when rotation_type is
+  /// ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP
+  Eigen::Vector3f rotation_axis_up;
   /// View rotation as quaternion
   Eigen::Quaternionf trackball_angle;
 
