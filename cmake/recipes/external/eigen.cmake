@@ -13,7 +13,7 @@ FetchContent_Declare(
 )
 FetchContent_GetProperties(eigen)
 if(NOT eigen_POPULATED)
-    FetchContent_Populate(eigen)
+    FetchContent_MakeAvailable(eigen)
 endif()
 
 add_library(Eigen3_Eigen INTERFACE)
