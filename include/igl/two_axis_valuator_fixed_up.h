@@ -39,7 +39,8 @@ namespace igl
     const int down_y,
     const int mouse_x,
     const int mouse_y,
-    const Eigen::Matrix<Scalarquat,3,1> & axis,
+    const Eigen::Matrix<Scalarquat,3,1> & camera_eye,
+    const Eigen::Matrix<Scalarquat,3,1> & axis_up,
     Eigen::Quaternion<Scalarquat> & quat);
 }
 
