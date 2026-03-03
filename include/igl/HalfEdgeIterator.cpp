@@ -8,6 +8,8 @@
 
 #include "HalfEdgeIterator.h"
 
+#include <cassert>
+
 template <typename DerivedF, typename DerivedFF, typename DerivedFFi>
 IGL_INLINE igl::HalfEdgeIterator<DerivedF,DerivedFF,DerivedFFi>::HalfEdgeIterator(
     const Eigen::MatrixBase<DerivedF>& _F,

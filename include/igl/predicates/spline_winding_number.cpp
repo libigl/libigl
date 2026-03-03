@@ -6,6 +6,8 @@
 #include "../eytzinger_aabb_winding_number_tree.h"
 #include "../eytzinger_aabb_winding_number.h"
 
+#include <cassert>
+
 template <
   typename DerivedP, 
   typename DerivedC, 

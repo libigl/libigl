@@ -12,6 +12,7 @@
 #ifndef IGL_EMBREE_EMBREE_DEVICE_H
 #define IGL_EMBREE_EMBREE_DEVICE_H
 #include <embree4/rtcore.h>
+#include <cassert>
 #include <iostream>
 
 namespace igl

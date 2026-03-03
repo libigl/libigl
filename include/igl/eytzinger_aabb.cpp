@@ -3,6 +3,7 @@
 #include "median.h"
 #include <vector>
 #include <algorithm>
+#include <cassert>
 
 template <
   typename DerivedPB,

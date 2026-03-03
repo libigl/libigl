@@ -1,5 +1,6 @@
 #include "eytzinger_aabb_winding_number.h"
 #include "PI.h"
+#include <cassert>
 
 // signed_angle helper. Not sure why igl::signed_angle is doing all that
 // normalization (divisions and square roots) when atan2 doesn't need it.

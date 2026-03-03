@@ -8,6 +8,8 @@
 #include "centroid.h"
 #include <Eigen/Geometry>
 
+#include <cassert>
+
 template <
   typename DerivedV, 
   typename DerivedF, 
