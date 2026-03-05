@@ -64,10 +64,10 @@ namespace igl
   /// @param[in] C  #E by dim list of stored placements
   /// @param[in] e  index into E of attempted collapsed edge. Set to -1 if Q is empty or
   ///               contains only infinite cost edges.
-  /// @param[in] e1  index into E of edge collpased on left.
-  /// @param[in] e2  index into E of edge collpased on right.
-  /// @param[in] f1  index into F of face collpased on left.
-  /// @param[in] f2  index into F of face collpased on right.
+  /// @param[in] e1  index into E of edge collapsed on left.
+  /// @param[in] e2  index into E of edge collapsed on right.
+  /// @param[in] f1  index into F of face collapsed on left.
+  /// @param[in] f2  index into F of face collapsed on right.
   /// @return whether to stop
   using decimate_stopping_condition_callback = 
     std::function<bool(
@@ -139,10 +139,10 @@ namespace igl
   /// @param[in] C  #E by dim list of stored placements
   /// @param[in] e  index into E of attempted collapsed edge. Set to -1 if Q is empty or
   ///               contains only infinite cost edges.
-  /// @param[in] e1  index into E of edge collpased on left.
-  /// @param[in] e2  index into E of edge collpased on right.
-  /// @param[in] f1  index into F of face collpased on left.
-  /// @param[in] f2  index into F of face collpased on right.
+  /// @param[in] e1  index into E of edge collapsed on left.
+  /// @param[in] e2  index into E of edge collapsed on right.
+  /// @param[in] f1  index into F of face collapsed on left.
+  /// @param[in] f2  index into F of face collapsed on right.
   /// @param[in] collapsed whether collapse actual took place
   using decimate_post_collapse_callback = 
     std::function<void(
