@@ -17,6 +17,7 @@
 #include <vector>
 #include <random>
 #include <cstdint>
+#include <cassert>
 
 namespace igl
 {

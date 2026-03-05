@@ -7,6 +7,8 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "edge_midpoints.h"
 
+#include <cassert>
+
 template<typename DerivedV,typename DerivedF,typename DerivedE,
 typename DerivedoE, typename Derivedmps>
 IGL_INLINE void

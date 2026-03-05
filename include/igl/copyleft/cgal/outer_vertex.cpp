@@ -8,6 +8,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "outer_vertex.h"
 #include "outer_edge.h"
+#include <cassert>
 #include <iostream>
 #include <vector>
 

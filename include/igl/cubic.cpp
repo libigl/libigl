@@ -1,4 +1,6 @@
 #include "cubic.h"
+#include <cassert>
+
   template
     <
     typename  DerivedC,

@@ -1,5 +1,7 @@
 #include "polygons_to_triangles.h"
 
+#include <cassert>
+
 template <
   typename DerivedI,
   typename DerivedC,

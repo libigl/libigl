@@ -8,6 +8,7 @@
 #include "is_boundary_edge.h"
 #include "unique_rows.h"
 #include "sort.h"
+#include <cassert>
 
 template <
   typename DerivedF,
