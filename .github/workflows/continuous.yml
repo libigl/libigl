@@ -29,7 +29,7 @@ jobs:
         config: [Release]
         build-params: [ {static:  ON, tutorials:  ON, tests:  ON }, {static: OFF, tutorials: OFF, tests:  ON }, {static: OFF, tutorials:  ON, tests: OFF }]
     env:
-      IGL_NUM_THREADS: 1  # See https://github.com/libigl/libigl/pull/996
+      IGL_NUM_THREADS: 4  # don't go wild, but let the parallel_for tests do something
     steps:
       - name: Checkout repository
         uses: actions/checkout@v1
