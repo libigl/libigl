@@ -307,11 +307,57 @@ TEST_CASE("AABB: intersect_tet", "[igl]")
   Eigen::VectorXi I;
   Eigen::VectorXd T;
   Eigen::MatrixXd UV;
-  double min_t = std::numeric_limits<double>::infinity();
+  double min_t = 0;
   tree.intersect_ray(V,Ele,origin,dir,min_t,I,T,UV);
   REQUIRE(I(0) == 0);
   REQUIRE(T(0) == Approx(0.8));
   REQUIRE(UV(0) == Approx(0.24));
   REQUIRE(UV(1) == Approx(0.52));
 
+}
+
+TEST_CASE("AABB: intersect_cube_min_t", "[igl]")
+{
+  // Inline mesh of a cube
+  Eigen::MatrixXd V(8,3);
+    V <<
+    0.0,0.0,0.0,
+    0.0,0.0,1.0,
+    0.0,1.0,0.0,
+    0.0,1.0,1.0,
+    1.0,0.0,0.0,
+    1.0,0.0,1.0,
+    1.0,1.0,0.0,
+    1.0,1.0,1.0;
+  Eigen::MatrixXi Ele(12,3);
+    Ele <<
+    0,6,4,
+    0,2,6,
+    0,3,2,
+    0,1,3,
+    2,7,6,
+    2,3,7,
+    4,6,7,
+    4,7,5,
+    0,4,5,
+    0,5,1,
+    1,5,7,
+    1,7,3;
+
+  Eigen::MatrixXd origin(1,3);
+  origin << 0.5,-1,0.5;
+  Eigen::MatrixXd dir(1,3);
+  dir << 0, 1, 0;
+  igl::AABB<Eigen::MatrixXd, 3> tree;
+  tree.init(V, Ele);
+
+  igl::Hit<double> hit, hit_with_min_t, hit_with_big_min_t;
+  bool is_hit = tree.intersect_ray(V, Ele, origin, dir, hit);
+  REQUIRE(is_hit == true);
+
+  bool is_hit_with_small_min_t = tree.intersect_ray(V, Ele, origin, dir, 0.00001, hit_with_min_t);
+  REQUIRE(is_hit_with_small_min_t == true);
+
+  bool is_hit_with_big_min_t = tree.intersect_ray(V, Ele, origin, dir, 100.0, hit_with_big_min_t);
+  REQUIRE(is_hit_with_big_min_t == false);
 }
