@@ -40,8 +40,9 @@ IGL_INLINE bool ray_triangle_intersect(
     t>0)
   {
     hit = {static_cast<int>(f),static_cast<int>(-1),
-           static_cast<float>(u),static_cast<float>(v),
-           static_cast<float>(t)};
+           static_cast<typename DerivedV::Scalar>(u),
+           static_cast<typename DerivedV::Scalar>(v),
+           static_cast<typename DerivedV::Scalar>(t)};
     return true;
   }
 
