@@ -12,11 +12,17 @@ IGL_INLINE void igl::polygons_to_triangles(
   Eigen::PlainObjectBase<DerivedJ> & J)
 {
   // Each polygon results in #sides-2 triangles. So ∑#sides-2
-  F.resize(C(C.size()-1) - (C.size()-1)*2,3);
+  // so could do F.resize(C(C.size()-1) - (C.size()-1)*2,3); 
+  // but Doesn't handle 0-sided polygons 
+  const int m = C.size() -1;
+  const auto counts = (C.tail(m) - C.head(m)).eval();
+  const int num_triangles = (counts.array() - 2).max(0).sum();
+  F.resize(num_triangles,3);
+
   J.resize(F.rows());
   {
     int f = 0;
-    for(int p = 0;p<C.size()-1;p++)
+    for(int p = 0; p < m ; p++)
     {
       const int np = C(p+1)-C(p);
       for(int c = 1;c<np-1;c++)
