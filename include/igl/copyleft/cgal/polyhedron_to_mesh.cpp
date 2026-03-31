@@ -100,6 +100,8 @@ IGL_INLINE void igl::copyleft::cgal::polyhedron_to_mesh(
   std::unordered_map<typename Polyhedron::Vertex_const_iterator,size_t> vertex_to_index;
   polyhedron_to_mesh_helper_vertices(poly,V,vertex_to_index);
   C.resize(poly.size_of_facets() + 1);
+  // poly.size_of_border_halfedges() may return 0 even if poly.is_closed()
+  // returns true, so we'll just have to deal with this post facto.
   I.resize(poly.size_of_halfedges());
   {
     int f = 0;
@@ -119,6 +121,9 @@ IGL_INLINE void igl::copyleft::cgal::polyhedron_to_mesh(
       } while (he != he0);
       C(f+1) = C(f) + deg;
     }
+    assert(i == C(C.size()-1));
+    // Necessary if not poly.is_closed()
+    I.conservativeResize(i);
   }
 }
 
