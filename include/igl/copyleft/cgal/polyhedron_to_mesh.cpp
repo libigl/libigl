@@ -102,6 +102,7 @@ IGL_INLINE void igl::copyleft::cgal::polyhedron_to_mesh(
   C.resize(poly.size_of_facets() + 1);
   // poly.size_of_border_halfedges() may return 0 even if poly.is_closed()
   // returns true, so we'll just have to deal with this post facto.
+  // https://github.com/CGAL/cgal/issues/9408
   I.resize(poly.size_of_halfedges());
   {
     int f = 0;
