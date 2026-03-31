@@ -10,7 +10,13 @@ IGL_INLINE void igl::copyleft::cgal::join_coplanar_neighboring_facets(
   {
     auto e = iter++;
     auto f1 = e->facet();
+    assert(f1 != nullptr && "CGAL Polyhedron should have a facet on both sides of each edge");
     auto f2 = e->opposite()->facet();
+    if(f2 == nullptr)
+    {
+      // boundary edge, skip
+      continue;
+    }
     auto p1 = Plane_3(
       f1->halfedge()->vertex()->point(), 
       f1->halfedge()->next()->vertex()->point(), 
