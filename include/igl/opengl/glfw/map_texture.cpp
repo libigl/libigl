@@ -68,12 +68,12 @@ void main()
     ;
   std::string fragment_shader = R"(
 #version 400
-layout(location = 0) out vec3 color;
+layout(location = 0) out vec4 color;
 uniform sampler2D tex;
 in vec2 tex_coord_f;
 void main()
 {
-  color = texture(tex,tex_coord_f).rgb;
+  color = texture(tex,tex_coord_f);
 }
 )";
   GLuint prog_id =
