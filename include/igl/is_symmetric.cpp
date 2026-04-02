@@ -39,7 +39,7 @@ IGL_INLINE bool igl::is_symmetric(
     return false;
   }
   assert(A.size() != 0);
-  return (A-A.transpose()).eval().nonZeros() == 0;
+  return (A-A.transpose()).eval().isZero();
 }
 
 template <typename AType, typename epsilonT>
