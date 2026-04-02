@@ -15,18 +15,10 @@ IGL_INLINE bool igl::is_symmetric(const Eigen::SparseMatrix<T>& A)
   {
     return false;
   }
-  // Not sure why this doesn't result in a .nonZeros() =0 below
-  if(A.rows() == 1 && A.cols() == 1)
-  {
-    return true;
-  }
   assert(A.size() != 0);
   Eigen::SparseMatrix<T> AT = A.transpose();
   Eigen::SparseMatrix<T> AmAT = A-AT;
-  //// Eigen screws up something with LLT if you try to do
-  //SparseMatrix<T> AmAT = A-A.transpose();
-  //// Eigen crashes at runtime if you try to do
-  // return (A-A.transpose()).nonZeros() == 0;
+  AmAT.prune(T(0));
   return AmAT.nonZeros() == 0;
 }
 
@@ -50,11 +42,6 @@ IGL_INLINE bool igl::is_symmetric(
   if(A.rows() != A.cols())
   {
     return false;
-  }
-  // Not sure why this doesn't result in a .nonZeros() =0 below
-  if(A.rows() == 1 && A.cols() == 1)
-  {
-    return true;
   }
   assert(A.size() != 0);
   Eigen::SparseMatrix<AType> AT = A.transpose();
