@@ -1,6 +1,7 @@
 #include "eytzinger_aabb.h"
 #include "PlainMatrix.h"
 #include "median.h"
+#include "placeholders.h"
 #include <vector>
 #include <algorithm>
 
@@ -41,8 +42,8 @@ IGL_INLINE void igl::eytzinger_aabb(
   {
     if(I.size() == 0) { return; }
 
-    B1.row(i) = PB1(I, Eigen::all).colwise().minCoeff();
-    B2.row(i) = PB2(I, Eigen::all).colwise().maxCoeff();
+    B1.row(i) = PB1(I, igl::placeholders::all).colwise().minCoeff();
+    B2.row(i) = PB2(I, igl::placeholders::all).colwise().maxCoeff();
 
     if(I.size() == 1) { leaf(i) = I[0]; return; }
 

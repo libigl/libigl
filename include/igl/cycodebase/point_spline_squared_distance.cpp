@@ -4,6 +4,7 @@
 #include "../eytzinger_aabb_sdf.h"
 #include "../parallel_for.h"
 #include "../cubic_monomial_bases.h"
+#include "../placeholders.h"
 
 template <
   typename DerivedQ,
@@ -69,7 +70,7 @@ void igl::cycodebase::point_spline_squared_distance(
     MatrixS4D M_unused;
     for(int j = 0; j < C.rows(); j++)
     {
-      C_vec[j] = P(C.row(j), Eigen::all);
+      C_vec[j] = P(C.row(j), igl::placeholders::all);
       cubic_monomial_bases( C_vec[j], M_unused, D_vec[j], B_vec[j]);
     }
   }
