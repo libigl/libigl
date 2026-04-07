@@ -7,6 +7,8 @@
 #include "../eytzinger_aabb_winding_number.h"
 #include "../placeholders.h"
 
+#include <cassert>
+
 template <
   typename DerivedP, 
   typename DerivedC, 

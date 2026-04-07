@@ -8,6 +8,8 @@
 #include "is_symmetric.h"
 #include "find.h"
 
+#include <cassert>
+
 template <typename T>
 IGL_INLINE bool igl::is_symmetric(const Eigen::SparseMatrix<T>& A)
 {

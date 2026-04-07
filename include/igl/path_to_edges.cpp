@@ -1,4 +1,5 @@
 #include "path_to_edges.h"
+#include <cassert>
 
 template <typename DerivedI, typename DerivedE>
 IGL_INLINE void igl::path_to_edges(

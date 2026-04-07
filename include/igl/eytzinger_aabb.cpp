@@ -4,6 +4,7 @@
 #include "placeholders.h"
 #include <vector>
 #include <algorithm>
+#include <cassert>
 
 template <
   typename DerivedPB,

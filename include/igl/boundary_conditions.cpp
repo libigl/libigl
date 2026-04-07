@@ -11,6 +11,7 @@
 #include "EPS.h"
 #include "project_to_line.h"
 
+#include <cassert>
 #include <vector>
 #include <map>
 #include <iostream>

@@ -8,6 +8,7 @@
 
 #include "moments.h"
 
+#include <cassert>
 // C++17 would avoid this with an if constexpr below
 //
 // This makes it so that m1 can be:

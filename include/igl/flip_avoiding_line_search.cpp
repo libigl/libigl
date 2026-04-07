@@ -10,6 +10,7 @@
 #include "PI.h"
 
 #include <Eigen/Dense>
+#include <cassert>
 #include <vector>
 
 namespace igl

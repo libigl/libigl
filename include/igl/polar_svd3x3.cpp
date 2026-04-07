@@ -14,6 +14,8 @@
 #  include "svd3x3_avx.h"
 #endif
 
+#include <cassert>
+
 template<typename Mat>
 IGL_INLINE void igl::polar_svd3x3(const Mat& A, Mat& R)
 {

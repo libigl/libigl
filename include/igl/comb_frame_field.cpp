@@ -16,6 +16,8 @@
 #include "PI.h"
 #include "PlainMatrix.h"
 
+#include <cassert>
+
 template <typename DerivedV, typename DerivedF, typename DerivedP>
 IGL_INLINE void igl::comb_frame_field(
   const Eigen::MatrixBase<DerivedV> &V,

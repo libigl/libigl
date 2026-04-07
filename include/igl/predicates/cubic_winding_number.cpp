@@ -8,6 +8,7 @@
 #include "../matlab_format.h"
 #include <iostream>
 #include <cstdio>
+#include <cassert>
 
 namespace 
 {

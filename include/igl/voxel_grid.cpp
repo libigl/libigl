@@ -8,6 +8,8 @@
 #include "voxel_grid.h"
 #include "grid.h"
 
+#include <cassert>
+
 template <
   typename Scalar,
   typename DerivedGV,

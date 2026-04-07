@@ -9,6 +9,7 @@
 #include "quad_planarity.h"
 #include <Eigen/Sparse>
 #include <Eigen/Eigenvalues> 
+#include <cassert>
 #include <iostream>
 
 namespace igl
