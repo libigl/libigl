@@ -2,6 +2,7 @@
 #include "matlab_format.h"
 
 #include <Eigen/Sparse>
+#include <cassert>
 #include <iostream>
 #include <vector>
 #include <queue>

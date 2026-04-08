@@ -1,4 +1,5 @@
 #include "cubic_monomial_bases.h"
+#include <cassert>
 
 template <
   typename DerivedC,
