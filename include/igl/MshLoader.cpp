@@ -114,10 +114,31 @@ IGL_INLINE igl::MshLoader::MshLoader(const std::string &filename) {
     fin.close();
 }
 
+IGL_INLINE int igl::MshLoader::node_dense_index(int node_tag) const {
+    const auto it = m_node_tag_to_dense.find(node_tag);
+    if (it == m_node_tag_to_dense.end()) {
+        std::stringstream err_msg;
+        err_msg << "Unknown node tag: " << node_tag;
+        throw std::runtime_error(err_msg.str());
+    }
+	return it->second;
+}
+
+IGL_INLINE int igl::MshLoader::element_dense_index(int elem_tag) const {
+	const auto it = m_element_tag_to_dense.find(elem_tag);
+    if (it == m_element_tag_to_dense.end()) {
+		std::stringstream err_msg;
+        err_msg << "Unknown element tag: " << elem_tag;
+		throw std::runtime_error(err_msg.str());
+    }
+	return it->second;
+}
+
 IGL_INLINE void igl::MshLoader::parse_nodes(std::ifstream& fin) {
     size_t num_nodes;
     fin >> num_nodes;
     m_nodes.resize(num_nodes*3);
+    m_node_tag_to_dense.clear();
 
     if (m_binary) {
 		size_t stride = (4+3*m_data_size);
@@ -127,23 +148,37 @@ IGL_INLINE void igl::MshLoader::parse_nodes(std::ifstream& fin) {
         fin.read(data, num_bytes);
 
         for (size_t i=0; i<num_nodes; i++) {
-            int node_idx;
-			memcpy(&node_idx, data+i*stride, sizeof(int));
-			node_idx-=1;
-			// directly move into vector storage
-			// this works only when m_data_size==sizeof(Float)==sizeof(double)
-			memcpy(&m_nodes[node_idx*3], data+i*stride + 4, m_data_size*3);
+            int node_tag;
+			memcpy(&node_tag, data+i*stride, sizeof(int));
+
+            if (node_tag <= 0) {
+                throw std::runtime_error("Invalid node tag");
+            }
+            if (m_node_tag_to_dense.find(node_tag) != m_node_tag_to_dense.end()) {
+                throw std::runtime_error("Duplicate node tag");
+            }
+            m_node_tag_to_dense[node_tag] = static_cast<int>(i);
+            // directly move into vector storage
+            // this works only when m_data_size==sizeof(Float)==sizeof(double)
+			memcpy(&m_nodes[i*3], data+i*stride + 4, m_data_size*3);
         }
         delete [] data;
     } else {
-        int node_idx;
+        int node_tag;
         for (size_t i=0; i<num_nodes; i++) {
-            fin >> node_idx;
-            node_idx -= 1;
+            fin >> node_tag;
+
+            if (node_tag <= 0) {
+				throw std::runtime_error("Invalid node tag");
+            }
+            if (m_node_tag_to_dense.find(node_tag) != m_node_tag_to_dense.end()) {
+                throw std::runtime_error("Duplicate node tag");
+            }
+            m_node_tag_to_dense[node_tag] = static_cast<int>(i);
             // here it's 3D node explicitly
-            fin >> m_nodes[node_idx*3]
-                >> m_nodes[node_idx*3+1]
-                >> m_nodes[node_idx*3+2];
+            fin >> m_nodes[i*3]
+                >> m_nodes[i*3+1]
+                >> m_nodes[i*3+2];
         }
     }
 }
@@ -152,6 +187,7 @@ IGL_INLINE void igl::MshLoader::parse_elements(std::ifstream& fin) {
     m_elements_tags.resize(2); //hardcoded to have 2 tags
     size_t num_elements;
     fin >> num_elements;
+    m_element_tag_to_dense.clear();
 
     size_t nodes_per_element;
 
@@ -168,15 +204,24 @@ IGL_INLINE void igl::MshLoader::parse_elements(std::ifstream& fin) {
 
             // store node info
             for (size_t i=0; i<num_elems; i++) {
-                int elem_idx;
+                int elem_tag;
 
                 // all elements in the segment share the same elem_type and number of nodes per element
                 m_elements_types.push_back(elem_type);
                 m_elements_lengths.push_back(nodes_per_element);
 
-                fin.read((char*)&elem_idx, sizeof(int));
-                elem_idx -= 1;
-                m_elements_ids.push_back(elem_idx);
+                fin.read((char*)&elem_tag, sizeof(int));
+
+                if (elem_tag <= 0) {
+                    throw std::runtime_error("Invalid element tag");
+                }
+                if (m_element_tag_to_dense.find(elem_tag) != m_element_tag_to_dense.end()) {
+                    throw std::runtime_error("Duplicate element tag");
+                }
+                m_element_tag_to_dense[elem_tag] = static_cast<int>(m_elements_ids.size());
+
+                elem_tag -= 1;
+                m_elements_ids.push_back(elem_tag);
 
                 // read first two tags
                 for (size_t j=0; j<num_tags; j++) {
@@ -191,10 +236,10 @@ IGL_INLINE void igl::MshLoader::parse_elements(std::ifstream& fin) {
                 m_elements_nodes_idx.push_back(m_elements.size());
                 // Element values.
                 for (size_t j=0; j<nodes_per_element; j++) {
-                    int idx;
-                    fin.read((char*)&idx, sizeof(int));
+                    int node_tag;
+                    fin.read((char*)&node_tag, sizeof(int));
                     
-                    m_elements.push_back(idx-1);
+                    m_elements.push_back(node_dense_index(node_tag));
                 }
             }
             elem_read += num_elems;
@@ -202,8 +247,16 @@ IGL_INLINE void igl::MshLoader::parse_elements(std::ifstream& fin) {
     } else {
         for (size_t i=0; i<num_elements; i++) {
             // Parse per element header
-            int elem_num, elem_type, num_tags;
-            fin >> elem_num >> elem_type >> num_tags;
+            int elem_tag, elem_type, num_tags;
+            fin >> elem_tag >> elem_type >> num_tags;
+
+            if (elem_tag <= 0) {
+                throw std::runtime_error("Invalid element tag");
+            }
+            if (m_element_tag_to_dense.find(elem_tag) != m_element_tag_to_dense.end()) {
+                throw std::runtime_error("Duplicate element tag");
+            }
+            m_element_tag_to_dense[elem_tag] = static_cast<int>(m_elements_ids.size());
 
             // read tags.
             for (size_t j=0; j<num_tags; j++) {
@@ -218,14 +271,14 @@ IGL_INLINE void igl::MshLoader::parse_elements(std::ifstream& fin) {
             m_elements_types.push_back(elem_type);
             m_elements_lengths.push_back(nodes_per_element);
 
-            elem_num -= 1;
-            m_elements_ids.push_back(elem_num);
+            elem_tag -= 1;
+            m_elements_ids.push_back(elem_tag);
             m_elements_nodes_idx.push_back(m_elements.size());
             // Parse node idx.
             for (size_t j=0; j<nodes_per_element; j++) {
-                int idx;
-                fin >> idx;
-                m_elements.push_back(idx-1); // msh index starts from 1.
+                int node_tag;
+                fin >> node_tag;
+                m_elements.push_back(node_dense_index(node_tag)); // msh index starts from 1.
             }
         }
     }
@@ -274,7 +327,7 @@ IGL_INLINE void igl::MshLoader::parse_node_field( std::ifstream& fin ) {
     int num_components    = int_tags[1];
     int num_entries       = int_tags[2];
 
-    std::vector<Float> field( num_entries*num_components );
+    std::vector<Float> field((m_nodes.size()/3)*num_components);
 
     if (m_binary) {
         size_t num_bytes = (num_components * m_data_size + 4) * num_entries;
@@ -282,23 +335,20 @@ IGL_INLINE void igl::MshLoader::parse_node_field( std::ifstream& fin ) {
         igl::_msh_eat_white_space(fin);
         fin.read(data, num_bytes);
         for (size_t i=0; i<num_entries; i++) {
-			int node_idx;
-			memcpy(&node_idx,&data[i*(4+num_components*m_data_size)],4);
-			
-            if(node_idx<1) throw std::runtime_error("Negative or zero index");
-            node_idx -= 1;
-			
-            if(node_idx>=num_entries) throw std::runtime_error("Index too big");
+			int node_tag;
+			memcpy(&node_tag,&data[i*(4+num_components*m_data_size)],4);
+
+            const int node_idx = node_dense_index(node_tag);
             size_t base_idx = i*(4+num_components*m_data_size) + 4;
             // TODO: make this work when m_data_size != sizeof(double) ?
 			memcpy(&field[node_idx*num_components], &data[base_idx], num_components*m_data_size);
         }
         delete [] data;
     } else {
-        int node_idx;
+        int node_tag;
         for (size_t i=0; i<num_entries; i++) {
-            fin >> node_idx;
-            node_idx -= 1;
+            fin >> node_tag;
+            const int node_idx = node_dense_index(node_tag);
             for (size_t j=0; j<num_components; j++) {
                 fin >> field[node_idx*num_components+j];
             }
@@ -346,7 +396,7 @@ IGL_INLINE void igl::MshLoader::parse_element_field(std::ifstream& fin) {
     std::string fieldname = str_tags[0];
     int num_components = int_tags[1];
     int num_entries = int_tags[2];
-    std::vector<Float> field(num_entries*num_components);
+    std::vector<Float> field(m_elements_ids.size()*num_components);
 
     if (m_binary) {
         size_t num_bytes = (num_components * m_data_size + 4) * num_entries;
@@ -354,20 +404,20 @@ IGL_INLINE void igl::MshLoader::parse_element_field(std::ifstream& fin) {
         igl::_msh_eat_white_space(fin);
         fin.read(data, num_bytes);
         for (int i=0; i<num_entries; i++) {
-			int elem_idx;
+			int elem_tag;
 			// works with sizeof(int)==4
-			memcpy(&elem_idx, &data[i*(4+num_components*m_data_size)],4);
-            elem_idx -= 1;
+			memcpy(&elem_tag, &data[i*(4+num_components*m_data_size)],4);
+            const int elem_idx = element_dense_index(elem_tag);
 			
 			// directly copy data into vector storage space
 			memcpy(&field[elem_idx*num_components], &data[i*(4+num_components*m_data_size) + 4], m_data_size*num_components);
         }
         delete [] data;
     } else {
-        int elem_idx;
+        int elem_tag;
         for (size_t i=0; i<num_entries; i++) {
-            fin >> elem_idx;
-            elem_idx -= 1;
+            fin >> elem_tag;
+            const int elem_idx = element_dense_index(elem_tag);
             for (size_t j=0; j<num_components; j++) {
                 fin >> field[elem_idx*num_components+j];
             }
