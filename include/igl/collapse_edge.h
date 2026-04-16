@@ -36,10 +36,10 @@ namespace igl
   ///     e=(j->i)
   /// @param[in,out] EI  #E by 2 list of edge flap corners (see above).
   /// [mesh inputs]
-  /// @param[out] e1  index into E of edge collpased on left
-  /// @param[out] e2  index into E of edge collpased on right
-  /// @param[out] f1  index into F of face collpased on left
-  /// @param[out] f2  index into F of face collpased on right
+  /// @param[out] e1  index into E of edge collapsed on left
+  /// @param[out] e2  index into E of edge collapsed on right
+  /// @param[out] f1  index into F of face collapsed on left
+  /// @param[out] f2  index into F of face collapsed on right
   /// @return true if edge was collapsed
   ///
   ///

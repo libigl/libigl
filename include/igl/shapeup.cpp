@@ -13,6 +13,7 @@
 #include "cat.h"
 #include "PI.h"
 #include <Eigen/Core>
+#include <cassert>
 #include <vector>
 
 namespace igl

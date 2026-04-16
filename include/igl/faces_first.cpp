@@ -10,6 +10,8 @@
 #include <vector>
 #include <Eigen/Dense>
 
+#include <cassert>
+
 template <typename MatV, typename MatF, typename VecI>
 IGL_INLINE void igl::faces_first(
   const MatV & V, 

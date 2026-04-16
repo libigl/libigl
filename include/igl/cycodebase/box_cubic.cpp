@@ -8,6 +8,7 @@
 #include "box_cubic.h"
 #include "../cubic.h"
 #include "../parallel_for.h"
+#include "../placeholders.h"
 #include <cyPolynomial.h>
 
 template < 
@@ -23,8 +24,8 @@ IGL_INLINE void igl::cycodebase::box_cubic(
   typedef Eigen::Matrix<Scalar,DerivedC::RowsAtCompileTime,1> VectorSC;
 
   // Using the control points is a simple (but not tight) bound
-  B1 = C({0,3},Eigen::all).colwise().minCoeff();
-  B2 = C({0,3},Eigen::all).colwise().maxCoeff();
+  B1 = C({0,3},igl::placeholders::all).colwise().minCoeff();
+  B2 = C({0,3},igl::placeholders::all).colwise().maxCoeff();
 
   // Better to find each of the t values where dC/dt = 0 and evaluate C there
   for(int d = 0;d<C.cols();d++)
@@ -67,7 +68,7 @@ IGL_INLINE void igl::cycodebase::box_cubic(
   {
     RowVectorP B1_c, B2_c;
     // Eval copies, but is it really good to make a template for the non copy?
-    box_cubic(P(C.row(c),Eigen::all).eval(),B1_c,B2_c);
+    box_cubic(P(C.row(c),igl::placeholders::all).eval(),B1_c,B2_c);
     B1.row(c) = B1_c;
     B2.row(c) = B2_c;
   },1000);

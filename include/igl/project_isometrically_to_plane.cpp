@@ -8,6 +8,8 @@
 #include "project_isometrically_to_plane.h"
 #include "edge_lengths.h"
 
+#include <cassert>
+
 template <
   typename DerivedV,
   typename DerivedF,

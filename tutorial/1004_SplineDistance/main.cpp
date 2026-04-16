@@ -9,6 +9,7 @@
 #include <igl/cycodebase/point_spline_squared_distance.h>
 #include <igl/cycodebase/spline_eytzinger_aabb.h>
 #include <igl/predicates/spline_winding_number.h>
+#include <igl/placeholders.h>
 
 int main(int argc, char * argv[])
 {
@@ -29,7 +30,7 @@ int main(int argc, char * argv[])
       const double t = double(i)/(ns-1);
       // Evaluate cubic Bezier at parameter t
       Eigen::RowVectorXd Vct;
-      igl::cubic(P(C.row(c),Eigen::all),t,Vct);
+      igl::cubic(P(C.row(c),igl::placeholders::all),t,Vct);
       V.row(c*ns + i) = Vct;
       if(i>0)
       {
@@ -93,12 +94,14 @@ int main(int argc, char * argv[])
 
   const auto nonempty = igl::find((leaf.array() != -2).eval());
   const int nb = nonempty.size();
+  const Eigen::MatrixXd B1n = B1(nonempty, igl::placeholders::all);
+  const Eigen::MatrixXd B2n = B2(nonempty, igl::placeholders::all);
   Eigen::MatrixXd BV(nb*4,2);
   BV<<
-    B1(nonempty,0), B1(nonempty,1),
-    B1(nonempty,0), B2(nonempty,1),
-    B2(nonempty,0), B2(nonempty,1),
-    B2(nonempty,0), B1(nonempty,1);
+    B1n.col(0), B1n.col(1),
+    B1n.col(0), B2n.col(1),
+    B2n.col(0), B2n.col(1),
+    B2n.col(0), B1n.col(1);
   Eigen::MatrixXi BE(nb*4,2);
   for(int c = 0;c<nb;c++)
   {
@@ -113,11 +116,11 @@ int main(int argc, char * argv[])
   vr.data().show_lines = false;
   const int g_index = vr.selected_data_index;
   vr.append_mesh();
-  vr.data().set_mesh(V,E(Eigen::all,{0,1,1}).eval());
+  vr.data().set_mesh(V,E(igl::placeholders::all,{0,1,1}).eval());
   vr.data().set_points(P,Eigen::RowVector3d(1,0.7,0.2));
   Eigen::MatrixXi CE(C.rows()*2,2);
-  CE<< C(Eigen::all,{0,1}),
-    C(Eigen::all,{2,3});
+  CE<< C(igl::placeholders::all,{0,1}),
+    C(igl::placeholders::all,{2,3});
   vr.data().set_edges(P,CE,Eigen::RowVector3d(1,0.7,0.2));
   vr.data().point_size = 10;
   vr.append_mesh();

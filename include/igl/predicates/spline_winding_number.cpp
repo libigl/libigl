@@ -5,6 +5,9 @@
 #include "../eytzinger_aabb.h"
 #include "../eytzinger_aabb_winding_number_tree.h"
 #include "../eytzinger_aabb_winding_number.h"
+#include "../placeholders.h"
+
+#include <cassert>
 
 template <
   typename DerivedP, 
@@ -37,7 +40,7 @@ IGL_INLINE void igl::predicates::spline_winding_number(
     {
       typedef Eigen::Matrix<Scalar,4,DerivedP::ColsAtCompileTime,Eigen::RowMajor> Mat4;
       // point_spline_squared_distance is caching this slice.
-      const Mat4 Cc = P(C.row(c),Eigen::all);
+      const Mat4 Cc = P(C.row(c),igl::placeholders::all);
       return igl::predicates::cubic_winding_number(Cc, qi);
     };
     igl::eytzinger_aabb_winding_number(qi,P,primitive,B1,B2,leaf,tI,tC,W(i));
