@@ -830,6 +830,8 @@ namespace glfw
                 down_mouse_y - (height_window - core().viewport(1) - core().viewport(3)),
                 mouse_x - core().viewport(0),
                 mouse_y - (height_window - core().viewport(1) - core().viewport(3)),
+                core().camera_eye,
+                core().rotation_axis_up,
                 core().trackball_angle);
               break;
           }
