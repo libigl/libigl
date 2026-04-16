@@ -9,6 +9,7 @@
 
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
+#include <cassert>
 #include <vector>
 
 #include "cotmatrix_entries.h"

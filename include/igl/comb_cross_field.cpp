@@ -18,6 +18,8 @@
 
 #include "triangle_triangle_adjacency.h"
 
+#include <cassert>
+
 namespace igl {
   template <typename DerivedV, typename DerivedF>
   class Comb

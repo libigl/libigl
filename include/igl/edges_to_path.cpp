@@ -5,6 +5,7 @@
 #include "unique.h"
 #include "adjacency_list.h"
 #include "PlainMatrix.h"
+#include <cassert>
 
 template <
   typename DerivedE,

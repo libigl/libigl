@@ -281,7 +281,7 @@ static constexpr inline fpreal32 SYSmax(fpreal32 a, fpreal32 b)	{ return h_max(a
 static constexpr inline fpreal64 SYSmin(fpreal64 a, fpreal64 b)	{ return h_min(a,b); }
 static constexpr inline fpreal64 SYSmax(fpreal64 a, fpreal64 b)	{ return h_max(a,b); }
 
-// Some systems have size_t as a seperate type from uint.  Some don't.
+// Some systems have size_t as a separate type from uint.  Some don't.
 #if (defined(LINUX) && defined(IA64)) || defined(MBSD)
 static constexpr inline size_t SYSmin(size_t a, size_t b)		{ return h_min(a,b); }
 static constexpr inline size_t SYSmax(size_t a, size_t b)		{ return h_max(a,b); }
@@ -3758,7 +3758,7 @@ namespace UT_Thread { inline int getNumProcessors() {
 /////
 ///// Requirements for the Range functor are:
 /////   - the requirements of the tbb Range Concept
-/////   - UT_estimatorNumItems<Range> must return the the estimated number of work items
+/////   - UT_estimatorNumItems<Range> must return the estimated number of work items
 /////     for the range. When Range::size() is not the correct estimate, then a 
 /////     (partial) specialization of UT_estimatorNumItemsimatorRange must be provided
 /////     for the type Range.

@@ -1,6 +1,8 @@
 #include "tetrahedralized_grid.h"
 #include "grid.h"
 
+#include <cassert>
+
 template <
   typename DerivedGV,
   typename DerivedGT>

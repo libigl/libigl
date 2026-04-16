@@ -21,7 +21,13 @@ namespace igl
   /// and returns the SDF to that primitive `primitive(i)`
   /// @param[out] f  SDF value at query point x
   ///
+  /// eytzinger_aabb_sdf<false> computes the signed distance function and
+  /// assumes that primitive(i) returns the signed distance to primitive i
+  ///
+  /// eytzinger_aabb_sdf<true> computes the squared (unsigned) distance function
+  /// and assumes that primitive(i) returns the squared distance to primitive i
   template <
+    bool Squared,
     typename Derivedp,
     typename Func,
     typename DerivedB,
@@ -45,6 +51,7 @@ namespace igl
   ///   `primitive(p,i)`
   /// @param[out] S  #P list of SDF values at query points P
   template <
+    bool Squared,
     typename DerivedP,
     typename Func,
     typename DerivedB,

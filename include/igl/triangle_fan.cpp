@@ -9,6 +9,8 @@
 #include "exterior_edges.h"
 #include "list_to_matrix.h"
 
+#include <cassert>
+
 template <typename DerivedE, typename Derivedcap>
 IGL_INLINE void igl::triangle_fan(
   const Eigen::MatrixBase<DerivedE> & E,

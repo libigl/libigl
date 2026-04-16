@@ -23,17 +23,17 @@ TEST_CASE("predicates", "[igl][predicates]") {
         e << 0.0, 1.0;
         f << 0.5, 0.5;
 
-        REQUIRE(orient2d(a, b, c) == Orientation::POSITIVE);
-        REQUIRE(orient2d(a, c, b) == Orientation::NEGATIVE);
-        REQUIRE(orient2d(a, b, b) == Orientation::COLLINEAR);
-        REQUIRE(orient2d(a, a, a) == Orientation::COLLINEAR);
-        REQUIRE(orient2d(a, b, d) == Orientation::COLLINEAR);
-        REQUIRE(orient2d(a, f, c) == Orientation::COLLINEAR);
+        REQUIRE(orient2d(a, b, c) == igl::Orientation::POSITIVE);
+        REQUIRE(orient2d(a, c, b) == igl::Orientation::NEGATIVE);
+        REQUIRE(orient2d(a, b, b) == igl::Orientation::COLLINEAR);
+        REQUIRE(orient2d(a, a, a) == igl::Orientation::COLLINEAR);
+        REQUIRE(orient2d(a, b, d) == igl::Orientation::COLLINEAR);
+        REQUIRE(orient2d(a, f, c) == igl::Orientation::COLLINEAR);
 
-        REQUIRE(incircle(a,b,c,e) == Orientation::COCIRCULAR);
-        REQUIRE(incircle(a,b,c,a) == Orientation::COCIRCULAR);
-        REQUIRE(incircle(a,b,c,d) == Orientation::OUTSIDE);
-        REQUIRE(incircle(a,b,c,f) == Orientation::INSIDE);
+        REQUIRE(incircle(a,b,c,e) == igl::Orientation::COCIRCULAR);
+        REQUIRE(incircle(a,b,c,a) == igl::Orientation::COCIRCULAR);
+        REQUIRE(incircle(a,b,c,d) == igl::Orientation::OUTSIDE);
+        REQUIRE(incircle(a,b,c,f) == igl::Orientation::INSIDE);
     }
 
     SECTION("3D") {
@@ -46,16 +46,16 @@ TEST_CASE("predicates", "[igl][predicates]") {
         e << 1.0, 1.0, 1.0;
         f << std::numeric_limits<Scalar>::epsilon(), 0.0, 0.0;
 
-        REQUIRE(orient3d(a, b, c, d) == Orientation::NEGATIVE);
-        REQUIRE(orient3d(a, b, d, c) == Orientation::POSITIVE);
-        REQUIRE(orient3d(a, b, d, d) == Orientation::COPLANAR);
-        REQUIRE(orient3d(a, a, a, a) == Orientation::COPLANAR);
-        REQUIRE(orient3d(a, b, f, c) == Orientation::COPLANAR);
+        REQUIRE(orient3d(a, b, c, d) == igl::Orientation::NEGATIVE);
+        REQUIRE(orient3d(a, b, d, c) == igl::Orientation::POSITIVE);
+        REQUIRE(orient3d(a, b, d, d) == igl::Orientation::COPLANAR);
+        REQUIRE(orient3d(a, a, a, a) == igl::Orientation::COPLANAR);
+        REQUIRE(orient3d(a, b, f, c) == igl::Orientation::COPLANAR);
 
-        REQUIRE(insphere(a, b, c, d, e) == Orientation::COSPHERICAL);
-        REQUIRE(insphere(a, b, d, e, c) == Orientation::COSPHERICAL);
-        REQUIRE(insphere(b, c, e, d, ((a+b)*0.5).eval()) == Orientation::INSIDE);
-        REQUIRE(insphere(b, c, e, d, (-f).eval()) == Orientation::OUTSIDE);
-        REQUIRE(insphere(f, b, d, c, e) == Orientation::INSIDE);
+        REQUIRE(insphere(a, b, c, d, e)                  == igl::Orientation::COSPHERICAL);
+        REQUIRE(insphere(a, b, d, e, c)                  == igl::Orientation::COSPHERICAL);
+        REQUIRE(insphere(b, c, e, d, ((a+b)*0.5).eval()) == igl::Orientation::INSIDE);
+        REQUIRE(insphere(b, c, e, d, (-f).eval())        == igl::Orientation::OUTSIDE);
+        REQUIRE(insphere(f, b, d, c, e)                  == igl::Orientation::INSIDE);
     }
 }

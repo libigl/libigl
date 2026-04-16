@@ -7,6 +7,8 @@
 #include "remesh_self_intersections.h"
 #include "../../collapse_edge.h"
 
+#include <cassert>
+
 template <
   typename DerivedV,
   typename DerivedF>

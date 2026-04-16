@@ -11,7 +11,7 @@
 
 #include "../igl_inline.h"
 #include <Eigen/Core>
-#include "Orientation.h"
+#include "../Orientation.h"
 
 namespace igl {
   namespace predicates {

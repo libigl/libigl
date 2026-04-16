@@ -16,14 +16,38 @@ namespace predicates {
 using REAL = IGL_PREDICATES_REAL;
 #include "IGL_PREDICATES_ASSERT_SCALAR.h"
 
-template<typename Vector2D>
+template <
+      typename Derivedpa,
+      typename Derivedpb,
+      typename Derivedpc>
 IGL_INLINE Orientation orient2d(
-    const Eigen::MatrixBase<Vector2D>& pa,
-    const Eigen::MatrixBase<Vector2D>& pb,
-    const Eigen::MatrixBase<Vector2D>& pc)
+    const Eigen::MatrixBase<Derivedpa>& pa,
+    const Eigen::MatrixBase<Derivedpb>& pb,
+    const Eigen::MatrixBase<Derivedpc>& pc)
 {
-  EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Vector2D, 2);
-  IGL_PREDICATES_ASSERT_SCALAR(Vector2D);
+  static_assert(
+      (Derivedpa::RowsAtCompileTime == 2 && Derivedpa::ColsAtCompileTime == 1) ||
+      (Derivedpa::RowsAtCompileTime == 1 && Derivedpa::ColsAtCompileTime == 2) ||
+      (Derivedpa::RowsAtCompileTime == Eigen::Dynamic && Derivedpa::ColsAtCompileTime == 1 ) ||
+      (Derivedpa::RowsAtCompileTime == 1 && Derivedpa::ColsAtCompileTime == Eigen::Dynamic ),
+      "pa must be a 2D point");
+  assert(pa.size() == 2 && "pa must be a 2D point");
+  static_assert(
+      (Derivedpb::RowsAtCompileTime == 2 && Derivedpb::ColsAtCompileTime == 1) ||
+      (Derivedpb::RowsAtCompileTime == 1 && Derivedpb::ColsAtCompileTime == 2) ||
+      (Derivedpb::RowsAtCompileTime == Eigen::Dynamic && Derivedpb::ColsAtCompileTime == 1 ) ||
+      (Derivedpb::RowsAtCompileTime == 1 && Derivedpb::ColsAtCompileTime == Eigen::Dynamic ),
+      "pb must be a 2D point");
+  assert(pb.size() == 2 && "pb must be a 2D point");
+  static_assert(
+      (Derivedpc::RowsAtCompileTime == 2 && Derivedpc::ColsAtCompileTime == 1) ||
+      (Derivedpc::RowsAtCompileTime == 1 && Derivedpc::ColsAtCompileTime == 2) ||
+      (Derivedpc::RowsAtCompileTime == Eigen::Dynamic && Derivedpc::ColsAtCompileTime == 1 ) ||
+      (Derivedpc::RowsAtCompileTime == 1 && Derivedpc::ColsAtCompileTime == Eigen::Dynamic ),
+      "pc must be a 2D point");
+  assert(pc.size() == 2 && "pc must be a 2D point");
+
+
 
   using Point = Eigen::Matrix<REAL, 2, 1>;
   Point a{pa[0], pa[1]};
@@ -72,14 +96,11 @@ IGL_INLINE void orient2d(
 }
 
 #ifdef IGL_STATIC_LIBRARY
-#define IGL_ORIENT2D(Vector) template igl::predicates::Orientation igl::predicates::orient2d<Vector>(const Eigen::MatrixBase<Vector>&, const Eigen::MatrixBase<Vector>&, const Eigen::MatrixBase<Vector>&)
-#define IGL_MATRIX(T, R, C) Eigen::Matrix<T, R, C>
-IGL_ORIENT2D(IGL_MATRIX(float, 1, 2));
-IGL_ORIENT2D(IGL_MATRIX(float, 2, 1));
-#ifndef LIBIGL_PREDICATES_USE_FLOAT
-IGL_ORIENT2D(IGL_MATRIX(double, 1, 2));
-IGL_ORIENT2D(IGL_MATRIX(double, 2, 1));
-#endif
-#undef IGL_MATRIX
-#undef IGL_ORIENT2D
+// Explicit template instantiation
+template igl::Orientation igl::predicates::orient2d<Eigen::Block<Eigen::Matrix<double, 4, -1, 1, 4, -1> const, 1, -1, true>, Eigen::Block<Eigen::Matrix<double, 4, -1, 1, 4, -1> const, 1, -1, true>, Eigen::Block<Eigen::Matrix<double, 4, -1, 1, 4, -1> const, 1, -1, true>>(Eigen::MatrixBase<Eigen::Block<Eigen::Matrix<double, 4, -1, 1, 4, -1> const, 1, -1, true>> const&, Eigen::MatrixBase<Eigen::Block<Eigen::Matrix<double, 4, -1, 1, 4, -1> const, 1, -1, true>> const&, Eigen::MatrixBase<Eigen::Block<Eigen::Matrix<double, 4, -1, 1, 4, -1> const, 1, -1, true>> const&);
+template igl::Orientation igl::predicates::orient2d<Eigen::Block<Eigen::Matrix<double, 4, 2, 0, 4, 2> const, 1, 2, false>, Eigen::Block<Eigen::Matrix<double, 4, 2, 0, 4, 2> const, 1, 2, false>, Eigen::Block<Eigen::Matrix<double, 4, 2, 0, 4, 2> const, 1, 2, false>>(Eigen::MatrixBase<Eigen::Block<Eigen::Matrix<double, 4, 2, 0, 4, 2> const, 1, 2, false>> const&, Eigen::MatrixBase<Eigen::Block<Eigen::Matrix<double, 4, 2, 0, 4, 2> const, 1, 2, false>> const&, Eigen::MatrixBase<Eigen::Block<Eigen::Matrix<double, 4, 2, 0, 4, 2> const, 1, 2, false>> const&);
+template igl::Orientation igl::predicates::orient2d<Eigen::Matrix<double, 1, -1, 1, 1, -1>, Eigen::Matrix<double, 1, -1, 1, 1, -1>, Eigen::Matrix<double, 1, -1, 1, 1, -1>>(Eigen::MatrixBase<Eigen::Matrix<double, 1, -1, 1, 1, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<double, 1, -1, 1, 1, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<double, 1, -1, 1, 1, -1>> const&);
+template igl::Orientation igl::predicates::orient2d<Eigen::Matrix<double, 1, 2, 1, 1, 2>, Eigen::Matrix<double, 1, 2, 1, 1, 2>, Eigen::Matrix<double, 1, -1, 1, 1, -1>>(Eigen::MatrixBase<Eigen::Matrix<double, 1, 2, 1, 1, 2>> const&, Eigen::MatrixBase<Eigen::Matrix<double, 1, 2, 1, 1, 2>> const&, Eigen::MatrixBase<Eigen::Matrix<double, 1, -1, 1, 1, -1>> const&);
+template igl::Orientation igl::predicates::orient2d<Eigen::Matrix<double, 1, 2, 1, 1, 2>, Eigen::Matrix<double, 1, 2, 1, 1, 2>, Eigen::Matrix<double, 1, 2, 1, 1, 2>>(Eigen::MatrixBase<Eigen::Matrix<double, 1, 2, 1, 1, 2>> const&, Eigen::MatrixBase<Eigen::Matrix<double, 1, 2, 1, 1, 2>> const&, Eigen::MatrixBase<Eigen::Matrix<double, 1, 2, 1, 1, 2>> const&);
+template igl::Orientation igl::predicates::orient2d<Eigen::Matrix<double, 2, 1, 0, 2, 1>, Eigen::Matrix<double, 2, 1, 0, 2, 1>, Eigen::Matrix<double, 2, 1, 0, 2, 1>>(Eigen::MatrixBase<Eigen::Matrix<double, 2, 1, 0, 2, 1>> const&, Eigen::MatrixBase<Eigen::Matrix<double, 2, 1, 0, 2, 1>> const&, Eigen::MatrixBase<Eigen::Matrix<double, 2, 1, 0, 2, 1>> const&);
 #endif
