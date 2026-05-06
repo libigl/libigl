@@ -4,9 +4,6 @@
 // Implementation
 #include "../EPS.h"
 
-#include <pmmintrin.h>
-#include <xmmintrin.h>
-
 IGL_INLINE igl::embree::EmbreeIntersector::EmbreeIntersector()
   :
   //scene(NULL),
@@ -399,10 +396,6 @@ igl::embree::EmbreeIntersector
   float tfar,
   int   mask) const
 {
-  // Embree recommends FTZ/DAZ on every traversal thread.
-  _MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);
-  _MM_SET_DENORMALS_ZERO_MODE(_MM_DENORMALS_ZERO_ON);
-
   struct query_context
   {
     RTCRayQueryContext base; // MUST be first for the reinterpret_cast in the filter
