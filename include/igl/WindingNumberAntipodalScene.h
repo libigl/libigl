@@ -22,11 +22,6 @@
 namespace igl
 {
   /// Precomputed scene for the Antipodal Method generalized winding number
-  /// of [Martens, Trettner, Bessmeltsev 2026, "The Antipodal Method: Fast,
-  /// Accurate, and Robust 3D Generalized Winding Numbers", SIGGRAPH 2026,
-  /// https://arxiv.org/abs/2605.01536].
-  ///
-  /// Project: https://martenscedric.github.io/academic-page/publications/antipodal_wn.html
   ///
   /// The scene stores only the weighted open-boundary edges of the input
   /// triangle mesh and a fixed antipodal reference direction `x0`. Closed

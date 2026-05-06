@@ -19,6 +19,8 @@ namespace igl
   /// Accurate, and Robust 3D Generalized Winding Numbers", SIGGRAPH 2026,
   /// https://arxiv.org/abs/2605.01536].
   ///
+  /// Project: https://martenscedric.github.io/academic-page/publications/antipodal_wn.html
+  ///
   /// One-shot convenience: builds a `WindingNumberAntipodalScene<Scalar>`
   /// (with `Scalar` deduced from `DerivedV`) and runs the batch query against
   /// the supplied `Intersector`. For repeated queries on the same mesh,
