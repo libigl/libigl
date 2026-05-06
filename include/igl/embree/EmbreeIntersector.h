@@ -37,6 +37,8 @@ namespace igl
     public:
       typedef Eigen::Matrix<float,Eigen::Dynamic,3> PointMatrixType;
       typedef Eigen::Matrix<int,Eigen::Dynamic,3> FaceMatrixType;
+      typedef Eigen::RowVector3f OriginType;
+      typedef Eigen::RowVector3f DirectionType;
     public:
       EmbreeIntersector();
     private:
@@ -149,6 +151,23 @@ namespace igl
         const Eigen::RowVector3f& ab,
         Hit<float> &hit,
         int mask = 0xFFFFFFFF) const;
+
+      /// Signed ray-mesh crossing count along `(origin, direction)`. Visits
+      /// every hit (occluded ray + argument filter rejecting each) and
+      /// accumulates `sign(direction · Ng)` per hit.
+      ///
+      /// @param[in] origin     ray origin
+      /// @param[in] direction  ray direction (need not be normalized)
+      /// @param[in] tnear      start of ray segment
+      /// @param[in] tfar       end of ray segment
+      /// @param[in] mask       a 32 bit mask to identify active geometries
+      /// @return signed crossing count
+      int signedIntersectionsRay(
+        const OriginType   & origin,
+        const DirectionType& direction,
+        float tnear = 0.0f,
+        float tfar  = std::numeric_limits<float>::infinity(),
+        int   mask  = 0xFFFFFFFF) const;
 
     private:
 
