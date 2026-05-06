@@ -1,5 +1,6 @@
 #include <test_common.h>
 #include <igl/winding_number_antipodal.h>
+#include <igl/WindingNumberAntipodalScene.h>
 #include <igl/embree/EmbreeIntersector.h>
 #include <igl/winding_number.h>
 #include <igl/read_triangle_mesh.h>
@@ -122,6 +123,33 @@ TEST_CASE("winding_number_antipodal: random non-manifold soup matches reference"
   {
     REQUIRE(std::abs(W(i) - W_ref(i)) < 1e-5);
   }
+}
+
+TEST_CASE("winding_number_antipodal: free-function one-shot matches scene", "[igl/embree]")
+{
+  Eigen::MatrixXd V;
+  Eigen::MatrixXi F;
+  igl::read_triangle_mesh(test_common::data_path("decimated-knight.obj"), V, F);
+
+  const Eigen::RowVector3d c = 0.5 * (V.colwise().minCoeff() + V.colwise().maxCoeff());
+  Eigen::MatrixXd P(4, 3);
+  P.row(0) = c;
+  P.row(1) = c + Eigen::RowVector3d(0.1, 0.0, 0.0);
+  P.row(2) = c + Eigen::RowVector3d(0.0, 0.1, 0.0);
+  P.row(3) = c + Eigen::RowVector3d(1e3, 0.0, 0.0);  // far outside
+
+  igl::embree::EmbreeIntersector e;
+  e.init(V.cast<float>(), F.cast<int>());
+
+  Eigen::VectorXd W;
+  igl::winding_number_antipodal(V, F, e, P, W);
+
+  Eigen::VectorXd W_ref;
+  igl::winding_number(V, F, P, W_ref);
+
+  REQUIRE(W.size() == W_ref.size());
+  for (int i = 0; i < W.size(); ++i)
+    REQUIRE(std::abs(W(i) - W_ref(i)) < 1e-3);
 }
 
 TEST_CASE("winding_number_antipodal: float precision compiles", "[igl/embree]")
