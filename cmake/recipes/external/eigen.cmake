@@ -13,7 +13,11 @@ FetchContent_Declare(
 )
 FetchContent_GetProperties(eigen)
 if(NOT eigen_POPULATED)
-    FetchContent_Populate(eigen)
+    if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.14")
+        FetchContent_MakeAvailable(eigen)
+    else()
+        FetchContent_Populate(eigen)
+    endif()
 endif()
 
 add_library(Eigen3_Eigen INTERFACE)
