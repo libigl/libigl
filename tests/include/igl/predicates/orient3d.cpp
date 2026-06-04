@@ -35,9 +35,9 @@ TEST_CASE("orient3d", "[igl][predicates]")
     Eigen::VectorXi R;
     igl::predicates::orient3d(A,B,C,D,R);
     REQUIRE(R.size() == 3);
-    REQUIRE(R(0) == int(igl::predicates::Orientation::NEGATIVE));
-    REQUIRE(R(1) == int(igl::predicates::Orientation::POSITIVE));
-    REQUIRE(R(2) == int(igl::predicates::Orientation::COPLANAR));
+    REQUIRE(R(0) == int(igl::Orientation::NEGATIVE));
+    REQUIRE(R(1) == int(igl::Orientation::POSITIVE));
+    REQUIRE(R(2) == int(igl::Orientation::COPLANAR));
   }
   {
     Eigen::MatrixXd A(1,3);
@@ -57,9 +57,9 @@ TEST_CASE("orient3d", "[igl][predicates]")
     Eigen::VectorXi R;
     igl::predicates::orient3d(A,B,C,D,R);
     REQUIRE(R.size() == 3);
-    REQUIRE(R(0) == int(igl::predicates::Orientation::NEGATIVE));
-    REQUIRE(R(1) == int(igl::predicates::Orientation::POSITIVE));
-    REQUIRE(R(2) == int(igl::predicates::Orientation::COPLANAR));
+    REQUIRE(R(0) == int(igl::Orientation::NEGATIVE));
+    REQUIRE(R(1) == int(igl::Orientation::POSITIVE));
+    REQUIRE(R(2) == int(igl::Orientation::COPLANAR));
   }
 }
 

@@ -10,6 +10,8 @@
 
 #include "triangle_triangle_adjacency.h"
 
+#include <cassert>
+
 template <typename DerivedF>
 IGL_INLINE std::vector<bool> igl::is_border_vertex(
   const Eigen::MatrixBase<DerivedF> &F)

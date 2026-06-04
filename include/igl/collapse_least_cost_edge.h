@@ -47,10 +47,10 @@ namespace igl
   /// @param[in] C  #E by dim list of stored placements
   /// @param[out] e  index into E of attempted collapsed edge. Set to -1 if Q is empty or
   ///               contains only infinite cost edges.
-  /// @param[out] e1  index into E of edge collpased on left.
-  /// @param[out] e2  index into E of edge collpased on right.
-  /// @param[out] f1  index into F of face collpased on left.
-  /// @param[out] f2  index into F of face collpased on right.
+  /// @param[out] e1  index into E of edge collapsed on left.
+  /// @param[out] e2  index into E of edge collapsed on right.
+  /// @param[out] f1  index into F of face collapsed on left.
+  /// @param[out] f2  index into F of face collapsed on right.
   ///
   /// \bug This function is not templated nicely and refactoring it and its
   /// dependencies to do so is non-trivial, see

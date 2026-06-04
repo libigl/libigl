@@ -47,7 +47,7 @@ namespace igl
   ///     F(f,:) opposite the vth corner, where EI(e,0)=v. Similarly EF(e,1) "
   ///     e=(j->i)
   /// @param[in] EI  #E by 2 list of edge flap corners (see above).
-  /// @param[out] #vN list of of faces touched by circulation (in cyclically order).
+  /// @param[out] #vN list of faces touched by circulation (in cyclically order).
   ///   
   /// \see edge_flaps
   template <typename DerivedEMAP, typename DerivedEF, typename DerivedEI, typename DerivedvN>

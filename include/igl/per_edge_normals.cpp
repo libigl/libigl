@@ -12,6 +12,8 @@
 #include "per_face_normals.h"
 #include "unique_simplices.h"
 
+#include <cassert>
+
 template <
   typename DerivedV, 
   typename DerivedF, 

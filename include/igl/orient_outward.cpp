@@ -10,6 +10,7 @@
 #include "barycenter.h"
 #include "doublearea.h"
 #include "PlainMatrix.h"
+#include <cassert>
 #include <iostream>
 
 template <

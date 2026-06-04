@@ -10,6 +10,7 @@
 #include "../../LinSpaced.h"
 #include <vector>
 #include <iostream>
+#include <cassert>
 //#define IGL_PEEL_OUTER_HULL_LAYERS_DEBUG
 #ifdef IGL_PEEL_OUTER_HULL_LAYERS_DEBUG
 #include "../../writePLY.h"

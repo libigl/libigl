@@ -1,5 +1,6 @@
 #include "quadprog.h"
 #include "min_quad_with_fixed.h"
+#include <cassert>
 #include <iostream>
 
 template <typename Scalar, int n, int m>

@@ -13,6 +13,7 @@
 #include "../../igl_inline.h"
 #include "../../MeshBooleanType.h"
 #include <Eigen/Core>
+#include <cassert>
 
 // TODO: This is not written according to libigl style. These should be
 // function handles.
