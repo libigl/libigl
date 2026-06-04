@@ -15,7 +15,7 @@ namespace igl
   ///
   /// @param[in] V  #V by dim list of positions of the input mesh.
   /// @param[in] TC  #TC by 2 list of 2D texture coordinates of the input mesh
-  /// @param[in] F  #F by 3 list of triange indices into V representing a
+  /// @param[in] F  #F by 3 list of triangle indices into V representing a
   ///     manifold-with-boundary triangle mesh
   /// @param[in] FTC  #F by 3 list of indices into TC for each corner
   /// @param[out] seams  Edges where the forwards and backwards directions have different

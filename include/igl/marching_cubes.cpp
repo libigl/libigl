@@ -14,6 +14,7 @@
 #include <unordered_map>
 #include <iostream>
 #include <cstdint>
+#include <cassert>
 
 template <typename DerivedS, typename DerivedGV, typename DerivedV, typename DerivedF>
 IGL_INLINE void igl::marching_cubes(

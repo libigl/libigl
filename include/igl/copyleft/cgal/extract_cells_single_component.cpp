@@ -15,6 +15,7 @@
 #include <set>
 #include <map>
 #include <queue>
+#include <cassert>
 
 //#define EXTRACT_CELLS_SINGLE_COMPONENT_TIMING
 

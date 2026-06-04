@@ -11,6 +11,7 @@
 #include "sortrows.h"
 #include "PlainMatrix.h"
 
+#include <cassert>
 #include <vector>
 #include <list>
 

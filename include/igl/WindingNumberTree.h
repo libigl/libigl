@@ -11,6 +11,7 @@
 #include <map>
 #include <Eigen/Dense>
 #include "WindingNumberMethod.h"
+#include <cassert>
 #include <memory>
 
 namespace igl

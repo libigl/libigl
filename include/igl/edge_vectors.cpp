@@ -13,6 +13,7 @@
 
 #include "PI.h"
 
+#include <cassert>
 
 template<typename DerivedV,typename DerivedF,typename DerivedE,
 typename DerivedoE, typename Derivedvec>

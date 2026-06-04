@@ -18,6 +18,7 @@
 
 #include "PI.h"
 
+#include <cassert>
 
 template <typename DerivedV, typename DerivedF, typename DerivedE,
 typename DerivedOE, typename ScalarK>

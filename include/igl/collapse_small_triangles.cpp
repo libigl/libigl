@@ -13,6 +13,8 @@
 #include "colon.h"
 #include "faces_first.h"
 
+#include <cassert>
+
 #include <limits>
 
 #include <iostream>

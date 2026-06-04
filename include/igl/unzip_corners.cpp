@@ -8,6 +8,8 @@
 #include "unzip_corners.h"
 #include "unique_rows.h"
 
+#include <cassert>
+
 template < typename DerivedA, typename DerivedU, typename DerivedG, typename DerivedJ >
 IGL_INLINE void igl::unzip_corners(
   const std::vector<std::reference_wrapper<DerivedA> > & A,

@@ -8,6 +8,7 @@
 #include "grad_intrinsic.h"
 #include "grad.h"
 #include "PlainMatrix.h"
+#include <cassert>
 
 template <typename Derivedl, typename DerivedF, typename Gtype>
 IGL_INLINE void igl::grad_intrinsic(
