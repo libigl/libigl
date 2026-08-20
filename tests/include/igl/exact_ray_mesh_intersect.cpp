@@ -1,14 +1,14 @@
 #include <test_common.h>
-#include <igl/predicates/ray_mesh_intersect.h>
-#include <igl/predicates/ray_triangle_intersect.h>
+#include <igl/exact_ray_mesh_intersect.h>
+#include <igl/exact_ray_triangle_intersect.h>
+#include <igl/exact_ray_triangle_hit_compare.h>
 #include <igl/ray_mesh_intersect.h>
 #include <igl/read_triangle_mesh.h>
-#include <Eigen/Geometry>
 #include <random>
 #include <algorithm>
 #include <vector>
 
-TEST_CASE("predicates/ray_mesh_intersect: one_triangle", "[igl][predicates]")
+TEST_CASE("exact_ray_mesh_intersect: one_triangle", "[igl]")
 {
   Eigen::MatrixXd V(3,3);
   V.row(0) << 0.0, 0.0, 0.0;
@@ -21,24 +21,24 @@ TEST_CASE("predicates/ray_mesh_intersect: one_triangle", "[igl][predicates]")
   Eigen::Vector3d dir{0.0, 0.0, 1.0};
 
   int fid = -1;
-  REQUIRE(igl::predicates::ray_mesh_intersect(source, dir, V, F, fid));
+  REQUIRE(igl::exact_ray_mesh_intersect(source, dir, V, F, fid));
   REQUIRE(fid == 0);
 
   igl::Hit<double> hit;
-  REQUIRE(igl::predicates::ray_mesh_intersect(source, dir, V, F, hit));
+  REQUIRE(igl::exact_ray_mesh_intersect(source, dir, V, F, hit));
   REQUIRE(hit.id == 0);
   REQUIRE(hit.t == Approx(1.0));
 
   // Ray pointing away: no hit (t < 0).
   Eigen::Vector3d away{0.0, 0.0, -1.0};
-  REQUIRE_FALSE(igl::predicates::ray_mesh_intersect(source, away, V, F, fid));
+  REQUIRE_FALSE(igl::exact_ray_mesh_intersect(source, away, V, F, fid));
 
   // Ray missing the triangle.
   Eigen::Vector3d off{5.0, 5.0, -1.0};
-  REQUIRE_FALSE(igl::predicates::ray_mesh_intersect(off, dir, V, F, fid));
+  REQUIRE_FALSE(igl::exact_ray_mesh_intersect(off, dir, V, F, fid));
 }
 
-TEST_CASE("predicates/ray_mesh_intersect: ordering", "[igl][predicates]")
+TEST_CASE("exact_ray_mesh_intersect: ordering", "[igl]")
 {
   // Three parallel triangles at z = 3, 1, 2 (deliberately out of index order).
   Eigen::MatrixXd V(9,3);
@@ -56,18 +56,18 @@ TEST_CASE("predicates/ray_mesh_intersect: ordering", "[igl][predicates]")
   Eigen::Vector3d dir{0.0, 0.0, 1.0};
 
   int fid = -1;
-  REQUIRE(igl::predicates::ray_mesh_intersect(source, dir, V, F, fid));
+  REQUIRE(igl::exact_ray_mesh_intersect(source, dir, V, F, fid));
   REQUIRE(fid == 1); // z = 1 is closest
 
   std::vector<int> fids;
-  REQUIRE(igl::predicates::ray_mesh_intersect_all(source, dir, V, F, fids));
+  REQUIRE(igl::exact_ray_mesh_intersect_all(source, dir, V, F, fids));
   REQUIRE(fids.size() == 3);
   REQUIRE(fids[0] == 1); // z = 1
   REQUIRE(fids[1] == 2); // z = 2
   REQUIRE(fids[2] == 0); // z = 3
 
   std::vector<igl::Hit<double>> hits;
-  REQUIRE(igl::predicates::ray_mesh_intersect_all(source, dir, V, F, hits));
+  REQUIRE(igl::exact_ray_mesh_intersect_all(source, dir, V, F, hits));
   REQUIRE(hits.size() == 3);
   REQUIRE(hits[0].t <= hits[1].t);
   REQUIRE(hits[1].t <= hits[2].t);
@@ -75,7 +75,7 @@ TEST_CASE("predicates/ray_mesh_intersect: ordering", "[igl][predicates]")
 
 // The exact leaf boolean and comparison predicates must agree with a brute force
 // scan, and the AABB traversal must agree with that scan on random meshes.
-TEST_CASE("predicates/ray_mesh_intersect: tree_matches_bruteforce", "[igl][predicates]")
+TEST_CASE("exact_ray_mesh_intersect: tree_matches_bruteforce", "[igl]")
 {
   std::mt19937 rng(7);
   std::uniform_real_distribution<double> U(-1,1);
@@ -96,21 +96,21 @@ TEST_CASE("predicates/ray_mesh_intersect: tree_matches_bruteforce", "[igl][predi
     const auto R = [&](int i){ return Eigen::RowVector3d(V.row(i)); };
     const auto tri_before = [&](int a, int b)
     {
-      return igl::predicates::ray_triangle_hit_compare(s,d,
+      return igl::exact_ray_triangle_hit_compare(s,d,
         R(F(a,0)),R(F(a,1)),R(F(a,2)),
         R(F(b,0)),R(F(b,1)),R(F(b,2))) < 0;
     };
     std::vector<int> bf;
     for(int f = 0; f < nf; f++)
     {
-      if(igl::predicates::ray_triangle_intersect(
+      if(igl::exact_ray_triangle_intersect(
            s,d,R(F(f,0)),R(F(f,1)),R(F(f,2))))
       { bf.push_back(f); }
     }
     std::sort(bf.begin(), bf.end(), tri_before);
 
     std::vector<int> tr;
-    igl::predicates::ray_mesh_intersect_all(s,d,V,F,tr);
+    igl::exact_ray_mesh_intersect_all(s,d,V,F,tr);
 
     // Same set of hit faces.
     std::vector<int> a = bf, b = tr;
@@ -119,11 +119,11 @@ TEST_CASE("predicates/ray_mesh_intersect: tree_matches_bruteforce", "[igl][predi
 
     // First hit consistent (equal exact distance to brute force front).
     int fid = -1;
-    const bool h = igl::predicates::ray_mesh_intersect(s,d,V,F,fid);
+    const bool h = igl::exact_ray_mesh_intersect(s,d,V,F,fid);
     REQUIRE(h == !bf.empty());
     if(h)
     {
-      const int c = igl::predicates::ray_triangle_hit_compare(s,d,
+      const int c = igl::exact_ray_triangle_hit_compare(s,d,
         R(F(fid,0)),R(F(fid,1)),R(F(fid,2)),
         R(F(bf.front(),0)),R(F(bf.front(),1)),R(F(bf.front(),2)));
       REQUIRE(c == 0);
@@ -133,7 +133,7 @@ TEST_CASE("predicates/ray_mesh_intersect: tree_matches_bruteforce", "[igl][predi
 
 // On a real, well-separated mesh the exact classification should agree with the
 // ordinary double-precision Moller-Trumbore reference.
-TEST_CASE("predicates/ray_mesh_intersect: agrees_with_double", "[igl][predicates]")
+TEST_CASE("exact_ray_mesh_intersect: agrees_with_double", "[igl]")
 {
   Eigen::MatrixXd V;
   Eigen::MatrixXi F;
@@ -158,14 +158,12 @@ TEST_CASE("predicates/ray_mesh_intersect: agrees_with_double", "[igl][predicates
     std::vector<igl::Hit<double>> ref;
     igl::ray_mesh_intersect(source, dir, V, F, ref);
     int fid = -1;
-    const bool got = igl::predicates::ray_mesh_intersect(source, dir, V, F, fid);
-    // Both should agree on whether there is a hit.
+    const bool got = igl::exact_ray_mesh_intersect(source, dir, V, F, fid);
     REQUIRE(got == (ref.size() > 0));
     if(got)
     {
       igl::Hit<double> hit;
-      igl::predicates::ray_mesh_intersect(source, dir, V, F, hit);
-      // Same nearest distance (cube faces are well separated from these rays).
+      igl::exact_ray_mesh_intersect(source, dir, V, F, hit);
       REQUIRE(hit.t == Approx(ref.front().t).margin(1e-9));
       compared++;
     }

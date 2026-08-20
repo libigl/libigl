@@ -19,44 +19,48 @@ template <
 IGL_INLINE void igl::eytzinger_aabb_ray_intersection(
   const Eigen::MatrixBase<Derivedsource> & source,
   const Eigen::MatrixBase<Deriveddir> & dir,
-  const std::function<bool(const int, double &)> & hit,
+  const std::function<bool(const int, typename DerivedB::Scalar &)> & hit,
   const std::function<bool(const int, const int)> & before,
   const Eigen::MatrixBase<DerivedB> & B1,
   const Eigen::MatrixBase<DerivedB> & B2,
   const Eigen::MatrixBase<Derivedleaf> & leaf,
   std::vector<int> & hits)
 {
+  using Scalar = typename DerivedB::Scalar;
   hits.clear();
   const int dim = source.size();
-  const double inf = std::numeric_limits<double>::infinity();
+  const Scalar inf = std::numeric_limits<Scalar>::infinity();
+  // Relative slack used to make box culling and distance pruning conservative.
+  const Scalar releps = Scalar(1024) * std::numeric_limits<Scalar>::epsilon();
+  const Scalar tiny = std::numeric_limits<Scalar>::min();
 
   // Conservative ray/box slab test.  Returns whether the ray may enter the
   // (slightly inflated) box [lo,hi] and, if so, a lower bound `tnear` on the ray
   // parameter of any point inside the box.  Inflation guarantees that a box the
   // ray genuinely grazes is never rejected.
-  const auto ray_box = [&](const int i, double & tnear) -> bool
+  const auto ray_box = [&](const int i, Scalar & tnear) -> bool
   {
-    double t0 = 0.0;
-    double t1 = inf;
+    Scalar t0 = Scalar(0);
+    Scalar t1 = inf;
     for(int k = 0; k < dim; k++)
     {
-      const double lo = (double)B1(i,k);
-      const double hi = (double)B2(i,k);
-      const double o = (double)source(k);
-      const double dk = (double)dir(k);
-      const double ext = hi - lo;
-      const double eps =
-        1e-12 * (std::fabs(lo) + std::fabs(hi) + ext) + 1e-300;
-      const double L = lo - eps;
-      const double H = hi + eps;
-      if(std::fabs(dk) <= 1e-300)
+      const Scalar lo = B1(i,k);
+      const Scalar hi = B2(i,k);
+      const Scalar o = (Scalar)source(k);
+      const Scalar dk = (Scalar)dir(k);
+      const Scalar ext = hi - lo;
+      const Scalar eps =
+        releps * (std::abs(lo) + std::abs(hi) + ext) + tiny;
+      const Scalar L = lo - eps;
+      const Scalar H = hi + eps;
+      if(std::abs(dk) <= tiny)
       {
         if(o < L || o > H){ return false; }
       }else
       {
-        const double inv = 1.0 / dk;
-        double ta = (L - o) * inv;
-        double tb = (H - o) * inv;
+        const Scalar inv = Scalar(1) / dk;
+        Scalar ta = (L - o) * inv;
+        Scalar tb = (H - o) * inv;
         if(ta > tb){ std::swap(ta, tb); }
         if(ta > t0){ t0 = ta; }
         if(tb < t1){ t1 = tb; }
@@ -69,18 +73,18 @@ IGL_INLINE void igl::eytzinger_aabb_ray_intersection(
 
   if(leaf.size() == 0){ return; }
   {
-    double tnear;
+    Scalar tnear;
     if(!ray_box(0, tnear)){ return; }
   }
 
   int best = -1;
-  double best_t = inf;
+  Scalar best_t = inf;
 
   // Depth-first traversal.  Entries carry the box's conservative entry distance so
   // subtrees that certainly start beyond the current best can be pruned.
-  std::vector<std::pair<int,double>> stack;
+  std::vector<std::pair<int,Scalar>> stack;
   stack.reserve(64);
-  stack.emplace_back(0, 0.0);
+  stack.emplace_back(0, Scalar(0));
   while(!stack.empty())
   {
     const auto [i, tnear] = stack.back();
@@ -90,14 +94,14 @@ IGL_INLINE void igl::eytzinger_aabb_ray_intersection(
     {
       // Safety margin absorbs the floating point error in best_t (an approximate
       // parameter of an actual hit) and in tnear.
-      const double margin = 1e-6 * (std::fabs(best_t) + 1.0);
+      const Scalar margin = releps * (std::abs(best_t) + Scalar(1));
       if(tnear > best_t + margin){ continue; }
     }
 
     const int l = (int)leaf(i);
     if(l >= 0)
     {
-      double t;
+      Scalar t;
       if(hit(l, t))
       {
         if(FirstOnly)
@@ -118,7 +122,7 @@ IGL_INLINE void igl::eytzinger_aabb_ray_intersection(
 
     const int left_i = 2*i + 1;
     const int right_i = 2*i + 2;
-    double tl, tr;
+    Scalar tl, tr;
     const bool ok_l = (left_i  < leaf.size()) && (leaf(left_i)  != -2) && ray_box(left_i,  tl);
     const bool ok_r = (right_i < leaf.size()) && (leaf(right_i) != -2) && ray_box(right_i, tr);
     // Push so that the nearer child is processed first (popped last -> pushed last).

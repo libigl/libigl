@@ -29,8 +29,8 @@ namespace igl
   /// @param[in] source  dim-vector origin of ray
   /// @param[in] dir     dim-vector direction of ray
   /// @param[in] hit     function handle `hit(i, t_approx)` returning true if the
-  ///   ray intersects primitive i and, when true, setting `t_approx` to an
-  ///   approximate (floating point) ray parameter used only for culling/ordering
+  ///   ray intersects primitive i and, when true, setting `t_approx` (of the box
+  ///   scalar type) to an approximate ray parameter used only for culling/ordering
   ///   (std::function so this routine can be instantiated with local lambdas)
   /// @param[in] before  function handle `before(i, j)` returning true if
   ///   primitive i's hit is strictly closer than primitive j's (exact)
@@ -41,7 +41,7 @@ namespace igl
   /// @param[out] hits  list of intersected primitive indices (size ≤ 1 if
   ///   FirstOnly), sorted near-to-far by `before`
   ///
-  /// \see eytzinger_aabb, predicates::ray_mesh_intersect
+  /// \see eytzinger_aabb, exact_ray_mesh_intersect
   template <
     bool FirstOnly,
     typename Derivedsource,
@@ -51,7 +51,7 @@ namespace igl
   IGL_INLINE void eytzinger_aabb_ray_intersection(
     const Eigen::MatrixBase<Derivedsource> & source,
     const Eigen::MatrixBase<Deriveddir> & dir,
-    const std::function<bool(const int, double &)> & hit,
+    const std::function<bool(const int, typename DerivedB::Scalar &)> & hit,
     const std::function<bool(const int, const int)> & before,
     const Eigen::MatrixBase<DerivedB> & B1,
     const Eigen::MatrixBase<DerivedB> & B2,

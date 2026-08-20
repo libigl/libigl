@@ -5,46 +5,18 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
-#include "ray_mesh_intersect.h"
-#include "ray_triangle_intersect.h"
-#include "../eytzinger_aabb.h"
-#include "../eytzinger_aabb_ray_intersection.h"
+#include "exact_ray_mesh_intersect.h"
+#include "exact_ray_triangle_intersect.h"
+#include "exact_ray_triangle_hit_compare.h"
+#include "ray_triangle_intersection_parameters.h"
+#include "eytzinger_aabb.h"
+#include "eytzinger_aabb_ray_intersection.h"
 #include <Eigen/Core>
-#include <Eigen/Geometry>
+#include <functional>
 #include <limits>
 
-namespace igl { namespace predicates { namespace ray_mesh_intersect_detail
+namespace igl { namespace exact_ray_mesh_intersect_detail
 {
-  // Approximate (inexact) Moller-Trumbore. Only used for culling/ordering and for
-  // the convenience hit records. Never affects the exact classification.
-  template <typename DerivedS, typename DerivedD, typename DerivedA>
-  inline bool approx_hit(
-    const Eigen::MatrixBase<DerivedS> & source,
-    const Eigen::MatrixBase<DerivedD> & dir,
-    const Eigen::MatrixBase<DerivedA> & A,
-    const Eigen::MatrixBase<DerivedA> & B,
-    const Eigen::MatrixBase<DerivedA> & C,
-    double & t, double & u, double & v)
-  {
-    const Eigen::Vector3d O(source(0), source(1), source(2));
-    const Eigen::Vector3d d(dir(0), dir(1), dir(2));
-    const Eigen::Vector3d a(A(0), A(1), A(2));
-    const Eigen::Vector3d b(B(0), B(1), B(2));
-    const Eigen::Vector3d c(C(0), C(1), C(2));
-    const Eigen::Vector3d e1 = b - a;
-    const Eigen::Vector3d e2 = c - a;
-    const Eigen::Vector3d pv = d.cross(e2);
-    const double det = e1.dot(pv);
-    if(det == 0.0){ t = 0.0; u = 0.0; v = 0.0; return false; }
-    const double inv = 1.0 / det;
-    const Eigen::Vector3d tv = O - a;
-    u = tv.dot(pv) * inv;
-    const Eigen::Vector3d qv = tv.cross(e1);
-    v = d.dot(qv) * inv;
-    t = e2.dot(qv) * inv;
-    return true;
-  }
-
   // Build the per-face Eytzinger AABB tree and run the traversal, returning the
   // hit face indices (size <= 1 when FirstOnly).
   template <
@@ -67,11 +39,10 @@ namespace igl { namespace predicates { namespace ray_mesh_intersect_detail
     const Eigen::RowVector3d S((double)source(0),(double)source(1),(double)source(2));
     const Eigen::RowVector3d D((double)dir(0),(double)dir(1),(double)dir(2));
 
-    // Per-face axis-aligned bounding boxes.
+    // Per-face axis-aligned bounding boxes (in double, matching the exact leaf).
     Eigen::Matrix<double,Eigen::Dynamic,3> PB1(m,3), PB2(m,3);
     for(int f = 0; f < m; f++)
     {
-      Eigen::RowVector3d lo, hi;
       for(int c = 0; c < 3; c++)
       {
         double mn = (double)V(F(f,0),c);
@@ -82,9 +53,8 @@ namespace igl { namespace predicates { namespace ray_mesh_intersect_detail
           mn = std::min(mn,x);
           mx = std::max(mx,x);
         }
-        lo(c) = mn; hi(c) = mx;
+        PB1(f,c) = mn; PB2(f,c) = mx;
       }
-      PB1.row(f) = lo; PB2.row(f) = hi;
     }
 
     Eigen::Matrix<double,Eigen::Dynamic,3> B1, B2;
@@ -104,12 +74,12 @@ namespace igl { namespace predicates { namespace ray_mesh_intersect_detail
       const Eigen::RowVector3d A = row(F(f,0));
       const Eigen::RowVector3d B = row(F(f,1));
       const Eigen::RowVector3d C = row(F(f,2));
-      if(!igl::predicates::ray_triangle_intersect(S, D, A, B, C))
+      if(!igl::exact_ray_triangle_intersect(S, D, A, B, C))
       {
         return false;
       }
       double u, v;
-      if(!approx_hit(S, D, A, B, C, t, u, v))
+      if(!igl::ray_triangle_intersection_parameters(S, D, A, B, C, t, u, v))
       {
         // Exact predicate certifies a transverse hit but the (inexact) parameter
         // could not be formed (near-parallel in double). Use +inf so this leaf
@@ -121,7 +91,7 @@ namespace igl { namespace predicates { namespace ray_mesh_intersect_detail
     const std::function<bool(const int, const int)> before =
       [&](const int f1, const int f2) -> bool
     {
-      return igl::predicates::ray_triangle_hit_compare(
+      return igl::exact_ray_triangle_hit_compare(
         S, D,
         row(F(f1,0)), row(F(f1,1)), row(F(f1,2)),
         row(F(f2,0)), row(F(f2,1)), row(F(f2,2))) < 0;
@@ -130,14 +100,34 @@ namespace igl { namespace predicates { namespace ray_mesh_intersect_detail
     igl::eytzinger_aabb_ray_intersection<FirstOnly>(
       S, D, hit, before, B1, B2, leaf, fids);
   }
-}}}
+
+  // Construct an approximate hit record for face fid.
+  template <typename Derivedsource, typename Deriveddir, typename DerivedV, typename DerivedF>
+  inline igl::Hit<typename DerivedV::Scalar> approximate_hit(
+    const Eigen::MatrixBase<Derivedsource> & source,
+    const Eigen::MatrixBase<Deriveddir> & dir,
+    const Eigen::MatrixBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedF> & F,
+    const int fid)
+  {
+    using Scalar = typename DerivedV::Scalar;
+    const Eigen::RowVector3d A((double)V(F(fid,0),0),(double)V(F(fid,0),1),(double)V(F(fid,0),2));
+    const Eigen::RowVector3d B((double)V(F(fid,1),0),(double)V(F(fid,1),1),(double)V(F(fid,1),2));
+    const Eigen::RowVector3d C((double)V(F(fid,2),0),(double)V(F(fid,2),1),(double)V(F(fid,2),2));
+    const Eigen::RowVector3d S((double)source(0),(double)source(1),(double)source(2));
+    const Eigen::RowVector3d D((double)dir(0),(double)dir(1),(double)dir(2));
+    double t = 0, u = 0, v = 0;
+    igl::ray_triangle_intersection_parameters(S, D, A, B, C, t, u, v);
+    return igl::Hit<Scalar>{ fid, -1, (Scalar)u, (Scalar)v, (Scalar)t };
+  }
+}}
 
 template <
   typename Derivedsource,
   typename Deriveddir,
   typename DerivedV,
   typename DerivedF>
-IGL_INLINE bool igl::predicates::ray_mesh_intersect(
+IGL_INLINE bool igl::exact_ray_mesh_intersect(
   const Eigen::MatrixBase<Derivedsource> & source,
   const Eigen::MatrixBase<Deriveddir> & dir,
   const Eigen::MatrixBase<DerivedV> & V,
@@ -145,7 +135,7 @@ IGL_INLINE bool igl::predicates::ray_mesh_intersect(
   int & fid)
 {
   std::vector<int> fids;
-  igl::predicates::ray_mesh_intersect_detail::query<true>(source, dir, V, F, fids);
+  igl::exact_ray_mesh_intersect_detail::query<true>(source, dir, V, F, fids);
   if(fids.empty()){ return false; }
   fid = fids.front();
   return true;
@@ -156,14 +146,14 @@ template <
   typename Deriveddir,
   typename DerivedV,
   typename DerivedF>
-IGL_INLINE bool igl::predicates::ray_mesh_intersect_all(
+IGL_INLINE bool igl::exact_ray_mesh_intersect_all(
   const Eigen::MatrixBase<Derivedsource> & source,
   const Eigen::MatrixBase<Deriveddir> & dir,
   const Eigen::MatrixBase<DerivedV> & V,
   const Eigen::MatrixBase<DerivedF> & F,
   std::vector<int> & fids)
 {
-  igl::predicates::ray_mesh_intersect_detail::query<false>(source, dir, V, F, fids);
+  igl::exact_ray_mesh_intersect_detail::query<false>(source, dir, V, F, fids);
   return !fids.empty();
 }
 
@@ -172,20 +162,16 @@ template <
   typename Deriveddir,
   typename DerivedV,
   typename DerivedF>
-IGL_INLINE bool igl::predicates::ray_mesh_intersect(
+IGL_INLINE bool igl::exact_ray_mesh_intersect(
   const Eigen::MatrixBase<Derivedsource> & source,
   const Eigen::MatrixBase<Deriveddir> & dir,
   const Eigen::MatrixBase<DerivedV> & V,
   const Eigen::MatrixBase<DerivedF> & F,
   igl::Hit<typename DerivedV::Scalar> & hit)
 {
-  using Scalar = typename DerivedV::Scalar;
   int fid;
-  if(!igl::predicates::ray_mesh_intersect(source, dir, V, F, fid)){ return false; }
-  double t, u, v;
-  igl::predicates::ray_mesh_intersect_detail::approx_hit(
-    source, dir, V.row(F(fid,0)), V.row(F(fid,1)), V.row(F(fid,2)), t, u, v);
-  hit = { fid, -1, (Scalar)u, (Scalar)v, (Scalar)t };
+  if(!igl::exact_ray_mesh_intersect(source, dir, V, F, fid)){ return false; }
+  hit = igl::exact_ray_mesh_intersect_detail::approximate_hit(source, dir, V, F, fid);
   return true;
 }
 
@@ -194,49 +180,46 @@ template <
   typename Deriveddir,
   typename DerivedV,
   typename DerivedF>
-IGL_INLINE bool igl::predicates::ray_mesh_intersect_all(
+IGL_INLINE bool igl::exact_ray_mesh_intersect_all(
   const Eigen::MatrixBase<Derivedsource> & source,
   const Eigen::MatrixBase<Deriveddir> & dir,
   const Eigen::MatrixBase<DerivedV> & V,
   const Eigen::MatrixBase<DerivedF> & F,
   std::vector<igl::Hit<typename DerivedV::Scalar>> & hits)
 {
-  using Scalar = typename DerivedV::Scalar;
   std::vector<int> fids;
-  igl::predicates::ray_mesh_intersect_all(source, dir, V, F, fids);
+  igl::exact_ray_mesh_intersect_all(source, dir, V, F, fids);
   hits.clear();
   hits.reserve(fids.size());
   for(const int fid : fids)
   {
-    double t, u, v;
-    igl::predicates::ray_mesh_intersect_detail::approx_hit(
-      source, dir, V.row(F(fid,0)), V.row(F(fid,1)), V.row(F(fid,2)), t, u, v);
-    hits.push_back({ fid, -1, (Scalar)u, (Scalar)v, (Scalar)t });
+    hits.push_back(
+      igl::exact_ray_mesh_intersect_detail::approximate_hit(source, dir, V, F, fid));
   }
   return !hits.empty();
 }
 
 #ifdef IGL_STATIC_LIBRARY
-namespace { namespace rmi_types {
+namespace { namespace ermi_types {
   using V3 = Eigen::Matrix<double,3,1,0,3,1>;    // Vector3d
   using R3 = Eigen::Matrix<double,1,3,1,1,3>;    // RowVector3d
   using MXd = Eigen::Matrix<double,-1,-1,0,-1,-1>;
   using MXi = Eigen::Matrix<int,-1,-1,0,-1,-1>;
 }}
-#define IGL_RMI(S,D,V,F) \
-  template bool igl::predicates::ray_mesh_intersect<S,D,V,F>( \
+#define IGL_ERMI(S,D,V,F) \
+  template bool igl::exact_ray_mesh_intersect<S,D,V,F>( \
     const Eigen::MatrixBase<S>&, const Eigen::MatrixBase<D>&, \
     const Eigen::MatrixBase<V>&, const Eigen::MatrixBase<F>&, int&); \
-  template bool igl::predicates::ray_mesh_intersect_all<S,D,V,F>( \
+  template bool igl::exact_ray_mesh_intersect_all<S,D,V,F>( \
     const Eigen::MatrixBase<S>&, const Eigen::MatrixBase<D>&, \
     const Eigen::MatrixBase<V>&, const Eigen::MatrixBase<F>&, std::vector<int>&); \
-  template bool igl::predicates::ray_mesh_intersect<S,D,V,F>( \
+  template bool igl::exact_ray_mesh_intersect<S,D,V,F>( \
     const Eigen::MatrixBase<S>&, const Eigen::MatrixBase<D>&, \
     const Eigen::MatrixBase<V>&, const Eigen::MatrixBase<F>&, igl::Hit<V::Scalar>&); \
-  template bool igl::predicates::ray_mesh_intersect_all<S,D,V,F>( \
+  template bool igl::exact_ray_mesh_intersect_all<S,D,V,F>( \
     const Eigen::MatrixBase<S>&, const Eigen::MatrixBase<D>&, \
     const Eigen::MatrixBase<V>&, const Eigen::MatrixBase<F>&, std::vector<igl::Hit<V::Scalar>>&);
-IGL_RMI(rmi_types::V3, rmi_types::V3, rmi_types::MXd, rmi_types::MXi)
-IGL_RMI(rmi_types::R3, rmi_types::R3, rmi_types::MXd, rmi_types::MXi)
-#undef IGL_RMI
+IGL_ERMI(ermi_types::V3, ermi_types::V3, ermi_types::MXd, ermi_types::MXi)
+IGL_ERMI(ermi_types::R3, ermi_types::R3, ermi_types::MXd, ermi_types::MXi)
+#undef IGL_ERMI
 #endif
