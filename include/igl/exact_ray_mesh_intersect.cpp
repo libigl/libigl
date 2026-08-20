@@ -8,7 +8,7 @@
 #include "exact_ray_mesh_intersect.h"
 #include "exact_ray_triangle_intersect.h"
 #include "exact_ray_triangle_hit_compare.h"
-#include "ray_triangle_intersection_parameters.h"
+#include "ray_triangle_intersect.h"
 #include "eytzinger_aabb.h"
 #include "eytzinger_aabb_ray_intersection.h"
 #include <Eigen/Core>
@@ -79,7 +79,8 @@ namespace igl { namespace exact_ray_mesh_intersect_detail
         return false;
       }
       double u, v;
-      if(!igl::ray_triangle_intersection_parameters(S, D, A, B, C, t, u, v))
+      bool parallel;
+      if(!igl::ray_triangle_intersect(S, D, A, B, C, 1e-6, t, u, v, parallel))
       {
         // Exact predicate certifies a transverse hit but the (inexact) parameter
         // could not be formed (near-parallel in double). Use +inf so this leaf
@@ -117,7 +118,8 @@ namespace igl { namespace exact_ray_mesh_intersect_detail
     const Eigen::RowVector3d S((double)source(0),(double)source(1),(double)source(2));
     const Eigen::RowVector3d D((double)dir(0),(double)dir(1),(double)dir(2));
     double t = 0, u = 0, v = 0;
-    igl::ray_triangle_intersection_parameters(S, D, A, B, C, t, u, v);
+    bool parallel;
+    igl::ray_triangle_intersect(S, D, A, B, C, 1e-6, t, u, v, parallel);
     return igl::Hit<Scalar>{ fid, -1, (Scalar)u, (Scalar)v, (Scalar)t };
   }
 }}
