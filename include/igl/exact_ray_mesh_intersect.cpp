@@ -8,15 +8,42 @@
 #include "exact_ray_mesh_intersect.h"
 #include "exact_ray_triangle_intersect.h"
 #include "exact_ray_triangle_hit_compare.h"
-#include "ray_triangle_intersect.h"
 #include "eytzinger_aabb.h"
 #include "eytzinger_aabb_ray_intersection.h"
 #include <Eigen/Core>
+#include <Eigen/Geometry>
 #include <functional>
 #include <limits>
 
 namespace igl { namespace exact_ray_mesh_intersect_detail
 {
+  // Ordinary (inexact) Möller–Trumbore solve for the intersection parameters
+  // (t,u,v). Used only to build the approximate convenience Hit record and the
+  // floating point parameter that drives the traversal's culling/ordering
+  // heuristics — never the exact classification. The only guard is the
+  // mathematically required division by an exact zero determinant (no tolerance):
+  // on inputs the exact predicate has already classified as a clean hit this
+  // essentially never triggers.
+  inline bool approx_tuv(
+    const Eigen::RowVector3d & O, const Eigen::RowVector3d & d,
+    const Eigen::RowVector3d & A, const Eigen::RowVector3d & B,
+    const Eigen::RowVector3d & C,
+    double & t, double & u, double & v)
+  {
+    const Eigen::RowVector3d e1 = B - A;
+    const Eigen::RowVector3d e2 = C - A;
+    const Eigen::RowVector3d pv = d.cross(e2);
+    const double det = e1.dot(pv);
+    if(det == 0.0){ t = u = v = 0.0; return false; }
+    const double inv = 1.0 / det;
+    const Eigen::RowVector3d tv = O - A;
+    u = tv.dot(pv) * inv;
+    const Eigen::RowVector3d qv = tv.cross(e1);
+    v = d.dot(qv) * inv;
+    t = e2.dot(qv) * inv;
+    return true;
+  }
+
   // Build the per-face Eytzinger AABB tree and run the traversal, returning the
   // hit face indices (size <= 1 when FirstOnly).
   template <
@@ -68,26 +95,30 @@ namespace igl { namespace exact_ray_mesh_intersect_detail
     {
       return Eigen::RowVector3d((double)V(i,0),(double)V(i,1),(double)V(i,2));
     };
-    const std::function<bool(const int, double &)> hit =
-      [&](const int f, double & t) -> bool
+    const std::function<bool(const int)> hit =
+      [&](const int f) -> bool
     {
-      const Eigen::RowVector3d A = row(F(f,0));
-      const Eigen::RowVector3d B = row(F(f,1));
-      const Eigen::RowVector3d C = row(F(f,2));
-      if(!igl::exact_ray_triangle_intersect(S, D, A, B, C))
-      {
-        return false;
-      }
-      double u, v;
-      bool parallel;
-      if(!igl::ray_triangle_intersect(S, D, A, B, C, 1e-6, t, u, v, parallel))
+      // Only clean transverse hits count. Coplanar configurations cannot be
+      // ordered with these exact predicates (their intersection is a segment,
+      // not a point), so they are treated as non-hits.
+      return igl::exact_ray_triangle_intersect(
+        S, D, row(F(f,0)), row(F(f,1)), row(F(f,2))) ==
+        igl::RayTriangleIntersection::Hit;
+    };
+    // Approximate ray parameter, only ever requested (lazily) as the first-hit
+    // pruning bound. Never called for the _all query.
+    const std::function<double(const int)> distance =
+      [&](const int f) -> double
+    {
+      double t, u, v;
+      if(!approx_tuv(S, D, row(F(f,0)), row(F(f,1)), row(F(f,2)), t, u, v))
       {
         // Exact predicate certifies a transverse hit but the (inexact) parameter
-        // could not be formed (near-parallel in double). Use +inf so this leaf
+        // could not be formed (det rounds to exactly zero). Use +inf so this leaf
         // never tightens the pruning bound; exact `before` still orders it.
-        t = std::numeric_limits<double>::infinity();
+        return std::numeric_limits<double>::infinity();
       }
-      return true;
+      return t;
     };
     const std::function<bool(const int, const int)> before =
       [&](const int f1, const int f2) -> bool
@@ -99,7 +130,7 @@ namespace igl { namespace exact_ray_mesh_intersect_detail
     };
 
     igl::eytzinger_aabb_ray_intersection<FirstOnly>(
-      S, D, hit, before, B1, B2, leaf, fids);
+      S, D, hit, distance, before, B1, B2, leaf, fids);
   }
 
   // Construct an approximate hit record for face fid.
@@ -118,8 +149,7 @@ namespace igl { namespace exact_ray_mesh_intersect_detail
     const Eigen::RowVector3d S((double)source(0),(double)source(1),(double)source(2));
     const Eigen::RowVector3d D((double)dir(0),(double)dir(1),(double)dir(2));
     double t = 0, u = 0, v = 0;
-    bool parallel;
-    igl::ray_triangle_intersect(S, D, A, B, C, 1e-6, t, u, v, parallel);
+    approx_tuv(S, D, A, B, C, t, u, v);
     return igl::Hit<Scalar>{ fid, -1, (Scalar)u, (Scalar)v, (Scalar)t };
   }
 }}

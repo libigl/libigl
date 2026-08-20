@@ -38,6 +38,36 @@ TEST_CASE("exact_ray_mesh_intersect: one_triangle", "[igl]")
   REQUIRE_FALSE(igl::exact_ray_mesh_intersect(off, dir, V, F, fid));
 }
 
+TEST_CASE("exact_ray_triangle_intersect: classification", "[igl]")
+{
+  using RTI = igl::RayTriangleIntersection;
+  // Triangle in the z = 0 plane.
+  Eigen::RowVector3d A(0,0,0), B(1,0,0), C(0,1,0);
+
+  // Clean transverse hit through the interior.
+  REQUIRE(igl::exact_ray_triangle_intersect(
+    Eigen::RowVector3d(0.25,0.25,-1), Eigen::RowVector3d(0,0,1), A,B,C) == RTI::Hit);
+  // Transverse but misses the triangle.
+  REQUIRE(igl::exact_ray_triangle_intersect(
+    Eigen::RowVector3d(5,5,-1), Eigen::RowVector3d(0,0,1), A,B,C) == RTI::None);
+  // Points away (t < 0).
+  REQUIRE(igl::exact_ray_triangle_intersect(
+    Eigen::RowVector3d(0.25,0.25,-1), Eigen::RowVector3d(0,0,-1), A,B,C) == RTI::None);
+  // Direction parallel to the plane, origin in the plane -> coplanar.
+  REQUIRE(igl::exact_ray_triangle_intersect(
+    Eigen::RowVector3d(-1,0.25,0), Eigen::RowVector3d(1,0,0), A,B,C) == RTI::Coplanar);
+  // Direction parallel to the plane, origin off the plane -> no intersection.
+  REQUIRE(igl::exact_ray_triangle_intersect(
+    Eigen::RowVector3d(-1,0.25,5), Eigen::RowVector3d(1,0,0), A,B,C) == RTI::None);
+
+  // A coplanar triangle is ignored by the mesh query (classified as no-hit).
+  Eigen::MatrixXd V(3,3); V.row(0)=A; V.row(1)=B; V.row(2)=C;
+  Eigen::MatrixXi F(1,3); F<<0,1,2;
+  int fid;
+  REQUIRE_FALSE(igl::exact_ray_mesh_intersect(
+    Eigen::Vector3d(-1,0.25,0), Eigen::Vector3d(1,0,0), V, F, fid));
+}
+
 TEST_CASE("exact_ray_mesh_intersect: ordering", "[igl]")
 {
   // Three parallel triangles at z = 3, 1, 2 (deliberately out of index order).
@@ -104,7 +134,8 @@ TEST_CASE("exact_ray_mesh_intersect: tree_matches_bruteforce", "[igl]")
     for(int f = 0; f < nf; f++)
     {
       if(igl::exact_ray_triangle_intersect(
-           s,d,R(F(f,0)),R(F(f,1)),R(F(f,2))))
+           s,d,R(F(f,0)),R(F(f,1)),R(F(f,2))) ==
+         igl::RayTriangleIntersection::Hit)
       { bf.push_back(f); }
     }
     std::sort(bf.begin(), bf.end(), tri_before);
