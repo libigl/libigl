@@ -13,7 +13,7 @@ template <
   typename DerivedS,
   typename DerivedD,
   typename DerivedA>
-IGL_INLINE bool igl::exact_ray_triangle_intersect(
+IGL_INLINE igl::RayTriangleIntersection igl::exact_ray_triangle_intersect(
   const Eigen::MatrixBase<DerivedS> & source,
   const Eigen::MatrixBase<DerivedD> & dir,
   const Eigen::MatrixBase<DerivedA> & A,
@@ -30,7 +30,7 @@ IGL_INLINE bool igl::exact_ray_triangle_intersect(
   const double a[3]  = {(double)A(0),(double)A(1),(double)A(2)};
   const double b[3]  = {(double)B(0),(double)B(1),(double)B(2)};
   const double c[3]  = {(double)C(0),(double)C(1),(double)C(2)};
-  return k::intersects(O, dd, a, b, c);
+  return static_cast<igl::RayTriangleIntersection>(k::classify(O, dd, a, b, c));
 }
 
 #ifdef IGL_STATIC_LIBRARY
@@ -39,7 +39,7 @@ namespace { namespace erti_types {
   using R3 = Eigen::Matrix<double,1,3,1,1,3>;   // RowVector3d
 }}
 #define IGL_ERTI(S,D,A) \
-  template bool igl::exact_ray_triangle_intersect<S,D,A>( \
+  template igl::RayTriangleIntersection igl::exact_ray_triangle_intersect<S,D,A>( \
     const Eigen::MatrixBase<S>&, const Eigen::MatrixBase<D>&, \
     const Eigen::MatrixBase<A>&, const Eigen::MatrixBase<A>&, const Eigen::MatrixBase<A>&);
 IGL_ERTI(erti_types::V3, erti_types::V3, erti_types::R3)

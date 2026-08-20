@@ -245,32 +245,43 @@ namespace igl
       return c;
     }
 
-    // Exact boolean: does the ray {O + t*d : t >= 0} transversally intersect the
-    // triangle (A,B,C)?  Returns false for the coplanar (parallel) degeneracy.
-    inline bool intersects(
+    // Exact 3-way classification of the ray {O + t*d : t >= 0} against triangle
+    // (A,B,C).  Returns:
+    //   0  no intersection
+    //   1  clean (transverse) intersection with t >= 0
+    //   2  coplanar: the ray lies exactly in the triangle's supporting plane
+    // Every branch is decided by exact determinant signs; there are no
+    // tolerances.
+    inline int classify(
       const double * O, const double * d,
       const double * A, const double * B, const double * C)
     {
       const Column cd = raw(d);
       const Column eAB = difference(B, A);
       const Column eAC = difference(C, A);
-      // Denominator D' = det(d, B-A, C-A).  Zero => ray parallel to triangle plane.
+      // Denominator D' = det(d, B-A, C-A) = d.n where n is the plane normal.
+      // Zero <=> the ray direction is parallel to the triangle's plane.
       const int Dp = det3_sign(cd, eAB, eAC);
-      if(Dp == 0){ return false; }
-      // Edge tests: g_i = det(d, Vi-O, Vj-O); for an interior/boundary crossing
-      // each shares the sign of D' (or is zero).  Any strictly opposite sign is a
-      // miss.
-      const int g0 = det3_sign(cd, difference(A, O), difference(B, O));
-      if(g0 == -Dp){ return false; }
-      const int g1 = det3_sign(cd, difference(B, O), difference(C, O));
-      if(g1 == -Dp){ return false; }
-      const int g2 = det3_sign(cd, difference(C, O), difference(A, O));
-      if(g2 == -Dp){ return false; }
-      // t = -a/D' with a = det(B-A, C-A, O-A) = n.(O-A).  t >= 0 <=> a == 0 or
-      // sign(a) == -sign(D').
+      // a = det(B-A, C-A, O-A) = n.(O-A): signed position of O w.r.t. the plane.
       const int a = det3_sign(eAB, eAC, difference(O, A));
-      if(!(a == 0 || a == -Dp)){ return false; }
-      return true;
+      if(Dp == 0)
+      {
+        // Direction parallel to the plane.  If O is also in the plane (a == 0)
+        // the whole ray is coplanar; otherwise it can never meet the plane.
+        return (a == 0) ? 2 : 0;
+      }
+      // Transverse.  Edge tests: g_i = det(d, Vi-O, Vj-O); for an interior or
+      // boundary crossing each shares the sign of D' (or is zero).  Any strictly
+      // opposite sign is a miss.
+      const int g0 = det3_sign(cd, difference(A, O), difference(B, O));
+      if(g0 == -Dp){ return 0; }
+      const int g1 = det3_sign(cd, difference(B, O), difference(C, O));
+      if(g1 == -Dp){ return 0; }
+      const int g2 = det3_sign(cd, difference(C, O), difference(A, O));
+      if(g2 == -Dp){ return 0; }
+      // t = -a/D'.  t >= 0 <=> a == 0 or sign(a) == -sign(D').
+      if(!(a == 0 || a == -Dp)){ return 0; }
+      return 1;
     }
 
     // Fill num/den expansions with t = num/den for a single triangle, normalized

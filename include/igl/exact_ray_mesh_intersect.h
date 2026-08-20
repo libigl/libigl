@@ -15,13 +15,24 @@
 namespace igl
 {
   /// Shoot a ray against a mesh (V,F) and robustly determine the first (closest)
-  /// intersected triangle using only exact sign predicates. The intersection is
-  /// classified — which triangle is hit and in what order — exactly with respect
-  /// to the mathematical ray defined by the floating point `source` and `dir`;
-  /// no intersection location or ray parameter is ever constructed (constructing
-  /// them would be inexact). Only transverse intersections are reported (a ray
-  /// coplanar with a triangle is treated as a non-hit, see
-  /// exact_ray_triangle_intersect). Coordinates must be `float` or `double`.
+  /// intersected triangle using only exact sign predicates. The classification —
+  /// which triangle is hit and in what order — is exact with respect to the
+  /// mathematical ray defined by the floating point `source` and `dir`; there are
+  /// no tolerances or fudge factors, and no intersection location or ray parameter
+  /// is ever constructed for that decision (constructing it would be inexact).
+  /// Coordinates must be `float` or `double`.
+  ///
+  /// Only clean transverse hits are reported. A triangle the ray is coplanar with
+  /// (exact_ray_triangle_intersect returns Coplanar) has a segment-valued
+  /// intersection that cannot be ordered against point hits with these predicates,
+  /// so it is deliberately ignored (classified as no-hit).
+  ///
+  /// This exactness is expensive: the exact per-triangle predicates dominate, so
+  /// as a rough guide it runs one to two orders of magnitude slower than
+  /// igl::ray_mesh_intersect (~40× on a 1k-face mesh in local benchmarks; the
+  /// AABB tree recovers some of that for first-hit queries on larger meshes).
+  /// Prefer igl::ray_mesh_intersect / igl::AABB unless exact classification is
+  /// required.
   ///
   /// @param[in] source  3-vector origin of ray
   /// @param[in] dir     3-vector direction of ray

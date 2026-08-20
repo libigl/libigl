@@ -19,7 +19,8 @@ template <
 IGL_INLINE void igl::eytzinger_aabb_ray_intersection(
   const Eigen::MatrixBase<Derivedsource> & source,
   const Eigen::MatrixBase<Deriveddir> & dir,
-  const std::function<bool(const int, typename DerivedB::Scalar &)> & hit,
+  const std::function<bool(const int)> & hit,
+  const std::function<typename DerivedB::Scalar(const int)> & distance,
   const std::function<bool(const int, const int)> & before,
   const Eigen::MatrixBase<DerivedB> & B1,
   const Eigen::MatrixBase<DerivedB> & B2,
@@ -101,15 +102,16 @@ IGL_INLINE void igl::eytzinger_aabb_ray_intersection(
     const int l = (int)leaf(i);
     if(l >= 0)
     {
-      Scalar t;
-      if(hit(l, t))
+      if(hit(l))
       {
         if(FirstOnly)
         {
+          // Only the closest hit's parameter is needed (as the pruning bound), so
+          // evaluate `distance` lazily — never for hits that are not the new best.
           if(best < 0 || before(l, best))
           {
             best = l;
-            best_t = t;
+            best_t = distance(l);
           }
         }else
         {
@@ -164,7 +166,8 @@ IGL_INLINE void igl::eytzinger_aabb_ray_intersection(
     Eigen::Matrix<double,-1,3,0,-1,3>, Eigen::Matrix<int,-1,1,0,-1,1>>( \
     const Eigen::MatrixBase<Eigen::Matrix<double,1,3,1,1,3>>&, \
     const Eigen::MatrixBase<Eigen::Matrix<double,1,3,1,1,3>>&, \
-    const std::function<bool(const int, double&)>&, \
+    const std::function<bool(const int)>&, \
+    const std::function<double(const int)>&, \
     const std::function<bool(const int, const int)>&, \
     const Eigen::MatrixBase<Eigen::Matrix<double,-1,3,0,-1,3>>&, \
     const Eigen::MatrixBase<Eigen::Matrix<double,-1,3,0,-1,3>>&, \

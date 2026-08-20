@@ -28,10 +28,13 @@ namespace igl
   ///   primitive sorted by `before`.
   /// @param[in] source  dim-vector origin of ray
   /// @param[in] dir     dim-vector direction of ray
-  /// @param[in] hit     function handle `hit(i, t_approx)` returning true if the
-  ///   ray intersects primitive i and, when true, setting `t_approx` (of the box
-  ///   scalar type) to an approximate ray parameter used only for culling/ordering
-  ///   (std::function so this routine can be instantiated with local lambdas)
+  /// @param[in] hit     function handle `hit(i)` returning true if the ray
+  ///   intersects primitive i (std::function so this routine can be instantiated
+  ///   with local lambdas)
+  /// @param[in] distance  function handle `distance(i)` returning an approximate
+  ///   (floating point) ray parameter for primitive i, used only as the first-hit
+  ///   pruning bound. It is evaluated lazily — only when primitive i becomes the
+  ///   current closest hit — and never at all when FirstOnly is false.
   /// @param[in] before  function handle `before(i, j)` returning true if
   ///   primitive i's hit is strictly closer than primitive j's (exact)
   /// @param[in] B1  #B by dim list of minimum corners of the Eytzinger AABBs
@@ -51,7 +54,8 @@ namespace igl
   IGL_INLINE void eytzinger_aabb_ray_intersection(
     const Eigen::MatrixBase<Derivedsource> & source,
     const Eigen::MatrixBase<Deriveddir> & dir,
-    const std::function<bool(const int, typename DerivedB::Scalar &)> & hit,
+    const std::function<bool(const int)> & hit,
+    const std::function<typename DerivedB::Scalar(const int)> & distance,
     const std::function<bool(const int, const int)> & before,
     const Eigen::MatrixBase<DerivedB> & B1,
     const Eigen::MatrixBase<DerivedB> & B2,
