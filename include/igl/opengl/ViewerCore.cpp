@@ -499,8 +499,18 @@ IGL_INLINE void igl::opengl::ViewerCore::set_rotation_type(
   if(rotation_type == ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP &&
     old_rotation_type != ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP)
   {
-    snap_to_fixed_up(Eigen::Quaternionf(trackball_angle),trackball_angle);
+    snap_to_fixed_up(Eigen::Quaternionf(trackball_angle), rotation_axis_up, trackball_angle);
   }
+}
+
+IGL_INLINE void igl::opengl::ViewerCore::set_rotation_axis_up(
+    const Eigen::Vector3f & axis)
+{
+    rotation_axis_up = axis;
+    if(rotation_type == ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP)
+    {
+        snap_to_fixed_up(Eigen::Quaternionf(trackball_angle), rotation_axis_up, trackball_angle);
+    }
 }
 
 IGL_INLINE void igl::opengl::ViewerCore::set(unsigned int &property_mask, bool value) const
@@ -543,6 +553,7 @@ IGL_INLINE igl::opengl::ViewerCore::ViewerCore()
   // Default trackball
   trackball_angle = Eigen::Quaternionf::Identity();
   rotation_type = ViewerCore::ROTATION_TYPE_TRACKBALL;
+  rotation_axis_up << 0, 1, 0;
   set_rotation_type(ViewerCore::ROTATION_TYPE_TWO_AXIS_VALUATOR_FIXED_UP);
 
   // Camera parameters
