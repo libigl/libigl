@@ -20,7 +20,6 @@ IGL_INLINE void igl::eytzinger_aabb_ray_intersection(
   const Eigen::MatrixBase<Derivedsource> & source,
   const Eigen::MatrixBase<Deriveddir> & dir,
   const std::function<bool(const int)> & hit,
-  const std::function<typename DerivedB::Scalar(const int)> & distance,
   const std::function<bool(const int, const int)> & before,
   const Eigen::MatrixBase<DerivedB> & B1,
   const Eigen::MatrixBase<DerivedB> & B2,
@@ -79,25 +78,17 @@ IGL_INLINE void igl::eytzinger_aabb_ray_intersection(
   }
 
   int best = -1;
-  Scalar best_t = inf;
 
-  // Depth-first traversal.  Entries carry the box's conservative entry distance so
-  // subtrees that certainly start beyond the current best can be pruned.
-  std::vector<std::pair<int,Scalar>> stack;
+  // Depth-first traversal. Nearer child is visited first (a floating point
+  // heuristic that never affects the result); whether a subtree is skipped is
+  // decided by `prune`.
+  std::vector<int> stack;
   stack.reserve(64);
-  stack.emplace_back(0, Scalar(0));
+  stack.push_back(0);
   while(!stack.empty())
   {
-    const auto [i, tnear] = stack.back();
+    const int i = stack.back();
     stack.pop_back();
-
-    if(FirstOnly && best >= 0)
-    {
-      // Safety margin absorbs the floating point error in best_t (an approximate
-      // parameter of an actual hit) and in tnear.
-      const Scalar margin = releps * (std::abs(best_t) + Scalar(1));
-      if(tnear > best_t + margin){ continue; }
-    }
 
     const int l = (int)leaf(i);
     if(l >= 0)
@@ -106,13 +97,7 @@ IGL_INLINE void igl::eytzinger_aabb_ray_intersection(
       {
         if(FirstOnly)
         {
-          // Only the closest hit's parameter is needed (as the pruning bound), so
-          // evaluate `distance` lazily — never for hits that are not the new best.
-          if(best < 0 || before(l, best))
-          {
-            best = l;
-            best_t = distance(l);
-          }
+          if(best < 0 || before(l, best)){ best = l; }
         }else
         {
           hits.push_back(l);
@@ -132,19 +117,19 @@ IGL_INLINE void igl::eytzinger_aabb_ray_intersection(
     {
       if(tl <= tr)
       {
-        stack.emplace_back(right_i, tr);
-        stack.emplace_back(left_i,  tl);
+        stack.push_back(right_i);
+        stack.push_back(left_i);
       }else
       {
-        stack.emplace_back(left_i,  tl);
-        stack.emplace_back(right_i, tr);
+        stack.push_back(left_i);
+        stack.push_back(right_i);
       }
     }else if(ok_l)
     {
-      stack.emplace_back(left_i, tl);
+      stack.push_back(left_i);
     }else if(ok_r)
     {
-      stack.emplace_back(right_i, tr);
+      stack.push_back(right_i);
     }
   }
 
@@ -167,7 +152,6 @@ IGL_INLINE void igl::eytzinger_aabb_ray_intersection(
     const Eigen::MatrixBase<Eigen::Matrix<double,1,3,1,1,3>>&, \
     const Eigen::MatrixBase<Eigen::Matrix<double,1,3,1,1,3>>&, \
     const std::function<bool(const int)>&, \
-    const std::function<double(const int)>&, \
     const std::function<bool(const int, const int)>&, \
     const Eigen::MatrixBase<Eigen::Matrix<double,-1,3,0,-1,3>>&, \
     const Eigen::MatrixBase<Eigen::Matrix<double,-1,3,0,-1,3>>&, \
