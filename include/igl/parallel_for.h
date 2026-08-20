@@ -62,6 +62,7 @@ namespace igl
     const Index loop_size,
     const FunctionType & func,
     const size_t min_parallel=0);
+
   /// Functional implementation of an open-mp style, parallel for loop with
   /// accumulation. For example, serial code separated into n chunks (each to be
   /// parallelized with a thread) might look like:
@@ -118,6 +119,123 @@ namespace igl
 #include <thread>
 #include <vector>
 #include <algorithm>
+#include <queue>
+#include <mutex>
+#include <condition_variable>
+#include <atomic>
+
+namespace igl {
+namespace internal
+{
+
+inline bool & worker_flag()
+{
+  static thread_local bool flag = false;
+  return flag;
+}
+
+inline bool is_worker_thread()
+{
+  return worker_flag();
+}
+
+inline void set_worker_thread(bool v)
+{
+  worker_flag() = v;
+}
+
+} // namespace internal
+} // namespace igl
+
+namespace igl {
+namespace internal
+{
+
+// Simple shared thread pool using only std::
+class ThreadPool
+{
+public:
+  using Task = std::function<void()>;
+
+  // First call fixes the pool size; later calls ignore nthreads_hint.
+  static ThreadPool & instance(size_t nthreads_hint)
+  {
+    static ThreadPool pool(nthreads_hint);
+    return pool;
+  }
+
+  size_t size() const
+  {
+    return workers.size();
+  }
+
+  void enqueue(Task task)
+  {
+    {
+      std::unique_lock<std::mutex> lock(mutex);
+      tasks.emplace(std::move(task));
+    }
+    cv.notify_one();
+  }
+
+private:
+  ThreadPool(size_t nthreads_hint)
+    : stop(false)
+  {
+    size_t nthreads = nthreads_hint == 0 ? 1 : nthreads_hint;
+    workers.reserve(nthreads);
+    for(size_t i = 0; i < nthreads; ++i)
+    {
+      workers.emplace_back([this]()
+          {
+          igl::internal::set_worker_thread(true); // <- mark this thread as a pool worker
+
+          for(;;)
+          {
+          Task task;
+          {
+          std::unique_lock<std::mutex> lock(mutex);
+          cv.wait(lock, [this]()
+              {
+              return stop || !tasks.empty();
+              });
+
+          if(stop && tasks.empty())
+          {
+          return;
+          }
+
+          task = std::move(tasks.front());
+          tasks.pop();
+          }
+          task();
+          }
+          });
+    }
+  }
+
+  ~ThreadPool()
+  {
+    {
+      std::unique_lock<std::mutex> lock(mutex);
+      stop = true;
+    }
+    cv.notify_all();
+    for(std::thread & t : workers)
+    {
+      if(t.joinable()) t.join();
+    }
+  }
+
+  std::vector<std::thread> workers;
+  std::queue<Task> tasks;
+  mutable std::mutex mutex;
+  std::condition_variable cv;
+  bool stop;
+};
+
+} // namespace internal
+} // namespace igl
 
 template<typename Index, typename FunctionType >
 inline bool igl::parallel_for(
@@ -125,12 +243,13 @@ inline bool igl::parallel_for(
   const FunctionType & func,
   const size_t min_parallel)
 {
-  // no op preparation/accumulation
-  const auto & no_op = [](const size_t /*n/t*/){};
+  // no-op preparation/accumulation
+  const auto & no_op = [](const size_t /*n_or_t*/){};
   // two-parameter wrapper ignoring thread id
-  const auto & wrapper = [&func](Index i,size_t /*t*/){ func(i); };
-  return parallel_for(loop_size,no_op,wrapper,no_op,min_parallel);
+  const auto & wrapper = [&func](Index i, size_t /*t*/){ func(i); };
+  return parallel_for(loop_size, no_op, wrapper, no_op, min_parallel);
 }
+
 
 template<
   typename Index,
@@ -144,66 +263,108 @@ inline bool igl::parallel_for(
   const AccumFunctionType & accum_func,
   const size_t min_parallel)
 {
-  assert(loop_size>=0);
-  if(loop_size==0) return false;
-  // Estimate number of threads in the pool
-  // http://ideone.com/Z7zldb
-#ifdef IGL_PARALLEL_FOR_FORCE_SERIAL
-  const size_t nthreads = 1;
-#else
-  const size_t nthreads = igl::default_num_threads();
-#endif
-  if(loop_size<min_parallel || nthreads<=1)
+  assert(loop_size >= 0);
+  if (loop_size == 0) return false;
+
+  // If we're already inside a ThreadPool worker, run serial to avoid nested
+  // deadlock with the global pool.
+  if (igl::internal::is_worker_thread())
   {
-    // serial
     prep_func(1);
-    for(Index i = 0;i<loop_size;i++) func(i,0);
+    for (Index i = 0; i < loop_size; ++i)
+    {
+      func(i, 0);
+    }
     accum_func(0);
     return false;
-  }else
-  {
-    // Size of a slice for the range functions
-    Index slice =
-      std::max(
-        (Index)std::round((loop_size+1)/static_cast<double>(nthreads)),(Index)1);
-
-    // [Helper] Inner loop
-    const auto & range = [&func](const Index k1, const Index k2, const size_t t)
-    {
-      for(Index k = k1; k < k2; k++) func(k,t);
-    };
-    prep_func(nthreads);
-    // Create pool and launch jobs
-    std::vector<std::thread> pool;
-    pool.reserve(nthreads);
-    // Inner range extents
-    Index i1 = 0;
-    Index i2 = std::min(0 + slice, loop_size);
-    {
-      size_t t = 0;
-      for (; t+1 < nthreads && i1 < loop_size; ++t)
-      {
-        pool.emplace_back(range, i1, i2, t);
-        i1 = i2;
-        i2 = std::min(i2 + slice, loop_size);
-      }
-      if (i1 < loop_size)
-      {
-        pool.emplace_back(range, i1, loop_size, t);
-      }
-    }
-    // Wait for jobs to finish
-    for (std::thread &t : pool) if (t.joinable()) t.join();
-    // Accumulate across threads
-    for(size_t t = 0;t<nthreads;t++)
-    {
-      accum_func(t);
-    }
-    return true;
   }
+
+#ifdef IGL_PARALLEL_FOR_FORCE_SERIAL
+  const size_t configured_threads = 1;
+#else
+  const size_t configured_threads = igl::default_num_threads();
+#endif
+
+  if (loop_size < static_cast<Index>(min_parallel) || configured_threads <= 1)
+  {
+    // Serial fallback
+    prep_func(1);
+    for (Index i = 0; i < loop_size; ++i)
+    {
+      func(i, 0);
+    }
+    accum_func(0);
+    return false;
+  }
+
+  // --- Parallel branch using shared thread pool ---
+
+  auto & pool = igl::internal::ThreadPool::instance(configured_threads);
+  const size_t pool_threads = std::max<size_t>(1, pool.size());
+
+  // Match old semantics: prep called with number of *potential* threads.
+  prep_func(pool_threads);
+
+  // Number of "logical jobs" (chunks of the index range).
+  const size_t jobs = static_cast<size_t>(
+    std::min<Index>(loop_size, static_cast<Index>(pool_threads)));
+
+  struct Group
+  {
+    std::mutex mutex;
+    std::condition_variable cv;
+    std::atomic<size_t> remaining;
+  };
+
+  auto group = std::make_shared<Group>();
+  group->remaining.store(jobs, std::memory_order_relaxed);
+
+  const Index total = loop_size;
+  const Index base  = total / static_cast<Index>(jobs);
+  const Index rem   = total % static_cast<Index>(jobs);
+
+  for (size_t t = 0; t < jobs; ++t)
+  {
+    const Index start =
+      static_cast<Index>(t) * base
+      + std::min<Index>(static_cast<Index>(t), rem);
+
+    const Index end = start + base + (t < static_cast<size_t>(rem) ? 1 : 0);
+
+    pool.enqueue([group, &func, start, end, t]()
+    {
+      // Each job processes its contiguous slice [start, end)
+      for (Index k = start; k < end; ++k)
+      {
+        func(k, t);
+      }
+
+      // Signal completion of this job.
+      if (group->remaining.fetch_sub(1, std::memory_order_acq_rel) == 1)
+      {
+        std::unique_lock<std::mutex> lock(group->mutex);
+        group->cv.notify_one();
+      }
+    });
+  }
+
+  // Wait for all jobs for this parallel_for call to finish.
+  {
+    std::unique_lock<std::mutex> lock(group->mutex);
+    group->cv.wait(lock, [&group]()
+    {
+      return group->remaining.load(std::memory_order_acquire) == 0;
+    });
+  }
+
+  // Accumulate across all potential threads (same as original implementation).
+  for (size_t t = 0; t < pool_threads; ++t)
+  {
+    accum_func(t);
+  }
+
+  return true;
 }
 
-//#ifndef IGL_STATIC_LIBRARY
-//#include "parallel_for.cpp"
-//#endif
 #endif
+
