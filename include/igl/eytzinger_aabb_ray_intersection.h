@@ -31,12 +31,11 @@ namespace igl
   /// @param[in] hit     function handle `hit(i)` returning true if the ray
   ///   intersects primitive i (std::function so this routine can be instantiated
   ///   with local lambdas)
-  /// @param[in] distance  function handle `distance(i)` returning an approximate
-  ///   (floating point) ray parameter for primitive i, used only as the first-hit
-  ///   pruning bound. It is evaluated lazily — only when primitive i becomes the
-  ///   current closest hit — and never at all when FirstOnly is false.
   /// @param[in] before  function handle `before(i, j)` returning true if
-  ///   primitive i's hit is strictly closer than primitive j's (exact)
+  ///   primitive i's hit is strictly closer than primitive j's (exact). The
+  ///   closest hit / sort order is decided entirely by this exact comparator;
+  ///   only the (conservative) box cull and nearer-child-first visit order use
+  ///   ordinary floating point, and neither can change the result.
   /// @param[in] B1  #B by dim list of minimum corners of the Eytzinger AABBs
   /// @param[in] B2  #B by dim list of maximum corners of the Eytzinger AABBs
   /// @param[in] leaf #B list of leaf indices, -1 indicates internal node, -2
@@ -55,7 +54,6 @@ namespace igl
     const Eigen::MatrixBase<Derivedsource> & source,
     const Eigen::MatrixBase<Deriveddir> & dir,
     const std::function<bool(const int)> & hit,
-    const std::function<typename DerivedB::Scalar(const int)> & distance,
     const std::function<bool(const int, const int)> & before,
     const Eigen::MatrixBase<DerivedB> & B1,
     const Eigen::MatrixBase<DerivedB> & B2,

@@ -13,7 +13,6 @@
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 #include <functional>
-#include <limits>
 
 namespace igl { namespace exact_ray_mesh_intersect_detail
 {
@@ -105,21 +104,6 @@ namespace igl { namespace exact_ray_mesh_intersect_detail
         S, D, row(F(f,0)), row(F(f,1)), row(F(f,2))) ==
         igl::RayTriangleIntersection::Hit;
     };
-    // Approximate ray parameter, only ever requested (lazily) as the first-hit
-    // pruning bound. Never called for the _all query.
-    const std::function<double(const int)> distance =
-      [&](const int f) -> double
-    {
-      double t, u, v;
-      if(!approx_tuv(S, D, row(F(f,0)), row(F(f,1)), row(F(f,2)), t, u, v))
-      {
-        // Exact predicate certifies a transverse hit but the (inexact) parameter
-        // could not be formed (det rounds to exactly zero). Use +inf so this leaf
-        // never tightens the pruning bound; exact `before` still orders it.
-        return std::numeric_limits<double>::infinity();
-      }
-      return t;
-    };
     const std::function<bool(const int, const int)> before =
       [&](const int f1, const int f2) -> bool
     {
@@ -129,8 +113,13 @@ namespace igl { namespace exact_ray_mesh_intersect_detail
         row(F(f2,0)), row(F(f2,1)), row(F(f2,2))) < 0;
     };
 
+    // The closest hit and the sort order are decided by the exact `before`
+    // comparator. First-hit uses no distance pruning: benchmarks showed the exact
+    // box-entry-vs-best pruning predicate costs as much as it saves (the
+    // conservative box cull already limits traversal to the ray's neighborhood),
+    // so the simpler, pruning-free strategy is used.
     igl::eytzinger_aabb_ray_intersection<FirstOnly>(
-      S, D, hit, distance, before, B1, B2, leaf, fids);
+      S, D, hit, before, B1, B2, leaf, fids);
   }
 
   // Construct an approximate hit record for face fid.
