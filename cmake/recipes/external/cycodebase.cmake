@@ -7,7 +7,12 @@ FetchContent_Declare(
   GIT_REPOSITORY https://github.com/cemyuksel/cyCodeBase/
   GIT_TAG e36f3cffca65eb12a8a071f0443128b7de6ed75d
 )
-FetchContent_Populate(cyCodeBase)
+if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.14")
+    FetchContent_MakeAvailable(cyCodeBase)
+else()
+    FetchContent_Populate(cyCodeBase)
+endif()
+
 add_library(cyCodeBase_interface INTERFACE)
 target_include_directories(cyCodeBase_interface INTERFACE ${cycodebase_SOURCE_DIR})
 
