@@ -27,6 +27,24 @@ namespace igl
     const size_t isolevel,
     Eigen::MatrixXd & SV,
     Eigen::MatrixXi & SF);
+  /// \brief Pass stepped transforms directly. Passed to the function above with
+  /// piecewise constant interpolation. So that, if steps=3, then [0,0.25) →
+  /// transforms[0], [0.25,0.75) → transforms[1], [0.75,1] → transforms[2]. In
+  /// other words,
+  ///
+  /// transform(t) = transforms[std::min( (size_t)(t*(steps-1) + 0.5), steps-1)]
+  ///
+  /// @param[in] transforms  #steps list of rigid transformations at each time
+  /// step
+  IGL_INLINE void swept_volume(
+    const Eigen::MatrixXd & V,
+    const Eigen::MatrixXi & F,
+    const std::vector<
+      Eigen::Affine3d,Eigen::aligned_allocator<Eigen::Affine3d> > & transforms,
+    const size_t grid_res,
+    const size_t isolevel,
+    Eigen::MatrixXd & SV,
+    Eigen::MatrixXi & SF);
   
 }
 

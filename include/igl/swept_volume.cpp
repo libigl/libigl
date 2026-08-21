@@ -44,3 +44,23 @@ IGL_INLINE void igl::swept_volume(
   S.array()-=isolevel;
   marching_cubes(S,GV,res(0),res(1),res(2),0,SV,SF);
 }
+
+
+IGL_INLINE void igl::swept_volume(
+  const Eigen::MatrixXd & V,
+  const Eigen::MatrixXi & F,
+  const std::vector<
+    Eigen::Affine3d,Eigen::aligned_allocator<Eigen::Affine3d> > & transforms,
+  const size_t grid_res,
+  const size_t isolevel,
+  Eigen::MatrixXd & SV,
+  Eigen::MatrixXi & SF)
+{
+  auto transform = [&transforms](const double t)->Eigen::Affine3d
+  {
+    const size_t steps = transforms.size();
+    const size_t i = std::min((size_t)(t*(steps-1)+0.5),steps-1);
+    return transforms[i];
+  };
+  return swept_volume(V,F,transform,transforms.size(),grid_res,isolevel,SV,SF);
+}
