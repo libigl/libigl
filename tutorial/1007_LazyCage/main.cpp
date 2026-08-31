@@ -15,7 +15,8 @@
 //
 // The isosurfacing grid resolution (--grid) trades cage fidelity for speed.
 //
-// Usage: 1007_LazyCage [mesh] [--faces N] [--grid G] [--max-sigma frac] [--iters K]
+// Usage: 1007_LazyCage [mesh] [--faces N] [--grid G] [--max-sigma frac]
+//                      [--iters K] [--qslim]
 // Press ' ' to toggle the cage wireframe.
 #include <igl/opengl/glfw/Viewer.h>
 #include <igl/read_triangle_mesh.h>
@@ -36,7 +37,8 @@ int main(int argc, char *argv[])
   int num_faces = 100;
   int grid_size = 64;
   double max_sigma_frac = 0.1;
-  int num_iters = 10;
+  int num_iters = 12;
+  bool use_qslim = false;
   for(int i = 1;i<argc;i++)
   {
     const std::string a = argv[i];
@@ -44,20 +46,22 @@ int main(int argc, char *argv[])
     else if(a == "--grid" && i+1<argc) { grid_size = std::atoi(argv[++i]); }
     else if(a == "--max-sigma" && i+1<argc) { max_sigma_frac = std::atof(argv[++i]); }
     else if(a == "--iters" && i+1<argc) { num_iters = std::atoi(argv[++i]); }
+    else if(a == "--qslim") { use_qslim = true; }
     else if(a == "--batch") { /* handled below */ }
     else if(!a.empty() && a[0] != '-') { mesh_path = a; }
   }
   igl::read_triangle_mesh(mesh_path, V,F);
   const double diag = igl::bounding_box_diagonal(V);
   printf("input: %ld vertices, %ld faces\n",(long)V.rows(),(long)F.rows());
-  printf("target cage faces: %d, grid: %d\n",num_faces,grid_size);
+  printf("target cage faces: %d, grid: %d, decimation: %s\n",
+    num_faces,grid_size,use_qslim?"qslim":"shortest-edge/midpoint");
 
   Eigen::MatrixXd CV;
   Eigen::MatrixXi CF;
   double sigma = 0;
   const double t = igl::get_seconds();
   const bool ok = igl::lazy_cage(
-    V,F,num_faces,grid_size,max_sigma_frac*diag,num_iters,CV,CF,sigma);
+    V,F,num_faces,grid_size,max_sigma_frac*diag,num_iters,use_qslim,CV,CF,sigma);
   printf("lazy_cage: %s  sigma=%g (%.4f*diag)  cage faces=%ld  (%.2fs)\n",
     ok?"reached target":"FAILED (target not reached in range)",
     sigma,sigma/diag,(long)CF.rows(),igl::get_seconds()-t);
