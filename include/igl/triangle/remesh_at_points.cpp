@@ -1,14 +1,13 @@
+#include "triangulate.h"
 #include "remesh_at_points.h"
-#include "STR.h"
-#include "write_triangle_mesh.h"
-#include "unique_rows.h"
-#include "unique_edge_map.h"
-#include "triangle/triangulate.h"
-#include "PlainMatrix.h"
-#include "PlainVector.h"
-#include "find.h"
-#include "sort.h"
-#include <iostream>
+#include "../STR.h"
+#include "../write_triangle_mesh.h"
+#include "../unique_rows.h"
+#include "../unique_edge_map.h"
+#include "../PlainMatrix.h"
+#include "../PlainVector.h"
+#include "../find.h"
+#include "../sort.h"
 
 template <
   typename DerivedV, 
@@ -20,7 +19,7 @@ template <
   typename DerivedJ,
   typename DerivedK
   >
-IGL_INLINE void igl::remesh_at_points(
+IGL_INLINE void igl::triangle::remesh_at_points(
   const Eigen::MatrixBase<DerivedV> & V, 
   const Eigen::MatrixBase<DerivedF> & F, 
   const Eigen::MatrixBase<DerivedB> & B,
@@ -31,17 +30,11 @@ IGL_INLINE void igl::remesh_at_points(
   Eigen::PlainObjectBase<DerivedK> & K)
 {
   using BScalar = typename DerivedB::Scalar;
-  // static assert that B has 3 columns or Eigen::Dynamic and if Dynamic then
-  // runtime assert that it's 3
   static_assert(DerivedB::ColsAtCompileTime == 3 || DerivedB::ColsAtCompileTime == Eigen::Dynamic, "B must have 3 columns");
   assert(B.cols() == 3);
 
-  // 1. Remove any duplicate points in B and FI, track the mapping from old to
-  // new indices
   assert(B.minCoeff() >= 0 && B.maxCoeff() <= 1);
 
-  // 2. Compute whether on vertex, edge or face based on counting the number of
-  // nonzero barycentric coordinates
   const auto nnz = (B.array()>0).rowwise().count();
 
   Eigen::VectorXi EMAP, uEC, uEE;
@@ -134,18 +127,6 @@ IGL_INLINE void igl::remesh_at_points(
     FI_rep(i) = vFI[i];
   }
 
-  //Eigen::VectorXi BI = Eigen::VectorXi::LinSpaced(B.rows(),0,B.rows()-1);
-  //Eigen::VectorXi BI_rep = BI;
-  //igl::PlainMatrix<DerivedB,Eigen::Dynamic> B_rep = B;
-  //igl::PlainVector<DerivedFI,Eigen::Dynamic> FI_rep = FI;
-
-  // 3. Handle on vertex cases: just track mapping into original vertices based
-  // on F(FI(i),j) where j is the index of the nonzero barycentric coordinate
-
-  // 4. Handle on edge cases into replicated face cases. Use igl::unique_edge_map (uEE,uEC) varient. And
-  // replicate every edge case for all incident faces (mapping given barycentric
-  // coordinates to each face). Track indices of replication for de-replication
-  // later.
 
   igl::PlainVector<DerivedFI> sFI;
   Eigen::VectorXi sI;
@@ -154,17 +135,12 @@ IGL_INLINE void igl::remesh_at_points(
   Eigen::VectorXi sBI = BI_rep(sI);
   
 
-  // 5. Gather points on each face and retriangulate them independently using
-  // igl::delaunay_triangulation or 
-  //
-  // Assert that on-edge points ended up on edges.
   int start = 0;
   int iter = 0;
 
 
   FF.resize(F.rows() + 2*sB.rows(), 3);
   J.resize(FF.rows());
-  //printf("guessing that |FF| = %d = %d + 2*%d\n", FF.rows(), F.rows(), B.rows());
   const int empty_count = empty.count();
   const std::vector<int> J_empty = igl::find(empty);
   FF.topRows( empty_count ) = F(J_empty, Eigen::placeholders::all);
@@ -174,8 +150,6 @@ IGL_INLINE void igl::remesh_at_points(
   {
     int end = start+1;
     while(end < sFI.rows() && sFI(end) == sFI(start) ) { end++; }
-    //printf("%d: ",iter);
-    //std::cout<<sFI.segment(start, end-start).transpose()<<std::endl;
 
     igl::PlainMatrix<DerivedB,Eigen::Dynamic> BBi_in(3 + (end-start),3);
     BBi_in.row(0) << 1,0,0;
@@ -215,7 +189,6 @@ IGL_INLINE void igl::remesh_at_points(
     //igl::write_triangle_mesh(STR("remesh_at_points_output-" << sBI(start) << ".ply"),BBi3,FFi);
     assert(BBi_in.rows() == BBi.rows());
 
-    //printf("  %d\n",FFi.rows());
     if(nf + FFi.rows() > FF.rows())
     {
       FF.conservativeResize(2*FF.rows() + FFi.rows(),3);
@@ -236,7 +209,6 @@ IGL_INLINE void igl::remesh_at_points(
       }
     }
     J.segment(nf, FFi.rows()).setConstant(sFI(start));
-    //printf("%d (%d | %d) %d new faces\n", iter,sFI(start),empty[sFI(start)], FFi.rows());
     nf += FFi.rows();
 
     start = end;
@@ -244,11 +216,10 @@ IGL_INLINE void igl::remesh_at_points(
   }
   FF.conservativeResize(nf,3);
   J.conservativeResize(FF.rows());
-  //printf("FF.rows() = %d\n",FF.rows());
 }
 
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instantiation
-template void igl::remesh_at_points<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>>(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1>> const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>>&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1>>&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1>>&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1>>&);
+template void igl::triangle::remesh_at_points<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>>(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1>> const&, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>>&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, -1, 0, -1, -1>>&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1>>&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1>>&);
 #endif
