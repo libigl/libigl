@@ -131,6 +131,7 @@ if(LIBIGL_TUTORIALS_CHAPTER9)
     igl_add_tutorial(908_IntersectionBlockingDecimation igl::glfw igl::predicates)
     igl_add_tutorial(909_BatchMarchingCubes igl::glfw)
     igl_add_tutorial(910_OrientedBoundingBox igl::glfw igl_copyleft::cgal)
+    igl_add_tutorial(911_ConstrainedDecimation igl::glfw igl::predicates)
 endif()
 
 if(LIBIGL_TUTORIALS_CHAPTER10)
