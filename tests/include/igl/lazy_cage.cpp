@@ -3,6 +3,7 @@
 #include <igl/read_triangle_mesh.h>
 #include <igl/bounding_box_diagonal.h>
 #include <igl/signed_distance.h>
+#include <igl/centroid.h>
 #include <igl/AABB.h>
 #include <igl/tri_tri_intersect.h>
 #include <Eigen/Core>
@@ -82,7 +83,8 @@ TEST_CASE("lazy_cage: encloses input", "[igl]")
   // A cube must round out enough to be decimated this aggressively, so allow a
   // generous offset range.
   const bool ok = igl::lazy_cage(
-    V,F,num_faces,grid_size,0.5*diag,8,/*use_qslim=*/false,CV,CF,sigma);
+    V,F,num_faces,grid_size,0.5*diag,8,/*use_qslim=*/false,
+    igl::LAZY_CAGE_METRIC_SIGMA,CV,CF,sigma);
 
   REQUIRE(ok);
   REQUIRE(CF.rows() > 0);
@@ -126,7 +128,41 @@ TEST_CASE("lazy_cage: qslim variant is valid", "[igl]")
   double sigma = -1;
   const bool ok = igl::lazy_cage(
     V,F,/*num_faces=*/40,/*grid=*/24,/*max_sigma=*/0.5*diag,/*iters=*/8,
-    /*use_qslim=*/true,CV,CF,sigma);
+    /*use_qslim=*/true,igl::LAZY_CAGE_METRIC_SIGMA,CV,CF,sigma);
   REQUIRE(ok);
   require_valid_cage(V,F,CV,CF);
+}
+
+// The volume metric may select a larger σ than the σ metric if that yields a
+// smaller-volume cage; either way the result must be a valid cage no larger in
+// volume than the minimum-σ cage.
+TEST_CASE("lazy_cage: volume metric is valid and no worse", "[igl]")
+{
+  Eigen::MatrixXd V;
+  Eigen::MatrixXi F;
+  igl::read_triangle_mesh(test_common::data_path("bunny_small.off"),V,F);
+  const double diag = igl::bounding_box_diagonal(V);
+  const int num_faces = 800;
+  const int grid_size = 48;
+
+  Eigen::MatrixXd CVs, CVv;
+  Eigen::MatrixXi CFs, CFv;
+  double sig_s=-1, sig_v=-1;
+  REQUIRE(igl::lazy_cage(
+    V,F,num_faces,grid_size,0.1*diag,10,false,
+    igl::LAZY_CAGE_METRIC_SIGMA,CVs,CFs,sig_s));
+  REQUIRE(igl::lazy_cage(
+    V,F,num_faces,grid_size,0.1*diag,10,false,
+    igl::LAZY_CAGE_METRIC_VOLUME,CVv,CFv,sig_v));
+
+  require_valid_cage(V,F,CVv,CFv);
+
+  const auto volume = [](const Eigen::MatrixXd & CV, const Eigen::MatrixXi & CF)
+  {
+    Eigen::RowVector3d c; double vol=0; igl::centroid(CV,CF,c,vol);
+    return std::abs(vol);
+  };
+  // The volume-optimal cage is at least as good (up to tiny tolerance) as the
+  // minimum-σ cage under the volume objective.
+  REQUIRE(volume(CVv,CFv) <= volume(CVs,CFs)*(1.0+1e-9));
 }

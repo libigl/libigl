@@ -14,9 +14,12 @@
 #include "block_self_intersections.h"
 #include "block_intersections_with_input.h"
 #include "bounding_box_diagonal.h"
+#include "centroid.h"
+#include "doublearea.h"
 #include "AABB.h"
 #include "tri_tri_intersect.h"
 #include <Eigen/Geometry>
+#include <cmath>
 #include <limits>
 #include <vector>
 
@@ -57,6 +60,33 @@ namespace
     }
     return false;
   }
+
+  // Objective value of a valid cage (smaller is better) under `metric`.
+  double cage_metric(
+    const Eigen::MatrixXd & CV,
+    const Eigen::MatrixXi & CF,
+    const double s,
+    const igl::LazyCageMetric metric)
+  {
+    switch(metric)
+    {
+      case igl::LAZY_CAGE_METRIC_VOLUME:
+      {
+        Eigen::RowVector3d c; double vol = 0;
+        igl::centroid(CV,CF,c,vol);
+        return std::abs(vol);
+      }
+      case igl::LAZY_CAGE_METRIC_SURFACE_AREA:
+      {
+        Eigen::VectorXd dblA;
+        igl::doublearea(CV,CF,dblA);
+        return 0.5*dblA.sum();
+      }
+      case igl::LAZY_CAGE_METRIC_SIGMA:
+      default:
+        return s;
+    }
+  }
 }
 
 IGL_INLINE bool igl::lazy_cage(
@@ -67,6 +97,7 @@ IGL_INLINE bool igl::lazy_cage(
   const double max_sigma,
   const int num_iters,
   const bool use_qslim,
+  const LazyCageMetric metric,
   Eigen::MatrixXd & CV,
   Eigen::MatrixXi & CF,
   double & sigma)
@@ -139,7 +170,8 @@ IGL_INLINE bool igl::lazy_cage(
 
   // Bisection for the smallest σ that still yields a valid cage. `lo` is kept as
   // a known (assumed) failure and is never evaluated at 0 (where the offset
-  // coincides with the input).
+  // coincides with the input). This is the answer for the σ metric and the
+  // lower end of the sweep for the volume/area metrics.
   double lo = 0.0;
   for(int it = 0; it < num_iters; it++)
   {
@@ -155,6 +187,28 @@ IGL_INLINE bool igl::lazy_cage(
       lo = mid;
     }
   }
+  if(metric == LAZY_CAGE_METRIC_SIGMA) { return true; }
+
+  // Volume / surface area are not monotonic in σ: giving decimation more room
+  // (a larger offset) can remove more volume/area than the tightest offset
+  // allows. Sweep σ from the valid floor up to max_sigma and keep the best.
+  double best = cage_metric(CV,CF,sigma,metric);
+  const double floor_sigma = sigma;
+  for(int i = 1; i <= num_iters; i++)
+  {
+    const double s = floor_sigma + (max_sigma-floor_sigma)*(double(i)/num_iters);
+    Eigen::MatrixXd U;
+    Eigen::MatrixXi G;
+    if(try_sigma(s, U, G))
+    {
+      const double m = cage_metric(U,G,s,metric);
+      if(m < best)
+      {
+        best = m;
+        CV = U; CF = G; sigma = s;
+      }
+    }
+  }
   return true;
 }
 
@@ -168,5 +222,7 @@ IGL_INLINE bool igl::lazy_cage(
   double & sigma)
 {
   const double diag = igl::bounding_box_diagonal(V);
-  return lazy_cage(V,F,num_faces,grid_size,0.1*diag,12,false,CV,CF,sigma);
+  return lazy_cage(
+    V,F,num_faces,grid_size,0.1*diag,12,false,
+    LAZY_CAGE_METRIC_SIGMA,CV,CF,sigma);
 }

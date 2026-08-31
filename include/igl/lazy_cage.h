@@ -11,20 +11,42 @@
 #include <Eigen/Core>
 namespace igl
 {
+  /// Objective minimized when choosing the offset amount σ for igl::lazy_cage.
+  enum LazyCageMetric
+  {
+    /// Smallest offset amount σ (tightest offset). Monotonic in σ, so the
+    /// smallest _valid_ offset is found by bisection.
+    LAZY_CAGE_METRIC_SIGMA = 0,
+    /// Smallest volume enclosed by the (decimated) cage. Because decimation can
+    /// remove more volume when given more room, the minimum-volume cage may
+    /// occur at a larger σ than the minimum-σ cage, so σ is swept.
+    LAZY_CAGE_METRIC_VOLUME = 1,
+    /// Smallest surface area of the (decimated) cage. Swept like volume.
+    LAZY_CAGE_METRIC_SURFACE_AREA = 2,
+    NUM_LAZY_CAGE_METRIC = 3
+  };
   /// Compute a "lazy cage" enclosing a closed input mesh: the coarse cage is
-  /// obtained by offsetting (V,F) outward by the _smallest_ amount σ for which
-  /// the dense offset surface can be decimated down to `num_faces` faces while
-  /// remaining a valid cage — enclosing the input, free of self-intersections,
-  /// and not intersecting the input surface.
+  /// obtained by offsetting (V,F) outward by an amount σ, extracting the dense
+  /// offset surface, and decimating it down to `num_faces` faces while it
+  /// remains a valid cage — enclosing the input, free of self-intersections, and
+  /// not intersecting the input surface.
   ///
   /// Collapses that would cross the input or create self-intersections are
   /// refused during decimation (via igl::block_self_intersections and
   /// igl::block_intersections_with_input). A candidate offset σ succeeds only if
   /// the resulting mesh reaches `num_faces` AND is verified to enclose the input
-  /// without intersecting it. The smallest such σ is found by bisection: too
-  /// small an offset either leaves no room to decimate to the target without
-  /// hitting the input, or (when σ is below the isosurfacing grid resolution) is
-  /// too poorly resolved to even separate from the input.
+  /// without intersecting it. Too small an offset either leaves no room to
+  /// decimate to the target without hitting the input, or (when σ is below the
+  /// isosurfacing grid resolution) is too poorly resolved to even separate from
+  /// the input.
+  ///
+  /// The offset amount is chosen to minimize `metric` over valid cages:
+  ///   - LAZY_CAGE_METRIC_SIGMA: the smallest valid σ, found by bisection.
+  ///   - LAZY_CAGE_METRIC_VOLUME / _SURFACE_AREA: the cage volume/area (computed
+  ///     by surface integral _after_ decimation) is not monotonic in σ — a
+  ///     larger offset can give decimation enough room to remove more volume/area
+  ///     than a tighter offset would — so σ is bisected to the valid floor and
+  ///     then swept up to `max_sigma`, keeping the best.
   ///
   /// @param[in] V  #V by 3 list of input vertex positions (closed, manifold)
   /// @param[in] F  #F by 3 list of input triangle indices into V
@@ -34,9 +56,11 @@ namespace igl
   ///   offset, more faithful but slower; must be fine enough that the smallest
   ///   feasible offset can be resolved)
   /// @param[in] max_sigma  upper bound on the searched offset distance
-  /// @param[in] num_iters  number of bisection iterations on σ
+  /// @param[in] num_iters  number of bisection iterations on σ (also the number
+  ///   of sweep samples for the volume/area metrics)
   /// @param[in] use_qslim  if true decimate with igl::qslim (quadric error),
   ///   otherwise with the default {shortest edge, midpoint} igl::decimate
+  /// @param[in] metric  objective minimized when choosing σ (see LazyCageMetric)
   /// @param[out] CV  #CV by 3 list of cage vertex positions
   /// @param[out] CF  #CF by 3 list of cage triangle indices into CV
   /// @param[out] sigma  the offset distance used to build the returned cage
@@ -45,7 +69,7 @@ namespace igl
   ///   attempt, if any, and `sigma` its offset)
   ///
   /// \see decimate, qslim, block_self_intersections,
-  ///   block_intersections_with_input, signed_distance, marching_cubes
+  ///   block_intersections_with_input, signed_distance, marching_cubes, centroid
   IGL_INLINE bool lazy_cage(
     const Eigen::MatrixXd & V,
     const Eigen::MatrixXi & F,
@@ -54,12 +78,13 @@ namespace igl
     const double max_sigma,
     const int num_iters,
     const bool use_qslim,
+    const LazyCageMetric metric,
     Eigen::MatrixXd & CV,
     Eigen::MatrixXi & CF,
     double & sigma);
   /// \overload
-  /// \brief Uses max_sigma = 0.1*bbox-diagonal, num_iters = 12, and the default
-  /// {shortest edge, midpoint} decimation.
+  /// \brief Uses max_sigma = 0.1*bbox-diagonal, num_iters = 12, the default
+  /// {shortest edge, midpoint} decimation, and the σ metric.
   IGL_INLINE bool lazy_cage(
     const Eigen::MatrixXd & V,
     const Eigen::MatrixXi & F,
