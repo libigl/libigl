@@ -1,4 +1,4 @@
-// 911_ConstrainedDecimation
+// 1006_ConstrainedDecimation
 //
 // "Progressive hulls" [Sander et al. 2000] decimate a closed mesh while placing
 // every new vertex *outside* the current surface, so the coarse output strictly
