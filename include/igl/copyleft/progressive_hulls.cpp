@@ -18,18 +18,37 @@ IGL_INLINE bool igl::copyleft::progressive_hulls(
   Eigen::MatrixXi & G,
   Eigen::VectorXi & J)
 {
+  std::vector<decimate_pre_post_collapse_callbacks_decorator> decorators;
+  return progressive_hulls(V,F,max_m,decorators,U,G,J);
+}
+
+IGL_INLINE bool igl::copyleft::progressive_hulls(
+  const Eigen::MatrixXd & V,
+  const Eigen::MatrixXi & F,
+  const size_t max_m,
+  const std::vector<decimate_pre_post_collapse_callbacks_decorator> & decorators,
+  Eigen::MatrixXd & U,
+  Eigen::MatrixXi & G,
+  Eigen::VectorXi & J)
+{
   int m = F.rows();
   Eigen::VectorXi I;
-  decimate_pre_collapse_callback always_try;
-  decimate_post_collapse_callback never_care;
-  decimate_trivial_callbacks(always_try,never_care);
+  decimate_pre_collapse_callback pre_collapse;
+  decimate_post_collapse_callback post_collapse;
+  decimate_trivial_callbacks(pre_collapse,post_collapse);
+  // progressive_hulls operates directly on the (closed, manifold) input, so all
+  // faces are "real": orig_m == #F and there are no faces at infinity.
+  for(const auto & decorator : decorators)
+  {
+    decorator(V,F,m,pre_collapse,post_collapse);
+  }
   return decimate(
     V,
     F,
     progressive_hulls_cost_and_placement,
     max_faces_stopping_condition(m,(const int)m,max_m),
-    always_try,
-    never_care,
+    pre_collapse,
+    post_collapse,
     U,
     G,
     J,

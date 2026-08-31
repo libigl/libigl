@@ -1,23 +1,30 @@
 // 911_ConstrainedDecimation
 //
-// Decimate (qslim) a mesh while optionally enforcing several geometric
-// constraints, each expressed as an igl::decimate callback "decorator" that can
-// be freely cascaded:
+// "Progressive hulls" [Sander et al. 2000] decimate a closed mesh while placing
+// every new vertex *outside* the current surface, so the coarse output strictly
+// *contains* the input. That makes a practically useful question well posed:
 //
-//   1. block self-intersections            (igl::block_self_intersections)
-//   2. stay inside an offset "clearance"   (igl::block_intersections_with_input)
-//      shape (a static obstacle mesh)
-//   3. stay strictly outside the input      (a *custom* decorator defined below
-//      surface, a "barrier on distance"     using a signed-distance barrier)
+//   can we build a coarse enclosing hull that stays within a given clearance —
+//   i.e., inside an outward offset of the input — and is free of
+//   self-intersections?
 //
-// With all three enabled the decimated armadillo remains free of
-// self-intersections and stays inside the thin shell between the original
-// surface and its outward offset.
+// This tutorial answers yes by cascading igl::decimate callback "decorators"
+// onto the progressive-hulls decimation:
+//
+//   1. igl::block_self_intersections        keep the hull free of self-intersections
+//   2. igl::block_intersections_with_input   keep the hull inside an outward
+//                                            offset (a static "clearance" mesh)
+//   3. a *custom* decorator (defined below)  cap how far the hull may bulge out
+//                                            (a signed-distance barrier)
+//
+// Unconstrained, the progressive hull bulges well past a tight offset (and can
+// self-intersect); with the clearance decorator on, no collapse is allowed to
+// push the hull outside the offset shell.
 //
 // Press ' ' to cycle through the results.
 #include <igl/opengl/glfw/Viewer.h>
 #include <igl/read_triangle_mesh.h>
-#include <igl/qslim.h>
+#include <igl/copyleft/progressive_hulls.h>
 #include <igl/decimate_callback_types.h>
 #include <igl/block_self_intersections.h>
 #include <igl/block_intersections_with_input.h>
@@ -26,38 +33,32 @@
 #include <igl/per_vertex_normals.h>
 #include <igl/per_edge_normals.h>
 #include <igl/signed_distance.h>
-#include <igl/voxel_grid.h>
-#include <igl/marching_cubes.h>
 #include <igl/bounding_box_diagonal.h>
-#include <igl/placeholders.h>
 #include <igl/predicates/find_self_intersections.h>
 #include <igl/unique.h>
 #include <igl/get_seconds.h>
-#include <igl/STR.h>
 #include <Eigen/Core>
 #include <cstdlib>
+#include <limits>
 #include <memory>
 #include <tuple>
 #include <vector>
 
-// A custom decorator: reject any collapse whose merged vertex would be pushed
-// (more than `tol`) to the *inside* of the static surface (VB,FB). This is a
-// simple distance barrier keeping the decimated surface on/outside the input —
-// "strict outside decimation".
-//
-// It demonstrates that callers can author their own decorators against the same
-// interface used by the shipped ones.
-static igl::decimate_pre_post_collapse_callbacks_decorator block_inside_surface(
+// A custom decorator demonstrating the same interface as the shipped ones:
+// reject any collapse whose merged vertex would be placed farther than
+// `max_dist` *outside* the surface (VB,FB). For progressive hulls (which only
+// ever place vertices outside) this is a pure "barrier on distance" that caps
+// how far the enclosing hull may bulge away from the input.
+static igl::decimate_pre_post_collapse_callbacks_decorator cap_distance_outside(
   const Eigen::MatrixXd & VB,
   const Eigen::MatrixXi & FB,
-  const double tol)
+  const double max_dist)
 {
   using Tree = igl::AABB<Eigen::MatrixXd,3>;
   auto tree = std::make_shared<Tree>();
   tree->init(VB,FB);
-  // Angle-weighted pseudonormal data for robust signed distance.
-  auto V = std::make_shared<Eigen::MatrixXd>(VB);
-  auto F = std::make_shared<Eigen::MatrixXi>(FB);
+  auto V  = std::make_shared<Eigen::MatrixXd>(VB);
+  auto F  = std::make_shared<Eigen::MatrixXi>(FB);
   auto FN = std::make_shared<Eigen::MatrixXd>();
   auto VN = std::make_shared<Eigen::MatrixXd>();
   auto EN = std::make_shared<Eigen::MatrixXd>();
@@ -94,8 +95,8 @@ static igl::decimate_pre_post_collapse_callbacks_decorator block_inside_surface(
       const Eigen::RowVector3d q = C.row(e);
       const double s = igl::signed_distance_pseudonormal(
         *tree,*V,*F,*FN,*VN,*EN,*EMAP,q);
-      // Positive is outside the closed surface; reject going inside.
-      return s >= -tol;
+      // Positive is outside; reject placements more than max_dist outside.
+      return s <= max_dist;
     };
   };
 }
@@ -104,48 +105,56 @@ int main(int argc, char *argv[])
 {
   Eigen::MatrixXd V;
   Eigen::MatrixXi F;
-  igl::read_triangle_mesh(
-    argc>1 ? argv[1] : TUTORIAL_SHARED_PATH "/armadillo.obj", V,F);
+  // Args: first non-flag arg is the mesh path; --offset <frac> and
+  // --target <frac> are fractions of the bbox diagonal / input face count.
+  std::string mesh_path = TUTORIAL_SHARED_PATH "/armadillo.obj";
+  double offset_frac = 0.02;
+  double target_frac = 0.02;
+  for(int i = 1;i<argc;i++)
+  {
+    const std::string a = argv[i];
+    if(a == "--offset" && i+1<argc) { offset_frac = std::atof(argv[++i]); }
+    else if(a == "--target" && i+1<argc) { target_frac = std::atof(argv[++i]); }
+    else if(a == "--batch") { /* handled below */ }
+    else if(!a.empty() && a[0] != '-') { mesh_path = a; }
+  }
+  igl::read_triangle_mesh(mesh_path, V,F);
   printf("input: %ld vertices, %ld faces\n",(long)V.rows(),(long)F.rows());
 
   const double diag = igl::bounding_box_diagonal(V);
-  const double offset = 0.02*diag;
+  const double offset = offset_frac*diag;
 
-  // Build an outward offset surface (OV,OF) via a background grid signed
-  // distance + marching cubes. This is used as a static "clearance" obstacle:
-  // the decimated mesh is not allowed to poke outside of it.
+  // Build the outward "clearance" offset by moving each vertex along its
+  // (outward) normal by `offset`. Exact-resolution and fast for any offset.
+  // Mild self-overlap at sharp convexities is harmless: it is only used as a
+  // static obstacle for winding-number distance / intersection queries.
   Eigen::MatrixXd OV;
-  Eigen::MatrixXi OF;
+  Eigen::MatrixXi OF = F;
   {
-    double t = igl::get_seconds();
-    Eigen::MatrixXd GV;
-    Eigen::RowVector3i side;
-    igl::voxel_grid(V,offset*2.0,64,1,GV,side);
-    Eigen::VectorXd S;
-    {
-      Eigen::VectorXi I; Eigen::MatrixXd C,N;
-      igl::signed_distance(
-        GV,V,F,igl::SIGNED_DISTANCE_TYPE_FAST_WINDING_NUMBER,
-        -std::numeric_limits<double>::infinity(),
-         std::numeric_limits<double>::infinity(),
-        S,I,C,N);
-    }
-    igl::marching_cubes(S,GV,side(0),side(1),side(2),offset,OV,OF);
-    printf("offset surface: %ld faces (%.2fs)\n",(long)OF.rows(),
-      igl::get_seconds()-t);
+    Eigen::MatrixXd N;
+    igl::per_vertex_normals(V,F,N);
+    OV = V + offset*N;
+    printf("offset: %g (%.4f*diag), outward clearance shape %ld faces\n",
+      offset,offset_frac,(long)OF.rows());
   }
 
-  const int target_m = std::max<int>(1000,int(F.rows()*0.05));
+  const int target_m = std::max<int>(100,int(F.rows()*target_frac));
+  printf("target faces: %d (%.3f*input)\n",target_m,target_frac);
 
-  // Assemble the shippable decorators.
+  const double tol = 1e-3*diag;
+
+  // Shipped decorators + one custom decorator.
   igl::decimate_pre_post_collapse_callbacks_decorator dec_self =
     igl::block_self_intersections();
-  igl::decimate_pre_post_collapse_callbacks_decorator dec_offset =
+  igl::decimate_pre_post_collapse_callbacks_decorator dec_clearance =
     igl::block_intersections_with_input(OV,OF);
-  igl::decimate_pre_post_collapse_callbacks_decorator dec_inside =
-    block_inside_surface(V,F,1e-4*diag);
+  igl::decimate_pre_post_collapse_callbacks_decorator dec_cap =
+    cap_distance_outside(V,F,offset);
 
-  struct Result { std::string name; Eigen::MatrixXd U; Eigen::MatrixXi G; };
+  struct Result {
+    std::string name; Eigen::MatrixXd U; Eigen::MatrixXi G;
+    int num_si=0, not_contained=0, outside_offset=0;
+  };
   std::vector<Result> results;
 
   const auto run = [&](
@@ -153,11 +162,11 @@ int main(int argc, char *argv[])
     const std::vector<igl::decimate_pre_post_collapse_callbacks_decorator> & decs)
   {
     double t = igl::get_seconds();
-    Eigen::MatrixXd U; Eigen::MatrixXi G; Eigen::VectorXi J,I;
-    igl::qslim(V,F,target_m,decs,U,G,J,I);
+    Eigen::MatrixXd U; Eigen::MatrixXi G; Eigen::VectorXi J;
+    igl::copyleft::progressive_hulls(V,F,target_m,decs,U,G,J);
     const double secs = igl::get_seconds()-t;
 
-    // Report self-intersections.
+    // Self-intersections of the hull.
     int num_si = 0;
     {
       Eigen::MatrixXi IF;
@@ -165,27 +174,43 @@ int main(int argc, char *argv[])
       igl::predicates::find_self_intersections(U,G,false,IF,CP);
       Eigen::VectorXi u; igl::unique(IF,u); num_si = u.size();
     }
-    // Report shell containment: signed distance to input in [~0, offset].
-    int num_inside=0, num_outside=0;
+    // Containment: input vertices should be inside/on the hull (signed distance
+    // to the hull <= 0). Count those that poke outside the hull.
+    int not_contained = 0;
     {
-      Eigen::VectorXd Sd; Eigen::VectorXi Id; Eigen::MatrixXd Cd,Nd;
+      Eigen::VectorXd S; Eigen::VectorXi I; Eigen::MatrixXd C,N;
       igl::signed_distance(
-        U,V,F,igl::SIGNED_DISTANCE_TYPE_FAST_WINDING_NUMBER,
+        V,U,G,igl::SIGNED_DISTANCE_TYPE_FAST_WINDING_NUMBER,
         -std::numeric_limits<double>::infinity(),
-         std::numeric_limits<double>::infinity(),Sd,Id,Cd,Nd);
-      num_inside  = (Sd.array() < -1e-3*diag).count();
-      num_outside = (Sd.array() > offset+1e-3*diag).count();
+         std::numeric_limits<double>::infinity(),S,I,C,N);
+      not_contained = (S.array() > tol).count();
     }
-    printf("%-28s %6ld F  %5.2fs  self-int:%5d  inside-input:%5d  "
-           "outside-offset:%5d\n",
-      name.c_str(),(long)G.rows(),secs,num_si,num_inside,num_outside);
-    results.push_back({name,U,G});
+    // Clearance: hull vertices should stay inside the outward offset (signed
+    // distance to the offset mesh <= 0). Count those that poke outside it.
+    int outside_offset = 0;
+    {
+      Eigen::VectorXd S; Eigen::VectorXi I; Eigen::MatrixXd C,N;
+      igl::signed_distance(
+        U,OV,OF,igl::SIGNED_DISTANCE_TYPE_FAST_WINDING_NUMBER,
+        -std::numeric_limits<double>::infinity(),
+         std::numeric_limits<double>::infinity(),S,I,C,N);
+      outside_offset = (S.array() > tol).count();
+    }
+    printf("%-26s %6ld F  %6.2fs  self-int:%5d  input-outside-hull:%5d  "
+           "hull-outside-offset:%5d\n",
+      name.c_str(),(long)G.rows(),secs,num_si,not_contained,outside_offset);
+    results.push_back({name,U,G,num_si,not_contained,outside_offset});
   };
 
-  run("unconstrained",              {});
-  run("+self",                      {dec_self});
-  run("+self +inside(input)",       {dec_self,dec_inside});
-  run("+self +inside +offset(all)", {dec_self,dec_inside,dec_offset});
+  // "unconstrained" contains the input but may self-intersect and bulge past
+  // the offset. "+self" removes self-intersections. "+self +clearance" also
+  // keeps the hull within the outward offset (growing the face count as
+  // collapses that would breach the offset are refused). "+self +custom-cap"
+  // uses the custom signed-distance barrier instead of the offset mesh.
+  run("unconstrained",            {});
+  run("+self",                    {dec_self});
+  run("+self +clearance",         {dec_self,dec_clearance});
+  run("+self +custom-cap",        {dec_self,dec_cap});
 
   bool batch = std::getenv("LIBIGL_NO_VIEWER") != nullptr;
   for(int i = 1;i<argc;i++)
@@ -194,7 +219,7 @@ int main(int argc, char *argv[])
   }
   if(batch) { return 0; }
 
-  // Viewer: cycle results with the space bar.
+  // Viewer: cycle results with the space bar; the input is shown for reference.
   igl::opengl::glfw::Viewer vr;
   int shown = 0;
   const auto show = [&](int i)
@@ -203,6 +228,7 @@ int main(int argc, char *argv[])
     vr.data().clear();
     vr.data().set_mesh(results[shown].U,results[shown].G);
     vr.data().set_face_based(true);
+    vr.data().show_lines = true;
     printf("showing [%d/%d]: %s\n",shown+1,(int)results.size(),
       results[shown].name.c_str());
   };
