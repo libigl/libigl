@@ -141,9 +141,16 @@ IGL_INLINE void igl::copyleft::cgal::snap_rounding(
       }
       // otherwise check for intersections with walls consider all walls
       const Segment_2 si(s,d);
+      // Accumulate the centroid of the intersection points on the fly. There are
+      // at most eight, so a std::vector is unnecessary; more importantly, we keep
+      // the count as an `int` so that the final division is `EScalar(int)`.
+      // Constructing an EScalar (CGAL::Epeck::FT) from `hits.size()`, i.e. a
+      // std::size_t, is ambiguous/ill-formed under x86 MSVC (where size_t is a
+      // 32-bit unsigned).
       Vector_2 cen(0,0);
       int hits_count = 0;
-      auto accumulate = [&cen, &hits_count](const Point_2 & p) {
+      const auto accumulate = [&cen, &hits_count](const Point_2 & p)
+      {
         cen = Vector_2(cen.x() + p.x(), cen.y() + p.y());
         ++hits_count;
       };
@@ -156,11 +163,11 @@ IGL_INLINE void igl::copyleft::cgal::snap_rounding(
           if(const Point_2 * p = CGAL::object_cast<Point_2 >(&result))
           {
             accumulate(*p);
-          }else if(const Segment_2 * s = CGAL::object_cast<Segment_2 >(&result))
+          }else if(const Segment_2 * seg = CGAL::object_cast<Segment_2 >(&result))
           {
-            // add both endpoints
-            accumulate(s->vertex(0));
-            accumulate(s->vertex(1));
+            // collinear overlap: add both endpoints
+            accumulate(seg->vertex(0));
+            accumulate(seg->vertex(1));
           }
         }
       }
