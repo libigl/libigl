@@ -24,10 +24,12 @@ namespace
       -std::numeric_limits<double>::infinity(),
        std::numeric_limits<double>::infinity(),S,I,C,N);
     REQUIRE((S.array() > 1e-6*diag).count() == 0);
-    // Does not intersect the input.
+    // Does not transversally (non-coplanar) pierce the input.
     Eigen::MatrixXi IF; Eigen::Array<bool,Eigen::Dynamic,1> CP;
     igl::find_intersections(CV,CF,V,F,/*first_only=*/false,IF,CP);
-    REQUIRE(IF.rows() == 0);
+    int transversal = 0;
+    for(int i = 0;i<CP.size();i++){ if(!CP(i)){ transversal++; } }
+    REQUIRE(transversal == 0);
   }
 }
 

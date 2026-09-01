@@ -19,10 +19,15 @@ namespace igl
   /// Because the obstacle is fixed, a single igl::AABB tree is built once and
   /// reused for every collapse test — no dynamic BVH maintenance is required.
   /// Only _transversal_ (non-coplanar) triangle-triangle intersections are
-  /// blocked, so this may be used even when `(VB,FB)` coincides with the input
-  /// surface being decimated (e.g., to keep a decimated copy of the original
-  /// mesh from ever crossing through the original): tangential flush contact is
-  /// permitted while genuine piercing is not.
+  /// blocked, so tangential flush contact against the obstacle is permitted
+  /// while genuine piercing is not.
+  ///
+  /// \note Intended for a _disjoint_ obstacle (e.g. an offset / clearance
+  /// shape). It may also be used against an obstacle that coincides with the
+  /// mesh being decimated, but see igl::collapse_edge_would_intersect_mesh for
+  /// the shared-vertex caveat there (a pierce very near a shared vertex may be
+  /// missed); true self-intersection blocking should use
+  /// igl::block_self_intersections instead.
   ///
   /// #### Example
   ///

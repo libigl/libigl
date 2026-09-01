@@ -205,6 +205,13 @@ IGL_INLINE bool igl::lazy_cage(
     OF = mF;
   };
 
+  // The obstacle (the input) is static across all candidate offsets, so build
+  // this decorator — and its AABB tree over the input — exactly once and reuse
+  // it for every decimation. (block_self_intersections must be re-created per
+  // candidate because its tree tracks the changing offset mesh.)
+  const igl::decimate_pre_post_collapse_callbacks_decorator dec_input =
+    igl::block_intersections_with_input(V,F);
+
   // Attempt to build a valid cage at a given offset: extract the offset
   // isosurface, decimate it to `num_faces` while forbidding self-intersections
   // and intersections with the input, then verify the result is actually a
@@ -221,19 +228,17 @@ IGL_INLINE bool igl::lazy_cage(
     if(OF.rows() <= num_faces) { return false; }
     std::vector<igl::decimate_pre_post_collapse_callbacks_decorator> decorators;
     decorators.push_back(igl::block_self_intersections());
-    decorators.push_back(igl::block_intersections_with_input(V,F));
+    decorators.push_back(dec_input);
     Eigen::VectorXi J,I;
     const bool reached = use_qslim ?
       igl::qslim   (OV,OF,num_faces,decorators,U,G,J,I) :
       igl::decimate(OV,OF,num_faces,decorators,U,G,J,I);
     if(!reached || G.rows() == 0) { return false; }
-    // The cage must not intersect the input (offset by σ>0, so any tri-tri hit
-    // is a genuine crossing). Reuse the input tree; stop at the first hit.
+    // The cage must not transversally (non-coplanar) pierce the input; a
+    // coplanar flush contact is not a crossing. Reuse the input tree.
     Eigen::MatrixXi IF; Eigen::Array<bool,Eigen::Dynamic,1> CP;
-    if(igl::find_intersections(input_tree,V,F,U,G,/*first_only=*/true,IF,CP))
-    {
-      return false;
-    }
+    igl::find_intersections(input_tree,V,F,U,G,/*first_only=*/false,IF,CP);
+    for(int i = 0;i<CP.size();i++){ if(!CP(i)) { return false; } }
     // ...and it must enclose the input: since the cage does not intersect the
     // input, the (connected) input is wholly inside or wholly outside; require
     // every input vertex to be strictly inside the cage.

@@ -29,6 +29,14 @@ namespace igl
   /// obstacle (sliding tangentially along it) are not reported, while triangles
   /// that actually pass through the obstacle are.
   ///
+  /// \note This routine is exact for a _disjoint_ obstacle (the intended use,
+  /// e.g. an offset/clearance shape). When the obstacle shares vertices with the
+  /// mesh being decimated, obstacle triangles that share a fixed corner of a
+  /// reshaped one-ring triangle are heuristically ignored (to permit tangential
+  /// contact); consequently a genuine pierce that occurs very near such a shared
+  /// vertex may be missed. Prefer a disjoint obstacle, or
+  /// igl::collapse_edge_would_create_intersections for true self-intersections.
+  ///
   /// @param[in] e  index into E of edge to try to collapse. E(e,:) = [s d] or
   ///     [d s], then d is collapsed to s.
   /// @param[in] p  dim list of vertex position where the merged vertex is placed
