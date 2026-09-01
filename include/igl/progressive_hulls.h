@@ -37,6 +37,23 @@ namespace igl
 
   /// \overload
   ///
+  /// \brief Progressive hulls, optionally blocking edge collapses that would
+  /// introduce self-intersections (see igl::block_self_intersections). This is
+  /// the convenience form matching igl::decimate / igl::qslim; it is equivalent
+  /// to passing `{igl::block_self_intersections()}` as the decorators.
+  ///
+  /// @param[in] block_intersections  whether to block self-intersections
+  IGL_INLINE bool progressive_hulls(
+    const Eigen::MatrixXd & V,
+    const Eigen::MatrixXi & F,
+    const size_t max_m,
+    const bool block_intersections,
+    Eigen::MatrixXd & U,
+    Eigen::MatrixXi & G,
+    Eigen::VectorXi & J);
+
+  /// \overload
+  ///
   /// \brief Progressive hulls with a list of user-supplied pre/post-collapse
   /// callback decorators (e.g., igl::block_self_intersections,
   /// igl::block_intersections_with_input, or a custom decorator) cascaded in

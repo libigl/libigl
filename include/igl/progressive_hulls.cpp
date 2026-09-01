@@ -9,6 +9,7 @@
 #include "progressive_hulls_cost_and_placement.h"
 #include "decimate.h"
 #include "decimate_trivial_callbacks.h"
+#include "block_self_intersections.h"
 #include "max_faces_stopping_condition.h"
 IGL_INLINE bool igl::progressive_hulls(
   const Eigen::MatrixXd & V,
@@ -19,6 +20,23 @@ IGL_INLINE bool igl::progressive_hulls(
   Eigen::VectorXi & J)
 {
   std::vector<decimate_pre_post_collapse_callbacks_decorator> decorators;
+  return progressive_hulls(V,F,max_m,decorators,U,G,J);
+}
+
+IGL_INLINE bool igl::progressive_hulls(
+  const Eigen::MatrixXd & V,
+  const Eigen::MatrixXi & F,
+  const size_t max_m,
+  const bool block_intersections,
+  Eigen::MatrixXd & U,
+  Eigen::MatrixXi & G,
+  Eigen::VectorXi & J)
+{
+  std::vector<decimate_pre_post_collapse_callbacks_decorator> decorators;
+  if(block_intersections)
+  {
+    decorators.push_back(igl::block_self_intersections());
+  }
   return progressive_hulls(V,F,max_m,decorators,U,G,J);
 }
 
