@@ -8,7 +8,9 @@
 #ifndef IGL_COPYLEFT_PROGRESSIVE_HULLS_H
 #define IGL_COPYLEFT_PROGRESSIVE_HULLS_H
 #include "../igl_inline.h"
+#include "../decimate_callback_types.h"
 #include <Eigen/Core>
+#include <vector>
 
 namespace igl
 {
@@ -31,6 +33,29 @@ namespace igl
       const Eigen::MatrixXd & V,
       const Eigen::MatrixXi & F,
       const size_t max_m,
+      Eigen::MatrixXd & U,
+      Eigen::MatrixXi & G,
+      Eigen::VectorXi & J);
+
+    /// \overload
+    ///
+    /// \brief Progressive hulls with a list of user-supplied pre/post-collapse
+    /// callback decorators (e.g., igl::block_self_intersections,
+    /// igl::block_intersections_with_input, or a custom decorator) cascaded in
+    /// order. Because progressive hulls place every new vertex outside the
+    /// current mesh (the output contains the input), combining with
+    /// igl::block_intersections_with_input against an outward offset yields a
+    /// coarse enclosing hull guaranteed to stay within a clearance shell.
+    ///
+    /// @param[in] decorators  list of decorators to cascade (may be empty)
+    ///
+    /// \see igl::decimate, igl::block_self_intersections,
+    ///   igl::block_intersections_with_input
+    IGL_INLINE bool progressive_hulls(
+      const Eigen::MatrixXd & V,
+      const Eigen::MatrixXi & F,
+      const size_t max_m,
+      const std::vector<decimate_pre_post_collapse_callbacks_decorator> & decorators,
       Eigen::MatrixXd & U,
       Eigen::MatrixXi & G,
       Eigen::VectorXi & J);
