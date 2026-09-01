@@ -7,6 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "write_image.h"
 #include <stb_image_write.h>
+#include <cassert>
 #include <vector>
 #include "../pathinfo.h"
 

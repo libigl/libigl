@@ -13,6 +13,7 @@
 #include "polygon_corners.h"
 #include "polygons_to_triangles.h"
 
+#include <cassert>
 #include <iostream>
 #include <cstdio>
 #include <fstream>

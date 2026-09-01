@@ -12,6 +12,7 @@
 #include "unique_edge_map.h"
 #include "is_delaunay.h"
 
+#include <cassert>
 #include <vector>
 #include <sstream>
 

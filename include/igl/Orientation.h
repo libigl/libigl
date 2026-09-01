@@ -7,23 +7,21 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #pragma once
-#ifndef IGL_PREDICATES_ORIENTATION_H
-#define IGL_PREDICATES_ORIENTATION_H
+#ifndef IGL_ORIENTATION_H
+#define IGL_ORIENTATION_H
 
-#include "../igl_inline.h"
+#include "igl_inline.h"
 #include <Eigen/Core>
 
 namespace igl {
-  namespace predicates {
-    /// Types of orientations and other predicate results.
-    ///
-    /// \fileinfo
-    enum class Orientation {
-      POSITIVE=1, INSIDE=1,
-      NEGATIVE=-1, OUTSIDE=-1,
-      COLLINEAR=0, COPLANAR=0, COCIRCULAR=0, COSPHERICAL=0, DEGENERATE=0
-    };
-  }
+  /// Types of orientations and other predicate results.
+  ///
+  /// \fileinfo
+  enum class Orientation {
+    POSITIVE=1, INSIDE=1,
+    NEGATIVE=-1, OUTSIDE=-1,
+    COLLINEAR=0, COPLANAR=0, COCIRCULAR=0, COSPHERICAL=0, DEGENERATE=0
+  };
 }
 
 

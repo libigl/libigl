@@ -17,6 +17,7 @@
 
 #include "verbose.h"
 
+#include <cassert>
 
 template <typename DerivedV, typename DerivedF, typename DerivedC>
 IGL_INLINE void igl::cotmatrix_entries(

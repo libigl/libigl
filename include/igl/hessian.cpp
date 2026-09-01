@@ -14,7 +14,7 @@
 #include "igl/doublearea.h"
 #include "igl/repdiag.h"
 
-
+#include <cassert>
 
 template <typename DerivedV, typename DerivedF, typename Scalar>
 IGL_INLINE void igl::hessian(

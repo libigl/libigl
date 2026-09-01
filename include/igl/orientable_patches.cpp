@@ -11,6 +11,7 @@
 #include "unique_rows.h"
 #include <vector>
 #include <iostream>
+#include <cassert>
 
 template <typename DerivedF, typename DerivedC, typename AScalar>
 IGL_INLINE void igl::orientable_patches(

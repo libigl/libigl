@@ -230,7 +230,7 @@ IGL_INLINE bool igl::predicates::find_intersections(
 {
   igl::AABB<DerivedV1,3> tree1;
   tree1.init(V1,F1);
-  return find_intersections(tree1,V1,F1,V2,F2,first_only,IF,CP);
+  return igl::predicates::find_intersections(tree1,V1,F1,V2,F2,first_only,IF,CP);
 }
 
 template <
@@ -256,7 +256,7 @@ IGL_INLINE bool igl::predicates::find_intersections(
 {
   igl::AABB<DerivedV1,3> tree1;
   tree1.init(V1,F1);
-  return find_intersections(tree1,V1,F1,V2,F2,IF,CP,EV,EE,EI);
+  return igl::predicates::find_intersections(tree1,V1,F1,V2,F2,IF,CP,EV,EE,EI);
 }
 
 template <
@@ -281,7 +281,7 @@ IGL_INLINE bool igl::predicates::find_intersections(
   Eigen::PlainObjectBase<DerivedEE> & EE,
   Eigen::PlainObjectBase<DerivedEI> & EI)
 {
-  if(!find_intersections(tree1,V1,F1,V2,F2,false,IF,CP)) { return false; }
+  if(!igl::predicates::find_intersections(tree1,V1,F1,V2,F2,false,IF,CP)) { return false; }
   std::vector<int> EI_vec = igl::find((CP.array()==false).eval());
   igl::list_to_matrix(EI_vec,EI);
   const auto IF_EI = IF(EI_vec,igl::placeholders::all).eval();

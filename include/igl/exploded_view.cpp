@@ -8,6 +8,7 @@
 #include "exploded_view.h"
 #include "barycenter.h"
 #include "volume.h"
+#include <cassert>
 
 template <
   typename DerivedV,

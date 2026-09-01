@@ -477,7 +477,7 @@ IGL_INLINE void igl::opengl::ViewerCore::draw_labels(
   // Parameters for mapping characters from font atlass
   float width  = viewport(2);
   float height = viewport(3);
-  float text_shift_scale_factor = orthographic ? 0.01 : 0.03;
+  float text_shift_scale_factor = (orthographic ? 0.01 : 0.03) * data.label_size;
   float render_scale = (orthographic ? 0.6 : 1.7) * data.label_size;
   glUniform1f(glGetUniformLocation(data.meshgl.shader_text, "TextShiftFactor"), text_shift_scale_factor);
   glUniform3f(glGetUniformLocation(data.meshgl.shader_text, "TextColor"), data.label_color(0), data.label_color(1), data.label_color(2));

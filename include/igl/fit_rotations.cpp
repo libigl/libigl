@@ -12,6 +12,7 @@
 #include "polar_dec.h"
 #include "polar_svd.h"
 #include "C_STR.h"
+#include <cassert>
 #include <iostream>
 
 template <typename DerivedS, typename DerivedD>

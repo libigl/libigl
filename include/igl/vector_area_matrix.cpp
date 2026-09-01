@@ -7,6 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "vector_area_matrix.h"
 #include "boundary_facets.h"
+#include <cassert>
 #include <vector>
 
 // Bug in unsupported/Eigen/SparseExtra needs iostream first
