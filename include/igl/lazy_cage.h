@@ -41,6 +41,21 @@ namespace igl
     LAZY_CAGE_GRID_SPARSE = 1,
     NUM_LAZY_CAGE_GRID_MODE = 2
   };
+  /// Which distance field the offset isosurface is extracted from.
+  enum LazyCageDistance
+  {
+    /// Signed distance (via fast winding number). The offset is the outward
+    /// {distance = σ} isosurface. Requires a closed, consistently oriented
+    /// input.
+    LAZY_CAGE_DISTANCE_SIGNED = 0,
+    /// Unsigned distance. The offset is the {distance = σ} isosurface, a closed
+    /// shell wrapping the input at distance σ on all sides. Needs no orientation
+    /// and works for inputs that are hard to orient, open, or genuinely a
+    /// mid-surface of a thin sheet (e.g. cloth). Also avoids the winding-number
+    /// evaluation entirely.
+    LAZY_CAGE_DISTANCE_UNSIGNED = 1,
+    NUM_LAZY_CAGE_DISTANCE = 2
+  };
   /// Heuristic isosurfacing grid resolution (cells across the largest side) for
   /// a lazy cage with `num_faces` faces, used when `grid_size <= 0`. Roughly
   /// proportional to sqrt(num_faces) and clamped; see igl::lazy_cage.
@@ -49,10 +64,17 @@ namespace igl
   /// @return grid resolution
   IGL_INLINE int lazy_cage_default_grid_size(const int num_faces);
   /// Compute a "lazy cage" enclosing a closed input mesh: the coarse cage is
-  /// obtained by offsetting (V,F) outward by an amount σ, extracting the dense
-  /// offset surface, and decimating it down to `num_faces` faces while it
-  /// remains a valid cage — enclosing the input, free of self-intersections, and
-  /// not intersecting the input surface.
+  /// obtained by offsetting (V,F) by an amount σ, extracting the dense offset
+  /// surface, and decimating it down to `num_faces` faces while it remains a
+  /// valid cage — enclosing the input, free of self-intersections, and not
+  /// intersecting the input surface.
+  ///
+  /// The offset can be the signed-distance isosurface (default; requires an
+  /// orientable closed input) or the unsigned-distance isosurface (see
+  /// LazyCageDistance), which wraps open / non-orientable inputs such as the
+  /// mid-surface of a thin sheet. Enclosure and non-intersection are verified
+  /// against the (always closed, orientable) cage, so the input itself need not
+  /// be orientable.
   ///
   /// Collapses that would cross the input or create self-intersections are
   /// refused during decimation (via igl::block_self_intersections and
@@ -87,6 +109,8 @@ namespace igl
   /// @param[in] metric  objective minimized when choosing σ (see LazyCageMetric)
   /// @param[in] grid_mode  dense vs. sparse isosurface extraction (see
   ///   LazyCageGridMode)
+  /// @param[in] distance  signed vs. unsigned distance field (see
+  ///   LazyCageDistance)
   /// @param[out] CV  #CV by 3 list of cage vertex positions
   /// @param[out] CF  #CF by 3 list of cage triangle indices into CV
   /// @param[out] sigma  the offset distance used to build the returned cage
@@ -107,12 +131,14 @@ namespace igl
     const bool use_qslim,
     const LazyCageMetric metric,
     const LazyCageGridMode grid_mode,
+    const LazyCageDistance distance,
     Eigen::MatrixXd & CV,
     Eigen::MatrixXi & CF,
     double & sigma);
   /// \overload
   /// \brief Uses max_sigma = 0.1*bbox-diagonal, num_iters = 12, the default
-  /// {shortest edge, midpoint} decimation, the σ metric, and the dense grid.
+  /// {shortest edge, midpoint} decimation, the σ metric, the dense grid, and
+  /// signed distance.
   /// If `grid_size <= 0` a resolution is chosen automatically from `num_faces`.
   IGL_INLINE bool lazy_cage(
     const Eigen::MatrixXd & V,

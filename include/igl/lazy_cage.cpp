@@ -7,6 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "lazy_cage.h"
 #include "signed_distance.h"
+#include "point_mesh_squared_distance.h"
 #include "voxel_grid.h"
 #include "marching_cubes.h"
 #include "decimate.h"
@@ -119,11 +120,13 @@ IGL_INLINE bool igl::lazy_cage(
   const bool use_qslim,
   const LazyCageMetric metric,
   const LazyCageGridMode grid_mode,
+  const LazyCageDistance distance,
   Eigen::MatrixXd & CV,
   Eigen::MatrixXi & CF,
   double & sigma)
 {
   const double diag = igl::bounding_box_diagonal(V);
+  const bool unsigned_distance = (distance == LAZY_CAGE_DISTANCE_UNSIGNED);
   const int grid_size = grid_size_in > 0 ?
     grid_size_in : lazy_cage_default_grid_size(num_faces);
 
@@ -148,29 +151,49 @@ IGL_INLINE bool igl::lazy_cage(
   double h0 = 0;
   int max_depth = 0;
 
+  // The scalar field whose σ-isosurface is the offset: signed distance (outward
+  // offset, needs orientation) or unsigned distance (a shell wrapping the input
+  // on all sides; needs no orientation).
   if(grid_mode == LAZY_CAGE_GRID_DENSE)
   {
     igl::voxel_grid(V, max_sigma*1.5, grid_size, 1, GV, side);
-    Eigen::VectorXi I; Eigen::MatrixXd C,N;
-    igl::signed_distance(
-      GV, V, F, igl::SIGNED_DISTANCE_TYPE_FAST_WINDING_NUMBER,
-      -std::numeric_limits<double>::infinity(),
-       std::numeric_limits<double>::infinity(), Sdense, I, C, N);
+    if(unsigned_distance)
+    {
+      Eigen::VectorXd sqrD; Eigen::VectorXi I; Eigen::MatrixXd C;
+      igl::point_mesh_squared_distance(GV, V, F, sqrD, I, C);
+      Sdense = sqrD.array().sqrt();
+    }
+    else
+    {
+      Eigen::VectorXi I; Eigen::MatrixXd C,N;
+      igl::signed_distance(
+        GV, V, F, igl::SIGNED_DISTANCE_TYPE_FAST_WINDING_NUMBER,
+        -std::numeric_limits<double>::infinity(),
+         std::numeric_limits<double>::infinity(), Sdense, I, C, N);
+    }
   }
   else
   {
-    igl::fast_winding_number(V.cast<float>().eval(), F, 2, fwn);
     const igl::AABB<Eigen::MatrixXd,3> & tree = input_tree;
     udist = [&V,&F,&tree](const Eigen::RowVector3d & p) -> double
     {
       int i; Eigen::RowVector3d c;
       return std::sqrt(tree.squared_distance(V,F,p,i,c));
     };
-    sdf = [&V,&F,&tree,&fwn,&udist](const Eigen::RowVector3d & p) -> double
+    if(unsigned_distance)
     {
-      const double w = igl::fast_winding_number(fwn, 2, p.cast<float>().eval());
-      return (1.0 - 2.0*std::abs(w))*udist(p);   // > 0 outside, < 0 inside
-    };
+      // The offset field is the unsigned distance itself — no winding number.
+      sdf = udist;
+    }
+    else
+    {
+      igl::fast_winding_number(V.cast<float>().eval(), F, 2, fwn);
+      sdf = [&V,&F,&fwn,&udist](const Eigen::RowVector3d & p) -> double
+      {
+        const double w = igl::fast_winding_number(fwn, 2, p.cast<float>().eval());
+        return (1.0 - 2.0*std::abs(w))*udist(p);   // > 0 outside, < 0 inside
+      };
+    }
     const Eigen::RowVector3d bmin = V.colwise().minCoeff();
     const Eigen::RowVector3d bmax = V.colwise().maxCoeff();
     const double maxside = (bmax-bmin).maxCoeff();
@@ -318,5 +341,6 @@ IGL_INLINE bool igl::lazy_cage(
   const double diag = igl::bounding_box_diagonal(V);
   return lazy_cage(
     V,F,num_faces,grid_size,0.1*diag,12,false,
-    LAZY_CAGE_METRIC_SIGMA,LAZY_CAGE_GRID_DENSE,CV,CF,sigma);
+    LAZY_CAGE_METRIC_SIGMA,LAZY_CAGE_GRID_DENSE,LAZY_CAGE_DISTANCE_SIGNED,
+    CV,CF,sigma);
 }

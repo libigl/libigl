@@ -84,7 +84,7 @@ TEST_CASE("lazy_cage: encloses input", "[igl]")
   // generous offset range.
   const bool ok = igl::lazy_cage(
     V,F,num_faces,grid_size,0.5*diag,8,/*use_qslim=*/false,
-    igl::LAZY_CAGE_METRIC_SIGMA,igl::LAZY_CAGE_GRID_DENSE,CV,CF,sigma);
+    igl::LAZY_CAGE_METRIC_SIGMA,igl::LAZY_CAGE_GRID_DENSE,igl::LAZY_CAGE_DISTANCE_SIGNED,CV,CF,sigma);
 
   REQUIRE(ok);
   REQUIRE(CF.rows() > 0);
@@ -128,7 +128,7 @@ TEST_CASE("lazy_cage: qslim variant is valid", "[igl]")
   double sigma = -1;
   const bool ok = igl::lazy_cage(
     V,F,/*num_faces=*/40,/*grid=*/24,/*max_sigma=*/0.5*diag,/*iters=*/8,
-    /*use_qslim=*/true,igl::LAZY_CAGE_METRIC_SIGMA,igl::LAZY_CAGE_GRID_DENSE,CV,CF,sigma);
+    /*use_qslim=*/true,igl::LAZY_CAGE_METRIC_SIGMA,igl::LAZY_CAGE_GRID_DENSE,igl::LAZY_CAGE_DISTANCE_SIGNED,CV,CF,sigma);
   REQUIRE(ok);
   require_valid_cage(V,F,CV,CF);
 }
@@ -150,10 +150,10 @@ TEST_CASE("lazy_cage: volume metric is valid and no worse", "[igl]")
   double sig_s=-1, sig_v=-1;
   REQUIRE(igl::lazy_cage(
     V,F,num_faces,grid_size,0.1*diag,10,false,
-    igl::LAZY_CAGE_METRIC_SIGMA,igl::LAZY_CAGE_GRID_DENSE,CVs,CFs,sig_s));
+    igl::LAZY_CAGE_METRIC_SIGMA,igl::LAZY_CAGE_GRID_DENSE,igl::LAZY_CAGE_DISTANCE_SIGNED,CVs,CFs,sig_s));
   REQUIRE(igl::lazy_cage(
     V,F,num_faces,grid_size,0.1*diag,10,false,
-    igl::LAZY_CAGE_METRIC_VOLUME,igl::LAZY_CAGE_GRID_DENSE,CVv,CFv,sig_v));
+    igl::LAZY_CAGE_METRIC_VOLUME,igl::LAZY_CAGE_GRID_DENSE,igl::LAZY_CAGE_DISTANCE_SIGNED,CVv,CFv,sig_v));
 
   require_valid_cage(V,F,CVv,CFv);
 
@@ -181,10 +181,10 @@ TEST_CASE("lazy_cage: sparse grid mode is valid", "[igl]")
   double sig_d=-1, sig_s=-1;
   REQUIRE(igl::lazy_cage(
     V,F,40,32,0.5*diag,8,false,
-    igl::LAZY_CAGE_METRIC_SIGMA,igl::LAZY_CAGE_GRID_DENSE,CVd,CFd,sig_d));
+    igl::LAZY_CAGE_METRIC_SIGMA,igl::LAZY_CAGE_GRID_DENSE,igl::LAZY_CAGE_DISTANCE_SIGNED,CVd,CFd,sig_d));
   REQUIRE(igl::lazy_cage(
     V,F,40,32,0.5*diag,8,false,
-    igl::LAZY_CAGE_METRIC_SIGMA,igl::LAZY_CAGE_GRID_SPARSE,CVs,CFs,sig_s));
+    igl::LAZY_CAGE_METRIC_SIGMA,igl::LAZY_CAGE_GRID_SPARSE,igl::LAZY_CAGE_DISTANCE_SIGNED,CVs,CFs,sig_s));
 
   require_valid_cage(V,F,CVd,CFd);
   require_valid_cage(V,F,CVs,CFs);
@@ -208,4 +208,46 @@ TEST_CASE("lazy_cage: automatic grid size", "[igl]")
   REQUIRE(igl::lazy_cage(V,F,/*num_faces=*/200,/*grid_size=*/0,CV,CF,sigma));
   REQUIRE(CF.rows() == 200);
   require_valid_cage(V,F,CV,CF);
+}
+
+// Unsigned distance wraps an open / non-orientable input (here a flat sheet — a
+// cloth-like mid-surface) in a closed cage, where signed distance is undefined.
+TEST_CASE("lazy_cage: unsigned distance wraps an open sheet", "[igl]")
+{
+  // A flat n×n triangulated sheet on z=0 with an open boundary.
+  const int n = 7;
+  Eigen::MatrixXd V(n*n,3);
+  for(int i=0;i<n;i++) for(int j=0;j<n;j++)
+  {
+    V.row(i*n+j) << double(i)/(n-1), double(j)/(n-1), 0.0;
+  }
+  Eigen::MatrixXi F(2*(n-1)*(n-1),3);
+  int f=0;
+  for(int i=0;i<n-1;i++) for(int j=0;j<n-1;j++)
+  {
+    const int a=i*n+j, b=i*n+j+1, c=(i+1)*n+j, d=(i+1)*n+j+1;
+    F.row(f++)<<a,b,d;
+    F.row(f++)<<a,d,c;
+  }
+  const double diag = igl::bounding_box_diagonal(V);
+
+  Eigen::MatrixXd CV;
+  Eigen::MatrixXi CF;
+  double sigma = -1;
+  const bool ok = igl::lazy_cage(
+    V,F,/*num_faces=*/40,/*grid=*/32,/*max_sigma=*/0.4*diag,/*iters=*/9,
+    /*use_qslim=*/false,igl::LAZY_CAGE_METRIC_SIGMA,igl::LAZY_CAGE_GRID_DENSE,
+    igl::LAZY_CAGE_DISTANCE_UNSIGNED,CV,CF,sigma);
+  REQUIRE(ok);
+  REQUIRE(sigma > 0.0);
+  require_valid_cage(V,F,CV,CF);
+
+  // Sparse + unsigned should also work (and needs no winding number at all).
+  Eigen::MatrixXd CVs;
+  Eigen::MatrixXi CFs;
+  double sig_s = -1;
+  REQUIRE(igl::lazy_cage(
+    V,F,40,32,0.4*diag,9,false,igl::LAZY_CAGE_METRIC_SIGMA,
+    igl::LAZY_CAGE_GRID_SPARSE,igl::LAZY_CAGE_DISTANCE_UNSIGNED,CVs,CFs,sig_s));
+  require_valid_cage(V,F,CVs,CFs);
 }

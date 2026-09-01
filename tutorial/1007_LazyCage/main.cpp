@@ -17,11 +17,13 @@
 //
 // Usage: 1007_LazyCage [mesh] [--faces N] [--grid G] [--max-sigma frac]
 //                      [--iters K] [--qslim] [--metric sigma|volume|area]
-//                      [--sparse]
+//                      [--sparse] [--unsigned]
 // With no --grid, the isosurfacing resolution is chosen automatically from the
 // target face count (igl::lazy_cage_default_grid_size). --sparse switches the
 // dense signed-distance grid for a Lipschitz-octree + sparse marching cubes
-// extraction (useful for very dense grids / large inputs).
+// extraction (useful for very dense grids / large inputs). --unsigned offsets
+// by unsigned distance instead of signed, wrapping open / non-orientable inputs
+// (e.g. a cloth mid-surface) in a closed cage.
 // Press ' ' to toggle the cage wireframe.
 #include <igl/opengl/glfw/Viewer.h>
 #include <igl/read_triangle_mesh.h>
@@ -48,6 +50,7 @@ int main(int argc, char *argv[])
   bool use_qslim = false;
   igl::LazyCageMetric metric = igl::LAZY_CAGE_METRIC_SIGMA;
   igl::LazyCageGridMode grid_mode = igl::LAZY_CAGE_GRID_DENSE;
+  igl::LazyCageDistance distance = igl::LAZY_CAGE_DISTANCE_SIGNED;
   for(int i = 1;i<argc;i++)
   {
     const std::string a = argv[i];
@@ -57,6 +60,7 @@ int main(int argc, char *argv[])
     else if(a == "--iters" && i+1<argc) { num_iters = std::atoi(argv[++i]); }
     else if(a == "--qslim") { use_qslim = true; }
     else if(a == "--sparse") { grid_mode = igl::LAZY_CAGE_GRID_SPARSE; }
+    else if(a == "--unsigned") { distance = igl::LAZY_CAGE_DISTANCE_UNSIGNED; }
     else if(a == "--metric" && i+1<argc)
     {
       const std::string m = argv[++i];
@@ -75,10 +79,12 @@ int main(int argc, char *argv[])
     metric==igl::LAZY_CAGE_METRIC_VOLUME ? "volume" :
     metric==igl::LAZY_CAGE_METRIC_SURFACE_AREA ? "surface-area" : "sigma";
   printf("input: %ld vertices, %ld faces\n",(long)V.rows(),(long)F.rows());
-  printf("target cage faces: %d, grid: %d%s, decimation: %s, metric: %s, %s\n",
+  printf("target cage faces: %d, grid: %d%s, decimation: %s, metric: %s, "
+         "%s, %s distance\n",
     num_faces,grid_used,grid_size>0?"":" (auto)",
     use_qslim?"qslim":"shortest-edge/midpoint",metric_name,
-    grid_mode==igl::LAZY_CAGE_GRID_SPARSE?"sparse":"dense");
+    grid_mode==igl::LAZY_CAGE_GRID_SPARSE?"sparse":"dense",
+    distance==igl::LAZY_CAGE_DISTANCE_UNSIGNED?"unsigned":"signed");
 
   Eigen::MatrixXd CV;
   Eigen::MatrixXi CF;
@@ -86,7 +92,7 @@ int main(int argc, char *argv[])
   const double t = igl::get_seconds();
   const bool ok = igl::lazy_cage(
     V,F,num_faces,grid_size,max_sigma_frac*diag,num_iters,use_qslim,metric,
-    grid_mode,CV,CF,sigma);
+    grid_mode,distance,CV,CF,sigma);
   double vol = 0; { Eigen::RowVector3d c; igl::centroid(CV,CF,c,vol); }
   double area = 0; { Eigen::VectorXd dblA; igl::doublearea(CV,CF,dblA); area = 0.5*dblA.sum(); }
   printf("lazy_cage: %s  sigma=%g (%.4f*diag)  cage faces=%ld  "
