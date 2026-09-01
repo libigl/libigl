@@ -36,6 +36,14 @@ IGL_INLINE bool igl::find_intersections(
   // Parallelize the broad+narrow phase over the second mesh's faces; appends are
   // rare (only on actual intersections) so a single mutex is cheap. `first_only`
   // early-outs: once a hit is recorded, queued/other tasks bail immediately.
+  //
+  // igl::parallel_for spawns a fresh thread pool per call (~ms of create/join
+  // overhead), so only go parallel once there is enough work to amortize it.
+  // Per-face work here is a cheap AABB box query plus a few triangle-triangle
+  // tests; empirically the parallel path only starts paying off past ~2e4 faces
+  // (much later for well-separated meshes with no candidates), so keep smaller
+  // queries — the common case, including early-out detection — serial and fast.
+  const size_t min_parallel = 20000;
   std::vector<int> f1s, f2s;
   std::vector<char> cps;
   std::mutex mtx;
@@ -69,7 +77,7 @@ IGL_INLINE bool igl::find_intersections(
         if(first_only) { hit.store(true,std::memory_order_relaxed); return; }
       }
     }
-  },1000);
+  },min_parallel);
   const int n = (int)f1s.size();
   IF.resize(n,2);
   CP.resize(n);
