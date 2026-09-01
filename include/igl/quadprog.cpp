@@ -25,9 +25,11 @@ IGL_INLINE Eigen::Matrix<Scalar,n,1> igl::quadprog(
   // up in dual contouring). igl::copyleft::quadprog handles more general problems
   // (and also starts to beat igl::quadprog when the number of variables gets over
   // ~20). I tried extending igl::quadprog so that we could use it for
-  // igl::copyleft::progressive_hulls and drop igl::copyleft::quadprog but it was
-  // trickier than I thought. Something like qpmad or the non GPL version of
-  // quadrog++ would be good future PR.
+  // igl::progressive_hulls and drop igl::copyleft::quadprog but it was
+  // trickier than I thought. (Update: igl::progressive_hulls now uses
+  // igl::project_to_halfspace_intersection instead -- a specialized
+  // fixed-dimension-3 halfspace-projection solver rather than a general QP
+  // reformulation -- and no longer depends on igl::copyleft::quadprog.)
   //
   typedef Eigen::Matrix<Scalar,n,1> VectorSn;
   typedef Eigen::Array<bool,n,1>    Arraybn;

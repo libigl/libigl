@@ -119,12 +119,12 @@ IGL_INLINE void igl::marching_cubes(
   const Eigen::MatrixBase<DerivedGI> & GI,
   const typename DerivedS::Scalar isovalue,
   Eigen::PlainObjectBase<DerivedV> &V,
-  Eigen::PlainObjectBase<DerivedF> &F)
+  Eigen::PlainObjectBase<DerivedF> &F,
+  std::unordered_map<std::int64_t,int> &E2V)
 {
   typedef Eigen::Index Index;
   typedef typename DerivedV::Scalar Scalar;
 
-  std::unordered_map<std::int64_t,int> E2V;
   V.resize(4*GV.rows(),3);
   F.resize(4*GV.rows(),3);
   Index n = 0;
@@ -146,6 +146,24 @@ IGL_INLINE void igl::marching_cubes(
   }
   V.conservativeResize(n,3);
   F.conservativeResize(m,3);
+}
+
+template <
+  typename DerivedS, 
+  typename DerivedGV, 
+  typename DerivedGI, 
+  typename DerivedV, 
+  typename DerivedF>
+IGL_INLINE void igl::marching_cubes(
+  const Eigen::MatrixBase<DerivedS> & S,
+  const Eigen::MatrixBase<DerivedGV> & GV,
+  const Eigen::MatrixBase<DerivedGI> & GI,
+  const typename DerivedS::Scalar isovalue,
+  Eigen::PlainObjectBase<DerivedV> &V,
+  Eigen::PlainObjectBase<DerivedF> &F)
+{
+  std::unordered_map<std::int64_t,int> E2V;
+  return marching_cubes(S,GV,GI,isovalue,V,F,E2V);
 }
 
 #ifdef IGL_STATIC_LIBRARY

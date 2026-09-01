@@ -257,15 +257,6 @@ namespace glfw
       }
       if (!loop)
         return !glfwWindowShouldClose(window);
-
-      #ifdef __APPLE__
-        static bool first_time_hack  = true;
-        if(first_time_hack) {
-          glfwHideWindow(window);
-          glfwShowWindow(window);
-          first_time_hack = false;
-        }
-      #endif
     }
     return EXIT_SUCCESS;
   }
