@@ -261,10 +261,14 @@ inline bool igl::parallel_for(
   if(loop_size == 0) return false;
 
 #ifdef IGL_PARALLEL_FOR_FORCE_SERIAL
-  const size_t nthreads = 1;
+  // Forced serial: this is the only path compiled, so no backend/pool code
+  // (nor any TBB/OpenMP dependency) is referenced.
+  prep_func(1);
+  for(Index i = 0;i<loop_size;i++){ func(i,0); }
+  accum_func(0);
+  return false;
 #else
   const size_t nthreads = igl::default_num_threads();
-#endif
 
   // Serial when: below the threshold, only one thread available, or already
   // inside a parallel_for region (nested → serial keeps the thread count
@@ -375,7 +379,8 @@ inline bool igl::parallel_for(
 
   for(size_t t = 0;t<P;t++){ accum_func(t); }
   return true;
-#endif
+#endif // backend selection
+#endif // IGL_PARALLEL_FOR_FORCE_SERIAL
 }
 
 #endif
