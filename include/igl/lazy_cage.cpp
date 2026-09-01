@@ -18,7 +18,7 @@
 #include "centroid.h"
 #include "doublearea.h"
 #include "AABB.h"
-#include "tri_tri_intersect.h"
+#include "find_intersections.h"
 #include "fast_winding_number.h"
 #include "lipschitz_octree.h"
 #include "unique_sparse_voxel_corners.h"
@@ -31,42 +31,6 @@
 
 namespace
 {
-  // Does any face of (AV,AF) transversally (non-coplanar) intersect (BV,BF),
-  // accelerated by a prebuilt AABB tree over (BV,BF)?
-  bool meshes_intersect(
-    const Eigen::MatrixXd & AV,
-    const Eigen::MatrixXi & AF,
-    const Eigen::MatrixXd & BV,
-    const Eigen::MatrixXi & BF,
-    const igl::AABB<Eigen::MatrixXd,3> & Btree)
-  {
-    for(int f = 0; f < AF.rows(); f++)
-    {
-      const Eigen::RowVector3d A0 = AV.row(AF(f,0));
-      const Eigen::RowVector3d A1 = AV.row(AF(f,1));
-      const Eigen::RowVector3d A2 = AV.row(AF(f,2));
-      Eigen::AlignedBox<double,3> box;
-      box.extend(A0.transpose()).extend(A1.transpose()).extend(A2.transpose());
-      std::vector<const igl::AABB<Eigen::MatrixXd,3>*> cand;
-      Btree.append_intersecting_leaves(box,cand);
-      for(const auto * c : cand)
-      {
-        const int g = c->m_primitive;
-        const Eigen::RowVector3d B0 = BV.row(BF(g,0));
-        const Eigen::RowVector3d B1 = BV.row(BF(g,1));
-        const Eigen::RowVector3d B2 = BV.row(BF(g,2));
-        bool coplanar = false;
-        Eigen::RowVector3d s,t;
-        if(igl::tri_tri_intersection_test_3d(A0,A1,A2,B0,B1,B2,coplanar,s,t) &&
-           !coplanar)
-        {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-
   // Objective value of a valid cage (smaller is better) under `metric`.
   double cage_metric(
     const Eigen::MatrixXd & CV,
@@ -263,8 +227,13 @@ IGL_INLINE bool igl::lazy_cage(
       igl::qslim   (OV,OF,num_faces,decorators,U,G,J,I) :
       igl::decimate(OV,OF,num_faces,decorators,U,G,J,I);
     if(!reached || G.rows() == 0) { return false; }
-    // The cage must not transversally intersect the input.
-    if(meshes_intersect(U,G,V,F,input_tree)) { return false; }
+    // The cage must not intersect the input (offset by σ>0, so any tri-tri hit
+    // is a genuine crossing). Reuse the input tree; stop at the first hit.
+    Eigen::MatrixXi IF; Eigen::Array<bool,Eigen::Dynamic,1> CP;
+    if(igl::find_intersections(input_tree,V,F,U,G,/*first_only=*/true,IF,CP))
+    {
+      return false;
+    }
     // ...and it must enclose the input: since the cage does not intersect the
     // input, the (connected) input is wholly inside or wholly outside; require
     // every input vertex to be strictly inside the cage.

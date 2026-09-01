@@ -76,6 +76,14 @@ namespace igl
   /// against the (always closed, orientable) cage, so the input itself need not
   /// be orientable.
   ///
+  /// The offset-and-decimate cage construction follows Sellán et al.,
+  /// "Breaking Good: Fracture Modes for Realtime Destruction" (ACM TOG 2023).
+  /// Unlike that formulation — which decimates without intersection awareness
+  /// and repairs self-intersections afterward with a boolean self-union — this
+  /// implementation blocks intersecting collapses during decimation (see
+  /// igl::block_self_intersections, igl::block_intersections_with_input), so the
+  /// output has exactly `num_faces` faces and needs no repair.
+  ///
   /// Collapses that would cross the input or create self-intersections are
   /// refused during decimation (via igl::block_self_intersections and
   /// igl::block_intersections_with_input). A candidate offset σ succeeds only if

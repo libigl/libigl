@@ -4,51 +4,12 @@
 #include <igl/bounding_box_diagonal.h>
 #include <igl/signed_distance.h>
 #include <igl/centroid.h>
-#include <igl/AABB.h>
-#include <igl/tri_tri_intersect.h>
+#include <igl/find_intersections.h>
 #include <Eigen/Core>
-#include <Eigen/Geometry>
 #include <limits>
-#include <vector>
 
 namespace
 {
-  // Count triangle pairs where a face of (AV,AF) transversally (non-coplanar)
-  // intersects (BV,BF). Ground-truth-ish check using only core tools.
-  int transversal_intersections(
-    const Eigen::MatrixXd & AV, const Eigen::MatrixXi & AF,
-    const Eigen::MatrixXd & BV, const Eigen::MatrixXi & BF)
-  {
-    igl::AABB<Eigen::MatrixXd,3> tree;
-    tree.init(BV,BF);
-    int count = 0;
-    for(int f = 0; f < AF.rows(); f++)
-    {
-      const Eigen::RowVector3d A0 = AV.row(AF(f,0));
-      const Eigen::RowVector3d A1 = AV.row(AF(f,1));
-      const Eigen::RowVector3d A2 = AV.row(AF(f,2));
-      Eigen::AlignedBox<double,3> box;
-      box.extend(A0.transpose()).extend(A1.transpose()).extend(A2.transpose());
-      std::vector<const igl::AABB<Eigen::MatrixXd,3>*> cand;
-      tree.append_intersecting_leaves(box,cand);
-      for(const auto * c : cand)
-      {
-        const int g = c->m_primitive;
-        const Eigen::RowVector3d B0 = BV.row(BF(g,0));
-        const Eigen::RowVector3d B1 = BV.row(BF(g,1));
-        const Eigen::RowVector3d B2 = BV.row(BF(g,2));
-        bool coplanar = false;
-        Eigen::RowVector3d s,t;
-        if(igl::tri_tri_intersection_test_3d(A0,A1,A2,B0,B1,B2,coplanar,s,t) &&
-           !coplanar)
-        {
-          count++;
-        }
-      }
-    }
-    return count;
-  }
-
   // A valid cage must enclose the input (all input vertices inside) and not
   // intersect it.
   void require_valid_cage(
@@ -63,8 +24,10 @@ namespace
       -std::numeric_limits<double>::infinity(),
        std::numeric_limits<double>::infinity(),S,I,C,N);
     REQUIRE((S.array() > 1e-6*diag).count() == 0);
-    // Does not pierce the input.
-    REQUIRE(transversal_intersections(CV,CF,V,F) == 0);
+    // Does not intersect the input.
+    Eigen::MatrixXi IF; Eigen::Array<bool,Eigen::Dynamic,1> CP;
+    igl::find_intersections(CV,CF,V,F,/*first_only=*/false,IF,CP);
+    REQUIRE(IF.rows() == 0);
   }
 }
 
