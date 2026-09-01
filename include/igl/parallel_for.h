@@ -124,115 +124,109 @@ namespace igl
 #include <condition_variable>
 #include <atomic>
 
+// ---------------------------------------------------------------------------
+// Backend selection. Exactly one is active:
+//
+//   IGL_PARALLEL_FOR_FORCE_SERIAL  always run serially
+//   IGL_PARALLEL_FOR_TBB           Intel oneTBB      (EXPERIMENTAL; needs TBB)
+//   IGL_PARALLEL_FOR_OPENMP        OpenMP            (EXPERIMENTAL; needs -fopenmp)
+//   (none of the above)            internal std::thread pool (default)
+//
+// The experimental backends' headers are included ONLY when their macro is
+// defined, so the default build pulls in no TBB/OpenMP dependency whatsoever.
+// ---------------------------------------------------------------------------
+#if defined(IGL_PARALLEL_FOR_TBB)
+#  include <tbb/parallel_for.h>
+#  include <tbb/task_arena.h>
+#elif defined(IGL_PARALLEL_FOR_OPENMP)
+#  include <omp.h>
+#endif
+
 namespace igl {
 namespace internal
 {
 
-inline bool & worker_flag()
+// Thread-local flag: is the current thread already running inside a
+// parallel_for region? Nested parallel_for calls run serially so a fixed pool
+// (or backend) is never oversubscribed — this is the fix for the thread
+// explosion in issue #2412. Scoped so the flag is restored on exit, meaning a
+// worker/thread can be reused for an unrelated (non-nested) region afterwards.
+inline bool & parallel_for_in_worker()
 {
   static thread_local bool flag = false;
   return flag;
 }
-
-inline bool is_worker_thread()
+struct parallel_for_worker_scope
 {
-  return worker_flag();
-}
+  const bool prev;
+  parallel_for_worker_scope() : prev(parallel_for_in_worker())
+  { parallel_for_in_worker() = true; }
+  ~parallel_for_worker_scope() { parallel_for_in_worker() = prev; }
+};
 
-inline void set_worker_thread(bool v)
-{
-  worker_flag() = v;
-}
-
-} // namespace internal
-} // namespace igl
-
-namespace igl {
-namespace internal
-{
-
-// Simple shared thread pool using only std::
-class ThreadPool
+#if !defined(IGL_PARALLEL_FOR_FORCE_SERIAL) && \
+    !defined(IGL_PARALLEL_FOR_TBB) && \
+    !defined(IGL_PARALLEL_FOR_OPENMP)
+// A minimal fixed-size worker pool built only on <thread>/<mutex>/etc.
+//
+// Design notes:
+//  - Lazily created on the first *parallel* region (never on include, and never
+//    when everything stays under min_parallel / single-threaded), so simply
+//    linking libigl costs no background threads.
+//  - Intentionally leaked (heap-allocated, never destroyed): process/library
+//    teardown must not block joining idle or in-flight workers. Joining threads
+//    from a static destructor is a classic source of shutdown hangs (DLL/plugin
+//    unload) and is problematic on thread-restricted platforms (WASM, iPadOS —
+//    the platform in #2412). The OS reclaims the blocked workers at exit.
+//  - Size is taken from igl::default_num_threads(), so IGL_NUM_THREADS (and
+//    friends) let an embedder cap or disable pooling.
+class parallel_for_pool
 {
 public:
-  using Task = std::function<void()>;
-
-  // First call fixes the pool size; later calls ignore nthreads_hint.
-  static ThreadPool & instance(size_t nthreads_hint)
+  // Created once; `nthreads` on later calls is ignored.
+  static parallel_for_pool & get(const size_t nthreads)
   {
-    static ThreadPool pool(nthreads_hint);
-    return pool;
+    static parallel_for_pool * instance = new parallel_for_pool(nthreads);
+    return *instance; // never deleted (see class comment)
   }
-
-  size_t size() const
-  {
-    return workers.size();
-  }
-
-  void enqueue(Task task)
+  size_t size() const { return m_workers.size(); }
+  void enqueue(std::function<void()> task)
   {
     {
-      std::unique_lock<std::mutex> lock(mutex);
-      tasks.emplace(std::move(task));
+      std::lock_guard<std::mutex> lock(m_mutex);
+      m_tasks.push(std::move(task));
     }
-    cv.notify_one();
+    m_cv.notify_one();
   }
-
 private:
-  ThreadPool(size_t nthreads_hint)
-    : stop(false)
+  explicit parallel_for_pool(const size_t nthreads)
   {
-    size_t nthreads = nthreads_hint == 0 ? 1 : nthreads_hint;
-    workers.reserve(nthreads);
-    for(size_t i = 0; i < nthreads; ++i)
+    const size_t n = std::max<size_t>(1, nthreads);
+    m_workers.reserve(n);
+    for(size_t i = 0; i < n; ++i)
     {
-      workers.emplace_back([this]()
+      m_workers.emplace_back([this]()
+      {
+        for(;;)
+        {
+          std::function<void()> task;
           {
-          igl::internal::set_worker_thread(true); // <- mark this thread as a pool worker
-
-          for(;;)
-          {
-          Task task;
-          {
-          std::unique_lock<std::mutex> lock(mutex);
-          cv.wait(lock, [this]()
-              {
-              return stop || !tasks.empty();
-              });
-
-          if(stop && tasks.empty())
-          {
-          return;
-          }
-
-          task = std::move(tasks.front());
-          tasks.pop();
+            std::unique_lock<std::mutex> lock(m_mutex);
+            m_cv.wait(lock, [this]{ return !m_tasks.empty(); });
+            task = std::move(m_tasks.front());
+            m_tasks.pop();
           }
           task();
-          }
-          });
+        }
+      });
     }
   }
-
-  ~ThreadPool()
-  {
-    {
-      std::unique_lock<std::mutex> lock(mutex);
-      stop = true;
-    }
-    cv.notify_all();
-    for(std::thread & t : workers)
-    {
-      if(t.joinable()) t.join();
-    }
-  }
-
-  std::vector<std::thread> workers;
-  std::queue<Task> tasks;
-  mutable std::mutex mutex;
-  std::condition_variable cv;
-  bool stop;
+  std::vector<std::thread> m_workers;
+  std::queue<std::function<void()>> m_tasks;
+  std::mutex m_mutex;
+  std::condition_variable m_cv;
 };
+#endif
 
 } // namespace internal
 } // namespace igl
@@ -264,106 +258,124 @@ inline bool igl::parallel_for(
   const size_t min_parallel)
 {
   assert(loop_size >= 0);
-  if (loop_size == 0) return false;
-
-  // If we're already inside a ThreadPool worker, run serial to avoid nested
-  // deadlock with the global pool.
-  if (igl::internal::is_worker_thread())
-  {
-    prep_func(1);
-    for (Index i = 0; i < loop_size; ++i)
-    {
-      func(i, 0);
-    }
-    accum_func(0);
-    return false;
-  }
+  if(loop_size == 0) return false;
 
 #ifdef IGL_PARALLEL_FOR_FORCE_SERIAL
-  const size_t configured_threads = 1;
+  const size_t nthreads = 1;
 #else
-  const size_t configured_threads = igl::default_num_threads();
+  const size_t nthreads = igl::default_num_threads();
 #endif
 
-  if (loop_size < static_cast<Index>(min_parallel) || configured_threads <= 1)
+  // Serial when: below the threshold, only one thread available, or already
+  // inside a parallel_for region (nested → serial keeps the thread count
+  // bounded regardless of backend; see #2412).
+  if(loop_size < static_cast<Index>(min_parallel) ||
+     nthreads <= 1 ||
+     igl::internal::parallel_for_in_worker())
   {
-    // Serial fallback
     prep_func(1);
-    for (Index i = 0; i < loop_size; ++i)
-    {
-      func(i, 0);
-    }
+    for(Index i = 0;i<loop_size;i++){ func(i,0); }
     accum_func(0);
     return false;
   }
 
-  // --- Parallel branch using shared thread pool ---
-
-  auto & pool = igl::internal::ThreadPool::instance(configured_threads);
-  const size_t pool_threads = std::max<size_t>(1, pool.size());
-
-  // Match old semantics: prep called with number of *potential* threads.
-  prep_func(pool_threads);
-
-  // Number of "logical jobs" (chunks of the index range).
-  const size_t jobs = static_cast<size_t>(
-    std::min<Index>(loop_size, static_cast<Index>(pool_threads)));
-
-  struct Group
+#if defined(IGL_PARALLEL_FOR_TBB)
+  // ---- EXPERIMENTAL: Intel TBB / oneTBB backend ----------------------------
+  // Partition into `jobs` fixed chunks and run them via TBB over the integer
+  // range [0,jobs); chunk index `t` doubles as the thread-slot id. Each slot is
+  // written by exactly one task, so func(...,t)/accum(t) need no per-slot sync,
+  // and this avoids version-specific APIs like this_task_arena — the integer
+  // `parallel_for(first,last,body)` and `task_arena` exist across TBB versions.
+  prep_func(nthreads);
+  const size_t jobs =
+    static_cast<size_t>(std::min<Index>(loop_size, static_cast<Index>(nthreads)));
+  const Index base = loop_size / static_cast<Index>(jobs);
+  const Index rem  = loop_size % static_cast<Index>(jobs);
+  tbb::task_arena arena(static_cast<int>(nthreads));
+  arena.execute([&]()
   {
-    std::mutex mutex;
-    std::condition_variable cv;
-    std::atomic<size_t> remaining;
+    tbb::parallel_for(size_t(0), jobs, [&](const size_t t)
+    {
+      igl::internal::parallel_for_worker_scope scope;
+      const Index s =
+        static_cast<Index>(t)*base + std::min<Index>(static_cast<Index>(t),rem);
+      const Index e = s + base + (static_cast<Index>(t) < rem ? 1 : 0);
+      for(Index k = s; k < e; k++){ func(k,t); }
+    });
+  });
+  for(size_t t = 0;t<nthreads;t++){ accum_func(t); }
+  return true;
+#elif defined(IGL_PARALLEL_FOR_OPENMP)
+  // ---- EXPERIMENTAL: OpenMP backend ----------------------------------------
+  prep_func(nthreads);
+  #pragma omp parallel num_threads(static_cast<int>(nthreads))
+  {
+    igl::internal::parallel_for_worker_scope scope;
+    const size_t t = static_cast<size_t>(omp_get_thread_num());
+    #pragma omp for schedule(static)
+    for(Index i = 0;i<loop_size;i++){ func(i,t); }
+  }
+  for(size_t t = 0;t<nthreads;t++){ accum_func(t); }
+  return true;
+#else
+  // ---- Default: internal std::thread pool ----------------------------------
+  auto & pool = igl::internal::parallel_for_pool::get(nthreads);
+  const size_t P = std::max<size_t>(1, pool.size());
+  // prep is called with the number of thread-id slots [0,P) that func/accum see.
+  prep_func(P);
+
+  // Partition [0,loop_size) into `jobs` contiguous chunks; chunk t is handled by
+  // exactly one thread, so func(...,t)/accum(t) need no per-slot synchronization.
+  const size_t jobs =
+    static_cast<size_t>(std::min<Index>(loop_size, static_cast<Index>(P)));
+  const Index base = loop_size / static_cast<Index>(jobs);
+  const Index rem  = loop_size % static_cast<Index>(jobs);
+  const auto chunk_begin = [&](const size_t t) -> Index
+  {
+    return static_cast<Index>(t)*base + std::min<Index>(static_cast<Index>(t),rem);
+  };
+  const auto chunk_end = [&](const size_t t) -> Index
+  {
+    return chunk_begin(t) + base + (static_cast<Index>(t) < rem ? 1 : 0);
   };
 
-  auto group = std::make_shared<Group>();
-  group->remaining.store(jobs, std::memory_order_relaxed);
-
-  const Index total = loop_size;
-  const Index base  = total / static_cast<Index>(jobs);
-  const Index rem   = total % static_cast<Index>(jobs);
-
-  for (size_t t = 0; t < jobs; ++t)
+  // Completion is tracked by a counter guarded by `done_mutex` (not a lone
+  // atomic): decrementing, testing-for-zero, and notifying all happen under the
+  // lock, and the waiter tests the same counter under the lock. This makes the
+  // last worker's notify and the caller's wake mutually exclusive, so the caller
+  // cannot wake (even spuriously) and destroy these stack-local primitives while
+  // a worker is still touching them.
+  size_t remaining = jobs;
+  std::mutex done_mutex;
+  std::condition_variable done_cv;
+  const auto run_chunk = [&](const size_t t)
   {
-    const Index start =
-      static_cast<Index>(t) * base
-      + std::min<Index>(static_cast<Index>(t), rem);
+    // Mark this thread as a worker so any parallel_for inside func runs serial.
+    igl::internal::parallel_for_worker_scope scope;
+    const Index end = chunk_end(t);
+    for(Index k = chunk_begin(t); k < end; k++){ func(k,t); }
+    std::lock_guard<std::mutex> lock(done_mutex);
+    if(--remaining == 0){ done_cv.notify_one(); }
+  };
 
-    const Index end = start + base + (t < static_cast<size_t>(rem) ? 1 : 0);
+  // Enqueue all-but-one chunk to the pool and run the last one on the calling
+  // thread — so the calling core isn't left idle, and (with nested→serial) the
+  // total active threads for this call stay ≤ P. The calling thread blocks below
+  // until all chunks finish, so capturing the local state by reference is safe.
+  for(size_t t = 0; t + 1 < jobs; t++)
+  {
+    pool.enqueue([&run_chunk,t]{ run_chunk(t); });
+  }
+  run_chunk(jobs-1);
 
-    pool.enqueue([group, &func, start, end, t]()
-    {
-      // Each job processes its contiguous slice [start, end)
-      for (Index k = start; k < end; ++k)
-      {
-        func(k, t);
-      }
-
-      // Signal completion of this job.
-      if (group->remaining.fetch_sub(1, std::memory_order_acq_rel) == 1)
-      {
-        std::unique_lock<std::mutex> lock(group->mutex);
-        group->cv.notify_one();
-      }
-    });
+  {
+    std::unique_lock<std::mutex> lock(done_mutex);
+    done_cv.wait(lock, [&remaining]{ return remaining == 0; });
   }
 
-  // Wait for all jobs for this parallel_for call to finish.
-  {
-    std::unique_lock<std::mutex> lock(group->mutex);
-    group->cv.wait(lock, [&group]()
-    {
-      return group->remaining.load(std::memory_order_acquire) == 0;
-    });
-  }
-
-  // Accumulate across all potential threads (same as original implementation).
-  for (size_t t = 0; t < pool_threads; ++t)
-  {
-    accum_func(t);
-  }
-
+  for(size_t t = 0;t<P;t++){ accum_func(t); }
   return true;
+#endif
 }
 
 #endif

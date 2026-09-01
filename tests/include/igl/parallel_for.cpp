@@ -1,3 +1,16 @@
+// These tests are backend-agnostic: they exercise whichever igl::parallel_for
+// backend the translation unit is compiled with. To run the same suite under an
+// experimental backend, define its macro when building this file (the default,
+// with no macro, uses the internal std::thread pool):
+//
+//   default (pool):  (nothing)
+//   OpenMP:          -DIGL_PARALLEL_FOR_OPENMP -fopenmp
+//   Intel TBB:       -DIGL_PARALLEL_FOR_TBB   (and link TBB)
+//   forced serial:   -DIGL_PARALLEL_FOR_FORCE_SERIAL
+//
+// (On machines with very many cores, cap IGL_NUM_THREADS for the OpenMP backend;
+// repeatedly spawning e.g. 128-thread OpenMP regions can exhaust some runtimes —
+// the pool backend, which creates its workers once, is unaffected.)
 #include <test_common.h>
 #include <igl/parallel_for.h>
 #include <atomic>
@@ -664,3 +677,66 @@ TEST_CASE("parallel_for: nested_serial_fallback", "[igl][parallel_for]")
 }
 
 #endif // IGL_PARALLEL_FOR_TIMING_TESTS
+
+// -----------------------------------------------------------------------------
+// Regression tests for issue #2412 (fast_winding_number / nested parallel_for
+// creating unboundedly many threads). The property we guard is: the number of
+// distinct OS threads that ever execute the loop body stays bounded by the
+// configured thread count, regardless of nesting depth or how many times
+// parallel_for is called.
+// -----------------------------------------------------------------------------
+
+namespace
+{
+  struct thread_id_recorder
+  {
+    std::mutex m;
+    std::set<std::thread::id> ids;
+    void record()
+    {
+      std::lock_guard<std::mutex> lock(m);
+      ids.insert(std::this_thread::get_id());
+    }
+    size_t count()
+    {
+      std::lock_guard<std::mutex> lock(m);
+      return ids.size();
+    }
+  };
+}
+
+TEST_CASE("parallel_for: bounded_thread_count_under_nesting", "[igl][parallel_for]")
+{
+  // Deeply nested parallel_for must not spawn a growing number of threads: with
+  // nested→serial, the inner loops run on their outer worker, so the total
+  // distinct threads is bounded by the pool size (+ the calling thread).
+  thread_id_recorder rec;
+  const int N = 4096;
+  igl::parallel_for(N,[&](int)
+  {
+    igl::parallel_for(64,[&](int)
+    {
+      igl::parallel_for(8,[&](int){ rec.record(); },1);
+    },1);
+  },1);
+
+  const size_t bound = (size_t)igl::default_num_threads() + 1; // workers + caller
+  INFO("distinct threads = " << rec.count() << ", bound = " << bound);
+  REQUIRE(rec.count() >= 1);
+  REQUIRE(rec.count() <= bound);
+}
+
+TEST_CASE("parallel_for: pool_reuse_no_thread_growth", "[igl][parallel_for]")
+{
+  // Calling parallel_for many times must reuse the same pool rather than spawn
+  // fresh threads each call (the per-call std::thread churn the pool replaces).
+  thread_id_recorder rec;
+  for(int it = 0; it < 200; ++it)
+  {
+    igl::parallel_for(1024,[&](int){ rec.record(); },1);
+  }
+  const size_t bound = (size_t)igl::default_num_threads() + 1;
+  INFO("distinct threads across 200 calls = " << rec.count() << ", bound = " << bound);
+  REQUIRE(rec.count() >= 1);
+  REQUIRE(rec.count() <= bound);
+}
