@@ -7,10 +7,10 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "progressive_hulls.h"
 #include "progressive_hulls_cost_and_placement.h"
-#include "../decimate.h"
-#include "../decimate_trivial_callbacks.h"
-#include "../max_faces_stopping_condition.h"
-IGL_INLINE bool igl::copyleft::progressive_hulls(
+#include "decimate.h"
+#include "decimate_trivial_callbacks.h"
+#include "max_faces_stopping_condition.h"
+IGL_INLINE bool igl::progressive_hulls(
   const Eigen::MatrixXd & V,
   const Eigen::MatrixXi & F,
   const size_t max_m,
@@ -22,7 +22,7 @@ IGL_INLINE bool igl::copyleft::progressive_hulls(
   return progressive_hulls(V,F,max_m,decorators,U,G,J);
 }
 
-IGL_INLINE bool igl::copyleft::progressive_hulls(
+IGL_INLINE bool igl::progressive_hulls(
   const Eigen::MatrixXd & V,
   const Eigen::MatrixXi & F,
   const size_t max_m,
