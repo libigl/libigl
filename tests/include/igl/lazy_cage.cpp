@@ -84,7 +84,7 @@ TEST_CASE("lazy_cage: encloses input", "[igl]")
   // generous offset range.
   const bool ok = igl::lazy_cage(
     V,F,num_faces,grid_size,0.5*diag,8,/*use_qslim=*/false,
-    igl::LAZY_CAGE_METRIC_SIGMA,CV,CF,sigma);
+    igl::LAZY_CAGE_METRIC_SIGMA,igl::LAZY_CAGE_GRID_DENSE,CV,CF,sigma);
 
   REQUIRE(ok);
   REQUIRE(CF.rows() > 0);
@@ -128,7 +128,7 @@ TEST_CASE("lazy_cage: qslim variant is valid", "[igl]")
   double sigma = -1;
   const bool ok = igl::lazy_cage(
     V,F,/*num_faces=*/40,/*grid=*/24,/*max_sigma=*/0.5*diag,/*iters=*/8,
-    /*use_qslim=*/true,igl::LAZY_CAGE_METRIC_SIGMA,CV,CF,sigma);
+    /*use_qslim=*/true,igl::LAZY_CAGE_METRIC_SIGMA,igl::LAZY_CAGE_GRID_DENSE,CV,CF,sigma);
   REQUIRE(ok);
   require_valid_cage(V,F,CV,CF);
 }
@@ -150,10 +150,10 @@ TEST_CASE("lazy_cage: volume metric is valid and no worse", "[igl]")
   double sig_s=-1, sig_v=-1;
   REQUIRE(igl::lazy_cage(
     V,F,num_faces,grid_size,0.1*diag,10,false,
-    igl::LAZY_CAGE_METRIC_SIGMA,CVs,CFs,sig_s));
+    igl::LAZY_CAGE_METRIC_SIGMA,igl::LAZY_CAGE_GRID_DENSE,CVs,CFs,sig_s));
   REQUIRE(igl::lazy_cage(
     V,F,num_faces,grid_size,0.1*diag,10,false,
-    igl::LAZY_CAGE_METRIC_VOLUME,CVv,CFv,sig_v));
+    igl::LAZY_CAGE_METRIC_VOLUME,igl::LAZY_CAGE_GRID_DENSE,CVv,CFv,sig_v));
 
   require_valid_cage(V,F,CVv,CFv);
 
@@ -165,4 +165,47 @@ TEST_CASE("lazy_cage: volume metric is valid and no worse", "[igl]")
   // The volume-optimal cage is at least as good (up to tiny tolerance) as the
   // minimum-σ cage under the volume objective.
   REQUIRE(volume(CVv,CFv) <= volume(CVs,CFs)*(1.0+1e-9));
+}
+
+// The sparse (Lipschitz octree) grid mode must produce a valid cage just like
+// the dense mode, with a comparable offset.
+TEST_CASE("lazy_cage: sparse grid mode is valid", "[igl]")
+{
+  Eigen::MatrixXd V;
+  Eigen::MatrixXi F;
+  igl::read_triangle_mesh(test_common::data_path("cube.obj"),V,F);
+  const double diag = igl::bounding_box_diagonal(V);
+
+  Eigen::MatrixXd CVd, CVs;
+  Eigen::MatrixXi CFd, CFs;
+  double sig_d=-1, sig_s=-1;
+  REQUIRE(igl::lazy_cage(
+    V,F,40,32,0.5*diag,8,false,
+    igl::LAZY_CAGE_METRIC_SIGMA,igl::LAZY_CAGE_GRID_DENSE,CVd,CFd,sig_d));
+  REQUIRE(igl::lazy_cage(
+    V,F,40,32,0.5*diag,8,false,
+    igl::LAZY_CAGE_METRIC_SIGMA,igl::LAZY_CAGE_GRID_SPARSE,CVs,CFs,sig_s));
+
+  require_valid_cage(V,F,CVd,CFd);
+  require_valid_cage(V,F,CVs,CFs);
+  // Same effective resolution, so the found offsets should be close (they can
+  // differ because the two backends sample the field at different points).
+  REQUIRE(sig_s == Approx(sig_d).epsilon(0.5));
+}
+
+// grid_size <= 0 selects the heuristic resolution and still yields a valid cage.
+TEST_CASE("lazy_cage: automatic grid size", "[igl]")
+{
+  REQUIRE(igl::lazy_cage_default_grid_size(100) >= 24);
+  REQUIRE(igl::lazy_cage_default_grid_size(100) <=
+          igl::lazy_cage_default_grid_size(1600));
+  Eigen::MatrixXd V;
+  Eigen::MatrixXi F;
+  igl::read_triangle_mesh(test_common::data_path("bunny_small.off"),V,F);
+  Eigen::MatrixXd CV;
+  Eigen::MatrixXi CF;
+  double sigma = -1;
+  REQUIRE(igl::lazy_cage(V,F,/*num_faces=*/200,/*grid_size=*/0,CV,CF,sigma));
+  REQUIRE(CF.rows() == 200);
+  require_valid_cage(V,F,CV,CF);
 }

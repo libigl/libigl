@@ -25,6 +25,29 @@ namespace igl
     LAZY_CAGE_METRIC_SURFACE_AREA = 2,
     NUM_LAZY_CAGE_METRIC = 3
   };
+  /// How the dense offset isosurface is extracted for each candidate σ.
+  enum LazyCageGridMode
+  {
+    /// Sample the signed distance field once on a dense `grid_size`³ background
+    /// grid and re-run marching cubes at each σ isolevel. Amortizes the (costly)
+    /// distance evaluation across all σ candidates; best for moderate grids.
+    LAZY_CAGE_GRID_DENSE = 0,
+    /// For each σ, prune to the octree cells near the offset surface with a
+    /// Lipschitz octree and run sparse marching cubes there, evaluating the
+    /// distance only at the O(surface-area) corners that matter. Loses the
+    /// amortized dense precompute but avoids the O(grid³) cost, so it wins for
+    /// large inputs and/or very dense grids. `grid_size` is rounded to the
+    /// nearest power of two.
+    LAZY_CAGE_GRID_SPARSE = 1,
+    NUM_LAZY_CAGE_GRID_MODE = 2
+  };
+  /// Heuristic isosurfacing grid resolution (cells across the largest side) for
+  /// a lazy cage with `num_faces` faces, used when `grid_size <= 0`. Roughly
+  /// proportional to sqrt(num_faces) and clamped; see igl::lazy_cage.
+  ///
+  /// @param[in] num_faces  desired number of cage faces
+  /// @return grid resolution
+  IGL_INLINE int lazy_cage_default_grid_size(const int num_faces);
   /// Compute a "lazy cage" enclosing a closed input mesh: the coarse cage is
   /// obtained by offsetting (V,F) outward by an amount σ, extracting the dense
   /// offset surface, and decimating it down to `num_faces` faces while it
@@ -54,13 +77,16 @@ namespace igl
   /// @param[in] grid_size  isosurfacing resolution: number of cells along the
   ///   largest bounding-box side used to sample the offset (larger = denser
   ///   offset, more faithful but slower; must be fine enough that the smallest
-  ///   feasible offset can be resolved)
+  ///   feasible offset can be resolved). If `<= 0`, a resolution is chosen from
+  ///   `num_faces` via igl::lazy_cage_default_grid_size.
   /// @param[in] max_sigma  upper bound on the searched offset distance
   /// @param[in] num_iters  number of bisection iterations on σ (also the number
   ///   of sweep samples for the volume/area metrics)
   /// @param[in] use_qslim  if true decimate with igl::qslim (quadric error),
   ///   otherwise with the default {shortest edge, midpoint} igl::decimate
   /// @param[in] metric  objective minimized when choosing σ (see LazyCageMetric)
+  /// @param[in] grid_mode  dense vs. sparse isosurface extraction (see
+  ///   LazyCageGridMode)
   /// @param[out] CV  #CV by 3 list of cage vertex positions
   /// @param[out] CF  #CF by 3 list of cage triangle indices into CV
   /// @param[out] sigma  the offset distance used to build the returned cage
@@ -69,7 +95,8 @@ namespace igl
   ///   attempt, if any, and `sigma` its offset)
   ///
   /// \see decimate, qslim, block_self_intersections,
-  ///   block_intersections_with_input, signed_distance, marching_cubes, centroid
+  ///   block_intersections_with_input, signed_distance, marching_cubes,
+  ///   lipschitz_octree, centroid
   IGL_INLINE bool lazy_cage(
     const Eigen::MatrixXd & V,
     const Eigen::MatrixXi & F,
@@ -79,12 +106,14 @@ namespace igl
     const int num_iters,
     const bool use_qslim,
     const LazyCageMetric metric,
+    const LazyCageGridMode grid_mode,
     Eigen::MatrixXd & CV,
     Eigen::MatrixXi & CF,
     double & sigma);
   /// \overload
   /// \brief Uses max_sigma = 0.1*bbox-diagonal, num_iters = 12, the default
-  /// {shortest edge, midpoint} decimation, and the σ metric.
+  /// {shortest edge, midpoint} decimation, the σ metric, and the dense grid.
+  /// If `grid_size <= 0` a resolution is chosen automatically from `num_faces`.
   IGL_INLINE bool lazy_cage(
     const Eigen::MatrixXd & V,
     const Eigen::MatrixXi & F,

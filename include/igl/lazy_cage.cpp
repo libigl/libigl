@@ -18,8 +18,13 @@
 #include "doublearea.h"
 #include "AABB.h"
 #include "tri_tri_intersect.h"
+#include "fast_winding_number.h"
+#include "lipschitz_octree.h"
+#include "unique_sparse_voxel_corners.h"
+#include "parallel_for.h"
 #include <Eigen/Geometry>
 #include <cmath>
+#include <functional>
 #include <limits>
 #include <vector>
 
@@ -89,40 +94,129 @@ namespace
   }
 }
 
+IGL_INLINE int igl::lazy_cage_default_grid_size(const int num_faces)
+{
+  // A cage with N faces has a characteristic edge length ~ 1/sqrt(N) of its
+  // extent, so the isosurfacing grid needs on the order of sqrt(N) cells across
+  // to resolve the offset that decimation targets. Beyond that, finer grids buy
+  // little tightness for a lot of cost (they can even force a *looser* offset,
+  // since a more faithful offset leaves the coarse cage less room). The constant
+  // and clamps below are fit to a mesh/parameter sweep (see 1007_LazyCage).
+  const double g = 3.5*std::sqrt((double)std::max(1,num_faces));
+  int gi = (int)std::lround(g);
+  if(gi < 24) { gi = 24; }
+  if(gi > 160) { gi = 160; }
+  return gi;
+}
+
 IGL_INLINE bool igl::lazy_cage(
   const Eigen::MatrixXd & V,
   const Eigen::MatrixXi & F,
   const int num_faces,
-  const int grid_size,
+  const int grid_size_in,
   const double max_sigma,
   const int num_iters,
   const bool use_qslim,
   const LazyCageMetric metric,
+  const LazyCageGridMode grid_mode,
   Eigen::MatrixXd & CV,
   Eigen::MatrixXi & CF,
   double & sigma)
 {
   const double diag = igl::bounding_box_diagonal(V);
+  const int grid_size = grid_size_in > 0 ?
+    grid_size_in : lazy_cage_default_grid_size(num_faces);
 
-  // Sample a signed distance field on a background grid padded to comfortably
-  // contain the largest offset we might try. The field is independent of σ, so
-  // it is computed once and every candidate offset is just a different marching
-  // cubes isolevel.
+  // Tree over the input, reused to validate every candidate cage (and, in
+  // sparse mode, to evaluate distances for the signed distance function).
+  igl::AABB<Eigen::MatrixXd,3> input_tree;
+  input_tree.init(V,F);
+
+  // === Backend-specific precompute + an extract(σ) -> (OV,OF) closure. ===
+  // DENSE: sample the signed distance field once on a grid_size³ grid; each
+  //   candidate offset is a different marching cubes isolevel (amortized).
   Eigen::MatrixXd GV;
   Eigen::RowVector3i side;
-  igl::voxel_grid(V, max_sigma*1.5, grid_size, 1, GV, side);
-  Eigen::VectorXd S;
+  Eigen::VectorXd Sdense;
+  // SPARSE: point-wise signed distance handle + a padded octree root; each
+  //   candidate offset prunes to near-surface cells and runs sparse marching
+  //   cubes there (no amortization, but O(surface) instead of O(grid³)).
+  igl::FastWindingNumberBVH fwn;
+  std::function<double(const Eigen::RowVector3d &)> sdf;   // signed (needs winding)
+  std::function<double(const Eigen::RowVector3d &)> udist; // unsigned (distance only)
+  Eigen::RowVector3d origin;
+  double h0 = 0;
+  int max_depth = 0;
+
+  if(grid_mode == LAZY_CAGE_GRID_DENSE)
   {
+    igl::voxel_grid(V, max_sigma*1.5, grid_size, 1, GV, side);
     Eigen::VectorXi I; Eigen::MatrixXd C,N;
     igl::signed_distance(
       GV, V, F, igl::SIGNED_DISTANCE_TYPE_FAST_WINDING_NUMBER,
       -std::numeric_limits<double>::infinity(),
-       std::numeric_limits<double>::infinity(), S, I, C, N);
+       std::numeric_limits<double>::infinity(), Sdense, I, C, N);
+  }
+  else
+  {
+    igl::fast_winding_number(V.cast<float>().eval(), F, 2, fwn);
+    const igl::AABB<Eigen::MatrixXd,3> & tree = input_tree;
+    udist = [&V,&F,&tree](const Eigen::RowVector3d & p) -> double
+    {
+      int i; Eigen::RowVector3d c;
+      return std::sqrt(tree.squared_distance(V,F,p,i,c));
+    };
+    sdf = [&V,&F,&tree,&fwn,&udist](const Eigen::RowVector3d & p) -> double
+    {
+      const double w = igl::fast_winding_number(fwn, 2, p.cast<float>().eval());
+      return (1.0 - 2.0*std::abs(w))*udist(p);   // > 0 outside, < 0 inside
+    };
+    const Eigen::RowVector3d bmin = V.colwise().minCoeff();
+    const Eigen::RowVector3d bmax = V.colwise().maxCoeff();
+    const double maxside = (bmax-bmin).maxCoeff();
+    h0 = maxside + 3.0*max_sigma;                 // room for offsets up to max_sigma
+    // Octree resolution is a power of two; pick the nearest to grid_size so the
+    // sparse mode is a fair drop-in for the dense mode at the same grid_size.
+    max_depth = std::max(1,(int)std::lround(std::log2((double)grid_size)));
+    origin = 0.5*(bmin+bmax) - Eigen::RowVector3d::Constant(0.5*h0);
   }
 
-  // Tree over the input, reused to validate every candidate cage.
-  igl::AABB<Eigen::MatrixXd,3> input_tree;
-  input_tree.init(V,F);
+  const auto extract_offset = [&](
+    const double s, Eigen::MatrixXd & OV, Eigen::MatrixXi & OF)
+  {
+    if(grid_mode == LAZY_CAGE_GRID_DENSE)
+    {
+      igl::marching_cubes(Sdense, GV, side(0), side(1), side(2), s, OV, OF);
+      return;
+    }
+    // Sparse: prune to octree cells straddling the offset surface {sdf = s}.
+    // Pruning only needs a 1-Lipschitz lower bound on the distance to that
+    // surface, so use the *unsigned* distance (no winding number): |udist - s|.
+    // This also flags an inner shell at unsigned distance s, but sdf < 0 there
+    // so marching cubes finds no surface — safe over-inclusion that keeps the
+    // expensive winding-number evaluation off the many pruning queries.
+    const std::function<double(const Eigen::RowVector3d &)> udf =
+      [&udist,s](const Eigen::RowVector3d & p){ return std::abs(udist(p)-s); };
+    Eigen::Matrix<int,Eigen::Dynamic,3,Eigen::RowMajor> ijk;
+    igl::lipschitz_octree(origin, h0, max_depth, udf, ijk);
+    if(ijk.rows() == 0) { OV.resize(0,3); OF.resize(0,3); return; }
+    Eigen::Matrix<int,Eigen::Dynamic,3,Eigen::RowMajor> unique_ijk;
+    Eigen::Matrix<int,Eigen::Dynamic,8,Eigen::RowMajor> J;
+    Eigen::Matrix<double,Eigen::Dynamic,3,Eigen::RowMajor> corners;
+    igl::unique_sparse_voxel_corners(
+      origin, h0, max_depth, ijk, unique_ijk, J, corners);
+    Eigen::VectorXd Sc(corners.rows());
+    igl::parallel_for(
+      corners.rows(),
+      [&](const int u){ Sc(u) = sdf(corners.row(u)); }, 1000);
+    // Use the fixed-3-column output types that the sparse marching_cubes is
+    // instantiated for, then assign into the caller's OV/OF.
+    Eigen::Matrix<double,Eigen::Dynamic,3> mV;
+    Eigen::Matrix<int,Eigen::Dynamic,3> mF;
+    igl::marching_cubes(Sc, corners, J, s, mV, mF);
+    OV = mV;
+    OF = mF;
+  };
 
   // Attempt to build a valid cage at a given offset: extract the offset
   // isosurface, decimate it to `num_faces` while forbidding self-intersections
@@ -136,7 +230,7 @@ IGL_INLINE bool igl::lazy_cage(
   {
     Eigen::MatrixXd OV;
     Eigen::MatrixXi OF;
-    igl::marching_cubes(S, GV, side(0), side(1), side(2), s, OV, OF);
+    extract_offset(s, OV, OF);
     if(OF.rows() <= num_faces) { return false; }
     std::vector<igl::decimate_pre_post_collapse_callbacks_decorator> decorators;
     decorators.push_back(igl::block_self_intersections());
@@ -224,5 +318,5 @@ IGL_INLINE bool igl::lazy_cage(
   const double diag = igl::bounding_box_diagonal(V);
   return lazy_cage(
     V,F,num_faces,grid_size,0.1*diag,12,false,
-    LAZY_CAGE_METRIC_SIGMA,CV,CF,sigma);
+    LAZY_CAGE_METRIC_SIGMA,LAZY_CAGE_GRID_DENSE,CV,CF,sigma);
 }
