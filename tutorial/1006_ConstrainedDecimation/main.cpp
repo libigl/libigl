@@ -24,7 +24,7 @@
 // Press ' ' to cycle through the results.
 #include <igl/opengl/glfw/Viewer.h>
 #include <igl/read_triangle_mesh.h>
-#include <igl/copyleft/progressive_hulls.h>
+#include <igl/progressive_hulls.h>
 #include <igl/decimate_callback_types.h>
 #include <igl/block_self_intersections.h>
 #include <igl/block_intersections_with_input.h>
@@ -163,7 +163,7 @@ int main(int argc, char *argv[])
   {
     double t = igl::get_seconds();
     Eigen::MatrixXd U; Eigen::MatrixXi G; Eigen::VectorXi J;
-    igl::copyleft::progressive_hulls(V,F,target_m,decs,U,G,J);
+    igl::progressive_hulls(V,F,target_m,decs,U,G,J);
     const double secs = igl::get_seconds()-t;
 
     // Self-intersections of the hull.
