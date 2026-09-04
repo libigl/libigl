@@ -28,6 +28,9 @@ namespace igl
   ///   infinite distance.
   ///
   /// \note specifying a face as target/source means its center. 
+  /// \note In debug mode, the function will crash on meshes with multiple
+  /// connected components. In release, it may siltently return 0.0 instead of
+  /// ∞ (https://github.com/libigl/libigl/issues/2554)
   ///
     template <
     typename DerivedV,
