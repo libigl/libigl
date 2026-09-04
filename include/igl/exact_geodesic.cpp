@@ -20,6 +20,7 @@
 #include <ctime>
 #include <fstream>
 #include <iostream>
+#include <limits>
 #include <set>
 #include <vector>
 #include <memory>
@@ -1026,7 +1027,7 @@ inline void Mesh::build_adjacencies()
 	assert(verify());
 }
 
-inline bool Mesh::verify()		//verifies connectivity of the mesh and prints some debug info
+inline bool Mesh::verify()		//verifies the mesh and prints some debug info
 {
 	// make sure that all vertices are mentioned at least once.
 	// though the loose vertex is not a bug, it most likely indicates that something is wrong with the mesh
@@ -1036,33 +1037,6 @@ inline bool Mesh::verify()		//verifies connectivity of the mesh and prints some 
 		edge_pointer e = &m_edges[i];
 		map[e->adjacent_vertices()[0]->id()] = true;
 		map[e->adjacent_vertices()[1]->id()] = true;
-	}
-	assert(std::find(map.begin(), map.end(), false) == map.end());
-
-	//make sure that the mesh is connected trough its edges
-	//if mesh has more than one connected component, it is most likely a bug
-	std::vector<face_pointer> stack(1,&m_faces[0]);
-	stack.reserve(m_faces.size());
-
-	map.resize(m_faces.size());
-	std::fill(map.begin(), map.end(), false);
-	map[0] = true;
-
-	while(!stack.empty())
-	{
-		face_pointer f = stack.back();
-		stack.pop_back();
-
-		for(unsigned i=0; i<3; ++i)
-		{
-			edge_pointer e = f->adjacent_edges()[i];
-			face_pointer f_adjacent = e->opposite_face(f);
-			if(f_adjacent && !map[f_adjacent->id()])
-			{
-				map[f_adjacent->id()] = true;
-				stack.push_back(f_adjacent);
-			}
-		}
 	}
 	assert(std::find(map.begin(), map.end(), false) == map.end());
 
@@ -3233,7 +3207,9 @@ IGL_INLINE void igl::exact_geodesic(
   for (int i = 0; i < target.size(); i++)
   {
     exact_algorithm.trace_back(target[i], path);
-    D(i) = igl::geodesic::length(path);
+    D(i) = path.empty() ?
+      std::numeric_limits<typename DerivedD::Scalar>::infinity() :
+      igl::geodesic::length(path);
   }
 }
 
