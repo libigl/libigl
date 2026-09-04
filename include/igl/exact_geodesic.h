@@ -26,6 +26,9 @@ namespace igl
   /// @param[out] D  #VT+#FT by 1 vector of geodesic distances of each target w.r.t. the nearest one in the source set
   ///
   /// \note specifying a face as target/source means its center. 
+  /// \note In debug mode, the function will crash on meshes with multiple
+  /// connected components. In release, it may siltently return 0.0 instead of
+  /// ∞ (https://github.com/libigl/libigl/issues/2554)
   ///
     template <
     typename DerivedV,

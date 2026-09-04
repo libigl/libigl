@@ -97,6 +97,15 @@ option(LIBIGL_INSTALL          "Enable installation of libigl targets" ${LIBIGL_
 # (by default, static build is off since libigl is a header-only library)
 option(LIBIGL_USE_STATIC_LIBRARY "Use libigl as static library" ${LIBIGL_TOPLEVEL_PROJECT})
 
+# Backend for igl::parallel_for. POOL (default) uses an internal std::thread
+# pool and needs no extra dependency. OPENMP and TBB are experimental and
+# require the corresponding toolchain/library; if the requested one is not found
+# the build falls back to POOL. SERIAL forces all parallel_for loops to run
+# serially. See include/igl/parallel_for.h.
+set(LIBIGL_PARALLEL_FOR_BACKEND "POOL" CACHE STRING
+    "igl::parallel_for backend: POOL, OPENMP, TBB, or SERIAL")
+set_property(CACHE LIBIGL_PARALLEL_FOR_BACKEND PROPERTY STRINGS POOL OPENMP TBB SERIAL)
+
 # Permissive modules. These modules are available under MPL2 license, and their dependencies are available
 # under a permissive or public domain license.
 option(LIBIGL_CYCODEBASE       "Build target igl::cycodebase"       ${LIBIGL_TOPLEVEL_PROJECT})
