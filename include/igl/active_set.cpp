@@ -14,6 +14,7 @@
 #include "placeholders.h"
 #include "PlainMatrix.h"
 
+#include <cassert>
 #include <iostream>
 #include <limits>
 #include <algorithm>

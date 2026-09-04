@@ -4,8 +4,10 @@
 #include <igl/swept_volume.h>
 #include <igl/opengl/glfw/Viewer.h>
 #include <igl/PI.h>
+#include <igl/LinSpaced.h>
 #include <Eigen/Core>
 #include <iostream>
+#include <vector>
 
 
 int main(int argc, char * argv[])
@@ -35,10 +37,22 @@ int main(int argc, char * argv[])
   viewer.core().is_animating = !show_swept_volume;
   const int grid_size = 50;
   const int time_steps = 200;
-  const double isolevel = 0.1;
+  // Dilate the swept volume by a distance of 10% of the bunny's largest side
+  // (isolevel is a distance in the units of V)
+  const double isolevel =
+    0.01*(V.colwise().maxCoeff()-V.colwise().minCoeff()).maxCoeff();
+  // Preload the motion as a list of rigid transformations sampled uniformly in
+  // time over t∈[0,1]
+  std::vector<Eigen::Affine3d,Eigen::aligned_allocator<Eigen::Affine3d> >
+    transforms(time_steps);
+  {
+    const Eigen::VectorXd t = igl::LinSpaced<Eigen::VectorXd>(time_steps,0,1);
+    for(int ti = 0;ti<time_steps;ti++) { transforms[ti] = transform(t(ti)); }
+  }
   std::cerr<<"Computing swept volume...";
   igl::swept_volume(
-    V,F,transform,time_steps,grid_size,isolevel,SV,SF);
+    V,F,transforms,igl::SIGNED_DISTANCE_TYPE_FAST_WINDING_NUMBER,grid_size,isolevel,
+    SV,SF);
   std::cerr<<" finished."<<std::endl;
 
   viewer.callback_pre_draw =

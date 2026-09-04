@@ -10,6 +10,7 @@
 #include <Eigen/Core>
 #include <Eigen/LU>
 #include "EPS.h"
+#include <cassert>
 #include <cstdio>
 
 template <typename T>

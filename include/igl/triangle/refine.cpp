@@ -8,6 +8,8 @@
 #include "refine.h"
 #include "triangle_header.h"
 
+#include <cassert>
+
 template <
   typename DerivedV,
   typename DerivedE,

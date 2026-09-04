@@ -113,12 +113,9 @@ void igl::variable_radius_offset(
   Eigen::PlainObjectBase<DerivedmF> & mF)
 {
   using RowVector3S = Eigen::Matrix<Scalar,1,3>;
-  IGL_TICTOC_LAMBDA;
-  tictoc();
   Eigen::Matrix<Scalar,Eigen::Dynamic,3,Eigen::RowMajor> B1,B2;
   Eigen::VectorXi leaf;
   igl::eytzinger_aabb(PB1,PB2,B1,B2,leaf);
-  printf("%-20s: %g secs\n","eytzinger_aabb",tictoc());
 
   const std::function<Scalar(const RowVector3S &)>
     sdf = [&](const RowVector3S & p) -> Scalar
@@ -128,7 +125,7 @@ void igl::variable_radius_offset(
       return primitive(p,j);
     };
     Scalar f;
-    igl::eytzinger_aabb_sdf(p,primitive_p,B1,B2,leaf,f);
+    igl::eytzinger_aabb_sdf<false>(p,primitive_p,B1,B2,leaf,f);
     return f;
   };
   const std::function<Scalar(const RowVector3S &)>
@@ -157,18 +154,14 @@ void igl::variable_radius_offset(
   };
   Eigen::Matrix<int,Eigen::Dynamic,3,Eigen::RowMajor> ijk;
   igl::lipschitz_octree( origin,h0,max_depth,udf,ijk);
-  printf("%-20s: %g secs\n","lipschitz_octree",tictoc());
 
   {
-    tictoc();
     // Gather the corners of those leaf cells
     const Scalar h = h0 / (1 << max_depth);
     Eigen::Matrix<int,Eigen::Dynamic,8,Eigen::RowMajor> J;
     Eigen::Matrix<int,Eigen::Dynamic,3,Eigen::RowMajor> unique_ijk;
     Eigen::Matrix<Scalar,Eigen::Dynamic,3,Eigen::RowMajor> unique_corner_positions;
     igl::unique_sparse_voxel_corners(origin,h0,max_depth,ijk,unique_ijk,J,unique_corner_positions);
-    //printf("unique_sparse_voxel_corners: %0.7f seconds\n",tictoc());
-    printf("%-20s: %g secs\n","unique_sparse_vo...",tictoc());
     /// Evaluate the signed distance function at the corners
     Eigen::VectorXd S(unique_corner_positions.rows());
     //for(int u = 0;u<unique_corner_positions.rows();u++)
@@ -179,12 +172,8 @@ void igl::variable_radius_offset(
         // evaluate the function at the corner
         S(u) = sdf(unique_corner_positions.row(u));
       },1000);
-      //printf("                        sdf: %0.7f seconds\n",tictoc());
-      printf("%-20s: %g secs\n","sdf",tictoc());
     // Run marching cubes on the sparse set of leaf cells
     igl::marching_cubes( S,unique_corner_positions,J, 0, mV,mF);
-    //printf("             marching_cubes: %0.7f seconds\n",tictoc());
-    printf("%-20s: %g secs\n","marching_cubes",tictoc());
   }
 }
 

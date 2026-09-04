@@ -6,6 +6,7 @@
 #include <igl/barycenter.h>
 #include <igl/winding_number.h>
 #include <igl/doublearea.h>
+#include <igl/placeholders.h>
 #include <iostream>
 
 TEST_CASE("refine", "[igl][triangle]") {
@@ -85,7 +86,7 @@ TEST_CASE("refine-inner-pinch", "[igl][triangle]") {
     // This is sadly O(|E| ⋅ |BC|) for 2D inputs.
     igl::winding_number(V,E,BC,W);
     auto keep = igl::find((W.array().abs() > 0.5).eval());
-    Fc = Fc(keep,Eigen::all).eval();
+    Fc = Fc(keep,igl::placeholders::all).eval();
   };
 
   Eigen::MatrixXd Vq;
