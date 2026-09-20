@@ -61,3 +61,37 @@ function(igl_install module_name)
         )
     endforeach()
 endfunction()
+
+function(igl_install_dependencies module_name)
+    if(NOT LIBIGL_INSTALL)
+        return()
+    endif()
+
+    # Check if category is `copyleft` or `restricted`
+    if(${module_name} MATCHES "^igl_copyleft")
+        set(suffix "_copyleft")
+    elseif(${module_name} MATCHES "^igl_restricted")
+        set(suffix "_restricted")
+    else()
+        set(suffix "")
+    endif()
+
+    ##############################
+    # Install named dependencies #
+    ##############################
+
+    include(GNUInstallDirs)
+    install(TARGETS ${ARGN}
+        EXPORT LibiglTargets${suffix}
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+                COMPONENT LibiglRuntime
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+                COMPONENT          LibiglRuntime
+                NAMELINK_COMPONENT LibiglDevelopment
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+                COMPONENT LibiglRuntime
+        PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+                COMPONENT LibiglDevelopment
+        INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+    )
+endfunction()
