@@ -10,6 +10,8 @@
 *.vbs text
 *.cpp text
 *.hpp text
+*.h text
+*.c text
 Makefile text
 
 # Declare files that will always have CRLF line endings on checkout.
