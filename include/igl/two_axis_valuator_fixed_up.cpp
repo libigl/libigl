@@ -18,23 +18,25 @@ IGL_INLINE void igl::two_axis_valuator_fixed_up(
   const int down_y,
   const int mouse_x,
   const int mouse_y,
+  const Eigen::Matrix<Scalarquat,3,1> & camera_eye,
+  const Eigen::Matrix<Scalarquat,3,1> & axis_up,
   Eigen::Quaternion<Scalarquat> & quat)
 {
-  Eigen::Matrix<Scalarquat,3,1> axis(0,1,0);
   quat = down_quat *
     Eigen::Quaternion<Scalarquat>(
       Eigen::AngleAxis<Scalarquat>(
         PI*((Scalarquat)(mouse_x-down_x))/(Scalarquat)w*speed/2.0,
-        axis.normalized()));
+        axis_up.normalized()));
   quat.normalize();
   {
-    Eigen::Matrix<Scalarquat,3,1> axis(1,0,0);
-    if(axis.norm() != 0)
+    // Rotation axis for vertical mouse movement
+    Eigen::Matrix<Scalarquat,3,1> axis_vert = axis_up.cross(camera_eye);
+    if(axis_vert.norm() != 0)
     {
         quat = Eigen::Quaternion<Scalarquat>(
                    Eigen::AngleAxis<Scalarquat>(
             PI*(mouse_y-down_y)/(Scalarquat)h*speed/2.0,
-            axis.normalized())) * quat;
+            axis_vert.normalized())) * quat;
       quat.normalize();
     }
   }
@@ -42,6 +44,6 @@ IGL_INLINE void igl::two_axis_valuator_fixed_up(
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instantiation
-template void igl::two_axis_valuator_fixed_up<float, float>(int, int, double, Eigen::Quaternion<float, 0> const&, int, int, int, int, Eigen::Quaternion<float, 0>&);
-template void igl::two_axis_valuator_fixed_up<double, double>(int, int, double, Eigen::Quaternion<double, 0> const&, int, int, int, int, Eigen::Quaternion<double, 0>&);
+template void igl::two_axis_valuator_fixed_up<float, float>(int, int, double, Eigen::Quaternion<float, 0> const&, int, int, int, int, Eigen::Matrix<float, 3, 1> const&, Eigen::Matrix<float, 3, 1> const&, Eigen::Quaternion<float, 0>&);
+template void igl::two_axis_valuator_fixed_up<double, double>(int, int, double, Eigen::Quaternion<double, 0> const&, int, int, int, int, Eigen::Matrix<double, 3, 1> const&, Eigen::Matrix<double, 3, 1> const&, Eigen::Quaternion<double, 0>&);
 #endif
