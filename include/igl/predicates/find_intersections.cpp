@@ -52,11 +52,11 @@ IGL_INLINE bool igl::predicates::find_intersections(
   const bool self_test = (&V1 == &V2) && (&F1 == &F2);
   if(stinker){ printf("%s\n",self_test?"🍎&(V1,F1) == 🍎&(V2,F2)":"🍎≠🍊"); }
 
+  std::atomic<bool> found_any(false);
   int num_if = 0;
-  // mutex
   std::mutex append_mutex;
-  const auto append_intersection = 
-    [&IF,&CP,&num_if,&append_mutex]( const int f1, const int f2, const bool coplanar = false)
+  const auto append_intersection =
+  [&IF,&CP,&num_if,&append_mutex,&found_any](const int f1, const int f2, const bool coplanar = false)
   {
     std::lock_guard<std::mutex> lock(append_mutex);
     if(num_if >= IF.rows())
@@ -67,7 +67,9 @@ IGL_INLINE bool igl::predicates::find_intersections(
     CP(num_if) = coplanar;
     IF.row(num_if) << f1,f2;
     num_if++;
+    found_any.store(true, std::memory_order_release);
   };
+
 
   // Returns corner in ith face opposite of shared edge; -1 otherwise
   const auto shared_edge = [&F1](const int f, const int g)->int
