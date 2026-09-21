@@ -21,9 +21,9 @@ IGL_INLINE  bool igl::predicates::triangle_triangle_intersect(
   exactinit();
   using Vector2D = Eigen::Matrix<typename Vector3D::Scalar,2,1>;
 
-  constexpr Orientation COPLANAR = igl::predicates::Orientation::COPLANAR;
-  constexpr Orientation NEGATIVE = igl::predicates::Orientation::NEGATIVE;
-  constexpr Orientation POSITIVE = igl::predicates::Orientation::POSITIVE;
+  constexpr Orientation COPLANAR = igl::Orientation::COPLANAR;
+  constexpr Orientation NEGATIVE = igl::Orientation::NEGATIVE;
+  constexpr Orientation POSITIVE = igl::Orientation::POSITIVE;
 
   // Determine for each vertex of one triangle if it's above, below or on the
   // plane of the other triangle.

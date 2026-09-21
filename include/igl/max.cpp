@@ -1,6 +1,7 @@
 #include "max.h"
 #include "for_each.h"
 #include "find_zero.h"
+#include <cassert>
 
 template <typename AType, typename DerivedB, typename DerivedI>
 IGL_INLINE void igl::max(

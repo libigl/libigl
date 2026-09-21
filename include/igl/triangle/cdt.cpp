@@ -5,6 +5,8 @@
 #include "../remove_unreferenced.h"
 #include "../placeholders.h"
 
+#include <cassert>
+
 template <
   typename DerivedV, 
   typename DerivedE,

@@ -12,6 +12,7 @@
 #include "face_occurrences.h"
 
 // STL includes
+#include <cassert>
 
 template <typename IntegerT>
 IGL_INLINE void igl::on_boundary(

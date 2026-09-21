@@ -8,6 +8,7 @@
 #include "triangulate.h"
 #include "triangle_header.h"
 
+#include <cassert>
 
 template <
  typename DerivedV,

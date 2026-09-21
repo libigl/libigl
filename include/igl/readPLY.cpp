@@ -3,6 +3,7 @@
 #include <set>
 #include <fstream>
 #include <iostream>
+#include <cassert>
 #include <cstdint>
 #include <Eigen/Core>
 

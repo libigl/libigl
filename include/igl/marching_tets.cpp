@@ -16,6 +16,7 @@
 #include <algorithm>
 #include <utility>
 #include <cmath>
+#include <cassert>
 
 template <typename DerivedTV,
           typename DerivedTT,

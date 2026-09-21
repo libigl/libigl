@@ -14,6 +14,7 @@
 #include "voronoi_mass.h"
 #include "repmat.h"
 #include <Eigen/Geometry>
+#include <cassert>
 #include <iostream>
 
 // For std::enable_if

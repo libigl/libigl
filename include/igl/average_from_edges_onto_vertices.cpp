@@ -7,6 +7,8 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "average_from_edges_onto_vertices.h"
 
+#include <cassert>
+
 template<typename DerivedF,typename DerivedE,typename DerivedoE,
 typename DeriveduE,typename DeriveduV>
 IGL_INLINE void

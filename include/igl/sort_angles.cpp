@@ -8,6 +8,7 @@
 #include "sort_angles.h"
 #include "LinSpaced.h"
 #include <algorithm>
+#include <cassert>
 
 template <typename DerivedM, typename DerivedR>
 IGL_INLINE void igl::sort_angles(

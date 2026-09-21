@@ -10,6 +10,7 @@
 #include "verbose.h"
 #include "repdiag.h"
 #include "cat.h"
+#include <cassert>
 #include <iostream>
 
 template<typename DerivedV, typename DerivedF, typename DerivedK>

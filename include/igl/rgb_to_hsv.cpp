@@ -7,6 +7,8 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "rgb_to_hsv.h"
 
+#include <cassert>
+
 template <typename R,typename H>
 IGL_INLINE void igl::rgb_to_hsv(const R * rgb, H * hsv)
 {

@@ -29,11 +29,11 @@ namespace igl
         /// output and strictly fewer FLOPS than CHECK_EACH_FACE. There will be
         /// many tiny patches along the intersection of A and B. 
         CHECK_EACH_PATCH = 2,
-        /// Merge A and B into the same mesh and resolve all self-itnersections.
+        /// Merge A and B into the same mesh and resolve all self-intersections.
         /// Then "undo" remeshing on faces of A not involved in intersections
-        /// with B (i.e., self-intersections in A). Then seperate into patches
+        /// with B (i.e., self-intersections in A). Then separate into patches
         /// based on connected faces --- where connected means sharing a
-        /// _manifold edge_ --- then label each aptch as inside or outside.
+        /// _manifold edge_ --- then label each patch as inside or outside.
         /// Results in fewer patches than CHECK_EACH_PATCH but finding, meshing and
         /// mesh-undoing self-intersections in A can be costly. This
         /// could result in different output from CHECK_EACH_PATCH because of

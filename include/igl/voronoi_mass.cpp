@@ -3,6 +3,8 @@
 #include "centroid.h"
 #include "unique_simplices.h"
 
+#include <cassert>
+
 template <
   typename DerivedV,
   typename DerivedT,

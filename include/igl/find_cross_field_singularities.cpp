@@ -14,6 +14,7 @@
 #include "vertex_triangle_adjacency.h"
 #include "is_border_vertex.h"
 
+#include <cassert>
 
 template <typename DerivedV, typename DerivedF, typename DerivedM, typename DerivedO>
 IGL_INLINE void igl::find_cross_field_singularities(const Eigen::MatrixBase<DerivedV> &V,

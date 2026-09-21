@@ -36,10 +36,10 @@ IGL_INLINE bool igl::predicates::segment_segment_intersect(
   };
   
   // colinear case
-  if((t1 == igl::predicates::Orientation::COLLINEAR && on_segment(a,b,c)) ||
-     (t2 == igl::predicates::Orientation::COLLINEAR && on_segment(c,d,b)) ||
-     (t3 == igl::predicates::Orientation::COLLINEAR && on_segment(a,b,d)) ||
-     (t4 == igl::predicates::Orientation::COLLINEAR && on_segment(c,d,a))) 
+  if((t1 == igl::Orientation::COLLINEAR && on_segment(a,b,c)) ||
+     (t2 == igl::Orientation::COLLINEAR && on_segment(c,d,b)) ||
+     (t3 == igl::Orientation::COLLINEAR && on_segment(a,b,d)) ||
+     (t4 == igl::Orientation::COLLINEAR && on_segment(c,d,a))) 
      return true;
   
   // ordinary case

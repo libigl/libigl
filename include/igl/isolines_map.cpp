@@ -1,4 +1,5 @@
 #include "isolines_map.h"
+#include <cassert>
 #include <iostream>
 
 template <

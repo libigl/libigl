@@ -7,6 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "cat.h"
 
+#include <cassert>
 #include <cstdio>
 
 // Bug in unsupported/Eigen/SparseExtra needs iostream first

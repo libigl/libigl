@@ -10,6 +10,8 @@
 #include "../../PlainMatrix.h"
 #include "tetrahedralize.h"
 
+#include <cassert>
+
 template <
   typename DerivedV, 
   typename DerivedF, 

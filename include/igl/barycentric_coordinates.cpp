@@ -8,6 +8,8 @@
 #include "barycentric_coordinates.h"
 #include "volume.h"
 
+#include <cassert>
+
 template <
   typename DerivedP,
   typename DerivedA,

@@ -14,6 +14,7 @@
 #include "writeSTL.h"
 #include "writeWRL.h"
 
+#include <cassert>
 #include <iostream>
 
 template <typename DerivedV, typename DerivedF>

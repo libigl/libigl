@@ -7,6 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "edges.h"
 #include "adjacency_matrix.h"
+#include <cassert>
 #include <iostream>
 
 template <typename DerivedF, typename DerivedE>

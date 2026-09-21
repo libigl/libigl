@@ -9,6 +9,7 @@
 #include "writeMSH.h"
 #include "MshSaver.h"
 #include "MshLoader.h"
+#include <cassert>
 #include <iostream>
 
 

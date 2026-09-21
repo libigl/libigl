@@ -20,6 +20,7 @@
 #include "avg_edge_length.h"
 #include "PlainMatrix.h"
 
+#include <cassert>
 
 template < typename DerivedV, typename DerivedF, typename Scalar >
 IGL_INLINE bool igl::heat_geodesics_precompute(

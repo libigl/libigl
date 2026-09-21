@@ -7,6 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "parallel_transport_angles.h"
 #include <Eigen/Geometry>
+#include <cassert>
 
 template <typename DerivedV, typename DerivedF, typename DerivedK>
 IGL_INLINE void igl::parallel_transport_angles(

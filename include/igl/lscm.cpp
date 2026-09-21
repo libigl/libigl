@@ -11,6 +11,7 @@
 #include "repdiag.h"
 #include "eigs.h"
 #include "min_quad_with_fixed.h"
+#include <cassert>
 #include <iostream>
 
 

@@ -26,6 +26,7 @@
 #include "marching_cubes.h"
 #include "marching_cubes_tables.h"
 
+#include <cassert>
 #include <unordered_map>
 
 

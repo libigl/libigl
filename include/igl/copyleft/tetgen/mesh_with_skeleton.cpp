@@ -11,6 +11,7 @@
 #include "../../sample_edges.h"
 #include "../../cat.h"
 
+#include <cassert>
 #include <iostream>
 // Default settings pq2Y tell tetgen to mesh interior of triangle mesh and
 // to produce a graded tet mesh

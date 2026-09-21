@@ -12,6 +12,7 @@
 #include "doublearea.h"
 #include "squared_edge_lengths.h"
 
+#include <cassert>
 
 template <typename DerivedV, typename DerivedF, typename DerivedE,
 typename DerivedOE, typename ScalarG>

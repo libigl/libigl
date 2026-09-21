@@ -9,6 +9,8 @@
 #include "cotmatrix.h"
 #include "PlainMatrix.h"
 
+#include <cassert>
+
 template <
   typename DerivedV,
   typename DerivedOmega,

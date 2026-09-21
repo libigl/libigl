@@ -7,6 +7,7 @@
 #include "coplanar.h"
 #include "mesh_boolean.h"
 #include <Eigen/Geometry>
+#include <cassert>
 #include <vector>
 
 template <

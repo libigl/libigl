@@ -7,6 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "hausdorff.h"
 #include "point_mesh_squared_distance.h"
+#include <cassert>
 
 template <
   typename DerivedVA,

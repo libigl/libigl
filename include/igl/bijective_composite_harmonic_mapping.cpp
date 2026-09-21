@@ -11,6 +11,7 @@
 #include "harmonic.h"
 #include "placeholders.h"
 //#include "matlab/MatlabWorkspace.h"
+#include <cassert>
 #include <iostream>
 
 template <

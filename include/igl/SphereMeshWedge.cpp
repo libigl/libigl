@@ -8,6 +8,7 @@
 #include "SphereMeshWedge.h"
 #include "round_cone_signed_distance.h"
 #include "sign.h"
+#include <cassert>
 #include <Eigen/QR>
 #include <Eigen/Geometry>
 

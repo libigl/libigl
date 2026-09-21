@@ -7,6 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "cr_vector_mass.h"
 
+#include <cassert>
 #include <vector>
 
 #include "orient_halfedges.h"

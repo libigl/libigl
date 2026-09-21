@@ -7,6 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 
 #include "connected_components.h"
+#include <cassert>
 #include <queue>
 
 template < typename Atype, typename DerivedC, typename DerivedK>

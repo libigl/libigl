@@ -7,6 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "vertex_components.h"
 #include "adjacency_matrix.h"
+#include <cassert>
 #include <queue>
 #include <vector>
 

@@ -13,6 +13,7 @@
 #  include "is_edge_manifold.h"
 #  include "is_vertex_manifold.h"
 #endif
+#include <cassert>
 #include <unordered_map>
 #include <vector>
 
