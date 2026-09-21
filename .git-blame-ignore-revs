@@ -1,0 +1,9 @@
+# Revisions to ignore when running `git blame`. These commits are purely
+# mechanical (whitespace / line-ending normalization) and carry no content
+# changes, so blame should skip past them to the real authoring commit.
+#
+# GitHub's blame view honors this file automatically. Locally, enable it with:
+#   git config blame.ignoreRevsFile .git-blame-ignore-revs
+#
+# Renormalize line endings to LF (git add --renormalize)
+44b20879f1b0a456762ec5d588337a911949f824

@@ -18,8 +18,7 @@
 #include "placeholders.h"
 #include "quadric_binary_plus_operator.h"
 #include "remove_unreferenced.h"
-#include "intersection_blocking_collapse_edge_callbacks.h"
-#include "AABB.h"
+#include "block_self_intersections.h"
 #include "PlainMatrix.h"
 
 IGL_INLINE bool igl::qslim(
@@ -32,14 +31,25 @@ IGL_INLINE bool igl::qslim(
   Eigen::VectorXi & J,
   Eigen::VectorXi & I)
 {
-  using namespace igl;
-  igl::AABB<Eigen::MatrixXd, 3> * tree = nullptr;
+  std::vector<decimate_pre_post_collapse_callbacks_decorator> decorators;
   if(block_intersections)
   {
-    tree = new igl::AABB<Eigen::MatrixXd, 3>();
-    tree->init(V,F);
+    decorators.push_back(igl::block_self_intersections());
   }
+  return qslim(V,F,max_m,decorators,U,G,J,I);
+}
 
+IGL_INLINE bool igl::qslim(
+  const Eigen::MatrixXd & V,
+  const Eigen::MatrixXi & F,
+  const int max_m,
+  const std::vector<decimate_pre_post_collapse_callbacks_decorator> & decorators,
+  Eigen::MatrixXd & U,
+  Eigen::MatrixXi & G,
+  Eigen::VectorXi & J,
+  Eigen::VectorXi & I)
+{
+  using namespace igl;
   // Original number of faces
   const int orig_m = F.rows();
   // Tracking number of faces
@@ -73,12 +83,10 @@ IGL_INLINE bool igl::qslim(
   decimate_post_collapse_callback      post_collapse;
   qslim_optimal_collapse_edge_callbacks(
     E,quadrics,v1,v2, cost_and_placement, pre_collapse,post_collapse);
-  if(block_intersections)
+  // Cascade the decorators: each wraps the result of the previous.
+  for(const auto & decorator : decorators)
   {
-    igl::intersection_blocking_collapse_edge_callbacks(
-      pre_collapse, post_collapse, // These will get copied as needed
-      tree,
-      pre_collapse, post_collapse);
+    decorator(VO,FO,orig_m,pre_collapse,post_collapse);
   }
   // Call to greedy decimator
   bool ret = decimate(
@@ -97,7 +105,5 @@ IGL_INLINE bool igl::qslim(
   igl::remove_unreferenced(Eigen::MatrixXd(U),Eigen::MatrixXi(G),U,G,_1,I2);
   I = I(I2).eval();
 
-  assert(tree == nullptr || tree == tree->root());
-  delete tree;
   return ret;
 }
