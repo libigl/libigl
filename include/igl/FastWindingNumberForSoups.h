@@ -7085,7 +7085,12 @@ inline void UT_SolidAngle<T,S>::init(
                     {
                         // Adjust Nijk for the change in centre P
                         data_for_parent->myNijkDiag += T(2)*displacement*child_data.myNijDiag + displacement*displacement*child_data.myN;
-                        data_for_parent->mySumPermuteNxyz += (displacement[0]*(Nyz+Nzy) + displacement[1]*(Nzx+Nxz) + displacement[2]*(Nxy+Nyx));
+                        // Each mixed moment occurs twice in the permutation sum
+                        // Add the original Nij as well as the translated Nij to double the linear terms without doubling the quadratic terms
+                        data_for_parent->mySumPermuteNxyz +=
+                            displacement[0]*(child_data.myNyz + child_data.myNzy + Nyz + Nzy)
+                            + displacement[1]*(child_data.myNzx + child_data.myNxz + Nzx + Nxz)
+                            + displacement[2]*(child_data.myNxy + child_data.myNyx + Nxy + Nyx);
                         data_for_parent->my2Nxxy_Nyxx +=
                             2*(displacement[1]*child_data.myNijDiag[0] + displacement[0]*child_data.myNxy + N[0]*displacement[0]*displacement[1])
                             + 2*child_data.myNyx*displacement[0] + N[1]*displacement[0]*displacement[0];
