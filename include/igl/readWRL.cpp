@@ -74,7 +74,12 @@ IGL_INLINE bool igl::readWRL(
   needle = std::string("coordIndex [");
   while(still_comments)
   {
-    fgets(line,1000,wrl_file);
+    if(fgets(line,1000,wrl_file) == NULL)
+    {
+      std::cerr<<"readWRL, reached EOF without finding \"coordIndex [\""<<std::endl;
+      fclose(wrl_file);
+      return false;
+    }
     haystack = std::string(line);
     still_comments = std::string::npos == haystack.find(needle);
   }

@@ -39,7 +39,7 @@ IGL_INLINE bool igl::readOFF(
   C.clear();
 
   // First line is always OFF
-  char header[1000];
+  char header[1000] = "";
   const std::string OFF("OFF");
   const std::string NOFF("NOFF");
   const std::string COFF("COFF");
@@ -59,15 +59,35 @@ IGL_INLINE bool igl::readOFF(
   int number_of_vertices;
   int number_of_faces;
   int number_of_edges;
-  char tic_tac_toe;
+  char tic_tac_toe[2];
   char line[1000];
+  const auto eat_comment = [&]()->bool
+  {
+    int c;
+    do
+    {
+      c = fgetc(off_file);
+    }while(c != '\n' && c != EOF);
+    return !ferror(off_file);
+  };
   bool still_comments = true;
   while(still_comments)
   {
-    fgets(line,1000,off_file);
+    if(fgets(line,1000,off_file) == NULL)
+    {
+      fprintf(stderr,"Error: unexpected end of OFF file...\n");
+      fclose(off_file);
+      return false;
+    }
     still_comments = (line[0] == '#' || line[0] == '\n');
   }
-  sscanf(line,"%d %d %d",&number_of_vertices,&number_of_faces,&number_of_edges);
+  if(3 != sscanf(line,"%d %d %d",
+    &number_of_vertices,&number_of_faces,&number_of_edges))
+  {
+    fprintf(stderr,"Error: expecting OFF vertex/face/edge counts...\n");
+    fclose(off_file);
+    return false;
+  }
   V.resize(number_of_vertices);
   if (has_normals)
     N.resize(number_of_vertices);
@@ -78,7 +98,12 @@ IGL_INLINE bool igl::readOFF(
   // Read vertices
   for(int i = 0;i<number_of_vertices;)
   {
-    fgets(line, 1000, off_file);
+    if(fgets(line,1000,off_file) == NULL)
+    {
+      fprintf(stderr,"Error: unexpected end of OFF vertex list...\n");
+      fclose(off_file);
+      return false;
+    }
     double x,y,z,nx,ny,nz;
     if(sscanf(line, "%lg %lg %lg %lg %lg %lg",&x,&y,&z,&nx,&ny,&nz)>= 3)
     {
@@ -108,10 +133,14 @@ IGL_INLINE bool igl::readOFF(
       }
       i++;
     }else if(
-        fscanf(off_file,"%[#]",&tic_tac_toe)==1)
+        fscanf(off_file,"%1[#]",tic_tac_toe)==1)
     {
-      char comment[1000];
-      fscanf(off_file,"%[^\n]",comment);
+      if(!eat_comment())
+      {
+        fprintf(stderr,"Error reading OFF comment...\n");
+        fclose(off_file);
+        return false;
+      }
     }else
     {
       printf("Error: bad line (%d)\n",i);
@@ -133,22 +162,28 @@ IGL_INLINE bool igl::readOFF(
       for(int j = 0;j<valence;j++)
       {
         int index;
-        if(j<valence-1)
+        const int items_read = j < valence-1
+          ? fscanf(off_file,"%d",&index)
+          : fscanf(off_file,"%d%*[^\n]",&index);
+        if(items_read != 1)
         {
-          fscanf(off_file,"%d",&index);
-        }else{
-          fscanf(off_file,"%d%*[^\n]",&index);
+          fprintf(stderr,"Error: expecting face index...\n");
+          fclose(off_file);
+          return false;
         }
-
         face[j] = index;
       }
       F[i] = face;
       i++;
     }else if(
-             fscanf(off_file,"%[#]",&tic_tac_toe)==1)
+             fscanf(off_file,"%1[#]",tic_tac_toe)==1)
     {
-      char comment[1000];
-      fscanf(off_file,"%[^\n]",comment);
+      if(!eat_comment())
+      {
+        fprintf(stderr,"Error reading OFF comment...\n");
+        fclose(off_file);
+        return false;
+      }
     }else
     {
       printf("Error: bad line\n");
