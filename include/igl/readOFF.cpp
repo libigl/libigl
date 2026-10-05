@@ -39,7 +39,7 @@ IGL_INLINE bool igl::readOFF(
   C.clear();
 
   // First line is always OFF
-  char header[1000];
+  char header[1000] = "";
   const std::string OFF("OFF");
   const std::string NOFF("NOFF");
   const std::string COFF("COFF");
@@ -64,10 +64,21 @@ IGL_INLINE bool igl::readOFF(
   bool still_comments = true;
   while(still_comments)
   {
-    fgets(line,1000,off_file);
+    if(fgets(line,1000,off_file) == NULL)
+    {
+      fprintf(stderr,"Error: unexpected end of OFF file...\n");
+      fclose(off_file);
+      return false;
+    }
     still_comments = (line[0] == '#' || line[0] == '\n');
   }
-  sscanf(line,"%d %d %d",&number_of_vertices,&number_of_faces,&number_of_edges);
+  if(3 != sscanf(line,"%d %d %d",
+    &number_of_vertices,&number_of_faces,&number_of_edges))
+  {
+    fprintf(stderr,"Error: expecting OFF vertex/face/edge counts...\n");
+    fclose(off_file);
+    return false;
+  }
   V.resize(number_of_vertices);
   if (has_normals)
     N.resize(number_of_vertices);
@@ -78,7 +89,12 @@ IGL_INLINE bool igl::readOFF(
   // Read vertices
   for(int i = 0;i<number_of_vertices;)
   {
-    fgets(line, 1000, off_file);
+    if(fgets(line,1000,off_file) == NULL)
+    {
+      fprintf(stderr,"Error: unexpected end of OFF vertex list...\n");
+      fclose(off_file);
+      return false;
+    }
     double x,y,z,nx,ny,nz;
     if(sscanf(line, "%lg %lg %lg %lg %lg %lg",&x,&y,&z,&nx,&ny,&nz)>= 3)
     {
