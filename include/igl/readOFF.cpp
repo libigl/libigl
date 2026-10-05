@@ -59,8 +59,17 @@ IGL_INLINE bool igl::readOFF(
   int number_of_vertices;
   int number_of_faces;
   int number_of_edges;
-  char tic_tac_toe;
+  char tic_tac_toe[2];
   char line[1000];
+  const auto eat_comment = [&]()->bool
+  {
+    int c;
+    do
+    {
+      c = fgetc(off_file);
+    }while(c != '\n' && c != EOF);
+    return !ferror(off_file);
+  };
   bool still_comments = true;
   while(still_comments)
   {
@@ -124,10 +133,14 @@ IGL_INLINE bool igl::readOFF(
       }
       i++;
     }else if(
-        fscanf(off_file,"%[#]",&tic_tac_toe)==1)
+        fscanf(off_file,"%1[#]",tic_tac_toe)==1)
     {
-      char comment[1000];
-      fscanf(off_file,"%[^\n]",comment);
+      if(!eat_comment())
+      {
+        fprintf(stderr,"Error reading OFF comment...\n");
+        fclose(off_file);
+        return false;
+      }
     }else
     {
       printf("Error: bad line (%d)\n",i);
@@ -163,10 +176,14 @@ IGL_INLINE bool igl::readOFF(
       F[i] = face;
       i++;
     }else if(
-             fscanf(off_file,"%[#]",&tic_tac_toe)==1)
+             fscanf(off_file,"%1[#]",tic_tac_toe)==1)
     {
-      char comment[1000];
-      fscanf(off_file,"%[^\n]",comment);
+      if(!eat_comment())
+      {
+        fprintf(stderr,"Error reading OFF comment...\n");
+        fclose(off_file);
+        return false;
+      }
     }else
     {
       printf("Error: bad line\n");
