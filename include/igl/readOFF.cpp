@@ -149,13 +149,15 @@ IGL_INLINE bool igl::readOFF(
       for(int j = 0;j<valence;j++)
       {
         int index;
-        if(j<valence-1)
+        const int items_read = j < valence-1
+          ? fscanf(off_file,"%d",&index)
+          : fscanf(off_file,"%d%*[^\n]",&index);
+        if(items_read != 1)
         {
-          fscanf(off_file,"%d",&index);
-        }else{
-          fscanf(off_file,"%d%*[^\n]",&index);
+          fprintf(stderr,"Error: expecting face index...\n");
+          fclose(off_file);
+          return false;
         }
-
         face[j] = index;
       }
       F[i] = face;
