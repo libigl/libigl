@@ -72,10 +72,20 @@ IGL_INLINE bool igl::readMESH(
     }
     return has_line;
   };
-  eat_comments();
+  if(!eat_comments())
+  {
+    fprintf(stderr,"Error: unexpected end of file...\n");
+    fclose(mesh_file);
+    return false;
+  }
 
   char str[LINE_MAX];
-  sscanf(line," %s",str);
+  if(1 != sscanf(line," %s",str))
+  {
+    fprintf(stderr,"Error: expecting MeshVersionFormatted...\n");
+    fclose(mesh_file);
+    return false;
+  }
   // check that first word is MeshVersionFormatted
   if(0!=strcmp(str,"MeshVersionFormatted"))
   {
@@ -85,7 +95,15 @@ IGL_INLINE bool igl::readMESH(
     return false;
   }
   int version = -1;
-  if(2 != sscanf(line,"%s %d",str,&version)) { fscanf(mesh_file," %d",&version); }
+  if(2 != sscanf(line,"%s %d",str,&version))
+  {
+    if(1 != fscanf(mesh_file," %d",&version))
+    {
+      fprintf(stderr,"Error: expecting mesh version...\n");
+      fclose(mesh_file);
+      return false;
+    }
+  }
   if(version != 1 && version != 2)
   {
     fprintf(stderr,"Error: second word should be 1 or 2 not %d\n",version);
@@ -95,7 +113,12 @@ IGL_INLINE bool igl::readMESH(
 
   while(eat_comments())
   {
-    sscanf(line," %s",str);
+    if(1 != sscanf(line," %s",str))
+    {
+      fprintf(stderr,"Error: expecting mesh section...\n");
+      fclose(mesh_file);
+      return false;
+    }
     int extra;
     // check that third word is Dimension
     if(0==strcmp(str,"Dimension"))
@@ -104,7 +127,12 @@ IGL_INLINE bool igl::readMESH(
       if(2 != sscanf(line,"%s %d",str,&three))
       {
         // 1 appears on next line?
-        fscanf(mesh_file," %d",&three);
+        if(1 != fscanf(mesh_file," %d",&three))
+        {
+          fprintf(stderr,"Error: expecting dimension...\n");
+          fclose(mesh_file);
+          return false;
+        }
       }
       if(three != 3)
       {
