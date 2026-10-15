@@ -1,8 +1,40 @@
 #include <test_common.h>
 #include <igl/readPLY.h>
 #include <fstream>
+#include <sstream>
 #include <string>
 #include <vector>
+
+TEST_CASE("readPLY: reordered vertex properties", "[igl]")
+{
+  std::istringstream ply_stream(
+    "ply\n"
+    "format ascii 1.0\n"
+    "element vertex 3\n"
+    "property double z\n"
+    "property double x\n"
+    "property double y\n"
+    "element face 1\n"
+    "property list uchar int vertex_indices\n"
+    "end_header\n"
+    "0 0 0\n"
+    "0 1 0\n"
+    "0 0 1\n"
+    "3 0 1 2\n");
+
+  Eigen::MatrixXd V,N,UV,VD,FD,ED;
+  Eigen::MatrixXi F,E;
+  std::vector<std::string> Vheader,Fheader,Eheader,comments;
+  REQUIRE (igl::readPLY(ply_stream,V,F,E,N,UV,VD,Vheader,
+    FD,Fheader,ED,Eheader,comments));
+
+  Eigen::MatrixXd expected_V(3,3);
+  expected_V << 0,0,0, 1,0,0, 0,1,0;
+  test_common::assert_eq(V,expected_V);
+  Eigen::MatrixXi expected_F(1,3);
+  expected_F << 0,1,2;
+  test_common::assert_eq(F,expected_F);
+}
 
 TEST_CASE("readPLY: cube_with_fold.ply", "[igl]")
 {

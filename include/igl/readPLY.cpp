@@ -264,6 +264,8 @@ IGL_INLINE bool readPLY(
 
   std::shared_ptr<tinyply::PlyData> _vertex_data;
   std::vector<std::string> _vertex_header;
+  Eigen::PermutationMatrix<3> vertex_order;
+  vertex_order.setIdentity();
 
   std::shared_ptr<tinyply::PlyData> _face_data;
   std::vector<std::string> _face_header;
@@ -278,8 +280,14 @@ IGL_INLINE bool readPLY(
   {
       if(e.name == "vertex" ) // found a vertex
       {
+        int coordinate_index = 0;
         for (auto p : e.properties)
         {
+          if(p.name == "x" || p.name == "y" || p.name == "z")
+          {
+            const int axis = p.name == "x" ? 0 : p.name == "y" ? 1 : 2;
+            vertex_order.indices()(axis) = coordinate_index++;
+          }
           if(vertex_std.find(p.name) == vertex_std.end())
           {
               _vertex_header.push_back(p.name);
@@ -399,6 +407,11 @@ IGL_INLINE bool readPLY(
 
   if (!vertices || !tinyply_buffer_to_matrix(*vertices,V,vertices->count,3) ) {
     // Don't do this because V might have non-trivial compile-time size V.resize(0,0);
+  }
+  else if(vertex_order.indices() != Eigen::Vector3i(0,1,2))
+  {
+    // Tinyply groups coordinates in file order, not x/y/z order.
+    V = (V * vertex_order).eval();
   }
 
   if (!normals || !tinyply_buffer_to_matrix(*normals,N,normals->count,3) ) {
