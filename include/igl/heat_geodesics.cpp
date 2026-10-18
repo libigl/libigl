@@ -88,8 +88,10 @@ IGL_INLINE bool igl::heat_geodesics_precompute(
     const Eigen::Matrix<Scalar,1,Eigen::Dynamic> M_diag_tr = M.diagonal().transpose();
     const Eigen::SparseMatrix<Scalar> Aeq = M_diag_tr.sparseView();
     L *= -0.5;
+    // The Laplacian has a constant nullspace, so it is not positive definite.
+    // Use LU for the mean-constrained Poisson system.
     if(!igl::min_quad_with_fixed_precompute(
-      L,Eigen::VectorXi(),Aeq,true,data.Poisson))
+      L,Eigen::VectorXi(),Aeq,false,data.Poisson))
     {
       return false;
     }
