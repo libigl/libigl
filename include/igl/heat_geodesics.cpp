@@ -85,11 +85,11 @@ IGL_INLINE bool igl::heat_geodesics_precompute(
         return false;
       }
     }
-    const Eigen::Matrix<Scalar,1,Eigen::Dynamic> M_diag_tr = M.diagonal().transpose();
-    const Eigen::SparseMatrix<Scalar> Aeq = M_diag_tr.sparseView();
     L *= -0.5;
+    // Fix the constant nullspace. The solve shifts the field at the sources.
+    const Eigen::VectorXi fixed = Eigen::VectorXi::Zero(1);
     if(!igl::min_quad_with_fixed_precompute(
-      L,Eigen::VectorXi(),Aeq,true,data.Poisson))
+      L,fixed,_,true,data.Poisson))
     {
       return false;
     }
@@ -152,8 +152,8 @@ IGL_INLINE void igl::heat_geodesics_solve(
     }
   }
   const DerivedD div_X = -data.Div*grad_u;
-  const DerivedD Beq = (DerivedD(1,1)<<0).finished();
-  igl::min_quad_with_fixed_solve(data.Poisson,(-div_X).eval(),DerivedD(),Beq,D);
+  igl::min_quad_with_fixed_solve(data.Poisson,(-div_X).eval(),
+    DerivedD::Zero(1,1).eval(),DerivedD(),D);
   DerivedD Dgamma = D(gamma.derived());
   D.array() -= Dgamma.mean();
   if(D.mean() < 0)
