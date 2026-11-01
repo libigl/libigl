@@ -112,6 +112,8 @@ IGL_INLINE igl::SolverStatus igl::active_set(
 
   // Keep track of previous Z for comparison
   PlainMatrix<DerivedZ> old_Z;
+  // Changes since the last convergence check must be solved before stopping
+  bool active_set_changed = false;
 
   int iter = 0;
   while(true)
@@ -136,6 +138,7 @@ IGL_INLINE igl::SolverStatus igl::active_set(
           new_as_lx += (as_lx(z)?0:1);
 #endif
           //new_as_lx++;
+          active_set_changed = active_set_changed || !as_lx(z);
           as_lx(z) = TRUE;
         }
         if(Z(z) > ux(z))
@@ -144,6 +147,7 @@ IGL_INLINE igl::SolverStatus igl::active_set(
           new_as_ux += (as_ux(z)?0:1);
 #endif
           //new_as_ux++;
+          active_set_changed = active_set_changed || !as_ux(z);
           as_ux(z) = TRUE;
         }
       }
@@ -158,6 +162,7 @@ IGL_INLINE igl::SolverStatus igl::active_set(
 #ifdef ACTIVE_SET_CPP_DEBUG
             new_as_ieq += (as_ieq(a)?0:1);
 #endif
+            active_set_changed = active_set_changed || !as_ieq(a);
             as_ieq(a) = TRUE;
           }
         }
@@ -166,7 +171,8 @@ IGL_INLINE igl::SolverStatus igl::active_set(
       cout<<"  new_as_lx: "<<new_as_lx<<endl;
       cout<<"  new_as_ux: "<<new_as_ux<<endl;
 #endif
-      if(iter > 0)
+      // An empty initial guess does not provide a previous iterate
+      if(iter > 0 && old_Z.size() == Z.size() && !active_set_changed)
       {
         const double diff = (Z-old_Z).squaredNorm();
 #ifdef ACTIVE_SET_CPP_DEBUG
@@ -180,6 +186,7 @@ IGL_INLINE igl::SolverStatus igl::active_set(
       }
       old_Z = Z;
     }
+    active_set_changed = false;
 
     const int as_lx_count = std::count(as_lx.data(),as_lx.data()+n,TRUE);
     const int as_ux_count = std::count(as_ux.data(),as_ux.data()+n,TRUE);
@@ -348,6 +355,7 @@ IGL_INLINE igl::SolverStatus igl::active_set(
       if(Lambda_known_i(nk + l) < params.inactive_threshold)
       {
         as_lx(known_i(nk + l)) = FALSE;
+        active_set_changed = true;
       }
     }
     for(int u = 0;u<as_ux_count;u++)
@@ -356,6 +364,7 @@ IGL_INLINE igl::SolverStatus igl::active_set(
         params.inactive_threshold)
       {
         as_ux(known_i(nk + as_lx_count + u)) = FALSE;
+        active_set_changed = true;
       }
     }
     for(int a = 0;a<as_ieq_count;a++)
@@ -363,6 +372,7 @@ IGL_INLINE igl::SolverStatus igl::active_set(
       if(Lambda_Aieq_i(a) < params.inactive_threshold)
       {
         as_ieq(int(as_ieq_list(a))) = FALSE;
+        active_set_changed = true;
       }
     }
 
