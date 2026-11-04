@@ -1,5 +1,6 @@
 #include <test_common.h>
 #include <igl/sort.h>
+#include <igl/sortrows.h>
 #include <igl/STR.h>
 #include <tuple>
 
@@ -84,4 +85,51 @@ TEST_CASE("SortTest: random", "[igl]")
 	};
 
 	test_common::run_test_cases(params, test_case);
+}
+
+TEST_CASE("SortTest: stability", "[igl]")
+{
+	Eigen::VectorXi X(6);
+	X << 2, 1, 2, 1, 2, 1;
+	Eigen::VectorXi Y, IX;
+
+	Eigen::VectorXi expected_asc_ix(6);
+	expected_asc_ix << 1, 3, 5, 0, 2, 4;
+	Eigen::VectorXi expected_desc_ix(6);
+	expected_desc_ix << 0, 2, 4, 1, 3, 5;
+
+	igl::sort(X, 1, true, Y, IX);
+	REQUIRE (IX == expected_asc_ix);
+	igl::sort(X, 1, false, Y, IX);
+	REQUIRE (IX == expected_desc_ix);
+
+	igl::sort_new(X, 1, true, Y, IX);
+	REQUIRE (IX == expected_asc_ix);
+	igl::sort_new(X, 1, false, Y, IX);
+	REQUIRE (IX == expected_desc_ix);
+
+	Eigen::RowVectorXi X_row = X.transpose();
+	Eigen::RowVectorXi Y_row, IX_row;
+	igl::sort(X_row, 2, true, Y_row, IX_row);
+	REQUIRE (IX_row == expected_asc_ix.transpose());
+	igl::sort(X_row, 2, false, Y_row, IX_row);
+	REQUIRE (IX_row == expected_desc_ix.transpose());
+
+	igl::sort_new(X_row, 2, true, Y_row, IX_row);
+	REQUIRE (IX_row == expected_asc_ix.transpose());
+	igl::sort_new(X_row, 2, false, Y_row, IX_row);
+	REQUIRE (IX_row == expected_desc_ix.transpose());
+
+	Eigen::MatrixXi R(6, 2);
+	R << 2, 0,
+	     1, 0,
+	     2, 0,
+	     1, 0,
+	     2, 0,
+	     1, 0;
+	Eigen::MatrixXi SR;
+	igl::sortrows(R, true, SR, IX);
+	REQUIRE (IX == expected_asc_ix);
+	igl::sortrows(R, false, SR, IX);
+	REQUIRE (IX == expected_desc_ix);
 }
