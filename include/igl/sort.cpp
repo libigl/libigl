@@ -127,21 +127,34 @@ IGL_INLINE void igl::sort_new(
     // Sort the index map, using unsorted for comparison
     if(dim == 1)
     {
-      std::sort(
-        ix.data(),
-        ix.data()+ix.size(),
-        igl::IndexVectorLessThan<const typename DerivedX::ConstColXpr >(X.col(i)));
+      if(ascending)
+      {
+        std::stable_sort(
+          ix.data(),
+          ix.data()+ix.size(),
+          igl::IndexVectorLessThan<const typename DerivedX::ConstColXpr >(X.col(i)));
+      }else
+      {
+        std::stable_sort(
+          ix.data(),
+          ix.data()+ix.size(),
+          [&X,i](int a, int b) { return X(b,i) < X(a,i); });
+      }
     }else
     {
-      std::sort(
-        ix.data(),
-        ix.data()+ix.size(),
-        igl::IndexVectorLessThan<const typename DerivedX::ConstRowXpr >(X.row(i)));
-    }
-    // if not ascending then reverse
-    if(!ascending)
-    {
-      std::reverse(ix.data(),ix.data()+ix.size());
+      if(ascending)
+      {
+        std::stable_sort(
+          ix.data(),
+          ix.data()+ix.size(),
+          igl::IndexVectorLessThan<const typename DerivedX::ConstRowXpr >(X.row(i)));
+      }else
+      {
+        std::stable_sort(
+          ix.data(),
+          ix.data()+ix.size(),
+          [&X,i](int a, int b) { return X(i,b) < X(i,a); });
+      }
     }
     for(int j = 0;j<num_inner;j++)
     {
@@ -303,15 +316,18 @@ for(size_t i=0;i<unsorted.size();i++)
   index_map[i] = i;
 }
 // Sort the index map, using unsorted for comparison
-std::sort(
-  index_map.begin(),
-  index_map.end(),
-  igl::IndexLessThan<const std::vector<T>& >(unsorted));
-
-// if not ascending then reverse
-if(!ascending)
+if(ascending)
 {
-  std::reverse(index_map.begin(),index_map.end());
+  std::stable_sort(
+    index_map.begin(),
+    index_map.end(),
+    igl::IndexLessThan<const std::vector<T>& >(unsorted));
+}else
+{
+  std::stable_sort(
+    index_map.begin(),
+    index_map.end(),
+    [&unsorted](size_t a, size_t b) { return unsorted[b] < unsorted[a]; });
 }
   // make space for output without clobbering
   sorted.resize(unsorted.size());

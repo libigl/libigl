@@ -13,6 +13,7 @@
 #include "colon.h"
 #include "IndexComparison.h"
 
+#include <algorithm>
 #include <vector>
 
 // Obsolete slower version converst to vector
@@ -75,7 +76,7 @@ IGL_INLINE void igl::sortrows(
       }
       return false;
     };
-      std::sort(
+      std::stable_sort(
         IX.data(),
         IX.data()+IX.size(),
         index_less_than
@@ -88,7 +89,7 @@ IGL_INLINE void igl::sortrows(
       }
       return false;
     };
-      std::sort(
+      std::stable_sort(
         IX.data(),
         IX.data()+IX.size(),
         index_greater_than
