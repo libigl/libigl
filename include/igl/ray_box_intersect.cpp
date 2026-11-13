@@ -7,6 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "ray_box_intersect.h"
 #include <array>
+#include <cmath>
 #include <igl/matlab_format.h>
 #include <igl/increment_ulp.h>
 
@@ -31,37 +32,41 @@ IGL_INLINE bool igl::ray_box_intersect(
   // corrected in "Robust BVH Ray Traversal" by Thiago Ize, section 3:
   Scalar tymin, tymax, tzmin, tzmax;
   std::array<RowVector3S, 2> bounds = {box.min().array(),box.max().array()};
+  // Expanding the inverse away from zero pads positive far distances, but
+  // shrinks negative ones. For a range extending behind the origin, pad a
+  // negative far distance by moving its inverse toward zero instead.
+  const auto far_bound = [&](const int axis) -> Scalar
+  {
+    const Scalar delta = bounds[1-sign[axis]](axis)-origin(axis);
+    const Scalar far = delta*inv_dir_pad(axis);
+    if(t0 < Scalar(0) && far < Scalar(0) && std::isfinite(inv_dir(axis)))
+    {
+      const Scalar inverse = std::nextafter(
+        std::nextafter(inv_dir(axis),Scalar(0)),Scalar(0));
+      return delta*inverse;
+    }
+    return far;
+  };
   tmin = ( bounds[sign[0]](0)   - origin(0)) * inv_dir(0);
-  tmax = ( bounds[1-sign[0]](0) - origin(0)) * inv_dir_pad(0);
+  tmax = far_bound(0);
   tymin = (bounds[sign[1]](1)   - origin(1)) * inv_dir(1);
-  tymax = (bounds[1-sign[1]](1) - origin(1)) * inv_dir_pad(1);
-  // NaN-safe min and max
-  const auto berger_perrin_min = [&](
-      const Scalar a,
-      const Scalar b) -> Scalar
-  {
-    return (a < b) ? a : b;
-  };
-  const auto berger_perrin_max = [&](
-      const Scalar a,
-      const Scalar b) -> Scalar
-  {
-    return (a > b) ? a : b;
-  };
+  tymax = far_bound(1);
+  // A parallel ray on a slab boundary produces 0 * infinity. Ignore that
+  // NaN whichever axis it belongs to, rather than overwriting a finite bound.
   if ( (tmin > tymax) || (tymin > tmax) )
   {
     return false;
   }
-  tmin = berger_perrin_max(tmin, tymin);
-  tmax = berger_perrin_min(tmax, tymax);
+  tmin = std::fmax(tmin, tymin);
+  tmax = std::fmin(tmax, tymax);
   tzmin = (bounds[sign[2]](2) - origin(2))   * inv_dir(2);
-  tzmax = (bounds[1-sign[2]](2) - origin(2)) * inv_dir_pad(2);
+  tzmax = far_bound(2);
   if ((tmin > tzmax) || (tzmin > tmax))
   {
     return false;
   }
-  tmin = berger_perrin_max(tmin, tzmin);
-  tmax = berger_perrin_min(tmax, tzmax);
+  tmin = std::fmax(tmin, tzmin);
+  tmax = std::fmin(tmax, tzmax);
   return ((tmin < t1) && (tmax > t0));
 }
 
