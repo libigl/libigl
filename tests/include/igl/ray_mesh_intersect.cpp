@@ -2,6 +2,8 @@
 #include <igl/ray_mesh_intersect.h>
 #include <igl/ray_box_intersect.h>
 #include <igl/AABB.h>
+#include <cmath>
+#include <limits>
 
 
 TEST_CASE("ray_mesh_intersect: one_triangle", "[igl]")
@@ -117,4 +119,140 @@ TEST_CASE("ray_mesh_intersect: corner-case2", "[igl]")
   float tmin, tmax;
   bool is_hit_box = igl::ray_box_intersect(origin, direction, box, 0.0f, std::numeric_limits<float>::max(), tmin, tmax);
   REQUIRE (is_hit == is_hit_box);
+}
+
+// https://github.com/libigl/libigl/issues/2568
+TEMPLATE_TEST_CASE("ray_mesh_intersect: rotated vertex hits", "[igl]",
+  float, double)
+{
+  IGL_PUSH_FPE;
+  typedef TestType Scalar;
+  typedef Eigen::Matrix<Scalar,Eigen::Dynamic,Eigen::Dynamic> Vertices;
+  typedef Eigen::Matrix<Scalar,3,1> Vector3;
+  Vertices original(5,3);
+  original << -1,0,0, 0,1,0, 1,0,0, 0,-1,0, 0,0,0;
+  Eigen::MatrixXi F(4,3);
+  F << 0,1,4, 1,2,4, 2,3,4, 3,0,4;
+  for(int axis = 0; axis < 3; ++axis)
+  {
+    Vertices V(5,3);
+    for(int j = 0; j < 3; ++j)
+    {
+      V.col((j+axis)%3) = original.col(j);
+    }
+    igl::AABB<Vertices,3> tree;
+    tree.init(V,F);
+    for(const Scalar side : {Scalar(-1),Scalar(1)})
+    {
+      for(const Scalar eps : {Scalar(0),Scalar(1e-5)})
+      {
+        DYNAMIC_SECTION("axis " << axis << " side " << side << " eps "
+          << eps)
+        {
+          Vector3 origin = Vector3::Constant(eps);
+          Vector3 direction = Vector3::Zero();
+          origin((2+axis)%3) = side*(Scalar(1)+eps);
+          direction((2+axis)%3) = -side;
+          std::vector<igl::Hit<Scalar>> direct, accelerated;
+          REQUIRE(igl::ray_mesh_intersect(origin,direction,V,F,direct));
+          REQUIRE(tree.intersect_ray(V,F,origin,direction,accelerated));
+          REQUIRE(direct.size() == accelerated.size());
+          if(eps == Scalar(0))
+          {
+            REQUIRE(accelerated.size() == 4);
+          }
+        }
+      }
+    }
+  }
+  IGL_POP_FPE;
+}
+
+TEMPLATE_TEST_CASE("ray_box_intersect: parallel boundary slabs", "[igl]",
+  float, double)
+{
+  IGL_PUSH_FPE;
+  typedef TestType Scalar;
+  typedef Eigen::Matrix<Scalar,1,3> RowVector3;
+  typedef Eigen::Matrix<Scalar,3,1> Vector3;
+  const Eigen::AlignedBox<Scalar,3> box(Vector3::Zero(),Vector3::Ones());
+  for(int axis = 0; axis < 3; ++axis)
+  {
+    for(const Scalar side : {Scalar(-1),Scalar(1)})
+    {
+      for(const Scalar zero : {Scalar(0),-Scalar(0)})
+      {
+        for(const Scalar position : {Scalar(-0.1),Scalar(0),Scalar(0.5),
+          Scalar(1),Scalar(1.1)})
+        {
+          DYNAMIC_SECTION("axis " << axis << " side " << side << " zero "
+            << std::signbit(zero) << " position " << position)
+          {
+            RowVector3 origin = RowVector3::Constant(position);
+            RowVector3 direction = RowVector3::Constant(zero);
+            origin(axis) = side > 0 ? Scalar(-1) : Scalar(2);
+            direction(axis) = side;
+            Scalar tmin, tmax;
+            const bool expected = position >= 0 && position <= 1;
+            const bool hit = igl::ray_box_intersect(origin,direction,box,
+              Scalar(0),Scalar(3),tmin,tmax);
+            REQUIRE(hit == expected);
+            if(hit)
+            {
+              REQUIRE(tmin == Approx(1));
+              REQUIRE(tmax == Approx(2));
+              // A finite segment stopping before the box still misses it.
+              REQUIRE_FALSE(igl::ray_box_intersect(origin,direction,box,
+                Scalar(0),Scalar(0.5),tmin,tmax));
+            }
+          }
+        }
+      }
+    }
+  }
+  IGL_POP_FPE;
+}
+
+TEMPLATE_TEST_CASE("ray_box_intersect: negative tangent interval", "[igl]",
+  float, double)
+{
+  IGL_PUSH_FPE;
+  typedef TestType Scalar;
+  typedef Eigen::Matrix<Scalar,1,3> RowVector3;
+  typedef Eigen::Matrix<Scalar,3,1> Vector3;
+  const Eigen::AlignedBox<Scalar,3> box(Vector3::Zero(),Vector3::Ones());
+  for(int axis = 0; axis < 3; ++axis)
+  {
+    for(const Scalar zero : {Scalar(0),-Scalar(0)})
+    {
+      DYNAMIC_SECTION("axis " << axis << " zero " << std::signbit(zero))
+      {
+        RowVector3 origin, direction;
+        origin(axis) = Scalar(1.5);
+        origin((axis+1)%3) = Scalar(1);
+        origin((axis+2)%3) = Scalar(0.5);
+        direction(axis) = Scalar(1);
+        direction((axis+1)%3) = zero;
+        direction((axis+2)%3) = Scalar(-1);
+        Scalar tmin, tmax;
+        // The only intersection is the corner reached at t = -0.5.
+        REQUIRE(igl::ray_box_intersect(origin,direction,box,
+          Scalar(-2),Scalar(0.125),tmin,tmax));
+        REQUIRE(tmin == Approx(-0.5));
+        REQUIRE(tmax == Approx(-0.5));
+        REQUIRE_FALSE(igl::ray_box_intersect(origin,direction,box,
+          Scalar(0),Scalar(2),tmin,tmax));
+        // A parallel outside slab must remain a miss even far behind us.
+        origin(axis) = Scalar(1.125);
+        origin((axis+1)%3) = Scalar(3);
+        origin((axis+2)%3) = Scalar(0.5);
+        direction(axis) = zero;
+        direction((axis+1)%3) = std::numeric_limits<Scalar>::min();
+        direction((axis+2)%3) = zero;
+        REQUIRE_FALSE(igl::ray_box_intersect(origin,direction,box,
+          -std::numeric_limits<Scalar>::max(),Scalar(0),tmin,tmax));
+      }
+    }
+  }
+  IGL_POP_FPE;
 }
