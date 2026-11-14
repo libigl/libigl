@@ -3,6 +3,7 @@
 #include <igl/guess_extension.h>
 #include <igl/pathinfo.h>
 #include <cstdio>
+#include <fstream>
 
 
 TEST_CASE("guess_extension: all_meshes", "[igl]")
@@ -23,4 +24,14 @@ TEST_CASE("guess_extension: all_meshes", "[igl]")
 	};
 
 	test_common::run_test_cases(test_common::all_meshes(), test_case);
+}
+
+TEST_CASE("guess_extension: long-first-token", "[igl]")
+{
+  const std::string filename = "guess_extension_long-first-token.txt";
+  std::ofstream(filename) << std::string(2000,'x') << "\n";
+  FILE * fp = fopen(filename.c_str(),"r");
+  REQUIRE(fp != NULL);
+  REQUIRE(igl::guess_extension(fp) == "obj");
+  fclose(fp);
 }

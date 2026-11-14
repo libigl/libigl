@@ -43,7 +43,7 @@ IGL_INLINE bool igl::readOFF(
   const std::string OFF("OFF");
   const std::string NOFF("NOFF");
   const std::string COFF("COFF");
-  if(fscanf(off_file,"%s\n",header)!=1
+  if(fscanf(off_file,"%999s\n",header)!=1
      || !(
        std::string(header).compare(0, OFF.length(), OFF)==0 ||
        std::string(header).compare(0, COFF.length(), COFF)==0 ||
@@ -59,7 +59,7 @@ IGL_INLINE bool igl::readOFF(
   int number_of_vertices;
   int number_of_faces;
   int number_of_edges;
-  char tic_tac_toe;
+  char tic_tac_toe[2];
   char line[1000];
   bool still_comments = true;
   while(still_comments)
@@ -108,10 +108,9 @@ IGL_INLINE bool igl::readOFF(
       }
       i++;
     }else if(
-        fscanf(off_file,"%[#]",&tic_tac_toe)==1)
+        fscanf(off_file,"%1[#]",tic_tac_toe)==1)
     {
-      char comment[1000];
-      fscanf(off_file,"%[^\n]",comment);
+      fscanf(off_file,"%*[^\n]");
     }else
     {
       printf("Error: bad line (%d)\n",i);
@@ -145,10 +144,9 @@ IGL_INLINE bool igl::readOFF(
       F[i] = face;
       i++;
     }else if(
-             fscanf(off_file,"%[#]",&tic_tac_toe)==1)
+             fscanf(off_file,"%1[#]",tic_tac_toe)==1)
     {
-      char comment[1000];
-      fscanf(off_file,"%[^\n]",comment);
+      fscanf(off_file,"%*[^\n]");
     }else
     {
       printf("Error: bad line\n");
