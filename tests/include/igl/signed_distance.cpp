@@ -122,9 +122,8 @@ TEST_CASE("signed_distance: winding_number_repeatable", "[igl]")
   // symmetry planes, so the winding number hierarchy has nodes whose boundary
   // loops lie in those planes. The query point is a hair off the plane x=0.
   //
-  // This only checks that repeated calls give the same result. It does not
-  // check accuracy: so close to a planar node boundary the hierarchical
-  // winding number can still be off.
+  // This only checks that repeated calls give the same result. The accuracy
+  // near such planes is checked in "winding_number: near_planar_node_boundary".
   const int nlat = 32, nlon = 64;
   Eigen::MatrixXd V((nlat-1)*nlon+2,3);
   V.row(0) << 0,0,1;
