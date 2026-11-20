@@ -85,6 +85,24 @@ IGL_INLINE bool igl::readBF(
   int num_roots = (bfP.array() == -1).count();
   BE.resize(WI.rows()-num_roots,2);
   P.resize(BE.rows());
+  // The parent indices bfP and weight indices WI come straight from the file
+  // and are used below to index into C/offsets (via locate_tip), WI, and the
+  // bone arrays P and BE. Validate their range first: a root has parent -1,
+  // any other parent must reference an existing joint, and a weight index is
+  // either -1 (no weight) or an index into P/BE.
+  for(int c = 0;c<WI.rows();c++)
+  {
+    if(bfP(c) < -1 || bfP(c) >= WI.rows())
+    {
+      fprintf(stderr,"IOError: readBF() parent index %d out of range\n",(int)bfP(c));
+      return false;
+    }
+    if(WI(c) >= BE.rows())
+    {
+      fprintf(stderr,"IOError: readBF() weight index %d out of range\n",(int)WI(c));
+      return false;
+    }
+  }
   for(int c = 0;c<C.rows();c++)
   {
     locate_tip(c);
