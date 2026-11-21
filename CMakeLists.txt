@@ -9,7 +9,7 @@ endif()
 
 
 # Check required CMake version
-set(REQUIRED_CMAKE_VERSION "3.16.0")
+set(REQUIRED_CMAKE_VERSION "3.11.0")
 if(LIBIGL_TOPLEVEL_PROJECT)
     cmake_minimum_required(VERSION ${REQUIRED_CMAKE_VERSION})
 else()

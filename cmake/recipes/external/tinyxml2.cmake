@@ -13,7 +13,11 @@ FetchContent_Declare(
 )
 FetchContent_GetProperties(tinyxml2)
 if(NOT tinyxml2_POPULATED)
-    FetchContent_Populate(tinyxml2)
+    if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.14")
+        FetchContent_MakeAvailable(tinyxml2)
+    else()
+        FetchContent_Populate(tinyxml2)
+    endif()
 endif()
 
 add_library(tinyxml2 STATIC ${tinyxml2_SOURCE_DIR}/tinyxml2.cpp ${tinyxml2_SOURCE_DIR}/tinyxml2.h)

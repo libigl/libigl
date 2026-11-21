@@ -12,7 +12,11 @@ FetchContent_Declare(
 )
 FetchContent_GetProperties(libigl_imgui_fonts)
 if(NOT libigl_imgui_fonts_POPULATED)
-    FetchContent_Populate(libigl_imgui_fonts)
+    if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.14")
+        FetchContent_MakeAvailable(libigl_imgui_fonts)
+    else()
+        FetchContent_Populate(libigl_imgui_fonts)
+    endif()
 endif()
 
 add_library(igl_imgui_fonts INTERFACE)

@@ -13,8 +13,26 @@ FetchContent_Declare(
 )
 FetchContent_GetProperties(eigen)
 if(NOT eigen_POPULATED)
-    FetchContent_Populate(eigen)
+    if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.14")
+        FetchContent_MakeAvailable(eigen)
+    else()
+        FetchContent_Populate(eigen)
+    endif()
 endif()
+
+# --------------------------------------------------------------------------------------------------
+# Temporary fix to avoid double inclusion of the Alias
+# Eigen's own CMake may already provide this namespaced target.
+if(TARGET Eigen3::Eigen)
+    return()
+endif()
+
+# Some Eigen builds provide `eigen` but not `Eigen3::Eigen`.
+if(TARGET eigen)
+    add_library(Eigen3::Eigen ALIAS eigen)
+    return()
+endif()
+# --------------------------------------------------------------------------------------------------
 
 add_library(Eigen3_Eigen INTERFACE)
 add_library(Eigen3::Eigen ALIAS Eigen3_Eigen)
