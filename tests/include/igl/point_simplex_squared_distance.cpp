@@ -1,3 +1,8 @@
+// Exercise scalar/shape combinations beyond the static library instantiations.
+#ifdef IGL_STATIC_LIBRARY
+#  undef IGL_STATIC_LIBRARY
+#endif
+
 #include <test_common.h>
 #include <igl/point_simplex_squared_distance.h>
 

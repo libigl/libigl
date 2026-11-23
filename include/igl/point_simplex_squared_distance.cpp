@@ -95,7 +95,8 @@ IGL_INLINE void igl::point_simplex_squared_distance(
     }
     // Check if P in edge region of BC, if so return projection of P onto BC
     Scalar va = d3*d6 - d5*d4;
-    if (va <= Scalar(0) && (d4 - d3) >= Scalar(0) && (d5 - d6) >= Scalar(0)) {
+    if (va <= Scalar(0) &&
+        (d4 - d3) >= Scalar(0) && (d5 - d6) >= Scalar(0)) {
       Scalar w = (d4 - d3) / ((d4 - d3) + (d5 - d6));
       // barycentric coordinates (0,1-w,w)
       bary_out << 0, 1-w, w;
