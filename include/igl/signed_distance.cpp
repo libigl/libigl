@@ -6,7 +6,6 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "signed_distance.h"
-#include <cmath>
 #include "get_seconds.h"
 #include "per_edge_normals.h"
 #include "parallel_for.h"
@@ -15,6 +14,7 @@
 #include "point_mesh_squared_distance.h"
 #include "pseudonormal_test.h"
 #include "fast_winding_number.h"
+#include <cmath>
 
 namespace
 {
@@ -82,7 +82,8 @@ namespace
     const Scalar max_abs = std::max(std::abs(lower_bound),std::abs(upper_bound));
     const Scalar up_sqr_d = std::pow(max_abs,Scalar(2));
     const Scalar low_sqr_d = 
-      std::pow(std::max(max_abs-(upper_bound-lower_bound),Scalar(0)),Scalar(2));
+      std::pow(
+        std::max(max_abs-(upper_bound-lower_bound),Scalar(0)),Scalar(2));
 
     S.resize(P.rows(),1);
     I.resize(P.rows(),1);
@@ -200,7 +201,8 @@ namespace
     const Scalar max_abs = std::max(std::abs(lower_bound),std::abs(upper_bound));
     const Scalar up_sqr_d = std::pow(max_abs,Scalar(2));
     const Scalar low_sqr_d = 
-      std::pow(std::max(max_abs-(upper_bound-lower_bound),Scalar(0)),Scalar(2));
+      std::pow(
+        std::max(max_abs-(upper_bound-lower_bound),Scalar(0)),Scalar(2));
 
     S.resize(P.rows(),1);
     I.resize(P.rows(),1);

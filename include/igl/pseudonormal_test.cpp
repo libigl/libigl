@@ -6,11 +6,11 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "pseudonormal_test.h"
-#include <cmath>
 #include "barycentric_coordinates.h"
 #include "doublearea.h"
 #include "project_to_line_segment.h"
 #include <cassert>
+#include <cmath>
 template <
   typename DerivedV,
   typename DerivedF,
