@@ -97,7 +97,7 @@ IGL_INLINE void igl::barycentric_coordinates(
   L.resize(P.rows(),3);
   L.col(1) = (d11 * d20 - d01 * d21) / denom;
   L.col(2) = (d00 * d21 - d01 * d20) / denom;
-  L.col(0) = 1.0f -(L.col(1) + L.col(2)).array();
+  L.col(0) = typename DerivedL::Scalar(1) -(L.col(1) + L.col(2)).array();
 }
 
 #ifdef IGL_STATIC_LIBRARY

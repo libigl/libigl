@@ -27,7 +27,7 @@ IGL_INLINE void igl::barycenter(
       BC.row(i) += V.row(F(i,j));
     }
     // average
-    BC.row(i) /= double(F.cols());
+    BC.row(i) /= typename DerivedBC::Scalar(F.cols());
   }
 }
 
