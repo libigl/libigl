@@ -6,6 +6,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "pseudonormal_test.h"
+#include <cmath>
 #include "barycentric_coordinates.h"
 #include "doublearea.h"
 #include "project_to_line_segment.h"
@@ -59,9 +60,9 @@ IGL_INLINE void igl::pseudonormal_test(
   const RowVector3S B = V.row(F(f,1));
   const RowVector3S C = V.row(F(f,2));
 
-  const double area = [&A,&B,&C]()
+  const Scalar area = [&A,&B,&C]()
   {
-    Eigen::Matrix<double,1,1> area;
+    Eigen::Matrix<Scalar,1,1> area;
     doublearea(A,B,C,area);
     return area(0);
   }();
@@ -69,8 +70,8 @@ IGL_INLINE void igl::pseudonormal_test(
   // the best way to determine if c is on a vertex/edge or in the middle of the
   // face: specifically, I'm worrying about degenerate triangles where
   // barycentric coordinates are error-prone.
-  const double MIN_DOUBLE_AREA = 1e-4;
-  const double epsilon = 1e-12;
+  const Scalar MIN_DOUBLE_AREA = Scalar(1e-4);
+  const Scalar epsilon = Scalar(1e-12);
   if(area>MIN_DOUBLE_AREA)
   {
     barycentric_coordinates( c,A,B,C,b);
@@ -123,10 +124,10 @@ IGL_INLINE void igl::pseudonormal_test(
     {
       const RowVector3S s = V.row(F(f,(e+1)%3));
       const RowVector3S d = V.row(F(f,(e+2)%3));
-      Eigen::Matrix<double,1,1> sqr_d_j_x(1,1);
-      Eigen::Matrix<double,1,1> t(1,1);
+      Eigen::Matrix<Scalar,1,1> sqr_d_j_x(1,1);
+      Eigen::Matrix<Scalar,1,1> t(1,1);
       project_to_line_segment(c,s,d,t,sqr_d_j_x);
-      if(sqrt(sqr_d_j_x(0)) < epsilon)
+      if(std::sqrt(sqr_d_j_x(0)) < epsilon)
       {
         n = EN.row(EMAP(F.rows()*e+f));
         found = true;
@@ -138,7 +139,7 @@ IGL_INLINE void igl::pseudonormal_test(
       n = FN.row(f);
     }
   }
-  s = (qc.dot(n) >= 0 ? 1. : -1.);
+  s = (qc.dot(n) >= Scalar(0) ? Scalar(1) : Scalar(-1));
 }
 
 template <
@@ -174,7 +175,7 @@ IGL_INLINE void igl::pseudonormal_test(
       Derivedn::ColsAtCompileTime*Derivedn::RowsAtCompileTime == 2 || 
       Derivedn::ColsAtCompileTime*Derivedn::RowsAtCompileTime == Eigen::Dynamic,"q must be size 2 or Dynamic");
   const auto & qc = q-c;
-  const double len = (V.row(E(e,1))-V.row(E(e,0))).norm();
+  const Scalar len = (V.row(E(e,1))-V.row(E(e,0))).norm();
   // barycentric coordinates
   // this .head() nonsense is for "ridiculus" templates instantiations that AABB
   // needs to compile
@@ -182,7 +183,7 @@ IGL_INLINE void igl::pseudonormal_test(
     b((c-V.row(E(e,1))).norm()/len,(c-V.row(E(e,0))).norm()/len);
     //b((c-V.row(E(e,1)).head(c.size())).norm()/len,(c-V.row(E(e,0)).head(c.size())).norm()/len);
   // Determine which normal to use
-  const double epsilon = 1e-12;
+  const Scalar epsilon = Scalar(1e-12);
   const int type = (b.array()<=epsilon).template cast<int>().sum();
   switch(type)
   {
@@ -203,7 +204,7 @@ IGL_INLINE void igl::pseudonormal_test(
       n = EN.row(e).head(2);
       break;
   }
-  s = (qc.dot(n) >= 0 ? 1. : -1.);
+  s = (qc.dot(n) >= Scalar(0) ? Scalar(1) : Scalar(-1));
 }
 
 #ifdef IGL_STATIC_LIBRARY

@@ -6,6 +6,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can 
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "signed_distance.h"
+#include <cmath>
 #include "get_seconds.h"
 #include "per_edge_normals.h"
 #include "parallel_for.h"
@@ -79,9 +80,9 @@ namespace
     // convert to bounds on (unsiged) squared distances
     typedef typename DerivedV::Scalar Scalar; 
     const Scalar max_abs = std::max(std::abs(lower_bound),std::abs(upper_bound));
-    const Scalar up_sqr_d = std::pow(max_abs,2.0);
+    const Scalar up_sqr_d = std::pow(max_abs,Scalar(2));
     const Scalar low_sqr_d = 
-      std::pow(std::max(max_abs-(upper_bound-lower_bound),(Scalar)0.0),2.0);
+      std::pow(std::max(max_abs-(upper_bound-lower_bound),Scalar(0)),Scalar(2));
 
     S.resize(P.rows(),1);
     I.resize(P.rows(),1);
@@ -100,7 +101,7 @@ namespace
       {
         // Out of bounds gets a nan (nans on grids can be flood filled later using
         // igl::flood_fill)
-        S(p) = std::numeric_limits<double>::quiet_NaN();
+        S(p) = std::numeric_limits<Scalar>::quiet_NaN();
         I(p) = F.rows()+1;
         C.row(p).setConstant(0);
       }else
@@ -131,7 +132,7 @@ namespace
           }
         }
         I(p) = i;
-        S(p) = s*sqrt(sqrd);
+        S(p) = s*std::sqrt(sqrd);
         C.row(p) = c.template cast<typename DerivedC::Scalar>();
       }
     }
@@ -197,9 +198,9 @@ namespace
     // convert to bounds on (unsiged) squared distances
     typedef typename DerivedV::Scalar Scalar; 
     const Scalar max_abs = std::max(std::abs(lower_bound),std::abs(upper_bound));
-    const Scalar up_sqr_d = std::pow(max_abs,2.0);
+    const Scalar up_sqr_d = std::pow(max_abs,Scalar(2));
     const Scalar low_sqr_d = 
-      std::pow(std::max(max_abs-(upper_bound-lower_bound),(Scalar)0.0),2.0);
+      std::pow(std::max(max_abs-(upper_bound-lower_bound),Scalar(0)),Scalar(2));
 
     S.resize(P.rows(),1);
     I.resize(P.rows(),1);
@@ -219,7 +220,7 @@ namespace
       {
         // Out of bounds gets a nan (nans on grids can be flood filled later using
         // igl::flood_fill)
-        S(p) = std::numeric_limits<double>::quiet_NaN();
+        S(p) = std::numeric_limits<Scalar>::quiet_NaN();
         I(p) = F.rows()+1;
         C.row(p).setConstant(0);
       }else
@@ -246,7 +247,7 @@ namespace
           }
         }
         I(p) = i;
-        S(p) = s*sqrt(sqrd);
+        S(p) = s*std::sqrt(sqrd);
         C.row(p) = c.template cast<typename DerivedC::Scalar>();
       }
     }
@@ -462,7 +463,7 @@ IGL_INLINE typename DerivedV::Scalar igl::signed_distance_pseudonormal(
   Eigen::Matrix<typename DerivedV::Scalar,1,3> n,c;
   int i = -1;
   signed_distance_pseudonormal(tree,V,F,FN,VN,EN,EMAP,q,s,sqrd,i,c,n);
-  return s*sqrt(sqrd);
+  return s*std::sqrt(sqrd);
 }
 
 template <
@@ -504,7 +505,7 @@ IGL_INLINE void igl::signed_distance_pseudonormal(
     int i = -1;
     RowVector3S q = P.row(p);
     signed_distance_pseudonormal(tree,V,F,FN,VN,EN,EMAP,q,s,sqrd,i,c,n);
-    S(p) = s*sqrt(sqrd);
+    S(p) = s*std::sqrt(sqrd);
     I(p) = i;
     N.row(p) = n;
     C.row(p) = c;
@@ -598,7 +599,7 @@ IGL_INLINE typename DerivedV::Scalar igl::signed_distance_winding_number(
   Eigen::Matrix<Scalar,1,3> c;
   int i=-1;
   signed_distance_winding_number(tree,V,F,hier,q,s,sqrd,i,c);
-  return s*sqrt(sqrd);
+  return s*std::sqrt(sqrd);
 }
 
 

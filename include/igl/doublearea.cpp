@@ -6,6 +6,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "doublearea.h"
+#include <cmath>
 #include "edge_lengths.h"
 #include "parallel_for.h"
 #include "sort.h"
@@ -174,7 +175,7 @@ IGL_INLINE void igl::doublearea(
         (l(i,2)-(l(i,0)-l(i,1)))*
         (l(i,2)+(l(i,0)-l(i,1)))*
         (l(i,0)+(l(i,1)-l(i,2)));
-      dblA(i) = 2.0*0.25*sqrt(arg);
+      dblA(i) = Scalar(2)*Scalar(0.25)*std::sqrt(arg);
       // Alec: If the input edge lengths were computed from floating point
       // vertex positions then there's no guarantee that they fulfill the
       // triangle inequality (in their floating point approximations). For
