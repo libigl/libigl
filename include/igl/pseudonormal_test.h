@@ -16,6 +16,12 @@ namespace igl
   /// sign of the dot product between (q-c) and n, where n is the normal _at c_,
   /// carefully chosen according to [Bærentzen & Aanæs 2005]
   ///
+  /// The 3D feature tolerance is 3e-3 for float, 1e-9 for double, and 1e-12
+  /// for other scalar types. It is applied to barycentric coordinates when
+  /// twice the triangle area exceeds 1e-4, and to coordinate distances
+  /// otherwise. Consequently, classification near features depends on mesh
+  /// scale. The 2D overload uses a barycentric tolerance of 1e-12.
+  ///
   /// @param[in] V  #V by 3 list of vertex positions
   /// @param[in] F  #F by 3 list of triangle indices
   /// @param[in] FN  #F by 3 list of triangle normals 

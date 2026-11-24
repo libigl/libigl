@@ -11,6 +11,7 @@
 #include "project_to_line_segment.h"
 #include <cassert>
 #include <cmath>
+#include <type_traits>
 template <
   typename DerivedV,
   typename DerivedF,
@@ -66,12 +67,12 @@ IGL_INLINE void igl::pseudonormal_test(
     doublearea(A,B,C,area);
     return area(0);
   }();
-  // These were chosen arbitrarily. In a floating point scenario, I'm not sure
-  // the best way to determine if c is on a vertex/edge or in the middle of the
-  // face: specifically, I'm worrying about degenerate triangles where
-  // barycentric coordinates are error-prone.
+  // Use barycentric coordinates above this area threshold and coordinate
+  // distances below it. The empirically chosen feature tolerances therefore
+  // have different units in the two branches and are scale dependent.
   const Scalar MIN_DOUBLE_AREA = Scalar(1e-4);
-  const Scalar epsilon = Scalar(1e-12);
+  const Scalar epsilon = std::is_same<Scalar,float>::value ? Scalar(3e-3) :
+    (std::is_same<Scalar,double>::value ? Scalar(1e-9) : Scalar(1e-12));
   if(area>MIN_DOUBLE_AREA)
   {
     barycentric_coordinates( c,A,B,C,b);
