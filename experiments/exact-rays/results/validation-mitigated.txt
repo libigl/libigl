@@ -1,0 +1,25 @@
+Validation on 2026-11-24, Linux x86-64, AMD EPYC 9B45.
+GCC 13.3.0; Eigen 5.0.1; Catch2 v2.
+Native timing pinned to CPU 24; generic timing pinned to CPU 24.
+Original PR: 4777048f11ac9d4d26078b32248a6f96b95460f2
+Initial experiment: 4770e3f1affa0bcc943a88b93faee3760c0534ef
+Dependency remains b434435124d29a2e87d132636fac46e1090c6c2d
+
+Native Release CTest: 5/5 passed.
+Native unit binary excluding cube-data test: 21294 assertions, 12 cases passed.
+ASan + UBSan CTest: 5/5 passed; no sanitizer diagnostics.
+Native and generic comparisons: 125000 classifications, 75031 hit comparisons,
+1200 mesh queries, zero mismatches.
+Native baseline comparison with ulimit -s 1024: passed.
+Instrumented zero-product shortcut check: passed.
+Leaf allocation audit: original 177, experiment 0 allocations.
+Known-failure reproducer outputs are unchanged from the initial experiment.
+Core ray-box .h/.cpp files are unchanged from the original PR.
+
+Native GCC -fstack-usage, individual frames (not full call stack):
+Previous adapter classify: 192 bytes, plus kernel classify: 1792 bytes.
+Mitigated adapter classify: tail jump (8 bytes reported).
+Mitigated public classification template: 256 bytes, static.
+Mitigated adaptive classifier: 1792 bytes, dynamic bounded; called only on uncertainty.
+Mitigated determinant expansion: 3008 bytes, dynamic bounded.
+Comparison frame: 47696 bytes, dynamic bounded.

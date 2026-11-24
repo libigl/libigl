@@ -1,5 +1,6 @@
 #include <cstdint>
 #include "api.h"
+#include "workloads.h"
 #include <algorithm>
 #include <chrono>
 #include <cmath>
@@ -13,53 +14,12 @@
 
 namespace
 {
-struct Case { Ray ray; Triangle first, second; };
+using exact_ray_experiment::cases;
 volatile std::int64_t checksum = 0;
 
 void require(bool condition, const char *message)
 {
   if(!condition) { throw std::runtime_error(message); }
-}
-
-std::vector<Case> cases(const std::string &kind, int count)
-{
-  std::mt19937 generator(2549);
-  std::uniform_real_distribution<double> uniform(-1,1);
-  const auto point = [&]() { return Point(uniform(generator),uniform(generator),uniform(generator)); };
-  std::vector<Case> result;
-  for(int i=0; i<count; ++i)
-  {
-    Case sample{{point()*2, point()}, {point(),point(),point()}, {point(),point(),point()}};
-    if(kind=="coplanar")
-    {
-      sample.ray={Point(0.25,0.25,0),Point(1,0,0)};
-      sample.first={Point(0,0,0),Point(1,0,0),Point(0,1,0)};
-    }
-    if(kind=="thin")
-    {
-      const double epsilon=std::ldexp(1.0,-52);
-      sample.ray={Point(0,0,0),Point(0,0,1)};
-      sample.first={Point(0,0,1),Point(1,1+epsilon,1),Point(1-epsilon,1,1)};
-      sample.second=sample.first;
-      sample.second.a.z()=sample.second.b.z()=sample.second.c.z()=2;
-    }
-    if(kind=="ordered")
-    {
-      sample.ray={Point(0,0,0),Point(0,0,1)};
-      sample.first={Point(-1,-1,2+uniform(generator)),Point(1,-1,2+uniform(generator)),Point(0,1,2+uniform(generator))};
-      sample.second={Point(-2,-2,2+uniform(generator)),Point(2,-2,2+uniform(generator)),Point(0,2,2+uniform(generator))};
-      if(i%4==0) { sample.second=sample.first; }
-      if(i%3==0) { std::swap(sample.second.b,sample.second.c); }
-    }
-    const double scale=std::ldexp(1.0,(i%7-3)*20);
-    sample.ray.origin*=scale; sample.ray.direction*=scale;
-    for(Triangle *triangle : {&sample.first,&sample.second})
-    {
-      triangle->a*=scale; triangle->b*=scale; triangle->c*=scale;
-    }
-    result.push_back(sample);
-  }
-  return result;
 }
 
 void mesh(int faces_count, bool layered, Eigen::MatrixXd &vertices, Eigen::MatrixXi &faces)
@@ -87,7 +47,7 @@ void mesh(int faces_count, bool layered, Eigen::MatrixXd &vertices, Eigen::Matri
 void accuracy()
 {
   std::size_t classifications=0, comparisons=0, mesh_queries=0;
-  for(const std::string kind : {"random","coplanar","thin","ordered"})
+  for(const std::string kind : {"random","coplanar","thin","ordered","dense_ordered"})
   {
     for(const auto &sample : cases(kind,25000))
     {
@@ -167,7 +127,7 @@ void benchmark(const std::string &name, const int operations, First original, Se
 void performance()
 {
   std::cout<<"case,operations,baseline_ns,shewchuk_ns,speedup\n";
-  for(const std::string kind : {"random","coplanar","thin"})
+  for(const std::string kind : {"random","ordered","dense_ordered","coplanar","thin"})
   {
     const auto samples=cases(kind,1024);
     benchmark("classify_"+kind,samples.size(),[&](){
@@ -176,7 +136,7 @@ void performance()
       int sum=0; for(const auto &sample:samples) sum+=shewchuk::classify(sample.ray,sample.first); return sum;
     });
   }
-  for(const std::string kind : {"ordered","thin"})
+  for(const std::string kind : {"ordered","dense_ordered","thin"})
   {
     const auto samples=cases(kind,512);
     benchmark("compare_"+kind,samples.size(),[&](){

@@ -38,6 +38,12 @@ namespace igl { namespace predicates { namespace exact_ray_triangle_kernel
       result[0] = column.p[axis];
       return 1;
     }
+    // Equal finite coordinates have an exactly zero difference.
+    if(column.p[axis] == column.q[axis])
+    {
+      result[0] = 0;
+      return 1;
+    }
     double value, tail;
     ::predicates_two_diff(column.p[axis], column.q[axis], &value, &tail);
     int length = 0;
@@ -101,6 +107,13 @@ namespace igl { namespace predicates { namespace exact_ray_triangle_kernel
     for(int permutation = 0; permutation < 6; ++permutation)
     {
       const int *axes = permutations[permutation];
+      // A monomial with an exact zero factor contributes nothing.
+      if((lengths[axes[0]][0] == 1 && entries[axes[0]][0][0] == 0) ||
+         (lengths[axes[1]][1] == 1 && entries[axes[1]][1][0] == 0) ||
+         (lengths[axes[2]][2] == 1 && entries[axes[2]][2][0] == 0))
+      {
+        continue;
+      }
       const int pair_length = product<8>(
         lengths[axes[0]][0], entries[axes[0]][0],
         lengths[axes[1]][1], entries[axes[1]][1], pair);
@@ -166,7 +179,7 @@ namespace igl { namespace predicates { namespace exact_ray_triangle_kernel
     return sign(expansion[length - 1]);
   }
 
-  inline int classify(const double *origin, const double *direction,
+  inline int classify_adaptive(const double *origin, const double *direction,
     const double *a, const double *b, const double *c)
   {
     const Column ray{direction, nullptr}, ab{b,a}, ac{c,a};
@@ -182,10 +195,42 @@ namespace igl { namespace predicates { namespace exact_ray_triangle_kernel
       numerator = sign(::orient3d(pa, pb, pc, po));
     }
     if(denominator == 0) { return numerator == 0 ? 2 : 0; }
+    if(numerator == -denominator) { return 0; }
     if(det3_sign(ray, {a,origin}, {b,origin}) == -denominator) { return 0; }
     if(det3_sign(ray, {b,origin}, {c,origin}) == -denominator) { return 0; }
     if(det3_sign(ray, {c,origin}, {a,origin}) == -denominator) { return 0; }
     return numerator == 0 || numerator == denominator ? 1 : 0;
+  }
+
+  // Keep expansion scratch and external arithmetic calls off the filtered path.
+  // An uncertain sign retries with adaptive evaluation; no rounded sign is used.
+  inline int classify(const double *origin, const double *direction,
+    const double *a, const double *b, const double *c)
+  {
+    const Column ray{direction,nullptr}, ab{b,a}, ac{c,a};
+    const int denominator = det3_filter(ray,ab,ac);
+    if(denominator != 0)
+    {
+      const int numerator = det3_filter(ab,ac,{a,origin});
+      if(numerator != 0)
+      {
+        if(numerator == -denominator) { return 0; }
+        const int first = det3_filter(ray,{a,origin},{b,origin});
+        if(first == -denominator) { return 0; }
+        if(first != 0)
+        {
+          const int second = det3_filter(ray,{b,origin},{c,origin});
+          if(second == -denominator) { return 0; }
+          if(second != 0)
+          {
+            const int third = det3_filter(ray,{c,origin},{a,origin});
+            if(third == -denominator) { return 0; }
+            if(third != 0) { return numerator == denominator ? 1 : 0; }
+          }
+        }
+      }
+    }
+    return classify_adaptive(origin,direction,a,b,c);
   }
 
   inline void hit_fraction(const double *origin, const double *direction,

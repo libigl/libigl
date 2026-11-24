@@ -1,5 +1,10 @@
 # Shewchuk exact-ray experiment
 
+The report below records the initial experiment at `4770e3f1`. A subsequent
+investigation removed the observed classification regressions; see
+[the slowdown investigation](SLOWDOWN.md) for the implementation changes,
+controlled measurements, and latest validation results.
+
 This branch starts at libigl PR #2549 revision
 `4777048f11ac9d4d26078b32248a6f96b95460f2`. It replaces the PR's allocating
 expansion implementation with Shewchuk's existing arithmetic and local stack

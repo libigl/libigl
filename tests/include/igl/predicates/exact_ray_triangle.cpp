@@ -117,6 +117,27 @@ TEST_CASE("predicates::exact_ray_triangle: float", "[igl][predicates]")
   REQUIRE(igl::predicates::exact_ray_triangle_hit_compare(origin,direction,a,b,c,c,b,a)==0);
 }
 
+TEST_CASE("predicates::exact_ray_triangle: filtered_boundary_handoff", "[igl][predicates]")
+{
+  // Preserve zero signs when any stage of the filtered classifier needs fallback.
+  using Point=Eigen::RowVector3d;
+  using Result=igl::predicates::RayTriangleIntersection;
+  const Point direction(0,0,1);
+  const std::array<Point,3> vertices{{Point(0,0,1),Point(1,0,1),Point(0,1,1)}};
+  for(int rotation=0; rotation<3; ++rotation)
+  {
+    const Point a=vertices[rotation], b=vertices[(rotation+1)%3], c=vertices[(rotation+2)%3];
+    for(const Point &surface : {a,Point((a+b)*0.5),Point((a+b+c)/3.0)})
+    {
+      const Point below=surface-direction, above=surface+direction;
+      REQUIRE(igl::predicates::exact_ray_triangle_intersect(below,direction,a,b,c)==Result::Hit);
+      REQUIRE(igl::predicates::exact_ray_triangle_intersect(surface,direction,a,b,c)==Result::Hit);
+      REQUIRE(igl::predicates::exact_ray_triangle_intersect(above,direction,a,b,c)==Result::None);
+      REQUIRE(igl::predicates::exact_ray_triangle_intersect(above,direction,c,b,a)==Result::None);
+    }
+  }
+}
+
 TEST_CASE("predicates::expansion: exact_capacity", "[igl][predicates]")
 {
   // Exercise the public arithmetic using buffers with exactly the promised capacity.

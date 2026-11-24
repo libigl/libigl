@@ -1,0 +1,12 @@
+case,baseline,shewchuk,mathematical_expectation
+distant_origin,0,0,1
+tiny_direction,0,0,1
+range_compare_-400,0,0,-1
+range_behind_-400,1,1,0
+range_compare_-220,0,0,-1
+range_behind_-220,0,0,0
+range_compare_220,0,0,-1
+range_behind_220,0,0,0
+range_compare_400,0,0,-1
+range_behind_400,0,1,0
+approximate_t,0,0,1
