@@ -193,8 +193,9 @@ TEMPLATE_TEST_CASE("pseudonormal_test: preserve explicit feature support", "[igl
   FN << 0,0,1;
   VN << 1,0,0, 1,0,0, 1,0,0;
   EN << 0,1,0, 0,1,0, 0,1,0;
-  const Scalar near = Scalar(4)*std::numeric_limits<Scalar>::epsilon();
-  for(const Row b : {Row(1,0,0),Row(1-near,near,0),Row(1-2*near,near,near)})
+  const Scalar positive_coordinate = Scalar(4)*std::numeric_limits<Scalar>::epsilon();
+  for(const Row b : {Row(1,0,0),Row(1-positive_coordinate,positive_coordinate,0),
+      Row(1-2*positive_coordinate,positive_coordinate,positive_coordinate)})
   {
     Row c=b*V,n;
     const Row q=c+Row(1,1,1);
@@ -261,4 +262,43 @@ TEMPLATE_TEST_CASE("AABB: retain barycentrics of the winning primitive", "[igl]"
     test_common::assert_eq(c,direct_c);
     test_common::assert_eq(b,direct_b);
   }
+}
+
+TEMPLATE_TEST_CASE("AABB: bounded legacy triangle queries", "[igl]",
+  Eigen::MatrixXd, (Eigen::Matrix<float,Eigen::Dynamic,3,Eigen::RowMajor>))
+{
+  using Matrix = TestType;
+  using Scalar = typename Matrix::Scalar;
+  using Row = Eigen::Matrix<Scalar,1,3>;
+  using Faces = Eigen::Matrix<int,Eigen::Dynamic,Matrix::ColsAtCompileTime,Matrix::Options>;
+  Matrix V(3,3);
+  V << 0,0,0, 1,0,0, 0,1,0;
+  Faces F(1,3);
+  F << 0,1,2;
+  igl::AABB<Matrix,3> tree;
+  tree.init(V,F);
+  const Row q(Scalar(0.25),Scalar(0.25),Scalar(1));
+  Row c;
+  int nearest = -1;
+  const Scalar squared_distance = tree.squared_distance(V,F,q,Scalar(0),Scalar(2),nearest,c);
+  REQUIRE(squared_distance == Scalar(1));
+  REQUIRE(nearest == 0);
+  test_common::assert_eq(c,Row(Scalar(0.25),Scalar(0.25),Scalar(0)));
+}
+
+TEST_CASE("AABB: bounded legacy segment queries", "[igl]")
+{
+  Eigen::MatrixXd V(2,2);
+  V << 0,0, 1,0;
+  Eigen::MatrixXi E(1,2);
+  E << 0,1;
+  igl::AABB<Eigen::MatrixXd,2> tree;
+  tree.init(V,E);
+  const Eigen::RowVector2d q(0.25,1);
+  Eigen::RowVector2d c;
+  int nearest = -1;
+  const double squared_distance = tree.squared_distance(V,E,q,0.0,2.0,nearest,c);
+  REQUIRE(squared_distance == 1.0);
+  REQUIRE(nearest == 0);
+  test_common::assert_eq(c,Eigen::RowVector2d(0.25,0));
 }
