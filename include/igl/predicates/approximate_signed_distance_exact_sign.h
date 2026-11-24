@@ -42,10 +42,27 @@ namespace igl { namespace predicates {
     const Eigen::MatrixBase<DerivedL> &leaf,const MeshFeatureExposure &exposure,
     PointMeshClosestPoint &closest,PointMeshLocation &location);
 
+  /// Uncached overload. Reuse array triangle_triangle_adjacency outputs TT,TTi
+  /// instead of an exposure cache; evaluate local edge/vertex signs per query.
+  /// All mesh, numerical and output contracts of the cached overload apply.
+  /// @param[in] TT,TTi  #F by 3 neighboring faces and corresponding edge ids
+  template<typename DerivedQ,typename DerivedV,typename DerivedF,
+    typename DerivedB,typename DerivedL,typename DerivedTT,typename DerivedTTi>
+  IGL_INLINE double approximate_signed_distance_exact_sign(
+    const Eigen::MatrixBase<DerivedQ> &query,
+    const Eigen::MatrixBase<DerivedV> &V,const Eigen::MatrixBase<DerivedF> &F,
+    const Eigen::MatrixBase<DerivedB> &B1,const Eigen::MatrixBase<DerivedB> &B2,
+    const Eigen::MatrixBase<DerivedL> &leaf,const Eigen::MatrixBase<DerivedTT> &TT,
+    const Eigen::MatrixBase<DerivedTTi> &TTi,
+    PointMeshClosestPoint &closest,PointMeshLocation &location);
+
   /// Batched overload reusing the tree and exposure cache for every query.
   /// The single-query contract applies to each row. Outputs are resized;
   /// an empty query matrix gives empty outputs. An empty mesh/tree throws
   /// std::invalid_argument. Output arrays must not alias input storage.
+  /// Batches of at least 10,000 queries use igl::parallel_for with the configured
+  /// igl::default_num_threads(). Worker exceptions are rethrown on the caller
+  /// after joining all workers; outputs may be partially filled on failure.
   /// @param[in] P  #P by 3 query positions
   /// @param[in] V,F,B1,B2,leaf,exposure  As in the single-query overload
   /// @param[out] S  #P approximate signed distances
@@ -61,6 +78,17 @@ namespace igl { namespace predicates {
     const Eigen::MatrixBase<DerivedL> &leaf,const MeshFeatureExposure &exposure,
     Eigen::VectorXd &S,std::vector<PointMeshClosestPoint> &closest,
     Eigen::VectorXi &locations);
+
+  /// Uncached batched overload with the same parallel policy and outputs.
+  template<typename DerivedP,typename DerivedV,typename DerivedF,
+    typename DerivedB,typename DerivedL,typename DerivedTT,typename DerivedTTi>
+  IGL_INLINE void approximate_signed_distance_exact_sign(
+    const Eigen::MatrixBase<DerivedP> &P,
+    const Eigen::MatrixBase<DerivedV> &V,const Eigen::MatrixBase<DerivedF> &F,
+    const Eigen::MatrixBase<DerivedB> &B1,const Eigen::MatrixBase<DerivedB> &B2,
+    const Eigen::MatrixBase<DerivedL> &leaf,const Eigen::MatrixBase<DerivedTT> &TT,
+    const Eigen::MatrixBase<DerivedTTi> &TTi,Eigen::VectorXd &S,
+    std::vector<PointMeshClosestPoint> &closest,Eigen::VectorXi &locations);
 }}
 #ifndef IGL_STATIC_LIBRARY
 #  include "approximate_signed_distance_exact_sign.cpp"

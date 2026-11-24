@@ -96,6 +96,12 @@ igl::predicates::approximate_signed_distance_exact_sign(
 //   .barycentric_coordinates: approximate doubles.
 ```
 
+The uncached signed overload replaces `exposure` with the array adjacency
+matrices `TT,TTi`; it computes local edge/vertex signs per query. Both single
+and batched overloads are available. Both batched paths use `igl::parallel_for`
+with a 10,000-query threshold and `igl::default_num_threads()`; worker exceptions
+are propagated to the caller after joining all workers.
+
 The single-query signed overload returns a `double` and fills one
 `PointMeshClosestPoint` and one `PointMeshLocation`. The unsigned
 `point_mesh_closest_point` wrapper returns `PointMeshClosestPoint` directly;
@@ -366,3 +372,13 @@ the corresponding `CMAKE_C_FLAGS`, and
 `test_exact_points`, `static_smoke`, and `audit_allocations` targets and run CTest.
 For the interval-only ablation, apply `interval-only.patch` in a disposable
 checkout, build the benchmark there, and retain strict floating-point flags.
+
+## Armadillo comparison example
+
+[`tutorial/1005_SignedDistanceProfile`](../../tutorial/1005_SignedDistanceProfile/README.md)
+loads the watertight tutorial Armadillo, samples 10,000 reproducible points, and
+compares unsigned, pseudonormal, fast-winding, uncached exact-sign and cached
+exact-sign distances. It reports setup, prepared queries and full-call timings
+with consistent query parallelism. One- and four-thread measurements and output
+agreement checks are saved in `results/armadillo-1-thread.csv` and
+`results/armadillo-4-threads.csv`.

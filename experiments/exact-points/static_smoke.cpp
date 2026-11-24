@@ -40,6 +40,13 @@ template<typename Point> void check()
      location!=p::PointMeshLocation::INSIDE || distances(0)!=distance ||
      locations(0)!=-1 || closest_points[0].triangle!=0)
     throw std::runtime_error("Static signed distance construction failed");
+  if(p::approximate_signed_distance_exact_sign(query,vertices,faces,lower,upper,leaves,
+    neighbors,edges,signed_closest,location)!=distance || location!=p::PointMeshLocation::INSIDE)
+    throw std::runtime_error("Static uncached signed distance failed");
+  p::approximate_signed_distance_exact_sign(queries,vertices,faces,lower,upper,leaves,
+    neighbors,edges,distances,closest_points,locations);
+  if(distances(0)!=distance || locations(0)!=-1 || closest_points[0].triangle!=0)
+    throw std::runtime_error("Static uncached signed distance batch failed");
   const Eigen::RowVector3d a(0,0,0),b(1,0,0),c(0,1,0);
   int id;
   if(p::exact_point_triangle_closest_feature(query,a,b,c,id)!=p::ClosestPointFeature::FACE ||

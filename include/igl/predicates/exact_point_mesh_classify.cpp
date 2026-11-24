@@ -24,23 +24,8 @@ IGL_INLINE igl::predicates::PointMeshLocation igl::predicates::exact_point_mesh_
     m::corner(V,F,closest_triangle,1),m::corner(V,F,closest_triangle,2)}};
   int id;
   const int dimension=k::feature(q,p,id);
-  if(m::on_surface(q,p,dimension,id)) return PointMeshLocation::ON_SURFACE;
-  if(dimension==2) return static_cast<PointMeshLocation>(-k::orientation(p[0],p[1],p[2],q));
-  m::Corner edge{closest_triangle,id};
-  if(dimension==0)
-  {
-    const auto ring=m::one_ring(F,TT,TTi,edge);
-    for(const auto &candidate:ring)
-    {
-      const auto a=m::corner(V,F,candidate.face,(candidate.corner+1)%3);
-      const auto b=m::corner(V,F,edge.face,(edge.corner+1)%3);
-      if(k::perpendicular_compare(q,p[id],a,b)<0) edge=candidate;
-    }
-  }
-  const int fold=m::fold(V,F,TT,TTi,edge);
-  if(fold!=0) return static_cast<PointMeshLocation>(fold);
-  return static_cast<PointMeshLocation>(-k::orientation(m::corner(V,F,edge.face,0),
-    m::corner(V,F,edge.face,1),m::corner(V,F,edge.face,2),q));
+  return static_cast<PointMeshLocation>(m::local_location(V,F,TT,TTi,q,p,
+    closest_triangle,dimension,id));
 }
 
 template<typename DerivedQ,typename DerivedV,typename DerivedF>

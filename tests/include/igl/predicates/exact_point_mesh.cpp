@@ -8,6 +8,8 @@
 #include <igl/predicates/approximate_signed_distance_exact_sign.h>
 #include <igl/point_simplex_squared_distance.h>
 #include <random>
+#include <atomic>
+#include <thread>
 
 namespace
 {
@@ -300,6 +302,9 @@ TEST_CASE("predicates::approximate_signed_distance_exact_sign: batch_and_feature
     REQUIRE(p::approximate_signed_distance_exact_sign(query,mesh.vertices,mesh.faces,
       mesh.lower,mesh.upper,mesh.leaves,mesh.exposure,single,location)==distances(i));
     REQUIRE(int(location)==locations(i)); REQUIRE(single.triangle==c.triangle);
+    REQUIRE(p::approximate_signed_distance_exact_sign(query,mesh.vertices,mesh.faces,
+      mesh.lower,mesh.upper,mesh.leaves,mesh.neighbors,mesh.neighbor_edges,single,location)==distances(i));
+    REQUIRE(int(location)==locations(i)); REQUIRE(single.feature==c.feature);
     if(locations(i)==0) REQUIRE_FALSE(std::signbit(distances(i)));
   }
   // Header-only float inputs and Eigen expressions preserve the same exact
@@ -411,6 +416,10 @@ TEST_CASE("predicates::approximate_signed_distance_exact_sign: analytic_stars","
       const double distance=p::approximate_signed_distance_exact_sign(query,mesh.vertices,
         mesh.faces,mesh.lower,mesh.upper,mesh.leaves,mesh.exposure,closest,location);
       REQUIRE(int(location)==analytic_location(query,heights));
+      p::PointMeshClosestPoint uncached; p::PointMeshLocation uncached_location;
+      REQUIRE(p::approximate_signed_distance_exact_sign(query,mesh.vertices,mesh.faces,
+        mesh.lower,mesh.upper,mesh.leaves,mesh.neighbors,mesh.neighbor_edges,uncached,uncached_location)==distance);
+      REQUIRE(uncached_location==location);
       REQUIRE(closest.triangle==mesh.closest(query));
       double reference=std::numeric_limits<double>::infinity();
       for(int face=0;face<mesh.faces.rows();++face)
@@ -423,5 +432,69 @@ TEST_CASE("predicates::approximate_signed_distance_exact_sign: analytic_stars","
       REQUIRE(distance==Approx(int(location)*std::sqrt(reference)).epsilon(1e-12));
       REQUIRE((query-closest.closest_point).norm()==Approx(closest.distance).epsilon(1e-12));
     }
+  }
+}
+
+TEST_CASE("predicates::approximate_signed_distance_exact_sign: parallel_batches","[igl][predicates]")
+{
+  const Mesh mesh=star({{-1,-1,-1,-1}});
+  const std::array<Point,8> samples{{Point(0,0,.25),Point(0,0,-.25),Point(.25,.25,-.5),
+    Point(1,0,-1),Point(1,1,-1),Point(0,0,-5),Point(0,-1,0),Point(0,0,-1)}};
+  std::array<p::PointMeshClosestPoint,8> expected_closest;
+  std::array<p::PointMeshLocation,8> expected_location;
+  std::array<double,8> expected_distance;
+  for(int i=0;i<8;++i) expected_distance[i]=p::approximate_signed_distance_exact_sign(samples[i],
+    mesh.vertices,mesh.faces,mesh.lower,mesh.upper,mesh.leaves,mesh.exposure,expected_closest[i],expected_location[i]);
+  Eigen::MatrixXd queries(10000,3);
+  Eigen::VectorXd expected_distances(queries.rows()); Eigen::VectorXi expected_locations(queries.rows());
+  for(int i=0;i<queries.rows();++i)
+  {
+    queries.row(i)=samples[i%8]; expected_distances(i)=expected_distance[i%8];
+    expected_locations(i)=int(expected_location[i%8]);
+  }
+  const auto caller=std::this_thread::get_id();
+  std::atomic<bool> worker_read{false};
+  // Observe input evaluation in a worker, so correctness alone cannot hide
+  // an accidentally serial batch implementation.
+  const auto observed_queries=Eigen::MatrixXd::NullaryExpr(queries.rows(),3,
+    [&](Eigen::Index row,Eigen::Index col)
+    {
+      if(std::this_thread::get_id()!=caller) worker_read.store(true,std::memory_order_relaxed);
+      return queries(row,col);
+    });
+  for(bool cached:{false,true})
+  {
+    Eigen::VectorXd distances; Eigen::VectorXi locations;
+    std::vector<p::PointMeshClosestPoint> closest;
+    const auto evaluate=[&]
+    {
+      if(cached) p::approximate_signed_distance_exact_sign(observed_queries,mesh.vertices,mesh.faces,
+        mesh.lower,mesh.upper,mesh.leaves,mesh.exposure,distances,closest,locations);
+      else p::approximate_signed_distance_exact_sign(observed_queries,mesh.vertices,mesh.faces,
+        mesh.lower,mesh.upper,mesh.leaves,mesh.neighbors,mesh.neighbor_edges,distances,closest,locations);
+    };
+    worker_read=false; evaluate();
+#ifdef IGL_PARALLEL_FOR_FORCE_SERIAL
+    REQUIRE_FALSE(worker_read.load());
+#else
+    REQUIRE(worker_read.load()==(igl::default_num_threads()>1));
+#endif
+    REQUIRE(distances==expected_distances); REQUIRE(locations==expected_locations);
+    for(int i=0;i<queries.rows();i+=997)
+    {
+      REQUIRE(closest[i].triangle==expected_closest[i%8].triangle);
+      REQUIRE(closest[i].feature==expected_closest[i%8].feature);
+      REQUIRE(closest[i].feature_id==expected_closest[i%8].feature_id);
+    }
+    worker_read=false;
+    if(cached) p::approximate_signed_distance_exact_sign(observed_queries.topRows(9999),mesh.vertices,mesh.faces,
+      mesh.lower,mesh.upper,mesh.leaves,mesh.exposure,distances,closest,locations);
+    else p::approximate_signed_distance_exact_sign(observed_queries.topRows(9999),mesh.vertices,mesh.faces,
+      mesh.lower,mesh.upper,mesh.leaves,mesh.neighbors,mesh.neighbor_edges,distances,closest,locations);
+    REQUIRE_FALSE(worker_read.load());
+    REQUIRE(distances==expected_distances.head(9999));
+    queries(9999,0)=std::numeric_limits<double>::quiet_NaN();
+    REQUIRE_THROWS_AS(evaluate(),std::invalid_argument);
+    queries.row(9999)=samples[9999%8];
   }
 }

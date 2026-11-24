@@ -71,6 +71,29 @@ namespace igl { namespace predicates { namespace exact_point_mesh_kernel
     const int filtered=k::sign(k::distance<k::Interval>(q,p,dimension,id).numerator);
     return filtered==2 ? k::sign(k::distance<k::Expansion>(q,p,dimension,id).numerator)==0 : filtered==0;
   }
+  template<typename V,typename F,typename TT,typename TTi> inline int local_location(
+    const V &vertices,const F &faces,const TT &neighbors,const TTi &neighbor_edges,
+    const k::Point &q,const std::array<k::Point,3> &p,Eigen::Index closest_triangle,
+    int dimension,int id)
+  {
+    if(on_surface(q,p,dimension,id)) return 0;
+    if(dimension==2) return -k::orientation(p[0],p[1],p[2],q);
+    Corner edge{closest_triangle,id};
+    if(dimension==0)
+    {
+      const auto ring=one_ring(faces,neighbors,neighbor_edges,edge);
+      for(const auto &candidate:ring)
+      {
+        const auto a=corner(vertices,faces,candidate.face,(candidate.corner+1)%3);
+        const auto b=corner(vertices,faces,edge.face,(edge.corner+1)%3);
+        if(k::perpendicular_compare(q,p[id],a,b)<0) edge=candidate;
+      }
+    }
+    const int fold_label=fold(vertices,faces,neighbors,neighbor_edges,edge);
+    if(fold_label!=0) return fold_label;
+    return -k::orientation(corner(vertices,faces,edge.face,0),
+      corner(vertices,faces,edge.face,1),corner(vertices,faces,edge.face,2),q);
+  }
   inline int cached_location(const k::Point &q,const std::array<k::Point,3> &p,
     int dimension,int id,int exposure_label)
   {

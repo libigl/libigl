@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.20)
 project(exact_point_predicates LANGUAGES C CXX)
 set(CMAKE_CXX_STANDARD 17)
+find_package(Threads REQUIRED)
 get_filename_component(LIBIGL_POINT_SOURCE "${CMAKE_CURRENT_LIST_DIR}/../.." ABSOLUTE)
 foreach(required PREDICATES_SOURCE_DIR EIGEN_INCLUDE_DIR CATCH2_INCLUDE_DIR)
   if(NOT DEFINED ${required})
@@ -21,8 +22,9 @@ target_compile_definitions(test_exact_points PRIVATE LIBIGL_DATA_DIR="${CMAKE_CU
 target_link_libraries(test_exact_points PRIVATE igl::predicates)
 enable_testing()
 add_test(NAME exact_points COMMAND test_exact_points)
-set_tests_properties(exact_points PROPERTIES TIMEOUT 120)
+set_tests_properties(exact_points PROPERTIES TIMEOUT 120 ENVIRONMENT "IGL_NUM_THREADS=4")
 add_library(exact_point_static STATIC
+  "${LIBIGL_POINT_SOURCE}/include/igl/default_num_threads.cpp"
   "${LIBIGL_POINT_SOURCE}/include/igl/predicates/exactinit.cpp"
   "${LIBIGL_POINT_SOURCE}/include/igl/predicates/exact_point_triangle_closest_feature.cpp"
   "${LIBIGL_POINT_SOURCE}/include/igl/predicates/exact_point_triangle_squared_distance_compare.cpp"
@@ -33,7 +35,7 @@ add_library(exact_point_static STATIC
   "${LIBIGL_POINT_SOURCE}/include/igl/predicates/approximate_signed_distance_exact_sign.cpp")
 target_compile_definitions(exact_point_static PUBLIC IGL_STATIC_LIBRARY)
 target_include_directories(exact_point_static PUBLIC "${LIBIGL_POINT_SOURCE}/include" "${EIGEN_INCLUDE_DIR}")
-target_link_libraries(exact_point_static PUBLIC predicates)
+target_link_libraries(exact_point_static PUBLIC predicates Threads::Threads)
 if(MSVC)
   target_compile_options(exact_point_static PUBLIC /fp:strict)
 else()
@@ -52,3 +54,11 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Cla
 endif()
 add_executable(benchmark_exact_points benchmark.cpp)
 target_link_libraries(benchmark_exact_points PRIVATE igl::predicates)
+
+# Build the headless tutorial against existing dependencies and data.
+if(DEFINED TUTORIAL_DATA_DIR)
+  add_executable(1005_SignedDistanceProfile
+    "${LIBIGL_POINT_SOURCE}/tutorial/1005_SignedDistanceProfile/main.cpp")
+  target_compile_definitions(1005_SignedDistanceProfile PRIVATE TUTORIAL_SHARED_PATH="${TUTORIAL_DATA_DIR}")
+  target_link_libraries(1005_SignedDistanceProfile PRIVATE igl::predicates)
+endif()
