@@ -6,6 +6,7 @@
 #include <igl/point_simplex_squared_distance.h>
 #include <igl/predicates/exact_point_mesh_closest_triangle.h>
 #include <igl/predicates/exact_point_mesh_classify.h>
+#include <igl/predicates/approximate_signed_distance_exact_sign.h>
 #include <igl/predicates/exact_point_triangle_closest_feature.h>
 #include <igl/predicates/exact_point_triangle_squared_distance_compare.h>
 #include <algorithm>
@@ -93,6 +94,29 @@ int main()
     {
       long long result=0;
       for(const Point &q:queries) result+=p::exact_point_mesh_closest_triangle(q,vertices,faces,lower,upper,leaves);
+      return result;
+    });
+    measure("closest_point_wrapper",faces.rows(),queries.size(),[&]()
+    {
+      long long result=0;
+      for(const Point &q:queries)
+      {
+        const auto closest_point=p::point_mesh_closest_point(q,vertices,faces,lower,upper,leaves);
+        result+=closest_point.triangle+closest_point.distance*1e6+closest_point.closest_point.sum()*1e6;
+      }
+      return result;
+    });
+    Eigen::MatrixXd query_matrix(queries.size(),3);
+    for(std::size_t i=0;i<queries.size();++i) query_matrix.row(i)=queries[i];
+    Eigen::VectorXd signed_distances; Eigen::VectorXi locations;
+    std::vector<p::PointMeshClosestPoint> closest_points;
+    measure("signed_distance_batch",faces.rows(),queries.size(),[&]()
+    {
+      p::approximate_signed_distance_exact_sign(query_matrix,vertices,faces,lower,upper,leaves,
+        exposure,signed_distances,closest_points,locations);
+      long long result=0;
+      for(Eigen::Index i=0;i<signed_distances.size();++i)
+        result+=signed_distances(i)*1e6+locations(i)+closest_points[i].triangle;
       return result;
     });
     for(bool cached:{false,true})

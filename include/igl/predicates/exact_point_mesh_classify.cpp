@@ -60,15 +60,9 @@ IGL_INLINE igl::predicates::PointMeshLocation igl::predicates::exact_point_mesh_
     m::corner(V,F,closest_triangle,1),m::corner(V,F,closest_triangle,2)}};
   int id;
   const int dimension=k::feature(q,p,id);
-  if(m::on_surface(q,p,dimension,id)) return PointMeshLocation::ON_SURFACE;
   const int exposure_label=dimension==0 ? exposure.vertices(F(closest_triangle,id)) :
     dimension==1 ? exposure.edges(closest_triangle,id) : 0;
-  if(exposure_label==int(FeatureExposure::UNREACHABLE))
-    throw std::invalid_argument("A noncoincident query cannot have an unreachable closest vertex");
-  if(exposure_label!=0 && exposure_label!=-1 && exposure_label!=1)
-    throw std::invalid_argument("Invalid feature exposure label");
-  if(exposure_label!=0) return static_cast<PointMeshLocation>(exposure_label);
-  return static_cast<PointMeshLocation>(-k::orientation(p[0],p[1],p[2],q));
+  return static_cast<PointMeshLocation>(m::cached_location(q,p,dimension,id,exposure_label));
 }
 
 #ifdef IGL_STATIC_LIBRARY

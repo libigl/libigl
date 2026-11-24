@@ -28,7 +28,9 @@ add_library(exact_point_static STATIC
   "${LIBIGL_POINT_SOURCE}/include/igl/predicates/exact_point_triangle_squared_distance_compare.cpp"
   "${LIBIGL_POINT_SOURCE}/include/igl/predicates/exact_point_mesh_closest_triangle.cpp"
   "${LIBIGL_POINT_SOURCE}/include/igl/predicates/exact_point_mesh_classify.cpp"
-  "${LIBIGL_POINT_SOURCE}/include/igl/predicates/exact_mesh_feature_exposure.cpp")
+  "${LIBIGL_POINT_SOURCE}/include/igl/predicates/exact_mesh_feature_exposure.cpp"
+  "${LIBIGL_POINT_SOURCE}/include/igl/predicates/point_mesh_closest_point.cpp"
+  "${LIBIGL_POINT_SOURCE}/include/igl/predicates/approximate_signed_distance_exact_sign.cpp")
 target_compile_definitions(exact_point_static PUBLIC IGL_STATIC_LIBRARY)
 target_include_directories(exact_point_static PUBLIC "${LIBIGL_POINT_SOURCE}/include" "${EIGEN_INCLUDE_DIR}")
 target_link_libraries(exact_point_static PUBLIC predicates)

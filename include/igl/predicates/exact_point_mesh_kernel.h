@@ -71,5 +71,16 @@ namespace igl { namespace predicates { namespace exact_point_mesh_kernel
     const int filtered=k::sign(k::distance<k::Interval>(q,p,dimension,id).numerator);
     return filtered==2 ? k::sign(k::distance<k::Expansion>(q,p,dimension,id).numerator)==0 : filtered==0;
   }
+  inline int cached_location(const k::Point &q,const std::array<k::Point,3> &p,
+    int dimension,int id,int exposure_label)
+  {
+    if(on_surface(q,p,dimension,id)) return 0;
+    if(exposure_label==2)
+      throw std::invalid_argument("A noncoincident query cannot have an unreachable closest vertex");
+    if(exposure_label!=0 && exposure_label!=-1 && exposure_label!=1)
+      throw std::invalid_argument("Invalid feature exposure label");
+    if(exposure_label!=0) return exposure_label;
+    return -k::orientation(p[0],p[1],p[2],q);
+  }
 }}}
 #endif

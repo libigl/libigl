@@ -1,6 +1,6 @@
 # Exact closest-point and local mesh-sign predicates
 
-This extends `experiment/exact-rays-shewchuk` with five operations. All public
+This extends `experiment/exact-rays-shewchuk` with closest-feature, signing, and distance operations. All public
 functions have `.h/.cpp` pairs under `include/igl/predicates/`; link
 `igl::predicates`. The ray APIs and core ray-box implementation are unchanged.
 
@@ -11,6 +11,9 @@ functions have `.h/.cpp` pairs under `include/igl/predicates/`; link
 | `exact_point_mesh_closest_triangle(q,V,F,B1,B2,leaf)` | An exactly minimizing face id, choosing the smallest id on ties; -1 for empty tree |
 | `exact_point_mesh_classify(q,V,F,face,TT,TTi)` | `PointMeshLocation::{INSIDE,ON_SURFACE,OUTSIDE}` (-1 / 0 / +1) |
 | `exact_mesh_feature_exposure(V,F,TT,TTi,exposure)` | Query-independent edge and vertex exposure labels |
+| `point_mesh_closest_point(q,V,F,B1,B2,leaf)` | `PointMeshClosestPoint`: exact triangle/feature ids; approximate distance, squared distance, point and barycentrics |
+| `approximate_signed_distance_exact_sign(q,V,F,B1,B2,leaf,exposure,closest,location)` | Approximate signed distance, closest-point information and exact location |
+| `approximate_signed_distance_exact_sign(P,V,F,B1,B2,leaf,exposure,S,closest,locations)` | Batch of signed distances, closest-point information and exact locations |
 
 The cached signing overload is
 `exact_point_mesh_classify(q,V,F,face,exposure)`. `MeshFeatureExposure` owns an
@@ -69,10 +72,62 @@ if(f>=0)
 
 The caller builds the tree once and reuses it. Boxes must conservatively contain
 their triangles; a box built from rounded approximate closest points is not a
-replacement. Neither an approximate closest point nor an approximate distance
-is returned by these APIs. Explicit static-library instantiations cover the
-usual double row/column queries with `MatrixXd/MatrixXi/VectorXi` mesh/tree
-storage, and float/double row/column leaf queries.
+replacement. Explicit static-library instantiations cover the usual double
+row/column queries with `MatrixXd/MatrixXi/VectorXi` mesh/tree storage,
+`MatrixXd` signed-distance batches, and float/double row/column leaf queries.
+
+### Signed distances and closest-point construction
+
+After the preprocessing above, reuse the tree and exposure cache:
+
+```cpp
+#include <igl/predicates/approximate_signed_distance_exact_sign.h>
+
+Eigen::MatrixXd P; // #P by 3 query positions
+Eigen::VectorXd S;
+Eigen::VectorXi locations;
+std::vector<igl::predicates::PointMeshClosestPoint> closest;
+igl::predicates::approximate_signed_distance_exact_sign(
+  P,V,F,B1,B2,leaf,exposure,S,closest,locations);
+// S(i): negative inside, positive outside, exactly +0.0 on the surface.
+// locations(i): exact -1 / 0 / +1, independent of rounded distances.
+// closest[i].triangle, .feature, .feature_id: exact selections.
+// closest[i].distance, .squared_distance, .closest_point,
+//   .barycentric_coordinates: approximate doubles.
+```
+
+The single-query signed overload returns a `double` and fills one
+`PointMeshClosestPoint` and one `PointMeshLocation`. The unsigned
+`point_mesh_closest_point` wrapper returns `PointMeshClosestPoint` directly;
+it also supports open meshes and degenerate triangles. Both wrappers perform
+one tree traversal. Signing reuses the selected feature without reclassifying
+an approximate point. The cache and tree are caller-owned and reused unchanged.
+Empty meshes/trees throw `std::invalid_argument`; an empty batch on a valid
+nonempty mesh produces empty outputs. Output arrays must not alias inputs.
+
+Numerical construction evaluates the selected feature's rational barycentric
+coordinates, point coordinates and squared distance. For edges it evaluates
+`|r cross e|^2 / |e|^2` to avoid the cancellation in
+`(|r|^2 |e|^2 - (r.e)^2) / |e|^2`. For faces it uses the exact unnormalized
+normal `n=e cross f`, barycentric numerators `(r cross f).n`, `(e cross r).n`,
+and denominator `n.n`. The remaining numerator is the denominator minus the
+other two. Coordinate numerators are barycentric-weighted original corners.
+A floating-point evaluation is accepted when each result's absolute value is
+at least 1/1024 of its absolute permanent; cancellation-prone constructions are
+reevaluated with stack expansions before converting the final ratios to double.
+The degree is at most six and the existing metric filter's rounding bound
+covers these expressions. Its `256*epsilon` bound gives about `6e-11`
+relative error per accepted polynomial component before division. This is an
+approximation policy, not a promise of correctly rounded coordinates or distances.
+
+Distance comes from `sqrt(N)/sqrt(D)` for the selected feature, independently
+of the rounded closest point. In particular, computing `norm(q-closest_point)`
+can give a substantially different answer when that point rounds toward q.
+The final `N/D` squared distance can underflow even when the distance remains
+representable. Exact `locations` are authoritative if a numerical magnitude
+rounds to zero. Rounded barycentrics may lie on the boundary of an exactly
+open feature and need not sum to exactly one; rounded point coordinates need
+not lie exactly on the surface. No expansions escape these calls.
 
 ## Metric predicates and arithmetic contract
 
@@ -148,7 +203,7 @@ quotients or rounded constructed closest points never decide the winner.
 ## Local sign and query-free exposure
 
 For an open face, Shewchuk `orient3d(a,b,c,q)>0` means inside for an outward
-oriented triangle. A zero squared distance is checked before any exposure lookup.
+oriented triangle. A zero squared distance takes precedence over exposure labels.
 
 For directed edge `(v,a)`, write its oriented faces `(v,a,b)` and `(v,c,a)`.
 The fold determinant is `T=((a-v) cross (b-v)).(c-v)`; Shewchuk's orientation
@@ -206,6 +261,13 @@ checks. Coverage includes:
 - Convex, reflex, flat, unreachable saddle, hull-edge and hull-facet vertices;
   flat supporting edges in nonflat rings; tied closest triangles; affine
   transforms, reflections with corrected orientation, and cavity shells.
+- Batched and single signed distances for face/edge/vertex features, including
+  exact surface zeros, empty batches, invalid dimensions, float expressions,
+  and static linkage. Numerical regressions cover thin triangles, cancellation
+  near an edge/plane, a rounded closest point with a misleading distance, and
+  a representable distance whose squared-distance ratio underflows. Another
+  400 queries compare signed outputs against analytic star interiors and an
+  independent ordinary closest-point implementation on well-conditioned meshes.
 - 2,000 additional queries on 20 irregular closed stars compared with an
   independent long-double solid-angle winding calculation. This is a secondary
   numerical cross-check, not an exact oracle for points arbitrarily near a face.
@@ -215,7 +277,7 @@ instrumentation confirms zero allocations, zero expansion sums for an ordinary
 filtered query and a shared-edge tie, and actual expansion work for a distance
 comparison whose rounded distances coincide. The suite also runs with a 1 MiB
 stack. The original exact-ray source and ray-box implementation are unchanged.
-The final Release run passed **52,760 assertions in 16 cases**, including the
+The final Release run passed **54,912 assertions in 20 cases**, including the
 existing ray leaf tests. All three CTest targets passed in both Release and
 AddressSanitizer/UndefinedBehaviorSanitizer builds, with leak detection enabled.
 
@@ -248,6 +310,37 @@ common-feature ties, and bounded-error box lower bound remove most of that cost.
 The remaining exact tree overhead is about 3.4× / 2.0× versus approximate
 traversal on these workloads. Boundary-heavy inputs needing expansions and very
 high-valence preprocessing can be slower; these are not universal mesh timings.
+
+### Signed-distance wrapper measurements
+
+The same benchmark now measures the full unsigned wrapper and the signed batch,
+including numerical construction and output storage, on the same queries:
+
+| Operation | 320 faces | 5,120 faces |
+| --- | ---: | ---: |
+| Exact closest-triangle search | 2.99 µs | 8.49 µs |
+| Closest-point wrapper | 3.31 µs | 8.96 µs |
+| Approximate signed-distance batch with exact sign | 3.34 µs | 9.00 µs |
+
+Thus construction, signing and storage add about 0.35 / 0.51 µs per query beyond
+exact triangle selection here. These numbers include one traversal per point;
+there is no second search or approximate feature reclassification.
+See `results/timings-signed-distance.csv` and `results/validation-signed-distance.json`.
+
+The first construction policy accepted a polynomial component only if its
+magnitude was at least 1/16 of its permanent, causing expansions even for
+ordinary projections far from small triangles. Full signed queries then took
+7.87 / 14.44 µs. Allowing the documented 1/1024 ratio in the **approximation**
+filter removes most of those fallbacks. Exact predicates use their original
+certified filters unchanged. To reproduce the first policy, replace `/1024`
+with `/16` in `point_mesh_closest_point.cpp`; its measurements are saved as
+`results/timings-signed-distance-conservative-filter.csv`.
+
+The allocation/path audit verifies that ordinary construction uses no expansion
+sums, while a near-plane construction uses 35 even though its feature can be
+classified without any. Each wrapper call uses the existing traversal vector's
+one allocation; expansion construction adds no heap allocation. Both paths
+and the complete test suite pass the sanitizer and 1 MiB stack checks.
 
 ## Reproduce
 

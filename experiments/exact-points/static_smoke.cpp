@@ -2,6 +2,7 @@
 #include <igl/predicates/exact_point_mesh_classify.h>
 #include <igl/predicates/exact_point_triangle_closest_feature.h>
 #include <igl/predicates/exact_point_triangle_squared_distance_compare.h>
+#include <igl/predicates/approximate_signed_distance_exact_sign.h>
 #include <stdexcept>
 
 template<typename Point> void check()
@@ -25,6 +26,20 @@ template<typename Point> void check()
   Eigen::VectorXi leaves(7); leaves<<-1,-1,-1,0,1,2,3;
   if(p::exact_point_mesh_closest_triangle(query,vertices,faces,lower,upper,leaves)!=0)
     throw std::runtime_error("Static closest triangle failed");
+  const auto constructed=p::point_mesh_closest_point(query,vertices,faces,lower,upper,leaves);
+  p::PointMeshClosestPoint signed_closest;
+  p::PointMeshLocation location;
+  const double distance=p::approximate_signed_distance_exact_sign(query,vertices,faces,
+    lower,upper,leaves,exposure,signed_closest,location);
+  Eigen::MatrixXd queries(1,3); queries.row(0)=Eigen::Map<const Eigen::RowVector3d>(query.data());
+  Eigen::VectorXd distances; Eigen::VectorXi locations;
+  std::vector<p::PointMeshClosestPoint> closest_points;
+  p::approximate_signed_distance_exact_sign(queries,vertices,faces,lower,upper,leaves,
+    exposure,distances,closest_points,locations);
+  if(constructed.triangle!=0 || constructed.distance!=.125 || distance!=-.125 ||
+     location!=p::PointMeshLocation::INSIDE || distances(0)!=distance ||
+     locations(0)!=-1 || closest_points[0].triangle!=0)
+    throw std::runtime_error("Static signed distance construction failed");
   const Eigen::RowVector3d a(0,0,0),b(1,0,0),c(0,1,0);
   int id;
   if(p::exact_point_triangle_closest_feature(query,a,b,c,id)!=p::ClosestPointFeature::FACE ||
