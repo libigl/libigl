@@ -5,34 +5,40 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
-#ifndef IGL_EXACT_RAY_MESH_INTERSECT_H
-#define IGL_EXACT_RAY_MESH_INTERSECT_H
-#include "igl_inline.h"
-#include "Hit.h"
+#ifndef IGL_PREDICATES_EXACT_RAY_MESH_INTERSECT_H
+#define IGL_PREDICATES_EXACT_RAY_MESH_INTERSECT_H
+#include "../igl_inline.h"
+#include "../Hit.h"
 #include <Eigen/Core>
 #include <vector>
 
 namespace igl
 {
-  /// Shoot a ray against a mesh (V,F) and robustly determine the first (closest)
-  /// intersected triangle using only exact sign predicates. The classification —
-  /// which triangle is hit and in what order — is exact with respect to the
-  /// mathematical ray defined by the floating point `source` and `dir`; there are
-  /// no tolerances or fudge factors, and no intersection location or ray parameter
-  /// is ever constructed for that decision (constructing it would be inexact).
-  /// Coordinates must be `float` or `double`.
+namespace predicates
+{
+  /// Shoot a ray against a mesh (V,F) using exact leaf classification and hit
+  /// ordering. The sign predicates refer to the mathematical ray defined by the
+  /// floating point `source` and `dir`, without constructing an intersection
+  /// location or ray parameter. Coordinates must be finite `float` or `double`.
+  ///
+  /// Candidate culling uses the floating-point eytzinger_aabb_ray_intersection
+  /// routine and retains its numerical limitations: distant origins and very
+  /// small direction components can cause missed candidates even when the
+  /// leaf predicates would classify them correctly.
   ///
   /// Only clean transverse hits are reported. A triangle the ray is coplanar with
-  /// (exact_ray_triangle_intersect returns Coplanar) has a segment-valued
-  /// intersection that cannot be ordered against point hits with these predicates,
-  /// so it is deliberately ignored (classified as no-hit).
+  /// (exact_ray_triangle_intersect returns Coplanar) may intersect in a segment.
+  /// These predicates do not resolve coplanar intersections, so they are ignored
+  /// (classified as no-hit).
   ///
-  /// This exactness is expensive: the exact per-triangle predicates dominate, so
-  /// as a rough guide it runs one to two orders of magnitude slower than
-  /// igl::ray_mesh_intersect (~40× on a 1k-face mesh in local benchmarks; the
-  /// AABB tree recovers some of that for first-hit queries on larger meshes).
-  /// Prefer igl::ray_mesh_intersect / igl::AABB unless exact classification is
-  /// required.
+  /// Each query builds an AABB tree. Runtime depends on the number of candidate
+  /// triangles and hit comparisons, and on how often sign filters need exact
+  /// expansion arithmetic.
+  ///
+  /// Link against igl::predicates with its double-precision backend. Correctness
+  /// assumes round-to-nearest arithmetic without fast-math reassociation or
+  /// intermediate overflow/underflow, as in Shewchuk's predicates. Float inputs
+  /// are promoted exactly to double. No expansion is retained between calls.
   ///
   /// @param[in] source  3-vector origin of ray
   /// @param[in] dir     3-vector direction of ray
@@ -71,9 +77,10 @@ namespace igl
     std::vector<int> & fids);
   /// \overload
   /// Convenience overload that additionally constructs an approximate (floating
-  /// point) hit record for the first hit as a post-process. The classification
-  /// (which face, and that it is the closest) is exact; the returned barycentric
-  /// coordinates and parameter t are computed inexactly for convenience only.
+  /// point) hit record for the first hit as a post-process. The returned
+  /// barycentric coordinates and parameter t are computed inexactly and can be
+  /// unreliable on ill-conditioned triangles, including zero values when the
+  /// rounded determinant vanishes.
   ///
   /// @param[out] hit  first hit (id, u, v, t), set only if returning true
   template <
@@ -103,6 +110,7 @@ namespace igl
     const Eigen::MatrixBase<DerivedV> & V,
     const Eigen::MatrixBase<DerivedF> & F,
     std::vector<igl::Hit<typename DerivedV::Scalar>> & hits);
+}
 }
 
 #ifndef IGL_STATIC_LIBRARY

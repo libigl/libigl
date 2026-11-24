@@ -5,12 +5,14 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
-#ifndef IGL_EXACT_RAY_TRIANGLE_INTERSECT_H
-#define IGL_EXACT_RAY_TRIANGLE_INTERSECT_H
-#include "igl_inline.h"
+#ifndef IGL_PREDICATES_EXACT_RAY_TRIANGLE_INTERSECT_H
+#define IGL_PREDICATES_EXACT_RAY_TRIANGLE_INTERSECT_H
+#include "../igl_inline.h"
 #include <Eigen/Core>
 
 namespace igl
+{
+namespace predicates
 {
   /// Exact 3-way classification of a ray against a triangle, returned by
   /// exact_ray_triangle_intersect.
@@ -20,17 +22,17 @@ namespace igl
     None = 0,
     /// The ray transversally intersects the triangle (a clean point hit, t ≥ 0).
     Hit = 1,
-    /// The ray lies exactly in the triangle's supporting plane. The intersection,
-    /// if any, is a segment rather than a point; this routine does not resolve
-    /// whether/where the coplanar ray overlaps the triangle.
+    /// The ray lies exactly in the triangle's supporting plane. This routine
+    /// does not resolve whether the coplanar intersection is empty, a point,
+    /// or a segment.
     Coplanar = 2
   };
 
   /// Exactly classify the ray {source + t·dir : t ≥ 0} against the triangle
   /// (A,B,C) using only exact sign predicates (adaptive-precision expansion
-  /// arithmetic). No intersection point is constructed and no rounded
-  /// intermediate quantity (such as source+dir) is ever formed: the sign tests
-  /// refer to the exact mathematical ray defined by the floating point inputs
+  /// arithmetic). No intersection point or rounded second ray point
+  /// (such as source+dir) is constructed: the sign tests refer to the exact
+  /// mathematical ray defined by the floating point inputs
   /// `source` and `dir`. There are no tolerances or fudge factors — every branch
   /// (including the coplanar case) is decided by an exact determinant sign.
   ///
@@ -39,9 +41,14 @@ namespace igl
   /// origin lies exactly in that plane, the configuration is `Coplanar`;
   /// otherwise (parallel but offset) it is `None`.
   ///
-  /// The exact arithmetic assumes IEEE-754 double; coordinates must be `float` or
-  /// `double` (both promote to double exactly, so the classification is exact
+  /// The exact arithmetic assumes IEEE-754 double; coordinates must be finite
+  /// `float` or `double` (both promote to double exactly, so classification is exact
   /// with respect to the given coordinates).
+  ///
+  /// Link against igl::predicates with its double-precision backend. Correctness
+  /// assumes round-to-nearest arithmetic without fast-math reassociation or
+  /// intermediate overflow/underflow, as in Shewchuk's predicates. Float inputs
+  /// are promoted exactly to double. No expansion is retained between calls.
   ///
   /// @param[in] source  3-vector origin of ray
   /// @param[in] dir     3-vector direction of ray
@@ -61,6 +68,7 @@ namespace igl
     const Eigen::MatrixBase<DerivedA> & A,
     const Eigen::MatrixBase<DerivedA> & B,
     const Eigen::MatrixBase<DerivedA> & C);
+}
 }
 
 #ifndef IGL_STATIC_LIBRARY

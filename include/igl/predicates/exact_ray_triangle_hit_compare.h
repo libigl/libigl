@@ -5,12 +5,14 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
-#ifndef IGL_EXACT_RAY_TRIANGLE_HIT_COMPARE_H
-#define IGL_EXACT_RAY_TRIANGLE_HIT_COMPARE_H
-#include "igl_inline.h"
+#ifndef IGL_PREDICATES_EXACT_RAY_TRIANGLE_HIT_COMPARE_H
+#define IGL_PREDICATES_EXACT_RAY_TRIANGLE_HIT_COMPARE_H
+#include "../igl_inline.h"
 #include <Eigen/Core>
 
 namespace igl
+{
+namespace predicates
 {
   /// Exactly compare the (unconstructed) hit distances of two triangles along a
   /// common ray. Both triangles are assumed to be transversally hit by the ray
@@ -19,7 +21,12 @@ namespace igl
   /// original floating point coordinates — no ratio t = -a/b is ever formed, so no
   /// exact construction is exposed.
   ///
-  /// Coordinates must be `float` or `double` (both promote to double exactly).
+  /// Coordinates must be finite `float` or `double` (both promote to double exactly).
+  ///
+  /// Link against igl::predicates with its double-precision backend. Correctness
+  /// assumes round-to-nearest arithmetic without fast-math reassociation or
+  /// intermediate overflow/underflow, as in Shewchuk's predicates. Float inputs
+  /// are promoted exactly to double. No expansion is retained between calls.
   ///
   /// @param[in] source  3-vector origin of ray
   /// @param[in] dir     3-vector direction of ray
@@ -41,6 +48,7 @@ namespace igl
     const Eigen::MatrixBase<DerivedA> & A2,
     const Eigen::MatrixBase<DerivedA> & B2,
     const Eigen::MatrixBase<DerivedA> & C2);
+}
 }
 
 #ifndef IGL_STATIC_LIBRARY

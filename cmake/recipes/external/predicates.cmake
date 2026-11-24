@@ -9,6 +9,9 @@ FetchContent_Declare(
     predicates
     GIT_REPOSITORY https://github.com/libigl/libigl-predicates.git
     GIT_TAG        decb7bc1260e689cbe008109e3cc5d3a5a433aea
+    # Experimental public wrappers for Shewchuk's existing expansion arithmetic.
+    PATCH_COMMAND ${CMAKE_COMMAND} -DSOURCE_DIR=<SOURCE_DIR>
+        -P ${CMAKE_CURRENT_LIST_DIR}/predicates-patch.cmake
 )
 
 FetchContent_MakeAvailable(predicates)

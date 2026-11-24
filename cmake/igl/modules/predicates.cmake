@@ -20,6 +20,14 @@ target_link_libraries(igl_predicates ${IGL_SCOPE}
     predicates::predicates
 )
 
+# Preserve the rounded operations used by the exact ray sign filters, including
+# when their implementations are compiled in a header-only consumer.
+if(MSVC)
+    target_compile_options(igl_predicates ${IGL_SCOPE} /fp:strict)
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(igl_predicates ${IGL_SCOPE} -fno-fast-math -ffp-contract=off)
+endif()
+
 # 5. Unit tests
 file(GLOB SRC_FILES "${libigl_SOURCE_DIR}/tests/include/igl/predicates/*.cpp")
 igl_add_test(igl_predicates ${SRC_FILES})
