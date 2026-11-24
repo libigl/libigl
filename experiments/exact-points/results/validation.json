@@ -1,0 +1,36 @@
+{
+  "recorded_at": "2026-11-24T04:00:56.386385+00:00",
+  "branch": "experiment/exact-rays-shewchuk",
+  "base_commit": "adc36d1ca243684b09f8ebacf7cbcf987bb6c9f7",
+  "compiler": "GCC 13.3.0",
+  "release": {
+    "test_cases": 16,
+    "assertions": 52760,
+    "ctest_passed": 3,
+    "ctest_failed": 0
+  },
+  "asan_ubsan": {
+    "ctest_passed": 3,
+    "ctest_failed": 0,
+    "leak_detection": true,
+    "halt_on_error": true
+  },
+  "stack_limit_1_mib": {
+    "test_cases": 16,
+    "assertions": 52760,
+    "passed": true
+  },
+  "accuracy_oracles": [
+    "bounded integer rational projection enumeration",
+    "exhaustive exact leaf comparisons",
+    "analytic closed star and cavity solids",
+    "secondary long-double solid-angle winding cross-check"
+  ],
+  "limitations": [
+    "finite float/double, double predicates backend",
+    "round-to-nearest and strict floating-point operations",
+    "no intermediate overflow or loss through underflow in exact metric expressions",
+    "embedded outward-oriented closed vertex-manifold mesh with nondegenerate faces for signing",
+    "preprocessing does not validate self-intersections or outward orientation"
+  ]
+}

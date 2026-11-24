@@ -1,0 +1,15 @@
+operation,faces,median_ns,min_ns,max_ns
+approximate_tree,320,862.817,853.97,980.674
+exact_tree,320,45797.7,45759.3,46059.6
+local_sign,320,1862.44,1861.46,1874.79
+cached_sign,320,1346.06,1344.93,1348.88
+closest_feature,320,1261.76,1259.05,1263.54
+adjacent_distance_compare,320,5722.42,5706.22,5804.03
+exposure_preprocess,320,394880,394011,396497
+approximate_tree,5120,4265.29,4249.68,4347.07
+exact_tree,5120,107222,107094,107610
+local_sign,5120,1997.15,1993.84,2005.04
+cached_sign,5120,1371.42,1369.95,1372.31
+closest_feature,5120,1282.1,1278.88,1296.87
+adjacent_distance_compare,5120,6710.89,6701.83,6772.09
+exposure_preprocess,5120,6.37531e+06,6.37265e+06,6.71541e+06

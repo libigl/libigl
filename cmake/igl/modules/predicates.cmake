@@ -20,7 +20,7 @@ target_link_libraries(igl_predicates ${IGL_SCOPE}
     predicates::predicates
 )
 
-# Preserve the rounded operations used by the exact ray sign filters, including
+# Preserve the rounded operations used by the exact sign filters, including
 # when their implementations are compiled in a header-only consumer.
 if(MSVC)
     target_compile_options(igl_predicates ${IGL_SCOPE} /fp:strict)

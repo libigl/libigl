@@ -5,6 +5,9 @@ investigation removed the observed classification regressions; see
 [the slowdown investigation](SLOWDOWN.md) for the implementation changes,
 controlled measurements, and latest validation results.
 
+The same branch also adds [exact closest-point queries and local mesh signing](../exact-points/README.md),
+including conservative tree traversal and query-independent feature exposure.
+
 This branch starts at libigl PR #2549 revision
 `4777048f11ac9d4d26078b32248a6f96b95460f2`. It replaces the PR's allocating
 expansion implementation with Shewchuk's existing arithmetic and local stack
