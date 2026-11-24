@@ -6,6 +6,46 @@
 #include <test_common.h>
 #include <igl/pseudonormal_test.h>
 #include <igl/signed_distance.h>
+#include <type_traits>
+
+TEMPLATE_TEST_CASE("pseudonormal_test: precision-aware 3d feature tolerance", "[igl]", float, double)
+{
+  using Scalar = TestType;
+  using Row = Eigen::Matrix<Scalar,1,3>;
+  using Matrix = Eigen::Matrix<Scalar,Eigen::Dynamic,3>;
+  const Scalar offset = std::is_same<Scalar,float>::value ? Scalar(1e-4) : Scalar(1e-10);
+  Eigen::Matrix<int,1,3> F;
+  F << 0,1,2;
+  Eigen::Vector3i EMAP;
+  EMAP << 0,1,2;
+  Matrix FN(1,3),VN(3,3),EN(3,3);
+  FN << 0,0,1;
+  VN << 1,0,0, 1,0,0, 1,0,0;
+  EN << 0,1,0, 0,1,0, 0,1,0;
+  for(const bool small_area : {false,true})
+  {
+    Matrix V(3,3);
+    V << 0,0,0, 1,0,0, 0,(small_area ? Scalar(4e-5) : Scalar(1)),0;
+    // The supplied closest point lies on an edge, close enough to its vertex
+    // that the vertex pseudonormal should be used in either area branch.
+    Row c(offset,0,0),n;
+    Row q = c + Row(1,-1,1);
+    Scalar s;
+    igl::pseudonormal_test(V,F,FN,VN,EN,EMAP,q,0,c,s,n);
+    test_common::assert_eq(n,Row(1,0,0));
+    REQUIRE(s == Scalar(1));
+
+    // A point slightly inside the face should select an edge normal. Keep it
+    // inside the thin triangle as well as away from all three vertices.
+    const Scalar edge_offset = small_area && std::is_same<Scalar,float>::value ?
+      Scalar(1e-5) : offset;
+    c << Scalar(0.5),edge_offset,0;
+    q = c + Row(1,-1,1);
+    igl::pseudonormal_test(V,F,FN,VN,EN,EMAP,q,0,c,s,n);
+    test_common::assert_eq(n,Row(0,1,0));
+    REQUIRE(s == Scalar(-1));
+  }
+}
 
 TEMPLATE_TEST_CASE("pseudonormal_test: scalar feature selection", "[igl]", float, double)
 {
@@ -32,10 +72,16 @@ TEMPLATE_TEST_CASE("pseudonormal_test: scalar feature selection", "[igl]", float
     {
       Row expected = Row::Zero();
       expected(feature) = 1;
+      // At this tiny scale all three fixture points lie within float's
+      // absolute vertex tolerance, even when they are on an edge or face.
+      if(std::is_same<Scalar,float>::value && scale == Scalar(1)/Scalar(1024))
+      {
+        expected << 1,0,0;
+      }
       for(const Scalar direction : {Scalar(-1),Scalar(1)})
       {
         Row c = closest.row(feature);
-        const Row q = c + direction*expected;
+        const Row q = c + direction*Row(1,1,1);
         Row n;
         Scalar s;
         igl::pseudonormal_test(V,F,FN,VN,EN,EMAP,q,0,c,s,n);
