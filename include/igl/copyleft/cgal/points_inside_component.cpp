@@ -143,10 +143,10 @@ namespace igl {
                         adj_faces, pivot_point, order);
                 assert((size_t)order.size() == num_adj_faces);
                 if (adj_faces[order[0]] > 0 &&
-                    adj_faces[order[num_adj_faces-1] < 0]) {
+                    adj_faces[order[num_adj_faces-1]] < 0) {
                     return true;
                 } else if (adj_faces[order[0]] < 0 &&
-                    adj_faces[order[num_adj_faces-1] > 0]) {
+                    adj_faces[order[num_adj_faces-1]] > 0) {
                     return false;
                 } else {
                     throw "The input mesh does not represent a valid volume";
@@ -203,10 +203,14 @@ namespace igl {
                 for (size_t i=0; i<num_adj_vertices; i++) {
                     const size_t vi = adj_vertices[i];
                     for (size_t j=i+1; j<num_adj_vertices; j++) {
-                        Plane_3 separator(p, adj_points[i], adj_points[j]);
-                        if (separator.is_degenerate()) {
-                            throw "Input mesh contains degenerated faces";
+                        // Two neighbors may be collinear with s (e.g., s
+                        // subdivides a straight edge) without any face
+                        // being degenerate: such a pair spans no plane, so
+                        // it cannot be a separator. Skip it.
+                        if (CGAL::collinear(p, adj_points[i], adj_points[j])) {
+                            continue;
                         }
+                        Plane_3 separator(p, adj_points[i], adj_points[j]);
                         if (is_on_exterior(separator)) {
                             d = vi;
                             assert(!CGAL::collinear(p, adj_points[i], query));
