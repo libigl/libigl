@@ -1,4 +1,5 @@
 #include "oriented_bounding_box.h"
+#include <boost/range/has_range_iterator.hpp>
 #include <CGAL/Aff_transformation_3.h>
 //#include <CGAL/Simple_cartesian.h>
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>

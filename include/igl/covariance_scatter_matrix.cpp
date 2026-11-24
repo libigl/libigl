@@ -13,6 +13,7 @@
 #include "verbose.h"
 #include "cat.h"
 #include "PI.h"
+#include <cassert>
 
 template <
   typename DerivedV, 

@@ -84,6 +84,7 @@
 #include <type_traits>
 #include <sys/types.h>
 #include <stdint.h>
+#include <cassert>
 
 namespace igl {
   /// @private
@@ -281,7 +282,7 @@ static constexpr inline fpreal32 SYSmax(fpreal32 a, fpreal32 b)	{ return h_max(a
 static constexpr inline fpreal64 SYSmin(fpreal64 a, fpreal64 b)	{ return h_min(a,b); }
 static constexpr inline fpreal64 SYSmax(fpreal64 a, fpreal64 b)	{ return h_max(a,b); }
 
-// Some systems have size_t as a seperate type from uint.  Some don't.
+// Some systems have size_t as a separate type from uint.  Some don't.
 #if (defined(LINUX) && defined(IA64)) || defined(MBSD)
 static constexpr inline size_t SYSmin(size_t a, size_t b)		{ return h_min(a,b); }
 static constexpr inline size_t SYSmax(size_t a, size_t b)		{ return h_max(a,b); }
@@ -2034,13 +2035,15 @@ public:
     { T *data = myData; myData = newdata; return data; }
 
     template <typename IT, bool FORWARD>
-    class base_iterator : 
-	public std::iterator<std::random_access_iterator_tag, T, exint> 
+    class base_iterator
     {
         public:
-	    typedef IT&		reference;
-	    typedef IT*		pointer;
-	
+        using iterator_category = std::random_access_iterator_tag;
+        using value_type = IT;
+        using difference_type = exint;
+        using pointer = value_type *;
+        using reference = value_type &;
+
 	    // Note: When we drop gcc 4.4 support and allow range-based for
 	    // loops, we should also drop atEnd(), which means we can drop
 	    // myEnd here.
@@ -2286,7 +2289,11 @@ protected:
     // use the SYS_DECLARE_IS_POD() macro in SYS_TypeDecorate.h.
     static constexpr SYS_FORCE_INLINE bool isPOD()
     {
-        return std::is_pod<T>::value;
+        return std::is_standard_layout<T>::value &&
+            std::is_trivially_default_constructible<T>::value &&
+            std::is_trivially_copyable<T>::value &&
+            std::is_trivially_move_assignable<T>::value &&
+            std::is_trivially_destructible<T>::value;
     }
 
     /// Implements both append(const T &) and append(T &&) via perfect
@@ -3758,7 +3765,7 @@ namespace UT_Thread { inline int getNumProcessors() {
 /////
 ///// Requirements for the Range functor are:
 /////   - the requirements of the tbb Range Concept
-/////   - UT_estimatorNumItems<Range> must return the the estimated number of work items
+/////   - UT_estimatorNumItems<Range> must return the estimated number of work items
 /////     for the range. When Range::size() is not the correct estimate, then a 
 /////     (partial) specialization of UT_estimatorNumItemsimatorRange must be provided
 /////     for the type Range.
@@ -3923,7 +3930,9 @@ struct Box {
 
     template<typename S>
     SYS_FORCE_INLINE Box(const Box<S,NAXES>& other) noexcept {
-        static_assert((std::is_pod<Box<T,NAXES>>::value) || !std::is_pod<T>::value,
+        static_assert(
+            (std::is_standard_layout<Box<T,NAXES>>::value && std::is_trivially_copyable<Box<T,NAXES>>::value && std::is_trivially_default_constructible<Box<T,NAXES>>::value) || 
+            !(std::is_standard_layout<T>::value && std::is_trivially_copyable<T>::value && std::is_trivially_default_constructible<T>::value),
             "UT::Box should be POD, for better performance in UT_Array, etc.");
 
         for (uint axis = 0; axis < NAXES; ++axis) {

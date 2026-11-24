@@ -11,7 +11,7 @@
 
 #include "../igl_inline.h"
 #include <Eigen/Core>
-#include "Orientation.h"
+#include "../Orientation.h"
 
 namespace igl {
   namespace predicates {
@@ -25,11 +25,14 @@ namespace igl {
     ///          COLLINEAR if they are collinear.
     ///
     /// \fileinfo
-    template<typename Vector2D>
+    template<
+      typename Derivedpa,
+      typename Derivedpb,
+      typename Derivedpc>
     IGL_INLINE Orientation orient2d(
-        const Eigen::MatrixBase<Vector2D>& pa,
-        const Eigen::MatrixBase<Vector2D>& pb,
-        const Eigen::MatrixBase<Vector2D>& pc);
+        const Eigen::MatrixBase<Derivedpa>& pa,
+        const Eigen::MatrixBase<Derivedpb>& pb,
+        const Eigen::MatrixBase<Derivedpc>& pc);
     /// Compute the orientation of the tetrahedron formed by each 4-tuple of
     /// points
     ///

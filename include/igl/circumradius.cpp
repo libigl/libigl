@@ -10,6 +10,8 @@
 #include "doublearea.h"
 #include "placeholders.h"
 #include <Eigen/QR>
+#include <cassert>
+
 template <
   typename DerivedV, 
   typename DerivedF,

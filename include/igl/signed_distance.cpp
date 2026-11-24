@@ -706,7 +706,7 @@ IGL_INLINE typename DerivedV::Scalar igl::signed_distance_fast_winding_number(
     Eigen::Matrix<Scalar,1,3> c;
     int i = -1;
     sqrd = tree.squared_distance(V,F,q,i,c);
-    Scalar w = fast_winding_number(fwn_bvh,2,q.template cast<float>());
+    Scalar w = fast_winding_number(fwn_bvh,2,q.template cast<float>().eval());
     //0.5 is on surface
     return sqrt(sqrd)*(1.-2.*std::abs(w));
   }

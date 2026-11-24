@@ -9,6 +9,8 @@
 #include "placeholders.h"
 #include "EPS.h"
 
+#include <cassert>
+
 template <typename DerivedP, typename DerivedS, typename DerivedJ>
 IGL_INLINE void igl::ramer_douglas_peucker(
   const Eigen::MatrixBase<DerivedP> & P,

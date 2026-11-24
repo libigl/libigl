@@ -81,6 +81,20 @@ namespace igl
     const Eigen::MatrixBase<DerivedGI> & GI,
     const typename DerivedS::Scalar isovalue,
     Eigen::PlainObjectBase<DerivedV> &V,
+    Eigen::PlainObjectBase<DerivedF> &F,
+    std::unordered_map<std::int64_t,int> &E2V);
+  template <
+    typename DerivedS, 
+    typename DerivedGV, 
+    typename DerivedGI, 
+    typename DerivedV, 
+    typename DerivedF>
+  IGL_INLINE void marching_cubes(
+    const Eigen::MatrixBase<DerivedS> & S,
+    const Eigen::MatrixBase<DerivedGV> & GV,
+    const Eigen::MatrixBase<DerivedGI> & GI,
+    const typename DerivedS::Scalar isovalue,
+    Eigen::PlainObjectBase<DerivedV> &V,
     Eigen::PlainObjectBase<DerivedF> &F);
 }
 

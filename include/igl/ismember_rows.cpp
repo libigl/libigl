@@ -9,6 +9,7 @@
 #include "sortrows.h"
 #include "unique.h"
 #include "unique_rows.h"
+#include <cassert>
 #include <iostream>
 
 template <

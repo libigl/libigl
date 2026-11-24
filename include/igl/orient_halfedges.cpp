@@ -10,6 +10,7 @@
 #include "oriented_facets.h"
 #include "unique_simplices.h"
 
+#include <cassert>
 
 template <typename DerivedF, typename DerivedE, typename DerivedOE>
 IGL_INLINE void

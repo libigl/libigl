@@ -7,6 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "grad.h"
 #include <Eigen/Geometry>
+#include <cassert>
 #include <vector>
 
 #include "PI.h"

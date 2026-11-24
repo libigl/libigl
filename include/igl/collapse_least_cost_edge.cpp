@@ -9,6 +9,8 @@
 #include "collapse_edge.h"
 #include "circulation.h"
 
+#include <cassert>
+
 IGL_INLINE bool igl::collapse_least_cost_edge(
   const decimate_cost_and_placement_callback & cost_and_placement,
   const decimate_pre_collapse_callback       & pre_collapse,

@@ -7,6 +7,9 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 
 #include "topological_hole_fill.h"
+
+#include <cassert>
+
   template <
   typename DerivedF,
   typename VectorIndex,

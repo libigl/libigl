@@ -11,6 +11,7 @@
 #include "../../list_to_matrix.h"
 
 // STL includes
+#include <cassert>
 #include <iostream>
 
 template <

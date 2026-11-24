@@ -386,3 +386,58 @@ igl::embree::EmbreeIntersector
   ray.hit.instID[0] = RTC_INVALID_GEOMETRY_ID;
   ray.hit.primID = RTC_INVALID_GEOMETRY_ID;
 }
+
+IGL_INLINE int
+igl::embree::EmbreeIntersector
+::signedIntersectionsRay(
+  const OriginType    & origin,
+  const DirectionType & direction,
+  float tnear,
+  float tfar,
+  int   mask) const
+{
+  struct query_context
+  {
+    RTCRayQueryContext base; // MUST be first for the reinterpret_cast in the filter
+    int sum;
+  };
+
+  query_context q;
+  rtcInitRayQueryContext(&q.base);
+  q.sum = 0;
+
+  RTCRay ray{};
+  ray.org_x = origin[0];
+  ray.org_y = origin[1];
+  ray.org_z = origin[2];
+  ray.dir_x = direction[0];
+  ray.dir_y = direction[1];
+  ray.dir_z = direction[2];
+  ray.tnear = tnear;
+  ray.tfar  = tfar;
+  ray.mask  = static_cast<unsigned int>(mask);
+  ray.flags = 0;
+
+  RTCOccludedArguments rargs;
+  rtcInitOccludedArguments(&rargs);
+  rargs.flags = (RTCRayQueryFlags)(
+      RTC_RAY_QUERY_FLAG_COHERENT | RTC_RAY_QUERY_FLAG_INVOKE_ARGUMENT_FILTER);
+  rargs.feature_mask = RTC_FEATURE_FLAG_ALL;
+  rargs.context = &q.base;
+  rargs.filter = +[](RTCFilterFunctionNArguments const* fargs)
+  {
+    assert(fargs->N == 1 && fargs->valid[0]);
+    auto const& fray = reinterpret_cast<RTCRay&>(*fargs->ray);
+    auto const& fhit = reinterpret_cast<RTCHit&>(*fargs->hit);
+    auto const d = fray.dir_x * fhit.Ng_x
+                 + fray.dir_y * fhit.Ng_y
+                 + fray.dir_z * fhit.Ng_z;
+    reinterpret_cast<query_context*>(fargs->context)->sum += d > 0.0f ? +1 : -1;
+    // Reject the hit so traversal continues and we visit every crossing.
+    fargs->valid[0] = 0;
+  };
+  rargs.occluded = nullptr;
+
+  rtcOccluded1(scene, &ray, &rargs);
+  return q.sum;
+}

@@ -8,6 +8,7 @@
 #include "slice.h"
 #include "colon.h"
 
+#include <cassert>
 #include <vector>
 
 template <

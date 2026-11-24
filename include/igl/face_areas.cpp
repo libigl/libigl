@@ -8,6 +8,7 @@
 #include "face_areas.h"
 #include "edge_lengths.h"
 #include "doublearea.h"
+#include <cassert>
 
 template <typename DerivedV, typename DerivedT, typename DerivedA>
 IGL_INLINE void igl::face_areas(

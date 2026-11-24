@@ -10,6 +10,7 @@
 #include "triangle_triangle_adjacency.h"
 #include "facet_adjacency_matrix.h"
 #include "connected_components.h"
+#include <cassert>
 #include <vector>
 #include <queue>
 

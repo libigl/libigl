@@ -4,7 +4,7 @@
 #include "tinyply.h"
 #include <stdint.h>
 
-
+#include <cassert>
 #include <cstdint>
 namespace igl
 {

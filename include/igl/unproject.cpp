@@ -10,6 +10,8 @@
 #include <Eigen/Dense>
 #include <Eigen/LU>
 
+#include <cassert>
+
 template <
   typename Derivedwin,
   typename Derivedmodel,

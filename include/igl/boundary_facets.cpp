@@ -15,6 +15,7 @@
 
 #include <Eigen/Core>
 
+#include <cassert>
 #include <map>
 #include <iostream>
 
