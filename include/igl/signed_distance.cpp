@@ -94,10 +94,16 @@ namespace
     {
       RowVectorS q = P.row(p);
       typename DerivedV::Scalar s=1,sqrd=0;
-      RowVectorS c;
+      RowVectorS c,b;
       int i=-1;
       // in all cases compute squared unsiged distances
-      sqrd = tree.squared_distance(V,F,q,low_sqr_d,up_sqr_d,i,c);
+      if(sign_type == SIGNED_DISTANCE_TYPE_PSEUDONORMAL)
+      {
+        sqrd = tree.squared_distance(V,F,q,low_sqr_d,up_sqr_d,i,c,b);
+      }else
+      {
+        sqrd = tree.squared_distance(V,F,q,low_sqr_d,up_sqr_d,i,c);
+      }
       if(sqrd >= up_sqr_d || sqrd < low_sqr_d)
       {
         // Out of bounds gets a nan (nans on grids can be flood filled later using
@@ -127,7 +133,7 @@ namespace
           case SIGNED_DISTANCE_TYPE_PSEUDONORMAL:
           {
             RowVectorS n;
-            pseudonormal_test(V,F,FN,VN,EN,EMAP,q,i,c,s,n);
+            pseudonormal_test(V,F,FN,VN,EN,EMAP,q,i,c,b,s,n);
             N.row(p) = n.template cast<typename DerivedN::Scalar>();
             break;
           }
@@ -548,8 +554,9 @@ IGL_INLINE void igl::signed_distance_pseudonormal(
   //sqrd = tree.squared_distance(V,F,RowVector3S(q),i,(RowVector3S&)c);
   // Alec: Why was this constructor around c necessary?
   //sqrd = tree.squared_distance(V,F,q,i,(RowVector3S&)c);
-  sqrd = tree.squared_distance(V,F,q,i,c);
-  pseudonormal_test(V,F,FN,VN,EN,EMAP,q,i,c,s,n);
+  Eigen::Matrix<Scalar,1,3> b;
+  sqrd = tree.squared_distance(V,F,q,i,c,b);
+  pseudonormal_test(V,F,FN,VN,EN,EMAP,q,i,c,b,s,n);
 }
 
 template <

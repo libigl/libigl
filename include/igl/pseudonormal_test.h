@@ -57,6 +57,29 @@ namespace igl
     Scalar & s,
     Eigen::PlainObjectBase<Derivedn> & n);
   /// \overload
+  /// Use the feature encoded by closest-point barycentric coordinates.
+  /// @param[in] b  Three nonnegative barycentric coordinates returned by the
+  ///   closest-point query, with exact zeros for coordinates outside its
+  ///   selected edge or vertex. No feature tolerance is applied.
+  template <
+    typename DerivedV, typename DerivedF, typename DerivedFN,
+    typename DerivedVN, typename DerivedEN, typename DerivedEMAP,
+    typename Derivedq, typename Derivedc, typename Derivedb,
+    typename Scalar, typename Derivedn>
+  IGL_INLINE void pseudonormal_test(
+    const Eigen::MatrixBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedF> & F,
+    const Eigen::MatrixBase<DerivedFN> & FN,
+    const Eigen::MatrixBase<DerivedVN> & VN,
+    const Eigen::MatrixBase<DerivedEN> & EN,
+    const Eigen::MatrixBase<DerivedEMAP> & EMAP,
+    const Eigen::MatrixBase<Derivedq> & q,
+    const int f,
+    const Eigen::MatrixBase<Derivedc> & c,
+    const Eigen::MatrixBase<Derivedb> & b,
+    Scalar & s,
+    Eigen::PlainObjectBase<Derivedn> & n);
+  /// \overload
   /// \brief 2D version.
   template <
     typename DerivedV,
