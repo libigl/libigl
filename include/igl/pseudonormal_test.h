@@ -16,6 +16,12 @@ namespace igl
   /// sign of the dot product between (q-c) and n, where n is the normal _at c_,
   /// carefully chosen according to [Bærentzen & Aanæs 2005]
   ///
+  /// The 3D feature tolerance is 3e-3 for float, 1e-9 for double, and 1e-12
+  /// for other scalar types. It is applied to barycentric coordinates when
+  /// twice the triangle area exceeds 1e-4, and to coordinate distances
+  /// otherwise. Consequently, classification near features depends on mesh
+  /// scale. The 2D overload uses a barycentric tolerance of 1e-12.
+  ///
   /// @param[in] V  #V by 3 list of vertex positions
   /// @param[in] F  #F by 3 list of triangle indices
   /// @param[in] FN  #F by 3 list of triangle normals 
@@ -48,6 +54,29 @@ namespace igl
     const Eigen::MatrixBase<Derivedq> & q,
     const int f,
     Eigen::PlainObjectBase<Derivedc> & c,
+    Scalar & s,
+    Eigen::PlainObjectBase<Derivedn> & n);
+  /// \overload
+  /// Use the feature encoded by closest-point barycentric coordinates.
+  /// @param[in] b  Three nonnegative barycentric coordinates returned by the
+  ///   closest-point query, with exact zeros for coordinates outside its
+  ///   selected edge or vertex. No feature tolerance is applied.
+  template <
+    typename DerivedV, typename DerivedF, typename DerivedFN,
+    typename DerivedVN, typename DerivedEN, typename DerivedEMAP,
+    typename Derivedq, typename Derivedc, typename Derivedb,
+    typename Scalar, typename Derivedn>
+  IGL_INLINE void pseudonormal_test(
+    const Eigen::MatrixBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedF> & F,
+    const Eigen::MatrixBase<DerivedFN> & FN,
+    const Eigen::MatrixBase<DerivedVN> & VN,
+    const Eigen::MatrixBase<DerivedEN> & EN,
+    const Eigen::MatrixBase<DerivedEMAP> & EMAP,
+    const Eigen::MatrixBase<Derivedq> & q,
+    const int f,
+    const Eigen::MatrixBase<Derivedc> & c,
+    const Eigen::MatrixBase<Derivedb> & b,
     Scalar & s,
     Eigen::PlainObjectBase<Derivedn> & n);
   /// \overload

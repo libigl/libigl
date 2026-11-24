@@ -51,7 +51,7 @@ IGL_INLINE void igl::point_simplex_squared_distance(
     Vector ap = p - a;
     Scalar d1 = Dot(ab, ap);
     Scalar d2 = Dot(ac, ap);
-    if (d1 <= 0.0 && d2 <= 0.0) {
+    if (d1 <= Scalar(0) && d2 <= Scalar(0)) {
       // barycentric coordinates (1,0,0)
       bary_out << 1, 0, 0;
       return a;
@@ -60,7 +60,7 @@ IGL_INLINE void igl::point_simplex_squared_distance(
     Vector bp = p - b;
     Scalar d3 = Dot(ab, bp);
     Scalar d4 = Dot(ac, bp);
-    if (d3 >= 0.0 && d4 <= d3) {
+    if (d3 >= Scalar(0) && d4 <= d3) {
       // barycentric coordinates (0,1,0)
       bary_out << 0, 1, 0;
       return b;
@@ -69,7 +69,7 @@ IGL_INLINE void igl::point_simplex_squared_distance(
     Scalar vc = d1*d4 - d3*d2;
     if( a != b)
     {
-      if (vc <= 0.0 && d1 >= 0.0 && d3 <= 0.0) {
+      if (vc <= Scalar(0) && d1 >= Scalar(0) && d3 <= Scalar(0)) {
         Scalar v = d1 / (d1 - d3);
         // barycentric coordinates (1-v,v,0)
         bary_out << 1-v, v, 0;
@@ -80,14 +80,14 @@ IGL_INLINE void igl::point_simplex_squared_distance(
     Vector cp = p - c;
     Scalar d5 = Dot(ab, cp);
     Scalar d6 = Dot(ac, cp);
-    if (d6 >= 0.0 && d5 <= d6) {
+    if (d6 >= Scalar(0) && d5 <= d6) {
       // barycentric coordinates (0,0,1)
       bary_out << 0, 0, 1;
       return c;
     }
     // Check if P in edge region of AC, if so return projection of P onto AC
     Scalar vb = d5*d2 - d1*d6;
-    if (vb <= 0.0 && d2 >= 0.0 && d6 <= 0.0) {
+    if (vb <= Scalar(0) && d2 >= Scalar(0) && d6 <= Scalar(0)) {
       Scalar w = d2 / (d2 - d6);
       // barycentric coordinates (1-w,0,w)
       bary_out << 1-w, 0, w;
@@ -95,17 +95,18 @@ IGL_INLINE void igl::point_simplex_squared_distance(
     }
     // Check if P in edge region of BC, if so return projection of P onto BC
     Scalar va = d3*d6 - d5*d4;
-    if (va <= 0.0 && (d4 - d3) >= 0.0 && (d5 - d6) >= 0.0) {
+    if (va <= Scalar(0) &&
+        (d4 - d3) >= Scalar(0) && (d5 - d6) >= Scalar(0)) {
       Scalar w = (d4 - d3) / ((d4 - d3) + (d5 - d6));
       // barycentric coordinates (0,1-w,w)
       bary_out << 0, 1-w, w;
       return b + w * (c - b);
     }
     // P inside face region. Compute Q through its barycentric coordinates (u,v,w)
-    Scalar denom = 1.0 / (va + vb + vc);
+    Scalar denom = Scalar(1) / (va + vb + vc);
     Scalar v = vb * denom;
     Scalar w = vc * denom;
-    bary_out << 1.0-v-w, v, w;
+    bary_out << Scalar(1)-v-w, v, w;
     return a + ab * v + ac * w; // = u*a + v*b + w*c, u = va * denom = 1.0-v-w
   };
 
@@ -174,4 +175,9 @@ template void igl::point_simplex_squared_distance<2, Eigen::Matrix<double, 1, 2,
 template void igl::point_simplex_squared_distance<2, Eigen::Matrix<double, 1, 2, 1, 1, 2>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, double, Eigen::Matrix<double, 1, 2, 1, 1, 2> >(Eigen::MatrixBase<Eigen::Matrix<double, 1, 2, 1, 1, 2> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::Matrix<int, -1, -1, 0, -1, -1>::Index, double&, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 2, 1, 1, 2> >&, Eigen::PlainObjectBase<Eigen::Matrix<double, 2, 1, 0, 2, 1> >&);
 template void igl::point_simplex_squared_distance<2, Eigen::Matrix<double, 1, 2, 1, 1, 2>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, double, Eigen::Matrix<double, 1, 2, 1, 1, 2> >(Eigen::MatrixBase<Eigen::Matrix<double, 1, 2, 1, 1, 2> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, Eigen::Matrix<int, -1, 1, 0, -1, 1>::Index, double&, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 2, 1, 1, 2> >&);
 template void igl::point_simplex_squared_distance<3, Eigen::Matrix<double, 1, 3, 1, 1, 3>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, double, Eigen::Matrix<double, 1, 3, 1, 1, 3> >(Eigen::MatrixBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, Eigen::Matrix<int, -1, 1, 0, -1, 1>::Index, double&, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> >&);
+// Barycentric coordinates retained by AABB closest-feature queries.
+template void igl::point_simplex_squared_distance<3, Eigen::Matrix<double, 1, 3, 1, 1, 3>, Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, double, Eigen::Matrix<double, 1, 3, 1, 1, 3>, Eigen::Matrix<double, 1, 3, 1, 1, 3> >(Eigen::MatrixBase<Eigen::Matrix<double, 1, 3, 1, 1, 3>> const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, 3, 0, -1, 3>> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 3, 0, -1, 3>> const&, Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, double&, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3>>&, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3>>&);
+template void igl::point_simplex_squared_distance<3, Eigen::Matrix<double, 1, 3, 1, 1, 3>, Eigen::Matrix<double, -1, 3, 1, -1, 3>, Eigen::Matrix<int, -1, 3, 1, -1, 3>, double, Eigen::Matrix<double, 1, 3, 1, 1, 3>, Eigen::Matrix<double, 1, 3, 1, 1, 3> >(Eigen::MatrixBase<Eigen::Matrix<double, 1, 3, 1, 1, 3>> const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, 3, 1, -1, 3>> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 3, 1, -1, 3>> const&, Eigen::Matrix<int, -1, 3, 1, -1, 3>::Index, double&, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3>>&, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3>>&);
+template void igl::point_simplex_squared_distance<3, Eigen::Matrix<float, 1, 3, 1, 1, 3>, Eigen::Matrix<float, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, float, Eigen::Matrix<float, 1, 3, 1, 1, 3>, Eigen::Matrix<float, 1, 3, 1, 1, 3> >(Eigen::MatrixBase<Eigen::Matrix<float, 1, 3, 1, 1, 3>> const&, Eigen::MatrixBase<Eigen::Matrix<float, -1, 3, 0, -1, 3>> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 3, 0, -1, 3>> const&, Eigen::Matrix<int, -1, 3, 0, -1, 3>::Index, float&, Eigen::PlainObjectBase<Eigen::Matrix<float, 1, 3, 1, 1, 3>>&, Eigen::PlainObjectBase<Eigen::Matrix<float, 1, 3, 1, 1, 3>>&);
+template void igl::point_simplex_squared_distance<3, Eigen::Matrix<float, 1, 3, 1, 1, 3>, Eigen::Matrix<float, -1, 3, 1, -1, 3>, Eigen::Matrix<int, -1, 3, 1, -1, 3>, float, Eigen::Matrix<float, 1, 3, 1, 1, 3>, Eigen::Matrix<float, 1, 3, 1, 1, 3> >(Eigen::MatrixBase<Eigen::Matrix<float, 1, 3, 1, 1, 3>> const&, Eigen::MatrixBase<Eigen::Matrix<float, -1, 3, 1, -1, 3>> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 3, 1, -1, 3>> const&, Eigen::Matrix<int, -1, 3, 1, -1, 3>::Index, float&, Eigen::PlainObjectBase<Eigen::Matrix<float, 1, 3, 1, 1, 3>>&, Eigen::PlainObjectBase<Eigen::Matrix<float, 1, 3, 1, 1, 3>>&);
 #endif
