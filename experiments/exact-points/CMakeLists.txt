@@ -54,6 +54,14 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Cla
 endif()
 add_executable(benchmark_exact_points benchmark.cpp)
 target_link_libraries(benchmark_exact_points PRIVATE igl::predicates)
+add_executable(profile_exact_point_search profile_search.cpp)
+target_link_libraries(profile_exact_point_search PRIVATE igl::predicates)
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+  add_executable(audit_exact_point_search profile_search.cpp)
+  target_compile_definitions(audit_exact_point_search PRIVATE PROFILE_EXPANSIONS)
+  target_link_libraries(audit_exact_point_search PRIVATE igl::predicates)
+  target_link_options(audit_exact_point_search PRIVATE -Wl,--wrap=predicates_expansion_sum)
+endif()
 
 # Build the headless tutorial against existing dependencies and data.
 if(DEFINED TUTORIAL_DATA_DIR)

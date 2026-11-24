@@ -382,3 +382,9 @@ exact-sign distances. It reports setup, prepared queries and full-call timings
 with consistent query parallelism. One- and four-thread measurements and output
 agreement checks are saved in `results/armadillo-1-thread.csv` and
 `results/armadillo-4-threads.csv`.
+
+[The search-cost investigation](SEARCH_PROFILE.md) adds ordinary Eytzinger
+distance controls, identical-hierarchy comparisons with AABB, separate leaf
+ordering and pruning-bound ablations, and an untimed expansion audit. It also
+measures a prototype that avoids an unnecessary self-comparison in uncached
+vertex signing.

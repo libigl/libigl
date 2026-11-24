@@ -1,0 +1,52 @@
+# prototype_brute_force_checks=180
+# mesh=tutorial/data/armadillo.obj vertices=43243 faces=86482 points=10000 seed=896 box_padding_per_side=0.1 threads=1 min_parallel=10000 repetitions=1
+# expansions ordinary_aabb sums=0 queries=0
+# expansions ordinary_eytzinger_aabb_hierarchy sums=0 queries=0
+# expansions ordinary_eytzinger_native sums=0 queries=0
+# expansions ordinary_aabb_eytzinger_hierarchy sums=0 queries=0
+# expansions ablation_rounded_compare_rounded_upper sums=0 queries=0
+# expansions ablation_exact_compare_rounded_upper sums=0 queries=0
+# expansions ablation_rounded_compare_interval_upper sums=0 queries=0
+# expansions ablation_exact_compare_interval_upper sums=0 queries=0
+# expansions prototype_keep_tie_upper sums=0 queries=0
+# expansions prototype_cache_features_coordinates sums=0 queries=0
+# expansions prototype_cache_features_topology sums=0 queries=0
+# expansions prototype_cache_features_coordinates_keep_tie_upper sums=0 queries=0
+# expansions prototype_cache_features_topology_keep_tie_upper sums=0 queries=0
+# expansions exact_search sums=0 queries=0
+# expansions closest_point sums=11871 queries=124
+# expansions exact_sign_cached sums=11871 queries=124
+# expansions exact_sign_uncached sums=204097 queries=6234
+# expansions prototype_uncached_skip_self sums=11871 queries=124
+# expansions fast_winding sums=0 queries=0
+# agreement ordinary_aabb different_triangle=6549 non_tie=0 max_squared_difference_from_aabb=0.000000e+00
+# agreement ordinary_eytzinger_aabb_hierarchy different_triangle=6545 non_tie=0 max_squared_difference_from_aabb=0.000000e+00
+# agreement ordinary_eytzinger_native different_triangle=6520 non_tie=0 max_squared_difference_from_aabb=0.000000e+00
+# agreement ordinary_aabb_eytzinger_hierarchy different_triangle=6529 non_tie=0 max_squared_difference_from_aabb=0.000000e+00
+# agreement ablation_rounded_compare_rounded_upper different_triangle=106 non_tie=0 max_squared_difference_from_aabb=0.000000e+00
+# agreement ablation_exact_compare_rounded_upper different_triangle=0 non_tie=0 max_squared_difference_from_aabb=0.000000e+00
+# agreement ablation_rounded_compare_interval_upper different_triangle=106 non_tie=0 max_squared_difference_from_aabb=0.000000e+00
+# agreement ablation_exact_compare_interval_upper different_triangle=0 non_tie=0 max_squared_difference_from_aabb=0.000000e+00
+# agreement prototype_keep_tie_upper different_triangle=0 non_tie=0 max_squared_difference_from_aabb=0.000000e+00
+# agreement prototype_cache_features_coordinates different_triangle=0 non_tie=0 max_squared_difference_from_aabb=0.000000e+00
+# agreement prototype_cache_features_topology different_triangle=0 non_tie=0 max_squared_difference_from_aabb=0.000000e+00
+# agreement prototype_cache_features_coordinates_keep_tie_upper different_triangle=0 non_tie=0 max_squared_difference_from_aabb=0.000000e+00
+# agreement prototype_cache_features_topology_keep_tie_upper different_triangle=0 non_tie=0 max_squared_difference_from_aabb=0.000000e+00
+# agreement exact_search different_triangle=0 non_tie=0 max_squared_difference_from_aabb=0.000000e+00
+# agreement closest_point different_triangle=0 non_tie=0 max_squared_difference_from_aabb=0.000000e+00
+# agreement exact_sign_cached different_triangle=0 non_tie=0 max_squared_difference_from_aabb=0.000000e+00
+# agreement exact_sign_uncached different_triangle=0 non_tie=0 max_squared_difference_from_aabb=0.000000e+00
+# agreement prototype_uncached_skip_self different_triangle=0 non_tie=0 max_squared_difference_from_aabb=0.000000e+00
+# agreement fast_winding different_triangle=6549 non_tie=0 max_squared_difference_from_aabb=0.000000e+00
+# audit rounded_rounded popped_nodes=3654186 leaves=605711 updates=72845 comparisons=0 ties=0 shared_vertex_ties=0 shared_edge_ties=0 tie_updates=24952 compare_interval_fallbacks=0 compare_expansion_fallbacks=0 interval_upper_bounds=0 upper_feature_interval_fallbacks=0 upper_feature_expansion_fallbacks=0 different_triangle=106 non_tie=0
+# audit exact_rounded popped_nodes=3654186 leaves=605711 updates=72847 comparisons=595711 ties=67779 shared_vertex_ties=63629 shared_edge_ties=4150 tie_updates=25117 compare_interval_fallbacks=0 compare_expansion_fallbacks=0 interval_upper_bounds=0 upper_feature_interval_fallbacks=0 upper_feature_expansion_fallbacks=0 different_triangle=0 non_tie=0
+# audit rounded_interval popped_nodes=3654186 leaves=605711 updates=72845 comparisons=0 ties=0 shared_vertex_ties=0 shared_edge_ties=0 tie_updates=24952 compare_interval_fallbacks=0 compare_expansion_fallbacks=0 interval_upper_bounds=72845 upper_feature_interval_fallbacks=0 upper_feature_expansion_fallbacks=0 different_triangle=106 non_tie=0
+# audit exact_interval popped_nodes=3654186 leaves=605711 updates=72847 comparisons=595711 ties=67779 shared_vertex_ties=63629 shared_edge_ties=4150 tie_updates=25117 compare_interval_fallbacks=0 compare_expansion_fallbacks=0 interval_upper_bounds=72847 upper_feature_interval_fallbacks=0 upper_feature_expansion_fallbacks=0 different_triangle=0 non_tie=0
+# audit keep_tie_upper popped_nodes=3654186 leaves=605711 updates=72847 comparisons=595711 ties=67779 shared_vertex_ties=63629 shared_edge_ties=4150 tie_updates=25117 compare_interval_fallbacks=0 compare_expansion_fallbacks=0 interval_upper_bounds=47730 upper_feature_interval_fallbacks=0 upper_feature_expansion_fallbacks=0 different_triangle=0 non_tie=0
+# audit cache_coordinates popped_nodes=3654186 leaves=605711 updates=72847 comparisons=595711 ties=67779 shared_vertex_ties=63629 shared_edge_ties=4150 tie_updates=25117 compare_interval_fallbacks=0 compare_expansion_fallbacks=0 interval_upper_bounds=72847 upper_feature_interval_fallbacks=0 upper_feature_expansion_fallbacks=0 different_triangle=0 non_tie=0
+# audit cache_topology popped_nodes=3654186 leaves=605711 updates=72847 comparisons=595711 ties=67779 shared_vertex_ties=63629 shared_edge_ties=4150 tie_updates=25117 compare_interval_fallbacks=0 compare_expansion_fallbacks=0 interval_upper_bounds=72847 upper_feature_interval_fallbacks=0 upper_feature_expansion_fallbacks=0 different_triangle=0 non_tie=0
+# audit cache_coordinates_keep_tie_upper popped_nodes=3654186 leaves=605711 updates=72847 comparisons=595711 ties=67779 shared_vertex_ties=63629 shared_edge_ties=4150 tie_updates=25117 compare_interval_fallbacks=0 compare_expansion_fallbacks=0 interval_upper_bounds=47730 upper_feature_interval_fallbacks=0 upper_feature_expansion_fallbacks=0 different_triangle=0 non_tie=0
+# audit cache_topology_keep_tie_upper popped_nodes=3654186 leaves=605711 updates=72847 comparisons=595711 ties=67779 shared_vertex_ties=63629 shared_edge_ties=4150 tie_updates=25117 compare_interval_fallbacks=0 compare_expansion_fallbacks=0 interval_upper_bounds=47730 upper_feature_interval_fallbacks=0 upper_feature_expansion_fallbacks=0 different_triangle=0 non_tie=0
+# audit ordinary_eytzinger_native leaves=604885 updates=47871
+# audit ordinary_eytzinger_aabb_hierarchy leaves=601379 updates=48890
+# cached_uncached_skip_self_signed_outputs_identical=1

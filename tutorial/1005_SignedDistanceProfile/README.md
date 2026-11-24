@@ -143,3 +143,7 @@ leak detection passed all three CTest targets and the full 10,000-point
 Armadillo example with four threads. See
 `experiments/exact-points/results/validation-armadillo-profile.json` for the
 mesh revision/hash and validation metadata.
+
+The [search-cost investigation](../../experiments/exact-points/SEARCH_PROFILE.md)
+separates ordinary AABB/Eytzinger traversal, exact leaf comparisons, interval
+pruning bounds and shared-feature ties using the same queries and thread policy.
