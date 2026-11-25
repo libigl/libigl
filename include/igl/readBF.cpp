@@ -89,7 +89,8 @@ IGL_INLINE bool igl::readBF(
   // and are used below to index into C/offsets (via locate_tip), WI, and the
   // bone arrays P and BE. Validate their range first: a root has parent -1,
   // any other parent must reference an existing joint, and a weight index is
-  // either -1 (no weight) or an index into P/BE.
+  // either -1 (no weight) or an index into P/BE. Roots cannot have weights:
+  // a weighted bone's parent is used as an index into WI.
   for(int c = 0;c<WI.rows();c++)
   {
     if(bfP(c) < -1 || bfP(c) >= WI.rows())
@@ -100,6 +101,11 @@ IGL_INLINE bool igl::readBF(
     if(WI(c) >= BE.rows())
     {
       fprintf(stderr,"IOError: readBF() weight index %d out of range\n",(int)WI(c));
+      return false;
+    }
+    if(WI(c) >= 0 && bfP(c) == -1)
+    {
+      fprintf(stderr,"IOError: readBF() root %d has weight index %d\n",c,(int)WI(c));
       return false;
     }
   }

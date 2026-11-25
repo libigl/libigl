@@ -54,3 +54,18 @@ TEST_CASE("readBF: parent-index-out-of-range","[igl]")
   Eigen::MatrixXi BE;
   REQUIRE_FALSE(igl::readBF(filename,WI,bfP,O,C,BE,P));
 }
+
+TEST_CASE("readBF: weighted-root","[igl]")
+{
+  const std::string filename = "readBF_weighted-root.bf";
+  // A root (parent -1) with a weight index. Weighted bones look up their
+  // parent's weight index, so without this check WI(-1) is read.
+  std::ofstream(filename)<< R"(0 -1 0 0 0
+-1 0 1 0 0
+)";
+
+  Eigen::VectorXi WI,bfP,P;
+  Eigen::MatrixXd O,C;
+  Eigen::MatrixXi BE;
+  REQUIRE_FALSE(igl::readBF(filename,WI,bfP,O,C,BE,P));
+}
