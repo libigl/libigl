@@ -21,10 +21,8 @@ namespace predicates
   /// floating point `source` and `dir`, without constructing an intersection
   /// location or ray parameter. Coordinates must be finite `float` or `double`.
   ///
-  /// Candidate culling uses the floating-point eytzinger_aabb_ray_intersection
-  /// routine and retains its numerical limitations: distant origins and very
-  /// small direction components can cause missed candidates even when the
-  /// leaf predicates would classify them correctly.
+  /// Candidate culling uses the conservative floating-point
+  /// eytzinger_aabb_ray_intersection routine.
   ///
   /// Only clean transverse hits are reported. A triangle the ray is coplanar with
   /// (exact_ray_triangle_intersect returns Coplanar) may intersect in a segment.

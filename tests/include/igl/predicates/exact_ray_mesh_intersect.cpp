@@ -6,6 +6,7 @@
 #include <igl/read_triangle_mesh.h>
 #include <random>
 #include <algorithm>
+#include <limits>
 #include <vector>
 
 TEST_CASE("exact_ray_mesh_intersect: one_triangle", "[igl]")
@@ -200,4 +201,60 @@ TEST_CASE("exact_ray_mesh_intersect: agrees_with_double", "[igl]")
     }
   }
   REQUIRE(compared > 0);
+}
+
+// Compare the traversal against exact leaf tests when parametric rounding grows
+// with the origin distance, and when a nonzero direction has a huge reciprocal.
+TEST_CASE("exact_ray_mesh_intersect: conservative_slabs", "[igl]")
+{
+  std::mt19937 generator(91);
+  std::uniform_real_distribution<double> uniform(-1,1);
+  Eigen::MatrixXd V(96,3);
+  Eigen::MatrixXi F(32,3);
+  for(int f=0;f<F.rows();++f)
+  {
+    for(int c=0;c<3;++c)
+    {
+      V.row(3*f+c)<<uniform(generator),uniform(generator),uniform(generator);
+      F(f,c)=3*f+c;
+    }
+  }
+  const auto row=[&](int i) { return Eigen::RowVector3d(V.row(i)); };
+  for(double distance:{1.0,1e3,1e4,1e6,1e8,1e10,1e12})
+  {
+    for(int sample=0;sample<300;++sample)
+    {
+      const Eigen::Vector3d origin=distance*Eigen::Vector3d(
+        uniform(generator),uniform(generator),uniform(generator));
+      const Eigen::Vector3d direction=(V.row(sample%V.rows()).transpose()-origin).normalized();
+      std::vector<int> expected,actual;
+      for(int f=0;f<F.rows();++f)
+        if(igl::predicates::exact_ray_triangle_intersect(origin,direction,
+          row(F(f,0)),row(F(f,1)),row(F(f,2)))==igl::predicates::RayTriangleIntersection::Hit)
+          expected.push_back(f);
+      igl::predicates::exact_ray_mesh_intersect_all(origin,direction,V,F,actual);
+      std::sort(actual.begin(),actual.end());
+      INFO("distance="<<distance<<", sample="<<sample);
+      REQUIRE(actual==expected);
+      int first=-1;
+      REQUIRE(igl::predicates::exact_ray_mesh_intersect(origin,direction,V,F,first)==!expected.empty());
+      for(int f:expected)
+        REQUIRE(igl::predicates::exact_ray_triangle_hit_compare(origin,direction,
+          row(F(first,0)),row(F(first,1)),row(F(first,2)),
+          row(F(f,0)),row(F(f,1)),row(F(f,2)))<=0);
+    }
+  }
+  V.resize(6,3); V<<0,0,0, 1,0,0, 0,1,0, 0,0,1, 1,0,1, 0,1,1;
+  F.resize(2,3); F<<0,1,2, 3,4,5;
+  const Eigen::Vector3d origin(0.1,0.2,-3);
+  for(double speed:{1.0,std::numeric_limits<double>::min(),1e-310})
+  {
+    const Eigen::Vector3d direction(0,0,speed);
+    std::vector<int> actual;
+    REQUIRE(igl::predicates::exact_ray_mesh_intersect_all(origin,direction,V,F,actual));
+    REQUIRE(actual==std::vector<int>{0,1});
+    int first=-1;
+    REQUIRE(igl::predicates::exact_ray_mesh_intersect(origin,direction,V,F,first));
+    REQUIRE(first==0);
+  }
 }

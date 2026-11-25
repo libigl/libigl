@@ -19,9 +19,10 @@ namespace igl
   /// comparison are supplied as function handles so that this traversal carries
   /// no exact-valued state: the only thing propagated for the closest hit is the
   /// identity (leaf index) of the current best primitive. Box culling and
-  /// front-to-back ordering use ordinary floating point and are made conservative
-  /// (boxes are slightly inflated, distance pruning uses a safety margin) so that
-  /// a genuine hit is never skipped.
+  /// front-to-back ordering use ordinary floating point. Slightly inflated boxes
+  /// and outward parametric slack make the slab test conservative, including
+  /// distant origins and nonzero subnormal directions. An overflowing slab is
+  /// left unconstrained. There is no distance pruning against the current hit.
   ///
   /// @tparam FirstOnly  if true, `hits` receives the single closest primitive (as
   ///   decided by `before`); otherwise `hits` receives every intersected

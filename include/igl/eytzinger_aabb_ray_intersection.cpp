@@ -30,8 +30,9 @@ IGL_INLINE void igl::eytzinger_aabb_ray_intersection(
   hits.clear();
   const int dim = source.size();
   const Scalar inf = std::numeric_limits<Scalar>::infinity();
-  // Relative slack used to make box culling and distance pruning conservative.
+  // Spatial inflation and parametric slack make box culling conservative.
   const Scalar releps = Scalar(1024) * std::numeric_limits<Scalar>::epsilon();
+  const Scalar tslack = Scalar(8) * std::numeric_limits<Scalar>::epsilon();
   const Scalar tiny = std::numeric_limits<Scalar>::min();
 
   // Conservative ray/box slab test.  Returns whether the ray may enter the
@@ -53,15 +54,25 @@ IGL_INLINE void igl::eytzinger_aabb_ray_intersection(
         releps * (std::abs(lo) + std::abs(hi) + ext) + tiny;
       const Scalar L = lo - eps;
       const Scalar H = hi + eps;
-      if(std::abs(dk) <= tiny)
+      if(dk == Scalar(0))
       {
         if(o < L || o > H){ return false; }
       }else
       {
         const Scalar inv = Scalar(1) / dk;
+        // A nonzero subnormal direction is not parallel. If its reciprocal or
+        // a slab endpoint overflows, leave this axis unconstrained.
+        if(!std::isfinite(inv)){ continue; }
         Scalar ta = (L - o) * inv;
         Scalar tb = (H - o) * inv;
+        if(!std::isfinite(ta) || !std::isfinite(tb)){ continue; }
         if(ta > tb){ std::swap(ta, tb); }
+        // Subtraction, reciprocal and multiplication each round once. Eight
+        // epsilons cover their relative error and rounding this enlargement;
+        // tiny covers absolute error from subnormal intermediates. Spatial
+        // inflation alone cannot cover distant origins' parameter error.
+        ta -= tslack * std::abs(ta) + tiny;
+        tb += tslack * std::abs(tb) + tiny;
         if(ta > t0){ t0 = ta; }
         if(tb < t1){ t1 = tb; }
         if(t0 > t1){ return false; }
@@ -80,8 +91,8 @@ IGL_INLINE void igl::eytzinger_aabb_ray_intersection(
   int best = -1;
 
   // Depth-first traversal. Nearer child is visited first (a floating point
-  // heuristic that never affects the result); whether a subtree is skipped is
-  // decided by `prune`.
+  // heuristic that never affects the result). Only the conservative slab test
+  // skips subtrees; the current best hit does not prune the traversal.
   std::vector<int> stack;
   stack.reserve(64);
   stack.push_back(0);
