@@ -25,6 +25,7 @@ namespace igl
   template <typename Qtype>
   IGL_INLINE void snap_to_fixed_up(
     const Eigen::Quaternion<Qtype> & q,
+    const Eigen::Matrix<Qtype,3,1> & axis,
     Eigen::Quaternion<Qtype> & s);
 }
 
