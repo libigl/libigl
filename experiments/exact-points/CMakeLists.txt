@@ -70,3 +70,6 @@ if(DEFINED TUTORIAL_DATA_DIR)
   target_compile_definitions(1008_SignedDistanceProfile PRIVATE TUTORIAL_SHARED_PATH="${TUTORIAL_DATA_DIR}")
   target_link_libraries(1008_SignedDistanceProfile PRIVATE igl::predicates)
 endif()
+
+add_executable(profile_point_filters profile_filters.cpp)
+target_link_libraries(profile_point_filters PRIVATE igl::predicates)

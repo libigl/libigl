@@ -214,6 +214,107 @@ namespace igl { namespace predicates { namespace exact_point_triangle_kernel
     const auto height=dot(offset,normal);
     return {height*height,dot(normal,normal)};
   }
+  // The existing 256*epsilon bound exceeds gamma_30/(1-gamma_30), including
+  // rounding of this multiplication. Reject underflowed/nonfinite error estimates.
+  inline bool filter_error(const Filter &value,double &bound)
+  {
+    bound=256*std::numeric_limits<double>::epsilon()*value.permanent;
+    return std::isfinite(value.value) &&
+      (std::isnormal(bound) || (bound==0 && value.permanent==0));
+  }
+  inline bool distance_upper_bound(const Fraction<Filter> &fraction,double &upper)
+  {
+    double numerator_error,denominator_error;
+    if(!filter_error(fraction.numerator,numerator_error) || !filter_error(fraction.denominator,denominator_error) ||
+       fraction.denominator.value<=denominator_error ||
+       (fraction.numerator.value<=numerator_error && fraction.numerator.permanent!=0)) return false;
+    if(fraction.numerator.permanent==0) { upper=0; return true; }
+    const double numerator=up(fraction.numerator.value+numerator_error);
+    const double denominator=down(fraction.denominator.value-denominator_error);
+    upper=up(numerator/denominator);
+    return denominator>0 && std::isfinite(upper);
+  }
+
+  // Test the same vertex-first, edge-second regions as the public classifier,
+  // reusing five dot products. -1 asks the existing classifier to refine.
+  inline int filtered_feature_distance(const Point &q,const std::array<Point,3> &p,
+    int &id,Fraction<Filter> &distance)
+  {
+    const auto r=difference<Filter>(q,p[0]);
+    const auto e=difference<Filter>(p[1],p[0]);
+    const auto f=difference<Filter>(p[2],p[0]);
+    const auto re=dot(r,e),rf=dot(r,f);
+    const auto vertex=[&](const Filter &first,const Filter &second)
+    {
+      const int a=sign(first),b=sign(second);
+      if(a==1 || b==1) return 0;
+      return a==2 || b==2 ? -1 : 1;
+    };
+    int selected=vertex(re,rf);
+    if(selected<0) return -1;
+    if(selected) { id=0; distance={dot(r,r),Filter(1)}; return 0; }
+    const auto ee=dot(e,e),ef=dot(e,f);
+    // Projections from b onto ba and bc, then from c onto ca and cb.
+    const auto br=ee-re,bc=(rf-ef)+br;
+    selected=vertex(br,bc);
+    if(selected<0) return -1;
+    if(selected)
+    {
+      const auto offset=difference<Filter>(q,p[1]);
+      id=1; distance={dot(offset,offset),Filter(1)}; return 0;
+    }
+    const auto ff=dot(f,f),cr=ff-rf,cb=(re-ef)+cr;
+    selected=vertex(cr,cb);
+    if(selected<0) return -1;
+    if(selected)
+    {
+      const auto offset=difference<Filter>(q,p[2]);
+      id=2; distance={dot(offset,offset),Filter(1)}; return 0;
+    }
+    const auto edge=[&](const Filter &first,const Filter &last)
+    {
+      const int a=sign(first),b=sign(last);
+      if(a==2 || b==2) return -1;
+      return a>0 && b>0 ? 1 : 0;
+    };
+    selected=edge(re,br);
+    if(selected<0) return -1;
+    if(selected)
+    {
+      const int side=sign(ee*rf-re*ef);
+      if(side==2) return -1;
+      if(side<=0) { id=0; distance={dot(r,r)*ee-re*re,ee}; return 1; }
+    }
+    selected=edge(bc,cb);
+    if(selected<0) return -1;
+    if(selected)
+    {
+      const auto be=ee-ef,ce=ff-ef,length=be+ce;
+      const int side=sign(length*br-bc*be);
+      if(side==2) return -1;
+      if(side<=0)
+      {
+        const auto offset=difference<Filter>(q,p[1]);
+        id=1; distance={dot(offset,offset)*length-bc*bc,length}; return 1;
+      }
+    }
+    selected=edge(cr,rf);
+    if(selected<0) return -1;
+    if(selected)
+    {
+      const int side=sign(ff*cb-cr*(ff-ef));
+      if(side==2) return -1;
+      if(side<=0)
+      {
+        const auto offset=difference<Filter>(q,p[2]);
+        id=2; distance={dot(offset,offset)*ff-cr*cr,ff}; return 1;
+      }
+    }
+    const auto normal=cross(e,f);
+    const auto height=dot(r,normal);
+    id=0; distance={height*height,dot(normal,normal)}; return 2;
+  }
+
   template<typename Number> inline int compare(const Point &q,
     const std::array<Point,3> &a,int ad,int ai,
     const std::array<Point,3> &b,int bd,int bi)
@@ -225,8 +326,23 @@ namespace igl { namespace predicates { namespace exact_point_triangle_kernel
     const auto first=distance<Number>(q,a,ad,ai),second=distance<Number>(q,b,bd,bi);
     return sign(first.numerator*second.denominator-second.numerator*first.denominator);
   }
-  // Reuse exact feature classifications within a query. No constructed point
-  // or expansion survives a predicate call; only dimension and local id do.
+  // Reuse the incumbent's rounded fraction and permanent. Refinement uses
+  // fresh local interval/expansion storage and the original input coordinates.
+  inline int compare(const Point &q,
+    const std::array<Point,3> &a,int ad,int ai,const Fraction<Filter> &first,
+    const std::array<Point,3> &b,int bd,int bi,const Fraction<Filter> &second)
+  {
+    if(ad==0 && bd==0 && a[ai]==b[bi]) return 0;
+    if(ad==1 && bd==1 &&
+       ((a[ai]==b[bi] && a[(ai+1)%3]==b[(bi+1)%3]) ||
+        (a[ai]==b[(bi+1)%3] && a[(ai+1)%3]==b[bi]))) return 0;
+    const int fast=sign(first.numerator*second.denominator-second.numerator*first.denominator);
+    if(fast!=2) return fast;
+    const int filtered=compare<Interval>(q,a,ad,ai,b,bd,bi);
+    return filtered==2 ? compare<Expansion>(q,a,ad,ai,b,bd,bi) : filtered;
+  }
+  // Reuse exact feature classifications, computing fractions within this call.
+  // All interval and expansion storage remains local to the predicate.
   inline int compare(const Point &q,const std::array<Point,3> &a,int ad,int ai,
     const std::array<Point,3> &b,int bd,int bi)
   {

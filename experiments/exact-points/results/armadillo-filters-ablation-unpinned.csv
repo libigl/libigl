@@ -1,0 +1,18 @@
+# points=10000 seed=896 padding=0.1 threads=1 repetitions=9 min_parallel=10000
+method,median_ms,min_ms,max_ms
+baseline,126.773748,126.639038,127.113758
+filtered_upper,112.707171,112.502731,112.969452
+reuse_distance,124.024659,123.886859,125.090208
+reuse_filtered_upper,110.551952,110.450872,110.749842
+fused_reuse_upper,106.790953,106.653363,106.992463
+enclosures,122.631099,122.412069,123.203178
+fused_enclosures,119.323480,118.908100,119.542720
+production,125.771568,125.606049,126.757358
+# audit baseline nodes=3654186 leaves=605711 updates=47730 feature_fallbacks=0 interval_bounds=47730 filter_compares=0 enclosure_compares=0 interval_compares=0 expansion_compares=0
+# audit filtered_upper nodes=3654186 leaves=605711 updates=47730 feature_fallbacks=0 interval_bounds=0 filter_compares=0 enclosure_compares=0 interval_compares=0 expansion_compares=0
+# audit reuse_distance nodes=3654186 leaves=605711 updates=47730 feature_fallbacks=0 interval_bounds=47730 filter_compares=527932 enclosure_compares=0 interval_compares=0 expansion_compares=0
+# audit reuse_filtered_upper nodes=3654186 leaves=605711 updates=47730 feature_fallbacks=0 interval_bounds=0 filter_compares=527932 enclosure_compares=0 interval_compares=0 expansion_compares=0
+# audit fused_reuse_upper nodes=3654186 leaves=605711 updates=47730 feature_fallbacks=0 interval_bounds=0 filter_compares=527932 enclosure_compares=0 interval_compares=0 expansion_compares=0
+# audit enclosures nodes=3654186 leaves=605711 updates=47730 feature_fallbacks=0 interval_bounds=0 filter_compares=0 enclosure_compares=527932 interval_compares=0 expansion_compares=0
+# audit fused_enclosures nodes=3654186 leaves=605711 updates=47730 feature_fallbacks=0 interval_bounds=0 filter_compares=0 enclosure_compares=527932 interval_compares=0 expansion_compares=0
+# all_triangle_ids_identical=1

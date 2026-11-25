@@ -112,6 +112,6 @@ int main()
     leaf_allocations!=0 || filtered_calls!=0 || tie_calls!=0 || leaf_sums==0 ||
     ordinary.distance!=1 || cancelled.distance<=0 || wrapper_allocations!=2 ||
     construction_filtered_calls!=0 || construction_feature_calls!=0 || construction_fallback_calls==0 ||
-    single!=0 || duplicate!=0 || single_rounding==0 || tie_rounding!=single_rounding ||
+    single!=0 || duplicate!=0 || single_rounding!=3 || tie_rounding!=single_rounding ||
     location!=p::PointMeshLocation::OUTSIDE || vertex_sign_calls!=0;
 }

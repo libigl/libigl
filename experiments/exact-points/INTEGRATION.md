@@ -1,5 +1,8 @@
 # Production closest-point optimizations
 
+This report records the first integration round. See [FILTERS.md](FILTERS.md)
+for subsequent certified-bound and distance-reuse optimizations and current timings.
+
 The closest-point traversal now classifies each candidate once, keeps the
 incumbent feature dimension and local id, and reuses its conservative upper
 bound when a smaller triangle id replaces it on an exact distance tie.

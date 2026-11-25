@@ -54,9 +54,12 @@ IGL_INLINE Eigen::Index igl::predicates::exact_point_mesh_closest_triangle(
     return std::max(0.0,(squared-16*std::numeric_limits<double>::epsilon()*squared)
       -4*std::numeric_limits<double>::denorm_min());
   };
-  const auto upper_bound=[&](const std::array<k::Point,3> &p,int dimension,int id)
+  const auto upper_bound=[&](const std::array<k::Point,3> &p,int dimension,int id,
+    const k::Fraction<k::Filter> &filtered)
   {
-    double upper=std::numeric_limits<double>::infinity();
+    double upper;
+    if(k::distance_upper_bound(filtered,upper)) return upper;
+    upper=std::numeric_limits<double>::infinity();
     for(const auto &corner:p)
     {
       const auto offset=k::difference<k::Interval>(q,corner);
@@ -74,6 +77,7 @@ IGL_INLINE Eigen::Index igl::predicates::exact_point_mesh_closest_triangle(
   Eigen::Index best=-1;
   std::array<k::Point,3> best_triangle;
   int best_dimension=0,best_id=0;
+  k::Fraction<k::Filter> best_distance;
   double upper=std::numeric_limits<double>::infinity();
   while(!active.empty())
   {
@@ -84,16 +88,24 @@ IGL_INLINE Eigen::Index igl::predicates::exact_point_mesh_closest_triangle(
       const Eigen::Index candidate=leaf(current.index);
       const auto candidate_triangle=triangle(candidate);
       int candidate_id;
-      const int candidate_dimension=k::feature(q,candidate_triangle,candidate_id);
+      k::Fraction<k::Filter> candidate_distance;
+      int candidate_dimension=k::filtered_feature_distance(q,candidate_triangle,candidate_id,candidate_distance);
+      if(candidate_dimension<0)
+      {
+        candidate_dimension=k::feature(q,candidate_triangle,candidate_id);
+        candidate_distance=k::distance<k::Filter>(q,candidate_triangle,candidate_dimension,candidate_id);
+      }
       const int order=best<0 ? -1 : k::compare(q,
-        candidate_triangle,candidate_dimension,candidate_id,best_triangle,best_dimension,best_id);
+        candidate_triangle,candidate_dimension,candidate_id,candidate_distance,
+        best_triangle,best_dimension,best_id,best_distance);
       if(order<0 || (order==0 && candidate<best))
       {
         best=candidate; best_triangle=candidate_triangle;
         best_dimension=candidate_dimension; best_id=candidate_id;
+        best_distance=candidate_distance;
         // An exact tie has the same distance, so the previous conservative
         // bound remains valid even when the smaller triangle id wins.
-        if(order<0) upper=upper_bound(best_triangle,best_dimension,best_id);
+        if(order<0) upper=upper_bound(best_triangle,best_dimension,best_id,best_distance);
       }
     }else
     {

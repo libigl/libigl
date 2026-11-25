@@ -89,43 +89,34 @@ traversal per query and reuse the exact selected feature for signing.
 
 ## Recorded Armadillo run
 
-After incorporating traversal feature caching, exact-tie bound reuse and the
-vertex-sign self-comparison fix, the branch was rebased onto main `cb3d2940`.
-GCC 13.3, Release `-O3 -DNDEBUG`, strict FP, AMD EPYC 9B45; CPUs 24 / 24–27.
+After integrating fused classification, reused filtered fractions and cheaper
+certified upper bounds, GCC 13.3 Release, strict FP, EPYC 9B45; CPUs 24 / 24–27.
 All methods use the current upstream thread pool with consistent parallelism.
 
 Median **query time for all 10,000 points**, with preprocessing already done:
 
 | Method | 1 thread | 4 threads |
 | --- | ---: | ---: |
-| Unsigned squared distance | 88.46 ms | 24.21 ms |
-| Pseudonormal signed distance | 82.25 ms | 22.02 ms |
-| Fast winding signed distance | 94.28 ms | 26.03 ms |
-| Exact sign, uncached | 137.02 ms | 37.11 ms |
-| Exact sign, cached | 130.39 ms | 35.07 ms |
+| Unsigned squared distance | 112.32 ms | 27.31 ms |
+| Pseudonormal signed distance | 101.21 ms | 24.97 ms |
+| Fast winding signed distance | 119.73 ms | 29.50 ms |
+| Exact sign, uncached | 131.70 ms | 32.34 ms |
+| Exact sign, cached | 123.99 ms | 30.99 ms |
 
-Median **full-call time including setup**:
+One warm-up and nine rotated-order repetitions per process; each table entry
+is the median of three process medians. These full-wrapper runs varied, including
+the unchanged controls. Use the [filter report](../../experiments/exact-points/FILTERS.md)
+for raw ranges, paired comparisons and full-call times including setup.
+Preprocessing dominates the cached full-call path, and that path did not show a
+serial improvement in these runs.
 
-| Method | 1 thread | 4 threads |
-| --- | ---: | ---: |
-| Unsigned squared distance | 139.93 ms | 80.77 ms |
-| Pseudonormal signed distance | 178.15 ms | 122.38 ms |
-| Fast winding signed distance | 187.30 ms | 98.49 ms |
-| Exact sign, uncached | 212.77 ms | 116.58 ms |
-| Exact sign, cached | 381.98 ms | 289.57 ms |
-
-One warm-up and nine rotated-order repetitions per process. Serial values are
-medians from one process; four-thread values are the median of three process
-medians, retaining all runs because timings varied. No concurrent compilation
-or competing CPU-heavy process was observed. Raw output, paired before/after
-tables, work counters and reproduction details are in
-[the integration report](../../experiments/exact-points/INTEGRATION.md).
-
-Serial uncached query time improved from 183.81 to 137.02 ms (25.5%), and cached
-queries from 154.65 to 130.39 ms (15.7%). Caching saves about 5% of query time
-now; its roughly 170 ms serial preprocessing makes it more expensive for a
-single batch. Its value depends on reuse and the query feature distribution.
-Cached exact-sign queries remain about 38% slower than fast winding serially.
+Separate search controls isolate the changes: integrated serial closest-triangle
+search decreased from 125.38 to 108.16 ms (13.7%). Cheaper certified upper bounds
+save most of this time; fraction reuse and fused classification add smaller gains.
+Computing full distance enclosures at every leaf was slower and was not retained.
+Exposure caching still only saves the local sign stage, with expensive setup for
+a single batch. The previous integration round is recorded in
+[INTEGRATION.md](../../experiments/exact-points/INTEGRATION.md).
 
 All sampled sign classifications agreed. Cached and uncached exact outputs
 were identical, as were each prepared path and its corresponding convenience

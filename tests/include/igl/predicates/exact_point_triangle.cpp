@@ -63,6 +63,11 @@ TEST_CASE("predicates::exact_point_triangle: integer_projection_oracle","[igl][p
     const auto feature=igl::predicates::exact_point_triangle_closest_feature(query,aa[0],aa[1],aa[2],id);
     REQUIRE(int(feature)==ar.dimension);
     REQUIRE(id==ar.id);
+    namespace k=igl::predicates::exact_point_triangle_kernel;
+    k::Fraction<k::Filter> distance;
+    const int fused=k::filtered_feature_distance(k::point(query),
+      {{k::point(aa[0]),k::point(aa[1]),k::point(aa[2])}},id,distance);
+    if(fused>=0) { REQUIRE(fused==ar.dimension); REQUIRE(id==ar.id); }
     const Integer cross=ar.numerator*br.denominator-br.numerator*ar.denominator;
     const int expected=(cross>0)-(cross<0);
     REQUIRE(igl::predicates::exact_point_triangle_squared_distance_compare(query,
@@ -141,4 +146,102 @@ TEST_CASE("predicates::exact_point_triangle: filter_certificates","[igl][predica
     REQUIRE(k::compare(q,a,exact_feature,exact_id,b,other_feature,other_id)==exact);
   }
   REQUIRE(certificates>100);
+}
+
+TEST_CASE("predicates::exact_point_triangle: fused_distance_certificates","[igl][predicates]")
+{
+  namespace k=igl::predicates::exact_point_triangle_kernel;
+  igl::predicates::exactinit();
+  std::mt19937 generator(2151);
+  std::uniform_real_distribution<double> mantissa(-1,1);
+  std::uniform_int_distribution<int> exponent(-40,40),integer(-4,4);
+  int certified=0,upper_certified=0,uncertain=0;
+  for(int iteration=0;iteration<3000;++iteration)
+  {
+    k::Point q;
+    std::array<k::Point,3> p;
+    const auto coordinate=[&]()
+    {
+      return iteration<1500 ? std::ldexp(mantissa(generator),exponent(generator)) :
+        std::ldexp(double(integer(generator)),(iteration%7-3)*20);
+    };
+    for(int axis=0;axis<3;++axis)
+    {
+      q[axis]=coordinate();
+      for(int i=0;i<3;++i) p[i][axis]=coordinate();
+    }
+    if(iteration%13==0) q=p[0];
+    if(iteration%17==0) p[2]=p[1];
+    if(iteration%19==0) for(int axis=0;axis<3;++axis) p[2][axis]=(p[0][axis]+p[1][axis])/2;
+    int id,exact_id;
+    k::Fraction<k::Filter> fraction;
+    int dimension=k::filtered_feature_distance(q,p,id,fraction);
+    const int exact_dimension=k::feature<k::Expansion>(q,p,exact_id);
+    if(dimension<0)
+    {
+      ++uncertain;
+      dimension=k::feature(q,p,id);
+      fraction=k::distance<k::Filter>(q,p,dimension,id);
+    }
+    else ++certified;
+    REQUIRE(dimension==exact_dimension);
+    REQUIRE(id==exact_id);
+    const auto exact=k::distance<k::Expansion>(q,p,exact_dimension,exact_id);
+    double upper;
+    if(k::distance_upper_bound(fraction,upper))
+    {
+      ++upper_certified;
+      REQUIRE(k::sign(k::Expansion(upper)*exact.denominator-exact.numerator)>=0);
+    }
+    auto other=p;
+    other[iteration%3][iteration%3]=std::nextafter(other[iteration%3][iteration%3],1.0);
+    int other_id;
+    k::Fraction<k::Filter> other_distance;
+    int other_dimension=k::filtered_feature_distance(q,other,other_id,other_distance);
+    if(other_dimension<0)
+    {
+      other_dimension=k::feature(q,other,other_id);
+      other_distance=k::distance<k::Filter>(q,other,other_dimension,other_id);
+    }
+    const int comparison=k::compare<k::Expansion>(q,p,dimension,id,other,other_dimension,other_id);
+    REQUIRE(k::compare(q,p,dimension,id,fraction,other,other_dimension,other_id,other_distance)==comparison);
+    // Certify N and D themselves, including the alternative edge formulas.
+    for(const auto &pair:{std::make_pair(fraction.numerator,exact.numerator),
+                          std::make_pair(fraction.denominator,exact.denominator)})
+    {
+      double error;
+      if(!k::filter_error(pair.first,error)) continue;
+      REQUIRE(k::sign(k::Expansion(k::up(pair.first.value+error))-pair.second)>=0);
+      REQUIRE(k::sign(pair.second-k::Expansion(k::down(pair.first.value-error)))>=0);
+    }
+  }
+  REQUIRE(certified>1000);
+  REQUIRE(upper_certified>1000);
+  REQUIRE(uncertain>100);
+}
+
+TEST_CASE("predicates::exact_point_triangle: distance_bound_refinement","[igl][predicates]")
+{
+  namespace k=igl::predicates::exact_point_triangle_kernel;
+  igl::predicates::exactinit();
+  const double epsilon=std::ldexp(1.0,-52);
+  const k::Point q{{.5,.5+epsilon,.5}};
+  const std::array<k::Point,3> p{{{{0,0,0}},{{2,2,0}},{{0,0,2}}}};
+  int id;
+  k::Fraction<k::Filter> fraction;
+  REQUIRE(k::filtered_feature_distance(q,p,id,fraction)==2);
+  double upper;
+  REQUIRE_FALSE(k::distance_upper_bound(fraction,upper));
+  // The existing interval/expansion path must resolve cancellation and zeros.
+  REQUIRE(k::sign(k::distance<k::Expansion>(q,p,2,0).numerator)>0);
+  REQUIRE(k::filtered_feature_distance(p[1],p,id,fraction)==-1);
+  REQUIRE(k::feature(p[1],p,id)==0);
+  REQUIRE(id==1);
+  const auto zero=k::distance<k::Filter>(p[1],p,0,id);
+  REQUIRE(k::distance_upper_bound(zero,upper));
+  REQUIRE(upper==0);
+  const double tiny=std::numeric_limits<double>::denorm_min();
+  REQUIRE_FALSE(k::distance_upper_bound({k::Filter(tiny),k::Filter(1)},upper));
+  REQUIRE_FALSE(k::distance_upper_bound({k::Filter(1),k::Filter(tiny)},upper));
+  REQUIRE_FALSE(k::distance_upper_bound({k::Filter(std::numeric_limits<double>::infinity()),k::Filter(1)},upper));
 }

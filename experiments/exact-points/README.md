@@ -156,15 +156,18 @@ Squared distances are represented transiently as positive-denominator fractions:
 The ordering sign is `N1*D2 - N2*D1`, of degree at most ten. Proven common
 vertices or common open edges give an exact tie directly, including reversed
 edge orientation. Traversal classifies each candidate once and retains the
-incumbent feature dimension and local id. Other comparisons recompute their own fractions. No
-exact point, parameter, normal, or expansion persists across comparisons.
+incumbent feature dimension and local id. Other comparisons use filtered cross
+products and recompute from input coordinates when refinement is needed. No
+exact point, normal, or expansion persists across comparisons. Ordinary filtered
+fractions and their error permanents are retained within traversal.
 
 A cheap filter evaluates each expression and its absolute permanent. It accepts
 only signs separated from zero by `256*DBL_EPSILON*permanent`. For a precise
 roundoff count, assign weight 1 to an input difference, `max(w1,w2)+1` to an
 addition/subtraction, and `w1+w2+1` to a product. This counts the rounding factors
 in each fully expanded monomial. Dot products of differences have weight 5;
-edge numerators 12; face numerators 17; face denominators 11; and the final
+direct edge numerators 12; fused edge numerators at most 16; face numerators 17;
+face denominators 11; and the final
 comparison at most 30. The positive permanent has the same bound. With unit
 roundoff `u`, the error relative to the computed permanent is bounded by
 `gamma_30/(1-gamma_30)`, where `gamma_n=n*u/(1-n*u)`. The implemented bound is
@@ -199,11 +202,20 @@ ulps, bounds downward including rounding of the correction itself. Nonfinite
 computed sums give the safe lower bound zero. Empty padding nodes do not read
 uninitialized box coordinates.
 
-The current exact minimizing triangle supplies an upper bound: the minimum of
-outward-rounded squared distances to its vertices and, when its denominator
-interval is positive, an outward-rounded interval quotient for its classified
-feature. A node is pruned only when its lower bound is **strictly greater** than
-that upper bound. Leaf candidates are compared by the metric predicate; an equal
+The current exact minimizing triangle supplies a certified upper bound. The
+common path uses its already computed filtered fraction: round `N+error_N`
+upward, `D-error_D` downward, then their quotient upward. It accepts only a
+positive certified denominator and nonnegative certified numerator, with finite,
+non-underflowed error estimates. This takes three outward-rounding operations.
+Uncertain cases use the minimum of outward-rounded squared distances to the
+vertices and a positive-denominator interval quotient for the classified feature.
+
+Within a query, traversal retains the incumbent's feature and ordinary filtered
+numerator/denominator with absolute permanents. The fused classifier reuses dot
+products to produce the candidate's feature and fraction together. Comparisons
+still certify the cross product and refine uncertain results using the original
+input coordinates. No expansion or constructed exact point is retained. A node
+is pruned only when its lower bound is **strictly greater** than that upper bound. Leaf candidates are compared by the metric predicate; an equal
 distance still permits replacement by a smaller face id, reusing the previous
 upper bound because it bounds the same exact distance. Consequently, rounded
 quotients or rounded constructed closest points never decide the winner.
@@ -255,7 +267,8 @@ noncoincident query that can have this vertex as its closest point.
 ## Validation and timings
 
 The small-mesh timings below predate the production traversal optimizations.
-See [INTEGRATION.md](INTEGRATION.md) for current validation and Armadillo timings.
+See [FILTERS.md](FILTERS.md) for current validation and Armadillo timings.
+[INTEGRATION.md](INTEGRATION.md) records the preceding optimization round.
 
 The standalone harness includes the normal libigl unit test files and existing
 exact-ray leaf regression tests, plus separate static-link and allocation/path
@@ -396,4 +409,4 @@ ordering and pruning-bound ablations, and an untimed expansion audit. It also
 records the prototypes now incorporated into production: cached closest-feature
 classifications, retained bounds on exact ties, and no incumbent self-comparison
 in vertex signing. The latest paired before/after Armadillo measurements are in
-[INTEGRATION.md](INTEGRATION.md).
+[FILTERS.md](FILTERS.md).

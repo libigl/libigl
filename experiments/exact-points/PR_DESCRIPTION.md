@@ -21,9 +21,10 @@ For closest-point queries, the branch adds:
 - `point_mesh_closest_point` and `approximate_signed_distance_exact_sign`,
   retaining approximate point coordinates, barycentrics and distance magnitudes
   separately from the exact selection and sign information.
-- Cached feature classifications during traversal, upper-bound reuse on exact
-  ties, and removal of the incumbent edge's self-comparison in vertex signing.
-  Different features still use the complete filtered/exact comparison path.
+- Cached feature classifications and filtered distance fractions during traversal,
+  fused feature/distance evaluation, cheap certified upper bounds, upper-bound
+  reuse on exact ties, and no incumbent self-comparison in vertex signing.
+  Uncertain decisions retain the interval/expansion refinement path.
 - Headless tutorial `1008_SignedDistanceProfile`, comparing unsigned,
   pseudonormal, fast-winding and cached/uncached exact-sign distances with the
   same query parallelism. The branch is rebased onto current main `cb3d2940`.
@@ -31,33 +32,42 @@ For closest-point queries, the branch adds:
 ## Performance
 
 Armadillo, 86,482 triangles and 10,000 fixed padded-box queries, GCC 13.3 Release,
-strict FP, EPYC 9B45. Times exclude preprocessing. Before/after binaries share
-the same rebased source except for the three optimized point-kernel files.
+strict FP, EPYC 9B45. The latest search controls isolate the retained changes:
+filtered upper bounds save most of the cost, with smaller improvements from
+fraction reuse and fused classification. Full distance enclosures per candidate
+were slower and remain a benchmark control. Integrated serial closest-triangle
+search measures 108.16 ms versus 125.38 ms for the preceding policy (13.7% less).
+All variants visit the same leaves and select identical triangle ids.
 
-| Method | 1 thread before → after | 4 threads before → after |
+For complete signed-distance queries, four-thread medians across three runs are:
+
+| Method | Before latest filters | After |
 | --- | ---: | ---: |
-| Exact sign, uncached | 183.81 → 137.02 ms | 51.02 → 37.11 ms |
-| Exact sign, cached | 154.65 → 130.39 ms | 42.99 → 35.07 ms |
-| Fast winding, control | 94.40 → 94.28 ms | 26.47 → 26.03 ms |
+| Exact sign, uncached | 39.21 ms | 32.34 ms |
+| Exact sign, cached | 37.31 ms | 30.99 ms |
+| Fast winding, unchanged source control | 28.37 ms | 29.50 ms |
 
-Serial query time drops 25.5% uncached and 15.7% cached. Cached exact-sign queries
-remain about 38% slower than fast winding serially on this sample. Exposure
-preprocessing remains expensive for a single batch; caching now saves about
-5% of query time. Four-thread values aggregate three runs and show more variance.
-[Methodology, full-call times, raw results and work counters](INTEGRATION.md)
-are included; [API contracts and usage](README.md) describe the supported inputs.
+Query times exclude preprocessing. All methods use the same parallel policy.
+Full-wrapper runs have appreciable variance; unchanged controls shift 2–4%.
+Serial full-call cached timings do not show an improvement because setup dominates
+and varies substantially. Exposure caching still only reduces local signing cost.
+[All paired timings, methodology, bounds proof and counters](FILTERS.md) and
+[API contracts and usage](README.md) are included.
 
 ## Validation
 
-- Point tests: 56,844 assertions in 22 cases; all three Release and ASan/UBSan
+- Point tests: 88,003 assertions in 24 cases; all three Release and ASan/UBSan
   CTest targets pass, including static linkage and allocation/path audits.
   The Release suite also passes with a 1 MiB stack.
-- Both targeted optimization-path regressions fail before the changes and pass
-  afterward. Cancellation tests still exercise expansion fallbacks.
+- The new upper-bound path regression fails against the preceding implementation
+  (45 rounding calls) and passes after the change (3). Cancellation still reaches
+  expansion fallbacks. New certificates are checked against full expansions,
+  including broad exponents, one-ulp perturbations and degenerate triangles.
 - All 10,000 Armadillo exact triangle ids agree with the original-policy search;
   cached/uncached signed outputs are bit identical. The full four-thread example
   passes ASan/UBSan with leak detection. The standard tutorial target also builds.
-- Rays: 22,295 assertions in 13 cases, all five CTest targets, and comparison to
+- Unchanged ray paths previously passed 22,295 assertions in 13 cases, all five
+  CTest targets, and comparison to
   #2549 on 125,000 classifications, 75,031 hit comparisons and 1,200 mesh queries
   with zero mismatches in the tested domain.
 - The dependency patch applies cleanly to the pinned upstream source and is

@@ -1,0 +1,32 @@
+# mesh=tutorial/data/armadillo.obj vertices=43243 faces=86482
+# points=10000 seed=896 box_padding_per_side=0.1 repetitions=9
+# threads=4 min_parallel=10000 eigen_threads=1
+# validation=closed_manifold_oriented_nondegenerate_no_self_intersections
+# preprocessing rows sum separately timed components; mesh loading, validation and sampling excluded
+phase,method,median_ms,min_ms,max_ms,us_per_point
+preprocess,point_mesh_squared_distance,57.589173,57.589173,57.589173,5.758917
+preprocess,signed_distance_pseudonormal,99.675330,99.675330,99.675330,9.967533
+preprocess,signed_distance_fast_winding_number,72.908168,72.908168,72.908168,7.290817
+preprocess,exact_sign_uncached,73.253888,73.253888,73.253888,7.325389
+preprocess,exact_sign_cached,250.013574,250.013574,250.013574,25.001357
+# components_ms: aabb=57.589173 normals=42.086157 winding_bvh=15.318995 eytzinger=70.008189 adjacency=3.245699 exposure=176.759686
+query,point_mesh_squared_distance,27.307322,26.791962,28.512711,2.730732
+query,signed_distance_pseudonormal,25.294333,24.771743,26.315642,2.529433
+query,signed_distance_fast_winding_number,29.503411,28.525271,30.578580,2.950341
+query,exact_sign_uncached,32.344141,32.088320,33.153700,3.234414
+query,exact_sign_cached,30.988531,30.269821,31.950040,3.098853
+# query checksum=64154.12486554581846576
+# all_prepared_methods_used_thread_pool=1
+total,point_mesh_squared_distance,82.206765,76.789776,83.459425,8.220676
+total,signed_distance_pseudonormal,116.335845,113.430625,121.334863,11.633584
+total,signed_distance_fast_winding_number,99.666260,93.675422,100.971509,9.966626
+total,exact_sign_uncached,105.107168,101.125509,106.708177,10.510717
+total,exact_sign_cached,270.694307,266.885479,273.124037,27.069431
+# total checksum=64154.12486554581846576
+# agreement,point_mesh_squared_distance,sign_mismatches=n/a,max_abs_magnitude_difference=1.665335e-16,max_prepared_vs_api_difference=0.000000e+00
+# agreement,signed_distance_pseudonormal,sign_mismatches=0,max_abs_magnitude_difference=1.665335e-16,max_prepared_vs_api_difference=0.000000e+00
+# agreement,signed_distance_fast_winding_number,sign_mismatches=0,max_abs_magnitude_difference=9.044590e-04,max_prepared_vs_api_difference=0.000000e+00
+# agreement,exact_sign_uncached,sign_mismatches=0,max_abs_magnitude_difference=0.000000e+00,max_prepared_vs_api_difference=0.000000e+00
+# agreement,exact_sign_cached,sign_mismatches=0,max_abs_magnitude_difference=0.000000e+00,max_prepared_vs_api_difference=0.000000e+00
+# exact_locations: inside=600 surface=0 outside=9400
+# exact_features: vertex=6110 edge=2982 face=908
