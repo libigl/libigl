@@ -8,6 +8,7 @@
 #include "edge_topology.h"
 #include "is_edge_manifold.h"
 #include <algorithm>
+#include <cassert>
 
 template<typename DerivedV, typename DerivedF, typename DerivedE>
 IGL_INLINE void igl::edge_topology(

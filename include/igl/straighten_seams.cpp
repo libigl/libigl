@@ -25,6 +25,7 @@
 #include "ears.h"
 #include "sum.h"
 #include "find.h"
+#include <cassert>
 #include <iostream>
 
 template <

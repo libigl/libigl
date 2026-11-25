@@ -40,6 +40,8 @@ IGL_INLINE void igl::copyleft::cgal::convex_hull(
       }
       Polyhedron_3 poly;
       CGAL::convex_hull_3(points.begin(),points.end(),poly);
+      // https://stackoverflow.com/a/27535366/148668
+      // It always should be.
       assert(poly.is_pure_triangle() && "Assuming CGAL outputs a triangle mesh");
       polyhedron_to_mesh(poly,W,G);
       break;

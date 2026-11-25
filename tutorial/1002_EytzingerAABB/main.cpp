@@ -178,7 +178,7 @@ int main(int argc, char * argv[])
 
   if(offset == OffsetType::VARIABLE_RADIUS_OFFSET)
   {
-    viewer.data().set_colors(R);
+    viewer.data().set_data(R);
   }
   viewer.append_mesh();
   const int m_index = viewer.selected_data_index;
@@ -207,7 +207,7 @@ int main(int argc, char * argv[])
       GV *= 2;
       GV.array() -= 1;
       Eigen::VectorXd S;
-      igl::eytzinger_aabb_sdf(GV,primitive,B1,B2,leaf,S);
+      igl::eytzinger_aabb_sdf<false>(GV,primitive,B1,B2,leaf,S);
       printf("%-20s: %g secs\n","eytzinger_aabb_sdf",tictoc());
 
       tictoc();
@@ -231,7 +231,7 @@ int main(int argc, char * argv[])
         return primitive(p,j);
       };
       double f;
-      igl::eytzinger_aabb_sdf(p,primitive_p,B1,B2,leaf,f);
+      igl::eytzinger_aabb_sdf<false>(p,primitive_p,B1,B2,leaf,f);
       return f - isovalue;
     };
     const std::function<double(const Eigen::RowVector3d &)>

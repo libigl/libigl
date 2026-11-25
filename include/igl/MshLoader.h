@@ -15,6 +15,7 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <unordered_map>
 
 namespace igl {
 
@@ -155,11 +156,15 @@ class MshLoader {
         void parse_element_field(std::ifstream& fin);
         void parse_unknown_field(std::ifstream& fin,
                 const std::string& fieldname);
+        int node_dense_index(int node_tag) const;
+        int element_dense_index(int elem_tag) const;
 
     private:
         bool   m_binary;
         size_t m_data_size;
-        
+        std::unordered_map<int, int> m_node_tag_to_dense;
+        std::unordered_map<int, int> m_element_tag_to_dense;
+
         FloatVector m_nodes;    // len x 3 vector 
 
         IndexVector m_elements; // linear array for nodes corresponding to each element 

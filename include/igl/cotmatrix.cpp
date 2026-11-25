@@ -15,6 +15,8 @@
 // Bug in unsupported/Eigen/SparseExtra needs iostream first
 #include <iostream>
 
+#include <cassert>
+
 template <typename DerivedV, typename DerivedF, typename Scalar>
 IGL_INLINE void igl::cotmatrix(
   const Eigen::MatrixBase<DerivedV> & V, 

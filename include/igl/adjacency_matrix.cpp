@@ -9,6 +9,7 @@
 
 #include "verbose.h"
 
+#include <cassert>
 #include <vector>
 
 template <typename DerivedF, typename T>

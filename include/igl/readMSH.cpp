@@ -8,6 +8,7 @@
 
 #include "readMSH.h"
 #include "MshLoader.h"
+#include <cassert>
 #include <iostream>
 
 template <

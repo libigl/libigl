@@ -222,9 +222,15 @@ TEST_CASE("AABB: dynamic", "[igl]")
       REQUIRE(min_i == qi);
     }
 
-    // Only compare speeds on large meshes
-    if(F.rows() > 300)
-    { 
+    // Only compare speeds on large meshes. Each timing above is a single-point
+    // query averaged over MAX_RUNS runs — only a few microseconds — so on small
+    // and medium meshes the tree's O(log n) advantage over the O(n) brute force
+    // is within timing noise (they are effectively a wash at ~1e3 faces), which
+    // made this assertion flaky on shared CI runners. Restrict the comparison to
+    // meshes large enough (here bunny ~69k and elephant ~157k faces) that the
+    // asymptotic advantage robustly dominates measurement noise.
+    if(F.rows() > 10000)
+    {
       REQUIRE(t_dynamic_tree < t_static_tree);
       REQUIRE(t_dynamic_tree < t_brute_force);
     }

@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <igl/unique_edge_map.h>
 #include <igl/barycentric_coordinates.h>
+#include <cassert>
 #include <unordered_map>
 
 //#define IGL_TRIANGLE_TRIANGLE_INTERSECT_DEBUG

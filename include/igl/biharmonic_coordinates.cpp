@@ -15,6 +15,7 @@
 #include "normal_derivative.h"
 #include "on_boundary.h"
 #include <Eigen/Sparse>
+#include <cassert>
 
 template <
   typename DerivedV,

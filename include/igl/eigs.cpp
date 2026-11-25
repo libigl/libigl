@@ -12,6 +12,7 @@
 #include "massmatrix.h"
 #include "placeholders.h"
 #include <iostream>
+#include <cassert>
 
 template <
   typename Atype,

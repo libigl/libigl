@@ -2,7 +2,7 @@
 #include <igl/boundary_loop.h>
 #include <igl/harmonic.h>
 #include <igl/map_vertices_to_circle.h>
-#include <igl/readOFF.h>
+#include <igl/read_triangle_mesh.h>
 #include <igl/opengl/glfw/Viewer.h>
 
 
@@ -43,7 +43,8 @@ int main(int argc, char *argv[])
 {
   using namespace std;
   // Load a mesh in OFF format
-  igl::readOFF(TUTORIAL_SHARED_PATH "/camelhead.off", V, F);
+  //igl::readOFF(TUTORIAL_SHARED_PATH "/camelhead.off", V, F);
+  igl::read_triangle_mesh(argc > 1 ? argv[1] : TUTORIAL_SHARED_PATH "/camelhead.off", V, F);
 
   // Compute the initial solution for ARAP (harmonic parametrization)
   Eigen::VectorXi bnd;

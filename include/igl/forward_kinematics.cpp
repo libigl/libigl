@@ -8,6 +8,7 @@
 #include "forward_kinematics.h"
 #include <functional>
 #include <iostream>
+#include <cassert>
 
 IGL_INLINE void igl::forward_kinematics(
   const Eigen::MatrixXd & C,

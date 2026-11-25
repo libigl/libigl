@@ -46,8 +46,8 @@ IGL_INLINE void igl::predicates::ear_clipping(
     Eigen::Matrix<Scalar,1,2> pb = P.row(b);
     Eigen::Matrix<Scalar,1,2> pi = P.row(i);
     auto r = igl::predicates::orient2d(pa, pi, pb);
-    if(r == igl::predicates::Orientation::NEGATIVE ||
-       r == igl::predicates::Orientation::COLLINEAR) return false;
+    if(r == igl::Orientation::NEGATIVE ||
+       r == igl::Orientation::COLLINEAR) return false;
 
     // check edge (b, R(b))
     Index k = b;
@@ -57,8 +57,8 @@ IGL_INLINE void igl::predicates::ear_clipping(
     auto r1 = igl::predicates::orient2d(pb, pl, pa);
     auto r2 = igl::predicates::orient2d(pi, pl, pb);
     if (l == a) return true;  // single triangle
-    if (r1 != igl::predicates::Orientation::POSITIVE &&
-        r2 != igl::predicates::Orientation::POSITIVE) {
+    if (r1 != igl::Orientation::POSITIVE &&
+        r2 != igl::Orientation::POSITIVE) {
       return false;
     }
     
@@ -83,8 +83,8 @@ IGL_INLINE void igl::predicates::ear_clipping(
     pl = P.row(l);
     r1 = igl::predicates::orient2d(pb, pk, pl);
     r2 = igl::predicates::orient2d(pi, pa, pk);
-    if (r1 != igl::predicates::Orientation::POSITIVE &&
-        r2 != igl::predicates::Orientation::POSITIVE
+    if (r1 != igl::Orientation::POSITIVE &&
+        r2 != igl::Orientation::POSITIVE
     ){
       return false;
     }

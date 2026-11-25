@@ -8,6 +8,7 @@
 
 #include "mapping_energy_with_jacobians.h"
 #include "polar_svd.h"
+#include <cassert>
 
 IGL_INLINE double igl::mapping_energy_with_jacobians(
   const Eigen::MatrixXd &Ji, 

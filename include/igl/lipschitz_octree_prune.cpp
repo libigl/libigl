@@ -6,13 +6,9 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "lipschitz_octree_prune.h"
-#include "unique_sparse_voxel_corners.h"
-#include "find.h"
-#include "matlab_format.h"
 #include "parallel_for.h"
 #include <cassert>
-#include <iostream>
-
+#include <cmath>
 
 template <
   bool batched,
@@ -29,8 +25,6 @@ IGL_INLINE void igl::lipschitz_octree_prune(
   const Eigen::MatrixBase<Derivedijk> & ijk,
   Eigen::PlainObjectBase<Derivedijk_maybe> & ijk_maybe)
 {
-  // static assert to ensure that Derivedorigin is a vector and the
-  // non-singleton dimension is 3 or Eigen::Dynamic
   static_assert(
     (Derivedorigin::RowsAtCompileTime == 1 && (
       Derivedorigin::ColsAtCompileTime == 3 ||
@@ -39,66 +33,58 @@ IGL_INLINE void igl::lipschitz_octree_prune(
       Derivedorigin::RowsAtCompileTime == 3 ||
       Derivedorigin::RowsAtCompileTime == Eigen::Dynamic)),
     "Derivedorigin must be a vector with 3 or Eigen::Dynamic dimensions");
-  // dynamic assert that the origin is a 3D vector
   assert((origin.rows() == 3 || origin.cols() == 3) && origin.size() == 3 &&
     "origin must be a 3D vector");
 
   using Scalar = typename Derivedorigin::Scalar;
   using RowVectorS3 = Eigen::Matrix<Scalar,1,3>;
-  using MatrixSX8R = Eigen::Matrix<typename Derivedorigin::Scalar,Eigen::Dynamic,8,Eigen::RowMajor>;
-  using MatrixSX3R = Eigen::Matrix<typename Derivedorigin::Scalar,Eigen::Dynamic,3,Eigen::RowMajor>;
-  using MatrixiX3R = Eigen::Matrix<int,Eigen::Dynamic,3,Eigen::RowMajor>;
-  // h0 is already the h at this depth.
+  using MatrixSX3R = Eigen::Matrix<Scalar,Eigen::Dynamic,3,Eigen::RowMajor>;
+
+  // Cell side length at this depth.
   const Scalar h = h0 / (1 << depth);
+  // A cell's center is at most h*sqrt(3)/2 from any point inside it (half
+  // space-diagonal).  By 1-Lipschitz, if udf(center) > h*sqrt(3)/2 the
+  // entire cell has udf > 0, so it contains no zero-crossing.
+  const Scalar threshold = h * std::sqrt(Scalar(3)) / 2;
 
-  Eigen::Matrix<int,Eigen::Dynamic,8,Eigen::RowMajor> J;
-  MatrixiX3R unique_ijk;
-  MatrixSX3R unique_corner_positions;
-  igl::unique_sparse_voxel_corners(origin,h0,depth,ijk,unique_ijk,J,unique_corner_positions);
+  // Compute cell centers.  Coordinate convention: x=col1, y=col0, z=col2
+  // (matches unique_sparse_voxel_corners / marching_cubes).
+  const auto cell_center = [&](const int c) -> RowVectorS3
+  {
+    return RowVectorS3(
+      origin(0) + h * (ijk(c,1) + Scalar(0.5)),
+      origin(1) + h * (ijk(c,0) + Scalar(0.5)),
+      origin(2) + h * (ijk(c,2) + Scalar(0.5)));
+  };
 
-  // Effectively a batched call to udf
-  Eigen::Array<bool,Eigen::Dynamic,1> big(unique_corner_positions.rows()); 
+  Eigen::Array<bool,Eigen::Dynamic,1> keep(ijk.rows());
   // Requires C++17
   if constexpr (batched)
   {
-    Eigen::Matrix<Scalar,Eigen::Dynamic,1> u = udf(unique_corner_positions);
-    for(int i = 0;i<unique_corner_positions.rows();i++)
+    MatrixSX3R centers(ijk.rows(), 3);
+    for(int c = 0; c < ijk.rows(); c++) centers.row(c) = cell_center(c);
+    const Eigen::Matrix<Scalar,Eigen::Dynamic,1> u = udf(centers);
+    for(int c = 0; c < ijk.rows(); c++)
     {
-      assert(u(i) >= 0 && "udf must be non-negative for lipschitz_octree_prune");
-      big(i) = (u(i) > h * std::sqrt(3));
+      assert(u(c) >= 0 && "udf must be non-negative for lipschitz_octree_prune");
+      keep(c) = (u(c) <= threshold);
     }
-  }else
+  }
+  else
   {
-    //for(int u = 0;u<unique_corner_positions.rows();u++)
-    igl::parallel_for(
-      unique_corner_positions.rows(),
-      [&](const int i)
-      {
-        // evaluate the function at the corner
-        const RowVectorS3 corner = unique_corner_positions.row(i);
-        const Scalar u = udf(corner);
-        assert(u >= 0 && "udf must be non-negative for lipschitz_octree_prune");
-        big(i) = (u > h * std::sqrt(3));
-      },
-      1000);
+    igl::parallel_for(ijk.rows(), [&](const int c)
+    {
+      const Scalar u = udf(cell_center(c));
+      assert(u >= 0 && "udf must be non-negative for lipschitz_octree_prune");
+      keep(c) = (u <= threshold);
+    }, 1000);
   }
 
-  ijk_maybe.resize(ijk.rows(),3);
+  ijk_maybe.resize(ijk.rows(), 3);
   int k = 0;
-  for(int c = 0;c<ijk.rows();c++)
-  {
-    bool empty = false;
-    for(int i = 0;i<8;i++)
-    {
-      empty = empty || big(J(c,i));
-    }
-    bool maybe = !empty;
-    if(maybe)
-    {
-      ijk_maybe.row(k++) = ijk.row(c);
-    }
-  }
-  ijk_maybe.conservativeResize(k,3);
+  for(int c = 0; c < ijk.rows(); c++)
+    if(keep(c)) ijk_maybe.row(k++) = ijk.row(c);
+  ijk_maybe.conservativeResize(k, 3);
 }
 
 #ifdef IGL_STATIC_LIBRARY

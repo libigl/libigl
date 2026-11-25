@@ -8,6 +8,7 @@
 #include "collapse_edge.h"
 #include "circulation.h"
 #include "edge_collapse_is_valid.h"
+#include <cassert>
 #include <vector>
 
 template <

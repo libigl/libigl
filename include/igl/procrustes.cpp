@@ -8,6 +8,8 @@
 #include "procrustes.h"
 #include "polar_dec.h"
 
+#include <cassert>
+
 template <
   typename DerivedX,
   typename DerivedY,

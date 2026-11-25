@@ -9,6 +9,7 @@
 #include "verbose.h"
 #include "cotmatrix_entries.h"
 #include <Eigen/Dense>
+#include <cassert>
 
 template <typename MatV, typename MatF, typename MatK>
 IGL_INLINE void igl::arap_linear_block(

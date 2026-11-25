@@ -3,6 +3,7 @@
 
 #include "igl_inline.h"
 #include <Eigen/Core>
+#include <cassert>
 
 namespace igl
 {

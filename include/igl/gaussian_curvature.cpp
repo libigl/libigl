@@ -8,6 +8,7 @@
 #include "gaussian_curvature.h"
 #include "internal_angles.h"
 #include "PI.h"
+#include <cassert>
 #include <iostream>
 template <typename DerivedV, typename DerivedF, typename DerivedK>
 IGL_INLINE void igl::gaussian_curvature(

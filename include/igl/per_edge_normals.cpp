@@ -12,6 +12,8 @@
 #include "per_face_normals.h"
 #include "unique_simplices.h"
 
+#include <cassert>
+
 template <
   typename DerivedV, 
   typename DerivedF, 
@@ -44,7 +46,7 @@ IGL_INLINE void igl::per_edge_normals(
   // now sort(allE,2) == E(EMAP,:), that is, if EMAP(i) = j, then E.row(j) is
   // the undirected edge corresponding to the directed edge allE.row(i).
 
-  Eigen::VectorXd W;
+  Eigen::Matrix<typename DerivedN::Scalar,Eigen::Dynamic,1> W;
   switch(weighting)
   {
     case PER_EDGE_NORMALS_WEIGHTING_TYPE_UNIFORM:

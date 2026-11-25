@@ -7,6 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "readNODE.h"
 #include "matrix_to_list.h"
+#include <cassert>
 #include <stdio.h>
 
 template <typename Scalar, typename Index>
@@ -101,6 +102,16 @@ IGL_INLINE bool igl::readNODE(
     if(line[0] == '#' || line[0] == '\n')
     {
       continue;
+    }
+    // The header count `n` sizes V and I above, so reject any file that lists
+    // more points than it declared before writing past the allocated rows.
+    if(p >= n)
+    {
+      fprintf(stderr,"readNODE: Error: more points than the %d declared in %s...\n",
+        n,
+        node_file_name.c_str());
+      fclose(node_file);
+      return false;
     }
     char * l = line;
     int offset;

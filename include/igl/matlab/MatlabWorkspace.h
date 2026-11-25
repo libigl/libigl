@@ -477,7 +477,7 @@ inline bool igl::matlab::MatlabWorkspace::find(
   double * pr = mxGetPr(mx_data);
   mwIndex * ir = mxGetIr(mx_data);
   mwIndex * jc = mxGetJc(mx_data);
-  vector<Eigen::Triplet<MT> > MIJV;
+  std::vector<Eigen::Triplet<MT> > MIJV;
   const int nnz = mxGetNzmax(mx_data);
   MIJV.reserve(nnz);
   // Iterate over outside
@@ -515,7 +515,7 @@ inline bool igl::matlab::MatlabWorkspace::find(
   assert(mxGetNumberOfDimensions(mx_data) == 2);
   //cout<<name<<": "<<mxGetM(mx_data)<<" "<<mxGetN(mx_data)<<endl;
   assert(mxGetNumberOfElements(mx_data) == 1);
-  copy(
+  std::copy(
     mxGetPr(mx_data),
     mxGetPr(mx_data)+mxGetNumberOfElements(mx_data),
     &v);
@@ -537,7 +537,7 @@ inline bool igl::matlab::MatlabWorkspace::find(
   assert(mxGetNumberOfDimensions(mx_data) == 2);
   //cout<<name<<": "<<mxGetM(mx_data)<<" "<<mxGetN(mx_data)<<endl;
   assert(mxGetNumberOfElements(mx_data) == 1);
-  copy(
+  std::copy(
     mxGetPr(mx_data),
     mxGetPr(mx_data)+mxGetNumberOfElements(mx_data),
     &d);

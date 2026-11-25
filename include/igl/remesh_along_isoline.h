@@ -12,6 +12,8 @@
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 
+#include <cassert>
+
 namespace igl 
 {
   /// Given a triangle mesh and a scalar field, remesh so that a given isovalue

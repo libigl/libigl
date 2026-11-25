@@ -10,6 +10,8 @@
 
 #include "is_border_vertex.h"
 
+#include <cassert>
+
 template <typename DerivedF>
 IGL_INLINE std::vector<bool> igl::is_irregular_vertex(const Eigen::MatrixBase<DerivedF> &F)
 {

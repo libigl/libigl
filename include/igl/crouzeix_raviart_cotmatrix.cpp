@@ -10,6 +10,7 @@
 #include "oriented_facets.h"
 #include "is_edge_manifold.h"
 #include "cotmatrix_entries.h"
+#include <cassert>
 
 template <typename DerivedV, typename DerivedF, typename LT, typename DerivedE, typename DerivedEMAP>
 void igl::crouzeix_raviart_cotmatrix(

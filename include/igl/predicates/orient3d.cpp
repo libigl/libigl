@@ -81,7 +81,7 @@ IGL_INLINE void orient3d(
 // Explicit template instantiation
 template void igl::predicates::orient3d<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>>(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>> const&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1>>&);
 
-#define IGL_ORIENT3D(Vector) template igl::predicates::Orientation igl::predicates::orient3d<Vector>(const Eigen::MatrixBase<Vector>&, const Eigen::MatrixBase<Vector>&, const Eigen::MatrixBase<Vector>&, const Eigen::MatrixBase<Vector>&)
+#define IGL_ORIENT3D(Vector) template igl::Orientation igl::predicates::orient3d<Vector>(const Eigen::MatrixBase<Vector>&, const Eigen::MatrixBase<Vector>&, const Eigen::MatrixBase<Vector>&, const Eigen::MatrixBase<Vector>&)
 #define IGL_MATRIX(T, R, C) Eigen::Matrix<T, R, C>
 IGL_ORIENT3D(IGL_MATRIX(float, 1, 3));
 IGL_ORIENT3D(IGL_MATRIX(float, 3, 1));

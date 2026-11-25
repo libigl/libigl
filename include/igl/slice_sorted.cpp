@@ -7,6 +7,7 @@
 // obtain one at http://mozilla.org/MPL/2.0/.
 #include "slice_sorted.h"
 
+#include <cassert>
 #include <vector>
 
 // TODO: Write a version that works for row-major sparse matrices as well.

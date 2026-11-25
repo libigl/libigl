@@ -9,6 +9,8 @@
 
 #include "list_to_matrix.h"
 #include <vector>
+#include <cassert>
+
 template <typename DerivedV, typename DerivedF, typename DerivedX>
 IGL_INLINE void igl::flipped_triangles(
   const Eigen::MatrixBase<DerivedV> & V,

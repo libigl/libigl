@@ -15,6 +15,7 @@
 #include "speye.h"
 #include "sum.h"
 #include <Eigen/Sparse>
+#include <cassert>
 
 template <
   typename DerivedV,

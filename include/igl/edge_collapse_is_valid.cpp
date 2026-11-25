@@ -11,6 +11,7 @@
 #include "intersect.h"
 #include "unique.h"
 #include "list_to_matrix.h"
+#include <cassert>
 #include <vector>
 
 template <

@@ -8,7 +8,9 @@
 #ifndef IGL_QSLIM_H
 #define IGL_QSLIM_H
 #include "igl_inline.h"
+#include "decimate_callback_types.h"
 #include <Eigen/Core>
+#include <vector>
 namespace igl
 {
   /// Decimate (simplify) a triangle mesh in nD according to the paper
@@ -34,6 +36,28 @@ namespace igl
     const Eigen::MatrixXi & F,
     const int max_m,
     const bool block_intersections,
+    Eigen::MatrixXd & U,
+    Eigen::MatrixXi & G,
+    Eigen::VectorXi & J,
+    Eigen::VectorXi & I);
+
+  /// \overload
+  ///
+  /// \brief Decimate with quadric error metrics while applying a list of
+  /// user-supplied callback decorators (e.g., igl::block_self_intersections,
+  /// igl::block_intersections_with_input, or a custom decorator). Each decorator
+  /// wraps the result of the previous, so they are cascaded in order.
+  ///
+  /// @param[in] decorators  list of pre/post-collapse callback decorators to
+  ///   cascade (may be empty)
+  ///
+  /// \see block_self_intersections, block_intersections_with_input,
+  ///   decimate_pre_post_collapse_callbacks_decorator
+  IGL_INLINE bool qslim(
+    const Eigen::MatrixXd & V,
+    const Eigen::MatrixXi & F,
+    const int max_m,
+    const std::vector<decimate_pre_post_collapse_callbacks_decorator> & decorators,
     Eigen::MatrixXd & U,
     Eigen::MatrixXi & G,
     Eigen::VectorXi & J,

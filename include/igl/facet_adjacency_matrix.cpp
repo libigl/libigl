@@ -8,6 +8,8 @@
 #include "facet_adjacency_matrix.h"
 #include "unique_edge_map.h"
 
+#include <cassert>
+
 template <typename DerivedF, typename Atype>
 IGL_INLINE void igl::facet_adjacency_matrix(
   const Eigen::MatrixBase<DerivedF> & F, Eigen::SparseMatrix<Atype> & A)

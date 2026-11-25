@@ -1,5 +1,6 @@
 #include "ray_triangle_intersect.h"
 #include <Eigen/Geometry>
+#include <cassert>
 #include <type_traits>
 
 namespace

@@ -10,6 +10,7 @@
 #include "squared_edge_lengths.h"
 #include "parallel_for.h"
 #include "get_seconds.h"
+#include <cmath>
 
 template <typename DerivedV, typename DerivedF, typename DerivedK>
 IGL_INLINE void igl::internal_angles(
@@ -26,7 +27,9 @@ IGL_INLINE void igl::internal_angles(
   {
     auto v1 = x-y;
     auto v2 = z-y;
-    return Scalar(2) * atan((v1/v1.norm() - v2/v2.norm()).norm() / (v1/v1.norm() + v2/v2.norm()).norm());
+    return Scalar(2) * std::atan(
+      (v1/v1.norm() - v2/v2.norm()).norm() /
+      (v1/v1.norm() + v2/v2.norm()).norm());
   };
   for(int i=0; i<F.rows(); ++i)
   {

@@ -10,6 +10,9 @@
 #include "doublearea.h"
 #include "project_to_line_segment.h"
 #include <cassert>
+#include <cmath>
+#include <type_traits>
+#include <limits>
 template <
   typename DerivedV,
   typename DerivedF,
@@ -59,18 +62,18 @@ IGL_INLINE void igl::pseudonormal_test(
   const RowVector3S B = V.row(F(f,1));
   const RowVector3S C = V.row(F(f,2));
 
-  const double area = [&A,&B,&C]()
+  const Scalar area = [&A,&B,&C]()
   {
-    Eigen::Matrix<double,1,1> area;
+    Eigen::Matrix<Scalar,1,1> area;
     doublearea(A,B,C,area);
     return area(0);
   }();
-  // These were chosen arbitrarily. In a floating point scenario, I'm not sure
-  // the best way to determine if c is on a vertex/edge or in the middle of the
-  // face: specifically, I'm worrying about degenerate triangles where
-  // barycentric coordinates are error-prone.
-  const double MIN_DOUBLE_AREA = 1e-4;
-  const double epsilon = 1e-12;
+  // Use barycentric coordinates above this area threshold and coordinate
+  // distances below it. The empirically chosen feature tolerances therefore
+  // have different units in the two branches and are scale dependent.
+  const Scalar MIN_DOUBLE_AREA = Scalar(1e-4);
+  const Scalar epsilon = std::is_same<Scalar,float>::value ? Scalar(3e-3) :
+    (std::is_same<Scalar,double>::value ? Scalar(1e-9) : Scalar(1e-12));
   if(area>MIN_DOUBLE_AREA)
   {
     barycentric_coordinates( c,A,B,C,b);
@@ -123,10 +126,10 @@ IGL_INLINE void igl::pseudonormal_test(
     {
       const RowVector3S s = V.row(F(f,(e+1)%3));
       const RowVector3S d = V.row(F(f,(e+2)%3));
-      Eigen::Matrix<double,1,1> sqr_d_j_x(1,1);
-      Eigen::Matrix<double,1,1> t(1,1);
+      Eigen::Matrix<Scalar,1,1> sqr_d_j_x(1,1);
+      Eigen::Matrix<Scalar,1,1> t(1,1);
       project_to_line_segment(c,s,d,t,sqr_d_j_x);
-      if(sqrt(sqr_d_j_x(0)) < epsilon)
+      if(std::sqrt(sqr_d_j_x(0)) < epsilon)
       {
         n = EN.row(EMAP(F.rows()*e+f));
         found = true;
@@ -138,7 +141,61 @@ IGL_INLINE void igl::pseudonormal_test(
       n = FN.row(f);
     }
   }
-  s = (qc.dot(n) >= 0 ? 1. : -1.);
+  s = (qc.dot(n) >= Scalar(0) ? Scalar(1) : Scalar(-1));
+}
+
+template <
+  typename DerivedV, typename DerivedF, typename DerivedFN,
+  typename DerivedVN, typename DerivedEN, typename DerivedEMAP,
+  typename Derivedq, typename Derivedc, typename Derivedb,
+  typename Scalar, typename Derivedn>
+IGL_INLINE void igl::pseudonormal_test(
+  const Eigen::MatrixBase<DerivedV> & /*V*/,
+  const Eigen::MatrixBase<DerivedF> & F,
+  const Eigen::MatrixBase<DerivedFN> & FN,
+  const Eigen::MatrixBase<DerivedVN> & VN,
+  const Eigen::MatrixBase<DerivedEN> & EN,
+  const Eigen::MatrixBase<DerivedEMAP> & EMAP,
+  const Eigen::MatrixBase<Derivedq> & q,
+  const int f,
+  const Eigen::MatrixBase<Derivedc> & c,
+  const Eigen::MatrixBase<Derivedb> & b,
+  Scalar & s,
+  Eigen::PlainObjectBase<Derivedn> & n)
+{
+  assert(b.size() == 3);
+  assert(b.allFinite() && (b.array() >= Scalar(0)).all());
+  if(!b.allFinite() || (b.array() < Scalar(0)).any())
+  {
+    n.setConstant(std::numeric_limits<Scalar>::quiet_NaN());
+    s = std::numeric_limits<Scalar>::quiet_NaN();
+    return;
+  }
+  const int positive = (b.array() > Scalar(0)).template cast<int>().sum();
+  switch(positive)
+  {
+    case 1:
+      for(int x=0;x<3;++x)
+      {
+        if(b(x) > Scalar(0)) { n = VN.row(F(f,x)); break; }
+      }
+      break;
+    case 2:
+      for(int x=0;x<3;++x)
+      {
+        if(b(x) == Scalar(0)) { n = EN.row(EMAP(F.rows()*x+f)); break; }
+      }
+      break;
+    case 3:
+      n = FN.row(f);
+      break;
+    default:
+      assert(false && "Closest-point barycentric coordinates must have positive support");
+      n.setConstant(std::numeric_limits<Scalar>::quiet_NaN());
+      s = std::numeric_limits<Scalar>::quiet_NaN();
+      return;
+  }
+  s = ((q-c).dot(n) >= Scalar(0) ? Scalar(1) : Scalar(-1));
 }
 
 template <
@@ -174,7 +231,7 @@ IGL_INLINE void igl::pseudonormal_test(
       Derivedn::ColsAtCompileTime*Derivedn::RowsAtCompileTime == 2 || 
       Derivedn::ColsAtCompileTime*Derivedn::RowsAtCompileTime == Eigen::Dynamic,"q must be size 2 or Dynamic");
   const auto & qc = q-c;
-  const double len = (V.row(E(e,1))-V.row(E(e,0))).norm();
+  const Scalar len = (V.row(E(e,1))-V.row(E(e,0))).norm();
   // barycentric coordinates
   // this .head() nonsense is for "ridiculus" templates instantiations that AABB
   // needs to compile
@@ -182,7 +239,7 @@ IGL_INLINE void igl::pseudonormal_test(
     b((c-V.row(E(e,1))).norm()/len,(c-V.row(E(e,0))).norm()/len);
     //b((c-V.row(E(e,1)).head(c.size())).norm()/len,(c-V.row(E(e,0)).head(c.size())).norm()/len);
   // Determine which normal to use
-  const double epsilon = 1e-12;
+  const Scalar epsilon = Scalar(1e-12);
   const int type = (b.array()<=epsilon).template cast<int>().sum();
   switch(type)
   {
@@ -203,7 +260,7 @@ IGL_INLINE void igl::pseudonormal_test(
       n = EN.row(e).head(2);
       break;
   }
-  s = (qc.dot(n) >= 0 ? 1. : -1.);
+  s = (qc.dot(n) >= Scalar(0) ? Scalar(1) : Scalar(-1));
 }
 
 #ifdef IGL_STATIC_LIBRARY
@@ -227,4 +284,16 @@ template void igl::pseudonormal_test<Eigen::Matrix<double, -1, -1, 0, -1, -1>, E
 template void igl::pseudonormal_test<Eigen::Matrix<float, -1, 3, 1, -1, 3>, Eigen::Matrix<int, -1, 3, 1, -1, 3>, Eigen::Matrix<float, -1, 3, 0, -1, 3>, Eigen::Matrix<float, -1, 3, 0, -1, 3>, Eigen::Matrix<float, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<float, 1, 3, 1, 1, 3>, Eigen::Matrix<float, 1, 3, 1, 1, 3>, float, Eigen::Matrix<float, 1, 3, 1, 1, 3> >(Eigen::MatrixBase<Eigen::Matrix<float, -1, 3, 1, -1, 3> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 3, 1, -1, 3> > const&, Eigen::MatrixBase<Eigen::Matrix<float, -1, 3, 0, -1, 3> > const&, Eigen::MatrixBase<Eigen::Matrix<float, -1, 3, 0, -1, 3> > const&, Eigen::MatrixBase<Eigen::Matrix<float, -1, 3, 0, -1, 3> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, Eigen::MatrixBase<Eigen::Matrix<float, 1, 3, 1, 1, 3> > const&, int, Eigen::PlainObjectBase<Eigen::Matrix<float, 1, 3, 1, 1, 3> >&, float&, Eigen::PlainObjectBase<Eigen::Matrix<float, 1, 3, 1, 1, 3> >&);
 template void igl::pseudonormal_test<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<double, 1, 3, 1, 1, 3>, Eigen::Matrix<double, 1, 3, 1, 1, 3>, double, Eigen::Matrix<double, 1, 3, 1, 1, 3> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, Eigen::MatrixBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > const&, int, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> >&, double&, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> >&);
 template void igl::pseudonormal_test<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<double, 1, 3, 1, 1, 3>, Eigen::Matrix<double, 1, 3, 1, 1, 3>, double, Eigen::Matrix<double, 1, 3, 1, 1, 3> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, 3, 0, -1, 3> > const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, Eigen::MatrixBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> > const&, int, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> >&, double&, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3> >&);
+// Barycentric closest-feature overloads.
+template void igl::pseudonormal_test<Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<double, 1, 3, 1, 1, 3>, Eigen::Matrix<double, 1, 3, 1, 1, 3>, Eigen::Matrix<double, 1, 3, 1, 1, 3>, double, Eigen::Matrix<double, 1, 3, 1, 1, 3> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, 3, 0, -1, 3>> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 3, 0, -1, 3>> const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, 3, 0, -1, 3>> const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, 3, 0, -1, 3>> const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, 3, 0, -1, 3>> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1>> const&, Eigen::MatrixBase<Eigen::Matrix<double, 1, 3, 1, 1, 3>> const&, int, Eigen::MatrixBase<Eigen::Matrix<double, 1, 3, 1, 1, 3>> const&, Eigen::MatrixBase<Eigen::Matrix<double, 1, 3, 1, 1, 3>> const&, double&, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3>>&);
+template void igl::pseudonormal_test<Eigen::Matrix<float, -1, 3, 1, -1, 3>, Eigen::Matrix<int, -1, 3, 1, -1, 3>, Eigen::Matrix<float, -1, -1, 0, -1, -1>, Eigen::Matrix<float, -1, -1, 0, -1, -1>, Eigen::Matrix<float, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<float, 1, 3, 1, 1, 3>, Eigen::Matrix<float, 1, 3, 1, 1, 3>, Eigen::Matrix<float, 1, 3, 1, 1, 3>, float, Eigen::Matrix<float, 1, 3, 1, 1, 3> >(Eigen::MatrixBase<Eigen::Matrix<float, -1, 3, 1, -1, 3>> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 3, 1, -1, 3>> const&, Eigen::MatrixBase<Eigen::Matrix<float, -1, -1, 0, -1, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<float, -1, -1, 0, -1, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<float, -1, -1, 0, -1, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1>> const&, Eigen::MatrixBase<Eigen::Matrix<float, 1, 3, 1, 1, 3>> const&, int, Eigen::MatrixBase<Eigen::Matrix<float, 1, 3, 1, 1, 3>> const&, Eigen::MatrixBase<Eigen::Matrix<float, 1, 3, 1, 1, 3>> const&, float&, Eigen::PlainObjectBase<Eigen::Matrix<float, 1, 3, 1, 1, 3>>&);
+template void igl::pseudonormal_test<Eigen::Matrix<float, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<float, -1, -1, 0, -1, -1>, Eigen::Matrix<float, -1, -1, 0, -1, -1>, Eigen::Matrix<float, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<float, 1, 3, 1, 1, 3>, Eigen::Matrix<float, 1, 3, 1, 1, 3>, Eigen::Matrix<float, 1, 3, 1, 1, 3>, float, Eigen::Matrix<float, 1, 3, 1, 1, 3> >(Eigen::MatrixBase<Eigen::Matrix<float, -1, 3, 0, -1, 3>> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 3, 0, -1, 3>> const&, Eigen::MatrixBase<Eigen::Matrix<float, -1, -1, 0, -1, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<float, -1, -1, 0, -1, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<float, -1, -1, 0, -1, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1>> const&, Eigen::MatrixBase<Eigen::Matrix<float, 1, 3, 1, 1, 3>> const&, int, Eigen::MatrixBase<Eigen::Matrix<float, 1, 3, 1, 1, 3>> const&, Eigen::MatrixBase<Eigen::Matrix<float, 1, 3, 1, 1, 3>> const&, float&, Eigen::PlainObjectBase<Eigen::Matrix<float, 1, 3, 1, 1, 3>>&);
+template void igl::pseudonormal_test<Eigen::Matrix<double, -1, 3, 1, -1, 3>, Eigen::Matrix<int, -1, 3, 1, -1, 3>, Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<double, 1, 3, 1, 1, 3>, Eigen::Matrix<double, 1, 3, 1, 1, 3>, Eigen::Matrix<double, 1, 3, 1, 1, 3>, double, Eigen::Matrix<double, 1, 3, 1, 1, 3> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, 3, 1, -1, 3>> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 3, 1, -1, 3>> const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, 3, 0, -1, 3>> const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, 3, 0, -1, 3>> const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, 3, 0, -1, 3>> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1>> const&, Eigen::MatrixBase<Eigen::Matrix<double, 1, 3, 1, 1, 3>> const&, int, Eigen::MatrixBase<Eigen::Matrix<double, 1, 3, 1, 1, 3>> const&, Eigen::MatrixBase<Eigen::Matrix<double, 1, 3, 1, 1, 3>> const&, double&, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3>>&);
+template void igl::pseudonormal_test<Eigen::Matrix<float, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 3, 0, -1, 3>, Eigen::Matrix<float, -1, 3, 0, -1, 3>, Eigen::Matrix<float, -1, 3, 0, -1, 3>, Eigen::Matrix<float, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<float, 1, 3, 1, 1, 3>, Eigen::Matrix<float, 1, 3, 1, 1, 3>, Eigen::Matrix<float, 1, 3, 1, 1, 3>, float, Eigen::Matrix<float, 1, 3, 1, 1, 3> >(Eigen::MatrixBase<Eigen::Matrix<float, -1, 3, 0, -1, 3>> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 3, 0, -1, 3>> const&, Eigen::MatrixBase<Eigen::Matrix<float, -1, 3, 0, -1, 3>> const&, Eigen::MatrixBase<Eigen::Matrix<float, -1, 3, 0, -1, 3>> const&, Eigen::MatrixBase<Eigen::Matrix<float, -1, 3, 0, -1, 3>> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1>> const&, Eigen::MatrixBase<Eigen::Matrix<float, 1, 3, 1, 1, 3>> const&, int, Eigen::MatrixBase<Eigen::Matrix<float, 1, 3, 1, 1, 3>> const&, Eigen::MatrixBase<Eigen::Matrix<float, 1, 3, 1, 1, 3>> const&, float&, Eigen::PlainObjectBase<Eigen::Matrix<float, 1, 3, 1, 1, 3>>&);
+template void igl::pseudonormal_test<Eigen::Matrix<float, -1, 3, 1, -1, 3>, Eigen::Matrix<int, -1, 3, 1, -1, 3>, Eigen::Matrix<float, -1, 3, 0, -1, 3>, Eigen::Matrix<float, -1, 3, 0, -1, 3>, Eigen::Matrix<float, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<float, 1, 3, 1, 1, 3>, Eigen::Matrix<float, 1, -1, 1, 1, -1>, Eigen::Matrix<float, 1, 3, 1, 1, 3>, float, Eigen::Matrix<float, 1, 3, 1, 1, 3> >(Eigen::MatrixBase<Eigen::Matrix<float, -1, 3, 1, -1, 3>> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 3, 1, -1, 3>> const&, Eigen::MatrixBase<Eigen::Matrix<float, -1, 3, 0, -1, 3>> const&, Eigen::MatrixBase<Eigen::Matrix<float, -1, 3, 0, -1, 3>> const&, Eigen::MatrixBase<Eigen::Matrix<float, -1, 3, 0, -1, 3>> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1>> const&, Eigen::MatrixBase<Eigen::Matrix<float, 1, 3, 1, 1, 3>> const&, int, Eigen::MatrixBase<Eigen::Matrix<float, 1, -1, 1, 1, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<float, 1, 3, 1, 1, 3>> const&, float&, Eigen::PlainObjectBase<Eigen::Matrix<float, 1, 3, 1, 1, 3>>&);
+template void igl::pseudonormal_test<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<double, 1, 3, 1, 1, 3>, Eigen::Matrix<double, 1, -1, 1, 1, -1>, Eigen::Matrix<double, 1, 3, 1, 1, 3>, double, Eigen::Matrix<double, 1, 3, 1, 1, 3> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, 3, 0, -1, 3>> const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, 3, 0, -1, 3>> const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, 3, 0, -1, 3>> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1>> const&, Eigen::MatrixBase<Eigen::Matrix<double, 1, 3, 1, 1, 3>> const&, int, Eigen::MatrixBase<Eigen::Matrix<double, 1, -1, 1, 1, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<double, 1, 3, 1, 1, 3>> const&, double&, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3>>&);
+template void igl::pseudonormal_test<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false>, Eigen::Matrix<double, 1, 3, 1, 1, 3>, Eigen::Matrix<double, 1, 3, 1, 1, 3>, double, Eigen::Matrix<double, 1, 3, 1, 1, 3> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, 3, 0, -1, 3>> const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, 3, 0, -1, 3>> const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, 3, 0, -1, 3>> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1>> const&, Eigen::MatrixBase<Eigen::Block<Eigen::Matrix<double, -1, -1, 0, -1, -1>, 1, -1, false>> const&, int, Eigen::MatrixBase<Eigen::Matrix<double, 1, 3, 1, 1, 3>> const&, Eigen::MatrixBase<Eigen::Matrix<double, 1, 3, 1, 1, 3>> const&, double&, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3>>&);
+template void igl::pseudonormal_test<Eigen::Matrix<float, -1, 3, 1, -1, 3>, Eigen::Matrix<int, -1, 3, 1, -1, 3>, Eigen::Matrix<float, -1, 3, 0, -1, 3>, Eigen::Matrix<float, -1, 3, 0, -1, 3>, Eigen::Matrix<float, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<float, 1, 3, 1, 1, 3>, Eigen::Matrix<float, 1, 3, 1, 1, 3>, Eigen::Matrix<float, 1, 3, 1, 1, 3>, float, Eigen::Matrix<float, 1, 3, 1, 1, 3> >(Eigen::MatrixBase<Eigen::Matrix<float, -1, 3, 1, -1, 3>> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 3, 1, -1, 3>> const&, Eigen::MatrixBase<Eigen::Matrix<float, -1, 3, 0, -1, 3>> const&, Eigen::MatrixBase<Eigen::Matrix<float, -1, 3, 0, -1, 3>> const&, Eigen::MatrixBase<Eigen::Matrix<float, -1, 3, 0, -1, 3>> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1>> const&, Eigen::MatrixBase<Eigen::Matrix<float, 1, 3, 1, 1, 3>> const&, int, Eigen::MatrixBase<Eigen::Matrix<float, 1, 3, 1, 1, 3>> const&, Eigen::MatrixBase<Eigen::Matrix<float, 1, 3, 1, 1, 3>> const&, float&, Eigen::PlainObjectBase<Eigen::Matrix<float, 1, 3, 1, 1, 3>>&);
+template void igl::pseudonormal_test<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<double, 1, 3, 1, 1, 3>, Eigen::Matrix<double, 1, 3, 1, 1, 3>, Eigen::Matrix<double, 1, 3, 1, 1, 3>, double, Eigen::Matrix<double, 1, 3, 1, 1, 3> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1>> const&, Eigen::MatrixBase<Eigen::Matrix<double, 1, 3, 1, 1, 3>> const&, int, Eigen::MatrixBase<Eigen::Matrix<double, 1, 3, 1, 1, 3>> const&, Eigen::MatrixBase<Eigen::Matrix<double, 1, 3, 1, 1, 3>> const&, double&, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3>>&);
+template void igl::pseudonormal_test<Eigen::Matrix<double, -1, -1, 0, -1, -1>, Eigen::Matrix<int, -1, -1, 0, -1, -1>, Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<double, -1, 3, 0, -1, 3>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<double, 1, 3, 1, 1, 3>, Eigen::Matrix<double, 1, 3, 1, 1, 3>, Eigen::Matrix<double, 1, 3, 1, 1, 3>, double, Eigen::Matrix<double, 1, 3, 1, 1, 3> >(Eigen::MatrixBase<Eigen::Matrix<double, -1, -1, 0, -1, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, -1, 0, -1, -1>> const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, 3, 0, -1, 3>> const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, 3, 0, -1, 3>> const&, Eigen::MatrixBase<Eigen::Matrix<double, -1, 3, 0, -1, 3>> const&, Eigen::MatrixBase<Eigen::Matrix<int, -1, 1, 0, -1, 1>> const&, Eigen::MatrixBase<Eigen::Matrix<double, 1, 3, 1, 1, 3>> const&, int, Eigen::MatrixBase<Eigen::Matrix<double, 1, 3, 1, 1, 3>> const&, Eigen::MatrixBase<Eigen::Matrix<double, 1, 3, 1, 1, 3>> const&, double&, Eigen::PlainObjectBase<Eigen::Matrix<double, 1, 3, 1, 1, 3>>&);
 #endif
