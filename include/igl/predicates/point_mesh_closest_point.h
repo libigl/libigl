@@ -25,6 +25,8 @@ namespace igl { namespace predicates {
   /// Uses one traversal of the supplied Eytzinger tree. Equal distances choose
   /// the lowest triangle id. Degenerate triangles are supported; feature ids
   /// follow exact_point_triangle_closest_feature (edge i joins i to (i+1)%3).
+  /// Inside/outside classification and signed-distance wrappers additionally
+  /// require nondegenerate faces, even though this unsigned search supports them.
   /// The feature is selected using exact predicates on the original inputs;
   /// numerical construction never reclassifies that feature.
   ///

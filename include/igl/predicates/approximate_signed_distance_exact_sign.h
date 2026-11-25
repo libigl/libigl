@@ -44,7 +44,9 @@ namespace igl { namespace predicates {
 
   /// Uncached overload. Reuse array triangle_triangle_adjacency outputs TT,TTi
   /// instead of an exposure cache; evaluate local edge/vertex signs per query.
-  /// All mesh, numerical and output contracts of the cached overload apply.
+  /// Requires nondegenerate faces, as well as the cached overload's other mesh,
+  /// numerical and output contracts. Degenerate incident faces encountered at
+  /// a zero fold throw std::invalid_argument; this is not a full mesh validation.
   /// @param[in] TT,TTi  #F by 3 neighboring faces and corresponding edge ids
   template<typename DerivedQ,typename DerivedV,typename DerivedF,
     typename DerivedB,typename DerivedL,typename DerivedTT,typename DerivedTTi>

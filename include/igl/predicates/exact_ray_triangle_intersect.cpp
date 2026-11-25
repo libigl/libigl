@@ -21,24 +21,10 @@ IGL_INLINE igl::predicates::RayTriangleIntersection igl::predicates::exact_ray_t
   const Eigen::MatrixBase<DerivedA> & B,
   const Eigen::MatrixBase<DerivedA> & C)
 {
-  static_assert(
-    std::is_same<typename DerivedA::Scalar, double>::value ||
-    std::is_same<typename DerivedA::Scalar, float>::value,
-    "exact_ray_triangle_intersect requires float or double coordinates");
-  static_assert(
-    (std::is_same<typename DerivedS::Scalar, double>::value ||
-     std::is_same<typename DerivedS::Scalar, float>::value) &&
-    (std::is_same<typename DerivedD::Scalar, double>::value ||
-     std::is_same<typename DerivedD::Scalar, float>::value),
-    "Exact ray predicates require float or double ray coordinates");
   igl::predicates::exactinit();
-  namespace k = igl::predicates::exact_ray_triangle_kernel;
-  const double O[3]  = {(double)source(0),(double)source(1),(double)source(2)};
-  const double dd[3] = {(double)dir(0),(double)dir(1),(double)dir(2)};
-  const double a[3]  = {(double)A(0),(double)A(1),(double)A(2)};
-  const double b[3]  = {(double)B(0),(double)B(1),(double)B(2)};
-  const double c[3]  = {(double)C(0),(double)C(1),(double)C(2)};
-  return static_cast<igl::predicates::RayTriangleIntersection>(k::classify(O, dd, a, b, c));
+  namespace k = igl::predicates::exact_point_triangle_kernel;
+  namespace r = igl::predicates::exact_ray_triangle_kernel;
+  return static_cast<igl::predicates::RayTriangleIntersection>(r::classify(k::point(source),k::point(dir),k::point(A),k::point(B),k::point(C)));
 }
 
 #ifdef IGL_STATIC_LIBRARY

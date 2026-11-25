@@ -2,6 +2,8 @@
 #include <igl/predicates/approximate_signed_distance_exact_sign.h>
 #include <igl/predicates/exact_point_triangle_closest_feature.h>
 #include <igl/predicates/exact_point_triangle_squared_distance_compare.h>
+#include <igl/predicates/exact_ray_triangle_intersect.h>
+#include <igl/predicates/exact_ray_triangle_hit_compare.h>
 #include <exception>
 #include <stdexcept>
 #ifdef _WIN32
@@ -28,6 +30,11 @@ void check_small_stack_queries()
   // Cancellation forces exact comparison; coincident faces force an exact tie.
   check(p::exact_point_triangle_squared_distance_compare(far,a,b,c,offset,second_b,second_c)==1);
   check(p::exact_point_triangle_squared_distance_compare(q,a,b,c,c,b,a)==0);
+  const Point origin(0,0,0),direction(0,0,1),ra(0,0,1),rb(1,1+epsilon,1),rc(1-epsilon,1,1),
+    sa(0,0,2),sb(1,1+epsilon,2),sc(1-epsilon,1,2);
+  check(p::exact_ray_triangle_intersect(origin,direction,ra,rb,rc)==p::RayTriangleIntersection::Hit);
+  check(p::exact_ray_triangle_hit_compare(origin,direction,ra,rb,rc,sa,sb,sc)==-1);
+  check(p::exact_ray_triangle_hit_compare(origin,direction,ra,rb,rc,rc,rb,ra)==0);
   int id;
   check(p::exact_point_triangle_closest_feature(Point(.5,-.5,0),a,Point(1,1,0),Point(0,0,1),id)
     ==p::ClosestPointFeature::VERTEX && id==0);

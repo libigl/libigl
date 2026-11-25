@@ -25,8 +25,7 @@ IGL_INLINE void igl::predicates::exact_mesh_feature_exposure(
   {
     const auto a=m::corner(V,F,face,0),b=m::corner(V,F,face,1),c=m::corner(V,F,face,2);
     // Reject degenerate faces before using a fold or a tangent plane.
-    const auto normal=k::cross(k::difference<k::Expansion>(b,a),k::difference<k::Expansion>(c,a));
-    if(k::sign(normal[0])==0 && k::sign(normal[1])==0 && k::sign(normal[2])==0)
+    if(k::degenerate(a,b,c))
       throw std::invalid_argument("Feature exposure requires nondegenerate faces");
     for(int i=0;i<3;++i)
     {

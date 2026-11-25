@@ -57,10 +57,16 @@ namespace igl { namespace predicates { namespace exact_point_mesh_kernel
     const V &vertices,const F &faces,const TT &neighbors,const TTi &neighbor_edges,Corner edge)
   {
     const Corner other=adjacent(faces,neighbors,neighbor_edges,edge);
-    return k::orientation(corner(vertices,faces,edge.face,edge.corner),
-      corner(vertices,faces,edge.face,(edge.corner+1)%3),
-      corner(vertices,faces,edge.face,(edge.corner+2)%3),
-      corner(vertices,faces,other.face,(other.corner+2)%3));
+    const auto a=corner(vertices,faces,edge.face,edge.corner),
+      b=corner(vertices,faces,edge.face,(edge.corner+1)%3),
+      c=corner(vertices,faces,edge.face,(edge.corner+2)%3),
+      d=corner(vertices,faces,other.face,(other.corner+2)%3);
+    const int label=k::orientation(a,b,c,d);
+    // A zero fold can also mean a degenerate incident face. Only this branch
+    // needs area checks before interpreting the fold as a flat surface.
+    if(label==0 && (k::degenerate(a,b,c) || k::degenerate(a,b,d)))
+      throw std::invalid_argument("Mesh signing requires nondegenerate faces");
+    return label;
   }
   inline bool on_surface(const k::Point &q,const std::array<k::Point,3> &p,int dimension,int id)
   {
@@ -69,7 +75,10 @@ namespace igl { namespace predicates { namespace exact_point_mesh_kernel
     const int fast=k::sign(k::distance<k::Filter>(q,p,dimension,id).numerator);
     if(fast!=2) return fast==0;
     const int filtered=k::sign(k::distance<k::Interval>(q,p,dimension,id).numerator);
-    return filtered==2 ? k::sign(k::distance<k::Expansion>(q,p,dimension,id).numerator)==0 : filtered==0;
+    if(filtered!=2) return filtered==0;
+    std::array<k::Point,4> scaled{{q,p[0],p[1],p[2]}};
+    k::rescale<6>(scaled);
+    return k::sign(k::distance<k::Expansion>(scaled[0],{{scaled[1],scaled[2],scaled[3]}},dimension,id).numerator)==0;
   }
   template<typename V,typename F,typename TT,typename TTi> inline int local_location(
     const V &vertices,const F &faces,const TT &neighbors,const TTi &neighbor_edges,
@@ -94,8 +103,10 @@ namespace igl { namespace predicates { namespace exact_point_mesh_kernel
     }
     const int fold_label=fold(vertices,faces,neighbors,neighbor_edges,edge);
     if(fold_label!=0) return fold_label;
-    return -k::orientation(corner(vertices,faces,edge.face,0),
+    const int side=-k::orientation(corner(vertices,faces,edge.face,0),
       corner(vertices,faces,edge.face,1),corner(vertices,faces,edge.face,2),q);
+    if(side==0) throw std::invalid_argument("Noncoincident closest feature has no oriented side");
+    return side;
   }
   inline int cached_location(const k::Point &q,const std::array<k::Point,3> &p,
     int dimension,int id,int exposure_label)

@@ -24,27 +24,11 @@ IGL_INLINE int igl::predicates::exact_ray_triangle_hit_compare(
   const Eigen::MatrixBase<DerivedA> & B2,
   const Eigen::MatrixBase<DerivedA> & C2)
 {
-  static_assert(
-    std::is_same<typename DerivedA::Scalar, double>::value ||
-    std::is_same<typename DerivedA::Scalar, float>::value,
-    "exact_ray_triangle_hit_compare requires float or double coordinates");
-  static_assert(
-    (std::is_same<typename DerivedS::Scalar, double>::value ||
-     std::is_same<typename DerivedS::Scalar, float>::value) &&
-    (std::is_same<typename DerivedD::Scalar, double>::value ||
-     std::is_same<typename DerivedD::Scalar, float>::value),
-    "Exact ray predicates require float or double ray coordinates");
   igl::predicates::exactinit();
-  namespace k = igl::predicates::exact_ray_triangle_kernel;
-  const double O[3]  = {(double)source(0),(double)source(1),(double)source(2)};
-  const double d[3]  = {(double)dir(0),(double)dir(1),(double)dir(2)};
-  const double a1[3] = {(double)A1(0),(double)A1(1),(double)A1(2)};
-  const double b1[3] = {(double)B1(0),(double)B1(1),(double)B1(2)};
-  const double c1[3] = {(double)C1(0),(double)C1(1),(double)C1(2)};
-  const double a2[3] = {(double)A2(0),(double)A2(1),(double)A2(2)};
-  const double b2[3] = {(double)B2(0),(double)B2(1),(double)B2(2)};
-  const double c2[3] = {(double)C2(0),(double)C2(1),(double)C2(2)};
-  return k::compare(O, d, a1, b1, c1, a2, b2, c2);
+  namespace k = igl::predicates::exact_point_triangle_kernel;
+  namespace r = igl::predicates::exact_ray_triangle_kernel;
+  return r::compare(k::point(source),k::point(dir),k::point(A1),k::point(B1),k::point(C1),
+    k::point(A2),k::point(B2),k::point(C2));
 }
 
 #ifdef IGL_STATIC_LIBRARY

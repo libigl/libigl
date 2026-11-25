@@ -13,6 +13,8 @@ namespace igl { namespace predicates {
   /// Classify a query using a triangle containing a globally closest point.
   /// The mesh must be embedded, closed, vertex-manifold, consistently oriented
   /// with normals pointing out of the solid, and have nondegenerate faces.
+  /// Local zero folds reject degenerate incident faces with std::invalid_argument;
+  /// global validity remains a precondition and is not checked on every query.
   /// Cavity shells must point into cavities. The triangle may be any exact
   /// minimizer, including ties. Supplying another triangle violates the contract.
   /// Uses orient3d on open faces, the adjacent fold on open edges, and the fold

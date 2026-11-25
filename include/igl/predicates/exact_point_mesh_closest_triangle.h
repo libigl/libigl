@@ -13,10 +13,16 @@ namespace igl { namespace predicates {
   /// contain every face exactly once. Use igl::eytzinger_aabb to build it.
   /// Pruning uses outward-rounded distance bounds; leaf comparisons are exact.
   /// Degenerate triangles are supported. Equal distances choose the lowest id.
+  /// Inside/outside classification and signed-distance wrappers additionally
+  /// require nondegenerate faces, even though this unsigned search supports them.
   /// Inputs must be finite float or double coordinates. Link igl::predicates
-  /// with its double backend. Correctness assumes round-to-nearest without
-  /// reassociation, contraction, or intermediate overflow/underflow, as for
-  /// Shewchuk's predicates. No expansion survives the call.
+  /// with its double backend. Correctness assumes round-to-nearest with gradual
+  /// underflow, without reassociation or contraction. Exact refinement rescales
+  /// coordinates by a common power of two and throws std::range_error if their
+  /// exponent span cannot fit safely. A sufficient range for the entire point
+  /// predicate family is: after rescaling, every nonzero coordinate's lowest
+  /// set bit is at least 2^-100 and its magnitude is less than 2^91. Predicates
+  /// of lower degree can refine wider spans. No expansion survives the call.
   /// @param[in] query  Query 3-vector
   /// @param[in] V,F  #V by 3 coordinates and #F by 3 triangle vertex indices
   /// @param[in] B1,B2,leaf  Eytzinger boxes and leaf ids (-1 internal, -2 empty)

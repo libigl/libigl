@@ -196,7 +196,10 @@ TEST_CASE("predicates::exact_point_triangle: fused_distance_certificates","[igl]
       REQUIRE(k::sign(k::Expansion(upper)*exact.denominator-exact.numerator)>=0);
     }
     auto other=p;
-    other[iteration%3][iteration%3]=std::nextafter(other[iteration%3][iteration%3],1.0);
+    double &perturbed=other[iteration%3][iteration%3];
+    // nextafter(0,1) spans more than 1000 exponents relative to these meshes;
+    // range rejection has its own test. Keep this certificate oracle in range.
+    perturbed=perturbed==0 ? std::ldexp(1.,(iteration%7-3)*20-52) : std::nextafter(perturbed,1.0);
     int other_id;
     k::Fraction<k::Filter> other_distance;
     int other_dimension=k::filtered_feature_distance(q,other,other_id,other_distance);
@@ -246,4 +249,47 @@ TEST_CASE("predicates::exact_point_triangle: distance_bound_refinement","[igl][p
   REQUIRE_FALSE(k::distance_upper_bound({k::Filter(tiny),k::Filter(1)},upper));
   REQUIRE_FALSE(k::distance_upper_bound({k::Filter(1),k::Filter(tiny)},upper));
   REQUIRE_FALSE(k::distance_upper_bound({k::Filter(std::numeric_limits<double>::infinity()),k::Filter(1)},upper));
+}
+
+TEST_CASE("predicates::exact_point_triangle: rescale_expansion_ties", "[igl][predicates]")
+{
+  namespace p=igl::predicates;
+  const Point q(.0079102904640018235,-.39932183933392218,1.6866102000607417),
+    a(-.48172845899923411,.3139446338798757,2.4651164674500633e-21),
+    b(.87900262097467774,3.345215376473156e-21,-.18960187611408252),
+    c(4.7334892242036771e-21,1.369257839175102,.56347102378932501);
+  const Point aa(-.6317723228792238,.94272795638206652,-7.1722102170357587e-21),
+    bb(.55475671348627009,8.0142140518424668e-21,-.95228725342804554),
+    cc(4.8155278767464747e-21,-.90768105542844058,-.19858355535130057),zero(0,0,0);
+  for(int exponent:{-400,0,400})
+  {
+    const double scale=std::ldexp(1.,exponent);
+    const Point query=q*scale,x=a*scale,y=b*scale,z=c*scale;
+    REQUIRE(p::exact_point_triangle_squared_distance_compare(query,x,y,z,z,y,x)==0);
+    const Point first=aa*scale,second=bb*scale,third=cc*scale,
+      opposite_first=-first,opposite_second=-second,opposite_third=-third;
+    REQUIRE(p::exact_point_triangle_squared_distance_compare(zero,first,second,third,
+      opposite_third,opposite_second,opposite_first)==0);
+  }
+  const Point x(1,0,0),y(0,1,0),z(std::ldexp(1.,-1070),0,1);
+  REQUIRE_THROWS_AS(p::exact_point_triangle_squared_distance_compare(zero,x,y,z,z,y,x),std::range_error);
+}
+
+TEST_CASE("predicates::exact_point_triangle: filter_range_guard", "[igl][predicates]")
+{
+  namespace k=igl::predicates::exact_point_triangle_kernel;
+  k::Point q{{.25,.25,1}};
+  std::array<k::Point,3> triangle{{{{0,0,0}},{{1,0,0}},{{0,1,0}}}};
+  REQUIRE(k::normal_filter_range(q,triangle));
+  k::Fraction<k::Filter> fraction;
+  int id;
+  REQUIRE(k::filtered_feature_distance(q,triangle,id,fraction)==2);
+  REQUIRE(fraction.numerator.value==1);
+  for(auto &p:triangle) for(double &x:p) x=std::ldexp(x,-200);
+  for(double &x:q) x=std::ldexp(x,-200);
+  REQUIRE_FALSE(k::normal_filter_range(q,triangle));
+  REQUIRE(k::filtered_feature_distance(q,triangle,id,fraction)==2);
+  // The guarded path must flag the underflowed degree-six numerator. An
+  // unchecked multiplication would silently return an exact-zero permanent.
+  REQUIRE_FALSE(std::isfinite(fraction.numerator.permanent));
 }

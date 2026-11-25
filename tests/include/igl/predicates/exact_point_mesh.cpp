@@ -539,3 +539,81 @@ TEST_CASE("predicates::approximate_signed_distance_exact_sign: parallel_batches"
     queries.row(9999)=samples[9999%8];
   }
 }
+
+TEST_CASE("predicates::exact_point_mesh: symmetric_solid_tie", "[igl][predicates]")
+{
+  Mesh mesh;
+  mesh.vertices.resize(6,3);
+  mesh.vertices.topRows(3)<<
+    .09346180974327023,.31748807834095416,4.0811717497108745e-21,
+    .79256025609371927,9.217454979427364e-21,-.43692309053096745,
+    -1.9375255404802405e-21,-.74414186935724669,.5525544893106793;
+  mesh.vertices.bottomRows(3)=-mesh.vertices.topRows(3);
+  mesh.faces.resize(8,3);
+  // The convex hull of three independent vectors and their negatives is a
+  // closed octahedron. Orient each of its eight faces away from its center.
+  for(int f=0;f<8;++f)
+  {
+    for(int c=0;c<3;++c) mesh.faces(f,c)=c+3*((f>>c)&1);
+    const Point a=mesh.vertices.row(mesh.faces(f,0)),b=mesh.vertices.row(mesh.faces(f,1)),
+      c=mesh.vertices.row(mesh.faces(f,2));
+    if((b-a).cross(c-a).dot(a)<0) std::swap(mesh.faces(f,1),mesh.faces(f,2));
+  }
+  mesh.prepare();
+  const Point query(0,0,0);
+  // Opposite open faces are exactly equidistant. Tiny coordinates used to
+  // lose low expansion bits and select face 7 instead of the lowest id 0.
+  REQUIRE(mesh.compare(query,0,7)==0);
+  REQUIRE(mesh.closest(query)==0);
+  REQUIRE(p::exact_point_mesh_classify(query,mesh.vertices,mesh.faces,0,
+    mesh.neighbors,mesh.neighbor_edges)==p::PointMeshLocation::INSIDE);
+  REQUIRE(p::exact_point_mesh_classify(query,mesh.vertices,mesh.faces,0,
+    mesh.exposure)==p::PointMeshLocation::INSIDE);
+}
+
+TEST_CASE("predicates::exact_point_mesh: reject_degenerate_signing_fold", "[igl][predicates]")
+{
+  for(bool degenerate_first:{false,true})
+  {
+    Mesh mesh;
+    mesh.vertices.resize(5,3); mesh.vertices<<0,0,0, 1,0,0, 0,1,0, 0,0,1, .5,0,0;
+    mesh.faces.resize(6,3); mesh.faces<<0,1,4, 0,2,1, 0,4,3, 4,1,3, 0,3,2, 1,2,3;
+    if(!degenerate_first) mesh.faces.row(0).swap(mesh.faces.row(5));
+    mesh.tree();
+    igl::triangle_triangle_adjacency(mesh.faces,mesh.neighbors,mesh.neighbor_edges);
+    REQUIRE_THROWS_AS(p::exact_mesh_feature_exposure(mesh.vertices,mesh.faces,
+      mesh.neighbors,mesh.neighbor_edges,mesh.exposure),std::invalid_argument);
+    for(const Point &query:{Point(.25,-1,0),Point(.25,-1,-1),Point(.75,-.5,-.5),Point(.3,-2,-.1)})
+    {
+      p::PointMeshClosestPoint closest;
+      p::PointMeshLocation location;
+      REQUIRE_THROWS_AS(p::approximate_signed_distance_exact_sign(query,mesh.vertices,mesh.faces,
+        mesh.lower,mesh.upper,mesh.leaves,mesh.neighbors,mesh.neighbor_edges,closest,location),std::invalid_argument);
+    }
+  }
+}
+
+TEST_CASE("predicates::point_mesh_closest_point: rescaled_construction", "[igl][predicates]")
+{
+  for(int exponent:{-800,800})
+  {
+    const double scale=std::ldexp(1.,exponent);
+    Mesh mesh;
+    mesh.vertices=Eigen::MatrixXd::Zero(3,3);
+    mesh.vertices(1,0)=scale; mesh.vertices(2,1)=scale;
+    mesh.faces.resize(1,3); mesh.faces<<0,1,2;
+    mesh.tree();
+    const Point query=Point(.25,.25,1)*scale;
+    const auto result=p::point_mesh_closest_point(query,mesh.vertices,mesh.faces,
+      mesh.lower,mesh.upper,mesh.leaves);
+    REQUIRE(result.triangle==0);
+    REQUIRE(result.feature==p::ClosestPointFeature::FACE);
+    REQUIRE(result.distance/scale==Approx(1.));
+    REQUIRE(result.closest_point(0)/scale==Approx(.25));
+    REQUIRE(result.closest_point(1)/scale==Approx(.25));
+    REQUIRE(result.closest_point(2)==0);
+    REQUIRE(result.barycentric_coordinates(0)==Approx(.5));
+    if(exponent<0) REQUIRE(result.squared_distance==0);
+    else REQUIRE(std::isinf(result.squared_distance));
+  }
+}

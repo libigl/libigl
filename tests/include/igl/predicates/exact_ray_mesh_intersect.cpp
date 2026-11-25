@@ -128,49 +128,48 @@ TEST_CASE("exact_ray_mesh_intersect: tree_matches_bruteforce", "[igl]")
     igl::eytzinger_aabb(lower,upper,B1,B2,leaf);
     for(int ray=0;ray<10;++ray)
     {
-    Eigen::Vector3d s(2*U(rng), 2*U(rng), 2*U(rng)), d(U(rng),U(rng),U(rng));
-    if(d.norm() < 1e-6){ continue; }
+      Eigen::Vector3d s(2*U(rng), 2*U(rng), 2*U(rng)), d(U(rng),U(rng),U(rng));
+      if(d.norm() < 1e-6){ continue; }
 
-    // Fixed-size rows so the leaf predicates are called with concrete types.
-    const auto R = [&](int i){ return Eigen::RowVector3d(V.row(i)); };
-    const auto tri_before = [&](int a, int b)
-    {
-      return igl::predicates::exact_ray_triangle_hit_compare(s,d,
-        R(F(a,0)),R(F(a,1)),R(F(a,2)),
-        R(F(b,0)),R(F(b,1)),R(F(b,2))) < 0;
-    };
-    std::vector<int> bf;
-    for(int f = 0; f < nf; f++)
-    {
-      if(igl::predicates::exact_ray_triangle_intersect(
-           s,d,R(F(f,0)),R(F(f,1)),R(F(f,2))) ==
-         igl::predicates::RayTriangleIntersection::Hit)
-      { bf.push_back(f); }
-    }
-    std::sort(bf.begin(), bf.end(), tri_before);
+      // Fixed-size rows so the leaf predicates are called with concrete types.
+      const auto R = [&](int i){ return Eigen::RowVector3d(V.row(i)); };
+      const auto tri_before = [&](int a, int b)
+      {
+        return igl::predicates::exact_ray_triangle_hit_compare(s,d,
+          R(F(a,0)),R(F(a,1)),R(F(a,2)),
+          R(F(b,0)),R(F(b,1)),R(F(b,2))) < 0;
+      };
+      std::vector<int> bf;
+      for(int f = 0; f < nf; f++)
+      {
+        if(igl::predicates::exact_ray_triangle_intersect(
+             s,d,R(F(f,0)),R(F(f,1)),R(F(f,2))) ==
+           igl::predicates::RayTriangleIntersection::Hit)
+        { bf.push_back(f); }
+      }
+      std::sort(bf.begin(), bf.end(), tri_before);
 
-    std::vector<int> tr;
-    igl::predicates::exact_ray_mesh_intersect_all(s,d,V,F,B1,B2,leaf,tr);
+      std::vector<int> tr;
+      igl::predicates::exact_ray_mesh_intersect_all(s,d,V,F,B1,B2,leaf,tr);
 
-    // Same set of hit faces.
-    std::vector<int> a = bf, b = tr;
-    std::sort(a.begin(),a.end()); std::sort(b.begin(),b.end());
-    REQUIRE(a == b);
+      // Same set of hit faces.
+      std::vector<int> a = bf, b = tr;
+      std::sort(a.begin(),a.end()); std::sort(b.begin(),b.end());
+      REQUIRE(a == b);
 
-    // First hit consistent (equal exact distance to brute force front).
-    int fid = -1;
-    const bool h = igl::predicates::exact_ray_mesh_intersect(s,d,V,F,B1,B2,leaf,fid);
-    REQUIRE(h == !bf.empty());
-    if(h)
-    {
-      const int c = igl::predicates::exact_ray_triangle_hit_compare(s,d,
-        R(F(fid,0)),R(F(fid,1)),R(F(fid,2)),
-        R(F(bf.front(),0)),R(F(bf.front(),1)),R(F(bf.front(),2)));
-      REQUIRE(c == 0);
+      // First hit consistent (equal exact distance to brute force front).
+      int fid = -1;
+      const bool h = igl::predicates::exact_ray_mesh_intersect(s,d,V,F,B1,B2,leaf,fid);
+      REQUIRE(h == !bf.empty());
+      if(h)
+      {
+        const int c = igl::predicates::exact_ray_triangle_hit_compare(s,d,
+          R(F(fid,0)),R(F(fid,1)),R(F(fid,2)),
+          R(F(bf.front(),0)),R(F(bf.front(),1)),R(F(bf.front(),2)));
+        REQUIRE(c == 0);
+      }
     }
   }
-}
-
 }
 
 // On a real, well-separated mesh the exact classification should agree with the

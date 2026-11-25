@@ -15,9 +15,13 @@ namespace igl { namespace predicates {
   /// Degenerate triangles are supported: prefer the first coincident vertex,
   /// otherwise the first open edge containing the closest point.
   /// Inputs must be finite float or double coordinates. Link igl::predicates
-  /// with its double backend. Correctness assumes round-to-nearest without
-  /// reassociation, contraction, or intermediate overflow/underflow, as for
-  /// Shewchuk's predicates. No expansion survives the call.
+  /// with its double backend. Correctness assumes round-to-nearest with gradual
+  /// underflow, without reassociation or contraction. Exact refinement rescales
+  /// coordinates by a common power of two and throws std::range_error if their
+  /// exponent span cannot fit safely. A sufficient range for the entire point
+  /// predicate family is: after rescaling, every nonzero coordinate's lowest
+  /// set bit is at least 2^-100 and its magnitude is less than 2^91. Predicates
+  /// of lower degree can refine wider spans. No expansion survives the call.
   /// @param[in] query,a,b,c  Query and triangle corner 3-vectors
   /// @param[out] feature_id  Local corner, edge, or face id as above
   /// @return Dimension of the feature containing the closest point

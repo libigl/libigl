@@ -2,6 +2,7 @@
 #include <igl/predicates/exact_ray_triangle_intersect.h>
 #include <igl/predicates/exact_ray_triangle_hit_compare.h>
 #include <igl/predicates/exactinit.h>
+#include <igl/predicates/exact_ray_triangle_kernel.h>
 #include <predicates.h>
 #include <array>
 #include <cstdint>
@@ -161,4 +162,36 @@ TEST_CASE("predicates::expansion: exact_capacity", "[igl][predicates]")
   const double small[1]={epsilon};
   REQUIRE(predicates_expansion_scale(1,small,epsilon,result)==1);
   REQUIRE(result[0]==epsilon*epsilon);
+}
+
+TEST_CASE("predicates::exact_ray_triangle: certified_order_filter", "[igl][predicates]")
+{
+  namespace r=igl::predicates::exact_ray_triangle_kernel;
+  namespace k=igl::predicates::exact_point_triangle_kernel;
+  igl::predicates::exactinit();
+  int certified=0,deferred=0;
+  for(int sample=0;sample<3000;++sample)
+  {
+    const double scale=std::ldexp(1.0,(sample%7-3)*30);
+    const double height=1.0+(sample%17)/32.0;
+    const double separation=sample%3==0 ? 0 : sample%3==1 ? 2 : std::ldexp(1.,-45);
+    const k::Point origin{{0,0,0}},direction{{0,0,scale}};
+    const k::Point a{{-scale,-scale,height*scale}},b{{scale,-scale,height*scale}},c{{0,scale,height*scale}};
+    const k::Point d{{-2*scale,-2*scale,(height+separation)*scale}},
+      e{{2*scale,-2*scale,(height+separation)*scale}},f{{0,2*scale,(height+separation)*scale}};
+    const auto &b1=sample%2 ? c : b,&c1=sample%2 ? b : c;
+    const auto &b2=sample%5 ? e : f,&c2=sample%5 ? f : e;
+    const int exact=r::compare<k::Expansion>(origin,direction,a,b1,c1,d,b2,c2);
+    const int filtered=r::compare<k::Filter>(origin,direction,a,b1,c1,d,b2,c2);
+    REQUIRE(exact==(separation==0 ? 0 : -1));
+    if(filtered==2) ++deferred;
+    else { ++certified; REQUIRE(filtered==exact); }
+    REQUIRE(r::compare(origin,direction,a,b1,c1,d,b2,c2)==exact);
+  }
+  REQUIRE(certified>=1000);
+  REQUIRE(deferred>=1000);
+  const Eigen::RowVector3d origin(0,0,0),direction(0,0,1),a(0,0,1),b(1,0,1),c(0,1,1);
+  Eigen::RowVector3d invalid=origin; invalid(0)=std::numeric_limits<double>::quiet_NaN();
+  REQUIRE_THROWS_AS(igl::predicates::exact_ray_triangle_intersect(invalid,direction,a,b,c),std::invalid_argument);
+  REQUIRE_THROWS_AS(igl::predicates::exact_ray_triangle_hit_compare(origin,direction,a,b,c,invalid,b,c),std::invalid_argument);
 }

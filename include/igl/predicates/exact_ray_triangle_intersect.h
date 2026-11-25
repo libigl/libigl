@@ -46,9 +46,13 @@ namespace predicates
   /// with respect to the given coordinates).
   ///
   /// Link against igl::predicates with its double-precision backend. Correctness
-  /// assumes round-to-nearest arithmetic without fast-math reassociation or
-  /// intermediate overflow/underflow, as in Shewchuk's predicates. Float inputs
-  /// are promoted exactly to double. No expansion is retained between calls.
+  /// assumes round-to-nearest with gradual underflow, without reassociation or
+  /// contraction. Exact refinement rescales positions and the direction by
+  /// separate positive powers of two. It throws std::range_error if an exponent
+  /// span cannot fit safely. A sufficient range for both ray predicates is:
+  /// after rescaling, every nonzero component's lowest set bit is at least
+  /// 2^-166 and its magnitude is less than 2^151. Float inputs promote exactly
+  /// to double. No expansion is retained between calls.
   ///
   /// @param[in] source  3-vector origin of ray
   /// @param[in] dir     3-vector direction of ray

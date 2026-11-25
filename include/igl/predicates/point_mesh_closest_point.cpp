@@ -100,7 +100,12 @@ namespace igl { namespace predicates { namespace point_mesh_closest_point_kernel
   inline void construct_exact(const k::Point &q,const std::array<k::Point,3> &p,
     int dimension,int id,PointMeshClosestPoint &result)
   {
-    approximate(construct<k::Expansion>(q,p,dimension,id),result);
+    std::array<k::Point,4> scaled{{q,p[0],p[1],p[2]}};
+    const int shift=k::rescale<6>(scaled);
+    approximate(construct<k::Expansion>(scaled[0],{{scaled[1],scaled[2],scaled[3]}},dimension,id),result);
+    result.distance=std::ldexp(result.distance,-shift);
+    result.squared_distance=std::ldexp(result.squared_distance,-2*shift);
+    for(int axis=0;axis<3;++axis) result.closest_point(axis)=std::ldexp(result.closest_point(axis),-shift);
   }
 }}}
 
