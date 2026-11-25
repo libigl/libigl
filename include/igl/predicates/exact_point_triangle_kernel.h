@@ -215,17 +215,33 @@ namespace igl { namespace predicates { namespace exact_point_triangle_kernel
     return {height*height,dot(normal,normal)};
   }
   template<typename Number> inline int compare(const Point &q,
-    const std::array<Point,3> &a,const std::array<Point,3> &b)
+    const std::array<Point,3> &a,int ad,int ai,
+    const std::array<Point,3> &b,int bd,int bi)
   {
-    int ai,bi;
-    const int ad=feature<Number>(q,a,ai),bd=feature<Number>(q,b,bi);
-    if(ad<0 || bd<0) return 2;
     if(ad==0 && bd==0 && a[ai]==b[bi]) return 0;
     if(ad==1 && bd==1 &&
        ((a[ai]==b[bi] && a[(ai+1)%3]==b[(bi+1)%3]) ||
         (a[ai]==b[(bi+1)%3] && a[(ai+1)%3]==b[bi]))) return 0;
     const auto first=distance<Number>(q,a,ad,ai),second=distance<Number>(q,b,bd,bi);
     return sign(first.numerator*second.denominator-second.numerator*first.denominator);
+  }
+  // Reuse exact feature classifications within a query. No constructed point
+  // or expansion survives a predicate call; only dimension and local id do.
+  inline int compare(const Point &q,const std::array<Point,3> &a,int ad,int ai,
+    const std::array<Point,3> &b,int bd,int bi)
+  {
+    const int fast=compare<Filter>(q,a,ad,ai,b,bd,bi);
+    if(fast!=2) return fast;
+    const int filtered=compare<Interval>(q,a,ad,ai,b,bd,bi);
+    return filtered==2 ? compare<Expansion>(q,a,ad,ai,b,bd,bi) : filtered;
+  }
+  template<typename Number> inline int compare(const Point &q,
+    const std::array<Point,3> &a,const std::array<Point,3> &b)
+  {
+    int ai,bi;
+    const int ad=feature<Number>(q,a,ai),bd=feature<Number>(q,b,bi);
+    if(ad<0 || bd<0) return 2;
+    return compare<Number>(q,a,ad,ai,b,bd,bi);
   }
   inline int compare(const Point &q,const std::array<Point,3> &a,const std::array<Point,3> &b)
   {

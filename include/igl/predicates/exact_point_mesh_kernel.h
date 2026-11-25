@@ -82,8 +82,11 @@ namespace igl { namespace predicates { namespace exact_point_mesh_kernel
     if(dimension==0)
     {
       const auto ring=one_ring(faces,neighbors,neighbor_edges,edge);
-      for(const auto &candidate:ring)
+      // The first edge is already the incumbent. Its self-comparison is an
+      // exact zero and would force unnecessary expansion arithmetic.
+      for(std::size_t i=1;i<ring.size();++i)
       {
+        const auto &candidate=ring[i];
         const auto a=corner(vertices,faces,candidate.face,(candidate.corner+1)%3);
         const auto b=corner(vertices,faces,edge.face,(edge.corner+1)%3);
         if(k::perpendicular_compare(q,p[id],a,b)<0) edge=candidate;

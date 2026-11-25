@@ -102,6 +102,34 @@ TEST_CASE("predicates::exact_point_mesh: conservative_tree","[igl][predicates]")
   mesh.vertices.resize(0,3); mesh.faces.resize(0,3); mesh.tree();
   REQUIRE(mesh.closest(Point(0,0,0))==-1);
 }
+TEST_CASE("predicates::exact_point_mesh: cached_features_and_ties","[igl][predicates]")
+{
+  Mesh mesh;
+  mesh.vertices.resize(8,3); mesh.faces.resize(8,3);
+  mesh.vertices.topRows(4)<<0,0,0, 1,0,0, 0,1,0, 0,0,1;
+  mesh.faces.topRows(4)<<0,2,1, 0,1,3, 0,3,2, 1,2,3;
+  // Duplicate coordinates have different vertex ids, reversed edge directions
+  // and different local feature ids. Tiny offsets also exercise exact ordering
+  // when rounded squared distances cannot distinguish the two copies.
+  for(int f=0;f<4;++f) for(int i=0;i<3;++i)
+    mesh.faces(f+4,i)=mesh.faces(f,2-i)+4;
+  const std::array<Point,10> queries{{Point(-1,-2,-3),Point(.25,-1,-2),
+    Point(.25,.25,-1),Point(0,0,0),Point(.5,0,0),Point(.25,.25,0),
+    Point(2,2,2),Point(.25,.25,.25),Point(0,0,std::ldexp(1.0,50)),
+    Point(.25,.25,-std::ldexp(1.0,-52))}};
+  for(const double offset:{0.0,std::ldexp(1.0,-52),.5})
+  {
+    mesh.vertices.bottomRows(4)=mesh.vertices.topRows(4);
+    mesh.vertices.bottomRows(4).col(2).array()+=offset;
+    mesh.tree();
+    for(const auto &q:queries)
+    {
+      int best=0;
+      for(int f=1;f<mesh.faces.rows();++f) if(mesh.compare(q,f,best)<0) best=f;
+      REQUIRE(mesh.closest(q)==best);
+    }
+  }
+}
 TEST_CASE("predicates::exact_point_mesh: local_and_cached_sign","[igl][predicates]")
 {
   const std::array<std::array<double,4>,8> cases{{

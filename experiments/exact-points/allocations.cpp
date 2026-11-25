@@ -1,6 +1,8 @@
 #include <igl/predicates/exact_point_triangle_closest_feature.h>
 #include <igl/predicates/exact_point_triangle_squared_distance_compare.h>
 #include <igl/predicates/point_mesh_closest_point.h>
+#include <igl/predicates/exact_point_mesh_classify.h>
+#include <igl/triangle_triangle_adjacency.h>
 #include <cmath>
 #include <cstdlib>
 #include <iostream>
@@ -29,6 +31,13 @@ extern "C" int __wrap_predicates_expansion_sum(int n,const double *a,int m,const
 {
   ++sum_calls;
   return __real_predicates_expansion_sum(n,a,m,b,out);
+}
+extern "C" double __real_nextafter(double,double);
+std::size_t rounding_calls=0;
+extern "C" double __wrap_nextafter(double value,double direction)
+{
+  ++rounding_calls;
+  return __real_nextafter(value,direction);
 }
 int main()
 {
@@ -67,12 +76,42 @@ int main()
   const auto cancelled=p::point_mesh_closest_point(near,vertices,faces,lower,upper,leaves);
   track_allocations=false;
   const auto construction_fallback_calls=sum_calls-construction_filtered_calls-construction_feature_calls;
+  const auto wrapper_allocations=allocation_count;
+  // Equal boxes visit the right leaf first. Replacing face 1 by face 0 on
+  // an exact tie must reuse the bound, without any further interval rounding.
+  vertices<<0,0,0, 1,0,0, 0,1,0;
+  const Point vertex_query(-1,-2,3);
+  rounding_calls=0;
+  const auto single=p::exact_point_mesh_closest_triangle(vertex_query,vertices,faces,lower,upper,leaves);
+  const auto single_rounding=rounding_calls;
+  Eigen::MatrixXi duplicate_faces(2,3); duplicate_faces<<0,1,2, 0,1,2;
+  Eigen::MatrixXd duplicate_lower=lower.replicate(3,1),duplicate_upper=upper.replicate(3,1);
+  Eigen::VectorXi duplicate_leaves(3); duplicate_leaves<<-1,0,1;
+  rounding_calls=0;
+  const auto duplicate=p::exact_point_mesh_closest_triangle(vertex_query,vertices,duplicate_faces,
+    duplicate_lower,duplicate_upper,duplicate_leaves);
+  const auto tie_rounding=rounding_calls;
+  // Distinct edge projections need no expansions. Comparing the seed edge
+  // with itself would introduce a redundant exact-zero fallback.
+  Eigen::MatrixXd tetra_vertices(4,3);
+  tetra_vertices<<0,0,0, 1,0,0, 0,1,0, 0,0,1;
+  Eigen::MatrixXi tetra_faces(4,3),neighbors,neighbor_edges;
+  tetra_faces<<0,2,1, 0,1,3, 0,3,2, 1,2,3;
+  igl::triangle_triangle_adjacency(tetra_faces,neighbors,neighbor_edges);
+  sum_calls=0;
+  const auto location=p::exact_point_mesh_classify(Point(-1,-2,-3),tetra_vertices,
+    tetra_faces,0,neighbors,neighbor_edges);
+  const auto vertex_sign_calls=sum_calls;
   std::cout<<"leaf_allocations,filtered_expansion_sums,shared_edge_expansion_sums,fallback_expansion_sums,wrapper_allocations,construction_filtered_sums,construction_feature_sums,construction_fallback_sums\n"
     <<leaf_allocations<<","<<filtered_calls<<","<<tie_calls<<","<<leaf_sums-filtered_calls-tie_calls
-    <<","<<allocation_count<<","<<construction_filtered_calls<<","<<construction_feature_calls
+    <<","<<wrapper_allocations<<","<<construction_filtered_calls<<","<<construction_feature_calls
     <<","<<construction_fallback_calls<<"\n";
+  std::cout<<"single_bound_rounding,tied_bound_rounding,vertex_sign_expansion_sums\n"
+    <<single_rounding<<","<<tie_rounding<<","<<vertex_sign_calls<<"\n";
   return dimension!=p::ClosestPointFeature::FACE || order!=1 || edge_tie!=0 ||
     leaf_allocations!=0 || filtered_calls!=0 || tie_calls!=0 || leaf_sums==0 ||
-    ordinary.distance!=1 || cancelled.distance<=0 || allocation_count!=2 ||
-    construction_filtered_calls!=0 || construction_feature_calls!=0 || construction_fallback_calls==0;
+    ordinary.distance!=1 || cancelled.distance<=0 || wrapper_allocations!=2 ||
+    construction_filtered_calls!=0 || construction_feature_calls!=0 || construction_fallback_calls==0 ||
+    single!=0 || duplicate!=0 || single_rounding==0 || tie_rounding!=single_rounding ||
+    location!=p::PointMeshLocation::OUTSIDE || vertex_sign_calls!=0;
 }

@@ -136,6 +136,9 @@ TEST_CASE("predicates::exact_point_triangle: filter_certificates","[igl][predica
     const int filtered=k::compare<k::Filter>(q,a,b),exact=k::compare<k::Expansion>(q,a,b);
     if(filtered!=2) { ++certificates; REQUIRE(filtered==exact); }
     REQUIRE(k::compare(q,a,b)==exact);
+    int other_id;
+    const int other_feature=k::feature<k::Expansion>(q,b,other_id);
+    REQUIRE(k::compare(q,a,exact_feature,exact_id,b,other_feature,other_id)==exact);
   }
   REQUIRE(certificates>100);
 }
