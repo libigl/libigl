@@ -141,7 +141,19 @@ IGL_INLINE void igl::copyleft::cgal::snap_rounding(
       }
       // otherwise check for intersections with walls consider all walls
       const Segment_2 si(s,d);
-      std::vector<Point_2> hits;
+      // Accumulate the centroid of the intersection points on the fly. There are
+      // at most eight, so a std::vector is unnecessary; more importantly, we keep
+      // the count as an `int` so that the final division is `EScalar(int)`.
+      // Constructing an EScalar (CGAL::Epeck::FT) from `hits.size()`, i.e. a
+      // std::size_t, is ambiguous/ill-formed under x86 MSVC (where size_t is a
+      // 32-bit unsigned).
+      Vector_2 cen(0,0);
+      int hits_count = 0;
+      const auto accumulate = [&cen, &hits_count](const Point_2 & p)
+      {
+        cen = Vector_2(cen.x() + p.x(), cen.y() + p.y());
+        ++hits_count;
+      };
       for(int j = 0;j<4;j++)
       {
         const Segment_2 & sj = wall[j];
@@ -150,26 +162,21 @@ IGL_INLINE void igl::copyleft::cgal::snap_rounding(
           CGAL::Object result = CGAL::intersection(si,sj);
           if(const Point_2 * p = CGAL::object_cast<Point_2 >(&result))
           {
-            hits.push_back(*p);
-          }else if(const Segment_2 * s = CGAL::object_cast<Segment_2 >(&result))
+            accumulate(*p);
+          }else if(const Segment_2 * seg = CGAL::object_cast<Segment_2 >(&result))
           {
-            // add both endpoints
-            hits.push_back(s->vertex(0));
-            hits.push_back(s->vertex(1));
+            // collinear overlap: add both endpoints
+            accumulate(seg->vertex(0));
+            accumulate(seg->vertex(1));
           }
         }
       }
-      if(hits.size() == 0)
+      if(hits_count == 0)
       {
         continue;
       }
       // centroid of hits
-      Vector_2 cen(0,0);
-      for(const Point_2 & hit : hits)
-      {
-        cen = Vector_2(cen.x()+hit.x(), cen.y()+hit.y());
-      }
-      cen = Vector_2(cen.x()/EScalar(hits.size()),cen.y()/EScalar(hits.size()));
+      cen /= EScalar(hits_count);
       const Point_2 rcen(round(cen.x()),round(cen.y()));
       // after all of that, don't add as a steiner unless it's going to round
       // to h
