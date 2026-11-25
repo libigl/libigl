@@ -1,5 +1,6 @@
 #include <test_common.h>
 #include <igl/signed_distance.h>
+#include <igl/PI.h>
 
 TEST_CASE("signed_distance: single_tet", "[igl]")
 {
@@ -136,5 +137,64 @@ TEST_CASE("signed_distance: precompiled float signature", "[igl]")
       8.0f*std::numeric_limits<float>::epsilon()*scale);
     REQUIRE(C.allFinite());
     REQUIRE(N.allFinite());
+  }
+}
+
+TEST_CASE("signed_distance: winding_number_repeatable", "[igl]")
+{
+  // Closed UV sphere scaled to 4:2:1. Its rings put vertices exactly on the
+  // symmetry planes, so the winding number hierarchy has nodes whose boundary
+  // loops lie in those planes. The query point is a hair off the plane x=0.
+  //
+  // This only checks that repeated calls give the same result. The accuracy
+  // near such planes is checked in "winding_number: near_planar_node_boundary".
+  const int nlat = 32, nlon = 64;
+  Eigen::MatrixXd V((nlat-1)*nlon+2,3);
+  V.row(0) << 0,0,1;
+  for(int i = 1;i<nlat;i++)
+  {
+    for(int j = 0;j<nlon;j++)
+    {
+      const double th = igl::PI*i/nlat, ph = 2.*igl::PI*j/nlon;
+      Eigen::RowVector3d x(sin(th)*cos(ph),sin(th)*sin(ph),cos(th));
+      for(int k = 0;k<3;k++){ if(std::abs(x(k))<1e-12){ x(k) = 0; } }
+      V.row(1+(i-1)*nlon+j) = x;
+    }
+  }
+  V.row(V.rows()-1) << 0,0,-1;
+  V = V*Eigen::Vector3d(2,1,0.5).asDiagonal();
+  const auto idx = [&](const int i,const int j){ return 1+i*nlon+(j%nlon); };
+  Eigen::MatrixXi F(2*nlon*(nlat-1),3);
+  int f = 0;
+  for(int j = 0;j<nlon;j++){ F.row(f++) << 0,idx(0,j),idx(0,j+1); }
+  for(int i = 0;i<nlat-2;i++)
+  {
+    for(int j = 0;j<nlon;j++)
+    {
+      F.row(f++) << idx(i,j),idx(i+1,j),idx(i,j+1);
+      F.row(f++) << idx(i,j+1),idx(i+1,j),idx(i+1,j+1);
+    }
+  }
+  const int s = V.rows()-1;
+  for(int j = 0;j<nlon;j++){ F.row(f++) << s,idx(nlat-2,j+1),idx(nlat-2,j); }
+  REQUIRE(f == F.rows());
+
+  Eigen::MatrixXd P(1,3);
+  P << -1e-16,0,0;
+  for(const igl::SignedDistanceType type :
+      {
+      igl::SIGNED_DISTANCE_TYPE_WINDING_NUMBER,
+      igl::SIGNED_DISTANCE_TYPE_DEFAULT
+      })
+  {
+    Eigen::VectorXd S0,S;
+    Eigen::VectorXi I;
+    Eigen::MatrixXd C,N;
+    igl::signed_distance(P,V,F,type,S0,I,C,N);
+    for(int k = 0;k<8;k++)
+    {
+      igl::signed_distance(P,V,F,type,S,I,C,N);
+      test_common::assert_eq(S,S0);
+    }
   }
 }

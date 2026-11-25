@@ -9,11 +9,14 @@ target_include_directories(igl_copyleft_cgal ${IGL_SCOPE}
 )
 
 # 3. Target sources
-file(GLOB INC_FILES "${libigl_SOURCE_DIR}/include/igl/copyleft/cgal/*.h")
+file(GLOB INC_FILES "${libigl_SOURCE_DIR}/include/igl/copyleft/cgal/*.h" "${libigl_SOURCE_DIR}/include/igl/copyleft/cgal/*.hpp")
 file(GLOB SRC_FILES "${libigl_SOURCE_DIR}/include/igl/copyleft/cgal/*.cpp")
 igl_target_sources(igl_copyleft_cgal ${INC_FILES} ${SRC_FILES})
 
-# 4. Dependencies
+# 4. Install target & headers
+igl_install(igl_copyleft_cgal ${INC_FILES} ${SRC_FILES})
+
+# 5. Dependencies
 include(cgal)
 igl_include(copyleft core)
 target_link_libraries(igl_copyleft_cgal ${IGL_SCOPE}
@@ -23,7 +26,7 @@ target_link_libraries(igl_copyleft_cgal ${IGL_SCOPE}
     CGAL::CGAL_Core
 )
 
-# 5. Unit tests
+# 6. Unit tests
 file(GLOB SRC_FILES
     "${libigl_SOURCE_DIR}/tests/include/igl/copyleft/boolean/*.cpp"
     "${libigl_SOURCE_DIR}/tests/include/igl/copyleft/cgal/*.cpp"

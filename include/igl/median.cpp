@@ -26,8 +26,10 @@ IGL_INLINE bool igl::median(
   std::nth_element(vV.begin(),vV.begin()+n,vV.end());
   if(vV.size()%2==0)
   {
-    std::nth_element(vV.begin(),vV.begin()+n-1,vV.end());
-    m = 0.5*(vV[n]+vV[n-1]);
+    // The lower middle value is the largest of the n entries now in front of
+    // position n. A second nth_element over the whole range could move a
+    // different element into position n.
+    m = 0.5*(vV[n]+*std::max_element(vV.begin(),vV.begin()+n));
   }else
   {
     m = vV[n];

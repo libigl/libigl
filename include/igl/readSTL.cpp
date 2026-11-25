@@ -120,9 +120,8 @@ IGL_INLINE bool read_stl_ascii(std::istream &input,
 
   auto parse_ascii_facet = [&parse_ascii_vertex, &parse_ascii_normal](std::istream &fin) {
     constexpr size_t LINE_SIZE = 256;
-    constexpr size_t WORD_SIZE = 128;
     char line[LINE_SIZE];
-    char first_word[WORD_SIZE];
+    char first_word[LINE_SIZE];
     const char *face_begin = "facet";
     const char *face_end = "endfacet";
     const char *loop_begin = "outer";

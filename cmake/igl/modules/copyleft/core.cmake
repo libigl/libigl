@@ -13,7 +13,10 @@ file(GLOB INC_FILES "${libigl_SOURCE_DIR}/include/igl/copyleft/*.h")
 file(GLOB SRC_FILES "${libigl_SOURCE_DIR}/include/igl/copyleft/*.cpp")
 igl_target_sources(igl_copyleft_core ${INC_FILES} ${SRC_FILES})
 
-# 4. Dependencies
+# 4. Install target & headers
+igl_install(igl_copyleft_core ${INC_FILES} ${SRC_FILES})
+
+# 5. Dependencies
 target_link_libraries(igl_copyleft_core ${IGL_SCOPE}
     igl::core
 )

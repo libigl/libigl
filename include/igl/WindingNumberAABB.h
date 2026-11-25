@@ -254,12 +254,21 @@ inline bool igl::WindingNumberAABB<Scalar,Index>::inside(const Point & p) const
 {
   assert(p.size() == max_corner.size());
   assert(p.size() == min_corner.size());
+  // Outside this box, winding_number() sums over the cap instead of the
+  // facets. The cap is spanned by boundary vertices of the facets, so it lies
+  // inside the box. For a query just outside the box the cap triangles can be
+  // nearly coplanar with the query, and their solid angles are then dominated
+  // by rounding (#2579). Therefore treat queries within a small distance of
+  // the box, relative to its size (radius is half the box diagonal), as
+  // inside. This only replaces cap evaluations by evaluations of the children
+  // or facets.
+  const Scalar pad = Scalar(1e-4) * this->radius;
   for(int i = 0;i<p.size();i++)
   {
     //// Perfect matching is **not** robust
     //if( p(i) < min_corner(i) || p(i) >= max_corner(i))
     // **MUST** be conservative
-    if( p(i) < min_corner(i) || p(i) > max_corner(i))
+    if( p(i) < min_corner(i) - pad || p(i) > max_corner(i) + pad)
     {
       return false;
     }

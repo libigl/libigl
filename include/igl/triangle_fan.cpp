@@ -26,9 +26,9 @@ IGL_INLINE void igl::triangle_fan(
   // Note: in 2D we need to know if E endpoints are incoming or
   // outgoing (left or right). Thus this will not work.
   assert(E.cols() == 2);
-  // Arbitrary starting vertex
-  //int s = E(int(((double)rand() / RAND_MAX)*E.rows()),0);
-  int s = E(rand()%E.rows(),0);
+  // Arbitrary starting vertex. Use a fixed one (not rand()) so that the output
+  // depends only on E.
+  int s = E(0,0);
   std::vector<std::vector<int> >  lcap;
   for(int i = 0;i<E.rows();i++)
   {
