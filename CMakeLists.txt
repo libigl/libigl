@@ -176,7 +176,15 @@ if(LIBIGL_INSTALL)
     set(version_config_file "${CMAKE_CURRENT_BINARY_DIR}/LibiglConfigVersion.cmake")
     set(export_dest_dir "${CMAKE_INSTALL_LIBDIR}/cmake/igl")
 
-    foreach(suffix IN ITEMS "") #"_restricted" "_copyleft")
+    # Exported names, e.g. igl::core;igl_copyleft::cgal (see igl_install). Also
+    # substituted into the package config to define deprecated aliases.
+    get_property(LIBIGL_INSTALLED_TARGETS GLOBAL PROPERTY LIBIGL_INSTALLED_TARGETS)
+    foreach(suffix IN ITEMS "" "_copyleft") #  "_restricted"
+        # Only install export sets that received targets
+        if(NOT LIBIGL_INSTALLED_TARGETS MATCHES "(^|;)igl${suffix}::")
+            continue()
+        endif()
+
         install(EXPORT LibiglTargets${suffix}
             DESTINATION ${export_dest_dir}
             NAMESPACE igl${suffix}::

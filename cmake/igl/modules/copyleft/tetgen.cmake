@@ -13,7 +13,10 @@ file(GLOB INC_FILES "${libigl_SOURCE_DIR}/include/igl/copyleft/tetgen/*.h")
 file(GLOB SRC_FILES "${libigl_SOURCE_DIR}/include/igl/copyleft/tetgen/*.cpp")
 igl_target_sources(igl_copyleft_tetgen ${INC_FILES} ${SRC_FILES})
 
-# 4. Dependencies
+# 4. Install target & headers
+igl_install(igl_copyleft_tetgen ${INC_FILES} ${SRC_FILES})
+
+# 5. Dependencies
 include(tetgen)
 igl_include(copyleft core)
 target_link_libraries(igl_copyleft_tetgen ${IGL_SCOPE}
@@ -21,7 +24,19 @@ target_link_libraries(igl_copyleft_tetgen ${IGL_SCOPE}
     igl_copyleft::core
     tetgen::tetgen
 )
+if(TARGET tetgen)
+    igl_install_dependencies(igl_copyleft_tetgen tetgen)
+    if(LIBIGL_INSTALL)
+        # The installed igl/copyleft/tetgen headers include <tetgen.h>
+        get_target_property(tetgen_source_dir tetgen SOURCE_DIR)
+        target_include_directories(tetgen INTERFACE
+            "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/libigl/tetgen>")
+        install(FILES "${tetgen_source_dir}/tetgen.h"
+            DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/libigl/tetgen"
+            COMPONENT LibiglDevelopment)
+    endif()
+endif()
 
-# 5. Unit tests
+# 6. Unit tests
 file(GLOB SRC_FILES "${libigl_SOURCE_DIR}/tests/include/igl/copyleft/tetgen/*.cpp")
 igl_add_test(igl_copyleft_tetgen ${SRC_FILES})
