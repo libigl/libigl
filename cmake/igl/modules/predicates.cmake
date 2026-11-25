@@ -32,6 +32,14 @@ endif()
 file(GLOB SRC_FILES "${libigl_SOURCE_DIR}/tests/include/igl/predicates/*.cpp")
 igl_add_test(igl_predicates ${SRC_FILES})
 if(LIBIGL_BUILD_TESTS)
+    if(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+        add_executable(test_predicates_allocations "${libigl_SOURCE_DIR}/tests/predicates_allocations.cpp")
+        target_link_libraries(test_predicates_allocations PRIVATE igl::predicates)
+        target_link_options(test_predicates_allocations PRIVATE
+            -Wl,--wrap=predicates_expansion_sum -Wl,--wrap=nextafter)
+        add_test(NAME predicates_allocations COMMAND test_predicates_allocations)
+        set_tests_properties(predicates_allocations PROPERTIES TIMEOUT 30)
+    endif()
     get_target_property(predicates_source_dir predicates SOURCE_DIR)
     add_test(NAME predicates_patch
         COMMAND ${CMAKE_COMMAND}

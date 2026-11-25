@@ -1,9 +1,0 @@
-workload,implementation,two_diff,expansion_scale,expansion_sum,orient3d
-random,previous,0,0,0,0
-random,current,0,0,0,0
-ordered,previous,0,0,0,0
-ordered,current,0,0,0,0
-coplanar,previous,6,12,5,1
-coplanar,current,2,0,0,1
-thin,previous,24,48,20,1
-thin,current,18,8,4,1

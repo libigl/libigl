@@ -1,6 +1,8 @@
 #include <igl/predicates/exact_point_triangle_closest_feature.h>
 #include <igl/predicates/exact_point_triangle_squared_distance_compare.h>
 #include <igl/predicates/point_mesh_closest_point.h>
+#include <igl/predicates/exact_point_mesh_closest_triangle.h>
+#include <igl/predicates/exact_ray_triangle_hit_compare.h>
 #include <igl/predicates/exact_point_mesh_classify.h>
 #include <igl/triangle_triangle_adjacency.h>
 #include <cmath>
@@ -102,6 +104,17 @@ int main()
   const auto location=p::exact_point_mesh_classify(Point(-1,-2,-3),tetra_vertices,
     tetra_faces,0,neighbors,neighbor_edges);
   const auto vertex_sign_calls=sum_calls;
+  const Point ray_origin(0,0,0),ray_direction(0,0,1),
+    first_a(-1,-1,1),first_b(1,-1,1),first_c(0,1,1),
+    last_a(-1,-1,3),last_b(1,-1,3),last_c(0,1,3);
+  sum_calls=0; allocation_count=0; track_allocations=true;
+  const int ray_order=p::exact_ray_triangle_hit_compare(ray_origin,ray_direction,
+    first_a,first_b,first_c,last_a,last_b,last_c);
+  const auto ray_filtered_calls=sum_calls;
+  const int ray_tie=p::exact_ray_triangle_hit_compare(ray_origin,ray_direction,
+    first_a,first_b,first_c,first_c,first_b,first_a);
+  track_allocations=false;
+  const auto ray_allocations=allocation_count,ray_fallback_calls=sum_calls-ray_filtered_calls;
   std::cout<<"leaf_allocations,filtered_expansion_sums,shared_edge_expansion_sums,fallback_expansion_sums,wrapper_allocations,construction_filtered_sums,construction_feature_sums,construction_fallback_sums\n"
     <<leaf_allocations<<","<<filtered_calls<<","<<tie_calls<<","<<leaf_sums-filtered_calls-tie_calls
     <<","<<wrapper_allocations<<","<<construction_filtered_calls<<","<<construction_feature_calls
@@ -110,8 +123,9 @@ int main()
     <<single_rounding<<","<<tie_rounding<<","<<vertex_sign_calls<<"\n";
   return dimension!=p::ClosestPointFeature::FACE || order!=1 || edge_tie!=0 ||
     leaf_allocations!=0 || filtered_calls!=0 || tie_calls!=0 || leaf_sums==0 ||
-    ordinary.distance!=1 || cancelled.distance<=0 || wrapper_allocations!=2 ||
+    ordinary.distance!=1 || cancelled.distance<=0 ||
     construction_filtered_calls!=0 || construction_feature_calls!=0 || construction_fallback_calls==0 ||
     single!=0 || duplicate!=0 || single_rounding!=3 || tie_rounding!=single_rounding ||
-    location!=p::PointMeshLocation::OUTSIDE || vertex_sign_calls!=0;
+    location!=p::PointMeshLocation::OUTSIDE || vertex_sign_calls!=0 ||
+    ray_order!=-1 || ray_tie!=0 || ray_filtered_calls!=0 || ray_fallback_calls==0 || ray_allocations!=0;
 }

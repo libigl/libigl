@@ -37,20 +37,6 @@ for this executable. Run separate processes to compare thread counts because
 `igl::default_num_threads` caches its first value. Eigen's own thread count is
 set to one to avoid nested parallel work.
 
-To reuse existing dependency checkouts without configuring the other tutorials,
-the standalone experiment harness builds this same source:
-
-```sh
-cmake -S experiments/exact-points -B build-exact-points -G Ninja \
-  -DCMAKE_BUILD_TYPE=Release \
-  -DPREDICATES_SOURCE_DIR="$PREDICATES_SOURCE" \
-  -DEIGEN_INCLUDE_DIR="$EIGEN_SOURCE" \
-  -DCATCH2_INCLUDE_DIR="$CATCH2_SOURCE/single_include" \
-  -DTUTORIAL_DATA_DIR="$TUTORIAL_DATA"
-cmake --build build-exact-points --target 1008_SignedDistanceProfile -j 4
-build-exact-points/1008_SignedDistanceProfile "$TUTORIAL_DATA/armadillo.obj" 10000 5 4
-```
-
 ## Timing and parallelism
 
 The output is CSV with `#` metadata/comment lines. It separates:
@@ -87,51 +73,19 @@ APIs return different amounts of metadata, which remains part of their costs.
 are still reused for the query phase. Both exact-sign paths perform one tree
 traversal per query and reuse the exact selected feature for signing.
 
-## Recorded Armadillo run
+## Interpreting comparisons
 
-After integrating fused classification, reused filtered fractions and cheaper
-certified upper bounds, GCC 13.3 Release, strict FP, EPYC 9B45; CPUs 24 / 24–27.
-All methods use the current upstream thread pool with consistent parallelism.
+Use query rows to compare methods when preprocessing can be reused. Use total
+rows for a single batch on a new mesh. Exposure caching saves the local signing
+step; it does not remove the closest-point search, and its setup cost can exceed
+that saving for one batch. Measure both rows for the expected workload.
 
-Median **query time for all 10,000 points**, with preprocessing already done:
+The example reports sign agreement, differences in numerical distance and
+closest-feature counts after timing. Cached and uncached exact locations must
+agree. Fast winding returns `sqrt(squared_distance) * (1 - 2*abs(w))`, so its
+magnitude changes when the approximate winding number differs from zero or one.
+These sampled comparisons do not prove accuracy for arbitrary queries.
 
-| Method | 1 thread | 4 threads |
-| --- | ---: | ---: |
-| Unsigned squared distance | 112.32 ms | 27.31 ms |
-| Pseudonormal signed distance | 101.21 ms | 24.97 ms |
-| Fast winding signed distance | 119.73 ms | 29.50 ms |
-| Exact sign, uncached | 131.70 ms | 32.34 ms |
-| Exact sign, cached | 123.99 ms | 30.99 ms |
-
-One warm-up and nine rotated-order repetitions per process; each table entry
-is the median of three process medians. These full-wrapper runs varied, including
-the unchanged controls. Use the [filter report](../../experiments/exact-points/FILTERS.md)
-for raw ranges, paired comparisons and full-call times including setup.
-Preprocessing dominates the cached full-call path, and that path did not show a
-serial improvement in these runs.
-
-Separate search controls isolate the changes: integrated serial closest-triangle
-search decreased from 125.38 to 108.16 ms (13.7%). Cheaper certified upper bounds
-save most of this time; fraction reuse and fused classification add smaller gains.
-Computing full distance enclosures at every leaf was slower and was not retained.
-Exposure caching still only saves the local sign stage, with expensive setup for
-a single batch. The previous integration round is recorded in
-[INTEGRATION.md](../../experiments/exact-points/INTEGRATION.md).
-
-All sampled sign classifications agreed. Cached and uncached exact outputs
-were identical, as were each prepared path and its corresponding convenience
-API. Unsigned and pseudonormal magnitudes differed from the exact-sign numerical
-magnitudes by at most `1.67e-16`. The fast-winding path differed by at most
-`9.04e-4`: libigl returns `sqrt(squared_distance) * (1 - 2*abs(w))`, which scales
-the magnitude when the approximate winding number differs from zero or one.
-The example preserves that behavior. These sampled comparisons are not a proof
-of accuracy for arbitrary queries, especially near the surface.
-
-The sample contains 600 inside and 9,400 outside points, with closest features
-at 6,110 vertices, 2,982 open edges and 908 open faces. The exact-sign methods
-retain their documented arithmetic range and floating-point assumptions.
-
-The [earlier search-cost investigation](../../experiments/exact-points/SEARCH_PROFILE.md)
-separates ordinary AABB/Eytzinger traversal, exact leaf comparisons, interval
-pruning bounds and shared-feature ties. Its original-policy benchmark copies
-remain available as controls for the optimized production implementation.
+For reproducible timings, use a Release build, keep thread counts equal, and
+run several separate processes without concurrent builds or other CPU work.
+The CSV includes the seed, mesh size, thread count and repetition count.
