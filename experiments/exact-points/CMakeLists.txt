@@ -73,3 +73,10 @@ endif()
 
 add_executable(profile_point_filters profile_filters.cpp)
 target_link_libraries(profile_point_filters PRIVATE igl::predicates)
+add_test(NAME predicates_patch
+  COMMAND ${CMAKE_COMMAND}
+    "-DPREDICATES_SOURCE_DIR=${PREDICATES_SOURCE_DIR}"
+    "-DPATCH_DIR=${LIBIGL_POINT_SOURCE}/cmake/recipes/external"
+    "-DTEST_DIR=${CMAKE_CURRENT_BINARY_DIR}/predicates-patch-test"
+    -P "${LIBIGL_POINT_SOURCE}/tests/cmake/predicates_patch.cmake")
+set_tests_properties(predicates_patch PROPERTIES TIMEOUT 60)

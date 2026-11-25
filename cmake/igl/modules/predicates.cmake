@@ -31,3 +31,13 @@ endif()
 # 5. Unit tests
 file(GLOB SRC_FILES "${libigl_SOURCE_DIR}/tests/include/igl/predicates/*.cpp")
 igl_add_test(igl_predicates ${SRC_FILES})
+if(LIBIGL_BUILD_TESTS)
+    get_target_property(predicates_source_dir predicates SOURCE_DIR)
+    add_test(NAME predicates_patch
+        COMMAND ${CMAKE_COMMAND}
+            "-DPREDICATES_SOURCE_DIR=${predicates_source_dir}"
+            "-DPATCH_DIR=${libigl_SOURCE_DIR}/cmake/recipes/external"
+            "-DTEST_DIR=${CMAKE_CURRENT_BINARY_DIR}/predicates-patch-test"
+            -P "${libigl_SOURCE_DIR}/tests/cmake/predicates_patch.cmake")
+    set_tests_properties(predicates_patch PROPERTIES TIMEOUT 60)
+endif()
