@@ -865,6 +865,8 @@ private:
       /// @param[in]  origin  dim-long ray origin
       /// @param[in]  dir  dim-long ray direction
       /// @param[in]  min_t  minimum t value to consider
+      /// @param[in]  max_t  maximum t value to consider, 
+      ///                    updated recursively to cull BVH tree
       /// @param[out]  hit  first hit
       /// @return  true if any hit
       template <typename DerivedEle>
@@ -876,6 +878,7 @@ private:
         const RowVectorDIMS & inv_dir,
         const RowVectorDIMS & inv_dir_pad,
         const Scalar min_t,
+        const Scalar max_t,
         igl::Hit<typename DerivedV::Scalar> & hit) const;
 public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
