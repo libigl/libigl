@@ -11,6 +11,7 @@
 
 #include <cassert>
 #include <iostream>
+#include <limits>
 #include <sstream>
 #include <vector>
 
@@ -137,6 +138,11 @@ IGL_INLINE int igl::MshLoader::element_dense_index(int elem_tag) const {
 IGL_INLINE void igl::MshLoader::parse_nodes(std::ifstream& fin) {
     size_t num_nodes;
     fin >> num_nodes;
+    // dense node indices are stored as int; this also keeps num_nodes*3 and
+    // the binary stride*num_nodes from wrapping
+    if (num_nodes > static_cast<size_t>(std::numeric_limits<int>::max())) {
+        throw std::runtime_error("Invalid number of nodes");
+    }
     m_nodes.resize(num_nodes*3);
     m_node_tag_to_dense.clear();
 
