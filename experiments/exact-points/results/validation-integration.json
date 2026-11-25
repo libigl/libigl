@@ -1,0 +1,744 @@
+{
+  "recorded_at": "2026-11-25T02:58:12.288671+00:00",
+  "branch": "experiment/exact-rays-shewchuk",
+  "main_base": "cb3d2940762924b43181bd97d1d4ec9155dc4c31",
+  "optimized_kernel_commit": "ad7d7fe945d3ed4fcbc24c226fc52e32c3e5d0e5",
+  "baseline_kernel_commit": "7344d884186138220e4bb47800e580851a01a9c8",
+  "baseline_method": "Same rebased tree, tutorial source and compiler options; only exact_point_triangle_kernel.h, exact_point_mesh_kernel.h and exact_point_mesh_closest_triangle.cpp restored from the optimization parent for the before binary.",
+  "example": "tutorial/1008_SignedDistanceProfile/main.cpp",
+  "mesh": {
+    "file": "tutorial/data/armadillo.obj",
+    "revision": "644dd4104843b6d736745d9dafbd70bf8d175648",
+    "sha256": "c007ebd11e541a2b1ab86a4c376653579281265f2c6c786a4a7bf47ba84d6879",
+    "vertices": 43243,
+    "faces": 86482
+  },
+  "sampling": {
+    "points": 10000,
+    "seed": 896,
+    "distribution": "Uniform bounding box padded 10 percent per side"
+  },
+  "build": {
+    "compiler": "GCC 13.3.0",
+    "flags": "-O3 -DNDEBUG -std=gnu++17 -fno-fast-math -ffp-contract=off",
+    "predicates_commit": "b434435124d29a2e87d132636fac46e1090c6c2d",
+    "dependency_patch_fresh_and_idempotent_application_verified": true
+  },
+  "profiling": {
+    "cpu": "AMD EPYC 9B45",
+    "container_cpu_limit": 4,
+    "affinities": [
+      "24",
+      "24-27"
+    ],
+    "warmup_batches": 1,
+    "repetitions_per_process": 9,
+    "serial_processes_per_version": 1,
+    "four_thread_processes_per_version": 3,
+    "four_thread_aggregation": "Median of per-process medians; no runs discarded",
+    "parallel_for_threshold": 10000,
+    "eigen_threads": 1,
+    "method_order": "Rotates between repetitions",
+    "version_order": "Before/after alternates between processes",
+    "concurrent_compilation": false,
+    "competing_cpu_heavy_process_observed": false,
+    "arithmetic_interposition_in_timed_binary": false,
+    "caveat": "Four-thread query ranges and full-call setup times vary; all recorded runs retained."
+  },
+  "checks": {
+    "point_ctest_release": {
+      "passed": 3,
+      "total": 3,
+      "assertions": 56844,
+      "cases": 22
+    },
+    "point_small_stack_bytes": 1048576,
+    "point_small_stack_passed": true,
+    "point_ctest_asan_ubsan": {
+      "passed": 3,
+      "total": 3,
+      "assertions": 56844,
+      "cases": 22,
+      "leak_detection": true
+    },
+    "full_armadillo_asan_ubsan": {
+      "points": 10000,
+      "repetitions": 1,
+      "threads": 4,
+      "passed": true
+    },
+    "ray_ctest": {
+      "passed": 5,
+      "total": 5
+    },
+    "ray_suite_including_cube": {
+      "assertions": 22295,
+      "cases": 13,
+      "passed": true
+    },
+    "ray_comparison_to_pr2549": {
+      "classifications": 125000,
+      "hit_comparisons": 75031,
+      "mesh_queries": 1200,
+      "mismatches": 0
+    },
+    "identical_benchmark_checksums_all_processes": true,
+    "all_sampled_signs_agree": true,
+    "cached_uncached_signed_outputs_bit_identical": true,
+    "prepared_convenience_distances_bit_identical": true,
+    "production_and_original_policy_triangle_ids_identical": true,
+    "brute_force_search_comparisons": 180,
+    "interval_only_patch_applies": true,
+    "standard_tutorial_cmake": {
+      "target": "1008_SignedDistanceProfile",
+      "header_only": true,
+      "viewer_dependencies": false,
+      "build_passed": true,
+      "smoke_points": 16,
+      "smoke_passed": true
+    }
+  },
+  "path_regressions": {
+    "before_failed": true,
+    "after_passed": true,
+    "single_upper_bound_rounding_calls": 45,
+    "tied_upper_bound_rounding_calls_before": 90,
+    "tied_upper_bound_rounding_calls_after": 45,
+    "vertex_sign_expansion_sums_before": 16,
+    "vertex_sign_expansion_sums_after": 0,
+    "leaf_cancellation_expansion_sums": 18,
+    "construction_cancellation_expansion_sums": 35,
+    "leaf_heap_allocations": 0
+  },
+  "expansion_audit": {
+    "file": "armadillo-integrated-audit.csv",
+    "search_sums": 0,
+    "closest_point_sums": 11871,
+    "cached_sums": 11871,
+    "uncached_sums": 11871,
+    "queries_using_metric_expansions": 124,
+    "counts_orient3d_internal_arithmetic": false
+  },
+  "checksums": [
+    "# query checksum=64154.12486554581846576",
+    "# total checksum=64154.12486554581846576"
+  ],
+  "measurements": {
+    "armadillo-integrated-baseline-1-threads.csv": {
+      "preprocess/point_mesh_squared_distance": {
+        "median_ms": 51.586257,
+        "min_ms": 51.586257,
+        "max_ms": 51.586257
+      },
+      "preprocess/signed_distance_pseudonormal": {
+        "median_ms": 93.287176,
+        "min_ms": 93.287176,
+        "max_ms": 93.287176
+      },
+      "preprocess/signed_distance_fast_winding_number": {
+        "median_ms": 89.837607,
+        "min_ms": 89.837607,
+        "max_ms": 89.837607
+      },
+      "preprocess/exact_sign_uncached": {
+        "median_ms": 78.0835,
+        "min_ms": 78.0835,
+        "max_ms": 78.0835
+      },
+      "preprocess/exact_sign_cached": {
+        "median_ms": 255.331124,
+        "min_ms": 255.331124,
+        "max_ms": 255.331124
+      },
+      "query/point_mesh_squared_distance": {
+        "median_ms": 88.509177,
+        "min_ms": 88.054698,
+        "max_ms": 88.914577
+      },
+      "query/signed_distance_pseudonormal": {
+        "median_ms": 83.64654,
+        "min_ms": 83.30094,
+        "max_ms": 86.551349
+      },
+      "query/signed_distance_fast_winding_number": {
+        "median_ms": 94.400605,
+        "min_ms": 94.111695,
+        "max_ms": 96.216516
+      },
+      "query/exact_sign_uncached": {
+        "median_ms": 183.808913,
+        "min_ms": 182.858243,
+        "max_ms": 184.488323
+      },
+      "query/exact_sign_cached": {
+        "median_ms": 154.653393,
+        "min_ms": 154.340263,
+        "max_ms": 157.930612
+      },
+      "total/point_mesh_squared_distance": {
+        "median_ms": 139.954899,
+        "min_ms": 139.275479,
+        "max_ms": 141.810268
+      },
+      "total/signed_distance_pseudonormal": {
+        "median_ms": 179.387125,
+        "min_ms": 177.524856,
+        "max_ms": 180.010915
+      },
+      "total/signed_distance_fast_winding_number": {
+        "median_ms": 186.965602,
+        "min_ms": 186.201382,
+        "max_ms": 188.235381
+      },
+      "total/exact_sign_uncached": {
+        "median_ms": 257.616026,
+        "min_ms": 257.220426,
+        "max_ms": 258.450556
+      },
+      "total/exact_sign_cached": {
+        "median_ms": 401.070744,
+        "min_ms": 399.826694,
+        "max_ms": 406.851732
+      }
+    },
+    "armadillo-integrated-baseline-4-threads-run2.csv": {
+      "preprocess/point_mesh_squared_distance": {
+        "median_ms": 52.681927,
+        "min_ms": 52.681927,
+        "max_ms": 52.681927
+      },
+      "preprocess/signed_distance_pseudonormal": {
+        "median_ms": 96.101996,
+        "min_ms": 96.101996,
+        "max_ms": 96.101996
+      },
+      "preprocess/signed_distance_fast_winding_number": {
+        "median_ms": 67.548293,
+        "min_ms": 67.548293,
+        "max_ms": 67.548293
+      },
+      "preprocess/exact_sign_uncached": {
+        "median_ms": 74.033101,
+        "min_ms": 74.033101,
+        "max_ms": 74.033101
+      },
+      "preprocess/exact_sign_cached": {
+        "median_ms": 243.097959,
+        "min_ms": 243.097959,
+        "max_ms": 243.097959
+      },
+      "query/point_mesh_squared_distance": {
+        "median_ms": 25.574884,
+        "min_ms": 25.063274,
+        "max_ms": 26.480564
+      },
+      "query/signed_distance_pseudonormal": {
+        "median_ms": 24.091464,
+        "min_ms": 23.808264,
+        "max_ms": 25.092454
+      },
+      "query/signed_distance_fast_winding_number": {
+        "median_ms": 26.933193,
+        "min_ms": 26.718673,
+        "max_ms": 27.271673
+      },
+      "query/exact_sign_uncached": {
+        "median_ms": 51.750037,
+        "min_ms": 51.195207,
+        "max_ms": 52.175007
+      },
+      "query/exact_sign_cached": {
+        "median_ms": 43.412269,
+        "min_ms": 42.215389,
+        "max_ms": 63.366664
+      },
+      "total/point_mesh_squared_distance": {
+        "median_ms": 79.75443,
+        "min_ms": 78.356051,
+        "max_ms": 82.395789
+      },
+      "total/signed_distance_pseudonormal": {
+        "median_ms": 120.732699,
+        "min_ms": 116.000551,
+        "max_ms": 124.258419
+      },
+      "total/signed_distance_fast_winding_number": {
+        "median_ms": 97.785595,
+        "min_ms": 95.170436,
+        "max_ms": 101.664954
+      },
+      "total/exact_sign_uncached": {
+        "median_ms": 126.539268,
+        "min_ms": 123.921219,
+        "max_ms": 131.634667
+      },
+      "total/exact_sign_cached": {
+        "median_ms": 294.997915,
+        "min_ms": 292.482136,
+        "max_ms": 310.391282
+      }
+    },
+    "armadillo-integrated-baseline-4-threads-run3.csv": {
+      "preprocess/point_mesh_squared_distance": {
+        "median_ms": 53.322227,
+        "min_ms": 53.322227,
+        "max_ms": 53.322227
+      },
+      "preprocess/signed_distance_pseudonormal": {
+        "median_ms": 96.446336,
+        "min_ms": 96.446336,
+        "max_ms": 96.446336
+      },
+      "preprocess/signed_distance_fast_winding_number": {
+        "median_ms": 67.862883,
+        "min_ms": 67.862883,
+        "max_ms": 67.862883
+      },
+      "preprocess/exact_sign_uncached": {
+        "median_ms": 74.773581,
+        "min_ms": 74.773581,
+        "max_ms": 74.773581
+      },
+      "preprocess/exact_sign_cached": {
+        "median_ms": 247.509898,
+        "min_ms": 247.509898,
+        "max_ms": 247.509898
+      },
+      "query/point_mesh_squared_distance": {
+        "median_ms": 23.808874,
+        "min_ms": 23.385804,
+        "max_ms": 44.929879
+      },
+      "query/signed_distance_pseudonormal": {
+        "median_ms": 22.476815,
+        "min_ms": 22.213334,
+        "max_ms": 25.485114
+      },
+      "query/signed_distance_fast_winding_number": {
+        "median_ms": 25.455064,
+        "min_ms": 25.201454,
+        "max_ms": 27.297223
+      },
+      "query/exact_sign_uncached": {
+        "median_ms": 48.788577,
+        "min_ms": 48.272888,
+        "max_ms": 52.680777
+      },
+      "query/exact_sign_cached": {
+        "median_ms": 41.459129,
+        "min_ms": 41.18235,
+        "max_ms": 70.589932
+      },
+      "total/point_mesh_squared_distance": {
+        "median_ms": 79.341541,
+        "min_ms": 77.29315,
+        "max_ms": 80.1866
+      },
+      "total/signed_distance_pseudonormal": {
+        "median_ms": 119.01089,
+        "min_ms": 114.746011,
+        "max_ms": 121.626179
+      },
+      "total/signed_distance_fast_winding_number": {
+        "median_ms": 96.390486,
+        "min_ms": 95.181016,
+        "max_ms": 98.917235
+      },
+      "total/exact_sign_uncached": {
+        "median_ms": 123.880268,
+        "min_ms": 122.923409,
+        "max_ms": 125.661858
+      },
+      "total/exact_sign_cached": {
+        "median_ms": 285.496777,
+        "min_ms": 284.919448,
+        "max_ms": 298.080254
+      }
+    },
+    "armadillo-integrated-baseline-4-threads.csv": {
+      "preprocess/point_mesh_squared_distance": {
+        "median_ms": 52.288911,
+        "min_ms": 52.288911,
+        "max_ms": 52.288911
+      },
+      "preprocess/signed_distance_pseudonormal": {
+        "median_ms": 92.792896,
+        "min_ms": 92.792896,
+        "max_ms": 92.792896
+      },
+      "preprocess/signed_distance_fast_winding_number": {
+        "median_ms": 66.093266,
+        "min_ms": 66.093266,
+        "max_ms": 66.093266
+      },
+      "preprocess/exact_sign_uncached": {
+        "median_ms": 75.814583,
+        "min_ms": 75.814583,
+        "max_ms": 75.814583
+      },
+      "preprocess/exact_sign_cached": {
+        "median_ms": 248.86572,
+        "min_ms": 248.86572,
+        "max_ms": 248.86572
+      },
+      "query/point_mesh_squared_distance": {
+        "median_ms": 25.158621,
+        "min_ms": 22.730272,
+        "max_ms": 34.631028
+      },
+      "query/signed_distance_pseudonormal": {
+        "median_ms": 24.032311,
+        "min_ms": 21.160532,
+        "max_ms": 42.336664
+      },
+      "query/signed_distance_fast_winding_number": {
+        "median_ms": 26.47347,
+        "min_ms": 24.280782,
+        "max_ms": 44.852314
+      },
+      "query/exact_sign_uncached": {
+        "median_ms": 51.021532,
+        "min_ms": 46.023193,
+        "max_ms": 70.102004
+      },
+      "query/exact_sign_cached": {
+        "median_ms": 42.987134,
+        "min_ms": 38.956836,
+        "max_ms": 74.982333
+      },
+      "total/point_mesh_squared_distance": {
+        "median_ms": 79.921471,
+        "min_ms": 77.200102,
+        "max_ms": 97.392205
+      },
+      "total/signed_distance_pseudonormal": {
+        "median_ms": 119.033596,
+        "min_ms": 114.892819,
+        "max_ms": 132.001072
+      },
+      "total/signed_distance_fast_winding_number": {
+        "median_ms": 96.270035,
+        "min_ms": 94.123225,
+        "max_ms": 122.228315
+      },
+      "total/exact_sign_uncached": {
+        "median_ms": 122.948836,
+        "min_ms": 117.714177,
+        "max_ms": 144.593528
+      },
+      "total/exact_sign_cached": {
+        "median_ms": 290.715584,
+        "min_ms": 283.701776,
+        "max_ms": 306.079718
+      }
+    },
+    "armadillo-integrated-optimized-1-threads.csv": {
+      "preprocess/point_mesh_squared_distance": {
+        "median_ms": 51.688561,
+        "min_ms": 51.688561,
+        "max_ms": 51.688561
+      },
+      "preprocess/signed_distance_pseudonormal": {
+        "median_ms": 94.915445,
+        "min_ms": 94.915445,
+        "max_ms": 94.915445
+      },
+      "preprocess/signed_distance_fast_winding_number": {
+        "median_ms": 89.864747,
+        "min_ms": 89.864747,
+        "max_ms": 89.864747
+      },
+      "preprocess/exact_sign_uncached": {
+        "median_ms": 77.687572,
+        "min_ms": 77.687572,
+        "max_ms": 77.687572
+      },
+      "preprocess/exact_sign_cached": {
+        "median_ms": 248.50803,
+        "min_ms": 248.50803,
+        "max_ms": 248.50803
+      },
+      "query/point_mesh_squared_distance": {
+        "median_ms": 88.463658,
+        "min_ms": 88.041898,
+        "max_ms": 88.648387
+      },
+      "query/signed_distance_pseudonormal": {
+        "median_ms": 82.24641,
+        "min_ms": 81.78262,
+        "max_ms": 84.420639
+      },
+      "query/signed_distance_fast_winding_number": {
+        "median_ms": 94.280456,
+        "min_ms": 94.129626,
+        "max_ms": 94.681165
+      },
+      "query/exact_sign_uncached": {
+        "median_ms": 137.01753,
+        "min_ms": 136.56325,
+        "max_ms": 137.99942
+      },
+      "query/exact_sign_cached": {
+        "median_ms": 130.387313,
+        "min_ms": 129.943313,
+        "max_ms": 133.996981
+      },
+      "total/point_mesh_squared_distance": {
+        "median_ms": 139.928719,
+        "min_ms": 139.248019,
+        "max_ms": 141.391218
+      },
+      "total/signed_distance_pseudonormal": {
+        "median_ms": 178.145376,
+        "min_ms": 176.907305,
+        "max_ms": 179.424764
+      },
+      "total/signed_distance_fast_winding_number": {
+        "median_ms": 187.295352,
+        "min_ms": 186.722912,
+        "max_ms": 189.448551
+      },
+      "total/exact_sign_uncached": {
+        "median_ms": 212.767292,
+        "min_ms": 211.752233,
+        "max_ms": 215.254382
+      },
+      "total/exact_sign_cached": {
+        "median_ms": 381.978901,
+        "min_ms": 379.677862,
+        "max_ms": 382.836731
+      }
+    },
+    "armadillo-integrated-optimized-4-threads-run2.csv": {
+      "preprocess/point_mesh_squared_distance": {
+        "median_ms": 52.230137,
+        "min_ms": 52.230137,
+        "max_ms": 52.230137
+      },
+      "preprocess/signed_distance_pseudonormal": {
+        "median_ms": 96.651776,
+        "min_ms": 96.651776,
+        "max_ms": 96.651776
+      },
+      "preprocess/signed_distance_fast_winding_number": {
+        "median_ms": 66.507003,
+        "min_ms": 66.507003,
+        "max_ms": 66.507003
+      },
+      "preprocess/exact_sign_uncached": {
+        "median_ms": 76.141201,
+        "min_ms": 76.141201,
+        "max_ms": 76.141201
+      },
+      "preprocess/exact_sign_cached": {
+        "median_ms": 254.644096,
+        "min_ms": 254.644096,
+        "max_ms": 254.644096
+      },
+      "query/point_mesh_squared_distance": {
+        "median_ms": 23.280584,
+        "min_ms": 23.117525,
+        "max_ms": 23.412204
+      },
+      "query/signed_distance_pseudonormal": {
+        "median_ms": 21.264165,
+        "min_ms": 21.121414,
+        "max_ms": 22.181444
+      },
+      "query/signed_distance_fast_winding_number": {
+        "median_ms": 24.806533,
+        "min_ms": 24.519054,
+        "max_ms": 26.219204
+      },
+      "query/exact_sign_uncached": {
+        "median_ms": 35.185472,
+        "min_ms": 34.924101,
+        "max_ms": 35.987491
+      },
+      "query/exact_sign_cached": {
+        "median_ms": 33.549512,
+        "min_ms": 33.342262,
+        "max_ms": 34.211192
+      },
+      "total/point_mesh_squared_distance": {
+        "median_ms": 80.7651,
+        "min_ms": 77.87665,
+        "max_ms": 81.433289
+      },
+      "total/signed_distance_pseudonormal": {
+        "median_ms": 122.383179,
+        "min_ms": 116.99382,
+        "max_ms": 123.224879
+      },
+      "total/signed_distance_fast_winding_number": {
+        "median_ms": 98.493326,
+        "min_ms": 96.955105,
+        "max_ms": 99.024875
+      },
+      "total/exact_sign_uncached": {
+        "median_ms": 116.63026,
+        "min_ms": 114.457271,
+        "max_ms": 118.10827
+      },
+      "total/exact_sign_cached": {
+        "median_ms": 296.576135,
+        "min_ms": 287.745588,
+        "max_ms": 300.800784
+      }
+    },
+    "armadillo-integrated-optimized-4-threads-run3.csv": {
+      "preprocess/point_mesh_squared_distance": {
+        "median_ms": 53.239817,
+        "min_ms": 53.239817,
+        "max_ms": 53.239817
+      },
+      "preprocess/signed_distance_pseudonormal": {
+        "median_ms": 97.698935,
+        "min_ms": 97.698935,
+        "max_ms": 97.698935
+      },
+      "preprocess/signed_distance_fast_winding_number": {
+        "median_ms": 67.714524,
+        "min_ms": 67.714524,
+        "max_ms": 67.714524
+      },
+      "preprocess/exact_sign_uncached": {
+        "median_ms": 77.54069,
+        "min_ms": 77.54069,
+        "max_ms": 77.54069
+      },
+      "preprocess/exact_sign_cached": {
+        "median_ms": 250.810156,
+        "min_ms": 250.810156,
+        "max_ms": 250.810156
+      },
+      "query/point_mesh_squared_distance": {
+        "median_ms": 24.206654,
+        "min_ms": 23.658954,
+        "max_ms": 24.946604
+      },
+      "query/signed_distance_pseudonormal": {
+        "median_ms": 22.024475,
+        "min_ms": 21.862645,
+        "max_ms": 30.138112
+      },
+      "query/signed_distance_fast_winding_number": {
+        "median_ms": 26.029084,
+        "min_ms": 25.173014,
+        "max_ms": 41.843459
+      },
+      "query/exact_sign_uncached": {
+        "median_ms": 37.111301,
+        "min_ms": 36.707321,
+        "max_ms": 52.047437
+      },
+      "query/exact_sign_cached": {
+        "median_ms": 35.069811,
+        "min_ms": 34.710941,
+        "max_ms": 61.421155
+      },
+      "total/point_mesh_squared_distance": {
+        "median_ms": 82.542129,
+        "min_ms": 79.730849,
+        "max_ms": 99.939744
+      },
+      "total/signed_distance_pseudonormal": {
+        "median_ms": 123.437249,
+        "min_ms": 121.178769,
+        "max_ms": 142.451924
+      },
+      "total/signed_distance_fast_winding_number": {
+        "median_ms": 100.618355,
+        "min_ms": 98.205275,
+        "max_ms": 114.924931
+      },
+      "total/exact_sign_uncached": {
+        "median_ms": 116.58137,
+        "min_ms": 112.238872,
+        "max_ms": 153.530041
+      },
+      "total/exact_sign_cached": {
+        "median_ms": 289.571047,
+        "min_ms": 282.781139,
+        "max_ms": 319.656499
+      }
+    },
+    "armadillo-integrated-optimized-4-threads.csv": {
+      "preprocess/point_mesh_squared_distance": {
+        "median_ms": 52.382531,
+        "min_ms": 52.382531,
+        "max_ms": 52.382531
+      },
+      "preprocess/signed_distance_pseudonormal": {
+        "median_ms": 94.206866,
+        "min_ms": 94.206866,
+        "max_ms": 94.206866
+      },
+      "preprocess/signed_distance_fast_winding_number": {
+        "median_ms": 66.988905,
+        "min_ms": 66.988905,
+        "max_ms": 66.988905
+      },
+      "preprocess/exact_sign_uncached": {
+        "median_ms": 73.916233,
+        "min_ms": 73.916233,
+        "max_ms": 73.916233
+      },
+      "preprocess/exact_sign_cached": {
+        "median_ms": 247.23121,
+        "min_ms": 247.23121,
+        "max_ms": 247.23121
+      },
+      "query/point_mesh_squared_distance": {
+        "median_ms": 24.665191,
+        "min_ms": 24.340782,
+        "max_ms": 25.068991
+      },
+      "query/signed_distance_pseudonormal": {
+        "median_ms": 22.758531,
+        "min_ms": 22.234392,
+        "max_ms": 23.302161
+      },
+      "query/signed_distance_fast_winding_number": {
+        "median_ms": 26.437741,
+        "min_ms": 26.349601,
+        "max_ms": 26.88892
+      },
+      "query/exact_sign_uncached": {
+        "median_ms": 37.365537,
+        "min_ms": 37.095527,
+        "max_ms": 37.497386
+      },
+      "query/exact_sign_cached": {
+        "median_ms": 35.653507,
+        "min_ms": 34.739117,
+        "max_ms": 36.517976
+      },
+      "total/point_mesh_squared_distance": {
+        "median_ms": 77.592282,
+        "min_ms": 77.282352,
+        "max_ms": 81.74225
+      },
+      "total/signed_distance_pseudonormal": {
+        "median_ms": 116.899017,
+        "min_ms": 115.391728,
+        "max_ms": 123.834675
+      },
+      "total/signed_distance_fast_winding_number": {
+        "median_ms": 94.297395,
+        "min_ms": 93.707396,
+        "max_ms": 112.622879
+      },
+      "total/exact_sign_uncached": {
+        "median_ms": 108.82449,
+        "min_ms": 107.135881,
+        "max_ms": 129.800533
+      },
+      "total/exact_sign_cached": {
+        "median_ms": 272.242611,
+        "min_ms": 271.498801,
+        "max_ms": 296.992562
+      }
+    }
+  }
+}

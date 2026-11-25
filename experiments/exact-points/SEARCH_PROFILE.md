@@ -2,10 +2,15 @@
 
 `profile_exact_point_search` separates tree representation/traversal from the
 metric predicates used by exact nearest-triangle search. It uses the same
-Armadillo input and 10,000 seeded queries as tutorial 1005. See the saved CSVs
+Armadillo input and 10,000 seeded queries as tutorial 1008. See the saved CSVs
 under `results/armadillo-search-*` for timings, counters and agreement checks.
 
-## Results
+These are historical measurements before integration. The production versions
+now include feature caching, tie-bound reuse and the vertex self-comparison
+fix; see [INTEGRATION.md](INTEGRATION.md) for paired before/after measurements.
+The benchmark copies retain the original policies as controls.
+
+## Results before integration
 
 Median milliseconds for all 10,000 queries (preprocessing excluded):
 
@@ -148,8 +153,8 @@ CPU-heavy process sharing this container's four-core quota. Its timing ranges
 are wide and several medians are distorted; it is preserved as
 `armadillo-ties-4-threads-contended.csv` and is **excluded from performance
 conclusions**. The initial one-/four-thread tree-versus-predicate controls above
-were collected earlier. These optimizations remain experiment-local prototypes;
-the production library has not been modified in this investigation.
+were collected earlier. These were experiment-local prototypes at the time of
+this investigation; they have since been integrated into the production library.
 
 ## Controls
 
@@ -195,7 +200,7 @@ Shewchuk's internal orient3d arithmetic.
 its edge loop after the incumbent edge. It retains the exact predicates for all
 remaining comparisons. Its full signed-distance outputs must equal both
 production cached and uncached outputs bit for bit on the sample. This is an
-experiment-local prototype; the production signing implementation is unchanged.
+reference copy of the optimization now used by production signing.
 
 ## Reproduce
 

@@ -65,8 +65,8 @@ endif()
 
 # Build the headless tutorial against existing dependencies and data.
 if(DEFINED TUTORIAL_DATA_DIR)
-  add_executable(1005_SignedDistanceProfile
-    "${LIBIGL_POINT_SOURCE}/tutorial/1005_SignedDistanceProfile/main.cpp")
-  target_compile_definitions(1005_SignedDistanceProfile PRIVATE TUTORIAL_SHARED_PATH="${TUTORIAL_DATA_DIR}")
-  target_link_libraries(1005_SignedDistanceProfile PRIVATE igl::predicates)
+  add_executable(1008_SignedDistanceProfile
+    "${LIBIGL_POINT_SOURCE}/tutorial/1008_SignedDistanceProfile/main.cpp")
+  target_compile_definitions(1008_SignedDistanceProfile PRIVATE TUTORIAL_SHARED_PATH="${TUTORIAL_DATA_DIR}")
+  target_link_libraries(1008_SignedDistanceProfile PRIVATE igl::predicates)
 endif()

@@ -155,8 +155,9 @@ Squared distances are represented transiently as positive-denominator fractions:
 
 The ordering sign is `N1*D2 - N2*D1`, of degree at most ten. Proven common
 vertices or common open edges give an exact tie directly, including reversed
-edge orientation. Other comparisons recompute their own fractions. No exact
-point, parameter, normal, or expansion persists across comparisons.
+edge orientation. Traversal classifies each candidate once and retains the
+incumbent feature dimension and local id. Other comparisons recompute their own fractions. No
+exact point, parameter, normal, or expansion persists across comparisons.
 
 A cheap filter evaluates each expression and its absolute permanent. It accepts
 only signs separated from zero by `256*DBL_EPSILON*permanent`. For a precise
@@ -203,7 +204,8 @@ outward-rounded squared distances to its vertices and, when its denominator
 interval is positive, an outward-rounded interval quotient for its classified
 feature. A node is pruned only when its lower bound is **strictly greater** than
 that upper bound. Leaf candidates are compared by the metric predicate; an equal
-distance still permits replacement by a smaller face id. Consequently, rounded
+distance still permits replacement by a smaller face id, reusing the previous
+upper bound because it bounds the same exact distance. Consequently, rounded
 quotients or rounded constructed closest points never decide the winner.
 
 ## Local sign and query-free exposure
@@ -252,6 +254,9 @@ noncoincident query that can have this vertex as its closest point.
 
 ## Validation and timings
 
+The small-mesh timings below predate the production traversal optimizations.
+See [INTEGRATION.md](INTEGRATION.md) for current validation and Armadillo timings.
+
 The standalone harness includes the normal libigl unit test files and existing
 exact-ray leaf regression tests, plus separate static-link and allocation/path
 checks. Coverage includes:
@@ -282,9 +287,9 @@ See `results/` for saved test summaries and timing CSVs. Leaf allocation/path
 instrumentation confirms zero allocations, zero expansion sums for an ordinary
 filtered query and a shared-edge tie, and actual expansion work for a distance
 comparison whose rounded distances coincide. The suite also runs with a 1 MiB
-stack. The original exact-ray source and ray-box implementation are unchanged.
-The final Release run passed **54,912 assertions in 20 cases**, including the
-existing ray leaf tests. All three CTest targets passed in both Release and
+stack. The original ray-box implementation is unchanged. The initial closest-point
+Release run passed **54,912 assertions in 20 cases**, including the existing
+ray leaf tests; subsequent validation is recorded in the Armadillo reports. All three CTest targets passed in both Release and
 AddressSanitizer/UndefinedBehaviorSanitizer builds, with leak detection enabled.
 
 GCC 13.3, AMD EPYC 9B45, Release `-O3 -DNDEBUG`, strict FP, generic x86-64 code,
@@ -309,9 +314,11 @@ comparison between different accuracy contracts.
 | Exposure preprocessing, whole mesh | 0.40 ms | 6.44 ms |
 
 The first interval-only implementation took about 1.3 µs per classification and
-46/107 µs per exact tree query. `interval-only.patch` recreates that arithmetic
-path and conservative box evaluation for an ablation; its saved measurements
-are in `results/timings-interval-only.csv`. The cheap certified filter, direct
+46/107 µs per exact tree query. `interval-only.patch` disables the fast arithmetic
+filters and shared-feature shortcuts and restores interval box bounds for an ablation. The historical
+measurements in `results/timings-interval-only.csv` predate traversal feature
+caching and tie-bound reuse; apply the patch at commit `c2eb7340` to reproduce
+that original implementation exactly. The cheap certified filter, direct
 common-feature ties, and bounded-error box lower bound remove most of that cost.
 The remaining exact tree overhead is about 3.4× / 2.0× versus approximate
 traversal on these workloads. Boundary-heavy inputs needing expansions and very
@@ -375,7 +382,7 @@ checkout, build the benchmark there, and retain strict floating-point flags.
 
 ## Armadillo comparison example
 
-[`tutorial/1005_SignedDistanceProfile`](../../tutorial/1005_SignedDistanceProfile/README.md)
+[`tutorial/1008_SignedDistanceProfile`](../../tutorial/1008_SignedDistanceProfile/README.md)
 loads the watertight tutorial Armadillo, samples 10,000 reproducible points, and
 compares unsigned, pseudonormal, fast-winding, uncached exact-sign and cached
 exact-sign distances. It reports setup, prepared queries and full-call timings
@@ -386,5 +393,7 @@ agreement checks are saved in `results/armadillo-1-thread.csv` and
 [The search-cost investigation](SEARCH_PROFILE.md) adds ordinary Eytzinger
 distance controls, identical-hierarchy comparisons with AABB, separate leaf
 ordering and pruning-bound ablations, and an untimed expansion audit. It also
-measures a prototype that avoids an unnecessary self-comparison in uncached
-vertex signing.
+records the prototypes now incorporated into production: cached closest-feature
+classifications, retained bounds on exact ties, and no incumbent self-comparison
+in vertex signing. The latest paired before/after Armadillo measurements are in
+[INTEGRATION.md](INTEGRATION.md).
