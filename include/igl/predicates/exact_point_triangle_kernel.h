@@ -197,14 +197,15 @@ namespace igl { namespace predicates { namespace exact_point_triangle_kernel
     return result;
   }
   // Exact fallback expressions have degree <= Degree. After scaling, their
-  // lowest possible product bit is >= -1000 and their largest monomial
-  // exponent <= 900. Fewer than 2^32 signed terms and the splitter's 27 bits
-  // leave room below overflow; the 74 low bits leave room above underflow.
+  // lowest possible product bit is >= -1000 and each monomial's magnitude is
+  // below 2^(900+Degree). Fewer than 2^32 signed terms and the splitter's 27
+  // bits keep intermediates below 2^969; the low bits stay above underflow.
   // A common power of two preserves every homogeneous sign and feature.
   // Called only on refinement, with a comparison-only shortcut for ordinary
   // coordinates. Excessive dynamic range is rejected, never silently rounded.
   template<int Degree,std::size_t Count> inline int rescale(std::array<Point,Count> &points)
   {
+    static_assert(Degree>0 && Degree<=10,"Unsupported exact expression degree");
     constexpr int lower=-1000/Degree,upper=900/Degree;
     double minimum=std::numeric_limits<double>::infinity(),maximum=0;
     for(const auto &p:points) for(double coordinate:p)
