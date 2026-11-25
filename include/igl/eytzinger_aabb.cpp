@@ -1,10 +1,10 @@
 #include "eytzinger_aabb.h"
 #include "PlainMatrix.h"
-#include "median.h"
 #include "placeholders.h"
 #include <vector>
 #include <algorithm>
 #include <cassert>
+#include <utility>
 
 template <
   typename DerivedPB,
@@ -19,7 +19,6 @@ IGL_INLINE void igl::eytzinger_aabb(
   Eigen::PlainObjectBase<Derivedleaf> & leaf)
 {
   using Scalar = typename DerivedPB::Scalar;
-  using VectorXS = Eigen::Matrix<Scalar, Eigen::Dynamic, 1>;
   // Number of primitives
   const int m = PB1.rows();
   assert(PB1.rows() == PB2.rows());
@@ -38,10 +37,26 @@ IGL_INLINE void igl::eytzinger_aabb(
   leaf.setConstant(-2);
   std::vector<int> I(m); for(int i = 0; i < m; i++) { I[i] = i; }
 
+  // Order (center, primitive index) pairs by center, then by index. Breaking
+  // ties by index makes the order total, so the tree does not depend on the
+  // standard library's nth_element. NaN centers sort last.
+  const auto before = [](
+    const std::pair<Scalar,int> & a, const std::pair<Scalar,int> & b)
+  {
+    if(a.first < b.first) { return true; }
+    if(b.first < a.first) { return false; }
+    const bool a_is_nan = a.first != a.first;
+    const bool b_is_nan = b.first != b.first;
+    if(a_is_nan != b_is_nan) { return b_is_nan; }
+    return a.second < b.second;
+  };
+
   std::function<void(const int, const std::vector<int> &)> recursive_helper;
   recursive_helper = [&](const int i, const std::vector<int> & I)
   {
     if(I.size() == 0) { return; }
+    // Balanced splits keep every nonempty node inside the arrays.
+    assert(i < complete_m);
 
     B1.row(i) = PB1(I, igl::placeholders::all).colwise().minCoeff();
     B2.row(i) = PB2(I, igl::placeholders::all).colwise().maxCoeff();
@@ -52,29 +67,21 @@ IGL_INLINE void igl::eytzinger_aabb(
     int dir;
     (B2.row(i) - B1.row(i)).maxCoeff(&dir);
 
-    Scalar split_value;
-    VectorXS Z = PBC(I, dir);
-    igl::median(Z,split_value); 
-    std::vector<int> left; left.reserve(I.size()/2+1);
-    std::vector<int> right; right.reserve(I.size()/2+1);
+    // Split at the middle of the primitives ordered by box center along dir.
+    // Splitting by position, not by comparing against a threshold value, keeps
+    // the two halves within one primitive of each other for every input. The
+    // complete_m bound on the node index relies on that balance.
+    std::vector<std::pair<Scalar,int>> keyed(I.size());
     for(int j = 0; j < (int)I.size(); j++)
     {
-      if(Z(j) < split_value)
-      {
-        left.push_back(I[j]);
-      }else if(Z(j) > split_value)
-      {
-        right.push_back(I[j]);
-      }
+      keyed[j] = std::make_pair(PBC(I[j],dir),I[j]);
     }
-    for(int j = 0; j < (int)I.size(); j++)
-    {
-      if(Z(j) == split_value)
-      {
-        (left.size()<right.size() ? left : right).push_back(I[j]);
-      }
-    }
-    assert(std::abs(int(left.size()-right.size())) <= 1);
+    const auto middle = keyed.begin() + keyed.size()/2;
+    std::nth_element(keyed.begin(),middle,keyed.end(),before);
+    std::vector<int> left; left.reserve(I.size()/2);
+    std::vector<int> right; right.reserve(I.size() - I.size()/2);
+    for(auto it = keyed.begin(); it != middle; ++it) { left.push_back(it->second); }
+    for(auto it = middle; it != keyed.end(); ++it) { right.push_back(it->second); }
 
     const int left_i = 2*i + 1;
     const int right_i = 2*i + 2;
