@@ -21,27 +21,44 @@ namespace igl { namespace predicates { namespace exact_point_triangle_kernel
   // Private arithmetic objects never escape a predicate invocation.
   constexpr int capacity = std::numeric_limits<double>::max_exponent
     - std::numeric_limits<double>::min_exponent + std::numeric_limits<double>::digits;
-  struct Expansion
+  constexpr int bounded_capacity(int size) { return size<capacity ? size : capacity; }
+  // Track expression-length bounds so coordinate differences and normals do
+  // not each reserve the maximum binary64 expansion. Arithmetic scratch still
+  // accommodates the full sum/scale output before checking its finite bound.
+  template<int Capacity> struct ExpansionStorage
   {
+    static_assert(Capacity>0 && Capacity<=capacity,"Invalid expansion capacity");
     int size;
-    double data[capacity];
-    Expansion(double value=0):size(1) { data[0]=value; }
-    Expansion(const Expansion &other):size(other.size)
+    double data[Capacity];
+    ExpansionStorage(double value=0):size(1) { data[0]=value; }
+    ExpansionStorage(const ExpansionStorage &other):size(other.size)
     { std::copy_n(other.data,size,data); }
-    Expansion &operator=(const Expansion &other)
+    ExpansionStorage &operator=(const ExpansionStorage &other)
     { size=other.size; std::copy_n(other.data,size,data); return *this; }
+    template<int Other> ExpansionStorage(const ExpansionStorage<Other> &other):size(other.size)
+    {
+      static_assert(Other<=Capacity,"An expansion conversion must preserve its capacity");
+      std::copy_n(other.data,size,data);
+    }
+    template<int Other> ExpansionStorage &operator=(const ExpansionStorage<Other> &other)
+    {
+      static_assert(Other<=Capacity,"An expansion assignment must preserve its capacity");
+      size=other.size; std::copy_n(other.data,size,data); return *this;
+    }
     void assign(int length,const double *values)
     {
-      if(length>capacity || !std::isfinite(values[length-1]))
+      if(length>Capacity || !std::isfinite(values[length-1]))
         throw std::overflow_error("Exact metric expansion exceeded its arithmetic range");
       size=length; std::copy_n(values,size,data);
     }
   };
-  inline int sign(const Expansion &value)
+  using Expansion=ExpansionStorage<capacity>;
+  template<int Capacity> inline int sign(const ExpansionStorage<Capacity> &value)
   { return (value.data[value.size-1]>0)-(value.data[value.size-1]<0); }
-  inline Expansion operator-(const Expansion &a,const Expansion &b)
+  template<int A,int B> inline ExpansionStorage<bounded_capacity(A+B)> operator-(
+    const ExpansionStorage<A> &a,const ExpansionStorage<B> &b)
   {
-    Expansion result;
+    ExpansionStorage<bounded_capacity(A+B)> result;
     if(a.size==1 && b.size==1)
     {
       double head,tail;
@@ -50,23 +67,25 @@ namespace igl { namespace predicates { namespace exact_point_triangle_kernel
       if(tail!=0 && head!=0) { result.data[1]=head; result.size=2; }
       return result;
     }
-    double negative[capacity],sum[2*capacity];
+    double negative[B],sum[A+B];
     for(int i=0;i<b.size;++i) negative[i]=-b.data[i];
     result.assign(::predicates_expansion_sum(a.size,a.data,b.size,negative,sum),sum);
     return result;
   }
-  inline Expansion operator+(const Expansion &a,const Expansion &b)
+  template<int A,int B> inline ExpansionStorage<bounded_capacity(A+B)> operator+(
+    const ExpansionStorage<A> &a,const ExpansionStorage<B> &b)
   {
-    Expansion result;
-    double sum[2*capacity];
+    ExpansionStorage<bounded_capacity(A+B)> result;
+    double sum[A+B];
     result.assign(::predicates_expansion_sum(a.size,a.data,b.size,b.data,sum),sum);
     return result;
   }
-  inline Expansion operator*(const Expansion &a,const Expansion &b)
+  template<int A,int B> inline ExpansionStorage<bounded_capacity(2*A*B)> operator*(
+    const ExpansionStorage<A> &a,const ExpansionStorage<B> &b)
   {
-    Expansion result;
+    ExpansionStorage<bounded_capacity(2*A*B)> result;
     if(sign(a)==0 || sign(b)==0) return result;
-    double scaled[2*capacity],sum[3*capacity];
+    double scaled[2*A],sum[bounded_capacity(2*A*B)+2*A];
     for(int i=0;i<b.size;++i)
     {
       const int length=::predicates_expansion_scale(a.size,a.data,b.data[i],scaled);
@@ -154,14 +173,23 @@ namespace igl { namespace predicates { namespace exact_point_triangle_kernel
     return result;
   }
   template<typename Number> using Vector=std::array<Number,3>;
-  template<typename Number> inline Vector<Number> difference(const Point &a,const Point &b)
-  { return {{Number(a[0])-Number(b[0]),Number(a[1])-Number(b[1]),Number(a[2])-Number(b[2])}}; }
-  template<> inline Vector<Filter> difference<Filter>(const Point &a,const Point &b)
-  { return {{Filter(a[0]-b[0]),Filter(a[1]-b[1]),Filter(a[2]-b[2])}}; }
-  template<typename Number> inline Number dot(const Vector<Number> &a,const Vector<Number> &b)
+  template<typename Number> using Input=typename std::conditional<
+    std::is_same<Number,Expansion>::value,ExpansionStorage<1>,Number>::type;
+  template<typename Number> inline auto difference(const Point &a,const Point &b)
+  {
+    using Scalar=Input<Number>;
+    using Difference=decltype(Scalar(a[0])-Scalar(b[0]));
+    return Vector<Difference>{{Scalar(a[0])-Scalar(b[0]),Scalar(a[1])-Scalar(b[1]),Scalar(a[2])-Scalar(b[2])}};
+  }
+  template<> inline auto difference<Filter>(const Point &a,const Point &b)
+  { return Vector<Filter>{{Filter(a[0]-b[0]),Filter(a[1]-b[1]),Filter(a[2]-b[2])}}; }
+  template<typename A,typename B> inline auto dot(const Vector<A> &a,const Vector<B> &b)
   { return (a[0]*b[0]+a[1]*b[1])+a[2]*b[2]; }
-  template<typename Number> inline Vector<Number> cross(const Vector<Number> &a,const Vector<Number> &b)
-  { return {{a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]}}; }
+  template<typename A,typename B> inline auto cross(const Vector<A> &a,const Vector<B> &b)
+  {
+    using ProductDifference=decltype(a[1]*b[2]-a[2]*b[1]);
+    return Vector<ProductDifference>{{a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]}};
+  }
 
   // Dimension 0/1/2 and corner/starting-corner/0. -1 means uncertain.
   template<typename Number> inline int feature(const Point &q,

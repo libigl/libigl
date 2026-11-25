@@ -178,9 +178,15 @@ filter is accepted only when both the value and permanent are zero.
 The expansions use the existing dependency's `Two_Diff`, expansion sum, and
 expansion scale, which use its `Two_Sum`/`Two_Product` primitives. Buffers are
 local stack storage. A finite nonoverlapping binary64 expansion has at most
-2098 nonzero components. Sum and scale scratch reserve their full input-length
-bounds before checking the output length. The measured leaf calls allocate
-nothing; traversal and one-ring collection use ordinary temporary vectors.
+2098 nonzero components. Each expression reserves the smaller of that bound
+and its own term-count bound: a sum/difference needs at most `N1+N2` terms,
+and a product at most `2*N1*N2`. Thus coordinate differences reserve two terms
+and cross-product components reserve 16. Sum and scale scratch still reserve
+their full output-length bounds before checking the result. Exact construction
+has a separate non-inlined entry point so its return storage is absent from
+the ordinary query's frame. The measured leaf calls allocate nothing;
+traversal and one-ring collection use ordinary temporary vectors. See
+[the stack regression and timings](STACK_USAGE.md) for 512 KiB worker validation.
 
 Inputs must be finite float or double, using the double predicates backend,
 round-to-nearest, and no reassociation or floating-point contraction. As with
@@ -299,8 +305,9 @@ checks. Coverage includes:
 See `results/` for saved test summaries and timing CSVs. Leaf allocation/path
 instrumentation confirms zero allocations, zero expansion sums for an ordinary
 filtered query and a shared-edge tie, and actual expansion work for a distance
-comparison whose rounded distances coincide. The suite also runs with a 1 MiB
-stack. The original ray-box implementation is unchanged. The initial closest-point
+comparison whose rounded distances coincide. Initial validation used a 1 MiB
+stack; the current regression also exercises a 512 KiB worker in header-only
+and static builds. The original ray-box implementation is unchanged. The initial closest-point
 Release run passed **54,912 assertions in 20 cases**, including the existing
 ray leaf tests; subsequent validation is recorded in the Armadillo reports. All three CTest targets passed in both Release and
 AddressSanitizer/UndefinedBehaviorSanitizer builds, with leak detection enabled.
@@ -366,7 +373,8 @@ The allocation/path audit verifies that ordinary construction uses no expansion
 sums, while a near-plane construction uses 35 even though its feature can be
 classified without any. Each wrapper call uses the existing traversal vector's
 one allocation; expansion construction adds no heap allocation. Both paths
-and the complete test suite pass the sanitizer and 1 MiB stack checks.
+and the complete test suite pass sanitizer checks, including the 512 KiB worker
+regression. The allocation audit also passes with a 512 KiB process stack.
 
 ## Reproduce
 
@@ -389,7 +397,8 @@ For ASan/UBSan, configure a separate build with
 `-DCMAKE_CXX_FLAGS='-g -fsanitize=address,undefined -fno-omit-frame-pointer'`,
 the corresponding `CMAKE_C_FLAGS`, and
 `-DCMAKE_EXE_LINKER_FLAGS='-fsanitize=address,undefined'`. Build the
-`test_exact_points`, `static_smoke`, and `audit_allocations` targets and run CTest.
+`test_exact_points`, `static_smoke`, `static_stack`, and `audit_allocations`
+targets and run CTest.
 For the interval-only ablation, apply `interval-only.patch` in a disposable
 checkout, build the benchmark there, and retain strict floating-point flags.
 

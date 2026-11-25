@@ -49,8 +49,8 @@ namespace igl { namespace predicates { namespace point_mesh_closest_point_kernel
         result.barycentric[(id+1)%3]-result.barycentric[(id+2)%3];
     }
     for(int axis=0;axis<3;++axis)
-      result.point[axis]=(Number(p[0][axis])*result.barycentric[0]+
-        Number(p[1][axis])*result.barycentric[1])+Number(p[2][axis])*result.barycentric[2];
+      result.point[axis]=(k::Input<Number>(p[0][axis])*result.barycentric[0]+
+        k::Input<Number>(p[1][axis])*result.barycentric[1])+k::Input<Number>(p[2][axis])*result.barycentric[2];
     return result;
   }
   inline bool well_conditioned(const k::Filter &value)
@@ -89,6 +89,19 @@ namespace igl { namespace predicates { namespace point_mesh_closest_point_kernel
       result.closest_point(i)=estimate(construction.point[i])/denominator;
     }
   }
+  // Keep the large return slot off the filtered query's frame, including in
+  // header-only builds. Caller-owned 512 KiB worker stacks must also suffice
+  // when a construction needs exact arithmetic.
+#if defined(_MSC_VER)
+  __declspec(noinline)
+#elif defined(__GNUC__) || defined(__clang__)
+  __attribute__((noinline))
+#endif
+  inline void construct_exact(const k::Point &q,const std::array<k::Point,3> &p,
+    int dimension,int id,PointMeshClosestPoint &result)
+  {
+    approximate(construct<k::Expansion>(q,p,dimension,id),result);
+  }
 }}}
 
 template<typename DerivedQ,typename DerivedV,typename DerivedF,
@@ -115,7 +128,7 @@ IGL_INLINE igl::predicates::PointMeshClosestPoint igl::predicates::point_mesh_cl
   for(int i=0;i<3;++i)
     reliable=reliable && c::well_conditioned(filtered.barycentric[i]) && c::well_conditioned(filtered.point[i]);
   if(reliable) c::approximate(filtered,result);
-  else c::approximate(c::construct<k::Expansion>(q,p,dimension,result.feature_id),result);
+  else c::construct_exact(q,p,dimension,result.feature_id,result);
   return result;
 }
 

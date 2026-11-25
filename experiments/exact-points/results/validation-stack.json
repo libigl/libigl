@@ -1,0 +1,59 @@
+{
+  "baseline_commit": "caafc200528b8a7e8227ac84a142b44753500628",
+  "platform": "Linux x86-64, GCC 13.3",
+  "baseline_worker_stack_bytes": 524288,
+  "baseline_worker_exit": 139,
+  "fixed_worker_checks": {
+    "header_only": "passed",
+    "static": "passed",
+    "asan_ubsan_header_only": "passed",
+    "asan_ubsan_static": "passed"
+  },
+  "release_tests": {
+    "cases": 25,
+    "assertions": 88007,
+    "ctest_passed": 5
+  },
+  "asan_ubsan_tests": {
+    "ctest_passed": 5,
+    "leak_detection": true
+  },
+  "asan_ubsan_armadillo": {
+    "queries": 10000,
+    "threads": 4,
+    "exit": 0,
+    "sign_mismatches": 0,
+    "cached_uncached_max_difference": 0
+  },
+  "allocation_audit": {
+    "stack_bytes": 524288,
+    "leaf_allocations": 0,
+    "wrapper_allocations_for_two_queries": 2,
+    "construction_feature_expansion_sums": 0,
+    "construction_fallback_expansion_sums": 35
+  },
+  "timing_method": {
+    "queries": 10000,
+    "faces": 86482,
+    "seed": 896,
+    "rotated_repetitions_per_process": 7,
+    "processes_per_variant_and_thread_count": 3,
+    "threads": [
+      1,
+      4
+    ],
+    "cpu_affinity": {
+      "1": "24",
+      "4": "24-27"
+    },
+    "build": "Release -O3 -DNDEBUG -fno-fast-math -ffp-contract=off -fstack-usage",
+    "binaries_alternated": true,
+    "concurrent_builds": false
+  },
+  "armadillo_all_12_runs": {
+    "checksums_match": true,
+    "agreement_reports_match": true,
+    "feature_location_counts_match": true
+  },
+  "native_macos_windows_validation": "Pending CI; no local native compiler/runtime available."
+}

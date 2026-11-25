@@ -16,6 +16,7 @@ add_executable(test_exact_points
   "${LIBIGL_POINT_SOURCE}/tests/main.cpp"
   "${LIBIGL_POINT_SOURCE}/tests/include/igl/predicates/exact_point_triangle.cpp"
   "${LIBIGL_POINT_SOURCE}/tests/include/igl/predicates/exact_point_mesh.cpp"
+  "${LIBIGL_POINT_SOURCE}/tests/include/igl/predicates/exact_point_small_stack.cpp"
   "${LIBIGL_POINT_SOURCE}/tests/include/igl/predicates/exact_ray_triangle.cpp")
 target_include_directories(test_exact_points PRIVATE "${LIBIGL_POINT_SOURCE}/tests" "${CATCH2_INCLUDE_DIR}")
 target_compile_definitions(test_exact_points PRIVATE LIBIGL_DATA_DIR="${CMAKE_CURRENT_BINARY_DIR}/data")
@@ -45,6 +46,14 @@ add_executable(static_smoke static_smoke.cpp)
 target_link_libraries(static_smoke PRIVATE exact_point_static)
 add_test(NAME exact_point_static_api COMMAND static_smoke)
 set_tests_properties(exact_point_static_api PROPERTIES TIMEOUT 30)
+add_executable(static_stack
+  "${LIBIGL_POINT_SOURCE}/tests/main.cpp"
+  "${LIBIGL_POINT_SOURCE}/tests/include/igl/predicates/exact_point_small_stack.cpp")
+target_include_directories(static_stack PRIVATE "${LIBIGL_POINT_SOURCE}/tests" "${CATCH2_INCLUDE_DIR}")
+target_compile_definitions(static_stack PRIVATE LIBIGL_DATA_DIR="${CMAKE_CURRENT_BINARY_DIR}/data")
+target_link_libraries(static_stack PRIVATE exact_point_static)
+add_test(NAME exact_point_static_stack COMMAND static_stack)
+set_tests_properties(exact_point_static_stack PROPERTIES TIMEOUT 30)
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
   add_executable(audit_allocations allocations.cpp)
   target_link_libraries(audit_allocations PRIVATE igl::predicates)
