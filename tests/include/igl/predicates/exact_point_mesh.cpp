@@ -1,4 +1,5 @@
 #include <test_common.h>
+#include <igl/default_num_threads.h>
 #include <igl/eytzinger_aabb.h>
 #include <igl/triangle_triangle_adjacency.h>
 #include <igl/predicates/exact_point_mesh_closest_triangle.h>
@@ -335,6 +336,7 @@ TEST_CASE("predicates::approximate_signed_distance_exact_sign: batch_and_feature
     REQUIRE(int(location)==locations(i)); REQUIRE(single.feature==c.feature);
     if(locations(i)==0) REQUIRE_FALSE(std::signbit(distances(i)));
   }
+#ifndef IGL_STATIC_LIBRARY
   // Header-only float inputs and Eigen expressions preserve the same exact
   // classifications; all returned numerical constructions are doubles.
   Eigen::VectorXd float_distances; Eigen::VectorXi float_locations;
@@ -343,6 +345,7 @@ TEST_CASE("predicates::approximate_signed_distance_exact_sign: batch_and_feature
     mesh.faces,mesh.lower.cast<float>(),mesh.upper.cast<float>(),mesh.leaves,
     mesh.exposure,float_distances,float_closest,float_locations);
   REQUIRE(float_distances==distances); REQUIRE(float_locations==locations);
+#endif
   queries(0,0)=std::numeric_limits<double>::quiet_NaN();
   REQUIRE_THROWS_AS(p::approximate_signed_distance_exact_sign(queries,mesh.vertices,mesh.faces,
     mesh.lower,mesh.upper,mesh.leaves,mesh.exposure,distances,closest,locations),std::invalid_argument);
@@ -359,7 +362,8 @@ TEST_CASE("predicates::approximate_signed_distance_exact_sign: batch_and_feature
     mesh.lower,mesh.upper,mesh.leaves,mesh.exposure,distances,closest,locations),std::invalid_argument);
   mesh.vertices.resize(0,3); mesh.faces.resize(0,3); mesh.tree();
   mesh.exposure.vertices.resize(0);
-  REQUIRE_THROWS_AS(p::point_mesh_closest_point(Point::Zero(),mesh.vertices,mesh.faces,
+  const Point zero=Point::Zero();
+  REQUIRE_THROWS_AS(p::point_mesh_closest_point(zero,mesh.vertices,mesh.faces,
     mesh.lower,mesh.upper,mesh.leaves),std::invalid_argument);
   REQUIRE_THROWS_AS(p::approximate_signed_distance_exact_sign(queries,mesh.vertices,mesh.faces,
     mesh.lower,mesh.upper,mesh.leaves,mesh.exposure,distances,closest,locations),std::invalid_argument);
@@ -480,6 +484,7 @@ TEST_CASE("predicates::approximate_signed_distance_exact_sign: parallel_batches"
     queries.row(i)=samples[i%8]; expected_distances(i)=expected_distance[i%8];
     expected_locations(i)=int(expected_location[i%8]);
   }
+#ifndef IGL_STATIC_LIBRARY
   const auto caller=std::this_thread::get_id();
   std::atomic<bool> worker_read{false};
   // Observe input evaluation in a worker, so correctness alone cannot hide
@@ -490,6 +495,14 @@ TEST_CASE("predicates::approximate_signed_distance_exact_sign: parallel_batches"
       if(std::this_thread::get_id()!=caller) worker_read.store(true,std::memory_order_relaxed);
       return queries(row,col);
     });
+  const auto serial_queries=observed_queries.topRows(9999);
+#else
+  // Static-library instantiations accept concrete matrices. Keep the same
+  // batch correctness and exception checks; expression instrumentation is
+  // available in the header-only build.
+  const auto &observed_queries=queries;
+  const Eigen::MatrixXd serial_queries=queries.topRows(9999);
+#endif
   for(bool cached:{false,true})
   {
     Eigen::VectorXd distances; Eigen::VectorXi locations;
@@ -501,11 +514,17 @@ TEST_CASE("predicates::approximate_signed_distance_exact_sign: parallel_batches"
       else p::approximate_signed_distance_exact_sign(observed_queries,mesh.vertices,mesh.faces,
         mesh.lower,mesh.upper,mesh.leaves,mesh.neighbors,mesh.neighbor_edges,distances,closest,locations);
     };
-    worker_read=false; evaluate();
+#ifndef IGL_STATIC_LIBRARY
+    worker_read=false;
+#endif
+    evaluate();
+#ifndef IGL_STATIC_LIBRARY
 #ifdef IGL_PARALLEL_FOR_FORCE_SERIAL
     REQUIRE_FALSE(worker_read.load());
 #else
     REQUIRE(worker_read.load()==(igl::default_num_threads()>1));
+#endif
+    worker_read=false;
 #endif
     REQUIRE(distances==expected_distances); REQUIRE(locations==expected_locations);
     for(int i=0;i<queries.rows();i+=997)
@@ -514,12 +533,13 @@ TEST_CASE("predicates::approximate_signed_distance_exact_sign: parallel_batches"
       REQUIRE(closest[i].feature==expected_closest[i%8].feature);
       REQUIRE(closest[i].feature_id==expected_closest[i%8].feature_id);
     }
-    worker_read=false;
-    if(cached) p::approximate_signed_distance_exact_sign(observed_queries.topRows(9999),mesh.vertices,mesh.faces,
+    if(cached) p::approximate_signed_distance_exact_sign(serial_queries,mesh.vertices,mesh.faces,
       mesh.lower,mesh.upper,mesh.leaves,mesh.exposure,distances,closest,locations);
-    else p::approximate_signed_distance_exact_sign(observed_queries.topRows(9999),mesh.vertices,mesh.faces,
+    else p::approximate_signed_distance_exact_sign(serial_queries,mesh.vertices,mesh.faces,
       mesh.lower,mesh.upper,mesh.leaves,mesh.neighbors,mesh.neighbor_edges,distances,closest,locations);
+#ifndef IGL_STATIC_LIBRARY
     REQUIRE_FALSE(worker_read.load());
+#endif
     REQUIRE(distances==expected_distances.head(9999));
     queries(9999,0)=std::numeric_limits<double>::quiet_NaN();
     REQUIRE_THROWS_AS(evaluate(),std::invalid_argument);

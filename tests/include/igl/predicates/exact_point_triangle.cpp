@@ -1,6 +1,8 @@
 #include <test_common.h>
 #include <igl/predicates/exact_point_triangle_closest_feature.h>
+#include <igl/predicates/exact_point_triangle_kernel.h>
 #include <igl/predicates/exact_point_triangle_squared_distance_compare.h>
+#include <igl/predicates/exactinit.h>
 #include <array>
 #include <cstdint>
 #include <random>

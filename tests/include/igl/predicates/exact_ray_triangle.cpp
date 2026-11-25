@@ -1,6 +1,7 @@
 #include <test_common.h>
 #include <igl/predicates/exact_ray_triangle_intersect.h>
 #include <igl/predicates/exact_ray_triangle_hit_compare.h>
+#include <igl/predicates/exactinit.h>
 #include <predicates.h>
 #include <array>
 #include <cstdint>
