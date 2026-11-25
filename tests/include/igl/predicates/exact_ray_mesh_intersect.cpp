@@ -3,6 +3,8 @@
 #include <igl/predicates/exact_ray_triangle_intersect.h>
 #include <igl/predicates/exact_ray_triangle_hit_compare.h>
 #include <igl/ray_mesh_intersect.h>
+#include <igl/box_simplices.h>
+#include <igl/eytzinger_aabb.h>
 #include <igl/read_triangle_mesh.h>
 #include <random>
 #include <algorithm>
@@ -110,7 +112,7 @@ TEST_CASE("exact_ray_mesh_intersect: tree_matches_bruteforce", "[igl]")
 {
   std::mt19937 rng(7);
   std::uniform_real_distribution<double> U(-1,1);
-  for(int t = 0; t < 3000; t++)
+  for(int t = 0; t < 300; t++)
   {
     const int nf = 1 + (rng()%16);
     Eigen::MatrixXd V(3*nf,3);
@@ -120,6 +122,12 @@ TEST_CASE("exact_ray_mesh_intersect: tree_matches_bruteforce", "[igl]")
       for(int k = 0; k < 3; k++){ V.row(3*f+k) << U(rng),U(rng),U(rng); }
       F.row(f) << 3*f, 3*f+1, 3*f+2;
     }
+    Eigen::MatrixXd lower,upper,B1,B2;
+    Eigen::VectorXi leaf;
+    igl::box_simplices(V,F,lower,upper);
+    igl::eytzinger_aabb(lower,upper,B1,B2,leaf);
+    for(int ray=0;ray<10;++ray)
+    {
     Eigen::Vector3d s(2*U(rng), 2*U(rng), 2*U(rng)), d(U(rng),U(rng),U(rng));
     if(d.norm() < 1e-6){ continue; }
 
@@ -142,7 +150,7 @@ TEST_CASE("exact_ray_mesh_intersect: tree_matches_bruteforce", "[igl]")
     std::sort(bf.begin(), bf.end(), tri_before);
 
     std::vector<int> tr;
-    igl::predicates::exact_ray_mesh_intersect_all(s,d,V,F,tr);
+    igl::predicates::exact_ray_mesh_intersect_all(s,d,V,F,B1,B2,leaf,tr);
 
     // Same set of hit faces.
     std::vector<int> a = bf, b = tr;
@@ -151,7 +159,7 @@ TEST_CASE("exact_ray_mesh_intersect: tree_matches_bruteforce", "[igl]")
 
     // First hit consistent (equal exact distance to brute force front).
     int fid = -1;
-    const bool h = igl::predicates::exact_ray_mesh_intersect(s,d,V,F,fid);
+    const bool h = igl::predicates::exact_ray_mesh_intersect(s,d,V,F,B1,B2,leaf,fid);
     REQUIRE(h == !bf.empty());
     if(h)
     {
@@ -161,6 +169,8 @@ TEST_CASE("exact_ray_mesh_intersect: tree_matches_bruteforce", "[igl]")
       REQUIRE(c == 0);
     }
   }
+}
+
 }
 
 // On a real, well-separated mesh the exact classification should agree with the
@@ -257,4 +267,30 @@ TEST_CASE("exact_ray_mesh_intersect: conservative_slabs", "[igl]")
     REQUIRE(igl::predicates::exact_ray_mesh_intersect(origin,direction,V,F,first));
     REQUIRE(first==0);
   }
+}
+
+TEST_CASE("exact_ray_mesh_intersect: prebuilt_outputs_and_invalid_tree", "[igl]")
+{
+  Eigen::MatrixXd V(3,3); V<<0,0,1, 1,0,1, 0,1,1;
+  Eigen::MatrixXi F(1,3); F<<0,1,2;
+  Eigen::MatrixXd lower,upper,B1,B2;
+  Eigen::VectorXi leaf;
+  igl::box_simplices(V,F,lower,upper);
+  igl::eytzinger_aabb(lower,upper,B1,B2,leaf);
+  const Eigen::Vector3d source(.25,.25,0),dir(0,0,1);
+  igl::Hit<double> hit;
+  std::vector<igl::Hit<double>> hits;
+  REQUIRE(igl::predicates::exact_ray_mesh_intersect(source,dir,V,F,B1,B2,leaf,hit));
+  REQUIRE(hit.id==0);
+  REQUIRE(hit.t==1);
+  REQUIRE(igl::predicates::exact_ray_mesh_intersect_all(source,dir,V,F,B1,B2,leaf,hits));
+  REQUIRE(hits.size()==1);
+  REQUIRE(hits.front().id==hit.id);
+  REQUIRE(hits.front().t==hit.t);
+  leaf(0)=-1;
+  REQUIRE_THROWS_AS(igl::predicates::exact_ray_mesh_intersect(source,dir,V,F,B1,B2,leaf,hit),std::invalid_argument);
+  leaf(0)=F.rows();
+  REQUIRE_THROWS_AS(igl::predicates::exact_ray_mesh_intersect(source,dir,V,F,B1,B2,leaf,hit),std::out_of_range);
+  leaf.resize(0);
+  REQUIRE_THROWS_AS(igl::predicates::exact_ray_mesh_intersect(source,dir,V,F,B1,B2,leaf,hit),std::invalid_argument);
 }

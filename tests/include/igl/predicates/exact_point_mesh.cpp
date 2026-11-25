@@ -1,6 +1,7 @@
 #include <test_common.h>
 #include <igl/default_num_threads.h>
 #include <igl/eytzinger_aabb.h>
+#include <igl/box_simplices.h>
 #include <igl/triangle_triangle_adjacency.h>
 #include <igl/predicates/exact_point_mesh_closest_triangle.h>
 #include <igl/predicates/exact_point_mesh_classify.h>
@@ -24,16 +25,8 @@ struct Mesh
   p::MeshFeatureExposure exposure;
   void tree()
   {
-    Eigen::MatrixXd minimum(faces.rows(),3),maximum(faces.rows(),3);
-    for(Eigen::Index f=0;f<faces.rows();++f)
-    {
-      minimum.row(f)=vertices.row(faces(f,0)); maximum.row(f)=minimum.row(f);
-      for(int i=1;i<3;++i)
-      {
-        minimum.row(f)=minimum.row(f).cwiseMin(vertices.row(faces(f,i)));
-        maximum.row(f)=maximum.row(f).cwiseMax(vertices.row(faces(f,i)));
-      }
-    }
+    Eigen::MatrixXd minimum,maximum;
+    igl::box_simplices(vertices,faces,minimum,maximum);
     igl::eytzinger_aabb(minimum,maximum,lower,upper,leaves);
   }
   void prepare()

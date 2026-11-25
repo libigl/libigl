@@ -29,7 +29,8 @@ namespace predicates
   /// These predicates do not resolve coplanar intersections, so they are ignored
   /// (classified as no-hit).
   ///
-  /// Each query builds an AABB tree. Runtime depends on the number of candidate
+  /// Overloads without B1,B2,leaf build a tree per query. Reuse a prebuilt tree
+  /// for repeated queries. Runtime depends on the number of candidate
   /// triangles and hit comparisons, and on how often sign filters need exact
   /// expansion arithmetic.
   ///
@@ -108,6 +109,83 @@ namespace predicates
     const Eigen::MatrixBase<DerivedV> & V,
     const Eigen::MatrixBase<DerivedF> & F,
     std::vector<igl::Hit<typename DerivedV::Scalar>> & hits);
+  /// Query a prebuilt Eytzinger tree. All hit semantics above apply.
+  /// Bounds must conservatively contain their triangles, and the tree must
+  /// contain every face exactly once. Build it with box_simplices followed by
+  /// eytzinger_aabb and rebuild after geometry or topology changes. Box scalar
+  /// precision must be at least that of V. Dimensions and visited node indices
+  /// are checked; complete coverage and conservative bounds are preconditions
+  /// and are not revalidated on each query.
+  /// @param[in] B1,B2,leaf  #B by 3 box corners and #B leaf ids (-1 internal,
+  ///   -2 empty); other parameters and outputs match the convenience overloads.
+  template <
+    typename Derivedsource,
+    typename Deriveddir,
+    typename DerivedV,
+    typename DerivedF,
+    typename DerivedB,
+    typename Derivedleaf>
+  IGL_INLINE bool exact_ray_mesh_intersect(
+    const Eigen::MatrixBase<Derivedsource> & source,
+    const Eigen::MatrixBase<Deriveddir> & dir,
+    const Eigen::MatrixBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedF> & F,
+    const Eigen::MatrixBase<DerivedB> & B1,
+    const Eigen::MatrixBase<DerivedB> & B2,
+    const Eigen::MatrixBase<Derivedleaf> & leaf,
+    int & fid);
+  /// \overload
+  template <
+    typename Derivedsource,
+    typename Deriveddir,
+    typename DerivedV,
+    typename DerivedF,
+    typename DerivedB,
+    typename Derivedleaf>
+  IGL_INLINE bool exact_ray_mesh_intersect_all(
+    const Eigen::MatrixBase<Derivedsource> & source,
+    const Eigen::MatrixBase<Deriveddir> & dir,
+    const Eigen::MatrixBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedF> & F,
+    const Eigen::MatrixBase<DerivedB> & B1,
+    const Eigen::MatrixBase<DerivedB> & B2,
+    const Eigen::MatrixBase<Derivedleaf> & leaf,
+    std::vector<int> & fids);
+  /// \overload
+  template <
+    typename Derivedsource,
+    typename Deriveddir,
+    typename DerivedV,
+    typename DerivedF,
+    typename DerivedB,
+    typename Derivedleaf>
+  IGL_INLINE bool exact_ray_mesh_intersect(
+    const Eigen::MatrixBase<Derivedsource> & source,
+    const Eigen::MatrixBase<Deriveddir> & dir,
+    const Eigen::MatrixBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedF> & F,
+    const Eigen::MatrixBase<DerivedB> & B1,
+    const Eigen::MatrixBase<DerivedB> & B2,
+    const Eigen::MatrixBase<Derivedleaf> & leaf,
+    igl::Hit<typename DerivedV::Scalar> & hit);
+  /// \overload
+  template <
+    typename Derivedsource,
+    typename Deriveddir,
+    typename DerivedV,
+    typename DerivedF,
+    typename DerivedB,
+    typename Derivedleaf>
+  IGL_INLINE bool exact_ray_mesh_intersect_all(
+    const Eigen::MatrixBase<Derivedsource> & source,
+    const Eigen::MatrixBase<Deriveddir> & dir,
+    const Eigen::MatrixBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedF> & F,
+    const Eigen::MatrixBase<DerivedB> & B1,
+    const Eigen::MatrixBase<DerivedB> & B2,
+    const Eigen::MatrixBase<Derivedleaf> & leaf,
+    std::vector<igl::Hit<typename DerivedV::Scalar>> & hits);
+
 }
 }
 

@@ -3,6 +3,7 @@
 #include <igl/centroid.h>
 #include <igl/default_num_threads.h>
 #include <igl/eytzinger_aabb.h>
+#include <igl/box_simplices.h>
 #include <igl/is_edge_manifold.h>
 #include <igl/is_vertex_manifold.h>
 #include <igl/parallel_for.h>
@@ -46,17 +47,8 @@ struct EytzingerTree
   Eigen::VectorXi leaves;
   void init(const Eigen::MatrixXd &vertices,const Eigen::MatrixXi &faces)
   {
-    Eigen::MatrixXd minimum(faces.rows(),3),maximum(faces.rows(),3);
-    for(Eigen::Index face=0;face<faces.rows();++face)
-    {
-      minimum.row(face)=vertices.row(faces(face,0));
-      maximum.row(face)=minimum.row(face);
-      for(int corner=1;corner<3;++corner)
-      {
-        minimum.row(face)=minimum.row(face).cwiseMin(vertices.row(faces(face,corner)));
-        maximum.row(face)=maximum.row(face).cwiseMax(vertices.row(faces(face,corner)));
-      }
-    }
+    Eigen::MatrixXd minimum,maximum;
+    igl::box_simplices(vertices,faces,minimum,maximum);
     igl::eytzinger_aabb(minimum,maximum,lower,upper,leaves);
   }
 };

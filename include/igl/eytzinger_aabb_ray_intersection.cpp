@@ -9,6 +9,8 @@
 #include <algorithm>
 #include <cmath>
 #include <limits>
+#include <stdexcept>
+#include <type_traits>
 
 template <
   bool FirstOnly,
@@ -26,9 +28,13 @@ IGL_INLINE void igl::eytzinger_aabb_ray_intersection(
   const Eigen::MatrixBase<Derivedleaf> & leaf,
   std::vector<int> & hits)
 {
-  using Scalar = typename DerivedB::Scalar;
+  using Scalar = typename std::common_type<typename Derivedsource::Scalar,
+    typename Deriveddir::Scalar,typename DerivedB::Scalar>::type;
   hits.clear();
   const int dim = source.size();
+  if(dir.size()!=dim || B1.cols()!=dim || B2.cols()!=dim ||
+     B1.rows()!=leaf.size() || B2.rows()!=leaf.size())
+    throw std::invalid_argument("Incompatible ray tree dimensions");
   const Scalar inf = std::numeric_limits<Scalar>::infinity();
   // Spatial inflation and parametric slack make box culling conservative.
   const Scalar releps = Scalar(1024) * std::numeric_limits<Scalar>::epsilon();
@@ -118,11 +124,16 @@ IGL_INLINE void igl::eytzinger_aabb_ray_intersection(
     }
     if(l == -2){ continue; }
 
+    if(l != -1 || i > (leaf.size()-3)/2)
+      throw std::invalid_argument("Incomplete ray tree internal node");
+
     const int left_i = 2*i + 1;
     const int right_i = 2*i + 2;
+    if(right_i>=leaf.size())
+      throw std::invalid_argument("Incomplete ray tree internal node");
     Scalar tl, tr;
-    const bool ok_l = (left_i  < leaf.size()) && (leaf(left_i)  != -2) && ray_box(left_i,  tl);
-    const bool ok_r = (right_i < leaf.size()) && (leaf(right_i) != -2) && ray_box(right_i, tr);
+    const bool ok_l = leaf(left_i)!=-2 && ray_box(left_i, tl);
+    const bool ok_r = leaf(right_i)!=-2 && ray_box(right_i, tr);
     // Push so that the nearer child is processed first (popped last -> pushed last).
     if(ok_l && ok_r)
     {
@@ -156,19 +167,22 @@ IGL_INLINE void igl::eytzinger_aabb_ray_intersection(
 
 #ifdef IGL_STATIC_LIBRARY
 // Explicit template instantiation
-#define IGL_EARI(FO) \
+#define IGL_EARI(FO,B) \
   template void igl::eytzinger_aabb_ray_intersection<FO, \
     Eigen::Matrix<double,1,3,1,1,3>, Eigen::Matrix<double,1,3,1,1,3>, \
-    Eigen::Matrix<double,-1,3,0,-1,3>, Eigen::Matrix<int,-1,1,0,-1,1>>( \
+    B, Eigen::Matrix<int,-1,1,0,-1,1>>( \
     const Eigen::MatrixBase<Eigen::Matrix<double,1,3,1,1,3>>&, \
     const Eigen::MatrixBase<Eigen::Matrix<double,1,3,1,1,3>>&, \
     const std::function<bool(const int)>&, \
     const std::function<bool(const int, const int)>&, \
-    const Eigen::MatrixBase<Eigen::Matrix<double,-1,3,0,-1,3>>&, \
-    const Eigen::MatrixBase<Eigen::Matrix<double,-1,3,0,-1,3>>&, \
+    const Eigen::MatrixBase<B>&, \
+    const Eigen::MatrixBase<B>&, \
     const Eigen::MatrixBase<Eigen::Matrix<int,-1,1,0,-1,1>>&, \
     std::vector<int>&);
-IGL_EARI(true)
-IGL_EARI(false)
+using EariBox3 = Eigen::Matrix<double,-1,3>;
+IGL_EARI(true,EariBox3)
+IGL_EARI(false,EariBox3)
+IGL_EARI(true,Eigen::MatrixXd)
+IGL_EARI(false,Eigen::MatrixXd)
 #undef IGL_EARI
 #endif
