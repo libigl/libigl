@@ -97,8 +97,8 @@ TEST_CASE("predicates::exact_point_triangle: boundaries_and_cancellation","[igl]
   REQUIRE(p::exact_point_triangle_squared_distance_compare(q,a,thin_b,thin_c,
     upper_a,upper_b,upper_c)==1);
   // The heights differ by less than one ulp of their rounded squared distances.
-  const Point far(0,0,std::ldexp(1.0,50)),near_a(0,0,epsilon),near_b=b+near_a,near_c=c+near_a;
-  REQUIRE(p::exact_point_triangle_squared_distance_compare(far,a,b,c,near_a,near_b,near_c)==1);
+  const Point distant_query(0,0,std::ldexp(1.0,50)),near_a(0,0,epsilon),near_b=b+near_a,near_c=c+near_a;
+  REQUIRE(p::exact_point_triangle_squared_distance_compare(distant_query,a,b,c,near_a,near_b,near_c)==1);
   REQUIRE(p::exact_point_triangle_squared_distance_compare(q,a,b,c,c,b,a)==0);
   int id;
   REQUIRE(p::exact_point_triangle_closest_feature(a,a,b,c,id)==p::ClosestPointFeature::VERTEX);
