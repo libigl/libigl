@@ -13,6 +13,9 @@
 #include <igl/barycenter.h>
 #include <igl/per_face_normals.h>
 #include <igl/doublearea.h>
+#include <Eigen/Geometry>
+#include <cmath>
+#include <functional>
 
 TEST_CASE("fast_winding_number: one_point_cloud", "[igl]")
 {
@@ -104,4 +107,148 @@ TEST_CASE("fast_winding_number: meshes", "[igl]" "[slow]")
   test_common::run_test_cases<std::string>(
     {"bunny.off", "elephant.off", "hemisphere.obj"},
     test_case);
+}
+
+namespace
+{
+// Varying face normals make first moments about each node's centroid nonzero.
+void moment_soup(const int side, Eigen::MatrixXd &V, Eigen::MatrixXi &F)
+{
+  const int count = side*side*side;
+  V.resize(3*count,3);
+  F.resize(count,3);
+  for(int i = 0; i < count; ++i)
+  {
+    const Eigen::RowVector3d p(i%side,(i/side)%side,i/(side*side));
+    V.row(3*i) = p;
+    V.row(3*i+1) = p + Eigen::RowVector3d(.75,.125*(i%3),.125*(i%5));
+    V.row(3*i+2) = p + Eigen::RowVector3d(.125*(i%7),.625,.125*(i%4));
+    F.row(i) << 3*i,3*i+1,3*i+2;
+  }
+}
+}
+
+TEST_CASE("fast_winding_number: translated_second_moments", "[igl]")
+{
+  using namespace igl::FastWindingNumber::HDK_Sample;
+  for(const int side : {4,8})
+  {
+    CAPTURE(side);
+    Eigen::MatrixXd V;
+    Eigen::MatrixXi F;
+    moment_soup(side,V,F);
+    std::vector<UT_Vector3T<float>> positions(V.rows());
+    std::vector<int> triangles(F.size());
+    std::vector<UT::Box<float,3>> boxes(F.rows());
+    for(int i = 0; i < V.rows(); ++i)
+      for(int j = 0; j < 3; ++j) positions[i][j] = V(i,j);
+    for(int i = 0; i < F.rows(); ++i)
+    {
+      boxes[i].initBounds(positions[F(i,0)]);
+      for(int j = 0; j < 3; ++j)
+      {
+        triangles[3*i+j] = F(i,j);
+        boxes[i].enlargeBounds(positions[F(i,j)]);
+      }
+    }
+    // Rebuild the same BVH to identify the groups approximated at the root.
+    UT_BVH<4> tree;
+    tree.init<UT::BVH_Heuristic::BOX_AREA,float,3>(boxes.data(),F.rows());
+    using Node = UT_BVH<4>::Node;
+    const auto *nodes = tree.getNodes();
+    std::vector<std::vector<int>> groups(4);
+    std::function<void(unsigned,std::vector<int>&)> collect;
+    collect = [&](unsigned child, std::vector<int> &items)
+    {
+      if(child == Node::EMPTY) return;
+      if(!Node::isInternal(child)) { items.push_back(child); return; }
+      for(const auto next : nodes[Node::getInternalNum(child)].child)
+        collect(next,items);
+    };
+    for(int i = 0; i < 4; ++i)
+    {
+      collect(nodes[0].child[i],groups[i]);
+      // A triangle's first moments vanish; deeper groups exercise their shift.
+      REQUIRE(groups[i].size() > 4);
+    }
+    UT_SolidAngle<float,float> order2(F.rows(),triangles.data(),V.rows(),positions.data(),2);
+    for(const Eigen::Vector3d direction : {Eigen::Vector3d(6,-2,7),
+      Eigen::Vector3d(-4,7,5),Eigen::Vector3d(7,8,-3)})
+    {
+      const Eigen::Vector3d query = direction*(side/4.);
+      double expected = 0;
+      for(const auto &group : groups)
+      {
+        Eigen::Vector3d center = Eigen::Vector3d::Zero();
+        double area = 0;
+        for(const int i : group)
+        {
+          const Eigen::Vector3d a=V.row(F(i,0)), b=V.row(F(i,1)), c=V.row(F(i,2));
+          const double weight = (b-a).cross(c-a).norm();
+          center += weight*(a+b+c)/3.;
+          area += weight;
+        }
+        center /= area;
+        const Eigen::Vector3d q = query-center;
+        const double r2 = q.squaredNorm(), r5 = r2*r2*std::sqrt(r2);
+        for(const int i : group)
+        {
+          const Eigen::Vector3d a=V.row(F(i,0)), b=V.row(F(i,1)), c=V.row(F(i,2));
+          const Eigen::Vector3d N = .5*(b-a).cross(c-a);
+          // Three edge midpoints integrate the second-order Taylor polynomial
+          // exactly, without using the moments or their translation formula.
+          for(int j = 0; j < 3; ++j)
+          {
+            const Eigen::Vector3d u = .5*(V.row(F(i,j))+V.row(F(i,(j+1)%3))).transpose()-center;
+            const double qu = q.dot(u), nq = N.dot(q);
+            const double nu = N.dot(u);
+            expected += ((nu-nq)*r2-3*nq*qu
+              +3*nu*qu+1.5*nq*u.squaredNorm()-7.5*nq*qu*qu/r2)/(3*r5);
+          }
+        }
+      }
+      UT_Vector3T<float> p;
+      for(int j = 0; j < 3; ++j) p[j] = query[j];
+      // Zero accuracy_scale evaluates the root's children without descending.
+      // Comparing the same Taylor polynomial avoids any truncation remainder.
+      const double actual = order2.computeSolidAngle(p,0);
+      CAPTURE(query,expected,actual);
+      CHECK(std::abs(actual-expected) < 1e-7);
+    }
+  }
+}
+
+TEST_CASE("fast_winding_number: translated_soup_moments", "[igl]")
+{
+  // Vary both positions and normals so child first moments are nonzero.
+  // The 64 triangles require several levels in the four-way hierarchy.
+  Eigen::MatrixXd V(3*64,3);
+  Eigen::MatrixXi F(64,3);
+  for(int i = 0; i < 64; ++i)
+  {
+    const double x = (i%4)/3.0-0.2;
+    const double y = ((i/4)%4)/3.0-0.3;
+    const double z = (i/16)/3.0-0.1;
+    const Eigen::RowVector3d center(
+      x+0.3*y-0.2*z, y-0.2*x+0.3*z, z+0.2*x-0.1*y);
+    const Eigen::RowVector3d u(0.2,0,-y*y);
+    const Eigen::RowVector3d v(0,0.2,-z*z);
+    V.row(3*i) = center-(u+v)/3.0;
+    V.row(3*i+1) = V.row(3*i)+u;
+    V.row(3*i+2) = V.row(3*i)+v;
+    F.row(i) << 3*i,3*i+1,3*i+2;
+  }
+  // The soup implementation stores float vertices. Use the same geometry
+  // for the double-precision direct reference.
+  V = V.cast<float>().cast<double>().eval();
+  igl::FastWindingNumberBVH bvh;
+  igl::fast_winding_number(V,F,2,bvh);
+  Eigen::MatrixXd Q(3,3);
+  Q << 8,16,24, -16,8,24, 16,-24,8;
+  Eigen::VectorXd actual, expected;
+  igl::fast_winding_number(bvh,2.0f,Q,actual);
+  igl::winding_number(V,F,Q,expected);
+  // Far-field queries use internal-node expansions. This tolerance allows
+  // truncation and float rounding, but detects the missing linear terms.
+  test_common::assert_near(actual,expected,2e-10);
 }

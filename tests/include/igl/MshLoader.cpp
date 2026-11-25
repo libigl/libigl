@@ -111,3 +111,25 @@ TEST_CASE("MshLoader_Non_Sequential", "[igl]")
     // cleanup
     std::remove(tmp_path.c_str());
 }
+
+TEST_CASE("MshLoader_Node_Count_Overflow", "[igl]")
+{
+    // num_nodes*3 wraps to 2 on 64-bit size_t; the loader must reject the
+    // count instead of writing past the resized node buffer
+    std::string tmp_path = test_common::data_path("_tmp_node_count_overflow.msh");
+    {
+        std::ofstream out(tmp_path);
+        out << "$MeshFormat\n"
+            << "2.2 0 8\n"
+            << "$EndMeshFormat\n"
+            << "$Nodes\n"
+            << "6148914691236517206\n"
+            << "1 0.0 0.0 0.0\n"
+            << "2 1.0 0.0 0.0\n"
+            << "$EndNodes\n";
+    }
+
+    REQUIRE_THROWS_WITH(igl::MshLoader(tmp_path), "Invalid number of nodes");
+
+    std::remove(tmp_path.c_str());
+}

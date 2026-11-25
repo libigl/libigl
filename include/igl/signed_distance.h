@@ -34,6 +34,10 @@ namespace igl
   };
   /// Computes signed distance to a mesh
   ///
+  /// For 3D pseudonormal signs, the normal is selected using the barycentric
+  /// coordinates returned by the closest-point query. Edge and vertex zeros
+  /// are preserved; no additional feature tolerance is applied.
+  ///
   /// @param[in] P  #P by (2|3) list of query point positions
   /// @param[in] V  #V by (2|3) list of vertex positions
   /// @param[in] F  #F by ss list of triangle indices, ss should be 3 unless

@@ -572,6 +572,18 @@ public:
         const RowVectorDIMS & p,
         int & i,
         Eigen::PlainObjectBase<RowVectorDIMS> & c) const;
+      /// \overload
+      /// @param[out] b  Ele.cols()-long barycentric coordinates of c in Ele.row(i).
+      ///   Coordinates on edges and vertices retain the zeros produced by the
+      ///   closest-point routine. Outputs are unchanged if no closer point is found.
+      template <typename DerivedEle, typename Derivedb>
+      IGL_INLINE Scalar squared_distance(
+        const Eigen::MatrixBase<DerivedV> & V,
+        const Eigen::MatrixBase<DerivedEle> & Ele,
+        const RowVectorDIMS & p,
+        int & i,
+        Eigen::PlainObjectBase<RowVectorDIMS> & c,
+        Eigen::PlainObjectBase<Derivedb> & b) const;
       /// Compute squared distance to a query point if within `low_sqr_d` and
       /// `up_sqr_d`.
       ///
@@ -598,6 +610,18 @@ public:
         const Scalar up_sqr_d,
         int & i,
         Eigen::PlainObjectBase<RowVectorDIMS> & c) const;
+      /// \overload
+      /// @param[out] b  Barycentric coordinates of the closest point, as above.
+      template <typename DerivedEle, typename Derivedb>
+      IGL_INLINE Scalar squared_distance(
+        const Eigen::MatrixBase<DerivedV> & V,
+        const Eigen::MatrixBase<DerivedEle> & Ele,
+        const RowVectorDIMS & p,
+        const Scalar low_sqr_d,
+        const Scalar up_sqr_d,
+        int & i,
+        Eigen::PlainObjectBase<RowVectorDIMS> & c,
+        Eigen::PlainObjectBase<Derivedb> & b) const;
       /// Compute squared distance to a query point (default `low_sqr_d`)
       ///
       /// @param[in] V  #V by dim list of vertex positions
@@ -756,6 +780,17 @@ public:
         Eigen::PlainObjectBase<DerivedI> & I,
         Eigen::PlainObjectBase<DerivedC> & C) const;
 private:
+      // Share traversal while compiling out barycentric storage for legacy calls.
+      template <bool WithBarycentric, typename DerivedEle, typename Derivedb>
+      IGL_INLINE Scalar squared_distance_with_barycentric(
+        const Eigen::MatrixBase<DerivedV> & V,
+        const Eigen::MatrixBase<DerivedEle> & Ele,
+        const RowVectorDIMS & p,
+        const Scalar low_sqr_d,
+        const Scalar up_sqr_d,
+        int & i,
+        Eigen::PlainObjectBase<RowVectorDIMS> & c,
+        Eigen::PlainObjectBase<Derivedb> & b) const;
       template <
         typename DerivedEle,
         typename Derivedother_V,

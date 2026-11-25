@@ -116,6 +116,30 @@ TEST_CASE("signed_distance: dimension-templates", "[igl]")
   igl::signed_distance(PX3,VX3,F,type,lower_bound,upper_bound,S,I,C,N);
 }
 
+TEST_CASE("signed_distance: precompiled float signature", "[igl]")
+{
+  // Exercise the static-library signature and its float helper instantiations.
+  Eigen::Matrix<float,Eigen::Dynamic,3> V(4,3),P(1,3),C,N;
+  Eigen::Matrix<int,Eigen::Dynamic,3> F(4,3);
+  F << 0,1,3, 0,2,1, 0,3,2, 1,2,3;
+  for(const float scale : {1.0f,1.0f/1024.0f})
+  {
+    V << 0,0,0, 1,0,0, 0,1,0, 0,0,1;
+    V *= scale;
+    P.setConstant(0.5f*scale);
+    Eigen::VectorXf S;
+    Eigen::VectorXi I;
+    igl::signed_distance(P,V,F,igl::SIGNED_DISTANCE_TYPE_PSEUDONORMAL,
+      -std::numeric_limits<float>::infinity(),
+      std::numeric_limits<float>::infinity(),S,I,C,N);
+    const float expected = std::sqrt(1.0f/12.0f)*scale;
+    REQUIRE(std::abs(S(0)-expected) <=
+      8.0f*std::numeric_limits<float>::epsilon()*scale);
+    REQUIRE(C.allFinite());
+    REQUIRE(N.allFinite());
+  }
+}
+
 TEST_CASE("signed_distance: winding_number_repeatable", "[igl]")
 {
   // Closed UV sphere scaled to 4:2:1. Its rings put vertices exactly on the

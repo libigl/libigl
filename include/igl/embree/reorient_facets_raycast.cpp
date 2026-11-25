@@ -11,6 +11,8 @@
 #include "../random_dir.h"
 #include "../bfs_orient.h"
 #include "../PlainMatrix.h"
+#include "../EPS.h"
+#include "../parallel_for.h"
 #include "EmbreeIntersector.h"
 #include <iostream>
 #include <random>
@@ -153,52 +155,114 @@ IGL_INLINE void igl::embree::reorient_facets_raycast(
   std::vector<std::pair<float, float>> C_vote_distance(num_cc, std::make_pair(0, 0));      // sum of distance between ray origin and intersection
   std::vector<std::pair<int  , int  >> C_vote_infinity(num_cc, std::make_pair(0, 0));      // number of rays reaching infinity
   std::vector<std::pair<int  , int  >> C_vote_parity(num_cc, std::make_pair(0, 0));        // sum of parity count for each ray
+  // each thread's own votes, summed into the totals above after all rays
+  std::vector<std::vector<std::pair<float, float>>> T_vote_distance;
+  std::vector<std::vector<std::pair<int  , int  >>> T_vote_infinity;
+  std::vector<std::vector<std::pair<int  , int  >>> T_vote_parity;
+
+  // Inputs:
+  //   o  ray origin
+  //   dir  ray direction
+  //   f  face the ray leaves
+  // Outputs:
+  //   hit  first hit past face f
+  // Returns true iff there is such a hit
+  const auto first_hit = [&ei](
+    const Eigen::Vector3f & o,
+    const Eigen::Vector3f & dir,
+    const int f,
+    Hit<float> & hit)
+  {
+    float tnear = 0;
+    int self_hits = 0;
+    while (ei.intersectRay(o, dir, hit, tnear))
+    {
+      if (hit.id != f && hit.t > tnear) return true;
+      // face f again: step past it, as the search for every hit does
+      tnear = std::max(tnear, hit.t) + std::pow(2.0f, self_hits++)*FLOAT_EPS;
+    }
+    return false;
+  };
 
   if (is_verbose) std::cout << "shooting rays... ";
-// #pragma omp parallel for
-  for (int i = 0; i < (int)ray_face.size(); ++i)
+  // Inputs:
+  //   n  number of threads
+  const auto prep = [
+    &T_vote_distance, &T_vote_infinity, &T_vote_parity,
+    &C_vote_distance, &C_vote_infinity, &C_vote_parity](const size_t n)
+  {
+    T_vote_distance.assign(n, C_vote_distance);
+    T_vote_infinity.assign(n, C_vote_infinity);
+    T_vote_parity  .assign(n, C_vote_parity);
+  };
+  // Inputs:
+  //   i  ray index
+  //   t  thread index
+  const auto shoot = [
+    &ray_face, &ray_ori, &ray_dir, &C, &ei, &first_hit, use_parity,
+    &T_vote_distance, &T_vote_infinity, &T_vote_parity](
+    const int i, const size_t t)
   {
     int      f = ray_face[i];
     Eigen::Vector3f o = ray_ori [i];
     Eigen::Vector3f d = ray_dir [i];
     int c = C(f);
 
-    // shoot ray toward front & back
-    std::vector<Hit<float>> hits_front;
-    std::vector<Hit<float>> hits_back;
-    int num_rays_front;
-    int num_rays_back;
-    ei.intersectRay(o,  d, hits_front, num_rays_front);
-    ei.intersectRay(o, -d, hits_back , num_rays_back );
-    if (!hits_front.empty() && hits_front[0].id == f) hits_front.erase(hits_front.begin());
-    if (!hits_back .empty() && hits_back [0].id == f) hits_back .erase(hits_back .begin());
-
     if (use_parity) {
-// #pragma omp atomic
-      C_vote_parity[c].first  += hits_front.size() % 2;
-// #pragma omp atomic
-      C_vote_parity[c].second += hits_back .size() % 2;
+      // shoot ray toward front & back, counting every hit
+      std::vector<Hit<float>> hits_front;
+      std::vector<Hit<float>> hits_back;
+      int num_rays_front;
+      int num_rays_back;
+      ei.intersectRay(o,  d, hits_front, num_rays_front);
+      ei.intersectRay(o, -d, hits_back , num_rays_back );
+      if (!hits_front.empty() && hits_front[0].id == f)
+        hits_front.erase(hits_front.begin());
+      if (!hits_back .empty() && hits_back [0].id == f)
+        hits_back .erase(hits_back .begin());
+
+      T_vote_parity[t][c].first  += hits_front.size() % 2;
+      T_vote_parity[t][c].second += hits_back .size() % 2;
 
     } else {
-      if (hits_front.empty())
+      // shoot ray toward front & back: only the first hit past face f
+      // counts, so stop there rather than collecting every hit
+      Hit<float> hit_front, hit_back;
+      if (!first_hit(o, d, f, hit_front))
       {
-// #pragma omp atomic
-        C_vote_infinity[c].first++;
+        T_vote_infinity[t][c].first++;
       } else {
-// #pragma omp atomic
-        C_vote_distance[c].first += hits_front[0].t;
+        T_vote_distance[t][c].first += hit_front.t;
       }
 
-      if (hits_back.empty())
+      if (!first_hit(o, -d, f, hit_back))
       {
-// #pragma omp atomic
-        C_vote_infinity[c].second++;
+        T_vote_infinity[t][c].second++;
       } else {
-// #pragma omp atomic
-        C_vote_distance[c].second += hits_back[0].t;
+        T_vote_distance[t][c].second += hit_back.t;
       }
     }
-  }
+  };
+  // Inputs:
+  //   t  thread index
+  const auto accumulate = [
+    num_cc,
+    &T_vote_distance, &T_vote_infinity, &T_vote_parity,
+    &C_vote_distance, &C_vote_infinity, &C_vote_parity](const size_t t)
+  {
+    for (int c = 0; c < num_cc; ++c)
+    {
+      C_vote_distance[c].first  += T_vote_distance[t][c].first;
+      C_vote_distance[c].second += T_vote_distance[t][c].second;
+      C_vote_infinity[c].first  += T_vote_infinity[t][c].first;
+      C_vote_infinity[c].second += T_vote_infinity[t][c].second;
+      C_vote_parity  [c].first  += T_vote_parity  [t][c].first;
+      C_vote_parity  [c].second += T_vote_parity  [t][c].second;
+    }
+  };
+  assert(ray_ori.size() == ray_face.size() && "one origin per ray");
+  assert(ray_dir.size() == ray_face.size() && "one direction per ray");
+  parallel_for((int)ray_face.size(), prep, shoot, accumulate, 1000);
 
   I.resize(m);
   for(int f = 0; f < m; ++f)

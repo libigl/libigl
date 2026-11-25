@@ -103,6 +103,16 @@ IGL_INLINE bool igl::readNODE(
     {
       continue;
     }
+    // The header count `n` sizes V and I above, so reject any file that lists
+    // more points than it declared before writing past the allocated rows.
+    if(p >= n)
+    {
+      fprintf(stderr,"readNODE: Error: more points than the %d declared in %s...\n",
+        n,
+        node_file_name.c_str());
+      fclose(node_file);
+      return false;
+    }
     char * l = line;
     int offset;
 
