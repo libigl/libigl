@@ -26,6 +26,15 @@ target_link_libraries(igl_copyleft_tetgen ${IGL_SCOPE}
 )
 if(TARGET tetgen)
     igl_install_dependencies(igl_copyleft_tetgen tetgen)
+    if(LIBIGL_INSTALL)
+        # The installed igl/copyleft/tetgen headers include <tetgen.h>
+        get_target_property(tetgen_source_dir tetgen SOURCE_DIR)
+        target_include_directories(tetgen INTERFACE
+            "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/libigl/tetgen>")
+        install(FILES "${tetgen_source_dir}/tetgen.h"
+            DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/libigl/tetgen"
+            COMPONENT LibiglDevelopment)
+    endif()
 endif()
 
 # 6. Unit tests

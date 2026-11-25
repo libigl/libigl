@@ -9,7 +9,7 @@ target_include_directories(igl_copyleft_cgal ${IGL_SCOPE}
 )
 
 # 3. Target sources
-file(GLOB INC_FILES "${libigl_SOURCE_DIR}/include/igl/copyleft/cgal/*.h")
+file(GLOB INC_FILES "${libigl_SOURCE_DIR}/include/igl/copyleft/cgal/*.h" "${libigl_SOURCE_DIR}/include/igl/copyleft/cgal/*.hpp")
 file(GLOB SRC_FILES "${libigl_SOURCE_DIR}/include/igl/copyleft/cgal/*.cpp")
 igl_target_sources(igl_copyleft_cgal ${INC_FILES} ${SRC_FILES})
 

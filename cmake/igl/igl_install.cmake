@@ -16,7 +16,13 @@ function(igl_install module_name)
     # Install CMake target #
     ########################
 
-    set_property(TARGET ${module_name} PROPERTY EXPORT_NAME ${module_export})
+    # Export under the same name as the in-build alias created by igl_add_library,
+    # e.g. igl_core as igl::core and igl_copyleft_cgal as igl_copyleft::cgal.
+    string(REPLACE "igl${suffix}_" "" module_shortname ${module_name})
+    set_property(TARGET ${module_name} PROPERTY EXPORT_NAME ${module_shortname})
+    # Recorded so that the package config can define the deprecated
+    # igl${suffix}::${module_name} names as aliases.
+    set_property(GLOBAL APPEND PROPERTY LIBIGL_INSTALLED_TARGETS "igl${suffix}::${module_shortname}")
 
     include(GNUInstallDirs)
     install(TARGETS ${module_name}
@@ -79,6 +85,13 @@ function(igl_install_dependencies module_name)
     ##############################
     # Install named dependencies #
     ##############################
+
+    # Dependencies share the module's export namespace. Export them under a
+    # distinct name so that e.g. the tetgen library does not collide with the
+    # igl_copyleft::tetgen module.
+    foreach(dependency IN ITEMS ${ARGN})
+        set_property(TARGET ${dependency} PROPERTY EXPORT_NAME "${dependency}_library")
+    endforeach()
 
     include(GNUInstallDirs)
     install(TARGETS ${ARGN}

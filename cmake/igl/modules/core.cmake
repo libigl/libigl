@@ -12,7 +12,7 @@ target_include_directories(igl_core ${IGL_SCOPE}
 )
 
 # 3. Target sources
-file(GLOB INC_FILES "${libigl_SOURCE_DIR}/include/igl/*.h")
+file(GLOB INC_FILES "${libigl_SOURCE_DIR}/include/igl/*.h" "${libigl_SOURCE_DIR}/include/igl/*.hpp")
 file(GLOB SRC_FILES "${libigl_SOURCE_DIR}/include/igl/*.cpp")
 igl_target_sources(igl_core ${INC_FILES} ${SRC_FILES})
 

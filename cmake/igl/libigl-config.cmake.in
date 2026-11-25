@@ -3,7 +3,30 @@
 include(CMakeFindDependencyMacro)
 find_dependency(Eigen3)
 find_dependency(Threads)
+if("@LIBIGL_COPYLEFT_CGAL@")
+  # Match the configuration in cmake/recipes/external/cgal.cmake
+  set(CGAL_CMAKE_EXACT_NT_BACKEND "BOOST_BACKEND" CACHE STRING "CGAL exact NT backend")
+  set(CGAL_DISABLE_GMP ON CACHE BOOL "Disable GMP")
+  find_dependency(CGAL CONFIG COMPONENTS Core)
+endif()
 include("${CMAKE_CURRENT_LIST_DIR}/LibiglConfigTargets.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/LibiglConfigTargets_copyleft.cmake" OPTIONAL)
 include("${CMAKE_CURRENT_LIST_DIR}/LibiglConfigTargets_restricted.cmake" OPTIONAL)
+
+# Installed targets used to be exported under their full module names, e.g.
+# igl::igl_core and igl_copyleft::igl_copyleft_cgal. Keep those names working
+# as deprecated aliases of igl::core and igl_copyleft::cgal.
+foreach(_libigl_target IN ITEMS @LIBIGL_INSTALLED_TARGETS@)
+  string(REGEX REPLACE "^([^:]+)::(.+)$" "\\1::\\1_\\2" _libigl_old_name "${_libigl_target}")
+  if(TARGET ${_libigl_target} AND NOT TARGET ${_libigl_old_name})
+    add_library(${_libigl_old_name} INTERFACE IMPORTED)
+    set_target_properties(${_libigl_old_name} PROPERTIES INTERFACE_LINK_LIBRARIES ${_libigl_target})
+    if(NOT CMAKE_VERSION VERSION_LESS 3.17)
+      set_property(TARGET ${_libigl_old_name} PROPERTY DEPRECATION "Use ${_libigl_target} instead.")
+    endif()
+  endif()
+endforeach()
+unset(_libigl_target)
+unset(_libigl_old_name)
+
 check_required_components(Libigl)
