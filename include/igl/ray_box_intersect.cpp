@@ -38,14 +38,14 @@ IGL_INLINE bool igl::ray_box_intersect(
   const auto far_bound = [&](const int axis) -> Scalar
   {
     const Scalar delta = bounds[1-sign[axis]](axis)-origin(axis);
-    const Scalar far = delta*inv_dir_pad(axis);
-    if(t0 < Scalar(0) && far < Scalar(0) && std::isfinite(inv_dir(axis)))
+    const Scalar far_distance = delta*inv_dir_pad(axis);
+    if(t0 < Scalar(0) && far_distance < Scalar(0) && std::isfinite(inv_dir(axis)))
     {
       const Scalar inverse = std::nextafter(
         std::nextafter(inv_dir(axis),Scalar(0)),Scalar(0));
       return delta*inverse;
     }
-    return far;
+    return far_distance;
   };
   tmin = ( bounds[sign[0]](0)   - origin(0)) * inv_dir(0);
   tmax = far_bound(0);
