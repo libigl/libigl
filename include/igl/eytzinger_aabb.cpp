@@ -1,6 +1,5 @@
 #include "eytzinger_aabb.h"
 #include "PlainMatrix.h"
-#include "median.h"
 #include "placeholders.h"
 #include <vector>
 #include <algorithm>
@@ -19,7 +18,6 @@ IGL_INLINE void igl::eytzinger_aabb(
   Eigen::PlainObjectBase<Derivedleaf> & leaf)
 {
   using Scalar = typename DerivedPB::Scalar;
-  using VectorXS = Eigen::Matrix<Scalar, Eigen::Dynamic, 1>;
   // Number of primitives
   const int m = PB1.rows();
   assert(PB1.rows() == PB2.rows());
@@ -30,7 +28,7 @@ IGL_INLINE void igl::eytzinger_aabb(
     leaf.resize(0);
     return;
   }
-  const PlainMatrix<DerivedPB> PBC = (PB1 + PB2) / 2;
+  const PlainMatrix<DerivedPB> PBC = PB1 / Scalar(2) + PB2 / Scalar(2);
   const int complete_m = 1 << ((int)std::ceil(std::log2(m))+1);
   B1.resize(complete_m, PB1.cols());
   B2.resize(complete_m, PB2.cols());
@@ -52,29 +50,17 @@ IGL_INLINE void igl::eytzinger_aabb(
     int dir;
     (B2.row(i) - B1.row(i)).maxCoeff(&dir);
 
-    Scalar split_value;
-    VectorXS Z = PBC(I, dir);
-    igl::median(Z,split_value); 
-    std::vector<int> left; left.reserve(I.size()/2+1);
-    std::vector<int> right; right.reserve(I.size()/2+1);
-    for(int j = 0; j < (int)I.size(); j++)
+    // Partition by rank so ties and rounded centers cannot unbalance the tree
+    // beyond the complete-tree storage allocated above.
+    std::vector<int> partition=I;
+    const auto middle=partition.begin()+partition.size()/2;
+    std::nth_element(partition.begin(),middle,partition.end(),[&](int a,int b)
     {
-      if(Z(j) < split_value)
-      {
-        left.push_back(I[j]);
-      }else if(Z(j) > split_value)
-      {
-        right.push_back(I[j]);
-      }
-    }
-    for(int j = 0; j < (int)I.size(); j++)
-    {
-      if(Z(j) == split_value)
-      {
-        (left.size()<right.size() ? left : right).push_back(I[j]);
-      }
-    }
-    assert(std::abs(int(left.size()-right.size())) <= 1);
+      if(PBC(a,dir)<PBC(b,dir)) return true;
+      if(PBC(b,dir)<PBC(a,dir)) return false;
+      return a<b;
+    });
+    const std::vector<int> left(partition.begin(),middle),right(middle,partition.end());
 
     const int left_i = 2*i + 1;
     const int right_i = 2*i + 2;
