@@ -16,7 +16,8 @@ TEST_CASE("igl_copyleft_cgal_snap_rounding: crossing_segments", "[igl/copyleft/c
     0,1,
     2,3).finished();
   Eigen::MatrixXd VI;
-  Eigen::MatrixXi EI,J;
+  Eigen::MatrixXi EI;
+  Eigen::VectorXi J;
   igl::copyleft::cgal::snap_rounding(V,E,VI,EI,J);
 
   // Output vertices are integer-valued, and the rounded copies of V come first.
