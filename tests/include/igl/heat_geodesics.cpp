@@ -25,3 +25,36 @@ TEST_CASE("heat_geodesic: upsampled cube", "[igl]")
   }
 
 }
+
+TEST_CASE("heat_geodesic: semidefinite Poisson system", "[igl]")
+{
+  Eigen::MatrixXd V(5,3);
+  V<<0,0,0,
+     1,0,0,
+     1,1,0,
+     0,1,0,
+     0.5,0.5,0;
+  Eigen::MatrixXi F(4,3);
+  F<<0,1,4,
+     1,2,4,
+     2,3,4,
+     3,0,4;
+  for(const int dim : {2,3})
+  {
+    const Eigen::MatrixXd points = V.leftCols(dim);
+    igl::HeatGeodesicsData<double> data;
+    REQUIRE(igl::heat_geodesics_precompute(points,F,data));
+    Eigen::VectorXi gamma(1);
+    gamma<<4;
+    Eigen::VectorXd D;
+    igl::heat_geodesics_solve(data,gamma,D);
+    REQUIRE(D.allFinite());
+    REQUIRE(D(4) == Approx(0).margin(1e-12));
+    // On each triangle, the normalized heat gradient points from its
+    // boundary edge to the center; the discrete Poisson solution is 0.5.
+    for(int i=0;i<4;++i)
+    {
+      REQUIRE(D(i) == Approx(0.5).margin(1e-12));
+    }
+  }
+}
