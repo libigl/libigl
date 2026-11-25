@@ -12,7 +12,7 @@ IGL_INLINE void igl::guess_extension(FILE * fp, std::string & guess)
     const std::string OFF("OFF");
     const std::string NOFF("NOFF");
     const std::string COFF("COFF");
-    bool f = (fscanf(fp,"%s\n",header)==1 && (
+    bool f = (fscanf(fp,"%999s\n",header)==1 && (
         std::string(header).compare(0, OFF.length(), OFF)==0 ||
         std::string(header).compare(0, COFF.length(), COFF)==0 ||
         std::string(header).compare(0,NOFF.length(),NOFF)==0));
@@ -23,7 +23,7 @@ IGL_INLINE void igl::guess_extension(FILE * fp, std::string & guess)
   {
     char header[1000];
     const std::string PLY("ply");
-    bool f = (fscanf(fp,"%s\n",header)==1 && (std::string(header).compare(0, PLY.length(), PLY)==0 ));
+    bool f = (fscanf(fp,"%999s\n",header)==1 && (std::string(header).compare(0, PLY.length(), PLY)==0 ));
     rewind(fp);
     return f;
   };
