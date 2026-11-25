@@ -159,8 +159,8 @@ TEST_CASE("predicates::expansion: exact_capacity", "[igl][predicates]")
   double result[2];
   REQUIRE(predicates_expansion_sum(1,left,1,right,result)==1);
   REQUIRE(result[0]==0.0);
-  const double small[1]={epsilon};
-  REQUIRE(predicates_expansion_scale(1,small,epsilon,result)==1);
+  const double input_expansion[1]={epsilon};
+  REQUIRE(predicates_expansion_scale(1,input_expansion,epsilon,result)==1);
   REQUIRE(result[0]==epsilon*epsilon);
 }
 
