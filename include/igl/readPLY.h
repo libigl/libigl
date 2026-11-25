@@ -45,7 +45,7 @@ namespace igl
     std::istream & ply_stream,
     Eigen::PlainObjectBase<DerivedV> & V,
     Eigen::PlainObjectBase<DerivedF> & F,
-    Eigen::PlainObjectBase<DerivedF> & E,
+    Eigen::PlainObjectBase<DerivedE> & E,
     Eigen::PlainObjectBase<DerivedN> & N,
     Eigen::PlainObjectBase<DerivedUV> & UV,
     Eigen::PlainObjectBase<DerivedVD> & VD,
