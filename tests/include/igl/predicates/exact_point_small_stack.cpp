@@ -26,9 +26,9 @@ void check_small_stack_queries()
   const double epsilon=std::ldexp(1.,-52);
   const Point a(0,0,0),b(1,0,0),c(0,1,0),q(.25,.25,1);
   const Point offset(0,0,epsilon),second_b=b+offset,second_c=c+offset;
-  const Point far(0,0,std::ldexp(1.,50));
+  const Point distant_query(0,0,std::ldexp(1.,50));
   // Cancellation forces exact comparison; coincident faces force an exact tie.
-  check(p::exact_point_triangle_squared_distance_compare(far,a,b,c,offset,second_b,second_c)==1);
+  check(p::exact_point_triangle_squared_distance_compare(distant_query,a,b,c,offset,second_b,second_c)==1);
   check(p::exact_point_triangle_squared_distance_compare(q,a,b,c,c,b,a)==0);
   const Point origin(0,0,0),direction(0,0,1),ra(0,0,1),rb(1,1+epsilon,1),rc(1-epsilon,1,1),
     sa(0,0,2),sb(1,1+epsilon,2),sc(1-epsilon,1,2);
@@ -52,7 +52,7 @@ void check_small_stack_queries()
   p::exact_mesh_feature_exposure(vertices,faces,neighbors,neighbor_edges,exposure);
   // The allocation audit verifies that this near-plane construction takes
   // the expansion fallback even though its feature is certified by the filter.
-  const Point near(.5,.5+epsilon,.5);
+  const Point near_plane_query(.5,.5+epsilon,.5);
   for(bool cached:{false,true})
   {
     p::PointMeshClosestPoint closest;
@@ -64,7 +64,7 @@ void check_small_stack_queries()
         p::approximate_signed_distance_exact_sign(query,vertices,faces,
           lower,upper,leaves,neighbors,neighbor_edges,closest,location);
     };
-    const double distance=evaluate(near);
+    const double distance=evaluate(near_plane_query);
     check(location==p::PointMeshLocation::INSIDE && closest.feature==p::ClosestPointFeature::FACE);
     check(std::abs(distance/epsilon+1/std::sqrt(2.))<1e-12);
     check(evaluate(Point(1,1,0))==0 && location==p::PointMeshLocation::ON_SURFACE);
