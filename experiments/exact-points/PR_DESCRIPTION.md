@@ -1,7 +1,8 @@
 # Use Shewchuk expansions for exact ray and closest-point mesh queries
 
-This extends #2549 with exact closest-feature selection, closest-triangle
-ordering and local inside/outside/on-surface tests. The signed-distance wrapper
+Supersedes the earlier draft #2549, carrying forward its ray implementation and
+adding exact closest-feature selection, closest-triangle ordering and local
+inside/outside/on-surface tests. The signed-distance wrapper
 returns an approximate numerical distance together with exact triangle/feature
 ids and an exact location label. It supports both single points and batches
 against a caller-owned Eytzinger tree and mesh data.
@@ -27,32 +28,40 @@ For closest-point queries, the branch adds:
   Uncertain decisions retain the interval/expansion refinement path.
 - Headless tutorial `1008_SignedDistanceProfile`, comparing unsigned,
   pseudonormal, fast-winding and cached/uncached exact-sign distances with the
-  same query parallelism. The branch is rebased onto current main `cb3d2940`.
+  same query parallelism.
 
 ## Performance
 
-Armadillo, 86,482 triangles and 10,000 fixed padded-box queries, GCC 13.3 Release,
-strict FP, EPYC 9B45. The latest search controls isolate the retained changes:
-filtered upper bounds save most of the cost, with smaller improvements from
-fraction reuse and fused classification. Full distance enclosures per candidate
-were slower and remain a benchmark control. Integrated serial closest-triangle
-search measures 108.16 ms versus 125.38 ms for the preceding policy (13.7% less).
+Armadillo, 86,482 triangles and 10,000 identical padded-box query points,
+GCC 13.3 Release, strict floating-point operations, EPYC 9B45. The following
+complete signed-distance query times are directly comparable: **four threads,
+preprocessing excluded, all distance and signing work included**, and the same
+parallel policy for every method.
+
+| Method | Median query time for 10,000 points |
+| --- | ---: |
+| Fast winding signed distance | 29.50 ms |
+| Approximate distance with exact sign, cached | 30.99 ms |
+| Approximate distance with exact sign, uncached | 32.34 ms |
+
+Each value is the median of three process medians, with one warm-up and nine
+rotated repetitions per process. Cached exact signing is about 5% slower than
+fast winding in these runs. Full-wrapper timings vary, so this is a workload
+measurement rather than a precise general speedup claim. Exposure-cache setup
+is excluded here; setup dominates cached full-call time and those serial
+measurements showed no improvement from the latest filters.
+
+Separate **one-thread closest-triangle search** controls measure 108.16 ms for
+the integrated implementation versus 125.38 ms for the preceding traversal
+policy (13.7% less). Cheaper certified upper bounds save most of this cost;
+reusing filtered fractions and fusing classification add smaller improvements.
 All variants visit the same leaves and select identical triangle ids.
 
-For complete signed-distance queries, four-thread medians across three runs are:
-
-| Method | Before latest filters | After |
-| --- | ---: | ---: |
-| Exact sign, uncached | 39.21 ms | 32.34 ms |
-| Exact sign, cached | 37.31 ms | 30.99 ms |
-| Fast winding, unchanged source control | 28.37 ms | 29.50 ms |
-
-Query times exclude preprocessing. All methods use the same parallel policy.
-Full-wrapper runs have appreciable variance; unchanged controls shift 2–4%.
-Serial full-call cached timings do not show an improvement because setup dominates
-and varies substantially. Exposure caching still only reduces local signing cost.
-[All paired timings, methodology, bounds proof and counters](FILTERS.md) and
-[API contracts and usage](README.md) are included.
+These measurements use the tested base `cb3d2940`. Current main has since
+advanced, including a fast-winding second-moment correction; that correction
+is not included in these benchmark numbers. [All paired timings, methodology,
+bounds proof and counters](FILTERS.md) and [API contracts and usage](README.md)
+are included.
 
 ## Validation
 
@@ -81,4 +90,11 @@ constructed points are approximate. Existing ray-box culling and approximate-hit
 limitations inherited from #2549 are documented in
 [the ray report](../exact-rays/README.md#accuracy-and-limitations).
 
-Prepared by Codex.
+#### Checklist
+
+- [ ] All changes meet [libigl style-guidelines](https://libigl.github.io/style-guidelines/).
+- [x] Adds new .cpp file.
+- [x] Adds corresponding unit test.
+- [ ] This is a minor change.
+
+Prepared by Codex (AI agent).
