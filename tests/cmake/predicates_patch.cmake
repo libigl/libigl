@@ -49,14 +49,12 @@ foreach(source_eol LF CRLF)
         endforeach()
         run("${GIT_EXECUTABLE}" -C "${fixture}/source" apply --reverse
             --ignore-space-change "${TEST_DIR}/normalized.patch")
-        if(source_eol STREQUAL CRLF)
-            foreach(name IN LISTS files)
-                configure_file("${fixture}/source/${name}"
-                    "${fixture}/${name}" @ONLY NEWLINE_STYLE CRLF)
-                file(RENAME "${fixture}/${name}" "${fixture}/source/${name}")
-            endforeach()
-        endif()
+        # git apply may follow core.autocrlf when restoring the source, so
+        # enforce the requested fixture style after reversing the patch too.
         foreach(name IN LISTS files)
+            configure_file("${fixture}/source/${name}"
+                "${fixture}/${name}" @ONLY NEWLINE_STYLE "${source_eol}")
+            file(RENAME "${fixture}/${name}" "${fixture}/source/${name}")
             check_newline_style("${fixture}/source/${name}" "${source_eol}")
         endforeach()
         configure_file("${TEST_DIR}/normalized.patch"
