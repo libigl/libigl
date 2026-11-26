@@ -7,6 +7,7 @@
 #define IGL_PREDICATES_POINT_MESH_CLOSEST_POINT_KERNEL_H
 #include "exact_point_mesh_closest_triangle_kernel.h"
 #include "exact_point_mesh_kernel.h"
+#include <type_traits>
 
 namespace igl { namespace predicates { namespace point_mesh_closest_point_kernel
 {
@@ -16,12 +17,12 @@ namespace igl { namespace predicates { namespace point_mesh_closest_point_kernel
     Eigen::Index triangle;
     int dimension,feature_id;
     double distance;
-    Eigen::RowVector3d closest_point,barycentric_coordinates;
+    Eigen::RowVector3d barycentric_coordinates;
   };
   template<typename Number> struct Construction
   {
     Number numerator,denominator;
-    std::array<Number,3> barycentric,point;
+    std::array<Number,3> barycentric;
   };
   template<typename Number> inline Construction<Number> construct(
     const k::Point &q,const std::array<k::Point,3> &p,int dimension,int id)
@@ -56,9 +57,6 @@ namespace igl { namespace predicates { namespace point_mesh_closest_point_kernel
       result.barycentric[id]=result.denominator-
         result.barycentric[(id+1)%3]-result.barycentric[(id+2)%3];
     }
-    for(int axis=0;axis<3;++axis)
-      result.point[axis]=(k::Input<Number>(p[0][axis])*result.barycentric[0]+
-        k::Input<Number>(p[1][axis])*result.barycentric[1])+k::Input<Number>(p[2][axis])*result.barycentric[2];
     return result;
   }
   inline bool well_conditioned(const k::Filter &value)
@@ -91,10 +89,7 @@ namespace igl { namespace predicates { namespace point_mesh_closest_point_kernel
     // when both the fraction and the distance are representable.
     result.distance=std::sqrt(numerator)/std::sqrt(denominator);
     for(int i=0;i<3;++i)
-    {
       result.barycentric_coordinates(i)=estimate(construction.barycentric[i])/denominator;
-      result.closest_point(i)=estimate(construction.point[i])/denominator;
-    }
   }
   // Keep the large return slot off the filtered query's frame, including in
   // header-only builds. Caller-owned 512 KiB worker stacks must also suffice
@@ -111,7 +106,6 @@ namespace igl { namespace predicates { namespace point_mesh_closest_point_kernel
     const int shift=k::rescale<6>(scaled);
     approximate(construct<k::Expansion>(scaled[0],{{scaled[1],scaled[2],scaled[3]}},dimension,id),result);
     result.distance=std::ldexp(result.distance,-shift);
-    for(int axis=0;axis<3;++axis) result.closest_point(axis)=std::ldexp(result.closest_point(axis),-shift);
   }
 
   template<typename DerivedQ,typename DerivedV,typename DerivedF,
@@ -136,19 +130,27 @@ namespace igl { namespace predicates { namespace point_mesh_closest_point_kernel
     const auto filtered=construct<k::Filter>(q,p,dimension,result.feature_id);
     bool reliable=well_conditioned(filtered.numerator) && well_conditioned(filtered.denominator);
     for(int i=0;i<3;++i)
-      reliable=reliable && well_conditioned(filtered.barycentric[i]) && well_conditioned(filtered.point[i]);
+      reliable=reliable && well_conditioned(filtered.barycentric[i]);
     if(reliable) approximate(filtered,result);
     else construct_exact(q,p,dimension,result.feature_id,result);
-    // Encode the exact feature in the support of the rounded barycentrics.
+    return result;
+  }
+
+  template<typename DerivedBary> inline void barycentrics(
+    const Result &result,Eigen::PlainObjectBase<DerivedBary> &bary)
+  {
+    using Scalar=typename DerivedBary::Scalar;
+    static_assert(std::is_floating_point<Scalar>::value,"Barycentrics require a floating-point output type");
+    bary.resizeLike(result.barycentric_coordinates);
+    // Encode the exact feature after converting to the output scalar type.
     // Active coefficients may underflow, but must never look like a boundary.
     for(int i=0;i<3;++i)
     {
-      const bool active=dimension==2 || i==result.feature_id ||
-        (dimension==1 && i==(result.feature_id+1)%3);
-      result.barycentric_coordinates(i)=active ?
-        std::max(result.barycentric_coordinates(i),std::numeric_limits<double>::denorm_min()) : 0.0;
+      const bool active=result.dimension==2 || i==result.feature_id ||
+        (result.dimension==1 && i==(result.feature_id+1)%3);
+      bary(i)=active ? std::max(static_cast<Scalar>(result.barycentric_coordinates(i)),
+        std::numeric_limits<Scalar>::denorm_min()) : Scalar(0);
     }
-    return result;
   }
 
 }}}

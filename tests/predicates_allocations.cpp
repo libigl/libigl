@@ -65,8 +65,8 @@ int main()
   Eigen::VectorXi leaves(1); leaves<<0;
   vertices<<0,0,0, 1,0,0, 0,1,0;
   sum_calls=0; allocation_count=0; track_allocations=true;
-  Eigen::Index closest_triangle; Point closest_point,bary;
-  const double ordinary=p::point_mesh_closest_point(q,vertices,faces,lower,upper,leaves,closest_triangle,closest_point,bary);
+  Eigen::Index closest_triangle; Point bary;
+  const double ordinary=p::point_mesh_closest_point(q,vertices,faces,lower,upper,leaves,closest_triangle,bary);
   track_allocations=false;
   const auto construction_filtered_calls=sum_calls;
   // This face classification is certified without expansions. Its tiny
@@ -76,7 +76,7 @@ int main()
   p::exact_point_triangle_closest_feature(near,v0,v1,v2,id);
   const auto construction_feature_calls=sum_calls-construction_filtered_calls;
   track_allocations=true;
-  const double cancelled=p::point_mesh_closest_point(near,vertices,faces,lower,upper,leaves,closest_triangle,closest_point,bary);
+  const double cancelled=p::point_mesh_closest_point(near,vertices,faces,lower,upper,leaves,closest_triangle,bary);
   track_allocations=false;
   const auto construction_fallback_calls=sum_calls-construction_filtered_calls-construction_feature_calls;
   const auto wrapper_allocations=allocation_count;
@@ -95,7 +95,7 @@ int main()
     duplicate_lower,duplicate_upper,duplicate_leaves);
   const auto tie_rounding=rounding_calls;
   // This exact boundary requires expansion refinement to select vertex 0.
-  // Constructing its point/distance is well conditioned, so the wrapper must
+  // Constructing its barycentrics/distance is well conditioned, so the wrapper must
   // use exactly the traversal's expansions, without classifying a second time.
   vertices<<0,0,0, 1,1,0, 0,0,1;
   const Point boundary_query(.5,-.5,0);
@@ -105,7 +105,7 @@ int main()
   const auto boundary_search_calls=sum_calls;
   sum_calls=0;
   const double boundary_distance=p::point_mesh_closest_point(boundary_query,
-    vertices,faces,lower,upper,leaves,closest_triangle,closest_point,bary);
+    vertices,faces,lower,upper,leaves,closest_triangle,bary);
   const auto boundary_wrapper_calls=sum_calls;
   const bool boundary_result=boundary_triangle==0 && closest_triangle==0 &&
     boundary_distance>0 && bary==Point(1,0,0);

@@ -200,7 +200,8 @@ int main(int argc,char *argv[])
     for(int method=0;method<method_count;++method)
     {
       auto &result=prepared[method]; result.distances.resize(query_count);
-      result.triangles.resize(query_count); result.closest_points.resize(query_count,3);
+      result.triangles.resize(query_count);
+      if(method<3) result.closest_points.resize(query_count,3);
       if(method==1) result.normals.resize(query_count,3);
       if(method>=3) result.barycentrics.resize(query_count,3);
     }
@@ -245,12 +246,12 @@ int main(int argc,char *argv[])
       auto &result=prepared[method];
       used_parallel[method]=parallel_queries(queries,[&](Eigen::Index i,const Point &query)
       {
-        Eigen::Index triangle; Point point,bary;
+        Eigen::Index triangle; Point bary;
         result.distances(i)=method==4 ? predicates::approximate_signed_distance_exact_sign(
-          query,vertices,faces,exact_tree.lower,exact_tree.upper,exact_tree.leaves,exposure,triangle,point,bary) :
+          query,vertices,faces,exact_tree.lower,exact_tree.upper,exact_tree.leaves,exposure,triangle,bary) :
           predicates::approximate_signed_distance_exact_sign(query,vertices,faces,exact_tree.lower,
-            exact_tree.upper,exact_tree.leaves,neighbors,neighbor_edges,triangle,point,bary);
-        result.triangles(i)=static_cast<int>(triangle); result.closest_points.row(i)=point;
+            exact_tree.upper,exact_tree.leaves,neighbors,neighbor_edges,triangle,bary);
+        result.triangles(i)=static_cast<int>(triangle);
         result.barycentrics.row(i)=bary;
       });
     };
@@ -281,9 +282,9 @@ int main(int argc,char *argv[])
         predicates::MeshFeatureExposure fresh_exposure;
         predicates::exact_mesh_feature_exposure(vertices,faces,fresh_neighbors,fresh_edges,fresh_exposure);
         predicates::approximate_signed_distance_exact_sign(queries,vertices,faces,fresh_tree.lower,
-          fresh_tree.upper,fresh_tree.leaves,fresh_exposure,r.distances,r.triangles,r.closest_points,r.barycentrics);
+          fresh_tree.upper,fresh_tree.leaves,fresh_exposure,r.distances,r.triangles,r.barycentrics);
       }else predicates::approximate_signed_distance_exact_sign(queries,vertices,faces,fresh_tree.lower,
-        fresh_tree.upper,fresh_tree.leaves,fresh_neighbors,fresh_edges,r.distances,r.triangles,r.closest_points,r.barycentrics);
+        fresh_tree.upper,fresh_tree.leaves,fresh_neighbors,fresh_edges,r.distances,r.triangles,r.barycentrics);
     };
     profile("total",full_methods,complete,repetitions,query_count);
 

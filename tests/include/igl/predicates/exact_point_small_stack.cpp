@@ -55,13 +55,13 @@ void check_small_stack_queries()
   const Point near_plane_query(.5,.5+epsilon,.5);
   for(bool cached:{false,true})
   {
-    Eigen::Index triangle; Point closest,bary;
+    Eigen::Index triangle; Point bary;
     const auto evaluate=[&](const Point &query)
     {
       return cached ? p::approximate_signed_distance_exact_sign(query,vertices,faces,
-        lower,upper,leaves,exposure,triangle,closest,bary) :
+        lower,upper,leaves,exposure,triangle,bary) :
         p::approximate_signed_distance_exact_sign(query,vertices,faces,
-          lower,upper,leaves,neighbors,neighbor_edges,triangle,closest,bary);
+          lower,upper,leaves,neighbors,neighbor_edges,triangle,bary);
     };
     const double distance=evaluate(near_plane_query);
     check(distance<0 && (bary.array()>0).all());

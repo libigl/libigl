@@ -82,13 +82,16 @@ that saving for one batch. Measure both rows for the expected workload.
 
 The example reports sign agreement, differences in numerical distance and
 closest-feature counts after timing. The exact-sign API returns Eigen arrays
-`S, I, C, bary` for signed distances, triangle indices, closest points and
-barycentrics. The sign/zeros of `S` retain exact inside/on-surface/outside
+`S, I, bary` for signed distances, triangle indices and barycentrics. The
+outputs use `Eigen::PlainObjectBase`; closest-point coordinates can be
+reconstructed from the triangle vertices and barycentrics when needed. The
+sign/zeros of `S` retain exact inside/on-surface/outside
 classification; the zero pattern of each barycentric row retains the exact
 closest feature (one positive weight for a vertex, two for an open edge, three
 for an open face). Nonzero distances or active weights that round to zero are
-replaced by the smallest positive double to preserve this information. Cached
-and uncached exact locations must agree. Fast winding returns `sqrt(squared_distance) * (1 - 2*abs(w))`, so its
+replaced by the smallest positive value of the output scalar type to preserve
+this information. Cached and uncached exact locations must agree. Fast winding
+returns `sqrt(squared_distance) * (1 - 2*abs(w))`, so its
 magnitude changes when the approximate winding number differs from zero or one.
 These sampled comparisons do not prove accuracy for arbitrary queries.
 

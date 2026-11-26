@@ -50,6 +50,12 @@ struct Mesh
     const Point b0=vertices.row(faces(b,0)),b1=vertices.row(faces(b,1)),b2=vertices.row(faces(b,2));
     return p::exact_point_triangle_squared_distance_compare(q,a0,a1,a2,b0,b1,b2);
   }
+  Point reconstruct(Eigen::Index face,const Point &bary) const
+  {
+    Point result=Point::Zero();
+    for(int i=0;i<3;++i) result+=bary(i)*vertices.row(faces(face,i));
+    return result;
+  }
   Eigen::Index closest(const Point &q) const
   { return p::exact_point_mesh_closest_triangle(q,vertices,faces,lower,upper,leaves); }
 };
@@ -309,11 +315,10 @@ TEST_CASE("predicates::approximate_signed_distance_exact_sign: batch_and_feature
   const int dimensions[8]={2,1,0,2,2,1,0,0};
   const int feature_ids[8]={0,2,0,0,0,2,0,2};
   Eigen::VectorXd distances; Eigen::VectorXi triangles;
-  Eigen::MatrixXd closest,bary;
+  Eigen::MatrixXd bary;
   p::approximate_signed_distance_exact_sign(queries,mesh.vertices,mesh.faces,mesh.lower,
-    mesh.upper,mesh.leaves,mesh.exposure,distances,triangles,closest,bary);
+    mesh.upper,mesh.leaves,mesh.exposure,distances,triangles,bary);
   REQUIRE(distances.size()==queries.rows()); REQUIRE(triangles.size()==8);
-  REQUIRE(closest.rows()==8); REQUIRE(closest.cols()==3);
   REQUIRE(bary.rows()==8); REQUIRE(bary.cols()==3);
   for(int i=0;i<8;++i)
   {
@@ -324,53 +329,51 @@ TEST_CASE("predicates::approximate_signed_distance_exact_sign: batch_and_feature
     REQUIRE(bary.row(i).sum()==Approx(1));
     Point reconstructed=Point::Zero();
     for(int j=0;j<3;++j) reconstructed+=bary(i,j)*mesh.vertices.row(mesh.faces(triangles(i),j));
-    REQUIRE((closest.row(i)-reconstructed).norm()<1e-14);
-    REQUIRE((queries.row(i)-closest.row(i)).norm()==Approx(std::abs(distances(i))));
-    Eigen::Index triangle; Point point,weights;
+    REQUIRE((queries.row(i)-reconstructed).norm()==Approx(std::abs(distances(i))));
+    Eigen::Index triangle; Point weights;
     const Eigen::Vector3d query=queries.row(i).transpose();
     REQUIRE(p::approximate_signed_distance_exact_sign(query,mesh.vertices,mesh.faces,
-      mesh.lower,mesh.upper,mesh.leaves,mesh.exposure,triangle,point,weights)==distances(i));
-    REQUIRE(triangle==triangles(i)); REQUIRE(point==closest.row(i)); REQUIRE(weights==bary.row(i));
+      mesh.lower,mesh.upper,mesh.leaves,mesh.exposure,triangle,weights)==distances(i));
+    REQUIRE(triangle==triangles(i)); REQUIRE(weights==bary.row(i));
     REQUIRE(p::approximate_signed_distance_exact_sign(query,mesh.vertices,mesh.faces,
-      mesh.lower,mesh.upper,mesh.leaves,mesh.neighbors,mesh.neighbor_edges,triangle,point,weights)==distances(i));
-    REQUIRE(triangle==triangles(i)); REQUIRE(point==closest.row(i)); REQUIRE(weights==bary.row(i));
+      mesh.lower,mesh.upper,mesh.leaves,mesh.neighbors,mesh.neighbor_edges,triangle,weights)==distances(i));
+    REQUIRE(triangle==triangles(i)); REQUIRE(weights==bary.row(i));
     if(expected[i]==0) REQUIRE_FALSE(std::signbit(distances(i)));
   }
 #ifndef IGL_STATIC_LIBRARY
   // Header-only float inputs and Eigen expressions preserve the same exact
   // classifications; all returned numerical constructions are doubles.
   Eigen::VectorXd float_distances; Eigen::VectorXi float_triangles;
-  Eigen::MatrixXd float_closest,float_bary;
+  Eigen::MatrixXd float_bary;
   p::approximate_signed_distance_exact_sign(queries.cast<float>(),mesh.vertices.cast<float>(),
     mesh.faces,mesh.lower.cast<float>(),mesh.upper.cast<float>(),mesh.leaves,
-    mesh.exposure,float_distances,float_triangles,float_closest,float_bary);
+    mesh.exposure,float_distances,float_triangles,float_bary);
   REQUIRE(float_distances==distances); REQUIRE(float_triangles==triangles);
-  REQUIRE(float_closest==closest); REQUIRE(float_bary==bary);
+  REQUIRE(float_bary==bary);
 #endif
   queries(0,0)=std::numeric_limits<double>::quiet_NaN();
   REQUIRE_THROWS_AS(p::approximate_signed_distance_exact_sign(queries,mesh.vertices,mesh.faces,
-    mesh.lower,mesh.upper,mesh.leaves,mesh.exposure,distances,triangles,closest,bary),std::invalid_argument);
+    mesh.lower,mesh.upper,mesh.leaves,mesh.exposure,distances,triangles,bary),std::invalid_argument);
   // Resizing reused output arrays must also handle empty batches.
   queries.resize(0,3);
   p::approximate_signed_distance_exact_sign(queries,mesh.vertices,mesh.faces,mesh.lower,
-    mesh.upper,mesh.leaves,mesh.exposure,distances,triangles,closest,bary);
+    mesh.upper,mesh.leaves,mesh.exposure,distances,triangles,bary);
   REQUIRE(distances.size()==0); REQUIRE(triangles.size()==0);
-  REQUIRE(closest.rows()==0); REQUIRE(closest.cols()==3);
   REQUIRE(bary.rows()==0); REQUIRE(bary.cols()==3);
   queries.resize(1,2);
   REQUIRE_THROWS_AS(p::approximate_signed_distance_exact_sign(queries,mesh.vertices,mesh.faces,
-    mesh.lower,mesh.upper,mesh.leaves,mesh.exposure,distances,triangles,closest,bary),std::invalid_argument);
+    mesh.lower,mesh.upper,mesh.leaves,mesh.exposure,distances,triangles,bary),std::invalid_argument);
   queries.resize(1,3); queries.setZero(); mesh.exposure.edges.resize(0,3);
   REQUIRE_THROWS_AS(p::approximate_signed_distance_exact_sign(queries,mesh.vertices,mesh.faces,
-    mesh.lower,mesh.upper,mesh.leaves,mesh.exposure,distances,triangles,closest,bary),std::invalid_argument);
+    mesh.lower,mesh.upper,mesh.leaves,mesh.exposure,distances,triangles,bary),std::invalid_argument);
   mesh.vertices.resize(0,3); mesh.faces.resize(0,3); mesh.tree();
   mesh.exposure.vertices.resize(0);
   const Point zero=Point::Zero();
-  Eigen::Index triangle; Point point,weights;
+  Eigen::Index triangle; Point weights;
   REQUIRE_THROWS_AS(p::point_mesh_closest_point(zero,mesh.vertices,mesh.faces,
-    mesh.lower,mesh.upper,mesh.leaves,triangle,point,weights),std::invalid_argument);
+    mesh.lower,mesh.upper,mesh.leaves,triangle,weights),std::invalid_argument);
   REQUIRE_THROWS_AS(p::approximate_signed_distance_exact_sign(queries,mesh.vertices,mesh.faces,
-    mesh.lower,mesh.upper,mesh.leaves,mesh.exposure,distances,triangles,closest,bary),std::invalid_argument);
+    mesh.lower,mesh.upper,mesh.leaves,mesh.exposure,distances,triangles,bary),std::invalid_argument);
 }
 
 TEST_CASE("predicates::point_mesh_closest_point: cancellation_and_degeneracy","[igl][predicates]")
@@ -379,15 +382,15 @@ TEST_CASE("predicates::point_mesh_closest_point: cancellation_and_degeneracy","[
   mesh.vertices.resize(3,3); mesh.faces.resize(1,3); mesh.faces<<0,1,2;
   const double thin=std::ldexp(1.,-40);
   mesh.vertices<<0,0,0, 1,1,0, 1,1+thin,0; mesh.tree();
-  Eigen::Index triangle; Point closest,bary;
+  Eigen::Index triangle; Point bary;
   const auto evaluate=[&](const Point &query)
-  { return p::point_mesh_closest_point(query,mesh.vertices,mesh.faces,mesh.lower,mesh.upper,mesh.leaves,triangle,closest,bary); };
+  { return p::point_mesh_closest_point(query,mesh.vertices,mesh.faces,mesh.lower,mesh.upper,mesh.leaves,triangle,bary); };
   const Point thin_query(.5,.5+thin/4,std::ldexp(1.,-20));
   double distance=evaluate(thin_query);
   require_feature(bary,2,0);
   REQUIRE(distance==std::ldexp(1.,-20));
   REQUIRE(bary==Point(.5,.25,.25));
-  REQUIRE(closest==Point(thin_query.x(),thin_query.y(),0));
+  REQUIRE(mesh.reconstruct(triangle,bary)==Point(thin_query.x(),thin_query.y(),0));
   // The rounded constructed point has a different distance from the exact
   // point. Never use its norm to replace the selected feature's fraction.
   const double large=std::ldexp(1.,40),offset=std::ldexp(1.,-12);
@@ -396,7 +399,7 @@ TEST_CASE("predicates::point_mesh_closest_point: cancellation_and_degeneracy","[
   distance=evaluate(query);
   require_feature(bary,1,0);
   REQUIRE(distance==Approx(offset/std::sqrt(2.)).epsilon(1e-14));
-  REQUIRE(std::abs((query-closest).norm()-distance)>distance*.1);
+  REQUIRE(std::abs((query-mesh.reconstruct(triangle,bary)).norm()-distance)>distance*.1);
   // Distance stays representable when the final squared-distance ratio
   // underflows. The polynomial intermediates themselves remain in range.
   const double scale=std::ldexp(1.,180),height=std::ldexp(1.,-600);
@@ -408,7 +411,7 @@ TEST_CASE("predicates::point_mesh_closest_point: cancellation_and_degeneracy","[
   mesh.vertices<<0,0,0, 1,0,0, 2,0,0; mesh.tree();
   distance=evaluate(Point(.5,1,0));
   REQUIRE((bary.array()>0).count()==2);
-  REQUIRE(distance==1); REQUIRE(closest==Point(.5,0,0));
+  REQUIRE(distance==1); REQUIRE(mesh.reconstruct(triangle,bary)==Point(.5,0,0));
   mesh.vertices.setZero(); mesh.tree(); distance=evaluate(Point(1,2,2));
   require_feature(bary,0,0); REQUIRE(distance==3);
   REQUIRE(bary==Point(1,0,0));
@@ -425,9 +428,9 @@ TEST_CASE("predicates::approximate_signed_distance_exact_sign: near_surface","[i
   for(int side:{-1,0,1})
   {
     const Point query(.5,.5+side*offset,.5);
-    Eigen::Index triangle; Point closest,bary;
+    Eigen::Index triangle; Point bary;
     const double distance=p::approximate_signed_distance_exact_sign(query,mesh.vertices,
-      mesh.faces,mesh.lower,mesh.upper,mesh.leaves,mesh.exposure,triangle,closest,bary);
+      mesh.faces,mesh.lower,mesh.upper,mesh.leaves,mesh.exposure,triangle,bary);
     REQUIRE((distance>0)-(distance<0)==-side); REQUIRE(triangle==0);
     require_feature(bary,2,0);
     if(side==0) { REQUIRE(distance==0); REQUIRE_FALSE(std::signbit(distance)); }
@@ -446,14 +449,14 @@ TEST_CASE("predicates::approximate_signed_distance_exact_sign: analytic_stars","
     for(int iteration=0;iteration<100;++iteration)
     {
       const Point query(sample(generator),sample(generator),sample(generator));
-      Eigen::Index triangle; Point closest,bary;
+      Eigen::Index triangle; Point bary;
       const double distance=p::approximate_signed_distance_exact_sign(query,mesh.vertices,
-        mesh.faces,mesh.lower,mesh.upper,mesh.leaves,mesh.exposure,triangle,closest,bary);
+        mesh.faces,mesh.lower,mesh.upper,mesh.leaves,mesh.exposure,triangle,bary);
       REQUIRE((distance>0)-(distance<0)==analytic_location(query,heights));
-      Eigen::Index uncached_triangle; Point uncached_point,uncached_bary;
+      Eigen::Index uncached_triangle; Point uncached_bary;
       REQUIRE(p::approximate_signed_distance_exact_sign(query,mesh.vertices,mesh.faces,
-        mesh.lower,mesh.upper,mesh.leaves,mesh.neighbors,mesh.neighbor_edges,uncached_triangle,uncached_point,uncached_bary)==distance);
-      REQUIRE(uncached_triangle==triangle); REQUIRE(uncached_point==closest); REQUIRE(uncached_bary==bary);
+        mesh.lower,mesh.upper,mesh.leaves,mesh.neighbors,mesh.neighbor_edges,uncached_triangle,uncached_bary)==distance);
+      REQUIRE(uncached_triangle==triangle); REQUIRE(uncached_bary==bary);
       REQUIRE(triangle==mesh.closest(query));
       double reference=std::numeric_limits<double>::infinity();
       for(int face=0;face<mesh.faces.rows();++face)
@@ -463,7 +466,7 @@ TEST_CASE("predicates::approximate_signed_distance_exact_sign: analytic_stars","
         reference=std::min(reference,squared);
       }
       REQUIRE(distance==Approx(analytic_location(query,heights)*std::sqrt(reference)).epsilon(1e-12));
-      REQUIRE((query-closest).norm()==Approx(std::abs(distance)).epsilon(1e-12));
+      REQUIRE((query-mesh.reconstruct(triangle,bary)).norm()==Approx(std::abs(distance)).epsilon(1e-12));
     }
   }
 }
@@ -474,11 +477,11 @@ TEST_CASE("predicates::approximate_signed_distance_exact_sign: parallel_batches"
   const std::array<Point,8> samples{{Point(0,0,.25),Point(0,0,-.25),Point(.25,.25,-.5),
     Point(1,0,-1),Point(1,1,-1),Point(0,0,-5),Point(0,-1,0),Point(0,0,-1)}};
   std::array<Eigen::Index,8> expected_triangle;
-  std::array<Point,8> expected_point,expected_bary;
+  std::array<Point,8> expected_bary;
   std::array<double,8> expected_distance;
   for(int i=0;i<8;++i) expected_distance[i]=p::approximate_signed_distance_exact_sign(samples[i],
     mesh.vertices,mesh.faces,mesh.lower,mesh.upper,mesh.leaves,mesh.exposure,
-    expected_triangle[i],expected_point[i],expected_bary[i]);
+    expected_triangle[i],expected_bary[i]);
   Eigen::MatrixXd queries(10000,3);
   Eigen::VectorXd expected_distances(queries.rows());
   for(int i=0;i<queries.rows();++i)
@@ -507,13 +510,13 @@ TEST_CASE("predicates::approximate_signed_distance_exact_sign: parallel_batches"
   for(bool cached:{false,true})
   {
     Eigen::VectorXd distances; Eigen::VectorXi triangles;
-    Eigen::MatrixXd closest,bary;
+    Eigen::MatrixXd bary;
     const auto evaluate=[&]
     {
       if(cached) p::approximate_signed_distance_exact_sign(observed_queries,mesh.vertices,mesh.faces,
-        mesh.lower,mesh.upper,mesh.leaves,mesh.exposure,distances,triangles,closest,bary);
+        mesh.lower,mesh.upper,mesh.leaves,mesh.exposure,distances,triangles,bary);
       else p::approximate_signed_distance_exact_sign(observed_queries,mesh.vertices,mesh.faces,
-        mesh.lower,mesh.upper,mesh.leaves,mesh.neighbors,mesh.neighbor_edges,distances,triangles,closest,bary);
+        mesh.lower,mesh.upper,mesh.leaves,mesh.neighbors,mesh.neighbor_edges,distances,triangles,bary);
     };
 #ifndef IGL_STATIC_LIBRARY
     worker_read=false;
@@ -531,13 +534,12 @@ TEST_CASE("predicates::approximate_signed_distance_exact_sign: parallel_batches"
     for(int i=0;i<queries.rows();i+=997)
     {
       REQUIRE(triangles(i)==expected_triangle[i%8]);
-      REQUIRE(closest.row(i)==expected_point[i%8]);
       REQUIRE(bary.row(i)==expected_bary[i%8]);
     }
     if(cached) p::approximate_signed_distance_exact_sign(serial_queries,mesh.vertices,mesh.faces,
-      mesh.lower,mesh.upper,mesh.leaves,mesh.exposure,distances,triangles,closest,bary);
+      mesh.lower,mesh.upper,mesh.leaves,mesh.exposure,distances,triangles,bary);
     else p::approximate_signed_distance_exact_sign(serial_queries,mesh.vertices,mesh.faces,
-      mesh.lower,mesh.upper,mesh.leaves,mesh.neighbors,mesh.neighbor_edges,distances,triangles,closest,bary);
+      mesh.lower,mesh.upper,mesh.leaves,mesh.neighbors,mesh.neighbor_edges,distances,triangles,bary);
 #ifndef IGL_STATIC_LIBRARY
     REQUIRE_FALSE(worker_read.load());
 #endif
@@ -593,9 +595,9 @@ TEST_CASE("predicates::exact_point_mesh: reject_degenerate_signing_fold", "[igl]
       mesh.neighbors,mesh.neighbor_edges,mesh.exposure),std::invalid_argument);
     for(const Point &query:{Point(.25,-1,0),Point(.25,-1,-1),Point(.75,-.5,-.5),Point(.3,-2,-.1)})
     {
-      Eigen::Index triangle; Point closest,bary;
+      Eigen::Index triangle; Point bary;
       REQUIRE_THROWS_AS(p::approximate_signed_distance_exact_sign(query,mesh.vertices,mesh.faces,
-        mesh.lower,mesh.upper,mesh.leaves,mesh.neighbors,mesh.neighbor_edges,triangle,closest,bary),std::invalid_argument);
+        mesh.lower,mesh.upper,mesh.leaves,mesh.neighbors,mesh.neighbor_edges,triangle,bary),std::invalid_argument);
     }
   }
 }
@@ -611,15 +613,16 @@ TEST_CASE("predicates::point_mesh_closest_point: rescaled_construction", "[igl][
     mesh.faces.resize(1,3); mesh.faces<<0,1,2;
     mesh.tree();
     const Point query=Point(.25,.25,1)*scale;
-    Eigen::Index triangle; Point closest,bary;
+    Eigen::Index triangle; Point bary;
     const double distance=p::point_mesh_closest_point(query,mesh.vertices,mesh.faces,
-      mesh.lower,mesh.upper,mesh.leaves,triangle,closest,bary);
+      mesh.lower,mesh.upper,mesh.leaves,triangle,bary);
     REQUIRE(triangle==0);
     require_feature(bary,2,0);
     REQUIRE(distance/scale==Approx(1.));
-    REQUIRE(closest(0)/scale==Approx(.25));
-    REQUIRE(closest(1)/scale==Approx(.25));
-    REQUIRE(closest(2)==0);
+    const Point reconstructed=mesh.reconstruct(triangle,bary);
+    REQUIRE(reconstructed(0)/scale==Approx(.25));
+    REQUIRE(reconstructed(1)/scale==Approx(.25));
+    REQUIRE(reconstructed(2)==0);
     REQUIRE(bary(0)==Approx(.5));
     if(exponent<0) REQUIRE(distance*distance==0);
     else REQUIRE(std::isinf(distance*distance));
@@ -636,9 +639,9 @@ TEST_CASE("predicates::point_mesh_closest_point: barycentric_support_underflow",
   mesh.faces.resize(1,3); mesh.faces<<0,1,2;
   mesh.tree();
   const Point query(0,tiny,0);
-  Eigen::Index triangle; Point closest,bary;
+  Eigen::Index triangle; Point bary;
   const double distance=p::point_mesh_closest_point(query,mesh.vertices,mesh.faces,
-    mesh.lower,mesh.upper,mesh.leaves,triangle,closest,bary);
+    mesh.lower,mesh.upper,mesh.leaves,triangle,bary);
   REQUIRE(triangle==0);
   require_feature(bary,2,0);
   REQUIRE(bary(1)==std::numeric_limits<double>::denorm_min());
@@ -659,25 +662,68 @@ TEST_CASE("predicates::approximate_signed_distance_exact_sign: sign_underflow", 
     Eigen::MatrixXd queries(2,3); queries<<scale*tilt,0,scale/4, 0,0,0;
     for(bool cached:{false,true})
     {
-      Eigen::VectorXd distances; Eigen::VectorXi triangles; Eigen::MatrixXd closest,bary;
+      Eigen::VectorXd distances; Eigen::VectorXi triangles; Eigen::MatrixXd bary;
       if(cached) p::approximate_signed_distance_exact_sign(queries,mesh.vertices,mesh.faces,
-        mesh.lower,mesh.upper,mesh.leaves,mesh.exposure,distances,triangles,closest,bary);
+        mesh.lower,mesh.upper,mesh.leaves,mesh.exposure,distances,triangles,bary);
       else p::approximate_signed_distance_exact_sign(queries,mesh.vertices,mesh.faces,
-        mesh.lower,mesh.upper,mesh.leaves,mesh.neighbors,mesh.neighbor_edges,distances,triangles,closest,bary);
+        mesh.lower,mesh.upper,mesh.leaves,mesh.neighbors,mesh.neighbor_edges,distances,triangles,bary);
       // The exact nonzero distance is about 2^-1080, below the rounding
       // midpoint to the smallest double. Its sign must remain observable.
       REQUIRE(distances(0)==-side*std::numeric_limits<double>::denorm_min());
       REQUIRE(triangles(0)==0); require_feature(bary.row(0),2,0);
       REQUIRE(distances(1)==0); REQUIRE_FALSE(std::signbit(distances(1)));
       require_feature(bary.row(1),0,0);
-      Eigen::Index triangle; Point point,weights;
+      Eigen::Index triangle; Point weights;
       const Point query=queries.row(0);
       const double distance=cached ? p::approximate_signed_distance_exact_sign(query,mesh.vertices,
-        mesh.faces,mesh.lower,mesh.upper,mesh.leaves,mesh.exposure,triangle,point,weights) :
+        mesh.faces,mesh.lower,mesh.upper,mesh.leaves,mesh.exposure,triangle,weights) :
         p::approximate_signed_distance_exact_sign(query,mesh.vertices,mesh.faces,
-          mesh.lower,mesh.upper,mesh.leaves,mesh.neighbors,mesh.neighbor_edges,triangle,point,weights);
+          mesh.lower,mesh.upper,mesh.leaves,mesh.neighbors,mesh.neighbor_edges,triangle,weights);
       REQUIRE(distance==distances(0)); REQUIRE(triangle==triangles(0));
-      REQUIRE(point==closest.row(0)); REQUIRE(weights==bary.row(0));
+      REQUIRE(weights==bary.row(0));
     }
   }
 }
+
+#ifndef IGL_STATIC_LIBRARY
+TEST_CASE("predicates::approximate_signed_distance_exact_sign: plain_object_outputs", "[igl][predicates]")
+{
+  Mesh mesh;
+  mesh.vertices.resize(4,3); mesh.vertices<<0,0,0, 1,0,0, 0,1,0, 0,0,1;
+  mesh.faces.resize(4,3); mesh.faces<<0,2,1, 0,1,3, 0,3,2, 1,2,3;
+  mesh.prepare();
+  const double tiny=std::ldexp(1.,-160);
+  Eigen::MatrixXd queries(4,3);
+  queries<<.25,.25,tiny, .25,.25,-tiny, .25,.25,0, tiny,.25,-1;
+  Eigen::Matrix<float,Eigen::Dynamic,1> distances;
+  Eigen::Matrix<long long,Eigen::Dynamic,1> triangles;
+  Eigen::Matrix<float,Eigen::Dynamic,3,Eigen::RowMajor> bary;
+  for(bool cached:{false,true})
+  {
+    if(cached) p::approximate_signed_distance_exact_sign(queries,mesh.vertices,mesh.faces,
+      mesh.lower,mesh.upper,mesh.leaves,mesh.exposure,distances,triangles,bary);
+    else p::approximate_signed_distance_exact_sign(queries,mesh.vertices,mesh.faces,
+      mesh.lower,mesh.upper,mesh.leaves,mesh.neighbors,mesh.neighbor_edges,distances,triangles,bary);
+    REQUIRE(distances.size()==4); REQUIRE(triangles.size()==4); REQUIRE(bary.rows()==4);
+    REQUIRE(distances(0)==-std::numeric_limits<float>::denorm_min());
+    REQUIRE(distances(1)==std::numeric_limits<float>::denorm_min());
+    REQUIRE(distances(2)==0); REQUIRE_FALSE(std::signbit(distances(2)));
+    REQUIRE(triangles(3)==0); REQUIRE((bary.row(3).array()>0).all());
+    REQUIRE(bary(3,2)==std::numeric_limits<float>::denorm_min());
+    const Point query=queries.row(3);
+    Eigen::Index triangle;
+    Eigen::Vector3f weights;
+    const double distance=cached ? p::approximate_signed_distance_exact_sign(query,mesh.vertices,
+      mesh.faces,mesh.lower,mesh.upper,mesh.leaves,mesh.exposure,triangle,weights) :
+      p::approximate_signed_distance_exact_sign(query,mesh.vertices,mesh.faces,
+        mesh.lower,mesh.upper,mesh.leaves,mesh.neighbors,mesh.neighbor_edges,triangle,weights);
+    REQUIRE(distance==1); REQUIRE(triangle==0); REQUIRE(weights==bary.row(3).transpose());
+    // A dynamic matrix can also hold the single-query row of barycentrics.
+    Eigen::MatrixXd dynamic_bary;
+    REQUIRE(p::point_mesh_closest_point(query,mesh.vertices,mesh.faces,mesh.lower,
+      mesh.upper,mesh.leaves,triangle,dynamic_bary)==1);
+    REQUIRE(dynamic_bary.rows()==1); REQUIRE(dynamic_bary.cols()==3);
+    REQUIRE(dynamic_bary(0,2)==tiny);
+  }
+}
+#endif
