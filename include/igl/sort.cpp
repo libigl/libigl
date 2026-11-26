@@ -124,36 +124,42 @@ IGL_INLINE void igl::sort_new(
   {
     Eigen::VectorXi ix;
     colon(0,num_inner-1,ix);
-    // Sort the index map, using unsorted for comparison
+    // Sort the index map, using unsorted for comparison. Ties are broken by
+    // index so equal entries keep their original order (the same result as
+    // std::stable_sort, which is slower here; see the std::vector overload).
     if(dim == 1)
     {
       if(ascending)
       {
-        std::stable_sort(
+        std::sort(
           ix.data(),
           ix.data()+ix.size(),
-          igl::IndexVectorLessThan<const typename DerivedX::ConstColXpr >(X.col(i)));
+          [&X,i](int a, int b)
+          { return X(a,i) < X(b,i) || (!(X(b,i) < X(a,i)) && a < b); });
       }else
       {
-        std::stable_sort(
+        std::sort(
           ix.data(),
           ix.data()+ix.size(),
-          [&X,i](int a, int b) { return X(b,i) < X(a,i); });
+          [&X,i](int a, int b)
+          { return X(b,i) < X(a,i) || (!(X(a,i) < X(b,i)) && a < b); });
       }
     }else
     {
       if(ascending)
       {
-        std::stable_sort(
+        std::sort(
           ix.data(),
           ix.data()+ix.size(),
-          igl::IndexVectorLessThan<const typename DerivedX::ConstRowXpr >(X.row(i)));
+          [&X,i](int a, int b)
+          { return X(i,a) < X(i,b) || (!(X(i,b) < X(i,a)) && a < b); });
       }else
       {
-        std::stable_sort(
+        std::sort(
           ix.data(),
           ix.data()+ix.size(),
-          [&X,i](int a, int b) { return X(i,b) < X(i,a); });
+          [&X,i](int a, int b)
+          { return X(i,b) < X(i,a) || (!(X(i,a) < X(i,b)) && a < b); });
       }
     }
     for(int j = 0;j<num_inner;j++)
@@ -315,19 +321,24 @@ for(size_t i=0;i<unsorted.size();i++)
 {
   index_map[i] = i;
 }
-// Sort the index map, using unsorted for comparison
+// Sort the index map, using unsorted for comparison. Ties are broken by index
+// so equal entries keep their original order. This gives the same result as
+// std::stable_sort, which is up to ~2× slower here (e.g., on the barycenters
+// that AABB::init sorts).
 if(ascending)
 {
-  std::stable_sort(
+  std::sort(
     index_map.begin(),
     index_map.end(),
-    igl::IndexLessThan<const std::vector<T>& >(unsorted));
+    [&unsorted](size_t a, size_t b)
+    { return unsorted[a] < unsorted[b] || (!(unsorted[b] < unsorted[a]) && a < b); });
 }else
 {
-  std::stable_sort(
+  std::sort(
     index_map.begin(),
     index_map.end(),
-    [&unsorted](size_t a, size_t b) { return unsorted[b] < unsorted[a]; });
+    [&unsorted](size_t a, size_t b)
+    { return unsorted[b] < unsorted[a] || (!(unsorted[a] < unsorted[b]) && a < b); });
 }
   // make space for output without clobbering
   sorted.resize(unsorted.size());
