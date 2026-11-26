@@ -89,6 +89,22 @@ TEST_CASE("AABB: dynamic", "[igl]")
   const auto test_case = [&MAX_RUNS](const std::string &param)
   {
     IGL_TICTOC_LAMBDA;
+    // Time f() as the fastest of `runs` calls. Preemption on a shared CI
+    // runner only ever adds time, so the minimum is a robust estimate of the
+    // true cost, whereas a single (or averaged) measurement of a call that
+    // takes microseconds can come out ~100× too slow if the process is
+    // descheduled for a timeslice in the middle of it.
+    const auto fastest = [&tictoc](const int runs, const std::function<void()> & f)
+    {
+      double t = std::numeric_limits<double>::infinity();
+      for(int r = 0;r<runs;r++)
+      {
+        tictoc();
+        f();
+        t = std::min(t,tictoc());
+      }
+      return t;
+    };
     Eigen::MatrixXd V;
     Eigen::MatrixXi F;
     // Load example mesh: GetParam() will be name of mesh file
@@ -105,9 +121,13 @@ TEST_CASE("AABB: dynamic", "[igl]")
     Eigen::MatrixXd C;
     igl::AABB<Eigen::MatrixXd, 3> * tree = new igl::AABB<Eigen::MatrixXd, 3>();
     tree->init(V,F);
-    tictoc();
-    tree->squared_distance(V,F,BC,sqrD,I,C);
-    const double t0 = tictoc();
+    // Padding is slow. Only test it on small meshes, and only time the
+    // initial query repeatedly when it will be compared against.
+    const bool test_pad = F.rows() < 4000;
+    const double t0 = fastest(test_pad ? MAX_RUNS : 1,[&]
+    {
+      tree->squared_distance(V,F,BC,sqrD,I,C);
+    });
     test_common::assert_eq(I,I_gt);
     test_common::assert_near(sqrD,sqrD_gt,1e-15);
     REQUIRE(tree->size() == 2*F.rows()-1);
@@ -120,8 +140,7 @@ TEST_CASE("AABB: dynamic", "[igl]")
       REQUIRE(leaf);
       REQUIRE(leaf->is_leaf());
     }
-    // This is slow. Only test on small meshes
-    if(F.rows() < 4000)
+    if(test_pad)
     {
       // Gather list of pointers to leaves and pad by ε to force rebuild
       tree = tree->pad(leaves,pad,2);
@@ -132,9 +151,10 @@ TEST_CASE("AABB: dynamic", "[igl]")
         REQUIRE(leaf);
         REQUIRE(leaf->is_leaf());
       }
-      tictoc();
-      tree->squared_distance(V,F,BC,sqrD,I,C);
-      const double t1 = tictoc();
+      const double t1 = fastest(MAX_RUNS,[&]
+      {
+        tree->squared_distance(V,F,BC,sqrD,I,C);
+      });
       REQUIRE(t1 < 10*t0);
       test_common::assert_eq(I,I_gt);
       test_common::assert_near(sqrD,sqrD_gt,1e-15);
@@ -150,85 +170,70 @@ TEST_CASE("AABB: dynamic", "[igl]")
 #endif
 
 
+    // Choose a small subset of the triangles to perturb
     Eigen::VectorXi RV;
     Eigen::VectorXi RF;
-    // Perturb a small subset of the triangles
     {
-      {
-        igl::randperm(F.rows(),RF);
-        RF = RF.topRows(std::min(12,(int)F.rows())).eval();
-        RV.resize(RF.size()*3);
-        RV << RF, RF.array()+F.rows(), RF.array()+2*F.rows();
-      }
+      igl::randperm(F.rows(),RF);
+      RF = RF.topRows(std::min(12,(int)F.rows())).eval();
+      RV.resize(RF.size()*3);
+      RV << RF, RF.array()+F.rows(), RF.array()+2*F.rows();
+    }
+    const int qi = RF(0);
+
+    // Each round perturbs those triangles, then times refitting the tree and
+    // querying the barycenter of one of them. A refit only takes tens of
+    // microseconds, so keep the fastest round.
+    double t_dynamic_tree = std::numeric_limits<double>::infinity();
+    for(int r = 0;r<MAX_RUNS;r++)
+    {
       Eigen::MatrixXd TF = 0.1*h*Eigen::MatrixXd::Random(RF.size(),3);
       Eigen::MatrixXd TV(RV.rows(),3);
       TV<<TF,TF,TF;
       V(RV,igl::placeholders::all) += TV;
       igl::barycenter(V,F,BC);
-    }
-    const int qi = RF(0);
-
-    double t_dynamic_tree;
-    {
       tictoc();
       // update those perturbed triangles
       for(int i = 0;i<RF.size();i++)
       {
         tree = leaves[RF(i)]->update_primitive(V,F,pad)->root();
       }
-      const double t_refit = tictoc();
-      for(int r = 0;r<MAX_RUNS;r++)
-      {
-        tree->squared_distance(V,F,Eigen::MatrixXd(BC.row(qi)),sqrD,I,C);
-      }
-      const double t_query = tictoc()/MAX_RUNS;
-      REQUIRE(I(0) == qi);
-      t_dynamic_tree = t_refit+t_query;
-    }
-    double t_static_tree;
-    {
-      tictoc();
-      for(int r = 0;r<MAX_RUNS;r++)
-      {
-        igl::point_mesh_squared_distance(
-          Eigen::MatrixXd(BC.row(qi)),V,F,sqrD,I,C);
-      }
-      t_static_tree = tictoc()/MAX_RUNS;
+      tree->squared_distance(V,F,Eigen::MatrixXd(BC.row(qi)),sqrD,I,C);
+      t_dynamic_tree = std::min(t_dynamic_tree,tictoc());
       REQUIRE(I(0) == qi);
     }
-    double t_brute_force;
+    const double t_static_tree = fastest(MAX_RUNS,[&]
     {
-      tictoc();
-      double min_dist;
-      int min_i;
-      for(int r = 0;r<MAX_RUNS;r++)
+      igl::point_mesh_squared_distance(
+        Eigen::MatrixXd(BC.row(qi)),V,F,sqrD,I,C);
+    });
+    REQUIRE(I(0) == qi);
+    double min_dist;
+    int min_i;
+    const double t_brute_force = fastest(MAX_RUNS,[&]
+    {
+      min_dist = std::numeric_limits<double>::infinity();
+      min_i = -1;
+      Eigen::RowVector3d q = Eigen::RowVector3d(BC.row(qi));
+      for(int i = 0;i<F.rows();i++)
       {
-        min_dist = std::numeric_limits<double>::infinity();
-        min_i = -1;
-        Eigen::RowVector3d q = Eigen::RowVector3d(BC.row(qi));
-        for(int i = 0;i<F.rows();i++)
+        Eigen::RowVector3d c;
+        double d;
+        igl::point_simplex_squared_distance<3>(q,V,F,i,d,c);
+        if(d < min_dist)
         {
-          Eigen::RowVector3d c;
-          double d;
-          igl::point_simplex_squared_distance<3>(q,V,F,i,d,c);
-          if(d < min_dist)
-          {
-            min_dist = d;
-            min_i = i;
-          }
+          min_dist = d;
+          min_i = i;
         }
       }
-      t_brute_force = tictoc()/MAX_RUNS;
-      REQUIRE(min_i == qi);
-    }
+    });
+    REQUIRE(min_i == qi);
 
-    // Only compare speeds on large meshes. Each timing above is a single-point
-    // query averaged over MAX_RUNS runs — only a few microseconds — so on small
-    // and medium meshes the tree's O(log n) advantage over the O(n) brute force
-    // is within timing noise (they are effectively a wash at ~1e3 faces), which
-    // made this assertion flaky on shared CI runners. Restrict the comparison to
-    // meshes large enough (here bunny ~69k and elephant ~157k faces) that the
-    // asymptotic advantage robustly dominates measurement noise.
+    // Only compare speeds on large meshes (here bunny ~69k and elephant ~157k
+    // faces), where refitting and querying the dynamic tree is ~100× faster
+    // than the O(n) brute force and ~1000× faster than rebuilding a static
+    // tree. On small and medium meshes the tree's advantage over brute force is
+    // within timing noise (they are effectively a wash at ~1e3 faces).
     if(F.rows() > 10000)
     {
       REQUIRE(t_dynamic_tree < t_static_tree);
