@@ -65,7 +65,8 @@ int main()
   Eigen::VectorXi leaves(1); leaves<<0;
   vertices<<0,0,0, 1,0,0, 0,1,0;
   sum_calls=0; allocation_count=0; track_allocations=true;
-  const auto ordinary=p::point_mesh_closest_point(q,vertices,faces,lower,upper,leaves);
+  Eigen::Index closest_triangle; Point closest_point,bary;
+  const double ordinary=p::point_mesh_closest_point(q,vertices,faces,lower,upper,leaves,closest_triangle,closest_point,bary);
   track_allocations=false;
   const auto construction_filtered_calls=sum_calls;
   // This face classification is certified without expansions. Its tiny
@@ -75,7 +76,7 @@ int main()
   p::exact_point_triangle_closest_feature(near,v0,v1,v2,id);
   const auto construction_feature_calls=sum_calls-construction_filtered_calls;
   track_allocations=true;
-  const auto cancelled=p::point_mesh_closest_point(near,vertices,faces,lower,upper,leaves);
+  const double cancelled=p::point_mesh_closest_point(near,vertices,faces,lower,upper,leaves,closest_triangle,closest_point,bary);
   track_allocations=false;
   const auto construction_fallback_calls=sum_calls-construction_filtered_calls-construction_feature_calls;
   const auto wrapper_allocations=allocation_count;
@@ -93,6 +94,21 @@ int main()
   const auto duplicate=p::exact_point_mesh_closest_triangle(vertex_query,vertices,duplicate_faces,
     duplicate_lower,duplicate_upper,duplicate_leaves);
   const auto tie_rounding=rounding_calls;
+  // This exact boundary requires expansion refinement to select vertex 0.
+  // Constructing its point/distance is well conditioned, so the wrapper must
+  // use exactly the traversal's expansions, without classifying a second time.
+  vertices<<0,0,0, 1,1,0, 0,0,1;
+  const Point boundary_query(.5,-.5,0);
+  sum_calls=0;
+  const auto boundary_triangle=p::exact_point_mesh_closest_triangle(boundary_query,
+    vertices,faces,lower,upper,leaves);
+  const auto boundary_search_calls=sum_calls;
+  sum_calls=0;
+  const double boundary_distance=p::point_mesh_closest_point(boundary_query,
+    vertices,faces,lower,upper,leaves,closest_triangle,closest_point,bary);
+  const auto boundary_wrapper_calls=sum_calls;
+  const bool boundary_result=boundary_triangle==0 && closest_triangle==0 &&
+    boundary_distance>0 && bary==Point(1,0,0);
   // Distinct edge projections need no expansions. Comparing the seed edge
   // with itself would introduce a redundant exact-zero fallback.
   Eigen::MatrixXd tetra_vertices(4,3);
@@ -121,9 +137,12 @@ int main()
     <<","<<construction_fallback_calls<<"\n";
   std::cout<<"single_bound_rounding,tied_bound_rounding,vertex_sign_expansion_sums\n"
     <<single_rounding<<","<<tie_rounding<<","<<vertex_sign_calls<<"\n";
-  return dimension!=p::ClosestPointFeature::FACE || order!=1 || edge_tie!=0 ||
+  std::cout<<"boundary_search_sums,boundary_wrapper_sums\n"
+    <<boundary_search_calls<<","<<boundary_wrapper_calls<<"\n";
+  return !boundary_result || boundary_search_calls==0 || boundary_wrapper_calls!=boundary_search_calls ||
+    dimension!=p::ClosestPointFeature::FACE || order!=1 || edge_tie!=0 ||
     leaf_allocations!=0 || filtered_calls!=0 || tie_calls!=0 || leaf_sums==0 ||
-    ordinary.distance!=1 || cancelled.distance<=0 ||
+    ordinary!=1 || cancelled<=0 ||
     construction_filtered_calls!=0 || construction_feature_calls!=0 || construction_fallback_calls==0 ||
     single!=0 || duplicate!=0 || single_rounding!=3 || tie_rounding!=single_rounding ||
     location!=p::PointMeshLocation::OUTSIDE || vertex_sign_calls!=0 ||

@@ -55,21 +55,20 @@ void check_small_stack_queries()
   const Point near_plane_query(.5,.5+epsilon,.5);
   for(bool cached:{false,true})
   {
-    p::PointMeshClosestPoint closest;
-    p::PointMeshLocation location;
+    Eigen::Index triangle; Point closest,bary;
     const auto evaluate=[&](const Point &query)
     {
       return cached ? p::approximate_signed_distance_exact_sign(query,vertices,faces,
-        lower,upper,leaves,exposure,closest,location) :
+        lower,upper,leaves,exposure,triangle,closest,bary) :
         p::approximate_signed_distance_exact_sign(query,vertices,faces,
-          lower,upper,leaves,neighbors,neighbor_edges,closest,location);
+          lower,upper,leaves,neighbors,neighbor_edges,triangle,closest,bary);
     };
     const double distance=evaluate(near_plane_query);
-    check(location==p::PointMeshLocation::INSIDE && closest.feature==p::ClosestPointFeature::FACE);
+    check(distance<0 && (bary.array()>0).all());
     check(std::abs(distance/epsilon+1/std::sqrt(2.))<1e-12);
-    check(evaluate(Point(1,1,0))==0 && location==p::PointMeshLocation::ON_SURFACE);
+    check(evaluate(Point(1,1,0))==0);
     // Equal edge projections at the closest vertex also refine to expansions.
-    check(evaluate(Point(0,-1,-1))>0 && location==p::PointMeshLocation::OUTSIDE);
+    check(evaluate(Point(0,-1,-1))>0);
   }
 }
 struct StackQuery

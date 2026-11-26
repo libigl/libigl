@@ -55,9 +55,8 @@ struct EytzingerTree
 struct Results
 {
   Eigen::VectorXd distances;
-  Eigen::VectorXi triangles,locations;
-  Eigen::MatrixXd closest_points,normals;
-  std::vector<predicates::PointMeshClosestPoint> exact_closest;
+  Eigen::VectorXi triangles;
+  Eigen::MatrixXd closest_points,normals,barycentrics;
 };
 
 template<typename Evaluate> bool parallel_queries(const Eigen::MatrixXd &queries,const Evaluate &evaluate)
@@ -201,11 +200,9 @@ int main(int argc,char *argv[])
     for(int method=0;method<method_count;++method)
     {
       auto &result=prepared[method]; result.distances.resize(query_count);
-      if(method<3)
-      {
-        result.triangles.resize(query_count); result.closest_points.resize(query_count,3);
-        if(method==1) result.normals.resize(query_count,3);
-      }else { result.exact_closest.resize(query_count); result.locations.resize(query_count); }
+      result.triangles.resize(query_count); result.closest_points.resize(query_count,3);
+      if(method==1) result.normals.resize(query_count,3);
+      if(method>=3) result.barycentrics.resize(query_count,3);
     }
     std::array<std::function<void()>,method_count> query_methods;
     query_methods[0]=[&]
@@ -248,12 +245,13 @@ int main(int argc,char *argv[])
       auto &result=prepared[method];
       used_parallel[method]=parallel_queries(queries,[&](Eigen::Index i,const Point &query)
       {
-        predicates::PointMeshLocation location;
+        Eigen::Index triangle; Point point,bary;
         result.distances(i)=method==4 ? predicates::approximate_signed_distance_exact_sign(
-          query,vertices,faces,exact_tree.lower,exact_tree.upper,exact_tree.leaves,exposure,result.exact_closest[i],location) :
+          query,vertices,faces,exact_tree.lower,exact_tree.upper,exact_tree.leaves,exposure,triangle,point,bary) :
           predicates::approximate_signed_distance_exact_sign(query,vertices,faces,exact_tree.lower,
-            exact_tree.upper,exact_tree.leaves,neighbors,neighbor_edges,result.exact_closest[i],location);
-        result.locations(i)=static_cast<int>(location);
+            exact_tree.upper,exact_tree.leaves,neighbors,neighbor_edges,triangle,point,bary);
+        result.triangles(i)=static_cast<int>(triangle); result.closest_points.row(i)=point;
+        result.barycentrics.row(i)=bary;
       });
     };
     profile("query",query_methods,prepared,repetitions,query_count);
@@ -283,14 +281,15 @@ int main(int argc,char *argv[])
         predicates::MeshFeatureExposure fresh_exposure;
         predicates::exact_mesh_feature_exposure(vertices,faces,fresh_neighbors,fresh_edges,fresh_exposure);
         predicates::approximate_signed_distance_exact_sign(queries,vertices,faces,fresh_tree.lower,
-          fresh_tree.upper,fresh_tree.leaves,fresh_exposure,r.distances,r.exact_closest,r.locations);
+          fresh_tree.upper,fresh_tree.leaves,fresh_exposure,r.distances,r.triangles,r.closest_points,r.barycentrics);
       }else predicates::approximate_signed_distance_exact_sign(queries,vertices,faces,fresh_tree.lower,
-        fresh_tree.upper,fresh_tree.leaves,fresh_neighbors,fresh_edges,r.distances,r.exact_closest,r.locations);
+        fresh_tree.upper,fresh_tree.leaves,fresh_neighbors,fresh_edges,r.distances,r.triangles,r.closest_points,r.barycentrics);
     };
     profile("total",full_methods,complete,repetitions,query_count);
 
     const auto &reference=prepared[4];
-    if(prepared[3].locations!=reference.locations || prepared[3].distances!=reference.distances)
+    if(prepared[3].distances!=reference.distances || prepared[3].triangles!=reference.triangles ||
+       prepared[3].barycentrics!=reference.barycentrics)
       throw std::logic_error("Cached and uncached exact-sign results disagree");
     for(int method=0;method<method_count;++method)
     {
@@ -302,7 +301,7 @@ int main(int argc,char *argv[])
       for(int i=0;i<query_count;++i)
       {
         const double value=prepared[method].distances(i);
-        if(method>0 && ((value>0)-(value<0))!=reference.locations(i)) ++sign_mismatches;
+        if(method>0 && ((value>0)-(value<0))!=((reference.distances(i)>0)-(reference.distances(i)<0))) ++sign_mismatches;
         const double magnitude=method==0 ? std::sqrt(value) : std::abs(value);
         magnitude_error=std::max(magnitude_error,std::abs(magnitude-std::abs(reference.distances(i))));
       }
@@ -314,8 +313,8 @@ int main(int argc,char *argv[])
     std::array<int,3> features{{0,0,0}},locations{{0,0,0}};
     for(int i=0;i<query_count;++i)
     {
-      ++features[static_cast<int>(reference.exact_closest[i].feature)];
-      ++locations[reference.locations(i)+1];
+      ++features[(reference.barycentrics.row(i).array()>0).count()-1];
+      ++locations[((reference.distances(i)>0)-(reference.distances(i)<0))+1];
     }
     std::cout<<"# exact_locations: inside="<<locations[0]<<" surface="<<locations[1]<<" outside="<<locations[2]<<'\n'
       <<"# exact_features: vertex="<<features[0]<<" edge="<<features[1]<<" face="<<features[2]<<'\n';

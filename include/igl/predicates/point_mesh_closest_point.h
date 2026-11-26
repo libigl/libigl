@@ -6,21 +6,8 @@
 #ifndef IGL_PREDICATES_POINT_MESH_CLOSEST_POINT_H
 #define IGL_PREDICATES_POINT_MESH_CLOSEST_POINT_H
 #include "../igl_inline.h"
-#include "exact_point_triangle_closest_feature.h"
 #include <Eigen/Core>
 namespace igl { namespace predicates {
-  /// Exact feature selection with approximate floating-point constructions.
-  struct PointMeshClosestPoint
-  {
-    Eigen::Index triangle;
-    ClosestPointFeature feature;
-    int feature_id;
-    double distance;
-    double squared_distance;
-    Eigen::RowVector3d closest_point;
-    Eigen::RowVector3d barycentric_coordinates;
-  };
-
   /// Find an exact closest feature and construct its approximate closest point.
   /// Uses one traversal of the supplied Eytzinger tree. Equal distances choose
   /// the lowest triangle id. Degenerate triangles are supported; feature ids
@@ -30,13 +17,17 @@ namespace igl { namespace predicates {
   /// The feature is selected using exact predicates on the original inputs;
   /// numerical construction never reclassifies that feature.
   ///
-  /// Distances, point coordinates and barycentrics are approximate doubles,
-  /// not correctly rounded exact constructions. Rounded barycentrics need not
-  /// sum to exactly one or retain an open feature's strict inequalities, and
-  /// closest_point need not lie exactly on the triangle. Distance is evaluated
-  /// from the selected feature's squared-distance fraction, independently of
-  /// the rounded closest point. squared_distance may underflow/overflow even
-  /// when distance is representable. No expansions survive this call.
+  /// Distance, point coordinates and barycentrics are approximate doubles,
+  /// not correctly rounded exact constructions. Barycentric coefficients are
+  /// zero exactly at the inactive corners of the selected feature and strictly
+  /// positive at its active corners. Thus one, two or three positive entries
+  /// identify a vertex, open edge or open face, respectively. Positive weights
+  /// that round to zero are replaced by the smallest positive double.
+  /// Barycentrics need not sum to exactly one, and C need not lie exactly on
+  /// the triangle or equal interpolation using the rounded barycentrics.
+  /// Distance is evaluated from the selected feature's squared-distance
+  /// fraction, independently of C, and may underflow/overflow. No expansions
+  /// survive this call.
   ///
   /// Tree validity, input types and arithmetic assumptions are those of
   /// exact_point_mesh_closest_triangle. An empty mesh/tree throws
@@ -44,14 +35,19 @@ namespace igl { namespace predicates {
   /// @param[in] query  Query 3-vector
   /// @param[in] V,F  #V by 3 coordinates and #F by 3 triangle vertex indices
   /// @param[in] B1,B2,leaf  Precomputed conservative Eytzinger tree
-  /// @return Exact triangle/feature ids and approximate numerical results
+  /// @param[out] I  Index of the selected closest triangle
+  /// @param[out] C  Approximate closest point (3-vector)
+  /// @param[out] bary  Barycentric 3-vector in F.row(I) corner order; its zero
+  ///   pattern identifies the exact feature (edge i joins i to (i+1)%3)
+  /// @return Approximate unsigned distance
   template<typename DerivedQ,typename DerivedV,typename DerivedF,
     typename DerivedB,typename DerivedL>
-  IGL_INLINE PointMeshClosestPoint point_mesh_closest_point(
+  IGL_INLINE double point_mesh_closest_point(
     const Eigen::MatrixBase<DerivedQ> &query,
     const Eigen::MatrixBase<DerivedV> &V,const Eigen::MatrixBase<DerivedF> &F,
     const Eigen::MatrixBase<DerivedB> &B1,const Eigen::MatrixBase<DerivedB> &B2,
-    const Eigen::MatrixBase<DerivedL> &leaf);
+    const Eigen::MatrixBase<DerivedL> &leaf,
+    Eigen::Index &I,Eigen::RowVector3d &C,Eigen::RowVector3d &bary);
 }}
 #ifndef IGL_STATIC_LIBRARY
 #  include "point_mesh_closest_point.cpp"
