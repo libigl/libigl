@@ -36,6 +36,32 @@ TEST_CASE("readPLY: reordered vertex properties", "[igl]")
   test_common::assert_eq(F,expected_F);
 }
 
+TEST_CASE("readPLY: repeated vertex coordinate property", "[igl]")
+{
+  // The repeated `x` used to push the coordinate counter to 3, so the
+  // permutation applied to V read a column that V does not have.
+  std::istringstream ply_stream(
+    "ply\n"
+    "format ascii 1.0\n"
+    "element vertex 1\n"
+    "property double x\n"
+    "property double y\n"
+    "property double z\n"
+    "property double x\n"
+    "end_header\n"
+    "1 2 3 4\n");
+
+  Eigen::MatrixXd V,N,UV,VD,FD,ED;
+  Eigen::MatrixXi F,E;
+  std::vector<std::string> Vheader,Fheader,Eheader,comments;
+  REQUIRE (igl::readPLY(ply_stream,V,F,E,N,UV,VD,Vheader,
+    FD,Fheader,ED,Eheader,comments));
+
+  Eigen::MatrixXd expected_V(1,3);
+  expected_V << 1,2,3;
+  test_common::assert_eq(V,expected_V);
+}
+
 TEST_CASE("readPLY: cube_with_fold.ply", "[igl]")
 {
     Eigen::MatrixXd V;

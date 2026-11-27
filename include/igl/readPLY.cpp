@@ -281,12 +281,21 @@ IGL_INLINE bool readPLY(
       if(e.name == "vertex" ) // found a vertex
       {
         int coordinate_index = 0;
+        bool coordinate_seen[3] = {false,false,false};
         for (auto p : e.properties)
         {
           if(p.name == "x" || p.name == "y" || p.name == "z")
           {
             const int axis = p.name == "x" ? 0 : p.name == "y" ? 1 : 2;
-            vertex_order.indices()(axis) = coordinate_index++;
+            // Tinyply binds a requested key to the first property with that
+            // name, so a repeated coordinate must not advance the order:
+            // vertex_order has three entries and indexing it with a larger
+            // value would read past V.
+            if(!coordinate_seen[axis])
+            {
+              coordinate_seen[axis] = true;
+              vertex_order.indices()(axis) = coordinate_index++;
+            }
           }
           if(vertex_std.find(p.name) == vertex_std.end())
           {
