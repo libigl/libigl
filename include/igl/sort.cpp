@@ -124,24 +124,43 @@ IGL_INLINE void igl::sort_new(
   {
     Eigen::VectorXi ix;
     colon(0,num_inner-1,ix);
-    // Sort the index map, using unsorted for comparison
+    // Sort the index map, using unsorted for comparison. Ties are broken by
+    // index so equal entries keep their original order (the same result as
+    // std::stable_sort, which is slower here; see the std::vector overload).
     if(dim == 1)
     {
-      std::sort(
-        ix.data(),
-        ix.data()+ix.size(),
-        igl::IndexVectorLessThan<const typename DerivedX::ConstColXpr >(X.col(i)));
+      if(ascending)
+      {
+        std::sort(
+          ix.data(),
+          ix.data()+ix.size(),
+          [&X,i](int a, int b)
+          { return X(a,i) < X(b,i) || (!(X(b,i) < X(a,i)) && a < b); });
+      }else
+      {
+        std::sort(
+          ix.data(),
+          ix.data()+ix.size(),
+          [&X,i](int a, int b)
+          { return X(b,i) < X(a,i) || (!(X(a,i) < X(b,i)) && a < b); });
+      }
     }else
     {
-      std::sort(
-        ix.data(),
-        ix.data()+ix.size(),
-        igl::IndexVectorLessThan<const typename DerivedX::ConstRowXpr >(X.row(i)));
-    }
-    // if not ascending then reverse
-    if(!ascending)
-    {
-      std::reverse(ix.data(),ix.data()+ix.size());
+      if(ascending)
+      {
+        std::sort(
+          ix.data(),
+          ix.data()+ix.size(),
+          [&X,i](int a, int b)
+          { return X(i,a) < X(i,b) || (!(X(i,b) < X(i,a)) && a < b); });
+      }else
+      {
+        std::sort(
+          ix.data(),
+          ix.data()+ix.size(),
+          [&X,i](int a, int b)
+          { return X(i,b) < X(i,a) || (!(X(i,a) < X(i,b)) && a < b); });
+      }
     }
     for(int j = 0;j<num_inner;j++)
     {
@@ -302,16 +321,24 @@ for(size_t i=0;i<unsorted.size();i++)
 {
   index_map[i] = i;
 }
-// Sort the index map, using unsorted for comparison
-std::sort(
-  index_map.begin(),
-  index_map.end(),
-  igl::IndexLessThan<const std::vector<T>& >(unsorted));
-
-// if not ascending then reverse
-if(!ascending)
+// Sort the index map, using unsorted for comparison. Ties are broken by index
+// so equal entries keep their original order. This gives the same result as
+// std::stable_sort, which is up to ~2× slower here (e.g., on the barycenters
+// that AABB::init sorts).
+if(ascending)
 {
-  std::reverse(index_map.begin(),index_map.end());
+  std::sort(
+    index_map.begin(),
+    index_map.end(),
+    [&unsorted](size_t a, size_t b)
+    { return unsorted[a] < unsorted[b] || (!(unsorted[b] < unsorted[a]) && a < b); });
+}else
+{
+  std::sort(
+    index_map.begin(),
+    index_map.end(),
+    [&unsorted](size_t a, size_t b)
+    { return unsorted[b] < unsorted[a] || (!(unsorted[a] < unsorted[b]) && a < b); });
 }
   // make space for output without clobbering
   sorted.resize(unsorted.size());
@@ -376,6 +403,9 @@ template void igl::sort<Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, 
 template void igl::sort<Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<long, -1, 1, 0, -1, 1> >(Eigen::DenseBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, int, bool, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<long, -1, 1, 0, -1, 1> >&);
 template void igl::sort<Eigen::Matrix<double, -1, 2, 0, -1, 2>, Eigen::Matrix<double, -1, 2, 0, -1, 2>, Eigen::Matrix<int, -1, 2, 0, -1, 2> >(Eigen::DenseBase<Eigen::Matrix<double, -1, 2, 0, -1, 2> > const&, int, bool, Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 2, 0, -1, 2> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 2, 0, -1, 2> >&);
 template void igl::sort<Eigen::Matrix<int, -1, 2, 0, -1, 2>, Eigen::Matrix<int, -1, 2, 0, -1, 2>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::DenseBase<Eigen::Matrix<int, -1, 2, 0, -1, 2> > const&, int, bool, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 2, 0, -1, 2> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
+template void igl::sort_new<Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1>, Eigen::Matrix<int, -1, 1, 0, -1, 1> >(Eigen::DenseBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> > const&, int, bool, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, -1, 1, 0, -1, 1> >&);
+template void igl::sort_new<Eigen::Matrix<int, 1, -1, 1, 1, -1>, Eigen::Matrix<int, 1, -1, 1, 1, -1>, Eigen::Matrix<int, 1, -1, 1, 1, -1> >(Eigen::DenseBase<Eigen::Matrix<int, 1, -1, 1, 1, -1> > const&, int, bool, Eigen::PlainObjectBase<Eigen::Matrix<int, 1, -1, 1, 1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, 1, -1, 1, 1, -1> >&);
+template void igl::sort<Eigen::Matrix<int, 1, -1, 1, 1, -1>, Eigen::Matrix<int, 1, -1, 1, 1, -1>, Eigen::Matrix<int, 1, -1, 1, 1, -1> >(Eigen::DenseBase<Eigen::Matrix<int, 1, -1, 1, 1, -1> > const&, int, bool, Eigen::PlainObjectBase<Eigen::Matrix<int, 1, -1, 1, 1, -1> >&, Eigen::PlainObjectBase<Eigen::Matrix<int, 1, -1, 1, 1, -1> >&);
 #ifdef WIN32
 template void igl::sort<class Eigen::Matrix<int,-1,1,0,-1,1>,class Eigen::Matrix<int,-1,1,0,-1,1>,class Eigen::Matrix<__int64,-1,1,0,-1,1> >(class Eigen::DenseBase<class Eigen::Matrix<int,-1,1,0,-1,1> > const &,int,bool,class Eigen::PlainObjectBase<class Eigen::Matrix<int,-1,1,0,-1,1> > &,class Eigen::PlainObjectBase<class Eigen::Matrix<__int64,-1,1,0,-1,1> > &);
 template void igl::sort<__int64>(class std::vector<__int64,class std::allocator<__int64> > const &,bool,class std::vector<__int64,class std::allocator<__int64> > &,class std::vector<unsigned __int64,class std::allocator<unsigned __int64> > &);
