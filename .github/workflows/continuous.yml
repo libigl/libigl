@@ -158,3 +158,72 @@ jobs:
 
       - name: Tests
         run: cd build; ctest --show-only; ctest --verbose -j2
+
+  ####################
+  # Installed package, consumed with another compiler
+  ####################
+
+  # Builds and installs libigl with MSVC, then builds tests/install_consumer against the installed
+  # package with a different compiler. Catches usage requirements that only libigl's own compiler
+  # accepts, such as /bigobj or /MP exported to a clang++ consumer (#2590).
+  InstallConsumer:
+    name: Windows MSVC-installed, ${{ matrix.consumer }} consumer
+    runs-on: windows-2022
+    strategy:
+      fail-fast: false
+      matrix:
+        consumer: [clang++, clang-cl, cl]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 10
+
+      - name: Install Ninja
+        uses: seanmiddleditch/gha-setup-ninja@master
+
+      - name: Configure and install libigl (MSVC)
+        shell: cmd
+        run: |
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=x64
+          cmake -G Ninja ^
+            -DCMAKE_POLICY_VERSION_MINIMUM=3.5 ^
+            -DCMAKE_BUILD_TYPE=Release ^
+            -DCMAKE_C_COMPILER=cl ^
+            -DCMAKE_CXX_COMPILER=cl ^
+            -DCMAKE_INSTALL_PREFIX=%GITHUB_WORKSPACE%\install ^
+            -DLIBIGL_USE_STATIC_LIBRARY=OFF ^
+            -DLIBIGL_INSTALL=ON ^
+            -DLIBIGL_BUILD_TESTS=OFF ^
+            -DLIBIGL_BUILD_TUTORIALS=OFF ^
+            -DLIBIGL_STB=ON ^
+            -DLIBIGL_CYCODEBASE=OFF ^
+            -DLIBIGL_EMBREE=OFF ^
+            -DLIBIGL_GLFW=OFF ^
+            -DLIBIGL_IMGUI=OFF ^
+            -DLIBIGL_OPENGL=OFF ^
+            -DLIBIGL_PREDICATES=OFF ^
+            -DLIBIGL_SPECTRA=OFF ^
+            -DLIBIGL_XML=OFF ^
+            -DLIBIGL_COPYLEFT_CORE=OFF ^
+            -DLIBIGL_COPYLEFT_CGAL=OFF ^
+            -DLIBIGL_COPYLEFT_COMISO=OFF ^
+            -DLIBIGL_COPYLEFT_TETGEN=OFF ^
+            -DLIBIGL_RESTRICTED_TRIANGLE=OFF ^
+            -B build ^
+            -S . || exit /b 1
+          cmake --install build || exit /b 1
+          findstr /c:"INTERFACE_COMPILE" install\lib\cmake\igl\LibiglConfigTargets.cmake
+
+      - name: Build and run consumer (${{ matrix.consumer }})
+        shell: cmd
+        run: |
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=x64
+          cmake -G Ninja ^
+            -DCMAKE_BUILD_TYPE=Release ^
+            -DCMAKE_CXX_COMPILER=${{ matrix.consumer }} ^
+            -Dlibigl_DIR=%GITHUB_WORKSPACE%\install\lib\cmake\igl ^
+            -B build-consumer ^
+            -S tests\install_consumer || exit /b 1
+          cmake --build build-consumer --verbose || exit /b 1
+          ctest --test-dir build-consumer --output-on-failure

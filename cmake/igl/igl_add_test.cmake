@@ -29,6 +29,9 @@ function(igl_add_test module_name)
     # Compile definitions
     target_compile_definitions(test_${module_name} PUBLIC CATCH_CONFIG_ENABLE_BENCHMARKING)
 
+    # Parallel compilation for Visual Studio (no longer inherited from the libigl targets)
+    target_compile_options(test_${module_name} PRIVATE $<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/MP>)
+
     # Dependencies
     include(catch2)
     include(libigl_tests_data)

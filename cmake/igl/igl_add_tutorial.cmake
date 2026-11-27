@@ -16,6 +16,9 @@ function(igl_add_tutorial name)
         ${ARGN}
     )
 
+    # Parallel compilation for Visual Studio (no longer inherited from the libigl targets)
+    target_compile_options(${name} PRIVATE $<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/MP>)
+
     set_target_properties(${name} PROPERTIES FOLDER Libigl_Tutorials)
 
     # Do this codesign only on macOS
