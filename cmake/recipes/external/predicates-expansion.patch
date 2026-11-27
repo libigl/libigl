@@ -1,0 +1,170 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 51d2028..186dbc0 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -10,6 +10,13 @@ endif()
+
+ add_library(${PROJECT_NAME} predicates.c predicates.h)
+
++# Error-free transforms require the written sequence of rounded operations.
++if(MSVC)
++    target_compile_options(${PROJECT_NAME} PRIVATE /fp:strict)
++elseif(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
++    target_compile_options(${PROJECT_NAME} PRIVATE -fno-fast-math -ffp-contract=off)
++endif()
++
+ include(GNUInstallDirs)
+ target_include_directories(${PROJECT_NAME} PUBLIC
+     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+diff --git a/predicates.c b/predicates.c
+index 1e22e69..bf3b234 100644
+--- a/predicates.c
++++ b/predicates.c
+@@ -1030,9 +1030,9 @@ REAL *h;
+
+ static int fast_expansion_sum_zeroelim(elen, e, flen, f, h)  /* h cannot be e or f. */
+ int elen;
+-REAL *e;
++const REAL *e;
+ int flen;
+-REAL *f;
++const REAL *f;
+ REAL *h;
+ {
+   REAL Q;
+@@ -1048,19 +1048,19 @@ REAL *h;
+   eindex = findex = 0;
+   if ((fnow > enow) == (fnow > -enow)) {
+     Q = enow;
+-    enow = e[++eindex];
++    if (++eindex < elen) enow = e[eindex];
+   } else {
+     Q = fnow;
+-    fnow = f[++findex];
++    if (++findex < flen) fnow = f[findex];
+   }
+   hindex = 0;
+   if ((eindex < elen) && (findex < flen)) {
+     if ((fnow > enow) == (fnow > -enow)) {
+       Fast_Two_Sum(enow, Q, Qnew, hh);
+-      enow = e[++eindex];
++      if (++eindex < elen) enow = e[eindex];
+     } else {
+       Fast_Two_Sum(fnow, Q, Qnew, hh);
+-      fnow = f[++findex];
++      if (++findex < flen) fnow = f[findex];
+     }
+     Q = Qnew;
+     if (hh != 0.0) {
+@@ -1069,10 +1069,10 @@ REAL *h;
+     while ((eindex < elen) && (findex < flen)) {
+       if ((fnow > enow) == (fnow > -enow)) {
+         Two_Sum(Q, enow, Qnew, hh);
+-        enow = e[++eindex];
++        if (++eindex < elen) enow = e[eindex];
+       } else {
+         Two_Sum(Q, fnow, Qnew, hh);
+-        fnow = f[++findex];
++        if (++findex < flen) fnow = f[findex];
+       }
+       Q = Qnew;
+       if (hh != 0.0) {
+@@ -1082,7 +1082,7 @@ REAL *h;
+   }
+   while (eindex < elen) {
+     Two_Sum(Q, enow, Qnew, hh);
+-    enow = e[++eindex];
++    if (++eindex < elen) enow = e[eindex];
+     Q = Qnew;
+     if (hh != 0.0) {
+       h[hindex++] = hh;
+@@ -1090,7 +1090,7 @@ REAL *h;
+   }
+   while (findex < flen) {
+     Two_Sum(Q, fnow, Qnew, hh);
+-    fnow = f[++findex];
++    if (++findex < flen) fnow = f[findex];
+     Q = Qnew;
+     if (hh != 0.0) {
+       h[hindex++] = hh;
+@@ -1302,7 +1302,7 @@ REAL *h;
+
+ static int scale_expansion_zeroelim(elen, e, b, h)   /* e and h cannot be the same. */
+ int elen;
+-REAL *e;
++const REAL *e;
+ REAL b;
+ REAL *h;
+ {
+@@ -4271,3 +4271,40 @@ REAL *pe;
+
+   return insphereadapt(pa, pb, pc, pd, pe, permanent);
+ }
++
++/* Public wrappers around the existing error-free transforms and expansion
++ * routines. Keep the arithmetic in the original implementation above. */
++void predicates_two_sum(REAL a, REAL b, REAL *value, REAL *tail)
++{
++  REAL x, y, bvirt, avirt, bround, around;
++  Two_Sum(a, b, x, y);
++  *value = x;
++  *tail = y;
++}
++
++void predicates_two_diff(REAL a, REAL b, REAL *value, REAL *tail)
++{
++  REAL x, y, bvirt, avirt, bround, around;
++  Two_Diff(a, b, x, y);
++  *value = x;
++  *tail = y;
++}
++
++void predicates_two_product(REAL a, REAL b, REAL *value, REAL *tail)
++{
++  REAL x, y, c, abig, ahi, alo, bhi, blo, err1, err2, err3;
++  Two_Product(a, b, x, y);
++  *value = x;
++  *tail = y;
++}
++
++int predicates_expansion_sum(int elen, const REAL *e, int flen,
++                             const REAL *f, REAL *h)
++{
++  return fast_expansion_sum_zeroelim(elen, e, flen, f, h);
++}
++
++int predicates_expansion_scale(int elen, const REAL *e, REAL b, REAL *h)
++{
++  return scale_expansion_zeroelim(elen, e, b, h);
++}
+diff --git a/predicates.h b/predicates.h
+index 804edbc..209973d 100644
+--- a/predicates.h
++++ b/predicates.h
+@@ -22,6 +22,26 @@ double incircle(double pa[2], double pb[2], double pc[2], double pd[2]);
+ double insphere(double pa[3], double pb[3], double pc[3], double pd[3], double pe[3]);
+ #endif
+
++/* Expansion arithmetic. Call exactinit() before using these routines.
++ * Arithmetic must round to nearest; intermediate overflow/underflow is not
++ * supported. The scalar transforms return a rounded value and its exact tail.
++ * Expansion inputs are nonempty, strongly nonoverlapping, and ordered from
++ * smallest to largest magnitude. Output buffers must not alias either input.
++ * Sum requires elen + flen output entries; scale requires 2 * elen entries.
++ * Both return the number of output entries, including one zero for exact zero.
++ */
++void predicates_two_sum(IGL_PREDICATES_REAL a, IGL_PREDICATES_REAL b,
++                       IGL_PREDICATES_REAL *value, IGL_PREDICATES_REAL *tail);
++void predicates_two_diff(IGL_PREDICATES_REAL a, IGL_PREDICATES_REAL b,
++                        IGL_PREDICATES_REAL *value, IGL_PREDICATES_REAL *tail);
++void predicates_two_product(IGL_PREDICATES_REAL a, IGL_PREDICATES_REAL b,
++                           IGL_PREDICATES_REAL *value, IGL_PREDICATES_REAL *tail);
++int predicates_expansion_sum(int elen, const IGL_PREDICATES_REAL *e,
++                             int flen, const IGL_PREDICATES_REAL *f,
++                             IGL_PREDICATES_REAL *h);
++int predicates_expansion_scale(int elen, const IGL_PREDICATES_REAL *e,
++                               IGL_PREDICATES_REAL b, IGL_PREDICATES_REAL *h);
++
+ #ifdef __cplusplus
+ }
+ #endif

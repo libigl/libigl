@@ -1,0 +1,199 @@
+// This file is part of libigl, a simple c++ geometry processing library.
+//
+// Copyright (C) 2026 Alec Jacobson <alecjacobson@gmail.com>
+//
+// This Source Code Form is subject to the terms of the Mozilla Public License
+// v. 2.0. If a copy of the MPL was not distributed with this file, You can
+// obtain one at http://mozilla.org/MPL/2.0/.
+#ifndef IGL_PREDICATES_EXACT_RAY_MESH_INTERSECT_H
+#define IGL_PREDICATES_EXACT_RAY_MESH_INTERSECT_H
+#include "../igl_inline.h"
+#include "../Hit.h"
+#include <Eigen/Core>
+#include <vector>
+
+namespace igl
+{
+namespace predicates
+{
+  /// Shoot a ray against a mesh (V,F) using exact leaf classification and hit
+  /// ordering. The sign predicates refer to the mathematical ray defined by the
+  /// floating point `source` and `dir`, without constructing an intersection
+  /// location or ray parameter. Coordinates must be finite `float` or `double`.
+  ///
+  /// Candidate culling uses the conservative floating-point
+  /// eytzinger_aabb_ray_intersection routine.
+  ///
+  /// Only clean transverse hits are reported. A triangle the ray is coplanar with
+  /// (exact_ray_triangle_intersect returns Coplanar) may intersect in a segment.
+  /// These predicates do not resolve coplanar intersections, so they are ignored
+  /// (classified as no-hit).
+  ///
+  /// Overloads without B1,B2,leaf build a tree per query. Reuse a prebuilt tree
+  /// for repeated queries. Runtime depends on the number of candidate
+  /// triangles and hit comparisons, and on how often sign filters need exact
+  /// expansion arithmetic.
+  ///
+  /// Link against igl::predicates with its double-precision backend. Correctness
+  /// assumes round-to-nearest with gradual underflow, without reassociation or
+  /// contraction. Exact refinement rescales positions and the direction by
+  /// separate positive powers of two. It throws std::range_error if an exponent
+  /// span cannot fit safely. A sufficient range for both ray predicates is:
+  /// after rescaling, every nonzero component's lowest set bit is at least
+  /// 2^-166 and its magnitude is less than 2^151. Float inputs promote exactly
+  /// to double. No expansion is retained between calls.
+  ///
+  /// @param[in] source  3-vector origin of ray
+  /// @param[in] dir     3-vector direction of ray
+  /// @param[in] V  #V by 3 list of mesh vertex positions
+  /// @param[in] F  #F by 3 list of mesh face indices into V
+  /// @param[out] fid  index into F of the first hit face (set only if returning true)
+  /// @return true if there was a hit
+  ///
+  /// \see exact_ray_triangle_intersect, igl::ray_mesh_intersect
+  template <
+    typename Derivedsource,
+    typename Deriveddir,
+    typename DerivedV,
+    typename DerivedF>
+  IGL_INLINE bool exact_ray_mesh_intersect(
+    const Eigen::MatrixBase<Derivedsource> & source,
+    const Eigen::MatrixBase<Deriveddir> & dir,
+    const Eigen::MatrixBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedF> & F,
+    int & fid);
+  /// Collect every triangle transversally intersected by the ray, sorted exactly
+  /// near-to-far.
+  ///
+  /// @param[out] fids  indices into F of hit faces, sorted by exact hit order
+  /// @return true if there were any hits
+  template <
+    typename Derivedsource,
+    typename Deriveddir,
+    typename DerivedV,
+    typename DerivedF>
+  IGL_INLINE bool exact_ray_mesh_intersect_all(
+    const Eigen::MatrixBase<Derivedsource> & source,
+    const Eigen::MatrixBase<Deriveddir> & dir,
+    const Eigen::MatrixBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedF> & F,
+    std::vector<int> & fids);
+  /// \overload
+  /// Convenience overload that additionally constructs an approximate (floating
+  /// point) hit record for the first hit as a post-process. The returned
+  /// barycentric coordinates and parameter t are computed inexactly and can be
+  /// unreliable on ill-conditioned triangles, including zero values when the
+  /// rounded determinant vanishes.
+  ///
+  /// @param[out] hit  first hit (id, u, v, t), set only if returning true
+  template <
+    typename Derivedsource,
+    typename Deriveddir,
+    typename DerivedV,
+    typename DerivedF>
+  IGL_INLINE bool exact_ray_mesh_intersect(
+    const Eigen::MatrixBase<Derivedsource> & source,
+    const Eigen::MatrixBase<Deriveddir> & dir,
+    const Eigen::MatrixBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedF> & F,
+    igl::Hit<typename DerivedV::Scalar> & hit);
+  /// \overload
+  /// Convenience overload constructing approximate hit records for all hits,
+  /// sorted by exact hit order.
+  ///
+  /// @param[out] hits  sorted list of hits with approximate (u,v,t)
+  template <
+    typename Derivedsource,
+    typename Deriveddir,
+    typename DerivedV,
+    typename DerivedF>
+  IGL_INLINE bool exact_ray_mesh_intersect_all(
+    const Eigen::MatrixBase<Derivedsource> & source,
+    const Eigen::MatrixBase<Deriveddir> & dir,
+    const Eigen::MatrixBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedF> & F,
+    std::vector<igl::Hit<typename DerivedV::Scalar>> & hits);
+  /// Query a prebuilt Eytzinger tree. All hit semantics above apply.
+  /// Bounds must conservatively contain their triangles, and the tree must
+  /// contain every face exactly once. Build it with box_simplices followed by
+  /// eytzinger_aabb and rebuild after geometry or topology changes. Box scalar
+  /// precision must be at least that of V. Dimensions and visited node indices
+  /// are checked; complete coverage and conservative bounds are preconditions
+  /// and are not revalidated on each query.
+  /// @param[in] B1,B2,leaf  #B by 3 box corners and #B leaf ids (-1 internal,
+  ///   -2 empty); other parameters and outputs match the convenience overloads.
+  template <
+    typename Derivedsource,
+    typename Deriveddir,
+    typename DerivedV,
+    typename DerivedF,
+    typename DerivedB,
+    typename Derivedleaf>
+  IGL_INLINE bool exact_ray_mesh_intersect(
+    const Eigen::MatrixBase<Derivedsource> & source,
+    const Eigen::MatrixBase<Deriveddir> & dir,
+    const Eigen::MatrixBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedF> & F,
+    const Eigen::MatrixBase<DerivedB> & B1,
+    const Eigen::MatrixBase<DerivedB> & B2,
+    const Eigen::MatrixBase<Derivedleaf> & leaf,
+    int & fid);
+  /// \overload
+  template <
+    typename Derivedsource,
+    typename Deriveddir,
+    typename DerivedV,
+    typename DerivedF,
+    typename DerivedB,
+    typename Derivedleaf>
+  IGL_INLINE bool exact_ray_mesh_intersect_all(
+    const Eigen::MatrixBase<Derivedsource> & source,
+    const Eigen::MatrixBase<Deriveddir> & dir,
+    const Eigen::MatrixBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedF> & F,
+    const Eigen::MatrixBase<DerivedB> & B1,
+    const Eigen::MatrixBase<DerivedB> & B2,
+    const Eigen::MatrixBase<Derivedleaf> & leaf,
+    std::vector<int> & fids);
+  /// \overload
+  template <
+    typename Derivedsource,
+    typename Deriveddir,
+    typename DerivedV,
+    typename DerivedF,
+    typename DerivedB,
+    typename Derivedleaf>
+  IGL_INLINE bool exact_ray_mesh_intersect(
+    const Eigen::MatrixBase<Derivedsource> & source,
+    const Eigen::MatrixBase<Deriveddir> & dir,
+    const Eigen::MatrixBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedF> & F,
+    const Eigen::MatrixBase<DerivedB> & B1,
+    const Eigen::MatrixBase<DerivedB> & B2,
+    const Eigen::MatrixBase<Derivedleaf> & leaf,
+    igl::Hit<typename DerivedV::Scalar> & hit);
+  /// \overload
+  template <
+    typename Derivedsource,
+    typename Deriveddir,
+    typename DerivedV,
+    typename DerivedF,
+    typename DerivedB,
+    typename Derivedleaf>
+  IGL_INLINE bool exact_ray_mesh_intersect_all(
+    const Eigen::MatrixBase<Derivedsource> & source,
+    const Eigen::MatrixBase<Deriveddir> & dir,
+    const Eigen::MatrixBase<DerivedV> & V,
+    const Eigen::MatrixBase<DerivedF> & F,
+    const Eigen::MatrixBase<DerivedB> & B1,
+    const Eigen::MatrixBase<DerivedB> & B2,
+    const Eigen::MatrixBase<Derivedleaf> & leaf,
+    std::vector<igl::Hit<typename DerivedV::Scalar>> & hits);
+
+}
+}
+
+#ifndef IGL_STATIC_LIBRARY
+#  include "exact_ray_mesh_intersect.cpp"
+#endif
+#endif
