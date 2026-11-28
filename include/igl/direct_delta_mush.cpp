@@ -142,39 +142,28 @@ IGL_INLINE void igl::direct_delta_mush_precomputation(
   Eigen::Matrix<Scalar, Eigen::Dynamic, 4> V_homogeneous(n, 4);
   V_homogeneous << V, Eigen::Matrix<Scalar, Eigen::Dynamic, 1>::Ones(n);
 
-  // Identity matrix of #V by #V
-  Eigen::SparseMatrix<Scalar> I(n, n);
-  I.setIdentity();
-
-  // Laplacian matrix of #V by #V
-  // L_bar = L \times D_L^{-1}
   Eigen::SparseMatrix<Scalar> L;
   igl::cotmatrix(V, F, L);
   L = -L;
-  // Inverse of diagonal matrix = reciprocal elements in diagonal
-  Eigen::Matrix<Scalar, Eigen::Dynamic, 1> D_L = L.diagonal();
-  // D_L = D_L.array().pow(-1);  // Not using this since not sure if diagonal contains 0
-  for (int i = 0; i < D_L.size(); ++i)
+  Eigen::Matrix<Scalar, Eigen::Dynamic, 1> diagonal = L.diagonal();
+  for (int i = 0; i < n; ++i)
   {
-    if (D_L(i) != 0)
+    // Keep an identity equation for an unreferenced vertex
+    if (diagonal(i) == 0)
     {
-      D_L(i) = 1 / D_L(i);
+      diagonal(i) = 1;
     }
   }
-  Eigen::SparseMatrix<Scalar> D_L_inv = D_L.asDiagonal().toDenseMatrix().sparseView();
-  Eigen::SparseMatrix<Scalar> L_bar = L * D_L_inv;
+  const Eigen::SparseMatrix<Scalar> D(diagonal.asDiagonal());
 
-  // Implicitly and iteratively solve for W'
-  // w'_{ij} = \sum_{k=1}^{n}{C_{ki} w_{kj}}      where C = (I + kappa L_bar)^{-p}:
-  // W' = C^T \times W  =>  c^T W_k = W_{k-1}     where c = (I + kappa L_bar)
-  // C positive semi-definite => ldlt solver
+  // Each implicit smoothing step (I + t D^-1 L) X = Y is equivalent to
+  // the symmetric system (D + t L) X = D Y
   Eigen::SimplicialLDLT<Eigen::SparseMatrix<Scalar>> ldlt_W_prime;
-  Eigen::SparseMatrix<Scalar> c(I + kappa * L_bar);
-  // working copy
+  ldlt_W_prime.compute(D + kappa * L);
   PlainMatrix<DerivedW ,Eigen::Dynamic ,Eigen::Dynamic> W_prime(W);
-  ldlt_W_prime.compute(c.transpose());
   for (int iter = 0; iter < p; ++iter)
   {
+    W_prime.array().colwise() *= diagonal.array();
     W_prime = ldlt_W_prime.solve(W_prime);
   }
 
@@ -202,21 +191,12 @@ IGL_INLINE void igl::direct_delta_mush_precomputation(
   }
 
   // Implicitly and iteratively solve for Psi: #V by #T*10 of \Psi_{ij}s.
-  // Note: Using dense matrices to solve for Psi will cause the program to hang.
-  // The following won't work
-  // Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> Psi(U_prime);
-  // Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> b((I + lambda * L_bar).transpose());
-  // for (int iter = 0; iter < p; ++iter)
-  // {
-  //   Psi = b.ldlt().solve(Psi);  // hangs here
-  // }
-  // Convert to sparse matrices and compute
   Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> Psi = U_prime.sparseView();
-  Eigen::SparseMatrix<Scalar> b = (I + lambda * L_bar).transpose();
   Eigen::SimplicialLDLT<Eigen::SparseMatrix<Scalar>> ldlt_Psi;
-  ldlt_Psi.compute(b);
+  ldlt_Psi.compute(D + lambda * L);
   for (int iter = 0; iter < p; ++iter)
   {
+    Psi.array().colwise() *= diagonal.array();
     Psi = ldlt_Psi.solve(Psi);
   }
 
